@@ -2,7 +2,7 @@
 
 /* datadesc: test of data description (using file transport).               */
 
-/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2004-2007 Martin Quinson. All rights reserved.             */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,107 +20,78 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 #define READ  0
 #define WRITE 1
 #define COPY  2
-#define RW    3
 
-int r_arch;
 const char *filename = "datadesc_usage.out";  
 
 void
-write_read(gras_datadesc_type_t type,void *src, void *dst, 
+write_read(const char* msgtype,void *src, void *dst, 
 	   gras_socket_t sock, int direction);
 
 void
-write_read(gras_datadesc_type_t type,void *src, void *dst, 
+write_read(const char* msgtype,void *src, void *dst, 
 	   gras_socket_t sock, int direction) {
    
-  /* write */
-  if (direction == RW) 
-    sock = gras_socket_client_from_file(filename);
-  if (direction == WRITE || direction == RW)
-    gras_datadesc_send(sock, type, src);
-  if (direction == RW) 
-    gras_socket_close(sock);
-   
-  /* read */
-  if (direction == RW) 
-    sock = gras_socket_server_from_file(filename);
-
-  if (direction == READ || direction == RW)
-    gras_datadesc_recv(sock, type, r_arch, dst);
-
-  if (direction == RW) 
-    gras_socket_close(sock);
-
-  if (direction == COPY)
-    gras_datadesc_memcpy(type, src, dst);
+  switch (direction) {
+   case READ:
+     gras_msg_wait(15, msgtype, NULL, dst);
+     break;
+     
+   case WRITE:
+     gras_msg_send(sock, msgtype, src);
+     break;
+     
+   case COPY:
+     gras_datadesc_memcpy(gras_datadesc_by_name(msgtype), src, dst);
+     break;
+  }
 }
 
-void test_int(gras_socket_t sock, int direction);
-void test_float(gras_socket_t sock, int direction);
-void test_double(gras_socket_t sock, int direction);
-void test_array(gras_socket_t sock, int direction);
-void test_dynar_scal(gras_socket_t sock, int direction);
-void test_intref(gras_socket_t sock, int direction);
-void test_string(gras_socket_t sock, int direction);
-
-void test_homostruct(gras_socket_t sock, int direction);
-void test_hetestruct(gras_socket_t sock, int direction);
-void test_nestedstruct(gras_socket_t sock, int direction);
-void test_chain_list(gras_socket_t sock, int direction);
-void test_graph(gras_socket_t sock, int direction);
-void test_dynar_ref(gras_socket_t sock, int direction);
-
-void test_pbio(gras_socket_t sock, int direction);
-void test_clause(gras_socket_t sock, int direction);
 
 /* defined in datadesc_structures.c, which in perl generated */
+void register_structures(void);
 void test_structures(gras_socket_t sock, int direction); 
 
+/************************
+ * Each and every tests *
+ ************************/
 
-
-void test_int(gras_socket_t sock, int direction) {
+static void test_int(gras_socket_t sock, int direction) {
   int i=5,j;
   
   INFO0("---- Test on integer ----");
-  write_read(gras_datadesc_by_name("int"), &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) 
+  write_read("int", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) 
     xbt_assert(i == j);
 }
-void test_float(gras_socket_t sock, int direction) {
+static void test_float(gras_socket_t sock, int direction) {
   float i=5.0,j;
   
   INFO0("---- Test on float ----");
-  write_read(gras_datadesc_by_name("float"), &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY)
+  write_read("float", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY)
     xbt_assert2(i == j,"%f != %f",i,j);
 }
-void test_double(gras_socket_t sock, int direction) {
+static void test_double(gras_socket_t sock, int direction) {
   double i=-3252355.1234,j;
   
   INFO0("---- Test on double ----");
-  write_read(gras_datadesc_by_name("double"), &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY)
+  write_read("double", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY)
     xbt_assert2(i == j,"%f != %f",i,j);
 }
 
-#define SIZE 5
-typedef int array[SIZE];
-void test_array(gras_socket_t sock, int direction) {
-  gras_datadesc_type_t my_type;
-  
+#define FIXED_ARRAY_SIZE 5
+typedef int array[FIXED_ARRAY_SIZE];
+static void test_array(gras_socket_t sock, int direction) {
   array i = { 35212,-6226,74337,11414,7733};
   array j;
   int cpt;
 
   INFO0("---- Test on fixed array ----");
 
-  my_type=gras_datadesc_array_fixed("fixed int array", 
-				    gras_datadesc_by_name("int"),
-				    SIZE);
-
-  write_read(my_type, &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
-    for (cpt=0; cpt<SIZE; cpt++) {
+  write_read("fixed int array", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) {
+    for (cpt=0; cpt<FIXED_ARRAY_SIZE; cpt++) {
       DEBUG1("Test spot %d",cpt);
       xbt_assert4(i[cpt] == j[cpt],"i[%d]=%d  !=  j[%d]=%d",
 		   cpt,i[cpt],cpt,j[cpt]);
@@ -129,22 +100,20 @@ void test_array(gras_socket_t sock, int direction) {
 }
 /*** Dynar of scalar ***/
 
-void test_dynar_scal(gras_socket_t sock, int direction){
-  gras_datadesc_type_t my_type;
+static void test_dynar_scal(gras_socket_t sock, int direction){
   xbt_dynar_t i,j;
   int cpt;
    
   INFO0("---- Test on dynar containing integers ----");
-  my_type = gras_datadesc_dynar(gras_datadesc_by_name("int"),NULL);
   i = xbt_dynar_new(sizeof(int),NULL);
   for (cpt=0; cpt<64; cpt++) {
     xbt_dynar_push_as(i,int,cpt); 
     DEBUG2("Push %d, length=%lu",cpt, xbt_dynar_length(i));
   }
 /*  xbt_dynar_dump(i);*/
-  write_read(my_type, &i,&j, sock, direction);
+  write_read("xbt_dynar_of_int", &i,&j, sock, direction);
 /*  xbt_dynar_dump(j);*/
-  if (direction == READ || direction == RW || direction == COPY) {
+  if (direction == READ || direction == COPY) {
      for (cpt=0; cpt<64; cpt++){
 	int ret=xbt_dynar_get_as(j,cpt,int);
 	if (cpt != ret) {
@@ -157,8 +126,7 @@ void test_dynar_scal(gras_socket_t sock, int direction){
   }
   xbt_dynar_free(&i);
 }
-void test_intref(gras_socket_t sock, int direction) {
-  gras_datadesc_type_t my_type;
+static void test_intref(gras_socket_t sock, int direction) {
   int *i,*j;
   
   i=xbt_new(int,1);
@@ -166,10 +134,8 @@ void test_intref(gras_socket_t sock, int direction) {
 
   INFO0("---- Test on a reference to an integer ----");
 
-  my_type = gras_datadesc_ref("int*",gras_datadesc_by_name("int"));
-
-  write_read(my_type, &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("int*", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) {
     xbt_assert2(*i == *j,"*i != *j (%d != %d)",*i,*j);
     free(j);
   }
@@ -179,14 +145,13 @@ void test_intref(gras_socket_t sock, int direction) {
 /***
  *** string (dynamic array)
  ***/ 
-void test_string(gras_socket_t sock, int direction) {
+static void test_string(gras_socket_t sock, int direction) {
   char *i=xbt_strdup("Some data"), *j=NULL;
   int cpt;
   
   INFO0("---- Test on string (ref to dynamic array) ----");
-  write_read(gras_datadesc_by_name("string"), &i,&j,
-	     sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("string", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) {
     for (cpt=0; cpt<strlen(i); cpt++) {
       xbt_assert4(i[cpt] == j[cpt],"i[%d]=%c  !=  j[%d]=%c",
 		   cpt,i[cpt],cpt,j[cpt]);
@@ -203,32 +168,17 @@ void test_string(gras_socket_t sock, int direction) {
 typedef struct {
   int a,b,c,d;
 } homostruct;
-void test_homostruct(gras_socket_t sock, int direction) {
-  gras_datadesc_type_t my_type;
+static void test_homostruct(gras_socket_t sock, int direction) {
   homostruct *i, *j; 
 
   INFO0("---- Test on homogeneous structure ----");
-  /* create descriptor */
-  my_type=gras_datadesc_struct("homostruct");
-  gras_datadesc_struct_append(my_type,"a",
-			      gras_datadesc_by_name("signed int"));
-  gras_datadesc_struct_append(my_type,"b",
-			      gras_datadesc_by_name("int"));
-  gras_datadesc_struct_append(my_type,"c",
-			      gras_datadesc_by_name("int"));
-  gras_datadesc_struct_append(my_type,"d",
-			      gras_datadesc_by_name("int"));
-  gras_datadesc_struct_close(my_type);
-  my_type=gras_datadesc_ref("homostruct*",
-			    gras_datadesc_by_name("homostruct"));
-
   /* init a value, exchange it and check its validity*/
   i=xbt_new(homostruct,1);
   i->a = 2235;    i->b = 433425;
   i->c = -23423;  i->d = -235235;
 
-  write_read(my_type, &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("homostruct*", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) {
     xbt_assert2(i->a == j->a,"i->a=%d != j->a=%d",i->a,j->a);
     xbt_assert(i->b == j->b);
     xbt_assert(i->c == j->c);
@@ -247,32 +197,17 @@ typedef struct {
   unsigned char c2;
   unsigned long int l2;
 } hetestruct;
-void test_hetestruct(gras_socket_t sock, int direction) {
-  gras_datadesc_type_t my_type;
+static void test_hetestruct(gras_socket_t sock, int direction) {
   hetestruct *i, *j; 
 
   INFO0("---- Test on heterogeneous structure ----");
-  /* create descriptor */
-  my_type=gras_datadesc_struct("hetestruct");
-  gras_datadesc_struct_append(my_type,"c1",
-			      gras_datadesc_by_name("unsigned char"));
-  gras_datadesc_struct_append(my_type,"l1",
-			      gras_datadesc_by_name("unsigned long int"));
-  gras_datadesc_struct_append(my_type,"c2",
-			      gras_datadesc_by_name("unsigned char"));
-  gras_datadesc_struct_append(my_type,"l2",
-			      gras_datadesc_by_name("unsigned long int"));
-  gras_datadesc_struct_close(my_type);
-  my_type=gras_datadesc_ref("hetestruct*", gras_datadesc_by_name("hetestruct"));
-
-
   /* init a value, exchange it and check its validity*/
   i=xbt_new(hetestruct,1);
   i->c1 = 's'; i->l1 = 123455;
   i->c2 = 'e'; i->l2 = 774531;
 
-  write_read(my_type, &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("hetestruct*", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) {
     xbt_assert(i->c1 == j->c1);
     xbt_assert(i->c2 == j->c2);
     xbt_assert2(i->l1 == j->l1,"i->l1(=%ld)  !=  j->l1(=%ld)",i->l1,j->l1);
@@ -289,21 +224,10 @@ typedef struct {
   hetestruct hete;
   homostruct homo;
 } nestedstruct;
-void test_nestedstruct(gras_socket_t sock, int direction) {
-  gras_datadesc_type_t my_type;
+static void test_nestedstruct(gras_socket_t sock, int direction) {
   nestedstruct *i, *j; 
 
   INFO0("---- Test on nested structures ----");
-  /* create descriptor */
-  my_type=gras_datadesc_struct("nestedstruct");
-
-  gras_datadesc_struct_append(my_type,"hete",
-			      gras_datadesc_by_name("hetestruct"));
-  gras_datadesc_struct_append(my_type,"homo",
-			      gras_datadesc_by_name("homostruct"));
-  gras_datadesc_struct_close(my_type);
-  my_type=gras_datadesc_ref("nestedstruct*", gras_datadesc_by_name("nestedstruct"));
-
   /* init a value, exchange it and check its validity*/
   i=xbt_new(nestedstruct,1);
   i->homo.a = 235231;  i->homo.b = -124151;
@@ -311,8 +235,8 @@ void test_nestedstruct(gras_socket_t sock, int direction) {
   i->hete.c1 = 's'; i->hete.l1 = 123455;
   i->hete.c2 = 'e'; i->hete.l2 = 774531;
 
-  write_read(my_type, &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("nestedstruct*", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) {
     xbt_assert(i->homo.a == j->homo.a);
     xbt_assert(i->homo.b == j->homo.b);
     xbt_assert(i->homo.c == j->homo.c);
@@ -334,21 +258,9 @@ struct s_chained_list {
   int          v;
   chained_list_t *l;
 };
-void declare_chained_list_type(void);
 chained_list_t *cons(int v, chained_list_t *l);
 void list_free(chained_list_t *l);
 int list_eq(chained_list_t*i,chained_list_t*j);
-
-void declare_chained_list_type(void) {
-  gras_datadesc_type_t my_type,ref_my_type;
-
-  my_type=gras_datadesc_struct("chained_list_t");
-  ref_my_type=gras_datadesc_ref("chained_list_t*",my_type);
-
-  gras_datadesc_struct_append(my_type,"v", gras_datadesc_by_name("int"));
-  gras_datadesc_struct_append(my_type,"l", ref_my_type);
-  gras_datadesc_struct_close(my_type);
-}
 
 chained_list_t * cons(int v, chained_list_t *l) {
   chained_list_t *nl = xbt_new(chained_list_t,1);
@@ -370,7 +282,7 @@ int list_eq(chained_list_t*i,chained_list_t*j) {
     return 0;
   return list_eq(i->l, j->l); 
 }
-void test_chain_list(gras_socket_t sock, int direction) {
+static void test_chain_list(gras_socket_t sock, int direction) {
   chained_list_t *i, *j; 
 
   INFO0("---- Test on chained list ----");
@@ -379,9 +291,8 @@ void test_chain_list(gras_socket_t sock, int direction) {
   i = cons( 12355, cons( 246264 , cons( 23263, NULL)));
   j = NULL;
 
-  write_read(gras_datadesc_by_name("chained_list_t*"),
-	     &i,&j,  sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("chained_list_t*", &i,&j,  sock,direction);
+  if (direction == READ || direction == COPY) {
     xbt_assert(list_eq(i,j));    
     list_free(j);
   }
@@ -391,7 +302,7 @@ void test_chain_list(gras_socket_t sock, int direction) {
 /***
  *** graph
  ***/
-void test_graph(gras_socket_t sock, int direction) {
+static void test_graph(gras_socket_t sock, int direction) {
   chained_list_t *i, *j; 
 
   INFO0("---- Test on graph (cyclique chained list of 3 items) ----");
@@ -400,10 +311,8 @@ void test_graph(gras_socket_t sock, int direction) {
   i->l->l->l = i;
   j = NULL;
 
-  gras_datadesc_cycle_set(gras_datadesc_by_name("chained_list_t*"));
-  write_read(gras_datadesc_by_name("chained_list_t*"),
-	     &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("chained_list_t*", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) {
     
     DEBUG1("i=%p"         ,i);
     DEBUG1("i->l=%p"      ,i->l);
@@ -433,15 +342,13 @@ void test_graph(gras_socket_t sock, int direction) {
 static void free_string(void *d){ /* used to free the data in dynar */
      free(*(void**)d);
 }
-void test_dynar_ref(gras_socket_t sock, int direction){
-  gras_datadesc_type_t my_type;
+static void test_dynar_ref(gras_socket_t sock, int direction){
   xbt_dynar_t i,j;
   char buf[1024];
   char *s1,*s2;
   int cpt;
    
   INFO0("---- Test on dynar containing integers ----");
-  my_type = gras_datadesc_dynar(gras_datadesc_by_name("string"),&free_string);
 
   i=xbt_dynar_new(sizeof(char*),&free_string);   
   for (cpt=0; cpt< 64; cpt++) {
@@ -450,8 +357,8 @@ void test_dynar_ref(gras_socket_t sock, int direction){
     xbt_dynar_push(i,&s1);
   }
 
-  write_read(my_type, &i,&j, sock, direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("xbt_dynar_of_string", &i,&j, sock, direction);
+  if (direction == READ || direction == COPY) {
      for (cpt=0; cpt< 64; cpt++) {
 	sprintf(buf,"%d",cpt);
 	xbt_dynar_shift(j,&s2);
@@ -487,7 +394,7 @@ struct s_pbio{ /* structure presented in the IEEE article */
 		 )
 typedef struct s_pbio pbio_t;
 
-void test_pbio(gras_socket_t sock, int direction) {
+static void test_pbio(gras_socket_t sock, int direction) {
   int cpt;
   int cpt2;
   gras_datadesc_type_t pbio_type;
@@ -523,9 +430,8 @@ void test_pbio(gras_socket_t sock, int direction) {
     for (cpt2=0; cpt2<106; cpt2++) 
       i.Cddsdde[cpt][cpt2] = ((double)cpt) * ((double)cpt2);
   }
-  write_read(gras_datadesc_by_symbol(s_pbio),
-	     &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("s_pbio", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) {
     /* Check that the data match */
     xbt_assert(i.Cnstatv == j.Cnstatv);
     for (cpt=0; cpt<12; cpt++)
@@ -566,8 +472,7 @@ struct s_clause {
 };)
 typedef struct s_clause Clause;
 
-void test_clause(gras_socket_t sock, int direction) {
-  gras_datadesc_type_t ddt;
+static void test_clause(gras_socket_t sock, int direction) {
   Clause *i,*j;
   int cpt;
   
@@ -583,14 +488,8 @@ void test_clause(gras_socket_t sock, int direction) {
   DEBUG3("created data=%p (within %p @%p)",&(i->num_lits),i,&i);
   DEBUG1("created count=%d",i->num_lits);
 
-  /* create the damn type descriptor */
-  ddt = gras_datadesc_by_symbol(s_clause);
-/*  gras_datadesc_type_dump(ddt); */
-
-  ddt=gras_datadesc_ref("Clause*",ddt);
-
-  write_read(ddt, &i,&j, sock,direction);
-  if (direction == READ || direction == RW || direction == COPY) {
+  write_read("Clause*", &i,&j, sock,direction);
+  if (direction == READ || direction == COPY) {
     xbt_assert(i->num_lits == j->num_lits);
     for (cpt=0; cpt<i->num_lits; cpt++)
       xbt_assert(i->literals[cpt] == j->literals[cpt]);
@@ -602,18 +501,87 @@ void test_clause(gras_socket_t sock, int direction) {
   free(i);
 }
 
+static void register_types(void) {
+  gras_datadesc_type_t my_type,ref_my_type;
+
+  gras_msgtype_declare("char",gras_datadesc_by_name("char"));
+  gras_msgtype_declare("int",gras_datadesc_by_name("int"));
+  gras_msgtype_declare("float",gras_datadesc_by_name("float"));
+  gras_msgtype_declare("double",gras_datadesc_by_name("double"));
+   
+  my_type=gras_datadesc_array_fixed("fixed int array", 
+				    gras_datadesc_by_name("int"),
+				    FIXED_ARRAY_SIZE);
+  gras_msgtype_declare("fixed int array",my_type);
+
+  my_type = gras_datadesc_dynar(gras_datadesc_by_name("int"),NULL);
+  gras_msgtype_declare("xbt_dynar_of_int",my_type);
+
+  my_type = gras_datadesc_ref("int*",gras_datadesc_by_name("int"));
+  gras_msgtype_declare("int*",my_type);
+
+  gras_msgtype_declare("string",gras_datadesc_by_name("string"));
+   
+  my_type=gras_datadesc_struct("homostruct");
+  gras_datadesc_struct_append(my_type,"a",gras_datadesc_by_name("signed int"));
+  gras_datadesc_struct_append(my_type,"b",gras_datadesc_by_name("int"));
+  gras_datadesc_struct_append(my_type,"c",gras_datadesc_by_name("int"));
+  gras_datadesc_struct_append(my_type,"d",gras_datadesc_by_name("int"));
+  gras_datadesc_struct_close(my_type);
+  my_type=gras_datadesc_ref("homostruct*",gras_datadesc_by_name("homostruct"));
+  gras_msgtype_declare("homostruct*",my_type);
+   
+  my_type=gras_datadesc_struct("hetestruct");
+  gras_datadesc_struct_append(my_type,"c1", gras_datadesc_by_name("unsigned char"));
+  gras_datadesc_struct_append(my_type,"l1", gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_append(my_type,"c2", gras_datadesc_by_name("unsigned char"));
+  gras_datadesc_struct_append(my_type,"l2", gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_close(my_type);
+  my_type=gras_datadesc_ref("hetestruct*", gras_datadesc_by_name("hetestruct"));
+  gras_msgtype_declare("hetestruct*",my_type);
+
+  my_type=gras_datadesc_struct("nestedstruct");
+  gras_datadesc_struct_append(my_type,"hete",gras_datadesc_by_name("hetestruct"));
+  gras_datadesc_struct_append(my_type,"homo",gras_datadesc_by_name("homostruct"));
+  gras_datadesc_struct_close(my_type);
+  my_type=gras_datadesc_ref("nestedstruct*", gras_datadesc_by_name("nestedstruct"));
+  gras_msgtype_declare("nestedstruct*",my_type);
+   
+  my_type=gras_datadesc_struct("chained_list_t");
+  ref_my_type=gras_datadesc_ref("chained_list_t*",my_type);
+  gras_datadesc_struct_append(my_type,"v", gras_datadesc_by_name("int"));
+  gras_datadesc_struct_append(my_type,"l", ref_my_type);
+  gras_datadesc_struct_close(my_type);
+  gras_datadesc_cycle_set(gras_datadesc_by_name("chained_list_t*"));
+  gras_msgtype_declare("chained_list_t",my_type);
+  gras_msgtype_declare("chained_list_t*",ref_my_type);   
+
+  my_type = gras_datadesc_dynar(gras_datadesc_by_name("string"),&free_string);
+  gras_msgtype_declare("xbt_dynar_of_string",my_type);   
+
+  my_type = gras_datadesc_by_symbol(s_pbio);
+  gras_msgtype_declare("s_pbio",my_type);
+
+  my_type = gras_datadesc_by_symbol(s_clause);
+  my_type = gras_datadesc_ref("Clause*",my_type);
+  gras_msgtype_declare("Clause*",my_type);
+
+}
+
 #ifdef __BORLANDC__
 #pragma argsused
 #endif
 
 int main(int argc,char *argv[]) {
   gras_socket_t sock=NULL;
-  int direction = RW;
+  int direction = WRITE;
   int cpt;
-  char r_arch_char = gras_arch_selfid();
+  char local_arch, remote_arch;
 
   gras_init(&argc,argv);
-
+  register_types();
+  register_structures();
+   
   for (cpt=1; cpt<argc; cpt++) {
     if (!strcmp(argv[cpt], "--read")) {
       direction = READ;
@@ -627,21 +595,23 @@ int main(int argc,char *argv[]) {
   }
     
   if (direction == WRITE) {
+    INFO1("Write to file %s",filename);
     sock = gras_socket_client_from_file(filename);
-    gras_datadesc_send(sock, gras_datadesc_by_name("char"),
-		       &r_arch_char);
   }
   if (direction == READ) {
+    INFO1("Read from file %s",filename);
     sock = gras_socket_server_from_file(filename);
-    gras_datadesc_recv(sock, gras_datadesc_by_name("char"),
-		       gras_arch_selfid(), &r_arch_char);
-    INFO2("This datafile was generated on %s (%d).",
-	  gras_datadesc_arch_name(r_arch_char),(int)r_arch_char);
-    VERB1("I'm %s.",
-	  gras_datadesc_arch_name(gras_arch_selfid()));
-
   }
-  r_arch = (int)r_arch_char;
+  if (direction == COPY) {
+    INFO0("Memory copy");
+  }
+
+  local_arch = gras_arch_selfid();
+  write_read("char", &local_arch,&remote_arch, sock,direction);
+  if (direction == READ)
+     VERB2("This file was generated on %s (%d)",
+	   gras_datadesc_arch_name(remote_arch),(int)remote_arch);
+
 
   test_int(sock,direction);    
   test_float(sock,direction);  
@@ -658,7 +628,6 @@ int main(int argc,char *argv[]) {
   test_hetestruct(sock,direction);
   test_nestedstruct(sock,direction);
 
-  declare_chained_list_type();
   test_chain_list(sock,direction);
   test_graph(sock,direction); 
   test_dynar_ref(sock,direction);  
@@ -667,8 +636,9 @@ int main(int argc,char *argv[]) {
 
   test_clause(sock,direction);
 
-  if (direction != RW && direction != COPY) 
+  if (direction != COPY) 
     gras_socket_close(sock);
+  
   gras_exit();
   return 0;
 }

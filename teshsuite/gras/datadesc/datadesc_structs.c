@@ -8,7 +8,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test,"Logs about the gigantic struct tes
 #define WRITE 1
 #define RW    2
 
-void write_read(gras_datadesc_type_t type,void *src, void *dst, gras_socket_t *sock, int direction);
+void write_read(const char *type,void *src, void *dst, gras_socket_t *sock, int direction);
 
 GRAS_DEFINE_TYPE(cccc,struct cccc { char a; char b; char c;char d;};)
 GRAS_DEFINE_TYPE(ccsc,struct ccsc { char a; char b; short int c;char d;};)
@@ -61,6 +61,58 @@ GRAS_DEFINE_TYPE(dcfc,struct dcfc { double a; char b; float c;char d;};)
 GRAS_DEFINE_TYPE(dcdc,struct dcdc { double a; char b; double c;char d;};)
 
 #define test(a) xbt_assert(a)
+void register_structures(void);
+void register_structures(void) {
+  gras_msgtype_declare("cccc", gras_datadesc_by_symbol(cccc));
+  gras_msgtype_declare("ccsc", gras_datadesc_by_symbol(ccsc));
+  gras_msgtype_declare("ccic", gras_datadesc_by_symbol(ccic));
+  gras_msgtype_declare("cclc", gras_datadesc_by_symbol(cclc));
+  gras_msgtype_declare("ccLc", gras_datadesc_by_symbol(ccLc));
+  gras_msgtype_declare("ccfc", gras_datadesc_by_symbol(ccfc));
+  gras_msgtype_declare("ccdc", gras_datadesc_by_symbol(ccdc));
+  gras_msgtype_declare("sccc", gras_datadesc_by_symbol(sccc));
+  gras_msgtype_declare("scsc", gras_datadesc_by_symbol(scsc));
+  gras_msgtype_declare("scic", gras_datadesc_by_symbol(scic));
+  gras_msgtype_declare("sclc", gras_datadesc_by_symbol(sclc));
+  gras_msgtype_declare("scLc", gras_datadesc_by_symbol(scLc));
+  gras_msgtype_declare("scfc", gras_datadesc_by_symbol(scfc));
+  gras_msgtype_declare("scdc", gras_datadesc_by_symbol(scdc));
+  gras_msgtype_declare("iccc", gras_datadesc_by_symbol(iccc));
+  gras_msgtype_declare("icsc", gras_datadesc_by_symbol(icsc));
+  gras_msgtype_declare("icic", gras_datadesc_by_symbol(icic));
+  gras_msgtype_declare("iclc", gras_datadesc_by_symbol(iclc));
+  gras_msgtype_declare("icLc", gras_datadesc_by_symbol(icLc));
+  gras_msgtype_declare("icfc", gras_datadesc_by_symbol(icfc));
+  gras_msgtype_declare("icdc", gras_datadesc_by_symbol(icdc));
+  gras_msgtype_declare("lccc", gras_datadesc_by_symbol(lccc));
+  gras_msgtype_declare("lcsc", gras_datadesc_by_symbol(lcsc));
+  gras_msgtype_declare("lcic", gras_datadesc_by_symbol(lcic));
+  gras_msgtype_declare("lclc", gras_datadesc_by_symbol(lclc));
+  gras_msgtype_declare("lcLc", gras_datadesc_by_symbol(lcLc));
+  gras_msgtype_declare("lcfc", gras_datadesc_by_symbol(lcfc));
+  gras_msgtype_declare("lcdc", gras_datadesc_by_symbol(lcdc));
+  gras_msgtype_declare("Lccc", gras_datadesc_by_symbol(Lccc));
+  gras_msgtype_declare("Lcsc", gras_datadesc_by_symbol(Lcsc));
+  gras_msgtype_declare("Lcic", gras_datadesc_by_symbol(Lcic));
+  gras_msgtype_declare("Lclc", gras_datadesc_by_symbol(Lclc));
+  gras_msgtype_declare("LcLc", gras_datadesc_by_symbol(LcLc));
+  gras_msgtype_declare("Lcfc", gras_datadesc_by_symbol(Lcfc));
+  gras_msgtype_declare("Lcdc", gras_datadesc_by_symbol(Lcdc));
+  gras_msgtype_declare("fccc", gras_datadesc_by_symbol(fccc));
+  gras_msgtype_declare("fcsc", gras_datadesc_by_symbol(fcsc));
+  gras_msgtype_declare("fcic", gras_datadesc_by_symbol(fcic));
+  gras_msgtype_declare("fclc", gras_datadesc_by_symbol(fclc));
+  gras_msgtype_declare("fcLc", gras_datadesc_by_symbol(fcLc));
+  gras_msgtype_declare("fcfc", gras_datadesc_by_symbol(fcfc));
+  gras_msgtype_declare("fcdc", gras_datadesc_by_symbol(fcdc));
+  gras_msgtype_declare("dccc", gras_datadesc_by_symbol(dccc));
+  gras_msgtype_declare("dcsc", gras_datadesc_by_symbol(dcsc));
+  gras_msgtype_declare("dcic", gras_datadesc_by_symbol(dcic));
+  gras_msgtype_declare("dclc", gras_datadesc_by_symbol(dclc));
+  gras_msgtype_declare("dcLc", gras_datadesc_by_symbol(dcLc));
+  gras_msgtype_declare("dcfc", gras_datadesc_by_symbol(dcfc));
+  gras_msgtype_declare("dcdc", gras_datadesc_by_symbol(dcdc));
+}
 void test_structures(gras_socket_t *sock, int direction);
 void test_structures(gras_socket_t *sock, int direction) {
   struct cccc my_cccc = {'w'+(char)1,'w'+(char)2,'w'+(char)3,'w'+(char)4}, my_cccc2;
@@ -113,7 +165,7 @@ void test_structures(gras_socket_t *sock, int direction) {
   struct dcfc my_dcfc = {1424420.11331+(double)1,'w'+(char)2,-11313.1135+(float)3,'w'+(char)4}, my_dcfc2;
   struct dcdc my_dcdc = {1424420.11331+(double)1,'w'+(char)2,1424420.11331+(double)3,'w'+(char)4}, my_dcdc2;
   INFO0("---- Test on all possible struct having 3 fields (49 structs) ----");
-  write_read(gras_datadesc_by_symbol(cccc), &my_cccc, &my_cccc2, sock,direction);
+  write_read("cccc", &my_cccc, &my_cccc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_cccc.a == my_cccc2.a);
@@ -122,7 +174,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_cccc.d == my_cccc2.d);
      if (!failed) VERB0("Passed cccc");
   }
-  write_read(gras_datadesc_by_symbol(ccsc), &my_ccsc, &my_ccsc2, sock,direction);
+  write_read("ccsc", &my_ccsc, &my_ccsc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_ccsc.a == my_ccsc2.a);
@@ -131,7 +183,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_ccsc.d == my_ccsc2.d);
      if (!failed) VERB0("Passed ccsc");
   }
-  write_read(gras_datadesc_by_symbol(ccic), &my_ccic, &my_ccic2, sock,direction);
+  write_read("ccic", &my_ccic, &my_ccic2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_ccic.a == my_ccic2.a);
@@ -140,7 +192,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_ccic.d == my_ccic2.d);
      if (!failed) VERB0("Passed ccic");
   }
-  write_read(gras_datadesc_by_symbol(cclc), &my_cclc, &my_cclc2, sock,direction);
+  write_read("cclc", &my_cclc, &my_cclc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_cclc.a == my_cclc2.a);
@@ -149,7 +201,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_cclc.d == my_cclc2.d);
      if (!failed) VERB0("Passed cclc");
   }
-  write_read(gras_datadesc_by_symbol(ccLc), &my_ccLc, &my_ccLc2, sock,direction);
+  write_read("ccLc", &my_ccLc, &my_ccLc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_ccLc.a == my_ccLc2.a);
@@ -158,7 +210,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_ccLc.d == my_ccLc2.d);
      if (!failed) VERB0("Passed ccLc");
   }
-  write_read(gras_datadesc_by_symbol(ccfc), &my_ccfc, &my_ccfc2, sock,direction);
+  write_read("ccfc", &my_ccfc, &my_ccfc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_ccfc.a == my_ccfc2.a);
@@ -167,7 +219,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_ccfc.d == my_ccfc2.d);
      if (!failed) VERB0("Passed ccfc");
   }
-  write_read(gras_datadesc_by_symbol(ccdc), &my_ccdc, &my_ccdc2, sock,direction);
+  write_read("ccdc", &my_ccdc, &my_ccdc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_ccdc.a == my_ccdc2.a);
@@ -176,7 +228,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_ccdc.d == my_ccdc2.d);
      if (!failed) VERB0("Passed ccdc");
   }
-  write_read(gras_datadesc_by_symbol(sccc), &my_sccc, &my_sccc2, sock,direction);
+  write_read("sccc", &my_sccc, &my_sccc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_sccc.a == my_sccc2.a);
@@ -185,7 +237,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_sccc.d == my_sccc2.d);
      if (!failed) VERB0("Passed sccc");
   }
-  write_read(gras_datadesc_by_symbol(scsc), &my_scsc, &my_scsc2, sock,direction);
+  write_read("scsc", &my_scsc, &my_scsc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_scsc.a == my_scsc2.a);
@@ -194,7 +246,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_scsc.d == my_scsc2.d);
      if (!failed) VERB0("Passed scsc");
   }
-  write_read(gras_datadesc_by_symbol(scic), &my_scic, &my_scic2, sock,direction);
+  write_read("scic", &my_scic, &my_scic2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_scic.a == my_scic2.a);
@@ -203,7 +255,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_scic.d == my_scic2.d);
      if (!failed) VERB0("Passed scic");
   }
-  write_read(gras_datadesc_by_symbol(sclc), &my_sclc, &my_sclc2, sock,direction);
+  write_read("sclc", &my_sclc, &my_sclc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_sclc.a == my_sclc2.a);
@@ -212,7 +264,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_sclc.d == my_sclc2.d);
      if (!failed) VERB0("Passed sclc");
   }
-  write_read(gras_datadesc_by_symbol(scLc), &my_scLc, &my_scLc2, sock,direction);
+  write_read("scLc", &my_scLc, &my_scLc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_scLc.a == my_scLc2.a);
@@ -221,7 +273,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_scLc.d == my_scLc2.d);
      if (!failed) VERB0("Passed scLc");
   }
-  write_read(gras_datadesc_by_symbol(scfc), &my_scfc, &my_scfc2, sock,direction);
+  write_read("scfc", &my_scfc, &my_scfc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_scfc.a == my_scfc2.a);
@@ -230,7 +282,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_scfc.d == my_scfc2.d);
      if (!failed) VERB0("Passed scfc");
   }
-  write_read(gras_datadesc_by_symbol(scdc), &my_scdc, &my_scdc2, sock,direction);
+  write_read("scdc", &my_scdc, &my_scdc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_scdc.a == my_scdc2.a);
@@ -239,7 +291,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_scdc.d == my_scdc2.d);
      if (!failed) VERB0("Passed scdc");
   }
-  write_read(gras_datadesc_by_symbol(iccc), &my_iccc, &my_iccc2, sock,direction);
+  write_read("iccc", &my_iccc, &my_iccc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_iccc.a == my_iccc2.a);
@@ -248,7 +300,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_iccc.d == my_iccc2.d);
      if (!failed) VERB0("Passed iccc");
   }
-  write_read(gras_datadesc_by_symbol(icsc), &my_icsc, &my_icsc2, sock,direction);
+  write_read("icsc", &my_icsc, &my_icsc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_icsc.a == my_icsc2.a);
@@ -257,7 +309,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_icsc.d == my_icsc2.d);
      if (!failed) VERB0("Passed icsc");
   }
-  write_read(gras_datadesc_by_symbol(icic), &my_icic, &my_icic2, sock,direction);
+  write_read("icic", &my_icic, &my_icic2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_icic.a == my_icic2.a);
@@ -266,7 +318,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_icic.d == my_icic2.d);
      if (!failed) VERB0("Passed icic");
   }
-  write_read(gras_datadesc_by_symbol(iclc), &my_iclc, &my_iclc2, sock,direction);
+  write_read("iclc", &my_iclc, &my_iclc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_iclc.a == my_iclc2.a);
@@ -275,7 +327,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_iclc.d == my_iclc2.d);
      if (!failed) VERB0("Passed iclc");
   }
-  write_read(gras_datadesc_by_symbol(icLc), &my_icLc, &my_icLc2, sock,direction);
+  write_read("icLc", &my_icLc, &my_icLc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_icLc.a == my_icLc2.a);
@@ -284,7 +336,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_icLc.d == my_icLc2.d);
      if (!failed) VERB0("Passed icLc");
   }
-  write_read(gras_datadesc_by_symbol(icfc), &my_icfc, &my_icfc2, sock,direction);
+  write_read("icfc", &my_icfc, &my_icfc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_icfc.a == my_icfc2.a);
@@ -293,7 +345,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_icfc.d == my_icfc2.d);
      if (!failed) VERB0("Passed icfc");
   }
-  write_read(gras_datadesc_by_symbol(icdc), &my_icdc, &my_icdc2, sock,direction);
+  write_read("icdc", &my_icdc, &my_icdc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_icdc.a == my_icdc2.a);
@@ -302,7 +354,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_icdc.d == my_icdc2.d);
      if (!failed) VERB0("Passed icdc");
   }
-  write_read(gras_datadesc_by_symbol(lccc), &my_lccc, &my_lccc2, sock,direction);
+  write_read("lccc", &my_lccc, &my_lccc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_lccc.a == my_lccc2.a);
@@ -311,7 +363,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_lccc.d == my_lccc2.d);
      if (!failed) VERB0("Passed lccc");
   }
-  write_read(gras_datadesc_by_symbol(lcsc), &my_lcsc, &my_lcsc2, sock,direction);
+  write_read("lcsc", &my_lcsc, &my_lcsc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_lcsc.a == my_lcsc2.a);
@@ -320,7 +372,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_lcsc.d == my_lcsc2.d);
      if (!failed) VERB0("Passed lcsc");
   }
-  write_read(gras_datadesc_by_symbol(lcic), &my_lcic, &my_lcic2, sock,direction);
+  write_read("lcic", &my_lcic, &my_lcic2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_lcic.a == my_lcic2.a);
@@ -329,7 +381,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_lcic.d == my_lcic2.d);
      if (!failed) VERB0("Passed lcic");
   }
-  write_read(gras_datadesc_by_symbol(lclc), &my_lclc, &my_lclc2, sock,direction);
+  write_read("lclc", &my_lclc, &my_lclc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_lclc.a == my_lclc2.a);
@@ -338,7 +390,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_lclc.d == my_lclc2.d);
      if (!failed) VERB0("Passed lclc");
   }
-  write_read(gras_datadesc_by_symbol(lcLc), &my_lcLc, &my_lcLc2, sock,direction);
+  write_read("lcLc", &my_lcLc, &my_lcLc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_lcLc.a == my_lcLc2.a);
@@ -347,7 +399,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_lcLc.d == my_lcLc2.d);
      if (!failed) VERB0("Passed lcLc");
   }
-  write_read(gras_datadesc_by_symbol(lcfc), &my_lcfc, &my_lcfc2, sock,direction);
+  write_read("lcfc", &my_lcfc, &my_lcfc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_lcfc.a == my_lcfc2.a);
@@ -356,7 +408,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_lcfc.d == my_lcfc2.d);
      if (!failed) VERB0("Passed lcfc");
   }
-  write_read(gras_datadesc_by_symbol(lcdc), &my_lcdc, &my_lcdc2, sock,direction);
+  write_read("lcdc", &my_lcdc, &my_lcdc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_lcdc.a == my_lcdc2.a);
@@ -365,7 +417,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_lcdc.d == my_lcdc2.d);
      if (!failed) VERB0("Passed lcdc");
   }
-  write_read(gras_datadesc_by_symbol(Lccc), &my_Lccc, &my_Lccc2, sock,direction);
+  write_read("Lccc", &my_Lccc, &my_Lccc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_Lccc.a == my_Lccc2.a);
@@ -374,7 +426,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_Lccc.d == my_Lccc2.d);
      if (!failed) VERB0("Passed Lccc");
   }
-  write_read(gras_datadesc_by_symbol(Lcsc), &my_Lcsc, &my_Lcsc2, sock,direction);
+  write_read("Lcsc", &my_Lcsc, &my_Lcsc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_Lcsc.a == my_Lcsc2.a);
@@ -383,7 +435,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_Lcsc.d == my_Lcsc2.d);
      if (!failed) VERB0("Passed Lcsc");
   }
-  write_read(gras_datadesc_by_symbol(Lcic), &my_Lcic, &my_Lcic2, sock,direction);
+  write_read("Lcic", &my_Lcic, &my_Lcic2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_Lcic.a == my_Lcic2.a);
@@ -392,7 +444,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_Lcic.d == my_Lcic2.d);
      if (!failed) VERB0("Passed Lcic");
   }
-  write_read(gras_datadesc_by_symbol(Lclc), &my_Lclc, &my_Lclc2, sock,direction);
+  write_read("Lclc", &my_Lclc, &my_Lclc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_Lclc.a == my_Lclc2.a);
@@ -401,7 +453,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_Lclc.d == my_Lclc2.d);
      if (!failed) VERB0("Passed Lclc");
   }
-  write_read(gras_datadesc_by_symbol(LcLc), &my_LcLc, &my_LcLc2, sock,direction);
+  write_read("LcLc", &my_LcLc, &my_LcLc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_LcLc.a == my_LcLc2.a);
@@ -410,7 +462,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_LcLc.d == my_LcLc2.d);
      if (!failed) VERB0("Passed LcLc");
   }
-  write_read(gras_datadesc_by_symbol(Lcfc), &my_Lcfc, &my_Lcfc2, sock,direction);
+  write_read("Lcfc", &my_Lcfc, &my_Lcfc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_Lcfc.a == my_Lcfc2.a);
@@ -419,7 +471,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_Lcfc.d == my_Lcfc2.d);
      if (!failed) VERB0("Passed Lcfc");
   }
-  write_read(gras_datadesc_by_symbol(Lcdc), &my_Lcdc, &my_Lcdc2, sock,direction);
+  write_read("Lcdc", &my_Lcdc, &my_Lcdc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_Lcdc.a == my_Lcdc2.a);
@@ -428,7 +480,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_Lcdc.d == my_Lcdc2.d);
      if (!failed) VERB0("Passed Lcdc");
   }
-  write_read(gras_datadesc_by_symbol(fccc), &my_fccc, &my_fccc2, sock,direction);
+  write_read("fccc", &my_fccc, &my_fccc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_fccc.a == my_fccc2.a);
@@ -437,7 +489,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_fccc.d == my_fccc2.d);
      if (!failed) VERB0("Passed fccc");
   }
-  write_read(gras_datadesc_by_symbol(fcsc), &my_fcsc, &my_fcsc2, sock,direction);
+  write_read("fcsc", &my_fcsc, &my_fcsc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_fcsc.a == my_fcsc2.a);
@@ -446,7 +498,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_fcsc.d == my_fcsc2.d);
      if (!failed) VERB0("Passed fcsc");
   }
-  write_read(gras_datadesc_by_symbol(fcic), &my_fcic, &my_fcic2, sock,direction);
+  write_read("fcic", &my_fcic, &my_fcic2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_fcic.a == my_fcic2.a);
@@ -455,7 +507,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_fcic.d == my_fcic2.d);
      if (!failed) VERB0("Passed fcic");
   }
-  write_read(gras_datadesc_by_symbol(fclc), &my_fclc, &my_fclc2, sock,direction);
+  write_read("fclc", &my_fclc, &my_fclc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_fclc.a == my_fclc2.a);
@@ -464,7 +516,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_fclc.d == my_fclc2.d);
      if (!failed) VERB0("Passed fclc");
   }
-  write_read(gras_datadesc_by_symbol(fcLc), &my_fcLc, &my_fcLc2, sock,direction);
+  write_read("fcLc", &my_fcLc, &my_fcLc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_fcLc.a == my_fcLc2.a);
@@ -473,7 +525,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_fcLc.d == my_fcLc2.d);
      if (!failed) VERB0("Passed fcLc");
   }
-  write_read(gras_datadesc_by_symbol(fcfc), &my_fcfc, &my_fcfc2, sock,direction);
+  write_read("fcfc", &my_fcfc, &my_fcfc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_fcfc.a == my_fcfc2.a);
@@ -482,7 +534,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_fcfc.d == my_fcfc2.d);
      if (!failed) VERB0("Passed fcfc");
   }
-  write_read(gras_datadesc_by_symbol(fcdc), &my_fcdc, &my_fcdc2, sock,direction);
+  write_read("fcdc", &my_fcdc, &my_fcdc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_fcdc.a == my_fcdc2.a);
@@ -491,7 +543,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_fcdc.d == my_fcdc2.d);
      if (!failed) VERB0("Passed fcdc");
   }
-  write_read(gras_datadesc_by_symbol(dccc), &my_dccc, &my_dccc2, sock,direction);
+  write_read("dccc", &my_dccc, &my_dccc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_dccc.a == my_dccc2.a);
@@ -500,7 +552,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_dccc.d == my_dccc2.d);
      if (!failed) VERB0("Passed dccc");
   }
-  write_read(gras_datadesc_by_symbol(dcsc), &my_dcsc, &my_dcsc2, sock,direction);
+  write_read("dcsc", &my_dcsc, &my_dcsc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_dcsc.a == my_dcsc2.a);
@@ -509,7 +561,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_dcsc.d == my_dcsc2.d);
      if (!failed) VERB0("Passed dcsc");
   }
-  write_read(gras_datadesc_by_symbol(dcic), &my_dcic, &my_dcic2, sock,direction);
+  write_read("dcic", &my_dcic, &my_dcic2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_dcic.a == my_dcic2.a);
@@ -518,7 +570,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_dcic.d == my_dcic2.d);
      if (!failed) VERB0("Passed dcic");
   }
-  write_read(gras_datadesc_by_symbol(dclc), &my_dclc, &my_dclc2, sock,direction);
+  write_read("dclc", &my_dclc, &my_dclc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_dclc.a == my_dclc2.a);
@@ -527,7 +579,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_dclc.d == my_dclc2.d);
      if (!failed) VERB0("Passed dclc");
   }
-  write_read(gras_datadesc_by_symbol(dcLc), &my_dcLc, &my_dcLc2, sock,direction);
+  write_read("dcLc", &my_dcLc, &my_dcLc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_dcLc.a == my_dcLc2.a);
@@ -536,7 +588,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_dcLc.d == my_dcLc2.d);
      if (!failed) VERB0("Passed dcLc");
   }
-  write_read(gras_datadesc_by_symbol(dcfc), &my_dcfc, &my_dcfc2, sock,direction);
+  write_read("dcfc", &my_dcfc, &my_dcfc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_dcfc.a == my_dcfc2.a);
@@ -545,7 +597,7 @@ void test_structures(gras_socket_t *sock, int direction) {
      test(my_dcfc.d == my_dcfc2.d);
      if (!failed) VERB0("Passed dcfc");
   }
-  write_read(gras_datadesc_by_symbol(dcdc), &my_dcdc, &my_dcdc2, sock,direction);
+  write_read("dcdc", &my_dcdc, &my_dcdc2, sock,direction);
   if (direction == READ || direction == RW) {
      int failed = 0;
      test(my_dcdc.a == my_dcdc2.a);

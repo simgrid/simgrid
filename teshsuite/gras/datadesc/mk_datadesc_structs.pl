@@ -25,8 +25,7 @@ print "XBT_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test,\"Logs about the gigantic st
 
 print "#define READ  0\n#define WRITE 1\n#define RW    2\n\n";
   
-
-print "void write_read(gras_datadesc_type_t type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
+print "void write_read(const char *type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
 
 my ($i,$j,$k,$l);
 my $max=scalar @types;
@@ -49,6 +48,14 @@ for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l
 # print "\n#define test(a) do {if (!(a)) { failed = 1; ERROR1(\"%s failed\",#a);}} while (0)\n";
  print "\n#define test(a) xbt_assert(a)\n";
 
+print "void register_structures(void);\n";
+print "void register_structures(void) {\n";
+for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
+    my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
+    print "  gras_msgtype_declare(\"$struct\", gras_datadesc_by_symbol($struct));\n";
+}}}}
+print "}\n";
+
 print "void test_structures(gras_socket_t *sock, int direction);\n";
 print "void test_structures(gras_socket_t *sock, int direction) {\n";
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
@@ -62,7 +69,7 @@ for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l
 print "  INFO0(\"---- Test on all possible struct having 3 fields (".(($max_i+1)*($max_j+1)*($max_k+1)*($max_l+1))." structs) ----\");\n";
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
-    print "  write_read(gras_datadesc_by_symbol($struct), &my_$struct, &my_${struct}2, sock,direction);\n";
+    print "  write_read(\"$struct\", &my_$struct, &my_${struct}2, sock,direction);\n";
     print "  if (direction == READ || direction == RW) {\n";
     print "     int failed = 0;\n";
     print "     test(my_$struct.a == my_${struct}2.a);\n";
