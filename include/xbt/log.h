@@ -348,7 +348,6 @@ XBT_PUBLIC(int) _xbt_log_cat_init(xbt_log_category_t   category,
 
 XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
 
-XBT_LOG_EXTERNAL_CATEGORY(GRAS);
 
 extern xbt_log_appender_t xbt_log_default_appender;
 extern xbt_log_layout_t xbt_log_default_layout;
