@@ -71,6 +71,9 @@ void gras_msg_send_ext(gras_socket_t   sock,
   gras_trp_flush(sock);
 }
 
+const char *hexa_str(unsigned char *data, int size, int downside);
+   
+   
 /*
  * receive the next message on the given socket.  
  */
@@ -110,8 +113,8 @@ gras_msg_recv(gras_socket_t    sock,
   for (cpt=0; cpt<4; cpt++)
     if (header[cpt] != _GRAS_header[cpt])
       THROW2(mismatch_error,0,
-	     "Incoming bytes do not look like a GRAS message (header='%.4s' not '%.4s')",
-	     header,_GRAS_header);
+	     "Incoming bytes do not look like a GRAS message (header='%s'  not '%.4s')",
+	     hexa_str((unsigned char*)header,4,0),_GRAS_header);
   if (header[4] != _GRAS_header[4]) 
     THROW2(mismatch_error,0,"GRAS protocol mismatch (got %d, use %d)",
 	   (int)header[4], (int)_GRAS_header[4]);
