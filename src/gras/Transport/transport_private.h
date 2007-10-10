@@ -58,7 +58,6 @@ typedef struct s_gras_socket  {
   int outgoing :1; /* true if we can write on this sock */
   int accepting :1; /* true if master incoming sock in tcp */
   int meas :1; /* true if this is an experiment socket instead of messaging */
-  int recv_ok :1; /* true if it is valid to recv() on the socket (false if it is a file) */
   int valid :1; /* false if a select returned that the peer quitted, forcing us to "close" the socket */
   int moredata :1; /* TCP socket use a buffer and read operation get as much 
 		      data as possible. It is possible that several messages
@@ -68,7 +67,10 @@ typedef struct s_gras_socket  {
 		      don't call select in that case.  Note that measurement
 		      sockets are not concerned since they use the TCP
 		      interface directly, with no buffer. */
-
+   
+  int recvd :1; /* true if the recvd_val field contains one byte of the stream (that we peek'ed to check the socket validity) */
+  char recvd_val; /* what we peeked from the socket, if any */
+   
   unsigned long int buf_size; /* what to say to the OS. 
 				 Field here to remember it when accepting */
    

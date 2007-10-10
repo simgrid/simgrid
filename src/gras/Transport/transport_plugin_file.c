@@ -95,7 +95,6 @@ gras_socket_client_from_file(const char*path) {
     res->sd = 1; /* stdout */
   }
 
-  res->recv_ok=0;
   DEBUG5("sock_client_from_file(%s): sd=%d in=%c out=%c accept=%c",
 	 path,
 	 res->sd,
@@ -144,7 +143,6 @@ gras_socket_t gras_socket_server_from_file(const char*path) {
 	 res->outgoing?'y':'n',
 	 res->accepting?'y':'n');
 
-  res->recv_ok=0;
   xbt_dynar_push(((gras_trp_procdata_t)
 		  gras_libdata_by_id(gras_trp_libdata_id))->sockets,&res);
   return res;
@@ -230,13 +228,20 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
   xbt_assert0(sock->incoming, "Cannot recv on client file socket");
   xbt_assert0(size >= 0, "Cannot receive a negative amount of data");
 
+  if (sock->recvd) {
+     data[0] = sock->recvd_val;
+     sock->recvd = 0;
+     got++;
+     size--;
+  }   
+   
   while (size) {
     int status = 0;
     
     status = read(sock->sd, data+got, (long int)size);
     DEBUG3("read(%d, %p, %ld);", sock->sd, data+got, size);
     
-    if (status == -1) {
+    if (status < 0) {
       THROW4(system_error,0,"read(%d,%p,%d) failed: %s",
 	     sock->sd, data+got, (int)size,
 	     strerror(errno));
@@ -246,7 +251,7 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
       size    -= status;
       got    += status;
     } else {
-      THROW0(system_error,0,"file descriptor closed");
+       THROW1(system_error,errno,"file descriptor closed after %d bytes",got);
     }
   }
   return got;

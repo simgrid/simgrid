@@ -151,7 +151,7 @@ gras_socket_t gras_trp_select(double timeout) {
 	THROW3(system_error,EINVAL,"invalid select: nb fds: %d, timeout: %d.%d",
 	       max_fds, (int)tout.tv_sec,(int) tout.tv_usec);
       case ENOMEM: 
-	xbt_assert0(0,"Malloc error during the select");
+	xbt_die("Malloc error during the select");
       default:
 	THROW2(system_error,errno,"Error during select: %s (%d)",
 	       strerror(errno),errno);
@@ -182,12 +182,11 @@ gras_socket_t gras_trp_select(double timeout) {
 	 accepted->meas = sock_iter->meas;
 	 break;
 
-       } else if (sock_iter->recv_ok) {
+       } else {
 	 /* Make sure the socket is still alive by reading the first byte */
-	 char lookahead;
 	 int recvd;
 
-	 recvd = recv(sock_iter->sd, &lookahead, 1, MSG_PEEK);
+	 recvd = read(sock_iter->sd, &sock_iter->recvd_val, 1);
 	 if (recvd < 0) {
 	   WARN2("socket %d failed: %s", sock_iter->sd, strerror(errno));
 	   /* done with this socket; remove it and break the foreach since it will change the dynar */
@@ -201,20 +200,14 @@ gras_socket_t gras_trp_select(double timeout) {
 	 } else { 
 	   /* Got a suited socket ! */
 	   XBT_OUT;
+	   sock_iter->recvd = 1;
 	   _gras_lastly_selected_socket = sock_iter;
-	    /* break sync dynar iteration */
-	    xbt_dynar_cursor_unlock(sockets);
+	   /* break sync dynar iteration */
+	   xbt_dynar_cursor_unlock(sockets);
 	   return sock_iter;
 	 }
-
-       } else {
-	 /* This is a file socket. Cannot recv() on it, but it must be alive */
-	   XBT_OUT;
-	   _gras_lastly_selected_socket = sock_iter;
-	  xbt_dynar_cursor_unlock(sockets);
-	   return sock_iter;
        }
-       
+
        /* if we're here, the socket we found wasn't really ready to be served */
        if (ready == 0) { /* exausted all sockets given by select. Request new ones */
 

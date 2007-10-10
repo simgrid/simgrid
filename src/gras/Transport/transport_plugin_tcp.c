@@ -322,6 +322,13 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
 
   int got = 0;
 
+  if (sock->recvd) {
+     data[0] = sock->recvd_val;
+     sock->recvd = 0;
+     got++;
+     bufsize--;
+  }   
+
   while (size>got) {
     int status = 0;
     
@@ -343,7 +350,7 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
       bufsize -= status;
       got     += status;
     } else {
-      THROW1(system_error,0,"Socket closed by remote side (got %d bytes before this)",
+      THROW1(system_error,errno,"Socket closed by remote side (got %d bytes before this)",
 	     got);
     }
   }
