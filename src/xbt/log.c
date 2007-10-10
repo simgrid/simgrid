@@ -493,6 +493,7 @@ XBT_LOG_NEW_CATEGORY(xbt,"All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_CATEGORY(surf,"All SURF categories");
 XBT_LOG_NEW_CATEGORY(msg,"All MSG categories");
 XBT_LOG_NEW_CATEGORY(simix,"All SIMIX categories");
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mechanism itself");
 
 /** @brief Get all logging settings from the command line
@@ -665,6 +666,16 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   int found = 0;
   s_xbt_log_event_t _log_ev;
 
+  _log_ev.cat = category;
+  _log_ev.priority = xbt_log_priority_debug;
+  _log_ev.fileName = __FILE__ ;
+  _log_ev.functionName = _XBT_FUNCTION ;
+  _log_ev.lineNum = __LINE__ ;
+  _xbt_log_event_log(&_log_ev, "Initializing category '%s' (firstChild=%s, nextSibling=%s)",
+		     category->name, 
+		     (category->firstChild ?category->firstChild->name :"none"),
+		     (category->nextSibling?category->nextSibling->name:"none"));
+   
   if(category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)){
     category->threshold = xbt_log_priority_info;/* xbt_log_priority_debug*/;
     category->appender = xbt_log_default_appender;
@@ -674,7 +685,34 @@ int _xbt_log_cat_init(xbt_log_category_t category,
     if (!category->parent)
       category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
     
+    _log_ev.lineNum = __LINE__ ;
+    _xbt_log_event_log(&_log_ev, "Set %s (%s) as father of %s ", category->parent->name,
+		       (category->parent->threshold == xbt_log_priority_uninitialized ? "uninited":xbt_log_priority_names[category->parent->threshold]),
+		       category->name);
     xbt_log_parent_set(category, category->parent);
+     
+    if (_XBT_LOGV(log).threshold < xbt_log_priority_info) {
+       char *buf,*res=NULL;
+       xbt_log_category_t cpp = category->parent->firstChild;
+       while (cpp) {
+	  if (res) {	       
+	     buf = bprintf("%s %s",res,cpp->name);
+	     free(res);
+	     res = buf;
+	  } else {
+	     res = xbt_strdup(cpp->name);
+	  }
+	  cpp = cpp->nextSibling;
+       }
+       
+       _log_ev.lineNum = __LINE__ ;
+       _xbt_log_event_log(&_log_ev,
+			  "Childs of %s: %s; nextSibling: %s", category->parent->name,res,
+			  (category->parent->nextSibling?category->parent->nextSibling->name:"none"));
+       
+       free(res);
+    }
+     	   
   }
 
   /* Apply the control */  
@@ -715,8 +753,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   return priority >= category->threshold;
 }
 
-void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent) 
-{
+void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent)  {
 	
 	xbt_assert0(cat,"NULL category to be given a parent");
 	xbt_assert1(parent,"The parent category of %s is NULL",cat->name);
@@ -866,15 +903,22 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
 }
 
 static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *name) {
-  xbt_log_category_t child;
+  xbt_log_category_t child,res;
   
+  DEBUG4("Search '%s' into '%s' (firstChild='%s'; nextSibling='%s')",name,cat->name,
+	 (cat->firstChild  ? cat->firstChild->name :"none"),
+	 (cat->nextSibling ? cat->nextSibling->name:"none"));
   if (!strcmp(cat->name,name)) 
     return cat;
 
-  for(child=cat->firstChild ; child != NULL; child = child->nextSibling) 
-    return _xbt_log_cat_searchsub(child,name);
-  
-  THROW1(not_found_error,0,"No such category: %s", name);
+  for (child=cat->firstChild ; child != NULL; child = child->nextSibling) {
+     DEBUG1("Dig into %s",child->name);
+     res = _xbt_log_cat_searchsub(child,name);
+     if (res) 
+       return res;
+  }
+
+  return NULL;
 }
 
 /**
@@ -927,22 +971,11 @@ void xbt_log_control_set(const char* control_string) {
      created), or store it for further use */
   xbt_dynar_foreach(set_strings,cpt,str) {
     xbt_log_category_t cat=NULL;
-    int found=0;
-    xbt_ex_t e;
     
     set = _xbt_log_parse_setting(str);
+    cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT),set->catname);
 
-    TRY {
-      cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT),set->catname);
-      found = 1;
-    } CATCH(e) {
-      if (e.category != not_found_error)
-	RETHROW;
-      xbt_ex_free(e);
-      found = 0;
-    } 
-
-    if (found) {
+    if (cat) {
       DEBUG0("Apply directly");
       _xbt_log_cat_apply_set(cat,set);
       _free_setting((void*)&set);
