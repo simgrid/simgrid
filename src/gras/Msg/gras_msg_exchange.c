@@ -91,11 +91,7 @@ gras_msg_wait_ext_(double           timeout,
     memset(&msg,sizeof(msg),0);
 
     TRY {
-			xbt_queue_shift_timed(pd->msg_received,&msg,timeout ? timeout - now + start : 0);
-			/*
-      msg.expe = gras_trp_select(timeout ? timeout - now + start : 0);
-      gras_msg_recv(msg.expe, &msg);
-			*/
+      xbt_queue_shift_timed(pd->msg_received,&msg,timeout ? timeout - now + start : 0);
     } CATCH(e) {
       if (e.category == system_error &&
 	  !strncmp("Socket closed by remote side",e.msg,
