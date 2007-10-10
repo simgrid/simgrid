@@ -666,15 +666,18 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   int found = 0;
   s_xbt_log_event_t _log_ev;
 
-  _log_ev.cat = category;
-  _log_ev.priority = xbt_log_priority_debug;
-  _log_ev.fileName = __FILE__ ;
-  _log_ev.functionName = _XBT_FUNCTION ;
-  _log_ev.lineNum = __LINE__ ;
-  _xbt_log_event_log(&_log_ev, "Initializing category '%s' (firstChild=%s, nextSibling=%s)",
-		     category->name, 
-		     (category->firstChild ?category->firstChild->name :"none"),
-		     (category->nextSibling?category->nextSibling->name:"none"));
+  if (_XBT_LOGV(log).threshold <= xbt_log_priority_debug
+      && _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
+     _log_ev.cat = &_XBT_LOGV(log);
+     _log_ev.priority = xbt_log_priority_debug;
+     _log_ev.fileName = __FILE__ ;
+     _log_ev.functionName = _XBT_FUNCTION ;
+     _log_ev.lineNum = __LINE__ ;  
+     _xbt_log_event_log(&_log_ev, "Initializing category '%s' (firstChild=%s, nextSibling=%s)",
+			category->name, 
+			(category->firstChild ?category->firstChild->name :"none"),
+			(category->nextSibling?category->nextSibling->name:"none"));
+  }
    
   if(category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)){
     category->threshold = xbt_log_priority_info;/* xbt_log_priority_debug*/;
@@ -685,13 +688,17 @@ int _xbt_log_cat_init(xbt_log_category_t category,
     if (!category->parent)
       category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
     
-    _log_ev.lineNum = __LINE__ ;
-    _xbt_log_event_log(&_log_ev, "Set %s (%s) as father of %s ", category->parent->name,
-		       (category->parent->threshold == xbt_log_priority_uninitialized ? "uninited":xbt_log_priority_names[category->parent->threshold]),
-		       category->name);
+    if (_XBT_LOGV(log).threshold <= xbt_log_priority_debug
+	&& _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
+       _log_ev.lineNum = __LINE__ ;
+       _xbt_log_event_log(&_log_ev, "Set %s (%s) as father of %s ", category->parent->name,
+			  (category->parent->threshold == xbt_log_priority_uninitialized ? "uninited":xbt_log_priority_names[category->parent->threshold]),
+			  category->name);
+    }     
     xbt_log_parent_set(category, category->parent);
      
-    if (_XBT_LOGV(log).threshold < xbt_log_priority_info) {
+    if (_XBT_LOGV(log).threshold < xbt_log_priority_info
+	&& _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
        char *buf,*res=NULL;
        xbt_log_category_t cpp = category->parent->firstChild;
        while (cpp) {
@@ -738,7 +745,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   
   if (!found && category->threshold <= xbt_log_priority_verbose) {
     
-    _log_ev.cat = category;
+    _log_ev.cat = &_XBT_LOGV(log);
     _log_ev.priority = xbt_log_priority_verbose;
     _log_ev.fileName = __FILE__ ;
     _log_ev.functionName = _XBT_FUNCTION ;
