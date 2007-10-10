@@ -186,7 +186,13 @@ gras_socket_t gras_trp_select(double timeout) {
 	 /* Make sure the socket is still alive by reading the first byte */
 	 int recvd;
 
-	 recvd = read(sock_iter->sd, &sock_iter->recvd_val, 1);
+	 if (sock_iter->recvd) {
+	    /* Socket wasn't used since last time! Don't bother checking whether it's still alive */
+	    recvd = 1;
+	 } else {
+	    recvd = read(sock_iter->sd, &sock_iter->recvd_val, 1);
+	 }
+	  
 	 if (recvd < 0) {
 	   WARN2("socket %d failed: %s", sock_iter->sd, strerror(errno));
 	   /* done with this socket; remove it and break the foreach since it will change the dynar */
@@ -201,6 +207,7 @@ gras_socket_t gras_trp_select(double timeout) {
 	   /* Got a suited socket ! */
 	   XBT_OUT;
 	   sock_iter->recvd = 1;
+	   DEBUG3("Filled little buffer (%c %x %d)", sock_iter->recvd_val, sock_iter->recvd_val, recvd);
 	   _gras_lastly_selected_socket = sock_iter;
 	   /* break sync dynar iteration */
 	   xbt_dynar_cursor_unlock(sockets);
