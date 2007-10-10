@@ -83,9 +83,18 @@ stopsearch:
 			SIMIX_mutex_lock(request->mutex);
 			memcpy(request->buf, message->buf, request->datatype->size * request->count);
 			request->src = message->src;
-			request->completed = 1;
 			request->data = message->data;
-			SIMIX_cond_broadcast(request->cond);
+			request->forward = message->forward;
+
+			if (0 == request->forward) {
+				request->completed = 1;
+				SIMIX_cond_broadcast(request->cond);
+			} else {
+				request->src = smpi_mpi_comm_rank(request->comm);
+				request->dst = (request->src + 1) % request->comm->size;
+				smpi_mpi_isend(request);
+			}
+
 			SIMIX_mutex_unlock(request->mutex);
 
 			xbt_free(message->buf);

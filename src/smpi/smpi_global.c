@@ -12,9 +12,12 @@ void *smpi_request_new()
 {
 	smpi_mpi_request_t request = xbt_new(s_smpi_mpi_request_t, 1);
 
+	request->buf       = NULL;
 	request->completed = 0;
 	request->mutex     = SIMIX_mutex_init();
 	request->cond      = SIMIX_cond_init();
+	request->data      = NULL;
+	request->forward   = 0;
 
 	return request;
 }
@@ -26,11 +29,9 @@ void smpi_request_free(void *pointer)
 
 	smpi_mpi_request_t request = pointer;
 
-	if (NULL != request) {
-		SIMIX_cond_destroy(request->cond);
-		SIMIX_mutex_destroy(request->mutex);
-		xbt_free(request);
-	}
+	SIMIX_cond_destroy(request->cond);
+	SIMIX_mutex_destroy(request->mutex);
+	xbt_free(request);
 
 	return;
 }
@@ -41,7 +42,10 @@ void smpi_request_reset(void *pointer)
 {
 	smpi_mpi_request_t request = pointer;
 
+	request->buf       = NULL;
 	request->completed = 0;
+	request->data      = NULL;
+	request->forward   = 0;
 
 	return;
 }
@@ -51,17 +55,16 @@ void *smpi_message_new(void);
 
 void *smpi_message_new()
 {
-	return xbt_new(s_smpi_received_message_t, 1);
+	smpi_received_message_t message = xbt_new(s_smpi_received_message_t, 1);
+	message->buf = NULL;
+	return message;
 }
 
 void smpi_message_free(void *pointer);
 
 void smpi_message_free(void *pointer)
 {
-	if (NULL != pointer) {
-		xbt_free(pointer);
-	}
-
+	xbt_free(pointer);
 	return;
 }
 
@@ -69,6 +72,8 @@ void smpi_message_reset(void *pointer);
 
 void smpi_message_reset(void *pointer)
 {
+	smpi_received_message_t message = pointer;
+	message->buf = NULL;
 	return;
 }
 

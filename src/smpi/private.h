@@ -46,6 +46,7 @@ typedef struct smpi_mpi_request_t {
 	smx_cond_t  cond;
 
 	void *data;
+	int forward;
 
 } s_smpi_mpi_request_t;
 
@@ -63,6 +64,7 @@ typedef struct smpi_received_message_t {
 	void *buf;
 
 	void *data;
+	int forward;
 
 } s_smpi_received_message_t;
 typedef struct smpi_received_message_t *smpi_received_message_t;

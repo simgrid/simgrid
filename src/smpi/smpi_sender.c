@@ -61,25 +61,35 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_process_suspend(self);
 		} else {
 
-			message       = xbt_mallocator_get(smpi_global->message_mallocator);
+			message       	 = xbt_mallocator_get(smpi_global->message_mallocator);
 
 			SIMIX_mutex_lock(request->mutex);
 
-			message->comm = request->comm;
-			message->src  = smpi_mpi_comm_rank(request->comm);
-			message->tag  = request->tag;
-			message->buf  = xbt_malloc(request->datatype->size * request->count);
+			message->comm    = request->comm;
+			message->src     = smpi_mpi_comm_rank(request->comm);
+			message->tag     = request->tag;
+			message->data    = request->data;
+			message->buf     = xbt_malloc(request->datatype->size * request->count);
 			memcpy(message->buf, request->buf, request->datatype->size * request->count);
-			message->data = request->data;
 
 			dindex = request->comm->rank_to_index_map[request->dst];
 			dhost  = smpi_global->hosts[dindex];
+
+			message->forward = (request->forward - 1) / 2;
+			request->forward = request->forward / 2;
 
 			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[dindex]);
 			xbt_fifo_push(smpi_global->received_message_queues[dindex], message);
 			SIMIX_mutex_unlock(smpi_global->received_message_queues_mutexes[dindex]);
 
-			request->completed = 1;
+			if (0 < request->forward) {
+				request->dst = (request->dst + message->forward + 1) % request->comm->size;
+				SIMIX_mutex_lock(request_queue_mutex);
+				xbt_fifo_push(request_queue, request);
+				SIMIX_mutex_unlock(request_queue_mutex);
+			} else {
+				request->completed = 1;
+			}
 
 			action = SIMIX_action_communicate(shost, dhost, communication, request->datatype->size * request->count, -1.0);
 
@@ -88,8 +98,6 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_unregister_action_to_condition(action, request->cond);
 
 			SIMIX_mutex_unlock(request->mutex);
-
-			//SIMIX_action_destroy(action);
 
 			// wake up receiver if necessary
 			receiver_process = smpi_global->receiver_processes[dindex];

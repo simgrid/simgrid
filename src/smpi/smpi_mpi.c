@@ -189,26 +189,20 @@ int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm co
 
 	int retval = MPI_SUCCESS;
 	int rank;
+	smpi_mpi_request_t request;
 
 	smpi_bench_end();
 
 	rank = smpi_mpi_comm_rank(comm);
 
 	if (rank == root) {
-		int i;
-		smpi_mpi_request_t *requests = xbt_new(smpi_mpi_request_t, comm->size - 1);
-		for (i = 1; i < comm->size; i++) {
-			retval = smpi_create_request(buf, count, datatype, root, (root + i) % comm->size, 0, comm, requests + i - 1);
-			smpi_mpi_isend(requests[i - 1]);
-		}
-		for (i = 0; i < comm->size - 1; i++) {
-			smpi_mpi_wait(requests[i], MPI_STATUS_IGNORE);
-			xbt_mallocator_release(smpi_global->request_mallocator, requests[i]);
-		}
-		xbt_free(requests);
+		retval = smpi_create_request(buf, count, datatype, root, (root + 1) % comm->size, 0, comm, &request);
+		request->forward = comm->size - 1;
+		smpi_mpi_isend(request);
+		smpi_mpi_wait(request, MPI_STATUS_IGNORE);
+		xbt_mallocator_release(smpi_global->request_mallocator, request);
 	} else {
-		smpi_mpi_request_t request;
-		retval = smpi_create_request(buf, count, datatype, root, rank, 0, comm, &request);
+		retval = smpi_create_request(buf, count, datatype, MPI_ANY_SOURCE, rank, 0, comm, &request);
 		smpi_mpi_irecv(request);
 		smpi_mpi_wait(request, MPI_STATUS_IGNORE);
 		xbt_mallocator_release(smpi_global->request_mallocator, request);

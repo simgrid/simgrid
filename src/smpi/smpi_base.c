@@ -227,7 +227,7 @@ int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t *status)
 		retval = MPI_ERR_INTERN;
 	} else {
 		SIMIX_mutex_lock(request->mutex);
-		if (!request->completed) {
+		while (!request->completed) {
 			SIMIX_cond_wait(request->cond, request->mutex);
 		}
 		if (NULL != status) {
