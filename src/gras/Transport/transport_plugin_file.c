@@ -84,7 +84,7 @@ gras_socket_client_from_file(const char*path) {
   res->plugin=gras_trp_plugin_get_by_name("file");
 
   if (strcmp("-", path)) {
-    res->sd = open(path, O_WRONLY|O_CREAT | O_BINARY, S_IRUSR|S_IWUSR|S_IRGRP );
+    res->sd = open(path, O_TRUNC|O_WRONLY|O_CREAT | O_BINARY, S_IRUSR|S_IWUSR|S_IRGRP );
     
     if ( res->sd < 0) {
       THROW2(system_error,0,
