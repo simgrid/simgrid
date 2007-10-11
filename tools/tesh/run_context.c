@@ -116,17 +116,17 @@ void rctx_empty(rctx_t rc) {
   rc->brokenpipe = 0;
   rc->timeout = 0;
   rc->interrupted = 0;
-  buff_empty(rc->input);
-  buff_empty(rc->output_wanted);
-  buff_empty(rc->output_got);
+  xbt_strbuff_empty(rc->input);
+  xbt_strbuff_empty(rc->output_wanted);
+  xbt_strbuff_empty(rc->output_got);
 }
 
 rctx_t rctx_new() {
   rctx_t res = xbt_new0(s_rctx_t,1);
 
-  res->input=buff_new();
-  res->output_wanted=buff_new();
-  res->output_got=buff_new();
+  res->input=xbt_strbuff_new();
+  res->output_wanted=xbt_strbuff_new();
+  res->output_got=xbt_strbuff_new();
   res->interruption = xbt_os_mutex_init();
   rctx_empty(res);
   return res;
@@ -143,9 +143,9 @@ void rctx_free(rctx_t rctx) {
   if (rctx->filepos)
     free(rctx->filepos);
   xbt_os_mutex_destroy(rctx->interruption);
-  buff_free(rctx->input);
-  buff_free(rctx->output_got);
-  buff_free(rctx->output_wanted);
+  xbt_strbuff_free(rctx->input);
+  xbt_strbuff_free(rctx->output_got);
+  xbt_strbuff_free(rctx->output_wanted);
   free(rctx);
 }
 
@@ -195,14 +195,14 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
     
   case '<':
     rctx->is_empty = 0;
-    buff_append(rctx->input,line);
-    buff_append(rctx->input,"\n");
+    xbt_strbuff_append(rctx->input,line);
+    xbt_strbuff_append(rctx->input,"\n");
     break;
 
   case '>':
     rctx->is_empty = 0;
-    buff_append(rctx->output_wanted,line);
-    buff_append(rctx->output_wanted,"\n");
+    xbt_strbuff_append(rctx->output_wanted,line);
+    xbt_strbuff_append(rctx->output_wanted,"\n");
     break;
 
   case '!':
@@ -298,7 +298,7 @@ static void *thread_reader(void *r) {
     }
     if (posr>0) {
       buffout[posr]='\0';
-      buff_append(rctx->output_got,buffout);
+      xbt_strbuff_append(rctx->output_got,buffout);
     } else {
       usleep(100);
     }
@@ -435,10 +435,10 @@ void *rctx_wait(void* r) {
     return NULL;
     xbt_os_mutex_lock(rctx->interruption);*/
  
-  buff_chomp(rctx->output_got);
-  buff_chomp(rctx->output_wanted);
-  buff_trim(rctx->output_got);
-  buff_trim(rctx->output_wanted);
+  xbt_strbuff_chomp(rctx->output_got);
+  xbt_strbuff_chomp(rctx->output_wanted);
+  xbt_strbuff_trim(rctx->output_got);
+  xbt_strbuff_trim(rctx->output_wanted);
 
   /* Check for broken pipe */
   if (rctx->brokenpipe)

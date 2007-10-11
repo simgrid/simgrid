@@ -88,7 +88,7 @@ static void handle_suite(const char* filename, FILE* IN) {
   int line_num=0;
   char file_pos[256];
 
-  buff_t buff=buff_new();
+  xbt_strbuff_t buff=xbt_strbuff_new();
   int buffbegin = 0;   
 
   rctx = rctx_new();
@@ -135,12 +135,12 @@ static void handle_suite(const char* filename, FILE* IN) {
     }
 
     if (buff->used || to_be_continued) { 
-      buff_append(buff,line);
+      xbt_strbuff_append(buff,line);
 
       if (!to_be_continued) {
 	snprintf(file_pos,256,"%s:%d",filename,buffbegin);
 	handle_line(file_pos, buff->data);    
-	buff_empty(buff);
+	xbt_strbuff_empty(buff);
       }
 	
     } else {
@@ -159,7 +159,7 @@ static void handle_suite(const char* filename, FILE* IN) {
   /* Clear buffers */
   if (line)
     free(line);
-  buff_free(buff);
+  xbt_strbuff_free(buff);
 
 }
 

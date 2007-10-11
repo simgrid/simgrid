@@ -65,7 +65,7 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_tesh_OBJECTS = run_context.$(OBJEXT) tesh.$(OBJEXT) buff.$(OBJEXT) \
+am_tesh_OBJECTS = run_context.$(OBJEXT) tesh.$(OBJEXT) \
 	signal.$(OBJEXT)
 tesh_OBJECTS = $(am_tesh_OBJECTS)
 tesh_DEPENDENCIES = $(top_builddir)/src/libgras.la
@@ -223,7 +223,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CFLAGS = -g
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include -I$(top_srcdir)/src
-tesh_SOURCES = run_context.c run_context.h tesh.c tesh.h buff.h buff.c signal.c
+tesh_SOURCES = run_context.c run_context.h tesh.c tesh.h signal.c
 tesh_LDADD = $(top_builddir)/src/libgras.la 
 TESTS_ENVIRONMENT = ./tesh
 TESTS = basic.tesh  cd.tesh \
@@ -305,7 +305,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buff.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_context.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tesh.Po@am__quote@

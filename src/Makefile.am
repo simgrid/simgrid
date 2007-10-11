@@ -120,7 +120,7 @@ VERSION_INFO= -version-info 2:0:0
 
 XBT_SRC=\
   \
-  xbt/snprintf.c    xbt/xbt_str.c                                            \
+  xbt/snprintf.c    xbt/xbt_str.c xbt/xbt_strbuff.c                          \
   xbt/ex.c                                                                   \
   \
   xbt_modinter.h    gras_modinter.h                                          \

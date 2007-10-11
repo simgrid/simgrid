@@ -11,7 +11,7 @@ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include -I$(top_srcdir)/s
 
 bin_PROGRAMS = tesh
 
-tesh_SOURCES = run_context.c run_context.h tesh.c tesh.h buff.h buff.c signal.c
+tesh_SOURCES = run_context.c run_context.h tesh.c tesh.h signal.c
 tesh_LDADD   = $(top_builddir)/src/libgras.la 
 
 TESTS_ENVIRONMENT=./tesh

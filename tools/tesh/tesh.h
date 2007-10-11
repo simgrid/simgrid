@@ -12,9 +12,7 @@
 #define TESH_H
 
 #include "xbt/xbt_os_thread.h"
-/*** Buffers ***/
-/***************/
-#include "buff.h"
+#include "xbt/strbuff.h"
 
 /*** What we need to know about signals ***/
 /******************************************/

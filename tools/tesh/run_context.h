@@ -46,9 +46,9 @@ typedef struct {
   int expected_return; /* the exepeted return code of following command */
 
   /* buffers */
-  buff_t input;
-  buff_t output_wanted;
-  buff_t output_got;
+  xbt_strbuff_t input;
+  xbt_strbuff_t output_wanted;
+  xbt_strbuff_t output_got;
 
   /* Threads */
   xbt_os_thread_t writer, reader; /* IO handlers */

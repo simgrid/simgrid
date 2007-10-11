@@ -1,6 +1,6 @@
-/* $Id$ */
+/* $Id: buff.c 3483 2007-05-07 11:18:56Z mquinson $ */
 
-/* buff -- buffers as needed by tesh                                        */
+/* strbuff -- string buffers                                                */
 
 /* Copyright (c) 2007 Martin Quinson.                                       */
 /* All rights reserved.                                                     */
@@ -13,34 +13,34 @@
 #pragma hdrstop
 #endif
 
-#include "buff.h"
+#include "xbt/strbuff.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(strbuff,xbt,"String buffers");
 
 /**
  ** Buffer code
  **/
 
-void buff_empty(buff_t b) {
+void xbt_strbuff_empty(xbt_strbuff_t b) {
   b->used=0;
   b->data[0]='\n';
   b->data[1]='\0';
 }
-buff_t buff_new(void) {
-  buff_t res=malloc(sizeof(s_buff_t));
+xbt_strbuff_t xbt_strbuff_new(void) {
+  xbt_strbuff_t res=malloc(sizeof(s_xbt_strbuff_t));
   res->data=malloc(512);
   res->size=512;
-  buff_empty(res);
+  xbt_strbuff_empty(res);
   return res;
 }
-void buff_free(buff_t b) {
+void xbt_strbuff_free(xbt_strbuff_t b) {
   if (b) {
     if (b->data)
       free(b->data);
     free(b);
   }
 }
-void buff_append(buff_t b, const char *toadd) {
+void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd) {
   int addlen;
   int needed_space;
 
@@ -57,7 +57,7 @@ void buff_append(buff_t b, const char *toadd) {
   strcpy(b->data+b->used, toadd);
   b->used += addlen;  
 }
-void buff_chomp(buff_t b) {
+void xbt_strbuff_chomp(xbt_strbuff_t b) {
   while (b->data[b->used] == '\n') {
     b->data[b->used] = '\0';
     if (b->used)
@@ -65,7 +65,7 @@ void buff_chomp(buff_t b) {
   }
 }
 
-void buff_trim(buff_t b) {
+void xbt_strbuff_trim(xbt_strbuff_t b) {
   xbt_str_trim(b->data," ");
   b->used = strlen(b->data);
 }
