@@ -188,6 +188,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
     trace_event->idx = 0;
   } else {			/* We don't need this trace_event anymore */
     free(trace_event);
+	return NULL;
   }
 
   return trace_event;
