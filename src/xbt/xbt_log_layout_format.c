@@ -9,7 +9,7 @@
 
 #include "portable.h" /* execinfo when available */
 #include "xbt/sysdep.h"
-#include "xbt/log.h"
+#include "xbt/log_private.h"
 #include "gras/virtu.h" /* gras_os_myname (KILLME) */
 #include "xbt/synchro.h" /* xbt_thread_self_name */
 #include <stdio.h>

@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
-#include "xbt/log.h"
+#include "xbt/log_private.h"
 #include "xbt/synchro.h" /* xbt_thread_name */
 #include "gras/virtu.h"
 #include <stdio.h>

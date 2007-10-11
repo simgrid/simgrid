@@ -32,6 +32,7 @@ EXTRA_DIST= \
 	xbt/graphxml.c \
 	xbt/graphxml.dtd \
         xbt/context_private.h \
+	xbt/log_private.h \
 	xbt/ex_interface.h \
         \
 	surf/maxmin_private.h \

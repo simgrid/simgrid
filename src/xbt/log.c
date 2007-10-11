@@ -2,7 +2,7 @@
 
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */
+/* Copyright (c) 2003-2007 Martin Quinson. All rights reserved.             */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,7 +20,7 @@
 #include "xbt/misc.h"
 #include "xbt/ex.h"
 #include "xbt/sysdep.h"
-#include "xbt/log.h"
+#include "xbt/log_private.h"
 #include "xbt/dynar.h"
 
 XBT_PUBLIC_DATA(int) (*xbt_pid)();
