@@ -1,8 +1,8 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform_description ((include|cpu|router|network_link|route|process)*)>
+<!ELEMENT platform_description ((include|cpu|router|network_link)*,(include|route|process)*)>
 <!ATTLIST platform_description version CDATA "0.0">
 
-<!ELEMENT include ((include|cpu|router|network_link|route|process)*)>
+<!ELEMENT include EMPTY>
 <!ATTLIST include file CDATA #REQUIRED>
 
 <!ELEMENT cpu EMPTY>
