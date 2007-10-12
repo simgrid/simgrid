@@ -350,10 +350,12 @@ clean-local:
 jardir = $(prefix)/jar 
 jar_DATA =  simgrid.jar
 
-simgrid.jar: $(JMSG_JAVA_SRC) ./surf/surfxml.dtd
+simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/surfxml.dtd
 	[ -e .classes ] || mkdir .classes
-	$(JAVAC) -sourcepath java -d .classes $(JMSG_JAVA_SRC) 
-	$(JAR) cvf simgrid.jar -C .classes . ./surf/surfxml.dtd;
+	$(JAVAC) -d .classes $(foreach file,$(JMSG_JAVA_SRC),$(srcdir)/$(file))
+	[ -e .classes/surf ] || mkdir .classes/surf
+	cp $(srcdir)/surf/surfxml.dtd .classes/surf
+	$(JAR) cvf simgrid.jar -C .classes .
 else
 EXTRA_DIST += $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
 endif
