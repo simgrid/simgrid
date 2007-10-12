@@ -251,8 +251,9 @@ struct xbt_log_event_s {
   e_xbt_log_priority_t priority;
   const char* fileName;
   const char* functionName;
-  int lineNum;
+  int lineNum; 
   va_list ap;
+  va_list ap_copy; /* need a copy to launch dynamic layouts when the static ones overflowed */
   char buffer[XBT_LOG_BUFF_SIZE];
 };
 
