@@ -582,12 +582,12 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   }
    
   va_start(ev->ap, fmt);
+  va_start(ev->ap_copy, fmt);
   while(1) {
     xbt_log_appender_t appender = cat->appender;
     if (appender != NULL) {
       xbt_assert1(cat->layout,"No valid layout for the appender of category %s",cat->name);
-      cat->layout->do_layout(cat->layout, ev, fmt);
-      appender->do_append(appender, ev->buffer);
+      cat->layout->do_layout(cat->layout, ev, fmt, appender);
     }
     if (!cat->additivity)
       break;
@@ -595,6 +595,7 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
     cat = cat->parent;
   } 
   va_end(ev->ap);
+  va_end(ev->ap_copy);
 }
 
 static void _xbt_log_cat_apply_set(xbt_log_category_t category,

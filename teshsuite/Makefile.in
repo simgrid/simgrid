@@ -44,7 +44,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-noinst_PROGRAMS = xbt/parallel_log_crashtest$(EXEEXT) \
+noinst_PROGRAMS = xbt/log_large_test$(EXEEXT) \
+	xbt/parallel_log_crashtest$(EXEEXT) \
 	gras/datadesc/datadesc_usage$(EXEEXT) \
 	gras/msg_handle/msg_handle_client$(EXEEXT) \
 	gras/msg_handle/msg_handle_server$(EXEEXT) \
@@ -169,6 +170,9 @@ am_simdag_partask_test_comp_only_seq_OBJECTS =  \
 simdag_partask_test_comp_only_seq_OBJECTS =  \
 	$(am_simdag_partask_test_comp_only_seq_OBJECTS)
 simdag_partask_test_comp_only_seq_DEPENDENCIES = $(LDADD_SG)
+xbt_log_large_test_SOURCES = xbt/log_large_test.c
+xbt_log_large_test_OBJECTS = log_large_test.$(OBJEXT)
+xbt_log_large_test_DEPENDENCIES = $(LDADD_SG)
 xbt_parallel_log_crashtest_SOURCES = xbt/parallel_log_crashtest.c
 xbt_parallel_log_crashtest_OBJECTS = parallel_log_crashtest.$(OBJEXT)
 xbt_parallel_log_crashtest_DEPENDENCIES = $(LDADD_RL)
@@ -201,7 +205,7 @@ SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(simdag_network_test_reinit_costs_SOURCES) \
 	$(simdag_partask_test_comp_only_par_SOURCES) \
 	$(simdag_partask_test_comp_only_seq_SOURCES) \
-	xbt/parallel_log_crashtest.c
+	xbt/log_large_test.c xbt/parallel_log_crashtest.c
 DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(gras_msg_handle_msg_handle_client_SOURCES) \
 	$(gras_msg_handle_msg_handle_server_SOURCES) \
@@ -219,7 +223,7 @@ DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(simdag_network_test_reinit_costs_SOURCES) \
 	$(simdag_partask_test_comp_only_par_SOURCES) \
 	$(simdag_partask_test_comp_only_seq_SOURCES) \
-	xbt/parallel_log_crashtest.c
+	xbt/log_large_test.c xbt/parallel_log_crashtest.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -379,7 +383,7 @@ EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
 	simdag/partask/platform_2p_1sl_hetero.xml \
 	simdag/partask/platform_2p_1sl.xml
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-TESTS = xbt/parallel_log_crashtest.tesh \
+TESTS = xbt/log_large_test.tesh xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_mem.tesh gras/datadesc/datadesc_rw.tesh \
 	gras/datadesc/datadesc_r_little32_4.tesh \
 	gras/datadesc/datadesc_r_little64.tesh \
@@ -405,6 +409,7 @@ XFAIL_TESTS = gras/datadesc/datadesc_r_little32.tesh \
 	gras/datadesc/datadesc_r_big32_2.tesh
 LDADD_SG = $(abs_top_builddir)/src/libsimgrid.la
 LDADD_RL = $(abs_top_builddir)/src/libgras.la
+xbt_log_large_test_LDADD = $(LDADD_SG)
 xbt_parallel_log_crashtest_LDADD = $(LDADD_RL)
 gras_datadesc_datadesc_usage_SOURCES = gras/datadesc/datadesc_usage.c gras/datadesc/datadesc_structs.c
 gras_datadesc_datadesc_usage_LDADD = $(LDADD_RL)
@@ -570,6 +575,9 @@ simdag/partask/test_comp_only_seq$(EXEEXT): $(simdag_partask_test_comp_only_seq_
 xbt/$(am__dirstamp):
 	@$(MKDIR_P) xbt
 	@: > xbt/$(am__dirstamp)
+xbt/log_large_test$(EXEEXT): $(xbt_log_large_test_OBJECTS) $(xbt_log_large_test_DEPENDENCIES) xbt/$(am__dirstamp)
+	@rm -f xbt/log_large_test$(EXEEXT)
+	$(LINK) $(xbt_log_large_test_OBJECTS) $(xbt_log_large_test_LDADD) $(LIBS)
 xbt/parallel_log_crashtest$(EXEEXT): $(xbt_parallel_log_crashtest_OBJECTS) $(xbt_parallel_log_crashtest_DEPENDENCIES) xbt/$(am__dirstamp)
 	@rm -f xbt/parallel_log_crashtest$(EXEEXT)
 	$(LINK) $(xbt_parallel_log_crashtest_OBJECTS) $(xbt_parallel_log_crashtest_LDADD) $(LIBS)
@@ -591,6 +599,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_structs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log_large_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_log_crashtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_comp_only_par.Po@am__quote@
@@ -933,6 +942,20 @@ test_comp_only_seq.obj: simdag/partask/test_comp_only_seq.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_comp_only_seq.obj `if test -f 'simdag/partask/test_comp_only_seq.c'; then $(CYGPATH_W) 'simdag/partask/test_comp_only_seq.c'; else $(CYGPATH_W) '$(srcdir)/simdag/partask/test_comp_only_seq.c'; fi`
 
+log_large_test.o: xbt/log_large_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log_large_test.o -MD -MP -MF $(DEPDIR)/log_large_test.Tpo -c -o log_large_test.o `test -f 'xbt/log_large_test.c' || echo '$(srcdir)/'`xbt/log_large_test.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/log_large_test.Tpo $(DEPDIR)/log_large_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/log_large_test.c' object='log_large_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log_large_test.o `test -f 'xbt/log_large_test.c' || echo '$(srcdir)/'`xbt/log_large_test.c
+
+log_large_test.obj: xbt/log_large_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log_large_test.obj -MD -MP -MF $(DEPDIR)/log_large_test.Tpo -c -o log_large_test.obj `if test -f 'xbt/log_large_test.c'; then $(CYGPATH_W) 'xbt/log_large_test.c'; else $(CYGPATH_W) '$(srcdir)/xbt/log_large_test.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/log_large_test.Tpo $(DEPDIR)/log_large_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/log_large_test.c' object='log_large_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log_large_test.obj `if test -f 'xbt/log_large_test.c'; then $(CYGPATH_W) 'xbt/log_large_test.c'; else $(CYGPATH_W) '$(srcdir)/xbt/log_large_test.c'; fi`
+
 parallel_log_crashtest.o: xbt/parallel_log_crashtest.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT parallel_log_crashtest.o -MD -MP -MF $(DEPDIR)/parallel_log_crashtest.Tpo -c -o parallel_log_crashtest.o `test -f 'xbt/parallel_log_crashtest.c' || echo '$(srcdir)/'`xbt/parallel_log_crashtest.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/parallel_log_crashtest.Tpo $(DEPDIR)/parallel_log_crashtest.Po
@@ -1217,6 +1240,8 @@ uninstall-am:
 #################
 ### XBT tests ###
 #################
+
+  #######################
 
   #######################
 

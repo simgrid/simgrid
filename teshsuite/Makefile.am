@@ -25,6 +25,13 @@ LDADD_RL=$(abs_top_builddir)/src/libgras.la
 ### XBT tests ###
 #################
 
+  ## Try large logs ##
+  ####################
+
+TESTS += xbt/log_large_test.tesh
+noinst_PROGRAMS += xbt/log_large_test
+xbt_log_large_test_LDADD = $(LDADD_SG)
+
   ## Try parallel logs ##
   #######################
 
