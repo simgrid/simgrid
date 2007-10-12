@@ -123,7 +123,8 @@ noinst_PROGRAMS += simdag/basic0 \
                    simdag/basic2 \
                    simdag/basic3 \
                    simdag/basic4 \
-                   simdag/basic5
+                   simdag/basic5 \
+                   simdag/basic6
 
 EXTRA_DIST      += simdag/basic_platform.xml
 
@@ -139,6 +140,8 @@ simdag_basic4_SOURCES = simdag/basic4.c
 simdag_basic4_LDADD = $(LDADD_SG)
 simdag_basic5_SOURCES = simdag/basic5.c
 simdag_basic5_LDADD = $(LDADD_SG)
+simdag_basic6_SOURCES = simdag/basic6.c
+simdag_basic6_LDADD = $(LDADD_SG)
 
 TESTS += \
   simdag/basic0.tesh  \
@@ -146,7 +149,8 @@ TESTS += \
   simdag/basic2.tesh \
   simdag/basic3.tesh \
   simdag/basic4.tesh \
-  simdag/basic5.tesh
+  simdag/basic5.tesh \
+  simdag/basic6.tesh
 
 # p2p
 

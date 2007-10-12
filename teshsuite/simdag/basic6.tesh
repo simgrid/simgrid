@@ -1,0 +1,9 @@
+$ simdag/basic6 simdag/network/p2p/platform_2p_1sl.xml
+> [0.000000] [sd_kernel/INFO] Starting simulation...
+> [0.000000] [sd_kernel/INFO] Executing task 'Task Root'
+> [0.000000] [sd_kernel/INFO] Task 'Task Root' done
+> [0.000000] [sd_kernel/INFO] Executing task 'Task A'
+> [0.000000] [sd_kernel/INFO] Executing task 'Task B'
+> [2.000000] [sd_kernel/INFO] Task 'Task A' done
+> [2.000000] [sd_kernel/INFO] Task 'Task B' done
+> [2.000000] [sd_kernel/INFO] Simulation finished

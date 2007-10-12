@@ -54,6 +54,7 @@ noinst_PROGRAMS = xbt/log_large_test$(EXEEXT) \
 	simdag/basic0$(EXEEXT) simdag/basic1$(EXEEXT) \
 	simdag/basic2$(EXEEXT) simdag/basic3$(EXEEXT) \
 	simdag/basic4$(EXEEXT) simdag/basic5$(EXEEXT) \
+	simdag/basic6$(EXEEXT) \
 	simdag/network/p2p/test_latency1$(EXEEXT) \
 	simdag/network/p2p/test_latency2$(EXEEXT) \
 	simdag/network/p2p/test_latency3$(EXEEXT) \
@@ -122,6 +123,9 @@ simdag_basic4_DEPENDENCIES = $(LDADD_SG)
 am_simdag_basic5_OBJECTS = basic5.$(OBJEXT)
 simdag_basic5_OBJECTS = $(am_simdag_basic5_OBJECTS)
 simdag_basic5_DEPENDENCIES = $(LDADD_SG)
+am_simdag_basic6_OBJECTS = basic6.$(OBJEXT)
+simdag_basic6_OBJECTS = $(am_simdag_basic6_OBJECTS)
+simdag_basic6_DEPENDENCIES = $(LDADD_SG)
 am_simdag_network_mxn_test_intra_all2all_OBJECTS =  \
 	test_intra_all2all.$(OBJEXT)
 simdag_network_mxn_test_intra_all2all_OBJECTS =  \
@@ -195,6 +199,7 @@ SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(simdag_basic0_SOURCES) $(simdag_basic1_SOURCES) \
 	$(simdag_basic2_SOURCES) $(simdag_basic3_SOURCES) \
 	$(simdag_basic4_SOURCES) $(simdag_basic5_SOURCES) \
+	$(simdag_basic6_SOURCES) \
 	$(simdag_network_mxn_test_intra_all2all_SOURCES) \
 	$(simdag_network_mxn_test_intra_independent_comm_SOURCES) \
 	$(simdag_network_mxn_test_intra_scatter_SOURCES) \
@@ -213,6 +218,7 @@ DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(simdag_basic0_SOURCES) $(simdag_basic1_SOURCES) \
 	$(simdag_basic2_SOURCES) $(simdag_basic3_SOURCES) \
 	$(simdag_basic4_SOURCES) $(simdag_basic5_SOURCES) \
+	$(simdag_basic6_SOURCES) \
 	$(simdag_network_mxn_test_intra_all2all_SOURCES) \
 	$(simdag_network_mxn_test_intra_independent_comm_SOURCES) \
 	$(simdag_network_mxn_test_intra_scatter_SOURCES) \
@@ -393,7 +399,7 @@ TESTS = xbt/log_large_test.tesh xbt/parallel_log_crashtest.tesh \
 	$(am__append_2) simdag/network/test_reinit_costs.tesh \
 	simdag/basic0.tesh simdag/basic1.tesh simdag/basic2.tesh \
 	simdag/basic3.tesh simdag/basic4.tesh simdag/basic5.tesh \
-	simdag/network/p2p/test_latency1.tesh \
+	simdag/basic6.tesh simdag/network/p2p/test_latency1.tesh \
 	simdag/network/p2p/test_latency2.tesh \
 	simdag/network/p2p/test_latency3.tesh \
 	simdag/network/p2p/test_latency_bound.tesh \
@@ -433,6 +439,8 @@ simdag_basic4_SOURCES = simdag/basic4.c
 simdag_basic4_LDADD = $(LDADD_SG)
 simdag_basic5_SOURCES = simdag/basic5.c
 simdag_basic5_LDADD = $(LDADD_SG)
+simdag_basic6_SOURCES = simdag/basic6.c
+simdag_basic6_LDADD = $(LDADD_SG)
 simdag_network_p2p_test_latency1_SOURCES = simdag/network/p2p/test_latency1.c
 simdag_network_p2p_test_latency1_LDADD = $(LDADD_SG)
 simdag_network_p2p_test_latency2_SOURCES = simdag/network/p2p/test_latency2.c
@@ -530,6 +538,9 @@ simdag/basic4$(EXEEXT): $(simdag_basic4_OBJECTS) $(simdag_basic4_DEPENDENCIES) s
 simdag/basic5$(EXEEXT): $(simdag_basic5_OBJECTS) $(simdag_basic5_DEPENDENCIES) simdag/$(am__dirstamp)
 	@rm -f simdag/basic5$(EXEEXT)
 	$(LINK) $(simdag_basic5_OBJECTS) $(simdag_basic5_LDADD) $(LIBS)
+simdag/basic6$(EXEEXT): $(simdag_basic6_OBJECTS) $(simdag_basic6_DEPENDENCIES) simdag/$(am__dirstamp)
+	@rm -f simdag/basic6$(EXEEXT)
+	$(LINK) $(simdag_basic6_OBJECTS) $(simdag_basic6_LDADD) $(LIBS)
 simdag/network/mxn/$(am__dirstamp):
 	@$(MKDIR_P) simdag/network/mxn
 	@: > simdag/network/mxn/$(am__dirstamp)
@@ -597,6 +608,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic4.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic5.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic6.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_structs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log_large_test.Po@am__quote@
@@ -801,6 +813,20 @@ basic5.obj: simdag/basic5.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/basic5.c' object='basic5.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o basic5.obj `if test -f 'simdag/basic5.c'; then $(CYGPATH_W) 'simdag/basic5.c'; else $(CYGPATH_W) '$(srcdir)/simdag/basic5.c'; fi`
+
+basic6.o: simdag/basic6.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT basic6.o -MD -MP -MF $(DEPDIR)/basic6.Tpo -c -o basic6.o `test -f 'simdag/basic6.c' || echo '$(srcdir)/'`simdag/basic6.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/basic6.Tpo $(DEPDIR)/basic6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/basic6.c' object='basic6.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o basic6.o `test -f 'simdag/basic6.c' || echo '$(srcdir)/'`simdag/basic6.c
+
+basic6.obj: simdag/basic6.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT basic6.obj -MD -MP -MF $(DEPDIR)/basic6.Tpo -c -o basic6.obj `if test -f 'simdag/basic6.c'; then $(CYGPATH_W) 'simdag/basic6.c'; else $(CYGPATH_W) '$(srcdir)/simdag/basic6.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/basic6.Tpo $(DEPDIR)/basic6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/basic6.c' object='basic6.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o basic6.obj `if test -f 'simdag/basic6.c'; then $(CYGPATH_W) 'simdag/basic6.c'; else $(CYGPATH_W) '$(srcdir)/simdag/basic6.c'; fi`
 
 test_intra_all2all.o: simdag/network/mxn/test_intra_all2all.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_intra_all2all.o -MD -MP -MF $(DEPDIR)/test_intra_all2all.Tpo -c -o test_intra_all2all.o `test -f 'simdag/network/mxn/test_intra_all2all.c' || echo '$(srcdir)/'`simdag/network/mxn/test_intra_all2all.c
