@@ -66,7 +66,7 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_mutex_lock(request->mutex);
 
 			message->comm    = request->comm;
-			message->src     = smpi_mpi_comm_rank(request->comm);
+			message->src     = request->comm->index_to_rank_map[index];
 			message->tag     = request->tag;
 			message->data    = request->data;
 			message->buf     = xbt_malloc(request->datatype->size * request->count);

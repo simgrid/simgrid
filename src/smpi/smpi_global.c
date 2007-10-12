@@ -84,7 +84,7 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
 
 	smpi_mpi_request_t request = NULL;
 
-	// FIXME: make sure requestptr is not null
+	// parameter checking prob belongs in smpi_mpi, but this is less repeat code
 	if (NULL == buf) {
 		retval = MPI_ERR_INTERN;
 	} else if (0 > count) {
@@ -100,7 +100,7 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
 	} else if (NULL == comm) {
 		retval = MPI_ERR_COMM;
 	} else if (NULL == requestptr) {
-		retval = MPI_ERR_INTERN;
+		retval = MPI_ERR_ARG;
 	} else {
 		request           = xbt_mallocator_get(smpi_global->request_mallocator);
 		request->comm     = comm;

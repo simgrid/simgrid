@@ -90,7 +90,7 @@ stopsearch:
 				request->completed = 1;
 				SIMIX_cond_broadcast(request->cond);
 			} else {
-				request->src = smpi_mpi_comm_rank(request->comm);
+				request->src = request->comm->index_to_rank_map[index];
 				request->dst = (request->src + 1) % request->comm->size;
 				smpi_mpi_isend(request);
 			}

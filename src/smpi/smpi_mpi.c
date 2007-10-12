@@ -104,14 +104,9 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 
 	smpi_bench_end();
 
-	if (NULL == request) {
-		retval = MPI_ERR_ARG;
-	} else {
-		int dst = 0;
-		retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, request);
-		if (NULL != *request && MPI_SUCCESS == retval) {
-			retval = smpi_mpi_irecv(*request);
-		}
+	retval = smpi_create_request(buf, count, datatype, src, 0, tag, comm, request);
+	if (NULL != *request && MPI_SUCCESS == retval) {
+		retval = smpi_mpi_irecv(*request);
 	}
 
 	smpi_bench_begin();
@@ -122,12 +117,11 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status)
 {
 	int retval = MPI_SUCCESS;
-	int dst = 0;
 	smpi_mpi_request_t request;
 
 	smpi_bench_end();
 
-	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
+	retval = smpi_create_request(buf, count, datatype, src, 0, tag, comm, &request);
 	if (NULL != request && MPI_SUCCESS == retval) {
 		retval = smpi_mpi_irecv(request);
 		if (MPI_SUCCESS == retval) {
@@ -147,14 +141,9 @@ int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
 
 	smpi_bench_end();
 
-	if (NULL == request) {
-		retval = MPI_ERR_ARG;
-	} else {
-		int src = 0;
-		retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, request);
-		if (NULL != *request && MPI_SUCCESS == retval) {
-			retval = smpi_mpi_isend(*request);
-		}
+	retval = smpi_create_request(buf, count, datatype, 0, dst, tag, comm, request);
+	if (NULL != *request && MPI_SUCCESS == retval) {
+		retval = smpi_mpi_isend(*request);
 	}
 
 	smpi_bench_begin();
@@ -165,12 +154,11 @@ int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
 int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
 	int retval = MPI_SUCCESS;
-	int src = 0;
 	smpi_mpi_request_t request;
 
 	smpi_bench_end();
 
-	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
+	retval = smpi_create_request(buf, count, datatype, 0, dst, tag, comm, &request);
 	if (NULL != request && MPI_SUCCESS == retval) {
 		retval = smpi_mpi_isend(request);
 		if (MPI_SUCCESS == retval) {
@@ -184,7 +172,6 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
 	return retval;
 }
 
-// FIXME: overly simplistic
 int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm) {
 
 	int retval = MPI_SUCCESS;
@@ -199,14 +186,13 @@ int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm co
 		retval = smpi_create_request(buf, count, datatype, root, (root + 1) % comm->size, 0, comm, &request);
 		request->forward = comm->size - 1;
 		smpi_mpi_isend(request);
-		smpi_mpi_wait(request, MPI_STATUS_IGNORE);
-		xbt_mallocator_release(smpi_global->request_mallocator, request);
 	} else {
 		retval = smpi_create_request(buf, count, datatype, MPI_ANY_SOURCE, rank, 0, comm, &request);
 		smpi_mpi_irecv(request);
-		smpi_mpi_wait(request, MPI_STATUS_IGNORE);
-		xbt_mallocator_release(smpi_global->request_mallocator, request);
 	}
+
+	smpi_mpi_wait(request, MPI_STATUS_IGNORE);
+	xbt_mallocator_release(smpi_global->request_mallocator, request);
 
 	smpi_bench_begin();
 
