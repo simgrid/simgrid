@@ -1,4 +1,4 @@
-/* $Id: philosopher.c,v 1.7 2007/09/10 15:18:39 mquinson Exp $ */
+/* $Id$ */
 
 /* synchro_crashtest -- tries to crash the logging mecanism by doing // logs*/
 
