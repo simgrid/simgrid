@@ -99,7 +99,7 @@ static void update_action_bound(surf_action_workstation_L07_t action)
 	for (k = 0; k < route_size; k++) {
 	  lat += route[k]->lat_current;
 	}
-	lat_current=MAX(lat_current,lat/action->communication_amount[i * workstation_nb + j]);
+	lat_current=MAX(lat_current,lat*action->communication_amount[i * workstation_nb + j]);
       }
     }
   }
