@@ -374,6 +374,7 @@ void lmm_print(lmm_system_t sys)
   DEBUG1("%s", trace_buf);
   trace_buf[0] = '\000';
 
+  DEBUG0("Constraints");
   /* Printing Constraints */
   cnst_list = &(sys->active_constraint_set);
   xbt_swag_foreach(cnst, cnst_list) {
@@ -411,6 +412,7 @@ void lmm_print(lmm_system_t sys)
 	    sum, cnst->bound, sum - cnst->bound);
   }
 
+  DEBUG0("Variables");
   /* Printing Result */
   xbt_swag_foreach(var, var_list) {
     if (var->bound > 0) {
