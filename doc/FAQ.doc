@@ -882,7 +882,7 @@ annotate Tiers-generated topologies. This perl-script is in
 <tt>tools/platform_generation/</tt> directory of the SVN. Dinda et Al.
 released a very comparable tool, and called it GridG.
 
-\subsubsection faq_SURF_dynamic Building a dynamic platform, with resource availability
+\subsubsection faq_SURF_dynamic Expressing dynamic resource availability in platform files
 
 A nice feature of SimGrid is that it enables you to seamlessly have
 resources whose availability change over time. When you build a
@@ -938,10 +938,11 @@ latency_file and state_file. The only difference with CPUs is that
 bandwidth_file and latency_file do not express fraction of available
 power but are expressed directly in bytes per seconds and seconds.
 
-\subsubsection faq_platform_multipath Is it possible to have several paths between two given hosts?
+\subsubsection faq_platform_multipath How to express multipath routing in platform files?
 
-The answer is no, unfortunately. Let's consider the following platform
-file:
+It is unfortunately impossible to express the fact that there is more
+than one routing path between two given hosts. Let's consider the
+following platform file:
 
 \verbatim
 <route src="A" dst="B">
@@ -976,8 +977,10 @@ symetric. For example, add the following to the previous file:
 \endverbatim
 
 This makes sure that data from C to A go through B where data from A
-to C go directly. Do not worry about realism of such settings since
-we've seen ways more weird situation in real settings.
+to C go directly. Don't worry about realism of such settings since
+we've seen ways more weird situation in real settings (in fact, that's
+the realism of very regular platforms which is questionable, but
+that's another story).
 
 \subsubsection faq_flexml_bypassing Bypassing the XML parser with your own C functions
 
