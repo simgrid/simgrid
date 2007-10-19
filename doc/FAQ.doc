@@ -841,14 +841,46 @@ subtasks.
 
 \subsection faq_platform Platform building and Dynamic resources
 
-\subsubsection faq_platform Building a realistic platform
+\subsubsection faq_platform_example Where can I find SimGrid platform files?
 
-We can speak more than an hour on this subject and we still do not have
-the right answer, just some ideas. You can read the following
+There is several little examples in the archive, in the examples/msg
+directory. From time to time, we are asked for other files, but we
+don't have any at hand right now. 
+
+We do have a description of the Grid'5000 platform, but because of
+some flaws in the current formalism, this file is actually 500Mb,
+which is ways too big to be used in the parser. We have an internship
+currently working on xml syntax improvements which will allow to
+reduce the size of this file and release it.
+
+Once it's done, we plan to model manually other existing platforms the
+same way we did for G5K and also release those files in some sort of
+SimGrid platform catalog project.
+
+\subsubsection faq_platform_alnem How can I automatically map an existing platform?
+
+We are working on a project called ALNeM (Application-Level Network
+Mapper) which goal is to automatically discover the topology of an
+existing network. Its output will be a platform description file
+following the SimGrid syntax, so everybody will get the ability to map
+their own lab network (and contribute them to the catalog project).
+This tool is not ready yet, but it move quite fast forward. Just stay
+tuned.
+
+\subsubsection faq_platform_synthetic Generating synthetic but realistic platforms
+
+The third possibility to get a platform file (after manual or
+automatic mapping of real platforms) is to generate synthetic
+platforms. Getting a realistic result is not a trivial task, and
+moreover, nobody is really able to define what "realistic" means when
+speaking of topology files. You can find some more thoughts on this
+topic in these
 <a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">slides</a>.
-It may give you some hints. You can also have a look at the
-<tt>tools/platform_generation/</tt> directory. There is a perl-script
-we use to annotate a Tiers generated platform.
+
+If you are looking for an actual tool, there we have a little tool to
+annotate Tiers-generated topologies. This perl-script is in
+<tt>tools/platform_generation/</tt> directory of the SVN. Dinda et Al.
+released a very comparable tool, and called it GridG.
 
 \subsubsection faq_SURF_dynamic Building a dynamic platform, with resource availability
 
