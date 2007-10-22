@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os,xbt,"Synchronization mechanism (OS-l
 /* ********************************* PTHREAD IMPLEMENTATION ************************************ */
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-
+#include <semaphore.h>
 
 typedef struct xbt_os_thread_ {
    pthread_t t;
@@ -93,7 +93,8 @@ static void * wrapper_start_routine(void *s) {
   if ((errcode=pthread_setspecific(xbt_self_thread_key,t)))
     THROW0(system_error,errcode,
 	   "pthread_setspecific failed for xbt_self_thread_key");   
-  return (*t->start_routine)(t->param);
+   
+  return (*(t->start_routine))(t->param);
 }
 xbt_os_thread_t xbt_os_thread_create(const char*name,
 				     pvoid_f_pvoid_t start_routine,
@@ -286,6 +287,118 @@ void *xbt_os_thread_getparam(void) {
    return t?t->param:NULL;
 }
 
+typedef struct xbt_os_sem_ {
+   sem_t s;
+   int pshared;
+   unsigned int value;
+   const char* name;
+}s_xbt_os_sem_t ;
+
+xbt_os_sem_t
+xbt_os_sem_init(int pshared, unsigned int value)
+{
+	xbt_os_sem_t res = xbt_new(s_xbt_os_sem_t,1);
+	
+	if(sem_init(&(res->s),pshared,value) < 0)
+		THROW1(system_error,errno,"sem_init() failed: %s",
+	    strerror(errno));
+   
+   res->pshared = pshared;
+   res->value = value;
+   
+   return res;
+}
+
+void 
+xbt_os_sem_wait(xbt_os_sem_t sem)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_wait() failed: %s",
+	    strerror(EINVAL));
+	
+	if(sem_wait(&(sem->s)) < 0)
+		THROW1(system_error,errno,"sem_wait() failed: %s",
+	    strerror(errno));		 
+}
+
+void xbt_os_sem_timedwait(xbt_os_sem_t sem,const struct timespec* abs_timeout)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_timedwait() failed: %s",
+	    strerror(EINVAL));
+	
+	/* only throw an exception if the global variable errno is different than ETIMEDOUT :
+	 * (the semaphore could not be locked before the specified timeout expired)
+	 */
+	if((sem_timedwait(&(sem->s),abs_timeout) < 0) && (ETIMEDOUT != errno))
+		THROW1(system_error,errno,"sem_wait() failed: %s",
+	    strerror(errno));	
+}
+
+void 
+xbt_os_sem_post(xbt_os_sem_t sem)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_post() failed: %s",
+	    strerror(EINVAL));
+	
+	if(sem_post(&(sem->s)) < 0)
+		THROW1(system_error,errno,"sem_post() failed: %s",
+	    strerror(errno));		 
+}
+
+void
+xbt_os_sem_close(xbt_os_sem_t sem)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_close() failed: %s",
+	    strerror(EINVAL));
+	    
+	if(sem_close(&(sem->s)) < 0)
+		THROW1(system_error,errno,"sem_close() failed: %s",
+	    strerror(errno));
+}
+
+xbt_os_sem_t 
+xbt_os_sem_open(const char *name, int oflag, mode_t mode, unsigned int value)
+{
+	sem_t* ps;
+	xbt_os_sem_t res = xbt_new(s_xbt_os_sem_t,1);
+	
+	if(SEM_FAILED == (ps = sem_open(name,oflag, mode, value)))
+		THROW1(system_error,errno,"sem_open() failed: %s",
+	    strerror(errno));
+	
+   res->s = *ps;
+   res->value = value;
+   
+   return res;	
+}
+
+void
+xbt_os_sem_destroy(xbt_os_sem_t sem)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_destroy() failed: %s",
+	    strerror(EINVAL));
+	    
+	if(sem_destroy(&(sem->s)) < 0)
+		THROW1(system_error,errno,"sem_destroy() failed: %s",
+	    strerror(errno));
+}
+
+void
+xbt_os_sem_get_value(xbt_os_sem_t sem, int* svalue)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_getvalue() failed: %s",
+	    strerror(EINVAL));
+	    
+	if(sem_getvalue(&(sem->s),svalue) < 0)
+		THROW1(system_error,errno,"sem_getvalue() failed: %s",
+	    strerror(errno));
+}
+
 /* ********************************* WINDOWS IMPLEMENTATION ************************************ */
 
 #elif defined(WIN32)
@@ -297,6 +410,14 @@ typedef struct xbt_os_thread_ {
   pvoid_f_pvoid_t start_routine;
   void* param;
 } s_xbt_os_thread_t ;
+
+/* so we can specify the size of the stack of the threads */
+#ifndef STACK_SIZE_PARAM_IS_A_RESERVATION
+#define STACK_SIZE_PARAM_IS_A_RESERVATION 0x00010000
+#endif
+
+/* the default size of the stack of the threads (in bytes)*/
+#define XBT_DEFAULT_THREAD_STACK_SIZE	4096
 
 /* key to the TLS containing the xbt_os_thread_t structure */
 static unsigned long xbt_self_thread_key;
@@ -312,11 +433,14 @@ void xbt_os_thread_mod_exit(void) {
 
 static DWORD WINAPI  wrapper_start_routine(void *s) {
   xbt_os_thread_t t = (xbt_os_thread_t)s;
+  void* rv;
  
     if(!TlsSetValue(xbt_self_thread_key,t))
      THROW0(system_error,(int)GetLastError(),"TlsSetValue of data describing the created thread failed");
    
-   return (DWORD)t->start_routine(t->param);
+   rv = (*(t->start_routine))(t->param);
+
+   return *((DWORD*)rv);
 }
 
 
@@ -329,9 +453,9 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,pvoid_f_pvoid_t start_rout
    t->start_routine = start_routine ;
    t->param = param;
    
-   t->handle = CreateThread(NULL,0,
+   t->handle = CreateThread(NULL,XBT_DEFAULT_THREAD_STACK_SIZE,
 			    (LPTHREAD_START_ROUTINE)wrapper_start_routine,
-			    t,0,&(t->id));
+			    t,STACK_SIZE_PARAM_IS_A_RESERVATION,&(t->id));
 	
    if(!t->handle) {
      xbt_free(t);
@@ -514,7 +638,56 @@ void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex) {
    EnterCriticalSection (& mutex->lock);
 }
 void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex, double delay) {
-   THROW_UNIMPLEMENTED;
+   
+	 unsigned long wait_result = WAIT_TIMEOUT;
+   int is_last_waiter;
+   unsigned long end = (unsigned long)(delay * 1000);
+
+
+   if (delay < 0) {
+      xbt_os_cond_wait(cond,mutex);
+   } else {
+	  DEBUG3("xbt_cond_timedwait(%p,%p,%ul)",&(cond->events),&(mutex->lock),end);
+
+   /* lock the threads counter and increment it */
+   EnterCriticalSection (& cond->waiters_count_lock);
+   cond->waiters_count++;
+   LeaveCriticalSection (& cond->waiters_count_lock);
+		
+   /* unlock the mutex associate with the condition */
+   LeaveCriticalSection (& mutex->lock);
+   /* wait for a signal (broadcast or no) */
+	
+   wait_result = WaitForMultipleObjects (2, cond->events, FALSE, end);
+	
+   switch(wait_result) {
+     case WAIT_TIMEOUT:
+   	THROW3(timeout_error,GetLastError(),"condition %p (mutex %p) wasn't signaled before timeout (%f)",cond,mutex, delay);
+	case WAIT_FAILED:
+     THROW0(system_error,GetLastError(),"WaitForMultipleObjects failed, so we cannot wait on the condition");
+   }
+	
+   /* we have a signal lock the condition */
+   EnterCriticalSection (& cond->waiters_count_lock);
+   cond->waiters_count--;
+	
+   /* it's the last waiter or it's a broadcast ? */
+   is_last_waiter = ((wait_result == WAIT_OBJECT_0 + BROADCAST - 1) && (cond->waiters_count == 0));
+	
+   LeaveCriticalSection (& cond->waiters_count_lock);
+	
+   /* yes it's the last waiter or it's a broadcast
+    * only reset the manual event (the automatic event is reset in the WaitForMultipleObjects() function
+    * by the system. 
+    */
+   if (is_last_waiter)
+      if(!ResetEvent (cond->events[BROADCAST]))
+	THROW0(system_error,0,"ResetEvent failed");
+	
+   /* relock the mutex associated with the condition in accordance with the posix thread specification */
+   EnterCriticalSection (& mutex->lock);
+   }
+	/*THROW_UNIMPLEMENTED;*/
 }
 
 void xbt_os_cond_signal(xbt_os_cond_t cond) {
@@ -559,6 +732,154 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond){
    
    if (error)
      THROW0(system_error,0,"Error while destroying the condition");
+}
+
+typedef struct xbt_os_sem_ {
+   HANDLE h;
+   unsigned int value;
+   const char* name;
+   CRITICAL_SECTION value_lock;  /* protect access to value of the semaphore  */
+}s_xbt_os_sem_t ;
+
+xbt_os_sem_t
+xbt_os_sem_init(int pshared, unsigned int value)
+{
+	xbt_os_sem_t res;
+	
+	if(0 != pshared)
+	THROW1(arg_error,EPERM,"xbt_os_sem_init() failed: %s",
+	    strerror(EPERM));
+	    
+	if(value > INT_MAX)
+	THROW1(arg_error,EINVAL,"xbt_os_sem_init() failed: %s",
+	    strerror(EINVAL));
+   	
+   	res = (xbt_os_sem_t)xbt_new0(s_xbt_os_sem_t,1);
+ 	
+	if(!(res->h = CreateSemaphore(NULL,value,(long)INT_MAX,NULL))) {
+		THROW1(system_error,GetLastError(),"CreateSemaphore() failed: %s",
+	    strerror(GetLastError()));
+	    return NULL;
+	}
+  
+  	res->value = value;
+  	
+  	InitializeCriticalSection(&(res->value_lock));
+   
+   	return res;
+}
+
+void 
+xbt_os_sem_wait(xbt_os_sem_t sem)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_wait() failed: %s",
+	    strerror(EINVAL));  
+
+	/* wait failure */
+	if(WAIT_OBJECT_0 != WaitForSingleObject(sem->h,INFINITE))
+		THROW1(system_error,GetLastError(),"WaitForSingleObject() failed: %s",
+	    	strerror(GetLastError()));
+	EnterCriticalSection(&(sem->value_lock));
+	sem->value--;
+	LeaveCriticalSection(&(sem->value_lock));
+}
+
+void xbt_os_sem_timedwait(xbt_os_sem_t sem,const struct timespec* abs_timeout)
+{
+	long timeout;
+	struct timeval tv;
+	
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_timedwait() failed: %s",
+	    strerror(EINVAL));	
+	    
+	if(!abs_timeout)
+		timeout = INFINITE;
+	else
+	{
+		if(gettimeofday(&tv, NULL) < 0) 
+			THROW1(system_error,errno,"gettimeofday() failed: %s",
+	    	strerror(errno));	
+			
+		 timeout = ((long) (abs_timeout->tv_sec - tv.tv_sec) * 1e3 + (long)((abs_timeout->tv_nsec / 1e3) - tv.tv_usec) / 1e3);	 	
+	}
+	
+	switch(WaitForSingleObject(sem->h,timeout))
+	{
+		case WAIT_OBJECT_0:
+		EnterCriticalSection(&(sem->value_lock));
+		sem->value--;
+		LeaveCriticalSection(&(sem->value_lock));
+		return;
+		
+		case WAIT_TIMEOUT:
+		/* it's not an exception : 
+		 * (semaphore could not be locked before the specified timeout expired)
+		 */
+		return;
+		
+		default:
+			
+		THROW1(system_error,GetLastError(),"WaitForSingleObject() failed: %s",
+	    	strerror(GetLastError()));
+	}
+}
+
+void 
+xbt_os_sem_post(xbt_os_sem_t sem)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_post() failed: %s",
+	    strerror(EINVAL));
+	
+	if(!ReleaseSemaphore(sem->h,1, NULL)) 
+		THROW1(system_error,GetLastError(),"ReleaseSemaphore() failed: %s",
+	    	strerror(GetLastError()));
+	EnterCriticalSection (&(sem->value_lock));
+	sem->value++;
+	LeaveCriticalSection(&(sem->value_lock));
+}
+
+xbt_os_sem_t 
+xbt_os_sem_open(const char *name, int oflag, mode_t mode, unsigned int value)
+{
+	THROW_UNIMPLEMENTED;
+}
+
+void
+xbt_os_sem_close(xbt_os_sem_t sem)
+{
+	THROW_UNIMPLEMENTED;
+}
+
+void
+xbt_os_sem_destroy(xbt_os_sem_t sem)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_destroy() failed: %s",
+	    strerror(EINVAL));
+	
+	if(!CloseHandle(sem->h)) 
+		THROW1(system_error,GetLastError(),"CloseHandle() failed: %s",
+	    	strerror(GetLastError()));
+	 
+	 DeleteCriticalSection(&(sem->value_lock));
+	    	
+	 xbt_free(sem);	    
+		
+}
+
+void
+xbt_os_sem_get_value(xbt_os_sem_t sem, int* svalue)
+{
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_get_value() failed: %s",
+	    strerror(EINVAL));
+	
+	EnterCriticalSection(&(sem->value_lock));  
+	*svalue = sem->value;
+	LeaveCriticalSection(&(sem->value_lock));
 }
 
 #endif

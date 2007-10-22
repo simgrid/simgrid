@@ -38,8 +38,8 @@ typedef struct s_xbt_context {
 #else   
 # ifdef CONTEXT_THREADS
 	xbt_os_thread_t thread; /* a plain dumb thread (portable to posix or windows) */
-	xbt_os_cond_t cond;		/* the condition used to synchronize the process	*/
-	xbt_os_mutex_t mutex;		/* the mutex used to synchronize the process		*/
+	xbt_os_sem_t begin;		/* this semaphore is used to schedule/unschedule the process */
+	xbt_os_sem_t end;		/* this semaphore is used to schedule/unschedule the process */
 # else
 	ucontext_t uc;	     /* the thread that execute the code */
 	char stack[STACK_SIZE];
@@ -58,9 +58,7 @@ typedef struct s_xbt_context {
 	void *startup_arg;
 	void_f_pvoid_t cleanup_func;
 	void *cleanup_arg;
-
    	int iwannadie;                  /* Set to true by the context when it wants to commit suicide */
-
 } s_xbt_context_t;
 
 

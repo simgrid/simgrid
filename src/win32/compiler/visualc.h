@@ -399,8 +399,6 @@ the double. For now, GRAS requires the structures to be compacted. */
  * Replace winsock2.h,ws2tcpip.h and winsock.h header files */
 #include <windows.h>
 
-/* types */
-typedef unsigned int uint32_t;
 
 /* Choose setjmp as exception implementation */
 #ifndef __EX_MCTX_SJLJ__
@@ -408,6 +406,50 @@ typedef unsigned int uint32_t;
 #endif 
 
 
+
+#include <sys/stat.h>
+
+#define S_IWUSR _S_IWRITE
+#define S_IRUSR _S_IREAD
+
+#define HAVE_STRUCT_TIMESPEC		0
+
+#define HAVE_STRUCT_TM				1
+
+#define HAVE_GETTIMEOFDAY			1
+
+#ifdef _WIN32_WINNT
+	#if _WIN32_WINNT < 0x0400
+		#undef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0400
+	#endif
+#else
+	#define _WIN32_WINNT 0x0400	
+#endif
+
+/* Visual C++ does not declare the ssize_t type */
 typedef int ssize_t;
+
+/* Visual C++ does not declare the mode_t type */
+typedef unsigned int mode_t;
+
+/* Visual C++ does not declare the uint32_t type */
+typedef unsigned int uint32_t;
+
+/* Visual C++ doesn't declare the structure timespec */
+struct timespec 
+{
+	long   	tv_sec;        /* seconds							*/
+	long    tv_nsec;       /* nanoseconds						*/
+};
+
+/* Visual C++ doesn't declare the structure timezone :
+ *(a structure used to indicate the local time zone)
+ */
+struct timezone 
+{
+	int tz_minuteswest; 	/* of Greenwich						*/
+    int tz_dsttime;     	/* type of dst correction to apply	*/
+};
 
 #endif /* #ifndef __XBT_VISUALC_COMPILER_CONFIG_H__ */

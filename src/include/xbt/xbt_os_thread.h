@@ -14,6 +14,11 @@
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"
 
+#ifndef WIN32 /* HAVE_SEMAPHOR_H */
+#include <semaphore.h>
+#endif
+
+
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_thread
@@ -61,6 +66,19 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(void)          xbt_os_cond_signal(xbt_os_cond_t cond);
   XBT_PUBLIC(void)          xbt_os_cond_broadcast(xbt_os_cond_t cond);
   XBT_PUBLIC(void)          xbt_os_cond_destroy(xbt_os_cond_t cond);
+  
+   /** \brief Semaphore data type (opaque structure) */
+  typedef struct xbt_os_sem_* xbt_os_sem_t;
+
+  XBT_PUBLIC(xbt_os_sem_t) xbt_os_sem_init(int pshared, unsigned int value);
+  XBT_PUBLIC(xbt_os_sem_t) xbt_os_sem_open(const char *name, int oflag, mode_t mode, unsigned int value);
+  XBT_PUBLIC(void) xbt_os_sem_wait(xbt_os_sem_t sem);
+  XBT_PUBLIC(void) xbt_os_sem_timedwait(xbt_os_sem_t sem,const struct timespec* abs_timeout);
+  XBT_PUBLIC(void) xbt_os_sem_post(xbt_os_sem_t sem);
+  XBT_PUBLIC(void) xbt_os_sem_close(xbt_os_sem_t sem);
+  XBT_PUBLIC(void) xbt_os_sem_destroy(xbt_os_sem_t sem);
+  XBT_PUBLIC(void) xbt_os_sem_get_value(xbt_os_sem_t sem, int* svalue);
+ 
 
 /** @} */
 

@@ -156,4 +156,11 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
 void hexa_print(const char*name, unsigned char *data, int size);
 const char *hexa_str(unsigned char *data, int size, int downside);
 
+
+#if defined(WIN32)
+/* Visual C++ does not implements the gettimeofday() function */
+XBT_PUBLIC(int)
+gettimeofday(struct timeval *tv, struct timezone *tz);
+#endif
+
 #endif /* GRAS_PORTABLE_H */

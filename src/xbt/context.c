@@ -25,19 +25,6 @@ static xbt_context_t init_context = NULL;
 static xbt_swag_t context_to_destroy = NULL;
 static xbt_swag_t context_living = NULL;
 
-#ifdef CONTEXT_THREADS
-static xbt_os_mutex_t creation_mutex;
-static xbt_os_cond_t creation_cond;
-static xbt_os_mutex_t master_mutex;
-static xbt_os_cond_t master_cond;
-
-static xbt_os_thread_t current_thread_id;
-
-static int is_main_thread(void) {
-   return xbt_os_thread_self() == current_thread_id;
-}
-
-#endif
 
 
 /********************/
@@ -62,6 +49,27 @@ static void _context_ex_terminate(xbt_ex_t * e)
 }
 #endif
 
+
+static void 
+schedule(xbt_context_t c);
+
+static void 
+unschedule(xbt_context_t c);
+
+
+static void 
+schedule(xbt_context_t c) 
+{
+	xbt_os_sem_post(c->begin);	
+	xbt_os_sem_wait(c->end);	
+}
+
+static void unschedule(xbt_context_t c) 
+{
+  	xbt_os_sem_post(c->end);		
+ 	xbt_os_sem_wait(c->begin);
+}
+
 /** \name Functions 
  *  \ingroup XBT_context
  */
@@ -80,19 +88,8 @@ void xbt_context_init(void)
       xbt_swag_new(xbt_swag_offset(*current_context, hookup));
     context_living = xbt_swag_new(xbt_swag_offset(*current_context, hookup));
     xbt_swag_insert(init_context, context_living);
-
-#ifdef CONTEXT_THREADS
-    /* only used during the creation of the processes */
-    creation_mutex = xbt_os_mutex_init();
-    creation_cond = xbt_os_cond_init();
-
-    /* used to schedule/unschedule the processes */
-    master_mutex = xbt_os_mutex_init();
-    master_cond = xbt_os_cond_init();
-
-    current_thread_id = xbt_os_thread_self();
-
-#else
+    
+    #ifndef CONTEXT_THREADS
     init_context->exception = xbt_new(ex_ctx_t, 1);
     XBT_CTX_INITIALIZE(init_context->exception);
     __xbt_ex_ctx = _context_ex_ctx;
@@ -117,12 +114,7 @@ void xbt_context_exit(void)
     }
   }
 
-#ifdef CONTEXT_THREADS
-  xbt_os_mutex_destroy(creation_mutex);
-  xbt_os_cond_destroy(creation_cond);
-  xbt_os_mutex_destroy(master_mutex);
-  xbt_os_cond_destroy(master_cond);
-#else
+#ifndef CONTEXT_THREADS
   free(init_context->exception);
 #endif
 
@@ -134,6 +126,7 @@ void xbt_context_exit(void)
   xbt_swag_free(context_living);
 
 }
+
 
 /*******************************/
 /* Object creation/destruction */
@@ -166,8 +159,12 @@ xbt_context_new(const char *name,
   res->name = xbt_strdup(name);
 
 #ifdef CONTEXT_THREADS
-  res->mutex = xbt_os_mutex_init();
-  res->cond = xbt_os_cond_init();
+  /* 
+   * initialize the semaphores used to schedule/unschedule 
+   * the process associated to the newly created context 
+   */
+  res->begin = xbt_os_sem_init(0,0);
+  res->end = xbt_os_sem_init(0,0);
 #else
 
   xbt_assert2(getcontext(&(res->uc)) == 0,
@@ -219,6 +216,7 @@ xbt_context_new(const char *name,
  *   (same than first case afterward)
  */
 
+
 /* Argument must be stopped first -- runs in maestro context */
 static void xbt_context_free(xbt_context_t context)
 {
@@ -244,12 +242,13 @@ static void xbt_context_free(xbt_context_t context)
 
   xbt_os_thread_join(context->thread, NULL);
 
-  xbt_os_mutex_destroy(context->mutex);
-  xbt_os_cond_destroy(context->cond);
+  /* destroy the semaphore used to schedule/unshedule the process */
+	xbt_os_sem_destroy(context->begin);
+	xbt_os_sem_destroy(context->end);
 
   context->thread = NULL;
-  context->mutex = NULL;
-  context->cond = NULL;
+  context->begin = NULL;
+  context->end = NULL;
 #else
   if (context->exception)
     free(context->exception);
@@ -270,27 +269,10 @@ static void *__context_wrapper(void *c)
 
 #ifdef CONTEXT_THREADS
   context = (xbt_context_t) c;
-  context->thread = xbt_os_thread_self();
+  /*context->thread = xbt_os_thread_self();*/
 
-  DEBUG3("**[ctx:%p;self:%p]** Lock creation_mutex %p ****", context,
-         (void *) xbt_os_thread_self(), creation_mutex);
-  xbt_os_mutex_lock(creation_mutex);
-  xbt_os_mutex_lock(context->mutex);
-
-  DEBUG4
-    ("**[ctx:%p;self:%p]** Releasing the creator (creation_cond %p,%p) ****",
-     context, (void *) xbt_os_thread_self(), creation_cond, creation_mutex);
-  xbt_os_cond_signal(creation_cond);
-  xbt_os_mutex_unlock(creation_mutex);
-
-  DEBUG4("**[ctx:%p;self:%p]** Going to Jail on lock %p and cond %p ****",
-         context, (void *) xbt_os_thread_self(), context->mutex,
-         context->cond);
-  xbt_os_cond_wait(context->cond, context->mutex);
-
-  DEBUG3("**[ctx:%p;self:%p]** Unlocking individual %p ****", context,
-         (void *) xbt_os_thread_self(), context->mutex);
-  xbt_os_mutex_unlock(context->mutex);
+  /* signal its starting to the maestro and wait to start its job*/
+  unschedule(context);
 
 #endif
 
@@ -302,7 +284,6 @@ static void *__context_wrapper(void *c)
   xbt_context_stop((context->code) (context->argc, context->argv));
   return NULL;
 }
-
 /** 
  * \param context the context to start
  * 
@@ -312,26 +293,11 @@ static void *__context_wrapper(void *c)
 void xbt_context_start(xbt_context_t context)
 {
 #ifdef CONTEXT_THREADS
-  /* Launch the thread */
-
-  DEBUG3("**[ctx:%p;self:%p]** Locking creation_mutex %p ****", context,
-         xbt_os_thread_self(), creation_mutex);
-  xbt_os_mutex_lock(creation_mutex);
-
-  DEBUG2("**[ctx:%p;self:%p]** Thread create ****", context,
-         xbt_os_thread_self());
-  context->thread =
-    xbt_os_thread_create(context->name, __context_wrapper, context);
-  DEBUG3("**[ctx:%p;self:%p]** Thread created : %p ****", context,
-         xbt_os_thread_self(), context->thread);
-
-  DEBUG4
-    ("**[ctx:%p;self:%p]** Going to jail on creation_cond/mutex (%p,%p) ****",
-     context, xbt_os_thread_self(), creation_cond, creation_mutex);
-  xbt_os_cond_wait(creation_cond, creation_mutex);
-  DEBUG3("**[ctx:%p;self:%p]** Unlocking creation %p ****", context,
-         xbt_os_thread_self(), creation_mutex);
-  xbt_os_mutex_unlock(creation_mutex);
+  /* create the process and start it */
+  context->thread = xbt_os_thread_create(context->name,__context_wrapper, context);
+  	
+  /* wait the starting of the newly created process */
+  xbt_os_sem_wait(context->end);
 #else
   makecontext(&(context->uc), (void (*)(void)) __context_wrapper, 1, context);
 #endif
@@ -354,19 +320,10 @@ static void xbt_context_stop(int retvalue)
   DEBUG0("Yielding");
 
 #ifdef CONTEXT_THREADS
-  /* a java thread has called this function
-   * - update the current context
-   * - signal the condition of the main thread
-   * - wait on its condition
-   * - restore thr current contex
-   */
-
-  xbt_os_mutex_lock(master_mutex);
-  xbt_os_cond_signal(master_cond);
-  xbt_os_mutex_unlock(master_mutex);
-  xbt_os_thread_exit(NULL);     /* We should provide return value in case other wants it */
-
-
+  /* signal to the maestro that it has finished */
+	xbt_os_sem_post(current_context->end);
+	/* exit*/
+	xbt_os_thread_exit(NULL);	/* We should provide return value in case other wants it */
 #else
   __xbt_context_yield(current_context);
 #endif
@@ -397,10 +354,6 @@ void xbt_context_empty_trash(void)
 
 static void __xbt_context_yield(xbt_context_t context)
 {
-#ifdef CONTEXT_THREADS
-  xbt_context_t self;
-#endif
-
   xbt_assert0(current_context, "You have to call context_init() first.");
   xbt_assert0(context, "Invalid argument");
 
@@ -416,48 +369,36 @@ static void __xbt_context_yield(xbt_context_t context)
 
 #ifdef CONTEXT_THREADS
 
-  self = current_context;
+  if(current_context != init_context && !context->iwannadie)
+	{/* it's a process and it doesn't wants to die (xbt_context_yield()) */
+		
+		/* save the current context */
+		xbt_context_t self = current_context;
 
-  if (is_main_thread()) {
-    /* the main thread has called this function
-     * - update the current context
-     * - signal the condition of the process to run
-     * - wait on its condition
-     * - restore thr current contex
-     */
+		/* update the current context to this context */
+		current_context = context;
+		
+		/* yield itself */
+		unschedule(context);
+		
+		/* restore the current context to the previously saved context */
+		current_context = self;
+	}
+	else
+	{ /* maestro wants to schedule a process or a process wants to die (xbt_context_schedule() or xbt_context_kill())*/
+		
+		/* save the current context */
+		xbt_context_t self = current_context;
+		
+		/* update the current context */
+		current_context = context;
 
-    xbt_os_mutex_lock(master_mutex);
-    xbt_os_mutex_lock(context->mutex);
+		/* schedule the process associated with this context */
+		schedule(context);
 
-    /* update the current context */
-    current_context = context;
-    xbt_os_cond_signal(context->cond);
-    xbt_os_mutex_unlock(context->mutex);
-
-    xbt_os_cond_wait(master_cond, master_mutex);
-    xbt_os_mutex_unlock(master_mutex);
-    /* retore the current context */
-    current_context = self;
-
-  } else {
-    /* a java thread has called this function
-     * - update the current context
-     * - signal the condition of the main thread
-     * - wait on its condition
-     * - restore thr current contex
-     */
-
-    xbt_os_mutex_lock(master_mutex);
-    xbt_os_mutex_lock(context->mutex);
-    /* update the current context */
-    current_context = context;
-    xbt_os_cond_signal(master_cond);
-    xbt_os_mutex_unlock(master_mutex);
-    xbt_os_cond_wait(context->cond, context->mutex);
-    xbt_os_mutex_unlock(context->mutex);
-    /* retore the current context */
-    current_context = self;
-  }
+		/* restore the current context to the previously saved context */
+		current_context = self;
+	}
 
 #else /* use SUSv2 contexts */
   VOIRP(current_context);
@@ -501,10 +442,6 @@ static void __xbt_context_yield(xbt_context_t context)
   if (current_context->iwannadie)
     xbt_context_stop(1);
 }
-
-
-
-
 
 /** 
  * Calling this function makes the current context yield. The context
@@ -554,19 +491,9 @@ void xbt_context_kill(xbt_context_t context)
 }
 
 /* Java cruft I'm gonna kill in the next cleanup round */
-void xbt_context_set_jprocess(xbt_context_t context, void *jp)
-{
-}
-void *xbt_context_get_jprocess(xbt_context_t context)
-{
-  return NULL;
-}
-void xbt_context_set_jenv(xbt_context_t context, void *je)
-{
-}
-void *xbt_context_get_jenv(xbt_context_t context)
-{
-  return NULL;
-}
+void  xbt_context_set_jprocess(xbt_context_t context, void *jp){}
+void* xbt_context_get_jprocess(xbt_context_t context){return NULL;}
+void  xbt_context_set_jenv(xbt_context_t context,void* je){}
+void* xbt_context_get_jenv(xbt_context_t context){return NULL;}
 
 /* @} */
