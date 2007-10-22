@@ -13,7 +13,7 @@
 
 /* globals */
 static gras_procdata_t *_gras_procdata = NULL;
-XBT_EXPORT_NO_IMPORT(char const *) _gras_procname = NULL;
+XBT_PUBLIC_DATA(char const *) _gras_procname = NULL;
 
 void gras_process_init() {
   _gras_procdata=xbt_new0(gras_procdata_t,1);
@@ -31,7 +31,7 @@ const char *xbt_procname(void) {
 
 int gras_os_getpid(void) {
 #ifdef _WIN32
-   return (long int) GetCurrentProcess();
+   return (long int) GetCurrentProcessId();
 #else
    return (long int) getpid();
 #endif
