@@ -132,7 +132,7 @@ typedef struct xbt_cond_ {
 xbt_cond_t xbt_cond_init(void) {
    xbt_cond_t res = (xbt_cond_t) xbt_os_cond_init();
    DEBUG1("Create cond %p", res);
-   return (xbt_cond_t) xbt_os_cond_init();
+   return res;
 }
 
 void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex) {
