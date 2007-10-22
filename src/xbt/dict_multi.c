@@ -87,7 +87,7 @@ xbt_multidict_set(xbt_dict_t  mdict,
                   xbt_dynar_t keys,
                   void       *data,  void_f_pvoid_t free_ctn) {
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
-  int i;
+  unsigned long i;
   xbt_ex_t e;
 
   for (i = 0; i < xbt_dynar_length(keys); i++) {
@@ -154,7 +154,7 @@ xbt_multidict_get_ext(xbt_dict_t  mdict,
 void *
 xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys) {
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
-  int i;
+  unsigned long i;
   void *res;
   
   for (i = 0; i < xbt_dynar_length(keys); i++) {
@@ -225,7 +225,7 @@ xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys) {
 
   xbt_ex_t e;
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
-  int i;
+  unsigned long i;
       
   for (i = 0; i < xbt_dynar_length(keys); i++) {
     char *thiskey = xbt_dynar_get_as(keys, i, char*);

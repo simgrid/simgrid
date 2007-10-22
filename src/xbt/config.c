@@ -239,11 +239,11 @@ xbt_cfg_register(xbt_cfg_t cfg,
     break;
 
   case xbt_cfgelm_string:
-   res->content = xbt_dynar_new(sizeof(char*),&xbt_cfg_str_free);
+   res->content = xbt_dynar_new(sizeof(char*),xbt_cfg_str_free);
    break;
 
   case xbt_cfgelm_peer:
-   res->content = xbt_dynar_new(sizeof(xbt_peer_t),&xbt_peer_free_voidp);
+   res->content = xbt_dynar_new(sizeof(xbt_peer_t),xbt_peer_free_voidp);
    break;
 
   default:

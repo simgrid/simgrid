@@ -26,7 +26,7 @@ static double reference = .00000000523066250047108838; /* FIXME: we should bench
 static double duration = 0.0;
 
 static char* locbuf = NULL;
-static int locbufsize;
+static unsigned int locbufsize;
 
 void gras_emul_init(void)
 {

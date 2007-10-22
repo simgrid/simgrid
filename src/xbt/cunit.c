@@ -141,7 +141,7 @@ xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...) {
   va_list ap;
 
   if (!_xbt_test_suites) 
-    _xbt_test_suites = xbt_dynar_new(sizeof(xbt_test_suite_t),&xbt_test_suite_free);
+    _xbt_test_suites = xbt_dynar_new(sizeof(xbt_test_suite_t),xbt_test_suite_free);
 
   va_start(ap, fmt);
   vasprintf(&suite->title,fmt, ap);

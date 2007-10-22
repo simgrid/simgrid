@@ -41,7 +41,7 @@ xbt_matrix_t xbt_matrix_new_sub(xbt_matrix_t from,
 
 /** \brief destructor */
 void xbt_matrix_free(xbt_matrix_t mat) {
-  int i;
+  unsigned int i;
   if (mat) {
     if (mat->free_f) {
       for (i=0; i < (mat->lines * mat->rows) ; i++) {
@@ -63,7 +63,7 @@ void xbt_matrix_free_voidp(void *d) {
  *  \param coords: boolean indicating whether we should add the coords of each cell to the output*/
 void xbt_matrix_dump(xbt_matrix_t matrix, const char*name, int coords,
 		     void_f_pvoid_t display_fun) {
-  int i,j;
+  unsigned int i,j;
 
   fprintf(stderr,">>> Matrix %s dump (%d x %d)\n",name,matrix->lines,matrix->rows);
   for (i=0; i<matrix->lines; i++) {
@@ -94,11 +94,11 @@ void xbt_matrix_dump_display_double(void*d) {
  * \param rpos_src: row offset on destination matrix
  */
 void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
-			    int lsize, int rsize,
-			    int lpos_dst,int rpos_dst,
-			    int lpos_src,int rpos_src,
+			    unsigned int lsize, unsigned int rsize,
+			    unsigned int lpos_dst,unsigned int rpos_dst,
+			    unsigned int lpos_src,unsigned int rpos_src,
 			    pvoid_f_pvoid_t const cpy_f) {
-   int i,j;
+   unsigned int i,j;
    
    DEBUG10("Copy a %dx%d submatrix from %dx%d(of %dx%d) to %dx%d (of %dx%d)",
 	   lsize,rsize,
@@ -179,7 +179,7 @@ xbt_matrix_t xbt_matrix_double_new_mult(xbt_matrix_t A,xbt_matrix_t B) {
 /** \brief add to C the result of A*B */
 void xbt_matrix_double_addmult(xbt_matrix_t A,xbt_matrix_t B,
 		       /*OUT*/ xbt_matrix_t C) {
-  int i,j,k;
+  unsigned int i,j,k;
 
   xbt_assert2(A->lines == C->lines,
 	      "A->lines != C->lines (%d vs %d)",A->lines,C->lines);

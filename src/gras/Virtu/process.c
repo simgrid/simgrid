@@ -144,7 +144,7 @@ gras_procdata_init() {
       THROW1(unknown_error,0,"MayDay: two modules use '%s' as libdata name", fab.name);
     
     /* Add the data in place, after some more sanity checking */
-    elem = (*fab.constructor)();
+    elem = (*(fab.constructor))();
     if (elem->name_len && elem->name_len != strlen(elem->name)) {
        elem->name_len = strlen(elem->name);
        WARN1("Module '%s' constructor is borken: it does not set elem->name_len",

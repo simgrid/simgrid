@@ -52,7 +52,7 @@ void gras_init(int *argc,char **argv) {
 	gras_msg_procdata_t msg_pd;
   VERB0("Initialize GRAS");
 
-  xbt_getpid = &gras_os_getpid;
+  xbt_getpid = gras_os_getpid;
   /* First initialize the XBT */
   xbt_init(argc,argv);
    

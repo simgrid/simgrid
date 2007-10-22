@@ -43,7 +43,7 @@ static gras_datadesc_type_t gras_ddt_new(const char *name) {
   res->cycle = 0;
       
   xbt_set_add(gras_datadesc_set_local,
-	       (xbt_set_elm_t)res,&gras_ddt_freev);
+	       (xbt_set_elm_t)res,gras_ddt_freev);
   XBT_OUT;
   return res;
 }
@@ -177,7 +177,7 @@ gras_datadesc_type_t
   res->category_code = e_gras_datadesc_type_cat_struct;
   res->category.struct_data.fields = 
        xbt_dynar_new(sizeof(gras_dd_cat_field_t),
-		      &gras_dd_cat_field_free);
+		      gras_dd_cat_field_free);
 
   XBT_OUT;
   return res;
@@ -320,7 +320,7 @@ gras_datadesc_type_t
   res->category_code		= e_gras_datadesc_type_cat_union;
   res->category.union_data.fields =
      xbt_dynar_new(sizeof(gras_dd_cat_field_t*),
-		    &gras_dd_cat_field_free);
+		    gras_dd_cat_field_free);
   res->category.union_data.selector = selector;
 
   return res;

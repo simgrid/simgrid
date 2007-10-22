@@ -412,7 +412,8 @@ char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
  */
 long getline(char **buf, size_t *n, FILE *stream) {
    
-   int i, ch;
+   size_t i;
+   int ch;
    
    if (!*buf) {
      *buf = xbt_malloc(512);
@@ -452,7 +453,7 @@ long getline(char **buf, size_t *n, FILE *stream) {
 static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db) {
   xbt_matrix_t C = xbt_matrix_new(xbt_dynar_length(da),xbt_dynar_length(db),
 				  sizeof(int),NULL); 
-  int i,j;
+  unsigned long i,j;
 
   /* Compute the LCS */
   /*

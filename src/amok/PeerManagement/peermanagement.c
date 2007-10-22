@@ -265,7 +265,7 @@ static void _amok_pm_leave(void *p) {
 
 void amok_pm_modulecreate() {
   gras_module_add("amok_pm", sizeof(s_amok_pm_moddata_t), &amok_pm_moddata_id,
-		  &_amok_pm_init,&_amok_pm_exit,&_amok_pm_join,&_amok_pm_leave);
+		  _amok_pm_init,_amok_pm_exit,_amok_pm_join,_amok_pm_leave);
 }
 
 

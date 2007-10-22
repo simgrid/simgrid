@@ -65,7 +65,7 @@ void xbt_mallocator_free(xbt_mallocator_t m) {
 
 
   for (i = 0; i < m->current_size; i++) {
-    m->free_f(m->objects[i]);
+    (*(m->free_f))(m->objects[i]);
   }
   xbt_free(m->objects);
   xbt_free(m);
@@ -98,9 +98,9 @@ void *xbt_mallocator_get(xbt_mallocator_t m) {
   }
   else {
     /* otherwise we must allocate a new object */
-    object = m->new_f();
+    object = (*(m->new_f))();
   }
-  m->reset_f(object);
+  (*(m->reset_f))(object);
   return object;
 }
 
@@ -126,6 +126,6 @@ void xbt_mallocator_release(xbt_mallocator_t m, void *object) {
   }
   else {
     /* otherwise we don't have a choice, we must free the object */
-    m->free_f(object);
+    (*(m->free_f))(object);
   }
 }

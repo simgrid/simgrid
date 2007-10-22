@@ -83,10 +83,10 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  XBT_PUBLIC(void) xbt_dynar_get_cpy(const xbt_dynar_t dynar, const int idx, void * const dst);
+  XBT_PUBLIC(void) xbt_dynar_get_cpy(const xbt_dynar_t dynar, const unsigned long idx, void * const dst);
   
   XBT_PUBLIC(void) xbt_dynar_set(xbt_dynar_t dynar, const int idx, const void *src);
-  XBT_PUBLIC(void) xbt_dynar_replace(xbt_dynar_t dynar, const int idx, const void *object);
+  XBT_PUBLIC(void) xbt_dynar_replace(xbt_dynar_t dynar, const unsigned long idx, const void *object);
 
   XBT_PUBLIC(void) xbt_dynar_insert_at(xbt_dynar_t  const dynar, const int  idx, const void *src);
   XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t  const dynar, const int  idx, void * const dst);
@@ -115,7 +115,7 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  XBT_PUBLIC(void*) xbt_dynar_get_ptr(const xbt_dynar_t dynar, const int idx);
+  XBT_PUBLIC(void*) xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx);
   XBT_PUBLIC(void*) xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar, const int idx);
   XBT_PUBLIC(void*) xbt_dynar_push_ptr(xbt_dynar_t  const dynar);
   XBT_PUBLIC(void*) xbt_dynar_pop_ptr(xbt_dynar_t  const dynar);

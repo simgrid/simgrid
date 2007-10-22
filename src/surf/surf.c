@@ -357,7 +357,7 @@ FILE *surf_fopen(const char *name, const char *mode)
   int i;
   char *path = NULL;
   FILE *file = NULL;
-  int path_name_len = 0;	/* don't count '\0' */
+  unsigned int path_name_len = 0;	/* don't count '\0' */
 
   xbt_assert0(name, "Need a non-NULL file name");
 

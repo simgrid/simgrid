@@ -65,7 +65,7 @@ void _xbt_clear_mem(void * const ptr,
 static XBT_INLINE
 void
 _xbt_dynar_expand(xbt_dynar_t const dynar,
-                   const int          nb) {
+                   const unsigned long          nb) {
   const unsigned long old_size    = dynar->size;
 
   if (nb > old_size) {
@@ -130,7 +130,7 @@ _xbt_dynar_put_elm(const xbt_dynar_t  dynar,
 static XBT_INLINE 
 void
 _xbt_dynar_remove_at(xbt_dynar_t  const dynar,
-                     const int            idx,
+                     const unsigned long            idx,
                      void         * const object) {
 
   unsigned long nb_shift;
@@ -278,7 +278,7 @@ xbt_dynar_reset(xbt_dynar_t const dynar) {
  * array is not expanded and nothing is done.
  */
 void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted) {
-  int size_wanted;
+  unsigned long size_wanted;
    
   _dynar_lock(dynar);
 
@@ -326,7 +326,7 @@ xbt_dynar_length(const xbt_dynar_t dynar) {
  */
 void
 xbt_dynar_get_cpy(const xbt_dynar_t dynar,
-		   const int          idx,
+		   const unsigned long         idx,
 		   void       * const dst) {
   _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
@@ -347,7 +347,7 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
  * Make a copy before fooling with it.
  */
 void*
-xbt_dynar_get_ptr(const xbt_dynar_t dynar, const int idx) {
+xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx) {
 
   void *res;
   _dynar_lock(dynar);
@@ -363,7 +363,7 @@ xbt_dynar_get_ptr(const xbt_dynar_t dynar, const int idx) {
 
 static void XBT_INLINE /* not synchronized */
 _xbt_dynar_set(xbt_dynar_t         dynar,
-               const int            idx,
+               const unsigned long   idx,
                const void   * const src) {
 
   _sanity_check_dynar(dynar);
@@ -408,7 +408,7 @@ xbt_dynar_set(xbt_dynar_t         dynar,
  */
 void
 xbt_dynar_replace(xbt_dynar_t         dynar,
-		   const int            idx,
+		   const unsigned long       idx,
 		   const void   * const object) {
   _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
@@ -417,7 +417,7 @@ xbt_dynar_replace(xbt_dynar_t         dynar,
   if (idx < dynar->used && dynar->free_f) {
     void * const old_object = _xbt_dynar_elm(dynar, idx);
 
-    dynar->free_f(old_object);
+    (*(dynar->free_f))(old_object);
   }
 
   _xbt_dynar_set(dynar, idx, object);
@@ -426,7 +426,7 @@ xbt_dynar_replace(xbt_dynar_t         dynar,
 
 static XBT_INLINE void *
 _xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
-			const int            idx) {
+			const unsigned long            idx) {
    void *res;
    unsigned long old_used;
    unsigned long new_used;
@@ -514,7 +514,7 @@ xbt_dynar_remove_at(xbt_dynar_t  const dynar,
 int
 xbt_dynar_search(xbt_dynar_t  const dynar,
 		 void        *const elem) {
-  int it;
+  unsigned long it;
   
   _dynar_lock(dynar);
   for (it=0; it< dynar->used; it++) 
@@ -624,7 +624,7 @@ static void _dynar_map(const xbt_dynar_t  dynar,
 
   for (i = 0; i < used; i++) {
     _xbt_dynar_get_elm(elm, dynar, i);
-    op(elm);
+    (*op)(elm);
   }
 }
 
@@ -639,7 +639,7 @@ static void _dynar_map(const xbt_dynar_t  dynar,
  */
 void
 xbt_dynar_map(const xbt_dynar_t  dynar,
-               void_f_pvoid_t    const op) {
+               void_f_pvoid_t     const op) {
 
   _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
@@ -688,7 +688,7 @@ _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
   _sanity_check_dynar(dynar);
   {
 
-    const int idx = *cursor;
+    const unsigned long idx = *cursor;
 
     if (idx >= dynar->used) {
       DEBUG1("Cursor on %p already on last elem",(void*)dynar);

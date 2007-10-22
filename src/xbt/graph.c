@@ -169,7 +169,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
 			 void_f_pvoid_t edge_free_function)
 {
   unsigned long nbr;
-  int i;
+  unsigned long i;
   int cursor = 0;
   xbt_node_t node = NULL;
   xbt_edge_t edge = NULL;
@@ -292,7 +292,7 @@ double *xbt_graph_get_length_matrix(xbt_graph_t g)
 {
   int cursor = 0;
   int in_cursor = 0;
-  int idx, i;
+  unsigned long idx, i;
   unsigned long n;
   xbt_edge_t edge = NULL;
   xbt_node_t node = NULL;
@@ -340,7 +340,7 @@ double *xbt_graph_get_length_matrix(xbt_graph_t g)
 void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
 			 xbt_node_t * p)
 {
-  int i, j, k;
+  unsigned long i, j, k;
   unsigned long n;
   n = xbt_dynar_length(g->nodes);
 
@@ -384,7 +384,7 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
 {
   xbt_node_t *p;
   xbt_node_t *r;
-  int i, j, k;
+  unsigned long i, j, k;
   unsigned long n;
 
   double *adj = NULL;
@@ -620,7 +620,7 @@ xbt_graph_t xbt_graph_read(const char *filename,
   ETag_graphxml_edge_fun = __parse_edge;
 
   xbt_graph_parse_open(filename);
-  xbt_assert1((!xbt_graph_parse()), "Parse error in %s", filename);
+  xbt_assert1((!(*xbt_graph_parse)()), "Parse error in %s", filename);
   xbt_graph_parse_close();
 
   graph = parsed_graph;

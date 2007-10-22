@@ -45,9 +45,9 @@ XBT_PUBLIC(void) xbt_matrix_free(xbt_matrix_t matrix);
 XBT_PUBLIC(void) xbt_matrix_free_voidp(void *d);
 
 XBT_PUBLIC(void) xbt_matrix_copy_values(xbt_matrix_t dest, xbt_matrix_t src,
-			    int lsize, int rsize,
-			    int lpos_dst,int rpos_dst,
-			    int lpos_src,int rpos_src,
+			    unsigned int lsize, unsigned int rsize,
+			    unsigned int lpos_dst,unsigned int rpos_dst,
+			    unsigned int lpos_src,unsigned int rpos_src,
 			    pvoid_f_pvoid_t const cpy_f);
 
 XBT_PUBLIC(void) xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords,
