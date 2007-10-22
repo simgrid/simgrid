@@ -2654,7 +2654,7 @@ static void xbt_graph_parse__load_buffer_state  (void)
 	xbt_graph_parse_free((void *) b  );
 }
 
-#ifndef __cplusplus
+#if !defined(__cplusplus) && !defined(WIN32) 
 extern int isatty (int );
 #endif /* __cplusplus */
     
