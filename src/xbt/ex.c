@@ -81,7 +81,9 @@ void xbt_backtrace_display_current(void) {
   xbt_backtrace_display(&e);
 }
 
+#ifndef WIN32
 extern char **environ; /* the environment, as specified by the opengroup */
+#endif
 
 void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
@@ -366,8 +368,8 @@ void __xbt_ex_terminate_default(xbt_ex_t *e)  {
 }
 
 /* the externally visible API */
-XBT_EXPORT_NO_IMPORT(ex_ctx_cb_t)  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
-XBT_EXPORT_NO_IMPORT(ex_term_cb_t) __xbt_ex_terminate = &__xbt_ex_terminate_default;
+XBT_PUBLIC_DATA(ex_ctx_cb_t)  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
+XBT_PUBLIC_DATA(ex_term_cb_t) __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
 
 void xbt_ex_free(xbt_ex_t e) {
