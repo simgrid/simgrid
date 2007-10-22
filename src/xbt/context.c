@@ -49,13 +49,13 @@ static void _context_ex_terminate(xbt_ex_t * e)
 }
 #endif
 
+#ifdef CONTEXT_THREADS
 
 static void 
 schedule(xbt_context_t c);
 
 static void 
 unschedule(xbt_context_t c);
-
 
 static void 
 schedule(xbt_context_t c) 
@@ -69,6 +69,7 @@ static void unschedule(xbt_context_t c)
   	xbt_os_sem_post(c->end);		
  	xbt_os_sem_wait(c->begin);
 }
+#endif
 
 /** \name Functions 
  *  \ingroup XBT_context
