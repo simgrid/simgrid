@@ -21,5 +21,5 @@ double xbt_time(void) {
 	return xbt_os_time();
 }
 void xbt_sleep(double sec) {
-	return xbt_os_sleep(sec);
+	xbt_os_sleep(sec);
 }
