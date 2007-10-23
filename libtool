@@ -325,7 +325,7 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../i486-linux-gnu/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../lib/ /lib/i486-linux-gnu/4.2.1/ /lib/../lib/ /usr/lib/i486-linux-gnu/4.2.1/ /usr/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../ /lib/ /usr/lib/"
+sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib/ /lib/i486-linux-gnu/4.2.3/ /lib/../lib/ /usr/lib/i486-linux-gnu/4.2.3/ /usr/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../ /lib/ /usr/lib/"
 
 # Run-time system search path for libraries
 sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
@@ -7531,11 +7531,11 @@ striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.2.1/crtbeginS.o"
+predep_objects="/usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.2.3/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc/i486-linux-gnu/4.2.1/crtendS.o /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../lib/crtn.o"
+postdep_objects="/usr/lib/gcc/i486-linux-gnu/4.2.3/crtendS.o /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib/crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -7547,7 +7547,7 @@ postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc/i486-linux-gnu/4.2.1 -L/usr/lib/gcc/i486-linux-gnu/4.2.1 -L/usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/i486-linux-gnu/4.2.1/../../.."
+compiler_lib_search_path="-L/usr/lib/gcc/i486-linux-gnu/4.2.3 -L/usr/lib/gcc/i486-linux-gnu/4.2.3 -L/usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/i486-linux-gnu/4.2.3/../../.."
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
@@ -7627,7 +7627,7 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../i486-linux-gnu/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../lib/ /lib/i486-linux-gnu/4.2.1/ /lib/../lib/ /usr/lib/i486-linux-gnu/4.2.1/ /usr/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../ /lib/ /usr/lib/"
+sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib/ /lib/i486-linux-gnu/4.2.3/ /lib/../lib/ /usr/lib/i486-linux-gnu/4.2.3/ /usr/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../ /lib/ /usr/lib/"
 
 # Run-time system search path for libraries
 sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "

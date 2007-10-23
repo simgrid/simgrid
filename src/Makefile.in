@@ -2284,7 +2284,7 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 @HAVE_JAVA_TRUE@	[ -e .classes ] || mkdir .classes
 @HAVE_JAVA_TRUE@	$(JAVAC) -d .classes $(foreach file,$(JMSG_JAVA_SRC),$(srcdir)/$(file))
 @HAVE_JAVA_TRUE@	[ -e .classes/surf ] || mkdir .classes/surf
-@HAVE_JAVA_TRUE@	cp $(srcdir)/surf/surfxml.dtd .classes
+@HAVE_JAVA_TRUE@	cp $(srcdir)/surf/surfxml.dtd .classes/surf
 @HAVE_JAVA_TRUE@	$(JAR) cvf simgrid.jar -C .classes .
 
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/cunit_unit.c: xbt/cunit.c
