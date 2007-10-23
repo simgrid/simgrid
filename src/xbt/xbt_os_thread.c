@@ -307,8 +307,7 @@ void
 xbt_os_sem_acquire(xbt_os_sem_t sem)
 {
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_acquire() failed: %s",
-	    strerror(EINVAL));
+		THROW0(arg_error,EINVAL,"Cannot acquire of the NULL semaphore");
 	
 	if(sem_wait(&(sem->s)) < 0)
 		THROW1(system_error,errno,"sem_wait() failed: %s",
@@ -326,7 +325,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
 	double end = timeout + xbt_os_time();
 	
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_timedacquire() failed: %s",strerror(EINVAL));
+		THROW0(arg_error,EINVAL,"Cannot acquire of the NULL semaphore");
 	
 	if (timeout < 0) 
 	{
@@ -357,8 +356,7 @@ void
 xbt_os_sem_release(xbt_os_sem_t sem)
 {
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_release() failed: %s",
-	    strerror(EINVAL));
+		THROW0(arg_error,EINVAL,"Cannot release of the NULL semaphore");
 	
 	if(sem_post(&(sem->s)) < 0)
 		THROW1(system_error,errno,"sem_post() failed: %s",
@@ -368,9 +366,8 @@ xbt_os_sem_release(xbt_os_sem_t sem)
 void
 xbt_os_sem_destroy(xbt_os_sem_t sem)
 {
-	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_destroy() failed: %s",
-	    strerror(EINVAL));
+   if(!sem)
+     return;
 	    
 	if(sem_destroy(&(sem->s)) < 0)
 		THROW1(system_error,errno,"sem_destroy() failed: %s",
@@ -381,8 +378,7 @@ void
 xbt_os_sem_get_value(xbt_os_sem_t sem, int* svalue)
 {
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_getvalue() failed: %s",
-	    strerror(EINVAL));
+		THROW0(arg_error,EINVAL,"Cannot get the value of the NULL semaphore");
 	    
 	if(sem_getvalue(&(sem->s),svalue) < 0)
 		THROW1(system_error,errno,"sem_getvalue() failed: %s",
@@ -738,8 +734,8 @@ xbt_os_sem_init(unsigned int value)
 	xbt_os_sem_t res;
 	
 	if(value > INT_MAX)
-	THROW1(arg_error,EINVAL,"xbt_os_sem_init() failed: %s",
-	    strerror(EINVAL));
+	THROW1(arg_error,value,"Semaphore initial value too big: %ud cannot be stored as a signed int",
+	    value);
    	
    	res = (xbt_os_sem_t)xbt_new0(s_xbt_os_sem_t,1);
  	
@@ -760,8 +756,7 @@ void
 xbt_os_sem_acquire(xbt_os_sem_t sem)
 {
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_acquire() failed: %s",
-	    strerror(EINVAL));  
+		THROW0(arg_error,EINVAL,"Cannot acquire the NULL semaphore");
 
 	/* wait failure */
 	if(WAIT_OBJECT_0 != WaitForSingleObject(sem->h,INFINITE))
@@ -779,8 +774,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double timeout)
 	double end = timeout + xbt_os_time();
 	
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_timedacquire() failed: %s",
-	    strerror(EINVAL));	
+		THROW0(arg_error,EINVAL,"Cannot acquire the NULL semaphore");
 	
 	 if (timeout < 0) 
 	{
@@ -816,8 +810,7 @@ void
 xbt_os_sem_release(xbt_os_sem_t sem)
 {
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_post() failed: %s",
-	    strerror(EINVAL));
+		THROW0(arg_error,EINVAL,"Cannot release the NULL semaphore");
 	
 	if(!ReleaseSemaphore(sem->h,1, NULL)) 
 		THROW1(system_error,GetLastError(),"ReleaseSemaphore() failed: %s",
@@ -830,9 +823,7 @@ xbt_os_sem_release(xbt_os_sem_t sem)
 void
 xbt_os_sem_destroy(xbt_os_sem_t sem)
 {
-	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_destroy() failed: %s",
-	    strerror(EINVAL));
+	if(!sem) return;
 	
 	if(!CloseHandle(sem->h)) 
 		THROW1(system_error,GetLastError(),"CloseHandle() failed: %s",
@@ -848,8 +839,7 @@ void
 xbt_os_sem_get_value(xbt_os_sem_t sem, int* svalue)
 {
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_get_value() failed: %s",
-	    strerror(EINVAL));
+		THROW0(arg_error,EINVAL,"Cannot get the value of the NULL semaphore");
 	
 	EnterCriticalSection(&(sem->value_lock));  
 	*svalue = sem->value;
