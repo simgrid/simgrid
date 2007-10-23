@@ -49,8 +49,8 @@ SG_BEGIN_DECL()
   typedef struct xbt_os_mutex_ *xbt_os_mutex_t;
 
   XBT_PUBLIC(xbt_os_mutex_t) xbt_os_mutex_init(void);
-  XBT_PUBLIC(void)           xbt_os_mutex_lock(xbt_os_mutex_t mutex);
-  XBT_PUBLIC(void)           xbt_os_mutex_unlock(xbt_os_mutex_t mutex);
+  XBT_PUBLIC(void)           xbt_os_mutex_acquire(xbt_os_mutex_t mutex);
+  XBT_PUBLIC(void)           xbt_os_mutex_release(xbt_os_mutex_t mutex);
   XBT_PUBLIC(void)           xbt_os_mutex_destroy(xbt_os_mutex_t mutex);
 
 
@@ -70,12 +70,10 @@ SG_BEGIN_DECL()
    /** \brief Semaphore data type (opaque structure) */
   typedef struct xbt_os_sem_* xbt_os_sem_t;
 
-  XBT_PUBLIC(xbt_os_sem_t) xbt_os_sem_init(int pshared, unsigned int value);
-  XBT_PUBLIC(xbt_os_sem_t) xbt_os_sem_open(const char *name, int oflag, mode_t mode, unsigned int value);
-  XBT_PUBLIC(void) xbt_os_sem_wait(xbt_os_sem_t sem);
-  XBT_PUBLIC(void) xbt_os_sem_timedwait(xbt_os_sem_t sem,const struct timespec* abs_timeout);
-  XBT_PUBLIC(void) xbt_os_sem_post(xbt_os_sem_t sem);
-  XBT_PUBLIC(void) xbt_os_sem_close(xbt_os_sem_t sem);
+  XBT_PUBLIC(xbt_os_sem_t) xbt_os_sem_init(unsigned int value);
+  XBT_PUBLIC(void) xbt_os_sem_acquire(xbt_os_sem_t sem);
+  XBT_PUBLIC(void) xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout);
+  XBT_PUBLIC(void) xbt_os_sem_release(xbt_os_sem_t sem);
   XBT_PUBLIC(void) xbt_os_sem_destroy(xbt_os_sem_t sem);
   XBT_PUBLIC(void) xbt_os_sem_get_value(xbt_os_sem_t sem, int* svalue);
  

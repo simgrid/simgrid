@@ -55,19 +55,19 @@ static void
 schedule(xbt_context_t c);
 
 static void 
-unschedule(xbt_context_t c);
+yield(xbt_context_t c);
 
 static void 
 schedule(xbt_context_t c) 
 {
-	xbt_os_sem_post(c->begin);	
-	xbt_os_sem_wait(c->end);	
+	xbt_os_sem_release(c->begin);	
+	xbt_os_sem_acquire(c->end);	
 }
 
-static void unschedule(xbt_context_t c) 
+static void yield(xbt_context_t c) 
 {
-  	xbt_os_sem_post(c->end);		
- 	xbt_os_sem_wait(c->begin);
+  	xbt_os_sem_release(c->end);		
+ 	xbt_os_sem_acquire(c->begin);
 }
 #endif
 
@@ -161,11 +161,11 @@ xbt_context_new(const char *name,
 
 #ifdef CONTEXT_THREADS
   /* 
-   * initialize the semaphores used to schedule/unschedule 
+   * initialize the semaphores used to schedule/yield 
    * the process associated to the newly created context 
    */
-  res->begin = xbt_os_sem_init(0,0);
-  res->end = xbt_os_sem_init(0,0);
+  res->begin = xbt_os_sem_init(0);
+  res->end = xbt_os_sem_init(0);
 #else
 
   xbt_assert2(getcontext(&(res->uc)) == 0,
@@ -273,7 +273,7 @@ static void *__context_wrapper(void *c)
   /*context->thread = xbt_os_thread_self();*/
 
   /* signal its starting to the maestro and wait to start its job*/
-  unschedule(context);
+  yield(context);
 
 #endif
 
@@ -298,7 +298,7 @@ void xbt_context_start(xbt_context_t context)
   context->thread = xbt_os_thread_create(context->name,__context_wrapper, context);
   	
   /* wait the starting of the newly created process */
-  xbt_os_sem_wait(context->end);
+  xbt_os_sem_acquire(context->end);
 #else
   makecontext(&(context->uc), (void (*)(void)) __context_wrapper, 1, context);
 #endif
@@ -322,7 +322,7 @@ static void xbt_context_stop(int retvalue)
 
 #ifdef CONTEXT_THREADS
   /* signal to the maestro that it has finished */
-	xbt_os_sem_post(current_context->end);
+	xbt_os_sem_release(current_context->end);
 	/* exit*/
 	xbt_os_thread_exit(NULL);	/* We should provide return value in case other wants it */
 #else
@@ -380,7 +380,7 @@ static void __xbt_context_yield(xbt_context_t context)
 		current_context = context;
 		
 		/* yield itself */
-		unschedule(context);
+		yield(context);
 		
 		/* restore the current context to the previously saved context */
 		current_context = self;

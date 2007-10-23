@@ -95,12 +95,12 @@ xbt_mutex_t xbt_mutex_init(void) {
 
 void xbt_mutex_lock(xbt_mutex_t mutex) {
    DEBUG1("Lock mutex %p", mutex);
-   xbt_os_mutex_lock( (xbt_os_mutex_t)mutex );
+   xbt_os_mutex_acquire( (xbt_os_mutex_t)mutex );
 }
 
 void xbt_mutex_unlock(xbt_mutex_t mutex) {
    DEBUG1("Unlock mutex %p", mutex);
-   xbt_os_mutex_unlock( (xbt_os_mutex_t)mutex );
+   xbt_os_mutex_release( (xbt_os_mutex_t)mutex );
 }
 
 void xbt_mutex_destroy(xbt_mutex_t mutex) {

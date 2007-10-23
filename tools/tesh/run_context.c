@@ -67,25 +67,25 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
   rctx_t rctx;
 
   DEBUG2("Armageddon request by <%s> (exit=%d)",initiator->filepos,exitcode);
-  xbt_os_mutex_lock(armageddon_mutex);
+  xbt_os_mutex_acquire(armageddon_mutex);
   if (armageddon_initiator != NULL) {
     VERB0("Armageddon already started. Let it go");
-    xbt_os_mutex_unlock(initiator->interruption);
-    xbt_os_mutex_unlock(armageddon_mutex);
+    xbt_os_mutex_release(initiator->interruption);
+    xbt_os_mutex_release(armageddon_mutex);
     return;
   }
   DEBUG1("Armageddon request by <%s> got the lock. Let's go amok",initiator->filepos);
   armageddon_initiator = initiator;
-  xbt_os_mutex_unlock(armageddon_mutex);
+  xbt_os_mutex_release(armageddon_mutex);
 
   /* Kill any background commands */
   while (xbt_dynar_length(bg_jobs)) {
     xbt_dynar_pop(bg_jobs,&rctx);
     if (rctx != initiator) {
       INFO2("Kill <%s> because <%s> failed",rctx->filepos,initiator->filepos);
-      xbt_os_mutex_lock(rctx->interruption);
+      xbt_os_mutex_acquire(rctx->interruption);
       rctx->interrupted = 1;
-      xbt_os_mutex_unlock(rctx->interruption);
+      xbt_os_mutex_release(rctx->interruption);
       if (!rctx->reader_done) {
 	kill(rctx->pid,SIGTERM);
 	usleep(100);
@@ -414,7 +414,7 @@ void *rctx_wait(void* r) {
     now = time(NULL);
   }
    
-  xbt_os_mutex_lock(rctx->interruption);
+  xbt_os_mutex_acquire(rctx->interruption);
   if (!rctx->interrupted && rctx->end_time > 0 && rctx->end_time < now) {    
     INFO1("<%s> timeouted. Kill the process.",rctx->filepos);
     rctx->timeout = 1;
@@ -430,10 +430,10 @@ void *rctx_wait(void* r) {
   xbt_os_thread_join(rctx->writer,NULL);
   xbt_os_thread_join(rctx->reader,NULL);
 
-  /*  xbt_os_mutex_unlock(rctx->interruption);
+  /*  xbt_os_mutex_release(rctx->interruption);
   if (rctx->interrupted)
     return NULL;
-    xbt_os_mutex_lock(rctx->interruption);*/
+    xbt_os_mutex_acquire(rctx->interruption);*/
  
   xbt_strbuff_chomp(rctx->output_got);
   xbt_strbuff_chomp(rctx->output_wanted);
@@ -547,7 +547,7 @@ void *rctx_wait(void* r) {
     }
   }
 
-  xbt_os_mutex_unlock(rctx->interruption);
+  xbt_os_mutex_release(rctx->interruption);
   return NULL;
 }
 

@@ -182,7 +182,7 @@ xbt_os_mutex_t xbt_os_mutex_init(void) {
    return res;
 }
 
-void xbt_os_mutex_lock(xbt_os_mutex_t mutex) {
+void xbt_os_mutex_acquire(xbt_os_mutex_t mutex) {
    int errcode;
    
    if ((errcode=pthread_mutex_lock(&(mutex->m))))
@@ -190,7 +190,7 @@ void xbt_os_mutex_lock(xbt_os_mutex_t mutex) {
 	    mutex, strerror(errcode));
 }
 
-void xbt_os_mutex_unlock(xbt_os_mutex_t mutex) {
+void xbt_os_mutex_release(xbt_os_mutex_t mutex) {
    int errcode;
    
    if ((errcode=pthread_mutex_unlock(&(mutex->m))))
@@ -289,31 +289,25 @@ void *xbt_os_thread_getparam(void) {
 
 typedef struct xbt_os_sem_ {
    sem_t s;
-   int pshared;
-   unsigned int value;
-   const char* name;
 }s_xbt_os_sem_t ;
 
 xbt_os_sem_t
-xbt_os_sem_init(int pshared, unsigned int value)
+xbt_os_sem_init(unsigned int value)
 {
 	xbt_os_sem_t res = xbt_new(s_xbt_os_sem_t,1);
 	
-	if(sem_init(&(res->s),pshared,value) < 0)
+	if(sem_init(&(res->s),0,value) < 0)
 		THROW1(system_error,errno,"sem_init() failed: %s",
 	    strerror(errno));
-   
-   res->pshared = pshared;
-   res->value = value;
    
    return res;
 }
 
 void 
-xbt_os_sem_wait(xbt_os_sem_t sem)
+xbt_os_sem_acquire(xbt_os_sem_t sem)
 {
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_wait() failed: %s",
+		THROW1(arg_error,EINVAL,"xbt_os_sem_acquire() failed: %s",
 	    strerror(EINVAL));
 	
 	if(sem_wait(&(sem->s)) < 0)
@@ -321,58 +315,49 @@ xbt_os_sem_wait(xbt_os_sem_t sem)
 	    strerror(errno));		 
 }
 
-void xbt_os_sem_timedwait(xbt_os_sem_t sem,const struct timespec* abs_timeout)
+void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
 {
-	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_timedwait() failed: %s",
-	    strerror(EINVAL));
+	int errcode;
+	struct timespec ts_end;
+	double end = timeout + xbt_os_time();
 	
-	/* only throw an exception if the global variable errno is different than ETIMEDOUT :
-	 * (the semaphore could not be locked before the specified timeout expired)
-	 */
-	if((sem_timedwait(&(sem->s),abs_timeout) < 0) && (ETIMEDOUT != errno))
-		THROW1(system_error,errno,"sem_wait() failed: %s",
-	    strerror(errno));	
+	if(!sem)
+		THROW1(arg_error,EINVAL,"xbt_os_sem_timedacquire() failed: %s",strerror(EINVAL));
+	
+	if (timeout < 0) 
+	{
+		xbt_os_sem_acquire(sem);
+	} 
+	else 
+	{
+		ts_end.tv_sec = (time_t) floor(end);
+		ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
+		DEBUG2("sem_timedwait(%p,%p)",&(sem->s),&ts_end);
+	
+		switch ((errcode=sem_timedwait(&(sem->s),&ts_end)))
+		{
+			case 0:
+			return;
+			
+			case ETIMEDOUT:
+			THROW2(timeout_error,errcode,"semaphore %p wasn't signaled before timeout (%f)",sem,timeout);
+			
+			default:
+			THROW3(system_error,errcode,"sem_timedwait(%p,%f) failed: %s",sem,timeout, strerror(errcode));
+		}   
+	}
 }
 
 void 
-xbt_os_sem_post(xbt_os_sem_t sem)
+xbt_os_sem_release(xbt_os_sem_t sem)
 {
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_post() failed: %s",
+		THROW1(arg_error,EINVAL,"xbt_os_sem_release() failed: %s",
 	    strerror(EINVAL));
 	
 	if(sem_post(&(sem->s)) < 0)
 		THROW1(system_error,errno,"sem_post() failed: %s",
 	    strerror(errno));		 
-}
-
-void
-xbt_os_sem_close(xbt_os_sem_t sem)
-{
-	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_close() failed: %s",
-	    strerror(EINVAL));
-	    
-	if(sem_close(&(sem->s)) < 0)
-		THROW1(system_error,errno,"sem_close() failed: %s",
-	    strerror(errno));
-}
-
-xbt_os_sem_t 
-xbt_os_sem_open(const char *name, int oflag, mode_t mode, unsigned int value)
-{
-	sem_t* ps;
-	xbt_os_sem_t res = xbt_new(s_xbt_os_sem_t,1);
-	
-	if(SEM_FAILED == (ps = sem_open(name,oflag, mode, value)))
-		THROW1(system_error,errno,"sem_open() failed: %s",
-	    strerror(errno));
-	
-   res->s = *ps;
-   res->value = value;
-   
-   return res;	
 }
 
 void
@@ -402,6 +387,8 @@ xbt_os_sem_get_value(xbt_os_sem_t sem, int* svalue)
 /* ********************************* WINDOWS IMPLEMENTATION ************************************ */
 
 #elif defined(WIN32)
+
+#include <math.h>
 
 typedef struct xbt_os_thread_ {
   char *name;
@@ -530,12 +517,12 @@ xbt_os_mutex_t xbt_os_mutex_init(void) {
    return res;
 }
 
-void xbt_os_mutex_lock(xbt_os_mutex_t mutex) {
+void xbt_os_mutex_acquire(xbt_os_mutex_t mutex) {
 
    EnterCriticalSection(& mutex->lock);
 }
 
-void xbt_os_mutex_unlock(xbt_os_mutex_t mutex) {
+void xbt_os_mutex_release(xbt_os_mutex_t mutex) {
 
    LeaveCriticalSection (& mutex->lock);
 
@@ -737,19 +724,14 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond){
 typedef struct xbt_os_sem_ {
    HANDLE h;
    unsigned int value;
-   const char* name;
    CRITICAL_SECTION value_lock;  /* protect access to value of the semaphore  */
 }s_xbt_os_sem_t ;
 
 xbt_os_sem_t
-xbt_os_sem_init(int pshared, unsigned int value)
+xbt_os_sem_init(unsigned int value)
 {
 	xbt_os_sem_t res;
 	
-	if(0 != pshared)
-	THROW1(arg_error,EPERM,"xbt_os_sem_init() failed: %s",
-	    strerror(EPERM));
-	    
 	if(value > INT_MAX)
 	THROW1(arg_error,EINVAL,"xbt_os_sem_init() failed: %s",
 	    strerror(EINVAL));
@@ -770,10 +752,10 @@ xbt_os_sem_init(int pshared, unsigned int value)
 }
 
 void 
-xbt_os_sem_wait(xbt_os_sem_t sem)
+xbt_os_sem_acquire(xbt_os_sem_t sem)
 {
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_wait() failed: %s",
+		THROW1(arg_error,EINVAL,"xbt_os_sem_acquire() failed: %s",
 	    strerror(EINVAL));  
 
 	/* wait failure */
@@ -785,49 +767,48 @@ xbt_os_sem_wait(xbt_os_sem_t sem)
 	LeaveCriticalSection(&(sem->value_lock));
 }
 
-void xbt_os_sem_timedwait(xbt_os_sem_t sem,const struct timespec* abs_timeout)
+void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double timeout)
 {
-	long timeout;
-	struct timeval tv;
+	long seconds;
+	long milliseconds;
+	double end = timeout + xbt_os_time();
 	
 	if(!sem)
-		THROW1(arg_error,EINVAL,"xbt_os_sem_timedwait() failed: %s",
+		THROW1(arg_error,EINVAL,"xbt_os_sem_timedacquire() failed: %s",
 	    strerror(EINVAL));	
-	    
-	if(!abs_timeout)
-		timeout = INFINITE;
-	else
-	{
-		if(gettimeofday(&tv, NULL) < 0) 
-			THROW1(system_error,errno,"gettimeofday() failed: %s",
-	    	strerror(errno));	
-			
-		 timeout = ((long) (abs_timeout->tv_sec - tv.tv_sec) * 1e3 + (long)((abs_timeout->tv_nsec / 1e3) - tv.tv_usec) / 1e3);	 	
-	}
 	
-	switch(WaitForSingleObject(sem->h,timeout))
+	 if (timeout < 0) 
 	{
-		case WAIT_OBJECT_0:
-		EnterCriticalSection(&(sem->value_lock));
-		sem->value--;
-		LeaveCriticalSection(&(sem->value_lock));
-		return;
+		xbt_os_sem_acquire(sem);
+	} 
+	else 
+	{
 		
-		case WAIT_TIMEOUT:
-		/* it's not an exception : 
-		 * (semaphore could not be locked before the specified timeout expired)
-		 */
-		return;
+		seconds = (long) floor(end);
+		milliseconds = (long)( ( end - seconds) * 1000);
+		milliseconds += (seconds * 1000);
 		
-		default:
+		switch(WaitForSingleObject(sem->h,milliseconds))
+		{
+			case WAIT_OBJECT_0:
+			EnterCriticalSection(&(sem->value_lock));
+			sem->value--;
+			LeaveCriticalSection(&(sem->value_lock));
+			return;
+		
+			case WAIT_TIMEOUT:
+			THROW2(timeout_error,GetLastError(),"semaphore %p wasn't signaled before timeout (%f)",sem,timeout);
+			return;
+		
+			default:
 			
-		THROW1(system_error,GetLastError(),"WaitForSingleObject() failed: %s",
-	    	strerror(GetLastError()));
+			THROW3(system_error,GetLastError(),"WaitForSingleObject(%p,%f) failed: %s",sem,timeout, strerror(GetLastError()));
+		}
 	}
 }
 
 void 
-xbt_os_sem_post(xbt_os_sem_t sem)
+xbt_os_sem_release(xbt_os_sem_t sem)
 {
 	if(!sem)
 		THROW1(arg_error,EINVAL,"xbt_os_sem_post() failed: %s",
@@ -839,18 +820,6 @@ xbt_os_sem_post(xbt_os_sem_t sem)
 	EnterCriticalSection (&(sem->value_lock));
 	sem->value++;
 	LeaveCriticalSection(&(sem->value_lock));
-}
-
-xbt_os_sem_t 
-xbt_os_sem_open(const char *name, int oflag, mode_t mode, unsigned int value)
-{
-	THROW_UNIMPLEMENTED;
-}
-
-void
-xbt_os_sem_close(xbt_os_sem_t sem)
-{
-	THROW_UNIMPLEMENTED;
 }
 
 void
