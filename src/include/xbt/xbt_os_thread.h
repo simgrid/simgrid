@@ -14,11 +14,6 @@
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"
 
-#ifndef WIN32 /* HAVE_SEMAPHOR_H */
-#include <semaphore.h>
-#endif
-
-
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_thread
