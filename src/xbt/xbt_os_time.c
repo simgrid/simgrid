@@ -15,6 +15,50 @@
 #include "portable.h"
 #include <math.h> /* floor */
 
+
+#ifdef WIN32
+#include <sys\timeb.h>
+#include <errno.h>
+
+int 
+gettimeofday(struct timeval *tv, struct timezone *tz)
+{
+	
+	#if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+	struct _timeb tm;
+	#else
+	FILETIME  ft;
+	unsigned __int64 tm;
+	#endif
+	
+	if (!tv) 
+	{
+		errno = EINVAL;
+		return -1;
+	}
+	
+	#if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+	_ftime (&tm);
+	
+    tv->tv_sec = tm.time;
+    tv->tv_usec = tm.millitm * 1000;
+	#else
+	GetSystemTimeAsFileTime (&ft);
+	tm = (unsigned __int64)ft.dwHighDateTime << 32;
+	tm |= ft.dwLowDateTime;
+	tm /=10;
+	tm -= 11644473600000000ULL;
+	
+	tv->tv_sec  = (long) (tm / 1000000L);
+	tv->tv_usec = (long) (tm % 1000000L);
+	#endif
+	
+	
+	
+	return 0;
+}
+#endif
+
 double xbt_os_time(void) {
 #ifdef HAVE_GETTIMEOFDAY
   struct timeval tv;
