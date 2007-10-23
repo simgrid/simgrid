@@ -91,20 +91,37 @@ dnl #
 dnl #  1. determine possibilities
 dnl #
 
-dnl #  check for MCSC method
+dnl #  check for MCSC method (ucontexts)
 AC_CHECK_MCSC(mcsc=yes, mcsc=no) 
 
 dnl #  check for pthread method
 AC_CHECK_HEADERS([pthread.h])
 AC_CHECK_LIB(pthread,pthread_create,pthread=yes, pthread=no)
 
+if test x$pthread = xyes ; then
+  AC_CHECK_LIB(pthread, sem_timedwait, HAVE_SEM_TIMEDWAIT=yes, HAVE_SEM_TIMEDWAIT=no)
+  if test ${HAVE_SEM_TIMEDWAIT} = yes ; then
+     AC_MSG_CHECKING(if sem_timedwait is compilable)
+     AC_TRY_COMPILE([#include <semaphore.h>],
+	            [sem_t *s; const struct timespec * t; sem_timedwait(s, t);], HAVE_SEM_TIMEDWAIT=yes, HAVE_SEM_TIMEDWAIT=no)
+     if test ${HAVE_SEM_TIMEDWAIT} = yes ; then
+        AC_DEFINE([HAVE_SEM_TIMEDWAIT],1,[Define if the sem_timedwait is avaible or not (part of XPG6 standard only)])
+        AC_MSG_RESULT(yes)
+     else
+	AC_MSG_RESULT(no)
+     fi
+  fi
+fi
+
 dnl #
 dnl #  2. make a general decision
 dnl #
 
 if test ".$mcsc" = .yes; then
+   # ucontext found
    mcsc=yes
 elif test ".$pthread" = .yes; then
+   # ucontext not found, but pthread found
    pthread=yes
 else
     ac_header=windows.h
@@ -159,13 +176,11 @@ if test "x$with_context" = "xucontext" ; then
   fi
 fi
 
-if test "x$with_context" = "xpthreads"; then
-  with_context=pthread
-fi
 if test "x$with_context" = "xpthread"; then
   AC_CHECK_HEADERS([pthread.h])
-  AC_CHECK_LIB(pthread,pthread_create,,
-    [AC_MSG_ERROR([[Cannot find pthreads (try --with-context=ucontext if you haven't already tried).]])])
+  if test x$pthread != xyes ; then
+    AC_MSG_ERROR([[Cannot find pthreads (try --with-context=ucontext if you haven't already tried).]])
+  fi
   AC_DEFINE([CONTEXT_THREADS],1,[Define if xbt contexts are based on our threads implementation or not])
   AC_MSG_RESULT(You have pthreads and requested for them. Fine.)
 fi
