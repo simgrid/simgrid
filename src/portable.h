@@ -163,4 +163,13 @@ XBT_PUBLIC(int)
 gettimeofday(struct timeval *tv, struct timezone *tz);
 #endif
 
+#define HAVE_SEM_TIMEDWAIT	1
+
+/* mac osx doesn't have the sem_timedwait() function */
+#if defined(__GNUC__) && ( defined(__APPLE_CPP__) || defined(__APPLE_CC__) || defined(__MACOS_CLASSIC__) )
+#
+# undef HAVE_SEM_TIMEDWAIT
+#
+#endif
+
 #endif /* GRAS_PORTABLE_H */

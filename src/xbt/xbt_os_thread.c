@@ -317,6 +317,10 @@ xbt_os_sem_acquire(xbt_os_sem_t sem)
 
 void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
 {
+	/* mac os x have not the sem_timedwait() function */
+	#ifndef HAVE_SEM_TIMEDWAIT
+	THROW_UNIMPLEMENTED;
+	#else
 	int errcode;
 	struct timespec ts_end;
 	double end = timeout + xbt_os_time();
@@ -346,6 +350,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
 			THROW3(system_error,errcode,"sem_timedwait(%p,%f) failed: %s",sem,timeout, strerror(errcode));
 		}   
 	}
+	#endif
 }
 
 void 
