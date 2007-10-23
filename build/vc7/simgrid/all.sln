@@ -23,6 +23,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sd_test", "..\examples\simd
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sd_test2", "..\examples\simdag\sd_test2\sd_test2.vcproj", "{F2CCCCB9-0342-44E1-B1E3-53E6103EC294}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sem_basic", "..\examples\xbt\sem_basic\sem_basic.vcproj", "{DFDB47E0-83D2-41F1-AF4B-DC5EA312A08C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sem_sched", "..\examples\xbt\sem_sched\sem_sched.vcproj", "{A95FC8DF-52C7-45FD-B7D1-D93081DE6BB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -73,6 +77,14 @@ Global
 		{F2CCCCB9-0342-44E1-B1E3-53E6103EC294}.Debug|Win32.Build.0 = Debug|Win32
 		{F2CCCCB9-0342-44E1-B1E3-53E6103EC294}.Release|Win32.ActiveCfg = Release|Win32
 		{F2CCCCB9-0342-44E1-B1E3-53E6103EC294}.Release|Win32.Build.0 = Release|Win32
+		{DFDB47E0-83D2-41F1-AF4B-DC5EA312A08C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DFDB47E0-83D2-41F1-AF4B-DC5EA312A08C}.Debug|Win32.Build.0 = Debug|Win32
+		{DFDB47E0-83D2-41F1-AF4B-DC5EA312A08C}.Release|Win32.ActiveCfg = Release|Win32
+		{DFDB47E0-83D2-41F1-AF4B-DC5EA312A08C}.Release|Win32.Build.0 = Release|Win32
+		{A95FC8DF-52C7-45FD-B7D1-D93081DE6BB1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A95FC8DF-52C7-45FD-B7D1-D93081DE6BB1}.Debug|Win32.Build.0 = Debug|Win32
+		{A95FC8DF-52C7-45FD-B7D1-D93081DE6BB1}.Release|Win32.ActiveCfg = Release|Win32
+		{A95FC8DF-52C7-45FD-B7D1-D93081DE6BB1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
