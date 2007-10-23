@@ -316,10 +316,6 @@ xbt_os_sem_acquire(xbt_os_sem_t sem)
 
 void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
 {
-	/* mac os x have not the sem_timedwait() function */
-	#ifndef HAVE_SEM_TIMEDWAIT
-	THROW_UNIMPLEMENTED;
-	#else
 	int errcode;
 	struct timespec ts_end;
 	double end = timeout + xbt_os_time();
@@ -333,6 +329,10 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
 	} 
 	else 
 	{
+	/* mac os x have not the sem_timedwait() function */
+#ifndef HAVE_SEM_TIMEDWAIT
+	THROW_UNIMPLEMENTED;
+#else
 		ts_end.tv_sec = (time_t) floor(end);
 		ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
 		DEBUG2("sem_timedwait(%p,%p)",&(sem->s),&ts_end);
@@ -348,8 +348,8 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
 			default:
 			THROW3(system_error,errcode,"sem_timedwait(%p,%f) failed: %s",sem,timeout, strerror(errcode));
 		}   
+#endif
 	}
-	#endif
 }
 
 void 
