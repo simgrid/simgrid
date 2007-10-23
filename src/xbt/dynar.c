@@ -81,7 +81,7 @@ _xbt_dynar_expand(xbt_dynar_t const dynar,
     const unsigned long new_length  = new_size*elmsize;
     char * const new_data    = (char *) xbt_malloc0(elmsize*new_size);
 
-    DEBUG3("expend %p from %lu to %d elements", (void*)dynar, (unsigned long)old_size, nb);
+    DEBUG3("expend %p from %lu to %lu elements", (void*)dynar, (unsigned long)old_size, nb);
 
     if (old_data) {
       memcpy(new_data, old_data, used_length);
@@ -695,7 +695,7 @@ _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
       _dynar_unlock(dynar);
       return FALSE;
     }
-    DEBUG2("Cash out cursor on %p at %d",(void*)dynar,idx);
+    DEBUG2("Cash out cursor on %p at %lu",(void*)dynar,idx);
 
     _xbt_dynar_get_elm(dst, dynar, idx);
   }

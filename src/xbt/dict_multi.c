@@ -93,7 +93,7 @@ xbt_multidict_set(xbt_dict_t  mdict,
   for (i = 0; i < xbt_dynar_length(keys); i++) {
     char *thiskey = xbt_dynar_get_as(keys, i, char*);
     unsigned long int thislen = (unsigned long int) strlen(thiskey);
-    DEBUG2("Push %ld as level %d length",thislen, i);
+    DEBUG2("Push %ld as level %lu length",thislen, i);
     xbt_dynar_push(lens,&thislen);
   }
 
