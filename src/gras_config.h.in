@@ -80,9 +80,6 @@
 /* Define to 1 if you have the <jni.h> header file. */
 #undef HAVE_JNI_H
 
-/* Define to 1 if you have the `pthread' library (-lpthread). */
-#undef HAVE_LIBPTHREAD
-
 /* Define to 1 if you have the `makecontext' function. */
 #undef HAVE_MAKECONTEXT
 
@@ -100,6 +97,10 @@
 
 /* Indicates whether we have the CSDP library or not */
 #undef HAVE_SDP
+
+/* Define if the sem_timedwait is avaible or not (part of XPG6 standard only)
+   */
+#undef HAVE_SEM_TIMEDWAIT
 
 /* Define to 1 if you have the `signal' function. */
 #undef HAVE_SIGNAL
