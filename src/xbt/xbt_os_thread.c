@@ -558,7 +558,7 @@ void
 xbt_os_sem_get_value(xbt_os_sem_t sem, int* svalue)
 {
 	if(!sem)
-		THROW0(arg_error,EINVAL,"Cannot get the value of the NULL semaphore",);
+		THROW0(arg_error,EINVAL,"Cannot get the value of the NULL semaphore");
 
 	#ifndef HAVE_SEM_WAIT
 	if(sem_getvalue((sem->s),svalue) < 0)
