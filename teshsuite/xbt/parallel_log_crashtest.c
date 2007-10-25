@@ -36,10 +36,10 @@ static void crasher_thread(void *arg) {
       INFO10("%03d (%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d)",test_amount-i,id,id,id,id,id,id,id,id,id);
    }
    
-   xbt_mutex_lock(mut_end);
+   xbt_mutex_acquire(mut_end);
    running_threads--;
    xbt_cond_signal(cond_end);
-   xbt_mutex_unlock(mut_end);
+   xbt_mutex_release(mut_end);
 }
 
 int crasher (int argc,char *argv[]);
@@ -69,10 +69,10 @@ int crasher (int argc,char *argv[]) {
   }
   
   /* wait for them */
-  xbt_mutex_lock(mut_end);
+  xbt_mutex_acquire(mut_end);
   while (running_threads) 
      xbt_cond_wait(cond_end,mut_end);
-  xbt_mutex_unlock(mut_end);
+  xbt_mutex_release(mut_end);
        
   gras_exit();
   return 0;

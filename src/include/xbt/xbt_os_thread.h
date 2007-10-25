@@ -45,6 +45,8 @@ SG_BEGIN_DECL()
 
   XBT_PUBLIC(xbt_os_mutex_t) xbt_os_mutex_init(void);
   XBT_PUBLIC(void)           xbt_os_mutex_acquire(xbt_os_mutex_t mutex);
+  XBT_PUBLIC(void)			 xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay);
+  XBT_PUBLIC(void)			 xbt_os_mutex_tryacquire(xbt_os_mutex_t mutex);			
   XBT_PUBLIC(void)           xbt_os_mutex_release(xbt_os_mutex_t mutex);
   XBT_PUBLIC(void)           xbt_os_mutex_destroy(xbt_os_mutex_t mutex);
 

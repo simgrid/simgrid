@@ -27,10 +27,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn,xbt,"Dynamic arrays");
 
 #define _dynar_lock(dynar) \
            if (dynar->mutex) \
-              xbt_mutex_lock(dynar->mutex)
+              xbt_mutex_acquire(dynar->mutex)
 #define _dynar_unlock(dynar) \
            if (dynar->mutex) \
-              xbt_mutex_unlock(dynar->mutex)
+              xbt_mutex_release(dynar->mutex)
 #define _sanity_check_dynar(dynar)       \
            xbt_assert0(dynar,           \
 			"dynar is NULL")

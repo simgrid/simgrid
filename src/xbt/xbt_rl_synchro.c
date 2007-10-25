@@ -93,12 +93,23 @@ xbt_mutex_t xbt_mutex_init(void) {
    return res;
 }
 
-void xbt_mutex_lock(xbt_mutex_t mutex) {
-   DEBUG1("Lock mutex %p", mutex);
+void xbt_mutex_acquire(xbt_mutex_t mutex) {
+   DEBUG1("Acquire mutex %p", mutex);
    xbt_os_mutex_acquire( (xbt_os_mutex_t)mutex );
 }
 
-void xbt_mutex_unlock(xbt_mutex_t mutex) {
+void xbt_mutex_tryacquire(xbt_mutex_t mutex) {
+   DEBUG1("Try acquire mutex %p", mutex);
+   xbt_os_mutex_tryacquire( (xbt_os_mutex_t)mutex );
+}
+
+void xbt_mutex_timedacquire(xbt_mutex_t mutex, double delay)
+{
+	DEBUG2("Acquire mutex %p with delay %lf", mutex,delay);
+   xbt_os_mutex_timedacquire( (xbt_os_mutex_t)mutex,delay );
+}
+
+void xbt_mutex_release(xbt_mutex_t mutex) {
    DEBUG1("Unlock mutex %p", mutex);
    xbt_os_mutex_release( (xbt_os_mutex_t)mutex );
 }

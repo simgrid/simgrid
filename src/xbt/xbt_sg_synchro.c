@@ -98,11 +98,11 @@ xbt_mutex_t xbt_mutex_init(void) {
    return (xbt_mutex_t)SIMIX_mutex_init();
 }
 
-void xbt_mutex_lock(xbt_mutex_t mutex) {
+void xbt_mutex_acquire(xbt_mutex_t mutex) {
    SIMIX_mutex_lock( (smx_mutex_t)mutex) ;
 }
 
-void xbt_mutex_unlock(xbt_mutex_t mutex) {
+void xbt_mutex_release(xbt_mutex_t mutex) {
    SIMIX_mutex_unlock( (smx_mutex_t)mutex );
 }
 
