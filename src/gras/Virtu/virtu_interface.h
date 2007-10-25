@@ -12,12 +12,15 @@
 #ifndef GRAS_VIRTU_INTERFACE_H
 #define GRAS_VIRTU_INTERFACE_H
 
+
 #include "xbt/function_types.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/set.h"
 #include "gras/virtu.h"
 #include "gras/process.h"
+
+SG_BEGIN_DECL()
 
 /* shutdown the module mechanism (world-wide cleanups) */
 void gras_moddata_exit(void);
@@ -40,5 +43,7 @@ int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t de
 
 void* gras_libdata_by_name(const char *name);
 void* gras_libdata_by_id(int id);
+
+SG_END_DECL()
 
 #endif  /* GRAS_VIRTU_INTERFACE_H */
