@@ -22,40 +22,37 @@
 
 double xbt_os_time(void) {
 #ifdef HAVE_GETTIMEOFDAY
-  struct timeval tv;
-
-  gettimeofday(&tv, NULL);
-
-  return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
 #elif defined(WIN32)
-
+	struct timeval tv;
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
-   struct _timeb tm;
-   
-   _ftime (&tm);
-	
-   tv->tv_sec = tm.time;
-   tv->tv_usec = tm.millitm * 1000;
-   
+	struct _timeb tm;
+
+	_ftime (&tm);
+
+	tv.tv_sec = tm.time;
+	tv.tv_usec = tm.millitm * 1000;
+
 #  else
-   FILETIME  ft;
-   unsigned __int64 tm;
-   
-   GetSystemTimeAsFileTime (&ft);
-   tm = (unsigned __int64)ft.dwHighDateTime << 32;
-   tm |= ft.dwLowDateTime;
-   tm /=10;
-   tm -= 11644473600000000ULL;
-   
-   tv->tv_sec  = (long) (tm / 1000000L);
-   tv->tv_usec = (long) (tm % 1000000L);
-#endif /* windows version checker */
-		
-   
+	FILETIME  ft;
+	unsigned __int64 tm;
+
+	GetSystemTimeAsFileTime (&ft);
+	tm = (unsigned __int64)ft.dwHighDateTime << 32;
+	tm |= ft.dwLowDateTime;
+	tm /=10;
+	tm -= 11644473600000000ULL;
+
+	tv.tv_sec  = (long) (tm / 1000000L);
+	tv.tv_usec = (long) (tm % 1000000L);
+#  endif /* windows version checker */
+
 #else  /* not windows, no gettimeofday => poor resolution */
-   
-  return (double)(time(NULL));
-#endif /* HAVE_GETTIMEOFDAY? */ 	
+return (double)(time(NULL));
+#endif /* HAVE_GETTIMEOFDAY? */
+
+return (double)(tv.tv_sec + tv.tv_usec / 1000000.0); 	
 }
 
 void xbt_os_sleep(double sec) {
