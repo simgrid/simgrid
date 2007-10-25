@@ -11,6 +11,10 @@
 #include "gras/Transport/transport_private.h"
 #include "xbt/ex.h"
 
+#ifdef WIN32
+#include <sys/stat.h>
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_file,gras_trp,
 	"Pseudo-transport to write to/read from a file");
 
