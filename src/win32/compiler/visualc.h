@@ -14,6 +14,15 @@
 
 #include <win32/platform/select_platform_features.h>
 
+#ifdef _WIN32_WINNT
+	#if _WIN32_WINNT < 0x0400
+		#undef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0400
+	#endif
+#else
+	#define _WIN32_WINNT 0x0400	
+#endif
+
 /* 
  * include files. 
  */
@@ -412,14 +421,6 @@ the double. For now, GRAS requires the structures to be compacted. */
 #define S_IWUSR _S_IWRITE
 #define S_IRUSR _S_IREAD
 
-#ifdef _WIN32_WINNT
-	#if _WIN32_WINNT < 0x0400
-		#undef _WIN32_WINNT
-		#define _WIN32_WINNT 0x0400
-	#endif
-#else
-	#define _WIN32_WINNT 0x0400	
-#endif
 
 /* Visual C++ does not declare the ssize_t type */
 typedef int ssize_t;
@@ -429,5 +430,6 @@ typedef unsigned int mode_t;
 
 /* Visual C++ does not declare the uint32_t type */
 typedef unsigned int uint32_t;
+
 
 #endif /* #ifndef __XBT_VISUALC_COMPILER_CONFIG_H__ */
