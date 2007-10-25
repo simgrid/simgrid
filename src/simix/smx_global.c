@@ -358,6 +358,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 	  || xbt_swag_size(model->common_public->states.
 			   done_action_set)) {
 	state_modifications = 1;
+	 break;
       }
     }
 
