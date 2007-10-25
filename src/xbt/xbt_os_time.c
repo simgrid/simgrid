@@ -4,7 +4,7 @@
 /*  no system header should be loaded out of this file so that we have only */
 /*  one file to check when porting to another OS                            */
 
-/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2004-2007 The SimGrid team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,45 +18,6 @@
 
 #ifdef WIN32
 #include <sys\timeb.h>
-#include <errno.h>
-
-int 
-gettimeofday(struct timeval *tv, struct timezone *tz)
-{
-	
-	#if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
-	struct _timeb tm;
-	#else
-	FILETIME  ft;
-	unsigned __int64 tm;
-	#endif
-	
-	if (!tv) 
-	{
-		errno = EINVAL;
-		return -1;
-	}
-	
-	#if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
-	_ftime (&tm);
-	
-    tv->tv_sec = tm.time;
-    tv->tv_usec = tm.millitm * 1000;
-	#else
-	GetSystemTimeAsFileTime (&ft);
-	tm = (unsigned __int64)ft.dwHighDateTime << 32;
-	tm |= ft.dwLowDateTime;
-	tm /=10;
-	tm -= 11644473600000000ULL;
-	
-	tv->tv_sec  = (long) (tm / 1000000L);
-	tv->tv_usec = (long) (tm % 1000000L);
-	#endif
-	
-	
-	
-	return 0;
-}
 #endif
 
 double xbt_os_time(void) {
@@ -66,8 +27,33 @@ double xbt_os_time(void) {
   gettimeofday(&tv, NULL);
 
   return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
-#else
-  /* Poor resolution */
+#elsif defined(WIN32)
+
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+   struct _timeb tm;
+   
+   _ftime (&tm);
+	
+   tv->tv_sec = tm.time;
+   tv->tv_usec = tm.millitm * 1000;
+   
+#  else
+   FILETIME  ft;
+   unsigned __int64 tm;
+   
+   GetSystemTimeAsFileTime (&ft);
+   tm = (unsigned __int64)ft.dwHighDateTime << 32;
+   tm |= ft.dwLowDateTime;
+   tm /=10;
+   tm -= 11644473600000000ULL;
+   
+   tv->tv_sec  = (long) (tm / 1000000L);
+   tv->tv_usec = (long) (tm % 1000000L);
+#endif /* windows version checker */
+		
+   
+#else  /* not windows, no gettimeofday => poor resolution */
+   
   return (double)(time(NULL));
 #endif /* HAVE_GETTIMEOFDAY? */ 	
 }
