@@ -27,7 +27,7 @@ double xbt_os_time(void) {
   gettimeofday(&tv, NULL);
 
   return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
-#elsif defined(WIN32)
+#elif defined(WIN32)
 
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
    struct _timeb tm;
