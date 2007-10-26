@@ -40,51 +40,51 @@ static int surf_parse_bypass(void)
 
   STAG(platform_description);
 
-/*   <cpu name="Cpu A" power="100000000.00"/> */
-  SURFXML_BUFFER_SET(cpu_name,"Cpu A");
-  SURFXML_BUFFER_SET(cpu_power, "100000000.00");
-  SURFXML_BUFFER_SET(cpu_availability, "1.0");
-  SURFXML_BUFFER_SET(cpu_availability_file, "");
-  A_surfxml_cpu_state = A_surfxml_cpu_state_ON;
-  SURFXML_BUFFER_SET(cpu_state_file, "");
-  SURFXML_BUFFER_SET(cpu_interference_send, "1.0");
-  SURFXML_BUFFER_SET(cpu_interference_recv, "1.0");
-  SURFXML_BUFFER_SET(cpu_interference_send_recv, "1.0");
-  SURFXML_BUFFER_SET(cpu_max_outgoing_rate, "-1.0");
+/*   <host id="host A" power="100000000.00"/> */
+  SURFXML_BUFFER_SET(host_id,"host A");
+  SURFXML_BUFFER_SET(host_power, "100000000.00");
+  SURFXML_BUFFER_SET(host_availability, "1.0");
+  SURFXML_BUFFER_SET(host_availability_file, "");
+  A_surfxml_host_state = A_surfxml_host_state_ON;
+  SURFXML_BUFFER_SET(host_state_file, "");
+  SURFXML_BUFFER_SET(host_interference_send, "1.0");
+  SURFXML_BUFFER_SET(host_interference_recv, "1.0");
+  SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
+  SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
 
-  STAG(cpu);
-  ETAG(cpu);
+  STAG(host);
+  ETAG(host);
 
-/*   <cpu name="Cpu B" power="100000000.00"/> */
-  SURFXML_BUFFER_SET(cpu_name, "Cpu B");
-  SURFXML_BUFFER_SET(cpu_power, "100000000.00");
-  SURFXML_BUFFER_SET(cpu_availability, "1.0");
-  SURFXML_BUFFER_SET(cpu_availability_file, "");
-  A_surfxml_cpu_state = A_surfxml_cpu_state_ON;
-  SURFXML_BUFFER_SET(cpu_state_file, "");
-  SURFXML_BUFFER_SET(cpu_interference_send, "1.0");
-  SURFXML_BUFFER_SET(cpu_interference_recv, "1.0");
-  SURFXML_BUFFER_SET(cpu_interference_send_recv, "1.0");
-  SURFXML_BUFFER_SET(cpu_max_outgoing_rate, "-1.0");
+/*   <host id="host B" power="100000000.00"/> */
+  SURFXML_BUFFER_SET(host_id, "host B");
+  SURFXML_BUFFER_SET(host_power, "100000000.00");
+  SURFXML_BUFFER_SET(host_availability, "1.0");
+  SURFXML_BUFFER_SET(host_availability_file, "");
+  A_surfxml_host_state = A_surfxml_host_state_ON;
+  SURFXML_BUFFER_SET(host_state_file, "");
+  SURFXML_BUFFER_SET(host_interference_send, "1.0");
+  SURFXML_BUFFER_SET(host_interference_recv, "1.0");
+  SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
+  SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
 
-  STAG(cpu);
-  ETAG(cpu);
+  STAG(host);
+  ETAG(host);
 
-/*   <network_link name="LinkA" bandwidth="10000000.0" latency="0.2"/> */
-  SURFXML_BUFFER_SET(network_link_name, "LinkA");
-  SURFXML_BUFFER_SET(network_link_bandwidth, "10000000.0");
-  SURFXML_BUFFER_SET(network_link_bandwidth_file, "");
-  SURFXML_BUFFER_SET(network_link_latency, "0.2");
-  SURFXML_BUFFER_SET(network_link_latency_file, "");
-  A_surfxml_network_link_state = A_surfxml_network_link_state_ON;
-  SURFXML_BUFFER_SET(network_link_state_file, "");
-  A_surfxml_network_link_sharing_policy = A_surfxml_network_link_sharing_policy_SHARED;
-  STAG(network_link);
-  ETAG(network_link);
+/*   <link id="LinkA" bandwidth="10000000.0" latency="0.2"/> */
+  SURFXML_BUFFER_SET(link_id, "LinkA");
+  SURFXML_BUFFER_SET(link_bandwidth, "10000000.0");
+  SURFXML_BUFFER_SET(link_bandwidth_file, "");
+  SURFXML_BUFFER_SET(link_latency, "0.2");
+  SURFXML_BUFFER_SET(link_latency_file, "");
+  A_surfxml_link_state = A_surfxml_link_state_ON;
+  SURFXML_BUFFER_SET(link_state_file, "");
+  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+  STAG(link);
+  ETAG(link);
 
-/*   <route src="Cpu A" dst="Cpu B"><route_element name="LinkA"/></route> */
-  SURFXML_BUFFER_SET(route_src, "Cpu A");
-  SURFXML_BUFFER_SET(route_dst, "Cpu B");
+/*   <route src="host A" dst="host B"><link:ctn id="LinkA"/></route> */
+  SURFXML_BUFFER_SET(route_src, "host A");
+  SURFXML_BUFFER_SET(route_dst, "host B");
   SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
   SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
@@ -92,15 +92,15 @@ static int surf_parse_bypass(void)
 
   STAG(route);
 
-  SURFXML_BUFFER_SET(route_element_name, "LinkA");
-  STAG(route_element);
-  ETAG(route_element);
+  SURFXML_BUFFER_SET(link_c_ctn_id, "LinkA");
+  STAG(link_c_ctn);
+  ETAG(link_c_ctn);
 
   ETAG(route);
 
-/*   <route src="Cpu B" dst="Cpu A"><route_element name="LinkA"/></route> */
-  SURFXML_BUFFER_SET(route_src, "Cpu B");
-  SURFXML_BUFFER_SET(route_dst, "Cpu A");
+/*   <route src="host B" dst="host A"><link:ctn id="LinkA"/></route> */
+  SURFXML_BUFFER_SET(route_src, "host B");
+  SURFXML_BUFFER_SET(route_dst, "host A");
   SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
   SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
@@ -108,14 +108,14 @@ static int surf_parse_bypass(void)
 
   STAG(route);
 
-  SURFXML_BUFFER_SET(route_element_name, "LinkA");
-  STAG(route_element);
-  ETAG(route_element);
+  SURFXML_BUFFER_SET(link_c_ctn_id, "LinkA");
+  STAG(link_c_ctn);
+  ETAG(link_c_ctn);
 
   ETAG(route);
 
-/*   <process host="Cpu A" function="master"> */
-  SURFXML_BUFFER_SET(process_host, "Cpu A");
+/*   <process host="host A" function="master"> */
+  SURFXML_BUFFER_SET(process_host, "host A");
   SURFXML_BUFFER_SET(process_function, "master");
   SURFXML_BUFFER_SET(process_start_time, "-1.0");
   SURFXML_BUFFER_SET(process_kill_time, "-1.0");
@@ -136,16 +136,16 @@ static int surf_parse_bypass(void)
   STAG(argument);
   ETAG(argument);
 
-/*      <argument value="Cpu B"/> */
-  SURFXML_BUFFER_SET(argument_value, "Cpu B");
+/*      <argument value="host B"/> */
+  SURFXML_BUFFER_SET(argument_value, "host B");
   STAG(argument);
   ETAG(argument);
 
 /*   </process> */
   ETAG(process);
 
-/*   <process host="Cpu B" function="slave"/> */
-  SURFXML_BUFFER_SET(process_host, "Cpu B");
+/*   <process host="host B" function="slave"/> */
+  SURFXML_BUFFER_SET(process_host, "host B");
   SURFXML_BUFFER_SET(process_function, "slave");
   SURFXML_BUFFER_SET(process_start_time, "-1.0");
   SURFXML_BUFFER_SET(process_kill_time, "-1.0");
