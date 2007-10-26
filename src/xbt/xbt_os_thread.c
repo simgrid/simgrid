@@ -27,8 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os,xbt,"Synchronization mechanism (OS-l
 
 /* use named sempahore instead */
 #ifndef HAVE_SEM_WAIT
-#  define MAX_SEM_NAME ((size_t)29)
-#  define MIN_SEM_NAME ((size_t)11)
+#  define MAX_SEM_NAME ((size_t)13)
    static int __next_sem_ID = 0;
    static pthread_mutex_t __next_sem_ID_lock;
 #endif
@@ -114,6 +113,7 @@ static void * wrapper_start_routine(void *s) {
 
   return (*(t->start_routine))(t->param);
 }
+
 xbt_os_thread_t xbt_os_thread_create(const char*name,
 				     pvoid_f_pvoid_t start_routine,
 				     void* param)  {
@@ -211,14 +211,6 @@ void xbt_os_mutex_acquire(xbt_os_mutex_t mutex) {
 	    mutex, strerror(errcode));
 }
 
-void xbt_os_mutex_tryacquire(xbt_os_mutex_t mutex) {
-   int errcode;
-
-   if ((errcode=pthread_mutex_trylock(&(mutex->m))))
-     THROW2(system_error,errcode,"pthread_mutex_trylock(%p) failed: %s",
-	    mutex, strerror(errcode));
-}
-
 
 
 #ifndef HAVE_PTHREAD_MUTEX_TIMEDLOCK
@@ -259,9 +251,15 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay) {
    int errcode;
    struct timespec ts_end;
    double end = delay + xbt_os_time();
-
+	
    if (delay < 0) {
       xbt_os_mutex_acquire(mutex);
+   }
+   else if(!delay /* equals 0 */)
+   	{
+   		if ((errcode=pthread_mutex_trylock(&(mutex->m))))
+     		THROW2(system_error,errcode,"pthread_mutex_trylock(%p) failed: %s",mutex, strerror(errcode));
+   		
    } else {
       ts_end.tv_sec = (time_t) floor(end);
       ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
@@ -407,10 +405,14 @@ xbt_os_sem_init(unsigned int value)
 	if((errcode = pthread_mutex_unlock(&__next_sem_ID_lock)))
 		THROW1(system_error,errcode,"pthread_mutex_unlock() failed: %s", strerror(errcode));
 
-	sprintf(res->name,"/%d",__next_sem_ID);
+	sprintf(res->name,"/%d.%d",(*xbt_getpid)(),__next_sem_ID);
 
-	if((res->s = sem_open(res->name, O_CREAT | O_EXCL, 0644, value)) == (sem_t*)SEM_FAILED)
+	if((res->s = sem_open(res->name, O_CREAT, 0644, value)) == (sem_t*)SEM_FAILED)
 		THROW1(system_error,errno,"sem_open() failed: %s",strerror(errno));
+	
+	if(sem_unlink(res->name) < 0)
+		THROW1(system_error,errno,"sem_unlink() failed: %s", strerror(errno));
+
 
 	#else
 	/* sem_init() is implemented, use it */
@@ -483,6 +485,16 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
 	{
 		xbt_os_sem_acquire(sem);
 	}
+	else if(!timeout)
+	{
+		#ifndef HAVE_SEM_TIMEDWAIT
+		if(sem_trywait(sem->s) < 0)
+			THROW2(system_error,errno,"sem_trywait(%p) failed: %s",sem,strerror(errno));
+		#else
+		if(sem_trywait(&(sem->s) < 0)
+			THROW2(system_error,errno,"sem_trywait(%p) failed: %s",sem,strerror(errno));
+		#endif		
+	}
 	else
 	{
 		ts_end.tv_sec = (time_t) floor(end);
@@ -537,10 +549,6 @@ xbt_os_sem_destroy(xbt_os_sem_t sem)
 	 */
 	if(sem_close((sem->s)) < 0)
 		THROW1(system_error,errno,"sem_close() failed: %s",
-	    strerror(errno));
-
-	if(sem_unlink(sem->name) < 0)
-		THROW1(system_error,errno,"sem_unlink() failed: %s",
 	    strerror(errno));
 
 	xbt_free(sem->name);
@@ -720,7 +728,7 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay) {
 
 void xbt_os_mutex_release(xbt_os_mutex_t mutex) {
 
-   LeaveCriticalSection (& mutex->lock);
+   LeaveCriticalSection (&mutex->lock);
 
 }
 
@@ -822,7 +830,7 @@ void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex) {
 }
 void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex, double delay) {
 
-	 unsigned long wait_result = WAIT_TIMEOUT;
+   unsigned long wait_result = WAIT_TIMEOUT;
    int is_last_waiter;
    unsigned long end = (unsigned long)(delay * 1000);
 
@@ -974,7 +982,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double timeout)
 	{
 		xbt_os_sem_acquire(sem);
 	}
-	else
+	else /* timeout can be zero <-> try acquire ) */
 	{
 
 		seconds = (long) floor(end);
@@ -994,7 +1002,6 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double timeout)
 			return;
 
 			default:
-
 			THROW3(system_error,GetLastError(),"WaitForSingleObject(%p,%f) failed: %s",sem,timeout, strerror(GetLastError()));
 		}
 	}
