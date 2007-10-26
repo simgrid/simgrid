@@ -12,6 +12,7 @@
 
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
 #include "xbt/time.h"
+#include "xbt/dict.h"
 
 SG_BEGIN_DECL()
 
