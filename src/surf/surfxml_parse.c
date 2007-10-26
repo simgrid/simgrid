@@ -16,6 +16,26 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(parse, surf,
 #undef CLEANUP
 #include "surfxml.c"
 
+/* make sure these symbols are defined as strong ones in this file so that the linked can resolve them */
+xbt_dynar_t STag_surfxml_platform_description_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_platform_description_cb_list = NULL;
+xbt_dynar_t STag_surfxml_host_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_host_cb_list = NULL;
+xbt_dynar_t STag_surfxml_router_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_router_cb_list = NULL;
+xbt_dynar_t STag_surfxml_link_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_link_cb_list = NULL;
+xbt_dynar_t STag_surfxml_route_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_route_cb_list = NULL;
+xbt_dynar_t STag_surfxml_link_c_ctn_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_link_c_ctn_cb_list = NULL;
+xbt_dynar_t STag_surfxml_process_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_process_cb_list = NULL;
+xbt_dynar_t STag_surfxml_argument_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_argument_cb_list = NULL;
+xbt_dynar_t STag_surfxml_prop_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_prop_cb_list = NULL;
+
 static xbt_dynar_t surf_input_buffer_stack = NULL;
 static xbt_dynar_t surf_file_to_parse_stack = NULL;
 
@@ -85,7 +105,7 @@ void STag_surfxml_platform_description(void)
   sscanf(A_surfxml_platform_description_version, "%lg", &version);
 
   xbt_assert0((version >= 1.0), "******* BIG FAT WARNING *********\n "
-	      "You're using an old XML file. "
+	      "You're using an ancient XML file. "
 	      "Since SimGrid 3.1, units are Bytes, Flops, and seconds "
 	      "instead of MBytes, MFlops and seconds. "
 	      "A script (surfxml_update.pl) to help you convert your old "
@@ -95,6 +115,12 @@ void STag_surfxml_platform_description(void)
 	      "SURF section of the ChangeLog for the 3.1 version. "
 	      "Last, do not forget to also update your values for "
 	      "the calls to MSG_task_create (if any).");
+  xbt_assert0((version >= 2.0), "******* BIG FAT WARNING *********\n "
+	      "You're using an old XML file. "
+	      "A script (surfxml_update.pl) to help you convert your old "
+	      "platform files "
+	      "is available in the contrib/platform_generation directory "
+	      "of the simgrid repository.");
 
   surfxml_call_cb_functions(STag_surfxml_platform_description_cb_list);
 }
