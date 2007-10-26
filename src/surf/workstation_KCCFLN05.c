@@ -1120,14 +1120,14 @@ static double impact_on_src;
 static double impact_on_dst;
 static double impact_on_src_with_other_recv;
 static double impact_on_dst_with_other_send;
-static int is_first = 0;
+static int is_first = 1;
 
 static void parse_route_set_endpoints(void)
 {
   cpu_KCCFLN05_t cpu_tmp = NULL;
 
-  if (!is_first) create_routing_table();
-  is_first = 1;	
+  if (is_first) create_routing_table();
+  is_first = 0;
 
   cpu_tmp = (cpu_KCCFLN05_t) name_service(A_surfxml_route_src);
   if (cpu_tmp != NULL) {

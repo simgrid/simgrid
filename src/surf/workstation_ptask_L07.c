@@ -861,14 +861,14 @@ static int link_list_capacity;
 static link_L07_t *link_list = NULL;
 static int src_id = -1;
 static int dst_id = -1;
-static int is_first =0;
+static int is_first =1;
 
 static void parse_route_set_endpoints(void)
 {
   cpu_L07_t cpu_tmp = NULL;
 
-  if (!is_first) create_routing_table();
-  is_first = 1;	
+  if (is_first) create_routing_table();
+  is_first = 0;
 
   cpu_tmp = (cpu_L07_t) name_service(A_surfxml_route_src);
   xbt_assert1(cpu_tmp, "Invalid cpu %s", A_surfxml_route_src);

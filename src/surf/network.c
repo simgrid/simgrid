@@ -156,9 +156,6 @@ static int link_list_capacity;
 static link_CM02_t *link_list = NULL;
 static int src_id = -1;
 static int dst_id = -1;
-/*
-static int is_first = 0;
-*/
 
 static void parse_route_set_endpoints(void)
 {
