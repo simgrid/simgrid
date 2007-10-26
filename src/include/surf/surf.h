@@ -552,26 +552,6 @@ XBT_PUBLIC(void) surf_exit(void);
 void parse_properties(void);
 void free_string(void*);
 
-/*Add callback lists*/
-xbt_dynar_t STag_surfxml_platform_description_cb_list;
-xbt_dynar_t ETag_surfxml_platform_description_cb_list;
-xbt_dynar_t STag_surfxml_host_cb_list;
-xbt_dynar_t ETag_surfxml_host_cb_list;
-xbt_dynar_t STag_surfxml_router_cb_list;
-xbt_dynar_t ETag_surfxml_router_cb_list;
-xbt_dynar_t STag_surfxml_link_cb_list;
-xbt_dynar_t ETag_surfxml_link_cb_list;
-xbt_dynar_t STag_surfxml_route_cb_list;
-xbt_dynar_t ETag_surfxml_route_cb_list;
-xbt_dynar_t STag_surfxml_link_c_ctn_cb_list;
-xbt_dynar_t ETag_surfxml_link_c_ctn_cb_list;
-xbt_dynar_t STag_surfxml_process_cb_list;
-xbt_dynar_t ETag_surfxml_process_cb_list;
-xbt_dynar_t STag_surfxml_argument_cb_list;
-xbt_dynar_t ETag_surfxml_argument_cb_list;
-xbt_dynar_t STag_surfxml_prop_cb_list;
-xbt_dynar_t ETag_surfxml_prop_cb_list;
-
 XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function);
 
 SG_END_DECL()
