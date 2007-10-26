@@ -11,6 +11,7 @@
 
 #include "xbt/misc.h"
 #include "xbt/fifo.h"
+#include "xbt/dict.h"
 #include "xbt/function_types.h"
 #include "simix/datatypes.h"
 #include "surf/surf.h"
@@ -50,7 +51,8 @@ typedef void *(*smx_creation_func_t)(/*name*/     const char *,
 				     /*userdata*/ void *,
 				     /*hostname*/ char *, 
 				     /* argc */   int,
-				     /* argv */   char **);
+				     /* argv */   char **,
+                                     /* props */ xbt_dict_t);
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
 XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_f_pvoid_t function);
 XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_f_pvoid_t function);
@@ -71,13 +73,15 @@ XBT_PUBLIC(smx_host_t *)SIMIX_host_get_table(void);
 XBT_PUBLIC(void) SIMIX_create_environment(const char *file);
 XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(const char *name);
 
+XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_properties(smx_host_t host);
+
 /* Two possible states, 1 - CPU ON and 0 CPU OFF */
 XBT_PUBLIC(int) SIMIX_host_get_state(smx_host_t host);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC(smx_process_t) SIMIX_process_create(const char *name,
 					       xbt_main_func_t code, void *data,
-					       const char * hostname, int argc, char **argv);
+					       const char * hostname, int argc, char **argv, xbt_dict_t properties);
 
 XBT_PUBLIC(void) SIMIX_jprocess_create(const char *name, 
 				       smx_host_t host,
@@ -101,6 +105,8 @@ XBT_PUBLIC(void) SIMIX_process_suspend(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_resume(smx_process_t process);
 XBT_PUBLIC(int) SIMIX_process_is_suspended(smx_process_t process);
 
+/*property handlers*/
+XBT_PUBLIC(xbt_dict_t) SIMIX_process_get_properties(smx_process_t host);
 
 /************************** Synchro handling **********************************/
 

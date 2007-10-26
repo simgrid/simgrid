@@ -45,7 +45,7 @@ static network_link_CM02_t network_link_new(char *name,
 					    state_initial,
 					    tmgr_trace_t state_trace,
 					    e_surf_network_link_sharing_policy_t
-					    policy)
+					    policy, xbt_dict_t properties)
 {
   network_link_CM02_t nw_link = xbt_new0(s_network_link_CM02_t, 1);
 
@@ -71,6 +71,10 @@ static network_link_CM02_t network_link_new(char *name,
 
   if (policy == SURF_NETWORK_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->constraint);
+
+  nw_link->properties = properties;
+
+  current_property_set = properties;
 
   xbt_dict_set(network_link_set, name, nw_link, network_link_free);
 
@@ -105,46 +109,46 @@ static void route_new(int src_id, int dst_id,
       xbt_realloc(link_list, sizeof(network_link_CM02_t) * nb_link);
 }
 
-static void parse_network_link(void)
+static void parse_network_link_init(void)
 {
-  char *name;
+  char *name_link;
   double bw_initial;
   tmgr_trace_t bw_trace;
   double lat_initial;
   tmgr_trace_t lat_trace;
-  e_surf_network_link_state_t state_initial = SURF_NETWORK_LINK_ON;
-  e_surf_network_link_sharing_policy_t policy_initial =
-      SURF_NETWORK_LINK_SHARED;
+  e_surf_network_link_state_t state_initial_link = SURF_NETWORK_LINK_ON;
+  e_surf_network_link_sharing_policy_t policy_initial_link = SURF_NETWORK_LINK_SHARED;
   tmgr_trace_t state_trace;
 
-  name = xbt_strdup(A_surfxml_network_link_name);
-  surf_parse_get_double(&bw_initial, A_surfxml_network_link_bandwidth);
-  surf_parse_get_trace(&bw_trace, A_surfxml_network_link_bandwidth_file);
-  surf_parse_get_double(&lat_initial, A_surfxml_network_link_latency);
-  surf_parse_get_trace(&lat_trace, A_surfxml_network_link_latency_file);
+  name_link = xbt_strdup(A_surfxml_link_id);
+  surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
+  surf_parse_get_trace(&bw_trace, A_surfxml_link_bandwidth_file);
+  surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
+  surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
 
-  xbt_assert0((A_surfxml_network_link_state ==
-	       A_surfxml_network_link_state_ON)
-	      || (A_surfxml_network_link_state ==
-		  A_surfxml_network_link_state_OFF), "Invalid state");
-  if (A_surfxml_network_link_state == A_surfxml_network_link_state_ON)
-    state_initial = SURF_NETWORK_LINK_ON;
-  else if (A_surfxml_network_link_state ==
-	   A_surfxml_network_link_state_OFF)
-    state_initial = SURF_NETWORK_LINK_OFF;
+  xbt_assert0((A_surfxml_link_state ==
+	       A_surfxml_link_state_ON)
+	      || (A_surfxml_link_state ==
+		  A_surfxml_link_state_OFF), "Invalid state");
+  if (A_surfxml_link_state == A_surfxml_link_state_ON)
+    state_initial_link = SURF_NETWORK_LINK_ON;
+  else if (A_surfxml_link_state ==
+	   A_surfxml_link_state_OFF)
+    state_initial_link = SURF_NETWORK_LINK_OFF;
 
-  if (A_surfxml_network_link_sharing_policy ==
-      A_surfxml_network_link_sharing_policy_SHARED)
-    policy_initial = SURF_NETWORK_LINK_SHARED;
-  else if (A_surfxml_network_link_sharing_policy ==
-	   A_surfxml_network_link_sharing_policy_FATPIPE)
-    policy_initial = SURF_NETWORK_LINK_FATPIPE;
+  if (A_surfxml_link_sharing_policy ==
+      A_surfxml_link_sharing_policy_SHARED)
+    policy_initial_link = SURF_NETWORK_LINK_SHARED;
+  else if (A_surfxml_link_sharing_policy ==
+	   A_surfxml_link_sharing_policy_FATPIPE)
+    policy_initial_link = SURF_NETWORK_LINK_FATPIPE;
 
-  surf_parse_get_trace(&state_trace, A_surfxml_network_link_state_file);
+  surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
 
-  network_link_new(name, bw_initial, bw_trace,
-		   lat_initial, lat_trace, state_initial, state_trace,
-		   policy_initial);
+  network_link_new(name_link, bw_initial, bw_trace,
+		   lat_initial, lat_trace, state_initial_link, state_trace,
+		   policy_initial_link, xbt_dict_new());
+
 }
 
 static int nb_link;
@@ -152,9 +156,13 @@ static int link_list_capacity;
 static network_link_CM02_t *link_list = NULL;
 static int src_id = -1;
 static int dst_id = -1;
+/*
+static int is_first = 0;
+*/
 
 static void parse_route_set_endpoints(void)
 {
+
   src_id = network_card_new(A_surfxml_route_src);
   dst_id = network_card_new(A_surfxml_route_dst);
   nb_link = 0;
@@ -164,6 +172,7 @@ static void parse_route_set_endpoints(void)
 
 static void parse_route_elem(void)
 {
+
   if (nb_link == link_list_capacity) {
     link_list_capacity *= 2;
     link_list =
@@ -171,7 +180,7 @@ static void parse_route_elem(void)
 		    (link_list_capacity) * sizeof(network_link_CM02_t));
   }
   link_list[nb_link++] =
-      xbt_dict_get_or_null(network_link_set, A_surfxml_route_element_name);
+      xbt_dict_get_or_null(network_link_set, A_surfxml_link_c_ctn_id);
 }
 
 static void parse_route_set_route(void)
@@ -182,17 +191,24 @@ static void parse_route_set_route(void)
 static void parse_file(const char *file)
 {
   int i;
-
+/*
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_network_link_init);
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
+*/
   /* Figuring out the network links */
   surf_parse_reset_parser();
-  ETag_surfxml_network_link_fun = parse_network_link;
+  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_network_link_init);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surf_parse_open(file);
   xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();
 
   /* Figuring out the network cards used */
   surf_parse_reset_parser();
-  STag_surfxml_route_fun = parse_route_set_endpoints;
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
   surf_parse_open(file);
   xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();
@@ -201,9 +217,9 @@ static void parse_file(const char *file)
 
   /* Building the routes */
   surf_parse_reset_parser();
-  STag_surfxml_route_fun = parse_route_set_endpoints;
-  ETag_surfxml_route_element_fun = parse_route_elem;
-  ETag_surfxml_route_fun = parse_route_set_route;
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surf_parse_open(file);
   xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();
@@ -216,7 +232,7 @@ static void parse_file(const char *file)
 	loopback = network_link_new(xbt_strdup("__MSG_loopback__"),
 				    498000000, NULL, 0.000015, NULL,
 				    SURF_NETWORK_LINK_ON, NULL,
-				    SURF_NETWORK_LINK_FATPIPE);
+				    SURF_NETWORK_LINK_FATPIPE,NULL);
       ROUTE_SIZE(i, i) = 1;
       ROUTE(i, i) = xbt_new0(network_link_CM02_t, 1);
       ROUTE(i, i)[0] = loopback;
@@ -531,6 +547,11 @@ static double get_link_latency(const void *link)
   return ((network_link_CM02_t) link)->lat_current;
 }
 
+static xbt_dict_t get_link_property_list(void *link)
+{
+ return ((network_link_CM02_t) link)->properties;
+}
+
 static void action_suspend(surf_action_t action)
 {
   ((surf_action_network_CM02_t) action)->suspended = 1;
@@ -656,6 +677,8 @@ static void surf_network_model_init_internal(void)
       get_link_bandwidth;
   surf_network_model->extension_public->get_link_latency =
       get_link_latency;
+  /*for the props of the link*/
+  surf_network_model->common_public->get_link_properties =  get_link_property_list;
 
   network_link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();

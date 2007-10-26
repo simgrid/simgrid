@@ -10,6 +10,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/dict.h"
 #include "surf/surfxml_parse_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
@@ -36,6 +37,8 @@ static void parse_process_init(void)
   parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
   surf_parse_get_double(&start_time, A_surfxml_process_start_time);
   surf_parse_get_double(&kill_time, A_surfxml_process_kill_time);
+
+  current_property_set = xbt_dict_new();
 }
 
 static void parse_argument(void)
@@ -58,6 +61,7 @@ static void parse_process_finalize(void)
     arg->argc = parse_argc;
     arg->argv = parse_argv;
     arg->kill_time = kill_time;
+    arg->properties = current_property_set;
 
     DEBUG3("Process %s(%s) will be started at time %f", arg->name,
 	   arg->hostname, start_time);
@@ -79,11 +83,11 @@ static void parse_process_finalize(void)
       process =
 	 (*simix_global->create_process_function)(parse_argv[0], parse_code,
 						NULL, parse_host,
-						parse_argc, parse_argv);
+						parse_argc, parse_argv, /*the props*/ current_property_set);
     else
       process =
 	  SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host,
-			       parse_argc, parse_argv);
+			       parse_argc, parse_argv, /*the props*/ current_property_set);
 
     if (kill_time > SIMIX_get_clock()) {
       if (simix_global->kill_process_function)
@@ -118,9 +122,11 @@ void SIMIX_launch_application(const char *file)
 {
   xbt_assert0(simix_global,
 	      "SIMIX_global_init has to be called before SIMIX_launch_application.");
-  STag_surfxml_process_fun = parse_process_init;
-  ETag_surfxml_argument_fun = parse_argument;
-  ETag_surfxml_process_fun = parse_process_finalize;
+  surfxml_add_callback(STag_surfxml_process_cb_list, parse_process_init);
+  surfxml_add_callback(ETag_surfxml_argument_cb_list, parse_argument);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
+  surfxml_add_callback(ETag_surfxml_process_cb_list, parse_process_finalize);
+
   surf_parse_open(file);
   xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();

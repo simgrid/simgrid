@@ -56,6 +56,7 @@ typedef struct s_smx_simdata_process {
   smx_cond_t cond;		/* cond on which the process is blocked  */
   int argc;			/* arguments number if any */
   char **argv;			/* arguments table if any */
+  xbt_dict_t properties;
 } s_smx_simdata_process_t;
 
 typedef struct s_smx_process_arg {
@@ -66,6 +67,7 @@ typedef struct s_smx_process_arg {
   int argc;
   char **argv;
   double kill_time;
+  xbt_dict_t properties;
 } s_smx_process_arg_t, *smx_process_arg_t;
 
 /********************************* Mutex and Conditional ****************************/
@@ -122,5 +124,7 @@ void __SIMIX_cond_wait(smx_cond_t cond);
 
 void __SIMIX_cond_display_actions(smx_cond_t cond);
 void __SIMIX_action_display_conditions(smx_action_t action);
+
+xbt_dict_t current_property_set;
 
 #endif

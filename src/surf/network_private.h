@@ -24,6 +24,8 @@ typedef struct network_link_CM02 {
   e_surf_network_link_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
+  /*holds the properties associated with a link*/
+  xbt_dict_t properties;
 } s_network_link_CM02_t, *network_link_CM02_t;
 
 

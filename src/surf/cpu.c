@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 surf_cpu_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
 
-xbt_dict_t cpu_set = NULL;
+xbt_dict_t cpu_set;
 
 static void cpu_free(void *cpu)
 {
@@ -25,7 +25,8 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
 			   double power_initial,
 			   tmgr_trace_t power_trace,
 			   e_surf_cpu_state_t state_initial,
-			   tmgr_trace_t state_trace)
+			   tmgr_trace_t state_trace,
+			   xbt_dict_t cpu_properties)
 {
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
 
@@ -47,42 +48,50 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
       lmm_constraint_new(cpu_maxmin_system, cpu,
 			 cpu->power_current * cpu->power_scale);
 
+  /*add the property set*/
+  cpu->properties = cpu_properties;
+
+  current_property_set = cpu_properties;
+
   xbt_dict_set(cpu_set, name, cpu, cpu_free);
 
   return cpu;
 }
 
-static void parse_cpu(void)
+
+static void parse_cpu_init(void)
 {
-  char *name = NULL;
   double power_scale = 0.0;
   double power_initial = 0.0;
   tmgr_trace_t power_trace = NULL;
   e_surf_cpu_state_t state_initial = SURF_CPU_OFF;
   tmgr_trace_t state_trace = NULL;
 
-  name = xbt_strdup(A_surfxml_cpu_name);
-  surf_parse_get_double(&power_scale, A_surfxml_cpu_power);
-  surf_parse_get_double(&power_initial, A_surfxml_cpu_availability);
-  surf_parse_get_trace(&power_trace, A_surfxml_cpu_availability_file);
+  surf_parse_get_double(&power_scale, A_surfxml_host_power);
+  surf_parse_get_double(&power_initial, A_surfxml_host_availability);
+  surf_parse_get_trace(&power_trace, A_surfxml_host_availability_file);
 
-  xbt_assert0((A_surfxml_cpu_state == A_surfxml_cpu_state_ON) ||
-	      (A_surfxml_cpu_state == A_surfxml_cpu_state_OFF),
+  xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
+	      (A_surfxml_host_state == A_surfxml_host_state_OFF),
 	      "Invalid state");
-  if (A_surfxml_cpu_state == A_surfxml_cpu_state_ON)
+  if (A_surfxml_host_state == A_surfxml_host_state_ON)
     state_initial = SURF_CPU_ON;
-  if (A_surfxml_cpu_state == A_surfxml_cpu_state_OFF)
+  if (A_surfxml_host_state == A_surfxml_host_state_OFF)
     state_initial = SURF_CPU_OFF;
-  surf_parse_get_trace(&state_trace, A_surfxml_cpu_state_file);
+  surf_parse_get_trace(&state_trace, A_surfxml_host_state_file); 
 
-  cpu_new(name, power_scale, power_initial, power_trace, state_initial,
-	  state_trace);
+  current_property_set = xbt_dict_new();
+  cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace, state_initial,
+	  state_trace, /*add the properties*/ current_property_set);
+
 }
 
 static void parse_file(const char *file)
 {
   surf_parse_reset_parser();
-  ETag_surfxml_cpu_fun = parse_cpu;
+  surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+
   surf_parse_open(file);
   xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();
@@ -334,6 +343,11 @@ static double get_available_speed(void *cpu)
   return ((cpu_Cas01_t) cpu)->power_current;
 }
 
+static xbt_dict_t get_properties(void *cpu)
+{
+ return ((cpu_Cas01_t) cpu)->properties;
+}
+
 static void finalize(void)
 {
   xbt_dict_free(&cpu_set);
@@ -411,6 +425,8 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->extension_public->get_speed = get_speed;
   surf_cpu_model->extension_public->get_available_speed =
       get_available_speed;
+  /*manage the properties of the cpu*/
+  surf_cpu_model->common_public->get_cpu_properties = get_properties;
 
   if(!cpu_set) cpu_set = xbt_dict_new();
   if (!cpu_maxmin_system) cpu_maxmin_system = lmm_system_new();

@@ -1,36 +1,40 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform_description ((include|cpu|router|network_link)*,(include|route|process)*)>
+<!ELEMENT platform_description (include*|(host*,router*,link*,route*,process*))>
 <!ATTLIST platform_description version CDATA "0.0">
 
 <!ELEMENT include EMPTY>
 <!ATTLIST include file CDATA #REQUIRED>
 
-<!ELEMENT cpu EMPTY>
-<!ATTLIST cpu name CDATA #REQUIRED>
-<!ATTLIST cpu power CDATA #REQUIRED>
-<!ATTLIST cpu availability CDATA "1.0">
-<!ATTLIST cpu availability_file CDATA "">
-<!ATTLIST cpu state (ON|OFF) "ON">
-<!ATTLIST cpu state_file CDATA "">
-<!ATTLIST cpu interference_send CDATA "1.0">
-<!ATTLIST cpu interference_recv CDATA "1.0">
-<!ATTLIST cpu interference_send_recv CDATA "1.0">
-<!ATTLIST cpu max_outgoing_rate CDATA "-1.0">
+<!ELEMENT host (prop*)>
+<!ATTLIST host id CDATA #REQUIRED>
+<!ATTLIST host power CDATA #REQUIRED>
+<!ATTLIST host availability CDATA "1.0">
+<!ATTLIST host availability_file CDATA "">
+<!ATTLIST host state (ON|OFF) "ON">
+<!ATTLIST host state_file CDATA "">
+<!ATTLIST host interference_send CDATA "1.0">
+<!ATTLIST host interference_recv CDATA "1.0">
+<!ATTLIST host interference_send_recv CDATA "1.0">
+<!ATTLIST host max_outgoing_rate CDATA "-1.0">
+
+<!ELEMENT prop EMPTY>
+<!ATTLIST prop id CDATA #REQUIRED>
+<!ATTLIST prop value CDATA #REQUIRED>
 
 <!ELEMENT router EMPTY>
-<!ATTLIST router name CDATA #REQUIRED>
+<!ATTLIST router id CDATA #REQUIRED>
 
-<!ELEMENT network_link EMPTY>
-<!ATTLIST network_link name CDATA #REQUIRED>
-<!ATTLIST network_link bandwidth CDATA  #REQUIRED>
-<!ATTLIST network_link bandwidth_file CDATA "">
-<!ATTLIST network_link latency CDATA "0.0">
-<!ATTLIST network_link latency_file CDATA "">
-<!ATTLIST network_link state (ON|OFF) "ON">
-<!ATTLIST network_link state_file CDATA "">
-<!ATTLIST network_link sharing_policy (SHARED|FATPIPE) "SHARED">
+<!ELEMENT link (prop*)>
+<!ATTLIST link id CDATA #REQUIRED>
+<!ATTLIST link bandwidth CDATA  #REQUIRED>
+<!ATTLIST link bandwidth_file CDATA "">
+<!ATTLIST link latency CDATA "0.0">
+<!ATTLIST link latency_file CDATA "">
+<!ATTLIST link state (ON|OFF) "ON">
+<!ATTLIST link state_file CDATA "">
+<!ATTLIST link sharing_policy (SHARED|FATPIPE) "SHARED">
 
-<!ELEMENT route (route_element*)>
+<!ELEMENT route (link:ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
 <!ATTLIST route impact_on_src CDATA "0.0">
@@ -38,10 +42,10 @@
 <!ATTLIST route impact_on_src_with_other_recv CDATA "0.0">
 <!ATTLIST route impact_on_dst_with_other_send CDATA "0.0">
 
-<!ELEMENT route_element EMPTY>
-<!ATTLIST route_element name CDATA #REQUIRED>
+<!ELEMENT link:ctn EMPTY>
+<!ATTLIST link:ctn id CDATA #REQUIRED>
 
-<!ELEMENT process (argument*)>
+<!ELEMENT process ((argument|prop)*)>
 <!ATTLIST process host CDATA #REQUIRED>
 <!ATTLIST process function CDATA #REQUIRED>
 <!ATTLIST process start_time CDATA "-1.0">

@@ -375,7 +375,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 	DEBUG2("Launching %s on %s", args->name, args->hostname);
 	process = SIMIX_process_create(args->name, args->code,
 				       args->data, args->hostname,
-				       args->argc, args->argv);
+				       args->argc, args->argv, args->properties);
 	if (args->kill_time > SIMIX_get_clock()) {
 	  surf_timer_model->extension_public->set(args->kill_time,
 						     (void *)

@@ -39,6 +39,10 @@ XBT_PUBLIC(int) MSG_get_host_msgload(m_host_t host);
 XBT_PUBLIC(double) MSG_get_host_speed(m_host_t h);
 XBT_PUBLIC(int) MSG_host_is_avail (m_host_t h);
 
+/*property handlers*/
+XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(m_host_t host);
+XBT_PUBLIC(const char*) MSG_host_get_property_value(m_host_t host, char* name);
+
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
 
 XBT_PUBLIC(m_host_t) MSG_get_host_by_name(const char *name);
@@ -52,6 +56,9 @@ XBT_PUBLIC(m_process_t) MSG_process_create(const char *name,
 XBT_PUBLIC(m_process_t) MSG_process_create_with_arguments(const char *name,
 					      xbt_main_func_t code, void *data,
 					      m_host_t host, int argc, char **argv);
+XBT_PUBLIC(m_process_t) MSG_process_create_with_environment(const char *name,
+					      xbt_main_func_t code, void *data,
+					      m_host_t host, int argc, char **argv, xbt_dict_t properties);
 XBT_PUBLIC(void) MSG_process_kill(m_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
 
@@ -67,6 +74,10 @@ XBT_PUBLIC(const char *)MSG_process_get_name(m_process_t process);
 XBT_PUBLIC(int) MSG_process_self_PID(void);
 XBT_PUBLIC(int) MSG_process_self_PPID(void);
 XBT_PUBLIC(m_process_t) MSG_process_self(void);
+
+/*property handlers*/
+XBT_PUBLIC(xbt_dict_t) MSG_process_get_properties(m_process_t process);
+XBT_PUBLIC(const char*) MSG_process_get_property_value(m_process_t process, char* name);
 
 XBT_PUBLIC(MSG_error_t) MSG_process_suspend(m_process_t process);
 XBT_PUBLIC(MSG_error_t) MSG_process_resume(m_process_t process);

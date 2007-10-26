@@ -130,6 +130,35 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
 }
 
 /**
+ * \brief Returns the value of a certain workstation property
+ *
+ * \param workstation a workstation
+ * \param name a property name
+ * \return value of a property
+ */
+const char* SD_workstation_get_property_value(SD_workstation_t ws, char* name)
+{
+  return xbt_dict_get_or_null(SD_workstation_get_properties(ws), name);
+}
+
+
+/**
+ * \brief Returns a xbt_dynar_t consisting of the list of properties assigned to this workstation
+ *
+ * \param workstation a workstation
+ * \return the dictionary containing the properties associated with the workstation
+ */
+xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
+{
+  SD_CHECK_INIT_DONE();
+  xbt_assert0((workstation != NULL), "Invalid parameters");
+
+  return (surf_workstation_model->common_public->get_cpu_properties(workstation->surf_workstation));
+
+}
+
+
+/**
  * \brief Returns the route between two workstations
  *
  * Use SD_route_get_size() to know the array size.

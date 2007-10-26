@@ -8,6 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
+#include "xbt/dict.h"
 #include "gras_modinter.h" /* module initialization interface */
 #include "gras/Virtu/virtu_sg.h"
 #include "gras/Msg/msg_interface.h" /* For some checks at simulation end */
@@ -19,12 +20,12 @@ static long int PID = 1;
 
 
 void gras_agent_spawn(const char *name, void *data, 
-		      xbt_main_func_t code, int argc, char *argv[]) {
+		      xbt_main_func_t code, int argc, char *argv[], xbt_dict_t properties) {
    
    SIMIX_process_create(name, code,
 			data,
 			gras_os_myname(), 
-			argc, argv);
+			argc, argv, properties);
 }
 
 /* **************************************************************************
@@ -136,6 +137,26 @@ gras_libdata_by_name_from_remote(const char *name, smx_process_t p) {
   return gras_libdata_by_name_from_procdata(name, pd);
 }   
 
+/**
+ * \brief Returns the value of a property for the current gras process
+ *
+ * \return the value of the property
+ */
+const char* gras_process_property_value(char* name)
+{
+ return xbt_dict_get_or_null(SIMIX_process_get_properties(SIMIX_process_self()), name);
+}
+
+/**
+ * \brief Returns the dictionary of properties for the current gras process
+ *
+ * \return the dictionary
+ */
+xbt_dict_t gras_process_properties(void)
+{
+  return SIMIX_process_get_properties(SIMIX_process_self());
+}
+
 /* **************************************************************************
  * OS virtualization function
  * **************************************************************************/
@@ -159,6 +180,26 @@ int gras_os_getpid(void) {
      return ((gras_procdata_t*)process->data)->pid;
   else
     return 0;
+}
+
+/**
+ * \brief Returns the value of a property for the current gras os
+ *
+ * \return the value of the property
+ */
+const char* gras_os_property_value(char* name)
+{
+ return xbt_dict_get_or_null(SIMIX_host_get_properties(SIMIX_process_get_host(SIMIX_process_self())), name);
+}
+
+/**
+ * \brief Returns the dictionary of properties for the gras host
+ *
+ * \return the dictionary
+ */
+xbt_dict_t gras_os_host_properties(void)
+{
+  return SIMIX_host_get_properties(SIMIX_process_get_host(SIMIX_process_self()));
 }
 
 /* **************************************************************************

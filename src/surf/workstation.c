@@ -251,6 +251,12 @@ static double get_available_speed(void *workstation)
       get_available_speed(((workstation_CLM03_t) workstation)->cpu);
 }
 
+static xbt_dict_t get_properties(void *workstation)
+{
+  return surf_cpu_model->common_public->
+      get_cpu_properties(((workstation_CLM03_t) workstation)->cpu);
+}
+
 static surf_action_t execute_parallel_task(int workstation_nb,
 					   void **workstation_list,
 					   double *computation_amount,
@@ -383,6 +389,10 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension_public->get_speed = get_speed;
   surf_workstation_model->extension_public->get_available_speed =
       get_available_speed;
+
+  /*manage the properties of the workstation*/
+  surf_workstation_model->common_public->get_cpu_properties = get_properties;
+
   surf_workstation_model->extension_public->communicate = communicate;
   surf_workstation_model->extension_public->execute_parallel_task =
       execute_parallel_task;

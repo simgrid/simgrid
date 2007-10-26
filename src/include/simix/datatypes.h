@@ -75,7 +75,6 @@ typedef struct s_smx_process {
    s_xbt_swag_hookup_t synchro_hookup;
    s_xbt_swag_hookup_t host_proc_hookup;
    void *data;			/**< @brief user data */
-
 } s_smx_process_t;
 /** @} */
 /** @brief Agent datatype  

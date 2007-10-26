@@ -211,6 +211,22 @@ smx_host_t SIMIX_host_get_by_name(const char *name)
 }
 
 /**
+ * \brief Returns a xbt_dynar_t consisting of the list of properties assigned to this host
+ *
+ * \param host a host
+ * \return the dynamic array consisting of property names
+ */
+xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
+{
+  xbt_assert0((host != NULL), "Invalid parameters");
+
+  return (surf_workstation_model->
+	  common_public->get_cpu_properties(host->simdata->host));
+
+}
+
+
+/**
  * \brief Return the state of a workstation
  *
  * Return the state of a workstation. Two states are possible, 1 if the host is active or 0 if it has crashed.

@@ -8,6 +8,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/dict.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
 				"Logging specific to SIMIX (process)");
@@ -54,7 +55,7 @@ void SIMIX_process_cleanup(void *arg)
 smx_process_t SIMIX_process_create(const char *name,
 				   xbt_main_func_t code, void *data,
 				   const char *hostname, int argc,
-				   char **argv)
+				   char **argv, /*props*/xbt_dict_t properties)
 {
   smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t, 1);
   smx_process_t process = xbt_new0(s_smx_process_t, 1);
@@ -79,6 +80,9 @@ smx_process_t SIMIX_process_create(const char *name,
   process->simdata = simdata;
   process->data = data;
 
+  /* Add properties*/
+  simdata->properties = properties;
+
   xbt_swag_insert(process, host->simdata->process_list);
 
   /* fix current_process, about which xbt_context_start mocks around */
@@ -92,7 +96,6 @@ smx_process_t SIMIX_process_create(const char *name,
 
   return process;
 }
-
 /** 
  * \brief Creates and runs a new #smx_process_t hosting a JAVA thread
  *
@@ -248,6 +251,16 @@ const char *SIMIX_process_get_name(smx_process_t process)
 	       && (process->simdata)), "Invalid parameters");
 
   return (process->name);
+}
+
+/** \ingroup m_process_management
+ * \brief Return the properties
+ *
+ * This functions returns the properties associated with this process
+ */
+xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
+{
+  return process->simdata->properties;
 }
 
 /**

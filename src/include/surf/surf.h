@@ -141,6 +141,13 @@ typedef struct surf_model_public {
   void (*set_max_duration) (surf_action_t action, double duration); /**< Set the max duration of an action*/
   void (*set_priority) (surf_action_t action, double priority); /**< Set the priority of an action */
   const char *name; /**< Name of this model */
+
+  /*for the properties of the link*/
+  xbt_dict_t (*get_link_properties) (void* link);
+
+  /*for the properties of the cpu*/
+  xbt_dict_t (*get_cpu_properties) (void* cpu);
+
 } s_surf_model_public_t, *surf_model_public_t;
 
 /** \brief Private data available on all models
@@ -381,6 +388,7 @@ typedef struct surf_workstation_model_extension_public {
   surf_action_t(*communicate) (void *workstation_src,                  /**< Execute a communication amount between two workstations */
 			       void *workstation_dst, double size,
 			       double max_rate);
+
   surf_action_t(*execute_parallel_task) (int workstation_nb,           /**< Execute a parallel task on several workstations */
 					 void **workstation_list,
 					 double *computation_amount,
@@ -540,6 +548,31 @@ XBT_PUBLIC(double)surf_get_clock(void);
  */
 XBT_PUBLIC(void) surf_exit(void);
 
+/* Prototypes of the functions that handle the properties */
+void parse_properties(void);
+void free_string(void*);
+
+/*Add callback lists*/
+xbt_dynar_t STag_surfxml_platform_description_cb_list;
+xbt_dynar_t ETag_surfxml_platform_description_cb_list;
+xbt_dynar_t STag_surfxml_host_cb_list;
+xbt_dynar_t ETag_surfxml_host_cb_list;
+xbt_dynar_t STag_surfxml_router_cb_list;
+xbt_dynar_t ETag_surfxml_router_cb_list;
+xbt_dynar_t STag_surfxml_link_cb_list;
+xbt_dynar_t ETag_surfxml_link_cb_list;
+xbt_dynar_t STag_surfxml_route_cb_list;
+xbt_dynar_t ETag_surfxml_route_cb_list;
+xbt_dynar_t STag_surfxml_link_c_ctn_cb_list;
+xbt_dynar_t ETag_surfxml_link_c_ctn_cb_list;
+xbt_dynar_t STag_surfxml_process_cb_list;
+xbt_dynar_t ETag_surfxml_process_cb_list;
+xbt_dynar_t STag_surfxml_argument_cb_list;
+xbt_dynar_t ETag_surfxml_argument_cb_list;
+xbt_dynar_t STag_surfxml_prop_cb_list;
+xbt_dynar_t ETag_surfxml_prop_cb_list;
+
+XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function);
 
 SG_END_DECL()
 

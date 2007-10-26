@@ -54,7 +54,7 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->max_channel = 0;
     msg_global->PID = 1;
 
-    SIMIX_function_register_process_create(_MSG_process_create_from_SIMIX);
+    SIMIX_function_register_process_create(_MSG_process_create_with_env_from_SIMIX);
     SIMIX_function_register_process_cleanup(__MSG_process_cleanup);
     SIMIX_function_register_process_kill(_MSG_process_kill_from_SIMIX);
   }

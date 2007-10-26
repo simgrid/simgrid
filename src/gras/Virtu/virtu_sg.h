@@ -50,6 +50,5 @@ void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p);
  * the same order, which is wrong if they init amok modules in different
  * order.
  */
-   
-   
+
 #endif /* VIRTU_SG_H */

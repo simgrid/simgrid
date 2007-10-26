@@ -46,7 +46,7 @@ static void network_link_free(void *nw_link)
 /* name: some name for the link, from the XML */
 /* bw: The bandwidth value            */
 /* lat: The latency value             */
-static void network_link_new(char *name, double bw, double lat)
+static void network_link_new(char *name, double bw, double lat, xbt_dict_t props)
 {
   static int link_count = -1;
   network_link_GTNETS_t gtnets_link;
@@ -87,6 +87,9 @@ static void network_link_new(char *name, double bw, double lat)
   gtnets_link->bw_current = bw;
   gtnets_link->lat_current = lat;
   gtnets_link->id = link_count;
+  /* Add the properties */
+  gtnets_link->properties = current_property_set;
+
   xbt_dict_set(network_link_set, name, gtnets_link, network_link_free);
 
   return;
@@ -177,8 +180,10 @@ static void route_onehop_new(int src_id, int dst_id, char **links,
   }
 }
 
+
+
 /* Parse the XML for a network link */
-static void parse_network_link(void)
+static void parse_network_link_init(void)
 {
   char *name;
   double bw;
@@ -213,10 +218,9 @@ static void parse_network_link(void)
 	  ("The GTNetS network model doesn't support link state traces");
 #endif
   }
-
-
   /* KF: remove several arguments to network_link_new */
-  network_link_new(name, bw, lat);
+  current_property_set = xbt_dict_new();
+  network_link_new(name, bw, lat, current_property_set);
 }
 
 static int nb_link = 0;
@@ -269,47 +273,20 @@ static void parse_route_set_onehop_route(void)
 /* Main XML parsing */
 static void parse_file(const char *file)
 {
-  /* Figuring out the network links */
   surf_parse_reset_parser();
-  ETag_surfxml_network_link_fun = parse_network_link;
+
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+  surfxml_add_callback(STag_surfxml_router_cb_list, &parse_route_set_routers);
+  surfxml_add_callback(STag_surfxml_network_link_cb_list, &parse_network_link_init);
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_route_element_cb_list, &parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_onehop_route);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
+
   surf_parse_open(file);
   xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();
 
-  /* Figuring out the network cards used */
-  /* KF
-     surf_parse_reset_parser();
-     STag_surfxml_route_fun=parse_route_set_endpoints;
-     surf_parse_open(file);
-     xbt_assert1((!surf_parse()),"Parse error in %s",file);
-     surf_parse_close();
-   */
-
-  /* KF: Figuring out the router (considered as part of
-     network cards) used. */
-  surf_parse_reset_parser();
-  STag_surfxml_router_fun = parse_route_set_routers;
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
-  surf_parse_close();
-
-  /* Building the one-hop routes */
-  surf_parse_reset_parser();
-  STag_surfxml_route_fun = parse_route_set_endpoints;
-  ETag_surfxml_route_element_fun = parse_route_elem;
-  ETag_surfxml_route_fun = parse_route_set_onehop_route;
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
-  surf_parse_close();
-
-  /* Building the routes */
-  surf_parse_reset_parser();
-  STag_surfxml_route_fun = parse_route_set_endpoints;
-  ETag_surfxml_route_element_fun = parse_route_elem;
-  ETag_surfxml_route_fun = parse_route_set_route;
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
-  surf_parse_close();
 }
 
 static void *name_service(const char *name)
@@ -321,6 +298,12 @@ static const char *get_resource_name(void *resource_id)
 {
   return ((network_card_GTNETS_t) resource_id)->name;
 }
+
+static xbt_dict_t get_link_property_list(void *link)
+{
+  return ((network_card_GTNETS_t) link)->properties;
+}
+
 
 /* We do not care about this: only used for traces */
 static int resource_used(void *resource_id)
@@ -602,6 +585,9 @@ static void surf_network_model_init_internal(void)
   surf_network_model->common_public->is_suspended = action_is_suspended;
 
   surf_network_model->extension_public->communicate = communicate;
+
+  /*for the props of the link*/
+  surf_network_model->common_public->get_link_properties =  get_link_property_list;
 
   network_link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();

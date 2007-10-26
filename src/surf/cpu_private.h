@@ -27,6 +27,8 @@ typedef struct cpu_Cas01 {
   e_surf_cpu_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
+  /*Handles the properties that can be added to cpu's*/
+  xbt_dict_t properties;
 } s_cpu_Cas01_t, *cpu_Cas01_t;
 
 extern xbt_dict_t cpu_set;

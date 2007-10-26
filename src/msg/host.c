@@ -186,6 +186,32 @@ double MSG_get_host_speed(m_host_t h)
   return (SIMIX_host_get_speed(h->simdata->smx_host));
 }
 
+/** \ingroup m_host_management
+ * \brief Returns the value of a certain host property
+ *
+ * \param host a host
+ * \param name a property name
+ * \return value of a property
+ */
+const char* MSG_host_get_property_value(m_host_t host, char* name)
+{
+  return xbt_dict_get_or_null(MSG_host_get_properties(host), name);
+}
+
+/** \ingroup m_host_management
+ * \brief Returns a xbt_dynar_t consisting of the list of properties assigned to this host
+ *
+ * \param host a host
+ * \return a dict containing the properties
+ */
+xbt_dict_t MSG_host_get_properties(m_host_t host)
+{
+  xbt_assert0((host != NULL), "Invalid parameters");
+
+  return (SIMIX_host_get_properties(host->simdata->smx_host));
+}
+
+
 /** \ingroup msg_gos_functions
  * \brief Determine if a host is available.
  *

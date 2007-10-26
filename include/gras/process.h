@@ -11,10 +11,11 @@
 #define GRAS_PROCESS_H
 
 #include "xbt/misc.h"  /* SG_BEGIN_DECL */
+#include "xbt/dict.h"
 
 SG_BEGIN_DECL()
 
-void gras_agent_spawn(const char *name, void *data, xbt_main_func_t code, int argc, char *argv[]);
+void gras_agent_spawn(const char *name, void *data, xbt_main_func_t code, int argc, char *argv[], xbt_dict_t properties);
   
   
 /****************************************************************************/

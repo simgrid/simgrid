@@ -48,6 +48,6 @@ gras_procdata_t *gras_procdata_get(void) {
 }
 
 void gras_agent_spawn(const char *name, void *data, 
-		      xbt_main_func_t code, int argc, char *argv[]) {
+		      xbt_main_func_t code, int argc, char *argv[], xbt_dict_t properties) {
    THROW_UNIMPLEMENTED;
 }

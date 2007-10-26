@@ -69,6 +69,16 @@ void *_MSG_process_create_from_SIMIX(const char *name,
 						    argc, argv);
 }
 
+/* This function creates a MSG process with properties. It has the prototype by SIMIX_function_register_process_create */
+void *_MSG_process_create_with_env_from_SIMIX(const char *name,
+				     xbt_main_func_t code, void *data,
+				     char *hostname, int argc, char **argv, xbt_dict_t properties)
+{
+  m_host_t host = MSG_get_host_by_name(hostname);
+  return (void *) MSG_process_create_with_environment(name, code, data, host,
+						    argc, argv,properties);
+}
+
 
 /** \ingroup m_process_management
  * \brief Creates and runs a new #m_process_t.
@@ -112,7 +122,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   simdata->argv = argv;
   simdata->s_process = SIMIX_process_create(name, code,
 					    (void *) process, host->name,
-					    argc, argv);
+					    argc, argv, NULL);
 
   if (SIMIX_process_self()) {
     simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
@@ -125,13 +135,75 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   /* Process structure */
   process->name = xbt_strdup(name);
   process->simdata = simdata;
-  process->data = data;
+  process->data = data ;
 
   xbt_fifo_unshift(msg_global->process_list, process);
 
   return process;
 }
 
+/** \ingroup m_process_management
+ * \brief Creates and runs a new #m_process_t.
+
+ * A constructor for #m_process_t taking four arguments and returning the 
+ * corresponding object. The structure (and the corresponding thread) is
+ * created, and put in the list of ready process.
+ * \param name a name for the object. It is for user-level information
+   and can be NULL.
+ * \param code is a function describing the behavior of the agent. It
+   should then only use functions described in \ref
+   m_process_management (to create a new #m_process_t for example),
+   in \ref m_host_management (only the read-only functions i.e. whose
+   name contains the word get), in \ref m_task_management (to create
+   or destroy some #m_task_t for example) and in \ref
+   msg_gos_functions (to handle file transfers and task processing).
+ * \param data a pointer to any data one may want to attach to the new
+   object.  It is for user-level information and can be NULL. It can
+   be retrieved with the function \ref MSG_process_get_data.
+ * \param host the location where the new agent is executed.
+ * \param argc first argument passed to \a code
+ * \param argv second argument passed to \a code
+ * \param properties list a properties defined for this process
+ * \see m_process_t
+ * \return The new corresponding object.
+ */
+m_process_t MSG_process_create_with_environment(const char *name,
+					      xbt_main_func_t code,
+					      void *data, m_host_t host,
+					      int argc, char **argv, xbt_dict_t properties)
+{
+  simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
+  m_process_t process = xbt_new0(s_m_process_t, 1);
+  xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
+
+  /* Simulator Data */
+  simdata->PID = msg_global->PID++;
+  simdata->waiting_task = NULL;
+  simdata->m_host = host;
+  simdata->argc = argc;
+  simdata->argv = argv;
+  simdata->s_process = SIMIX_process_create(name, code,
+					    (void *) process, host->name,
+					    argc, argv, properties);
+
+  if (SIMIX_process_self()) {
+    simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
+  } else {
+    simdata->PPID = -1;
+  }
+  simdata->last_errno = MSG_OK;
+
+
+  /* Process structure */
+  process->name = xbt_strdup(name);
+  process->simdata = simdata;
+  process->data = data ;
+
+  xbt_fifo_unshift(msg_global->process_list, process);
+
+  return process;
+
+}
 
 void _MSG_process_kill_from_SIMIX(void *p)
 {
@@ -285,6 +357,31 @@ const char *MSG_process_get_name(m_process_t process)
 	       && (process->simdata)), "Invalid parameters");
 
   return (process->name);
+}
+
+/** \ingroup m_process_management
+ * \brief Returns the value of a certain process property
+ *
+ * \param process a process
+ * \param name a property name
+ * \return value of a property
+ */
+const char* MSG_process_get_property_value(m_process_t process, char* name)
+{
+  return xbt_dict_get_or_null(MSG_process_get_properties(process), name);
+}
+
+/** \ingroup m_process_management
+ * \brief Return the list of properties
+ *
+ * This functions returns all the parameters associated with a process
+ */
+xbt_dict_t MSG_process_get_properties(m_process_t process)
+{
+   xbt_assert0((process != NULL), "Invalid parameters");
+
+  return (SIMIX_process_get_properties(((simdata_process_t)process->simdata)->s_process));
+
 }
 
 /** \ingroup m_process_management

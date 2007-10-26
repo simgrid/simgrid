@@ -17,6 +17,8 @@
 #define NO_MAX_DURATION -1.0
 #define SG_TCP_CTE_GAMMA 20000.0
 
+xbt_dict_t current_property_set;
+
 extern const char *surf_action_state_names[6];
 
 typedef enum {
@@ -65,7 +67,6 @@ FILE * surf_fopen(const char *name, const char *mode);
 
 extern tmgr_history_t history;
 extern xbt_dynar_t surf_path;
-
 
 /*
  * Returns the initial path. On Windows the initial path is
