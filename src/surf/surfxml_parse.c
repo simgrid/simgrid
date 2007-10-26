@@ -295,8 +295,9 @@ void surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function)
 void surfxml_call_cb_functions(xbt_dynar_t cb_list)
 {
   int iterator;
-  void_f_void_t data;
-  xbt_dynar_foreach(cb_list, iterator, data){
-       (*data)();
+  void_f_void_t fun;
+  xbt_dynar_foreach(cb_list, iterator, fun){
+       DEBUG2("call %p %p",fun,*fun);
+       (*fun)();
     }
 }

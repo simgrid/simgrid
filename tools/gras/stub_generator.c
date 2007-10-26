@@ -81,6 +81,11 @@ static void parse_process_finalize(void)
   /*VERB1("Function: %s",process.argv[0]);*/
 }
 
+void surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function)
+{
+   xbt_dynar_push(cb_list, &function);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -116,9 +121,11 @@ int main(int argc, char *argv[])
 
   project_name = argv[1];
 
-  STag_surfxml_process_fun = parse_process_init;
-  ETag_surfxml_argument_fun = parse_argument;
-  ETag_surfxml_process_fun = parse_process_finalize;
+  surf_parse_reset_parser();
+  DEBUG2("%p %p",parse_process_init,&parse_process_init);
+  surfxml_add_callback(STag_surfxml_process_cb_list, &parse_process_init);
+  surfxml_add_callback(ETag_surfxml_argument_cb_list, &parse_argument);
+  surfxml_add_callback(ETag_surfxml_process_cb_list, &parse_process_finalize);
   
   for(i=2; i<argc; i++) {
      deployment_file = argv[i];
