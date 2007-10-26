@@ -69,13 +69,12 @@ gras_os_hostport(void);
 XBT_PUBLIC(int) gras_os_getpid(void);
 
 
-/* The following functions handle process property query */
+/* Properties related */
 XBT_PUBLIC(xbt_dict_t) gras_process_properties(void);
 XBT_PUBLIC(const char*) gras_process_property_value(char* name);
 
-/* The following functions handle host/cpu property query */
 XBT_PUBLIC(xbt_dict_t) gras_os_host_properties(void);
-XBT_PUBLIC(const char*) gras_os_property_value(char* name);   
+XBT_PUBLIC(const char*) gras_os_host_property_value(char* name);   
 
 /** @} */
 SG_END_DECL()

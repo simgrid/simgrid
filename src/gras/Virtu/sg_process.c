@@ -137,20 +137,13 @@ gras_libdata_by_name_from_remote(const char *name, smx_process_t p) {
   return gras_libdata_by_name_from_procdata(name, pd);
 }   
 
-/**
- * \brief Returns the value of a property for the current gras process
- *
- * \return the value of the property
- */
-const char* gras_process_property_value(char* name)
-{
+/** @brief retrieve the value of a given process property (or NULL if not defined) */
+const char* gras_process_property_value(char* name) {
  return xbt_dict_get_or_null(SIMIX_process_get_properties(SIMIX_process_self()), name);
 }
 
-/**
- * \brief Returns the dictionary of properties for the current gras process
- *
- * \return the dictionary
+/** @brief retrieve the process properties dictionnary
+ *  @warning it's the original one, not a copy. Don't mess with it
  */
 xbt_dict_t gras_process_properties(void)
 {
@@ -182,23 +175,16 @@ int gras_os_getpid(void) {
     return 0;
 }
 
-/**
- * \brief Returns the value of a property for the current gras os
- *
- * \return the value of the property
- */
-const char* gras_os_property_value(char* name)
-{
+
+/** @brief retrieve the value of a given host property (or NULL if not defined) */
+const char* gras_os_host_property_value(char* name) {
  return xbt_dict_get_or_null(SIMIX_host_get_properties(SIMIX_process_get_host(SIMIX_process_self())), name);
 }
 
-/**
- * \brief Returns the dictionary of properties for the gras host
- *
- * \return the dictionary
+/** @brief retrieve the host properties dictionnary
+ *  @warning it's the original one, not a copy. Don't mess with it
  */
-xbt_dict_t gras_os_host_properties(void)
-{
+xbt_dict_t gras_os_host_properties(void) {
   return SIMIX_host_get_properties(SIMIX_process_get_host(SIMIX_process_self()));
 }
 
