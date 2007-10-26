@@ -491,7 +491,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
 		if(sem_trywait(sem->s) < 0)
 			THROW2(system_error,errno,"sem_trywait(%p) failed: %s",sem,strerror(errno));
 		#else
-		if(sem_trywait(&(sem->s)) < 0)
+		if(sem_trywait(sem->s) < 0)
 			THROW2(system_error,errno,"sem_trywait(%p) failed: %s",sem,strerror(errno));
 		#endif		
 	}
