@@ -86,7 +86,7 @@ int father (int argc,char *argv[]) {
      child_args[0] = xbt_strdup("child");
      child_args[1] = bprintf("%d",port);
      child_args[2] = NULL;
-     gras_agent_spawn("child",NULL,child,2,child_args);
+     gras_agent_spawn("child",NULL,child,2,child_args,NULL);
   }
      
   /* 7. Wait to be contacted be the kids */
