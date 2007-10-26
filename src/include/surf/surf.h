@@ -484,14 +484,14 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_workstation_model_description[]
  *
  *  \see workstation_set
  */
-XBT_PUBLIC_DATA(xbt_dict_t) network_link_set;
+XBT_PUBLIC_DATA(xbt_dict_t) link_set;
 
 /** \brief The workstations
  *  \ingroup SURF_models
  *
  *  This dict contains all workstations.
  *
- *  \see network_link_set
+ *  \see link_set
  */
 XBT_PUBLIC_DATA(xbt_dict_t)  workstation_set;
 

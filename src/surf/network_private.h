@@ -21,12 +21,12 @@ typedef struct network_link_CM02 {
   tmgr_trace_event_t bw_event;
   double lat_current;
   tmgr_trace_event_t lat_event;
-  e_surf_network_link_state_t state_current;
+  e_surf_link_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
   /*holds the properties associated with a link*/
   xbt_dict_t properties;
-} s_network_link_CM02_t, *network_link_CM02_t;
+} s_link_CM02_t, *link_CM02_t;
 
 
 typedef struct network_card_CM02 {
@@ -49,7 +49,7 @@ extern xbt_dict_t network_card_set;
 
 
 extern int card_number;
-extern network_link_CM02_t **routing_table;
+extern link_CM02_t **routing_table;
 extern int *routing_table_size;
 
 #define ROUTE(i,j) routing_table[(i)+(j)*card_number]

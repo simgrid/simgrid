@@ -12,13 +12,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
 				"Logging specific to the SURF network module");
 
 /* surf_network_model_t surf_network_model = NULL; */
-/*static xbt_dict_t network_link_set = NULL;*/
+/*static xbt_dict_t link_set = NULL;*/
 
 /* xbt_dict_t network_card_set = NULL; */
 
 #if 0
 static int card_number = 0;
-static network_link_GTNETS_t **routing_table = NULL;
+static link_GTNETS_t **routing_table = NULL;
 static int *routing_table_size = NULL;
 
 #define ROUTE(i,j) routing_table[(i)+(j)*card_number]
@@ -36,9 +36,9 @@ static int *routing_table_size = NULL;
  **/
 
 /* Free memory for a network link */
-static void network_link_free(void *nw_link)
+static void link_free(void *nw_link)
 {
-  free(((network_link_GTNETS_t) nw_link)->name);
+  free(((link_GTNETS_t) nw_link)->name);
   free(nw_link);
 }
 
@@ -46,13 +46,13 @@ static void network_link_free(void *nw_link)
 /* name: some name for the link, from the XML */
 /* bw: The bandwidth value            */
 /* lat: The latency value             */
-static void network_link_new(char *name, double bw, double lat, xbt_dict_t props)
+static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 {
   static int link_count = -1;
-  network_link_GTNETS_t gtnets_link;
+  link_GTNETS_t gtnets_link;
 
   /* KF: Check that the link wasn't added before */
-  if (xbt_dict_get_or_null(network_link_set, name)) {
+  if (xbt_dict_get_or_null(link_set, name)) {
     return;
   }
 
@@ -82,7 +82,7 @@ static void network_link_new(char *name, double bw, double lat, xbt_dict_t props
   }
 
   /* KF: Insert entry in the dictionary */
-  gtnets_link = xbt_new0(s_network_link_GTNETS_t, 1);
+  gtnets_link = xbt_new0(s_link_GTNETS_t, 1);
   gtnets_link->name = name;
   gtnets_link->bw_current = bw;
   gtnets_link->lat_current = lat;
@@ -90,7 +90,7 @@ static void network_link_new(char *name, double bw, double lat, xbt_dict_t props
   /* Add the properties */
   gtnets_link->properties = current_property_set;
 
-  xbt_dict_set(network_link_set, name, gtnets_link, network_link_free);
+  xbt_dict_set(link_set, name, gtnets_link, link_free);
 
   return;
 }
@@ -130,14 +130,14 @@ static int network_card_new(const char *name)
 static void route_new(int src_id, int dst_id, char **links, int nb_link)
 {
 #if 0
-  network_link_GTNETS_t *link_list = NULL;
+  link_GTNETS_t *link_list = NULL;
   int i;
 
   ROUTE_SIZE(src_id, dst_id) = nb_link;
   link_list = (ROUTE(src_id, dst_id) =
-	       xbt_new0(network_link_GTNETS_t, nb_link));
+	       xbt_new0(link_GTNETS_t, nb_link));
   for (i = 0; i < nb_link; i++) {
-    link_list[i] = xbt_dict_get_or_null(network_link_set, links[i]);
+    link_list[i] = xbt_dict_get_or_null(link_set, links[i]);
     free(links[i]);
   }
   free(links);
@@ -149,8 +149,8 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
   gtnets_links = (int *) calloc(nb_link, sizeof(int));
   for (i = 0; i < nb_link; i++) {
     gtnets_links[i] =
-	((network_link_GTNETS_t)
-	 (xbt_dict_get(network_link_set, links[i])))->id;
+	((link_GTNETS_t)
+	 (xbt_dict_get(link_set, links[i])))->id;
   }
 
   /* KF: Create the GTNets route */
@@ -171,8 +171,8 @@ static void route_onehop_new(int src_id, int dst_id, char **links,
 
   /* KF: Build the list of gtnets link IDs */
   linkid =
-      ((network_link_GTNETS_t)
-       (xbt_dict_get(network_link_set, links[0])))->id;
+      ((link_GTNETS_t)
+       (xbt_dict_get(link_set, links[0])))->id;
 
   /* KF: Create the GTNets route */
   if (gtnets_add_onehop_route(src_id, dst_id, linkid)) {
@@ -183,17 +183,17 @@ static void route_onehop_new(int src_id, int dst_id, char **links,
 
 
 /* Parse the XML for a network link */
-static void parse_network_link_init(void)
+static void parse_link_init(void)
 {
   char *name;
   double bw;
   double lat;
-  e_surf_network_link_state_t state;
+  e_surf_link_state_t state;
 
-  name = xbt_strdup(A_surfxml_network_link_name);
-  surf_parse_get_double(&bw, A_surfxml_network_link_bandwidth);
-  surf_parse_get_double(&lat, A_surfxml_network_link_latency);
-  state = SURF_NETWORK_LINK_ON;
+  name = xbt_strdup(A_surfxml_link_name);
+  surf_parse_get_double(&bw, A_surfxml_link_bandwidth);
+  surf_parse_get_double(&lat, A_surfxml_link_latency);
+  state = SURF_link_ON;
 
   /* Print values when no traces are specified */
   {
@@ -201,9 +201,9 @@ static void parse_network_link_init(void)
     tmgr_trace_t state_trace;
     tmgr_trace_t lat_trace;
 
-    surf_parse_get_trace(&bw_trace, A_surfxml_network_link_bandwidth_file);
-    surf_parse_get_trace(&lat_trace, A_surfxml_network_link_latency_file);
-    surf_parse_get_trace(&state_trace, A_surfxml_network_link_state_file);
+    surf_parse_get_trace(&bw_trace, A_surfxml_link_bandwidth_file);
+    surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
+    surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
 
     /*TODO Where is WARNING0 defined??? */
 #if 0
@@ -218,9 +218,9 @@ static void parse_network_link_init(void)
 	  ("The GTNetS network model doesn't support link state traces");
 #endif
   }
-  /* KF: remove several arguments to network_link_new */
+  /* KF: remove several arguments to link_new */
   current_property_set = xbt_dict_new();
-  network_link_new(name, bw, lat, current_property_set);
+  link_new(name, bw, lat, current_property_set);
 }
 
 static int nb_link = 0;
@@ -277,7 +277,7 @@ static void parse_file(const char *file)
 
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_route_set_routers);
-  surfxml_add_callback(STag_surfxml_network_link_cb_list, &parse_network_link_init);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_element_cb_list, &parse_route_elem);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_onehop_route);
@@ -443,7 +443,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   network_card_GTNETS_t card_dst = dst;
 /*
   int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
-  network_link_GTNETS_t *route = ROUTE(card_src->id, card_dst->id);
+  link_GTNETS_t *route = ROUTE(card_src->id, card_dst->id);
 */
 
 /*
@@ -503,7 +503,7 @@ static void finalize(void)
   int i, j;
 #endif
   xbt_dict_free(&network_card_set);
-  xbt_dict_free(&network_link_set);
+  xbt_dict_free(&link_set);
   xbt_swag_free(surf_network_model->common_public->states.
 		ready_action_set);
   xbt_swag_free(surf_network_model->common_public->states.
@@ -589,7 +589,7 @@ static void surf_network_model_init_internal(void)
   /*for the props of the link*/
   surf_network_model->common_public->get_link_properties =  get_link_property_list;
 
-  network_link_set = xbt_dict_new();
+  link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();
 
   /* KF: Added the initialization for GTNetS interface */

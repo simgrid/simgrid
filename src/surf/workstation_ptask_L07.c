@@ -36,7 +36,7 @@ typedef struct cpu_L07 {
 /*********** network object ***********/
 /**************************************/
 
-typedef struct network_link_L07 {
+typedef struct link_L07 {
   surf_model_t model;	/* Do not move this field */
   e_surf_workstation_model_type_t type;	/* Do not move this field */
   char *name;			/* Do not move this field */
@@ -45,15 +45,15 @@ typedef struct network_link_L07 {
   tmgr_trace_event_t lat_event;
   double bw_current;
   tmgr_trace_event_t bw_event;
-  e_surf_network_link_state_t state_current;
+  e_surf_link_state_t state_current;
   tmgr_trace_event_t state_event;
   /*holds the property list that can be associated with the link*/
   xbt_dict_t properties;
-} s_network_link_L07_t, *network_link_L07_t;
+} s_link_L07_t, *link_L07_t;
 
 
 typedef struct s_route_L07 {
-  network_link_L07_t *links;
+  link_L07_t *links;
   int size;
 } s_route_L07_t, *route_L07_t;
 
@@ -78,8 +78,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_workstation);
 static int nb_workstation = 0;
 static s_route_L07_t *routing_table = NULL;
 #define ROUTE(i,j) routing_table[(i)+(j)*nb_workstation]
-static network_link_L07_t loopback = NULL;
-static xbt_dict_t parallel_task_network_link_set = NULL;
+static link_L07_t loopback = NULL;
+static xbt_dict_t parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
 
@@ -95,7 +95,7 @@ static void update_action_bound(surf_action_workstation_L07_t action)
       cpu_L07_t card_src = action->workstation_list[i];
       cpu_L07_t card_dst = action->workstation_list[j];
       int route_size = ROUTE(card_src->id, card_dst->id).size;
-      network_link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
+      link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
       double lat = 0.0;
       
       if (action->communication_amount[i * workstation_nb + j] > 0) {
@@ -130,7 +130,7 @@ static void *name_service(const char *name)
 static const char *get_resource_name(void *resource_id)
 {
   /* We can freely cast as a cpu_L07_t because it has the same
-     prefix as network_link_L07_t. However, only cpu_L07_t
+     prefix as link_L07_t. However, only cpu_L07_t
      will theoretically be given as an argument here. */
 
   return ((cpu_L07_t) resource_id)->name;
@@ -228,10 +228,10 @@ static void action_set_priority(surf_action_t action, double priority)
 
 static int resource_used(void *resource_id)
 {
-  /* We can freely cast as a network_link_L07_t because it has
+  /* We can freely cast as a link_L07_t because it has
      the same prefix as cpu_L07_t */
   return lmm_constraint_used(ptask_maxmin_system,
-			     ((network_link_L07_t) resource_id)->
+			     ((link_L07_t) resource_id)->
 			     constraint);
 
 }
@@ -321,11 +321,11 @@ static void update_actions_state(double now, double delta)
 				    i++))) {
 	constraint_id = lmm_constraint_id(cnst);
 
-/* 	if(((network_link_L07_t)constraint_id)->type== */
+/* 	if(((link_L07_t)constraint_id)->type== */
 /* 	   SURF_WORKSTATION_RESOURCE_LINK) { */
 /* 	  DEBUG2("Checking for link %s (%p)", */
-/* 		 ((network_link_L07_t)constraint_id)->name, */
-/* 		 ((network_link_L07_t)constraint_id)); */
+/* 		 ((link_L07_t)constraint_id)->name, */
+/* 		 ((link_L07_t)constraint_id)); */
 /* 	} */
 /* 	if(((cpu_L07_t)constraint_id)->type== */
 /* 	   SURF_WORKSTATION_RESOURCE_CPU) { */
@@ -335,10 +335,10 @@ static void update_actions_state(double now, double delta)
 /* 		 ((cpu_L07_t)constraint_id)->state_current==SURF_CPU_OFF?"Off":"On"); */
 /* 	} */
 
-	if (((((network_link_L07_t) constraint_id)->type ==
+	if (((((link_L07_t) constraint_id)->type ==
 	      SURF_WORKSTATION_RESOURCE_LINK) &&
-	     (((network_link_L07_t) constraint_id)->state_current ==
-	      SURF_NETWORK_LINK_OFF)) ||
+	     (((link_L07_t) constraint_id)->state_current ==
+	      SURF_LINK_OFF)) ||
 	    ((((cpu_L07_t) constraint_id)->type ==
 	      SURF_WORKSTATION_RESOURCE_CPU) &&
 	     (((cpu_L07_t) constraint_id)->state_current ==
@@ -360,7 +360,7 @@ static void update_resource_state(void *id,
 				  double value)
 {
   cpu_L07_t cpu = id;
-  network_link_L07_t nw_link = id;
+  link_L07_t nw_link = id;
 
   if (nw_link->type == SURF_WORKSTATION_RESOURCE_LINK) {
     DEBUG2("Updating link %s (%p)", nw_link->name, nw_link);
@@ -383,9 +383,9 @@ static void update_resource_state(void *id,
 
     } else if (event_type == nw_link->state_event) {
       if (value > 0)
-	nw_link->state_current = SURF_NETWORK_LINK_ON;
+	nw_link->state_current = SURF_LINK_ON;
       else
-	nw_link->state_current = SURF_NETWORK_LINK_OFF;
+	nw_link->state_current = SURF_LINK_OFF;
     } else {
       CRITICAL0("Unknown event ! \n");
       xbt_abort();
@@ -417,10 +417,10 @@ static void finalize(void)
 {
   int i, j;
 
-  xbt_dict_free(&network_link_set);
+  xbt_dict_free(&link_set);
   xbt_dict_free(&workstation_set);
-  if (parallel_task_network_link_set != NULL) {
-    xbt_dict_free(&parallel_task_network_link_set);
+  if (parallel_task_link_set != NULL) {
+    xbt_dict_free(&parallel_task_link_set);
   }
   xbt_swag_free(surf_workstation_model->common_public->states.
 		ready_action_set);
@@ -488,12 +488,12 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   int nb_host = 0;
   double latency = 0.0;
 
-  if (parallel_task_network_link_set == NULL) {
-    parallel_task_network_link_set =
+  if (parallel_task_link_set == NULL) {
+    parallel_task_link_set =
 	xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
   }
 
-  xbt_dict_reset(parallel_task_network_link_set);
+  xbt_dict_reset(parallel_task_link_set);
 
   /* Compute the number of affected resources... */
   for (i = 0; i < workstation_nb; i++) {
@@ -501,21 +501,21 @@ static surf_action_t execute_parallel_task(int workstation_nb,
       cpu_L07_t card_src = workstation_list[i];
       cpu_L07_t card_dst = workstation_list[j];
       int route_size = ROUTE(card_src->id, card_dst->id).size;
-      network_link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
+      link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
       double lat = 0.0;
 
       if (communication_amount[i * workstation_nb + j] > 0)
 	for (k = 0; k < route_size; k++) {
 	  lat += route[k]->lat_current;
-	  xbt_dict_set(parallel_task_network_link_set, route[k]->name,
+	  xbt_dict_set(parallel_task_link_set, route[k]->name,
 		       route[k], NULL);
 	}
       latency=MAX(latency,lat);
     }
   }
 
-  nb_link = xbt_dict_length(parallel_task_network_link_set);
-  xbt_dict_reset(parallel_task_network_link_set);
+  nb_link = xbt_dict_length(parallel_task_link_set);
+  xbt_dict_reset(parallel_task_link_set);
 
   for (i = 0; i < workstation_nb; i++)
     if (computation_amount[i] > 0)
@@ -567,7 +567,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
       cpu_L07_t card_src = workstation_list[i];
       cpu_L07_t card_dst = workstation_list[j];
       int route_size = ROUTE(card_src->id, card_dst->id).size;
-      network_link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
+      link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
       
       if (communication_amount[i * workstation_nb + j] == 0.0) 
 	continue;
@@ -635,7 +635,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
   return (surf_action_t) action;
 }
 
-/* returns an array of network_link_L07_t */
+/* returns an array of link_L07_t */
 static const void **get_route(void *src, void *dst)
 {
   cpu_L07_t card_src = src;
@@ -655,23 +655,23 @@ static int get_route_size(void *src, void *dst)
 
 static const char *get_link_name(const void *link)
 {
-  return ((network_link_L07_t) link)->name;
+  return ((link_L07_t) link)->name;
 }
 
 static double get_link_bandwidth(const void *link)
 {
-  return ((network_link_L07_t) link)->bw_current;
+  return ((link_L07_t) link)->bw_current;
 }
 
 static double get_link_latency(const void *link)
 {
-  return ((network_link_L07_t) link)->lat_current;
+  return ((link_L07_t) link)->lat_current;
 }
 
 
 static xbt_dict_t get_link_properties(void *link)
 {
- return ((network_link_L07_t) link)->properties;
+ return ((link_L07_t) link)->properties;
 }
 
 
@@ -754,24 +754,24 @@ static void parse_cpu_init(void)
 	  state_initial, state_trace,/*add the properties*/current_property_set);
 }
 
-static void network_link_free(void *nw_link)
+static void link_free(void *nw_link)
 {
-  free(((network_link_L07_t) nw_link)->name);
+  free(((link_L07_t) nw_link)->name);
   free(nw_link);
 }
 
-static network_link_L07_t network_link_new(char *name,
+static link_L07_t link_new(char *name,
 					   double bw_initial,
 					   tmgr_trace_t bw_trace,
 					   double lat_initial,
 					   tmgr_trace_t lat_trace,
-					   e_surf_network_link_state_t
+					   e_surf_link_state_t
 					   state_initial,
 					   tmgr_trace_t state_trace,
-					   e_surf_network_link_sharing_policy_t
+					   e_surf_link_sharing_policy_t
 					   policy, xbt_dict_t properties)
 {
-  network_link_L07_t nw_link = xbt_new0(s_network_link_L07_t, 1);
+  link_L07_t nw_link = xbt_new0(s_link_L07_t, 1);
 
 
   nw_link->model = (surf_model_t) surf_workstation_model;
@@ -794,25 +794,25 @@ static network_link_L07_t network_link_new(char *name,
       lmm_constraint_new(ptask_maxmin_system, nw_link,
 			 nw_link->bw_current);
 
-  if (policy == SURF_NETWORK_LINK_FATPIPE)
+  if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->constraint);
 
   nw_link->properties = properties;
   
-  xbt_dict_set(network_link_set, name, nw_link, network_link_free);
+  xbt_dict_set(link_set, name, nw_link, link_free);
 
   return nw_link;
 }
 
-static void parse_network_link_init(void)
+static void parse_link_init(void)
 {
   char *name_link;
   double bw_initial;
   tmgr_trace_t bw_trace;
   double lat_initial;
   tmgr_trace_t lat_trace;
-  e_surf_network_link_state_t state_initial_link = SURF_NETWORK_LINK_ON;
-  e_surf_network_link_sharing_policy_t policy_initial_link = SURF_NETWORK_LINK_SHARED;
+  e_surf_link_state_t state_initial_link = SURF_LINK_ON;
+  e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
   tmgr_trace_t state_trace;
 
   name_link = xbt_strdup(A_surfxml_link_id);
@@ -826,39 +826,39 @@ static void parse_network_link_init(void)
 	      || (A_surfxml_link_state ==
 		  A_surfxml_link_state_OFF), "Invalid state");
   if (A_surfxml_link_state == A_surfxml_link_state_ON)
-    state_initial_link = SURF_NETWORK_LINK_ON;
+    state_initial_link = SURF_LINK_ON;
   else if (A_surfxml_link_state ==
 	   A_surfxml_link_state_OFF)
-    state_initial_link = SURF_NETWORK_LINK_OFF;
+    state_initial_link = SURF_LINK_OFF;
 
   if (A_surfxml_link_sharing_policy ==
       A_surfxml_link_sharing_policy_SHARED)
-    policy_initial_link = SURF_NETWORK_LINK_SHARED;
+    policy_initial_link = SURF_LINK_SHARED;
   else if (A_surfxml_link_sharing_policy ==
 	   A_surfxml_link_sharing_policy_FATPIPE)
-    policy_initial_link = SURF_NETWORK_LINK_FATPIPE;
+    policy_initial_link = SURF_LINK_FATPIPE;
 
   surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
 
   current_property_set = xbt_dict_new();
-  network_link_new(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
+  link_new(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
 		   state_initial_link, state_trace, policy_initial_link, current_property_set);
 
  }
 
 static void route_new(int src_id, int dst_id,
-		      network_link_L07_t * link_list, int nb_link)
+		      link_L07_t * link_list, int nb_link)
 {
   route_L07_t route = &(ROUTE(src_id, dst_id));
 
   route->size = nb_link;
   route->links = link_list =
-      xbt_realloc(link_list, sizeof(network_link_L07_t) * nb_link);
+      xbt_realloc(link_list, sizeof(link_L07_t) * nb_link);
 }
 
 static int nb_link;
 static int link_list_capacity;
-static network_link_L07_t *link_list = NULL;
+static link_L07_t *link_list = NULL;
 static int src_id = -1;
 static int dst_id = -1;
 static int is_first =0;
@@ -882,7 +882,7 @@ static void parse_route_set_endpoints(void)
 
   nb_link = 0;
   link_list_capacity = 1;
-  link_list = xbt_new(network_link_L07_t, link_list_capacity);
+  link_list = xbt_new(link_L07_t, link_list_capacity);
 }
 
 static void parse_route_elem(void)
@@ -892,11 +892,11 @@ static void parse_route_elem(void)
     link_list_capacity *= 2;
     link_list =
 	xbt_realloc(link_list,
-		    (link_list_capacity) * sizeof(network_link_L07_t));
+		    (link_list_capacity) * sizeof(link_L07_t));
   }
   TRY {
     link_list[nb_link++] =
-	xbt_dict_get(network_link_set, A_surfxml_link_c_ctn_id);
+	xbt_dict_get(link_set, A_surfxml_link_c_ctn_id);
   }
   CATCH(e) {
     RETHROW1("Link %s not found (dict raised this exception: %s)",
@@ -918,7 +918,7 @@ static void parse_file(const char *file)
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_network_link_init);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
@@ -932,13 +932,13 @@ static void parse_file(const char *file)
   for (i = 0; i < nb_workstation; i++)
     if (!ROUTE(i, i).size) {
       if (!loopback)
-	loopback = network_link_new(xbt_strdup("__MSG_loopback__"),
+	loopback = link_new(xbt_strdup("__MSG_loopback__"),
 				    498000000, NULL, 0.000015, NULL,
-				    SURF_NETWORK_LINK_ON, NULL,
-				    SURF_NETWORK_LINK_FATPIPE,NULL);
+				    SURF_LINK_ON, NULL,
+				    SURF_LINK_FATPIPE,NULL);
 
       ROUTE(i, i).size = 1;
-      ROUTE(i, i).links = xbt_new0(network_link_L07_t, 1);
+      ROUTE(i, i).links = xbt_new0(link_L07_t, 1);
       ROUTE(i, i).links[0] = loopback;
     }
 }
@@ -1030,7 +1030,7 @@ static void model_init_internal(void)
   surf_workstation_model->common_public->get_cpu_properties = get_properties;
 
   workstation_set = xbt_dict_new();
-  network_link_set = xbt_dict_new();
+  link_set = xbt_dict_new();
 
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();

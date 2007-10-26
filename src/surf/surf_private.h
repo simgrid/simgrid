@@ -22,14 +22,14 @@ xbt_dict_t current_property_set;
 extern const char *surf_action_state_names[6];
 
 typedef enum {
-  SURF_NETWORK_LINK_ON = 1,	/* Ready        */
-  SURF_NETWORK_LINK_OFF = 0	/* Running      */
-} e_surf_network_link_state_t;
+  SURF_LINK_ON = 1,	/* Ready        */
+  SURF_LINK_OFF = 0	/* Running      */
+} e_surf_link_state_t;
 
 typedef enum {
-  SURF_NETWORK_LINK_SHARED = 1,
-  SURF_NETWORK_LINK_FATPIPE = 0
-} e_surf_network_link_sharing_policy_t;
+  SURF_LINK_SHARED = 1,
+  SURF_LINK_FATPIPE = 0
+} e_surf_link_sharing_policy_t;
 
 typedef struct surf_model_private {
   int (*resource_used) (void *resource_id);

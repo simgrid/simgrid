@@ -366,7 +366,7 @@ void SD_create_environment(const char *platform_file) {
     __SD_workstation_create(surf_workstation, NULL);
   }
 
-  xbt_dict_foreach(network_link_set, cursor, name, surf_link) {
+  xbt_dict_foreach(link_set, cursor, name, surf_link) {
     __SD_link_create(surf_link, NULL);
   }
 
