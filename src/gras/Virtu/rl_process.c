@@ -51,3 +51,24 @@ void gras_agent_spawn(const char *name, void *data,
 		      xbt_main_func_t code, int argc, char *argv[], xbt_dict_t properties) {
    THROW_UNIMPLEMENTED;
 }
+
+/* **************************************************************************
+ * Properties
+ * **************************************************************************/
+
+const char* gras_process_property_value(char* name) {
+   THROW_UNIMPLEMENTED;
+}
+xbt_dict_t gras_process_properties(void) {
+   THROW_UNIMPLEMENTED;
+}
+
+const char* gras_os_host_property_value(char* name) {
+   THROW_UNIMPLEMENTED;
+}
+xbt_dict_t gras_os_host_properties(void) {
+   THROW_UNIMPLEMENTED;
+}
+
+
+  
