@@ -1,5 +1,5 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform_description (include*|(host*,router*,link*,route*,process*))>
+<!ELEMENT platform_description ((include|host|router|link)*,(include|route|process)*)>
 <!ATTLIST platform_description version CDATA "0.0">
 
 <!ELEMENT include EMPTY>
