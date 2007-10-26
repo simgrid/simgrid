@@ -31,7 +31,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
 
   cpu->model = (surf_model_t) surf_cpu_model;
-  cpu->name = name;
+  cpu->name = xbt_strdup(name);
   cpu->power_scale = power_scale;
   xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
   cpu->power_current = power_initial;
