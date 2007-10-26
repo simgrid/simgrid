@@ -1,14 +1,14 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="1">
+<platform_description version="2">
   <!-- For using with ping_pong example, very simple platform -->
-  <cpu name="Inmos" power="98095000"/>
-  <cpu name="Bellevue" power="76296000"/>
-  <network_link name="link" bandwidth="1000000" latency="0.1"/>
+  <host id="Inmos" power="98095000"/>
+  <host id="Bellevue" power="76296000"/>
+  <link id="link" bandwidth="1000000" latency="0.1"/>
   <route src="Inmos" dst="Bellevue">
-    <route_element name="link"/>
+    <link:ctn id="link"/>
   </route>
   <route src="Bellevue" dst="Inmos">
-    <route_element name="link"/>
+    <link:ctn id="link"/>
   </route>
 </platform_description>
