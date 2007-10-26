@@ -32,8 +32,9 @@ typedef struct router_KCCFLN05 {
 /**************************************/
 typedef struct cpu_KCCFLN05 {
   surf_model_t model;
+  xbt_dict_t properties;                /* Do not move this field */
   e_surf_workstation_model_type_t type;	/* Do not move this field */
-  char *name;					/* Do not move this field */
+  char *name;				/* Do not move this field */
   lmm_constraint_t constraint;
   lmm_constraint_t bus;
   double power_scale;
@@ -47,8 +48,6 @@ typedef struct cpu_KCCFLN05 {
   int id;			/* cpu and network card are a single object... */
   xbt_dynar_t incomming_communications;
   xbt_dynar_t outgoing_communications;
-  /*Handles the properties that can be added to cpu's*/
-  xbt_dict_t properties;
 } s_cpu_KCCFLN05_t, *cpu_KCCFLN05_t;
 
 /**************************************/
@@ -57,8 +56,9 @@ typedef struct cpu_KCCFLN05 {
 
 typedef struct link_KCCFLN05 {
   surf_model_t model;
+  xbt_dict_t properties;                /* Do not move this field */
   e_surf_workstation_model_type_t type;	/* Do not move this field */
-  char *name;					/* Do not move this field */
+  char *name;			      	/* Do not move this field */
   lmm_constraint_t constraint;
   double lat_current;
   tmgr_trace_event_t lat_event;
@@ -66,8 +66,6 @@ typedef struct link_KCCFLN05 {
   tmgr_trace_event_t bw_event;
   e_surf_link_state_t state_current;
   tmgr_trace_event_t state_event;
-  /*holds the properties that can be attached to the link*/
-  xbt_dict_t properties;
 } s_link_KCCFLN05_t, *link_KCCFLN05_t;
 
 
@@ -635,7 +633,7 @@ static double get_available_speed(void *cpu)
   return ((cpu_KCCFLN05_t) cpu)->power_current;
 }
 
-static xbt_dict_t get_property_list(void *cpu)
+static xbt_dict_t get_cpu_properties(void *cpu)
 {
   return ((cpu_KCCFLN05_t) cpu)->properties;
 }
@@ -860,7 +858,7 @@ static double get_link_latency(const void *link)
   return ((link_KCCFLN05_t) link)->lat_current;
 }
 
-static xbt_dict_t get_link_property_list(void *link)
+static xbt_dict_t get_link_properties(void *link)
 {
  return ((link_KCCFLN05_t) link)->properties;
 }
@@ -1009,15 +1007,15 @@ static void link_free(void *nw_link)
 }
 
 static link_KCCFLN05_t link_new(char *name,
-						double bw_initial,
-						tmgr_trace_t bw_trace,
-						double lat_initial,
-						tmgr_trace_t lat_trace,
-						e_surf_link_state_t
-						state_initial,
-						tmgr_trace_t state_trace,
-						e_surf_link_sharing_policy_t
-						policy, xbt_dict_t network_properties_k)
+				double bw_initial,
+				tmgr_trace_t bw_trace,
+				double lat_initial,
+				tmgr_trace_t lat_trace,
+				e_surf_link_state_t
+				state_initial,
+				tmgr_trace_t state_trace,
+				e_surf_link_sharing_policy_t
+				policy, xbt_dict_t properties_args)
 {
   link_KCCFLN05_t nw_link = xbt_new0(s_link_KCCFLN05_t, 1);
 
@@ -1045,7 +1043,7 @@ static link_KCCFLN05_t link_new(char *name,
     lmm_constraint_shared(nw_link->constraint);
 
   /*add the property set*/
-  nw_link->properties = network_properties_k;
+  nw_link->properties = properties_args;
 
   xbt_dict_set(link_set, name, nw_link, link_free);
 
@@ -1299,8 +1297,8 @@ static void model_init_internal(void)
   surf_workstation_model->extension_public->get_available_speed =
       get_available_speed;
 
-  surf_workstation_model->common_public->get_cpu_properties = get_property_list;
-  surf_workstation_model->common_public->get_link_properties = get_link_property_list;
+  surf_workstation_model->common_public->get_cpu_properties = get_cpu_properties;
+  surf_workstation_model->common_public->get_link_properties = get_link_properties;
 
   surf_workstation_model->extension_public->communicate = communicate;
   surf_workstation_model->extension_public->execute_parallel_task =
