@@ -10,6 +10,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifdef HAVE_PTHREAD_H
+/* XOPEN_SOURCE is needed to get sem_timedwait (on amd64 at least). Declare it before everything else to play safe.  */
+#define _XOPEN_SOURCE 600
+#endif
+
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
 #include "xbt/ex_interface.h" /* We play crude games with exceptions */
@@ -22,14 +27,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os,xbt,"Synchronization mechanism (OS-l
 
 /* ********************************* PTHREAD IMPLEMENTATION ************************************ */
 #ifdef HAVE_PTHREAD_H
+
+/* XOPEN_SOURCE is needed to get sem_timedwait (on amd64 at least) according to the man page, 
+   but the headers seem to follow __USE_XOPEN2K. 
+   So let's get safe and declare both before loading headers. */
+#define _XOPEN_SOURCE 600
+#include <features.h>
+
 #include <pthread.h>
 #include <semaphore.h>
 
-/* use named sempahore instead */
-#ifndef HAVE_SEM_WAIT
-#  define MAX_SEM_NAME ((size_t)13)
-   static int __next_sem_ID = 0;
-   static pthread_mutex_t __next_sem_ID_lock;
+
+/* use named sempahore when sem_init() does not work */
+#ifndef HAVE_SEM_INIT
+  static int next_sem_ID = 0;
+  static xbt_os_mutex_t next_sem_ID_lock;
 #endif
 
 typedef struct xbt_os_thread_ {
@@ -82,17 +94,12 @@ void xbt_os_thread_mod_init(void) {
    __xbt_ex_ctx = _os_thread_ex_ctx;
    __xbt_ex_terminate = _os_thread_ex_terminate;
 
+   thread_mod_inited = 1;
+   
    #ifndef HAVE_SEM_WAIT
-
-   /* initialize the mutex use to protect the incrementation of the variable __next_sem_ID
-    * used to build the name of the named sempahore
-    */
-   if ((errcode = pthread_mutex_init(&__next_sem_ID_lock,NULL)))
-     THROW1(system_error,errcode,"pthread_mutex_init() failed: %s",strerror(errcode));
-
+   next_sem_ID_lock = xbt_os_mutex_init();
    #endif
 
-   thread_mod_inited = 1;
 }
 void xbt_os_thread_mod_exit(void) {
    /* FIXME: don't try to free our key on shutdown.
@@ -212,71 +219,61 @@ void xbt_os_mutex_acquire(xbt_os_mutex_t mutex) {
 }
 
 
-
-#ifndef HAVE_PTHREAD_MUTEX_TIMEDLOCK
-/* if the function is not availabled or if is MAC OS X use pthread_mutex_trylock() to define
- * it.
- */
-#include <time.h> /* declaration of the timespec structure and of the nanosleep() function */
-int pthread_mutex_timedlock(pthread_mutex_t * mutex, const struct timespec * abs_timeout)
-{
-	int rv;
-	long ellapsed_time = 0;
-	struct timespec ts;
-
-	do
-	{
-		/* the mutex could not be acquired because it was already locked by an other thread */
-		rv = pthread_mutex_trylock(mutex);
-
-		ts.tv_sec = 0;
-		ts.tv_nsec = 2.5e7 /* (25 ms (2 context switch + 5 ms)) */;
-
-		do
-		{
-			nanosleep(&ts, &ts);
-		}while(EINTR == errno);
-
-		ellapsed_time += ts.tv_nsec;
-
-	}
-	while (/* locked */ (EBUSY == rv) && /* !timeout */ (ellapsed_time < ((long)(abs_timeout->tv_sec * 1e9) + abs_timeout->tv_nsec)));
-
-	return (EBUSY == rv) ? ETIMEDOUT : rv;
-}
-
-#endif
-
 void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay) {
    int errcode;
-   struct timespec ts_end;
-   double end = delay + xbt_os_time();
 	
    if (delay < 0) {
       xbt_os_mutex_acquire(mutex);
-   }
-   else if(!delay /* equals 0 */)
-   	{
-   		if ((errcode=pthread_mutex_trylock(&(mutex->m))))
-     		THROW2(system_error,errcode,"pthread_mutex_trylock(%p) failed: %s",mutex, strerror(errcode));
+      
+   } else if (delay == 0) {
+      errcode=pthread_mutex_trylock(&(mutex->m));
+	
+      switch (errcode) {
+       case 0:
+	 return;	 
+       case ETIMEDOUT:
+	 THROW1(timeout_error,0,"mutex %p not ready",mutex);	
+       default:
+	 THROW2(system_error,errcode,"xbt_mutex_tryacquire(%p) failed: %s",mutex, strerror(errcode));
+      }
+
    		
    } else {
+      
+#ifdef HAVE_MUTEX_TIMEDLOCK
+      struct timespec ts_end;
+      double end = delay + xbt_os_time();
+      
       ts_end.tv_sec = (time_t) floor(end);
       ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
       DEBUG2("pthread_mutex_timedlock(%p,%p)",&(mutex->m), &ts_end);
 
-   switch ((errcode=pthread_mutex_timedlock(&(mutex->m),&ts_end)))
-     {
-     	case 0:
-		return;
-
-		case ETIMEDOUT:
-		THROW2(timeout_error,errcode,"mutex %p wasn't signaled before timeout (%f)",mutex,delay);
-
-		default:
-		THROW3(system_error,errcode,"pthread_mutex_timedlock(%p,%f) failed: %s",mutex,delay, strerror(errcode));
-		}
-    }
+      errcode=pthread_mutex_timedlock(&(mutex->m),&ts_end);
+      
+#else /* Well, let's reimplement it since those lazy libc dudes didn't */
+      double start = xbt_os_time();
+      do {
+	 errcode = pthread_mutex_trylock(&(mutex->m));
+	 if (errcode == EBUSY)
+	   xbt_os_thread_yield();
+      } while (errcode == EBUSY && xbt_os_time()-start <delay);
+      
+      if (errcode == EBUSY)
+	errcode = ETIMEDOUT;
+      
+#endif /* HAVE_MUTEX_TIMEDLOCK */
+      
+      switch (errcode) {
+       case 0:
+	 return;
+	 
+       case ETIMEDOUT:
+	 THROW2(timeout_error,delay,"mutex %p wasn't signaled before timeout (%f)",mutex,delay);
+	 
+       default:
+	 THROW3(system_error,errcode,"pthread_mutex_timedlock(%p,%f) failed: %s",mutex,delay, strerror(errcode));
+      }
+   }
 }
 
 void xbt_os_mutex_release(xbt_os_mutex_t mutex) {
@@ -376,148 +373,115 @@ void *xbt_os_thread_getparam(void) {
 }
 
 typedef struct xbt_os_sem_ {
-   #ifndef HAVE_SEM_WAIT
+   #ifndef HAVE_SEM_INIT
    char* name;
-   sem_t* s;
-   #else
-   sem_t s;
    #endif
+   sem_t s;
+   sem_t *ps;
 }s_xbt_os_sem_t ;
 
+#ifndef SEM_FAILED
+#define SEM_FAILED (-1)
+#endif
+
 xbt_os_sem_t
-xbt_os_sem_init(unsigned int value)
-{
-	xbt_os_sem_t res = xbt_new(s_xbt_os_sem_t,1);
-	int errcode;
+xbt_os_sem_init(unsigned int value) {
+   xbt_os_sem_t res = xbt_new(s_xbt_os_sem_t,1);
 
-	/* On MAC OS X, it seems that the sem_init is failing with ENOSYS,
-	 * which means the sem_init function is not implemented use sem_open()
-	 * instead
-	 */
-	#ifndef HAVE_SEM_INIT
-	res->name = (char*) calloc(MAX_SEM_NAME + 1,sizeof(char));
+   /* On some systems (MAC OS X), only the stub of sem_init is to be found. 
+    * Any attempt to use it leads to ENOSYS (function not implemented).
+    * If such a prehistoric system is detected, do the job with sem_open instead
+    */
+#ifdef HAVE_SEM_INIT
+   if(sem_init(&(res->s),0,value) != 0)
+     THROW1(system_error,errno,"sem_init() failed: %s", strerror(errno));
+   res->ps = &(res->s);
+   
+#else /* damn, no sem_init(). Reimplement it */
 
-	if((errcode = pthread_mutex_lock(&__next_sem_ID_lock)))
-		THROW1(system_error,errcode,"pthread_mutex_lock() failed: %s", strerror(errcode));
+   xbt_os_mutex_acquire(next_sem_ID_lock);
+   res->name = bprintf("/%d.%d",(*xbt_getpid)(),++next_sem_ID);
+   xbt_os_mutex_release(next_sem_ID_lock);
 
-	__next_sem_ID++;
+   res->ps = sem_open(res->name, O_CREAT, 0644, value);
+   if ((res->ps == (sem_t *)SEM_FAILED) && (errno == ENAMETOOLONG)) {
+      /* Old darwins only allow 13 chars. Did you create *that* amount of semaphores? */
+      res->name[13] = '\0';
+      res->ps = sem_open(res->name, O_CREAT, 0644, 1);
+   }
+   if ((res->ps == (sem_t *)SEM_FAILED))
+     THROW1(system_error,errno,"sem_open() failed: %s",strerror(errno));
+   
+   /* Remove the name from the semaphore namespace: we never join on it */
+   if(sem_unlink(res->name) < 0)
+     THROW1(system_error,errno,"sem_unlink() failed: %s", strerror(errno));
 
-	if((errcode = pthread_mutex_unlock(&__next_sem_ID_lock)))
-		THROW1(system_error,errcode,"pthread_mutex_unlock() failed: %s", strerror(errcode));
-
-	sprintf(res->name,"/%d.%d",(*xbt_getpid)(),__next_sem_ID);
-
-	if((res->s = sem_open(res->name, O_CREAT, 0644, value)) == (sem_t*)SEM_FAILED)
-		THROW1(system_error,errno,"sem_open() failed: %s",strerror(errno));
-	
-	if(sem_unlink(res->name) < 0)
-		THROW1(system_error,errno,"sem_unlink() failed: %s", strerror(errno));
-
-
-	#else
-	/* sem_init() is implemented, use it */
-	if(sem_init(&(res->s),0,value) < 0)
-		THROW1(system_error,errno,"sem_init() failed: %s",
-	    strerror(errno));
-	#endif
+#endif
 
    return res;
 }
 
 void
-xbt_os_sem_acquire(xbt_os_sem_t sem)
-{
-	if(!sem)
-		THROW0(arg_error,EINVAL,"Cannot acquire of the NULL semaphore");
-	#ifndef HAVE_SEM_WAIT
-	if(sem_wait((sem->s)) < 0)
-		THROW1(system_error,errno,"sem_wait() failed: %s",
-	    strerror(errno));
-	#else
-	if(sem_wait(&(sem->s)) < 0)
-		THROW1(system_error,errno,"sem_wait() failed: %s",
-	    strerror(errno));
-	#endif
+xbt_os_sem_acquire(xbt_os_sem_t sem) {
+   if(!sem)
+     THROW0(arg_error,EINVAL,"Cannot acquire of the NULL semaphore");
+   if(sem_wait(sem->ps) < 0)
+     THROW1(system_error,errno,"sem_wait() failed: %s", strerror(errno));
 }
 
-#ifndef HAVE_SEM_TIMEDWAIT
-/* if the function is not availabled or if is MAC OS X use sem_trywait() to define
- * it.
- */
-#include <time.h> /* declaration of the timespec structure and of the nanosleep() function */
-int sem_timedwait(sem_t* sem, const struct timespec * abs_timeout)
-{
-	int rv;
-	long ellapsed_time = 0;
-	struct timespec ts;
+void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay) {
+   int errcode;
 
-	do
-	{
-		rv = sem_trywait(sem);
-		ts.tv_sec = 0;
-		ts.tv_nsec = 2.5e7 /* (25 ms (2 * context switch + 5 ms)) */;
+   if(!sem)
+     THROW0(arg_error,EINVAL,"Cannot acquire of the NULL semaphore");
 
-		do
-		{
-			nanosleep(&ts, &ts);
-		}while(EINTR == errno);
+   if (delay < 0) {
+      xbt_os_sem_acquire(sem);
+   } else if (delay==0) {
+      errcode = sem_trywait(sem->ps);
 
-		ellapsed_time += ts.tv_nsec;
-
-	}
-	while(/* locked */ (EAGAIN == rv) && /* !timeout */ ellapsed_time < ((long)(abs_timeout->tv_sec * 1e9) + abs_timeout->tv_nsec));
-
-	return (EAGAIN == rv) ? ETIMEDOUT : rv;
-}
-
+      switch (errcode) {
+       case 0:
+	 return;	 
+       case ETIMEDOUT:
+	 THROW1(timeout_error,0,"semaphore %p not ready",sem);
+       default:
+	 THROW2(system_error,errcode,"xbt_sem_tryacquire(%p) failed: %s",sem, strerror(errcode));
+      }
+      
+   } else {
+#ifdef HAVE_SEM_WAIT
+      struct timespec ts_end;
+      double end = delay + xbt_os_time();
+      
+      ts_end.tv_sec = (time_t) floor(end);
+      ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
+      DEBUG2("sem_timedwait(%p,%p)",sem->ps,&ts_end);
+      errcode = sem_timedwait(sem->s,&ts_end);
+      
+#else /* Okay, reimplement this function then */
+      double start = xbt_os_time();
+      do {
+	 errcode = sem_trywait(sem->ps);
+	 if (errcode == EBUSY)
+	   xbt_os_thread_yield();
+      } while (errcode == EBUSY && xbt_os_time()-start <delay);
+      
+      if (errcode == EBUSY)
+	errcode = ETIMEDOUT;
 #endif
+      
+      switch (errcode) {
+       case 0:
+	 return;
 
-void xbt_os_sem_timedacquire(xbt_os_sem_t sem,double timeout)
-{
-	int errcode;
-	struct timespec ts_end;
-	double end = timeout + xbt_os_time();
+       case ETIMEDOUT:
+	 THROW2(timeout_error,delay,"semaphore %p wasn't signaled before timeout (%f)",sem,delay);
 
-	if(!sem)
-		THROW0(arg_error,EINVAL,"Cannot acquire of the NULL semaphore");
-
-	if (timeout < 0)
-	{
-		xbt_os_sem_acquire(sem);
-	}
-	else if(!timeout)
-	{
-		#ifndef HAVE_SEM_TIMEDWAIT
-		if(sem_trywait(sem->s) < 0)
-			THROW2(system_error,errno,"sem_trywait(%p) failed: %s",sem,strerror(errno));
-		#else
-		if(sem_trywait(sem->s) < 0)
-			THROW2(system_error,errno,"sem_trywait(%p) failed: %s",sem,strerror(errno));
-		#endif		
-	}
-	else
-	{
-		ts_end.tv_sec = (time_t) floor(end);
-		ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
-		DEBUG2("sem_timedwait(%p,%p)",&(sem->s),&ts_end);
-
-		#ifndef HAVE_SEM_WAIT
-		switch ((errcode = sem_timedwait(sem->s,&ts_end)))
-		#else
-		switch ((errcode = sem_timedwait(&(sem->s),&ts_end)))
-		#endif
-		{
-			case 0:
-			return;
-
-			case ETIMEDOUT:
-			THROW2(timeout_error,errcode,"semaphore %p wasn't signaled before timeout (%f)",sem,timeout);
-
-			default:
-			THROW3(system_error,errcode,"sem_timedwait(%p,%f) failed: %s",sem,timeout, strerror(errcode));
-		}
-	}
-
+       default:
+	 THROW3(system_error,errcode,"sem_timedwait(%p,%f) failed: %s",sem,delay, strerror(errcode));
+      }
+   }
 }
 
 void
@@ -526,40 +490,29 @@ xbt_os_sem_release(xbt_os_sem_t sem)
 	if(!sem)
 		THROW0(arg_error,EINVAL,"Cannot release of the NULL semaphore");
 
-	#ifndef HAVE_SEM_WAIT
-	if(sem_post((sem->s)) < 0)
+	if(sem_post(sem->ps) < 0)
 		THROW1(system_error,errno,"sem_post() failed: %s",
 	    strerror(errno));
-	#else
-	if(sem_post(&(sem->s)) < 0)
-		THROW1(system_error,errno,"sem_post() failed: %s",
-	    strerror(errno));
-	#endif
 }
 
 void
 xbt_os_sem_destroy(xbt_os_sem_t sem)
 {
-	if(!sem)
-		THROW0(arg_error,EINVAL,"Cannot destroy the NULL sempahore");
+   if(!sem)
+     THROW0(arg_error,EINVAL,"Cannot destroy the NULL sempahore");
 
-	#ifndef HAVE_SEM_WAIT
-	/* MAC OS X does not implement the sem_init() function so,
-	 * we use the named semaphore (sem_open)
-	 */
-	if(sem_close((sem->s)) < 0)
-		THROW1(system_error,errno,"sem_close() failed: %s",
+#ifdef HAVE_SEM_INIT
+   if(sem_destroy(sem->ps)) < 0)
+     THROW1(system_error,errno,"sem_destroy() failed: %s",
 	    strerror(errno));
-
-	xbt_free(sem->name);
-
-	#else
-	if(sem_destroy(&(sem->s)) < 0)
-		THROW1(system_error,errno,"sem_destroy() failed: %s",
+#else
+   if(sem_close(sem->ps) < 0)
+     THROW1(system_error,errno,"sem_close() failed: %s",
 	    strerror(errno));
-	#endif
+   xbt_free(sem->name);
 
-	xbt_free(sem);
+#endif
+   xbt_free(sem);
 }
 
 void
@@ -568,15 +521,9 @@ xbt_os_sem_get_value(xbt_os_sem_t sem, int* svalue)
 	if(!sem)
 		THROW0(arg_error,EINVAL,"Cannot get the value of the NULL semaphore");
 
-	#ifndef HAVE_SEM_WAIT
-	if(sem_getvalue((sem->s),svalue) < 0)
-		THROW1(system_error,errno,"sem_getvalue() failed: %s",
-	    strerror(errno));
-	#else
 	if(sem_getvalue(&(sem->s),svalue) < 0)
 		THROW1(system_error,errno,"sem_getvalue() failed: %s",
 	    strerror(errno));
-	#endif
 }
 
 /* ********************************* WINDOWS IMPLEMENTATION ************************************ */
