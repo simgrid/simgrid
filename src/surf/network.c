@@ -188,13 +188,6 @@ static void parse_route_set_route(void)
 static void parse_file(const char *file)
 {
   int i;
-/*
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-*/
   /* Figuring out the network links */
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);

@@ -39,13 +39,7 @@ xbt_dynar_t ETag_surfxml_prop_cb_list = NULL;
 static xbt_dynar_t surf_input_buffer_stack = NULL;
 static xbt_dynar_t surf_file_to_parse_stack = NULL;
 
-void surfxml_call_cb_functions(xbt_dynar_t);
-
-void nil_function(void);
-void nil_function(void)
-{
-  return;
-}
+static inline void surfxml_call_cb_functions(xbt_dynar_t);
 
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse;
@@ -292,7 +286,7 @@ void surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function)
   xbt_dynar_push(cb_list, &function);
 }
 
-void surfxml_call_cb_functions(xbt_dynar_t cb_list)
+static inline void surfxml_call_cb_functions(xbt_dynar_t cb_list)
 {
   int iterator;
   void_f_void_t fun;

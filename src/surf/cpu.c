@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 surf_cpu_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
 
-xbt_dict_t cpu_set;
+xbt_dict_t cpu_set = NULL;
 
 static void cpu_free(void *cpu)
 {

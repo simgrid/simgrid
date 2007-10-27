@@ -14,6 +14,7 @@
 typedef struct network_link_CM02 {
   surf_model_t model;	/* Any such object, added in a trace
 				   should start by this field!!! */
+  xbt_dict_t properties;
   /* Using this object with the public part of
      model does not make sense */
   char *name;
@@ -24,8 +25,6 @@ typedef struct network_link_CM02 {
   e_surf_link_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
-  /*holds the properties associated with a link*/
-  xbt_dict_t properties;
 } s_link_CM02_t, *link_CM02_t;
 
 
