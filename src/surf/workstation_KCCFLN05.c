@@ -11,6 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 				"Logging specific to the SURF workstation module (KCCFLN05)");
+XBT_LOG_EXTERNAL_CATEGORY(surf_parse);
 
 typedef enum {
   SURF_WORKSTATION_RESOURCE_CPU,
@@ -909,7 +910,12 @@ static cpu_KCCFLN05_t cpu_new(const char *name, double power_scale,
 			      xbt_dict_t cpu_properties_k)
 {
   cpu_KCCFLN05_t cpu = xbt_new0(s_cpu_KCCFLN05_t, 1);
+  xbt_assert1(! xbt_dict_get_or_null(workstation_set, name),
+	      "Host '%s' declared several times in the platform file.",name);
 
+  CDEBUG8(surf_parse, "cpu_new(%s,power_scale=%.2f,power_initial=%.2f,state_init=%d,isend=%.2f,irecv=%.2f,isendrev=%.2f) -> %p",
+	  name,power_scale,power_initial,state_initial,interference_send,interference_recv,interference_send_recv,cpu);
+   
   cpu->model = (surf_model_t) surf_workstation_model;
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
   cpu->name = xbt_strdup(name);
@@ -1191,6 +1197,8 @@ static void parse_file(const char *file)
 {
   int i;
 
+  CDEBUG0(surf_parse, "Use the KCCFKN05 model");
+				   
   /* Adding callback functions */
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);

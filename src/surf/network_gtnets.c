@@ -11,20 +11,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
 				"Logging specific to the SURF network module");
 
-/* surf_network_model_t surf_network_model = NULL; */
-/*static xbt_dict_t link_set = NULL;*/
-
-/* xbt_dict_t network_card_set = NULL; */
-
-#if 0
-static int card_number = 0;
-static link_GTNETS_t **routing_table = NULL;
-static int *routing_table_size = NULL;
-
-#define ROUTE(i,j) routing_table[(i)+(j)*card_number]
-#define ROUTE_SIZE(i,j) routing_table_size[(i)+(j)*card_number]
-#endif
-
 /** QUESTIONS for GTNetS integration
  **   1. Check that we did the right thing with name_service and get_resource_name
  **   2. Right now there is no "kill flow" in our GTNetS implementation. Do we
@@ -51,7 +37,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   static int link_count = -1;
   link_GTNETS_t gtnets_link;
 
-  /* KF: Check that the link wasn't added before */
+  /* If link already exists, nothing to do (FIXME: check that multiple definition match?) */
   if (xbt_dict_get_or_null(link_set, name)) {
     return;
   }

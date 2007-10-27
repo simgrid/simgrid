@@ -684,6 +684,8 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
                          xbt_dict_t cpu_properties)
 {
   cpu_L07_t cpu = xbt_new0(s_cpu_L07_t, 1);
+  xbt_assert1(! xbt_dict_get_or_null(workstation_set, name),
+	      "Host '%s' declared several times in the platform file.",name);
 
   cpu->model = (surf_model_t) surf_workstation_model;
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
@@ -752,18 +754,19 @@ static void link_free(void *nw_link)
 }
 
 static link_L07_t link_new(char *name,
-					   double bw_initial,
-					   tmgr_trace_t bw_trace,
-					   double lat_initial,
-					   tmgr_trace_t lat_trace,
-					   e_surf_link_state_t
-					   state_initial,
-					   tmgr_trace_t state_trace,
-					   e_surf_link_sharing_policy_t
-					   policy, xbt_dict_t properties)
-{
+			   double bw_initial,
+			   tmgr_trace_t bw_trace,
+			   double lat_initial,
+			   tmgr_trace_t lat_trace,
+			   e_surf_link_state_t
+			   state_initial,
+			   tmgr_trace_t state_trace,
+			   e_surf_link_sharing_policy_t
+			   policy, xbt_dict_t properties)
+{   
   link_L07_t nw_link = xbt_new0(s_link_L07_t, 1);
-
+  xbt_assert1(! xbt_dict_get_or_null(link_set, name),
+	      "Link '%s' declared several times in the platform file.",name);
 
   nw_link->model = (surf_model_t) surf_workstation_model;
   nw_link->type = SURF_WORKSTATION_RESOURCE_LINK;

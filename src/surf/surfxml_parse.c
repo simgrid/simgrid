@@ -10,8 +10,8 @@
 #include "xbt/dict.h"
 #include "surf/surfxml_parse_private.h"
 #include "surf/surf_private.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(parse, surf,
-				"Logging specific to the SURF  module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
+				"Logging specific to the SURF parsing module");
 
 #undef CLEANUP
 #include "surfxml.c"

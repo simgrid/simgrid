@@ -37,18 +37,19 @@ static void link_free(void *nw_link)
 }
 
 static link_CM02_t link_new(char *name,
-					    double bw_initial,
-					    tmgr_trace_t bw_trace,
-					    double lat_initial,
-					    tmgr_trace_t lat_trace,
-					    e_surf_link_state_t
-					    state_initial,
-					    tmgr_trace_t state_trace,
-					    e_surf_link_sharing_policy_t
-					    policy, xbt_dict_t properties)
+			    double bw_initial,
+			    tmgr_trace_t bw_trace,
+			    double lat_initial,
+			    tmgr_trace_t lat_trace,
+			    e_surf_link_state_t
+			    state_initial,
+			    tmgr_trace_t state_trace,
+			    e_surf_link_sharing_policy_t
+			    policy, xbt_dict_t properties)
 {
   link_CM02_t nw_link = xbt_new0(s_link_CM02_t, 1);
-
+  xbt_assert1(!xbt_dict_get_or_null(link_set, name), 
+	      "Link '%s' declared several times in the platform file.", name);   
 
   nw_link->model = (surf_model_t) surf_network_model;
   nw_link->name = name;
