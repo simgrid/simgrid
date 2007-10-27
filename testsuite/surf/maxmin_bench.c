@@ -80,8 +80,8 @@ void test(int nb_cnst, int nb_var, int nb_elem)
 
 int main(int argc, char **argv)
 {
-  int nb_cnst = 20000;
-  int nb_var = 20000;
+  int nb_cnst = 2000;
+  int nb_var = 2000;
   int nb_elem = 80;
   date = xbt_os_time() * 1000000;
   test(nb_cnst, nb_var, nb_elem);
