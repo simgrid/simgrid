@@ -69,6 +69,3 @@ const char* gras_os_host_property_value(char* name) {
 xbt_dict_t gras_os_host_properties(void) {
    THROW_UNIMPLEMENTED;
 }
-
-
-  
