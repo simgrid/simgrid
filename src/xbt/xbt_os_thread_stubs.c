@@ -56,14 +56,14 @@ xbt_os_mutex_t xbt_os_mutex_init(void){
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_mutex_init)");
 }
 
-void xbt_os_mutex_lock(xbt_os_mutex_t mutex){
+void xbt_os_mutex_acquire(xbt_os_mutex_t mutex){
    xbt_backtrace_display_current();
-   xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_mutex_lock)");
+   xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_mutex_acquire)");
 }
 
-void xbt_os_mutex_unlock(xbt_os_mutex_t mutex){
+void xbt_os_mutex_release(xbt_os_mutex_t mutex){
    xbt_backtrace_display_current();
-   xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_mutex_unlock)");
+   xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_mutex_release)");
 }
 
 void xbt_os_mutex_destroy(xbt_os_mutex_t mutex){
