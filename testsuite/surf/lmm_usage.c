@@ -475,62 +475,40 @@ int main(int argc, char **argv)
 {
   xbt_init(&argc, argv);
 
-
-  DEBUG0("**************************** ");
-  DEBUG0("*****                  ***** ");
-  DEBUG0("*****      TEST 1      ***** ");
-  DEBUG0("*****                  ***** ");
-  DEBUG0("**************************** ");
-
-
-  DEBUG0("***** Test 1 (Max-Min) ***** ");
+  INFO0("***** Test 1 (Max-Min)");
   test1(MAXMIN);
 #ifdef HAVE_SDP
-  DEBUG0("***** Test 1 (SDP) ***** ");
+  INFO0("***** Test 1 (SDP)");
   test1(SDP);
 #endif
-  DEBUG0("***** Test 1 (Lagrange - Vegas) ***** ");
+  INFO0("***** Test 1 (Lagrange - Vegas)");
   test1(LAGRANGE_VEGAS);
-  DEBUG0("***** Test 1 (Lagrange - Reno) ***** ");
+  INFO0("***** Test 1 (Lagrange - Reno)");
   test1(LAGRANGE_RENO);
 
-
-  DEBUG0("**************************** ");
-  DEBUG0("*****                  ***** ");
-  DEBUG0("*****      TEST 2      ***** ");
-  DEBUG0("*****                  ***** ");
-  DEBUG0("**************************** ");
-
-
-  DEBUG0("***** Test 2 (Max-Min) ***** ");
+   
+   
+  INFO0("***** Test 2 (Max-Min)");
   test2(MAXMIN);
 #ifdef HAVE_SDP
-  DEBUG0("***** Test 2 (SDP) ***** ");
+  INFO0("***** Test 2 (SDP)");
   test2(SDP);
 #endif
-  DEBUG0("***** Test 2 (Lagrange - Vegas) ***** ");
+  INFO0("***** Test 2 (Lagrange - Vegas)");
   test2(LAGRANGE_VEGAS);
-  DEBUG0("***** Test 2 (Lagrange - Reno) ***** ");
+  INFO0("***** Test 2 (Lagrange - Reno)");
   test2(LAGRANGE_RENO);
 
 
-
-  DEBUG0("**************************** ");
-  DEBUG0("*****                  ***** ");
-  DEBUG0("*****      TEST 3      ***** ");
-  DEBUG0("*****                  ***** ");
-  DEBUG0("**************************** ");
-
-
-  DEBUG0("***** Test 3 (Max-Min) ***** ");
+  INFO0("***** Test 3 (Max-Min)");
   test3(MAXMIN);
 #ifdef HAVE_SDP
-  DEBUG0("***** Test 3 (SDP) ***** ");
+  INFO0("***** Test 3 (SDP)");
   test3(SDP);
 #endif
-  DEBUG0("***** Test 3 (Lagrange - Vegas) ***** ");
+  INFO0("***** Test 3 (Lagrange - Vegas)");
   test3(LAGRANGE_VEGAS);
-  DEBUG0("***** Test 3 (Lagrange - Reno) ***** ");
+  INFO0("***** Test 3 (Lagrange - Reno)");
   test3(LAGRANGE_RENO);
 
   return 0;
