@@ -36,6 +36,8 @@ xbt_dynar_t ETag_surfxml_argument_cb_list = NULL;
 xbt_dynar_t STag_surfxml_prop_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_prop_cb_list = NULL;
 
+xbt_dict_t current_property_set = NULL;
+  
 static xbt_dynar_t surf_input_buffer_stack = NULL;
 static xbt_dynar_t surf_file_to_parse_stack = NULL;
 
