@@ -25,7 +25,7 @@ typedef struct s_xbt_thread_ {
    smx_process_t s_process;
    void_f_pvoid_t code;
    void *userparam;
-	 void *father_data;
+   void *father_data;
 } s_xbt_thread_t;
 
 static int xbt_thread_create_wrapper(int argc, char *argv[]) {
@@ -55,7 +55,8 @@ const char* xbt_thread_name(xbt_thread_t t) {
 }
 
 const char* xbt_thread_self_name(void) {
-   return xbt_thread_self()->name;
+   xbt_thread_t me = xbt_thread_self();
+   return me ? me->name : "maestro";
 }
 
 
@@ -77,7 +78,8 @@ void xbt_thread_exit() {
 }
 
 xbt_thread_t xbt_thread_self(void) {
-   return SIMIX_process_get_data(SIMIX_process_self());
+   smx_process_t p = SIMIX_process_self();
+   return p ? SIMIX_process_get_data(p) : NULL;
 }
 
 void xbt_thread_yield(void) {
