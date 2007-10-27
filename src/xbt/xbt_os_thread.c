@@ -10,11 +10,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef HAVE_PTHREAD_H
-/* XOPEN_SOURCE is needed to get sem_timedwait (on amd64 at least). Declare it before everything else to play safe.  */
-#define _XOPEN_SOURCE 600
-#endif
-
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
 #include "xbt/ex_interface.h" /* We play crude games with exceptions */
@@ -28,15 +23,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os,xbt,"Synchronization mechanism (OS-l
 /* ********************************* PTHREAD IMPLEMENTATION ************************************ */
 #ifdef HAVE_PTHREAD_H
 
-/* XOPEN_SOURCE is needed to get sem_timedwait (on amd64 at least) according to the man page, 
-   but the headers seem to follow __USE_XOPEN2K. 
-   So let's get safe and declare both before loading headers. */
-#define _XOPEN_SOURCE 600
-#include <features.h>
-
 #include <pthread.h>
 #include <semaphore.h>
 
+#ifdef HAVE_MUTEX_TIMEDLOCK
+/* redefine the function header since we fail to get this from system headers on amd (at least) */
+int pthread_mutex_timedlock(pthread_mutex_t *mutex,
+			    const struct timespec *abs_timeout);
+#endif
+  
 
 /* use named sempahore when sem_init() does not work */
 #ifndef HAVE_SEM_INIT
