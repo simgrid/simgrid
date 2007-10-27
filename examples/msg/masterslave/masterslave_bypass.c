@@ -27,7 +27,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 #define STAG(tag)  STag_surfxml_##tag();
 #define ETAG(tag)  do { ETag_surfxml_##tag(); SURFXML_BUFFER_RESET(); } while(0)     
 
-static int surf_parse_bypass(void)
+static int surf_parse_bypass_platform(void)
 {
   static int AX_ptr;
   static int surfxml_bufferstack_size = 2048;
@@ -36,7 +36,7 @@ static int surf_parse_bypass(void)
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
   
   /* <platform_description> */
-  SURFXML_BUFFER_SET(platform_description_version,"1");
+  SURFXML_BUFFER_SET(platform_description_version,"2");
 
   STAG(platform_description);
 
@@ -113,7 +113,25 @@ static int surf_parse_bypass(void)
   ETAG(link_c_ctn);
 
   ETAG(route);
+/* </platform_description> */
+  ETAG(platform_description);
 
+  free(surfxml_bufferstack);
+  return 0;
+}
+
+static int surf_parse_bypass_application(void) {   
+  static int AX_ptr;
+  static int surfxml_bufferstack_size = 2048;
+
+  /* allocating memory to the buffer, I think 2MB should be enough */
+  surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
+  
+  /* <platform_description> */
+  SURFXML_BUFFER_SET(platform_description_version,"2");
+
+  STAG(platform_description);
+   
 /*   <process host="host A" function="master"> */
   SURFXML_BUFFER_SET(process_host, "host A");
   SURFXML_BUFFER_SET(process_function, "master");
@@ -247,6 +265,7 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
+  INFO0("I'm a slave");
   while(1) {
     m_task_t task = NULL;
     int a;
@@ -275,18 +294,19 @@ MSG_error_t test_all(void)
 {
   MSG_error_t res = MSG_OK;
 
-  {				/*  Simulation setting */
-    MSG_set_channel_number(MAX_CHANNEL);
-    MSG_paje_output("msg_test.trace");
-    surf_parse = surf_parse_bypass;
-    MSG_create_environment(NULL);
-  }
-  {                            /*   Application deployment */
-    MSG_function_register("master", master);
-    MSG_function_register("slave", slave);
-    MSG_launch_application(NULL);
-  }
-  res = MSG_main();
+   /*  Simulation setting */
+   MSG_set_channel_number(MAX_CHANNEL);
+   MSG_paje_output("msg_test.trace");
+   surf_parse = surf_parse_bypass_platform;
+   MSG_create_environment(NULL);
+  
+   /*   Application deployment */
+   MSG_function_register("master", master);
+   MSG_function_register("slave", slave);
+   surf_parse = surf_parse_bypass_application;
+   MSG_launch_application(NULL);
+   
+   res = MSG_main();
   
   INFO1("Simulation time %g",MSG_get_clock());
   return res;
