@@ -105,7 +105,20 @@ if test x$pthread = xyes ; then
      AC_TRY_COMPILE([#include <semaphore.h>],
 	            [sem_t *s; const struct timespec * t; sem_timedwait(s, t);], HAVE_SEM_TIMEDWAIT=yes, HAVE_SEM_TIMEDWAIT=no)
      if test ${HAVE_SEM_TIMEDWAIT} = yes ; then
-        AC_DEFINE([HAVE_SEM_TIMEDWAIT],1,[Define if the sem_timedwait is avaible or not (part of XPG6 standard only)])
+        AC_DEFINE([HAVE_SEM_TIMEDWAIT],1,[Define if sem_timedwait() is avaible or not (part of XPG6 standard only)])
+        AC_MSG_RESULT(yes)
+     else
+	AC_MSG_RESULT(no)
+     fi
+  fi
+
+  AC_CHECK_LIB(pthread, pthread_mutex_timedlock, HAVE_MUTEX_TIMEDLOCK=yes, HAVE_MUTEX_TIMEDLOCK=no)
+  if test ${HAVE_MUTEX_TIMEDLOCK} = yes ; then
+     AC_MSG_CHECKING(if pthread_mutex_timedlock is compilable)
+     AC_TRY_COMPILE([#include <pthread.h>],
+	            [pthread_mutex_t s; const struct timespec t; sem_timedlock(&s, &t);], HAVE_MUTEX_TIMEDLOCK=yes, HAVE_MUTEX_TIMEDLOCK=no)
+     if test ${HAVE_MUTEX_TIMEDLOCK} = yes ; then
+        AC_DEFINE([HAVE_MUTEX_TIMEDLOCK],1,[Define if pthread_mutex_timedlock() is avaible or not (part of XPG6 standard only?)])
         AC_MSG_RESULT(yes)
      else
 	AC_MSG_RESULT(no)
