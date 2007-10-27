@@ -42,7 +42,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 	      && (channel < msg_global->max_channel), "Invalid channel %d",
 	      channel);
   /* Sanity check */
-  xbt_assert0(task, "Null pointer for the task\n");
+  xbt_assert0(task, "Null pointer for the task storage");
 
   if (*task)
     CRITICAL0
