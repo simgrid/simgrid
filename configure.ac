@@ -403,7 +403,6 @@ SG_CONFIGURE_PART(Check for Java bindings...)
 AC_ARG_ENABLE(java,
 	      AS_HELP_STRING([--disable-java], [To not compile the Java bindings even if the tools are found]),
 	      disable_java=$enableval,disable_java=yes)
-AC_MSG_CHECKING(whether to compile java bindings)
 if test "x$disable_java" != "xyes" ; then
    use_java="disabled by user"
 else
@@ -421,7 +420,7 @@ else
      use_java="no"
   fi
 fi
-AC_MSG_RESULT($use_java)
+AC_MSG_RESULT(decide whether to compile java bindings... $use_java)
 AM_CONDITIONAL(HAVE_JAVA,test "x$use_java" = "xyes")
 
 #####################
