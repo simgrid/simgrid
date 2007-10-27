@@ -19,13 +19,11 @@ public class Slave extends simgrid.msg.Process {
       Channel channel = new Channel(0);
 		
       while(true) {
-	 int a;
 	 double time1 = Msg.getClock();       
 	 Task t = channel.get();	
 	 double time2 = Msg.getClock();
  
 	 if (t instanceof FinalizeTask) {
-	    Msg.info("Received Finalize " + getHost().getName());
 	    break;
 	 }
 	 CommTimeTask task = (CommTimeTask)t;
@@ -37,10 +35,8 @@ public class Slave extends simgrid.msg.Process {
 		  " (Communication time : " +  (time2 - time1) + ")");
 */	     
 	 task.execute();
-	 
-	 
       }
        
-      Msg.info("I'm done. See you!" + getHost().getName());
+      Msg.info("Received Finalize. I'm done. See you!");
    }
 }

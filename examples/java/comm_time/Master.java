@@ -53,12 +53,8 @@ public class Master extends simgrid.msg.Process {
 		
       for (int i = 0; i < slavecount; i++) { 
 			
-	 FinalizeTask task = new FinalizeTask();
-			
-	 Msg.info("Send task to host : " + slaves[i].getName());
-	 channel.put(task,slaves[i]);
-			
-	 Msg.info("Send completed " + slaves[i].getName() +  " [" + i + "]");
+	 Msg.info("Finalize host " + slaves[i].getName() +  " [" + i + "]");
+	 channel.put(new FinalizeTask(),slaves[i]);
       }
       
       Msg.info("All finalize messages have been dispatched. Goodbye now!");

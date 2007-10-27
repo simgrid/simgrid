@@ -74,9 +74,7 @@ public class Master extends simgrid.msg.Process {
       Msg.info("All tasks have been dispatched. Let's tell everybody the computation is over.");
       
       for (int i = 0; i < slaveCount; i++) {
-	 BasicTask task = new BasicTask("finalize", 0, 0);
-	 task.setData(221297);	 
-	 channel.put(task,slaves[i]);
+	 channel.put(new FinalizeTask(),slaves[i]);
       }
       
       Msg.info("Goodbye now!");

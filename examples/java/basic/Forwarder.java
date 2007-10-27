@@ -32,32 +32,28 @@ public class Forwarder extends simgrid.msg.Process {
 		
       int taskCount = 0;
       while(true) {
-			
-	 BasicTask task = (BasicTask)channel.get();
+	 Task t = channel.get();	
 	 
-	 Msg.info("Received \"" + task.getName() + "\" ");
-	 
-	 if(task.getData() == 221297) {
+	 if (t instanceof FinalizeTask) {
 	    Msg.info("All tasks have been dispatched. Let's tell everybody the computation is over.");
 	    
 	    for (int cpt = 0; cpt<slavesCount; cpt++) {
-	       BasicTask forwardedtask = new BasicTask("finalize", 0, 0);
-	       forwardedtask.setData(221297);
-	       
-	       channel.put(forwardedtask,slaves[cpt]);
+	       channel.put(new FinalizeTask(),slaves[cpt]);
 	    }
 	    break;
-	    
-	 } else {
-	    
-	    Msg.info("Sending \"" + task.getName() + "\" to \"" + slaves[taskCount % slavesCount].getName() + "\"");
-	    channel.put(task, slaves[taskCount % slavesCount]);
-	    
-	    taskCount++;
 	 }
+	 BasicTask task = (BasicTask)t;
 	 
-	 Msg.info("I'm done. See you!");
+	 Msg.info("Received \"" + task.getName() + "\" ");
+	 	    
+	 Msg.info("Sending \"" + task.getName() + "\" to \"" + slaves[taskCount % slavesCount].getName() + "\"");
+	 channel.put(task, slaves[taskCount % slavesCount]);
+	    
+	 taskCount++;
       }
+      
+	 
+      Msg.info("I'm done. See you!");
    }
 }
 

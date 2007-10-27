@@ -206,7 +206,9 @@ top_srcdir = @top_srcdir@
 EXTRA_DIST = basic_deployment.xml basic_platform.xml $(JAVA_SRC)
 
 # Declare sources:
-JAVA_SRC = Master.java Forwarder.java Slave.java BasicTest.java BasicTask.java
+JAVA_SRC = Master.java Forwarder.java Slave.java BasicTest.java \
+         BasicTask.java FinalizeTask.java
+
 JAVA_TESTS = BasicTest.class
 
 # Declare test class

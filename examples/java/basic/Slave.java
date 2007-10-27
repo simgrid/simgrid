@@ -17,8 +17,12 @@ public class Slave extends simgrid.msg.Process {
       Channel channel = new Channel(0);
 
       while(true) { 
-	 BasicTask task=(BasicTask)channel.get();
+	 Task t = channel.get();	
 	 
+	 if (t instanceof FinalizeTask) {
+	    break;
+	 }
+	 BasicTask task = (BasicTask)t;
 	 Msg.info("Received \"" + task.getName() + "\" ");
 	 
 	 if (task.getData() == 0) {
@@ -33,6 +37,6 @@ public class Slave extends simgrid.msg.Process {
 	 Msg.info("\"" + task.getName() + "\" done ");
        }
        
-       Msg.info("I'm done. See you!");
+      Msg.info("Received Finalize. I'm done. See you!");
     }
 }
