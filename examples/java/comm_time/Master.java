@@ -53,8 +53,7 @@ public class Master extends simgrid.msg.Process {
 		
       for (int i = 0; i < slavecount; i++) { 
 			
-	 CommTimeTask task = new CommTimeTask("finalize_" + i,0,0);
-	 task.setData(221297);
+	 FinalizeTask task = new FinalizeTask();
 			
 	 Msg.info("Send task to host : " + slaves[i].getName());
 	 channel.put(task,slaves[i]);
