@@ -118,11 +118,11 @@ double SD_link_get_current_bandwidth(SD_link_t link) {
 }
 
 /**
- * \brief Returns the value of a certain link property
+ * \brief Returns the value of a given link property
  *
  * \param workstation a workstation
  * \param name a property name
- * \return value of a property
+ * \return value of a property (or NULL if property not set)
  */
 const char* SD_link_get_property_value(SD_link_t link, char* name)
 {
@@ -130,7 +130,7 @@ const char* SD_link_get_property_value(SD_link_t link, char* name)
 }
 
 /**
- * \brief Returns a xbt_dynar_t consisting of the list of properties assigned to a link
+ * \brief Returns a #xbt_dict_t consisting of the list of properties assigned to a link
  *
  * \param link a link
  * \return the dictionary containing the properties associated with the link

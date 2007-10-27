@@ -187,11 +187,11 @@ double MSG_get_host_speed(m_host_t h)
 }
 
 /** \ingroup m_host_management
- * \brief Returns the value of a certain host property
+ * \brief Returns the value of a given host property
  *
  * \param host a host
  * \param name a property name
- * \return value of a property
+ * \return value of a property (or NULL if property not set)
  */
 const char* MSG_host_get_property_value(m_host_t host, char* name)
 {

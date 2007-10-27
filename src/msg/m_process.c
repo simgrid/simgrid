@@ -29,21 +29,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
  */
 
 /******************************** Process ************************************/
-/** \ingroup m_process_management
- * \brief Creates and runs a new #m_process_t.
- *
- * Does exactly the same as #MSG_process_create_with_arguments but without 
-   providing standard arguments (\a argc, \a argv, \a start_time, \a kill_time).
- * \sa MSG_process_create_with_arguments
- */
-m_process_t MSG_process_create(const char *name,
-			       xbt_main_func_t code, void *data,
-			       m_host_t host)
-{
-  return MSG_process_create_with_arguments(name, code, data, host, -1,
-					   NULL);
-}
-
 void __MSG_process_cleanup(void *arg)
 {
   /* arg is a pointer to a simix process, we can get the msg process with the field data */
@@ -67,6 +52,21 @@ void *_MSG_process_create_from_SIMIX(const char *name,
   m_host_t host = MSG_get_host_by_name(hostname);
   return (void *) MSG_process_create_with_environment(name, code, data, host,
 						      argc, argv,properties);
+}
+
+/** \ingroup m_process_management
+ * \brief Creates and runs a new #m_process_t.
+ *
+ * Does exactly the same as #MSG_process_create_with_arguments but without 
+   providing standard arguments (\a argc, \a argv, \a start_time, \a kill_time).
+ * \sa MSG_process_create_with_arguments
+ */
+m_process_t MSG_process_create(const char *name,
+			       xbt_main_func_t code, void *data,
+			       m_host_t host)
+{
+  return MSG_process_create_with_environment(name, code, data, host, -1,
+					     NULL,NULL);
 }
 
 /** \ingroup m_process_management
@@ -99,36 +99,8 @@ m_process_t MSG_process_create_with_arguments(const char *name,
 					      void *data, m_host_t host,
 					      int argc, char **argv)
 {
-  simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
-  m_process_t process = xbt_new0(s_m_process_t, 1);
-  xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
-
-  /* Simulator Data */
-  simdata->PID = msg_global->PID++;
-  simdata->waiting_task = NULL;
-  simdata->m_host = host;
-  simdata->argc = argc;
-  simdata->argv = argv;
-  simdata->s_process = SIMIX_process_create(name, code,
-					    (void *) process, host->name,
-					    argc, argv, NULL);
-
-  if (SIMIX_process_self()) {
-    simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
-  } else {
-    simdata->PPID = -1;
-  }
-  simdata->last_errno = MSG_OK;
-
-
-  /* Process structure */
-  process->name = xbt_strdup(name);
-  process->simdata = simdata;
-  process->data = data ;
-
-  xbt_fifo_unshift(msg_global->process_list, process);
-
-  return process;
+  return MSG_process_create_with_environment(name, code, data, host, 
+					     argc,argv,NULL);
 }
 
 /** \ingroup m_process_management
@@ -186,7 +158,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
   /* Process structure */
   process->name = xbt_strdup(name);
   process->simdata = simdata;
-  process->data = data ;
+  process->data = data;
 
   xbt_fifo_unshift(msg_global->process_list, process);
 
@@ -349,11 +321,11 @@ const char *MSG_process_get_name(m_process_t process)
 }
 
 /** \ingroup m_process_management
- * \brief Returns the value of a certain process property
+ * \brief Returns the value of a given process property
  *
  * \param process a process
  * \param name a property name
- * \return value of a property
+ * \return value of a property (or NULL if the property is not set)
  */
 const char* MSG_process_get_property_value(m_process_t process, char* name)
 {

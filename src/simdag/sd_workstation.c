@@ -130,11 +130,11 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
 }
 
 /**
- * \brief Returns the value of a certain workstation property
+ * \brief Returns the value of a given workstation property
  *
  * \param workstation a workstation
  * \param name a property name
- * \return value of a property
+ * \return value of a property (or NULL if property not set)
  */
 const char* SD_workstation_get_property_value(SD_workstation_t ws, char* name)
 {
@@ -143,7 +143,7 @@ const char* SD_workstation_get_property_value(SD_workstation_t ws, char* name)
 
 
 /**
- * \brief Returns a xbt_dynar_t consisting of the list of properties assigned to this workstation
+ * \brief Returns a #xbt_dict_t consisting of the list of properties assigned to this workstation
  *
  * \param workstation a workstation
  * \return the dictionary containing the properties associated with the workstation
