@@ -14,11 +14,7 @@
 #include <stdarg.h> /* va_* */
 #include "xbt/misc.h"
 #include "xbt/dynar.h"
-
-/* KILLME: Malek, are you sure you need this? */
-#if defined(_WIN32)
-#include <stdio.h>
-#endif 
+#include <stdio.h> /* FILE for getline */
 
 SG_BEGIN_DECL()
 
@@ -54,7 +50,7 @@ XBT_PUBLIC(int) vasprintf (char **ptr, const char *fmt, va_list ap);
 XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 
 /* the gettext function. It gets redefined here only if not yet available */
-#if defined(_WIN32) || !defined(__GNUC__) || defined(DOXYGEN)
+#if !defined(__USE_GNU) || defined(DOXYGEN)
 XBT_PUBLIC(long) getline(char **lineptr, size_t *n, FILE *stream);
 #endif
 
