@@ -59,26 +59,15 @@ void __MSG_process_cleanup(void *arg)
   return;
 }
 
-/* This function creates a MSG process. It has the prototype by SIMIX_function_register_process_create */
+/* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
 void *_MSG_process_create_from_SIMIX(const char *name,
-				     xbt_main_func_t code, void *data,
-				     char *hostname, int argc, char **argv)
-{
-  m_host_t host = MSG_get_host_by_name(hostname);
-  return (void *) MSG_process_create_with_arguments(name, code, data, host,
-						    argc, argv);
-}
-
-/* This function creates a MSG process with properties. It has the prototype by SIMIX_function_register_process_create */
-void *_MSG_process_create_with_env_from_SIMIX(const char *name,
 				     xbt_main_func_t code, void *data,
 				     char *hostname, int argc, char **argv, xbt_dict_t properties)
 {
   m_host_t host = MSG_get_host_by_name(hostname);
   return (void *) MSG_process_create_with_environment(name, code, data, host,
-						    argc, argv,properties);
+						      argc, argv,properties);
 }
-
 
 /** \ingroup m_process_management
  * \brief Creates and runs a new #m_process_t.
