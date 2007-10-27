@@ -65,6 +65,16 @@ class CustomConfigure(ShellCommand):
         else:
             return self.describe(True) + ["failed"]
             
+    def maybeGetText2(self, cmd, results):
+        if results == SUCCESS:
+            pass
+        elif results == WARNINGS:
+            pass
+        elif self.incompatible:
+            return ["incompatible platform"]
+        else:
+            return self.describe(True) + ["failed"]
+        return []
 
 
 
@@ -80,7 +90,15 @@ class CustomSVN(SVN):
        elif results == SUCCESS:
             return self.describe(True) + ["updated to some version"]
        else:
-            return self.describe(True) + ["failed"]             
+            return self.describe(True) + ["failed"]
+        
+   def maybeGetText2(self,cmd,results):
+       lines = cmd.logs['stdio'].getText()
+       r = re.search(' (\d+).',lines)
+       if results == SUCCESS and r:
+           return ["SVN revision %s" % r.group(1)]
+       else:
+           return []
               
 """
 CustomCheck class for master-side representation of the checkall results.
@@ -92,7 +110,7 @@ class CustomCheck(ShellCommand):
     descriptionDone = [name]
 
             
-   # Override getText method.	       
+   # Override per step getText method.	       
     def getText(self, cmd, results):
        lines = cmd.logs['stdio'].getText().split("\n")
        re.compile('^FAIL:')
@@ -108,14 +126,14 @@ class CustomCheck(ShellCommand):
        
        res = ""
        if fail != 0:
-           res += "%d failed, " % fail
+           res += ("%d failed, " % fail)
        if skip != 0:
-           res += "%d skipped, " % skip
+           res += ("%d skipped, " % skip)
        if xpass != 0:
-           res += "%d unexpected success, " % xpass
+           res += ("%d unexpected success, " % xpass)
        if xfail != 0:
-           res += "%d expected failure, " % xfail
-       res += "%d total" % (passed + fail + skip + xpass + xfail)
+           res += ("%d expected failure, " % xfail)
+       res += ("%d total" % (passed + fail + skip + xpass + xfail))
               
        if results == SUCCESS:
             return self.describe(True) + ["Success (%s)" % res]
@@ -126,3 +144,36 @@ class CustomCheck(ShellCommand):
        else:
             return self.describe(True) + [res]
                 
+   # Add some text to the top-column box
+    def getText2(self, cmd, results):
+       lines = cmd.logs['stdio'].getText().split("\n")
+       re.compile('^FAIL:')
+       fail = len( filter(lambda line: re.search('^FAIL:', line), lines) )
+       re.compile('^XFAIL:')
+       xfail = len( filter(lambda line: re.search('^XFAIL:', line), lines) )
+       re.compile('^SKIP:')
+       skip = len( filter(lambda line: re.search('^SKIP:', line), lines) )
+       re.compile('^XPASS:')
+       xpass = len( filter(lambda line: re.search('^XPASS:', line), lines) )
+       re.compile('^PASS:')
+       passed = len( filter(lambda line: re.search('^PASS:', line), lines) )
+       
+       res = ""
+       if fail != 0:
+           res += ("%d failed, " % fail)
+       if skip != 0:
+           res += ("%d skipped, " % skip)
+       if xpass != 0:
+           res += ("%d unexpected success, " % xpass)
+       if xfail != 0:
+           res += ("%d expected failure, " % xfail)
+       res += ("%d total" % (passed + fail + skip + xpass + xfail))
+              
+       if results == SUCCESS:
+            return ["All tests ok (%s)" % res]
+       elif results == WARNINGS:
+            return ["Warnings (%s)" % res]
+       elif fail == 0:
+            return ["Tests failed strangly"]
+       else:
+            return [res]
