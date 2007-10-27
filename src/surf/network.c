@@ -544,7 +544,7 @@ static double get_link_latency(const void *link)
   return ((link_CM02_t) link)->lat_current;
 }
 
-static xbt_dict_t get_link_property_list(void *link)
+static xbt_dict_t get_properties(void *link)
 {
  return ((link_CM02_t) link)->properties;
 }
@@ -674,8 +674,8 @@ static void surf_network_model_init_internal(void)
       get_link_bandwidth;
   surf_network_model->extension_public->get_link_latency =
       get_link_latency;
-  /*for the props of the link*/
-  surf_network_model->common_public->get_link_properties =  get_link_property_list;
+
+  surf_network_model->common_public->get_properties =  get_properties;
 
   link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();

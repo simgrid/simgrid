@@ -31,7 +31,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
 
   cpu->model = (surf_model_t) surf_cpu_model;
-  cpu->name = xbt_strdup(name);
+  cpu->name = name;
   cpu->power_scale = power_scale;
   xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
   cpu->power_current = power_initial;
@@ -81,8 +81,8 @@ static void parse_cpu_init(void)
   surf_parse_get_trace(&state_trace, A_surfxml_host_state_file); 
 
   current_property_set = xbt_dict_new();
-  cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace, state_initial,
-	  state_trace, /*add the properties*/ current_property_set);
+  cpu_new(xbt_strdup(A_surfxml_host_id), power_scale, power_initial, power_trace, state_initial,
+	  state_trace,  current_property_set);
 
 }
 
@@ -426,7 +426,7 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->extension_public->get_available_speed =
       get_available_speed;
   /*manage the properties of the cpu*/
-  surf_cpu_model->common_public->get_cpu_properties = get_properties;
+  surf_cpu_model->common_public->get_properties = get_properties;
 
   if(!cpu_set) cpu_set = xbt_dict_new();
   if (!cpu_maxmin_system) cpu_maxmin_system = lmm_system_new();

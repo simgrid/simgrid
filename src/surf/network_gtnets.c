@@ -299,7 +299,7 @@ static const char *get_resource_name(void *resource_id)
   return ((network_card_GTNETS_t) resource_id)->name;
 }
 
-static xbt_dict_t get_link_property_list(void *link)
+static xbt_dict_t get_properties(void *link)
 {
   return ((network_card_GTNETS_t) link)->properties;
 }
@@ -587,7 +587,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension_public->communicate = communicate;
 
   /*for the props of the link*/
-  surf_network_model->common_public->get_link_properties =  get_link_property_list;
+  surf_network_model->common_public->get_properties =  get_properties;
 
   link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();

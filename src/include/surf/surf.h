@@ -142,11 +142,7 @@ typedef struct surf_model_public {
   void (*set_priority) (surf_action_t action, double priority); /**< Set the priority of an action */
   const char *name; /**< Name of this model */
 
-  /*for the properties of the link*/
-  xbt_dict_t (*get_link_properties) (void* link);
-
-  /*for the properties of the cpu*/
-  xbt_dict_t (*get_cpu_properties) (void* cpu);
+  xbt_dict_t (*get_properties) (void* link); /**< Return the properties dictionary */
 
 } s_surf_model_public_t, *surf_model_public_t;
 

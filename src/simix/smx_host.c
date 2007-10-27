@@ -221,7 +221,7 @@ xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
   xbt_assert0((host != NULL), "Invalid parameters");
 
   return (surf_workstation_model->
-	  common_public->get_cpu_properties(host->simdata->host));
+	  common_public->get_properties(host->simdata->host));
 
 }
 

@@ -31,10 +31,10 @@ typedef struct router_KCCFLN05 {
 /********* cpu object *****************/
 /**************************************/
 typedef struct cpu_KCCFLN05 {
-  surf_model_t model;
-  xbt_dict_t properties;                /* Do not move this field */
-  e_surf_workstation_model_type_t type;	/* Do not move this field */
-  char *name;				/* Do not move this field */
+  surf_model_t model;                   /* Do not move this field: must match model_obj_t */
+  xbt_dict_t properties;                /* Do not move this field: must match link_KCCFLN05_t */
+  e_surf_workstation_model_type_t type;	/* Do not move this field: must match link_KCCFLN05_t */
+  char *name;				/* Do not move this field: must match link_KCCFLN05_t */
   lmm_constraint_t constraint;
   lmm_constraint_t bus;
   double power_scale;
@@ -55,10 +55,10 @@ typedef struct cpu_KCCFLN05 {
 /**************************************/
 
 typedef struct link_KCCFLN05 {
-  surf_model_t model;
-  xbt_dict_t properties;                /* Do not move this field */
-  e_surf_workstation_model_type_t type;	/* Do not move this field */
-  char *name;			      	/* Do not move this field */
+  surf_model_t model;                   /* Do not move this field: must match model_obj_t */
+  xbt_dict_t properties;                /* Do not move this field: must match cpu_KCCFLN05_t */
+  e_surf_workstation_model_type_t type;	/* Do not move this field: must match cpu_KCCFLN05_t */
+  char *name;			      	/* Do not move this field: must match cpu_KCCFLN05_t */
   lmm_constraint_t constraint;
   double lat_current;
   tmgr_trace_event_t lat_event;
@@ -103,7 +103,6 @@ static xbt_dict_t parallel_task_link_set = NULL;
 //added to work with GTNETS
 static xbt_dict_t router_set = NULL;
 static lmm_system_t maxmin_system = NULL;
-/*xbt_dict_t link_set = NULL;*/
 
 
 /* convenient function */
@@ -190,6 +189,13 @@ static const char *get_resource_name(void *resource_id)
      prefix as link_KCCFLN05_t. However, only cpu_KCCFLN05_t
      will theoretically be given as an argument here. */
   return ((cpu_KCCFLN05_t) resource_id)->name;
+}
+
+static xbt_dict_t get_properties(void *resource)
+{
+  /* We can freely cast as a cpu_KCCFLN05_t because it has the same
+     prefix as link_KCCFLN05_t. */
+  return ((cpu_KCCFLN05_t) resource)->properties;
 }
 
 /* action_get_state is inherited from the surf module */
@@ -633,11 +639,6 @@ static double get_available_speed(void *cpu)
   return ((cpu_KCCFLN05_t) cpu)->power_current;
 }
 
-static xbt_dict_t get_cpu_properties(void *cpu)
-{
-  return ((cpu_KCCFLN05_t) cpu)->properties;
-}
-
 static surf_action_t communicate(void *src, void *dst, double size,
 				 double rate)
 {
@@ -858,12 +859,6 @@ static double get_link_latency(const void *link)
   return ((link_KCCFLN05_t) link)->lat_current;
 }
 
-static xbt_dict_t get_link_properties(void *link)
-{
- return ((link_KCCFLN05_t) link)->properties;
-}
-
-
 /**************************************/
 /*** Resource Creation & Destruction **/
 /**************************************/
@@ -997,7 +992,7 @@ static void parse_cpu_init(void)
   current_property_set = xbt_dict_new();
   cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace,
 	  state_initial, state_trace, interference_send, interference_recv,
-	  interference_send_recv, max_outgoing_rate,/*add the properties*/current_property_set);
+	  interference_send_recv, max_outgoing_rate,current_property_set);
 }
 
 static void link_free(void *nw_link)
@@ -1297,8 +1292,7 @@ static void model_init_internal(void)
   surf_workstation_model->extension_public->get_available_speed =
       get_available_speed;
 
-  surf_workstation_model->common_public->get_cpu_properties = get_cpu_properties;
-  surf_workstation_model->common_public->get_link_properties = get_link_properties;
+  surf_workstation_model->common_public->get_properties = get_properties;
 
   surf_workstation_model->extension_public->communicate = communicate;
   surf_workstation_model->extension_public->execute_parallel_task =

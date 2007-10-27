@@ -19,17 +19,17 @@ typedef enum {
 /********* cpu object *****************/
 /**************************************/
 typedef struct cpu_L07 {
-  surf_model_t model;	/* Do not move this field */
-  e_surf_workstation_model_type_t type;	/* Do not move this field */
-  char *name;			/* Do not move this field */
-  lmm_constraint_t constraint;	/* Do not move this field */
+  surf_model_t model;	/* Do not move this field: must match model_obj_t */
+  xbt_dict_t properties;                /* Do not move this field: must match link_L07_t */
+  e_surf_workstation_model_type_t type;	/* Do not move this field: must match link_L07_t */
+  char *name;			        /* Do not move this field: must match link_L07_t */
+  lmm_constraint_t constraint;	        /* Do not move this field: must match link_L07_t */
   double power_scale;
   double power_current;
   tmgr_trace_event_t power_event;
   e_surf_cpu_state_t state_current;
   tmgr_trace_event_t state_event;
   int id;			/* cpu and network card are a single object... */
-  xbt_dict_t properties;
 } s_cpu_L07_t, *cpu_L07_t;
 
 /**************************************/
@@ -37,18 +37,17 @@ typedef struct cpu_L07 {
 /**************************************/
 
 typedef struct link_L07 {
-  surf_model_t model;	/* Do not move this field */
-  e_surf_workstation_model_type_t type;	/* Do not move this field */
-  char *name;			/* Do not move this field */
-  lmm_constraint_t constraint;	/* Do not move this field */
+  surf_model_t model;	/* Do not move this field: must match model_obj_t */
+  xbt_dict_t properties;                /* Do not move this field: must match link_L07_t */
+  e_surf_workstation_model_type_t type;	/* Do not move this field: must match cpu_L07_t */
+  char *name;	  		        /* Do not move this field: must match cpu_L07_t */
+  lmm_constraint_t constraint;	        /* Do not move this field: must match cpu_L07_t */
   double lat_current;
   tmgr_trace_event_t lat_event;
   double bw_current;
   tmgr_trace_event_t bw_event;
   e_surf_link_state_t state_current;
   tmgr_trace_event_t state_event;
-  /*holds the property list that can be associated with the link*/
-  xbt_dict_t properties;
 } s_link_L07_t, *link_L07_t;
 
 
@@ -134,6 +133,10 @@ static const char *get_resource_name(void *resource_id)
      will theoretically be given as an argument here. */
 
   return ((cpu_L07_t) resource_id)->name;
+}
+static xbt_dict_t get_properties(void *r) {
+  /* We can freely cast as a cpu_L07_t since it has the same prefix than link_L07_t */
+ return ((cpu_L07_t) r)->properties;
 }
 
 /* action_get_state is inherited from the surf module */
@@ -470,12 +473,6 @@ static double get_available_speed(void *cpu)
   return ((cpu_L07_t) cpu)->power_current;
 }
 
-static xbt_dict_t get_properties(void *cpu)
-{
- return ((cpu_L07_t) cpu)->properties;
-}
-
-
 static surf_action_t execute_parallel_task(int workstation_nb,
 					   void **workstation_list,
 					   double *computation_amount,
@@ -669,12 +666,6 @@ static double get_link_latency(const void *link)
 }
 
 
-static xbt_dict_t get_link_properties(void *link)
-{
- return ((link_L07_t) link)->properties;
-}
-
-
 /**************************************/
 /*** Resource Creation & Destruction **/
 /**************************************/
@@ -751,7 +742,7 @@ static void parse_cpu_init(void)
 
   current_property_set = xbt_dict_new();
   cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace,
-	  state_initial, state_trace,/*add the properties*/current_property_set);
+	  state_initial, state_trace,current_property_set);
 }
 
 static void link_free(void *nw_link)
@@ -1026,8 +1017,7 @@ static void model_init_internal(void)
   surf_workstation_model->extension_public->get_link_latency =
       get_link_latency;
 
-  surf_workstation_model->common_public->get_link_properties = get_link_properties;
-  surf_workstation_model->common_public->get_cpu_properties = get_properties;
+  surf_workstation_model->common_public->get_properties = get_properties;
 
   workstation_set = xbt_dict_new();
   link_set = xbt_dict_new();

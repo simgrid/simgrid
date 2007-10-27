@@ -153,7 +153,7 @@ xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
   SD_CHECK_INIT_DONE();
   xbt_assert0((workstation != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->common_public->get_cpu_properties(workstation->surf_workstation));
+  return (surf_workstation_model->common_public->get_properties(workstation->surf_workstation));
 
 }
 
