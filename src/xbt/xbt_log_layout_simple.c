@@ -42,7 +42,7 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
    
    xbt_strbuff_append(buff,ev->buffer);
 
-   vasprintf(&p,fmt,ev->ap);
+   vasprintf(&p,fmt,ev->ap_copy);
    xbt_strbuff_append(buff,p);
    free(p);
 
