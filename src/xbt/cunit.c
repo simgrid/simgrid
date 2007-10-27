@@ -245,7 +245,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
     for (i=1;i<79;i++)
       suite_title[i]='=';
     suite_title[i++]='\n';
-    suite_title[i]='\0';
+    suite_title[79]='\0';
 
     sprintf(suite_title + 40 - (suite_len+4)/2, "[ %s ]", suite->title);
     suite_title[40 + (suite_len+5)/2] = '=';
