@@ -99,6 +99,18 @@ AC_CHECK_HEADERS([pthread.h])
 AC_CHECK_LIB(pthread,pthread_create,pthread=yes, pthread=no)
 
 if test x$pthread = xyes ; then
+  AC_CHECK_LIB(pthread, sem_init, HAVE_SEM_INIT=yes, HAVE_SEM_INIT=no)
+  if test ${HAVE_SEM_INIT} = yes ; then
+     AC_MSG_CHECKING(if sem_init is compilable)
+     AC_TRY_COMPILE([#include <semaphore.h>],
+	            [sem_t s; sem_init(&s);], HAVE_SEM_INIT=yes, HAVE_SEM_INIT=no)
+     if test ${HAVE_SEM_INIT} = yes ; then
+        AC_DEFINE([HAVE_SEM_INIT],1,[Define if sem_init() is avaible or not (part of XPG6 standard only)])
+        AC_MSG_RESULT(yes)
+     else
+	AC_MSG_RESULT(no)
+     fi
+  fi
   AC_CHECK_LIB(pthread, sem_timedwait, HAVE_SEM_TIMEDWAIT=yes, HAVE_SEM_TIMEDWAIT=no)
   if test ${HAVE_SEM_TIMEDWAIT} = yes ; then
      AC_MSG_CHECKING(if sem_timedwait is compilable)
@@ -190,8 +202,7 @@ if test "x$with_context" = "xucontext" ; then
 fi
 
 if test "x$with_context" = "xpthread"; then
-  AC_CHECK_HEADERS([pthread.h])
-  if test x$pthread != xyes ; then
+  if test x$pthread != xyes ; then # reuse previous checks
     AC_MSG_ERROR([[Cannot find pthreads (try --with-context=ucontext if you haven't already tried).]])
   fi
   AC_DEFINE([CONTEXT_THREADS],1,[Define if xbt contexts are based on our threads implementation or not])
