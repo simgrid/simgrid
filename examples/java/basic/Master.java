@@ -31,8 +31,6 @@ public class Master extends simgrid.msg.Process {
       double taskCommunicateSize = Double.valueOf(args[2]).doubleValue();
       BasicTask[] todo = new BasicTask[numberOfTasks];
       
-      String taskName = null;
-      
       for (int i = 0; i < numberOfTasks; i++) {
 	 todo[i] = new BasicTask("Task_" + i, taskComputeSize, taskCommunicateSize); 
       }
