@@ -202,8 +202,8 @@ XBT_PUBLIC(void) surf_timer_model_init(const char *filename);
  *  \ingroup SURF_models
  */
 typedef enum {
-  SURF_CPU_ON = 1,		/**< Ready        */
-  SURF_CPU_OFF = 0		/**< Running      */
+  SURF_CPU_ON = 1,		/**< Up & ready        */
+  SURF_CPU_OFF = 0		/**< Down & broken     */
 } e_surf_cpu_state_t;
 
 /** \brief CPU model extension public
