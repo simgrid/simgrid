@@ -782,20 +782,20 @@ released a very comparable tool, and called it GridG.
 
 A nice feature of SimGrid is that it enables you to seamlessly have
 resources whose availability change over time. When you build a
-platform, you generally declare CPUs like that:
+platform, you generally declare hosts like that:
 
 \verbatim
-  <cpu name="Cpu A" power="100.00"/>
+  <host id="host A" power="100.00"/>
 \endverbatim 
 
-If you want the availability of "CPU A" to change over time, the only
+If you want the availability of "host A" to change over time, the only
 thing you have to do is change this definition like that:
 
 \verbatim
-  <cpu name="Cpu A" power="100.00" availability_file="trace_A.txt" state_file="trace_A_failure.txt"/>
+  <host id="host A" power="100.00" availability_file="trace_A.txt" state_file="trace_A_failure.txt"/>
 \endverbatim
 
-For CPUs, availability files are expressed in fraction of available
+For hosts, availability files are expressed in fraction of available
 power. Let's have a look at what "trace_A.txt" may look like:
 
 \verbatim
@@ -805,7 +805,7 @@ PERIODICITY 1.0
 20.0 0.9
 \endverbatim
 
-At time 0, our CPU will deliver 100 flop/s. At time 11.0, it will
+At time 0, our host will deliver 100 flop/s. At time 11.0, it will
 deliver only 50 flop/s until time 20.0 where it will will start
 delivering 90 flop/s. Last at time 21.0 (20.0 plus the periodicity
 1.0), we'll be back to the beginning and it will deliver 100 flop/s.
@@ -818,7 +818,7 @@ PERIODICITY 10.0
 \endverbatim
 
 A negative value means "off" while a positive one means "on". At time
-1.0, the CPU is on. At time 1.0, it is turned off and at time 2.0, it
+1.0, the host is on. At time 1.0, it is turned off and at time 2.0, it
 is turned on again until time 12 (2.0 plus the periodicity 10.0). It
 will be turned on again at time 13.0 until time 23.0, and so on.
 
@@ -826,11 +826,11 @@ Now, let's look how the same kind of thing can be done for network
 links. A usual declaration looks like:
 
 \verbatim
-  <network_link name="LinkA" bandwidth="10.0" latency="0.2"/>
+  <link id="LinkA" bandwidth="10.0" latency="0.2"/>
 \endverbatim
 
 You have at your disposal the following options: bandwidth_file,
-latency_file and state_file. The only difference with CPUs is that
+latency_file and state_file. The only difference with hosts is that
 bandwidth_file and latency_file do not express fraction of available
 power but are expressed directly in bytes per seconds and seconds.
 
@@ -842,13 +842,13 @@ following platform file:
 
 \verbatim
 <route src="A" dst="B">
-   <route_element name="1"/>
+   <link:ctn id="1"/>
 </route>
 <route src="B" dst="C">
-  <route_element name="2"/>
+  <link:ctn id="2"/>
 </route>
 <route src="A" dst="C">
-  <route_element name="3"/>
+  <link:ctn id="3"/>
 </route>
 \endverbatim
 
@@ -858,8 +858,8 @@ links 1 and 2). It simply means that the routing on the graph is not
 trivial, and that data do not following the shortest path in number of
 hops on this graph. Another way to say it is that there is no implicit
 in these routing descriptions. The system will only use the routes you
-declare (such as &lt;route src="A" dst="C"&gt;&lt;route_element
-name="3"/&gt;&lt;/route&gt;), without trying to build new routes by aggregating
+declare (such as &lt;route src="A" dst="C"&gt;&lt;link:ctn
+id="3"/&gt;&lt;/route&gt;), without trying to build new routes by aggregating
 the provided ones.
   
 You are also free to declare platform where the routing is not
@@ -867,8 +867,8 @@ symetric. For example, add the following to the previous file:
 
 \verbatim
 <route src="C" dst="A">
-  <route_element name="2"/>
-  <route_element name="1"/>
+  <link:ctn id="2"/>
+  <link:ctn id="1"/>
 </route>
 \endverbatim
 
@@ -881,8 +881,9 @@ that's another story).
 \subsubsection faq_flexml_bypassing Bypassing the XML parser with your own C functions
 
 So you want to bypass the XML files parser, uh? Maybe doin some parameter
-sweep experiments on your simulations or so? This is possible, but it's not
-really easy. Here is how it goes.
+sweep experiments on your simulations or so? This is possible, and
+it's not even really difficult (well. Such a brutal idea could be
+harder to implement). Here is how it goes.
 
 For this, you have to first remember that the XML parsing in SimGrid is done
 using a tool called FleXML. Given a DTD, this gives a flex-based parser. If
@@ -894,59 +895,71 @@ FleXML parser are close to classical SAX parsers. It means that a
 well-formed SimGrid platform XML file might result in the following
 "events":
 
-  - start "platform_description"
-  - start "cpu" with attributes name="host1" power="1.0"
-  - end "cpu"
-  - start "cpu" with attributes name="host2" power="2.0"
-  - end "cpu"
-  - start "network_link" with ...
-  - end "network_link"
+  - start "platform_description" with attribute version="2"
+  - start "host" with attributes id="host1" power="1.0"
+  - end "host"
+  - start "host" with attributes id="host2" power="2.0"
+  - end "host"
+  - start "link" with ...
+  - end "link"
   - start "route" with ...
-  - end "route"
-  - start "route" with ...
+  - start "link:ctn" with ...
+  - end "link:ctn"
   - end "route"
   - end "platform_description"
 
 The communication from the parser to the SURF code uses two means:
 Attributes get copied into some global variables, and a surf-provided
 function gets called by the parser for each event. For example, the event
-  - start "cpu" with attributes name="host1" power="1.0"
+  - start "host" with attributes id="host1" power="1.0"
 
-let the parser do the equivalent of:
+let the parser do something roughly equivalent to:
 \verbatim
-  strcpy("host1",A_cpu_name);
-  A_cpu_power = 1.0;
-  (*STag_cpu_fun)();
+  strcpy(A_host_id,"host1");
+  A_host_power = 1.0;
+  STag_host();
 \endverbatim
 
 In SURF, we attach callbacks to the different events by initializing the
-pointer functions to some the right surf functions. Example in
-workstation_KCCFLN05.c (surf_parse_open() ends up calling surf_parse()):
+pointer functions to some the right surf functions. Since there can be
+more than one callback attached to the same event (if more than one
+model is in use, for example), they are stored in a dynar. Example in
+workstation_ptask_L07.c:
 \verbatim
-  // Building the routes
+  /* Adding callback functions */
   surf_parse_reset_parser();
-  STag_route_fun=parse_route_set_endpoints;
-  ETag_route_element_fun=parse_route_elem;
-  ETag_route_fun=parse_route_set_route;
+  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
+                
+  /* Parse the file */
   surf_parse_open(file);
-  xbt_assert1((!surf_parse()),"Parse error in %s",file);
+  xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();
 \endverbatim
     
 So, to bypass the FleXML parser, you need to write your own version of the
 surf_parse function, which should do the following:
-   - Call the corresponding STag_<tag>_fun function to simulate tag start
    - Fill the A_<tag>_<attribute> variables with the wanted values
+   - Call the corresponding STag_<tag>_fun function to simulate tag start
    - Call the corresponding ETag_<tag>_fun function to simulate tag end
    - (do the same for the next set of values, and loop)
 
 Then, tell SimGrid that you want to use your own "parser" instead of the stock one:
 \verbatim
-  surf_parse = surf_parse_bypass;
+  surf_parse = surf_parse_bypass_environment;
   MSG_create_environment(NULL);
+  surf_parse = surf_parse_bypass_application;
+  MSG_launch_application(NULL);
 \endverbatim
 
-An example of this trick is distributed in the file examples/msg/masterslave/masterslave_bypass.c
+A set of macros are provided at the end of
+include/surf/surfxml_parse.h to ease the writing of the bypass
+functions. An example of this trick is distributed in the file
+examples/msg/masterslave/masterslave_bypass.c
 
 \section faq_troubleshooting Troubleshooting
 
