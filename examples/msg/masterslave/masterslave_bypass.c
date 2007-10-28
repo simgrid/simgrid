@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include "msg/msg.h"  /* Yeah! If you want to use msg, you need to include msg/msg.h */
-#include "surf/surfxml_parse.h" /* to override surf_parse */
+#include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
 #include "surf/surfxml.h"       /* to hijack surf_parse_lex */
 
 /* Create a log channel to have nice outputs. */
@@ -15,30 +15,18 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 #define FINALIZE ((void*)221297) /* a magic number to tell people to stop working */
 
-#define SURFXML_BUFFER_SET(key,val) do { \
-  AX_surfxml_##key=AX_ptr; \
-  strcpy(A_surfxml_##key,val); \
-  AX_ptr+=strlen(val)+1; } while(0)
-
-#define SURFXML_BUFFER_RESET() do { \
-  AX_ptr = 0; \
-  memset(surfxml_bufferstack,0,surfxml_bufferstack_size); } while(0)
-
-#define STAG(tag)  STag_surfxml_##tag();
-#define ETAG(tag)  do { ETag_surfxml_##tag(); SURFXML_BUFFER_RESET(); } while(0)     
-
 static int surf_parse_bypass_platform(void)
 {
-  static int AX_ptr;
+  static int AX_ptr = 0;
   static int surfxml_bufferstack_size = 2048;
 
-  /* allocating memory to the buffer, I think 2MB should be enough */
+  /* allocating memory for the buffer, I think 2kB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
   
   /* <platform_description> */
   SURFXML_BUFFER_SET(platform_description_version,"2");
 
-  STAG(platform_description);
+  SURFXML_START_TAG(platform_description);
 
 /*   <host id="host A" power="100000000.00"/> */
   SURFXML_BUFFER_SET(host_id,"host A");
@@ -52,8 +40,8 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
   SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
 
-  STAG(host);
-  ETAG(host);
+  SURFXML_START_TAG(host);
+  SURFXML_END_TAG(host);
 
 /*   <host id="host B" power="100000000.00"/> */
   SURFXML_BUFFER_SET(host_id, "host B");
@@ -67,8 +55,8 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
   SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
 
-  STAG(host);
-  ETAG(host);
+  SURFXML_START_TAG(host);
+  SURFXML_END_TAG(host);
 
 /*   <link id="LinkA" bandwidth="10000000.0" latency="0.2"/> */
   SURFXML_BUFFER_SET(link_id, "LinkA");
@@ -79,8 +67,8 @@ static int surf_parse_bypass_platform(void)
   A_surfxml_link_state = A_surfxml_link_state_ON;
   SURFXML_BUFFER_SET(link_state_file, "");
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-  STAG(link);
-  ETAG(link);
+  SURFXML_START_TAG(link);
+  SURFXML_END_TAG(link);
 
 /*   <route src="host A" dst="host B"><link:ctn id="LinkA"/></route> */
   SURFXML_BUFFER_SET(route_src, "host A");
@@ -90,13 +78,13 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
   SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
 
-  STAG(route);
+  SURFXML_START_TAG(route);
 
   SURFXML_BUFFER_SET(link_c_ctn_id, "LinkA");
-  STAG(link_c_ctn);
-  ETAG(link_c_ctn);
+  SURFXML_START_TAG(link_c_ctn);
+  SURFXML_END_TAG(link_c_ctn);
 
-  ETAG(route);
+  SURFXML_END_TAG(route);
 
 /*   <route src="host B" dst="host A"><link:ctn id="LinkA"/></route> */
   SURFXML_BUFFER_SET(route_src, "host B");
@@ -106,15 +94,15 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
   SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
 
-  STAG(route);
+  SURFXML_START_TAG(route);
 
   SURFXML_BUFFER_SET(link_c_ctn_id, "LinkA");
-  STAG(link_c_ctn);
-  ETAG(link_c_ctn);
+  SURFXML_START_TAG(link_c_ctn);
+  SURFXML_END_TAG(link_c_ctn);
 
-  ETAG(route);
+  SURFXML_END_TAG(route);
 /* </platform_description> */
-  ETAG(platform_description);
+  SURFXML_END_TAG(platform_description);
 
   free(surfxml_bufferstack);
   return 0;
@@ -130,48 +118,48 @@ static int surf_parse_bypass_application(void) {
   /* <platform_description> */
   SURFXML_BUFFER_SET(platform_description_version,"2");
 
-  STAG(platform_description);
+  SURFXML_START_TAG(platform_description);
    
 /*   <process host="host A" function="master"> */
   SURFXML_BUFFER_SET(process_host, "host A");
   SURFXML_BUFFER_SET(process_function, "master");
   SURFXML_BUFFER_SET(process_start_time, "-1.0");
   SURFXML_BUFFER_SET(process_kill_time, "-1.0");
-  STAG(process);
+  SURFXML_START_TAG(process);
 
 /*      <argument value="20"/> */
   SURFXML_BUFFER_SET(argument_value, "20");
-  STAG(argument);
-  ETAG(argument);
+  SURFXML_START_TAG(argument);
+  SURFXML_END_TAG(argument);
 
 /*      <argument value="5000000"/> */
   SURFXML_BUFFER_SET(argument_value, "5000000");
-  STAG(argument);
-  ETAG(argument);
+  SURFXML_START_TAG(argument);
+  SURFXML_END_TAG(argument);
 
 /*      <argument value="100000"/> */
   SURFXML_BUFFER_SET(argument_value, "100000");
-  STAG(argument);
-  ETAG(argument);
+  SURFXML_START_TAG(argument);
+  SURFXML_END_TAG(argument);
 
 /*      <argument value="host B"/> */
   SURFXML_BUFFER_SET(argument_value, "host B");
-  STAG(argument);
-  ETAG(argument);
+  SURFXML_START_TAG(argument);
+  SURFXML_END_TAG(argument);
 
 /*   </process> */
-  ETAG(process);
+  SURFXML_END_TAG(process);
 
 /*   <process host="host B" function="slave"/> */
   SURFXML_BUFFER_SET(process_host, "host B");
   SURFXML_BUFFER_SET(process_function, "slave");
   SURFXML_BUFFER_SET(process_start_time, "-1.0");
   SURFXML_BUFFER_SET(process_kill_time, "-1.0");
-  STAG(process);
-  ETAG(process);
+  SURFXML_START_TAG(process);
+  SURFXML_END_TAG(process);
 
 /* </platform_description> */
-  ETAG(platform_description);
+  SURFXML_END_TAG(platform_description);
 
   free(surfxml_bufferstack);
   return 0;
