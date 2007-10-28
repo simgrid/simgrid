@@ -9,7 +9,7 @@ dnl GNU LGPL (v2.1) licence.
 ##
 
 AC_PREREQ(2.59)
-AC_INIT([simgrid],[3.3-cvs],[simgrid-devel@lists.gforge.inria.fr])
+AC_INIT([simgrid],[3.3-svn],[simgrid-devel@lists.gforge.inria.fr])
 AC_CONFIG_SRCDIR([include/gras.h])
 AC_CONFIG_HEADERS([src/gras_config.h])
 # A CI_PREREQ(2003.01.16) # We need a recent ACI when having sub-modules
@@ -30,6 +30,15 @@ m4_defun([AC_PROG_F77],[])
 dnl We do build a proper DLL when using win32
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
+
+###############
+## SVN version check
+##
+if test -e .svn ; then
+  VERSION="$VERSION-r`svnversion`"
+  PACKAGE_VERSION="$PACKAGE_VERSION-r`svnversion`"
+  PACKAGE_STRING="PACKAGE_STRING r`svnversion`"  
+fi
 
 ###############
 ## System checks
@@ -464,7 +473,7 @@ AC_SUBST(ac_configure_args)
 # Can we make status line about the compilation result?
 AC_CHECK_PROG(MD5SUM,md5sum,`which md5sum`)
 if test x$MD5SUM != xno ; then
-  build_version=`find -name '*.[ch]' |grep -v src/ucontext_stack.h | grep -v src/gras_config.h |\ 
+  build_version=`find . -name '*.[ch]' |grep -v src/ucontext_stack.h | grep -v src/gras_config.h |\ 
                  xargs cat| $MD5SUM | sed 's/ .*$//'`
 else 
   build_version="no_md5sum_binary"
