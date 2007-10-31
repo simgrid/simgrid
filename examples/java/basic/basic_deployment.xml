@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <process host="Jacquelin" function="Master">
      <argument value="5"/>
      <argument value="50000"/>
@@ -30,4 +30,4 @@
   <process host="Robert" function="Slave"/>
   <process host="Sirois" function="Slave"/>
   <process host="Monique" function="Slave"/>
-</platform_description>
+</platform>

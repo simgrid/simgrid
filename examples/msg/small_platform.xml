@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <!-- ljlkj -->
   <host id="Tremblay" power="98095000"/>
   <host id="Jupiter" power="76296000"/>
@@ -86,4 +86,4 @@
   <route src="Bourassa" dst="Ginette">
     <link:ctn id="7"/><link:ctn id="6"/><link:ctn id="1"/><link:ctn id="0"/><link:ctn id="2"/><link:ctn id="5"/>
   </route>
-</platform_description>
+</platform>

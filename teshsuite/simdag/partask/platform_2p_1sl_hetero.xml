@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
 
 	<host id="cpu0" power="1" />
 	<host id="cpu1" power="2" />
@@ -13,4 +13,4 @@
 	<route src="cpu1" dst="cpu0">
 		<link:ctn id="link0" />
 	</route>
-</platform_description>
+</platform>

@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2"><!-- For using with ping_pong, platform_sendrecv.xml -->
+<platform version="2"><!-- For using with ping_pong, platform_sendrecv.xml -->
 
   <process host="Fafard" function="test">
 	<argument value="76296000"/>
@@ -10,4 +10,4 @@
 	<argument value="76296000"/>
 	<argument value="2.0"/>
   </process>
-</platform_description>
+</platform>

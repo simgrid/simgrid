@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <host id="Jacquelin" power="137333000"/>
   <host id="Boivin"    power="98095000"/>
   <host id="Geoff"     power="42917000"/>
@@ -17,5 +17,5 @@
 
   <route src="Geoff"  dst="Boivin">      <link:ctn id="3"/></route>
   <route src="Boivin" dst="Geoff">       <link:ctn id="3"/></route>
-</platform_description>
+</platform>
 

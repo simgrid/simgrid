@@ -1,9 +1,9 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2"><!-- For using with ping_pong, platform_sendrecv.xml -->
+<platform version="2"><!-- For using with ping_pong, platform_sendrecv.xml -->
 
   <process host="Inmos" function="sender">
 	<argument value="Bellevue"/>
   </process>
   <process host="Bellevue" function="receiver"/>
-</platform_description>
+</platform>

@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <host id="Apple" power="76296000"/>
   <host id="Anne_Marie" power="42917000"/>
   <host id="Audy" power="98095000"/>
@@ -1453,4 +1453,4 @@
   <route src="Jeannine" dst="Olivier">
     <link:ctn id="23"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="5"/><link:ctn id="4"/><link:ctn id="2"/><link:ctn id="0"/><link:ctn id="1"/><link:ctn id="19"/><link:ctn id="14"/><link:ctn id="16"/><link:ctn id="37"/>
   </route>
-</platform_description>
+</platform>

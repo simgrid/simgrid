@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <process host="Apple" function="maestro">
      <argument value="Anne_Marie:4000"/>
      <argument value="Audy:4000"/>
@@ -87,4 +87,4 @@
   <process host="Jeannine" function="sensor">
      <argument value="4000"/>
   </process>
-</platform_description>
+</platform>

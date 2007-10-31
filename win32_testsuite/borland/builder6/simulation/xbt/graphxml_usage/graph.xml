@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2"><graph>
+<platform version="2"><graph>
   <node id="A" label="A"/>
   <node id="B" label="B"/>
   <node id="C" label="C"/>

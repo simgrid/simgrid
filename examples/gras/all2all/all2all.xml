@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <!-- For each host, we have a sender and a receiver (because we use a
        1-port model and still don't want any deadlocks neither synchronization
        delays).
@@ -71,4 +71,4 @@
      <argument value="4000"/>
      <argument value="4"/>
   </process>
-</platform_description>
+</platform>

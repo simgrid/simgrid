@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2"><!--- 
+<platform version="2"><!--- 
   dogbone
 -->
 
@@ -62,4 +62,4 @@
   <route src="R2" dst="C2">
      <link:ctn id="5"/>
   </route>
-</platform_description>
+</platform>

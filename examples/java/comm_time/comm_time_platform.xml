@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <host id="Jacquelin" power="137333000"/>
   <host id="Boivin" power="98095000"/>
   <host id="Jean_Yves" power="98095000"/>
@@ -8293,4 +8293,4 @@
   <route src="Dodge" dst="Doyon"><link:ctn id="180"/><link:ctn id="81"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="62"/><link:ctn id="132"/></route>
   <route src="Dodge" dst="Fafard"><link:ctn id="180"/><link:ctn id="81"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="90"/><link:ctn id="179"/></route>
   <route src="Dodge" dst="Croteau"><link:ctn id="180"/><link:ctn id="81"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="175"/></route>
-</platform_description>
+</platform>

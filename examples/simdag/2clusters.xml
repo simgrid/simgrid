@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <host id="C2-06" power="5000000000"/>
   <host id="C1-03" power="1000000000"/>
   <host id="C2-07" power="5000000000"/>
@@ -116,4 +116,4 @@
   <route src="C2-05" dst="C1-01"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
   <route src="C2-05" dst="C1-04"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
   <route src="C2-05" dst="C1-00"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-</platform_description>
+</platform>

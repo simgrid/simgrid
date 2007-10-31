@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
 
  <process host="Tremblay" function="node">
   <argument value="4000"/>                           <!-- port on which I am listening -->
@@ -28,4 +28,4 @@
   <argument value="Tremblay"/><argument value="4000"/><!-- peer (successor) host id and port-->
  </process>
  
-</platform_description>
+</platform>

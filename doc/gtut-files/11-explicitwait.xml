@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <process host="Jacquelin" function="server">
     <argument value="12345"/>
   </process>
@@ -12,5 +12,5 @@
     <argument value="Jacquelin"/>
     <argument value="12345"/>
   </process>
-</platform_description>
+</platform>
 

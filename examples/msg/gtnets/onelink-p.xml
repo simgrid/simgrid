@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2"><!--- 
+<platform version="2"><!--- 
    S1  --------- C1
         link 1
         100MB, 5ms
@@ -16,4 +16,4 @@
      <link:ctn id="1"/>
   </route>
 
-</platform_description>
+</platform>

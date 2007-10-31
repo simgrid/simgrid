@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
 	<host id="Jacquelin" power="137333000"/>
 	<host id="Boivin" power="98095000"/>
 	<host id="Jean_Yves" power="98095000"/>
@@ -323,5 +323,5 @@
   <route src="Laroche" dst="iRMX"><link:ctn id="91"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
   <route src="Laroche" dst="McGee"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
   <route src="Laroche" dst="Gatien"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
-</platform_description>
+</platform>
   

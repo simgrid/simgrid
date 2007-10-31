@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
   <process host="Tremblay" function="server">
      <argument value="4000"/>       <!-- port number -->
   </process>
@@ -8,4 +8,4 @@
      <argument value="Tremblay"/>   <!-- server host -->
      <argument value="4000"/>       <!-- port number -->
   </process>
-</platform_description>
+</platform>

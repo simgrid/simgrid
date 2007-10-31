@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="2">
+<platform version="2">
 
   <process host="Tremblay" function="sensor">  <argument value="Bourassa:4000"/> </process>
   <process host="Jupiter"  function="sensor">  <argument value="Bourassa:4000"/> </process>
@@ -9,4 +9,4 @@
 
   <process host="Bourassa" function="maestro"> <argument value="4000"/>          </process>
 
-</platform_description>
+</platform>
