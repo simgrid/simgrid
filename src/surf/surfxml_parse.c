@@ -17,8 +17,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
 #include "surfxml.c"
 
 /* make sure these symbols are defined as strong ones in this file so that the linked can resolve them */
-xbt_dynar_t STag_surfxml_platform_description_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_platform_description_cb_list = NULL;
+xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t STag_surfxml_host_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_host_cb_list = NULL;
 xbt_dynar_t STag_surfxml_router_cb_list = NULL;
@@ -46,27 +46,49 @@ static inline void surfxml_call_cb_functions(xbt_dynar_t);
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse;
 
+void surf_parse_free_callbacks(void)
+{
+  xbt_dynar_free(&STag_surfxml_platform_cb_list);
+  xbt_dynar_free(&ETag_surfxml_platform_cb_list);
+  xbt_dynar_free(&STag_surfxml_host_cb_list);
+  xbt_dynar_free(&ETag_surfxml_host_cb_list);
+  xbt_dynar_free(&STag_surfxml_router_cb_list);
+  xbt_dynar_free(&ETag_surfxml_router_cb_list);
+  xbt_dynar_free(&STag_surfxml_link_cb_list);
+  xbt_dynar_free(&ETag_surfxml_link_cb_list);
+  xbt_dynar_free(&STag_surfxml_route_cb_list);
+  xbt_dynar_free(&ETag_surfxml_route_cb_list);
+  xbt_dynar_free(&STag_surfxml_link_c_ctn_cb_list);
+  xbt_dynar_free(&ETag_surfxml_link_c_ctn_cb_list);
+  xbt_dynar_free(&STag_surfxml_process_cb_list);
+  xbt_dynar_free(&ETag_surfxml_process_cb_list);
+  xbt_dynar_free(&STag_surfxml_argument_cb_list);
+  xbt_dynar_free(&ETag_surfxml_argument_cb_list);
+  xbt_dynar_free(&STag_surfxml_prop_cb_list);
+  xbt_dynar_free(&ETag_surfxml_prop_cb_list);
+}
+
 void surf_parse_reset_parser(void)
 {
-
-  STag_surfxml_platform_description_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  ETag_surfxml_platform_description_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  STag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  ETag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  STag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  ETag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  STag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  ETag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  STag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  ETag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  STag_surfxml_link_c_ctn_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  ETag_surfxml_link_c_ctn_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  STag_surfxml_process_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  ETag_surfxml_process_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  STag_surfxml_argument_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  ETag_surfxml_argument_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  STag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
-  ETag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t),&free);
+  surf_parse_free_callbacks();
+  STag_surfxml_platform_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  ETag_surfxml_platform_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  STag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  ETag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  STag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  ETag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  STag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  ETag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  STag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  ETag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  STag_surfxml_link_c_ctn_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  ETag_surfxml_link_c_ctn_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  STag_surfxml_process_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  ETag_surfxml_process_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  STag_surfxml_argument_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  ETag_surfxml_argument_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  STag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  ETag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
 
 }
 
@@ -94,11 +116,11 @@ void ETag_surfxml_include(void)
   xbt_dynar_pop(surf_input_buffer_stack, &surf_input_buffer);
 }
 
-void STag_surfxml_platform_description(void)
+void STag_surfxml_platform(void)
 {
   double version = 0.0;
 
-  sscanf(A_surfxml_platform_description_version, "%lg", &version);
+  sscanf(A_surfxml_platform_version, "%lg", &version);
 
   xbt_assert0((version >= 1.0), "******* BIG FAT WARNING *********\n "
 	      "You're using an ancient XML file. "
@@ -118,12 +140,12 @@ void STag_surfxml_platform_description(void)
 	      "is available in the contrib/platform_generation directory "
 	      "of the simgrid repository.");
 
-  surfxml_call_cb_functions(STag_surfxml_platform_description_cb_list);
+  surfxml_call_cb_functions(STag_surfxml_platform_cb_list);
 }
 
-void ETag_surfxml_platform_description(void)
+void ETag_surfxml_platform(void)
 {
-  surfxml_call_cb_functions(ETag_surfxml_platform_description_cb_list);
+  surfxml_call_cb_functions(ETag_surfxml_platform_cb_list);
 }
 
 void STag_surfxml_host(void)

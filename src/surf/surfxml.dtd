@@ -1,6 +1,8 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform_description ((include|host|router|link)*,(include|route|process)*)>
-<!ATTLIST platform_description version CDATA "0.0">
+<!ELEMENT platform ((include|host|router|link)*,(include|route|process)*)>
+<!ATTLIST platform version CDATA "0.0">
+<!ATTLIST platform xmlns:link CDATA "http://simgrid.gforge.inria.fr/">
+<!ATTLIST platform xmlns:route CDATA "http://simgrid.gforge.inria.fr/">
 
 <!ELEMENT include EMPTY>
 <!ATTLIST include file CDATA #REQUIRED>

@@ -549,8 +549,6 @@ XBT_PUBLIC_DATA(xbt_dict_t) current_property_set; /* the prop set for the curren
 void parse_properties(void);
 void free_string(void*);
 
-XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function);
-
 SG_END_DECL()
 
 #endif				/* _SURF_SURF_H */
