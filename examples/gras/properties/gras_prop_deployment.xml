@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "surfxml.dtd">
+<platform version="2">
+  <process host="Jacquelin" function="server">
+    <prop id="someprop" value="somevalue"/>
+  </process>
+  <process host="Boivin" function="client">
+    <prop id="otherprop" value="othervalue"/>
+  </process>
+</platform>
