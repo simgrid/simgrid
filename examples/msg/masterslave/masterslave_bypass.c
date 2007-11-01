@@ -23,10 +23,10 @@ static int surf_parse_bypass_platform(void)
   /* allocating memory for the buffer, I think 2kB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
   
-  /* <platform_description> */
-  SURFXML_BUFFER_SET(platform_description_version,"2");
+  /* <platform> */
+  SURFXML_BUFFER_SET(platform_version,"2");
 
-  SURFXML_START_TAG(platform_description);
+  SURFXML_START_TAG(platform);
 
 /*   <host id="host A" power="100000000.00"/> */
   SURFXML_BUFFER_SET(host_id,"host A");
@@ -101,8 +101,8 @@ static int surf_parse_bypass_platform(void)
   SURFXML_END_TAG(link_c_ctn);
 
   SURFXML_END_TAG(route);
-/* </platform_description> */
-  SURFXML_END_TAG(platform_description);
+/* </platform> */
+  SURFXML_END_TAG(platform);
 
   free(surfxml_bufferstack);
   return 0;
@@ -115,10 +115,10 @@ static int surf_parse_bypass_application(void) {
   /* allocating memory to the buffer, I think 2MB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
   
-  /* <platform_description> */
-  SURFXML_BUFFER_SET(platform_description_version,"2");
+  /* <platform> */
+  SURFXML_BUFFER_SET(platform_version,"2");
 
-  SURFXML_START_TAG(platform_description);
+  SURFXML_START_TAG(platform);
    
 /*   <process host="host A" function="master"> */
   SURFXML_BUFFER_SET(process_host, "host A");
@@ -158,8 +158,8 @@ static int surf_parse_bypass_application(void) {
   SURFXML_START_TAG(process);
   SURFXML_END_TAG(process);
 
-/* </platform_description> */
-  SURFXML_END_TAG(platform_description);
+/* </platform> */
+  SURFXML_END_TAG(platform);
 
   free(surfxml_bufferstack);
   return 0;

@@ -50,7 +50,8 @@ noinst_PROGRAMS = sendrecv/sendrecv$(EXEEXT) suspend/suspend$(EXEEXT) \
 	masterslave/masterslave_failure$(EXEEXT) \
 	masterslave/masterslave_bypass$(EXEEXT) \
 	parallel_task/parallel_task$(EXEEXT) \
-	priority/priority$(EXEEXT) $(am__EXEEXT_1)
+	priority/priority$(EXEEXT) properties/msg_prop$(EXEEXT) \
+	$(am__EXEEXT_1)
 @HAVE_GTNETS_TRUE@am__append_2 = gtnets/gtnets 
 @HAVE_GTNETS_FALSE@am__append_3 = gtnets/gtnets.c
 DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -104,6 +105,9 @@ parallel_task_parallel_task_DEPENDENCIES =  \
 am_priority_priority_OBJECTS = priority.$(OBJEXT)
 priority_priority_OBJECTS = $(am_priority_priority_OBJECTS)
 priority_priority_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
+am_properties_msg_prop_OBJECTS = msg_prop.$(OBJEXT)
+properties_msg_prop_OBJECTS = $(am_properties_msg_prop_OBJECTS)
+properties_msg_prop_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
 am_sendrecv_sendrecv_OBJECTS = sendrecv.$(OBJEXT)
 sendrecv_sendrecv_OBJECTS = $(am_sendrecv_sendrecv_OBJECTS)
 sendrecv_sendrecv_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
@@ -127,15 +131,15 @@ SOURCES = $(gtnets_gtnets_SOURCES) \
 	$(masterslave_masterslave_failure_SOURCES) \
 	$(masterslave_masterslave_forwarder_SOURCES) \
 	$(parallel_task_parallel_task_SOURCES) \
-	$(priority_priority_SOURCES) $(sendrecv_sendrecv_SOURCES) \
-	$(suspend_suspend_SOURCES)
+	$(priority_priority_SOURCES) $(properties_msg_prop_SOURCES) \
+	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
 DIST_SOURCES = $(am__gtnets_gtnets_SOURCES_DIST) \
 	$(masterslave_masterslave_bypass_SOURCES) \
 	$(masterslave_masterslave_failure_SOURCES) \
 	$(masterslave_masterslave_forwarder_SOURCES) \
 	$(parallel_task_parallel_task_SOURCES) \
-	$(priority_priority_SOURCES) $(sendrecv_sendrecv_SOURCES) \
-	$(suspend_suspend_SOURCES)
+	$(priority_priority_SOURCES) $(properties_msg_prop_SOURCES) \
+	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -284,7 +288,9 @@ EXTRA_DIST = msg_platform.xml small_platform.xml \
 	masterslave/deployment_masterslave.xml \
 	gtnets/r-n200-f50-s4-2-d.xml gtnets/onelink-p.xml \
 	gtnets/onelink-d.xml gtnets/r-n200-f50-s4-2-p.xml \
-	gtnets/dogbone-d.xml gtnets/dogbone-p.xml $(am__append_3)
+	gtnets/dogbone-d.xml gtnets/dogbone-p.xml \
+	properties/deployment_platform.xml \
+	properties/deployment_properties.xml $(am__append_3)
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
         sendrecv/sendrecv_Vegas.tesh \
@@ -295,13 +301,19 @@ TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
 	masterslave/masterslave_failure.tesh \
         masterslave/masterslave_bypass.tesh \
         parallel_task/parallel_task.tesh \
-        priority/priority.tesh
+        priority/priority.tesh \
+	properties/msg_prop.tesh
 
 @HAVE_SDP_TRUE@BROKEN_TESTS = sendrecv/sendrecv_SDP.tesh
 CLEANFILES = sendrecv/*~ sendrecv/sendrecv suspend/*~ suspend/suspend \
 	masterslave/*~ masterslave/masterslave_forwarder \
 	masterslave/masterslave_failure masterslave/masterslave_bypass \
-	parallel_task/parallel_task priority/priority $(am__append_1)
+	parallel_task/parallel_task priority/priority \
+	properties/msg_prop $(am__append_1)
+
+# property handle example
+properties_msg_prop_SOURCES = properties/msg_prop.c
+properties_msg_prop_LDADD = $(top_builddir)/src/libsimgrid.la
 
 # sendrecv simple example
 sendrecv_sendrecv_SOURCES = sendrecv/sendrecv.c
@@ -404,6 +416,12 @@ priority/$(am__dirstamp):
 priority/priority$(EXEEXT): $(priority_priority_OBJECTS) $(priority_priority_DEPENDENCIES) priority/$(am__dirstamp)
 	@rm -f priority/priority$(EXEEXT)
 	$(LINK) $(priority_priority_OBJECTS) $(priority_priority_LDADD) $(LIBS)
+properties/$(am__dirstamp):
+	@$(MKDIR_P) properties
+	@: > properties/$(am__dirstamp)
+properties/msg_prop$(EXEEXT): $(properties_msg_prop_OBJECTS) $(properties_msg_prop_DEPENDENCIES) properties/$(am__dirstamp)
+	@rm -f properties/msg_prop$(EXEEXT)
+	$(LINK) $(properties_msg_prop_OBJECTS) $(properties_msg_prop_LDADD) $(LIBS)
 sendrecv/$(am__dirstamp):
 	@$(MKDIR_P) sendrecv
 	@: > sendrecv/$(am__dirstamp)
@@ -427,6 +445,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave_bypass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave_failure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave_forwarder.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_prop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_task.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/priority.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sendrecv.Po@am__quote@
@@ -536,6 +555,20 @@ priority.obj: priority/priority.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='priority/priority.c' object='priority.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o priority.obj `if test -f 'priority/priority.c'; then $(CYGPATH_W) 'priority/priority.c'; else $(CYGPATH_W) '$(srcdir)/priority/priority.c'; fi`
+
+msg_prop.o: properties/msg_prop.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_prop.o -MD -MP -MF $(DEPDIR)/msg_prop.Tpo -c -o msg_prop.o `test -f 'properties/msg_prop.c' || echo '$(srcdir)/'`properties/msg_prop.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/msg_prop.Tpo $(DEPDIR)/msg_prop.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='properties/msg_prop.c' object='msg_prop.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_prop.o `test -f 'properties/msg_prop.c' || echo '$(srcdir)/'`properties/msg_prop.c
+
+msg_prop.obj: properties/msg_prop.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_prop.obj -MD -MP -MF $(DEPDIR)/msg_prop.Tpo -c -o msg_prop.obj `if test -f 'properties/msg_prop.c'; then $(CYGPATH_W) 'properties/msg_prop.c'; else $(CYGPATH_W) '$(srcdir)/properties/msg_prop.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/msg_prop.Tpo $(DEPDIR)/msg_prop.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='properties/msg_prop.c' object='msg_prop.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_prop.obj `if test -f 'properties/msg_prop.c'; then $(CYGPATH_W) 'properties/msg_prop.c'; else $(CYGPATH_W) '$(srcdir)/properties/msg_prop.c'; fi`
 
 sendrecv.o: sendrecv/sendrecv.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sendrecv.o -MD -MP -MF $(DEPDIR)/sendrecv.Tpo -c -o sendrecv.o `test -f 'sendrecv/sendrecv.c' || echo '$(srcdir)/'`sendrecv/sendrecv.c
@@ -748,6 +781,7 @@ distclean-generic:
 	-rm -f masterslave/$(am__dirstamp)
 	-rm -f parallel_task/$(am__dirstamp)
 	-rm -f priority/$(am__dirstamp)
+	-rm -f properties/$(am__dirstamp)
 	-rm -f sendrecv/$(am__dirstamp)
 	-rm -f suspend/$(am__dirstamp)
 

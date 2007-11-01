@@ -20,7 +20,9 @@ EXTRA_DIST = msg_platform.xml \
              gtnets/onelink-d.xml \
              gtnets/r-n200-f50-s4-2-p.xml \
              gtnets/dogbone-d.xml \
-             gtnets/dogbone-p.xml
+             gtnets/dogbone-p.xml \
+             properties/deployment_platform.xml \
+             properties/deployment_properties.xml
 
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
@@ -35,7 +37,8 @@ TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
 	masterslave/masterslave_failure.tesh \
         masterslave/masterslave_bypass.tesh \
         parallel_task/parallel_task.tesh \
-        priority/priority.tesh
+        priority/priority.tesh \
+	properties/msg_test.tesh
 
 
 if HAVE_SDP
@@ -53,7 +56,8 @@ CLEANFILES = sendrecv/*~ \
              masterslave/masterslave_failure \
              masterslave/masterslave_bypass \
              parallel_task/parallel_task \
-             priority/priority
+             priority/priority \
+             properties/msg_prop
 
 if HAVE_GTNETS
              CLEANFILES += gtnets/gtnets 
@@ -68,12 +72,17 @@ noinst_PROGRAMS = sendrecv/sendrecv \
                   masterslave/masterslave_failure \
                   masterslave/masterslave_bypass \
                   parallel_task/parallel_task \
-                  priority/priority
+                  priority/priority \
+                  properties/msg_prop
 
 if HAVE_GTNETS
   noinst_PROGRAMS += gtnets/gtnets 
 endif
 
+
+# property handle example
+properties_msg_prop_SOURCES = properties/msg_prop.c
+properties_msg_prop_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 
 # sendrecv simple example
