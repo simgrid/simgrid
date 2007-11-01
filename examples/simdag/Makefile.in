@@ -44,7 +44,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-check_PROGRAMS = sd_test$(EXEEXT) sd_test2$(EXEEXT)
+check_PROGRAMS = sd_test$(EXEEXT) sd_test2$(EXEEXT) \
+	properties/sd_prop$(EXEEXT)
 bin_PROGRAMS =
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -66,6 +67,10 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
+am_properties_sd_prop_OBJECTS = sd_prop.$(OBJEXT)
+properties_sd_prop_OBJECTS = $(am_properties_sd_prop_OBJECTS)
+properties_sd_prop_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
+am__dirstamp = $(am__leading_dot)dirstamp
 am_sd_test_OBJECTS = sd_test.$(OBJEXT)
 sd_test_OBJECTS = $(am_sd_test_OBJECTS)
 sd_test_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
@@ -84,8 +89,10 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(sd_test_SOURCES) $(sd_test2_SOURCES)
-DIST_SOURCES = $(sd_test_SOURCES) $(sd_test2_SOURCES)
+SOURCES = $(properties_sd_prop_SOURCES) $(sd_test_SOURCES) \
+	$(sd_test2_SOURCES)
+DIST_SOURCES = $(properties_sd_prop_SOURCES) $(sd_test_SOURCES) \
+	$(sd_test2_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -226,10 +233,16 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include
 AM_CFLAGS = -g
-EXTRA_DIST = 2clusters.xml
-CLEANFILES = sd_test.trace
+EXTRA_DIST = 2clusters.xml \
+             properties/2clusters.xml
+
+CLEANFILES = sd_test.trace \
+             properties/sd_prop
+
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-TESTS = test_simdag.tesh test_simdag2.tesh 
+TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh
+properties_sd_prop_SOURCES = properties/sd_prop.c
+properties_sd_prop_LDADD = $(top_builddir)/src/libsimgrid.la
 sd_test_SOURCES = sd_test.c
 sd_test_LDADD = $(top_builddir)/src/libsimgrid.la
 sd_test2_SOURCES = sd_test2.c
@@ -302,6 +315,12 @@ clean-checkPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
+properties/$(am__dirstamp):
+	@$(MKDIR_P) properties
+	@: > properties/$(am__dirstamp)
+properties/sd_prop$(EXEEXT): $(properties_sd_prop_OBJECTS) $(properties_sd_prop_DEPENDENCIES) properties/$(am__dirstamp)
+	@rm -f properties/sd_prop$(EXEEXT)
+	$(LINK) $(properties_sd_prop_OBJECTS) $(properties_sd_prop_LDADD) $(LIBS)
 sd_test$(EXEEXT): $(sd_test_OBJECTS) $(sd_test_DEPENDENCIES) 
 	@rm -f sd_test$(EXEEXT)
 	$(LINK) $(sd_test_OBJECTS) $(sd_test_LDADD) $(LIBS)
@@ -315,6 +334,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_prop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_test2.Po@am__quote@
 
@@ -338,6 +358,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+sd_prop.o: properties/sd_prop.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_prop.o -MD -MP -MF $(DEPDIR)/sd_prop.Tpo -c -o sd_prop.o `test -f 'properties/sd_prop.c' || echo '$(srcdir)/'`properties/sd_prop.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_prop.Tpo $(DEPDIR)/sd_prop.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='properties/sd_prop.c' object='sd_prop.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_prop.o `test -f 'properties/sd_prop.c' || echo '$(srcdir)/'`properties/sd_prop.c
+
+sd_prop.obj: properties/sd_prop.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_prop.obj -MD -MP -MF $(DEPDIR)/sd_prop.Tpo -c -o sd_prop.obj `if test -f 'properties/sd_prop.c'; then $(CYGPATH_W) 'properties/sd_prop.c'; else $(CYGPATH_W) '$(srcdir)/properties/sd_prop.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_prop.Tpo $(DEPDIR)/sd_prop.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='properties/sd_prop.c' object='sd_prop.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_prop.obj `if test -f 'properties/sd_prop.c'; then $(CYGPATH_W) 'properties/sd_prop.c'; else $(CYGPATH_W) '$(srcdir)/properties/sd_prop.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -522,6 +556,7 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+	-rm -f properties/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"

@@ -7,16 +7,21 @@
 
 INCLUDES = -I$(top_srcdir)/include
 AM_CFLAGS = -g
-EXTRA_DIST = 2clusters.xml
+EXTRA_DIST = 2clusters.xml \
+             properties/prop.xml
 
-CLEANFILES = sd_test.trace
+CLEANFILES = sd_test.trace \
+             properties/sd_prop
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 
-TESTS = test_simdag.tesh test_simdag2.tesh 
-check_PROGRAMS = sd_test sd_test2
+TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh
+check_PROGRAMS = sd_test sd_test2 properties/sd_prop
 
 bin_PROGRAMS = 
+
+properties_sd_prop_SOURCES = properties/sd_prop.c
+properties_sd_prop_LDADD = $(top_builddir)/src/libsimgrid.la
 
 sd_test_SOURCES = sd_test.c
 sd_test_LDADD =	$(top_builddir)/src/libsimgrid.la
