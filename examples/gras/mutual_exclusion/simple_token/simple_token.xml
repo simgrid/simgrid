@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<!DOCTYPE platform SYSTEM "surfxml.dtd">
 <platform version="2">
 
  <process host="Tremblay" function="node">

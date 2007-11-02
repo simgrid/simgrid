@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<!DOCTYPE platform SYSTEM "surfxml.dtd">
 <platform version="2">
   <host id="C2-06" power="5000000000"/>
   <host id="C1-03" power="1000000000"/>
