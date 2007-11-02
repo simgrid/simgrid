@@ -2,7 +2,7 @@
 
 p Simple test of simdag with properties
 
-$ $SG_TEST_EXENV ./sd_prop ${srcdir:=.}/prop.xml
+$ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/properties/prop.xml
 > [0.000000] [sd_test/INFO] Property list for workstation C1-00
 > [0.000000] [sd_test/INFO] Property: Hdd has value: 120
 > [0.000000] [sd_test/INFO] Property: Memory is undefined
