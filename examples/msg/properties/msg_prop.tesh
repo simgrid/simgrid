@@ -2,7 +2,7 @@
 
 p Testing a MSG application with properties in the XML for Hosts, Links and Processes
 
-$ $SG_TEST_EXENV /properties/msg_prop$EXEEXT ${srcdir:=.}/properties/deployment_platform.xml ${srcdir:=.}/properties/deployment_properties.xml 
+$ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/properties/deployment_platform.xml ${srcdir:=.}/properties/deployment_properties.xml 
 > [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Property: mem for host: Boivin has value: 654321
 > [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Property: disk for host: Boivin has value: 123456
 > [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Property: Unknown for host Boivin is undefined
