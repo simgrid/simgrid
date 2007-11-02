@@ -1,0 +1,13 @@
+#! ./tesh
+
+p Testing a MSG application with properties in the XML for Hosts, Links and Processes
+
+$ $SG_TEST_EXENV /properties/msg_prop$EXEEXT ${srcdir:=.}/properties/deployment_platform.xml ${srcdir:=.}/properties/deployment_properties.xml 
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Property: mem for host: Boivin has value: 654321
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Property: disk for host: Boivin has value: 123456
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Property: Unknown for host Boivin is undefined
+> [Boivin:slave:(2) 0.303833] [msg_test/INFO] Received "Task_0" 
+> [Boivin:slave:(2) 0.303833] [msg_test/INFO] Property: SomeProp for process slave has value: SomeValue
+> [Boivin:slave:(2) 0.303833] [msg_test/INFO] Property: UnknownProcessProp for process slave is undefined
+> [Boivin:slave:(2) 0.814139] [msg_test/INFO] Received "finalize" 
+> [0.814139] [msg_test/INFO] Simulation time 0.814139

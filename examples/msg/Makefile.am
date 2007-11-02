@@ -38,7 +38,7 @@ TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
         masterslave/masterslave_bypass.tesh \
         parallel_task/parallel_task.tesh \
         priority/priority.tesh \
-	properties/msg_test.tesh
+	properties/msg_prop.tesh
 
 
 if HAVE_SDP
