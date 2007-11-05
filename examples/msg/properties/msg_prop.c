@@ -1,6 +1,6 @@
-/* 	$Id: msg_test.c,v 1.24 2007/03/16 13:18:24 cherierm Exp $	 */
+/* 	$Id$	 */
 
-/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
+/* Copyright (c) 2006. All rights reserved.        */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Property test");
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
@@ -52,7 +52,7 @@ int master(int argc, char *argv[])
   {                  /*  Task creation */
     char sprintf_buffer[64];
 
-    todo = calloc(number_of_tasks, sizeof(m_task_t));
+    todo = xbt_new(m_task_t, sizeof(m_task_t) * number_of_tasks);
 
     for (i = 0; i < number_of_tasks; i++) {
       sprintf(sprintf_buffer, "Task_%d", i);
@@ -62,10 +62,12 @@ int master(int argc, char *argv[])
 
   {                  /* Process organisation */
     slaves_count = argc - 4;
-    slaves = calloc(slaves_count, sizeof(m_host_t));
+    slaves = xbt_new(m_host_t, sizeof(m_host_t) * slaves_count);
     xbt_dict_t props;    
-    for (i = 4; i < argc; i++) {
+    for (i = 4; i < argc; i++) {     
       slaves[i-4] = MSG_get_host_by_name(argv[i]);
+      xbt_assert1(slaves[i-4]!=NULL, "Unknown host %s. Stopping Now! ", argv[i]);
+
       /* Get the property list of the host */
       props = MSG_host_get_properties(slaves[i-4]);
       xbt_dict_cursor_t cursor=NULL;
@@ -77,24 +79,36 @@ int master(int argc, char *argv[])
       }
 
      /* Try to get a property that does not exist */
-     char *noexist=xbt_strdup("Unknown");
-     const char *value = MSG_host_get_property_value(slaves[i-4],noexist);
+     char *noexist="Unknown";
+     const char*value = MSG_host_get_property_value(slaves[i-4],noexist);
      if ( value == NULL) 
        INFO2("Property: %s for host %s is undefined", noexist, argv[i]);
      else
        INFO3("Property: %s for host %s has value: %s", noexist, argv[i], value);
 
-     if(slaves[i-4]==NULL) {
-	 INFO1("Unknown host %s. Stopping Now! ", argv[i]);
-	 abort();
-       }
-     }
+      /* Modify an existing property test. First check it exists */\
+      INFO0("Trying to modify a host property");
+      char *exist="Hdd";
+      value = MSG_host_get_property_value(slaves[i-4],exist);
+      if ( value == NULL) 
+        INFO1("\tProperty: %s is undefined", exist);
+      else {
+        INFO2("\tProperty: %s old value: %s", exist, value);
+        xbt_dict_set(props, exist, strdup("250"), free);  
+      }
+ 
+      /* Test if we have changed the value */
+      value = MSG_host_get_property_value(slaves[i-4],exist);
+      if ( value == NULL) 
+        INFO1("\tProperty: %s is undefined", exist);
+      else
+        INFO2("\tProperty: %s new value: %s", exist, value);
+    }
   }
 
   for (i = 0; i < number_of_tasks; i++) {
     if(MSG_host_self()==slaves[i % slaves_count]) {
     }
-
     MSG_task_put(todo[i], slaves[i % slaves_count],
                  PORT_22);
   }
@@ -133,7 +147,7 @@ int slave(int argc, char *argv[])
       }
 
       /* Try to get a property that does not exist */
-      char *noexist=xbt_strdup("UnknownProcessProp");
+      char *noexist="UnknownProcessProp";
       const char *value = MSG_process_get_property_value(MSG_process_self(),noexist);
       if ( value == NULL) 
         INFO2("Property: %s for process %s is undefined", noexist, MSG_process_get_name(MSG_process_self()));
@@ -143,8 +157,7 @@ int slave(int argc, char *argv[])
       MSG_task_execute(task);
       MSG_task_destroy(task);
     } else {
-      INFO0("Hey ?! What's up ? ");
-      xbt_assert0(0,"Unexpected behavior");
+	xbt_die("Hey ?! What's up ?");
     }
   }
   return 0;
@@ -163,10 +176,7 @@ int forwarder(int argc, char *argv[])
     
     for (i = 1; i < argc; i++) {
       slaves[i-1] = MSG_get_host_by_name(argv[i]);
-      if(slaves[i-1]==NULL) {
-	INFO1("Unknown host %s. Stopping Now! ", argv[i]);
-	abort();
-      }
+      xbt_assert1(slaves[i-1]!=NULL, "Unknown host %s. Stopping Now! ", argv[i]);
     }
   }
 
@@ -189,9 +199,8 @@ int forwarder(int argc, char *argv[])
 		   PORT_22);
       i++;
     } else {
-      INFO0("Hey ?! What's up ? ");
-      xbt_assert0(0,"Unexpected behavior");
-    }
+	xbt_die("Hey ?! What's up ?");    
+      }
   }
   return 0;
 } /* end_of_forwarder */
