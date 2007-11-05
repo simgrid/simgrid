@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
     INFO3("\tLink %s property: %s has value: %s",SD_link_get_name(route[i]),key,data);
 
     /* Try to get a property that does not exist */
-    char noexist1="Other";
+    char noexist1[]="Other";
     value = SD_link_get_property_value(route[i], noexist1);
     if ( value == NULL) 
       INFO2("\tProperty: %s for link %s is undefined", noexist, SD_link_get_name(route[i]));
