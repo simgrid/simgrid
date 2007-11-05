@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
   }
 
   /* Modify an existing property test. First check it exists */\
-  INFO0("Modify an host existing property");
+  INFO0("Modify an existing property");
   char exist[]="Hdd";
   value = SD_workstation_get_property_value(w2,exist);
   if ( value == NULL) 
@@ -111,8 +111,8 @@ int main(int argc, char **argv) {
     INFO3("\tLink %s property: %s has value: %s",SD_link_get_name(route[i]),key,data);
 
     /* Try to get a property that does not exist */
-    noexist=xbt_strdup("Other");
-    value = SD_link_get_property_value(route[i], noexist);
+    char noexist1="Other";
+    value = SD_link_get_property_value(route[i], noexist1);
     if ( value == NULL) 
       INFO2("\tProperty: %s for link %s is undefined", noexist, SD_link_get_name(route[i]));
     else
