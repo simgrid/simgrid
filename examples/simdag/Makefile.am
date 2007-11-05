@@ -10,8 +10,7 @@ AM_CFLAGS = -g
 EXTRA_DIST = 2clusters.xml \
              properties/prop.xml
 
-CLEANFILES = sd_test.trace \
-             properties/sd_prop
+CLEANFILES = sd_test.trace
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 

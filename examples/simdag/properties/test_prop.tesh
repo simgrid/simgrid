@@ -2,34 +2,27 @@
 
 p Simple test of simdag with properties
 
-$ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/properties/prop.xml
-> [0.000000] [sd_test/INFO] Property list for workstation C1-00
-> [0.000000] [sd_test/INFO] Property: Hdd has value: 120
-> [0.000000] [sd_test/INFO] Property: Memory is undefined
-> [0.000000] [sd_test/INFO] Property list for workstation C1-01
-> [0.000000] [sd_test/INFO] Property: mem on host: 4
-> [0.000000] [sd_test/INFO] Property: Hdd on host: 180
-> [0.000000] [sd_test/INFO] Computation time for 2000000.000000 flops on C1-00: 0.002000
-> [0.000000] [sd_test/INFO] Computation time for 1000000.000000 flops on C1-01: 0.001000
-> [0.000000] [sd_test/INFO] Route between C1-00 and C1-01:
-> [0.000000] [sd_test/INFO] 	Link 6: latency = 0.000100, bandwidth = 125000000.000000
-> [0.000000] [sd_test/INFO] Link 6 property: type has value: Ethernet
-> [0.000000] [sd_test/INFO] Property: Other for link 6 is undefined
-> [0.000000] [sd_test/INFO] 	Link 0: latency = 0.000100, bandwidth = 125000000.000000
-> [0.000000] [sd_test/INFO] Link 0 property: type has value: ethernet
-> [0.000000] [sd_test/INFO] Property: Other for link 0 is undefined
-> [0.000000] [sd_test/INFO] Route latency = 0.000200, route bandwidth = 125000000.000000
-> [0.000000] [sd_test/INFO] Communication time for 2000000.000000 bytes between C1-00 and C1-01: 0.016200
-> [0.000000] [sd_test/INFO] Communication time for 3000000.000000 bytes between C1-01 and C1-00: 0.024200
-> [0.000000] [sd_test/INFO] Estimated time for 'Task D': 1.512000
+$ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
+> [0.000000] [test/INFO] Property list for workstation C1-00
+> [0.000000] [test/INFO] 	Property: Hdd has value: 120
+> [0.000000] [test/INFO] 	Property: NewProp has value: newValue
+> [0.000000] [test/INFO] 	Property: NoProp is undefined
+> [0.000000] [test/INFO] Property list for workstation C1-01
+> [0.000000] [test/INFO] 	Property: mem on host: 4
+> [0.000000] [test/INFO] 	Property: Hdd on host: 180
+> [0.000000] [test/INFO] Modify an existing property
+> [0.000000] [test/INFO] 	Property: Hdd old value: 180
+> [0.000000] [test/INFO] 	Property: Hdd new value: 250
+> [0.000000] [test/INFO] Estimated time for 'Task D': 0.000000
 > [0.000000] [sd_kernel/INFO] Starting simulation...
 > [0.000000] [sd_kernel/INFO] Executing task 'Task D'
-> [3.600200] [sd_kernel/INFO] Task 'Task D' done
-> [3.600200] [sd_kernel/INFO] Executing task 'Task B'
-> [3.600200] [sd_kernel/INFO] Executing task 'Task C'
-> [6.000400] [sd_kernel/INFO] Task 'Task B' done
-> [6.000400] [sd_task/INFO] Watch point reached with task 'Task B'!
-> [6.000400] [sd_kernel/INFO] Simulation finished
-> [6.000400] [sd_test/INFO] Task 'Task D' start time: 0.000000, finish time: 3.600200
-> [6.000400] [sd_test/INFO] Task 'Task B' start time: 3.600200, finish time: 6.000400
+> [0.120000] [sd_kernel/INFO] Task 'Task D' done
+> [0.120000] [sd_kernel/INFO] Executing task 'Task B'
+> [0.120000] [sd_kernel/INFO] Executing task 'Task C'
+> [0.200000] [sd_kernel/INFO] Task 'Task B' done
+> [0.200000] [sd_task/INFO] Watch point reached with task 'Task B'!
+> [0.200000] [sd_kernel/INFO] Simulation finished
+> [0.200000] [test/INFO] Task 'Task D' start time: 0.000000, finish time: 0.120000
+> [0.200000] [test/INFO] Task 'Task B' start time: 0.120000, finish time: 0.200000
+
 
