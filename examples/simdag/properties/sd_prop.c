@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   }
  
   /* Try to get a property that does not exist */
-  char *noexist="NoProp";
+  char noexist[]="NoProp";
   const char *value = SD_workstation_get_property_value(w1,noexist);
   if ( value == NULL) 
     INFO1("\tProperty: %s is undefined", noexist);
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 
   /* Modify an existing property test. First check it exists */\
   INFO0("Modify an host existing property");
-  char *exist="Hdd";
+  char exist[]="Hdd";
   value = SD_workstation_get_property_value(w2,exist);
   if ( value == NULL) 
     INFO1("\tProperty: %s is undefined", exist);

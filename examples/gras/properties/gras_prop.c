@@ -19,7 +19,7 @@ int client(int argc, char *argv[]) {
   }
  
   /* Try to get a property that does not exist */
-  char *noexist="Nonexisent";
+  char noexist[]="Nonexisent";
   const char *value = gras_process_property_value(noexist);
   if ( value == NULL) 
     INFO1("Process property: %s is undefined", noexist);
@@ -28,7 +28,7 @@ int client(int argc, char *argv[]) {
  
    /* Modify an existing property. First check it exists */\
     INFO0("Trying to modify a process property");
-    char *exist="otherprop";
+    char exist[]="otherprop";
     value = gras_process_property_value(exist);
     if ( value == NULL) 
       INFO1("\tProperty: %s is undefined", exist);
@@ -62,7 +62,7 @@ int server(int argc, char *argv[]) {
   }
  
   /* Try to get a property that does not exist */
-  char *noexist="Nonexisent";
+  char noexist[]="Nonexisent";
   const char *value = gras_os_host_property_value(noexist);
   if ( value == NULL) 
     INFO1("Host property: %s is undefined", noexist);

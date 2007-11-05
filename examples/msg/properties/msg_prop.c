@@ -79,16 +79,16 @@ int master(int argc, char *argv[])
       }
 
      /* Try to get a property that does not exist */
-     char *noexist="Unknown";
-     const char*value = MSG_host_get_property_value(slaves[i-4],noexist);
+     char noexist[]="Unknown";
+     const char*value = MSG_host_get_property_value(slaves[i-4], noexist);
      if ( value == NULL) 
        INFO2("Property: %s for host %s is undefined", noexist, argv[i]);
      else
-       INFO3("Property: %s for host %s has value: %s", noexist, argv[i], value);
+       INFO3("Property: %s for host %s has value: %s",(char*) noexist, argv[i], value);
 
       /* Modify an existing property test. First check it exists */\
       INFO0("Trying to modify a host property");
-      char *exist="Hdd";
+      char exist[]="Hdd";
       value = MSG_host_get_property_value(slaves[i-4],exist);
       if ( value == NULL) 
         INFO1("\tProperty: %s is undefined", exist);
@@ -147,7 +147,7 @@ int slave(int argc, char *argv[])
       }
 
       /* Try to get a property that does not exist */
-      char *noexist="UnknownProcessProp";
+      char noexist[]="UnknownProcessProp";
       const char *value = MSG_process_get_property_value(MSG_process_self(),noexist);
       if ( value == NULL) 
         INFO2("Property: %s for process %s is undefined", noexist, MSG_process_get_name(MSG_process_self()));
