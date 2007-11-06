@@ -138,7 +138,7 @@ gras_libdata_by_name_from_remote(const char *name, smx_process_t p) {
 }   
 
 /** @brief retrieve the value of a given process property (or NULL if not defined) */
-const char* gras_process_property_value(char* name) {
+const char* gras_process_property_value(const char* name) {
  return xbt_dict_get_or_null(SIMIX_process_get_properties(SIMIX_process_self()), name);
 }
 
@@ -177,7 +177,7 @@ int gras_os_getpid(void) {
 
 
 /** @brief retrieve the value of a given host property (or NULL if not defined) */
-const char* gras_os_host_property_value(char* name) {
+const char* gras_os_host_property_value(const char* name) {
  return xbt_dict_get_or_null(SIMIX_host_get_properties(SIMIX_process_get_host(SIMIX_process_self())), name);
 }
 

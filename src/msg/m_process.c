@@ -327,7 +327,7 @@ const char *MSG_process_get_name(m_process_t process)
  * \param name a property name
  * \return value of a property (or NULL if the property is not set)
  */
-const char* MSG_process_get_property_value(m_process_t process, char* name)
+const char* MSG_process_get_property_value(m_process_t process, const char* name)
 {
   return xbt_dict_get_or_null(MSG_process_get_properties(process), name);
 }

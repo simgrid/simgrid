@@ -193,7 +193,7 @@ double MSG_get_host_speed(m_host_t h)
  * \param name a property name
  * \return value of a property (or NULL if property not set)
  */
-const char* MSG_host_get_property_value(m_host_t host, char* name)
+const char* MSG_host_get_property_value(m_host_t host, const char* name)
 {
   return xbt_dict_get_or_null(MSG_host_get_properties(host), name);
 }

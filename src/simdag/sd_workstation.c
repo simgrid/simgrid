@@ -136,7 +136,7 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
  * \param name a property name
  * \return value of a property (or NULL if property not set)
  */
-const char* SD_workstation_get_property_value(SD_workstation_t ws, char* name)
+const char* SD_workstation_get_property_value(SD_workstation_t ws, const char* name)
 {
   return xbt_dict_get_or_null(SD_workstation_get_properties(ws), name);
 }

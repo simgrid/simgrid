@@ -124,7 +124,7 @@ double SD_link_get_current_bandwidth(SD_link_t link) {
  * \param name a property name
  * \return value of a property (or NULL if property not set)
  */
-const char* SD_link_get_property_value(SD_link_t link, char* name)
+const char* SD_link_get_property_value(SD_link_t link, const char* name)
 {
   return xbt_dict_get_or_null(SD_link_get_properties(link), name);
 }

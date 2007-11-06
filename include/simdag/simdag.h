@@ -32,7 +32,7 @@ XBT_PUBLIC(double)             SD_link_get_current_bandwidth(SD_link_t link);
 XBT_PUBLIC(double)             SD_link_get_current_latency(SD_link_t link);
 /*property handling functions*/
 XBT_PUBLIC(xbt_dict_t) SD_link_get_properties(SD_link_t link);
-XBT_PUBLIC(const char*) SD_link_get_property_value(SD_link_t link, char* name);
+XBT_PUBLIC(const char*) SD_link_get_property_value(SD_link_t link, const char* name);
 /** @} */
 
 /************************** Workstation handling ****************************/
@@ -59,7 +59,7 @@ XBT_PUBLIC(void*)                   SD_workstation_get_data(SD_workstation_t wor
 XBT_PUBLIC(const char*)             SD_workstation_get_name(SD_workstation_t workstation);
 /*property handling functions*/
 XBT_PUBLIC(xbt_dict_t) SD_workstation_get_properties(SD_workstation_t workstation);
-XBT_PUBLIC(const char*) SD_workstation_get_property_value(SD_workstation_t workstation, char* name);
+XBT_PUBLIC(const char*) SD_workstation_get_property_value(SD_workstation_t workstation, const char* name);
  
 XBT_PUBLIC(const SD_link_t*)              SD_route_get_list(SD_workstation_t src, SD_workstation_t dst);
 XBT_PUBLIC(int)                     SD_route_get_size(SD_workstation_t src, SD_workstation_t dst);

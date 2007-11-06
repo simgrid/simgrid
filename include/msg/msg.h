@@ -41,7 +41,7 @@ XBT_PUBLIC(int) MSG_host_is_avail (m_host_t h);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(m_host_t host);
-XBT_PUBLIC(const char*) MSG_host_get_property_value(m_host_t host, char* name);
+XBT_PUBLIC(const char*) MSG_host_get_property_value(m_host_t host, const char* name);
 
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
 
@@ -77,7 +77,7 @@ XBT_PUBLIC(m_process_t) MSG_process_self(void);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_process_get_properties(m_process_t process);
-XBT_PUBLIC(const char*) MSG_process_get_property_value(m_process_t process, char* name);
+XBT_PUBLIC(const char*) MSG_process_get_property_value(m_process_t process, const char* name);
 
 XBT_PUBLIC(MSG_error_t) MSG_process_suspend(m_process_t process);
 XBT_PUBLIC(MSG_error_t) MSG_process_resume(m_process_t process);
