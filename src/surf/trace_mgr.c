@@ -142,7 +142,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
   trace_event->idx = offset;
   trace_event->model = model;
 
-  xbt_assert0((trace_event->idx < xbt_dynar_length(trace->event_list)),
+  xbt_assert0((trace_event->idx < (int)xbt_dynar_length(trace->event_list)),
 	      "You're refering to an event that does not exist!");
 
   xbt_heap_push(h->heap, trace_event, start_time);
@@ -180,7 +180,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
   *value = event->value;
   *model = trace_event->model;
 
-  if (trace_event->idx < xbt_dynar_length(trace->event_list) - 1) {
+  if (trace_event->idx < (int)xbt_dynar_length(trace->event_list) - 1) {
     xbt_heap_push(h->heap, trace_event, event_date + event->delta);
     trace_event->idx++;
   } else if (event->delta > 0) {	/* Last element, checking for periodicity */

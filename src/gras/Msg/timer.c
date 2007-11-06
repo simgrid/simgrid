@@ -141,7 +141,7 @@ double gras_msg_timer_handle(void) {
   double now=gras_os_time();
   double untilnext = -1.0;
   
-  for (cursor=0; cursor < xbt_dynar_length(pd->timers); cursor++) {
+  for (cursor=0; cursor < (int)xbt_dynar_length(pd->timers); cursor++) {
      double untilthis;
      
      timer = xbt_dynar_get_ptr (pd->timers, cursor);

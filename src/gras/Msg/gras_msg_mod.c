@@ -19,7 +19,7 @@ extern xbt_set_t _gras_msgtype_set;
 /*
  * Creating procdata for this module
  */
-static void *gras_msg_procdata_new() {
+static void *gras_msg_procdata_new(void) {
    gras_msg_procdata_t res = xbt_new(s_gras_msg_procdata_t,1);
    
    res->name = xbt_strdup("gras_msg");

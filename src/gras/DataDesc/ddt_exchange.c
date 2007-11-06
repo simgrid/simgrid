@@ -198,7 +198,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t           state,
 		"union field selector of %s gave a negative value", 
 		type->name);
     
-    xbt_assert3(field_num < xbt_dynar_length(union_data.fields),
+    xbt_assert3(field_num < (int)xbt_dynar_length(union_data.fields),
 	 "union field selector of %s returned %d but there is only %lu fields",
 		 type->name, field_num, xbt_dynar_length(union_data.fields));
     
@@ -472,7 +472,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 		 "union field selector of %s gave a negative value", 
 		 type->name);
     
-    xbt_assert3(field_num < xbt_dynar_length(union_data.fields),
+    xbt_assert3(field_num < (int)xbt_dynar_length(union_data.fields),
 	 "union field selector of %s returned %d but there is only %lu fields",
 		 type->name, field_num, xbt_dynar_length(union_data.fields));
 
@@ -723,7 +723,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
     if (field_num < 0)
       THROW1(mismatch_error,0,
 	     "Received union field for %s is negative", type->name);
-    if (field_num > xbt_dynar_length(union_data.fields)) 
+    if (field_num > (int)xbt_dynar_length(union_data.fields)) 
       THROW3(mismatch_error,0,
 	     "Received union field for %s is said to be #%d but there is only %lu fields",
 	     type->name, field_num, xbt_dynar_length(union_data.fields));
