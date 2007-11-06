@@ -61,7 +61,7 @@ XBT_PUBLIC_DATA(int_f_void_t) surf_parse; /* Entry-point to the parser. Set this
 #define SURFXML_BUFFER_SET(key,val) do { \
   AX_surfxml_##key=AX_ptr; \
   strcpy(A_surfxml_##key,val); \
-  AX_ptr+=strlen(val)+1; } while(0)
+  AX_ptr+=(int)strlen(val)+1; } while(0)
 
 #define SURFXML_BUFFER_RESET() do { \
   AX_ptr = 0; \
