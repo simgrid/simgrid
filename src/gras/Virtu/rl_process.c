@@ -56,14 +56,14 @@ void gras_agent_spawn(const char *name, void *data,
  * Properties
  * **************************************************************************/
 
-const char* gras_process_property_value(char* name) {
+const char* gras_process_property_value(const char* name) {
    THROW_UNIMPLEMENTED;
 }
 xbt_dict_t gras_process_properties(void) {
    THROW_UNIMPLEMENTED;
 }
 
-const char* gras_os_host_property_value(char* name) {
+const char* gras_os_host_property_value(const char* name) {
    THROW_UNIMPLEMENTED;
 }
 xbt_dict_t gras_os_host_properties(void) {
