@@ -45,7 +45,7 @@ xbt_thread_t xbt_thread_create(const char*name,void_f_pvoid_t code, void* param)
    res->s_process = SIMIX_process_create(name, 
 					 xbt_thread_create_wrapper, res,
 					 SIMIX_host_get_name(SIMIX_host_self()),
-					 0, NULL,/*props*/NULL);
+					 0,/*props*/NULL);
 //   free(name);
    return res;
 }
