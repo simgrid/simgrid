@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "simgrid", "simgrid.vcproj", "{617987DE-296D-4E0C-BD53-8D639E6FDA09}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "masterslave", "..\examples\msg\masterslave\masterslave.vcproj", "{62EAFE9E-A935-4CE8-AC6E-A17FC5E7BCBE}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "masterslave_bypass", "..\examples\msg\masterslave_bypass\masterslave_bypass.vcproj", "{FD995103-FD5C-4A5B-95E6-AF512BC6D749}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "masterslave_failure", "..\examples\msg\masterslave_failure\masterslave_failure.vcproj", "{4A8A0642-2553-4BB1-ADB2-264F2E799EF9}"
@@ -37,10 +35,6 @@ Global
 		{617987DE-296D-4E0C-BD53-8D639E6FDA09}.Debug|Win32.Build.0 = Debug|Win32
 		{617987DE-296D-4E0C-BD53-8D639E6FDA09}.Release|Win32.ActiveCfg = Release|Win32
 		{617987DE-296D-4E0C-BD53-8D639E6FDA09}.Release|Win32.Build.0 = Release|Win32
-		{62EAFE9E-A935-4CE8-AC6E-A17FC5E7BCBE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{62EAFE9E-A935-4CE8-AC6E-A17FC5E7BCBE}.Debug|Win32.Build.0 = Debug|Win32
-		{62EAFE9E-A935-4CE8-AC6E-A17FC5E7BCBE}.Release|Win32.ActiveCfg = Release|Win32
-		{62EAFE9E-A935-4CE8-AC6E-A17FC5E7BCBE}.Release|Win32.Build.0 = Release|Win32
 		{FD995103-FD5C-4A5B-95E6-AF512BC6D749}.Debug|Win32.ActiveCfg = Debug|Win32
 		{FD995103-FD5C-4A5B-95E6-AF512BC6D749}.Debug|Win32.Build.0 = Debug|Win32
 		{FD995103-FD5C-4A5B-95E6-AF512BC6D749}.Release|Win32.ActiveCfg = Release|Win32
