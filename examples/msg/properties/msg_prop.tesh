@@ -8,9 +8,7 @@ $ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml $
 > [C1-01:master:(1) 0.000000] [test/INFO] Trying to modify a host property
 > [C1-01:master:(1) 0.000000] [test/INFO] 	Property: Hdd old value: 120
 > [C1-01:master:(1) 0.000000] [test/INFO] 	Property: Hdd new value: 250
-> [C1-00:slave:(2) 0.020200] [test/INFO] Received "Task_0" 
-> [C1-00:slave:(2) 0.020200] [test/INFO] Property: SomeProp for process slave has value: SomeValue
-> [C1-00:slave:(2) 0.020200] [test/INFO] Property: UnknownProcessProp for process slave is undefined
-> [C1-00:slave:(2) 0.070400] [test/INFO] Received "finalize" 
-> [0.070400] [test/INFO] Simulation time 0.0704
+> [C1-00:slave:(2) 0.000000] [test/INFO] Property: SomeProp for process slave has value: SomeValue
+> [C1-00:slave:(2) 0.000000] [test/INFO] Property: UnknownProcessProp for process slave is undefined
+> [0.000000] [test/INFO] Simulation time 0
 
