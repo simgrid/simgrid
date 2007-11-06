@@ -119,7 +119,7 @@ typedef enum {
  * Defines a new subcategory of the parent. 
  */
 #define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)    \
-    XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(parent); \
+    extern s_xbt_log_category_t _XBT_LOGV(parent); \
     XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
 
 /**
@@ -161,24 +161,23 @@ typedef enum {
 /* Damnit Malek. There is no difference between the WINDOWS version and the regular one.
  * Moreover, portability cruft MUST be kept out of this file. If you need another definition of EXPORT_NO_IMPORT, do so in misc, not here.
  * Killing your crufty definition once again (I hate dupplicated code). Please do not readd them without a good justification
-
+*/
 #if (defined(_WIN32) && !defined(DLL_STATIC))
 # define XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc) \
 	XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(cname) = {       \
-        0, 0, 0,                    \
+        NULL, NULL, NULL,                    \
 		#cname, xbt_log_priority_uninitialized, 1, \
-        0, 0, 1                                          \
+        NULL, NULL, 1                                          \
     }
 # define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
 	XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc); \
 	XBT_LOG_DEFAULT_CATEGORY(cname)
     
 #else
- */
 # define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
     XBT_LOG_NEW_CATEGORY(cname,desc);                   \
     XBT_LOG_DEFAULT_CATEGORY(cname)
-//#endif
+#endif
 
 
 
