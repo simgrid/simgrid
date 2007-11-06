@@ -68,23 +68,23 @@ print LOG "\n$dashes\n$banner\n$dashes\n\n";
 print     "\n$dashes\n$banner (full logs in checkall.log)\n$dashes\n\n";
 
 if (scalar @skip) {
-    print LOG "Skipped tests:\n";
-    print     "Skipped tests:\n";
+    print LOG (scalar @skip)." skipped tests:\n";
+    print     (scalar @skip)." skipped tests:\n";
     map {print "  $_\n";print LOG "  $_\n"} @skip;
 }
 if (scalar @xpass) {
-    print LOG "Unexpected pass:\n";
-    print     "Unexpected pass:\n";
+    print LOG (scalar @xpass)." unexpected pass:\n";
+    print     (scalar @xpass)." unexpected pass:\n";
     map {print "  $_\n";print LOG "  $_\n"} @xpass;
 }
 if (scalar @xfail) {
-    print LOG "Expected failures:\n";
-    print     "Expected failures:\n";
+    print LOG (scalar @xfail)." expected failures:\n";
+    print     (scalar @xfail)." expected failures:\n";
     map {print "  $_\n";print LOG "  $_\n"} @xfail;
 }
 if (scalar @fail) {
-    print LOG "Failed tests:\n";
-    print     "Failed tests:\n";
+    print LOG (scalar @fail)." failed tests:\n";
+    print     (scalar @fail)." failed tests:\n";
     map {print "  $_\n";print LOG "  $_\n"} @fail;
 }
 
