@@ -1,0 +1,6 @@
+
+! timeout 20
+& $SG_TEST_ENV ./properties_master$EXEEXT 4002 --log=root.fmt=%P:%t%e%m%n $ARGS
+
+! timeout 20
+& $SG_TEST_ENV ./properties_slave$EXEEXT 127.0.0.1 4002 --log=root.fmt=%P:%t%e%m%n $ARGS

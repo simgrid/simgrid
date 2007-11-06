@@ -570,6 +570,7 @@ AC_CONFIG_FILES([
       examples/gras/spawn/Makefile
       examples/gras/synchro/Makefile
       examples/gras/timer/Makefile
+      examples/gras/properties/Makefile
       examples/gras/chrono/Makefile
       examples/gras/mutual_exclusion/simple_token/Makefile
       examples/gras/mmrpc/Makefile
