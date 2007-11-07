@@ -100,8 +100,9 @@ typedef struct smpi_global_t {
 	int               running_hosts_count;
 	smx_mutex_t       running_hosts_count_mutex;
 
-	xbt_os_timer_t   *timers;
-	smx_mutex_t      *timers_mutexes;
+	xbt_os_timer_t    timer;
+	smx_mutex_t       timer_mutex;
+	smx_cond_t        timer_cond;
 
 } s_smpi_global_t;
 typedef struct smpi_global_t *smpi_global_t;

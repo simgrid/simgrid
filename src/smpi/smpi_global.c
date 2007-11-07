@@ -162,8 +162,9 @@ void smpi_global_init()
 	smpi_global->receiver_processes                  = xbt_new(smx_process_t, size);
 
 	// timers
-	smpi_global->timers                              = xbt_new(xbt_os_timer_t, size);
-	smpi_global->timers_mutexes                      = xbt_new(smx_mutex_t, size);
+	smpi_global->timer                               = xbt_os_timer_new();
+	smpi_global->timer_mutex                         = SIMIX_mutex_init();
+	smpi_global->timer_cond                          = SIMIX_cond_init();
 
 	for(i = 0; i < size; i++) {
 		smpi_global->pending_send_request_queues[i]         = xbt_fifo_new();
@@ -172,8 +173,6 @@ void smpi_global_init()
 		smpi_global->pending_recv_request_queues_mutexes[i] = SIMIX_mutex_init();
 		smpi_global->received_message_queues[i]             = xbt_fifo_new();
 		smpi_global->received_message_queues_mutexes[i]     = SIMIX_mutex_init();
-		smpi_global->timers[i]                              = xbt_os_timer_new();
-		smpi_global->timers_mutexes[i]                      = SIMIX_mutex_init();
 	}
 
 }
@@ -199,6 +198,10 @@ void smpi_global_destroy()
 	xbt_mallocator_free(smpi_global->request_mallocator);
 	xbt_mallocator_free(smpi_global->message_mallocator);
 
+	xbt_os_timer_free(smpi_global->timer);
+	SIMIX_mutex_destroy(smpi_global->timer_mutex);
+	SIMIX_cond_destroy(smpi_global->timer_cond);
+
 	for(i = 0; i < size; i++) {
 		xbt_fifo_free(smpi_global->pending_send_request_queues[i]);
 		SIMIX_mutex_destroy(smpi_global->pending_send_request_queues_mutexes[i]);
@@ -206,8 +209,6 @@ void smpi_global_destroy()
 		SIMIX_mutex_destroy(smpi_global->pending_recv_request_queues_mutexes[i]);
 		xbt_fifo_free(smpi_global->received_message_queues[i]);
 		SIMIX_mutex_destroy(smpi_global->received_message_queues_mutexes[i]);
-		xbt_os_timer_free(smpi_global->timers[i]);
-		SIMIX_mutex_destroy(smpi_global->timers_mutexes[i]);
 	}
 
 	xbt_free(smpi_global->pending_send_request_queues);
@@ -216,8 +217,6 @@ void smpi_global_destroy()
 	xbt_free(smpi_global->pending_recv_request_queues_mutexes);
 	xbt_free(smpi_global->received_message_queues);
 	xbt_free(smpi_global->received_message_queues_mutexes);
-	xbt_free(smpi_global->timers);
-	xbt_free(smpi_global->timers_mutexes);
 
 	xbt_free(smpi_global);
 

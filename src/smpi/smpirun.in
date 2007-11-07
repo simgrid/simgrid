@@ -41,28 +41,28 @@ PLATFORMTMP="$(mktemp tmpXXXXXX)"
 
 cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="1">
+<!DOCTYPE platform SYSTEM "surfxml.dtd">
+<platform version="2">
 PLATFORMHEAD
 
 for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
-  echo "  <cpu name=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
-  echo "  <network_link name=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
-  echo "  <network_link name=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
+  echo "  <host id=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
+  echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
+  echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
 done
 
 for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
   for (( j=${NUMPROCS}; $j ; j=$j-1 )) do
     if [ $i -eq $j ]; then
-      echo "  <route src=\"host$i\" dst=\"host$j\"><route_element name=\"loop$i\"/></route>" >> ${PLATFORMTMP}
+      echo "  <route src=\"host$i\" dst=\"host$j\"><link:ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
     else
-      echo "  <route src=\"host$i\" dst=\"host$j\"><route_element name=\"link$i\"/><route_element name=\"link$j\"/></route>" >> ${PLATFORMTMP}
+      echo "  <route src=\"host$i\" dst=\"host$j\"><link:ctn id=\"link$i\"/><link:ctn id=\"link$j\"/></route>" >> ${PLATFORMTMP}
     fi
   done
 done
 
 cat >> ${PLATFORMTMP} <<PLATFORMFOOT
-</platform_description>
+</platform>
 PLATFORMFOOT
 
 APPLICATIONTMP="$(mktemp tmpXXXXXX)"
@@ -70,8 +70,8 @@ APPLICATIONTMP="$(mktemp tmpXXXXXX)"
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="1">
+<!DOCTYPE platform SYSTEM "surfxml.dtd">
+<platform version="2">
 APPLICATIONHEAD
 
 for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
@@ -88,7 +88,7 @@ for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
 done
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
-</platform_description>
+</platform>
 APPLICATIONFOOT
 
 ${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
