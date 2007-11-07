@@ -74,7 +74,7 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
  * 	\param amount Task amount (in bytes)
  * 	\return A new SIMIX action
  * */
-smx_action_t SIMIX_action_execute(smx_host_t host, char *name,
+smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
 				  double amount)
 {
 	 smx_action_t act;

@@ -130,7 +130,7 @@ XBT_PUBLIC(xbt_fifo_t) SIMIX_cond_get_actions(smx_cond_t cond);
 /************************** Action handling ************************************/
 XBT_PUBLIC(smx_action_t) SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver, const char *name,
 																									double size, double rate);
-XBT_PUBLIC(smx_action_t) SIMIX_action_execute(smx_host_t host,char *name, double amount);
+XBT_PUBLIC(smx_action_t) SIMIX_action_execute(smx_host_t host, const char *name, double amount);
 XBT_PUBLIC(smx_action_t) SIMIX_action_sleep(smx_host_t host, double amount);
 XBT_PUBLIC(void) SIMIX_action_cancel(smx_action_t action);
 XBT_PUBLIC(void) SIMIX_action_set_priority(smx_action_t action, double priority);
