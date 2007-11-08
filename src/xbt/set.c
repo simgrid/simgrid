@@ -230,7 +230,7 @@ unsigned long xbt_set_length (const xbt_set_t set) {
  ***/
 typedef struct xbt_set_cursor_ {
   xbt_set_t set;
-  int val;
+  unsigned int val;
 } s_xbt_set_cursor_t;
 
 /** @brief Create the cursor if it does not exists, rewind it in any case. */
@@ -265,7 +265,7 @@ void         xbt_set_cursor_step        (xbt_set_cursor_t cursor) {
   do {
     cursor->val++;
   }
-  while (cursor->val < (int)xbt_dynar_length(dynar) &&
+  while (cursor->val < xbt_dynar_length(dynar) &&
 	 xbt_dynar_get_ptr(dynar, cursor->val) == NULL);
 }
 
@@ -282,7 +282,7 @@ int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *curs,
 
   cursor=*curs;
 
-  if (cursor->val >= (int)xbt_dynar_length(cursor->set->dynar)) {
+  if (cursor->val >= xbt_dynar_length(cursor->set->dynar)) {
     free(cursor);
     *curs=NULL;
     return FALSE;    

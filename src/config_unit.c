@@ -96,7 +96,7 @@ XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
     dyn = xbt_cfg_get_dynar(myset,"user");
 
     if (xbt_dynar_length(dyn) != 3) 
-      xbt_test_fail1("Dynar length = %d, I expected 3", (int)xbt_dynar_length(dyn));
+      xbt_test_fail1("Dynar length = %lu, I expected 3", xbt_dynar_length(dyn));
 
     if (strcmp(xbt_dynar_get_as(dyn,0,char*),"foo"))
       xbt_test_fail1("Dynar[0] = %s, I expected foo",   xbt_dynar_get_as(dyn,0,char*));

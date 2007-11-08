@@ -492,8 +492,8 @@ static void apply_selection(char *selection) {
 	suite->enabled = enabling;
       }
     } else {
-      int it;
-      for (it=0; it< (int)xbt_dynar_length(_xbt_test_suites); it++) {
+      unsigned int it;
+      for (it=0; it< xbt_dynar_length(_xbt_test_suites); it++) {
 	xbt_test_suite_t thissuite=xbt_dynar_get_as(_xbt_test_suites,it,xbt_test_suite_t);
 	if (!strcmp(suitename,thissuite->name)) {
 	  /* Do not disable the whole suite when we just want to disable a child */
@@ -505,9 +505,9 @@ static void apply_selection(char *selection) {
 	      unit->enabled = enabling;
 	    }
 	  } else { /* act on one child only */
-	    int it2_unit;
+	    unsigned int it2_unit;
 	    /* search it, first (we won't reuse it for external loop which gets broken) */
-	    for (it2_unit=0; it2_unit< (int)xbt_dynar_length(thissuite->units); it2_unit++) {
+	    for (it2_unit=0; it2_unit< xbt_dynar_length(thissuite->units); it2_unit++) {
 	      xbt_test_unit_t thisunit=xbt_dynar_get_as(thissuite->units,it2_unit,xbt_test_unit_t);
 	      if (!strcmp(thisunit->name,unitname)) {
 		thisunit->enabled = enabling;
