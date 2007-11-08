@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # libtoolT - Provide generalized library-building support services.
-# Generated automatically by  (GNU simgrid 3.3-cvs)
+# Generated automatically by  (GNU simgrid 3.3-svn)
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
@@ -328,7 +328,7 @@ link_all_deplibs=no
 sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib/ /lib/i486-linux-gnu/4.2.3/ /lib/../lib/ /usr/lib/i486-linux-gnu/4.2.3/ /usr/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../ /lib/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/lib/R/lib /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7630,7 +7630,7 @@ link_all_deplibs=no
 sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../i486-linux-gnu/4.2.3/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib/ /lib/i486-linux-gnu/4.2.3/ /lib/../lib/ /usr/lib/i486-linux-gnu/4.2.3/ /usr/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../ /lib/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/lib/R/lib /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7938,7 +7938,7 @@ link_all_deplibs=no
 sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../i486-linux-gnu/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../i486-linux-gnu/4.2.1/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../lib/ /lib/i486-linux-gnu/4.2.1/ /lib/../lib/ /usr/lib/i486-linux-gnu/4.2.1/ /usr/lib/../lib/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.2.1/../../../ /lib/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/lib/R/lib /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
