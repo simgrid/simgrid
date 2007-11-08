@@ -265,7 +265,7 @@ void
 gras_cbps_block_end(gras_cbps_t ps) {
 
   xbt_dynar_t  frame        = NULL;
-  int           cursor       =    0;
+  unsigned int cursor       =    0;
   char         *name         = NULL;
 
   xbt_assert0(xbt_dynar_length(ps->frames),

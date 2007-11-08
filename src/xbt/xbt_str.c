@@ -370,7 +370,7 @@ XBT_TEST_UNIT("xbt_str_split_quoted",test_split_quoted, "test the function xbt_s
 
 char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
   int len=1,dyn_len=xbt_dynar_length(dyn);
-  int cpt;
+  unsigned int cpt;
   char *cursor;
   char *res,*p;
   

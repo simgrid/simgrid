@@ -83,7 +83,7 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
 xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst)
 {
   xbt_edge_t edge;
-  int cursor;
+  unsigned int cursor;
 
   xbt_dynar_foreach(src->out, cursor, edge) {
     DEBUG3("%p = %p--%p",edge,edge->src,edge->dst);
@@ -131,7 +131,7 @@ void xbt_graph_free_graph(xbt_graph_t g,
 			  void_f_pvoid_t edge_free_function,
 			  void_f_pvoid_t graph_free_function)
 {
-  int cursor = 0;
+  unsigned int cursor = 0;
   xbt_node_t node = NULL;
   xbt_edge_t edge = NULL;
 
@@ -170,7 +170,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
 {
   unsigned long nbr;
   unsigned long i;
-  int cursor = 0;
+  unsigned int cursor = 0;
   xbt_node_t node = NULL;
   xbt_edge_t edge = NULL;
 
@@ -206,7 +206,7 @@ void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
 			 void_f_pvoid_t free_function)
 {
   int idx;
-  int cursor = 0;
+  unsigned int cursor = 0;
   xbt_edge_t edge = NULL;
 
   if ((free_function) && (e->data))
@@ -235,7 +235,7 @@ void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
 int __xbt_find_in_dynar(xbt_dynar_t dynar, void *p)
 {
 
-  int cursor = 0;
+  unsigned int cursor = 0;
   void *tmp = NULL;
 
   xbt_dynar_foreach(dynar, cursor, tmp) {
@@ -290,8 +290,8 @@ double xbt_graph_edge_get_length(xbt_edge_t e)
  */
 double *xbt_graph_get_length_matrix(xbt_graph_t g)
 {
-  int cursor = 0;
-  int in_cursor = 0;
+  unsigned int cursor = 0;
+  unsigned int in_cursor = 0;
   unsigned long idx, i;
   unsigned long n;
   xbt_edge_t edge = NULL;
@@ -433,7 +433,7 @@ xbt_edge_t *xbt_graph_spanning_tree_prim(xbt_graph_t g)
   xbt_node_t node = NULL;
   xbt_dynar_t edge_list = NULL;
   xbt_heap_t heap = xbt_heap_new(10, NULL);
-  int cursor;
+  unsigned int cursor;
 
   xbt_assert0(!(g->directed),
 	      "Spanning trees do not make sense on directed graphs");
@@ -489,7 +489,8 @@ xbt_node_t *xbt_graph_topo_sort(xbt_graph_t g)
 {
 
   xbt_node_t *sorted;
-  int cursor, idx;
+  unsigned int cursor;
+  int idx;
   xbt_node_t node;
   unsigned long n;
 
@@ -516,7 +517,7 @@ xbt_node_t *xbt_graph_topo_sort(xbt_graph_t g)
 void xbt_graph_depth_visit(xbt_graph_t g, xbt_node_t n,
 			   xbt_node_t * sorted, int *idx)
 {
-  int cursor;
+  unsigned int cursor;
   xbt_edge_t edge;
 
   if (*((int *) (n->xbtdata)) == ALREADY_EXPLORED)
@@ -634,7 +635,7 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
 			       const char *(node_name) (xbt_node_t),
 			       const char *(edge_name) (xbt_edge_t))
 {
-  int cursor = 0;
+  unsigned int cursor = 0;
   xbt_node_t node = NULL;
   xbt_edge_t edge = NULL;
   FILE *file = NULL;
@@ -680,7 +681,7 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
 			       const char *(node_data_print) (void *),
 			       const char *(edge_data_print) (void *))
 {
-  int cursor = 0;
+  unsigned int cursor = 0;
   xbt_node_t node = NULL;
   xbt_edge_t edge = NULL;
   FILE *file = NULL;

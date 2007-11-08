@@ -490,7 +490,8 @@ double * amok_bw_matrix(xbt_dynar_t peers,
   /* construction of matrices for bandwith and latency */
 
 
-  int i,j,len=xbt_dynar_length(peers);
+  unsigned int i,j;
+  int len=xbt_dynar_length(peers);
 
   double *matrix_res = xbt_new0(double, len*len);
   xbt_peer_t p1,p2;

@@ -120,7 +120,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
     for (i=0; environ[i]; i++) {
       if (!strncmp("PATH=",environ[i], 5)) {	
 	xbt_dynar_t path=xbt_str_split(environ[i] + 5, ":");
-	int cpt;
+	unsigned int cpt;
 	char *data;
 	xbt_dynar_foreach(path, cpt, data) {
 	  if (binary_name)

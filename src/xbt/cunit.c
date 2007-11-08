@@ -72,7 +72,7 @@ typedef struct s_xbt_test_test {
 static void xbt_test_test_dump(xbt_test_test_t test){
   if (test) {
     xbt_test_log_t log;
-    int it_log;
+    unsigned int it_log;
     fprintf(stderr,"    test %p(%s:%d)=%s (%s)\n",
 	    test,test->file,test->line,test->title,
 	    test->failed?"failed":"not failed");
@@ -100,7 +100,7 @@ struct s_xbt_test_unit {
 static void xbt_test_unit_dump(xbt_test_unit_t unit) {
   if (unit) {
     xbt_test_test_t test;
-    int it_test;
+    unsigned int it_test;
     fprintf(stderr,"  UNIT %s: %s (%s)\n",
 	    unit->name,unit->title,
 	    (unit->enabled?"enabled":"disabled"));
@@ -158,7 +158,7 @@ xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...) {
 /** @brief retrieve a testsuite from name, or create a new one */
 xbt_test_suite_t xbt_test_suite_by_name(const char *name,const char *fmt, ...) {
   xbt_test_suite_t suite;
-  int it_suite;
+  unsigned int it_suite;
 
   char *bufname;
   va_list ap;
@@ -180,7 +180,7 @@ xbt_test_suite_t xbt_test_suite_by_name(const char *name,const char *fmt, ...) {
 void xbt_test_suite_dump(xbt_test_suite_t suite) {
   if (suite) {
     xbt_test_unit_t unit;
-    int it_unit;
+    unsigned int it_unit;
     fprintf(stderr,"TESTSUITE %s: %s (%s)\n",
 	    suite->name, suite->title,
 	    suite->enabled?"enabled":"disabled");
@@ -225,7 +225,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
   const char *file;
   int line;
   char *cp;
-  int it_unit,it_test,it_log;
+  unsigned int it_unit,it_test,it_log;
 
   int first=1; /* for result pretty printing */
 
@@ -251,7 +251,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
     suite_title[40 + (suite_len+5)/2] = '=';
     if (!suite->enabled) 
       sprintf(suite_title+ 70," DISABLED ");
-    fprintf(stderr, "\n%s",suite_title);
+    fprintf(stderr, "\n%s\n",suite_title);
   }
 
   if (suite->enabled) {	
@@ -430,10 +430,10 @@ static void apply_selection(char *selection) {
   int done = 0;
   char dir[1024]; /* the directive */
   /* iterators */
-  int it_suite;
+  unsigned int it_suite;
   xbt_test_suite_t suite;
   xbt_test_unit_t unit;
-  int it_unit;
+  unsigned int it_unit;
 
   char suitename[512];
   char unitname[512];
@@ -537,7 +537,7 @@ void xbt_test_dump(char *selection) {
   apply_selection(selection);
 
   if (_xbt_test_suites) {
-    int it_suite;
+    unsigned int it_suite;
     xbt_test_suite_t suite;
 
     xbt_dynar_foreach(_xbt_test_suites,it_suite,suite) 
@@ -551,7 +551,7 @@ int xbt_test_run(char *selection) {
   apply_selection(selection);
 
   if (_xbt_test_suites) {
-    int it_suite;
+    unsigned int it_suite;
     xbt_test_suite_t suite;
     int first=1;
     

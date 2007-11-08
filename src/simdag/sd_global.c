@@ -123,7 +123,7 @@ static void sd_cfg_control_set(const char *control_string)
   /* To split the string in commands, and the cursors */
   xbt_dynar_t set_strings;
   char *str;
-  int cpt;
+  unsigned int cpt;
 
   if (!control_string)
     return;
@@ -395,7 +395,7 @@ SD_task_t* SD_simulate(double how_long)
   SD_task_t *changed_tasks = NULL;
   int changed_task_number = 0;
   int changed_task_capacity = sd_global->task_number + 1;
-  int i;
+  unsigned int iter;
   static int first_time = 1;
 
   SD_CHECK_INIT_DONE();
@@ -451,7 +451,7 @@ SD_task_t* SD_simulate(double how_long)
       total_time += elapsed_time;
 
     /* let's see which tasks are done */
-    xbt_dynar_foreach(model_list, i, model) {
+    xbt_dynar_foreach(model_list, iter, model) {
       while ((action = xbt_swag_extract(model->common_public->
 					states.done_action_set))) {
 	task = action->data;
@@ -523,10 +523,10 @@ SD_task_t* SD_simulate(double how_long)
   }
 
   /* we must reset every task->state_changed */
-  i = 0;
-  while (changed_tasks[i] != NULL) {
-    changed_tasks[i]->state_changed = 0;
-    i++;
+  iter = 0;
+  while (changed_tasks[iter] != NULL) {
+    changed_tasks[iter]->state_changed = 0;
+    iter++;
   }
 
   INFO0("Simulation finished");

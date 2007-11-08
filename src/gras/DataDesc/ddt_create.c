@@ -771,7 +771,7 @@ static gras_dd_cat_field_t
    xbt_dynar_t         field_array;
    
    gras_dd_cat_field_t  field=NULL;
-   int                  field_num;
+   unsigned int         field_num;
    
    if (type->category_code == e_gras_datadesc_type_cat_union) {
       field_array = type->category.union_data.fields;
@@ -916,7 +916,8 @@ void gras_datadesc_free(gras_datadesc_type_t *type) {
  */
 int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
 			   const gras_datadesc_type_t d2) {
-  int ret,cpt;
+  int ret;
+  unsigned int cpt;
   gras_dd_cat_field_t field1,field2;
   gras_datadesc_type_t field_desc_1,field_desc_2;
 

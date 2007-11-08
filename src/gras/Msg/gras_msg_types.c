@@ -228,7 +228,7 @@ gras_cb_register_(gras_msgtype_t msgtype,
   gras_msg_procdata_t pd=
     (gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t *list=NULL;
-  int cpt;
+  unsigned int cpt;
 
   DEBUG2("Register %p as callback to '%s'",cb,msgtype->name);
 
@@ -261,7 +261,7 @@ gras_cb_unregister_(gras_msgtype_t msgtype,
     (gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t *list;
   gras_msg_cb_t cb_cpt;
-  int cpt;
+  unsigned int cpt;
   int found = 0;
 
   /* search the list of cb for this message on this host */

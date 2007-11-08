@@ -178,7 +178,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
   double *bw_sat;
 
   /* iterators */
-  int i,j,k,l;
+  unsigned int i,j,k,l;
   xbt_peer_t h1,h2,h3,h4;
 
   /* Init the group */

@@ -559,7 +559,7 @@ static gras_datadesc_type_t parse_struct(char *definition) {
 
   xbt_dynar_t identifiers;
   s_identifier_t field;
-  int i;
+  unsigned int iter;
   int done;
 
   xbt_dynar_t fields_to_push;
@@ -600,7 +600,7 @@ static gras_datadesc_type_t parse_struct(char *definition) {
     
     DEBUG1("This statement contained %lu identifiers",xbt_dynar_length(identifiers));
     /* append the identifiers we've found */
-    xbt_dynar_foreach(identifiers,i, field) {
+    xbt_dynar_foreach(identifiers,iter, field) {
       if (field.tm.is_ref)
 	PARSE_ERROR2("Not enough GRAS_ANNOTATE to deal with all dereferencing levels of %s (%d '*' left)",
 		     field.name,field.tm.is_ref);
@@ -615,7 +615,7 @@ static gras_datadesc_type_t parse_struct(char *definition) {
     DEBUG1("struct_type=%p",(void*)struct_type);
     
     /* Make sure that all fields declaring a size push it into the cbps */
-    xbt_dynar_foreach(fields_to_push,i, name) {
+    xbt_dynar_foreach(fields_to_push,iter, name) {
       DEBUG1("struct_type=%p",(void*)struct_type);
       if (name[0] == '*') {
 	VERB2("Push field '%s' as a multiplier into size stack of %p",

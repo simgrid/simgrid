@@ -42,7 +42,7 @@ gras_socket_t gras_trp_select(double timeout) {
   static int fd_setsize=-1; /* FD_SETSIZE not always defined. Get this portably */
 
   gras_socket_t sock_iter; /* iterating over all sockets */
-  int cursor;              /* iterating over all sockets */
+  unsigned int cursor;     /* iterating over all sockets */
 
   /* Check whether there is more data to read from the socket we selected last time.
      This can happen with tcp buffered sockets since we try to get as much data as we can for them */

@@ -48,7 +48,7 @@ gras_msg_wait_ext_(double           timeout,
   double start, now;
   gras_msg_procdata_t pd=
     (gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
-  int cpt;
+  unsigned int cpt;
 
   xbt_assert0(msg_got,"msg_got is an output parameter");
 
@@ -295,7 +295,7 @@ gras_msg_handle(double timeOut) {
   
   double          untiltimer;
    
-  int             cpt;
+  unsigned int cpt;
   int volatile ran_ok;
 
   s_gras_msg_t    msg;

@@ -45,7 +45,8 @@ void gras_timer_repeat(double interval, void_f_void_t action) {
 /** @brief Cancel a delayed task */
 void gras_timer_cancel_delay(double interval, void_f_void_t action) {
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
-  int cursor,found;
+  unsigned int cursor;
+  int found;
   s_gras_timer_t timer;
 
   found = FALSE;
@@ -68,7 +69,8 @@ void gras_timer_cancel_delay(double interval, void_f_void_t action) {
 /** @brief Cancel a repetitive task */
 void gras_timer_cancel_repeat(double interval, void_f_void_t action) {
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
-  int cursor,found;
+  unsigned int cursor;
+  int found;
   s_gras_timer_t timer;
 
   found = FALSE;
@@ -90,7 +92,8 @@ void gras_timer_cancel_repeat(double interval, void_f_void_t action) {
 /** @brief Cancel all delayed tasks */
 void gras_timer_cancel_delay_all(void) {
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
-  int cursor, found;
+  unsigned int cursor;
+  int found;
   s_gras_timer_t timer;
 
   found = FALSE;
@@ -110,7 +113,8 @@ void gras_timer_cancel_delay_all(void) {
 /** @brief Cancel all repetitive tasks */
 void gras_timer_cancel_repeat_all(void){
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
-  int cursor, found;
+  unsigned int cursor;
+  int found;
   s_gras_timer_t timer;
 
   found = FALSE;
@@ -136,12 +140,12 @@ void gras_timer_cancel_all(void) {
 /* returns 0 if it handled a timer, or the delay until next timer, or -1 if no armed timer */
 double gras_msg_timer_handle(void) {
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
-  int cursor;
+  unsigned int cursor;
   gras_timer_t timer;
   double now=gras_os_time();
   double untilnext = -1.0;
   
-  for (cursor=0; cursor < (int)xbt_dynar_length(pd->timers); cursor++) {
+  for (cursor=0; cursor < xbt_dynar_length(pd->timers); cursor++) {
      double untilthis;
      
      timer = xbt_dynar_get_ptr (pd->timers, cursor);

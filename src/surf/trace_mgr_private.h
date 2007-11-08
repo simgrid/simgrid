@@ -23,7 +23,7 @@ typedef struct tmgr_trace {
 
 typedef struct tmgr_trace_event {
   tmgr_trace_t trace;
-  int idx;
+  unsigned int idx;
   void *model;
 } s_tmgr_trace_event_t;
 

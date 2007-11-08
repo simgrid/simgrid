@@ -36,7 +36,7 @@ gras_socket_t gras_trp_select(double timeout) {
   gras_socket_t active_socket = NULL;
   gras_trp_sg_sock_data_t *active_socket_data;
   gras_socket_t sock_iter; /* iterating over all sockets */
-  int cursor;
+  unsigned int cursor;
 
   DEBUG3("select on %s@%s with timeout=%f",
 	 SIMIX_process_get_name(SIMIX_process_self()),

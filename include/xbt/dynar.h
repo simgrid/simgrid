@@ -174,12 +174,12 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  XBT_PUBLIC(void) _xbt_dynar_cursor_first (const xbt_dynar_t dynar, int * const cursor);
-  XBT_PUBLIC(void) _xbt_dynar_cursor_step  (const xbt_dynar_t dynar, int * const cursor);
-  XBT_PUBLIC(int)  _xbt_dynar_cursor_get   (const xbt_dynar_t dynar, int * const cursor, 
+  XBT_PUBLIC(void) _xbt_dynar_cursor_first (const xbt_dynar_t dynar, unsigned int * const cursor);
+  XBT_PUBLIC(void) _xbt_dynar_cursor_step  (const xbt_dynar_t dynar, unsigned int * const cursor);
+  XBT_PUBLIC(int)  _xbt_dynar_cursor_get   (const xbt_dynar_t dynar, unsigned int * const cursor, 
 					    void *whereto);
   XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
-				       int         *const cursor);
+				       unsigned int *const cursor);
   XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
 
 /** @brief Iterates over the whole dynar. 
@@ -192,7 +192,7 @@ SG_BEGIN_DECL()
  * \note An example of usage:
  * \code
 xbt_dynar_t dyn;
-int cpt;
+unsigned int cpt;
 string *str;
 xbt_dynar_foreach (dyn,cpt,str) {
   printf("Seen %s\n",str);

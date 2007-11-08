@@ -109,7 +109,7 @@ gras_procdata_init() {
   gras_procdata_t *pd=gras_procdata_get();
   s_gras_procdata_fabric_t fab;
    
-  int cursor;
+  unsigned int cursor;
    
   xbt_ex_t e;
   xbt_set_elm_t elem;
@@ -122,7 +122,7 @@ gras_procdata_init() {
   xbt_dynar_foreach(_gras_procdata_fabrics,cursor,fab){ 
     volatile int found = 0;
      
-    if (cursor+1 <= (int)xbt_set_length(pd->libdata)) {
+    if (cursor+1 <= xbt_set_length(pd->libdata)) {
        DEBUG2("Skip fabric %d: there is already %ld libdata",
 	     cursor, xbt_set_length(pd->libdata));
        continue; /* allow to recall this function to get recently added fabrics */

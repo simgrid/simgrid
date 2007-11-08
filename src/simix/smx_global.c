@@ -31,7 +31,7 @@ static void simix_cfg_control_set(const char *control_string)
   /* To split the string in commands, and the cursors */
   xbt_dynar_t set_strings;
   char *str;
-  int cpt;
+  unsigned int cpt;
 
   if (!control_string)
     return;
@@ -323,7 +323,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 {
 
   smx_process_t process = NULL;
-  int i;
+  unsigned int iter;
   double elapsed_time = 0.0;
   static int state_modifications = 1;
   static int first = 1;
@@ -353,7 +353,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
     void *fun = NULL;
     void *arg = NULL;
 
-    xbt_dynar_foreach(model_list, i, model) {
+    xbt_dynar_foreach(model_list, iter, model) {
       if (xbt_swag_size(model->common_public->states.failed_action_set)
 	  || xbt_swag_size(model->common_public->states.
 			   done_action_set)) {
@@ -393,7 +393,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
     }
 
     /* Wake up all process waiting for the action finish */
-    xbt_dynar_foreach(model_list, i, model) {
+    xbt_dynar_foreach(model_list, iter, model) {
       while ((action =
 	      xbt_swag_extract(model->common_public->states.
 			       failed_action_set))) {

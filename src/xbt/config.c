@@ -796,7 +796,8 @@ xbt_cfg_set_peer(xbt_cfg_t cfg,const char*name,
 void xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
 
   xbt_cfgelm_t variable;
-  int cpt,seen;
+  unsigned int cpt;
+  int seen;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_int);
   
@@ -826,7 +827,7 @@ void xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
 
 void xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
   xbt_cfgelm_t variable;
-  int cpt;
+  unsigned int cpt;
   double seen;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_double);
@@ -858,7 +859,7 @@ void xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
 void
 xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
   xbt_cfgelm_t variable;
-  int cpt;
+  unsigned int cpt;
   char *seen;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_string);
@@ -892,7 +893,7 @@ xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
 void
 xbt_cfg_rm_peer(xbt_cfg_t cfg,const char*name, const char *peer,int port) {
   xbt_cfgelm_t variable;
-  int cpt;
+  unsigned int cpt;
   xbt_peer_t seen;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_peer);
@@ -956,7 +957,7 @@ xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
 
   if (variable) {
     if (variable->cb_rm) {
-      int cpt;
+      unsigned int cpt;
       void *ignored;
       xbt_dynar_foreach(variable->content,cpt,ignored) {
         (*variable->cb_rm)(name, cpt);

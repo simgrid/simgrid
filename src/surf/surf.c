@@ -354,7 +354,7 @@ void surf_init(int *argc, char **argv)
 static char *path_name = NULL;
 FILE *surf_fopen(const char *name, const char *mode)
 {
-  int i;
+  unsigned int iter;
   char *path = NULL;
   FILE *file = NULL;
   unsigned int path_name_len = 0;	/* don't count '\0' */
@@ -374,7 +374,7 @@ FILE *surf_fopen(const char *name, const char *mode)
       path_name = xbt_new0(char, path_name_len + 1);
     }
 
-    xbt_dynar_foreach(surf_path, i, path) {
+    xbt_dynar_foreach(surf_path, iter, path) {
       if (path_name_len < strlen(path) + strlen(name) + 1) {
 	path_name_len = strlen(path) + strlen(name) + 1;	/* plus '/' */
 	path_name = xbt_realloc(path_name, path_name_len + 1);
@@ -390,10 +390,10 @@ FILE *surf_fopen(const char *name, const char *mode)
 
 void surf_exit(void)
 {
-  int i;
+  unsigned int iter;
   surf_model_t model = NULL;
 
-  xbt_dynar_foreach(model_list, i, model) {
+  xbt_dynar_foreach(model_list, iter, model) {
     model->common_private->finalize();
   }
 
@@ -433,7 +433,7 @@ double surf_solve(void)
   surf_model_object_t model_obj = NULL;
   surf_model_t model = NULL;
   tmgr_trace_event_t event = NULL;
-  int i;
+  unsigned int iter;
 
   if (first_run) {
     DEBUG0
@@ -449,7 +449,7 @@ double surf_solve(void)
 	    update_resource_state(model_obj, event, value);
       }
     }
-    xbt_dynar_foreach(model_list, i, model) {
+    xbt_dynar_foreach(model_list, iter, model) {
       model->common_private->update_actions_state(NOW, 0.0);
     }
     first_run = 0;
@@ -459,7 +459,7 @@ double surf_solve(void)
   min = -1.0;
 
   DEBUG0("Looking for next action end");
-  xbt_dynar_foreach(model_list, i, model) {
+  xbt_dynar_foreach(model_list, iter, model) {
     DEBUG1("Running for Resource [%s]", model->common_public->name);
     model_next_action_end =
 	model->common_private->share_resources(NOW);
@@ -502,7 +502,7 @@ double surf_solve(void)
 
   NOW = NOW + min;
 
-  xbt_dynar_foreach(model_list, i, model) {
+  xbt_dynar_foreach(model_list, iter, model) {
     model->common_private->update_actions_state(NOW, min);
   }
 

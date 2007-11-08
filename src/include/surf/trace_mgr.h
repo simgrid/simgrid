@@ -26,7 +26,7 @@ XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 
 XBT_PUBLIC(tmgr_trace_event_t) tmgr_history_add_trace(tmgr_history_t history,
 					  tmgr_trace_t trace,
-					  double start_time, int offset,
+					  double start_time, unsigned int offset,
 					  void *model);
 
 /* Access functions */

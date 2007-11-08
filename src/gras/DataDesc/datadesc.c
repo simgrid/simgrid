@@ -196,7 +196,7 @@ int gras_datadesc_size(gras_datadesc_type_t type) {
  * For debugging purpose
  */
 void gras_datadesc_type_dump(const gras_datadesc_type_t ddt){
-  int cpt;
+  unsigned int cpt;
 
   printf("DataDesc dump:");
   if(!ddt) {

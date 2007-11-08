@@ -109,7 +109,7 @@ static lmm_system_t maxmin_system = NULL;
 /* convenient function */
 static void __update_cpu_usage(cpu_KCCFLN05_t cpu)
 {
-  int cpt;
+  unsigned int cpt;
   surf_action_workstation_KCCFLN05_t action = NULL;
   if ((!xbt_dynar_length(cpu->incomming_communications)) &&
       (!xbt_dynar_length(cpu->outgoing_communications))) {
@@ -209,7 +209,7 @@ static void action_use(surf_action_t action)
 
 static int action_free(surf_action_t action)
 {
-  int cpt;
+  unsigned int cpt;
   surf_action_t act = NULL;
   cpu_KCCFLN05_t src = ((surf_action_workstation_KCCFLN05_t) action)->src;
   cpu_KCCFLN05_t dst = ((surf_action_workstation_KCCFLN05_t) action)->dst;

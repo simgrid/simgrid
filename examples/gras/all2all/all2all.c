@@ -77,7 +77,7 @@ int receiver (int argc,char *argv[]) {
 
 int sender (int argc,char *argv[]) {
 
-  int i; /* iterator */
+  unsigned int iter; /* iterator */
   char *data; /* data exchanged */
   int datasize; /* size of message */
   xbt_peer_t h; /* iterator */
@@ -93,8 +93,8 @@ int sender (int argc,char *argv[]) {
   gras_init(&argc,argv);
  
   /* Get the node location from argc/argv */
-  for (i=1; i<argc-1; i++){
-    xbt_peer_t peer = xbt_peer_from_string(argv[i]);
+  for (iter=1; iter<argc-1; iter++){
+    xbt_peer_t peer = xbt_peer_from_string(argv[iter]);
     xbt_dynar_push(peers,&peer);
   }
   
@@ -111,7 +111,7 @@ int sender (int argc,char *argv[]) {
 
 
   /* write to the receivers */
-  xbt_dynar_foreach(peers,i,h) {
+  xbt_dynar_foreach(peers,iter,h) {
      connected = 0;
      while (!connected) {
 	xbt_ex_t e;

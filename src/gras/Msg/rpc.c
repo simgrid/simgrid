@@ -68,7 +68,7 @@ static int msgfilter_rpcID(gras_msg_t msg, void* ctx) {
   unsigned long int ID= *(unsigned long int*)ctx;
   int res = msg->ID == ID && 
     (msg->kind == e_gras_msg_kind_rpcanswer || msg->kind == e_gras_msg_kind_rpcerror);
-  int cursor;
+  unsigned int cursor;
   gras_msg_cb_ctx_t rpc_ctx;
      
 

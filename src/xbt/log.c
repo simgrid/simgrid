@@ -662,7 +662,7 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category,
  */
 int _xbt_log_cat_init(xbt_log_category_t category,
 		      e_xbt_log_priority_t priority) {
-  int cursor;
+  unsigned int cursor;
   xbt_log_setting_t setting=NULL;
   int found = 0;
   s_xbt_log_event_t _log_ev;
@@ -956,7 +956,7 @@ void xbt_log_control_set(const char* control_string) {
   /* To split the string in commands, and the cursors */
   xbt_dynar_t set_strings;
   char *str;
-  int cpt;
+  unsigned int cpt;
 
   if (!control_string)
     return;

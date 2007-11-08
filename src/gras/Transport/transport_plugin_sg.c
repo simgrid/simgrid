@@ -58,7 +58,7 @@ typedef struct {
  ***/
 static void find_port(gras_hostdata_t *hd, int port,
 		      gras_sg_portrec_t *hpd) {
-  int cpt;
+  unsigned int cpt;
   gras_sg_portrec_t pr;
 
   xbt_assert0(hd,"Please run gras_process_init on each process");
@@ -208,7 +208,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 
 void gras_trp_sg_socket_close(gras_socket_t sock){
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
-  int cpt;
+  unsigned int cpt;
   gras_sg_portrec_t pr; 
 
   XBT_IN1(" (sock=%p)",sock);

@@ -18,7 +18,8 @@ XBT_LOG_DEFAULT_CATEGORY(xbt_dyn);
 XBT_TEST_UNIT("int",test_dynar_int,"Dynars of integers") {
    /* Vars_decl [doxygen cruft] */
    xbt_dynar_t d;
-   int i,cpt,cursor;
+   int i,cpt;
+   unsigned int cursor;
    int *iptr;
    
    xbt_test_add0("==== Traverse the empty dynar");
@@ -163,7 +164,8 @@ XBT_TEST_UNIT("int",test_dynar_int,"Dynars of integers") {
 /*******************************************************************************/
 XBT_TEST_UNIT("double",test_dynar_double,"Dynars of doubles") {
    xbt_dynar_t d;
-   int cpt,cursor;
+   int cpt;
+   unsigned int cursor;
    double d1,d2;
    
    xbt_test_add0("==== Traverse the empty dynar");
@@ -284,12 +286,13 @@ static void free_string(void *d){
 XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
    xbt_dynar_t d;
    int cpt;
+   unsigned int iter;
    char buf[1024];
    char *s1,*s2;
    
    xbt_test_add0("==== Traverse the empty dynar");
    d=xbt_dynar_new(sizeof(char *),&free_string);
-   xbt_dynar_foreach(d,cpt,s1){
+   xbt_dynar_foreach(d,iter,s1){
      xbt_test_assert0(FALSE,
 		  "Damnit, there is something in the empty dynar");
    }
@@ -340,8 +343,8 @@ XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
      xbt_dynar_unshift(d,&s1);
    }
    /* 2. Traverse the dynar with the macro */
-   xbt_dynar_foreach(d,cpt,s1) {
-     sprintf(buf,"%d",NB_ELEM - cpt -1);
+   xbt_dynar_foreach(d,iter,s1) {
+     sprintf(buf,"%d",NB_ELEM - iter -1);
      xbt_test_assert2 (!strcmp(buf,s1),
            "The retrieved value is not the same than the injected one (%s!=%s)",
 	       buf,s1);

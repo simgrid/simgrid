@@ -74,7 +74,7 @@ void
 gras_process_exit() {
 	xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_name("gras_trp"))->sockets;
   gras_socket_t sock_iter;
-  int cursor;
+  unsigned int cursor;
   gras_hostdata_t *hd=
     (gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
   gras_procdata_t *pd=

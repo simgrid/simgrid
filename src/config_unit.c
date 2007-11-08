@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 1144 "xbt/config.c" 
+# 1145 "xbt/config.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 

@@ -81,13 +81,13 @@ void test(char *platform)
   surf_solve();			/* Takes traces into account. Returns 0.0 */
   do {
     surf_action_t action = NULL;
-    int i;
+    unsigned int iter;
     surf_model_t model = NULL;
 
     now = surf_get_clock();
     DEBUG1("Next Event : " "%g" "\n", now);
 
-    xbt_dynar_foreach(model_list, i, model) {
+    xbt_dynar_foreach(model_list, iter, model) {
       DEBUG1("\t %s actions\n", model->common_public->name);
       while ((action =
 	     xbt_swag_extract(model->common_public->states.

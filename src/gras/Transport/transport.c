@@ -331,7 +331,7 @@ gras_socket_client_from_string(const char *host) {
 void gras_socket_close(gras_socket_t sock) {
   xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
   gras_socket_t sock_iter = NULL;
-  int cursor;
+  unsigned int cursor;
 
   XBT_IN;
   VERB1("Close %p",sock);
@@ -349,7 +349,7 @@ void gras_socket_close(gras_socket_t sock) {
   if (sock) {
 	/* FIXME: Cannot get the dynar mutex, because it can be already locked */
 //		_xbt_dynar_foreach(sockets,cursor,sock_iter) {
-		for (cursor=0; cursor< (int)xbt_dynar_length(sockets); cursor++)  {
+		for (cursor=0; cursor< xbt_dynar_length(sockets); cursor++)  {
 			_xbt_dynar_cursor_get(sockets,&cursor,&sock_iter);
 			if (sock == sock_iter) {
 				DEBUG2("remove sock cursor %d dize %lu\n",cursor,xbt_dynar_length(sockets));
@@ -584,7 +584,7 @@ void gras_trp_socketset_dump(const char *name) {
   gras_trp_procdata_t procdata = 
     (gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
 
-  int it;
+  unsigned int it;
   gras_socket_t s;
 
   INFO1("** Dump the socket set %s",name);

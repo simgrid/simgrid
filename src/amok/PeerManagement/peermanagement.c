@@ -75,7 +75,7 @@ static int amok_pm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload) {
   xbt_peer_t dude = xbt_peer_new(gras_socket_peer_name(exp),
 				 gras_socket_peer_port(exp));
 
-  int cpt;
+  unsigned int cpt;
   xbt_peer_t peer_it;
 
   xbt_dynar_foreach(group, cpt, peer_it) {
@@ -178,7 +178,7 @@ void amok_pm_group_shutdown(const char *group_name) {
   amok_pm_moddata_t g=gras_moddata_by_id(amok_pm_moddata_id);
   xbt_dynar_t group = xbt_dict_get(g->groups, group_name);
   
-  int cpt;
+  unsigned int cpt;
   xbt_peer_t peer_it;
 
   xbt_dynar_foreach(group, cpt, peer_it) {
