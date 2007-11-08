@@ -6,9 +6,6 @@
 
 EXTRA_DIST= platforms/prop.xml
 
-SUBDIRS= msg gras amok simdag 
-if HAVE_JAVA
-  SUBDIRS+= java
-endif
+SUBDIRS= msg gras amok simdag java
 
 include $(top_srcdir)/acmacro/dist-files.mk

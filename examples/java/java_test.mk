@@ -14,9 +14,13 @@ AM_JAVACFLAGS=-classpath $(top_srcdir)/src/simgrid.jar:.
 # We need to override the CLASSPATH to add simgrid.jar and current dir to the picture
 # We also need to express dependencies manually (in each test dir)
 # Damn...
-TESTS_ENVIRONMENT=LD_LIBRARY_PATH="$(top_srcdir)/src/.libs:$$LD_LIBRARY_PATH" \
-                  CLASSPATH=".:$(top_srcdir)/src/simgrid.jar:$$CLASSPATH" \
-                  $(srcdir)/../runtest 
+if HAVE_JAVA
+  TESTS_ENVIRONMENT=LD_LIBRARY_PATH="$(top_srcdir)/src/.libs:$$LD_LIBRARY_PATH" \
+                    CLASSPATH=".:$(top_srcdir)/src/simgrid.jar:$$CLASSPATH" \
+                    $(srcdir)/../runtest 
+else
+  TESTS_ENVIRONMENT=DO_NOT_HAVE_JAVA=1 $(srcdir)/../runtest 
+endif
 
 # declare that we must recompile everything before lauching tests
 $(TESTS): classnoinst.stamp

@@ -11,13 +11,13 @@ EXTRA_DIST=basic_deployment.xml basic_platform.xml
 JAVA_SRC=Master.java Forwarder.java Slave.java BasicTest.java \
          BasicTask.java FinalizeTask.java
 JAVA_TESTS=BasicTest.class
+TESTS=$(JAVA_TESTS)
 
 EXTRA_DIST+=$(JAVA_SRC)
 
 # Declare test class
 if HAVE_JAVA
   noinst_JAVA=$(JAVA_SRC)
-  TESTS=$(JAVA_TESTS)
 endif
 
 include $(srcdir)/../java_test.mk

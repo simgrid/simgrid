@@ -209,12 +209,13 @@ EXTRA_DIST = ping_pong_deployment.xml ping_pong_platform.xml \
 # Declare sources:
 JAVA_SRC = Sender.java Receiver.java PingPongTask.java PingPongTest.java
 JAVA_TESTS = PingPongTest.class
+TESTS = $(JAVA_TESTS)
 
 # Declare test class
 @HAVE_JAVA_TRUE@noinst_JAVA = $(JAVA_SRC)
-@HAVE_JAVA_TRUE@TESTS = $(JAVA_TESTS)
 JAVAROOT = .
 AM_JAVACFLAGS = -classpath $(top_srcdir)/src/simgrid.jar:.
+@HAVE_JAVA_FALSE@TESTS_ENVIRONMENT = DO_NOT_HAVE_JAVA=1 $(srcdir)/../runtest 
 
 ##########################
 # What to do on make check
@@ -223,9 +224,9 @@ AM_JAVACFLAGS = -classpath $(top_srcdir)/src/simgrid.jar:.
 # We need to override the CLASSPATH to add simgrid.jar and current dir to the picture
 # We also need to express dependencies manually (in each test dir)
 # Damn...
-TESTS_ENVIRONMENT = LD_LIBRARY_PATH="$(top_srcdir)/src/.libs:$$LD_LIBRARY_PATH" \
-                  CLASSPATH=".:$(top_srcdir)/src/simgrid.jar:$$CLASSPATH" \
-                  $(srcdir)/../runtest 
+@HAVE_JAVA_TRUE@TESTS_ENVIRONMENT = LD_LIBRARY_PATH="$(top_srcdir)/src/.libs:$$LD_LIBRARY_PATH" \
+@HAVE_JAVA_TRUE@                    CLASSPATH=".:$(top_srcdir)/src/simgrid.jar:$$CLASSPATH" \
+@HAVE_JAVA_TRUE@                    $(srcdir)/../runtest 
 
 all: all-am
 

@@ -10,13 +10,13 @@ EXTRA_DIST=suspend_deployment.xml suspend_platform.xml
 # Declare sources:
 JAVA_SRC=DreamMaster.java LazyGuy.java SuspendTest.java
 JAVA_TESTS=SuspendTest.class
+TESTS=$(JAVA_TESTS)
 
 EXTRA_DIST+=$(JAVA_SRC)
 
 # Declare test class
 if HAVE_JAVA
   noinst_JAVA=$(JAVA_SRC)
-  TESTS=$(JAVA_TESTS)
 endif
 
 include $(srcdir)/../java_test.mk
