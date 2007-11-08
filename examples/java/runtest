@@ -1,7 +1,7 @@
 #! /bin/sh
 
 if test "x$DO_NOT_HAVE_JAVA" = x1 ; then
-  return 77
+  exit 77
 fi
 
 t=`basename $1 .class`
