@@ -460,9 +460,9 @@ xbt/graphxml.c: xbt/graphxml.l
 
 if HAVE_FLEXML
 surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
-	set -e; mkdir -p surf; flexml -b 1000000 -P surfxml --sysid=surfxml.dtd -S $@ -L $^
+	set -e; mkdir -p surf; flexml --root-tags platform -b 1000000 -P surfxml --sysid=surfxml.dtd -S $@ -L $^
 $(top_srcdir)/include/surf/surfxml.h: $(srcdir)/surf/surfxml.dtd
-	set -e;                flexml            -P surfxml --sysid=surfxml.dtd -H $@ -L $^
+	set -e;                flexml --root-tags platform            -P surfxml --sysid=surfxml.dtd -H $@ -L $^
 	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 
