@@ -21,7 +21,6 @@ EXTRA_DIST = msg_platform.xml \
              gtnets/r-n200-f50-s4-2-p.xml \
              gtnets/dogbone-d.xml \
              gtnets/dogbone-p.xml \
-             properties/deployment_platform.xml \
              properties/deployment_properties.xml
 
 

@@ -4,6 +4,7 @@
 # You can redistribute and/or modify it under the terms of the
 # GNU LGPL (v2.1) licence.
 
+EXTRA_DIST= platforms/prop.xml
 
 SUBDIRS= msg gras amok simdag 
 if HAVE_JAVA
