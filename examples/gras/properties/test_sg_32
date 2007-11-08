@@ -6,7 +6,7 @@ $ $SG_TEST_EXENV ./properties_simulator${EXEEXT:=} ${srcdir:=.}/../../platforms/
 > [C1-00:slave:(2) 0.000000] [test/INFO] Process property: SomeProp has value: SomeValue
 > [C1-00:slave:(2) 0.000000] [test/INFO] Process property: Nonexisting is undefined
 > [C1-00:slave:(2) 0.000000] [test/INFO] Trying to modify a process property
-> [C1-00:slave:(2) 0.000000] [test/INFO]  Property: otherprop is undefined
-> [C1-00:slave:(2) 0.000000] [test/INFO]  Property: otherprop is undefined
+> [C1-00:slave:(2) 0.000000] [test/INFO] 	Property: otherprop is undefined
+> [C1-00:slave:(2) 0.000000] [test/INFO] 	Property: otherprop is undefined
 > [C1-01:master:(1) 1.000000] [gras/INFO] Exiting GRAS
 > [C1-00:slave:(2) 1.000000] [gras/INFO] Exiting GRAS
