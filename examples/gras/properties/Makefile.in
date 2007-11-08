@@ -246,7 +246,7 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include
-EXTRA_DIST = properties.xml properties.h test_rl test_sg_32 test_sg_64
+EXTRA_DIST = properties.xml test_rl test_sg_32 test_sg_64
 @GRAS_ARCH_32_BITS_FALSE@TESTS = test_sg_64 test_rl
 @GRAS_ARCH_32_BITS_TRUE@TESTS = test_sg_32 test_rl
 TESTS_ENVIRONMENT = srcdir=$(srcdir) EXEEXT=$(EXEEXT) @top_builddir@/tools/tesh/tesh

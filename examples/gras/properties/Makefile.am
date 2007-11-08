@@ -7,7 +7,7 @@
 
 INCLUDES= -I$(top_srcdir)/include
 
-EXTRA_DIST=properties.xml properties.h
+EXTRA_DIST=properties.xml
 include $(top_srcdir)/examples/gras/tests.mk
 
 # AUTOMAKE variable definition
