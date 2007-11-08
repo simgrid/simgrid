@@ -86,7 +86,7 @@ int gras_bench_always_end(void)
 	mutex = SIMIX_mutex_init();
 	
 	SIMIX_mutex_lock(mutex);
-	act = SIMIX_action_execute(SIMIX_host_self(), (char*) "task", (duration)/reference);
+	act = SIMIX_action_execute(SIMIX_host_self(), "task", (duration)/reference);
 	
 	SIMIX_register_action_to_condition(act,cond);
 	SIMIX_cond_wait(cond, mutex);
@@ -144,7 +144,7 @@ int gras_bench_once_end(void)
 	mutex = SIMIX_mutex_init();
 	
 	SIMIX_mutex_lock(mutex);
-	act = SIMIX_action_execute(SIMIX_host_self(), (char*)"task", (duration)/reference);
+	act = SIMIX_action_execute(SIMIX_host_self(), "task", (duration)/reference);
 	
 	SIMIX_register_action_to_condition(act,cond);
 	SIMIX_cond_wait(cond, mutex);
