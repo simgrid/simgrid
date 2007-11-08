@@ -119,8 +119,6 @@ gras_msg_recv(gras_socket_t    sock,
     THROW2(mismatch_error,0,"GRAS protocol mismatch (got %d, use %d)",
 	   (int)header[4], (int)_GRAS_header[4]);
   r_arch = (int)header[5];
-  DEBUG2("Handle an incoming message using protocol %d (remote is %s)",
-	 (int)header[4],gras_datadesc_arch_name(r_arch));
 
   switch (msg->kind) {
   case e_gras_msg_kind_oneway: 
@@ -137,6 +135,9 @@ gras_msg_recv(gras_socket_t    sock,
   }
 
   gras_datadesc_recv(sock, string_type, r_arch, &msg_name);
+  DEBUG4("Handle an incoming message '%s' (%s) using protocol %d (remote is %s)",
+	 msg_name, e_gras_msg_kind_names[msg->kind], (int)header[4],gras_datadesc_arch_name(r_arch));
+   
   TRY {
     msg->type = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set,msg_name);
   } CATCH(e) {
