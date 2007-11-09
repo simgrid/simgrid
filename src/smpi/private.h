@@ -136,7 +136,7 @@ void smpi_bench_skip(void);
 void smpi_global_init(void);
 void smpi_global_destroy(void);
 int smpi_host_index(void);
-int smpi_run_simulation(int argc, char **argv);
+int smpi_run_simulation(int *argc, char **argv);
 int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
 	int src, int dst, int tag, smpi_mpi_communicator_t comm, smpi_mpi_request_t *request);
 

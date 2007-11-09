@@ -29,6 +29,7 @@ double smpi_bench_end()
 	SIMIX_register_action_to_condition(action, smpi_global->timer_cond);
 	SIMIX_cond_wait(smpi_global->timer_cond, smpi_global->timer_mutex);
 	SIMIX_unregister_action_to_condition(action, smpi_global->timer_cond);
+	SIMIX_action_destroy(action);
 
 	SIMIX_mutex_unlock(smpi_global->timer_mutex);
 
@@ -43,11 +44,12 @@ void smpi_bench_skip() {
 	SIMIX_mutex_lock(smpi_global->timer_mutex);
 
 	host   = SIMIX_host_self();
-        action = SIMIX_action_execute(host, "computation", duration * SMPI_DEFAULT_SPEED);
+	action = SIMIX_action_execute(host, "computation", duration * SMPI_DEFAULT_SPEED);
 
 	SIMIX_register_action_to_condition(action, smpi_global->timer_cond);
 	SIMIX_cond_wait(smpi_global->timer_cond, smpi_global->timer_mutex);
 	SIMIX_unregister_action_to_condition(action, smpi_global->timer_cond);
+	SIMIX_action_destroy(action);
 
 	SIMIX_mutex_unlock(smpi_global->timer_mutex);
 

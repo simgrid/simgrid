@@ -238,7 +238,7 @@ int smpi_host_index()
 	return hdata->index;
 }
 
-int smpi_run_simulation(int argc, char **argv)
+int smpi_run_simulation(int *argc, char **argv)
 {
 	xbt_fifo_item_t cond_item   = NULL;
 	smx_cond_t   cond           = NULL;
@@ -250,7 +250,7 @@ int smpi_run_simulation(int argc, char **argv)
 
 	srand(SMPI_RAND_SEED);
 
-	SIMIX_global_init(&argc, argv);
+	SIMIX_global_init(argc, argv);
 
 	SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
 	SIMIX_function_register("smpi_sender",         smpi_sender);

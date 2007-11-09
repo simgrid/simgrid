@@ -18,26 +18,23 @@ int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
 
 unsigned int smpi_sleep(unsigned int seconds)
 {
-	smx_mutex_t mutex;
-	smx_cond_t cond;
 	smx_host_t host;
 	smx_action_t action;
 
 	smpi_bench_end();
-	host   = SIMIX_host_self();
+
+	host = SIMIX_host_self();
+
+	SIMIX_mutex_lock(smpi_global->timer_mutex);
+
 	action = SIMIX_action_sleep(host, seconds);
-	mutex  = SIMIX_mutex_init();
-	cond   = SIMIX_cond_init();
 
-	SIMIX_mutex_lock(mutex);
-	SIMIX_register_action_to_condition(action, cond);
-	SIMIX_cond_wait(cond, mutex);
-	SIMIX_unregister_action_to_condition(action, cond);
-	SIMIX_mutex_unlock(mutex);
+	SIMIX_register_action_to_condition(action, smpi_global->timer_cond);
+	SIMIX_cond_wait(smpi_global->timer_cond, smpi_global->timer_mutex);
+	SIMIX_unregister_action_to_condition(action, smpi_global->timer_cond);
+	SIMIX_action_destroy(action);
 
-	SIMIX_mutex_destroy(mutex);
-	SIMIX_cond_destroy(cond);
-	//SIMIX_action_destroy(action);
+	SIMIX_mutex_unlock(smpi_global->timer_mutex);
 
 	smpi_bench_begin();
 	return 0;

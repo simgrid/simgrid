@@ -95,6 +95,7 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_register_action_to_condition(action, request->cond);
 			SIMIX_cond_wait(request->cond, request->mutex);
 			SIMIX_unregister_action_to_condition(action, request->cond);
+			SIMIX_action_destroy(action);
 
 			SIMIX_mutex_unlock(request->mutex);
 
