@@ -32,6 +32,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
  */
 void SIMIX_create_environment(const char *file)
 {
+  int parsed = 0;
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   void *workstation = NULL;
@@ -95,13 +96,16 @@ void SIMIX_create_environment(const char *file)
     surf_cpu_model_description[cpu_id].model_init(file);
     surf_network_model_description[network_id].model_init(file);
 
+    parse_platform_file(file);
+    parsed = 1;	
   }
+
+  
 
   surf_workstation_model_description[workstation_id].
       model_init(file);
 
-  /* Parse the platform file */
-  parse_platform_file(file);
+  if  (!parsed) parse_platform_file(file);
 
   _simix_init_status = 2;	/* inited; don't change settings now */
 
