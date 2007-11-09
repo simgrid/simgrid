@@ -233,6 +233,53 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep) {
   return res;
 }
 
+/**
+ * \brief This functions splits a string after using another string as separator
+ * For example A##B##C splitted after ## will return the dynar {A,B,C}
+ * \return An array of dynars containing the string tokens
+*/
+xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char*), free_string);
+  int done;
+  const char *p, *q;
+ 
+  p = q = s;
+  done = 0;
+ 
+  if (s[0] == '\0') 
+    return res;
+  if (sep[0] == '\0') {
+    xbt_dynar_push(res, &s);
+    return res;
+  }
+
+  while (!done) {
+    char *to_push;
+    int v = 0;
+    //get the start of the first occurence of the substring
+    q = strstr(p, sep);
+    //if substring was not found add the entire string
+    if (NULL == q) {
+      v = strlen(p);
+      to_push = malloc(v + 1);
+      memcpy(to_push, p, v);
+      to_push[v] = '\0';
+      xbt_dynar_push(res, &to_push);
+      done = 1;
+    }
+    else {
+      //get the appearance
+      to_push = malloc(q - p + 1);
+      memcpy(to_push, p, q - p);
+      //add string terminator
+      to_push[q - p] = '\0';
+          xbt_dynar_push(res, &to_push);
+      p = q +strlen(sep);
+    }
+  }
+  return res;
+}
+
 /** @brief Splits a string into a dynar of strings, taking quotes into account
  * 
  * It basically does the same argument separation than the shell, where white 
@@ -363,6 +410,27 @@ XBT_TEST_UNIT("xbt_str_split_quoted",test_split_quoted, "test the function xbt_s
   mytest("Backslashed quotes", "\\'toto tutu\\' tata", "'totoXXXtutu'XXXtata");
   mytest("Backslashed quotes + quotes", "'toto \\'tutu' tata", "toto 'tutuXXXtata");
 
+}
+
+#define mytest_str(name, input, separator, expected) \
+  xbt_test_add0(name); \
+  d=xbt_str_split_str(input, separator); \
+  s=xbt_str_join(d,"XXX"); \
+  xbt_test_assert3(!strcmp(s,expected),\
+		   "Input (%s) leads to (%s) instead of (%s)", \
+		   input,s,expected);\
+  free(s); \
+  xbt_dynar_free(&d);
+
+XBT_TEST_UNIT("xbt_str_split_str",test_split_str, "test the function xbt_str_split_str") {
+  xbt_dynar_t d;
+  char *s;
+
+  mytest_str("Empty string and separator", "", "", "");
+  mytest_str("Empty string", "", "##", "");
+  mytest_str("Empty separator", "toto", "", "toto");
+  mytest_str("String with no separator in it", "toto", "##", "toto");
+  mytest_str("Basic test", "toto##tutu",  "##", "totoXXXtutu");
 }
 #endif /* SIMGRID_TEST */
    

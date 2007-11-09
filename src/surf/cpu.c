@@ -88,15 +88,11 @@ static void parse_cpu_init(void)
 
 }
 
-static void parse_file(const char *file)
+static void define_callbacks(const char *file)
 {
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
-  surf_parse_close();
+  surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
 }
 
 static void *name_service(const char *name)
@@ -454,6 +450,6 @@ void surf_cpu_model_init_Cas01(const char *filename)
   if (surf_cpu_model)
     return;
   surf_cpu_model_init_internal();
-  parse_file(filename);
+  define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_cpu_model);
 }

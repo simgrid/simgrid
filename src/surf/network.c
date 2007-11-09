@@ -19,6 +19,7 @@ xbt_dict_t link_set = NULL;
 xbt_dict_t network_card_set = NULL;
 
 int card_number = 0;
+int host_number = 0;
 link_CM02_t **routing_table = NULL;
 int *routing_table_size = NULL;
 static link_CM02_t loopback = NULL;
@@ -26,8 +27,8 @@ static link_CM02_t loopback = NULL;
 static void create_routing_table(void)
 {
   routing_table =
-      xbt_new0(link_CM02_t *, card_number * card_number);
-  routing_table_size = xbt_new0(int, card_number * card_number);
+      xbt_new0(link_CM02_t *, /*card_number * card_number */ host_number * host_number);
+  routing_table_size = xbt_new0(int, /*card_number * card_number*/ host_number * host_number);
 }
 
 static void link_free(void *nw_link)
@@ -152,72 +153,32 @@ static void parse_link_init(void)
 
 }
 
-static int nb_link;
-static int link_list_capacity;
-static link_CM02_t *link_list = NULL;
 static int src_id = -1;
 static int dst_id = -1;
 
 static void parse_route_set_endpoints(void)
 {
-
   src_id = network_card_new(A_surfxml_route_src);
   dst_id = network_card_new(A_surfxml_route_dst);
-  nb_link = 0;
-  link_list_capacity = 20;
-  link_list = xbt_new(link_CM02_t, link_list_capacity);
-}
 
-static void parse_route_elem(void)
-{
-
-  if (nb_link == link_list_capacity) {
-    link_list_capacity *= 2;
-    link_list =
-	xbt_realloc(link_list,
-		    (link_list_capacity) * sizeof(link_CM02_t));
-  }
-  link_list[nb_link++] =
-      xbt_dict_get_or_null(link_set, A_surfxml_link_c_ctn_id);
+  route_link_list = xbt_dynar_new(sizeof(char *), &free_string);
 }
 
 static void parse_route_set_route(void)
 {
-  route_new(src_id, dst_id, link_list, nb_link);
+  char *name;
+  if (src_id != -1 && dst_id != -1) {
+    name = bprintf("%d##%d",src_id, dst_id);
+    xbt_dict_set(route_table, name, route_link_list, NULL);
+    free(name);    
+  }
 }
 
-static void parse_file(const char *file)
+static void add_loopback()
 {
   int i;
-  /* Figuring out the network links */
-  surf_parse_reset_parser();
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
-  surf_parse_close();
-
-  /* Figuring out the network cards used */
-  surf_parse_reset_parser();
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
-  surf_parse_close();
-
-  create_routing_table();
-
-  /* Building the routes */
-  surf_parse_reset_parser();
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
-  surf_parse_close();
-
   /* Adding loopback if needed */
-
-  for (i = 0; i < card_number; i++)
+  for (i = 0; i < host_number; i++)
     if (!ROUTE_SIZE(i, i)) {
       if (!loopback)
 	loopback = link_new(xbt_strdup("__MSG_loopback__"),
@@ -228,6 +189,54 @@ static void parse_file(const char *file)
       ROUTE(i, i) = xbt_new0(link_CM02_t, 1);
       ROUTE(i, i)[0] = loopback;
     }
+}
+
+static void add_route()
+{
+  xbt_ex_t e;
+  int nb_link = 0;
+  int cpt = 0;    
+  int link_list_capacity = 0;
+  link_CM02_t *link_list = NULL;
+
+  if (routing_table == NULL) create_routing_table();
+
+  link_list_capacity = xbt_dynar_length(links);
+  link_list = xbt_new(link_CM02_t, link_list_capacity);
+
+  src_id = atoi(xbt_dynar_get_as(keys, 0, char*));
+  dst_id = atoi(xbt_dynar_get_as(keys, 1, char*));
+ 
+  char* link = NULL;
+  xbt_dynar_foreach (links, cpt, link) {
+      TRY {
+	link_list[nb_link++] = xbt_dict_get(link_set, link);
+      }
+      CATCH(e) {
+        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
+      }     
+  }
+  route_new(src_id, dst_id, link_list, nb_link);
+
+}
+
+static void count_hosts(void)
+{
+   host_number++;
+}
+
+static void define_callbacks(const char *file)
+{
+  /* Figuring out the network links */
+  surfxml_add_callback(STag_surfxml_host_cb_list, &count_hosts);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
+  surfxml_add_callback(STag_surfxml_platform_cb_list, &init_route_table);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
 }
 
 static void *name_service(const char *name)
@@ -695,7 +704,7 @@ void surf_network_model_init_CM02(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  parse_file(filename);
+  define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
@@ -710,7 +719,7 @@ void surf_network_model_init_Reno(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  parse_file(filename);
+  define_callbacks(filename);
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
@@ -728,7 +737,7 @@ void surf_network_model_init_Vegas(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  parse_file(filename);
+  define_callbacks(filename);
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
@@ -747,7 +756,7 @@ void surf_network_model_init_SDP(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  parse_file(filename);
+  define_callbacks(filename);
 
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = sdp_solve;

@@ -359,6 +359,8 @@ void SD_create_environment(const char *platform_file) {
   surf_workstation_model_description[workstation_id].
       model_init(platform_file);
 
+  parse_platform_file(platform_file);
+
   _sd_init_status = 2;
 
   /* now let's create the SD wrappers for workstations and links */

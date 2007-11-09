@@ -122,6 +122,7 @@ void SIMIX_launch_application(const char *file)
 {
   xbt_assert0(simix_global,
 	      "SIMIX_global_init has to be called before SIMIX_launch_application.");
+  surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_process_cb_list, parse_process_init);
   surfxml_add_callback(ETag_surfxml_argument_cb_list, parse_argument);
   surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);

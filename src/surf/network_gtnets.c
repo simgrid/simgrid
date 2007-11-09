@@ -219,8 +219,11 @@ static void parse_route_set_endpoints(void)
 {
   src_id = network_card_new(A_surfxml_route_src);
   dst_id = network_card_new(A_surfxml_route_dst);
-  nb_link = 0;
+
+/*  nb_link = 0;
   link_name = NULL;
+*/
+  route_link_list = xbt_dynar_new(sizeof(char *), &free_string);
 }
 
 /* KF*/
@@ -234,21 +237,28 @@ static void parse_route_set_routers(void)
   }
 }
 
+//The following is common to all and has been relocated to surfxml_parse
 /* Parses a route element from the XML: UNMODIFIED BY HC */
-static void parse_route_elem(void)
+/*static void parse_route_elem(void)
 {
   nb_link++;
   link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
   link_name[(nb_link) - 1] = xbt_strdup(A_surfxml_route_element_name);
 }
+*/
 
 /* Create the route (more than one hops): MODIFIED BY KF */
 static void parse_route_set_route(void)
 {
-  if (nb_link > 1)
+/*  if (nb_link > 1)
     route_new(src_id, dst_id, link_name, nb_link);
+*/
+    name = bprintf("%d##%d",src_id, dst_id);
+    xbt_dict_set(route_table, name, route_link_list, NULL);
+    free(name);    
 }
 
+//This is not used anymore. one hop routes are created in add_route
 /* Create the one-hope route: BY KF */
 static void parse_route_set_onehop_route(void)
 {
@@ -256,23 +266,45 @@ static void parse_route_set_onehop_route(void)
     route_onehop_new(src_id, dst_id, link_name, nb_link);
 }
 
-/* Main XML parsing */
-static void parse_file(const char *file)
+static void add_route()
 {
-  surf_parse_reset_parser();
+  xbt_ex_t e;
+  int cpt = 0;    
+  int i = 0;
 
+  nb_link = xbt_dynar_length(links);
+  link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
+
+  src_id = atoi(xbt_dynar_get_as(keys, 0, char*));
+  dst_id = atoi(xbt_dynar_get_as(keys, 1, char*));
+  
+  i = 0;
+  char* link = NULL;
+  xbt_dynar_foreach (links, cpt, link) {
+      TRY {
+        link_name[i++] = xbt_dict_get(link_set, link);
+      }
+      CATCH(e) {
+        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
+      }     
+  }
+  if (nb_link > 1)
+    route_new(src_id, dst_id, link_name, nb_link);
+  if (nb_link == 1)
+    route_onehop_new(src_id, dst_id, link_name, nb_link);
+}
+
+/* Main XML parsing */
+static void define_callbacks(const char *file)
+{
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_route_set_routers);
   surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_element_cb_list, &parse_route_elem);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_onehop_route);
+/* surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_onehop_route);*/
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
-  surf_parse_close();
-
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
 }
 
 static void *name_service(const char *name)
@@ -589,7 +621,7 @@ void surf_network_model_init_GTNETS(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  parse_file(filename);
+  define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
 
   update_model_description(surf_network_model_description,

@@ -9,6 +9,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
 				"Logging specific to SIMIX (environment)");
 
@@ -93,10 +94,14 @@ void SIMIX_create_environment(const char *file)
 
     surf_cpu_model_description[cpu_id].model_init(file);
     surf_network_model_description[network_id].model_init(file);
+
   }
 
   surf_workstation_model_description[workstation_id].
       model_init(file);
+
+  /* Parse the platform file */
+  parse_platform_file(file);
 
   _simix_init_status = 2;	/* inited; don't change settings now */
 

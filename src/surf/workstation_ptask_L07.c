@@ -841,28 +841,21 @@ static void parse_link_init(void)
  }
 
 static void route_new(int src_id, int dst_id,
-		      link_L07_t * link_list, int nb_link)
+		      link_L07_t * link_list , int nb_link)
 {
   route_L07_t route = &(ROUTE(src_id, dst_id));
 
   route->size = nb_link;
-  route->links = link_list =
-      xbt_realloc(link_list, sizeof(link_L07_t) * nb_link);
+  route->links = link_list = xbt_realloc(link_list, sizeof(link_L07_t) * nb_link); 
 }
 
-static int nb_link;
-static int link_list_capacity;
-static link_L07_t *link_list = NULL;
+
 static int src_id = -1;
 static int dst_id = -1;
-static int is_first =1;
 
 static void parse_route_set_endpoints(void)
 {
   cpu_L07_t cpu_tmp = NULL;
-
-  if (is_first) create_routing_table();
-  is_first = 0;
 
   cpu_tmp = (cpu_L07_t) name_service(A_surfxml_route_src);
   xbt_assert1(cpu_tmp, "Invalid cpu %s", A_surfxml_route_src);
@@ -874,54 +867,22 @@ static void parse_route_set_endpoints(void)
   if (cpu_tmp != NULL)
     dst_id = cpu_tmp->id;
 
-  nb_link = 0;
-  link_list_capacity = 1;
-  link_list = xbt_new(link_L07_t, link_list_capacity);
-}
-
-static void parse_route_elem(void)
-{
-  xbt_ex_t e;
-  if (nb_link == link_list_capacity) {
-    link_list_capacity *= 2;
-    link_list =
-	xbt_realloc(link_list,
-		    (link_list_capacity) * sizeof(link_L07_t));
-  }
-  TRY {
-    link_list[nb_link++] =
-	xbt_dict_get(link_set, A_surfxml_link_c_ctn_id);
-  }
-  CATCH(e) {
-    RETHROW1("Link %s not found (dict raised this exception: %s)",
-	     A_surfxml_link_c_ctn_id);
-  }
+  route_link_list = xbt_dynar_new(sizeof(char*), &free_string);
 }
 
 static void parse_route_set_route(void)
 {
-  if (src_id != -1 && dst_id != -1)
-    route_new(src_id, dst_id, link_list, nb_link);
+  char* name;
+  if (src_id != -1 && dst_id != -1) {
+     name = bprintf("%d##%d",src_id, dst_id);
+     xbt_dict_set(route_table, name, route_link_list, NULL);
+     free(name);
+  }
 }
 
-static void parse_file(const char *file)
+static void add_loopback(void)
 {
   int i;
-
-  /* Adding callback functions */
-  surf_parse_reset_parser();
-  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-
-  /* Parse the file */
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
-  surf_parse_close();
-
   /* Adding loopback if needed */
   for (i = 0; i < nb_workstation; i++)
     if (!ROUTE(i, i).size) {
@@ -935,6 +896,50 @@ static void parse_file(const char *file)
       ROUTE(i, i).links = xbt_new0(link_L07_t, 1);
       ROUTE(i, i).links[0] = loopback;
     }
+}
+
+static void add_route()
+{
+    xbt_ex_t e;
+    int nb_link = 0;
+    int cpt = 0;
+   // char* val;
+    int link_list_capacity = 0;
+    link_L07_t *link_list = NULL;
+
+    if (routing_table == NULL) create_routing_table();
+
+    src_id = atoi(xbt_dynar_get_as(keys, 0, char*));
+    dst_id = atoi(xbt_dynar_get_as(keys, 1, char*));
+
+    link_list_capacity = xbt_dynar_length(links);
+    link_list = xbt_new(link_L07_t, link_list_capacity);
+
+    char* link = NULL;
+    xbt_dynar_foreach (links, cpt, link) {
+      TRY {
+        link_list[nb_link++] = xbt_dict_get(link_set, link);
+      }
+      CATCH(e) {
+        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
+      }    
+    }
+    route_new(src_id, dst_id, link_list, nb_link);
+}
+
+static void define_callbacks(const char *file)
+{
+  /* Adding callback functions */
+  surf_parse_reset_parser();
+  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
+  surfxml_add_callback(STag_surfxml_platform_cb_list, &init_route_table);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
 }
 
 /**************************************/
@@ -1038,7 +1043,7 @@ void surf_workstation_model_init_ptask_L07(const char *filename)
   xbt_assert0(!surf_network_model,
 	      "network model type already defined");
   model_init_internal();
-  parse_file(filename);
+  define_callbacks(filename);
 
   update_model_description(surf_workstation_model_description,
 			      surf_workstation_model_description_size,

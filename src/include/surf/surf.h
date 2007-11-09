@@ -549,6 +549,14 @@ XBT_PUBLIC_DATA(xbt_dict_t) current_property_set; /* the prop set for the curren
 void parse_properties(void);
 void free_string(void*);
 
+/* Prototypes for functions handling routing and were factorized succesfully from the models */
+void init_route_table(void);
+void make_route_table(void);
+void parse_route_elem(void);
+
+/* surf parse file related */
+void parse_platform_file(const char* file);
+
 SG_END_DECL()
 
 #endif				/* _SURF_SURF_H */

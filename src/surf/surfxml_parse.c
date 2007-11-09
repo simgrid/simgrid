@@ -37,7 +37,12 @@ xbt_dynar_t STag_surfxml_prop_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_prop_cb_list = NULL;
 
 xbt_dict_t current_property_set = NULL;
-  
+
+xbt_dict_t route_table = NULL;
+xbt_dynar_t route_link_list = NULL;
+xbt_dynar_t links = NULL;
+xbt_dynar_t keys = NULL;
+
 static xbt_dynar_t surf_input_buffer_stack = NULL;
 static xbt_dynar_t surf_file_to_parse_stack = NULL;
 
@@ -45,6 +50,23 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t);
 
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse;
+
+void make_route_table(void)
+{
+  xbt_dict_cursor_t cursor = NULL;
+  char *key,*data;
+  const char *sep = "##";
+
+   xbt_dict_foreach(route_table, cursor, key, data) {
+     links = (xbt_dynar_t)data;
+     keys = xbt_str_split_str(key, sep);
+     surfxml_call_cb_functions(ETag_surfxml_platform_cb_list);
+   }
+
+   xbt_dict_free(&route_table);
+   xbt_dynar_free(&links);
+
+}
 
 void surf_parse_free_callbacks(void)
 {
@@ -145,7 +167,7 @@ void STag_surfxml_platform(void)
 
 void ETag_surfxml_platform(void)
 {
-  surfxml_call_cb_functions(ETag_surfxml_platform_cb_list);
+  if (route_table != NULL) make_route_table();
 }
 
 void STag_surfxml_host(void)
@@ -318,4 +340,25 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
        DEBUG2("call %p %p",fun,*fun);
        (*fun)();
     }
+}
+
+void init_route_table(void)
+{
+  xbt_dict_free(&route_table);
+  xbt_dynar_free(&route_link_list);
+  route_table = xbt_dict_new();
+}
+
+void parse_route_elem(void)
+{
+  char *val;
+  val = xbt_strdup(A_surfxml_link_c_ctn_id);
+  xbt_dynar_push(route_link_list, &val);
+}
+
+void parse_platform_file(const char* file)
+{
+  surf_parse_open(file);
+  xbt_assert1((!surf_parse()), "Parse error in %s", file);
+  surf_parse_close();
 }

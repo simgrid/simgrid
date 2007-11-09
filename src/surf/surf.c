@@ -418,6 +418,7 @@ void surf_exit(void)
     path_name = NULL;
   }
   surf_parse_free_callbacks();
+  xbt_dict_free(&route_table);
   NOW=0; /* Just in case the user plans to restart the simulation afterward */
   xbt_exit();
 }
