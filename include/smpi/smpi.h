@@ -97,4 +97,9 @@ unsigned int smpi_sleep(unsigned int);
 void smpi_exit(int);
 int smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
 
+void smpi_do_once_1(void);
+int  smpi_do_once_2(void);
+void smpi_do_once_3(void);
+#define DO_ONCE for (smpi_do_once_1(); smpi_do_once_2(); smpi_do_once_3())
+
 #endif

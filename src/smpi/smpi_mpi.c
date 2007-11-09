@@ -1,5 +1,3 @@
-// FIXME: remove
-#include <stdio.h>
 #include "private.h"
 
 int MPI_Init(int *argc, char ***argv)

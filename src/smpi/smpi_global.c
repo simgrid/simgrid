@@ -165,14 +165,20 @@ void smpi_global_init()
 	smpi_global->timer                               = xbt_os_timer_new();
 	smpi_global->timer_mutex                         = SIMIX_mutex_init();
 	smpi_global->timer_cond                          = SIMIX_cond_init();
+	smpi_global->times_max                           = 0;
+	smpi_global->times_mutex                         = SIMIX_mutex_init();
 
-	for(i = 0; i < size; i++) {
+	for (i = 0; i < size; i++) {
 		smpi_global->pending_send_request_queues[i]         = xbt_fifo_new();
 		smpi_global->pending_send_request_queues_mutexes[i] = SIMIX_mutex_init();
 		smpi_global->pending_recv_request_queues[i]         = xbt_fifo_new();
 		smpi_global->pending_recv_request_queues_mutexes[i] = SIMIX_mutex_init();
 		smpi_global->received_message_queues[i]             = xbt_fifo_new();
 		smpi_global->received_message_queues_mutexes[i]     = SIMIX_mutex_init();
+	}
+
+	for (i = 0; i < SMPI_MAX_TIMES; i++) {
+		smpi_global->times[i] = -1.0;
 	}
 
 }
@@ -201,6 +207,7 @@ void smpi_global_destroy()
 	xbt_os_timer_free(smpi_global->timer);
 	SIMIX_mutex_destroy(smpi_global->timer_mutex);
 	SIMIX_cond_destroy(smpi_global->timer_cond);
+	SIMIX_mutex_destroy(smpi_global->times_mutex);
 
 	for(i = 0; i < size; i++) {
 		xbt_fifo_free(smpi_global->pending_send_request_queues[i]);

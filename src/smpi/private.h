@@ -11,6 +11,9 @@
 #define SMPI_DEFAULT_SPEED 100
 #define SMPI_REQUEST_MALLOCATOR_SIZE 100
 #define SMPI_MESSAGE_MALLOCATOR_SIZE 100
+// FIXME: should probably be dynamic datatype...
+// or could include code to dynamically expand when full
+#define SMPI_MAX_TIMES 10
 
 // smpi mpi communicator
 typedef struct smpi_mpi_communicator_t {
@@ -103,6 +106,9 @@ typedef struct smpi_global_t {
 	xbt_os_timer_t    timer;
 	smx_mutex_t       timer_mutex;
 	smx_cond_t        timer_cond;
+	double	          times[SMPI_MAX_TIMES];
+	int               times_max;
+	smx_mutex_t       times_mutex;
 
 } s_smpi_global_t;
 typedef struct smpi_global_t *smpi_global_t;
@@ -124,7 +130,8 @@ int smpi_mpi_irecv(smpi_mpi_request_t request);
 int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t *status);
 
 void smpi_bench_begin(void);
-void smpi_bench_end(void);
+double smpi_bench_end(void);
+void smpi_bench_skip(void);
 
 void smpi_global_init(void);
 void smpi_global_destroy(void);
