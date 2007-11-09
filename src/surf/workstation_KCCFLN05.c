@@ -1187,7 +1187,7 @@ static void add_route()
 {  
   xbt_ex_t e;
   int nb_link = 0;
-  int cpt = 0;    
+  unsigned int cpt = 0;    
   int link_list_capacity = 0;
   link_KCCFLN05_t *link_list = NULL;
 

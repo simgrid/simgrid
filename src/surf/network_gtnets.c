@@ -269,7 +269,7 @@ static void parse_route_set_onehop_route(void)
 static void add_route()
 {
   xbt_ex_t e;
-  int cpt = 0;    
+  unsigned int cpt = 0;    
   int i = 0;
 
   nb_link = xbt_dynar_length(links);
