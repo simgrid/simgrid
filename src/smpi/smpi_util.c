@@ -23,18 +23,18 @@ unsigned int smpi_sleep(unsigned int seconds)
 
 	smpi_bench_end();
 
-	host = SIMIX_host_self();
+	host  = SIMIX_host_self();
 
-	SIMIX_mutex_lock(smpi_global->timer_mutex);
+	SIMIX_mutex_lock(smpi_global->execute_mutex);
 
 	action = SIMIX_action_sleep(host, seconds);
 
-	SIMIX_register_action_to_condition(action, smpi_global->timer_cond);
-	SIMIX_cond_wait(smpi_global->timer_cond, smpi_global->timer_mutex);
-	SIMIX_unregister_action_to_condition(action, smpi_global->timer_cond);
+	SIMIX_register_action_to_condition(action, smpi_global->execute_cond);
+	SIMIX_cond_wait(smpi_global->execute_cond, smpi_global->execute_mutex);
+	SIMIX_unregister_action_to_condition(action, smpi_global->execute_cond);
 	SIMIX_action_destroy(action);
 
-	SIMIX_mutex_unlock(smpi_global->timer_mutex);
+	SIMIX_mutex_unlock(smpi_global->execute_mutex);
 
 	smpi_bench_begin();
 	return 0;

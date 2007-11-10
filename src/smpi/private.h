@@ -103,12 +103,18 @@ typedef struct smpi_global_t {
 	int               running_hosts_count;
 	smx_mutex_t       running_hosts_count_mutex;
 
+	// FIXME: maybe all code needs to lock timer?
 	xbt_os_timer_t    timer;
 	smx_mutex_t       timer_mutex;
 	smx_cond_t        timer_cond;
+
+	// keeps track of previous times
 	double	          times[SMPI_MAX_TIMES];
 	int               times_max;
 	smx_mutex_t       times_mutex;
+
+	smx_mutex_t       execute_mutex;
+	smx_cond_t        execute_cond;
 
 } s_smpi_global_t;
 typedef struct smpi_global_t *smpi_global_t;
@@ -129,6 +135,7 @@ int smpi_mpi_isend(smpi_mpi_request_t request);
 int smpi_mpi_irecv(smpi_mpi_request_t request);
 int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t *status);
 
+void smpi_execute(double duration);
 void smpi_bench_begin(void);
 double smpi_bench_end(void);
 void smpi_bench_skip(void);
