@@ -27,6 +27,7 @@ unsigned int smpi_sleep(unsigned int seconds)
 
 	SIMIX_mutex_lock(smpi_global->execute_mutex);
 
+	// FIXME: explicit conversion to double?
 	action = SIMIX_action_sleep(host, seconds);
 
 	SIMIX_register_action_to_condition(action, smpi_global->execute_cond);

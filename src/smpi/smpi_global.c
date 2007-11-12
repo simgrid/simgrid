@@ -166,11 +166,13 @@ void smpi_global_init()
 	smpi_global->timer_mutex                         = SIMIX_mutex_init();
 	smpi_global->timer_cond                          = SIMIX_cond_init();
 
-	smpi_global->times_max                           = 0;
-	smpi_global->times_mutex                         = SIMIX_mutex_init();
-
 	smpi_global->execute_mutex                       = SIMIX_mutex_init();
 	smpi_global->execute_cond                        = SIMIX_cond_init();
+	smpi_global->execute_count			 = 0;
+
+	smpi_global->do_once_duration_nodes              = NULL;
+	smpi_global->do_once_duration                    = NULL;
+	smpi_global->do_once_mutex                       = SIMIX_mutex_init();
 
 	for (i = 0; i < size; i++) {
 		smpi_global->pending_send_request_queues[i]         = xbt_fifo_new();
@@ -181,10 +183,6 @@ void smpi_global_init()
 		smpi_global->received_message_queues_mutexes[i]     = SIMIX_mutex_init();
 	}
 
-	for (i = 0; i < SMPI_MAX_TIMES; i++) {
-		smpi_global->times[i] = -1.0;
-	}
-
 }
 
 void smpi_global_destroy()
@@ -192,6 +190,8 @@ void smpi_global_destroy()
 	int i;
 
 	int size = SIMIX_host_get_number();
+
+	smpi_do_once_duration_node_t curr, next;
 
 	// start/stop
 	SIMIX_mutex_destroy(smpi_global->start_stop_mutex);
@@ -211,9 +211,16 @@ void smpi_global_destroy()
 	xbt_os_timer_free(smpi_global->timer);
 	SIMIX_mutex_destroy(smpi_global->timer_mutex);
 	SIMIX_cond_destroy(smpi_global->timer_cond);
-	SIMIX_mutex_destroy(smpi_global->times_mutex);
 	SIMIX_mutex_destroy(smpi_global->execute_mutex);
 	SIMIX_cond_destroy(smpi_global->execute_cond);
+
+	for(curr = smpi_global->do_once_duration_nodes; NULL != curr; curr = next) {
+		next = curr->next;
+		xbt_free(curr->file);
+		xbt_free(curr);
+	}
+
+	SIMIX_mutex_destroy(smpi_global->do_once_mutex);
 
 	for(i = 0; i < size; i++) {
 		xbt_fifo_free(smpi_global->pending_send_request_queues[i]);
@@ -246,9 +253,7 @@ int smpi_host_index()
 
 int smpi_run_simulation(int *argc, char **argv)
 {
-	xbt_fifo_item_t cond_item   = NULL;
 	smx_cond_t   cond           = NULL;
-	xbt_fifo_item_t action_item = NULL;
 	smx_action_t action         = NULL;
 
 	xbt_fifo_t   actions_failed = xbt_fifo_new();
@@ -279,15 +284,15 @@ int smpi_run_simulation(int *argc, char **argv)
 	fflush(stderr);
 
 	while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
-		xbt_fifo_foreach(actions_failed, action_item, action, smx_action_t) {
+		while ((action = xbt_fifo_pop(actions_failed))) {
 			DEBUG1("** %s failed **", action->name);
-			xbt_fifo_foreach(action->cond_list, cond_item, cond, smx_cond_t) {
+			while((cond = xbt_fifo_pop(action->cond_list))) {
 				SIMIX_cond_broadcast(cond);
 			}
 		}
-		xbt_fifo_foreach(actions_done, action_item, action, smx_action_t) {
+		while((action = xbt_fifo_pop(actions_done))) {
 			DEBUG1("** %s done **",action->name);
-			xbt_fifo_foreach(action->cond_list, cond_item, cond, smx_cond_t) {
+			while((cond = xbt_fifo_pop(action->cond_list))) {
 				SIMIX_cond_broadcast(cond);
 			}
 		}

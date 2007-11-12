@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	printf("%d %f\n", i, d);
+	MPI_Comm_rank(MPI_COMM_WORLD, &i);
 	MPI_Finalize();
 	return 0;
 }

@@ -1,4 +1,5 @@
 #include "private.h"
+#include <string.h>
 
 void smpi_execute(double duration) {
         smx_host_t host = SIMIX_host_self();
@@ -6,7 +7,7 @@ void smpi_execute(double duration) {
 
 	SIMIX_mutex_lock(smpi_global->execute_mutex);
 
-	action = SIMIX_action_execute(host, "computation", duration * SMPI_DEFAULT_SPEED);
+	action = SIMIX_action_execute(host, "execute", duration * SMPI_DEFAULT_SPEED);
 
         SIMIX_register_action_to_condition(action, smpi_global->execute_cond);
         SIMIX_cond_wait(smpi_global->execute_cond, smpi_global->execute_mutex);
@@ -18,55 +19,68 @@ void smpi_execute(double duration) {
 	return;
 }
 
-void smpi_bench_begin()
+void smpi_start_timer()
 {
 	SIMIX_mutex_lock(smpi_global->timer_mutex);
 	xbt_os_timer_start(smpi_global->timer);
-	return;
 }
 
-double smpi_bench_end()
+double smpi_stop_timer()
 {
 	double duration;
-
 	xbt_os_timer_stop(smpi_global->timer);
-
 	duration = xbt_os_timer_elapsed(smpi_global->timer);
-
 	SIMIX_mutex_unlock(smpi_global->timer_mutex);
-
-	smpi_execute(duration);
-
 	return duration;
 }
 
-
-void smpi_bench_skip() {
-	double duration = smpi_global->times[0];
-	smpi_execute(duration);
-	return;
+void smpi_bench_begin()
+{
+	smpi_start_timer();
 }
 
-void smpi_do_once_1() {
+void smpi_bench_end()
+{
+	smpi_execute(smpi_stop_timer());
+}
+
+void smpi_do_once_1(const char *file, int line) {
+	smpi_do_once_duration_node_t curr, prev;
 	smpi_bench_end();
-	SIMIX_mutex_lock(smpi_global->times_mutex);
-	if (0 < smpi_global->times[0]) {
-		smpi_bench_skip();
+	SIMIX_mutex_lock(smpi_global->do_once_mutex);
+	prev = NULL;
+	for(curr = smpi_global->do_once_duration_nodes;
+		NULL != curr && (strcmp(curr->file, file) || curr->line != line);
+		curr = curr->next) {
+		prev = curr;
 	}
-	return;
+	if (NULL == curr) {
+		curr = xbt_new(s_smpi_do_once_duration_node_t, 1);
+		curr->file = xbt_strdup(file);
+		curr->line = line;
+		curr->duration = -1;
+		curr->next = NULL;
+		if (NULL == prev) {
+			smpi_global->do_once_duration_nodes = curr;
+		} else {
+			prev->next = curr;
+		}
+	}
+	smpi_global->do_once_duration = &curr->duration;
 }
 
 int smpi_do_once_2() {
-	int retval = 1;
-	if (0 < smpi_global->times[0]) {
-		SIMIX_mutex_unlock(smpi_global->times_mutex);
-		retval = 0;
+	double duration = *(smpi_global->do_once_duration);
+	if (0 < duration) {
+		SIMIX_mutex_unlock(smpi_global->do_once_mutex);
+		smpi_execute(duration);
+		smpi_bench_begin();
+		return 0;
 	}
-	smpi_bench_begin();
-	return retval;
+	smpi_start_timer();
+	return 1;
 }
 
 void smpi_do_once_3() {
-	smpi_global->times[0] = smpi_bench_end();
-	return;
+	*(smpi_global->do_once_duration) = smpi_stop_timer();
 }
