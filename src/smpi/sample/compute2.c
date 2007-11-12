@@ -5,7 +5,7 @@ int main(int argc, char *argv[]) {
 	double d;
 	MPI_Init(&argc, &argv);
 	d = 2.0;
-	DO_ONCE {
+	SMPI_DO_ONCE {
 		for (i = 0; i < atoi(argv[1]); i++) {
 			if (d < 10000) {
 				d = d*d;

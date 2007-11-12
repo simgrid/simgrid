@@ -100,6 +100,6 @@ int smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
 void smpi_do_once_1(const char *file, int line);
 int  smpi_do_once_2(void);
 void smpi_do_once_3(void);
-#define DO_ONCE for (smpi_do_once_1(__FILE__, __LINE__); smpi_do_once_2(); smpi_do_once_3())
+#define SMPI_DO_ONCE for (smpi_do_once_1(__FILE__, __LINE__); smpi_do_once_2(); smpi_do_once_3())
 
 #endif
