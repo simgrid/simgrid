@@ -24,15 +24,8 @@ public class Slave extends simgrid.msg.Process {
 	 }
 	 BasicTask task = (BasicTask)t;
 	 Msg.info("Received \"" + task.getName() + "\" ");
-	 
-	 if (task.getData() == 0) {
-	    Msg.info("task.getData() gave null \"" + task.getName() + "\" ");
-	 } else if(task.getData() == 221297) {
-	    break;
-	 }
-	 
-	 Msg.info("Processing \"" + task.getName() +  "\" ");
-	 
+	 	 
+	 Msg.info("Processing \"" + task.getName() +  "\" ");	 
 	 task.execute();
 	 Msg.info("\"" + task.getName() + "\" done ");
        }

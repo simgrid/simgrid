@@ -12,21 +12,7 @@ import simgrid.msg.*;
 
 public class BasicTask extends Task {
     	
-    private int data;
-    	
     public BasicTask(String name, double computeDuration, double messageSize) throws JniException{
 	super(name,computeDuration,messageSize);		
-    }
-	
-    public BasicTask() {
-	this.data = 0;
-    }
-    	
-    public void setData(int data){
-	this.data = data;
-    }
-    	
-    public int getData() {
-	return this.data;
     }
 }
