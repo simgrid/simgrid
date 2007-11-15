@@ -31,7 +31,11 @@ EXTRA_DIST= \
 	xbt/graphxml.l \
 	xbt/graphxml.c \
 	xbt/graphxml.dtd \
-        xbt/context_private.h \
+        xbt/xbt_context_private.h \
+        xbt/xbt_context_factory.h \
+        xbt/xbt_thread_context.h \
+        xbt/xbt_ucontext.h \
+        xbt/xbt_jcontext.h \
 	xbt/log_private.h \
 	xbt/ex_interface.h \
         \
@@ -55,7 +59,6 @@ EXTRA_DIST= \
 	\
 	include/xbt/xbt_os_time.h \
 	include/xbt/xbt_os_thread.h \
-	include/xbt/context.h \
 	\
 	msg/private.h \
 	\
@@ -181,9 +184,9 @@ GTNETS_SRC= \
   surf/gtnets/gtnets_interface.cc \
   surf/network_gtnets.c
 
-# Separated because we don't want it in libsimgrid4java
-CTX_SRC= xbt/context.c
-JCTX_SRC= java/jxbt_context.c java/jxbt_context.h
+# Separated because src/gras/rl_stubs also define the function xbt_context_mod_init() and xbt_context_mod_exit()
+# so there is an implementation of these functions in the simgrid library and an implementatin in the gras library 
+CTX_SRC= xbt/xbt_context.c
 
 SIMIX_SRC= \
   simix/smx_global.c \
@@ -335,15 +338,6 @@ endif
 
 EXTRA_DIST+=$(JMSG_JAVA_SRC)
 if HAVE_JAVA
-lib_LTLIBRARIES += libsimgrid4java.la
-
-libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
-                             $(SIMIX_SRC) $(JCTX_SRC) \
-                             $(JMSG_C_SRC) $(MSG_SRC) \
-		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
-libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
-libsimgrid4java_la_GCJFLAGS = -fjni
-
 clean-local:
 	-rm -rf .classes
 
@@ -357,7 +351,7 @@ simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/surfxml.dtd
 	cp $(srcdir)/surf/surfxml.dtd .classes/surf
 	$(JAR) cvf simgrid.jar -C .classes .
 else
-EXTRA_DIST += $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
+EXTRA_DIST+=$(JMSG_C_SRC) $(MSG_SRC)
 endif
 
 if GRAMINE_MODE
