@@ -161,6 +161,8 @@
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				SuppressStartupBanner="true"
+				CompileAs="1"
+				DisableSpecificWarnings="4127;4996;4244;4715;4090"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -175,7 +177,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib WSOCK32.LIB"
-				OutputFile=".\Release/simgrid.dll"
+				OutputFile="c:\windows\system32\simgrid.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/simgrid.pdb"
@@ -235,10 +237,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\xbt\config.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\xbt\context.c"
 				>
 			</File>
 			<File
@@ -547,6 +545,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\surf\workstation_ptask_L07.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\xbt\xbt_context.c"
 				>
 			</File>
 			<File

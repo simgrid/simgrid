@@ -25,6 +25,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sem_basic", "..\examples\xb
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sem_sched", "..\examples\xbt\sem_sched\sem_sched.vcproj", "{A95FC8DF-52C7-45FD-B7D1-D93081DE6BB1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "msg_prop", "..\examples\msg\msg_prop\msg_prop.vcproj", "{D8A5626B-3188-4F74-95F0-732F84F53A1C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sd_prop", "..\examples\simdag\sd_prop\sd_prop.vcproj", "{317E8A67-AE41-45F1-85C7-AA4A3A9146D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -79,6 +83,14 @@ Global
 		{A95FC8DF-52C7-45FD-B7D1-D93081DE6BB1}.Debug|Win32.Build.0 = Debug|Win32
 		{A95FC8DF-52C7-45FD-B7D1-D93081DE6BB1}.Release|Win32.ActiveCfg = Release|Win32
 		{A95FC8DF-52C7-45FD-B7D1-D93081DE6BB1}.Release|Win32.Build.0 = Release|Win32
+		{D8A5626B-3188-4F74-95F0-732F84F53A1C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D8A5626B-3188-4F74-95F0-732F84F53A1C}.Debug|Win32.Build.0 = Debug|Win32
+		{D8A5626B-3188-4F74-95F0-732F84F53A1C}.Release|Win32.ActiveCfg = Release|Win32
+		{D8A5626B-3188-4F74-95F0-732F84F53A1C}.Release|Win32.Build.0 = Release|Win32
+		{317E8A67-AE41-45F1-85C7-AA4A3A9146D3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{317E8A67-AE41-45F1-85C7-AA4A3A9146D3}.Debug|Win32.Build.0 = Debug|Win32
+		{317E8A67-AE41-45F1-85C7-AA4A3A9146D3}.Release|Win32.ActiveCfg = Release|Win32
+		{317E8A67-AE41-45F1-85C7-AA4A3A9146D3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
