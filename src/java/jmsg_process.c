@@ -14,14 +14,7 @@
 #include "jmsg.h"
 #include "jxbt_utilities.h"
 
-#ifndef JAVA_SIMGRID
-#define JAVA_SIMGRID
-#endif 
-
-
-#include "xbt/context_private.h"
-
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+#include "xbt/xbt_jcontext.h"
 
 
 jobject
@@ -194,7 +187,7 @@ jprocess_schedule(xbt_context_t context) {
 	if(!id)
 		return;
 	
-	(*env)->CallVoidMethod(env,context->jprocess,id);
+	(*env)->CallVoidMethod(env,((xbt_jcontext_t)context)->jprocess,id);
 }
 
 
@@ -212,6 +205,6 @@ jprocess_unschedule(xbt_context_t context) {
 	if(!id)
 		return;
 	
-	(*env)->CallVoidMethod(env,context->jprocess,id);
+	(*env)->CallVoidMethod(env,((xbt_jcontext_t)context)->jprocess,id);
 }
 

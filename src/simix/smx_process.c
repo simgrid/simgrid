@@ -135,23 +135,24 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
   simdata->argc = 0;
   simdata->argv = NULL;
 
-  simdata->context = xbt_context_new(name,NULL, NULL, NULL,
+ 
+  simdata->context = xbt_context_new(name,NULL, NULL, jprocess,
 				     simix_global->
 				     cleanup_process_function, process,
 				     /* argc/argv */ 0, NULL);
-
+	
   /* Process structure */
   process->name = xbt_strdup(name);
   process->simdata = simdata;
   process->data = data;
-  SIMIX_process_set_jprocess(process, jprocess);
-  SIMIX_process_set_jenv(process, jenv);
 
   xbt_swag_insert(process, host->simdata->process_list);
 
   /* fix current_process, about which xbt_context_start mocks around */
   self = simix_global->current_process;
+ 
   xbt_context_start(process->simdata->context);
+ 
   simix_global->current_process = self;
 
   xbt_swag_insert(process, simix_global->process_list);
@@ -388,25 +389,3 @@ int SIMIX_process_is_suspended(smx_process_t process)
 }
 
 
-/* Helper functions for jMSG: manipulate the context data without breaking the module separation */
-#include "xbt/context.h"	/* to pass java objects from MSG to the context */
-
-void SIMIX_process_set_jprocess(smx_process_t process, void *jp)
-{
-  xbt_context_set_jprocess(process->simdata->context, jp);
-}
-
-void *SIMIX_process_get_jprocess(smx_process_t process)
-{
-  return xbt_context_get_jprocess(process->simdata->context);
-}
-
-void SIMIX_process_set_jenv(smx_process_t process, void *je)
-{
-  xbt_context_set_jenv(process->simdata->context, je);
-}
-
-void *SIMIX_process_get_jenv(smx_process_t process)
-{
-  return xbt_context_get_jenv(process->simdata->context);
-}

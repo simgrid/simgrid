@@ -454,7 +454,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
   res = xbt_malloc(len);
   p=res;
   xbt_dynar_foreach(dyn,cpt,cursor) {
-    if (cpt<dyn_len-1)
+    if ((int)cpt<dyn_len-1)
       p+=sprintf(p,"%s%s",cursor,sep);    
     else
       p+=sprintf(p,"%s",cursor);    

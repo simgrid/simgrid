@@ -49,7 +49,7 @@ static xbt_dynar_t surf_file_to_parse_stack = NULL;
 static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t);
 
 YY_BUFFER_STATE surf_input_buffer;
-FILE *surf_file_to_parse;
+FILE *surf_file_to_parse = NULL;
 
 void make_route_table(void)
 {
@@ -359,6 +359,6 @@ void parse_route_elem(void)
 void parse_platform_file(const char* file)
 {
   surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
+  xbt_assert1((!(*surf_parse)()), "Parse error in %s", file);
   surf_parse_close();
 }

@@ -174,7 +174,7 @@ static void parse_route_set_route(void)
   }
 }
 
-static void add_loopback()
+static void add_loopback(void)
 {
   int i;
   /* Adding loopback if needed */
@@ -191,13 +191,14 @@ static void add_loopback()
     }
 }
 
-static void add_route()
+static void add_route(void)
 {
   xbt_ex_t e;
   int nb_link = 0;
   unsigned int cpt = 0;    
   int link_list_capacity = 0;
   link_CM02_t *link_list = NULL;
+  char* link;
 
   if (routing_table == NULL) create_routing_table();
 
@@ -207,7 +208,7 @@ static void add_route()
   src_id = atoi(xbt_dynar_get_as(keys, 0, char*));
   dst_id = atoi(xbt_dynar_get_as(keys, 1, char*));
  
-  char* link = NULL;
+  link = NULL;
   xbt_dynar_foreach (links, cpt, link) {
       TRY {
 	link_list[nb_link++] = xbt_dict_get(link_set, link);
@@ -228,15 +229,15 @@ static void count_hosts(void)
 static void define_callbacks(const char *file)
 {
   /* Figuring out the network links */
-  surfxml_add_callback(STag_surfxml_host_cb_list, &count_hosts);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-  surfxml_add_callback(STag_surfxml_platform_cb_list, &init_route_table);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
+  surfxml_add_callback(STag_surfxml_host_cb_list, count_hosts);
+  surfxml_add_callback(STag_surfxml_link_cb_list, parse_link_init);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
+  surfxml_add_callback(STag_surfxml_route_cb_list, parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, parse_route_set_route);
+  surfxml_add_callback(STag_surfxml_platform_cb_list, init_route_table);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, add_route);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, add_loopback);
 }
 
 static void *name_service(const char *name)

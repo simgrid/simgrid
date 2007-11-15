@@ -94,14 +94,12 @@ public final class ApplicationHandler extends DefaultHandler
 		public void createProcess(){
 			try {
 				
-				System.out.println("Create process " + function + " on the host " + hostName);
 	    		Class cls = Class.forName(this.function);
 	    		simgrid.msg.Process process = (simgrid.msg.Process)cls.newInstance();
 	    		process.name = process.getName(); //this.function;
 	    		process.id = simgrid.msg.Process.nextProcessId++;
 	    		Host host = Host.getByName(this.hostName);
 	    		Msg.processCreate(process,host);
-	    		
 	    		Vector args = processFactory.args;
 	    		int size = args.size();
 	    		

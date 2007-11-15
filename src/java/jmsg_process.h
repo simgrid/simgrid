@@ -15,7 +15,7 @@
 
 #include <jni.h>
 #include "msg/msg.h"
-#include "xbt/context.h"
+#include "xbt/xbt_context.h"
 
 /**
  * This function returns a global reference to the  java process instance 

@@ -15,8 +15,6 @@
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
-
 jobject jhost_new_instance(JNIEnv* env) {
 	
   jclass cls = jxbt_get_class(env,"simgrid/msg/Host");	

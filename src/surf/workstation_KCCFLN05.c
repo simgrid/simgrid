@@ -1165,7 +1165,7 @@ static void parse_route_set_route(void)
   }
 }
 
-static void add_loopback()
+static void add_loopback(void)
 {
   int i;
   /* Adding loopback if needed */
@@ -1183,13 +1183,14 @@ static void add_loopback()
   }
 }
 
-static void add_route()
+static void add_route(void)
 {  
   xbt_ex_t e;
   int nb_link = 0;
   unsigned int cpt = 0;    
   int link_list_capacity = 0;
   link_KCCFLN05_t *link_list = NULL;
+  char* link;
 
   if (routing_table == NULL) create_routing_table();
 
@@ -1203,7 +1204,7 @@ static void add_route()
   impact_on_src_with_other_recv = atof(xbt_dynar_get_as(keys, 4, char*));
   impact_on_dst_with_other_send = atof(xbt_dynar_get_as(keys, 5, char*));
 
-  char* link = NULL;
+  link = NULL;
   xbt_dynar_foreach (links, cpt, link) {
       TRY {
         link_list[nb_link++] = xbt_dict_get(link_set, link);
@@ -1224,16 +1225,16 @@ static void define_callbacks(const char *file)
 				   
   /* Adding callback functions */
   surf_parse_reset_parser();
-  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(STag_surfxml_router_cb_list, &parse_routers);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-  surfxml_add_callback(STag_surfxml_platform_cb_list, &init_route_table);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
+  surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
+  surfxml_add_callback(STag_surfxml_router_cb_list, parse_routers);
+  surfxml_add_callback(STag_surfxml_link_cb_list, parse_link_init);
+  surfxml_add_callback(STag_surfxml_route_cb_list, parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, parse_route_set_route);
+  surfxml_add_callback(STag_surfxml_platform_cb_list, init_route_table);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, add_route);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, add_loopback);
 }
 
 /**************************************/

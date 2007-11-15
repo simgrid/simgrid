@@ -16,8 +16,6 @@
 #include "xbt/str.h"
 #include "jxbt_utilities.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
-
 /* *********** */
 /* JNI GETTERS */
 /* *********** */

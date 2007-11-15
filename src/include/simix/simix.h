@@ -151,12 +151,6 @@ XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(char * name,
 
 void SIMIX_display_process_status(void);
 
-/* Helper functions for jMSG: manipulate the context data without breaking the module separation */
-void  SIMIX_process_set_jprocess(smx_process_t process, void *jp);
-void* SIMIX_process_get_jprocess(smx_process_t process);
-void  SIMIX_process_set_jenv(smx_process_t process, void *je);
-void* SIMIX_process_get_jenv(smx_process_t process);
-
 
 SG_END_DECL()
 

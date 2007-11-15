@@ -29,6 +29,8 @@ get_current_thread_env(void);
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_Msg_processCreate(JNIEnv* env,jclass cls,jobject jprocess,jobject jhost);
 
+
+
 /*
  * Class		simgrid_msg_Msg
  * Method		processSuspend
@@ -456,5 +458,9 @@ Java_simgrid_msg_Msg_createEnvironment(JNIEnv* env, jclass cls,jstring jplatform
 
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_Msg_platformLoad(JNIEnv* env, jclass cls, jobject jplatform);
+
+
+JNIEXPORT void JNICALL 
+Java_simgrid_msg_Msg_selectContextFactory(JNIEnv *, jclass, jstring);
 
 #endif /* !MSG4JAVA_H */ 

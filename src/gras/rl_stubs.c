@@ -11,6 +11,6 @@
 #include "xbt_modinter.h"
 #include "xbt/sysdep.h"
 
-void xbt_context_init(void) {}
+void xbt_context_mod_init(void) {}
    
-void xbt_context_exit(void) {}
+void xbt_context_mod_exit(void) {}

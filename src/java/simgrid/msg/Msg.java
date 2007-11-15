@@ -83,15 +83,24 @@ public final class Msg {
      */
     static {
         try {
-            System.loadLibrary("simgrid4java");
+            System.loadLibrary("simgrid");
+            Msg.selectContextFactory("jcontext_factory");
+        } catch(NativeException e)
+        {
+   		  System.err.println(e.toString());
+   		  e.printStackTrace();
+   		  System.exit(1);
         } catch(UnsatisfiedLinkError e){
-            System.err.println("Cannot load simgrid4java library : ");
+            System.err.println("Cannot load simgrid library : ");
             e.printStackTrace();
 	    System.err.println("Please check your LD_LIBRARY_PATH, "+
 			       "or copy the library to the current directory");
 	    System.exit(1);
         }
     }
+    
+    final static native 
+    void selectContextFactory(String name) throws NativeException;
     
     /******************************************************************
      * The natively implemented methods connected to the MSG Process  *

@@ -12,7 +12,7 @@
 #include "msg/msg.h"
 #include "msg/private.h"
 #include "simix/private.h"
-#include "java/jxbt_context.h"
+#include "xbt/xbt_context_private.h"
 
 #include "jmsg_process.h"
 #include "jmsg_host.h"
@@ -21,11 +21,12 @@
 #include "jmsg_channel.h"
 #include "jxbt_utilities.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg,"MSG for Java(TM)");
-
 #include "jmsg.h"
 
 static JavaVM * __java_vm = NULL;
+
+static jobject
+native_to_java_process(m_process_t process);
 
 JavaVM *
 get_java_VM(void) {
@@ -39,6 +40,12 @@ get_current_thread_env(void) {
     (*__java_vm)->AttachCurrentThread(__java_vm, (void **)&env, NULL);
 
 	 return env;
+}
+
+static jobject
+native_to_java_process(m_process_t process)
+{
+	return ((xbt_jcontext_t)(process->simdata->s_process->simdata->context))->jprocess;	
 }
 
 
@@ -108,6 +115,8 @@ Java_simgrid_msg_Msg_processCreate(JNIEnv* env, jclass cls, jobject jprocess_arg
 			/*data*/ (void*)process,
 			jprocess,env,
 			&process->simdata->s_process);
+
+  
   DEBUG1("context created (s_process=%p)",process->simdata->s_process);
 
 
@@ -176,7 +185,7 @@ Java_simgrid_msg_Msg_processKill(JNIEnv* env, jclass cls, jobject jprocess) {
   }
 
   /* delete the global reference */
-  jprocess_delete_global_ref(SIMIX_process_get_jprocess(process->simdata->s_process),env);
+  jprocess_delete_global_ref(native_to_java_process(process),env);
 	
   /* kill the native process (this wrapper is call by the destructor of the java 
    * process instance)
@@ -216,12 +225,12 @@ Java_simgrid_msg_Msg_processFromPID(JNIEnv* env, jclass cls, jint PID) {
     return NULL;
   }
 
-  if(!SIMIX_process_get_jprocess(process->simdata->s_process)) {
+  if(!native_to_java_process(process)) {
     jxbt_throw_native(env, xbt_strdup("SIMIX_process_get_jprocess() failed"));
     return NULL;
   }
 
-  return (jobject)SIMIX_process_get_jprocess(process->simdata->s_process);
+  return (jobject)(native_to_java_process(process));
 }
 
 
@@ -260,7 +269,7 @@ Java_simgrid_msg_Msg_processSelf(JNIEnv* env, jclass cls) {
     return NULL;
   }
 
-  jprocess = SIMIX_process_get_jprocess(process->simdata->s_process);
+  jprocess = native_to_java_process(process);
 
   if(!jprocess)
     jxbt_throw_native(env, xbt_strdup("SIMIX_process_get_jprocess() failed"));
@@ -583,7 +592,7 @@ Java_simgrid_msg_Msg_taskGetSender(JNIEnv* env , jclass cls , jobject jtask) {
   }
 	
   process = MSG_task_get_sender(task);
-  return SIMIX_process_get_jprocess(process->simdata->s_process);
+  return (jobject)native_to_java_process(process);
 }
 
 JNIEXPORT jobject JNICALL 
@@ -600,7 +609,7 @@ Java_simgrid_msg_Msg_parallelTaskGetSender(JNIEnv* env , jclass cls , jobject jt
 	
   process = MSG_task_get_sender(task);
 	
-  return SIMIX_process_get_jprocess(process->simdata->s_process);
+  return (jobject)native_to_java_process(process);
 }
 
 JNIEXPORT jobject JNICALL 
@@ -1099,7 +1108,7 @@ Java_simgrid_msg_Msg_processExit(JNIEnv* env, jclass cls, jobject jprocess) {
     return;
   }
 
-  jcontext_exit(process->simdata->s_process->simdata->context,0,get_current_thread_env());
+  xbt_context_stop(0);
 }
 
 JNIEXPORT void JNICALL 
@@ -1160,4 +1169,20 @@ Java_simgrid_msg_Msg_allHosts(JNIEnv * env, jclass cls_arg) {
   return jtable;
 }
 
+
+JNIEXPORT void JNICALL 
+Java_simgrid_msg_Msg_selectContextFactory(JNIEnv * env, jclass class,jstring jname)
+{
+	int rv;
+	
+	/* get the C string from the java string*/
+	const char* name = (*env)->GetStringUTFChars(env, jname, 0);
+
+	rv = xbt_context_select_factory(name);
+		
+	(*env)->ReleaseStringUTFChars(env, jname, name);
+	
+	if(rv)
+		jxbt_throw_native(env, xbt_strdup("xbt_select_context_factory() failed"));	 
+}
   

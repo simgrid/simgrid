@@ -379,7 +379,11 @@ FILE *surf_fopen(const char *name, const char *mode)
 	path_name_len = strlen(path) + strlen(name) + 1;	/* plus '/' */
 	path_name = xbt_realloc(path_name, path_name_len + 1);
       }
+      #ifdef WIN32
+      sprintf(path_name, "%s\\%s", path, name);
+      #else
       sprintf(path_name, "%s/%s", path, name);
+      #endif
       file = fopen(path_name, mode);
       if (file)
 	return file;

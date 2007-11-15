@@ -43,7 +43,7 @@ void MSG_global_init_args(int *argc, char **argv)
  */
 void MSG_global_init(int *argc, char **argv)
 {
-  xbt_getpid = &MSG_process_self_PID;
+  xbt_getpid = MSG_process_self_PID;
   if (!msg_global) {
     SIMIX_global_init(argc, argv);
 
