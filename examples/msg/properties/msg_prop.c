@@ -27,21 +27,26 @@ int master(int argc, char *argv[])
 {
   int slaves_count = 0;
   m_host_t *slaves = NULL;
-
+  xbt_dict_t props; 
+  xbt_dict_cursor_t cursor=NULL;
   int i;
+  char *key,*data;
+  const char *noexist="Unknown";
+  const char*value;
+  char exist[]="Hdd";
 
   {                  /* Process organisation */
     slaves_count = argc - 4;
     slaves = xbt_new(m_host_t, sizeof(m_host_t) * slaves_count);
-    xbt_dict_t props;    
+      
     for (i = 4; i < argc; i++) {     
       slaves[i-4] = MSG_get_host_by_name(argv[i]);
       xbt_assert1(slaves[i-4]!=NULL, "Unknown host %s. Stopping Now! ", argv[i]);
 
       /* Get the property list of the host */
       props = MSG_host_get_properties(slaves[i-4]);
-      xbt_dict_cursor_t cursor=NULL;
-      char *key,*data;
+     
+      
 
       /* Print the properties of the host */
       xbt_dict_foreach(props,cursor,key,data) {
@@ -49,8 +54,8 @@ int master(int argc, char *argv[])
       }
 
      /* Try to get a property that does not exist */
-     const char *noexist="Unknown";
-     const char*value = MSG_host_get_property_value(slaves[i-4], noexist);
+     
+     value = MSG_host_get_property_value(slaves[i-4], noexist);
      if ( value == NULL) 
        INFO2("Property: %s for host %s is undefined", noexist, argv[i]);
      else
@@ -58,7 +63,7 @@ int master(int argc, char *argv[])
 
       /* Modify an existing property test. First check it exists */\
       INFO0("Trying to modify a host property");
-      char exist[]="Hdd";
+      
       value = MSG_host_get_property_value(slaves[i-4],exist);
       xbt_assert1(value,"\tProperty %s is undefined", exist);
       INFO2("\tProperty: %s old value: %s", exist, value);
@@ -82,6 +87,8 @@ int slave(int argc, char *argv[])
   xbt_dict_t props = MSG_process_get_properties(MSG_process_self());
   xbt_dict_cursor_t cursor=NULL;
   char *key,*data;
+  const char *noexist="UnknownProcessProp";
+  const char *value;
 
   /* Print the properties of the process */
   xbt_dict_foreach(props,cursor,key,data) {
@@ -89,8 +96,8 @@ int slave(int argc, char *argv[])
   }
 
   /* Try to get a property that does not exist */
-  const char *noexist="UnknownProcessProp";
-  const char *value = MSG_process_get_property_value(MSG_process_self(),noexist);
+ 
+  value = MSG_process_get_property_value(MSG_process_self(),noexist);
   if ( value == NULL) 
     INFO2("Property: %s for process %s is undefined", noexist, MSG_process_get_name(MSG_process_self()));
   else

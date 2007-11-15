@@ -9,6 +9,25 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
 
 int main(int argc, char **argv) {
   int i;
+  const char * platform_file;
+  const SD_workstation_t *workstations;
+  const char *name1;
+  const char *name2;
+  double computation_amount1;
+  double computation_amount2;
+  double communication_amount12;
+  double communication_amount21;
+  const SD_link_t *route;
+  int route_size;
+  SD_task_t task, taskA, taskB, taskC, taskD;
+  SD_task_t *changed_tasks;
+  xbt_ex_t ex;
+  const int workstation_number = 2;
+  SD_workstation_t workstation_list[2];
+  double computation_amount[2];
+  double communication_amount[4] = {0};
+  double rate = -1.0;
+  SD_workstation_t w1, w2;
 
   /* initialisation of SD */
   SD_init(&argc, argv);
@@ -22,28 +41,28 @@ int main(int argc, char **argv) {
   }
 
   /* creation of the environment */
-  const char * platform_file = argv[1];
+  platform_file = argv[1];
   SD_create_environment(platform_file);
 
   /* test the estimation functions */
-  const SD_workstation_t *workstations = SD_workstation_get_list();
-  SD_workstation_t w1 = workstations[0];
-  SD_workstation_t w2 = workstations[1];
+  workstations = SD_workstation_get_list();
+  w1 = workstations[0];
+  w2 = workstations[1];
   SD_workstation_set_access_mode(w2, SD_WORKSTATION_SEQUENTIAL_ACCESS);
-  const char *name1 = SD_workstation_get_name(w1);
-  const char *name2 = SD_workstation_get_name(w2);
-  const double computation_amount1 = 2000000;
-  const double computation_amount2 = 1000000;
-  const double communication_amount12 = 2000000;
-  const double communication_amount21 = 3000000;
+  name1 = SD_workstation_get_name(w1);
+  name2 = SD_workstation_get_name(w2);
+  computation_amount1 = 2000000;
+  computation_amount2 = 1000000;
+  communication_amount12 = 2000000;
+  communication_amount21 = 3000000;
   INFO3("Computation time for %f flops on %s: %f", computation_amount1, name1,
 	SD_workstation_get_computation_time(w1, computation_amount1));
   INFO3("Computation time for %f flops on %s: %f", computation_amount2, name2,
 	SD_workstation_get_computation_time(w2, computation_amount2));
 
   INFO2("Route between %s and %s:", name1, name2);
-  const SD_link_t *route = SD_route_get_list(w1, w2);
-  int route_size = SD_route_get_size(w1, w2);
+  route = SD_route_get_list(w1, w2);
+  route_size = SD_route_get_size(w1, w2);
   for (i = 0; i < route_size; i++) {
     INFO3("\tLink %s: latency = %f, bandwidth = %f", SD_link_get_name(route[i]),
 	  SD_link_get_current_latency(route[i]), SD_link_get_current_bandwidth(route[i]));
@@ -56,10 +75,10 @@ int main(int argc, char **argv) {
 	SD_route_get_communication_time(w2, w1, communication_amount21));
 
   /* creation of the tasks and their dependencies */
-  SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
-  SD_task_t taskB = SD_task_create("Task B", NULL, 40.0);
-  SD_task_t taskC = SD_task_create("Task C", NULL, 30.0);
-  SD_task_t taskD = SD_task_create("Task D", NULL, 60.0);
+  taskA = SD_task_create("Task A", NULL, 10.0);
+  taskB = SD_task_create("Task B", NULL, 40.0);
+  taskC = SD_task_create("Task C", NULL, 30.0);
+  taskD = SD_task_create("Task D", NULL, 60.0);
   
 
   SD_task_dependency_add(NULL, NULL, taskB, taskA);
@@ -68,7 +87,7 @@ int main(int argc, char **argv) {
   SD_task_dependency_add(NULL, NULL, taskD, taskC);
   /*  SD_task_dependency_add(NULL, NULL, taskA, taskD); /\* deadlock */
 
-  xbt_ex_t ex;
+  
 
   TRY {
     SD_task_dependency_add(NULL, NULL, taskA, taskA); /* shouldn't work and must raise an exception */
@@ -120,19 +139,16 @@ int main(int argc, char **argv) {
   
 
   /* scheduling parameters */
-
-  const int workstation_number = 2;
-  const SD_workstation_t workstation_list[] = {w1, w2};
-  double computation_amount[] = {computation_amount1, computation_amount2};
-  double communication_amount[] =
-    {
-      0, communication_amount12,
-      communication_amount21, 0
-    };
-  double rate = -1.0;
+  workstation_list[0] = w1;
+  workstation_list[1] = w2;
+  computation_amount[0] = computation_amount1;
+  computation_amount[1] = computation_amount2;
+  
+  communication_amount[1] = communication_amount12;
+  communication_amount[2] = communication_amount21;
 
   /* estimated time */
-  SD_task_t task = taskD;
+  task = taskD;
   INFO2("Estimated time for '%s': %f", SD_task_get_name(task),
 	SD_task_get_execution_time(task, workstation_number, workstation_list,
 				   computation_amount, communication_amount, rate));
@@ -147,8 +163,6 @@ int main(int argc, char **argv) {
 		   computation_amount, communication_amount, rate);
   SD_task_schedule(taskD, workstation_number, workstation_list,
 		   computation_amount, communication_amount, rate);
-
-  SD_task_t *changed_tasks;
 
   changed_tasks = SD_simulate(-1.0);
   for (i = 0; changed_tasks[i] != NULL; i++) {

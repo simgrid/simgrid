@@ -17,6 +17,37 @@ static int nameCompareHosts(const void *n1, const void *n2)
 int main(int argc, char **argv) {
   int i,j;
   SD_task_t *changed_tasks;
+  int n_hosts;
+  const SD_workstation_t * hosts;
+  SD_task_t taskInit;
+  SD_task_t PtoPComm1;
+  SD_task_t PtoPComm2;
+  SD_task_t ParComp_wocomm;
+  SD_task_t IntraRedist;
+  SD_task_t ParComp_wcomm1;
+  SD_task_t InterRedist;
+  SD_task_t taskFinal;
+  SD_task_t ParComp_wcomm2;
+  const double no_cost[] = {1.0, 1.0};
+  SD_workstation_t PtoPcomm1_hosts[2];
+  SD_workstation_t PtoPcomm2_hosts[2];
+  double PtoPcomm1_table[] = { 0, 12500000, 0, 0 }; /* 100Mb */
+  double PtoPcomm2_table[] = { 0, 1250000, 0, 0 }; /* 10Mb */
+  double ParComp_wocomm_cost[] = {1e+9,1e+9,1e+9,1e+9,1e+9}; /* 1 Gflop per Proc */
+  double *ParComp_wocomm_table;
+  SD_workstation_t ParComp_wocomm_hosts[5];
+  double *IntraRedist_cost;
+  double *IntraRedist_table;
+  SD_workstation_t IntraRedist_hosts[5];
+  double ParComp_wcomm1_cost[] = {1e+9,1e+9,1e+9,1e+9,1e+9}; /* 1 Gflop per Proc */
+  double *ParComp_wcomm1_table;
+  SD_workstation_t ParComp_wcomm1_hosts[5];
+  double *InterRedist_cost;
+  double *InterRedist_table;
+  double ParComp_wcomm2_cost[] = {1e+8,1e+8,1e+8,1e+8,1e+8}; /* 1 Gflop per Proc (0.02sec duration) */
+  SD_workstation_t ParComp_wcomm2_hosts[5];
+  double final_cost = 5e+9;
+  double *ParComp_wcomm2_table;
  
   /* initialisation of SD */
   SD_init(&argc, argv);
@@ -25,23 +56,24 @@ int main(int argc, char **argv) {
   SD_create_environment(argv[1]);
 
   /* getting platform infos */
-  int n_hosts = SD_workstation_get_number();
-  const SD_workstation_t * hosts= SD_workstation_get_list();
+  n_hosts = SD_workstation_get_number();
+  hosts= SD_workstation_get_list();
 
   /* sorting hosts by hostname */
   qsort((void *)hosts,n_hosts,
 	sizeof(SD_workstation_t),nameCompareHosts);
 
   /* creation of the tasks */
-  SD_task_t taskInit = SD_task_create("Initial",NULL,1.0);
-  SD_task_t PtoPComm1 = SD_task_create("PtoP Comm 1", NULL, 1.0);
-  SD_task_t PtoPComm2 = SD_task_create("PtoP Comm 2", NULL, 1.0);
-  SD_task_t ParComp_wocomm =  SD_task_create("Par Comp without comm", NULL, 1.0);
-  SD_task_t IntraRedist =  SD_task_create("intra redist", NULL, 1.0);
-  SD_task_t ParComp_wcomm1 =  SD_task_create("Par Comp with comm 1", NULL, 1.0);
-  SD_task_t InterRedist =  SD_task_create("inter redist", NULL, 1.0);
-  SD_task_t taskFinal = SD_task_create("Final",NULL,1.0);
-  SD_task_t ParComp_wcomm2 =  SD_task_create("Par Comp with comm 2", NULL, 1.0);
+  taskInit = SD_task_create("Initial",NULL,1.0);
+  PtoPComm1 = SD_task_create("PtoP Comm 1", NULL, 1.0);
+  PtoPComm2 = SD_task_create("PtoP Comm 2", NULL, 1.0);
+  ParComp_wocomm =  SD_task_create("Par Comp without comm", NULL, 1.0);
+  IntraRedist =  SD_task_create("intra redist", NULL, 1.0);
+  ParComp_wcomm1 =  SD_task_create("Par Comp with comm 1", NULL, 1.0);
+  InterRedist =  SD_task_create("inter redist", NULL, 1.0);
+  taskFinal = SD_task_create("Final",NULL,1.0);
+  ParComp_wcomm2 =  SD_task_create("Par Comp with comm 2", NULL, 1.0);
+  
   
   /* creation of the dependencies */
   SD_task_dependency_add(NULL, NULL, taskInit, PtoPComm1);
@@ -54,22 +86,20 @@ int main(int argc, char **argv) {
   SD_task_dependency_add(NULL, NULL, ParComp_wcomm2, taskFinal);
   SD_task_dependency_add(NULL, NULL, PtoPComm2, taskFinal);
   
+  
   /* scheduling parameters */
   
-  const double no_cost[] = {1.0, 1.0};
-  
   /* large point-to-point communication (0.1 sec duration) */ 
-  double PtoPcomm1_table[] = { 0, 12500000, 0, 0 }; /* 100Mb */
-  SD_workstation_t PtoPcomm1_hosts[] = {hosts[0],hosts[1]};
+  PtoPcomm1_hosts[0] = hosts[0];
+  PtoPcomm1_hosts[1]  =hosts[1];
 
   /* small point-to-point communication (0.01 sec duration) */ 
-  double PtoPcomm2_table[] = { 0, 1250000, 0, 0 }; /* 10Mb */
-  SD_workstation_t PtoPcomm2_hosts[] = {hosts[0],hosts[2]};
+  PtoPcomm2_hosts[0] = hosts[0];
+  PtoPcomm2_hosts[1] = hosts[2];
  
   /* parallel task without intra communications (1 sec duration) */
-  double ParComp_wocomm_cost[] = {1e+9,1e+9,1e+9,1e+9,1e+9}; /* 1 Gflop per Proc */
-  double *ParComp_wocomm_table = (double*) calloc (25, sizeof(double));
-  SD_workstation_t ParComp_wocomm_hosts[5];
+  ParComp_wocomm_table = (double*) calloc (25, sizeof(double));
+
   for (i=0; i<5;i++){
     ParComp_wocomm_hosts[i]=hosts[i];
   }
@@ -77,8 +107,8 @@ int main(int argc, char **argv) {
   /* redistribution within a cluster (small latencies) */
   /* each host send (4*2.5Mb =) 10Mb */
   /* bandwidth is shared between 5 flows (0.05sec duration) */
-  double *IntraRedist_cost = (double*) calloc (5, sizeof(double));
-  double *IntraRedist_table = (double*) calloc (25, sizeof(double));
+  IntraRedist_cost = (double*) calloc (5, sizeof(double));
+  IntraRedist_table = (double*) calloc (25, sizeof(double));
   for (i=0;i<5;i++){
     for (j=0;j<5;j++){
       if (i==j) 
@@ -88,16 +118,14 @@ int main(int argc, char **argv) {
     }
   }
 
-  SD_workstation_t IntraRedist_hosts[5];
   for (i=0; i<5;i++){
     IntraRedist_hosts[i]=hosts[i];
   }
   
   /* parallel task with intra communications */
   /* Computation domination (1 sec duration) */
-  double ParComp_wcomm1_cost[] = {1e+9,1e+9,1e+9,1e+9,1e+9}; /* 1 Gflop per Proc */
-  double *ParComp_wcomm1_table = (double*) calloc (25, sizeof(double));
-  SD_workstation_t ParComp_wcomm1_hosts[5];
+  ParComp_wcomm1_table = (double*) calloc (25, sizeof(double));
+  
   for (i=0; i<5;i++){
     ParComp_wcomm1_hosts[i]=hosts[i];
   }
@@ -113,17 +141,17 @@ int main(int argc, char **argv) {
   
   /* inter cluster redistribution (big latency on the backbone) */
   /* (0.5sec duration without latency impact)*/
-  double *InterRedist_cost = (double*) calloc (10, sizeof(double));
-  double *InterRedist_table = (double*) calloc (100, sizeof(double));
+  InterRedist_cost = (double*) calloc (10, sizeof(double));
+  InterRedist_table = (double*) calloc (100, sizeof(double));
   for (i=0;i<5;i++){
     InterRedist_table[i*10+i+5] = 1250000.; /* 10Mb */
   }
 
   /* parallel task with intra communications */
   /* Communication domination (0.1 sec duration) */
-  double ParComp_wcomm2_cost[] = {1e+8,1e+8,1e+8,1e+8,1e+8}; /* 1 Gflop per Proc (0.02sec duration) */
-  double *ParComp_wcomm2_table = (double*) calloc (25, sizeof(double));
-  SD_workstation_t ParComp_wcomm2_hosts[5];
+  
+  ParComp_wcomm2_table = (double*) calloc (25, sizeof(double));
+  
   for (i=0; i<5;i++){
     ParComp_wcomm2_hosts[i]=hosts[i+5];
   }
@@ -138,7 +166,7 @@ int main(int argc, char **argv) {
   }
   
   /* Sequential task */
-  double final_cost = 5e+9;
+  
 
   /* scheduling the tasks */
   SD_task_schedule(taskInit, 1, hosts, no_cost, no_cost, -1.0);
