@@ -342,7 +342,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t           state,
        
     } else {
       VERB1("Array of %ld stuff, copy it in one after the other",array_count);
-      for (cpt=0; cpt<array_count; cpt++) {
+      for (cpt=0; cpt<(unsigned int)array_count; cpt++) {
 	VERB2("Copy the %dth stuff out of %ld",cpt,array_count);
 	count += gras_datadesc_memcpy_rec(state,refs, sub_type, src_ptr, dst_ptr, 0,
 					detect_cycle || sub_type->cycle);
