@@ -3,6 +3,7 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/xbt_context.h"
+#include "xbt/swag.h"
 
 SG_BEGIN_DECL()
 
@@ -41,17 +42,22 @@ typedef struct s_xbt_context
 	XBT_CTX_BASE_T;
 }s_xbt_context_t;
 
+/* Important guys */
+extern xbt_context_t current_context;
+extern xbt_context_t maestro_context;
+/* All dudes lists */
+extern xbt_swag_t context_living;
+extern xbt_swag_t context_to_destroy;
+
+
+/* All factories init */
+typedef struct s_xbt_context_factory* xbt_context_factory_t;
+
+int xbt_thread_context_factory_init(xbt_context_factory_t* factory);
+int xbt_ucontext_factory_init(xbt_context_factory_t* factory);
+int xbt_jcontext_factory_init(xbt_context_factory_t* factory);
+
+
 SG_END_DECL()
-	
-
-#ifdef CONTEXT_THREADS
-#include "xbt_thread_context.h"	/* thread based context declarations 		*/
-#elif !defined(WIN32)
-#include "xbt_ucontext.h"		/* ucontext based context declarations		*/
-#else
-#error ERROR [__FILE__, line __LINE__]: no context based implementation specified.
-#endif
-
-#include "xbt_jcontext.h"		/* java thread based context declarations	*/	
 
 #endif /* !_XBT_CONTEXT_PRIVATE_H */

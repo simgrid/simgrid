@@ -15,6 +15,8 @@
 #include "jmsg_parallel_task.h"
 #include "jxbt_utilities.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+
 jobject
 jparallel_task_ref(JNIEnv* env, jobject jparallel_task) {
   jobject newref = (*env)->NewGlobalRef(env,jparallel_task); 

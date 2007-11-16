@@ -12,7 +12,8 @@
 #include "msg/msg.h"
 #include "msg/private.h"
 #include "simix/private.h"
-#include "xbt/xbt_context_private.h"
+#include "xbt/xbt_jcontext.h"
+#include "xbt/xbt_context_factory.h"
 
 #include "jmsg_process.h"
 #include "jmsg_host.h"
@@ -22,6 +23,8 @@
 #include "jxbt_utilities.h"
 
 #include "jmsg.h"
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 static JavaVM * __java_vm = NULL;
 

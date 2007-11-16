@@ -1,5 +1,7 @@
 
 #include "xbt/function_types.h"
+#include "xbt/xbt_context_factory.h"
+#include "xbt/xbt_thread_context.h"
 
 static xbt_context_t 
 xbt_thread_context_factory_create_context(const char* name, xbt_main_func_t code, void_f_pvoid_t startup_func, void* startup_arg, void_f_pvoid_t cleanup_func, void* cleanup_arg, int argc, char** argv);

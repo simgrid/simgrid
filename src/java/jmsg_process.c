@@ -16,6 +16,7 @@
 
 #include "xbt/xbt_jcontext.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 jobject
 jprocess_new_global_ref(jobject jprocess,JNIEnv* env) {

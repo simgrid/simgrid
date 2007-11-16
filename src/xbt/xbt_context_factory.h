@@ -27,11 +27,6 @@ typedef struct s_xbt_context_factory
 	
 }s_xbt_context_factory_t;
 
-#ifndef _XBT_CONTEXT_FACTORY_T_DEFINED
-typedef struct s_xbt_context_factory* xbt_context_factory_t;
-#define _XBT_CONTEXT_FACTORY_T_DEFINED
-#endif /* !_XBT_CONTEXT_FACTORY_T_DEFINED */
-
 /**
  * This function select a context factory associated with the name specified by
  * the parameter name.

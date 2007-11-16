@@ -173,9 +173,11 @@ SURF_SRC= \
   surf/workstation_KCCFLN05.c   surf/workstation_ptask_L07.c
 
 if CONTEXT_THREADS
-  SURF_SRC += xbt/xbt_os_thread.c
+  SURF_SRC += xbt/xbt_os_thread.c        \
+              xbt/xbt_thread_context.c  
 else  
-  SURF_SRC += xbt/xbt_os_thread_stubs.c
+  SURF_SRC += xbt/xbt_os_thread_stubs.c  \
+              xbt/xbt_ucontext.c
 endif
 
 GTNETS_SRC= \
@@ -212,6 +214,7 @@ MSG_SRC=  msg/msg_config.c \
   msg/global.c msg/environment.c msg/deployment.c 
 
 JMSG_C_SRC = \
+  xbt/xbt_jcontext.c \
   java/jxbt_utilities.c     java/jxbt_utilities.h      \
   java/jmsg.c               java/jmsg.h                \
   java/jmsg_channel.c       java/jmsg_channel.h        \
@@ -337,7 +340,10 @@ endif
 ## Java cruft
 
 EXTRA_DIST+=$(JMSG_JAVA_SRC)
+
 if HAVE_JAVA
+libsimgrid_la_SOURCES += $(JMSG_C_SRC) # add the binding support to the library
+
 clean-local:
 	-rm -rf .classes
 

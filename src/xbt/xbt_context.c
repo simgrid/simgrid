@@ -13,21 +13,17 @@
 #include "xbt_context_factory.h"
 
 /* the context associated with the current process 				*/
-static xbt_context_t 
-current_context = NULL;
+xbt_context_t current_context = NULL;
 
 /* the context associated with the maestro						*/
-static xbt_context_t 
-maestro_context = NULL;
+xbt_context_t  maestro_context = NULL;
 
 
 /* this list contains the contexts to destroy					*/
-static xbt_swag_t 
-context_to_destroy = NULL;
+xbt_swag_t context_to_destroy = NULL;
 
 /* this list contains the contexts in use						*/
-static xbt_swag_t 
-context_living = NULL;
+xbt_swag_t context_living = NULL;
 
 /* the context factory used to create the appropriate context	
  * each context implementation define its own context factory
@@ -41,18 +37,6 @@ context_living = NULL;
  */
 static xbt_context_factory_t
 context_factory = NULL;
-
-/* java implementation of the context */
-#include "xbt_jcontext.c"
-
-#ifdef CONTEXT_THREADS
-/* use the native thread implementation of the context */
-#include "xbt_thread_context.c"
-#elif !defined(WIN32)
-/* use the ucontext	based context		*/
-#  include "xbt_ucontext.c" 
-#endif 
-
 
 /**
  * This function is call by the xbt_init() function to initialize the context module.

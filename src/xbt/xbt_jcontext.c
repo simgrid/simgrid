@@ -2,17 +2,10 @@
 
 #include "xbt/function_types.h"
 #include "xbt/ex_interface.h"
+#include "xbt/xbt_context_factory.h"
+#include "xbt/xbt_jcontext.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg,"MSG for Java(TM)");
-
-#include "java/jmsg.c"
-#include "java/jmsg_channel.c"
-#include "java/jmsg_host.c"
-#include "java/jmsg_parallel_task.c"
-#include "java/jmsg_task.c"
-#include "java/jxbt_utilities.c"
-#include "java/jmsg_process.c"
-
 
 /* callback: context fetching */
 static ex_ctx_t*
