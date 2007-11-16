@@ -52,12 +52,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@CONTEXT_THREADS_TRUE@am__append_1 = xbt/xbt_os_thread.c        \
-@CONTEXT_THREADS_TRUE@              xbt/xbt_thread_context.c  
-
-@CONTEXT_THREADS_FALSE@am__append_2 = xbt/xbt_os_thread_stubs.c  \
-@CONTEXT_THREADS_FALSE@              xbt/xbt_ucontext.c
-
+@CONTEXT_THREADS_TRUE@am__append_1 = xbt/xbt_os_thread.c xbt/xbt_thread_context.c  
+@CONTEXT_THREADS_FALSE@am__append_2 = xbt/xbt_ucontext.c
 @HAVE_GTNETS_FALSE@am__append_3 = $(GTNETS_SRC)
 @HAVE_SDP_FALSE@am__append_4 = surf/sdp.c
 
@@ -137,8 +133,8 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	surf/surf.c surf/surfxml_parse.c surf/cpu.c surf/network.c \
 	surf/workstation.c surf/surf_timer.c \
 	surf/workstation_KCCFLN05.c surf/workstation_ptask_L07.c \
-	xbt/xbt_os_thread.c xbt/xbt_thread_context.c \
-	xbt/xbt_os_thread_stubs.c xbt/xbt_ucontext.c \
+	xbt/xbt_sg_stubs.c xbt/xbt_os_thread.c \
+	xbt/xbt_thread_context.c xbt/xbt_ucontext.c \
 	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
 	surf/gtnets/gtnets_interface.cc surf/network_gtnets.c \
 	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
@@ -172,12 +168,11 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	java/jmsg_process.h java/jmsg_task.c java/jmsg_task.h
 @CONTEXT_THREADS_TRUE@am__objects_6 = xbt_os_thread.lo \
 @CONTEXT_THREADS_TRUE@	xbt_thread_context.lo
-@CONTEXT_THREADS_FALSE@am__objects_7 = xbt_os_thread_stubs.lo \
-@CONTEXT_THREADS_FALSE@	xbt_ucontext.lo
+@CONTEXT_THREADS_FALSE@am__objects_7 = xbt_ucontext.lo
 am__objects_8 = maxmin.lo fair_bottleneck.lo lagrange.lo trace_mgr.lo \
 	surf.lo surfxml_parse.lo cpu.lo network.lo workstation.lo \
 	surf_timer.lo workstation_KCCFLN05.lo workstation_ptask_L07.lo \
-	$(am__objects_6) $(am__objects_7)
+	xbt_sg_stubs.lo $(am__objects_6) $(am__objects_7)
 am__objects_9 = gtnets_simulator.lo gtnets_topology.lo \
 	gtnets_interface.lo network_gtnets.lo
 @HAVE_GTNETS_TRUE@am__objects_10 = $(am__objects_9)
@@ -507,7 +502,7 @@ SURF_SRC = surf/maxmin.c surf/fair_bottleneck.c surf/lagrange.c \
 	surf/trace_mgr.c surf/surf.c surf/surfxml_parse.c surf/cpu.c \
 	surf/network.c surf/workstation.c surf/surf_timer.c \
 	surf/workstation_KCCFLN05.c surf/workstation_ptask_L07.c \
-	$(am__append_1) $(am__append_2)
+	xbt/xbt_sg_stubs.c $(am__append_1) $(am__append_2)
 GTNETS_SRC = \
   surf/gtnets/gtnets_simulator.cc \
   surf/gtnets/gtnets_topology.cc  \
@@ -893,12 +888,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_matrix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_os_thread.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_os_thread_stubs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_os_time.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_peer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_queue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_rl_synchro.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_rl_time.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_sg_stubs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_sg_synchro.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_sg_time.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_str.Plo@am__quote@
@@ -1440,19 +1435,19 @@ workstation_ptask_L07.lo: surf/workstation_ptask_L07.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o workstation_ptask_L07.lo `test -f 'surf/workstation_ptask_L07.c' || echo '$(srcdir)/'`surf/workstation_ptask_L07.c
 
+xbt_sg_stubs.lo: xbt/xbt_sg_stubs.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_sg_stubs.lo -MD -MP -MF $(DEPDIR)/xbt_sg_stubs.Tpo -c -o xbt_sg_stubs.lo `test -f 'xbt/xbt_sg_stubs.c' || echo '$(srcdir)/'`xbt/xbt_sg_stubs.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xbt_sg_stubs.Tpo $(DEPDIR)/xbt_sg_stubs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_sg_stubs.c' object='xbt_sg_stubs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_sg_stubs.lo `test -f 'xbt/xbt_sg_stubs.c' || echo '$(srcdir)/'`xbt/xbt_sg_stubs.c
+
 xbt_thread_context.lo: xbt/xbt_thread_context.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_thread_context.lo -MD -MP -MF $(DEPDIR)/xbt_thread_context.Tpo -c -o xbt_thread_context.lo `test -f 'xbt/xbt_thread_context.c' || echo '$(srcdir)/'`xbt/xbt_thread_context.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xbt_thread_context.Tpo $(DEPDIR)/xbt_thread_context.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_thread_context.c' object='xbt_thread_context.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_thread_context.lo `test -f 'xbt/xbt_thread_context.c' || echo '$(srcdir)/'`xbt/xbt_thread_context.c
-
-xbt_os_thread_stubs.lo: xbt/xbt_os_thread_stubs.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_os_thread_stubs.lo -MD -MP -MF $(DEPDIR)/xbt_os_thread_stubs.Tpo -c -o xbt_os_thread_stubs.lo `test -f 'xbt/xbt_os_thread_stubs.c' || echo '$(srcdir)/'`xbt/xbt_os_thread_stubs.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xbt_os_thread_stubs.Tpo $(DEPDIR)/xbt_os_thread_stubs.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_os_thread_stubs.c' object='xbt_os_thread_stubs.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_os_thread_stubs.lo `test -f 'xbt/xbt_os_thread_stubs.c' || echo '$(srcdir)/'`xbt/xbt_os_thread_stubs.c
 
 xbt_ucontext.lo: xbt/xbt_ucontext.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_ucontext.lo -MD -MP -MF $(DEPDIR)/xbt_ucontext.Tpo -c -o xbt_ucontext.lo `test -f 'xbt/xbt_ucontext.c' || echo '$(srcdir)/'`xbt/xbt_ucontext.c

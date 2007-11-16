@@ -1,10 +1,16 @@
 /* $Id$ */
 
-/* xbt_os_thread_stub -- empty functions used in SG, but harmful in RL      */
-/* More specifically, it is loaded by xbt/context.c when CONTEXT_UCONTEXT   */
-/* When CONTEXT_THREAD, xbt_os_thread is loaded instead (to get real func)  */
-/* In RL, xbt_os_thread is part of GRAS_RL_SRC                              */
+/* xbt_sg_stubs -- empty functions sometimes used in SG (never in RL)       */
 
+/* This is always part of SG, never of RL. Content:                         */
+/*  - a bunch of stub functions of the thread related function that we need */
+/*    to add to the lib to please the linker when using ucontextes.         */
+/*  - a bunch of stub functions of the java related function when we don't  */
+/*    compile java bindings.                                                */
+
+/* In RL, java is useless, and threads are always part of the picture,      */
+/*  ucontext never */
+  
 /* Copyright (c) 2007 Martin Quinson.                                       */
 /* All rights reserved.                                                     */
 
@@ -95,6 +101,12 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond){
    xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_cond_destroy)");
 }
+#endif
 
 
+#ifndef HAVE_JAVA
+#include "xbt/xbt_context_private.h"
+int xbt_jcontext_factory_init(xbt_context_factory_t* factory) {
+   return -1;
+}
 #endif
