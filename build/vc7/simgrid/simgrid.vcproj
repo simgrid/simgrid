@@ -360,6 +360,34 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\java\jmsg.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\java\jmsg_channel.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\java\jmsg_host.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\java\jmsg_parallel_task.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\java\jmsg_process.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\java\jmsg_task.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\java\jxbt_utilities.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\surf\lagrange.c"
 				>
 			</File>
@@ -552,6 +580,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\xbt\xbt_jcontext.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\xbt\xbt_log_appender_file.c"
 				>
 			</File>
@@ -601,6 +633,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\xbt\xbt_strbuff.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\xbt\xbt_thread_context.c"
 				>
 			</File>
 			<File
