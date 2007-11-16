@@ -26471,6 +26471,11 @@ done
      && test "x$ac_cv_header_jni_h" = "xyes" ; then
 
      use_java="yes"
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_JAVA 1
+_ACEOF
+
   else
      use_java="no"
   fi
@@ -26484,6 +26489,7 @@ else
   HAVE_JAVA_TRUE='#'
   HAVE_JAVA_FALSE=
 fi
+
 
 
 #####################

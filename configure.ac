@@ -425,12 +425,14 @@ else
      && test "x$ac_cv_header_jni_h" = "xyes" ; then
    
      use_java="yes"
+     AC_DEFINE(HAVE_JAVA,1, [defines whether Java bindings must be compiled or not])
   else   
      use_java="no"
   fi
 fi
 AC_MSG_RESULT(decide whether to compile java bindings... $use_java)
 AM_CONDITIONAL(HAVE_JAVA,test "x$use_java" = "xyes")
+
 
 #####################
 ## Check for programs
