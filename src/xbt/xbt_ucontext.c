@@ -1,5 +1,8 @@
 
 #include "ucontext_stack.h"
+#include "xbt/ex_interface.h"
+#include "xbt/xbt_context_factory.h"
+#include "xbt/xbt_ucontext.h"
 
 /* callback: context fetching */
 static ex_ctx_t*
