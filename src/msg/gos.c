@@ -19,12 +19,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
  *  by an agent for handling some task.
  */
 
-static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
-							  m_channel_t
-							  channel,
-							  double
-							  max_duration,
-							  m_host_t host)
+MSG_error_t MSG_task_get_ext(m_task_t * task,
+			     m_channel_t channel,
+			     double max_duration,
+			     m_host_t host)
 {
 
   m_process_t process = MSG_process_self();
@@ -208,8 +206,7 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
 				       m_channel_t channel,
 				       double max_duration)
 {
-  return __MSG_task_get_with_time_out_from_host(task, channel,
-						max_duration, NULL);
+  return MSG_task_get_ext(task, channel, max_duration, NULL);
 }
 
 /** \ingroup msg_gos_functions
@@ -230,7 +227,7 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
 MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel,
 				   m_host_t host)
 {
-  return __MSG_task_get_with_time_out_from_host(task, channel, -1, host);
+  return MSG_task_get_ext(task, channel, -1, host);
 }
 
 /** \ingroup msg_gos_functions
@@ -290,8 +287,9 @@ int MSG_task_probe_from(m_channel_t channel)
 
 /** \ingroup msg_gos_functions
  * \brief Wait for at most \a max_duration second for a task reception
-   on \a channel. *\a PID is updated with the PID of the first process
-   that triggered this event if any.
+   on \a channel. 
+ 
+ * \a PID is updated with the PID of the first process that triggered this event if any.
  *
  * It takes three parameters:
  * \param channel the channel on which the agent should be

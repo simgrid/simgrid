@@ -102,9 +102,13 @@ XBT_PUBLIC(MSG_error_t) MSG_task_destroy(m_task_t task);
 
 XBT_PUBLIC(MSG_error_t) MSG_task_get(m_task_t * task, m_channel_t channel);
 XBT_PUBLIC(MSG_error_t) MSG_task_get_with_time_out(m_task_t * task, m_channel_t channel,
-				       double max_duration);
+						   double max_duration);
 XBT_PUBLIC(MSG_error_t) MSG_task_get_from_host(m_task_t * task, int channel, 
-				   m_host_t host);
+					       m_host_t host);
+XBT_PUBLIC(MSG_error_t) MSG_task_get_ext(m_task_t * task, int channel, 
+					 double max_duration, m_host_t host);
+
+
 XBT_PUBLIC(MSG_error_t) MSG_task_put(m_task_t task, m_host_t dest, 
 			 m_channel_t channel);
 XBT_PUBLIC(MSG_error_t) MSG_task_put_bounded(m_task_t task,
