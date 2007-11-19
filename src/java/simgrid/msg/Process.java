@@ -13,6 +13,7 @@ package simgrid.msg;
 
 import java.lang.Thread;
 import java.util.*;
+
 /*
  * A process may be defined as a code, with some private data, executing 
  * in a location (host). All the process used by your simulation must be
@@ -55,59 +56,56 @@ import java.util.*;
  * @since SimGrid 3.3
  * @since JDK1.5011
  */
- 
-public abstract class Process extends Thread
-{
+
+public abstract class Process extends Thread {
     /**
      * This attribute represents a bind between a java process object and
      * a native process. Even if this attribute is public you must never
      * access to it. It is set automaticatly during the build of the object.
      */
-    public long bind;
-	
+  public long bind;
+
     /**
      * Even if this attribute is public you must never access to it.
      * It is used to compute the id of an MSG process.
      */
-    public static long nextProcessId = 0;
-	
+  public static long nextProcessId = 0;
+
     /**
      * Even if this attribute is public you must never access to it.
      * It is compute automaticaly during the creation of the object. 
      * The native functions use this identifier to synchronize the process.
      */
-    public long id;
-	
+  public long id;
+
     /**
      * The name of the process.							
      */
-    protected String name;
-    public String msgName() {
-	return this.name;
-    }
-	
-    /*
-     * The arguments of the method function of the process.	
-     */
-    public Vector args;
-    
-   /* process synchronisation tools */
-	protected Sem schedBegin, schedEnd;
-	
+  protected String name;
+  public String msgName() {
+    return this.name;
+  }
+  /*
+   * The arguments of the method function of the process.     
+   */ public Vector args;
+
+  /* process synchronisation tools */
+  protected Sem schedBegin, schedEnd;
+
     /**
      * Default constructor. (used in ApplicationHandler to initialize it)
      */
-    protected Process() {
-	super();
-	this.id = 0;
-	this.name = null;
-	this.bind = 0;
-	this.args = new Vector();
-	schedBegin = new Sem(0);
-	schedEnd = new Sem(0);
-    }
+  protected Process() {
+    super();
+    this.id = 0;
+    this.name = null;
+    this.bind = 0;
+    this.args = new Vector();
+    schedBegin = new Sem(0);
+    schedEnd = new Sem(0);
+  }
 
-	
+
     /**
      * Constructs a new process from the name of a host and his name. The method
      * function of the process doesn't have argument.
@@ -120,11 +118,11 @@ public abstract class Process extends Thread
      *                              JniException on JNI madness
      *
      */
-    public Process(String hostname,String name) 
-	throws NullPointerException, HostNotFoundException, JniException, NativeException {
-	this(Host.getByName(hostname),name,null);
-    }
-	
+  public Process(String hostname, String name)
+  throws NullPointerException, HostNotFoundException, JniException,
+    NativeException {
+    this(Host.getByName(hostname), name, null);
+  }
     /**
      * Constructs a new process from the name of a host and his name. The arguments
      * of the method function of the process are specified by the parameter args.
@@ -137,12 +135,11 @@ public abstract class Process extends Thread
      *                              NullPointerException if the provided name is null
      *                              JniException on JNI madness
      *
-     */
-    public Process(String hostname,String name,String args[]) 
-	throws NullPointerException, HostNotFoundException, JniException, NativeException {
-	this(Host.getByName(hostname),name,args);
-    }
-	
+     */ public Process(String hostname, String name, String args[])
+  throws NullPointerException, HostNotFoundException, JniException,
+    NativeException {
+    this(Host.getByName(hostname), name, args);
+  }
     /**
      * Constructs a new process from a host and his name. The method function of the 
      * process doesn't have argument.
@@ -154,10 +151,10 @@ public abstract class Process extends Thread
      *                              JniException on JNI madness
      *
      */
-    public Process(Host host,String name) throws NullPointerException, JniException {
-	this(host,name,null);
-    }
-	
+    public Process(Host host, String name) throws NullPointerException,
+    JniException {
+    this(host, name, null);
+  }
     /**
      * Constructs a new process from a host and his name, the arguments of here method function are
      * specified by the parameter args.
@@ -170,27 +167,27 @@ public abstract class Process extends Thread
      *                              JniException on JNI madness
      *
      */
-    public Process(Host host,String name,String[] args) throws NullPointerException, JniException {
-	/* This is the constructor called by all others */
+    public Process(Host host, String name,
+                     String[]args) throws NullPointerException, JniException {
+    /* This is the constructor called by all others */
 
-	if (name==null)
-	    throw new NullPointerException("Process name cannot be NULL");
-	
-	
-	this.args = new Vector();
-	
-	if(null != args)
-		this.args.addAll(Arrays.asList(args));
-		
-	this.name = name;
-	this.id = nextProcessId++;
-	
-	schedBegin = new Sem(0);
-	schedEnd = new Sem(0);
-		
-	Msg.processCreate(this,host);
-    }
-	
+    if (name == null)
+      throw new NullPointerException("Process name cannot be NULL");
+
+
+      this.args = new Vector();
+
+    if (null != args)
+        this.args.addAll(Arrays.asList(args));
+
+      this.name = name;
+      this.id = nextProcessId++;
+
+      schedBegin = new Sem(0);
+      schedEnd = new Sem(0);
+
+      Msg.processCreate(this, host);
+  }
     /**
      * This method kills all running process of the simulation.
      *
@@ -200,21 +197,20 @@ public abstract class Process extends Thread
      *
      * @return				The function returns the PID of the next created process.
      *			
-     */				
-    public static int killAll(int resetPID){
-	return Msg.processKillAll(resetPID);
-    }
-	
+     */ public static int killAll(int resetPID) {
+    return Msg.processKillAll(resetPID);
+  }
+
     /**
      * This method adds an argument in the list of the arguments of the main function
      * of the process. 
      *
      * @param arg			The argument to add.
      */
-    protected void addArg(String arg) {
-	args.add(arg);
-    }
-	
+  protected void addArg(String arg) {
+    args.add(arg);
+  }
+
     /**
      * This method suspends the process by suspending the task on which it was
      * waiting for the completion.
@@ -222,10 +218,9 @@ public abstract class Process extends Thread
      * @exception			JniException on JNI madness
      *                              NativeException on error in the native SimGrid code
      */
-    public void pause() throws JniException,NativeException {
-	Msg.processSuspend(this);		
-    }
-	
+  public void pause() throws JniException, NativeException {
+    Msg.processSuspend(this);
+  }
     /**
      * This method resumes a suspended process by resuming the task on which it was
      * waiting for the completion.
@@ -233,11 +228,9 @@ public abstract class Process extends Thread
      * @exception			JniException on JNI madness
      *                              NativeException on error in the native SimGrid code
      *
-     */
-    public void restart() throws JniException,NativeException {
-	Msg.processResume(this);
-    }
-	
+     */ public void restart() throws JniException, NativeException {
+    Msg.processResume(this);
+  }
     /**
      * This method tests if a process is suspended.
      *
@@ -245,11 +238,9 @@ public abstract class Process extends Thread
      *						Otherwise the method returns false.
      *
      * @exception			JniException on JNI madness
-     */
-    public boolean isSuspended() throws JniException {
-	return Msg.processIsSuspended(this);
-    }
-	
+     */ public boolean isSuspended() throws JniException {
+    return Msg.processIsSuspended(this);
+  }
     /**
      * This method returns the host of a process.
      *
@@ -258,11 +249,9 @@ public abstract class Process extends Thread
      * @exception			JniException on JNI madness
      *                              NativeException on error in the native SimGrid code
      *
-     */
-    public Host getHost() throws JniException,NativeException{
-	return Msg.processGetHost(this);
-    }
-	
+     */ public Host getHost() throws JniException, NativeException {
+    return Msg.processGetHost(this);
+  }
     /**
      * This static method get a process from a PID.
      *
@@ -271,11 +260,9 @@ public abstract class Process extends Thread
      * @return				The process with the specified PID.
      *
      * @exception			NativeException on error in the native SimGrid code
-     */
-    public static Process fromPID(int PID) throws NativeException {
-	return Msg.processFromPID(PID);
-    }
-	
+     */ public static Process fromPID(int PID) throws NativeException {
+    return Msg.processFromPID(PID);
+  }
     /**
      * This method returns the PID of the process.
      *
@@ -283,22 +270,18 @@ public abstract class Process extends Thread
      *
      * @exception			JniException on JNI madness
      *                              NativeException on error in the native SimGrid code
-     */
-    public int getPID() throws JniException,NativeException{
-	return Msg.processGetPID(this);
-    }	
-	
+     */ public int getPID() throws JniException, NativeException {
+    return Msg.processGetPID(this);
+  }
     /**
      * This method returns the PID of the parent of a process.
      *
      * @return				The PID of the parent of the process.
      *
      * @exception			NativeException on error in the native SimGrid code
-     */
-    public int getPPID() throws NativeException{
-	return Msg.processGetPPID(this);
-    }
-	
+     */ public int getPPID() throws NativeException {
+    return Msg.processGetPPID(this);
+  }
     /**
      * This static method returns the currently running process.
      *
@@ -307,29 +290,26 @@ public abstract class Process extends Thread
      * @exception			NativeException on error in the native SimGrid code
      *
      *
-     */ 
-    public static Process currentProcess()  throws NativeException{
-	return 	Msg.processSelf();
-    }
-	
+     */ public static Process currentProcess() throws NativeException {
+    return Msg.processSelf();
+  }
     /**
      * This static method returns the PID of the currently running process.
      *
      * @return				The PID of the current process.		
-     */
-    public static int currentProcessPID(){
-	return 	Msg.processSelfPID();
-    }
-	
+     */ public static int currentProcessPID() {
+    return Msg.processSelfPID();
+  }
+
     /**
      * This static method returns the PID of the parent of the currently running process.
      *
      * @return				The PID of the parent of current process.		
      */
-    public static int currentProcessPPID(){
-	return 	Msg.processSelfPPID();
-    }
-	
+  public static int currentProcessPPID() {
+    return Msg.processSelfPPID();
+  }
+
     /**
      * This function migrates a process to another host.
      *
@@ -337,114 +317,105 @@ public abstract class Process extends Thread
      *
      * @exception			JniException on JNI madness
      *                              NativeException on error in the native SimGrid code
-     */			
-    public void migrate(Host host) throws JniException, NativeException{
-	Msg.processChangeHost(this,host);
-    }
-	
+     */
+  public void migrate(Host host) throws JniException, NativeException {
+    Msg.processChangeHost(this, host);
+  }
     /**
      * This method makes the current process sleep until time seconds have elapsed.
      *
      * @param seconds		The time the current process must sleep.
      *
      * @exception			NativeException on error in the native SimGrid code
-     */
-    public static void waitFor(double seconds) throws NativeException {
-	Msg.processWaitFor(seconds);
+     */ public static void waitFor(double seconds) throws NativeException {
+    Msg.processWaitFor(seconds);
+  } public void showArgs() {
+    try {
+      Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
+               this.args.size());
+      for (int i = 0; i < this.args.size(); i++)
+        Msg.info("[" + this.msgName() + "/" + this.getHost().getName() +
+                 "] args[" + i + "]=" + (String) (this.args.get(i)));
+    } catch(MsgException e) {
+      Msg.info("Damn JNI stuff");
+      e.printStackTrace();
+      System.exit(1);
     }
-	
-
-    public void showArgs(){
-	try {
-	    Msg.info("["+this.name+"/"+this.getHost().getName()+"] argc="+this.args.size() );	
-	    for(int i = 0; i < this.args.size(); i++) 
-		Msg.info("["+this.msgName()+"/"+this.getHost().getName()+
-			 "] args["+i+"]="+(String)(this.args.get(i)));
-	} catch (MsgException e) {
-	    Msg.info("Damn JNI stuff");
-	    e.printStackTrace();
-	    System.exit(1);
-	}
-    }
+  }
     /**
      * This method runs the process. Il calls the method function that you must overwrite.
      */
-    public synchronized void run() {
-	    	
-	try {
-	    String[] args = null; /* do not fill it before the signal or this.args will be empty */
-	    
-	    //waitSignal(); /* wait for other people to fill the process in */
-	    
-	    
-	    try {
-	    schedBegin.acquire();
-	} catch(InterruptedException e) {
-	}
-	
-			
-		
-		if(this.args.size() > 0)
-		{
-		
-	    	args = new String[this.args.size()];
-	   		this.args.toArray(args);
-	   	}
+  public synchronized void run() {
 
-	    this.main(args);
-	    Msg.processExit(this);
-	    schedEnd.release();
-	} catch (MsgException e) {
-	    e.printStackTrace();
-	    Msg.info("Unexpected behavior. Stopping now");
-	    System.exit(1);
-	}
+    try {
+      String[]args = null;      /* do not fill it before the signal or this.args will be empty */
+
+      //waitSignal(); /* wait for other people to fill the process in */
+
+
+      try {
+        schedBegin.acquire();
+      } catch(InterruptedException e) {
+      }
+
+
+
+      if (this.args.size() > 0) {
+
+        args = new String[this.args.size()];
+        this.args.toArray(args);
+      }
+
+      this.main(args);
+      Msg.processExit(this);
+      schedEnd.release();
     }
-    
+    catch(MsgException e) {
+      e.printStackTrace();
+      Msg.info("Unexpected behavior. Stopping now");
+      System.exit(1);
+    }
+  }
+
     /**
      * Process synchronization. The process wait the signal of the simulator to start.
      *
      * @exception			JniException on JNI madness
      */
-    private void waitSignal() throws JniException{
-        Msg.waitSignal(this);
-        unschedule();        
-    }
-  
+  private void waitSignal() throws JniException {
+    Msg.waitSignal(this);
+    unschedule();
+  }
     /**
    	 * The main function of the process (to implement).
-   	 */
-    public abstract void main(String[] args) 
-    throws JniException, NativeException;
-    
-   
-   public void unschedule() {
-   	
-   		try {
-			schedEnd.release();
-			schedBegin.acquire();
-		} catch(InterruptedException e){
-			
-		}
-	}
-    
-     public void schedule() {
-     	
-     	try { 
-			schedBegin.release();
-			schedEnd.acquire();
-		} catch(InterruptedException e) {
-			
-		}
-	}
-	
-	public void taskSend(Channel channel,Task task, Host host)  throws NativeException, JniException {
-		Msg.channelPut(channel,task,host);
-	}
-	
-	public Task taskReceive(Channel channel)  throws NativeException, JniException {
-		return Msg.channelGet(channel);
-	} 		     
-}
+   	 */ public abstract void main(String[]args)
+  throws JniException, NativeException;
 
 
+  public void unschedule() {
+
+    try {
+      schedEnd.release();
+      schedBegin.acquire();
+    } catch(InterruptedException e) {
+
+    }
+  }
+
+  public void schedule() {
+
+    try {
+      schedBegin.release();
+      schedEnd.acquire();
+    } catch(InterruptedException e) {
+
+    }
+  }
+
+  public void taskSend(Channel channel, Task task,
+                       Host host) throws NativeException, JniException {
+    Msg.channelPut(channel, task, host);
+  } public Task taskReceive(Channel channel) throws NativeException,
+    JniException {
+    return Msg.channelGet(channel);
+}}

@@ -8,27 +8,25 @@
  * it and/or modify it under the terms of the license 
  * (GNU LGPL) which comes with this package.
  */
- 
+
 package simgrid.msg;
 
 public class ProcessNotFoundException extends MsgException {
-	
-   private static final long serialVersionUID = 1L;
+
+  private static final long serialVersionUID = 1L;
 
    /**
     * Constructs an <code>ProcessNotFoundException</code> without a 
     * detail message. 
     */
-   public ProcessNotFoundException() {
-      super();
-   }
-   
+  public ProcessNotFoundException() {
+    super();
+  }
    /**
     * Constructs an <code>ProcessNotFoundException</code> with a detail message. 
     *
     * @param   s   the detail message.
-    */
-   public ProcessNotFoundException(String s) {
-      super(s);
-   }
+    */ public ProcessNotFoundException(String s) {
+    super(s);
+  }
 }

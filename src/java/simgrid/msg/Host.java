@@ -48,7 +48,7 @@ import java.lang.String;
  * @since JDK1.5011
  */
 public class Host {
-	/**
+        /**
 	 * This attribute represents a bind between a java host object and
 	 * a native host. Even if this attribute is public you must never
 	 * access to it. It is set automaticatly during the call of the 
@@ -56,19 +56,19 @@ public class Host {
 	 *
 	 * @see				Host.getByName().
 	 */
-	public long bind;
-	
-	/**
+  public long bind;
+
+        /**
 	 * User data.
 	 */
-	private Object data;
-	
-	protected Host() {
-		this.bind = 0;
-		this.data = null;
-	};
-	
-	/**
+  private Object data;
+
+  protected Host() {
+    this.bind = 0;
+    this.data = null;
+  };
+
+        /**
 	 * This static method gets an host instance associated with a native
 	 * host of your platform. This is the best way to get a java host object.
 	 *
@@ -76,79 +76,69 @@ public class Host {
 	 *
 	 * @exception		HostNotFoundException if the name of the host is not valid.
 	 *					MsgException if the native version of this method failed.
-	 */			
-	public static Host getByName(String name)
-	    throws HostNotFoundException, NativeException, JniException {
+	 */
+  public static Host getByName(String name)
+  throws HostNotFoundException, NativeException, JniException {
 
-	    return Msg.hostGetByName(name);
-	}
-	
-	/**
+    return Msg.hostGetByName(name);
+  }
+        /**
 	 * This static method returns the number of the installed hosts.
 	 *
 	 * @return			The number of the installed hosts.
 	 *
-	 */
-	public static int getNumber()  throws NativeException, JniException {
-		return Msg.hostGetNumber();
-	}
-	
-	/**
+	 */ public static int getNumber() throws NativeException, JniException {
+    return Msg.hostGetNumber();
+  }
+        /**
 	 * This static method return an instance to the host of the current process.
 	 *
 	 * @return			The host on which the current process is executed.
 	 *
 	 * @exception		MsgException if the native version of this method failed.
-	 */
-	public static Host currentHost()   throws JniException{
-		return Msg.hostSelf();
-	}
-	
-	/**
+	 */ public static Host currentHost() throws JniException {
+    return Msg.hostSelf();
+  }
+        /**
 	 * This static method returns all of the hosts of the installed platform.
 	 *
 	 * @return			An array containing all the hosts installed.
 	 *
 	 * @exception		MsgException if the native version of this method failed.
-	 */
-	public static Host[] all()  throws JniException, NativeException{
-		return Msg.allHosts();
-	}
-	
-	/**
+	 */ public static Host[] all() throws JniException, NativeException {
+    return Msg.allHosts();
+  }
+        /**
 	 * This method returns the name of a host.
 	 *
 	 * @return			The name of the host.
 	 *
 	 * @exception		InvalidHostException if the host is not valid.
-	 */
-	public String getName()  throws NativeException, JniException{
-		return Msg.hostGetName(this);
-	}
-	
-	/**
+	 */ public String getName() throws NativeException, JniException {
+    return Msg.hostGetName(this);
+  }
+        /**
 	 * This method sets the data of the host.
 	 *
-	 */
-	 public void setData(Object data) {
-	 	this.data = data;
-	}
-	
-	/**
+	 */ public void setData(Object data) {
+    this.data = data;
+  }
+
+        /**
 	 * This method gets the data of the host.
 	 */
-	public Object getData() {
-		return this.data;
-	}
-	
-	/**
+  public Object getData() {
+    return this.data;
+  }
+
+        /**
 	 * This function tests if a host has data.
 	 */
-	 public boolean hasData() {
-		return null != this.data;
-	}
-	
-	/**
+  public boolean hasData() {
+    return null != this.data;
+  }
+
+        /**
 	 * This method returns the number of tasks currently running on a host.
 	 * The external load is not taken in account.
 	 *
@@ -157,11 +147,10 @@ public class Host {
 	 * @exception		InvalidHostException if the host is invalid.
 	 *
 	 */
-	public int getLoad() throws JniException{
-		return Msg.hostGetLoad(this);
-	}
-	
-	/**
+  public int getLoad() throws JniException {
+    return Msg.hostGetLoad(this);
+  }
+        /**
 	 * This method returns the speed of the processor of a host,
 	 * regardless of the current load of the machine.
 	 *
@@ -169,13 +158,10 @@ public class Host {
 	 *
 	 * @exception		InvalidHostException if the host is not valid.
 	 *
-	 */
-
-	public double getSpeed() throws JniException {
-		return Msg.hostGetSpeed(this);
-	}
-	
-	/**
+	 */ public double getSpeed() throws JniException {
+    return Msg.hostGetSpeed(this);
+  }
+        /**
 	 * This method tests if a host is avail.
 	 * 
 	 * @return			If the host is avail the method returns true.
@@ -184,9 +170,6 @@ public class Host {
 	 * @exception		JniException if the host is not valid.
 	 *
 	 *
-	 */			 
-	public boolean isAvail()throws JniException {
-		return Msg.hostIsAvail(this);
-	}
-	
-}
+	 */ public boolean isAvail() throws JniException {
+    return Msg.hostIsAvail(this);
+}}

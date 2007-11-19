@@ -8,7 +8,7 @@
  * it and/or modify it under the terms of the license 
  *(GNU LGPL) which comes with this package. 
  */
- 
+
 package simgrid.msg;
 import org.xml.sax.*;
 
@@ -38,74 +38,73 @@ public final class Msg {
      *
      * @return     The last error code of the simulation.
      */
-    final static native int getErrCode();
-    
+  final static native int getErrCode();
+
     /**
      * Errors returned by the method Msg.getErrCode().
      */
-    
-    /* Everything is right. Keep on goin the way !                                
-     *
-     */
-    public static final int SUCCESS                = 0;
-    
-    /* Something must be not perfectly clean. But I 
-     * may be paranoid freak... !    
-     */
-    public static final int WARNING                = 1;
-    
-    /* There has been a problem during you task treansfer.
-     * Either the network is  down or the remote host has 
-     * been shutdown.
-     */
-    public static final int TRANSFERT_FAILURE    = 2;
-    
+
+  /* Everything is right. Keep on goin the way !                                
+   *
+   */
+  public static final int SUCCESS = 0;
+
+  /* Something must be not perfectly clean. But I 
+   * may be paranoid freak... !    
+   */
+  public static final int WARNING = 1;
+
+  /* There has been a problem during you task treansfer.
+   * Either the network is  down or the remote host has 
+   * been shutdown.
+   */
+  public static final int TRANSFERT_FAILURE = 2;
+
     /**
      * System shutdown. The host on which you are running
      * has just been rebooted. Free your datastructures and
      * return now !
      */
-    public static final int HOST_FAILURE        = 3;
-    
+  public static final int HOST_FAILURE = 3;
+
     /**
      * Cancelled task. This task has been cancelled by somebody !
      */
-    public static final int TASK_CANCELLLED        = 4;
-    
+  public static final int TASK_CANCELLLED = 4;
+
     /**
      * You've done something wrong. You'd better look at it...
      */
-    public static final int FATAL_ERROR            = 5;
-    
+  public static final int FATAL_ERROR = 5;
+
     /**
      * Staticaly load the SIMGRID4JAVA library
      *  which contains all native functions used in here
      */
-    static {
-        try {
-            System.loadLibrary("simgrid");
-            Msg.selectContextFactory("jcontext_factory");
-        } catch(NativeException e)
-        {
-   		  System.err.println(e.toString());
-   		  e.printStackTrace();
-   		  System.exit(1);
-        } catch(UnsatisfiedLinkError e){
-            System.err.println("Cannot load simgrid library : ");
-            e.printStackTrace();
-	    System.err.println("Please check your LD_LIBRARY_PATH, "+
-			       "or copy the library to the current directory");
-	    System.exit(1);
-        }
+  static {
+    try {
+      System.loadLibrary("simgrid");
+      Msg.selectContextFactory("jcontext_factory");
+    } catch(NativeException e) {
+      System.err.println(e.toString());
+      e.printStackTrace();
+      System.exit(1);
+    } catch(UnsatisfiedLinkError e) {
+      System.err.println("Cannot load simgrid library : ");
+      e.printStackTrace();
+      System.err.println("Please check your LD_LIBRARY_PATH, " +
+                         "or copy the library to the current directory");
+      System.exit(1);
     }
-    
-    final static native 
+  }
+
+  final static native
     void selectContextFactory(String name) throws NativeException;
-    
+
     /******************************************************************
      * The natively implemented methods connected to the MSG Process  *
      ******************************************************************/
-     
+
     /**
      * The natively implemented method to create an MSG process.
      *
@@ -116,9 +115,9 @@ public final class Msg {
      *
      * @see  Process constructors.
      */
-    final static native 
-	void processCreate(Process process, Host host) throws JniException;
-     
+  final static native
+    void processCreate(Process process, Host host) throws JniException;
+
     /**
      * The natively implemented method to kill all the process of the simulation.
      *
@@ -128,8 +127,8 @@ public final class Msg {
      *
      * @return                The function returns the PID of the next created process.
      */
-    final static native int processKillAll(int resetPID);
-       
+  final static native int processKillAll(int resetPID);
+
     /**
      * The natively implemented method to suspend an MSG process.
      *
@@ -140,9 +139,9 @@ public final class Msg {
      *
      * @see                 Process.pause()
      */
-    final static native void processSuspend(Process process) 
-	throws JniException, NativeException;
-     
+  final static native void processSuspend(Process process)
+  throws JniException, NativeException;
+
     /**
      * The natively implemented method to kill a MSG process.
      *
@@ -150,9 +149,9 @@ public final class Msg {
      *
      * @see                 Process.kill()
      */
-    final static native void processKill(Process process)
-	throws JniException;
-     
+  final static native void processKill(Process process)
+  throws JniException;
+
     /**
      * The natively implemented method to resume a suspended MSG process.
      *
@@ -163,9 +162,9 @@ public final class Msg {
      *
      * @see                 Process.restart()
      */
-    final static native void processResume(Process process)
-	throws JniException, NativeException;
-     
+  final static native void processResume(Process process)
+  throws JniException, NativeException;
+
     /**
      * The natively implemented method to test if MSG process is suspended.
      *
@@ -178,8 +177,9 @@ public final class Msg {
      *
      * @see                 Process.isSuspended()
      */
-    final static native boolean processIsSuspended(Process process) throws JniException;
-     
+  final static native boolean processIsSuspended(Process process) throws
+    JniException;
+
     /**
      * The natively implemented method to get the host of a MSG process.
      *
@@ -192,9 +192,9 @@ public final class Msg {
      *
      * @see                 Process.getHost()
      */
-    final static native Host processGetHost(Process process)
-	throws JniException, NativeException;
-     
+  final static native Host processGetHost(Process process)
+  throws JniException, NativeException;
+
     /**
      * The natively implemented method to get a MSG process from his PID.
      *
@@ -206,8 +206,8 @@ public final class Msg {
      *
      * @see                 Process.getFromPID()
      */
-    final static native Process processFromPID(int PID) throws NativeException;
-     
+  final static native Process processFromPID(int PID) throws NativeException;
+
     /**
      * The natively implemented method to get the PID of a MSG process.
      *
@@ -219,8 +219,9 @@ public final class Msg {
      *
      * @see                 Process.getPID()
      */
-    final static native int processGetPID(Process process) throws NativeException;
-     
+  final static native int processGetPID(Process process) throws
+    NativeException;
+
     /**
      * The natively implemented method to get the PPID of a MSG process.
      *
@@ -232,8 +233,9 @@ public final class Msg {
      *
      * @see                 Process.getPPID()
      */
-    final static native int processGetPPID(Process process) throws NativeException;
-     
+  final static native int processGetPPID(Process process) throws
+    NativeException;
+
     /**
      * The natively implemented method to get the current running process.
      *
@@ -243,8 +245,8 @@ public final class Msg {
 
      * @see                Process.currentProcess()
      */
-    final static native Process processSelf() throws NativeException;
-     
+  final static native Process processSelf() throws NativeException;
+
     /**
      * The natively implemented method to get the current running process PID.
      *
@@ -252,8 +254,8 @@ public final class Msg {
      *
      * @see                Process.currentProcessPID()
      */
-    final static native int processSelfPID();
-     
+  final static native int processSelfPID();
+
     /**
      * The natively implemented method to get the current running process PPID.
      *
@@ -261,8 +263,8 @@ public final class Msg {
      *
      * @see                Process.currentProcessPPID()
      */
-    final static native int processSelfPPID();
-     
+  final static native int processSelfPPID();
+
     /**
      * The natively implemented method to migrate a process from his currnet host to a new host.
      *
@@ -275,16 +277,16 @@ public final class Msg {
      * @see                Process.migrate()
      * @see                Host.getByName()
      */
-    final static native void processChangeHost(Process process,Host host) 
-	throws JniException, NativeException;
-     
+  final static native void processChangeHost(Process process, Host host)
+  throws JniException, NativeException;
+
     /**
      * Process synchronization. The process wait the signal of the simulator to start.
      * 
      * @exception            JniException if something goes wrong with JNI
      */
-    final static native void waitSignal(Process process) throws JniException;
-     
+  final static native void waitSignal(Process process) throws JniException;
+
     /**
      * The natively implemented native to request the current process to sleep 
      * until time seconds have elapsed.
@@ -295,8 +297,9 @@ public final class Msg {
      *
      * @see                 Process.waitFor()
      */
-    final static native void processWaitFor(double seconds) throws NativeException;
-     
+  final static native void processWaitFor(double seconds) throws
+    NativeException;
+
     /**
      * The natively implemented native method to exit a process.
      *
@@ -304,13 +307,13 @@ public final class Msg {
      *
      * @see                Process.exit()
      */
-    final static native void processExit(Process process) throws JniException;
-      
-     
+  final static native void processExit(Process process) throws JniException;
+
+
     /******************************************************************
      * The natively implemented methods connected to the MSG host     *
      ******************************************************************/
-     
+
     /**
      * The natively implemented method to get an host from his name.
      *
@@ -324,9 +327,9 @@ public final class Msg {
      *
      * @see                Host.getByName()
      */
-    final static native Host hostGetByName(String name) 
-	throws JniException, HostNotFoundException, NativeException;
-     
+  final static native Host hostGetByName(String name)
+  throws JniException, HostNotFoundException, NativeException;
+
     /**
      * The natively implemented method to get the name of an MSG host.
      *
@@ -338,8 +341,8 @@ public final class Msg {
      *
      * @see                Host.getName()
      */
-    final static native String hostGetName(Host host) throws JniException;
-     
+  final static native String hostGetName(Host host) throws JniException;
+
     /**
      * The natively implemented method to get the number of hosts of the simulation.
      *
@@ -347,8 +350,8 @@ public final class Msg {
      *
      * @see                Host.getNumber()
      */
-    final static native int hostGetNumber();
-     
+  final static native int hostGetNumber();
+
     /**
      * The natively implemented method to get the host of the current runing process.
      *
@@ -358,8 +361,8 @@ public final class Msg {
      *
      * @see                Host.currentHost()
      */
-    final static native Host hostSelf() throws JniException;
-     
+  final static native Host hostSelf() throws JniException;
+
     /**
      * The natively implemented method to get the speed of a MSG host.
      *
@@ -371,9 +374,9 @@ public final class Msg {
      *
      * @see                Host.getSpeed()
      */
-      
-    final static native double hostGetSpeed(Host host) throws JniException;
-     
+
+  final static native double hostGetSpeed(Host host) throws JniException;
+
     /**
      * The natively implemented native method to test if an host is avail.
      *
@@ -386,8 +389,8 @@ public final class Msg {
      *
      * @see                Host.isAvail()
      */
-    final static native boolean hostIsAvail(Host host) throws JniException;
-     
+  final static native boolean hostIsAvail(Host host) throws JniException;
+
     /**
      * The natively implemented native method to get all the hosts of the simulation.
      *
@@ -395,9 +398,9 @@ public final class Msg {
      *
      * @return                A array which contains all the hosts of simulation.
      */
-     
-    final static native Host[] allHosts() throws JniException;
-     
+
+  final static native Host[] allHosts() throws JniException;
+
     /**
      * The natively implemented native method to get the number of running tasks on a host.
      *
@@ -408,12 +411,12 @@ public final class Msg {
      * @exception            JniException if something goes wrong with JNI
      *
      */
-    final static native int hostGetLoad(Host host) throws JniException;
-     
+  final static native int hostGetLoad(Host host) throws JniException;
+
     /******************************************************************
      * The natively implemented methods connected to the MSG task     *
      ******************************************************************/
-      
+
     /**
      * The natively implemented method to create a MSG task.
      *
@@ -433,9 +436,11 @@ public final class Msg {
      *
      * @see                    Task.create()
      */
-    final static native void taskCreate(Task task,String name,double computeDuration, double messageSize)
-	throws JniException, NullPointerException, IllegalArgumentException;
-      
+  final static native void taskCreate(Task task, String name,
+                                      double computeDuration,
+                                      double messageSize)
+  throws JniException, NullPointerException, IllegalArgumentException;
+
     /**
      * The natively implemented method to get the sender of a task.
      *
@@ -448,8 +453,8 @@ public final class Msg {
      *
      * @see                    Task.getSender()
      */
-    final static native Process taskGetSender(Task task) throws JniException;
-      
+  final static native Process taskGetSender(Task task) throws JniException;
+
     /**
      * The natively implementd method to get the source of a task.
      *
@@ -462,8 +467,9 @@ public final class Msg {
      *
      * @see                    Task.getSource()
      */
-    final static native Host taskGetSource(Task task) throws JniException, NativeException;
-      
+  final static native Host taskGetSource(Task task) throws JniException,
+    NativeException;
+
     /**
      * The natively implemented method to get the name of the task.
      *
@@ -476,8 +482,8 @@ public final class Msg {
      *
      * @see                    Task.getName()
      */
-    final static native String taskGetName(Task task) throws JniException;
-      
+  final static native String taskGetName(Task task) throws JniException;
+
     /**
      * The natively implemented method to cancel a task.
      *
@@ -489,8 +495,9 @@ public final class Msg {
      *
      * @see                    Task.cancel().
      */
-    final static native void taskCancel(Task task) throws JniException, NativeException;
-      
+  final static native void taskCancel(Task task) throws JniException,
+    NativeException;
+
     /**
      * The natively implemented method to get the computing amount of the task.
      *
@@ -504,8 +511,9 @@ public final class Msg {
      *
      * @see                    Task.getComputeDuration()
      */
-    final static native double taskGetComputeDuration(Task task) throws JniException;
-      
+  final static native double taskGetComputeDuration(Task task) throws
+    JniException;
+
     /**
      * The natively implemented method to get the remaining computation
      *
@@ -519,8 +527,9 @@ public final class Msg {
      *
      * @see                    Task.getRemainingDuration()
      */
-    final static native double taskGetRemainingDuration(Task task) throws JniException;
-      
+  final static native double taskGetRemainingDuration(Task task) throws
+    JniException;
+
     /**
      * The natively implemented method to set the priority of a task.
      *
@@ -534,8 +543,10 @@ public final class Msg {
      *
      * @see                    Task.setPriority()
      */
-    final static native void taskSetPriority(Task task,double priority) throws JniException;
-      
+  final static native void taskSetPriority(Task task,
+                                           double priority) throws
+    JniException;
+
     /**
      * The natively implemented method to destroy a MSG task.
      *
@@ -547,8 +558,9 @@ public final class Msg {
      *
      * @see                    Task.destroy()
      */
-    final static native void taskDestroy(Task task) throws JniException, NativeException;
-      
+  final static native void taskDestroy(Task task) throws JniException,
+    NativeException;
+
     /**
      * The natively implemented method to execute a MSG task.
      *
@@ -560,14 +572,15 @@ public final class Msg {
      *
      * @see                    Task.execute()
      */
-    final static native void taskExecute(Task task) throws JniException, NativeException;
-      
-      
-     
+  final static native void taskExecute(Task task) throws JniException,
+    NativeException;
+
+
+
     /**************************************************************************
      * The natively implemented methods connected to the MSG parallel task     *
      ***************************************************************************/
-      
+
     /**
      * The natively implemented method to create a MSG parallel task.
      *
@@ -579,10 +592,12 @@ public final class Msg {
      *
      * @see                        ParallelTask.create()
      */
-    final static native void parallelTaskCreate(ParallelTask parallelTask, String name, 
-						       Host[] hosts, double[] computeDurations, double[] messageSizes)
-	throws JniException, NullPointerException, IllegalArgumentException;
-      
+  final static native void parallelTaskCreate(ParallelTask parallelTask,
+                                              String name, Host[]hosts,
+                                              double[]computeDurations,
+                                              double[]messageSizes)
+  throws JniException, NullPointerException, IllegalArgumentException;
+
     /**
      * The natively implemented method to get the sender of a parallel task.
      *
@@ -592,8 +607,9 @@ public final class Msg {
      *
      * @see                    ParallelTask.getSender()
      */
-    final static native Process parallelTaskGetSender(ParallelTask parallelTask) throws JniException;
-      
+  final static native Process parallelTaskGetSender(ParallelTask parallelTask)
+    throws JniException;
+
     /**
      * The natively implementd method to get the source of a parallel task.
      *
@@ -603,8 +619,9 @@ public final class Msg {
      *
      * @see                    ParallelTask.getSource()
      */
-    final static native Host parallelTaskGetSource(ParallelTask parallelTask) throws JniException;
-      
+  final static native Host parallelTaskGetSource(ParallelTask parallelTask)
+    throws JniException;
+
     /**
      * The natively implemented method to get the name of the parallel task.
      *
@@ -614,8 +631,9 @@ public final class Msg {
      *
      * @see                    ParallelTask.getName()
      */
-    final static native String parallelTaskGetName(ParallelTask parallelTask) throws JniException;
-      
+  final static native String parallelTaskGetName(ParallelTask parallelTask)
+    throws JniException;
+
     /**
      * The natively implemented method to cancel a parallel task.
      *
@@ -623,8 +641,9 @@ public final class Msg {
      *
      * @see                    ParallelTask.cancel().
      */
-    final static native void parallelTaskCancel(ParallelTask parallelTask) throws JniException,NativeException;
-      
+  final static native void parallelTaskCancel(ParallelTask parallelTask)
+    throws JniException, NativeException;
+
     /**
      * The natively implemented method to get the computing amount of the task.
      *
@@ -634,8 +653,10 @@ public final class Msg {
      *
      * @see                    ParallelTask.getComputeDuration()
      */
-    final static native double parallelTaskGetComputeDuration(ParallelTask parallelTask) throws JniException;
-      
+  final static native double parallelTaskGetComputeDuration(ParallelTask
+                                                            parallelTask)
+    throws JniException;
+
     /**
      * The natively implemented method to get the remaining computation
      *
@@ -645,8 +666,10 @@ public final class Msg {
      *
      * @see                    ParallelTask.getRemainingDuration()
      */
-    final static native double parallelTaskGetRemainingDuration(ParallelTask parallelTask) throws JniException;
-      
+  final static native double parallelTaskGetRemainingDuration(ParallelTask
+                                                              parallelTask)
+    throws JniException;
+
     /**
      * The natively implemented method to set the priority of a parallel task.
      *
@@ -656,8 +679,10 @@ public final class Msg {
      *
      * @see                    ParallelTask.setPriority()
      */
-    final static native void parallelTaskSetPriority(ParallelTask parallelTask,double priority) throws JniException;
-      
+  final static native void parallelTaskSetPriority(ParallelTask parallelTask,
+                                                   double priority) throws
+    JniException;
+
     /**
      * The natively implemented method to destroy a MSG parallel task.
      *
@@ -665,8 +690,9 @@ public final class Msg {
      *
      * @see                    ParallelTask.destroy()
      */
-    final static native void parallelTaskDestroy(ParallelTask parallelTask) throws JniException,NativeException;
-      
+  final static native void parallelTaskDestroy(ParallelTask parallelTask)
+    throws JniException, NativeException;
+
     /**
      * The natively implemented method to execute a MSG parallel task.
      *
@@ -674,12 +700,13 @@ public final class Msg {
      *
      * @see                    ParallelTask.execute()
      */
-    final static native void parallelTaskExecute(ParallelTask parallelTask) throws JniException, NativeException;
-      
+  final static native void parallelTaskExecute(ParallelTask parallelTask)
+    throws JniException, NativeException;
+
     /******************************************************************
      * The natively implemented methods connected to the MSG channel  *
      ******************************************************************/
-      
+
     /**
      * The natively implemented method to listen on the channel and wait for receiving a task.
      *
@@ -691,8 +718,9 @@ public final class Msg {
      *
      * @see                    Channel.get()
      */
-    final static native Task channelGet(Channel channel) throws JniException,NativeException;
-      
+  final static native Task channelGet(Channel channel) throws JniException,
+    NativeException;
+
     /**
      * The natively implemented method to listen on the channel and wait for receiving a task with a timeout.
      *
@@ -705,10 +733,12 @@ public final class Msg {
      *
      * @see                    Channel.getWithTimeout()
      *
-     */ 
-    final static native Task channelGetWithTimeout(Channel channel,double timeout) throws JniException,NativeException;
-      
-      
+     */
+  final static native Task channelGetWithTimeout(Channel channel,
+                                                 double timeout) throws
+    JniException, NativeException;
+
+
     /**
      * The natively implemented method to listen on the channel of a specific host.
      *
@@ -722,9 +752,11 @@ public final class Msg {
      *                        MsgException if the listening operation failed.
      *
      * @see                    Channel.getFromHost()
-     */    
-    final static native Task channelGetFromHost(Channel channel,Host host) throws JniException,NativeException;
-      
+     */
+  final static native Task channelGetFromHost(Channel channel,
+                                              Host host) throws JniException,
+    NativeException;
+
     /**
      * The natively implemented method to test whether there is a pending communication on the channel.
      *
@@ -734,9 +766,10 @@ public final class Msg {
      *                        channel. Otherwise the method returns false.
      *
      * @see                    Channel.hasPendingCommunication()
-     */                
-    final static native boolean channelHasPendingCommunication(Channel channel) throws JniException;
-      
+     */
+  final static native boolean channelHasPendingCommunication(Channel channel)
+    throws JniException;
+
     /**
      * The natively implemented method to test whether there is a pending communication on a 
      * channel, and who sent it.
@@ -748,8 +781,9 @@ public final class Msg {
      *
      * @see                    Channel.getCummunicatingProcess()
      */
-    final static native int channelGetCommunicatingProcess(Channel channel) throws JniException;
-      
+  final static native int channelGetCommunicatingProcess(Channel channel)
+    throws JniException;
+
     /**
      * The natively implemented method to get the number of tasks waiting to be received on a
      * channel and sent by a host.
@@ -765,8 +799,10 @@ public final class Msg {
      *
      * @see                    Channel.getHostWaiting()
      */
-    final static native int channelGetHostWaitingTasks(Channel channel,Host host) throws JniException;
-      
+  final static native int channelGetHostWaitingTasks(Channel channel,
+                                                     Host host) throws
+    JniException;
+
     /**
      * The natively implemented method to put a task on the channel of an host.
      *
@@ -779,9 +815,11 @@ public final class Msg {
      *                        MsgException if the operation failed.
      *
      * @see                    Channel.put()
-     */                
-    final static native void channelPut(Channel channel,Task task,Host host) throws JniException,NativeException;
-      
+     */
+  final static native void channelPut(Channel channel, Task task,
+                                      Host host) throws JniException,
+    NativeException;
+
     /**
      * The natively implemented method to put a task on a channel of an  host (with a timeout 
      * on the waiting of the destination host) and waits for the end of the transmission.
@@ -797,8 +835,11 @@ public final class Msg {
      *
      * @see                    Channel.putWithTimeout()
      */
-    final static native void channelPutWithTimeout(Channel channel,Task task,Host host,double timeout) throws JniException,NativeException;
-      
+  final static native void channelPutWithTimeout(Channel channel, Task task,
+                                                 Host host,
+                                                 double timeout) throws
+    JniException, NativeException;
+
     /**
      * The natively implemented method to put a task on channel with a bounded transmition
      * rate.
@@ -814,8 +855,11 @@ public final class Msg {
      *
      * @see                    Channel.putBounded()
      */
-    final static native void channelPutBounded(Channel channel,Task task,Host host,double max_rate) throws JniException,NativeException;
-      
+  final static native void channelPutBounded(Channel channel, Task task,
+                                             Host host,
+                                             double max_rate) throws
+    JniException, NativeException;
+
     /**
      * The natively implemented method to wait for at most timeout seconds for a task reception
      * on channel. The PID is updated with the PID of the first process.
@@ -828,8 +872,10 @@ public final class Msg {
      *
      * @see                    Channel.wait()
      */
-    final static native int channelWait(Channel channel, double timeout) throws JniException,NativeException;
-      
+  final static native int channelWait(Channel channel,
+                                      double timeout) throws JniException,
+    NativeException;
+
     /**
      * The natively implemented method to set the number of channel used by all the process
      * of the simulation.
@@ -838,8 +884,8 @@ public final class Msg {
      *
      * @see                    Channel.setNumber()
      */
-    final static native void channelSetNumber(int channelNumber);
-      
+  final static native void channelSetNumber(int channelNumber);
+
     /**
      * The natively implemented method to get the number of channel of the process of the simulation.
      *
@@ -847,28 +893,28 @@ public final class Msg {
      *
      * @see                    Channel.getNumber()
      */
-    final static native int channelGetNumber();
-             
+  final static native int channelGetNumber();
+
     /*********************************************************************************
      * Additional native methods                                                      *
      **********************************************************************************/
-      
+
     /**
      * The natively implemented method to get the simulation time.
      *
      * @param                    The simulation time.
      */
-    public final static native double getClock();
-      
-    public final static native void pajeOutput(String pajeFile);
-      
-       
-    public final static native void info(String s);
-                        
+  public final static native double getClock();
+
+  public final static native void pajeOutput(String pajeFile);
+
+
+  public final static native void info(String s);
+
     /*********************************************************************
      * The natively implemented methods connected to the MSG simulation  *
      *********************************************************************/
-       
+
     /**
      * The natively implemented method to initialize a MSG simulation.
      *
@@ -876,8 +922,8 @@ public final class Msg {
      *
      * @see                    Msg.init()
      */
-    public final static native void init(String[] args);
-       
+  public final static native void init(String[]args);
+
     /**
      * Run the MSG simulation, and cleanup everything afterward.
      *
@@ -886,61 +932,65 @@ public final class Msg {
      *
      * @see                    MSG_run, MSG_clean
      */
-    public final static native void run() throws NativeException;
-       
+  public final static native void run() throws NativeException;
+
     /**
      * The native implemented method to create the environment of the simulation.
      *
      * @param platformFile    The XML file which contains the description of the environment of the simulation
      *
      */
-    public final static native void createEnvironment(String platformFile) throws NativeException;
-       
-       
+  public final static native void createEnvironment(String platformFile)
+    throws NativeException;
+
+
     /**
      * The method to deploy the simulation.
      *
      * @param appFile        The XML file which contains the description of the application to deploy.
      */
-       
-        
-    public static void deployApplication(String platformFile) {
-	try {
-	    Class c = Class.forName("com.sun.org.apache.xerces.internal.parsers.SAXParser");
-	    XMLReader reader = (XMLReader)c.newInstance();
-	    reader.setEntityResolver(new DTDResolver());
-	    ApplicationHandler handler = new ApplicationHandler();
-	    reader.setContentHandler(handler);
-	    reader.setFeature("http://xml.org/sax/features/validation", false);
-	    reader.parse(platformFile);
 
-	} catch(Exception e) {
-	    /* FIXME: do not swallow exception ! */
-	    System.out.println("Exception in Msg.launchApplication()");
-	    System.out.println(e);
-	    e.printStackTrace();
-	}        
-    }                    
 
-    /* The launcher */
-    static public void main(String[]args) throws MsgException {
-	/* initialize the MSG simulation. Must be done before anything else (even logging). */
-	Msg.init(args);
+  public static void deployApplication(String platformFile) {
+    try {
+      Class c =
+        Class.forName("com.sun.org.apache.xerces.internal.parsers.SAXParser");
+      XMLReader reader = (XMLReader) c.newInstance();
 
-	if(args.length < 2) {
-    		
-	    Msg.info("Usage: Msg platform_file deployment_file");
-	    System.exit(1);
-	}
-		
-	/* specify the number of channel for the process of the simulation. */
-	Channel.setNumber(1);
-		
-	/* Load the platform and deploy the application */
-	Msg.createEnvironment(args[0]);
-	Msg.deployApplication(args[1]);
-		
-	/* Execute the simulation */
-	Msg.run();
+      reader.setEntityResolver(new DTDResolver());
+      ApplicationHandler handler = new ApplicationHandler();
+
+      reader.setContentHandler(handler);
+      reader.setFeature("http://xml.org/sax/features/validation", false);
+      reader.parse(platformFile);
+
+    } catch(Exception e) {
+      /* FIXME: do not swallow exception ! */
+      System.out.println("Exception in Msg.launchApplication()");
+      System.out.println(e);
+      e.printStackTrace();
     }
+  }
+
+  /* The launcher */
+  static public void main(String[]args) throws MsgException {
+    /* initialize the MSG simulation. Must be done before anything else (even logging). */
+    Msg.init(args);
+
+    if (args.length < 2) {
+
+      Msg.info("Usage: Msg platform_file deployment_file");
+      System.exit(1);
+    }
+
+    /* specify the number of channel for the process of the simulation. */
+      Channel.setNumber(1);
+
+    /* Load the platform and deploy the application */
+    Msg.createEnvironment(args[0]);
+    Msg.deployApplication(args[1]);
+
+    /* Execute the simulation */
+    Msg.run();
+  }
 }

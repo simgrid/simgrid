@@ -8,27 +8,25 @@
  * it and/or modify it under the terms of the license 
  * (GNU LGPL) which comes with this package.
  */
- 
+
 package simgrid.msg;
 
 public class NativeException extends MsgException {
-	
-   private static final long serialVersionUID = 1L;
+
+  private static final long serialVersionUID = 1L;
 
    /**
     * Constructs an <code>NativeException</code> without a 
     * detail message. 
     */
-   public NativeException() {
-      super();
-   }
-   
+  public NativeException() {
+    super();
+  }
    /**
     * Constructs an <code>NativeException</code> with a detail message. 
     *
     * @param   s   the detail message.
-    */
-   public NativeException(String s) {
-      super(s);
-   }
+    */ public NativeException(String s) {
+    super(s);
+  }
 }
