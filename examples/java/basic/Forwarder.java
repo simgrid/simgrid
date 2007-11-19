@@ -28,17 +28,15 @@ public class Forwarder extends simgrid.msg.Process {
 	 }
       }
       
-      Channel channel = new Channel(0);
-		
       int taskCount = 0;
       while(true) {
-	 Task t = channel.get();	
+	 Task t = Task.get(0);	
 	 
 	 if (t instanceof FinalizeTask) {
 	    Msg.info("All tasks have been dispatched. Let's tell everybody the computation is over.");
 	    
 	    for (int cpt = 0; cpt<slavesCount; cpt++) {
-	       channel.put(new FinalizeTask(),slaves[cpt]);
+	       slaves[cpt].put(0,new FinalizeTask());
 	    }
 	    break;
 	 }
@@ -47,7 +45,7 @@ public class Forwarder extends simgrid.msg.Process {
 	 Msg.info("Received \"" + task.getName() + "\" ");
 	 	    
 	 Msg.info("Sending \"" + task.getName() + "\" to \"" + slaves[taskCount % slavesCount].getName() + "\"");
-	 channel.put(task, slaves[taskCount % slavesCount]);
+	 slaves[taskCount % slavesCount].put(0, task);
 	    
 	 taskCount++;
       }

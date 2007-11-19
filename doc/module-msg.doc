@@ -1,4 +1,48 @@
-/** @addtogroup MSG_API 
+/** \defgroup MSG_JAVA      jMSG
+    \ingroup MSG_API
+    \brief Java bindings to MSG (\ref MSG_API)
+
+    \htmlonly <!-- 
+      DOXYGEN_NAVBAR_LABEL="JAVA bindings" 
+      DOXYGEN_NAVBAR_CHILD "Simulation functions"=classsimgrid_1_1msg_1_1Msg.html
+      DOXYGEN_NAVBAR_CHILD "Host"=classsimgrid_1_1msg_1_1Host.html
+      DOXYGEN_NAVBAR_CHILD "Process"=classsimgrid_1_1msg_1_1Process.html
+      DOXYGEN_NAVBAR_CHILD "Task"=classsimgrid_1_1msg_1_1Task.html      
+      DOXYGEN_NAVBAR_CHILD "MsgException"=classsimgrid_1_1msg_1_1MsgException.html
+    --> \endhtmlonly 
+	  
+      MSG was the first distributed programming environment provided within
+      SimGrid. While almost realistic, it remains quite simple (simplistic?).
+      This describes the Java bindings to this interface.
+
+      \section jMSG_who Who should use this (and who shouldn't)
+      
+      You should use MSG if you want to study some heuristics for a
+      given problem you don't really want to implement. If you want to
+      use the Java programming language, your are in the right
+      section. To use the C interface, please refer to \ref MSG_C.
+*/
+
+/** \defgroup MSG_C      MSG native
+    \ingroup MSG_API
+    \brief Native interface to MSG (\ref MSG_API)
+
+    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Native interface" --> \endhtmlonly 
+	  
+      MSG was the first distributed programming environment provided within
+      SimGrid. While almost realistic, it remains quite simple (simplistic?).
+      This describes the native to MSG.
+
+      \section jMSG_who Who should use this (and who shouldn't)
+      
+      You should use MSG if you want to study some heuristics for a
+      given problem you don't really want to implement. If you want to
+      use the C programming language, your are in the right
+      section. To use the Java programming interface, please refer to
+      \ref MSG_JAVA.
+*/
+
+/** @addtogroup MSG_C
 
   \section MSG_funct Offered functionnalities
    - \ref m_process_management
@@ -16,29 +60,27 @@
 */
 
 /** @defgroup m_datatypes_management MSG Data Types 
-    @ingroup MSG_API
+    @ingroup MSG_C
     @brief This section describes the different datatypes provided by MSG.
     
     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
 */
 /**     \addtogroup m_process_management
-        \ingroup MSG_API  */
+        \ingroup MSG_C  */
 /**     \addtogroup m_host_management
-        \ingroup MSG_API  */
+        \ingroup MSG_C  */
 /**     \addtogroup m_task_management
-        \ingroup MSG_API  */
+        \ingroup MSG_C  */
 /**     \addtogroup msg_gos_functions
-        \ingroup MSG_API  */
+        \ingroup MSG_C  */
 /**     \addtogroup m_channel_management
-        \ingroup MSG_API  */
+        \ingroup MSG_C  */
 /**     \addtogroup msg_easier_life
-        \ingroup MSG_API  */
+        \ingroup MSG_C  */
 /**     \addtogroup msg_simulation
-        \ingroup MSG_API  */
+        \ingroup MSG_C  */
 
 /** \page MSG_ex_master_slave Master/slave application
-
-    <center>[\ref MSG_API]</center>
     
     Simulation of a master-slave application using a realistic platform and
     an external description of the deployment. 

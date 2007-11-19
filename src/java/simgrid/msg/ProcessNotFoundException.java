@@ -11,22 +11,24 @@
 
 package simgrid.msg;
 
+/**
+  * This exception is raised when looking for a non-existing process.
+  */
 public class ProcessNotFoundException extends MsgException {
-
   private static final long serialVersionUID = 1L;
 
-   /**
-    * Constructs an <code>ProcessNotFoundException</code> without a 
-    * detail message. 
-    */
+  /*
+   * Constructs an <code>ProcessNotFoundException</code> without a 
+   * detail message. 
+   */
   public ProcessNotFoundException() {
     super();
   }
-   /**
-    * Constructs an <code>ProcessNotFoundException</code> with a detail message. 
-    *
-    * @param   s   the detail message.
-    */ public ProcessNotFoundException(String s) {
+  /*
+   * Constructs an <code>ProcessNotFoundException</code> with a detail message. 
+   *
+   * @param   s   the detail message.
+   */ public ProcessNotFoundException(String s) {
     super(s);
   }
 }

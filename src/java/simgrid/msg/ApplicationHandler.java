@@ -96,7 +96,7 @@ public final class ApplicationHandler extends DefaultHandler {
         process.id = simgrid.msg.Process.nextProcessId++;
         Host host = Host.getByName(this.hostName);
 
-        Msg.processCreate(process, host);
+        MsgNative.processCreate(process, host);
         Vector args = processFactory.args;
         int size = args.size();
 

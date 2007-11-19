@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "surfxml.dtd">
 <platform version="2">
   <process host="Jacquelin" function="Master">
-     <argument value="10000"/>
+     <argument value="50000"/>
      <argument value="50000"/>
      <argument value="10"/>
      <argument value="iRMX"/>

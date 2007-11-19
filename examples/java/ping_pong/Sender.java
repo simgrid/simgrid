@@ -36,8 +36,6 @@ public class Sender extends simgrid.msg.Process {
 	  }
         }
         
-        Channel channel = new Channel(0);
-        
         for (int pos = 0; pos < hostCount; pos++) { 
 	   time = Msg.getClock(); 
             
@@ -46,7 +44,7 @@ public class Sender extends simgrid.msg.Process {
 	   task = new PingPongTask("no name",computeDuration,commSizeLat);
 	   task.setTime(time);
             
-	   channel.put(task, hostTable[pos]); 
+	   hostTable[pos].put(0,task);
         } 
         
         Msg.info("goodbye!");

@@ -27,7 +27,7 @@ get_current_thread_env(void);
  * Signature	(Lsimgrid/msg/Process;Lsimgrid/msg/Host;)V
  */
 JNIEXPORT void JNICALL 
-Java_simgrid_msg_Msg_processCreate(JNIEnv* env,jclass cls,jobject jprocess,jobject jhost);
+Java_simgrid_msg_MsgNative_processCreate(JNIEnv* env,jclass cls,jobject jprocess,jobject jhost);
 
 
 
@@ -37,14 +37,14 @@ Java_simgrid_msg_Msg_processCreate(JNIEnv* env,jclass cls,jobject jprocess,jobje
  * Signature	(Lsimgrid/msg/Process;)V
  */
 JNIEXPORT void JNICALL 
-Java_simgrid_msg_Msg_processSuspend(JNIEnv* env, jclass cls, jobject jprocess);
+Java_simgrid_msg_MsgNative_processSuspend(JNIEnv* env, jclass cls, jobject jprocess);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		processResume
  * Signature	(Lsimgrid/msg/Process;)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_processResume
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_processResume
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_simgrid_msg_Msg_processResume
  * Method		processIsSuspended
  * Signature	(Lsimgrid/msg/Process;)Z
  */
-JNIEXPORT jboolean JNICALL Java_simgrid_msg_Msg_processIsSuspended
+JNIEXPORT jboolean JNICALL Java_simgrid_msg_MsgNative_processIsSuspended
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jboolean JNICALL Java_simgrid_msg_Msg_processIsSuspended
  * Method		processKill
  * Signature	(Lsimgrid/msg/Process;)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_processKill
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_processKill
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT void JNICALL Java_simgrid_msg_Msg_processKill
  * Method		processGetHost
  * Signature	(Lsimgrid/msg/Process;)Lsimgrid/msg/Host;
  */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_processGetHost
+JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_processGetHost
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_processGetHost
  * Method		processFromPID
  * Signature	(I)Lsimgrid/msg/Process;
  */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_processFromPID
+JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_processFromPID
   (JNIEnv *, jclass, jint);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_processFromPID
  * Method		processGetPID
  * Signature	(Lsimgrid/msg/Process;)I
  */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processGetPID
+JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_processGetPID
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processGetPID
  * Method		processGetPPID
  * Signature	(Lsimgrid/msg/Process;)I
  */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processGetPPID
+JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_processGetPPID
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -100,7 +100,7 @@ JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processGetPPID
  * Method		processSelf
  * Signature	()Lsimgrid/msg/Process;
  */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_processSelf
+JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_processSelf
   (JNIEnv *, jclass);
 
 /*
@@ -108,7 +108,7 @@ JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_processSelf
  * Method		processSelfPID
  * Signature	()I
  */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processSelfPID
+JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_processSelfPID
   (JNIEnv *, jclass);
 
 /*
@@ -116,7 +116,7 @@ JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processSelfPID
  * Method		processSelfPPID
  * Signature	()I
  */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processSelfPPID
+JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_processSelfPPID
   (JNIEnv *, jclass);
 
 /*
@@ -124,7 +124,7 @@ JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processSelfPPID
  * Method		processChangeHost
  * Signature	(Lsimgrid/msg/Process;Lsimgrid/msg/Host;)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_processChangeHost
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_processChangeHost
   (JNIEnv *, jclass, jobject, jobject);
 
 /*
@@ -132,7 +132,7 @@ JNIEXPORT void JNICALL Java_simgrid_msg_Msg_processChangeHost
  * Method		processWaitFor
  * Signature	(D)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_processWaitFor
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_processWaitFor
   (JNIEnv *, jclass, jdouble);
 
 /*
@@ -140,7 +140,7 @@ JNIEXPORT void JNICALL Java_simgrid_msg_Msg_processWaitFor
  * Method		hostGetByName
  * Signature	(Ljava/lang/String;)Lsimgrid/msg/Host;
  */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_hostGetByName
+JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_hostGetByName
   (JNIEnv *, jclass, jstring);
 
 /*
@@ -148,7 +148,7 @@ JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_hostGetByName
  * Method		hostGetName
  * Signature	(Lsimgrid/msg/Host;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_simgrid_msg_Msg_hostGetName
+JNIEXPORT jstring JNICALL Java_simgrid_msg_MsgNative_hostGetName
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -156,7 +156,7 @@ JNIEXPORT jstring JNICALL Java_simgrid_msg_Msg_hostGetName
  * Method		hostGetNumber
  * Signature	()I
  */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_hostGetNumber
+JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_hostGetNumber
   (JNIEnv *, jclass);
 
 /*
@@ -164,7 +164,7 @@ JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_hostGetNumber
  * Method		hostSelf
  * Signature	()Lsimgrid/msg/Host;
  */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_hostSelf
+JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_hostSelf
   (JNIEnv *, jclass);
 
 /*
@@ -172,18 +172,18 @@ JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_hostSelf
  * Method		hostGetSpeed
  * Signature	(Lsimgrid/msg/Host;)D
  */
-JNIEXPORT jdouble JNICALL Java_simgrid_msg_Msg_hostGetSpeed
+JNIEXPORT jdouble JNICALL Java_simgrid_msg_MsgNative_hostGetSpeed
   (JNIEnv *, jclass, jobject);
 
 JNIEXPORT jint JNICALL 
-Java_simgrid_msg_Msg_hostGetLoad(JNIEnv* env, jclass cls, jobject jhost);
+Java_simgrid_msg_MsgNative_hostGetLoad(JNIEnv* env, jclass cls, jobject jhost);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		hostIsAvail
  * Signature	(Lsimgrid/msg/Host;)Z
  */
-JNIEXPORT jboolean JNICALL Java_simgrid_msg_Msg_hostIsAvail
+JNIEXPORT jboolean JNICALL Java_simgrid_msg_MsgNative_hostIsAvail
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -191,206 +191,131 @@ JNIEXPORT jboolean JNICALL Java_simgrid_msg_Msg_hostIsAvail
  * Method		taskCreate
  * Signature	(Lsimgrid/msg/Task;Ljava/lang/String;DD)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_taskCreate
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_taskCreate
   (JNIEnv *, jclass, jobject, jstring, jdouble, jdouble);
 
 JNIEXPORT void JNICALL 
-Java_simgrid_msg_Msg_parallel_taskCreate(JNIEnv*, jclass, jobject, jstring, jobjectArray,jdoubleArray, jdoubleArray);
+Java_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv*, jclass, jobject, jstring, jobjectArray,jdoubleArray, jdoubleArray);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		taskGetSender
  * Signature	(Lsimgrid/msg/Task;)Lsimgrid/msg/Process;
  */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_taskGetSender
+JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_taskGetSender
   (JNIEnv *, jclass, jobject);
-
-JNIEXPORT jobject JNICALL 
-Java_simgrid_msg_Msg_parallelTaskGetSender(JNIEnv* env , jclass cls , jobject jparallel_task);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		taskGetSource
  * Signature	(Lsimgrid/msg/Task;)Lsimgrid/msg/Host;
  */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_taskGetSource
+JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_taskGetSource
   (JNIEnv *, jclass, jobject);
-
-JNIEXPORT jobject JNICALL 
-Java_simgrid_msg_Msg_parallelTaskGetSource(JNIEnv* env , jclass cls, jobject jparallel_task);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		taskGetName
  * Signature	(Lsimgrid/msg/Task;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_simgrid_msg_Msg_taskGetName
+JNIEXPORT jstring JNICALL Java_simgrid_msg_MsgNative_taskGetName
   (JNIEnv *, jclass, jobject);
-
-JNIEXPORT jstring JNICALL 
-Java_simgrid_msg_Msg_parallelTaskGetName(JNIEnv* env, jclass cls, jobject jparallel_task);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		taskCancel
  * Signature	(Lsimgrid/msg/Task;)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_taskCancel
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_taskCancel
   (JNIEnv *, jclass, jobject);
-
-JNIEXPORT void JNICALL 
-Java_simgrid_msg_Msg_parallelTaskCancel(JNIEnv* env, jclass cls, jobject jparallel_task);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		taskGetComputeDuration
  * Signature	(Lsimgrid/msg/Task;)D
  */
-JNIEXPORT jdouble JNICALL Java_simgrid_msg_Msg_taskGetComputeDuration
+JNIEXPORT jdouble JNICALL Java_simgrid_msg_MsgNative_taskGetComputeDuration
   (JNIEnv *, jclass, jobject);
-
-JNIEXPORT jdouble JNICALL 
-Java_simgrid_msg_Msg_parallelTaskGetComputeDuration(JNIEnv* env, jclass cls, jobject jparallel_task);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		taskGetRemainingDuration
  * Signature	(Lsimgrid/msg/Task;)D
  */
-JNIEXPORT jdouble JNICALL Java_simgrid_msg_Msg_taskGetRemainingDuration
+JNIEXPORT jdouble JNICALL Java_simgrid_msg_MsgNative_taskGetRemainingDuration
   (JNIEnv *, jclass, jobject);
-
-JNIEXPORT jdouble JNICALL 
-Java_simgrid_msg_Msg_paralleTaskGetRemainingDuration(JNIEnv* env, jclass cls, jobject jparallel_task);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		taskSetPriority
  * Signature	(Lsimgrid/msg/Task;D)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_taskSetPriority
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_taskSetPriority
   (JNIEnv *, jclass, jobject, jdouble);
-
-JNIEXPORT void JNICALL 
-Java_simgrid_msg_Msg_parallelTaskSetPriority(JNIEnv* env, jclass cls, jobject jparallel_task, jdouble priority);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		taskDestroy
  * Signature	(Lsimgrid/msg/Task;)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_taskDestroy
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_taskDestroy
   (JNIEnv *, jclass, jobject);
-
-JNIEXPORT void JNICALL 
-Java_simgrid_msg_Msg_parallelTaskDestroy(JNIEnv* env, jclass cls, jobject jparallel_task);
 
 /*
  * Class		simgrid_msg_Msg
  * Method		taskExecute
  * Signature	(Lsimgrid/msg/Task;)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_taskExecute
-  (JNIEnv *, jclass, jobject);
-
-JNIEXPORT void JNICALL 
-Java_simgrid_msg_Msg_parallelTaskExecute(JNIEnv* env, jclass cls, jobject jparallel_task);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		channelGet
- * Signature	(Lsimgrid/msg/Channel;)Lsimgrid/msg/Task;
- */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_channelGet
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_taskExecute
   (JNIEnv *, jclass, jobject);
 
 /*
  * Class		simgrid_msg_Msg
- * Method		channelGetWithTimeout
- * Signature	(Lsimgrid/msg/Channel;D)Lsimgrid/msg/Task;
+ * Method		taskGetWithTimeout
+ * Signature	(I;D;Lsimgrid/msg/Host;)Lsimgrid/msg/Task;
  */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_channelGetWithTimeout
-  (JNIEnv *, jclass, jobject, jdouble);
+JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_taskGet
+  (JNIEnv *, jclass, jint, jdouble, jobject);
 
 /*
  * Class		simgrid_msg_Msg
- * Method		channelGetFromHost
- * Signature	(Lsimgrid/msg/Channel;Lsimgrid/msg/Host;)Lsimgrid/msg/Task;
+ * Method		taskHasPendingCommunication
+ * Signature	(I)Z
  */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_Msg_channelGetFromHost
-  (JNIEnv *, jclass, jobject, jobject);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		channelHasPendingCommunication
- * Signature	(Lsimgrid/msg/Channel;)Z
- */
-JNIEXPORT jboolean JNICALL Java_simgrid_msg_Msg_channelHasPendingCommunication
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		channelGetCommunicatingProcess
- * Signature	(Lsimgrid/msg/Channel;)I
- */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_channelGetCommunicatingProcess
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		channelGetHostWaitingTasks
- * Signature	(Lsimgrid/msg/Channel;Lsimgrid/msg/Host;)I
- */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_channelGetHostWaitingTasks
-  (JNIEnv *, jclass, jobject, jobject);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		channelPut
- * Signature	(Lsimgrid/msg/Channel;Lsimgrid/msg/Task;Lsimgrid/msg/Host;)V
- */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_channelPut
-  (JNIEnv *, jclass, jobject, jobject, jobject);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		channelPutWithTimeout
- * Signature	(Lsimgrid/msg/Channel;Lsimgrid/msg/Task;Lsimgrid/msg/Host;D)V
- */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_channelPutWithTimeout
-  (JNIEnv *, jclass, jobject, jobject, jobject, jdouble);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		channelPutBounded
- * Signature	(Lsimgrid/msg/Channel;Lsimgrid/msg/Task;Lsimgrid/msg/Host;D)V
- */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_channelPutBounded
-  (JNIEnv *, jclass, jobject, jobject, jobject, jdouble);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		channelWait
- * Signature	(Lsimgrid/msg/Channel;D)I
- */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_channelWait
-  (JNIEnv *, jclass, jobject, jdouble);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		channelSetNumber
- * Signature	(I)V
- */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_channelSetNumber
+JNIEXPORT jboolean JNICALL Java_simgrid_msg_MsgNative_taskProbe
   (JNIEnv *, jclass, jint);
 
 /*
  * Class		simgrid_msg_Msg
- * Method		channelGetNumber
- * Signature	()I
+ * Method		taskGetCommunicatingProcess
+ * Signature	(I)Lsimgrid/msg/Process;
  */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_channelGetNumber
-  (JNIEnv *, jclass);
+JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_taskGetCommunicatingProcess
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class		simgrid_msg_Msg
+ * Method		taskGetHostWaitingTasks
+ * Signature	(Lsimgrid/msg/Host;I)I
+ */
+JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_taskProbeHost
+  (JNIEnv *, jclass, jobject, jint);
+
+/*
+ * Class		simgrid_msg_Msg
+ * Method		hostPutWith
+ * Signature	(Lsimgrid/msg/Host;I;Lsimgrid/msg/Task;D)V
+ */
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_hostPut
+  (JNIEnv *, jclass, jobject, jint, jobject, jdouble);
+
+/*
+ * Class		simgrid_msg_Msg
+ * Method		hostPutBounded
+ * Signature	(Lsimgrid/msg/Host;I;Lsimgrid/msg/Task;D)V
+ */
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_hostPutBounded
+  (JNIEnv *, jclass, jobject, jint, jobject, jdouble);
 
 /*
  * Class		simgrid_msg_Msg
@@ -408,11 +333,6 @@ JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_getErrCode
 JNIEXPORT jdouble JNICALL Java_simgrid_msg_Msg_getClock
   (JNIEnv *, jclass);
 
-
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_init
-  (JNIEnv *, jclass, jobjectArray);
-
-
 JNIEXPORT void JNICALL
 JNICALL Java_simgrid_msg_Msg_run(JNIEnv* env, jclass cls);
 
@@ -424,7 +344,7 @@ Java_simgrid_msg_Msg_init(JNIEnv* env, jclass cls, jobjectArray jargs);
  * Method		processKillAll
  * Signature	(I)I
  */
-JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processKillAll
+JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_processKillAll
   (JNIEnv *, jclass, jint);
 
 /*
@@ -432,35 +352,22 @@ JNIEXPORT jint JNICALL Java_simgrid_msg_Msg_processKillAll
  * Method		processExit
  * Signature	(Lsimgrid/msg/Process;)V
  */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_processExit
+JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_processExit
   (JNIEnv *, jclass, jobject);
-
 
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_Msg_pajeOutput(JNIEnv* env, jclass cls, jstring jpajeFile);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		waitSignal
- * Signature	(Lsimgrid/msg/Process;)V
- */
-JNIEXPORT void JNICALL Java_simgrid_msg_Msg_waitSignal
-  (JNIEnv *, jclass, jobject);
 
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_Msg_info(JNIEnv * , jclass , jstring );
 
 JNIEXPORT jobjectArray JNICALL
-Java_simgrid_msg_Msg_allHosts(JNIEnv * , jclass );
+Java_simgrid_msg_MsgNative_allHosts(JNIEnv * , jclass );
 
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_Msg_createEnvironment(JNIEnv* env, jclass cls,jstring jplatformFile);
 
 JNIEXPORT void JNICALL 
-Java_simgrid_msg_Msg_platformLoad(JNIEnv* env, jclass cls, jobject jplatform);
-
-
-JNIEXPORT void JNICALL 
-Java_simgrid_msg_Msg_selectContextFactory(JNIEnv *, jclass, jstring);
+Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv *, jclass, jstring);
 
 #endif /* !MSG4JAVA_H */ 

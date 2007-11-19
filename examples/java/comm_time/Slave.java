@@ -16,11 +16,9 @@ public class Slave extends simgrid.msg.Process {
       
       Msg.info("Hello i'm a slave");
       
-      Channel channel = new Channel(0);
-		
       while(true) {
 	 double time1 = Msg.getClock();       
-	 Task t = channel.get();	
+	 Task t = Task.get(0);	
 	 double time2 = Msg.getClock();
  
 	 if (t instanceof FinalizeTask) {

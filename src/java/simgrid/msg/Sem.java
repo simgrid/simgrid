@@ -18,7 +18,7 @@
   public Sem(int i) {
     permits_ = i;
   } public void acquire() throws InterruptedException {
-      if (Thread.interrupted())
+    if (Thread.interrupted())
       throw new InterruptedException();
     synchronized(this) {
       try {

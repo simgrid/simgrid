@@ -39,12 +39,10 @@ public class Master extends simgrid.msg.Process {
       
       Msg.info("Got "+numberoftasks+" task(s) to process.");
       
-      Channel channel = new Channel(0);
-		
       for (int i = 0; i < numberoftasks; i++) {			
 	 CommTimeTask task = new CommTimeTask("Task_" + i ,taskComputeSize,taskCommunicateSize);
 	 task.setTime(Msg.getClock());
-	 channel.put(task,slaves[i % slavecount]);
+	 slaves[i % slavecount].put(0,task);
 	 
 //	 Msg.info("Send completed for the task " + task.getName() + " on the host " + slaves[i % slavecount].getName() +  " [" + (i % slavecount) + "]");
       }
@@ -54,7 +52,7 @@ public class Master extends simgrid.msg.Process {
       for (int i = 0; i < slavecount; i++) { 
 			
 	 Msg.info("Finalize host " + slaves[i].getName() +  " [" + i + "]");
-	 channel.put(new FinalizeTask(),slaves[i]);
+	 slaves[i].put(0, new FinalizeTask());
       }
       
       Msg.info("All finalize messages have been dispatched. Goodbye now!");

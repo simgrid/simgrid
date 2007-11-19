@@ -19,8 +19,8 @@ public class BasicTest {
    
     public static void main(String[] args) throws JniException, NativeException {
        
-	/* initialize the MSG simulation. Must be done before anything else (even logging). */
-	Msg.init(args);
+       /* initialize the MSG simulation. Must be done before anything else (even logging). */
+       Msg.init(args);
 
        if(args.length < 2) {
     		
@@ -29,8 +29,6 @@ public class BasicTest {
 	  System.exit(1);
        }
 		
-	/* specify the number of channel for the process of the simulation. */
-	Channel.setNumber(1);
         /* specify a paje output file. */
         Msg.pajeOutput("basic.trace");
 		

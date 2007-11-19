@@ -14,10 +14,8 @@ public class Slave extends simgrid.msg.Process {
    public void main(String[] args) throws JniException, NativeException {
       Msg.info("Hello !");
       
-      Channel channel = new Channel(0);
-
       while(true) { 
-	 Task t = channel.get();	
+	 Task t = Task.get(0);	
 	 
 	 if (t instanceof FinalizeTask) {
 	    break;

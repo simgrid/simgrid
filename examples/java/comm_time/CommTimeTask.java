@@ -13,10 +13,9 @@ import simgrid.msg.*;
 public class CommTimeTask extends Task {
     	
    private double timeVal;
-   private int data;
     	
    public CommTimeTask(String name, double computeDuration, double messageSize) throws JniException, NativeException{
-      create(name,computeDuration,messageSize);
+      super(name,computeDuration,messageSize);
    }
 	
    public void setTime(double timeVal){
@@ -25,14 +24,6 @@ public class CommTimeTask extends Task {
    
    public double getTime() {
       return this.timeVal;
-   }
-    	
-   public void setData(int data) {
-      this.data = data;
-   }
-   
-   public int getData() {
-      return this.data;
    }
 }
     

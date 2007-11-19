@@ -11,22 +11,26 @@
 
 package simgrid.msg;
 
+/**
+ * This exception is raised when looking for a non-existing host.
+ */
 public class HostNotFoundException extends MsgException {
-
   private static final long serialVersionUID = 1L;
 
-   /**
-    * Constructs an <code>HostNotFoundException</code> without a 
-    * detail message. 
-    */
+
+  /*
+   * Constructs an <code>HostNotFoundException</code> without a 
+   * detail message. 
+   */
   public HostNotFoundException() {
     super();
   }
-   /**
-    * Constructs an <code>HostNotFoundException</code> with a detail message. 
-    *
-    * @param   s   the detail message.
-    */ public HostNotFoundException(String s) {
+  /*
+   * Constructs an <code>HostNotFoundException</code> with a detail message. 
+   *
+   * @param   s   the detail message.
+   */
+  public HostNotFoundException(String s) {
     super(s);
   }
 }

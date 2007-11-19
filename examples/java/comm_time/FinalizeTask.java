@@ -13,7 +13,7 @@ import simgrid.msg.*;
 public class FinalizeTask extends Task {
     	
    public FinalizeTask() throws JniException, NativeException{
-      create("",0,0);
+      super("",0,0);
    }
 }
     

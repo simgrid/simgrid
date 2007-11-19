@@ -1,5 +1,5 @@
 /*
- * simgrid.msg.Host.java	1.00 07/05/01
+ * $Id$
  *
  * Copyright 2006,2007 Martin Quinson, Malek Cherier           
  * All right reserved. 
@@ -14,7 +14,7 @@ package simgrid.msg;
 import java.lang.Thread;
 import java.util.*;
 
-/*
+/**
  * A process may be defined as a code, with some private data, executing 
  * in a location (host). All the process used by your simulation must be
  * declared in the deployment file (XML format).
@@ -27,34 +27,25 @@ import java.util.*;
  * 
  * public class Slave extends simgrid.msg.Process {
  *
- * 	(2) Write a default constructor and 
- *	call the default constructor of the base class.
- *	
- * 	public Slave() {
- * 		super();
- *  }
- *
- *  (3) Override the method function 
+ *  (2) Override the method function
+ * 
+ *  \verbatim
  * 	public void main(String[] args) {
  *		System.out.println("Hello MSG");
  *	}
+ *  \endverbatim
  * }
  * The name of your process must be declared in the deployment file of your simulation.
  * For the exemple, for the previouse process Slave this file must contains a line :
  * <process host="Maxims" function="Slave"/>, where Maxims is the host of the process
  * Slave. All the process of your simulation are automaticaly launched and managed by Msg.
  * A process use tasks to simulate communications or computations with another process. 
- * For more information see Task and ParallelTask. For more information on host concept 
+ * For more information see Task. For more information on host concept 
  * see Host.
  * 
  * @author  Abdelmalek Cherier
  * @author  Martin Quinson
- * @version 1.00, 07/05/01
- * @see Host
- * @see Task
- * @see ParallelTask
  * @since SimGrid 3.3
- * @since JDK1.5011
  */
 
 public abstract class Process extends Thread {
@@ -186,7 +177,7 @@ public abstract class Process extends Thread {
       schedBegin = new Sem(0);
       schedEnd = new Sem(0);
 
-      Msg.processCreate(this, host);
+      MsgNative.processCreate(this, host);
   }
     /**
      * This method kills all running process of the simulation.
@@ -198,7 +189,7 @@ public abstract class Process extends Thread {
      * @return				The function returns the PID of the next created process.
      *			
      */ public static int killAll(int resetPID) {
-    return Msg.processKillAll(resetPID);
+    return MsgNative.processKillAll(resetPID);
   }
 
     /**
@@ -219,7 +210,7 @@ public abstract class Process extends Thread {
      *                              NativeException on error in the native SimGrid code
      */
   public void pause() throws JniException, NativeException {
-    Msg.processSuspend(this);
+    MsgNative.processSuspend(this);
   }
     /**
      * This method resumes a suspended process by resuming the task on which it was
@@ -229,7 +220,7 @@ public abstract class Process extends Thread {
      *                              NativeException on error in the native SimGrid code
      *
      */ public void restart() throws JniException, NativeException {
-    Msg.processResume(this);
+    MsgNative.processResume(this);
   }
     /**
      * This method tests if a process is suspended.
@@ -239,7 +230,7 @@ public abstract class Process extends Thread {
      *
      * @exception			JniException on JNI madness
      */ public boolean isSuspended() throws JniException {
-    return Msg.processIsSuspended(this);
+    return MsgNative.processIsSuspended(this);
   }
     /**
      * This method returns the host of a process.
@@ -250,7 +241,7 @@ public abstract class Process extends Thread {
      *                              NativeException on error in the native SimGrid code
      *
      */ public Host getHost() throws JniException, NativeException {
-    return Msg.processGetHost(this);
+    return MsgNative.processGetHost(this);
   }
     /**
      * This static method get a process from a PID.
@@ -261,7 +252,7 @@ public abstract class Process extends Thread {
      *
      * @exception			NativeException on error in the native SimGrid code
      */ public static Process fromPID(int PID) throws NativeException {
-    return Msg.processFromPID(PID);
+    return MsgNative.processFromPID(PID);
   }
     /**
      * This method returns the PID of the process.
@@ -271,7 +262,7 @@ public abstract class Process extends Thread {
      * @exception			JniException on JNI madness
      *                              NativeException on error in the native SimGrid code
      */ public int getPID() throws JniException, NativeException {
-    return Msg.processGetPID(this);
+    return MsgNative.processGetPID(this);
   }
     /**
      * This method returns the PID of the parent of a process.
@@ -280,7 +271,7 @@ public abstract class Process extends Thread {
      *
      * @exception			NativeException on error in the native SimGrid code
      */ public int getPPID() throws NativeException {
-    return Msg.processGetPPID(this);
+    return MsgNative.processGetPPID(this);
   }
     /**
      * This static method returns the currently running process.
@@ -291,14 +282,14 @@ public abstract class Process extends Thread {
      *
      *
      */ public static Process currentProcess() throws NativeException {
-    return Msg.processSelf();
+    return MsgNative.processSelf();
   }
     /**
      * This static method returns the PID of the currently running process.
      *
      * @return				The PID of the current process.		
      */ public static int currentProcessPID() {
-    return Msg.processSelfPID();
+    return MsgNative.processSelfPID();
   }
 
     /**
@@ -307,7 +298,7 @@ public abstract class Process extends Thread {
      * @return				The PID of the parent of current process.		
      */
   public static int currentProcessPPID() {
-    return Msg.processSelfPPID();
+    return MsgNative.processSelfPPID();
   }
 
     /**
@@ -319,7 +310,7 @@ public abstract class Process extends Thread {
      *                              NativeException on error in the native SimGrid code
      */
   public void migrate(Host host) throws JniException, NativeException {
-    Msg.processChangeHost(this, host);
+    MsgNative.processChangeHost(this, host);
   }
     /**
      * This method makes the current process sleep until time seconds have elapsed.
@@ -328,7 +319,7 @@ public abstract class Process extends Thread {
      *
      * @exception			NativeException on error in the native SimGrid code
      */ public static void waitFor(double seconds) throws NativeException {
-    Msg.processWaitFor(seconds);
+    MsgNative.processWaitFor(seconds);
   } public void showArgs() {
     try {
       Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
@@ -367,7 +358,7 @@ public abstract class Process extends Thread {
       }
 
       this.main(args);
-      Msg.processExit(this);
+      MsgNative.processExit(this);
       schedEnd.release();
     }
     catch(MsgException e) {
@@ -378,44 +369,53 @@ public abstract class Process extends Thread {
   }
 
     /**
-     * Process synchronization. The process wait the signal of the simulator to start.
-     *
-     * @exception			JniException on JNI madness
+     * The main function of the process (to implement).
      */
-  private void waitSignal() throws JniException {
-    Msg.waitSignal(this);
-    unschedule();
-  }
-    /**
-   	 * The main function of the process (to implement).
-   	 */ public abstract void main(String[]args)
+  public abstract void main(String[]args)
   throws JniException, NativeException;
 
 
   public void unschedule() {
-
     try {
       schedEnd.release();
       schedBegin.acquire();
     } catch(InterruptedException e) {
-
     }
   }
 
   public void schedule() {
-
     try {
       schedBegin.release();
       schedEnd.acquire();
     } catch(InterruptedException e) {
-
     }
   }
 
-  public void taskSend(Channel channel, Task task,
-                       Host host) throws NativeException, JniException {
-    Msg.channelPut(channel, task, host);
-  } public Task taskReceive(Channel channel) throws NativeException,
+
+   /** Send the given task to given host on given channel */
+  public void taskSend(Host host, int channel,
+                       Task task) throws NativeException, JniException {
+    MsgNative.hostPut(host, channel, task, -1);
+  }
+   /** Receive a task on given channel */
+    public Task taskReceive(int channel) throws NativeException,
     JniException {
-    return Msg.channelGet(channel);
-}}
+    return MsgNative.taskGet(channel, -1, null);
+  }
+   /** Receive a task on given channel (waiting at most given time) */
+    public Task taskReceive(int channel,
+                            double timeout) throws NativeException,
+    JniException {
+    return MsgNative.taskGet(channel, timeout, null);
+  }
+   /** Receive a task on given channel from given sender */
+    public Task taskReceive(int channel, Host host) throws NativeException,
+    JniException {
+    return MsgNative.taskGet(channel, -1, host);
+  }
+   /** Receive a task on given channel from given sender (waiting at most given time) */
+    public Task taskReceive(int channel, double timeout,
+                            Host host) throws NativeException, JniException {
+    return MsgNative.taskGet(channel, timeout, host);
+  }
+}

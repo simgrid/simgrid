@@ -47,6 +47,7 @@
       before). 
 */
 
+
 /** \defgroup GRAS_API      GRAS
     \ingroup SimGrid_API
     \brief Realistic programming environment (Grid Reality And Simulation)

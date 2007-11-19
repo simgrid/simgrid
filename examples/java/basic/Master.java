@@ -12,6 +12,7 @@ import simgrid.msg.*;
 
 public class Master extends simgrid.msg.Process {
    public void main(String[] args) throws JniException, NativeException {
+      int channel = 0;
       Msg.info("hello!");
         
       int slaveCount = 0;
@@ -56,15 +57,13 @@ public class Master extends simgrid.msg.Process {
       
       Msg.info("Got "+ numberOfTasks + " task to process.");
       
-      Channel channel = new Channel(0);
-      
       for (int i = 0; i < numberOfTasks; i++) {
 	 Msg.info("Sending \"" + todo[i].getName()+ "\" to \"" + slaves[i % slaveCount].getName() + "\"");
 	 
 	 if((Host.currentHost()).equals(slaves[i % slaveCount])) 
 	   Msg.info("Hey ! It's me ! ");
 	 
-	 channel.put(todo[i], slaves[i % slaveCount]);
+	 slaves[i % slaveCount].put(channel, todo[i]);
       }
       
       Msg.info("Send completed");
@@ -72,7 +71,7 @@ public class Master extends simgrid.msg.Process {
       Msg.info("All tasks have been dispatched. Let's tell everybody the computation is over.");
       
       for (int i = 0; i < slaveCount; i++) {
-	 channel.put(new FinalizeTask(),slaves[i]);
+	 slaves[i].put(channel, new FinalizeTask());
       }
       
       Msg.info("Goodbye now!");

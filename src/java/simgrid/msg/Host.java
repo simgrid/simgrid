@@ -8,9 +8,8 @@
  * it and/or modify it under the terms of the license 
  *(GNU LGPL) which comes with this package. 
  *
- */
-package simgrid.msg;
-
+ */  
+  package simgrid.msg;
 import java.lang.String;
 
 /**
@@ -29,6 +28,7 @@ import java.lang.String;
  * For example to get the instance of the host. If your platform
  * file description contains an host named "Jacquelin" :
  *
+ * \verbatim
  *	Host jacquelin;
  *
  * 	try { 
@@ -37,17 +37,14 @@ import java.lang.String;
  *		System.err.println(e.toString());
  *	}
  *	...
+ * \endverbatim
  *
  * @author  Abdelmalek Cherier
  * @author  Martin Quinson
- * @version 1.00, 07/05/01
- * @see Grid
- * @see Simulation
- * @see Process
  * @since SimGrid 3.3
- * @since JDK1.5011
- */
-public class Host {
+ */ 
+  public class Host {
+  
         /**
 	 * This attribute represents a bind between a java host object and
 	 * a native host. Even if this attribute is public you must never
@@ -55,19 +52,19 @@ public class Host {
 	 * static method Host.getByName().
 	 *
 	 * @see				Host.getByName().
-	 */
+	 */ 
   public long bind;
 
+  
         /**
 	 * User data.
-	 */
-  private Object data;
-
+	 */ 
+    private Object data;
   protected Host() {
     this.bind = 0;
     this.data = null;
   };
-
+  
         /**
 	 * This static method gets an host instance associated with a native
 	 * host of your platform. This is the best way to get a java host object.
@@ -76,68 +73,76 @@ public class Host {
 	 *
 	 * @exception		HostNotFoundException if the name of the host is not valid.
 	 *					MsgException if the native version of this method failed.
-	 */
-  public static Host getByName(String name)
-  throws HostNotFoundException, NativeException, JniException {
-
-    return Msg.hostGetByName(name);
+	 */ 
+  public static Host getByName(String name) 
+    throws HostNotFoundException, NativeException, JniException {
+    return MsgNative.hostGetByName(name);
   }
+  
         /**
 	 * This static method returns the number of the installed hosts.
 	 *
 	 * @return			The number of the installed hosts.
 	 *
-	 */ public static int getNumber() throws NativeException, JniException {
-    return Msg.hostGetNumber();
+	 */ 
+  public static int getNumber() throws NativeException, JniException {
+    return MsgNative.hostGetNumber();
   }
+  
         /**
 	 * This static method return an instance to the host of the current process.
 	 *
 	 * @return			The host on which the current process is executed.
 	 *
 	 * @exception		MsgException if the native version of this method failed.
-	 */ public static Host currentHost() throws JniException {
-    return Msg.hostSelf();
+	 */ 
+    public static Host currentHost() throws JniException {
+    return MsgNative.hostSelf();
   }
+  
         /**
 	 * This static method returns all of the hosts of the installed platform.
 	 *
 	 * @return			An array containing all the hosts installed.
 	 *
 	 * @exception		MsgException if the native version of this method failed.
-	 */ public static Host[] all() throws JniException, NativeException {
-    return Msg.allHosts();
+	 */ 
+    public static Host[] all() throws JniException, NativeException {
+    return MsgNative.allHosts();
   }
+  
         /**
 	 * This method returns the name of a host.
 	 *
 	 * @return			The name of the host.
 	 *
 	 * @exception		InvalidHostException if the host is not valid.
-	 */ public String getName() throws NativeException, JniException {
-    return Msg.hostGetName(this);
+	 */ 
+    public String getName() throws NativeException, JniException {
+    return MsgNative.hostGetName(this);
   }
+  
         /**
 	 * This method sets the data of the host.
 	 *
-	 */ public void setData(Object data) {
+	 */ 
+    public void setData(Object data) {
     this.data = data;
-  }
-
+  } 
         /**
 	 * This method gets the data of the host.
-	 */
-  public Object getData() {
+	 */ 
+    public Object getData() {
     return this.data;
   }
-
+  
         /**
 	 * This function tests if a host has data.
-	 */
-  public boolean hasData() {
+	 */ 
+    public boolean hasData() {
     return null != this.data;
   }
-
+  
         /**
 	 * This method returns the number of tasks currently running on a host.
 	 * The external load is not taken in account.
@@ -146,10 +151,11 @@ public class Host {
 	 *
 	 * @exception		InvalidHostException if the host is invalid.
 	 *
-	 */
+	 */ 
   public int getLoad() throws JniException {
-    return Msg.hostGetLoad(this);
+    return MsgNative.hostGetLoad(this);
   }
+  
         /**
 	 * This method returns the speed of the processor of a host,
 	 * regardless of the current load of the machine.
@@ -158,18 +164,36 @@ public class Host {
 	 *
 	 * @exception		InvalidHostException if the host is not valid.
 	 *
-	 */ public double getSpeed() throws JniException {
-    return Msg.hostGetSpeed(this);
+	 */ 
+   public double getSpeed() throws JniException {
+    return MsgNative.hostGetSpeed(this);
   }
+  
         /**
 	 * This method tests if a host is avail.
 	 * 
-	 * @return			If the host is avail the method returns true.
-	 *					Otherwise the method returns false.
-	 *
 	 * @exception		JniException if the host is not valid.
-	 *
-	 *
-	 */ public boolean isAvail() throws JniException {
-    return Msg.hostIsAvail(this);
-}}
+	 */ 
+    public boolean isAvail() throws JniException {
+    return MsgNative.hostIsAvail(this);
+  }
+  
+   /** Send the given task to the given channel of the host */ 
+   
+    public void put(int channel, Task task) throws JniException,
+    NativeException {
+    MsgNative.hostPut(this, channel, task, -1);
+  } 
+   /** Send the given task to the given channel of the host (waiting at most #timeout seconds) */ 
+   
+    public void put(int channel, Task task,
+                    double timeout) throws JniException, NativeException {
+    MsgNative.hostPut(this, channel, task, timeout);
+  } 
+   /** Send the given task to the given channel of the host (capping the emision rate to #maxrate) */ 
+   
+    public void putBounded(int channel, Task task,
+                           double maxrate) throws JniException,
+    NativeException {
+    MsgNative.hostPutBounded(this, channel, task, maxrate);
+} } 

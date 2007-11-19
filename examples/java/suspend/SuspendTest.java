@@ -25,8 +25,6 @@ public class SuspendTest {
         	System.exit(1);
     	}
     	
-	/* specify the number of channel for the process of the simulation. */
-	Channel.setNumber(1);
         /* specify a paje output file. */
         Msg.pajeOutput("suspend.trace");
 		
