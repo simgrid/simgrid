@@ -218,7 +218,6 @@ JMSG_C_SRC = \
   java/jmsg.c               java/jmsg.h                \
   java/jmsg_channel.c       java/jmsg_channel.h        \
   java/jmsg_host.c          java/jmsg_host.h           \
-  java/jmsg_parallel_task.c java/jmsg_parallel_task.h  \
   java/jmsg_process.c       java/jmsg_process.h        \
   java/jmsg_task.c          java/jmsg_task.h
 
@@ -229,14 +228,14 @@ JMSG_JAVA_SRC = \
   java/simgrid/msg/HostNotFoundException.java        \
   java/simgrid/msg/ProcessNotFoundException.java     \
   \
+  java/simgrid/msg/Msg.java                          \
   java/simgrid/msg/Process.java                      \
+  java/simgrid/msg/Host.java                         \
+  java/simgrid/msg/Task.java                         \
+  \
+  java/simgrid/msg/MsgNative.java                    \
   java/simgrid/msg/DTDResolver.java                  \
   java/simgrid/msg/ApplicationHandler.java           \
-  java/simgrid/msg/Channel.java                      \
-  java/simgrid/msg/Host.java                         \
-  java/simgrid/msg/Msg.java                          \
-  java/simgrid/msg/Task.java                         \
-  java/simgrid/msg/ParallelTask.java                 \
   \
   java/simgrid/msg/Sem.java
 
