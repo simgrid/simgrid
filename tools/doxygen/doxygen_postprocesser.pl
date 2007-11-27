@@ -241,7 +241,18 @@ sub handle_page {
 #      print "TAB: $_";
       print TO "$_";
     }
+    if ($current->{'file'} =~ m/^class/) {
+	while (<FROM>) {
+	    last if (m|</div>|);
+	}
+      print TO "$_";	
+    }
     while (<FROM>) {
+      if (m/The documentation for/) {
+	  while (<FROM>) {
+	      last if (m/<p>/);
+	  }
+      }
       print TO "$_";
     }    
     close FROM;
