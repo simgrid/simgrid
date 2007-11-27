@@ -2,7 +2,7 @@
 #define _XBT_CONTEXT_PRIVATE_H
 
 #include "xbt/sysdep.h"
-#include "xbt/xbt_context.h"
+#include "xbt/context.h"
 #include "xbt/swag.h"
 
 SG_BEGIN_DECL()
