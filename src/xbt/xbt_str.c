@@ -249,6 +249,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
   if (s[0] == '\0') 
     return res;
   if (sep[0] == '\0') {
+    s = xbt_strdup(s);
     xbt_dynar_push(res, &s);
     return res;
   }

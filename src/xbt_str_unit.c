@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 386 "xbt/xbt_str.c" 
+# 387 "xbt/xbt_str.c" 
 #define mytest(name, input, expected) \
   xbt_test_add0(name); \
   d=xbt_str_split_quoted(input); \
