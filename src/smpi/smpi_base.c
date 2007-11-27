@@ -1,5 +1,7 @@
 #include "private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
+
 smpi_mpi_global_t smpi_mpi_global = NULL;
 
 void smpi_mpi_land_func(void *a, void *b, int *length, MPI_Datatype *datatype);
@@ -28,7 +30,7 @@ void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype *datatype)
 	}
 }
 
-int inline smpi_mpi_comm_rank(smpi_mpi_communicator_t comm)
+int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm)
 {
 	return comm->index_to_rank_map[smpi_host_index()];
 }
@@ -103,7 +105,7 @@ void smpi_mpi_init()
 
 		// make sure root is done before own initialization
 		SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-		if (!smpi_global->root_ready) {
+		while (!smpi_global->root_ready) {
 			SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
 		}
 		SIMIX_mutex_unlock(smpi_global->start_stop_mutex);

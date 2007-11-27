@@ -1,9 +1,12 @@
 #include "private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_sender, smpi, "Logging specific to SMPI (sender)");
+
 int smpi_sender(int argc, char **argv)
 {
 	smx_process_t self;
 	smx_host_t shost;
+
 	int index;
 
 	xbt_fifo_t request_queue;
@@ -77,10 +80,6 @@ int smpi_sender(int argc, char **argv)
 			message->forward = (request->forward - 1) / 2;
 			request->forward = request->forward / 2;
 
-			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[dindex]);
-			xbt_fifo_push(smpi_global->received_message_queues[dindex], message);
-			SIMIX_mutex_unlock(smpi_global->received_message_queues_mutexes[dindex]);
-
 			if (0 < request->forward) {
 				request->dst = (request->dst + message->forward + 1) % request->comm->size;
 				SIMIX_mutex_lock(request_queue_mutex);
@@ -94,10 +93,15 @@ int smpi_sender(int argc, char **argv)
 
 			SIMIX_register_action_to_condition(action, request->cond);
 			SIMIX_cond_wait(request->cond, request->mutex);
+
 			SIMIX_unregister_action_to_condition(action, request->cond);
 			SIMIX_action_destroy(action);
 
 			SIMIX_mutex_unlock(request->mutex);
+
+			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[dindex]);
+			xbt_fifo_push(smpi_global->received_message_queues[dindex], message);
+			SIMIX_mutex_unlock(smpi_global->received_message_queues_mutexes[dindex]);
 
 			// wake up receiver if necessary
 			receiver_process = smpi_global->receiver_processes[dindex];

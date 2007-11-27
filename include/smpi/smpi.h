@@ -1,8 +1,12 @@
 #ifndef SMPI_H
 #define SMPI_H
 
+#include <stddef.h>
 #include <sys/time.h>
+#include <xbt/misc.h>
 #include <xbt/function_types.h>
+
+SG_BEGIN_DECL()
 
 #define SMPI_RAND_SEED 5
 
@@ -76,30 +80,48 @@ extern smpi_mpi_global_t smpi_mpi_global;
 #define MPI_LAND          (smpi_mpi_global->mpi_land)
 #define MPI_SUM           (smpi_mpi_glboal->mpi_sum)
 
-// MPI Functions
-int MPI_Init(int *argc, char ***argv);
-int MPI_Finalize(void);
-int MPI_Abort(MPI_Comm comm, int errorcode);
-int MPI_Comm_size(MPI_Comm comm, int *size);
-int MPI_Comm_rank(MPI_Comm comm, int *rank);
-int MPI_Type_size(MPI_Datatype datatype, size_t *size);
-int MPI_Barrier(MPI_Comm comm);
-int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request *request);
-int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status);
-int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request);
-int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
-int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out);
+// MPI macros
+#define MPI_Init(a, b) SMPI_MPI_Init(a, b)
+#define MPI_Finalize() SMPI_MPI_Finalize()
+#define MPI_Abort(a, b) SMPI_MPI_Abort(a, b)
+#define MPI_Comm_size(a, b) SMPI_MPI_Comm_size(a, b)
+#define MPI_Comm_rank(a, b) SMPI_MPI_Comm_rank(a, b)
+#define MPI_Type_size(a, b) SMPI_MPI_Type_size(a, b)
+#define MPI_Barrier(a) SMPI_MPI_Barrier(a)
+#define MPI_Irecv(a, b, c, d, e, f, g) SMPI_MPI_Irecv(a, b, c, d, e, f, g)
+#define MPI_Recv(a, b, c, d, e, f, g) SMPI_MPI_Recv(a, b, c, d, e, f, g)
+#define MPI_Isend(a, b, c, d, e, f, g) SMPI_MPI_Isend(a, b, c, d, e, f, g)
+#define MPI_Send(a, b, c, d, e, f) SMPI_MPI_Send(a, b, c, d, e, f)
+#define MPI_Bcast(a, b, c, d, e) SMPI_MPI_Bcast(a, b, c, d, e)
+#define MPI_Comm_split(a, b, c, d) SMPI_MPI_Comm_split(a, b, c, d)
+
+// SMPI Functions
+XBT_PUBLIC(int) SMPI_MPI_Init(int *argc, char ***argv);
+XBT_PUBLIC(int) SMPI_MPI_Finalize(void);
+XBT_PUBLIC(int) SMPI_MPI_Abort(MPI_Comm comm, int errorcode);
+XBT_PUBLIC(int) SMPI_MPI_Comm_size(MPI_Comm comm, int *size);
+XBT_PUBLIC(int) SMPI_MPI_Comm_rank(MPI_Comm comm, int *rank);
+XBT_PUBLIC(int) SMPI_MPI_Type_size(MPI_Datatype datatype, size_t *size);
+XBT_PUBLIC(int) SMPI_MPI_Barrier(MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request *request);
+XBT_PUBLIC(int) SMPI_MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status);
+XBT_PUBLIC(int) SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request);
+XBT_PUBLIC(int) SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out);
 
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
-unsigned int smpi_sleep(unsigned int);
-void smpi_exit(int);
-int smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
+XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int);
+XBT_PUBLIC(void) smpi_exit(int);
+XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
 
-void smpi_do_once_1(const char *file, int line);
-int  smpi_do_once_2(void);
-void smpi_do_once_3(void);
+XBT_PUBLIC(void) smpi_do_once_1(const char *file, int line);
+XBT_PUBLIC(int)  smpi_do_once_2(void);
+XBT_PUBLIC(void) smpi_do_once_3(void);
+
 #define SMPI_DO_ONCE for (smpi_do_once_1(__FILE__, __LINE__); smpi_do_once_2(); smpi_do_once_3())
+
+SG_END_DECL()
 
 #endif

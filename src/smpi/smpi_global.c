@@ -2,7 +2,9 @@
 
 #include "private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi, XBT_LOG_ROOT_CAT, "All SMPI categories");
+XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories");
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 
 smpi_global_t     smpi_global     = NULL;
 

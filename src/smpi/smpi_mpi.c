@@ -1,13 +1,15 @@
 #include "private.h"
 
-int MPI_Init(int *argc, char ***argv)
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI (mpi)");
+
+int SMPI_MPI_Init(int *argc, char ***argv)
 {
 	smpi_mpi_init();
 	smpi_bench_begin();
 	return MPI_SUCCESS;
 }
 
-int MPI_Finalize()
+int SMPI_MPI_Finalize()
 {
 	smpi_bench_end();
 	smpi_mpi_finalize();
@@ -16,13 +18,13 @@ int MPI_Finalize()
 
 // right now this just exits the current node, should send abort signal to all
 // hosts in the communicator;
-int MPI_Abort(MPI_Comm comm, int errorcode)
+int SMPI_MPI_Abort(MPI_Comm comm, int errorcode)
 {
 	smpi_exit(errorcode);
 	return 0;
 }
 
-int MPI_Comm_size(MPI_Comm comm, int *size)
+int SMPI_MPI_Comm_size(MPI_Comm comm, int *size)
 {
 	int retval = MPI_SUCCESS;
 
@@ -41,7 +43,7 @@ int MPI_Comm_size(MPI_Comm comm, int *size)
 	return retval;
 }
 
-int MPI_Comm_rank(MPI_Comm comm, int *rank)
+int SMPI_MPI_Comm_rank(MPI_Comm comm, int *rank)
 {
 	int retval = MPI_SUCCESS;
 
@@ -60,7 +62,7 @@ int MPI_Comm_rank(MPI_Comm comm, int *rank)
 	return retval;
 }
 
-int MPI_Type_size(MPI_Datatype datatype, size_t *size)
+int SMPI_MPI_Type_size(MPI_Datatype datatype, size_t *size)
 {
 	int retval = MPI_SUCCESS;
 
@@ -79,7 +81,7 @@ int MPI_Type_size(MPI_Datatype datatype, size_t *size)
 	return retval;
 }
 
-int MPI_Barrier(MPI_Comm comm)
+int SMPI_MPI_Barrier(MPI_Comm comm)
 {
 	int retval = MPI_SUCCESS;
 
@@ -96,7 +98,7 @@ int MPI_Barrier(MPI_Comm comm)
 	return retval;
 }
 
-int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request *request)
+int SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request *request)
 {
 	int retval = MPI_SUCCESS;
 
@@ -112,7 +114,7 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 	return retval;
 }
 
-int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status)
+int SMPI_MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status)
 {
 	int retval = MPI_SUCCESS;
 	smpi_mpi_request_t request;
@@ -133,7 +135,7 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_
 	return retval;
 }
 
-int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request)
+int SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request)
 {
 	int retval = MPI_SUCCESS;
 
@@ -149,7 +151,7 @@ int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
 	return retval;
 }
 
-int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
+int SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
 	int retval = MPI_SUCCESS;
 	smpi_mpi_request_t request;
@@ -170,7 +172,7 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
 	return retval;
 }
 
-int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm) {
+int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm) {
 
 	int retval = MPI_SUCCESS;
 	int rank;
@@ -199,7 +201,7 @@ int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm co
 
 // FIXME: needs to return null in event of MPI_UNDEFINED color...
 // FIXME: seriously, this isn't pretty
-int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
+int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 {
 	int retval = MPI_SUCCESS;
 

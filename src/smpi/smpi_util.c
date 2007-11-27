@@ -1,10 +1,13 @@
 #include "private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_util, smpi, "Logging specific to SMPI (utilities)");
+
 int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
 	double now;
-	int retval = 0;
+	int retval;
 	smpi_bench_end();
+	retval = 0;
 	if (NULL == tv) {
 		retval = -1;
 	} else {
@@ -44,9 +47,7 @@ unsigned int smpi_sleep(unsigned int seconds)
 void smpi_exit(int status)
 {
 	smpi_bench_end();
-	SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
-	smpi_global->running_hosts_count--;
-	SIMIX_mutex_unlock(smpi_global->running_hosts_count_mutex);
+	smpi_mpi_finalize();
 	SIMIX_process_kill(SIMIX_process_self());
 	return;
 }

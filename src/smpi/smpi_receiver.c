@@ -1,5 +1,7 @@
 #include "private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_receiver, smpi, "Logging specific to SMPI (receiver)");
+
 int smpi_receiver(int argc, char **argv)
 {
 	smx_process_t self;

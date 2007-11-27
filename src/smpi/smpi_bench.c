@@ -1,6 +1,8 @@
 #include "private.h"
 #include <string.h>
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (benchmarking)");
+
 void smpi_execute(double duration) {
         smx_host_t host = SIMIX_host_self();
         smx_action_t action;
@@ -56,10 +58,10 @@ void smpi_do_once_1(const char *file, int line) {
 	}
 	if (NULL == curr) {
 		curr = xbt_new(s_smpi_do_once_duration_node_t, 1);
-		curr->file = xbt_strdup(file);
-		curr->line = line;
+		curr->file     = xbt_strdup(file);
+		curr->line     = line;
 		curr->duration = -1;
-		curr->next = NULL;
+		curr->next     = NULL;
 		if (NULL == prev) {
 			smpi_global->do_once_duration_nodes = curr;
 		} else {
@@ -71,14 +73,14 @@ void smpi_do_once_1(const char *file, int line) {
 
 int smpi_do_once_2() {
 	double duration = *(smpi_global->do_once_duration);
-	if (0 < duration) {
-		SIMIX_mutex_unlock(smpi_global->do_once_mutex);
-		smpi_execute(duration);
-		smpi_bench_begin();
-		return 0;
+	if (0 > duration) {
+		smpi_start_timer();
+		return 1;
 	}
-	smpi_start_timer();
-	return 1;
+	SIMIX_mutex_unlock(smpi_global->do_once_mutex);
+	smpi_execute(duration);
+	smpi_bench_begin();
+	return 0;
 }
 
 void smpi_do_once_3() {
