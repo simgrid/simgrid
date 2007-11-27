@@ -57,6 +57,7 @@ EXTRA_DIST= \
 	include/surf/surf.h \
 	include/surf/surfxml_parse_private.h \
 	\
+	include/xbt/context.h \
 	include/xbt/xbt_os_time.h \
 	include/xbt/xbt_os_thread.h \
 	\

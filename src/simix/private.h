@@ -15,7 +15,7 @@
 #include "xbt/fifo.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
-#include "xbt/xbt_context.h"
+#include "xbt/context.h"
 #include "xbt/config.h"
 #include "xbt/function_types.h"
 

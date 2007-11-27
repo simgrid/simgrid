@@ -404,11 +404,11 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	surf/surfxml.c surf/surfxml.dtd surf/network_private.h \
 	surf/network_gtnets_private.h include/surf/maxmin.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
-	include/surf/surfxml_parse_private.h include/xbt/xbt_os_time.h \
-	include/xbt/xbt_os_thread.h msg/private.h simdag/private.h \
-	gras/DataDesc/ddt_parse.yy.l gras/Virtu/virtu_rl.h \
-	gras/Virtu/virtu_sg.h gras/Virtu/virtu_interface.h \
-	gras/Virtu/virtu_private.h \
+	include/surf/surfxml_parse_private.h include/xbt/context.h \
+	include/xbt/xbt_os_time.h include/xbt/xbt_os_thread.h \
+	msg/private.h simdag/private.h gras/DataDesc/ddt_parse.yy.l \
+	gras/Virtu/virtu_rl.h gras/Virtu/virtu_sg.h \
+	gras/Virtu/virtu_interface.h gras/Virtu/virtu_private.h \
 	gras/Transport/transport_interface.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
 	include/simix/simix.h include/simix/datatypes.h \
