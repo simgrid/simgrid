@@ -102,13 +102,13 @@ XBT_PUBLIC(void) lmm_set_default_protocol_function(double (* func_f)  (lmm_varia
 				       double (* func_fp) (lmm_variable_t var, double x),
 				       double (* func_fpi)(lmm_variable_t var, double x));
 
-double func_reno_f  (lmm_variable_t var, double x);
-double func_reno_fp (lmm_variable_t var, double x);
-double func_reno_fpi(lmm_variable_t var, double x);
+XBT_PUBLIC(double func_reno_f)  (lmm_variable_t var, double x);
+XBT_PUBLIC(double func_reno_fp) (lmm_variable_t var, double x);
+XBT_PUBLIC(double func_reno_fpi)(lmm_variable_t var, double x);
 
-double func_vegas_f  (lmm_variable_t var, double x);
-double func_vegas_fp (lmm_variable_t var, double x);
-double func_vegas_fpi(lmm_variable_t var, double x);
+XBT_PUBLIC(double func_vegas_f)  (lmm_variable_t var, double x);
+XBT_PUBLIC(double func_vegas_fp) (lmm_variable_t var, double x);
+XBT_PUBLIC(double func_vegas_fpi)(lmm_variable_t var, double x);
 
 
 #endif				/* _SURF_MAXMIN_H */
