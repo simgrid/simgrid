@@ -99,7 +99,7 @@ typedef enum {
  * XBT_LOG_NEW_CATEGORY */
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
     XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {       \
-        &_XBT_LOGV(parent),                             \
+        NULL,                             \
         NULL /* firstChild */,                          \
 	NULL /* nextSibling */,                         \
         #catName,                                       \
