@@ -11,6 +11,11 @@
  #endif
  
 #include <stdio.h>
+
+#ifdef _MSC_VER
+#define snprintf	_snprintf
+#endif
+
 #include "xbt/module.h"
 #include "xbt/sysdep.h"
 #include "xbt/graph.h"
@@ -44,7 +49,7 @@ void test(char *graph_file)
   int test_shortest_paths = 1;
   int test_topo_sort = 1;
 
-  int i, j;
+  unsigned long i, j;
   unsigned long n;
 
   xbt_dynar_t edges = NULL;
