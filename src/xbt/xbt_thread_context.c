@@ -4,6 +4,7 @@
 
 #include "portable.h"  		/* loads context system definitions */
 #include "xbt/swag.h"
+#include "xbt/xbt_os_thread.h"
 
 
 typedef struct s_xbt_thread_context {
