@@ -9,6 +9,24 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
 
 int main(int argc, char **argv) {
   int i;
+  const char* platform_file;
+
+  const SD_workstation_t *workstations;
+  SD_workstation_t w1;
+  SD_workstation_t w2;
+  const char *name1;
+  const char *name2;
+  const double computation_amount1 = 2000000;
+  const double computation_amount2 = 1000000;
+  const double communication_amount12 = 2000000;
+  const double communication_amount21 = 3000000;
+  const SD_link_t *route;
+  int route_size;
+  SD_task_t taskA;
+  SD_task_t taskB;
+  SD_task_t taskC;
+  SD_task_t taskD;
+  xbt_ex_t ex;
 
   /* initialisation of SD */
   SD_init(&argc, argv);
@@ -20,26 +38,23 @@ int main(int argc, char **argv) {
   }
 
   /* creation of the environment */
-  char * platform_file = argv[1];
+
+  platform_file = argv[1];
+  
   SD_create_environment(platform_file);
 
   /* test the estimation functions (use small_platform.xml) */
-  const SD_workstation_t *workstations = SD_workstation_get_list();
-  SD_workstation_t w1 = workstations[0];
-  SD_workstation_t w2 = workstations[1];
-  const char *name1 = SD_workstation_get_name(w1);
-  const char *name2 = SD_workstation_get_name(w2);
-  const double computation_amount1 = 2000000;
-  const double computation_amount2 = 1000000;
-  const double communication_amount12 = 2000000;
-  const double communication_amount21 = 3000000;
-  const SD_link_t *route = SD_route_get_list(w1, w2);
-  int route_size = SD_route_get_size(w1, w2);
-  SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
-  SD_task_t taskB = SD_task_create("Task B", NULL, 40.0);
-  SD_task_t taskC = SD_task_create("Task C", NULL, 30.0);
-  SD_task_t taskD = SD_task_create("Task D", NULL, 60.0);
-  xbt_ex_t ex;
+  workstations = SD_workstation_get_list();
+  w1 = workstations[0];
+  w2 = workstations[1];
+  name1 = SD_workstation_get_name(w1);
+  name2 = SD_workstation_get_name(w2);
+  route = SD_route_get_list(w1, w2);
+  route_size = SD_route_get_size(w1, w2);
+  taskA = SD_task_create("Task A", NULL, 10.0);
+  taskB = SD_task_create("Task B", NULL, 40.0);
+  taskC = SD_task_create("Task C", NULL, 30.0);
+  taskD = SD_task_create("Task D", NULL, 60.0);
 
   INFO3("Computation time for %f flops on %s: %f", computation_amount1, name1,
 	SD_workstation_get_computation_time(w1, computation_amount1));
