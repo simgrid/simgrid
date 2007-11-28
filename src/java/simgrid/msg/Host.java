@@ -29,14 +29,14 @@ import java.lang.String;
  * file description contains an host named "Jacquelin" :
  *
  * \verbatim
- *	Host jacquelin;
- *
- * 	try { 
- * 		jacquelin = Host.getByName("Jacquelin");
- *	} catch(HostNotFoundException e) {
- *		System.err.println(e.toString());
- *	}
- *	...
+Host jacquelin;
+
+try { 
+	jacquelin = Host.getByName("Jacquelin");
+} catch(HostNotFoundException e) {
+	System.err.println(e.toString());
+}
+...
  * \endverbatim
  *
  * @author  Abdelmalek Cherier
