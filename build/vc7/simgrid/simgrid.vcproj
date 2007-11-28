@@ -161,6 +161,7 @@
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
 				CompileAs="1"
 				DisableSpecificWarnings="4127;4996;4244;4715;4090"
 			/>
@@ -180,7 +181,10 @@
 				OutputFile="c:\windows\system32\simgrid.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release/simgrid.pdb"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
 				ImportLibrary=".\Release/simgrid.lib"
 				TargetMachine="1"
 			/>
@@ -369,10 +373,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\java\jmsg_host.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\java\jmsg_parallel_task.c"
 				>
 			</File>
 			<File
