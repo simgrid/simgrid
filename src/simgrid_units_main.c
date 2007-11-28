@@ -57,6 +57,7 @@ extern xbt_test_unit_t _xbt_current_unit;
     void test_config_use(void);
   /* SGU: END FILE */
 
+/* SGU: END PROTOTYPES */
 
 /*******************************/
 /* GENERATED FILE, DO NOT EDIT */

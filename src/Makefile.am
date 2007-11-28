@@ -33,8 +33,6 @@ EXTRA_DIST= \
 	xbt/graphxml.dtd \
         xbt/xbt_context_private.h \
         xbt/xbt_context_factory.h \
-        xbt/xbt_thread_context.h \
-        xbt/xbt_ucontext.h \
         xbt/xbt_jcontext.h \
 	xbt/log_private.h \
 	xbt/ex_interface.h \

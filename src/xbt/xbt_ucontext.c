@@ -2,7 +2,18 @@
 #include "ucontext_stack.h"
 #include "xbt/ex_interface.h"
 #include "xbt/xbt_context_factory.h"
-#include "xbt/xbt_ucontext.h"
+
+#include "ucontext_stack.h"		/* loads context system definitions				*/
+#include <ucontext.h>			/* context relative declarations				*/				
+#define STACK_SIZE 128*1024		/* lower this if you want to reduce the memory consumption	*/
+
+typedef struct s_xbt_ucontext {
+   XBT_CTX_BASE_T;
+   	ucontext_t uc;			/* the thread that execute the code				*/
+	char stack[STACK_SIZE];		/* the thread stack size					*/
+	struct s_xbt_ucontext* prev;	/* the previous thread						*/
+} s_xbt_ucontext_t,* xbt_ucontext_t;
+
 
 /* callback: context fetching */
 static ex_ctx_t*

@@ -395,8 +395,7 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	xbt/dict_private.h xbt/heap_private.h xbt/fifo_private.h \
 	xbt/graph_private.h xbt/graphxml_parse.c xbt/graphxml.l \
 	xbt/graphxml.c xbt/graphxml.dtd xbt/xbt_context_private.h \
-	xbt/xbt_context_factory.h xbt/xbt_thread_context.h \
-	xbt/xbt_ucontext.h xbt/xbt_jcontext.h xbt/log_private.h \
+	xbt/xbt_context_factory.h xbt/xbt_jcontext.h xbt/log_private.h \
 	xbt/ex_interface.h surf/maxmin_private.h \
 	surf/trace_mgr_private.h surf/surf_private.h \
 	surf/cpu_private.h surf/workstation_private.h \

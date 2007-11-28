@@ -1,7 +1,17 @@
 
 #include "xbt/function_types.h"
 #include "xbt/xbt_context_factory.h"
-#include "xbt/xbt_thread_context.h"
+
+#include "portable.h"  		/* loads context system definitions */
+#include "xbt/swag.h"
+
+
+typedef struct s_xbt_thread_context {
+	XBT_CTX_BASE_T;
+   	xbt_os_thread_t thread;			/* a plain dumb thread (portable to posix or windows) */
+	xbt_os_sem_t begin;				/* this semaphore is used to schedule/yield the process	 */
+	xbt_os_sem_t end;				/* this semaphore is used to schedule/unschedule the process   */
+} s_xbt_thread_context_t,* xbt_thread_context_t;
 
 static xbt_context_t 
 xbt_thread_context_factory_create_context(const char* name, xbt_main_func_t code, void_f_pvoid_t startup_func, void* startup_arg, void_f_pvoid_t cleanup_func, void* cleanup_arg, int argc, char** argv);
