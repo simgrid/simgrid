@@ -112,7 +112,7 @@ void SIMIX_create_environment(const char *file)
   double s = xbt_os_time();  
   if  (!parsed) parse_platform_file(file);
   double e = xbt_os_time();
-  INFO1("PARSE TIME: %lg", (e-s));
+  DEBUG1("PARSE TIME: %lg", (e-s));
 
   _simix_init_status = 2;	/* inited; don't change settings now */
 
