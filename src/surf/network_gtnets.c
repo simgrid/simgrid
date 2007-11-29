@@ -253,7 +253,7 @@ static void parse_route_set_route(void)
 /*  if (nb_link > 1)
     route_new(src_id, dst_id, link_name, nb_link);
 */
-    name = bprintf("%d##%d",src_id, dst_id);
+    name = bprintf("%x#%x",src_id, dst_id);
     xbt_dict_set(route_table, name, route_link_list, NULL);
     free(name);    
 }
@@ -271,27 +271,40 @@ static void add_route()
   xbt_ex_t e;
   unsigned int cpt = 0;    
   int i = 0;
+  xbt_dict_cursor_t cursor = NULL;
+  char *key,*data;
+  const char *sep = "#";
+  xbt_dynar_t links, keys;
 
-  nb_link = xbt_dynar_length(links);
-  link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
+  xbt_dict_foreach(route_table, cursor, key, data) {
+    nb_link = 0;
+    links = (xbt_dynar_t)data;
+    keys = xbt_str_split_str(key, sep);
 
-  src_id = atoi(xbt_dynar_get_as(keys, 0, char*));
-  dst_id = atoi(xbt_dynar_get_as(keys, 1, char*));
+    nb_link = xbt_dynar_length(links);
+    link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
+
+    src_id = atoi(xbt_dynar_get_as(keys, 0, char*));
+    dst_id = atoi(xbt_dynar_get_as(keys, 1, char*));
   
-  i = 0;
-  char* link = NULL;
-  xbt_dynar_foreach (links, cpt, link) {
+    i = 0;
+    char* link = NULL;
+    xbt_dynar_foreach (links, cpt, link) {
       TRY {
         link_name[i++] = xbt_dict_get(link_set, link);
       }
       CATCH(e) {
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
       }     
-  }
-  if (nb_link > 1)
-    route_new(src_id, dst_id, link_name, nb_link);
-  if (nb_link == 1)
-    route_onehop_new(src_id, dst_id, link_name, nb_link);
+    }
+    if (nb_link > 1)
+      route_new(src_id, dst_id, link_name, nb_link);
+    if (nb_link == 1)
+      route_onehop_new(src_id, dst_id, link_name, nb_link);
+    xbt_dynar_free(&links);
+   }
+
+   xbt_dict_free(&route_table);
 }
 
 /* Main XML parsing */
@@ -303,8 +316,14 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_element_cb_list, &parse_route_elem);
 /* surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_onehop_route);*/
+  surfxml_add_callback(STag_surfxml_platform_cb_list, &init_data);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
+  surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
+  surfxml_add_callback(STag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_route);
+  surfxml_add_callback(STag_surfxml_foreach_cb_list, &parse_foreach);
+  surfxml_add_callback(STag_surfxml_cluster_cb_list, &parse_cluster);
 }
 
 static void *name_service(const char *name)

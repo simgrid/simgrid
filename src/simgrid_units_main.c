@@ -57,7 +57,10 @@ extern xbt_test_unit_t _xbt_current_unit;
     void test_config_use(void);
   /* SGU: END FILE */
 
-/* SGU: END PROTOTYPES */
+  /* SGU: BEGIN FILE ./xbt/cunit.c */
+    void test_expected_failure(void);
+  /* SGU: END FILE */
+
 
 /*******************************/
 /* GENERATED FILE, DO NOT EDIT */
@@ -123,6 +126,11 @@ int main(int argc, char *argv[]) {
       xbt_test_suite_push(suite, "memuse", test_config_memuse, "Alloc and free a config set");
       xbt_test_suite_push(suite, "validation", test_config_validation, "Validation tests");
       xbt_test_suite_push(suite, "use", test_config_use, "Data retrieving tests");
+    /* SGU: END FILE */
+
+    /* SGU: BEGIN FILE ./xbt/cunit.c */
+      suite = xbt_test_suite_by_name("cunit","Testsuite mechanism autotest");
+      xbt_test_suite_push(suite, "expect", test_expected_failure, "expected failures");
     /* SGU: END FILE */
 
   /* SGU: END SUITES DECLARATION */

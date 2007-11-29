@@ -1,11 +1,39 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((include|host|router|link)*,(include|route|process)*)>
+<!ELEMENT platform ((include|trace|random|cluster|set|foreach|host|router|link|trace:connect)*,(include|route:multi|route|trace:connect|process)*)>
 <!ATTLIST platform version CDATA "0.0">
 <!ATTLIST platform xmlns:link CDATA "http://simgrid.gforge.inria.fr/">
 <!ATTLIST platform xmlns:route CDATA "http://simgrid.gforge.inria.fr/">
 
 <!ELEMENT include EMPTY>
 <!ATTLIST include file CDATA #REQUIRED>
+
+<!ELEMENT trace (#PCDATA)>
+<!ATTLIST trace id CDATA #REQUIRED>
+<!ATTLIST trace file CDATA "">
+<!ATTLIST trace periodicity CDATA #REQUIRED>
+
+<!ELEMENT random (prop*)>
+<!ATTLIST random id CDATA #REQUIRED>
+<!ATTLIST random min CDATA #REQUIRED>
+<!ATTLIST random max CDATA #REQUIRED>
+<!ATTLIST random mean CDATA #REQUIRED>
+<!ATTLIST random std_deviation CDATA #REQUIRED>
+<!ATTLIST random generator (DRAND48|RAND) "DRAND48">
+
+<!ELEMENT trace:connect EMPTY>
+<!ATTLIST trace:connect kind (AVAILABILITY|BANDWIDTH|LATENCY|POWER) "AVAILABILITY">
+<!ATTLIST trace:connect trace_id CDATA #REQUIRED>
+<!ATTLIST trace:connect element (HOST|LINK) "HOST">
+<!ATTLIST trace:connect connector_id CDATA #REQUIRED>
+
+<!ELEMENT set EMPTY>
+<!ATTLIST set id CDATA #REQUIRED>
+<!ATTLIST set prefix CDATA #REQUIRED>
+<!ATTLIST set suffix CDATA #REQUIRED>
+<!ATTLIST set radical CDATA #REQUIRED>
+
+<!ELEMENT foreach (host|(host,link)|link)>
+<!ATTLIST foreach set_id CDATA #REQUIRED>
 
 <!ELEMENT host (prop*)>
 <!ATTLIST host id CDATA #REQUIRED>
@@ -23,6 +51,17 @@
 <!ATTLIST prop id CDATA #REQUIRED>
 <!ATTLIST prop value CDATA #REQUIRED>
 
+<!ELEMENT cluster EMPTY>
+<!ATTLIST cluster id CDATA #REQUIRED>
+<!ATTLIST cluster prefix CDATA #REQUIRED>
+<!ATTLIST cluster suffix CDATA #REQUIRED>
+<!ATTLIST cluster radical CDATA #REQUIRED>
+<!ATTLIST cluster power CDATA #REQUIRED>
+<!ATTLIST cluster bw CDATA #REQUIRED>
+<!ATTLIST cluster lat CDATA #REQUIRED>
+<!ATTLIST cluster bb_bw CDATA #REQUIRED>
+<!ATTLIST cluster bb_lat CDATA #REQUIRED>
+
 <!ELEMENT router EMPTY>
 <!ATTLIST router id CDATA #REQUIRED>
 
@@ -36,6 +75,12 @@
 <!ATTLIST link state_file CDATA "">
 <!ATTLIST link sharing_policy (SHARED|FATPIPE) "SHARED">
 
+<!ELEMENT route:multi (link:ctn+)>
+<!ATTLIST route:multi src CDATA #REQUIRED>
+<!ATTLIST route:multi dst CDATA #REQUIRED>
+<!ATTLIST route:multi action (POSTPEND|PREPEND|OVERRIDE) "POSTPEND">
+<!ATTLIST route:multi symmetric (YES|NO) "YES">
+
 <!ELEMENT route (link:ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
@@ -43,6 +88,7 @@
 <!ATTLIST route impact_on_dst CDATA "0.0">
 <!ATTLIST route impact_on_src_with_other_recv CDATA "0.0">
 <!ATTLIST route impact_on_dst_with_other_send CDATA "0.0">
+<!ATTLIST route action (POSTPEND|PREPEND|OVERRIDE) "POSTPEND">
 
 <!ELEMENT link:ctn EMPTY>
 <!ATTLIST link:ctn id CDATA #REQUIRED>

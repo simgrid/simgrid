@@ -34,6 +34,60 @@ void tmgr_history_free(tmgr_history_t h)
   free(h);
 }
 
+tmgr_trace_t tmgr_trace_new_from_string(const char* id, const char *input, double periodicity)
+{
+  tmgr_trace_t trace = NULL;
+  int linecount = 0;
+  s_tmgr_event_t event;
+  tmgr_event_t last_event = NULL;
+
+  if (trace_list) {
+    trace = xbt_dict_get_or_null(trace_list, id);
+    if (trace)
+      return trace;
+  }
+
+  if (periodicity <= 0) {
+    xbt_assert1(0, "Periodicity has to be positive. Your value %lg", periodicity);
+  }
+
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
+
+  xbt_dynar_t list = xbt_str_split(input,"\n\r");
+  
+  unsigned int cpt;
+  char * val;
+  xbt_dynar_foreach(list, cpt, val) {
+     linecount++;
+     xbt_str_trim(val, " \t\n\r\x0B");
+     if (strlen(val) > 0) {
+       if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2) {
+          xbt_assert2(0, "%s\n%d: Syntax error", input, linecount);
+       }
+       if (last_event) {
+           if ((last_event->delta = event.delta - last_event->delta) <= 0) {
+	       xbt_assert2(0, "%s\n%d: Invalid trace value, events have to be sorted", input, linecount);
+           }
+       }
+       xbt_dynar_push(trace->event_list, &event);
+       last_event = xbt_dynar_get_ptr(trace->event_list, xbt_dynar_length(trace->event_list) - 1);
+       if (periodicity > 0) {
+         if (last_event)
+           last_event->delta = periodicity;
+       }
+     }
+  }
+
+  if (!trace_list)
+    trace_list = xbt_dict_new();
+
+  xbt_dict_set(trace_list, id, (void *) trace, _tmgr_trace_free);
+
+  xbt_dynar_free(&list);
+  return trace;
+}
+
 tmgr_trace_t tmgr_trace_new(const char *filename)
 {
   tmgr_trace_t trace = NULL;

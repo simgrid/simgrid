@@ -550,12 +550,38 @@ void parse_properties(void);
 void free_string(void*);
 
 /* Prototypes for functions handling routing and were factorized succesfully from the models */
-void init_route_table(void);
-void make_route_table(void);
+void init_data(void);
 void parse_route_elem(void);
 
 /* surf parse file related */
 void parse_platform_file(const char* file);
+
+/* Stores the sets */
+XBT_PUBLIC_DATA(xbt_dict_t) set_list;
+
+void parse_foreach(void);
+void parse_sets(void);
+void parse_route_multi_set_endpoints(void);
+void parse_route_multi_set_route(void);
+void parse_cluster(void);
+void parse_trace_init(void);
+void parse_trace_finalize(void);
+void parse_trace_c_connect(void);
+
+void manage_route(xbt_dict_t route_table, const char* route_name, int action, int isMultiRoute);
+int route_action;
+
+/* This is used by all models when creating the routing table while parsing */
+xbt_dict_t route_table, route_multi_table;
+xbt_dynar_t route_link_list;
+
+/* For the trace and trace:connect tag */
+xbt_dict_t traces_set_list;
+xbt_dynar_t traces_connect_list;
+
+double get_cpu_power(const char* power);
+void init_randomness(void);
+void add_randomness(void);
 
 SG_END_DECL()
 

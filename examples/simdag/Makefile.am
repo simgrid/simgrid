@@ -14,13 +14,16 @@ CLEANFILES = sd_test.trace
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 
-TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh
+TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh metaxml/metaxml_test.trace
 check_PROGRAMS = sd_test sd_test2 properties/sd_prop
 
 bin_PROGRAMS = 
 
 properties_sd_prop_SOURCES = properties/sd_prop.c
 properties_sd_prop_LDADD = $(top_builddir)/src/libsimgrid.la
+
+metaxml_sd_test_SOURCES = metaxml/sd_test.c
+metaxml_sd_test_LDADD = $(top_builddir)/src/libsimgrid.la
 
 sd_test_SOURCES = sd_test.c
 sd_test_LDADD =	$(top_builddir)/src/libsimgrid.la

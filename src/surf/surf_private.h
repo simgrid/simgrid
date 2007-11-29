@@ -13,6 +13,7 @@
 #include "surf/trace_mgr.h"
 #include "xbt/log.h"
 #include "surf/surfxml_parse_private.h"
+#include "surf/random_mgr.h"
 
 #define NO_MAX_DURATION -1.0
 #define SG_TCP_CTE_GAMMA 20000.0

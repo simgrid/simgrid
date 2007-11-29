@@ -54,6 +54,7 @@ EXTRA_DIST= \
 	include/surf/trace_mgr.h \
 	include/surf/surf.h \
 	include/surf/surfxml_parse_private.h \
+	include/surf/random_mgr.h \
 	\
 	include/xbt/context.h \
 	include/xbt/xbt_os_time.h \
@@ -165,6 +166,7 @@ SURF_SRC= \
   surf/fair_bottleneck.c                                                              \
   surf/lagrange.c                                                            \
   surf/trace_mgr.c                                                           \
+  surf/random_mgr.c                                                           \
   surf/surf.c                                                                \
   surf/surfxml_parse.c                                                       \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \

@@ -9,6 +9,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/xbt_os_time.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
 				"Logging specific to SIMIX (environment)");
@@ -96,7 +97,10 @@ void SIMIX_create_environment(const char *file)
     surf_cpu_model_description[cpu_id].model_init(file);
     surf_network_model_description[network_id].model_init(file);
 
+    double start = xbt_os_time();  
     parse_platform_file(file);
+    double end = xbt_os_time();
+    DEBUG1("PARSE TIME: %lg", (end-start));
     parsed = 1;	
   }
 
@@ -105,7 +109,10 @@ void SIMIX_create_environment(const char *file)
   surf_workstation_model_description[workstation_id].
       model_init(file);
 
+  double s = xbt_os_time();  
   if  (!parsed) parse_platform_file(file);
+  double e = xbt_os_time();
+  INFO1("PARSE TIME: %lg", (e-s));
 
   _simix_init_status = 2;	/* inited; don't change settings now */
 

@@ -69,7 +69,7 @@ static void parse_cpu_init(void)
   e_surf_cpu_state_t state_initial = SURF_CPU_OFF;
   tmgr_trace_t state_trace = NULL;
 
-  surf_parse_get_double(&power_scale, A_surfxml_host_power);
+  power_scale = get_cpu_power(A_surfxml_host_power);
   surf_parse_get_double(&power_initial, A_surfxml_host_availability);
   surf_parse_get_trace(&power_trace, A_surfxml_host_availability_file);
 
@@ -88,11 +88,48 @@ static void parse_cpu_init(void)
 
 }
 
+static int called = 0;
+
+static void add_traces(void)
+{
+   xbt_dynar_t trace_connect = NULL;
+   unsigned int cpt;
+   int connect_element, connect_kind;
+   char *value, *trace_id, *connector_id;
+   cpu_Cas01_t host = NULL;
+   tmgr_trace_t trace;
+   
+   if (called) return;
+   called = 1;
+
+   /*for all trace connects parse them and update traces for hosts */
+   xbt_dynar_foreach (traces_connect_list, cpt, value) {
+     trace_connect = xbt_str_split_str(value, "##");
+     trace_id        = xbt_dynar_get_as(trace_connect, 0, char*);
+     connect_element = atoi(xbt_dynar_get_as(trace_connect, 1, char*)); 
+     connect_kind    = atoi(xbt_dynar_get_as(trace_connect, 2, char*));
+     connector_id    = xbt_dynar_get_as(trace_connect, 3, char*);
+
+     xbt_assert1((trace = xbt_dict_get_or_null(traces_set_list, trace_id)), "Trace %s undefined", trace_id);
+
+     if (connect_element == A_surfxml_trace_c_connect_element_HOST) {
+        xbt_assert1((host = xbt_dict_get_or_null(cpu_set, connector_id)), "Host %s undefined", connector_id);
+        switch (connect_kind) {
+           case A_surfxml_trace_c_connect_kind_AVAILABILITY: host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
+           case A_surfxml_trace_c_connect_kind_POWER: host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
+        }
+     }
+   }
+}
+
 static void define_callbacks(const char *file)
 {
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
   surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
+  surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
+  surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
 }
 
 static void *name_service(const char *name)

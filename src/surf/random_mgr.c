@@ -1,0 +1,49 @@
+
+#include "surf/random_mgr.h"
+#include "xbt/sysdep.h"
+
+static double custom_random(int generator){
+   switch(generator) {
+      case DRAND48: return drand48(); break;
+      case RAND: return (double)rand()/RAND_MAX; break;
+      default: return drand48();
+   }
+}
+
+/* Generate numbers between min and max with a given mean and standard deviation */
+float random_generate(random_data_t random){  
+  float x1, x2, w, y;
+  
+  if (random == NULL) return 0.0f;  
+
+  do {
+    /* Apply the polar form of the Box-Muller Transform to map the two uniform random numbers to a pair of numbers from a normal distribution.
+       It is good for speed because it does not call math functions many times. Another way would be to simply:
+         y1 = sqrt( - 2 * log(x1) ) * cos( 2 * pi * x2 )
+    */ 
+    do {
+      x1 = 2.0 * custom_random(random->generator) - 1.0;
+      x2 = 2.0 * custom_random(random->generator) - 1.0;
+      w = x1 * x1 + x2 * x2;
+    } while ( w >= 1.0 );
+
+    w = sqrt( (-2.0 * log( w ) ) / w );
+    y = x1 * w;
+
+    /* Multiply the Box-Muller value by the standard deviation and add the mean */
+    y = y * random->stdDeviation + random->mean;
+  } while (!(random->min <= y && y <= random->max));
+
+  return y;
+}
+
+random_data_t random_new(int generator, int min, int max, int mean, int stdDeviation){
+  random_data_t random = xbt_new0(s_random_data_t, 1);
+  random->generator = generator;
+  random->min = min;
+  random->max = max;
+  random->mean = mean;
+  random->stdDeviation = stdDeviation;
+  return random;
+}
+

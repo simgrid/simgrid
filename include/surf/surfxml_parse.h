@@ -32,12 +32,27 @@ XBT_PUBLIC(xbt_dynar_t) STag_surfxml_argument_cb_list;
 XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_argument_cb_list;
 XBT_PUBLIC(xbt_dynar_t) STag_surfxml_prop_cb_list;
 XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_prop_cb_list;
+XBT_PUBLIC(xbt_dynar_t) STag_surfxml_set_cb_list;
+XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_set_cb_list;
+XBT_PUBLIC(xbt_dynar_t) STag_surfxml_foreach_cb_list;
+XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_foreach_cb_list;
+XBT_PUBLIC(xbt_dynar_t) STag_surfxml_route_c_multi_cb_list;
+XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_route_c_multi_cb_list;
+XBT_PUBLIC(xbt_dynar_t) STag_surfxml_cluster_cb_list;
+XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_cluster_cb_list;
+XBT_PUBLIC(xbt_dynar_t) STag_surfxml_trace_cb_list;
+XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_trace_cb_list;
+XBT_PUBLIC(xbt_dynar_t) STag_surfxml_trace_c_connect_cb_list;
+XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_trace_c_connect_cb_list;
+XBT_PUBLIC(xbt_dynar_t) STag_surfxml_random_cb_list;
+XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_random_cb_list;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);
 XBT_PUBLIC(void) surf_parse_reset_parser(void);
 XBT_PUBLIC(void) surf_parse_free_callbacks(void);
 XBT_PUBLIC(void) surf_parse_get_double(double *value,const char *string);
+XBT_PUBLIC(void) surf_parse_get_int(int *value,const char *string);
 
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex(void);
@@ -71,12 +86,6 @@ XBT_PUBLIC_DATA(int_f_void_t) surf_parse; /* Entry-point to the parser. Set this
 #define SURFXML_END_TAG(tag)  do { ETag_surfxml_##tag(); SURFXML_BUFFER_RESET(); } while(0)     
 
 XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function);
-
-/* This is used by all models when creating the routing table while parsing */
-XBT_PUBLIC_DATA(xbt_dict_t) route_table;
-XBT_PUBLIC_DATA(xbt_dynar_t) route_link_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) links;
-XBT_PUBLIC_DATA(xbt_dynar_t) keys;
 
 
 #endif

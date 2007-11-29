@@ -301,17 +301,22 @@ void *xbt_dict_get(xbt_dict_t dict,
  */
 void *xbt_dict_get_or_null(xbt_dict_t     dict,
 		     const char     *key) {
-  xbt_ex_t e;
-  void *result = NULL;
-  TRY {
-    result = xbt_dict_get(dict, key);
-  } CATCH(e) {
-    if (e.category != not_found_error) 
-      RETHROW;
-    xbt_ex_free(e);
-    result = NULL;
+  unsigned int hash_code ;
+  xbt_dictelm_t current;
+
+  xbt_assert(dict);
+
+  hash_code = xbt_dict_hash(key) % dict->table_size;
+
+  current = dict->table[hash_code];
+  while (current != NULL && (strcmp(key, current->key))) {
+    current = current->next;
   }
-  return result;
+
+  if (current == NULL) 
+    return NULL;
+
+  return current->content;
 }
 
 
