@@ -1160,7 +1160,7 @@ static void parse_route_set_route(void)
 {
   char* name;
   if (src_id != -1 && dst_id != -1) {
-    name = bprintf("%d#%d#%lf#%lf#%lf#%lf",src_id, dst_id,impact_on_src,
+    name = bprintf("%x#%x#%lf#%lf#%lf#%lf",src_id, dst_id,impact_on_src,
 	      impact_on_dst, impact_on_src_with_other_recv,
 	      impact_on_dst_with_other_send);
 
@@ -1196,7 +1196,7 @@ static void add_route(void)
   int link_list_capacity = 0;
   link_KCCFLN05_t *link_list = NULL;
   xbt_dict_cursor_t cursor = NULL;
-  char *key,*data;
+  char *key,*data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
 
@@ -1210,8 +1210,8 @@ static void add_route(void)
     link_list_capacity = xbt_dynar_length(links);
     link_list = xbt_new(link_KCCFLN05_t, link_list_capacity);
 
-    src_id = atoi(xbt_dynar_get_as(keys, 0, char*));
-    dst_id = atoi(xbt_dynar_get_as(keys, 1, char*));
+    src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
+    dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
     impact_on_src = atof(xbt_dynar_get_as(keys, 2, char*));
     impact_on_dst = atof(xbt_dynar_get_as(keys, 3, char*));
     impact_on_src_with_other_recv = atof(xbt_dynar_get_as(keys, 4, char*));

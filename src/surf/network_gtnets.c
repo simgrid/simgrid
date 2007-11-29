@@ -272,7 +272,7 @@ static void add_route()
   unsigned int cpt = 0;    
   int i = 0;
   xbt_dict_cursor_t cursor = NULL;
-  char *key,*data;
+  char *key,*data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
 
@@ -284,8 +284,8 @@ static void add_route()
     nb_link = xbt_dynar_length(links);
     link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
 
-    src_id = atoi(xbt_dynar_get_as(keys, 0, char*));
-    dst_id = atoi(xbt_dynar_get_as(keys, 1, char*));
+    src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
+    dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
   
     i = 0;
     char* link = NULL;
