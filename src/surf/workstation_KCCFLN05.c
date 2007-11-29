@@ -1150,6 +1150,7 @@ static void parse_route_set_endpoints(void)
   surf_parse_get_double(&impact_on_dst_with_other_send,
 			A_surfxml_route_impact_on_dst_with_other_send);
 
+  
   route_action = A_surfxml_route_action;
   route_link_list = xbt_dynar_new(sizeof(char *), &free_string);
 
@@ -1159,7 +1160,7 @@ static void parse_route_set_route(void)
 {
   char* name;
   if (src_id != -1 && dst_id != -1) {
-    name = bprintf("%x#%x#%lf#%lf#%lf#%lf",src_id, dst_id,impact_on_src,
+    name = bprintf("%d#%d#%lf#%lf#%lf#%lf",src_id, dst_id,impact_on_src,
 	      impact_on_dst, impact_on_src_with_other_recv,
 	      impact_on_dst_with_other_send);
 

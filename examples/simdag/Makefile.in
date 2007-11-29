@@ -370,14 +370,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-metaxml/sd_meta.o: metaxml/sd_meta.c
+sd_meta.o: metaxml/sd_meta.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_meta.o -MD -MP -MF $(DEPDIR)/sd_meta.Tpo -c -o sd_meta.o `test -f 'metaxml/sd_meta.c' || echo '$(srcdir)/'`metaxml/sd_meta.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_meta.Tpo $(DEPDIR)/sd_meta.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='metaxml/sd_meta.c' object='sd_meta.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_meta.o `test -f 'metaxml/sd_meta.c' || echo '$(srcdir)/'`metaxml/sd_meta.c
 
-metaxml/sd_meta.obj: metaxml/sd_meta.c
+sd_meta.obj: metaxml/sd_meta.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_meta.obj -MD -MP -MF $(DEPDIR)/sd_meta.Tpo -c -o sd_meta.obj `if test -f 'metaxml/sd_meta.c'; then $(CYGPATH_W) 'metaxml/sd_meta.c'; else $(CYGPATH_W) '$(srcdir)/metaxml/sd_meta.c'; fi`
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_meta.Tpo $(DEPDIR)/sd_meta.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='metaxml/sd_meta.c' object='sd_meta.obj' libtool=no @AMDEPBACKSLASH@
