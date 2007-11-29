@@ -45,7 +45,7 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 check_PROGRAMS = sd_test$(EXEEXT) sd_test2$(EXEEXT) \
-	properties/sd_prop$(EXEEXT) metaxml/sd_test$(EXEEXT)
+	properties/sd_prop$(EXEEXT) metaxml/sd_meta$(EXEEXT)
 bin_PROGRAMS =
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -70,9 +70,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_properties_sd_prop_OBJECTS = sd_prop.$(OBJEXT)
 properties_sd_prop_OBJECTS = $(am_properties_sd_prop_OBJECTS)
 properties_sd_prop_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
-am_metaxml_sd_test_OBJECTS = sd_test.$(OBJEXT)
-metaxml_sd_test_OBJECTS = $(am_metaxml_sd_test_OBJECTS)
-metaxml_sd_test_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
+am_metaxml_sd_meta_OBJECTS = sd_meta.$(OBJEXT)
+metaxml_sd_meta_OBJECTS = $(am_metaxml_sd_meta_OBJECTS)
+metaxml_sd_meta_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
 am__dirstamp = $(am__leading_dot)dirstamp
 am_sd_test_OBJECTS = sd_test.$(OBJEXT)
 sd_test_OBJECTS = $(am_sd_test_OBJECTS)
@@ -93,9 +93,9 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(properties_sd_prop_SOURCES) $(sd_test_SOURCES) \
-	$(sd_test2_SOURCES) $(metaxml_sd_test_SOURCES)
+	$(sd_test2_SOURCES) $(metaxml_sd_meta_SOURCES)
 DIST_SOURCES = $(properties_sd_prop_SOURCES) $(sd_test_SOURCES) \
-	$(sd_test2_SOURCES) $(metaxml_sd_test_SOURCES)
+	$(sd_test2_SOURCES) $(metaxml_sd_meta_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -244,8 +244,8 @@ TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh metaxml/metaxml_test.tesh
 properties_sd_prop_SOURCES = properties/sd_prop.c
 properties_sd_prop_LDADD = $(top_builddir)/src/libsimgrid.la
-metaxml_sd_test_SOURCES = metaxml/sd_test.c
-metaxml_sd_test_LDADD = $(top_builddir)/src/libsimgrid.la
+metaxml_sd_meta_SOURCES = metaxml/sd_meta.c
+metaxml_sd_meta_LDADD = $(top_builddir)/src/libsimgrid.la
 sd_test_SOURCES = sd_test.c
 sd_test_LDADD = $(top_builddir)/src/libsimgrid.la
 sd_test2_SOURCES = sd_test2.c
@@ -327,9 +327,9 @@ properties/sd_prop$(EXEEXT): $(properties_sd_prop_OBJECTS) $(properties_sd_prop_
 metaxml/$(am__dirstamp):
 	@$(MKDIR_P) metaxml
 	@: > metaxml/$(am__dirstamp)
-metaxml/sd_test$(EXEEXT): $(metaxml_sd_test_OBJECTS) $(metaxml_sd_test_DEPENDENCIES) metaxml/$(am__dirstamp)
-	@rm -f metaxml/sd_test$(EXEEXT)
-	$(LINK) $(metaxml_sd_test_OBJECTS) $(metaxml_sd_test_LDADD) $(LIBS)
+metaxml/sd_meta$(EXEEXT): $(metaxml_sd_meta_OBJECTS) $(metaxml_sd_meta_DEPENDENCIES) metaxml/$(am__dirstamp)
+	@rm -f metaxml/sd_meta$(EXEEXT)
+	$(LINK) $(metaxml_sd_meta_OBJECTS) $(metaxml_sd_meta_LDADD) $(LIBS)
 sd_test$(EXEEXT): $(sd_test_OBJECTS) $(sd_test_DEPENDENCIES) 
 	@rm -f sd_test$(EXEEXT)
 	$(LINK) $(sd_test_OBJECTS) $(sd_test_LDADD) $(LIBS)
@@ -382,19 +382,19 @@ sd_prop.obj: properties/sd_prop.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_prop.obj `if test -f 'properties/sd_prop.c'; then $(CYGPATH_W) 'properties/sd_prop.c'; else $(CYGPATH_W) '$(srcdir)/properties/sd_prop.c'; fi`
 
-metaxml/sd_test.o: metaxml/sd_test.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test.o -MD -MP -MF $(DEPDIR)/sd_test.Tpo -c -o sd_test.o `test -f 'metaxml/sd_test.c' || echo '$(srcdir)/'`metaxml/sd_test.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test.Tpo $(DEPDIR)/sd_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='metaxml/sd_test.c' object='sd_test.o' libtool=no @AMDEPBACKSLASH@
+sd_meta.o: metaxml/sd_meta.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_meta.o -MD -MP -MF $(DEPDIR)/sd_meta.Tpo -c -o sd_meta.o `test -f 'metaxml/sd_meta.c' || echo '$(srcdir)/'`metaxml/sd_meta.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_meta.Tpo $(DEPDIR)/sd_meta.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='metaxml/sd_meta.c' object='sd_meta.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test.o `test -f 'metaxml/sd_test.c' || echo '$(srcdir)/'`metaxml/sd_test.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_meta.o `test -f 'metaxml/sd_meta.c' || echo '$(srcdir)/'`metaxml/sd_meta.c
 
-metaxml/sd_test.obj: metaxml/sd_test.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test.obj -MD -MP -MF $(DEPDIR)/sd_test.Tpo -c -o sd_test.obj `if test -f 'metaxml/sd_test.c'; then $(CYGPATH_W) 'metaxml/sd_test.c'; else $(CYGPATH_W) '$(srcdir)/metaxml/sd_test.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test.Tpo $(DEPDIR)/sd_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='metaxml/sd_test.c' object='sd_test.obj' libtool=no @AMDEPBACKSLASH@
+sd_meta.obj: metaxml/sd_meta.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_meta.obj -MD -MP -MF $(DEPDIR)/sd_meta.Tpo -c -o sd_meta.obj `if test -f 'metaxml/sd_meta.c'; then $(CYGPATH_W) 'metaxml/sd_meta.c'; else $(CYGPATH_W) '$(srcdir)/metaxml/sd_meta.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_meta.Tpo $(DEPDIR)/sd_meta.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='metaxml/sd_meta.c' object='sd_meta.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test.obj `if test -f 'metaxml/sd_test.c'; then $(CYGPATH_W) 'metaxml/sd_test.c'; else $(CYGPATH_W) '$(srcdir)/metaxml/sd_test.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_meta.obj `if test -f 'metaxml/sd_meta.c'; then $(CYGPATH_W) 'metaxml/sd_meta.c'; else $(CYGPATH_W) '$(srcdir)/metaxml/sd_meta.c'; fi`
 
 
 mostlyclean-libtool:

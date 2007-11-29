@@ -2,7 +2,7 @@
 
 p Simple test of simdag with metaxml tags
 
-$ $SG_TEST_EXENV metaxml/sd_test ${srcdir:=.}/../platforms/metaxml-random.xml
+$ $SG_TEST_EXENV metaxml/sd_meta ${srcdir:=.}/../platforms/metaxml-random.xml
 > [0.000000] [sd_test/INFO] Route between lille_2_host and lille_2_host:
 > [0.000000] [sd_test/INFO] 	Link lille_2_host: latency = 0.000007, bandwidth = 3297750.000000
 > [0.000000] [sd_test/INFO] Route between lille_2_host and lyon_1_host:
