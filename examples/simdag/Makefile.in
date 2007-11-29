@@ -238,7 +238,7 @@ EXTRA_DIST = 2clusters.xml \
 
 CLEANFILES = sd_test.trace
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh metaxml/metaxml_test.trace
+TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh metaxml/metaxml_test.tesh
 properties_sd_prop_SOURCES = properties/sd_prop.c
 properties_sd_prop_LDADD = $(top_builddir)/src/libsimgrid.la
 metaxml_sd_test_SOURCES = metaxml/sd_test.c
