@@ -382,14 +382,14 @@ sd_prop.obj: properties/sd_prop.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_prop.obj `if test -f 'properties/sd_prop.c'; then $(CYGPATH_W) 'properties/sd_prop.c'; else $(CYGPATH_W) '$(srcdir)/properties/sd_prop.c'; fi`
 
-sd_test.o: metaxml/sd_test.c
+metaxml/sd_test.o: metaxml/sd_test.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test.o -MD -MP -MF $(DEPDIR)/sd_test.Tpo -c -o sd_test.o `test -f 'metaxml/sd_test.c' || echo '$(srcdir)/'`metaxml/sd_test.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test.Tpo $(DEPDIR)/sd_test.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='metaxml/sd_test.c' object='sd_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test.o `test -f 'metaxml/sd_test.c' || echo '$(srcdir)/'`metaxml/sd_test.c
 
-sd_test.obj: metaxml/sd_test.c
+metaxml/sd_test.obj: metaxml/sd_test.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test.obj -MD -MP -MF $(DEPDIR)/sd_test.Tpo -c -o sd_test.obj `if test -f 'metaxml/sd_test.c'; then $(CYGPATH_W) 'metaxml/sd_test.c'; else $(CYGPATH_W) '$(srcdir)/metaxml/sd_test.c'; fi`
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test.Tpo $(DEPDIR)/sd_test.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='metaxml/sd_test.c' object='sd_test.obj' libtool=no @AMDEPBACKSLASH@
