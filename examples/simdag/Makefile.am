@@ -14,8 +14,8 @@ CLEANFILES = sd_test.trace
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 
-TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh metaxml/metaxml_test.trace
-check_PROGRAMS = sd_test sd_test2 properties/sd_prop
+TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh metaxml/metaxml_test.tesh
+check_PROGRAMS = sd_test sd_test2 properties/sd_prop metaxml/sd_test
 
 bin_PROGRAMS = 
 
