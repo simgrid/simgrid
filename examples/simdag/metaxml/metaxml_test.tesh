@@ -59,18 +59,3 @@ $ $SG_TEST_EXENV metaxml/sd_meta ${srcdir:=.}/../platforms/metaxml.xml
 > [0.000000] [sd_test/INFO] Route between nancy_1_host and nancy_1_host:
 > [0.000000] [sd_test/INFO] 	Link nancy_1_host: latency = 0.000050, bandwidth = 125000000.000000
 > [0.000000] [sd_test/INFO] 	Link Nancy_bb: latency = 0.001000, bandwidth = 50000000.000000
-> [0.000000] [sd_test/INFO] Computation time for 2000000.000000 flops on nancy_0_host: 0.001620
-> [0.000000] [sd_test/INFO] Computation time for 1000000.000000 flops on lille_1_host: 0.000810
-> [0.000000] [sd_test/INFO] Estimated time for 'Task D': 1.500600
-> [0.000000] [sd_kernel/INFO] Starting simulation...
-> [0.000000] [sd_kernel/INFO] Executing task 'Task D'
-> [863309.428714] [sd_kernel/INFO] Task 'Task D' done
-> [863309.428714] [sd_kernel/INFO] Executing task 'Task B'
-> [863309.428714] [sd_kernel/INFO] Executing task 'Task C'
-> [1438849.000343] [sd_kernel/INFO] Task 'Task B' done
-> [1438849.000343] [sd_task/INFO] Watch point reached with task 'Task B'!
-> [1438849.000343] [sd_kernel/INFO] Simulation finished
-> [1438849.000343] [sd_test/INFO] Task 'Task D' start time: 0.000000, finish time: 863309.428714
-> [1438849.000343] [sd_test/INFO] Task 'Task B' start time: 863309.428714, finish time: 1438849.000343
-
-
