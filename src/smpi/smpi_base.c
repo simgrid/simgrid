@@ -57,6 +57,8 @@ void smpi_mpi_init()
 	for (i = 0; i < host_count && host != hosts[i]; i ++);
 
 	hdata->index = i;
+	hdata->mutex = SIMIX_mutex_init();
+	hdata->cond  = SIMIX_cond_init();
 
 	SIMIX_host_set_data(host, hdata);
 
@@ -115,10 +117,11 @@ void smpi_mpi_init()
 	// wait for all nodes to signal initializatin complete
 	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
 	smpi_global->ready_process_count++;
-	if (smpi_global->ready_process_count < 3 * host_count) {
-		SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
-	} else {
+	if (smpi_global->ready_process_count >= 3 * host_count) {
 		SIMIX_cond_broadcast(smpi_global->start_stop_cond);
+	}
+	while (smpi_global->ready_process_count < 3 * host_count) {
+		SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
 	}
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
@@ -136,6 +139,9 @@ void smpi_mpi_finalize()
 	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
 	smpi_global->ready_process_count--;
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
+
+	SIMIX_mutex_destroy(smpi_host_mutex());
+	SIMIX_cond_destroy(smpi_host_cond());
 
 	if (0 >= i) {
 
@@ -170,11 +176,11 @@ int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
 {
 
 	SIMIX_mutex_lock(comm->barrier_mutex);
-	if(++comm->barrier_count < comm->size) {
-		SIMIX_cond_wait(comm->barrier_cond, comm->barrier_mutex);
-	} else {
-		comm->barrier_count = 0;
+	if (++comm->barrier_count >= comm->size) {
 		SIMIX_cond_broadcast(comm->barrier_cond);
+	}
+	while (comm->barrier_count < comm->size) {
+		SIMIX_cond_wait(comm->barrier_cond, comm->barrier_mutex);
 	}
 	SIMIX_mutex_unlock(comm->barrier_mutex);
 

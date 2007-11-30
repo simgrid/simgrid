@@ -20,6 +20,8 @@ int smpi_sender(int argc, char **argv)
 
 	smx_action_t action;
 
+	e_surf_action_state_t state;
+
 	smpi_received_message_t message;
 
 	int dindex;
@@ -31,7 +33,7 @@ int smpi_sender(int argc, char **argv)
 
 	// make sure root is done before own initialization
 	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-	if (!smpi_global->root_ready) {
+	while (!smpi_global->root_ready) {
 		SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
 	}
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
@@ -46,10 +48,11 @@ int smpi_sender(int argc, char **argv)
 	// wait for all nodes to signal initializatin complete
 	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
 	smpi_global->ready_process_count++;
-	if (smpi_global->ready_process_count < 3 * smpi_global->host_count) {
-		SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
-	} else {
+	if (smpi_global->ready_process_count >= 3 * smpi_global->host_count) {
 		SIMIX_cond_broadcast(smpi_global->start_stop_cond);
+	}
+	while (smpi_global->ready_process_count < 3 * smpi_global->host_count) {
+		SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
 	}
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
@@ -92,7 +95,15 @@ int smpi_sender(int argc, char **argv)
 			action = SIMIX_action_communicate(shost, dhost, "communication", request->datatype->size * request->count, -1.0);
 
 			SIMIX_register_action_to_condition(action, request->cond);
-			SIMIX_cond_wait(request->cond, request->mutex);
+
+			for (
+				state  = SIMIX_action_get_state(action);
+				state == SURF_ACTION_READY ||
+				state == SURF_ACTION_RUNNING;
+				state  = SIMIX_action_get_state(action)
+			) {
+				SIMIX_cond_wait(request->cond, request->mutex);
+			}
 
 			SIMIX_unregister_action_to_condition(action, request->cond);
 			SIMIX_action_destroy(action);

@@ -5,18 +5,28 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (ben
 
 void smpi_execute(double duration) {
         smx_host_t host = SIMIX_host_self();
+	smx_mutex_t mutex = smpi_host_mutex();
+	smx_cond_t cond = smpi_host_cond();
         smx_action_t action;
+	e_surf_action_state_t state;
 
-	SIMIX_mutex_lock(smpi_global->execute_mutex);
+	SIMIX_mutex_lock(mutex);
 
 	action = SIMIX_action_execute(host, "execute", duration * SMPI_DEFAULT_SPEED);
 
-        SIMIX_register_action_to_condition(action, smpi_global->execute_cond);
-        SIMIX_cond_wait(smpi_global->execute_cond, smpi_global->execute_mutex);
-        SIMIX_unregister_action_to_condition(action, smpi_global->execute_cond);
+        SIMIX_register_action_to_condition(action, cond);
+	for (
+		state =  SIMIX_action_get_state(action);
+		state == SURF_ACTION_READY ||
+		state == SURF_ACTION_RUNNING;
+		state =  SIMIX_action_get_state(action)
+	) {
+        	SIMIX_cond_wait(cond, mutex);
+	}
+        SIMIX_unregister_action_to_condition(action, cond);
         SIMIX_action_destroy(action);
 
-        SIMIX_mutex_unlock(smpi_global->execute_mutex);
+        SIMIX_mutex_unlock(mutex);
 
 	return;
 }

@@ -22,23 +22,35 @@ int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
 unsigned int smpi_sleep(unsigned int seconds)
 {
 	smx_host_t host;
+	smx_mutex_t mutex;
+	smx_cond_t cond;
 	smx_action_t action;
+	e_surf_action_state_t state;
 
 	smpi_bench_end();
 
 	host  = SIMIX_host_self();
+	mutex = smpi_host_mutex();
+	cond  = smpi_host_cond();
 
-	SIMIX_mutex_lock(smpi_global->execute_mutex);
+	SIMIX_mutex_lock(mutex);
 
 	// FIXME: explicit conversion to double?
 	action = SIMIX_action_sleep(host, seconds);
 
-	SIMIX_register_action_to_condition(action, smpi_global->execute_cond);
-	SIMIX_cond_wait(smpi_global->execute_cond, smpi_global->execute_mutex);
-	SIMIX_unregister_action_to_condition(action, smpi_global->execute_cond);
+	SIMIX_register_action_to_condition(action, cond);
+	for (
+		state =  SIMIX_action_get_state(action);
+		state == SURF_ACTION_READY ||
+		state == SURF_ACTION_RUNNING;
+		state =  SIMIX_action_get_state(action)
+	) {
+		SIMIX_cond_wait(cond, mutex);
+	}
+	SIMIX_unregister_action_to_condition(action, cond);
 	SIMIX_action_destroy(action);
 
-	SIMIX_mutex_unlock(smpi_global->execute_mutex);
+	SIMIX_mutex_unlock(mutex);
 
 	smpi_bench_begin();
 	return 0;

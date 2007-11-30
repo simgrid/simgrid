@@ -93,6 +93,7 @@ typedef struct smpi_global_t {
 	xbt_mallocator_t  request_mallocator;
 	xbt_mallocator_t  message_mallocator;
 
+	// FIXME: request queues should be moved to host data...
 	xbt_fifo_t       *pending_send_request_queues;
 	smx_mutex_t      *pending_send_request_queues_mutexes;
 
@@ -108,14 +109,9 @@ typedef struct smpi_global_t {
 	int               running_hosts_count;
 	smx_mutex_t       running_hosts_count_mutex;
 
-	// FIXME: maybe all code needs to lock timer?
 	xbt_os_timer_t    timer;
 	smx_mutex_t       timer_mutex;
 	smx_cond_t        timer_cond;
-
-	smx_mutex_t       execute_mutex;
-	smx_cond_t        execute_cond;
-	int               execute_count;
 
 	// keeps track of previous times
 	smpi_do_once_duration_node_t do_once_duration_nodes;
@@ -128,6 +124,8 @@ extern smpi_global_t smpi_global;
 
 typedef struct smpi_host_data_t {
 	int index;
+	smx_mutex_t mutex;
+	smx_cond_t cond;
 } s_smpi_host_data_t;
 typedef struct smpi_host_data_t *smpi_host_data_t;
 
@@ -151,6 +149,8 @@ void smpi_bench_skip(void);
 void smpi_global_init(void);
 void smpi_global_destroy(void);
 int smpi_host_index(void);
+smx_mutex_t smpi_host_mutex(void);
+smx_cond_t smpi_host_cond(void);
 int smpi_run_simulation(int *argc, char **argv);
 int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
 	int src, int dst, int tag, smpi_mpi_communicator_t comm, smpi_mpi_request_t *request);

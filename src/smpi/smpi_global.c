@@ -168,10 +168,6 @@ void smpi_global_init()
 	smpi_global->timer_mutex                         = SIMIX_mutex_init();
 	smpi_global->timer_cond                          = SIMIX_cond_init();
 
-	smpi_global->execute_mutex                       = SIMIX_mutex_init();
-	smpi_global->execute_cond                        = SIMIX_cond_init();
-	smpi_global->execute_count			 = 0;
-
 	smpi_global->do_once_duration_nodes              = NULL;
 	smpi_global->do_once_duration                    = NULL;
 	smpi_global->do_once_mutex                       = SIMIX_mutex_init();
@@ -213,8 +209,6 @@ void smpi_global_destroy()
 	xbt_os_timer_free(smpi_global->timer);
 	SIMIX_mutex_destroy(smpi_global->timer_mutex);
 	SIMIX_cond_destroy(smpi_global->timer_cond);
-	SIMIX_mutex_destroy(smpi_global->execute_mutex);
-	SIMIX_cond_destroy(smpi_global->execute_cond);
 
 	for(curr = smpi_global->do_once_duration_nodes; NULL != curr; curr = next) {
 		next = curr->next;
@@ -249,8 +243,21 @@ int smpi_host_index()
 {
 	smx_host_t host = SIMIX_host_self();
 	smpi_host_data_t hdata = (smpi_host_data_t)SIMIX_host_get_data(host);
-
 	return hdata->index;
+}
+
+smx_mutex_t smpi_host_mutex()
+{
+	smx_host_t host = SIMIX_host_self();
+	smpi_host_data_t hdata = (smpi_host_data_t)SIMIX_host_get_data(host);
+	return hdata->mutex;
+}
+
+smx_cond_t smpi_host_cond()
+{
+	smx_host_t host = SIMIX_host_self();
+	smpi_host_data_t hdata = (smpi_host_data_t)SIMIX_host_get_data(host);
+	return hdata->cond;
 }
 
 int smpi_run_simulation(int *argc, char **argv)
