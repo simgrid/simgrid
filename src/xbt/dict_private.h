@@ -20,11 +20,16 @@
 
 typedef struct xbt_dictelm_ *xbt_dictelm_t;
 
+#define MAX_FILL_PERCENT 60
+
 typedef struct xbt_dictelm_ {
   char *key;
   int key_len;
+  unsigned int hash_code;
+   
   void *content;
   void_f_pvoid_t free_f;
+   
   xbt_dictelm_t next;
 } s_xbt_dictelm_t;
 
@@ -32,6 +37,7 @@ typedef struct xbt_dict_ {
   xbt_dictelm_t *table;
   int table_size;
   int count;
+  int fill;
 } s_xbt_dict_t;
 
 typedef struct xbt_dict_cursor_ s_xbt_dict_cursor_t;
@@ -42,11 +48,8 @@ extern void dict_elm_mallocator_free_f(void* elem);
 extern void dict_elm_mallocator_reset_f(void* elem);
 
 /*####[ Function prototypes ]################################################*/
-xbt_dictelm_t xbt_dictelm_new(const char *key,
-			      int key_len,
-			      void *content,
-			      void_f_pvoid_t free_f,
-			      xbt_dictelm_t next);
+xbt_dictelm_t xbt_dictelm_new(const char *key, int key_len, unsigned int hash_code,
+			      void *content, void_f_pvoid_t free_f);
 void xbt_dictelm_free(xbt_dictelm_t element);
 void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element);
 

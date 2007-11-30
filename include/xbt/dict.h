@@ -45,9 +45,7 @@ SG_BEGIN_DECL()
   /** \brief Dictionnary data type (opaque structure) */
   typedef struct xbt_dict_ *xbt_dict_t;
   XBT_PUBLIC(xbt_dict_t) xbt_dict_new(void);
-  XBT_PUBLIC(xbt_dict_t) xbt_dict_new_ext(int hashsize);
   XBT_PUBLIC(void) xbt_dict_free(xbt_dict_t *dict);
-  XBT_PUBLIC(void) xbt_dict_hashsize_set(xbt_dict_t dict, int hashsize);
 
 /** @} */
 /** @defgroup XBT_dict_basic Dictionnaries basic usage

@@ -21,9 +21,9 @@ xbt_mallocator_t dict_elm_mallocator = NULL;
 
 xbt_dictelm_t xbt_dictelm_new(const char *key,
 			      int key_len,
+			      unsigned int hash_code,
 			      void *content,
-			      void_f_pvoid_t free_f,
-			      xbt_dictelm_t next) {
+			      void_f_pvoid_t free_f) {
   xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
   
   element->key = xbt_new(char, key_len + 1);
@@ -31,9 +31,11 @@ xbt_dictelm_t xbt_dictelm_new(const char *key,
   element->key[key_len] = '\0';
 
   element->key_len = key_len;
+  element->hash_code = hash_code;
+   
   element->content = content;
   element->free_f = free_f;
-  element->next = next;
+  element->next = NULL;
   
   return element;
 }

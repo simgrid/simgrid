@@ -122,7 +122,7 @@ void xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
       DEBUG1("next element: %p", current);
     }
     
-    while (current == NULL && ++line < cursor->dict->table_size) {
+    while (current == NULL && ++line <= cursor->dict->table_size) {
       DEBUG0("current is NULL, take the next line");
       current = cursor->dict->table[line];
       DEBUG1("element in the next line: %p", current);

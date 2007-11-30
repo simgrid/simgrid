@@ -52,6 +52,9 @@ SimGrid (3.3-cvs) unstable; urgency=low
     classical producer/consumer synchronization scheme
   * xbt_dynar_new_sync() creates a synchronized dynar. All access
     (using the classical functions will get serialized) [Mt]
+  * Make dictionary internal table dynamic. No need to specify its size
+    anymore; functions xbt_dict_new_ext() and xbt_dict_hashsize_set()
+    thus dropped. [Mt].
 
  SURF:
   * Cleaned many thing in surf and fixed a few bugs [AL].

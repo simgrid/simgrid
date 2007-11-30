@@ -35,16 +35,6 @@ static void dict_mallocator_reset_f(void* dict);
  * Creates and initialize a new dictionnary with a default hashtable size.
  */
 xbt_dict_t xbt_dict_new(void) {
-  return xbt_dict_new_ext(256);
-}
-
-/**
- * \brief Create a new dictionary with the specified hashtable size
- * \param hashsize the hashtable size
- * \return a pointer to the created object
- * \see xbt_dict_new(), xbt_dict_free()
- */
-xbt_dict_t xbt_dict_new_ext(int hashsize) {
   xbt_dict_t dict;
 
   if (dict_mallocator == NULL) {
@@ -60,9 +50,10 @@ xbt_dict_t xbt_dict_new_ext(int hashsize) {
   }
 
   dict = xbt_mallocator_get(dict_mallocator);
-  dict->table_size = hashsize;
-  dict->table = xbt_new0(xbt_dictelm_t, dict->table_size);
+  dict->table_size = 127;
+  dict->table = xbt_new0(xbt_dictelm_t, dict->table_size+1);
   dict->count = 0;
+  dict->fill = 0;
 
   return dict;
 }
@@ -97,61 +88,79 @@ void xbt_dict_free(xbt_dict_t *dict) {
 }
 
 /**
- * \brief Change the hashtable size
- * \param dict a dictionary
- * \param hashsize the new hashtable size
- *
- * Change the hashtable size is a long operation, so it's better
- * to use xbt_dict_new_ext or to call xbt_dict_hashsize_set when
- * the dictionary is empty. 
- */
-void xbt_dict_hashsize_set(xbt_dict_t dict, int hashsize) {
-  xbt_dict_t new_dict = xbt_dict_new_ext(hashsize);
-  xbt_dictelm_t element, next;
-  int i;
-
-  for (i = 0; i < dict->table_size; i++) {
-    element = dict->table[i];
-    while (element != NULL) {
-      next = element->next; /* save the next because it will be lost */
-      xbt_dict_add_element(new_dict, element); /* no new xbt_dictelm_t is mallocated */
-      element = next;
-    }
-  }
-
-  xbt_free(dict->table);
-  dict->table = new_dict->table;
-  dict->table_size = hashsize;
-  xbt_free(new_dict);
-}
-
-/**
  * Returns the hash code of a string.
  */
-static unsigned int xbt_dict_hash_ext(const char *str, int str_len) {
+static XBT_INLINE unsigned int xbt_dict_hash_ext(const char *str, int str_len) {
   /* fast implementation of djb2 algorithm */
-  unsigned int hash = 5381;
   int c;
+  register unsigned int hash = 5381;
   
   while (str_len--) {
     c = *str++;
     hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
   }
-  
+   
   return hash;
 }
 
-static unsigned int xbt_dict_hash(const char *str) {
+static XBT_INLINE unsigned int xbt_dict_hash(const char *str) {
   /* fast implementation of djb2 algorithm */
-  unsigned int hash = 5381;
   int c;
+  register unsigned int hash = 5381;
   
   while ( (c = *str++) ) {
     hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
   }
-  
+   
   return hash;
 }
+
+/* Expend the size of the dict */
+static void xbt_dict_rehash(xbt_dict_t dict) {
+   const int oldsize = dict->table_size + 1;
+   register int newsize = oldsize * 2;
+   register int i;
+   register xbt_dictelm_t *currcell;
+   register xbt_dictelm_t *twincell;
+   register xbt_dictelm_t bucklet;
+   register xbt_dictelm_t *pprev;
+   
+   currcell = (xbt_dictelm_t*) xbt_realloc((char*)dict->table, newsize * sizeof(xbt_dictelm_t));
+   memset(&currcell[oldsize], 0, oldsize * sizeof(xbt_dictelm_t)); /* zero second half */
+   dict->table_size = --newsize;
+   dict->table = currcell;
+   DEBUG2("REHASH (%d->%d)",oldsize,newsize);
+   
+   for (i=0; i<oldsize; i++,currcell++) {
+      if (!*currcell) /* empty cell */
+	continue;
+      twincell = currcell+oldsize;
+      for (pprev = currcell, bucklet = *currcell; 
+	   bucklet; 
+	   bucklet = *pprev) {
+	 /* Since we use "& size" instead of "%size" and since the size was doubled, 
+	    each bucklet of this cell must either : 
+	     - stay  in  cell i (ie, currcell)
+	     - go to the cell i+oldsize (ie, twincell) */
+	 if ((bucklet->hash_code & newsize) != i) { /* Move to b */
+	    *pprev = bucklet->next;
+	    bucklet->next = *twincell;
+	    if (!*twincell)
+	      dict->fill++;
+	    *twincell = bucklet;
+	    continue;
+	 } else {
+	    pprev = &bucklet->next;
+	 }
+	 
+      }
+      
+      if (!*currcell)  /* everything moved */
+	dict->fill--;
+   }   
+}
+
+
 
 /**
  * \brief Add data to the dict (arbitrary key)
@@ -165,35 +174,35 @@ static unsigned int xbt_dict_hash(const char *str) {
  * Set the \a data in the structure under the \a key, which can be any kind 
  * of data, as long as its length is provided in \a key_len.
  */
-void xbt_dict_set_ext(xbt_dict_t       dict,
-		      const char      *key,
-		      int              key_len,
-		      void            *data,
-		      void_f_pvoid_t   free_ctn) {
+XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict, 
+				 const char *key, int key_len,
+				 void *data, void_f_pvoid_t free_ctn) {
 
-  unsigned int hash_code;
+  unsigned int hash_code = xbt_dict_hash_ext(key,key_len);
+
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
   
-  hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
-
-  current = dict->table[hash_code];
+//  fprintf(stderr,"ADD %.*s hash = %d, size = %d, & = %d\n",key_len,key,hash_code, dict->table_size, hash_code & dict->table_size);
+  current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
-	 (key_len != current->key_len || strncmp(key, current->key, key_len))) {
+	 (hash_code != current->hash_code || key_len != current->key_len || memcmp(key, current->key, key_len))) {
     previous = current;
     current = current->next;
   }
 
   if (current == NULL) {
     /* this key doesn't exist yet */
-    current = xbt_dictelm_new(key, key_len, data, free_ctn, NULL);
+    current = xbt_dictelm_new(key, key_len, hash_code, data, free_ctn);
+    dict->count++;
     if (previous == NULL) {
-      dict->table[hash_code] = current;
-    }
-    else {
+      dict->table[hash_code & dict->table_size] = current;
+      dict->fill++;
+      if ((dict->fill * 100) / (dict->table_size + 1) > MAX_FILL_PERCENT)
+	 xbt_dict_rehash(dict);
+    } else {
       previous->next = current;
     }
-    dict->count++;
   }
   else {
     /* there is already an element with the same key: we overwrite it */
@@ -222,8 +231,6 @@ void xbt_dict_set(xbt_dict_t      dict,
 		  void           *data,
 		  void_f_pvoid_t  free_ctn) {
 
-  xbt_assert(dict);
-  
   xbt_dict_set_ext(dict, key, strlen(key), data, free_ctn);
 }
 
@@ -237,27 +244,23 @@ void xbt_dict_set(xbt_dict_t      dict,
  *
  * Search the given \a key. Throws not_found_error when not found.
  */
-void *xbt_dict_get_ext(xbt_dict_t      dict,
-		       const char     *key,
-		       int             key_len) {
+void *xbt_dict_get_ext(xbt_dict_t dict,
+		       const char *key, int key_len) {
 
 
-  unsigned int hash_code;
+  unsigned int hash_code = xbt_dict_hash_ext(key,key_len);
   xbt_dictelm_t current;
 
   xbt_assert(dict);
   
-  hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
-
-  current = dict->table[hash_code];
+  current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
-	 (key_len != current->key_len || strncmp(key, current->key, key_len))) {
+	 (hash_code != current->hash_code || key_len != current->key_len || memcmp(key, current->key, key_len))) {
     current = current->next;
   }
 
-  if (current == NULL) {
+  if (current == NULL)
     THROW2(not_found_error, 0, "key %.*s not found", key_len, key);
-  }
 
   return current->content;
 }
@@ -277,21 +280,17 @@ void *xbt_dict_get(xbt_dict_t dict,
 		   const char *key) {
 
 
-  unsigned int hash_code ;
+  unsigned int hash_code = xbt_dict_hash(key);
   xbt_dictelm_t current;
 
   xbt_assert(dict);
 
-  hash_code = xbt_dict_hash(key) % dict->table_size;
-
-  current = dict->table[hash_code];
-  while (current != NULL && (strcmp(key, current->key))) {
+  current = dict->table[hash_code & dict->table_size];
+  while (current != NULL && hash_code != current->hash_code && strcmp(key, current->key))
     current = current->next;
-  }
 
-  if (current == NULL) {
+  if (current == NULL)
     THROW1(not_found_error, 0, "key %s not found", key);
-  }
 
   return current->content;
 }
@@ -299,20 +298,18 @@ void *xbt_dict_get(xbt_dict_t dict,
 /**
  * \brief like xbt_dict_get(), but returning NULL when not found
  */
-void *xbt_dict_get_or_null(xbt_dict_t     dict,
-		     const char     *key) {
-  unsigned int hash_code ;
+void *xbt_dict_get_or_null(xbt_dict_t dict,
+			   const char *key) {
+  unsigned int hash_code = xbt_dict_hash(key);
   xbt_dictelm_t current;
 
   xbt_assert(dict);
 
-  hash_code = xbt_dict_hash(key) % dict->table_size;
-
-  current = dict->table[hash_code];
-  while (current != NULL && (strcmp(key, current->key))) {
+  current = dict->table[hash_code & dict->table_size];
+  while (current != NULL && 
+	 hash_code != current->hash_code && strcmp(key, current->key)) 
     current = current->next;
-  }
-
+  
   if (current == NULL) 
     return NULL;
 
@@ -334,31 +331,30 @@ void xbt_dict_remove_ext(xbt_dict_t  dict,
 			 int          key_len) {
 
 
-  unsigned int hash_code ;
+  unsigned int hash_code = xbt_dict_hash_ext(key,key_len);
   xbt_dictelm_t current, previous = NULL;
 
   xbt_assert(dict);
 
-  hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
-
-  current = dict->table[hash_code];
+//  fprintf(stderr,"RM %.*s hash = %d, size = %d, & = %d\n",key_len,key,hash_code, dict->table_size, hash_code & dict->table_size);
+  current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
-	 (key_len != current->key_len || strncmp(key, current->key, key_len))) {
+	 (hash_code != current->hash_code || key_len != current->key_len || strncmp(key, current->key, key_len))) {
     previous = current; /* save the previous node */
     current = current->next;
   }
 
-  if (current == NULL) {
+  if (current == NULL)
     THROW2(not_found_error, 0, "key %.*s not found", key_len, key);
-  }
 
   if (previous != NULL) {
-    xbt_assert0(previous->next == current, "previous-next != current");
     previous->next = current->next;
+  } else {
+    dict->table[hash_code & dict->table_size] = current->next;
   }
-  else {
-    dict->table[hash_code] = current->next;
-  }
+   
+  if (!dict->table[hash_code & dict->table_size])
+     dict->fill--;
 
   xbt_dictelm_free(current);
   dict->count--;
@@ -372,10 +368,7 @@ void xbt_dict_remove_ext(xbt_dict_t  dict,
  *
  * Remove the entry associated with the given \a key
  */
-void xbt_dict_remove(xbt_dict_t  dict,
-		     const char  *key) {
-  xbt_assert(dict);
-
+void xbt_dict_remove(xbt_dict_t dict, const char *key) {
   xbt_dict_remove_ext(dict, key, strlen(key));
 }
 
@@ -385,16 +378,15 @@ void xbt_dict_remove(xbt_dict_t  dict,
  */
 void xbt_dict_reset(xbt_dict_t dict) {
 
-
   int i;
   xbt_dictelm_t current, previous = NULL;
 
-   xbt_assert(dict);
+  xbt_assert(dict);
    
   if (dict->count == 0)
     return;
    
-  for (i = 0; i < dict->table_size; i++) {
+  for (i = 0; i <= dict->table_size; i++) {
     current = dict->table[i];
     while (current != NULL) {
       previous = current;
@@ -405,6 +397,7 @@ void xbt_dict_reset(xbt_dict_t dict) {
   }
 
   dict->count = 0;
+  dict->fill = 0;
 }
 
 /**
@@ -415,21 +408,6 @@ int xbt_dict_length(xbt_dict_t dict) {
   xbt_assert(dict);
 
   return dict->count;
-}
-
-/*
- * Add an already mallocated element to a dictionary.
- */
-void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element) {
-
-
-  int hashcode;
-
-  xbt_assert(dict);
-  
-  hashcode = xbt_dict_hash_ext(element->key,element->key_len) % dict->table_size;
-  element->next = dict->table[hashcode];
-  dict->table[hashcode] = element;
 }
 
 /**
@@ -562,9 +540,14 @@ static void traverse(xbt_dict_t head) {
   xbt_dict_cursor_t cursor=NULL;
   char *key;
   char *data;
+  int i = 0;
 
   xbt_dict_foreach(head,cursor,key,data) {
-    xbt_test_log2("Seen:  %s->%s",PRINTF_STR(key),PRINTF_STR(data));
+    if (!key || !data || strcmp(key,data)) {	    
+       xbt_test_log3("Seen #%d:  %s->%s",++i,PRINTF_STR(key),PRINTF_STR(data));
+    } else {
+       xbt_test_log2("Seen #%d:  %s",++i,PRINTF_STR(key));
+    }
     xbt_test_assert2(!data || !strcmp(key,data),
 		     "Key(%s) != value(%s). Abording\n",key,data);
   }
@@ -589,8 +572,19 @@ static void search_not_found(xbt_dict_t head, const char *data) {
 }
 
 static void count(xbt_dict_t dict, int length) {
+  xbt_dict_cursor_t cursor;
+  char *key;
+  void *data;
+  int effective = 0;
+
+
   xbt_test_add1("Count elements (expecting %d)", length);
-  xbt_test_assert2(xbt_dict_length(dict) == length, "Length(%d) != %d.", xbt_dict_length(dict), length);
+  xbt_test_assert2(xbt_dict_length(dict) == length, "Announced length(%d) != %d.", xbt_dict_length(dict), length);
+   
+  xbt_dict_foreach(dict,cursor,key,data) {
+    effective++;
+  }
+  xbt_test_assert2(effective == length, "Effective length(%d) != %d.", effective, length);
 }
 
 xbt_ex_t e;
@@ -725,7 +719,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
     xbt_ex_free(e);
   }                              traverse(head);
   
-  xbt_test_add0("Remove all values");
+  xbt_test_add0("Free dict, create new fresh one, and then reset the dict");
   xbt_dict_free(&head);
   fill(&head);
   xbt_dict_reset(head);
@@ -751,7 +745,12 @@ XBT_TEST_UNIT("nulldata",test_dict_nulldata,"NULL data management"){
     int found=0;
 
     xbt_dict_foreach(head,cursor,key,data) {
-      xbt_test_log2("Seen:  %s->%s",PRINTF_STR(key),PRINTF_STR(data));
+      if (!key || !data || strcmp(key,data)) {	    
+	 xbt_test_log2("Seen:  %s->%s",PRINTF_STR(key),PRINTF_STR(data));
+      } else {
+	 xbt_test_log1("Seen:  %s",PRINTF_STR(key));
+      }
+     
       if (!strcmp(key,"null"))
 	found = 1;
     }
@@ -782,26 +781,32 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
 
   srand((unsigned int)time(NULL));
 
-  xbt_test_add0("CRASH test");
-  xbt_test_log0("Fill the struct, count its elems and frees the structure (x10)");
-  xbt_test_log1("using 1000 elements with %d chars long randomized keys.",SIZEOFKEY);
-
   for (i=0;i<10;i++) {
+    xbt_test_add2("CRASH test number %d (%d to go)",i+1,10-i-1);
+    xbt_test_log0("Fill the struct, count its elems and frees the structure");
+    xbt_test_log1("using 1000 elements with %d chars long randomized keys.",SIZEOFKEY);
     head=xbt_dict_new();
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     nb=0;
     for (j=0;j<1000;j++) {
+      char *data = NULL;
       key=xbt_malloc(SIZEOFKEY);
 
-      for (k=0;k<SIZEOFKEY-1;k++)
-	key[k]=rand() % ('z' - 'a') + 'a';
-      key[k]='\0';
-      /*      printf("[%d %s]\n",j,key); */
+      do {	    
+	 for (k=0;k<SIZEOFKEY-1;k++)
+	   key[k]=rand() % ('z' - 'a') + 'a';
+	 key[k]='\0';
+	 /*      printf("[%d %s]\n",j,key); */
+	 data = xbt_dict_get_or_null(head,key);
+      } while (data != NULL);
+        
       xbt_dict_set(head,key,key,&free);
+      data = xbt_dict_get(head,key);
+      xbt_test_assert2(!strcmp(key,data), "Retrieved value (%s) != Injected value (%s)",key,data);
+       
+      count(head,j+1);
     }
     /*    xbt_dict_dump(head,(void (*)(void*))&printf); */
-    nb = countelems(head);
-    xbt_test_assert1(nb == 1000,"found %d elements instead of 1000",nb);
     traverse(head);
     xbt_dict_free(&head);
     xbt_dict_free(&head);
