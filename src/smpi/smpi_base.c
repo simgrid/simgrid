@@ -176,7 +176,10 @@ int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
 {
 
 	SIMIX_mutex_lock(comm->barrier_mutex);
-	if (++comm->barrier_count >= comm->size) {
+	++comm->barrier_count;
+	if (comm->barrier_count > comm->size) { // only happens on second barrier...
+		comm->barrier_count = 0;
+	} else if (comm->barrier_count == comm->size) {
 		SIMIX_cond_broadcast(comm->barrier_cond);
 	}
 	while (comm->barrier_count < comm->size) {
