@@ -494,7 +494,7 @@ void init_data(void)
 {
   xbt_dict_free(&route_table);
   xbt_dynar_free(&route_link_list);
-  route_table = xbt_dict_new_ext(202400);
+  route_table = xbt_dict_new();
 
   route_multi_table = xbt_dict_new();
   route_multi_elements = xbt_dynar_new(sizeof(char*), NULL);

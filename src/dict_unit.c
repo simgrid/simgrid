@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 494 "xbt/dict.c" 
+# 472 "xbt/dict.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 #include "portable.h"
@@ -80,9 +80,14 @@ static void traverse(xbt_dict_t head) {
   xbt_dict_cursor_t cursor=NULL;
   char *key;
   char *data;
+  int i = 0;
 
   xbt_dict_foreach(head,cursor,key,data) {
-    xbt_test_log2("Seen:  %s->%s",PRINTF_STR(key),PRINTF_STR(data));
+    if (!key || !data || strcmp(key,data)) {	    
+       xbt_test_log3("Seen #%d:  %s->%s",++i,PRINTF_STR(key),PRINTF_STR(data));
+    } else {
+       xbt_test_log2("Seen #%d:  %s",++i,PRINTF_STR(key));
+    }
     xbt_test_assert2(!data || !strcmp(key,data),
 		     "Key(%s) != value(%s). Abording\n",key,data);
   }
@@ -107,8 +112,19 @@ static void search_not_found(xbt_dict_t head, const char *data) {
 }
 
 static void count(xbt_dict_t dict, int length) {
+  xbt_dict_cursor_t cursor;
+  char *key;
+  void *data;
+  int effective = 0;
+
+
   xbt_test_add1("Count elements (expecting %d)", length);
-  xbt_test_assert2(xbt_dict_length(dict) == length, "Length(%d) != %d.", xbt_dict_length(dict), length);
+  xbt_test_assert2(xbt_dict_length(dict) == length, "Announced length(%d) != %d.", xbt_dict_length(dict), length);
+   
+  xbt_dict_foreach(dict,cursor,key,data) {
+    effective++;
+  }
+  xbt_test_assert2(effective == length, "Effective length(%d) != %d.", effective, length);
 }
 
 xbt_ex_t e;
@@ -243,7 +259,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
     xbt_ex_free(e);
   }                              traverse(head);
   
-  xbt_test_add0("Remove all values");
+  xbt_test_add0("Free dict, create new fresh one, and then reset the dict");
   xbt_dict_free(&head);
   fill(&head);
   xbt_dict_reset(head);
@@ -269,7 +285,12 @@ XBT_TEST_UNIT("nulldata",test_dict_nulldata,"NULL data management"){
     int found=0;
 
     xbt_dict_foreach(head,cursor,key,data) {
-      xbt_test_log2("Seen:  %s->%s",PRINTF_STR(key),PRINTF_STR(data));
+      if (!key || !data || strcmp(key,data)) {	    
+	 xbt_test_log2("Seen:  %s->%s",PRINTF_STR(key),PRINTF_STR(data));
+      } else {
+	 xbt_test_log1("Seen:  %s",PRINTF_STR(key));
+      }
+     
       if (!strcmp(key,"null"))
 	found = 1;
     }
@@ -300,26 +321,32 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
 
   srand((unsigned int)time(NULL));
 
-  xbt_test_add0("CRASH test");
-  xbt_test_log0("Fill the struct, count its elems and frees the structure (x10)");
-  xbt_test_log1("using 1000 elements with %d chars long randomized keys.",SIZEOFKEY);
-
   for (i=0;i<10;i++) {
+    xbt_test_add2("CRASH test number %d (%d to go)",i+1,10-i-1);
+    xbt_test_log0("Fill the struct, count its elems and frees the structure");
+    xbt_test_log1("using 1000 elements with %d chars long randomized keys.",SIZEOFKEY);
     head=xbt_dict_new();
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     nb=0;
     for (j=0;j<1000;j++) {
+      char *data = NULL;
       key=xbt_malloc(SIZEOFKEY);
 
-      for (k=0;k<SIZEOFKEY-1;k++)
-	key[k]=rand() % ('z' - 'a') + 'a';
-      key[k]='\0';
-      /*      printf("[%d %s]\n",j,key); */
+      do {	    
+	 for (k=0;k<SIZEOFKEY-1;k++)
+	   key[k]=rand() % ('z' - 'a') + 'a';
+	 key[k]='\0';
+	 /*      printf("[%d %s]\n",j,key); */
+	 data = xbt_dict_get_or_null(head,key);
+      } while (data != NULL);
+        
       xbt_dict_set(head,key,key,&free);
+      data = xbt_dict_get(head,key);
+      xbt_test_assert2(!strcmp(key,data), "Retrieved value (%s) != Injected value (%s)",key,data);
+       
+      count(head,j+1);
     }
     /*    xbt_dict_dump(head,(void (*)(void*))&printf); */
-    nb = countelems(head);
-    xbt_test_assert1(nb == 1000,"found %d elements instead of 1000",nb);
     traverse(head);
     xbt_dict_free(&head);
     xbt_dict_free(&head);

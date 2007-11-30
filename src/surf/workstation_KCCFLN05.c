@@ -740,8 +740,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   int nb_host = 0;
 
   if (parallel_task_link_set == NULL) {
-    parallel_task_link_set =
-	xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
+    parallel_task_link_set = xbt_dict_new();
   }
 
   /* Compute the number of affected resources... */

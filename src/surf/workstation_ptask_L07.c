@@ -485,10 +485,8 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   int nb_host = 0;
   double latency = 0.0;
 
-  if (parallel_task_link_set == NULL) {
-    parallel_task_link_set =
-	xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
-  }
+  if (parallel_task_link_set == NULL)
+    parallel_task_link_set = xbt_dict_new();
 
   xbt_dict_reset(parallel_task_link_set);
 
@@ -1099,8 +1097,8 @@ static void model_init_internal(void)
 
   surf_workstation_model->common_public->get_properties = get_properties;
 
-  workstation_set = xbt_dict_new_ext(1024);
-  link_set = xbt_dict_new_ext(1024);
+  workstation_set = xbt_dict_new();
+  link_set = xbt_dict_new();
 
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();
