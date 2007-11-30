@@ -308,12 +308,14 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
 					  (test->failed?" FAIL":" PASS"))),
 		  test->title, file, line);
 	  
-	  xbt_dynar_foreach(test->logs,it_log,log) {
-	    file = (log->file != NULL ? log->file : file);
-	    line = (log->line != 0    ? log->line : line);
-	    fprintf(stderr, "             %s:%d: %s\n", 
-		    file, line,log->text);
-	    
+	  if  ( (test->expected_failure && !test->failed) || (!test->expected_failure && test->failed) ) {
+	     xbt_dynar_foreach(test->logs,it_log,log) {
+		file = (log->file != NULL ? log->file : file);
+		line = (log->line != 0    ? log->line : line);
+		fprintf(stderr, "             %s:%d: %s\n", 
+			file, line,log->text);
+		
+	     }
 	  }
 	}
 	fprintf(stderr, "    Summary: %d of %d tests failed",unit->test_failed, unit->nb_tests);
