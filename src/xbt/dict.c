@@ -7,6 +7,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+//#define DJB2_HASH_FUNCTION
+//#define FNV_HASH_FUNCTION
+
 #include <string.h>
 #include <stdio.h>
 #include "xbt/ex.h"
@@ -70,6 +73,8 @@ void xbt_dict_free(xbt_dict_t *dict) {
   int table_size;
   xbt_dictelm_t *table;
 
+//  if ( *dict )  xbt_dict_dump_sizes(*dict);
+
   if (dict != NULL && *dict != NULL) {
     table_size = (*dict)->table_size;
     table = (*dict)->table;
@@ -91,6 +96,9 @@ void xbt_dict_free(xbt_dict_t *dict) {
  * Returns the hash code of a string.
  */
 static XBT_INLINE unsigned int xbt_dict_hash_ext(const char *str, int str_len) {
+  
+   
+#ifdef DJB2_HASH_FUNCTION 
   /* fast implementation of djb2 algorithm */
   int c;
   register unsigned int hash = 5381;
@@ -99,11 +107,33 @@ static XBT_INLINE unsigned int xbt_dict_hash_ext(const char *str, int str_len) {
     c = *str++;
     hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
   }
+# elif defined(FNV_HASH_FUNCTION)
+  register unsigned int hash = 0x811c9dc5;
+  unsigned char *bp = (unsigned char *)str;   /* start of buffer */
+  unsigned char *be = bp + str_len;               /* beyond end of buffer */
+   
+  while (bp < be) {
+     /* multiply by the 32 bit FNV magic prime mod 2^32 */
+     hash += (hash<<1) + (hash<<4) + (hash<<7) + (hash<<8) + (hash<<24);
+	
+     /* xor the bottom with the current octet */
+     hash ^= (unsigned int)*bp++;
+  }
+
+# else 
+  register unsigned int hash = 0;
+   
+  while (str_len--) {	
+     hash += (*str) * (*str);
+     str++;
+  }
+#endif
    
   return hash;
 }
 
 static XBT_INLINE unsigned int xbt_dict_hash(const char *str) {
+#ifdef DJB2_HASH_FUNCTION 
   /* fast implementation of djb2 algorithm */
   int c;
   register unsigned int hash = 5381;
@@ -112,6 +142,25 @@ static XBT_INLINE unsigned int xbt_dict_hash(const char *str) {
     hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
   }
    
+# elif defined(FNV_HASH_FUNCTION)
+  register unsigned int hash = 0x811c9dc5;
+   
+  while (*str) {
+     /* multiply by the 32 bit FNV magic prime mod 2^32 */
+     hash += (hash<<1) + (hash<<4) + (hash<<7) + (hash<<8) + (hash<<24);
+	
+     /* xor the bottom with the current octet */
+     hash ^= (unsigned int)*str++;
+  }
+   
+# else 
+  register unsigned int hash = 0;
+   
+  while (*str) {	
+     hash += (*str) * (*str);
+     str++;
+  }
+#endif
   return hash;
 }
 
@@ -160,8 +209,6 @@ static void xbt_dict_rehash(xbt_dict_t dict) {
    }   
 }
 
-
-
 /**
  * \brief Add data to the dict (arbitrary key)
  * \param dict the container
@@ -183,7 +230,7 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
   
-//  fprintf(stderr,"ADD %.*s hash = %d, size = %d, & = %d\n",key_len,key,hash_code, dict->table_size, hash_code & dict->table_size);
+  DEBUG5("ADD %.*s hash = %d, size = %d, & = %d",key_len,key,hash_code, dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
 	 (hash_code != current->hash_code || key_len != current->key_len || memcmp(key, current->key, key_len))) {
@@ -205,7 +252,12 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
     }
   }
   else {
-    /* there is already an element with the same key: we overwrite it */
+     
+    DEBUG6("Replace %.*s by %.*s under key %.*s",
+	  key_len,(char*)current->content,
+	  key_len,(char*)data,
+	  key_len,(char*)key);
+    /* there is already an element with the same key: overwrite it */
     if (current->content != NULL && current->free_f != NULL) {
       current->free_f(current->content);
     }
@@ -279,14 +331,13 @@ void *xbt_dict_get_ext(xbt_dict_t dict,
 void *xbt_dict_get(xbt_dict_t dict,
 		   const char *key) {
 
-
   unsigned int hash_code = xbt_dict_hash(key);
   xbt_dictelm_t current;
 
   xbt_assert(dict);
 
   current = dict->table[hash_code & dict->table_size];
-  while (current != NULL && hash_code != current->hash_code && strcmp(key, current->key))
+  while (current != NULL && (hash_code != current->hash_code || strcmp(key, current->key)))
     current = current->next;
 
   if (current == NULL)
@@ -428,16 +479,79 @@ void xbt_dict_dump(xbt_dict_t     dict,
   if (dict != NULL) {
     for (i = 0; i < dict->table_size; i++) {
       element = dict->table[i];
-      while (element != NULL) {
-	printf("%s -> ", element->key);
-	if (output != NULL) {
-	  (*output)(element->content);
-	}
-	printf("\n");
-	element = element->next;
+      if (element) {
+	 printf("[\n");
+	 while (element != NULL) {
+	    printf(" %s -> ", element->key);
+	    if (output != NULL) {
+	       (*output)(element->content);
+	    }
+	    printf("\n");
+	    element = element->next;
+	 }
+	 printf("]\n");
+      } else {
+	 printf("[]\n");
       }
     }
   }
+}
+
+xbt_dynar_t all_sizes = NULL;
+/** @brief shows some debugging info about the bucklet repartition */
+void xbt_dict_dump_sizes(xbt_dict_t dict) {
+
+  unsigned int i,count;
+  int size;
+  xbt_dictelm_t element;
+  xbt_dynar_t sizes = xbt_dynar_new(sizeof(int),NULL);
+   
+  printf("Dict %p: %d bucklets, %d used cells (of %d) ", dict, dict->count, dict->fill,dict->table_size);
+  if (dict != NULL) {
+    for (i = 0; i < dict->table_size; i++) {
+      element = dict->table[i];
+      size = 0;
+      if (element) {
+	 while (element != NULL) {
+	    size ++;
+	    element = element->next;
+	 }
+      }
+      if (xbt_dynar_length(sizes) <= size) {
+	 int prevsize = 1;
+	 xbt_dynar_set(sizes,size,&prevsize);
+      } else {
+	 int prevsize;
+	 xbt_dynar_get_cpy(sizes,size,&prevsize);
+	 prevsize++;
+	 xbt_dynar_set(sizes,size,&prevsize);
+      }       
+    }
+    if (!all_sizes)
+       all_sizes = xbt_dynar_new(sizeof(int), NULL);
+     
+    xbt_dynar_foreach(sizes,count,size) {
+       /* Copy values of this one into all_sizes */
+       int prevcount;
+       if (xbt_dynar_length(all_sizes) <= count) {
+	  prevcount = size;
+	  xbt_dynar_set(all_sizes,count,&prevcount);
+       } else {
+	  xbt_dynar_get_cpy(all_sizes,count,&prevcount);
+	  prevcount += size;
+	  xbt_dynar_set(all_sizes,count,&prevcount);
+       }       
+
+       /* Report current sizes */
+       if (count==0)
+	 continue;
+       if (size==0)
+	 continue;
+       printf("%delm x %d cells; ",count,size);
+    }
+  }
+  printf("\n");
+  xbt_dynar_free(&sizes);
 }
 
 /**
@@ -450,6 +564,23 @@ void xbt_dict_exit(void) {
     dict_mallocator = NULL;
     xbt_mallocator_free(dict_elm_mallocator);
     dict_elm_mallocator = NULL;
+  }
+  if (all_sizes) {
+     unsigned int count;
+     int size;
+     double avg = 0;
+     int total_count = 0;
+     printf("Overall stats:");
+     xbt_dynar_foreach(all_sizes,count,size) {
+	if (count==0)
+	  continue;
+	if (size==0)
+	  continue;
+	printf("%delm x %d cells; ",count,size);
+	avg += count * size;
+	total_count += size;
+     }
+     printf("; %f elm per cell\n",avg/(double)total_count);
   }
 }
 
@@ -549,7 +680,7 @@ static void traverse(xbt_dict_t head) {
        xbt_test_log2("Seen #%d:  %s",++i,PRINTF_STR(key));
     }
     xbt_test_assert2(!data || !strcmp(key,data),
-		     "Key(%s) != value(%s). Abording\n",key,data);
+		     "Key(%s) != value(%s). Abording",key,data);
   }
 }
 
@@ -772,7 +903,7 @@ static int countelems(xbt_dict_t head) {
   }
   return res;
 }
-
+   
 XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
   xbt_dict_t head=NULL;
   int i,j,k, nb;
@@ -823,7 +954,8 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
     sprintf(key,"%d",j);
     xbt_dict_set(head,key,key,&free);
   }
-
+   /*xbt_dict_dump(head,(void (*)(void*))&printf);*/
+   
   xbt_test_add0("Count the elements (retrieving the key and data for each)");
   i = countelems(head);
   xbt_test_log1("There is %d elements",i);
@@ -837,7 +969,10 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
       sprintf(key,"%d",j);
       data = xbt_dict_get(head,key);
       xbt_test_assert2(!strcmp(key,(char*)data),
-		       "key=%s != data=%s\n",key,(char*)data);
+		       "with get, key=%s != data=%s",key,(char*)data);
+      data = xbt_dict_get_ext(head,key,strlen(key));
+      xbt_test_assert2(!strcmp(key,(char*)data),
+		       "with get_ext, key=%s != data=%s",key,(char*)data);
     }
   }
   free(key);

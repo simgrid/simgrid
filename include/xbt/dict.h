@@ -64,7 +64,9 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(void) xbt_dict_reset(xbt_dict_t dict);
   XBT_PUBLIC(int) xbt_dict_length(xbt_dict_t dict);
   XBT_PUBLIC(void) xbt_dict_dump(xbt_dict_t dict, void (*output)(void*));
-  
+  XBT_PUBLIC(void) xbt_dict_dump_sizes(xbt_dict_t dict);
+   
+   
 /** @} */
 /** @defgroup XBT_dict_nnul Dictionnaries with non-nul terminated keys
  *  @ingroup XBT_dict
