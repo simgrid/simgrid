@@ -1224,7 +1224,7 @@ static void add_route(void)
         link_list[nb_link++] = xbt_dict_get(link_set, link);
       }
       CATCH(e) {
-        RETHROW3("Link %s not found between", link);
+        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
       }     
     }
     route_new(src_id, dst_id, link_list, nb_link,impact_on_src,
