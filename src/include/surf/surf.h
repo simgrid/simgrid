@@ -569,15 +569,18 @@ void parse_trace_finalize(void);
 void parse_trace_c_connect(void);
 
 void manage_route(xbt_dict_t route_table, const char* route_name, int action, int isMultiRoute);
-int route_action;
+XBT_PUBLIC_DATA(int) route_action;
 
 /* This is used by all models when creating the routing table while parsing */
-xbt_dict_t route_table, route_multi_table;
-xbt_dynar_t route_link_list;
+XBT_PUBLIC_DATA(xbt_dict_t) route_table;
+XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
+XBT_PUBLIC_DATA(xbt_dict_t) route_table;
+XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
+XBT_PUBLIC_DATA(xbt_dynar_t) route_link_list;
 
 /* For the trace and trace:connect tag */
-xbt_dict_t traces_set_list;
-xbt_dynar_t traces_connect_list;
+XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) traces_connect_list;
 
 double get_cpu_power(const char* power);
 void init_randomness(void);
