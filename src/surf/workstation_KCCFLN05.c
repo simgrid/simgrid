@@ -1217,10 +1217,8 @@ static void add_route(void)
     impact_on_dst_with_other_send = 0;//atof(xbt_dynar_get_as(keys, 5, char*));
 
     char* link = NULL;
-    INFO2("%d - %d", src_id, dst_id);
     xbt_dynar_foreach (links, cpt, link) {
       TRY {
-	INFO1("\t%s",link);
         link_list[nb_link++] = xbt_dict_get(link_set, link);
       }
       CATCH(e) {
