@@ -20,7 +20,7 @@
 
 typedef struct xbt_dictelm_ *xbt_dictelm_t;
 
-#define MAX_FILL_PERCENT 60
+#define MAX_FILL_PERCENT 80
 
 typedef struct xbt_dictelm_ {
   char *key;

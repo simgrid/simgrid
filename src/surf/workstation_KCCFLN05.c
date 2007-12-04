@@ -909,6 +909,7 @@ static cpu_KCCFLN05_t cpu_new(const char *name, double power_scale,
 			      xbt_dict_t cpu_properties_k)
 {
   cpu_KCCFLN05_t cpu = xbt_new0(s_cpu_KCCFLN05_t, 1);
+
   xbt_assert1(! xbt_dict_get_or_null(workstation_set, name),
 	      "Host '%s' declared several times in the platform file.",name);
 
@@ -1159,9 +1160,7 @@ static void parse_route_set_route(void)
 {
   char* name;
   if (src_id != -1 && dst_id != -1) {
-    name = bprintf("%x#%x#%lf#%lf#%lf#%lf",src_id, dst_id,impact_on_src,
-	      impact_on_dst, impact_on_src_with_other_recv,
-	      impact_on_dst_with_other_send);
+    name = bprintf("%x#%x",src_id, dst_id);
 
     manage_route(route_table, name, route_action, 0);
     free(name);
@@ -1211,24 +1210,26 @@ static void add_route(void)
 
     src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
-    impact_on_src = atof(xbt_dynar_get_as(keys, 2, char*));
-    impact_on_dst = atof(xbt_dynar_get_as(keys, 3, char*));
-    impact_on_src_with_other_recv = atof(xbt_dynar_get_as(keys, 4, char*));
-    impact_on_dst_with_other_send = atof(xbt_dynar_get_as(keys, 5, char*));
+    /*ATTRIBUTES NOT USED ANYMORE. WILL BE REMOVED FROM MODEL.*/
+    impact_on_src = 0;//atof(xbt_dynar_get_as(keys, 2, char*));
+    impact_on_dst = 0; //atof(xbt_dynar_get_as(keys, 3, char*));
+    impact_on_src_with_other_recv = 0;//atof(xbt_dynar_get_as(keys, 4, char*));
+    impact_on_dst_with_other_send = 0;//atof(xbt_dynar_get_as(keys, 5, char*));
 
     char* link = NULL;
+    INFO2("%d - %d", src_id, dst_id);
     xbt_dynar_foreach (links, cpt, link) {
       TRY {
+	INFO1("\t%s",link);
         link_list[nb_link++] = xbt_dict_get(link_set, link);
       }
       CATCH(e) {
-        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
+        RETHROW3("Link %s not found between %s and %s (dict raised this exception: %s)", link,src,dst);
       }     
     }
     route_new(src_id, dst_id, link_list, nb_link,impact_on_src,
 	      impact_on_dst, impact_on_src_with_other_recv,
 	      impact_on_dst_with_other_send);
-    xbt_dynar_free(&links);
    }
 
    xbt_dict_free(&route_table);

@@ -32,8 +32,8 @@
   <!-- Define backbone for communication between Nancy and Lille-->
   <link id="INTER-bb" bandwidth="125000000" latency="0.000100"/>
 
-  <!-- 4. Define startpoint for Lille -> $* (All other hosts including Nancy hosts) routes (it is symmetric: $* -> Lille). It is the starting point so it overrides all previosly routes!!! -->
-  <route:multi src="Lille" dst="$*" action="OVERRIDE">
+  <!-- 4. Define startpoint for Lille -> $* (All other hosts including Nancy hosts) routes. It is the starting point so it overrides all previosly routes!!! -->
+  <route:multi src="Lille" dst="$*" action="OVERRIDE" symmetric="NO">
     <link:ctn id="$src"/>
   </route:multi>
 

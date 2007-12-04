@@ -935,7 +935,6 @@ static void add_route(void)
          }    
        }
        route_new(src_id, dst_id, link_list, nb_link);
-       xbt_dynar_free(&links);
    }
 
    xbt_dict_free(&route_table);

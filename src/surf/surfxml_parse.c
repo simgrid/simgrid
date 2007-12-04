@@ -802,6 +802,7 @@ static void add_multi_links(const char* src, const char* dst, xbt_dynar_t links,
        val = xbt_strdup(src_name);
      else
        val = xbt_strdup(value);
+     DEBUG1("\t\tELEMENT: %s", val);
      xbt_dynar_push(route_link_list, &val);
    }    
    surfxml_call_cb_functions(ETag_surfxml_route_cb_list);
@@ -931,7 +932,7 @@ void parse_cluster(void)
    char * backbone_name = bprintf("%s_bb", cluster_id);
    parse_change_link_data(backbone_name, cluster_bb_bw, "", cluster_bb_lat, "", "");
    A_surfxml_link_state = A_surfxml_link_state_ON;
-   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_FATPIPE;
  
    SURFXML_START_TAG(link);
    SURFXML_END_TAG(link);

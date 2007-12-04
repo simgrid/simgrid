@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 472 "xbt/dict.c" 
+# 603 "xbt/dict.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 #include "portable.h"
@@ -89,7 +89,7 @@ static void traverse(xbt_dict_t head) {
        xbt_test_log2("Seen #%d:  %s",++i,PRINTF_STR(key));
     }
     xbt_test_assert2(!data || !strcmp(key,data),
-		     "Key(%s) != value(%s). Abording\n",key,data);
+		     "Key(%s) != value(%s). Abording",key,data);
   }
 }
 
@@ -312,7 +312,7 @@ static int countelems(xbt_dict_t head) {
   }
   return res;
 }
-
+   
 XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
   xbt_dict_t head=NULL;
   int i,j,k, nb;
@@ -363,7 +363,8 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
     sprintf(key,"%d",j);
     xbt_dict_set(head,key,key,&free);
   }
-
+   /*xbt_dict_dump(head,(void (*)(void*))&printf);*/
+   
   xbt_test_add0("Count the elements (retrieving the key and data for each)");
   i = countelems(head);
   xbt_test_log1("There is %d elements",i);
@@ -377,7 +378,10 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
       sprintf(key,"%d",j);
       data = xbt_dict_get(head,key);
       xbt_test_assert2(!strcmp(key,(char*)data),
-		       "key=%s != data=%s\n",key,(char*)data);
+		       "with get, key=%s != data=%s",key,(char*)data);
+      data = xbt_dict_get_ext(head,key,strlen(key));
+      xbt_test_assert2(!strcmp(key,(char*)data),
+		       "with get_ext, key=%s != data=%s",key,(char*)data);
     }
   }
   free(key);

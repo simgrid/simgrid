@@ -301,7 +301,6 @@ static void add_route()
       route_new(src_id, dst_id, link_name, nb_link);
     if (nb_link == 1)
       route_onehop_new(src_id, dst_id, link_name, nb_link);
-    xbt_dynar_free(&links);
    }
 
    xbt_dict_free(&route_table);

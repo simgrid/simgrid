@@ -7,7 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-//#define DJB2_HASH_FUNCTION
+#define DJB2_HASH_FUNCTION
 //#define FNV_HASH_FUNCTION
 
 #include <string.h>
