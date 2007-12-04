@@ -2,133 +2,107 @@
 
 p Testing a simple master/slave example application
 
-$ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/masterslave/deployment_masterslave.xml 
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slave(s) :
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Jupiter
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Fafard
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Ginette
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Bourassa
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Tremblay
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 20 task to process :
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_0"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_1"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_2"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_3"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_4"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_5"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_6"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_7"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_8"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_9"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_10"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_11"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_12"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_13"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_14"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_15"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_16"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_17"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_18"
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] "Task_19"
+$ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/masterslave/deployment_masterslave.xml
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slaves and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" to "Jupiter"
-> [Tremblay:master:(1) 0.147613] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 0.147613] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 0.147613] [msg_test/INFO] Sending "Task_1" to "Fafard"
 > [Jupiter:slave:(3) 0.147613] [msg_test/INFO] Received "Task_0"
 > [Jupiter:slave:(3) 0.147613] [msg_test/INFO] Processing "Task_0"
-> [Tremblay:master:(1) 0.347192] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 0.347192] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 0.347192] [msg_test/INFO] Sending "Task_2" to "Ginette"
 > [Fafard:slave:(4) 0.347192] [msg_test/INFO] Received "Task_1"
 > [Fafard:slave:(4) 0.347192] [msg_test/INFO] Processing "Task_1"
-> [Tremblay:master:(1) 0.475692] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 0.475692] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 0.475692] [msg_test/INFO] Sending "Task_3" to "Bourassa"
 > [Ginette:slave:(5) 0.475692] [msg_test/INFO] Received "Task_2"
 > [Ginette:slave:(5) 0.475692] [msg_test/INFO] Processing "Task_2"
-> [Tremblay:master:(1) 0.673184] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 0.673184] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 0.673184] [msg_test/INFO] Sending "Task_4" to "Tremblay"
 > [Tremblay:master:(1) 0.673184] [msg_test/INFO] Hey ! It's me ! :)
 > [Bourassa:slave:(6) 0.673184] [msg_test/INFO] Received "Task_3"
 > [Bourassa:slave:(6) 0.673184] [msg_test/INFO] Processing "Task_3"
-> [Tremblay:master:(1) 0.675207] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 0.675207] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 0.675207] [msg_test/INFO] Sending "Task_5" to "Jupiter"
 > [Tremblay:slave:(2) 0.675207] [msg_test/INFO] Received "Task_4"
 > [Tremblay:slave:(2) 0.675207] [msg_test/INFO] Processing "Task_4"
 > [Jupiter:slave:(3) 0.802956] [msg_test/INFO] "Task_0" done
-> [Tremblay:master:(1) 0.950569] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 0.950569] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 0.950569] [msg_test/INFO] Sending "Task_6" to "Fafard"
 > [Jupiter:slave:(3) 0.950569] [msg_test/INFO] Received "Task_5"
 > [Jupiter:slave:(3) 0.950569] [msg_test/INFO] Processing "Task_5"
 > [Fafard:slave:(4) 1.002534] [msg_test/INFO] "Task_1" done
 > [Tremblay:slave:(2) 1.184917] [msg_test/INFO] "Task_4" done
-> [Tremblay:master:(1) 1.202113] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 1.202113] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 1.202113] [msg_test/INFO] Sending "Task_7" to "Ginette"
 > [Fafard:slave:(4) 1.202113] [msg_test/INFO] Received "Task_6"
 > [Fafard:slave:(4) 1.202113] [msg_test/INFO] Processing "Task_6"
 > [Ginette:slave:(5) 1.506790] [msg_test/INFO] "Task_2" done
 > [Jupiter:slave:(3) 1.605911] [msg_test/INFO] "Task_5" done
-> [Tremblay:master:(1) 1.635290] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 1.635290] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 1.635290] [msg_test/INFO] Sending "Task_8" to "Bourassa"
 > [Ginette:slave:(5) 1.635290] [msg_test/INFO] Received "Task_7"
 > [Ginette:slave:(5) 1.635290] [msg_test/INFO] Processing "Task_7"
 > [Bourassa:slave:(6) 1.704282] [msg_test/INFO] "Task_3" done
 > [Fafard:slave:(4) 1.857455] [msg_test/INFO] "Task_6" done
-> [Tremblay:master:(1) 1.901774] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 1.901774] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 1.901774] [msg_test/INFO] Sending "Task_9" to "Tremblay"
 > [Tremblay:master:(1) 1.901774] [msg_test/INFO] Hey ! It's me ! :)
 > [Bourassa:slave:(6) 1.901774] [msg_test/INFO] Received "Task_8"
 > [Bourassa:slave:(6) 1.901774] [msg_test/INFO] Processing "Task_8"
-> [Tremblay:master:(1) 1.903797] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 1.903797] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 1.903797] [msg_test/INFO] Sending "Task_10" to "Jupiter"
 > [Tremblay:slave:(2) 1.903797] [msg_test/INFO] Received "Task_9"
 > [Tremblay:slave:(2) 1.903797] [msg_test/INFO] Processing "Task_9"
-> [Tremblay:master:(1) 2.051410] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 2.051410] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 2.051410] [msg_test/INFO] Sending "Task_11" to "Fafard"
 > [Jupiter:slave:(3) 2.051410] [msg_test/INFO] Received "Task_10"
 > [Jupiter:slave:(3) 2.051410] [msg_test/INFO] Processing "Task_10"
-> [Tremblay:master:(1) 2.250988] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 2.250988] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 2.250988] [msg_test/INFO] Sending "Task_12" to "Ginette"
 > [Fafard:slave:(4) 2.250988] [msg_test/INFO] Received "Task_11"
 > [Fafard:slave:(4) 2.250988] [msg_test/INFO] Processing "Task_11"
 > [Tremblay:slave:(2) 2.413507] [msg_test/INFO] "Task_9" done
 > [Ginette:slave:(5) 2.666388] [msg_test/INFO] "Task_7" done
 > [Jupiter:slave:(3) 2.706752] [msg_test/INFO] "Task_10" done
-> [Tremblay:master:(1) 2.794888] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 2.794888] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 2.794888] [msg_test/INFO] Sending "Task_13" to "Bourassa"
 > [Ginette:slave:(5) 2.794888] [msg_test/INFO] Received "Task_12"
 > [Ginette:slave:(5) 2.794888] [msg_test/INFO] Processing "Task_12"
 > [Fafard:slave:(4) 2.906331] [msg_test/INFO] "Task_11" done
 > [Bourassa:slave:(6) 2.932871] [msg_test/INFO] "Task_8" done
-> [Tremblay:master:(1) 3.130363] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 3.130363] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 3.130363] [msg_test/INFO] Sending "Task_14" to "Tremblay"
 > [Tremblay:master:(1) 3.130363] [msg_test/INFO] Hey ! It's me ! :)
 > [Bourassa:slave:(6) 3.130363] [msg_test/INFO] Received "Task_13"
 > [Bourassa:slave:(6) 3.130363] [msg_test/INFO] Processing "Task_13"
-> [Tremblay:master:(1) 3.132386] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 3.132386] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 3.132386] [msg_test/INFO] Sending "Task_15" to "Jupiter"
 > [Tremblay:slave:(2) 3.132386] [msg_test/INFO] Received "Task_14"
 > [Tremblay:slave:(2) 3.132386] [msg_test/INFO] Processing "Task_14"
-> [Tremblay:master:(1) 3.280000] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 3.280000] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 3.280000] [msg_test/INFO] Sending "Task_16" to "Fafard"
 > [Jupiter:slave:(3) 3.280000] [msg_test/INFO] Received "Task_15"
 > [Jupiter:slave:(3) 3.280000] [msg_test/INFO] Processing "Task_15"
-> [Tremblay:master:(1) 3.479578] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 3.479578] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 3.479578] [msg_test/INFO] Sending "Task_17" to "Ginette"
 > [Fafard:slave:(4) 3.479578] [msg_test/INFO] Received "Task_16"
 > [Fafard:slave:(4) 3.479578] [msg_test/INFO] Processing "Task_16"
 > [Tremblay:slave:(2) 3.642096] [msg_test/INFO] "Task_14" done
 > [Ginette:slave:(5) 3.825986] [msg_test/INFO] "Task_12" done
 > [Jupiter:slave:(3) 3.935342] [msg_test/INFO] "Task_15" done
-> [Tremblay:master:(1) 3.954486] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 3.954486] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 3.954486] [msg_test/INFO] Sending "Task_18" to "Bourassa"
 > [Ginette:slave:(5) 3.954486] [msg_test/INFO] Received "Task_17"
 > [Ginette:slave:(5) 3.954486] [msg_test/INFO] Processing "Task_17"
 > [Fafard:slave:(4) 4.134920] [msg_test/INFO] "Task_16" done
 > [Bourassa:slave:(6) 4.161461] [msg_test/INFO] "Task_13" done
-> [Tremblay:master:(1) 4.358953] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 4.358953] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 4.358953] [msg_test/INFO] Sending "Task_19" to "Tremblay"
 > [Tremblay:master:(1) 4.358953] [msg_test/INFO] Hey ! It's me ! :)
 > [Bourassa:slave:(6) 4.358953] [msg_test/INFO] Received "Task_18"
 > [Bourassa:slave:(6) 4.358953] [msg_test/INFO] Processing "Task_18"
-> [Tremblay:master:(1) 4.360976] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 4.360976] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 4.360976] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
 > [Tremblay:slave:(2) 4.360976] [msg_test/INFO] Received "Task_19"
 > [Tremblay:slave:(2) 4.360976] [msg_test/INFO] Processing "Task_19"

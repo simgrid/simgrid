@@ -63,21 +63,13 @@ int master(int argc, char *argv[])
     
     for (i = 4; i < argc; i++) {
       slaves[i-4] = MSG_get_host_by_name(argv[i]);
-      if(slaves[i-4]==NULL) {
-	INFO1("Unknown host %s. Stopping Now! ", argv[i]);
-	abort();
-      }
+      xbt_assert1(slaves[i-4]!=NULL, "Unknown host %s. Stopping Now! ", argv[i]);
     }
   }
 
-  INFO1("Got %d slave(s) :", slaves_count);
+  INFO2("Got %d slaves and %d tasks to process", slaves_count,number_of_tasks);
   for (i = 0; i < slaves_count; i++)
-    INFO1("%s", slaves[i]->name);
-
-  INFO1("Got %d task to process :", number_of_tasks);
-
-  for (i = 0; i < number_of_tasks; i++)
-    INFO1("\"%s\"", todo[i]->name);
+    DEBUG1("%s", slaves[i]->name);
 
   for (i = 0; i < number_of_tasks; i++) {
     INFO2("Sending \"%s\" to \"%s\"",
@@ -89,7 +81,7 @@ int master(int argc, char *argv[])
 
     MSG_task_put(todo[i], slaves[i % slaves_count],
                  PORT_22);
-    INFO0("Send completed");
+    INFO0("Sent");
   }
   
   INFO0("All tasks have been dispatched. Let's tell everybody the computation is over.");
@@ -106,24 +98,23 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
+  m_task_t task = NULL;
+  int res;
   while(1) {
-    m_task_t task = NULL;
-    int a;
-    a = MSG_task_get(&(task), PORT_22);
-    if (a == MSG_OK) {
-      INFO1("Received \"%s\"", MSG_task_get_name(task));
-      if(MSG_task_get_data(task)==FINALIZE) {
+    res = MSG_task_get(&(task), PORT_22);
+    xbt_assert0(res == MSG_OK, "MSG_task_get failed");
+
+    INFO1("Received \"%s\"", MSG_task_get_name(task));
+    if (!strcmp(MSG_task_get_name(task),"finalize")) {
 	MSG_task_destroy(task);
 	break;
-      }
-      INFO1("Processing \"%s\"", MSG_task_get_name(task));
-      MSG_task_execute(task);
-      INFO1("\"%s\" done", MSG_task_get_name(task));
-      MSG_task_destroy(task);
-    } else {
-      INFO0("Hey ?! What's up ? ");
-      xbt_assert0(0,"Unexpected behavior");
     }
+     
+    INFO1("Processing \"%s\"", MSG_task_get_name(task));
+    MSG_task_execute(task);
+    INFO1("\"%s\" done", MSG_task_get_name(task));
+    MSG_task_destroy(task);
+    task = NULL;
   }
   INFO0("I'm done. See you!");
   return 0;
