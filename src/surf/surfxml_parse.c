@@ -17,6 +17,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
 #undef CLEANUP
 #include "surfxml.c"
 
+/* Initialize the parsing globals */
+int route_action = 0;
+xbt_dict_t traces_set_list = NULL;
+xbt_dynar_t traces_connect_list = NULL;
+
 /* This buffer is used to store the original buffer before substituing it by out own buffer. Usefull for the foreach tag */
 char* old_buff;
 /* Stores the set name reffered to by the foreach tag */
