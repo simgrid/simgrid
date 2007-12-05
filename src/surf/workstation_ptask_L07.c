@@ -911,6 +911,7 @@ static void add_route(void)
     char *key,*data, *end;
     const char *sep = "#";
     xbt_dynar_t links, keys;
+	char* link = NULL;
 
     if (routing_table == NULL) create_routing_table();
 
@@ -925,7 +926,7 @@ static void add_route(void)
        link_list_capacity = xbt_dynar_length(links);
        link_list = xbt_new(link_L07_t, link_list_capacity);
 
-       char* link = NULL;
+       
        xbt_dynar_foreach (links, cpt, link) {
          TRY {
            link_list[nb_link++] = xbt_dict_get(link_set, link);

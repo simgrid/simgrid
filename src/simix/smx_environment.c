@@ -39,6 +39,7 @@ void SIMIX_create_environment(const char *file)
   void *workstation = NULL;
   char *workstation_model_name;
   int workstation_id = -1;
+  double start, end;
 
   simix_config_init();		/* make sure that our configuration set is created */
   surf_timer_model_init(file);
@@ -97,9 +98,9 @@ void SIMIX_create_environment(const char *file)
     surf_cpu_model_description[cpu_id].model_init(file);
     surf_network_model_description[network_id].model_init(file);
 
-    double start = xbt_os_time();  
+    start = xbt_os_time();  
     parse_platform_file(file);
-    double end = xbt_os_time();
+    end = xbt_os_time();
     DEBUG1("PARSE TIME: %lg", (end-start));
     parsed = 1;	
   }
@@ -108,9 +109,10 @@ void SIMIX_create_environment(const char *file)
       model_init(file);
 
   if  (!parsed)  {
+	 double e ;
     double s = xbt_os_time();  
     parse_platform_file(file);
-    double e = xbt_os_time();
+    e = xbt_os_time();
     DEBUG1("PARSE TIME: %lg", (e-s));
   }
 

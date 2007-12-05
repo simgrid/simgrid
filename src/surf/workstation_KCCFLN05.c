@@ -1197,6 +1197,7 @@ static void add_route(void)
   char *key,*data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
+  char* link = NULL;
 
   if (routing_table == NULL) create_routing_table();
 
@@ -1216,7 +1217,7 @@ static void add_route(void)
     impact_on_src_with_other_recv = 0;//atof(xbt_dynar_get_as(keys, 4, char*));
     impact_on_dst_with_other_send = 0;//atof(xbt_dynar_get_as(keys, 5, char*));
 
-    char* link = NULL;
+    
     xbt_dynar_foreach (links, cpt, link) {
       TRY {
         link_list[nb_link++] = xbt_dict_get(link_set, link);

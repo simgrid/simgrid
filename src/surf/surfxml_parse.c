@@ -581,6 +581,9 @@ void parse_sets(void)
   char *id, *suffix, *prefix, *radical;
   int start, end;
   xbt_dynar_t radical_ends;
+  xbt_dynar_t current_set;
+  char *value;
+  int i;
 
   id = xbt_strdup(A_surfxml_set_id);
   prefix = xbt_strdup(A_surfxml_set_prefix);
@@ -595,10 +598,9 @@ void parse_sets(void)
   surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char*));
   surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char*));
 
-  xbt_dynar_t current_set = xbt_dynar_new(sizeof(char*), NULL);
+  current_set = xbt_dynar_new(sizeof(char*), NULL);
 
-  char *value;
-  int i;
+  
   for (i=start; i<end; i++) {
      value = bprintf("%s%d%s", prefix, i, suffix);
      xbt_dynar_push(current_set, &value);
@@ -612,20 +614,28 @@ static void parse_host_foreach(void)
   xbt_dynar_t names = NULL;
   unsigned int cpt = 0;
   char *name;
+  const char* surfxml_host_power;
+  const char* surfxml_host_availability;
+  const char* surfxml_host_availability_file;
+  const char* surfxml_host_state_file;
+  const char* surfxml_host_interference_send;
+  const char* surfxml_host_interference_recv;
+  const char *surfxml_host_interference_send_recv;
+  const char* surfxml_host_max_outgoing_rate;
   
   xbt_assert1((names = xbt_dict_get_or_null(set_list, foreach_set_name)),
 	      "Set name '%s' reffered by foreach tag not found.", foreach_set_name);  
 
   xbt_assert1((strcmp(A_surfxml_host_id, "$1") == 0), "The id of the host within the foreach should point to the foreach set_id (use $1). Your value: %s", A_surfxml_host_id);
 
-  const char* surfxml_host_power = A_surfxml_host_power;
-  const char* surfxml_host_availability = A_surfxml_host_availability;
-  const char* surfxml_host_availability_file = A_surfxml_host_availability_file;
-  const char* surfxml_host_state_file = A_surfxml_host_state_file;
-  const char* surfxml_host_interference_send = A_surfxml_host_interference_send;
-  const char* surfxml_host_interference_recv = A_surfxml_host_interference_recv;
-  const char *surfxml_host_interference_send_recv = A_surfxml_host_interference_send_recv;
-  const char* surfxml_host_max_outgoing_rate = A_surfxml_host_max_outgoing_rate;
+  surfxml_host_power = A_surfxml_host_power;
+  surfxml_host_availability = A_surfxml_host_availability;
+  surfxml_host_availability_file = A_surfxml_host_availability_file;
+  surfxml_host_state_file = A_surfxml_host_state_file;
+  surfxml_host_interference_send = A_surfxml_host_interference_send;
+  surfxml_host_interference_recv = A_surfxml_host_interference_recv;
+  surfxml_host_interference_send_recv = A_surfxml_host_interference_send_recv;
+  surfxml_host_max_outgoing_rate = A_surfxml_host_max_outgoing_rate;
 
   /* foreach name in set call the main host callback */
   xbt_dynar_foreach (names, cpt, name) {
@@ -647,17 +657,22 @@ static void parse_link_foreach(void)
   xbt_dynar_t names = NULL;
   unsigned int cpt = 0;
   char *name;
+  const char* surfxml_link_bandwidth;
+  const char* surfxml_link_bandwidth_file;
+  const char* surfxml_link_latency;
+  const char* surfxml_link_latency_file;
+  const char* surfxml_link_state_file;
 
   xbt_assert1((names = xbt_dict_get_or_null(set_list, foreach_set_name)),
 	      "Set name '%s' reffered by foreach tag not found.", foreach_set_name); 
 
   xbt_assert1((strcmp(A_surfxml_link_id, "$1") == 0), "The id of the link within the foreach should point to the foreach set_id (use $1). Your value: %s", A_surfxml_link_id);
 
-  const char* surfxml_link_bandwidth = A_surfxml_link_bandwidth;
-  const char* surfxml_link_bandwidth_file = A_surfxml_link_bandwidth_file;
-  const char* surfxml_link_latency = A_surfxml_link_latency;
-  const char* surfxml_link_latency_file = A_surfxml_link_latency_file;
-  const char* surfxml_link_state_file = A_surfxml_link_state_file;
+  surfxml_link_bandwidth = A_surfxml_link_bandwidth;
+  surfxml_link_bandwidth_file = A_surfxml_link_bandwidth_file;
+  surfxml_link_latency = A_surfxml_link_latency;
+  surfxml_link_latency_file = A_surfxml_link_latency_file;
+  surfxml_link_state_file = A_surfxml_link_state_file;
   /* for each name in set call the main link callback */
   xbt_dynar_foreach (names, cpt, name) {
     parse_change_link_data(name, surfxml_link_bandwidth, surfxml_link_bandwidth_file,
@@ -900,6 +915,9 @@ void parse_cluster(void)
    char* cluster_bb_lat = A_surfxml_cluster_bb_lat;
  
    char* saved_buff = surfxml_bufferstack;
+
+   char * backbone_name;
+
    surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
    /* Make set */
@@ -934,7 +952,7 @@ void parse_cluster(void)
    SURFXML_END_TAG(foreach);
 
    /* Make backbone link */
-   char * backbone_name = bprintf("%s_bb", cluster_id);
+   backbone_name = bprintf("%s_bb", cluster_id);
    parse_change_link_data(backbone_name, cluster_bb_bw, "", cluster_bb_lat, "", "");
    A_surfxml_link_state = A_surfxml_link_state_ON;
    A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_FATPIPE;
@@ -1007,9 +1025,10 @@ void parse_trace_finalize(void)
 
 void parse_trace_c_connect(void)
 {
+	char* trace_connect;
    xbt_assert1(xbt_dict_get_or_null(traces_set_list, A_surfxml_trace_c_connect_trace_id),
 	      "Trace %s undefined", A_surfxml_trace_c_connect_trace_id);
-   char* trace_connect = bprintf("%s#%d#%d#%s", A_surfxml_trace_c_connect_trace_id, A_surfxml_trace_c_connect_element, 
+   trace_connect = bprintf("%s#%d#%d#%s", A_surfxml_trace_c_connect_trace_id, A_surfxml_trace_c_connect_element, 
                                    A_surfxml_trace_c_connect_kind, A_surfxml_trace_c_connect_connector_id);
    xbt_dynar_push(traces_connect_list, &trace_connect);
 }

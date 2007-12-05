@@ -40,6 +40,9 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* id, const char *input, doubl
   int linecount = 0;
   s_tmgr_event_t event;
   tmgr_event_t last_event = NULL;
+  xbt_dynar_t list;
+  unsigned int cpt;
+  char * val;
 
   if (trace_list) {
     trace = xbt_dict_get_or_null(trace_list, id);
@@ -54,10 +57,9 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* id, const char *input, doubl
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
-  xbt_dynar_t list = xbt_str_split(input,"\n\r");
+  list = xbt_str_split(input,"\n\r");
   
-  unsigned int cpt;
-  char * val;
+  
   xbt_dynar_foreach(list, cpt, val) {
      linecount++;
      xbt_str_trim(val, " \t\n\r\x0B");
