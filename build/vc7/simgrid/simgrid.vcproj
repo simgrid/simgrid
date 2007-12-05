@@ -424,6 +424,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\surf\random_mgr.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\gras\Msg\rpc.c"
 				>
 			</File>
