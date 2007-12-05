@@ -2,11 +2,19 @@
 #include "surf/random_mgr.h"
 #include "xbt/sysdep.h"
 
+#ifdef WIN32
+static double drand48(void)
+{
+	return rand()/(double)RAND_MAX;
+}
+#endif
+
 static double custom_random(int generator){
    switch(generator) {
-      case DRAND48: return drand48(); break;
-      case RAND: return (double)rand()/RAND_MAX; break;
-      default: return drand48();
+      
+	case DRAND48:return drand48(); 	
+	case RAND: return (double)rand()/RAND_MAX; 
+   default: return drand48();
    }
 }
 
