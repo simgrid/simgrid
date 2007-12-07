@@ -5,7 +5,8 @@
 #ifdef WIN32
 static double drand48(void)
 {
-	return rand()/(double)RAND_MAX;
+   THROW_UNIMPLEMENTED();
+   return -1;
 }
 #endif
 
