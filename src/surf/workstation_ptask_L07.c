@@ -875,7 +875,6 @@ static void parse_route_set_route(void)
   char* name;
   if (src_id != -1 && dst_id != -1) {
      name = bprintf("%x#%x",src_id, dst_id);
-
      manage_route(route_table, name, route_action, 0);
      free(name);
   }

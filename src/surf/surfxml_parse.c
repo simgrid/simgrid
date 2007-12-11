@@ -773,18 +773,18 @@ void manage_route(xbt_dict_t routing_table, const char *route_name, int action, 
   DEBUG1("ROUTE: %s", route_name);
   if (links != NULL) {
      switch (action) {
-        case A_surfxml_route_c_multi_action_PREPEND: /* add existing links at the end; route_link_list + links */
+        case A_surfxml_route_action_PREPEND: /* add existing links at the end; route_link_list + links */
 				    xbt_dynar_foreach(links, cpt, value) {	
                                        xbt_dynar_push(route_link_list,&value);
 				    }
                                     break;
-        case A_surfxml_route_c_multi_action_POSTPEND: /* add existing links in front; links + route_link_list */ 
+        case A_surfxml_route_action_POSTPEND: /* add existing links in front; links + route_link_list */ 
 				    xbt_dynar_foreach(route_link_list, cpt, value) {
                                        xbt_dynar_push(links,&value);
 				    }
                                     route_link_list = links;
 				    break;
-        case A_surfxml_route_c_multi_action_OVERRIDE:
+        case A_surfxml_route_action_OVERRIDE:
                                     break;
         default:break;
      }
@@ -854,6 +854,11 @@ static void convert_route_multi_to_routes(void)
 
   if (!route_multi_elements) return;
 
+  xbt_dict_t set = cpu_set;
+  if (workstation_set != NULL)
+     set = workstation_set;
+  
+
   old_buff = surfxml_bufferstack;
   /* Get all routes in the exact order they were entered in the platform file */
   xbt_dynar_foreach(route_multi_elements, cursor, key) {
@@ -887,14 +892,14 @@ static void convert_route_multi_to_routes(void)
       xbt_dynar_foreach(dst_names, cpt2, dst_host_name) {
         /* If dst is $* then set this route to have its dst point to all hosts */
         if (strcmp(src_host_name,"$*") != 0 && strcmp(dst_host_name,"$*") == 0){			
-		  xbt_dict_foreach(cpu_set, cursor_w, key_w, data_w) {
+		  xbt_dict_foreach(set, cursor_w, key_w, data_w) {
                           //int n = xbt_dynar_member(src_names, (char*)key_w);
        			    add_multi_links(src, dst, links, src_host_name, key_w);               
 		  }
         }
         /* If src is $* then set this route to have its dst point to all hosts */
         if (strcmp(src_host_name,"$*") == 0 && strcmp(dst_host_name,"$*") != 0){
-	   	  xbt_dict_foreach(cpu_set, cursor_w, key_w, data_w) {
+	   	  xbt_dict_foreach(set, cursor_w, key_w, data_w) {
                      // if (!symmetric || (symmetric && !contains(dst_names, key_w)))
       			add_multi_links(src, dst, links, key_w, dst_host_name);               
                 }
