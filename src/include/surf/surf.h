@@ -44,6 +44,7 @@ typedef struct surf_model_description {
   const char *name;
   surf_model_t model;
   void (* model_init) (const char *filename);
+  void (* create_ws) (void);
 } s_surf_model_description_t, *surf_model_description_t;
 
 XBT_PUBLIC(void) update_model_description(s_surf_model_description_t *table,
@@ -277,6 +278,8 @@ typedef struct surf_network_model {
   surf_network_model_extension_public_t extension_public;
 } s_surf_network_model_t, *surf_network_model_t;
 
+XBT_PUBLIC(void) create_workstations(void);
+
 /** \brief The network model
  *  \ingroup SURF_models
  *
@@ -490,7 +493,7 @@ XBT_PUBLIC_DATA(xbt_dict_t) link_set;
  *  \see link_set
  */
 XBT_PUBLIC_DATA(xbt_dict_t)  workstation_set;
-
+XBT_PUBLIC_DATA(xbt_dict_t)  cpu_set;
 /** \brief List of initialized models
  *  \ingroup SURF_models
  */

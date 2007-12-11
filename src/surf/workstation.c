@@ -12,6 +12,9 @@
 #include "cpu_private.h"
 #include "network_private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
+				"Logging specific to the SURF workstation module");
+
 surf_workstation_model_t surf_workstation_model = NULL;
 xbt_dict_t workstation_set = NULL;
 
@@ -34,7 +37,7 @@ static void workstation_free(void *workstation)
   free(workstation);
 }
 
-static void create_workstations(void)
+void create_workstations(void)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
@@ -424,7 +427,7 @@ void surf_workstation_model_init_CLM03(const char *filename)
   surf_workstation_model_init_internal();
   surf_cpu_model_init_Cas01(filename);
   surf_network_model_init_CM02(filename);
-  create_workstations();
+//  create_workstations();
   update_model_description(surf_workstation_model_description,
 			      surf_workstation_model_description_size,
 			      "CLM03",

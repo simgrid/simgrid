@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_private.h"
+#include "cpu_private.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
@@ -247,6 +248,7 @@ static void add_traces(void)
    int connect_element, connect_kind;
    char *value, *trace_id, *connector_id;
    link_CM02_t link;
+   cpu_Cas01_t host = NULL;
    tmgr_trace_t trace;
    
    if (called) return;
@@ -261,6 +263,14 @@ static void add_traces(void)
      connector_id    = xbt_dynar_get_as(trace_connect, 3, char*);
 
      xbt_assert1((trace = xbt_dict_get_or_null(traces_set_list, trace_id)), "Trace %s undefined", trace_id);
+
+     if (connect_element == A_surfxml_trace_c_connect_element_HOST) {
+        xbt_assert1((host = xbt_dict_get_or_null(cpu_set, connector_id)), "Host %s undefined", connector_id);
+        switch (connect_kind) {
+           case A_surfxml_trace_c_connect_kind_AVAILABILITY: host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
+           case A_surfxml_trace_c_connect_kind_POWER: host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
+        }
+     }
 
      if (connect_element == A_surfxml_trace_c_connect_element_LINK) {
         xbt_assert1((link = xbt_dict_get_or_null(link_set, connector_id)), "Link %s undefined", connector_id);
@@ -287,9 +297,9 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surfxml_add_callback(STag_surfxml_platform_cb_list, &init_data);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
   surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
   surfxml_add_callback(STag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_route);

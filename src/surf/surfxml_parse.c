@@ -887,14 +887,14 @@ static void convert_route_multi_to_routes(void)
       xbt_dynar_foreach(dst_names, cpt2, dst_host_name) {
         /* If dst is $* then set this route to have its dst point to all hosts */
         if (strcmp(src_host_name,"$*") != 0 && strcmp(dst_host_name,"$*") == 0){			
-		  xbt_dict_foreach(workstation_set, cursor_w, key_w, data_w) {
+		  xbt_dict_foreach(cpu_set, cursor_w, key_w, data_w) {
                           //int n = xbt_dynar_member(src_names, (char*)key_w);
        			    add_multi_links(src, dst, links, src_host_name, key_w);               
 		  }
         }
         /* If src is $* then set this route to have its dst point to all hosts */
         if (strcmp(src_host_name,"$*") == 0 && strcmp(dst_host_name,"$*") != 0){
-	   	  xbt_dict_foreach(workstation_set, cursor_w, key_w, data_w) {
+	   	  xbt_dict_foreach(cpu_set, cursor_w, key_w, data_w) {
                      // if (!symmetric || (symmetric && !contains(dst_names, key_w)))
       			add_multi_links(src, dst, links, key_w, dst_host_name);               
                 }
@@ -1091,3 +1091,4 @@ void add_randomness(void)
    random_data_t random = random_new(random_generator, random_min, random_max, random_mean, random_std_deviation);
    xbt_dict_set(random_data_list, random_id, (void *)random, NULL);
 }
+

@@ -132,7 +132,6 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	surf/fair_bottleneck.c surf/lagrange.c surf/trace_mgr.c \
 	surf/random_mgr.c surf/surf.c surf/surfxml_parse.c surf/cpu.c \
 	surf/network.c surf/workstation.c surf/surf_timer.c \
-	surf/workstation_KCCFLN05.c surf/workstation_ptask_L07.c \
 	xbt/xbt_sg_stubs.c xbt/xbt_os_thread.c \
 	xbt/xbt_thread_context.c xbt/xbt_ucontext.c \
 	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
@@ -170,7 +169,7 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 @CONTEXT_THREADS_FALSE@am__objects_7 = xbt_ucontext.lo
 am__objects_8 = maxmin.lo fair_bottleneck.lo lagrange.lo trace_mgr.lo \
 	random_mgr.lo surf.lo surfxml_parse.lo cpu.lo network.lo \
-	workstation.lo surf_timer.lo workstation_KCCFLN05.lo \
+	workstation.lo surf_timer.lo \
 	workstation_ptask_L07.lo xbt_sg_stubs.lo $(am__objects_6) \
 	$(am__objects_7)
 am__objects_9 = gtnets_simulator.lo gtnets_topology.lo \
@@ -501,7 +500,7 @@ SURF_SRC = surf/maxmin.c surf/fair_bottleneck.c surf/lagrange.c \
 	surf/trace_mgr.c surf/random_mgr.c surf/surf.c \
 	surf/surfxml_parse.c surf/cpu.c surf/network.c \
 	surf/workstation.c surf/surf_timer.c \
-	surf/workstation_KCCFLN05.c surf/workstation_ptask_L07.c \
+	surf/workstation_ptask_L07.c \
 	xbt/xbt_sg_stubs.c $(am__append_1) $(am__append_2)
 GTNETS_SRC = \
   surf/gtnets/gtnets_simulator.cc \
@@ -1426,13 +1425,6 @@ surf_timer.lo: surf/surf_timer.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/surf_timer.c' object='surf_timer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o surf_timer.lo `test -f 'surf/surf_timer.c' || echo '$(srcdir)/'`surf/surf_timer.c
-
-workstation_KCCFLN05.lo: surf/workstation_KCCFLN05.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT workstation_KCCFLN05.lo -MD -MP -MF $(DEPDIR)/workstation_KCCFLN05.Tpo -c -o workstation_KCCFLN05.lo `test -f 'surf/workstation_KCCFLN05.c' || echo '$(srcdir)/'`surf/workstation_KCCFLN05.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/workstation_KCCFLN05.Tpo $(DEPDIR)/workstation_KCCFLN05.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/workstation_KCCFLN05.c' object='workstation_KCCFLN05.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o workstation_KCCFLN05.lo `test -f 'surf/workstation_KCCFLN05.c' || echo '$(srcdir)/'`surf/workstation_KCCFLN05.c
 
 workstation_ptask_L07.lo: surf/workstation_ptask_L07.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT workstation_ptask_L07.lo -MD -MP -MF $(DEPDIR)/workstation_ptask_L07.Tpo -c -o workstation_ptask_L07.lo `test -f 'surf/workstation_ptask_L07.c' || echo '$(srcdir)/'`surf/workstation_ptask_L07.c

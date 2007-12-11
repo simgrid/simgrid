@@ -112,8 +112,10 @@ void SIMIX_create_environment(const char *file)
 	 double e ;
     double s = xbt_os_time();  
     parse_platform_file(file);
+    if (surf_workstation_model_description[workstation_id].create_ws != NULL)
+      surf_workstation_model_description[workstation_id].create_ws();
     e = xbt_os_time();
-    DEBUG1("PARSE TIME: %lg", (e-s));
+    INFO1("PARSE TIME: %lg", (e-s));
   }
 
   _simix_init_status = 2;	/* inited; don't change settings now */

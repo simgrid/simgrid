@@ -90,7 +90,7 @@ static void parse_cpu_init(void)
 
 static int called = 0;
 
-static void add_traces(void)
+static void add_traces_cpu(void)
 {
    xbt_dynar_t trace_connect = NULL;
    unsigned int cpt;
@@ -127,7 +127,7 @@ static void define_callbacks(const char *file)
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
   surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
+//  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu);
   surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
   surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
 }

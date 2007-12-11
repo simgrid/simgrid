@@ -80,7 +80,7 @@ void simix_config_init(void)
 		   "network_model", xbt_cfgelm_string, 1, 1,
 		   &_simix_cfg_cb__network_model, NULL);
 
-  xbt_cfg_set_string(_simix_cfg_set, "workstation_model", "KCCFLN05");
+  xbt_cfg_set_string(_simix_cfg_set, "workstation_model", "CLM03");
 }
 
 void simix_config_finalize(void)
