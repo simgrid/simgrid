@@ -291,7 +291,7 @@ EXTRA_DIST = msg_platform.xml small_platform.xml \
 	gtnets/dogbone-d.xml gtnets/dogbone-p.xml \
 	properties/deployment_properties.xml $(am__append_3)
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
+TESTS = sendrecv/sendrecv_CLM03.tesh \
         sendrecv/sendrecv_Vegas.tesh \
         sendrecv/sendrecv_Reno.tesh \
         suspend/suspend.tesh \

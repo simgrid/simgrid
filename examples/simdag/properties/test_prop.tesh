@@ -4,8 +4,8 @@ p Simple test of simdag with properties
 
 $ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
 > [0.000000] [test/INFO] Property list for workstation C1-00
-> [0.000000] [test/INFO] 	Property: Hdd has value: 120
 > [0.000000] [test/INFO] 	Property: NewProp has value: newValue
+> [0.000000] [test/INFO] 	Property: Hdd has value: 120
 > [0.000000] [test/INFO] 	Property: NoProp is undefined
 > [0.000000] [test/INFO] Property list for workstation C1-01
 > [0.000000] [test/INFO] 	Property: mem on host: 4
@@ -28,5 +28,6 @@ $ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
 > [6.000400] [sd_kernel/INFO] Simulation finished
 > [6.000400] [test/INFO] Task 'Task D' start time: 0.000000, finish time: 3.600200
 > [6.000400] [test/INFO] Task 'Task B' start time: 3.600200, finish time: 6.000400
+
 
 

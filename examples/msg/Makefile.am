@@ -27,7 +27,7 @@ EXTRA_DIST = msg_platform.xml \
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 
 
-TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
+TESTS = sendrecv/sendrecv_CLM03.tesh \
         sendrecv/sendrecv_Vegas.tesh \
         sendrecv/sendrecv_Reno.tesh \
         suspend/suspend.tesh \
