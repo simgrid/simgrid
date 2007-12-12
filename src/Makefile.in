@@ -132,26 +132,26 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	surf/fair_bottleneck.c surf/lagrange.c surf/trace_mgr.c \
 	surf/random_mgr.c surf/surf.c surf/surfxml_parse.c surf/cpu.c \
 	surf/network.c surf/workstation.c surf/surf_timer.c \
-	xbt/xbt_sg_stubs.c xbt/xbt_os_thread.c \
-	xbt/xbt_thread_context.c xbt/xbt_ucontext.c \
-	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
-	surf/gtnets/gtnets_interface.cc surf/network_gtnets.c \
-	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
-	simix/smx_config.c simix/smx_environment.c simix/smx_host.c \
-	simix/smx_process.c simix/smx_action.c simix/smx_synchro.c \
-	xbt/xbt_context.c msg/msg_config.c msg/task.c msg/host.c \
-	msg/m_process.c msg/gos.c msg/global.c msg/environment.c \
-	msg/deployment.c simdag/sd_global.c simdag/sd_link.c \
-	simdag/sd_task.c simdag/sd_workstation.c gras/gras.c \
-	gras/Transport/transport.c gras/Transport/transport_private.h \
-	gras/Msg/gras_msg_mod.c gras/Msg/gras_msg_types.c \
-	gras/Msg/gras_msg_exchange.c gras/Msg/gras_msg_listener.c \
-	gras/Msg/rpc.c gras/Msg/timer.c gras/Msg/msg_interface.h \
-	gras/Msg/msg_private.h gras/Virtu/process.c \
-	gras/Virtu/gras_module.c gras/DataDesc/ddt_create.c \
-	gras/DataDesc/ddt_convert.c gras/DataDesc/ddt_exchange.c \
-	gras/DataDesc/cbps.c gras/DataDesc/datadesc.c \
-	gras/DataDesc/datadesc_interface.h \
+	surf/workstation_ptask_L07.c xbt/xbt_sg_stubs.c \
+	xbt/xbt_os_thread.c xbt/xbt_thread_context.c \
+	xbt/xbt_ucontext.c surf/gtnets/gtnets_simulator.cc \
+	surf/gtnets/gtnets_topology.cc surf/gtnets/gtnets_interface.cc \
+	surf/network_gtnets.c surf/sdp.c simix/smx_global.c \
+	simix/smx_deployment.c simix/smx_config.c \
+	simix/smx_environment.c simix/smx_host.c simix/smx_process.c \
+	simix/smx_action.c simix/smx_synchro.c xbt/xbt_context.c \
+	msg/msg_config.c msg/task.c msg/host.c msg/m_process.c \
+	msg/gos.c msg/global.c msg/environment.c msg/deployment.c \
+	simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c \
+	simdag/sd_workstation.c gras/gras.c gras/Transport/transport.c \
+	gras/Transport/transport_private.h gras/Msg/gras_msg_mod.c \
+	gras/Msg/gras_msg_types.c gras/Msg/gras_msg_exchange.c \
+	gras/Msg/gras_msg_listener.c gras/Msg/rpc.c gras/Msg/timer.c \
+	gras/Msg/msg_interface.h gras/Msg/msg_private.h \
+	gras/Virtu/process.c gras/Virtu/gras_module.c \
+	gras/DataDesc/ddt_create.c gras/DataDesc/ddt_convert.c \
+	gras/DataDesc/ddt_exchange.c gras/DataDesc/cbps.c \
+	gras/DataDesc/datadesc.c gras/DataDesc/datadesc_interface.h \
 	gras/DataDesc/datadesc_private.h gras/DataDesc/ddt_parse.c \
 	gras/DataDesc/ddt_parse.yy.c gras/DataDesc/ddt_parse.yy.h \
 	gras/Transport/sg_transport.c \
@@ -169,9 +169,8 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 @CONTEXT_THREADS_FALSE@am__objects_7 = xbt_ucontext.lo
 am__objects_8 = maxmin.lo fair_bottleneck.lo lagrange.lo trace_mgr.lo \
 	random_mgr.lo surf.lo surfxml_parse.lo cpu.lo network.lo \
-	workstation.lo surf_timer.lo \
-	workstation_ptask_L07.lo xbt_sg_stubs.lo $(am__objects_6) \
-	$(am__objects_7)
+	workstation.lo surf_timer.lo workstation_ptask_L07.lo \
+	xbt_sg_stubs.lo $(am__objects_6) $(am__objects_7)
 am__objects_9 = gtnets_simulator.lo gtnets_topology.lo \
 	gtnets_interface.lo network_gtnets.lo
 @HAVE_GTNETS_TRUE@am__objects_10 = $(am__objects_9)
@@ -500,8 +499,8 @@ SURF_SRC = surf/maxmin.c surf/fair_bottleneck.c surf/lagrange.c \
 	surf/trace_mgr.c surf/random_mgr.c surf/surf.c \
 	surf/surfxml_parse.c surf/cpu.c surf/network.c \
 	surf/workstation.c surf/surf_timer.c \
-	surf/workstation_ptask_L07.c \
-	xbt/xbt_sg_stubs.c $(am__append_1) $(am__append_2)
+	surf/workstation_ptask_L07.c xbt/xbt_sg_stubs.c \
+	$(am__append_1) $(am__append_2)
 GTNETS_SRC = \
   surf/gtnets/gtnets_simulator.cc \
   surf/gtnets/gtnets_topology.cc  \
@@ -876,7 +875,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/transport_plugin_sg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/transport_plugin_tcp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation_KCCFLN05.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation_ptask_L07.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_jcontext.Plo@am__quote@

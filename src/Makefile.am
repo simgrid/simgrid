@@ -171,7 +171,7 @@ SURF_SRC= \
   surf/surfxml_parse.c                                                       \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   surf/surf_timer.c                                                          \
-  surf/workstation_KCCFLN05.c   surf/workstation_ptask_L07.c                 \
+  surf/workstation_ptask_L07.c                                               \
   xbt/xbt_sg_stubs.c
 
 if CONTEXT_THREADS
