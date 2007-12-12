@@ -297,18 +297,17 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
     free(addrs[i]);
      
     /* Mask the bottom of the stack */    
-    if (!strncmp("main",line_func,strlen("main"))) {
-       int j;
-       for (j=i+1; j<e->used; j++)
-	 free(addrs[j]);
-       e->used = i+1;
-    }
-     
-    if (!strncmp("__context_wrapper",line_func,strlen("__context_wrapper"))) {
+    if (!strncmp("main",line_func,strlen("main")) ||
+	!strncmp("xbt_thread_context_wrapper",line_func,strlen("xbt_thread_context_wrapper"))) {
        int j;
        for (j=i+1; j<e->used; j++)
 	 free(addrs[j]);
        e->used = i;
+
+       if (!strncmp("xbt_thread_context_wrapper",line_func,strlen("xbt_thread_context_wrapper"))) {
+	  e->used++;
+	  e->bt_strings[i] = bprintf("**   (in a separate thread)");
+       }       
     }
      
     
