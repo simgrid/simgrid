@@ -6,7 +6,7 @@
 
 
 INCLUDES= -I$(top_srcdir)/include
-EXTRA_DIST=all2all.xml 
+EXTRA_DIST=all2all.xml make_deployment.pl
 include $(top_srcdir)/examples/gras/tests.mk
 
 # AUTOMAKE variable definition
