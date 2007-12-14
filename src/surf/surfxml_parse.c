@@ -855,7 +855,8 @@ static void convert_route_multi_to_routes(void)
   if (!route_multi_elements) return;
 
   xbt_dict_t set = cpu_set;
-  if (workstation_set != NULL)
+  DEBUG1("%d", xbt_dict_length(workstation_set));				
+  if (workstation_set != NULL && xbt_dict_length(workstation_set) > 0)
      set = workstation_set;
   
 
@@ -880,18 +881,23 @@ static void convert_route_multi_to_routes(void)
        src_names = xbt_dynar_new(sizeof(char *), &free_string);
        val = xbt_strdup(src);
        xbt_dynar_push(src_names, &val);
+       if (strcmp(val,"$*") != 0 && NULL == xbt_dict_get_or_null(set, val))
+         THROW3(unknown_error,0,"(In route:multi (%s -> %s) source %s does not exist (not a set or a host)", src, dst, src);
     }
     if (dst_names == NULL) {
        dst_names = xbt_dynar_new(sizeof(char *), &free_string);
        val = xbt_strdup(dst);
+       if (strcmp(val,"$*") != 0 && NULL == xbt_dict_get_or_null(set, val))
+         THROW3(unknown_error,0,"(In route:multi (%s -> %s) destination %s does not exist (not a set or a host)", src, dst, dst);
        xbt_dynar_push(dst_names, &val);
     }
+
     /* Build the routes */
     DEBUG2("ADDING MULTI ROUTE: %s -> %s", xbt_dynar_get_as(keys, 0, char*), xbt_dynar_get_as(keys, 1, char*));
     xbt_dynar_foreach(src_names, cpt, src_host_name) {
       xbt_dynar_foreach(dst_names, cpt2, dst_host_name) {
         /* If dst is $* then set this route to have its dst point to all hosts */
-        if (strcmp(src_host_name,"$*") != 0 && strcmp(dst_host_name,"$*") == 0){			
+        if (strcmp(src_host_name,"$*") != 0 && strcmp(dst_host_name,"$*") == 0){
 		  xbt_dict_foreach(set, cursor_w, key_w, data_w) {
                           //int n = xbt_dynar_member(src_names, (char*)key_w);
        			    add_multi_links(src, dst, links, src_host_name, key_w);               

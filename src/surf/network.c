@@ -218,7 +218,6 @@ static void add_route(void)
     src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
  
-    
     xbt_dynar_foreach (links, cpt, link) {
       TRY {
 	link_list[nb_link++] = xbt_dict_get(link_set, link);
