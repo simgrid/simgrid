@@ -680,7 +680,7 @@ of processes in your simulations.
      result in *fat* simulation hindering debugging.
    - It was really boring to write 25,000 entries in the deployment
      file, so I wrote a little script
-     <tt>examples/gras/tokenS/make_deployment.pl</tt>, which you may
+     <tt>examples/gras/mutual_exclusion/simple_token/make_deployment.pl</tt>, which you may
      want to adapt to your case. You could also think about hijacking
      the SURFXML parser (have look at \ref faq_flexml_bypassing).
    - The deployment file became quite big, so I had to do what is in
@@ -690,10 +690,24 @@ of processes in your simulations.
      user don't get into trouble about this. You want to tune this
      size to increse the number of processes. This is the
      <tt>STACK_SIZE</tt> define in 
-     <tt>src/xbt/context_private.h</tt>, which is 128kb by default.
+     <tt>src/xbt/xbt_ucontext.c</tt>, which is 128kb by default.
      Reduce this as much as you can, but be warned that if this value
      is too low, you'll get a segfault. The token ring example, which
-     is quite simple, runs with 40kb stacks.
+     is quite simple, runs with 40kb stacks.     
+   - You may tweak the logs to reduce the stack size further.  When
+     logging something, we try to build the string to display in a
+     char array on the stack. The size of this array is constant (and
+     equal to XBT_LOG_BUFF_SIZE, defined in include/xbt/log/h). If the
+     string is too large to fit this buffer, we move to a dynamically
+     sized buffer. In which case, we have to traverse one time the log
+     event arguments to compute the size we need for the buffer,
+     malloc it, and traverse the argument list again to do the actual
+     job.\n     
+     The idea here is to move XBT_LOG_BUFF_SIZE to 1, forcing the logs
+     to use a dynamic array each time. This allows us to lower further
+     the stack size at the price of some performance loss...\n
+     This allowed me to run the reduce the stack size to ... 4k. Ie,
+     on my 1Gb laptop, I can run more than 250,000 processes!
 
 \subsubsection faq_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid?
 
