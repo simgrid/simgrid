@@ -10,7 +10,7 @@ my @host;
 open IN,$input || die "Cannot open $input: $!\n";
 
 while (<IN>) {
-  next unless /<cpu name="([^"]*)"/; # "
+  next unless /<host id="([^"]*)"/; # "
   
   push @host, $1;
 }
@@ -25,8 +25,8 @@ if (! $nb_hosts) {
 # map { print "$_\n" } @host;
 
 print "<?xml version='1.0'?>\n";
-print "<!DOCTYPE platform_description SYSTEM \"surfxml.dtd\">\n";
-print "<platform_description version=\"1\">\n\n";
+print "<!DOCTYPE platform SYSTEM \"surfxml.dtd\">\n";
+print "<platform version=\"2\">\n\n";
 
 
 my $it_port=4000;
@@ -54,4 +54,4 @@ print "    <argument value=\"4000\"/>     <!-- port on which peer is listening -
 print "    <argument value=\"--create-token\"/>   <!-- I'm first client, ie I have to create the token -->\n";
 print "  </process>\n\n";
 
-print "</platform_description>\n";
+print "</platform\n";
