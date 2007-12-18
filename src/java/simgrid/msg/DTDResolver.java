@@ -21,7 +21,7 @@
         println("\n MSG - Warning - the platform used seams invalid\n");
       return null;
     }
-    
+    
       /* try to get the DTD from the classpath */ 
       InputStream in = getClass().getResourceAsStream("/surfxml.dtd");
     if (null == in)
@@ -45,7 +45,7 @@
                           "   - the directory Simgrid/msg;\n" +
                           "   - the directory of you simulation.\n\n" +
                           "Once the DTD puted in one of the previouse destinations, retry you simulation.\n");
-      
+      
         /* 
          * If not founded, returning null makes process continue normally (try to get 
          * the DTD from the current directory 
