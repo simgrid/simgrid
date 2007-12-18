@@ -1131,15 +1131,20 @@ reason:
 
 \subsubsection faq_trouble_errors_big_fat_warning I'm told that my XML files are too old.
 
-We have decided to change the units in SimGrid. Now we use Bytes, Flops and
-seconds instead of MBytes, MFlops and seconds... Units should be updated
-accordingly and the version of platform_description should be set to a
-valuer greater than 1:
+The format of the XML platform description files is sometimes
+improved. For example, we decided to change the units used in SimGrid
+from MBytes, MFlops and seconds to Bytes, Flops and seconds to ease
+people exchanging small messages. We also reworked the route
+descriptions to allow more compact descriptions.
+
+That is why the XML files are versionned using the 'version' attribute
+of the root tag. Currently, it should read:
 \verbatim
-  <platform_description version="1">
+  <platform version="2">
 \endverbatim
-You should try to use the surfxml_update.pl script that can be found
-<a href="https://gforge.inria.fr/plugins/scmsvn/viewcvs.php/contrib/trunk/platform_generation/?rev=4721&root=simgrid"">here</a>.
+
+If your files are too old, you can use the simgrid_update_xml.pl
+script which can be found in the tools directory of the archive.
 
 \subsection faq_trouble_valgrind Valgrind-related issues
 

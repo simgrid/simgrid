@@ -211,7 +211,7 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = gras tesh
-@GRAMINE_MODE_FALSE@EXTRA_DIST = graspe-master
+@GRAMINE_MODE_FALSE@EXTRA_DIST = simgrid_update_xml.pl graspe-master
 all: all-recursive
 
 .SUFFIXES:

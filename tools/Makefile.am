@@ -4,10 +4,9 @@
 # You can redistribute and/or modify it under the terms of the
 # GNU LGPL (v2.1) licence.
 
-
 SUBDIRS=gras tesh
 include $(top_srcdir)/acmacro/dist-files.mk
 if GRAMINE_MODE
 else
-EXTRA_DIST= graspe-master
+EXTRA_DIST= simgrid_update_xml.pl graspe-master
 endif
