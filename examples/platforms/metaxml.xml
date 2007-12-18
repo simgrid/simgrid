@@ -2,7 +2,7 @@
      routes between sets of hosts using the route:multi tag
 -->
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "surfxml.dtd">
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
 
    <!-- define a trace inside the XML file -->

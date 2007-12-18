@@ -2,7 +2,7 @@
      Also it shows how to use the random generator for generating random cpu power
 -->
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "surfxml.dtd">
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
 
   <random id="rand_lyon" min="237333000" max="437333000" mean="337333000" std_deviation="100000000"/>
