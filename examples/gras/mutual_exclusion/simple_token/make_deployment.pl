@@ -54,4 +54,4 @@ print "    <argument value=\"4000\"/>     <!-- port on which peer is listening -
 print "    <argument value=\"--create-token\"/>   <!-- I'm first client, ie I have to create the token -->\n";
 print "  </process>\n\n";
 
-print "</platform\n";
+print "</platform>\n";
