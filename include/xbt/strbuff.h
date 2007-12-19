@@ -11,7 +11,6 @@
 #ifndef XBT_STRBUFF_H
 #define XBT_STRBUFF_H
 
-#include "portable.h"
 #include "xbt/sysdep.h"
 #include "xbt/function_types.h"
 #include "xbt/log.h"
