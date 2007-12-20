@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
+#include "xbt/str.h"
 #include "xbt/dict.h"
 #include "surf_private.h"
 /* extern lmm_system_t maxmin_system; */

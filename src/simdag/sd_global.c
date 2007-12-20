@@ -4,6 +4,7 @@
 #include "surf/surf.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
+#include "xbt/str.h"
 #include "xbt/config.h"
 
 XBT_LOG_NEW_CATEGORY(sd,"Logging specific to SimDag");

@@ -9,6 +9,8 @@
 /*******************************/
 
 # 387 "xbt/xbt_str.c" 
+#include "xbt/str.h"
+
 #define mytest(name, input, expected) \
   xbt_test_add0(name); \
   d=xbt_str_split_quoted(input); \

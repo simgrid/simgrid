@@ -19,6 +19,7 @@
 
 #include "xbt/misc.h"
 #include "xbt/ex.h"
+#include "xbt/str.h"
 #include "xbt/sysdep.h"
 #include "xbt/log_private.h"
 #include "xbt/dynar.h"

@@ -17,7 +17,6 @@
    
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
-#include "xbt/str.h"
   
 SG_BEGIN_DECL()
 
@@ -31,6 +30,12 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(void) xbt_abort(void) _XBT_GNUC_NORETURN;
 XBT_PUBLIC(void) xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 /** @} */
+
+/* these ones live in str.h, but redeclare them here so that we do 
+   not need to load the whole str.h and its heavy dependencies */
+XBT_PUBLIC(int) asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
+XBT_PUBLIC(int) vasprintf (char **ptr, const char *fmt, va_list ap);
+XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 
 /** @addtogroup XBT_syscall
  *  @brief Malloc and associated functions, killing the program on error (with \ref XBT_ex)

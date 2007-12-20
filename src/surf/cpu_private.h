@@ -10,6 +10,7 @@
 
 #include "surf_private.h"
 #include "xbt/dict.h"
+#include "xbt/str.h"
 
 typedef struct surf_action_cpu_Cas01 {
   s_surf_action_t generic_action;

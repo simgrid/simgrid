@@ -7,6 +7,7 @@
 
 #include "xbt/misc.h"
 #include "xbt/log.h"
+#include "xbt/str.h"
 #include "xbt/dict.h"
 #include "surf/surfxml_parse_private.h"
 #include "surf/surf_private.h"

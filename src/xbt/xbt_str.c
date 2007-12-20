@@ -383,6 +383,8 @@ xbt_dynar_t xbt_str_split_quoted(const char *s) {
 }
 
 #ifdef SIMGRID_TEST
+#include "xbt/str.h"
+
 #define mytest(name, input, expected) \
   xbt_test_add0(name); \
   d=xbt_str_split_quoted(input); \

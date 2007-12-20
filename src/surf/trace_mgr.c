@@ -7,6 +7,7 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/str.h"
 #include "xbt/dict.h"
 #include "trace_mgr_private.h"
 #include "surf_private.h"

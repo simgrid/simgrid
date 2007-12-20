@@ -16,6 +16,7 @@
 
 #include "portable.h" /* execinfo when available */
 #include "xbt/ex.h"
+#include "xbt/str.h"
 #include "xbt/module.h" /* xbt_binary_name */
 #include "xbt/synchro.h" /* xbt_thread_self */
 

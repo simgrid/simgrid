@@ -9,6 +9,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/str.h"
 #include "xbt/ex.h"		/* ex_backtrace_display */
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
 				"Logging specific to SIMIX (kernel)");
