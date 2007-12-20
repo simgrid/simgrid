@@ -98,6 +98,7 @@ int main(int argc, char *argv[]) {
   xbt_test_suite_t suite; 
   char selection[1024];
   int i;\n
+  int res;\n
   /* SGU: BEGIN SUITES DECLARATION */
   /* SGU: END SUITES DECLARATION */
       
@@ -146,7 +147,9 @@ int main(int argc, char *argv[]) {
     }
   /* Got all my tests to do */
       
-  return xbt_test_run(selection);
+  res = xbt_test_run(selection);
+  xbt_exit();
+  return res;
 }
 EOF
   print OUT $GENERATED;
