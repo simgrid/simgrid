@@ -1,10 +1,10 @@
 /* Validating XML processor for xbt/graphxml.dtd.
- * Generated 2007/08/09 10:57:49.
+ * Generated 2007/12/19 15:09:56.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp).
+ * (Id: flexml.pl,v 1.63 2007/10/11 14:46:08 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -49,18 +49,27 @@
 
 /* Version strings. */
 const char rcs_graphxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.38 2006/09/12 18:05:45 wdowling Exp $";
+ "$" "Id: skel,v 1.40 2007/10/11 09:57:24 mquinson Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp $";
+ "$" "Id: flexml.pl,v 1.63 2007/10/11 14:46:08 mquinson Exp $";
 
 /* ANSI headers. */
-#include <unistd.h>
+#include <stdlib.h> /* for realloc() -- needed here when using flex 2.5.4 */
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <ctype.h>
-
+     
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
+# ifndef __STRICT_ANSI__
+#  include <io.h>
+#  include <process.h>
+# endif
+#else
+# include <unistd.h>
+#endif
+     
 #ifndef FLEXML_INDEXSTACKSIZE
 #define FLEXML_INDEXSTACKSIZE 1000
 #endif
@@ -370,6 +379,8 @@ const char* *graphxml_statenames=NULL;
  /*     isDirected (true|false) "true"
   * >  */
 
+<S_graphxml_graph,S_graphxml_graph_3,S_graphxml_graph_1,S_graphxml_graph_5,S_graphxml_graph_2,S_graphxml_graph_4,E_graphxml_graph>"<graph"{s} FAIL("Starting tag <graph> is not allowed here.");
+
 <ROOT_graphxml_graph>"<graph"{s} {
   AX_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
   ENTER(AL_graphxml_graph); pushbuffer(0);
@@ -415,6 +426,8 @@ const char* *graphxml_statenames=NULL;
   *     position_x	    CDATA		 "-1.0"
   *     position_y	    CDATA		 "-1.0"
   * >  */
+
+<S_graphxml_graph_1,S_graphxml_graph_5,S_graphxml_graph_4,E_graphxml_graph>"<node"{s} FAIL("Starting tag <node> is not allowed here.");
 
 <ROOT_graphxml_node,S_graphxml_graph_2,S_graphxml_graph_3,S_graphxml_graph>"<node"{s} {
   AX_graphxml_node_label = 0;
@@ -480,6 +493,8 @@ const char* *graphxml_statenames=NULL;
   *     length          CDATA               "-1.0"
   *     data            CDATA               ""
   * >  */
+
+<S_graphxml_graph_2,E_graphxml_graph>"<edge"{s} FAIL("Starting tag <edge> is not allowed here.");
 
 <ROOT_graphxml_edge,S_graphxml_graph_1,S_graphxml_graph_3,S_graphxml_graph_5,S_graphxml_graph_4,S_graphxml_graph>"<edge"{s} {
   AX_graphxml_edge_label = 0;
