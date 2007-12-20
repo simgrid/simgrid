@@ -11,6 +11,7 @@
 #include "xbt/mallocator.h"
 #include "maxmin_private.h"
 #include <stdlib.h>
+#include <stdio.h> /* sprintf */
 #include <math.h>
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf,
 				"Logging specific to SURF (maxmin)");
