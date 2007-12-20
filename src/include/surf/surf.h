@@ -12,7 +12,6 @@
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 #include "xbt/misc.h"
-#include "portable.h"
 
 SG_BEGIN_DECL()
 

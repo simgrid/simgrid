@@ -9,7 +9,6 @@
 #define _SURF_MAXMIN_H
 
 #include "xbt/misc.h"
-#include "portable.h" 
 
 #define MAXMIN_PRECISION 0.00001
 static XBT_INLINE void double_update(double *variable, double value) 
