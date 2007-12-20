@@ -31,7 +31,7 @@ XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_new  (const char *name,const char *f
 XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_by_name(const char *name,const char *fmt, ...);
 XBT_PUBLIC(void)             xbt_test_suite_dump (xbt_test_suite_t suite);
 XBT_PUBLIC(void)             xbt_test_suite_push (xbt_test_suite_t suite, const char *name,
-				      ts_test_cb_t func, const char *fmt, ...);
+						  ts_test_cb_t func, const char *fmt, ...);
 
 /* Run all the specified tests. what_to_do allows to disable some tests.
  * It is a coma (,) separated list of directives. They are applied from left to right.
