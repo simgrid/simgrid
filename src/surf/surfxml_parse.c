@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
 				"Logging specific to the SURF parsing module");
 
 #undef CLEANUP
-#include "surfxml.c"
+#include "simgrid_dtd.c"
 
 /* Initialize the parsing globals */
 int route_action = 0;

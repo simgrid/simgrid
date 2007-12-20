@@ -322,6 +322,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -398,16 +399,16 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	xbt/ex_interface.h surf/maxmin_private.h \
 	surf/trace_mgr_private.h surf/surf_private.h \
 	surf/cpu_private.h surf/workstation_private.h \
-	surf/surf_timer_private.h surf/surfxml_parse.c surf/surfxml.l \
-	surf/surfxml.c surf/surfxml.dtd surf/network_private.h \
-	surf/network_gtnets_private.h include/surf/maxmin.h \
-	include/surf/trace_mgr.h include/surf/surf.h \
-	include/surf/surfxml_parse_private.h include/surf/random_mgr.h \
-	include/xbt/context.h include/xbt/xbt_os_time.h \
-	include/xbt/xbt_os_thread.h msg/private.h simdag/private.h \
-	gras/DataDesc/ddt_parse.yy.l gras/Virtu/virtu_rl.h \
-	gras/Virtu/virtu_sg.h gras/Virtu/virtu_interface.h \
-	gras/Virtu/virtu_private.h \
+	surf/surf_timer_private.h surf/surfxml_parse.c \
+	surf/simgrid_dtd.l surf/simgrid_dtd.c surf/simgrid.dtd \
+	surf/network_private.h surf/network_gtnets_private.h \
+	include/surf/maxmin.h include/surf/trace_mgr.h \
+	include/surf/surf.h include/surf/surfxml_parse_private.h \
+	include/surf/random_mgr.h include/xbt/context.h \
+	include/xbt/xbt_os_time.h include/xbt/xbt_os_thread.h \
+	msg/private.h simdag/private.h gras/DataDesc/ddt_parse.yy.l \
+	gras/Virtu/virtu_rl.h gras/Virtu/virtu_sg.h \
+	gras/Virtu/virtu_interface.h gras/Virtu/virtu_private.h \
 	gras/Transport/transport_interface.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
 	include/simix/simix.h include/simix/datatypes.h \
@@ -634,7 +635,7 @@ libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm \
 @GRAMINE_MODE_FALSE@	    @builddir@/xbt_str_unit.c \
 @GRAMINE_MODE_FALSE@            @builddir@/config_unit.c 
 
-@GRAMINE_MODE_FALSE@BUILT_SOURCES = ../include/surf/surfxml.h surf/surfxml.c \
+@GRAMINE_MODE_FALSE@BUILT_SOURCES = ../include/surf/simgrid_dtd.h surf/simgrid_dtd.c \
 @GRAMINE_MODE_FALSE@              ../include/xbt/graphxml.h xbt/graphxml.c \
 @GRAMINE_MODE_FALSE@              gras/DataDesc/ddt_parse.yy.c \
 @GRAMINE_MODE_FALSE@	      $(TEST_UNITS) @builddir@/simgrid_units_main.c
@@ -2227,11 +2228,11 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 @HAVE_JAVA_TRUE@clean-local:
 @HAVE_JAVA_TRUE@	-rm -rf .classes
 
-@HAVE_JAVA_TRUE@simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/surfxml.dtd
+@HAVE_JAVA_TRUE@simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/simgrid.dtd
 @HAVE_JAVA_TRUE@	[ -e .classes ] || mkdir .classes
 @HAVE_JAVA_TRUE@	$(JAVAC) -d .classes $(foreach file,$(JMSG_JAVA_SRC),$(srcdir)/$(file))
 @HAVE_JAVA_TRUE@	[ -e .classes/surf ] || mkdir .classes/surf
-@HAVE_JAVA_TRUE@	cp $(srcdir)/surf/surfxml.dtd .classes/surf
+@HAVE_JAVA_TRUE@	cp $(srcdir)/surf/simgrid.dtd .classes/surf
 @HAVE_JAVA_TRUE@	$(JAR) cvf simgrid.jar -C .classes .
 
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/cunit_unit.c: xbt/cunit.c
@@ -2278,17 +2279,18 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 @GRAMINE_MODE_FALSE@gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 @GRAMINE_MODE_FALSE@	set -e;@LEX@ -o$@ -Pgras_ddt_parse_ --noline $^
 
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@surf/surfxml.c: surf/surfxml.l
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@surf/simgrid_dtd.c: surf/simgrid_dtd.l
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Psurf_parse_ --noline $^
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@xbt/graphxml.c: xbt/graphxml.l
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Pxbt_graph_parse_ --noline $^
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
 
-@GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
-@GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	set -e; mkdir -p surf; flexml --root-tags platform -b 1000000 -P surfxml --sysid=surfxml.dtd -S $@ -L $^
-@GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@$(top_srcdir)/include/surf/surfxml.h: $(srcdir)/surf/surfxml.dtd
-@GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	set -e;                flexml --root-tags platform            -P surfxml --sysid=surfxml.dtd -H $@ -L $^
+@GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@surf/simgrid_dtd.l: $(srcdir)/surf/simgrid.dtd
+@GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	set -e; mkdir -p surf; flexml --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S $@ -L $^ 
+@GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@$(top_srcdir)/include/surf/simgrid_dtd.h: $(srcdir)/surf/simgrid.dtd
+@GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	set -e;                flexml --root-tags platform            -P surfxml --sysid=simgrid.dtd -H $@ -L $^ 
+@GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	mv $(top_srcdir)/include/surf/simgrid.h $@
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 
@@ -2299,10 +2301,10 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 
-@GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@$(top_srcdir)/include/surf/surfxml.h surf/surfxml.l: $(top_srcdir)/src/surf/surfxml.dtd
-@GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@	@echo "ERROR: src/surf/surfxml.dtd was modified, but the flexml program was not detected"
+@GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@$(top_srcdir)/include/surf/simgrid_dtd.h surf/simgrid_dtd.l: $(top_srcdir)/src/surf/simgrid.dtd
+@GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@	@echo "ERROR: src/surf/simgrid.dtd was modified, but the flexml program was not detected"
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
-@GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@	@echo "ERROR:   touch include/surf/surfxml.h src/surf/surfxml.l"
+@GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@	@echo "ERROR:   touch include/surf/simgrid_dtd.h src/surf/simgrid_dtd.l"
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@	@exit 1
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@$(top_srcdir)/include/xbt/graphxml.h xbt/graphxml.l: $(top_srcdir)/src/xbt/graphxml.dtd
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_FALSE@@MAINTAINER_MODE_TRUE@	@echo "ERROR: src/xbt/graphxml.dtd was modified, but the flexml program was not detected"

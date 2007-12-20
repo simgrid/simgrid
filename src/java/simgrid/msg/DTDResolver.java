@@ -16,26 +16,26 @@ import org.xml.sax.SAXException;
 public class DTDResolver implements EntityResolver {
   public InputSource resolveEntity(String publicID, String systemID) 
     throws SAXException {
-    if (!systemID.endsWith("surfxml.dtd")) {
+    if (!systemID.endsWith("simgrid.dtd")) {
       System.out.
         println("\n MSG - Warning - the platform used seams invalid\n");
       return null;
     }
     
       /* try to get the DTD from the classpath */ 
-      InputStream in = getClass().getResourceAsStream("/surfxml.dtd");
+      InputStream in = getClass().getResourceAsStream("/simgrid.dtd");
     if (null == in)
       
         /* try to get the DTD from the surf dir in the jar */ 
-        in = getClass().getResourceAsStream("/surf/surfxml.dtd");
+        in = getClass().getResourceAsStream("/surf/simgrid.dtd");
     if (null == in)
       
         /* try to get the DTD from the directory Simgrid */ 
-        in = getClass().getResourceAsStream("/Simgrid/surfxml.dtd");
+        in = getClass().getResourceAsStream("/Simgrid/simgrid.dtd");
     if (null == in)
       
         /* try to get the DTD from the directory Simgrid/msg */ 
-        in = getClass().getResourceAsStream("/Simgrid/msg/surfxml.dtd");
+        in = getClass().getResourceAsStream("/Simgrid/msg/simgrid.dtd");
     if (null == in) {
       System.err.println("\nMSG - XML DTD not found (" +
                           systemID.toString() +

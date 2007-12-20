@@ -44,9 +44,9 @@ EXTRA_DIST= \
 	surf/workstation_private.h \
 	surf/surf_timer_private.h \
 	surf/surfxml_parse.c \
-	surf/surfxml.l \
-	surf/surfxml.c \
-	surf/surfxml.dtd \
+	surf/simgrid_dtd.l \
+	surf/simgrid_dtd.c \
+	surf/simgrid.dtd \
 	surf/network_private.h \
 	surf/network_gtnets_private.h \
 	\
@@ -349,11 +349,11 @@ clean-local:
 jardir = $(prefix)/jar 
 jar_DATA =  simgrid.jar
 
-simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/surfxml.dtd
+simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/simgrid.dtd
 	[ -e .classes ] || mkdir .classes
 	$(JAVAC) -d .classes $(foreach file,$(JMSG_JAVA_SRC),$(srcdir)/$(file))
 	[ -e .classes/surf ] || mkdir .classes/surf
-	cp $(srcdir)/surf/surfxml.dtd .classes/surf
+	cp $(srcdir)/surf/simgrid.dtd .classes/surf
 	$(JAR) cvf simgrid.jar -C .classes .
 else
 EXTRA_DIST+=$(JMSG_C_SRC) $(MSG_SRC)
@@ -384,7 +384,7 @@ TEST_UNITS= @builddir@/cunit_unit.c @builddir@/ex_unit.c         \
 	    @builddir@/xbt_str_unit.c \
             @builddir@/config_unit.c 
 
-BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
+BUILT_SOURCES=../include/surf/simgrid_dtd.h surf/simgrid_dtd.c \
               ../include/xbt/graphxml.h xbt/graphxml.c \
               gras/DataDesc/ddt_parse.yy.c \
 	      $(TEST_UNITS) @builddir@/simgrid_units_main.c
@@ -450,7 +450,7 @@ gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 	set -e;@LEX@ -o$@ -Pgras_ddt_parse_ --noline $^
 
 if MAINTAINER_MODE
-surf/surfxml.c: surf/surfxml.l
+surf/simgrid_dtd.c: surf/simgrid_dtd.l
 	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Psurf_parse_ --noline $^
 	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
 xbt/graphxml.c: xbt/graphxml.l
@@ -458,10 +458,11 @@ xbt/graphxml.c: xbt/graphxml.l
 	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
 
 if HAVE_FLEXML
-surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
-	set -e; mkdir -p surf; flexml --root-tags platform -b 1000000 -P surfxml --sysid=surfxml.dtd -S $@ -L $^
-$(top_srcdir)/include/surf/surfxml.h: $(srcdir)/surf/surfxml.dtd
-	set -e;                flexml --root-tags platform            -P surfxml --sysid=surfxml.dtd -H $@ -L $^
+surf/simgrid_dtd.l: $(srcdir)/surf/simgrid.dtd
+	set -e; mkdir -p surf; flexml --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S $@ -L $^ 
+$(top_srcdir)/include/surf/simgrid_dtd.h: $(srcdir)/surf/simgrid.dtd
+	set -e;                flexml --root-tags platform            -P surfxml --sysid=simgrid.dtd -H $@ -L $^ 
+	mv $(top_srcdir)/include/surf/simgrid.h $@
 	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 
@@ -473,10 +474,10 @@ $(top_srcdir)/include/xbt/graphxml.h: $(srcdir)/xbt/graphxml.dtd
 	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 else
 
-$(top_srcdir)/include/surf/surfxml.h surf/surfxml.l: $(top_srcdir)/src/surf/surfxml.dtd
-	@echo "ERROR: src/surf/surfxml.dtd was modified, but the flexml program was not detected"
+$(top_srcdir)/include/surf/simgrid_dtd.h surf/simgrid_dtd.l: $(top_srcdir)/src/surf/simgrid.dtd
+	@echo "ERROR: src/surf/simgrid.dtd was modified, but the flexml program was not detected"
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
-	@echo "ERROR:   touch include/surf/surfxml.h src/surf/surfxml.l"
+	@echo "ERROR:   touch include/surf/simgrid_dtd.h src/surf/simgrid_dtd.l"
 	@exit 1
 $(top_srcdir)/include/xbt/graphxml.h xbt/graphxml.l: $(top_srcdir)/src/xbt/graphxml.dtd
 	@echo "ERROR: src/xbt/graphxml.dtd was modified, but the flexml program was not detected"
