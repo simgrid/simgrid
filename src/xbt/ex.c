@@ -23,7 +23,111 @@
 #include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
 #include "xbt/ex_interface.h"
 
+#if (defined(WIN32) && defined(_M_IX86))
+#include <dbghelp.h>
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex,xbt,"Exception mecanism");
+
+#if (defined(WIN32) && defined(_M_IX86))
+
+/* 
+ * Win32 (x86) implementation backtrace, backtrace_symbols, backtrace_symbols_fd
+ * : support for application self-debugging.
+ */
+
+/* Pointer function to SymInitialize() */
+typedef BOOL (WINAPI *xbt_pfn_sym_initialize_t)(HANDLE, PSTR , BOOL);
+
+/* Pointer function to SymCleanup() */
+typedef BOOL (WINAPI *xbt_pfn_sym_cleanup_t)(HANDLE hProcess);
+
+/* Pointer function to SymFunctionTableAccess() */
+typedef PVOID (WINAPI *xbt_pfn_sym_function_table_access_t)(HANDLE, DWORD);
+
+/* Pointer function to SymGetLineFromAddr() */
+typedef BOOL (WINAPI *xbt_pfn_sym_get_line_from_addr_t)(HANDLE, DWORD, PDWORD , PIMAGEHLP_LINE);
+
+/* Pointer function to SymGetModuleBase() */
+typedef DWORD (WINAPI *xbt_pfn_sym_get_module_base_t)(HANDLE,DWORD);
+
+/* Pointer function to SymGetOptions() */
+typedef DWORD (WINAPI *xbt_pfn_sym_get_options_t)(VOID);
+
+/* Pointer function to SymGetSymFromAddr() */
+typedef BOOL (WINAPI *xbt_pfn_sym_get_sym_from_addr_t)(HANDLE, DWORD, PDWORD , OUT PIMAGEHLP_SYMBOL);
+
+/* Pointer function to SymSetOptions() */
+typedef DWORD (WINAPI *xbt_pfn_sym_set_options_t)(DWORD);
+
+/* Pointer function to StackWalk() */
+typedef BOOL (WINAPI *xbt_pfn_stack_walk_t)(DWORD, HANDLE, HANDLE ,LPSTACKFRAME, PVOID,PREAD_PROCESS_MEMORY_ROUTINE, PFUNCTION_TABLE_ACCESS_ROUTINE, PGET_MODULE_BASE_ROUTINE, PTRANSLATE_ADDRESS_ROUTINE);
+
+/* This structure representes the debug_help library used interface */
+typedef struct s_xbt_debug_help
+{
+	HINSTANCE instance;
+	HANDLE process_handle;											
+	xbt_pfn_sym_initialize_t sym_initialize;
+	xbt_pfn_sym_cleanup_t sym_cleanup;
+	xbt_pfn_sym_function_table_access_t sym_function_table_access;
+	xbt_pfn_sym_get_line_from_addr_t sym_get_line_from_addr;
+	xbt_pfn_sym_get_module_base_t sym_get_module_base;
+	xbt_pfn_sym_get_options_t sym_get_options;
+	xbt_pfn_sym_get_sym_from_addr_t sym_get_sym_from_addr;
+	xbt_pfn_sym_set_options_t sym_set_options;
+	xbt_pfn_stack_walk_t stack_walk;
+}s_xbt_debug_hlp_t,* xbt_debug_hlp_t;
+
+
+/* the address to the unique reference to the debug help library interface */
+static xbt_debug_hlp_t 
+dbg_hlp = NULL;
+
+/* initialize the debug help library */
+static int
+dbg_hlp_init(HANDLE process_handle);
+
+/* finalize the debug help library */
+static int
+dbg_hlp_finalize(void);
+
+/*
+ * backtrace() function.
+ *
+ * Returns a backtrace for the calling program, in  the  array
+ * pointed  to  by  buffer.  A backtrace is the series of currently active
+ * function calls for the program.  Each item in the array pointed  to  by
+ * buffer  is  of  type  void *, and is the return address from the corre-
+ * sponding stack frame.  The size argument specifies the  maximum  number
+ * of  addresses that can be stored in buffer.  If the backtrace is larger
+ * than size, then the addresses corresponding to  the  size  most  recent
+ * function  calls  are  returned;  to obtain the complete backtrace, make
+ * sure that buffer and size are large enough.
+ */
+
+int 
+backtrace (void **buffer, int size);
+
+/*
+ * backtrace_symbols() function.
+ *
+ * Given the set of addresses returned by  backtrace()  in  buffer,  back-
+ * trace_symbols()  translates the addresses into an array of strings containing
+ * the name, the source file and the line number or the las called functions.
+ */
+char ** 
+backtrace_symbols (void *const *buffer, int size);
+
+/*
+ * backtrace_symbols_fd() function.
+ *
+ * Same as backtrace_symbols() function but, the the array of strings is wrotten
+ * in a file (fd is the file descriptor of this file)
+ */
+void 
+backtrace_symbols_fd(void *const *buffer, int size, int fd);
+#endif
 
 /* default __ex_ctx callback function */
 ex_ctx_t *__xbt_ex_ctx_default(void) {
@@ -46,7 +150,7 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
 void xbt_ex_setup_backtrace(xbt_ex_t *e);
 
 void xbt_backtrace_current(xbt_ex_t *e) {
-#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE) || (defined(WIN32) && defined(_M_IX86))
   e->used     = backtrace((void**)e->bt,XBT_BACKTRACE_SIZE);
   e->bt_strings = NULL;
   xbt_ex_setup_backtrace(e);
@@ -54,7 +158,7 @@ void xbt_backtrace_current(xbt_ex_t *e) {
 }
 
 void xbt_backtrace_display(xbt_ex_t *e) {
-#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE) || (defined(WIN32) && defined(_M_IX86))
   int i;
 
   if (e->used == 0) {
@@ -71,6 +175,7 @@ void xbt_backtrace_display(xbt_ex_t *e) {
   e->remote=0;
   xbt_ex_free(*e);
 #else 
+
   ERROR0("No backtrace on this arch");
 #endif
 }
@@ -317,6 +422,22 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   free(addrs);
   free(backtrace);
   free(cmd);
+#elif (defined(WIN32) && defined (_M_IX86))
+int i;
+  /* to get the backtrace from the libc */
+  char **backtrace = backtrace_symbols (e->bt, e->used);
+  
+  /* parse the output and build a new backtrace */
+  e->bt_strings = xbt_new(char*,e->used);
+  
+
+  for(i=0; i<e->used; i++) 
+  {
+      e->bt_strings[i] = strdup(backtrace[i]);
+      free(backtrace[i]);
+  }
+  
+  free(backtrace);
 #endif
 }    
 
@@ -342,7 +463,7 @@ void xbt_ex_display(xbt_ex_t *e)  {
   if (!e->remote && !e->bt_strings)
     xbt_ex_setup_backtrace(e);
 
-#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+#if (defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)) || (defined(WIN32) && defined(_M_IX86))
   /* We have everything to build neat backtraces */
   {
     int i;
@@ -407,9 +528,367 @@ const char * xbt_ex_catname(xbt_errcat_t cat) {
 }
 
 #ifndef HAVE_EXECINFO_H
+#  if (defined(WIN32) && defined(_M_IX86))
+int 
+backtrace (void **buffer, int size)
+{
+	int pos = 0;
+	STACKFRAME* stack_frame;
+	int first = 1;
+
+	CONTEXT context = {CONTEXT_FULL};
+	GetThreadContext(GetCurrentThread(), &context);
+	
+	/* ebp pointe sur la base de la pile */
+	/* esp pointe sur le stack pointer <=> sur le dernier élément déposé dans la pile (l'élément courant) */
+	_asm call $+5
+	_asm pop eax 
+	_asm mov context.Eip, eax 
+	_asm mov eax, esp 
+	_asm mov context.Esp, eax 
+	_asm mov context.Ebp, ebp 
+
+	dbg_hlp_init(GetCurrentProcess());
+	
+	if((NULL == dbg_hlp) || (size <= 0) || (NULL == buffer))
+	{
+		errno = EINVAL;
+		return 0;
+	}
+
+	for(pos = 0; pos < size; pos++)
+		buffer[pos] = NULL;
+	
+	pos = 0;
+
+    while(pos < size)
+    {
+		stack_frame = (void*)calloc(1,sizeof(STACKFRAME));
+		
+		if(!stack_frame)
+		{
+			errno = ENOMEM;
+			break;
+		}
+		
+		stack_frame->AddrPC.Offset = context.Eip;
+	    stack_frame->AddrPC.Mode = AddrModeFlat;
+	
+	    stack_frame->AddrFrame.Offset = context.Ebp;
+	    stack_frame->AddrFrame.Mode = AddrModeFlat;
+	
+	    stack_frame->AddrStack.Offset = context.Esp;
+	    stack_frame->AddrStack.Mode = AddrModeFlat;
+		
+		if((*(dbg_hlp->stack_walk))(
+					IMAGE_FILE_MACHINE_I386,
+					dbg_hlp->process_handle,
+					GetCurrentThread(),
+					stack_frame, 
+					&context,
+					NULL,
+					dbg_hlp->sym_function_table_access,
+					dbg_hlp->sym_get_module_base,
+					NULL)
+			&& !first) 
+		{
+			if(stack_frame->AddrReturn.Offset)
+				buffer[pos++] = (void*)stack_frame;
+			else
+			{
+				free(stack_frame); /* no symbol */
+				break;
+			}
+		}
+		else
+		{
+			free(stack_frame);
+
+			if(first)
+				first = 0;
+			else
+				break;
+		}		
+    }
+
+    return pos;
+}
+
+char ** 
+backtrace_symbols (void *const *buffer, int size)
+{
+	int pos;
+	int success = 0;	
+	char** strings;
+	STACKFRAME* stack_frame;
+	char str[MAX_SYM_NAME] = {0};
+	IMAGEHLP_SYMBOL * pSym;
+	unsigned long displacement = 0;
+	IMAGEHLP_LINE line_info = {0};
+	IMAGEHLP_MODULE module = {0};
+	byte __buffer[(sizeof(SYMBOL_INFO) +MAX_SYM_NAME * sizeof(TCHAR) + sizeof(ULONG64) - 1) / sizeof(ULONG64)];
+
+	if((NULL == dbg_hlp) || (size <= 0) || (NULL == buffer))
+	{
+		errno = EINVAL;
+		return NULL;
+	}
+	
+	strings = (char**)calloc(size,sizeof(char*));
+	
+	if(NULL == strings)
+	{
+		errno = ENOMEM;
+		return NULL;
+	}
+	
+	pSym = (IMAGEHLP_SYMBOL*)__buffer;
+
+	pSym->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL);
+	pSym->MaxNameLength = MAX_SYM_NAME;
+
+
+	line_info.SizeOfStruct = sizeof(IMAGEHLP_LINE);
+	module.SizeOfStruct = sizeof(IMAGEHLP_MODULE);
+	
+	for(pos = 0; pos < size; pos++)
+	{
+		stack_frame = (STACKFRAME*)(buffer[pos]);
+
+		if(NULL != stack_frame)
+		{
+		
+			if((*(dbg_hlp->sym_get_sym_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,pSym))
+			{	
+				if((*(dbg_hlp->sym_get_line_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,&line_info))
+				{
+					
+						sprintf(str,"**   In %s() at %s:%d", pSym->Name,line_info.FileName,line_info.LineNumber); 
+						
+						strings[pos] = strdup(str);
+						memset(str,0,MAX_SYM_NAME);	
+					
+						success = 1;
+				}
+			}
+
+			free(stack_frame);
+		}
+		else
+			break;
+	}
+	
+	if(!success)
+	{
+		free(strings);
+		strings = NULL;
+	}
+
+	dbg_hlp_finalize();
+	
+	return strings;
+}
+
+void
+backtrace_symbols_fd(void *const *buffer, int size, int fd)
+{
+	int pos;
+	int success = 0;	
+	STACKFRAME* stack_frame;
+	char str[MAX_SYM_NAME] = {0};
+	IMAGEHLP_SYMBOL * pSym;
+	unsigned long displacement = 0;
+	IMAGEHLP_LINE line_info = {0};
+	IMAGEHLP_MODULE module = {0};
+
+	byte __buffer[(sizeof(SYMBOL_INFO) +MAX_SYM_NAME * sizeof(TCHAR) + sizeof(ULONG64) - 1) / sizeof(ULONG64)];
+
+	if((NULL == dbg_hlp) || (size <= 0) || (NULL == buffer) || (-1 == fd))
+	{
+		errno = EINVAL;
+		return;
+	}
+	
+	pSym = (IMAGEHLP_SYMBOL*)__buffer;
+
+	pSym->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL);
+	pSym->MaxNameLength = MAX_SYM_NAME;
+
+
+	line_info.SizeOfStruct = sizeof(IMAGEHLP_LINE);
+	module.SizeOfStruct = sizeof(IMAGEHLP_MODULE);
+	
+	for(pos = 0; pos < size; pos++)
+	{
+		stack_frame = (STACKFRAME*)(buffer[pos]);
+
+		if(NULL != stack_frame)
+		{
+		
+			if((*(dbg_hlp->sym_get_sym_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,pSym))
+			{	
+				if((*(dbg_hlp->sym_get_line_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,&line_info))
+				{
+					
+						
+						sprintf(str,"**   In %s() at %s:%d\n", pSym->Name,line_info.FileName,line_info.LineNumber); 
+						
+						if(-1 == write(fd,str,strlen(str)))
+							break;
+
+						memset(str,0,MAX_SYM_NAME);	
+					
+						success = 1;
+				}
+			}
+
+			free(stack_frame);
+		}
+		else
+			break;
+	}
+	
+	dbg_hlp_finalize();
+	
+}
+
+static int
+dbg_hlp_init(HANDLE process_handle)
+{
+	if(dbg_hlp)
+	{
+		/* debug help is already loaded */
+		return 0;
+	}
+
+	/* allocation */
+	dbg_hlp = (xbt_debug_hlp_t)calloc(1,sizeof(s_xbt_debug_hlp_t));
+	
+	if(!dbg_hlp)
+		return ENOMEM;
+	
+	/* load the library */
+	dbg_hlp->instance = LoadLibraryA("Dbghelp.dll");
+	
+	if(!(dbg_hlp->instance))
+	{
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();
+	}
+	
+	/* get the pointers to debug help library exported functions */
+	
+	if(!((dbg_hlp->sym_initialize) = (xbt_pfn_sym_initialize_t)GetProcAddress(dbg_hlp->instance,"SymInitialize")))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();	
+	}
+		
+	if(!((dbg_hlp->sym_cleanup) = (xbt_pfn_sym_cleanup_t)GetProcAddress(dbg_hlp->instance,"SymCleanup")))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();	
+	}
+	
+	if(!((dbg_hlp->sym_function_table_access) = (xbt_pfn_sym_function_table_access_t)GetProcAddress(dbg_hlp->instance,"SymFunctionTableAccess")))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();	
+	}
+	
+	if(!((dbg_hlp->sym_get_line_from_addr) = (xbt_pfn_sym_get_line_from_addr_t)GetProcAddress(dbg_hlp->instance,"SymGetLineFromAddr")))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();	
+	}
+	
+	if(!((dbg_hlp->sym_get_module_base) = (xbt_pfn_sym_get_module_base_t)GetProcAddress(dbg_hlp->instance,"SymGetModuleBase")))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();	
+	}
+	
+	if(!((dbg_hlp->sym_get_options) = (xbt_pfn_sym_get_options_t)GetProcAddress(dbg_hlp->instance,"SymGetOptions")))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();	
+	}
+	
+	if(!((dbg_hlp->sym_get_sym_from_addr) = (xbt_pfn_sym_get_sym_from_addr_t)GetProcAddress(dbg_hlp->instance,"SymGetSymFromAddr")))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();	
+	}
+	
+	if(!((dbg_hlp->sym_set_options) = (xbt_pfn_sym_set_options_t)GetProcAddress(dbg_hlp->instance,"SymSetOptions")))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();	
+	}
+	
+	if(!((dbg_hlp->stack_walk) = (xbt_pfn_stack_walk_t)GetProcAddress(dbg_hlp->instance,"StackWalk")))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();	
+	}
+	
+	dbg_hlp->process_handle = process_handle;
+
+	(*(dbg_hlp->sym_set_options))((*(dbg_hlp->sym_get_options))() | SYMOPT_LOAD_LINES | SYMOPT_DEFERRED_LOADS);
+	
+	if(!(*(dbg_hlp->sym_initialize))(dbg_hlp->process_handle,0,1))
+	{
+		FreeLibrary(dbg_hlp->instance);
+		free(dbg_hlp);
+		dbg_hlp = NULL;
+		return (int)GetLastError();
+	}
+		
+	
+	return 0;
+}
+
+static int
+dbg_hlp_finalize(void)
+{
+	if(!dbg_hlp)
+		return EINVAL;
+		
+	if(!(*(dbg_hlp->sym_cleanup))(dbg_hlp->process_handle))
+		return (int)GetLastError();
+	
+	if(!FreeLibrary(dbg_hlp->instance))
+		return (int)GetLastError();
+	
+	free(dbg_hlp);
+	dbg_hlp = NULL;
+	
+	return 0;
+}
+#  endif
+#else
 /* dummy implementation. We won't use the result, but ex.h needs it to be defined */
 int backtrace (void **__array, int __size) {
-  return 0;
+  return 0;	
 }
 
 #endif
