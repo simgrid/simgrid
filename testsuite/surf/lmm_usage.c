@@ -17,8 +17,6 @@
 #include "xbt/module.h"
 #include <math.h>
 
-
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
 			     "Messages specific for surf example");
 
@@ -405,16 +403,13 @@ void test3(method_t method)
 
 
   tmp_name = (char **) calloc(31, sizeof(char *));
-  for (i = 0; i < 31; i++) {
-    tmp_name[i] = (char *) calloc(10, sizeof(char));
-  }
 
   /*
    * Creates the constraints
    */
   tmp_cnst = calloc(15, sizeof(lmm_constraint_t));
   for (i = 0; i < 15; i++) {
-    sprintf(tmp_name[i], "C_%03d", i);
+    tmp_name[i] = bprintf("C_%03d", i);
     tmp_cnst[i] = lmm_constraint_new(Sys, (void *) tmp_name[i], B[i]);
   }
 
@@ -424,7 +419,7 @@ void test3(method_t method)
    */
   tmp_var = calloc(16, sizeof(lmm_variable_t));
   for (j = 0; j < 16; j++) {
-    sprintf(tmp_name[i + j], "X_%03d", j);
+    tmp_name[i + j] = bprintf("X_%03d", j);
     tmp_var[j] =
 	lmm_variable_new(Sys, (void *) tmp_name[i + j], 1.0, -1.0, 15);
     lmm_update_variable_latency(Sys, tmp_var[j], 1.0);
