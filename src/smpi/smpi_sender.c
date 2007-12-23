@@ -94,6 +94,12 @@ int smpi_sender(int argc, char **argv)
 
 			action = SIMIX_action_communicate(shost, dhost, "communication", request->datatype->size * request->count, -1.0);
 
+			message->action = action;
+
+			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[dindex]);
+			xbt_fifo_push(smpi_global->received_message_queues[dindex], message);
+			SIMIX_mutex_unlock(smpi_global->received_message_queues_mutexes[dindex]);
+
 			SIMIX_register_action_to_condition(action, request->cond);
 
 			for (
@@ -109,10 +115,6 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_action_destroy(action);
 
 			SIMIX_mutex_unlock(request->mutex);
-
-			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[dindex]);
-			xbt_fifo_push(smpi_global->received_message_queues[dindex], message);
-			SIMIX_mutex_unlock(smpi_global->received_message_queues_mutexes[dindex]);
 
 			// wake up receiver if necessary
 			receiver_process = smpi_global->receiver_processes[dindex];

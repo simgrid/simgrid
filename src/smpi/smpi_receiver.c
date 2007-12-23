@@ -66,9 +66,12 @@ int smpi_receiver(int argc, char **argv)
 				NULL != message_item;
 				message_item = xbt_fifo_get_next_item(message_item)) {
 				message = xbt_fifo_get_item_content(message_item);
-				if (request->comm == message->comm &&
-				   (MPI_ANY_SOURCE == request->src || request->src == message->src) &&
-				   (MPI_ANY_TAG == request->tag || request->tag == message->tag)) {
+				if (
+					request->comm == message->comm &&
+				   	(MPI_ANY_SOURCE == request->src || request->src == message->src) &&
+				   	(MPI_ANY_TAG == request->tag || request->tag == message->tag) &&
+					(message->action != SURF_ACTION_READY && message->action != SURF_ACTION_RUNNING)
+				) {
 					xbt_fifo_remove_item(request_queue, request_item);
 					xbt_fifo_remove_item(message_queue, message_item);
 					goto stopsearch;
