@@ -20,6 +20,8 @@ int smpi_receiver(int argc, char **argv)
 	xbt_fifo_item_t request_item;
 	xbt_fifo_item_t message_item;
 
+	e_surf_action_state_t state;
+
 	self = SIMIX_process_self();
 
 	// make sure root is done before own initialization
@@ -66,11 +68,12 @@ int smpi_receiver(int argc, char **argv)
 				NULL != message_item;
 				message_item = xbt_fifo_get_next_item(message_item)) {
 				message = xbt_fifo_get_item_content(message_item);
+				state   = SIMIX_action_get_state(message->action);
 				if (
 					request->comm == message->comm &&
 				   	(MPI_ANY_SOURCE == request->src || request->src == message->src) &&
 				   	(MPI_ANY_TAG == request->tag || request->tag == message->tag) &&
-					(message->action != SURF_ACTION_READY && message->action != SURF_ACTION_RUNNING)
+					(state != SURF_ACTION_READY && state != SURF_ACTION_RUNNING)
 				) {
 					xbt_fifo_remove_item(request_queue, request_item);
 					xbt_fifo_remove_item(message_queue, message_item);
@@ -85,6 +88,8 @@ stopsearch:
 		if (NULL == request || NULL == message) {
 			SIMIX_process_suspend(self);
 		} else {
+
+			// FIXME: check action status for bad messages
 
 			SIMIX_mutex_lock(request->mutex);
 			memcpy(request->buf, message->buf, request->datatype->size * request->count);
