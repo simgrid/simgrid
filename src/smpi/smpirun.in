@@ -41,7 +41,7 @@ PLATFORMTMP="$(mktemp tmpXXXXXX)"
 
 cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "surfxml.dtd">
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
 PLATFORMHEAD
 
@@ -70,7 +70,7 @@ APPLICATIONTMP="$(mktemp tmpXXXXXX)"
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "surfxml.dtd">
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
 APPLICATIONHEAD
 
