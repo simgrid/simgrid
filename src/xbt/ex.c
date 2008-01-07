@@ -424,8 +424,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   free(cmd);
 #elif (defined(WIN32) && defined (_M_IX86))
 int i;
-  /* to get the backtrace from the libc */
-  char **backtrace = backtrace_symbols (e->bt, e->used);
+char **backtrace = backtrace_symbols (e->bt, e->used);
   
   /* parse the output and build a new backtrace */
   e->bt_strings = xbt_new(char*,e->used);
@@ -536,6 +535,11 @@ backtrace (void **buffer, int size)
 	STACKFRAME* stack_frame;
 	int first = 1;
 
+	IMAGEHLP_SYMBOL * pSym;
+	unsigned long displacement = 0;
+	IMAGEHLP_LINE line_info = {0};
+	byte __buffer[(sizeof(SYMBOL_INFO) +MAX_SYM_NAME * sizeof(TCHAR) + sizeof(ULONG64) - 1) / sizeof(ULONG64)];
+
 	CONTEXT context = {CONTEXT_FULL};
 	GetThreadContext(GetCurrentThread(), &context);
 	
@@ -560,6 +564,15 @@ backtrace (void **buffer, int size)
 		buffer[pos] = NULL;
 	
 	pos = 0;
+
+	pSym = (IMAGEHLP_SYMBOL*)__buffer;
+
+	pSym->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL);
+	pSym->MaxNameLength = MAX_SYM_NAME;
+
+
+	line_info.SizeOfStruct = sizeof(IMAGEHLP_LINE);
+	
 
     while(pos < size)
     {
@@ -593,10 +606,17 @@ backtrace (void **buffer, int size)
 			&& !first) 
 		{
 			if(stack_frame->AddrReturn.Offset)
-				buffer[pos++] = (void*)stack_frame;
+			{
+
+				if((*(dbg_hlp->sym_get_sym_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,pSym))
+				{	
+					if((*(dbg_hlp->sym_get_line_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,&line_info))
+						buffer[pos++] = (void*)stack_frame;
+				}
+			}
 			else
 			{
-				free(stack_frame); /* no symbol */
+				free(stack_frame); /* no symbol or no line info */
 				break;
 			}
 		}
@@ -670,6 +690,14 @@ backtrace_symbols (void *const *buffer, int size)
 					
 						success = 1;
 				}
+				else
+				{
+					strings[pos] = strdup("<no line>");
+				}
+			}
+			else
+			{
+				strings[pos] = strdup("<no symbole>");
 			}
 
 			free(stack_frame);
