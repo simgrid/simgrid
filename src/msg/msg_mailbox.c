@@ -169,28 +169,10 @@ MSG_mailbox_free(void* mailbox)
 msg_mailbox_t
 MSG_mailbox_get_by_alias(const char* alias)
 {
-	xbt_ex_t e;
-	int found = 1;
-	msg_mailbox_t mailbox;
 
-	TRY 
-	{
-		mailbox = xbt_dict_get(msg_mailboxes,alias);
-	} 
-	CATCH(e) 
-	{
-		if (e.category == not_found_error) 
-		{
-			found = 0;
-			xbt_ex_free(e);
-		} 
-		else 
-		{
-			RETHROW;
-		}
-	}
-
-	if(!found)
+	msg_mailbox_t mailbox = xbt_dict_get_or_null(msg_mailboxes,alias);
+   
+	if(!mailbox)
 	{
 		mailbox = MSG_mailbox_new(alias);
 		MSG_mailbox_set_hostname(mailbox,MSG_host_self()->name);
