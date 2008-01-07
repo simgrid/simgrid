@@ -57,10 +57,6 @@ extern xbt_test_unit_t _xbt_current_unit;
     void test_config_use(void);
   /* SGU: END FILE */
 
-  /* SGU: BEGIN FILE ./xbt/cunit.c */
-    void test_expected_failure(void);
-  /* SGU: END FILE */
-
 
 /*******************************/
 /* GENERATED FILE, DO NOT EDIT */
@@ -70,6 +66,8 @@ int main(int argc, char *argv[]) {
   xbt_test_suite_t suite; 
   char selection[1024];
   int i;
+
+  int res;
 
   /* SGU: BEGIN SUITES DECLARATION */
     /* SGU: BEGIN FILE xbt/cunit.c */
@@ -128,11 +126,6 @@ int main(int argc, char *argv[]) {
       xbt_test_suite_push(suite, "use", test_config_use, "Data retrieving tests");
     /* SGU: END FILE */
 
-    /* SGU: BEGIN FILE ./xbt/cunit.c */
-      suite = xbt_test_suite_by_name("cunit","Testsuite mechanism autotest");
-      xbt_test_suite_push(suite, "expect", test_expected_failure, "expected failures");
-    /* SGU: END FILE */
-
   /* SGU: END SUITES DECLARATION */
       
   xbt_init(&argc,argv);
@@ -180,7 +173,9 @@ int main(int argc, char *argv[]) {
     }
   /* Got all my tests to do */
       
-  return xbt_test_run(selection);
+  res = xbt_test_run(selection);
+  xbt_exit();
+  return res;
 }
 /*******************************/
 /* GENERATED FILE, DO NOT EDIT */

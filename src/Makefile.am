@@ -36,6 +36,7 @@ EXTRA_DIST= \
         xbt/xbt_jcontext.h \
 	xbt/log_private.h \
 	xbt/ex_interface.h \
+        xbt/backtrace_linux.c xbt/backtrace_windows.c \
         \
 	surf/maxmin_private.h \
 	surf/trace_mgr_private.h \
@@ -320,6 +321,7 @@ libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                         $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+# -Wl,--entry -Wl,simgrid_version
 
 # Please do not add -no-undefined to libsmpi_la_LDFLAGS:
 # smpi_simulated_main is indeed defined in user code, and undef in the
