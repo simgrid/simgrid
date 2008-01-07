@@ -23,13 +23,13 @@ typedef struct s_msg_mailbox
 /*
  * Initialization of the mailbox module.
  */
-XBT_PUBLIC(void
+void
 MSG_mailbox_mod_init(void);
 
 /*
  * Terminaison of the mailbox module.
  */
-XBT_PUBLIC(void
+void
 MSG_mailbox_mod_exit(void);
 
 /*! \brief MSG_get_mailboxes - get the dictionary containing all the mailboxes.
@@ -40,7 +40,7 @@ MSG_mailbox_mod_exit(void);
  * 
  * \return	The dictionary containing all the mailboxes of the simulation.
  */
-XBT_PUBLIC(xbt_dict_t
+xbt_dict_t
 MSG_get_mailboxes(void);
 
 /*! \brief MSG_mailbox_new - create a new mailbox.
@@ -52,7 +52,7 @@ MSG_get_mailboxes(void);
  * 
  * \return			The newly created mailbox.
  */
-XBT_PUBLIC(msg_mailbox_t
+msg_mailbox_t
 MSG_mailbox_new(const char *alias);
 
 /* \brief MSG_mailbox_destroy - destroy a mailbox.
@@ -66,7 +66,7 @@ MSG_mailbox_new(const char *alias);
  *
  * \see				MSG_mailbox_free.
  */
-XBT_PUBLIC(void)
+void
 MSG_mailbox_destroy(msg_mailbox_t* mailbox);
 
 /* \brief MSG_mailbox_free - release a mailbox from the memory.
@@ -78,7 +78,7 @@ MSG_mailbox_destroy(msg_mailbox_t* mailbox);
  *
  * \see				MSG_mailbox_destroy.
  */
-XBT_PUBLIC(void)
+void
 MSG_mailbox_free(void* mailbox);
 
 /* \brief MSG_mailbox_get_by_alias - get a mailbox from its alias.
@@ -92,7 +92,7 @@ MSG_mailbox_free(void* mailbox);
  * \return			The mailbox associated with the alias specified as parameter
  *					or a new mailbox if the key does not match.
  */
-XBT_PUBLIC(msg_mailbox_t)
+msg_mailbox_t
 MSG_mailbox_get_by_alias(const char* alias);
 
 /*! \brief MSG_mailbox_get_alias - get the alias associated with the mailbox.
@@ -104,7 +104,7 @@ MSG_mailbox_get_by_alias(const char* alias);
  *
  * \return			The alias of the mailbox specified by the parameter mailbox.
  */
-XBT_PUBLIC(const char*)
+const char*
 MSG_mailbox_get_alias(msg_mailbox_t mailbox);
 
 /*! \brief MSG_mailbox_get_cond - get the simix condition of a mailbox.
@@ -116,7 +116,7 @@ MSG_mailbox_get_alias(msg_mailbox_t mailbox);
  *
  * \return			The simix condition of the mailbox specified by the parameter mailbox.
  */
-XBT_PUBLIC(smx_cond_t)
+smx_cond_t
 MSG_mailbox_get_cond(msg_mailbox_t mailbox);
 
 /*! \brief MSG_mailbox_set_cond - set the simix condition of a mailbox.
@@ -128,7 +128,7 @@ MSG_mailbox_get_cond(msg_mailbox_t mailbox);
  * \param cond		The new simix condition of the mailbox.
  *
  */
-XBT_PUBLIC(void)
+void
 MSG_mailbox_set_cond(msg_mailbox_t mailbox, smx_cond_t cond);
 
 /*! \brief MSG_mailbox_get_hostname - get the name of the host owned a mailbox.
@@ -140,7 +140,7 @@ MSG_mailbox_set_cond(msg_mailbox_t mailbox, smx_cond_t cond);
  *
  * \return			The name of the host owned the mailbox specified by the parameter mailbox.
  */
-XBT_PUBLIC(const char*)
+const char*
 MSG_mailbox_get_hostname(msg_mailbox_t mailbox);
 
 /*! \brief MSG_mailbox_set_hostname - set the name of the host owned a mailbox.
@@ -152,7 +152,7 @@ MSG_mailbox_get_hostname(msg_mailbox_t mailbox);
  * \param hostname	The name of the owner of the mailbox.
  *
  */
-XBT_PUBLIC(void)
+void
 MSG_mailbox_set_hostname(msg_mailbox_t mailbox, const char* hostname);
 
 
@@ -165,7 +165,7 @@ MSG_mailbox_set_hostname(msg_mailbox_t mailbox, const char* hostname);
  * \return			The function returns 1 if the mailbox is empty. Otherwise the function
  *					returns 0.
  */
-XBT_PUBLIC(int)
+int
 MSG_mailbox_is_empty(msg_mailbox_t mailbox);
 
 /*! \brief MSG_mailbox_put - put a task in a mailbox.
@@ -175,7 +175,7 @@ MSG_mailbox_is_empty(msg_mailbox_t mailbox);
  * \param mailbox	The mailbox where put the task.
  * \param task		The task to put in the mailbox.
  */
-XBT_PUBLIC(void)
+void
 MSG_mailbox_put(msg_mailbox_t mailbox, m_task_t task);
 
 /*! \brief MSG_mailbox_remove - remove a task from a mailbox.
@@ -185,7 +185,7 @@ MSG_mailbox_put(msg_mailbox_t mailbox, m_task_t task);
  * \param mailbox	The mailbox concerned by this operation.
  * \param task		The task to remove from the mailbox.
  */
-XBT_PUBLIC(void)
+void
 MSG_mailbox_remove(msg_mailbox_t mailbox, m_task_t task);
 
 /*! \brief MSG_mailbox_get_head - get the task at the head of a mailbox.
@@ -198,7 +198,7 @@ MSG_mailbox_remove(msg_mailbox_t mailbox, m_task_t task);
  *
  * \return			The task at the head of the mailbox.
  */
-XBT_PUBLIC(m_task_t)
+m_task_t
 MSG_mailbox_get_head(msg_mailbox_t mailbox);
 
 /*! \brief MSG_mailbox_pop_head - get the task at the head of a mailbox
@@ -211,7 +211,7 @@ MSG_mailbox_get_head(msg_mailbox_t mailbox);
  *
  * \return			The task at the head of the mailbox.
  */
-XBT_PUBLIC(m_task_t)
+m_task_t
 MSG_mailbox_pop_head(msg_mailbox_t mailbox);
 
 /*! \brief MSG_mailbox_get_first_host_task - get the first msg task
@@ -225,7 +225,7 @@ MSG_mailbox_pop_head(msg_mailbox_t mailbox);
  *					parameter mailbox and sended by a process located
  *					on the host specified by the parameter host.
  */
-XBT_PUBLIC(m_task_t)
+m_task_t
 MSG_mailbox_get_first_host_task(msg_mailbox_t mailbox, m_host_t host);
 
 /*! \brief MSG_mailbox_get_count_host_tasks - get the number of msg tasks
@@ -239,7 +239,7 @@ MSG_mailbox_get_first_host_task(msg_mailbox_t mailbox, m_host_t host);
  *					parameter mailbox and sended by all the processes located
  *					on the host specified by the parameter host.
  */
-XBT_PUBLIC(int)
+int
 MSG_mailbox_get_count_host_tasks(msg_mailbox_t mailbox, m_host_t host);
 
 
