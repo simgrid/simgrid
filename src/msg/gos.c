@@ -840,7 +840,6 @@ MSG_task_receive_ext(m_task_t* task, const char* alias, double timeout, m_host_t
 	simdata_task_t t_simdata = NULL;
 	simdata_host_t h_simdata = NULL;
 	int first_time = 1;
-	xbt_fifo_item_t item = NULL;
 	
 	smx_cond_t cond = NULL;	//conditional wait if the task isn't on the channel yet
 	
