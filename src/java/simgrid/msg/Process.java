@@ -68,6 +68,8 @@ public abstract class Process extends Thread {
      * The native functions use this identifier to synchronize the process.
      */
   public long id;
+  
+  public Hashtable properties;
 
     /**
      * The name of the process.							
@@ -92,6 +94,7 @@ public abstract class Process extends Thread {
     this.name = null;
     this.bind = 0;
     this.args = new Vector();
+    this.properties = null;
     schedBegin = new Sem(0);
     schedEnd = new Sem(0);
   }
@@ -165,7 +168,8 @@ public abstract class Process extends Thread {
     if (name == null)
       throw new NullPointerException("Process name cannot be NULL");
 
-
+	  this.properties = null;
+	  
       this.args = new Vector();
 
     if (null != args)
@@ -179,6 +183,8 @@ public abstract class Process extends Thread {
 
       MsgNative.processCreate(this, host);
   }
+  
+ 
     /**
      * This method kills all running process of the simulation.
      *
@@ -390,32 +396,118 @@ public abstract class Process extends Thread {
     } catch(InterruptedException e) {
     }
   }
-
-
-   /** Send the given task to given host on given channel */
-  public void taskSend(Host host, int channel,
+  
+  /** Send the given task to given host on given channel */
+  public void taskPut(Host host, int channel,
                        Task task) throws NativeException, JniException {
     MsgNative.hostPut(host, channel, task, -1);
   }
+  
+   /** Send the given task to given host on given channel (waiting at most given time)*/
+   public void taskPut(Host host, int channel,
+                       Task task, double timeout) throws NativeException, JniException {
+    MsgNative.hostPut(host, channel, task, timeout);
+  }
    /** Receive a task on given channel */
-    public Task taskReceive(int channel) throws NativeException,
+    public Task taskGet(int channel) throws NativeException,
     JniException {
     return MsgNative.taskGet(channel, -1, null);
   }
    /** Receive a task on given channel (waiting at most given time) */
-    public Task taskReceive(int channel,
+    public Task taskGet(int channel,
                             double timeout) throws NativeException,
     JniException {
     return MsgNative.taskGet(channel, timeout, null);
   }
    /** Receive a task on given channel from given sender */
-    public Task taskReceive(int channel, Host host) throws NativeException,
+    public Task taskGet(int channel, Host host) throws NativeException,
     JniException {
     return MsgNative.taskGet(channel, -1, host);
   }
    /** Receive a task on given channel from given sender (waiting at most given time) */
-    public Task taskReceive(int channel, double timeout,
+    public Task taskGet(int channel, double timeout,
                             Host host) throws NativeException, JniException {
     return MsgNative.taskGet(channel, timeout, host);
+  }
+  
+  /** Send the given task in the mailbox associated with the specified alias  (waiting at most given time) */
+  public void taskSend(String alias,
+                       Task task, double timeout) throws NativeException, JniException {
+    MsgNative.taskSend(alias, task, timeout);
+  }
+  
+  /** Send the given task in the mailbox associated with the specified alias*/
+  public void taskSend(String alias,
+                       Task task) throws NativeException, JniException {
+    MsgNative.taskSend(alias, task, -1);
+  }
+  
+  /** Send the given task in the mailbox associated with the default alias  (defaultAlias = "hostName:processName") */
+  public void taskSend(Task task) throws NativeException, JniException {
+  	
+  	String alias = Host.currentHost().getName() + ":" + this.msgName();
+    MsgNative.taskSend(alias, task, -1);
+  }
+  
+  /** Send the given task in the mailbox associated with the default alias (waiting at most given time) */
+  public void taskSend(Task task, double timeout) throws NativeException, JniException {
+  	
+  	String alias = Host.currentHost().getName() + ":" + this.msgName();
+    MsgNative.taskSend(alias, task, timeout);
+  }
+  
+  
+   /** Receive a task on mailbox associated with the specified alias */
+    public Task taskReceive(String alias) throws NativeException,
+    JniException {
+    return MsgNative.taskReceive(alias, -1.0, null);
+  }
+  
+  /** Receive a task on mailbox associated with the default alias */
+   public Task taskReceive() throws NativeException,
+    JniException {
+    String alias = Host.currentHost().getName() + ":" + this.msgName();
+    return MsgNative.taskReceive(alias, -1.0, null);
+  }
+  
+  /** Receive a task on mailbox associated with the specified alias (waiting at most given time) */
+    public Task taskReceive(String alias,
+                            double timeout) throws NativeException,
+    JniException {
+    return MsgNative.taskReceive(alias, timeout, null);
+  }
+  
+  /** Receive a task on mailbox associated with the default alias (waiting at most given time) */
+   public Task taskReceive(double timeout) throws NativeException,
+    JniException {
+    String alias = Host.currentHost().getName() + ":" + this.msgName();
+    return MsgNative.taskReceive(alias, timeout, null);
+  }
+  
+   /** Receive a task on mailbox associated with the specified alias from given sender */
+    public Task taskReceive(String alias,
+                            double timeout, Host host) throws NativeException,
+    JniException {
+    return MsgNative.taskReceive(alias, timeout, host);
+  }
+  
+  /** Receive a task on mailbox associated with the default alias from given sender  (waiting at most given time) */
+  public Task taskReceive(double timeout, Host host) throws NativeException,
+    JniException {
+    String alias = Host.currentHost().getName() + ":" + this.msgName();
+    return MsgNative.taskReceive(alias, timeout, host);
+  }
+  
+   /** Receive a task on mailbox associated with the specified alias from given sender*/
+     public Task taskReceive(String alias,
+                            Host host) throws NativeException,
+    JniException {
+    return MsgNative.taskReceive(alias, -1.0, host);
+  }
+   /** Receive a task on mailbox associated with the default alias from given sender */
+   public Task taskReceive( Host host) throws NativeException,
+    JniException {
+    	String alias = Host.currentHost().getName() + ":" + this.msgName();
+    return MsgNative.taskReceive(alias, -1.0, host);
   }
 }

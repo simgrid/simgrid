@@ -529,6 +529,30 @@ final class MsgNative {
   final static native Task taskGet(int channel, double timeout,
                                    Host host) throws JniException,
     NativeException;
+    
+  
+  /******************************************************************
+     * Task methods relative with the alias                           *
+     ******************************************************************/
+  
+  
+  final static native void taskSend(String alias, Task task, double timeout) 
+  throws JniException, NativeException;
+  
+  
+  final static native Task taskReceive(String alias, double timeout, Host host) 
+  throws JniException, NativeException;
+  
+  final static native int taskListenFrom(String alias) 
+  throws JniException, NativeException;
+  
+  
+  final static native boolean taskListen(String alias) 
+  throws JniException;
+  
+  final static native int taskListenFromHost(String alias, Host host) 
+  throws JniException;
+    
 
 
     /**
@@ -574,6 +598,7 @@ final class MsgNative {
      */
   final static native int taskProbeHost(int channel,
                                         Host host) throws JniException;
+                                        
 
     /******************************************************************
      * Task emission methods                                          *
@@ -614,5 +639,20 @@ final class MsgNative {
   final static native void hostPutBounded(Host host, int channel, Task task,
                                           double max_rate) throws
     JniException, NativeException;
+    
+   /**
+     * The natively implemented method to send a task in a mailbox associated with an alias,  with a bounded transmition
+     * rate.
+     * 
+     * @param alias            The alias of the mailbox.
+     * @param task            The task to put.
+     * @param max_rate        The bounded transmition rate.
+     *
+     * @exception                InvalidTaskException if the task is not valid.
+     *                        InvalidHostException if the host is not valid.
+     *                        MsgException if the operation failed.
+     */ 
+  final static native void taskSendBounded(String alias, Task task, double maxrate) 
+  throws JniException, NativeException;
 
 }

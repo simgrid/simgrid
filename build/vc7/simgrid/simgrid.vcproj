@@ -412,6 +412,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\msg\msg_mailbox.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\surf\network.c"
 				>
 			</File>
@@ -569,10 +573,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\surf\workstation.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\surf\workstation_KCCFLN05.c"
 				>
 			</File>
 			<File

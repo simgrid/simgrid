@@ -12,6 +12,7 @@
 package simgrid.msg;
 
 import java.util.Vector;
+import java.util.Hashtable;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 
@@ -39,6 +40,8 @@ public final class ApplicationHandler extends DefaultHandler {
 		 * of the process object.
 		 */
     public Vector args;
+    
+    public Hashtable properties;
 
                 /**
 		 * The name of the host of the process.
@@ -49,12 +52,14 @@ public final class ApplicationHandler extends DefaultHandler {
 		 * The function of the process.
 		 */
     private String function;
+    
 
                 /**
 		 * Default constructor.
 		 */
     public ProcessFactory() {
       this.args = new Vector();
+      this.properties = new Hashtable();
       this.hostName = null;
       this.function = null;
     }
@@ -72,8 +77,11 @@ public final class ApplicationHandler extends DefaultHandler {
       this.hostName = hostName;
       this.function = function;
 
-      if (!args.isEmpty())
-        args.clear();
+      if (!this.args.isEmpty())
+        this.args.clear();
+        
+      if(!this.properties.isEmpty())
+      	this.properties.clear();
     }
                 /**
 		 * This method is called by the startElement() handler.
@@ -85,6 +93,16 @@ public final class ApplicationHandler extends DefaultHandler {
 		 */ public void registerProcessArg(String arg) {
       this.args.add(arg);
     }
+    
+    public void setProperty(String id, String value)
+    {
+    	this.properties.put(id,value);	
+    }
+    
+    public String getHostName()
+    {
+    	return this.hostName;
+    }
 
     public void createProcess() {
       try {
@@ -92,7 +110,7 @@ public final class ApplicationHandler extends DefaultHandler {
         Class cls = Class.forName(this.function);
 
         simgrid.msg.Process process = (simgrid.msg.Process) cls.newInstance();
-        process.name = process.getName();       //this.function;
+        process.name = /*process.getName();*/       this.function;
         process.id = simgrid.msg.Process.nextProcessId++;
         Host host = Host.getByName(this.hostName);
 
@@ -102,6 +120,9 @@ public final class ApplicationHandler extends DefaultHandler {
 
         for (int index = 0; index < size; index++)
           process.args.add(args.get(index));
+          
+        process.properties = this.properties;
+        this.properties = new Hashtable();
 
       } catch(JniException e) {
         System.out.println(e.toString());
@@ -159,6 +180,8 @@ public final class ApplicationHandler extends DefaultHandler {
                            Attributes attr) {
     if (localName.equals("process"))
       onProcessIdentity(attr);
+    else if(localName.equals("prop"))
+      onProperty(attr);
     else if (localName.equals("argument"))
       onProcessArg(attr);
   }
@@ -168,6 +191,10 @@ public final class ApplicationHandler extends DefaultHandler {
      */
   public void onProcessIdentity(Attributes attr) {
     processFactory.setProcessIdentity(attr.getValue(0), attr.getValue(1));
+  }
+  
+  public void onProperty(Attributes attr) {
+    processFactory.setProperty(attr.getValue(0), attr.getValue(1));
   }
 
         /**

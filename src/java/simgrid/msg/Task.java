@@ -176,6 +176,7 @@ public class Task {
                               Host host) throws JniException, NativeException {
     return MsgNative.taskGet(channel, timeout, host);
   }
+  
    /**
     * Probes whether there is a waiting task on the given channel of local host
     *
@@ -191,6 +192,7 @@ public class Task {
     */ public static int probe(int channel, Host host) throws JniException {
     return MsgNative.taskProbeHost(channel, host);
   }
+  
   /* *                     * *
    * * Computation-related * *
          * *                     * *//**
@@ -219,4 +221,189 @@ public class Task {
 	 */ protected void finalize() throws JniException, NativeException {
     if (this.bind != 0)
       MsgNative.taskDestroy(this);
-}}
+	}
+	
+	/**
+    * Send the task on the mailbox identified by the default alias (defaultAlias = "currentHostName:CurrentProcessName")
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	public void send() throws JniException,NativeException {
+	
+		String alias = Host.currentHost().getName() + ":" + Process.currentProcess().msgName();
+			
+		MsgNative.taskSend(alias, this, -1);
+	} 
+	
+	/**
+    * Send the task on the mailbox identified by the specified alias 
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	public void send(String alias) throws JniException,NativeException {
+		MsgNative.taskSend(alias, this, -1);
+	} 
+	
+	/**
+    * Send the task on the mailbox identified by the default alias  (wait at most #timeout seconds)
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	public void send(double timeout) throws JniException,NativeException {
+		String alias = Host.currentHost().getName() + ":" + Process.currentProcess().msgName();
+		MsgNative.taskSend(alias, this, timeout);
+	} 
+	
+	/**
+    * Send the task on the mailbox identified by the specified alias  (wait at most #timeout seconds)
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	public void send(String alias, double timeout) throws JniException,NativeException {
+		MsgNative.taskSend(alias, this, timeout);
+	} 
+	
+	
+	/**
+    * Send the task on the mailbox identified by the default alias  (capping the emision rate to #maxrate) 
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	public void sendBounded(double maxrate) throws JniException,NativeException {
+		String alias = Host.currentHost().getName() + ":" + Process.currentProcess().msgName();
+		MsgNative.taskSendBounded(alias, this, maxrate);
+	} 
+	
+	/**
+    * Send the task on the mailbox identified by the specified alias  (capping the emision rate to #maxrate) 
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	public void sendBounded(String alias, double maxrate) throws JniException,NativeException {
+		MsgNative.taskSendBounded(alias, this, maxrate);
+	} 
+	
+	/**
+    * Retrieves next task from the mailbox identified by the default alias (defaultAlias = "currentHostName:CurrentProcessName")
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	public static Task receive() throws JniException, NativeException {
+		String alias = Host.currentHost().getName() + ":" + Process.currentProcess().msgName();
+		return MsgNative.taskReceive(alias, -1.0, null);
+	}
+	
+	/**
+    * Retrieves next task from the mailbox identified by the specified alias
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	
+	public static Task receive(String alias) throws JniException, NativeException {
+		return MsgNative.taskReceive(alias, -1.0, null);
+	}
+	
+	/**
+    * Retrieves next task on the mailbox identified by the specified alias (wait at most #timeout seconds)
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	public static Task receive(String alias, double timeout) throws JniException, NativeException {
+		return MsgNative.taskReceive(alias, timeout, null);
+	}
+	
+	/**
+    * Retrieves next task sended by a given host on the mailbox identified by the specified alias 
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	
+	public static Task receive(String alias, Host host) throws JniException, NativeException {
+		return MsgNative.taskReceive(alias, -1.0, host);
+	}
+	
+	/**
+    * Retrieves next task sended by a given host on the mailbox identified by the specified alias (wait at most #timeout seconds)
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */
+	public static Task receive(String alias, double timeout, Host host) throws JniException, NativeException {
+		return MsgNative.taskReceive(alias, timeout, host);
+	}
+	
+	/**
+    * Listen whether there is a waiting task on the mailbox identified by the default alias of local host
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */ 
+	public static boolean listen() throws JniException, NativeException {
+		String alias = Host.currentHost().getName() + ":" + Process.currentProcess().msgName();
+		
+		return MsgNative.taskListen(alias);
+	}
+	
+	/**
+    * Test whether there is a pending communication on the mailbox identified by the specified alias, and who sent it
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */ 
+	public static int listenFrom(String alias) throws JniException, NativeException  {
+		return MsgNative.taskListenFrom(alias);
+	}
+	
+	/**
+    * Test whether there is a pending communication on the mailbox identified by the default alias, of the current host, and who sent it
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */ 
+	public static int listenFrom() throws JniException, NativeException {
+		String alias = Host.currentHost().getName() + ":" + Process.currentProcess().msgName();
+		
+		return MsgNative.taskListenFrom(alias);
+	}
+	
+	/**
+    * Listen whether there is a waiting task on the mailbox identified by the specified alias
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */ 
+	public static boolean listen(String alias) throws JniException, NativeException  {
+		return MsgNative.taskListen(alias);
+	}
+	
+	 /**
+    * Counts the number of tasks waiting to be received on the #mailbox identified by the specified alias and sended by the current host.
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */ 
+	public static int listenFromHost(Host host) throws JniException, NativeException  {
+		String alias = Host.currentHost().getName() + ":" + Process.currentProcess().msgName();
+		return MsgNative.taskListenFromHost(alias,host);
+	}
+	
+	/**
+    * Counts the number of tasks waiting to be received on the #mailbox identified by the specified alia and sended by the specified #host.
+    *
+    * @exception  JniException if the binding mecanism fails.
+    * @exception  NativeException if the retrival fails.
+    */ 
+	public static int listenFromHost(String alias, Host host) throws JniException, NativeException  {
+		return MsgNative.taskListenFromHost(alias, host);
+	}
+}

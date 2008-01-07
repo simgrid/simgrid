@@ -190,10 +190,48 @@ try {
                     double timeout) throws JniException, NativeException {
     MsgNative.hostPut(this, channel, task, timeout);
   } 
+  
+  
    /** Send the given task to the given channel of the host (capping the emision rate to #maxrate) */ 
    
     public void putBounded(int channel, Task task,
                            double maxrate) throws JniException,
     NativeException {
     MsgNative.hostPutBounded(this, channel, task, maxrate);
-} } 
+	}
+	
+	 /** Send the given task to mailbox identified by the default alias */ 
+	public void send(Task task) throws JniException, NativeException  {
+		String alias = this.getName() + ":" + Process.currentProcess().msgName();	
+    	MsgNative.taskSend(alias, task, -1);
+  	} 
+	
+	/** Send the given task to the mailbox associated with the specified alias */ 
+   
+    public void send(String alias, Task task) throws JniException, NativeException {
+    	MsgNative.taskSend(alias, task, -1);
+  	}
+   	
+   	 /** Send the given task in the mailbox associated with the alias of the current host (waiting at most #timeout seconds) */
+   	public void send(Task task, double timeout) throws JniException, NativeException {
+    	String alias = this.getName() + ":" + Process.currentProcess().msgName();
+    	MsgNative.taskSend(alias, task, timeout);
+  	}
+  	
+  	 /** Send the given task to mailbox associated with the specified alias (waiting at most #timeout seconds) */
+    public void send(String alias, Task task, double timeout) throws JniException, NativeException {
+    	MsgNative.taskSend(alias, task, timeout);
+  	}
+  	
+  	 /** Send the given task to the mailbox associated with the default alias (capping the emision rate to #maxrate) */ 
+  	public void sendBounded(Task task, double maxrate) throws JniException, NativeException {
+    	String alias = this.getName() + ":" + Process.currentProcess().msgName();
+			
+    	MsgNative.taskSendBounded(alias, task, maxrate);
+  	}  
+  	
+  	 /** Send the given task to the mailbox associated with the specified alias (capping the emision rate to #maxrate) */
+  	public void sendBounded(String alias, Task task, double maxrate) throws JniException, NativeException {
+    	MsgNative.taskSendBounded(alias, task, maxrate);
+  	} 
+} 

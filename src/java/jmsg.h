@@ -277,6 +277,10 @@ JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_taskExecute
 JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_taskGet
   (JNIEnv *, jclass, jint, jdouble, jobject);
 
+JNIEXPORT jobject JNICALL 
+Java_simgrid_msg_MsgNative_taskReceive
+  (JNIEnv *, jclass, jstring, jdouble, jobject);
+
 /*
  * Class		simgrid_msg_Msg
  * Method		taskHasPendingCommunication
@@ -308,6 +312,10 @@ JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_taskProbeHost
  */
 JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_hostPut
   (JNIEnv *, jclass, jobject, jint, jobject, jdouble);
+
+JNIEXPORT void JNICALL 
+Java_simgrid_msg_MsgNative_taskSend
+  (JNIEnv *, jclass, jstring, jobject, jdouble);
 
 /*
  * Class		simgrid_msg_Msg
@@ -369,5 +377,17 @@ Java_simgrid_msg_Msg_createEnvironment(JNIEnv* env, jclass cls,jstring jplatform
 
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv *, jclass, jstring);
+
+JNIEXPORT void JNICALL 
+Java_simgrid_msg_MsgNative_taskSendBounded(JNIEnv*, jclass, jstring, jobject, jdouble);
+
+JNIEXPORT jboolean JNICALL 
+Java_simgrid_msg_MsgNative_taskListen(JNIEnv*, jclass, jstring);
+
+JNIEXPORT jint JNICALL 
+Java_simgrid_msg_MsgNative_taskListenFromHost(JNIEnv*, jclass, jstring, jobject);
+
+JNIEXPORT jint JNICALL 
+Java_simgrid_msg_MsgNative_taskListenFrom(JNIEnv*, jclass, jstring);
 
 #endif /* !MSG4JAVA_H */ 

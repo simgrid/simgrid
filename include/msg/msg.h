@@ -132,5 +132,36 @@ XBT_PUBLIC(double) MSG_task_get_compute_duration(m_task_t task);
 XBT_PUBLIC(double) MSG_task_get_remaining_computation(m_task_t task);
 XBT_PUBLIC(double) MSG_task_get_data_size(m_task_t task);
 
+
+XBT_PUBLIC(MSG_error_t) 
+MSG_task_receive_ext(m_task_t* task, const char* alias, double timeout, m_host_t host);
+
+XBT_PUBLIC(MSG_error_t) 
+MSG_task_receive_with_time_out(m_task_t * task, const char* alias, double timeout);
+
+XBT_PUBLIC(MSG_error_t) 
+MSG_task_receive(m_task_t * task, const char* alias);
+
+XBT_PUBLIC(int) 
+MSG_task_listen(const char* alias);
+
+XBT_PUBLIC(int) 
+MSG_task_listen_from_host(const char* alias, m_host_t host);
+
+XBT_PUBLIC(MSG_error_t) 
+MSG_alias_select_from(const char* alias, double timeout, int* PID);
+
+XBT_PUBLIC(MSG_error_t) 
+MSG_task_send_with_timeout(m_task_t task, const char* alias, double timeout);
+
+XBT_PUBLIC(MSG_error_t) 
+MSG_task_send(m_task_t task,const char* alias);
+
+XBT_PUBLIC(MSG_error_t) 
+MSG_task_send_bounded(m_task_t task, const char* alias, double rate);
+
+XBT_PUBLIC(int)
+MSG_task_listen_from(const char* alias);
+
 SG_END_DECL()
 #endif
