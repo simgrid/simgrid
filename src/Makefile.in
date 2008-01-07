@@ -408,9 +408,10 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	include/surf/surf.h include/surf/surfxml_parse_private.h \
 	include/surf/random_mgr.h include/xbt/context.h \
 	include/xbt/xbt_os_time.h include/xbt/xbt_os_thread.h \
-	msg/private.h simdag/private.h gras/DataDesc/ddt_parse.yy.l \
-	gras/Virtu/virtu_rl.h gras/Virtu/virtu_sg.h \
-	gras/Virtu/virtu_interface.h gras/Virtu/virtu_private.h \
+	msg/private.h msg/msg_mailbox.h simdag/private.h \
+	gras/DataDesc/ddt_parse.yy.l gras/Virtu/virtu_rl.h \
+	gras/Virtu/virtu_sg.h gras/Virtu/virtu_interface.h \
+	gras/Virtu/virtu_private.h \
 	gras/Transport/transport_interface.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
 	include/simix/simix.h include/simix/datatypes.h \
@@ -617,6 +618,7 @@ libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) \
 	$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC) $(am__append_8)
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ \
 	@LD_DYNAMIC_FLAGS@ -lm $(am__append_6)
+# -Wl,--entry -Wl,simgrid_version
 
 # Please do not add -no-undefined to libsmpi_la_LDFLAGS:
 # smpi_simulated_main is indeed defined in user code, and undef in the

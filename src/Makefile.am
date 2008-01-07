@@ -62,6 +62,7 @@ EXTRA_DIST= \
 	include/xbt/xbt_os_thread.h \
 	\
 	msg/private.h \
+	msg/msg_mailbox.h \
 	\
 	simdag/private.h \
 	\
