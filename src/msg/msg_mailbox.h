@@ -248,3 +248,4 @@ MSG_mailbox_get_count_host_tasks(msg_mailbox_t mailbox, m_host_t host);
 #endif
 
 #endif /* !SMX_MAILBOX_H */
+

@@ -211,7 +211,7 @@ SMPI_SRC= \
 
 MSG_SRC=  msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
-  msg/global.c msg/environment.c msg/deployment.c 
+  msg/global.c msg/environment.c msg/deployment.c msg_mailbox.c
 
 JMSG_C_SRC = \
   xbt/xbt_jcontext.c \
