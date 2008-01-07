@@ -100,9 +100,6 @@ xbt_context_mod_exit(void)
 		/* remove the context of the scheduler from the list of the contexts in use */
 		xbt_swag_remove(maestro_context, context_living);
 		
-		free(maestro_context);
-		maestro_context = current_context = NULL;
-		
 		/*  
 		 * kill all the contexts in use :
 		 * the killed contexts are added in the list of the contexts to destroy
@@ -113,6 +110,9 @@ xbt_context_mod_exit(void)
 		
 		/* destroy all contexts in the list of contexts to destroy */
 		xbt_context_empty_trash();
+		
+		free(maestro_context);
+		maestro_context = current_context = NULL;
 		
 		/* destroy the lists */
 		xbt_swag_free(context_to_destroy);
