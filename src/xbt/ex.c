@@ -32,7 +32,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex,xbt,"Exception mecanism");
 #if (defined(WIN32) && defined(_M_IX86))
 
 /* 
- * Win32 (x86) implementation backtrace, backtrace_symbols, backtrace_symbols_fd
+ * Win32 (x86) implementation backtrace, backtrace_symbols
  * : support for application self-debugging.
  */
 
@@ -119,14 +119,6 @@ backtrace (void **buffer, int size);
 char ** 
 backtrace_symbols (void *const *buffer, int size);
 
-/*
- * backtrace_symbols_fd() function.
- *
- * Same as backtrace_symbols() function but, the the array of strings is wrotten
- * in a file (fd is the file descriptor of this file)
- */
-void 
-backtrace_symbols_fd(void *const *buffer, int size, int fd);
 #endif
 
 /* default __ex_ctx callback function */
@@ -432,7 +424,7 @@ char **backtrace = backtrace_symbols (e->bt, e->used);
 
   for(i=0; i<e->used; i++) 
   {
-      e->bt_strings[i] = strdup(backtrace[i]);
+      e->bt_strings[i] = xbt_strdup(backtrace[i]);
       free(backtrace[i]);
   }
   
@@ -536,15 +528,15 @@ backtrace (void **buffer, int size)
 	int first = 1;
 
 	IMAGEHLP_SYMBOL * pSym;
-	unsigned long displacement = 0;
+	unsigned long offset = 0;
 	IMAGEHLP_LINE line_info = {0};
 	byte __buffer[(sizeof(SYMBOL_INFO) +MAX_SYM_NAME * sizeof(TCHAR) + sizeof(ULONG64) - 1) / sizeof(ULONG64)];
 
 	CONTEXT context = {CONTEXT_FULL};
 	GetThreadContext(GetCurrentThread(), &context);
 	
-	/* ebp pointe sur la base de la pile */
-	/* esp pointe sur le stack pointer <=> sur le dernier élément déposé dans la pile (l'élément courant) */
+	/* ebp points on stack base */
+	/* esp points on stack pointer, ie on last stacked element (current element) */
 	_asm call $+5
 	_asm pop eax 
 	_asm mov context.Eip, eax 
@@ -608,9 +600,9 @@ backtrace (void **buffer, int size)
 			if(stack_frame->AddrReturn.Offset)
 			{
 
-				if((*(dbg_hlp->sym_get_sym_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,pSym))
+				if((*(dbg_hlp->sym_get_sym_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &offset,pSym))
 				{	
-					if((*(dbg_hlp->sym_get_line_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,&line_info))
+					if((*(dbg_hlp->sym_get_line_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &offset,&line_info))
 						buffer[pos++] = (void*)stack_frame;
 				}
 			}
@@ -641,9 +633,8 @@ backtrace_symbols (void *const *buffer, int size)
 	int success = 0;	
 	char** strings;
 	STACKFRAME* stack_frame;
-	char str[MAX_SYM_NAME] = {0};
 	IMAGEHLP_SYMBOL * pSym;
-	unsigned long displacement = 0;
+	unsigned long offset = 0;
 	IMAGEHLP_LINE line_info = {0};
 	IMAGEHLP_MODULE module = {0};
 	byte __buffer[(sizeof(SYMBOL_INFO) +MAX_SYM_NAME * sizeof(TCHAR) + sizeof(ULONG64) - 1) / sizeof(ULONG64)];
@@ -678,26 +669,21 @@ backtrace_symbols (void *const *buffer, int size)
 		if(NULL != stack_frame)
 		{
 		
-			if((*(dbg_hlp->sym_get_sym_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,pSym))
+			if((*(dbg_hlp->sym_get_sym_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &offset,pSym))
 			{	
-				if((*(dbg_hlp->sym_get_line_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,&line_info))
+				if((*(dbg_hlp->sym_get_line_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &offset,&line_info))
 				{
-					
-						sprintf(str,"**   In %s() at %s:%d", pSym->Name,line_info.FileName,line_info.LineNumber); 
-						
-						strings[pos] = strdup(str);
-						memset(str,0,MAX_SYM_NAME);	
-					
-						success = 1;
+					strings[pos] = bprintf("**   In %s() at %s:%d", pSym->Name,line_info.FileName,line_info.LineNumber);
 				}
 				else
 				{
-					strings[pos] = strdup("<no line>");
+					strings[pos] = bprintf("**   In %s()", pSym->Name);
 				}
+				success = 1;
 			}
 			else
 			{
-				strings[pos] = strdup("<no symbole>");
+				strings[pos] = xbt_strdup("**   <no symbol>");
 			}
 
 			free(stack_frame);
@@ -715,69 +701,6 @@ backtrace_symbols (void *const *buffer, int size)
 	dbg_hlp_finalize();
 	
 	return strings;
-}
-
-void
-backtrace_symbols_fd(void *const *buffer, int size, int fd)
-{
-	int pos;
-	int success = 0;	
-	STACKFRAME* stack_frame;
-	char str[MAX_SYM_NAME] = {0};
-	IMAGEHLP_SYMBOL * pSym;
-	unsigned long displacement = 0;
-	IMAGEHLP_LINE line_info = {0};
-	IMAGEHLP_MODULE module = {0};
-
-	byte __buffer[(sizeof(SYMBOL_INFO) +MAX_SYM_NAME * sizeof(TCHAR) + sizeof(ULONG64) - 1) / sizeof(ULONG64)];
-
-	if((NULL == dbg_hlp) || (size <= 0) || (NULL == buffer) || (-1 == fd))
-	{
-		errno = EINVAL;
-		return;
-	}
-	
-	pSym = (IMAGEHLP_SYMBOL*)__buffer;
-
-	pSym->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL);
-	pSym->MaxNameLength = MAX_SYM_NAME;
-
-
-	line_info.SizeOfStruct = sizeof(IMAGEHLP_LINE);
-	module.SizeOfStruct = sizeof(IMAGEHLP_MODULE);
-	
-	for(pos = 0; pos < size; pos++)
-	{
-		stack_frame = (STACKFRAME*)(buffer[pos]);
-
-		if(NULL != stack_frame)
-		{
-		
-			if((*(dbg_hlp->sym_get_sym_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,pSym))
-			{	
-				if((*(dbg_hlp->sym_get_line_from_addr))(dbg_hlp->process_handle,stack_frame->AddrPC.Offset, &displacement,&line_info))
-				{
-					
-						
-						sprintf(str,"**   In %s() at %s:%d\n", pSym->Name,line_info.FileName,line_info.LineNumber); 
-						
-						if(-1 == write(fd,str,strlen(str)))
-							break;
-
-						memset(str,0,MAX_SYM_NAME);	
-					
-						success = 1;
-				}
-			}
-
-			free(stack_frame);
-		}
-		else
-			break;
-	}
-	
-	dbg_hlp_finalize();
-	
 }
 
 static int
