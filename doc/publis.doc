@@ -1,51 +1,41 @@
 /*! \page publis Reference publications about SimGrid
 
 
-When citing SimGrid, the prefered reference paper is <i>Scheduling
-Distributed Applications: the SimGrid Simulation Framework</i>, even if it's
-a bit old now. We are actively working on improving this.
+When citing SimGrid, the prefered reference paper is <i>SimGrid: a
+Generic Framework for Large-Scale Distributed Experimentations</i>.
 
-\li <b>Scheduling Distributed Applications: the
-       SimGrid Simulation Framework</b>\n
-    by <em>Henri Casanova and Arnaud Legrand and Loris Marchal</em>\n
-    Proceedings of the third IEEE International Symposium
-    on Cluster Computing and the Grid (CCGrid'03)\n
-    Since the advent of distributed computer systems an active field
-    of research has been the investigation of scheduling strategies
-    for parallel applications.  The common approach is to employ
-    scheduling heuristics that approximate an optimal
-    schedule. Unfortunately, it is often impossible to obtain
-    analytical results to compare the efficacy of these heuristics.
-    One possibility is to conducts large numbers of back-to-back
-    experiments on real platforms.  While this is possible on
-    tightly-coupled platforms, it is infeasible on modern distributed
-    platforms (i.e. Grids) as it is labor-intensive and does not
-    enable repeatable results. The solution is to resort to
-    simulations. Simulations not only enables repeatable results but
-    also make it possible to explore wide ranges of platform and
+\li <b>SimGrid: a Generic Framework for Large-Scale Distributed
+    Experimentations</b>\n 
+    by <em>Henri Casanova, Arnaud Legrand and Martin Quinson</em>\n
+    Proceedings of the 10th IEEE International Conference on Computer
+    Modelling and Simulation (UKSIM/EUROSIM'08)\n    
+    Distributed computing is a very broad and active research area
+    comprising fields such as cluster computing, computational
+    grids, desktop grids and peer-to-peer (P2P) systems.
+    Unfortunately, it is often impossible to obtain theoretical or
+    analytical results to compare the performance of algorithms
+    targeting such systems. One possibility is to conduct large
+    numbers of back-to-back experiments on real platforms. While
+    this is possible on tightly-coupled platforms, it is infeasible
+    on modern distributed platforms as experiments are labor-intensive
+    and results typically not reproducible. Consequently, one must
+    resort to simulations, which enable reproducible results and also
+    make it possible to explore wide ranges of platform and
     application scenarios.\n
-    In this paper we present the SimGrid framework which enables the
-    simulation of distributed applications in distributed computing
-    environments for the specific purpose of developing and evaluating
-    scheduling algorithms.  This paper focuses on SimGrid v2, which
-    greatly improves on the first version of the software with more
-    realistic network models and topologies.  SimGrid v2 also enables
-    the simulation of distributed scheduling agents, which has become
-    critical for current scheduling research in large-scale platforms.
-    After describing and validating these features, we present a case
-    study by which we demonstrate the usefulness of SimGrid for
-    conducting scheduling research.\n
-    http://www-id.imag.fr/Laboratoire/Membres/Legrand_Arnaud/articles/simgrid2_CCgrid03.pdf
+    In this paper we describe the SimGrid framework, a
+    simulation-based framework for evaluating cluster, grid and P2P
+    algorithms and heuristics. This paper focuses on SimGrid v3, which
+    greatly improves on previous versions thanks to a novel and
+    validated modular simulation engine that achieves higher
+    simulation speed without hindering simulation accuracy. Also, two
+    new user interfaces were added to broaden the targeted research
+    community. After surveying existing tools and methodologies we
+    describe the key features and benefits of SimGrid.\n
+    www.loria.fr/~quinson/articles/SimGrid-uksim08.pdf
 
 Previous publication do not cover the GRAS part of the framework. So, if you
 want to cite GRAS, please use this publication instead:
 
-\li <b>Gras: A Research &amp; Development Framework for Grid and P2P
-      Infrastructures</b>\n
-    by <em>Martin Quinson</em>\n
-    <b>Best paper</b> of the 18th IASTED International Conference on
-      Parallel and Distributed Computing and Systems (PDCS 2006)\n
-    http://www.loria.fr/~quinson/articles/gras-iasted06.pdf 
 
 \section publis_others Other publications
 
@@ -89,6 +79,13 @@ splited in 3 pages (also accessible from the navbar on top of this page):
     <b>M.S. Thesis</b>, Dept. of Information and Computer Sciences, University of Hawai`i at Manoa, April 2007.\n
     http://navet.ics.hawaii.edu/~casanova/homepage/theses/kayo_fujiwara_MS.pdf
 
+\li <b>Gras: A Research &amp; Development Framework for Grid and P2P
+      Infrastructures</b>\n
+    by <em>Martin Quinson</em>\n
+    <b>Best paper</b> of the 18th IASTED International Conference on
+      Parallel and Distributed Computing and Systems (PDCS 2006)\n
+    http://www.loria.fr/~quinson/articles/gras-iasted06.pdf 
+
 \li <b>The SimGrid Project - Simulation and Deployment of Distributed Applications</b>\n
     by <em>A. Legrand, M. Quinson, K. Fujiwara, H. Casanova</em>\n
     <b>POSTER</b> in Proceedings of the IEEE International Symposium on High Performance Distributed Computing (HPDC-15), Paris, France, May 2006.\n    
@@ -96,6 +93,12 @@ splited in 3 pages (also accessible from the navbar on top of this page):
      <a href="http://navet.ics.hawaii.edu/~casanova/homepage/papers/simgrid_hpdc06.pdf"><img src="poster_thumbnail.png" /></a>
     \endhtmlonly
     http://navet.ics.hawaii.edu/~casanova/homepage/papers/simgrid_hpdc06.pdf
+
+\li <b>Scheduling Distributed Applications: the SimGrid Simulation Framework</b>\n
+    by <em>Henri Casanova and Arnaud Legrand and Loris Marchal</em>\n
+    Proceedings of the third IEEE International Symposium
+    on Cluster Computing and the Grid (CCGrid'03)\n
+    http://www-id.imag.fr/Laboratoire/Membres/Legrand_Arnaud/articles/simgrid2_CCgrid03.pdf
 
 \li <b>A Network Model for Simulation of Grid Application</b>\n
     by <em>Henri Casanova and Loris Marchal</em>\n
