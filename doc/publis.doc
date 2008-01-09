@@ -31,7 +31,7 @@ Generic Framework for Large-Scale Distributed Experimentations</i>.
     new user interfaces were added to broaden the targeted research
     community. After surveying existing tools and methodologies we
     describe the key features and benefits of SimGrid.\n
-    www.loria.fr/~quinson/articles/SimGrid-uksim08.pdf
+    http://www.loria.fr/~quinson/articles/SimGrid-uksim08.pdf
 
 Previous publication do not cover the GRAS part of the framework. So, if you
 want to cite GRAS, please use this publication instead:
