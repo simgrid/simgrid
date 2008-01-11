@@ -14,6 +14,8 @@
  * : support for application self-debugging.
  */
 
+#include <dbghelp.h>
+
 /* Pointer function to SymInitialize() */
 typedef BOOL (WINAPI *xbt_pfn_sym_initialize_t)(HANDLE, PSTR , BOOL);
 
@@ -97,8 +99,6 @@ backtrace (void **buffer, int size);
 char ** 
 backtrace_symbols (void *const *buffer, int size);
 
-#endif
-
 void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 int i;
 char **backtrace = backtrace_symbols (e->bt, e->used);
@@ -164,7 +164,7 @@ backtrace (void **buffer, int size)
 
     while(pos < size)
     {
-		stack_frame = (void*)calloc(1,sizeof(STACKFRAME));
+		stack_frame = (void*)xbt_new0(STACKFRAME,1);
 		
 		if(!stack_frame)
 		{
@@ -241,7 +241,7 @@ backtrace_symbols (void *const *buffer, int size)
 		return NULL;
 	}
 	
-	strings = (char**)calloc(size,sizeof(char*));
+	strings = xbt_new0(char*,size);
 	
 	if(NULL == strings)
 	{
@@ -309,7 +309,7 @@ dbg_hlp_init(HANDLE process_handle)
 	}
 
 	/* allocation */
-	dbg_hlp = (xbt_debug_hlp_t)calloc(1,sizeof(s_xbt_debug_hlp_t));
+	dbg_hlp = xbt_new0(s_xbt_debug_hlp_t,1);
 	
 	if(!dbg_hlp)
 		return ENOMEM;
@@ -430,10 +430,5 @@ dbg_hlp_finalize(void)
 	dbg_hlp = NULL;
 	
 	return 0;
-}
-
-/* dummy implementation. We won't use the result, but ex.h needs it to be defined */
-int backtrace (void **__array, int __size) {
-  return 0;	
 }
 
