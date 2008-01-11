@@ -49,7 +49,7 @@ int master(int argc, char *argv[])
 		/*  Task creation */
 		char sprintf_buffer[64];
 
-		todo = calloc(number_of_tasks, sizeof(m_task_t));
+		todo = xbt_new0(m_task_t,number_of_tasks);
 
 		for (i = 0; i < number_of_tasks; i++) 
 		{
@@ -61,7 +61,7 @@ int master(int argc, char *argv[])
 	{                  
 		/* Process organisation */
 		alias_count = argc - 4;
-		aliases = (char**) calloc(alias_count, sizeof(char*));
+		aliases = xbt_new0(char*,alias_count);
 
 		for(i = 4; i < argc; i++) 
 		{
@@ -141,7 +141,7 @@ int forwarder(int argc, char *argv[])
 	
 	{                  /* Process organisation */
 		alias_count = argc - 1;
-		aliases = calloc(alias_count, sizeof(char*));
+		aliases = xbt_new0(char*,alias_count);
 	
 		for (i = 1; i < argc; i++) 
 			aliases[i-1] =strdup(argv[i]);
