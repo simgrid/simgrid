@@ -5,7 +5,7 @@
 #ifdef WIN32
 static double drand48(void)
 {
-   THROW_UNIMPLEMENTED();
+   THROW_UNIMPLEMENTED;
    return -1;
 }
 #endif
