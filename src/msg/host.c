@@ -10,7 +10,7 @@
 #include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "msg_mailbox.h"
+#include "mailbox.h"
 
 /** \defgroup m_host_management Management functions of Hosts
  *  \brief This section describes the host structure of MSG
@@ -37,7 +37,6 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
 	int i;
 	
 	char alias[MAX_ALIAS_NAME +1] = {0}; /* buffer used to build the key of the mailbox */
-	msg_mailbox_t mailbox;
 	
 	name = SIMIX_host_get_name(workstation);
 	/* Host structure */
@@ -47,21 +46,18 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
 	
 	simdata->smx_host = workstation;
 	
-	simdata->mbox = xbt_new0(xbt_fifo_t, msg_global->max_channel);
+	simdata->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
 	
 	for (i = 0; i < msg_global->max_channel; i++)
 	{
 		sprintf(alias,"%s:%d",name,i);
 		
 		/* the key of the mailbox (in this case) is build from the name of the host and the channel number */
-		mailbox = MSG_mailbox_new(alias);
-		MSG_mailbox_set_hostname(mailbox,name);
+		simdata->mailboxes[i] = MSG_mailbox_create(alias);
+		MSG_mailbox_set_hostname(simdata->mailboxes[i],name);
 		memset(alias,0,MAX_ALIAS_NAME +1);
-		
-		simdata->mbox[i] = xbt_fifo_new();
 	}
 	
-	simdata->sleeping = xbt_new0(smx_cond_t, msg_global->max_channel);
 	simdata->mutex = SIMIX_mutex_init();
 	SIMIX_host_set_data(workstation, host);
 	
@@ -138,35 +134,32 @@ m_host_t MSG_host_self(void)
  */
 void __MSG_host_destroy(m_host_t host)
 {
-  simdata_host_t simdata = NULL;
-  int i = 0;
-  char alias[MAX_ALIAS_NAME +1] = {0}; /* buffer used to build the key of the mailbox */
+	simdata_host_t simdata = NULL;
+	int i = 0;
+	char alias[MAX_ALIAS_NAME +1] = {0}; /* buffer used to build the key of the mailbox */
+	
+	xbt_assert0((host != NULL), "Invalid parameters");
+	
+	/* Clean Simulator data */
+	/* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
+	simdata = (host)->simdata;
+	
+	for (i = 0; i < msg_global->max_channel; i++)
+	{
+		sprintf(alias,"%s:%d",host->name,i);
+		MSG_mailbox_free((void*)(simdata->mailboxes[i]));
+		memset(alias,0,MAX_ALIAS_NAME +1);
+	}
+	
+	free(simdata->mailboxes);
+	SIMIX_mutex_destroy(simdata->mutex);
+	free(simdata);
+	
+	/* Clean host structure */
+	free(host->name);
+	free(host);
+	
 
-  xbt_assert0((host != NULL), "Invalid parameters");
-
-  /* Clean Simulator data */
-  /* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
-  simdata = (host)->simdata;
-
-  for (i = 0; i < msg_global->max_channel; i++)
-  {
-  	sprintf(alias,"%s:%d",host->name,i);
-  	xbt_dict_remove(MSG_get_mailboxes(),alias);
-  	memset(alias,0,MAX_ALIAS_NAME +1);
-  	
-    xbt_fifo_free(simdata->mbox[i]);
-  }
-
-  free(simdata->mbox);
-  free(simdata->sleeping);
-  SIMIX_mutex_destroy(simdata->mutex);
-  free(simdata);
-
-  /* Clean host structure */
-  free(host->name);
-  free(host);
-
-  return;
 }
 
 /** \ingroup m_host_management

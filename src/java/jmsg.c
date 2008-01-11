@@ -23,7 +23,7 @@
 
 #include "jmsg.h"
 
-#include "msg/msg_mailbox.h"
+#include "msg/mailbox.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -845,7 +845,7 @@ Java_simgrid_msg_Msg_init(JNIEnv* env, jclass cls, jobjectArray jargs) {
 
   argc++;
 	
-  argv = (char**)calloc(argc,sizeof(char*));
+  argv = xbt_new0(char*,1);
 	 
   argv[0] = strdup("java");
 	

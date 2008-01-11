@@ -5,20 +5,12 @@
 #include "simix/private.h"
 #include "msg/datatypes.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SG_BEGIN_DECL()
 
 #define MAX_ALIAS_NAME	((size_t)260)
 
-/* this structure represents a mailbox */
-typedef struct s_msg_mailbox
-{
-	char* alias;			/* the key of the mailbox in the dictionary				*/
-	xbt_fifo_t tasks;		/* the list of the tasks in the mailbox					*/
-	smx_cond_t cond;		/* the condition on the mailbox							*/
-	char* hostname;			/* the name of the host containing the mailbox			*/
-}s_msg_mailbox_t, * msg_mailbox_t;
+/* forward declaration */
+typedef struct s_msg_mailbox* msg_mailbox_t;
 
 /*
  * Initialization of the mailbox module.
@@ -32,21 +24,11 @@ MSG_mailbox_mod_init(void);
 void
 MSG_mailbox_mod_exit(void);
 
-/*! \brief MSG_get_mailboxes - get the dictionary containing all the mailboxes.
- * 
- * The function MSG_get_mailboxes returns the dictionary containing all the mailboxes
- * of the simulation. A mailbox allow different processes to communicate using msg tasks.
- * It is identified by an alias which is a key of the dictionary containing all of them.
- * 
- * \return	The dictionary containing all the mailboxes of the simulation.
- */
-xbt_dict_t
-MSG_get_mailboxes(void);
 
 /*! \brief MSG_mailbox_new - create a new mailbox.
  *
  * The function MSG_mailbox_new creates a new mailbox identified by the key specified
- * by the parameter alias.
+ * by the parameter alias and add it in the global dictionary.
  *
  * \param alias		The alias of the mailbox to create.
  * 
@@ -55,19 +37,18 @@ MSG_get_mailboxes(void);
 msg_mailbox_t
 MSG_mailbox_new(const char *alias);
 
-/* \brief MSG_mailbox_destroy - destroy a mailbox.
+/*! \brief MSG_mailbox_create - create a new mailbox.
  *
- * The function MSG_mailbox_destroy removes a mailbox from the dictionary containing
- * all the mailbox of the simulation an release it from the memory. This function is
- * different to the MSG_mailbox_free which only release a mailbox from the memory but
- does not remove it from the dictionary.
+ * The function MSG_mailbox_new creates a new mailbox identified by the key specified
+ * by the parameter alias and add it in the global dictionary but doesn't add it in
+ * the global dictionary. Typicaly, this type of mailbox is associated with a channel.
  *
- * \param mailbox	The mailbox to destroy.
- *
- * \see				MSG_mailbox_free.
+ * \param alias		The alias of the mailbox to create.
+ * 
+ * \return			The newly created mailbox.
  */
-void
-MSG_mailbox_destroy(msg_mailbox_t* mailbox);
+msg_mailbox_t
+MSG_mailbox_create(const char *alias);
 
 /* \brief MSG_mailbox_free - release a mailbox from the memory.
  *
@@ -94,6 +75,21 @@ MSG_mailbox_free(void* mailbox);
  */
 msg_mailbox_t
 MSG_mailbox_get_by_alias(const char* alias);
+
+/* \brief MSG_mailbox_get_by_channel - get a mailbox of the specified host from its channel.
+ *
+ * The function MSG_mailbox_get_by_channel returns the mailbox of the specified host
+ * from the channel specified by the parameter channel. If the mailbox does not exists,
+ * the function fails.
+ *
+ * \param host		The host containing he mailbox to get.
+ * \param channel	The channel used to identify the mailbox.
+ *
+ * \return			The mailbox of the specified host associated the channel specified as parameter.
+ *		
+ */
+msg_mailbox_t
+MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel);
 
 /*! \brief MSG_mailbox_get_alias - get the alias associated with the mailbox.
  *
@@ -228,8 +224,8 @@ MSG_mailbox_pop_head(msg_mailbox_t mailbox);
 m_task_t
 MSG_mailbox_get_first_host_task(msg_mailbox_t mailbox, m_host_t host);
 
-/*! \brief MSG_mailbox_get_count_host_tasks - get the number of msg tasks
- * of a specified mailbox, sended by all the process of a specified host.
+/*! \brief MSG_mailbox_get_count_host_waiting_tasks - Return the number of tasks 
+   waiting to be received in a mailbox and sent by a host.
  *
  * \param mailbox	The mailbox concerned by the operation.
  * \param host		The msg host containing the processes that have sended the
@@ -240,12 +236,18 @@ MSG_mailbox_get_first_host_task(msg_mailbox_t mailbox, m_host_t host);
  *					on the host specified by the parameter host.
  */
 int
-MSG_mailbox_get_count_host_tasks(msg_mailbox_t mailbox, m_host_t host);
+MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox, m_host_t host);
 
 
-#ifdef __cplusplus
-}
-#endif
+MSG_error_t 
+MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t* task, m_host_t host, double timeout);
+
+
+MSG_error_t 
+MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task, double timeout);
+
+SG_END_DECL()
+
 
 #endif /* !SMX_MAILBOX_H */
 

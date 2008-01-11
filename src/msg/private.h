@@ -23,12 +23,21 @@
 
 /**************** datatypes **********************************/
 
-typedef struct simdata_host {
-  smx_host_t smx_host;			/* SURF modeling */
-  xbt_fifo_t *mbox;		/* array of FIFOs used as a mailboxes  */
-  smx_cond_t *sleeping;	/* array of conditions on which the processes sleep if they are waiting for a communication on a channel */
-	smx_mutex_t mutex; /* mutex to access the host */
-} s_simdata_host_t;
+/* this structure represents a mailbox */
+typedef struct s_msg_mailbox
+{
+	char* alias;						/* the key of the mailbox in the global dictionary			*/
+	xbt_fifo_t tasks;					/* the list of the tasks in the mailbox						*/
+	smx_cond_t cond;					/* the condition on the mailbox								*/
+	char* hostname;						/* the name of the host containing the mailbox				*/
+}s_msg_mailbox_t;
+
+typedef struct simdata_host 
+{
+	smx_host_t smx_host;				/* SURF modeling								*/
+	struct s_msg_mailbox** mailboxes;	/* mailboxes to store msg tasks of of the host	*/
+	smx_mutex_t mutex; 					/* mutex to access the host 					*/
+}s_simdata_host_t;
 
 /********************************* Task **************************************/
 

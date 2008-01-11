@@ -12,6 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/virtu.h"
 #include "xbt/ex.h"		/* ex_backtrace_display */
+#include "mailbox.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
 				"Logging specific to MSG (kernel)");
@@ -53,6 +54,9 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->process_list = xbt_fifo_new();
     msg_global->max_channel = 0;
     msg_global->PID = 1;
+
+	/* initialization of the mailbox module */
+	MSG_mailbox_mod_init();
 
     SIMIX_function_register_process_create(_MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(__MSG_process_cleanup);
@@ -232,7 +236,13 @@ MSG_error_t MSG_clean(void)
 
   free(msg_global);
   msg_global = NULL;
+
+  /* cleanup all resources in the mailbox module */
+  MSG_mailbox_mod_exit();
+
   SIMIX_clean();
+
+  
 
   return MSG_OK;
 }

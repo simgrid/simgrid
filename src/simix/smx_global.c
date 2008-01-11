@@ -11,7 +11,6 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/ex.h"		/* ex_backtrace_display */
-#include "msg/msg_mailbox.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
 				"Logging specific to SIMIX (kernel)");
 
@@ -121,9 +120,6 @@ void SIMIX_global_init(int *argc, char **argv)
 	xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->current_process = NULL;
     simix_global->registered_functions = xbt_dict_new();
-	
-	/* initialization of the mailbox module */
-	MSG_mailbox_mod_init();
 	
     simix_global->create_process_function = NULL;
     simix_global->kill_process_function = NULL;
@@ -300,9 +296,6 @@ void SIMIX_clean(void)
   simix_config_finalize();
   free(simix_global);
   simix_global = NULL;
-  
-  /* cleanup all resources in the mailbox module */
-  MSG_mailbox_mod_exit();
   
   surf_exit();
 
