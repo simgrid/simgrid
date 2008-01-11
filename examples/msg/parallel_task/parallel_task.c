@@ -32,8 +32,8 @@ int test(int argc, char *argv[])
   slaves_count = MSG_get_host_number();
   slaves = MSG_get_host_table();
 
-  computation_amount = calloc(slaves_count,sizeof(double));
-  communication_amount = calloc(slaves_count*slaves_count,sizeof(double));
+  computation_amount = xbt_new0(double,slaves_count);
+  communication_amount = xbt_new0(double,slaves_count*slaves_count);
   
   for(i=0;i<slaves_count;i++) 
     computation_amount[i]=task_comp_size;

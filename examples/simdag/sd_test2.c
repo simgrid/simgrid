@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
   PtoPcomm2_hosts[1] = hosts[2];
  
   /* parallel task without intra communications (1 sec duration) */
-  ParComp_wocomm_table = (double*) calloc (25, sizeof(double));
+  ParComp_wocomm_table = xbt_new0(double,25);
 
   for (i=0; i<5;i++){
     ParComp_wocomm_hosts[i]=hosts[i];
@@ -107,8 +107,8 @@ int main(int argc, char **argv) {
   /* redistribution within a cluster (small latencies) */
   /* each host send (4*2.5Mb =) 10Mb */
   /* bandwidth is shared between 5 flows (0.05sec duration) */
-  IntraRedist_cost = (double*) calloc (5, sizeof(double));
-  IntraRedist_table = (double*) calloc (25, sizeof(double));
+  IntraRedist_cost = xbt_new0(double,5);
+  IntraRedist_table = xbt_new0(double,25);
   for (i=0;i<5;i++){
     for (j=0;j<5;j++){
       if (i==j) 
@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
   
   /* parallel task with intra communications */
   /* Computation domination (1 sec duration) */
-  ParComp_wcomm1_table = (double*) calloc (25, sizeof(double));
+  ParComp_wcomm1_table = xbt_new0(double,25);
   
   for (i=0; i<5;i++){
     ParComp_wcomm1_hosts[i]=hosts[i];
@@ -141,8 +141,8 @@ int main(int argc, char **argv) {
   
   /* inter cluster redistribution (big latency on the backbone) */
   /* (0.5sec duration without latency impact)*/
-  InterRedist_cost = (double*) calloc (10, sizeof(double));
-  InterRedist_table = (double*) calloc (100, sizeof(double));
+  InterRedist_cost = xbt_new0(double,10);
+  InterRedist_table = xbt_new0(double,100);
   for (i=0;i<5;i++){
     InterRedist_table[i*10+i+5] = 1250000.; /* 10Mb */
   }
@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
   /* parallel task with intra communications */
   /* Communication domination (0.1 sec duration) */
   
-  ParComp_wcomm2_table = (double*) calloc (25, sizeof(double));
+  ParComp_wcomm2_table = xbt_new0(double,25);
   
   for (i=0; i<5;i++){
     ParComp_wcomm2_hosts[i]=hosts[i+5];

@@ -47,7 +47,7 @@ int master(int argc, char *argv[])
 
   {                  /* Process organisation */
     slaves_count = argc - 4;
-    slaves = calloc(slaves_count, sizeof(m_host_t));
+    slaves = xbt_new0(m_host_t,slaves_count);
     
     for (i = 4; i < argc; i++) {
       slaves[i-4] = MSG_get_host_by_name(argv[i]);
@@ -66,7 +66,7 @@ int master(int argc, char *argv[])
 
   for (i = 0; i < number_of_tasks; i++) {
     m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size, 
-				    calloc(1,sizeof(double)));
+				    xbt_new0(double,1));
     int a;
     *((double*) task->data) = MSG_get_clock();
     

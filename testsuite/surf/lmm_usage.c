@@ -306,12 +306,12 @@ void test3(method_t method)
 
     1, 1, 1, 1, 1
   };
-
-  A = (double **) calloc(links + 5, sizeof(double));
+	
+  /*A = xbt_new0(double*, links + 5);*/
+  A = xbt_new0(double*, links + 5);
 
   for (i = 0; i < links + 5; i++) {
-    A[i] = (double *) calloc(flows + 5, sizeof(double));
-
+    A[i] = xbt_new0(double, flows + 5);
     for (j = 0; j < flows + 5; j++) {
       A[i][j] = 0.0;
 
@@ -402,12 +402,12 @@ void test3(method_t method)
 
 
 
-  tmp_name = (char **) calloc(31, sizeof(char *));
+  tmp_name = xbt_new0(char *,31);
 
   /*
    * Creates the constraints
    */
-  tmp_cnst = calloc(15, sizeof(lmm_constraint_t));
+  tmp_cnst = xbt_new0(lmm_constraint_t,15);
   for (i = 0; i < 15; i++) {
     tmp_name[i] = bprintf("C_%03d", i);
     tmp_cnst[i] = lmm_constraint_new(Sys, (void *) tmp_name[i], B[i]);
@@ -417,7 +417,7 @@ void test3(method_t method)
   /*
    * Creates the variables
    */
-  tmp_var = calloc(16, sizeof(lmm_variable_t));
+  tmp_var = xbt_new0(lmm_variable_t,16);
   for (j = 0; j < 16; j++) {
     tmp_name[i + j] = bprintf("X_%03d", j);
     tmp_var[j] =

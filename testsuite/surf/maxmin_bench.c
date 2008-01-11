@@ -36,9 +36,9 @@ void test(int nb_cnst, int nb_var, int nb_elem);
 void test(int nb_cnst, int nb_var, int nb_elem)
 {
   lmm_system_t Sys = NULL;
-  lmm_constraint_t *cnst = calloc(nb_cnst, sizeof(lmm_constraint_t));
-  lmm_variable_t *var = calloc(nb_var, sizeof(lmm_variable_t));
-  int *used = calloc(nb_cnst, sizeof(int));
+  lmm_constraint_t *cnst = xbt_new0(lmm_constraint_t,nb_cnst);
+  lmm_variable_t *var = xbt_new0(lmm_variable_t,nb_var);
+  int *used = xbt_new0(int,nb_cnst);
   int i, j, k;
 
   Sys = lmm_system_new();

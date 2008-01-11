@@ -49,7 +49,7 @@ int master(int argc, char *argv[])
   {                  /*  Task creation */
     char sprintf_buffer[64];
 
-    todo = calloc(number_of_tasks, sizeof(m_task_t));
+    todo = xbt_new0(m_task_t,number_of_tasks);
 
     for (i = 0; i < number_of_tasks; i++) {
       sprintf(sprintf_buffer, "Task_%d", i);
@@ -59,7 +59,7 @@ int master(int argc, char *argv[])
 
   {                  /* Process organisation */
     slaves_count = argc - 4;
-    slaves = calloc(slaves_count, sizeof(m_host_t));
+    slaves = xbt_new0(m_host_t,slaves_count);
     
     for (i = 4; i < argc; i++) {
       slaves[i-4] = MSG_get_host_by_name(argv[i]);
@@ -129,7 +129,7 @@ int forwarder(int argc, char *argv[])
 
   {                  /* Process organisation */
     slaves_count = argc - 1;
-    slaves = calloc(slaves_count, sizeof(m_host_t));
+    slaves = xbt_new0(m_host_t,slaves_count);
     
     for (i = 1; i < argc; i++) {
       slaves[i-1] = MSG_get_host_by_name(argv[i]);

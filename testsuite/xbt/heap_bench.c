@@ -48,7 +48,7 @@ int compare_double(const void *a, const void *b)
 void test_heap_validity(int size)
 {
   xbt_heap_t heap = xbt_heap_new(size, NULL);
-  double *tab = (double*)calloc(size,sizeof(double));
+  double *tab = xbt_new0(double,size);
 
   int i;
 

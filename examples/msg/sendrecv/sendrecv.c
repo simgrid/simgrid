@@ -40,7 +40,7 @@ int sender(int argc,char *argv[] )
 
   INFO0("sender");
  
-  host = calloc(1, sizeof(m_host_t));
+  /*host = xbt_new0(m_host_t,1);*/
     
   INFO1("host = %s", argv[1]);
   

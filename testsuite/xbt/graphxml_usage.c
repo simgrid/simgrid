@@ -76,7 +76,7 @@ void test(char *graph_file)
 
     INFO0("---- Dumping Edge lengths ----");
     adj = xbt_graph_get_length_matrix(graph);
-    buf = calloc(n * 20, sizeof(char));
+    buf = xbt_new0(char,n * 20);
     for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
 	sprintf(buf + strlen(buf), "%le\t", adj[i * n + j]);
@@ -94,7 +94,7 @@ void test(char *graph_file)
   
     INFO0("---- Testing Shortest Paths ----");
     route = xbt_graph_shortest_paths(graph);
-    buf = calloc(n * 40, sizeof(char));
+    buf = xbt_new0(char,n * 40);
     for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
 	if (route[i * n + j])

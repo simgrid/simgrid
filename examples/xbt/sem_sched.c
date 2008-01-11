@@ -125,7 +125,7 @@ main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 	
-	__argv = (char**)calloc(MAX_ARGS,sizeof(char*));
+	__argv = xbt_new0(char*,MAX_ARGS);
 	
 	for(i = 0; i < MAX_ARGS; i++)
 	{
@@ -221,7 +221,7 @@ void unschedule(ctx_t c)
 ctx_t 
 ctx_new(job_t job)
 {
-	ctx_t ctx = (ctx_t)calloc(1,sizeof(s_ctx_t));
+	ctx_t ctx = xbt_new0(s_ctx_t,1);
 	ctx->index = ++__next_ctx_ID;
 	ctx->begin = xbt_os_sem_init(0);
 	ctx->end = xbt_os_sem_init(0);
@@ -260,7 +260,7 @@ sched_new(int size)
 		return NULL;
 	}
 	
-	sched = (sched_t)calloc(1,sizeof(s_sched_t));
+	sched = xbt_new0(s_sched_t,1);
 	
 	if(!sched)
 	{
@@ -268,7 +268,7 @@ sched_new(int size)
 		return NULL;
 	}
 		
-	sched->ctxs = (ctx_t*)calloc(size,sizeof(ctx_t));
+	sched->ctxs = xbt_new0(ctx_t,size);
 	
 	if(!(sched->ctxs))
 	{
@@ -403,7 +403,7 @@ job_new(pfn_func_t func, int argc, char** argv)
 	int i;
 	
 	/* todo check the parameters */
-	job = (job_t)calloc(1,sizeof(s_job_t));
+	job = xbt_new0(s_job_t,1);
 	
 	if(!job)
 	{
@@ -411,7 +411,7 @@ job_new(pfn_func_t func, int argc, char** argv)
 		return NULL;
 	}
 	
-	job->argv = (char**)calloc(argc,sizeof(char*));
+	job->argv = xbt_new0(char*,argc);
 	
 	if(!(job->argv))
 	{
