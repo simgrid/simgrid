@@ -18,6 +18,8 @@
 #include "xbt/heap.h"
 #include "gras/virtu.h"		/* time manipulation in bench */
 
+#include "xbt/sysdep.h" /* calloc, printf */
+
 #define MAX_TEST 1000000
 
 #ifdef __BORLANDC__

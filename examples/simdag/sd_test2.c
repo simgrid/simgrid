@@ -5,6 +5,8 @@
 #include "simdag/simdag.h"
 #include "xbt/log.h"
 
+#include "xbt/sysdep.h" /* calloc, printf */
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
 			     "Logging specific to this SimDag example");
 
