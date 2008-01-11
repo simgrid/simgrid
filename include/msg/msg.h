@@ -105,6 +105,8 @@ XBT_PUBLIC(MSG_error_t) MSG_task_get_with_timeout(m_task_t * task, m_channel_t c
 						   double max_duration);
 XBT_PUBLIC(MSG_error_t) MSG_task_get_from_host(m_task_t * task, int channel, 
 					       m_host_t host);
+MSG_error_t 
+MSG_task_receive_from_host(m_task_t * task, const char* alias, m_host_t host);
 XBT_PUBLIC(MSG_error_t) MSG_task_get_ext(m_task_t * task, int channel, 
 					 double max_duration, m_host_t host);
 
