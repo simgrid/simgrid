@@ -62,8 +62,8 @@ smx_process_t SIMIX_process_create(const char *name,
   smx_process_t process = xbt_new0(s_smx_process_t, 1);
   smx_process_t self = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
-  char alias[MAX_ALIAS_NAME + 1] = {0};
-  msg_mailbox_t mailbox;
+  /*char alias[MAX_ALIAS_NAME + 1] = {0};
+  msg_mailbox_t mailbox;*/
 	
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
   /* Simulator Data */
@@ -97,10 +97,10 @@ smx_process_t SIMIX_process_create(const char *name,
   DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
   xbt_swag_insert(process, simix_global->process_to_run);
   
-  sprintf(alias,"%s:%s",hostname,process->name);
+  /*sprintf(alias,"%s:%s",hostname,process->name);
 
 	mailbox = MSG_mailbox_new(alias);
-	MSG_mailbox_set_hostname(mailbox, hostname);
+	MSG_mailbox_set_hostname(mailbox, hostname);*/
 
   return process;
 }
