@@ -17,17 +17,17 @@ public class Forwarder extends simgrid.msg.Process {
 		Msg.info("hello!");
 	
 		int aliasCount = args.length;
+		
+		int taskCount = 0;
+		
 		Task taskReceived;
 		Task finalizeTask;
 		BasicTask basicTask;
-		
-		int taskCount = 0;
 		
 		while(true) 
 		{
 			taskReceived = Task.receive();
 				
-	
 			if(taskReceived instanceof FinalizeTask) 
 			{
 				Msg.info("All tasks have been dispatched. Let's tell everybody the computation is over.");

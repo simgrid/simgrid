@@ -29,7 +29,7 @@ public class Forwarder extends simgrid.msg.Process
 		
 		Task receivedTask;
 		FinalizeTask finalizeTask;
-		BasicTask task;
+		BasicTask basicTask;
 		
 		while(true) 
 		{
@@ -48,13 +48,13 @@ public class Forwarder extends simgrid.msg.Process
 				break;
 			}
 		
-			task = (BasicTask)receivedTask;
+			basicTask = (BasicTask)receivedTask;
 			
-			Msg.info("Received \"" + task.getName() + "\" ");
+			Msg.info("Received \"" + basicTask.getName() + "\" ");
 			
-			Msg.info("Sending \"" + task.getName() + "\" to \"" + aliases[taskCount % aliasCount] + "\"");
+			Msg.info("Sending \"" + basicTask.getName() + "\" to \"" + aliases[taskCount % aliasCount] + "\"");
 			
-			task.send(aliases[taskCount % aliasCount]);
+			basicTask.send(aliases[taskCount % aliasCount]);
 			
 			taskCount++;
 		}

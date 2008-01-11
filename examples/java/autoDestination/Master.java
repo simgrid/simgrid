@@ -58,7 +58,7 @@ public class Master extends simgrid.msg.Process
 		
 		for (int i = 0; i < taskCount; i++) 
 		{	
-			Msg.info("current host name : " + (aliases[i % aliasCount].split(":"))[0]);
+			Msg.info("Sending \"" + basicTasks[i].getName()+ "\" to \"" + aliases[i % aliasCount] + "\"");
 			
 			if((Host.currentHost().getName()).equals((aliases[i % aliasCount].split(":"))[0]))
 				Msg.info("Hey ! It's me ! ");

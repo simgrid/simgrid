@@ -28,17 +28,21 @@ public class Master extends simgrid.msg.Process
 			System.exit(1);
 		}
 		
-		int numberOfTasks = Integer.valueOf(args[0]).intValue();		
-		double taskComputeSize = Double.valueOf(args[1]).doubleValue();		
+		int numberOfTasks = Integer.valueOf(args[0]).intValue();	
+			
+		double taskComputeSize = Double.valueOf(args[1]).doubleValue();	
+			
 		double taskCommunicateSize = Double.valueOf(args[2]).doubleValue();
-		BasicTask[] todo = new BasicTask[numberOfTasks];
+		
+		BasicTask[] basicTasks = new BasicTask[numberOfTasks];
 		
 		for (int i = 0; i < numberOfTasks; i++) 
 		{
-			todo[i] = new BasicTask("Task_" + i, taskComputeSize, taskCommunicateSize); 
+			basicTasks[i] = new BasicTask("Task_" + i, taskComputeSize, taskCommunicateSize); 
 		}
 		
 		int aliasCount = args.length - 3;
+		
 		String[] aliases = new String[aliasCount];
 		
 		for(int i = 3; i < args.length ; i++)  
@@ -55,12 +59,12 @@ public class Master extends simgrid.msg.Process
 		
 		for (int i = 0; i < numberOfTasks; i++) 
 		{
-			Msg.info("Sending \"" + todo[i].getName()+ "\" to \"" + aliases[i % aliasCount] + "\"");
+			Msg.info("Sending \"" + basicTasks[i].getName()+ "\" to \"" + aliases[i % aliasCount] + "\"");
 		
 			if((Host.currentHost()).getName().equals(aliases[i % aliasCount])) 
 				Msg.info("Hey ! It's me ! ");
 				
-			todo[i].send(aliases[i % aliasCount]);
+			basicTasks[i].send(aliases[i % aliasCount]);
 		}
 		
 		Msg.info("Send completed");
@@ -68,6 +72,7 @@ public class Master extends simgrid.msg.Process
 		Msg.info("All tasks have been dispatched. Let's tell everybody the computation is over.");
 		
 		FinalizeTask finalizeTask;
+		
 		for (int i = 0; i < aliasCount; i++) 
 		{
 			finalizeTask = new FinalizeTask();

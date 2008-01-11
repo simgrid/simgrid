@@ -16,21 +16,25 @@ public class Slave extends simgrid.msg.Process
 	{
 		Msg.info("Hello !");
 		
+		Task receivedTask;
+		BasicTask basicTask;
+		
 		while(true) 
 		{ 
-			Task t = Task.receive(Host.currentHost().getName());	
+			receivedTask = Task.receive();	
 		
-			if (t instanceof FinalizeTask) 
+			if (receivedTask instanceof FinalizeTask) 
 			{
 				break;
 			}
-			
-			BasicTask task = (BasicTask)t;
-			Msg.info("Received \"" + task.getName() + "\" ");
 		
-			Msg.info("Processing \"" + task.getName() +  "\" ");	 
-			task.execute();
-			Msg.info("\"" + task.getName() + "\" done ");
+			basicTask = (BasicTask)receivedTask;
+			
+			Msg.info("Received \"" + basicTask.getName() + "\" ");
+		
+			Msg.info("Processing \"" + basicTask.getName() +  "\" ");	 
+			basicTask.execute();
+			Msg.info("\"" + basicTask.getName() + "\" done ");
 		}
 		
 		Msg.info("Received Finalize. I'm done. See you!");

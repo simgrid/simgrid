@@ -10,7 +10,7 @@
 
 import simgrid.msg.*;
 
-public class Alias0Test {
+public class AutoDestinationTest {
    
    /* This only contains the launcher. If you do nothing more than than you can run 
     *   java simgrid.msg.Msg
