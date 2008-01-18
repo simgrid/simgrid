@@ -227,7 +227,7 @@ xbt_ucontext_yield(void)
 static void 
 xbt_ucontext_start(xbt_context_t context)
 {
-	makecontext(&(((xbt_ucontext_t)context)->uc), xbt_ucontext_wrapper, 1, context);
+	makecontext(&(((xbt_ucontext_t)context)->uc), xbt_ucontext_wrapper, 0);
 }
 
 static void 

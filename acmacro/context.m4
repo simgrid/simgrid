@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
     uc_child.uc_stack.ss_sp = (char *)stack+(32*1024);
     uc_child.uc_stack.ss_size = 32*1024;
     uc_child.uc_stack.ss_flags = 0;
-    makecontext(&uc_child, child, 2, (void *)12345);
+    makecontext(&uc_child, child, 0);
 
     /* switch into the user context */
     if (swapcontext(&uc_main, &uc_child) != 0)
@@ -341,7 +341,7 @@ int main(int argc, char *argv[])
         uc_handler.uc_stack.ss_sp    = (void *)(skaddr + sksize);
         uc_handler.uc_stack.ss_size  = sksize;
         uc_handler.uc_stack.ss_flags = 0;
-        makecontext(&uc_handler, handler, 1);
+        makecontext(&uc_handler, handler, 0);
         swapcontext(&uc_main, &uc_handler);
     }
 #endif
