@@ -65,8 +65,7 @@ xbt_ucontext_suspend(xbt_context_t context);
 static void
 xbt_ucontext_resume(xbt_context_t context);
 
-static void* 
-xbt_ucontext_wrapper(void* param);
+static void xbt_ucontext_wrapper(void);
 
 /* callback: context fetching */
 static ex_ctx_t*
@@ -228,7 +227,7 @@ xbt_ucontext_yield(void)
 static void 
 xbt_ucontext_start(xbt_context_t context)
 {
-	makecontext(&(((xbt_ucontext_t)context)->uc), (void (*)(void)) xbt_ucontext_wrapper, 1, context);
+	makecontext(&(((xbt_ucontext_t)context)->uc), xbt_ucontext_wrapper, 1, context);
 }
 
 static void 
@@ -258,14 +257,13 @@ xbt_ucontext_swap(xbt_context_t context)
 		xbt_ucontext_stop(1);
 }
 
-static void* 
-xbt_ucontext_wrapper(void* param)
+static void
+xbt_ucontext_wrapper(void)
 {
 	if (current_context->startup_func)
 		(*current_context->startup_func)(current_context->startup_arg);
 	
 	xbt_ucontext_stop((*(current_context->code))(current_context->argc, current_context->argv));
-	return NULL;
 }
 
 static void

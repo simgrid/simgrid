@@ -134,10 +134,8 @@ AC_TRY_RUN([
 ucontext_t uc_child;
 ucontext_t uc_main;
 
-void child(void *arg)
+void child(void)
 {
-    if (arg != (void *)12345)
-        exit(1);
     if (swapcontext(&uc_child, &uc_main) != 0)
         exit(2);
 }
