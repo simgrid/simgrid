@@ -1,4 +1,4 @@
-/* $Id: ex.c 5173 2008-01-07 22:10:52Z mquinson $ */
+/* $Id$ */
 
 /* backtrace_windows - backtrace displaying on windows platform             */
 /* This file is included by ex.c on need (windows x86)                      */
@@ -357,8 +357,6 @@ char **backtrace_symbols(void *const *buffer, int size)
     free(strings);
     strings = NULL;
   }
-
-  dbg_hlp_finalize();
 
   return strings;
 }

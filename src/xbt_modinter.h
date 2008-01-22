@@ -12,6 +12,9 @@
 #include "xbt/misc.h"
 
 /* Modules definitions */
+void xbt_backtrace_init(void);
+void xbt_backtrace_exit(void);
+
 void xbt_log_init(int *argc,char **argv);
 void xbt_log_exit(void);
 void xbt_fifo_exit(void);
