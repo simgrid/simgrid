@@ -36,7 +36,7 @@ EXTRA_DIST= \
         xbt/xbt_jcontext.h \
 	xbt/log_private.h \
 	xbt/ex_interface.h \
-        xbt/backtrace_linux.c xbt/backtrace_windows.c \
+        xbt/backtrace_linux.c xbt/backtrace_windows.c xbt/backtrace_dummy.c \
         \
 	surf/maxmin_private.h \
 	surf/trace_mgr_private.h \

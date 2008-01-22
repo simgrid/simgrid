@@ -18,6 +18,7 @@
 #include "xbt/ex.h"
 #include "xbt/str.h"
 #include "xbt/module.h" /* xbt_binary_name */
+#include "xbt_modinter.h" /* backtrace initialization headers */
 #include "xbt/synchro.h" /* xbt_thread_self */
 
 #include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
@@ -96,8 +97,7 @@ void xbt_backtrace_display_current(void) {
 #elif (defined(WIN32) && defined (_M_IX86))
 # include "backtrace_windows.c"
 #else
-void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
-}
+# include "backtrace_dummy.c"
 #endif
 
 /** @brief shows an exception content and the associated stack if available */

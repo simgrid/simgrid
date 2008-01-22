@@ -35,6 +35,7 @@ xbt_init(int *argc, char **argv) {
   srand((unsigned int)time(NULL));
   VERB0("Initialize XBT");
   
+  xbt_backtrace_init();
   xbt_log_init(argc,argv);
   xbt_os_thread_mod_init();
   xbt_context_mod_init();
@@ -50,6 +51,7 @@ xbt_exit(){
     xbt_context_mod_exit();
     xbt_os_thread_mod_exit();
     xbt_log_exit();
+    xbt_backtrace_exit();
   }
    
   if (xbt_initialized == 0)

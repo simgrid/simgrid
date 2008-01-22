@@ -16,6 +16,7 @@
 
 #include <dbghelp.h>
 
+
 /* Pointer function to SymInitialize() */
 typedef BOOL(WINAPI * xbt_pfn_sym_initialize_t) (HANDLE, PSTR, BOOL);
 
@@ -70,11 +71,94 @@ typedef struct s_xbt_debug_help {
 /* the address to the unique reference to the debug help library interface */
 static xbt_debug_hlp_t dbg_hlp = NULL;
 
-/* initialize the debug help library */
-static int dbg_hlp_init(HANDLE process_handle);
+/* Module creation/destruction: nothing to do on linux */
+void xbt_backtrace_init(void) { 
+  HANDLE process_handle = GetCurrentProcess();
 
-/* finalize the debug help library */
-static int dbg_hlp_finalize(void);
+  if (dbg_hlp) {
+    /* debug help is already loaded */
+    return;
+  }
+
+  /* allocation */
+  dbg_hlp = xbt_new0(s_xbt_debug_hlp_t, 1);
+
+  /* load the library */
+  dbg_hlp->instance = LoadLibraryA("Dbghelp.dll");
+
+  if (!dbg_hlp->instance) {
+    free(dbg_hlp);
+    dbg_hlp = NULL;
+    return;
+  }
+ 
+  /* get the pointers to debug help library exported functions */
+  dbg_hlp->sym_initialize =
+    (xbt_pfn_sym_initialize_t) GetProcAddress(dbg_hlp->instance, "SymInitialize");
+
+  dbg_hlp->sym_cleanup = 
+    (xbt_pfn_sym_cleanup_t) GetProcAddress(dbg_hlp->instance, "SymCleanup");
+
+  dbg_hlp->sym_function_table_access =
+    (xbt_pfn_sym_function_table_access_t) GetProcAddress(dbg_hlp->instance, "SymFunctionTableAccess");
+
+  dbg_hlp->sym_get_line_from_addr =
+    (xbt_pfn_sym_get_line_from_addr_t) GetProcAddress(dbg_hlp->instance, "SymGetLineFromAddr");
+
+  dbg_hlp->sym_get_module_base =
+    (xbt_pfn_sym_get_module_base_t) GetProcAddress(dbg_hlp->instance, "SymGetModuleBase");
+
+  dbg_hlp->sym_get_options =
+    (xbt_pfn_sym_get_options_t) GetProcAddress(dbg_hlp->instance, "SymGetOptions");
+
+  dbg_hlp->sym_get_sym_from_addr =
+    (xbt_pfn_sym_get_sym_from_addr_t) GetProcAddress(dbg_hlp->instance, "SymGetSymFromAddr");
+
+  dbg_hlp->sym_set_options =
+    (xbt_pfn_sym_set_options_t) GetProcAddress(dbg_hlp->instance, "SymSetOptions");
+
+  dbg_hlp->stack_walk =
+    (xbt_pfn_stack_walk_t) GetProcAddress(dbg_hlp->instance, "StackWalk");
+
+  /* Check that everything worked well */
+  if (!dbg_hlp->sym_initialize ||
+      !dbg_hlp->sym_cleanup ||
+      !dbg_hlp->sym_function_table_access || 
+      !dbg_hlp->sym_get_line_from_addr ||
+      !dbg_hlp->sym_get_module_base ||
+      !dbg_hlp->sym_get_options ||
+      !dbg_hlp->sym_get_sym_from_addr ||
+      !dbg_hlp->sym_set_options ||
+      !dbg_hlp->stack_walk
+      ) {
+    FreeLibrary(dbg_hlp->instance);
+    free(dbg_hlp);
+    dbg_hlp = NULL;
+    return;
+  }
+
+  dbg_hlp->process_handle = process_handle;
+
+  (*(dbg_hlp->sym_set_options)) ((*(dbg_hlp->sym_get_options)) () |
+                                 SYMOPT_LOAD_LINES | SYMOPT_DEFERRED_LOADS);
+
+  if (!(*(dbg_hlp->sym_initialize)) (dbg_hlp->process_handle, 0, 1)) {
+    FreeLibrary(dbg_hlp->instance);
+    free(dbg_hlp);
+    dbg_hlp = NULL;
+  }
+}
+void xbt_backtrace_exit(void) { 
+  if (!dbg_hlp)
+    return;
+
+  if ((dbg_hlp->sym_cleanup) (dbg_hlp->process_handle))
+    FreeLibrary(dbg_hlp->instance);
+
+
+  free(dbg_hlp);
+  dbg_hlp = NULL;
+}
 
 /*
  * backtrace() function.
@@ -144,8 +228,6 @@ int backtrace(void **buffer, int size)
   _asm mov eax, esp
   _asm mov context.Esp, eax
   _asm mov context.Ebp, ebp 
-
-  dbg_hlp_init(GetCurrentProcess());
 
   if ((NULL == dbg_hlp) || (size <= 0) || (NULL == buffer)) {
     errno = EINVAL;
@@ -279,101 +361,4 @@ char **backtrace_symbols(void *const *buffer, int size)
   dbg_hlp_finalize();
 
   return strings;
-}
-
-static int dbg_hlp_init(HANDLE process_handle)
-{
-  if (dbg_hlp) {
-    /* debug help is already loaded */
-    return 0;
-  }
-
-  /* allocation */
-  dbg_hlp = xbt_new0(s_xbt_debug_hlp_t, 1);
-
-  /* load the library */
-  dbg_hlp->instance = LoadLibraryA("Dbghelp.dll");
-
-  if (!dbg_hlp->instance) {
-    free(dbg_hlp);
-    dbg_hlp = NULL;
-    return (int) GetLastError();
-  }
- 
-  /* get the pointers to debug help library exported functions */
-  dbg_hlp->sym_initialize =
-    (xbt_pfn_sym_initialize_t) GetProcAddress(dbg_hlp->instance, "SymInitialize");
-
-  dbg_hlp->sym_cleanup = 
-    (xbt_pfn_sym_cleanup_t) GetProcAddress(dbg_hlp->instance, "SymCleanup");
-
-  dbg_hlp->sym_function_table_access =
-    (xbt_pfn_sym_function_table_access_t) GetProcAddress(dbg_hlp->instance, "SymFunctionTableAccess");
-
-  dbg_hlp->sym_get_line_from_addr =
-    (xbt_pfn_sym_get_line_from_addr_t) GetProcAddress(dbg_hlp->instance, "SymGetLineFromAddr");
-
-  dbg_hlp->sym_get_module_base =
-    (xbt_pfn_sym_get_module_base_t) GetProcAddress(dbg_hlp->instance, "SymGetModuleBase");
-
-  dbg_hlp->sym_get_options =
-    (xbt_pfn_sym_get_options_t) GetProcAddress(dbg_hlp->instance, "SymGetOptions");
-
-  dbg_hlp->sym_get_sym_from_addr =
-    (xbt_pfn_sym_get_sym_from_addr_t) GetProcAddress(dbg_hlp->instance, "SymGetSymFromAddr");
-
-  dbg_hlp->sym_set_options =
-    (xbt_pfn_sym_set_options_t) GetProcAddress(dbg_hlp->instance, "SymSetOptions");
-
-  dbg_hlp->stack_walk =
-    (xbt_pfn_stack_walk_t) GetProcAddress(dbg_hlp->instance, "StackWalk");
-
-  /* Check that everything worked well */
-  if (!dbg_hlp->sym_initialize ||
-      !dbg_hlp->sym_cleanup ||
-      !dbg_hlp->sym_function_table_access || 
-      !dbg_hlp->sym_get_line_from_addr ||
-      !dbg_hlp->sym_get_module_base ||
-      !dbg_hlp->sym_get_options ||
-      !dbg_hlp->sym_get_sym_from_addr ||
-      !dbg_hlp->sym_set_options ||
-      !dbg_hlp->stack_walk
-      ) {
-    FreeLibrary(dbg_hlp->instance);
-    free(dbg_hlp);
-    dbg_hlp = NULL;
-    return (int) GetLastError();
-  }
-
-  dbg_hlp->process_handle = process_handle;
-
-  (*(dbg_hlp->sym_set_options)) ((*(dbg_hlp->sym_get_options)) () |
-                                 SYMOPT_LOAD_LINES | SYMOPT_DEFERRED_LOADS);
-
-  if (!(*(dbg_hlp->sym_initialize)) (dbg_hlp->process_handle, 0, 1)) {
-    FreeLibrary(dbg_hlp->instance);
-    free(dbg_hlp);
-    dbg_hlp = NULL;
-    return (int) GetLastError();
-  }
-
-
-  return 0;
-}
-
-static int dbg_hlp_finalize(void)
-{
-  if (!dbg_hlp)
-    return EINVAL;
-
-  if (!(*(dbg_hlp->sym_cleanup)) (dbg_hlp->process_handle))
-    return (int) GetLastError();
-
-  if (!FreeLibrary(dbg_hlp->instance))
-    return (int) GetLastError();
-
-  free(dbg_hlp);
-  dbg_hlp = NULL;
-
-  return 0;
 }
