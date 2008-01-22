@@ -501,7 +501,8 @@ xbt_dynar_t all_sizes = NULL;
 /** @brief shows some debugging info about the bucklet repartition */
 void xbt_dict_dump_sizes(xbt_dict_t dict) {
 
-  unsigned int i,count;
+  int i;
+  unsigned int count;
   int size;
   xbt_dictelm_t element;
   xbt_dynar_t sizes = xbt_dynar_new(sizeof(int),NULL);
