@@ -14,7 +14,7 @@ extern char **environ; /* the environment, as specified by the opengroup */
 void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   int i;
   /* to get the backtrace from the libc */
-  char **backtrace = backtrace_symbols (e->bt, e->used);
+  char **backtrace_syms = backtrace_symbols (e->bt, e->used);
   
   /* To build the commandline of addr2line */
   char *cmd, *curr;
@@ -34,6 +34,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   struct stat stat_buf;
   char *binary_name = NULL;
    
+  e->used     = backtrace((void**)e->bt,XBT_BACKTRACE_SIZE);
+  e->bt_strings = NULL;
+
   /* Some arches only have stubs of backtrace, no implementation (hppa comes to mind) */
   if (!e->used)
      return;
@@ -79,8 +82,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
    
   for (i=0; i<e->used;i++) {
     /* retrieve this address */
-    DEBUG2("Retrieving address number %d from '%s'", i, backtrace[i]);
-    snprintf(buff,256,"%s",strchr(backtrace[i],'[')+1);
+    DEBUG2("Retrieving address number %d from '%s'", i, backtrace_syms[i]);
+    snprintf(buff,256,"%s",strchr(backtrace_syms[i],'[')+1);
     p=strchr(buff,']');
     *p='\0';
     if (strcmp(buff,"(nil)"))
@@ -165,8 +168,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 
       if (!found) {
 	VERB0("Problem while reading the maps file. Following backtrace will be mangled.");
-	DEBUG1("No dynamic. Static symbol: %s", backtrace[i]);
-	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace[i]);
+	DEBUG1("No dynamic. Static symbol: %s", backtrace_syms[i]);
+	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace_syms[i]);
 	continue;
       }
 
@@ -180,7 +183,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 
       /* Got it. We have our new address. Let's get the library path and we 
 	 are set */ 
-      p  = xbt_strdup(backtrace[i]);
+      p  = xbt_strdup(backtrace_syms[i]);
       if (p[0]=='[') {
 	 /* library path not displayed in the map file either... */
 	 free(p);
@@ -214,8 +217,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 	e->bt_strings[i] = bprintf("**   In %s() at %s", line_func,line_pos);
       } else {
 	/* damn, nothing to do here. Let's print the raw address */
-	DEBUG1("Dynamic symbol not found. Raw address = %s", backtrace[i]);
-	e->bt_strings[i] = bprintf("**   In ?? at %s", backtrace[i]);
+	DEBUG1("Dynamic symbol not found. Raw address = %s", backtrace_syms[i]);
+	e->bt_strings[i] = bprintf("**   In ?? at %s", backtrace_syms[i]);
       }
       
     }
@@ -239,6 +242,6 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   }
   pclose(pipe);
   free(addrs);
-  free(backtrace);
+  free(backtrace_syms);
   free(cmd);
 }

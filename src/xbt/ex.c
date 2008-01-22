@@ -57,8 +57,6 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e);
 
 void xbt_backtrace_current(xbt_ex_t *e) {
 #ifdef HAVE_BACKTRACE
-  e->used     = backtrace((void**)e->bt,XBT_BACKTRACE_SIZE);
-  e->bt_strings = NULL;
   xbt_ex_setup_backtrace(e);
 #endif
 }

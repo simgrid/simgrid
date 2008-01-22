@@ -101,19 +101,21 @@ backtrace_symbols (void *const *buffer, int size);
 
 void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 int i;
-char **backtrace = backtrace_symbols (e->bt, e->used);
+char **backtrace_syms = backtrace_symbols (e->bt, e->used);
   
+  e->used     = backtrace((void**)e->bt,XBT_BACKTRACE_SIZE);
+  e->bt_strings = NULL;
   /* parse the output and build a new backtrace */
   e->bt_strings = xbt_new(char*,e->used);
   
 
   for(i=0; i<e->used; i++) 
   {
-      e->bt_strings[i] = xbt_strdup(backtrace[i]);
-      free(backtrace[i]);
+      e->bt_strings[i] = xbt_strdup(backtrace_syms[i]);
+      free(backtrace_syms[i]);
   }
   
-  free(backtrace);
+  free(backtrace_syms);
 }    
 
 int 
