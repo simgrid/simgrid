@@ -503,7 +503,7 @@ void xbt_dict_dump_sizes(xbt_dict_t dict) {
 
   int i;
   unsigned int count;
-  int size;
+  unsigned int size;
   xbt_dictelm_t element;
   xbt_dynar_t sizes = xbt_dynar_new(sizeof(int),NULL);
    
@@ -548,7 +548,7 @@ void xbt_dict_dump_sizes(xbt_dict_t dict) {
 	 continue;
        if (size==0)
 	 continue;
-       printf("%delm x %d cells; ",count,size);
+       printf("%delm x %u cells; ",count,size);
     }
   }
   printf("\n");
