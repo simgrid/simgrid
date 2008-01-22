@@ -169,11 +169,6 @@ int backtrace(void **buffer, int size)
   while (pos < size) {
     stack_frame = (void *) xbt_new0(STACKFRAME, 1);
 
-    if (!stack_frame) {
-      errno = ENOMEM;
-      break;
-    }
-
     stack_frame->AddrPC.Offset = context.Eip;
     stack_frame->AddrPC.Mode = AddrModeFlat;
 
@@ -240,11 +235,6 @@ char **backtrace_symbols(void *const *buffer, int size)
 
   strings = xbt_new0(char *, size);
 
-  if (NULL == strings) {
-    errno = ENOMEM;
-    return NULL;
-  }
-
   pSym = (IMAGEHLP_SYMBOL *) __buffer;
 
   pSym->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL);
@@ -300,9 +290,6 @@ static int dbg_hlp_init(HANDLE process_handle)
 
   /* allocation */
   dbg_hlp = xbt_new0(s_xbt_debug_hlp_t, 1);
-
-  if (!dbg_hlp)
-    return ENOMEM;
 
   /* load the library */
   dbg_hlp->instance = LoadLibraryA("Dbghelp.dll");
