@@ -1,5 +1,5 @@
 /* Validating XML processor for surf/simgrid.dtd.
- * Generated 2007/12/19 15:10:22.
+ * Generated 2008/01/23 16:38:27.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

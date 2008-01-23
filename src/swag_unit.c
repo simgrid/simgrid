@@ -22,8 +22,8 @@ XBT_TEST_UNIT("basic",test_swag_basic,"Basic usage") {
   shmurtz_t obj1, obj2, obj;
   xbt_swag_t setA,setB;
 
-  obj1 = calloc(1,sizeof(s_shmurtz_t));
-  obj2 = calloc(1,sizeof(s_shmurtz_t));
+  obj1 = xbt_new0(s_shmurtz_t,1);
+  obj2 = xbt_new0(s_shmurtz_t,1);
 
   obj1->name="Obj 1";
   obj2->name="Obj 2";
