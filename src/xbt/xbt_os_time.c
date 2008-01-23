@@ -1,10 +1,8 @@
 /* $Id$ */
 
-/* sysdep.c -- all system dependency                                        */
-/*  no system header should be loaded out of this file so that we have only */
-/*  one file to check when porting to another OS                            */
+/* xbt_os_time.c -- portable interface to time-related functions            */
 
-/* Copyright (c) 2004-2007 The SimGrid team. All rights reserved.           */
+/* Copyright (c) 2004-2008 The SimGrid team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +15,7 @@
 
 
 #ifdef WIN32
-#include <sys\timeb.h>
+#include <sys/timeb.h>
 #endif
 
 double xbt_os_time(void) {
@@ -49,10 +47,10 @@ double xbt_os_time(void) {
 #  endif /* windows version checker */
 
 #else  /* not windows, no gettimeofday => poor resolution */
-return (double)(time(NULL));
+   return (double)(time(NULL));
 #endif /* HAVE_GETTIMEOFDAY? */
 
-return (double)(tv.tv_sec + tv.tv_usec / 1000000.0); 	
+   return (double)(tv.tv_sec + tv.tv_usec / 1000000.0); 	
 }
 
 void xbt_os_sleep(double sec) {
@@ -60,10 +58,8 @@ void xbt_os_sleep(double sec) {
   sleep(sec);
   (void)usleep( (sec - floor(sec)) * 1000000);
 
-#elif _WIN32
-
-     Sleep((floor(sec) * 1000) +((sec - floor(sec)) * 1000));
-
+#elif WIN32
+   Sleep((floor(sec) * 1000) +((sec - floor(sec)) * 1000));
         
 #else /* don't have usleep. Use select to sleep less than one second */
   struct timeval timeout;
@@ -78,9 +74,8 @@ void xbt_os_sleep(double sec) {
 
 /** @brief like free 
     @hideinitializer */
-XBT_PUBLIC(void) xbt_free_f(void* p)
-{
-	free(p);
+XBT_PUBLIC(void) xbt_free_f(void* p) {
+   free(p);
 }
 
 
@@ -92,22 +87,6 @@ XBT_PUBLIC(void) xbt_free_f(void* p)
  * \brief This section describes many macros/functions that can serve as
  *  an OS abstraction.
  */
-
-/*
-double xbt_os_time(void) {
-#ifdef HAVE_GETTIMEOFDAY
-  struct timeval tv;
-
-  gettimeofday(&tv, NULL);
-
-  return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
-#else*/
-  /* Poor resolution */
-/*  return (double)(time(NULL));*/
-//#endif /* HAVE_GETTIMEOFDAY? */ 	
-//}
-
-/*XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, xbt, "System dependency");*/
 
 
 struct s_xbt_os_timer {
