@@ -396,22 +396,22 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
  */
 
 #define _THROW(c,v,m) \
-  do { /* change this sequence into one block */                   \
-     ex_ctx_t *ctx = __xbt_ex_ctx();                               \
-     /* build the exception */                                     \
-     ctx->ctx_ex.msg      = (m);                                   \
-     ctx->ctx_ex.category = (xbt_errcat_t)(c);                     \
-     ctx->ctx_ex.value    = (v);                                   \
-     ctx->ctx_ex.remote   = 0;                                     \
-     ctx->ctx_ex.host     = (char*)NULL;                           \
-     ctx->ctx_ex.procname = (char*)xbt_procname();                 \
-     ctx->ctx_ex.pid      = (*xbt_getpid)();                       \
-     ctx->ctx_ex.file     = (char*)__FILE__;                       \
-     ctx->ctx_ex.line     = __LINE__;                              \
-     ctx->ctx_ex.func     = (char*)_XBT_FUNCTION;                  \
-     ctx->ctx_ex.bt_strings = NULL;                                \
-     xbt_backtrace_current( (xbt_ex_t *) &(ctx->ctx_ex) );         \
-     DO_THROW(ctx->ctx_ex);\
+  do { /* change this sequence into one block */                          \
+     ex_ctx_t *_throw_ctx = __xbt_ex_ctx();                               \
+     /* build the exception */                                            \
+     _throw_ctx->ctx_ex.msg      = (m);                                   \
+     _throw_ctx->ctx_ex.category = (xbt_errcat_t)(c);                     \
+     _throw_ctx->ctx_ex.value    = (v);                                   \
+     _throw_ctx->ctx_ex.remote   = 0;                                     \
+     _throw_ctx->ctx_ex.host     = (char*)NULL;                           \
+     _throw_ctx->ctx_ex.procname = (char*)xbt_procname();                 \
+     _throw_ctx->ctx_ex.pid      = (*xbt_getpid)();                       \
+     _throw_ctx->ctx_ex.file     = (char*)__FILE__;                       \
+     _throw_ctx->ctx_ex.line     = __LINE__;                              \
+     _throw_ctx->ctx_ex.func     = (char*)_XBT_FUNCTION;                  \
+     _throw_ctx->ctx_ex.bt_strings = NULL;                                \
+     xbt_backtrace_current( (xbt_ex_t *) &(_throw_ctx->ctx_ex) );         \
+     DO_THROW(_throw_ctx->ctx_ex);                                        \
   } while (0)
 //     __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,XBT_BACKTRACE_SIZE);
 
