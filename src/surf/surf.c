@@ -125,15 +125,7 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-int surf_network_model_description_size = 3
-#ifdef HAVE_GTNETS
-    + 1
-#endif
-#ifdef HAVE_SDP
-    + 1
-#endif
-    ;
-s_surf_model_description_t surf_network_model_description[] = {
+s_surf_model_description_t surf_network_model_description[surf_network_model_description_size] = {
   {"CM02", NULL, surf_network_model_init_CM02},
 #ifdef HAVE_GTNETS
   {"GTNets", NULL, surf_network_model_init_GTNETS},
@@ -145,13 +137,11 @@ s_surf_model_description_t surf_network_model_description[] = {
   {"Vegas", NULL, surf_network_model_init_Vegas}
 };
 
-int surf_cpu_model_description_size = 1;
-s_surf_model_description_t surf_cpu_model_description[] = {
+s_surf_model_description_t surf_cpu_model_description[surf_cpu_model_description_size] = {
   {"Cas01", NULL, surf_cpu_model_init_Cas01},
 };
 
-int surf_workstation_model_description_size = 4;
-s_surf_model_description_t surf_workstation_model_description[] = {
+s_surf_model_description_t surf_workstation_model_description[surf_workstation_model_description_size] = {
   {"CLM03", NULL, surf_workstation_model_init_CLM03, create_workstations},
   {"compound", NULL, surf_workstation_model_init_compound, NULL},
   {"ptask_L07", NULL, surf_workstation_model_init_ptask_L07, NULL}

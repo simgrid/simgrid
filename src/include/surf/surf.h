@@ -244,11 +244,11 @@ XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model;
  */
 XBT_PUBLIC(void) surf_cpu_model_init_Cas01(const char *filename);
 
-XBT_PUBLIC_DATA(int) surf_cpu_model_description_size;
+#define surf_cpu_model_description_size 1
 /** \brief The list of all available cpu model models
  *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[surf_cpu_model_description_size];
 
 /* Network model */
 
@@ -354,7 +354,7 @@ XBT_PUBLIC(void) surf_network_model_init_Vegas(const char *filename);
  *
  *  Reference:
  *
- *  [TAG03]. Corinne Touati, Eitan Altman, and Jérôme Galtier.  
+ *  [TAG03]. Corinne Touati, Eitan Altman, and Jerome Galtier.  
  *  Semi-definite programming approach for bandwidth allocation and routing in networks.
  *  Game Theory and Applications, 9:169-179, December 2003. Nova publisher.
  *
@@ -363,13 +363,17 @@ XBT_PUBLIC(void) surf_network_model_init_Vegas(const char *filename);
 XBT_PUBLIC(void) surf_network_model_init_SDP(const char *filename);
 #endif
 
-
-
-XBT_PUBLIC_DATA(int) surf_network_model_description_size;
+#if defined(HAVE_GTNETS) && defined(HAVE_SDP)
+# define surf_network_model_description_size  5
+#elsif defined(HAVE_GTNETS) || defined(HAVE_SDP)
+# define surf_network_model_description_size  4
+#else 
+# define surf_network_model_description_size  3
+#endif   
 /** \brief The list of all available network model models
  *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[surf_network_model_description_size];
 
 /** \brief Workstation model extension public
  *  \ingroup SURF_models
@@ -469,11 +473,11 @@ XBT_PUBLIC(void) surf_workstation_model_init_KCCFLN05(const char *filename);
  */
 XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(const char *filename);
 
-XBT_PUBLIC_DATA(int) surf_workstation_model_description_size;
+#define surf_workstation_model_description_size 4
 /** \brief The list of all available workstation model models
  *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_workstation_model_description[];
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_workstation_model_description[surf_workstation_model_description_size];
 
 /** \brief The network links
  *  \ingroup SURF_models
