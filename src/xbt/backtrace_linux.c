@@ -20,13 +20,13 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   int i;
 
   /* to get the backtrace from the libc */
-  char **backtrace_syms = backtrace_symbols(e->bt, e->used);
+  char **backtrace_syms;
 
   /* To build the commandline of addr2line */
   char *cmd, *curr;
 
   /* to extract the addresses from the backtrace */
-  char **addrs = xbt_new(char *, e->used);
+  char **addrs;
   char buff[256], *p;
 
   /* To read the output of addr2line */
@@ -39,8 +39,11 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   /* To search for the right executable path when not trivial */
   struct stat stat_buf;
   char *binary_name = NULL;
-
+   
   e->used = backtrace((void **) e->bt, XBT_BACKTRACE_SIZE);
+  backtrace_syms = backtrace_symbols(e->bt, e->used);
+  addrs = xbt_new(char *, e->used);
+   
   e->bt_strings = NULL;
 
   /* Some arches only have stubs of backtrace, no implementation (hppa comes to mind) */
