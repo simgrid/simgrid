@@ -18,8 +18,8 @@
 
 
 /* Pointer function to SymInitialize() */
-void *fun_initialize;
-void *fun_cleanup;
+BOOL (* fun_initialize) (HANDLE, PSTR, BOOL);
+void (*fun_cleanup)(void);
 void *fun_function_table_access;
 void *fun_get_line_from_addr;
 void *fun_get_module_base;
