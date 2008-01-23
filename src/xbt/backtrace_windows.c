@@ -18,6 +18,17 @@
 
 
 /* Pointer function to SymInitialize() */
+void *fun_initialize;
+void *fun_cleanup;
+void *fun_function_table_access;
+void *fun_get_line_from_addr;
+void *fun_get_module_base;
+void *fun_get_options;
+void *fun_set_options;
+void *fun_get_sym_from_addr;
+void *fun_stack_walk;
+
+#if 0
 BOOL(WINAPI * fun_initialize) (HANDLE, PSTR, BOOL);
 
 /* Pointer function to SymCleanup() */
@@ -45,14 +56,15 @@ static BOOL(WINAPI * fun_get_sym_from_addr) (HANDLE, DWORD, PDWORD,
 static DWORD(WINAPI * fun_set_options) (DWORD);
 
 /* Pointer function to StackWalk() */
-static BOOL(WINAPI * xbt_pfn_stack_walk) (DWORD, HANDLE, HANDLE,
+static BOOL(WINAPI * fun_stack_walk) (DWORD, HANDLE, HANDLE,
 					    LPSTACKFRAME, PVOID,
 					    PREAD_PROCESS_MEMORY_ROUTINE,
 					    PFUNCTION_TABLE_ACCESS_ROUTINE,
 					    PGET_MODULE_BASE_ROUTINE,
 					    PTRANSLATE_ADDRESS_ROUTINE);
+#endif
 
-static HINSTANCE instance = NULL;
+static HINSTANCE hlp_dbg_instance = NULL;
 static HANDLE process_handle = NULL;
 
 
@@ -60,27 +72,27 @@ static HANDLE process_handle = NULL;
 void xbt_backtrace_init(void) { 
   process_handle = GetCurrentProcess();
 
-  if (instance) {
+  if (hlp_dbg_instance) {
     /* debug help is already loaded */
     return;
   }
 
   /* load the library */
-  instance = LoadLibraryA("Dbghelp.dll");
+  hlp_dbg_instance = LoadLibraryA("Dbghelp.dll");
 
-  if (!instance)
+  if (!hlp_dbg_instance)
     return;
  
   /* get the pointers to debug help library exported functions */
-  fun_initialize = GetProcAddress(instance, "SymInitialize");
-  fun_cleanup = GetProcAddress(instance, "SymCleanup");
-  fun_function_table_access = GetProcAddress(instance, "SymFunctionTableAccess");
-  fun_get_line_from_addr = GetProcAddress(instance, "SymGetLineFromAddr");
-  fun_get_module_base = GetProcAddress(instance, "SymGetModuleBase");
-  fun_get_options = GetProcAddress(instance, "SymGetOptions");
-  fun_get_sym_from_addr = GetProcAddress(instance, "SymGetSymFromAddr");
-  fun_set_options = GetProcAddress(instance, "SymSetOptions");
-  fun_stack_walk = GetProcAddress(instance, "StackWalk");
+  fun_initialize = GetProcAddress(hlp_dbg_instance, "SymInitialize");
+  fun_cleanup = GetProcAddress(hlp_dbg_instance, "SymCleanup");
+  fun_function_table_access = GetProcAddress(hlp_dbg_instance, "SymFunctionTableAccess");
+  fun_get_line_from_addr = GetProcAddress(hlp_dbg_instance, "SymGetLineFromAddr");
+  fun_get_module_base = GetProcAddress(hlp_dbg_instance, "SymGetModuleBase");
+  fun_get_options = GetProcAddress(hlp_dbg_instance, "SymGetOptions");
+  fun_get_sym_from_addr = GetProcAddress(hlp_dbg_instance, "SymGetSymFromAddr");
+  fun_set_options = GetProcAddress(hlp_dbg_instance, "SymSetOptions");
+  fun_stack_walk = GetProcAddress(hlp_dbg_instance, "StackWalk");
 
   /* Check that everything worked well */
   if (!fun_initialize ||
@@ -93,8 +105,8 @@ void xbt_backtrace_init(void) {
       !fun_set_options ||
       !fun_stack_walk
       ) {
-    FreeLibrary(instance);
-    instance = NULL;
+    FreeLibrary(hlp_dbg_instance);
+    hlp_dbg_instance = NULL;
     return;
   }
 
@@ -102,18 +114,18 @@ void xbt_backtrace_init(void) {
 			SYMOPT_LOAD_LINES | SYMOPT_DEFERRED_LOADS);
 
   if (!(*fun_initialize) (process_handle, 0, 1)) {
-    FreeLibrary(instance);
-    instance = NULL;
+    FreeLibrary(hlp_dbg_instance);
+    hlp_dbg_instance = NULL;
   }
 }
 void xbt_backtrace_exit(void) { 
-  if (!instance)
+  if (!hlp_dbg_instance)
     return;
 
   if ((*fun_cleanup) (process_handle))
-    FreeLibrary(instance);
+    FreeLibrary(hlp_dbg_instance);
 
-  instance = NULL;
+  hlp_dbg_instance = NULL;
 }
 
 /*
@@ -183,7 +195,7 @@ int backtrace(void **buffer, int size)
   _asm mov context.Esp, eax
   _asm mov context.Ebp, ebp 
 
-  if ((NULL == dbg_hlp) || (size <= 0) || (NULL == buffer)) {
+  if ((NULL == hlp_dbg_instance) || (size <= 0) || (NULL == buffer)) {
     errno = EINVAL;
     return 0;
   }
@@ -260,7 +272,7 @@ char **backtrace_symbols(void *const *buffer, int size)
     __buffer[(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) +
               sizeof(ULONG64) - 1) / sizeof(ULONG64)];
 
-  if ((NULL == dbg_hlp) || (size <= 0) || (NULL == buffer)) {
+  if ((NULL == hlp_dbg_instance) || (size <= 0) || (NULL == buffer)) {
     errno = EINVAL;
     return NULL;
   }
