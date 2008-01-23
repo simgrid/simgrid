@@ -316,13 +316,13 @@
 #define LINUX_COMPATIBLE
 #endif
 
+#include "portable.h" /* to get a working stdarg.h */
+
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-
-#include "portable.h" /* to get a working stdarg.h */
 
 #include <assert.h>
 #include <errno.h>
@@ -399,10 +399,11 @@ int vasnprintf (char **ptr, size_t str_m, const char *fmt, va_list ap);
 /* declare our portable snprintf  routine under name portable_snprintf  */
 /* declare our portable vsnprintf routine under name portable_vsnprintf */
 #  if defined(_MSC_VER) && (_MSC_VER >= 1400)
-#    define portable_snprintf _snprintf
-#  if !defined(NEED_SNPRINTF_ONLY)
+#    define portable_snprintf  _snprintf
+#    define portable_vsnprintf  vsnprintf
+#  else
+#    define portable_snprintf  snprintf
 #    define portable_vsnprintf vsnprintf
-#  endif
 #  endif
 #else
 /* declare our portable routines under names snprintf and vsnprintf */
