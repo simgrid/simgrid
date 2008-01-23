@@ -229,7 +229,7 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay) {
        case ETIMEDOUT:
 	 THROW1(timeout_error,0,"mutex %p not ready",mutex);	
        default:
-	 THROW2(system_error,errcode,"xbt_mutex_tryacquire(%p) failed: %s",mutex, strerror(errcode));
+	 THROW2(system_error,errcode,"xbt_mutex_timedacquire(%p) failed: %s",mutex, strerror(errcode));
       }
 
    		
@@ -441,7 +441,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay) {
        case ETIMEDOUT:
 	 THROW1(timeout_error,0,"semaphore %p not ready",sem);
        default:
-	 THROW2(system_error,errcode,"xbt_sem_tryacquire(%p) failed: %s",sem, strerror(errcode));
+	 THROW2(system_error,errcode,"xbt_os_sem_timedacquire(%p) failed: %s",sem, strerror(errcode));
       }
       
    } else {
@@ -655,13 +655,7 @@ xbt_os_mutex_t xbt_os_mutex_init(void) {
 }
 
 void xbt_os_mutex_acquire(xbt_os_mutex_t mutex) {
-
    EnterCriticalSection(& mutex->lock);
-}
-
-void xbt_os_mutex_tryacquire(xbt_os_mutex_t mutex)
-{
-	TryEnterCriticalSection(&mutex->lock);
 }
 
 void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay) {
@@ -780,7 +774,7 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex, double dela
    if (delay < 0) {
       xbt_os_cond_wait(cond,mutex);
    } else {
-	  DEBUG3("xbt_cond_timedwait(%p,%p,%ul)",&(cond->events),&(mutex->lock),end);
+	  DEBUG3("xbt_cond_timedwait(%p,%p,%lu)",&(cond->events),&(mutex->lock),end);
 
    /* lock the threads counter and increment it */
    EnterCriticalSection (& cond->waiters_count_lock);
@@ -872,6 +866,10 @@ typedef struct xbt_os_sem_ {
    unsigned int value;
    CRITICAL_SECTION value_lock;  /* protect access to value of the semaphore  */
 }s_xbt_os_sem_t ;
+
+#ifndef INT_MAX
+# define INT_MAX 32767 /* let's be safe by underestimating this value: this is for 16bits only */
+#endif
 
 xbt_os_sem_t
 xbt_os_sem_init(unsigned int value)
