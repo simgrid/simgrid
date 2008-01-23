@@ -18,11 +18,6 @@
 #include "xbt/misc.h"
 #include "xbt/virtu.h"
 
-/* do not include execinfo.h directly since it's not always available. 
-   Instead, copy the parts we need (and fake when it's not there) */
-XBT_PUBLIC(int) backtrace (void **__array, int __size);
-
-
 /*-*-* Emergency debuging: define this when the exceptions get crazy *-*-*/
 #undef __EX_MAYDAY
 
@@ -401,22 +396,24 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
  */
 
 #define _THROW(c,v,m) \
-  do { /* change this sequence into one block */                              \
-     /* build the exception */                                                \
-     __xbt_ex_ctx()->ctx_ex.msg      = (m);                                   \
-     __xbt_ex_ctx()->ctx_ex.category = (xbt_errcat_t)(c);                     \
-     __xbt_ex_ctx()->ctx_ex.value    = (v);                                   \
-     __xbt_ex_ctx()->ctx_ex.remote   = 0;                                     \
-     __xbt_ex_ctx()->ctx_ex.host     = (char*)NULL;                           \
-     __xbt_ex_ctx()->ctx_ex.procname = (char*)xbt_procname();                 \
-     __xbt_ex_ctx()->ctx_ex.pid      = (*xbt_getpid)();                       \
-     __xbt_ex_ctx()->ctx_ex.file     = (char*)__FILE__;                       \
-     __xbt_ex_ctx()->ctx_ex.line     = __LINE__;                              \
-     __xbt_ex_ctx()->ctx_ex.func     = (char*)_XBT_FUNCTION;                  \
-     __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,XBT_BACKTRACE_SIZE);\
-     __xbt_ex_ctx()->ctx_ex.bt_strings = NULL; \
-     DO_THROW(__xbt_ex_ctx()->ctx_ex);\
+  do { /* change this sequence into one block */                   \
+     ex_ctx_t *ctx = __xbt_ex_ctx();                               \
+     /* build the exception */                                     \
+     ctx->ctx_ex.msg      = (m);                                   \
+     ctx->ctx_ex.category = (xbt_errcat_t)(c);                     \
+     ctx->ctx_ex.value    = (v);                                   \
+     ctx->ctx_ex.remote   = 0;                                     \
+     ctx->ctx_ex.host     = (char*)NULL;                           \
+     ctx->ctx_ex.procname = (char*)xbt_procname();                 \
+     ctx->ctx_ex.pid      = (*xbt_getpid)();                       \
+     ctx->ctx_ex.file     = (char*)__FILE__;                       \
+     ctx->ctx_ex.line     = __LINE__;                              \
+     ctx->ctx_ex.func     = (char*)_XBT_FUNCTION;                  \
+     ctx->ctx_ex.bt_strings = NULL;                                \
+     xbt_backtrace_current( (xbt_ex_t *) &(ctx->ctx_ex) );         \
+     DO_THROW(ctx->ctx_ex);\
   } while (0)
+//     __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,XBT_BACKTRACE_SIZE);
 
 /** @brief Builds and throws an exception with a string taking no arguments
     @hideinitializer */
@@ -507,7 +504,6 @@ XBT_PUBLIC(void) xbt_ex_free(xbt_ex_t e);
 
 /** @brief Shows a backtrace of the current location */
 XBT_PUBLIC(void) xbt_backtrace_display_current(void);
-
 /** @brief Captures a backtrace for further use */
 XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t *e);
 /** @brief Display a previously captured backtrace */
