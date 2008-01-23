@@ -201,11 +201,11 @@ int backtrace(void **buffer, int size)
   /* ebp points on stack base */
   /* esp points on stack pointer, ie on last stacked element (current element) */
   _asm call $ + 5
-  _asm pop %eax
-  _asm mov context.Eip, %eax
-  _asm mov %eax, %esp
-  _asm mov context.Esp, %eax
-  _asm mov context.Ebp, %ebp
+  _asm pop eax
+  _asm mov context.Eip, eax
+  _asm mov eax, esp
+  _asm mov context.Esp, eax
+  _asm mov context.Ebp, ebp
      
   if ((NULL == hlp_dbg_instance) || (size <= 0) || (NULL == buffer)) {
     errno = EINVAL;
