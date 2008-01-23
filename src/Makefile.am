@@ -57,6 +57,7 @@ EXTRA_DIST= \
 	include/surf/surfxml_parse_private.h \
 	include/surf/random_mgr.h \
 	\
+	include/xbt/wine_dbghelp.h \
 	include/xbt/context.h \
 	include/xbt/xbt_os_time.h \
 	include/xbt/xbt_os_thread.h \

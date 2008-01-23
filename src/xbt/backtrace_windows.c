@@ -14,55 +14,58 @@
  *  support for application self-debugging.
  */
 
-#include <dbghelp.h>
+#if defined(_XBT_BORLAND_COMPILER) || defined(_XBT_VISUALC_COMPILER)
+  /* native windows build */
+#  include <dbghelp.h>
+#else
+  /* gcc-based cross-compiling */
+#  include "xbt/wine_dbghelp.h"
+#endif
 
 
-/* Pointer function to SymInitialize() */
-BOOL (* fun_initialize) (HANDLE, PSTR, BOOL);
-void (*fun_cleanup)(void);
-void *fun_function_table_access;
-void *fun_get_line_from_addr;
-void *fun_get_module_base;
-void *fun_get_options;
-void *fun_set_options;
-void *fun_get_sym_from_addr;
-void *fun_stack_walk;
+/* SymInitialize() */
+typedef BOOL(WINAPI * fun_initialize_t) (HANDLE, PSTR, BOOL);
+static fun_initialize_t fun_initialize;
 
-#if 0
-BOOL(WINAPI * fun_initialize) (HANDLE, PSTR, BOOL);
+/* SymCleanup() */
+typedef BOOL(WINAPI * fun_cleanup_t) (HANDLE hProcess);
+static fun_cleanup_t fun_cleanup;
 
-/* Pointer function to SymCleanup() */
-static BOOL(WINAPI * fun_cleanup) (HANDLE hProcess);
+/* SymFunctionTableAccess() */
+typedef PVOID(WINAPI * fun_function_table_access_t) (HANDLE, DWORD);
+static fun_function_table_access_t fun_function_table_access;
 
-/* Pointer function to SymFunctionTableAccess() */
-static PVOID(WINAPI * fun_function_table_access) (HANDLE, DWORD);
+/* SymGetLineFromAddr() */
+typedef BOOL(WINAPI * fun_get_line_from_addr_t) (HANDLE, DWORD,
+						 PDWORD,
+						 PIMAGEHLP_LINE);
+static fun_get_line_from_addr_t fun_get_line_from_addr;
 
-/* Pointer function to SymGetLineFromAddr() */
-static BOOL(WINAPI * fun_get_line_from_addr) (HANDLE, DWORD,
-						PDWORD,
-						PIMAGEHLP_LINE);
+/* SymGetModuleBase() */
+typedef DWORD(WINAPI *fun_get_module_base_t) (HANDLE, DWORD);
+static fun_get_module_base_t fun_get_module_base;
 
-/* Pointer function to SymGetModuleBase() */
-static DWORD(WINAPI * fun_get_module_base) (HANDLE, DWORD);
+/* SymGetOptions() */
+typedef DWORD(WINAPI *fun_get_options_t) (VOID);
+static fun_get_options_t fun_get_options;
 
-/* Pointer function to SymGetOptions() */
-static DWORD(WINAPI * fun_get_options) (VOID);
+/* SymSetOptions() */
+typedef DWORD(WINAPI *fun_set_options_t) (DWORD);
+static fun_set_options_t fun_set_options;
 
 /* Pointer function to SymGetSymFromAddr() */
-static BOOL(WINAPI * fun_get_sym_from_addr) (HANDLE, DWORD, PDWORD,
+typedef BOOL(WINAPI *fun_get_sym_from_addr_t) (HANDLE, DWORD, PDWORD,
 					       OUT PIMAGEHLP_SYMBOL);
-
-/* Pointer function to SymSetOptions() */
-static DWORD(WINAPI * fun_set_options) (DWORD);
+static fun_get_sym_from_addr_t fun_get_sym_from_addr;
 
 /* Pointer function to StackWalk() */
-static BOOL(WINAPI * fun_stack_walk) (DWORD, HANDLE, HANDLE,
+typedef BOOL(WINAPI * fun_stack_walk_t) (DWORD, HANDLE, HANDLE,
 					    LPSTACKFRAME, PVOID,
 					    PREAD_PROCESS_MEMORY_ROUTINE,
 					    PFUNCTION_TABLE_ACCESS_ROUTINE,
 					    PGET_MODULE_BASE_ROUTINE,
 					    PTRANSLATE_ADDRESS_ROUTINE);
-#endif
+static fun_stack_walk_t fun_stack_walk;
 
 static HINSTANCE hlp_dbg_instance = NULL;
 static HANDLE process_handle = NULL;
@@ -84,15 +87,24 @@ void xbt_backtrace_init(void) {
     return;
  
   /* get the pointers to debug help library exported functions */
-  fun_initialize = GetProcAddress(hlp_dbg_instance, "SymInitialize");
-  fun_cleanup = GetProcAddress(hlp_dbg_instance, "SymCleanup");
-  fun_function_table_access = GetProcAddress(hlp_dbg_instance, "SymFunctionTableAccess");
-  fun_get_line_from_addr = GetProcAddress(hlp_dbg_instance, "SymGetLineFromAddr");
-  fun_get_module_base = GetProcAddress(hlp_dbg_instance, "SymGetModuleBase");
-  fun_get_options = GetProcAddress(hlp_dbg_instance, "SymGetOptions");
-  fun_get_sym_from_addr = GetProcAddress(hlp_dbg_instance, "SymGetSymFromAddr");
-  fun_set_options = GetProcAddress(hlp_dbg_instance, "SymSetOptions");
-  fun_stack_walk = GetProcAddress(hlp_dbg_instance, "StackWalk");
+  fun_initialize = 
+     (fun_initialize_t) GetProcAddress(hlp_dbg_instance, "SymInitialize");
+  fun_cleanup = 
+     (fun_cleanup_t) GetProcAddress(hlp_dbg_instance, "SymCleanup");
+  fun_function_table_access = 
+     (fun_function_table_access_t) GetProcAddress(hlp_dbg_instance, "SymFunctionTableAccess");
+  fun_get_line_from_addr = 
+     (fun_get_line_from_addr_t) GetProcAddress(hlp_dbg_instance, "SymGetLineFromAddr");
+  fun_get_module_base = 
+     (fun_get_module_base_t) GetProcAddress(hlp_dbg_instance, "SymGetModuleBase");
+  fun_get_options = 
+     (fun_get_options_t) GetProcAddress(hlp_dbg_instance, "SymGetOptions");
+  fun_get_sym_from_addr = 
+     (fun_get_sym_from_addr_t) GetProcAddress(hlp_dbg_instance, "SymGetSymFromAddr");
+  fun_set_options = 
+     (fun_set_options_t) GetProcAddress(hlp_dbg_instance, "SymSetOptions");
+  fun_stack_walk = 
+     (fun_stack_walk_t) GetProcAddress(hlp_dbg_instance, "StackWalk");
 
   /* Check that everything worked well */
   if (!fun_initialize ||
@@ -188,12 +200,12 @@ int backtrace(void **buffer, int size)
 
   /* ebp points on stack base */
   /* esp points on stack pointer, ie on last stacked element (current element) */
-  _asm call $ + 5
-  _asm pop eax
-  _asm mov context.Eip, eax
-  _asm mov eax, esp
-  _asm mov context.Esp, eax
-  _asm mov context.Ebp, ebp 
+//  asm ("call $ + 5"); FIXME: this does not works when cross-compiling. Is this really mandatory?
+  asm ("pop %eax");
+  asm ("mov context.Eip, %eax");
+  asm ("mov %eax, %esp");
+  asm ("mov context.Esp, %eax");
+  asm ("mov context.Ebp, %ebp");
 
   if ((NULL == hlp_dbg_instance) || (size <= 0) || (NULL == buffer)) {
     errno = EINVAL;
@@ -297,7 +309,7 @@ char **backtrace_symbols(void *const *buffer, int size)
         if ((*fun_get_line_from_addr) (process_handle, stack_frame->AddrPC.Offset, &offset, &line_info)) {
           strings[pos] =
             bprintf("**   In %s() at %s:%d", pSym->Name, line_info.FileName,
-                    line_info.LineNumber);
+                    (int)line_info.LineNumber);
         } else {
           strings[pos] = bprintf("**   In %s()", pSym->Name);
         }
