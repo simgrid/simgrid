@@ -15,6 +15,11 @@ extern char **environ;          /* the environment, as specified by the opengrou
 void xbt_backtrace_init(void) { }
 void xbt_backtrace_exit(void) { }
 
+void xbt_backtrace_current(xbt_ex_t * e) {
+  e->used = backtrace((void **) e->bt, XBT_BACKTRACE_SIZE);
+}
+
+  
 void xbt_ex_setup_backtrace(xbt_ex_t * e)
 {
   int i;
@@ -40,7 +45,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   struct stat stat_buf;
   char *binary_name = NULL;
    
-  e->used = backtrace((void **) e->bt, XBT_BACKTRACE_SIZE);
+  xbt_assert0(e && e->used,"Backtrace not setup yet, cannot set it up for display");
+   
   backtrace_syms = backtrace_symbols(e->bt, e->used);
   addrs = xbt_new(char *, e->used);
    

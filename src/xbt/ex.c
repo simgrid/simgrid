@@ -56,13 +56,8 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
 /* Change raw libc symbols to file names and line numbers */
 void xbt_ex_setup_backtrace(xbt_ex_t *e);
 
-void xbt_backtrace_current(xbt_ex_t *e) {
-#ifdef HAVE_BACKTRACE
-  xbt_ex_setup_backtrace(e);
-#endif
-}
-
 void xbt_backtrace_display(xbt_ex_t *e) {
+  xbt_ex_setup_backtrace(e);
 #ifdef HAVE_BACKTRACE
   int i;
 
