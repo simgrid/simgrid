@@ -56,7 +56,7 @@ static XBT_INLINE char *xbt_strdup(const char *s) {
 }
 /** @brief Like malloc, but xbt_die() on error 
     @hideinitializer */
-static XBT_INLINE void *xbt_malloc(int n){
+static XBT_INLINE void *xbt_malloc(unsigned int n){
   void *res=malloc(n);
   if (!res)
      xbt_die(bprintf("Memory allocation of %d bytes failed",n));
@@ -65,7 +65,7 @@ static XBT_INLINE void *xbt_malloc(int n){
 
 /** @brief like malloc, but xbt_die() on error and memset data to 0
     @hideinitializer */
-static XBT_INLINE void *xbt_malloc0(int n) {
+static XBT_INLINE void *xbt_malloc0(unsigned int n) {
   void *res=calloc(n,1);
   if (!res)
      xbt_die(bprintf("Memory callocation of %d bytes failed",n));
@@ -74,7 +74,7 @@ static XBT_INLINE void *xbt_malloc0(int n) {
   
 /** @brief like realloc, but xbt_die() on error 
     @hideinitializer */
-static XBT_INLINE void *xbt_realloc(void*p,int s){
+static XBT_INLINE void *xbt_realloc(void*p,unsigned int s){
   void *res=res;
   if (s) {
     if (p) {
