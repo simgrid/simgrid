@@ -514,13 +514,20 @@ static surf_action_t communicate(void *src, void *dst, double size,
 				 double rate)
 {
   surf_action_network_CM02_t action = NULL;
+  /* LARGE PLATFORMS HACK:
+     Add a link_CM02_t *link and a int link_nb to network_card_CM02_t. It will represent local links for this node
+     Use the cluster_id for ->id */
   network_card_CM02_t card_src = src;
   network_card_CM02_t card_dst = dst;
   int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
   link_CM02_t *route = ROUTE(card_src->id, card_dst->id);
+  /* LARGE PLATFORMS HACK:
+     total_route_size = route_size + src->link_nb + dst->nb */
   int i;
 
   XBT_IN4("(%s,%s,%g,%g)", card_src->name, card_dst->name, size, rate);
+  /* LARGE PLATFORMS HACK:
+     assert on total_route_size */
   xbt_assert2(route_size,
 	      "You're trying to send data from %s to %s but there is no connexion between these two cards.",
 	      card_src->name, card_dst->name);
@@ -546,8 +553,12 @@ static surf_action_t communicate(void *src, void *dst, double size,
   action->latency = 0.0;
   for (i = 0; i < route_size; i++)
     action->latency += route[i]->lat_current;
+  /* LARGE PLATFORMS HACK:
+     Add src->link and dst->link latencies */
   action->lat_current = action->latency;
 
+  /* LARGE PLATFORMS HACK:
+     lmm_variable_new(..., total_route_size)*/
   if (action->latency > 0)
     action->variable =
 	lmm_variable_new(network_maxmin_system, action, 0.0, -1.0,
@@ -582,6 +593,9 @@ static surf_action_t communicate(void *src, void *dst, double size,
   for (i = 0; i < route_size; i++)
     lmm_expand(network_maxmin_system, route[i]->constraint,
 	       action->variable, 1.0);
+  /* LARGE PLATFORMS HACK:
+     expand also with src->link and dst->link */
+
   XBT_OUT;
 
   return (surf_action_t) action;
