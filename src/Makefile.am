@@ -465,7 +465,9 @@ if HAVE_FLEXML
 surf/simgrid_dtd.l: $(srcdir)/surf/simgrid.dtd
 	set -e; mkdir -p surf; flexml --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S $@ -L $^ 
 $(top_srcdir)/include/surf/simgrid_dtd.h: $(srcdir)/surf/simgrid.dtd
+	rm -f $(top_srcdir)/include/surf/simgrid.h 
 	set -e;                flexml --root-tags platform            -P surfxml --sysid=simgrid.dtd -H $@ -L $^ 
+	if test -e $(top_srcdir)/include/surf/simgrid.h ; then mv $(top_srcdir)/include/surf/simgrid.h $@ ; fi
 	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 
