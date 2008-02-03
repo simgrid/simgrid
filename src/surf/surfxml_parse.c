@@ -21,7 +21,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
 /* Initialize the parsing globals */
 int route_action = 0;
 xbt_dict_t traces_set_list = NULL;
-xbt_dynar_t traces_connect_list = NULL;
+//xbt_dynar_t traces_connect_list = NULL;
+xbt_dict_t trace_connect_list_host_avail = NULL;
+xbt_dict_t trace_connect_list_power = NULL;
+xbt_dict_t trace_connect_list_link_avail = NULL;
+xbt_dict_t trace_connect_list_bandwidth = NULL;
+xbt_dict_t trace_connect_list_latency = NULL;
 
 /* This buffer is used to store the original buffer before substituing it by out own buffer. Usefull for the foreach tag */
 char* old_buff;
@@ -504,9 +509,14 @@ void init_data(void)
   route_multi_table = xbt_dict_new();
   route_multi_elements = xbt_dynar_new(sizeof(char*), NULL);
   traces_set_list = xbt_dict_new();
-  traces_connect_list = xbt_dynar_new(sizeof(char*), NULL);
-  random_data_list = xbt_dict_new();
+   
+  trace_connect_list_host_avail = xbt_dict_new();
+  trace_connect_list_power = xbt_dict_new();
+  trace_connect_list_link_avail = xbt_dict_new();
+  trace_connect_list_bandwidth = xbt_dict_new();
+  trace_connect_list_latency = xbt_dict_new();
 
+  random_data_list = xbt_dict_new();
 }
 
 void parse_platform_file(const char* file)
@@ -1052,12 +1062,28 @@ void parse_trace_finalize(void)
 
 void parse_trace_c_connect(void)
 {
-	char* trace_connect;
-   xbt_assert1(xbt_dict_get_or_null(traces_set_list, A_surfxml_trace_c_connect_trace_id),
-	      "Trace %s undefined", A_surfxml_trace_c_connect_trace_id);
-   trace_connect = bprintf("%s#%d#%d#%s", A_surfxml_trace_c_connect_trace_id, A_surfxml_trace_c_connect_element, 
-                                   A_surfxml_trace_c_connect_kind, A_surfxml_trace_c_connect_connector_id);
-   xbt_dynar_push(traces_connect_list, &trace_connect);
+   xbt_assert2(xbt_dict_get_or_null(traces_set_list, A_surfxml_trace_c_connect_trace),
+	      "Cannot connect trace %s to %s: trace unknown", A_surfxml_trace_c_connect_trace,A_surfxml_trace_c_connect_element);
+   
+   switch (A_surfxml_trace_c_connect_kind) {
+    case A_surfxml_trace_c_connect_kind_HOST_AVAIL:
+      xbt_dict_set(trace_connect_list_host_avail, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      break;
+    case A_surfxml_trace_c_connect_kind_POWER:
+      xbt_dict_set(trace_connect_list_power, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      break;
+    case A_surfxml_trace_c_connect_kind_LINK_AVAIL:
+      xbt_dict_set(trace_connect_list_link_avail, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      break;
+    case A_surfxml_trace_c_connect_kind_BANDWIDTH:
+      xbt_dict_set(trace_connect_list_bandwidth, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      break;
+    case A_surfxml_trace_c_connect_kind_LATENCY:
+      xbt_dict_set(trace_connect_list_latency, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      break;
+    default:
+      xbt_die("kind of trace unknown");
+   }   
 }
 
 /* Random tag functions */

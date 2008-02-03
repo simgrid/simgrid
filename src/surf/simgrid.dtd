@@ -21,10 +21,9 @@
 <!ATTLIST random generator (DRAND48|RAND) "DRAND48">
 
 <!ELEMENT trace:connect EMPTY>
-<!ATTLIST trace:connect kind (AVAILABILITY|BANDWIDTH|LATENCY|POWER) "AVAILABILITY">
-<!ATTLIST trace:connect trace_id CDATA #REQUIRED>
-<!ATTLIST trace:connect element (HOST|LINK) "HOST">
-<!ATTLIST trace:connect connector_id CDATA #REQUIRED>
+<!ATTLIST trace:connect kind (HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY) "HOST_AVAIL">
+<!ATTLIST trace:connect trace CDATA #REQUIRED>
+<!ATTLIST trace:connect element CDATA #REQUIRED>
 
 <!ELEMENT set EMPTY>
 <!ATTLIST set id CDATA #REQUIRED>

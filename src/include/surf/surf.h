@@ -584,9 +584,14 @@ XBT_PUBLIC_DATA(xbt_dict_t) route_table;
 XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
 XBT_PUBLIC_DATA(xbt_dynar_t) route_link_list;
 
-/* For the trace and trace:connect tag */
+/* For the trace and trace:connect tag (store their content till the end of the parsing) */
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) traces_connect_list;
+XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_host_avail;
+XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_power;
+XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_avail;
+XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_bandwidth;
+XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
+
 
 double get_cpu_power(const char* power);
 void init_randomness(void);

@@ -941,19 +941,65 @@ static void add_route(void)
    xbt_dict_free(&route_table);
 }
 
-static void add_traces(void)
-{
-   xbt_dynar_t trace_connect = NULL;
-   unsigned int cpt;
-   int connect_element, connect_kind;
-   char *value, *trace_id, *connector_id;
-   link_L07_t link;
-   cpu_L07_t host = NULL;
-   tmgr_trace_t trace;
+static void add_traces(void) {   
+   xbt_dict_cursor_t cursor=NULL;
+   char *trace_name,*elm;
    
-   if (!traces_connect_list) return;
+   if (!trace_connect_list_host_avail) return;
  
-   /*for all trace connects parse them and update traces for hosts or links */
+   /* Connect traces relative to cpu */
+   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      cpu_L07_t host = xbt_dict_get_or_null(workstation_set, elm);
+      
+      xbt_assert1(host, "Host %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); 
+   }
+
+   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      cpu_L07_t host = xbt_dict_get_or_null(workstation_set, elm);
+      
+      xbt_assert1(host, "Host %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); 
+   }
+
+   /* Connect traces relative to network */
+   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      link_L07_t link = xbt_dict_get_or_null(link_set, elm);
+      
+      xbt_assert1(link, "Link %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      link->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+   }
+
+   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      link_L07_t link = xbt_dict_get_or_null(link_set, elm);
+      
+      xbt_assert1(link, "Link %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      link->bw_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+   }
+   
+   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      link_L07_t link = xbt_dict_get_or_null(link_set, elm);
+      
+      xbt_assert1(link, "Link %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+   }
+/*
+   
    xbt_dynar_foreach (traces_connect_list, cpt, value) {
      trace_connect = xbt_str_split_str(value, "#");
      trace_id        = xbt_dynar_get_as(trace_connect, 0, char*);
@@ -979,9 +1025,13 @@ static void add_traces(void)
         }
      }
    }
-
-   xbt_dynar_free(&trace_connect);
-   xbt_dynar_free(&traces_connect_list);
+*/
+   xbt_dict_free(&trace_connect_list_host_avail);
+   xbt_dict_free(&trace_connect_list_power);
+   xbt_dict_free(&trace_connect_list_link_avail);
+   xbt_dict_free(&trace_connect_list_bandwidth);
+   xbt_dict_free(&trace_connect_list_latency);
+   
    xbt_dict_free(&traces_set_list); 
 }
 

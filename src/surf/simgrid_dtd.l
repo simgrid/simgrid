@@ -1,5 +1,5 @@
 /* Validating XML processor for surf/simgrid.dtd.
- * Generated 2008/01/23 16:38:27.
+ * Generated 2008/02/03 11:50:45.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -133,7 +133,7 @@ AT_surfxml_process_kill_time AX_surfxml_process_kill_time;
 AT_surfxml_cluster_bb_bw AX_surfxml_cluster_bb_bw;
 #define A_surfxml_cluster_bb_bw (surfxml_bufferstack + AX_surfxml_cluster_bb_bw)
 AT_surfxml_trace_c_connect_element AX_surfxml_trace_c_connect_element;
-#define A_surfxml_trace_c_connect_element AX_surfxml_trace_c_connect_element
+#define A_surfxml_trace_c_connect_element (surfxml_bufferstack + AX_surfxml_trace_c_connect_element)
 AT_surfxml_argument_value AX_surfxml_argument_value;
 #define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
 AT_surfxml_link_state AX_surfxml_link_state;
@@ -150,8 +150,6 @@ AT_surfxml_cluster_bb_lat AX_surfxml_cluster_bb_lat;
 #define A_surfxml_cluster_bb_lat (surfxml_bufferstack + AX_surfxml_cluster_bb_lat)
 AT_surfxml_link_latency AX_surfxml_link_latency;
 #define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
-AT_surfxml_trace_c_connect_trace_id AX_surfxml_trace_c_connect_trace_id;
-#define A_surfxml_trace_c_connect_trace_id (surfxml_bufferstack + AX_surfxml_trace_c_connect_trace_id)
 AT_surfxml_platform_xmlns_c_link AX_surfxml_platform_xmlns_c_link;
 #define A_surfxml_platform_xmlns_c_link (surfxml_bufferstack + AX_surfxml_platform_xmlns_c_link)
 AT_surfxml_link_bandwidth_file AX_surfxml_link_bandwidth_file;
@@ -200,6 +198,8 @@ AT_surfxml_route_c_multi_src AX_surfxml_route_c_multi_src;
 #define A_surfxml_route_c_multi_src (surfxml_bufferstack + AX_surfxml_route_c_multi_src)
 AT_surfxml_route_c_multi_action AX_surfxml_route_c_multi_action;
 #define A_surfxml_route_c_multi_action AX_surfxml_route_c_multi_action
+AT_surfxml_trace_c_connect_trace AX_surfxml_trace_c_connect_trace;
+#define A_surfxml_trace_c_connect_trace (surfxml_bufferstack + AX_surfxml_trace_c_connect_trace)
 AT_surfxml_trace_id AX_surfxml_trace_id;
 #define A_surfxml_trace_id (surfxml_bufferstack + AX_surfxml_trace_id)
 AT_surfxml_cluster_radical AX_surfxml_cluster_radical;
@@ -210,8 +210,6 @@ AT_surfxml_random_std_deviation AX_surfxml_random_std_deviation;
 #define A_surfxml_random_std_deviation (surfxml_bufferstack + AX_surfxml_random_std_deviation)
 AT_surfxml_trace_c_connect_kind AX_surfxml_trace_c_connect_kind;
 #define A_surfxml_trace_c_connect_kind AX_surfxml_trace_c_connect_kind
-AT_surfxml_trace_c_connect_connector_id AX_surfxml_trace_c_connect_connector_id;
-#define A_surfxml_trace_c_connect_connector_id (surfxml_bufferstack + AX_surfxml_trace_c_connect_connector_id)
 AT_surfxml_route_c_multi_dst AX_surfxml_route_c_multi_dst;
 #define A_surfxml_route_c_multi_dst (surfxml_bufferstack + AX_surfxml_route_c_multi_dst)
 AT_surfxml_host_state_file AX_surfxml_host_state_file;
@@ -776,42 +774,38 @@ const char* *surfxml_statenames=NULL;
 <S_surfxml_route_c_multi_1,E_surfxml_link,S_surfxml_random,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,S_surfxml_host_1,E_surfxml_route_c_multi,E_surfxml_random,S_surfxml_route_2,E_surfxml_platform,S_surfxml_foreach,E_surfxml_route,S_surfxml_random_1,S_surfxml_route_1,S_surfxml_route_c_multi,S_surfxml_link_1,E_surfxml_host,S_surfxml_link,S_surfxml_host,S_surfxml_process_1,S_surfxml_route_c_multi_2,S_surfxml_host_2,S_surfxml_random_2,E_surfxml_foreach,S_surfxml_process_2,S_surfxml_foreach_1,S_surfxml_route>"<trace:connect"{s} FAIL("Starting tag <trace:connect> is not allowed here.");
 
 <S_surfxml_platform_5,S_surfxml_platform_2,S_surfxml_platform_1,S_surfxml_platform_3,S_surfxml_platform,S_surfxml_platform_4>"<trace:connect"{s} {
-  AX_surfxml_trace_c_connect_kind = A_surfxml_trace_c_connect_kind_AVAILABILITY;
-  AX_surfxml_trace_c_connect_trace_id = 0;
-  AX_surfxml_trace_c_connect_element = A_surfxml_trace_c_connect_element_HOST;
-  AX_surfxml_trace_c_connect_connector_id = 0;
+  AX_surfxml_trace_c_connect_kind = A_surfxml_trace_c_connect_kind_HOST_AVAIL;
+  AX_surfxml_trace_c_connect_trace = 0;
+  AX_surfxml_trace_c_connect_element = 0;
   ENTER(AL_surfxml_trace_c_connect); pushbuffer(0);
   }
 
 <AL_surfxml_trace_c_connect>{
- "kind"{Eq}"'AVAILABILITY'" |
- "kind"{Eq}"\"AVAILABILITY\"" A_surfxml_trace_c_connect_kind = A_surfxml_trace_c_connect_kind_AVAILABILITY;
+ "kind"{Eq}"'HOST_AVAIL'" |
+ "kind"{Eq}"\"HOST_AVAIL\"" A_surfxml_trace_c_connect_kind = A_surfxml_trace_c_connect_kind_HOST_AVAIL;
+ "kind"{Eq}"'POWER'" |
+ "kind"{Eq}"\"POWER\"" A_surfxml_trace_c_connect_kind = A_surfxml_trace_c_connect_kind_POWER;
+ "kind"{Eq}"'LINK_AVAIL'" |
+ "kind"{Eq}"\"LINK_AVAIL\"" A_surfxml_trace_c_connect_kind = A_surfxml_trace_c_connect_kind_LINK_AVAIL;
  "kind"{Eq}"'BANDWIDTH'" |
  "kind"{Eq}"\"BANDWIDTH\"" A_surfxml_trace_c_connect_kind = A_surfxml_trace_c_connect_kind_BANDWIDTH;
  "kind"{Eq}"'LATENCY'" |
  "kind"{Eq}"\"LATENCY\"" A_surfxml_trace_c_connect_kind = A_surfxml_trace_c_connect_kind_LATENCY;
- "kind"{Eq}"'POWER'" |
- "kind"{Eq}"\"POWER\"" A_surfxml_trace_c_connect_kind = A_surfxml_trace_c_connect_kind_POWER;
 
- "trace_id"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_c_connect_trace_id);
- "trace_id"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_c_connect_trace_id);
+ "trace"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_c_connect_trace);
+ "trace"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_c_connect_trace);
 
- "element"{Eq}"'HOST'" |
- "element"{Eq}"\"HOST\"" A_surfxml_trace_c_connect_element = A_surfxml_trace_c_connect_element_HOST;
- "element"{Eq}"'LINK'" |
- "element"{Eq}"\"LINK\"" A_surfxml_trace_c_connect_element = A_surfxml_trace_c_connect_element_LINK;
-
- "connector_id"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_c_connect_connector_id);
- "connector_id"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_c_connect_connector_id);
+ "element"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_c_connect_element);
+ "element"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_c_connect_element);
 
  ">" {
-  if (!AX_surfxml_trace_c_connect_trace_id) FAIL("Required attribute `trace_id' not set for `trace:connect' element.");
-  if (!AX_surfxml_trace_c_connect_connector_id) FAIL("Required attribute `connector_id' not set for `trace:connect' element.");
+  if (!AX_surfxml_trace_c_connect_trace) FAIL("Required attribute `trace' not set for `trace:connect' element.");
+  if (!AX_surfxml_trace_c_connect_element) FAIL("Required attribute `element' not set for `trace:connect' element.");
   LEAVE; STag_surfxml_trace_c_connect();surfxml_pcdata_ix = 0; ENTER(E_surfxml_trace_c_connect);
  }
  "/>" {
-  if (!AX_surfxml_trace_c_connect_trace_id) FAIL("Required attribute `trace_id' not set for `trace:connect' element.");
-  if (!AX_surfxml_trace_c_connect_connector_id) FAIL("Required attribute `connector_id' not set for `trace:connect' element.");
+  if (!AX_surfxml_trace_c_connect_trace) FAIL("Required attribute `trace' not set for `trace:connect' element.");
+  if (!AX_surfxml_trace_c_connect_element) FAIL("Required attribute `element' not set for `trace:connect' element.");
   LEAVE; STag_surfxml_trace_c_connect(); surfxml_pcdata_ix = 0; ETag_surfxml_trace_c_connect(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform: case S_surfxml_platform_4: SET(S_surfxml_platform_5); break;

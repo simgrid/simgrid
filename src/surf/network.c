@@ -238,51 +238,52 @@ static void count_hosts(void)
    host_number++;
 }
 
-static int called = 0;
 
-static void add_traces(void)
-{
-   xbt_dynar_t trace_connect = NULL;
-   unsigned int cpt;
-   int connect_element, connect_kind;
-   char *value, *trace_id, *connector_id;
-   link_CM02_t link;
-   cpu_Cas01_t host = NULL;
-   tmgr_trace_t trace;
+static void add_traces(void) {
+   xbt_dict_cursor_t cursor=NULL;
+   char *trace_name,*elm;
    
+   static int called = 0;
    if (called) return;
    called = 1;
 
-   /*for all trace connects parse them and update traces for hosts or links */
-   xbt_dynar_foreach (traces_connect_list, cpt, value) {
-     trace_connect = xbt_str_split_str(value, "#");
-     trace_id        = xbt_dynar_get_as(trace_connect, 0, char*);
-     connect_element = atoi(xbt_dynar_get_as(trace_connect, 1, char*)); 
-     connect_kind    = atoi(xbt_dynar_get_as(trace_connect, 2, char*));
-     connector_id    = xbt_dynar_get_as(trace_connect, 3, char*);
-
-     xbt_assert1((trace = xbt_dict_get_or_null(traces_set_list, trace_id)), "Trace %s undefined", trace_id);
-
-     if (connect_element == A_surfxml_trace_c_connect_element_HOST) {
-        xbt_assert1((host = xbt_dict_get_or_null(cpu_set, connector_id)), "Host %s undefined", connector_id);
-        switch (connect_kind) {
-           case A_surfxml_trace_c_connect_kind_AVAILABILITY: host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
-           case A_surfxml_trace_c_connect_kind_POWER: host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
-        }
-     }
-
-     if (connect_element == A_surfxml_trace_c_connect_element_LINK) {
-        xbt_assert1((link = xbt_dict_get_or_null(link_set, connector_id)), "Link %s undefined", connector_id);
-        switch (connect_kind) {
-           case A_surfxml_trace_c_connect_kind_AVAILABILITY: link->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, link); break;
-           case A_surfxml_trace_c_connect_kind_BANDWIDTH: link->bw_event = tmgr_history_add_trace(history, trace, 0.0, 0, link); break;
-           case A_surfxml_trace_c_connect_kind_LATENCY: link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link); break;
-        }
-     }
+   /* connect all traces relative to network */
+   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      link_CM02_t link = xbt_dict_get_or_null(link_set, elm);
+      
+      xbt_assert1(link, "Link %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      link->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
    }
 
-   xbt_dynar_free(&trace_connect);
-   xbt_dynar_free(&traces_connect_list);
+   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      link_CM02_t link = xbt_dict_get_or_null(link_set, elm);
+      
+      xbt_assert1(link, "Link %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      link->bw_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+   }
+   
+   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      link_CM02_t link = xbt_dict_get_or_null(link_set, elm);
+      
+      xbt_assert1(link, "Link %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+   }
+
+   xbt_dict_free(&trace_connect_list_host_avail);
+   xbt_dict_free(&trace_connect_list_power);
+   xbt_dict_free(&trace_connect_list_link_avail);
+   xbt_dict_free(&trace_connect_list_bandwidth);
+   xbt_dict_free(&trace_connect_list_latency);
+   
    xbt_dict_free(&traces_set_list); 
 }
 

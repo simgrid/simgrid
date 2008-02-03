@@ -88,37 +88,35 @@ static void parse_cpu_init(void)
 
 }
 
-static int called = 0;
+static void add_traces_cpu(void) {
+   xbt_dict_cursor_t cursor=NULL;
+   char *trace_name,*elm;
 
-static void add_traces_cpu(void)
-{
-   xbt_dynar_t trace_connect = NULL;
-   unsigned int cpt;
-   int connect_element, connect_kind;
-   char *value, *trace_id, *connector_id;
-   cpu_Cas01_t host = NULL;
-   tmgr_trace_t trace;
+   static int called = 0;
    
    if (called) return;
    called = 1;
 
-   /*for all trace connects parse them and update traces for hosts */
-   xbt_dynar_foreach (traces_connect_list, cpt, value) {
-     trace_connect = xbt_str_split_str(value, "##");
-     trace_id        = xbt_dynar_get_as(trace_connect, 0, char*);
-     connect_element = atoi(xbt_dynar_get_as(trace_connect, 1, char*)); 
-     connect_kind    = atoi(xbt_dynar_get_as(trace_connect, 2, char*));
-     connector_id    = xbt_dynar_get_as(trace_connect, 3, char*);
+   
+   /* connect all traces relative to hosts */
+   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      cpu_Cas01_t host = xbt_dict_get_or_null(cpu_set, elm);
+      
+      xbt_assert1(host, "Host %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); 
+   }
 
-     xbt_assert1((trace = xbt_dict_get_or_null(traces_set_list, trace_id)), "Trace %s undefined", trace_id);
-
-     if (connect_element == A_surfxml_trace_c_connect_element_HOST) {
-        xbt_assert1((host = xbt_dict_get_or_null(cpu_set, connector_id)), "Host %s undefined", connector_id);
-        switch (connect_kind) {
-           case A_surfxml_trace_c_connect_kind_AVAILABILITY: host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
-           case A_surfxml_trace_c_connect_kind_POWER: host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
-        }
-     }
+   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
+      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+      cpu_Cas01_t host = xbt_dict_get_or_null(cpu_set, elm);
+      
+      xbt_assert1(host, "Host %s undefined", elm);
+      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      
+      host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); 
    }
 }
 
@@ -127,7 +125,6 @@ static void define_callbacks(const char *file)
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
   surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
-//  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu);
   surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
   surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
 }
