@@ -172,7 +172,7 @@ splited in 3 pages (also accessible from the navbar on top of this page):
     highlights current implementation issues. We also give some
     experimental results and describe work that builds on SimGrid's
     functionalities.\n
-    http://grail.sdsc.edu/papers/simgrid_ccgrid01.ps.gz
+    http://doi.ieeecomputersociety.org/10.1109/CCGRID.2001.923223 
 
 \page publis_extern Papers that use SimGrid-generated results (not counting our owns)
 
