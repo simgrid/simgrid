@@ -466,7 +466,6 @@ surf/simgrid_dtd.l: $(srcdir)/surf/simgrid.dtd
 	set -e; mkdir -p surf; flexml --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S $@ -L $^ 
 $(top_srcdir)/include/surf/simgrid_dtd.h: $(srcdir)/surf/simgrid.dtd
 	set -e;                flexml --root-tags platform            -P surfxml --sysid=simgrid.dtd -H $@ -L $^ 
-	mv $(top_srcdir)/include/surf/simgrid.h $@
 	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 
