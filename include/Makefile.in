@@ -249,7 +249,7 @@ nobase_include_HEADERS = \
 	smpi/smpi.h \
 	\
 	surf/surfxml_parse.h \
-	surf/surfxml.h \
+	surf/simgrid_dtd.h \
 	\
 	gras/datadesc.h gras/transport.h \
 	gras/virtu.h gras/emul.h gras/process.h gras/module.h \

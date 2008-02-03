@@ -9,7 +9,7 @@
 #define _SURF_SURFXML_PARSE_H
 
 #include <stdio.h> /* to have FILE */
-#include "surf/surfxml.h"
+#include "surf/simgrid_dtd.h"
 #include "xbt/function_types.h"
 #include "xbt/dict.h"
 
