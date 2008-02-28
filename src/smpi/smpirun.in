@@ -27,6 +27,12 @@ while true; do
       NETWORK_LATENCY="$2"
       shift 2
     ;;
+   "-help")
+      echo "usage:"
+      echo "$0 [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
+      echo
+      exit
+   ;;
     *)
       break
     ;;
