@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include "msg/msg.h"  /* Yeah! If you want to use msg, you need to include msg/msg.h */
 #include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
-#include "surf/surfxml.h"       /* to hijack surf_parse_lex */
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
