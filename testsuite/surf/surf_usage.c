@@ -55,6 +55,8 @@ void test(char *platform)
   surf_cpu_model_init_Cas01(platform);	/* Now it is possible to use CPUs */
   surf_network_model_init_CM02(platform);	/* Now it is possible to use eth0 */
 
+  parse_platform_file(platform);
+
   /*********************** CPU ***********************************/
   DEBUG1("%p \n", surf_cpu_model);
   cpuA = surf_cpu_model->common_public->name_service("Cpu A");
@@ -144,7 +146,7 @@ int main(int argc, char **argv)
 {
   surf_init(&argc, argv);	/* Initialize some common structures */
   if(argc==1) {
-     fprintf(stderr,"Usage : %s platform.txt\n",argv[0]);
+     fprintf(stderr,"Usage : %s platform.xml\n",argv[0]);
      return 1;
   }
   test(argv[1]);
