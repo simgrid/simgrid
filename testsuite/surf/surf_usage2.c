@@ -47,7 +47,15 @@ void test(char *platform)
   surf_action_t commAB = NULL;
   double now = -1.0;
 
-  surf_workstation_model_init_CLM03(platform);
+  int workstation_id =
+      find_model_description(surf_workstation_model_description,
+			     surf_workstation_model_description_size,
+			     "CLM03");
+
+  surf_workstation_model_description[workstation_id].model_init(platform);
+  parse_platform_file(platform);
+  if (surf_workstation_model_description[workstation_id].create_ws)
+    surf_workstation_model_description[workstation_id].create_ws();
 
   /*********************** WORKSTATION ***********************************/
   workstationA =
