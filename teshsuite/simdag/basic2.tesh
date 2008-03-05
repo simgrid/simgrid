@@ -5,5 +5,5 @@ $ simdag/basic2 simdag/basic_platform.xml
 > [0.000000] [sd_kernel/INFO] Executing task 'Task Comm A'
 > [0.000000] [sd_kernel/INFO] Executing task 'Task Comm B'
 > [1.600100] [sd_kernel/INFO] Task 'Task Comm B' done
-> [8.800100] [sd_kernel/INFO] Task 'Task Comm A' done
-> [8.800100] [sd_kernel/INFO] Simulation finished
+> [10.600100] [sd_kernel/INFO] Task 'Task Comm A' done
+> [10.600100] [sd_kernel/INFO] Simulation finished
