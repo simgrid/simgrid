@@ -64,10 +64,10 @@ void test(char *platform)
       surf_workstation_model->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
-  DEBUG2("%s : %p\n",
+  DEBUG2("%s : %p",
 	 surf_workstation_model->common_public->
 	 get_resource_name(workstationA), workstationA);
-  DEBUG2("%s : %p\n",
+  DEBUG2("%s : %p",
 	 surf_workstation_model->common_public->
 	 get_resource_name(workstationB), workstationB);
 
@@ -93,26 +93,26 @@ void test(char *platform)
     surf_model_t model = NULL;
 
     now = surf_get_clock();
-    DEBUG1("Next Event : " "%g" "\n", now);
+    DEBUG1("Next Event : %g", now);
 
     xbt_dynar_foreach(model_list, iter, model) {
-      DEBUG1("\t %s actions\n", model->common_public->name);
+      DEBUG1("\t %s actions", model->common_public->name);
       while ((action =
 	     xbt_swag_extract(model->common_public->states.
 			      failed_action_set))) {
-	DEBUG1("\t * Failed : %p\n", action);
+	DEBUG1("\t * Failed : %p", action);
 	model->common_public->action_free(action);
       }
       while ((action =
 	     xbt_swag_extract(model->common_public->states.
 			      done_action_set))) {
-	DEBUG1("\t * Done : %p\n", action);
+	DEBUG1("\t * Done : %p", action);
 	model->common_public->action_free(action);
       }
     }
   } while (surf_solve()>=0.0);
 
-  DEBUG0("Simulation Terminated\n");
+  DEBUG0("Simulation Terminated");
 
 }
 
