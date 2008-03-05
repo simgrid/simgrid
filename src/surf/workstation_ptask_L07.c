@@ -400,7 +400,7 @@ static void update_resource_state(void *id,
     if (event_type == cpu->power_event) {
       cpu->power_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, cpu->constraint,
-				  cpu->power_current);
+				  cpu->power_current * cpu->power_scale);
     } else if (event_type == cpu->state_event) {
       if (value > 0)
 	cpu->state_current = SURF_CPU_ON;
