@@ -98,7 +98,7 @@ void SIMIX_create_environment(const char *file)
     surf_cpu_model_description[cpu_id].model_init(file);
     surf_network_model_description[network_id].model_init(file);
 
-    start = xbt_os_time();  
+    start = xbt_os_time();
     parse_platform_file(file);
     end = xbt_os_time();
     DEBUG1("PARSE TIME: %lg", (end-start));
@@ -109,13 +109,12 @@ void SIMIX_create_environment(const char *file)
       model_init(file);
 
   if  (!parsed)  {
-	 double e ;
-    double s = xbt_os_time();  
+    start = xbt_os_time();
     parse_platform_file(file);
     if (surf_workstation_model_description[workstation_id].create_ws != NULL)
       surf_workstation_model_description[workstation_id].create_ws();
-    e = xbt_os_time();
-    DEBUG1("PARSE TIME: %lg", (e-s));
+    end = xbt_os_time();
+    DEBUG1("PARSE TIME: %lg", (end-start));
   }
 
   _simix_init_status = 2;	/* inited; don't change settings now */
