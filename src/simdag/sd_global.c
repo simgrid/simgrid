@@ -392,7 +392,7 @@ SD_task_t* SD_simulate(double how_long)
 {
   double total_time = 0.0; /* we stop the simulation when total_time >= how_long */
   double elapsed_time = 0.0;
-  SD_task_t task, dst;
+  SD_task_t task, task_safe, dst;
   SD_dependency_t dependency;
   surf_action_t action;
   SD_task_t *changed_tasks = NULL;
@@ -421,7 +421,7 @@ SD_task_t* SD_simulate(double how_long)
   sd_global->watch_point_reached = 0;
 
   /* explore the ready tasks */
-  xbt_swag_foreach(task, sd_global->ready_task_set) {
+  xbt_swag_foreach_safe(task, task_safe, sd_global->ready_task_set) {
     INFO1("Executing task '%s'", SD_task_get_name(task));
     if ((task->state_changed = __SD_task_try_to_run(task))) {
       changed_tasks[changed_task_number++] = task; /* replace NULL by the task */
