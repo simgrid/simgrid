@@ -58,14 +58,14 @@ void test(char *platform)
   parse_platform_file(platform);
 
   /*********************** CPU ***********************************/
-  DEBUG1("%p \n", surf_cpu_model);
+  DEBUG1("%p", surf_cpu_model);
   cpuA = surf_cpu_model->common_public->name_service("Cpu A");
   cpuB = surf_cpu_model->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
-  DEBUG2("%s : %p\n",
+  DEBUG2("%s : %p",
 	 surf_cpu_model->common_public->get_resource_name(cpuA), cpuA);
-  DEBUG2("%s : %p\n",
+  DEBUG2("%s : %p",
 	 surf_cpu_model->common_public->get_resource_name(cpuB), cpuB);
 
   /* Let's do something on it */
@@ -79,20 +79,20 @@ void test(char *platform)
   stateActionC = surf_cpu_model->common_public->action_get_state(actionC);	/* When you know actionA model type */
 
   /* And just look at the state of these tasks */
-  DEBUG2("actionA : %p (%s)\n", actionA, string_action(stateActionA));
-  DEBUG2("actionB : %p (%s)\n", actionB, string_action(stateActionB));
-  DEBUG2("actionC : %p (%s)\n", actionB, string_action(stateActionC));
+  DEBUG2("actionA : %p (%s)", actionA, string_action(stateActionA));
+  DEBUG2("actionB : %p (%s)", actionB, string_action(stateActionB));
+  DEBUG2("actionC : %p (%s)", actionB, string_action(stateActionC));
 
   /*********************** Network *******************************/
-  DEBUG1("%p \n", surf_network_model);
+  DEBUG1("%p", surf_network_model);
   cardA = surf_network_model->common_public->name_service("Cpu A");
   cardB = surf_network_model->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
-  DEBUG2("%s : %p\n",
+  DEBUG2("%s : %p",
 	 surf_network_model->common_public->get_resource_name(cardA),
 	 cardA);
-  DEBUG2("%s : %p\n",
+  DEBUG2("%s : %p",
 	 surf_network_model->common_public->get_resource_name(cardB),
 	 cardB);
 
@@ -105,37 +105,37 @@ void test(char *platform)
   do {
     surf_action_t action = NULL;
     now = surf_get_clock();
-    DEBUG1("Next Event : " "%g" "\n", now);
-    DEBUG0("\t CPU actions\n");
+    DEBUG1("Next Event : %g", now);
+    DEBUG0("\t CPU actions");
     while ((action =
 	    xbt_swag_extract(surf_cpu_model->common_public->states.
 			     failed_action_set))) {
-      DEBUG1("\t * Failed : %p\n", action);
+      DEBUG1("\t * Failed : %p", action);
       action->model_type->common_public->action_free(action);
     }
     while ((action =
 	    xbt_swag_extract(surf_cpu_model->common_public->states.
 			     done_action_set))) {
-      DEBUG1("\t * Done : %p\n", action);
+      DEBUG1("\t * Done : %p", action);
       action->model_type->common_public->action_free(action);
     }
-    DEBUG0("\t Network actions\n");
+    DEBUG0("\t Network actions");
     while ((action =
 	    xbt_swag_extract(surf_network_model->common_public->states.
 			     failed_action_set))) {
-      DEBUG1("\t * Failed : %p\n", action);
+      DEBUG1("\t * Failed : %p", action);
       action->model_type->common_public->action_free(action);
     }
     while ((action =
 	    xbt_swag_extract(surf_network_model->common_public->states.
 			     done_action_set))) {
-      DEBUG1("\t * Done : %p\n", action);
+      DEBUG1("\t * Done : %p", action);
       action->model_type->common_public->action_free(action);
     }
 
   } while (surf_solve()>=0.0);
 
-  DEBUG0("Simulation Terminated\n");
+  DEBUG0("Simulation Terminated");
 }
 
 #ifdef __BORLANDC__
