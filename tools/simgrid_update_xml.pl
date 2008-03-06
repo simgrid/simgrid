@@ -21,7 +21,7 @@ open INPUT, "$ARGV[0]" or die "Cannot open input file $ARGV[0]: $!\n";
 
 $output_string .=  "<?xml version='1.0'?>\n";
 $output_string .=  "<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n";
-$output_string .=  "<platform version=\"$toversion\">";
+$output_string .=  "<platform version=\"$toversion\">\n";
 
 my $line;
 while (defined($line = <INPUT>)) {
@@ -29,12 +29,11 @@ while (defined($line = <INPUT>)) {
     # eat the header, whatever form it has
     next if ($line =~ s/<\?xml[^>]*>//           && ! $line =~ /\S/); # just in case several tags are on the same line
     next if ($line =~ s/<!DOCTYPE[^>]*>//        && ! $line =~ /\S/);
-    next if ($line =~ s/<platform_description>// && ! $line =~ /\S/);
-    
     
     if ($line =~ s/<platform(_description)? *>//) {
 	$fromversion = 0;
-    } else if ($line =~ s/<platform(_description)? *version=['"]?([0-9.]*)["']?>//) {
+	next if !$line =~ /\S/;
+    } elsif ($line =~ s/<platform(_description)? *version=['"]?([0-9.]*)["']?>//) {
 	$fromversion = $1;
 	if ($fromversion == $toversion) {
 	    warn "Input platform file version is already $fromversion. This should be a no-op.\n";
@@ -42,6 +41,7 @@ while (defined($line = <INPUT>)) {
 	if ($fromversion > $toversion) {
 	    die "Input platform file version is more recent than this script (file version: $fromversion; script version: $toversion)\n";
 	}
+	next if !$line =~ /\S/;
     }
     
     if ($fromversion == 0) {
