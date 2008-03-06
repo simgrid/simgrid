@@ -14,7 +14,12 @@ XBT_LOG_NEW_SUBCATEGORY(amok,XBT_LOG_ROOT_CAT,"All AMOK categories");
 
 void amok_base_init(void) {
   gras_datadesc_type_t host_desc;
-     
+
+  /* Connect our log channels: that must be done manually under windows */
+  XBT_LOG_CONNECT(amok_bw, amok);
+    XBT_LOG_CONNECT(amok_bw_sat, amok_bw);
+  XBT_LOG_CONNECT(amok_pm, amok);
+   
   /* Build the datatype descriptions */
   host_desc = gras_datadesc_struct("s_xbt_host_t");
   gras_datadesc_struct_append(host_desc,"name",gras_datadesc_by_name("string"));

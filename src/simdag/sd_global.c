@@ -73,6 +73,11 @@ static void sd_config_init(void)
   if (_sd_init_status)
     return;			/* Already inited, nothing to do */
 
+  /* Connect our log channels: that must be done manually under windows */
+  XBT_LOG_CONNECT(sd_kernel, sd);
+  XBT_LOG_CONNECT(sd_task, sd);
+  XBT_LOG_CONNECT(sd_workstation, sd);
+   
   _sd_init_status = 1;
   _sd_cfg_set = xbt_cfg_new();
 

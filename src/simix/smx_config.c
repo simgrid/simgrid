@@ -66,6 +66,15 @@ void simix_config_init(void)
   if (_simix_init_status)
     return;			/* Already inited, nothing to do */
 
+  /* Connect our log channels: that must be done manually under windows */
+  XBT_LOG_CONNECT(simix_action, simix);
+  XBT_LOG_CONNECT(simix_deployment, simix);
+  XBT_LOG_CONNECT(simix_environment, simix);
+  XBT_LOG_CONNECT(simix_host, simix);
+  XBT_LOG_CONNECT(simix_kernel, simix);
+  XBT_LOG_CONNECT(simix_process, simix);
+  XBT_LOG_CONNECT(simix_synchro, simix);
+  
   _simix_init_status = 1;
   _simix_cfg_set = xbt_cfg_new();
 

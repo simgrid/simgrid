@@ -60,6 +60,33 @@ void gras_init(int *argc,char **argv) {
    *    - declare process specific data we need (without creating them) 
    */
   if (gras_running_process == 0) {
+     /* Connect our log channels: that must be done manually under windows */
+     XBT_LOG_CONNECT(gras_ddt, gras);
+       XBT_LOG_CONNECT(gras_ddt_cbps, gras_ddt);
+       XBT_LOG_CONNECT(gras_ddt_convert, gras_ddt);
+       XBT_LOG_CONNECT(gras_ddt_create, gras_ddt);
+       XBT_LOG_CONNECT(gras_ddt_exchange, gras_ddt);
+       XBT_LOG_CONNECT(gras_ddt_lexer, gras_ddt_parse);
+       XBT_LOG_CONNECT(gras_ddt_parse, gras_ddt);
+     
+     XBT_LOG_CONNECT(gras_modules, gras);
+     
+     XBT_LOG_CONNECT(gras_msg, gras);
+       XBT_LOG_CONNECT(gras_msg_read, gras_msg);
+       XBT_LOG_CONNECT(gras_msg_rpc, gras_msg);
+     
+     XBT_LOG_CONNECT(gras_timer, gras);
+     
+     XBT_LOG_CONNECT(gras_trp, gras);
+       XBT_LOG_CONNECT(gras_trp_file, gras_trp);
+       XBT_LOG_CONNECT(gras_trp_meas, gras_trp);
+       XBT_LOG_CONNECT(gras_trp_sg, gras_trp);
+       XBT_LOG_CONNECT(gras_trp_tcp, gras_trp);
+     
+     XBT_LOG_CONNECT(gras_virtu, gras);
+       XBT_LOG_CONNECT(gras_virtu_emul, gras_virtu);
+       XBT_LOG_CONNECT(gras_virtu_process, gras_virtu);
+     
      gras_trp_register();
      gras_msg_register();
   }

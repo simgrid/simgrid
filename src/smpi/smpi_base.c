@@ -43,6 +43,16 @@ void smpi_mpi_init()
 	int i;
 	smpi_host_data_t hdata;
 
+   /* Connect our log channels: that must be done manually under windows */
+   /* (should be done only once, not for each process) */
+   XBT_LOG_CONNECT(smpi_base, smpi);
+   XBT_LOG_CONNECT(smpi_bench, smpi);
+   XBT_LOG_CONNECT(smpi_kernel, smpi);
+   XBT_LOG_CONNECT(smpi_mpi, smpi);
+   XBT_LOG_CONNECT(smpi_receiver, smpi);
+   XBT_LOG_CONNECT(smpi_sender, smpi);
+   XBT_LOG_CONNECT(smpi_util, smpi);
+   
 	SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
 	smpi_global->running_hosts_count++;
 	SIMIX_mutex_unlock(smpi_global->running_hosts_count_mutex);

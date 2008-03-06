@@ -307,6 +307,20 @@ void surf_init(int *argc, char **argv)
 
   const char *initial_path;
 
+  /* Connect our log channels: that must be done manually under windows */
+  XBT_LOG_CONNECT(surf_cpu, surf);
+  XBT_LOG_CONNECT(surf_kernel, surf);
+  XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
+  XBT_LOG_CONNECT(surf_lagrange, surf);
+  XBT_LOG_CONNECT(surf_maxmin, surf);
+  XBT_LOG_CONNECT(surf_network_gtnets, surf);
+  XBT_LOG_CONNECT(surf_network, surf);
+  XBT_LOG_CONNECT(surf_parse, surf);
+  XBT_LOG_CONNECT(surf_sdp_out, surf);
+  XBT_LOG_CONNECT(surf_sdp, surf);
+  XBT_LOG_CONNECT(surf_timer, surf);
+  XBT_LOG_CONNECT(surf_workstation, surf);
+   
   xbt_init(argc, argv);
   if (!surf_path) {
 
