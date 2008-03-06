@@ -58,12 +58,13 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e);
 
 void xbt_backtrace_display(xbt_ex_t *e) {
   xbt_ex_setup_backtrace(e);
+   
 #ifdef HAVE_BACKTRACE
-  int i;
-
   if (e->used == 0) {
      fprintf(stderr,"(backtrace not set)\n");
   } else {	
+     int i;
+     
      fprintf(stderr,"Backtrace (displayed in thread %p):\n",
 	     (void*)xbt_thread_self());
      for (i=1; i<e->used; i++) /* no need to display "xbt_display_backtrace" */
