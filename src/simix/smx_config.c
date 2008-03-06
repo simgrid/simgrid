@@ -59,6 +59,15 @@ static void _simix_cfg_cb__network_model(const char *name, int pos)
 			    surf_network_model_description_size, val);
 }
 
+XBT_LOG_EXTERNAL_CATEGORY(simix);
+XBT_LOG_EXTERNAL_CATEGORY(simix_action);
+XBT_LOG_EXTERNAL_CATEGORY(simix_deployment);
+XBT_LOG_EXTERNAL_CATEGORY(simix_environment);
+XBT_LOG_EXTERNAL_CATEGORY(simix_host);
+XBT_LOG_EXTERNAL_CATEGORY(simix_kernel);
+XBT_LOG_EXTERNAL_CATEGORY(simix_process);
+XBT_LOG_EXTERNAL_CATEGORY(simix_synchro);
+
 /* create the config set and register what should be */
 void simix_config_init(void)
 {

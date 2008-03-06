@@ -46,6 +46,24 @@ static void gras_sigint_handler(int sig) {
 }
 #endif
 
+XBT_LOG_EXTERNAL_CATEGORY(gras_ddt);
+XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_cbps);
+XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_convert);
+XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_create);
+XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_exchange);
+XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_lexer);
+XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_parse);
+XBT_LOG_EXTERNAL_CATEGORY(gras_modules);
+XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
+XBT_LOG_EXTERNAL_CATEGORY(gras_msg_read);
+XBT_LOG_EXTERNAL_CATEGORY(gras_msg_rpc);
+XBT_LOG_EXTERNAL_CATEGORY(gras_timer);
+XBT_LOG_EXTERNAL_CATEGORY(gras_trp);
+XBT_LOG_EXTERNAL_CATEGORY(gras_trp_meas);
+XBT_LOG_EXTERNAL_CATEGORY(gras_virtu);
+XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_emul);
+XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_process);
+
 void gras_init(int *argc,char **argv) {
 
 	gras_procdata_t *pd;
@@ -78,10 +96,7 @@ void gras_init(int *argc,char **argv) {
      XBT_LOG_CONNECT(gras_timer, gras);
      
      XBT_LOG_CONNECT(gras_trp, gras);
-       XBT_LOG_CONNECT(gras_trp_file, gras_trp);
        XBT_LOG_CONNECT(gras_trp_meas, gras_trp);
-       XBT_LOG_CONNECT(gras_trp_sg, gras_trp);
-       XBT_LOG_CONNECT(gras_trp_tcp, gras_trp);
      
      XBT_LOG_CONNECT(gras_virtu, gras);
        XBT_LOG_CONNECT(gras_virtu_emul, gras_virtu);

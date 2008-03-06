@@ -1,6 +1,13 @@
 #include "private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
+XBT_LOG_EXTERNAL_CATEGORY(smpi_base);
+XBT_LOG_EXTERNAL_CATEGORY(smpi_bench);
+XBT_LOG_EXTERNAL_CATEGORY(smpi_kernel);
+XBT_LOG_EXTERNAL_CATEGORY(smpi_mpi);
+XBT_LOG_EXTERNAL_CATEGORY(smpi_receiver);
+XBT_LOG_EXTERNAL_CATEGORY(smpi_sender);
+XBT_LOG_EXTERNAL_CATEGORY(smpi_util);
 
 smpi_mpi_global_t smpi_mpi_global = NULL;
 

@@ -300,6 +300,24 @@ void surf_action_set_data(surf_action_t action, void *data)
   action->data = data;
 }
 
+XBT_LOG_EXTERNAL_CATEGORY(surf_cpu);
+XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
+XBT_LOG_EXTERNAL_CATEGORY(surf_lagrange);
+XBT_LOG_EXTERNAL_CATEGORY(surf_lagrange_dichotomy);
+XBT_LOG_EXTERNAL_CATEGORY(surf_maxmin);
+XBT_LOG_EXTERNAL_CATEGORY(surf_network);
+XBT_LOG_EXTERNAL_CATEGORY(surf_parse);
+XBT_LOG_EXTERNAL_CATEGORY(surf_timer);
+XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
+
+#ifdef HAVE_SDP
+  XBT_LOG_EXTERNAL_CATEGORY(surf_sdp_out);
+  XBT_LOG_EXTERNAL_CATEGORY(surf_sdp);
+#endif
+#ifdef HAVE_GTNETS
+  XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
+#endif
+
 void surf_init(int *argc, char **argv)
 {
   int i, j;
@@ -310,16 +328,21 @@ void surf_init(int *argc, char **argv)
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);
-  XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
   XBT_LOG_CONNECT(surf_lagrange, surf);
+    XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
   XBT_LOG_CONNECT(surf_maxmin, surf);
-  XBT_LOG_CONNECT(surf_network_gtnets, surf);
   XBT_LOG_CONNECT(surf_network, surf);
   XBT_LOG_CONNECT(surf_parse, surf);
-  XBT_LOG_CONNECT(surf_sdp_out, surf);
-  XBT_LOG_CONNECT(surf_sdp, surf);
   XBT_LOG_CONNECT(surf_timer, surf);
   XBT_LOG_CONNECT(surf_workstation, surf);
+
+#ifdef HAVE_SDP
+  XBT_LOG_CONNECT(surf_sdp_out, surf);
+  XBT_LOG_CONNECT(surf_sdp, surf);
+#endif
+#ifdef HAVE_GTNETS
+  XBT_LOG_CONNECT(surf_network_gtnets, surf);
+#endif
    
   xbt_init(argc, argv);
   if (!surf_path) {

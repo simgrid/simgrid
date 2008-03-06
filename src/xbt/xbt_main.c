@@ -23,6 +23,29 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module,xbt, "module handling");
 char *xbt_binary_name=NULL; /* Mandatory to retrieve neat backtraces */
 int xbt_initialized=0;
 
+XBT_LOG_EXTERNAL_CATEGORY(graphxml_parse);
+XBT_LOG_EXTERNAL_CATEGORY(log);
+XBT_LOG_EXTERNAL_CATEGORY(module);
+XBT_LOG_EXTERNAL_CATEGORY(peer);
+XBT_LOG_EXTERNAL_CATEGORY(strbuff);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_add);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_collapse);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_cursor);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_elm);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_multi);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_remove);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_search);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_ex);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_fifo);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_graph);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_matrix);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_queue);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_set);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_sync_os);
+
 /** @brief Initialize the xbt mechanisms. */
 void 
 xbt_init(int *argc, char **argv) {
@@ -38,14 +61,14 @@ xbt_init(int *argc, char **argv) {
   XBT_LOG_CONNECT(peer, xbt);
   XBT_LOG_CONNECT(strbuff, xbt);
   XBT_LOG_CONNECT(xbt_cfg, xbt);
-  XBT_LOG_CONNECT(xbt_dict_add, xbt_dict);
-  XBT_LOG_CONNECT(xbt_dict_collapse, xbt_dict);
-  XBT_LOG_CONNECT(xbt_dict_cursor, xbt_dict);
-  XBT_LOG_CONNECT(xbt_dict_elm, xbt_dict);
-  XBT_LOG_CONNECT(xbt_dict_multi, xbt_dict);
-  XBT_LOG_CONNECT(xbt_dict_remove, xbt_dict);
-  XBT_LOG_CONNECT(xbt_dict_search, xbt_dict);
   XBT_LOG_CONNECT(xbt_dict, xbt);
+    XBT_LOG_CONNECT(xbt_dict_add, xbt_dict);
+    XBT_LOG_CONNECT(xbt_dict_collapse, xbt_dict);
+    XBT_LOG_CONNECT(xbt_dict_cursor, xbt_dict);
+    XBT_LOG_CONNECT(xbt_dict_elm, xbt_dict);
+    XBT_LOG_CONNECT(xbt_dict_multi, xbt_dict);
+    XBT_LOG_CONNECT(xbt_dict_remove, xbt_dict);
+    XBT_LOG_CONNECT(xbt_dict_search, xbt_dict);
   XBT_LOG_CONNECT(xbt_dyn, xbt);
   XBT_LOG_CONNECT(xbt_ex, xbt);
   XBT_LOG_CONNECT(xbt_fifo, xbt);
@@ -54,7 +77,6 @@ xbt_init(int *argc, char **argv) {
   XBT_LOG_CONNECT(xbt_queue, xbt);
   XBT_LOG_CONNECT(xbt_set, xbt);
   XBT_LOG_CONNECT(xbt_sync_os, xbt);
-  XBT_LOG_CONNECT(xbt_sync_rl, xbt);
    
   xbt_binary_name = xbt_strdup(argv[0]);
   srand((unsigned int)time(NULL));

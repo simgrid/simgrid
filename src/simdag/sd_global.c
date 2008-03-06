@@ -66,6 +66,10 @@ static void _sd_cfg_cb__network_model(const char *name, int pos)
 			    surf_network_model_description_size, val);
 }
 
+XBT_LOG_EXTERNAL_CATEGORY(sd_kernel);
+XBT_LOG_EXTERNAL_CATEGORY(sd_task);
+XBT_LOG_EXTERNAL_CATEGORY(sd_workstation);
+
 /* create the config set and register what should be */
 static void sd_config_init(void)
 {

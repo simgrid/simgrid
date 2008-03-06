@@ -11,6 +11,9 @@
 #include "amok/base.h"
 
 XBT_LOG_NEW_SUBCATEGORY(amok,XBT_LOG_ROOT_CAT,"All AMOK categories");
+XBT_LOG_EXTERNAL_CATEGORY(amok_bw);
+XBT_LOG_EXTERNAL_CATEGORY(amok_bw_sat);
+XBT_LOG_EXTERNAL_CATEGORY(amok_pm);
 
 void amok_base_init(void) {
   gras_datadesc_type_t host_desc;
