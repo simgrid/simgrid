@@ -113,10 +113,10 @@ typedef enum {
  */
 #if defined(__STRICT_ANSI__) || defined(_MSC_VER)
 # define _XBT_LOG_PARENT_INITIALIZER(parent) NULL
-# define XBT_LOG_CONNECT(parent,child)       _XBT_LOGV(child).parent = &_XBT_LOGV(parent)
+# define XBT_LOG_CONNECT(parent_cat,child)       _XBT_LOGV(child).parent = &_XBT_LOGV(parent_cat)
 #else 
 # define _XBT_LOG_PARENT_INITIALIZER(parent) &_XBT_LOGV(parent)
-# define XBT_LOG_CONNECT(parent,child)       xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent))
+# define XBT_LOG_CONNECT(parent_cat,child)     /*  xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent_cat))*/
 #endif
 
 /* XBT_LOG_NEW_SUBCATEGORY_helper:
