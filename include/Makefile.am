@@ -51,10 +51,11 @@ nobase_include_HEADERS = \
 	amok/peermanagement.h \
 	amok/bandwidth.h
 
-surf/surfxml.h:
-	$(MAKE) -C ../src ../include/surf/surfxml.h
+surf/simgrid_dtd.h:
+	$(MAKE) -C ../src ../include/surf/simgrid_dtd.h
 
 xbt/graphxml.h:
 	$(MAKE) -C ../src ../include/xbt/graphxml.h
+
 
 include $(top_srcdir)/acmacro/dist-files.mk
