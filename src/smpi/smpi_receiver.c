@@ -50,8 +50,6 @@ int smpi_receiver(int argc, char **argv)
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
 	do {
-		request = NULL;
-		message = NULL;
 
 		// FIXME: better algorithm, maybe some kind of balanced tree? or a heap?
 
@@ -71,11 +69,17 @@ int smpi_receiver(int argc, char **argv)
 				   	(MPI_ANY_SOURCE == request->src || request->src == message->src) &&
 				   	(MPI_ANY_TAG == request->tag || request->tag == message->tag)) {
 					xbt_fifo_remove_item(request_queue, request_item);
+					xbt_fifo_free_item(request_item);
 					xbt_fifo_remove_item(message_queue, message_item);
+					xbt_fifo_free_item(message_item);
 					goto stopsearch;
 				}
 			}
 		}
+
+		request = NULL;
+		message = NULL;
+
 stopsearch:
 		SIMIX_mutex_unlock(message_queue_mutex);
 		SIMIX_mutex_unlock(request_queue_mutex);
