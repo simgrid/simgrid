@@ -1,10 +1,10 @@
-#! /bin/bash
+#! /bin/sh
 
 # libtoolT - Provide generalized library-building support services.
 # Generated automatically by  (GNU simgrid 3.3-svn)
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
+# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 # Free Software Foundation, Inc.
 #
 # This file is part of GNU Libtool:
@@ -44,10 +44,10 @@ available_tags=" CXX GCJ"
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host ubuntu:
+# Libtool was configured on host blaise:
 
 # Shell to use when invoking shell scripts.
-SHELL="/bin/bash"
+SHELL="/bin/sh"
 
 # Whether or not to build shared libraries.
 build_libtool_libs=yes
@@ -66,12 +66,12 @@ fast_install=yes
 
 # The host system.
 host_alias=
-host=x86_64-unknown-linux-gnu
+host=i686-pc-linux-gnu
 host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=x86_64-unknown-linux-gnu
+build=i686-pc-linux-gnu
 build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
@@ -97,7 +97,7 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/bin/ld -m elf_x86_64"
+LD="/usr/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -147,7 +147,7 @@ pic_flag=" -fPIC -DPIC"
 pic_mode=default
 
 # What is the maximum length of a command?
-max_cmd_len=32768
+max_cmd_len=98304
 
 # Does compiler simultaneously support -c and -o options?
 compiler_c_o="yes"
@@ -200,7 +200,7 @@ soname_spec="\${libname}\${release}\${shared_ext}\$major"
 
 # Commands used to build and install an old-style archive.
 RANLIB="ranlib"
-old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs\$old_deplibs~\$RANLIB \$oldlib"
+old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs~\$RANLIB \$oldlib"
 old_postinstall_cmds="chmod 644 \$oldlib~\$RANLIB \$oldlib"
 old_postuninstall_cmds=""
 
@@ -242,6 +242,10 @@ predeps=""
 # Dependencies to place after the objects being linked to create a
 # shared library.
 postdeps=""
+
+# The directories searched by this compiler when creating a shared
+# library
+compiler_lib_search_dirs=""
 
 # The library search path used internally by the compiler when linking
 # a shared library.
@@ -325,10 +329,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/x86_64-linux-gnu/4.1.2/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../../x86_64-linux-gnu/lib/x86_64-linux-gnu/4.1.2/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../../x86_64-linux-gnu/lib/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../x86_64-linux-gnu/4.1.2/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../ /lib/x86_64-linux-gnu/4.1.2/ /lib/ /usr/lib/x86_64-linux-gnu/4.1.2/ /usr/lib/"
+sys_lib_search_path_spec="/usr/lib/gcc/i486-linux-gnu/4.2.3 /usr/lib /lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/lib/R/lib /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -343,7 +347,7 @@ export_symbols_cmds="\$NM \$libobjs \$convenience | \$global_symbol_pipe | \$SED
 extract_expsyms_cmds=""
 
 # Symbols that should not be listed in the preloaded symbols.
-exclude_expsyms="_GLOBAL_OFFSET_TABLE_"
+exclude_expsyms="_GLOBAL_OFFSET_TABLE_|_GLOBAL__F[ID]_.*"
 
 # Symbols that must always be exported.
 include_expsyms=""
@@ -7349,10 +7353,10 @@ disable_libs=static
 # End:
 # ### BEGIN LIBTOOL TAG CONFIG: CXX
 
-# Libtool was configured on host ubuntu:
+# Libtool was configured on host blaise:
 
 # Shell to use when invoking shell scripts.
-SHELL="/bin/bash"
+SHELL="/bin/sh"
 
 # Whether or not to build shared libraries.
 build_libtool_libs=yes
@@ -7371,12 +7375,12 @@ fast_install=yes
 
 # The host system.
 host_alias=
-host=x86_64-unknown-linux-gnu
+host=i686-pc-linux-gnu
 host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=x86_64-unknown-linux-gnu
+build=i686-pc-linux-gnu
 build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
@@ -7402,7 +7406,7 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/bin/ld -m elf_x86_64"
+LD="/usr/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -7452,7 +7456,7 @@ pic_flag=" -fPIC -DPIC"
 pic_mode=default
 
 # What is the maximum length of a command?
-max_cmd_len=32768
+max_cmd_len=98304
 
 # Does compiler simultaneously support -c and -o options?
 compiler_c_o="yes"
@@ -7505,7 +7509,7 @@ soname_spec="\${libname}\${release}\${shared_ext}\$major"
 
 # Commands used to build and install an old-style archive.
 RANLIB="ranlib"
-old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs\$old_deplibs~\$RANLIB \$oldlib"
+old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs~\$RANLIB \$oldlib"
 old_postinstall_cmds="chmod 644 \$oldlib~\$RANLIB \$oldlib"
 old_postuninstall_cmds=""
 
@@ -7531,11 +7535,11 @@ striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../../lib64/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.1.2/crtbeginS.o"
+predep_objects="/usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.2.3/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc/x86_64-linux-gnu/4.1.2/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../../lib64/crtn.o"
+postdep_objects="/usr/lib/gcc/i486-linux-gnu/4.2.3/crtendS.o /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib/crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -7545,9 +7549,13 @@ predeps=""
 # shared library.
 postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
+# The directories searched by this compiler when creating a shared
+# library
+compiler_lib_search_dirs="/usr/lib/gcc/i486-linux-gnu/4.2.3 /usr/lib/gcc/i486-linux-gnu/4.2.3 /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib /lib/../lib /usr/lib/../lib /usr/lib/gcc/i486-linux-gnu/4.2.3/../../.."
+
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc/x86_64-linux-gnu/4.1.2 -L/usr/lib/gcc/x86_64-linux-gnu/4.1.2 -L/usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64"
+compiler_lib_search_path="-L/usr/lib/gcc/i486-linux-gnu/4.2.3 -L/usr/lib/gcc/i486-linux-gnu/4.2.3 -L/usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/i486-linux-gnu/4.2.3/../../.."
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
@@ -7627,10 +7635,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/x86_64-linux-gnu/4.1.2/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../../x86_64-linux-gnu/lib/x86_64-linux-gnu/4.1.2/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../../x86_64-linux-gnu/lib/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../x86_64-linux-gnu/4.1.2/ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/../../../ /lib/x86_64-linux-gnu/4.1.2/ /lib/ /usr/lib/x86_64-linux-gnu/4.1.2/ /usr/lib/"
+sys_lib_search_path_spec="/usr/lib/gcc/i486-linux-gnu/4.2.3 /usr/lib /lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/lib/R/lib /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7645,7 +7653,7 @@ export_symbols_cmds="\$NM \$libobjs \$convenience | \$global_symbol_pipe | \$SED
 extract_expsyms_cmds=""
 
 # Symbols that should not be listed in the preloaded symbols.
-exclude_expsyms=""
+exclude_expsyms="_GLOBAL_OFFSET_TABLE_|_GLOBAL__F[ID]_.*"
 
 # Symbols that must always be exported.
 include_expsyms=""
@@ -7654,10 +7662,10 @@ include_expsyms=""
 
 # ### BEGIN LIBTOOL TAG CONFIG: GCJ
 
-# Libtool was configured on host ubuntu:
+# Libtool was configured on host blaise:
 
 # Shell to use when invoking shell scripts.
-SHELL="/bin/bash"
+SHELL="/bin/sh"
 
 # Whether or not to build shared libraries.
 build_libtool_libs=yes
@@ -7676,12 +7684,12 @@ fast_install=yes
 
 # The host system.
 host_alias=
-host=x86_64-unknown-linux-gnu
+host=i686-pc-linux-gnu
 host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=x86_64-unknown-linux-gnu
+build=i686-pc-linux-gnu
 build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
@@ -7753,14 +7761,14 @@ shrext_cmds='.so'
 exeext=""
 
 # Additional compiler flags for building library objects.
-pic_flag=""
+pic_flag=" -fPIC"
 pic_mode=default
 
 # What is the maximum length of a command?
-max_cmd_len=32768
+max_cmd_len=98304
 
 # Does compiler simultaneously support -c and -o options?
-compiler_c_o="no"
+compiler_c_o="yes"
 
 # Must we lock files when doing compilation?
 need_locks="no"
@@ -7810,7 +7818,7 @@ soname_spec="\${libname}\${release}\${shared_ext}\$major"
 
 # Commands used to build and install an old-style archive.
 RANLIB="ranlib"
-old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs\$old_deplibs~\$RANLIB \$oldlib"
+old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs~\$RANLIB \$oldlib"
 old_postinstall_cmds="chmod 644 \$oldlib~\$RANLIB \$oldlib"
 old_postuninstall_cmds=""
 
@@ -7852,6 +7860,10 @@ predeps=""
 # Dependencies to place after the objects being linked to create a
 # shared library.
 postdeps=""
+
+# The directories searched by this compiler when creating a shared
+# library
+compiler_lib_search_dirs=""
 
 # The library search path used internally by the compiler when linking
 # a shared library.
@@ -7935,10 +7947,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=""
+sys_lib_search_path_spec="/usr/lib/gcc/i486-linux-gnu/4.2.3 /usr/lib /lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/lib/R/lib /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7953,7 +7965,7 @@ export_symbols_cmds="\$NM \$libobjs \$convenience | \$global_symbol_pipe | \$SED
 extract_expsyms_cmds=""
 
 # Symbols that should not be listed in the preloaded symbols.
-exclude_expsyms="_GLOBAL_OFFSET_TABLE_"
+exclude_expsyms="_GLOBAL_OFFSET_TABLE_|_GLOBAL__F[ID]_.*"
 
 # Symbols that must always be exported.
 include_expsyms=""
