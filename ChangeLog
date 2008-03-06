@@ -55,6 +55,9 @@ SimGrid (3.3-cvs) unstable; urgency=low
   * Make dictionary internal table dynamic. No need to specify its size
     anymore; functions xbt_dict_new_ext() and xbt_dict_hashsize_set()
     thus dropped. [Mt].
+  * Make sure the log channels are organized as a tree under windows
+    (because of ANSI C compatibility issue, any channel were child of
+     root directly) [Mt].
 
  SURF:
   * Cleaned many thing in surf and fixed a few bugs [AL].
