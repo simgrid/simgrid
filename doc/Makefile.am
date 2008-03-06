@@ -6,7 +6,7 @@
 
 
 DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") \
- $(shell find @srcdir@ -name "*.doc")
+ $(shell find @srcdir@ -name "*.doc" |grep -v logcategories.doc)
 FIGS=simgrid_modules.fig simgrid_modules2.fig amok_bw_test.fig amok_bw_sat.fig
 PNGS=$(patsubst %.fig,%.png,$(FIGS)) webcruft/simgrid_logo.png webcruft/simgrid_logo_small.png webcruft/poster_thumbnail.png
 
@@ -69,11 +69,11 @@ publish:
 endif
 
 ./logcategories.doc: $(DOCSOURCES)
-	pwd=`pwd`; rm $$pwd/logcategories.doc; set -e; \
+	pwd=`pwd`; rm -f $$pwd/logcategories.doc; set -e; \
 	echo "/* Generated file, do not edit */"          > $$pwd/logcategories.doc; \
 	echo "/** \addtogroup XBT_log_cats"              >> $$pwd/logcategories.doc; \
 	echo "    @{"                                    >> $$pwd/logcategories.doc; \
-	cd @top_srcdir@/src; ./xbt_log_extract_hierarchy >> $$pwd/logcategories.doc; \
+	cd @top_srcdir@/src; ../tools/doxygen/xbt_log_extract_hierarchy.pl >> $$pwd/logcategories.doc; \
 	echo "@}*/"                                      >> $$pwd/logcategories.doc;
 
 install-data-local: 
