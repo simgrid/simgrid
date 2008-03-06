@@ -93,13 +93,39 @@ typedef enum {
 /* The root of the category hierarchy. */
 #define XBT_LOG_ROOT_CAT   root
 
+/* In stric ansi C, we are not allowed to initialize a variable with 
+ * a non-constant value. But the whole tree of categories is
+ * connected by setting the address of the parent category as a field
+ * of the child one.
+ * 
+ * Unfortunately, Visual C builder does not target any standard
+ * compliance, and C99 is not an exception to this unfortunate rule.
+ * 
+ * So, we work this around by adding a XBT_LOG_CONNECT() macro,
+ * allowing to connect a child to its parent. It should be used
+ * during the initialization of the code, before the child category
+ * gets used.
+ * 
+ * When compiling with gcc, this is not necessary (XBT_LOG_CONNECT
+ * defines to nothing). When compiling with MSVC, this is needed if
+ * you don't want to see your child category become a child of root
+ * directly.
+ */
+#if defined(__STRICT_ANSI__) || defined(_MSC_VER)
+# define _XBT_LOG_PARENT_INITIALIZER(parent) NULL
+# define XBT_LOG_CONNECT(parent,child)       _XBT_LOGV(child).parent = &_XBT_LOGV(parent)
+#else 
+# define _XBT_LOG_PARENT_INITIALIZER(parent) &_XBT_LOGV(parent)
+# define XBT_LOG_CONNECT(parent,child)       xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent))
+#endif
+
 /* XBT_LOG_NEW_SUBCATEGORY_helper:
  * Implementation of XBT_LOG_NEW_SUBCATEGORY, which must declare "extern parent" in addition
  * to avoid an extra declaration of root when XBT_LOG_NEW_SUBCATEGORY is called by
  * XBT_LOG_NEW_CATEGORY */
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
     XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {       \
-        &_XBT_LOGV(parent),                             \
+        _XBT_LOG_PARENT_INITIALIZER(parent),            \
         NULL /* firstChild */,                          \
 	NULL /* nextSibling */,                         \
         #catName,                                       \
@@ -158,28 +184,9 @@ typedef enum {
  * Creates a new subcategory of the root category and makes it the default
  * (used by macros that don't explicitly specify a category).
  */
-/* Damnit Malek. There is no difference between the WINDOWS version and the regular one.
- * Moreover, portability cruft MUST be kept out of this file. If you need another definition of EXPORT_NO_IMPORT, do so in misc, not here.
- * Killing your crufty definition once again (I hate dupplicated code). Please do not readd them without a good justification
-*/
-#if (defined(_WIN32) && !defined(DLL_STATIC))
-# define XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc) \
-	XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(cname) = {       \
-        NULL, NULL, NULL,                    \
-		#cname, xbt_log_priority_uninitialized, 1, \
-        NULL, NULL, 1                                          \
-    }
-# define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
-	XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc); \
-	XBT_LOG_DEFAULT_CATEGORY(cname)
-    
-#else
 # define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
     XBT_LOG_NEW_CATEGORY(cname,desc);                   \
     XBT_LOG_DEFAULT_CATEGORY(cname)
-#endif
-
-
 
 /**
  * \ingroup XBT_log  
@@ -265,16 +272,6 @@ struct xbt_log_event_s {
  */
 XBT_PUBLIC(void) xbt_log_threshold_set(xbt_log_category_t cat,
 				       e_xbt_log_priority_t thresholdPriority);
-
-/**
- * \ingroup XBT_log_implem  
- * \param cat the category (not only its name, but the variable)
- * \param parent the parent cat
- *
- * Programatically alter a category's parent (don't use).
- */
-XBT_PUBLIC(void) xbt_log_parent_set(xbt_log_category_t cat,
-				xbt_log_category_t parent);
 
 /**
  * \ingroup XBT_log_implem  

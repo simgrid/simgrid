@@ -25,4 +25,15 @@ struct xbt_log_layout_s {
 } ;
 
 
+/**
+ * \ingroup XBT_log_implem  
+ * \param cat the category (not only its name, but the variable)
+ * \param parent the parent cat
+ *
+ * Programatically alter a category's parent (don't use).
+ */
+XBT_PUBLIC(void) xbt_log_parent_set(xbt_log_category_t cat,
+				    xbt_log_category_t parent);
+
+
 #endif /* LOG_PRIVATE_H */
