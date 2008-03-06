@@ -1,10 +1,10 @@
 /* XML processor/application API for xbt/graphxml.dtd.
- * Generated 2007/08/09 10:57:49.
+ * Generated 2008/03/06 08:55:12.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp).
+ * (Id: flexml.pl,v 1.63 2007/10/11 14:46:08 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
