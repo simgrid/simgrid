@@ -559,8 +559,8 @@ void free_string(void*);
 void init_data(void);
 void parse_route_elem(void);
 
-/* surf parse file related */
-void parse_platform_file(const char* file);
+/* surf parse file related (public because called from a test suite) */
+XBT_PUBLIC(void) parse_platform_file(const char* file);
 
 /* Stores the sets */
 XBT_PUBLIC_DATA(xbt_dict_t) set_list;
