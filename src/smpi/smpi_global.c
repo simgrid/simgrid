@@ -125,16 +125,15 @@ void smpi_global_init()
 	int size = SIMIX_host_get_number();
 
 	/* Connect our log channels: that must be done manually under windows */
-        /* (should be done only once, not for each process) */
-	#ifdef XBT_LOG_CONNECT
-        XBT_LOG_CONNECT(smpi_base, smpi);
+#ifdef XBT_LOG_CONNECT
+	XBT_LOG_CONNECT(smpi_base, smpi);
 	XBT_LOG_CONNECT(smpi_bench, smpi);
 	XBT_LOG_CONNECT(smpi_kernel, smpi);
 	XBT_LOG_CONNECT(smpi_mpi, smpi);
 	XBT_LOG_CONNECT(smpi_receiver, smpi);
 	XBT_LOG_CONNECT(smpi_sender, smpi);
 	XBT_LOG_CONNECT(smpi_util, smpi);
-	#endif
+#endif
 
 	smpi_global                                      = xbt_new(s_smpi_global_t, 1);
 	// config variable
