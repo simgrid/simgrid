@@ -199,7 +199,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
   bw=amok_bw_matrix(peers,buf_size,msg_size,msg_amount,min_duration);
 
   INFO2("Did all BW tests in %ld sec (%.2f simulated(?) sec)",
-	  time(NULL)-begin,gras_os_time()-begin_simulated);
+	 (long int) (time(NULL)-begin),gras_os_time()-begin_simulated);
 
   /* Do the test with saturation */
   bw_sat=xbt_new(double,nb_peers*nb_peers);
@@ -243,7 +243,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
       amok_bw_saturate_stop(h1->name,h1->port,&time1,&bw1);
 
       INFO2("Did an iteration on saturation pair in %ld sec (%.2f simulated sec)",
-	      time(NULL)-begin, gras_os_time()-begin_simulated);
+	      (long int) (time(NULL)-begin), gras_os_time()-begin_simulated);
  	INFO2("the duration of the experiment >>>>> %.3f sec (%.3f bandwidth)",time1,bw1);
     }
   }
