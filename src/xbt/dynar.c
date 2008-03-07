@@ -553,15 +553,27 @@ xbt_dynar_member(xbt_dynar_t  const dynar,
  */
 void *
 xbt_dynar_push_ptr(xbt_dynar_t  const dynar) {
-  return xbt_dynar_insert_at_ptr(dynar, dynar->used);    
+  void *res;
+
+  /* we have to inline xbt_dynar_insert_at_ptr here to make sure that 
+    dynar->used don't change between reading it and getting the lock 
+   within xbt_dynar_insert_at_ptr */
+  _dynar_lock(dynar);
+  res = _xbt_dynar_insert_at_ptr(dynar,dynar->used);
+  _dynar_unlock(dynar);
+  return res;
 }
 
 /** @brief Add an element at the end of the dynar */
 void
 xbt_dynar_push(xbt_dynar_t  const dynar,
                 const void   * const src) {
-  /* sanity checks done by insert_at */
-  xbt_dynar_insert_at(dynar, dynar->used, src); 
+  _dynar_lock(dynar);
+  /* checks done in xbt_dynar_insert_at_ptr */
+  memcpy(_xbt_dynar_insert_at_ptr(dynar,dynar->used),
+	 src,
+	 dynar->elmsize);
+  _dynar_unlock(dynar);
 }
 
 /** @brief Mark the last dynar's element as unused and return a pointer to it.
@@ -589,7 +601,9 @@ xbt_dynar_pop(xbt_dynar_t  const dynar,
 
   /* sanity checks done by remove_at */
   DEBUG1("Pop %p",(void*)dynar);
-  xbt_dynar_remove_at(dynar, dynar->used-1, dst);
+  _dynar_lock(dynar);
+  _xbt_dynar_remove_at(dynar, dynar->used-1, dst);
+  _dynar_unlock(dynar);
 }
 
 /** @brief Add an element at the begining of the dynar.
