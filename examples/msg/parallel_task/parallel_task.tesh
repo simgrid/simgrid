@@ -3,5 +3,6 @@
 p Testing a simple master/slave example application
 
 $ $SG_TEST_EXENV parallel_task/parallel_task$EXEEXT ${srcdir:=.}/small_platform.xml
-> [Fafard:test:(1) 0.000000] [msg_test/INFO] Goodbye now!
-> [0.000000] [msg_test/INFO] Simulation time 0.00594081
+> [0.000000] [xbt_cfg/INFO] type in variable = 2
+> [Fafard:test:(1) 0.009378] [msg_test/INFO] Goodbye now!
+> [0.009378] [msg_test/INFO] Simulation time 0.00937836
