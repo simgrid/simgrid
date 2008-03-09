@@ -49,10 +49,11 @@ int test(int argc, char *argv[])
 				   NULL);
   MSG_parallel_task_execute(ptask);
 
+  /* There is no need to free that! */
+/*   free(communication_amount); */
+/*   free(computation_amount); */
   
   INFO0("Goodbye now!");
-  free(communication_amount);
-  free(computation_amount);
   free(slaves);
   return 0;
 } 
@@ -62,7 +63,7 @@ MSG_error_t test_all(const char *platform_file)
 {
   MSG_error_t res = MSG_OK;
 
-  /* MSG_config("workstation_model","KCCFLN05"); */
+  MSG_config("workstation_model","ptask_L07");
   MSG_set_channel_number(1);
   MSG_create_environment(platform_file);
 
