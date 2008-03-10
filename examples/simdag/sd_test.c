@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
   route = SD_route_get_list(w1, w2);
   route_size = SD_route_get_size(w1, w2);
   for (i = 0; i < route_size; i++) {
-    INFO3("\tLink %s: latency = %f, bandwidth = %f", SD_link_get_name(route[i]),
+    INFO3("   Link %s: latency = %f, bandwidth = %f", SD_link_get_name(route[i]),
 	  SD_link_get_current_latency(route[i]), SD_link_get_current_bandwidth(route[i]));
   }
   INFO2("Route latency = %f, route bandwidth = %f", SD_route_get_current_latency(w1, w2),
