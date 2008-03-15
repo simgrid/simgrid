@@ -21,7 +21,6 @@ typedef struct surf_action_network_Constant {
   s_surf_action_t generic_action;
   double latency;
   double lat_current;
-  lmm_variable_t variable;
   double rate;
   int suspended;
   network_card_Constant_t src;
@@ -29,9 +28,6 @@ typedef struct surf_action_network_Constant {
 } s_surf_action_network_Constant_t, *surf_action_network_Constant_t;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
-
-static lmm_system_t network_maxmin_system = NULL;
-static void (*network_solve) (lmm_system_t) = NULL;
 
 static int card_number = 0;
 static int host_number = 0;
@@ -122,9 +118,6 @@ static int action_free(surf_action_t action)
   action->using--;
   if (!action->using) {
     xbt_swag_remove(action, action->state_set);
-    if (((surf_action_network_Constant_t) action)->variable)
-      lmm_variable_free(network_maxmin_system,
-			((surf_action_network_Constant_t) action)->variable);
     free(action);
     return 1;
   }
@@ -149,12 +142,6 @@ static void action_recycle(surf_action_t action)
 static void action_change_state(surf_action_t action,
 				e_surf_action_state_t state)
 {
-/*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
-/*     if(((surf_action_network_Constant_t)action)->variable) { */
-/*       lmm_variable_disable(network_maxmin_system, ((surf_action_network_Constant_t)action)->variable); */
-/*       ((surf_action_network_Constant_t)action)->variable = NULL; */
-/*     } */
-
   surf_action_change_state(action, state);
   return;
 }
@@ -288,21 +275,12 @@ static xbt_dict_t get_properties(void *link)
 static void action_suspend(surf_action_t action)
 {
   ((surf_action_network_Constant_t) action)->suspended = 1;
-  lmm_update_variable_weight(network_maxmin_system,
-			     ((surf_action_network_Constant_t) action)->
-			     variable, 0.0);
 }
 
 static void action_resume(surf_action_t action)
 {
-  if (((surf_action_network_Constant_t) action)->suspended) {
-    lmm_update_variable_weight(network_maxmin_system,
-			       ((surf_action_network_Constant_t) action)->
-			       variable,
-			       ((surf_action_network_Constant_t) action)->
-			       lat_current);
+  if (((surf_action_network_Constant_t) action)->suspended)
     ((surf_action_network_Constant_t) action)->suspended = 0;
-  }
 }
 
 static int action_is_suspended(surf_action_t action)
@@ -406,8 +384,6 @@ static void surf_network_model_init_internal(void)
   link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();
 
-  if (!network_maxmin_system)
-    network_maxmin_system = lmm_system_new();
 }
 
 void surf_network_model_init_Constant(const char *filename)
@@ -418,7 +394,6 @@ void surf_network_model_init_Constant(const char *filename)
   surf_network_model_init_internal();
   define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
-  network_solve = lmm_solve;
 
   update_model_description(surf_network_model_description,
 			      surf_network_model_description_size,
