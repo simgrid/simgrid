@@ -427,7 +427,6 @@ void surf_workstation_model_init_CLM03(const char *filename)
   surf_workstation_model_init_internal();
   surf_cpu_model_init_Cas01(filename);
   surf_network_model_init_CM02(filename);
-//  create_workstations();
   update_model_description(surf_workstation_model_description,
 			      surf_workstation_model_description_size,
 			      "CLM03",
@@ -441,7 +440,6 @@ void surf_workstation_model_init_compound(const char *filename)
   xbt_assert0(surf_cpu_model, "No CPU model defined yet!");
   xbt_assert0(surf_network_model, "No network model defined yet!");
   surf_workstation_model_init_internal();
-  create_workstations();
 
   update_model_description(surf_workstation_model_description,
 			      surf_workstation_model_description_size,

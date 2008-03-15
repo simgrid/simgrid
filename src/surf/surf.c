@@ -143,7 +143,7 @@ s_surf_model_description_t surf_cpu_model_description[surf_cpu_model_description
 
 s_surf_model_description_t surf_workstation_model_description[surf_workstation_model_description_size] = {
   {"CLM03", NULL, surf_workstation_model_init_CLM03, create_workstations},
-  {"compound", NULL, surf_workstation_model_init_compound, NULL},
+  {"compound", NULL, surf_workstation_model_init_compound, create_workstations},
   {"ptask_L07", NULL, surf_workstation_model_init_ptask_L07, NULL}
 };
 

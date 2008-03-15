@@ -33,7 +33,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
  */
 void SIMIX_create_environment(const char *file)
 {
-  int parsed = 0;
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   void *workstation = NULL;
@@ -98,24 +97,18 @@ void SIMIX_create_environment(const char *file)
     surf_cpu_model_description[cpu_id].model_init(file);
     surf_network_model_description[network_id].model_init(file);
 
-    start = xbt_os_time();
-    parse_platform_file(file);
-    end = xbt_os_time();
-    DEBUG1("PARSE TIME: %lg", (end-start));
-    parsed = 1;	
-  }
 
+  } 
   surf_workstation_model_description[workstation_id].
-      model_init(file);
+    model_init(file);
 
-  if  (!parsed)  {
-    start = xbt_os_time();
-    parse_platform_file(file);
-    if (surf_workstation_model_description[workstation_id].create_ws != NULL)
-      surf_workstation_model_description[workstation_id].create_ws();
-    end = xbt_os_time();
-    DEBUG1("PARSE TIME: %lg", (end-start));
-  }
+  start = xbt_os_time();
+  parse_platform_file(file);
+
+  if (surf_workstation_model_description[workstation_id].create_ws != NULL)
+    surf_workstation_model_description[workstation_id].create_ws();
+  end = xbt_os_time();
+  DEBUG1("PARSE TIME: %lg", (end-start));
 
   _simix_init_status = 2;	/* inited; don't change settings now */
 
