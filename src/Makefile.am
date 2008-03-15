@@ -173,7 +173,7 @@ SURF_SRC= \
   surf/random_mgr.c                                                           \
   surf/surf.c                                                                \
   surf/surfxml_parse.c                                                       \
-  surf/cpu.c   surf/network.c   surf/workstation.c                           \
+  surf/cpu.c   surf/network.c surf/network_constant.c surf/workstation.c     \
   surf/surf_timer.c                                                          \
   surf/workstation_ptask_L07.c                                               \
   xbt/xbt_sg_stubs.c

@@ -126,6 +126,7 @@ const char *surf_action_state_names[6] = {
 };
 
 s_surf_model_description_t surf_network_model_description[surf_network_model_description_size] = {
+  {"Constant", NULL, surf_network_model_init_Constant},
   {"CM02", NULL, surf_network_model_init_CM02},
 #ifdef HAVE_GTNETS
   {"GTNets", NULL, surf_network_model_init_GTNETS},

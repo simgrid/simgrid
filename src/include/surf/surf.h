@@ -289,6 +289,21 @@ XBT_PUBLIC(void) create_workstations(void);
  */
 XBT_PUBLIC_DATA(surf_network_model_t) surf_network_model;
 
+
+/** \brief Initializes the platform with the network model 'Constant'
+ *  \ingroup SURF_models
+ *  \param filename XML platform file name
+ *
+ *  In this model, the communication time between two network cards is
+ *  constant, hence no need for a routing table. This is particularly
+ *  usefull when simulating huge distributed algorithms where
+ *  scalability is really an issue. This function is called in
+ *  conjunction with surf_workstation_model_init_compound.
+ *
+ *  \see surf_workstation_model_init_compound()
+ */
+XBT_PUBLIC(void) surf_network_model_init_Constant(const char *filename);
+
 /** \brief Initializes the platform with the network model CM02
  *  \ingroup SURF_models
  *  \param filename XML platform file name
@@ -364,11 +379,11 @@ XBT_PUBLIC(void) surf_network_model_init_SDP(const char *filename);
 #endif
 
 #if defined(HAVE_GTNETS) && defined(HAVE_SDP)
-# define surf_network_model_description_size  5
+# define surf_network_model_description_size  6
 #elsif defined(HAVE_GTNETS) || defined(HAVE_SDP)
-# define surf_network_model_description_size  4
+# define surf_network_model_description_size  5
 #else 
-# define surf_network_model_description_size  3
+# define surf_network_model_description_size  4
 #endif   
 /** \brief The list of all available network model models
  *  \ingroup SURF_models
