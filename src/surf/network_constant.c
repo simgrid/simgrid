@@ -387,7 +387,7 @@ static void surf_network_model_init_internal(void)
   network_card_set = xbt_dict_new();
 
   if(!random_latency) 
-    random_latency = random_new(RAND, 0.0, 1.0, .125, .034);
+    random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
 }
 
 void surf_network_model_init_Constant(const char *filename)
