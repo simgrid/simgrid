@@ -427,8 +427,6 @@ static void update_actions_state(double now, double delta)
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
-    /*   if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
-
     if ((action->generic_action.remains <= 0) &&
 	(lmm_get_variable_weight(action->variable) > 0)) {
       action->generic_action.finish = surf_get_clock();
