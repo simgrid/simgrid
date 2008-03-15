@@ -17,22 +17,6 @@ typedef struct network_card_Constant {
   int id;
 } s_network_card_Constant_t, *network_card_Constant_t;
 
-typedef struct network_link_Constant {
-  surf_model_t model;	/* Any such object, added in a trace
-				   should start by this field!!! */
-  xbt_dict_t properties;
-  /* Using this object with the public part of
-     model does not make sense */
-  char *name;
-  double bw_current;
-  tmgr_trace_event_t bw_event;
-  double lat_current;
-  tmgr_trace_event_t lat_event;
-  e_surf_link_state_t state_current;
-  tmgr_trace_event_t state_event;
-  lmm_constraint_t constraint;
-} s_link_Constant_t, *link_Constant_t;
-
 typedef struct surf_action_network_Constant {
   s_surf_action_t generic_action;
   double latency;
@@ -52,58 +36,6 @@ static void (*network_solve) (lmm_system_t) = NULL;
 static int card_number = 0;
 static int host_number = 0;
 
-static void link_free(void *nw_link)
-{
-  free(((link_Constant_t) nw_link)->name);
-  free(nw_link);
-}
-
-static link_Constant_t link_new(char *name,
-			    double bw_initial,
-			    tmgr_trace_t bw_trace,
-			    double lat_initial,
-			    tmgr_trace_t lat_trace,
-			    e_surf_link_state_t
-			    state_initial,
-			    tmgr_trace_t state_trace,
-			    e_surf_link_sharing_policy_t
-			    policy, xbt_dict_t properties)
-{
-  link_Constant_t nw_link = xbt_new0(s_link_Constant_t, 1);
-  xbt_assert1(!xbt_dict_get_or_null(link_set, name), 
-	      "Link '%s' declared several times in the platform file.", name);   
-
-  nw_link->model = (surf_model_t) surf_network_model;
-  nw_link->name = name;
-  nw_link->bw_current = bw_initial;
-  if (bw_trace)
-    nw_link->bw_event =
-	tmgr_history_add_trace(history, bw_trace, 0.0, 0, nw_link);
-  nw_link->lat_current = lat_initial;
-  if (lat_trace)
-    nw_link->lat_event =
-	tmgr_history_add_trace(history, lat_trace, 0.0, 0, nw_link);
-  nw_link->state_current = state_initial;
-  if (state_trace)
-    nw_link->state_event =
-	tmgr_history_add_trace(history, state_trace, 0.0, 0, nw_link);
-
-  nw_link->constraint =
-      lmm_constraint_new(network_maxmin_system, nw_link,
-			 nw_link->bw_current);
-
-  if (policy == SURF_LINK_FATPIPE)
-    lmm_constraint_shared(nw_link->constraint);
-
-  nw_link->properties = properties;
-
-  current_property_set = properties;
-
-  xbt_dict_set(link_set, name, nw_link, link_free);
-
-  return nw_link;
-}
-
 static void network_card_free(void *nw_card)
 {
   free(((network_card_Constant_t) nw_card)->name);
@@ -122,48 +54,6 @@ static int network_card_new(const char *card_name)
     xbt_dict_set(network_card_set, card_name, card, network_card_free);
   }
   return card->id;
-}
-
-static void parse_link_init(void)
-{
-  char *name_link;
-  double bw_initial;
-  tmgr_trace_t bw_trace;
-  double lat_initial;
-  tmgr_trace_t lat_trace;
-  e_surf_link_state_t state_initial_link = SURF_LINK_ON;
-  e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
-  tmgr_trace_t state_trace;
-
-  name_link = xbt_strdup(A_surfxml_link_id);
-  surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
-  surf_parse_get_trace(&bw_trace, A_surfxml_link_bandwidth_file);
-  surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
-  surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
-
-  xbt_assert0((A_surfxml_link_state ==
-	       A_surfxml_link_state_ON)
-	      || (A_surfxml_link_state ==
-		  A_surfxml_link_state_OFF), "Invalid state");
-  if (A_surfxml_link_state == A_surfxml_link_state_ON)
-    state_initial_link = SURF_LINK_ON;
-  else if (A_surfxml_link_state ==
-	   A_surfxml_link_state_OFF)
-    state_initial_link = SURF_LINK_OFF;
-
-  if (A_surfxml_link_sharing_policy ==
-      A_surfxml_link_sharing_policy_SHARED)
-    policy_initial_link = SURF_LINK_SHARED;
-  else if (A_surfxml_link_sharing_policy ==
-	   A_surfxml_link_sharing_policy_FATPIPE)
-    policy_initial_link = SURF_LINK_FATPIPE;
-
-  surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
-
-  link_new(name_link, bw_initial, bw_trace,
-		   lat_initial, lat_trace, state_initial_link, state_trace,
-		   policy_initial_link, xbt_dict_new());
-
 }
 
 static int src_id = -1;
@@ -192,66 +82,15 @@ static void count_hosts(void)
    host_number++;
 }
 
-
-static void add_traces(void) {
-   xbt_dict_cursor_t cursor=NULL;
-   char *trace_name,*elm;
-   
-   static int called = 0;
-   if (called) return;
-   called = 1;
-
-   /* connect all traces relative to network */
-   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
-      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-      link_Constant_t link = xbt_dict_get_or_null(link_set, elm);
-      
-      xbt_assert1(link, "Link %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
-      
-      link->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
-   }
-
-   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
-      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-      link_Constant_t link = xbt_dict_get_or_null(link_set, elm);
-      
-      xbt_assert1(link, "Link %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
-      
-      link->bw_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
-   }
-   
-   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
-      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-      link_Constant_t link = xbt_dict_get_or_null(link_set, elm);
-      
-      xbt_assert1(link, "Link %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
-      
-      link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
-   }
-
-   xbt_dict_free(&trace_connect_list_host_avail);
-   xbt_dict_free(&trace_connect_list_power);
-   xbt_dict_free(&trace_connect_list_link_avail);
-   xbt_dict_free(&trace_connect_list_bandwidth);
-   xbt_dict_free(&trace_connect_list_latency);
-   
-   xbt_dict_free(&traces_set_list); 
-}
-
 static void define_callbacks(const char *file)
 {
   /* Figuring out the network links */
   surfxml_add_callback(STag_surfxml_host_cb_list, &count_hosts);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surfxml_add_callback(STag_surfxml_platform_cb_list, &init_data);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
   surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
   surfxml_add_callback(STag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_route);
@@ -275,9 +114,7 @@ static const char *get_resource_name(void *resource_id)
 
 static int resource_used(void *resource_id)
 {
-  return lmm_constraint_used(network_maxmin_system,
-			     ((link_Constant_t) resource_id)->
-			     constraint);
+  return 0;
 }
 
 static int action_free(surf_action_t action)
@@ -378,53 +215,7 @@ static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
 {
-  link_Constant_t nw_link = id;
-  /*   printf("[" "%lg" "] Asking to update network card \"%s\" with value " */
-  /*     "%lg" " for event %p\n", surf_get_clock(), nw_link->name, */
-  /*     value, event_type); */
-
-  if (event_type == nw_link->bw_event) {
-    nw_link->bw_current = value;
-    lmm_update_constraint_bound(network_maxmin_system, nw_link->constraint,
-				nw_link->bw_current);
-  } else if (event_type == nw_link->lat_event) {
-    double delta = value - nw_link->lat_current;
-    lmm_variable_t var = NULL;
-    surf_action_network_Constant_t action = NULL;
-
-    nw_link->lat_current = value;
-    while (lmm_get_var_from_cnst
-	   (network_maxmin_system, nw_link->constraint, &var)) {
-      action = lmm_variable_id(var);
-      action->lat_current += delta;
-      if (action->rate < 0)
-	lmm_update_variable_bound(network_maxmin_system, action->variable,
-				  SG_TCP_CTE_GAMMA / (2.0 *
-						      action->
-						      lat_current));
-      else
-	lmm_update_variable_bound(network_maxmin_system, action->variable,
-				  min(action->rate,
-				      SG_TCP_CTE_GAMMA / (2.0 *
-							  action->
-							  lat_current)));
-      if (!(action->suspended))
-	lmm_update_variable_weight(network_maxmin_system, action->variable,
-				   action->lat_current);
-      lmm_update_variable_latency(network_maxmin_system, action->variable,
-				  delta);
-    }
-  } else if (event_type == nw_link->state_event) {
-    if (value > 0)
-      nw_link->state_current = SURF_LINK_ON;
-    else
-      nw_link->state_current = SURF_LINK_OFF;
-  } else {
-    CRITICAL0("Unknown event ! \n");
-    xbt_abort();
-  }
-
-  return;
+  DIE_IMPOSSIBLE;
 }
 
 static surf_action_t communicate(void *src, void *dst, double size,
@@ -476,22 +267,22 @@ static int get_route_size(void *src, void *dst)
 
 static const char *get_link_name(const void *link)
 {
-  return ((link_Constant_t) link)->name;
+  DIE_IMPOSSIBLE;
 }
 
 static double get_link_bandwidth(const void *link)
 {
-  return ((link_Constant_t) link)->bw_current;
+  DIE_IMPOSSIBLE;
 }
 
 static double get_link_latency(const void *link)
 {
-  return ((link_Constant_t) link)->lat_current;
+  DIE_IMPOSSIBLE;
 }
 
 static xbt_dict_t get_properties(void *link)
 {
- return ((link_Constant_t) link)->properties;
+  DIE_IMPOSSIBLE;
 }
 
 static void action_suspend(surf_action_t action)
