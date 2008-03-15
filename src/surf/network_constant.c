@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_private.h"
+#include "network_common.h"
 #include "xbt/dict.h"
 #include "xbt/str.h"
 #include "xbt/log.h"
@@ -47,8 +48,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
 static lmm_system_t network_maxmin_system = NULL;
 static void (*network_solve) (lmm_system_t) = NULL;
-
-static xbt_dict_t network_card_set = NULL;
 
 static int card_number = 0;
 static int host_number = 0;
@@ -406,17 +405,10 @@ static void action_change_state(surf_action_t action,
 
 static double share_resources(double now)
 {
-  s_surf_action_network_Constant_t s_action;
   surf_action_network_Constant_t action = NULL;
   xbt_swag_t running_actions =
       surf_network_model->common_public->states.running_action_set;
-  double min;
-
-  min = generic_maxmin_share_resources(running_actions,
-				       xbt_swag_offset(s_action,
-						       variable),
-				       network_maxmin_system,
-				       network_solve);
+  double min = -1.0;
 
   xbt_swag_foreach(action, running_actions) {
     if (action->latency > 0) {
@@ -432,25 +424,21 @@ static double share_resources(double now)
 
 static void update_actions_state(double now, double delta)
 {
-  double deltap = 0.0;
   surf_action_network_Constant_t action = NULL;
   surf_action_network_Constant_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_network_model->common_public->states.running_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
-    deltap = delta;
     if (action->latency > 0) {
-      if (action->latency > deltap) {
-	double_update(&(action->latency), deltap);
-	deltap = 0.0;
+      if (action->latency > delta) {
+	double_update(&(action->latency), delta);
       } else {
-	double_update(&(deltap), action->latency);
 	action->latency = 0.0;
       }
     }
     double_update(&(action->generic_action.remains),
-		  action->generic_action.cost * deltap/ CONSTANT_VALUE);
+		  action->generic_action.cost * delta/ CONSTANT_VALUE);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
