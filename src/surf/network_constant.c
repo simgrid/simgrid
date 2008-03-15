@@ -10,6 +10,7 @@
 #include "xbt/str.h"
 #include "xbt/log.h"
 
+#define CONSTANT_VALUE 1.0
 typedef struct network_card_Constant {
   char *name;
   int id;
@@ -436,10 +437,6 @@ static void update_actions_state(double now, double delta)
   surf_action_network_Constant_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_network_model->common_public->states.running_action_set;
-  /*
-     xbt_swag_t failed_actions =
-     surf_network_model->common_public->states.failed_action_set;
-   */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     deltap = delta;
@@ -451,41 +448,20 @@ static void update_actions_state(double now, double delta)
 	double_update(&(deltap), action->latency);
 	action->latency = 0.0;
       }
-      if ((action->latency == 0.0) && !(action->suspended))
-	lmm_update_variable_weight(network_maxmin_system, action->variable,
-				   action->lat_current);
     }
     double_update(&(action->generic_action.remains),
-		  lmm_variable_getvalue(action->variable) * deltap);
+		  action->generic_action.cost * deltap/ CONSTANT_VALUE);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
-    /*   if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
-
-    if ((action->generic_action.remains <= 0) &&
-	(lmm_get_variable_weight(action->variable) > 0)) {
+    if (action->generic_action.remains <= 0) {
       action->generic_action.finish = surf_get_clock();
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
 	       (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-    } else {			/* Need to check that none of the model has failed */
-      lmm_constraint_t cnst = NULL;
-      int i = 0;
-      link_Constant_t nw_link = NULL;
-
-      while ((cnst =
-	      lmm_get_cnst_from_var(network_maxmin_system,
-				    action->variable, i++))) {
-	nw_link = lmm_constraint_id(cnst);
-	if (nw_link->state_current == SURF_LINK_OFF) {
-	  action->generic_action.finish = surf_get_clock();
-	  action_change_state((surf_action_t) action, SURF_ACTION_FAILED);
-	  break;
-	}
-      }
-    }
+    } 
   }
 
   return;
@@ -570,7 +546,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
 
-  action->latency = 1.0;
+  action->latency = CONSTANT_VALUE;
   action->lat_current = action->latency;
 
   XBT_OUT;
