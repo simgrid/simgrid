@@ -10,7 +10,7 @@ static double drand48(void)
 }
 #endif
 
-static double custom_random(int generator){
+static double custom_random(Generator generator){
    switch(generator) {
       
 	case DRAND48:return drand48(); 	
@@ -20,8 +20,8 @@ static double custom_random(int generator){
 }
 
 /* Generate numbers between min and max with a given mean and standard deviation */
-float random_generate(random_data_t random){  
-  float x1, x2, w, y;
+double random_generate(random_data_t random){  
+  double x1, x2, w, y;
   
   if (random == NULL) return 0.0f;  
 
@@ -46,7 +46,7 @@ float random_generate(random_data_t random){
   return y;
 }
 
-random_data_t random_new(int generator, int min, int max, int mean, int stdDeviation){
+random_data_t random_new(Generator generator, double min, double max, double mean, double stdDeviation){
   random_data_t random = xbt_new0(s_random_data_t, 1);
   random->generator = generator;
   random->min = min;
