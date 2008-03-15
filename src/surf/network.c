@@ -6,8 +6,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_private.h"
-#include "cpu_private.h"
 #include "xbt/log.h"
+#include "xbt/str.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
 				"Logging specific to the SURF network module");
