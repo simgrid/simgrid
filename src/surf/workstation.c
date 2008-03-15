@@ -10,7 +10,7 @@
 #include "portable.h"
 #include "workstation_private.h"
 #include "cpu_private.h"
-#include "network_private.h"
+#include "network_common.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 				"Logging specific to the SURF workstation module");

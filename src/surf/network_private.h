@@ -9,6 +9,7 @@
 #define _SURF_NETWORK_PRIVATE_H
 
 #include "surf_private.h"
+#include "network_common.h"
 #include "xbt/dict.h"
 
 typedef struct network_link_CM02 {
@@ -43,9 +44,6 @@ typedef struct surf_action_network_CM02 {
   network_card_CM02_t src;
   network_card_CM02_t dst;
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
-
-extern xbt_dict_t network_card_set;
-
 
 extern int card_number;
 extern link_CM02_t **routing_table;
