@@ -21,7 +21,6 @@ typedef struct surf_action_network_Constant {
   s_surf_action_t generic_action;
   double latency;
   double lat_current;
-  double rate;
   int suspended;
   network_card_Constant_t src;
   network_card_Constant_t dst;
@@ -229,7 +228,6 @@ static surf_action_t communicate(void *src, void *dst, double size,
       surf_network_model->common_public->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
-  action->rate = rate;
 
   action->latency = CONSTANT_VALUE;
   action->lat_current = action->latency;
