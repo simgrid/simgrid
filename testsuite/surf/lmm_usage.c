@@ -54,26 +54,36 @@ static double dichotomy(double func(double), double min, double max,
   if ((min_func > 0 && max_func < 0))
     abort();
 
+  SHOW_EXPR(min_error);
+
   while (overall_error > min_error) {
+    SHOW_EXPR(overall_error);
     if ((min_func > 0 && max_func > 0) ||
 	(min_func < 0 && max_func < 0) || (min_func > 0 && max_func < 0)) {
       abort();
     }
+
+    SHOW_EXPR(min);
+    SHOW_EXPR(min_func);
+    SHOW_EXPR(max);
+    SHOW_EXPR(max_func);
 
     middle = (max + min) / 2.0;
     if ((min == middle) || (max == middle)) {
       break;
     }
     middle_func = func(middle);
+    SHOW_EXPR(middle);
+    SHOW_EXPR(middle_func);
 
     if (middle_func < 0) {
       min = middle;
       min_func = middle_func;
-      overall_error = max - middle_func;
+      overall_error = max_func - middle_func;
     } else if (middle_func > 0) {
       max = middle;
       max_func = middle_func;
-      overall_error = max - middle_func;
+      overall_error = middle_func-min_func;
     } else {
       overall_error = 0;
     }
@@ -187,7 +197,7 @@ void test1(method_t method)
 
     a_test_1 = a;
     b_test_1 = b;
-    x = dichotomy(diff_lagrange_test_1, 0, a, 1e-8);
+    x = dichotomy(diff_lagrange_test_1, 0, a, 1e-13);
 
     if (x < 0)
       x = 0;
