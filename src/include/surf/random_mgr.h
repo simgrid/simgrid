@@ -12,6 +12,7 @@ SG_BEGIN_DECL()
 typedef enum {NONE, DRAND48, RAND} Generator;
 
 typedef struct random_data_desc {
+  long int seed;
   double max, min, mean, stdDeviation;
   Generator generator;
 } s_random_data_t, *random_data_t;
@@ -19,7 +20,9 @@ typedef struct random_data_desc {
 XBT_PUBLIC_DATA(xbt_dict_t) random_data_list;
 
 XBT_PUBLIC(double) random_generate(random_data_t random);
-XBT_PUBLIC(random_data_t) random_new(Generator generator, double min, double max, double mean, double stdDeviation);
+XBT_PUBLIC(random_data_t) random_new(Generator generator, long int seed, 
+				     double min, double max, double mean, 
+				     double stdDeviation);
 
 SG_END_DECL()
 

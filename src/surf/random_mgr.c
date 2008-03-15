@@ -10,11 +10,12 @@ static double drand48(void)
 }
 #endif
 
-static double custom_random(Generator generator){
+static double custom_random(Generator generator, long int *seed){
    switch(generator) {
-      
-	case DRAND48:return drand48(); 	
-	case RAND: return (double)rand()/RAND_MAX; 
+   case DRAND48:
+     return drand48(); 	
+   case RAND: 
+     return (double)rand_r((unsigned int*)seed)/RAND_MAX; 
    default: return drand48();
    }
 }
@@ -31,8 +32,8 @@ double random_generate(random_data_t random){
          y1 = sqrt( - 2 * log(x1) ) * cos( 2 * pi * x2 )
     */ 
     do {
-      x1 = 2.0 * custom_random(random->generator) - 1.0;
-      x2 = 2.0 * custom_random(random->generator) - 1.0;
+      x1 = 2.0 * custom_random(random->generator,&(random->seed)) - 1.0;
+      x2 = 2.0 * custom_random(random->generator,&(random->seed)) - 1.0;
       w = x1 * x1 + x2 * x2;
     } while ( w >= 1.0 );
 
@@ -46,9 +47,12 @@ double random_generate(random_data_t random){
   return y;
 }
 
-random_data_t random_new(Generator generator, double min, double max, double mean, double stdDeviation){
+random_data_t random_new(Generator generator, long int seed, 
+			 double min, double max, double mean, 
+			 double stdDeviation){
   random_data_t random = xbt_new0(s_random_data_t, 1);
   random->generator = generator;
+  random->seed = seed;
   random->min = min;
   random->max = max;
   random->mean = mean;

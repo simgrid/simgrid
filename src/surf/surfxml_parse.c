@@ -1127,7 +1127,7 @@ void init_randomness(void)
 void add_randomness(void)
 {
    /* If needed aditional properties can be added by using the prop tag */
-   random_data_t random = random_new(random_generator, random_min, random_max, random_mean, random_std_deviation);
+  random_data_t random = random_new(random_generator, 0, random_min, random_max, random_mean, random_std_deviation);
    xbt_dict_set(random_data_list, random_id, (void *)random, NULL);
 }
 
