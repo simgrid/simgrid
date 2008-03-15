@@ -131,28 +131,28 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c surf/maxmin.c \
 	surf/fair_bottleneck.c surf/lagrange.c surf/trace_mgr.c \
 	surf/random_mgr.c surf/surf.c surf/surfxml_parse.c surf/cpu.c \
-	surf/network.c surf/workstation.c surf/surf_timer.c \
-	surf/workstation_ptask_L07.c xbt/xbt_sg_stubs.c \
-	xbt/xbt_os_thread.c xbt/xbt_thread_context.c \
-	xbt/xbt_ucontext.c surf/gtnets/gtnets_simulator.cc \
-	surf/gtnets/gtnets_topology.cc surf/gtnets/gtnets_interface.cc \
-	surf/network_gtnets.c surf/sdp.c simix/smx_global.c \
-	simix/smx_deployment.c simix/smx_config.c \
-	simix/smx_environment.c simix/smx_host.c simix/smx_process.c \
-	simix/smx_action.c simix/smx_synchro.c xbt/xbt_context.c \
-	msg/msg_config.c msg/task.c msg/host.c msg/m_process.c \
-	msg/gos.c msg/global.c msg/environment.c msg/deployment.c \
-	msg/msg_mailbox.c simdag/sd_global.c simdag/sd_link.c \
-	simdag/sd_task.c simdag/sd_workstation.c gras/gras.c \
-	gras/Transport/transport.c gras/Transport/transport_private.h \
-	gras/Msg/gras_msg_mod.c gras/Msg/gras_msg_types.c \
-	gras/Msg/gras_msg_exchange.c gras/Msg/gras_msg_listener.c \
-	gras/Msg/rpc.c gras/Msg/timer.c gras/Msg/msg_interface.h \
-	gras/Msg/msg_private.h gras/Virtu/process.c \
-	gras/Virtu/gras_module.c gras/DataDesc/ddt_create.c \
-	gras/DataDesc/ddt_convert.c gras/DataDesc/ddt_exchange.c \
-	gras/DataDesc/cbps.c gras/DataDesc/datadesc.c \
-	gras/DataDesc/datadesc_interface.h \
+	surf/network.c surf/network_constant.c surf/workstation.c \
+	surf/surf_timer.c surf/workstation_ptask_L07.c \
+	xbt/xbt_sg_stubs.c xbt/xbt_os_thread.c \
+	xbt/xbt_thread_context.c xbt/xbt_ucontext.c \
+	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
+	surf/gtnets/gtnets_interface.cc surf/network_gtnets.c \
+	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
+	simix/smx_config.c simix/smx_environment.c simix/smx_host.c \
+	simix/smx_process.c simix/smx_action.c simix/smx_synchro.c \
+	xbt/xbt_context.c msg/msg_config.c msg/task.c msg/host.c \
+	msg/m_process.c msg/gos.c msg/global.c msg/environment.c \
+	msg/deployment.c msg/msg_mailbox.c simdag/sd_global.c \
+	simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c \
+	gras/gras.c gras/Transport/transport.c \
+	gras/Transport/transport_private.h gras/Msg/gras_msg_mod.c \
+	gras/Msg/gras_msg_types.c gras/Msg/gras_msg_exchange.c \
+	gras/Msg/gras_msg_listener.c gras/Msg/rpc.c gras/Msg/timer.c \
+	gras/Msg/msg_interface.h gras/Msg/msg_private.h \
+	gras/Virtu/process.c gras/Virtu/gras_module.c \
+	gras/DataDesc/ddt_create.c gras/DataDesc/ddt_convert.c \
+	gras/DataDesc/ddt_exchange.c gras/DataDesc/cbps.c \
+	gras/DataDesc/datadesc.c gras/DataDesc/datadesc_interface.h \
 	gras/DataDesc/datadesc_private.h gras/DataDesc/ddt_parse.c \
 	gras/DataDesc/ddt_parse.yy.c gras/DataDesc/ddt_parse.yy.h \
 	gras/Transport/sg_transport.c \
@@ -170,8 +170,9 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 @CONTEXT_THREADS_FALSE@am__objects_7 = xbt_ucontext.lo
 am__objects_8 = maxmin.lo fair_bottleneck.lo lagrange.lo trace_mgr.lo \
 	random_mgr.lo surf.lo surfxml_parse.lo cpu.lo network.lo \
-	workstation.lo surf_timer.lo workstation_ptask_L07.lo \
-	xbt_sg_stubs.lo $(am__objects_6) $(am__objects_7)
+	network_constant.lo workstation.lo surf_timer.lo \
+	workstation_ptask_L07.lo xbt_sg_stubs.lo $(am__objects_6) \
+	$(am__objects_7)
 am__objects_9 = gtnets_simulator.lo gtnets_topology.lo \
 	gtnets_interface.lo network_gtnets.lo
 @HAVE_GTNETS_TRUE@am__objects_10 = $(am__objects_9)
@@ -405,7 +406,7 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	surf/surf_private.h surf/cpu_private.h \
 	surf/workstation_private.h surf/surf_timer_private.h \
 	surf/surfxml_parse.c surf/simgrid_dtd.l surf/simgrid_dtd.c \
-	surf/simgrid.dtd surf/network_private.h \
+	surf/simgrid.dtd surf/network_private.h surf/network_common.h \
 	surf/network_gtnets_private.h include/surf/maxmin.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
 	include/surf/surfxml_parse_private.h include/surf/random_mgr.h \
@@ -505,7 +506,7 @@ XBT_SG_SRC = \
 SURF_SRC = surf/maxmin.c surf/fair_bottleneck.c surf/lagrange.c \
 	surf/trace_mgr.c surf/random_mgr.c surf/surf.c \
 	surf/surfxml_parse.c surf/cpu.c surf/network.c \
-	surf/workstation.c surf/surf_timer.c \
+	surf/network_constant.c surf/workstation.c surf/surf_timer.c \
 	surf/workstation_ptask_L07.c xbt/xbt_sg_stubs.c \
 	$(am__append_1) $(am__append_2)
 GTNETS_SRC = \
@@ -830,6 +831,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_config.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_mailbox.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network_constant.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network_gtnets.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/peermanagement.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/process.Plo@am__quote@
@@ -1418,6 +1420,13 @@ network.lo: surf/network.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/network.c' object='network.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o network.lo `test -f 'surf/network.c' || echo '$(srcdir)/'`surf/network.c
+
+network_constant.lo: surf/network_constant.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT network_constant.lo -MD -MP -MF $(DEPDIR)/network_constant.Tpo -c -o network_constant.lo `test -f 'surf/network_constant.c' || echo '$(srcdir)/'`surf/network_constant.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/network_constant.Tpo $(DEPDIR)/network_constant.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/network_constant.c' object='network_constant.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o network_constant.lo `test -f 'surf/network_constant.c' || echo '$(srcdir)/'`surf/network_constant.c
 
 workstation.lo: surf/workstation.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT workstation.lo -MD -MP -MF $(DEPDIR)/workstation.Tpo -c -o workstation.lo `test -f 'surf/workstation.c' || echo '$(srcdir)/'`surf/workstation.c
