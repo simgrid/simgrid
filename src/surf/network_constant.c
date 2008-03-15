@@ -51,19 +51,6 @@ static void (*network_solve) (lmm_system_t) = NULL;
 
 static int card_number = 0;
 static int host_number = 0;
-static link_Constant_t **routing_table = NULL;
-static int *routing_table_size = NULL;
-static link_Constant_t loopback = NULL;
-
-#define ROUTE(i,j) routing_table[(i)+(j)*card_number]
-#define ROUTE_SIZE(i,j) routing_table_size[(i)+(j)*card_number]
-
-static void create_routing_table(void)
-{
-  routing_table =
-      xbt_new0(link_Constant_t *, /*card_number * card_number */ host_number * host_number);
-  routing_table_size = xbt_new0(int, /*card_number * card_number*/ host_number * host_number);
-}
 
 static void link_free(void *nw_link)
 {
@@ -137,14 +124,6 @@ static int network_card_new(const char *card_name)
   return card->id;
 }
 
-static void route_new(int src_id, int dst_id,
-		      link_Constant_t * link_list, int nb_link)
-{
-  ROUTE_SIZE(src_id, dst_id) = nb_link;
-  ROUTE(src_id, dst_id) = link_list =
-      xbt_realloc(link_list, sizeof(link_Constant_t) * nb_link);
-}
-
 static void parse_link_init(void)
 {
   char *name_link;
@@ -206,64 +185,6 @@ static void parse_route_set_route(void)
     manage_route(route_table, name, route_action, 0);
     free(name);    
   }
-}
-
-static void add_loopback(void)
-{
-  int i;
-  /* Adding loopback if needed */
-  for (i = 0; i < host_number; i++)
-    if (!ROUTE_SIZE(i, i)) {
-      if (!loopback)
-	loopback = link_new(xbt_strdup("__MSG_loopback__"),
-				    498000000, NULL, 0.000015, NULL,
-				    SURF_LINK_ON, NULL,
-				    SURF_LINK_FATPIPE,NULL);
-      ROUTE_SIZE(i, i) = 1;
-      ROUTE(i, i) = xbt_new0(link_Constant_t, 1);
-      ROUTE(i, i)[0] = loopback;
-    }
-}
-
-static void add_route(void)
-{
-  xbt_ex_t e;
-  int nb_link = 0;
-  unsigned int cpt = 0;    
-  int link_list_capacity = 0;
-  link_Constant_t *link_list = NULL;
-  xbt_dict_cursor_t cursor = NULL;
-  char *key,*data, *end;
-  const char *sep = "#";
-  xbt_dynar_t links, keys;
-
-  if (routing_table == NULL) create_routing_table();
-
-  xbt_dict_foreach(route_table, cursor, key, data) {
-	  char* link = NULL;
-    nb_link = 0;
-    links = (xbt_dynar_t)data;
-    keys = xbt_str_split_str(key, sep);
-
-    link_list_capacity = xbt_dynar_length(links);
-    link_list = xbt_new(link_Constant_t, link_list_capacity);
-
-    src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
-    dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
- 
-    xbt_dynar_foreach (links, cpt, link) {
-      TRY {
-	link_list[nb_link++] = xbt_dict_get(link_set, link);
-      }
-      CATCH(e) {
-        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
-      }     
-    }
-    route_new(src_id, dst_id, link_list, nb_link);
-   }
-
-   xbt_dict_free(&route_table);
-
 }
 
 static void count_hosts(void)
@@ -331,8 +252,6 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surfxml_add_callback(STag_surfxml_platform_cb_list, &init_data);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
   surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
   surfxml_add_callback(STag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_route);
@@ -545,16 +464,14 @@ static surf_action_t communicate(void *src, void *dst, double size,
 /* returns an array of link_Constant_t */
 static const void **get_route(void *src, void *dst)
 {
-  network_card_Constant_t card_src = src;
-  network_card_Constant_t card_dst = dst;
-  return (const void **) ROUTE(card_src->id, card_dst->id);
+  xbt_assert0(0, "Calling this function does not make any sense");
+  return (const void **) NULL;
 }
 
 static int get_route_size(void *src, void *dst)
 {
-  network_card_Constant_t card_src = src;
-  network_card_Constant_t card_dst = dst;
-  return ROUTE_SIZE(card_src->id, card_dst->id);
+  xbt_assert0(0, "Calling this function does not make any sense");
+  return 0;
 }
 
 static const char *get_link_name(const void *link)
@@ -609,8 +526,6 @@ static void action_set_max_duration(surf_action_t action, double duration)
 
 static void finalize(void)
 {
-  int i, j;
-
   xbt_dict_free(&network_card_set);
   xbt_dict_free(&link_set);
   xbt_swag_free(surf_network_model->common_public->states.
@@ -628,14 +543,6 @@ static void finalize(void)
   free(surf_network_model);
   surf_network_model = NULL;
 
-  loopback = NULL;
-  for (i = 0; i < card_number; i++)
-    for (j = 0; j < card_number; j++)
-      free(ROUTE(i, j));
-  free(routing_table);
-  routing_table = NULL;
-  free(routing_table_size);
-  routing_table_size = NULL;
   card_number = 0;
 }
 
