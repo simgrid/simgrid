@@ -7,11 +7,11 @@
 
 #include "surf_private.h"
 #include "network_common.h"
+#include "surf/random_mgr.h"
 #include "xbt/dict.h"
 #include "xbt/str.h"
 #include "xbt/log.h"
 
-#define CONSTANT_VALUE 1.0
 typedef struct network_card_Constant {
   char *name;
   int id;
@@ -20,14 +20,14 @@ typedef struct network_card_Constant {
 typedef struct surf_action_network_Constant {
   s_surf_action_t generic_action;
   double latency;
-  double lat_current;
+  double lat_init;
   int suspended;
   network_card_Constant_t src;
   network_card_Constant_t dst;
 } s_surf_action_network_Constant_t, *surf_action_network_Constant_t;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
-
+static random_data_t random_latency = NULL;
 static int card_number = 0;
 static int host_number = 0;
 
@@ -180,7 +180,7 @@ static void update_actions_state(double now, double delta)
       }
     }
     double_update(&(action->generic_action.remains),
-		  action->generic_action.cost * delta/ CONSTANT_VALUE);
+		  action->generic_action.cost * delta/action->lat_init);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
@@ -229,8 +229,8 @@ static surf_action_t communicate(void *src, void *dst, double size,
 
   xbt_swag_insert(action, action->generic_action.state_set);
 
-  action->latency = CONSTANT_VALUE;
-  action->lat_current = action->latency;
+  action->latency = random_generate(random_latency);
+  action->lat_init = action->latency;
 
   XBT_OUT;
 
@@ -294,7 +294,6 @@ static void action_set_max_duration(surf_action_t action, double duration)
 static void finalize(void)
 {
   xbt_dict_free(&network_card_set);
-  xbt_dict_free(&link_set);
   xbt_swag_free(surf_network_model->common_public->states.
 		ready_action_set);
   xbt_swag_free(surf_network_model->common_public->states.
@@ -379,9 +378,10 @@ static void surf_network_model_init_internal(void)
 
   surf_network_model->common_public->get_properties =  get_properties;
 
-  link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();
 
+  if(!random_latency) 
+    random_latency = random_new(RAND, 0.0, 1.0, .125, .034);
 }
 
 void surf_network_model_init_Constant(const char *filename)
