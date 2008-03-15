@@ -224,13 +224,19 @@ static surf_action_t communicate(void *src, void *dst, double size,
   action->generic_action.model_type =
       (surf_model_t) surf_network_model;
   action->suspended = 0;
-  action->generic_action.state_set =
+
+  action->latency = random_generate(random_latency);
+  action->lat_init = action->latency;
+
+  if(action->latency<=0.0)
+    action->generic_action.state_set =
+      surf_network_model->common_public->states.done_action_set;
+  else
+    action->generic_action.state_set =
       surf_network_model->common_public->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
 
-  action->latency = random_generate(random_latency);
-  action->lat_init = action->latency;
 
   XBT_OUT;
 
