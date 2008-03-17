@@ -22,7 +22,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -55,7 +55,7 @@
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				DisableLanguageExtensions="false"
 				PrecompiledHeaderFile=".\Debug/simgrid.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -417,6 +417,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\surf\network.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\surf\network_constant.c"
 				>
 			</File>
 			<File
