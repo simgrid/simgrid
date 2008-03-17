@@ -8,6 +8,13 @@ static double drand48(void)
    THROW_UNIMPLEMENTED;
    return -1;
 }
+
+static double rand_r(unsigned int* seed)
+{
+	THROW_UNIMPLEMENTED;
+   return -1;
+}
+
 #endif
 
 static double custom_random(Generator generator, long int *seed){
