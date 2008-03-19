@@ -216,4 +216,5 @@ TESTS += \
   simdag/partask/test_comp_only_seq.tesh \
   simdag/partask/test_comp_only_par.tesh
 
+EXTRA_DIST+=$(TESTS)
 include $(top_srcdir)/acmacro/dist-files.mk

@@ -31,4 +31,5 @@ sd_test_LDADD =	$(top_builddir)/src/libsimgrid.la
 sd_test2_SOURCES = sd_test2.c
 sd_test2_LDADD = $(top_builddir)/src/libsimgrid.la
 
+EXTRA_DIST=$(TESTS)
 include $(top_srcdir)/acmacro/dist-files.mk

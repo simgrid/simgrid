@@ -10,6 +10,8 @@ AM_CFLAGS = -g
 
 EXTRA_DIST = msg_platform.xml \
              small_platform.xml \
+             small_platform_with_failures.xml \
+             jupiter_state.trace link5_state.trace \
              sendrecv/platform_sendrecv.xml \
              sendrecv/deployment_sendrecv.xml \
              suspend/deployment_suspend.xml \
@@ -21,6 +23,7 @@ EXTRA_DIST = msg_platform.xml \
              gtnets/r-n200-f50-s4-2-p.xml \
              gtnets/dogbone-d.xml \
              gtnets/dogbone-p.xml \
+             priority/deployment_priority.xml \
              properties/deployment_properties.xml
 
 
@@ -120,4 +123,5 @@ else
   EXTRA_DIST+= gtnets/gtnets.c
 endif
 
+EXTRA_DIST+=$(TESTS)
 include $(top_srcdir)/acmacro/dist-files.mk
