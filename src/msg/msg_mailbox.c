@@ -102,22 +102,20 @@ MSG_mailbox_get_head(msg_mailbox_t mailbox)
 	return (m_task_t)xbt_fifo_get_item_content(item);
 }
 
+
 m_task_t
 MSG_mailbox_get_first_host_task(msg_mailbox_t mailbox, m_host_t host)
 {
-	m_task_t task = NULL;
-	xbt_fifo_item_t item = NULL;
-	
-	xbt_fifo_foreach(mailbox->tasks, item, task, m_task_t) 
-	{
-		if (task->simdata->source == host)
-			break;
-	}
-	
-	if(item) 
-		xbt_fifo_remove_item(mailbox->tasks, item);
-		
-	return task;
+ m_task_t task = NULL;
+ xbt_fifo_item_t item = NULL;
+
+ xbt_fifo_foreach(mailbox->tasks, item, task, m_task_t)
+   if (task->simdata->source == host) {
+     xbt_fifo_remove_item(mailbox->tasks, item);
+     return task;
+   }
+
+ return NULL;
 }
 
 int
