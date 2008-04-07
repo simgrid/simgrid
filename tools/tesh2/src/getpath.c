@@ -91,7 +91,7 @@ getpath(const char* file, char** path)
 		for( p2 = p1; --p2 > buffer2 && *p2 != '/'; );
 		
 		if (*(p1 + 3)) 
-			strcpy(p2, p1 + 3);
+	                memmove(p2, p1+3, strlen(p1+3)+1);
 		else 
 			*p2 = '\0';
 	}
@@ -239,7 +239,7 @@ translatepath(const char* totranslate, char** translated)
 		for( p2 = p1; --p2 > buffer2 && *p2 != '/'; );
 		
 		if (*(p1 + 3)) 
-			strcpy(p2, p1 + 3);
+	                memmove(p2, p1+3, strlen(p1+3)+1);
 		else 
 			*p2 = '\0';
 	}
