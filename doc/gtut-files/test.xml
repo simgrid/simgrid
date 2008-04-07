@@ -1,9 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
-  <process host="Jacquelin" function="server">
-  </process>
-  <process host="Boivin" function="client">
-  </process>
+  <process host="Jacquelin" function="server" />
+  <process host="Boivin" function="client" />
 </platform>
 
