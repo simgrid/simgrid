@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 unit_t
-unit_new(runner_t runner, suite_t owner, fstream_t fstream);
+unit_new(runner_t runner, unit_t root, unit_t owner, fstream_t fstream);
 
 int
 unit_free(void** unitptr);
@@ -36,13 +36,16 @@ void
 unit_pushline(unit_t unit, context_t context, xbt_os_mutex_t mutex, const char* filepos, char kind, char *line);
 
 void
-unit_handle_include(unit_t unit, context_t context, xbt_os_mutex_t mutex, const char* file_name);
+unit_handle_include(unit_t unit, context_t context, xbt_os_mutex_t mutex, const char* file_name, const char* description);
 
 void
 unit_parse(unit_t unit, context_t context, xbt_os_mutex_t mutex, const char* file_name, FILE* stream);
 
 void
 unit_handle_suite(unit_t unit, context_t context, xbt_os_mutex_t mutex, const char* description);
+
+void 
+display_title(const char* description);
 
 #ifdef __cplusplus
 }

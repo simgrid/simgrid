@@ -10,8 +10,7 @@ fstream_t
 fstream_new(const char* directory, const char* name)
 {
 	fstream_t fstream;
-	/*struct stat buffer = {0};*/
-		
+	
 	if(!name)
 	{
 		errno = EINVAL;
@@ -30,15 +29,6 @@ fstream_new(const char* directory, const char* name)
 		return NULL;
 	}
 	
-	/*if(stat(name, &buffer))
-		return NULL;
-	
-	if(!S_ISREG(buffer.st_mode))
-	{
-		errno = ENOENT;
-		return NULL;
-	}*/
-	
 	fstream = xbt_new0(s_fstream_t, 1);
 	
 	fstream->name = strdup(name);
@@ -53,6 +43,8 @@ fstream_new(const char* directory, const char* name)
 int
 fstream_open(fstream_t fstream)
 {
+	char path[MAX_PATH] = {0};
+	
 	if(!fstream || fstream->stream)
 		return EINVAL;
 		
@@ -62,7 +54,9 @@ fstream_open(fstream_t fstream)
 		return 0;
 	}
 	
-	if(!(fstream->stream = fopen(fstream->name, "r")))
+	sprintf(path,"%s/%s",fstream->directory, fstream->name);
+	
+	if(!(fstream->stream = fopen(path, "r")))
 		return errno;
 	
 	return 0;
@@ -105,7 +99,7 @@ fstream_free(void** fstreamptr)
 }
 
 void
-fstream_parse( fstream_t fstream, unit_t unit)
+fstream_parse(fstream_t fstream, unit_t unit, xbt_os_mutex_t mutex)
 {
 	size_t len;
 	char * line = NULL;
@@ -114,7 +108,6 @@ fstream_parse( fstream_t fstream, unit_t unit)
 	xbt_strbuff_t buff;
 	int buffbegin = 0; 
 	context_t context;
-	xbt_os_mutex_t mutex = unit->mutex;
 	
 	/* Count the line length while checking wheather it's blank */
 	int blankline;
@@ -125,8 +118,9 @@ fstream_parse( fstream_t fstream, unit_t unit)
 	buff=xbt_strbuff_new();
 	context = context_new();
 	
-	while(!unit->interrupted  && getline(&line, &len, fstream->stream) != -1)
+	while(!(unit->root->interrupted)  && getline(&line, &len, fstream->stream) != -1)
 	{
+		
 		blankline=1;
 		linelen = 0;    
 		to_be_continued = 0;
@@ -146,16 +140,16 @@ fstream_parse( fstream_t fstream, unit_t unit)
 			if(!context->command_line && (context->input->used || context->output->used))
 			{
 				ERROR1("[%d] Error: no command found in this chunk of lines.",buffbegin);
-				
-				if(unit->parsing_include_file)
-					ERROR1("Unit `%s': NOK (syntax error)", fstream->name);
-				else
-					ERROR2("Unit `%s' inclued in `%s' : NOK (syntax error)", fstream->name, fstream->name);	
+				ERROR1("Unit `%s': NOK (syntax error)", fstream->name);
+			
 				
 				exit_code = ESYNTAX;
 				unit_handle_failure(unit);
 				break;
 			}
+			else if(unit->running_suite)
+				unit->running_suite = 0;
+				
 			
 			if(context->command_line)
 			{
@@ -163,19 +157,18 @@ fstream_parse( fstream_t fstream, unit_t unit)
 				{
 					command_t command = command_new(unit, context, mutex);
 					command_run(command);
+					
 				}
 				
 				context_reset(context);
 			}
 		
-		
 			continue;
-			
 		}
 		
 		if(linelen>1 && line[linelen-2]=='\\') 
 		{
-			if (linelen>2 && line[linelen-3] == '\\') 
+			if(linelen>2 && line[linelen-3] == '\\') 
 			{
 				/* Damn. Escaped \ */
 				line[linelen-2] = '\n';
@@ -210,6 +203,8 @@ fstream_parse( fstream_t fstream, unit_t unit)
 		}
 	}
 	
+	
+	
 	/* Check that last command of the file ran well */
 	if(context->command_line)
 	{
@@ -221,12 +216,15 @@ fstream_parse( fstream_t fstream, unit_t unit)
 		
 		context_reset(context);
 	}
+	
+	
 
 	/* Clear buffers */
 	if (line)
 		free(line);
 		
 	xbt_strbuff_free(buff);	
+	context_free(&context);
 }
 
 

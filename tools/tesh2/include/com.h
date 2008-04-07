@@ -49,13 +49,14 @@ units_sem;
 
 /* the dlist of tesh include directories */
 extern vector_t 
-includes;
+include_dirs;
 
 extern int
 interrupted;
 
-extern int
+/*extern int
 exit_code;
+*/
 
 extern int
 want_silent;
@@ -71,6 +72,16 @@ dont_want_display_directory;
 
 extern directory_t
 root_directory;
+
+extern int
+want_detail_summary;
+
+extern int
+exit_code;
+
+extern pid_t
+pid;
+
 
 
 #ifdef __cplusplus

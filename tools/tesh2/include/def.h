@@ -47,16 +47,17 @@ extern "C" {
 #endif
 
 
-#define INDEFINITE					((int)-1)
-#define INDEFINITE_SIGNAL			NULL
+#define INDEFINITE						((int)-1)
+#define INDEFINITE_SIGNAL				NULL
 
-#define DEFAULT_FSTREAMS_CAPACITY	((int)128)
-#define DEFAULT_INCLUDES_CAPACITY	DEFAULT_FSTREAMS_CAPACITY
-#define DEFAULT_UNITS_CAPACITY		((int)64)
-#define DEFAULT_COMMANDS_CAPACITY	((int)1024)
-#define DEFAULT_SUITES_CAPACITY		((int)128)
+#define DEFAULT_FSTREAMS_CAPACITY		((int)128)
+#define DEFAULT_INCLUDE_DIRS_CAPACITY	DEFAULT_FSTREAMS_CAPACITY
+#define DEFAULT_UNITS_CAPACITY			((int)64)
+#define DEFAULT_INCLUDES				((int)8)
+#define DEFAULT_COMMANDS_CAPACITY		((int)512)
+#define DEFAULT_SUITES_CAPACITY			((int)32)
 
-#define								MAX_SUFFIX ((unsigned int)9)
+#define									MAX_SUFFIX ((unsigned int)9)
 
 #ifdef __cplusplus
 }

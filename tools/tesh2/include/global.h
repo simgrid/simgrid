@@ -47,7 +47,7 @@ units_sem;
 
 /* the dlist of tesh include directories */
 extern vector_t 
-includes;
+include_dirs;
 
 extern int
 interrupted;

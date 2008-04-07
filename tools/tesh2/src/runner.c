@@ -1,12 +1,19 @@
 #include <runner.h>
 #include <units.h>
+#include <unit.h>
 #include <error.h>
+#include <variable.h>
 
 #include <errno.h>	/* for error code	*/
 #include <stdlib.h>	/* for calloc()		*/
-#include <stdio.h>	
+#include <stdio.h>
+
+#include <sys/resource.h>	
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
+
+extern char**
+environ;
 
 /* the unique tesh runner */
 static runner_t
@@ -24,7 +31,7 @@ runner_start_routine(void* p);
  * the want_check_syntax is specified. Returns
  * 0 if the syntax is clean.
  */
-static int
+static void
 check_syntax(void);
 
 #ifdef WIN32
@@ -96,19 +103,19 @@ int
 runner_init(int want_check_syntax, int timeout, fstreams_t fstreams)
 {
 	
-	if(runner)
-	{
-		ERROR0("Runner is already initialized");
-		return EEXIST;
-	}
+	int i;
+	char* val;
+	char buffer[MAX_PATH + 1] = {0};
+	int code;
+	const char* cstr;
+	variable_t variable;
 		
-		
-	runner = xbt_new0(s_runner_t, 1);
+	if(!(runner = (runner_t)calloc(1, sizeof(s_runner_t))))
+		return errno;
+	
 	
 	if(!(runner->units = units_new(runner, fstreams)))
 	{
-		ERROR0("Runner initialization failed");
-		
 		free(runner);
 		runner = NULL;
 		return errno;
@@ -121,13 +128,60 @@ runner_init(int want_check_syntax, int timeout, fstreams_t fstreams)
 	runner->number_of_runned_units = 0;
 	runner->waiting = 0;
 	
-	if(want_check_syntax)
+	runner->total_of_tests = 0;
+	runner->total_of_successeded_tests = 0;
+	runner->total_of_failed_tests = 0;
+	runner->total_of_interrupted_tests = 0;
+	
+	runner->total_of_units = 0;
+	runner->total_of_successeded_units = 0;
+	runner->total_of_failed_units = 0;
+	runner->total_of_interrupted_units = 0;
+	
+	runner->total_of_suites = 0;
+	runner->total_of_successeded_suites = 0;
+	runner->total_of_failed_suites = 0;
+	runner->total_of_interrupted_suites = 0;
+	
+	/* initialize the vector of variables */
+	runner->variables = vector_new(32, (fn_finalize_t)variable_free);
+	
+	
+	for(i = 0; environ[i] != NULL; i++)
 	{
-		if((errno = check_syntax()))
-			return errno;		
-	}
+		val = strchr(environ[i], '=');
 		
-	return 0;
+		if(val)
+		{
+			val++;
+				
+			if(val[0] != '\0')
+				strncpy(buffer, environ[i], (val - environ[i] -1));
+			
+			variable = variable_new(buffer, val);
+			variable->env = 1;
+			
+			/*printf("Add the environment variable %s %s\n", variable->name, variable->val);*/
+			
+			vector_push_back(runner->variables, variable);
+		}
+	}
+	
+	i = 0;
+	
+	while((cstr = error_get_at(i++, &code)))
+	{
+		sprintf(buffer,"%d",code);
+		variable = variable_new(cstr, buffer);
+		variable->err = 1;
+		vector_push_back(runner->variables, variable);
+	}
+	
+	
+	if(want_check_syntax)
+		check_syntax();
+		
+	return exit_code;
 		
 }
 
@@ -135,6 +189,8 @@ void
 runner_destroy(void)
 {
 	units_free((void**)(&(runner->units)));
+	vector_free(&runner->variables);
+	
 
 	#ifdef WIN32
 	CloseHandle(timer_handle);
@@ -202,29 +258,85 @@ runner_interrupt(void)
 void
 runner_display_status(void)
 {
+	
 	if(!want_dry_run)
 	{
+		struct rusage r_usage;
 		
-		/*unit_t unit;*/
-	
-		printf("Runner\n");
-		printf("Status informations :\n");
-	
-		printf("    number of units     %d\n",units_get_size(runner->units));
-		printf("    exit code           %d (%s)\n",exit_code, exit_code ? error_to_string(exit_code) : "success");
+		/*printf("\033[1m");*/
+		printf("\n  TEst SHell utility - mini shell specialized in running test units.\n");
+		printf(" =============================================================================\n");
+		/*printf("\033[0m");*/
 		
 		units_verbose(runner->units);
+		
+		/*printf("\033[1m");*/
+		printf(" =====================================================================%s\n",
+		runner->total_of_failed_tests ? "== FAILED": (runner->total_of_interrupted_tests || runner->total_of_interrupted_units) ? "==== INTR" : "====== OK");
+		
+		printf(" TOTAL : Suite(s): %.0f%% ok (%d suite(s): %d ok",
+		(runner->total_of_suites ? (1-((double)runner->total_of_failed_suites + (double)runner->total_of_interrupted_suites)/(double)runner->total_of_suites)*100.0 : 100.0),
+		runner->total_of_suites, runner->total_of_successeded_suites);
+		
+		if(runner->total_of_failed_suites > 0)
+			printf(", %d failed", runner->total_of_failed_suites);
+		
+		if(runner->total_of_interrupted_suites > 0)
+			printf(", %d interrupted)", runner->total_of_interrupted_suites);
+		
+		printf(")\n");	
+		
+		printf("         Unit(s):  %.0f%% ok (%d unit(s): %d ok",
+		(runner->total_of_units ? (1-((double)runner->total_of_failed_units + (double)runner->total_of_interrupted_units)/(double)runner->total_of_units)*100.0 : 100.0),
+		runner->total_of_units, runner->total_of_successeded_units);
+		
+		if(runner->total_of_failed_units > 0)
+			printf(", %d failed", runner->total_of_failed_units);
+		
+		if(runner->total_of_interrupted_units > 0)
+			printf(", %d interrupted)", runner->total_of_interrupted_units);
+		
+		printf(")\n");
+		
+		printf("         Test(s):  %.0f%% ok (%d test(s): %d ok",
+		(runner->total_of_tests ? (1-((double)runner->total_of_failed_tests + (double)runner->total_of_interrupted_tests)/(double)runner->total_of_tests)*100.0 : 100.0),
+		runner->total_of_tests, runner->total_of_successeded_tests); 
+		
+		if(runner->total_of_failed_tests > 0)
+			printf(", %d failed", runner->total_of_failed_tests);
+		
+		if(runner->total_of_interrupted_tests > 0)
+			printf(", %d interrupted)", runner->total_of_interrupted_tests);
+	 	
+		printf(")\n\n");
+		
+		
+		if(!getrusage(RUSAGE_SELF, &r_usage))
+		{
+		
+			printf("         Total tesh user time used:       %ld second(s) %ld microsecond(s)\n", r_usage.ru_utime.tv_sec, r_usage.ru_utime.tv_usec);
+			printf("         Total tesh system time used:     %ld second(s) %ld microsecond(s)\n\n", r_usage.ru_stime.tv_sec, r_usage.ru_stime.tv_usec);
+		
+			if(!getrusage(RUSAGE_CHILDREN, &r_usage))
+			{
+				printf("         Total children user time used:   %ld second(s) %ld microsecond(s)\n", r_usage.ru_utime.tv_sec, r_usage.ru_utime.tv_usec);
+				printf("         Total children system time used: %ld second(s) %ld microsecond(s)\n\n", r_usage.ru_stime.tv_sec, r_usage.ru_stime.tv_usec);
+		
+			}	
+		}
+		
+		/*printf("\033[0m");*/
 	}
 	else
 	{
 		if(exit_code)
 			ERROR0("Syntax error detected");
-		else if(exit_code == 0)
+		else if(!exit_code)
 			INFO0("Syntax 0K");
 	}
 }
 
-static int
+static void
 check_syntax(void)
 {
 	if(!want_dry_run)
@@ -235,7 +347,7 @@ check_syntax(void)
 	
 		want_dry_run = 0;
 		
-		if(0 == exit_code)
+		if(!exit_code)
 		{
 			if(!want_silent)
 				INFO0("syntax checked (OK)");
@@ -250,5 +362,4 @@ check_syntax(void)
 		WARN0("mismatch in the syntax : --just-check-syntax and --check-syntax options at same time");
 	}
 
-	return exit_code;
 }

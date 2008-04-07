@@ -8,6 +8,7 @@
 #include <error.h>
 
 #include <getopt.h>
+#include <getpath.h>
 
 /*
  * entry used to define the parameter of a tesh option.
@@ -44,8 +45,12 @@ prev_error_mode = 0;
 directory_t
 root_directory = NULL;
 
-int
+/*int
 exit_code = 0;
+*/
+
+int 
+want_detail_summary = 0;
 
 /* the current version of tesh									*/
 static const char* 
@@ -86,7 +91,7 @@ directories = NULL;
 
 /* the include directories : see the !i metacommand				*/
 vector_t 
-includes = NULL;
+include_dirs = NULL;
 
 /* the list of tesh files to run								*/
 static fstreams_t 
@@ -133,12 +138,6 @@ want_display_version = 0;
 static int
 want_check_syntax = 0;
 
-/* if 1, all the tesh file of the current directory
- * are runned
- */ 
-static int
-want_load_directory = 0;
-
 /* if 1, the status of all the units is display at
  * the end.
  */
@@ -183,25 +182,31 @@ xbt_os_sem_t
 units_sem = NULL;
 
 static int
-prepared = 0;
-
+loaded = 0;
 
 int 
-interrupted = 0; 
+interrupted = 0;
+
+int
+exit_code = 0; 
+
+pid_t
+pid =0;
 
 /* the table of the entries of the options */ 
 static const struct s_optentry opt_entries[] =
 {
-	{ 'C', string, (byte*)&directories, 0, "directory" },
+	{ 'C', string, (byte*)NULL, 0, "directory" },
 	{ 'x', string, (byte*)&suffixes, 0, "suffix" },
 	{ 'e', flag, (byte*)&env_overrides, 0, "environment-overrides", },
 	{ 'f', string, (byte*)&fstreams, 0, "file" },
 	{ 'h', flag, (byte*)&want_display_usage, 0, "help" },
 	{ 'a', flag, (byte*)&want_display_semantic, 0, "semantic" },
 	{ 'i', flag, (byte*)&want_keep_going_unit, 0, "keep-going-unit" },
-	{ 'I', string, (byte*)&includes, 0, "include-dir" },
+	{ 'I', string, (byte*)&include_dirs, 0, "include-dir" },
 	{ 'j', number, (byte*)&number_of_jobs, (byte*) &optional_number_of_jobs, "jobs" },
 	{ 'k', flag, (byte*)&want_keep_going, 0, "keep-going" },
+	{ 'm', flag, (byte*)&want_detail_summary, 0, "detail-summary" },
 	{ 'c', flag, (byte*)&want_just_display, 0, "just-display" },
 	{ 'd', flag, (byte*)&display_data_base, 0,"display-data-base" },
 	{ 'q', flag, (byte*)&question, 0, "question" },
@@ -211,7 +216,7 @@ static const struct s_optentry opt_entries[] =
 	{ 'n', flag, (byte*)&want_dry_run, 0, "dry-run"},
 	{ 't', number, (byte*)&timeout, 0, "timeout" },
 	{ 'S', flag, (byte*)&want_check_syntax, 0, "check-syntax"},
-	{ 'r', flag, (byte*)&want_load_directory, 0, "load-directory"},
+	{ 'r', string, (byte*)&directories, 0, "load-directory"},
 	{ 'v', flag, (byte*)&want_verbose, 0, "verbose"},
 	{ 'F', string,(byte*)&excludes, 0, "exclude"},
 	{ 'l', string,(byte*)&logs,0,"log"},
@@ -259,6 +264,7 @@ static const char* usage[] =
 	" -b, --build-file                       Build a tesh file.\n",
 	" -r, --load-directory                   Run all the tesh files located in the directories specified by the option --directory.\n",
 	" -v, --verbose                          Display the status of the commands.\n",
+	" -m, --detail-summary                   Detail the summary of the run.\n",
 	" -F file , --exclude=FILE               Ignore the tesh file FILE.\n",
 	" -l format, --log                       Format of the xbt logs.\n",
 	NULL
@@ -278,11 +284,11 @@ init_options(void);
 static int
 process_command_line(int argc, char** argv);
 
-static int
+static void
 load(void);
 
 static void
-display_usage(int exit_code);
+display_usage(void);
 
 static void
 display_version(void);
@@ -301,16 +307,21 @@ init(void);
 int
 main(int argc, char* argv[])
 {
-	init();
-	
-	/* process the command line */
-	if((exit_code = process_command_line(argc, argv)))
+	if(init() < 0)
 		finalize();
+		
+	/* process the command line */
+	if(process_command_line(argc, argv) < 0)
+		finalize();
+	
+	/* move to the root directory (the directory may change during the command line processing) */
+	chdir(root_directory->name);
 		
 	/* initialize the xbt library 
 	 * for thread portability layer
 	 */
 	 
+	/* xbt initialization */
 	if(!lstrings_is_empty(logs))
 	{
 		int size = lstrings_get_size(logs);
@@ -342,16 +353,12 @@ main(int argc, char* argv[])
 		finalize();
 	}
 	
-	if(!directories_has_directories_to_load(directories) && want_load_directory)
-		WARN0("--load-directory specified but no directory specified");
+	/* load tesh files */
+	load();
 	
-	excludes_check(excludes, fstreams);
 	
-	/* load tesh */
-	if((exit_code = load()))
-		finalize();
-		
-	prepared = 1;
+	/* use by the finalize function to known if it must display the tesh usage */	
+	loaded = 1;
 
 	if(-2 == number_of_jobs)
 	{/* --jobs is not specified (use the default value) */
@@ -365,27 +372,22 @@ main(int argc, char* argv[])
 	if(number_of_jobs > fstreams_get_size(fstreams))
 	{/* --jobs = N is specified and N is more than the number of tesh files */
 		
-		WARN0("number of requested jobs exceed the number of files");
+		WARN0("Number of requested jobs exceed the number of files to run");
 		
 		/* assume one job per file */
 		number_of_jobs = fstreams_get_size(fstreams);
 	}
 
-	/* initialize the semaphore used to synchronize the jobs */
+	/* initialize the semaphore used to synchronize all the units */
 	jobs_sem = xbt_os_sem_init(number_of_jobs);
 
 	/* initialize the semaphore used by the runner to wait for the end of all units */
 	units_sem = xbt_os_sem_init(0);
 	
 	/* initialize the runner */
-	if((0 != (exit_code = runner_init(
-									want_check_syntax, 
-									timeout, 
-									fstreams))))
-	{
+	if(runner_init(want_check_syntax, timeout, fstreams))
 		finalize();
-	}
-	
+		
 	if(want_just_display && want_silent)
 		want_silent = 0;
 		
@@ -393,17 +395,17 @@ main(int argc, char* argv[])
 		WARN0("mismatch in the syntax : --just-check-syntax and --just-display options at same time");
 	
 	/* run all the units */
-	runner_run(); 
+	runner_run();
+	
 	
 	/* show the result of the units */
 	if(want_verbose || want_dry_run)
 		runner_display_status();
 		
-
 	/* all the test are runned, destroy the runner */
 	runner_destroy();
 	
-	/* then, finalize tesh */
+	/* then, finalize tesh (release all the allocated memory and exits) */
 	finalize();
 	
 	#ifndef WIN32
@@ -412,10 +414,21 @@ main(int argc, char* argv[])
 	
 }
 
+/* init --	initialize tesh : allocated all the objects needed by tesh to run
+ *			the tesh files specified in the command line.
+ *
+ * return	If successful the function returns zero. Otherwise the function returns
+ *			-1 and sets the global variable errno to the appropriate error code.
+ */
+
+
+
 static int
 init(void)
 {
-	char* buffer = getcwd(NULL, 0);
+	char* buffer;
+	
+	
 	
 	#ifdef WIN32
 	/* Windows specific : don't display the general-protection-fault message box and
@@ -425,99 +438,176 @@ init(void)
 	prev_error_mode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
 	#endif
 	
-	/* used to store the file streams to run */
-	fstreams = fstreams_new(DEFAULT_FSTREAMS_CAPACITY, fstream_free);
-	
-	root_directory = directory_new(buffer,want_load_directory);
-	free(buffer);
-	/* used to store the directories to loads */
-	directories = directories_new(); 
+	/* used to store the files to run */
+	if(!(fstreams = fstreams_new(DEFAULT_FSTREAMS_CAPACITY, fstream_free)))
+	{
+		ERROR0("Insufficient memory is available to initialize tesh : system error");
+		return -1;
+	}
 	
 	/* register the current directory */
-	directories_add(directories, root_directory);
+	if(!(buffer  = getcwd(NULL, 0)))
+	{
+		exit_code = errno;
+		
+		if(EACCES == errno)
+			ERROR0("tesh initialization failed - Insufficient permission to read the current directory");
+		else
+			ERROR0("Insufficient memory is available to initialize tesh : system error");	
+		
+		return -1;
+	}
 	
-	/* used to store the includes directories */
-	includes = vector_new(DEFAULT_INCLUDES_CAPACITY, directory_free);
+	/* save the root directory */
+	if(!(root_directory = directory_new(buffer)))
+	{
+		ERROR0("Insufficient memory is available to initialize tesh : system error");
+		return -1;
+	}
 	
-	/* xbt logs */
-	logs = lstrings_new();
+	free(buffer);
 	
-	/* used to to store all the excluded file streams */
-	excludes = excludes_new();
+	/* the directories to loads */
+	if(!(directories = directories_new()))
+	{
+		ERROR0("Insufficient memory is available to initialize tesh : system error");
+		return -1;
+	}
 	
-	/* list of file streams suffixes */
-	suffixes = lstrings_new();
+	/* the include directories */
+	if(!(include_dirs = vector_new(DEFAULT_INCLUDE_DIRS_CAPACITY, directory_free)))
+	{
+		ERROR0("Insufficient memory is available to initialize tesh : system error");
+		return -1;
+	}
 	
-	lstrings_push_back(suffixes,".tesh");
+	/* xbt logs option */
+	if(!(logs = lstrings_new()))
+	{
+		ERROR0("Insufficient memory is available to initialize tesh : system error");
+		return -1;
+	}
+	
+	/* the excluded files */
+	if(!(excludes = excludes_new()))
+	{
+		ERROR0("Insufficient memory is available to initialize tesh : system error");
+		return -1;
+	}
+	
+	/* the suffixes */
+	if(!(suffixes = lstrings_new()))
+	{
+		ERROR0("Insufficient memory is available to initialize tesh : system error");
+		return -1;
+	}
+	
+	/* register the default suffix ".tesh" */
+	if(lstrings_push_back(suffixes,".tesh"))
+	{
+		ERROR0("Insufficient memory is available to initialize tesh : system error");
+		return -1;
+	}
+	
+	pid = getpid();
 	
 	return 0;
 }
 
-static int
+/* load -- load the tesh files to run */
+static void
 load(void)
 {
-	chdir(directory_get_name(root_directory));
 	
-	if(want_load_directory)
+	/* if the directories object is not empty load all the tesh files contained in
+	 * the directories specified in the command line (this tesh files must have the
+	 * a suffix specified in the suffixes object.
+	 */
+	if(!directories_is_empty(directories))
 		directories_load(directories, fstreams, suffixes);
 	
-	/* on a aucun fichier specifie dans la ligne de commande
-	 * l'option --run-current-directory n'a pas ete specifie ou aucun fichier ne se trouve dans le repertoire a charger
+	/* if no tesh file has been specified in the command line try to load the default tesh file
+	 * teshfile from the current directory
 	 */
 	if(fstreams_is_empty(fstreams))
 	{
 		struct stat buffer = {0};
 		
-		/* add the default tesh file if it exists */
+		/* add the default tesh file if it exists in the current directory */
 		if(!stat("teshfile", &buffer) && S_ISREG(buffer.st_mode))
 			fstreams_add(fstreams, fstream_new(getcwd(NULL, 0), "teshfile"));
 	}
 	
+	/* excludes the files specified in the command line and stored in the excludes object */
 	if(!excludes_is_empty(excludes) && !fstreams_is_empty(fstreams))
+	{
+		/* check the files to excludes before */	
+		excludes_check(excludes, fstreams);
+		
+		/* exclude the specified tesh files */
 		fstreams_exclude(fstreams, excludes);
+	}
 	
+	/* if the fstreams object is empty use the stdin */
 	if(fstreams_is_empty(fstreams))
 		fstreams_add(fstreams, fstream_new(NULL, "stdin"));	
 	
+	/* load the tesh files (open them) */
 	fstreams_load(fstreams);
 	
-	return 0;
 }
 
+/* finalize -- cleanup all the allocated objects and display the tesh usage if needed */
 static void
 finalize(void)
 {
-	if((!exit_code && want_display_usage) || (!exit_code && !prepared))
-		display_usage(exit_code);
+	/* if there is not an error and the user wants display the usage or
+	 * if there is an error and all the files to load are loaded, display the usage
+	 */
+	if((!exit_code && want_display_usage) || (!exit_code && !loaded))
+		display_usage();
 	
+	/* delete the fstreams object */
 	if(fstreams)
 		fstreams_free((void**)&fstreams);
 	
+	/* delete the excludes object */
 	if(excludes)	
 		excludes_free((void**)&excludes);
 	
+	/* delete the directories object */
 	if(directories)
 		directories_free((void**)&directories);
-	
-	if(includes)
-		vector_free(&includes);
 		
+	/* delete the root directory object */
+	if(root_directory)
+		directory_free((void**)&root_directory);
+	
+	/* delete the include directories object */
+	if(include_dirs)
+		vector_free(&include_dirs);
+	
+	/* delete the list of tesh files suffixes */	
 	if(suffixes)
 		lstrings_free(&suffixes);
 	
+	/* delete the xbt log options list */
 	if(logs)
 		lstrings_free(&logs);
+		
 	
-	/* destroy the semaphore used to synchronize the jobs */
+	/* destroy the semaphore used to synchronize the units */
 	if(jobs_sem)
 		xbt_os_sem_destroy(jobs_sem);
-
+	
+	/* destroy the semaphore used by the runner used to wait for the end of the units */
 	if(units_sem)
 		xbt_os_sem_destroy(units_sem);
 	
 	/* exit from the xbt framework */
 	xbt_exit();
 	
+	/* Windows specific (restore the previouse error mode */
 	#ifdef WIN32
 	SetErrorMode(prev_error_mode);
 	#endif
@@ -525,56 +615,50 @@ finalize(void)
 	if(!want_verbose && !want_dry_run && !want_silent && !want_just_display)
 		INFO2("tesh terminated with exit code %d : %s",exit_code, (!exit_code ? "success" : error_to_string(exit_code)));
 	
+	/* exit with the last error code */
 	exit(exit_code);
 }
 
+/* init_options -- initialize the options string */
 static void
 init_options (void)
 {
 	char *p;
 	unsigned int i;
 	
+	/* the function has been already called */
 	if(optstring[0] != '\0')
-	/* déjà traité.  */
 		return;
 	
 	p = optstring;
 	
-	/* Return switch and non-switch args in order, regardless of
-	POSIXLY_CORRECT.  Non-switch args are returned as option 1.  */
 	
-	/* le premier caractère de la chaîne d'options vaut -.
-	 * les arguments ne correspondant pas à une option sont 
-	 * manipulés comme s'ils étaient des arguments d'une option
-	 *  dont le caractère est le caractère de code 1
-	 */
 	*p++ = '-';
 	
 	for (i = 0; opt_entries[i].c != '\0'; ++i)
 	{
-		/* initialize le nom de l'option longue*/
+		/* initialize the long name of the option*/
 		longopts[i].name = (opt_entries[i].long_name == 0 ? "" : opt_entries[i].long_name);
 		
-		/* getopt_long() retourne la valeur de val */
+		/* getopt_long returns the value of val */
 		longopts[i].flag = 0;
 		
-		/* la valeur de l'option courte est le caractère spécifié dans  opt_entries[i].c */
+		/* the short option */
 		longopts[i].val = opt_entries[i].c;
 		
-		/* on l'ajoute à la chaine des optstring */
+		/* add the short option in the options string */
 		*p++ = opt_entries[i].c;
 		
 		switch (opt_entries[i].type)
 		{
-			/* si c'est une option qui sert a positionner un flag ou que l'on doit ignorée, elle n'a pas d'argument */
+			/* if this option is used to set a flag or if the argument must be ignored
+			 * the option has no argument
+			 */
 			case flag:
 			longopts[i].has_arg = no_argument;
 			break;
 		
-			/* c'est une option qui attent un argument : 
-			 * une chaine de caractères, un nombre flottant, 
-			 * ou un entier positif
-			 */
+			/* the option has an argument */
 			case string:
 			case number:
 			
@@ -597,6 +681,18 @@ init_options (void)
 	longopts[i].name = 0;
 }
 
+/* process_command_line --	process the command line
+ *
+ * param					argc the number of the arguments contained by the command line.
+ * param					The array of C strings containing all the arguments of the command 
+ *							line.
+ *
+ * return					If successful, the function returns 0. Otherwise -1 is returned
+ *							and sets the global variable errno to indicate the error.
+ *
+ * errors	[ENOENT]		A file name specified in the command line does not exist
+ */	
+
 static int
 process_command_line(int argc, char** argv)
 {
@@ -605,17 +701,18 @@ process_command_line(int argc, char** argv)
 	directory_t directory;
 	fstream_t fstream;
 	
-	/* initialize the options table of tesh */
+	/* initialize the options string of tesh */
 	init_options();
 	
-	/* display the errors of the function getopt_long() */
+	/* let the function getopt_long display the errors if any */
 	opterr = 1;
 	
+	/* set option index to zero */
 	optind = 0;
 	
 	while (optind < argc)
 	{
-		c = getopt_long (argc, argv, optstring, longopts, (int *) 0);
+		c = getopt_long(argc, argv, optstring, longopts, (int *) 0);
 		
 		if(c == EOF)
 		{
@@ -624,72 +721,54 @@ process_command_line(int argc, char** argv)
 		}
 		else if (c == 1)
 		{
-			/* the argument of the command line is not an option (no "-"), assume it's a tesh file */
-			/*struct stat buffer = {0};
-			char* prev = getcwd(NULL, 0);
+			/* no option specified, assume it's a tesh file to run */
+			char* path;
+			char* delimiter;
 			
-			directory = directories_get_back(directories);
-			
-			chdir(directory->name);
-			
-			if(stat(optarg, &buffer) || !S_ISREG(buffer.st_mode))
+			/* getpath returns -1 when the file to get the path doesn't exist */
+			if(getpath(optarg, &path) < 0)
 			{
-				chdir(prev);
-				free(prev);
-				ERROR1("file %s not found", optarg);
-				return EFILENOTFOUND;
-			}
-			
-			chdir(prev);
-			free(prev);*/
-			
-			directory = directories_search_fstream_directory(directories, optarg);
-			
-			if(!directory)
-			{
-				if(1 == directories_get_size(directories))
-				{
-					ERROR1("file %s not found in the current directory",optarg);
-					return EFILENOTINCURDIR;
-				}
+				exit_code = errno;
+				
+				if(ENOENT == errno)
+					ERROR1("File %s does not exist", optarg);
 				else
-				{
-					ERROR1("file %s not found in the specified directories",optarg);
-					return EFILENOTINSPECDIR;
-				}
+					ERROR0("Insufficient memory is available to parse the command line : system error");
+					
+				return -1;
 			}
 			
-			if(!(fstream = fstream_new(directory_get_name(directory), optarg)))
+			/* get to the last / (if any) to get the short name of the file */
+			delimiter = strrchr(optarg,'/');
+			
+			/* create a new file stream which represents the tesh file to run */
+			fstream = fstream_new(path, delimiter ? delimiter + 1 : optarg);
+			
+			free(path);
+			
+			/* if the list of all tesh files to run already contains this file
+			 * destroy it and display a warning, otherwise add it in the list.
+			 */
+			if(fstreams_contains(fstreams, fstream))
 			{
-				ERROR1("command line processing failed with the error code %d", errno);
-				return EPROCESSCMDLINE;
+				fstream_free((void**)&fstream);
+				WARN1("File %s already specified to be run", optarg);
 			}
 			else
-			{
-				if(fstreams_contains(fstreams, fstream))
-				{
-					fstream_free((void**)&fstream);
-					WARN1("file %s already specified", optarg);
-				}
-				else
-				{
-					if((errno = fstreams_add(fstreams, fstream)))
-					{
-						fstream_free((void**)&fstream);
-						ERROR1("command line processing failed with the error code %d", errno);
-						return EPROCESSCMDLINE;
-					}
-				}
-			}					
+				fstreams_add(fstreams, fstream);
+				
+			
+				
+			
 		}
 		else if (c == '?')
 		{
-			/* unknown option, getopt_long() displays the error */
-			return 1;
+			/* unknown option, let getopt_long() displays the error */
+			return -1;
 		}
 		else
 		{
-			for (entry = opt_entries; entry->c != '\0'; ++entry)
+			for(entry = opt_entries; entry->c != '\0'; ++entry)
 				
 				if(c == entry->c)
 				{
@@ -698,8 +777,9 @@ process_command_line(int argc, char** argv)
 					{
 						/* impossible */
 						default:
-						ERROR0("command line processing failed : internal error");
-						return EPROCESSCMDLINE;
+						ERROR0("Command line processing failed : internal error");
+						exit_code = EPROCCMDLINE;
+						return -1;
 						
 						
 						/* flag options */
@@ -720,51 +800,79 @@ process_command_line(int argc, char** argv)
 						else if (*optarg == '\0')
 						{
 							/* a non optional argument is not specified */
-							ERROR2("the option %c \"%s\"requires an argument",entry->c,entry->long_name);
-							return EARGNOTSPEC;
+							ERROR2("Option %c \"%s\"requires an argument",entry->c,entry->long_name);
+							exit_code = ENOARG;
+							return -1;
 						}
 						
-						/* --directory option */
-						if(!strcmp(entry->long_name,"directory"))
+						/* --load-directory option */
+						if(!strcmp(entry->long_name,"load-directory"))
 						{
-							if(!(directory = directory_new(optarg, want_load_directory)))
+							char* path;
+							
+							if(translatepath(optarg, &path) < 0)
 							{
+								exit_code = errno;
+								
 								if(ENOTDIR == errno)
-								{
-									ERROR1("directory %s not found",optarg);
-									return EDIRNOTFOUND;
-								}
+									ERROR1("%s is not a directory",optarg);
 								else
-								{
-									ERROR1("command line processing failed with the error code %d", errno);
-									return EPROCESSCMDLINE;
-								}
+									ERROR0("Insufficient memory is available to process the command line - system error");
+									
+								return -1;
+								
 							}
 							else
 							{
+								directory = directory_new(path);
+								free(path);
+						
 								if(directories_contains(directories, directory))
 								{
 									directory_free((void**)&directory);
-									WARN1("directory %s already specified",optarg);
+									WARN1("Directory %s already specified to be load",optarg);
 								}
 								else
-								{
-									if((errno = directories_add(directories, directory)))
-									{
-										directory_free((void**)&directory);
-										ERROR1("command line processing failed with the error code %d", errno);
-										return EPROCESSCMDLINE;
-									}
-								}
+									 directories_add(directories, directory);
+									 
+								
 							}			
 						}
+						else if(!strcmp(entry->long_name,"directory"))
+						{
+							char* path ;
+							
+							if(translatepath(optarg, &path) < 0)
+							{
+								exit_code = errno;
+								
+								if(ENOTDIR == errno)
+									ERROR1("%s is not a directory",optarg);
+								else
+									ERROR0("Insufficient memory is available to process the command line - system error");
+									
+								return -1;
+							}
+							else
+							{
+								if(!dont_want_display_directory)
+									INFO1("Entering directory \"%s\"",path);
+								
+								chdir(path);
+								free(path);
+								
+								
+							}	
+						}
+						
 						/* --suffix option */
 						else if(!strcmp(entry->long_name,"suffix"))
 						{
 							if(strlen(optarg) > MAX_SUFFIX)
 							{
-								ERROR1("suffix %s too long",optarg);
-								return ESUFFIXTOOLONG;	
+								ERROR1("Suffix %s too long",optarg);
+								exit_code = ESUFFIXTOOLONG;	
+								return -1;
 							}
 							
 							if(optarg[0] == '.')
@@ -773,14 +881,14 @@ process_command_line(int argc, char** argv)
 								sprintf(suffix,".%s",optarg);
 								
 								if(lstrings_contains(suffixes, suffix))
-									WARN1("suffix %s already specified", optarg);
+									WARN1("Suffix %s already specified to be used", optarg);
 								else
 									lstrings_push_back(suffixes, suffix);
 							}
 							else
 							{
 								if(lstrings_contains(suffixes, optarg))
-									WARN1("suffix %s already specified", optarg);
+									WARN1("Suffix %s already specified to be used", optarg);
 								else
 									lstrings_push_back(suffixes, optarg);	
 							}
@@ -788,135 +896,100 @@ process_command_line(int argc, char** argv)
 						/* --file option */
 						else if(!strcmp(entry->long_name,"file"))
 						{
+							char* path;
+							char* delimiter;
 							
-							/* the argument of the command line is not an option (no "-"), assume it's a tesh file */
-							/*struct stat buffer = {0};
-							char* prev = getcwd(NULL, 0);
-							
-							directory = directories_get_back(directories);
-							
-							chdir(directory->name);
-			
-							if(stat(optarg, &buffer) || !S_ISREG(buffer.st_mode))
+							if(getpath(optarg, &path) < 0)
 							{
-								chdir(prev);
-								free(prev);
-								ERROR1("file %s not found", optarg);
-								return EFILENOTFOUND;
-							}
-							
-							chdir(prev);
-							free(prev);*/
-							
-							directory = directories_search_fstream_directory(directories, optarg);
-			
-							if(!directory)
-							{
-								if(1 == directories_get_size(directories))
-								{
-									ERROR1("file %s not found in the current directory",optarg);
-									return EFILENOTINCURDIR;
-								}
+								exit_code = errno;
+								
+								if(ENOENT == errno)
+									ERROR1("File %s does not exist", optarg);
 								else
-								{
-									ERROR1("file %s not found in the specified directories",optarg);
-									return EFILENOTINSPECDIR;
-								}
+									ERROR0("Insufficient memory is available to process the command line - system error");
+								
+								return -1;
 							}
 							
-							if(!(fstream = fstream_new(directory_get_name(directory),optarg)))
+							delimiter = strrchr(optarg,'/');
+							
+							fstream = fstream_new(path, delimiter ? delimiter + 1 : optarg);
+							
+							free(path);
+							
+							if(fstreams_contains(fstreams, fstream))
 							{
-								ERROR1("command line processing failed with the error code %d", errno);
-								return EPROCESSCMDLINE;
+								fstream_free((void**)&fstream);
+								WARN1("File %s already specified to run", optarg);
 							}
 							else
-							{
-								if(fstreams_contains(fstreams, fstream))
-								{
-									fstream_free((void**)&fstream);
-									WARN1("file %s already specified", optarg);
-								}
-								else
-								{
-									if((errno = fstreams_add(fstreams, fstream)))
-									{
-										fstream_free((void**)&fstream);
-										ERROR1("command line processing failed with the error code %d", errno);
-										return EPROCESSCMDLINE;
-									}
-								}
-							}		
+								fstreams_add(fstreams, fstream);
 						}
 						/* --include-dir option */
 						else if(!strcmp(entry->long_name,"include-dir"))
 						{
-							if(!(directory = directory_new(optarg, want_load_directory)))
+							
+							char* path ;
+							
+							if(translatepath(optarg, &path) < 0)
 							{
+								exit_code = errno;
+								
 								if(ENOTDIR == errno)
-								{
 									ERROR1("%s is not a directory",optarg);
-									return EDIRNOTFOUND;
-								}
 								else
-								{
-									ERROR1("command line processing failed with the error code %d", errno);
-									return EPROCESSCMDLINE;
-								}
+									ERROR0("Insufficient memory is available to process the command line - system error");
+									
+								return -1;
 							}
 							else
 							{
-								if(vector_contains(includes, directory))
+							
+								directory = directory_new(path);
+								free(path);
+							
+								if(vector_contains(include_dirs, directory))
 								{
 									directory_free((void**)&directory);
-									WARN1("include directory %s already specified",optarg);
+									WARN1("Include directory %s already specified to be used",optarg);
 									
 								}
 								else
-								{
-									if((errno = vector_push_back(includes, directory)))
-									{
-										directory_free((void**)&directory);
-										ERROR1("command line processing failed with the error code %d", errno);
-										return EPROCESSCMDLINE;
-									}
-								}
+									vector_push_back(include_dirs, directory);
 							}
 						}
 						/* --exclude option */ 
 						else if(!strcmp(entry->long_name,"exclude"))
 						{
-							directory = directories_get_back(directories);
 							
-							if(!(fstream = fstream_new(directory_get_name(directory), optarg)))
+							char* path;
+							char* delimiter;
+			
+							if(getpath(optarg, &path) < 0)
 							{
+								exit_code = errno;
+								
 								if(ENOENT == errno)
-								{
-									ERROR1("file to exclude %s not found", optarg);
-									return EFILENOTFOUND;
-								}
+									ERROR1("file %s does not exist", optarg);
 								else
-								{
-									ERROR1("command line processing failed with the error code %d", errno);
-									return EPROCESSCMDLINE;
-								}
+									ERROR0("Insufficient memory is available to process the command line - system error");
+									
+								return -1;
+							}
+			
+							delimiter = strrchr(optarg,'/');
+			
+							fstream = fstream_new(path, delimiter ? delimiter + 1 : optarg);
+							free(path);
+			
+							if(excludes_contains(excludes, fstream))
+							{
+								fstream_free((void**)&fstream);
+								WARN1("File %s already specified to be exclude", optarg);
 							}
 							else
-							{
-								if(excludes_contains(excludes, fstream))
-								{
-									fstream_free((void**)&fstream);
-									WARN1("file to exclude %s already specified", optarg);
-								}
-								else
-								{
-									if((errno = excludes_add(excludes, fstream)))
-									{
-										fstream_free((void**)&fstream);
-										ERROR1("command line processing failed with the error code %d", errno);
-										return EPROCESSCMDLINE;
-									}
-								}
-							}				
+								excludes_add(excludes, fstream);
+									
 						}
 						/* --log option */
 						else if(!strcmp(entry->long_name,"log"))
@@ -925,7 +998,8 @@ process_command_line(int argc, char** argv)
 						}
 						else
 						{
-							/* TODO */
+							INFO1("Unexpected option %s", optarg);
+							return -1;
 						}
 						
 						
@@ -953,8 +1027,9 @@ process_command_line(int argc, char** argv)
 		
 							if (i < 1 || cp[0] != '\0')
 							{
-								ERROR2("option %c \"%s\" requires an strictly positive integer as argument",entry->c, entry->long_name);
-								return ENOTPOSITIVENUM;
+								ERROR2("Option %c \"%s\" requires an strictly positive integer as argument",entry->c, entry->long_name);
+								exit_code = ENOTPOSITIVENUM;
+								return -1;
 							}
 							else
 								*(int*)entry->value = i;
@@ -975,7 +1050,7 @@ process_command_line(int argc, char** argv)
 }
 
 static void
-display_usage(int exit_code)
+display_usage(void)
 {
 	const char **cpp;
 	FILE* stream;

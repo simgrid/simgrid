@@ -140,9 +140,10 @@ lstrings_clear(lstrings_t lstrings)
 		return EINVAL;
 	
 	if(!lstrings->size)
-		return EAGAIN;
+		return 0;
 	
-	while(lstrings_pop_back(lstrings));
+	while(lstrings->size)
+		lstrings_pop_back(lstrings);
 	
 	return 0;
 }

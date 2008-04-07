@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <stdio.h>
+
 #ifdef _MSC_VER
 #define inline _inline
 #endif
@@ -54,11 +56,13 @@ vector_new(int capacity, fn_finalize_t fn_finalize)
 int 
 vector_clear(vector_t vector)
 {
+	int rv;
+	
 	if(!vector)
 	    return EINVAL;
 	    
 	if(!vector->size)
-		return EAGAIN;
+		return 0;
 	
 	if(vector->fn_finalize)
 	{
@@ -69,8 +73,8 @@ vector_clear(vector_t vector)
 		
 		for(pos = 0; pos < size; pos++)
 		{
-			if((errno = (*(fn_finalize))(&(items[pos]))))
-				return errno;
+			if((rv = (*(fn_finalize))(&(items[pos]))))
+				return rv;
 			else
 				vector->size--;
 		}
@@ -88,11 +92,13 @@ vector_clear(vector_t vector)
 int 
 vector_free(vector_t* vector_ptr)
 {
+	int rv;
+	
     if(!(*vector_ptr))
         return EINVAL;
        
-	if((errno = vector_clear(*vector_ptr)))
-		return errno;
+	if((rv = vector_clear(*vector_ptr)))
+		return rv;
 
 	free(*vector_ptr);
 	*vector_ptr = NULL;
@@ -175,21 +181,23 @@ vector_get_capacity_available(vector_t vector)
 int
 vector_push_back(vector_t vector, void* item)
 {
+	int rv;
+	
 	if(!vector || !item)
     	return EINVAL;
-    
     
 	/* if all capacity is used, resize the vector */
 	if(vector->capacity <= vector->size)
 	{
-		if(!resize(vector))
-			return errno;
+		if((rv = resize(vector)))
+			return rv;
 	}
 	
 	/* increment the item count and push the new item at the end of the vector */
 	vector->items[++(vector->size) - 1] = item;
 	
 	vector->pos = -1;
+	
 	
 	return 0;	
 }
@@ -263,6 +271,8 @@ vector_set_at(vector_t vector, int pos, void* item)
 int 
 vector_insert(vector_t vector, int pos, void* item)
 {
+	int rv;
+	
 	if(!vector)
         return EINVAL;
    
@@ -280,8 +290,8 @@ vector_insert(vector_t vector, int pos, void* item)
     
 	if(vector->size >= vector->capacity)
 	{
-		if(!resize(vector))
-			return errno;
+		if((rv = resize(vector)))
+			return rv;
 	}		
 	
 	if(vector->size)
@@ -300,6 +310,8 @@ vector_insert(vector_t vector, int pos, void* item)
 int 
 vector_erase_at(vector_t vector, int pos)
 {
+	int rv;
+	
 	if(!vector)
         return EINVAL;
     
@@ -317,8 +329,8 @@ vector_erase_at(vector_t vector, int pos)
 
 	if(vector->fn_finalize)
 	{
-		if((errno = (*(vector->fn_finalize))(&(vector->items[pos]))))
-			return errno;
+		if((rv = (*(vector->fn_finalize))(&(vector->items[pos]))))
+			return rv;
 	}
 
 	if(pos != (vector->size - 1))
@@ -336,7 +348,7 @@ vector_erase_at(vector_t vector, int pos)
 int 
 vector_erase(vector_t vector, void* item)
 {
-	int pos;
+	int pos, rv;
 	
 	if(!vector || !item)
 		return EINVAL;
@@ -349,8 +361,8 @@ vector_erase(vector_t vector, void* item)
 		
 	if(vector->fn_finalize)
 	{
-		if((errno = (*(vector->fn_finalize))(&item)))
-			return errno;	
+		if((rv = (*(vector->fn_finalize))(&item)))
+			return rv;	
 	}
 	
 	if(pos != (vector->size - 1))
@@ -368,7 +380,8 @@ int
 vector_erase_range(vector_t vector, int first, int last)
 {
 	register int width;
-
+	int rv;
+	
 	if(!vector || first >= last)
 		return EINVAL;
 	
@@ -382,8 +395,8 @@ vector_erase_range(vector_t vector, int first, int last)
 
 	while(width--)
 	{
-		if((errno = vector_erase_at(vector,first)))
-			return errno;
+		if((rv = vector_erase_at(vector,first)))
+			return rv;
 	}
 		
 	return 0;
@@ -454,6 +467,7 @@ vector_assign(vector_t dst,vector_t src)
 	register int pos;
 	int size;
 	void** items;
+	int rv;
 
 	
 	if(!dst || !src ||(dst == src))
@@ -467,13 +481,13 @@ vector_assign(vector_t dst,vector_t src)
 	/* if the destination vector has not enough capacity resize it */
 	if(size > dst->capacity)
 	{
-		if((errno = vector_reserve(dst, size - dst->capacity)))
-			return errno;
+		if((rv = vector_reserve(dst, size - dst->capacity)))
+			return rv;
 	}
 
 	/* clear the destination vector */
-	if((errno = vector_clear(dst)))
-		return errno;
+	if((rv = vector_clear(dst)))
+		return rv;
 
 	dst->fn_finalize = NULL;
 		
@@ -481,8 +495,8 @@ vector_assign(vector_t dst,vector_t src)
 	
 	/* file the destination vector */
 	for(pos = 0; pos < size; pos++)
-		 if((errno = vector_push_back(dst,items[pos])))
-		 	return errno;
+		 if((rv = vector_push_back(dst,items[pos])))
+		 	return rv;
 		 	
 	dst->pos = -1;
 		 
@@ -612,6 +626,7 @@ vector_reserve(vector_t vector, int size)
 	
 	if(!(items = (void**)realloc(vector->items, size * sizeof(void*))))
 		return errno;
+	
 	
 	vector->capacity = size;
 	vector->items = items;

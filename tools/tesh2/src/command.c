@@ -13,11 +13,16 @@
 #include "../include/_signal.h"
 
 
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
+
+static void sig_io_handler(int status)
+{
+	INFO0("*************************Got a SIGIO**************************************");	
+}
 
 static void*
 command_start(void* p);
-
 
 command_t
 command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
@@ -50,7 +55,7 @@ command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
 	command->stat_val = -1;
 	
 	/* set the unit of the command */
-	command->unit = unit; 
+	command->unit = unit->root ? unit->root : unit; 
 	
 	/* all the commands are runned in a thread */
 	command->thread = NULL;
@@ -81,14 +86,20 @@ command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
 	
 	/* register the command */
 	xbt_os_mutex_acquire(mutex);
-	/*unit->commands[(unit->number_of_commands)++] = command;*/
+	
 	vector_push_back(unit->commands, command);
-	(unit->number_of_commands)++;
+	
+	(command->unit->number_of_commands)++;
+	
 	xbt_os_mutex_release(mutex);
+	
+	command->fn_sig_io_handler = sig_io_handler;
 	
 	#ifndef WIN32
 	command->killed = 0;
 	#endif
+	
+	
 
 	return command;
 }
@@ -365,7 +376,7 @@ command_exec(command_t command, const char* command_line)
 	}
 	
 	command->pid= fork();
-	
+				
 	if(command->pid < 0) 
 	{
 		close(child_stdin_fd[0]);
@@ -381,12 +392,18 @@ command_exec(command_t command, const char* command_line)
 	{
 		if(command->pid) 
 		{/* father */
+			
+			
 			close(child_stdin_fd[0]);
 			close(child_stdout_fd[1]);
 			
 			command->stdin_fd = child_stdin_fd[1];
+			
 			command->stdout_fd = child_stdout_fd[0];
-
+			
+			/* on indique que c'est le processus parent qui doit recevoir le signal */
+			/*fcntl(command->stdin_fd,F_SETOWN, pid);*/
+			
 			if(command->reader)
 			{
 				/* launch the reader */
@@ -411,31 +428,58 @@ command_exec(command_t command, const char* command_line)
 		} 
 		else 
 		{/* child */
-		
+			
+ 			
 			close(child_stdin_fd[1]);
-			
-			dup2(child_stdin_fd[0],0);
-			
-			close(child_stdin_fd[0]);
-			
 			close(child_stdout_fd[0]);
 			
-			dup2(child_stdout_fd[1],1);
+			if(dup2(child_stdin_fd[0],STDIN_FILENO/*0*/) < 0)
+			{
+				exit_code = EEXEC;
+				ERROR1("dup2() failed (%d)",errno);
+				command_handle_failure(command,csr_exec_failure);
+			}
 			
-			dup2(child_stdout_fd[1],2);
+			/*close(child_stdin_fd[0]);
+			*/
 			
-			close(child_stdout_fd[1]);
+			if(dup2(child_stdout_fd[1],STDOUT_FILENO/*1*/) < 0)
+			{
+				exit_code = EEXEC;
+				ERROR1("dup2() failed (%d)",errno);
+				command_handle_failure(command,csr_exec_failure);
+			}
+			
+			if(dup2(child_stdout_fd[1], STDERR_FILENO/*2*/) < 0)
+			{
+				exit_code = EEXEC;
+				ERROR1("dup2() failed (%d)",errno);
+				command_handle_failure(command,csr_exec_failure);
+			}
+			
+			fcntl(command->stdin_fd, F_SETFL, fcntl(command->stdin_fd, F_GETFL) | O_NONBLOCK);
+ 			
+ 			
+			if(command->writer)
+				xbt_os_sem_release(command->writer->can_write);
+			
+			/*close(child_stdout_fd[1]);*/
 			
 			if(command->reader)
 				xbt_os_sem_acquire(command->reader->started);
 			
 			if(command->writer)
-				xbt_os_sem_acquire(command->writer->started);
+				xbt_os_sem_acquire(command->writer->written);
 				
 			if(command->timer)
-				xbt_os_sem_acquire(command->timer->started);	
+				xbt_os_sem_acquire(command->timer->started);
 			
-			execlp ("/bin/sh", "sh", "-c", command->context->command_line, NULL);
+			if(execlp("/bin/sh", "sh", "-c", command->context->command_line, NULL) < 0)
+			{
+				exit_code = EEXEC;
+				ERROR1("execlp() failed (%d)",errno);
+				command_handle_failure(command,csr_exec_failure);
+			}
 		}
 	}
 }
@@ -477,7 +521,17 @@ command_wait(command_t command)
 	
 	/* let this thread wait for the child so that the main thread can detect the timeout without blocking on the wait */
 	
+	
+	xbt_os_mutex_acquire(command->unit->mutex);
+	command->unit->number_of_waiting_commands++;
+	xbt_os_mutex_release(command->unit->mutex);
+	
 	pid = waitpid(command->pid, &(command->stat_val), 0);
+	
+	
+	xbt_os_mutex_acquire(command->unit->mutex);
+	command->unit->number_of_waiting_commands--;
+	xbt_os_mutex_release(command->unit->mutex);
 	
 	/*printf("The %p command ended\n",command);*/
 	if(pid != command->pid) 
@@ -491,6 +545,8 @@ command_wait(command_t command)
 		if(WIFEXITED(command->stat_val))
 			command->exit_code = WEXITSTATUS(command->stat_val);	
 	}
+	
+	
 }
 #endif
 
@@ -504,7 +560,7 @@ command_check(command_t command)
 	if(WIFSIGNALED(command->stat_val))
 	{
 		command->signal = strdup(signal_name(WTERMSIG(command->stat_val),command->context->signal));
-		INFO3("the command -PID %d %s receive the signal : %s",command->pid, command->context->command_line, command->signal);
+		/*INFO3("the command -PID %d %s receive the signal : %s",command->pid, command->context->command_line, command->signal);*/
 	}
 	
 	/* we have a signal and not signal is expected */
@@ -547,20 +603,23 @@ command_check(command_t command)
 	if(success && oh_check == command->context->output_handling && command->reader)
 	{
 		/* make sure the reader done */
-		while(!command->reader->broken_pipe)
+		while(!command->reader->done)
 			xbt_os_thread_yield();
+			
+		close(command->stdout_fd);
+		command->stdout_fd = INDEFINITE_FD;
 
-			xbt_strbuff_chomp(command->output);
-			xbt_strbuff_chomp(command->context->output);
-			xbt_strbuff_trim(command->output);
-			xbt_strbuff_trim(command->context->output);
+		xbt_strbuff_chomp(command->output);
+		xbt_strbuff_chomp(command->context->output);
+		xbt_strbuff_trim(command->output);
+		xbt_strbuff_trim(command->context->output);
 
-			if(command->output->used != command->context->output->used || strcmp(command->output->data, command->context->output->data))
-			{
-				success = 0;
-				exit_code = EOUTPUTNOTMATCH;
-				reason = csr_outputs_dont_match;
-			}
+		if(command->output->used != command->context->output->used || strcmp(command->output->data, command->context->output->data))
+		{
+			success = 0;
+			exit_code = EOUTPUTNOTMATCH;
+			reason = csr_outputs_dont_match;
+		}
 	}
 	
 	if(success)
@@ -650,34 +709,15 @@ command_interrupt(command_t command)
 void
 command_display_status(command_t command)
 {
-	#ifdef WIN32
-	printf("\nCommand : PID - %p\n%s\n",command->pid,command->context->command_line);
-	#else
-	printf("\nCommand : PID - %d\n%s\n",command->pid,command->context->command_line);
-	#endif
-	printf("Status informations :\n");
-	printf("    position in the tesh file   : %s\n",command->context->line);
 	
-	/* the command successeded */
-	if(cs_successeded == command->status)
+	/*printf("\033[1m");*/
+	
+	if(cs_successeded != command->status)
 	{
-		/* status */
-		printf("    status                      : success\n");
-	}
-	else
-	{
-		
-		/* display if the command is interrupted, failed or in a unknown status */
-		if(cs_interrupted == command->status)
-			printf("    status                      : interrupted\n");
-		else if(cs_failed == command->status)
-			printf("    status                      : failed\n");
-		else
-			printf("    status                      : unknown\n");
 			
 		#ifndef WIN32
 		if(command->killed)
-			printf("    <killed command>\n");
+			printf("          <killed command>\n");
 		#endif
 		
 		/* display the reason of the status of the command */
@@ -685,83 +725,83 @@ command_display_status(command_t command)
 		{
 			/* the function pipe or CreatePipe() fails */
 			case csr_pipe_function_failed :
-			printf("    reason                      : pipe() or CreatePipe() function failed (system error)\n");
+			printf("          reason                      : pipe() or CreatePipe() function failed (system error)\n");
 			break;
 			
 			/* reader failure reasons*/
 			case csr_read_pipe_broken :
-			printf("    reason                      : command read pipe broken\n");
+			printf("          reason                      : command read pipe broken\n");
 			break;
 
 			case csr_read_failure :
-			printf("    reason                      : command stdout read failed\n");
+			printf("          reason                      : command stdout read failed\n");
 			break;
 	
 			/* writer failure reasons */
 			case csr_write_failure :
-			printf("    reason                      : command stdin write failed\n");
+			printf("          reason                      : command stdin write failed\n");
 			break;
 
 			case csr_write_pipe_broken :
-			printf("    reason                      : command write pipe broken\n");
+			printf("          reason                      : command write pipe broken\n");
 			break;
 			
 			/* timer reason */
 			case csr_timeout :
-			printf("    reason                      : command timeouted\n");
+			printf("          reason                      : command timeouted\n");
 			break;
 			
 			/* command failure reason */
 			case csr_command_not_found :
-			printf("    reason                      : command not found\n");
+			printf("          reason                      : command not found\n");
 			break;
 			
 			/* context failure reasons */
 			case csr_exit_codes_dont_match :
-			printf("    reason                      : exit codes don't match\n");
+			printf("          reason                      : exit codes don't match\n");
 			
 			break;
 
 			case csr_outputs_dont_match :
 			{
 				char *diff;
-				printf("    reason                      : ouputs don't match\n");
+				printf("          reason                      : ouputs don't match\n");
 				diff = xbt_str_diff(command->context->output->data,command->output->data);	  	
-				printf("    output diff :\n%s\n",diff);
+				printf("          output diff :\n%s\n",diff);
 				free(diff);
 			}     
 
 			break;
 
 			case csr_signals_dont_match :
-			printf("    reason                      : signals don't match\n"); 
+			printf("          reason                      : signals don't match\n"); 
 			break;
 			
 			case csr_unexpected_signal_caught:
-			printf("    reason                      : unexpected signal caught\n");
+			printf("                reason                      : unexpected signal caught\n");
 			break;
 			
 			case csr_expected_signal_not_receipt :
-			printf("    reason                      : expected signal not receipt\n");
+			printf("          reason                      : expected signal not receipt\n");
 			break;
 
 			/* system failure reasons */
 			case csr_exec_failure :
-			printf("    reason                      : can't excute the command\n");
+			printf("          reason                      : can't excute the command\n");
 			break;
 			
 			case csr_wait_failure :
-			printf("    reason                      : wait command failure\n");
+			printf("          reason                      : wait command failure\n");
 			break;
 			
 			/* global/local interruption */
 			case csr_interruption_request :
-			printf("    reason                      : the command receive a interruption request\n");
+			printf("          reason                      : the command receive a interruption request\n");
 			break;
 			
 			/* unknown ? */
 			case csr_unknown :
-			printf("    reason                      : unknown \n");
+			printf("          reason                      : unknown \n");
 		}
 	}
 
@@ -769,23 +809,23 @@ command_display_status(command_t command)
 	{
 		if(INDEFINITE != command->exit_code)
 			/* the command exit code */
-			printf("    exit code                   : %d\n",command->exit_code);
+			printf("          exit code                   : %d\n",command->exit_code);
 		
 		/* if an expected exit code was specified display it */
 		if(INDEFINITE != command->context->exit_code)
-			printf("    expected exit code          : %d\n",command->context->exit_code);
+			printf("          expected exit code          : %d\n",command->context->exit_code);
 		else
-			printf("    no expected exit code specified\n");
+			printf("          no expected exit code specified\n");
 		
 		/* if an expected exit code was specified display it */
 		if(NULL == command->context->signal)
-			printf("    no expected signal specified\n");
+			printf("          no expected signal specified\n");
 		else
 		{
 			if(NULL != command->signal)
-				printf("    signal                      : %s\n",command->signal);
+				printf("          signal                      : %s\n",command->signal);
 			
-			printf("    expected signal             : %s\n",command->context->signal);
+			printf("          expected signal             : %s\n",command->context->signal);
 		}
 		
 		/* if the command has out put and the metacommand display output is specified display it  */
@@ -794,15 +834,20 @@ command_display_status(command_t command)
 			xbt_dynar_t a = xbt_str_split(command->output->data, "\n");
 			char *out = xbt_str_join(a,"\n||");
 			xbt_dynar_free(&a);
-			printf("    output :\n||%s",out);
+			printf("          output :\n||%s",out);
 			free(out);
 		}
 	}
 
 	printf("\n");
+	
+	/*printf("\033[0m");*/
 		
 
 }
+
+
+
 
 void
 command_handle_failure(command_t command, cs_reason_t reason)

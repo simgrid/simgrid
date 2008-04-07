@@ -8,7 +8,9 @@ fstreams_t
 fstreams_new(int capacity, fn_finalize_t fn_finalize)
 {
 	fstreams_t fstreams;
-	fstreams = xbt_new0(s_fstreams_t, 1);
+	
+	if(!(fstreams = (fstreams_t) calloc(1, sizeof(s_fstreams_t))))
+		return NULL;
 	
 	if(!(fstreams->items = vector_new(capacity, fn_finalize)))
 	{
@@ -33,8 +35,6 @@ fstreams_exclude(fstreams_t fstreams, excludes_t excludes)
 	
 	if(!(to_erase = vector_new(8, NULL)))
 		return errno;
-	
-	INFO0("excluding file streams");
 	
 	/* collecte the file streams to exclude */
 	vector_rewind(fstreams->items);
@@ -93,8 +93,6 @@ int
 fstreams_load(fstreams_t fstreams)
 {
 	register fstream_t fstream;
-	const char* directory = NULL;
-	
 	
 	if(!fstreams )
 		return EINVAL;
@@ -103,23 +101,10 @@ fstreams_load(fstreams_t fstreams)
 	
 	while((fstream = vector_get(fstreams->items)))
 	{
-		chdir(root_directory->name);
-		
-		if(!directory || strcmp(directory, fstream->directory))
-		{
-			directory = fstream->directory;	
-			
-			if(!dont_want_display_directory)
-				INFO1("entering directory \"%s\"",directory);
-				
-		}
-		
-		chdir(fstream->directory);
-		
 		fstream_open(fstream);
-		
 		vector_move_next(fstreams->items);
 	}
+	
 	
 	return 0;
 }
@@ -140,12 +125,13 @@ fstreams_add(fstreams_t fstreams, fstream_t fstream)
 int
 fstreams_free(void** fstreamsptr)
 {
+	int rv;
+	
 	if(!(* fstreamsptr))
 		return EINVAL;
-		
 	
-	if((errno = vector_free(&((*((fstreams_t*)fstreamsptr))->items))))
-		return errno;
+	if(EAGAIN != (rv = vector_free(&((*((fstreams_t*)fstreamsptr))->items))))
+		return rv;
 		
 	free(*fstreamsptr);
 	

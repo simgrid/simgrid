@@ -69,7 +69,7 @@ allocator_new(int block_capacity, int type_size, fn_finalize_t fn_finalize)
 	
 	/* first block allocation */
 	
-	if((errno = resize(allocator)))
+	if(resize(allocator))
 	{
 		free(allocator);
 		return NULL;
@@ -88,6 +88,7 @@ allocator_free(allocator_t* allocator_ptr)
 	int pos, node_size;
 	fn_finalize_t fn_finalize;
 	void* type;
+	int rv;
 	
 	if(!(*allocator_ptr))
 		return EINVAL;
@@ -113,8 +114,8 @@ allocator_free(allocator_t* allocator_ptr)
 			
 				/* apply the fn_finalize function to the first type */
 				
-				if((errno = (*fn_finalize)(&type)))
-					return errno;
+				if((rv = (*fn_finalize)(&type)))
+					return rv;
 			}
 			
 			/*clear all the other types */
@@ -128,8 +129,8 @@ allocator_free(allocator_t* allocator_ptr)
 				
 					/* apply the fn_finalize function to the first type */
 					
-					if((errno = (*fn_finalize)(&type)))
-						return errno;
+					if((rv = (*fn_finalize)(&type)))
+						return rv;
 				}
 			}
 			
@@ -182,6 +183,7 @@ allocator_alloc(allocator_t allocator)
 int
 allocator_dealloc(allocator_t allocator, void* block)
 {
+	int rv;
 	allocator_node_t node;
 	
 	if(!allocator || !block)
@@ -189,8 +191,8 @@ allocator_dealloc(allocator_t allocator, void* block)
 	
 	if(allocator->fn_finalize)
 	{
-		if((errno = (*(allocator->fn_finalize))(&block)))
-			return errno;
+		if((rv = (*(allocator->fn_finalize))(&block)))
+			return rv;
 			
 		memset(block, 0, allocator->type_size);
 		node->is_allocated = 0;
@@ -304,6 +306,7 @@ allocator_clear(allocator_t allocator)
 	fn_finalize_t fn_finalize;
 	void* type;
 	register int pos;
+	int rv;
 	
 	
 	if(!allocator)
@@ -331,8 +334,8 @@ allocator_clear(allocator_t allocator)
 			
 				/* apply the fn_finalize function to the first type */
 				
-				if((errno = (*fn_finalize)(&type)))
-					return errno;
+				if((rv = (*fn_finalize)(&type)))
+					return rv;
 				
 				memset(type, 0, type_size);
 				node->is_allocated = 0;
@@ -349,8 +352,8 @@ allocator_clear(allocator_t allocator)
 				
 					/* apply the fn_finalize function to the first type */
 					
-					if((errno = (*fn_finalize)(&type)))
-						return errno;
+					if((rv = (*fn_finalize)(&type)))
+						return rv;
 				
 					memset(type, 0, type_size);
 					node->is_allocated = 0;

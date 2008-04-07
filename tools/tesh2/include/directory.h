@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 directory_t
-directory_new(const char* name, int load);
+directory_new(const char* name);
 
 int
 directory_open(directory_t directory);

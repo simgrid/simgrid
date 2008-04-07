@@ -110,11 +110,13 @@ excludes_check(excludes_t excludes, fstreams_t fstreams)
 int
 excludes_free(void** excludesptr)
 {
+	int rv;
+	
 	if(!(*excludesptr))
 		return EINVAL;
 		
-	if((errno =vector_free((&(*((excludes_t*)excludesptr))->items))))
-		return errno;
+	if((rv =vector_free((&(*((excludes_t*)excludesptr))->items))))
+		return rv;
 		
 	free(*excludesptr);
 	*excludesptr = NULL;	

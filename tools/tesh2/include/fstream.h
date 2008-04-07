@@ -20,7 +20,7 @@ int
 fstream_free(void** fstreamptr);
 
 void
-fstream_parse(fstream_t fstream, unit_t unit);
+fstream_parse(fstream_t fstream, unit_t unit, xbt_os_mutex_t mutex);
 
 #ifdef __cplusplus
 }

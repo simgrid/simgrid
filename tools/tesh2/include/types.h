@@ -71,6 +71,10 @@ struct s_writer;
 struct s_reader;
 struct s_timer;
 struct s_context;
+struct s_command;
+struct s_variable;
+struct s_variables;
+
 
 
 /* 
@@ -111,11 +115,19 @@ typedef enum e_command_status_raison
 	csr_pipe_function_failed		= 16		/* the function pipe() or CreatePipe() fails						*/
 }cs_reason_t;
 
+typedef struct s_variable
+{
+	char* name;
+	char* val;
+	int used:1;
+	int env:1;
+	int err:1;
+}s_variable_t,* variable_t;
 
-struct s_command;
-struct s_variable;
-struct s_variables;
-
+typedef struct s_variables
+{
+	dictionary_t items;
+}s_variables_t,* variables_t;
 
 /* 
  * declaration of the tesh timer type 
@@ -137,6 +149,7 @@ typedef struct s_reader
 	struct s_command* command;					/* the command of the reader											*/
 	int failed;							/* if 1, the reader failed												*/
 	int broken_pipe;					/* if 1, the pipe used by the reader is broken							*/
+	int done;
 	xbt_os_sem_t started;
 }s_reader_t,* reader_t;
 
@@ -149,8 +162,11 @@ typedef struct s_writer
 	struct s_command* command;					/* the command of the writer											*/
 	int failed;							/* if 1, the writer failed												*/
 	int broken_pipe;					/* if 1, the pipe used by the writer is broken							*/
-	xbt_os_sem_t started;
+	xbt_os_sem_t written;
+	xbt_os_sem_t can_write;
+	int done;
 }s_writer_t,* writer_t;
+
 
 typedef struct s_units
 {
@@ -165,6 +181,8 @@ typedef struct s_units
  */
 typedef struct s_unit
 {
+	char* description;
+	int is_suite;
 	struct s_fstream* fstream;
 	struct s_runner* runner;					/* the runner of the unit											    */
 	vector_t commands;
@@ -174,6 +192,7 @@ typedef struct s_unit
 	int number_of_failed_commands;		/* number of failed commands of the unit								*/
 	int number_of_successeded_commands;	/* number of successeded commands of the unit							*/
 	int number_of_terminated_commands;	/* number of ended commands												*/
+	int number_of_waiting_commands;
 	xbt_os_thread_t thread;				/* all the units run in its own thread									*/
 	xbt_os_sem_t sem;					/* used by the commands of the unit to signal the end of the unit		*/
 	xbt_os_mutex_t mutex;				/* used to synchronously access to the properties of the runner			*/
@@ -183,12 +202,16 @@ typedef struct s_unit
 	int parsed;							/* if 1, the tesh file of the unit is parsed							*/
 	int released;
 	int parsing_include_file;
-	struct s_suite* owner;						/* the suite containing the unit if any									*/
+	struct s_unit* owner;				/* the unit containing the unit if any									*/
+	struct s_unit* root;
 	vector_t suites;
 	int number;							/* the number of suites													*/
 	int capacity;						/* the number of suites that the unit can contain						*/
-	int running_suite;					/* if 1, the suite running a suite										*/									
+	int running_suite;					/* if 1, the suite running a suite										*/
+	vector_t includes;								
 }s_unit_t,* unit_t;
+
+
 
 
 /* 
@@ -211,7 +234,7 @@ typedef struct s_suite
 typedef struct s_runner
 {
 	
-	/*vector_t units;*/						/* the vector containing all the units launched by the runner			*/
+	/*vector_t units;*/					/* the vector containing all the units launched by the runner			*/
 	struct s_units* units;
 	int timeouted;						/* if 1, the runner is timeouted										*/
 	int timeout;						/* the timeout of the runner											*/
@@ -220,6 +243,22 @@ typedef struct s_runner
 	int number_of_ended_units;			/* the number of ended units											*/
 	int waiting;						/* if 1, the runner is waiting the end of all the units					*/
 	xbt_os_thread_t thread;				/* the timer thread														*/
+	vector_t variables;
+
+	int total_of_tests;
+	int total_of_successeded_tests;
+	int total_of_failed_tests;
+	int total_of_interrupted_tests;
+	
+	int total_of_units;
+	int total_of_successeded_units;
+	int total_of_failed_units;
+	int total_of_interrupted_units;
+	
+	int total_of_suites;
+	int total_of_successeded_suites;
+	int total_of_failed_suites;
+	int total_of_interrupted_suites;
 }s_runner_t,* runner_t;
 
 
@@ -245,7 +284,6 @@ typedef struct s_directory
 {
 	char* name;
 	DIR* stream;
-	int load;
 }s_directory_t,* directory_t;
 
 typedef struct s_directories
@@ -276,6 +314,8 @@ typedef struct s_context
 	int async;							/* if 1, the command is asynchronous									*/
 }s_context_t,* context_t;
 
+
+typedef void (*fn_sig_io_handler_t)(int);
 /* 
  * declaration of the tesh command type 
  */
@@ -307,6 +347,8 @@ typedef struct s_command
 	#ifndef WIN32
 	int killed;							/* if 1, the command was killed											*/
 	#endif
+	
+	fn_sig_io_handler_t fn_sig_io_handler;
 }s_command_t,* command_t;
 
 #ifdef _cplusplus

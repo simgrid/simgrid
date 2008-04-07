@@ -22,7 +22,7 @@ units_new(runner_t runner, fstreams_t fstreams)
 	
 	while((fstream = vector_get(fstreams->items)))
 	{
-		if((errno = vector_push_back(units->items, unit_new(runner, NULL, fstream))))
+		if(vector_push_back(units->items, unit_new(runner, NULL, NULL, fstream)))
 		{
 			vector_free(&(units->items));
 			free(units);
@@ -191,11 +191,13 @@ units_reset_all(units_t units)
 int
 units_free(void** unitsptr)
 {
+	int rv;
+	
 	if(!(*unitsptr))
 		return EINVAL;
 	
-	if((errno = vector_free(&((*((units_t*)unitsptr))->items))))
-		return errno;
+	if((rv = vector_free(&((*((units_t*)unitsptr))->items))))
+		return rv;
 		
 	free(*unitsptr);
 	*unitsptr = NULL;

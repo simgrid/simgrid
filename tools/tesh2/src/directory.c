@@ -5,10 +5,9 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
 directory_t
-directory_new(const char* name, int load)
+directory_new(const char* name)
 {
 	directory_t directory;
-	struct stat buffer = {0};
 	
 	if(!name)
 	{
@@ -16,37 +15,13 @@ directory_new(const char* name, int load)
 		return NULL;
 	}
 	
-	if(stat(name, &buffer))
-		return NULL;
-		
-	if(!S_ISDIR(buffer.st_mode))
-	{
-		errno = ENOTDIR;
-		return NULL;
-	}
-	
 	directory = xbt_new0(s_directory_t, 1);
 	
-	if(!strcmp(".",name))
-	{
-		directory->name = getcwd(NULL, 0);
-	}
-	else if(!strcmp("..",name))
-	{
-		char* buffer = getcwd(NULL, 0);
-		chdir(name);
-		directory->name = getcwd(NULL, 0);
-		chdir(buffer);
-		free(buffer);
-	}
-	else
-	{
-		directory->name = strdup(name);	
-	}
-		
 	
+	directory->name = strdup(name);	
+	
+		
 	directory->stream = NULL;
-	directory->load = load;
 	
 	return directory;
 }
@@ -88,6 +63,7 @@ directory_load(directory_t directory, fstreams_t fstreams, lstrings_t suffixes)
 	const char* suffix;
 	int has_valid_suffix;
 	int is_empty = 1;
+	int rv;
 	
 	if(!directory || !fstreams)
 		return EINVAL;
@@ -128,12 +104,12 @@ directory_load(directory_t directory, fstreams_t fstreams, lstrings_t suffixes)
 		}
 		
 		/* add the fstream to the list of file streams to run */
-		if((errno = fstreams_add(fstreams, fstream_new(directory->name, entry->d_name))))
+		if((rv = fstreams_add(fstreams, fstream_new(directory->name, entry->d_name))))
 		{
 			INFO0("fstreams_add() failed");
 			free(sfstream.directory);
 			free(sfstream.name);
-			return errno;
+			return rv;
 		}
 			
 		is_empty = 0;

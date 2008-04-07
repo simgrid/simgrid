@@ -141,7 +141,7 @@ htable_remove(htable_t htable, const void* key)
 			*prev = hassoc->next;  
 			val = (void*)hassoc->val;
 			
-			if((errno = allocator_dealloc(htable->allocator,hassoc)))
+			if(allocator_dealloc(htable->allocator,hassoc))
 				return NULL;
 				
 			return val;
@@ -162,6 +162,7 @@ htable_erase(htable_t htable, const void* key)
 	hassoc_t* prev;
 	fn_cmp_key_t fn_cmp_key;
 	void* val;
+	int rv;
 	
 	if(!htable || !key)
 		return EINVAL;
@@ -177,13 +178,13 @@ htable_erase(htable_t htable, const void* key)
 			*prev = hassoc->next;  
 			val = (void*)hassoc->val;
 			
-			if((errno = allocator_dealloc(htable->allocator,hassoc)))
-				return errno;
+			if((rv = allocator_dealloc(htable->allocator,hassoc)))
+				return rv;
 				
 			if(htable->fn_finalize)
 			{	
-				if((errno = (*(htable->fn_finalize))(&val)))
-					return errno;
+				if((rv = (*(htable->fn_finalize))(&val)))
+					return rv;
 			}
 			
 			return 0;
@@ -199,6 +200,7 @@ int
 htable_free(htable_t* htableptr)
 {
 	htable_t htable;
+	int rv;
 	
 	if(!(*htableptr))
 		return EINVAL;
@@ -221,16 +223,16 @@ htable_free(htable_t* htableptr)
 			for(hassoc = content[pos]; hassoc; hassoc = hassoc->next)
 			{
 				val = (void*)hassoc->val;
-				if((errno = (*(htable->fn_finalize))(&val)))
-					return errno;
+				if((rv = (*(htable->fn_finalize))(&val)))
+					return rv;
 			}
 		}
 	}
 	
 	free(htable->content);
 	
-	if((errno = allocator_free(&(htable->allocator))))
-		return errno;
+	if((rv = allocator_free(&(htable->allocator))))
+		return rv;
 		
 	free(*htableptr);
 	*htableptr = NULL;
@@ -246,6 +248,7 @@ htable_clear(htable_t htable)
 	register int pos;
 	int size;
 	void* val;
+	int rv;
 	
 	if(!htable)
 		return EINVAL;
@@ -261,8 +264,8 @@ htable_clear(htable_t htable)
 			for(hassoc = content[pos]; hassoc; hassoc = hassoc->next)
 			{
 				val = (void*)hassoc->val;
-				if((errno = (*(htable->fn_finalize))(&val)))
-					return errno;
+				if((rv = (*(htable->fn_finalize))(&val)))
+					return rv;
 			}
 			
 			content[pos] = NULL;

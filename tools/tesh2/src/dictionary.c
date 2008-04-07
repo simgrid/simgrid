@@ -76,11 +76,13 @@ dictionary_get(dictionary_t dictionary, const char* key)
 int
 dictionary_free(dictionary_t* dictionaryptr)
 {
+	int rv;
+	
 	if(!(*dictionaryptr))
 		return EINVAL;
 	
-	if((errno = htable_free(&((*dictionaryptr)->htable))))
-		return errno;
+	if((rv = htable_free(&((*dictionaryptr)->htable))))
+		return rv;
 	
 	free(*dictionaryptr);
 	*dictionaryptr = NULL;

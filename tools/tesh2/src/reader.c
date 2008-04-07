@@ -15,6 +15,7 @@ reader_new(command_t command)
 	reader->command = command;
 	reader->broken_pipe = 0;
 	reader->failed = 0;
+	reader->done = 0;
 	
 	reader->started = xbt_os_sem_init(0);
 	
@@ -127,9 +128,7 @@ reader_start_routine(void* p)
 		command_handle_failure(command, csr_read_failure);
 	}
 	
-	reader->broken_pipe = 1;
-	
-	/*printf("the reader of the command %p is ended\n",command);*/
+	reader->done = 1;
 	
 	return NULL;
 } 
