@@ -310,7 +310,7 @@ void generate_makefile_local(char *project, char *deployment) {
   fprintf(OUT,
 	  "# Set the GRAS_ROOT environment variable to the path under which you installed SimGrid\n"
 	  "# Compilation will fail if you don't do so\n" 
-	  "GRAS_ROOT?= $(shell echo \"\\\"<<<< GRAS_ROOT undefined !!! >>>>\\\"\")\n\n"
+	  "GRAS_ROOT?= $(shell if [ -e /usr/local/lib/libgras.so ] ; then echo /usr/local ; else echo \"\\\"<<<< GRAS_ROOT undefined !!! >>>>\\\"\"; fi)\n\n"
 	  "# You can fiddle the following to make it fit your taste\n"
 	  "INCLUDES = -I$(GRAS_ROOT)/include\n"
 	  "CFLAGS ?= -O3 -w -g\n"
