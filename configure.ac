@@ -472,15 +472,10 @@ if test x$ADDR2LINE != x ; then
 fi
 
 AC_SUBST(ac_configure_args)
+AC_DEFINE_UNQUOTED(AC_CONFIGURE_ARGS,"$ac_configure_args",[Arguments passed to the configure script])
 # Can we make status line about the compilation result?
-AC_CHECK_PROG(MD5SUM,md5sum,`which md5sum`)
-if test x$MD5SUM != xno ; then
-  build_version=`find . -name '*.[ch]' |grep -v src/ucontext_stack.h | grep -v src/gras_config.h |\ 
-                 xargs cat| $MD5SUM | sed 's/ .*$//'`
-else 
-  build_version="no_md5sum_binary"
-fi
-build_id="$PACKAGE ver=$VERSION build=$build_version args=\"$ac_configure_args\""
+dnl A C_CHECK_PROG(MD5SUM,md5sum,`which md5sum`)
+build_id="$PACKAGE ver=$VERSION args=\"$ac_configure_args\""
 AC_SUBST(build_id)
 
 ###################
@@ -500,7 +495,7 @@ AC_CONFIG_FILES([
   Makefile
   include/Makefile
   src/Makefile
-  src/ucontext_stack.h
+  src/context_sysv_stack.h
 ])
 
 # Tools being embeeded in gramine (stub generator)
