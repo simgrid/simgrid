@@ -263,7 +263,7 @@ xbt_thread_context_wrapper(void* param)
 {
 	xbt_thread_context_t context = (xbt_thread_context_t)param;
 	
-	/* signal its starting to the maestro and wait to start its job*/
+	/* Tell the maestro we are starting, and wait for its green light */
 	xbt_os_sem_release(context->end);		
  	xbt_os_sem_acquire(context->begin);
 	
