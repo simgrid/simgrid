@@ -33,7 +33,7 @@ EXTRA_DIST= \
 	xbt/graphxml.dtd \
         xbt/xbt_context_private.h \
         xbt/xbt_context_factory.h \
-        xbt/xbt_jcontext.h \
+        xbt/xbt_context_java.h \
 	xbt/log_private.h \
 	xbt/ex_interface.h \
         xbt/backtrace_linux.c xbt/backtrace_windows.c xbt/backtrace_dummy.c \
@@ -179,9 +179,9 @@ SURF_SRC= \
   xbt/xbt_sg_stubs.c
 
 if CONTEXT_THREADS
-  SURF_SRC +=  xbt/xbt_os_thread.c xbt/xbt_thread_context.c  
+  SURF_SRC +=  xbt/xbt_os_thread.c xbt/xbt_context_thread.c  
 else  
-  SURF_SRC += xbt/xbt_ucontext.c
+  SURF_SRC += xbt/xbt_context_sysv.c
 endif
 
 GTNETS_SRC= \
@@ -218,7 +218,7 @@ MSG_SRC=  msg/msg_config.c \
   msg/global.c msg/environment.c msg/deployment.c msg/msg_mailbox.c
 
 JMSG_C_SRC = \
-  xbt/xbt_jcontext.c \
+  xbt/xbt_context_java.c \
   java/jxbt_utilities.c     java/jxbt_utilities.h      \
   java/jmsg.c               java/jmsg.h                \
   java/jmsg_channel.c       java/jmsg_channel.h        \
