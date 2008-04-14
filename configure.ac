@@ -495,7 +495,7 @@ AC_CONFIG_FILES([
   Makefile
   include/Makefile
   src/Makefile
-  src/context_sysv_stack.h
+  src/context_sysv_config.h
 ])
 
 # Tools being embeeded in gramine (stub generator)
