@@ -60,7 +60,7 @@ xbt_ctx_thread_resume(xbt_context_t context);
 static void* 
 xbt_ctx_thread_wrapper(void* param);
 
-int
+void
 xbt_ctx_thread_factory_init(xbt_context_factory_t* factory)
 {
 	*factory = xbt_new0(s_xbt_context_factory_t,1);
@@ -69,8 +69,6 @@ xbt_ctx_thread_factory_init(xbt_context_factory_t* factory)
 	(*factory)->finalize = xbt_ctx_thread_factory_finalize;
 	(*factory)->create_maestro_context = xbt_ctx_thread_factory_create_master_context;
 	(*factory)->name = "ctx_thread_factory";
-
-	return 0;
 }
 
 static int

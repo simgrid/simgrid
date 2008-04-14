@@ -83,7 +83,7 @@ xbt_ctx_sysv_ex_terminate(xbt_ex_t *e)
 }
 
 
-int
+void
 xbt_ctx_sysv_factory_init(xbt_context_factory_t* factory)
 {
 	/* context exception */
@@ -97,8 +97,6 @@ xbt_ctx_sysv_factory_init(xbt_context_factory_t* factory)
 	/* context exception handlers */
 	__xbt_ex_ctx       = xbt_ctx_sysv_ex_ctx;
     __xbt_ex_terminate = xbt_ctx_sysv_ex_terminate;	
-    
-	return 0;
 }
 
 static int 

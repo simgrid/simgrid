@@ -73,7 +73,7 @@ xbt_ctx_java_ex_terminate(xbt_ex_t *e)
 	abort();
 }
 
-int
+void
 xbt_ctx_java_factory_init(xbt_context_factory_t* factory)
 {
 	/* context exception handlers */
@@ -87,8 +87,6 @@ xbt_ctx_java_factory_init(xbt_context_factory_t* factory)
 	(*factory)->finalize = xbt_ctx_java_factory_finalize;
 	(*factory)->create_maestro_context = xbt_ctx_java_factory_create_maestro_context;
 	(*factory)->name = "ctx_java_factory";
-	
-	return 0;
 }
 
 static int 

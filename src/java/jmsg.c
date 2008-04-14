@@ -988,17 +988,26 @@ Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg) {
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv * env, jclass class,jstring jname)
 {
-	int rv;
+   char *errmsg=NULL;
+   xbt_ex_t e;
 	
-	/* get the C string from the java string*/
-	const char* name = (*env)->GetStringUTFChars(env, jname, 0);
+   /* get the C string from the java string*/
+   const char* name = (*env)->GetStringUTFChars(env, jname, 0);
 
-	rv = xbt_context_select_factory(name);
-		
+   TRY {
+      xbt_context_select_factory(name);
+   } CATCH(e) {
+      errmsg = xbt_strdup(e.msg);
+      xbt_ex_free(e);
+   }
+   
 	(*env)->ReleaseStringUTFChars(env, jname, name);
 	
-	if(rv)
-		jxbt_throw_native(env, xbt_strdup("xbt_select_context_factory() failed"));	 
+   if(errmsg) {
+      char *thrown = bprintf("xbt_select_context_factory() failed: %s",errmsg);
+      free(errmsg);
+      jxbt_throw_native(env, thrown);
+   }   
 }
 
 JNIEXPORT void JNICALL 

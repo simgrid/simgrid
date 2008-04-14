@@ -277,26 +277,20 @@ xbt_context_select_factory(const char* name)
 	return 0;	
 }
 
-int
+void
 xbt_context_init_factory_by_name(xbt_context_factory_t* factory, const char* name)
 {
 	if(!strcmp(name,"java"))
-	{
-		return xbt_ctx_java_factory_init(factory);	
-	}
+		xbt_ctx_java_factory_init(factory);	
 	#ifdef CONTEXT_THREADS
 	else if(!strcmp(name,"thread"))	
-	{
-		return xbt_ctx_thread_factory_init(factory);	
-	}
+		xbt_ctx_thread_factory_init(factory);	
 	#elif !defined(WIN32)
 	else if(!strcmp(name,"sysv"))
-	{
-		return xbt_ctx_sysv_factory_init(factory);	
-	}
+		xbt_ctx_sysv_factory_init(factory);	
 	#endif
-	
-	return EINVAL;
+
+   THROW1(not_found_error, 0,"Factory '%s' does not exist",name);
 }
 
 /** Garbage collection
