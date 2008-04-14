@@ -33,7 +33,7 @@ public final class Msg {
   static {
     try {
       System.loadLibrary("simgrid");
-      MsgNative.selectContextFactory("jcontext_factory");
+      MsgNative.selectContextFactory("java");
     } catch(NativeException e) {
       System.err.println(e.toString());
       e.printStackTrace();
