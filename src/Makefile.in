@@ -398,14 +398,14 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	xbt/dict_private.h xbt/heap_private.h xbt/fifo_private.h \
 	xbt/graph_private.h xbt/graphxml_parse.c xbt/graphxml.l \
 	xbt/graphxml.c xbt/graphxml.dtd xbt/xbt_context_private.h \
-	xbt/xbt_context_factory.h xbt/xbt_context_java.h \
-	xbt/log_private.h xbt/ex_interface.h xbt/backtrace_linux.c \
-	xbt/backtrace_windows.c xbt/backtrace_dummy.c \
-	surf/maxmin_private.h surf/trace_mgr_private.h \
-	surf/surf_private.h surf/cpu_private.h \
-	surf/workstation_private.h surf/surf_timer_private.h \
-	surf/surfxml_parse.c surf/simgrid_dtd.l surf/simgrid_dtd.c \
-	surf/simgrid.dtd surf/network_private.h surf/network_common.h \
+	xbt/xbt_context_java.h xbt/log_private.h xbt/ex_interface.h \
+	xbt/backtrace_linux.c xbt/backtrace_windows.c \
+	xbt/backtrace_dummy.c surf/maxmin_private.h \
+	surf/trace_mgr_private.h surf/surf_private.h \
+	surf/cpu_private.h surf/workstation_private.h \
+	surf/surf_timer_private.h surf/surfxml_parse.c \
+	surf/simgrid_dtd.l surf/simgrid_dtd.c surf/simgrid.dtd \
+	surf/network_private.h surf/network_common.h \
 	surf/network_gtnets_private.h include/surf/maxmin.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
 	include/surf/surfxml_parse_private.h include/surf/random_mgr.h \
