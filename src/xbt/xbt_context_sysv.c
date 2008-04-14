@@ -1,18 +1,18 @@
 
-#include "ucontext_stack.h"
 #include "xbt/ex_interface.h"
-#include "xbt/xbt_context_factory.h"
+#include "xbt/xbt_context_private.h"
 
-#include "ucontext_stack.h"		/* loads context system definitions				*/
+#include "context_sysv_config.h"	/* loads context system definitions				*/
+#include "portable.h" 
 #include <ucontext.h>			/* context relative declarations				*/				
 #define STACK_SIZE 128*1024		/* lower this if you want to reduce the memory consumption	*/
 
-typedef struct s_xbt_ucontext {
+typedef struct s_xbt_ctx_sysv {
    XBT_CTX_BASE_T;
    	ucontext_t uc;			/* the thread that execute the code				*/
 	char stack[STACK_SIZE];		/* the thread stack size					*/
-	struct s_xbt_ucontext* prev;	/* the previous thread						*/
-} s_xbt_ucontext_t,* xbt_ucontext_t;
+	struct s_xbt_ctx_sysv* prev;/* the previous thread						*/
+} s_xbt_ctx_sysv_t,* xbt_ctx_sysv_t;
 
 
 /* callback: context fetching */
@@ -24,59 +24,59 @@ static void
 xbt_jcontext_ex_terminate(xbt_ex_t *e);
 
 static xbt_context_t 
-xbt_ucontext_factory_create_context(const char* name, xbt_main_func_t code, void_f_pvoid_t startup_func, void* startup_arg, void_f_pvoid_t cleanup_func, void* cleanup_arg, int argc, char** argv);
+xbt_ctx_sysv_factory_create_context(const char* name, xbt_main_func_t code, void_f_pvoid_t startup_func, void* startup_arg, void_f_pvoid_t cleanup_func, void* cleanup_arg, int argc, char** argv);
 
 static int
-xbt_ucontext_factory_finalize(xbt_context_factory_t* factory);
+xbt_ctx_sysv_factory_finalize(xbt_context_factory_t* factory);
 
 static int 
-xbt_ucontext_factory_create_maestro_context(xbt_context_t* maestro);
+xbt_ctx_sysv_factory_create_maestro_context(xbt_context_t* maestro);
 
 static void 
-xbt_ucontext_free(xbt_context_t context);
+xbt_ctx_sysv_free(xbt_context_t context);
 
 static void 
-xbt_ucontext_kill(xbt_context_t context);
+xbt_ctx_sysv_kill(xbt_context_t context);
 
 static void 
-xbt_ucontext_schedule(xbt_context_t context);
+xbt_ctx_sysv_schedule(xbt_context_t context);
 
 static void 
-xbt_ucontext_yield(void);
+xbt_ctx_sysv_yield(void);
 
 static void 
-xbt_ucontext_start(xbt_context_t context);
+xbt_ctx_sysv_start(xbt_context_t context);
 
 static void 
-xbt_ucontext_stop(int exit_code);
+xbt_ctx_sysv_stop(int exit_code);
 
 static void 
-xbt_ucontext_swap(xbt_context_t context);
+xbt_ctx_sysv_swap(xbt_context_t context);
 
 static void
-xbt_ucontext_schedule(xbt_context_t context);
+xbt_ctx_sysv_schedule(xbt_context_t context);
 
 static void
-xbt_ucontext_yield(void);
+xbt_ctx_sysv_yield(void);
 
 static void
-xbt_ucontext_suspend(xbt_context_t context);
+xbt_ctx_sysv_suspend(xbt_context_t context);
 
 static void
-xbt_ucontext_resume(xbt_context_t context);
+xbt_ctx_sysv_resume(xbt_context_t context);
 
-static void xbt_ucontext_wrapper(void);
+static void xbt_ctx_sysv_wrapper(void);
 
 /* callback: context fetching */
 static ex_ctx_t*
-xbt_ucontext_ex_ctx(void) 
+xbt_ctx_sysv_ex_ctx(void) 
 {
 	return current_context->exception;
 }
 
 /* callback: termination */
 static void 
-xbt_ucontext_ex_terminate(xbt_ex_t *e) 
+xbt_ctx_sysv_ex_terminate(xbt_ex_t *e) 
 {
 	xbt_ex_display(e);
 	abort();
@@ -84,28 +84,28 @@ xbt_ucontext_ex_terminate(xbt_ex_t *e)
 
 
 int
-xbt_ucontext_factory_init(xbt_context_factory_t* factory)
+xbt_ctx_sysv_factory_init(xbt_context_factory_t* factory)
 {
 	/* context exception */
 	*factory = xbt_new0(s_xbt_context_factory_t,1);
 	
-	(*factory)->create_context = xbt_ucontext_factory_create_context;
-	(*factory)->finalize = xbt_ucontext_factory_finalize;
-	(*factory)->create_maestro_context = xbt_ucontext_factory_create_maestro_context;
-	(*factory)->name = "ucontext_context_factory";
+	(*factory)->create_context = xbt_ctx_sysv_factory_create_context;
+	(*factory)->finalize = xbt_ctx_sysv_factory_finalize;
+	(*factory)->create_maestro_context = xbt_ctx_sysv_factory_create_maestro_context;
+	(*factory)->name = "ctx_sysv_context_factory";
 	
 	/* context exception handlers */
-	__xbt_ex_ctx       = xbt_ucontext_ex_ctx;
-    __xbt_ex_terminate = xbt_ucontext_ex_terminate;	
+	__xbt_ex_ctx       = xbt_ctx_sysv_ex_ctx;
+    __xbt_ex_terminate = xbt_ctx_sysv_ex_terminate;	
     
 	return 0;
 }
 
 static int 
-xbt_ucontext_factory_create_maestro_context(xbt_context_t* maestro)
+xbt_ctx_sysv_factory_create_maestro_context(xbt_context_t* maestro)
 {
 		
-	xbt_ucontext_t context = xbt_new0(s_xbt_ucontext_t, 1);
+	xbt_ctx_sysv_t context = xbt_new0(s_xbt_ctx_sysv_t, 1);
 	
 	context->exception = xbt_new(ex_ctx_t,1);
     XBT_CTX_INITIALIZE(context->exception);
@@ -118,7 +118,7 @@ xbt_ucontext_factory_create_maestro_context(xbt_context_t* maestro)
 
 
 static int
-xbt_ucontext_factory_finalize(xbt_context_factory_t* factory)
+xbt_ctx_sysv_factory_finalize(xbt_context_factory_t* factory)
 {
 	free(maestro_context->exception);
 	free(*factory);
@@ -127,9 +127,9 @@ xbt_ucontext_factory_finalize(xbt_context_factory_t* factory)
 }
 
 static xbt_context_t 
-xbt_ucontext_factory_create_context(const char* name, xbt_main_func_t code, void_f_pvoid_t startup_func, void* startup_arg, void_f_pvoid_t cleanup_func, void* cleanup_arg, int argc, char** argv)
+xbt_ctx_sysv_factory_create_context(const char* name, xbt_main_func_t code, void_f_pvoid_t startup_func, void* startup_arg, void_f_pvoid_t cleanup_func, void* cleanup_arg, int argc, char** argv)
 {
-	xbt_ucontext_t context = xbt_new0(s_xbt_ucontext_t, 1);
+	xbt_ctx_sysv_t context = xbt_new0(s_xbt_ctx_sysv_t, 1);
 	
 	context->code = code;
 	context->name = xbt_strdup(name);
@@ -150,18 +150,18 @@ xbt_ucontext_factory_create_context(const char* name, xbt_main_func_t code, void
 	context->cleanup_arg = cleanup_arg;
 	
 	
-	context->free = xbt_ucontext_free;			
-	context->kill = xbt_ucontext_kill;			
-	context->schedule = xbt_ucontext_schedule;
-	context->yield = xbt_ucontext_yield;			
-	context->start = xbt_ucontext_start;			
-	context->stop = xbt_ucontext_stop;			
+	context->free = xbt_ctx_sysv_free;			
+	context->kill = xbt_ctx_sysv_kill;			
+	context->schedule = xbt_ctx_sysv_schedule;
+	context->yield = xbt_ctx_sysv_yield;			
+	context->start = xbt_ctx_sysv_start;			
+	context->stop = xbt_ctx_sysv_stop;			
 	
 	return (xbt_context_t)context;
 }
 
 static void 
-xbt_ucontext_free(xbt_context_t context)
+xbt_ctx_sysv_free(xbt_context_t context)
 {
 	if(context)
 	{
@@ -187,10 +187,10 @@ xbt_ucontext_free(xbt_context_t context)
 }
 
 static void 
-xbt_ucontext_kill(xbt_context_t context)
+xbt_ctx_sysv_kill(xbt_context_t context)
 {
 	context->iwannadie = 1;
-	xbt_ucontext_swap(context);
+	xbt_ctx_sysv_swap(context);
 }
 
 /** 
@@ -203,10 +203,10 @@ xbt_ucontext_kill(xbt_context_t context)
  * Only the maestro can call this function to run a given process.
  */
 static void 
-xbt_ucontext_schedule(xbt_context_t context)
+xbt_ctx_sysv_schedule(xbt_context_t context)
 {
 	xbt_assert0((current_context == maestro_context),"You are not supposed to run this function here!");
-	xbt_ucontext_swap(context);
+	xbt_ctx_sysv_swap(context);
 }
 
 /** 
@@ -218,20 +218,20 @@ xbt_ucontext_schedule(xbt_context_t context)
  * to the maestro
  */
 static void 
-xbt_ucontext_yield(void)
+xbt_ctx_sysv_yield(void)
 {
 	xbt_assert0((current_context != maestro_context),"You are not supposed to run this function here!");
-	xbt_ucontext_swap(current_context);
+	xbt_ctx_sysv_swap(current_context);
 }
 
 static void 
-xbt_ucontext_start(xbt_context_t context)
+xbt_ctx_sysv_start(xbt_context_t context)
 {
-	makecontext(&(((xbt_ucontext_t)context)->uc), xbt_ucontext_wrapper, 0);
+	makecontext(&(((xbt_ctx_sysv_t)context)->uc), xbt_ctx_sysv_wrapper, 0);
 }
 
 static void 
-xbt_ucontext_stop(int exit_code)
+xbt_ctx_sysv_stop(int exit_code)
 {
 	if(current_context->cleanup_func) 
 		((*current_context->cleanup_func))(current_context->cleanup_arg);
@@ -239,59 +239,59 @@ xbt_ucontext_stop(int exit_code)
 	xbt_swag_remove(current_context, context_living);
 	xbt_swag_insert(current_context, context_to_destroy);	
 	
-	xbt_ucontext_swap(current_context);
+	xbt_ctx_sysv_swap(current_context);
 }
 
 static void 
-xbt_ucontext_swap(xbt_context_t context)
+xbt_ctx_sysv_swap(xbt_context_t context)
 {
 	xbt_assert0(current_context, "You have to call context_init() first.");
 	xbt_assert0(context, "Invalid argument");
 	
-	if(((xbt_ucontext_t)context)->prev == NULL) 
-		xbt_ucontext_resume(context);
+	if(((xbt_ctx_sysv_t)context)->prev == NULL) 
+		xbt_ctx_sysv_resume(context);
 	else 
-		xbt_ucontext_suspend(context);
+		xbt_ctx_sysv_suspend(context);
 	
 	if(current_context->iwannadie)
-		xbt_ucontext_stop(1);
+		xbt_ctx_sysv_stop(1);
 }
 
 static void
-xbt_ucontext_wrapper(void)
+xbt_ctx_sysv_wrapper(void)
 {
 	if (current_context->startup_func)
 		(*current_context->startup_func)(current_context->startup_arg);
 	
-	xbt_ucontext_stop((*(current_context->code))(current_context->argc, current_context->argv));
+	xbt_ctx_sysv_stop((*(current_context->code))(current_context->argc, current_context->argv));
 }
 
 static void
-xbt_ucontext_suspend(xbt_context_t context)
+xbt_ctx_sysv_suspend(xbt_context_t context)
 {
 	int rv;
 	
-	xbt_ucontext_t prev_context = ((xbt_ucontext_t)context)->prev;
+	xbt_ctx_sysv_t prev_context = ((xbt_ctx_sysv_t)context)->prev;
 	
-	current_context = (xbt_context_t)(((xbt_ucontext_t)context)->prev);
+	current_context = (xbt_context_t)(((xbt_ctx_sysv_t)context)->prev);
 	
-	((xbt_ucontext_t)context)->prev = NULL;
+	((xbt_ctx_sysv_t)context)->prev = NULL;
 	
-	rv = swapcontext(&(((xbt_ucontext_t)context)->uc), &(prev_context->uc));
+	rv = swapcontext(&(((xbt_ctx_sysv_t)context)->uc), &(prev_context->uc));
 		
 	xbt_assert0((rv == 0), "Context swapping failure");
 }
 
 static void
-xbt_ucontext_resume(xbt_context_t context)
+xbt_ctx_sysv_resume(xbt_context_t context)
 {
 	int rv;
 	
-	((xbt_ucontext_t)context)->prev = (xbt_ucontext_t)current_context;
+	((xbt_ctx_sysv_t)context)->prev = (xbt_ctx_sysv_t)current_context;
 	
 	current_context = context;
 	
-	rv = swapcontext(&(((xbt_ucontext_t)context)->prev->uc), &(((xbt_ucontext_t)context)->uc));
+	rv = swapcontext(&(((xbt_ctx_sysv_t)context)->prev->uc), &(((xbt_ctx_sysv_t)context)->uc));
 		
 	xbt_assert0((rv == 0), "Context swapping failure");
 }

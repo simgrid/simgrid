@@ -14,7 +14,7 @@
 #include "jmsg.h"
 #include "jxbt_utilities.h"
 
-#include "xbt/xbt_jcontext.h"
+#include "xbt/xbt_context_java.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -188,7 +188,7 @@ jprocess_schedule(xbt_context_t context) {
 	if(!id)
 		return;
 	
-	(*env)->CallVoidMethod(env,((xbt_jcontext_t)context)->jprocess,id);
+	(*env)->CallVoidMethod(env,((xbt_ctx_java_t)context)->jprocess,id);
 }
 
 
@@ -206,6 +206,6 @@ jprocess_unschedule(xbt_context_t context) {
 	if(!id)
 		return;
 	
-	(*env)->CallVoidMethod(env,((xbt_jcontext_t)context)->jprocess,id);
+	(*env)->CallVoidMethod(env,((xbt_ctx_java_t)context)->jprocess,id);
 }
 

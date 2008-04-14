@@ -2,7 +2,7 @@
 
 #include "xbt/function_types.h"
 #include "xbt/ex_interface.h"
-#include "xbt/xbt_context_factory.h"
+#include "xbt/xbt_context_private.h"
 #include "xbt/xbt_context_java.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg,"MSG for Java(TM)");

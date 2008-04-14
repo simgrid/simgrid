@@ -12,8 +12,7 @@
 #include "msg/msg.h"
 #include "msg/private.h"
 #include "simix/private.h"
-#include "xbt/xbt_jcontext.h"
-#include "xbt/xbt_context_factory.h"
+#include "xbt/xbt_context_java.h"
 
 #include "jmsg_process.h"
 #include "jmsg_host.h"
@@ -49,7 +48,7 @@ get_current_thread_env(void) {
 static jobject
 native_to_java_process(m_process_t process)
 {
-	return ((xbt_jcontext_t)(process->simdata->s_process->simdata->context))->jprocess;	
+	return ((xbt_ctx_java_t)(process->simdata->s_process->simdata->context))->jprocess;	
 }
 
 
