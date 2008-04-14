@@ -10,7 +10,7 @@
 #include "portable.h"
 #include "xbt/log.h"
 #include "xbt/swag.h"
-#include "xbt_context_factory.h"
+#include "xbt_context_private.h"
 
 /* the context associated with the current process 				*/
 xbt_context_t current_context = NULL;
@@ -50,10 +50,10 @@ xbt_context_mod_init(void)
 
 		#ifdef CONTEXT_THREADS
 			/* context switch based os thread */
-			xbt_thread_context_factory_init(&context_factory);
+			xbt_ctx_thread_factory_init(&context_factory);
 		#elif !defined(WIN32)
 			/* context switch based ucontext */
-			xbt_ucontext_factory_init(&context_factory);
+			xbt_ctx_sysv_factory_init(&context_factory);
 		#else
 			/* context switch is not allowed on Windows */
 			#error ERROR [__FILE__, line __LINE__]: no context based implementation specified.
@@ -280,19 +280,19 @@ xbt_context_select_factory(const char* name)
 int
 xbt_context_init_factory_by_name(xbt_context_factory_t* factory, const char* name)
 {
-	if(!strcmp(name,"jcontext_factory"))
+	if(!strcmp(name,"java"))
 	{
-		return xbt_jcontext_factory_init(factory);	
+		return xbt_ctx_java_factory_init(factory);	
 	}
 	#ifdef CONTEXT_THREADS
-	else if(!strcmp(name,"thread_context_factory"))	
+	else if(!strcmp(name,"thread"))	
 	{
-		return xbt_thread_context_factory_init(factory);	
+		return xbt_ctx_thread_factory_init(factory);	
 	}
 	#elif !defined(WIN32)
-	else if(!strcmp(name,"ucontext_context_factory"))	
+	else if(!strcmp(name,"sysv"))
 	{
-		return xbt_ucontext_factory_init(factory);	
+		return xbt_ctx_sysv_factory_init(factory);	
 	}
 	#endif
 	
