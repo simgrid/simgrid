@@ -244,15 +244,10 @@ xbt_context_select_factory(const char* name)
 	{
 		/* if the desired factory is different of the current factory, call xbt_context_mod_exit() */
 		if(strcmp(context_factory->name,name))
-		{
 			xbt_context_mod_exit();
-				
-		}
 		else
-		{
 			/* the same context factory is requested return directly */
 			return 0;
-		}
 	}
 	
 	/* get the desired factory */
@@ -280,17 +275,17 @@ xbt_context_select_factory(const char* name)
 void
 xbt_context_init_factory_by_name(xbt_context_factory_t* factory, const char* name)
 {
-	if(!strcmp(name,"java"))
-		xbt_ctx_java_factory_init(factory);	
-	#ifdef CONTEXT_THREADS
-	else if(!strcmp(name,"thread"))	
-		xbt_ctx_thread_factory_init(factory);	
-	#elif !defined(WIN32)
-	else if(!strcmp(name,"sysv"))
-		xbt_ctx_sysv_factory_init(factory);	
-	#endif
-
-   THROW1(not_found_error, 0,"Factory '%s' does not exist",name);
+   if(!strcmp(name,"java")) 
+      xbt_ctx_java_factory_init(factory);
+#ifdef CONTEXT_THREADS
+   else if(!strcmp(name,"thread"))	
+     xbt_ctx_thread_factory_init(factory);	
+#elif !defined(WIN32)
+   else if(!strcmp(name,"sysv"))
+     xbt_ctx_sysv_factory_init(factory);	
+#endif
+   else
+     THROW1(not_found_error, 0,"Factory '%s' does not exist",name);
 }
 
 /** Garbage collection
