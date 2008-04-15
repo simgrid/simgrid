@@ -690,7 +690,7 @@ of processes in your simulations.
      user don't get into trouble about this. You want to tune this
      size to increse the number of processes. This is the
      <tt>STACK_SIZE</tt> define in 
-     <tt>src/xbt/xbt_ucontext.c</tt>, which is 128kb by default.
+     <tt>src/xbt/xbt_context_sysv.c</tt>, which is 128kb by default.
      Reduce this as much as you can, but be warned that if this value
      is too low, you'll get a segfault. The token ring example, which
      is quite simple, runs with 40kb stacks.     
