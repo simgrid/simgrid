@@ -988,7 +988,7 @@ Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg) {
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv * env, jclass class,jstring jname)
 {
-   char *errmsg=NULL;
+   char *errmsg = NULL;
    xbt_ex_t e;
 	
    /* get the C string from the java string*/
@@ -1001,7 +1001,7 @@ Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv * env, jclass class,jstri
       xbt_ex_free(e);
    }
    
-	(*env)->ReleaseStringUTFChars(env, jname, name);
+   (*env)->ReleaseStringUTFChars(env, jname, name);
 	
    if(errmsg) {
       char *thrown = bprintf("xbt_select_context_factory() failed: %s",errmsg);
