@@ -344,22 +344,21 @@ public abstract class Process extends Thread {
      */
   public synchronized void run() {
 
-    try {
       String[]args = null;      /* do not fill it before the signal or this.args will be empty */
 
       //waitSignal(); /* wait for other people to fill the process in */
 
 
-      try {
+     try {
         schedBegin.acquire();
-      } catch(InterruptedException e) {
-      }
+     } catch(InterruptedException e) {
+     }
 
 
 
+    try {
+      args = new String[this.args.size()];
       if (this.args.size() > 0) {
-
-        args = new String[this.args.size()];
         this.args.toArray(args);
       }
 
