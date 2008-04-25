@@ -93,6 +93,7 @@ extern smpi_mpi_global_t smpi_mpi_global;
 #define MPI_Isend(a, b, c, d, e, f, g) SMPI_MPI_Isend(a, b, c, d, e, f, g)
 #define MPI_Send(a, b, c, d, e, f) SMPI_MPI_Send(a, b, c, d, e, f)
 #define MPI_Bcast(a, b, c, d, e) SMPI_MPI_Bcast(a, b, c, d, e)
+#define MPI_Wait(a, b) SMPI_MPI_Wait(a, b)
 #define MPI_Comm_split(a, b, c, d) SMPI_MPI_Comm_split(a, b, c, d)
 
 // SMPI Functions
@@ -108,6 +109,7 @@ XBT_PUBLIC(int) SMPI_MPI_Recv(void *buf, int count, MPI_Datatype datatype, int s
 XBT_PUBLIC(int) SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request);
 XBT_PUBLIC(int) SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
 XBT_PUBLIC(int) SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Wait(MPI_Request *request, MPI_Status *status);
 XBT_PUBLIC(int) SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out);
 
 // smpi functions
