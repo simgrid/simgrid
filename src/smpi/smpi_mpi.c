@@ -172,6 +172,10 @@ int SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
 	return retval;
 }
 
+int SMPI_MPI_Wait(MPI_Request *request, MPI_Status *status) {
+	return smpi_mpi_wait(*request, status);
+}
+
 int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm) {
 
 	int retval = MPI_SUCCESS;
@@ -237,9 +241,9 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 			retval = smpi_create_request(colorkey, 2, MPI_INT, MPI_ANY_SOURCE, rank, MPI_ANY_TAG, comm, &request);
 			smpi_mpi_irecv(request);
 			smpi_mpi_wait(request, &status);
+			colors[status.MPI_SOURCE] = colorkey[0];
+			keys[status.MPI_SOURCE]   = colorkey[1];
 			xbt_mallocator_release(smpi_global->request_mallocator, request);
-			colors[i] = colorkey[0];
-			keys[i]   = colorkey[1];
 		}
 
 		for (i = 0; i < comm->size; i++) {
@@ -256,41 +260,44 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 					keycount++;
 				}
 			}
-			if (0 < keycount) {
-				// FIXME: yes, mock me, bubble sort...
-				for (j = 0; j < keycount; j++) {
-					for (k = keycount - 1; k > j; k--) {
-						if (keystmp[k] < keystmp[k - 1]) {
-							tmpval          = keystmp[k];
-							keystmp[k]      = keystmp[k - 1];
-							keystmp[k - 1]  = tmpval;
+			// FIXME: yes, mock me, bubble sort...
+			for (j = 0; j < keycount; j++) {
+				for (k = j; k < keycount - 1; k++) {
+					if (keystmp[k] > keystmp[k + 1]) {
+						tmpval          = keystmp[k];
+						keystmp[k]      = keystmp[k + 1];
+						keystmp[k + 1]  = tmpval;
 
-							tmpval          = rankstmp[k];
-							rankstmp[k]     = rankstmp[k - 1];
-							rankstmp[k - 1] = tmpval;
-						}
+						tmpval          = rankstmp[k];
+						rankstmp[k]     = rankstmp[k + 1];
+						rankstmp[k + 1] = tmpval;
 					}
 				}
-				tempcomm                    = xbt_new(s_smpi_mpi_communicator_t, 1);
-				tempcomm->barrier_count     = 0;
-				tempcomm->barrier_mutex     = SIMIX_mutex_init();
-				tempcomm->barrier_cond      = SIMIX_cond_init();
-				tempcomm->rank_to_index_map = xbt_new(int, keycount);
-				tempcomm->index_to_rank_map = xbt_new(int, smpi_global->host_count);
-				for (j = 0; j < smpi_global->host_count; j++) {
-					tempcomm->index_to_rank_map[j] = -1;
-				}
-				for (j = 0; j < keycount; j++) {
-					indextmp = comm->rank_to_index_map[rankstmp[j]];
-					tempcomm->rank_to_index_map[j]        = indextmp;
-					tempcomm->index_to_rank_map[indextmp] = j;
-				}
-				for (j = 0; j < keycount; j++) {
+			}
+			tempcomm                    = xbt_new(s_smpi_mpi_communicator_t, 1);
+			tempcomm->barrier_count     = 0;
+			tempcomm->size              = keycount;
+			tempcomm->barrier_mutex     = SIMIX_mutex_init();
+			tempcomm->barrier_cond      = SIMIX_cond_init();
+			tempcomm->rank_to_index_map = xbt_new(int, keycount);
+			tempcomm->index_to_rank_map = xbt_new(int, smpi_global->host_count);
+			for (j = 0; j < smpi_global->host_count; j++) {
+				tempcomm->index_to_rank_map[j] = -1;
+			}
+			for (j = 0; j < keycount; j++) {
+				indextmp = comm->rank_to_index_map[rankstmp[j]];
+				tempcomm->rank_to_index_map[j]        = indextmp;
+				tempcomm->index_to_rank_map[indextmp] = j;
+			}
+			for (j = 0; j < keycount; j++) {
+				if (rankstmp[j]) {
 					retval = smpi_create_request(&j, 1, MPI_INT, 0, rankstmp[j], 0, comm, &request);
 					request->data = tempcomm;
 					smpi_mpi_isend(request);
 					smpi_mpi_wait(request, &status);
 					xbt_mallocator_release(smpi_global->request_mallocator, request);
+				} else {
+					*comm_out = tempcomm;
 				}
 			}
 		}
