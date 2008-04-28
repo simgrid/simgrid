@@ -601,7 +601,7 @@ void parse_sets(void)
   current_set = xbt_dynar_new(sizeof(char*), NULL);
 
   
-  for (i=start; i<end; i++) {
+  for (i=start; i<=end; i++) {
      value = bprintf("%s%d%s", prefix, i, suffix);
      xbt_dynar_push(current_set, &value);
   } 
