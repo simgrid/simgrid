@@ -31,8 +31,8 @@ SG_BEGIN_DECL()
  xbt_dict_set(mydict,"my data", strdup(buff), free); 
 
  sprintf(buff,"another good stuff");
- xbt_dict_set(mydict,"my data", strdup(buff), free); // previous data gets erased (and freed) by second add \endverbatim
-
+ xbt_dict_set(mydict,"my data", strdup(buff), free); // previous data gets erased (and freed) by second add 
+\endverbatim
  *
  */
 
