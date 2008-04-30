@@ -64,7 +64,7 @@ public class Task {
      *
      * @param name		The name of the parallel task.
      * @param hosts		The list of hosts implied by the parallel task.
-     * @param computeDurations	The amount of operations to be performed by each host of \e hosts.
+     * @param computeDurations	The amount of operations to be performed by each host of \a hosts.
      * @param messageSizes	A matrix describing the amount of data to exchange between hosts.
      * 
      * @exception		JniException if the binding mecanism fails.
@@ -150,7 +150,7 @@ public class Task {
     return MsgNative.taskGet(channel, -1.0, null);
   }
    /**
-    * Retrieves next task on given channel of local host (wait at most \e timeout seconds)
+    * Retrieves next task on given channel of local host (wait at most \a timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -170,7 +170,7 @@ public class Task {
     return MsgNative.taskGet(channel, -1, host);
   }
    /**
-    * Retrieves next task from given host on given channel of local host (wait at most \e timeout seconds)
+    * Retrieves next task from given host on given channel of local host (wait at most \a timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -188,7 +188,7 @@ public class Task {
     return MsgNative.taskProbe(channel);
   }
    /**
-    * Counts tasks waiting on the given \e channel of local host and sent by given \e host
+    * Counts tasks waiting on the given \a channel of local host and sent by given \a host
     *
     * @exception  JniException if the binding mecanism fails.
     */ public static int probe(int channel, Host host) throws JniException {
@@ -251,7 +251,7 @@ public class Task {
 	} 
 	
 	/**
-    * Send the task on the mailbox identified by the default alias  (wait at most \e timeout seconds)
+    * Send the task on the mailbox identified by the default alias  (wait at most \a timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -262,7 +262,7 @@ public class Task {
 	} 
 	
 	/**
-    * Send the task on the mailbox identified by the specified alias  (wait at most \e timeout seconds)
+    * Send the task on the mailbox identified by the specified alias  (wait at most \a timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -273,7 +273,7 @@ public class Task {
 	
 	
 	/**
-    * Send the task on the mailbox identified by the default alias  (capping the emision rate to \e maxrate) 
+    * Send the task on the mailbox identified by the default alias  (capping the emision rate to \a maxrate) 
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -284,7 +284,7 @@ public class Task {
 	} 
 	
 	/**
-    * Send the task on the mailbox identified by the specified alias  (capping the emision rate to \e maxrate) 
+    * Send the task on the mailbox identified by the specified alias  (capping the emision rate to \a maxrate) 
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -316,7 +316,7 @@ public class Task {
 	}
 	
 	/**
-    * Retrieves next task on the mailbox identified by the specified alias (wait at most \e timeout seconds)
+    * Retrieves next task on the mailbox identified by the specified alias (wait at most \a timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -337,7 +337,7 @@ public class Task {
 	}
 	
 	/**
-    * Retrieves next task sended by a given host on the mailbox identified by the specified alias (wait at most \e timeout seconds)
+    * Retrieves next task sended by a given host on the mailbox identified by the specified alias (wait at most \a timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -391,7 +391,7 @@ public class Task {
 	}
 	
    /**
-    * Counts the number of tasks waiting to be received on the \e mailbox identified by the specified alias and sended by the current host.
+    * Counts the number of tasks waiting to be received on the \a mailbox identified by the specified alias and sended by the current host.
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -402,7 +402,7 @@ public class Task {
 	}
 	
    /**
-    * Counts the number of tasks waiting to be received on the \e mailbox identified by the specified alia and sended by the specified \e host.
+    * Counts the number of tasks waiting to be received on the \a mailbox identified by the specified alia and sended by the specified \a host.
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
