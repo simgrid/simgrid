@@ -588,7 +588,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\xbt\xbt_jcontext.c"
+				RelativePath="..\..\..\src\xbt\xbt_context_java.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\xbt\xbt_context_thread.c"
 				>
 			</File>
 			<File
@@ -641,10 +645,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\xbt\xbt_strbuff.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\xbt\xbt_thread_context.c"
 				>
 			</File>
 			<File
