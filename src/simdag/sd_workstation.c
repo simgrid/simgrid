@@ -132,7 +132,7 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
 /**
  * \brief Returns the value of a given workstation property
  *
- * \param workstation a workstation
+ * \param ws a workstation
  * \param name a property name
  * \return value of a property (or NULL if property not set)
  */

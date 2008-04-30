@@ -120,7 +120,7 @@ double SD_link_get_current_bandwidth(SD_link_t link) {
 /**
  * \brief Returns the value of a given link property
  *
- * \param workstation a workstation
+ * \param link the inspected link
  * \param name a property name
  * \return value of a property (or NULL if property not set)
  */

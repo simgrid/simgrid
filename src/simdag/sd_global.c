@@ -290,7 +290,7 @@ void SD_application_reinit(void) {
  *
  * The XML file follows this DTD:
  *
- *     \include surfxml.dtd
+ *     \include simgrid.dtd
  *
  * Here is a small example of such a platform: 
  *
