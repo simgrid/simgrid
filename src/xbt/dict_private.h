@@ -33,7 +33,7 @@ typedef struct xbt_dictelm_ {
   xbt_dictelm_t next;
 } s_xbt_dictelm_t;
 
-typedef struct xbt_dict_ {
+typedef struct xbt_dict_s {
   xbt_dictelm_t *table;
   int table_size;
   int count;
