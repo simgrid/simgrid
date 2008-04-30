@@ -436,7 +436,7 @@ MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel, double m
  * \param channel the channel on which the agent should put this
    task. This value has to be >=0 and < than the maximal number of
    channels fixed with MSG_set_channel_number().
- * \param max_duration the maximum time to wait for a task before giving
+ * \param timeout the maximum time to wait for a task before giving
     up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task 
     will not be modified 
  * \return #MSG_FATAL if \a task is not properly initialized and
@@ -581,7 +581,7 @@ MSG_task_listen_from(const char* alias)
    listening. This value has to be >=0 and < than the maximal.
    number of channels fixed with MSG_set_channel_number().
  * \param PID a memory location for storing an int.
- * \param max_duration the maximum time to wait for a task before
+ * \param timeout the maximum time to wait for a task before
     giving up. In the case of a reception, *\a PID will be updated
     with the PID of the first process to send a task.
  * \return #MSG_HOST_FAILURE if the host is shut down in the meantime

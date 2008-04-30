@@ -49,7 +49,7 @@ m_host_t MSG_get_host_by_name(const char *name)
  * \param file a filename of a xml description of a platform. This file 
  * follows this DTD :
  *
- *     \include surfxml.dtd
+ *     \include simgrid.dtd
  *
  * Here is a small example of such a platform 
  *

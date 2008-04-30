@@ -19,7 +19,7 @@
  * \param file a filename of a xml description of the application. This file 
  * follows this DTD :
  *
- *     \include surfxml.dtd
+ *     \include simgrid.dtd
  *
  * Here is a small example of such a platform 
  *
