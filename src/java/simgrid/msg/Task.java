@@ -64,7 +64,7 @@ public class Task {
      *
      * @param name		The name of the parallel task.
      * @param hosts		The list of hosts implied by the parallel task.
-     * @param computeDurations	The amount of operations to be performed by each host of @hosts.
+     * @param computeDurations	The amount of operations to be performed by each host of \e hosts.
      * @param messageSizes	A matrix describing the amount of data to exchange between hosts.
      * 
      * @exception		JniException if the binding mecanism fails.
@@ -123,22 +123,24 @@ public class Task {
  	 */ public double getRemainingDuration() throws JniException {
     return MsgNative.taskGetRemainingDuration(this);
   }
-        /**
- 	 * This method sets the priority of the computation of the task.
- 	 * The priority doesn't affect the transfert rate. For example a
- 	 * priority of 2 will make the task receive two times more cpu than
- 	 * the other ones.
- 	 *
- 	 * @param				The new priority of the task.
- 	 *
- 	 * @exception			InvalidTaskException is the specified task is not valid. A task
- 	 *						is invalid if it is not binded with a native task.
- 	 */ public void setPrirority(double priority) throws JniException {
-    MsgNative.taskSetPriority(this, priority);
-  }
+   /**
+    * This method sets the priority of the computation of the task.
+    * The priority doesn't affect the transfert rate. For example a
+    * priority of 2 will make the task receive two times more cpu than
+    * the other ones.
+    *
+    * @param priority	The new priority of the task.
+    *
+    * @exception	JniException is the specified task is not valid (ie, not binded to a native task)
+    */ 
+   public void setPriority(double priority) throws JniException {
+      MsgNative.taskSetPriority(this, priority);
+   }
   /* *                       * *
    * * Communication-related * *
-    * *                       * *//**
+   * *                       * */
+   
+   /**
     * Retrieves next task on given channel of local host
     *
     * @exception  JniException if the binding mecanism fails.
@@ -148,7 +150,7 @@ public class Task {
     return MsgNative.taskGet(channel, -1.0, null);
   }
    /**
-    * Retrieves next task on given channel of local host (wait at most #timeout seconds)
+    * Retrieves next task on given channel of local host (wait at most \e timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -168,7 +170,7 @@ public class Task {
     return MsgNative.taskGet(channel, -1, host);
   }
    /**
-    * Retrieves next task from given host on given channel of local host (wait at most #timeout seconds)
+    * Retrieves next task from given host on given channel of local host (wait at most \e timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -186,7 +188,7 @@ public class Task {
     return MsgNative.taskProbe(channel);
   }
    /**
-    * Counts tasks waiting on the given #channel of local host and sent by given #host
+    * Counts tasks waiting on the given \e channel of local host and sent by given \e host
     *
     * @exception  JniException if the binding mecanism fails.
     */ public static int probe(int channel, Host host) throws JniException {
@@ -195,15 +197,17 @@ public class Task {
   
   /* *                     * *
    * * Computation-related * *
-         * *                     * *//**
-	 * This method execute a task on the location on which the
-   	 * process is running.
-   	 *
-	 * @exception JniException if the binding mecanism fails.
-	 * @exception NativeException if the cancelation failed.
- 	 */ public void execute() throws JniException, NativeException {
-    MsgNative.taskExecute(this);
-  }
+   * *                     * */
+  /**
+   * This method execute a task on the location on which the
+   * process is running.
+   *
+   * @exception JniException if the binding mecanism fails.
+   * @exception NativeException if the cancelation failed.
+   */ 
+   public void execute() throws JniException, NativeException {
+      MsgNative.taskExecute(this);
+   }
         /**
 	 * This method cancels a task.
 	 *
@@ -247,7 +251,7 @@ public class Task {
 	} 
 	
 	/**
-    * Send the task on the mailbox identified by the default alias  (wait at most #timeout seconds)
+    * Send the task on the mailbox identified by the default alias  (wait at most \e timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -258,7 +262,7 @@ public class Task {
 	} 
 	
 	/**
-    * Send the task on the mailbox identified by the specified alias  (wait at most #timeout seconds)
+    * Send the task on the mailbox identified by the specified alias  (wait at most \e timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -269,7 +273,7 @@ public class Task {
 	
 	
 	/**
-    * Send the task on the mailbox identified by the default alias  (capping the emision rate to #maxrate) 
+    * Send the task on the mailbox identified by the default alias  (capping the emision rate to \e maxrate) 
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -280,7 +284,7 @@ public class Task {
 	} 
 	
 	/**
-    * Send the task on the mailbox identified by the specified alias  (capping the emision rate to #maxrate) 
+    * Send the task on the mailbox identified by the specified alias  (capping the emision rate to \e maxrate) 
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -312,7 +316,7 @@ public class Task {
 	}
 	
 	/**
-    * Retrieves next task on the mailbox identified by the specified alias (wait at most #timeout seconds)
+    * Retrieves next task on the mailbox identified by the specified alias (wait at most \e timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -333,7 +337,7 @@ public class Task {
 	}
 	
 	/**
-    * Retrieves next task sended by a given host on the mailbox identified by the specified alias (wait at most #timeout seconds)
+    * Retrieves next task sended by a given host on the mailbox identified by the specified alias (wait at most \e timeout seconds)
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -376,7 +380,7 @@ public class Task {
 		return MsgNative.taskListenFrom(alias);
 	}
 	
-	/**
+   /**
     * Listen whether there is a waiting task on the mailbox identified by the specified alias
     *
     * @exception  JniException if the binding mecanism fails.
@@ -386,8 +390,8 @@ public class Task {
 		return MsgNative.taskListen(alias);
 	}
 	
-	 /**
-    * Counts the number of tasks waiting to be received on the #mailbox identified by the specified alias and sended by the current host.
+   /**
+    * Counts the number of tasks waiting to be received on the \e mailbox identified by the specified alias and sended by the current host.
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.
@@ -397,8 +401,8 @@ public class Task {
 		return MsgNative.taskListenFromHost(alias,host);
 	}
 	
-	/**
-    * Counts the number of tasks waiting to be received on the #mailbox identified by the specified alia and sended by the specified #host.
+   /**
+    * Counts the number of tasks waiting to be received on the \e mailbox identified by the specified alia and sended by the specified \e host.
     *
     * @exception  JniException if the binding mecanism fails.
     * @exception  NativeException if the retrival fails.

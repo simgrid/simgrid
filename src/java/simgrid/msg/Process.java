@@ -37,7 +37,7 @@ import java.util.*;
  * }
  * The name of your process must be declared in the deployment file of your simulation.
  * For the exemple, for the previouse process Slave this file must contains a line :
- * <process host="Maxims" function="Slave"/>, where Maxims is the host of the process
+ * &lt;process host="Maxims" function="Slave"/&gt;, where Maxims is the host of the process
  * Slave. All the process of your simulation are automaticaly launched and managed by Msg.
  * A process use tasks to simulate communications or computations with another process. 
  * For more information see Task. For more information on host concept 
@@ -104,7 +104,7 @@ public abstract class Process extends Thread {
      * Constructs a new process from the name of a host and his name. The method
      * function of the process doesn't have argument.
      *
-     * @param hostName		The name of the host of the process to create.
+     * @param hostname		The name of the host of the process to create.
      * @param name			The name of the process.
      *
      * @exception			HostNotFoundException  if no host with this name exists.
@@ -121,7 +121,7 @@ public abstract class Process extends Thread {
      * Constructs a new process from the name of a host and his name. The arguments
      * of the method function of the process are specified by the parameter args.
      *
-     * @param hostName		The name of the host of the process to create.
+     * @param hostname		The name of the host of the process to create.
      * @param name			The name of the process.
      * @param args			The arguments of the main function of the process.
      *
@@ -129,8 +129,9 @@ public abstract class Process extends Thread {
      *                              NullPointerException if the provided name is null
      *                              JniException on JNI madness
      *
-     */ public Process(String hostname, String name, String args[])
-  throws NullPointerException, HostNotFoundException, JniException,
+     */ 
+   public Process(String hostname, String name, String args[])
+     throws NullPointerException, HostNotFoundException, JniException,
     NativeException {
     this(Host.getByName(hostname), name, args);
   }
@@ -310,7 +311,7 @@ public abstract class Process extends Thread {
     /**
      * This function migrates a process to another host.
      *
-     * @parm host			The host where to migrate the process.
+     * @param host			The host where to migrate the process.
      *
      * @exception			JniException on JNI madness
      *                              NativeException on error in the native SimGrid code

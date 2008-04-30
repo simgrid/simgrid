@@ -118,7 +118,7 @@ public final class Msg {
     /**
      * The method to deploy the simulation.
      *
-     * @param appFile        The XML file which contains the description of the application to deploy.
+     * @param platformFile    The XML file which contains the description of the application to deploy.
      */
 
 
