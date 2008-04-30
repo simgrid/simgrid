@@ -235,7 +235,7 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep) {
 
 /**
  * \brief This functions splits a string after using another string as separator
- * For example A##B##C splitted after ## will return the dynar {A,B,C}
+ * For example A!!B!!C splitted after !! will return the dynar {A,B,C}
  * \return An array of dynars containing the string tokens
 */
 xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
