@@ -103,6 +103,25 @@ else
   TESTS += gras/msg_handle/test_rl gras/msg_handle/test_sg_64
 endif
 
+  ## Make sure it's ok to have empty main functions ##
+  ####################################################
+EXTRA_DIST += gras/empty_main/empty_main.xml
+noinst_PROGRAMS+=\
+  gras/empty_main/empty_main_function \
+  gras/empty_main/empty_main_simulator
+  
+gras_empty_main_empty_main_simulator_SOURCES= gras/empty_main/empty_main.c gras/empty_main/_empty_main_simulator.c
+gras_empty_main_empty_main_function_SOURCES=  gras/empty_main/empty_main.c gras/empty_main/_empty_main_function.c
+
+gras_empty_main_empty_main_simulator_LDADD=   $(LDADD_SG)
+gras_empty_main_empty_main_function_LDADD=    $(LDADD_RL)
+
+gras/empty_main/_empty_main_simulator.c gras/empty_main/_empty_main_function.c : gras/empty_main/empty_main.c gras/empty_main/empty_main.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
+	mkdir -p gras/empty_main; \
+	  cd gras/empty_main;\
+	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ empty_main ../../$(top_srcdir)/teshsuite/gras/empty_main/empty_main.xml
+
+TESTS += gras/empty_main/test_rl gras/empty_main/test_sg
 
 ###################################
 # network model test via SimDag API

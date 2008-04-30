@@ -50,6 +50,8 @@ noinst_PROGRAMS = xbt/log_large_test$(EXEEXT) \
 	gras/msg_handle/msg_handle_client$(EXEEXT) \
 	gras/msg_handle/msg_handle_server$(EXEEXT) \
 	gras/msg_handle/msg_handle_simulator$(EXEEXT) \
+	gras/empty_main/empty_main_function$(EXEEXT) \
+	gras/empty_main/empty_main_simulator$(EXEEXT) \
 	simdag/network/test_reinit_costs$(EXEEXT) \
 	simdag/basic0$(EXEEXT) simdag/basic1$(EXEEXT) \
 	simdag/basic2$(EXEEXT) simdag/basic3$(EXEEXT) \
@@ -90,6 +92,16 @@ gras_datadesc_datadesc_usage_OBJECTS =  \
 	$(am_gras_datadesc_datadesc_usage_OBJECTS)
 gras_datadesc_datadesc_usage_DEPENDENCIES = $(LDADD_RL)
 am__dirstamp = $(am__leading_dot)dirstamp
+am_gras_empty_main_empty_main_function_OBJECTS = empty_main.$(OBJEXT) \
+	_empty_main_function.$(OBJEXT)
+gras_empty_main_empty_main_function_OBJECTS =  \
+	$(am_gras_empty_main_empty_main_function_OBJECTS)
+gras_empty_main_empty_main_function_DEPENDENCIES = $(LDADD_RL)
+am_gras_empty_main_empty_main_simulator_OBJECTS =  \
+	empty_main.$(OBJEXT) _empty_main_simulator.$(OBJEXT)
+gras_empty_main_empty_main_simulator_OBJECTS =  \
+	$(am_gras_empty_main_empty_main_simulator_OBJECTS)
+gras_empty_main_empty_main_simulator_DEPENDENCIES = $(LDADD_SG)
 am_gras_msg_handle_msg_handle_client_OBJECTS = msg_handle.$(OBJEXT) \
 	_msg_handle_client.$(OBJEXT)
 gras_msg_handle_msg_handle_client_OBJECTS =  \
@@ -193,6 +205,8 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
+	$(gras_empty_main_empty_main_function_SOURCES) \
+	$(gras_empty_main_empty_main_simulator_SOURCES) \
 	$(gras_msg_handle_msg_handle_client_SOURCES) \
 	$(gras_msg_handle_msg_handle_server_SOURCES) \
 	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
@@ -212,6 +226,8 @@ SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(simdag_partask_test_comp_only_seq_SOURCES) \
 	xbt/log_large_test.c xbt/parallel_log_crashtest.c
 DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
+	$(gras_empty_main_empty_main_function_SOURCES) \
+	$(gras_empty_main_empty_main_simulator_SOURCES) \
 	$(gras_msg_handle_msg_handle_client_SOURCES) \
 	$(gras_msg_handle_msg_handle_server_SOURCES) \
 	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
@@ -291,7 +307,6 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
-MD5SUM = @MD5SUM@
 MKDIR_P = @MKDIR_P@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -382,7 +397,7 @@ EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
 	gras/datadesc/datadesc.big32_8_4 \
 	gras/datadesc/datadesc.big32_2 \
 	gras/datadesc/mk_datadesc_structs.pl \
-	gras/msg_handle/msg_handle.xml \
+	gras/msg_handle/msg_handle.xml gras/empty_main/empty_main.xml \
 	simdag/network/platform_2p_1sl.xml simdag/basic_platform.xml \
 	simdag/network/p2p/platform_2p_1sl.xml \
 	simdag/network/p2p/platform_2p_1fl.xml \
@@ -390,7 +405,7 @@ EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
 	simdag/network/p2p/platform_2p_1bb.xml \
 	simdag/network/mxn/platform_4p_1switch.xml \
 	simdag/partask/platform_2p_1sl_hetero.xml \
-	simdag/partask/platform_2p_1sl.xml
+	simdag/partask/platform_2p_1sl.xml $(TESTS)
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = xbt/log_large_test.tesh xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_mem.tesh gras/datadesc/datadesc_rw.tesh \
@@ -399,7 +414,8 @@ TESTS = xbt/log_large_test.tesh xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_r_big32_8.tesh \
 	gras/datadesc/datadesc_r_big32_8_4.tesh \
 	gras/datadesc/datadesc_r_big32_2.tesh $(am__append_1) \
-	$(am__append_2) simdag/network/test_reinit_costs.tesh \
+	$(am__append_2) gras/empty_main/test_rl \
+	gras/empty_main/test_sg simdag/network/test_reinit_costs.tesh \
 	simdag/basic0.tesh simdag/basic1.tesh simdag/basic2.tesh \
 	simdag/basic3.tesh simdag/basic4.tesh simdag/basic5.tesh \
 	simdag/basic6.tesh simdag/network/p2p/test_latency1.tesh \
@@ -428,6 +444,10 @@ gras_msg_handle_msg_handle_server_SOURCES = gras/msg_handle/msg_handle.c gras/ms
 gras_msg_handle_msg_handle_simulator_LDADD = $(LDADD_SG)
 gras_msg_handle_msg_handle_client_LDADD = $(LDADD_RL)
 gras_msg_handle_msg_handle_server_LDADD = $(LDADD_RL)
+gras_empty_main_empty_main_simulator_SOURCES = gras/empty_main/empty_main.c gras/empty_main/_empty_main_simulator.c
+gras_empty_main_empty_main_function_SOURCES = gras/empty_main/empty_main.c gras/empty_main/_empty_main_function.c
+gras_empty_main_empty_main_simulator_LDADD = $(LDADD_SG)
+gras_empty_main_empty_main_function_LDADD = $(LDADD_RL)
 simdag_network_test_reinit_costs_SOURCES = simdag/network/test_reinit_costs.c
 simdag_network_test_reinit_costs_LDADD = $(LDADD_SG)
 simdag_basic0_SOURCES = simdag/basic0.c
@@ -508,6 +528,15 @@ gras/datadesc/$(am__dirstamp):
 gras/datadesc/datadesc_usage$(EXEEXT): $(gras_datadesc_datadesc_usage_OBJECTS) $(gras_datadesc_datadesc_usage_DEPENDENCIES) gras/datadesc/$(am__dirstamp)
 	@rm -f gras/datadesc/datadesc_usage$(EXEEXT)
 	$(LINK) $(gras_datadesc_datadesc_usage_OBJECTS) $(gras_datadesc_datadesc_usage_LDADD) $(LIBS)
+gras/empty_main/$(am__dirstamp):
+	@$(MKDIR_P) gras/empty_main
+	@: > gras/empty_main/$(am__dirstamp)
+gras/empty_main/empty_main_function$(EXEEXT): $(gras_empty_main_empty_main_function_OBJECTS) $(gras_empty_main_empty_main_function_DEPENDENCIES) gras/empty_main/$(am__dirstamp)
+	@rm -f gras/empty_main/empty_main_function$(EXEEXT)
+	$(LINK) $(gras_empty_main_empty_main_function_OBJECTS) $(gras_empty_main_empty_main_function_LDADD) $(LIBS)
+gras/empty_main/empty_main_simulator$(EXEEXT): $(gras_empty_main_empty_main_simulator_OBJECTS) $(gras_empty_main_empty_main_simulator_DEPENDENCIES) gras/empty_main/$(am__dirstamp)
+	@rm -f gras/empty_main/empty_main_simulator$(EXEEXT)
+	$(LINK) $(gras_empty_main_empty_main_simulator_OBJECTS) $(gras_empty_main_empty_main_simulator_LDADD) $(LIBS)
 gras/msg_handle/$(am__dirstamp):
 	@$(MKDIR_P) gras/msg_handle
 	@: > gras/msg_handle/$(am__dirstamp)
@@ -602,6 +631,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_empty_main_function.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_empty_main_simulator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_msg_handle_client.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_msg_handle_server.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_msg_handle_simulator.Po@am__quote@
@@ -614,6 +645,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic6.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_structs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/empty_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log_large_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_log_crashtest.Po@am__quote@
@@ -676,6 +708,48 @@ datadesc_structs.obj: gras/datadesc/datadesc_structs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/datadesc/datadesc_structs.c' object='datadesc_structs.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o datadesc_structs.obj `if test -f 'gras/datadesc/datadesc_structs.c'; then $(CYGPATH_W) 'gras/datadesc/datadesc_structs.c'; else $(CYGPATH_W) '$(srcdir)/gras/datadesc/datadesc_structs.c'; fi`
+
+empty_main.o: gras/empty_main/empty_main.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT empty_main.o -MD -MP -MF $(DEPDIR)/empty_main.Tpo -c -o empty_main.o `test -f 'gras/empty_main/empty_main.c' || echo '$(srcdir)/'`gras/empty_main/empty_main.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/empty_main.Tpo $(DEPDIR)/empty_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/empty_main/empty_main.c' object='empty_main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o empty_main.o `test -f 'gras/empty_main/empty_main.c' || echo '$(srcdir)/'`gras/empty_main/empty_main.c
+
+empty_main.obj: gras/empty_main/empty_main.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT empty_main.obj -MD -MP -MF $(DEPDIR)/empty_main.Tpo -c -o empty_main.obj `if test -f 'gras/empty_main/empty_main.c'; then $(CYGPATH_W) 'gras/empty_main/empty_main.c'; else $(CYGPATH_W) '$(srcdir)/gras/empty_main/empty_main.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/empty_main.Tpo $(DEPDIR)/empty_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/empty_main/empty_main.c' object='empty_main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o empty_main.obj `if test -f 'gras/empty_main/empty_main.c'; then $(CYGPATH_W) 'gras/empty_main/empty_main.c'; else $(CYGPATH_W) '$(srcdir)/gras/empty_main/empty_main.c'; fi`
+
+_empty_main_function.o: gras/empty_main/_empty_main_function.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _empty_main_function.o -MD -MP -MF $(DEPDIR)/_empty_main_function.Tpo -c -o _empty_main_function.o `test -f 'gras/empty_main/_empty_main_function.c' || echo '$(srcdir)/'`gras/empty_main/_empty_main_function.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_empty_main_function.Tpo $(DEPDIR)/_empty_main_function.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/empty_main/_empty_main_function.c' object='_empty_main_function.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _empty_main_function.o `test -f 'gras/empty_main/_empty_main_function.c' || echo '$(srcdir)/'`gras/empty_main/_empty_main_function.c
+
+_empty_main_function.obj: gras/empty_main/_empty_main_function.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _empty_main_function.obj -MD -MP -MF $(DEPDIR)/_empty_main_function.Tpo -c -o _empty_main_function.obj `if test -f 'gras/empty_main/_empty_main_function.c'; then $(CYGPATH_W) 'gras/empty_main/_empty_main_function.c'; else $(CYGPATH_W) '$(srcdir)/gras/empty_main/_empty_main_function.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_empty_main_function.Tpo $(DEPDIR)/_empty_main_function.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/empty_main/_empty_main_function.c' object='_empty_main_function.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _empty_main_function.obj `if test -f 'gras/empty_main/_empty_main_function.c'; then $(CYGPATH_W) 'gras/empty_main/_empty_main_function.c'; else $(CYGPATH_W) '$(srcdir)/gras/empty_main/_empty_main_function.c'; fi`
+
+_empty_main_simulator.o: gras/empty_main/_empty_main_simulator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _empty_main_simulator.o -MD -MP -MF $(DEPDIR)/_empty_main_simulator.Tpo -c -o _empty_main_simulator.o `test -f 'gras/empty_main/_empty_main_simulator.c' || echo '$(srcdir)/'`gras/empty_main/_empty_main_simulator.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_empty_main_simulator.Tpo $(DEPDIR)/_empty_main_simulator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/empty_main/_empty_main_simulator.c' object='_empty_main_simulator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _empty_main_simulator.o `test -f 'gras/empty_main/_empty_main_simulator.c' || echo '$(srcdir)/'`gras/empty_main/_empty_main_simulator.c
+
+_empty_main_simulator.obj: gras/empty_main/_empty_main_simulator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _empty_main_simulator.obj -MD -MP -MF $(DEPDIR)/_empty_main_simulator.Tpo -c -o _empty_main_simulator.obj `if test -f 'gras/empty_main/_empty_main_simulator.c'; then $(CYGPATH_W) 'gras/empty_main/_empty_main_simulator.c'; else $(CYGPATH_W) '$(srcdir)/gras/empty_main/_empty_main_simulator.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_empty_main_simulator.Tpo $(DEPDIR)/_empty_main_simulator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/empty_main/_empty_main_simulator.c' object='_empty_main_simulator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _empty_main_simulator.obj `if test -f 'gras/empty_main/_empty_main_simulator.c'; then $(CYGPATH_W) 'gras/empty_main/_empty_main_simulator.c'; else $(CYGPATH_W) '$(srcdir)/gras/empty_main/_empty_main_simulator.c'; fi`
 
 msg_handle.o: gras/msg_handle/msg_handle.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_handle.o -MD -MP -MF $(DEPDIR)/msg_handle.Tpo -c -o msg_handle.o `test -f 'gras/msg_handle/msg_handle.c' || echo '$(srcdir)/'`gras/msg_handle/msg_handle.c
@@ -1005,6 +1079,7 @@ mostlyclean-libtool:
 clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf gras/datadesc/.libs gras/datadesc/_libs
+	-rm -rf gras/empty_main/.libs gras/empty_main/_libs
 	-rm -rf gras/msg_handle/.libs gras/msg_handle/_libs
 	-rm -rf simdag/.libs simdag/_libs
 	-rm -rf simdag/network/.libs simdag/network/_libs
@@ -1186,6 +1261,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-rm -f gras/datadesc/$(am__dirstamp)
+	-rm -f gras/empty_main/$(am__dirstamp)
 	-rm -f gras/msg_handle/$(am__dirstamp)
 	-rm -f simdag/$(am__dirstamp)
 	-rm -f simdag/network/$(am__dirstamp)
@@ -1296,6 +1372,13 @@ gras/msg_handle/_msg_handle_simulator.c gras/msg_handle/_msg_handle_client.c gra
 	mkdir -p gras/msg_handle; \
 	  cd gras/msg_handle;\
 	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle ../../$(top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
+
+  ####################################################
+
+gras/empty_main/_empty_main_simulator.c gras/empty_main/_empty_main_function.c : gras/empty_main/empty_main.c gras/empty_main/empty_main.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
+	mkdir -p gras/empty_main; \
+	  cd gras/empty_main;\
+	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ empty_main ../../$(top_srcdir)/teshsuite/gras/empty_main/empty_main.xml
 
 dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
