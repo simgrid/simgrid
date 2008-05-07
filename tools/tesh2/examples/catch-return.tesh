@@ -10,7 +10,7 @@ $ cd temp_testdir
 < int main(void) {
 <   exit(1);
 < }
-$ Cat > return1.c
+$ cat > return1.c
 
 $ gcc -o return1 return1.c
 

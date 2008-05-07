@@ -4,9 +4,9 @@ p This is a basic test
 
 < TOTO \
 TUTU
-$ Cat > tmp_fich
+$ cat > tmp_fich
 
-$ Cat tmp_fich
+$ cat tmp_fich
 > TOTO TUTU
 
 $ rm tmp_fich
@@ -17,9 +17,9 @@ p And now, some multilines examples
 < b
 < c
 < d
-$ Cat > tmp_fich
+$ cat > tmp_fich
 
-$ Cat tmp_fich
+$ cat tmp_fich
 > a
 > b
 > c

@@ -34,7 +34,7 @@ $ cd temp_testdir
 <   }
 <   return 0;
 < }
-$ Cat > delayed_cat.c
+$ cat > delayed_cat.c
 
 $ gcc -Wall -o delayed_cat delayed_cat.c
 
@@ -42,7 +42,7 @@ $ gcc -Wall -o delayed_cat delayed_cat.c
 > TOTO
 
 < TOTO
-$ Cat > tmp_fich
+$ cat > tmp_fich
 
 $ sleep 2
 $ cd ..

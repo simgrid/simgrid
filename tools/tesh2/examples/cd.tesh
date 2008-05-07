@@ -12,6 +12,7 @@ $ ls
 # Check that tesh detects properly cd to non-existing directories
 ! expect return $ENOENT
 < $ cd toto
+
 $ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
 
 # The next command checks that there is a testdir_temp in the upper directory, 

@@ -32,12 +32,12 @@ are separated by blank lines). It is possible to place these lines either after
 the command or before. The difference between the two following chunks is
 mainly cosmetic in your testsuites, TESH don't care. (cf IO-orders.tesh)
 
- $ Cat
+ $ cat
  < TOTO
  > TOTO
 
  > TOTO
- $ Cat
+ $ cat
  < TOTO
 
 Nevertheless, it is possible to have several commands in the same block, but
@@ -47,10 +47,10 @@ errors such as the following:
 
  $ cd toto
  > TOTO
- $ Cat > file
+ $ cat > file
 
 TOTO will be passed to the cd command, where the user clearly want to pass it
-to Cat.
+to cat.
 
 RETURN CODE
 -----------

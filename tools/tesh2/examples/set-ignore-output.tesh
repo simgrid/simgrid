@@ -5,6 +5,6 @@ p This tests whether TESH accepts to ignore command output
 < ! output ignore
 < > TOTO
 < < TUTU
-< $ Cat
-$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
+< $ cat
+$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
 

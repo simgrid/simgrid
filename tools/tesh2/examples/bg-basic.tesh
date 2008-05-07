@@ -4,7 +4,7 @@ p This is a basic test
 
 < TOTO \
 TUTU
-& Cat
+& cat
 > TOTO TUTU
 
 p And now, some multilines examples
@@ -13,7 +13,7 @@ p And now, some multilines examples
 < b
 < c
 < d
-& Cat
+& cat
 > a
 > b
 > c

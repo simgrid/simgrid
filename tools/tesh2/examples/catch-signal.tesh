@@ -11,13 +11,14 @@ $ cd temp_testdir
 <   char *A=NULL;
 <   *A = 1;
 < }
-$ Cat > segfault.c
+$ cat > segfault.c
 
 $ gcc -o segfault segfault.c
 
 ! expect return $EUNXPSIG
 < $ ./segfault
 $ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
+
 
 $ cd ..
 $ rm -rf temp_testdir

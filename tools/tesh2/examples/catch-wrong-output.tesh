@@ -2,11 +2,15 @@
 
 p This tests whether TESH detects wrong outputs
 
-! expect return $EOUTPUTNOTMATCH
+! expect return 2
 < > TOTO
 < < TUTU
 < $ cat
 $ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
-
-
+> Test suite from stdin
+> [stdin:3] cat
+> Output of <stdin:3> mismatch:
+> - TOTO
+> + TUTU
+> Test suite `(stdin)': NOK (<stdin:3> output mismatch)
 
