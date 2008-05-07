@@ -844,7 +844,7 @@ Java_simgrid_msg_Msg_init(JNIEnv* env, jclass cls, jobjectArray jargs) {
 
   argc++;
 	
-  argv = xbt_new0(char*,1);
+  argv = xbt_new0(char*, argc);
 	 
   argv[0] = strdup("java");
 	
