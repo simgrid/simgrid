@@ -1,0 +1,6 @@
+#! ./tesh
+
+# Description of this tesh file
+! D This tesh file contains all the tesh files relative with the xbt framework
+
+! include parallel_log_crashtest.tesh

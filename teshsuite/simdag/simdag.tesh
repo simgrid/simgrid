@@ -1,0 +1,15 @@
+#! ./tesh
+
+# Description of this tesh file
+! D This tesh file contains all the tesh files relative with SimDag
+
+# SimDag tesh suite
+
+! suite Simdag tests this suite contains all the tesh files relative with SimDag
+! include basic0.tesh
+! include basic1.tesh
+! include basic2.tesh
+! include basic3.tesh
+! include basic4.tesh
+! include basic5.tesh
+! include basic6.tesh

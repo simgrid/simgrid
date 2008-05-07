@@ -1,0 +1,40 @@
+#! ./tesh
+
+# Description of this tesh file
+! D This tesh file contains all the tesh files relative with the SimGrid sumulator
+
+# Remark :
+# 	To run this tesh file you must specify the include directories (simdag, gras, xbt...)
+#	on the command line of the Tesh utiliy.
+
+# First includes Tesh utility auto test.
+
+! suite Tesh utility Auto Test
+! include background.tesh
+! include basic.tesh
+! include bg-basic.tesh
+! include bg-set-signal.tesh
+! include catch-return.tesh
+! include catch-signal.tesh
+! include catch-timeout.tesh
+! include cd.tesh
+! include IO-broken-pipe.tesh
+! include IO-orders.tesh
+! include set-ignore-output.tesh
+! include set-return.tesh
+! include set-signal.tesh
+
+# Now includes The SimGrid tesh files 
+
+# includes the SimDag tesh suite
+! include simdag.tesh
+
+# include the Gras tesh suite
+! include gras.tesh
+
+# include the xbt framwork tesh suite
+! include xbt.tesh
+
+
+
+
