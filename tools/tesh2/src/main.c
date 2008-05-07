@@ -221,7 +221,7 @@ static const struct s_optentry opt_entries[] =
 	{ 'e', flag, (byte*)&env_overrides_flag, 0, "environment-overrides", },
 	{ 'f', string, (byte*)&fstreams, 0, "file" },
 	{ 'h', flag, (byte*)&print_usage_flag, 0, "help" },
-	{ 'a', flag, (byte*)&print_readme_flag, 0, "semantic" },
+	{ 'a', flag, (byte*)&print_readme_flag, 0, "read-me" },
 	{ 'i', flag, (byte*)&keep_going_unit_flag, 0, "keep-going-unit" },
 	{ 'I', string, (byte*)&include_dirs, 0, "include-dir" },
 	{ 'j', number, (byte*)&jobs_nb, (byte*) &optional_jobs_nb, "jobs" },
