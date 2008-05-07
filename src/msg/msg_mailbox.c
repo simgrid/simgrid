@@ -20,30 +20,25 @@ MSG_mailbox_mod_exit(void)
 }
 
 msg_mailbox_t
-MSG_mailbox_new(const char *alias)
-{
-	msg_mailbox_t mailbox = xbt_new0(s_msg_mailbox_t,1);
-	
-	mailbox->tasks = xbt_fifo_new();
-	mailbox->cond = NULL;
-	mailbox->alias = xbt_strdup(alias);
-	mailbox->hostname = NULL;
-	
-	/* add the mbox in the dictionary */
-	xbt_dict_set(msg_mailboxes, alias, mailbox, MSG_mailbox_free);
-	
-	return mailbox;
-}
-
-msg_mailbox_t
 MSG_mailbox_create(const char *alias)
 {
 	msg_mailbox_t mailbox = xbt_new0(s_msg_mailbox_t,1);
 	
 	mailbox->tasks = xbt_fifo_new();
 	mailbox->cond = NULL;
-	mailbox->alias = xbt_strdup(alias);
+        mailbox->alias = alias ? xbt_strdup(alias) : NULL;
 	mailbox->hostname = NULL;
+	
+	return mailbox;
+}
+
+msg_mailbox_t
+MSG_mailbox_new(const char *alias)
+{
+	msg_mailbox_t mailbox = MSG_mailbox_create(alias);
+	
+	/* add the mbox in the dictionary */
+	xbt_dict_set(msg_mailboxes, alias, mailbox, MSG_mailbox_free);
 	
 	return mailbox;
 }

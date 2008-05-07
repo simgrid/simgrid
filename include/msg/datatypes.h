@@ -64,6 +64,8 @@ typedef struct m_task  *m_task_t;
 
 /** @} */
 
+
+
 /* ****************************** Process *********************************** */
 typedef struct simdata_process *simdata_process_t;
 /** @brief Process datatype 
@@ -94,6 +96,19 @@ typedef struct m_process *m_process_t;
    @{ */
 typedef int m_channel_t;
 /** @} */
+
+/* ******************************** Mailbox ************************************ */
+
+typedef struct s_msg_mailbox* msg_mailbox_t;
+/** @brief Mailbox datatype
+    @ingroup m_datatypes_management_details @{ */
+
+msg_mailbox_t MSG_mailbox_create(const char *alias);
+void MSG_mailbox_free(void* mailbox);
+
+
+/** @} */
+
 
 /* ***************************** Error handling ***************************** */
 /** @brief Error handling 

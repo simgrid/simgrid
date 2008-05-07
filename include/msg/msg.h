@@ -165,5 +165,12 @@ MSG_task_send_bounded(m_task_t task, const char* alias, double rate);
 XBT_PUBLIC(int)
 MSG_task_listen_from(const char* alias);
 
+/************************** Task handling ************************************/
+XBT_PUBLIC(MSG_error_t)
+MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t* task, m_host_t host, double timeout);
+
+XBT_PUBLIC(MSG_error_t)
+MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task, double timeout);
+
 SG_END_DECL()
 #endif

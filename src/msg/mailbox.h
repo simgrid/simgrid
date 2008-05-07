@@ -9,9 +9,6 @@ SG_BEGIN_DECL()
 
 #define MAX_ALIAS_NAME	((size_t)260)
 
-/* forward declaration */
-typedef struct s_msg_mailbox* msg_mailbox_t;
-
 /*
  * Initialization of the mailbox module.
  */
