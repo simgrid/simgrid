@@ -1,0 +1,39 @@
+#! ./tesh
+
+# This suite show how to use the suite concept. A suite is specified
+# by the metacommand suite have a description and contains some units.
+
+# declare and define the variable dir
+! testdir=temp_testdir
+
+# delete the temp_testdir if it already exists
+$ rm -rf $testdir
+
+# create the tempory test directory
+$ mkdir $testdir
+
+# enter in the tempory test directory
+$ cd $testdir
+
+$ cd ..
+
+$ rm -rf $testdir
+
+# this is the first suite
+! suite first suite
+! include set-timeout.tesh display how to use the timeout metacommand
+! include set-signal.tesh display how to use the signal metacommand
+# this unit has no description (the file name of the unit will be used)
+! include background.tesh
+
+# this is the second suite
+! suite second suite
+! include cd.tesh
+! include basic.tesh
+! include bg-basic.tesh like basic but used backgrounded commands
+
+# a simple inclusion
+! include catch-return.tesh		
+
+
+

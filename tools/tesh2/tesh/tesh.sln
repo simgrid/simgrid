@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tesh", "tesh.vcproj", "{9CE760B1-56D4-40B3-BF09-9DDE60F3FD37}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cat", "..\w32\Cat\Cat.vcproj", "{5F206E30-FD87-46E5-820A-DE37A2A9DBA0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9CE760B1-56D4-40B3-BF09-9DDE60F3FD37}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9CE760B1-56D4-40B3-BF09-9DDE60F3FD37}.Debug|Win32.Build.0 = Debug|Win32
+		{9CE760B1-56D4-40B3-BF09-9DDE60F3FD37}.Release|Win32.ActiveCfg = Release|Win32
+		{9CE760B1-56D4-40B3-BF09-9DDE60F3FD37}.Release|Win32.Build.0 = Release|Win32
+		{5F206E30-FD87-46E5-820A-DE37A2A9DBA0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5F206E30-FD87-46E5-820A-DE37A2A9DBA0}.Debug|Win32.Build.0 = Debug|Win32
+		{5F206E30-FD87-46E5-820A-DE37A2A9DBA0}.Release|Win32.ActiveCfg = Release|Win32
+		{5F206E30-FD87-46E5-820A-DE37A2A9DBA0}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

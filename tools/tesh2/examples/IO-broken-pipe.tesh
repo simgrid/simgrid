@@ -1,0 +1,37 @@
+
+# TESH autotest: check that the father is protected from broken pipes
+#
+# If not, it breaks sometimes (when the child is scheduled before the
+# father), so we do the test a bunch of times.
+#
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+
+< blablablablablablablablablablablablablablablablablablablabla
+$ pwd>/dev/null
+

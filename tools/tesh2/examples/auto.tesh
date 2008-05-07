@@ -1,0 +1,17 @@
+#! ./tesh
+
+# Includes some auto tests of tesh
+
+! include background.tesh
+! include basic.tesh
+! include bg-basic.tesh
+! include bg-set-signal.tesh
+! include catch-return.tesh
+! include catch-signal.tesh
+! include catch-timeout.tesh
+! include cd.tesh
+#! include IO-broken-pipe.tesh
+! include IO-orders.tesh
+! include set-ignore-output.tesh
+! include set-return.tesh
+! include set-signal.tesh

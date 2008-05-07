@@ -1,0 +1,20 @@
+#! ./tesh
+
+p This is a basic test
+
+< TOTO \
+TUTU
+& Cat
+> TOTO TUTU
+
+p And now, some multilines examples
+
+< a
+< b
+< c
+< d
+& Cat
+> a
+> b
+> c
+> d

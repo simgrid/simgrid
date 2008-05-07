@@ -1,0 +1,22 @@
+#! ./tesh
+
+# This example uses the cd command
+
+$ rm -rf testdir_temp
+$ mkdir testdir_temp
+$ cd testdir_temp
+
+# Check that there is nothing in the current dir (which must be testdir_temp)
+$ ls
+
+# Check that tesh detects properly cd to non-existing directories
+! expect return $ENOENT
+< $ cd toto
+$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
+
+# The next command checks that there is a testdir_temp in the upper directory, 
+# ie that mkdir and cd both worked.
+#$ test -e ../testdir_temp
+
+$ cd ..
+$ rmdir testdir_temp

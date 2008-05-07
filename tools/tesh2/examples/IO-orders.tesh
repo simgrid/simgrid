@@ -1,0 +1,39 @@
+
+p This tests that TESH accepts any order for the input/output
+
+p Order: in, out, cmd
+< < TOTO
+< > TOTO
+< $ Cat
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
+
+p Order: out, in, cmd
+< > TOTO
+< < TOTO
+< $ Cat
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
+
+p Order: out, cmd, in
+< > TOTO
+< $ Cat
+< < TOTO
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
+
+p Order: in, cmd, out
+< < TOTO
+< $ Cat
+< > TOTO
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
+
+p Order: cmd, out, in
+< $ Cat
+< > TOTO
+< < TOTO
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
+
+p Order: cmd, in, out
+< $ Cat
+< < TOTO
+< > TOTO
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
+
