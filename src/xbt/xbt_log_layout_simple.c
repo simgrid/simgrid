@@ -25,19 +25,20 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
 					  const char*fmt,
 					  xbt_log_appender_t app) {
    xbt_strbuff_t buff = xbt_strbuff_new();
+   char loc_buff[256];
    char *p;
    
-   /* Put every static information in the static buffer, and copy them in the dyn one */
-   p = ev->buffer;
-   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"[");
+   /* Put every static information in a static buffer, and copy them in the dyn one */
+   p = loc_buff;
+   p += snprintf(p,256-(p-ev->buffer),"[");
 
    if(strlen(xbt_procname()))
-     p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%s:%s:(%d) ", 
+     p += snprintf(p,256-(p-ev->buffer),"%s:%s:(%d) ", 
 		   gras_os_myname(), xbt_procname(),(*xbt_getpid)());
-   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%f] ", gras_os_time()-begin_of_time);
+   p += snprintf(p,256-(p-ev->buffer),"%f] ", gras_os_time()-begin_of_time);
    if (ev->priority != xbt_log_priority_info)
-     p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%s:%d: ", ev->fileName, ev->lineNum);
-   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "[%s/%s] ", 
+     p += snprintf(p,256-(p-ev->buffer), "%s:%d: ", ev->fileName, ev->lineNum);
+   p += snprintf(p,256-(p-ev->buffer), "[%s/%s] ", 
 		 ev->cat->name, xbt_log_priority_names[ev->priority] );
    
    xbt_strbuff_append(buff,ev->buffer);
