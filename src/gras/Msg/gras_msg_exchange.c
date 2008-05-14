@@ -441,7 +441,7 @@ gras_msg_handle(double timeOut) {
 		 "AND IN SIMGRID (process wasn't killed by an assert)",msg.type->name);
     if (!ran_ok)
       THROW1(mismatch_error,0,
-	     "Message '%s' refused by all registered callbacks", msg.type->name);
+	     "Message '%s' refused by all registered callbacks (maybe your callback misses a 'return 0' at the end)", msg.type->name);
     /* FIXME: gras_datadesc_free not implemented => leaking the payload */
     break;
 
