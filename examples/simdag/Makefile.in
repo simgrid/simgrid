@@ -158,7 +158,6 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
-MD5SUM = @MD5SUM@
 MKDIR_P = @MKDIR_P@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -240,9 +239,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include
 AM_CFLAGS = -g
-EXTRA_DIST = 2clusters.xml \
-             properties/prop.xml
-
+EXTRA_DIST = 2clusters.xml properties/prop.xml $(TESTS)
 CLEANFILES = sd_test.trace
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh metaxml/metaxml_test.tesh

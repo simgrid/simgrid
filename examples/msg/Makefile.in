@@ -201,7 +201,6 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
-MD5SUM = @MD5SUM@
 MKDIR_P = @MKDIR_P@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -284,7 +283,8 @@ top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include
 AM_CFLAGS = -g
 EXTRA_DIST = msg_platform.xml small_platform.xml \
-	sendrecv/platform_sendrecv.xml \
+	small_platform_with_failures.xml jupiter_state.trace \
+	link5_state.trace sendrecv/platform_sendrecv.xml \
 	sendrecv/deployment_sendrecv.xml \
 	suspend/deployment_suspend.xml \
 	masterslave/deployment_masterslave_forwarder.xml \
@@ -292,7 +292,8 @@ EXTRA_DIST = msg_platform.xml small_platform.xml \
 	gtnets/r-n200-f50-s4-2-d.xml gtnets/onelink-p.xml \
 	gtnets/onelink-d.xml gtnets/r-n200-f50-s4-2-p.xml \
 	gtnets/dogbone-d.xml gtnets/dogbone-p.xml \
-	properties/deployment_properties.xml $(am__append_3)
+	priority/deployment_priority.xml \
+	properties/deployment_properties.xml $(am__append_3) $(TESTS)
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = sendrecv/sendrecv_CLM03.tesh \
         sendrecv/sendrecv_Vegas.tesh \

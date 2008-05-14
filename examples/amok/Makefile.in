@@ -189,7 +189,6 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
-MD5SUM = @MD5SUM@
 MKDIR_P = @MKDIR_P@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -279,7 +278,11 @@ AM_CFLAGS = -g
 ###################
 # saturate tests #
 ###################
-EXTRA_DIST = bandwidth/bandwidth.xml saturate/saturate.xml
+
+#########
+# Cruft #
+#########
+EXTRA_DIST = bandwidth/bandwidth.xml saturate/saturate.xml $(TESTS)
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = $(am__append_1) $(am__append_2) $(am__append_3) \
 	$(am__append_4)
@@ -783,10 +786,6 @@ dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
 	@echo
 	@for n in $(DIST_SUBDIRS) ; do if [ x$$n != x. ] ; then $(MAKE) -C $$n dist-files SRCFILE=$(SRCFILE)$$n/ ; fi; done
-
-#########
-# Cruft #
-#########
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

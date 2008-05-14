@@ -135,7 +135,6 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
-MD5SUM = @MD5SUM@
 MKDIR_P = @MKDIR_P@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -220,7 +219,7 @@ nobase_include_HEADERS = \
 	xbt/misc.h \
 	xbt/sysdep.h \
 	xbt/virtu.h \
-	xbt/str.h xbt/strbuff.h \
+	xbt/str.h xbt/strbuff.h xbt/hash.h \
 	xbt/function_types.h \
 	xbt/asserts.h xbt/ex.h \
 	xbt/log.h \

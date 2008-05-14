@@ -51,6 +51,10 @@ extern xbt_test_unit_t _xbt_current_unit;
     void test_split_str(void);
   /* SGU: END FILE */
 
+  /* SGU: BEGIN FILE xbt/xbt_sha.c */
+    void test_crypto_sha(void);
+  /* SGU: END FILE */
+
   /* SGU: BEGIN FILE xbt/config.c */
     void test_config_memuse(void);
     void test_config_validation(void);
@@ -117,6 +121,11 @@ int main(int argc, char *argv[]) {
       suite = xbt_test_suite_by_name("xbt_str","String Handling");
       xbt_test_suite_push(suite, "xbt_str_split_quoted", test_split_quoted,  "test the function xbt_str_split_quoted");
       xbt_test_suite_push(suite, "xbt_str_split_str", test_split_str,  "test the function xbt_str_split_str");
+    /* SGU: END FILE */
+
+    /* SGU: BEGIN FILE xbt/xbt_sha.c */
+      suite = xbt_test_suite_by_name("hash","Various hash functions");
+      xbt_test_suite_push(suite, "sha", test_crypto_sha, "Test of the sha algorithm");
     /* SGU: END FILE */
 
     /* SGU: BEGIN FILE xbt/config.c */
