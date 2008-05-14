@@ -287,6 +287,10 @@ void xbt_queue_shift_timed(xbt_queue_t queue, void* const dst,double delay) {
     }
   }
 
+  if (xbt_dynar_length(queue->data) == 0) {
+     THROW1(timeout_error,0,"Timeout (%f) elapsed, but queue still empty",delay);
+  }
+   
   xbt_dynar_shift(queue->data,dst);
   xbt_cond_signal(queue->not_full);
   xbt_mutex_release(queue->mutex);
