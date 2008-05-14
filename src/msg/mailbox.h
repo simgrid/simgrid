@@ -236,13 +236,6 @@ int
 MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox, m_host_t host);
 
 
-MSG_error_t 
-MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t* task, m_host_t host, double timeout);
-
-
-MSG_error_t 
-MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task, double timeout);
-
 SG_END_DECL()
 
 
