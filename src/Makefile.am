@@ -126,7 +126,7 @@ VERSION_INFO= -version-info 2:0:0
 
 XBT_SRC=\
   \
-  xbt/snprintf.c    xbt/xbt_str.c xbt/xbt_strbuff.c                          \
+  xbt/snprintf.c    xbt/xbt_str.c xbt/xbt_strbuff.c  xbt/xbt_sha.c           \
   xbt/ex.c                                                                   \
   \
   xbt_modinter.h    gras_modinter.h                                          \
@@ -381,11 +381,11 @@ else
 noinst_PROGRAMS=testall
 TEST_CFILES=xbt/cunit.c  xbt/ex.c          \
             xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
-	    xbt/xbt_str.c                      \
+	    xbt/xbt_str.c  xbt/xbt_sha.c                \
             xbt/config.c 
-TEST_UNITS= @builddir@/cunit_unit.c @builddir@/ex_unit.c         \
-            @builddir@/dynar_unit.c @builddir@/dict_unit.c @builddir@/set_unit.c @builddir@/swag_unit.c \
-	    @builddir@/xbt_str_unit.c \
+TEST_UNITS= @builddir@/cunit_unit.c   @builddir@/ex_unit.c         \
+            @builddir@/dynar_unit.c   @builddir@/dict_unit.c @builddir@/set_unit.c @builddir@/swag_unit.c \
+	    @builddir@/xbt_str_unit.c @builddir@/xbt_sha_unit.c\
             @builddir@/config_unit.c 
 
 BUILT_SOURCES=../include/surf/simgrid_dtd.h surf/simgrid_dtd.c \
@@ -408,6 +408,8 @@ CLEANFILES=$(TEST_UNITS)
 @builddir@/ex_unit.c: xbt/ex.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 @builddir@/xbt_str_unit.c: xbt/xbt_str.c
+	@top_srcdir@/tools/sg_unit_extractor.pl $^
+@builddir@/xbt_sha_unit.c: xbt/xbt_sha.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 @builddir@/dynar_unit.c: xbt/dynar.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
