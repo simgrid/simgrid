@@ -1,5 +1,5 @@
 /*
- * MsgException.hpp
+ * BadAllocException.hpp
  *
  * Copyright 2006,2007 Martin Quinson, Malek Cherier           
  * All right reserved. 
@@ -20,32 +20,32 @@ namespace SimGrid
 	namespace Msg
 	{
 		
-		class MsgException : public Exception
+		class BadAllocException : public Exception
 		{
 			public:
 			
 			// Default constructor.
-				MsgException();
+				BadAllocException();
 			
 			// Copy constructor.
-				MsgException(const MsgException& rMsgException);
+				BadAllocException(const BadAllocException& rBadAllocException);
 			
-			// This constructor takes the reason of the exception.
-				MsgException(const char* reason);
+			// This constructor takes the name of the object of the allocation failure.
+				BadAllocException(const char* objectName);
 			
 			// Destructor.
-				virtual ~MsgException();
+				virtual ~BadAllocException();
 				
 			// Operations.
 					
 					// Returns the reason of the exception :
-					// the message "Internal exception `reason'"
+					// the message "Not enough memory to allocate : `object name'"
 					const char* toString(void) const;
 			
 			// Operators.
 				
 				// Assignement.
-				const MsgException& operator = (const MsgException& rMsgException);
+				const BadAllocException& operator = (const BadAllocException& rBadAllocException);
 				
 			private :
 			

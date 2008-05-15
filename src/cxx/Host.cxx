@@ -1,53 +1,52 @@
 #include <Host.hpp>
 
-namespace msg
+namespace SimGrid
 {
-// Default constructor.
+namespace Msg
+{
+
+
 Host::Host()
 {
 	nativeHost = NULL;
 	data = NULL;
 }
 
-// Copy constructor.
 Host::Host(const Host& rHost)
 {
+	this->nativeHost = rHost.nativeHost;
+	this->data = rHost.getData();	
 }
 
-// Destructor.
 Host::~Host()
 {
-	nativeHost = NULL;
+	// NOTHING TODO
 }
 
-// Operations
 
 Host& Host::getByName(const char* hostName)
-throw(HostNotFoundException)
+throw(HostNotFoundException, InvalidParameterException, BadAllocException)
 {
-	m_host_t nativeHost;	// native host.
-	Host* host = NULL;		// wrapper host.
+	// check the parameters
+	if(!hostName)
+		throw InvalidParmeterException("hostName");
+		
+	m_host_t nativeHost = NULL;	// native host.
+	Host* host = NULL;			// wrapper host.
 	
-	/* get the host by name	(the hosts are created during the grid resolution) */
-	nativeHost = MSG_get_host_by_name(name);
-	DEBUG2("MSG gave %p as native host (simdata=%p)",nativeHost,nativeHost->simdata);
-	
-	if(!nativeHost) 
-	{// invalid host name
-		// TODO throw HostNotFoundException
-		return NULL;
-	}
+	if(!(nativeHost = MSG_get_host_by_name(hostName))) 
+		throw HostNotFoundException(hostName);
 	
 	if(!nativeHost->data) 
 	{ // native host not associated yet with  its wrapper
 	
 		// instanciate a new wrapper 
-		host = new Host();
-	
+		if(!(host = new Host())
+			throw BadAllocException(hostName);
+		
 		host->nativeHost = nativeHost; 
 	
 		// the native host data field is set with its wrapper returned 
-		
 		nativeHost->data = (void*)host;
 	}
 	
@@ -84,11 +83,21 @@ Host& Host::currentHost(void)
 	return *host;
 }
 
-int Host::all(Host** hosts)  
+void Host::all(Host*** hosts, int* len) 
+throw(InvalidParameterException, BadAllocException) 
 {
+	/* check the parameters */
+	if(!hosts)
+		throw InvalidParameterException("hosts");
+		
+	if(len < 0)
+		throw InvalidParameterException("len parameter must be positive");
+	
 	int count = xbt_fifo_size(msg_global->host);
 	
-	*hosts = new Host[count];
+	if(*len < count)
+		throw InvalidParameterException("len parameter must be more than the number of installed host\n (use Host::getNumber() to get the number of hosts)");
+	
 	int index;
  	m_host_t nativeHost;
  	Host* host;
@@ -102,16 +111,23 @@ int Host::all(Host** hosts)
 	
 		if(!host) 
 		{
-			host = new Host();
+			if(!(host = new Host())
+			{
+				// release all allocated memory.
+				for(int i = 0; i < index; i++)
+					delete (*(hosts)[i]);
+				
+				throw BadAllocException("to fill the table of the hosts installed on your platform");
+			}
 			
 			host->nativeHost = nativeHost;
 			nativeHost->data = (void*)host;
 		}
 		
-		hosts[index] = host;
+		(*hosts)[index] = host;
   }
 
-  return count;  
+  *len = count;  
 }
 
 
@@ -181,11 +197,6 @@ throw(NativeException)
 		// TODO throw NativeException
 	}
 }
-
-
-
-
- 
 
 void Host::send(const Task& rTask) 
 throw(NativeException)  
@@ -274,4 +285,5 @@ throw(NativeException)
 } 
 
 	
-}
+} // namspace Msg
+} // namespace SimGrid

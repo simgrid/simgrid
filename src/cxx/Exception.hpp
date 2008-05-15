@@ -1,5 +1,5 @@
 /*
- * MsgException.hpp
+ * Exception.hpp
  *
  * Copyright 2006,2007 Martin Quinson, Malek Cherier           
  * All right reserved. 
@@ -10,49 +10,46 @@
  *
  */  
  
-#ifndef MSG_MSGEXCEPTION_HPP
-#define MSG_MSGEXCEPTION_HPP
-
-#include "Exception.hpp"
+#ifndef MSG_EXCEPTION_HPP
+#define MSG_EXCEPTION_HPP
 
 namespace SimGrid
 {
 	namespace Msg
 	{
 		
-		class MsgException : public Exception
+		class Exception
 		{
 			public:
 			
 			// Default constructor.
-				MsgException();
+				Exception();
 			
 			// Copy constructor.
-				MsgException(const MsgException& rMsgException);
+				Exception(const Exception& rException);
 			
 			// This constructor takes the reason of the exception.
-				MsgException(const char* reason);
+				Exception(const char* reason);
 			
 			// Destructor.
-				virtual ~MsgException();
+				virtual ~Exception();
 				
 			// Operations.
 					
-					// Returns the reason of the exception :
-					// the message "Internal exception `reason'"
+					// Returns the reason of the exception.
 					const char* toString(void) const;
 			
 			// Operators.
 				
 				// Assignement.
-				const MsgException& operator = (const MsgException& rMsgException);
+				const Exception& operator = (const Exception& rException);
 				
 			private :
 			
 			// Attributes.
 				
-				// A buffer used to build the message returned by the methode toString().
-				char* reason;
+				// The reason of the exceptions.
+				const char* reason;
 		};
 		
 		
@@ -61,4 +58,4 @@ namespace SimGrid
 }// namespace SimGrid
 
 
-#endif // !MSG_MSGEXCEPTION_HPP
+#endif // !MSG_EXCEPTION_HPP

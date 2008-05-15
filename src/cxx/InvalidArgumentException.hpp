@@ -1,5 +1,5 @@
 /*
- * MsgException.hpp
+ * InvalidArgumentException.hpp
  *
  * Copyright 2006,2007 Martin Quinson, Malek Cherier           
  * All right reserved. 
@@ -10,8 +10,8 @@
  *
  */  
  
-#ifndef MSG_MSGEXCEPTION_HPP
-#define MSG_MSGEXCEPTION_HPP
+#ifndef MSG_INVALIDARGUMENTEXCEPTION_HPP
+#define MSG_INVALIDARGUMENTEXCEPTION_HPP
 
 #include "Exception.hpp"
 
@@ -20,32 +20,32 @@ namespace SimGrid
 	namespace Msg
 	{
 		
-		class MsgException : public Exception
+		class InvalidArgumentException : public Exception
 		{
 			public:
 			
 			// Default constructor.
-				MsgException();
+				InvalidArgumentException();
 			
 			// Copy constructor.
-				MsgException(const MsgException& rMsgException);
+				InvalidArgumentException(const InvalidArgumentException& rInvalidArgumentException);
 			
-			// This constructor takes the reason of the exception.
-				MsgException(const char* reason);
+			// This constructor takes the name of the invalid argument.
+				InvalidArgumentException(const char* name);
 			
 			// Destructor.
-				virtual ~MsgException();
+				virtual ~InvalidArgumentException();
 				
 			// Operations.
 					
 					// Returns the reason of the exception :
-					// the message "Internal exception `reason'"
+					// the message "Invalid argument `argument name'"
 					const char* toString(void) const;
 			
 			// Operators.
 				
 				// Assignement.
-				const MsgException& operator = (const MsgException& rMsgException);
+				const InvalidArgumentException& operator = (const InvalidArgumentException& rInvalidArgumentException);
 				
 			private :
 			
@@ -61,4 +61,4 @@ namespace SimGrid
 }// namespace SimGrid
 
 
-#endif // !MSG_MSGEXCEPTION_HPP
+#endif // !MSG_INVALIDARGUMENTEXCEPTION_HPP

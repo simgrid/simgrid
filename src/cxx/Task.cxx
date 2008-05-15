@@ -174,10 +174,239 @@ throw(NativeException)
 	}	
 }
 
-void send(void) 
+void Task::send(void) 
 throw(NativeException)
 {
-}			
+	MSG_error_t rv;
+	
+	char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+	sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+		
+		
+
+	rv = MSG_task_send_with_timeout(nativeTask, alias, -1.0);
+
+	free(alias)
+
+	if(MSG_OK != rv)
+	{
+		// TODO throw the NativeException
+	}
+}
+
+
+void Task::send(const char* alias) 
+throw(NativeException)
+{
+
+	if(MSG_OK != MSG_task_send_with_timeout(nativeTask, alias, -1.0))
+	{
+		// TODO throw the NativeException
+	}
+}
+
+void Task::send(double timeout) 
+throw(NativeException)
+{
+	MSG_error_t rv;
+	
+	char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+	sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+		
+		
+
+	rv = MSG_task_send_with_timeout(nativeTask, alias, timeout);
+
+	free(alias)
+
+	if(MSG_OK != rv)
+	{
+		// TODO throw the NativeException
+	}
+}	
+
+void Task::send(const char* alias, double timeout) 
+throw(NativeException)
+{
+	if(MSG_OK != MSG_task_send_with_timeout(nativeTask, alias, timeout))
+	{
+		// TODO throw the NativeException
+	}
+}
+
+void Task::sendBounded(double maxRate) 
+throw(NativeException)
+{
+	MSG_error_t rv;
+	
+	char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+	sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+	
+	rv = MSG_task_send_bounded(nativeTask, alias, maxRate);
+	
+	free(alias);
+	
+	
+	
+	if(MSG_OK != rv)
+	{
+		// TODO throw the NativeException
+	}
+}
+
+void Task::sendBounded(const char* alias, double maxRate) 
+throw(NativeException)
+{
+	if(MSG_OK != MSG_task_send_bounded(nativeTask, alias, maxRate))
+	{
+		// TODO throw the NativeException
+	}
+}
+
+Task& Task::receive(void) 
+throw(NativeException)
+{
+	MSG_error_t rv;
+	
+	char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+	sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+		
+	m_task_t nativeTask = NULL;
+	
+	rv = MSG_task_receive_ext(&nativeTask, alias, -1.0, NULL);	
+
+	free(alias);
+	
+	if(MSG_OK != rv) 
+	{
+		// TODO thow NativeException
+		return NULL;
+	}
+
+	return (*((Task*)nativeTask->data));
+}
+
+Task& Task::receive(const char* alias) 
+throw(NativeException)
+{
+	m_task_t nativeTask = NULL;
+	
+	if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, -1.0, NULL)) 
+	{
+		// TODO thow NativeException
+		return NULL;
+	}
+
+	return (*((Task*)nativeTask->data));
+}
+
+Task& Task::receive(const char* alias, double timeout) 
+throw(NativeException)
+{
+	m_task_t nativeTask = NULL;
+	
+	if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, timeout, NULL)) 
+	{
+		// TODO thow NativeException
+		return NULL;
+	}
+
+	return (*((Task*)nativeTask->data));
+}
+
+Task& Task::receive(const char* alias, const Host& rHost) 
+throw(NativeException)
+{
+	m_task_t nativeTask = NULL;
+	
+	
+	if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, -1.0, rHost.nativeHost)) 
+	{
+		// TODO thow NativeException
+		return NULL;
+	}
+
+	return (*((Task*)nativeTask->data));
+}	
+
+Task& Task::receive(const char* alias, double timeout, const Host& rHost) 
+throw(NativeException)
+{
+	m_task_t nativeTask = NULL;
+	
+	
+	if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, timeout, rHost.nativeHost)) 
+	{
+		// TODO thow NativeException
+		return NULL;
+	}
+
+	return (*((Task*)nativeTask->data));
+}
+
+bool Task::listen(void) 
+throw(NativeException)
+{
+	int rv;
+	
+	char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+	sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+		
+	rv = MSG_task_listen(alias);
+	
+	free(alias);
+	
+	return (bool)rv;
+}	
+
+bool Task::listen(const char* alias) 
+throw(NativeException)
+{
+	return (bool)MSG_task_listen(alias);
+}
+
+bool Task::listenFrom(void) 
+throw(NativeException)
+{
+	int rv;
+	
+	char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+	sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+	
+	rv = MSG_task_listen_from(alias);
+	
+	free(alias);
+	
+	return 	(int)rv;
+}	
+
+bool Task::listenFrom(const char* alias) 
+throw(NativeException)
+{
+	return (bool)MSG_task_listen_from(alias);
+	
+}
+
+bool Task::listenFromHost(const Host& rHost) 
+throw(NativeException)
+{
+	int rv;
+	
+	char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+	sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+	
+	rv = MSG_task_listen_from_host(alias, rHost.nativeHost);
+	
+	free(alias);
+	
+	return (bool)rv;
+}
+	
+bool Task::listenFromHost(const char* alias, const Host& rHost) 
+throw(NativeException)
+{
+	return (bool)MSG_task_listen_from_host(alias, rHost.nativeHost);
+}																									
 
 }
 

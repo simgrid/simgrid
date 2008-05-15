@@ -1,5 +1,5 @@
 /*
- * MsgException.hpp
+ * HostNotFoundException.hpp
  *
  * Copyright 2006,2007 Martin Quinson, Malek Cherier           
  * All right reserved. 
@@ -10,8 +10,8 @@
  *
  */  
  
-#ifndef MSG_MSGEXCEPTION_HPP
-#define MSG_MSGEXCEPTION_HPP
+#ifndef MSG_HOSTNOTFOUNDEXCEPTION_HPP
+#define MSG_HOSTNOTFOUNDEXCEPTION_HPP
 
 #include "Exception.hpp"
 
@@ -20,32 +20,32 @@ namespace SimGrid
 	namespace Msg
 	{
 		
-		class MsgException : public Exception
+		class HostNotFoundException : public Exception
 		{
 			public:
 			
 			// Default constructor.
-				MsgException();
+				HostNotFoundException();
 			
 			// Copy constructor.
-				MsgException(const MsgException& rMsgException);
+				HostNotFoundException(const HostNotFoundException& rHostNotFoundException);
 			
-			// This constructor takes the reason of the exception.
-				MsgException(const char* reason);
+			// This constructor takes the name of the host not found.
+				HostNotFoundException(const char* name);
 			
 			// Destructor.
-				virtual ~MsgException();
+				virtual ~HostNotFoundException();
 				
 			// Operations.
 					
 					// Returns the reason of the exception :
-					// the message "Internal exception `reason'"
+					// the message "Host not found `host name'"
 					const char* toString(void) const;
 			
 			// Operators.
 				
 				// Assignement.
-				const MsgException& operator = (const MsgException& rMsgException);
+				const HostNotFoundException& operator = (const HostNotFoundException& rHostNotFoundException);
 				
 			private :
 			
@@ -61,4 +61,4 @@ namespace SimGrid
 }// namespace SimGrid
 
 
-#endif // !MSG_MSGEXCEPTION_HPP
+#endif // !MSG_HOSTNOTFOUNDEXCEPTION_HPP

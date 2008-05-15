@@ -5,7 +5,7 @@
 
 // Compilation C++ recquise
 #ifndef __cplusplus
-	#error object.hpp requires C++ compilation (use a .cxx suffix)
+	#error Object.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
 #include <stdlib.h>
@@ -35,7 +35,7 @@ namespace msg
                                 { return MSG_GET_CLASS(class_name); } \
 		
 		// CreateObject implementation.	
-		#define HX_IMPLEMENT_DYNAMIC(class_name, base_class_name) \
+		#define MSG_IMPLEMENT_DYNAMIC(class_name, base_class_name) \
 			Object* class_name::createObject() \
 				{ return (Object*)(new class_name); } \
 			DeclaringClass _declaringClass_##class_name(MSG_GET_CLASS(class_name)); \
