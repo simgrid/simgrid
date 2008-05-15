@@ -419,7 +419,7 @@ SD_task_t* SD_simulate(double how_long)
   changed_tasks[0] = NULL;
 
   if (first_time) {
-    surf_solve(); /* Takes traces into account. Returns 0.0 */
+    surf_presolve(); /* Takes traces into account */
     first_time = 0;
   }
 

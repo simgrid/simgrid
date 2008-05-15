@@ -168,6 +168,7 @@ MSG_error_t MSG_main(void)
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
+  SIMIX_init();
 
   //surf_solve(); /* Takes traces into account. Returns 0.0 */
   /* xbt_fifo_size(msg_global->process_to_run) */

@@ -454,20 +454,14 @@ void surf_exit(void)
   xbt_exit();
 }
 
-double surf_solve(void)
-{
-  static int first_run = 1;
-
-  double min = -1.0;
+void surf_presolve(void) {
   double next_event_date = -1.0;
-  double model_next_action_end = -1.0;
+  tmgr_trace_event_t event = NULL;
   double value = -1.0;
   surf_model_object_t model_obj = NULL;
   surf_model_t model = NULL;
-  tmgr_trace_event_t event = NULL;
   unsigned int iter;
-
-  if (first_run) {
+   
     DEBUG0
 	("First Run! Let's \"purge\" events and put models in the right state");
     while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
@@ -484,9 +478,18 @@ double surf_solve(void)
     xbt_dynar_foreach(model_list, iter, model) {
       model->common_private->update_actions_state(NOW, 0.0);
     }
-    first_run = 0;
-    return 0.0;
-  }
+}
+
+double surf_solve(void)
+{
+  double min = -1.0;
+  double next_event_date = -1.0;
+  double model_next_action_end = -1.0;
+  double value = -1.0;
+  surf_model_object_t model_obj = NULL;
+  surf_model_t model = NULL;
+  tmgr_trace_event_t event = NULL;
+  unsigned int iter;
 
   min = -1.0;
 

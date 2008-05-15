@@ -314,6 +314,15 @@ double SIMIX_get_clock(void)
 }
 
 /**
+ * 	\brief Finish the simulation initialization 
+ * 
+ *      Must be called before the first call to SIMIX_solve()
+ */
+void SIMIX_init(void) {
+    surf_presolve();
+}
+
+/**
  * 	\brief Does a turn of the simulation
  *
  *	Executes a step in the surf simulation, adding to the two lists all the actions that finished on this turn. Schedules all processus in the process_to_run list. 	
@@ -328,16 +337,12 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
   unsigned int iter;
   double elapsed_time = 0.0;
   static int state_modifications = 1;
-  static int first = 1;
 
   xbt_context_empty_trash();
   if (xbt_swag_size(simix_global->process_to_run) && (elapsed_time > 0)) {
     DEBUG0("**************************************************");
   }
-  if (first) {
-    surf_solve();		/* Takes traces into account. Returns 0.0 */
-    first = 0;
-  }
+ 
   while ((process = xbt_swag_extract(simix_global->process_to_run))) {
     DEBUG2("Scheduling %s on %s",
 	   process->name, process->simdata->smx_host->name);

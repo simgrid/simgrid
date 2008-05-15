@@ -1,5 +1,8 @@
 /* src/gras_config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Arguments passed to the configure script */
+#undef AC_CONFIGURE_ARGS
+
 /* Path to the addr2line tool */
 #undef ADDR2LINE
 

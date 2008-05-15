@@ -29,6 +29,7 @@ XBT_PUBLIC(xbt_main_func_t) SIMIX_get_registered_function(const char *name);
 XBT_PUBLIC(void) SIMIX_launch_application(const char *file);
 
 XBT_PUBLIC(double) SIMIX_get_clock(void);
+XBT_PUBLIC(void) SIMIX_init(void);
 XBT_PUBLIC(double) SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed);
 
 /* Timer functions */

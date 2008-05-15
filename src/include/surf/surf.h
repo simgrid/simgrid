@@ -537,6 +537,13 @@ XBT_PUBLIC_DATA(xbt_dynar_t)  model_list;
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);	/* initialize common structures */
 
+/** \brief Finish simulation initialization
+ *  \ingroup SURF_simulation
+ *
+ *  This function must be called before the first call to surf_solve()
+ */
+XBT_PUBLIC(void) surf_presolve(void);
+
 /** \brief Performs a part of the simulation
  *  \ingroup SURF_simulation
  *  \return the elapsed time, or -1.0 if no event could be executed

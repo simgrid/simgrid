@@ -217,6 +217,7 @@ void gras_main() {
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
+  SIMIX_init();
 
   while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
     while ( (action = xbt_fifo_pop(actions_failed)) ) {
