@@ -55,6 +55,7 @@ catch(HostNotFoundException e)
 #include <InvalidArgumentException.hpp>
 #include <BadAllocException.hpp>
 #include <HostNotFoundException.hpp>
+#include <MsgException.hpp>
 
 // namespace SimGrid::Msg
 namespace SimGrid
@@ -62,7 +63,7 @@ namespace SimGrid
 	namespace Msg
 	{
 		// Declaration of the class SimGrid::Msg::Host.
-		class Host
+		class Host // final class.
 		{
 			// Desable the default constructor.
 			// The best way to get an host instance is to use the static method Host::getByName().
@@ -185,53 +186,222 @@ namespace SimGrid
 				 */ 
 				static void all(Host*** hosts /*in|out*/, int* len /*in|out*/);
 				
-				
+				/*! \brief Host::getName() - This method return the name of the Msg host object.
+				 *
+				 * \return			The name of the host object.
+				 */
 				const char* getName(void) const;
 				
+				/*! \brief Host::setData() - Set the user data of an host object.
+				 *
+				 * \param data		The user data to set.
+				 */
 				void setData(void* data);
 				
-				// Getters/setters
-				
+				/*! \brief Host::getData() - Get the user data of a host object.
+				 *
+				 * \return			The user data of the host object.
+				 */
 				void* getData(void) const;
 				
-				int Host::getRunningTaskNumber(void) const;
-				
-				double getSpeed(void) const;
-				
+				/*! \brief Host::hasData() - Test if an host object has some data.
+				 *
+				 * \return			This method returns true if the host object has some user data.
+				 *					Otherwise the method returns false.
+				 */
 				bool hasData(void) const;
 				
+				/*! \brief Host::getRunningTaskNumber() - returns the number of tasks currently running on a host.
+				 *
+				 * \return			The number of task currently running of the host object.
+				 *
+	 			 * \remark			The external load is not taken in account.
+	 			 */
+				int getRunningTaskNumber(void) const;
+				
+				/*! \brief Host::getSpeed() - returns the speed of the processor of a host,
+				 * regardless of the current load of the machine.
+				 *
+				 * \return			The speed of the processor of the host in flops.
+				 */ 
+				double getSpeed(void) const;
+				
+				/*! \brief Host::isAvailable - tests if an host is availabled.
+				 * 
+				 * \return			Is the host is availabled the method returns
+				 *					true. Otherwise the method returns false.
+				 */ 
 				bool isAvailble(void) const;
 				
+				/* ! \brief Host::put() - put a task on the given channel of a host .
+				 *
+				 * \param channel	The channel where to put the task.
+				 * \param rTask		A refercence to the task object containing the native task to
+				 *					put on the channel specified by the parameter channel.
+				 *
+				 * \return			If successful the task is puted on the specified channel. Otherwise
+				 *					the method throws one of the exceptions described below.
+				 *
+				 * \exception		[MsgException] 				if an internal error occurs.
+				 *					[InvalidParameterException]	if the value of the channel specified as
+				 *												parameter is negative.
+				 */
 				void put(int channel, const Task& rTask)
-				throw(NativeException);
+				throw(MsgException, InvalidParameterException);
 				
+				/* ! \brief Host::put() - put a task on the given channel of a host object (waiting at most timeout seconds).
+				 *
+				 * \param channel	The channel where to put the task.
+				 * \param rTask		A refercence to the task object containing the native task to
+				 *					put on the channel specified by the parameter channel.
+				 * \param timeout	The timeout in seconds.
+				 *
+				 * \return			If successful the task is puted on the specified channel. Otherwise
+				 *					the method throws one of the exceptions described below.
+				 *
+				 * \exception		[MsgException] 				if an internal error occurs.
+				 *					[InvalidParameterException]	if the value of the channel specified as
+				 *												parameter is negative or if the timeout value
+				 *												is less than zero and différent of -1.
+				 *
+				 * \remark			To specify no timeout set the timeout value with -1.0.
+				 */
 				void put(int channel, Task task, double timeout) 
-				throw(NativeException);
+				throw(MsgException, InvalidParameterException);
 				
+				/* ! \brief Host::putBounded() - put a task on the given channel of a host object (capping the emission rate to maxrate).
+				 *
+				 * \param channel	The channel where to put the task.
+				 * \param rTask		A refercence to the task object containing the native task to
+				 *					put on the channel specified by the parameter channel.
+				 * \param maxRate	The maximum rate.
+				 *
+				 * \return			If successful the task is puted on the specified channel. Otherwise
+				 *					the method throws one of the exceptions described below.
+				 *
+				 * \exception		[MsgException] 				if an internal error occurs.
+				 *					[InvalidParameterException]	if the value of the channel specified as
+				 *												parameter is negative or if the maxRate parameter value
+				 *												is less than zero and différent of -1.0.
+				 *
+				 * \remark			To specify no rate set the maxRate parameter value with -1.0.
+				 */
 				void Host::putBounded(int channel, const Task& rTask, double maxRate) 
-				throw(NativeException);
+				throw(MsgException, InvalidParameterException);
 				
-				
+				/* ! brief Host::send() - sends the given task to mailbox identified by the default alias.
+				 *
+				 * \param rTask		A reference to the task object containing the native msg task to send.
+				 *
+				 * \return			If successful the task is sended to the default mailbox. Otherwise the
+				 *					method throws one of the exceptions described below.
+				 *
+				 * \exception		[BadAllocException]			if there is not enough memory to allocate
+				 *												the default alias variable.
+				 *					[MsgException]				if an internal error occurs.
+				 */
 				void send(const Task& rTask) 
-				throw(NativeException);
+				throw(BadAllocException, MsgException);
 				
+				/* ! brief Host::send() - sends the given task to mailbox identified by the specified alias parameter.
+				 *
+				 * \param rTask		A reference to the task object containing the native msg task to send.
+				 * \param alias		The alias of the mailbox where to send the task.
+				 *
+				 * \return			If successful the task is sended to the default mailbox. Otherwise the
+				 *					method throws one of the exceptions described below.
+				 *
+				 * \exception		[InvalidParameterException]	if alias parameter is invalid (NULL).
+				 *					[BadAllocException]			if there is not enough memory to allocate
+				 *												the default alias variable.
+				 *					[MsgException]				if an internal error occurs.
+				 */
 				void send(const char* alias, const Task& rTask) 
-				throw(NativeException);
+				throw(InvalidParameterException, BadAllocException, MsgException);
 				
+				/* ! brief Host::send() - sends the given task to mailbox identified by the default alias
+				 *  (waiting at most timeout seconds).
+				 *
+				 * \param rTask		A reference to the task object containing the native msg task to send.
+				 * \param timeout	The timeout value to wait for.
+				 *
+				 * \return			If successful the task is sended to the default mailbox. Otherwise the
+				 *					method throws one of the exceptions described below.
+				 *
+				 * \exception		[BadAllocException]			if there is not enough memory to allocate
+				 *												the default alias variable.
+				 *					[InvalidParameterException]	if the timeout value is negative and different of
+				 *												-1.0.			
+				 *					[MsgException]				if an internal error occurs.
+				 *
+				 * \remark			To specify no timeout set the timeout value with -1.0 or use the previous 
+				 *					version of this method.
+				 *
+				 */
 				void send(const Task& rTask, double timeout) 
 				throw(NativeException);
 				
+				/* ! brief Host::send() - sends the given task to mailbox identified by the parameter alias
+				 *  (waiting at most timeout seconds).
+				 *
+				 * \param alias		The alias of the mailbox to send the task.
+				 * \param rTask		A reference to the task object containing the native msg task to send.
+				 * \param timeout	The timeout value to wait for.
+				 *
+				 * \return			If successful the task is sended to the default mailbox. Otherwise the
+				 *					method throws one of the exceptions described below.
+				 *
+				 * \exception		[InvalidParameterException]	if the timeout value is negative and different of
+				 *												-1.0 or if the alias parameter is invalid (NULL).			
+				 *					[MsgException]				if an internal error occurs.
+				 *
+				 * \remark			To specify no timeout set the timeout value with -1.0 or use the previous 
+				 *					version of this method.
+				 *
+				 */
 				void send(const char* alias, const Task& rTask, double timeout) 
-				throw(NativeException);
+				throw(InvalidParameterException, MsgException);
 				
+				/* ! brief Host::sendBounded() - sends the given task to mailbox associated to the default alias
+				 *  (capping the emission rate to maxRate).
+				 *
+				 * \param rTask		A reference to the task object containing the native msg task to send.
+				 * \param maxRate	The maximum rate value.
+				 *
+				 * \return			If successful the task is sended to the default mailbox. Otherwise the
+				 *					method throws one of the exceptions described below.
+				 *
+				 * \exception		[InvalidParameterException]	if the maximum rate value is negative and different of
+				 *												-1.0.			
+				 *					[MsgException]				if an internal error occurs.
+				 *					[BadAllocException]			if there is not enough memory to allocate
+				 *												the default alias variable.
+				 *
+				 * \remark			To specify no rate set its value with -1.0.
+				 *
+				 */
 				void sendBounded(const Task& rTask, double maxRate) 
-				throw(NativeException);
+				throw(InvalidParameterException, BadAllocException, MsgException);
 				
+				/* ! brief Host::sendBounded() - sends the given task to mailbox identified by the parameter alias
+				 *  (capping the emission rate to maxRate).
+				 *
+				 * \param alias		The alias of the mailbox where to send the task.
+				 * \param rTask		A reference to the task object containing the native msg task to send.
+				 * \param maxRate	The maximum rate value.
+				 *
+				 * \return			If successful the task is sended to the default mailbox. Otherwise the
+				 *					method throws one of the exceptions described below.
+				 *
+				 * \exception		[InvalidParameterException]	if the maximum rate value is negative and different of
+				 *												-1.0 or if the alias parameter is invalid (NULL).			
+				 *					[MsgException]				if an internal error occurs.
+				 *
+				 * \remark			To specify no rate set its value with -1.0.
+				 *
+				 */
 				void sendBounded(const char* alias, const Task& rTask, double maxRate) 
-				throw(NativeException);
-				
-			 
-			
+				throw(InvalidParameterException, MsgException);
 			
 			protected:
 			// Attributes.
@@ -241,7 +411,7 @@ namespace SimGrid
 				 * It is set automaticatly during the call of the static 
 				 * method Host::getByName().
 				 *
-				 * @see				Host::getByName().
+				 * \see				Host::getByName().
 				 */ 
 				m_host_t nativeHost;
 			
