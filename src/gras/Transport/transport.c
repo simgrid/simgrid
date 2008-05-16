@@ -301,9 +301,8 @@ gras_socket_client_ext(const char *host,
 }
 
 /**
- * gras_socket_server:
- *
- * Opens a server socket and make it ready to be listened to.
+ * @brief Opens a server socket and make it ready to be listened to.
+ * 
  * In real life, you'll get a TCP socket.
  */
 gras_socket_t
