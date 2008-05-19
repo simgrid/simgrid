@@ -304,11 +304,12 @@ static surf_action_t execute(void *cpu, double size)
 static surf_action_t action_sleep(void *cpu, double duration)
 {
   surf_action_cpu_Cas01_t action = NULL;
-
+  duration=MAX(duration,MAXMIN_PRECISION);
   XBT_IN2("(%s,%g)", ((cpu_Cas01_t) cpu)->name, duration);
   action = (surf_action_cpu_Cas01_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;
+
   lmm_update_variable_weight(cpu_maxmin_system, action->variable, 0.0);
   XBT_OUT;
   return (surf_action_t) action;
