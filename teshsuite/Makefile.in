@@ -52,6 +52,8 @@ noinst_PROGRAMS = xbt/log_large_test$(EXEEXT) \
 	gras/msg_handle/msg_handle_simulator$(EXEEXT) \
 	gras/empty_main/empty_main_function$(EXEEXT) \
 	gras/empty_main/empty_main_simulator$(EXEEXT) \
+	gras/small_sleep/small_sleep_function$(EXEEXT) \
+	gras/small_sleep/small_sleep_simulator$(EXEEXT) \
 	simdag/network/test_reinit_costs$(EXEEXT) \
 	simdag/basic0$(EXEEXT) simdag/basic1$(EXEEXT) \
 	simdag/basic2$(EXEEXT) simdag/basic3$(EXEEXT) \
@@ -117,6 +119,16 @@ am_gras_msg_handle_msg_handle_simulator_OBJECTS =  \
 gras_msg_handle_msg_handle_simulator_OBJECTS =  \
 	$(am_gras_msg_handle_msg_handle_simulator_OBJECTS)
 gras_msg_handle_msg_handle_simulator_DEPENDENCIES = $(LDADD_SG)
+am_gras_small_sleep_small_sleep_function_OBJECTS =  \
+	small_sleep.$(OBJEXT) _small_sleep_function.$(OBJEXT)
+gras_small_sleep_small_sleep_function_OBJECTS =  \
+	$(am_gras_small_sleep_small_sleep_function_OBJECTS)
+gras_small_sleep_small_sleep_function_DEPENDENCIES = $(LDADD_RL)
+am_gras_small_sleep_small_sleep_simulator_OBJECTS =  \
+	small_sleep.$(OBJEXT) _small_sleep_simulator.$(OBJEXT)
+gras_small_sleep_small_sleep_simulator_OBJECTS =  \
+	$(am_gras_small_sleep_small_sleep_simulator_OBJECTS)
+gras_small_sleep_small_sleep_simulator_DEPENDENCIES = $(LDADD_SG)
 am_simdag_basic0_OBJECTS = basic0.$(OBJEXT)
 simdag_basic0_OBJECTS = $(am_simdag_basic0_OBJECTS)
 simdag_basic0_DEPENDENCIES = $(LDADD_SG)
@@ -210,6 +222,8 @@ SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(gras_msg_handle_msg_handle_client_SOURCES) \
 	$(gras_msg_handle_msg_handle_server_SOURCES) \
 	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
+	$(gras_small_sleep_small_sleep_function_SOURCES) \
+	$(gras_small_sleep_small_sleep_simulator_SOURCES) \
 	$(simdag_basic0_SOURCES) $(simdag_basic1_SOURCES) \
 	$(simdag_basic2_SOURCES) $(simdag_basic3_SOURCES) \
 	$(simdag_basic4_SOURCES) $(simdag_basic5_SOURCES) \
@@ -231,6 +245,8 @@ DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(gras_msg_handle_msg_handle_client_SOURCES) \
 	$(gras_msg_handle_msg_handle_server_SOURCES) \
 	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
+	$(gras_small_sleep_small_sleep_function_SOURCES) \
+	$(gras_small_sleep_small_sleep_simulator_SOURCES) \
 	$(simdag_basic0_SOURCES) $(simdag_basic1_SOURCES) \
 	$(simdag_basic2_SOURCES) $(simdag_basic3_SOURCES) \
 	$(simdag_basic4_SOURCES) $(simdag_basic5_SOURCES) \
@@ -387,7 +403,7 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_srcdir)/src/include
-AM_CFLAGS = -g
+AM_CFLAGS = -g $(INCLUDES)
 
 # Declare all the variables to empty, so that each test set can add
 # their content to them
@@ -398,6 +414,7 @@ EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
 	gras/datadesc/datadesc.big32_2 \
 	gras/datadesc/mk_datadesc_structs.pl \
 	gras/msg_handle/msg_handle.xml gras/empty_main/empty_main.xml \
+	gras/small_sleep/small_sleep.xml \
 	simdag/network/platform_2p_1sl.xml simdag/basic_platform.xml \
 	simdag/network/p2p/platform_2p_1sl.xml \
 	simdag/network/p2p/platform_2p_1fl.xml \
@@ -415,10 +432,11 @@ TESTS = xbt/log_large_test.tesh xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_r_big32_8_4.tesh \
 	gras/datadesc/datadesc_r_big32_2.tesh $(am__append_1) \
 	$(am__append_2) gras/empty_main/test_rl \
-	gras/empty_main/test_sg simdag/network/test_reinit_costs.tesh \
-	simdag/basic0.tesh simdag/basic1.tesh simdag/basic2.tesh \
-	simdag/basic3.tesh simdag/basic4.tesh simdag/basic5.tesh \
-	simdag/basic6.tesh simdag/network/p2p/test_latency1.tesh \
+	gras/empty_main/test_sg gras/small_sleep/test_sg \
+	simdag/network/test_reinit_costs.tesh simdag/basic0.tesh \
+	simdag/basic1.tesh simdag/basic2.tesh simdag/basic3.tesh \
+	simdag/basic4.tesh simdag/basic5.tesh simdag/basic6.tesh \
+	simdag/network/p2p/test_latency1.tesh \
 	simdag/network/p2p/test_latency2.tesh \
 	simdag/network/p2p/test_latency3.tesh \
 	simdag/network/p2p/test_latency_bound.tesh \
@@ -448,6 +466,10 @@ gras_empty_main_empty_main_simulator_SOURCES = gras/empty_main/empty_main.c gras
 gras_empty_main_empty_main_function_SOURCES = gras/empty_main/empty_main.c gras/empty_main/_empty_main_function.c
 gras_empty_main_empty_main_simulator_LDADD = $(LDADD_SG)
 gras_empty_main_empty_main_function_LDADD = $(LDADD_RL)
+gras_small_sleep_small_sleep_simulator_SOURCES = gras/small_sleep/small_sleep.c gras/small_sleep/_small_sleep_simulator.c
+gras_small_sleep_small_sleep_function_SOURCES = gras/small_sleep/small_sleep.c gras/small_sleep/_small_sleep_function.c
+gras_small_sleep_small_sleep_simulator_LDADD = $(LDADD_SG)
+gras_small_sleep_small_sleep_function_LDADD = $(LDADD_RL)
 simdag_network_test_reinit_costs_SOURCES = simdag/network/test_reinit_costs.c
 simdag_network_test_reinit_costs_LDADD = $(LDADD_SG)
 simdag_basic0_SOURCES = simdag/basic0.c
@@ -549,6 +571,15 @@ gras/msg_handle/msg_handle_server$(EXEEXT): $(gras_msg_handle_msg_handle_server_
 gras/msg_handle/msg_handle_simulator$(EXEEXT): $(gras_msg_handle_msg_handle_simulator_OBJECTS) $(gras_msg_handle_msg_handle_simulator_DEPENDENCIES) gras/msg_handle/$(am__dirstamp)
 	@rm -f gras/msg_handle/msg_handle_simulator$(EXEEXT)
 	$(LINK) $(gras_msg_handle_msg_handle_simulator_OBJECTS) $(gras_msg_handle_msg_handle_simulator_LDADD) $(LIBS)
+gras/small_sleep/$(am__dirstamp):
+	@$(MKDIR_P) gras/small_sleep
+	@: > gras/small_sleep/$(am__dirstamp)
+gras/small_sleep/small_sleep_function$(EXEEXT): $(gras_small_sleep_small_sleep_function_OBJECTS) $(gras_small_sleep_small_sleep_function_DEPENDENCIES) gras/small_sleep/$(am__dirstamp)
+	@rm -f gras/small_sleep/small_sleep_function$(EXEEXT)
+	$(LINK) $(gras_small_sleep_small_sleep_function_OBJECTS) $(gras_small_sleep_small_sleep_function_LDADD) $(LIBS)
+gras/small_sleep/small_sleep_simulator$(EXEEXT): $(gras_small_sleep_small_sleep_simulator_OBJECTS) $(gras_small_sleep_small_sleep_simulator_DEPENDENCIES) gras/small_sleep/$(am__dirstamp)
+	@rm -f gras/small_sleep/small_sleep_simulator$(EXEEXT)
+	$(LINK) $(gras_small_sleep_small_sleep_simulator_OBJECTS) $(gras_small_sleep_small_sleep_simulator_LDADD) $(LIBS)
 simdag/$(am__dirstamp):
 	@$(MKDIR_P) simdag
 	@: > simdag/$(am__dirstamp)
@@ -636,6 +667,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_msg_handle_client.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_msg_handle_server.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_msg_handle_simulator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_small_sleep_function.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_small_sleep_simulator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic0.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic2.Po@am__quote@
@@ -649,6 +682,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log_large_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_log_crashtest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/small_sleep.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_comp_only_par.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_comp_only_seq.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_intra_all2all.Po@am__quote@
@@ -806,6 +840,48 @@ _msg_handle_simulator.obj: gras/msg_handle/_msg_handle_simulator.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/_msg_handle_simulator.c' object='_msg_handle_simulator.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _msg_handle_simulator.obj `if test -f 'gras/msg_handle/_msg_handle_simulator.c'; then $(CYGPATH_W) 'gras/msg_handle/_msg_handle_simulator.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/_msg_handle_simulator.c'; fi`
+
+small_sleep.o: gras/small_sleep/small_sleep.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT small_sleep.o -MD -MP -MF $(DEPDIR)/small_sleep.Tpo -c -o small_sleep.o `test -f 'gras/small_sleep/small_sleep.c' || echo '$(srcdir)/'`gras/small_sleep/small_sleep.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/small_sleep.Tpo $(DEPDIR)/small_sleep.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/small_sleep/small_sleep.c' object='small_sleep.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o small_sleep.o `test -f 'gras/small_sleep/small_sleep.c' || echo '$(srcdir)/'`gras/small_sleep/small_sleep.c
+
+small_sleep.obj: gras/small_sleep/small_sleep.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT small_sleep.obj -MD -MP -MF $(DEPDIR)/small_sleep.Tpo -c -o small_sleep.obj `if test -f 'gras/small_sleep/small_sleep.c'; then $(CYGPATH_W) 'gras/small_sleep/small_sleep.c'; else $(CYGPATH_W) '$(srcdir)/gras/small_sleep/small_sleep.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/small_sleep.Tpo $(DEPDIR)/small_sleep.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/small_sleep/small_sleep.c' object='small_sleep.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o small_sleep.obj `if test -f 'gras/small_sleep/small_sleep.c'; then $(CYGPATH_W) 'gras/small_sleep/small_sleep.c'; else $(CYGPATH_W) '$(srcdir)/gras/small_sleep/small_sleep.c'; fi`
+
+_small_sleep_function.o: gras/small_sleep/_small_sleep_function.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _small_sleep_function.o -MD -MP -MF $(DEPDIR)/_small_sleep_function.Tpo -c -o _small_sleep_function.o `test -f 'gras/small_sleep/_small_sleep_function.c' || echo '$(srcdir)/'`gras/small_sleep/_small_sleep_function.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_small_sleep_function.Tpo $(DEPDIR)/_small_sleep_function.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/small_sleep/_small_sleep_function.c' object='_small_sleep_function.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _small_sleep_function.o `test -f 'gras/small_sleep/_small_sleep_function.c' || echo '$(srcdir)/'`gras/small_sleep/_small_sleep_function.c
+
+_small_sleep_function.obj: gras/small_sleep/_small_sleep_function.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _small_sleep_function.obj -MD -MP -MF $(DEPDIR)/_small_sleep_function.Tpo -c -o _small_sleep_function.obj `if test -f 'gras/small_sleep/_small_sleep_function.c'; then $(CYGPATH_W) 'gras/small_sleep/_small_sleep_function.c'; else $(CYGPATH_W) '$(srcdir)/gras/small_sleep/_small_sleep_function.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_small_sleep_function.Tpo $(DEPDIR)/_small_sleep_function.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/small_sleep/_small_sleep_function.c' object='_small_sleep_function.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _small_sleep_function.obj `if test -f 'gras/small_sleep/_small_sleep_function.c'; then $(CYGPATH_W) 'gras/small_sleep/_small_sleep_function.c'; else $(CYGPATH_W) '$(srcdir)/gras/small_sleep/_small_sleep_function.c'; fi`
+
+_small_sleep_simulator.o: gras/small_sleep/_small_sleep_simulator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _small_sleep_simulator.o -MD -MP -MF $(DEPDIR)/_small_sleep_simulator.Tpo -c -o _small_sleep_simulator.o `test -f 'gras/small_sleep/_small_sleep_simulator.c' || echo '$(srcdir)/'`gras/small_sleep/_small_sleep_simulator.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_small_sleep_simulator.Tpo $(DEPDIR)/_small_sleep_simulator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/small_sleep/_small_sleep_simulator.c' object='_small_sleep_simulator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _small_sleep_simulator.o `test -f 'gras/small_sleep/_small_sleep_simulator.c' || echo '$(srcdir)/'`gras/small_sleep/_small_sleep_simulator.c
+
+_small_sleep_simulator.obj: gras/small_sleep/_small_sleep_simulator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _small_sleep_simulator.obj -MD -MP -MF $(DEPDIR)/_small_sleep_simulator.Tpo -c -o _small_sleep_simulator.obj `if test -f 'gras/small_sleep/_small_sleep_simulator.c'; then $(CYGPATH_W) 'gras/small_sleep/_small_sleep_simulator.c'; else $(CYGPATH_W) '$(srcdir)/gras/small_sleep/_small_sleep_simulator.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_small_sleep_simulator.Tpo $(DEPDIR)/_small_sleep_simulator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/small_sleep/_small_sleep_simulator.c' object='_small_sleep_simulator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _small_sleep_simulator.obj `if test -f 'gras/small_sleep/_small_sleep_simulator.c'; then $(CYGPATH_W) 'gras/small_sleep/_small_sleep_simulator.c'; else $(CYGPATH_W) '$(srcdir)/gras/small_sleep/_small_sleep_simulator.c'; fi`
 
 basic0.o: simdag/basic0.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT basic0.o -MD -MP -MF $(DEPDIR)/basic0.Tpo -c -o basic0.o `test -f 'simdag/basic0.c' || echo '$(srcdir)/'`simdag/basic0.c
@@ -1081,6 +1157,7 @@ clean-libtool:
 	-rm -rf gras/datadesc/.libs gras/datadesc/_libs
 	-rm -rf gras/empty_main/.libs gras/empty_main/_libs
 	-rm -rf gras/msg_handle/.libs gras/msg_handle/_libs
+	-rm -rf gras/small_sleep/.libs gras/small_sleep/_libs
 	-rm -rf simdag/.libs simdag/_libs
 	-rm -rf simdag/network/.libs simdag/network/_libs
 	-rm -rf simdag/network/mxn/.libs simdag/network/mxn/_libs
@@ -1263,6 +1340,7 @@ distclean-generic:
 	-rm -f gras/datadesc/$(am__dirstamp)
 	-rm -f gras/empty_main/$(am__dirstamp)
 	-rm -f gras/msg_handle/$(am__dirstamp)
+	-rm -f gras/small_sleep/$(am__dirstamp)
 	-rm -f simdag/$(am__dirstamp)
 	-rm -f simdag/network/$(am__dirstamp)
 	-rm -f simdag/network/mxn/$(am__dirstamp)
@@ -1379,6 +1457,13 @@ gras/empty_main/_empty_main_simulator.c gras/empty_main/_empty_main_function.c :
 	mkdir -p gras/empty_main; \
 	  cd gras/empty_main;\
 	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ empty_main ../../$(top_srcdir)/teshsuite/gras/empty_main/empty_main.xml
+
+  #################################################
+
+gras/small_sleep/_small_sleep_simulator.c gras/small_sleep/_small_sleep_function.c : gras/small_sleep/small_sleep.c gras/small_sleep/small_sleep.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
+	mkdir -p gras/small_sleep; \
+	  cd gras/small_sleep;\
+	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ small_sleep ../../$(top_srcdir)/teshsuite/gras/small_sleep/small_sleep.xml
 
 dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done

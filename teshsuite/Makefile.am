@@ -6,7 +6,7 @@
 
 
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_srcdir)/src/include
-AM_CFLAGS = -g
+AM_CFLAGS = -g $(INCLUDES)
 
 # Declare all the variables to empty, so that each test set can add
 # their content to them
@@ -122,6 +122,27 @@ gras/empty_main/_empty_main_simulator.c gras/empty_main/_empty_main_function.c :
 	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ empty_main ../../$(top_srcdir)/teshsuite/gras/empty_main/empty_main.xml
 
 TESTS += gras/empty_main/test_rl gras/empty_main/test_sg
+
+  ## Make sure it's ok to have very small sleeps ##
+  #################################################
+EXTRA_DIST += gras/small_sleep/small_sleep.xml
+noinst_PROGRAMS+=\
+  gras/small_sleep/small_sleep_function \
+  gras/small_sleep/small_sleep_simulator
+  
+gras_small_sleep_small_sleep_simulator_SOURCES= gras/small_sleep/small_sleep.c gras/small_sleep/_small_sleep_simulator.c
+gras_small_sleep_small_sleep_function_SOURCES=  gras/small_sleep/small_sleep.c gras/small_sleep/_small_sleep_function.c
+
+gras_small_sleep_small_sleep_simulator_LDADD=   $(LDADD_SG)
+gras_small_sleep_small_sleep_function_LDADD=    $(LDADD_RL)
+
+gras/small_sleep/_small_sleep_simulator.c gras/small_sleep/_small_sleep_function.c : gras/small_sleep/small_sleep.c gras/small_sleep/small_sleep.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
+	mkdir -p gras/small_sleep; \
+	  cd gras/small_sleep;\
+	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ small_sleep ../../$(top_srcdir)/teshsuite/gras/small_sleep/small_sleep.xml
+
+TESTS += gras/small_sleep/test_sg
+# gras/small_sleep/test_rl don't test on RL!!
 
 ###################################
 # network model test via SimDag API
