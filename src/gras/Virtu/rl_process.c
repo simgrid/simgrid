@@ -20,7 +20,12 @@ static xbt_dict_t _process_properties = NULL;
 static xbt_dict_t _host_properties = NULL;
 
 /* the environment, as specified by the opengroup, used to initialize the process properties */
-extern char **environ;          
+#ifdef DARWIN
+#  include <crt_externs.h>
+#  define environ (*_NSGetEnviron())
+#endif
+
+extern char **environ;
 
 void gras_process_init() {
   char **env_iter;
