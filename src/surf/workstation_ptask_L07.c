@@ -375,10 +375,11 @@ static void update_resource_state(void *id,
     } else if (event_type == nw_link->lat_event) {
       lmm_variable_t var = NULL;
       surf_action_workstation_L07_t action = NULL;
+      lmm_element_t elem = NULL;
 
       nw_link->lat_current = value;
-      while (lmm_get_var_from_cnst
-	     (ptask_maxmin_system, nw_link->constraint, &var)) {
+      while (var = lmm_get_var_from_cnst
+	     (ptask_maxmin_system, nw_link->constraint, &elem)) {
 	
 
 	action = lmm_variable_id(var);

@@ -20,7 +20,7 @@ typedef struct lmm_element {
   lmm_constraint_t constraint;
   lmm_variable_t variable;
   double value;
-} s_lmm_element_t, *lmm_element_t;
+} s_lmm_element_t;
 #define make_elem_active(elem) xbt_swag_insert_at_head(elem,&(elem->constraint->active_element_set))
 #define make_elem_inactive(elem) xbt_swag_remove(elem,&(elem->constraint->active_element_set))
 

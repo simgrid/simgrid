@@ -274,13 +274,16 @@ int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var)
 
 lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys,
 				     lmm_constraint_t cnst,
-				     lmm_variable_t * var)
+				     lmm_element_t * elem)
 {
-  if (!(*var))
-    xbt_swag_getFirst(&(cnst->element_set));
+  if (!(*elem))
+    *elem = xbt_swag_getFirst(&(cnst->element_set));
   else
-    *var = xbt_swag_getNext(*var, cnst->element_set.offset);
-  return *var;
+    *elem = xbt_swag_getNext(*elem, cnst->element_set.offset);
+  if(*elem)
+    return (*elem)->variable;
+  else 
+    return NULL;
 }
 
 void *lmm_constraint_id(lmm_constraint_t cnst)

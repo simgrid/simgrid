@@ -22,6 +22,7 @@ static XBT_INLINE int double_positive(double value)
   return (value>MAXMIN_PRECISION);
 }
 
+typedef struct lmm_element *lmm_element_t;
 typedef struct lmm_variable *lmm_variable_t;
 typedef struct lmm_constraint *lmm_constraint_t;
 typedef struct lmm_system *lmm_system_t;
@@ -54,7 +55,7 @@ lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
 int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
 lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys,
 				     lmm_constraint_t cnst,
-				     lmm_variable_t * var);
+				     lmm_element_t * elem);
 
 lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t sys);
 lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint_t cnst);
