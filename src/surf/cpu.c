@@ -221,21 +221,6 @@ static void update_actions_state(double now, double delta)
 	       (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-    } else {			/* Need to check that none of the model has failed */
-      lmm_constraint_t cnst = NULL;
-      int i = 0;
-      cpu_Cas01_t cpu = NULL;
-
-      while ((cnst =
-	      lmm_get_cnst_from_var(cpu_maxmin_system, action->variable,
-				    i++))) {
-	cpu = lmm_constraint_id(cnst);
-	if (cpu->state_current == SURF_CPU_OFF) {
-	  action->generic_action.finish = surf_get_clock();
-	  action_change_state((surf_action_t) action, SURF_ACTION_FAILED);
-	  break;
-	}
-      }
     }
   }
 
@@ -255,8 +240,23 @@ static void update_resource_state(void *id,
   } else if (event_type == cpu->state_event) {
     if (value > 0)
       cpu->state_current = SURF_CPU_ON;
-    else
+    else {
+      lmm_constraint_t cnst = cpu->constraint;
+      lmm_variable_t var = NULL;
+      lmm_element_t elem = NULL;
+
       cpu->state_current = SURF_CPU_OFF;
+
+      while(var = lmm_get_var_from_cnst(cpu_maxmin_system,cnst,&elem)) {
+	surf_action_t action = lmm_variable_id(var) ;
+
+	if(surf_action_get_state(action)==SURF_ACTION_RUNNING ||
+	   surf_action_get_state(action)==SURF_ACTION_READY) {
+	  action->finish = surf_get_clock(); // BUG! Wrong value here
+	  action_change_state( action, SURF_ACTION_FAILED);
+	}
+      }
+    }
   } else {
     CRITICAL0("Unknown event ! \n");
     xbt_abort();
