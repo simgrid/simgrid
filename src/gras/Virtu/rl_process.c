@@ -28,8 +28,6 @@ static xbt_dict_t _host_properties = NULL;
  extern char **environ;
 # endif 
 
-extern char **environ;
-
 void gras_process_init() {
   char **env_iter;
   _gras_procdata=xbt_new0(gras_procdata_t,1);
