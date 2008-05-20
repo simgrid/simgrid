@@ -103,11 +103,23 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
  */
 
 void rctx_empty(rctx_t rc) {
+  int i;
+  char **env_it=environ;
+   
   if (rc->cmd)
     free(rc->cmd);
   rc->cmd = NULL;
   if (rc->filepos)
     free(rc->filepos);
+  if (rc->env)
+     free(rc->env);
+   
+  for (i=0;*env_it;i++,env_it++);
+  i++;
+  rc->env_size = i;
+  rc->env = malloc(i*sizeof(char*));
+  memcpy(rc->env,environ,i*sizeof(char*)); 
+
   rc->filepos = NULL;
   rc->is_empty = 1;
   rc->is_background = 0;
@@ -120,6 +132,9 @@ void rctx_empty(rctx_t rc) {
   xbt_strbuff_empty(rc->output_wanted);
   xbt_strbuff_empty(rc->output_got);
 }
+
+/* the environment, as specified by the opengroup */
+extern char **environ;
 
 rctx_t rctx_new() {
   rctx_t res = xbt_new0(s_rctx_t,1);
@@ -142,6 +157,8 @@ void rctx_free(rctx_t rctx) {
     free(rctx->cmd);
   if (rctx->filepos)
     free(rctx->filepos);
+  if (rctx->env)
+    free(rctx->env);
   xbt_os_mutex_destroy(rctx->interruption);
   xbt_strbuff_free(rctx->input);
   xbt_strbuff_free(rctx->output_got);
@@ -234,6 +251,12 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
        
     } else if (!strncmp(line,"output display",strlen("output display"))) {
       rctx->output = e_output_display;
+      VERB1("[%s] (ignore output of next command)", filepos);
+
+    } else if (!strncmp(line,"setenv ",strlen("setenv "))) {
+      rctx->env = realloc(rctx->env,++(rctx->env_size)*sizeof(char*));
+      rctx->env[rctx->env_size-2] = xbt_strdup(line+strlen("setenv "));
+      rctx->env[rctx->env_size-1] = NULL;
       VERB1("[%s] (ignore output of next command)", filepos);
        
     } else {
@@ -368,7 +391,7 @@ void rctx_start(void) {
     dup2(child_out[1],2);
     close(child_out[1]);
 
-    execlp ("/bin/sh", "sh", "-c", rctx->cmd, NULL);
+    execle ("/bin/sh", "sh", "-c", rctx->cmd, NULL, rctx->env);
   }
 
   rctx->is_stoppable = 1;

@@ -19,6 +19,8 @@ typedef enum {e_output_check, e_output_display, e_output_ignore} e_output_handli
 typedef struct {
   /* kind of job */
   char *cmd;
+  char **env;
+  int  env_size;
   char *filepos;
   int pid;
   int is_background:1;

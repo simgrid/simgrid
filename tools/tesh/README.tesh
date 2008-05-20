@@ -18,6 +18,7 @@ blank and is ignored):
      `expect signal' <signal name>
      `expect return' <integer>
      `output' <ignore|display>
+     `setenv <key>=<val>'
  `p' a string to print
  `P' a string to print at the CRITICAL level (ease logging grepping)
 
@@ -87,4 +88,10 @@ OUTPUT
 By default, the commands output is matched against the one expected,
 and an error is raised on discrepency. Metacomands to change this:
  "output ignore"  -> output completely discarded 
- "output display" -> output displayed (but not verified) 
+ "output display" -> output displayed (but not verified)
+ 
+ENVIRONMENT
+-----------
+You can add some content to the tested processes environment with the
+setenv metacommand. It works as expected. For example:
+  "setenv PATH=/bin"
