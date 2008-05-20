@@ -209,6 +209,12 @@ static void update_actions_state(double now, double delta)
    */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
+    if (action->generic_action.max_duration == NO_MAX_DURATION &&
+	action->suspended==2 )
+      /* Rely on the fact that sleep action with no duration are on
+	 the end of the queue */
+      break;
+
     double_update(&(action->generic_action.remains),
 		  lmm_variable_getvalue(action->variable) * delta);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
@@ -291,7 +297,9 @@ static surf_action_t execute(void *cpu, double size)
   else
     action->generic_action.state_set =
 	surf_cpu_model->common_public->states.failed_action_set;
-  xbt_swag_insert(action, action->generic_action.state_set);
+  /* Insert at the head by default. This convention is used to speed
+     up update_resource_state  */
+  xbt_swag_insert_at_head(action, action->generic_action.state_set);
 
   action->variable = lmm_variable_new(cpu_maxmin_system, action,
 				      action->generic_action.priority,
@@ -304,12 +312,21 @@ static surf_action_t execute(void *cpu, double size)
 static surf_action_t action_sleep(void *cpu, double duration)
 {
   surf_action_cpu_Cas01_t action = NULL;
+  xbt_swag_t action_set = NULL;
   if (duration>0)
      duration=MAX(duration,MAXMIN_PRECISION);
+
   XBT_IN2("(%s,%g)", ((cpu_Cas01_t) cpu)->name, duration);
   action = (surf_action_cpu_Cas01_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;
+  if(duration == NO_MAX_DURATION) {
+    /* Move to the *end* of the corresponding action set. This convention
+       is used to speed up update_resource_state  */
+    action_set = action->generic_action.state_set;
+    xbt_swag_remove(action, action_set);
+    xbt_swag_insert(action, action_set);
+  }
 
   lmm_update_variable_weight(cpu_maxmin_system, action->variable, 0.0);
   XBT_OUT;
