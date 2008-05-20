@@ -387,6 +387,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
       q++;
     } else {
       *(p++) = *(q++);
+      check_overflow;	   
     }
   }
   *p = '\0';

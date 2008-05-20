@@ -41,7 +41,7 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
    p += snprintf(p,256-(p-ev->buffer), "[%s/%s] ", 
 		 ev->cat->name, xbt_log_priority_names[ev->priority] );
    
-   xbt_strbuff_append(buff,ev->buffer);
+   xbt_strbuff_append(buff,loc_buff);
 
    vasprintf(&p,fmt,ev->ap_copy);
    xbt_strbuff_append(buff,p);
@@ -77,14 +77,18 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
 
   p = ev->buffer;
   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"[");
+  check_overflow;
 
   /* Display the proc info if available */
-  if(strlen(xbt_procname()))
+  if(strlen(xbt_procname())) {
     p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%s:%s:(%d) ", 
 		 gras_os_myname(), xbt_procname(),(*xbt_getpid)());
-
+    check_overflow;
+  }
+   
   /* Display the date */
   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%f] ", gras_os_time()-begin_of_time);
+  check_overflow;
 
   /* Display file position if not INFO*/
   if (ev->priority != xbt_log_priority_info)
