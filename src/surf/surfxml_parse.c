@@ -1067,19 +1067,19 @@ void parse_trace_c_connect(void)
    
    switch (A_surfxml_trace_c_connect_kind) {
     case A_surfxml_trace_c_connect_kind_HOST_AVAIL:
-      xbt_dict_set(trace_connect_list_host_avail, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      xbt_dict_set(trace_connect_list_host_avail, A_surfxml_trace_c_connect_trace, xbt_strdup(A_surfxml_trace_c_connect_element), free);
       break;
     case A_surfxml_trace_c_connect_kind_POWER:
-      xbt_dict_set(trace_connect_list_power, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      xbt_dict_set(trace_connect_list_power, A_surfxml_trace_c_connect_trace, xbt_strdup(A_surfxml_trace_c_connect_element), free);
       break;
     case A_surfxml_trace_c_connect_kind_LINK_AVAIL:
-      xbt_dict_set(trace_connect_list_link_avail, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      xbt_dict_set(trace_connect_list_link_avail, A_surfxml_trace_c_connect_trace, xbt_strdup(A_surfxml_trace_c_connect_element), free);
       break;
     case A_surfxml_trace_c_connect_kind_BANDWIDTH:
-      xbt_dict_set(trace_connect_list_bandwidth, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      xbt_dict_set(trace_connect_list_bandwidth, A_surfxml_trace_c_connect_trace, xbt_strdup(A_surfxml_trace_c_connect_element), free);
       break;
     case A_surfxml_trace_c_connect_kind_LATENCY:
-      xbt_dict_set(trace_connect_list_latency, A_surfxml_trace_c_connect_element, xbt_strdup(A_surfxml_trace_c_connect_trace), free);
+      xbt_dict_set(trace_connect_list_latency, A_surfxml_trace_c_connect_trace, xbt_strdup(A_surfxml_trace_c_connect_element), free);
       break;
     default:
       xbt_die("kind of trace unknown");
