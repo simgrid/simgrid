@@ -7,8 +7,9 @@
 
 INCLUDES= -I$(top_srcdir)/include
 
-EXTRA_DIST=properties.xml
+EXTRA_DIST=
 include $(top_srcdir)/examples/gras/tests.mk
+EXTRA_DIST=properties.xml test_sg test_rl
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=properties_alice properties_bob properties_simulator

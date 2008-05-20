@@ -7,8 +7,7 @@
 
 INCLUDES = -I$(top_srcdir)/include
 AM_CFLAGS = -g
-EXTRA_DIST = 2clusters.xml \
-             properties/prop.xml
+EXTRA_DIST = 2clusters.xml 
 
 CLEANFILES = sd_test.trace
 
