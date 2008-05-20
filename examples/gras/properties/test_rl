@@ -1,6 +1,19 @@
 
-! timeout 20
-& $SG_TEST_ENV ./properties_master$EXEEXT 4002 --log=root.fmt=%P:%t%e%m%n $ARGS
+! setenv SG_TEST_blah=blah
+$ $SG_TEST_ENV ./properties_alice --log=root.fmt=%P:%t%e%m%n $ARGS
+> alice:main == Dump all the properties of current host
+> alice:main == Dump all the properties of alice
+> alice:main   Process property: 'SG_TEST_blah' has value: 'blah'
+> alice:main == Try to get a process property that does not exist
+> alice:main == Trying to modify a process property
+> alice:main Exiting GRAS
 
-! timeout 20
-& $SG_TEST_ENV ./properties_slave$EXEEXT 127.0.0.1 4002 --log=root.fmt=%P:%t%e%m%n $ARGS
+! setenv SG_TEST_blah=blah
+$ $SG_TEST_ENV ./properties_bob --log=root.fmt=%P:%t%e%m%n $ARGS
+> bob:main == Dump all the properties of host1
+> bob:main == Try to get a property that does not exist
+> bob:main == Set a host property that alice will try to retrieve in SG (from bob->hello)
+> bob:main == Dump all the properties of host1 again to check the addition
+> bob:main   Host property: 'from bob' has value: 'hello'
+> bob:main Exiting GRAS
+

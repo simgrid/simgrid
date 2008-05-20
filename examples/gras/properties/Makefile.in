@@ -61,7 +61,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk \
 	$(top_srcdir)/examples/gras/tests.mk \
 	$(top_srcdir)/examples/temps-gras-stub.mk
-noinst_PROGRAMS = properties_slave$(EXEEXT) properties_master$(EXEEXT) \
+noinst_PROGRAMS = properties_alice$(EXEEXT) properties_bob$(EXEEXT) \
 	properties_simulator$(EXEEXT)
 subdir = examples/gras/properties
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -79,18 +79,18 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/gras_config.h
 CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_properties_master_OBJECTS = _properties_master.$(OBJEXT) \
+am_properties_alice_OBJECTS = _properties_alice.$(OBJEXT) \
 	properties.$(OBJEXT)
-properties_master_OBJECTS = $(am_properties_master_OBJECTS)
-properties_master_DEPENDENCIES = $(top_builddir)/src/libgras.la
+properties_alice_OBJECTS = $(am_properties_alice_OBJECTS)
+properties_alice_DEPENDENCIES = $(top_builddir)/src/libgras.la
+am_properties_bob_OBJECTS = _properties_bob.$(OBJEXT) \
+	properties.$(OBJEXT)
+properties_bob_OBJECTS = $(am_properties_bob_OBJECTS)
+properties_bob_DEPENDENCIES = $(top_builddir)/src/libgras.la
 am_properties_simulator_OBJECTS = _properties_simulator.$(OBJEXT) \
 	properties.$(OBJEXT)
 properties_simulator_OBJECTS = $(am_properties_simulator_OBJECTS)
 properties_simulator_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
-am_properties_slave_OBJECTS = _properties_slave.$(OBJEXT) \
-	properties.$(OBJEXT)
-properties_slave_OBJECTS = $(am_properties_slave_OBJECTS)
-properties_slave_DEPENDENCIES = $(top_builddir)/src/libgras.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -103,10 +103,10 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(properties_master_SOURCES) $(properties_simulator_SOURCES) \
-	$(properties_slave_SOURCES)
-DIST_SOURCES = $(properties_master_SOURCES) \
-	$(properties_simulator_SOURCES) $(properties_slave_SOURCES)
+SOURCES = $(properties_alice_SOURCES) $(properties_bob_SOURCES) \
+	$(properties_simulator_SOURCES)
+DIST_SOURCES = $(properties_alice_SOURCES) $(properties_bob_SOURCES) \
+	$(properties_simulator_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -251,17 +251,17 @@ INCLUDES = -I$(top_srcdir)/include
 EXTRA_DIST = properties.xml test_rl test_sg_32 test_sg_64
 @GRAS_ARCH_32_BITS_FALSE@TESTS = test_sg_64 test_rl
 @GRAS_ARCH_32_BITS_TRUE@TESTS = test_sg_32 test_rl
+TESTS = test_sg test_rl
 TESTS_ENVIRONMENT = srcdir=$(srcdir) EXEEXT=$(EXEEXT) @top_builddir@/tools/tesh/tesh
 properties_simulator_SOURCES = _properties_simulator.c properties.c
 properties_simulator_LDADD = $(top_builddir)/src/libsimgrid.la
-properties_slave_SOURCES = _properties_slave.c    properties.c
-properties_slave_LDADD = $(top_builddir)/src/libgras.la
-properties_master_SOURCES = _properties_master.c    properties.c
-properties_master_LDADD = $(top_builddir)/src/libgras.la
-
+properties_alice_SOURCES = _properties_alice.c    properties.c
+properties_alice_LDADD = $(top_builddir)/src/libgras.la
+properties_bob_SOURCES = _properties_bob.c    properties.c
+properties_bob_LDADD = $(top_builddir)/src/libgras.la
 # Take care of generatated sources
 NAME = properties
-PROCESSES = slave master
+PROCESSES = alice bob
 CLEANFILES = _$(NAME)_simulator.c $(NAME).mk $(NAME).Makefile.local $(NAME).Makefile.remote $(NAME).deploy.sh \
              $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c)
 
@@ -306,15 +306,15 @@ clean-noinstPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-properties_master$(EXEEXT): $(properties_master_OBJECTS) $(properties_master_DEPENDENCIES) 
-	@rm -f properties_master$(EXEEXT)
-	$(LINK) $(properties_master_OBJECTS) $(properties_master_LDADD) $(LIBS)
+properties_alice$(EXEEXT): $(properties_alice_OBJECTS) $(properties_alice_DEPENDENCIES) 
+	@rm -f properties_alice$(EXEEXT)
+	$(LINK) $(properties_alice_OBJECTS) $(properties_alice_LDADD) $(LIBS)
+properties_bob$(EXEEXT): $(properties_bob_OBJECTS) $(properties_bob_DEPENDENCIES) 
+	@rm -f properties_bob$(EXEEXT)
+	$(LINK) $(properties_bob_OBJECTS) $(properties_bob_LDADD) $(LIBS)
 properties_simulator$(EXEEXT): $(properties_simulator_OBJECTS) $(properties_simulator_DEPENDENCIES) 
 	@rm -f properties_simulator$(EXEEXT)
 	$(LINK) $(properties_simulator_OBJECTS) $(properties_simulator_LDADD) $(LIBS)
-properties_slave$(EXEEXT): $(properties_slave_OBJECTS) $(properties_slave_DEPENDENCIES) 
-	@rm -f properties_slave$(EXEEXT)
-	$(LINK) $(properties_slave_OBJECTS) $(properties_slave_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -322,9 +322,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_properties_master.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_properties_alice.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_properties_bob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_properties_simulator.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_properties_slave.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/properties.Po@am__quote@
 
 .c.o:

@@ -1,0 +1,22 @@
+p Runs the 'properties' test within the simulator (simulation times valid for 32bits architectures)
+
+$ $SG_TEST_EXENV ./properties_simulator${EXEEXT:=} ${srcdir:=.}/../../platforms/prop.xml ${srcdir:=.}/properties.xml
+> [host1:bob:(2) 0.000000] [test/INFO] == Dump all the properties of host1
+> [host1:bob:(2) 0.000000] [test/INFO]   Host property: 'SG_TEST_Hdd' has value: '180'
+> [host1:bob:(2) 0.000000] [test/INFO]   Host property: 'SG_TEST_mem' has value: '4'
+> [host1:bob:(2) 0.000000] [test/INFO] == Try to get a property that does not exist
+> [host1:bob:(2) 0.000000] [test/INFO] == Set a host property that alice will try to retrieve in SG (from bob->hello)
+> [host1:bob:(2) 0.000000] [test/INFO] == Dump all the properties of host1 again to check the addition
+> [host1:bob:(2) 0.000000] [test/INFO]   Host property: 'from bob' has value: 'hello'
+> [host1:bob:(2) 0.000000] [test/INFO]   Host property: 'SG_TEST_Hdd' has value: '180'
+> [host1:bob:(2) 0.000000] [test/INFO]   Host property: 'SG_TEST_mem' has value: '4'
+> [host1:bob:(2) 1.000000] [gras/INFO] Exiting GRAS
+> [host1:alice:(1) 1.000000] [test/INFO] == Dump all the properties of current host
+> [host1:alice:(1) 1.000000] [test/INFO]   Host property: 'from bob' has value: 'hello'
+> [host1:alice:(1) 1.000000] [test/INFO]   Host property: 'SG_TEST_Hdd' has value: '180'
+> [host1:alice:(1) 1.000000] [test/INFO]   Host property: 'SG_TEST_mem' has value: '4'
+> [host1:alice:(1) 1.000000] [test/INFO] == Dump all the properties of alice
+> [host1:alice:(1) 1.000000] [test/INFO]   Process property: 'SG_TEST_blah' has value: 'blah'
+> [host1:alice:(1) 1.000000] [test/INFO] == Try to get a process property that does not exist
+> [host1:alice:(1) 1.000000] [test/INFO] == Trying to modify a process property
+> [host1:alice:(1) 1.000000] [gras/INFO] Exiting GRAS

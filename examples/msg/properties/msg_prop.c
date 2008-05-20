@@ -17,116 +17,79 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Property test");
 
-int master(int argc, char *argv[]);
-int slave(int argc, char *argv[]);
+int alice(int argc, char *argv[]);
+int bob(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
 MSG_error_t test_all(const char *platform_file, const char *application_file);
 
-/** Emitter function  */
-int master(int argc, char *argv[])
+int alice(int argc, char *argv[])
 {
-  int slaves_count = 0;
-  m_host_t *slaves = NULL;
-  xbt_dict_t props; 
+  m_host_t host1 = MSG_get_host_by_name("host1");
+  xbt_dict_t props = MSG_host_get_properties(host1);
   xbt_dict_cursor_t cursor=NULL;
-  int i;
   char *key,*data;
   const char *noexist="Unknown";
   const char*value;
-  char exist[]="Hdd";
+  char exist[]="SG_TEST_Hdd";
 
-  {                  /* Process organisation */
-    slaves_count = argc - 4;
-    slaves = xbt_new(m_host_t, sizeof(m_host_t) * slaves_count);
-      
-    for (i = 4; i < argc; i++) {     
-      slaves[i-4] = MSG_get_host_by_name(argv[i]);
-      xbt_assert1(slaves[i-4]!=NULL, "Unknown host %s. Stopping Now! ", argv[i]);
+  INFO0("== Print the properties of the host");
+  xbt_dict_foreach(props,cursor,key,data)
+    INFO2("  Host property: '%s' -> '%s'",key,data);
 
-      /* Get the property list of the host */
-      props = MSG_host_get_properties(slaves[i-4]);
-     
-      
+  INFO0("== Try to get a host property that does not exist");     
+  value = MSG_host_get_property_value(host1, noexist);
+  xbt_assert0(!value, "The key exists (it's not supposed to)");
 
-      /* Print the properties of the host */
-      xbt_dict_foreach(props,cursor,key,data) {
-         INFO3("Property: %s for host: %s has value: %s",key,argv[i],data);
-      }
+  INFO0("== Try to get a host property that does exist");     
+  value = MSG_host_get_property_value(host1,exist);
+  xbt_assert1(value,"\tProperty %s is undefined (where it should)", exist);
+  xbt_assert2(!strcmp(value,"180"),"\tValue of property %s is defined to %s (where it should be 180)", exist, value);
+  INFO2("   Property: %s old value: %s", exist, value);
 
-     /* Try to get a property that does not exist */
-     
-     value = MSG_host_get_property_value(slaves[i-4], noexist);
-     if ( value == NULL) 
-       INFO2("Property: %s for host %s is undefined", noexist, argv[i]);
-     else
-       INFO3("Property: %s for host %s has value: %s",(char*) noexist, argv[i], value);
-
-      /* Modify an existing property test. First check it exists */\
-      INFO0("Trying to modify a host property");
-      
-      value = MSG_host_get_property_value(slaves[i-4],exist);
-      xbt_assert1(value,"\tProperty %s is undefined", exist);
-      INFO2("\tProperty: %s old value: %s", exist, value);
-      xbt_dict_set(props, exist, xbt_strdup("250"), free);  
- 
-      /* Test if we have changed the value */
-      value = MSG_host_get_property_value(slaves[i-4],exist);
-      xbt_assert1(value,"\tProperty %s is undefined", exist);
-      INFO2("\tProperty: %s new value: %s", exist, value);
-    }
-  }
+  INFO0("== Trying to modify a host property");
+  xbt_dict_set(props, exist, xbt_strdup("250"), xbt_free_f);
   
-  free(slaves);
-  return 0;
-} /* end_of_master */
+  /* Test if we have changed the value */
+  value = MSG_host_get_property_value(host1,exist);
+  xbt_assert1(value,"Property %s is undefined (where it should)", exist);
+  xbt_assert2(!strcmp(value,"250"),"Value of property %s is defined to %s (where it should be 250)", exist, value);
+  INFO2("   Property: %s old value: %s", exist, value);
 
-/** Receiver function  */
-int slave(int argc, char *argv[])
+  return 0;
+}
+
+int bob(int argc, char *argv[])
 {
-  /* Get the property list of current slave process */
+  /* Get the property list of current bob process */
   xbt_dict_t props = MSG_process_get_properties(MSG_process_self());
   xbt_dict_cursor_t cursor=NULL;
   char *key,*data;
   const char *noexist="UnknownProcessProp";
   const char *value;
 
-  /* Print the properties of the process */
-  xbt_dict_foreach(props,cursor,key,data) {
-     INFO3("Property: %s for process %s has value: %s",key,MSG_process_get_name(MSG_process_self()),data);
-  }
+  INFO0("== Print the properties of the process");
+  xbt_dict_foreach(props,cursor,key,data)
+    INFO2("   Process property: %s -> %s",key,data);
 
-  /* Try to get a property that does not exist */
+  INFO0("== Try to get a process property that does not exist");
  
   value = MSG_process_get_property_value(MSG_process_self(),noexist);
-  if ( value == NULL) 
-    INFO2("Property: %s for process %s is undefined", noexist, MSG_process_get_name(MSG_process_self()));
-  else
-    INFO3("Property: %s for process %s has value: %s", noexist, MSG_process_get_name(MSG_process_self()), value);
+  xbt_assert0(!value,"The property is defined (it shouldnt)");
 
   return 0;
-} /* end_of_slave */
+} 
 
 /** Test function */
 MSG_error_t test_all(const char *platform_file,
 			    const char *application_file)
 {
-  MSG_error_t res = MSG_OK;
+  MSG_function_register("alice", alice);
+  MSG_function_register("bob", bob);
+   
+  MSG_create_environment(platform_file);
+  MSG_launch_application(application_file);
 
-  /* MSG_config("surf_workstation_model","KCCFLN05"); */
-  {				/*  Simulation setting */
-//    MSG_set_channel_number(MAX_CHANNEL);
-    MSG_paje_output("msg_test.trace");
-    MSG_create_environment(platform_file);
-  }
-  {                            /*   Application deployment */
-    MSG_function_register("master", master);
-    MSG_function_register("slave", slave);
-    MSG_launch_application(application_file);
-  }
-  res = MSG_main();
-  
-  INFO1("Simulation time %g",MSG_get_clock());
-  return res;
+  return MSG_main();
 } /* end_of_test_all */
 
 

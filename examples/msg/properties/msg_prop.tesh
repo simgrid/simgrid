@@ -3,12 +3,14 @@
 p Testing a MSG application with properties in the XML for Hosts, Links and Processes
 
 $ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml ${srcdir:=.}/properties/deployment_properties.xml 
-> [C1-01:master:(1) 0.000000] [test/INFO] Property: Hdd for host: C1-00 has value: 120
-> [C1-01:master:(1) 0.000000] [test/INFO] Property: Unknown for host C1-00 is undefined
-> [C1-01:master:(1) 0.000000] [test/INFO] Trying to modify a host property
-> [C1-01:master:(1) 0.000000] [test/INFO] 	Property: Hdd old value: 120
-> [C1-01:master:(1) 0.000000] [test/INFO] 	Property: Hdd new value: 250
-> [C1-00:slave:(2) 0.000000] [test/INFO] Property: SomeProp for process slave has value: SomeValue
-> [C1-00:slave:(2) 0.000000] [test/INFO] Property: UnknownProcessProp for process slave is undefined
-> [0.000000] [test/INFO] Simulation time 0
-
+> [host1:alice:(1) 0.000000] [test/INFO] == Print the properties of the host
+> [host1:alice:(1) 0.000000] [test/INFO]   Host property: 'SG_TEST_Hdd' -> '180'
+> [host1:alice:(1) 0.000000] [test/INFO]   Host property: 'SG_TEST_mem' -> '4'
+> [host1:alice:(1) 0.000000] [test/INFO] == Try to get a host property that does not exist
+> [host1:alice:(1) 0.000000] [test/INFO] == Try to get a host property that does exist
+> [host1:alice:(1) 0.000000] [test/INFO]    Property: SG_TEST_Hdd old value: 180
+> [host1:alice:(1) 0.000000] [test/INFO] == Trying to modify a host property
+> [host1:alice:(1) 0.000000] [test/INFO]    Property: SG_TEST_Hdd old value: 250
+> [host1:bob:(2) 0.000000] [test/INFO] == Print the properties of the process
+> [host1:bob:(2) 0.000000] [test/INFO]    Process property: SomeProp -> SomeValue
+> [host1:bob:(2) 0.000000] [test/INFO] == Try to get a process property that does not exist

@@ -3,31 +3,20 @@
 p Simple test of simdag with properties
 
 $ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
-> [0.000000] [test/INFO] Property list for workstation C1-00
+> [0.000000] [test/INFO] Property list for workstation host1
 > [0.000000] [test/INFO] 	Property: NewProp has value: newValue
-> [0.000000] [test/INFO] 	Property: Hdd has value: 120
+> [0.000000] [test/INFO] 	Property: SG_TEST_Hdd has value: 180
+> [0.000000] [test/INFO] 	Property: SG_TEST_mem has value: 4
 > [0.000000] [test/INFO] 	Property: NoProp is undefined
-> [0.000000] [test/INFO] Property list for workstation C1-01
-> [0.000000] [test/INFO] 	Property: mem on host: 4
-> [0.000000] [test/INFO] 	Property: Hdd on host: 180
+> [0.000000] [test/INFO] Property list for workstation host2
+> [0.000000] [test/INFO] 	Property: SG_TEST_Hdd on host: 120
 > [0.000000] [test/INFO] Modify an existing property
-> [0.000000] [test/INFO] 	Property: Hdd old value: 180
-> [0.000000] [test/INFO] 	Property: Hdd new value: 250
-> [0.000000] [test/INFO] 	Link 6 property: type has value: Ethernet
-> [0.000000] [test/INFO] 	Property: NoProp for link 6 is undefined
-> [0.000000] [test/INFO] 	Link 0 property: type has value: ethernet
-> [0.000000] [test/INFO] 	Property: NoProp for link 0 is undefined
-> [0.000000] [test/INFO] Estimated time for 'Task D': 1.512000
-> [0.000000] [sd_kernel/INFO] Starting simulation...
-> [0.000000] [sd_kernel/INFO] Executing task 'Task D'
-> [3.600200] [sd_kernel/INFO] Task 'Task D' done
-> [3.600200] [sd_kernel/INFO] Executing task 'Task B'
-> [3.600200] [sd_kernel/INFO] Executing task 'Task C'
-> [6.000400] [sd_kernel/INFO] Task 'Task B' done
-> [6.000400] [sd_task/INFO] Watch point reached with task 'Task B'!
-> [6.000400] [sd_kernel/INFO] Simulation finished
-> [6.000400] [test/INFO] Task 'Task D' start time: 0.000000, finish time: 3.600200
-> [6.000400] [test/INFO] Task 'Task B' start time: 3.600200, finish time: 6.000400
+> [0.000000] [test/INFO] 	Property: SG_TEST_Hdd old value: 120
+> [0.000000] [test/INFO] 	Property: SG_TEST_Hdd new value: 250
+> [0.000000] [test/INFO] 	Link l1 property: type has value: Ethernet
+> [0.000000] [test/INFO] 	Property: NoProp for link l1 is undefined
+> [0.000000] [test/INFO] 	Link l2 property: type has value: ethernet
+> [0.000000] [test/INFO] 	Property: NoProp for link l2 is undefined
 
 
 

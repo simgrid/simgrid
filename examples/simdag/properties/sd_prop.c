@@ -13,7 +13,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,
 
 int main(int argc, char **argv) {
   int i;
-  const char * platform_file;
   const SD_workstation_t *workstations;
   SD_workstation_t w1;
   SD_workstation_t w2;
@@ -24,38 +23,21 @@ int main(int argc, char **argv) {
   char *key,*data;
   char noexist[]="NoProp";
   const char *value;
-  char exist[]="Hdd";
-  const double computation_amount1 = 2000000;
-  const double computation_amount2 = 1000000;
-  const double communication_amount12 = 2000000;
-  const double communication_amount21 = 3000000;
+  char exist[]="SG_TEST_Hdd";
+   
   const SD_link_t *route;
   int route_size;
-  SD_task_t taskA, taskB, taskC, taskD, task;
-  const int workstation_number = 2;
-  SD_workstation_t workstation_list[2];
-  double computation_amount[2];
-  double communication_amount[4] = {0};
-  double rate = -1.0;
-  SD_task_t *changed_tasks;
 
   /* initialisation of SD */
-  SD_init(&argc, argv);
-	
-  platform_file = argv[1];
-
-  /*  xbt_log_control_set("sd.thres=debug"); */
-
+  SD_init(&argc, argv);	
   if (argc < 2) {
     INFO1("Usage: %s platform_file", argv[0]);
     INFO1("example: %s sd_platform.xml", argv[0]);
     exit(1);
   }
+  SD_create_environment(argv[1]);
 
-  /* creation of the environment */
-  SD_create_environment(platform_file);
-
-  /* test the estimation functions */
+  /* init of platform elements */
   workstations = SD_workstation_get_list();
   w1 = workstations[0];
   w2 = workstations[1];
@@ -140,75 +122,6 @@ int main(int argc, char **argv) {
   }
 
   }
-  /* creation of the tasks and their dependencies */
-  taskA = SD_task_create("Task A", NULL, 10.0);
-  taskB = SD_task_create("Task B", NULL, 40.0);
-  taskC = SD_task_create("Task C", NULL, 30.0);
-  taskD = SD_task_create("Task D", NULL, 60.0);
-  
-
-  SD_task_dependency_add(NULL, NULL, taskB, taskA);
-  SD_task_dependency_add(NULL, NULL, taskC, taskA);
-  SD_task_dependency_add(NULL, NULL, taskD, taskB);
-  SD_task_dependency_add(NULL, NULL, taskD, taskC);
-
-  /* watch points */
-  SD_task_watch(taskD, SD_DONE);
-  SD_task_watch(taskB, SD_DONE);
-  SD_task_unwatch(taskD, SD_DONE);
-  
-
-  /* scheduling parameters */
-  workstation_list[0] = w1;
-   workstation_list[1] = w2;
-  computation_amount[0] = computation_amount1;
-  computation_amount[1] = computation_amount2;
-  
-  communication_amount[1] = communication_amount12;
-  communication_amount[2] = communication_amount21;
-   
- 
-
-  /* estimated time */
-  task = taskD;
-  INFO2("Estimated time for '%s': %f", SD_task_get_name(task),
-	SD_task_get_execution_time(task, workstation_number, workstation_list,
-				   computation_amount, communication_amount, rate));
-
-  /* let's launch the simulation! */
-
-  SD_task_schedule(taskA, workstation_number, workstation_list,
-		   computation_amount, communication_amount, rate);
-  SD_task_schedule(taskB, workstation_number, workstation_list,
-		   computation_amount, communication_amount, rate);
-  SD_task_schedule(taskC, workstation_number, workstation_list,
-		   computation_amount, communication_amount, rate);
-  SD_task_schedule(taskD, workstation_number, workstation_list,
-		   computation_amount, communication_amount, rate);
-
-  changed_tasks = SD_simulate(-1.0);
-  for (i = 0; changed_tasks[i] != NULL; i++) {
-    INFO3("Task '%s' start time: %f, finish time: %f",
-	  SD_task_get_name(changed_tasks[i]),
-	  SD_task_get_start_time(changed_tasks[i]),
-	  SD_task_get_finish_time(changed_tasks[i]));
-  }
-  
-  xbt_assert0(changed_tasks[0] == taskD &&
-	      changed_tasks[1] == taskB &&
-	      changed_tasks[2] == NULL,
-	      "Unexpected simulation results");
-
-  xbt_free(changed_tasks);
-
-  DEBUG0("Destroying tasks...");
-
-  SD_task_destroy(taskA);
-  SD_task_destroy(taskB);
-  SD_task_destroy(taskC);
-  SD_task_destroy(taskD);
-
-  DEBUG0("Tasks destroyed. Exiting SimDag...");
 
   SD_exit();
   return 0;

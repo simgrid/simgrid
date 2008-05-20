@@ -11,20 +11,21 @@ EXTRA_DIST=properties.xml
 include $(top_srcdir)/examples/gras/tests.mk
 
 # AUTOMAKE variable definition
-noinst_PROGRAMS=properties_slave properties_master properties_simulator
+noinst_PROGRAMS=properties_alice properties_bob properties_simulator
 
 properties_simulator_SOURCES=	_properties_simulator.c properties.c
 properties_simulator_LDADD=	$(top_builddir)/src/libsimgrid.la
 
-properties_slave_SOURCES=	_properties_slave.c    properties.c
-properties_slave_LDADD=	$(top_builddir)/src/libgras.la
+properties_alice_SOURCES=	_properties_alice.c    properties.c
+properties_alice_LDADD=		$(top_builddir)/src/libgras.la
 
-properties_master_SOURCES=	_properties_master.c    properties.c
-properties_master_LDADD=	$(top_builddir)/src/libgras.la
+properties_bob_SOURCES=		_properties_bob.c    properties.c
+properties_bob_LDADD=		$(top_builddir)/src/libgras.la
 
+TESTS=test_sg test_rl
 # Take care of generatated sources
 NAME=properties
-PROCESSES= slave master
+PROCESSES= alice bob
 include $(top_srcdir)/examples/temps-gras-stub.mk
 
 # Cruft
