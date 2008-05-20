@@ -248,6 +248,8 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include
+
+# override EXTRA_DIST and TESTS since we do not have 32bits and 64bits variants of the sg test here
 EXTRA_DIST = properties.xml test_sg test_rl
 @GRAS_ARCH_32_BITS_FALSE@TESTS = test_sg_64 test_rl
 @GRAS_ARCH_32_BITS_TRUE@TESTS = test_sg_32 test_rl
@@ -259,6 +261,7 @@ properties_alice_SOURCES = _properties_alice.c    properties.c
 properties_alice_LDADD = $(top_builddir)/src/libgras.la
 properties_bob_SOURCES = _properties_bob.c    properties.c
 properties_bob_LDADD = $(top_builddir)/src/libgras.la
+
 # Take care of generatated sources
 NAME = properties
 PROCESSES = alice bob

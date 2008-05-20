@@ -9,7 +9,11 @@ INCLUDES= -I$(top_srcdir)/include
 
 EXTRA_DIST=
 include $(top_srcdir)/examples/gras/tests.mk
+
+# override EXTRA_DIST and TESTS since we do not have 32bits and 64bits variants of the sg test here
 EXTRA_DIST=properties.xml test_sg test_rl
+TESTS=test_sg test_rl
+
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=properties_alice properties_bob properties_simulator
@@ -23,7 +27,6 @@ properties_alice_LDADD=		$(top_builddir)/src/libgras.la
 properties_bob_SOURCES=		_properties_bob.c    properties.c
 properties_bob_LDADD=		$(top_builddir)/src/libgras.la
 
-TESTS=test_sg test_rl
 # Take care of generatated sources
 NAME=properties
 PROCESSES= alice bob
