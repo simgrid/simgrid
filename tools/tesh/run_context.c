@@ -102,6 +102,15 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
  * Memory management
  */
 
+# ifdef __APPLE__
+/* under darwin, the environment gets added to the process at startup time. So, it's not defined at library link time, forcing us to extra tricks */
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
+# else
+ /* the environment, as specified by the opengroup, used to initialize the process properties */
+ extern char **environ;
+# endif
+
 void rctx_empty(rctx_t rc) {
   int i;
   char **env_it=environ;
@@ -133,8 +142,6 @@ void rctx_empty(rctx_t rc) {
   xbt_strbuff_empty(rc->output_got);
 }
 
-/* the environment, as specified by the opengroup */
-extern char **environ;
 
 rctx_t rctx_new() {
   rctx_t res = xbt_new0(s_rctx_t,1);
