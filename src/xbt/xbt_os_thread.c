@@ -155,6 +155,9 @@ xbt_os_thread_join(xbt_os_thread_t thread,void ** thread_return) {
    if (thread->exception)
      free(thread->exception);
 
+   if (thread->name)
+     free(thread->name);
+   
    if (thread == main_thread) /* just killed main thread */
      main_thread = NULL;
 
