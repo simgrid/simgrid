@@ -458,7 +458,7 @@ static void update_actions_state(double now, double delta)
 
 static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
-				  double value)
+				  double value, double date)
 {
   link_CM02_t nw_link = id;
   /*   printf("[" "%lg" "] Asking to update network card \"%s\" with value " */

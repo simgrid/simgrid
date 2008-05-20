@@ -472,7 +472,7 @@ void surf_presolve(void) {
 					      &value,
 					      (void **) &model_obj))) {
 	model_obj->model->common_private->
-	    update_resource_state(model_obj, event, value);
+	  update_resource_state(model_obj, event, value,NOW);
       }
     }
     xbt_dynar_foreach(model_list, iter, model) {
@@ -529,7 +529,7 @@ double surf_solve(void)
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       model_obj->model->common_private->
-	  update_resource_state(model_obj, event, value);
+	update_resource_state(model_obj, event, value,NOW+min);
     }
   }
 

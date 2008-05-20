@@ -38,7 +38,7 @@ typedef struct surf_model_private {
   /* Update the actions' state */
   void (*update_actions_state) (double now, double delta);
   void (*update_resource_state) (void *id, tmgr_trace_event_t event_type,
-				 double value);
+				 double value, double time);
   void (*finalize) (void);
 } s_surf_model_private_t;
 

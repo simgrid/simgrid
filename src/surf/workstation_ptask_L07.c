@@ -361,7 +361,7 @@ static void update_actions_state(double now, double delta)
 
 static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
-				  double value)
+				  double value, double date)
 {
   cpu_L07_t cpu = id;
   link_L07_t nw_link = id;

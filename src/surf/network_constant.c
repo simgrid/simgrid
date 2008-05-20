@@ -199,7 +199,7 @@ static void update_actions_state(double now, double delta)
 
 static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
-				  double value)
+				  double value, double time)
 {
   DIE_IMPOSSIBLE;
 }

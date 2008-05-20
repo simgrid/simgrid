@@ -229,7 +229,7 @@ static void update_actions_state(double now, double delta)
 
 static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
-				  double value)
+				  double value, double date)
 {
   cpu_Cas01_t cpu = id;
 
@@ -252,7 +252,7 @@ static void update_resource_state(void *id,
 
 	if(surf_action_get_state(action)==SURF_ACTION_RUNNING ||
 	   surf_action_get_state(action)==SURF_ACTION_READY) {
-	  action->finish = surf_get_clock(); // BUG! Wrong value here
+	  action->finish = date;
 	  action_change_state( action, SURF_ACTION_FAILED);
 	}
       }
