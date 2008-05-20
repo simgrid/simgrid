@@ -37,7 +37,8 @@ typedef struct {
 	
   int pid; /* pid of process, only for SG */
   int ppid; /* ppid of process, only for SG */
-	gras_msg_listener_t listener;
+   
+  gras_msg_listener_t listener; /* the thread in charge of the incomming communication for this process */
 } gras_procdata_t;
 
 gras_procdata_t *gras_procdata_get(void);
