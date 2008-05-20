@@ -19,11 +19,14 @@ XBT_EXPORT_NO_IMPORT(char const *) _gras_procname = NULL;
 static xbt_dict_t _process_properties = NULL;
 static xbt_dict_t _host_properties = NULL;
 
-/* the environment, as specified by the opengroup, used to initialize the process properties */
-#ifdef DARWIN
-#  include <crt_externs.h>
-#  define environ (*_NSGetEnviron())
-#endif
+# ifdef __APPLE__
+/* under darwin, the environment gets added to the process at startup time. So, it's not defined at library link time, forcing us to extra tricks */
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
+# else
+ /* the environment, as specified by the opengroup, used to initialize the process properties */
+ extern char **environ;
+# endif 
 
 extern char **environ;
 
