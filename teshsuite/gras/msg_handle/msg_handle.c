@@ -71,7 +71,7 @@ int server (int argc,char *argv[]) {
   xbt_assert1(gras_os_time() - now < 0.01,
 	      "gras_msg_handle(0) do not anwser immediately (%.4fsec)",
 	      gras_os_time() - now);
-  INFO0("gras_msg_handle(0) works as expected (imediate timeout)");
+  INFO0("gras_msg_handle(0) works as expected (immediate timeout)");
   /* Launch handle(0) when there is no message. Timeout expected */
   got_expected = 0;
   TRY {     
