@@ -253,7 +253,7 @@ static void update_resource_state(void *id,
 
       cpu->state_current = SURF_CPU_OFF;
 
-      while(var = lmm_get_var_from_cnst(cpu_maxmin_system,cnst,&elem)) {
+      while((var = lmm_get_var_from_cnst(cpu_maxmin_system,cnst,&elem))) {
 	surf_action_t action = lmm_variable_id(var) ;
 
 	if(surf_action_get_state(action)==SURF_ACTION_RUNNING ||

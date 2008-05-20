@@ -476,8 +476,8 @@ static void update_resource_state(void *id,
     surf_action_network_CM02_t action = NULL;
 
     nw_link->lat_current = value;
-    while (var= lmm_get_var_from_cnst
-	   (network_maxmin_system, nw_link->constraint, &elem)) {
+    while ((var= lmm_get_var_from_cnst
+	   (network_maxmin_system, nw_link->constraint, &elem))) {
       action = lmm_variable_id(var);
       action->lat_current += delta;
       if (action->rate < 0)

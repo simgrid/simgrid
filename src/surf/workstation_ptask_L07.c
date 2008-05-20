@@ -378,8 +378,8 @@ static void update_resource_state(void *id,
       lmm_element_t elem = NULL;
 
       nw_link->lat_current = value;
-      while (var = lmm_get_var_from_cnst
-	     (ptask_maxmin_system, nw_link->constraint, &elem)) {
+      while ((var = lmm_get_var_from_cnst
+	     (ptask_maxmin_system, nw_link->constraint, &elem))) {
 	
 
 	action = lmm_variable_id(var);
