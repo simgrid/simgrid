@@ -14,10 +14,6 @@
 #include "portable.h"
 #include "xbt/matrix.h" /* for the diff */
 
-static void free_string(void *d){
-  free(*(void**)d);
-}
-
 /**  @brief Strip whitespace (or other characters) from the end of a string.
  *
  * Strips the whitespaces from the end of s. 
@@ -191,7 +187,7 @@ xbt_str_strip_spaces(char *s) {
  */
 
 xbt_dynar_t xbt_str_split(const char *s, const char *sep) {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char*), free_string);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char*), xbt_free_ref);
   const char *p, *q;
   int done;
   const char* sep_dflt = " \t\n\r\x0B";
@@ -239,7 +235,7 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep) {
  * \return An array of dynars containing the string tokens
 */
 xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char*), free_string);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char*), xbt_free_ref);
   int done;
   const char *p, *q;
  
@@ -291,7 +287,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
  */
 
 xbt_dynar_t xbt_str_split_quoted(const char *s) {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char*), free_string);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char*), xbt_free_ref);
   char *str; /* we have to copy the string before, to handle backslashes */
   char *beg, *end; /* pointers around the parsed chunk */
   int in_simple_quote=0, in_double_quote=0;
@@ -612,7 +608,7 @@ char *xbt_str_diff(char *a, char *b) {
   xbt_dynar_t db = xbt_str_split(b, "\n");
 
   xbt_matrix_t C = diff_build_LCS(da,db);
-  xbt_dynar_t diff = xbt_dynar_new(sizeof(char*),free_string);
+  xbt_dynar_t diff = xbt_dynar_new(sizeof(char*),xbt_free_ref);
   char *res=NULL;
   
   diff_build_diff(diff, C, da,db, xbt_dynar_length(da)-1, xbt_dynar_length(db)-1);

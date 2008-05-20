@@ -105,9 +105,10 @@ static XBT_INLINE void *xbt_realloc(void*p,unsigned int s){
 #define xbt_free free /*nothing specific to do here. A poor valgrind replacement?*/
 /*#define xbt_free_fct free * replacement with the guareenty of being a function  FIXME:KILLME*/
 
-/** @brief like free 
-    @hideinitializer */
+/** @brief like free, but you can be sure that it is a function  */
 XBT_PUBLIC(void) xbt_free_f(void* p);
+/** @brief should be given a pointer to pointer, and frees the second one */
+XBT_PUBLIC(void) xbt_free_ref(void *d);
 
 /** @brief like calloc, but xbt_die() on error and don't memset to 0
     @hideinitializer */

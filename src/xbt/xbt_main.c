@@ -105,3 +105,15 @@ xbt_exit(){
     free(xbt_binary_name);
 }
 
+
+/* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
+/** @brief like free, but you can be sure that it is a function  */
+XBT_PUBLIC(void) xbt_free_f(void* p) {
+   free(p);
+}
+
+/** @brief should be given a pointer to pointer, and frees the second one */
+XBT_PUBLIC(void) xbt_free_ref(void *d){
+   free(*(void**)d);
+}
+
