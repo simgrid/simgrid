@@ -7,6 +7,6 @@ $ $SG_TEST_EXENV ./simple_token_simulator$EXEEXT ${srcdir:=.}/../../../msg/small
 > [Fafard:node:(2) 1.028109] [gras/INFO] Exiting GRAS
 > [Jupiter:node:(3) 1.030844] [gras/INFO] Exiting GRAS
 > [Ginette:node:(4) 1.032083] [gras/INFO] Exiting GRAS
-> [Bourassa:node:(5) 1.034039] [gras/INFO] Exiting GRAS
 > [Tremblay:node:(1) 1.034039] [gras/INFO] Exiting GRAS
+> [Bourassa:node:(5) 1.034039] [gras/INFO] Exiting GRAS
 
