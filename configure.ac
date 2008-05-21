@@ -514,6 +514,7 @@ AC_CONFIG_FILES([
 ],[
     for file in                                                 \
      tools/graspe-slave           tools/graspe-master           \
+     checkall                     examples/java/runtest         \
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done

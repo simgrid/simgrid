@@ -7,5 +7,5 @@
 
 SUBDIRS= basic ping_pong comm_time suspend
 
-EXTRA_DIST=java_test.mk
+EXTRA_DIST=java_test.mk runtest
 include $(top_srcdir)/acmacro/dist-files.mk
