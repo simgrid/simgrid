@@ -212,7 +212,9 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = platforms/prop.xml
+EXTRA_DIST = platforms/prop.xml \
+            platforms/metaxml.xml platforms/metaxml-random.xml
+
 SUBDIRS = msg gras amok simdag java
 all: all-recursive
 
