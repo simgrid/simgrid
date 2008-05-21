@@ -37,6 +37,16 @@ static double begin_of_time = -1;
 	precision = -1;                                               \
    } while (0)
 
+#define ERRMSG "Unknown %%%c sequence in layout format (%s).\nKnown sequences:\n"                       \
+	"  what:        %%m: user message  %%c: log category  %%p: log priority\n"                      \
+        "  where:\n"                                                                                    \
+	"    source:    %%F: file          %%L: line          %%M: function  %%l: location (%%F:%%L)\n" \
+	"    runtime:   %%h: hostname      %%t: thread        %%P: process   %%i: PID\n"                \
+	"    backtrace: %%b: full          %%B: short\n"                                                \
+	"  when:        %%d: date          %%r: app. age\n"                                             \
+	"  other:       %%%%: %%             %%n: new line      %%e: plain space\n"
+	
+
 static void xbt_log_layout_format_dynamic(xbt_log_layout_t l,
 					  xbt_log_event_t ev,
 					  const char*fmt,
@@ -144,8 +154,7 @@ static void xbt_log_layout_format_dynamic(xbt_log_layout_t l,
 	break;
 
       default:
-	fprintf(stderr,"Unknown %%%c sequence in layout format (%s)\n",
-		*q,(char*)l->data);
+	fprintf(stderr,ERRMSG, *q,(char*)l->data);
 	abort();
       }
       q++;
@@ -380,8 +389,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	break;
 
       default:
-	fprintf(stderr,"Unknown %%%c sequence in layout format (%s)\n",
-		*q,(char*)l->data);
+	fprintf(stderr,ERRMSG,*q,(char*)l->data);
 	abort();
       }
       q++;
