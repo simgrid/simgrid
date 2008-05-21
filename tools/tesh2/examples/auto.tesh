@@ -9,7 +9,7 @@
 ! include catch-return.tesh
 ! include catch-signal.tesh
 ! include catch-timeout.tesh
-! include cd.tesh
+! include catch-wrong-output.tesh
 ! include IO-broken-pipe.tesh
 ! include IO-orders.tesh
 ! include set-ignore-output.tesh
