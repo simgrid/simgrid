@@ -435,21 +435,6 @@ static void update_actions_state(double now, double delta)
 	       (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-    } else {			/* Need to check that none of the model has failed */
-      lmm_constraint_t cnst = NULL;
-      int i = 0;
-      link_CM02_t nw_link = NULL;
-
-      while ((cnst =
-	      lmm_get_cnst_from_var(network_maxmin_system,
-				    action->variable, i++))) {
-	nw_link = lmm_constraint_id(cnst);
-	if (nw_link->state_current == SURF_LINK_OFF) {
-	  action->generic_action.finish = surf_get_clock();
-	  action_change_state((surf_action_t) action, SURF_ACTION_FAILED);
-	  break;
-	}
-      }
     }
   }
 
@@ -500,8 +485,23 @@ static void update_resource_state(void *id,
   } else if (event_type == nw_link->state_event) {
     if (value > 0)
       nw_link->state_current = SURF_LINK_ON;
-    else
+    else {
+      lmm_constraint_t cnst = nw_link->constraint;
+      lmm_variable_t var = NULL;
+      lmm_element_t elem = NULL;
+
       nw_link->state_current = SURF_LINK_OFF;
+      while ((var= lmm_get_var_from_cnst
+	      (network_maxmin_system, cnst, &elem))) {
+	surf_action_t action = lmm_variable_id(var) ;
+
+	if(surf_action_get_state(action)==SURF_ACTION_RUNNING ||
+	   surf_action_get_state(action)==SURF_ACTION_READY) {
+	  action->finish = date;
+	  action_change_state( action, SURF_ACTION_FAILED);
+	}
+      }
+    }
   } else {
     CRITICAL0("Unknown event ! \n");
     xbt_abort();
@@ -546,7 +546,13 @@ static surf_action_t communicate(void *src, void *dst, double size,
 				   calloc but it seems to help valgrind... */
   action->generic_action.state_set =
       surf_network_model->common_public->states.running_action_set;
-
+  for (i = 0; i < route_size; i++) 
+    if(route[i]->state_current == SURF_LINK_OFF) {
+      action->generic_action.state_set =
+	surf_network_model->common_public->states.failed_action_set;
+      break;
+    }
+  
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
 
