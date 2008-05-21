@@ -1,7 +1,7 @@
 $ simdag/basic2 simdag/basic_platform.xml
 > [0.000000] [sd_kernel/INFO] Starting simulation...
-> [0.000000] [sd_kernel/INFO] Executing task '(null)'
-> [0.000000] [sd_kernel/INFO] Task '(null)' done
+> [0.000000] [sd_kernel/INFO] Executing task 'Init'
+> [0.000000] [sd_kernel/INFO] Task 'Init' done
 > [0.000000] [sd_kernel/INFO] Executing task 'Task Comm A'
 > [0.000000] [sd_kernel/INFO] Executing task 'Task Comm B'
 > [1.600100] [sd_kernel/INFO] Task 'Task Comm B' done
