@@ -141,7 +141,11 @@ gras/small_sleep/_small_sleep_simulator.c gras/small_sleep/_small_sleep_function
 	  cd gras/small_sleep;\
 	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ small_sleep ../../$(top_srcdir)/teshsuite/gras/small_sleep/small_sleep.xml
 
-TESTS += gras/small_sleep/test_sg
+if GRAS_ARCH_32_BITS
+  TESTS += gras/small_sleep/test_sg_32
+else
+  TESTS += gras/small_sleep/test_sg_64
+endif
 # gras/small_sleep/test_rl don't test on RL!!
 
 ###################################
