@@ -110,6 +110,6 @@ $ masterslave/masterslave_failure$EXEEXT small_platform_with_failures.xml master
 > [23.861529] [simix_kernel/INFO] Oops ! Deadlock or code not perfectly clean.
 > [23.861529] [simix_kernel/INFO] 1 processes are still running, waiting for something.
 > [23.861529] [simix_kernel/INFO] Legend of the following listing: "<process> on <host>: <status>."
-> [23.861529] [simix_kernel/INFO] slave on Ginette:  Blocked on condition 0x806fbf8; Waiting for the following actions: 'sleep'(0x806fba0).
+> [23.861529] [simix_kernel/INFO] slave on Ginette:  Blocked on condition 0xdead; Waiting for the following actions: 'sleep'(0xdead).
 > [23.861529] [simix_kernel/INFO] Return a Warning.
 > [23.861529] [msg_test/INFO] Simulation time 23.8615
