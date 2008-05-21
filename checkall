@@ -15,7 +15,7 @@ open LOG,(">checkall.log") || die "Cannot open log file: $!";
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 print LOG "Build started on $hour:$min:$sec $mon/$mday/$year\n\n";
-open MAKE,("make |") || die "Cannot fork a make: $!";
+open MAKE,("make 2>&1 |") || die "Cannot fork a make: $!";
 while (<MAKE>) {
     print     $_;
     print LOG $_;
@@ -30,7 +30,7 @@ if (!close MAKE) {
     exit 1;
 }
     
-open CHECK,("make -k check|") || die "Cannot fork a make check: $!";
+open CHECK,("make -k check 2>&1 |") || die "Cannot fork a make check: $!";
 while (<CHECK>) {
     print     $_;
     print LOG $_;
