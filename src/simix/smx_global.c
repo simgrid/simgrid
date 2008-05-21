@@ -153,18 +153,18 @@ void SIMIX_display_process_status(void)
 	     : ((process->simdata->suspended) ? "[SUSPENDED] " : ""));
 
     if (p_simdata->mutex) {
-      who2 = bprintf("%s Blocked on mutex %p", who, p_simdata->mutex);
+      who2 = bprintf("%s Blocked on mutex %p", who, (XBT_LOG_ISENABLED(simix_kernel,xbt_log_priority_verbose))?p_simdata->mutex:NULL);
       free(who);
       who = who2;
     } else if (p_simdata->cond) {
       who2 =
 	  bprintf
 	  ("%s Blocked on condition %p; Waiting for the following actions:",
-	   who, p_simdata->cond);
+	   who, (XBT_LOG_ISENABLED(simix_kernel,xbt_log_priority_verbose))?p_simdata->cond:NULL);
       free(who);
       who = who2;
       xbt_fifo_foreach(p_simdata->cond->actions, item, act, smx_action_t) {
-	who2 = bprintf("%s '%s'(%p)", who, act->name,act);
+	who2 = bprintf("%s '%s'(%p)", who, act->name,(XBT_LOG_ISENABLED(simix_kernel,xbt_log_priority_verbose))?act:NULL);
 	free(who);
 	who = who2;
       }
