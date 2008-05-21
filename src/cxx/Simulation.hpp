@@ -23,6 +23,9 @@ namespace SimGrid
 			
 				int execute(int argc, char** argv);
 				
+				void run(const Environment& rEnvironment, const Application& rApplication)
+				throw (MsgException);
+				
 				
 			// Operators.
 			

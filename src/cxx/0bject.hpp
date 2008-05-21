@@ -10,6 +10,8 @@
 
 #include <stdlib.h>
 
+#include <ClassNotFoundException.hpp>
+
 namespace msg
 {
 		//////////////////////////////////////////////////////////////////////////////
@@ -97,7 +99,8 @@ namespace msg
 		// Operations
 		
 			// Create the runtime class from its name.
-			static Class* fromName(const char* name);
+			static Class* fromName(const char* name)
+			throw (ClassNotFoundException);
 			
 			// Create an object from the name of the its class.
 			static Object* createObject(const char* name);

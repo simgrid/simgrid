@@ -50,7 +50,7 @@ Class* Class::fromName(const char* name)
 	}
 
 	MSG_DELCARING_CLASSES.unlock();
-	return cur;
+	throw ClassNotFoundException(name);
 }
 
 Object* Class::createObject(const char* name)

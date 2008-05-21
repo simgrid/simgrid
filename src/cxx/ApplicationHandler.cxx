@@ -85,12 +85,30 @@ namespace SimGrid
 		// create the cxx process wrapper.
 		void ApplicationHandler::ProcessFactory::createProcess() 
 		{
+			Host host;
+			Process* process;
+			
 			// dynamic creation of a instance fo the process from its name (which is specified by the element function
 			// in the xml application file.
-			Process* process = (Process*)Class::fromName(this->function);
+			try
+			{
+				process = (Process*)Class::fromName(this->function);
+			}
+			catch(ClassNotFoundException e)
+			{
+				cerr << e.toString();	
+			}
 			
-			// retrieve the host of the process from its name
-			Host host = Host::getByName(this->hostName);
+			// try to retrieve the host of the process from its name
+			try
+			{
+				host = Host::getByName(this->hostName);	
+			}
+			catch(HostNotFoundException(this->hostName))
+			{
+				cerr << e.toString();
+			}
+				
 			
 			// build the list of the arguments of the newly created process.
 			int argc = xbt_dynar_length(this->args);

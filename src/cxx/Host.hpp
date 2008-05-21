@@ -286,7 +286,7 @@ namespace SimGrid
 				 *
 				 * \remark			To specify no rate set the maxRate parameter value with -1.0.
 				 */
-				void Host::putBounded(int channel, const Task& rTask, double maxRate) 
+				void putBounded(int channel, const Task& rTask, double maxRate) 
 				throw(MsgException, InvalidParameterException);
 				
 				/* ! brief Host::send() - sends the given task to mailbox identified by the default alias.
