@@ -45,8 +45,9 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
 	host->data = data;
 	
 	simdata->smx_host = workstation;
-	
-	simdata->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
+
+	if (msg_global->max_channel>0)   
+		simdata->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
 	
 	for (i = 0; i < msg_global->max_channel; i++)
 	{
@@ -151,7 +152,8 @@ void __MSG_host_destroy(m_host_t host)
 		memset(alias,0,MAX_ALIAS_NAME +1);
 	}
 	
-	free(simdata->mailboxes);
+	if (msg_global->max_channel>0)   
+		free(simdata->mailboxes);
 	SIMIX_mutex_destroy(simdata->mutex);
 	free(simdata);
 	
