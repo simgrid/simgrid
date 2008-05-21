@@ -43,8 +43,8 @@ $ masterslave/masterslave_failure$EXEEXT small_platform_with_failures.xml master
 > [Fafard:slave:(4) 1.202113] [msg_test/INFO] Communication time : "0.199579"
 > [Fafard:slave:(4) 1.202113] [msg_test/INFO] Processing "Task"
 > [Ginette:slave:(5) 1.506790] [msg_test/INFO] "Task" done
-> [Tremblay:master:(1) 1.508062] [msg_test/INFO] Mmh. Something went wrong with 'Ginette'. Nevermind. Let's keep going!
-> [Ginette:slave:(5) 1.508062] [msg_test/INFO] Mmh. Something went wrong. Nevermind. Let's keep going!
+> [Tremblay:master:(1) 1.506790] [msg_test/INFO] Mmh. Something went wrong with 'Ginette'. Nevermind. Let's keep going!
+> [Ginette:slave:(5) 1.506790] [msg_test/INFO] Mmh. Something went wrong. Nevermind. Let's keep going!
 > [Bourassa:slave:(6) 1.704282] [msg_test/INFO] "Task" done
 > [Fafard:slave:(4) 1.857455] [msg_test/INFO] "Task" done
 > [Tremblay:master:(1) 1.901774] [msg_test/INFO] Send completed
@@ -83,28 +83,33 @@ $ masterslave/masterslave_failure$EXEEXT small_platform_with_failures.xml master
 > [Fafard:slave:(4) 22.630969] [msg_test/INFO] Received "Task"
 > [Fafard:slave:(4) 22.630969] [msg_test/INFO] Communication time : "0.199579"
 > [Fafard:slave:(4) 22.630969] [msg_test/INFO] Processing "Task"
-> [Tremblay:master:(1) 22.632241] [msg_test/INFO] Mmh. Something went wrong with 'Ginette'. Nevermind. Let's keep going!
-> [Ginette:slave:(5) 22.632241] [msg_test/INFO] Mmh. Something went wrong. Nevermind. Let's keep going!
-> [Tremblay:master:(1) 22.829733] [msg_test/INFO] Send completed
-> [Bourassa:slave:(6) 22.829733] [msg_test/INFO] Received "Task"
-> [Bourassa:slave:(6) 22.829733] [msg_test/INFO] Communication time : "0.197492"
-> [Bourassa:slave:(6) 22.829733] [msg_test/INFO] Processing "Task"
-> [Tremblay:master:(1) 22.831756] [msg_test/INFO] Send completed
-> [Tremblay:master:(1) 22.831756] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
-> [Tremblay:slave:(2) 22.831756] [msg_test/INFO] Received "Task"
-> [Tremblay:slave:(2) 22.831756] [msg_test/INFO] Communication time : "0.002023"
-> [Tremblay:slave:(2) 22.831756] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 22.630969] [msg_test/INFO] Mmh. Something went wrong with 'Ginette'. Nevermind. Let's keep going!
+> [Ginette:slave:(5) 22.630969] [msg_test/INFO] Mmh. Something went wrong. Nevermind. Let's keep going!
+> [Tremblay:master:(1) 22.828461] [msg_test/INFO] Send completed
+> [Bourassa:slave:(6) 22.828461] [msg_test/INFO] Received "Task"
+> [Bourassa:slave:(6) 22.828461] [msg_test/INFO] Communication time : "0.197492"
+> [Bourassa:slave:(6) 22.828461] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 22.830484] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 22.830484] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [Tremblay:slave:(2) 22.830484] [msg_test/INFO] Received "Task"
+> [Tremblay:slave:(2) 22.830484] [msg_test/INFO] Communication time : "0.002023"
+> [Tremblay:slave:(2) 22.830484] [msg_test/INFO] Processing "Task"
 > [Fafard:slave:(4) 23.286311] [msg_test/INFO] "Task" done
-> [Tremblay:slave:(2) 23.341466] [msg_test/INFO] "Task" done
-> [Tremblay:master:(1) 23.831756] [msg_test/INFO] Mmh. Can't reach 'Jupiter'! Nevermind. Let's keep going!
-> [Fafard:slave:(4) 23.833732] [msg_test/INFO] Received "finalize"
-> [Fafard:slave:(4) 23.833732] [msg_test/INFO] I'm done. See you!
-> [Ginette:slave:(5) 23.835004] [msg_test/INFO] Received "finalize"
-> [Ginette:slave:(5) 23.835004] [msg_test/INFO] I'm done. See you!
-> [Bourassa:slave:(6) 23.860831] [msg_test/INFO] "Task" done
-> [Bourassa:slave:(6) 23.862786] [msg_test/INFO] Received "finalize"
-> [Bourassa:slave:(6) 23.862786] [msg_test/INFO] I'm done. See you!
-> [Tremblay:master:(1) 23.862801] [msg_test/INFO] Goodbye now!
-> [Tremblay:slave:(2) 23.862801] [msg_test/INFO] Received "finalize"
-> [Tremblay:slave:(2) 23.862801] [msg_test/INFO] I'm done. See you!
-> [23.862801] [msg_test/INFO] Simulation time 23.8628
+> [Tremblay:slave:(2) 23.340194] [msg_test/INFO] "Task" done
+> [Tremblay:master:(1) 23.830484] [msg_test/INFO] Mmh. Can't reach 'Jupiter'! Nevermind. Let's keep going!
+> [Fafard:slave:(4) 23.832460] [msg_test/INFO] Received "finalize"
+> [Fafard:slave:(4) 23.832460] [msg_test/INFO] I'm done. See you!
+> [Tremblay:master:(1) 23.832460] [msg_test/INFO] Mmh. Can't reach 'Ginette'! Nevermind. Let's keep going!
+> [Ginette:slave:(5) 23.832460] [msg_test/INFO] Mmh. Something went wrong. Nevermind. Let's keep going!
+> [Bourassa:slave:(6) 23.859559] [msg_test/INFO] "Task" done
+> [Bourassa:slave:(6) 23.861514] [msg_test/INFO] Received "finalize"
+> [Bourassa:slave:(6) 23.861514] [msg_test/INFO] I'm done. See you!
+> [Tremblay:master:(1) 23.861529] [msg_test/INFO] Goodbye now!
+> [Tremblay:slave:(2) 23.861529] [msg_test/INFO] Received "finalize"
+> [Tremblay:slave:(2) 23.861529] [msg_test/INFO] I'm done. See you!
+> [23.861529] [simix_kernel/INFO] Oops ! Deadlock or code not perfectly clean.
+> [23.861529] [simix_kernel/INFO] 1 processes are still running, waiting for something.
+> [23.861529] [simix_kernel/INFO] Legend of the following listing: "<process> on <host>: <status>."
+> [23.861529] [simix_kernel/INFO] slave on Ginette:  Blocked on condition 0x806fbf8; Waiting for the following actions: 'sleep'(0x806fba0).
+> [23.861529] [simix_kernel/INFO] Return a Warning.
+> [23.861529] [msg_test/INFO] Simulation time 23.8615
