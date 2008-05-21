@@ -14,6 +14,7 @@ surf_cpu_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
 
 xbt_dict_t cpu_set = NULL;
+xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
 
 static void cpu_free(void *cpu)
 {
@@ -209,12 +210,6 @@ static void update_actions_state(double now, double delta)
    */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
-    if (action->generic_action.max_duration == NO_MAX_DURATION &&
-	action->suspended==2 )
-      /* Rely on the fact that sleep action with no duration are on
-	 the end of the queue */
-      break;
-
     double_update(&(action->generic_action.remains),
 		  lmm_variable_getvalue(action->variable) * delta);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
@@ -257,7 +252,8 @@ static void update_resource_state(void *id,
 	surf_action_t action = lmm_variable_id(var) ;
 
 	if(surf_action_get_state(action)==SURF_ACTION_RUNNING ||
-	   surf_action_get_state(action)==SURF_ACTION_READY) {
+	   surf_action_get_state(action)==SURF_ACTION_READY || 
+	   surf_action_get_state(action)==SURF_ACTION_NOT_IN_THE_SYSTEM) {
 	  action->finish = date;
 	  action_change_state( action, SURF_ACTION_FAILED);
 	}
@@ -297,9 +293,8 @@ static surf_action_t execute(void *cpu, double size)
   else
     action->generic_action.state_set =
 	surf_cpu_model->common_public->states.failed_action_set;
-  /* Insert at the head by default. This convention is used to speed
-     up update_resource_state  */
-  xbt_swag_insert_at_head(action, action->generic_action.state_set);
+
+  xbt_swag_insert(action, action->generic_action.state_set);
 
   action->variable = lmm_variable_new(cpu_maxmin_system, action,
 				      action->generic_action.priority,
@@ -312,7 +307,7 @@ static surf_action_t execute(void *cpu, double size)
 static surf_action_t action_sleep(void *cpu, double duration)
 {
   surf_action_cpu_Cas01_t action = NULL;
-  xbt_swag_t action_set = NULL;
+
   if (duration>0)
      duration=MAX(duration,MAXMIN_PRECISION);
 
@@ -323,9 +318,9 @@ static surf_action_t action_sleep(void *cpu, double duration)
   if(duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention
        is used to speed up update_resource_state  */
-    action_set = action->generic_action.state_set;
-    xbt_swag_remove(action, action_set);
-    xbt_swag_insert(action, action_set);
+    xbt_swag_remove(action, ((surf_action_t)action)->state_set);
+    ((surf_action_t)action)->state_set =running_action_set_that_does_not_need_being_checked;
+    xbt_swag_insert(action, ((surf_action_t)action)->state_set);
   }
 
   lmm_update_variable_weight(cpu_maxmin_system, action->variable, 0.0);
@@ -436,6 +431,9 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->common_public->states.failed_action_set =
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
   surf_cpu_model->common_public->states.done_action_set =
+      xbt_swag_new(xbt_swag_offset(action, state_hookup));
+
+  running_action_set_that_does_not_need_being_checked =
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_cpu_model->common_public->name_service = name_service;
