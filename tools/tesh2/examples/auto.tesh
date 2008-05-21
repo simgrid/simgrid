@@ -10,8 +10,11 @@
 ! include catch-signal.tesh
 ! include catch-timeout.tesh
 ! include catch-wrong-output.tesh
+! include cd.tesh
 ! include IO-broken-pipe.tesh
 ! include IO-orders.tesh
+! include IO-bigsize.tesh
+! include set-timeout.tesh
 ! include set-ignore-output.tesh
 ! include set-return.tesh
 ! include set-signal.tesh
