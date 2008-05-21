@@ -221,7 +221,7 @@ static const struct s_optentry opt_entries[] =
 	{ 'e', flag, (byte*)&env_overrides_flag, 0, "environment-overrides", },
 	{ 'f', string, (byte*)&fstreams, 0, "file" },
 	{ 'h', flag, (byte*)&print_usage_flag, 0, "help" },
-	{ 'a', flag, (byte*)&print_readme_flag, 0, "read-me" },
+	{ 'a', flag, (byte*)&print_readme_flag, 0, "semantic" },
 	{ 'i', flag, (byte*)&keep_going_unit_flag, 0, "keep-going-unit" },
 	{ 'I', string, (byte*)&include_dirs, 0, "include-dir" },
 	{ 'j', number, (byte*)&jobs_nb, (byte*) &optional_jobs_nb, "jobs" },
@@ -340,6 +340,12 @@ static void
 free_string(void* str)
 {
 	free(*(void**)str);
+}
+
+static void 
+free_error(void* e)
+{
+	free(*(void**)e);
 }
 
 int
@@ -544,7 +550,7 @@ init(void)
 	free(buffer);
 	
 	/* this vector contains all the errors of the run */
-	errors = xbt_dynar_new(sizeof(xerror_t), free);
+	errors = xbt_dynar_new(sizeof(xerror_t), free_error);
 	
 	/* the directories to loads */
 	if(!(directories = directories_new()))
@@ -646,6 +652,7 @@ finalize(void)
 		}
 	}
 	
+	
 	/* delete vector of errors */
 	if(errors)
 		xbt_dynar_free(&errors);
@@ -679,6 +686,7 @@ finalize(void)
 	/* delete the xbt log options list */
 	if(logs)
 		xbt_dynar_free(&logs);
+		
 		
 	/* destroy the semaphore used to synchronize the units */
 	if(jobs_sem)

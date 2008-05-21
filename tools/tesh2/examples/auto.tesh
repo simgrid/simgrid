@@ -10,7 +10,7 @@
 ! include catch-signal.tesh
 ! include catch-timeout.tesh
 ! include cd.tesh
-#! include IO-broken-pipe.tesh
+! include IO-broken-pipe.tesh
 ! include IO-orders.tesh
 ! include set-ignore-output.tesh
 ! include set-return.tesh
