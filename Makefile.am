@@ -12,7 +12,8 @@ SG_EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS C
 	acmacro/aci.m4 \
 	tools/graspe-slave.in \
 	tools/MSG_visualization \
-	   tools/MSG_visualization/colorize.pl
+	tools/MSG_visualization/colorize.pl \
+	checkall
 # GRAMINE_CUT_END
 
 SUBDIRS= include src tools $(SG_SUBDIRS)
