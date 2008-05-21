@@ -575,7 +575,6 @@ XBT_PUBLIC(void) surf_exit(void);
 /* Prototypes of the functions that handle the properties */
 XBT_PUBLIC_DATA(xbt_dict_t) current_property_set; /* the prop set for the currently parsed element (also used in SIMIX) */
 void parse_properties(void);
-void free_string(void*);
 
 /* Prototypes for functions handling routing and were factorized succesfully from the models */
 void init_data(void);

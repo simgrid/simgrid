@@ -869,7 +869,7 @@ static void parse_route_set_endpoints(void)
 
   route_action = A_surfxml_route_action;
 
-  route_link_list = xbt_dynar_new(sizeof(char*), &free_string);
+  route_link_list = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
 }
 
 static void parse_route_set_route(void)

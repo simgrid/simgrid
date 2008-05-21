@@ -229,6 +229,7 @@ void ETag_surfxml_platform(void)
 
   surfxml_call_cb_functions(ETag_surfxml_platform_cb_list);
 
+  xbt_dynar_free(&route_link_list);
   xbt_dict_free(&random_data_list);
   xbt_dict_free(&set_list);
 
@@ -478,11 +479,6 @@ void parse_properties(void)
 
    value = xbt_strdup(A_surfxml_prop_value);  
    xbt_dict_set(current_property_set, A_surfxml_prop_id, value, free);
-}
-
-void free_string(void *d)
-{
-  free(*(void**)d);
 }
 
 void surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function)
@@ -755,7 +751,7 @@ void parse_route_multi_set_endpoints(void)
   is_symmetric_route = A_surfxml_route_c_multi_symmetric;
   route_multi_size++;
 
-  route_link_list = xbt_dynar_new(sizeof(char *), &free_string);
+  route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 static int contains(xbt_dynar_t list, const char* value)
@@ -890,14 +886,14 @@ static void convert_route_multi_to_routes(void)
     dst_names = (xbt_dynar_t)xbt_dict_get_or_null(set_list, dst);
     /* Add to dynar even if they are simple names */
     if (src_names == NULL) {
-       src_names = xbt_dynar_new(sizeof(char *), &free_string);
+       src_names = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
        val = xbt_strdup(src);
        xbt_dynar_push(src_names, &val);
        if (strcmp(val,"$*") != 0 && NULL == xbt_dict_get_or_null(set, val))
          THROW3(unknown_error,0,"(In route:multi (%s -> %s) source %s does not exist (not a set or a host)", src, dst, src);
     }
     if (dst_names == NULL) {
-       dst_names = xbt_dynar_new(sizeof(char *), &free_string);
+       dst_names = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
        val = xbt_strdup(dst);
        if (strcmp(val,"$*") != 0 && NULL == xbt_dict_get_or_null(set, val))
          THROW3(unknown_error,0,"(In route:multi (%s -> %s) destination %s does not exist (not a set or a host)", src, dst, dst);

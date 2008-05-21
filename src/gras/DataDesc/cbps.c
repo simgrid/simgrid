@@ -27,10 +27,6 @@ typedef struct s_gras_cbps {
   xbt_dynar_t globals;
 } s_gras_cbps_t;
 
-static void free_string(void *d){
-  free(*(void**)d);
-}
-
 gras_cbps_t gras_cbps_new(void) {
   gras_cbps_t  res;
 

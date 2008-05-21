@@ -162,7 +162,7 @@ static void parse_route_set_endpoints(void)
   src_id = network_card_new(A_surfxml_route_src);
   dst_id = network_card_new(A_surfxml_route_dst);
   route_action = A_surfxml_route_action;
-  route_link_list = xbt_dynar_new(sizeof(char *), &free_string);
+  route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 static void parse_route_set_route(void)
@@ -217,6 +217,7 @@ static void add_route(void)
 
     src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
+    xbt_dynar_free(&keys);
  
     xbt_dynar_foreach (links, cpt, link) {
       TRY {

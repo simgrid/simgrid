@@ -1005,11 +1005,6 @@ XBT_TEST_UNIT("double",test_dynar_double,"Dynars of doubles") {
 
 /* doxygen_string_cruft */
 
-/* The function we will use to free the data */
-static void free_string(void *d){
-  free(*(void**)d);
-}
-
 /*******************************************************************************/
 /*******************************************************************************/
 /*******************************************************************************/
@@ -1021,7 +1016,7 @@ XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
    char *s1,*s2;
    
    xbt_test_add0("==== Traverse the empty dynar");
-   d=xbt_dynar_new(sizeof(char *),&free_string);
+   d=xbt_dynar_new(sizeof(char *),&xbt_free_ref);
    xbt_dynar_foreach(d,iter,s1){
      xbt_test_assert0(FALSE,
 		  "Damnit, there is something in the empty dynar");
@@ -1031,7 +1026,7 @@ XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
 
    xbt_test_add1("==== Push %d strings, set them again 3 times, shift them",NB_ELEM);
    /* Populate_str [doxygen cruft] */
-   d=xbt_dynar_new(sizeof(char*),&free_string);
+   d=xbt_dynar_new(sizeof(char*),&xbt_free_ref);
    /* 1. Populate the dynar */
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
@@ -1066,7 +1061,7 @@ XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
 
 
    xbt_test_add1("==== Unshift, traverse and pop %d strings",NB_ELEM);
-   d=xbt_dynar_new(sizeof(char**),&free_string);
+   d=xbt_dynar_new(sizeof(char**),&xbt_free_ref);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
@@ -1094,7 +1089,7 @@ XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
 
 
    xbt_test_add2("==== Push %d strings, insert %d strings in the middle, shift everything",NB_ELEM,NB_ELEM/5);
-   d=xbt_dynar_new(sizeof(char*),&free_string);
+   d=xbt_dynar_new(sizeof(char*),&xbt_free_ref);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
@@ -1135,7 +1130,7 @@ XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
 
 
    xbt_test_add3("==== Push %d strings, remove %d-%d. free the rest",NB_ELEM,2*(NB_ELEM/5),4*(NB_ELEM/5));
-   d=xbt_dynar_new(sizeof(char*),&free_string);
+   d=xbt_dynar_new(sizeof(char*),&xbt_free_ref);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);

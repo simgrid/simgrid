@@ -223,7 +223,7 @@ static void parse_route_set_endpoints(void)
 /*  nb_link = 0;
   link_name = NULL;
 */
-  route_link_list = xbt_dynar_new(sizeof(char *), &free_string);
+  route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 /* KF*/
