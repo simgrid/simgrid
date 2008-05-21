@@ -270,7 +270,6 @@ gras_msg_handleall(double period) {
 
   do {
     now=gras_os_time();
-          
     TRY{
       if (period - now + begin > 0)
 	gras_msg_handle(period - now + begin);
@@ -280,7 +279,7 @@ gras_msg_handleall(double period) {
       xbt_ex_free(e);
     }
      /* Epsilon to avoid numerical stability issues were the waited interval is so small that the global clock cannot notice the increment */
-  } while (now - begin < period - 0.000001);
+  } while (period - now + begin > 0);
 }
 
 /** @brief Handle an incomming message or timer (or wait up to \a timeOut seconds)
