@@ -70,6 +70,8 @@ noinst_PROGRAMS = xbt/log_large_test$(EXEEXT) \
 	simdag/partask/test_comp_only_par$(EXEEXT)
 @GRAS_ARCH_32_BITS_TRUE@am__append_1 = gras/msg_handle/test_rl gras/msg_handle/test_sg_32
 @GRAS_ARCH_32_BITS_FALSE@am__append_2 = gras/msg_handle/test_rl gras/msg_handle/test_sg_64
+@GRAS_ARCH_32_BITS_TRUE@am__append_3 = gras/small_sleep/test_sg_32
+@GRAS_ARCH_32_BITS_FALSE@am__append_4 = gras/small_sleep/test_sg_64
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
 subdir = teshsuite
@@ -413,8 +415,11 @@ EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
 	gras/datadesc/datadesc.big32_8_4 \
 	gras/datadesc/datadesc.big32_2 \
 	gras/datadesc/mk_datadesc_structs.pl \
-	gras/msg_handle/msg_handle.xml gras/empty_main/empty_main.xml \
-	gras/small_sleep/small_sleep.xml \
+	gras/msg_handle/msg_handle.xml gras/msg_handle/test_rl \
+	gras/msg_handle/test_sg_32 gras/msg_handle/test_sg_64 \
+	gras/empty_main/empty_main.xml gras/empty_main/test_rl \
+	gras/empty_main/test_sg gras/small_sleep/small_sleep.xml \
+	gras/small_sleep/test_sg_32 gras/small_sleep/test_sg_64 \
 	simdag/network/platform_2p_1sl.xml simdag/basic_platform.xml \
 	simdag/network/p2p/platform_2p_1sl.xml \
 	simdag/network/p2p/platform_2p_1fl.xml \
@@ -432,7 +437,7 @@ TESTS = xbt/log_large_test.tesh xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_r_big32_8_4.tesh \
 	gras/datadesc/datadesc_r_big32_2.tesh $(am__append_1) \
 	$(am__append_2) gras/empty_main/test_rl \
-	gras/empty_main/test_sg gras/small_sleep/test_sg \
+	gras/empty_main/test_sg $(am__append_3) $(am__append_4) \
 	simdag/network/test_reinit_costs.tesh simdag/basic0.tesh \
 	simdag/basic1.tesh simdag/basic2.tesh simdag/basic3.tesh \
 	simdag/basic4.tesh simdag/basic5.tesh simdag/basic6.tesh \
@@ -1458,7 +1463,7 @@ gras/empty_main/_empty_main_simulator.c gras/empty_main/_empty_main_function.c :
 	  cd gras/empty_main;\
 	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ empty_main ../../$(top_srcdir)/teshsuite/gras/empty_main/empty_main.xml
 
-  #################################################
+  ###########################################################################
 
 gras/small_sleep/_small_sleep_simulator.c gras/small_sleep/_small_sleep_function.c : gras/small_sleep/small_sleep.c gras/small_sleep/small_sleep.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
 	mkdir -p gras/small_sleep; \

@@ -77,7 +77,9 @@ gras/datadesc/datadesc_structs.c: gras/datadesc/mk_datadesc_structs.pl
 
   ## Ensures the gras_msg_handle semantic ##
   ##########################################
-EXTRA_DIST += gras/msg_handle/msg_handle.xml
+EXTRA_DIST += gras/msg_handle/msg_handle.xml \
+              gras/msg_handle/test_rl \
+	      gras/msg_handle/test_sg_32 gras/msg_handle/test_sg_64
 noinst_PROGRAMS+=\
   gras/msg_handle/msg_handle_client \
   gras/msg_handle/msg_handle_server \
@@ -105,7 +107,8 @@ endif
 
   ## Make sure it's ok to have empty main functions ##
   ####################################################
-EXTRA_DIST += gras/empty_main/empty_main.xml
+EXTRA_DIST += gras/empty_main/empty_main.xml \
+              gras/empty_main/test_rl gras/empty_main/test_sg
 noinst_PROGRAMS+=\
   gras/empty_main/empty_main_function \
   gras/empty_main/empty_main_simulator
@@ -123,9 +126,10 @@ gras/empty_main/_empty_main_simulator.c gras/empty_main/_empty_main_function.c :
 
 TESTS += gras/empty_main/test_rl gras/empty_main/test_sg
 
-  ## Make sure it's ok to have very small sleeps ##
-  #################################################
-EXTRA_DIST += gras/small_sleep/small_sleep.xml
+  ## Make sure it's ok to have very small sleeps (not meant for real life) ##
+  ###########################################################################
+EXTRA_DIST += gras/small_sleep/small_sleep.xml \
+              gras/small_sleep/test_sg_32 gras/small_sleep/test_sg_64
 noinst_PROGRAMS+=\
   gras/small_sleep/small_sleep_function \
   gras/small_sleep/small_sleep_simulator
@@ -146,7 +150,6 @@ if GRAS_ARCH_32_BITS
 else
   TESTS += gras/small_sleep/test_sg_64
 endif
-# gras/small_sleep/test_rl don't test on RL!!
 
 ###################################
 # network model test via SimDag API
