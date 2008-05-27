@@ -16,7 +16,7 @@
 xbt_context_t current_context = NULL;
 
 /* the context associated with the maestro						*/
-xbt_context_t  maestro_context = NULL;
+xbt_context_t maestro_context = NULL;
 
 
 /* this list contains the contexts to destroy					*/
@@ -35,89 +35,85 @@ xbt_swag_t context_living = NULL;
  * java implementation of the context and the java factory build
  * the context depending of this implementation.
  */
-static xbt_context_factory_t
-context_factory = NULL;
+static xbt_context_factory_t context_factory = NULL;
 
 /**
  * This function is call by the xbt_init() function to initialize the context module.
  */
-void
-xbt_context_mod_init(void)
+void xbt_context_mod_init(void)
 {
-	if(!context_factory)
-	{
-		/* select context factory to use to create the context(depends of the macro definitions) */
+  if (!context_factory) {
+    /* select context factory to use to create the context(depends of the macro definitions) */
 
-		#ifdef CONTEXT_THREADS
-			/* context switch based os thread */
-			xbt_ctx_thread_factory_init(&context_factory);
-		#elif !defined(WIN32)
-			/* context switch based ucontext */
-			xbt_ctx_sysv_factory_init(&context_factory);
-		#else
-			/* context switch is not allowed on Windows */
-			#error ERROR [__FILE__, line __LINE__]: no context based implementation specified.
-		#endif
-		
-		/* maestro context specialisation (this create the maestro with the good implementation */
-		(*(context_factory->create_maestro_context))(&maestro_context);
-		
-		/* the current context is the context of the maestro */
-		current_context = maestro_context;
-		
-		/* the current context doesn't want to die */
-		current_context->iwannadie = 0;
-		
-		/* intantiation of the lists containing the contexts to destroy and the contexts in use */  
-		context_to_destroy = xbt_swag_new(xbt_swag_offset(*current_context, hookup));
-		context_living = xbt_swag_new(xbt_swag_offset(*current_context, hookup));
-		
-		/* insert the current context in the list of the contexts in use */
-		xbt_swag_insert(current_context, context_living);
-		
-	}		 
-} 
+#ifdef CONTEXT_THREADS
+    /* context switch based os thread */
+    xbt_ctx_thread_factory_init(&context_factory);
+#elif !defined(WIN32)
+    /* context switch based ucontext */
+    xbt_ctx_sysv_factory_init(&context_factory);
+#else
+    /* context switch is not allowed on Windows */
+#error ERROR [__FILE__, line __LINE__]: no context based implementation specified.
+#endif
+
+    /* maestro context specialisation (this create the maestro with the good implementation */
+    (*(context_factory->create_maestro_context)) (&maestro_context);
+
+    /* the current context is the context of the maestro */
+    current_context = maestro_context;
+
+    /* the current context doesn't want to die */
+    current_context->iwannadie = 0;
+
+    /* intantiation of the lists containing the contexts to destroy and the contexts in use */
+    context_to_destroy =
+      xbt_swag_new(xbt_swag_offset(*current_context, hookup));
+    context_living = xbt_swag_new(xbt_swag_offset(*current_context, hookup));
+
+    /* insert the current context in the list of the contexts in use */
+    xbt_swag_insert(current_context, context_living);
+
+  }
+}
 
 /**
  * This function is call by the xbt_exit() function to finalize the context module.
  */
-void
-xbt_context_mod_exit(void)
+void xbt_context_mod_exit(void)
 {
-	if(context_factory)
-	{
-		xbt_context_t context = NULL;
-		xbt_pfn_context_factory_finalize_t finalize_factory;
-		
-		/* finalize the context factory */
-		finalize_factory = context_factory->finalize;
-		
-		(*finalize_factory)(&context_factory);
-		
-		/* destroy all contexts in the list of contexts to destroy */
-		xbt_context_empty_trash();
-		
-		/* remove the context of the scheduler from the list of the contexts in use */
-		xbt_swag_remove(maestro_context, context_living);
-		
-		/*  
-		 * kill all the contexts in use :
-		 * the killed contexts are added in the list of the contexts to destroy
-		 */
-		while((context = xbt_swag_extract(context_living))) 
-				(*(context->kill))(context);	
-	
-		
-		/* destroy all contexts in the list of contexts to destroy */
-		xbt_context_empty_trash();
-		
-		free(maestro_context);
-		maestro_context = current_context = NULL;
-		
-		/* destroy the lists */
-		xbt_swag_free(context_to_destroy);
-		xbt_swag_free(context_living);
-	}
+  if (context_factory) {
+    xbt_context_t context = NULL;
+    xbt_pfn_context_factory_finalize_t finalize_factory;
+
+    /* finalize the context factory */
+    finalize_factory = context_factory->finalize;
+
+    (*finalize_factory) (&context_factory);
+
+    /* destroy all contexts in the list of contexts to destroy */
+    xbt_context_empty_trash();
+
+    /* remove the context of the scheduler from the list of the contexts in use */
+    xbt_swag_remove(maestro_context, context_living);
+
+    /*  
+     * kill all the contexts in use :
+     * the killed contexts are added in the list of the contexts to destroy
+     */
+    while ((context = xbt_swag_extract(context_living)))
+      (*(context->kill)) (context);
+
+
+    /* destroy all contexts in the list of contexts to destroy */
+    xbt_context_empty_trash();
+
+    free(maestro_context);
+    maestro_context = current_context = NULL;
+
+    /* destroy the lists */
+    xbt_swag_free(context_to_destroy);
+    xbt_swag_free(context_living);
+  }
 }
 
 /*******************************/
@@ -141,15 +137,18 @@ xbt_context_new(const char *name,
                 void *startup_arg,
                 void_f_pvoid_t cleanup_func,
                 void *cleanup_arg, int argc, char *argv[]
-)
+  )
 {
-	/* use the appropriate context factory to create the appropriate context */
-	xbt_context_t context = (*(context_factory->create_context))(name, code, startup_func, startup_arg, cleanup_func, cleanup_arg, argc, argv);
-	
-	/* add the context in the list of the contexts in use */
-	xbt_swag_insert(context, context_living);
+  /* use the appropriate context factory to create the appropriate context */
+  xbt_context_t context =
+    (*(context_factory->create_context)) (name, code, startup_func,
+                                          startup_arg, cleanup_func,
+                                          cleanup_arg, argc, argv);
 
-	return context;
+  /* add the context in the list of the contexts in use */
+  xbt_swag_insert(context, context_living);
+
+  return context;
 }
 
 /* Scenario for the end of a context:
@@ -175,17 +174,15 @@ xbt_context_new(const char *name,
 
 
 /* Argument must be stopped first -- runs in maestro context */
-void
-xbt_context_free(xbt_context_t context)
+void xbt_context_free(xbt_context_t context)
 {
-	(*(context->free))(context);	
+  (*(context->free)) (context);
 }
 
 
-void
-xbt_context_kill(xbt_context_t context)
+void xbt_context_kill(xbt_context_t context)
 {
-	(*(context->kill))(context);	
+  (*(context->kill)) (context);
 }
 
 /** 
@@ -194,10 +191,9 @@ xbt_context_kill(xbt_context_t context)
  * Calling this function prepares \a context to be run. It will 
    however run effectively only when calling #xbt_context_schedule
  */
-void
-xbt_context_start(xbt_context_t context)
+void xbt_context_start(xbt_context_t context)
 {
-	(*(context->start))(context);
+  (*(context->start)) (context);
 }
 
 /** 
@@ -208,10 +204,9 @@ xbt_context_start(xbt_context_t context)
  * Only the processes can call this function, giving back the control
  * to the maestro
  */
-void
-xbt_context_yield(void)
+void xbt_context_yield(void)
 {
-	(*(current_context->yield))();	
+  (*(current_context->yield)) ();
 }
 
 /** 
@@ -223,69 +218,67 @@ xbt_context_yield(void)
  * 
  * Only the maestro can call this function to run a given process.
  */
-void
-xbt_context_schedule(xbt_context_t context)
+void xbt_context_schedule(xbt_context_t context)
 {
-	(*(context->schedule))(context);	
+  (*(context->schedule)) (context);
+}
+
+void xbt_context_stop(int exit_code)
+{
+
+  (*(current_context->stop)) (exit_code);
+}
+
+int xbt_context_select_factory(const char *name)
+{
+  /* if a factory is already instantiated (xbt_context_mod_init() was called) */
+  if (NULL != context_factory) {
+    /* if the desired factory is different of the current factory, call xbt_context_mod_exit() */
+    if (strcmp(context_factory->name, name))
+      xbt_context_mod_exit();
+    else
+      /* the same context factory is requested return directly */
+      return 0;
+  }
+
+  /* get the desired factory */
+  xbt_context_init_factory_by_name(&context_factory, name);
+
+  /* maestro context specialisation */
+  (*(context_factory->create_maestro_context)) (&maestro_context);
+
+  /* the current context is the context of the maestro */
+  current_context = maestro_context;
+
+  /* the current context doesn't want to die */
+  current_context->iwannadie = 0;
+
+  /* intantiation of the lists containing the contexts to destroy and the contexts in use */
+  context_to_destroy =
+    xbt_swag_new(xbt_swag_offset(*current_context, hookup));
+  context_living = xbt_swag_new(xbt_swag_offset(*current_context, hookup));
+
+  /* insert the current context in the list of the contexts in use */
+  xbt_swag_insert(current_context, context_living);
+
+  return 0;
 }
 
 void
-xbt_context_stop(int exit_code)
+xbt_context_init_factory_by_name(xbt_context_factory_t * factory,
+                                 const char *name)
 {
-
-	(*(current_context->stop))(exit_code);
-}
-
-int
-xbt_context_select_factory(const char* name)
-{
-	/* if a factory is already instantiated (xbt_context_mod_init() was called) */
-	if(NULL != context_factory)
-	{
-		/* if the desired factory is different of the current factory, call xbt_context_mod_exit() */
-		if(strcmp(context_factory->name,name))
-			xbt_context_mod_exit();
-		else
-			/* the same context factory is requested return directly */
-			return 0;
-	}
-	
-	/* get the desired factory */
-	xbt_context_init_factory_by_name(&context_factory,name);
-	
-	/* maestro context specialisation */
-	(*(context_factory->create_maestro_context))(&maestro_context);
-	
-	/* the current context is the context of the maestro */
-	current_context = maestro_context;
-	
-	/* the current context doesn't want to die */
-	current_context->iwannadie = 0;
-	
-	/* intantiation of the lists containing the contexts to destroy and the contexts in use */  
-	context_to_destroy = xbt_swag_new(xbt_swag_offset(*current_context, hookup));
-	context_living = xbt_swag_new(xbt_swag_offset(*current_context, hookup));
-	
-	/* insert the current context in the list of the contexts in use */
-	xbt_swag_insert(current_context, context_living);	
-	
-	return 0;	
-}
-
-void
-xbt_context_init_factory_by_name(xbt_context_factory_t* factory, const char* name)
-{
-   if(!strcmp(name,"java")) 
-      xbt_ctx_java_factory_init(factory);
+  if (!strcmp(name, "java"))
+    xbt_ctx_java_factory_init(factory);
 #ifdef CONTEXT_THREADS
-   else if(!strcmp(name,"thread"))	
-     xbt_ctx_thread_factory_init(factory);	
+  else if (!strcmp(name, "thread"))
+    xbt_ctx_thread_factory_init(factory);
 #elif !defined(WIN32)
-   else if(!strcmp(name,"sysv"))
-     xbt_ctx_sysv_factory_init(factory);	
+  else if (!strcmp(name, "sysv"))
+    xbt_ctx_sysv_factory_init(factory);
 #endif
-   else
-     THROW1(not_found_error, 0,"Factory '%s' does not exist",name);
+  else
+    THROW1(not_found_error, 0, "Factory '%s' does not exist", name);
 }
 
 /** Garbage collection
@@ -293,14 +286,10 @@ xbt_context_init_factory_by_name(xbt_context_factory_t* factory, const char* nam
  * Should be called some time to time to free the memory allocated for contexts
  * that have finished executing their main functions.
  */
-void 
-xbt_context_empty_trash(void)
+void xbt_context_empty_trash(void)
 {
-	xbt_context_t context = NULL;
-	
-	while((context = xbt_swag_extract(context_to_destroy)))
-		(*(context->free))(context);
+  xbt_context_t context = NULL;
+
+  while ((context = xbt_swag_extract(context_to_destroy)))
+    (*(context->free)) (context);
 }
-
-
-
