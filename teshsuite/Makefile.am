@@ -96,7 +96,7 @@ gras_msg_handle_msg_handle_server_LDADD=      $(LDADD_RL)
 gras/msg_handle/_msg_handle_simulator.c gras/msg_handle/_msg_handle_client.c gras/msg_handle/_msg_handle_server.c : gras/msg_handle/msg_handle.c gras/msg_handle/msg_handle.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
 	mkdir -p gras/msg_handle; \
 	  cd gras/msg_handle;\
-	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle ../../$(top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
+	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle $(top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
 
 
 if GRAS_ARCH_32_BITS
@@ -122,7 +122,7 @@ gras_empty_main_empty_main_function_LDADD=    $(LDADD_RL)
 gras/empty_main/_empty_main_simulator.c gras/empty_main/_empty_main_function.c : gras/empty_main/empty_main.c gras/empty_main/empty_main.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
 	mkdir -p gras/empty_main; \
 	  cd gras/empty_main;\
-	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ empty_main ../../$(top_srcdir)/teshsuite/gras/empty_main/empty_main.xml
+	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ empty_main $(top_srcdir)/teshsuite/gras/empty_main/empty_main.xml
 
 TESTS += gras/empty_main/test_rl gras/empty_main/test_sg
 
@@ -143,7 +143,7 @@ gras_small_sleep_small_sleep_function_LDADD=    $(LDADD_RL)
 gras/small_sleep/_small_sleep_simulator.c gras/small_sleep/_small_sleep_function.c : gras/small_sleep/small_sleep.c gras/small_sleep/small_sleep.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
 	mkdir -p gras/small_sleep; \
 	  cd gras/small_sleep;\
-	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ small_sleep ../../$(top_srcdir)/teshsuite/gras/small_sleep/small_sleep.xml
+	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ small_sleep $(top_srcdir)/teshsuite/gras/small_sleep/small_sleep.xml
 
 if GRAS_ARCH_32_BITS
   TESTS += gras/small_sleep/test_sg_32

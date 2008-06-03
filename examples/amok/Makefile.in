@@ -776,11 +776,11 @@ uninstall-am:
 
 # Take care of generatated sources
 bandwidth/_bandwidth_simulator.c bandwidth/_bandwidth_sensor.c bandwidth/_bandwidth_maestro.c : bandwidth/bandwidth.c bandwidth/bandwidth.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
-	cd bandwidth; ../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ bandwidth ../$(top_srcdir)/examples/amok/bandwidth/bandwidth.xml
+	cd bandwidth; ../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ bandwidth $(top_srcdir)/examples/amok/bandwidth/bandwidth.xml
 
 # Take care of generatated sources
 saturate/_saturate_simulator.c saturate/_saturate_sensor.c saturate/_saturate_maestro.c : saturate/saturate.c saturate/saturate.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
-	cd saturate; ../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ saturate ../$(top_srcdir)/examples/amok/saturate/saturate.xml
+	cd saturate; ../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ saturate $(top_srcdir)/examples/amok/saturate/saturate.xml
 
 dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
