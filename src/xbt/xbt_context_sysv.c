@@ -6,12 +6,18 @@
 #include "portable.h"
 #include <ucontext.h>           /* context relative declarations                                */
 #define STACK_SIZE 128*1024     /* lower this if you want to reduce the memory consumption      */
+#ifdef HAVE_VALGRIND_VALGRIND_H
+#  include <valgrind/valgrind.h>
+#endif     /* HAVE_VALGRIND_VALGRIND_H */
 
 typedef struct s_xbt_ctx_sysv {
   XBT_CTX_BASE_T;
-  ucontext_t uc;                /* the thread that execute the code                             */
-  char stack[STACK_SIZE];       /* the thread stack size                                        */
-  struct s_xbt_ctx_sysv *prev;  /* the previous thread                                              */
+  ucontext_t uc;                    /* the thread that execute the code                             */
+  char stack[STACK_SIZE];           /* the thread stack size                                        */
+  struct s_xbt_ctx_sysv *prev;      /* the previous thread                                              */
+#ifdef HAVE_VALGRIND_VALGRIND_H
+  unsigned int valgrind_stack_id;   /* the valgrind stack id.	    */
+#endif /* HAVE_VALGRIND_VALGRIND_H */
 } s_xbt_ctx_sysv_t, *xbt_ctx_sysv_t;
 
 
@@ -130,6 +136,12 @@ xbt_ctx_sysv_factory_create_context(const char *name, xbt_main_func_t code,
     pth_skaddr_makecontext(context->stack, STACK_SIZE);
   context->uc.uc_stack.ss_size =
     pth_sksize_makecontext(context->stack, STACK_SIZE);
+  #ifdef HAVE_VALGRIND_VALGRIND_H
+  context->valgrind_stack_id = VALGRIND_STACK_REGISTER(
+    context->uc.uc_stack.ss_sp,
+    ((char *)context->uc.uc_stack.ss_sp) + context->uc.uc_stack.ss_size
+  );
+  #endif     /* HAVE_VALGRIND_VALGRIND_H */
 
   context->exception = xbt_new(ex_ctx_t, 1);
   XBT_CTX_INITIALIZE(context->exception);
@@ -169,6 +181,10 @@ static void xbt_ctx_sysv_free(xbt_context_t context)
 
     if (context->exception)
       free(context->exception);
+
+    #ifdef HAVE_VALGRIND_VALGRIND_H
+      VALGRIND_STACK_DEREGISTER(((xbt_ctx_sysv_t)context)->valgrind_stack_id);
+    #endif     /* HAVE_VALGRIND_VALGRIND_H */
 
     /* finally destroy the context */
     free(context);
