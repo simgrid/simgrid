@@ -27,6 +27,7 @@ if GRAS_ARCH_32_BITS
 else
   TESTS += bandwidth/bandwidth_rl.tesh bandwidth/bandwidth_sg_64.tesh
 endif
+XFAIL_TESTS+=bandwidth/bandwidth_rl.tesh
 
 noinst_PROGRAMS += \
   bandwidth/bandwidth_maestro   \
@@ -52,10 +53,14 @@ bandwidth/_bandwidth_simulator.c bandwidth/_bandwidth_sensor.c bandwidth/_bandwi
 EXTRA_DIST+=saturate/saturate.xml
 
 if GRAS_ARCH_32_BITS
-  TESTS += saturate/saturate_rl.tesh saturate/saturate_sg_32.tesh
+  TESTS       += saturate/saturate_rl.tesh saturate/saturate_sg_32.tesh
+  XFAIL_TESTS += saturate/saturate_rl.tesh saturate/saturate_sg_32.tesh
 else
-  TESTS += saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
+  TESTS       += saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
+  XFAIL_TESTS += saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
 endif
+
+
 noinst_PROGRAMS += \
   saturate/saturate_maestro   \
   saturate/saturate_sensor    \
@@ -80,5 +85,4 @@ saturate/_saturate_simulator.c saturate/_saturate_sensor.c saturate/_saturate_ma
 # Cruft #
 #########
 EXTRA_DIST+=$(TESTS)
-XFAIL_TESTS+=$(TESTS)
 include $(top_srcdir)/acmacro/dist-files.mk

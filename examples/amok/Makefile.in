@@ -53,7 +53,9 @@ noinst_PROGRAMS = bandwidth/bandwidth_maestro$(EXEEXT) \
 @GRAS_ARCH_32_BITS_TRUE@am__append_1 = bandwidth/bandwidth_rl.tesh bandwidth/bandwidth_sg_32.tesh
 @GRAS_ARCH_32_BITS_FALSE@am__append_2 = bandwidth/bandwidth_rl.tesh bandwidth/bandwidth_sg_64.tesh
 @GRAS_ARCH_32_BITS_TRUE@am__append_3 = saturate/saturate_rl.tesh saturate/saturate_sg_32.tesh
-@GRAS_ARCH_32_BITS_FALSE@am__append_4 = saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
+@GRAS_ARCH_32_BITS_TRUE@am__append_4 = saturate/saturate_rl.tesh saturate/saturate_sg_32.tesh
+@GRAS_ARCH_32_BITS_FALSE@am__append_5 = saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
+@GRAS_ARCH_32_BITS_FALSE@am__append_6 = saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
 subdir = examples/amok
@@ -284,8 +286,9 @@ AM_CFLAGS = -g
 EXTRA_DIST = bandwidth/bandwidth.xml saturate/saturate.xml $(TESTS)
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = $(am__append_1) $(am__append_2) $(am__append_3) \
-	$(am__append_4)
-XFAIL_TESTS = $(TESTS)
+	$(am__append_5)
+XFAIL_TESTS = bandwidth/bandwidth_rl.tesh $(am__append_4) \
+	$(am__append_6)
 LDADD_SG = $(top_builddir)/src/libsimgrid.la
 LDADD_RL = $(top_builddir)/src/libgras.la
 bandwidth_bandwidth_simulator_SOURCES = bandwidth/bandwidth.c bandwidth/_bandwidth_simulator.c
