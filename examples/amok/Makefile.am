@@ -80,4 +80,5 @@ saturate/_saturate_simulator.c saturate/_saturate_sensor.c saturate/_saturate_ma
 # Cruft #
 #########
 EXTRA_DIST+=$(TESTS)
+XFAIL_TESTS+=$(TESTS)
 include $(top_srcdir)/acmacro/dist-files.mk
