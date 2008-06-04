@@ -107,6 +107,15 @@ units_interrupt_all(units_t units)
 	{
 		if(!(unit->successeded) && !(unit->interrupted))
 			unit_interrupt(unit);
+		else
+		{
+			if(!unit->released && unit->sem)
+			{
+				unit->released = 1;
+				xbt_os_sem_release(unit->sem);
+			}
+		}
+			
 	}
 	
 	return 0;
@@ -157,8 +166,9 @@ units_free(void** unitsptr)
 {
 	if(!(*unitsptr))
 		return EINVAL;
-
-	xbt_dynar_free(&((*((units_t*)unitsptr))->items));
+	
+	if((*((units_t*)unitsptr))->items)
+		xbt_dynar_free(&((*((units_t*)unitsptr))->items));
 		
 	free(*unitsptr);
 	*unitsptr = NULL;

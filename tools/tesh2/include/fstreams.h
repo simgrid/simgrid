@@ -38,7 +38,7 @@ extern "C" {
  *					         the file stream.
  */
 fstreams_t
-fstreams_new(int capacity, void_f_pvoid_t fn_finalize);
+fstreams_new(void_f_pvoid_t fn_finalize);
 
 int
 fstreams_exclude(fstreams_t fstreams, excludes_t excludes);

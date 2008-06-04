@@ -7,26 +7,24 @@
 
 struct option
 {
-	const char *name;	/* nom de l'option longue	*/
+	const char *name;	/* name of the long option	*/
 	
 	int has_arg;		/*
-						 * has_arg vaut : no_argument (ou 0), si l'option ne prend pas d'argument, 
-						 * required_argument (ou 1) si l'option prend un argument,
-						 * ou optional_argument (ou 2) si l'option prend un argument optionnel. 
+						 * has_arg is : no_argument (or 0), if the option doesn't take an argument, 
+						 * required_argument (or 1) if the option takes an argument,
+						 * optional_argument (or 2) if the option takes an optional argument.
 						 */
 	
-	int *flag;			/* spécifie la manière de renvoyer les résultats pour une option longue
-						 * si flag vaut NULL, alors getopt_long() renvoie val
-						 * (un programme peut par exemple initialiser val avec le caractère de 
-						 * l'option courte correspondante)
-						 * dans le cas contraire getopt_long() renvoie 0, et flag pointe sur la  
-						 * variable dont le contenu est spécifié dans le champ val lorsque l'option 
-						 * est trouvée mais reste inchangée si l'option n'est pas trouvée.
+	int *flag;			/* specify the mean used to return a result for a long option:
+						 * if flag is NULL, then getopt_long() returns val
+						 * in the other case getopt_long() returns 0, and flag points to the  
+						 * variable specified bay the content of the field val when the option 
+						 * is found but it is not update if the option is not found.
 						 */
 						 				
-	int val;			/* val est la valeur renvoyée par getopt_long() lorsque le pointeur flag
-						 * vaut NULL ou la valeur de la variable référencée par le pointeur flag
-						 * lorsque l'option est trouvée.
+	int val;			/* val is the value returned by getopt_long() when the pointer flag
+						 * is NULL or the value of the variable referenced by the pointer flag
+						 * when the option is found.
 						 */
 };
 

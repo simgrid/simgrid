@@ -109,8 +109,9 @@ directories_free(void** directoriesptr)
 		return EINVAL;
 
 	directories = (directories_t)(*directoriesptr);
-
-	xbt_dynar_free(&(directories->items));
+	
+	if(directories->items)
+		xbt_dynar_free(&(directories->items));
 	
 	free(*directoriesptr);
 	*directoriesptr = NULL;

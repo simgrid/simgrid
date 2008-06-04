@@ -1,31 +1,1 @@
-#! ./tesh
-
-p This is a basic test
-
-< TOTO \
-TUTU
-$ cat > tmp_fich
-
-$ cat tmp_fich
-> TOTO TUTU
-
-$ rm tmp_fich
-
-p And now, some multilines examples
-
-< a
-< b
-< c
-< d
-$ cat > tmp_fich
-
-$ cat tmp_fich
-> a
-> b
-> c
-> d
-
-$ wc -l tmp_fich
-> 4 tmp_fich
-
-$ rm tmp_fich
+#! ./teshp This is a basic test< TOTO \TUTU$ cat > tmp_fich$ cat tmp_fich> TOTO TUTU$ rm tmp_fichp And now, some multilines examples< a< b< c< d$ cat > tmp_fich$ cat tmp_fich> a> b> c> d$ wc -l tmp_fich> 4 tmp_fich$ rm tmp_fich

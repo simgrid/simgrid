@@ -6,5 +6,8 @@ p This tests whether TESH accepts to ignore command output
 < > TOTO
 < < TUTU
 < $ cat
-$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
-
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+> Test unit from stdin
+> [stdin:4] cat
+> (ignoring the output of <stdin:4> as requested)
+> Test unit from stdin OK

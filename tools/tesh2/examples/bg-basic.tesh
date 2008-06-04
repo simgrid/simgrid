@@ -1,20 +1,1 @@
-#! ./tesh
-
-p This is a basic test
-
-< TOTO \
-TUTU
-& cat
-> TOTO TUTU
-
-p And now, some multilines examples
-
-< a
-< b
-< c
-< d
-& cat
-> a
-> b
-> c
-> d
+#! ./teshp This is a basic test< TOTO \TUTU& cat> TOTO TUTUp And now, some multilines examples< a< b< c< d& cat> a> b> c> d

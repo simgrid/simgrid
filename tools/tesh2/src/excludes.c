@@ -1,4 +1,5 @@
 #include <excludes.h>
+#include <fstream.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
@@ -7,7 +8,7 @@ excludes_new(void)
 {
 	excludes_t excludes = xbt_new0(s_excludes_t, 1);
 
-	excludes->items = xbt_dynar_new(sizeof(fstream_t), NULL);
+	excludes->items = xbt_dynar_new(sizeof(fstream_t), (void_f_pvoid_t)fstream_free);
 	
 	return excludes;
 }
@@ -70,25 +71,28 @@ excludes_check(excludes_t excludes, fstreams_t fstreams)
 	
 	if(!excludes || !fstreams)
 		return EINVAL;
-
-	xbt_dynar_foreach(excludes->items, i, exclude)
-	{
-		xbt_dynar_foreach(fstreams->items, i, fstream)
+	
+	
+		xbt_dynar_foreach(excludes->items, i, exclude)
 		{
-			exists = 0;
-			
-			if(!strcmp(fstream->name, exclude->name) && !strcmp(fstream->directory, exclude->directory))
+			exists = 1;
+
+			xbt_dynar_foreach(fstreams->items, i, fstream)
 			{
-				exists = 1;
-				break;
+				exists = 0;
+				
+				if(!strcmp(fstream->name, exclude->name) && !strcmp(fstream->directory, exclude->directory))
+				{
+					exists = 1;
+					break;
+				}
 			}
-		}
 
-		if(!exists)
-		{
-			success = 0;
-			WARN1("cannot exclude the file %s",exclude->name);	
-		}
+			if(!exists)
+			{
+				success = 0;
+				WARN1("cannot exclude the file %s",exclude->name);	
+			}
 	}
 		
 	return success;
@@ -99,8 +103,9 @@ excludes_free(void** excludesptr)
 {
 	if(!(*excludesptr))
 		return EINVAL;
-
-	xbt_dynar_free((&(*((excludes_t*)excludesptr))->items));
+	
+	if((*((excludes_t*)excludesptr))->items)
+		xbt_dynar_free((&(*((excludes_t*)excludesptr))->items));
 
 	free(*excludesptr);
 	*excludesptr = NULL;	

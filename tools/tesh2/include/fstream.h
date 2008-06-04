@@ -112,10 +112,12 @@ void
 fstream_handle_include(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, const char* file_name, const char* description);
 
 void
-fstream_handle_suite(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, const char* description);
+fstream_handle_suite(fstream_t fstream, const char* description, const char* filepos);
 
 int
 fstream_launch_command(fstream_t fstream, context_t context, xbt_os_mutex_t mutex);
+
+long fstream_getline(fstream_t fstream, char **buf, size_t *n);
 
 #ifdef __cplusplus
 }

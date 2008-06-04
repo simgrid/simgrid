@@ -5,35 +5,35 @@ p Order: in, out, cmd
 < < TOTO
 < > TOTO
 < $ cat
-$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
+> Test unit from stdin
+> [stdin:3] cat
+> Test unit from stdin OK
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
 
 p Order: out, in, cmd
 < > TOTO
 < < TOTO
 < $ cat
-$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
+> Test unit from stdin
+> [stdin:3] cat
+> Test unit from stdin OK
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
 
 p Order: out, cmd, in
 < > TOTO
 < $ cat
 < < TOTO
-$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
+> Test unit from stdin
+> [stdin:2] cat
+> Test unit from stdin OK
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
 
 p Order: in, cmd, out
 < < TOTO
 < $ cat
 < > TOTO
-$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
-
-p Order: cmd, out, in
-< $ cat
-< > TOTO
-< < TOTO
-$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
-
-p Order: cmd, in, out
-< $ cat
-< < TOTO
-< > TOTO
-$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
+> Test unit from stdin
+> [stdin:2] cat
+> Test unit from stdin OK
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
 

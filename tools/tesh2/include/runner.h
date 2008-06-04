@@ -36,7 +36,7 @@ extern "C" {
  *								[ESYNTAX] if the parameter check_syntax_flag is 1 and a syntax error is detected.
  */			
 int
-runner_init(int check_syntax_flag, int timeout, fstreams_t fstreams);
+runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams);
 
 /*! \brief runner_run - run the tesh files.
  */			
@@ -57,6 +57,9 @@ runner_summarize(void);
  */
 void
 runner_interrupt(void);
+
+int
+runner_is_timedout(void);
 
 
 #ifdef __cplusplus

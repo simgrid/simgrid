@@ -108,6 +108,9 @@ unit_summuarize(unit_t unit);
 int
 unit_reset(unit_t unit);
 
+void
+unit_set_error(unit_t unit, int errcode, int kind);
+
 #ifdef __cplusplus
 }
 #endif

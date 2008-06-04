@@ -25,6 +25,7 @@ context_new(void)
 	context_t context = xbt_new0(s_context_t,1);
 	
 	context->line = NULL;
+	context->pos = NULL;
 	context->command_line = NULL;
 	context->exit_code = 0;
 	context->timeout = INDEFINITE;
@@ -40,13 +41,18 @@ context_new(void)
 int
 context_free(context_t* ptr)
 {
-	/* TODO : check the parameter */
 	if(((*ptr)->input))
 		xbt_strbuff_free(((*ptr)->input));
 
 	if(((*ptr)->output))
 		xbt_strbuff_free(((*ptr)->output));
 	
+	if((*ptr)->command_line)
+		free((*ptr)->command_line);
+
+	if((*ptr)->pos)
+		free((*ptr)->pos);
+
 	if((*ptr)->signal)
 		free((*ptr)->signal);
 
@@ -58,11 +64,20 @@ context_free(context_t* ptr)
 int
 context_reset(context_t context)
 {
-	
-	/* TODO : check the parameter */
-	
 	context->line = NULL;
-	context->command_line = NULL;
+	context->pos = NULL;
+
+	if(context->command_line)
+	{
+		free(context->command_line);
+		context->command_line = NULL;
+	}
+
+	if(context->pos)
+	{
+		free(context->pos);
+		context->pos = NULL;
+	}
 
 	if(context->input)
 		xbt_strbuff_empty(context->input);
@@ -89,15 +104,13 @@ context_reset(context_t context)
 context_t
 context_dup(context_t context)
 {
-	
 	context_t dup;
-	
-	/* TODO : check the parameter */
 	
 	dup = xbt_new0(s_context_t, 1);
 	
 	dup->line = context->line;
-	dup->command_line = context->command_line;
+	dup->pos = strdup(context->pos);
+	dup->command_line = strdup(context->command_line);
 	dup->exit_code = context->exit_code;
 	dup->timeout = context->timeout;
 	dup->output = NULL;
@@ -109,10 +122,11 @@ context_dup(context_t context)
 		dup->input = xbt_strbuff_new();
 		xbt_strbuff_append(dup->input,context->input->data);
 	}
+	
+	dup->output = xbt_strbuff_new();
 
 	if(context->output->used)
 	{
-		dup->output = xbt_strbuff_new();
 		xbt_strbuff_append(dup->output,context->output->data);
 	}
 
@@ -136,7 +150,20 @@ void
 context_clear(context_t context)
 {
 	context->line = NULL;
-	context->command_line = NULL;
+	context->pos = NULL;
+	
+	if(context->command_line)
+	{
+		free(context->command_line);
+		context->command_line = NULL;
+	}
+
+	if(context->pos)
+	{
+		free(context->pos);
+		context->pos = NULL;
+	}
+
 	context->exit_code = 0;
 	context->timeout = INDEFINITE;
 	

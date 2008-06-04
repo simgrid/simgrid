@@ -14,7 +14,7 @@
  
 #include <timer.h>
 #include <command.h>
-
+#include <unit.h>
 
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
@@ -26,8 +26,6 @@ ttimer_t
 timer_new(command_t command)
 {
 	ttimer_t timer;
-	
-	/* TODO : check the parameter */
 	
 	timer = xbt_new0(s_timer_t, 1);
 	
@@ -42,9 +40,11 @@ timer_new(command_t command)
 int
 timer_free(ttimer_t* ptr)
 {
-	/* TODO : check the parameter */
-	
+	if((*ptr)->started)
+		xbt_os_sem_destroy((*ptr)->started);
+
 	free(*ptr);
+
 	*ptr = NULL;
 	
 	return 0;
@@ -82,11 +82,21 @@ timer_start_routine(void* p)
 
 	if(timer->timeouted && !command->failed && !command->successeded  && !command->interrupted)
 	{
-		error_register("Command timed out", ECMDTIMEDOUT, command->context->command_line, command->unit->fstream->name);
+		ERROR3("[%s] `%s' timed out after %d sec", command->context->pos, command->context->command_line, command->context->timeout);
+
+
+		unit_set_error(command->unit, ECMDTIMEDOUT, 1);
+
 		command_kill(command);
 		command_handle_failure(command, csr_timeout);
-		
-		
+
+		while(!command->reader->done)
+			xbt_os_thread_yield();
+
+		if(command->output->used)
+			INFO2("[%s] Output on timeout:\n%s",command->context->pos, command->output->data);
+		else
+			INFO1("[%s] No output before timeout",command->context->pos);
 	}
 	
   	return NULL;

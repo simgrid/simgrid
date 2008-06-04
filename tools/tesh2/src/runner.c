@@ -11,7 +11,6 @@
  * 		the tesh runner type.
  *
  */
- 
 #include <runner.h>
 #include <units.h>
 #include <unit.h>
@@ -22,13 +21,67 @@
 #include <stdlib.h>	/* for calloc()		*/
 #include <stdio.h>
 
+#include <readline.h>
+
 #ifndef WIN32
 #include <sys/resource.h>
+#include <explode.h>
 #endif
 
 #define _RUNNER_HASHCODE		0xFEFEAAAA	
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
+
+#if (!defined(__BUILTIN) && defined(__CHKCMD))
+static const char* builtin[] =
+{
+	"alias",
+	"bind",
+	"builtin",
+	"caller",
+	"cd",
+	"command",
+	"compgen",
+	"complete",
+	"declare",
+	"disown",
+	"echo",
+	"enable",
+	"eval",
+	"exec",
+	"export",
+	"false",
+	"fc",
+	"function",
+	"getopts",
+	"hash",
+	"history",
+	"jobs",
+	"let",
+	"logout",
+	"printf",
+	"pwd",
+	"readonly",
+	"shift",
+	"shopt",
+	"source",
+	"suspend",
+	"test",
+	"time",
+	"times",
+	"trap",
+	"true",
+	"type",
+	"typeset",
+	"ulimit",
+	"umask",
+	"unalias",
+	"unset",
+	NULL
+};
+
+#define __BUILTIN_MAX ((size_t)42)
+#endif
 
 #ifndef WIN32
 extern char**
@@ -51,13 +104,14 @@ runner_start_routine(void* p);
  * the check_syntax_flag is specified. Returns
  * 0 if the syntax is clean.
  */
-static void
-check_syntax(void);
+/*static void
+check_syntax(void);*/
 
 #ifdef WIN32
 
 static HANDLE 
 timer_handle = NULL;
+
 
 static void*
 runner_start_routine(void* p)
@@ -79,6 +133,7 @@ runner_start_routine(void* p)
 	if(runner->waiting)
 	{
 		exit_code = ELEADTIME;
+		err_kind = 1;
 		runner->timeouted = 1;
 		xbt_os_sem_release(units_sem);
 	}
@@ -91,14 +146,19 @@ static void*
 runner_start_routine(void* p)
 {
 	struct timespec ts;
-
-	ts.tv_sec = runner->timeout;
-	ts.tv_nsec = 0L;
-
-	do
+	int timeout = runner->timeout;
+	
+	
+	while(timeout-- && runner->waiting)
 	{
-		nanosleep(&ts, &ts);
-	}while(EINTR == errno);
+		ts.tv_sec = 1;
+		ts.tv_nsec = 0L;
+
+		do
+		{
+			nanosleep(&ts, &ts);
+		}while(EINTR == errno);
+	}
 	
 	if(errno)
 	{
@@ -109,6 +169,7 @@ runner_start_routine(void* p)
 		if(runner->waiting)
 		{
 			exit_code = ELEADTIME;
+			err_kind = 1;
 			runner->timeouted = 1;
 			xbt_os_sem_release(units_sem);
 		}
@@ -120,7 +181,7 @@ runner_start_routine(void* p)
 
 
 int
-runner_init(int check_syntax_flag, int timeout, fstreams_t fstreams)
+runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 {
 	
 	int i;
@@ -130,10 +191,25 @@ runner_init(int check_syntax_flag, int timeout, fstreams_t fstreams)
 	const char* cstr;
 	variable_t variable;
 	
+	#if (defined(__CHKCMD) && defined(__BUILTIN))
+	FILE* s;
+	int n = 0;
+	size_t len;
+	char* line = NULL;
+	int is_blank;
+	#endif
+	
+	
 	if(runner)
-		return EALREADY;
+	{
+		ERROR0("The runner is already initialized");
+		return -1;
+	}
 		
 	runner = xbt_new0(s_runner_t, 1);
+	
+	runner->path = NULL;
+	runner->builtin = NULL;
 	
 	if(!(runner->units = units_new(runner, fstreams)))
 	{
@@ -170,10 +246,13 @@ runner_init(int check_syntax_flag, int timeout, fstreams_t fstreams)
 	/* add the environment variables in the vector */
 	for(i = 0; environ[i] != NULL; i++)
 	{
+		
 		val = strchr(environ[i], '=');
 		
 		if(val)
 		{
+			
+			
 			val++;
 				
 			if(val[0] != '\0')
@@ -185,24 +264,75 @@ runner_init(int check_syntax_flag, int timeout, fstreams_t fstreams)
 			variable = variable_new(buffer, val);
 			variable->env = 1;
 			xbt_dynar_push(runner->variables, &variable);
+			
+			#ifndef WIN32
+			if(!strcmp("PATH", buffer))
+			{
+				char* p;
+				int j,k,  len;
+				
+				/* get the list of paths */
+				runner->path = explode(':', val);
+
+				/* remove spaces and backslahes at the end of the path */
+				for (k = 0; runner->path[k] != NULL; k++)
+				{
+    				p = runner->path[k];
+			    	
+    				len = strlen(p);
+			    	
+    				for(j = len - 1; p[j] == '/' || p[j] == ' '; j--)
+    					p[j] = '\0';
+				}
+			}
+			#endif
+				
+			memset(buffer, 0, PATH_MAX + 1);
 		}
 	}
 	
 	if(is_tesh_root)
 	{
+		char* tesh_dir = getcwd(NULL, 0);
+		
 		sprintf(buffer,"%d",getpid());
 		
 		#ifndef WIN32
 		setenv("TESH_PPID", buffer, 0);
+		setenv("TESH_DIR", tesh_dir, 0);
 		#else
 		SetEnvironmentVariable("TESH_PPID", buffer);
+		SetEnvironmentVariable("TESH_DIR", tesh_dir);
 		#endif
 		
 		variable = variable_new("TESH_PPID", buffer);
-		variable->env = 1;
+		variable->err = 1;
 			
 		xbt_dynar_push(runner->variables, &variable);
+		
+		free(tesh_dir);
 	}
+	
+	variable = variable_new("EXIT_SUCCESS", "0");
+	variable->err = 1;
+			
+	xbt_dynar_push(runner->variables, &variable);
+
+	variable = variable_new("EXIT_FAILURE", "1");
+	variable->err = 1;
+			
+	xbt_dynar_push(runner->variables, &variable);
+
+	variable = variable_new("TRUE", "0");
+	variable->err = 1;
+			
+	xbt_dynar_push(runner->variables, &variable);
+
+	variable = variable_new("FALSE", "1");
+	variable->err = 1;
+			
+	xbt_dynar_push(runner->variables, &variable);
+
 	
 	i = 0;
 	
@@ -216,19 +346,140 @@ runner_init(int check_syntax_flag, int timeout, fstreams_t fstreams)
 	}
 	
 	/* if the user want check the syntax, check it */
-	if(check_syntax_flag)
+	/*if(check_syntax_flag)
 		check_syntax();
+	*/
+	
+	
+	#if defined(__CHKCMD)
+	#if defined(__BUILTIN)
+	if(!is_tesh_root)
+	{
+		/* compute the full path the builtin.def file */
+		#ifndef WIN32
+		sprintf(buffer,"%s/builtin.def",getenv("TESH_DIR"));
+		#else
+		GetEnvironmentVariable("TESH_DIR",buffer,PATH_MAX + 1);
+		#endif
 		
+		s = fopen(buffer, "r");	
+		
+	}
+	else
+	{
+		s = fopen("builtin.def", "r");
+	}
+	
+	if(s)
+	{
+		fpos_t begin;
+
+		fgetpos(s, &begin);
+
+		while(readline(s, &line, &len) != -1)
+		{
+			i = 0;
+			is_blank = 1;
+			
+
+			while(line[i] != '\0') 
+			{
+				if (line[i] != ' ' && line[i] != '\t' && line[i]!='\n' && line[i]!='\r')
+				{
+					is_blank = 0;
+					break;
+				}
+				
+				i++;
+			}
+
+			if(!is_blank)
+				n++;
+				
+			
+		}
+
+		fsetpos(s, &begin);
+		free(line);
+		line = NULL;
+
+		if(n)
+		{
+			char* l;
+			
+			runner->builtin = xbt_new0(char*, n + 1); /* (char**) calloc(n + 1, sizeof(char*));*/
+			
+			n = 0;
+			
+			while(readline(s, &line, &len) != -1)
+			{
+				i = 0;
+				is_blank = 1;
+
+				while(line[i] != '\0') 
+				{
+					if (line[i] != ' ' && line[i] != '\t' && line[i]!='\n' && line[i]!='\r')
+					{
+						is_blank = 0;
+						break;
+					}
+					
+					i++;
+				}
+
+				if(!is_blank)
+				{
+					l = strdup(line);
+
+					l[strlen(l) - 1] = '\0';
+
+					(runner->builtin)[n++] = l;
+					
+				}
+			}
+			
+		}
+		else
+		{
+			WARN0("The file `(builtin.def)' is empty");
+			free(runner->builtin);
+			runner->builtin = NULL;
+		}
+		
+
+		fclose(s);
+		
+		if(line)
+			free(line);
+		
+	}
+	else
+	{
+		ERROR0("File `(builtin.def)' not found");
+		return -1;
+	}
+	#else
+	
+		runner->builtin = xbt_new0(char*, __BUILTIN_MAX + 1); /* (char**) calloc(__BUILTIN_MAX + 1, sizeof(char*));*/
+		
+		for(i = 0; i < __BUILTIN_MAX; i++)
+			runner->builtin[i] = strdup(builtin[i]);	
+	#endif
+	#endif
+
 	return exit_code ? -1 : 0;
-		
 }
 
 void
 runner_destroy(void)
 {
-	units_free((void**)(&(runner->units)));
-
-	xbt_dynar_free(&runner->variables);
+	int i;
+	
+	if(runner->units)
+		units_free((void**)(&(runner->units)));
+	
+	if(runner->variables)
+		xbt_dynar_free(&runner->variables);
 	
 	#ifdef WIN32
 	CloseHandle(timer_handle);
@@ -236,6 +487,22 @@ runner_destroy(void)
 
 	if(runner->thread)
 		xbt_os_thread_join(runner->thread, NULL);
+	
+	if(runner->path)
+	{
+		for (i = 0; runner->path[i] != NULL; i++)
+			free(runner->path[i]);
+		
+		free(runner->path);
+	}
+
+	if(runner->builtin)
+	{
+		for (i = 0; runner->builtin[i] != NULL; i++)
+			free(runner->builtin[i]);
+		
+		free(runner->builtin);
+	}
 
 	free(runner);
 	
@@ -349,7 +616,7 @@ runner_summarize(void)
 		
 		printf("         Test(s):  %.0f%% ok (%d test(s): %d ok",
 		(runner->total_of_tests ? (1-((double)runner->total_of_failed_tests + (double)runner->total_of_interrupted_tests)/(double)runner->total_of_tests)*100.0 : 100.0),
-		runner->total_of_tests, runner->total_of_successeded_tests); 
+		runner->total_of_tests, runner->total_of_successeded_tests);
 		
 		if(runner->total_of_failed_tests > 0)
 			printf(", %d failed", runner->total_of_failed_tests);
@@ -393,38 +660,15 @@ runner_summarize(void)
 	else
 	{
 		if(exit_code)
-			ERROR0("Syntax error detected");
+			ERROR0("Syntax NOK");
 		else if(!exit_code)
 			INFO0("Syntax 0K");
 	}
 }
 
-static void
-check_syntax(void)
+int
+runner_is_timedout(void)
 {
-	if(!dry_run_flag)
-	{
-		dry_run_flag = 1;
-		
-		runner_run();
-	
-		dry_run_flag = 0;
-		
-		if(!exit_code)
-		{
-			if(!silent_flag)
-				INFO0("syntax checked (OK)");
-			
-			units_reset_all(runner->units);
-		
-		}
-		else
-			errno = exit_code;
-		
-	}
-	else
-	{
-		WARN0("mismatch in the syntax : --just-check-syntax and --check-syntax options at same time");
-	}
-
+	return runner->timeouted;
 }
+

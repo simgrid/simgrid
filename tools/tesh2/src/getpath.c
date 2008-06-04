@@ -187,8 +187,6 @@ translatepath(const char* totranslate, char** translated)
 		else 
 			p1[1] = '\0';
 	
-	
-	
 	if (buffer1[0] == '~') 
 	{
 		for (p2 = buffer2, p1 = buffer1 + 1; *p1 && (*p1 != '/'); *(p2++) = *(p1++));

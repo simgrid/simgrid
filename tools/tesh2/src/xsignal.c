@@ -86,7 +86,7 @@ static const s_signal_entry_t signals[] = {
 };
 
 #ifdef WIN32
-const char* signal_name(DWORD got, char *expected) 
+const char* signal_name(DWORD got, const char* expected) 
 #else
 const char* signal_name(unsigned int got, char *expected) 
 #endif
@@ -108,6 +108,19 @@ const char* signal_name(unsigned int got, char *expected)
 	
 	#endif
 	return bprintf("SIG UNKNOWN (%d)", got);
+}
+
+int
+sig_exists(const char* sig_name)
+{
+	int i;
+
+	for (i=0; signals[i].number != -1; i++)
+		if (!strcmp(signals[i].name, sig_name))
+			return 1; 
+
+	/* not found */
+	return 0;
 }
 
 

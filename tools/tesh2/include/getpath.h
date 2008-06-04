@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-/* getpath th 	  -- 		get the path of the file name specified by the first parameter
+/* getpath th 	  -- 	get the path of the file name specified by the first parameter
  * 						of the function and store the path in its second parmater.
  *						the function returns the length of the path of the file.				 
  *

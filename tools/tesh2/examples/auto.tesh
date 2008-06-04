@@ -1,7 +1,3 @@
-#! ./tesh
-
-# Includes some auto tests of tesh
-
 ! include background.tesh
 ! include basic.tesh
 ! include bg-basic.tesh
@@ -11,10 +7,15 @@
 ! include catch-timeout.tesh
 ! include catch-wrong-output.tesh
 ! include cd.tesh
+! include IO-bigsize.tesh
 ! include IO-broken-pipe.tesh
 ! include IO-orders.tesh
-! include IO-bigsize.tesh
-! include set-timeout.tesh
 ! include set-ignore-output.tesh
 ! include set-return.tesh
 ! include set-signal.tesh
+! include set-timeout.tesh
+! include var.tesh
+! include keep-going.tesh
+! include keep-going-unit.tesh
+! include jobs.tesh
+! include suite-usage.tesh

@@ -5,7 +5,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
 fstreams_t
-fstreams_new(int capacity, void_f_pvoid_t fn_finalize)
+fstreams_new(void_f_pvoid_t fn_finalize)
 {
 	fstreams_t fstreams = xbt_new0(s_fstreams_t, 1);
 	fstreams->items = xbt_dynar_new(sizeof(fstream_t), fn_finalize);
@@ -94,7 +94,8 @@ fstreams_free(void** fstreamsptr)
 	if(!(* fstreamsptr))
 		return EINVAL;
 	
-	xbt_dynar_free(&((*((fstreams_t*)fstreamsptr))->items));
+	if((*((fstreams_t*)fstreamsptr))->items)
+		xbt_dynar_free(&((*((fstreams_t*)fstreamsptr))->items));
 		
 	free(*fstreamsptr);
 	

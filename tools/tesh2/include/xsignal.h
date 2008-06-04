@@ -184,11 +184,15 @@ is_an_unhandled_exception(DWORD exit_code);
 
 #ifdef WIN32
 const char* 
-signal_name(DWORD got, char* expected);
+signal_name(DWORD got, const char* expected);
 #else
 const char* 
 signal_name(unsigned int got, char *expected);
 #endif
+
+
+int
+sig_exists(const char* sig_name);
 
 #ifdef __cplusplus
 }

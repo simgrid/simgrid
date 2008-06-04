@@ -6,7 +6,11 @@ p This tests whether TESH detects wrong outputs
 < > TOTO
 < < TUTU
 < $ cat
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n' --silent
-
-
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+> Test unit from stdin
+> [stdin:3] cat
+> [stdin:3] `cat' : NOK (outputs mismatch):
+> - TOTO
+> + TUTU
+> Test unit `(stdin)' : NOK (output mismatch)
 

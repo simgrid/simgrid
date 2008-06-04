@@ -6,4 +6,10 @@
 ! expect return $ECMDTIMEDOUT
 < ! timeout 1
 < $ sleep 6
-$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
+> Test unit from stdin
+> [stdin:2] sleep 6
+> [stdin:2] `sleep 6' timed out after 1 sec
+> [stdin:2] Kill the process `sleep 6'
+> [stdin:2] No output before timeout
+> Test unit `(stdin)' : NOK (command timed out)
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'

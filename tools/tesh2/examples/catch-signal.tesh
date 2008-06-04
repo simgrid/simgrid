@@ -17,8 +17,13 @@ $ gcc -o segfault segfault.c
 
 ! expect return $EUNXPSIG
 < $ ./segfault
-$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
-
+$ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
+> Test unit from stdin
+> [stdin:1] ./segfault
+> [stdin:1] `./segfault' : NOK (unexpected signal `SIGSEGV' caught)
+> Output of <stdin:1> so far: 
+> ||
+> Test unit `(stdin)' : NOK (unexpected signal caught)
 
 $ cd ..
 $ rm -rf temp_testdir

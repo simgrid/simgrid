@@ -93,8 +93,6 @@ static directories_t
 directories = NULL;
 
 /* the include directories : see the !i metacommand				*/
-/*vector_t 
-include_dirs = NULL;*/
 xbt_dynar_t
 include_dirs = NULL;
 
@@ -102,14 +100,9 @@ include_dirs = NULL;
 static fstreams_t 
 fstreams = NULL;
 
-/* xbt logs														*/
-static xbt_dynar_t
-logs = NULL;
-
 /* the list of tesh file suffixes								*/
 static xbt_dynar_t
 suffixes = NULL;
-
 
 static excludes_t
 excludes = NULL;
@@ -138,12 +131,6 @@ print_usage_flag = 0;
 /* if 1, display the tesh version								*/
 static int 
 print_version_flag = 0;
-
-/* if 1, the syntax of all tesh files is checked 
- * before running them
- */
-static int
-check_syntax_flag = 0;
 
 /* if 1, the status of all the units is display at
  * the end.
@@ -175,15 +162,6 @@ silent_flag = 0;
 int 
 just_print_flag = 0;
 
-static int 
-env_overrides_flag  = 0;
-
-static int 
-print_database_flag = 0;
-
-static int 
-question_flag = 0;
-
 /* the semaphore used to synchronize the jobs */
 xbt_os_sem_t
 jobs_sem = NULL;
@@ -201,45 +179,39 @@ interrupted = 0;
 int
 exit_code = 0; 
 
+int
+err_kind = 0;
+
+
 pid_t
 pid =0;
 
 int 
 is_tesh_root = 1;
 
-xbt_dynar_t
-errors = NULL;
-
-xbt_os_mutex_t
-err_mutex = NULL;
-
 /* the table of the entries of the options */ 
 static const struct s_optentry opt_entries[] =
 {
 	{ 'C', string, (byte*)NULL, 0, "directory" },
 	{ 'x', string, (byte*)&suffixes, 0, "suffix" },
-	{ 'e', flag, (byte*)&env_overrides_flag, 0, "environment-overrides", },
 	{ 'f', string, (byte*)&fstreams, 0, "file" },
 	{ 'h', flag, (byte*)&print_usage_flag, 0, "help" },
-	{ 'a', flag, (byte*)&print_readme_flag, 0, "semantic" },
+	{ 'a', flag, (byte*)&print_readme_flag, 0, "README" },
 	{ 'i', flag, (byte*)&keep_going_unit_flag, 0, "keep-going-unit" },
 	{ 'I', string, (byte*)&include_dirs, 0, "include-dir" },
 	{ 'j', number, (byte*)&jobs_nb, (byte*) &optional_jobs_nb, "jobs" },
 	{ 'k', flag, (byte*)&keep_going_flag, 0, "keep-going" },
 	{ 'm', flag, (byte*)&detail_summary_flag, 0, "detail-summary" },
 	{ 'c', flag, (byte*)&just_print_flag, 0, "just-print" },
-	{ 'd', flag, (byte*)&print_database_flag, 0,"display-data-base" },
-	{ 'q', flag, (byte*)&question_flag, 0, "question_flag" },
 	{ 's', flag, (byte*)&silent_flag, 0, "silent" },
 	{ 'V', flag, (byte*)&print_version_flag, 0, "version" },
-	{ 'w', flag, (byte*)&print_directory_flag, 0,"dont-display-directory" },
+	{ 'w', flag, (byte*)&print_directory_flag, 0,"dont-print-directory" },
 	{ 'n', flag, (byte*)&dry_run_flag, 0, "dry-run"},
 	{ 't', number, (byte*)&timeout, 0, "timeout" },
-	{ 'S', flag, (byte*)&check_syntax_flag, 0, "check-syntax"},
 	{ 'r', string, (byte*)&directories, 0, "load-directory"},
 	{ 'v', flag, (byte*)&summary_flag, 0, "summary"},
 	{ 'F', string,(byte*)&excludes, 0, "exclude"},
-	{ 'l', string,(byte*)&logs,0,"log"},
+	{ 'l', string, (byte*)NULL, 0, "log" },
 	{ 0, 0, 0, 0, 0}
 };
 
@@ -263,24 +235,20 @@ static const char* usage[] =
 	"                                         - the write pipe is broken\n",
 	"                                         - the command assigned delay is outdated\n",
 	"  -I DIRECTORY, --include-dir=DIRECTORY Search DIRECTORY for included files.\n",
-	"  -j [N], --jobs[=N]                    Allow N commands at once; infinite commands with\n"
+	"  -j [N], --jobs[=N]                    Allow N units at once; infinite units with\n"
 	"                                        no arg.\n",
 	"  -k, --keep-going                      Keep going when some commands can't be made or\n",
 	"                                        failed.\n",
 	"  -c, --just-print                      Don't actually run any commands; just print them.\n",
-	"  -p, --print-data-base                 Display tesh's internal database.\n",
-	"  -q, --question                        Run no commands; exit status says if up to date.\n",
 	"  -s, --silent,                         Don't echo commands.\n",
 	"  -V, --version                         Print the version number of tesh and exit.\n",
 	"  -d, --dont-print-directory            Don't display the current directory.\n",
 	"  -n, --dry-run                         Check the syntax of the specified tesh files, display the result and exit.\n",
 	"  -t, --timeout                         Wait the end of the commands at most timeout seconds.\n",
-	"  -S, --check-syntax                    Check the syntax of the tesh files before run them. \n",
 	"  -x, --suffix                          Consider the new suffix for the tesh files.\n"
 	"                                           remark :\n",
 	"                                           the default suffix for the tesh files is \".tesh\".\n",
-	" -a, --read-me                          Print the read me file and exit.\n",
-	" -b, --build-file                       Build a tesh file.\n",
+	" -a, --README                           Print the read me file and exit.\n",
 	" -r, --load-directory                   Run all the tesh files located in the directories specified by the option --directory.\n",
 	" -v, --summary                          Display the status of the commands.\n",
 	" -m, --detail-summary                   Detail the summary of the run.\n",
@@ -342,19 +310,14 @@ free_string(void* str)
 	free(*(void**)str);
 }
 
-static void 
-free_error(void* e)
-{
-	free(*(void**)e);
-}
-
 int
 main(int argc, char* argv[])
 {
-	int _argc;
-
 	/* set the locale to the default*/
 	setlocale(LC_ALL,"");
+
+	/* xbt initialization */
+	xbt_init(&argc, argv);
 	
 	/* initialize tesh */
 	if(init() < 0)
@@ -366,31 +329,6 @@ main(int argc, char* argv[])
 	
 	/* move to the root directory (the directory may change during the command line processing) */
 	chdir(root_directory->name);
-		
-	/* initialize the xbt library 
-	 * for thread portability layer
-	 */
-	 
-	/* xbt initialization */
-
-	if((_argc = xbt_dynar_length(logs)))
-	{
-		int i;
-
-		char** _argv = (char**)calloc(_argc, sizeof(char*));
-		
-		for(i = 0; i < _argc; i++)
-			xbt_dynar_pop(logs, &(_argv[i]));
-
-		xbt_init(&_argc, _argv);
-
-		while(--i)
-			free(_argv[i]);
-
-		free(_argv);
-	}
-	else
-		xbt_init(&argc, argv);
 		
 	/* the user wants to display the usage of tesh */
 	if(print_version_flag)
@@ -440,6 +378,12 @@ main(int argc, char* argv[])
 		jobs_nb = fstreams_get_size(fstreams);
 	}
 
+	if(jobs_nb != 1 && dry_run_flag)
+	{
+		jobs_nb = 1;
+		INFO0("Dry run specified : force jobs count to 1");
+	}
+
 	/* initialize the semaphore used to synchronize all the units */
 	jobs_sem = xbt_os_sem_init(jobs_nb);
 
@@ -447,7 +391,7 @@ main(int argc, char* argv[])
 	units_sem = xbt_os_sem_init(0);
 	
 	/* initialize the runner */
-	if(runner_init(check_syntax_flag, timeout, fstreams) < 0)
+	if(runner_init(/*check_syntax_flag,*/ timeout, fstreams) < 0)
 		finalize();
 		
 	if(just_print_flag && silent_flag)
@@ -459,9 +403,11 @@ main(int argc, char* argv[])
 	/* run all the units */
 	runner_run();
 	
-	
+	if(runner_is_timedout())
+		ERROR1("Tesh timed out after `(%d)' seconds", timeout);
+
 	/* show the result of the units */
-	if(summary_flag || dry_run_flag)
+	if(detail_summary_flag ||summary_flag || dry_run_flag)
 		runner_summarize();
 		
 	/* all the test are runned, destroy the runner */
@@ -518,7 +464,6 @@ init(void)
  	
  	#endif
  	
- 	err_mutex = xbt_os_mutex_init();
  	
  	/* handle the abort signal */
  	/*signal(SIGABRT, sig_abort_handler);*/
@@ -527,7 +472,7 @@ init(void)
  	/*signal(SIGINT, sig_int_handler);*/
 	
 	/* used to store the files to run */
-	if(!(fstreams = fstreams_new(DEFAULT_FSTREAMS_CAPACITY, (void_f_pvoid_t)fstream_free)))
+	if(!(fstreams = fstreams_new((void_f_pvoid_t)fstream_free)))
 	{
 		ERROR1("(system error) %s", strerror(errno));
 		return -1;
@@ -549,9 +494,6 @@ init(void)
 	
 	free(buffer);
 	
-	/* this vector contains all the errors of the run */
-	errors = xbt_dynar_new(sizeof(xerror_t), free_error);
-	
 	/* the directories to loads */
 	if(!(directories = directories_new()))
 	{
@@ -561,13 +503,6 @@ init(void)
 	
 	/* the include directories */
 	include_dirs = xbt_dynar_new(sizeof(directory_t), (void_f_pvoid_t)directory_free);
-	
-	/* xbt logs option */
-	if(!(logs = xbt_dynar_new(sizeof(char*), free_string)))
-	{
-		ERROR1("(system error) %s", strerror(errno));
-		return -1;
-	}
 	
 	/* the excluded files */
 	if(!(excludes = excludes_new()))
@@ -633,32 +568,6 @@ static void
 finalize(void)
 {
 	
-	if(is_tesh_root && !summary_flag)
-	{
-		xerror_t error;
-		unsigned int i;
-
-		xbt_dynar_foreach(errors, i, error)
-		{
-			if(error->command)
-				fprintf(stderr, "[tesh/ERROR] %s : <Command `%s'> <Unit `%s'> <C%d (%s)>\n", error->reason, error->command, error->unit, error->errcode, error_to_string(error->errcode));
-			else if(!error->command && error->unit)
-				fprintf(stderr, "[tesh/ERROR] %s : Unit `%s' - C%d (%s)\n", error->reason, error->unit, error->errcode, error_to_string(error->errcode));
-			else if(!error->command && !error->unit && error->reason)
-				fprintf(stderr, "[tesh/ERROR] %s : C%d (%s)\n", error->reason, error->errcode, error_to_string(error->errcode));		
-			else if(!error->command && !error->unit && !error->reason)
-				fprintf(stderr, "[tesh/ERROR] C%d (%s)\n", error->errcode, error_to_string(error->errcode));		
-			
-		}
-	}
-	
-	
-	/* delete vector of errors */
-	if(errors)
-		xbt_dynar_free(&errors);
-		
-	xbt_os_mutex_destroy(err_mutex);
-	
 	/* delete the fstreams object */
 	if(fstreams)
 		fstreams_free((void**)&fstreams);
@@ -682,11 +591,6 @@ finalize(void)
 	/* delete the list of tesh files suffixes */	
 	if(suffixes)
 		xbt_dynar_free(&suffixes);
-	
-	/* delete the xbt log options list */
-	if(logs)
-		xbt_dynar_free(&logs);
-		
 		
 	/* destroy the semaphore used to synchronize the units */
 	if(jobs_sem)
@@ -696,9 +600,6 @@ finalize(void)
 	if(units_sem)
 		xbt_os_sem_destroy(units_sem);
 	
-	/* exit from the xbt framework */
-	xbt_exit();
-	
 	/* Windows specific (restore the previouse error mode */
 	#ifdef WIN32
 	SetErrorMode(prev_error_mode);
@@ -707,11 +608,13 @@ finalize(void)
 	if(!summary_flag && !dry_run_flag && !silent_flag && !just_print_flag && !print_version_flag && !print_usage_flag && is_tesh_root)
 	{
 		if(!exit_code)
-			INFO2("tesh terminated with exit code %d : %s",exit_code, "success");
+			INFO2("Tesh terminated with exit code %d : %s",exit_code, "success");
 		else
-			ERROR2("tesh terminated with exit code %d : %s",exit_code, error_to_string(exit_code));
+			ERROR2("Tesh terminated with exit code `(%s)' (%d)",error_to_string(exit_code, err_kind), exit_code);
 	}
 	
+	/* exit from the xbt framework */
+	xbt_exit();
 	
 	/* exit with the last error code */
 	exit(exit_code);
@@ -826,6 +729,7 @@ process_command_line(int argc, char** argv)
 			if(getpath(optarg, &path) < 0)
 			{
 				exit_code = errno;
+				err_kind = 0;
 				
 				if(ENOENT == errno)
 					ERROR1("File %s does not exist", optarg);
@@ -837,6 +741,11 @@ process_command_line(int argc, char** argv)
 			
 			/* get to the last / (if any) to get the short name of the file */
 			delimiter = strrchr(optarg,'/');
+			
+			#ifdef WIN32
+			if(!delimiter)
+				delimiter = strrchr(optarg,'\\');
+			#endif
 			
 			/* create a new file stream which represents the tesh file to run */
 			fstream = fstream_new(path, delimiter ? delimiter + 1 : optarg);
@@ -853,9 +762,6 @@ process_command_line(int argc, char** argv)
 			}
 			else
 				fstreams_add(fstreams, fstream);
-				
-			
-				
 			
 		}
 		else if (c == '?')
@@ -863,6 +769,7 @@ process_command_line(int argc, char** argv)
 			/* unknown option, let getopt_long() displays the error */
 			ERROR0("Command line processing failed : invalid command line");
 			exit_code = EINVCMDLINE;
+			err_kind = 1;
 			return -1;
 		}
 		else
@@ -878,6 +785,7 @@ process_command_line(int argc, char** argv)
 						default:
 						ERROR0("Command line processing failed : internal error");
 						exit_code = EPROCCMDLINE;
+						err_kind = 1;
 						return -1;
 						
 						
@@ -901,6 +809,7 @@ process_command_line(int argc, char** argv)
 							/* a non optional argument is not specified */
 							ERROR2("Option %c \"%s\"requires an argument",entry->c,entry->long_name);
 							exit_code = ENOARG;
+							err_kind = 1;
 							return -1;
 						}
 						
@@ -913,6 +822,7 @@ process_command_line(int argc, char** argv)
 							{
 								ERROR1("%s is not a directory",optarg);
 								exit_code = ENOTDIR;
+								err_kind = 0;
 								return -1;
 							}	
 
@@ -922,6 +832,7 @@ process_command_line(int argc, char** argv)
 							if(translatepath(optarg, &path) < 0)
 							{
 								exit_code = errno;
+								err_kind = 0;
 								
 								if(ENOTDIR == errno)
 									ERROR1("%s is not a directory",optarg);
@@ -960,6 +871,7 @@ process_command_line(int argc, char** argv)
 							{
 								ERROR1("%s is not a directory",optarg);
 								exit_code = ENOTDIR;
+								err_kind = 0;
 								return -1;
 							}	
 
@@ -969,6 +881,7 @@ process_command_line(int argc, char** argv)
 							if(translatepath(optarg, &path) < 0)
 							{
 								exit_code = errno;
+								err_kind = 0;
 								
 								if(ENOTDIR == errno)
 									ERROR1("%s is not a directory",optarg);
@@ -1013,7 +926,8 @@ process_command_line(int argc, char** argv)
 							if(strlen(optarg) > MAX_SUFFIX)
 							{
 								ERROR1("Suffix %s too long",optarg);
-								exit_code = ESUFFIXTOOLONG;	
+								exit_code = ESUFFIXTOOLONG;
+								err_kind = 1;
 								return -1;
 							}
 							
@@ -1023,7 +937,7 @@ process_command_line(int argc, char** argv)
 								unsigned int i;
 								int exists = 0;
 
-								char suffix[MAX_SUFFIX + 2] = {0};
+								char* suffix = xbt_new0(char, MAX_SUFFIX + 2);
 								sprintf(suffix,".%s",optarg);
 								
 								xbt_dynar_foreach(suffixes, i, cur)
@@ -1058,7 +972,10 @@ process_command_line(int argc, char** argv)
 								if(exists)
 									WARN1("Suffix %s already specified to be used", optarg);
 								else
-									xbt_dynar_push(suffixes, &optarg);	
+								{
+									char* suffix = strdup(optarg);
+									xbt_dynar_push(suffixes, &suffix);
+								}
 							}
 						}
 						/* --file option */
@@ -1070,6 +987,7 @@ process_command_line(int argc, char** argv)
 							if(getpath(optarg, &path) < 0)
 							{
 								exit_code = errno;
+								err_kind = 0;
 								
 								if(ENOENT == errno)
 									ERROR1("File %s does not exist", optarg);
@@ -1080,6 +998,11 @@ process_command_line(int argc, char** argv)
 							}
 							
 							delimiter = strrchr(optarg,'/');
+
+							#ifdef WIN32
+							if(!delimiter)
+								delimiter = strrchr(optarg,'\\');
+							#endif
 							
 							fstream = fstream_new(path, delimiter ? delimiter + 1 : optarg);
 							
@@ -1102,6 +1025,7 @@ process_command_line(int argc, char** argv)
 							{
 								ERROR1("%s is not a directory",optarg);
 								exit_code = ENOTDIR;
+								err_kind = 0;
 								return -1;
 							}	
 
@@ -1111,6 +1035,7 @@ process_command_line(int argc, char** argv)
 							if(translatepath(optarg, &path) < 0)
 							{
 								exit_code = errno;
+								err_kind = 0;
 								
 								if(ENOTDIR == errno)
 									ERROR1("%s is not a directory",optarg);
@@ -1161,6 +1086,7 @@ process_command_line(int argc, char** argv)
 							if(getpath(optarg, &path) < 0)
 							{
 								exit_code = errno;
+								err_kind = 0;
 								
 								if(ENOENT == errno)
 									ERROR1("file %s does not exist", optarg);
@@ -1171,6 +1097,11 @@ process_command_line(int argc, char** argv)
 							}
 			
 							delimiter = strrchr(optarg,'/');
+
+							#ifdef WIN32
+							if(!delimiter)
+								delimiter = strrchr(optarg,'\\');
+							#endif
 			
 							fstream = fstream_new(path, delimiter ? delimiter + 1 : optarg);
 							free(path);
@@ -1184,10 +1115,9 @@ process_command_line(int argc, char** argv)
 								excludes_add(excludes, fstream);
 									
 						}
-						/* --log option */
 						else if(!strcmp(entry->long_name,"log"))
 						{
-							xbt_dynar_push(logs, &optarg);
+							/* NOTHING TODO : log for xbt */
 						}
 						else
 						{
@@ -1222,6 +1152,7 @@ process_command_line(int argc, char** argv)
 							{
 								ERROR2("Option %c \"%s\" requires an strictly positive integer as argument",entry->c, entry->long_name);
 								exit_code = ENOTPOSITIVENUM;
+								err_kind = 1;
 								return -1;
 							}
 							else
@@ -1280,12 +1211,13 @@ print_readme(void)
 	size_t len;
 	char * line = NULL;
 	
-	FILE* stream = fopen("README.txt", "r");
+	FILE* stream = fopen("examples/README.tesh", "r");
 	
 	if(!stream)
 	{
 		ERROR0("Unable to locate the README.txt file");
 		exit_code = EREADMENOTFOUND;
+		err_kind = 1;
 		return;
 	}
 	

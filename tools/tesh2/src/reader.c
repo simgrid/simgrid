@@ -11,7 +11,8 @@
  * 		the tesh reader type.
  *
  */
- 
+
+#include <unit.h>
 #include <reader.h>
 #include <command.h>
 
@@ -45,9 +46,11 @@ reader_new(command_t command)
 int
 reader_free(reader_t* ptr)
 {
-	/* TODO : check the parameter */
+	if((*ptr)->started)
+		xbt_os_sem_destroy((*ptr)->started);
 	
 	free(*ptr);
+	
 	*ptr = NULL;
 	
 	return 0;
@@ -60,73 +63,6 @@ reader_read(reader_t reader)
 }
 
 #ifdef WIN32
-/*static void*
-reader_start_routine(void* p)
-{
-	reader_t reader = (reader_t)p;
-	command_t command = reader->command;
-	
-	xbt_strbuff_t output = command->output;
-	HANDLE stdout_fd = command->stdout_fd;
-	
-	DWORD number_of_bytes_to_read = 4096;
-	DWORD number_of_bytes_readed = 0;
-	
-	char* buffer = (char*)calloc(number_of_bytes_to_read + 1,sizeof(char));
-	char* clean;
-	char* cp = buffer;
-	size_t i, j;
-
-	while(!command->failed && !command->interrupted && !command->successeded && !reader->failed && !reader->broken_pipe)
-	{
-		if(!ReadFile(reader->command->stdout_fd, cp, number_of_bytes_to_read, &number_of_bytes_readed, NULL) || (0 == number_of_bytes_readed))
-		{
-			if(GetLastError() == ERROR_BROKEN_PIPE)
-				reader->broken_pipe = 1;
-			else
-	    		reader->failed = 1;
-				
-		}
-		else
-		{
-			if(number_of_bytes_readed > 0) 
-			{
-				number_of_bytes_to_read -= number_of_bytes_readed;
-				cp +=number_of_bytes_readed;
-			} 
-			else 
-			{
-				xbt_os_thread_yield();
-			}
-		}
-	}
-
-	if(reader->failed && !command->failed && !command->interrupted && !command->successeded)
-	{
-		error_register("read() function failed", (int)GetLastError(), command->context->command_line, command->unit->fstream->name);
-		
-		command_kill(command);
-		command_handle_failure(command, csr_read_failure);
-	}
-	
-	clean = (char*)calloc((unsigned int)strlen(buffer) + 1, sizeof(char));
-	
-	j = 0;
-	
-	for(i= 0; i < strlen(buffer); i++)
-		if((int)(buffer[i]) != 13)
-			clean[j++] = buffer[i];
-
-	xbt_strbuff_append(output,clean);
-	
-	free(clean);
-	free(buffer);
-
-	reader->done = 1;
-	
-	return NULL;
-}*/
-
 static void*
 reader_start_routine(void* p)
 {
@@ -145,7 +81,7 @@ reader_start_routine(void* p)
 
 	while(!command->failed && !command->interrupted && !command->successeded && !reader->failed && !reader->broken_pipe)
 	{
-		if(!ReadFile(reader->command->stdout_fd, buffer, number_of_bytes_to_read, &number_of_bytes_readed, NULL) || (0 == number_of_bytes_readed))
+		if(!ReadFile(stdout_fd, buffer, number_of_bytes_to_read, &number_of_bytes_readed, NULL) || (0 == number_of_bytes_readed))
 		{
 			if(GetLastError() == ERROR_BROKEN_PIPE)
 				reader->broken_pipe = 1;
@@ -176,15 +112,50 @@ reader_start_routine(void* p)
 	free(clean);
 	free(buffer);
 
-	if(reader->failed && !command->failed && !command->interrupted && !command->successeded)
+	xbt_strbuff_chomp(command->output);
+	xbt_strbuff_trim(command->output);
+
+	reader->done = 1;
+	
+	if(command->failed)
 	{
-		error_register("read() function failed", (int)GetLastError(), command->context->command_line, command->unit->fstream->name);
+		if(command->reason == csr_write_failure)
+		{
+			if(command->output->used)
+				INFO2("[%s] Output on write failure:\n%s",command->context->pos, command->output->data);
+			else
+				INFO1("[%s] No output before write failure",command->context->pos);
+		}
+		else if(command->reason == csr_write_pipe_broken)
+		{
+			if(command->output->used)
+				INFO2("[%s] Output on broken pipe:\n%s",command->context->pos, command->output->data);
+			else
+				INFO1("[%s] No output before broken pipe",command->context->pos);
+		}
+	}
+	else if(command->interrupted)
+	{
+		if(command->output->used)
+			INFO2("[%s] Output on interruption:\n%s",command->context->pos, command->output->data);
+		else
+			INFO1("[%s] No output before interruption",command->context->pos);
+	}
+	else if(reader->failed && !command->failed && !command->interrupted && !command->successeded)
+	{
+		ERROR2("[%s] Error while reading output of child `%s'", command->context->pos, command->context->command_line);
 		
+		if(command->output->used)
+			INFO2("[%s] Output on read failure:\n%s",command->context->pos, command->output->data);
+		else
+			INFO1("[%s] No output before read failure",command->context->pos);
+		
+		unit_set_error(command->unit, errno, 0);
 		command_kill(command);
 		command_handle_failure(command, csr_read_failure);
 	}
 
-	reader->done = 1;
+	
 	
 	return NULL;
 }
@@ -199,6 +170,8 @@ reader_start_routine(void* p)
 	int stdout_fd = command->stdout_fd;
 	int number_of_bytes_readed;
 	int number_of_bytes_to_read = (1024 > SSIZE_MAX) ? SSIZE_MAX : 1024;
+
+	int total = 0;
 		
 	char* buffer = (char*)calloc(number_of_bytes_to_read,sizeof(char));
 	xbt_os_sem_release(reader->started);
@@ -216,6 +189,7 @@ reader_start_routine(void* p)
 		{
 			buffer[number_of_bytes_readed]='\0';
 			xbt_strbuff_append(output,buffer);
+			total += total;
 		} 
 		else 
 		{
@@ -232,16 +206,50 @@ reader_start_routine(void* p)
 	}
 	else
 		command->stdout_fd = INDEFINITE_FD;
+	
+	xbt_strbuff_chomp(command->output);
+	xbt_strbuff_trim(command->output);
 
-	if(reader->failed && !command->failed && !command->interrupted && !command->successeded)
+	reader->done = 1;
+
+	if(command->failed)
 	{
-		error_register("read() function failed", errno, command->context->command_line, command->unit->fstream->name);
+		if(command->reason == csr_write_failure)
+		{
+			if(command->output->used)
+				INFO2("[%s] Output on write failure:\n%s",command->context->pos, command->output->data);
+			else
+				INFO1("[%s] No output before write failur",command->context->pos);
+		}
+		else if(command->reason == csr_write_pipe_broken)
+		{
+			if(command->output->used)
+				INFO2("[%s] Output on broken pipe:\n%s",command->context->pos, command->output->data);
+			else
+				INFO1("[%s] No output before broken pipe",command->context->pos);
+		}
+	}
+	else if(command->interrupted)
+	{
+		if(command->output->used)
+			INFO2("[%s] Output on interruption:\n%s",command->context->pos, command->output->data);
+		else
+			INFO1("[%s] No output before interruption",command->context->pos);
+	}
+	else if(reader->failed && !command->failed && !command->interrupted && !command->successeded)
+	{
+		ERROR2("[%s] Error while reading output of child `%s'", command->context->pos, command->context->command_line);
 		
+		if(command->output->used)
+			INFO2("[%s] Output on read failure:\n%s",command->context->pos, command->output->data);
+		else
+			INFO1("[%s] No output before read failure",command->context->pos);
+		
+		unit_set_error(command->unit, errno, 0);
 		command_kill(command);
 		command_handle_failure(command, csr_read_failure);
 	}
 	
-	reader->done = 1;
 	
 	return NULL;
 } 

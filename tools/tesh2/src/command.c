@@ -11,7 +11,7 @@
  * 		the tesh command type.
  *
  */
- 
+#include <unit.h>
 #include <command.h>
 #include <context.h>
 #include <writer.h>
@@ -21,20 +21,26 @@
 #ifndef WIN32
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #endif
 
+#include <com.h>
+
 #include <xsignal.h>
+
+#include <is_cmd.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
 static void*
 command_start(void* p);
 
+
 command_t
 command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
 {
 	command_t command;
-	/* TODO : check the parameters */
 	
 	command = xbt_new0(s_command_t, 1);
 	
@@ -56,28 +62,23 @@ command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
 	
 	/* the mutex used to safetly access to the command unit properties */
 	command->mutex = mutex;
-	
-	if(context->output->used)
-		command->output = xbt_strbuff_new();
-	else
-		command->output = NULL;
+
+	command->output = xbt_strbuff_new();
 
 	command->pid = INDEFINITE_PID;
 	
 	command->stat_val = -1;
 	
 	/* set the unit of the command */
-	command->unit = unit->root ? unit->root : unit; 
+	command->root = unit->root ? unit->root : unit; 
+	command->unit = unit;
 	
 	/* all the commands are runned in a thread */
 	command->thread = NULL;
 	
 	command->successeded = 0;
 	
-	if(context->output->used)
-		command->reader = reader_new(command);
-	else
-		command->reader = NULL;
+	command->reader = reader_new(command);
 
 	if(context->input->used)
 		command->writer = writer_new(command);
@@ -99,9 +100,8 @@ command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
 	/* register the command */
 	xbt_os_mutex_acquire(mutex);
 	
-	/*vector_push_back(unit->commands, command);*/
 	xbt_dynar_push(unit->commands, &command);
-	command->unit->cmd_nb++;
+	command->root->cmd_nb++;
 	xbt_os_mutex_release(mutex);
 	
 	#ifndef WIN32
@@ -116,24 +116,25 @@ command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
 int
 command_run(command_t command)
 {
-	/* TODO : check the parameter */
 	
 	if(!silent_flag)
-		INFO1("tesh %s",command->context->command_line);
+		INFO2("[%s] %s",command->context->pos, command->context->command_line);
 	
 	if(!just_print_flag)
 	{	
 		if(!interrupted)
 		{
-			/* start the command */
-			
+			/* start the command in a thread*/
 			if(command->context->async)
 			{
 				command->thread = xbt_os_thread_create("", command_start, command);
 			
 			}
 			else
+			{
+				/* start the command in the main thread */
 				command_start(command);
+			}
 		}
 		else
 		{
@@ -149,14 +150,14 @@ static void*
 command_start(void* p)
 {
 	command_t command = (command_t)p;
-	unit_t unit = command->unit;
+	unit_t root = command->root;
 	
 	/* the command is started */
 	command->status = cs_started;
 	
 	/* increment the number of started commands of the unit */
 	xbt_os_mutex_acquire(command->mutex);
-	(command->unit->started_cmd_nb)++;
+	(root->started_cmd_nb)++;
 	xbt_os_mutex_release(command->mutex);
 	
 	/* execute the command of the test */
@@ -164,13 +165,7 @@ command_start(void* p)
 	
 	if(cs_in_progress == command->status)
 	{
-		
-		/* on attend la fin de la commande.
-		 * la command peut soit se terminée normalement,
-		 * soit se terminée à la suite d'un timeout, d'une erreur de lecture des son reader ou d'une erreur d'écriture de son writer
-		 * soit à la suit d'une demande d'interruption
-		 */
-		
+		/* wait the process if it is in progress */
 		command_wait(command);
 	
 		if(cs_failed != command->status && cs_interrupted != command->status)
@@ -179,14 +174,14 @@ command_start(void* p)
 	
 	xbt_os_mutex_acquire(command->mutex);
 	
-	/* if it's the last command release its unit */
-	if(!unit->interrupted && unit->parsed && (unit->started_cmd_nb == (unit->failed_cmd_nb + unit->interrupted_cmd_nb + unit->successeded_cmd_nb)))
+	/* if it's the last command of the root unit */
+	if(!root->interrupted && root->parsed && (root->started_cmd_nb == (root->failed_cmd_nb + root->interrupted_cmd_nb + root->successeded_cmd_nb)))
 	{
 		/* first release the mutex */
-		unit->released = 1;
+		root->released = 1;
 		xbt_os_mutex_release(command->mutex);
 		/* the last command release the unit */
-		xbt_os_sem_release(command->unit->sem);
+		xbt_os_sem_release(root->sem);
 	}
 	else
 		xbt_os_mutex_release(command->mutex);
@@ -195,12 +190,16 @@ command_start(void* p)
 	/* wait the end of the timer, the reader and the writer */
 	if(command->timer && command->timer->thread)
 		timer_wait(command->timer);
-
+	
+	/* wait the end of the writer */
 	if(command->writer && command->writer->thread)
 		writer_wait(command->writer);
-
+	
+	/* wait the end of the reader */
 	if(command->reader && command->reader->thread)
 		reader_wait(command->reader);
+	
+
 	
 	return NULL;
 }
@@ -224,17 +223,22 @@ command_exec(command_t command, const char* command_line)
 	
 	if(!CreatePipe(&(child_stdin_handle[0]),&(child_stdin_handle[1]),&sa,0))
     {
-		error_register("CreatePipe() function failed", (int)GetLastError(), command->context->command_line, command->unit->fstream->name);
-		command->failed = 1;
-		command->status = cs_failed;	
+		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
+		
+		unit_set_error(command->unit, (int)GetLastError(), 0);
 
+		command->failed = 1;
+		command->status = cs_failed;
+		
 		return;
     }
 	
 	
 	if(!DuplicateHandle(GetCurrentProcess(),(child_stdin_handle[1]),GetCurrentProcess(),&(child_stderr),0,TRUE,DUPLICATE_SAME_ACCESS))
     {
-		error_register("DuplicateHandle() function failed", (int)GetLastError(), command->context->command_line, command->unit->fstream->name);
+		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
+		
+		unit_set_error(command->unit, (int)GetLastError(), 0);
 		
 		CloseHandle(child_stdin_handle[0]);
 		CloseHandle(child_stdin_handle[1]);
@@ -247,7 +251,8 @@ command_exec(command_t command, const char* command_line)
 	
 	if(!CreatePipe(&(child_stdout_handle[0]),&(child_stdout_handle[1]),&sa,0))
     {
-		error_register("CreatePipe() function failed", (int)GetLastError(), command->context->command_line, command->unit->fstream->name);
+		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
+		unit_set_error(command->unit, (int)GetLastError(), 0);
 		
 		CloseHandle(child_stdout_handle[0]);
 		CloseHandle(child_stdout_handle[1]);
@@ -270,9 +275,10 @@ command_exec(command_t command, const char* command_line)
 
 		command->failed = 1;
 		command->status = cs_failed;	
-
-		error_register("DuplicateHandle() function failed", (int)GetLastError(), command->context->command_line, command->unit->fstream->name);
 		
+		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
+		unit_set_error(command->unit, (int)GetLastError(), 0);
+	
 		return;
 	}
 	
@@ -287,8 +293,11 @@ command_exec(command_t command, const char* command_line)
 
 		command->failed = 1;
 		command->status = cs_failed;	
+		
+		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
 
-		error_register("DuplicateHandle() function failed", (int)GetLastError(), command->context->command_line, command->unit->fstream->name);
+		unit_set_error(command->unit, (int)GetLastError(), 0);
+
 		return;
     }
 
@@ -336,8 +345,11 @@ command_exec(command_t command, const char* command_line)
 						&pi)
 	)
 	{
-		error_register("CreateProcess() function failed", (int)GetLastError(), command->context->command_line, command->unit->fstream->name);
+		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
+
 		command_handle_failure(command,csr_create_process_function_failure);
+
+		unit_set_error(command->unit, (int)GetLastError(), 0);
     }
 	else
 	{
@@ -367,12 +379,42 @@ command_exec(command_t command, const char* command_line)
 	int child_stdin_fd[2] ;
 	int child_stdout_fd[2];
 	
+	#ifdef __CHKCMD
+	int rv = is_cmd(command->unit->runner->path, command->unit->runner->builtin, command_line);
+
+	if(rv != 0)
+	{
+
+		if(rv == EINVAL)
+		{
+			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(rv, 0));
+			unit_set_error(command->unit, rv, 0);
+		}
+		else
+		{
+			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(rv, 1));
+			unit_set_error(command->unit, rv, 1);
+		}
+
+		command_handle_failure(command, csr_command_not_found);
+	
+		return;
+	}
+	
+	#endif
+	
+	
 	if(command->writer)
 	{
 		if(pipe(child_stdin_fd)) 
 		{
-			error_register("pipe() function failed", errno, command->context->command_line, command->unit->fstream->name);
-			command_handle_failure(command, csr_pipe_function_failed);	
+			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
+			
+			unit_set_error(command->unit, errno, 0);
+
+			command_handle_failure(command, csr_pipe_function_failed);
+
+			
 	
 			return;
 		}
@@ -382,7 +424,7 @@ command_exec(command_t command, const char* command_line)
 	{
 		if(pipe(child_stdout_fd)) 
 		{
-			error_register("write() function failed", errno, command->context->command_line, command->unit->fstream->name);
+			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
 				
 			if(command->writer)
 			{
@@ -390,6 +432,8 @@ command_exec(command_t command, const char* command_line)
 				close(child_stdin_fd[1]);
 			}
 			
+			unit_set_error(command->unit, errno, 0);
+
 			command_handle_failure(command, csr_pipe_function_failed);
 			
 			return;
@@ -400,7 +444,8 @@ command_exec(command_t command, const char* command_line)
 	{
 		if(fcntl(child_stdin_fd[1], F_SETFL, fcntl(child_stdin_fd[1], F_GETFL) | O_NONBLOCK) < 0)
 		{
-			error_register("fcntl() function failed", errno, command->context->command_line, command->unit->fstream->name);
+
+			ERROR3("[%s] `%s'  : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
 			
 			close(child_stdin_fd[0]);
 			close(child_stdin_fd[1]);
@@ -411,6 +456,8 @@ command_exec(command_t command, const char* command_line)
 				close(child_stdout_fd[1]);
 			}
 			
+			unit_set_error(command->unit, errno, 0);
+
 			command_handle_failure(command, csr_fcntl_function_failed);	
 				
 			return;
@@ -466,7 +513,8 @@ command_exec(command_t command, const char* command_line)
 			close(child_stdout_fd[1]);
 		}
 		
-		error_register("fcntl() function failed", errno, command->context->command_line, command->unit->fstream->name);
+		ERROR2("[%s] Cannot fork the command `%s'", command->context->pos, command->context->command_line);
+		unit_set_error(command->unit, errno, 0);
 		command_handle_failure(command,csr_fork_function_failure);
 	}
 	else
@@ -496,7 +544,10 @@ command_exec(command_t command, const char* command_line)
 				/* redirect stdin to child_stdin_fd[0] (now fgets(), getchar() ... read from the pipe */  
 				if(dup2(child_stdin_fd[0],STDIN_FILENO) < 0)
 				{
-					error_register("dup2() function failed", errno, command->context->command_line, command->unit->fstream->name);
+					ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
+					command->unit->exit_code = errno;
+
+					unit_set_error(command->unit, errno, 0);
 					command_handle_failure(command,csr_dup2_function_failure);
 				}
 			
@@ -510,13 +561,16 @@ command_exec(command_t command, const char* command_line)
 				/* redirect stdout and stderr to child_stdout_fd[1] (now printf(), perror()... write to the pipe */  
 				if(dup2(child_stdout_fd[1],STDOUT_FILENO) < 0)
 				{
-					error_register("dup2() function failed", errno, command->context->command_line, command->unit->fstream->name);
+					ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
+
+					unit_set_error(command->unit, errno, 0);
 					command_handle_failure(command, csr_dup2_function_failure);
 				}
 				
 				if(dup2(child_stdout_fd[1], STDERR_FILENO) < 0)
 				{
-					error_register("dup2() function failed", errno, command->context->command_line, command->unit->fstream->name);
+					ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
+					unit_set_error(command->unit, errno, 0);
 					command_handle_failure(command, csr_dup2_function_failure);
 				}
 			
@@ -541,7 +595,11 @@ command_wait(command_t command)
 
 	if(WAIT_FAILED == WaitForSingleObject(command->pid, INFINITE))
 	{
-		ERROR0("WaitForSingleObject() failed");
+		ERROR2("[%s] Cannot wait for the child`%s'", command->context->pos, command->context->command_line);
+		
+		unit_set_error(command->unit, (int)GetLastError(), 0);
+
+		command_handle_failure(command, csr_wait_failure );
 		/* TODO : see for the interruption	*/	
 	}
 	else
@@ -551,8 +609,11 @@ command_wait(command_t command)
 		{
 			if(!GetExitCodeProcess(command->pid,&rv))
 			{
-				ERROR1("GetExitCodeProcess() failed for the child %s",command->context->command_line);
-				/* TODO : see for the interruption	*/	
+				ERROR2("[%s] Cannot get the exit code of the process `%s'",command->context->pos, command->context->command_line);
+				
+				unit_set_error(command->unit, (int)GetLastError(), 0);
+
+				command_handle_failure(command, csr_get_exit_code_process_function_failure );	
 			}
 			else
 				command->stat_val = command->exit_code = rv;
@@ -565,24 +626,29 @@ command_wait(command_t command)
 {
 	if(!command->execlp_errno)
 	{
-		
 		/* let this thread wait for the child so that the main thread can detect the timeout without blocking on the wait */
 		int pid = waitpid(command->pid, &(command->stat_val), 0);
 	
 		if(pid != command->pid) 
 		{
-			error_register("waitpid() function failed", errno, command->context->command_line, command->unit->fstream->name);
+			ERROR2("[%s] Cannot wait for the child`%s'", command->context->pos, command->context->command_line);
+
+			unit_set_error(command->unit, errno, 0);
+
 			command_handle_failure(command, csr_waitpid_function_failure);
 		}
 		else
 		{
 			if(WIFEXITED(command->stat_val))
-				command->exit_code = WEXITSTATUS(command->stat_val);	
+				command->exit_code = WEXITSTATUS(command->stat_val);
 		}
 	}
 	else
 	{
-		error_register("execlp() function failed", command->execlp_errno, command->context->command_line, command->unit->fstream->name);
+		ERROR2("[%s] Cannot execute the command `%s'", command->context->pos, command->context->command_line);
+
+		unit_set_error(command->unit, command->execlp_errno, 0);
+
 		command_handle_failure(command, csr_execlp_function_failure);
 	}
 }
@@ -600,69 +666,125 @@ command_check(command_t command)
 		command->signal = strdup(signal_name(WTERMSIG(command->stat_val),command->context->signal));
 	}
 	
-	/* we have a signal and not signal is expected */
+	/* we have a signal and no signal is expected */
 	if(WIFSIGNALED(command->stat_val) && !command->context->signal) 
 	{
 		success = 0;
-		error_register("Command failure", EUNXPSIG, command->context->command_line, command->unit->fstream->name);
+		ERROR3("[%s] `%s' : NOK (unexpected signal `%s' caught)", command->context->pos, command->context->command_line, command->signal);
+
+		unit_set_error(command->unit, EUNXPSIG, 1);
+
 		reason = csr_unexpected_signal_caught;
 	}
 	
 	/* we have a signal that differ form the expected signal */
-	if(success && WIFSIGNALED(command->stat_val) && command->context->signal && strcmp(signal_name(WTERMSIG(command->stat_val),command->context->signal),command->context->signal)) 
+	if(WIFSIGNALED(command->stat_val) && command->context->signal && strcmp(signal_name(WTERMSIG(command->stat_val),command->context->signal),command->context->signal)) 
 	{
-		success = 0;
-		error_register("Command failure", ESIGNOTMATCH, command->context->command_line, command->unit->fstream->name);
+
+		ERROR4("[%s] `%s' : NOK (got signal `%s' instead of `%s')", command->context->pos, command->context->command_line, command->signal, command->context->signal);
+		
+		if(success)
+		{
+			success = 0;
+			unit_set_error(command->unit, ESIGNOTMATCH, 1);
+		}
+		
 		reason = csr_signals_dont_match;
 	}
 	
 	/* we don't receipt the expected signal */
-	if(success && !WIFSIGNALED(command->stat_val) && command->context->signal) 
+	if(!WIFSIGNALED(command->stat_val) && command->context->signal) 
 	{
-		success = 0;
-		error_register("Command failure", ESIGNOTRECEIPT, command->context->command_line, command->unit->fstream->name);
+		
+		ERROR3("[%s] `%s' : NOK (expected `%s' not receipt)", command->context->pos, command->context->command_line, command->context->signal);
+		
+		if(success)
+		{
+			success = 0;
+			unit_set_error(command->unit, ESIGNOTRECEIPT, 1);
+		}
+		
 		reason = csr_expected_signal_not_receipt;
 	}
 	
 	/* if the command exit normaly and we expect a exit code : test it */
-	if(success && WIFEXITED(command->stat_val) /* && INDEFINITE != command->context->exit_code*/)
+	if(WIFEXITED(command->stat_val) /* && INDEFINITE != command->context->exit_code*/)
 	{
 		/* the exit codes don't match */
 		if(WEXITSTATUS(command->stat_val) != command->context->exit_code)
 		{
-			success = 0;
-			error_register("Command failure", EEXITCODENOTMATCH, command->context->command_line, command->unit->fstream->name);
+			ERROR4("[%s] %s : NOK (returned code `%d' instead `%d')", command->context->pos, command->context->command_line, WEXITSTATUS(command->stat_val), command->context->exit_code);
+			
+			if(success)
+			{
+				success = 0;
+				unit_set_error(command->unit, EEXITCODENOTMATCH, 1);
+			}
+	
 			reason = csr_exit_codes_dont_match;
 		}
 	}
+
+	/* make sure the reader done */
+	while(!command->reader->done)
+		xbt_os_thread_yield();
 	
-	/* if ouput handling flag is specified check the output */
-	if(success && oh_check == command->context->output_handling && command->reader)
+	#ifdef WIN32
+	CloseHandle(command->stdout_fd);
+	#else
+	close(command->stdout_fd);
+	#endif
+
+	command->stdout_fd = INDEFINITE_FD;
+
+	xbt_strbuff_chomp(command->output);
+	xbt_strbuff_chomp(command->context->output);
+	xbt_strbuff_trim(command->output);
+	xbt_strbuff_trim(command->context->output);
+
+	if(!success)
 	{
-		/* make sure the reader done */
-		while(!command->reader->done)
-			xbt_os_thread_yield();
-		
-		#ifdef WIN32
-		CloseHandle(command->stdout_fd);
-		#else
-		close(command->stdout_fd);
-		#endif
-
-		command->stdout_fd = INDEFINITE_FD;
-
-		xbt_strbuff_chomp(command->output);
-		xbt_strbuff_chomp(command->context->output);
-		xbt_strbuff_trim(command->output);
-		xbt_strbuff_trim(command->context->output);
-
+		xbt_dynar_t a = xbt_str_split(command->output->data, "\n");
+		char *out = xbt_str_join(a,"\n||");
+		xbt_dynar_free(&a);
+		INFO2("Output of <%s> so far: \n||%s", command->context->pos,out);
+		free(out);    
+	}
+	/* if ouput handling flag is specified check the output */
+	else if(oh_check == command->context->output_handling && command->reader)
+	{
 		if(command->output->used != command->context->output->used || strcmp(command->output->data, command->context->output->data))
 		{
-			success = 0;
-			error_register("Command failure", EOUTPUTNOTMATCH, command->context->command_line, command->unit->fstream->name);
+			char *diff;
+			
+			ERROR2("[%s] `%s' : NOK (outputs mismatch):", command->context->pos, command->context->command_line);
+			
+			if(success)
+			{
+				unit_set_error(command->unit, EOUTPUTNOTMATCH, 1);
+				success = 0;
+			}
+
 			reason = csr_outputs_dont_match;
+
+			/* display the diff */
+			diff = xbt_str_diff(command->context->output->data,command->output->data);	  	
+			INFO1("%s",diff);
+			free(diff);
 		}
 	}
+	else if (oh_ignore == command->context->output_handling) 
+	{
+		INFO1("(ignoring the output of <%s> as requested)",command->context->line);
+	} 
+	else if (oh_display == command->context->output_handling) 
+	{
+		xbt_dynar_t a = xbt_str_split(command->output->data, "\n");
+		char *out = xbt_str_join(a,"\n||");
+		xbt_dynar_free(&a);
+		INFO3("[%s] Here is the (ignored) command `%s' output: \n||%s",command->context->pos, command->context->command_line, out);
+		free(out);
+	} 
 	
 	if(success)
 	{
@@ -670,21 +792,19 @@ command_check(command_t command)
 		
 		if(command->status != cs_interrupted)
 		{
-		
 			/* signal the success of the command */
 			command->status = cs_successeded;
 			command->successeded = 1;
 
 			/* increment the number of successeded command of the unit */
-			(command->unit->successeded_cmd_nb)++;
+			(command->root->successeded_cmd_nb)++;
 		}
 		
-		xbt_os_mutex_release(command->mutex);
-			
+		xbt_os_mutex_release(command->mutex);	
 	}
 	else
 	{
-		command_handle_failure(command,reason);
+		command_handle_failure(command, reason);
 	}
 }
 
@@ -693,7 +813,10 @@ void
 command_kill(command_t command)
 {
 	if(INDEFINITE_PID != command->pid)
+	{
+		INFO2("[%s] Kill the process `%s'", command->context->pos, command->context->command_line);
 		TerminateProcess(command->pid, INDEFINITE);
+	}
 }
 #else
 void
@@ -710,6 +833,8 @@ command_kill(command_t command)
 		command->killed = 1;
 		
 		usleep(100);
+
+		INFO2("[%s] Kill the process `%s'", command->context->pos, command->context->command_line);
 		kill(command->pid,SIGKILL); 
 
 		
@@ -727,9 +852,11 @@ command_interrupt(command_t command)
 		command->status = cs_interrupted;	
 		command->reason = csr_interruption_request;
 		command->interrupted = 1;
-		xbt_os_mutex_acquire(command->unit->mutex);
-		(command->unit->interrupted_cmd_nb)++;
-		xbt_os_mutex_release(command->unit->mutex);
+		command->unit->interrupted = 1;
+
+		xbt_os_mutex_acquire(command->root->mutex);
+		(command->root->interrupted_cmd_nb)++;
+		xbt_os_mutex_release(command->root->mutex);
 		
 		if(command->pid != INDEFINITE_PID)
 			command_kill(command);
@@ -757,6 +884,14 @@ command_summarize(command_t command)
 			/* the function pipe or CreatePipe() fails */
 			case csr_pipe_function_failed :
 			printf("          reason                      : pipe() or CreatePipe() function failed (system error)\n");
+			break;
+			
+			case csr_shell_failed :
+			printf("          reason                      : shell failed (may be command not found)\n");
+			break;
+
+			case csr_get_exit_code_process_function_failure :
+			printf("          reason                      : ExitCodeProcess() function failed (system error)\n");
 			break;
 			
 			/* reader failure reasons*/
@@ -897,14 +1032,11 @@ command_summarize(command_t command)
 	printf("\n");
 }
 
-
-
-
 void
 command_handle_failure(command_t command, cs_reason_t reason)
 {
 	
-	unit_t unit = command->unit;
+	unit_t root = command->root;
 	
 	xbt_os_mutex_acquire(command->mutex);
 
@@ -913,22 +1045,24 @@ command_handle_failure(command_t command, cs_reason_t reason)
 		command->status = cs_failed;
 		command->reason = reason;
 		command->failed = 1;
+
+		command->unit->failed = 1;
 		
-		xbt_os_mutex_acquire(unit->mutex);
+		xbt_os_mutex_acquire(root->mutex);
 		
 		/* increment the number of failed command of the unit */
-		unit->failed_cmd_nb++;
+		root->failed_cmd_nb++;
 		
 		/* if the --ignore-failures option is not specified */
 		if(!keep_going_unit_flag)
 		{
-			if(!unit->interrupted)
+			if(!root->interrupted)
 			{
 				/* the unit interrupted (exit for the loop) */
-				unit->interrupted = 1;
+				root->interrupted = 1;
 
 				/* release the unit */
-				xbt_os_sem_release(unit->sem);
+				xbt_os_sem_release(root->sem);
 			}
 			
 			/* if the --keep-going option is not specified */
@@ -945,7 +1079,7 @@ command_handle_failure(command_t command, cs_reason_t reason)
 			}
 		}
 
-		xbt_os_mutex_release(unit->mutex);
+		xbt_os_mutex_release(root->mutex);
 	}
 
 	xbt_os_mutex_release(command->mutex);
@@ -954,8 +1088,6 @@ command_handle_failure(command_t command, cs_reason_t reason)
 int
 command_free(command_t* ptr)
 {
-	/* TODO : check the parameter */
-	
 	/* close the stdin and the stdout pipe handles */
 
 	#ifdef WIN32
@@ -978,7 +1110,6 @@ command_free(command_t* ptr)
 	{
 		if(timer_free(&((*ptr)->timer)) < 0)
 			return -1;
-			
 	}
 	
 	if((*ptr)->writer)
@@ -993,7 +1124,8 @@ command_free(command_t* ptr)
 			return -1;
 	}
 	
-	xbt_strbuff_free((*ptr)->output);
+	if((*ptr)->output)
+		xbt_strbuff_free((*ptr)->output);
 	
 	if((*ptr)->context)
 	{

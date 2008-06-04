@@ -20,14 +20,30 @@
 #include <str_replace.h>
 #include <variable.h>
 
+#include <readline.h>
+
+#include <is_cmd.h>
+
+#ifndef WIN32
+#include <xsignal.h>
+#endif
+
 
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
+
+
+
+long fstream_getline(fstream_t fstream, char **buf, size_t *n) {
+
+	return readline(fstream->stream, buf, n);
+	
+}
+
 static void
 failure(unit_t unit)
 {
-	
 	if(!keep_going_unit_flag)
 	{
 		unit_t root = unit->root ? unit->root : unit;
@@ -53,49 +69,6 @@ failure(unit_t unit)
 				xbt_os_sem_release(units_sem);
 			}
 		}
-	}
-}
-
-static void
-syntax_error(unit_t unit)
-{
-	error_register("Unit failure", ESYNTAX, NULL, unit->fstream->name);
-	
-	failure(unit);
-	
-}
-
-static void
-internal_error(unit_t unit)
-{
-	failure(unit);
-}
-
-static void
-sys_error(unit_t unit)
-{
-	unit_t root;
-	
-	error_register("System error", errno, NULL, unit->fstream->name);
-	
-	root = unit->root ? unit->root : unit;
-			
-	if(!root->interrupted)
-	{
-		/* the unit interrupted (exit for the loop) */
-		root->interrupted = 1;
-
-		/* release the unit */
-		xbt_os_sem_release(root->sem);
-	}
-	
-	if(!interrupted)
-	{
-		/* request an global interruption by the runner */
-		interrupted = 1;
-
-		/* release the runner */
-		xbt_os_sem_release(units_sem);
 	}
 }
 
@@ -139,6 +112,7 @@ fstream_new(const char* directory, const char* name)
 	
 	fstream->stream = NULL;
 	fstream->unit = NULL;
+	fstream->parsed = 0;
 	
 	
 	return fstream;
@@ -218,7 +192,8 @@ fstream_free(fstream_t* ptr)
 	if((*ptr)->stream)
 		fclose((*ptr)->stream);
 	
-	free((*ptr)->name);
+	if((*ptr)->name)
+		free((*ptr)->name);
 	
 	if((*ptr)->directory)
 		free((*ptr)->directory);
@@ -263,7 +238,8 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 		
 	unit = fstream->unit;
 	
-	while(!(unit->root->interrupted)  && getline(&line, &len, fstream->stream) != -1)
+	/*while(!(unit->root->interrupted)  && getline(&line, &len, fstream->stream) != -1)*/
+	while(!(unit->root->interrupted)  && fstream_getline(fstream, &line, &len) != -1)
 	{
 		
 		blankline=1;
@@ -284,12 +260,29 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 		{
 			if(!context->command_line && (context->input->used || context->output->used))
 			{
-				ERROR1("[%d] Error: no command found in this chunk of lines.",buffbegin);
-				syntax_error(unit);
+				snprintf(file_pos,256,"%s:%d",fstream->name, line_num);
+				ERROR1("[%s] Error : no command found in the last chunk of lines", file_pos);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
 				break;
 			}
 			else if(unit->is_running_suite)
 			{/* it's the end of a suite */
+				
+				unit_t* current_suite = xbt_dynar_get_ptr(unit->suites, xbt_dynar_length(unit->suites) - 1);
+
+				if(!xbt_dynar_length((*current_suite)->includes))
+				{
+					ERROR2("[%s] Malformated suite `(%s)' : include missing", file_pos, (*current_suite)->description);
+				
+					unit_set_error(*current_suite, ESYNTAX, 1);
+
+					failure(unit);
+					
+				}
+			
 				unit->is_running_suite = 0;
 			}
 				
@@ -368,6 +361,26 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 	char name[VAR_NAME_MAX + 1] = {0};
 	unit_t unit = fstream->unit;
 	xbt_dynar_t variables = unit->runner->variables;
+
+	if(unit->is_running_suite && strncmp(line, "! include", strlen("! include")))
+	{/* it's the end of a suite */
+		
+		unit_t* current_suite = xbt_dynar_get_ptr(unit->suites, xbt_dynar_length(unit->suites) - 1);
+
+		if(!xbt_dynar_length((*current_suite)->includes))
+			ERROR2("[%s] Malformated suite `(%s)': include missing", filepos, (*current_suite)->description);
+		else
+			ERROR2("[%s] Malformated suite `(%s)': blank line missing", filepos, (*current_suite)->description);
+		
+		unit_set_error(*current_suite, ESYNTAX, 1);
+
+		failure(fstream->unit);
+			
+		
+	}
+	
+	context->line = strdup(filepos);
+	
 	
 	/* search end */
 	xbt_str_rtrim(line + 2,"\n");
@@ -385,6 +398,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 	}
 	
 	xbt_os_mutex_release(unit->mutex);
+
 	
 	switch(line2[0]) 
 	{
@@ -393,8 +407,23 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 		
 		case '$':
 		case '&':
+
+		if(line[1] != ' ')
+		{
+			
+			if(line2[0] == '$')
+				ERROR1("[%s] Missing space after `$' `(usage : $ <command>)'", filepos);
+			else
+				ERROR1("[%s] Missing space after & `(usage : & <command>)'", filepos);
+		
+			unit_set_error(fstream->unit, ESYNTAX, 1);
+
+			failure(unit);
+			return;
+		}
 			
 		context->async = (line2[0] == '&');
+
 		
 		/* further trim useless chars which are significant for in/output */
 		xbt_str_rtrim(line2 + 2," \t");
@@ -418,14 +447,15 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 			if(!dry_run_flag)
 			{
 				if(!silent_flag)
-					INFO1("tesh cd %s",dir);
+					INFO2("[%s] cd %s", filepos, dir);
 				
 				if(!just_print_flag)
 				{
 					if(chdir(dir))
 					{
-						ERROR1("chdir failed to set the directory to %s", dir);
-						error_register("Unit failure", errno, NULL, unit->fstream->name);
+						ERROR3("[%s] Chdir to %s failed: %s",filepos, dir,error_to_string(errno, 0));
+						unit_set_error(fstream->unit, errno, 0);
+
 						failure(unit);
 					}
 				}
@@ -442,29 +472,109 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 		case '<':
 		case '>':
 		case '!':
+		
+		if(line[0] == '!' && line[1] != ' ')
+		{
+			ERROR1("[%s] Missing space after `!' `(usage : ! <command> [[=]value])'", filepos);
+		
+			unit_set_error(fstream->unit, ESYNTAX, 1);
+
+			failure(unit);
+			return;
+		}
+
 		fstream_process_token(fstream, context, mutex, filepos, line2[0], line2 + 2);    
 		break;
 		
 		case 'p':
-		if(!dry_run_flag)
-			INFO2("[%s] %s",filepos,line2+2);
+		
+		{
+			unsigned int j;
+			int is_blank = 1;
+			
+			char* prompt = line2 + 2;
+
+			for(j = 0; j < strlen(prompt); j++) 
+				if (prompt[j] != ' ' && prompt[j] != '\t')
+					is_blank = 0;
+
+			if(is_blank)
+			{
+				ERROR1("[%s] Bad usage of the metacommand p `(usage : p <prompt>)'", filepos);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
+			}
+
+			if(!dry_run_flag)
+				INFO2("[%s] %s",filepos,prompt);
+		}
+
+		
 		break;
 		
 		case 'P':
-		if(!dry_run_flag)
-			CRITICAL2("[%s] %s",filepos,line2+2);
+		
+		{
+			unsigned int j;
+			int is_blank = 1;
+				
+			char* prompt = line2 + 2;
+
+			for(j = 0; j < strlen(prompt); j++) 
+				if (prompt[j] != ' ' && prompt[j] != '\t')
+					is_blank = 0;
+
+			if(is_blank)
+			{
+				ERROR1("[%s] Bad usage of the metacommand P `(usage : P <prompt>)'", filepos);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
+			}
+
+			if(!dry_run_flag)		
+				CRITICAL2("[%s] %s",filepos, prompt);
+		}
+
 		break;
 		
 		case 'D':
 			if(unit->description)
-				WARN2("Description already specified %s at %s", line2, filepos); 
+				WARN2("[%s] Description already specified `%s'",filepos, line2 + 2); 
 			else
-				unit->description = strdup(line2 + 2);
+			{
+				unsigned int j;
+				int is_blank = 1;
+				
+				char* desc = line2 + 2;
+
+				for(j = 0; j < strlen(desc); j++) 
+					if (desc[j] != ' ' && desc[j] != '\t')
+						is_blank = 0;
+
+				if(is_blank)
+				{
+					ERROR1("[%s] Bad usage of the metacommand D `(usage : D <Description>)'", filepos);
+					
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);
+					return;
+				}
+
+				unit->description = strdup(desc);
+			}
 		break;
 		
 		default:
-		error_register("Unit failure", errno, NULL, unit->fstream->name);
-		syntax_error(unit);
+		ERROR2("[%s] Syntax error `%s'", filepos, line2);
+		unit_set_error(fstream->unit, ESYNTAX, 1);
+		failure(unit);
 		break;
 	}
 	
@@ -486,8 +596,10 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			
 			if(context->output->used || context->input->used) 
 			{
-				ERROR2("[%s] More than one command in this chunk of lines (previous: %s).\nDunno which input/output belongs to which command.",filepos,context->command_line);
-				syntax_error(unit);
+				ERROR2("[%s] More than one command in this chunk of lines (previous: %s).\nDunno which input/output belongs to which command.",filepos, context->command_line);
+
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+				failure(unit);
 				return;
 			}
 			
@@ -497,10 +609,31 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			VERB1("[%s] More than one command in this chunk of lines",filepos);
 		}
 		
-		context->command_line = strdup(line);
-		context->line = strdup(filepos);
-	
+		{
+			size_t j,
+			is_blank = 1;
+
+			for(j = 0; j < strlen(line); j++) 
+				if (line[j] != ' ' && line[j] != '\t')
+					is_blank = 0;
+
+			if(is_blank)
+			{
+				if(token == '$')
+				ERROR1("[%s] Undefinite command for `$' `(usage: $ <command>)'", filepos);
+				else
+				ERROR1("[%s] Undefinite command for `&' `(usage: & <command>)'", filepos);
+
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
+			}
+		}
 		
+		context->command_line = strdup(line);
+		context->line = /*strdup(filepos)*/ filepos;
+		context->pos = strdup(filepos);
 		break;
 		
 		case '<':
@@ -516,8 +649,10 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 		case '!':
 		
 		if(context->command_line)
+		{
 			if(fstream_launch_command(fstream, context, mutex) < 0)
 					return;
+		}
 		
 		if(!strncmp(line,"timeout no",strlen("timeout no"))) 
 		{
@@ -527,15 +662,35 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 		else if(!strncmp(line,"timeout ",strlen("timeout "))) 
 		{
 			int i = 0;
+			unsigned int j;
+			int is_blank = 1;
 			char* p = line + strlen("timeout ");
+
+
+			for(j = 0; j < strlen(p); j++) 
+				if (p[j] != ' ' && p[j] != '\t')
+					is_blank = 0;
+
+			if(is_blank)
+			{
+				ERROR1("[%s] Undefinite timeout value `(usage :timeout <seconds>)'", filepos);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
+			}
 	
 			while(p[i] != '\0')
 			{
 				if(!isdigit(p[i]))
 				{
-					ERROR2("Invalid timeout value `%s' at %s ", line + strlen("timeout "), filepos);
-					syntax_error(unit);
+					ERROR2("[%s] Invalid timeout value `(%s)' : `(usage :timeout <seconds>)'", filepos, line + strlen("timeout "));
+
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+ 
 					failure(unit);
+					return;
 				}
 
 				i++;
@@ -547,17 +702,57 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 		} 
 		else if (!strncmp(line,"expect signal ",strlen("expect signal "))) 
 		{
+			unsigned int j;
+			int is_blank = 1;
+
+			
+			char* p = line + strlen("expect signal ");
+
+
+			for(j = 0; j < strlen(p); j++) 
+				if (p[j] != ' ' && p[j] != '\t')
+					is_blank = 0;
+
+			if(is_blank)
+			{
+				ERROR1("[%s] Undefinite signal name `(usage :expect signal <signal name>)'", filepos);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
+			}
+
 			context->signal = strdup(line + strlen("expect signal "));
 			
+			xbt_str_trim(context->signal," \n");
+
 			#ifdef WIN32
 			if(!strstr("SIGSEGVSIGTRAPSIGBUSSIGFPESIGILL", context->signal))
 			{
-				ERROR2("Incompatible signal \'%s\' detected at %s", context->signal, filepos);
-				syntax_error(unit);
+				ERROR2("[%s] Signal `%s' not supported by this platform", filepos, context->signal);
+
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+
+				failure(unit);
+				return;
 			}
+			#else
+			if(!sig_exists(context->signal))
+			{
+				ERROR2("[%s] Signal `%s' not supported by Tesh", filepos, context->signal);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+
+				failure(unit);
+				return;
+			}
+
 			#endif
 
-			xbt_str_trim(context->signal," \n");
+			
 			VERB2("[%s] (next command must raise signal %s)", filepos, context->signal);
 		
 		} 
@@ -565,14 +760,35 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 		{
 
 			int i = 0;
+			unsigned int j;
+			int is_blank = 1;
 			char* p = line + strlen("expect return ");
+
+
+			for(j = 0; j < strlen(p); j++) 
+				if (p[j] != ' ' && p[j] != '\t')
+					is_blank = 0;
+
+			if(is_blank)
+			{
+				ERROR1("[%s] Undefinite return value `(usage :expect return <return value>)'", filepos);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
+			}
 			
 			while(p[i] != '\0')
 			{
 				if(!isdigit(p[i]))
 				{
-					ERROR2("Invalid exit code value `%s' at %s ", line + strlen("expect return "), filepos);
-					syntax_error(unit);
+					ERROR2("[%s] Invalid exit code value `(%s)' : must be an integer >= 0 and <=255",  filepos, line + strlen("expect return "));
+
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);
+					return;
 				}
 
 				i++;
@@ -607,8 +823,12 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			
 			if(p1[0] == '\0')
 			{
-				ERROR1("include file not specified %s ", filepos);
-				syntax_error(unit);
+				ERROR1("[%s] no file specified : `(usage : include <file> [<description>])'", filepos);
+
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
 			}
 			else
 			{
@@ -632,22 +852,63 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 		}
 		else if(!strncmp(line,"suite ", strlen("suite ")))
 		{
+			unsigned int j;
+			int is_blank = 1;
+			char* p = line + strlen("suite ");
+
+
+			for(j = 0; j < strlen(p); j++) 
+				if (p[j] != ' ' && p[j] != '\t')
+					is_blank = 0;
+			
+			if(is_blank)
+			{
+				ERROR1("[%s] Undefinite suit description : `(usage : suite <description>)", filepos);
+
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
+			}
+
 			if(unit->is_running_suite)
 			{
-				ERROR1("Suite already in process at %s", filepos);
-				syntax_error(unit);
+				ERROR1("[%s] Suite already in progress", filepos);
+
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
 				return;
 			}
 			
-			fstream_handle_suite(fstream, context, mutex, line + strlen("suite "));
+			fstream_handle_suite(fstream, line + strlen("suite "), filepos);
 		}
 		else if(!strncmp(line,"unsetenv ", strlen("unsetenv ")))
 		{
-			unsigned int i;
+			unsigned int i, j;
 			int exists = 0;
 			int env = 0;
+			int err = 0;
 			variable_t variable;
+			int is_blank;
+
 			char* name = line + strlen("unsetenv ");
+
+			is_blank = 1;
+
+			for(j = 0; j < strlen(name); j++) 
+				if (name[j] != ' ' && name[j] != '\t')
+					is_blank = 0;
+
+			if(is_blank)
+			{
+				ERROR1("[%s] Bad usage of the metacommand unsetenv : `(usage : unsetenv variable)'", filepos);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
+			}
 			
 			xbt_os_mutex_acquire(unit->mutex);
 			
@@ -657,6 +918,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				if(!strcmp(variable->name, name))
 				{
 					env = variable->env;
+					err = variable->err;
 					exists = 1;
 					break;
 				}
@@ -665,17 +927,52 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			if(env)
 			{
 				if(exists)
-					/*xbt_dynar_remove_at(unit->runner->variables, i - 1, NULL);*/
+				{
+					#ifndef WIN32
+					unsetenv(name);
+					#else
+					SetEnvironmentVariable(name, NULL);
+					#endif
 					xbt_dynar_cursor_rm(unit->runner->variables, &i);
+				}
 				else
-					WARN3("environment variable %s not found %s %s at", name, line, filepos);	
+				{
+					ERROR2("[%s] `(%s)' environment variable not found : impossible to unset it",filepos, name);	
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+					xbt_os_mutex_release(unit->mutex);
+					failure(unit);
+					return;
+				}
 			}
 			else
 			{
 				if(exists)
-					WARN3("%s is an not environment variable use unset metacommand to delete it %s %s", name, line, filepos);
+				{
+					if(!err)
+					{
+						ERROR2("[%s] `(%s)' is not an environment variable : use `unset' instead `unsetenv'",filepos, name);	
+						unit_set_error(fstream->unit, ESYNTAX, 1);
+						failure(unit);
+						xbt_os_mutex_release(unit->mutex);
+						return;
+					}
+					else
+					{
+						ERROR2("[%s] `(%s)' is not an environment variable (it's a system variable) : impossible to unset it",filepos, name);	
+						unit_set_error(fstream->unit, ESYNTAX, 1);
+						xbt_os_mutex_release(unit->mutex);
+						failure(unit);
+						return;
+					}
+				}
 				else
-					WARN3("%s environment variable not found %s %s", name, line, filepos);
+				{
+					ERROR2("[%s] `(%s)' environment variable not found : impossible to unset it",filepos, name);	
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+					xbt_os_mutex_release(unit->mutex);
+					failure(unit);
+					return;
+				}
 			}
 			
 			xbt_os_mutex_release(unit->mutex);	
@@ -688,6 +985,8 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			char name[PATH_MAX + 1] = {0};
 			char* p;
 			unsigned int i;
+			int is_blank;
+			unsigned int j;
 			
 			p = line + strlen("setenv ");
 			
@@ -698,18 +997,40 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				variable_t variable;
 				int exists = 0;
 				int env = 0;
+				int err = 0;
 				val++;
 				
 				/* syntax error */
-				if(val[0] == '\0')
+				if(val[0] == '\0' || val[0] ==' ' || val[0] =='\t')
 				{
-					ERROR2("Indefinite variable value %s %s", line, filepos);
-					syntax_error(unit);
-					failure(unit);	
+					ERROR1("[%s] Bad usage of the metacommand setenv `(usage : setenv variable=value)'", filepos);	
+
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);
+					return;
 				}
 				
 				
+				
 				strncpy(name, p, (val - p -1));
+
+				is_blank = 1;
+
+				for(j = 0; j < strlen(name); j++) 
+					if (name[j] != ' ' && name[j] != '\t')
+						is_blank = 0;
+
+				if(is_blank)
+				{
+					
+					ERROR1("[%s] Bad usage of the metacommand setenv `(usage : setenv variable=value)'", filepos);
+					
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);
+					return;
+				}
 				
 				/* test if the variable is already registred */
 				xbt_os_mutex_acquire(unit->mutex);
@@ -718,7 +1039,8 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				{
 					if(!strcmp(variable->name, name))
 					{
-						variable->env = 1;
+						env = variable->env;
+						err = variable->err;
 						exists = 1;
 						break;
 					}
@@ -731,8 +1053,12 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				{
 					if(env)
 					{
+						if(!strcmp(val, variable->val))
+							WARN3("[%s] This environment variable `(%s)' is already set with the value `(%s)'", filepos, name, val);
+
 						free(variable->val);
 						variable->val = strdup(val);
+
 						#ifdef WIN32
 						SetEnvironmentVariable(variable->name, variable->val);
 						#else
@@ -740,34 +1066,84 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 						#endif
 					}
 					else
-						WARN3("%s variable already exists %s %s", name, line, filepos);	
+					{
+						if(err)
+							ERROR2("[%s] Conflict : a system variable `(%s)' already exists", filepos, name);
+						else
+							ERROR2("[%s] Conflict : (none environment) variable `(%s)' already exists", filepos, name);	
+
+						unit_set_error(fstream->unit, ESYNTAX, 1);
+						xbt_os_mutex_release(unit->mutex);
+						failure(unit);
+						return;
+					}
 				}
 				else
 				{
-					variable = variable_new(name, val);
-					variable->env = 1;
+					if(err)
+					{
+						ERROR2("[%s] A system variable named `(%s)' already exists", filepos, name);
 					
-					xbt_dynar_push(unit->runner->variables, &variable);
-					
-					#ifdef WIN32
-					SetEnvironmentVariable(variable->name, variable->val);
-					#else
-					setenv(variable->name, variable->val, 0);
-					#endif
+						unit_set_error(fstream->unit, ESYNTAX, 1);
+						xbt_os_mutex_release(unit->mutex);
+						failure(unit);
+						return;
+					}
+					else
+					{
+						variable = variable_new(name, val);
+						variable->env = 1;
+						
+						xbt_dynar_push(unit->runner->variables, &variable);
+						
+						#ifdef WIN32
+						SetEnvironmentVariable(variable->name, variable->val);
+						#else
+						setenv(variable->name, variable->val, 0);
+						#endif
+					}
 				}
 				
 				xbt_os_mutex_release(unit->mutex);
 				
 			}
+			else
+			{
+				ERROR1("[%s] Bad usage of the metacommand setenv `(usage : setenv variable=value)'", filepos);
+					
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+				failure(unit);
+				return;
+			}
 		}
 		else if(!strncmp(line,"unset ", strlen("unset ")))
 		{
-			unsigned int i;
+			unsigned int i, j;
 			int exists = 0;
 			int env = 0;
 			int err = 0;
 			variable_t variable;
+			int is_blank;
+
 			char* name = line + strlen("unset ");
+
+			is_blank = 1;
+
+			for(j = 0; j < strlen(name); j++) 
+				if (name[j] != ' ' && name[j] != '\t')
+					is_blank = 0;
+
+			if(is_blank)
+			{
+				
+				ERROR1("[%s] Bad usage of the metacommand unset `(usage : unset variable)'", filepos);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
+				return;
+			}
+
 			
 			xbt_os_mutex_acquire(unit->mutex);
 
@@ -782,49 +1158,104 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				}
 			}
 				
-			if(!env)
+			if(!env && !err)
 			{
 				if(exists)
 					/*xbt_dynar_remove_at(unit->runner->variables, i, NULL);*/
 					xbt_dynar_cursor_rm(unit->runner->variables, &i);
 				else
-					WARN3("variable %s not found %s %s", name, line, filepos);	
+				{
+					ERROR2("[%s] `(%s)' variable not found",filepos, name);	
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+					xbt_os_mutex_release(unit->mutex);
+					failure(unit);
+					return;
+				}
 			}
 			else if(env)
-				WARN3("%s is an environment variable use unsetenv metacommand to delete it %s %s", name, line, filepos);	
-			else
-				WARN3("%s is an error variable : you are not allowed to delete it %s %s", name, line, filepos);
+			{
+				ERROR2("[%s] `(%s)' is an environment variable use `unsetenv' instead `unset'",filepos, name);	
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+				xbt_os_mutex_release(unit->mutex);
+				failure(unit);
+				return;
+			}
+			else if(err)
+			{
+				ERROR2("[%s] `(%s)' is system variable : you can unset it",filepos, name);	
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+				xbt_os_mutex_release(unit->mutex);
+				failure(unit);
+				return;
+			}
 			
-
 			xbt_os_mutex_release(unit->mutex);
 				
 		}
-		else
+		else if(!strncmp(line,"set ", strlen("set ")))
 		{
 			char* val;
 			char name[PATH_MAX + 1] = {0};
+			unsigned int j; 
+			int is_blank;
 			
-			val = strchr(line, '=');
+			val = strchr(line + strlen("set "), '=');
 			
 			if(val)
 			{
 				variable_t variable;
 				int exists = 0;
 				unsigned int i;
+				int err;
+				int env;
+
 				val++;
 				
 				
 				/* syntax error */
 				if(val[0] == '\0')
 				{
-					ERROR2("Indefinite variable value %s %s", line, filepos);
-					syntax_error(unit);
+					ERROR1("[%s] Bad usage of the metacommand set `(usage : set variable=value)'", filepos);
+					
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);
+					return;
+				}
+				else if(val[0] ==' ' || val[0] =='\t')
+				{
+					strncpy(name, line + strlen("set "), (val - (line + strlen("set "))));
+
+					ERROR2("[%s] No space avaible after`(%s)'", filepos, name);
+
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);
+					return;
 				}
 				
 				
 				/* assume it's a varibale */
-				strncpy(name, line, (val - line -1));
 				
+				strncpy(name, line + strlen("set "), (val - (line + strlen("set ")) -1));
+				
+				is_blank = 1;
+
+				for(j = 0; j < strlen(name); j++) 
+					if (name[j] != ' ' && name[j] != '\t')
+						is_blank = 0;
+
+				if(is_blank)
+				{
+					
+					ERROR1("[%s] Bad usage of the metacommand set `(usage : set variable=value)'", filepos);
+					
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);
+					return;
+				}
+
 				xbt_os_mutex_acquire(unit->mutex);
 				
 				/* test if the variable is already registred */
@@ -833,17 +1264,203 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					if(!strcmp(variable->name, name))
 					{
 						exists = 1;
+						err = variable->err;
+						env = variable->env;
 						break;
 					}
 				}
 				
-				/* if the variable is already registred, update its value;
+				/* if the variable is already registred, update its value (if same value warns);
 				 * otherwise register it.
 				 */
 				if(exists)
 				{
-					free(variable->val);
-					variable->val = strdup(val);
+					if(err)
+					{
+						ERROR2("[%s] A system variable named `(%s)' already exists", filepos, name);
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1);
+						xbt_os_mutex_release(unit->mutex);
+
+						failure(unit);
+						return;
+					}
+					if(env)
+					{
+						ERROR2("[%s] `(%s)' is an environment variable use `setenv' instead `set'", filepos, name);
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1);
+						xbt_os_mutex_release(unit->mutex);
+
+						failure(unit);
+						return;
+					}
+					else
+					{
+						if(!strcmp(val, variable->val))
+							WARN3("[%s] Variable `(%s)' already contains value `<%s>'",filepos, variable->name, val);
+
+						free(variable->val);
+						variable->val = strdup(val);
+					}
+				}
+				else
+				{
+					variable_t new_var = variable_new(name, val);
+					xbt_dynar_push(unit->runner->variables, &new_var);
+				}
+
+					
+				xbt_os_mutex_release(unit->mutex);
+			}
+			else
+			{
+				ERROR1("[%s] Bad usage of the metacommand set `(usage : set variable=value)'", filepos);
+					
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+				failure(unit);
+				return;
+			}
+		}
+		else
+		{/* assume it's	a variable */
+			char* val;
+			char name[PATH_MAX + 1] = {0};
+			unsigned int i, j; 
+			int is_blank;
+			
+			val = strchr(line, '=');
+
+			if(val)
+			{
+				variable_t variable;
+				int exists = 0;
+				int err;
+				int env;
+				val++;
+				
+				
+				/* syntax error */
+				if(val[0] == '\0')
+				{
+					strncpy(name, line, (val - line -1));
+
+					is_blank = 1;
+
+					for(j = 0; j < strlen(name); j++) 
+						if (name[j] != ' ' && name[j] != '\t')
+							is_blank = 0;
+
+					if(is_blank)
+						ERROR1("[%s] Bad usage of Tesh variable mechanism `(usage : variable=value)'", filepos);
+					else if(!strcmp("setenv", name))
+						ERROR1("[%s] Bad usage of the metacommand setenv `(usage : setenv variable=value)'", filepos);
+					else if(!strcmp("set", name))
+						ERROR1("[%s] Bad usage of the metacommand set `(usage : set variable=value)'", filepos);
+					else
+						ERROR2("[%s] Undefined variable `(%s)'", filepos, name);
+
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);
+					return;
+				}
+				else if(val[0] ==' ' || val[0] =='\t')
+				{
+					strncpy(name, line, (val - line));
+
+					ERROR2("[%s] No space avaible after`(%s)'", filepos, name);
+
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);	 
+				}
+				
+				
+				/* assume it's a varibale */
+				
+				strncpy(name, line, (val - line -1));
+
+				is_blank = 1;
+
+				for(j = 0; j < strlen(name); j++) 
+					if (name[j] != ' ' && name[j] != '\t')
+						is_blank = 0;
+
+				if(is_blank)
+				{
+					
+					ERROR1("[%s] Bad usage of Tesh variable capability `(usage : variable=value)'", filepos);
+
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+
+					failure(unit);
+					return;
+				}
+				
+				if(!strcmp("set", name))
+				{
+					ERROR1("[%s] Bad usage of the metacommand set `(usage : set variable=value)'", filepos);
+					
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+					failure(unit);
+					return;
+				}
+				else if(!strcmp("setenv", name))
+				{
+					ERROR1("[%s] Bad usage of the metacommand setenv `(usage : setenv variable=value)'", filepos);
+					
+					unit_set_error(fstream->unit, ESYNTAX, 1);
+					failure(unit);
+					return;
+				}
+
+				xbt_os_mutex_acquire(unit->mutex);
+				
+				/* test if the variable is already registred */
+				xbt_dynar_foreach(unit->runner->variables, i, variable)
+				{
+					if(!strcmp(variable->name, name))
+					{
+						exists = 1;
+						err = variable->err;
+						env = variable->env;
+						break;
+					}
+				}
+				
+				/* if the variable is already registred, update its value (if same value warns);
+				 * otherwise register it.
+				 */
+				if(exists)
+				{
+					if(err)
+					{
+						ERROR2("[%s] A system variable named `(%s)' already exists", filepos, name);
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1);
+						xbt_os_mutex_release(unit->mutex);
+						failure(unit);
+						return;
+					}
+					if(env)
+					{
+						ERROR2("[%s] `(%s)' is an environment variable use `setenv' metacommand", filepos, name);
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1);
+						xbt_os_mutex_release(unit->mutex);
+
+						failure(unit);
+						return;
+					}
+					else
+					{
+						if(!strcmp(val, variable->val))
+							WARN3("[%s] Variable `(%s)' already contains value `<%s>'",filepos, variable->name, val);
+
+						free(variable->val);
+						variable->val = strdup(val);
+					}
 				}
 				else
 				{
@@ -857,12 +1474,33 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			}
 			else 
 			{
-				ERROR2("%s: Malformed metacommand: %s",filepos,line);
-				syntax_error(unit);
+				if(!strncmp("setenv", line, strlen("setenv")))
+					ERROR1("[%s] Bad usage of the metacommand setenv : `(usage : setenv variable=value)'", filepos);
+				else if(!strncmp("set", line, strlen("set")))
+					ERROR1("[%s] Bad usage of the metacommand set : `(usage : set variable=value)'", filepos);
+				else if(!strncmp("unsetenv", line, strlen("unsetenv")))
+					ERROR1("[%s] Bad usage of the metacommand unsetenv : `(usage : unsetenv variable)'", filepos);
+				else if(!strncmp("unset", line, strlen("unset")))
+					ERROR1("[%s] Bad usage of the metacommand unset : `(usage : unset variable)'", filepos);
+				else if(!strncmp("timeout", line, strlen("timeout")))
+					ERROR1("[%s] Bad usage of the metacommand timeout : `(usage : timeout <integral positive integer>)'", filepos);
+				else if(!strncmp("expect signal", line, strlen("expect signal")))
+					ERROR1("[%s] Bad usage of the metacommand expect signal : `(usage : expect signal <sig_name>)'", filepos);
+				else if(!strncmp("expect return", line, strlen("expect return")))
+					ERROR1("[%s] Bad usage of the metacommand expect return : `(usage : expect return <return value (>=0 <=255)>)'", filepos);
+				else if(!strncmp("include", line, strlen("include")))
+					ERROR1("[%s] Bad usage of the metacommand include  :`(usage : include <file> [<description>])'", filepos);
+				else if(!strncmp("suite", line, strlen("suite")))
+					ERROR1("[%s] Bad usage of the metacommand suite : `(usage : suite <description>)'", filepos);
+				else
+					ERROR2("[%s] Unknown metacommand: `%s'",filepos,line);
+
+				unit_set_error(fstream->unit, ESYNTAX, 1);
+
+				failure(unit);
 				return;
 			}
 		}
-		
 		
 		break;
 	}
@@ -905,21 +1543,46 @@ fstream_handle_include(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 		free(prev_directory);
 	}
 	
-	
-	
 	/* the file to include is not found handle the failure */
 	if(!_fstream)
 	{
-		exit_code = EINCLUDENOTFOUND;
-		ERROR1("Include file %s not found",file_name);
+		if(file_name[0] == '$')
+		{
+			ERROR3("[%s] Include file `(%s)' not found or variable `(%s)' doesn't exist",context->line, file_name, file_name + 1);
+		
+		}
+		else
+		{
+
+			/* may be a variable */
+			variable_t variable;
+			int exists = 0;
+			unsigned int i;
+
+			xbt_dynar_foreach(unit->runner->variables, i, variable)
+			{
+				if(!strcmp(variable->name, file_name))
+				{
+					exists = 1;
+					break;
+				}
+			}
+
+			if(exists)
+				ERROR3("[%s] Include file `(%s)' not found (if you want to use the variable <%s> add the prefix `$')",context->line, file_name, file_name);
+			else
+				ERROR2("[%s] Include file `(%s)' not found",context->line, file_name);
+		}
+		
+		unit_set_error(fstream->unit, EINCLUDENOTFOUND, 1);
+
 		failure(unit);
 	}
 	else
 	{
-		
 		if(!unit->is_running_suite)
 		{/* it's the unit of a suite */
-			unit_t include = unit_new(unit->runner,unit->root, unit, _fstream);
+			unit_t include = unit_new(unit->runner, unit->root, unit, _fstream);
 			
 			include->mutex = unit->root->mutex;
 		
@@ -927,7 +1590,12 @@ fstream_handle_include(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 				include->description = strdup(description);
 		
 			xbt_dynar_push(unit->includes, &include);
-		
+		 
+			if(!dry_run_flag)
+				INFO1("Include from %s", _fstream->name);
+			else
+				INFO1("Checking include %s...",_fstream->name);
+			
 			fstream_parse(_fstream, mutex);
 		}
 		else
@@ -938,7 +1606,7 @@ fstream_handle_include(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 
 			owner = xbt_dynar_get_ptr(unit->suites, xbt_dynar_length(unit->suites) - 1);
 			
-			include = unit_new(unit->runner,unit->root, *owner, _fstream);
+			include = unit_new(unit->runner, unit->root, *owner, _fstream);
 			
 			include->mutex = unit->root->mutex;
 			
@@ -946,32 +1614,43 @@ fstream_handle_include(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 				include->description = strdup(description);
 		
 			xbt_dynar_push((*owner)->includes, &include);
-			fstream_parse(_fstream, mutex);	
 			
+			if(!dry_run_flag)
+				INFO1("Include from %s", _fstream->name);
+			else
+				INFO1("Checking include %s...",_fstream->name);
+			
+			fstream_parse(_fstream, mutex);
 		}
 	}
 }
 
 void
-fstream_handle_suite(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, const char* description)
+fstream_handle_suite(fstream_t fstream, const char* description, const char* filepos)
 {
 	unit_t unit = fstream->unit;
 	unit_t suite = unit_new(unit->runner, unit->root, unit, NULL);
+	
+	if(description)
+		suite->description = strdup(description);
 
-	suite->description = strdup(description);
+	suite->filepos = strdup(filepos); 
+
 	xbt_dynar_push(unit->suites, &suite);
 	unit->is_running_suite = 1;
 	
+	if(!dry_run_flag)
+		INFO1("Test suite %s", description);
+	else
+		INFO1("Checking suite %s...",description);
+	
 }
-
 
 int
 fstream_launch_command(fstream_t fstream, context_t context, xbt_os_mutex_t mutex)
 {
 	unit_t unit = fstream->unit;
-	
-	/* TODO : check the parameters */
-	
+
 	if(!dry_run_flag)
 	{
 		command_t command;
@@ -980,30 +1659,39 @@ fstream_launch_command(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 		{
 			if(EINVAL == errno)
 			{
-				ERROR2("Internal error : command_new() failed with the error %s (%d)",strerror(errno), errno);	
-				internal_error(unit);
+				ERROR3("[%s] Cannot instantiate the command `%s' (%d)",context->pos, strerror(errno), errno);	
+
+				unit_set_error(unit, errno, 0);
+				failure(unit);
 				return -1;
 			}
 			else if(ENOMEM == errno)
 			{
-				ERROR1("System error : command_new() failed with the error code %d",errno);	
-				sys_error(unit);
+				ERROR3("[%s] Cannot instantiate the command `%s' (%d)",context->pos, strerror(errno), errno);
+
+				unit_set_error(unit, errno, 0);
+
+				failure(unit);
 				return -1;
 			}
 		}
 		
 		if(command_run(command) < 0)
 		{
-			ERROR2("Internal error : command_run() failed with the error %s (%d)",strerror(errno), errno);	
-			internal_error(unit);
+			ERROR3("[%s] Cannot run the command `%s' (%d)",context->pos, strerror(errno), errno);	
+			unit_set_error(unit, errno, 0);
+			failure(unit);
 			return -1;	
 		}
 	}
 	
 	if(context_reset(context) < 0)
 	{
-		ERROR2("Internal error : command_run() failed with the error %s (%d)",strerror(errno), errno);	
-		internal_error(unit);
+		ERROR3("[%s] Cannot reset the context of the command `%s' (%d)",context->pos, strerror(errno), errno);	
+
+		unit_set_error(fstream->unit, errno, 0);
+
+		failure(unit);
 		return -1;	
 	}
 	

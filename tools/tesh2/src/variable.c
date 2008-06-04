@@ -30,9 +30,12 @@ variable_free(variable_t* variableptr)
 {
 	if(!(*variableptr))
 		return EINVAL;
-		
-	free((*((variable_t*)(variableptr)))->name);
-	free((*((variable_t*)(variableptr)))->val);
+	
+	if((*((variable_t*)(variableptr)))->name)
+		free((*((variable_t*)(variableptr)))->name);
+	
+	if((*((variable_t*)(variableptr)))->val)
+		free((*((variable_t*)(variableptr)))->val);
 	
 	free(*variableptr);
 	

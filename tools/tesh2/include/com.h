@@ -35,12 +35,6 @@ units_sem;
 extern xbt_os_sem_t
 jobs_sem;
 
-/*
- * the mutex to synchronize the access to the list
- * of the errors producted by a run.
- */
-extern xbt_os_mutex_t
-err_mutex;
 
 /* the list of tesh include directories */
 extern xbt_dynar_t
@@ -92,6 +86,9 @@ detail_summary_flag;
 extern int
 exit_code;
 
+extern int
+err_kind;
+
 /*
  * the list of the errors of the run.
  */
@@ -115,6 +112,7 @@ keep_going_flag;
  */
 extern int
 keep_going_unit_flag;
+
 
 
 #ifdef __cplusplus

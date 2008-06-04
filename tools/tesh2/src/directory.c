@@ -103,7 +103,6 @@ directory_load(directory_t directory, fstreams_t fstreams, xbt_dynar_t suffixes)
 		/* add the fstream to the list of file streams to run */
 		if((rv = fstreams_add(fstreams, fstream_new(directory->name, entry->d_name))))
 		{
-			INFO0("fstreams_add() failed");
 			free(sfstream.directory);
 			free(sfstream.name);
 			return rv;
@@ -136,7 +135,8 @@ directory_free(void** directoryptr)
 		if(directory_close(directory))
 			return errno;
 	
-	free(directory->name);
+	if(directory->name)
+		free(directory->name);
 	
 	free(*directoryptr);
 	*directoryptr  = NULL;

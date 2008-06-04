@@ -4,7 +4,9 @@ typedef struct s_entry
 {
 	const char* name;
 	int code;
+	unsigned kind : 1;		/* if 1 it's an error of the application else assume it's a system error */
 	const char* string;
+	
 }entry_t;
 
 
@@ -13,333 +15,338 @@ entry_t err[] =
 {
 	
 	#ifdef E2BIG
-	{"E2BIG", E2BIG, "Argument list too long."},
+	{"E2BIG", E2BIG, 0, "argument list too long"},
 	#endif
 	
 	#ifdef EACCES
-	{"EACCES", EACCES, "Permission denied."},
+	{"EACCES", EACCES, 0, "permission denied"},
 	#endif
 	
 	#ifdef EADDRINUSE
-	{"EADDRINUSE", EADDRINUSE, "Address in use."},
+	{"EADDRINUSE", EADDRINUSE, 0, "address in use"},
 	#endif
 	
 	#ifdef EADDRNOTAVAIL
-	{"EADDRNOTAVAIL", EADDRNOTAVAIL, "Address not available."},
+	{"EADDRNOTAVAIL", EADDRNOTAVAIL, 0, "address not available"},
 	#endif
 	
 	#ifdef EAFNOSUPPORT
-	{"EAFNOSUPPORT", EAFNOSUPPORT, "Address family not supported."},
+	{"EAFNOSUPPORT", EAFNOSUPPORT, 0, "address family not supported"},
 	#endif
 	
 	#ifdef EAGAIN
-	{"EAGAIN", EAGAIN, "Resource unavailable, try again."},
+	{"EAGAIN", EAGAIN, 0, "resource unavailable, try again"},
 	#endif
 	
 	#ifdef EALREADY
-	{"EALREADY", EALREADY, "Connection already in progress."},
+	{"EALREADY", EALREADY, 0, "connection already in progress"},
 	#endif
 	
 	#ifdef EBADF
-	{"EBADF", EBADF, "Bad file descriptor."},
+	{"EBADF", EBADF, 0, "bad file descriptor"},
 	#endif
 	
 	#ifdef EBADMSG
-	{"EBADMSG", EBADMSG, "Bad message."},
+	{"EBADMSG", EBADMSG, 0, "bad message"},
 	#endif
 	
 	#ifdef EBUSY
-	{"EBUSY", EBUSY, "Device or resource busy."},
+	{"EBUSY", EBUSY, 0, "device or resource busy"},
 	#endif
 	
 	#ifdef ECANCELED
-	{"ECANCELED", ECANCELED, "Operation canceled."},
+	{"ECANCELED", ECANCELED, 0, "operation canceled"},
 	#endif
 	
 	#ifdef ECHILD
-	{"ECHILD", ECHILD, "No child processes."},
+	{"ECHILD", ECHILD, 0, "no child processes"},
 	#endif
 	
 	#ifdef ECONNABORTED
-	{"ECONNABORTED", ECONNABORTED, "Connection aborted."},
+	{"ECONNABORTED", ECONNABORTED, 0, "connection aborted"},
 	#endif
 	
 	#ifdef ECONNREFUSED
-	{"ECONNREFUSED", ECONNREFUSED, "Connection refused."},
+	{"ECONNREFUSED", ECONNREFUSED, 0, "connection refused"},
 	#endif
 	
 	#ifdef ECONNRESET
-	{"ECONNRESET", ECONNRESET, "Connection reset."},
+	{"ECONNRESET", ECONNRESET, 0, "connection reset"},
 	#endif
 	
 	#ifdef EDEADLK
-	{"EDEADLK", EDEADLK, "Resource deadlock would occur."},
+	{"EDEADLK", EDEADLK, 0, "resource deadlock would occur"},
 	#endif
 	
 	#ifdef EDESTADDRREQ
-	{"EDESTADDRREQ", EDESTADDRREQ, "Destination address required."},
+	{"EDESTADDRREQ", EDESTADDRREQ, 0, "destination address required"},
 	#endif
 	
 	#ifdef EDOM
-	{"EDOM", EDOM, "Mathematics argument out of domain of function."},
+	{"EDOM", EDOM, 0, "mathematics argument out of domain of function"},
 	#endif 
 	
 	#ifdef EEXIST
-	{"EEXIST", EEXIST, "File exists."},
+	{"EEXIST", EEXIST, 0, "file exists"},
 	#endif
 	
 	#ifdef EFAULT
-	{"EFAULT", EFAULT, "Bad address."},
+	{"EFAULT", EFAULT, 0, "bad address"},
 	#endif
 	
 	#ifdef EFBIG
-	{"EFBIG", EFBIG, "File too large."},
+	{"EFBIG", EFBIG, 0, "file too large"},
 	#endif
 	
 	#ifdef EHOSTUNREACH
-	{"EHOSTUNREACH", EHOSTUNREACH, "Host is unreachable."},
+	{"EHOSTUNREACH", EHOSTUNREACH, 0, "host is unreachable"},
 	#endif
 	
 	#ifdef EIDRM
-	{"EIDRM", EIDRM, "Identifier removed."},
+	{"EIDRM", EIDRM, 0, "identifier removed"},
 	#endif
 	
 	#ifdef EILSEQ
-	{"EILSEQ", EILSEQ, "Illegal byte sequence."},
+	{"EILSEQ", EILSEQ, 0, "illegal byte sequence"},
 	#endif
 	
 	#ifdef EINPROGRESS
-	{"EINPROGRESS", EINPROGRESS, "Operation in progress."},
+	{"EINPROGRESS", EINPROGRESS, 0, "operation in progress"},
 	#endif
 	
 	#ifdef EINTR
-	{"EINTR", EINTR, "Interrupted function."},
+	{"EINTR", EINTR, 0, "interrupted function"},
 	#endif
 	
 	#ifdef EINVAL
-	{"EINVAL", EINVAL, "Invalid argument."},
+	{"EINVAL", EINVAL, 0, "invalid argument"},
 	#endif
 	
 	#ifdef EIO
-	{"EIO", EIO, "I/O error."},
+	{"EIO", EIO, 0, "I/O error"},
 	#endif
 	
 	#ifdef EISCONN
-	{"EISCONN", EISCONN, "Socket is connected."},
+	{"EISCONN", EISCONN, 0, "socket is connected"},
 	#endif
 	
 	#ifdef EISDIR
-	{"EISDIR", EISDIR, "Is a directory."},
+	{"EISDIR", EISDIR, 0, "is a directory"},
 	#endif
 	
 	#ifdef ELOOP
-	{"ELOOP", ELOOP, "Too many levels of symbolic links."},
+	{"ELOOP", ELOOP, 0, "too many levels of symbolic links"},
 	#endif
 	
 	#ifdef EMFILE
-	{"EMFILE", EMFILE, "Too many open files."},
+	{"EMFILE", EMFILE, 0, "too many open files"},
 	#endif
 	
 	#ifdef EMLINK
-	{"EMLINK", EMLINK, "Too many links."},
+	{"EMLINK", EMLINK, 0, "too many links"},
 	#endif
 	
 	#ifdef EMSGSIZE
-	{"EMSGSIZE", EMSGSIZE, "Message too large."},
+	{"EMSGSIZE", EMSGSIZE, 0, "message too large"},
 	#endif
 	
 	#ifdef ENAMETOOLONG
-	{"ENAMETOOLONG", ENAMETOOLONG, "Filename too long."},
+	{"ENAMETOOLONG", ENAMETOOLONG, 0, "filename too long"},
 	#endif
 	
 	#ifdef ENETDOWN
-	{"ENETDOWN", ENETDOWN, "Network is down."},
+	{"ENETDOWN", ENETDOWN, 0, "network is down"},
 	#endif
 	
 	#ifdef ENETRESET
-	{"ENETRESET", ENETRESET, "Connection aborted by network."},
+	{"ENETRESET", ENETRESET, 0, "connection aborted by network"},
 	#endif
 	
 	#ifdef ENETUNREACH
-	{"ENETUNREACH", ENETUNREACH, "Network unreachable."},
+	{"ENETUNREACH", ENETUNREACH, 0, "network unreachable"},
 	#endif
 	
 	#ifdef ENFILE
-	{"ENFILE", ENFILE, "Too many files open in system."},
+	{"ENFILE", ENFILE, 0, "too many files open in system"},
 	#endif
 	
 	#ifdef ENOBUFS
-	{"ENOBUFS", ENOBUFS, "No buffer space available."},
+	{"ENOBUFS", ENOBUFS, 0, "no buffer space available"},
 	#endif
 	
 	#ifdef ENODATA
-	{"ENODATA", ENODATA, "No message is available on the STREAM head read queue."},
+	{"ENODATA", ENODATA, 0, "no message is available on the STREAM head read queue"},
 	#endif
 	
 	#ifdef ENODEV
-	{"ENODEV", ENODEV, "No such device."},
+	{"ENODEV", ENODEV, 0, "no such device"},
 	#endif
 	
 	#ifdef ENOENT
-	{"ENOENT", ENOENT, "No such file or directory."},
+	{"ENOENT", ENOENT, 0, "no such file or directory"},
 	#endif
 	
 	#ifdef ENOEXEC
-	{"ENOEXEC", ENOEXEC, "Executable file format error."},
+	{"ENOEXEC", ENOEXEC, 0, "executable file format error"},
 	#endif
 	
 	#ifdef ENOLCK
-	{"ENOLCK", ENOLCK, "No locks available."},
+	{"ENOLCK", ENOLCK, 0, "no locks available"},
 	#endif
 	
 	#ifdef ENOMEM
-	{"ENOMEM", ENOMEM, "Not enough space."},
+	{"ENOMEM", ENOMEM, 0, "not enough space"},
 	#endif
 	
 	#ifdef ENOMSG
-	{"ENOMSG", ENOMSG, "No message of the desired type."},
+	{"ENOMSG", ENOMSG, 0, "no message of the desired type"},
 	#endif
 	
 	#ifdef ENOPROTOOPT
-	{"ENOPROTOOPT", ENOPROTOOPT, "Protocol not available."},
+	{"ENOPROTOOPT", ENOPROTOOPT, 0, "protocol not available"},
 	#endif
 	
 	#ifdef ENOSPC
-	{"ENOSPC", ENOSPC, "No space left on device."},
+	{"ENOSPC", ENOSPC, 0, "no space left on device"},
 	#endif
 	
 	#ifdef ENOSR
-	{"ENOSR", ENOSR, "No stream resources."},
+	{"ENOSR", ENOSR, 0, "no stream resources"},
 	#endif
 	
 	#ifdef ENOSTR
-	{"ENOSTR", ENOSTR, "Not a stream."},
+	{"ENOSTR", ENOSTR, 0, "not a stream"},
 	#endif
 	
 	#ifdef ENOSYS
-	{"ENOSYS", ENOSYS, "Function not supported."},
+	{"ENOSYS", ENOSYS, 0, "function not supported"},
 	#endif
 	
 	#ifdef ENOTCONN
-	{"ENOTCONN", ENOTCONN, "The socket is not connected."},
+	{"ENOTCONN", ENOTCONN, 0, "the socket is not connected"},
 	#endif
 	
 	#ifdef ENOTDIR
-	{"ENOTDIR", ENOTDIR, "Not a directory."},
+	{"ENOTDIR", ENOTDIR, 0, "not a directory"},
 	#endif
 	
 	#ifdef ENOTEMPTY
-	{"ENOTEMPTY", ENOTEMPTY, "Directory not empty."},
+	{"ENOTEMPTY", ENOTEMPTY, 0, "directory not empty"},
 	#endif
 	
 	#ifdef ENOTSOCK
-	{"ENOTSOCK", ENOTSOCK, "Not a socket."},
+	{"ENOTSOCK", ENOTSOCK, 0, "not a socket"},
 	#endif
 	
 	#ifdef ENOTSUP
-	{"ENOTSUP", ENOTSUP, "Not supported."},
+	{"ENOTSUP", ENOTSUP, 0, "not supported"},
 	#endif
 	
 	#ifdef ENOTTY
-	{"ENOTTY", ENOTTY, "Inappropriate I/O control operation."},
+	{"ENOTTY", ENOTTY, 0, "inappropriate I/O control operation"},
 	#endif
 	
 	#ifdef ENXIO
-	{"ENXIO", ENXIO, "No such device or address."},
+	{"ENXIO", ENXIO, 0, "no such device or address"},
 	#endif
 	
 	#ifdef EOPNOTSUPP
-	{"EOPNOTSUPP", EOPNOTSUPP, "Operation not supported on socket."},
+	{"EOPNOTSUPP", EOPNOTSUPP, 0, "operation not supported on socket"},
 	#endif
 	
 	#ifdef EOVERFLOW
-	{"EOVERFLOW", EOVERFLOW, "Value too large to be stored in data type."},
+	{"EOVERFLOW", EOVERFLOW, 0, "value too large to be stored in data type"},
 	#endif
 	
 	#ifdef EPERM
-	{"EPERM", EPERM, "Operation not permitted."},
+	{"EPERM", EPERM, 0, "operation not permitted"},
 	#endif
 	
 	#ifdef EPIPE
-	{"EPIPE", EPIPE, "Broken pipe."},
+	{"EPIPE", EPIPE, 0, "broken pipe"},
 	#endif
 	
 	#ifdef EPROTO
-	{"EPROTO", EPROTO, "Protocol error."},
+	{"EPROTO", EPROTO, 0, "protocol error"},
 	#endif
 	
 	#ifdef EPROTONOSUPPORT
-	{"EPROTONOSUPPORT", EPROTONOSUPPORT, "Protocol not supported."},
+	{"EPROTONOSUPPORT", EPROTONOSUPPORT, 0, "protocol not supported"},
 	#endif
 	
 	#ifdef EPROTOTYPE
-	{"EPROTOTYPE", EPROTOTYPE, "Protocol wrong type for socket."},
+	{"EPROTOTYPE", EPROTOTYPE, 0, "protocol wrong type for socket"},
 	#endif
 	
 	#ifdef ERANGE
-	{"ERANGE", ERANGE, "Result too large."},
+	{"ERANGE", ERANGE, 0, "result too large"},
 	#endif
 	
 	#ifdef EROFS
-	{"EROFS", EROFS, "Read-only file system."},
+	{"EROFS", EROFS, 0, "read-only file system"},
 	#endif
 	
 	#ifdef ESPIPE
-	{"ESPIPE", ESPIPE, "Invalid seek."},
+	{"ESPIPE", ESPIPE, 0, "invalid seek"},
 	#endif
 	
 	#ifdef ESRCH
-	{"ESRCH", ESRCH, "No such process."},
+	{"ESRCH", ESRCH, 0, "no such process"},
 	#endif
 	
 	#ifdef ETIME
-	{"ETIME", ETIME, "Stream ioctl() timeout."},
+	{"ETIME", ETIME, 0, "stream ioctl() timeout"},
 	#endif
 	
 	#ifdef ETIMEDOUT
-	{"ETIMEDOUT", ETIMEDOUT, "Connection timed out."},
+	{"ETIMEDOUT", ETIMEDOUT, 0, "connection timed out"},
 	#endif
 	
 	#ifdef ETXTBSY
-	{"ETXTBSY", ETXTBSY, "Text file busy."},
+	{"ETXTBSY", ETXTBSY, 0, "text file busy"},
 	#endif
 	
 	#ifdef EWOULDBLOCK
-	{"EWOULDBLOCK", EWOULDBLOCK, "Operation would block ."},
+	{"EWOULDBLOCK", EWOULDBLOCK, 0, "operation would block"},
 	#endif
 	
 	#ifdef EXDEV
-	{"EXDEV", EXDEV, "Cross-device link ."},
+	{"EXDEV", EXDEV, 0, "cross-device link"},
 	#endif
 	
-	{"ECMDTIMEDOUT", ECMDTIMEDOUT, "Command timed out"},
-	
-	{"EEXEC", EEXEC, "can't execute a command"},
-	{"EWAIT", EWAIT, "wait function failed"},
-	{"ECMDNOTFOUND", ECMDNOTFOUND, "command is not found"},
-	{"EEXITCODENOTMATCH", EEXITCODENOTMATCH, "Exit code does not match"},
-	{"EOUTPUTNOTMATCH", EOUTPUTNOTMATCH, "Output does not match"},
-	{"ESIGNOTMATCH", ESIGNOTMATCH, "Signal does not match"},
-	{"EUNXPSIG", EUNXPSIG, "Unexpected signal caught"},
-	{"ESIGNOTRECEIPT", ESIGNOTRECEIPT, "Expected signal not receipt"},
-	{"EFILENOTFOUND", EFILENOTFOUND, "specified tesh file not found"},
-	{"EGETCWD", EGETCWD, "system error : the getcwd() function failed"},
-	{"EDIRNOTFOUND", EDIRNOTFOUND, "specified directory not found"},
-	{"EPROCCMDLINE", EPROCCMDLINE, "process_command_line() failed : internal error"},
-	{"ENOARG", ENOARG, "none optional argument not specified"},
-	{"ENOTPOSITIVENUM", ENOTPOSITIVENUM, "argument option not strictly positive"},
-	{"ESYNTAX", ESYNTAX, "Syntax error"},
-	{"EINVALIDTIMEOUT", EINVALIDTIMEOUT, "timeout value specified by metacommand invalid"},
-	{"EINVALIDEXITCODE", EINVALIDEXITCODE, "expected exit code value specified by the metacommand invalid"},
-	{"ESIGNOTSUPP", ESIGNOTSUPP, "signal specified by the metacommand not supported (Windows specific)"},
-	{"ELEADTIME", ELEADTIME, "lead time"},
-	{"EREADMENOTFOUND", EREADMENOTFOUND, "unable to locate the README.txt file"},
-	{"EINCLUDENOTFOUND", EINCLUDENOTFOUND, "include file specified by a metacommand is not found"},
-	{"ESUFFIXTOOLONG", ESUFFIXTOOLONG, "suffix is too long"},
-	{"EFILENOTINSPECDIR", EFILENOTINSPECDIR,"file not found in the specified directories"},
-	{"EFILENOTINCURDIR", EFILENOTINCURDIR,"file not found in the current directory"},
-	{"EINVCMDLINE", EINVCMDLINE, "invalid command line"},
-	{"unkwown", -1, "unknown"}
+	{"ECMDTIMEDOUT", ECMDTIMEDOUT, 1, "command timed out"},
+
+	{"ECMDNOTFOUND", ECMDNOTFOUND,1,  "command not found"},
+
+	{"EEXITCODENOTMATCH", EEXITCODENOTMATCH,1,  "exit code mismatch"},
+
+	{"EOUTPUTNOTMATCH", EOUTPUTNOTMATCH,1,  "output mismatch"},
+
+	{"ESIGNOTMATCH", ESIGNOTMATCH,1,  "signal mismatch"},
+
+	{"EUNXPSIG", EUNXPSIG,1,  "unexpected signal caught"},
+
+	{"ESIGNOTRECEIPT", ESIGNOTRECEIPT,1,  "expected signal not receipt"},
+
+	{"EPROCCMDLINE", EPROCCMDLINE, 1, "command line processing failed"},
+
+	{"ENOARG", ENOARG, 1, "none optional argument not specified"},
+
+	{"ENOTPOSITIVENUM", ENOTPOSITIVENUM, 1, "argument option not strictly positive"},
+
+	{"ESYNTAX", ESYNTAX,1,  "syntax error"},
+
+	{"ELEADTIME", ELEADTIME, 1, "timed out"},
+
+	{"EREADMENOTFOUND", EREADMENOTFOUND,1,  "unable to locate the README.txt file"},
+
+	{"EINCLUDENOTFOUND", EINCLUDENOTFOUND, 1,  "include file not found"},
+
+	{"ESUFFIXTOOLONG", ESUFFIXTOOLONG,1,  "suffix too long"},
+
+	{"EINVCMDLINE", EINVCMDLINE,1,  "invalid command line"},
+
+	{"unkwown", -1, 0, "unknown"}
 };
 
 #include <stdio.h>
@@ -376,15 +383,17 @@ w32error_to_string(DWORD errcode)
 #endif
 
 const char*
-error_to_string(int errcode)
+error_to_string(int errcode, int kind)
 {
 	int i;
 	
 	for(i = 0; err[i].code != -1; i++)
-		if(err[i].code == errcode)
+		if(err[i].code == errcode && err[i].kind == kind)
 			return err[i].string;
 
 	#ifdef WIN32
+
+	/* assume it's a W32 error */
 	return w32error_to_string((DWORD)errcode);
 	#else
 	return "unknow error";	
@@ -405,24 +414,3 @@ error_get_at(int pos, int* code)
 	return err[pos].name;
 }
 
-void
-error_register(const char* reason, int errcode, const char* command, const char* unit)
-{
-	xerror_t error;
-	
-	xbt_os_mutex_acquire(err_mutex);
-	
-	if(!exit_code)
-		exit_code = errcode;
-	
-	error = xbt_new0(s_xerror_t, 1);
-	
-	error->reason = reason;
-	error->command = command;
-	error->unit = unit;
-	error->errcode = errcode;
-	
-	xbt_dynar_push(errors, &error);
-	
-	xbt_os_mutex_release(err_mutex);
-}

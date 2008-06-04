@@ -1,6 +1,15 @@
 #ifndef __DEF_H
 #define __DEF_H
 
+#if (defined(__BUILTIN) && !defined(__CHKCMD) && !defined(WARN_DEF_MISMATCH))
+#ifdef WIN32
+#pragma message(Macro definition mismatch : __BUILTIN defined but __CHKCMD not defined)
+#else
+#warning "Macro definition mismatch : __BUILTIN defined but __CHKCMD not defined"
+#endif
+#define WARN_DEF_MISMATCH	1
+#endif
+
 /* must be defined first */
 #ifdef WIN32
 
@@ -51,14 +60,6 @@ extern "C" {
 
 #define INDEFINITE						((int)-1)
 #define INDEFINITE_SIGNAL				NULL
-
-#define DEFAULT_FSTREAMS_CAPACITY		((int)128)
-#define DEFAULT_INCLUDE_DIRS_CAPACITY	DEFAULT_FSTREAMS_CAPACITY
-#define DEFAULT_UNITS_CAPACITY			((int)64)
-#define DEFAULT_INCLUDES				((int)8)
-#define DEFAULT_COMMANDS_CAPACITY		((int)512)
-#define DEFAULT_SUITES_CAPACITY			((int)32)
-#define DEFAULT_ERRORS_CAPACITY			((int)32)
 #define	MAX_SUFFIX 						((unsigned int)9)
 
 

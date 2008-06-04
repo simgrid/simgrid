@@ -71,8 +71,10 @@ unit_start(void* p)
 	/* initialize the mutex used to synchronize the access to the properties of this unit */
 	mutex = xbt_os_mutex_init();
 	
-	if(dry_run_flag)
-		INFO1("checking unit %s...",root->fstream->name); 
+	if(!dry_run_flag)
+		INFO1("Test unit from %s",root->fstream->name);
+	else
+		INFO1("Checking unit %s...",root->fstream->name); 
 	
 	/* launch the parsing of the unit */
 	fstream_parse(root->fstream, mutex);
@@ -92,16 +94,19 @@ unit_start(void* p)
 	}
 	
 	/* wait the end of all the commands or a command failure or an interruption */
+
 	xbt_os_sem_acquire(root->sem);
 	
+
 	if(root->interrupted)
 	{
+
 		xbt_dynar_foreach(root->commands, itc , command)
 		{
 			if(command->status == cs_in_progress)
 				command_interrupt(command);
 		}
-		
+
 		/* interrupt all the running commands of the included units */
 		include_nb = xbt_dynar_length(root->includes);
 		
@@ -131,7 +136,7 @@ unit_start(void* p)
 			}
 		}
 	}
-	
+
 	/* wait the end of the command threads of the unit */
 	xbt_dynar_foreach(root->commands, itc, command)
 	{
@@ -153,6 +158,16 @@ unit_start(void* p)
 			if(thread)
 				xbt_os_thread_join(thread,NULL);
 		}
+
+		if(!dry_run_flag)
+		{
+			if(!include->exit_code && !include->interrupted)
+				INFO1("Include from %s OK",include->fstream->name);
+			else if(include->exit_code)
+				ERROR4("Include `(%s)' NOK : (<%s> %s (%d))", include->fstream->name, command->context->line, error_to_string(include->exit_code, include->err_kind), include->exit_code);
+			else if(include->interrupted && !include->exit_code)
+				INFO1("Include `(%s)' INTR",include->fstream->name);
+		}
 	}
 	
 	/* interrupt all the running commands of the unit */
@@ -161,6 +176,28 @@ unit_start(void* p)
 	xbt_dynar_foreach(root->suites, its, suite)
 	{
 		include_nb = xbt_dynar_length(suite->includes);
+
+		if(!include_nb)
+		{
+			if(!suite->exit_code)
+			{
+				unit_set_error(suite, ESYNTAX, 1);
+				ERROR2("[%s] Empty suite `(%s)' detected (no includes added)", suite->filepos, suite->description);
+
+				/* if the --keep-going option is not specified */
+				if(!keep_going_flag)
+				{
+					if(!interrupted)
+					{
+						/* request an global interruption by the runner */
+						interrupted = 1;
+
+						/* release the runner */
+						xbt_os_sem_release(units_sem);
+					}
+				}
+			}
+		}
 		
 		xbt_dynar_foreach(suite->includes, itu, include)
 		{
@@ -171,25 +208,67 @@ unit_start(void* p)
 				if(thread)
 					xbt_os_thread_join(thread,NULL);
 			}
+			
+			if(!include->exit_code && !include->interrupted)
+			{
+				if(!dry_run_flag)
+					INFO1("Include from %s OK",include->fstream->name);
+			}
+			else if(include->exit_code)
+			{
+				if(!dry_run_flag)
+					ERROR3("Include `(%s)' NOK : (<%s> %s)", include->fstream->name, command->context->pos, error_to_string(include->exit_code, include->err_kind));
+
+				suite->exit_code = include->exit_code;
+				suite->err_kind = include->err_kind;
+			}
+			else if(include->interrupted && !include->exit_code)
+			{
+				if(!dry_run_flag)
+					INFO1("Include `(%s)' INTR",include->fstream->name);
+
+				suite->interrupted = 1;
+			}
+			
+		}
+		
+		if(!dry_run_flag )
+		{
+			if(!suite->exit_code && !suite->interrupted)
+				INFO1("Test suite from %s OK",suite->description);
+			else if(suite->exit_code)
+				ERROR3("Test suite `(%s)' NOK : (<%s> %s) ", suite->description, suite->filepos, error_to_string(suite->exit_code, suite->err_kind));
+			else if(suite->interrupted && !suite->exit_code)
+				INFO1("Test suite `(%s)' INTR",suite->description);
 		}
 	}
 	
 	/* you can now destroy the mutex used to synchrone the command accesses to the properties of the unit */
 	xbt_os_mutex_destroy(mutex);
-	
+
 	/* update the number of ended units of the runner */
 	xbt_os_mutex_acquire(root->mutex);
-
+	
 	/* increment the number of ended units */
 	root->runner->number_of_ended_units++;
 	
-	/* if itc's the last unit, release the runner */
+	if(!dry_run_flag )
+	{
+		if(root->interrupted && !root->exit_code)
+			INFO1("Test unit from %s INTR",root->fstream->name);
+		else if(!root->exit_code)
+				INFO1("Test unit from %s OK",root->fstream->name);
+		else if(root->exit_code)
+			ERROR2("Test unit `(%s)' : NOK (%s)",root->fstream->name, error_to_string(root->exit_code, root->err_kind));	
+	}
+	
+	/* if it's the last unit, release the runner */
 	if((root->runner->number_of_runned_units == root->runner->number_of_ended_units))
 	{
 		/* if all the commands of the unit are successeded itc's a successeded unit */
-		if(root->successeded_cmd_nb == root->cmd_nb)
-			root->successeded = 1;
-
+		if(root->successeded_cmd_nb == root->cmd_nb && !root->exit_code /* case of only one cd : nb = successeded = 0)*/)
+			root->successeded = 1; 
+			
 		/* first release the mutex */
 		xbt_os_mutex_release(root->mutex);
 		
@@ -211,8 +290,6 @@ unit_t
 unit_new(runner_t runner, unit_t root, unit_t owner, fstream_t fstream)
 {
 	unit_t unit;
-	
-	/* TODO : check the parameters */
 	
 	unit = xbt_new0(s_unit_t, 1);
 	
@@ -256,27 +333,56 @@ unit_new(runner_t runner, unit_t root, unit_t owner, fstream_t fstream)
 	unit->is_running_suite = 0;
 	unit->description = NULL;
 	unit->sem = NULL;
+	unit->exit_code = 0;
+	unit->err_kind = 0;
+	unit->filepos = NULL;
+	
 	
 
 	return unit;
 }
 
+void
+unit_set_error(unit_t unit, int errcode, int kind)
+{
+	if(!unit->exit_code)
+	{
+		unit->exit_code = errcode;
+		unit->err_kind = kind;
+
+		if(unit->root && !unit->root->exit_code)
+		{
+			unit->root->exit_code = errcode;
+			unit->root->err_kind = kind;
+		}
+		
+		if(!exit_code)
+		{
+		
+			exit_code = errcode;
+			err_kind = kind;
+		}
+	}
+	
+}
+
 int
 unit_free(unit_t* ptr)
 {
-	
-	/* check the parameter */
 	if(!(*ptr))
     {
         errno = EINVAL;
         return -1;
     }
-
-	xbt_dynar_free(&((*ptr)->commands));
 	
-	xbt_dynar_free(&((*ptr)->includes));
-
-	xbt_dynar_free(&((*ptr)->suites));
+	if((*ptr)->commands)
+		xbt_dynar_free(&((*ptr)->commands));
+	
+	if((*ptr)->includes)
+		xbt_dynar_free(&((*ptr)->includes));
+	
+	if((*ptr)->suites)
+		xbt_dynar_free(&((*ptr)->suites));
 	
 	/* if the unit is interrupted during its run, the semaphore is NULL */
 	if((*ptr)->sem)
@@ -284,6 +390,9 @@ unit_free(unit_t* ptr)
 		
 	if((*ptr)->description)
 		free((*ptr)->description);
+
+	if((*ptr)->filepos)
+		free((*ptr)->filepos);
 
 	free(*ptr);
 	*ptr = NULL;
@@ -407,7 +516,6 @@ unit_summuarize(unit_t unit)
 	int total_of_successeded_suites = 0;			/* total of successeded suites contained by this unit				*/ 
 	int total_of_interrupted_suites = 0;			/* total of interrupted suites contained by this unit				*/
 	
-	
 	/* check the parameter */
 	if(!(unit))
     {
@@ -462,7 +570,7 @@ unit_summuarize(unit_t unit)
 				: command->status == cs_successeded ? "PASS  " 
 				: "UNKNWN",
 				command->context->command_line, 
-				command->context->line);
+				command->context->pos);
 				
 			if(detail_summary_flag)
 				command_summarize(command);
@@ -546,7 +654,7 @@ unit_summuarize(unit_t unit)
 				: command->status == cs_successeded ? "PASS  " 
 				: "UNKNWN",
 				command->context->command_line, 
-				command->context->line);
+				command->context->pos);
 				
 				command_summarize(command);
 			}
@@ -655,7 +763,7 @@ unit_summuarize(unit_t unit)
 					: command->status == cs_successeded ? "PASS  " 
 					: "UNKNWN",
 					command->context->command_line, 
-					command->context->line);
+					command->context->pos);
 					
 					command_summarize(command);
 				}
@@ -770,9 +878,45 @@ unit_summuarize(unit_t unit)
 int
 unit_reset(unit_t unit)
 {
+	unit_t cur;
+	unsigned int i;
+
+	/* reset all the suites of the unit */
+	xbt_dynar_foreach(unit->suites, i, cur)
+	{
+		unit_reset(cur);
+	}
+
+
+	/* reset all the includes of the unit */
+	xbt_dynar_foreach(unit->includes, i, cur)
+	{
+		unit_reset(cur);
+	}
+
 	fseek(unit->fstream->stream,0L, SEEK_SET);
 	unit->parsed = 0;
 	unit->cmd_nb = 0;
+	unit->started_cmd_nb = 0;
+	unit->interrupted_cmd_nb = 0;
+	unit->failed_cmd_nb = 0;
+	unit->successeded_cmd_nb = 0;
+	unit->terminated_cmd_nb = 0;
+	unit->waiting_cmd_nb = 0;
+	unit->interrupted = 0;
+	unit->failed = 0;
+	unit->successeded = 0;
+	unit->parsed = 0;
+	unit->released = 0;
+	unit->is_running_suite = 0;
+	
+	if(unit->description)
+	{
+		free(unit->description);
+		unit->description = NULL;
+	}
+
+	unit->exit_code = 0;
 	
 	return 0;
 }

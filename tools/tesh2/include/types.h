@@ -114,7 +114,10 @@ typedef struct s_unit
 	struct s_unit* owner;				/* the unit owned the unit is included									*/
 	struct s_unit* root;				/* the root unit 														*/
 	xbt_dynar_t suites;					/* the suites contained by the unit										*/
+	int exit_code;						/* the exit code of the unit											*/
+	int err_kind;
 	xbt_dynar_t includes;
+	char* filepos;
 }s_unit_t,* unit_t;
 
 /* 
@@ -126,6 +129,7 @@ typedef struct s_fstream
 	char* directory;					/* the directory containing the tesh file								*/
 	FILE* stream;						/* the system file stream												*/
 	struct s_unit* unit;				/* a reference to the unit using the file stream object					*/
+	unsigned parsed:1;
 }s_fstream_t,* fstream_t;
 
 /* 
@@ -168,16 +172,12 @@ typedef enum e_command_status_raison
 	csr_dup2_function_failure			= 17,
 	csr_execlp_function_failure			= 18,
 	csr_create_process_function_failure	= 19,
-	csr_waitpid_function_failure		= 20
+	csr_waitpid_function_failure		= 20,
+	csr_get_exit_code_process_function_failure	= 21,
+	csr_shell_failed = 22
 }cs_reason_t;
 
-typedef struct s_xerror
-{
-	const char* reason;
-	const char* unit;
-	const char* command;
-	int errcode;
-}s_xerror_t,* xerror_t;
+
 
 
 typedef struct s_variable
@@ -206,7 +206,7 @@ typedef struct s_timer
 typedef struct s_reader
 {
 	xbt_os_thread_t thread;				/* asynchonous reader													*/
-	struct s_command* command;					/* the command of the reader											*/
+	struct s_command* command;			/* the command of the reader											*/
 	int failed;							/* if 1, the reader failed												*/
 	int broken_pipe;					/* if 1, the pipe used by the reader is broken							*/
 	int done;
@@ -265,6 +265,8 @@ typedef struct s_runner
 	int total_of_successeded_suites;
 	int total_of_failed_suites;
 	int total_of_interrupted_suites;
+	char** path;
+	char** builtin;
 }s_runner_t,* runner_t;
 
 
@@ -302,8 +304,9 @@ typedef enum
  */
 typedef struct s_context
 {
-	const char* command_line;			/* the command line of the command to execute							*/
+	char* command_line;			/* the command line of the command to execute							*/
 	const char* line;					/* the current parsed line												*/
+	char* pos;
 	int exit_code;						/* the expected exit code of the command								*/
 	char* signal;						/* the expected signal raised by the command							*/
 	int timeout;						/* the timeout of the test												*/
@@ -318,12 +321,13 @@ typedef struct s_context
  */
 typedef struct s_command
 {
-	unit_t unit;						/* the unit of the command												*/
-	struct s_context* context;					/* the context of the execution of the command							*/
+	unit_t root;
+	unit_t unit;					/* the unit of the command												*/
+	struct s_context* context;			/* the context of the execution of the command							*/
 	xbt_os_thread_t thread;				/* asynchronous command													*/
-	struct s_writer* writer;					/* the writer used to write in the command stdin						*/
-	struct s_reader* reader;					/* the reader used to read from the command stout						*/
-	struct s_timer* timer;						/* the timer used for the command										*/
+	struct s_writer* writer;			/* the writer used to write in the command stdin						*/
+	struct s_reader* reader;			/* the reader used to read from the command stout						*/
+	struct s_timer* timer;				/* the timer used for the command										*/
 	command_status_t status;			/* the current status of the command									*/
 	cs_reason_t reason;					/* the reason of the state of the command								*/
 	int successeded;					/* if 1, the command is successeded										*/

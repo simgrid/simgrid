@@ -14,6 +14,7 @@
  
 #include <writer.h>
 #include <command.h>
+#include <unit.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
@@ -41,12 +42,15 @@ writer_new(command_t command)
 int
 writer_free(writer_t* ptr)
 {
-	/* TODO : check the parameter */
+
+	if((*ptr)->written)
+		xbt_os_sem_destroy((*ptr)->written);
 	
-	/*xbt_os_sem_destroy((*writer)->started);
-	xbt_os_sem_destroy((*writer)->can_write);*/
+	if((*ptr)->can_write)
+		xbt_os_sem_destroy((*ptr)->can_write);
 	
 	free(*ptr);
+
 	*ptr = NULL;
 	
 	return 0;
@@ -92,11 +96,15 @@ writer_start_routine(void* p)
 	
 	if(writer->failed  && !command->successeded && !command->failed && !command->interrupted)
 	{
-		error_register("Write failure", errno, command->context->command_line, command->unit->fstream->name);
+		ERROR2("[%s] Error while writing input to child `%s'", command->context->pos, command->context->command_line);
+		unit_set_error(command->unit, (int)GetLastError(), 0);
 		command_handle_failure(command, csr_write_failure);
 	}
 	/*else if(writer->broken_pipe && !command->successeded && !command->failed && !command->interrupted)
 	{
+
+		ERROR2("[%s] Pipe broken while writing input to child `%s'", command->context->pos, command->context->command_line);
+		unit_set_error(command->unit, (int)GetLastError(), 0);
 		command_kill(command);
 		command_handle_failure(command, csr_write_pipe_broken);
 	}*/
@@ -176,12 +184,16 @@ writer_start_routine(void* p)
 	if(writer->failed && !command->successeded && !command->failed && !command->interrupted)
 	{
 		command_kill(command);
-		error_register("Write failure", errno, command->context->command_line, command->unit->fstream->name);
+		ERROR2("[%s] Error while writing input to child `%s'", command->context->pos, command->context->command_line);
+		
+		unit_set_error(command->unit, errno, 0);
 		command_handle_failure(command, csr_write_failure);
 	}
 	else if(writer->broken_pipe && !command->successeded && !command->failed && !command->interrupted)
 	{
-		error_register("write() function failed", errno, command->context->command_line, command->unit->fstream->name);
+		ERROR2("[%s] Pipe broken while writing input to child `%s'", command->context->pos, command->context->command_line);
+
+		unit_set_error(command->unit, errno, 0);
 		command_kill(command);
 		command_handle_failure(command, csr_write_pipe_broken);
 	}
