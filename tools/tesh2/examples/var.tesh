@@ -1,0 +1,131 @@
+#! ./tesh
+# This file describes the usage of the Tesh variables and contains all the tests connected.
+
+# Description of this tesh suite
+D Usage of tesh variables
+
+# Declare and define the variable include-file
+! include-file=catch-signal.tesh
+
+# include the tesh file specified by the value (catch-signal.tesh) of the variable include-file
+! include $include-file
+
+# set a new value to the variable include-file
+! include-file=basic.tesh
+
+# this line throws a warning (you assign the same value to the variable)
+! include-file=basic.tesh
+
+# include the tesh file specified by the value (basic.tesh) of the variable include-file
+! include $include-file
+
+# Undefined variable
+! expect return $ESYNTAX
+< ! include-file=
+< ! include $include-file
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+> Test unit from stdin
+> [stdin:1] Undefined variable `(include-file)'
+> Test unit `(stdin)' : NOK (syntax error)
+
+
+# A single sample of the usage of the tesh variables
+$ rm -rf temp_testdir
+$ mkdir temp_testdir
+
+$ cd temp_testdir
+
+< #include <stdlib.h>
+< #include <stdio.h>
+< int main(int argc, char* argv[]) {	
+<	return ( atoi(argv[1]) + atoi(argv[2]));
+<	}  
+$ cat > sum.c
+
+$ gcc -o sum sum.c
+
+! x=2
+! y=2
+! sum=./sum
+! rv=4
+
+! expect return $rv
+$ $sum $x $y
+
+$ cd ..
+$ rm -rf temp_testdir
+
+# set metacommand usage
+
+# This ligne add a new tesh variable DIR
+
+! set DIR=temp_testdir
+
+$ rm -rf $DIR
+
+$ mkdir $DIR
+
+$ cd $DIR
+
+$ cd ..
+
+$ rm -rf $DIR
+
+# This ligne change the value of the tesh variable DIR
+! set DIR=test_tempdir
+
+# This ligne # this line throws a warning (you assign the same value to the variable)
+! set DIR=test_tempdir
+
+
+# This ligne create a new variable CURRENT_DIR (setted with the content of the variable DIR)
+! CURRENT_DIR=$DIR
+p CURRENT_DIR is $CURRENT_DIR (same value as DIR)
+
+# This ligne use the metacommand `set' to update the content of the variable CURRENT_DIR
+! set CURRENT_DIR=temp_testdir
+p Now CURRENT_DIR is $CURRENT_DIR
+
+# This ligne unset the variable CURRENT_DIR (delete the tesh variable)
+! unset CURRENT_DIR
+p $CURRENT_DIR does not exist
+
+# This ligne displays the content of the environment variable TESH_PPID (which contains the PID of the tesh parent) 
+p The Tesh parent PID is: $TESH_PPID
+
+# This ligne displays the content of the value of the system variable ENOENT
+p On this platform ENOENT is: $ENOENT
+
+# Attempt to change the content of a system variable is a syntax error
+! expect return $ESYNTAX
+< ! ENOENT=300
+< $ echo $ENOENT
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+> Test unit from stdin
+> [stdin:1] A system variable named `(ENOENT)' already exists
+> Test unit `(stdin)' : NOK (syntax error)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
