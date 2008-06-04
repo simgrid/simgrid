@@ -11,7 +11,6 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-//#include "xbt/ex.h"
 #include "xbt/dynar.h"
 
 #include "xbt/synchro.h"

@@ -1,3 +1,4 @@
+/* $Id$ */
 
 /* xbt_str.c - various helping functions to deal with strings               */
 

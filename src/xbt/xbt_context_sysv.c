@@ -1,3 +1,11 @@
+/* $Id$ */
+
+/* context_sysv - implementation of context switching with ucontextes from Sys V */
+
+/* Copyright (c) 2004-2008 the SimGrid team. All right reserved */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex_interface.h"
 #include "xbt/xbt_context_private.h"
@@ -9,6 +17,8 @@
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
 #endif     /* HAVE_VALGRIND_VALGRIND_H */
+
+
 
 typedef struct s_xbt_ctx_sysv {
   XBT_CTX_BASE_T;

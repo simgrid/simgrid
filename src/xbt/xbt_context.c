@@ -1,7 +1,6 @@
 /* a fast and simple context switching library                              */
 
-/* Copyright (c) 2004 Arnaud Legrand.                                       */
-/* Copyright (c) 2004, 2005 Martin Quinson.                                 */
+/* Copyright (c) 2004-2008 the SimGrid team.                                */
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

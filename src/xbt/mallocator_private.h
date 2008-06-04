@@ -1,5 +1,12 @@
-#ifndef _XBT_DICT_PRIVATE_H__
-#define _XBT_DICT_PRIVATE_H__
+/* mallocator - recycle objects to avoid malloc() / free()                  */
+
+/* Copyright (c) 2006 Christophe Thiery. All rights reserved.               */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef _XBT_MALLOCATOR_PRIVATE_H__
+#define _XBT_MALLOCATOR_PRIVATE_H__
 
 typedef struct s_xbt_mallocator {
   int current_size;       /* number of objects currently stored */
@@ -10,4 +17,4 @@ typedef struct s_xbt_mallocator {
   void_f_pvoid_t reset_f; /* function to call when an object is released by the user */
 } s_xbt_mallocator_t;
 
-#endif
+#endif /* _XBT_MALLOCATOR_PRIVATE_H__ */

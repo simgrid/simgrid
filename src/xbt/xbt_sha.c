@@ -2,10 +2,13 @@
 /* xbt_sha.c - SHA1 hash function */
 
 /* Initial version part of iksemel (XML parser for Jabber)
- *   Copyright (C) 2000-2003 Gurer Ozen <madcat@e-kolay.net>
- *   This code is free software; you can redistribute it and/or
- *   modify it under the terms of GNU Lesser General Public License. */
-/* Adapted to fit into SimGrid by Martin Quinson. */
+ *   Copyright (C) 2000-2003 Gurer Ozen <madcat@e-kolay.net>. All right reserved. */
+
+/* Adapted to fit into SimGrid by Martin Quinson.
+     Copyright (c) 2008 Martin Quinson. All rights reserved. */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
 #include "xbt/hash.h"
