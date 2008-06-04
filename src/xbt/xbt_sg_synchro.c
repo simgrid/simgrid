@@ -68,6 +68,7 @@ xbt_thread_join(xbt_thread_t thread) {
 void 
 xbt_thread_cancel(xbt_thread_t thread) {
    SIMIX_process_kill(thread->s_process);
+   free(thread->name);
    free(thread);
 }		       
 
