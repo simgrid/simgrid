@@ -53,6 +53,7 @@ gras_msg_listener_launch(xbt_queue_t msg_exchange){
   arg->incomming_messages = msg_exchange;
 
   arg->listener =  xbt_thread_create("listener",listener_function,arg);
+  gras_os_sleep(0); /* give the listener a chance to initialize even if the main is empty and we cancel it right afterward */
   return arg;
 }
 
