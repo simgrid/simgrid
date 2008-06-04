@@ -267,10 +267,11 @@ static void *xbt_ctx_thread_wrapper(void *param)
 
 static void xbt_ctx_thread_suspend(xbt_context_t context)
 {
-  DEBUG1("Suspend context '%s'",context->name);
   /* save the current context */
   xbt_context_t self = current_context;
 
+  DEBUG1("Suspend context '%s'",context->name);
+   
   /* update the current context to this context */
   current_context = context;
 
