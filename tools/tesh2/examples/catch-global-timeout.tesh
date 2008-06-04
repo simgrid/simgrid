@@ -1,0 +1,11 @@
+#! ./tesh
+# This test detects a global timeout
+
+! expect return $ELEADTIME
+
+< $ sleep 30
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n' --timeout=3
+> Test unit from stdin
+> [stdin:1] sleep 30
+> Test unit from stdin INTR
+> Tesh timed out after `(3)' seconds

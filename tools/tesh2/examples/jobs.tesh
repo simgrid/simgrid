@@ -1,0 +1,28 @@
+#! ./tesh
+
+D this Tesh unit tests the option of the command line `--jobs'
+
+< #include <stdlib.h>
+< #include <stdio.h>
+< 
+< int
+< main(int argc, char* argv[])
+< {
+<	printf("Hello Tesh\n");
+<	
+<	return EXIT_SUCCESS;
+< }
+< 
+$ cat > job.c
+
+$ gcc -o job job.c
+
+# Ignore output of the command because we can't known the order of the execution of the Tesh files.
+! output ignore
+
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n' --silent --jobs --directory=examples jobs1.tesh jobs2.tesh jobs3.tesh jobs4.tesh jobs5.tesh jobs6.tesh jobs7.tesh jobs8.tesh jobs9.tesh 
+
+
+$ rm -f job
+
+$ rm -f job.c

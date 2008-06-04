@@ -1,0 +1,144 @@
+#! ./tesh
+
+D this Tesh unit tests the option of the command line `--keep-going'
+
+< #include <stdlib.h>
+< #include <stdio.h>
+<  
+< int
+< main(int argc, char* argv[])
+< {
+<	printf("Hello Tesh\n");
+<	
+<	return EXIT_SUCCESS;
+< }
+< 
+$ cat > job.c
+
+$ gcc -o job job.c
+
+ 
+< ! expect return 1
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+$ cat > file1.tesh
+
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+$ cat > file2.tesh
+
+! expect return $EEXITCODENOTMATCH
+
+# in this case the option `keep-going' is not specified so Tesh detects the error and interrupt all the folowing units.
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n' file1.tesh file2.tesh
+> Test unit from file1.tesh
+> [file1.tesh:3] ./job
+> [file1.tesh:3] ./job : NOK (returned code `0' instead `1')
+> Output of <file1.tesh:3> so far: 
+> ||Hello Tesh
+> ||
+> Test unit `(file1.tesh)' : NOK (exit code mismatch)
+> Test unit from file2.tesh
+> Test unit from file2.tesh INTR
+
+< ! expect return 1
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+$ cat > file1.tesh
+
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+< 
+< ! expect return 0
+< > Hello Tesh
+< $ ./job
+$ cat > file2.tesh
+
+! expect return $EEXITCODENOTMATCH
+
+# in this case the option `keep-going' is specified so, Tesh execute all the other units.
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n' file1.tesh file2.tesh  --keep-going
+> Test unit from file1.tesh
+> [file1.tesh:3] ./job
+> [file1.tesh:3] ./job : NOK (returned code `0' instead `1')
+> Output of <file1.tesh:3> so far: 
+> ||Hello Tesh
+> ||
+> Test unit `(file1.tesh)' : NOK (exit code mismatch)
+> Test unit from file2.tesh
+> [file2.tesh:3] ./job
+> [file2.tesh:7] ./job
+> [file2.tesh:11] ./job
+> [file2.tesh:15] ./job
+> [file2.tesh:19] ./job
+> Test unit from file2.tesh OK
+
+$ rm -f file1.tesh
+
+$ rm -f file2.tesh
+
+$ rm -f job
+
+$ rm -f job.c
