@@ -18,13 +18,13 @@
 #  include <valgrind/valgrind.h>
 #endif     /* HAVE_VALGRIND_VALGRIND_H */
 
-
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_context);
 
 typedef struct s_xbt_ctx_sysv {
   XBT_CTX_BASE_T;
   ucontext_t uc;                    /* the thread that execute the code                             */
   char stack[STACK_SIZE];           /* the thread stack size                                        */
-  struct s_xbt_ctx_sysv *prev;      /* the previous thread                                              */
+  struct s_xbt_ctx_sysv *prev;      /* the previous thread                                          */
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id;   /* the valgrind stack id.	    */
 #endif /* HAVE_VALGRIND_VALGRIND_H */
@@ -50,27 +50,16 @@ static int
 xbt_ctx_sysv_factory_create_maestro_context(xbt_context_t * maestro);
 
 static void xbt_ctx_sysv_free(xbt_context_t context);
-
 static void xbt_ctx_sysv_kill(xbt_context_t context);
-
 static void xbt_ctx_sysv_schedule(xbt_context_t context);
-
 static void xbt_ctx_sysv_yield(void);
-
 static void xbt_ctx_sysv_start(xbt_context_t context);
-
 static void xbt_ctx_sysv_stop(int exit_code);
-
 static void xbt_ctx_sysv_swap(xbt_context_t context);
-
 static void xbt_ctx_sysv_schedule(xbt_context_t context);
-
 static void xbt_ctx_sysv_yield(void);
-
 static void xbt_ctx_sysv_suspend(xbt_context_t context);
-
 static void xbt_ctx_sysv_resume(xbt_context_t context);
-
 static void xbt_ctx_sysv_wrapper(void);
 
 /* callback: context fetching */
@@ -108,6 +97,7 @@ xbt_ctx_sysv_factory_create_maestro_context(xbt_context_t * maestro)
 {
 
   xbt_ctx_sysv_t context = xbt_new0(s_xbt_ctx_sysv_t, 1);
+  context->name = (char*)"maestro";
 
   context->exception = xbt_new(ex_ctx_t, 1);
   XBT_CTX_INITIALIZE(context->exception);
@@ -134,6 +124,7 @@ xbt_ctx_sysv_factory_create_context(const char *name, xbt_main_func_t code,
                                     void_f_pvoid_t cleanup_func,
                                     void *cleanup_arg, int argc, char **argv)
 {
+  VERB1("Create context %s",name);
   xbt_ctx_sysv_t context = xbt_new0(s_xbt_ctx_sysv_t, 1);
 
   context->code = code;
@@ -203,6 +194,7 @@ static void xbt_ctx_sysv_free(xbt_context_t context)
 
 static void xbt_ctx_sysv_kill(xbt_context_t context)
 {
+  DEBUG2("Kill context '%s' (from '%s')",context->name,current_context->name);
   context->iwannadie = 1;
   xbt_ctx_sysv_swap(context);
 }
@@ -218,6 +210,7 @@ static void xbt_ctx_sysv_kill(xbt_context_t context)
  */
 static void xbt_ctx_sysv_schedule(xbt_context_t context)
 {
+  DEBUG1("Schedule context '%s'",context->name);
   xbt_assert0((current_context == maestro_context),
               "You are not supposed to run this function here!");
   xbt_ctx_sysv_swap(context);
@@ -233,6 +226,7 @@ static void xbt_ctx_sysv_schedule(xbt_context_t context)
  */
 static void xbt_ctx_sysv_yield(void)
 {
+  DEBUG1("Yielding context '%s'",current_context->name);
   xbt_assert0((current_context != maestro_context),
               "You are not supposed to run this function here!");
   xbt_ctx_sysv_swap(current_context);
@@ -240,11 +234,13 @@ static void xbt_ctx_sysv_yield(void)
 
 static void xbt_ctx_sysv_start(xbt_context_t context)
 {
+  DEBUG1("Start context '%s'",context->name);
   makecontext(&(((xbt_ctx_sysv_t) context)->uc), xbt_ctx_sysv_wrapper, 0);
 }
 
 static void xbt_ctx_sysv_stop(int exit_code)
 {
+  /* please no debug here: our procdata was already free'd */
   if (current_context->cleanup_func)
     ((*current_context->cleanup_func)) (current_context->cleanup_arg);
 
@@ -256,6 +252,7 @@ static void xbt_ctx_sysv_stop(int exit_code)
 
 static void xbt_ctx_sysv_swap(xbt_context_t context)
 {
+  DEBUG2("Swap context: '%s' -> '%s'",current_context->name,context->name);
   xbt_assert0(current_context, "You have to call context_init() first.");
   xbt_assert0(context, "Invalid argument");
 
@@ -281,6 +278,7 @@ static void xbt_ctx_sysv_suspend(xbt_context_t context)
 {
   int rv;
 
+  DEBUG1("Suspend context: '%s'",current_context->name);
   xbt_ctx_sysv_t prev_context = ((xbt_ctx_sysv_t) context)->prev;
 
   current_context = (xbt_context_t) (((xbt_ctx_sysv_t) context)->prev);
@@ -296,6 +294,7 @@ static void xbt_ctx_sysv_resume(xbt_context_t context)
 {
   int rv;
 
+  DEBUG2("Resume context: '%s' (from '%s')",context->name,current_context->name);
   ((xbt_ctx_sysv_t) context)->prev = (xbt_ctx_sysv_t) current_context;
 
   current_context = context;

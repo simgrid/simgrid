@@ -11,6 +11,8 @@
 #include "xbt/swag.h"
 #include "xbt_context_private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_context,xbt,"Context switching mecanism");
+
 /* the context associated with the current process 				*/
 xbt_context_t current_context = NULL;
 
