@@ -1,5 +1,4 @@
 p Runs the 'empty_main' test within the simulator
 
 $ $SG_TEST_EXENV ./gras/empty_main/empty_main_simulator${EXEEXT:=} ${srcdir:=.}/../examples/msg/small_platform.xml ${srcdir:=.}/gras/empty_main/empty_main.xml
-> [Tremblay:server:(1) 0.000000] [gras/INFO] Exiting GRAS
-> [Fafard:client:(2) 0.000000] [gras/INFO] Exiting GRAS
+> [Tremblay:function:(1) 0.000000] [gras/INFO] Exiting GRAS
