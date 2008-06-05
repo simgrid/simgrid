@@ -17,7 +17,7 @@
    
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
-  
+
 SG_BEGIN_DECL()
 
 /* They live in asserts.h, but need to be declared before this module.
@@ -59,7 +59,9 @@ static XBT_INLINE char *xbt_strdup(const char *s) {
 /** @brief Like malloc, but xbt_die() on error 
     @hideinitializer */
 static XBT_INLINE void *xbt_malloc(unsigned int n){
-  void *res=malloc(n);
+  void *res;
+  if (n==0) xbt_die("malloc(0) is not portable");
+  res=malloc(n);
   if (!res)
      xbt_die(bprintf("Memory allocation of %d bytes failed",n));
   return res;
@@ -68,7 +70,9 @@ static XBT_INLINE void *xbt_malloc(unsigned int n){
 /** @brief like malloc, but xbt_die() on error and memset data to 0
     @hideinitializer */
 static XBT_INLINE void *xbt_malloc0(unsigned int n) {
-  void *res=calloc(n,1);
+  void *res;
+  if (n==0) xbt_die("calloc(0) is not portable");
+  res=calloc(n,1);
   if (!res)
      xbt_die(bprintf("Memory callocation of %d bytes failed",n));
   return res;
@@ -78,6 +82,7 @@ static XBT_INLINE void *xbt_malloc0(unsigned int n) {
     @hideinitializer */
 static XBT_INLINE void *xbt_realloc(void*p,unsigned int s){
   void *res=res;
+  if (s==0) xbt_die("realloc(0) is not portable");
   if (s) {
     if (p) {
       res=realloc(p,s);
