@@ -58,7 +58,11 @@ void gras_msg_send_ext(gras_socket_t   sock,
 					      payload,msg->payl);
   } else if (kind == e_gras_msg_kind_rpcanswer) {
     msg->payl_size=gras_datadesc_size(msgtype->answer_type);
-    msg->payl=xbt_malloc(msg->payl_size);
+    if (msg->payl_size)
+       msg->payl=xbt_malloc(msg->payl_size);
+    else
+       msg->payl=NULL;
+     
     if (msgtype->answer_type)
       whole_payload_size = gras_datadesc_memcpy(msgtype->answer_type,
 						payload, msg->payl);
