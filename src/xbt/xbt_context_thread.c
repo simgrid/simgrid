@@ -284,9 +284,10 @@ static void xbt_ctx_thread_suspend(xbt_context_t context)
 
 static void xbt_ctx_thread_resume(xbt_context_t context)
 {
-  DEBUG1("Resume context '%s'",context->name);
   /* save the current context */
   xbt_context_t self = current_context;
+
+  DEBUG1("Resume context '%s'",context->name);
 
   /* update the current context */
   current_context = context;
