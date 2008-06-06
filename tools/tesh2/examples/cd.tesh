@@ -16,11 +16,11 @@ $ ls
 > [stdin:1] cd toto
 > [stdin:1] Chdir to toto failed: no such file or directory
 > Test unit `(stdin)' : NOK (no such file or directory)
-$ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
 
 # The next command checks that there is a testdir_temp in the upper directory, 
 # ie that mkdir and cd both worked.
-$ test -e ../testdir_temp
+#$ test -e ../testdir_temp
 
 $ cd ..
 $ rmdir testdir_temp

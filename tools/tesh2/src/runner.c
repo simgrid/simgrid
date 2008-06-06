@@ -28,11 +28,14 @@
 #include <explode.h>
 #endif
 
+
+
+
 #define _RUNNER_HASHCODE		0xFEFEAAAA	
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
-#if (!defined(__BUILTIN) && defined(__CHKCMD))
+#if (!defined(__BUILTIN) && defined(__CHKCMD) && !defined(WIN32))
 static const char* builtin[] =
 {
 	"alias",
@@ -129,7 +132,7 @@ runner_start_routine(void* p)
     
     /* wait for the timer */
     WaitForSingleObject(timer_handle, INFINITE);
-	
+
 	if(runner->waiting)
 	{
 		exit_code = ELEADTIME;
@@ -187,11 +190,12 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 	int i;
 	char* val;
 	char buffer[PATH_MAX + 1] = {0};
+
 	int code;
 	const char* cstr;
 	variable_t variable;
 	
-	#if (defined(__CHKCMD) && defined(__BUILTIN))
+	#if (defined(__CHKCMD) && defined(__BUILTIN) && !defined(WIN32))
 	FILE* s;
 	int n = 0;
 	size_t len;
@@ -246,13 +250,10 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 	/* add the environment variables in the vector */
 	for(i = 0; environ[i] != NULL; i++)
 	{
-		
 		val = strchr(environ[i], '=');
 		
 		if(val)
 		{
-			
-			
 			val++;
 				
 			if(val[0] != '\0')
@@ -269,9 +270,10 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 			if(!strcmp("PATH", buffer))
 			{
 				char* p;
-				int j,k,  len;
+				size_t j,k, len;
 				
 				/* get the list of paths */
+				
 				runner->path = explode(':', val);
 
 				/* remove spaces and backslahes at the end of the path */
@@ -282,6 +284,7 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
     				len = strlen(p);
 			    	
     				for(j = len - 1; p[j] == '/' || p[j] == ' '; j--)
+					
     					p[j] = '\0';
 				}
 			}
@@ -309,6 +312,11 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 		variable->err = 1;
 			
 		xbt_dynar_push(runner->variables, &variable);
+
+		variable = variable_new("TESH_DIR", tesh_dir);
+		variable->err = 1;
+			
+		xbt_dynar_push(runner->variables, &variable);
 		
 		free(tesh_dir);
 	}
@@ -333,7 +341,6 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 			
 	xbt_dynar_push(runner->variables, &variable);
 
-	
 	i = 0;
 	
 	/* add the errors variables */
@@ -350,24 +357,28 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 		check_syntax();
 	*/
 	
-	
-	#if defined(__CHKCMD)
+	#if (!defined(WIN32) && defined(__CHKCMD))
 	#if defined(__BUILTIN)
+	
 	if(!is_tesh_root)
 	{
 		/* compute the full path the builtin.def file */
-		#ifndef WIN32
 		sprintf(buffer,"%s/builtin.def",getenv("TESH_DIR"));
-		#else
-		GetEnvironmentVariable("TESH_DIR",buffer,PATH_MAX + 1);
-		#endif
 		
-		s = fopen(buffer, "r");	
+		if(!(s = fopen(buffer, "r")))	
+		{
+			ERROR1("File `(%s)' not found", buffer);
+			return -1;
+		}
 		
 	}
 	else
 	{
-		s = fopen("builtin.def", "r");
+		if(!(s = fopen("builtin.def", "r")))	
+		{
+			ERROR0("File `(builtin.def)' not found");
+			return -1;
+		}
 	}
 	
 	if(s)
@@ -395,8 +406,6 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 
 			if(!is_blank)
 				n++;
-				
-			
 		}
 
 		fsetpos(s, &begin);
@@ -453,13 +462,8 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 			free(line);
 		
 	}
-	else
-	{
-		ERROR0("File `(builtin.def)' not found");
-		return -1;
-	}
-	#else
 	
+	#else
 		runner->builtin = xbt_new0(char*, __BUILTIN_MAX + 1); /* (char**) calloc(__BUILTIN_MAX + 1, sizeof(char*));*/
 		
 		for(i = 0; i < __BUILTIN_MAX; i++)

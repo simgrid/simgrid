@@ -63,7 +63,7 @@ $ cat > file2.tesh
 ! expect return $EEXITCODENOTMATCH
 
 # in this case the option `keep-going' is not specified so Tesh detects the error and interrupt all the folowing units.
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n' file1.tesh file2.tesh
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n" file1.tesh file2.tesh
 > Test unit from file1.tesh
 > [file1.tesh:3] ./job
 > [file1.tesh:3] ./job : NOK (returned code `0' instead `1')
@@ -71,8 +71,6 @@ $ ./tesh --log='log.thresh:info tesh.fmt:%m%n' file1.tesh file2.tesh
 > ||Hello Tesh
 > ||
 > Test unit `(file1.tesh)' : NOK (exit code mismatch)
-> Test unit from file2.tesh
-> Test unit from file2.tesh INTR
 
 < ! expect return 1
 < > Hello Tesh
@@ -119,7 +117,7 @@ $ cat > file2.tesh
 ! expect return $EEXITCODENOTMATCH
 
 # in this case the option `keep-going' is specified so, Tesh execute all the other units.
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n' file1.tesh file2.tesh  --keep-going
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n" file1.tesh file2.tesh  --keep-going
 > Test unit from file1.tesh
 > [file1.tesh:3] ./job
 > [file1.tesh:3] ./job : NOK (returned code `0' instead `1')

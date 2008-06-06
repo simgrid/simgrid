@@ -39,7 +39,7 @@ $ gcc -o job job.c
 < ! expect return 0
 < > Hello Tesh
 < $ ./job
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
 > Test unit from stdin
 > [stdin:3] ./job
 > [stdin:3] ./job : NOK (returned code `0' instead `1')
@@ -71,7 +71,7 @@ $ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
 < ! expect return 0
 < > Hello Tesh
 < $ ./job
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'  --keep-going-unit
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"  --keep-going-unit
 > Test unit from stdin
 > [stdin:3] ./job
 > [stdin:3] ./job : NOK (returned code `0' instead `1')

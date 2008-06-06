@@ -9,11 +9,6 @@
 ! include catch-signal.tesh
 ! include set-timeout.tesh
 
-
-# a command
-$ echo Hello Tesh
->  Hello Tesh
-
 # some includes
 ! include catch-wrong-output.tesh
 

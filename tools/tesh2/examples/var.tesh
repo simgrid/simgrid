@@ -23,7 +23,7 @@ D Usage of tesh variables
 ! expect return $ESYNTAX
 < ! include-file=
 < ! include $include-file
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
 > Test unit from stdin
 > [stdin:1] Undefined variable `(include-file)'
 > Test unit `(stdin)' : NOK (syntax error)
@@ -100,7 +100,7 @@ p On this platform ENOENT is: $ENOENT
 ! expect return $ESYNTAX
 < ! ENOENT=300
 < $ echo $ENOENT
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
 > Test unit from stdin
 > [stdin:1] A system variable named `(ENOENT)' already exists
 > Test unit `(stdin)' : NOK (syntax error)

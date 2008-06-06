@@ -64,6 +64,7 @@ units_run_all(units_t units, xbt_os_mutex_t mutex)
 
 	xbt_dynar_foreach(units->items, i, unit)
 	{
+		xbt_os_sem_acquire(jobs_sem);
 		unit_run(unit, mutex);
 	}
 

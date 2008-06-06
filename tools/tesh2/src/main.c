@@ -197,10 +197,10 @@ static const struct s_optentry opt_entries[] =
 	{ 'f', string, (byte*)&fstreams, 0, "file" },
 	{ 'h', flag, (byte*)&print_usage_flag, 0, "help" },
 	{ 'a', flag, (byte*)&print_readme_flag, 0, "README" },
-	{ 'i', flag, (byte*)&keep_going_unit_flag, 0, "keep-going-unit" },
+	{ 'k', flag, (byte*)&keep_going_flag, 0, "keep-going" },
+	{ 'i', flag, (byte*)&keep_going_unit_flag, 0, "keep-going-unit"},
 	{ 'I', string, (byte*)&include_dirs, 0, "include-dir" },
 	{ 'j', number, (byte*)&jobs_nb, (byte*) &optional_jobs_nb, "jobs" },
-	{ 'k', flag, (byte*)&keep_going_flag, 0, "keep-going" },
 	{ 'm', flag, (byte*)&detail_summary_flag, 0, "detail-summary" },
 	{ 'c', flag, (byte*)&just_print_flag, 0, "just-print" },
 	{ 's', flag, (byte*)&silent_flag, 0, "silent" },
@@ -289,20 +289,29 @@ print_readme(void);
 static int
 init(void);
 
+static int
+screen_cleaned;
 
-static void 
-sig_abort_handler(int signum)
-{
-	/* TODO : implement this function */
-	INFO0("sig_abort_handler() called");
-}
+static int
+finalized = 0;
 
+static int 
+sig_int = 0;
+
+#ifdef WIN32
 static void 
 sig_int_handler(int signum)
 {
-	/* TODO : implement this function */
-	INFO0("sig_int_handler() called");
+
+	if(!finalized)
+	{
+		sig_int = 1;
+		runner_interrupt();
+		while(!finalized);
+	}
+	
 }
+#endif
 
 static void 
 free_string(void* str)
@@ -443,33 +452,28 @@ init(void)
 	 * to the calling process : tesh)
 	 */
 	prev_error_mode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
+ 	
+ 	/* handle the interrupt signal */
+ 	signal(SIGINT, sig_int_handler);
 	#else
-	struct sigaction act;
 	/* Ignore pipe issues.
 	 * They will show up when we try to send data to dead buddies, 
      * but we will stop doing so when we're done with provided input 
      */
-  	memset(&act,0, sizeof(struct sigaction));
+  	/*
+	struct sigaction act;
+	memset(&act,0, sizeof(struct sigaction));
  	act.sa_handler = SIG_IGN;
  	sigaction(SIGPIPE, &act, NULL);
  	
- 	
- 	memset(&act,0, sizeof(struct sigaction));
- 	act.sa_handler = sig_abort_handler;
- 	sigaction(SIGABRT, &act, NULL);
- 	
  	memset(&act,0, sizeof(struct sigaction));
  	act.sa_handler = sig_int_handler;
- 	sigaction(SIGINT, &act, NULL);
+ 	sigaction(SIGINT, &act, NULL);*/
  	
  	#endif
  	
  	
- 	/* handle the abort signal */
- 	/*signal(SIGABRT, sig_abort_handler);*/
  	
- 	/* handle the interrupt signal */
- 	/*signal(SIGINT, sig_int_handler);*/
 	
 	/* used to store the files to run */
 	if(!(fstreams = fstreams_new((void_f_pvoid_t)fstream_free)))
@@ -567,7 +571,6 @@ load(void)
 static void
 finalize(void)
 {
-	
 	/* delete the fstreams object */
 	if(fstreams)
 		fstreams_free((void**)&fstreams);
@@ -604,8 +607,10 @@ finalize(void)
 	#ifdef WIN32
 	SetErrorMode(prev_error_mode);
 	#endif
-	
-	if(!summary_flag && !dry_run_flag && !silent_flag && !just_print_flag && !print_version_flag && !print_usage_flag && is_tesh_root)
+
+	if(sig_int)
+		INFO0("Tesh interrupted (receive a SIGINT)");
+	else if(!summary_flag && !dry_run_flag && !silent_flag && !just_print_flag && !print_version_flag && !print_usage_flag && is_tesh_root)
 	{
 		if(!exit_code)
 			INFO2("Tesh terminated with exit code %d : %s",exit_code, "success");
@@ -615,9 +620,12 @@ finalize(void)
 	
 	/* exit from the xbt framework */
 	xbt_exit();
+
+	finalized = 1;
 	
 	/* exit with the last error code */
-	exit(exit_code);
+	if(!sig_int)
+		exit(exit_code);
 }
 
 /* init_options -- initialize the options string */
@@ -816,17 +824,6 @@ process_command_line(int argc, char** argv)
 						/* --load-directory option */
 						if(!strcmp(entry->long_name,"load-directory"))
 						{
-							#ifdef WIN32
-							struct stat info = {0};
-							if(stat(optarg, &info) || !S_ISDIR(info.st_mode))
-							{
-								ERROR1("%s is not a directory",optarg);
-								exit_code = ENOTDIR;
-								err_kind = 0;
-								return -1;
-							}	
-
-							#else
 							char* path;
 							
 							if(translatepath(optarg, &path) < 0)
@@ -842,15 +839,11 @@ process_command_line(int argc, char** argv)
 								return -1;
 								
 							}
-							#endif
 							else
 							{
-								#ifdef WIN32
-								directory = directory_new(optarg);
-								#else
+								
 								directory = directory_new(path);
 								free(path);
-								#endif
 						
 								if(directories_contains(directories, directory))
 								{
@@ -865,17 +858,6 @@ process_command_line(int argc, char** argv)
 						}
 						else if(!strcmp(entry->long_name,"directory"))
 						{
-							#ifdef WIN32
-							struct stat info = {0};
-							if(stat(optarg, &info) || !S_ISDIR(info.st_mode))
-							{
-								ERROR1("%s is not a directory",optarg);
-								exit_code = ENOTDIR;
-								err_kind = 0;
-								return -1;
-							}	
-
-							#else
 							char* path ;
 							
 							if(translatepath(optarg, &path) < 0)
@@ -890,20 +872,10 @@ process_command_line(int argc, char** argv)
 									
 								return -1;
 							}
-							#endif
 							else
 							{
 								char* buffer = getcwd(NULL, 0);
 
-								#ifdef WIN32
-								
-								if(!strcmp(buffer, optarg))
-									WARN1("Already in the directory %s", optarg);
-								else if(!print_directory_flag)
-									INFO1("Entering directory \"%s\"",optarg);
-								
-								chdir(optarg);
-								#else
 								
 								if(!strcmp(buffer, path))
 									WARN1("Already in the directory %s", optarg);
@@ -912,11 +884,8 @@ process_command_line(int argc, char** argv)
 
 								chdir(path);
 								free(path);
-								#endif
-
+						
 								free(buffer);
-								
-								
 							}	
 						}
 						
@@ -1019,17 +988,7 @@ process_command_line(int argc, char** argv)
 						/* --include-dir option */
 						else if(!strcmp(entry->long_name,"include-dir"))
 						{
-							#ifdef WIN32
-							struct stat info = {0};
-							if(stat(optarg, &info) || !S_ISDIR(info.st_mode))
-							{
-								ERROR1("%s is not a directory",optarg);
-								exit_code = ENOTDIR;
-								err_kind = 0;
-								return -1;
-							}	
-
-							#else
+							
 							char* path ;
 							
 							if(translatepath(optarg, &path) < 0)
@@ -1044,18 +1003,14 @@ process_command_line(int argc, char** argv)
 									
 								return -1;
 							}
-							#endif
+							
 							else
 							{
 								int exists = 0;
 								unsigned int i;
 								directory_t cur;
-								#ifdef WIN32
-								directory = directory_new(optarg);
-								#else
 								directory = directory_new(path);
 								free(path);
-								#endif
 
 								xbt_dynar_foreach(include_dirs, i , cur)
 								{
@@ -1180,6 +1135,16 @@ print_usage(void)
 	FILE* stream;
 	
 	stream = exit_code ? stderr : stdout;
+
+	if(!screen_cleaned)
+	{
+		#ifdef WIN32
+		system("cls");
+		#else
+		system("clear");
+		#endif
+		screen_cleaned = 1;
+	}
 	
 	fprintf (stream, "Usage: tesh [options] [file] ...\n");
 	
@@ -1192,6 +1157,16 @@ print_usage(void)
 static void
 print_version(void)
 {
+	if(!screen_cleaned)
+	{
+		#ifdef WIN32
+		system("cls");
+		#else
+		system("clear");
+		#endif
+		screen_cleaned = 1;
+	}
+
 	/* TODO : display the version of tesh */
 	printf("Version :\n");
 	printf("  tesh version %s : Mini shell specialized in running test units by Martin Quinson \n", version);

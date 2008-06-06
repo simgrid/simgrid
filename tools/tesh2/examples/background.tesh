@@ -9,6 +9,10 @@ $ cd temp_testdir
 < #include <sys/types.h>
 < #include <sys/stat.h>
 < #include <fcntl.h>
+< 
+< #ifdef __MINGW32__
+< #define sleep	_sleep
+< #endif
 <		     
 < int main() {
 <   char buff[2048];

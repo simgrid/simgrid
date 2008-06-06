@@ -74,6 +74,8 @@ writer_start_routine(void* p)
 	DWORD number_of_bytes_to_write = command->context->input->used;
 	DWORD number_of_bytes_written = 0;
 
+	xbt_os_sem_release(writer->written);
+
 	while(!command->failed && !command->interrupted && !command->successeded && ! writer->failed && ! writer->broken_pipe && number_of_bytes_to_write)
 	{
 		if(!WriteFile(writer->command->stdin_fd, input, number_of_bytes_to_write, &number_of_bytes_written, NULL))
@@ -108,7 +110,7 @@ writer_start_routine(void* p)
 		command_kill(command);
 		command_handle_failure(command, csr_write_pipe_broken);
 	}*/
-	
+
 	CloseHandle(command->stdin_fd);
 	command->stdin_fd = INDEFINITE_FD;
 

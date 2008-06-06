@@ -79,6 +79,8 @@ reader_start_routine(void* p)
 	char* clean = (char*)calloc(number_of_bytes_to_read + 1,sizeof(char));
 	size_t i, j;
 
+	xbt_os_sem_release(reader->started);
+
 	while(!command->failed && !command->interrupted && !command->successeded && !reader->failed && !reader->broken_pipe)
 	{
 		if(!ReadFile(stdout_fd, buffer, number_of_bytes_to_read, &number_of_bytes_readed, NULL) || (0 == number_of_bytes_readed))

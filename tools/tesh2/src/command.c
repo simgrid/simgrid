@@ -23,6 +23,52 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#else
+char *
+tow32cmd(const char* cmd)
+{
+	static char w32cmd[PATH_MAX + 1] = {0};
+	char cmd_buf[PATH_MAX + 1] = {0};
+    size_t i,j, len;
+    
+    if(!cmd)
+    {
+    	errno = EINVAL;
+		return NULL;
+	}
+	
+	/* TODO : if ~*/
+	if(cmd[0] != '.')
+	{
+		strcpy(w32cmd, cmd);
+		return w32cmd;
+	}
+	
+	i = j = 0;
+	len = strlen(cmd);
+	
+	while(i < len)
+	{
+		if(cmd[i] != ' ' && cmd[i] != '\t' && cmd[i] != '>')
+			cmd_buf[j++] = cmd[i];
+		else
+			break;
+			
+		i++;
+	}
+
+   _fullpath(w32cmd, cmd_buf, sizeof(w32cmd));
+   
+   if(!strstr(w32cmd, ".exe"))
+		strcat(w32cmd, ".exe ");
+   
+   strcat(w32cmd, cmd + i);
+   
+   
+   /*printf("w32cmd : %s", w32cmd);*/
+
+   return w32cmd;
+}
 #endif
 
 #include <com.h>
@@ -116,7 +162,6 @@ command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
 int
 command_run(command_t command)
 {
-	
 	if(!silent_flag)
 		INFO2("[%s] %s",command->context->pos, command->context->command_line);
 	
@@ -140,6 +185,8 @@ command_run(command_t command)
 		{
 			command_interrupt(command);		
 		}
+
+		
 	}
 	
 	return 0;
@@ -205,6 +252,10 @@ command_start(void* p)
 }
 
 #ifdef WIN32
+
+#ifndef BUFSIZE
+#define BUFSIZE	4096
+#endif
 void
 command_exec(command_t command, const char* command_line)
 {
@@ -216,6 +267,7 @@ command_exec(command_t command, const char* command_line)
 	HANDLE child_stdout_handle[2] = {NULL};	/* child_stdout_handle[0]	<-> stdin of the child process	*/
 	HANDLE child_stderr = NULL;
 	
+
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
     sa.lpSecurityDescriptor = NULL;			/* use default security for the pipe handles				*/
 	
@@ -300,10 +352,10 @@ command_exec(command_t command, const char* command_line)
 
 		return;
     }
-
 	
 	CloseHandle(child_stdin_handle[0]);
 	CloseHandle(child_stdout_handle[1]);
+
 	
 	if(command->timer)
 	{
@@ -324,6 +376,18 @@ command_exec(command_t command, const char* command_line)
 		writer_write(command->writer);
 	}
 
+	/* if there is a reader wait for its starting */
+	if(command->reader)
+		xbt_os_sem_acquire(command->reader->started);
+	
+	/* if there is a reader wait for its ending */
+	if(command->writer)
+		xbt_os_sem_acquire(command->writer->written);
+	
+	/* if there is a reader wait for its starting */
+	if(command->timer)
+		xbt_os_sem_acquire(command->timer->started);
+
     si.cb = sizeof(STARTUPINFO);
 	
 	si.dwFlags |= STARTF_USESTDHANDLES;
@@ -334,7 +398,7 @@ command_exec(command_t command, const char* command_line)
 	/* launch the process */
 	if(!CreateProcess(
 						NULL,
-						(char*)command_line,
+						tow32cmd(command_line),
 						NULL,
 						NULL,
 						TRUE,
@@ -345,11 +409,21 @@ command_exec(command_t command, const char* command_line)
 						&pi)
 	)
 	{
-		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
 
-		command_handle_failure(command,csr_create_process_function_failure);
+		if(ERROR_FILE_NOT_FOUND == GetLastError())
+		{
+			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(ECMDNOTFOUND, 1));
+			unit_set_error(command->unit, ECMDNOTFOUND, 1);
+			command_handle_failure(command, csr_command_not_found);
+		}
+		else
+		{
+			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
 
-		unit_set_error(command->unit, (int)GetLastError(), 0);
+			unit_set_error(command->unit, (int)GetLastError(), 0);
+			command_handle_failure(command, csr_create_process_function_failure);
+		}
+		
     }
 	else
 	{
@@ -968,7 +1042,7 @@ command_summarize(command_t command)
 			break;
 			
 			case csr_unexpected_signal_caught:
-			printf("                reason                      : unexpected signal caught\n");
+			printf("          reason                      : unexpected signal caught\n");
 			break;
 			
 			case csr_expected_signal_not_receipt :
@@ -1007,15 +1081,22 @@ command_summarize(command_t command)
 		else
 			printf("          no expected exit code specified\n");
 		
-		/* if an expected exit code was specified display it */
+		/* no expected signal expected */
 		if(NULL == command->context->signal)
+		{
 			printf("          no expected signal specified\n");
+
+			if(command->signal)
+				printf("          but got signal              : %s\n",command->signal);
+				
+		}
+		/* if an expected exit code was specified display it */
 		else
 		{
 			if(NULL != command->signal)
 				printf("          signal                      : %s\n",command->signal);
-			
-			printf("          expected signal             : %s\n",command->context->signal);
+			else
+				printf("          no signal caugth\n");
 		}
 		
 		/* if the command has out put and the metacommand display output is specified display it  */
@@ -1035,7 +1116,6 @@ command_summarize(command_t command)
 void
 command_handle_failure(command_t command, cs_reason_t reason)
 {
-	
 	unit_t root = command->root;
 	
 	xbt_os_mutex_acquire(command->mutex);

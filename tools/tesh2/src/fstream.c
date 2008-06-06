@@ -149,7 +149,9 @@ fstream_open(fstream_t fstream)
     #endif
 
 	if(!(fstream->stream = fopen(path, "r")))
+	{
 		return -1;
+	}
 	
 	return 0;
 }

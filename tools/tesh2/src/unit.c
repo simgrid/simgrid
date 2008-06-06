@@ -66,7 +66,7 @@ unit_start(void* p)
 	xbt_os_mutex_release(root->mutex);
 
 	/* must acquire the jobs semaphore to start */
-	xbt_os_sem_acquire(jobs_sem);
+	/*xbt_os_sem_acquire(jobs_sem);*/
 	
 	/* initialize the mutex used to synchronize the access to the properties of this unit */
 	mutex = xbt_os_mutex_init();
@@ -409,7 +409,7 @@ unit_run(unit_t unit, xbt_os_mutex_t mutex)
         errno = EINVAL;
         return -1;
     }
-    
+
 	if(!interrupted)
 	{
 		unit->mutex = mutex;
