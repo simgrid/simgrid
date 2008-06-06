@@ -49,7 +49,7 @@ extern int card_number;
 extern link_CM02_t **routing_table;
 extern int *routing_table_size;
 
-#define ROUTE(i,j) routing_table[(i)+(j)*card_number]
-#define ROUTE_SIZE(i,j) routing_table_size[(i)+(j)*card_number]
+#define ROUTE(i,j) routing_table[(i)+(j)*host_number]
+#define ROUTE_SIZE(i,j) routing_table_size[(i)+(j)*host_number]
 
 #endif				/* _SURF_NETWORK_PRIVATE_H */

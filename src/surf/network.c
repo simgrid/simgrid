@@ -98,7 +98,7 @@ static int network_card_new(const char *card_name)
   if (!card) {
     card = xbt_new0(s_network_card_CM02_t, 1);
     card->name = xbt_strdup(card_name);
-    card->id = card_number++;
+    card->id = host_number++;
     xbt_dict_set(network_card_set, card_name, card, network_card_free);
   }
   return card->id;
@@ -695,14 +695,14 @@ static void finalize(void)
   surf_network_model = NULL;
 
   loopback = NULL;
-  for (i = 0; i < card_number; i++)
-    for (j = 0; j < card_number; j++)
+  for (i = 0; i < host_number; i++)
+    for (j = 0; j < host_number; j++)
       free(ROUTE(i, j));
   free(routing_table);
   routing_table = NULL;
   free(routing_table_size);
   routing_table_size = NULL;
-  card_number = 0;
+  host_number = 0;
 }
 
 static void surf_network_model_init_internal(void)
