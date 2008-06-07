@@ -152,8 +152,8 @@ int main(int argc, char **argv) {
     
     changed_tasks = SD_simulate(-1.0);
     xbt_assert0(changed_tasks[0] == taskD &&
-		changed_tasks[1] == taskB &&
-		changed_tasks[2] == taskC &&
+		changed_tasks[1] == taskC &&
+		changed_tasks[2] == taskB &&
 		changed_tasks[3] == NULL,
 		"Unexpected simulation results");
     
