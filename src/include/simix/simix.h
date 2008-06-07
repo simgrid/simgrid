@@ -93,6 +93,7 @@ XBT_PUBLIC(void) SIMIX_jprocess_create(const char *name,
 XBT_PUBLIC(void) SIMIX_process_kill(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_cleanup(void *arg);
 XBT_PUBLIC(void) SIMIX_process_killall(void);
+XBT_PUBLIC(void) SIMIX_process_change_host(smx_process_t process, char *source, char *dest);
 
 //above layer
 XBT_PUBLIC(void*) SIMIX_process_get_data(smx_process_t process);

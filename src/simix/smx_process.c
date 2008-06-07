@@ -382,6 +382,21 @@ void SIMIX_process_resume(smx_process_t process)
 }
 
 /**
+ * \brief Migrates an agent to another location.
+ *
+ * This function changes the value of the host on which \a process is running.
+ */
+void SIMIX_process_change_host(smx_process_t process, char *source, char *dest)
+{
+  smx_simdata_process_t p_simdata = process->simdata;
+  smx_host_t h1 = SIMIX_host_get_by_name(source);
+  smx_host_t h2 = SIMIX_host_get_by_name(dest);
+  p_simdata->smx_host =  h2;
+  xbt_swag_remove(process, h1->simdata->process_list);
+  xbt_swag_insert(process, h2->simdata->process_list);
+}
+
+/**
  * \brief Returns true if the process is suspended .
  *
  * This checks whether a process is suspended or not by inspecting the task on which it was waiting for the completion.

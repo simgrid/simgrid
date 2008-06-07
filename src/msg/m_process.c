@@ -10,6 +10,7 @@
 #include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "../simix/private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
 				"Logging specific to MSG (process)");
@@ -201,20 +202,22 @@ void MSG_process_kill(m_process_t process)
 /** \ingroup m_process_management
  * \brief Migrates an agent to another location.
  *
- * This functions checks whether \a process and \a host are valid pointers
+ * This function checks whether \a process and \a host are valid pointers
    and change the value of the #m_host_t on which \a process is running.
  */
-MSG_error_t MSG_process_change_host(m_process_t process, m_host_t host)
+MSG_error_t MSG_process_change_host(m_host_t host)
 {
-  xbt_die
-      ("MSG_process_change_host - not implemented yet - maybe useless function");
+  m_process_t process = MSG_process_self();
+  m_host_t now = process->simdata->m_host;
+  process->simdata->m_host = host;
+  SIMIX_process_change_host(process->simdata->s_process, now->name, host->name);
   return MSG_OK;
 }
 
 /** \ingroup m_process_management
  * \brief Return the user data of a #m_process_t.
  *
- * This functions checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not 
    and return the user data associated to \a process if it is possible.
  */
 void *MSG_process_get_data(m_process_t process)
@@ -227,7 +230,7 @@ void *MSG_process_get_data(m_process_t process)
 /** \ingroup m_process_management
  * \brief Set the user data of a #m_process_t.
  *
- * This functions checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not 
    and set the user data associated to \a process if it is possible.
  */
 MSG_error_t MSG_process_set_data(m_process_t process, void *data)
@@ -243,7 +246,7 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data)
 /** \ingroup m_process_management
  * \brief Return the location on which an agent is running.
  *
- * This functions checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not 
    and return the m_host_t corresponding to the location on which \a 
    process is running.
  */
@@ -259,7 +262,7 @@ m_host_t MSG_process_get_host(m_process_t process)
  *
  * \brief Return a #m_process_t given its PID.
  *
- * This functions search in the list of all the created m_process_t for a m_process_t 
+ * This function search in the list of all the created m_process_t for a m_process_t 
    whose PID is equal to \a PID. If no host is found, \c NULL is returned. 
    Note that the PID are uniq in the whole simulation, not only on a given host.
  */
@@ -278,7 +281,7 @@ m_process_t MSG_process_from_PID(int PID)
 /** \ingroup m_process_management
  * \brief Returns the process ID of \a process.
  *
- * This functions checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not 
    and return its PID (or 0 in case of problem).
  */
 int MSG_process_get_PID(m_process_t process)
@@ -294,7 +297,7 @@ int MSG_process_get_PID(m_process_t process)
 /** \ingroup m_process_management
  * \brief Returns the process ID of the parent of \a process.
  *
- * This functions checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not 
    and return its PID. Returns -1 if the agent has not been created by 
    another agent.
  */
@@ -309,7 +312,7 @@ int MSG_process_get_PPID(m_process_t process)
 /** \ingroup m_process_management
  * \brief Return the name of an agent.
  *
- * This functions checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not 
    and return its name.
  */
 const char *MSG_process_get_name(m_process_t process)
@@ -335,7 +338,7 @@ const char* MSG_process_get_property_value(m_process_t process, const char* name
 /** \ingroup m_process_management
  * \brief Return the list of properties
  *
- * This functions returns all the parameters associated with a process
+ * This function returns all the parameters associated with a process
  */
 xbt_dict_t MSG_process_get_properties(m_process_t process)
 {
@@ -348,7 +351,7 @@ xbt_dict_t MSG_process_get_properties(m_process_t process)
 /** \ingroup m_process_management
  * \brief Return the PID of the current agent.
  *
- * This functions returns the PID of the currently running #m_process_t.
+ * This function returns the PID of the currently running #m_process_t.
  */
 int MSG_process_self_PID(void)
 {
@@ -358,7 +361,7 @@ int MSG_process_self_PID(void)
 /** \ingroup m_process_management
  * \brief Return the PPID of the current agent.
  *
- * This functions returns the PID of the parent of the currently
+ * This function returns the PID of the parent of the currently
  * running #m_process_t.
  */
 int MSG_process_self_PPID(void)
@@ -369,7 +372,7 @@ int MSG_process_self_PPID(void)
 /** \ingroup m_process_management
  * \brief Return the current agent.
  *
- * This functions returns the currently running #m_process_t.
+ * This function returns the currently running #m_process_t.
  */
 m_process_t MSG_process_self(void)
 {
@@ -385,7 +388,7 @@ m_process_t MSG_process_self(void)
 /** \ingroup m_process_management
  * \brief Suspend the process.
  *
- * This functions suspend the process by suspending the task on which
+ * This function suspends the process by suspending the task on which
  * it was waiting for the completion.
  */
 MSG_error_t MSG_process_suspend(m_process_t process)
@@ -401,7 +404,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
 /** \ingroup m_process_management
  * \brief Resume a suspended process.
  *
- * This functions resume a suspended process by resuming the task on
+ * This function resumes a suspended process by resuming the task on
  * which it was waiting for the completion.
  */
 MSG_error_t MSG_process_resume(m_process_t process)

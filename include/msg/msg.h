@@ -62,7 +62,7 @@ XBT_PUBLIC(m_process_t) MSG_process_create_with_environment(const char *name,
 XBT_PUBLIC(void) MSG_process_kill(m_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
 
-XBT_PUBLIC(MSG_error_t) MSG_process_change_host(m_process_t process, m_host_t host);
+XBT_PUBLIC(MSG_error_t) MSG_process_change_host(m_host_t host);
 
 XBT_PUBLIC(void*) MSG_process_get_data(m_process_t process);
 XBT_PUBLIC(MSG_error_t) MSG_process_set_data(m_process_t process, void *data);
