@@ -404,19 +404,14 @@ SD_task_t* SD_simulate(double how_long)
   SD_task_t task, task_safe, dst;
   SD_dependency_t dependency;
   surf_action_t action;
-  SD_task_t *changed_tasks = NULL;
-  int changed_task_number = 0;
-  int changed_task_capacity = sd_global->task_number + 1;
+  SD_task_t *res=NULL;
+  xbt_dynar_t changed_tasks = xbt_dynar_new (sizeof(SD_task_t), NULL);
   unsigned int iter;
   static int first_time = 1;
 
   SD_CHECK_INIT_DONE();
 
   INFO0("Starting simulation...");
-
-  /* create the array that will be returned */
-  changed_tasks = xbt_new(SD_task_t, changed_task_capacity);
-  changed_tasks[0] = NULL;
 
   if (first_time) {
     surf_presolve(); /* Takes traces into account */
@@ -432,16 +427,9 @@ SD_task_t* SD_simulate(double how_long)
   /* explore the ready tasks */
   xbt_swag_foreach_safe(task, task_safe, sd_global->ready_task_set) {
     INFO1("Executing task '%s'", SD_task_get_name(task));
-    if ((task->state_changed = __SD_task_try_to_run(task))) {
-      changed_tasks[changed_task_number++] = task; /* replace NULL by the task */
-      /*
-      if (changed_task_number == changed_task_capacity) {
-	changed_task_capacity *= 2;
-	changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
-      }
-      */
-      changed_tasks[changed_task_number] = NULL;
-    }
+    if(__SD_task_try_to_run(task) && 
+       !xbt_dynar_member(changed_tasks,&task))
+      xbt_dynar_push (changed_tasks, &task);
   }
 
   /* main loop */
@@ -473,17 +461,8 @@ SD_task_t* SD_simulate(double how_long)
 	DEBUG1("__SD_task_just_done called on task '%s'", SD_task_get_name(task));
 	
 	/* the state has changed */
-	if (!task->state_changed) {
-	  task->state_changed = 1;
-	  changed_tasks[changed_task_number++] = task;
-	  /*
-	    if (changed_task_number == changed_task_capacity) {
-	    changed_task_capacity *= 2;
-	    changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
-	    }
-	  */
-	  changed_tasks[changed_task_number] = NULL;
-	}
+	if(!xbt_dynar_member(changed_tasks,&task))
+	  xbt_dynar_push (changed_tasks, &task);
 
 	/* remove the dependencies after this task */
 	while (xbt_dynar_length(task->tasks_after) > 0) {
@@ -494,16 +473,9 @@ SD_task_t* SD_simulate(double how_long)
 	  /* is dst ready now? */
 	  if (__SD_task_is_ready(dst) && !sd_global->watch_point_reached) {
 	    INFO1("Executing task '%s'", SD_task_get_name(dst));
-	    if (__SD_task_try_to_run(dst)) {
-	      changed_tasks[changed_task_number++] = dst;
-	      /*
-		if (changed_task_number == changed_task_capacity) {
-		changed_task_capacity *= 2;
-		changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
-		}
-	      */
-	      changed_tasks[changed_task_number] = NULL;
-	    }
+	    if (__SD_task_try_to_run(dst) &&
+		!xbt_dynar_member(changed_tasks,&task))
+	      xbt_dynar_push(changed_tasks, &task);
 	  }
 	}
       }
@@ -516,17 +488,8 @@ SD_task_t* SD_simulate(double how_long)
 	surf_workstation_model->common_public->action_free(action);
 	task->surf_action = NULL;
 	
-	if (!task->state_changed) {
-	  task->state_changed = 1;
-	  changed_tasks[changed_task_number++] = task;
-	  /*
-	    if (changed_task_number == changed_task_capacity) {
-	    changed_task_capacity *= 2;
-	    changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
-	    }
-	  */
-	  changed_tasks[changed_task_number] = NULL;
-	}
+	if(!xbt_dynar_member(changed_tasks,&task))
+	  xbt_dynar_push (changed_tasks, &task);
       }
     }
 
@@ -534,18 +497,18 @@ SD_task_t* SD_simulate(double how_long)
     }
   }
 
-  /* we must reset every task->state_changed */
-  iter = 0;
-  while (changed_tasks[iter] != NULL) {
-    changed_tasks[iter]->state_changed = 0;
-    iter++;
+  res = xbt_new0(SD_task_t,(xbt_dynar_length(changed_tasks)+1));
+
+  xbt_dynar_foreach(changed_tasks,iter,task) {
+    res[iter]=task;
   }
+  xbt_dynar_free(&changed_tasks);
 
   INFO0("Simulation finished");
   DEBUG3("elapsed_time = %f, total_time = %f, watch_point_reached = %d", elapsed_time, total_time, sd_global->watch_point_reached);
   DEBUG1("current time = %f", surf_get_clock());
 
-  return changed_tasks;
+  return res;
 }
 
 /**

@@ -44,7 +44,6 @@ SD_task_t SD_task_create(const char *name, void *data, double amount) {
   task->finish_time = -1.0;
   task->surf_action = NULL;
   task->watch_points = 0;
-  task->state_changed = 0;
 
   /* dependencies */
   task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
@@ -695,7 +694,6 @@ void __SD_task_really_run(SD_task_t task) {
   }
 
   surf_workstation_model->common_public->action_set_data(task->surf_action, task);
-  task->state_changed = 1;
 
   DEBUG1("surf_action = %p",  task->surf_action);
 

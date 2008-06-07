@@ -73,8 +73,6 @@ typedef struct SD_task {
   surf_action_t surf_action;
   unsigned short watch_points;
 
-  int state_changed; /* used only by SD_simulate, to make sure we put
-			the task only once in the returning array */
   int fifo_checked; /* used by SD_task_just_done to make sure we evaluate
 		       the task only once */
 
