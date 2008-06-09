@@ -831,7 +831,7 @@ void surf_network_model_init_Reno2(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  parse_file(filename);
+  define_callbacks(filename);
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp,
