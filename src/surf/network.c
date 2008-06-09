@@ -385,6 +385,8 @@ static double share_resources(double now)
 				       network_maxmin_system,
 				       network_solve);
 
+#define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + xbt_swag_offset(s_action, variable)  )))
+  
   xbt_swag_foreach(action, running_actions) {
     if (action->latency > 0) {
       if (min < 0)
@@ -820,6 +822,25 @@ void surf_network_model_init_Reno(const char *filename)
   update_model_description(surf_network_model_description,
 			      surf_network_model_description_size,
 			      "Reno",
+			      (surf_model_t) surf_network_model);
+}
+
+
+void surf_network_model_init_Reno2(const char *filename)
+{
+  if (surf_network_model)
+    return;
+  surf_network_model_init_internal();
+  parse_file(filename);
+
+  xbt_dynar_push(model_list, &surf_network_model);
+  lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp,
+				    func_reno2_fpi);
+  network_solve = lagrange_solve;
+
+  update_model_description(surf_network_model_description,
+			      surf_network_model_description_size,
+			      "Reno2",
 			      (surf_model_t) surf_network_model);
 }
 

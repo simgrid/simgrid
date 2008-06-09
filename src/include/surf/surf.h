@@ -344,6 +344,21 @@ XBT_PUBLIC(void) surf_network_model_init_GTNETS(const char *filename);
  */
 XBT_PUBLIC(void) surf_network_model_init_Reno(const char *filename);
 
+/** \brief Initializes the platform with the network model Reno2
+ *  \ingroup SURF_models
+ *  \param filename XML platform file name
+ *
+ *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
+ *
+ *  Reference:
+ *  [LOW01] S. H. Low. A duality model of TCP and queue management algorithms.
+ *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
+ *
+ *  Call this function only if you plan using surf_workstation_model_init_compound.
+ *
+ */
+XBT_PUBLIC(void) surf_network_model_init_Reno2(const char *filename);
+
 /** \brief Initializes the platform with the network model Vegas
  *  \ingroup SURF_models
  *  \param filename XML platform file name

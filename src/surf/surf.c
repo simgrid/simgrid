@@ -125,6 +125,15 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
+int surf_network_model_description_size = 5
+#ifdef HAVE_GTNETS
+    + 1
+#endif
+#ifdef HAVE_SDP
+    + 1
+#endif
+    ;
+
 s_surf_model_description_t surf_network_model_description[surf_network_model_description_size] = {
   {"Constant", NULL, surf_network_model_init_Constant},
   {"CM02", NULL, surf_network_model_init_CM02},
@@ -135,6 +144,7 @@ s_surf_model_description_t surf_network_model_description[surf_network_model_des
   {"SDP", NULL, surf_network_model_init_SDP},
 #endif
   {"Reno", NULL, surf_network_model_init_Reno},
+  {"Reno2", NULL, surf_network_model_init_Reno2},
   {"Vegas", NULL, surf_network_model_init_Vegas}
 };
 
@@ -211,8 +221,6 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   } else
     min = action->max_duration;
 
-  DEBUG5("Found action (%p: duration = %f, remains = %f, value = %f) ! %f",
-	 action, action->max_duration, action->remains, value, min);
 
   for (action = xbt_swag_getNext(action, running_actions->offset);
        action;

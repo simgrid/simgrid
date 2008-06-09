@@ -107,6 +107,10 @@ XBT_PUBLIC(double func_reno_f)  (lmm_variable_t var, double x);
 XBT_PUBLIC(double func_reno_fp) (lmm_variable_t var, double x);
 XBT_PUBLIC(double func_reno_fpi)(lmm_variable_t var, double x);
 
+XBT_PUBLIC(double func_reno2_f)  (lmm_variable_t var, double x);
+XBT_PUBLIC(double func_reno2_fp) (lmm_variable_t var, double x);
+XBT_PUBLIC(double func_reno2_fpi)(lmm_variable_t var, double x);
+
 XBT_PUBLIC(double func_vegas_f)  (lmm_variable_t var, double x);
 XBT_PUBLIC(double func_vegas_fp) (lmm_variable_t var, double x);
 XBT_PUBLIC(double func_vegas_fpi)(lmm_variable_t var, double x);

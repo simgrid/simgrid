@@ -608,3 +608,37 @@ double func_reno_fpi(lmm_variable_t var, double x)
 /*   xbt_assert0(res_fpi>0.0,"Don't call me with stupid values!"); */
   return sqrt(res_fpi);
 }
+
+
+/* Implementing new Reno-2
+ * For Reno-2:  $f(x)   = U_f(x_f) = \frac{{2}{D_f}}*ln(2+x*D_f)$
+ * Therefore:   $fp(x)  = 2/(Df*x + 2)
+ * Therefore:   $fpi(x) = (2*Df)/x - 4
+ */
+#define RENO2_SCALING 1.0
+double func_reno2_f(lmm_variable_t var, double x)
+{
+  xbt_assert0(var->df > 0.0, "Don't call me with stupid values!");
+  return RENO2_SCALING * (1.0/var->df) * log((x*var->df)/(2.0*x*var->df+3.0));
+}
+
+double func_reno2_fp(lmm_variable_t var, double x)
+{
+  return RENO2_SCALING * 3.0/(var->df*x*(2.0*var->df*x+3.0));
+}
+
+double func_reno2_fpi(lmm_variable_t var, double x)
+{
+  double res_fpi;
+  double tmp;
+
+  xbt_assert0(x > 0.0, "Don't call me with stupid values!");
+  tmp= x*var->df*var->df;
+  res_fpi= tmp*(9.0*x+24.0);
+  
+  if (res_fpi <= 0.0)
+    return 0.0;
+
+  res_fpi = RENO2_SCALING * (-3.0*tmp + sqrt(res_fpi))/(4.0*tmp);
+  return res_fpi;
+}
