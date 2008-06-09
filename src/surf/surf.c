@@ -125,14 +125,6 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-int surf_network_model_description_size = 5
-#ifdef HAVE_GTNETS
-    + 1
-#endif
-#ifdef HAVE_SDP
-    + 1
-#endif
-    ;
 
 s_surf_model_description_t surf_network_model_description[surf_network_model_description_size] = {
   {"Constant", NULL, surf_network_model_init_Constant},

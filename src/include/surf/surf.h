@@ -405,7 +405,7 @@ XBT_PUBLIC(void) surf_network_model_init_SDP(const char *filename);
 # define inc_SDP 0
 #endif
 
-#define surf_network_model_description_size  4+inc_SDP+inc_GT
+#define surf_network_model_description_size  5+inc_SDP+inc_GT
 
 /** \brief The list of all available network model models
  *  \ingroup SURF_models
