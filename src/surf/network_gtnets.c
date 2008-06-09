@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
 /* Free memory for a network link */
 static void link_free(void *nw_link)
 {
-  free(((link_GTNETS_t) nw_link)->name);
+  free(((network_link_GTNETS_t) nw_link)->name);
   free(nw_link);
 }
 
@@ -35,7 +35,7 @@ static void link_free(void *nw_link)
 static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 {
   static int link_count = -1;
-  link_GTNETS_t gtnets_link;
+  network_link_GTNETS_t gtnets_link;
 
   /* If link already exists, nothing to do (FIXME: check that multiple definition match?) */
   if (xbt_dict_get_or_null(link_set, name)) {
@@ -68,7 +68,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   }
 
   /* KF: Insert entry in the dictionary */
-  gtnets_link = xbt_new0(s_link_GTNETS_t, 1);
+  gtnets_link = xbt_new0(s_network_link_GTNETS_t, 1);
   gtnets_link->name = name;
   gtnets_link->bw_current = bw;
   gtnets_link->lat_current = lat;
@@ -116,12 +116,12 @@ static int network_card_new(const char *name)
 static void route_new(int src_id, int dst_id, char **links, int nb_link)
 {
 #if 0
-  link_GTNETS_t *link_list = NULL;
+  network_link_GTNETS_t *link_list = NULL;
   int i;
 
   ROUTE_SIZE(src_id, dst_id) = nb_link;
   link_list = (ROUTE(src_id, dst_id) =
-	       xbt_new0(link_GTNETS_t, nb_link));
+	       xbt_new0(network_link_GTNETS_t, nb_link));
   for (i = 0; i < nb_link; i++) {
     link_list[i] = xbt_dict_get_or_null(link_set, links[i]);
     free(links[i]);
@@ -135,7 +135,7 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
   gtnets_links = (int *) calloc(nb_link, sizeof(int));
   for (i = 0; i < nb_link; i++) {
     gtnets_links[i] =
-	((link_GTNETS_t)
+	((network_link_GTNETS_t)
 	 (xbt_dict_get(link_set, links[i])))->id;
   }
 
@@ -157,7 +157,7 @@ static void route_onehop_new(int src_id, int dst_id, char **links,
 
   /* KF: Build the list of gtnets link IDs */
   linkid =
-      ((link_GTNETS_t)
+      ((network_link_GTNETS_t)
        (xbt_dict_get(link_set, links[0])))->id;
 
   /* KF: Create the GTNets route */
@@ -479,7 +479,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   network_card_GTNETS_t card_dst = dst;
 /*
   int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
-  link_GTNETS_t *route = ROUTE(card_src->id, card_dst->id);
+  network_link_GTNETS_t *route = ROUTE(card_src->id, card_dst->id);
 */
 
 /*
