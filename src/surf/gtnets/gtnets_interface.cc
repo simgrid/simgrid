@@ -61,6 +61,12 @@ int gtnets_run_until_next_flow_completion(void ***metadata, int *number_of_flows
   return gtnets_sim->run_until_next_flow_completion(metadata, number_of_flows);
 }
 
+// get the total received in bytes using the TCPServer object totRx field
+double gtnets_get_flow_rx(void *metadata){
+  return gtnets_sim->gtnets_get_flow_rx(metadata);
+}
+
+
 // run for a given time (double)
 int gtnets_run(Time_t deltat){
   gtnets_sim->run(deltat);

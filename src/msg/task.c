@@ -212,6 +212,20 @@ double MSG_task_get_remaining_computation(m_task_t task)
   }
 }
 
+
+
+/** \ingroup m_task_management
+ * \brief Returns the total amount received by a task #m_task_t.
+ *
+ */
+double MSG_task_get_remaining_communication(m_task_t task)
+{
+  xbt_assert0((task != NULL)
+	      && (task->simdata != NULL), "Invalid parameter");
+
+  return SIMIX_action_get_remains(task->simdata->comm);
+}
+
 /** \ingroup m_task_management
  * \brief Returns the size of the data attached to a task #m_task_t.
  *

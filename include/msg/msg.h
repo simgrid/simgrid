@@ -132,6 +132,7 @@ XBT_PUBLIC(MSG_error_t) MSG_get_errno(void);
 
 XBT_PUBLIC(double) MSG_task_get_compute_duration(m_task_t task);
 XBT_PUBLIC(double) MSG_task_get_remaining_computation(m_task_t task);
+XBT_PUBLIC(double) MSG_task_get_remaining_communication(m_task_t task);
 XBT_PUBLIC(double) MSG_task_get_data_size(m_task_t task);
 
 

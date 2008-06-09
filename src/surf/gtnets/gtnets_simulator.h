@@ -45,7 +45,8 @@ public:
   double get_time_to_next_flow_completion();
   int run_until_next_flow_completion(void*** metadata, int* number_of_flows);
   int run(double deltat);
-
+  //added by pedro, returns the total received by the TCPServer peer of the given action
+  double gtnets_get_flow_rx(void *metadata);
   void create_gtnets_topology();
 private:
   void add_nodes();
@@ -60,10 +61,12 @@ private:
   int is_topology_;
   int nflow_;
 
-  map<int, Linkp2p*>   gtnets_links_;
-  map<int, Node*>      gtnets_nodes_;
   map<int, TCPServer*> gtnets_servers_;
   map<int, TCPSend*>   gtnets_clients_;
+  map<int, Linkp2p*>   gtnets_links_;
+  map<int, Node*>      gtnets_nodes_;
+  //added by pedro in order to get statistics
+  map<void*, int>      gtnets_action_to_flow_;
 
   map<int, void*>      gtnets_metadata_;
 };
