@@ -13,7 +13,8 @@ typedef enum {NONE, DRAND48, RAND} Generator;
 
 typedef struct random_data_desc {
   long int seed;
-  double max, min, mean, stdDeviation;
+  double max, min;
+  double mean, std; /* note: mean and standard deviation are normalized */
   Generator generator;
 } s_random_data_t, *random_data_t;
 
