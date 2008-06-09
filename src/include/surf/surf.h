@@ -8,6 +8,7 @@
 #ifndef _SURF_SURF_H
 #define _SURF_SURF_H
 
+#include "portable.h"
 #include "xbt/swag.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
@@ -378,13 +379,19 @@ XBT_PUBLIC(void) surf_network_model_init_Vegas(const char *filename);
 XBT_PUBLIC(void) surf_network_model_init_SDP(const char *filename);
 #endif
 
-#if defined(HAVE_GTNETS) && defined(HAVE_SDP)
-# define surf_network_model_description_size  6
-#elsif defined(HAVE_GTNETS) || defined(HAVE_SDP)
-# define surf_network_model_description_size  5
+#if (HAVE_GTNETS)
+# define inc_GT 1
 #else 
-# define surf_network_model_description_size  4
-#endif   
+# define inc_GT 0
+#endif
+#if (HAVE_SDP)
+# define inc_SDP 1
+#else
+# define inc_SDP 0
+#endif
+
+#define surf_network_model_description_size  4+inc_SDP+inc_GT
+
 /** \brief The list of all available network model models
  *  \ingroup SURF_models
  */
