@@ -651,17 +651,3 @@ static void surf_network_model_init_internal(void)
     xbt_assert0(0, "impossible to initialize GTNetS interface");
   }
 }
-
-void surf_network_model_init_GTNETS(const char *filename)
-{
-  if (surf_network_model)
-    return;
-  surf_network_model_init_internal();
-  define_callbacks(filename);
-  xbt_dynar_push(model_list, &surf_network_model);
-
-  update_model_description(surf_network_model_description,
-			      surf_network_model_description_size,
-			      "GTNets",
-			      (surf_model_t) surf_network_model);
-}
