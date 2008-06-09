@@ -42,6 +42,7 @@ XBT_PUBLIC(lmm_variable_t) lmm_variable_new(lmm_system_t sys, void *id,
 				double bound, int number_of_constraints);
 void lmm_variable_free(lmm_system_t sys, lmm_variable_t var);
 XBT_PUBLIC(double) lmm_variable_getvalue(lmm_variable_t var);
+XBT_PUBLIC(double) lmm_variable_getbound(lmm_variable_t var);
 
 XBT_PUBLIC(void) lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, double value);
