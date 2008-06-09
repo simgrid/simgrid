@@ -8,6 +8,7 @@
 #ifndef _SURF_MAXMIN_H
 #define _SURF_MAXMIN_H
 
+#include "portable.h"
 #include "xbt/misc.h"
 
 #define MAXMIN_PRECISION 0.00001

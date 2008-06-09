@@ -10,6 +10,7 @@
 #include "xbt/sysdep.h"
 #include "maxmin_private.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #ifndef MATH
 #include <math.h>
@@ -117,7 +118,7 @@ XBT_LOG_NEW_SUBCATEGORY(surf_sdp_out, surf,
 
 #define get_y(a,b) (pow(2,a)+b-1)
 
-void sdp_solve(lmm_system_t sys)
+void sdp_solve (lmm_system_t sys)
 {
 
   /*
