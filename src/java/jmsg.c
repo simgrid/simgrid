@@ -302,14 +302,8 @@ Java_simgrid_msg_MsgNative_processSelfPPID(JNIEnv* env, jclass cls) {
 }
 
 JNIEXPORT void JNICALL 
-Java_simgrid_msg_MsgNative_processChangeHost(JNIEnv* env, jclass cls, jobject jprocess, jobject jhost){
+Java_simgrid_msg_MsgNative_processChangeHost(JNIEnv* env, jclass cls, jobject jhost){
   m_host_t host = jhost_get_native(env,jhost);
-  m_process_t process = jprocess_to_native_process(jprocess,env);
-	
-  if(!process) {
-    jxbt_throw_notbound(env,"process",jprocess);
-    return;
-  }
 	
   if(!host) {
     jxbt_throw_notbound(env,"host",jhost);
@@ -317,7 +311,7 @@ Java_simgrid_msg_MsgNative_processChangeHost(JNIEnv* env, jclass cls, jobject jp
   }
 
   /* try to change the host of the process */
-  if(MSG_OK != MSG_process_change_host(process,host))
+  if(MSG_OK != MSG_process_change_host(host))
     jxbt_throw_native(env, xbt_strdup("MSG_process_change_host() failed"));
 }
 
