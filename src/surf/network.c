@@ -15,7 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
 surf_network_model_t surf_network_model = NULL;
 static lmm_system_t network_maxmin_system = NULL;
 static void (*network_solve) (lmm_system_t) = NULL;
-
 xbt_dict_t link_set = NULL;
 xbt_dict_t network_card_set = NULL;
 
@@ -877,5 +876,21 @@ void surf_network_model_init_SDP(const char *filename)
 			      surf_network_model_description_size,
 			      "SDP",
 			      (surf_model_t) surf_network_model);
+}
+#endif
+
+#ifdef HAVE_GTNETS
+void surf_network_model_init_GTNETS(const char *filename)
+{
+  if (surf_network_model)
+    return;
+  surf_network_model_init_internal();
+  define_callbacks(filename);
+  xbt_dynar_push(model_list, &surf_network_model);
+
+  update_model_description(surf_network_model_description,
+                              surf_network_model_description_size,
+                              "GTNets",
+                              (surf_model_t) surf_network_model);
 }
 #endif
