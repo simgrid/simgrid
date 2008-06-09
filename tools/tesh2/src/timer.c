@@ -85,7 +85,7 @@ timer_start_routine(void* p)
 		ERROR3("[%s] `%s' timed out after %d sec", command->context->pos, command->context->command_line, command->context->timeout);
 
 
-		unit_set_error(command->unit, ECMDTIMEDOUT, 1);
+		unit_set_error(command->unit, ECMDTIMEDOUT, 1, command->context->pos);
 
 		command_kill(command);
 		command_handle_failure(command, csr_timeout);

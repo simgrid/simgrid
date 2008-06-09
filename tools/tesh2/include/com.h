@@ -89,6 +89,9 @@ exit_code;
 extern int
 err_kind;
 
+extern char*
+err_line;
+
 /*
  * the list of the errors of the run.
  */

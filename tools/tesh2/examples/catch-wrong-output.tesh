@@ -12,5 +12,5 @@ $ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
 > [stdin:3] `cat' : NOK (outputs mismatch):
 > - TOTO
 > + TUTU
-> Test unit `(stdin)' : NOK (output mismatch)
+> Test unit `stdin': NOK (<stdin:3> output mismatch)
 

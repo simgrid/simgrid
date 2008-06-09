@@ -164,7 +164,7 @@ unit_start(void* p)
 			if(!include->exit_code && !include->interrupted)
 				INFO1("Include from %s OK",include->fstream->name);
 			else if(include->exit_code)
-				ERROR4("Include `(%s)' NOK : (<%s> %s (%d))", include->fstream->name, command->context->line, error_to_string(include->exit_code, include->err_kind), include->exit_code);
+				ERROR3("Include `%s' NOK : (<%s> %s)", include->fstream->name, command->context->line, error_to_string(include->exit_code, include->err_kind));
 			else if(include->interrupted && !include->exit_code)
 				INFO1("Include `(%s)' INTR",include->fstream->name);
 		}
@@ -181,7 +181,7 @@ unit_start(void* p)
 		{
 			if(!suite->exit_code)
 			{
-				unit_set_error(suite, ESYNTAX, 1);
+				unit_set_error(suite, ESYNTAX, 1, suite->filepos);
 				ERROR2("[%s] Empty suite `(%s)' detected (no includes added)", suite->filepos, suite->description);
 
 				/* if the --keep-going option is not specified */
@@ -217,10 +217,11 @@ unit_start(void* p)
 			else if(include->exit_code)
 			{
 				if(!dry_run_flag)
-					ERROR3("Include `(%s)' NOK : (<%s> %s)", include->fstream->name, command->context->pos, error_to_string(include->exit_code, include->err_kind));
+					ERROR3("Include `%s' NOK : (<%s> %s)", include->fstream->name, command->context->pos, error_to_string(include->exit_code, include->err_kind));
 
 				suite->exit_code = include->exit_code;
 				suite->err_kind = include->err_kind;
+				suite->err_line = strdup(include->err_line);
 			}
 			else if(include->interrupted && !include->exit_code)
 			{
@@ -237,7 +238,7 @@ unit_start(void* p)
 			if(!suite->exit_code && !suite->interrupted)
 				INFO1("Test suite from %s OK",suite->description);
 			else if(suite->exit_code)
-				ERROR3("Test suite `(%s)' NOK : (<%s> %s) ", suite->description, suite->filepos, error_to_string(suite->exit_code, suite->err_kind));
+				ERROR3("Test suite `%s' NOK : (<%s> %s) ", suite->description, suite->err_line, error_to_string(suite->exit_code, suite->err_kind));
 			else if(suite->interrupted && !suite->exit_code)
 				INFO1("Test suite `(%s)' INTR",suite->description);
 		}
@@ -259,7 +260,7 @@ unit_start(void* p)
 		else if(!root->exit_code)
 				INFO1("Test unit from %s OK",root->fstream->name);
 		else if(root->exit_code)
-			ERROR2("Test unit `(%s)' : NOK (%s)",root->fstream->name, error_to_string(root->exit_code, root->err_kind));	
+			ERROR3("Test unit `%s': NOK (<%s> %s)",root->fstream->name, root->err_line, error_to_string(root->exit_code, root->err_kind));	
 	}
 	
 	/* if it's the last unit, release the runner */
@@ -335,6 +336,7 @@ unit_new(runner_t runner, unit_t root, unit_t owner, fstream_t fstream)
 	unit->sem = NULL;
 	unit->exit_code = 0;
 	unit->err_kind = 0;
+	unit->err_line = NULL;
 	unit->filepos = NULL;
 	
 	
@@ -343,17 +345,19 @@ unit_new(runner_t runner, unit_t root, unit_t owner, fstream_t fstream)
 }
 
 void
-unit_set_error(unit_t unit, int errcode, int kind)
+unit_set_error(unit_t unit, int errcode, int kind, const char* line)
 {
 	if(!unit->exit_code)
 	{
 		unit->exit_code = errcode;
 		unit->err_kind = kind;
+		unit->err_line = strdup(line);
 
 		if(unit->root && !unit->root->exit_code)
 		{
 			unit->root->exit_code = errcode;
 			unit->root->err_kind = kind;
+			unit->root->err_line = strdup(line);
 		}
 		
 		if(!exit_code)
@@ -361,6 +365,7 @@ unit_set_error(unit_t unit, int errcode, int kind)
 		
 			exit_code = errcode;
 			err_kind = kind;
+			err_line = strdup(line);
 		}
 	}
 	
@@ -391,6 +396,9 @@ unit_free(unit_t* ptr)
 	if((*ptr)->description)
 		free((*ptr)->description);
 
+	if((*ptr)->err_line)
+		free((*ptr)->err_line);
+
 	if((*ptr)->filepos)
 		free((*ptr)->filepos);
 
@@ -407,7 +415,9 @@ unit_run(unit_t unit, xbt_os_mutex_t mutex)
 	if(!(unit) || !mutex)
     {
         errno = EINVAL;
+		xbt_os_sem_release(jobs_sem);
         return -1;
+		
     }
 
 	if(!interrupted)
@@ -420,11 +430,14 @@ unit_run(unit_t unit, xbt_os_mutex_t mutex)
 		unit->thread = xbt_os_thread_create("", unit_start, unit);
 	}
 	else
+	{
 		/* the unit is interrupted by the runner before its starting 
 		 * in this case the unit semaphore is NULL take care of that
 		 * in the function unit_free()
 		 */
 		unit->interrupted = 1;
+		xbt_os_sem_release(jobs_sem);
+	}
 		
 	return 0;
 	

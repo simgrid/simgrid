@@ -46,7 +46,7 @@ $ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
 > Output of <stdin:3> so far: 
 > ||Hello Tesh
 > ||
-> Test unit `(stdin)' : NOK (exit code mismatch)
+> Test unit `stdin': NOK (<stdin:3> exit code mismatch)
 
 
 # in this case the option keep-going-unit is specified so, all the command are executed.
@@ -82,7 +82,7 @@ $ ./tesh --log="log.thresh:info tesh.fmt:%m%n"  --keep-going-unit
 > [stdin:11] ./job
 > [stdin:15] ./job
 > [stdin:19] ./job
-> Test unit `(stdin)' : NOK (exit code mismatch)
+> Test unit `stdin': NOK (<stdin:3> exit code mismatch)
 
 
 $ rm -f job

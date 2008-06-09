@@ -277,7 +277,7 @@ command_exec(command_t command, const char* command_line)
     {
 		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
 		
-		unit_set_error(command->unit, (int)GetLastError(), 0);
+		unit_set_error(command->unit, (int)GetLastError(), 0, command->context->pos);
 
 		command->failed = 1;
 		command->status = cs_failed;
@@ -290,7 +290,7 @@ command_exec(command_t command, const char* command_line)
     {
 		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
 		
-		unit_set_error(command->unit, (int)GetLastError(), 0);
+		unit_set_error(command->unit, (int)GetLastError(), 0, command->context->pos);
 		
 		CloseHandle(child_stdin_handle[0]);
 		CloseHandle(child_stdin_handle[1]);
@@ -304,7 +304,7 @@ command_exec(command_t command, const char* command_line)
 	if(!CreatePipe(&(child_stdout_handle[0]),&(child_stdout_handle[1]),&sa,0))
     {
 		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
-		unit_set_error(command->unit, (int)GetLastError(), 0);
+		unit_set_error(command->unit, (int)GetLastError(), 0, command->context->pos);
 		
 		CloseHandle(child_stdout_handle[0]);
 		CloseHandle(child_stdout_handle[1]);
@@ -329,7 +329,7 @@ command_exec(command_t command, const char* command_line)
 		command->status = cs_failed;	
 		
 		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
-		unit_set_error(command->unit, (int)GetLastError(), 0);
+		unit_set_error(command->unit, (int)GetLastError(), 0, command->context->pos);
 	
 		return;
 	}
@@ -348,7 +348,7 @@ command_exec(command_t command, const char* command_line)
 		
 		ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
 
-		unit_set_error(command->unit, (int)GetLastError(), 0);
+		unit_set_error(command->unit, (int)GetLastError(), 0, command->context->pos);
 
 		return;
     }
@@ -413,14 +413,14 @@ command_exec(command_t command, const char* command_line)
 		if(ERROR_FILE_NOT_FOUND == GetLastError())
 		{
 			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(ECMDNOTFOUND, 1));
-			unit_set_error(command->unit, ECMDNOTFOUND, 1);
+			unit_set_error(command->unit, ECMDNOTFOUND, 1, command->context->pos);
 			command_handle_failure(command, csr_command_not_found);
 		}
 		else
 		{
 			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string((int)GetLastError(), 0));
 
-			unit_set_error(command->unit, (int)GetLastError(), 0);
+			unit_set_error(command->unit, (int)GetLastError(), 0, command->context->pos);
 			command_handle_failure(command, csr_create_process_function_failure);
 		}
 		
@@ -462,12 +462,12 @@ command_exec(command_t command, const char* command_line)
 		if(rv == EINVAL)
 		{
 			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(rv, 0));
-			unit_set_error(command->unit, rv, 0);
+			unit_set_error(command->unit, rv, 0, command->context->pos);
 		}
 		else
 		{
 			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(rv, 1));
-			unit_set_error(command->unit, rv, 1);
+			unit_set_error(command->unit, rv, 1, command->context->pos);
 		}
 
 		command_handle_failure(command, csr_command_not_found);
@@ -484,7 +484,7 @@ command_exec(command_t command, const char* command_line)
 		{
 			ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
 			
-			unit_set_error(command->unit, errno, 0);
+			unit_set_error(command->unit, errno, 0, command->context->pos);
 
 			command_handle_failure(command, csr_pipe_function_failed);
 
@@ -506,7 +506,7 @@ command_exec(command_t command, const char* command_line)
 				close(child_stdin_fd[1]);
 			}
 			
-			unit_set_error(command->unit, errno, 0);
+			unit_set_error(command->unit, errno, 0, command->context->pos);
 
 			command_handle_failure(command, csr_pipe_function_failed);
 			
@@ -530,7 +530,7 @@ command_exec(command_t command, const char* command_line)
 				close(child_stdout_fd[1]);
 			}
 			
-			unit_set_error(command->unit, errno, 0);
+			unit_set_error(command->unit, errno, 0, command->context->pos);
 
 			command_handle_failure(command, csr_fcntl_function_failed);	
 				
@@ -588,7 +588,7 @@ command_exec(command_t command, const char* command_line)
 		}
 		
 		ERROR2("[%s] Cannot fork the command `%s'", command->context->pos, command->context->command_line);
-		unit_set_error(command->unit, errno, 0);
+		unit_set_error(command->unit, errno, 0, command->context->pos);
 		command_handle_failure(command,csr_fork_function_failure);
 	}
 	else
@@ -621,7 +621,7 @@ command_exec(command_t command, const char* command_line)
 					ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
 					command->unit->exit_code = errno;
 
-					unit_set_error(command->unit, errno, 0);
+					unit_set_error(command->unit, errno, 0, command->context->pos);
 					command_handle_failure(command,csr_dup2_function_failure);
 				}
 			
@@ -637,14 +637,14 @@ command_exec(command_t command, const char* command_line)
 				{
 					ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
 
-					unit_set_error(command->unit, errno, 0);
+					unit_set_error(command->unit, errno, 0, command->context->pos);
 					command_handle_failure(command, csr_dup2_function_failure);
 				}
 				
 				if(dup2(child_stdout_fd[1], STDERR_FILENO) < 0)
 				{
 					ERROR3("[%s] `%s' : NOK (%s)", command->context->pos, command->context->command_line, error_to_string(errno, 0));
-					unit_set_error(command->unit, errno, 0);
+					unit_set_error(command->unit, errno, 0, command->context->pos);
 					command_handle_failure(command, csr_dup2_function_failure);
 				}
 			
@@ -671,7 +671,7 @@ command_wait(command_t command)
 	{
 		ERROR2("[%s] Cannot wait for the child`%s'", command->context->pos, command->context->command_line);
 		
-		unit_set_error(command->unit, (int)GetLastError(), 0);
+		unit_set_error(command->unit, (int)GetLastError(), 0, command->context->pos);
 
 		command_handle_failure(command, csr_wait_failure );
 		/* TODO : see for the interruption	*/	
@@ -685,7 +685,7 @@ command_wait(command_t command)
 			{
 				ERROR2("[%s] Cannot get the exit code of the process `%s'",command->context->pos, command->context->command_line);
 				
-				unit_set_error(command->unit, (int)GetLastError(), 0);
+				unit_set_error(command->unit, (int)GetLastError(), 0, command->context->pos);
 
 				command_handle_failure(command, csr_get_exit_code_process_function_failure );	
 			}
@@ -707,7 +707,7 @@ command_wait(command_t command)
 		{
 			ERROR2("[%s] Cannot wait for the child`%s'", command->context->pos, command->context->command_line);
 
-			unit_set_error(command->unit, errno, 0);
+			unit_set_error(command->unit, errno, 0, command->context->pos);
 
 			command_handle_failure(command, csr_waitpid_function_failure);
 		}
@@ -721,7 +721,7 @@ command_wait(command_t command)
 	{
 		ERROR2("[%s] Cannot execute the command `%s'", command->context->pos, command->context->command_line);
 
-		unit_set_error(command->unit, command->execlp_errno, 0);
+		unit_set_error(command->unit, command->execlp_errno, 0, command->context->pos);
 
 		command_handle_failure(command, csr_execlp_function_failure);
 	}
@@ -746,7 +746,7 @@ command_check(command_t command)
 		success = 0;
 		ERROR3("[%s] `%s' : NOK (unexpected signal `%s' caught)", command->context->pos, command->context->command_line, command->signal);
 
-		unit_set_error(command->unit, EUNXPSIG, 1);
+		unit_set_error(command->unit, EUNXPSIG, 1, command->context->pos);
 
 		reason = csr_unexpected_signal_caught;
 	}
@@ -760,7 +760,7 @@ command_check(command_t command)
 		if(success)
 		{
 			success = 0;
-			unit_set_error(command->unit, ESIGNOTMATCH, 1);
+			unit_set_error(command->unit, ESIGNOTMATCH, 1, command->context->pos);
 		}
 		
 		reason = csr_signals_dont_match;
@@ -775,7 +775,7 @@ command_check(command_t command)
 		if(success)
 		{
 			success = 0;
-			unit_set_error(command->unit, ESIGNOTRECEIPT, 1);
+			unit_set_error(command->unit, ESIGNOTRECEIPT, 1, command->context->pos);
 		}
 		
 		reason = csr_expected_signal_not_receipt;
@@ -792,7 +792,7 @@ command_check(command_t command)
 			if(success)
 			{
 				success = 0;
-				unit_set_error(command->unit, EEXITCODENOTMATCH, 1);
+				unit_set_error(command->unit, EEXITCODENOTMATCH, 1, command->context->pos);
 			}
 	
 			reason = csr_exit_codes_dont_match;
@@ -835,7 +835,7 @@ command_check(command_t command)
 			
 			if(success)
 			{
-				unit_set_error(command->unit, EOUTPUTNOTMATCH, 1);
+				unit_set_error(command->unit, EOUTPUTNOTMATCH, 1, command->context->pos);
 				success = 0;
 			}
 

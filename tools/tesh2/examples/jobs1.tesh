@@ -1,5 +1,4 @@
 
-
 ! expect return 0
 > Hello Tesh
 $ ./job

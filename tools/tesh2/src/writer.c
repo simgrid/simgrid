@@ -99,7 +99,7 @@ writer_start_routine(void* p)
 	if(writer->failed  && !command->successeded && !command->failed && !command->interrupted)
 	{
 		ERROR2("[%s] Error while writing input to child `%s'", command->context->pos, command->context->command_line);
-		unit_set_error(command->unit, (int)GetLastError(), 0);
+		unit_set_error(command->unit, (int)GetLastError(), 0, command->context->pos);
 		command_handle_failure(command, csr_write_failure);
 	}
 	/*else if(writer->broken_pipe && !command->successeded && !command->failed && !command->interrupted)
@@ -188,14 +188,14 @@ writer_start_routine(void* p)
 		command_kill(command);
 		ERROR2("[%s] Error while writing input to child `%s'", command->context->pos, command->context->command_line);
 		
-		unit_set_error(command->unit, errno, 0);
+		unit_set_error(command->unit, errno, 0, command->context->pos);
 		command_handle_failure(command, csr_write_failure);
 	}
 	else if(writer->broken_pipe && !command->successeded && !command->failed && !command->interrupted)
 	{
 		ERROR2("[%s] Pipe broken while writing input to child `%s'", command->context->pos, command->context->command_line);
 
-		unit_set_error(command->unit, errno, 0);
+		unit_set_error(command->unit, errno, 0, command->context->pos);
 		command_kill(command);
 		command_handle_failure(command, csr_write_pipe_broken);
 	}

@@ -5,14 +5,14 @@
 ! include set-return.tesh
 
 ! suite `description of the second suite'
-! include catch-return.tesh
+! include catch-return.tesh description of the include 1
 ! include catch-signal.tesh
 ! include set-timeout.tesh
 
 # some includes
 ! include catch-wrong-output.tesh
 
-! include  set-signal.tesh
+! include  set-signal.tesh description of the include 2
 
 
 

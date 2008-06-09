@@ -182,6 +182,9 @@ exit_code = 0;
 int
 err_kind = 0;
 
+char* 
+err_line = NULL;
+
 
 pid_t
 pid =0;
@@ -615,8 +618,17 @@ finalize(void)
 		if(!exit_code)
 			INFO2("Tesh terminated with exit code %d : %s",exit_code, "success");
 		else
-			ERROR2("Tesh terminated with exit code `(%s)' (%d)",error_to_string(exit_code, err_kind), exit_code);
+		{
+			if(err_line)
+				ERROR3("Tesh terminated with exit code `(<%s> %s)' (%d)",err_line, error_to_string(exit_code, err_kind), exit_code);
+			else
+				ERROR2("Tesh terminated with exit code `(%s)' (%d)", error_to_string(exit_code, err_kind), exit_code);
+			
+		}
 	}
+
+	if(err_line)
+		free(err_line);
 	
 	/* exit from the xbt framework */
 	xbt_exit();

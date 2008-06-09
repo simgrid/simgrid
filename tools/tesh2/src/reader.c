@@ -152,7 +152,7 @@ reader_start_routine(void* p)
 		else
 			INFO1("[%s] No output before read failure",command->context->pos);
 		
-		unit_set_error(command->unit, errno, 0);
+		unit_set_error(command->unit, errno, 0, command->context->pos);
 		command_kill(command);
 		command_handle_failure(command, csr_read_failure);
 	}
@@ -247,7 +247,7 @@ reader_start_routine(void* p)
 		else
 			INFO1("[%s] No output before read failure",command->context->pos);
 		
-		unit_set_error(command->unit, errno, 0);
+		unit_set_error(command->unit, errno, 0, command->context->pos);
 		command_kill(command);
 		command_handle_failure(command, csr_read_failure);
 	}

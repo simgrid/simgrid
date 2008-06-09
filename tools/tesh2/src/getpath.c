@@ -366,7 +366,7 @@ translatepath(const char* totranslate, char** translated)
 		return (int)strlen(*translated);
 	}
 	/* it's a relative directory name build the full directory name */
-	else if(!strchr(totranslate, '/') && !strchr(totranslate, '\\') && !stat(totranslate, &stat_buf) || S_ISDIR(stat_buf.st_mode))
+	else if(!strchr(totranslate, '/') && !strchr(totranslate, '\\') && !stat(totranslate, &stat_buf) && S_ISDIR(stat_buf.st_mode))
 	{
 		getcwd(buffer1, PATH_MAX + 1);
 		strcat(buffer1,"\\");
@@ -374,6 +374,7 @@ translatepath(const char* totranslate, char** translated)
 		
 		*translated = (char*) calloc(strlen(buffer1) + 1, sizeof(char));
 		strcpy(*translated, buffer1);
+
 		return (int)strlen(*translated);
 	}
 	
@@ -406,7 +407,7 @@ translatepath(const char* totranslate, char** translated)
 		/* perhaps it's a relative directory : `dir/' */
 		strncpy(buffer2, buffer1, strlen(buffer1) - 1);
 		
-		if(!stat(buffer2, &stat_buf) || S_ISDIR(stat_buf.st_mode))
+		if(!stat(buffer2, &stat_buf) && S_ISDIR(stat_buf.st_mode))
 		{
 			getcwd(buffer1, PATH_MAX + 1);
 			strcat(buffer1,"\\");
@@ -414,6 +415,7 @@ translatepath(const char* totranslate, char** translated)
 			
 			*translated = (char*) calloc(strlen(buffer1) + 1, sizeof(char));
 			strcpy(*translated, buffer1);
+
 			return (int)strlen(*translated);
 		}
 		else
@@ -433,7 +435,7 @@ translatepath(const char* totranslate, char** translated)
 		_fullpath(buffer2, buffer1, sizeof(buffer1));	
 	} 
 	else 
-		strcpy(buffer2, buffer1);			
+		strcpy(buffer2, buffer1);
 	
 	if(stat(buffer2, &stat_buf) || !S_ISDIR(stat_buf.st_mode))
 	{
@@ -451,9 +453,7 @@ translatepath(const char* totranslate, char** translated)
 		*translated = NULL;
 		return -1;
 	}
-	
-	strncpy(*translated, buffer2, len);
-	
+
 	return len;
 }
 #endif

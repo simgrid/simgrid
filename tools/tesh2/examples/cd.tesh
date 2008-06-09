@@ -15,7 +15,7 @@ $ ls
 > Test unit from stdin
 > [stdin:1] cd toto
 > [stdin:1] Chdir to toto failed: no such file or directory
-> Test unit `(stdin)' : NOK (no such file or directory)
+> Test unit `stdin': NOK (<stdin:1> no such file or directory)
 $ ../tesh --log="log.thresh:info tesh.fmt:%m%n"
 
 # The next command checks that there is a testdir_temp in the upper directory, 

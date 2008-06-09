@@ -265,7 +265,7 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 				snprintf(file_pos,256,"%s:%d",fstream->name, line_num);
 				ERROR1("[%s] Error : no command found in the last chunk of lines", file_pos);
 				
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, file_pos);
 
 				failure(unit);
 				break;
@@ -279,7 +279,7 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 				{
 					ERROR2("[%s] Malformated suite `(%s)' : include missing", file_pos, (*current_suite)->description);
 				
-					unit_set_error(*current_suite, ESYNTAX, 1);
+					unit_set_error(*current_suite, ESYNTAX, 1, file_pos);
 
 					failure(unit);
 					
@@ -374,7 +374,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 		else
 			ERROR2("[%s] Malformated suite `(%s)': blank line missing", filepos, (*current_suite)->description);
 		
-		unit_set_error(*current_suite, ESYNTAX, 1);
+		unit_set_error(*current_suite, ESYNTAX, 1, filepos);
 
 		failure(fstream->unit);
 			
@@ -418,7 +418,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 			else
 				ERROR1("[%s] Missing space after & `(usage : & <command>)'", filepos);
 		
-			unit_set_error(fstream->unit, ESYNTAX, 1);
+			unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 			failure(unit);
 			return;
@@ -456,7 +456,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 					if(chdir(dir))
 					{
 						ERROR3("[%s] Chdir to %s failed: %s",filepos, dir,error_to_string(errno, 0));
-						unit_set_error(fstream->unit, errno, 0);
+						unit_set_error(fstream->unit, errno, 0, filepos);
 
 						failure(unit);
 					}
@@ -479,7 +479,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 		{
 			ERROR1("[%s] Missing space after `!' `(usage : ! <command> [[=]value])'", filepos);
 		
-			unit_set_error(fstream->unit, ESYNTAX, 1);
+			unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 			failure(unit);
 			return;
@@ -504,7 +504,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 			{
 				ERROR1("[%s] Bad usage of the metacommand p `(usage : p <prompt>)'", filepos);
 				
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -533,7 +533,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 			{
 				ERROR1("[%s] Bad usage of the metacommand P `(usage : P <prompt>)'", filepos);
 				
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -563,7 +563,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 				{
 					ERROR1("[%s] Bad usage of the metacommand D `(usage : D <Description>)'", filepos);
 					
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);
 					return;
@@ -575,7 +575,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 		
 		default:
 		ERROR2("[%s] Syntax error `%s'", filepos, line2);
-		unit_set_error(fstream->unit, ESYNTAX, 1);
+		unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 		failure(unit);
 		break;
 	}
@@ -600,7 +600,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR2("[%s] More than one command in this chunk of lines (previous: %s).\nDunno which input/output belongs to which command.",filepos, context->command_line);
 
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 				failure(unit);
 				return;
 			}
@@ -626,7 +626,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				else
 				ERROR1("[%s] Undefinite command for `&' `(usage: & <command>)'", filepos);
 
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -677,7 +677,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR1("[%s] Undefinite timeout value `(usage :timeout <seconds>)'", filepos);
 				
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -689,7 +689,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				{
 					ERROR2("[%s] Invalid timeout value `(%s)' : `(usage :timeout <seconds>)'", filepos, line + strlen("timeout "));
 
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
  
 					failure(unit);
 					return;
@@ -719,7 +719,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR1("[%s] Undefinite signal name `(usage :expect signal <signal name>)'", filepos);
 				
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -734,7 +734,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR2("[%s] Signal `%s' not supported by this platform", filepos, context->signal);
 
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 
 				failure(unit);
@@ -745,7 +745,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR2("[%s] Signal `%s' not supported by Tesh", filepos, context->signal);
 				
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 
 				failure(unit);
@@ -775,7 +775,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR1("[%s] Undefinite return value `(usage :expect return <return value>)'", filepos);
 				
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -787,7 +787,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				{
 					ERROR2("[%s] Invalid exit code value `(%s)' : must be an integer >= 0 and <=255",  filepos, line + strlen("expect return "));
 
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);
 					return;
@@ -827,7 +827,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR1("[%s] no file specified : `(usage : include <file> [<description>])'", filepos);
 
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -867,7 +867,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR1("[%s] Undefinite suit description : `(usage : suite <description>)", filepos);
 
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -877,7 +877,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR1("[%s] Suite already in progress", filepos);
 
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -906,7 +906,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR1("[%s] Bad usage of the metacommand unsetenv : `(usage : unsetenv variable)'", filepos);
 				
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -940,7 +940,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				else
 				{
 					ERROR2("[%s] `(%s)' environment variable not found : impossible to unset it",filepos, name);	
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 					xbt_os_mutex_release(unit->mutex);
 					failure(unit);
 					return;
@@ -953,7 +953,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					if(!err)
 					{
 						ERROR2("[%s] `(%s)' is not an environment variable : use `unset' instead `unsetenv'",filepos, name);	
-						unit_set_error(fstream->unit, ESYNTAX, 1);
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 						failure(unit);
 						xbt_os_mutex_release(unit->mutex);
 						return;
@@ -961,7 +961,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					else
 					{
 						ERROR2("[%s] `(%s)' is not an environment variable (it's a system variable) : impossible to unset it",filepos, name);	
-						unit_set_error(fstream->unit, ESYNTAX, 1);
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 						xbt_os_mutex_release(unit->mutex);
 						failure(unit);
 						return;
@@ -970,7 +970,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				else
 				{
 					ERROR2("[%s] `(%s)' environment variable not found : impossible to unset it",filepos, name);	
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 					xbt_os_mutex_release(unit->mutex);
 					failure(unit);
 					return;
@@ -1007,7 +1007,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				{
 					ERROR1("[%s] Bad usage of the metacommand setenv `(usage : setenv variable=value)'", filepos);	
 
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);
 					return;
@@ -1028,7 +1028,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					
 					ERROR1("[%s] Bad usage of the metacommand setenv `(usage : setenv variable=value)'", filepos);
 					
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);
 					return;
@@ -1074,7 +1074,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 						else
 							ERROR2("[%s] Conflict : (none environment) variable `(%s)' already exists", filepos, name);	
 
-						unit_set_error(fstream->unit, ESYNTAX, 1);
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 						xbt_os_mutex_release(unit->mutex);
 						failure(unit);
 						return;
@@ -1086,7 +1086,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					{
 						ERROR2("[%s] A system variable named `(%s)' already exists", filepos, name);
 					
-						unit_set_error(fstream->unit, ESYNTAX, 1);
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 						xbt_os_mutex_release(unit->mutex);
 						failure(unit);
 						return;
@@ -1113,7 +1113,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR1("[%s] Bad usage of the metacommand setenv `(usage : setenv variable=value)'", filepos);
 					
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 				failure(unit);
 				return;
 			}
@@ -1140,7 +1140,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				
 				ERROR1("[%s] Bad usage of the metacommand unset `(usage : unset variable)'", filepos);
 				
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -1168,7 +1168,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				else
 				{
 					ERROR2("[%s] `(%s)' variable not found",filepos, name);	
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 					xbt_os_mutex_release(unit->mutex);
 					failure(unit);
 					return;
@@ -1177,7 +1177,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			else if(env)
 			{
 				ERROR2("[%s] `(%s)' is an environment variable use `unsetenv' instead `unset'",filepos, name);	
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 				xbt_os_mutex_release(unit->mutex);
 				failure(unit);
 				return;
@@ -1185,7 +1185,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			else if(err)
 			{
 				ERROR2("[%s] `(%s)' is system variable : you can unset it",filepos, name);	
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 				xbt_os_mutex_release(unit->mutex);
 				failure(unit);
 				return;
@@ -1219,7 +1219,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				{
 					ERROR1("[%s] Bad usage of the metacommand set `(usage : set variable=value)'", filepos);
 					
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);
 					return;
@@ -1230,7 +1230,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 
 					ERROR2("[%s] No space avaible after`(%s)'", filepos, name);
 
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);
 					return;
@@ -1252,7 +1252,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					
 					ERROR1("[%s] Bad usage of the metacommand set `(usage : set variable=value)'", filepos);
 					
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);
 					return;
@@ -1281,7 +1281,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					{
 						ERROR2("[%s] A system variable named `(%s)' already exists", filepos, name);
 					
-						unit_set_error(fstream->unit, ESYNTAX, 1);
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 						xbt_os_mutex_release(unit->mutex);
 
 						failure(unit);
@@ -1291,7 +1291,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					{
 						ERROR2("[%s] `(%s)' is an environment variable use `setenv' instead `set'", filepos, name);
 					
-						unit_set_error(fstream->unit, ESYNTAX, 1);
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 						xbt_os_mutex_release(unit->mutex);
 
 						failure(unit);
@@ -1319,7 +1319,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				ERROR1("[%s] Bad usage of the metacommand set `(usage : set variable=value)'", filepos);
 					
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 				failure(unit);
 				return;
 			}
@@ -1362,7 +1362,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					else
 						ERROR2("[%s] Undefined variable `(%s)'", filepos, name);
 
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);
 					return;
@@ -1373,7 +1373,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 
 					ERROR2("[%s] No space avaible after`(%s)'", filepos, name);
 
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);	 
 				}
@@ -1394,7 +1394,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					
 					ERROR1("[%s] Bad usage of Tesh variable capability `(usage : variable=value)'", filepos);
 
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 					failure(unit);
 					return;
@@ -1404,7 +1404,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				{
 					ERROR1("[%s] Bad usage of the metacommand set `(usage : set variable=value)'", filepos);
 					
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 					failure(unit);
 					return;
 				}
@@ -1412,7 +1412,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				{
 					ERROR1("[%s] Bad usage of the metacommand setenv `(usage : setenv variable=value)'", filepos);
 					
-					unit_set_error(fstream->unit, ESYNTAX, 1);
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 					failure(unit);
 					return;
 				}
@@ -1440,7 +1440,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					{
 						ERROR2("[%s] A system variable named `(%s)' already exists", filepos, name);
 					
-						unit_set_error(fstream->unit, ESYNTAX, 1);
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 						xbt_os_mutex_release(unit->mutex);
 						failure(unit);
 						return;
@@ -1449,7 +1449,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					{
 						ERROR2("[%s] `(%s)' is an environment variable use `setenv' metacommand", filepos, name);
 					
-						unit_set_error(fstream->unit, ESYNTAX, 1);
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 						xbt_os_mutex_release(unit->mutex);
 
 						failure(unit);
@@ -1497,7 +1497,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 				else
 					ERROR2("[%s] Unknown metacommand: `%s'",filepos,line);
 
-				unit_set_error(fstream->unit, ESYNTAX, 1);
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
 
 				failure(unit);
 				return;
@@ -1555,7 +1555,6 @@ fstream_handle_include(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 		}
 		else
 		{
-
 			/* may be a variable */
 			variable_t variable;
 			int exists = 0;
@@ -1576,9 +1575,11 @@ fstream_handle_include(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 				ERROR2("[%s] Include file `(%s)' not found",context->line, file_name);
 		}
 		
-		unit_set_error(fstream->unit, EINCLUDENOTFOUND, 1);
+		unit_set_error(fstream->unit, EINCLUDENOTFOUND, 1, context->line);
 
-		failure(unit);
+		failure(fstream->unit);
+
+		return;
 	}
 	else
 	{
@@ -1594,7 +1595,13 @@ fstream_handle_include(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 			xbt_dynar_push(unit->includes, &include);
 		 
 			if(!dry_run_flag)
-				INFO1("Include from %s", _fstream->name);
+			{
+				if(description)
+					INFO2("Include from %s (%s)", _fstream->name, description);
+				else
+					INFO1("Include from %s", _fstream->name);
+
+			}
 			else
 				INFO1("Checking include %s...",_fstream->name);
 			
@@ -1618,7 +1625,12 @@ fstream_handle_include(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 			xbt_dynar_push((*owner)->includes, &include);
 			
 			if(!dry_run_flag)
-				INFO1("Include from %s", _fstream->name);
+			{
+				if(description)
+					INFO2("Include from %s (%s)", _fstream->name, description);
+				else
+					INFO1("Include from %s", _fstream->name);
+			}
 			else
 				INFO1("Checking include %s...",_fstream->name);
 			
@@ -1663,7 +1675,7 @@ fstream_launch_command(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 			{
 				ERROR3("[%s] Cannot instantiate the command `%s' (%d)",context->pos, strerror(errno), errno);	
 
-				unit_set_error(unit, errno, 0);
+				unit_set_error(unit, errno, 0, context->pos);
 				failure(unit);
 				return -1;
 			}
@@ -1671,7 +1683,7 @@ fstream_launch_command(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 			{
 				ERROR3("[%s] Cannot instantiate the command `%s' (%d)",context->pos, strerror(errno), errno);
 
-				unit_set_error(unit, errno, 0);
+				unit_set_error(unit, errno, 0, context->pos);
 
 				failure(unit);
 				return -1;
@@ -1681,7 +1693,7 @@ fstream_launch_command(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 		if(command_run(command) < 0)
 		{
 			ERROR3("[%s] Cannot run the command `%s' (%d)",context->pos, strerror(errno), errno);	
-			unit_set_error(unit, errno, 0);
+			unit_set_error(unit, errno, 0, context->pos);
 			failure(unit);
 			return -1;	
 		}
@@ -1691,7 +1703,7 @@ fstream_launch_command(fstream_t fstream, context_t context, xbt_os_mutex_t mute
 	{
 		ERROR3("[%s] Cannot reset the context of the command `%s' (%d)",context->pos, strerror(errno), errno);	
 
-		unit_set_error(fstream->unit, errno, 0);
+		unit_set_error(fstream->unit, errno, 0, context->pos);
 
 		failure(unit);
 		return -1;	

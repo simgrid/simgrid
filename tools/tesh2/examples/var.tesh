@@ -26,7 +26,7 @@ D Usage of tesh variables
 $ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
 > Test unit from stdin
 > [stdin:1] Undefined variable `(include-file)'
-> Test unit `(stdin)' : NOK (syntax error)
+> Test unit `stdin': NOK (<stdin:1> syntax error)
 
 
 # A single sample of the usage of the tesh variables
@@ -103,7 +103,7 @@ p On this platform ENOENT is: $ENOENT
 $ ./tesh --log="log.thresh:info tesh.fmt:%m%n"
 > Test unit from stdin
 > [stdin:1] A system variable named `(ENOENT)' already exists
-> Test unit `(stdin)' : NOK (syntax error)
+> Test unit `stdin': NOK (<stdin:1> syntax error)
 
 
 

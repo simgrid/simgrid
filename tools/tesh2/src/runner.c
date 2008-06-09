@@ -525,8 +525,10 @@ runner_run(void)
 	/* run all the units */
 	units_run_all(runner->units, mutex);
 	
+	
 	if(!interrupted)
 		runner_wait();
+
 	
 	/* if the runner is timeouted or receive a interruption request
 	 * , interrupt all the active units.
@@ -553,6 +555,7 @@ runner_wait(void)
 	
 	/* wait for the end of all the units */
 	xbt_os_sem_acquire(units_sem);
+
 	
 	runner->waiting = 0;
 }

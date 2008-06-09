@@ -109,7 +109,7 @@ int
 unit_reset(unit_t unit);
 
 void
-unit_set_error(unit_t unit, int errcode, int kind);
+unit_set_error(unit_t unit, int errcode, int kind, const char* line);
 
 #ifdef __cplusplus
 }

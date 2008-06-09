@@ -116,6 +116,7 @@ typedef struct s_unit
 	xbt_dynar_t suites;					/* the suites contained by the unit										*/
 	int exit_code;						/* the exit code of the unit											*/
 	int err_kind;
+	char* err_line;
 	xbt_dynar_t includes;
 	char* filepos;
 }s_unit_t,* unit_t;
