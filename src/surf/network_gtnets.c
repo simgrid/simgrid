@@ -1,4 +1,4 @@
-/* 	$Id$	 */
+/*     $Id$     */
 
 /* Copyright (c) 2005 Henri Casanova. All rights reserved.                  */
 
@@ -394,12 +394,11 @@ static void action_change_state(surf_action_t action,
 /* share_resources() */
 static double share_resources(double now)
 {
-#if 0
-  s_surf_action_network_GTNETS_t s_action;
-  surf_action_network_GTNETS_t action = NULL;
-  xbt_swag_t running_actions =
-      surf_network_model->common_public->states.running_action_set;
-#endif
+  xbt_swag_t running_actions = surf_network_model->common_public->states.running_action_set;
+
+  //get the first relevant value from the running_actions list
+  if (!xbt_swag_size(running_actions))
+    return -1.0;
 
   return gtnets_get_time_to_next_flow_completion();
 }
@@ -413,9 +412,9 @@ static double share_resources(double now)
 
 static void update_actions_state(double now, double delta)
 {
-#if 0
+#if 1
   surf_action_network_GTNETS_t action = NULL;
-  surf_action_network_GTNETS_t next_action = NULL;
+  //  surf_action_network_GTNETS_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_network_model->common_public->states.running_action_set;
 #endif
@@ -444,15 +443,34 @@ static void update_actions_state(double now, double delta)
 		  "GTNetS simulation couldn't find a flow that would complete");
     }
 
-    for (i = 0; i < num_flows; i++) {
-      surf_action_network_GTNETS_t action =
-	  (surf_action_network_GTNETS_t) (metadata[i]);
 
-      action->generic_action.remains = 0;
+
+    xbt_swag_foreach(action, running_actions) {
+      DEBUG1("]]]]]]]]] Action remains old value: %f", action->generic_action.remains);
+      double remain = gtnets_get_flow_rx(action);
+      //need to trust this remain value
+      if(remain == 0){
+	action->generic_action.remains=0;
+      }else {
+	action->generic_action.remains-=remain;
+      }
+      DEBUG1("[[[[[[[[[ Action remains new value: %f", action->generic_action.remains);
+    }
+
+    for (i = 0; i < num_flows; i++) {
+      action =  (surf_action_network_GTNETS_t) (metadata[i]);
+      
       action->generic_action.finish = now + time_to_next_flow_completion;
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
       /* TODO: Anything else here? */
+
+      //need to map this action to the gtnets engine
+      DEBUG1("]]]]]]]]] Action remains old value: %f", action->generic_action.remains);
+      action->generic_action.remains -= gtnets_get_flow_rx(metadata[i]);
+      DEBUG1("[[[[[[[[[ Action remains new value: %f", action->generic_action.remains);
     }
+
+
   } else {			/* run for a given number of seconds */
     if (gtnets_run(delta)) {
       xbt_assert0(0, "Cannot run GTNetS simulation");
