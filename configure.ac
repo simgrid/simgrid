@@ -270,6 +270,8 @@ if test "x$gtnets_path" = "xno" ; then
 else  
   AC_MSG_RESULT(***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. *****)
   AC_MSG_CHECKING(for gtnets)
+  AC_DEFINE([HAVE_GTNETS], 1, [Indicates that we have GTNETS support])
+  AM_CONDITIONAL(HAVE_GTNETS, test "x$gtnets" != "xno")
   AC_LANG_PUSH([C++])  
   GTNETS_LDFLAGS="-lgtnets -L$gtnets_path/lib"
   GTNETS_CPPFLAGS="-I$gtnets_path/include -I$gtnets_path/include/gtnets"
@@ -282,17 +284,17 @@ else
   CPPFLAGS=$CPPFLAGS_SAV
   LDFLAGS=$LDFLAGS_SAV
   AC_LANG_POP([C++])  
-
-  if test "x$gtnets" = xyes ; then 
-    AM_CPPFLAGS="$AM_CPPFLAGS $GTNETS_CPPFLAGS"
-    SIMGRID_DEP="$SIMGRID_DEP $GTNETS_LDFLAGS"
-    AC_MSG_RESULT(Found working gtnets library.)
-    AC_DEFINE(HAVE_GTNETS, 1, [Indicates whether we have the GTNETS library or not])
-  else
-    AC_MSG_RESULT(Could not find any working gtnets library or not patched version, see config.log for details .)
-  fi
 fi
-AM_CONDITIONAL(HAVE_GTNETS,test "x$gtnets" != xno)
+
+if test "x$gtnets" = "xyes" ; then
+  AC_MSG_RESULT(Enabling GTNETS support.)
+  LDFLAGS+="-lgtnets -L$gtnets_path/lib"
+  CPPFLAGS+="-I$gtnets_path/include -I$gtnets_path/include/gtnets -DHAVE_GTNETS"
+fi
+
+
+
+
 
 #########################################
 ## Build optional modules (csdp)
@@ -301,8 +303,9 @@ csdp=no
 AC_ARG_WITH(csdp,
   AS_HELP_STRING([--with-csdp], [Path to csdp installation (default to empty, i.e. not using csdp)]),
   csdp_path="$withval",csdp_path="no")
+  AC_MSG_CHECKING(for CSDP option:)
 if test "x$csdp_path" = "xno" ; then
-  AC_MSG_RESULT(Eventually you will come to csdp.)
+  AC_MSG_RESULT(no, eventually you will come to csdp.)
 else  
   AC_MSG_RESULT(***** You have decided to use csdp. Let's check whether it works or not *****)
   AC_MSG_CHECKING(for csdp)
@@ -324,10 +327,10 @@ else
      csdp=no;
   fi
   if test "x$csdp" = xyes; then 
-    AM_CPPFLAGS="$AM_CPPFLAGS $CSDP_CPPFLAGS"
+    AM_CPPFLAGS="$AM_CPPFLAGS $CSDP_CPPFLAGS -DHAVE_SDP"
     SIMGRID_DEP="$SIMGRID_DEP $CSDP_LDFLAGS"
     AC_MSG_RESULT(Found working sdp library.)
-    AC_DEFINE(HAVE_SDP, 1, [Indicates whether we have the CSDP library or not])
+    AC_DEFINE([HAVE_SDP], 1, [Indicates whether we have the CSDP library or not])
   else
     AC_MSG_RESULT(Could not find any working sdp library.)
   fi;
