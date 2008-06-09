@@ -7,6 +7,7 @@
 
 #include "network_gtnets_private.h"
 #include "gtnets/gtnets_interface.h"
+#include "xbt/str.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
 				"Logging specific to the SURF network module");
@@ -176,10 +177,10 @@ static void parse_link_init(void)
   double lat;
   e_surf_link_state_t state;
 
-  name = xbt_strdup(A_surfxml_link_name);
+  name = xbt_strdup(A_surfxml_link_id);
   surf_parse_get_double(&bw, A_surfxml_link_bandwidth);
   surf_parse_get_double(&lat, A_surfxml_link_latency);
-  state = SURF_link_ON;
+  state = SURF_LINK_ON;
 
   /* Print values when no traces are specified */
   {
@@ -229,7 +230,7 @@ static void parse_route_set_endpoints(void)
 /* KF*/
 static void parse_route_set_routers(void)
 {
-  int id = network_card_new(A_surfxml_router_name);
+  int id = network_card_new(A_surfxml_router_id);
 
   /* KF: Create the GTNets router */
   if (gtnets_add_router(id)) {
@@ -253,7 +254,7 @@ static void parse_route_set_route(void)
 /*  if (nb_link > 1)
     route_new(src_id, dst_id, link_name, nb_link);
 */
-    name = bprintf("%x#%x",src_id, dst_id);
+    char *name = bprintf("%x#%x",src_id, dst_id);
     xbt_dict_set(route_table, name, route_link_list, NULL);
     free(name);    
 }
@@ -313,7 +314,7 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_route_set_routers);
   surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_route_element_cb_list, &parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
 /* surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_onehop_route);*/
   surfxml_add_callback(STag_surfxml_platform_cb_list, &init_data);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
@@ -464,7 +465,7 @@ static void update_actions_state(double now, double delta)
 /* UNUSED HERE: no traces */
 static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
-				  double value)
+				  double value, double date)
 {
   xbt_assert0(0, "Cannot update model state for GTNetS simulation");
   return;
@@ -612,8 +613,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->common_private->share_resources = share_resources;
   surf_network_model->common_private->update_actions_state =
       update_actions_state;
-  surf_network_model->common_private->update_resource_state =
-      update_resource_state;
+  surf_network_model->common_private->update_resource_state = update_resource_state;
   surf_network_model->common_private->finalize = finalize;
 
   surf_network_model->common_public->suspend = action_suspend;
