@@ -51,6 +51,7 @@ MSG_mailbox_free(void* mailbox)
 	if(NULL != (_mailbox->hostname))
 		free(_mailbox->hostname);
 
+	xbt_fifo_free(_mailbox->tasks);
 	free(_mailbox->alias);
 	
 	free(_mailbox);
