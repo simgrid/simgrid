@@ -704,6 +704,8 @@ static void finalize(void)
   free(routing_table_size);
   routing_table_size = NULL;
   host_number = 0;
+  lmm_system_free(network_maxmin_system);
+  network_maxmin_system = NULL;
 }
 
 static void surf_network_model_init_internal(void)

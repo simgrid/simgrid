@@ -397,6 +397,8 @@ static xbt_dict_t get_properties(void *cpu)
 static void finalize(void)
 {
   xbt_dict_free(&cpu_set);
+  lmm_system_free(cpu_maxmin_system);
+  cpu_maxmin_system = NULL;
   xbt_swag_free(surf_cpu_model->common_public->states.ready_action_set);
   xbt_swag_free(surf_cpu_model->common_public->states.
 		running_action_set);
