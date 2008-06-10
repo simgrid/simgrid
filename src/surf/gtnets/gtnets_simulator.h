@@ -45,7 +45,7 @@ public:
   double get_time_to_next_flow_completion();
   int run_until_next_flow_completion(void*** metadata, int* number_of_flows);
   int run(double deltat);
-  //added by pedro, returns the total received by the TCPServer peer of the given action
+  // returns the total received by the TCPServer peer of the given action
   double gtnets_get_flow_rx(void *metadata);
   void create_gtnets_topology();
 private:
