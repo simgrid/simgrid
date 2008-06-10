@@ -412,12 +412,10 @@ static double share_resources(double now)
 
 static void update_actions_state(double now, double delta)
 {
-#if 1
   surf_action_network_GTNETS_t action = NULL;
   //  surf_action_network_GTNETS_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_network_model->common_public->states.running_action_set;
-#endif
 
   double time_to_next_flow_completion =
       gtnets_get_time_to_next_flow_completion();
