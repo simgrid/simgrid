@@ -59,7 +59,6 @@ static void parse_route_set_endpoints(void)
   src_id = network_card_new(A_surfxml_route_src);
   dst_id = network_card_new(A_surfxml_route_dst);
   route_action = A_surfxml_route_action;
-  route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 static void parse_route_set_route(void)
@@ -83,9 +82,7 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(STag_surfxml_host_cb_list, &count_hosts);
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-  surfxml_add_callback(STag_surfxml_platform_cb_list, &init_data);
   surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
   surfxml_add_callback(STag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_route);

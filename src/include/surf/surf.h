@@ -580,10 +580,6 @@ XBT_PUBLIC(void) surf_exit(void);
 XBT_PUBLIC_DATA(xbt_dict_t) current_property_set; /* the prop set for the currently parsed element (also used in SIMIX) */
 void parse_properties(void);
 
-/* Prototypes for functions handling routing and were factorized succesfully from the models */
-void init_data(void);
-void parse_route_elem(void);
-
 /* surf parse file related (public because called from a test suite) */
 XBT_PUBLIC(void) parse_platform_file(const char* file);
 
@@ -605,9 +601,7 @@ XBT_PUBLIC_DATA(int) route_action;
 /* This is used by all models when creating the routing table while parsing */
 XBT_PUBLIC_DATA(xbt_dict_t) route_table;
 XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
-XBT_PUBLIC_DATA(xbt_dict_t) route_table;
 XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
-XBT_PUBLIC_DATA(xbt_dynar_t) route_link_list;
 
 /* For the trace and trace:connect tag (store their content till the end of the parsing) */
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;

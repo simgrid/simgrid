@@ -80,7 +80,7 @@ xbt_dict_t current_property_set = NULL;
 xbt_dict_t route_table = NULL;
 xbt_dict_t route_multi_table = NULL;
 xbt_dynar_t route_multi_elements = NULL;
-xbt_dynar_t route_link_list = NULL;
+static xbt_dynar_t route_link_list = NULL;
 xbt_dynar_t links = NULL;
 xbt_dynar_t keys = NULL;
 
@@ -95,6 +95,7 @@ YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = NULL;
 
 static void convert_route_multi_to_routes(void);
+static void parse_route_elem(void);
 
 void surf_parse_free_callbacks(void)
 {
@@ -229,10 +230,8 @@ void ETag_surfxml_platform(void)
 
   surfxml_call_cb_functions(ETag_surfxml_platform_cb_list);
 
-  xbt_dynar_free(&route_link_list);
   xbt_dict_free(&random_data_list);
   xbt_dict_free(&set_list);
-
 }
 
 void STag_surfxml_host(void)
@@ -496,7 +495,11 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
     }
 }
 
-void init_data(void)
+static void parse_route_set_endpoints(void) {
+  route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+}
+
+static void init_data(void)
 {
   xbt_dict_free(&route_table);
   xbt_dynar_free(&route_link_list);
@@ -513,12 +516,29 @@ void init_data(void)
   trace_connect_list_latency = xbt_dict_new();
 
   random_data_list = xbt_dict_new();
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+}
+
+static void free_data(void) 
+{
+  char *key,*data;
+  xbt_dict_cursor_t cursor = NULL;
+
+  xbt_dict_foreach(route_table, cursor, key, data) {
+    xbt_dynar_t links = (xbt_dynar_t)data;
+    xbt_dynar_free(&links);
+  }
+  xbt_dict_free(&route_table);
+  route_link_list = NULL;
 }
 
 void parse_platform_file(const char* file)
 {
   surf_parse_open(file);
+  init_data();
   xbt_assert1((!(*surf_parse)()), "Parse error in %s", file);
+  free_data();
   surf_parse_close();
 }
 
@@ -734,7 +754,7 @@ static int route_multi_size=0;
 static char* src_name, *dst_name;
 static int is_symmetric_route;
 
-void parse_route_elem(void)
+static void parse_route_elem(void)
 {
   char *val;
 
