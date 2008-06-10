@@ -99,10 +99,8 @@ xbt_exit(){
     xbt_os_thread_mod_exit();
     xbt_log_exit();
     xbt_backtrace_exit();
-  }
-   
-  if (xbt_initialized == 0)
     free(xbt_binary_name);
+  }
 }
 
 
