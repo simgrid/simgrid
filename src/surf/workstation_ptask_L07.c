@@ -1167,8 +1167,7 @@ void surf_workstation_model_init_ptask_L07(const char *filename)
   define_callbacks(filename);
 
   update_model_description(surf_workstation_model_description,
-			      surf_workstation_model_description_size,
-			      "ptask_L07",
-			      (surf_model_t) surf_workstation_model);
+			   "ptask_L07",
+			   (surf_model_t) surf_workstation_model);
   xbt_dynar_push(model_list, &surf_workstation_model);
 }

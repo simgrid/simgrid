@@ -428,9 +428,8 @@ void surf_workstation_model_init_CLM03(const char *filename)
   surf_cpu_model_init_Cas01(filename);
   surf_network_model_init_CM02(filename);
   update_model_description(surf_workstation_model_description,
-			      surf_workstation_model_description_size,
-			      "CLM03",
-			      (surf_model_t) surf_workstation_model);
+			   "CLM03",
+			   (surf_model_t) surf_workstation_model);
   xbt_dynar_push(model_list, &surf_workstation_model);
 }
 
@@ -442,9 +441,8 @@ void surf_workstation_model_init_compound(const char *filename)
   surf_workstation_model_init_internal();
 
   update_model_description(surf_workstation_model_description,
-			      surf_workstation_model_description_size,
-			      "compound",
-			      (surf_model_t) surf_workstation_model);
+			   "compound",
+			   (surf_model_t) surf_workstation_model);
 
   xbt_dynar_push(model_list, &surf_workstation_model);
 }

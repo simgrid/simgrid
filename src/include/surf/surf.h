@@ -48,13 +48,11 @@ typedef struct surf_model_description {
 } s_surf_model_description_t, *surf_model_description_t;
 
 XBT_PUBLIC(void) update_model_description(s_surf_model_description_t *table,
-					     int table_size,
-					     const char* name, 
-					     surf_model_t model
-					     );
+					  const char* name, 
+					  surf_model_t model
+					  );
 XBT_PUBLIC(int) find_model_description(s_surf_model_description_t *table,
-					  int table_size,
-					  const char* name);
+				       const char* name);
 
 /** \brief Action structure
  * \ingroup SURF_actions
@@ -245,11 +243,10 @@ XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model;
  */
 XBT_PUBLIC(void) surf_cpu_model_init_Cas01(const char *filename);
 
-#define surf_cpu_model_description_size 1
 /** \brief The list of all available cpu model models
  *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[surf_cpu_model_description_size];
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
 
 /* Network model */
 
@@ -394,23 +391,10 @@ XBT_PUBLIC(void) surf_network_model_init_Vegas(const char *filename);
 XBT_PUBLIC(void) surf_network_model_init_SDP(const char *filename);
 #endif
 
-#if (HAVE_GTNETS)
-# define inc_GT 1
-#else 
-# define inc_GT 0
-#endif
-#if (HAVE_SDP)
-# define inc_SDP 1
-#else
-# define inc_SDP 0
-#endif
-
-#define surf_network_model_description_size  5+inc_SDP+inc_GT
-
 /** \brief The list of all available network model models
  *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[surf_network_model_description_size];
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
 
 /** \brief Workstation model extension public
  *  \ingroup SURF_models
@@ -510,11 +494,10 @@ XBT_PUBLIC(void) surf_workstation_model_init_KCCFLN05(const char *filename);
  */
 XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(const char *filename);
 
-#define surf_workstation_model_description_size 4
 /** \brief The list of all available workstation model models
  *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_workstation_model_description[surf_workstation_model_description_size];
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_workstation_model_description[];
 
 /** \brief The network links
  *  \ingroup SURF_models

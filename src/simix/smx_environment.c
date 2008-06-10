@@ -50,8 +50,7 @@ void SIMIX_create_environment(const char *file)
   DEBUG1("Model : %s", workstation_model_name);
   workstation_id =
       find_model_description(surf_workstation_model_description,
-				surf_workstation_model_description_size,
-				workstation_model_name);
+			     workstation_model_name);
   if (!strcmp(workstation_model_name, "compound")) {
     xbt_ex_t e;
     char *network_model_name = NULL;
@@ -87,12 +86,10 @@ void SIMIX_create_environment(const char *file)
 
     network_id =
 	find_model_description(surf_network_model_description,
-				  surf_network_model_description_size,
-				  network_model_name);
+			       network_model_name);
     cpu_id =
 	find_model_description(surf_cpu_model_description,
-				  surf_cpu_model_description_size,
-				  cpu_model_name);
+			       cpu_model_name);
 
     surf_cpu_model_description[cpu_id].model_init(file);
     surf_network_model_description[network_id].model_init(file);

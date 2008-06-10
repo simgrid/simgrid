@@ -801,9 +801,8 @@ void surf_network_model_init_CM02(const char *filename)
   network_solve = lmm_solve;
 
   update_model_description(surf_network_model_description,
-			      surf_network_model_description_size,
-			      "CM02",
-			      (surf_model_t) surf_network_model);
+			   "CM02",
+			   (surf_model_t) surf_network_model);
 }
 
 void surf_network_model_init_Reno(const char *filename)
@@ -819,9 +818,8 @@ void surf_network_model_init_Reno(const char *filename)
   network_solve = lagrange_solve;
 
   update_model_description(surf_network_model_description,
-			      surf_network_model_description_size,
-			      "Reno",
-			      (surf_model_t) surf_network_model);
+			   "Reno",
+			   (surf_model_t) surf_network_model);
 }
 
 
@@ -838,9 +836,8 @@ void surf_network_model_init_Reno2(const char *filename)
   network_solve = lagrange_solve;
 
   update_model_description(surf_network_model_description,
-			      surf_network_model_description_size,
-			      "Reno2",
-			      (surf_model_t) surf_network_model);
+			   "Reno2",
+			   (surf_model_t) surf_network_model);
 }
 
 void surf_network_model_init_Vegas(const char *filename)
@@ -856,9 +853,8 @@ void surf_network_model_init_Vegas(const char *filename)
   network_solve = lagrange_solve;
 
   update_model_description(surf_network_model_description,
-			      surf_network_model_description_size,
-			      "Vegas",
-			      (surf_model_t) surf_network_model);
+			   "Vegas",
+			   (surf_model_t) surf_network_model);
 }
 
 #ifdef HAVE_SDP
@@ -873,9 +869,8 @@ void surf_network_model_init_SDP(const char *filename)
   network_solve = sdp_solve;
 
   update_model_description(surf_network_model_description,
-			      surf_network_model_description_size,
-			      "SDP",
-			      (surf_model_t) surf_network_model);
+			   "SDP",
+			   (surf_model_t) surf_network_model);
 }
 #endif
 
@@ -889,8 +884,7 @@ void surf_network_model_init_GTNETS(const char *filename)
   xbt_dynar_push(model_list, &surf_network_model);
 
   update_model_description(surf_network_model_description,
-                              surf_network_model_description_size,
-                              "GTNets",
-                              (surf_model_t) surf_network_model);
+			   "GTNets",
+			   (surf_model_t) surf_network_model);
 }
 #endif

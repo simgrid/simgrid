@@ -26,9 +26,7 @@ static void _simix_cfg_cb__workstation_model(const char *name, int pos)
   val = xbt_cfg_get_string(_simix_cfg_set, name);
   /* New Module missing */
 
-  find_model_description(surf_workstation_model_description,
-			    surf_workstation_model_description_size,
-			    val);
+  find_model_description(surf_workstation_model_description,val);
 }
 
 /* callback of the cpu_model variable */
@@ -41,8 +39,7 @@ static void _simix_cfg_cb__cpu_model(const char *name, int pos)
 
   val = xbt_cfg_get_string(_simix_cfg_set, name);
   /* New Module missing */
-  find_model_description(surf_cpu_model_description,
-			    surf_cpu_model_description_size, val);
+  find_model_description(surf_cpu_model_description, val);
 }
 
 /* callback of the workstation_model variable */
@@ -55,8 +52,7 @@ static void _simix_cfg_cb__network_model(const char *name, int pos)
 
   val = xbt_cfg_get_string(_simix_cfg_set, name);
   /* New Module missing */
-  find_model_description(surf_network_model_description,
-			    surf_network_model_description_size, val);
+  find_model_description(surf_network_model_description, val);
 }
 
 XBT_LOG_EXTERNAL_CATEGORY(simix);

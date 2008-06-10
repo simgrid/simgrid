@@ -126,7 +126,7 @@ const char *surf_action_state_names[6] = {
 };
 
 
-s_surf_model_description_t surf_network_model_description[surf_network_model_description_size] = {
+s_surf_model_description_t surf_network_model_description[] = {
   {"Constant", NULL, surf_network_model_init_Constant},
   {"CM02", NULL, surf_network_model_init_CM02},
 #ifdef HAVE_GTNETS
@@ -137,40 +137,42 @@ s_surf_model_description_t surf_network_model_description[surf_network_model_des
 #endif
   {"Reno", NULL, surf_network_model_init_Reno},
   {"Reno2", NULL, surf_network_model_init_Reno2},
-  {"Vegas", NULL, surf_network_model_init_Vegas}
+  {"Vegas", NULL, surf_network_model_init_Vegas},
+  { NULL,NULL,NULL} /* this array must be NULL terminated */
 };
 
-s_surf_model_description_t surf_cpu_model_description[surf_cpu_model_description_size] = {
+s_surf_model_description_t surf_cpu_model_description[] = {
   {"Cas01", NULL, surf_cpu_model_init_Cas01},
+  { NULL,NULL,NULL} /* this array must be NULL terminated */
 };
 
-s_surf_model_description_t surf_workstation_model_description[surf_workstation_model_description_size] = {
+s_surf_model_description_t surf_workstation_model_description[] = {
   {"CLM03", NULL, surf_workstation_model_init_CLM03, create_workstations},
   {"compound", NULL, surf_workstation_model_init_compound, create_workstations},
-  {"ptask_L07", NULL, surf_workstation_model_init_ptask_L07, NULL}
+  {"ptask_L07", NULL, surf_workstation_model_init_ptask_L07, NULL},
+  { NULL,NULL,NULL} /* this array must be NULL terminated */
 };
 
 void update_model_description(s_surf_model_description_t * table,
-				 int table_size,
-				 const char *name,
-				 surf_model_t model)
+			      const char *name,
+			      surf_model_t model)
 {
-  int i = find_model_description(table, table_size, name);
+  int i = find_model_description(table, name);
   table[i].model = model;
 }
 
 int find_model_description(s_surf_model_description_t * table,
-			      int table_size, const char *name)
+			   const char *name)
 {
   int i;
   char *name_list = NULL;
 
-  for (i = 0; i < table_size; i++)
+  for (i = 0; table[i].name; i++)
     if (!strcmp(name, table[i].name)) {
       return i;
     }
   name_list = strdup(table[0].name);
-  for (i = 1; i < table_size; i++) {
+  for (i = 1; table[i].name; i++) {
     name_list =
 	xbt_realloc(name_list,
 		    strlen(name_list) + strlen(table[i].name) + 2);

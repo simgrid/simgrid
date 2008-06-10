@@ -35,9 +35,7 @@ static void _sd_cfg_cb__workstation_model(const char *name, int pos)
 	      "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sd_cfg_set, name);
-  find_model_description(surf_workstation_model_description,
-			    surf_workstation_model_description_size,
-			    val);
+  find_model_description(surf_workstation_model_description, val);
 }
 
 /* callback of the cpu_model variable */
@@ -49,8 +47,7 @@ static void _sd_cfg_cb__cpu_model(const char *name, int pos)
 	      "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sd_cfg_set, name);
-  find_model_description(surf_cpu_model_description,
-			    surf_cpu_model_description_size, val);
+  find_model_description(surf_cpu_model_description, val);
 }
 
 /* callback of the workstation_model variable */
@@ -62,8 +59,7 @@ static void _sd_cfg_cb__network_model(const char *name, int pos)
 	      "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sd_cfg_set, name);
-  find_model_description(surf_network_model_description,
-			    surf_network_model_description_size, val);
+  find_model_description(surf_network_model_description, val);
 }
 
 XBT_LOG_EXTERNAL_CATEGORY(sd_kernel);
@@ -317,8 +313,7 @@ void SD_create_environment(const char *platform_file) {
   DEBUG1("Model : %s", workstation_model_name);
   workstation_id =
       find_model_description(surf_workstation_model_description,
-				surf_workstation_model_description_size,
-				workstation_model_name);
+			     workstation_model_name);
   if (!strcmp(workstation_model_name, "compound")) {
     xbt_ex_t e;
     char *network_model_name = NULL;
@@ -354,12 +349,10 @@ void SD_create_environment(const char *platform_file) {
 
     network_id =
 	find_model_description(surf_network_model_description,
-				  surf_network_model_description_size,
-				  network_model_name);
+			       network_model_name);
     cpu_id =
 	find_model_description(surf_cpu_model_description,
-				  surf_cpu_model_description_size,
-				  cpu_model_name);
+			       cpu_model_name);
 
     surf_cpu_model_description[cpu_id].model_init(platform_file);
     surf_network_model_description[network_id].model_init(platform_file);

@@ -400,7 +400,6 @@ void surf_network_model_init_Constant(const char *filename)
   xbt_dynar_push(model_list, &surf_network_model);
 
   update_model_description(surf_network_model_description,
-			      surf_network_model_description_size,
-			      "Constant",
-			      (surf_model_t) surf_network_model);
+			   "Constant",
+			   (surf_model_t) surf_network_model);
 }
