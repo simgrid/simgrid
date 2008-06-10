@@ -103,6 +103,11 @@ void xbt_os_thread_mod_exit(void) {
 
 //   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
 //     THROW0(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
+   free(main_thread->exception);
+   free(main_thread);
+#ifndef HAVE_SEM_WAIT
+   xbt_os_mutex_destroy(next_sem_ID_lock);
+#endif
 }
 
 static void * wrapper_start_routine(void *s) {
