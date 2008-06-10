@@ -41,7 +41,9 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   xbt_assert0(new_f != NULL && free_f != NULL && reset_f != NULL,"invalid parameter");
 
   m = xbt_new0(s_xbt_mallocator_t, 1);
-  DEBUG1("Create mallocator %p",m);
+  VERB1("Create mallocator %p",m);
+  if (XBT_LOG_ISENABLED(xbt_mallocator,xbt_log_priority_verbose))
+      xbt_backtrace_display_current();
 
   m->objects = xbt_new0(void*, size);
   m->max_size = size;
@@ -66,7 +68,7 @@ void xbt_mallocator_free(xbt_mallocator_t m) {
   int i;
   xbt_assert0(m != NULL, "Invalid parameter");
 
-  DEBUG3("Frees mallocator %p (size:%d/%d)",m,m->current_size,m->max_size);
+  VERB3("Frees mallocator %p (size:%d/%d)",m,m->current_size,m->max_size);
   for (i = 0; i < m->current_size; i++) {
     (*(m->free_f))(m->objects[i]);
   }
