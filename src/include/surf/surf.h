@@ -8,7 +8,6 @@
 #ifndef _SURF_SURF_H
 #define _SURF_SURF_H
 
-#include "portable.h"
 #include "xbt/swag.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
