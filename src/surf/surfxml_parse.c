@@ -531,6 +531,13 @@ static void free_data(void)
   }
   xbt_dict_free(&route_table);
   route_link_list = NULL;
+
+  xbt_dict_free(&trace_connect_list_host_avail);
+  xbt_dict_free(&trace_connect_list_power);
+  xbt_dict_free(&trace_connect_list_link_avail);
+  xbt_dict_free(&trace_connect_list_bandwidth);
+  xbt_dict_free(&trace_connect_list_latency);
+  xbt_dict_free(&traces_set_list);
 }
 
 void parse_platform_file(const char* file)

@@ -273,14 +273,6 @@ static void add_traces(void) {
       
       link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
    }
-
-   xbt_dict_free(&trace_connect_list_host_avail);
-   xbt_dict_free(&trace_connect_list_power);
-   xbt_dict_free(&trace_connect_list_link_avail);
-   xbt_dict_free(&trace_connect_list_bandwidth);
-   xbt_dict_free(&trace_connect_list_latency);
-   
-   xbt_dict_free(&traces_set_list); 
 }
 
 static void define_callbacks(const char *file)
