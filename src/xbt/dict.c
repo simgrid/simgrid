@@ -78,12 +78,13 @@ void xbt_dict_free(xbt_dict_t *dict) {
   if (dict != NULL && *dict != NULL) {
     table_size = (*dict)->table_size;
     table = (*dict)->table;
-    for (i = 0; i < table_size; i++) {
+    for (i = 0; (*dict)->count && i < table_size; i++) {
       current = table[i];
       while (current != NULL) {
 	previous = current;
 	current = current->next;
 	xbt_dictelm_free(previous);
+	(*dict)->count--;
       }
     }
     xbt_free(table);
