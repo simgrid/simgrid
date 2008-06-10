@@ -789,6 +789,7 @@ void manage_route(xbt_dict_t routing_table, const char *route_name, int action, 
 				    xbt_dynar_foreach(route_link_list, cpt, value) {
                                        xbt_dynar_push(links,&value);
 				    }
+				    xbt_dynar_free(&route_link_list);
                                     route_link_list = links;
 				    break;
         case A_surfxml_route_action_OVERRIDE:
