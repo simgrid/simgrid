@@ -148,6 +148,7 @@ int main(int argc, char *argv[]) {
   /* Got all my tests to do */
       
   res = xbt_test_run(selection);
+  xbt_test_exit();
   xbt_exit();
   return res;
 }

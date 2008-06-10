@@ -52,6 +52,8 @@ XBT_PUBLIC(void)             xbt_test_suite_push (xbt_test_suite_t suite, const 
 XBT_PUBLIC(int) xbt_test_run(char *selection);
 /* Show information about the selection of tests */
 XBT_PUBLIC(void) xbt_test_dump(char *selection);
+/* Cleanup the mess */
+XBT_PUBLIC(void) xbt_test_exit(void);
 
 /* test operations */
 XBT_PUBLIC(void)    _xbt_test_add(const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(3,4);

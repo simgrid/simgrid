@@ -50,13 +50,6 @@ static void xbt_test_log_dump(xbt_test_log_t log) {
   else
     fprintf(stderr,"      log=NULL\n");	   
 }
-static void xbt_test_log_free(xbt_test_log_t log) {
-  if (!log)
-    return;
-  if (log->text)
-    free(log->text);
-  free(log);
-}
 
 /* test suite test check */
 typedef struct s_xbt_test_test {
@@ -135,6 +128,25 @@ static void xbt_test_suite_free(void *s) {
   free(suite);
 }
 
+static void xbt_test_unit_free(void *unit) {
+   xbt_test_unit_t u = *(xbt_test_unit_t*)unit;
+   /* name is static */
+   free(u->title);
+   xbt_dynar_free(&u->tests);
+   free(u);
+}
+static void xbt_test_test_free(void *test) {
+   xbt_test_test_t t = *(xbt_test_test_t*)test;
+   free(t->title);
+   xbt_dynar_free(&(t->logs));
+   free(t);
+}
+static void xbt_test_log_free(void *log) {
+  xbt_test_log_t l= *(xbt_test_log_t*) log;
+  free(l->text);
+  free(l);
+}
+
 /** @brief create test suite */
 xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...) {
   xbt_test_suite_t suite = xbt_new0(struct s_xbt_test_suite,1);
@@ -145,7 +157,7 @@ xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...) {
 
   va_start(ap, fmt);
   vasprintf(&suite->title,fmt, ap);
-  suite->units = xbt_dynar_new(sizeof(xbt_test_unit_t), NULL);
+  suite->units = xbt_dynar_new(sizeof(xbt_test_unit_t), &xbt_test_unit_free);
   va_end(ap);
   suite->name = name;
   suite->enabled = 1;
@@ -210,7 +222,7 @@ void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t 
   unit->file = NULL;
   unit->line = 0;
   unit->enabled = 1;
-  unit->tests = xbt_dynar_new(sizeof(xbt_test_test_t), NULL);
+  unit->tests = xbt_dynar_new(sizeof(xbt_test_test_t), xbt_test_test_free);
   
   xbt_dynar_push(suite->units, &unit);
   return;
@@ -623,7 +635,9 @@ int xbt_test_run(char *selection) {
   }
   return _xbt_test_unit_failed;
 }
-
+void xbt_test_exit(void) {
+   xbt_dynar_free(&_xbt_test_suites);
+}
 
 /* annotate test case with test */
 void _xbt_test_add(const char*file,int line, const char *fmt, ...) {
@@ -634,7 +648,7 @@ void _xbt_test_add(const char*file,int line, const char *fmt, ...) {
   xbt_assert(unit);
   xbt_assert(fmt);
 
-  test = xbt_new(struct s_xbt_test_test,1);
+  test = xbt_new0(struct s_xbt_test_test,1);
   va_start(ap, fmt);
   vasprintf(&test->title, fmt, ap);
   va_end(ap);
@@ -643,7 +657,7 @@ void _xbt_test_add(const char*file,int line, const char *fmt, ...) {
   test->ignored = 0;
   test->file = file;
   test->line = line;
-  test->logs = xbt_dynar_new(sizeof(xbt_test_log_t),NULL);
+  test->logs = xbt_dynar_new(sizeof(xbt_test_log_t),xbt_test_log_free);
   xbt_dynar_push(unit->tests,&test);
   return;
 }
