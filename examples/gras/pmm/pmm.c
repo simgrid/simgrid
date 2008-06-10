@@ -1,9 +1,7 @@
 /* $Id$ */
 /* pmm - parallel matrix multiplication "double diffusion"                  */
 
-/* Copyright (c) 2006 Ahmed Harbaoui.                                       */
-/* Copyright (c) 2006 Martin Quinson.                                       */
-/* All rights reserved.                                                     */
+/* Copyright (c) 2006-2008 The SimGrid team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -267,12 +265,11 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
 	
     /* a line brodcast */
     if(myline==step){
-       INFO3("LINE: step(%d) = Myline(%d). Broadcast my data (myport=%d).",
-	     step,myline,gras_os_myport());
+       INFO2("LINE: step(%d) = Myline(%d). Broadcast my data.",
+	     step,myline);
        for (l=0;l < PROC_MATRIX_SIZE-1 ;l++) {
-	  INFO2("LINE:   Send to %s:%d",
-		gras_socket_peer_name(socket_row[l]),
-		gras_socket_peer_port(socket_row[l]));
+	  INFO1("LINE:   Send to %s",
+		gras_socket_peer_name(socket_row[l]));
 	 gras_msg_send(socket_row[l], "dataB", &mydataB);
        }
        
@@ -288,17 +285,16 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
       } CATCH(e) {
 	RETHROW0("Can't get a data message from line : %s");
       }
-      INFO4("LINE: step(%d) <> Myline(%d). Receive data from %s:%d",step,myline,
-	    gras_socket_peer_name(from), gras_socket_peer_port(from));
+      INFO3("LINE: step(%d) <> Myline(%d). Receive data from %s",step,myline,
+	    gras_socket_peer_name(from));
     }
 
     /* a row brodcast */
     if (myrow==step) { 
-       INFO2("ROW: step(%d)=myrow(%d). Broadcast my data",step,myrow);
+       INFO2("ROW: step(%d)=myrow(%d). Broadcast my data.",step,myrow);
        for (l=1;l < PROC_MATRIX_SIZE ; l++) {
-	  INFO2("ROW:   Send to %s:%d",
-		gras_socket_peer_name(socket_line[l-1]),
-		gras_socket_peer_port(socket_line[l-1]));
+	  INFO1("ROW:   Send to %s",
+		gras_socket_peer_name(socket_line[l-1]));
 	  gras_msg_send(socket_line[l-1],"dataA", &mydataA);
        }
        xbt_matrix_free(bA);
@@ -356,10 +352,17 @@ int slave(int argc,char *argv[]) {
   gras_socket_t mysock;
   gras_socket_t master = NULL;
   int connected = 0;
+  int rank;
 
   /* Init the GRAS's infrastructure */
   gras_init(&argc, argv);
   amok_pm_init();
+  if (argc != 3 && argc !=2)
+     xbt_die("Usage: slave masterhost:masterport [rank]");
+  if (argc == 2) 
+     rank = -1;
+  else 
+     rank = atoi(argv[2]);
 
   /*  Register the known messages and my callback */
   register_messages();
@@ -367,7 +370,7 @@ int slave(int argc,char *argv[]) {
 
   /* Create the connexions */
   mysock = gras_socket_server_range(3000,9999,0,0);
-  INFO1("Sensor starting (on port %d)",gras_os_myport());  
+  INFO1("Sensor %d starting",rank);
   while (!connected) {	
      xbt_ex_t e;
      TRY {	  
@@ -382,7 +385,7 @@ int slave(int argc,char *argv[]) {
   }
 				
   /* Join and run the group */
-  amok_pm_group_join(master,"pmm");
+  amok_pm_group_join(master,"pmm",rank);
   amok_pm_mainloop(600);
 
   /* housekeeping */
