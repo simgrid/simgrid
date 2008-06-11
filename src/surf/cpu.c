@@ -14,7 +14,7 @@ surf_cpu_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
 
 xbt_dict_t cpu_set = NULL;
-xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
+static xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
 
 static void cpu_free(void *cpu)
 {
@@ -405,6 +405,8 @@ static void finalize(void)
   xbt_swag_free(surf_cpu_model->common_public->states.
 		failed_action_set);
   xbt_swag_free(surf_cpu_model->common_public->states.done_action_set);
+  xbt_swag_free(running_action_set_that_does_not_need_being_checked);
+  running_action_set_that_does_not_need_being_checked = NULL;
   free(surf_cpu_model->common_public);
   free(surf_cpu_model->common_private);
   free(surf_cpu_model->extension_public);
