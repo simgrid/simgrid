@@ -578,7 +578,7 @@ XBT_PUBLIC(void) surf_exit(void);
 
 /* Prototypes of the functions that handle the properties */
 XBT_PUBLIC_DATA(xbt_dict_t) current_property_set; /* the prop set for the currently parsed element (also used in SIMIX) */
-void parse_properties(void);
+XBT_PUBLIC_DATA(void) parse_properties(void);
 
 /* surf parse file related (public because called from a test suite) */
 XBT_PUBLIC(void) parse_platform_file(const char* file);
@@ -586,16 +586,7 @@ XBT_PUBLIC(void) parse_platform_file(const char* file);
 /* Stores the sets */
 XBT_PUBLIC_DATA(xbt_dict_t) set_list;
 
-void parse_foreach(void);
-void parse_sets(void);
-void parse_route_multi_set_endpoints(void);
-void parse_route_multi_set_route(void);
-void parse_cluster(void);
-void parse_trace_init(void);
-void parse_trace_finalize(void);
-void parse_trace_c_connect(void);
-
-void manage_route(xbt_dict_t route_table, const char* route_name, int action, int isMultiRoute);
+XBT_PUBLIC_DATA(void) manage_route(xbt_dict_t route_table, const char* route_name, int action, int isMultiRoute);
 XBT_PUBLIC_DATA(int) route_action;
 
 /* This is used by all models when creating the routing table while parsing */
@@ -612,9 +603,8 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_bandwidth;
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 
-double get_cpu_power(const char* power);
-void init_randomness(void);
-void add_randomness(void);
+XBT_PUBLIC_DATA(double) get_cpu_power(const char* power);
+
 
 SG_END_DECL()
 

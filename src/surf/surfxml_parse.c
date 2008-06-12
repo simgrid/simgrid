@@ -96,6 +96,16 @@ FILE *surf_file_to_parse = NULL;
 
 static void convert_route_multi_to_routes(void);
 static void parse_route_elem(void);
+static void parse_foreach(void);
+static void parse_sets(void);
+static void parse_route_multi_set_endpoints(void);
+static void parse_route_multi_set_route(void);
+static void parse_cluster(void);
+static void parse_trace_init(void);
+static void parse_trace_finalize(void);
+static void parse_trace_c_connect(void);
+static void init_randomness(void);
+static void add_randomness(void);
 
 void surf_parse_free_callbacks(void)
 {
@@ -516,8 +526,19 @@ static void init_data(void)
   trace_connect_list_latency = xbt_dict_new();
 
   random_data_list = xbt_dict_new();
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+  surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
+  surfxml_add_callback(STag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_route);
+  surfxml_add_callback(STag_surfxml_foreach_cb_list, &parse_foreach);
+  surfxml_add_callback(STag_surfxml_cluster_cb_list, &parse_cluster);
+  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_trace_init);
+  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_trace_finalize);
+  surfxml_add_callback(STag_surfxml_trace_c_connect_cb_list, &parse_trace_c_connect);
+  surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
+  surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
 }
 
 static void free_data(void) 
@@ -599,7 +620,7 @@ static void parse_restore_original_buffer(void)
 
 /* Functions for the sets and foreach tags */
 
-void parse_sets(void)
+static void parse_sets(void)
 {
   char *id, *suffix, *prefix, *radical;
   int start, end;
@@ -732,7 +753,7 @@ static void finalize_link_foreach(void)
   surfxml_bufferstack = old_buff;
 }
 
-void parse_foreach(void)
+static void parse_foreach(void)
 {
   /* save the host & link callbacks */
   main_STag_surfxml_host_cb_list = STag_surfxml_host_cb_list;
@@ -770,7 +791,7 @@ static void parse_route_elem(void)
   xbt_dynar_push(route_link_list, &val);
 }
 
-void parse_route_multi_set_endpoints(void)
+static void parse_route_multi_set_endpoints(void)
 {
   src_name = xbt_strdup(A_surfxml_route_c_multi_src); 
   dst_name = xbt_strdup(A_surfxml_route_c_multi_dst); 
@@ -793,7 +814,7 @@ static int contains(xbt_dynar_t list, const char* value)
 }
 
 /* 
-   This function is used to append or override the contents of an alread existing route in the case a new one with its name is found.
+   This function is used to append or override the contents of an already existing route in the case a new one with its name is found.
    The decision is based upon the value of action specified in the xml route:multi attribute action
  */
 void manage_route(xbt_dict_t routing_table, const char *route_name, int action, int isMultiRoute)
@@ -830,7 +851,7 @@ void manage_route(xbt_dict_t routing_table, const char *route_name, int action, 
   }
 }
 
-void parse_route_multi_set_route(void)
+static void parse_route_multi_set_route(void)
 {
   char* route_name;
 
@@ -960,7 +981,7 @@ static void convert_route_multi_to_routes(void)
 
 /* Cluster tag functions */
 
-void parse_cluster(void)
+static void parse_cluster(void)
 {  
    static int AX_ptr = 0;
    static int surfxml_bufferstack_size = 2048;
@@ -1063,14 +1084,14 @@ static double trace_periodicity = -1.0;
 static char* trace_file = NULL;
 static char* trace_id;
 
-void parse_trace_init(void)
+static void parse_trace_init(void)
 {
    trace_id = strdup(A_surfxml_trace_id);
    trace_file = strdup(A_surfxml_trace_file);
    surf_parse_get_double(&trace_periodicity, A_surfxml_trace_periodicity);
 }
 
-void parse_trace_finalize(void)
+static void parse_trace_finalize(void)
 {
   tmgr_trace_t trace;
   if (!trace_file || strcmp(trace_file,"") != 0) {
@@ -1084,7 +1105,7 @@ void parse_trace_finalize(void)
   xbt_dict_set(traces_set_list, trace_id, (void *)trace, NULL);
 }
 
-void parse_trace_c_connect(void)
+static void parse_trace_c_connect(void)
 {
    xbt_assert2(xbt_dict_get_or_null(traces_set_list, A_surfxml_trace_c_connect_trace),
 	      "Cannot connect trace %s to %s: trace unknown", A_surfxml_trace_c_connect_trace,A_surfxml_trace_c_connect_element);
@@ -1138,7 +1159,7 @@ double get_cpu_power(const char *power)
 int random_min, random_max, random_mean, random_std_deviation, random_generator;
 char *random_id;
 
-void init_randomness(void)
+static void init_randomness(void)
 {
   random_id = A_surfxml_random_id;
   surf_parse_get_int(&random_min, A_surfxml_random_min);
@@ -1148,7 +1169,7 @@ void init_randomness(void)
   random_generator = A_surfxml_random_generator;
 }
 
-void add_randomness(void)
+static void add_randomness(void)
 {
    /* If needed aditional properties can be added by using the prop tag */
   random_data_t random = random_new(random_generator, 0, random_min, random_max, random_mean, random_std_deviation);

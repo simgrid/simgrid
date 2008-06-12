@@ -310,20 +310,12 @@ static void add_route()
 /* Main XML parsing */
 static void define_callbacks(const char *file)
 {
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_route_set_routers);
   surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
 /* surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_onehop_route);*/
-  surfxml_add_callback(STag_surfxml_platform_cb_list, &init_data);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
-  surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
-  surfxml_add_callback(STag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_route);
-  surfxml_add_callback(STag_surfxml_foreach_cb_list, &parse_foreach);
-  surfxml_add_callback(STag_surfxml_cluster_cb_list, &parse_cluster);
 }
 
 static void *name_service(const char *name)

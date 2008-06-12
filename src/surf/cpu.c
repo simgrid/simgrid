@@ -125,9 +125,6 @@ static void define_callbacks(const char *file)
 {
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
-  surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
-  surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
 }
 
 static void *name_service(const char *name)

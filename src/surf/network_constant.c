@@ -80,17 +80,8 @@ static void define_callbacks(const char *file)
 {
   /* Figuring out the network links */
   surfxml_add_callback(STag_surfxml_host_cb_list, &count_hosts);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-  surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
-  surfxml_add_callback(STag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list, &parse_route_multi_set_route);
-  surfxml_add_callback(STag_surfxml_foreach_cb_list, &parse_foreach);
-  surfxml_add_callback(STag_surfxml_cluster_cb_list, &parse_cluster);
-  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_trace_init);
-  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_trace_finalize);
-  surfxml_add_callback(STag_surfxml_trace_c_connect_cb_list, &parse_trace_c_connect);
 }
 
 static void *name_service(const char *name)
