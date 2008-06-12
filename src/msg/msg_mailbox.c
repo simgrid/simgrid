@@ -190,6 +190,13 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 
   SIMIX_mutex_lock(h->simdata->mutex);
 
+  if (MSG_mailbox_get_cond(mailbox)) {
+    CRITICAL1("A process is already blocked on the channel %s",
+	      MSG_mailbox_get_alias(mailbox));
+    SIMIX_cond_display_info(MSG_mailbox_get_cond(mailbox));
+    xbt_die("Go fix your code!");
+  }
+
   while (1) {
     /* if the mailbox is empty (has no task */
     if (!MSG_mailbox_is_empty(mailbox)) {
@@ -212,13 +219,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 	SIMIX_cond_destroy(cond);
 	MSG_RETURN(MSG_TRANSFER_FAILURE);
       }
-    }
-
-    if (MSG_mailbox_get_cond(mailbox)) {
-      CRITICAL1("A process is already blocked on the channel %s",
-		MSG_mailbox_get_alias(mailbox));
-      SIMIX_cond_display_info(MSG_mailbox_get_cond(mailbox));
-      xbt_die("Go fix your code!");
     }
 
     cond = SIMIX_cond_init();
