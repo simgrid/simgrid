@@ -105,6 +105,8 @@ void xbt_os_thread_mod_exit(void) {
 //     THROW0(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
    free(main_thread->exception);
    free(main_thread);
+   main_thread = NULL;
+   thread_mod_inited=0;
 #ifndef HAVE_SEM_WAIT
    xbt_os_mutex_destroy(next_sem_ID_lock);
 #endif
