@@ -232,8 +232,11 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
       SIMIX_cond_wait(MSG_mailbox_get_cond(mailbox), h->simdata->mutex);
 
 
-    if (SIMIX_host_get_state(h_simdata->smx_host) == 0)
+    if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
+      MSG_mailbox_set_cond(mailbox, NULL);
+      SIMIX_cond_destroy(cond);
       MSG_RETURN(MSG_HOST_FAILURE);
+    }
 
     first_time = 0;
   }
