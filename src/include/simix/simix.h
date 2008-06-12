@@ -127,7 +127,7 @@ XBT_PUBLIC(void) SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, doub
 XBT_PUBLIC(void) SIMIX_cond_broadcast(smx_cond_t cond);
 XBT_PUBLIC(void) SIMIX_cond_destroy(smx_cond_t cond);
 XBT_PUBLIC(xbt_fifo_t) SIMIX_cond_get_actions(smx_cond_t cond);
-
+XBT_PUBLIC(void) SIMIX_cond_display_info(smx_cond_t cond);
 
 /************************** Action handling ************************************/
 XBT_PUBLIC(smx_action_t) SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver, const char *name,

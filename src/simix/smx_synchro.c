@@ -315,3 +315,17 @@ void SIMIX_cond_destroy(smx_cond_t cond)
     return;
   }
 }
+
+void SIMIX_cond_display_info(smx_cond_t cond)
+{
+  if (cond == NULL)
+    return;
+  else {
+    smx_process_t process = NULL;
+
+    INFO0("Blocked process on this condition:");
+    xbt_swag_foreach(process,cond->sleeping) {
+      INFO2("\t %s running on host %s",process->name,process->simdata->smx_host->name);
+    }
+  }
+}

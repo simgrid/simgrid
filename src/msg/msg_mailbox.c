@@ -214,9 +214,12 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
       }
     }
 
-    xbt_assert1(!MSG_mailbox_get_cond(mailbox),
-		"A process is already blocked on the channel %s",
+    if (MSG_mailbox_get_cond(mailbox)) {
+      CRITICAL1("A process is already blocked on the channel %s",
 		MSG_mailbox_get_alias(mailbox));
+      SIMIX_cond_display_info(MSG_mailbox_get_cond(mailbox));
+      xbt_die("Go fix your code!");
+    }
 
     cond = SIMIX_cond_init();
 
