@@ -506,7 +506,7 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
 }
 
 static void parse_route_set_endpoints(void) {
-  route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+  route_link_list = xbt_dynar_new(sizeof(char *), NULL);
 }
 
 static void init_data(void)
@@ -832,6 +832,7 @@ void manage_route(xbt_dict_t routing_table, const char *route_name, int action, 
 				    xbt_dynar_foreach(links, cpt, value) {	
                                        xbt_dynar_push(route_link_list,&value);
 				    }
+				    xbt_dynar_free(&links);
                                     break;
         case A_surfxml_route_action_POSTPEND: /* add existing links in front; links + route_link_list */ 
 				    xbt_dynar_foreach(route_link_list, cpt, value) {
@@ -841,6 +842,7 @@ void manage_route(xbt_dict_t routing_table, const char *route_name, int action, 
                                     route_link_list = links;
 				    break;
         case A_surfxml_route_action_OVERRIDE:
+				    xbt_dynar_free(&links);
                                     break;
         default:break;
      }
