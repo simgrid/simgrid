@@ -624,6 +624,7 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
   int i;
   lmm_element_t elem;
 
+  if(weight==var->weight) return;
   XBT_IN3("(sys=%p, var=%p, weight=%f)", sys, var, weight);
   sys->modified = 1;
   var->weight = weight;
