@@ -332,8 +332,9 @@ void SIMIX_process_suspend(smx_process_t process)
     surf_workstation_model->common_public->suspend(dummy->simdata->surf_action);
     SIMIX_register_action_to_condition(dummy, cond);
     __SIMIX_cond_wait(cond);
-    //SIMIX_action_destroy(dummy);
-    //SIMIX_cond_destroy(cond);
+    SIMIX_unregister_action_to_condition(dummy, cond);
+    SIMIX_action_destroy(dummy);
+    SIMIX_cond_destroy(cond);
   }
   return;
 }
