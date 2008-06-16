@@ -171,7 +171,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   m_host_t h = NULL;
   simdata_task_t t_simdata = NULL;
   simdata_host_t h_simdata = NULL;
-  int first_time = 1;
+  double start_time = SIMIX_get_clock();
 
   smx_cond_t cond = NULL;	//conditional wait if the task isn't on the channel yet
 
@@ -211,45 +211,40 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
       }
     }
 
-    if (timeout > 0) {
-      if (!first_time) {
-	SIMIX_mutex_unlock(h->simdata->mutex);
-	/* set the simix condition of the mailbox to NULL */
-	MSG_mailbox_set_cond(mailbox, NULL);
-	SIMIX_cond_destroy(cond);
-	MSG_RETURN(MSG_TRANSFER_FAILURE);
-      }
+    if ((timeout > 0) && (SIMIX_get_clock()-start_time>=timeout)) {
+      SIMIX_mutex_unlock(h->simdata->mutex);
+      MSG_mailbox_set_cond(mailbox, NULL);
+      SIMIX_cond_destroy(cond);
+      MSG_RETURN(MSG_TRANSFER_FAILURE);
     }
 
-    cond = SIMIX_cond_init();
-
-    /* set the condition of the mailbox */
-    MSG_mailbox_set_cond(mailbox, cond);
+    if(!cond) {
+      cond = SIMIX_cond_init();
+      MSG_mailbox_set_cond(mailbox, cond);
+    }
 
     if (timeout > 0)
-      SIMIX_cond_wait_timeout(cond, h->simdata->mutex, timeout);
+      SIMIX_cond_wait_timeout(cond, h->simdata->mutex, timeout-start_time);
     else
       SIMIX_cond_wait(MSG_mailbox_get_cond(mailbox), h->simdata->mutex);
 
-
     if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
+      SIMIX_mutex_unlock(h->simdata->mutex);
       MSG_mailbox_set_cond(mailbox, NULL);
       SIMIX_cond_destroy(cond);
       MSG_RETURN(MSG_HOST_FAILURE);
     }
-
-    first_time = 0;
   }
 
-  SIMIX_mutex_unlock(h->simdata->mutex);
 
   DEBUG1("OK, got a task (%s)", t->name);
   /* clean conditional */
   if (cond) {
-    SIMIX_cond_destroy(cond);
-
     MSG_mailbox_set_cond(mailbox, NULL);
+    SIMIX_cond_destroy(cond);
   }
+
+  SIMIX_mutex_unlock(h->simdata->mutex);
 
   t_simdata = t->simdata;
   t_simdata->receiver = process;
