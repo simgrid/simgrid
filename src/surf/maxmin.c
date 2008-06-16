@@ -456,6 +456,7 @@ void lmm_solve(lmm_system_t sys)
   xbt_swag_foreach(var, var_list) {
     int nb=0;
     int i;
+    if(var->weight<=0.0) break;
     var->value = 0.0;
     for (i = 0; i < var->cnsts_number; i++) {
       if(var->cnsts[i].value==0.0) nb++;
@@ -499,6 +500,7 @@ void lmm_solve(lmm_system_t sys)
     var_list = &(sys->saturated_variable_set);
 
     xbt_swag_foreach(var, var_list) {
+      if(var->weight<=0.0) DIE_IMPOSSIBLE;
       /* First check if some of these variables have reach their upper
          bound and update min_usage accordingly. */
       DEBUG5
@@ -642,6 +644,9 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
     else
       xbt_swag_insert_at_tail(elem, &(elem->constraint->element_set));
   }
+  if(!weight)
+    var->value = 0.0;
+
   XBT_OUT;
 }
 
