@@ -42,7 +42,7 @@ void MSG_mailbox_free(void *mailbox)
 {
   msg_mailbox_t _mailbox = (msg_mailbox_t) mailbox;
 
-  if (NULL != (_mailbox->hostname))
+  if (_mailbox->hostname)
     free(_mailbox->hostname);
 
   xbt_fifo_free(_mailbox->tasks);
@@ -80,7 +80,7 @@ m_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 {
   xbt_fifo_item_t item;
 
-  if (NULL == (item = xbt_fifo_get_first_item(mailbox->tasks)))
+  if (!(item = xbt_fifo_get_first_item(mailbox->tasks)))
     return NULL;
 
   return (m_task_t) xbt_fifo_get_item_content(item);
@@ -206,7 +206,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 	break;
       } else {
 	/* get the first task of the host */
-	if (NULL != (t = MSG_mailbox_get_first_host_task(mailbox, host)))
+	if ((t = MSG_mailbox_get_first_host_task(mailbox, host)))
 	  break;
       }
     }
@@ -338,7 +338,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   remote_host = MSG_get_host_by_name(hostname);
 
-  if (NULL == remote_host)
+  if (!remote_host)
     THROW1(not_found_error, 0, "Host %s not fount", hostname);
 
 
@@ -352,12 +352,10 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   /* put the task in the mailbox */
   MSG_mailbox_put(mailbox, task);
 
-  if (NULL != (cond = MSG_mailbox_get_cond(mailbox))) {
+  if ((cond = MSG_mailbox_get_cond(mailbox))) {
     DEBUG0("Somebody is listening. Let's wake him up!");
     SIMIX_cond_signal(cond);
   }
-
-
 
   SIMIX_mutex_unlock(remote_host->simdata->mutex);
 
@@ -427,7 +425,6 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   task->simdata->sender = NULL;
   SIMIX_mutex_unlock(task->simdata->mutex);
-
 
   if (SIMIX_action_get_state(task->simdata->comm) == SURF_ACTION_DONE) {
     MSG_RETURN(MSG_OK);
