@@ -228,8 +228,6 @@ void STag_surfxml_platform(void)
 	      "is available in the contrib/platform_generation directory "
 	      "of the simgrid repository.");
 
-  if (set_list == NULL) set_list = xbt_dict_new(); 
-
   surfxml_call_cb_functions(STag_surfxml_platform_cb_list);
 
 }
@@ -518,7 +516,8 @@ static void init_data(void)
   route_multi_table = xbt_dict_new();
   route_multi_elements = xbt_dynar_new(sizeof(char*), NULL);
   traces_set_list = xbt_dict_new();
-   
+  if (set_list == NULL) set_list = xbt_dict_new();
+
   trace_connect_list_host_avail = xbt_dict_new();
   trace_connect_list_power = xbt_dict_new();
   trace_connect_list_link_avail = xbt_dict_new();
