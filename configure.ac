@@ -199,6 +199,7 @@ if test "x$with_context" = "xucontext" ; then
   if test ".$mcsc" = .yes; then
     AC_MSG_RESULT(found working ucontext. Great!)
     AC_DEFINE([CONTEXT_UCONTEXT],1,[Define if xbt contexts are based on ucontext or not])
+    AC_CHECK_HEADERS([valgrind/valgrind.h])
   else
     if test ".$windows_context" = .yes ; then
       AC_MSG_RESULT(use windows context portability layer.)
