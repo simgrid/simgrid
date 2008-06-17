@@ -259,7 +259,6 @@ void ETag_surfxml_platform(void)
   surfxml_call_cb_functions(ETag_surfxml_platform_cb_list);
 
   xbt_dict_free(&random_data_list);
-  xbt_dict_free(&set_list);
 }
 
 void STag_surfxml_host(void)
@@ -1012,6 +1011,7 @@ static void convert_route_multi_to_routes(void)
 	}     
       }
     }
+    xbt_dynar_free(&keys);
   }  
   pop_surfxml_bufferstack(0);
   xbt_dict_free(&route_multi_table);
