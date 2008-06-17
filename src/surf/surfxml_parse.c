@@ -577,6 +577,9 @@ static void free_data(void)
   xbt_dict_free(&route_table);
   route_link_list = NULL;
 
+  xbt_dict_free(&route_multi_table);
+  xbt_dynar_free(&route_multi_elements);
+
   xbt_dict_foreach(set_list, cursor, key, data) {
     xbt_dynar_t set = (xbt_dynar_t)data;
     char *name;
@@ -1014,8 +1017,6 @@ static void convert_route_multi_to_routes(void)
     xbt_dynar_free(&keys);
   }  
   pop_surfxml_bufferstack(0);
-  xbt_dict_free(&route_multi_table);
-  xbt_dynar_free(&route_multi_elements);
 }
 
 /* Cluster tag functions */
