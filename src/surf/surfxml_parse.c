@@ -660,6 +660,11 @@ static void parse_sets(void)
   } 
   
   xbt_dict_set(set_list, id, current_set, NULL);
+
+  free(radical);
+  free(suffix);
+  free(prefix);
+  free(id);
 }
 
 static const char* surfxml_host_power;
