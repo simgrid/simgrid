@@ -51,10 +51,6 @@ static void xbt_cfgelm_free(void *data);
 static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
 				   e_xbt_cfgelm_type_t type);
 
-static void xbt_cfg_str_free(void *d){
-  free(*(void**)d);
-}
-
 /*----[ Memory management ]-----------------------------------------------*/
 
 /** @brief Constructor
@@ -81,6 +77,7 @@ xbt_cfg_cpy(xbt_cfg_t tocopy,xbt_cfg_t *whereto) {
   xbt_cfgelm_t variable=NULL;
   char *name=NULL;
   
+  DEBUG1("Copy cfg set %p",tocopy);
   *whereto=NULL;
   xbt_assert0(tocopy,"cannot copy NULL config");
 
@@ -92,6 +89,7 @@ xbt_cfg_cpy(xbt_cfg_t tocopy,xbt_cfg_t *whereto) {
 
 /** @brief Destructor */
 void xbt_cfg_free(xbt_cfg_t *cfg) {
+  DEBUG1("Frees cfg set %p",cfg);
   xbt_dict_free((xbt_dict_t*)cfg);
 }
 
@@ -175,6 +173,7 @@ void xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
 void xbt_cfgelm_free(void *data) {
   xbt_cfgelm_t c=(xbt_cfgelm_t)data;
 
+  DEBUG1("Frees cfgelm %p",c);
   if (!c) return;
   xbt_dynar_free(&(c->content));
   free(c);
@@ -196,32 +195,21 @@ xbt_cfg_register(xbt_cfg_t cfg,
 		 int min, int max,
 		 xbt_cfg_cb_t cb_set,  xbt_cfg_cb_t cb_rm){
   xbt_cfgelm_t res;
-  xbt_ex_t e;
-  int found=0;
 
   xbt_assert(cfg);
   xbt_assert4(type>=xbt_cfgelm_int && type<=xbt_cfgelm_peer,
               "type of %s not valid (%d should be between %d and %d)",
               name,type,xbt_cfgelm_int, xbt_cfgelm_peer);
-  DEBUG5("Register cfg elm %s (%d to %d %s (=%d))",
-	 name,min,max,xbt_cfgelm_type_name[type],type);
-  TRY {
-    res = xbt_dict_get((xbt_dict_t)cfg,name);
-  } CATCH(e) {
-    if (e.category == not_found_error) {
-      found = 1;
-      xbt_ex_free(e);
-    } else {
-      RETHROW;
-    }
-  }
+  res = xbt_dict_get_or_null((xbt_dict_t)cfg,name);
 
-  if (!found) {
+  if (res) {
     WARN1("Config elem %s registered twice.",name);
     /* Will be removed by the insertion of the new one */
   } 
 
   res=xbt_new(s_xbt_cfgelm_t,1);
+  DEBUG7("Register cfg elm %s (%d to %d %s (=%d) @%p in set %p)",
+	 name,min,max,xbt_cfgelm_type_name[type],type,res,cfg);
 
   res->type=type;
   res->min=min;
@@ -239,7 +227,7 @@ xbt_cfg_register(xbt_cfg_t cfg,
     break;
 
   case xbt_cfgelm_string:
-   res->content = xbt_dynar_new(sizeof(char*),xbt_cfg_str_free);
+   res->content = xbt_dynar_new(sizeof(char*),xbt_free_ref);
    break;
 
   case xbt_cfgelm_peer:
@@ -264,6 +252,7 @@ xbt_cfg_register(xbt_cfg_t cfg,
 
 void
 xbt_cfg_unregister(xbt_cfg_t cfg,const char *name) {
+  DEBUG2("Unregister elm '%s' from set %p",name,cfg);
   xbt_dict_remove((xbt_dict_t)cfg,name);
 }
 
@@ -285,6 +274,7 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
 
   int min,max;
   e_xbt_cfgelm_type_t type;
+  DEBUG1("Register string '%s'",entry);
 
   tok=strchr(entrycpy, ':');
   xbt_assert2(tok,"Invalid config element descriptor: %s%s",
@@ -330,6 +320,7 @@ xbt_cfg_check(xbt_cfg_t cfg) {
   int size;
 
   xbt_assert0(cfg,"NULL config set.");
+  DEBUG1("Check cfg set %p",cfg);
 
   xbt_dict_foreach((xbt_dict_t)cfg,cursor,name,variable) {
     size = xbt_dynar_length(variable->content);
@@ -361,18 +352,11 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t  cfg,
 				   const char *name,
 				   e_xbt_cfgelm_type_t type){
   xbt_cfgelm_t res=NULL;
-  xbt_ex_t e;
 
-  TRY {
-    res = xbt_dict_get((xbt_dict_t)cfg,name);
-  } CATCH(e) {
-    if (e.category == not_found_error) {
-      xbt_ex_free(e);
-      THROW1(not_found_error,0,
-	     "No registered variable '%s' in this config set",name);
-    }
-    RETHROW;
-  }
+  res = xbt_dict_get_or_null((xbt_dict_t)cfg,name);
+  if (!res)
+    THROW1(not_found_error,0,
+	   "No registered variable '%s' in this config set",name);
 
   xbt_assert3(type == xbt_cfgelm_any || res->type == type,
 	       "You tried to access to the config element %s as an %s, but its type is %s.",
@@ -395,18 +379,11 @@ e_xbt_cfgelm_type_t
 xbt_cfg_get_type(xbt_cfg_t cfg, const char *name) {
 
   xbt_cfgelm_t variable = NULL;
-  xbt_ex_t e;
 
-  TRY {
-    variable = xbt_dict_get((xbt_dict_t)cfg,name);
-  } CATCH(e) {
-    if (e.category == not_found_error) { 
-      xbt_ex_free(e);
-      THROW1(not_found_error,0,
-	     "Can't get the type of '%s' since this variable does not exist",name);
-    }
-    RETHROW;
-  }
+  variable = xbt_dict_get_or_null((xbt_dict_t)cfg,name);
+  if (!variable)
+    THROW1(not_found_error,0,
+	   "Can't get the type of '%s' since this variable does not exist",name);
 
   INFO1("type in variable = %d",variable->type);
 
@@ -722,6 +699,8 @@ xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) {
 
   VERB2("Configuration setting: %s=%s",name,val);
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_string);
+  DEBUG5("Variable: %d to %d %s (=%d) @%p",
+	 variable->min,variable->max,xbt_cfgelm_type_name[variable->type],variable->type,variable);
 
   if (variable->max == 1) {
     if (xbt_dynar_length(variable->content)) {
