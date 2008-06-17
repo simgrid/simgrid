@@ -552,6 +552,16 @@ static void free_data(void)
   xbt_dict_free(&route_table);
   route_link_list = NULL;
 
+  xbt_dict_foreach(set_list, cursor, key, data) {
+    xbt_dynar_t set = (xbt_dynar_t)data;
+    char *name;
+    unsigned int cpt = 0;
+
+    xbt_dynar_foreach (set, cpt, name)  free(name);
+    xbt_dynar_free(&set);
+  }
+  xbt_dict_free(&set_list);
+
   xbt_dict_free(&trace_connect_list_host_avail);
   xbt_dict_free(&trace_connect_list_power);
   xbt_dict_free(&trace_connect_list_link_avail);
