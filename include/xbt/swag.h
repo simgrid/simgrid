@@ -15,6 +15,8 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h" /* size_t */
 
+SG_BEGIN_DECL()
+
 /** 
  * @addtogroup XBT_swag
  * @brief a O(1) set based on linked lists
@@ -157,5 +159,7 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
        ((obj)?(obj_next=xbt_swag_getNext((obj),(swag)->offset)):  \
                  (obj_next=NULL))     )
 /* @} */
+
+SG_END_DECL()
 
 #endif    /* _XBT_SWAG_H */
