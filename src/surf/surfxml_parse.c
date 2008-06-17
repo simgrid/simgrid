@@ -677,6 +677,8 @@ static void parse_sets(void)
   
   xbt_dict_set(set_list, id, current_set, NULL);
 
+  xbt_dynar_free(&radical_ends);
+
   free(radical);
   free(suffix);
   free(prefix);
