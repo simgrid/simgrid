@@ -31,7 +31,7 @@ xbt_dict_t trace_connect_list_latency = NULL;
 /* This buffer is used to store the original buffer before substituing it by out own buffer. Usefull for the foreach tag */
 char* old_buff;
 /* Stores the set name reffered to by the foreach tag */
-static const char* foreach_set_name;
+static char* foreach_set_name;
 static xbt_dynar_t main_STag_surfxml_host_cb_list = NULL;
 static xbt_dynar_t main_ETag_surfxml_host_cb_list = NULL;
 static xbt_dynar_t main_STag_surfxml_link_cb_list = NULL;
@@ -547,6 +547,10 @@ static void free_data(void)
 
   xbt_dict_foreach(route_table, cursor, key, data) {
     xbt_dynar_t links = (xbt_dynar_t)data;
+    char *name;
+    unsigned int cpt = 0;
+
+    xbt_dynar_foreach (links, cpt, name)  free(name);
     xbt_dynar_free(&links);
   }
   xbt_dict_free(&route_table);
@@ -765,6 +769,8 @@ static void finalize_link_foreach(void)
   current_property_set = xbt_dict_new();
 
   surfxml_bufferstack = old_buff;
+  free(foreach_set_name);
+  foreach_set_name=NULL;
 }
 
 static void parse_foreach(void)
