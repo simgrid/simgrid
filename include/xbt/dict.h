@@ -46,6 +46,7 @@ SG_BEGIN_DECL()
   typedef struct xbt_dict_ *xbt_dict_t;
   XBT_PUBLIC(xbt_dict_t) xbt_dict_new(void);
   XBT_PUBLIC(void) xbt_dict_free(xbt_dict_t *dict);
+  XBT_PUBLIC(unsigned int) xbt_dict_size(xbt_dict_t dict);
 
 /** @} */
 /** @defgroup XBT_dict_basic Dictionnaries basic usage

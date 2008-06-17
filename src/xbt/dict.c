@@ -94,6 +94,13 @@ void xbt_dict_free(xbt_dict_t *dict) {
 }
 
 /**
+ * Returns the amount of elements in the dict
+ */
+unsigned int xbt_dict_size(xbt_dict_t dict) {   
+      return dict->count;
+}
+
+/**
  * Returns the hash code of a string.
  */
 static XBT_INLINE unsigned int xbt_dict_hash_ext(const char *str, int str_len) {
