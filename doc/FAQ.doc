@@ -1146,36 +1146,10 @@ of the root tag. Currently, it should read:
 If your files are too old, you can use the simgrid_update_xml.pl
 script which can be found in the tools directory of the archive.
 
-\subsection faq_trouble_valgrind Valgrind-related issues
+\subsection faq_trouble_valgrind Valgrind-related and other debugger issues
 
 If you don't, you really should use valgrind to debug your code, it's
 almost magic.
-
-\subsubsection faq_trouble_vg_context Stack switching problems and truncated backtraces
-
-With the default version of simgrid, valgrind will probably spit tons
-of warnings about stack switching like the following, and produce
-truncated bactraces where only one call appears instead of the whole
-stack.
-
-\verbatim
-==14908== Warning: client switching stacks?  SP change: 0xBEA2A48C --> 0x476F350
-==14908==          to suppress, use: --max-stackframe=1171541700 or greater
-==14908== Warning: client switching stacks?  SP change: 0x476E1E4 --> 0xBEA2A48C
-==14908==          to suppress, use: --max-stackframe=1171537240 or greater
-==14908== Warning: client switching stacks?  SP change: 0xBEA2A48C --> 0x4792420
-==14908==          to suppress, use: --max-stackframe=1171685268 or greater
-==14908==          further instances of this message will not be shown.
-\endverbatim
-
-This is because valgrind don't like too much the UNIX98 contextes we
-use by default in simgrid for efficiency reasons. Simply add the
---with-pthread flag to your configure when debugging your code. You
-may also find --disable-compiler-optimization usefull if valgrind or
-gdb get fooled by the optimization done by the compiler. But you
-should remove these flages when everything works before going in
-production (before launching your 1252135 experiments), or everything
-will run only one third of the true SimGrid potential.
 
 \subsubsection faq_trouble_vg_longjmp longjmp madness in valgrind
 
@@ -1186,27 +1160,6 @@ This is when valgrind starts complaining about longjmp things, just like:
 ==21434==
 ==21434== Use of uninitialised value of size 4
 ==21434==    at 0x420DC3A: __longjmp (__longjmp.S:48)
-\endverbatim
-
-or even when it reports scary things like:
-
-\verbatim ==24023== Warning: client switching stacks?  SP change: 0xBE3FF618 --> 0xBE7FF710
-x86->IR: unhandled instruction bytes: 0xF4 0xC7 0x83 0xD0
-==24023==          to suppress, use: --max-stackframe=4194552 or greater
-==24023== Your program just tried to execute an instruction that Valgrind
-==24023== did not recognise.  There are two possible reasons for this.
-==24023== 1. Your program has a bug and erroneously jumped to a non-code
-==24023==    location.  If you are running Memcheck and you just saw a
-==24023==    warning about a bad jump, it's probably your program's fault.
-==24023== 2. The instruction is legitimate but Valgrind doesn't handle it,
-==24023==    i.e. it's Valgrind's fault.  If you think this is the case or
-==24023==    you are not sure, please let us know.
-==24023== Either way, Valgrind will now raise a SIGILL signal which will
-==24023== probably kill your program.
-==24023==
-==24023== Process terminating with default action of signal 4 (SIGILL)
-==24023==  Illegal opcode at address 0x420D234
-==24023==    at 0x420D234: abort (abort.c:124)
 \endverbatim
 
 This is the sign that you didn't used the exception mecanism well. Most
@@ -1259,6 +1212,15 @@ happen to be my personnal settings. Check the valgrind documentation for
 more information.
 
 \verbatim export VALGRIND_OPTS="--leak-check=yes --leak-resolution=high --num-callers=40 --tool=memcheck --suppressions=$HOME/.valgrind.supp" \endverbatim
+
+\subsubsection faq_trouble_backtraces Truncated backtraces
+
+When debugging SimGrid, it's easier to pass the
+--disable-compiler-optimization flag to the configure if valgrind or
+gdb get fooled by the optimization done by the compiler. But you
+should remove these flages when everything works before going in
+production (before launching your 1252135 experiments), or everything
+will run only one half of the true SimGrid potential.
 
 \subsection faq_deadlock There is a deadlock in my code!!!
 
