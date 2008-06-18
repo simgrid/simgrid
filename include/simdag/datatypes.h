@@ -26,6 +26,11 @@ typedef enum {
   SD_WORKSTATION_SEQUENTIAL_ACCESS  /**< @brief Only one task can be executed, the others wait in a FIFO. */
 } e_SD_workstation_access_mode_t;
 
+typedef enum {
+  SD_LINK_SHARED,
+  SD_LINK_FATPIPE
+} e_SD_link_sharing_policy_t;
+ 
 /** @brief Link datatype
     @ingroup SD_datatypes_management
 

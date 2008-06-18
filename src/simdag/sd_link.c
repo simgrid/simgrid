@@ -156,6 +156,21 @@ double SD_link_get_current_latency(SD_link_t link) {
   return surf_workstation_model->extension_public->get_link_latency(link->surf_link);
 }
 
+/**
+ * \brief Returns the sharing policy of this workstation.
+ *
+ * \param link a link
+ * \return the sharing policyfor the flows going through this link:
+ * SD_LINK_SHARED or SD_LINK_FATPIPE
+ *
+ */
+e_SD_link_sharing_policy_t SD_link_get_sharing_policy (SD_link_t link) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(link != NULL, "Invalid parameter");
+  return link->sharing_policy;
+}
+
+ 
 /* Destroys a link.
  */
 void __SD_link_destroy(void *link) {

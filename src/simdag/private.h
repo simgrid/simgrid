@@ -47,6 +47,7 @@ extern SD_global_t sd_global;
 typedef struct SD_link {
   void *surf_link; /* surf object */
   void *data; /* user data */
+  e_SD_link_sharing_policy_t sharing_policy; 
 } s_SD_link_t;
 
 /* Workstation */

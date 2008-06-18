@@ -30,6 +30,7 @@ XBT_PUBLIC(void)               SD_link_set_data(SD_link_t link, void *data);
 XBT_PUBLIC(const char*)        SD_link_get_name(SD_link_t link);
 XBT_PUBLIC(double)             SD_link_get_current_bandwidth(SD_link_t link);
 XBT_PUBLIC(double)             SD_link_get_current_latency(SD_link_t link);
+XBT_PUBLIC(e_SD_link_sharing_policy_t) SD_link_get_sharing_policy(SD_link_t link);
 /*property handling functions*/
 XBT_PUBLIC(xbt_dict_t) SD_link_get_properties(SD_link_t link);
 XBT_PUBLIC(const char*) SD_link_get_property_value(SD_link_t link, const char* name);
