@@ -1,4 +1,4 @@
-/*     $Id$      */
+/*     $Id: environment.c 5354 2008-04-30 08:55:54Z mquinson $      */
 
 /* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
 /* Copyright (c) 2007 Bruno Donassolo.                                      */
@@ -10,6 +10,7 @@
 #include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/dict.h"
 
 /** \defgroup msg_easier_life      Platform and Application management
  *  \brief This section describes functions to manage the platform creation
@@ -59,16 +60,15 @@ m_host_t MSG_get_host_by_name(const char *name)
  */
 void MSG_create_environment(const char *file)
 {
-  smx_host_t *workstation = NULL;
-  int i;
+  xbt_dict_cursor_t c;
+  smx_host_t h;
+  char *name;
 
   SIMIX_create_environment(file);
 
   /* Initialize MSG hosts */
-  workstation = SIMIX_host_get_table();
-  for (i = 0; i < SIMIX_host_get_number(); i++) {
-    __MSG_host_create(workstation[i], NULL);
+  xbt_dict_foreach(SIMIX_host_get_dict(),c,name,h) {
+    __MSG_host_create(h, NULL);
   }
-  xbt_free(workstation);
   return;
 }
