@@ -48,9 +48,7 @@ void test(char *platform)
   double now = -1.0;
 
   int workstation_id =
-      find_model_description(surf_workstation_model_description,
-			     surf_workstation_model_description_size,
-			     "CLM03");
+      find_model_description(surf_workstation_model_description,"CLM03");
 
   surf_workstation_model_description[workstation_id].model_init(platform);
   parse_platform_file(platform);
