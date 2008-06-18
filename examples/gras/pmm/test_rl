@@ -1,40 +1,157 @@
 # Ignore the output of slaves since it depends on the order of connexion
 
 ! timeout no
-! output display
-& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
+& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 0 --log=root.fmt:%m%n
+> Sensor 0 starting
+> Receive my pos (0,0) and assignment
+> LINE: step(0) = Myline(0). Broadcast my data.
+> LINE:   Send to 127.0.0.1
+> LINE:   Send to 127.0.0.1
+> ROW: step(0)=myrow(0). Broadcast my data.
+> ROW:   Send to 127.0.0.1
+> ROW:   Send to 127.0.0.1
+> LINE: step(1) <> Myline(0). Receive data from 127.0.0.1
+> ROW: step(1)<>myrow(0). Receive data from 127.0.0.1
+> LINE: step(2) <> Myline(0). Receive data from 127.0.0.1
+> ROW: step(2)<>myrow(0). Receive data from 127.0.0.1
+> >>>>>>>> Result sent to 127.0.0.1:4242 <<<<<<<<
+> Exiting GRAS
 
 ! timeout no
-! output display
-& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
+& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 1 --log=root.fmt:%m%n
+> Sensor 1 starting
+> Receive my pos (0,1) and assignment
+> LINE: step(0) = Myline(0). Broadcast my data.
+> LINE:   Send to 127.0.0.1
+> LINE:   Send to 127.0.0.1
+> ROW: step(0)<>myrow(1). Receive data from 127.0.0.1
+> LINE: step(1) <> Myline(0). Receive data from 127.0.0.1
+> ROW: step(1)=myrow(1). Broadcast my data.
+> ROW:   Send to 127.0.0.1
+> ROW:   Send to 127.0.0.1
+> LINE: step(2) <> Myline(0). Receive data from 127.0.0.1
+> ROW: step(2)<>myrow(1). Receive data from 127.0.0.1
+> >>>>>>>> Result sent to 127.0.0.1:4242 <<<<<<<<
+> Exiting GRAS
 
 ! timeout no
-! output display
-& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
+& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 2 --log=root.fmt:%m%n
+> Sensor 2 starting
+> Receive my pos (0,2) and assignment
+> LINE: step(0) = Myline(0). Broadcast my data.
+> LINE:   Send to 127.0.0.1
+> LINE:   Send to 127.0.0.1
+> ROW: step(0)<>myrow(2). Receive data from 127.0.0.1
+> LINE: step(1) <> Myline(0). Receive data from 127.0.0.1
+> ROW: step(1)<>myrow(2). Receive data from 127.0.0.1
+> LINE: step(2) <> Myline(0). Receive data from 127.0.0.1
+> ROW: step(2)=myrow(2). Broadcast my data.
+> ROW:   Send to 127.0.0.1
+> ROW:   Send to 127.0.0.1
+> >>>>>>>> Result sent to 127.0.0.1:4242 <<<<<<<<
+> Exiting GRAS
 
 ! timeout no
-! output display
-& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
+& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 3 --log=root.fmt:%m%n
+> Sensor 3 starting
+> Receive my pos (1,0) and assignment
+> LINE: step(0) <> Myline(1). Receive data from 127.0.0.1
+> ROW: step(0)=myrow(0). Broadcast my data.
+> ROW:   Send to 127.0.0.1
+> ROW:   Send to 127.0.0.1
+> LINE: step(1) = Myline(1). Broadcast my data.
+> LINE:   Send to 127.0.0.1
+> LINE:   Send to 127.0.0.1
+> ROW: step(1)<>myrow(0). Receive data from 127.0.0.1
+> LINE: step(2) <> Myline(1). Receive data from 127.0.0.1
+> ROW: step(2)<>myrow(0). Receive data from 127.0.0.1
+> >>>>>>>> Result sent to 127.0.0.1:4242 <<<<<<<<
+> Exiting GRAS
 
 ! timeout no
-! output display
-& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
+& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 4 --log=root.fmt:%m%n
+> Sensor 4 starting
+> Receive my pos (1,1) and assignment
+> LINE: step(0) <> Myline(1). Receive data from 127.0.0.1
+> ROW: step(0)<>myrow(1). Receive data from 127.0.0.1
+> LINE: step(1) = Myline(1). Broadcast my data.
+> LINE:   Send to 127.0.0.1
+> LINE:   Send to 127.0.0.1
+> ROW: step(1)=myrow(1). Broadcast my data.
+> ROW:   Send to 127.0.0.1
+> ROW:   Send to 127.0.0.1
+> LINE: step(2) <> Myline(1). Receive data from 127.0.0.1
+> ROW: step(2)<>myrow(1). Receive data from 127.0.0.1
+> >>>>>>>> Result sent to 127.0.0.1:4242 <<<<<<<<
+> Exiting GRAS
 
 ! timeout no
-! output display
-& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
+& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 5 --log=root.fmt:%m%n
+> Sensor 5 starting
+> Receive my pos (1,2) and assignment
+> LINE: step(0) <> Myline(1). Receive data from 127.0.0.1
+> ROW: step(0)<>myrow(2). Receive data from 127.0.0.1
+> LINE: step(1) = Myline(1). Broadcast my data.
+> LINE:   Send to 127.0.0.1
+> LINE:   Send to 127.0.0.1
+> ROW: step(1)<>myrow(2). Receive data from 127.0.0.1
+> LINE: step(2) <> Myline(1). Receive data from 127.0.0.1
+> ROW: step(2)=myrow(2). Broadcast my data.
+> ROW:   Send to 127.0.0.1
+> ROW:   Send to 127.0.0.1
+> >>>>>>>> Result sent to 127.0.0.1:4242 <<<<<<<<
+> Exiting GRAS
 
 ! timeout no
-! output display
-& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
+& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 6 --log=root.fmt:%m%n
+> Sensor 6 starting
+> Receive my pos (2,0) and assignment
+> LINE: step(0) <> Myline(2). Receive data from 127.0.0.1
+> ROW: step(0)=myrow(0). Broadcast my data.
+> ROW:   Send to 127.0.0.1
+> ROW:   Send to 127.0.0.1
+> LINE: step(1) <> Myline(2). Receive data from 127.0.0.1
+> ROW: step(1)<>myrow(0). Receive data from 127.0.0.1
+> LINE: step(2) = Myline(2). Broadcast my data.
+> LINE:   Send to 127.0.0.1
+> LINE:   Send to 127.0.0.1
+> ROW: step(2)<>myrow(0). Receive data from 127.0.0.1
+> >>>>>>>> Result sent to 127.0.0.1:4242 <<<<<<<<
+> Exiting GRAS
 
 ! timeout no
-! output display
-& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
+& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 7 --log=root.fmt:%m%n
+> Sensor 7 starting
+> Receive my pos (2,1) and assignment
+> LINE: step(0) <> Myline(2). Receive data from 127.0.0.1
+> ROW: step(0)<>myrow(1). Receive data from 127.0.0.1
+> LINE: step(1) <> Myline(2). Receive data from 127.0.0.1
+> ROW: step(1)=myrow(1). Broadcast my data.
+> ROW:   Send to 127.0.0.1
+> ROW:   Send to 127.0.0.1
+> LINE: step(2) = Myline(2). Broadcast my data.
+> LINE:   Send to 127.0.0.1
+> LINE:   Send to 127.0.0.1
+> ROW: step(2)<>myrow(1). Receive data from 127.0.0.1
+> >>>>>>>> Result sent to 127.0.0.1:4242 <<<<<<<<
+> Exiting GRAS
 
 ! timeout no
-! output display
-& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
+& $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 8 --log=root.fmt:%m%n
+> Sensor 8 starting
+> Receive my pos (2,2) and assignment
+> LINE: step(0) <> Myline(2). Receive data from 127.0.0.1
+> ROW: step(0)<>myrow(2). Receive data from 127.0.0.1
+> LINE: step(1) <> Myline(2). Receive data from 127.0.0.1
+> ROW: step(1)<>myrow(2). Receive data from 127.0.0.1
+> LINE: step(2) = Myline(2). Broadcast my data.
+> LINE:   Send to 127.0.0.1
+> LINE:   Send to 127.0.0.1
+> ROW: step(2)=myrow(2). Broadcast my data.
+> ROW:   Send to 127.0.0.1
+> ROW:   Send to 127.0.0.1
+> >>>>>>>> Result sent to 127.0.0.1:4242 <<<<<<<<
+> Exiting GRAS
 
 ! timeout no
 & $SG_TEST_EXENV ./pmm_master$EXEEXT 4242 --log=root.fmt:%m%n
