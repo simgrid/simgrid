@@ -17,6 +17,10 @@ SD_link_t __SD_link_create(void *surf_link, void *data) {
   link = xbt_new(s_SD_link_t, 1);
   link->surf_link = surf_link;
   link->data = data; /* user data */
+  if(surf_workstation_model->extension_public->link_shared(link))
+    link->sharing_policy=SD_LINK_SHARED;
+  else
+    link->sharing_policy=SD_LINK_FATPIPE;
 
   name = SD_link_get_name(link);
   xbt_dict_set(sd_global->links, name, link, __SD_link_destroy); /* add the link to the dictionary */
