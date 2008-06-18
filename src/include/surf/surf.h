@@ -138,10 +138,8 @@ typedef struct surf_model_public {
   int (*is_suspended) (surf_action_t action); /**< Return whether an action is suspended */
   void (*set_max_duration) (surf_action_t action, double duration); /**< Set the max duration of an action*/
   void (*set_priority) (surf_action_t action, double priority); /**< Set the priority of an action */
+  xbt_dict_t (*get_properties) (void* resource_id); /**< Return the properties dictionary */
   const char *name; /**< Name of this model */
-
-  xbt_dict_t (*get_properties) (void* link); /**< Return the properties dictionary */
-
 } s_surf_model_public_t, *surf_model_public_t;
 
 /** \brief Private data available on all models
