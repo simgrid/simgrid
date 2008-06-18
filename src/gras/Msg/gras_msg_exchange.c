@@ -53,7 +53,7 @@ gras_msg_wait_ext_(double           timeout,
   xbt_assert0(msg_got,"msg_got is an output parameter");
 
   start = gras_os_time();
-  VERB1("Waiting for message '%s'",msgt_want?msgt_want->name:"(any)");
+  VERB2("Waiting for message '%s' for %fs",msgt_want?msgt_want->name:"(any)", timeout);
 
   xbt_dynar_foreach(pd->msg_waitqueue,cpt,msg){
     if ( (   !msgt_want || (msg.type->code == msgt_want->code)) 
@@ -448,12 +448,14 @@ gras_msg_handle(double timeOut) {
 
 
   case e_gras_msg_kind_rpcanswer:
-    INFO1("Unexpected RPC answer discarded (type: %s)", msg.type->name);
+    INFO3("Unexpected RPC answer discarded (type: %s; from:%s:%d)", msg.type->name,
+	  gras_socket_peer_name(msg.expe),gras_socket_peer_port(msg.expe));
     WARN0("FIXME: gras_datadesc_free not implemented => leaking the payload");
     return;
 
   case e_gras_msg_kind_rpcerror:
-    INFO1("Unexpected RPC error discarded (type: %s)", msg.type->name);
+    INFO3("Unexpected RPC error discarded (type: %s; from:%s:%d)", msg.type->name,
+	  gras_socket_peer_name(msg.expe),gras_socket_peer_port(msg.expe));
     WARN0("FIXME: gras_datadesc_free not implemented => leaking the payload");
     return;
 
