@@ -565,6 +565,8 @@ static void free_data(void)
 {
   char *key,*data;
   xbt_dict_cursor_t cursor = NULL;
+  char *name;
+  unsigned int cpt = 0;
 
   xbt_dict_foreach(route_table, cursor, key, data) {
     xbt_dynar_t links = (xbt_dynar_t)data;
@@ -578,12 +580,12 @@ static void free_data(void)
   route_link_list = NULL;
 
   xbt_dict_free(&route_multi_table);
+
+  xbt_dynar_foreach (route_multi_elements, cpt, name)  free(name);
   xbt_dynar_free(&route_multi_elements);
 
   xbt_dict_foreach(set_list, cursor, key, data) {
     xbt_dynar_t set = (xbt_dynar_t)data;
-    char *name;
-    unsigned int cpt = 0;
 
     xbt_dynar_foreach (set, cpt, name)  free(name);
     xbt_dynar_free(&set);
@@ -1108,6 +1110,8 @@ static void parse_cluster(void)
     
    SURFXML_END_TAG(route_c_multi);
 
+
+   free(backbone_name);
 
    /* Restore buff */
    pop_surfxml_bufferstack(1);
