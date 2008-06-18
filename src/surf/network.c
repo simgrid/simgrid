@@ -34,6 +34,7 @@ static void create_routing_table(void)
 static void link_free(void *nw_link)
 {
   free(((link_CM02_t) nw_link)->name);
+  xbt_dict_free(&(((link_CM02_t)nw_link)->properties));
   free(nw_link);
 }
 

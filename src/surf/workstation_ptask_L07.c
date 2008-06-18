@@ -673,6 +673,7 @@ static double get_link_latency(const void *link)
 static void cpu_free(void *cpu)
 {
   free(((cpu_L07_t) cpu)->name);
+  xbt_dict_free(&(((cpu_L07_t)cpu)->properties));
   free(cpu);
 }
 
@@ -751,6 +752,7 @@ static void parse_cpu_init(void)
 static void link_free(void *nw_link)
 {
   free(((link_L07_t) nw_link)->name);
+  xbt_dict_free(&(((link_L07_t)nw_link)->properties));
   free(nw_link);
 }
 

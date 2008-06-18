@@ -26,6 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
 static void link_free(void *nw_link)
 {
   free(((network_link_GTNETS_t) nw_link)->name);
+  xbt_dict_free(&(((network_link_GTNETS_t)nw_link)->properties));
   free(nw_link);
 }
 
@@ -75,7 +76,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   gtnets_link->lat_current = lat;
   gtnets_link->id = link_count;
   /* Add the properties */
-  gtnets_link->properties = current_property_set;
+  gtnets_link->properties = props;
 
   xbt_dict_set(link_set, name, gtnets_link, link_free);
 

@@ -19,6 +19,7 @@ static xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
 static void cpu_free(void *cpu)
 {
   free(((cpu_Cas01_t) cpu)->name);
+  xbt_dict_free(&(((cpu_Cas01_t)cpu)->properties));
   free(cpu);
 }
 
