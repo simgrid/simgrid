@@ -665,6 +665,10 @@ static double get_link_latency(const void *link)
   return ((link_L07_t) link)->lat_current;
 }
 
+static int link_shared(const void *link)
+{
+  return lmm_constraint_is_shared(((link_L07_t) link)->constraint);
+}
 
 /**************************************/
 /*** Resource Creation & Destruction **/
@@ -1123,6 +1127,8 @@ static void model_init_internal(void)
       get_link_bandwidth;
   surf_workstation_model->extension_public->get_link_latency =
       get_link_latency;
+  surf_workstation_model->extension_public->link_shared =
+      link_shared;
 
   surf_workstation_model->common_public->get_properties = get_properties;
 

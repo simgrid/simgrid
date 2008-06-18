@@ -617,6 +617,11 @@ static double get_link_latency(const void *link)
   return ((link_CM02_t) link)->lat_current;
 }
 
+static int link_shared(const void *link)
+{
+  return lmm_constraint_is_shared(((link_CM02_t) link)->constraint);
+}
+
 static xbt_dict_t get_properties(void *link)
 {
  return ((link_CM02_t) link)->properties;
@@ -749,6 +754,8 @@ static void surf_network_model_init_internal(void)
       get_link_bandwidth;
   surf_network_model->extension_public->get_link_latency =
       get_link_latency;
+  surf_network_model->extension_public->link_shared =
+      link_shared;
 
   surf_network_model->common_public->get_properties =  get_properties;
 

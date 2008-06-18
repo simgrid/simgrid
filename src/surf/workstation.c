@@ -305,6 +305,11 @@ static double get_link_latency(const void *link)
   return surf_network_model->extension_public->get_link_latency(link);
 }
 
+static int link_shared(const void *link)
+{
+  return surf_network_model->extension_public->get_link_latency(link);
+}
+
 static void finalize(void)
 {
   xbt_dict_free(&workstation_set);
@@ -408,6 +413,9 @@ static void surf_workstation_model_init_internal(void)
       get_link_bandwidth;
   surf_workstation_model->extension_public->get_link_latency =
       get_link_latency;
+  surf_workstation_model->extension_public->link_shared =
+      link_shared;
+
   workstation_set = xbt_dict_new();
 }
 

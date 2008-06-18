@@ -260,6 +260,7 @@ typedef struct surf_network_model_extension_public {
   const char* (*get_link_name) (const void *link);
   double (*get_link_bandwidth) (const void *link);
   double (*get_link_latency) (const void *link);
+  int (*link_shared) (const void *link);
 } s_surf_network_model_extension_public_t,
     *surf_network_model_extension_public_t;
 
@@ -420,6 +421,7 @@ typedef struct surf_workstation_model_extension_public {
   const char* (*get_link_name) (const void *link);                     /**< Return the name of a network link */
   double (*get_link_bandwidth) (const void *link);                     /**< Return the current bandwidth of a network link */
   double (*get_link_latency) (const void *link);                       /**< Return the current latency of a network link */
+  int (*link_shared) (const void *link);
 } s_surf_workstation_model_extension_public_t,
     *surf_workstation_model_extension_public_t;
 

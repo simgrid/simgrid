@@ -126,6 +126,11 @@ void lmm_constraint_shared(lmm_constraint_t cnst)
   cnst->shared = 0;
 }
 
+int lmm_constraint_is_shared(lmm_constraint_t cnst)
+{
+  return (cnst->shared);
+}
+
 void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst)
 {
   remove_constraint(sys, cnst);

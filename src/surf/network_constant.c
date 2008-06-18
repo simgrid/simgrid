@@ -259,6 +259,11 @@ static double get_link_latency(const void *link)
   DIE_IMPOSSIBLE;
 }
 
+static int link_shared(const void *link)
+{
+  DIE_IMPOSSIBLE;
+}
+
 static xbt_dict_t get_properties(void *link)
 {
   DIE_IMPOSSIBLE;
@@ -369,6 +374,8 @@ static void surf_network_model_init_internal(void)
       get_link_bandwidth;
   surf_network_model->extension_public->get_link_latency =
       get_link_latency;
+  surf_network_model->extension_public->link_shared =
+      link_shared;
 
   surf_network_model->common_public->get_properties =  get_properties;
 
