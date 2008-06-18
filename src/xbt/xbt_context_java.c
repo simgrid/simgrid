@@ -207,6 +207,7 @@ static void xbt_ctx_java_start(xbt_context_t context)
 static void xbt_ctx_java_stop(int exit_code)
 {
   jobject jprocess = NULL;
+
   xbt_ctx_java_t ctx_java;
 
   if (current_context->cleanup_func)

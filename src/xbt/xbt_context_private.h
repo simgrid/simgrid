@@ -20,10 +20,15 @@ SG_BEGIN_DECL()
 /* *********************** */
 /* the following function pointers describe the interface that all context concepts must implement */
      typedef void (*xbt_pfn_context_free_t) (xbt_context_t);    /* pointer type to the function used to destroy the specified context   */
+
      typedef void (*xbt_pfn_context_kill_t) (xbt_context_t);    /* pointer type to the function used to kill the specified context              */
+
      typedef void (*xbt_pfn_context_schedule_t) (xbt_context_t);        /* pointer type to the function used to resume the specified context    */
+
      typedef void (*xbt_pfn_context_yield_t) (void);    /* pointer type to the function used to yield the specified context             */
+
      typedef void (*xbt_pfn_context_start_t) (xbt_context_t);   /* pointer type to the function used to start the specified context             */
+
      typedef void (*xbt_pfn_context_stop_t) (int);      /* pointer type to the function used to stop the current context                */
 
 /* each context type must contain this macro at its begining -- OOP in C :/ */
@@ -57,10 +62,12 @@ SG_BEGIN_DECL()
 
 /* Important guys */
      extern xbt_context_t current_context;
+
      extern xbt_context_t maestro_context;
 
 /* All dudes lists */
      extern xbt_swag_t context_living;
+
      extern xbt_swag_t context_to_destroy;
 
 /* *********************** */
@@ -80,8 +87,8 @@ SG_BEGIN_DECL()
                                                                        char
                                                                        **);
      typedef
-       int (*xbt_pfn_context_factory_create_maestro_context_t) (xbt_context_t
-                                                                *);
+     int (*xbt_pfn_context_factory_create_maestro_context_t) (xbt_context_t
+                                                              *);
 
 /* this function finalize the specified context factory */
      typedef int (*xbt_pfn_context_factory_finalize_t) (xbt_context_factory_t
@@ -111,6 +118,7 @@ SG_BEGIN_DECL()
  * If the factory cannot be found, an exception is raised.
  */
      void
+
       
        xbt_context_init_factory_by_name(xbt_context_factory_t * factory,
                                         const char *name);
@@ -118,7 +126,9 @@ SG_BEGIN_DECL()
 
 /* All factories init */
      void xbt_ctx_thread_factory_init(xbt_context_factory_t * factory);
+
      void xbt_ctx_sysv_factory_init(xbt_context_factory_t * factory);
+
      void xbt_ctx_java_factory_init(xbt_context_factory_t * factory);
 
 

@@ -36,17 +36,29 @@ static int
 xbt_ctx_thread_factory_create_master_context(xbt_context_t * maestro);
 
 static int xbt_ctx_thread_factory_finalize(xbt_context_factory_t * factory);
+
 static void xbt_ctx_thread_free(xbt_context_t context);
+
 static void xbt_ctx_thread_kill(xbt_context_t context);
+
 static void xbt_ctx_thread_schedule(xbt_context_t context);
+
 static void xbt_ctx_thread_yield(void);
+
 static void xbt_ctx_thread_start(xbt_context_t context);
+
 static void xbt_ctx_thread_stop(int exit_code);
+
 static void xbt_ctx_thread_swap(xbt_context_t context);
+
 static void xbt_ctx_thread_schedule(xbt_context_t context);
+
 static void xbt_ctx_thread_yield(void);
+
 static void xbt_ctx_thread_suspend(xbt_context_t context);
+
 static void xbt_ctx_thread_resume(xbt_context_t context);
+
 static void *xbt_ctx_thread_wrapper(void *param);
 
 void xbt_ctx_thread_factory_init(xbt_context_factory_t * factory)
@@ -64,7 +76,7 @@ static int
 xbt_ctx_thread_factory_create_master_context(xbt_context_t * maestro)
 {
   *maestro = (xbt_context_t) xbt_new0(s_xbt_ctx_thread_t, 1);
-  (*maestro)->name = (char*)"maestro";
+  (*maestro)->name = (char *) "maestro";
   return 0;
 }
 
@@ -85,7 +97,7 @@ xbt_ctx_thread_factory_create_context(const char *name, xbt_main_func_t code,
 {
   xbt_ctx_thread_t context = xbt_new0(s_xbt_ctx_thread_t, 1);
 
-  VERB1("Create context %s",name);
+  VERB1("Create context %s", name);
   context->code = code;
   context->name = xbt_strdup(name);
   context->begin = xbt_os_sem_init(0);
@@ -139,7 +151,7 @@ static void xbt_ctx_thread_free(xbt_context_t context)
 
 static void xbt_ctx_thread_kill(xbt_context_t context)
 {
-  DEBUG1("Kill context '%s'",context->name);
+  DEBUG1("Kill context '%s'", context->name);
   context->iwannadie = 1;
   xbt_ctx_thread_swap(context);
 }
@@ -155,7 +167,7 @@ static void xbt_ctx_thread_kill(xbt_context_t context)
  */
 static void xbt_ctx_thread_schedule(xbt_context_t context)
 {
-  DEBUG1("Schedule context '%s'",context->name);
+  DEBUG1("Schedule context '%s'", context->name);
   xbt_assert0((current_context == maestro_context),
               "You are not supposed to run this function here!");
   xbt_ctx_thread_swap(context);
@@ -171,7 +183,7 @@ static void xbt_ctx_thread_schedule(xbt_context_t context)
  */
 static void xbt_ctx_thread_yield(void)
 {
-  DEBUG1("Yield context '%s'",current_context->name);
+  DEBUG1("Yield context '%s'", current_context->name);
   xbt_assert0((current_context != maestro_context),
               "You are not supposed to run this function here!");
   xbt_ctx_thread_swap(current_context);
@@ -181,7 +193,7 @@ static void xbt_ctx_thread_start(xbt_context_t context)
 {
   xbt_ctx_thread_t ctx_thread = (xbt_ctx_thread_t) context;
 
-  DEBUG1("Start context '%s'",context->name);
+  DEBUG1("Start context '%s'", context->name);
   /* create and start the process */
   ctx_thread->thread =
     xbt_os_thread_create(ctx_thread->name, xbt_ctx_thread_wrapper,
@@ -208,8 +220,8 @@ static void xbt_ctx_thread_stop(int exit_code)
 }
 
 static void xbt_ctx_thread_swap(xbt_context_t context)
-{ 
-  DEBUG2("Swap context: '%s' -> '%s'",current_context->name,context->name);
+{
+  DEBUG2("Swap context: '%s' -> '%s'", current_context->name, context->name);
   if ((current_context != maestro_context) && !context->iwannadie) {
     /* (0) it's not the scheduler and the process doesn't want to die, it just wants to yield */
 
@@ -270,8 +282,8 @@ static void xbt_ctx_thread_suspend(xbt_context_t context)
   /* save the current context */
   xbt_context_t self = current_context;
 
-  DEBUG1("Suspend context '%s'",context->name);
-   
+  DEBUG1("Suspend context '%s'", context->name);
+
   /* update the current context to this context */
   current_context = context;
 
@@ -287,7 +299,7 @@ static void xbt_ctx_thread_resume(xbt_context_t context)
   /* save the current context */
   xbt_context_t self = current_context;
 
-  DEBUG1("Resume context '%s'",context->name);
+  DEBUG1("Resume context '%s'", context->name);
 
   /* update the current context */
   current_context = context;
