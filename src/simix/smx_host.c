@@ -1,4 +1,4 @@
-/* 	$Id$	 */
+/* 	$Id: smx_host.c 4895 2007-10-27 07:34:39Z mquinson $	 */
 
 /* Copyright (c) 2007 Arnaud Legrand, Bruno Donassolo.
    All rights reserved.                                          */
@@ -9,6 +9,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/dict.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
 				"Logging specific to SIMIX (hosts)");
@@ -32,7 +33,7 @@ smx_host_t __SIMIX_host_create(const char *name,
       xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
   /* Update global variables */
 
-  xbt_fifo_unshift(simix_global->host, host);
+  xbt_dict_set(simix_global->host,host->name, host,&__SIMIX_host_destroy);
 
   return host;
 }
@@ -102,8 +103,9 @@ smx_host_t SIMIX_host_self(void)
  * MSG_host_destroy is just  a front_end that also removes it from 
  * msg_global->host
  */
-void __SIMIX_host_destroy(smx_host_t host)
+void __SIMIX_host_destroy(void* h)
 {
+  smx_host_t host = (smx_host_t)h;
   smx_simdata_host_t simdata = NULL;
 
   xbt_assert0((host != NULL), "Invalid parameters");
@@ -144,19 +146,36 @@ void __SIMIX_host_destroy(smx_host_t host)
  */
 int SIMIX_host_get_number(void)
 {
-  return (xbt_fifo_size(simix_global->host));
+  return (xbt_dict_size(simix_global->host));
+}
+
+
+/**
+ * \brief Return an array of all the #smx_host_t.
+ *
+ * \return List of all hosts (in a newly allocated table)
+ */
+smx_host_t* SIMIX_host_get_table(void) {
+   smx_host_t *res = xbt_new(smx_host_t,xbt_dict_size(simix_global->host));
+   smx_host_t h;
+   xbt_dict_cursor_t c;
+   char *name;
+   int i=0;
+   
+   xbt_dict_foreach(simix_global->host,c,name,h)
+     res[i++] = h;
+   
+   return res;
 }
 
 /**
- * \brief Return a array of all the #smx_host_t.
+ * \brief Return a dict of all the #smx_host_t.
  *
- * \return List of all hosts
+ * \return List of all hosts (as a #xbt_dict_t)
  */
-smx_host_t *SIMIX_host_get_table(void)
-{
-  return ((smx_host_t *) xbt_fifo_to_array(simix_global->host));
+xbt_dict_t SIMIX_host_get_dict(void) {
+   return simix_global->host;
 }
-
 
 /**
  * \brief Return the speed of the processor.
@@ -196,18 +215,11 @@ double SIMIX_host_get_available_speed(smx_host_t host)
  */
 smx_host_t SIMIX_host_get_by_name(const char *name)
 {
-  xbt_fifo_item_t i = NULL;
-  smx_host_t host = NULL;
-
   xbt_assert0(((simix_global != NULL)
 	       && (simix_global->host != NULL)),
 	      "Environment not set yet");
 
-  xbt_fifo_foreach(simix_global->host, i, host, smx_host_t) {
-    if (strcmp(host->name, name) == 0)
-      return host;
-  }
-  return NULL;
+  return xbt_dict_get_or_null(simix_global->host, name);
 }
 
 /**

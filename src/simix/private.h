@@ -1,4 +1,4 @@
-/* 	$Id$	 */
+/* 	$Id: private.h 5071 2007-11-27 15:41:57Z mquinson $	 */
 
 /* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
    All rights reserved.                                          */
@@ -32,7 +32,7 @@ typedef struct s_smx_simdata_host {
 /********************************* Simix Global ******************************/
 
 typedef struct SIMIX_Global {
-  xbt_fifo_t host;
+  xbt_dict_t host;
   xbt_swag_t process_to_run;
   xbt_swag_t process_list;
 
@@ -118,7 +118,7 @@ extern xbt_cfg_t _simix_cfg_set;
 
 smx_host_t __SIMIX_host_create(const char *name, void *workstation,
 			       void *data);
-void __SIMIX_host_destroy(smx_host_t host);
+void __SIMIX_host_destroy(void* host);
 
 void __SIMIX_cond_wait(smx_cond_t cond);
 

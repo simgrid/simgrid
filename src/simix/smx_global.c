@@ -1,4 +1,4 @@
-/* 	$Id$	 */
+/* 	$Id: smx_global.c 5483 2008-05-21 09:53:01Z alegrand $	 */
 
 /* Copyright (c) 2007 Arnaud Legrand, Bruno Donassolo.
    All rights reserved.                                          */
@@ -113,7 +113,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
     simix_global = xbt_new0(s_SIMIX_Global_t, 1);
 
-    simix_global->host = xbt_fifo_new();
+    simix_global->host = xbt_dict_new();
     simix_global->process_to_run =
 	xbt_swag_new(xbt_swag_offset(proc, synchro_hookup));
     simix_global->process_list =
@@ -278,18 +278,13 @@ void SIMIX_process_killall()
  */
 void SIMIX_clean(void)
 {
-  xbt_fifo_item_t i = NULL;
-  smx_host_t h = NULL;
   smx_process_t p = NULL;
 
   while ((p = xbt_swag_extract(simix_global->process_list))) {
     SIMIX_process_kill(p);
   }
 
-  xbt_fifo_foreach(simix_global->host, i, h, smx_host_t) {
-    __SIMIX_host_destroy(h);
-  }
-  xbt_fifo_free(simix_global->host);
+  xbt_dict_free(&(simix_global->host));
   xbt_swag_free(simix_global->process_to_run);
   xbt_swag_free(simix_global->process_list);
   xbt_dict_free(&(simix_global->registered_functions));

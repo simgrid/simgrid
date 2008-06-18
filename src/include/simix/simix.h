@@ -1,4 +1,4 @@
-/* 	$Id$	 */
+/* 	$Id: simix.h 5610 2008-06-12 09:38:58Z alegrand $	 */
 
 /* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
    All rights reserved.                                          */
@@ -69,7 +69,8 @@ XBT_PUBLIC(double) SIMIX_host_get_speed(smx_host_t host);
 XBT_PUBLIC(double) SIMIX_host_get_available_speed(smx_host_t host);
 
 XBT_PUBLIC(int) SIMIX_host_get_number(void);
-XBT_PUBLIC(smx_host_t *)SIMIX_host_get_table(void);
+XBT_PUBLIC(smx_host_t *) SIMIX_host_get_table(void);
+XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_dict(void);
 
 XBT_PUBLIC(void) SIMIX_create_environment(const char *file);
 XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(const char *name);
