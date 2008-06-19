@@ -1,0 +1,14 @@
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_availability.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_state_file.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_state_off.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_state_on.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_link_availability.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_link_fatpipe.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_link_shared.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_link_state_file.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms three_hosts_non_symmetric_route.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms two_hosts_multi_hop.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms two_hosts_one_link.xml
+
+

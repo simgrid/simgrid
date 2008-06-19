@@ -164,6 +164,11 @@ simdag_network_test_reinit_costs_LDADD   =   $(LDADD_SG)
 TESTS += \
   simdag/network/test_reinit_costs.tesh
 
+noinst_PROGRAMS += simdag/platforms/basic_parsing_test
+simdag_platforms_basic_parsing_test_SOURCES = simdag/platforms/basic_parsing_test.c
+simdag_platforms_basic_parsing_test_LDADD = $(LDADD_SG)
+TESTS += simdag/platforms/basic_parsing_test.tesh
+
 # from L.C. Canon
 noinst_PROGRAMS += simdag/basic0 \
                    simdag/basic1 \
