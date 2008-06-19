@@ -55,6 +55,7 @@ noinst_PROGRAMS = xbt/log_large_test$(EXEEXT) \
 	gras/small_sleep/small_sleep_function$(EXEEXT) \
 	gras/small_sleep/small_sleep_simulator$(EXEEXT) \
 	simdag/network/test_reinit_costs$(EXEEXT) \
+	simdag/platforms/basic_parsing_test$(EXEEXT) \
 	simdag/basic0$(EXEEXT) simdag/basic1$(EXEEXT) \
 	simdag/basic2$(EXEEXT) simdag/basic3$(EXEEXT) \
 	simdag/basic4$(EXEEXT) simdag/basic5$(EXEEXT) \
@@ -200,6 +201,11 @@ am_simdag_partask_test_comp_only_seq_OBJECTS =  \
 simdag_partask_test_comp_only_seq_OBJECTS =  \
 	$(am_simdag_partask_test_comp_only_seq_OBJECTS)
 simdag_partask_test_comp_only_seq_DEPENDENCIES = $(LDADD_SG)
+am_simdag_platforms_basic_parsing_test_OBJECTS =  \
+	basic_parsing_test.$(OBJEXT)
+simdag_platforms_basic_parsing_test_OBJECTS =  \
+	$(am_simdag_platforms_basic_parsing_test_OBJECTS)
+simdag_platforms_basic_parsing_test_DEPENDENCIES = $(LDADD_SG)
 xbt_log_large_test_SOURCES = xbt/log_large_test.c
 xbt_log_large_test_OBJECTS = log_large_test.$(OBJEXT)
 xbt_log_large_test_DEPENDENCIES = $(LDADD_SG)
@@ -240,6 +246,7 @@ SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(simdag_network_test_reinit_costs_SOURCES) \
 	$(simdag_partask_test_comp_only_par_SOURCES) \
 	$(simdag_partask_test_comp_only_seq_SOURCES) \
+	$(simdag_platforms_basic_parsing_test_SOURCES) \
 	xbt/log_large_test.c xbt/parallel_log_crashtest.c
 DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(gras_empty_main_empty_main_function_SOURCES) \
@@ -263,6 +270,7 @@ DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(simdag_network_test_reinit_costs_SOURCES) \
 	$(simdag_partask_test_comp_only_par_SOURCES) \
 	$(simdag_partask_test_comp_only_seq_SOURCES) \
+	$(simdag_platforms_basic_parsing_test_SOURCES) \
 	xbt/log_large_test.c xbt/parallel_log_crashtest.c
 ETAGS = etags
 CTAGS = ctags
@@ -438,7 +446,8 @@ TESTS = xbt/log_large_test.tesh xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_r_big32_2.tesh $(am__append_1) \
 	$(am__append_2) gras/empty_main/test_rl \
 	gras/empty_main/test_sg $(am__append_3) $(am__append_4) \
-	simdag/network/test_reinit_costs.tesh simdag/basic0.tesh \
+	simdag/network/test_reinit_costs.tesh \
+	simdag/platforms/basic_parsing_test.tesh simdag/basic0.tesh \
 	simdag/basic1.tesh simdag/basic2.tesh simdag/basic3.tesh \
 	simdag/basic4.tesh simdag/basic5.tesh simdag/basic6.tesh \
 	simdag/network/p2p/test_latency1.tesh \
@@ -477,6 +486,8 @@ gras_small_sleep_small_sleep_simulator_LDADD = $(LDADD_SG)
 gras_small_sleep_small_sleep_function_LDADD = $(LDADD_RL)
 simdag_network_test_reinit_costs_SOURCES = simdag/network/test_reinit_costs.c
 simdag_network_test_reinit_costs_LDADD = $(LDADD_SG)
+simdag_platforms_basic_parsing_test_SOURCES = simdag/platforms/basic_parsing_test.c
+simdag_platforms_basic_parsing_test_LDADD = $(LDADD_SG)
 simdag_basic0_SOURCES = simdag/basic0.c
 simdag_basic0_LDADD = $(LDADD_SG)
 simdag_basic1_SOURCES = simdag/basic1.c
@@ -651,6 +662,12 @@ simdag/partask/test_comp_only_par$(EXEEXT): $(simdag_partask_test_comp_only_par_
 simdag/partask/test_comp_only_seq$(EXEEXT): $(simdag_partask_test_comp_only_seq_OBJECTS) $(simdag_partask_test_comp_only_seq_DEPENDENCIES) simdag/partask/$(am__dirstamp)
 	@rm -f simdag/partask/test_comp_only_seq$(EXEEXT)
 	$(LINK) $(simdag_partask_test_comp_only_seq_OBJECTS) $(simdag_partask_test_comp_only_seq_LDADD) $(LIBS)
+simdag/platforms/$(am__dirstamp):
+	@$(MKDIR_P) simdag/platforms
+	@: > simdag/platforms/$(am__dirstamp)
+simdag/platforms/basic_parsing_test$(EXEEXT): $(simdag_platforms_basic_parsing_test_OBJECTS) $(simdag_platforms_basic_parsing_test_DEPENDENCIES) simdag/platforms/$(am__dirstamp)
+	@rm -f simdag/platforms/basic_parsing_test$(EXEEXT)
+	$(LINK) $(simdag_platforms_basic_parsing_test_OBJECTS) $(simdag_platforms_basic_parsing_test_LDADD) $(LIBS)
 xbt/$(am__dirstamp):
 	@$(MKDIR_P) xbt
 	@: > xbt/$(am__dirstamp)
@@ -681,6 +698,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic4.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic6.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic_parsing_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_structs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/empty_main.Po@am__quote@
@@ -1126,6 +1144,20 @@ test_comp_only_seq.obj: simdag/partask/test_comp_only_seq.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_comp_only_seq.obj `if test -f 'simdag/partask/test_comp_only_seq.c'; then $(CYGPATH_W) 'simdag/partask/test_comp_only_seq.c'; else $(CYGPATH_W) '$(srcdir)/simdag/partask/test_comp_only_seq.c'; fi`
 
+basic_parsing_test.o: simdag/platforms/basic_parsing_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT basic_parsing_test.o -MD -MP -MF $(DEPDIR)/basic_parsing_test.Tpo -c -o basic_parsing_test.o `test -f 'simdag/platforms/basic_parsing_test.c' || echo '$(srcdir)/'`simdag/platforms/basic_parsing_test.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/basic_parsing_test.Tpo $(DEPDIR)/basic_parsing_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/platforms/basic_parsing_test.c' object='basic_parsing_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o basic_parsing_test.o `test -f 'simdag/platforms/basic_parsing_test.c' || echo '$(srcdir)/'`simdag/platforms/basic_parsing_test.c
+
+basic_parsing_test.obj: simdag/platforms/basic_parsing_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT basic_parsing_test.obj -MD -MP -MF $(DEPDIR)/basic_parsing_test.Tpo -c -o basic_parsing_test.obj `if test -f 'simdag/platforms/basic_parsing_test.c'; then $(CYGPATH_W) 'simdag/platforms/basic_parsing_test.c'; else $(CYGPATH_W) '$(srcdir)/simdag/platforms/basic_parsing_test.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/basic_parsing_test.Tpo $(DEPDIR)/basic_parsing_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/platforms/basic_parsing_test.c' object='basic_parsing_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o basic_parsing_test.obj `if test -f 'simdag/platforms/basic_parsing_test.c'; then $(CYGPATH_W) 'simdag/platforms/basic_parsing_test.c'; else $(CYGPATH_W) '$(srcdir)/simdag/platforms/basic_parsing_test.c'; fi`
+
 log_large_test.o: xbt/log_large_test.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log_large_test.o -MD -MP -MF $(DEPDIR)/log_large_test.Tpo -c -o log_large_test.o `test -f 'xbt/log_large_test.c' || echo '$(srcdir)/'`xbt/log_large_test.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/log_large_test.Tpo $(DEPDIR)/log_large_test.Po
@@ -1168,6 +1200,7 @@ clean-libtool:
 	-rm -rf simdag/network/mxn/.libs simdag/network/mxn/_libs
 	-rm -rf simdag/network/p2p/.libs simdag/network/p2p/_libs
 	-rm -rf simdag/partask/.libs simdag/partask/_libs
+	-rm -rf simdag/platforms/.libs simdag/platforms/_libs
 	-rm -rf xbt/.libs xbt/_libs
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -1351,6 +1384,7 @@ distclean-generic:
 	-rm -f simdag/network/mxn/$(am__dirstamp)
 	-rm -f simdag/network/p2p/$(am__dirstamp)
 	-rm -f simdag/partask/$(am__dirstamp)
+	-rm -f simdag/platforms/$(am__dirstamp)
 	-rm -f xbt/$(am__dirstamp)
 
 maintainer-clean-generic:
