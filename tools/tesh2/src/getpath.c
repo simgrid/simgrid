@@ -1,5 +1,7 @@
 #include <com.h>
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
+
 /*#include <stdlib.h>
 #include <string.h>
 
@@ -300,13 +302,14 @@ translatepath(const char* totranslate, char** translated)
 	return len;
 }
 #else
-int
+/*int
 getpath(const char* file, char** path)
 {
 	DWORD len;
 	char* part = NULL;
 	char buffer[PATH_MAX + 1] = {0}; 
 	struct stat info = {0};
+
 	
 	len = GetFullPathName(file, PATH_MAX, buffer, &part );
 	
@@ -315,7 +318,6 @@ getpath(const char* file, char** path)
 		*path = NULL;
 		return -1;
 	}
-
 	
 	if(stat(buffer, &info) || !S_ISREG(info.st_mode))
 	{
@@ -330,7 +332,53 @@ getpath(const char* file, char** path)
 	*path = strncpy(*path, buffer, strlen(buffer) - strlen(part) - 1);
 
 	return (int)(strlen(buffer) - strlen(part) -1);
+}*/
+
+int
+getpath(const char* file, char** path)
+{
+	char buf1[PATH_MAX + 1] = {0};
+	char buf2[PATH_MAX + 1] = {0};
+	struct stat info = {0};
+
+	char* delimiter;
+	
+	if(!file)
+	{
+		*path = NULL;
+		return -1;
+	}
+
+	delimiter = strrchr(file,'/');
+
+	if(!delimiter)
+		delimiter = strrchr(file,'\\');
+
+	if(!delimiter)
+	{
+		*path = getcwd(NULL,0);
+	}
+	else
+	{
+		strncpy(buf2, file, (delimiter - file));
+
+		if(translatepath(buf2, path) < 0)
+			return -1;
+	}
+
+	sprintf(buf1,"%s\\%s", *path, delimiter ? delimiter + 1 : file);
+	
+	if(stat(buf1, &info) || !S_ISREG(info.st_mode))
+	{
+		free(*path);
+		*path = NULL;
+		errno = ENOENT;
+		return -1;
+	}		
+	
+	return (int) strlen(*path);
 }
+
 
 int
 translatepath(const char* totranslate, char** translated)
@@ -363,6 +411,7 @@ translatepath(const char* totranslate, char** translated)
 	{
 		*translated = getcwd(NULL,0);
 		(*translated)[2] = '\0';
+
 		return (int)strlen(*translated);
 	}
 	/* it's a relative directory name build the full directory name */
@@ -401,7 +450,7 @@ translatepath(const char* totranslate, char** translated)
 				break;
 		}
 	}
-	
+
 	if(j == 1 && buffer1[i - 1] == '/')
 	{
 		/* perhaps it's a relative directory : `dir/' */
@@ -412,7 +461,7 @@ translatepath(const char* totranslate, char** translated)
 			getcwd(buffer1, PATH_MAX + 1);
 			strcat(buffer1,"\\");
 			strcat(buffer1,buffer2);
-			
+
 			*translated = (char*) calloc(strlen(buffer1) + 1, sizeof(char));
 			strcpy(*translated, buffer1);
 
@@ -447,6 +496,7 @@ translatepath(const char* totranslate, char** translated)
 	len = (int)strlen(buffer2);
 	
 	*translated = (char*) calloc(len + 1, sizeof(char));
+	strcpy(*translated, buffer2);
 	
 	if(!(*translated))
 	{

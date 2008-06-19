@@ -162,7 +162,7 @@ command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
 int
 command_run(command_t command)
 {
-	if(!silent_flag)
+	if(!silent_flag && !interrupted)
 		INFO2("[%s] %s",command->context->pos, command->context->command_line);
 	
 	if(!just_print_flag)
@@ -208,7 +208,13 @@ command_start(void* p)
 	xbt_os_mutex_release(command->mutex);
 	
 	/* execute the command of the test */
+
+	#ifndef WIN32
 	command_exec(command, command->context->command_line);
+	#else
+	/* play the translated command line on Windows */
+	command_exec(command, command->context->t_command_line);
+	#endif
 	
 	if(cs_in_progress == command->status)
 	{
@@ -816,7 +822,7 @@ command_check(command_t command)
 	xbt_strbuff_trim(command->output);
 	xbt_strbuff_trim(command->context->output);
 
-	if(!success)
+	if(!success &&  !strcmp(command->output->data, command->context->output->data))
 	{
 		xbt_dynar_t a = xbt_str_split(command->output->data, "\n");
 		char *out = xbt_str_join(a,"\n||");
@@ -830,6 +836,7 @@ command_check(command_t command)
 		if(command->output->used != command->context->output->used || strcmp(command->output->data, command->context->output->data))
 		{
 			char *diff;
+
 			
 			ERROR2("[%s] `%s' : NOK (outputs mismatch):", command->context->pos, command->context->command_line);
 			

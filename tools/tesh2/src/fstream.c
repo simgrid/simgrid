@@ -23,16 +23,52 @@
 #include <readline.h>
 
 #include <is_cmd.h>
+#include <getpath.h>
 
 #ifndef WIN32
 #include <xsignal.h>
 #endif
 
+#ifdef WIN32
+static int
+is_w32_cmd(const char* cmd, char** path)
+{
+	size_t i = 0;
+	struct stat stat_buff = {0};
+	char buff[PATH_MAX + 1] = {0};
+	
+
+
+	if(!cmd)
+	{
+		errno = EINVAL;
+		return 0;
+	}
+	
+	if(stat(cmd, &stat_buff) || !S_ISREG(stat_buff.st_mode))
+	{
+		if(path)
+		{
+			for (i = 0; path[i] != NULL; i++)
+			{
+				
+				sprintf(buff,"%s\\%s",path[i], cmd);
+				
+				if(!stat(buff, &stat_buff) && S_ISREG(stat_buff.st_mode))
+					return 1;
+			}
+		}
+	}
+	else
+		return 1;
+		
+
+	return 0;
+}
+#endif
 
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
-
-
 
 
 long fstream_getline(fstream_t fstream, char **buf, size_t *n) {
@@ -360,9 +396,20 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 	char* line2;
 	variable_t variable;
 	unsigned int i;
-	char name[VAR_NAME_MAX + 1] = {0};
+	char exp[VAR_NAME_MAX + 1] = {0};
 	unit_t unit = fstream->unit;
 	xbt_dynar_t variables = unit->runner->variables;
+	char* p= NULL;
+	char* end = NULL;
+	char* val = NULL;
+	char buff[VAR_NAME_MAX + 1] = {0}; 
+	size_t len;
+	char delimiters[4] = {' ', '\t', '\n', '\0'}; 
+	
+	int j;
+	
+	if(line[0] == '#')
+		return;
 
 	if(unit->is_running_suite && strncmp(line, "! include", strlen("! include")))
 	{/* it's the end of a suite */
@@ -377,35 +424,605 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 		unit_set_error(*current_suite, ESYNTAX, 1, filepos);
 
 		failure(fstream->unit);
-			
-		
 	}
 	
 	context->line = strdup(filepos);
-	
 	
 	/* search end */
 	xbt_str_rtrim(line + 2,"\n");
 	
 	line2 = strdup(line);
-	
+
+	len = strlen(line2 + 2) + 1;
+
 	/* replace each variable by its value */
 	xbt_os_mutex_acquire(unit->mutex);
+	
 
+	/* replace all existing
+	   ${var}
+	   ${var:=val}
+	   ${var:+val}
+	   ${var:-val}
+	   ${var:?val}
+	   ${#var}
+   */
+	
 	xbt_dynar_foreach(variables, i, variable)
 	{
-		sprintf(name, "$%s", variable->name);
-		str_replace_all(&line2, name, variable->val);
-		memset(name, 0, VAR_NAME_MAX + 1);
+		if(!(p = strstr(line2 + 2, "${")))
+			break;
+
+		memset(buff, 0, len);
+
+		sprintf(buff,"${%s",variable->name);
+		
+		/* FALSE */
+		if((p = strstr(line2 + 2, buff)))
+		{
+			memset(buff, 0, len);
+			p--;
+			j = 0;
+
+			while(*(p++) != '\0')
+			{
+				buff[j++] = *p;
+
+				if(*p == '}')
+					break;
+			}
+
+			if(buff[j - 1] != '}')
+			{
+				xbt_os_mutex_release(unit->mutex);	
+				
+				
+				ERROR2("[%s] Syntax error : `%s'.",filepos, p - j);
+				
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+				failure(fstream->unit);
+				return;
+			}
+
+			if((p = strstr(buff , ":=")))
+			{
+				/* ${var:=val} */
+				
+				/* if the value of the variable is empty, update its value by the value*/
+				p += 2;
+				
+				end = strchr(p, '}');
+
+				if(!end || (end == p))
+				{
+					xbt_os_mutex_release(unit->mutex);	
+				
+				
+					ERROR2("[%s] Bad substitution : `%s'.",filepos, strstr(buff, "${"));
+				
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+					failure(fstream->unit);
+					return;
+				}
+
+				val = (char*) calloc((size_t)(end - p) + 1, sizeof(char));
+
+				strncpy(val, p,(end - p));
+				
+				
+				/* replace the expression by the expression of the value of the variable*/
+				sprintf(exp, "${%s:=%s}", variable->name, val);
+
+				if(variable->val)
+					str_replace_all(&line2, exp, variable->val, NULL);
+				else
+				{
+					str_replace_all(&line2, exp, val, NULL);
+
+					variable->val = strdup(val);
+				}
+
+				memset(exp, 0, VAR_NAME_MAX + 1);
+
+				if(val)
+				{
+					free(val);
+					val = NULL;
+				}
+
+			}
+			else if((p = strstr(buff, ":-")))
+			{
+				/* ${var:-val} */
+				
+				/* if the value of the variable is empty, replace the expression by the value */
+				p += 2;
+				end = strchr(p, '}');
+
+				if(!end || (end == p))
+				{
+					xbt_os_mutex_release(unit->mutex);	
+				
+					ERROR2("[%s] Bad substitution : `%s'.",filepos, strstr(line2, "${"));
+				
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+					failure(fstream->unit);
+					return;
+				}
+
+				val = (char*) calloc((size_t)(end - p) + 1, sizeof(char));
+
+				strncpy(val, p,(end - p)); 
+
+				sprintf(exp, "${%s:-%s}", variable->name, val);
+				
+				str_replace_all(&line2, exp, variable->val ? variable->val : val, NULL);
+				
+
+				memset(exp, 0, VAR_NAME_MAX + 1);
+				
+				if(val)
+				{
+					free(val);
+					val = NULL;
+				}
+
+			}
+			else if((p = strstr(buff, ":+")))
+			{
+				/* ${var:+val} */
+	
+				/* if the value of the variable is not empty, replace the expression by the value */
+				p += 2;
+
+				end = strchr(p, '}');
+
+				if(!end || (end == p))
+				{
+					xbt_os_mutex_release(unit->mutex);	
+				
+				
+					ERROR2("[%s] Bad substitution : `%s'.",filepos, strstr(line2, "${"));
+				
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+					failure(fstream->unit);
+					return;
+				}
+
+				val = (char*) calloc((size_t)(end - p) + 1, sizeof(char));
+
+				strncpy(val, p,(end - p));
+
+				sprintf(exp, "${%s:+%s}", variable->name, val);
+
+				if(variable->val)
+				{
+					str_replace_all(&line2, exp, val, NULL);
+				}
+				else
+				{
+					str_replace_all(&line2, exp, NULL , NULL);
+					variable->val = strdup(val);
+				}
+				
+				memset(exp, 0, VAR_NAME_MAX + 1);
+				
+				if(val)
+				{
+					free(val);
+					val = NULL;
+				}
+			}
+			else if((p = strstr(buff, ":?")))
+			{
+				/*  ${var:?val} */
+	
+				/* if the value of the variable is not empty, replace the expression by the value */
+				p += 2;
+				end = strchr(p, '}');
+
+				if(!end || (end == p))
+				{
+					xbt_os_mutex_release(unit->mutex);	
+				
+					ERROR2("[%s] Bad substitution : `%s'.",filepos, strstr(line2, "${"));
+				
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+					failure(fstream->unit);
+					return;
+				}
+
+				val = (char*) calloc((size_t)(end - p) + 1, sizeof(char));
+
+				strncpy(val, p,(end - p));
+
+				sprintf(exp, "${%s:?%s}", variable->name, val);
+				
+				if(variable->val)
+					str_replace_all(&line2, exp, variable->val, NULL);
+				else
+				{
+
+					xbt_os_mutex_release(unit->mutex);	
+
+					ERROR2("[%s] %s.",filepos, val);
+
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+					failure(fstream->unit);
+					return;
+				}
+				
+				memset(exp, 0, VAR_NAME_MAX + 1);
+				
+				if(val)
+				{
+					free(val);
+					val = NULL;
+				}
+			}
+		}
+	}
+
+	/* replace all existing $var */
+	xbt_dynar_foreach(variables, i, variable)
+	{
+		if(!strchr(line2 + 2, '$'))
+			break;
+
+		if(strstr(line2 + 2, variable->name))
+		{
+
+			sprintf(exp, "${#%s}", variable->name);
+			
+			if(strstr(line2 + 2, exp))
+			{
+
+				if(variable->val)
+				{
+					char slen[4] = {0};
+					sprintf(slen,"%d", (int)strlen(variable->val));
+					str_replace_all(&line2, exp, slen, NULL);
+				}
+				else
+					str_replace_all(&line2, exp, "0", NULL);
+			}
+
+			memset(exp, 0, VAR_NAME_MAX + 1);
+
+			sprintf(exp, "${%s}", variable->name);
+
+			if(strstr(line2 + 2, exp))
+			{
+				if(variable->val)
+					str_replace_all(&line2, exp, variable->val, NULL);
+				else
+					str_replace_all(&line2, exp, NULL, NULL);
+			}
+
+			memset(exp, 0, VAR_NAME_MAX + 1);
+
+			sprintf(exp, "$%s", variable->name);
+			
+			if((p = strstr(line2 + 2, exp)))
+			{
+				if((p + strlen(variable->name) + 1)[0] != '\0')
+					delimiters[0] = (p + strlen(variable->name) + 1)[0];
+
+				if(variable->val)
+					str_replace_all(&line2, exp, variable->val,  delimiters);
+				else
+					str_replace_all(&line2, exp, NULL, delimiters);
+			}
+
+			memset(exp, 0, VAR_NAME_MAX + 1);
+
+		}
+	}
+
+	while((p = strstr(line2 + 2, "${")))
+	{
+		/*if(*(p+1) != '{')
+		{
+			j = 0;
+			p --;
+
+			while(*(p++) != '\0')
+			{
+				if(*p != ' ' && *p !='\t')
+					exp[j++] = *p;
+				else
+					break;
+
+			}
+			
+			str_replace_all(&line2, exp, NULL, " \t\n\r");
+			memset(exp, 0, VAR_NAME_MAX + 1);
+		}.
+		else
+		*/
+		{
+			char* begin = NULL;
+			
+			j = 0;
+			p --;
+
+			while(*(p++) != '\0')
+			{
+				if((!begin && *p != ' ' && *p !='\t') || begin)
+				{
+					/* `:' must be before this caracter, bad substitution : exit loop 
+					    ||
+						the current character is already present, bad substitution : exit loop
+						*/
+					if(
+							(
+								*(p - 1) != ':' && (
+														(*p == '=') || (*p == '-') || (*p == '+') || (*p == '?')
+													)
+							)
+						|| 
+							(
+								begin &&	(
+												(*p == ':') || (*p == '=') || (*p == '-') || (*p == '+') || (*p == '?')
+											)
+							)
+						)
+						break;
+					else
+						exp[j++] = *p;
+
+					if(*p == ':')
+					{
+						/* save the begining of the value */
+						if((*(p+1) == '=') || (*(p+1) == '-') || (*(p+1) == '+') || (*(p+1) == '?'))
+						{
+							begin = p + 2;
+							exp[j++] = *(p+1);
+							p++;
+							continue;
+
+						}
+						else
+						/* the current char is `:' but the next is invalid, bad substitution : exit loop */
+							break;
+					}
+					/* end of the substitution : exit loop */
+					else if(*p == '}')
+						break;
+				}
+				else
+					break;
+			}
+			
+			if(exp[j - 1] == '}')
+			{
+				if(exp[2] == '#')
+				{
+					/* ${#var} */
+
+
+					if(4 == strlen(exp))
+					{
+						xbt_os_mutex_release(unit->mutex);	
+					
+						ERROR2("[%s] Bad substitution : `%s'.",filepos, strchr(line2 + 2, '$'));
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+						failure(fstream->unit);
+						return;
+					}
+					
+					str_replace_all(&line2, exp, "0", NULL);	
+				}
+				else if(strstr(exp,":="))
+				{
+					/* ${var:=value} */	
+					
+					end = strchr(p, '}');
+
+					if(!end || (end == begin))
+					{
+						xbt_os_mutex_release(unit->mutex);	
+					
+					
+						ERROR2("[%s] Bad substitution : `%s'.",filepos, strchr(line2 + 2, '$'));
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+						failure(fstream->unit);
+						return;
+					}
+
+					variable = xbt_new0(s_variable_t, 1);
+
+					variable->val = (char*) calloc((size_t)(end - begin) + 1, sizeof(char));
+
+					strncpy(variable->val, begin ,(end - begin));
+
+					begin = exp + 2;
+					end = strchr(exp, ':');
+
+					if(!end || (end == begin))
+					{
+						xbt_os_mutex_release(unit->mutex);	
+					
+					
+						ERROR2("[%s] Bad substitution : `%s'.",filepos, strchr(line2 + 2, '$'));
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+						failure(fstream->unit);
+						return;
+					}
+
+					variable->name = (char*) calloc((size_t)(end - begin) + 1, sizeof(char));
+
+					strncpy(variable->name, exp + 2 ,(end - begin));
+
+					str_replace_all(&line2, exp, variable->val, NULL);
+
+					xbt_dynar_push(variables, &variable);
+
+				}
+				else if(strstr(exp,":-"))
+				{
+					/* ${var:-value} */	
+
+					
+					end = strchr(p, '}');
+
+					if(!end || (end == begin))
+					{
+						xbt_os_mutex_release(unit->mutex);	
+					
+					
+						ERROR2("[%s] Bad substitution : `%s'.",filepos, strchr(line2 + 2, '$'));
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+						failure(fstream->unit);
+						return;
+					}
+
+					val = (char*) calloc((size_t)(end - begin) + 1, sizeof(char));
+
+					strncpy(val, begin ,(end - begin));
+
+					str_replace_all(&line2, exp, val, NULL);
+
+					if(val)
+						free(val);
+
+				}
+				else if(strstr(exp,":+"))
+				{
+					/* ${var:+value} */	
+
+					end = strchr(p, '}');
+
+					if(!end || (end == begin))
+					{
+						xbt_os_mutex_release(unit->mutex);	
+					
+						ERROR2("[%s] Bad substitution : `%s'.",filepos, strchr(line2 + 2, '$'));
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+						failure(fstream->unit);
+						return;
+					}
+
+					str_replace_all(&line2, exp, NULL, NULL);
+				}
+				else if(strstr(exp,":?"))
+				{
+					/* ${var:?value} */
+					
+					end = strchr(p, '}');
+
+					if(!end || (end == begin))
+					{
+						xbt_os_mutex_release(unit->mutex);	
+					
+						ERROR2("[%s] Bad substitution : `%s'.",filepos, strchr(line2 + 2, '$'));
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+						failure(fstream->unit);
+						return;
+					}
+
+					val = (char*) calloc((size_t)(end - begin) + 1, sizeof(char));
+
+					strncpy(val, begin ,(end - begin));
+
+					xbt_os_mutex_release(unit->mutex);	
+					
+					ERROR2("[%s] : `%s'.",filepos, val);
+
+					if(val)
+						free(val);
+					
+					unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+					failure(fstream->unit);
+
+					return;
+					
+				}
+				else
+				{
+					/* ${var} */
+
+					if(3 == strlen(exp))
+					{
+						xbt_os_mutex_release(unit->mutex);	
+					
+						ERROR2("[%s] Bad substitution : `%s'.",filepos, strchr(line2 + 2, '$'));
+					
+						unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+						failure(fstream->unit);
+						return;
+					}
+
+					str_replace_all(&line2, exp, NULL, NULL);
+					
+				}
+
+				memset(exp, 0, VAR_NAME_MAX + 1);
+			}
+			else
+			{
+				xbt_os_mutex_release(unit->mutex);	
+				
+				if(strstr(line2 + 2, "${"))
+					ERROR2("[%s] Bad substitution : `%s'.",filepos, strstr(line2, "${"));
+				else
+					ERROR2("[%s] Syntax error : `%s'.",filepos, strstr(line2, "${"));
+
+				unit_set_error(fstream->unit, ESYNTAX, 1, filepos);
+				failure(fstream->unit);
+				return;
+			}
+
+		}
+		
 	}
 	
-	xbt_os_mutex_release(unit->mutex);
+	p = line2 + 2;
+	
+	while(p && 1)
+	{
+		if((p = strchr(p, '$')))
+		{
+			if(*(p+1) != ' ')
+			{
+				j = 0;
+				p --;
 
+				while(*(p++) != '\0')
+				{
+					if(*p != ' ' && *p !='\t')
+						exp[j++] = *p;
+					else
+						break;
+
+				}
+				
+				str_replace_all(&line2, exp, NULL, " \t\n\r");
+				memset(exp, 0, VAR_NAME_MAX + 1);
+			}
+			else
+			{
+				/* maybe < $ cmd */
+				p++;
+			}
+		}
+		else
+			break;
+	}
+
+	xbt_os_mutex_release(unit->mutex);	
 	
 	switch(line2[0]) 
 	{
-		case '#': 
+		/*case '#': 
 		break;
+		*/
 		
 		case '$':
 		case '&':
@@ -496,9 +1113,14 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 			
 			char* prompt = line2 + 2;
 
-			for(j = 0; j < strlen(prompt); j++) 
+			for(j = 0; j < strlen(prompt); j++)
+			{
 				if (prompt[j] != ' ' && prompt[j] != '\t')
+				{
 					is_blank = 0;
+					break;
+				}
+			}
 
 			if(is_blank)
 			{
@@ -634,8 +1256,106 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 		}
 		
 		context->command_line = strdup(line);
+
+		xbt_str_ltrim(context->command_line," ");
+		
 		context->line = /*strdup(filepos)*/ filepos;
 		context->pos = strdup(filepos);
+		
+		#ifdef WIN32
+		{
+
+		/* translate the command line */
+
+		char* path;
+		char* delimiter;
+		char command_line[PATH_MAX + 1] = {0};
+		size_t i = 0;
+		char* args = NULL;
+
+		
+
+		if(strstr(context->command_line,".exe"))
+			strcpy(command_line,context->command_line);
+		else
+		{
+			size_t len;
+			
+			size_t j = 0;
+	
+			len = strlen(context->command_line);
+			
+			while(i < len)
+			{
+				if(context->command_line[i] != ' ' && context->command_line[i] != '\t' && context->command_line[i] != '>')
+					command_line[j++] = context->command_line[i];
+				else
+					break;
+					
+				i++;
+			}
+
+			strcat(command_line,".exe");
+
+			args = strdup(context->command_line + i);
+		}
+		
+		if(getpath(command_line, &path) && !is_w32_cmd(command_line, fstream->unit->runner->path))
+		{
+			ERROR3("[%s] `%s' : NOK (%s)", filepos, context->command_line, error_to_string(ECMDNOTFOUND, 1));
+			unit_set_error(fstream->unit, ECMDNOTFOUND, 1, filepos);
+			failure(unit);
+			return;
+		}
+		
+		delimiter = strrchr(command_line,'/');
+
+		if(!delimiter)
+			delimiter = strrchr(command_line,'\\');
+		
+		/*free(context->command_line);*/
+		
+		
+		if(path)
+		{
+			if(args)
+			{
+				context->t_command_line = (char*)calloc(strlen(path) + strlen(delimiter ? delimiter + 1 : command_line) + strlen(args) + 2, sizeof(char));
+				sprintf(context->t_command_line,"%s\\%s%s",path,delimiter ? delimiter + 1 : command_line, args);
+
+				free(args);
+
+			}
+			else
+			{
+				context->t_command_line = (char*)calloc(strlen(path) + strlen(delimiter ? delimiter + 1 : command_line) + 2, sizeof(char));
+				sprintf(context->t_command_line,"%s\\%s",path,delimiter ? delimiter + 1 : command_line);
+			}
+		
+			free(path);
+		}
+		else
+		{
+			if(args)
+			{
+				context->t_command_line = (char*)calloc(strlen(command_line) + strlen(args) + 1, sizeof(char));
+				sprintf(context->t_command_line,"%s%s",command_line, args);
+
+				free(args);
+
+			}
+			else
+			{
+				context->t_command_line = (char*)calloc(strlen(command_line) + 1, sizeof(char));
+				strcpy(context->t_command_line,command_line);
+			}
+		}
+
+
+		}
+		#endif
+
+
 		break;
 		
 		case '<':
@@ -1163,8 +1883,19 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			if(!env && !err)
 			{
 				if(exists)
+				{
 					/*xbt_dynar_remove_at(unit->runner->variables, i, NULL);*/
-					xbt_dynar_cursor_rm(unit->runner->variables, &i);
+					/*xbt_dynar_cursor_rm(unit->runner->variables, &i);*/
+					if(variable->val)
+					{
+						free(variable->val);
+						variable->val = NULL;
+					}
+					else
+					{
+						WARN2("[%s] Variable `(%s)' already unseted",filepos, variable->name);
+					}
+				}	
 				else
 				{
 					ERROR2("[%s] `(%s)' variable not found",filepos, name);	

@@ -96,7 +96,7 @@ reader_start_routine(void* p)
 			if(number_of_bytes_readed > 0) 
 			{
 				for(i= 0, j= 0; i < number_of_bytes_readed; i++)
-					if((int)(buffer[i]) != 13)
+					if((buffer[i]) != '\r')
 						clean[j++] = buffer[i];
 
 				xbt_strbuff_append(output,clean);

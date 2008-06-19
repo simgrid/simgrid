@@ -7,7 +7,7 @@ variable_new(const char* name, const char* val)
 {
 	variable_t variable;
 	
-	if(!name || !val)
+	if(!name)
 	{
 		errno = EINVAL;
 		return NULL;
@@ -16,7 +16,10 @@ variable_new(const char* name, const char* val)
 	variable = xbt_new0(s_variable_t, 1);
 	
 	variable->name = strdup(name);
-	variable->val = strdup(val);
+
+	if(val)
+		variable->val = strdup(val);
+
 	variable->used = 0;
 	variable->env = 0;
 	variable->err = 0;

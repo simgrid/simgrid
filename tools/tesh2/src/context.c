@@ -34,6 +34,10 @@ context_new(void)
 	context->signal = INDEFINITE_SIGNAL;
 	context->output_handling = oh_check;
 	context->async = 0;
+
+	#ifdef WIN32
+	context->t_command_line = NULL;
+	#endif
 	
 	return context;
 }
@@ -56,6 +60,11 @@ context_free(context_t* ptr)
 	if((*ptr)->signal)
 		free((*ptr)->signal);
 
+	#ifdef WIN32
+	if((*ptr)->t_command_line)
+		free((*ptr)->t_command_line);
+	#endif
+
 	*ptr = NULL;
 	
 	return 0;
@@ -72,6 +81,14 @@ context_reset(context_t context)
 		free(context->command_line);
 		context->command_line = NULL;
 	}
+
+	#ifdef WIN32
+	if(context->t_command_line)
+	{
+		free(context->t_command_line);
+		context->t_command_line = NULL;
+	}
+	#endif
 
 	if(context->pos)
 	{
@@ -111,6 +128,12 @@ context_dup(context_t context)
 	dup->line = context->line;
 	dup->pos = strdup(context->pos);
 	dup->command_line = strdup(context->command_line);
+
+	
+	#ifdef WIN32
+	dup->t_command_line = strdup(context->t_command_line);
+	#endif
+
 	dup->exit_code = context->exit_code;
 	dup->timeout = context->timeout;
 	dup->output = NULL;
@@ -157,6 +180,14 @@ context_clear(context_t context)
 		free(context->command_line);
 		context->command_line = NULL;
 	}
+
+	#ifdef WIN32
+	if(context->t_command_line)
+	{
+		free(context->t_command_line);
+		context->t_command_line = NULL;
+	}
+	#endif
 
 	if(context->pos)
 	{

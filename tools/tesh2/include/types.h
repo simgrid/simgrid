@@ -315,6 +315,11 @@ typedef struct s_context
 	xbt_strbuff_t output;				/* the expected output of the command of the test						*/
 	output_handling_t output_handling;
 	int async;							/* if 1, the command is asynchronous									*/
+	
+	#ifdef WIN32
+	char* t_command_line;				/* translate the command line on Windows								*/
+	#endif
+
 }s_context_t,* context_t;
 
 /* 

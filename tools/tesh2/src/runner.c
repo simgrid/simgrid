@@ -22,11 +22,12 @@
 #include <stdio.h>
 
 #include <readline.h>
+#include <explode.h>
 
 #ifndef WIN32
 #include <sys/resource.h>
-#include <explode.h>
 #endif
+
 
 
 
@@ -85,6 +86,16 @@ static const char* builtin[] =
 
 #define __BUILTIN_MAX ((size_t)42)
 #endif
+
+
+# ifdef __APPLE__
+/* under darwin, the environment gets added to the process at startup time. So, it's not defined at library link time, forcing us to extra tricks */
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
+# elif !defined(WIN32)
+ /* the environment, as specified by the opengroup, used to initialize the process properties */
+ extern char **environ;
+# endif
 
 #ifndef WIN32
 extern char**
@@ -268,13 +279,20 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 			
 			#ifndef WIN32
 			if(!strcmp("PATH", buffer))
+			#else
+			if(!strcmp("Path", buffer) || !strcmp("PATH", buffer))
+			#endif
 			{
 				char* p;
 				size_t j,k, len;
 				
 				/* get the list of paths */
 				
+				#ifdef WIN32
+				runner->path = explode(';', val);
+				#else
 				runner->path = explode(':', val);
+				#endif
 
 				/* remove spaces and backslahes at the end of the path */
 				for (k = 0; runner->path[k] != NULL; k++)
@@ -283,12 +301,15 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 			    	
     				len = strlen(p);
 			    	
+					#ifndef WIN32
     				for(j = len - 1; p[j] == '/' || p[j] == ' '; j--)
-					
+					#else
+					for(j = len - 1; p[j] == '\\' || p[j] == ' '; j--)
+					#endif
     					p[j] = '\0';
 				}
 			}
-			#endif
+			
 				
 			memset(buffer, 0, PATH_MAX + 1);
 		}
