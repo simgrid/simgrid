@@ -17,7 +17,7 @@ SD_link_t __SD_link_create(void *surf_link, void *data) {
   link = xbt_new(s_SD_link_t, 1);
   link->surf_link = surf_link;
   link->data = data; /* user data */
-  if(surf_workstation_model->extension_public->link_shared(link))
+  if(surf_workstation_model->extension_public->link_shared(surf_link))
     link->sharing_policy=SD_LINK_SHARED;
   else
     link->sharing_policy=SD_LINK_FATPIPE;
