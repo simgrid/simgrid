@@ -1,7 +1,7 @@
 #! ./tesh
 
 # Description of this tesh file
-! D This tesh file contains all the tesh files relative with SimDag
+D This tesh file contains all the tesh files relative with SimDag
 
 # SimDag tesh suite
 
