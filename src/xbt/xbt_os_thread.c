@@ -567,14 +567,15 @@ void xbt_os_thread_mod_exit(void) {
 
 static DWORD WINAPI  wrapper_start_routine(void *s) {
   xbt_os_thread_t t = (xbt_os_thread_t)s;
-  void* rv;
+  DWORD* rv;
 
     if(!TlsSetValue(xbt_self_thread_key,t))
      THROW0(system_error,(int)GetLastError(),"TlsSetValue of data describing the created thread failed");
 
-   rv = (*(t->start_routine))(t->param);
+   rv = (DWORD*)((t->start_routine)(t->param));
 
-   return *((DWORD*)rv);
+   return rv ? *rv : 0;
+   
 }
 
 
@@ -621,7 +622,10 @@ xbt_os_thread_join(xbt_os_thread_t thread,void ** thread_return) {
 	}
 
 	CloseHandle(thread->handle);
-	free(thread->name);
+	
+	if(thread->name)
+		free(thread->name);
+	
 	free(thread);
 }
 
@@ -646,7 +650,8 @@ void xbt_os_thread_yield(void) {
     Sleep(0);
 }
 void xbt_os_thread_cancel(xbt_os_thread_t t) {
-   THROW_UNIMPLEMENTED;
+  if(!TerminateThread(t->handle,0))
+		THROW0(system_error,(int)GetLastError(), "TerminateThread failed");
 }
 
 /****** mutex related functions ******/
