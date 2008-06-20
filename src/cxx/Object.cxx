@@ -38,6 +38,7 @@ bool Class::isDerivedFrom(const Class* baseClass) const
 
 // Dynamic name lookup and creation
 Class* Class::fromName(const char* name)
+throw (ClassNotFoundException)
 {
 	Class* cur;
 

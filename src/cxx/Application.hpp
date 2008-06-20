@@ -1,3 +1,17 @@
+/*
+ * Application.hpp
+ *
+ * This file contains the declaration of the wrapper class of the native MSG task type.
+ *
+ * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * All right reserved. 
+ *
+ * This program is free software; you can redistribute 
+ * it and/or modify it under the terms of the license 
+ *(GNU LGPL) which comes with this package. 
+ *
+ */  
+ 
 #ifndef MSG_APPLICATION_HPP
 #define MSG_APPLICATION_HPP
 
@@ -5,7 +19,8 @@
 	#error Application.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
-#include <InvalidParameterException.hpp>
+#include <NullPointerException.hpp>
+#include <FileNotFoundException.hpp>
 #include <LogicException.hpp>
 #include <MsgException.hpp>
 
@@ -13,11 +28,13 @@ namespace SimGrid
 {
 	namespace Msg
 	{
+		// Application wrapper class declaration.
 		class Application
 		{
 		public:
 			
-		// Default constructor.
+			/*! \brief Default constructor.
+			 */
 			Application();
 			
 			/*! \brief Copy constructor.
@@ -26,11 +43,15 @@ namespace SimGrid
 			
 			/* \brief A constructor which takes as parameter the xml file of the application.
 			 *
-			 * \exception		[InvalidParameterException]	if the parameter file is invalid
-			 *					(NULL or if the file does not exist).
+			 * \exception		If this constructor fails, it throws on of the exceptions described
+			 *					below:
+			 *		
+			 *					[NullPointerException]	if the parameter file is NULL.
+			 *
+			 *					[FileNotFoundException]	if the file is not found.
 			 */
 			Application(const char* file)
-			throw(InvalidParameterException);
+			throw(NullPointerException, FileNotFoundException);
 			
 			/*! \brief Destructor.
 			 */
@@ -40,8 +61,7 @@ namespace SimGrid
 			
 			/*! \brief Application::deploy() - deploy the appliction.
 			 *
-			 * \return			If successfuly the application is deployed. Otherwise
-			 *					the method throws an exception listed below.
+			 * \exception		If this method fails, it throws an exception listed below:
 			 *
 			 * \exception		[LogicException]			if the xml file which describes the application
 			 *												is not yet specified or if the application is already
@@ -57,22 +77,25 @@ namespace SimGrid
 			void deploy(void)
 			throw(LogicExeption, MsgException);
 			
-			/*! \brief Application::deploy() - deploy the appliction.
+			/*! \brief Application::deploy() - Deploy the appliction.
 			 *
 			 * \return			If successfuly the application is deployed. Otherwise
 			 *					the method throws an exception listed below.
 			 *
-			 * \exception		[InvalidParameterException]	if the parameter file is invalid
-			 *					(NULL or not a xml deployment file name).
+			 * \exception		[NullPointerException]		if the parameter file is NULL.
+			 *					
+			 *					[FileNotFoundException]		if the file is not found.
+			 *
 			 *					[MsgException]				if a internal exception occurs.
+			 *
 			 *					[LogicException]			if the application is already deployed.
 			 *
 			 * \
 			 */
 			void deploy(const char* file)
-			throw(InvalidParameterException, LogicException, MsgException);
+			throw(NullPointerException, FileNotFoundException, LogicException, MsgException);
 			
-			/*! \brief Application::isDeployed() - tests if the application is deployed.
+			/*! \brief Application::isDeployed() - Tests if the application is deployed.
 			 *
 			 * \return			This method returns true is the application is deployed.
 			 *					Otherwise the method returns false.
@@ -84,18 +107,20 @@ namespace SimGrid
 			
 			/*! \brief Application::setFile() - this setter sets the value of the file of the application.
 			 *
-			 * \return			If successful, the value of the file of the application is setted.
-			 *					Otherwise the method throws on of the exceptions listed below.
+			 * \exception		If this method fails, it throws on of the exceptions listed below:
 			 *
-			 * \exception		[InvalidParameterException]	if the parameter file is invalid
-			 *												(NULL or does no exist).
+			 * 					[NullPointerException]		if the parameter file is NULL.
+			 *
+			 *					[FileNotFoundException]		if the file is not found.
+			 
 			 *					[LogicException]			if you try to set the value of the file of an
 			 *												application which is already deployed.
 			 */
 			void setFile(const char* file)
-			throw (InvalidParameterException, LogicException);
+			throw (NullPointerException, FileNotFoundException, LogicException);
 			
-			/*! \brief Application::getFile() - this getter returns the file of an application object.
+			/*! \brief Application::getFile() - This getter returns the name of the xml file which describes the 
+			 * application of the simulation.
 			 */
 			const char* getFile(void) const;
 			
@@ -113,9 +138,9 @@ namespace SimGrid
 			
 			// flag : if true the application was deployed.
 			bool deployed;
-			// the xml file which describe the application.
-			const char* file;
 			
+			// the xml file which describes the application of the simulation.
+			const char* file;
 		};
 		
 	} // namespace Msg

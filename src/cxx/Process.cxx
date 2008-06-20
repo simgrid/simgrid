@@ -547,14 +547,27 @@ namespace SimGrid
 		throw(HostNotFoundException)
 		{
 			smx_process_t nativeCurrentProcess = NULL;
-			nativeProcess = xbt_new0(s_smx_process_t, 1);
+			
+			// allocate the native process
+			this->nativeProcess = xbt_new0(s_smx_process_t, 1);
+			
+			// allocate the simulation data of the native process
 			smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t, 1);
+			
+			// try to retrieve the host where to createt the process from its name
 			smx_host_t nativeHost = SIMIX_host_get_by_name(rHost.getName());
 			
-			throw HostNotFoundException(rHost.getName());
+			if(!nativeHost)
+				throw HostNotFoundException(rHost.getName());
 			
+			// realloc the list of the argument to add the pointer to this process instance at the end
 			argv = (char**)realloc(argc + 1, sizeo(char*));
 			
+			// add the pointer to this instance at the end of the list of the arguments of the process
+			// so the static method Process::run() (passed as argument of the MSG function xbt_context_new())
+			// can retrieve the concerned process object by the run
+			// so Process::run() can call the method main() of the good process
+			// for more detail see Process::run() method
 			argv[argc] = (char*)this;
 			
 			// Simulator Data
@@ -563,28 +576,30 @@ namespace SimGrid
 			simdata->cond = NULL;
 			simdata->argc = argc;
 			simdata->argv = argv;
+			
+			// create the context of the process.
 			simdata->context = xbt_context_new(name, Process::run, NULL, NULL, simix_global->cleanup_process_function, nativeProcess, simdata->argc, simdata->argv);
 			
 			/* Process structure */
-			nativeProcess->name = xbt_strdup(name);
-			nativeProcess->simdata = simdata;
+			this->nativeProcess->name = xbt_strdup(name);
+			this->nativeProcess->simdata = simdata;
 			
 			// Set process data
-			nativeProcess->data = NULL;
+			this->nativeProcess->data = NULL;
 			
 			// Set process properties
 			simdata->properties = NULL;
 			
-			xbt_swag_insert(nativeProcess, nativeHost->simdata->process_list);
+			xbt_swag_insert(this->nativeProcess, nativeHost->simdata->process_list);
 			
 			/* fix current_process, about which xbt_context_start mocks around */
 			nativeCurrentProcess = simix_global->current_process;
-			xbt_context_start(nativeProcess->simdata->context);
+			xbt_context_start(this->nativeProcess->simdata->context);
 			simix_global->current_process = nativeCurrentProcess;
 			
-			xbt_swag_insert(nativeProcess, simix_global->process_list);
-			DEBUG2("Inserting %s(%s) in the to_run list", nativeProcess->name, nativeHost->name);
-			xbt_swag_insert(nativeProcess, simix_global->process_to_run);
+			xbt_swag_insert(this->nativeProcess, simix_global->process_list);
+			DEBUG2("Inserting %s(%s) in the to_run list", this->nativeProcess->name, nativeHost->name);
+			xbt_swag_insert(this->nativeProcess, simix_global->process_to_run);
 		}
 		
 		Process& Process::fromNativeProcess(m_process_t nativeProcess)
@@ -594,9 +609,10 @@ namespace SimGrid
 		
 		int Process::run(int argc, char** argv)
 		{
-			Process* process =(Process*)argv[argc];
 			
-			return process->main(argc, argv);
+			// the last argument of the process is the pointer to the process to run
+			// for mor detail see Process::create() method
+			return ((Process*)argv[argc])->main(argc, argv);
 		}
 		
 	} // namespace Msg

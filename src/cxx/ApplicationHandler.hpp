@@ -1,3 +1,17 @@
+/*
+ * ApplicationHandler.hpp
+ *
+ * This file contains the declaration of the wrapper class of the native MSG task type.
+ *
+ * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * All right reserved. 
+ *
+ * This program is free software; you can redistribute 
+ * it and/or modify it under the terms of the license 
+ *(GNU LGPL) which comes with this package. 
+ *
+ */  
+ 
 #ifndef MSG_APPLICATION_HANDLER_HPP
 #define MSG_APPLICATION_HANDLER_HPP
 
@@ -7,11 +21,14 @@
 #endif
 
 
+#include <ClassNotFoundException.hpp>
+#include <HostNotFoundException.hpp>
+
 namespace SimGrid
 {
 	namespace Msg
 	{
-		// Declaration of the class ApplicationHandler.
+		// Declaration of the class ApplicationHandler (Singleton).
 		class ApplicationHandler
 		{
 		private :
@@ -71,12 +88,14 @@ namespace SimGrid
 				const const char* getHostName(void);
 				
 				// Create the current process.
-		    	void createProcess(void); 
+		    	void createProcess(void)
+		    	throw (ClassNotFoundException, HostNotFoundException); 
 		    	
 			};
 			
 			// the process factory used by the application handler.
 			static ProcessFactory* processFactory;
+			
 			
 			public:
 			

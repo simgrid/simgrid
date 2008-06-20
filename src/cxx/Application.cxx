@@ -1,3 +1,18 @@
+/*
+ * Application.cxx
+ *
+ * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * All right reserved. 
+ *
+ * This program is free software; you can redistribute 
+ * it and/or modify it under the terms of the license 
+ *(GNU LGPL) which comes with this package. 
+ *
+ */
+ 
+ /* Application member functions implementation.
+  */  
+  
 #include <Application.hpp>
 #include <ApplicationHandler.hpp>
 
@@ -27,17 +42,17 @@ namespace SimGrid
 		}
 	
 		Application::Application(const char* file)
-		throw(InvalidParameterException)
+		throw(NullPointerException, FileNotFoundException)
 		{
 			// check parameters
 			
 			if(!file)
-				throw InvalidParameterException("file (must not be NULL");
+				throw NullPointerException("file");
 			
 			struct stat statBuf = {0};
 				
 			if(stat(statBuff, &info) < 0 || !S_ISREG(statBuff.st_mode))
-				throw InvalidParameterException("file (file not found)");
+				throw FileNotFoundException(file);
 				
 			this->file = file;
 			this->deployed = false;
@@ -49,7 +64,7 @@ namespace SimGrid
 		}
 			
 		Application::deploy(const char* file)
-		throw(InvalidParameterException, LogicException, MsgException)
+		throw(NullPointerException, FileNotFoundException, LogicException, MsgException)
 		{
 			// check logic
 			
@@ -59,25 +74,39 @@ namespace SimGrid
 			// check the parameters
 				
 			if(!file)
-				throw InvalidParameterException("file (must not be NULL");
+				throw NullPointerException("file");
 			
 			struct stat statBuf = {0};
 				
 			if(stat(statBuff, &info) < 0 || !S_ISREG(statBuff.st_mode))
-				throw InvalidParameterException("file (file not found)");
+				throw FileNotFoundException(file);
 					
 			surf_parse_reset_parser();
+			
+			// set the begin of the xml process element handler
   			surfxml_add_callback(STag_surfxml_process_cb_list, ApplicationHandler::onBeginProcess);
+  				
+  			// set the process arg handler
   			surfxml_add_callback(ETag_surfxml_argument_cb_list, ApplicationHandler::onArg);
+  				
+  			// set the properties handler
   			surfxml_add_callback(STag_surfxml_prop_cb_list, ApplicationHandler::OnProperty);
+  				
+  			// set the end of the xml process element handler
   			surfxml_add_callback(ETag_surfxml_process_cb_list, ApplicationHandler::OnEndProcess);
 
   			surf_parse_open(file);
   			
+  			// initialize the process factory used by the process handler to build the processes.
+  			ApplicationHandler::onStartDocument();
+  				
   			if(surf_parse())
   				throw MsgException("surf_parse() failed");
   			
-  			surf_parse_close();	
+  			surf_parse_close();
+  			
+  			// release the process factory
+  			ApplicationHandler::onEndDocument();	
   			
   			this->file = file;
   			this->deployed = true;
@@ -117,7 +146,7 @@ namespace SimGrid
 		}
 		
 		void Application::setFile(const char* file)
-		throw (InvalidParameterException, LogicException)
+		throw (NullPointerException, FileNotFoundException, LogicException)
 		{
 			// check logic
 			
@@ -127,12 +156,12 @@ namespace SimGrid
 			// check parameters
 			
 			if(!file)
-				throw InvalidParameterException("file (must not be NULL");
+				throw NullPointerException("file");
 			
 			struct stat statBuf = {0};
 				
 			if(stat(statBuff, &info) < 0 || !S_ISREG(statBuff.st_mode))
-				throw InvalidParameterException("file (file not found)");
+				throw FileNotFoundException("file (file not found)");
 				
 			this->file = file;
 			

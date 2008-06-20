@@ -1,3 +1,18 @@
+/*
+ * ApplicationHandler.cxx
+ *
+ * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * All right reserved. 
+ *
+ * This program is free software; you can redistribute 
+ * it and/or modify it under the terms of the license 
+ *(GNU LGPL) which comes with this package. 
+ *
+ */
+ 
+ /* ApplicationHandler member functions implementation.
+  */  
+  
 #include <ApplicationHandler.hpp>
 
 namespace SimGrid
@@ -33,7 +48,7 @@ namespace SimGrid
 		{
 			return *this;
 		}
-			
+		
 		void ApplicationHandler::onStartDocument(void)
 		{
 			// instanciate the factory at the begining of the parsing
@@ -84,31 +99,19 @@ namespace SimGrid
 		
 		// create the cxx process wrapper.
 		void ApplicationHandler::ProcessFactory::createProcess() 
+		throw (ClassNotFoundException, HostNotFoundException)
 		{
 			Host host;
 			Process* process;
 			
-			// dynamic creation of a instance fo the process from its name (which is specified by the element function
+			// try to dynamicaly create an instance fo the process from its name (which is specified by the element function
 			// in the xml application file.
-			try
-			{
-				process = (Process*)Class::fromName(this->function);
-			}
-			catch(ClassNotFoundException e)
-			{
-				cerr << e.toString();	
-			}
+			// if this static method fails, it throws an exception of the class ClassNotFoundException
+			process = (Process*)Class::fromName(this->function);
 			
 			// try to retrieve the host of the process from its name
-			try
-			{
-				host = Host::getByName(this->hostName);	
-			}
-			catch(HostNotFoundException(this->hostName))
-			{
-				cerr << e.toString();
-			}
-				
+			// if this method fails, it throws an exception of the class HostNotFoundException
+			host = Host::getByName(this->hostName);	
 			
 			// build the list of the arguments of the newly created process.
 			int argc = xbt_dynar_length(this->args);

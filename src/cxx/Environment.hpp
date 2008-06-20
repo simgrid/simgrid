@@ -29,6 +29,7 @@ namespace SimGrid
 {
 	namespace Msg
 	{
+		// Environment class wrapper declaration
 		class Environment
 		{
 			public:
