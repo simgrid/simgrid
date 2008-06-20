@@ -370,7 +370,11 @@ void xbt_graph_parse_free (void *  );
 
 /* Begin user sect3 */
 
+#ifdef WIN32
+#define xbt_graph_parse_wrap() 1
+#else
 #define xbt_graph_parse_wrap(n) 1
+#endif
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -2718,7 +2722,9 @@ static void xbt_graph_parse__load_buffer_state  (void)
 }
 
 #ifndef __cplusplus
+#ifndef WIN32
 extern int isatty (int );
+#endif
 #endif /* __cplusplus */
     
 /* Initializes or reinitializes a buffer.
