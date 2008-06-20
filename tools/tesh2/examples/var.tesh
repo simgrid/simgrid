@@ -117,7 +117,7 @@ p the len of new is : ${#new}
 
 p new is empty <$new> and is len is <${#new}>
 
-# display 66 and assign 6 to the value 66 of the variable new
+# display 66 and assign 66 to the value 66 of the variable new
 
 p ${new:=66}
 
