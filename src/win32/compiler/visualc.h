@@ -317,7 +317,7 @@ the double. For now, GRAS requires the structures to be compacted. */
 	#undef GRAS_THISARCH
 #endif
 
-#define GRAS_THISARCH 0
+#define GRAS_THISARCH 3
 
  
  /* Path to the addr2line tool */
