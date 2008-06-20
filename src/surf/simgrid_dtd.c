@@ -40,6 +40,10 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+#include <io.h>
+#endif
+
 /* end standard C headers. */
 
 /* flex integer type definitions */
@@ -370,7 +374,11 @@ void surf_parse_free (void *  );
 
 /* Begin user sect3 */
 
+#ifndef WIN32
 #define surf_parse_wrap(n) 1
+#else
+#define surf_parse_wrap() 1
+#endif
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -6338,7 +6346,9 @@ static void surf_parse__load_buffer_state  (void)
 }
 
 #ifndef __cplusplus
+#ifndef WIN32
 extern int isatty (int );
+#endif
 #endif /* __cplusplus */
     
 /* Initializes or reinitializes a buffer.
