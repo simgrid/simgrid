@@ -3,6 +3,18 @@
 #include "simdag/simdag.h"
 
 int main(int argc, char **argv) {
+	/* creation of the tasks and their dependencies */
+    
+	SD_task_t taskInit;
+    SD_task_t taskA;
+    SD_task_t taskFin;
+
+
+    /* scheduling parameters */
+
+    double no_cost[] = { 0., 0., 0., 0. };
+    double amount[] = { 0., 1., 0., 0.};
+
     /* initialisation of SD */
     SD_init(&argc, argv);
 
@@ -10,15 +22,10 @@ int main(int argc, char **argv) {
     SD_create_environment(argv[1]);
 
     /* creation of the tasks and their dependencies */
-    SD_task_t taskInit = SD_task_create("Task Init",NULL,1.0);
-    SD_task_t taskA = SD_task_create("Task A", NULL, 1.0);
-    SD_task_t taskFin = SD_task_create("Task Fin", NULL, 1.0);
+    taskInit = SD_task_create("Task Init",NULL,1.0);
+    taskA = SD_task_create("Task A", NULL, 1.0);
+    taskFin = SD_task_create("Task Fin", NULL, 1.0);
 
-
-    /* scheduling parameters */
-
-    double no_cost[] = { 0., 0., 0., 0. };
-    double amount[] = { 0., 1., 0., 0.};
 
     /* let's launch the simulation! */
     SD_task_schedule(taskInit, 1, SD_workstation_get_list(), no_cost, no_cost, -1.0);
