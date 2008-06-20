@@ -14,6 +14,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
 			     "Logging specific to this SimDag example");
 
 int main(int argc, char **argv) {
+
+	const char * platform_file;
+	const SD_workstation_t *workstations;
+  int ws_nr;
+   SD_workstation_t w1 = NULL;
+  SD_workstation_t w2 = NULL;
+  const char *name1, *name2;
+   int i,j,k;
+
   /* initialisation of SD */
   SD_init(&argc, argv);
 
@@ -26,27 +35,27 @@ int main(int argc, char **argv) {
   }
 
   /* creation of the environment */
-  const char * platform_file = argv[1];
+  platform_file = argv[1];
   SD_create_environment(platform_file);
 
   /* test the estimation functions */
-  const SD_workstation_t *workstations = SD_workstation_get_list();
-  int ws_nr = SD_workstation_get_number();
+  workstations = SD_workstation_get_list();
+  ws_nr = SD_workstation_get_number();
 
-  SD_workstation_t w1 = NULL;
-  SD_workstation_t w2 = NULL;
-  const char *name1, *name2;
+ 
   /* Show routes between all workstation */
-  int i,j,k;
+ 
   for (i=0; i<ws_nr; i++){
     for (j=0;j<ws_nr; j++){
+		 const SD_link_t *route;
+		 int route_size;
       w1 = workstations[i];
       w2 = workstations[j];
       name1 = SD_workstation_get_name(w1);
       name2 = SD_workstation_get_name(w2);
       INFO2("Route between %s and %s:", name1, name2);   
-      const SD_link_t *route = SD_route_get_list(w1, w2);
-      int route_size = SD_route_get_size(w1, w2);
+      route = SD_route_get_list(w1, w2);
+      route_size = SD_route_get_size(w1, w2);
       for (k = 0; k < route_size; k++) {
         INFO3("\tLink %s: latency = %f, bandwidth = %f", SD_link_get_name(route[k]),
 	  SD_link_get_current_latency(route[k]), SD_link_get_current_bandwidth(route[k]));
