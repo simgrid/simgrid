@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     SD_create_environment(argv[1]);
 
     /* creation of the tasks and their dependencies */
-    taskInit = SD_task_create(NULL,NULL,1.0);
+    taskInit = SD_task_create("Init",NULL,1.0);
     taskA = SD_task_create("Task Comm A", NULL, 1.0);
     taskB = SD_task_create("Task Comm B", NULL, 1.0);
 
