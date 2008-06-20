@@ -239,7 +239,11 @@ typedef struct xbt_log_category_s s_xbt_log_category_t,*xbt_log_category_t;
 /*
  * Do NOT access any members of this structure directly. FIXME: move to private?
  */
+#ifdef WIN32
+#define XBT_LOG_BUFF_SIZE  16384/* Size of the static string in which we build the log string */
+#else
 #define XBT_LOG_BUFF_SIZE 2048 /* Size of the static string in which we build the log string */
+#endif
 struct xbt_log_category_s {
   xbt_log_category_t parent;
   xbt_log_category_t firstChild; 
@@ -260,7 +264,11 @@ struct xbt_log_event_s {
   int lineNum; 
   va_list ap;
   va_list ap_copy; /* need a copy to launch dynamic layouts when the static ones overflowed */
+  #ifdef WIN32
+  char* buffer;
+  #else
   char buffer[XBT_LOG_BUFF_SIZE];
+  #endif
 };
 
 /**
@@ -378,7 +386,15 @@ extern xbt_log_layout_t xbt_log_default_layout;
  * code. 
  * Setting the LogEvent's valist member is done inside _log_logEvent.
  */
-
+#ifdef WIN32
+#define _XBT_LOG_PRE(catv, priority) do {			 \
+     if (_XBT_LOG_ISENABLEDV(catv, priority)) {                  \
+         s_xbt_log_event_t _log_ev =                             \
+             {NULL,priority,__FILE__,_XBT_FUNCTION,__LINE__}; \
+                _log_ev.cat = &(catv);                           \
+				_log_ev.buffer = (char*) calloc(XBT_LOG_BUFF_SIZE + 1, sizeof(char)); \
+              _xbt_log_event_log(&_log_ev
+#else
 #define _XBT_LOG_PRE(catv, priority) do {			 \
      if (_XBT_LOG_ISENABLEDV(catv, priority)) {                  \
          s_xbt_log_event_t _log_ev =                             \
@@ -386,6 +402,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
                 _log_ev.cat = &(catv);                           \
               _xbt_log_event_log(&_log_ev 			 \
               
+#endif
 
 #define _XBT_LOG_POST                          \
                         );                      \

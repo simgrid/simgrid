@@ -445,7 +445,7 @@ welcome here, too.
 
 *//*'*/
 
-
+
 xbt_log_appender_t xbt_log_default_appender = NULL; /* set in log_init */
 xbt_log_layout_t xbt_log_default_layout = NULL; /* set in log_init */
 int _log_usable = 0;
@@ -597,6 +597,10 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   } 
   va_end(ev->ap);
   va_end(ev->ap_copy);
+	
+  #ifdef WIN32
+  free(ev->buffer);
+  #endif
 }
 
 static void _xbt_log_cat_apply_set(xbt_log_category_t category,
@@ -655,6 +659,7 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category,
 			 (setting->additivity?"on":"off"));
     }
   }
+
 }
 /*
  * This gets called the first time a category is referenced and performs the
