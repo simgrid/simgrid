@@ -56,10 +56,10 @@ noinst_PROGRAMS = xbt/log_large_test$(EXEEXT) \
 	gras/small_sleep/small_sleep_simulator$(EXEEXT) \
 	simdag/network/test_reinit_costs$(EXEEXT) \
 	simdag/platforms/basic_parsing_test$(EXEEXT) \
-	simdag/basic0$(EXEEXT) simdag/basic1$(EXEEXT) \
-	simdag/basic2$(EXEEXT) simdag/basic3$(EXEEXT) \
-	simdag/basic4$(EXEEXT) simdag/basic5$(EXEEXT) \
-	simdag/basic6$(EXEEXT) \
+	simdag/platforms/flatifier$(EXEEXT) simdag/basic0$(EXEEXT) \
+	simdag/basic1$(EXEEXT) simdag/basic2$(EXEEXT) \
+	simdag/basic3$(EXEEXT) simdag/basic4$(EXEEXT) \
+	simdag/basic5$(EXEEXT) simdag/basic6$(EXEEXT) \
 	simdag/network/p2p/test_latency1$(EXEEXT) \
 	simdag/network/p2p/test_latency2$(EXEEXT) \
 	simdag/network/p2p/test_latency3$(EXEEXT) \
@@ -206,6 +206,10 @@ am_simdag_platforms_basic_parsing_test_OBJECTS =  \
 simdag_platforms_basic_parsing_test_OBJECTS =  \
 	$(am_simdag_platforms_basic_parsing_test_OBJECTS)
 simdag_platforms_basic_parsing_test_DEPENDENCIES = $(LDADD_SG)
+am_simdag_platforms_flatifier_OBJECTS = flatifier.$(OBJEXT)
+simdag_platforms_flatifier_OBJECTS =  \
+	$(am_simdag_platforms_flatifier_OBJECTS)
+simdag_platforms_flatifier_DEPENDENCIES = $(LDADD_SG)
 xbt_log_large_test_SOURCES = xbt/log_large_test.c
 xbt_log_large_test_OBJECTS = log_large_test.$(OBJEXT)
 xbt_log_large_test_DEPENDENCIES = $(LDADD_SG)
@@ -247,7 +251,8 @@ SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(simdag_partask_test_comp_only_par_SOURCES) \
 	$(simdag_partask_test_comp_only_seq_SOURCES) \
 	$(simdag_platforms_basic_parsing_test_SOURCES) \
-	xbt/log_large_test.c xbt/parallel_log_crashtest.c
+	$(simdag_platforms_flatifier_SOURCES) xbt/log_large_test.c \
+	xbt/parallel_log_crashtest.c
 DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(gras_empty_main_empty_main_function_SOURCES) \
 	$(gras_empty_main_empty_main_simulator_SOURCES) \
@@ -271,7 +276,8 @@ DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(simdag_partask_test_comp_only_par_SOURCES) \
 	$(simdag_partask_test_comp_only_seq_SOURCES) \
 	$(simdag_platforms_basic_parsing_test_SOURCES) \
-	xbt/log_large_test.c xbt/parallel_log_crashtest.c
+	$(simdag_platforms_flatifier_SOURCES) xbt/log_large_test.c \
+	xbt/parallel_log_crashtest.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -428,7 +434,32 @@ EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
 	gras/empty_main/empty_main.xml gras/empty_main/test_rl \
 	gras/empty_main/test_sg gras/small_sleep/small_sleep.xml \
 	gras/small_sleep/test_sg_32 gras/small_sleep/test_sg_64 \
-	simdag/network/platform_2p_1sl.xml simdag/basic_platform.xml \
+	simdag/network/platform_2p_1sl.xml \
+	simdag/platforms/one_cluster_foreach.xml \
+	simdag/platforms/one_cluster_one_host_random.xml \
+	simdag/platforms/one_cluster_one_host.xml \
+	simdag/platforms/one_cluster_properties_foreach.xml \
+	simdag/platforms/one_cluster_properties_override.xml \
+	simdag/platforms/one_cluster.xml \
+	simdag/platforms/one_host_availability.xml \
+	simdag/platforms/one_host_properties.xml \
+	simdag/platforms/one_host_state_file.xml \
+	simdag/platforms/one_host_state_off.xml \
+	simdag/platforms/one_host_state_on.xml \
+	simdag/platforms/one_host_trace_file.xml \
+	simdag/platforms/one_host_trace_inside.xml \
+	simdag/platforms/one_host.xml \
+	simdag/platforms/one_link_availability.xml \
+	simdag/platforms/one_link_fatpipe.xml \
+	simdag/platforms/one_link_shared.xml \
+	simdag/platforms/one_link_state_file.xml \
+	simdag/platforms/route_override.xml \
+	simdag/platforms/three_hosts_non_symmetric_route.xml \
+	simdag/platforms/two_clusters_symmetric.xml \
+	simdag/platforms/two_clusters.xml \
+	simdag/platforms/two_hosts_multi_hop.xml \
+	simdag/platforms/two_hosts_one_link.xml \
+	simdag/basic_platform.xml \
 	simdag/network/p2p/platform_2p_1sl.xml \
 	simdag/network/p2p/platform_2p_1fl.xml \
 	simdag/network/p2p/platform_2p_1switch.xml \
@@ -447,7 +478,8 @@ TESTS = xbt/log_large_test.tesh xbt/parallel_log_crashtest.tesh \
 	$(am__append_2) gras/empty_main/test_rl \
 	gras/empty_main/test_sg $(am__append_3) $(am__append_4) \
 	simdag/network/test_reinit_costs.tesh \
-	simdag/platforms/basic_parsing_test.tesh simdag/basic0.tesh \
+	simdag/platforms/basic_parsing_test.tesh \
+	simdag/platforms/flatifier.tesh simdag/basic0.tesh \
 	simdag/basic1.tesh simdag/basic2.tesh simdag/basic3.tesh \
 	simdag/basic4.tesh simdag/basic5.tesh simdag/basic6.tesh \
 	simdag/network/p2p/test_latency1.tesh \
@@ -463,7 +495,8 @@ TESTS = xbt/log_large_test.tesh xbt/parallel_log_crashtest.tesh \
 XFAIL_TESTS = gras/datadesc/datadesc_r_little32.tesh \
 	gras/datadesc/datadesc_r_big32_8.tesh \
 	gras/datadesc/datadesc_r_big32_8_4.tesh \
-	gras/datadesc/datadesc_r_big32_2.tesh
+	gras/datadesc/datadesc_r_big32_2.tesh \
+	simdag/platforms/basic_parsing_test_failing.tesh
 LDADD_SG = $(abs_top_builddir)/src/libsimgrid.la
 LDADD_RL = $(abs_top_builddir)/src/libgras.la
 xbt_log_large_test_LDADD = $(LDADD_SG)
@@ -488,6 +521,8 @@ simdag_network_test_reinit_costs_SOURCES = simdag/network/test_reinit_costs.c
 simdag_network_test_reinit_costs_LDADD = $(LDADD_SG)
 simdag_platforms_basic_parsing_test_SOURCES = simdag/platforms/basic_parsing_test.c
 simdag_platforms_basic_parsing_test_LDADD = $(LDADD_SG)
+simdag_platforms_flatifier_SOURCES = simdag/platforms/flatifier.c
+simdag_platforms_flatifier_LDADD = $(LDADD_SG)
 simdag_basic0_SOURCES = simdag/basic0.c
 simdag_basic0_LDADD = $(LDADD_SG)
 simdag_basic1_SOURCES = simdag/basic1.c
@@ -668,6 +703,9 @@ simdag/platforms/$(am__dirstamp):
 simdag/platforms/basic_parsing_test$(EXEEXT): $(simdag_platforms_basic_parsing_test_OBJECTS) $(simdag_platforms_basic_parsing_test_DEPENDENCIES) simdag/platforms/$(am__dirstamp)
 	@rm -f simdag/platforms/basic_parsing_test$(EXEEXT)
 	$(LINK) $(simdag_platforms_basic_parsing_test_OBJECTS) $(simdag_platforms_basic_parsing_test_LDADD) $(LIBS)
+simdag/platforms/flatifier$(EXEEXT): $(simdag_platforms_flatifier_OBJECTS) $(simdag_platforms_flatifier_DEPENDENCIES) simdag/platforms/$(am__dirstamp)
+	@rm -f simdag/platforms/flatifier$(EXEEXT)
+	$(LINK) $(simdag_platforms_flatifier_OBJECTS) $(simdag_platforms_flatifier_LDADD) $(LIBS)
 xbt/$(am__dirstamp):
 	@$(MKDIR_P) xbt
 	@: > xbt/$(am__dirstamp)
@@ -702,6 +740,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_structs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/empty_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/flatifier.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log_large_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_log_crashtest.Po@am__quote@
@@ -1157,6 +1196,20 @@ basic_parsing_test.obj: simdag/platforms/basic_parsing_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/platforms/basic_parsing_test.c' object='basic_parsing_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o basic_parsing_test.obj `if test -f 'simdag/platforms/basic_parsing_test.c'; then $(CYGPATH_W) 'simdag/platforms/basic_parsing_test.c'; else $(CYGPATH_W) '$(srcdir)/simdag/platforms/basic_parsing_test.c'; fi`
+
+flatifier.o: simdag/platforms/flatifier.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT flatifier.o -MD -MP -MF $(DEPDIR)/flatifier.Tpo -c -o flatifier.o `test -f 'simdag/platforms/flatifier.c' || echo '$(srcdir)/'`simdag/platforms/flatifier.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/flatifier.Tpo $(DEPDIR)/flatifier.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/platforms/flatifier.c' object='flatifier.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o flatifier.o `test -f 'simdag/platforms/flatifier.c' || echo '$(srcdir)/'`simdag/platforms/flatifier.c
+
+flatifier.obj: simdag/platforms/flatifier.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT flatifier.obj -MD -MP -MF $(DEPDIR)/flatifier.Tpo -c -o flatifier.obj `if test -f 'simdag/platforms/flatifier.c'; then $(CYGPATH_W) 'simdag/platforms/flatifier.c'; else $(CYGPATH_W) '$(srcdir)/simdag/platforms/flatifier.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/flatifier.Tpo $(DEPDIR)/flatifier.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/platforms/flatifier.c' object='flatifier.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o flatifier.obj `if test -f 'simdag/platforms/flatifier.c'; then $(CYGPATH_W) 'simdag/platforms/flatifier.c'; else $(CYGPATH_W) '$(srcdir)/simdag/platforms/flatifier.c'; fi`
 
 log_large_test.o: xbt/log_large_test.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log_large_test.o -MD -MP -MF $(DEPDIR)/log_large_test.Tpo -c -o log_large_test.o `test -f 'xbt/log_large_test.c' || echo '$(srcdir)/'`xbt/log_large_test.c
