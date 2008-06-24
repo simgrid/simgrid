@@ -31,6 +31,7 @@ xbt_dict_t trace_connect_list_latency = NULL;
 static xbt_dynar_t surfxml_bufferstack_stack = NULL;
 static int surfxml_bufferstack_size = 2048;
 static char *old_buff=NULL;
+static void surf_parse_error(char *msg);
 
 static void push_surfxml_bufferstack(int new)
 {
@@ -471,13 +472,20 @@ static int _surf_parse(void)
 
 int_f_void_t surf_parse = _surf_parse;
 
+void surf_parse_error(char *msg)
+{
+   fprintf(stderr,"Parse error on line %d: %s\n",surf_parse_lineno,msg);
+   abort();
+}
+
+
 void surf_parse_get_double(double *value, const char *string)
 {
   int ret = 0;
 
   ret = sscanf(string, "%lg", value);
-  xbt_assert2((ret == 1), "Parse error line %d : %s not a number",
-	      surf_parse_lineno, string);
+  if (ret != 1)
+     surf_parse_error(bprintf("%s is not a double", string));
 }
 
 void surf_parse_get_int(int *value, const char *string)
@@ -485,8 +493,8 @@ void surf_parse_get_int(int *value, const char *string)
   int ret = 0;
 
   ret = sscanf(string, "%d", value);
-  xbt_assert2((ret == 1), "Parse error line %d : %s not a number",
-	      surf_parse_lineno, string);
+  if (ret != 1) 
+     surf_parse_error(bprintf("%s is not an integer", string));
 }
 
 void surf_parse_get_trace(tmgr_trace_t * trace, const char *string)
@@ -653,36 +661,56 @@ static void parse_sets(void)
 {
   char *id, *suffix, *prefix, *radical;
   int start, end;
+  xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
   xbt_dynar_t current_set;
-  char *value;
+  char *value,*groups;
   int i;
+  unsigned int iter;
 
   id = xbt_strdup(A_surfxml_set_id);
   prefix = xbt_strdup(A_surfxml_set_prefix);
   suffix = xbt_strdup(A_surfxml_set_suffix);
   radical = xbt_strdup(A_surfxml_set_radical);
   
-  xbt_assert1(!xbt_dict_get_or_null(set_list, id),
-	      "Set '%s' declared several times in the platform file.",id);  
-  radical_ends = xbt_str_split(radical, "-");
-  xbt_assert1((xbt_dynar_length(radical_ends)==2), "Radical must be in the form lvalue-rvalue! Provided value: %s", radical);
-
-  surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char*));
-  surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char*));
-
+  if (xbt_dict_get_or_null(set_list, id))
+     surf_parse_error(bprintf("Set '%s' declared several times in the platform file.",id));
+   
   current_set = xbt_dynar_new(sizeof(char*), NULL);
 
-  
-  for (i=start; i<=end; i++) {
-     value = bprintf("%s%d%s", prefix, i, suffix);
-     xbt_dynar_push(current_set, &value);
-  } 
-  
+  radical_elements = xbt_str_split(radical,",");
+  xbt_dynar_foreach(radical_elements,iter, groups) {
+	
+     radical_ends = xbt_str_split(groups, "-");
+     switch (xbt_dynar_length(radical_ends)) {
+      case 1:
+	surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char*));
+	value = bprintf("%s%d%s", prefix, start, suffix);
+	xbt_dynar_push(current_set, &value);
+	break;
+	
+      case 2:
+
+	surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char*));
+	surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char*));
+
+
+	for (i=start; i<=end; i++) {
+	   value = bprintf("%s%d%s", prefix, i, suffix);
+	   xbt_dynar_push(current_set, &value);
+	} 
+	break;
+	
+      default:
+	surf_parse_error(xbt_strdup("Malformed radical"));
+     } 
+     
+     xbt_dynar_free(&radical_ends);
+  }
+   
   xbt_dict_set(set_list, id, current_set, NULL);
 
-  xbt_dynar_free(&radical_ends);
-
+  xbt_dynar_free(&radical_elements);
   free(radical);
   free(suffix);
   free(prefix);
@@ -712,10 +740,13 @@ static void finalize_host_foreach(void)
 
   xbt_dict_t cluster_host_props = current_property_set;
   
-  xbt_assert1((names = xbt_dict_get_or_null(set_list, foreach_set_name)),
-	      "Set name '%s' reffered by foreach tag not found.", foreach_set_name);  
-
-  xbt_assert1((strcmp(A_surfxml_host_id, "$1") == 0), "The id of the host within the foreach should point to the foreach set_id (use $1). Your value: %s", A_surfxml_host_id);
+  names = xbt_dict_get_or_null(set_list, foreach_set_name);
+  if (!names)
+     surf_parse_error(bprintf("Set name '%s' used in <foreach> not found.",
+			       foreach_set_name));
+  if (strcmp(A_surfxml_host_id, "$1"))
+     surf_parse_error(bprintf("The host id within <foreach> should point to the foreach set_id (use $1 instead of %s)", 
+			      A_surfxml_host_id));
 
 	
   /* foreach name in set call the main host callback */
@@ -763,11 +794,13 @@ static void finalize_link_foreach(void)
 
   xbt_dict_t cluster_link_props = current_property_set;
 
-  xbt_assert1((names = xbt_dict_get_or_null(set_list, foreach_set_name)),
-	      "Set name '%s' reffered by foreach tag not found.", foreach_set_name); 
-
-  xbt_assert1((strcmp(A_surfxml_link_id, "$1") == 0), "The id of the link within the foreach should point to the foreach set_id (use $1). Your value: %s", A_surfxml_link_id);
-
+  names = xbt_dict_get_or_null(set_list, foreach_set_name);
+  if (!names)
+     surf_parse_error(bprintf("Set name '%s' used in <foreach> not found.",
+			       foreach_set_name));
+  if (strcmp(A_surfxml_link_id, "$1"))
+     surf_parse_error(bprintf("The host id within <foreach> should point to the foreach set_id (use $1 instead of %s)", 
+			      A_surfxml_link_id));
 
   /* for each name in set call the main link callback */
   xbt_dynar_foreach (names, cpt, name) {
