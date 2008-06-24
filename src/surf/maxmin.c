@@ -246,9 +246,10 @@ void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
     if (var->cnsts[i].constraint == cnst)
       break;
 
-  if (i < var->cnsts_number)
-    var->cnsts[i].value += value;
-  else
+  if (i < var->cnsts_number) {
+    if(cnst->shared) var->cnsts[i].value += value;
+    else var->cnsts[i].value = MAX(var->cnsts[i].value,value);
+  }  else
     lmm_expand(sys, cnst, var, value);
 }
 
