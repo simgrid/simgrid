@@ -112,7 +112,7 @@ EXTRA_DIST += gras/empty_main/empty_main.xml \
 noinst_PROGRAMS+=\
   gras/empty_main/empty_main_function \
   gras/empty_main/empty_main_simulator
-  
+
 gras_empty_main_empty_main_simulator_SOURCES= gras/empty_main/empty_main.c gras/empty_main/_empty_main_simulator.c
 gras_empty_main_empty_main_function_SOURCES=  gras/empty_main/empty_main.c gras/empty_main/_empty_main_function.c
 
@@ -133,7 +133,7 @@ EXTRA_DIST += gras/small_sleep/small_sleep.xml \
 noinst_PROGRAMS+=\
   gras/small_sleep/small_sleep_function \
   gras/small_sleep/small_sleep_simulator
-  
+
 gras_small_sleep_small_sleep_simulator_SOURCES= gras/small_sleep/small_sleep.c gras/small_sleep/_small_sleep_simulator.c
 gras_small_sleep_small_sleep_function_SOURCES=  gras/small_sleep/small_sleep.c gras/small_sleep/_small_sleep_function.c
 
@@ -168,6 +168,38 @@ noinst_PROGRAMS += simdag/platforms/basic_parsing_test
 simdag_platforms_basic_parsing_test_SOURCES = simdag/platforms/basic_parsing_test.c
 simdag_platforms_basic_parsing_test_LDADD = $(LDADD_SG)
 TESTS += simdag/platforms/basic_parsing_test.tesh
+XFAIL_TESTS += simdag/platforms/basic_parsing_test_failing.tesh
+
+noinst_PROGRAMS += simdag/platforms/flatifier
+simdag_platforms_flatifier_SOURCES = simdag/platforms/flatifier.c
+simdag_platforms_flatifier_LDADD = $(LDADD_SG)
+TESTS += simdag/platforms/flatifier.tesh
+
+EXTRA_DIST      += simdag/platforms/one_cluster_foreach.xml \
+                   simdag/platforms/one_cluster_one_host_random.xml \
+                   simdag/platforms/one_cluster_one_host.xml \
+                   simdag/platforms/one_cluster_properties_foreach.xml \
+                   simdag/platforms/one_cluster_properties_override.xml \
+                   simdag/platforms/one_cluster.xml \
+                   simdag/platforms/one_host_availability.xml \
+                   simdag/platforms/one_host_properties.xml \
+                   simdag/platforms/one_host_state_file.xml \
+                   simdag/platforms/one_host_state_off.xml \
+                   simdag/platforms/one_host_state_on.xml \
+                   simdag/platforms/one_host_trace_file.xml \
+                   simdag/platforms/one_host_trace_inside.xml \
+                   simdag/platforms/one_host.xml \
+                   simdag/platforms/one_link_availability.xml \
+                   simdag/platforms/one_link_fatpipe.xml \
+                   simdag/platforms/one_link_shared.xml \
+                   simdag/platforms/one_link_state_file.xml \
+                   simdag/platforms/route_override.xml \
+                   simdag/platforms/three_hosts_non_symmetric_route.xml \
+                   simdag/platforms/two_clusters_symmetric.xml \
+                   simdag/platforms/two_clusters.xml \
+                   simdag/platforms/two_hosts_multi_hop.xml \
+                   simdag/platforms/two_hosts_one_link.xml
+
 
 # from L.C. Canon
 noinst_PROGRAMS += simdag/basic0 \

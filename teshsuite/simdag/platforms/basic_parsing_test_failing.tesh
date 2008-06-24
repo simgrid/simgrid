@@ -1,0 +1,2 @@
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_cluster_properties_override.xml
+$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_trace_file.xml
