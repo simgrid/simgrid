@@ -15,6 +15,7 @@ static vector<void*> meta_flows;
 static int* meta_nflow;
 static int meta_flg = 0;
 
+
 void static tcp_sent_callback(void* action, double completion_time);
 
 // Constructor.
@@ -247,26 +248,16 @@ int GTSim::create_flow(int src, int dst, long datasize, void* metadata){
     return -1;
   }
 
-  gtnets_servers_[nflow_] = (TCPServer*)gtnets_nodes_[dst_node]->
+  gtnets_servers_[nflow_] = (TCPServer*) gtnets_nodes_[dst_node]->
        AddApplication(TCPServer(TCPReno()));
-  //added by arnaud in order to avoid TCPServer duplicates.
-  //It is not needed since we create a new TCPServer for
-  //each flow. Also we need to control this variable
-  //to proper set the value of remaining communication amount.
-  //See functions:
-  gtnets_servers_[nflow_]->copyOnConnect=false;
   gtnets_servers_[nflow_]->BindAndListen(80);
 
   gtnets_clients_[nflow_] = (TCPSend*)gtnets_nodes_[src_node]->
     AddApplication(TCPSend(metadata, gtnets_nodes_[dst_node]->GetIPAddr(), 
 			   80, Constant(datasize), TCPReno()));
-  gtnets_clients_[nflow_]->copyOnConnect=false;
   gtnets_clients_[nflow_]->SetSendCallBack(tcp_sent_callback);
   gtnets_clients_[nflow_]->Start(0);
 
-  //added by pedro in order to get statistics
-  //map an action from a gtnets flow id
-  //metadata is the action and flow is the id to gtnets
   gtnets_action_to_flow_[metadata] = nflow_;
   nflow_++;
 
@@ -301,8 +292,8 @@ Time_t GTSim::get_time_to_next_flow_completion(){
 }
 
 double GTSim::gtnets_get_flow_rx(void *metadata){
-  int flow = gtnets_action_to_flow_[metadata];
-  return ((TCPServer *)gtnets_servers_[flow])->totRx;//action_remain[flow]; 
+  int flow_id = gtnets_action_to_flow_[metadata];
+  return gtnets_servers_[flow_id]->totRx; 
 }
 
 int GTSim::run_until_next_flow_completion(void ***metadata, int *number_of_flows){
@@ -335,4 +326,5 @@ void static tcp_sent_callback(void* action, double completion_time){
     (*meta_nflow)++;
   }
 }
+
 
