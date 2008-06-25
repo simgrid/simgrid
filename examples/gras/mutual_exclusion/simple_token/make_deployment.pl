@@ -25,7 +25,7 @@ if (! $nb_hosts) {
 # map { print "$_\n" } @host;
 
 print "<?xml version='1.0'?>\n";
-print "<!DOCTYPE platform SYSTEM \"surfxml.dtd\">\n";
+print "<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n";
 print "<platform version=\"2\">\n\n";
 
 

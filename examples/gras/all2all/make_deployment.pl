@@ -30,7 +30,7 @@ my @host;
 open IN,$input || die "Cannot open $input: $!\n";
 
 while (<IN>) {
-  next unless /<cpu name="([^"]*)"/; # "
+  next unless /<host id="([^"]*)"/; # "
   
   push @host, $1;
 }
@@ -66,8 +66,8 @@ for (my $i=0; $i<$nb_hosts; $i++) {
 # and now, really generate the file. Receiver first.
 
 print "<?xml version='1.0'?>\n";
-print "<!DOCTYPE platform_description SYSTEM \"surfxml.dtd\">\n";
-print "<platform_description version=\"1\">\n\n";
+print "<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n";
+print "<platform version=\"2\">\n\n";
 
 for my $r (@receivers) {
     my ($h, $p) = split(':', $r);
@@ -102,6 +102,6 @@ if(length($source)) {
     }
 }
 
-print "</platform_description>\n";
+print "</platform>\n";
 
 # print "source='$source' nb_hosts=$nb_hosts\n";

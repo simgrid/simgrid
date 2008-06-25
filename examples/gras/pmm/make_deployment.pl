@@ -26,7 +26,7 @@ my @host;
 open IN,$input || die "Cannot open $input: $!\n";
 
 while (<IN>) {
-  next unless /<cpu name="([^"]*)"/; # "
+  next unless /<host id="([^"]*)"/; # "
   
   push @host, $1;
 }
@@ -47,8 +47,8 @@ my $port_num = 4000;
 my $master = $host[0];
 
 print "<?xml version='1.0'?>\n";
-print "<!DOCTYPE platform_description SYSTEM \"surfxml.dtd\">\n";
-print "<platform_description version=\"1\">\n\n";
+print "<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n";
+print "<platform version=\"2\">\n\n";
 print "  <!-- The master, argument :: port number -->\n";
 print "  <process host=\"$master\" function=\"master\">\n";
 print "    <argument value=\"$port_num\"/>\n";
@@ -68,5 +68,5 @@ for (my $i=0; $i<$nb_slaves; $i++) {
 }
 
 
-print "</platform_description>\n";
+print "</platform>\n";
 
