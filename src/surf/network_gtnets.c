@@ -9,6 +9,9 @@
 #include "gtnets/gtnets_interface.h"
 #include "xbt/str.h"
 
+
+static   double time_to_next_flow_completion=-1;
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
 				"Logging specific to the SURF network module");
 
@@ -346,7 +349,11 @@ static double share_resources(double now)
   if (!xbt_swag_size(running_actions))
     return -1.0;
 
-  return gtnets_get_time_to_next_flow_completion();
+  xbt_assert0(time_to_next_flow_completion, "Time to next flow completion not initialized!\n");
+  
+  time_to_next_flow_completion = gtnets_get_time_to_next_flow_completion();
+
+  return time_to_next_flow_completion;
 }
 
 /* delta: by how many time units the simulation must advance */
@@ -362,9 +369,6 @@ static void update_actions_state(double now, double delta)
   //  surf_action_network_GTNETS_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_network_model->common_public->states.running_action_set;
-
-  double time_to_next_flow_completion =
-      gtnets_get_time_to_next_flow_completion();
 
   /* If there are no renning flows, just return */
   if (time_to_next_flow_completion < 0.0) {
