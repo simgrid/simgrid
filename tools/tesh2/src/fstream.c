@@ -396,13 +396,13 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 	char* line2;
 	variable_t variable;
 	unsigned int i;
-	char exp[VAR_NAME_MAX + 1] = {0};
+	char exp[PATH_MAX + 1] = {0};
 	unit_t unit = fstream->unit;
 	xbt_dynar_t variables = unit->runner->variables;
 	char* p= NULL;
 	char* end = NULL;
 	char* val = NULL;
-	char buff[VAR_NAME_MAX + 1] = {0}; 
+	char buff[PATH_MAX + 1] = {0}; 
 	size_t len;
 	char delimiters[4] = {' ', '\t', '\n', '\0'}; 
 	
@@ -1267,7 +1267,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 
 		/* translate the command line */
 
-		char* path;
+		char* path = NULL;
 		char* delimiter;
 		char command_line[PATH_MAX + 1] = {0};
 		size_t i = 0;
@@ -1275,9 +1275,9 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 
 		
 
-		if(strstr(context->command_line,".exe"))
-			strcpy(command_line,context->command_line);
-		else
+		/*if(strstr(context->command_line,".exe"))
+			strcpy(command_line,context->command_line);*/
+		
 		{
 			size_t len;
 			
@@ -1294,15 +1294,16 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 					
 				i++;
 			}
-
-			strcat(command_line,".exe");
+			
+			if(!strstr(context->command_line,".exe"))
+				strcat(command_line,".exe");
 
 			args = strdup(context->command_line + i);
 		}
 		
-		if(getpath(command_line, &path) && !is_w32_cmd(command_line, fstream->unit->runner->path))
+		if(!is_w32_cmd(command_line, fstream->unit->runner->path) && getpath(command_line, &path) < 0)
 		{
-			ERROR3("[%s] `%s' : NOK (%s)", filepos, context->command_line, error_to_string(ECMDNOTFOUND, 1));
+			ERROR3("[%s] `%s' : NOK (%s)", filepos, command_line, error_to_string(ECMDNOTFOUND, 1));
 			unit_set_error(fstream->unit, ECMDNOTFOUND, 1, filepos);
 			failure(unit);
 			return;
@@ -1338,9 +1339,11 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 		{
 			if(args)
 			{
+
 				context->t_command_line = (char*)calloc(strlen(command_line) + strlen(args) + 1, sizeof(char));
 				sprintf(context->t_command_line,"%s%s",command_line, args);
 
+			
 				free(args);
 
 			}
