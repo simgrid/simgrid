@@ -162,7 +162,6 @@ void GTSim::create_gtnets_topology(){
 int GTSim::add_route(int src, int dst, int* links, int nlink){
   if (is_topology_ == 0){
     create_gtnets_topology();
-    //    topo_->print_topology();
     is_topology_ = 1;
   }  
 
@@ -234,7 +233,6 @@ int GTSim::create_flow(int src, int dst, long datasize, void* metadata){
   //generate it here.
   if (is_topology_ == 0){
     create_gtnets_topology();
-    //    topo_->print_topology();
     is_topology_ = 1;
   }
 
@@ -279,17 +277,19 @@ Time_t GTSim::get_time_to_next_flow_completion(){
   int status;
   Time_t t1;
   int pfds[2];
+  int soon_pid=-1;
   meta_flg=0;
- 
+
   //remain needs to be updated in the future
   Count_t remain;
   
   pipe(pfds);
   
   t1 = 0;
-  if (fork() != 0){
+
+  if ( (soon_pid=fork()) != 0){
     read(pfds[0], &t1, sizeof(Time_t));
-    waitpid(-1, &status, 0);      
+    waitpid(soon_pid, &status, 0);      
   }else{
     Time_t t;
     t = sim_->RunUntilNextCompletion();
@@ -306,6 +306,7 @@ double GTSim::gtnets_get_flow_rx(void *metadata){
 }
 
 int GTSim::run_until_next_flow_completion(void ***metadata, int *number_of_flows){
+
   meta_flows.clear();
   meta_nflow = number_of_flows;
   meta_flg = 1;
