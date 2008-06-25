@@ -1,3 +1,7 @@
+D Tesh Auto Checking
+
+$ cd ${teshexample_dir:=.}
+
 ! include background.tesh
 ! include basic.tesh
 ! include bg-basic.tesh
