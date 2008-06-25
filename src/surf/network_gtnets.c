@@ -115,30 +115,15 @@ static int network_card_new(const char *name)
 }
 
 /* Instantiate a new route: MODIFY BY KF */
-static void route_new(int src_id, int dst_id, char **links, int nb_link)
+static void route_new(int src_id, int dst_id, network_link_GTNETS_t *links, int nb_link)
 {
-#if 0
-  network_link_GTNETS_t *link_list = NULL;
-  int i;
-
-  ROUTE_SIZE(src_id, dst_id) = nb_link;
-  link_list = (ROUTE(src_id, dst_id) =
-	       xbt_new0(network_link_GTNETS_t, nb_link));
-  for (i = 0; i < nb_link; i++) {
-    link_list[i] = xbt_dict_get_or_null(link_set, links[i]);
-    free(links[i]);
-  }
-  free(links);
-#endif
   int i;
   int *gtnets_links;
 
   /* KF: Build the list of gtnets link IDs */
   gtnets_links = (int *) calloc(nb_link, sizeof(int));
   for (i = 0; i < nb_link; i++) {
-    gtnets_links[i] =
-	((network_link_GTNETS_t)
-	 (xbt_dict_get(link_set, links[i])))->id;
+    gtnets_links[i] = links[i]->id;
   }
 
   /* KF: Create the GTNets route */
@@ -148,8 +133,7 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
 }
 
 /* Instantiate a new route: MODIFY BY KF */
-static void route_onehop_new(int src_id, int dst_id, char **links,
-			     int nb_link)
+static void route_onehop_new(int src_id, int dst_id, network_link_GTNETS_t *links, int nb_link)
 {
   int linkid;
 
@@ -158,9 +142,7 @@ static void route_onehop_new(int src_id, int dst_id, char **links,
   }
 
   /* KF: Build the list of gtnets link IDs */
-  linkid =
-      ((network_link_GTNETS_t)
-       (xbt_dict_get(link_set, links[0])))->id;
+  linkid = links[0]->id;
 
   /* KF: Create the GTNets route */
   if (gtnets_add_onehop_route(src_id, dst_id, linkid)) {
@@ -183,36 +165,26 @@ static void parse_link_init(void)
   surf_parse_get_double(&lat, A_surfxml_link_latency);
   state = SURF_LINK_ON;
 
-  /* Print values when no traces are specified */
-  {
-    tmgr_trace_t bw_trace;
-    tmgr_trace_t state_trace;
-    tmgr_trace_t lat_trace;
+  tmgr_trace_t bw_trace;
+  tmgr_trace_t state_trace;
+  tmgr_trace_t lat_trace;
+  
+  surf_parse_get_trace(&bw_trace, A_surfxml_link_bandwidth_file);
+  surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
+  surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
 
-    surf_parse_get_trace(&bw_trace, A_surfxml_link_bandwidth_file);
-    surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
-    surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
+  if (bw_trace)
+    INFO0("The GTNetS network model doesn't support bandwidth state traces");
+  if (lat_trace)
+    INFO0("The GTNetS network model doesn't support latency state traces");
+  if (state_trace)
+    INFO0("The GTNetS network model doesn't support link state traces");
 
-    /*TODO Where is WARNING0 defined??? */
-#if 0
-    if (bw_trace)
-      WARNING0
-	  ("The GTNetS network model doesn't support bandwidth state traces");
-    if (lat_trace)
-      WARNING0
-	  ("The GTNetS network model doesn't support latency state traces");
-    if (state_trace)
-      WARNING0
-	  ("The GTNetS network model doesn't support link state traces");
-#endif
-  }
-  /* KF: remove several arguments to link_new */
   current_property_set = xbt_dict_new();
   link_new(name, bw, lat, current_property_set);
 }
 
 static int nb_link = 0;
-static char **link_name = NULL;
 static int src_id = -1;
 static int dst_id = -1;
 
@@ -221,11 +193,7 @@ static void parse_route_set_endpoints(void)
 {
   src_id = network_card_new(A_surfxml_route_src);
   dst_id = network_card_new(A_surfxml_route_dst);
-
-/*  nb_link = 0;
-  link_name = NULL;
-*/
-  route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+  route_action = A_surfxml_route_action;
 }
 
 /* KF*/
@@ -239,33 +207,15 @@ static void parse_route_set_routers(void)
   }
 }
 
-//The following is common to all and has been relocated to surfxml_parse
-/* Parses a route element from the XML: UNMODIFIED BY HC */
-/*static void parse_route_elem(void)
-{
-  nb_link++;
-  link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
-  link_name[(nb_link) - 1] = xbt_strdup(A_surfxml_route_element_name);
-}
-*/
-
 /* Create the route (more than one hops): MODIFIED BY KF */
 static void parse_route_set_route(void)
 {
-/*  if (nb_link > 1)
-    route_new(src_id, dst_id, link_name, nb_link);
-*/
-    char *name = bprintf("%x#%x",src_id, dst_id);
-    xbt_dict_set(route_table, name, route_link_list, NULL);
+  char *name;
+  if (src_id != -1 && dst_id != -1) {
+    name = bprintf("%x#%x",src_id, dst_id);
+    manage_route(route_table, name, route_action, 0);
     free(name);    
-}
-
-//This is not used anymore. one hop routes are created in add_route
-/* Create the one-hope route: BY KF */
-static void parse_route_set_onehop_route(void)
-{
-  if (nb_link == 1)
-    route_onehop_new(src_id, dst_id, link_name, nb_link);
+  }
 }
 
 static void add_route()
@@ -277,14 +227,16 @@ static void add_route()
   char *key,*data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
+  static network_link_GTNETS_t *link_list = NULL;
 
+  DEBUG0("Entering add_route()");
   xbt_dict_foreach(route_table, cursor, key, data) {
     nb_link = 0;
     links = (xbt_dynar_t)data;
     keys = xbt_str_split_str(key, sep);
 
     nb_link = xbt_dynar_length(links);
-    link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
+    link_list = xbt_realloc(link_list, (nb_link) * sizeof(network_link_GTNETS_t));
 
     src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
@@ -293,29 +245,29 @@ static void add_route()
     char* link = NULL;
     xbt_dynar_foreach (links, cpt, link) {
       TRY {
-        link_name[i++] = xbt_dict_get(link_set, link);
+        link_list[i++] = xbt_dict_get(link_set, link);
       }
       CATCH(e) {
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
       }     
     }
     if (nb_link > 1)
-      route_new(src_id, dst_id, link_name, nb_link);
+      route_new(src_id, dst_id, link_list, nb_link);
     if (nb_link == 1)
-      route_onehop_new(src_id, dst_id, link_name, nb_link);
+      route_onehop_new(src_id, dst_id, link_list, nb_link);
    }
 
-   xbt_dict_free(&route_table);
+  xbt_dict_free(&route_table);
+  DEBUG0("Bailling add_route()");
 }
 
 /* Main XML parsing */
 static void define_callbacks(const char *file)
 {
-  surfxml_add_callback(STag_surfxml_router_cb_list, &parse_route_set_routers);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
-/* surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_onehop_route);*/
+  surfxml_add_callback(STag_surfxml_router_cb_list,   &parse_route_set_routers);
+  surfxml_add_callback(STag_surfxml_link_cb_list,     &parse_link_init);
+  surfxml_add_callback(STag_surfxml_route_cb_list,    &parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_route_cb_list,    &parse_route_set_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
 }
 
@@ -642,3 +594,18 @@ static void surf_network_model_init_internal(void)
     xbt_assert0(0, "impossible to initialize GTNetS interface");
   }
 }
+
+#ifdef HAVE_GTNETS
+void surf_network_model_init_GTNETS(const char *filename)
+{
+  if (surf_network_model)
+    return;
+  surf_network_model_init_internal();
+  define_callbacks(filename);
+  xbt_dynar_push(model_list, &surf_network_model);
+
+  update_model_description(surf_network_model_description,
+			   "GTNets",
+			   (surf_model_t) surf_network_model);
+}
+#endif

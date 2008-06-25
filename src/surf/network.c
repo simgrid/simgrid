@@ -845,7 +845,7 @@ void surf_network_model_init_Vegas(const char *filename)
 }
 
 #ifdef HAVE_SDP
-void surf_network_model_init_SDP(const char *filename)
+ void surf_network_model_init_SDP(const char *filename)
 {
   if (surf_network_model)
     return;
@@ -857,21 +857,6 @@ void surf_network_model_init_SDP(const char *filename)
 
   update_model_description(surf_network_model_description,
 			   "SDP",
-			   (surf_model_t) surf_network_model);
-}
-#endif
-
-#ifdef HAVE_GTNETS
-void surf_network_model_init_GTNETS(const char *filename)
-{
-  if (surf_network_model)
-    return;
-  surf_network_model_init_internal();
-  define_callbacks(filename);
-  xbt_dynar_push(model_list, &surf_network_model);
-
-  update_model_description(surf_network_model_description,
-			   "GTNets",
 			   (surf_model_t) surf_network_model);
 }
 #endif
