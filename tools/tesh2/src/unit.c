@@ -536,7 +536,7 @@ unit_summuarize(unit_t unit)
         return -1;
     }
 	
-	if(unit->description)
+	if((unit->description) && strlen(unit->description) < 78)
 		strcpy(title, unit->description);
 	else
 		sprintf(title, "file : %s",unit->fstream->name);
