@@ -22,6 +22,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
  **   6. We don't update "remaining" for ongoing flows. Is it bad?
  **/
 
+static int src_id = -1;
+static int dst_id = -1;
+
 /* Free memory for a network link */
 static void link_free(void *nw_link)
 {
@@ -141,7 +144,7 @@ static void route_onehop_new(int src_id, int dst_id, network_link_GTNETS_t *link
     xbt_assert0(0, "In onehop_new, nb_link should be 1");
   }
 
-  /* KF: Build the list of gtnets link IDs */
+  /* KF: Build the linbst of gtnets link IDs */
   linkid = links[0]->id;
 
   /* KF: Create the GTNets route */
@@ -184,10 +187,6 @@ static void parse_link_init(void)
   link_new(name, bw, lat, current_property_set);
 }
 
-static int nb_link = 0;
-static int src_id = -1;
-static int dst_id = -1;
-
 /* Parses a route from the XML: UNMODIFIED BY HC */
 static void parse_route_set_endpoints(void)
 {
@@ -222,30 +221,32 @@ static void add_route()
 {
   xbt_ex_t e;
   unsigned int cpt = 0;    
-  int i = 0;
+  int link_list_capacity = 0;
+  int nb_link = 0;
   xbt_dict_cursor_t cursor = NULL;
   char *key,*data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
   static network_link_GTNETS_t *link_list = NULL;
 
+
   DEBUG0("Entering add_route()");
   xbt_dict_foreach(route_table, cursor, key, data) {
+    char *link = NULL;
     nb_link = 0;
     links = (xbt_dynar_t)data;
     keys = xbt_str_split_str(key, sep);
 
-    nb_link = xbt_dynar_length(links);
-    link_list = xbt_realloc(link_list, (nb_link) * sizeof(network_link_GTNETS_t));
+    link_list_capacity = xbt_dynar_length(links);
+    link_list = xbt_new(network_link_GTNETS_t, link_list_capacity);
 
     src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
-  
-    i = 0;
-    char* link = NULL;
+    xbt_dynar_free(&keys);
+
     xbt_dynar_foreach (links, cpt, link) {
       TRY {
-        link_list[i++] = xbt_dict_get(link_set, link);
+        link_list[nb_link++] = xbt_dict_get(link_set, link);
       }
       CATCH(e) {
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
@@ -267,8 +268,8 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(STag_surfxml_router_cb_list,   &parse_route_set_routers);
   surfxml_add_callback(STag_surfxml_link_cb_list,     &parse_link_init);
   surfxml_add_callback(STag_surfxml_route_cb_list,    &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_route_cb_list,    &parse_route_set_route);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
+  surfxml_add_callback(ETag_surfxml_route_cb_list,      &parse_route_set_route);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list,   &add_route);
 }
 
 static void *name_service(const char *name)
@@ -517,20 +518,7 @@ static void finalize(void)
   free(surf_network_model);
   surf_network_model = NULL;
 
-#if 0
-  for (i = 0; i < card_number; i++)
-    for (j = 0; j < card_number; j++)
-      free(ROUTE(i, j));
-  free(routing_table);
-  routing_table = NULL;
-  free(routing_table_size);
-  routing_table_size = NULL;
-  card_number = 0;
-#endif
-
-  /* ADDED BY KF */
   gtnets_finalize();
-  /* END ADDITION */
 }
 
 static void surf_network_model_init_internal(void)
