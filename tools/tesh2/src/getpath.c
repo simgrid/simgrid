@@ -363,10 +363,16 @@ getpath(const char* file, char** path)
 		strncpy(buf2, file, (delimiter - file));
 
 		if(translatepath(buf2, path) < 0)
+		{
+			if(errno == ENOTDIR)
+				errno = ENOENT;
+
 			return -1;
+		}
 	}
 
 	sprintf(buf1,"%s\\%s", *path, delimiter ? delimiter + 1 : file);
+
 	
 	if(stat(buf1, &info) || !S_ISREG(info.st_mode))
 	{
@@ -386,9 +392,22 @@ translatepath(const char* totranslate, char** translated)
 	char buffer1[PATH_MAX + 1] = {0};		
 	char buffer2[PATH_MAX + 1] = {0};
 	char *p1;
-	int i, j, len;
+	int i, len;
 	
 	struct stat stat_buf = {0};
+
+	len = (int)strlen(totranslate);						
+	
+	strncpy(buffer1, totranslate, len);
+
+	while((p1 = strstr(buffer1, "//"))) 
+		if(p1[2]) 
+			strcpy(p1, p1 + 1); 
+		else 
+			p1[1] = '\0';
+
+	if(buffer1[strlen(buffer1) - 1] == '/' || buffer1[strlen(buffer1) - 1] == '\\')
+		buffer1[strlen(buffer1) - 1] = '\0';
 	
 	/* return the current directory */
 	if(!strcmp(totranslate,".") || !strcmp(totranslate,"./"))
@@ -414,65 +433,28 @@ translatepath(const char* totranslate, char** translated)
 
 		return (int)strlen(*translated);
 	}
-	/* it's a relative directory name build the full directory name */
-	else if(!strchr(totranslate, '/') && !strchr(totranslate, '\\') && !stat(totranslate, &stat_buf) && S_ISDIR(stat_buf.st_mode))
+	/* it's a relative directory name build the full directory name (directory)*/
+	else if( buffer1[0] != '.' && buffer1[0] != '/' && buffer1[1] != ':' && !stat(totranslate, &stat_buf) && S_ISDIR(stat_buf.st_mode))
 	{
+		for(i = 0; buffer1[i] !='\0'; i++)
+		{
+			if(buffer1[i] == '/')
+				buffer2[i] = '\\';
+			else
+				buffer2[i] = buffer1[i];
+		}
+		
+		memset(buffer1, 0, PATH_MAX + 1);
 		getcwd(buffer1, PATH_MAX + 1);
 		strcat(buffer1,"\\");
-		strcat(buffer1,totranslate);
+		strcat(buffer1,buffer2);
 		
 		*translated = (char*) calloc(strlen(buffer1) + 1, sizeof(char));
 		strcpy(*translated, buffer1);
 
 		return (int)strlen(*translated);
 	}
-	
-	len = (int)strlen(totranslate);						
-	
-	strncpy(buffer1, totranslate, len);	
-	
-	if(buffer1[strlen(buffer1) - 1] == '/' || buffer1[strlen(buffer1) - 1] == '\\')
-		buffer1[strlen(buffer1) - 1] = '\0';
-	
-	while((p1 = strstr(buffer1, "//"))) 
-		if(p1[2]) 
-			strcpy(p1, p1 + 1); 
-		else 
-			p1[1] = '\0';
-	
-	for(i = 0, j = 0; buffer1[i] !='\0'; i++)
-	{
-		if(buffer1[i] == '/')
-		{
-			j++;
-			
-			if(j > 1)
-				break;
-		}
-	}
-
-	if(j == 1 && buffer1[i - 1] == '/')
-	{
-		/* perhaps it's a relative directory : `dir/' */
-		strncpy(buffer2, buffer1, strlen(buffer1) - 1);
-		
-		if(!stat(buffer2, &stat_buf) && S_ISDIR(stat_buf.st_mode))
-		{
-			getcwd(buffer1, PATH_MAX + 1);
-			strcat(buffer1,"\\");
-			strcat(buffer1,buffer2);
-
-			*translated = (char*) calloc(strlen(buffer1) + 1, sizeof(char));
-			strcpy(*translated, buffer1);
-
-			return (int)strlen(*translated);
-		}
-		else
-			memset(buffer2, 0, PATH_MAX + 1);
-		
-	}
-	
-	if(buffer1[0] == '~') 
+	else if(buffer1[0] == '~') 
 	{
 		/* TODO */
 		*translated = NULL;
@@ -481,7 +463,7 @@ translatepath(const char* totranslate, char** translated)
 	}
 	else if (*buffer1 == '.') 
 	{
-		_fullpath(buffer2, buffer1, sizeof(buffer1));	
+		_fullpath(buffer2, buffer1, sizeof(buffer1));
 	} 
 	else 
 		strcpy(buffer2, buffer1);
@@ -492,8 +474,12 @@ translatepath(const char* totranslate, char** translated)
 		errno = ENOTDIR;
 		return -1;
 	}
-				 
+	
+
+	
 	len = (int)strlen(buffer2);
+	
+
 	
 	*translated = (char*) calloc(len + 1, sizeof(char));
 	strcpy(*translated, buffer2);
