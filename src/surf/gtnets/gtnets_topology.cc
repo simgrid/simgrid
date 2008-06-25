@@ -433,10 +433,14 @@ int GTNETS_Topology::nodeid_from_hostid(int hostid){
 }
 
 void GTNETS_Topology::print_topology(){
+  printf("<<<<<================================>>>>>\n");
+  printf("Dumping GTNETS topollogy information\n");
   map<int, GTNETS_Link*>::iterator it;
   for (it = links_.begin(); it != links_.end(); it++){
     it->second->print_link_status();
   }
+  printf(">>>>>================================<<<<<\n");
+  fflush(NULL);
 }
 
 const vector<GTNETS_Node*>& GTNETS_Topology::nodes(){
