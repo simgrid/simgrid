@@ -126,7 +126,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -155,7 +155,8 @@
 				InlineFunctionExpansion="1"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;SIMGRID_EXPORTS;DLL_EXPORT"
 				StringPooling="true"
-				RuntimeLibrary="0"
+				ExceptionHandling="0"
+				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Release/simgrid.pch"
 				AssemblerListingLocation=".\Release/"
