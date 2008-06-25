@@ -24,7 +24,6 @@
 #include "tcp-tahoe.h"      // Definitions for TCP Tahoe
 #include "tcp-reno.h"
 #include "tcp-newreno.h"
-#include "validation.h"
 #include "event.h"
 #include "routing-manual.h"
 
