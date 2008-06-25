@@ -31,7 +31,7 @@
 
 #ifdef WIN32
 static int
-is_w32_cmd(const char* cmd, char** path)
+is_w32_cmd(char* cmd, char** path)
 {
 	size_t i = 0;
 	struct stat stat_buff = {0};
@@ -51,6 +51,9 @@ is_w32_cmd(const char* cmd, char** path)
 		{
 			for (i = 0; path[i] != NULL; i++)
 			{
+				/* use Cat.exe on Windows */
+				if(!strcmp(cmd, "cat"))
+					cmd[0] = 'C';
 				
 				sprintf(buff,"%s\\%s",path[i], cmd);
 				
