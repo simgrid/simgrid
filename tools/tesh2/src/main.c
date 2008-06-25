@@ -973,7 +973,7 @@ process_command_line(int argc, char** argv)
 								if(ENOENT == errno)
 									ERROR1("File %s does not exist", optarg);
 								else
-									ERROR0("Insufficient memory is available to process the command line - system error");
+									ERROR1("System error :`(%s)'", strerror(errno));
 								
 								return -1;
 							}
