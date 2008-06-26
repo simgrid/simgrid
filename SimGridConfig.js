@@ -56,8 +56,8 @@ JNIIncludeDir = Args.Item(2);
 var FileSystem = new ActiveXObject("Scripting.FileSystemObject");
 
 // Build the 2 paths of SimGrid library paths (debug and release)
-ReleaseLibraryPath = SGBuildDir + "\\build\\vc7\\simgrid\\Release";
-DebugLibraryPath = SGBuildDir + "\\build\\vc7\\simgrid\\Debug";
+ReleaseLibraryPath = SGBuildDir + "build\\vc7\\simgrid\\Release";
+DebugLibraryPath = SGBuildDir + "build\\vc7\\simgrid\\Debug";
 
 // Check the directories specified as parameters of the script.
 
