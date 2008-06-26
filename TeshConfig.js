@@ -113,13 +113,13 @@ else
 }
 
 // Build environement of Tesh.
-UserEnv("tesh") = "tesh";
-UserEnv("tesh_dir") = TeshDir;
-UserEnv("teshexample_dir") = TeshExampleDir;
-UserEnv("teshsuite_dir") = TeshSuiteDir;
-UserEnv("testsuite_dir") = TestSuiteDir;
-UserEnv("example_dir") = ExampleDir;
-UserEnv("srcdir") = SrcDir;
+UserEnv("TESH") = "tesh";
+UserEnv("TESH_DIR") = TeshDir;
+UserEnv("TESHEXAMPLE_DIR") = TeshExampleDir;
+UserEnv("TESHSUITE_DIR") = TeshSuiteDir;
+UserEnv("TESTSUITE_DIR") = TestSuiteDir;
+UserEnv("EXAMPLE_DIR") = ExampleDir;
+UserEnv("SRCDIR") = SrcDir;
 UserEnv("INCLUDE") = Include;
 
 

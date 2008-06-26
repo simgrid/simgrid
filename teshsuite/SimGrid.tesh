@@ -2,7 +2,7 @@ D Tesh tests of SimGrid library.
 p Command line tesh --directory=%teshsuite_dir% --include-dir=simdag --include-dir=xbt --file=SimGrid.tesh --log="log.thresh:info tesh.fmt:%m%n"
 
 
-$ cd ${teshsuite_dir:=.}
+$ cd ${TESHSUITE_DIR:=.}
 
 # XBT
 
