@@ -182,8 +182,6 @@ MSG_error_t MSG_main(void)
       while ((cond = xbt_fifo_pop(smx_action->cond_list))) {
 	SIMIX_cond_broadcast(cond);
       }
-      /* action finished, destroy it */
-      //      SIMIX_action_destroy(smx_action);
     }
 
     while ((smx_action = xbt_fifo_pop(actions_done))) {
@@ -192,8 +190,6 @@ MSG_error_t MSG_main(void)
       while ((cond = xbt_fifo_pop(smx_action->cond_list))) {
 	SIMIX_cond_broadcast(cond);
       }
-      /* action finished, destroy it */
-      //SIMIX_action_destroy(smx_action);
     }
   }
   xbt_fifo_free(actions_failed);
