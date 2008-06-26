@@ -391,18 +391,17 @@ static void update_actions_state(double now, double delta)
 		  "GTNetS simulation couldn't find a flow that would complete");
     }
 
-
-
     xbt_swag_foreach(action, running_actions) {
-      DEBUG1("]]]]]]]]] Action remains old value: %f", action->generic_action.remains);
+      DEBUG2("Action (%p) remains old value: %f", action, action->generic_action.remains);
       double remain = gtnets_get_flow_rx(action);
+      DEBUG1("Remain value returned by GTNetS : %f", remain);
       //need to trust this remain value
       if(remain == 0){
 	action->generic_action.remains=0;
       }else {
-	action->generic_action.remains-=remain;
+	action->generic_action.remains=action->generic_action.cost-remain;
       }
-      DEBUG1("[[[[[[[[[ Action remains new value: %f", action->generic_action.remains);
+      DEBUG2("Action (%p) remains new value: %f", action, action->generic_action.remains);
     }
 
     for (i = 0; i < num_flows; i++) {
@@ -410,12 +409,7 @@ static void update_actions_state(double now, double delta)
       
       action->generic_action.finish = now + time_to_next_flow_completion;
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-      /* TODO: Anything else here? */
-
-      //need to map this action to the gtnets engine
-      DEBUG1("]]]]]]]]] Action remains old value: %f", action->generic_action.remains);
-      action->generic_action.remains -= gtnets_get_flow_rx(metadata[i]);
-      DEBUG1("[[[[[[[[[ Action remains new value: %f", action->generic_action.remains);
+      DEBUG1("----> Action (%p) just terminated",action);
     }
 
 
