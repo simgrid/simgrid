@@ -113,7 +113,7 @@ const char* SD_link_get_name(SD_link_t link) {
  * \brief Returns the current bandwidth of a link
  *
  * \param link a link
- * \return the current bandwidth of this link, in Flops
+ * \return the current bandwidth of this link, in bytes per second
  */
 double SD_link_get_current_bandwidth(SD_link_t link) {
   SD_CHECK_INIT_DONE();
