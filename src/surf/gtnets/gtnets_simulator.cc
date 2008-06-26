@@ -293,7 +293,7 @@ Time_t GTSim::get_time_to_next_flow_completion(){
 
 double GTSim::gtnets_get_flow_rx(void *metadata){
   int flow_id = gtnets_action_to_flow_[metadata];
-  return gtnets_servers_[flow_id]->totRx; 
+  return gtnets_servers_[flow_id]->GetTotRx(); 
 }
 
 int GTSim::run_until_next_flow_completion(void ***metadata, int *number_of_flows){
