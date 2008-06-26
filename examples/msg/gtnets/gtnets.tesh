@@ -1,0 +1,18 @@
+#! ./tesh
+
+p Testing simple communication patterns
+
+$ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml 
+> [S1:master:(1) 0.000000] [msg_test/INFO] Send completed (to C1). Transfer time: 0.110000	 Agregate bandwidth: 9090.909091
+> [S1:master:(1) 0.000000] [msg_test/INFO] Completed peer: C1 time: 0.110000
+
+$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml 
+> [S1:master:(1) 0.000000] [msg_test/INFO] Send completed (to C1). Transfer time: 150.020000	 Agregate bandwidth: 66657.778963
+> [S1:master:(1) 0.000000] [msg_test/INFO] Completed peer: C1 time: 150.020000
+> [S2:master:(2) 50.020000] [msg_test/INFO] Send completed (to C2). Transfer time: 200.040000	 Agregate bandwidth: 49990.002000
+> [S2:master:(2) 50.020000] [msg_test/INFO] Completed peer: C2 time: 200.040000
+
+$ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation_model=compound --cfg=network_model=GTNets --cfg=cpu_model=Cas01
+$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation_model=compound --cfg=network_model=GTNets --cfg=cpu_model=Cas01
+
+

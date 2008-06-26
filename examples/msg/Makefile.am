@@ -47,6 +47,7 @@ if HAVE_SDP
   BROKEN_TESTS = sendrecv/sendrecv_SDP.tesh
 endif
 if HAVE_GTNETS
+  TESTS += gtnets/gtnets.tesh
 endif
 
 CLEANFILES = sendrecv/*~ \
