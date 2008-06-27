@@ -613,7 +613,7 @@ finalize(void)
 
 	if(sig_int)
 		INFO0("Tesh interrupted (receive a SIGINT)");
-	else if(!summary_flag && !dry_run_flag && !silent_flag && !just_print_flag && !print_version_flag && !print_usage_flag && is_tesh_root)
+	else if(!summary_flag && !detail_summary_flag && !dry_run_flag && !silent_flag && !just_print_flag && !print_version_flag && !print_usage_flag && is_tesh_root)
 	{
 		if(!exit_code)
 			INFO2("Tesh terminated with exit code %d : %s",exit_code, "success");

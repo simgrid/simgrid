@@ -1035,11 +1035,11 @@ command_summarize(command_t command)
 			
 			case csr_outputs_dont_match :
 			{
-				char *diff;
+				/*char *diff;*/
 				printf("          reason                      : ouputs don't match\n");
-				diff = xbt_str_diff(command->context->output->data,command->output->data);	  	
+				/*diff = xbt_str_diff(command->context->output->data,command->output->data);	  	
 				printf("          output diff :\n%s\n",diff);
-				free(diff);
+				free(diff);*/
 			}     
 
 			break;

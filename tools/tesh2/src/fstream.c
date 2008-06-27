@@ -708,7 +708,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 			
 			if((p = strstr(line2 + 2, exp)))
 			{
-				if((p + strlen(variable->name) + 1)[0] != '\0')
+				if((p + strlen(variable->name) + 1)[0] != '\0' && !(isalpha((p + strlen(variable->name) + 1)[0])))
 					delimiters[0] = (p + strlen(variable->name) + 1)[0];
 
 				if(variable->val)

@@ -634,7 +634,7 @@ unit_summuarize(unit_t unit)
 				number_of_successeded_tests++;	
 		}
 		
-		asprintf(&p," Unit: %s ............................................................................", include->description ? include->description : include->fstream->name);
+		asprintf(&p," Unit: %s ............................................................................", include->description && strlen(include->description) < 60 ? include->description : include->fstream->name);
 			
 		p[70] = '\0';
 		printf("%s", p);
@@ -732,7 +732,7 @@ unit_summuarize(unit_t unit)
 					number_of_successeded_tests++;
 			}
 			
-			asprintf(&p," Unit: %s ............................................................................", include->description ? include->description : include->fstream->name);
+			asprintf(&p," Unit: %s ............................................................................", include->description && strlen(include->description) < 60 ? include->description : include->fstream->name);
 			
 			p[70] = '\0';
 			printf("%s", p);

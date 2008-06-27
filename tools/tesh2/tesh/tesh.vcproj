@@ -51,6 +51,7 @@
 				DebugInformationFormat="4"
 				CompileAs="1"
 				DisableSpecificWarnings="4996;4127;4204;4706;4245"
+				UseFullPaths="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

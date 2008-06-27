@@ -674,11 +674,11 @@ runner_summarize(void)
 		{
 			FileTimeToSystemTime(&user_time, &si);
 			
-			printf("         Total tesh user time used:       %uhour(s) %uminute(s) %usecond(s) %millisecond(s)\n", si.wHour, si.wMinute, si.wSecond, si.wMilliseconds );
+			printf(" User time used:   %2u Hour(s) %2u Minute(s) %2u Second(s) %3u Millisecond(s)\n", si.wHour, si.wMinute, si.wSecond, si.wMilliseconds );
 			
 			FileTimeToSystemTime(&kernel_time, &si);
 			
-			printf("         Total tesh kernel time used:     %uhour(s) %uminute(s) %usecond(s) %millisecond(s)\n", si.wHour, si.wMinute, si.wSecond, si.wMilliseconds );
+			printf(" Kernel time used: %2u Hour(s) %2u Minute(s) %2u Second(s) %3u Millisecond(s)\n", si.wHour, si.wMinute, si.wSecond, si.wMilliseconds );
 		}
 
 
