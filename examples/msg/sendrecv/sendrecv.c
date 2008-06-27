@@ -128,6 +128,8 @@ MSG_error_t test_all(const char *platform_file,
 
   MSG_error_t res = MSG_OK;
 
+  
+
   INFO0("test_all"); 
  			
   /*  Simulation setting */
@@ -142,6 +144,7 @@ MSG_error_t test_all(const char *platform_file,
   MSG_launch_application(application_file);
   
   res = MSG_main();
+
   return res;
 } /* end_of_test_all */
 
@@ -150,7 +153,10 @@ MSG_error_t test_all(const char *platform_file,
 int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
-
+	
+  #ifdef _MSC_VER
+  unsigned int prev_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
+  #endif
   
   MSG_global_init(&argc,argv);
 
@@ -175,6 +181,10 @@ int main(int argc, char *argv[])
   INFO1("Total simulation time: %le", MSG_get_clock());
 
   MSG_clean();
+
+  #ifdef _MSC_VER
+  _set_output_format(prev_exponent_format);
+  #endif
 
   if(res==MSG_OK) return 0; 
   else return 1;

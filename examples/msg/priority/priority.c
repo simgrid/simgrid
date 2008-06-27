@@ -61,6 +61,11 @@ static MSG_error_t test_all(const char *platform_file,
 int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
+  
+  #ifdef _MSC_VER
+  unsigned int prev_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
+  #endif
+
 
   MSG_global_init(&argc,argv);
   if (argc < 3) {
@@ -70,6 +75,10 @@ int main(int argc, char *argv[])
   }
   res = test_all(argv[1],argv[2]);
   MSG_clean();
+  
+  #ifdef _MSC_VER
+  _set_output_format(prev_exponent_format);
+  #endif
 
   if(res==MSG_OK)
     return 0;
