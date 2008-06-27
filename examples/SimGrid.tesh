@@ -1,0 +1,48 @@
+# Command line tesh --directory=%EXAMPLE_DIR% --include-dir=msg --file=SimGrid.tesh --log="log.thresh:info tesh.fmt:%m%n" --keep-going-unit
+D Examples (MSG API functionnality checking)
+
+
+$ cd ${EXAMPLE_DIR:=.}
+
+$ cd msg
+
+# Masterslave OK
+#! include masterslave/masterslave.tesh
+
+# Outputs difference : __FILE__ difference between Windows and Linux
+! include masterslave/masterslave_bypass.tesh
+
+# Outputs difference
+! include masterslave/masterslave_failure.tesh
+
+! include masterslave/masterslave_forwarder.tesh
+
+# Parllel task
+! include parallel_task/parallel_task.tesh
+
+# Priority
+! include priority/priority.tesh
+
+# Properties
+! include properties/msg_prop.tesh
+
+# Send/Receive
+
+! include sendrecv/sendrecv_CLM03.tesh
+
+# format d'affichage de %g
+! include sendrecv/sendrecv_KCCFLN05.tesh
+
+
+! include sendrecv/sendrecv_Reno.tesh
+
+# Modele non valid
+#! include sendrecv/sendrecv_SDP.tesh
+
+
+! include sendrecv/sendrecv_Vegas.tesh
+
+# Suspend
+! include suspend/suspend.tesh
+
+
