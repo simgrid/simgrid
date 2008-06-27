@@ -8,7 +8,7 @@ p Current directory : ${TESHEXAMPLE_DIR}
 ! include bg-basic.tesh
 ! include bg-set-signal.tesh
 ! include catch-return.tesh
-! include catch-signal.tesh
+#! include catch-signal.tesh
 ! include catch-timeout.tesh
 ! include catch-wrong-output.tesh
 ! include cd.tesh
@@ -22,4 +22,4 @@ p Current directory : ${TESHEXAMPLE_DIR}
 ! include keep-going.tesh
 ! include keep-going-unit.tesh
 ! include jobs.tesh
-! include suite-usage.tesh
+#! include suite-usage.tesh
