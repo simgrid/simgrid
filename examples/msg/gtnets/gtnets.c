@@ -1,6 +1,3 @@
-
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "msg/msg.h"
@@ -19,7 +16,13 @@ typedef enum {
   MAX_CHANNEL
 } channel_t;
 
-#define FINALIZE ((void*)221297) /* a magic number to tell people to stop working */
+//keep a pointer to all surf running tasks.
+#define NTASKS 2
+int bool_printed=0;
+double start_time, end_time, elapsed_time;
+double   gl_data_size[NTASKS];
+m_task_t gl_task_array[NTASKS];
+int gl_task_array_id=0;
 
 /** master */
 int master(int argc, char *argv[])
@@ -28,6 +31,8 @@ int master(int argc, char *argv[])
   double task_comm_size = 0;
   m_task_t todo;
   m_host_t slave;
+  //unique id to control statistics
+  int id=gl_task_array_id++;
 
   /* data size */
   xbt_assert1(sscanf(argv[1],"%lg", &task_comm_size),
@@ -39,6 +44,9 @@ int master(int argc, char *argv[])
   { /*  Task creation.  */
     char sprintf_buffer[64] = "Task_0";
     todo = MSG_task_create(sprintf_buffer, 0, task_comm_size, NULL);
+    //keep track of running tasks
+    gl_task_array[id] = todo;
+    gl_data_size[id]=task_comm_size;
   }
 
   { /* Process organisation */
@@ -52,8 +60,6 @@ int master(int argc, char *argv[])
   INFO3("Send completed (to %s). Transfer time: %f\t Agregate bandwidth: %f",
 	slave->name, (end_time - start_time), task_comm_size/(end_time-start_time));
   INFO2("Completed peer: %s time: %f", slave->name, (end_time-start_time));
-  MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
-      slave, PORT_22);
 
   return 0;
 } /* end_of_master */
@@ -61,21 +67,35 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  while(1) {
-    m_task_t task = NULL;
-    int a;
-    a = MSG_task_get(&(task), PORT_22);
-    if (a == MSG_OK) {
-      if(MSG_task_get_data(task)==FINALIZE) {
-	MSG_task_destroy(task);
-	break;
+  m_task_t task = NULL;
+  int a;
+  int id=0;
+  double remaining=0;
+
+  a = MSG_task_get(&(task), PORT_22);
+  if (a != MSG_OK) {
+    INFO0("Hey?! What's up?");
+    xbt_assert0(0,"Unexpected behavior.");
+  }
+
+  elapsed_time = MSG_get_clock() - start_time;
+
+  if(!bool_printed){
+    bool_printed=1;
+    for(id=0; id<NTASKS; id++){
+      if(gl_task_array[id] == NULL){
+        INFO0("===> Task already done, skipping print statistics");
+      }else if(gl_task_array[id] == task){
+        INFO1("===> Bandwidth of first finishing (this) flow : %f.", gl_data_size[id]/elapsed_time);
+      }else{
+        remaining = MSG_task_get_remaining_communication(gl_task_array[id]);
+        INFO1("===> Bandwidth of last finishing  flow        : %f.", (gl_data_size[id]-remaining)/elapsed_time);
       }
-      MSG_task_destroy(task);
-    } else {
-      INFO0("Hey?! What's up?");
-      xbt_assert0(0,"Unexpected behavior.");
     }
   }
+
+  MSG_task_destroy(task);
+
   return 0;
 } /* end_of_slave */
 
