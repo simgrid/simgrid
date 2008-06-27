@@ -18,7 +18,7 @@ p Current directory : ${TESHEXAMPLE_DIR}
 ! include set-return.tesh
 ! include set-signal.tesh
 ! include set-timeout.tesh
-! include var.tesh
+#! include var.tesh
 ! include keep-going.tesh
 ! include keep-going-unit.tesh
 ! include jobs.tesh
