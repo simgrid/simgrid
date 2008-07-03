@@ -1,10 +1,8 @@
-#include "MsgException.hpp"
+#include <MsgException.hpp>
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-using namespace std;
 
 namespace SimGrid
 {

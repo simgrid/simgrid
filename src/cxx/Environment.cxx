@@ -15,8 +15,18 @@
   
 #include <Environment.hpp>
 
+#include <NullPointerException.hpp>
+#include <FileNotFoundException.hpp>
+#include <InvalidArgumentException.hpp>
+#include <LogicException.hpp>
+#include <MsgException.hpp>
+
+#include <stdlib.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#include <msg/msg.h>
 
 #ifndef S_ISREG
 	#define S_ISREG(__mode) (((__mode) & S_IFMT) == S_IFREG)
@@ -32,14 +42,14 @@ namespace SimGrid
 			this->loaded = false;
 		}
 				
-		Environment::Environment(const Environment& rEnvironment);
+		Environment::Environment(const Environment& rEnvironment)
 		{
 			this->file = rEnvironment.getFile();
 			this->loaded = rEnvironment.isLoaded();
 		}
 		
 		Environment::Environment(const char* file)
-		throw(NullPointerException, InvalidArgumentException);
+		throw(NullPointerException, InvalidArgumentException)
 		{
 			// check parameters
 			
@@ -48,8 +58,8 @@ namespace SimGrid
 			
 			struct stat statBuf = {0};
 				
-			if(stat(statBuff, &info) < 0 || !S_ISREG(statBuff.st_mode))
-				throw InvalidParameterException("file (file not found)");
+			if(stat(file, &statBuf) < 0 || !S_ISREG(statBuf.st_mode))
+				throw InvalidArgumentException("file (file not found)");
 				
 			this->file = file;
 			this->loaded = false;
@@ -94,7 +104,7 @@ namespace SimGrid
 			
 			struct stat statBuf = {0};
 				
-			if(stat(statBuff, &info) < 0 || !S_ISREG(statBuff.st_mode))
+			if(stat(file, &statBuf) < 0 || !S_ISREG(statBuf.st_mode))
 				throw FileNotFoundException(file);
 					
 			MSG_create_environment(file);
@@ -124,7 +134,7 @@ namespace SimGrid
 			
 			struct stat statBuf = {0};
 				
-			if(stat(statBuff, &info) < 0 || !S_ISREG(statBuff.st_mode))
+			if(stat(file, &statBuf) < 0 || !S_ISREG(statBuf.st_mode))
 				throw FileNotFoundException("file (file not found)");
 				
 			this->file = file;

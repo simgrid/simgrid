@@ -19,18 +19,20 @@
 	#error Environment.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
-#include <NullPointerException.hpp>
-#include <FileNotFoundException.hpp>
-#include <LogicException.hpp>
-#include <MsgException.hpp>
-
+#include <Config.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
+		class NullPointerException;
+		class FileNotFoundException;
+		class InvalidArgumentException;
+		class LogicException;
+		class MsgException;
+
 		// Environment class wrapper declaration
-		class Environment
+		class SIMGRIDX_EXPORT Environment
 		{
 			public:
 				
@@ -136,7 +138,7 @@ namespace SimGrid
 				const char* file;
 				
 				// flag : is true the environment of the simulation is loaded.
-				bool loaded.
+				bool loaded;
 		};
 		
 	} // namespace Msg

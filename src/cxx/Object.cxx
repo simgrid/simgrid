@@ -1,20 +1,24 @@
-#include <object.hpp>
+#include <Object.hpp>
 #include <string.h>
 
 
 DeclaringClasses* DeclaringClass::declaringClasses = NULL;
 
 
-namespace msg
+namespace SimGrid
 {
-    // Generate static object constructor for class registration
-    void DeclareClass(Class* c)
-    {
-        MSG_DELCARING_CLASSES.lock();
-        MSG_DELCARING_CLASSES.addHead(c);
-        MSG_DELCARING_CLASSES.unlock();
-    }
-} 
+	namespace Msg
+	{
+
+		// Generate static object constructor for class registration
+		void DeclareClass(Class* c)
+		{
+			MSG_DELCARING_CLASSES.lock();
+			MSG_DELCARING_CLASSES.addHead(c);
+			MSG_DELCARING_CLASSES.unlock();
+		}
+	} // namespace Msg
+} // namespace SimGrid
 
 //////////////////////////////////////////////////////////////////////////////
 // Implémentation des fonctions membre de la classe Class
@@ -47,20 +51,18 @@ throw (ClassNotFoundException)
 	for(cur = MSG_DELCARING_CLASSES.getHead(); cur; cur = cur->next)
 	{
 		if(!strcmp(name,cur->name))
-			break;
+			return cur;
+
 	}
 
 	MSG_DELCARING_CLASSES.unlock();
 	throw ClassNotFoundException(name);
 }
 
+
 Object* Class::createObject(const char* name)
 {
 	Class* c = fromName(name);
-	
-	if(NULL == c)
-		return NULL;
-		
 	return c->createObject();
 }
 
@@ -145,6 +147,13 @@ bool DeclaringClasses::remove(Class* c)
 	}
 	
 	return success;
+}
+
+bool Object::isInstanceOf(const char* className)
+{
+	Class* c = Class::fromName(className);
+
+	return this->getClass()->isDerivedFrom(c);
 }
 		
 

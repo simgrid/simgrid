@@ -20,35 +20,39 @@
 	#error Msg.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
-#include <MsgException.hpp>
+#include <Config.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
+		class MsgException;
 		
 		/*! \brief init() - Initialize MSG (This function must be called at the begining of each simulation).
 		 *
 		 * \param argv			A list of arguments.
 		 * \param argc			The number of arguments of the list.
 		 */
-		static void init(int argc, char** argv);
+		SIMGRIDX_EXPORT void init(int argc, char** argv);
 		
-		/* \brief finalize() - Finalize MSG (This function must be called at the end of each simulation).
+		/*! \brief finalize() - Finalize MSG (This function must be called at the end of each simulation).
 		 *
 		 * \exception			If this function fails, it throws a exception describing the cause of the failure.
 		 */
-		static void finalize(void)
+		SIMGRIDX_EXPORT void finalize(void)
 		throw (MsgException);
 		
 		/*! \brief info() - Display information (using xbt log format).
 		 *
 		 * \param s				The information to display.
 		 */
-		static void info(const char* s);
-		
-		
-		
+		SIMGRIDX_EXPORT void info(const char* s);
+
+		/*! \brief getClock() -  Retrieve the simulation time
+		 *
+		 * \return				The current simulation time.
+		 */
+		SIMGRIDX_EXPORT double getClock(void);
 		
 	} // namespace Msg
 } // namespace SimGrid

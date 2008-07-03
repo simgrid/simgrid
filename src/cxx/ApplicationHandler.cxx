@@ -12,15 +12,27 @@
  
  /* ApplicationHandler member functions implementation.
   */  
-  
+
 #include <ApplicationHandler.hpp>
+
+#include <Object.hpp>
+#include <ClassNotFoundException.hpp>
+#include <HostNotFoundException.hpp>
+#include <Host.hpp>
+#include <Process.hpp>
+
+#include <stdlib.h>
+
+#include <surf/surfxml_parse.h>
+#include <xbt/sysdep.h>
+
 
 namespace SimGrid
 {
 	namespace Msg
 	{
 
-		ApplicationHandler::ProcessFactory::processFactory = NULL;
+		ApplicationHandler::ProcessFactory* ApplicationHandler::processFactory = NULL;
 			
 		// Desable the default constructor, the copy constructor , the assignement operator
 		// and the destructor of this class. Assume that this class is static.
@@ -59,7 +71,7 @@ namespace SimGrid
 		{
 			// release the handler at the end of the parsing.
 			if(processFactory)
-				delete processFactroy;
+				delete processFactory;
 		}
 			
 		void ApplicationHandler::onBeginProcess(void)
@@ -91,7 +103,7 @@ namespace SimGrid
 		
 		ApplicationHandler::ProcessFactory::ProcessFactory() 
 		{
-			this->args = xbt_dynar_new(sizeof(char*),ProcessFactory::freeCstr);
+			this->args = xbt_dynar_new(sizeof(char*),ApplicationHandler::ProcessFactory::freeCstr);
 			this->properties = NULL; // TODO instanciate the dictionary
 			this->hostName = NULL;
 			this->function = NULL;
@@ -102,12 +114,14 @@ namespace SimGrid
 		throw (ClassNotFoundException, HostNotFoundException)
 		{
 			Host host;
+			Class* c;
 			Process* process;
 			
 			// try to dynamicaly create an instance fo the process from its name (which is specified by the element function
 			// in the xml application file.
 			// if this static method fails, it throws an exception of the class ClassNotFoundException
-			process = (Process*)Class::fromName(this->function);
+			c = Class::fromName(this->function);
+			process = reinterpret_cast<Process*>(c->createObject());
 			
 			// try to retrieve the host of the process from its name
 			// if this method fails, it throws an exception of the class HostNotFoundException
@@ -118,7 +132,7 @@ namespace SimGrid
 			
 			char** argv = (char**)calloc(argc, sizeof(char*));
 			
-			for(int i = 0; i < argc; i++)
+			for(int i = argc -1; i >= 0; i--)
 				xbt_dynar_pop(this->args, &(argv[i]));
 			
 			// finaly create the process (for more detail on the process creation see Process::create()
@@ -129,7 +143,7 @@ namespace SimGrid
 			this->properties = new Properties();*/
 		}
 			
-		void ApplicationHandler::ProcessFactory::setProcessIdentity(const string& hostName, const string& function) 
+		void ApplicationHandler::ProcessFactory::setProcessIdentity(const char* hostName, const char* function) 
 		{
 			this->hostName = hostName;
 			this->function = function;
@@ -144,12 +158,12 @@ namespace SimGrid
 		// callback function used by the dynamic array to cleanup all of its elements.
 		void ApplicationHandler::ProcessFactory::freeCstr(void* cstr)
 		{
-			free(*(void**)str);
+			free(*(void**)cstr);
 		}
 		
 		void ApplicationHandler::ProcessFactory::registerProcessArg(const char* arg) 
 		{
-			char* cstr = strdup(arg);
+			char* cstr = _strdup(arg);
 			xbt_dynar_push(this->args, &cstr);
 		}
 		
@@ -158,7 +172,7 @@ namespace SimGrid
 			// TODO implement this function;	
 		}
 		
-		const const char* ApplicationHandler::ProcessFactory::getHostName(void)
+		const char* ApplicationHandler::ProcessFactory::getHostName(void)
 		{
 			return this->hostName;
 		}

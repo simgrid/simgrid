@@ -13,12 +13,14 @@
 #ifndef MSG_EXCEPTION_HPP
 #define MSG_EXCEPTION_HPP
 
+#include <Config.hpp>
+
 namespace SimGrid
 {
 	namespace Msg
 	{
 		
-		class Exception
+		class SIMGRIDX_EXPORT Exception
 		{
 			public:
 			

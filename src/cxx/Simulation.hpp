@@ -19,20 +19,25 @@
 	#error Sumulation.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
+#include <Config.hpp>
+
 namespace SimGrid
 {
 	namespace Msg
 	{
+		class MsgException;
+		class FileNotFoundException;
+
 		// Simulation class declaration.
-		class Simulation
+		class SIMGRIDX_EXPORT Simulation
 		{
 			public :
 			
-				Simulation();
+				Simulation(){};
 				
 				Simulation(const Simulation& rSimulation);
 				
-				virtual ~Simulation();
+				virtual ~Simulation(){};
 				
 			// Operations.
 			

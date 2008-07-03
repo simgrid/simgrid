@@ -17,19 +17,66 @@
 
 // Compilation C++ recquise
 #ifndef __cplusplus
-	#error Process.hpp requires C++ compilation (use a .cxx suffix)
+	#error Task.hpp requires C++ compilation (use a .cxx suffix)
 #endif
+
+#include <msg/datatypes.h>
+
+#include <Config.hpp>
+
+#include <Object.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
+		class MsgException;
+		class InvalidArgumentException;
+		class NullPointerException;
+		class MsgException;
+		class BadAllocException;
+
+		class Process;
+		class Host;
+
 		// SimGrid::Msg::Task wrapper class declaration.
-		class Task
+		class SIMGRIDX_EXPORT Task : public Object
 		{
+			MSG_DECLARE_DYNAMIC(Task);
+
+			friend Process;
+			friend Host;
+
 			protected:
 				// Default constructor.
 				Task();
+
+			class Ref
+			{
+			public:
+				Ref(Task* task)
+				{
+					count = 1;
+					this->task = task;
+				}
+
+				virtual ~Ref(){}
+
+				void operator++(void){
+					count++;
+					
+				}
+
+				void operator--(void){
+					if(--count <= 0)
+						delete p;
+				}
+
+			private:
+				int count;
+				Task* task;
+
+			};
 				
 			public:
 				/*! \brief Copy constructor.
@@ -144,9 +191,12 @@ namespace SimGrid
 				 *					
 				 *							[MsgException]				if an internal excpetion occurs.
 				 */
-				static Task& get(int channel) 
-				throw(InvalidArgumentException, MsgException); 
-				
+				/*static Task& get(int channel) 
+				throw(InvalidArgumentException, MsgException);*/
+
+				static Task* get(int channel) 
+				throw(InvalidArgumentException, MsgException);
+
 				/*! \brief	Task::get() - Gets a task from the given channel number of the given host.	
 				 *
 				 * \param channel			The channel number.
@@ -184,14 +234,14 @@ namespace SimGrid
 				 *
 				 * \param channel			The channel number.
 				 *
-				 * \return 					If there is a waiting task on the channel the method returns true. Otherwise
-				 *							the method returns false.
+				 * \return 					If there is a waiting task on the channel the method returns 1. Otherwise
+				 *							the method returns 0.
 				 *
 				 * \exception				If this method fails, it throws the exception described below:
 				 *
 				 *							[InvalidArgumentException]	if the parameter channel is negative.
 				 */
-				static bool probe(int channel)
+				static int probe(int channel)
 				throw(InvalidArgumentException);
 				
 				/*! \brief Task::probe() - Counts tasks waiting on the given channel of local host and sent by given host.
@@ -266,7 +316,7 @@ namespace SimGrid
 				 *							[MsgException]				if an internal exception occurs.
 				 */
 				void send(double timeout) 
-				throw(BadAllocationException, InvalidArgumentException, MsgException);
+				throw(BadAllocException, InvalidArgumentException, MsgException);
 				
 				/*! \brief Task::send() - Send the task on the mailbox identified by a given alias
 				 * (waiting at most given time).
@@ -333,7 +383,10 @@ namespace SimGrid
 				 *
 				 *							[MsgException]				if an internal exception occurs.
 				 */
-				static Task& receive(void) 
+				/*static Task& receive(void) 
+				throw(BadAllocException, MsgException);*/
+
+				static Task* receive(void) 
 				throw(BadAllocException, MsgException);
 				
 				/*! \brief Task::receive() - Receives a task from the mailbox identified by a given alias (located
@@ -349,7 +402,9 @@ namespace SimGrid
 				 *
 				 *							[MsgException]				if an internal exception occurs.
 				 */
-				static Task& receive(const char* alias) 
+				/*static Task& receive(const char* alias) 
+				throw(NullPointerException, MsgException);*/
+				static Task* receive(const char* alias) 
 				throw(NullPointerException, MsgException);
 				
 				/*! \brief Task::receive() - Receives a task from the mailbox identified by a given alias (located
@@ -420,7 +475,7 @@ namespace SimGrid
 				 *
 				 *							[BadAllocException]			if there is not enough memory to build the default alias.
 				 */
-				static bool listen(void) 
+				static int listen(void) 
 				throw(BadAllocException);
 				
 				/*! \brief Task::listen() - Listen whether there is a waiting task on the mailbox 
@@ -428,14 +483,14 @@ namespace SimGrid
 				 *
 				 * \param alias				The alias of the mailbox.
 				 *
-				 * \return					If there is a waiting task on the mailbox the method returns true.
-				 *							Otherwise the method returns false.
+				 * \return					If there is a waiting task on the mailbox the method returns 1.
+				 *							Otherwise the method returns 0.
 				 *
 				 * \exception				If this method fails, it throws one of the exceptions described below:
 				 *
 				 *							[NullPointerException]		if the parameter alias is NULL.
 				 */
-				static bool listen(const char* alias) 
+				static int listen(const char* alias) 
 				throw(NullPointerException);
 				
 				/*! \brief Task::listenFrom() - Tests whether there is a pending communication on the mailbox 
@@ -496,17 +551,23 @@ namespace SimGrid
 				 *							[BadAllocException]			if there is not enough memory to build the default
 				 *														alias.
 				 */
-				static bool listenFromHost(const char* alias, const Host& rHost) 
-				throw(NullPointerException, NativeException);
+				static int listenFromHost(const char* alias, const Host& rHost) 
+				throw(NullPointerException, MsgException);
+
+				virtual const Task& operator= (const Task& rTask);
 			
-			private:
+			protected:
 				
 				// Attributes.
 				
-					m_task_t nativeTask;	// the native MSG task.
+				m_task_t nativeTask;	// the native MSG task.
+
+				Ref* ref;
 		};
 	
 	} // namespace Msg 
 } // namespace SimGrid
+
+typedef Task* TaskPtr;
 
 #endif // §MSG_TASK_HPP

@@ -18,22 +18,39 @@
 	#error Process.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
+#include <msg/datatypes.h>
+
+#include <ApplicationHandler.hpp>
+#include <Object.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
+		class NullPointerException;
+		class HostNotFoundException;
+		class ProcessNotFoundException;
+		class InvalidArgumentException;
+		class BadAllocException;
+		class LogicException;
+		class MsgException;
+
+		class ApplicationHandler;
+		class Host;
+		class Task;
+
 		// SimGrid::Msg::Process class declaration.
-		class Process
+		class SIMGRIDX_EXPORT Process : public Object
 		{
-			friend ApplicationHandler;
 			
-			private;
+			friend ApplicationHandler::ProcessFactory;
 			
+			MSG_DECLARE_DYNAMIC(Process);
+
+			public:
 				// Disable the default constructor.
 				Process();
 			
-			public:
 			
 				/*! \brief  Constructs a process from the name of the host and its name.
 				 *
@@ -143,10 +160,10 @@ namespace SimGrid
 			
 				/*! \brief Process::isSuspend() - Tests if a process is suspended.
 				 *
-				 * \return				This method returns true is the process is suspended.
-				 *						Otherwise the method returns false.
+				 * \return				This method returns 1 is the process is suspended.
+				 *						Otherwise the method returns 0.
 				 */
-				bool isSuspended(void);
+				int isSuspended(void);
 			
 				/*! \brief Process::getHost() - Retrieves the host of a process object.
 				 *
@@ -333,7 +350,7 @@ namespace SimGrid
 				 * \remark				Set the timeout with -1.0 to disable it.
 				 */
 				Task& getTask(int channel, double timeout, const Host& rHost)
-				throw(InvalidArgumentException MsgException);
+				throw(InvalidArgumentException, MsgException);
 			
 				/*! \brief Process::sendTask() - Sends the given task in the mailbox identified by the specified alias
 				 * (waiting at most given time).
@@ -498,7 +515,7 @@ namespace SimGrid
 				 *
 				 *							[MsgException]				if an internal exception occurs.
 				 */
-				Task& Process::receiveTask(double timeout, const Host& rHost) 
+				Task& receiveTask(double timeout, const Host& rHost) 
 				throw(BadAllocException, InvalidArgumentException, MsgException);
 			
 				/*! \brief Process::receiveTask() - Retrieves a task from the mailbox identified by the alias
@@ -555,7 +572,7 @@ namespace SimGrid
 				 *
 				 * \return				The wrapper associated with the native process specified as parameter.
 				 */
-				static Process& fromNativeProcess(m_process_t nativeProcess);
+				static Process* fromNativeProcess(m_process_t nativeProcess);
 			
 			
 			public:
@@ -572,7 +589,7 @@ namespace SimGrid
 				 *
 				 * \return				The exit code of the main function.
 				 */
-				virtual int main(int argc, char** argv) = 0;
+				virtual int main(int argc, char** argv);
 				
 			private:
 				
@@ -584,4 +601,6 @@ namespace SimGrid
 	
 	} //namepace Msg
 
-} namespace SimGrid
+} // namespace SimGrid
+
+#endif // !MSG_PROCESS_HPP

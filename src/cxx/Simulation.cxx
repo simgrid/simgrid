@@ -15,12 +15,20 @@
   
 #include <Simulation.hpp>
 
+#include <Application.hpp>
+#include <Environment.hpp>
+
+#include <MsgException.hpp>
+#include <FileNotFoundException.hpp>
+
+#include <Msg.hpp>
+
+#include <msg/msg.h> 
+
 namespace SimGrid
 {
 	namespace Msg
 	{
-		
-		
 		int Simulation::execute(int argc, char** argv)
 		{
 			if(argc < 3) 
@@ -55,6 +63,7 @@ namespace SimGrid
 			try
 			{
 				app.deploy(argv[2]);
+			}
 			catch(FileNotFoundException e)
 			{
 				info(e.toString());
@@ -65,7 +74,7 @@ namespace SimGrid
 			//try to run the simulation the given application on the given environment
 			try
 			{
-				this->run();
+				run();
 			}
 			catch(MsgException e)
 			{
@@ -81,7 +90,7 @@ namespace SimGrid
 			}
 			catch(MsgException e)
 			{
-				info(e.toString())
+				info(e.toString());
 				return 1;
 			}
 			

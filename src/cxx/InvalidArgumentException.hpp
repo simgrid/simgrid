@@ -13,14 +13,14 @@
 #ifndef MSG_INVALIDARGUMENTEXCEPTION_HPP
 #define MSG_INVALIDARGUMENTEXCEPTION_HPP
 
-#include "Exception.hpp"
+#include <Exception.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
 		
-		class InvalidArgumentException : public Exception
+		class SIMGRIDX_EXPORT InvalidArgumentException : public Exception
 		{
 			public:
 			

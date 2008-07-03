@@ -1,9 +1,25 @@
 #include <Task.hpp>
 
+#include <MsgException.hpp>
+#include <InvalidArgumentException.hpp>
+#include <NullPointerException.hpp>
+#include <MsgException.hpp>
+#include <BadAllocException.hpp>
+
+#include <Process.hpp>
+#include <Host.hpp>
+
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <msg/msg.h>
+
 namespace SimGrid
 {
 	namespace Msg
 	{
+
+		MSG_IMPLEMENT_DYNAMIC(Task, Object);
 	
 		Task::Task()
 		{
@@ -13,11 +29,12 @@ namespace SimGrid
 		
 		Task::Task(const Task& rTask)
 		{
+			this->nativeTask = rTask.nativeTask;
 		}
 		
 		
 		Task::~Task()
-		throw(NativeException)
+		throw(MsgException)
 		{
 			if(NULL != nativeTask)
 				if(MSG_OK != MSG_task_destroy(nativeTask))
@@ -28,7 +45,7 @@ namespace SimGrid
 		Task::Task(const char* name, double computeDuration, double messageSize)
 		throw(InvalidArgumentException, NullPointerException)
 		{
-			 
+
 			if(computeDuration < 0) 
 				throw InvalidArgumentException("computeDuration");
 			
@@ -47,7 +64,6 @@ namespace SimGrid
 		Task::Task(const char* name, Host* hosts, double* computeDurations, double* messageSizes, int hostCount)
 		throw(NullPointerException, InvalidArgumentException)
 		{
-			
 			// check the parameters
 			
 			if(!name) 
@@ -91,7 +107,7 @@ namespace SimGrid
 			
 			
 			
-			task->data = (void*)this;
+			this->nativeTask->data = (void*)this;
 			
 		}
 		
@@ -102,7 +118,7 @@ namespace SimGrid
 		
 		Process& Task::getSender(void) const
 		{
-			m_proccess_t nativeProcess = MSG_task_get_sender(nativeTask);
+			m_process_t nativeProcess = MSG_task_get_sender(nativeTask);
 			
 			return (*((Process*)(nativeProcess->data)));
 		}
@@ -135,7 +151,7 @@ namespace SimGrid
 			MSG_task_set_priority(nativeTask, priority);
 		}
 		
-		Task& Task::get(int channel) 
+		/*Task& Task::get(int channel) 
 		throw(InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -149,6 +165,22 @@ namespace SimGrid
 				throw MsgException("MSG_task_get_ext() failed");
 			
 			return (*((Task*)(nativeTask->data)));
+		}*/
+
+		Task* Task::get(int channel) 
+		throw(InvalidArgumentException, MsgException)
+		{
+			// check the parameters
+			
+			if(channel < 0)
+				throw InvalidArgumentException("channel (must not be negative)");
+				
+			m_task_t nativeTask = NULL;
+			
+			if(MSG_OK != MSG_task_get_ext(&nativeTask, channel , -1.0, NULL)) 
+				throw MsgException("MSG_task_get_ext() failed");
+			
+			return ((Task*)(nativeTask->data));
 		}
 		
 		Task& Task::get(int channel, const Host& rHost) 
@@ -188,7 +220,7 @@ namespace SimGrid
 			return (*((Task*)(nativeTask->data)));
 		}
 		
-		bool static Task::probe(int channel)
+		int Task::probe(int channel)
 		throw(InvalidArgumentException)
 		{
 			// check the parameters
@@ -196,7 +228,7 @@ namespace SimGrid
 			if(channel < 0)
 				throw InvalidArgumentException("channel (must not be negative)");
 				
-			return (bool)MSG_task_Iprobe(channel);
+			return MSG_task_Iprobe(channel);
 		}
 		
 		int Task::probe(int channel, const Host& rHost)
@@ -207,7 +239,7 @@ namespace SimGrid
 			if(channel < 0)
 				throw InvalidArgumentException("channel (must not be negative)");
 				
-			return MSG_task_probe_from_host(chan_id,rHost.nativeHost);
+			return MSG_task_probe_from_host(channel,rHost.nativeHost);
 		}
 		
 		void Task::execute(void) 
@@ -227,16 +259,16 @@ namespace SimGrid
 		void Task::send(void) 
 		throw(BadAllocException, MsgException)
 		{	
-			char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+			char* alias = (char*)calloc(strlen(Process::currentProcess().getName()) + strlen(Host::currentHost().getName()) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
 				
-			sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+			sprintf(alias,"%s:%s", Host::currentHost().getName(), Process::currentProcess().getName());
 				
 			MSG_error_t rv = MSG_task_send_with_timeout(nativeTask, alias, -1.0);
 		
-			free(alias)
+			free(alias);
 		
 			if(MSG_OK != rv)
 				throw MsgException("MSG_task_send_with_timeout() failed");
@@ -255,23 +287,23 @@ namespace SimGrid
 		}
 		
 		void Task::send(double timeout) 
-		throw(BadAllocationException, InvalidArgumentException, MsgException)
+		throw(BadAllocException, InvalidArgumentException, MsgException)
 		{
 			// check the parameters
 			
 			if(timeout < 0  && timeout != -1.0)
 				throw InvalidArgumentException("timeout (must not be negative and different than -1.0");
 						
-			char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+			char* alias = (char*)calloc(strlen(Process::currentProcess().getName()) + strlen(Host::currentHost().getName()) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
 				
-			sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+			sprintf(alias,"%s:%s", Host::currentHost().getName(), Process::currentProcess().getName());
 		
 			MSG_error_t rv = MSG_task_send_with_timeout(nativeTask, alias, timeout);
 		
-			free(alias)
+			free(alias);
 		
 			if(MSG_OK != rv)
 				throw MsgException("MSG_task_send_with_timeout() failed");
@@ -301,12 +333,12 @@ namespace SimGrid
 			if(maxRate < 0 && maxRate != -1.0)
 				throw InvalidArgumentException("maxRate (must not be negative and different than -1.0");
 					
-			char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+			char* alias = (char*)calloc(strlen(Process::currentProcess().getName()) + strlen(Host::currentHost().getName()) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
 			
-			sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+			sprintf(alias,"%s:%s", Host::currentHost().getName(), Process::currentProcess().getName());
 			
 			MSG_error_t rv = MSG_task_send_bounded(nativeTask, alias, maxRate);
 			
@@ -332,15 +364,15 @@ namespace SimGrid
 				throw MsgException("MSG_task_send_bounded() failed");
 		}
 		
-		Task& Task::receive(void) 
-		throw(throw(BadAllocException, MsgException))
+		/*Task& Task::receive(void) 
+		throw(BadAllocException, MsgException)
 		{
-			char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+			char* alias = (char*)calloc(strlen(Process::currentProcess().getName()) + strlen(Host::currentHost().getName()) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
 				
-			sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+			sprintf(alias,"%s:%s", Host::currentHost().getName(), Process::currentProcess().getName());
 				
 			m_task_t nativeTask = NULL;
 			
@@ -352,9 +384,31 @@ namespace SimGrid
 				throw MsgException("MSG_task_receive_ext() failed");
 		
 			return (*((Task*)nativeTask->data));
+		}*/
+
+		Task* Task::receive(void) 
+		throw(BadAllocException, MsgException)
+		{
+			char* alias = (char*)calloc(strlen(Process::currentProcess().getName()) + strlen(Host::currentHost().getName()) + 2, sizeof(char));
+			
+			if(!alias)
+				throw BadAllocException("alias");
+				
+			sprintf(alias,"%s:%s", Host::currentHost().getName(), Process::currentProcess().getName());
+				
+			m_task_t nativeTask = NULL;
+			
+			MSG_error_t rv = MSG_task_receive_ext(&nativeTask, alias, -1.0, NULL);	
+		
+			free(alias);
+			
+			if(MSG_OK != rv) 
+				throw MsgException("MSG_task_receive_ext() failed");
+		
+			return ((Task*)nativeTask->data);
 		}
 		
-		Task& Task::receive(const char* alias) 
+		/*Task& Task::receive(const char* alias) 
 		throw(NullPointerException, MsgException)
 		{
 			// check the parameters
@@ -368,6 +422,22 @@ namespace SimGrid
 				throw MsgException("MSG_task_receive_ext() failed");
 		
 			return (*((Task*)nativeTask->data));
+		}*/
+
+		Task* Task::receive(const char* alias) 
+		throw(NullPointerException, MsgException)
+		{
+			// check the parameters
+			
+			if(!alias)
+				throw NullPointerException("alias");
+				
+			m_task_t nativeTask = NULL;
+			
+			if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, -1.0, NULL)) 
+				throw MsgException("MSG_task_receive_ext() failed");
+		
+			return ((Task*)nativeTask->data);
 		}
 		
 		Task& Task::receive(const char* alias, double timeout) 
@@ -378,7 +448,7 @@ namespace SimGrid
 			if(!alias)
 				throw NullPointerException("alias");
 			
-			if(timeout < 0 && alias != -1.0)
+			if(timeout < 0 && timeout != -1.0)
 				throw InvalidArgumentException("timeout (must not be negative and differnt than -1.0)");
 				
 			m_task_t nativeTask = NULL;
@@ -413,7 +483,7 @@ namespace SimGrid
 			if(!alias)
 				throw NullPointerException("alias");
 			
-			if(timeout < 0 && alias != -1.0)
+			if(timeout < 0 && timeout != -1.0)
 				throw InvalidArgumentException("timeout (must not be negative and differnt than -1.0)");
 				
 			m_task_t nativeTask = NULL;
@@ -425,24 +495,24 @@ namespace SimGrid
 			return (*((Task*)nativeTask->data));
 		}
 		
-		bool Task::listen(void) 
+		int Task::listen(void) 
 		throw(BadAllocException)
 		{
-			char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+			char* alias = (char*)calloc(strlen(Process::currentProcess().getName()) + strlen(Host::currentHost().getName()) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
 				
-			sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+			sprintf(alias,"%s:%s", Host::currentHost().getName(), Process::currentProcess().getName());
 				
 			int rv = MSG_task_listen(alias);
 			
 			free(alias);
 			
-			return (bool)rv;
+			return rv;
 		}	
 		
-		bool Task::listen(const char* alias) 
+		int Task::listen(const char* alias) 
 		throw(NullPointerException)
 		{
 			// check the parameters
@@ -450,18 +520,18 @@ namespace SimGrid
 			if(!alias)
 				throw NullPointerException("alias");
 				
-			return (bool)MSG_task_listen(alias);
+			return MSG_task_listen(alias);
 		}
 		
 		int Task::listenFrom(void) 
 		throw(BadAllocException)
 		{
-			char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+			char* alias = (char*)calloc(strlen(Process::currentProcess().getName()) + strlen(Host::currentHost().getName()) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
 				
-			sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+			sprintf(alias,"%s:%s", Host::currentHost().getName(), Process::currentProcess().getName());
 			
 			int rv = MSG_task_listen_from(alias);
 			
@@ -483,12 +553,12 @@ namespace SimGrid
 		int Task::listenFromHost(const Host& rHost) 
 		throw(BadAllocException)
 		{
-			char* alias = (char*)calloc(strlen(Process::currentProcess().getName() + strlen(Host::currentHost().getName()) + 2);
+			char* alias = (char*)calloc(strlen(Process::currentProcess().getName()) + strlen(Host::currentHost().getName()) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
 			
-			sprintf(alias,"%s:%s", Process::currentProcess().getName(),Host::currentHost().getName());
+			sprintf(alias,"%s:%s", Host::currentHost().getName(), Process::currentProcess().getName());
 			
 			int rv = MSG_task_listen_from_host(alias, rHost.nativeHost);
 			
@@ -506,6 +576,12 @@ namespace SimGrid
 				
 			return MSG_task_listen_from_host(alias, rHost.nativeHost);
 		}	
+
+		const Task& Task::operator = (const Task& rTask)
+		{
+			this->nativeTask = rTask.nativeTask;
+			return *this;
+		}
 	} // namespace Msg																								
 } // namespace SimGrid
 

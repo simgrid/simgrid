@@ -13,14 +13,14 @@
 #ifndef MSG_HOSTNOTFOUNDEXCEPTION_HPP
 #define MSG_HOSTNOTFOUNDEXCEPTION_HPP
 
-#include "Exception.hpp"
+#include <Exception.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
 		
-		class HostNotFoundException : public Exception
+		class SIMGRIDX_EXPORT HostNotFoundException : public Exception
 		{
 			public:
 			

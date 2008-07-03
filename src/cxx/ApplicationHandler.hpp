@@ -20,34 +20,27 @@
 	#error ApplicationHandler.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
+#include <xbt/dict.h>
+#include <xbt/dynar.h>
 
-#include <ClassNotFoundException.hpp>
-#include <HostNotFoundException.hpp>
+#include <Config.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
+
+		class ClassNotFoundException;
+		class HostNotFoundException;
+		class Process;
+
 		// Declaration of the class ApplicationHandler (Singleton).
-		class ApplicationHandler
+		class SIMGRIDX_EXPORT ApplicationHandler
 		{
-		private :
-			
-			// Desable the default constructor, the copy constructor , the assignement operator
-			// and the destructor of this class. Assume that this class is static.
-			
-			// Default constructor.
-			ApplicationHandler();
-			
-			// Copy constructor.
-			ApplicationHandler(const ApplicationHandler& rApplicationHandler);
-			
-			// Destructor
-			virtual ~ApplicationHandler();
-			
-			// Assignement operator.
-			const ApplicationHandler& operator = (const ApplicationHandler& rApplicationHandler);
-			
+			friend Process;
+
+		public:
+
 			class ProcessFactory 
 			{
 				public:
@@ -66,32 +59,51 @@ namespace SimGrid
 		        
 				public :
 			
-				// Default constructor.
-				ProcessFactory(); 
-				
-				// Copy constructor.
-				ProcessFactory(const ProcessFactory& rProcessFactory);
-				
-				// Destructor.
-				virtual ~ProcessFactory();
-				
-				// Set the identity of the current process.
-		  		void setProcessIdentity(const char* hostName, const char* function);
-		    	
-		    	// Register an argument of the current process.
-		    	void registerProcessArg(const char* arg); 
-				
-				// Set the property of the current process.
-				void setProperty(const char* id, const char* value);
-				
-				// Return the host name of the current process.
-				const const char* getHostName(void);
-				
-				// Create the current process.
-		    	void createProcess(void)
-		    	throw (ClassNotFoundException, HostNotFoundException); 
+					// Default constructor.
+					ProcessFactory(); 
+					
+					// Copy constructor.
+					ProcessFactory(const ProcessFactory& rProcessFactory);
+					
+					// Destructor.
+					virtual ~ProcessFactory(){}
+					
+					// Set the identity of the current process.
+		  			void setProcessIdentity(const char* hostName, const char* function);
+			    	
+		    		// Register an argument of the current process.
+		    		void registerProcessArg(const char* arg); 
+					
+					// Set the property of the current process.
+					void setProperty(const char* id, const char* value);
+					
+					// Return the host name of the current process.
+					const char* getHostName(void);
+					
+					// Create the current process.
+		    		void createProcess(void)
+		    		throw (ClassNotFoundException, HostNotFoundException); 
+
+					static void freeCstr(void* cstr);
 		    	
 			};
+
+		private :
+			
+			// Desable the default constructor, the copy constructor , the assignement operator
+			// and the destructor of this class. Assume that this class is static.
+			
+			// Default constructor.
+			ApplicationHandler();
+			
+			// Copy constructor.
+			ApplicationHandler(const ApplicationHandler& rApplicationHandler);
+			
+			// Destructor
+			virtual ~ApplicationHandler();
+			
+			// Assignement operator.
+			const ApplicationHandler& operator = (const ApplicationHandler& rApplicationHandler);
 			
 			// the process factory used by the application handler.
 			static ProcessFactory* processFactory;

@@ -10,17 +10,17 @@
  *
  */  
  
-#ifndef MSG_MSGEXCEPTION_HPP
-#define MSG_MSGEXCEPTION_HPP
+#ifndef MSG_BADALLOCEXCEPTION_HPP
+#define MSG_BADALLOCEXCEPTION_HPP
 
-#include "Exception.hpp"
+#include <Exception.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
 		
-		class BadAllocException : public Exception
+		class SIMGRIDX_EXPORT BadAllocException : public Exception
 		{
 			public:
 			
@@ -61,4 +61,4 @@ namespace SimGrid
 }// namespace SimGrid
 
 
-#endif // !MSG_MSGEXCEPTION_HPP
+#endif // !MSG_BADALLOCEXCEPTION_HPP

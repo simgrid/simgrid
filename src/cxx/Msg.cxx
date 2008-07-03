@@ -13,7 +13,14 @@
  
  /* Msg functions implementation.
   */  
+
+#include <MsgException.hpp>
 #include <Msg.hpp>
+
+#include <msg/msg.h>
+#include <stdio.h>
+
+// XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(SimGridX);
 
 namespace SimGrid
 {
@@ -35,7 +42,13 @@ namespace SimGrid
 		
 		void info(const char* s)
 		{
-			 INFO1("%s",s);
+			 //INFO1("%s",s);
+			printf("[SimGridX/info] %s\n", s);
+		}
+
+		double getClock(void)
+		{
+			return MSG_get_clock();
 		}
 
 	} // namespace Msg

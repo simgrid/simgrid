@@ -14,10 +14,19 @@
   */  
   
 #include <Application.hpp>
+
+
+#include <NullPointerException.hpp>
+#include <FileNotFoundException.hpp>
+#include <LogicException.hpp>
+#include <MsgException.hpp>
 #include <ApplicationHandler.hpp>
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdlib.h>
+
+#include <surf/surfxml_parse.h>
 
 #ifndef S_ISREG
 	#define S_ISREG(__mode) (((__mode) & S_IFMT) == S_IFREG)
@@ -34,7 +43,7 @@ namespace SimGrid
 			this->deployed = false;
 		}
 				
-		Application(const Application& rApplication)
+		Application::Application(const Application& rApplication)
 		{
 				
 			this->file = rApplication.getFile();
@@ -51,7 +60,7 @@ namespace SimGrid
 			
 			struct stat statBuf = {0};
 				
-			if(stat(statBuff, &info) < 0 || !S_ISREG(statBuff.st_mode))
+			if(stat(file, &statBuf) < 0 || !S_ISREG(statBuf.st_mode))
 				throw FileNotFoundException(file);
 				
 			this->file = file;
@@ -63,7 +72,7 @@ namespace SimGrid
 			// NOTHING TODO
 		}
 			
-		Application::deploy(const char* file)
+		void Application::deploy(const char* file)
 		throw(NullPointerException, FileNotFoundException, LogicException, MsgException)
 		{
 			// check logic
@@ -78,7 +87,7 @@ namespace SimGrid
 			
 			struct stat statBuf = {0};
 				
-			if(stat(statBuff, &info) < 0 || !S_ISREG(statBuff.st_mode))
+			if(stat(file, &statBuf) < 0 || !S_ISREG(statBuf.st_mode))
 				throw FileNotFoundException(file);
 					
 			surf_parse_reset_parser();
@@ -87,13 +96,13 @@ namespace SimGrid
   			surfxml_add_callback(STag_surfxml_process_cb_list, ApplicationHandler::onBeginProcess);
   				
   			// set the process arg handler
-  			surfxml_add_callback(ETag_surfxml_argument_cb_list, ApplicationHandler::onArg);
+  			surfxml_add_callback(ETag_surfxml_argument_cb_list, ApplicationHandler::onProcessArg);
   				
   			// set the properties handler
   			surfxml_add_callback(STag_surfxml_prop_cb_list, ApplicationHandler::OnProperty);
   				
   			// set the end of the xml process element handler
-  			surfxml_add_callback(ETag_surfxml_process_cb_list, ApplicationHandler::OnEndProcess);
+  			surfxml_add_callback(ETag_surfxml_process_cb_list, ApplicationHandler::onEndProcess);
 
   			surf_parse_open(file);
   			
@@ -112,7 +121,7 @@ namespace SimGrid
   			this->deployed = true;
 		}
 		
-		Application::deploy(void)
+		void Application::deploy(void)
 		throw(LogicException, MsgException)
 		{
 			// check logic
@@ -126,9 +135,9 @@ namespace SimGrid
 			
 			surf_parse_reset_parser();
   			surfxml_add_callback(STag_surfxml_process_cb_list, ApplicationHandler::onBeginProcess);
-  			surfxml_add_callback(ETag_surfxml_argument_cb_list, ApplicationHandler::onArg);
+  			surfxml_add_callback(ETag_surfxml_argument_cb_list, ApplicationHandler::onProcessArg);
   			surfxml_add_callback(STag_surfxml_prop_cb_list, ApplicationHandler::OnProperty);
-  			surfxml_add_callback(ETag_surfxml_process_cb_list, ApplicationHandler::OnEndProcess);
+  			surfxml_add_callback(ETag_surfxml_process_cb_list, ApplicationHandler::onEndProcess);
 
   			surf_parse_open(file);
   			
@@ -140,7 +149,7 @@ namespace SimGrid
   			this->deployed = true;	
 		}
 		
-		bool Application::isDeployed(void)
+		bool Application::isDeployed(void) const
 		{
 			return this->deployed;
 		}
@@ -160,7 +169,7 @@ namespace SimGrid
 			
 			struct stat statBuf = {0};
 				
-			if(stat(statBuff, &info) < 0 || !S_ISREG(statBuff.st_mode))
+			if(stat(file, &statBuf) < 0 || !S_ISREG(statBuf.st_mode))
 				throw FileNotFoundException("file (file not found)");
 				
 			this->file = file;

@@ -19,17 +19,19 @@
 	#error Application.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
-#include <NullPointerException.hpp>
-#include <FileNotFoundException.hpp>
-#include <LogicException.hpp>
-#include <MsgException.hpp>
+#include <Config.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
+		class NullPointerException;
+		class FileNotFoundException;
+		class LogicException;
+		class MsgException;
+
 		// Application wrapper class declaration.
-		class Application
+		class SIMGRIDX_EXPORT Application
 		{
 		public:
 			
@@ -75,7 +77,7 @@ namespace SimGrid
 			 */
 			 
 			void deploy(void)
-			throw(LogicExeption, MsgException);
+			throw(LogicException, MsgException);
 			
 			/*! \brief Application::deploy() - Deploy the appliction.
 			 *
@@ -141,6 +143,7 @@ namespace SimGrid
 			
 			// the xml file which describes the application of the simulation.
 			const char* file;
+
 		};
 		
 	} // namespace Msg

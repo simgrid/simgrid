@@ -13,14 +13,14 @@
 #ifndef MSG_FILENOTFOUND_HPP
 #define MSG_FILENOTFOUND_HPP
 
-#include <Exception.hp>
+#include <Exception.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
 		
-		class FileNotFoundException : public Exception
+		class SIMGRIDX_EXPORT FileNotFoundException : public Exception
 		{
 			public:
 			

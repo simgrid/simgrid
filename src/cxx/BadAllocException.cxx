@@ -1,10 +1,8 @@
-#include "BadAllocException.hpp"
+#include <BadAllocException.hpp>
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-using namespace std;
 
 namespace SimGrid
 {

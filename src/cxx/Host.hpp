@@ -52,23 +52,34 @@ catch(HostNotFoundException e)
 	#error Host.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
-#include <InvalidArgumentException.hpp>
-#include <BadAllocException.hpp>
-#include <HostNotFoundException.hpp>
-#include <MsgException.hpp>
+#include <msg/datatypes.h>
+
+#include <Config.hpp>
+
 
 // namespace SimGrid::Msg
 namespace SimGrid
 {
 	namespace Msg
 	{
+		class InvalidArgumentException;
+		class BadAllocException;
+		class HostNotFoundException;
+		class MsgException;
+
+		class Task;
+		class Process;
+
 		// Declaration of the class SimGrid::Msg::Host.
-		class Host // final class.
+		class SIMGRIDX_EXPORT Host // final class.
 		{
+			friend Process;
+			friend Task;
+
 			// Desable the default constructor.
 			// The best way to get an host instance is to use the static method Host::getByName().
 			
-			private :
+			public :
 				
 			// Default constructor (desabled).
 				Host();
@@ -97,11 +108,11 @@ namespace SimGrid
 				 *
 				 * \exception		[HostNotFoundException]		if no host with the specified name
 				 *												was found.
-				 *					[InvalidParameterException]	if the hostName parameter is invalid (NULL).
+				 *					[InvalidArgumentException]	if the hostName parameter is invalid (NULL).
 				 *					[BadAllocException]			if there is not enough memory to allocate the host.
 				 */ 
 				static Host& getByName(const char* hostName)
-				throw(HostNotFoundException, InvalidParameterException, BadAllocException);
+				throw(HostNotFoundException, InvalidArgumentException, BadAllocException);
 				
 				/*! \brief Host::getNumber() - returns the number of the installed hosts.
 				 *
@@ -118,7 +129,7 @@ namespace SimGrid
 				 * \see				Process::currentProcess().
 				 */
 				static Host& currentHost(void)
-				throw(InvalidParameterException, BadAllocException);
+				throw(InvalidArgumentException, BadAllocException);
 				
 				/*! \brief Host::all() - This static method retrieves all of the hosts of the installed platform.
 				 *
@@ -130,7 +141,7 @@ namespace SimGrid
 				 *					the parameter len is set with the number of hosts of the platform.
 				 *					Otherwise the method throw one of the exception described below.
 				 *
-				 * \exception		[InvalidParameterException]	if the parameter hosts is invalid or
+				 * \exception		[InvalidArgumentException]	if the parameter hosts is invalid or
 				 *												if the parameter len is negative or
 				 *												less than the number of hosts installed
 				 *												on the current platform.
@@ -229,9 +240,9 @@ namespace SimGrid
 				/*! \brief Host::isAvailable - tests if an host is availabled.
 				 * 
 				 * \return			Is the host is availabled the method returns
-				 *					true. Otherwise the method returns false.
+				 *					1. Otherwise the method returns 0.
 				 */ 
-				bool isAvailble(void) const;
+				int isAvailable(void) const;
 				
 				/* ! \brief Host::put() - put a task on the given channel of a host .
 				 *
@@ -243,11 +254,14 @@ namespace SimGrid
 				 *					the method throws one of the exceptions described below.
 				 *
 				 * \exception		[MsgException] 				if an internal error occurs.
-				 *					[InvalidParameterException]	if the value of the channel specified as
+				 *					[InvalidArgumentException]	if the value of the channel specified as
 				 *												parameter is negative.
 				 */
 				void put(int channel, const Task& rTask)
-				throw(MsgException, InvalidParameterException);
+				throw(MsgException, InvalidArgumentException);
+
+				void Host::put(int channel, Task* task) 
+				throw(MsgException, InvalidArgumentException);
 				
 				/* ! \brief Host::put() - put a task on the given channel of a host object (waiting at most timeout seconds).
 				 *
@@ -260,14 +274,14 @@ namespace SimGrid
 				 *					the method throws one of the exceptions described below.
 				 *
 				 * \exception		[MsgException] 				if an internal error occurs.
-				 *					[InvalidParameterException]	if the value of the channel specified as
+				 *					[InvalidArgumentException]	if the value of the channel specified as
 				 *												parameter is negative or if the timeout value
 				 *												is less than zero and différent of -1.
 				 *
 				 * \remark			To specify no timeout set the timeout value with -1.0.
 				 */
-				void put(int channel, Task task, double timeout) 
-				throw(MsgException, InvalidParameterException);
+				void put(int channel, const Task& rTask, double timeout) 
+				throw(MsgException, InvalidArgumentException);
 				
 				/* ! \brief Host::putBounded() - put a task on the given channel of a host object (capping the emission rate to maxrate).
 				 *
@@ -280,14 +294,14 @@ namespace SimGrid
 				 *					the method throws one of the exceptions described below.
 				 *
 				 * \exception		[MsgException] 				if an internal error occurs.
-				 *					[InvalidParameterException]	if the value of the channel specified as
+				 *					[InvalidArgumentException]	if the value of the channel specified as
 				 *												parameter is negative or if the maxRate parameter value
 				 *												is less than zero and différent of -1.0.
 				 *
 				 * \remark			To specify no rate set the maxRate parameter value with -1.0.
 				 */
 				void putBounded(int channel, const Task& rTask, double maxRate) 
-				throw(MsgException, InvalidParameterException);
+				throw(MsgException, InvalidArgumentException);
 				
 				/* ! brief Host::send() - sends the given task to mailbox identified by the default alias.
 				 *
@@ -311,13 +325,13 @@ namespace SimGrid
 				 * \return			If successful the task is sended to the default mailbox. Otherwise the
 				 *					method throws one of the exceptions described below.
 				 *
-				 * \exception		[InvalidParameterException]	if alias parameter is invalid (NULL).
+				 * \exception		[InvalidArgumentException]	if alias parameter is invalid (NULL).
 				 *					[BadAllocException]			if there is not enough memory to allocate
 				 *												the default alias variable.
 				 *					[MsgException]				if an internal error occurs.
 				 */
 				void send(const char* alias, const Task& rTask) 
-				throw(InvalidParameterException, BadAllocException, MsgException);
+				throw(InvalidArgumentException, BadAllocException, MsgException);
 				
 				/* ! brief Host::send() - sends the given task to mailbox identified by the default alias
 				 *  (waiting at most timeout seconds).
@@ -330,7 +344,7 @@ namespace SimGrid
 				 *
 				 * \exception		[BadAllocException]			if there is not enough memory to allocate
 				 *												the default alias variable.
-				 *					[InvalidParameterException]	if the timeout value is negative and different of
+				 *					[InvalidArgumentException]	if the timeout value is negative and different of
 				 *												-1.0.			
 				 *					[MsgException]				if an internal error occurs.
 				 *
@@ -339,7 +353,7 @@ namespace SimGrid
 				 *
 				 */
 				void send(const Task& rTask, double timeout) 
-				throw(NativeException);
+				throw(MsgException);
 				
 				/* ! brief Host::send() - sends the given task to mailbox identified by the parameter alias
 				 *  (waiting at most timeout seconds).
@@ -351,7 +365,7 @@ namespace SimGrid
 				 * \return			If successful the task is sended to the default mailbox. Otherwise the
 				 *					method throws one of the exceptions described below.
 				 *
-				 * \exception		[InvalidParameterException]	if the timeout value is negative and different of
+				 * \exception		[InvalidArgumentException]	if the timeout value is negative and different of
 				 *												-1.0 or if the alias parameter is invalid (NULL).			
 				 *					[MsgException]				if an internal error occurs.
 				 *
@@ -360,7 +374,7 @@ namespace SimGrid
 				 *
 				 */
 				void send(const char* alias, const Task& rTask, double timeout) 
-				throw(InvalidParameterException, MsgException);
+				throw(InvalidArgumentException, MsgException);
 				
 				/* ! brief Host::sendBounded() - sends the given task to mailbox associated to the default alias
 				 *  (capping the emission rate to maxRate).
@@ -371,7 +385,7 @@ namespace SimGrid
 				 * \return			If successful the task is sended to the default mailbox. Otherwise the
 				 *					method throws one of the exceptions described below.
 				 *
-				 * \exception		[InvalidParameterException]	if the maximum rate value is negative and different of
+				 * \exception		[InvalidArgumentException]	if the maximum rate value is negative and different of
 				 *												-1.0.			
 				 *					[MsgException]				if an internal error occurs.
 				 *					[BadAllocException]			if there is not enough memory to allocate
@@ -381,7 +395,7 @@ namespace SimGrid
 				 *
 				 */
 				void sendBounded(const Task& rTask, double maxRate) 
-				throw(InvalidParameterException, BadAllocException, MsgException);
+				throw(InvalidArgumentException, BadAllocException, MsgException);
 				
 				/* ! brief Host::sendBounded() - sends the given task to mailbox identified by the parameter alias
 				 *  (capping the emission rate to maxRate).
@@ -393,7 +407,7 @@ namespace SimGrid
 				 * \return			If successful the task is sended to the default mailbox. Otherwise the
 				 *					method throws one of the exceptions described below.
 				 *
-				 * \exception		[InvalidParameterException]	if the maximum rate value is negative and different of
+				 * \exception		[InvalidArgumentException]	if the maximum rate value is negative and different of
 				 *												-1.0 or if the alias parameter is invalid (NULL).			
 				 *					[MsgException]				if an internal error occurs.
 				 *
@@ -401,7 +415,7 @@ namespace SimGrid
 				 *
 				 */
 				void sendBounded(const char* alias, const Task& rTask, double maxRate) 
-				throw(InvalidParameterException, MsgException);
+				throw(InvalidArgumentException, MsgException);
 			
 			protected:
 			// Attributes.
