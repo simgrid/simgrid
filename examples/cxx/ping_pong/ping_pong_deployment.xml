@@ -1,0 +1,8 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <process host="Inmos" function="Sender">
+      <argument value="Bellevue"/>
+  </process>
+<process host="Bellevue" function="Receiver"/>
+</platform>
