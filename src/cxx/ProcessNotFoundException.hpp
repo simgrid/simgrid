@@ -13,6 +13,10 @@
 #ifndef MSG_PROCESSNOTFOUNDEXCEPTION_HPP
 #define MSG_PROCESSNOTFOUNDEXCEPTION_HPP
 
+#ifndef __cplusplus
+	#error ProcessNotFoundException.hpp requires C++ compilation (use a .cxx suffix)
+#endif
+
 #include <Exception.hpp>
 
 namespace SimGrid

@@ -14,23 +14,28 @@
  /* Msg functions implementation.
   */  
 
-#include <MsgException.hpp>
+
 #include <Msg.hpp>
 
 #include <msg/msg.h>
+#include <msg/private.h>
 #include <stdio.h>
 
-// XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(SimGridX);
+
+
 
 namespace SimGrid
 {
 	namespace Msg
 	{
+		#define SIMGRIDX_DEFAULT_CHANNEL_NUMBER	((int)10)
 		
 		void init(int argc, char** argv)
 		{
 			MSG_global_init(&argc,argv);
-			MSG_set_channel_number(10); // FIXME: this should not be fixed statically 
+
+			if(getMaxChannelNumber() == 0)
+				setMaxChannelNumber(SIMGRIDX_DEFAULT_CHANNEL_NUMBER);
 		}	
 		
 		void finalize(void)
@@ -38,6 +43,7 @@ namespace SimGrid
 		{
 			if(MSG_OK != MSG_clean())
 				throw MsgException("MSG_clean() failed");
+			
 		}
 		
 		void info(const char* s)
@@ -51,6 +57,24 @@ namespace SimGrid
 			return MSG_get_clock();
 		}
 
+		void setMaxChannelNumber(int number)
+		throw(InvalidArgumentException, LogicException)
+		{
+			if(msg_global->max_channel > 0)
+				throw LogicException("Max channel number already setted");
+
+			if(number < 0)
+				throw InvalidArgumentException("number");
+
+			msg_global->max_channel = number;
+		}
+
+		int getMaxChannelNumber(void)
+		{
+			return msg_global->max_channel;
+		}
+
 	} // namespace Msg
 
 } // namespace SimGrid
+

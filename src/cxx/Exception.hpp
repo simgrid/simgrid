@@ -13,6 +13,10 @@
 #ifndef MSG_EXCEPTION_HPP
 #define MSG_EXCEPTION_HPP
 
+#ifndef __cplusplus
+	#error Exception.hpp requires C++ compilation (use a .cxx suffix)
+#endif
+
 #include <Config.hpp>
 
 namespace SimGrid
@@ -61,3 +65,4 @@ namespace SimGrid
 
 
 #endif // !MSG_EXCEPTION_HPP
+

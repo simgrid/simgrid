@@ -11,16 +11,12 @@
  */
  
  /* Host class member functions implementation.
-  */  
-#include <Host.hpp>
-
-#include <InvalidArgumentException.hpp>
-#include <BadAllocException.hpp>
-#include <HostNotFoundException.hpp>
-#include <MsgException.hpp>
+  */ 
 
 #include <Task.hpp>
 #include <Process.hpp>
+
+#include <Host.hpp>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -53,11 +49,11 @@ namespace SimGrid
 		
 		
 		Host& Host::getByName(const char* hostName)
-		throw(HostNotFoundException, InvalidArgumentException, BadAllocException)
+		throw(HostNotFoundException, NullPointerException, BadAllocException)
 		{
 			// check the parameters
 			if(!hostName)
-				throw InvalidArgumentException("hostName");
+				throw NullPointerException("hostName");
 				
 			m_host_t nativeHost = NULL;	// native host.
 			Host* host = NULL;			// wrapper host.
@@ -193,17 +189,6 @@ namespace SimGrid
 			return SIMIX_host_get_state(nativeHost->simdata->smx_host);
 		}
 		
-		void Host::put(int channel, const Task& rTask) 
-		throw(MsgException, InvalidArgumentException)
-		{
-			// checks the parameters
-			if(channel < 0)
-				throw InvalidArgumentException("channel (must be more or equal to zero)");
-				
-			if(MSG_OK != MSG_task_put_with_timeout(rTask.nativeTask, nativeHost, channel , -1.0))
-				throw MsgException("MSG_task_put_with_timeout() failed");
-		} 
-
 		void Host::put(int channel, Task* task) 
 		throw(MsgException, InvalidArgumentException)
 		{
@@ -214,8 +199,8 @@ namespace SimGrid
 			if(MSG_OK != MSG_task_put_with_timeout(task->nativeTask, nativeHost, channel , -1.0))
 				throw MsgException("MSG_task_put_with_timeout() failed");
 		} 
-		
-		void Host::put(int channel, const Task& rTask, double timeout) 
+
+		void Host::put(int channel, Task* task, double timeout) 
 		throw(MsgException, InvalidArgumentException) 
 		{
 			// checks the parameters
@@ -226,11 +211,11 @@ namespace SimGrid
 				throw InvalidArgumentException("timeout (must be more or equal to zero or equal to -1.0)");	
 				
 				
-		    if(MSG_OK != MSG_task_put_with_timeout(rTask.nativeTask, nativeHost, channel , timeout))
+		    if(MSG_OK != MSG_task_put_with_timeout(task->nativeTask, nativeHost, channel , timeout))
 				throw MsgException("MSG_task_put_with_timeout() failed");
 		}
 		
-		void Host::putBounded(int channel, const Task& rTask, double maxRate) 
+		void Host::putBounded(int channel, Task* task, double maxRate) 
 		throw(MsgException, InvalidArgumentException)
 		{
 		    // checks the parameters
@@ -240,12 +225,12 @@ namespace SimGrid
 			if(maxRate < 0.0 && maxRate != -1.0)
 				throw InvalidArgumentException("maxRate (must be more or equal to zero or equal to -1.0)");	
 		    
-			if(MSG_OK != MSG_task_put_bounded(rTask.nativeTask, nativeHost, channel, maxRate))
+			if(MSG_OK != MSG_task_put_bounded(task->nativeTask, nativeHost, channel, maxRate))
 				throw MsgException("MSG_task_put_bounded() failed");
 		}
 		
-		void Host::send(const Task& rTask) 
-		throw(MsgException)  
+		void Host::send(Task* task) 
+		throw(MsgException, BadAllocException)  
 		{	
 			MSG_error_t rv;
 			
@@ -256,7 +241,7 @@ namespace SimGrid
 				
 			sprintf(alias,"%s:%s", this->getName(),Process::currentProcess().getName());
 				
-			rv = MSG_task_send_with_timeout(rTask.nativeTask, alias, -1.0);
+			rv = MSG_task_send_with_timeout(task->nativeTask, alias, -1.0);
 			
 			free(alias);
 			
@@ -264,18 +249,18 @@ namespace SimGrid
 				throw MsgException("MSG_task_send_with_timeout() failed");
 		} 
 		
-		void Host::send(const char* alias, const Task& rTask) 
+		void Host::send(const char* alias, Task* task) 
 		throw(InvalidArgumentException, MsgException) 
 		{
 			// check the parameters
 			if(!alias)
 				throw InvalidArgumentException("alias (must not be NULL)");
 			
-			if(MSG_OK != MSG_task_send_with_timeout(rTask.nativeTask, alias, -1.0))
+			if(MSG_OK != MSG_task_send_with_timeout(task->nativeTask, alias, -1.0))
 				throw MsgException("MSG_task_send_with_timeout() failed");
 		}
 		
-		void Host::send(const Task& rTask, double timeout) 
+		void Host::send(Task* task, double timeout) 
 		throw(InvalidArgumentException, BadAllocException, MsgException) 
 		{
 			// check the parameters
@@ -292,7 +277,7 @@ namespace SimGrid
 			sprintf(alias,"%s:%s", this->getName(),Process::currentProcess().getName());
 				
 				
-			rv = MSG_task_send_with_timeout(rTask.nativeTask, alias, timeout);
+			rv = MSG_task_send_with_timeout(task->nativeTask, alias, timeout);
 			
 			free(alias);
 			
@@ -300,7 +285,7 @@ namespace SimGrid
 				throw MsgException("MSG_task_send_with_timeout() failed");
 		}
 		
-		void Host::send(const char* alias, const Task& rTask, double timeout) 
+		void Host::send(const char* alias, Task* task, double timeout) 
 		throw(InvalidArgumentException, MsgException) 
 		{
 			// check the parameter
@@ -311,12 +296,12 @@ namespace SimGrid
 			if(timeout < 0 && timeout != -1.0)
 				throw InvalidArgumentException("timeout (must be positive or equal to zero or equal to -1.0)");
 					
-			if(MSG_OK != MSG_task_send_with_timeout(rTask.nativeTask, alias, timeout))
+			if(MSG_OK != MSG_task_send_with_timeout(task->nativeTask, alias, timeout))
 				throw MsgException("MSG_task_send_with_timeout() failed");
 		}
 		
 		
-		void Host::sendBounded(const Task& rTask, double maxRate) 
+		void Host::sendBounded(Task* task, double maxRate) 
 		throw(InvalidArgumentException, BadAllocException, MsgException) 
 		{
 			if(maxRate < 0 && maxRate != -1.0)
@@ -331,7 +316,7 @@ namespace SimGrid
 				
 			sprintf(alias,"%s:%s", this->getName(),Process::currentProcess().getName());
 				
-			rv = MSG_task_send_bounded(rTask.nativeTask, alias, maxRate);
+			rv = MSG_task_send_bounded(task->nativeTask, alias, maxRate);
 			
 			free(alias);
 			
@@ -339,7 +324,7 @@ namespace SimGrid
 				throw MsgException("MSG_task_send_bounded() failed");
 		}  
 		
-		void Host::sendBounded(const char* alias, const Task& rTask, double maxRate) 
+		void Host::sendBounded(const char* alias, Task* task, double maxRate) 
 		throw(InvalidArgumentException, MsgException) 
 		{
 			// check the parameters
@@ -349,9 +334,10 @@ namespace SimGrid
 			if(maxRate < 0 && maxRate != -1)
 				throw InvalidArgumentException("maxRate (must be positive or equal to zero or equal to -1.0)");
 			
-			if(MSG_OK != MSG_task_send_bounded(rTask.nativeTask, alias, maxRate))
+			if(MSG_OK != MSG_task_send_bounded(task->nativeTask, alias, maxRate))
 				throw MsgException("MSG_task_send_bounded() failed");
 			
 		}
 	} // namspace Msg
 } // namespace SimGrid
+

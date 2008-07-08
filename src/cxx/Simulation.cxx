@@ -13,15 +13,14 @@
  /* Simulation member functions implementation.
   */  
   
-#include <Simulation.hpp>
 
 #include <Application.hpp>
 #include <Environment.hpp>
 
-#include <MsgException.hpp>
-#include <FileNotFoundException.hpp>
-
 #include <Msg.hpp>
+
+#include <Simulation.hpp>
+
 
 #include <msg/msg.h> 
 
@@ -105,3 +104,5 @@ namespace SimGrid
 		}
 	} // namespace Msg
 } // namespace SimGrid
+
+

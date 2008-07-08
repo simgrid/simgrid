@@ -19,7 +19,11 @@
 	#error Environment.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
-#include <Config.hpp>
+#include <NullPointerException.hpp>
+#include <FileNotFoundException.hpp>
+#include <InvalidArgumentException.hpp>
+#include <LogicException.hpp>
+#include <MsgException.hpp>
 
 namespace SimGrid
 {
@@ -146,3 +150,4 @@ namespace SimGrid
 
 
 #endif // !MSG_ENVIRONMENT_HPP
+

@@ -13,6 +13,10 @@
 #ifndef MSG_BADALLOCEXCEPTION_HPP
 #define MSG_BADALLOCEXCEPTION_HPP
 
+#ifndef __cplusplus
+	#error BadAllocException.hpp requires C++ compilation (use a .cxx suffix)
+#endif
+
 #include <Exception.hpp>
 
 namespace SimGrid
@@ -62,3 +66,4 @@ namespace SimGrid
 
 
 #endif // !MSG_BADALLOCEXCEPTION_HPP
+

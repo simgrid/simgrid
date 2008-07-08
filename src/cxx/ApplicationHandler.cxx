@@ -13,13 +13,16 @@
  /* ApplicationHandler member functions implementation.
   */  
 
-#include <ApplicationHandler.hpp>
 
 #include <Object.hpp>
-#include <ClassNotFoundException.hpp>
-#include <HostNotFoundException.hpp>
-#include <Host.hpp>
+#include <ApplicationHandler.hpp>
+
 #include <Process.hpp>
+#include <Host.hpp>
+
+
+
+
 
 #include <stdlib.h>
 
@@ -107,7 +110,12 @@ namespace SimGrid
 			this->properties = NULL; // TODO instanciate the dictionary
 			this->hostName = NULL;
 			this->function = NULL;
-		}      
+		} 
+
+		ApplicationHandler::ProcessFactory::~ProcessFactory()
+		{
+			xbt_dynar_free(&(this->args));
+		}
 		
 		// create the cxx process wrapper.
 		void ApplicationHandler::ProcessFactory::createProcess() 
@@ -179,3 +187,4 @@ namespace SimGrid
 
 	} // namespace Msg
 } // namespace SimGrid
+

@@ -22,7 +22,11 @@
 
 #include <msg/datatypes.h>
 
-#include <Config.hpp>
+#include <MsgException.hpp>
+#include <InvalidArgumentException.hpp>
+#include <NullPointerException.hpp>
+#include <MsgException.hpp>
+#include <BadAllocException.hpp>
 
 #include <Object.hpp>
 
@@ -30,12 +34,6 @@ namespace SimGrid
 {
 	namespace Msg
 	{
-		class MsgException;
-		class InvalidArgumentException;
-		class NullPointerException;
-		class MsgException;
-		class BadAllocException;
-
 		class Process;
 		class Host;
 
@@ -44,39 +42,12 @@ namespace SimGrid
 		{
 			MSG_DECLARE_DYNAMIC(Task);
 
-			friend Process;
-			friend Host;
+			friend class Process;
+			friend class Host;
 
 			protected:
 				// Default constructor.
 				Task();
-
-			class Ref
-			{
-			public:
-				Ref(Task* task)
-				{
-					count = 1;
-					this->task = task;
-				}
-
-				virtual ~Ref(){}
-
-				void operator++(void){
-					count++;
-					
-				}
-
-				void operator--(void){
-					if(--count <= 0)
-						delete p;
-				}
-
-			private:
-				int count;
-				Task* task;
-
-			};
 				
 			public:
 				/*! \brief Copy constructor.
@@ -191,9 +162,6 @@ namespace SimGrid
 				 *					
 				 *							[MsgException]				if an internal excpetion occurs.
 				 */
-				/*static Task& get(int channel) 
-				throw(InvalidArgumentException, MsgException);*/
-
 				static Task* get(int channel) 
 				throw(InvalidArgumentException, MsgException);
 
@@ -209,7 +177,7 @@ namespace SimGrid
 				 *
 				 *							[MsgException]				if an internal exception occurs.
 				 */
-				static Task& get(int channel, const Host& rHost) 
+				static Task* get(int channel, const Host& rHost) 
 				throw(InvalidArgumentException, MsgException);
 				
 				/*! \brief Task::get() - Gets a task from the specified channel of the specified host
@@ -227,7 +195,7 @@ namespace SimGrid
 				 *														different than -1.0.
 				 *							[MsgException]				if an internal exception occurs.
 				 */
-				static Task& get(int channel, double timeout, const Host& rHost) 
+				static Task* get(int channel, double timeout, const Host& rHost) 
 				throw(InvalidArgumentException, MsgException);  
 				
 				/*! \brief Task::probe() - Probes whether there is a waiting task on the given channel of local host.
@@ -424,7 +392,7 @@ namespace SimGrid
 				 *
 				 *							[MsgException]				if an internal exception occurs.
 				 */
-				static Task& receive(const char* alias, double timeout) 
+				static Task* receive(const char* alias, double timeout) 
 				throw(NullPointerException, InvalidArgumentException, MsgException);
 				
 				/*! \brief Task::receive() - Receives a task from the mailbox identified by a given alias located
@@ -441,7 +409,7 @@ namespace SimGrid
 				 *
 				 *							[MsgException]				if an internal exception occurs.
 				 */
-				static Task& receive(const char* alias, const Host& rHost) 
+				static Task* receive(const char* alias, const Host& rHost) 
 				throw(NullPointerException, MsgException);
 				
 				/*! \brief Task::receive() - Receives a task from the mailbox identified by a given alias located
@@ -462,7 +430,7 @@ namespace SimGrid
 				 *
 				 *							[MsgException]				if an internal exception occurs.
 				 */
-				static Task& receive(const char* alias, double timeout, const Host& rHost) 
+				static Task* receive(const char* alias, double timeout, const Host& rHost) 
 				throw(NullPointerException, InvalidArgumentException, MsgException);
 				
 				/*! \brief Task::listen() - Listen whether there is a waiting task on the mailbox 
@@ -552,7 +520,7 @@ namespace SimGrid
 				 *														alias.
 				 */
 				static int listenFromHost(const char* alias, const Host& rHost) 
-				throw(NullPointerException, MsgException);
+				throw(NullPointerException);
 
 				virtual const Task& operator= (const Task& rTask);
 			
@@ -561,8 +529,6 @@ namespace SimGrid
 				// Attributes.
 				
 				m_task_t nativeTask;	// the native MSG task.
-
-				Ref* ref;
 		};
 	
 	} // namespace Msg 
@@ -571,3 +537,4 @@ namespace SimGrid
 typedef Task* TaskPtr;
 
 #endif // §MSG_TASK_HPP
+

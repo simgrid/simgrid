@@ -19,7 +19,8 @@
 	#error Sumulation.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
-#include <Config.hpp>
+#include <MsgException.hpp>
+#include <FileNotFoundException.hpp>
 
 namespace SimGrid
 {
@@ -57,3 +58,4 @@ namespace SimGrid
 } // namespace SimGrid
 
 #endif // !MSG_SIMULATION_HPP
+

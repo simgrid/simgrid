@@ -1,12 +1,19 @@
-#include <Process.hpp>
+/*
+ * Process.cxx
+ *
+ * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * All right reserved. 
+ *
+ * This program is free software; you can redistribute 
+ * it and/or modify it under the terms of the license 
+ *(GNU LGPL) which comes with this package. 
+ *
+ */
+ 
+ /* Process member functions implementation.
+  */  
 
-#include <MsgException.hpp>
-#include <NullPointerException.hpp>
-#include <HostNotFoundException.hpp>
-#include <ProcessNotFoundException.hpp>
-#include <InvalidArgumentException.hpp>
-#include <BadAllocException.hpp>
-#include <LogicException.hpp>
+#include <Process.hpp>
 
 
 #include <ApplicationHandler.hpp>
@@ -19,6 +26,7 @@
 #include <msg/msg.h>
 #include <msg/private.h>
 #include <msg/mailbox.h>
+
 
 
 namespace SimGrid
@@ -35,7 +43,7 @@ namespace SimGrid
 		}
 		
 		Process::Process(const char* hostName, const char* name)
-		throw(InvalidArgumentException, HostNotFoundException)
+		throw(NullPointerException, HostNotFoundException, BadAllocException)
 		{
 			// check the parameters
 			
@@ -81,7 +89,7 @@ namespace SimGrid
 		}
 		
 		Process::Process(const char* hostName, const char* name, int argc, char** argv)
-		throw(NullPointerException, InvalidArgumentException, LogicException, HostNotFoundException)
+		throw(NullPointerException, InvalidArgumentException, LogicException, HostNotFoundException, BadAllocException)
 		{
 			// check the parameters
 			
@@ -223,7 +231,7 @@ namespace SimGrid
 		   	
 		}
 		
-		void Process::putTask(const Host& rHost, int channel, const Task& rTask)
+		void Process::putTask(const Host& rHost, int channel, Task* task)
 		throw(InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -231,11 +239,11 @@ namespace SimGrid
 			if(channel < 0)
 				throw InvalidArgumentException("channel (must not be negative)");
 				
-			if(MSG_OK != MSG_task_put_with_timeout(rTask.nativeTask, rHost.nativeHost, channel, -1.0))
+			if(MSG_OK != MSG_task_put_with_timeout(task->nativeTask, rHost.nativeHost, channel, -1.0))
 				throw MsgException("MSG_task_put_with_timeout()");
 		}
 		
-		void Process::putTask(const Host& rHost, int channel, const Task& rTask, double timeout) 
+		void Process::putTask(const Host& rHost, int channel, Task* task, double timeout) 
 		throw(InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -245,11 +253,11 @@ namespace SimGrid
 			if(timeout < 0 && timeout != -1.0)
 				throw InvalidArgumentException("timeout (must not be less than zero an different of -1.0)");
 				
-			if(MSG_OK != MSG_task_put_with_timeout(rTask.nativeTask, rHost.nativeHost, channel, timeout))
+			if(MSG_OK != MSG_task_put_with_timeout(task->nativeTask, rHost.nativeHost, channel, timeout))
 				throw MsgException("MSG_task_put_with_timeout() failed");
 		}
 		
-		Task& Process::getTask(int channel) 
+		Task* Process::getTask(int channel) 
 		throw(InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -262,10 +270,10 @@ namespace SimGrid
 			if (MSG_OK != MSG_task_get_ext(&nativeTask, channel, -1.0, NULL)) 
 				throw MsgException("MSG_task_get_ext() failed");
 			
-			return (*((Task*)(nativeTask->data)));
+			return (Task*)(nativeTask->data);
 		}
 		
-		Task& Process::getTask(int channel, double timeout) 
+		Task* Process::getTask(int channel, double timeout) 
 		throw(InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -280,10 +288,10 @@ namespace SimGrid
 			if (MSG_OK != MSG_task_get_ext(&nativeTask, channel, timeout, NULL)) 
 				throw MsgException("MSG_task_get_ext() failed");
 			
-			return (*((Task*)(nativeTask->data)));
+			return (Task*)(nativeTask->data);
 		}
 		
-		Task& Process::getTask(int channel, const Host& rHost) 
+		Task* Process::getTask(int channel, const Host& rHost) 
 		throw(InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -295,10 +303,10 @@ namespace SimGrid
 			if (MSG_OK != MSG_task_get_ext(&nativeTask, channel, -1.0, rHost.nativeHost)) 
 				throw MsgException("MSG_task_get_ext() failed");
 			
-			return (*((Task*)(nativeTask->data)));
+			return (Task*)(nativeTask->data);
 		}
 		
-		Task& Process::getTask(int channel, double timeout, const Host& rHost)
+		Task* Process::getTask(int channel, double timeout, const Host& rHost)
 		throw(InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -313,10 +321,10 @@ namespace SimGrid
 			if (MSG_OK != MSG_task_get_ext(&nativeTask, channel, timeout, rHost.nativeHost)) 
 				throw MsgException("MSG_task_get_ext() failed");
 			
-			return (*((Task*)(nativeTask->data)));
+			return (Task*)(nativeTask->data);
 		}
 		
-		void Process::sendTask(const char* alias, const Task& rTask, double timeout) 
+		void Process::sendTask(const char* alias, Task* task, double timeout) 
 		throw(NullPointerException, InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -327,12 +335,12 @@ namespace SimGrid
 			if(timeout < 0 && timeout !=-1.0)
 				throw InvalidArgumentException("timeout (the timeout value must not be negative and different than -1.0)");
 			
-			if(MSG_OK != MSG_task_send_with_timeout(rTask.nativeTask, alias ,timeout))
+			if(MSG_OK != MSG_task_send_with_timeout(task->nativeTask, alias ,timeout))
 				throw MsgException("MSG_task_send_with_timeout()");
 				
 		}
 		
-		void Process::sendTask(const char* alias, const Task& rTask) 
+		void Process::sendTask(const char* alias, Task* task) 
 		throw(NullPointerException, MsgException)
 		{
 			// check the parameters
@@ -340,11 +348,11 @@ namespace SimGrid
 			if(!alias)
 				throw NullPointerException("alias");
 				
-			if(MSG_OK != MSG_task_send_with_timeout(rTask.nativeTask, alias ,-1.0))
+			if(MSG_OK != MSG_task_send_with_timeout(task->nativeTask, alias ,-1.0))
 				throw MsgException("MSG_task_send_with_timeout()");
 		}
 		
-		void Process::sendTask(const Task& rTask) 
+		void Process::sendTask(Task* task) 
 		throw(BadAllocException, MsgException)
 		{
 			char* alias = (char*)calloc( strlen(Host::currentHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
@@ -354,7 +362,7 @@ namespace SimGrid
 				
 			sprintf(alias,"%s:%s", Host::currentHost().getName() ,nativeProcess->name);
 			
-			MSG_error_t rv = MSG_task_send_with_timeout(rTask.nativeTask, alias ,-1.0);
+			MSG_error_t rv = MSG_task_send_with_timeout(task->nativeTask, alias ,-1.0);
 			
 			free(alias);
 			
@@ -362,7 +370,7 @@ namespace SimGrid
 				throw MsgException("MSG_task_send_with_timeout()");
 		}
 		
-		void Process::sendTask(const Task& rTask, double timeout) 
+		void Process::sendTask(Task* task, double timeout) 
 		throw(BadAllocException, InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -377,7 +385,7 @@ namespace SimGrid
 				
 			sprintf(alias,"%s:%s", Host::currentHost().getName() ,nativeProcess->name);
 			
-			MSG_error_t rv = MSG_task_send_with_timeout(rTask.nativeTask, alias ,timeout);
+			MSG_error_t rv = MSG_task_send_with_timeout(task->nativeTask, alias ,timeout);
 			
 			free(alias);
 			
@@ -385,7 +393,7 @@ namespace SimGrid
 				throw MsgException("MSG_task_send_with_timeout()");	
 		}
 		
-		Task& Process::receiveTask(const char* alias) 
+		Task* Process::receiveTask(const char* alias) 
 		throw(NullPointerException, MsgException)
 		{
 			// check the parameters
@@ -398,11 +406,11 @@ namespace SimGrid
 			if (MSG_OK !=  MSG_task_receive_ext(&nativeTask,alias, -1.0, NULL)) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
 		
 		
-		Task& Process::receiveTask(void) 
+		Task* Process::receiveTask(void) 
 		throw(BadAllocException, MsgException)
 		{
 			
@@ -422,11 +430,11 @@ namespace SimGrid
 			if(MSG_OK !=  rv) 
 				throw MsgException("MSG_task_receive_ext() failed");	
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
 		
 		
-		Task& Process::receiveTask(const char* alias, double timeout) 
+		Task* Process::receiveTask(const char* alias, double timeout) 
 		throw(NullPointerException, InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -442,11 +450,11 @@ namespace SimGrid
 			if(MSG_OK !=  MSG_task_receive_ext(&nativeTask, alias, timeout, NULL)) 
 				throw MsgException("MSG_task_receive_ext() failed");		
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
 		
 		
-		Task& Process::receiveTask(double timeout) 
+		Task* Process::receiveTask(double timeout) 
 		throw(InvalidArgumentException, BadAllocException, MsgException)
 		{
 			// check the parameters
@@ -471,11 +479,11 @@ namespace SimGrid
 			if(MSG_OK !=  rv) 
 				throw MsgException("MSG_task_receive_ext() failed");	
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
 		
 		
-		Task& Process::receiveTask(const char* alias, double timeout, const Host& rHost) 
+		Task* Process::receiveTask(const char* alias, double timeout, const Host& rHost) 
 		throw(NullPointerException, InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -491,11 +499,11 @@ namespace SimGrid
 			if(MSG_OK !=  MSG_task_receive_ext(&nativeTask, alias, timeout, rHost.nativeHost)) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
 		
 		
-		Task& Process::receiveTask(double timeout, const Host& rHost) 
+		Task* Process::receiveTask(double timeout, const Host& rHost) 
 		throw(BadAllocException, InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -519,11 +527,11 @@ namespace SimGrid
 			if(MSG_OK !=  rv) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
 		
 		
-		Task& Process::receiveTask(const char* alias, const Host& rHost) 
+		Task* Process::receiveTask(const char* alias, const Host& rHost) 
 		throw(NullPointerException, MsgException)
 		{
 			
@@ -537,10 +545,10 @@ namespace SimGrid
 			if(MSG_OK !=   MSG_task_receive_ext(&nativeTask, alias, -1.0, rHost.nativeHost)) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
 		
-		Task& Process::receiveTask(const Host& rHost) 
+		Task* Process::receiveTask(const Host& rHost) 
 		throw(BadAllocException, MsgException)
 		{
 			char* alias = (char*)calloc(strlen(Host::currentHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
@@ -559,67 +567,8 @@ namespace SimGrid
 			if(MSG_OK !=  rv) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
-		
-		/*void Process::create(const Host& rHost, const char* name, int argc, char** argv)
-		throw(HostNotFoundException)
-		{
-			smx_process_t nativeCurrentProcess = NULL;
-			
-			// allocate the native process
-			this->nativeProcess = xbt_new0(s_smx_process_t, 1);
-			
-			// allocate the simulation data of the native process
-			smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t, 1);
-			
-			// try to retrieve the host where to createt the process from its name
-			smx_host_t nativeHost = SIMIX_host_get_by_name(rHost.getName());
-			
-			if(!nativeHost)
-				throw HostNotFoundException(rHost.getName());
-			
-			// realloc the list of the argument to add the pointer to this process instance at the end
-			argv = (char**)realloc(argc + 1, sizeof(char*));
-			
-			// add the pointer to this instance at the end of the list of the arguments of the process
-			// so the static method Process::run() (passed as argument of the MSG function xbt_context_new())
-			// can retrieve the concerned process object by the run
-			// so Process::run() can call the method main() of the good process
-			// for more detail see Process::run() method
-			argv[argc] = (char*)this;
-			
-			// Simulator Data
-			simdata->smx_host = nativeHost;
-			simdata->mutex = NULL;
-			simdata->cond = NULL;
-			simdata->argc = argc;
-			simdata->argv = argv;
-			
-			// create the context of the process.
-			simdata->context = xbt_context_new(name, Process::run, NULL, NULL, simix_global->cleanup_process_function, nativeProcess, simdata->argc, simdata->argv);
-			
-			// Process structure 
-			this->nativeProcess->name = xbt_strdup(name);
-			this->nativeProcess->simdata = simdata;
-			
-			// Set process data
-			this->nativeProcess->data = NULL;
-			
-			// Set process properties
-			simdata->properties = NULL;
-			
-			xbt_swag_insert(this->nativeProcess, nativeHost->simdata->process_list);
-			
-			// fix current_process, about which xbt_context_start mocks around 
-			nativeCurrentProcess = simix_global->current_process;
-			xbt_context_start(this->nativeProcess->simdata->context);
-			simix_global->current_process = nativeCurrentProcess;
-			
-			xbt_swag_insert(this->nativeProcess, simix_global->process_list);
-			DEBUG2("Inserting %s(%s) in the to_run list", this->nativeProcess->name, nativeHost->name);
-			xbt_swag_insert(this->nativeProcess, simix_global->process_to_run);
-		}*/
 
 		void Process::create(const Host& rHost, const char* name, int argc, char** argv)
 		throw(InvalidArgumentException)
@@ -684,9 +633,7 @@ namespace SimGrid
 			
 			mailbox = MSG_mailbox_new(alias);
 			
-			MSG_mailbox_set_hostname(mailbox, this->nativeProcess->simdata->m_host->simdata->smx_host->name);
-
-		  	
+			MSG_mailbox_set_hostname(mailbox, this->nativeProcess->simdata->m_host->simdata->smx_host->name);	
 		}
 		
 		Process* Process::fromNativeProcess(m_process_t nativeProcess)
@@ -698,7 +645,7 @@ namespace SimGrid
 		{
 			
 			// the last argument of the process is the pointer to the process to run
-			// for mor detail see Process::create() method
+			// for more detail see Process::create() method
 			return ((Process*)argv[argc])->main(argc, argv);
 		}
 
@@ -706,7 +653,18 @@ namespace SimGrid
 		{
 			throw LogicException("Process::main() not implemented");
 		}
+
+		/*void* Process::operator new(size_t size)
+		{
+			// TODO
+		}
+
+		void Process::operator delete(void* p)
+		{
+			// TODO
+		}*/
 		
 	} // namespace Msg
 
 } // namespace SimGrid
+

@@ -13,6 +13,10 @@
 #ifndef MSG_FILENOTFOUND_HPP
 #define MSG_FILENOTFOUND_HPP
 
+#ifndef __cplusplus
+	#error FileNotFoundException.hpp requires C++ compilation (use a .cxx suffix)
+#endif
+
 #include <Exception.hpp>
 
 namespace SimGrid
@@ -62,3 +66,4 @@ namespace SimGrid
 
 
 #endif // !MSG_MSGEXCEPTION_HPP
+

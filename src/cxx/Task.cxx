@@ -1,13 +1,22 @@
-#include <Task.hpp>
-
-#include <MsgException.hpp>
-#include <InvalidArgumentException.hpp>
-#include <NullPointerException.hpp>
-#include <MsgException.hpp>
-#include <BadAllocException.hpp>
+/*
+ * Task.cxx
+ *
+ * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * All right reserved. 
+ *
+ * This program is free software; you can redistribute 
+ * it and/or modify it under the terms of the license 
+ *(GNU LGPL) which comes with this package. 
+ *
+ */
+ 
+ /* Task member functions implementation.
+  */  
 
 #include <Process.hpp>
 #include <Host.hpp>
+
+#include <Task.hpp>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -150,22 +159,6 @@ namespace SimGrid
 				
 			MSG_task_set_priority(nativeTask, priority);
 		}
-		
-		/*Task& Task::get(int channel) 
-		throw(InvalidArgumentException, MsgException)
-		{
-			// check the parameters
-			
-			if(channel < 0)
-				throw InvalidArgumentException("channel (must not be negative)");
-				
-			m_task_t nativeTask = NULL;
-			
-			if(MSG_OK != MSG_task_get_ext(&nativeTask, channel , -1.0, NULL)) 
-				throw MsgException("MSG_task_get_ext() failed");
-			
-			return (*((Task*)(nativeTask->data)));
-		}*/
 
 		Task* Task::get(int channel) 
 		throw(InvalidArgumentException, MsgException)
@@ -183,7 +176,7 @@ namespace SimGrid
 			return ((Task*)(nativeTask->data));
 		}
 		
-		Task& Task::get(int channel, const Host& rHost) 
+		Task* Task::get(int channel, const Host& rHost) 
 		throw(InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -197,10 +190,10 @@ namespace SimGrid
 			if(MSG_OK != MSG_task_get_ext(&nativeTask, channel , -1.0, rHost.nativeHost)) 
 				throw MsgException("MSG_task_get_ext() failed");
 			
-			return (*((Task*)(nativeTask->data)));
+			return (Task*)(nativeTask->data);
 		}
 		
-		Task& Task::get(int channel, double timeout, const Host& rHost) 
+		Task* Task::get(int channel, double timeout, const Host& rHost) 
 		throw(InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -217,7 +210,7 @@ namespace SimGrid
 			if(MSG_OK != MSG_task_get_ext(&nativeTask, channel , timeout, rHost.nativeHost)) 
 				throw MsgException("MSG_task_get_ext() failed");
 			
-			return (*((Task*)(nativeTask->data)));
+			return (Task*)(nativeTask->data);
 		}
 		
 		int Task::probe(int channel)
@@ -363,28 +356,6 @@ namespace SimGrid
 			if(MSG_OK != MSG_task_send_bounded(nativeTask, alias, maxRate))
 				throw MsgException("MSG_task_send_bounded() failed");
 		}
-		
-		/*Task& Task::receive(void) 
-		throw(BadAllocException, MsgException)
-		{
-			char* alias = (char*)calloc(strlen(Process::currentProcess().getName()) + strlen(Host::currentHost().getName()) + 2, sizeof(char));
-			
-			if(!alias)
-				throw BadAllocException("alias");
-				
-			sprintf(alias,"%s:%s", Host::currentHost().getName(), Process::currentProcess().getName());
-				
-			m_task_t nativeTask = NULL;
-			
-			MSG_error_t rv = MSG_task_receive_ext(&nativeTask, alias, -1.0, NULL);	
-		
-			free(alias);
-			
-			if(MSG_OK != rv) 
-				throw MsgException("MSG_task_receive_ext() failed");
-		
-			return (*((Task*)nativeTask->data));
-		}*/
 
 		Task* Task::receive(void) 
 		throw(BadAllocException, MsgException)
@@ -405,24 +376,8 @@ namespace SimGrid
 			if(MSG_OK != rv) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return ((Task*)nativeTask->data);
+			return (Task*)(nativeTask->data);
 		}
-		
-		/*Task& Task::receive(const char* alias) 
-		throw(NullPointerException, MsgException)
-		{
-			// check the parameters
-			
-			if(!alias)
-				throw NullPointerException("alias");
-				
-			m_task_t nativeTask = NULL;
-			
-			if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, -1.0, NULL)) 
-				throw MsgException("MSG_task_receive_ext() failed");
-		
-			return (*((Task*)nativeTask->data));
-		}*/
 
 		Task* Task::receive(const char* alias) 
 		throw(NullPointerException, MsgException)
@@ -437,10 +392,10 @@ namespace SimGrid
 			if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, -1.0, NULL)) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return ((Task*)nativeTask->data);
+			return (Task*)(nativeTask->data);
 		}
 		
-		Task& Task::receive(const char* alias, double timeout) 
+		Task* Task::receive(const char* alias, double timeout) 
 		throw(NullPointerException, InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -456,10 +411,10 @@ namespace SimGrid
 			if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, timeout, NULL)) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
 		
-		Task& Task::receive(const char* alias, const Host& rHost) 
+		Task* Task::receive(const char* alias, const Host& rHost) 
 		throw(NullPointerException, MsgException)
 		{
 			// check the parameters
@@ -472,10 +427,10 @@ namespace SimGrid
 			if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, -1.0, rHost.nativeHost)) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}	
 		
-		Task& Task::receive(const char* alias, double timeout, const Host& rHost) 
+		Task* Task::receive(const char* alias, double timeout, const Host& rHost) 
 		throw(NullPointerException, InvalidArgumentException, MsgException)
 		{
 			// check the parameters
@@ -492,7 +447,7 @@ namespace SimGrid
 			if(MSG_OK != MSG_task_receive_ext(&nativeTask, alias, timeout, rHost.nativeHost)) 
 				throw MsgException("MSG_task_receive_ext() failed");
 		
-			return (*((Task*)nativeTask->data));
+			return (Task*)(nativeTask->data);
 		}
 		
 		int Task::listen(void) 

@@ -15,12 +15,6 @@
   
 #include <Environment.hpp>
 
-#include <NullPointerException.hpp>
-#include <FileNotFoundException.hpp>
-#include <InvalidArgumentException.hpp>
-#include <LogicException.hpp>
-#include <MsgException.hpp>
-
 #include <stdlib.h>
 
 #include <sys/types.h>
@@ -49,7 +43,7 @@ namespace SimGrid
 		}
 		
 		Environment::Environment(const char* file)
-		throw(NullPointerException, InvalidArgumentException)
+		throw(NullPointerException, FileNotFoundException)
 		{
 			// check parameters
 			
@@ -59,7 +53,7 @@ namespace SimGrid
 			struct stat statBuf = {0};
 				
 			if(stat(file, &statBuf) < 0 || !S_ISREG(statBuf.st_mode))
-				throw InvalidArgumentException("file (file not found)");
+				throw FileNotFoundException("file (file not found)");
 				
 			this->file = file;
 			this->loaded = false;
@@ -162,3 +156,4 @@ namespace SimGrid
 				
 	} // namespace Msg
 } // namespace SimGrid
+

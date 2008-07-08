@@ -54,7 +54,11 @@ catch(HostNotFoundException e)
 
 #include <msg/datatypes.h>
 
-#include <Config.hpp>
+#include <InvalidArgumentException.hpp>
+#include <BadAllocException.hpp>
+#include <HostNotFoundException.hpp>
+#include <MsgException.hpp>
+
 
 
 // namespace SimGrid::Msg
@@ -62,19 +66,14 @@ namespace SimGrid
 {
 	namespace Msg
 	{
-		class InvalidArgumentException;
-		class BadAllocException;
-		class HostNotFoundException;
-		class MsgException;
-
 		class Task;
 		class Process;
 
 		// Declaration of the class SimGrid::Msg::Host.
 		class SIMGRIDX_EXPORT Host // final class.
 		{
-			friend Process;
-			friend Task;
+			friend class Process;
+			friend class Task;
 
 			// Desable the default constructor.
 			// The best way to get an host instance is to use the static method Host::getByName().
@@ -112,7 +111,7 @@ namespace SimGrid
 				 *					[BadAllocException]			if there is not enough memory to allocate the host.
 				 */ 
 				static Host& getByName(const char* hostName)
-				throw(HostNotFoundException, InvalidArgumentException, BadAllocException);
+				throw(HostNotFoundException, NullPointerException, BadAllocException);
 				
 				/*! \brief Host::getNumber() - returns the number of the installed hosts.
 				 *
@@ -128,8 +127,7 @@ namespace SimGrid
 				 *
 				 * \see				Process::currentProcess().
 				 */
-				static Host& currentHost(void)
-				throw(InvalidArgumentException, BadAllocException);
+				static Host& currentHost(void);
 				
 				/*! \brief Host::all() - This static method retrieves all of the hosts of the installed platform.
 				 *
@@ -195,7 +193,8 @@ namespace SimGrid
 				 *	delete[] ar;
 				 *
 				 */ 
-				static void all(Host*** hosts /*in|out*/, int* len /*in|out*/);
+				static void all(Host*** hosts /*in|out*/, int* len /*in|out*/)
+				throw(InvalidArgumentException, BadAllocException) ;
 				
 				/*! \brief Host::getName() - This method return the name of the Msg host object.
 				 *
@@ -257,10 +256,7 @@ namespace SimGrid
 				 *					[InvalidArgumentException]	if the value of the channel specified as
 				 *												parameter is negative.
 				 */
-				void put(int channel, const Task& rTask)
-				throw(MsgException, InvalidArgumentException);
-
-				void Host::put(int channel, Task* task) 
+				void put(int channel, Task* task) 
 				throw(MsgException, InvalidArgumentException);
 				
 				/* ! \brief Host::put() - put a task on the given channel of a host object (waiting at most timeout seconds).
@@ -280,7 +276,7 @@ namespace SimGrid
 				 *
 				 * \remark			To specify no timeout set the timeout value with -1.0.
 				 */
-				void put(int channel, const Task& rTask, double timeout) 
+				void put(int channel, Task* task, double timeout) 
 				throw(MsgException, InvalidArgumentException);
 				
 				/* ! \brief Host::putBounded() - put a task on the given channel of a host object (capping the emission rate to maxrate).
@@ -300,7 +296,7 @@ namespace SimGrid
 				 *
 				 * \remark			To specify no rate set the maxRate parameter value with -1.0.
 				 */
-				void putBounded(int channel, const Task& rTask, double maxRate) 
+				void putBounded(int channel, Task* task, double maxRate) 
 				throw(MsgException, InvalidArgumentException);
 				
 				/* ! brief Host::send() - sends the given task to mailbox identified by the default alias.
@@ -314,8 +310,8 @@ namespace SimGrid
 				 *												the default alias variable.
 				 *					[MsgException]				if an internal error occurs.
 				 */
-				void send(const Task& rTask) 
-				throw(BadAllocException, MsgException);
+				void send(Task* task) 
+				throw(MsgException, BadAllocException);
 				
 				/* ! brief Host::send() - sends the given task to mailbox identified by the specified alias parameter.
 				 *
@@ -330,8 +326,8 @@ namespace SimGrid
 				 *												the default alias variable.
 				 *					[MsgException]				if an internal error occurs.
 				 */
-				void send(const char* alias, const Task& rTask) 
-				throw(InvalidArgumentException, BadAllocException, MsgException);
+				void send(const char* alias, Task* task) 
+				throw(InvalidArgumentException, MsgException);
 				
 				/* ! brief Host::send() - sends the given task to mailbox identified by the default alias
 				 *  (waiting at most timeout seconds).
@@ -352,8 +348,8 @@ namespace SimGrid
 				 *					version of this method.
 				 *
 				 */
-				void send(const Task& rTask, double timeout) 
-				throw(MsgException);
+				void send(Task* task, double timeout) 
+				throw(InvalidArgumentException, BadAllocException, MsgException);
 				
 				/* ! brief Host::send() - sends the given task to mailbox identified by the parameter alias
 				 *  (waiting at most timeout seconds).
@@ -373,7 +369,7 @@ namespace SimGrid
 				 *					version of this method.
 				 *
 				 */
-				void send(const char* alias, const Task& rTask, double timeout) 
+				void send(const char* alias, Task* task, double timeout) 
 				throw(InvalidArgumentException, MsgException);
 				
 				/* ! brief Host::sendBounded() - sends the given task to mailbox associated to the default alias
@@ -394,7 +390,7 @@ namespace SimGrid
 				 * \remark			To specify no rate set its value with -1.0.
 				 *
 				 */
-				void sendBounded(const Task& rTask, double maxRate) 
+				void sendBounded(Task* task, double maxRate) 
 				throw(InvalidArgumentException, BadAllocException, MsgException);
 				
 				/* ! brief Host::sendBounded() - sends the given task to mailbox identified by the parameter alias
@@ -414,7 +410,7 @@ namespace SimGrid
 				 * \remark			To specify no rate set its value with -1.0.
 				 *
 				 */
-				void sendBounded(const char* alias, const Task& rTask, double maxRate) 
+				void sendBounded(const char* alias, Task* task, double maxRate) 
 				throw(InvalidArgumentException, MsgException);
 			
 			protected:

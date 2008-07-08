@@ -23,21 +23,19 @@
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
 
-#include <Config.hpp>
+#include <ClassNotFoundException.hpp>
+#include <HostNotFoundException.hpp>
 
 namespace SimGrid
 {
 	namespace Msg
 	{
-
-		class ClassNotFoundException;
-		class HostNotFoundException;
 		class Process;
 
 		// Declaration of the class ApplicationHandler (Singleton).
 		class SIMGRIDX_EXPORT ApplicationHandler
 		{
-			friend Process;
+			//friend Process;
 
 		public:
 
@@ -66,7 +64,7 @@ namespace SimGrid
 					ProcessFactory(const ProcessFactory& rProcessFactory);
 					
 					// Destructor.
-					virtual ~ProcessFactory(){}
+					virtual ~ProcessFactory();
 					
 					// Set the identity of the current process.
 		  			void setProcessIdentity(const char* hostName, const char* function);
@@ -134,4 +132,4 @@ namespace SimGrid
 } // namespace SimGrid
 
 #endif // !MSG_APPLICATION_HANDLER_HPP
-	
+

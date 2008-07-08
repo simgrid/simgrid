@@ -62,3 +62,4 @@ namespace SimGrid
 
 
 #endif // !MSG_MSGEXCEPTION_HPP
+

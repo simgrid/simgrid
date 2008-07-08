@@ -13,6 +13,10 @@
 #ifndef MSG_LOGICEXCEPTION_HPP
 #define MSG_LOGICEXCEPTION_HPP
 
+#ifndef __cplusplus
+	#error LogicException.hpp requires C++ compilation (use a .cxx suffix)
+#endif
+
 #include <Exception.hpp>
 
 namespace SimGrid
@@ -62,3 +66,5 @@ namespace SimGrid
 
 
 #endif // !MSG_INVALIDARGUMENTEXCEPTION_HPP
+
+

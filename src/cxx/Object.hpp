@@ -1,4 +1,16 @@
-
+/*
+ * Object.hpp
+ *
+ * This file contains the declaration of the wrapper class of the native MSG task type.
+ *
+ * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * All right reserved. 
+ *
+ * This program is free software; you can redistribute 
+ * it and/or modify it under the terms of the license 
+ *(GNU LGPL) which comes with this package. 
+ *
+ */  
 #ifndef MSG_OBJECT_H
 #define MSG_OBJECT_H
 
@@ -27,7 +39,7 @@ namespace SimGrid
 		public: \
 			static Class class##class_name; \
 			virtual Class* getClass() const; \
-			static Object*  createObject(); \
+			static Object*  createObject() \
 
 		// The runtime class implementation.	
 		#define MSG_IMPLEMENT_CLASS(class_name, base_class_name, pfn,class_init) \
@@ -226,6 +238,8 @@ namespace SimGrid
 			// The number of elements of the list.
 			unsigned int count;
 		};
+
+		typedef Object* ObjectPtr;
 
 
         // Constructor (Add the class in the list).

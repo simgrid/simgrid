@@ -20,13 +20,18 @@
 	#error Msg.hpp requires C++ compilation (use a .cxx suffix)
 #endif
 
-#include <Config.hpp>
+#include <MsgException.hpp>
+#include <InvalidArgumentException.hpp>
+#include <LogicException.hpp>
+
 
 namespace SimGrid
 {
 	namespace Msg
 	{
 		class MsgException;
+		class InvalidArgumentException;
+		class LogicException;
 		
 		/*! \brief init() - Initialize MSG (This function must be called at the begining of each simulation).
 		 *
@@ -53,6 +58,12 @@ namespace SimGrid
 		 * \return				The current simulation time.
 		 */
 		SIMGRIDX_EXPORT double getClock(void);
+
+
+		SIMGRIDX_EXPORT void setMaxChannelNumber(int number)
+		throw(InvalidArgumentException, LogicException);
+
+		SIMGRIDX_EXPORT int getMaxChannelNumber(void);
 		
 	} // namespace Msg
 } // namespace SimGrid

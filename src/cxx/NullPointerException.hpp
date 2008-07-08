@@ -13,6 +13,10 @@
 #ifndef MSG_NULLPOINTEREXCEPTION_HPP
 #define MSG_NULLPOINTEREXCEPTION_HPP
 
+#ifndef __cplusplus
+	#error NullPointerException.hpp requires C++ compilation (use a .cxx suffix)
+#endif
+
 #include <Exception.hpp>
 
 namespace SimGrid
@@ -62,3 +66,4 @@ namespace SimGrid
 
 
 #endif // !MSG_NULLPOINTEREXCEPTION_HPP
+

@@ -12,15 +12,10 @@
  
  /* Application member functions implementation.
   */  
-  
-#include <Application.hpp>
 
-
-#include <NullPointerException.hpp>
-#include <FileNotFoundException.hpp>
-#include <LogicException.hpp>
-#include <MsgException.hpp>
 #include <ApplicationHandler.hpp>
+
+#include <Application.hpp>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -196,3 +191,6 @@ namespace SimGrid
 		}
 	} // namespace Msg
 } // namespace SimGrid
+
+
+
