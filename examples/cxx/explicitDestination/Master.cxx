@@ -89,5 +89,7 @@ int Master::main(int argc, char** argv)
 	delete[] basicTasks;
 	delete[] aliases;
 
+	delete this;
+
 	return 0;
 }

@@ -4,6 +4,8 @@
 #include <Host.hpp>
 #include <HostNotFoundException.hpp>
 
+#include <Msg.hpp>
+
 #include <iostream>
 using namespace std;
 
@@ -82,8 +84,8 @@ int Master::main(int argc, char** argv)
 		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Sending \"" << todo[i]->getName() << "\" to \"" << slaves[i % slaveCount].getName() << "\"" << endl;
 	
 		if(!strcmp(Host::currentHost().getName(), slaves[i % slaveCount].getName())) 
-			cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Hey ! It's me ! ";
-	
+			cout <<"[" <<  getName() << ":" << getHost().getName() << "] " << "Hey ! It's me ! ";
+
 		slaves[i % slaveCount].put(channel, todo[i]);
 	}
 	
@@ -92,19 +94,14 @@ int Master::main(int argc, char** argv)
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "All tasks have been dispatched. Let's tell everybody the computation is over." << endl;
 	
 	for (int i = 0; i < slaveCount; i++) 
-	{
-		slaves[i].put(channel, new FinalizeTask());
-	}
-	
-
-	for(int i = 0; i < numberOfTasks; i++)
-		delete todo[i];
+			slaves[i].put(channel, new FinalizeTask());
 
 	delete[] todo;
-
 	delete[] slaves;
 	
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Goodbye now!" << endl;
+
+	delete this;
 
 	return 0;
 }

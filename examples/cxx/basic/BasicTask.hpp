@@ -17,11 +17,6 @@ public:
 	BasicTask(const char* name, double computeDuration, double messageSize)
 	throw (InvalidArgumentException, NullPointerException)
 	:Task(name, computeDuration, messageSize){}
-
-	/*virtual const BasicTask& operator = (const BasicTask& rTask) {
-		Task::operator=(rTask);
-		return *this;
-	}*/
 };
 
 typedef BasicTask* BasicTaskPtr;

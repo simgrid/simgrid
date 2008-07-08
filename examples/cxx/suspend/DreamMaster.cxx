@@ -47,6 +47,8 @@ int DreamMaster::main(int argc, char** argv)
 	
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "OK, goodbye now." << endl;
 
+	delete this;
+
 	return 0;
 	
 }

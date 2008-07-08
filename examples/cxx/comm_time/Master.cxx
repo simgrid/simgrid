@@ -85,5 +85,8 @@ int Master::main(int argc, char** argv)
 	
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "All finalize messages have been dispatched. Goodbye now!" << endl;
 	
+
+	delete[] slaves;
+	delete this;
 	return 0;
 }

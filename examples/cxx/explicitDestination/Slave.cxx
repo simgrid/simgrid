@@ -39,6 +39,7 @@ int Slave::main(int argc, char** argv)
 	}
 		
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received Finalize. I'm done. See you!" << endl;
-
+	
+	delete this;
 	return 0;
 }

@@ -65,6 +65,8 @@ int Forwarder::main(int argc, char** argv)
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "I'm done. See you!" << endl;
 	
 	delete[] slaves;
+
+	delete this;
       
 	return 0;
 }

@@ -39,6 +39,8 @@ int Receiver::main(int argc, char** argv)
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << " --- bw " << commSizeBw/communicationTime << " ----" << endl;
 	
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "goodbye!" << endl;
+	
+	delete this;
 
 	return 0;
 }

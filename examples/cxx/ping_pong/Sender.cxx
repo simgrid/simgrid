@@ -54,6 +54,8 @@ int Sender::main(int argc, char** argv)
 	
 	delete[] hostTable;
 
+	delete this;
+
 	return 0;
     
 }

@@ -12,9 +12,8 @@ MSG_IMPLEMENT_DYNAMIC(Slave, Process);
 
 int Slave::main(int argc, char** argv)
 {
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	cout <<"[" << getName() << ":" << getHost().getName() << ": PID " << getPID() << "] " << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
 	
-		
 	Task* receivedTask;
 	BasicTask* basicTask;
 	
@@ -30,16 +29,20 @@ int Slave::main(int argc, char** argv)
 	
 		basicTask = reinterpret_cast<BasicTask*>(receivedTask);
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received \"" << basicTask->getName() << "\" " << endl;
+		cout <<"[" << getName() << ":" << getHost().getName() << ": PID " << getPID() << "] " << "Received \"" << basicTask->getName() << "\" " << endl;
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Processing \"" << basicTask->getName() <<  "\" " << endl;	 
+		cout <<"[" << getName() << ":" << getHost().getName() << ": PID " << getPID() << "] " << "Processing \"" << basicTask->getName() <<  "\" " << endl;	 
+		
 		basicTask->execute();
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "\"" << basicTask->getName() << "\" done " << endl;
+		
+		cout <<"[" << getName() << ":" << getHost().getName() << ": PID " << getPID() << "] " << "\"" << basicTask->getName() << "\" done " << endl;
 	
 		delete basicTask;
 	}
 		
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received Finalize. I'm done. See you!" << endl;
+	cout <<"[" << getName() << ":" << getHost().getName() << ": PID " << getPID() << "] " << "Received Finalize. I'm done. See you!" << endl;
+	
+	delete this;
 
 	return 0;
 }

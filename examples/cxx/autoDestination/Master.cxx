@@ -24,16 +24,13 @@ int Master::main(int argc, char** argv)
 	
 	cout << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
 		
-		
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "argc=" << argc << endl;
 		
 	for (int i = 0; i< argc; i++)	    
 		cout << "argv:" << argv[i] << endl;
 	
 	sscanf(argv[0],"%d", &taskCount);
-	
 	sscanf(argv[1],"%lg", &taskComputeSize);
-	
 	sscanf(argv[2],"%lg", &taskCommunicateSize);
 	
 	BasicTaskPtr* basicTasks = new BasicTaskPtr[taskCount];
@@ -46,7 +43,6 @@ int Master::main(int argc, char** argv)
 	}		
 	
 	int aliasCount = argc - 3;
-	
 		
 	char** aliases = (char**) calloc(aliasCount, sizeof(char*));
 		
@@ -88,6 +84,8 @@ int Master::main(int argc, char** argv)
 
 	delete[] basicTasks;
 	delete[] aliases;
+
+	delete this;
 
 	return 0;
 }

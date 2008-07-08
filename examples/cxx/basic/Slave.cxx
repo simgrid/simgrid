@@ -29,9 +29,13 @@ int Slave::main(int argc, char** argv)
 		t->execute();
 		
 		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "\"" << t->getName() << "\" done " << endl;
+
+		delete t;
 	}
 	
 	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received Finalize. I'm done. See you!" << endl;
+	
+	delete this;
 
 	return 0;
 }
