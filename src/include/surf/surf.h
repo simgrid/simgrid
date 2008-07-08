@@ -75,7 +75,7 @@ typedef struct surf_action {
   double finish;		/**< finish time : this is modified during the run
 				 * and fluctuates until the task is completed */
   void *data;			/**< for your convenience */
-  int using;
+  int refcount ;
   surf_model_t model_type;
 } s_surf_action_t;
 

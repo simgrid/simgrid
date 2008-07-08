@@ -1,4 +1,4 @@
-/* 	$Id: private.h 5071 2007-11-27 15:41:57Z mquinson $	 */
+/* 	$Id$	 */
 
 /* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
    All rights reserved.                                          */
@@ -76,7 +76,7 @@ typedef struct s_smx_mutex {
 
   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_mutex */
   xbt_swag_t sleeping;		/* list of sleeping process */
-  int using;
+  int refcount ;
   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_mutex */
 
 } s_smx_mutex_t;

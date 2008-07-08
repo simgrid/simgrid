@@ -92,7 +92,7 @@ struct s_xbt_mutex_ {
    
    /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_mutex */
    xbt_swag_t sleeping;			/* list of sleeping process */
-   int using;
+   int refcount ;
    /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_mutex */
    
 };

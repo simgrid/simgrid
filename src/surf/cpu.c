@@ -146,8 +146,8 @@ static int resource_used(void *resource_id)
 
 static int action_free(surf_action_t action)
 {
-  action->using--;
-  if (!action->using) {
+  action->refcount --;
+  if (!action->refcount ) {
     xbt_swag_remove(action, action->state_set);
     if (((surf_action_cpu_Cas01_t) action)->variable)
       lmm_variable_free(cpu_maxmin_system,
@@ -160,7 +160,7 @@ static int action_free(surf_action_t action)
 
 static void action_use(surf_action_t action)
 {
-  action->using++;
+  action->refcount ++;
 }
 
 static void action_cancel(surf_action_t action)
@@ -273,7 +273,7 @@ static surf_action_t execute(void *cpu, double size)
   XBT_IN2("(%s,%g)", CPU->name, size);
   action = xbt_new0(s_surf_action_cpu_Cas01_t, 1);
 
-  action->generic_action.using = 1;
+  action->generic_action.refcount  = 1;
   action->generic_action.cost = size;
   action->generic_action.remains = size;
   action->generic_action.priority = 1.0;

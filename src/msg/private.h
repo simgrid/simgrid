@@ -21,6 +21,8 @@
 #include "xbt/context.h"
 #include "xbt/config.h"
 
+SG_BEGIN_DECL()
+
 /**************** datatypes **********************************/
 
 /* this structure represents a mailbox */
@@ -53,7 +55,7 @@ typedef struct simdata_task {
   m_host_t source;
   double priority;
   double rate;
-  int using;
+  int refcount ;
   /*******  Parallel Tasks Only !!!! *******/
   int host_nb;
   smx_host_t *host_list;
@@ -95,7 +97,9 @@ typedef struct MSG_Global {
   int session;
 } s_MSG_Global_t, *MSG_Global_t;
 
-extern MSG_Global_t msg_global;
+/*extern MSG_Global_t msg_global;*/
+XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
+
       
 /*************************************************************/
 
@@ -119,5 +123,5 @@ void *_MSG_process_create_from_SIMIX(const char *name,
 				     char * hostname, int argc, char **argv, xbt_dict_t properties);
 void _MSG_process_kill_from_SIMIX(void *p);
 
-
+SG_END_DECL()
 #endif

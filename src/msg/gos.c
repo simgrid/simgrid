@@ -45,11 +45,11 @@ MSG_task_execute(m_task_t task)
 	CHECK_HOST();
 	
 	simdata = task->simdata;
-	xbt_assert0((!simdata->compute) && (task->simdata->using == 1),"This task is executed somewhere else. Go fix your code!");
+	xbt_assert0((!simdata->compute) && (task->simdata->refcount  == 1),"This task is executed somewhere else. Go fix your code!");
 	
 	DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
 	
-	simdata->using++;
+	simdata->refcount ++;
 	SIMIX_mutex_lock(simdata->mutex);
 	simdata->compute = SIMIX_action_execute(SIMIX_host_self(), task->name, simdata->computation_amount);
 	SIMIX_action_set_priority(simdata->compute, simdata->priority);
@@ -61,7 +61,7 @@ MSG_task_execute(m_task_t task)
 	self->simdata->waiting_task = NULL;
 	
 	SIMIX_mutex_unlock(simdata->mutex);
-	simdata->using--;
+	simdata->refcount --;
 	
 	if (SIMIX_action_get_state(task->simdata->compute) == SURF_ACTION_DONE) 
 	{
@@ -129,7 +129,7 @@ MSG_parallel_task_create(const char *name,int host_nb, const m_host_t * host_lis
 	simdata->compute = NULL;
 	simdata->comm = NULL;
 	simdata->rate = -1.0;
-	simdata->using = 1;
+	simdata->refcount  = 1;
 	simdata->sender = NULL;
 	simdata->receiver = NULL;
 	simdata->source = NULL;
@@ -154,13 +154,13 @@ MSG_parallel_task_execute(m_task_t task)
 	
 	simdata = task->simdata;
 	
-	xbt_assert0((!simdata->compute) && (task->simdata->using == 1),"This task is executed somewhere else. Go fix your code!");
+	xbt_assert0((!simdata->compute) && (task->simdata->refcount  == 1),"This task is executed somewhere else. Go fix your code!");
 	
 	xbt_assert0(simdata->host_nb,"This is not a parallel task. Go to hell.");
 	
 	DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
 	
-	simdata->using++;
+	simdata->refcount ++;
 	
 	SIMIX_mutex_lock(simdata->mutex);
 	simdata->compute =
@@ -174,7 +174,7 @@ MSG_parallel_task_execute(m_task_t task)
 	
 	
 	SIMIX_mutex_unlock(simdata->mutex);
-	simdata->using--;
+	simdata->refcount --;
 	
 	if (SIMIX_action_get_state(task->simdata->compute) == SURF_ACTION_DONE) 
 	{

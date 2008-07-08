@@ -29,7 +29,7 @@ smx_mutex_t SIMIX_mutex_init()
   smx_mutex_t m = xbt_new0(s_smx_mutex_t, 1);
   s_smx_process_t p;		/* useful to initialize sleeping swag */
   /* structures initialization */
-  m->using = 0;
+  m->refcount  = 0;
   m->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   return m;
 }
@@ -46,7 +46,7 @@ void SIMIX_mutex_lock(smx_mutex_t mutex)
   xbt_assert0((mutex != NULL), "Invalid parameters");
 
 
-  if (mutex->using) {
+  if (mutex->refcount ) {
     /* somebody using the mutex, block */
     xbt_swag_insert(self, mutex->sleeping);
     self->simdata->mutex = mutex;
@@ -59,10 +59,10 @@ void SIMIX_mutex_lock(smx_mutex_t mutex)
       xbt_context_yield();
     }
 
-    mutex->using = 1;
+    mutex->refcount  = 1;
   } else {
     /* mutex free */
-    mutex->using = 1;
+    mutex->refcount  = 1;
   }
   return;
 }
@@ -78,10 +78,10 @@ int SIMIX_mutex_trylock(smx_mutex_t mutex)
 {
   xbt_assert0((mutex != NULL), "Invalid parameters");
 
-  if (mutex->using)
+  if (mutex->refcount )
     return 0;
   else {
-    mutex->using = 1;
+    mutex->refcount  = 1;
     return 1;
   }
 }
@@ -100,11 +100,11 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex)
 
   if (xbt_swag_size(mutex->sleeping) > 0) {
     p = xbt_swag_extract(mutex->sleeping);
-    mutex->using = 0;
+    mutex->refcount  = 0;
     xbt_swag_insert(p, simix_global->process_to_run);
   } else {
     /* nobody to wake up */
-    mutex->using = 0;
+    mutex->refcount  = 0;
   }
   return;
 }

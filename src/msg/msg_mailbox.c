@@ -293,17 +293,17 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   if (SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
     SIMIX_action_destroy(t_simdata->comm);
     t_simdata->comm = NULL;
-    t_simdata->using--;
+    t_simdata->refcount --;
     MSG_RETURN(MSG_OK);
   } else if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
     SIMIX_action_destroy(t_simdata->comm);
     t_simdata->comm = NULL;
-    t_simdata->using--;
+    t_simdata->refcount --;
     MSG_RETURN(MSG_HOST_FAILURE);
   } else {
     SIMIX_action_destroy(t_simdata->comm);
     t_simdata->comm = NULL;
-    t_simdata->using--;
+    t_simdata->refcount --;
     MSG_RETURN(MSG_TRANSFER_FAILURE);
   }
 }
@@ -325,12 +325,12 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   task_simdata->sender = process;
   task_simdata->source = MSG_process_get_host(process);
 
-  xbt_assert0(task_simdata->using == 1,
+  xbt_assert0(task_simdata->refcount  == 1,
 	      "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
   task_simdata->comm = NULL;
 
-  task_simdata->using++;
+  task_simdata->refcount ++;
   local_host = ((simdata_process_t) process->simdata)->m_host;
 
   /* get the host name containing the mailbox */

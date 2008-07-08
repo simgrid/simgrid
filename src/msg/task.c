@@ -61,7 +61,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->message_size = message_size;
   simdata->rate = -1.0;
   simdata->priority = 1.0;
-  simdata->using = 1;
+  simdata->refcount  = 1;
   simdata->sender = NULL;
   simdata->receiver = NULL;
   simdata->cond = SIMIX_cond_init();
@@ -135,8 +135,8 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   xbt_assert0((task != NULL), "Invalid parameter");
 
   /* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
-  task->simdata->using--;
-  if (task->simdata->using > 0)
+  task->simdata->refcount --;
+  if (task->simdata->refcount  > 0)
     return MSG_OK;
 
   if (task->name)

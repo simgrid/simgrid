@@ -308,8 +308,8 @@ static int resource_used(void *resource_id)
 
 static int action_free(surf_action_t action)
 {
-  action->using--;
-  if (!action->using) {
+  action->refcount --;
+  if (!action->refcount ) {
     xbt_swag_remove(action, action->state_set);
     if (((surf_action_network_CM02_t) action)->variable)
       lmm_variable_free(network_maxmin_system,
@@ -322,7 +322,7 @@ static int action_free(surf_action_t action)
 
 static void action_use(surf_action_t action)
 {
-  action->using++;
+  action->refcount ++;
 }
 
 static void action_cancel(surf_action_t action)
@@ -514,7 +514,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
 
   action = xbt_new0(s_surf_action_network_CM02_t, 1);
 
-  action->generic_action.using = 1;
+  action->generic_action.refcount  = 1;
   action->generic_action.cost = size;
   action->generic_action.remains = size;
   action->generic_action.max_duration = NO_MAX_DURATION;

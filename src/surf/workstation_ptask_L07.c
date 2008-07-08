@@ -144,15 +144,15 @@ static xbt_dict_t get_properties(void *r) {
 
 static void action_use(surf_action_t action)
 {
-  action->using++;
+  action->refcount ++;
   return;
 }
 
 static int action_free(surf_action_t action)
 {
-  action->using--;
+  action->refcount --;
 
-  if (!action->using) {
+  if (!action->refcount ) {
     xbt_swag_remove(action, action->state_set);
     if (((surf_action_workstation_L07_t) action)->variable)
       lmm_variable_free(ptask_maxmin_system,
@@ -521,7 +521,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   action = xbt_new0(s_surf_action_workstation_L07_t, 1);
   DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.",
 	 action, workstation_nb, nb_link);
-  action->generic_action.using = 1;
+  action->generic_action.refcount  = 1;
   action->generic_action.cost = amount;
   action->generic_action.remains = amount;
   action->generic_action.max_duration = NO_MAX_DURATION;
