@@ -48,6 +48,9 @@
 #ifndef _FLEXML_simgrid_H
 #define _FLEXML_simgrid_H
 
+
+SG_BEGIN_DECL()
+
 /* XML application entry points. */
 XBT_PUBLIC(void ) STag_surfxml_platform(void);
 XBT_PUBLIC(void ) ETag_surfxml_platform(void);
@@ -363,4 +366,8 @@ XBT_PUBLIC(int ) yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
 const char * surfxml_parse_err_msg(void);
+
+
+SG_END_DECL()
+
 #endif

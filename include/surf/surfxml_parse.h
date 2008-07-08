@@ -13,6 +13,9 @@
 #include "xbt/function_types.h"
 #include "xbt/dict.h"
 
+
+SG_BEGIN_DECL()
+
 /* Hook for the different tags. All the functions which pointer to are push into here are run when the tag is encountered */
 XBT_PUBLIC(xbt_dynar_t) STag_surfxml_platform_cb_list;
 XBT_PUBLIC(xbt_dynar_t) ETag_surfxml_platform_cb_list;
@@ -86,6 +89,9 @@ XBT_PUBLIC_DATA(int_f_void_t) surf_parse; /* Entry-point to the parser. Set this
 #define SURFXML_END_TAG(tag)  do { ETag_surfxml_##tag(); SURFXML_BUFFER_RESET(); } while(0)     
 
 XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function);
+
+
+SG_END_DECL()
 
 
 #endif
