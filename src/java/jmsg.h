@@ -390,4 +390,7 @@ Java_simgrid_msg_MsgNative_taskListenFromHost(JNIEnv*, jclass, jstring, jobject)
 JNIEXPORT jint JNICALL 
 Java_simgrid_msg_MsgNative_taskListenFrom(JNIEnv*, jclass, jstring);
 
+JNIEXPORT void JNICALL 
+Java_simgrid_msg_Msg_deployApplication(JNIEnv* env, jclass cls,jstring jdeploymentFile);
+
 #endif /* !MSG4JAVA_H */ 

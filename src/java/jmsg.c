@@ -18,11 +18,16 @@
 #include "jmsg_host.h"
 #include "jmsg_task.h"
 #include "jmsg_channel.h"
+#include "jmsg_application_handler.h"
 #include "jxbt_utilities.h"
+
 
 #include "jmsg.h"
 
 #include "msg/mailbox.h"
+
+#include "surf/surfxml_parse.h"
+
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -1134,5 +1139,34 @@ Java_simgrid_msg_MsgNative_taskListenFrom(JNIEnv* env, jclass cls, jstring jalia
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
   
   return (jint)rv;
+}
+
+JNIEXPORT void JNICALL 
+Java_simgrid_msg_Msg_deployApplication(JNIEnv* env, jclass cls,jstring jdeploymentFile) {
+	
+  	const char* deploymentFile = (*env)->GetStringUTFChars(env, jdeploymentFile, 0);
+	
+ 	surf_parse_reset_parser();
+ 	
+	surfxml_add_callback(STag_surfxml_process_cb_list, japplication_handler_on_begin_process);
+	
+	surfxml_add_callback(ETag_surfxml_argument_cb_list, japplication_handler_on_process_arg);
+	
+	surfxml_add_callback(STag_surfxml_prop_cb_list, japplication_handler_on_property);
+	
+	surfxml_add_callback(ETag_surfxml_process_cb_list, japplication_handler_on_end_process);
+
+	surf_parse_open(deploymentFile);
+	
+	japplication_handler_on_start_document();
+	
+	if(surf_parse())
+		jxbt_throw_native(env, xbt_strdup("surf_parse() failed"));
+	
+	surf_parse_close();
+	
+	japplication_handler_on_end_document();
+	
+  (*env)->ReleaseStringUTFChars(env, jdeploymentFile, deploymentFile); 
 }
   
