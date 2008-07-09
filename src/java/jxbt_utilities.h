@@ -27,6 +27,10 @@ jclass jxbt_get_class(JNIEnv* env, const char*name);
    (it's ok to to pass a NULL class: it's a noop) */
 jmethodID jxbt_get_jmethod(JNIEnv* env, jclass class, 
 			   const char *name,const char *signature);
+			   
+/* Like the jxbt_get_class() but get a static method */
+jmethodID jxbt_get_static_jmethod(JNIEnv* env, jclass cls, 
+			   const char *name,const char *signature);
 
 /* Search a field in a class and throw an exception if not found
    (it's ok to to pass a NULL class: it's a noop) */
@@ -37,6 +41,10 @@ jfieldID jxbt_get_jfield(JNIEnv* env, jclass class,
 /* Search a method in a class and throw an exception if not found
    (it's ok to to pass a NULL class: it's a noop) */
 jmethodID jxbt_get_smethod(JNIEnv* env, const char *classname, 
+			  const char *name,const char *signature);
+
+/* Like the jxbt_get_smethod() but get a static method */
+jmethodID jxbt_get_static_smethod(JNIEnv* env, const char *classname, 
 			  const char *name,const char *signature);
 
 /* Search a field in a class and throw an exception if not found

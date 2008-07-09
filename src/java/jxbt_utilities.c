@@ -60,6 +60,57 @@ jmethodID jxbt_get_jmethod(JNIEnv* env, jclass cls,
   return id;
 }
 
+jmethodID jxbt_get_static_jmethod(JNIEnv* env, jclass cls, 
+			   const char *name,const char *signature) {
+  jmethodID id;
+
+  if (!cls)
+    return 0;
+  id = (*env)->GetStaticMethodID(env, cls, name,signature);
+	
+  if(!id) {
+
+    jmethodID tostr_id = (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
+    jstring jclassname = (jstring) (*env)->CallObjectMethod(env, cls, tostr_id, NULL);
+    const char *classname = (*env)->GetStringUTFChars(env, jclassname, 0);
+
+    char *m=bprintf("Cannot find static method %s(%s) in %s", name, signature ,classname);
+
+    (*env)->ReleaseStringUTFChars(env, jclassname, classname); 	
+
+    jxbt_throw_jni(env,m);
+
+    free(m);
+    return 0;
+  }
+
+  return id;
+}
+
+jmethodID jxbt_get_static_smethod(JNIEnv* env, const char *classname, 
+			  const char *name,const char *signature) { 
+  
+	jclass cls;
+
+	jmethodID id;
+	cls = jxbt_get_class(env,classname);
+
+  if (!cls)
+    return 0;
+
+  id = (*env)->GetStaticMethodID(env, cls, name,signature);
+	
+  if(!id) {
+    char *m=bprintf("Cannot find static method %s(%s) in %s", name, signature,classname);
+
+    jxbt_throw_jni(env,m);
+
+    free(m);
+    return 0;
+  }
+  return id;
+}
+
 jmethodID jxbt_get_smethod(JNIEnv* env, const char *classname, 
 			  const char *name,const char *signature) { 
   
