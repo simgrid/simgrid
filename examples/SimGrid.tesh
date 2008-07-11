@@ -1,6 +1,7 @@
-# Command line tesh --directory=%EXAMPLE_DIR% --include-dir=msg --file=SimGrid.tesh --log="log.thresh:info tesh.fmt:%m%n" --keep-going-unit
-D Examples (MSG API functionnality checking)
-
+# Command line : 
+# Windows -> tesh --directory=%EXAMPLE_DIR% --file=SimGrid.tesh --log="log.thresh:info tesh.fmt:%m%n" --keep-going-unit
+# Linux   -> tesh --directory=$EXAMPLE_DIR --file=SimGrid.tesh --log="log.thresh:info tesh.fmt:%m%n" --keep-going-unit
+D Examples (MSG API functionnality checking (for C, C++ and Java))
 
 $ cd ${EXAMPLE_DIR:=.}
 
@@ -10,7 +11,7 @@ $ cd msg
 #! include masterslave/masterslave.tesh
 
 # Outputs difference : __FILE__ difference between Windows and Linux
-! include masterslave/masterslave_bypass.tesh
+#! include masterslave/masterslave_bypass.tesh
 
 # Outputs difference
 ! include masterslave/masterslave_failure.tesh
@@ -44,5 +45,83 @@ $ cd msg
 
 # Suspend
 ! include suspend/suspend.tesh
+
+$ cd ..
+
+$ cd java/basic
+
+! include basic.tesh
+
+$ cd ..
+
+$ cd comm_time
+
+! include comm_time.tesh
+
+$ cd ..
+
+$ cd ping_pong
+
+! include ping_pong.tesh
+
+$ cd ..
+
+$ cd suspend
+
+! include suspend.tesh
+
+$ cd ..
+
+$ cd autoDestination
+
+! include autoDestination.tesh
+
+$ cd ..
+
+$ cd explicitDestination
+
+! include explicitDestination.tesh
+
+$ cd ..
+
+$ cd ..
+
+$ cd cxx/basic
+
+! include basic.tesh
+
+$ cd ..
+
+$ cd comm_time
+
+! include comm_time.tesh
+
+$ cd ..
+
+$ cd ping_pong
+
+! include ping_pong.tesh
+
+$ cd ..
+
+$ cd suspend
+
+! include suspend.tesh
+
+$ cd ..
+
+$ cd autoDestination
+
+! include autoDestination.tesh
+
+$ cd ..
+
+$ cd explicitDestination
+
+! include explicitDestination.tesh
+
+
+
+
 
 
