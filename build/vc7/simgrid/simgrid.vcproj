@@ -370,6 +370,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\java\jmsg_application_handler.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\java\jmsg_channel.c"
 				>
 			</File>
