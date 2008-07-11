@@ -13,8 +13,6 @@ package simgrid.msg;
 
 import java.util.Vector;
 import java.util.Hashtable;
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
 
 /**
  * The handler used to parse the deployment file which contains 
@@ -29,12 +27,12 @@ import org.xml.sax.helpers.*;
  * @since SimGrid 3.3
  * @since JDK1.5011 
  */
-public final class ApplicationHandler extends DefaultHandler {
+public final class ApplicationHandler{
 
   /* 
    * This class is used to create the processes descibed in the deployment file.
    */
-  class ProcessFactory {
+  static class ProcessFactory {
                 /**
 		 * The vector which contains the arguments of the main function 
 		 * of the process object.
@@ -77,11 +75,11 @@ public final class ApplicationHandler extends DefaultHandler {
       this.hostName = hostName;
       this.function = function;
 
-      if (!this.args.isEmpty())
-        this.args.clear();
+      if (!args.isEmpty())
+        args.clear();
         
-      if(!this.properties.isEmpty())
-      	this.properties.clear();
+      if(!properties.isEmpty())
+      	properties.clear();
     }
                 /**
 		 * This method is called by the startElement() handler.
@@ -91,17 +89,17 @@ public final class ApplicationHandler extends DefaultHandler {
 		 * @arg					The argument to add.
 		 *
 		 */ public void registerProcessArg(String arg) {
-      this.args.add(arg);
+      args.add(arg);
     }
     
     public void setProperty(String id, String value)
     {
-    	this.properties.put(id,value);	
+    	properties.put(id,value);	
     }
     
     public String getHostName()
     {
-    	return this.hostName;
+    	return hostName;
     }
 
     public void createProcess() {
@@ -158,7 +156,7 @@ public final class ApplicationHandler extends DefaultHandler {
   /* 
    * the ProcessFactory object used to create the processes.
    */
-  private ProcessFactory processFactory;
+  public static ProcessFactory processFactory;
 
   public ApplicationHandler() {
     super();
@@ -166,53 +164,27 @@ public final class ApplicationHandler extends DefaultHandler {
     /**
      * instanciates the process factory 
      */
-  public void startDocument() {
-    this.processFactory = new ProcessFactory();
-  }
-
-  public void characters(char[]caracteres, int debut, int longueur) {
-  }                             // NOTHING TODO
-
-   /**
-    * element handlers
-    */
-  public void startElement(String nameSpace, String localName, String qName,
-                           Attributes attr) {
-    if (localName.equals("process"))
-      onProcessIdentity(attr);
-    else if(localName.equals("prop"))
-      onProperty(attr);
-    else if (localName.equals("argument"))
-      onProcessArg(attr);
-  }
-
-     /**
-     * process attributs handler.
-     */
-  public void onProcessIdentity(Attributes attr) {
-    processFactory.setProcessIdentity(attr.getValue(0), attr.getValue(1));
+  public static void onStartDocument() {
+    processFactory = new ProcessFactory();
   }
   
-  public void onProperty(Attributes attr) {
-    processFactory.setProperty(attr.getValue(0), attr.getValue(1));
+   public static void onBeginProcess(String hostName, String function)
+   {
+   	 processFactory.setProcessIdentity(hostName, function);
+}
+	public static void onProperty(String id, String value) {
+    processFactory.setProperty(id, value);
   }
-
-        /**
-     * process arguments handler.
-     */
-  public void onProcessArg(Attributes attr) {
-    processFactory.registerProcessArg(attr.getValue(0));
+  
+   public static void onProcessArg(String arg) {
+    processFactory.registerProcessArg(arg);
   }
-
-    /**
-     * creates the process
-     */
-  public void endElement(String nameSpace, String localName, String qName) {
-    if (localName.equals("process")) {
+  
+  public static void onEndProcess() {
+    
       processFactory.createProcess();
-    }
-  }
+  }        
 
-  public void endDocument() {
-  }                             // NOTHING TODO
+  public static void onEndDocument() {
+  }  // NOTHING TODO
 }

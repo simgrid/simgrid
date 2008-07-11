@@ -113,36 +113,15 @@ public final class Msg {
      */
   public final static native void createEnvironment(String platformFile)
   throws NativeException;
-
-
-    /**
+  
+   /**
      * The method to deploy the simulation.
      *
      * @param platformFile    The XML file which contains the description of the application to deploy.
      */
-
-
-  public static void deployApplication(String platformFile) {
-    try {
-      Class c =
-        Class.forName("com.sun.org.apache.xerces.internal.parsers.SAXParser");
-      XMLReader reader = (XMLReader) c.newInstance();
-
-      reader.setEntityResolver(new DTDResolver());
-      ApplicationHandler handler = new ApplicationHandler();
-
-      reader.setContentHandler(handler);
-      reader.setFeature("http://xml.org/sax/features/validation", false);
-      reader.parse(platformFile);
-
-    } catch(Exception e) {
-      /* FIXME: do not swallow exception ! */
-      System.out.println("Exception in Msg.launchApplication()");
-      System.out.println(e);
-      e.printStackTrace();
-    }
-  }
-
+  public final static native void deployApplication(String deploymentFile)
+  throws NativeException;
+ 
   /* The launcher */
   static public void main(String[]args) throws MsgException {
     /* initialize the MSG simulation. Must be done before anything else (even logging). */
