@@ -5,14 +5,14 @@
 #include <Host.hpp>
 #include <HostNotFoundException.hpp>
 
-#include <iostream>
+#include <Msg.hpp>
 using namespace std;
 
 MSG_IMPLEMENT_DYNAMIC(Slave, Process);
 
 int Slave::main(int argc, char** argv)
 {
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 	
 	Task* receivedTask;
 	BasicTask* basicTask;
@@ -29,16 +29,16 @@ int Slave::main(int argc, char** argv)
 	
 		basicTask = reinterpret_cast<BasicTask*>(receivedTask);
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received \"" << basicTask->getName() << "\" " << endl;
+		info(TEXT_("Received \"") + TEXT_(basicTask->getName()) + TEXT_("\" "));
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Processing \"" << basicTask->getName() <<  "\" " << endl;	 
+		info(TEXT_("Processing \"") + TEXT_(basicTask->getName()) + TEXT_("\" "));
 		basicTask->execute();
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "\"" << basicTask->getName() << "\" done " << endl;
+		info(TEXT_("\"") + TEXT_(basicTask->getName()) + TEXT_("\" done "));
 	
 		delete basicTask;
 	}
 		
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received Finalize. I'm done. See you!" << endl;
+	info("Received Finalize. I'm done. See you!");
 	
 	delete this;
 	return 0;

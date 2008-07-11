@@ -23,22 +23,24 @@ int Master::main(int argc, char** argv)
 	int numberOfTasks;		
 	double taskComputeSize;		
 	double taskCommunicateSize;
+	StringHelper s;
 
 	if (argc < 3) 
 	{
-		cerr <<"Master needs 3 arguments" << endl;
+		error("Master needs 3 arguments");
 		exit(1);
 	}
 	
-	cout << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 	
 	int slaveCount = 0;
 	Host* slaves = NULL;
+
 	
-	cout << "argc=" <<  argc << endl;
+	info( TEXT_("argc=") + TEXT_(argc));
 	
 	for (int i = 0; i< argc; i++)	    
-		cout << "argv:" << argv[i] << endl;
+		info(TEXT_("argv:") + TEXT_(argv[i]));
 	
 	sscanf(argv[0],"%d", &numberOfTasks);
 	
@@ -49,11 +51,7 @@ int Master::main(int argc, char** argv)
 	BasicTaskPtr* todo = new BasicTaskPtr[numberOfTasks];
 	
 	for (int i = 0; i < numberOfTasks; i++) 
-	{
-		sprintf(buff,"Task_%d",i);
-		todo[i] = new BasicTask(buff, taskComputeSize, taskCommunicateSize);
-		memset(buff, 0 , BUFFMAX + 1); 
-	}
+		todo[i] = new BasicTask((TEXT_("Task_") + TEXT_(i)), taskComputeSize, taskCommunicateSize);
 	
 	slaveCount = argc - 3;
 	slaves = new Host[slaveCount];
@@ -71,27 +69,27 @@ int Master::main(int argc, char** argv)
 			exit(1);
 		}
 	}
-	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Got slave(s) :"  << slaveCount << endl;
+
+	info(TEXT_("Got slave(s) :") + TEXT_(slaveCount));
 	
 	for (int i = 0; i < slaveCount; i++)
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "\t" << slaves[i].getName() << endl;
+		info(TEXT_("\t") + TEXT_(slaves[i].getName()));
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Got " << numberOfTasks << " task to process." << endl;
+	 info(TEXT_("Got ") + TEXT_(numberOfTasks) + TEXT_(" task to process."));
 	
 	for (int i = 0; i < numberOfTasks; i++) 
 	{
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Sending \"" << todo[i]->getName() << "\" to \"" << slaves[i % slaveCount].getName() << "\"" << endl;
+		info(TEXT_("Sending \"") + TEXT_(todo[i]->getName()) + TEXT_("\" to \"") + TEXT_(slaves[i % slaveCount].getName()) + TEXT_("\""));
 	
 		if(!strcmp(Host::currentHost().getName(), slaves[i % slaveCount].getName())) 
-			cout <<"[" <<  getName() << ":" << getHost().getName() << "] " << "Hey ! It's me ! ";
+			info("Hey ! It's me ! ");
 
 		slaves[i % slaveCount].put(channel, todo[i]);
 	}
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Send completed" << endl;
+	info("Send completed");
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "All tasks have been dispatched. Let's tell everybody the computation is over." << endl;
+	info("All tasks have been dispatched. Let's tell everybody the computation is over.");
 	
 	for (int i = 0; i < slaveCount; i++) 
 			slaves[i].put(channel, new FinalizeTask());
@@ -99,7 +97,7 @@ int Master::main(int argc, char** argv)
 	delete[] todo;
 	delete[] slaves;
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Goodbye now!" << endl;
+	info("Goodbye now!");
 
 	delete this;
 

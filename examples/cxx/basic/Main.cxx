@@ -8,5 +8,5 @@ main(int argc, char* argv[])
 	Simulation s;
 	
 	return s.execute(argc, argv);
-	
+
 }

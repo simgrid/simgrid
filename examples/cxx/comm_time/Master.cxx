@@ -5,31 +5,24 @@
 #include <HostNotFoundException.hpp>
 #include <Msg.hpp>
 
-#include <iostream>
-using namespace std;
-
-
-#ifndef BUFFMAX
-#define BUFFMAX 260
-#endif
+#include <Msg.hpp>
 
 MSG_IMPLEMENT_DYNAMIC(Master, Process);
 
 int Master::main(int argc, char** argv)
 {
 	int channel = 0;
-	char buff[BUFFMAX + 1] = {0};
 	int numberOfTasks;		
 	double taskComputeSize;		
 	double taskCommunicateSize;
 
 	if (argc < 3) 
 	{
-		cerr <<"Master needs 3 arguments" << endl;
+		error("Master needs 3 arguments");
 		exit(1);
 	}
 	
-	cout << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 	
 	int slaveCount = 0;
 	Host* slaves = NULL;
@@ -53,37 +46,36 @@ int Master::main(int argc, char** argv)
 		
 		catch(HostNotFoundException e) 
 		{
-			cerr << e.toString() <<". Stopping Now!" << endl;
+			error(TEXT_(e.toString()) + TEXT_(". Stopping Now!"));
 			exit(1);
 		}
 	}
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Got slave(s) :"  << slaveCount << endl;
+	info(TEXT_("Got slave(s) :" ) + TEXT_(slaveCount));
 			
 	for (int i = 0; i < slaveCount; i++)
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "\t" << slaves[i].getName() << endl;
+		info(TEXT_("\t") + TEXT_(slaves[i].getName()));
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Got " << numberOfTasks << " task to process." << endl;
+	info(TEXT_("Got ") + TEXT_(numberOfTasks) + TEXT_(" task to process."));
 	
 	
 	for (int i = 0; i < numberOfTasks; i++) 
 	{			
-		sprintf(buff,"Task_%d",i);
-		CommTimeTask* task = new CommTimeTask(buff, taskComputeSize, taskCommunicateSize);
+		CommTimeTask* task = new CommTimeTask(TEXT_("Task_") + TEXT_(i), taskComputeSize, taskCommunicateSize);
 		task->setTime(getClock());
 		slaves[i % slaveCount].put(0, task);
-		memset(buff, 0 , BUFFMAX + 1);
+		
 	}
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "All tasks have been dispatched. Let's tell everybody the computation is over." << endl;
+	info("All tasks have been dispatched. Let's tell everybody the computation is over.");
 	
 	for (int i = 0; i < slaveCount; i++) 
 	{ 
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Finalize host " << slaves[i].getName() <<  " [" <<  i  << "]" << endl;
+		info(TEXT_("Finalize host ") + TEXT_(slaves[i].getName()) + TEXT_(" [") + TEXT_(i) + TEXT_("]"));
 		slaves[i].put(0, new FinalizeTask());
 	}
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "All finalize messages have been dispatched. Goodbye now!" << endl;
+	info("All finalize messages have been dispatched. Goodbye now!");
 	
 
 	delete[] slaves;

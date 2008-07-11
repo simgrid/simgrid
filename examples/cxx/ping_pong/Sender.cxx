@@ -4,7 +4,7 @@
 #include <HostNotFoundException.hpp>
 #include <Msg.hpp>
 
-#include <iostream>
+#include <Msg.hpp>
 using namespace std;
 
 const double commSizeLat = 1;
@@ -14,11 +14,11 @@ MSG_IMPLEMENT_DYNAMIC(Sender, Process);
 
 int Sender::main(int argc, char** argv)
 {
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 	
 	int hostCount = argc;
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " <<  "host count : " << hostCount << endl;
+	info(TEXT_("Host count : ") + TEXT_(hostCount));
 	
 	Host* hostTable = new Host[hostCount]; 
 	double time;
@@ -33,7 +33,7 @@ int Sender::main(int argc, char** argv)
 		} 
 		catch(HostNotFoundException e) 
 		{
-			cerr << e.toString() <<". Stopping Now!" << endl;
+			error(TEXT_(e.toString()) + TEXT_(". Stopping Now!"));
 			exit(1);
 		}
 	}
@@ -42,7 +42,7 @@ int Sender::main(int argc, char** argv)
 	{ 
 		time = getClock(); 
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " <<  "sender time : " << time << endl;
+		info(TEXT_("Sender time : ") + TEXT_(time));
 	
 		task = new PingPongTask("no name",computeDuration,commSizeLat);
 		task->setTime(time);
@@ -50,7 +50,8 @@ int Sender::main(int argc, char** argv)
 		hostTable[pos].put(0,task);
 	} 
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " <<  "goodbye!" << endl;
+	info("Goodbye!");
+
 	
 	delete[] hostTable;
 

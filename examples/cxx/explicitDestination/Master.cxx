@@ -5,30 +5,23 @@
 #include <Host.hpp>
 #include <HostNotFoundException.hpp>
 
-#include <iostream>
-using namespace std;
-
-
-#ifndef BUFFMAX
-#define BUFFMAX 260
-#endif
+#include <Msg.hpp>
 
 MSG_IMPLEMENT_DYNAMIC(Master, Process);
 
 int Master::main(int argc, char** argv)
 {
-	char buff[BUFFMAX + 1] = {0};
 	int taskCount;		
 	double taskComputeSize;		
 	double taskCommunicateSize;
 	
-	cout << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 		
 		
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "argc=" << argc << endl;
+	info(TEXT_("argc=") + TEXT_(argc));
 		
 	for (int i = 0; i< argc; i++)	    
-		cout << "argv:" << argv[i] << endl;
+		info(TEXT_("argv:") + TEXT_(argv[i]));
 	
 	sscanf(argv[0],"%d", &taskCount);
 	
@@ -39,41 +32,37 @@ int Master::main(int argc, char** argv)
 	BasicTaskPtr* basicTasks = new BasicTaskPtr[taskCount];
 		
 	for (int i = 0; i < taskCount; i++) 
-	{
-		sprintf(buff,"Task_%d",i);
-		basicTasks[i] = new BasicTask(buff, taskComputeSize, taskCommunicateSize);
-		memset(buff, 0 , BUFFMAX + 1); 
-	}		
+		basicTasks[i] = new BasicTask(TEXT_("Task_") + TEXT_(i), taskComputeSize, taskCommunicateSize);		
 	
 	int aliasCount = argc - 3;
 	
-		
 	char** aliases = (char**) calloc(aliasCount, sizeof(char*));
 		
 	for(int i = 3; i < argc ; i++) 
 		aliases[i - 3] = _strdup(argv[i]);
 		
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Got "<<  aliasCount << " alias(es) :" << endl;
+	info(TEXT_("Got ") + TEXT_(aliasCount) + TEXT_(" alias(es) :"));
 		
 	for (int i = 0; i < aliasCount; i++)
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "\t" << aliases[i] << endl;
+		info(TEXT_("\t") + TEXT_(aliases[i]));
 		
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Got "<< taskCount << " task to process." << endl;
+	info(TEXT_("Got ") + TEXT_(taskCount) + TEXT_(" task to process."));
 		
 	for (int i = 0; i < taskCount; i++) 
 	{	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Sending \"" << basicTasks[i]->getName() << "\" to \"" << aliases[i % aliasCount] << "\"" << endl;
+		info(TEXT_("Sending \"") + TEXT_(basicTasks[i]->getName()) + TEXT_("\" to \"") + TEXT_(aliases[i % aliasCount]) + TEXT_("\""));
+
 		
 		/*if((Host::currentHost().getName()).equals((aliases[i % aliasCount].split(":"))[0]))
-			cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Hey ! It's me ! ";
+			info("Hey ! It's me ! ");
 		*/
 			
 		basicTasks[i]->send(aliases[i % aliasCount]);
 	}
 		
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Send completed" << endl;
+	info("Send completed");
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "All tasks have been dispatched. Let's tell everybody the computation is over." << endl;
+	info("All tasks have been dispatched. Let's tell everybody the computation is over.");
 	
 	FinalizeTask* finalizeTask;
 	
@@ -84,7 +73,7 @@ int Master::main(int argc, char** argv)
 		
 	}
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Goodbye now!" << endl;
+	info("Goodbye now!");
 
 	delete[] basicTasks;
 	delete[] aliases;

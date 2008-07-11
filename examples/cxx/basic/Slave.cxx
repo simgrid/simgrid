@@ -6,11 +6,13 @@
 #include <iostream>
 using namespace std;
 
+#include <Msg.hpp>
+
 MSG_IMPLEMENT_DYNAMIC(Slave, Process);
 
 int Slave::main(int argc, char** argv)
 {
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");;
 	
 	while(true) 
 	{ 
@@ -22,18 +24,18 @@ int Slave::main(int argc, char** argv)
 			break;
 		}
 		
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received \"" << t->getName() << "\" " << endl;
+		info(TEXT_("Received \"") + TEXT_(t->getName()) + TEXT_("\" "));
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Processing \"" << t->getName() <<  "\" " << endl;
+		info(TEXT_("Processing \"") + TEXT_(t->getName()));
 
 		t->execute();
 		
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "\"" << t->getName() << "\" done " << endl;
+		info(TEXT_("\"") + TEXT_(t->getName()) + TEXT_("\" done "));
 
 		delete t;
 	}
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received Finalize. I'm done. See you!" << endl;
+	info("Received Finalize. I'm done. See you!");
 	
 	delete this;
 

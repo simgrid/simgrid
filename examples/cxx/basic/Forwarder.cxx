@@ -4,15 +4,14 @@
 #include <Host.hpp>
 #include <HostNotFoundException.hpp>
 
-#include <iostream>
-using namespace std;
+#include <Msg.hpp>
 
 MSG_IMPLEMENT_DYNAMIC(Forwarder, Process);
 
 
 int Forwarder::main(int argc, char** argv)
 {
-	cout << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 	
 	int slavesCount = argc;
 	
@@ -26,8 +25,8 @@ int Forwarder::main(int argc, char** argv)
 		} 
 		catch (HostNotFoundException e) 
 		{
-			cerr << e.toString() << endl;
-			cerr << "Buggy deployment file" << endl;
+			error(TEXT_(e.toString()));
+			error("Buggy deployment file");
 			exit(1);
 		}
 	}
@@ -40,21 +39,19 @@ int Forwarder::main(int argc, char** argv)
 	
 		if(t->isInstanceOf("FinalizeTask")) 
 		{
-			cout << getName() << ":" << getHost().getName() << "All tasks have been dispatched. Let's tell everybody the computation is over." << endl;
+			info("All tasks have been dispatched. Let's tell everybody the computation is over.");
 	
 			for (int cpt = 0; cpt< slavesCount; cpt++) 
-			{
 				slaves[cpt].put(0, new FinalizeTask());
-			}
 
 			delete t;
 
 			break;
 		}
 
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received \"" << t->getName() << "\" " << endl;
+		info(TEXT_("Received \"") + TEXT_(t->getName()) + TEXT_("\" "));
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Sending \"" << t->getName() << "\" to \"" << slaves[taskCount % slavesCount].getName() <<"\"" << endl;
+		info(TEXT_("Sending \"") + TEXT_(t->getName()) + TEXT_("\" to \"") + TEXT_(slaves[taskCount % slavesCount].getName()) + TEXT_("\""));
 		
 		slaves[taskCount % slavesCount].put(0, t);
 	
@@ -62,7 +59,7 @@ int Forwarder::main(int argc, char** argv)
 	}
 	
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "I'm done. See you!" << endl;
+	info("I'm done. See you!");
 	
 	delete[] slaves;
 

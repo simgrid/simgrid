@@ -4,17 +4,17 @@
 #include <HostNotFoundException.hpp>
 #include <Msg.hpp>
 
-#include <iostream>
-using namespace std;
+#include <Msg.hpp>
+
 
 MSG_IMPLEMENT_DYNAMIC(DreamMaster, Process);
 
 int DreamMaster::main(int argc, char** argv)
 {
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Let's create a lazy guy.";
+	info("Let's create a lazy guy.");
 	
 
 	LazyGuy* lazy;
@@ -23,15 +23,15 @@ int DreamMaster::main(int argc, char** argv)
 	{
 		Host currentHost = Host::currentHost();
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Current host  name : " << currentHost.getName() << endl;
+		info(TEXT_("Current host  name : ") + TEXT_(currentHost.getName()));
 	
 		lazy = new LazyGuy(currentHost,"LazyGuy");
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Let's wait a little bit..." << endl;
+		info("Let's wait a little bit...");
 	
 		Process::sleep(10.0);
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Let's wake the lazy guy up! >:) " << endl;
+		info("Let's wake the lazy guy up! >:) ");
 	
 		lazy->resume();
 	
@@ -39,13 +39,13 @@ int DreamMaster::main(int argc, char** argv)
 	}
 	catch(HostNotFoundException e)
 	{
-		cerr << e.toString() <<". Stopping Now!" << endl;
+		error(TEXT_(e.toString()) + TEXT_(". Stopping Now!"));
 		exit(1);
 	}
 	
 	//lazy->migrate(currentHost);
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "OK, goodbye now." << endl;
+	info("OK, goodbye now.");
 
 	delete this;
 

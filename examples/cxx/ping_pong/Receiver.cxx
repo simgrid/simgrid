@@ -4,8 +4,7 @@
 #include <HostNotFoundException.hpp>
 #include <Msg.hpp>
 
-#include <iostream>
-using namespace std;
+#include <Msg.hpp>
 
 MSG_IMPLEMENT_DYNAMIC(Receiver, Process);
 
@@ -14,11 +13,12 @@ const double commSizeBw = 100000000;
 
 int Receiver::main(int argc, char** argv)
 {
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 	double communicationTime=0;
 	double time = getClock();
+	StringHelper bw;
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "try to get a task" << endl;
+	info("Try to get a task");
 	
 	PingPongTask* task = reinterpret_cast<PingPongTask*>(Task::get(0));
 	
@@ -27,18 +27,18 @@ int Receiver::main(int argc, char** argv)
 	
 	delete task;
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Got at time " << timeGot << endl;
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Was sent at time " << timeSent << endl;
+	info(TEXT_("Got at time ") + TEXT_(timeGot));
+	info(TEXT_("Was sent at time ") + TEXT_(timeSent));
 	
 	time = timeSent;
 	
 	communicationTime = timeGot - time;
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Communication time : " << communicationTime << endl;
+	info(TEXT_( "Communication time : ") + TEXT_(communicationTime));
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << " --- bw " << commSizeBw/communicationTime << " ----" << endl;
+	info(TEXT_(" --- BW ") + bw.append(commSizeBw/communicationTime,"%07lf") + TEXT_(" ----"));
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "goodbye!" << endl;
+	info("Goodbye!");
 	
 	delete this;
 

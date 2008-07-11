@@ -5,14 +5,13 @@
 #include <HostNotFoundException.hpp>
 #include <Msg.hpp>
 
-#include <iostream>
-using namespace std;
+#include <Msg.hpp>
 
 MSG_IMPLEMENT_DYNAMIC(Slave, Process);
 
 int Slave::main(int argc, char** argv)
 {
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 	
 	while(true) 
 	{
@@ -31,14 +30,14 @@ int Slave::main(int argc, char** argv)
 		if(time1 < task->getTime())
 			time1 = task->getTime();
 			
-		// cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Processing \"" << task->getName() << "\" " << getHost().getName() <<  " (Communication time : " <<  (time2 - time1) << ")" << endl;
+		//info(TEXT_("Processing \"") + TEXT_(task->getName()) + TEXT_("\" ") + TEXT_(getHost().getName()) + TEXT_(" (Communication time : ") + TEXT_((time2 - time1)) + TEXT_(")"));
 	 
 		task->execute();
 		
 		delete task;
 	}
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received Finalize. I'm done. See you!" << endl;
+	info(TEXT_("Received Finalize. I'm done. See you!"));
 	
 	delete this;
 	return 0;

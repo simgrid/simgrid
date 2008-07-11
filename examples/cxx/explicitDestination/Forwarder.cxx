@@ -5,15 +5,15 @@
 #include <Host.hpp>
 #include <HostNotFoundException.hpp>
 
-#include <iostream>
-using namespace std;
+#include <Msg.hpp>
+
 
 MSG_IMPLEMENT_DYNAMIC(Forwarder, Process);
 
 
 int Forwarder::main(int argc, char** argv)
 {
-	cout << "Hello I'm " << getName() << " on " << getHost().getName() << "!" << endl;
+	info("Hello");
 	
 	int aliasCount = argc;
 	
@@ -29,7 +29,7 @@ int Forwarder::main(int argc, char** argv)
 	
 		if(taskReceived->isInstanceOf("FinalizeTask")) 
 		{
-			cout <<"[" << getName() << ":" << getHost().getName() << "] " << "All tasks have been dispatched. Let's tell everybody the computation is over." << endl;
+			info("All tasks have been dispatched. Let's tell everybody the computation is over.");
 	
 			for (int i = 0; i < aliasCount; i++) 
 			{
@@ -44,9 +44,9 @@ int Forwarder::main(int argc, char** argv)
 	
 		basicTask = reinterpret_cast<BasicTask*>(taskReceived);
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Received \"" << basicTask->getName() << "\" " << endl;
+		info(TEXT_("Received \"") + TEXT_(basicTask->getName()) + TEXT_("\" "));
 	
-		cout <<"[" << getName() << ":" << getHost().getName() << "] " << "Sending \"" << basicTask->getName() << "\" to \"" << argv[taskCount % aliasCount] << "\"" << endl;
+		info(TEXT_("Sending \"") + TEXT_(basicTask->getName()) + TEXT_("\" to \"") + TEXT_(argv[taskCount % aliasCount]) + TEXT_("\""));
 	
 		basicTask->send(argv[taskCount % aliasCount]);
 	
@@ -54,7 +54,7 @@ int Forwarder::main(int argc, char** argv)
 	}
 	
 	
-	cout <<"[" << getName() << ":" << getHost().getName() << "] " << "I'm done. See you!" << endl;
+	info("I'm done. See you!");
 	
 	delete this;
 	return 0;
