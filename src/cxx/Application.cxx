@@ -133,6 +133,9 @@ namespace SimGrid
   			surfxml_add_callback(ETag_surfxml_argument_cb_list, ApplicationHandler::onProcessArg);
   			surfxml_add_callback(STag_surfxml_prop_cb_list, ApplicationHandler::OnProperty);
   			surfxml_add_callback(ETag_surfxml_process_cb_list, ApplicationHandler::onEndProcess);
+			
+			// initialize the process factory used by the process handler to build the processes.
+  			ApplicationHandler::onStartDocument();
 
   			surf_parse_open(file);
   			

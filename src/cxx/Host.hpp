@@ -58,6 +58,7 @@ catch(HostNotFoundException e)
 #include <BadAllocException.hpp>
 #include <HostNotFoundException.hpp>
 #include <MsgException.hpp>
+#include <NullPointerException.hpp>
 
 
 

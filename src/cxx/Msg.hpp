@@ -24,6 +24,8 @@
 #include <InvalidArgumentException.hpp>
 #include <LogicException.hpp>
 
+#include <StringHelper.hpp>
+
 
 namespace SimGrid
 {
@@ -51,7 +53,14 @@ namespace SimGrid
 		 *
 		 * \param s				The information to display.
 		 */
+		SIMGRIDX_EXPORT void info(const StringHelper& s);
+
 		SIMGRIDX_EXPORT void info(const char* s);
+
+		SIMGRIDX_EXPORT void error(const StringHelper& s);
+
+		SIMGRIDX_EXPORT void error(const char* s);
+
 
 		/*! \brief getClock() -  Retrieve the simulation time
 		 *

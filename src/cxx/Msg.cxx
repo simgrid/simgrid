@@ -16,11 +16,21 @@
 
 
 #include <Msg.hpp>
+#include <Host.hpp>
+#include <Process.hpp>
+
 
 #include <msg/msg.h>
 #include <msg/private.h>
-#include <stdio.h>
 
+#include <iostream>
+using std::cout;
+using std::endl;
+using std::streamsize;
+
+#include <iomanip>
+using std::setprecision;
+using std::setw;
 
 
 
@@ -46,10 +56,72 @@ namespace SimGrid
 			
 		}
 		
+		void info(const StringHelper& s)
+		{
+			StringHelper clock;
+			
+			cout << "[";
+			cout << Host::currentHost().getName();
+			cout << ":";
+			cout << Process::currentProcess().getName();
+			cout << ":(";
+			cout << Process::currentProcess().getPID();
+			cout << ") " ;
+			cout << clock.append(getClock(), "%07lf");
+			cout << "] [cxx4msg/INFO] ";
+			cout << s;
+			cout << endl;
+		}
+
 		void info(const char* s)
 		{
-			 //INFO1("%s",s);
-			printf("[SimGridX/info] %s\n", s);
+			StringHelper clock;
+			
+			cout << "[";
+			cout << Host::currentHost().getName();
+			cout << ":";
+			cout << Process::currentProcess().getName();
+			cout << ":(";
+			cout << Process::currentProcess().getPID();
+			cout << ") " ;
+			cout << clock.append(getClock(), "%07lf");
+			cout << "] [cxx4msg/INFO] ";
+			cout << s;
+			cout << endl;
+		}
+
+		void error(const StringHelper& s)
+		{
+			StringHelper clock;
+			
+			cout << "[";
+			cout << Host::currentHost().getName();
+			cout << ":";
+			cout << Process::currentProcess().getName();
+			cout << ":(";
+			cout << Process::currentProcess().getPID();
+			cout << ") " ;
+			cout << clock.append(getClock(), "%07lf");
+			cout << "] [cxx4msg/ERROR] ";
+			cout << s;
+			cout << endl;
+		}
+
+		void error(const char* s)
+		{
+			StringHelper clock;
+			
+			cout << "[";
+			cout << Host::currentHost().getName();
+			cout << ":";
+			cout << Process::currentProcess().getName();
+			cout << ":(";
+			cout << Process::currentProcess().getPID();
+			cout << ") " ;
+			cout << clock.append(getClock(), "%07lf");
+			cout << "] [cxx4msg/ERROR] ";
+			cout << s;
+			cout << endl;
 		}
 
 		double getClock(void)
