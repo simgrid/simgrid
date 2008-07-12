@@ -16,23 +16,12 @@
 #include <jni.h>
 #include "msg/msg.h"
 
-void
-japplication_handler_on_start_document(void);
-
-void
-japplication_handler_on_end_document(void);
-
-void
-japplication_handler_on_begin_process(void);
-
-void
-japplication_handler_on_process_arg(void);
-
-void
-japplication_handler_on_property(void);
-
-void
-japplication_handler_on_end_process(void);
+void japplication_handler_on_start_document(void);
+void japplication_handler_on_end_document(void);
+void japplication_handler_on_begin_process(void);
+void japplication_handler_on_process_arg(void);
+void japplication_handler_on_property(void);
+void japplication_handler_on_end_process(void);
 
 
 #endif /* !MSG_JAPPLICATION_HANDLER_H */
