@@ -51,8 +51,8 @@ noinst_PROGRAMS = sendrecv/sendrecv$(EXEEXT) suspend/suspend$(EXEEXT) \
 	masterslave/masterslave_failure$(EXEEXT) \
 	masterslave/masterslave_bypass$(EXEEXT) \
 	parallel_task/parallel_task$(EXEEXT) \
-	priority/priority$(EXEEXT) properties/msg_prop$(EXEEXT) \
-	$(am__EXEEXT_1)
+	parallel_task/test_ptask$(EXEEXT) priority/priority$(EXEEXT) \
+	properties/msg_prop$(EXEEXT) $(am__EXEEXT_1)
 @HAVE_GTNETS_TRUE@am__append_3 = gtnets/gtnets 
 @HAVE_GTNETS_FALSE@am__append_4 = gtnets/gtnets.c
 DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -103,6 +103,11 @@ parallel_task_parallel_task_OBJECTS =  \
 	$(am_parallel_task_parallel_task_OBJECTS)
 parallel_task_parallel_task_DEPENDENCIES =  \
 	$(top_builddir)/src/libsimgrid.la
+am_parallel_task_test_ptask_OBJECTS = test_ptask.$(OBJEXT)
+parallel_task_test_ptask_OBJECTS =  \
+	$(am_parallel_task_test_ptask_OBJECTS)
+parallel_task_test_ptask_DEPENDENCIES =  \
+	$(top_builddir)/src/libsimgrid.la
 am_priority_priority_OBJECTS = priority.$(OBJEXT)
 priority_priority_OBJECTS = $(am_priority_priority_OBJECTS)
 priority_priority_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
@@ -132,6 +137,7 @@ SOURCES = $(gtnets_gtnets_SOURCES) \
 	$(masterslave_masterslave_failure_SOURCES) \
 	$(masterslave_masterslave_forwarder_SOURCES) \
 	$(parallel_task_parallel_task_SOURCES) \
+	$(parallel_task_test_ptask_SOURCES) \
 	$(priority_priority_SOURCES) $(properties_msg_prop_SOURCES) \
 	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
 DIST_SOURCES = $(am__gtnets_gtnets_SOURCES_DIST) \
@@ -139,6 +145,7 @@ DIST_SOURCES = $(am__gtnets_gtnets_SOURCES_DIST) \
 	$(masterslave_masterslave_failure_SOURCES) \
 	$(masterslave_masterslave_forwarder_SOURCES) \
 	$(parallel_task_parallel_task_SOURCES) \
+	$(parallel_task_test_ptask_SOURCES) \
 	$(priority_priority_SOURCES) $(properties_msg_prop_SOURCES) \
 	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
 ETAGS = etags
@@ -293,6 +300,8 @@ EXTRA_DIST = msg_platform.xml small_platform.xml \
 	gtnets/r-n200-f50-s4-2-d.xml gtnets/onelink-p.xml \
 	gtnets/onelink-d.xml gtnets/r-n200-f50-s4-2-p.xml \
 	gtnets/dogbone-d.xml gtnets/dogbone-p.xml \
+	parallel_task/test_ptask_deployment.xml \
+	parallel_task/test_ptask_platform.xml \
 	priority/deployment_priority.xml \
 	properties/deployment_properties.xml $(am__append_4) $(TESTS)
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
@@ -308,8 +317,8 @@ TESTS = sendrecv/sendrecv_CLM03.tesh sendrecv/sendrecv_Vegas.tesh \
 CLEANFILES = sendrecv/*~ sendrecv/sendrecv suspend/*~ suspend/suspend \
 	masterslave/*~ masterslave/masterslave_forwarder \
 	masterslave/masterslave_failure masterslave/masterslave_bypass \
-	parallel_task/parallel_task priority/priority \
-	properties/msg_prop $(am__append_2)
+	parallel_task/parallel_task parallel_task/test_ptask \
+	priority/priority properties/msg_prop $(am__append_2)
 
 # property handle example
 properties_msg_prop_SOURCES = properties/msg_prop.c
@@ -326,6 +335,8 @@ suspend_suspend_LDADD = $(top_builddir)/src/libsimgrid.la
 # parallel task example
 parallel_task_parallel_task_SOURCES = parallel_task/parallel_task.c
 parallel_task_parallel_task_LDADD = $(top_builddir)/src/libsimgrid.la
+parallel_task_test_ptask_SOURCES = parallel_task/test_ptask.c
+parallel_task_test_ptask_LDADD = $(top_builddir)/src/libsimgrid.la
 
 # playing with priorities example
 priority_priority_SOURCES = priority/priority.c
@@ -410,6 +421,9 @@ parallel_task/$(am__dirstamp):
 parallel_task/parallel_task$(EXEEXT): $(parallel_task_parallel_task_OBJECTS) $(parallel_task_parallel_task_DEPENDENCIES) parallel_task/$(am__dirstamp)
 	@rm -f parallel_task/parallel_task$(EXEEXT)
 	$(LINK) $(parallel_task_parallel_task_OBJECTS) $(parallel_task_parallel_task_LDADD) $(LIBS)
+parallel_task/test_ptask$(EXEEXT): $(parallel_task_test_ptask_OBJECTS) $(parallel_task_test_ptask_DEPENDENCIES) parallel_task/$(am__dirstamp)
+	@rm -f parallel_task/test_ptask$(EXEEXT)
+	$(LINK) $(parallel_task_test_ptask_OBJECTS) $(parallel_task_test_ptask_LDADD) $(LIBS)
 priority/$(am__dirstamp):
 	@$(MKDIR_P) priority
 	@: > priority/$(am__dirstamp)
@@ -450,6 +464,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/priority.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sendrecv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/suspend.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ptask.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -541,6 +556,20 @@ parallel_task.obj: parallel_task/parallel_task.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='parallel_task/parallel_task.c' object='parallel_task.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o parallel_task.obj `if test -f 'parallel_task/parallel_task.c'; then $(CYGPATH_W) 'parallel_task/parallel_task.c'; else $(CYGPATH_W) '$(srcdir)/parallel_task/parallel_task.c'; fi`
+
+test_ptask.o: parallel_task/test_ptask.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_ptask.o -MD -MP -MF $(DEPDIR)/test_ptask.Tpo -c -o test_ptask.o `test -f 'parallel_task/test_ptask.c' || echo '$(srcdir)/'`parallel_task/test_ptask.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_ptask.Tpo $(DEPDIR)/test_ptask.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='parallel_task/test_ptask.c' object='test_ptask.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_ptask.o `test -f 'parallel_task/test_ptask.c' || echo '$(srcdir)/'`parallel_task/test_ptask.c
+
+test_ptask.obj: parallel_task/test_ptask.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_ptask.obj -MD -MP -MF $(DEPDIR)/test_ptask.Tpo -c -o test_ptask.obj `if test -f 'parallel_task/test_ptask.c'; then $(CYGPATH_W) 'parallel_task/test_ptask.c'; else $(CYGPATH_W) '$(srcdir)/parallel_task/test_ptask.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_ptask.Tpo $(DEPDIR)/test_ptask.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='parallel_task/test_ptask.c' object='test_ptask.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_ptask.obj `if test -f 'parallel_task/test_ptask.c'; then $(CYGPATH_W) 'parallel_task/test_ptask.c'; else $(CYGPATH_W) '$(srcdir)/parallel_task/test_ptask.c'; fi`
 
 priority.o: priority/priority.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT priority.o -MD -MP -MF $(DEPDIR)/priority.Tpo -c -o priority.o `test -f 'priority/priority.c' || echo '$(srcdir)/'`priority/priority.c
