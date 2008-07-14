@@ -20,9 +20,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 void bottleneck_solve(lmm_system_t sys)
 {
   lmm_variable_t var = NULL;
-  lmm_variable_t var_to_update = NULL;
+  lmm_variable_t var_next = NULL;
   lmm_constraint_t cnst = NULL;
-  lmm_constraint_t useless_cnst = NULL;
   s_lmm_constraint_t s_cnst;
   lmm_constraint_t cnst_next = NULL;
   lmm_element_t elem = NULL;
@@ -44,14 +43,25 @@ void bottleneck_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   DEBUG1("Variable set : %d", xbt_swag_size(var_list));
   xbt_swag_foreach(var, var_list) {
-    int nb=0;
+    int nb = 0;
     var->value = 0.0;
+    DEBUG1("Handling variable %p",var);
+    xbt_swag_insert(var, &(sys->saturated_variable_set));
     for (i = 0; i < var->cnsts_number; i++) {
-      if(var->cnsts[i].value==0.0) nb++;
+      if (var->cnsts[i].value == 0.0)
+	nb++;
     }
-    if((nb==var->cnsts_number) && (var->weight>0.0))
+    if ((nb == var->cnsts_number) && (var->weight > 0.0)) {
+      DEBUG1("Err, finally, there is no need to take care of variable %p",var);
+      xbt_swag_remove(var, &(sys->saturated_variable_set));
       var->value = 1.0;
+    }
+    if (var->weight <= 0.0) {
+      DEBUG1("Err, finally, there is no need to take care of variable %p",var);
+      xbt_swag_remove(var, &(sys->saturated_variable_set));
+    }
   }
+  var_list = &(sys->saturated_variable_set);
 
   cnst_list = &(sys->active_constraint_set);
   DEBUG1("Active constraints : %d", xbt_swag_size(cnst_list));
@@ -69,133 +79,103 @@ void bottleneck_solve(lmm_system_t sys)
   /* 
    * Compute Usage and store the variables that reach the maximum.
    */
-  while (1) {
-/*     if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) { */
-/*       DEBUG0("Fair bottleneck done"); */
-/*       lmm_print(sys); */
-/*     } */
-    DEBUG1("******* Constraints to process: %d *******", xbt_swag_size(cnst_list));
+  do {
+    if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
+      DEBUG0("Fair bottleneck done");
+      lmm_print(sys);
+    }
+    DEBUG1("******* Constraints to process: %d *******",
+	   xbt_swag_size(cnst_list));
     min_usage = -1;
     xbt_swag_foreach_safe(cnst, cnst_next, cnst_list) {
       int nb = 0;
-      double max_elem = 0.0;
       DEBUG1("Processing cnst %p ", cnst);
       elem_list = &(cnst->element_set);
       cnst->usage = 0.0;
       xbt_swag_foreach(elem, elem_list) {
 	if (elem->variable->weight <= 0)
 	  break;
-	if ((elem->value > 0)) {
+	if ((elem->value > 0) &&
+	    xbt_swag_belongs(elem->variable, var_list))
 	  nb++;
-	  if (max_elem > 0)
-	    max_elem =
-		MAX(max_elem, elem->value / elem->variable->weight);
-	  else
-	    max_elem = elem->value / elem->variable->weight;
-	}
-	//      make_elem_active(elem);
       }
-      DEBUG2("\tmax_elem : %g with %d variables",  max_elem,nb);
-      if(nb>0 && !cnst->shared)
+      DEBUG1("\tThere are %d variables", nb);
+      if (nb > 0 && !cnst->shared)
 	nb = 1;
-      cnst->usage = max_elem * nb;
-      DEBUG3("\tConstraint Usage %p : %f with %d variables", cnst, cnst->usage,nb);
-      if(!nb) {
+      if (!nb) {
+	cnst->remaining = 0.0;
+	cnst->usage = cnst->remaining;
 	xbt_swag_remove(cnst, cnst_list);
 	continue;
       }
+      cnst->usage = cnst->remaining / nb;
+      DEBUG3("\tConstraint Usage %p : %f with %d variables", cnst,
+	     cnst->usage, nb);
+    }
 
-      /* Saturated constraints update */
-      if (min_usage < 0 || min_usage > cnst->remaining / cnst->usage) {
-	DEBUG3("Update min_usage (%g) with cnst %p -> %g",min_usage, cnst,
-	       cnst->remaining / cnst->usage);
-
-	min_usage = cnst->remaining / cnst->usage;
-	while ((useless_cnst = xbt_swag_extract(&(cnst_to_update)))) {
-	  xbt_swag_insert_at_head(useless_cnst, cnst_list);
-	}
-	xbt_swag_remove(cnst, cnst_list);
-	xbt_swag_insert(cnst, &(cnst_to_update));
-      } else if (min_usage == cnst->remaining / cnst->usage) {
-	DEBUG2("Keep   min_usage (%g) with cnst %p",min_usage, cnst);
-	xbt_swag_remove(cnst, cnst_list);
-	xbt_swag_insert(cnst, &(cnst_to_update));
-      } else {
-	DEBUG1("\tmin_usage: %f. No update",min_usage);
+    xbt_swag_foreach_safe(var, var_next, var_list) {
+      double min_inc = var->cnsts[0].constraint->usage /
+	  var->cnsts[0].value;
+      for (i = 1; i < var->cnsts_number; i++) {
+	lmm_element_t elm = &var->cnsts[i];
+	min_inc = MIN(min_inc, elm->constraint->usage / elm->value);
+      }
+      if (var->bound > 0)
+	min_inc = MIN(min_inc, var->bound - var->value);
+      var->mu = min_inc;
+      DEBUG2("Updating variable %p maximum increment: %g", var, var->mu);
+      var->value += var->mu;
+      if (var->value == var->bound) {
+	xbt_swag_remove(var, var_list);
       }
     }
 
-    if (!xbt_swag_size(&cnst_to_update))
-      break;
-
-    var_list = &(sys->variable_set);
-    var_to_update = NULL;
-    xbt_swag_foreach(var, var_list) {
-      if(!var->value  && var->bound>0 && 
-	 var->bound<min_usage) {
-	var_to_update = var;
-	min_usage = var->bound;
-      }
-    }
-    if(var_to_update) {
-      DEBUG2("\tUpdating var %p (%g)",var_to_update,var_to_update->value);
-      var_to_update->value = var_to_update->bound;
-      
-      for (i = 0; i < var_to_update->cnsts_number; i++) {
-	lmm_element_t elm = &var_to_update->cnsts[i];
-	cnst = elm->constraint;
-	DEBUG1("\t\tUpdating cnst %p",cnst);
-	double_update(&(cnst->remaining), elm->value * var_to_update->value);
-	double_update(&(cnst->usage), elm->value / var_to_update->weight);
-	//              make_elem_inactive(elm);
-      }
-      while ((cnst = xbt_swag_extract(&cnst_to_update))) {
-	xbt_swag_insert(cnst, cnst_list);
-      }
-      continue;
-    }
-
-    while ((cnst_next = xbt_swag_extract(&cnst_to_update))) {
-      int nb = 0;
-      double remaining = cnst_next->remaining;
-      elem_list = &(cnst_next->element_set);
+    xbt_swag_foreach_safe(cnst, cnst_next, cnst_list) {
+      DEBUG1("Updating cnst %p ", cnst);
+      elem_list = &(cnst->element_set);
       xbt_swag_foreach(elem, elem_list) {
 	if (elem->variable->weight <= 0)
 	  break;
-	if ((elem->value > 0))
-	  nb++;
+	if (cnst->shared) {
+	  DEBUG4("\tUpdate constraint %p (%g) with variable %p by %g",
+		 cnst, cnst->remaining, elem->variable,
+		 elem->variable->mu);
+	  double_update(&(cnst->remaining),
+			elem->value * elem->variable->mu);
+	} else {
+	  DEBUG4
+	      ("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g",
+	       cnst, cnst->usage, elem->variable, elem->variable->mu);
+	  cnst->usage = MIN(cnst->usage, elem->value * elem->variable->mu);
+	}
       }
-      if(nb>0 && !(cnst_next->shared))
-	nb = 1;
+      if (!cnst->shared) {
+	DEBUG3("\tUpdate constraint %p (%g) by %g",
+	       cnst, cnst->remaining, cnst->usage);
 
-      DEBUG1("Updating for cnst %p",cnst_next);
+	double_update(&(cnst->remaining), cnst->usage);
+      }
 
-      xbt_swag_foreach(elem, elem_list) {
-	if (elem->value <= 0) continue;
+      DEBUG2("\tRemaining for %p : %g", cnst, cnst->remaining);
+      if (cnst->remaining == 0.0) {
+	DEBUG1("\tGet rid of constraint %p", cnst);
 
-	var = elem->variable;
-
-	if (var->weight <= 0)
-	  break;
-	if (var->value == 0.0) {
-	  DEBUG2("\tUpdating var %p (%g)",var,var->value);
-	  var->value = var->weight * remaining / (nb * elem->value);
-
-	  /* Update usage */
-
-	  for (i = 0; i < var->cnsts_number; i++) {
- 	    lmm_element_t elm = &var->cnsts[i];
-	    cnst = elm->constraint;
-	    DEBUG1("\t\tUpdating cnst %p",cnst);
-	    double_update(&(cnst->remaining), elm->value * var->value);
-	    double_update(&(cnst->usage), elm->value / var->weight);
-	    //              make_elem_inactive(elm);
+	xbt_swag_remove(cnst, cnst_list);
+	xbt_swag_foreach(elem, elem_list) {
+	  if (elem->variable->weight <= 0)
+	    break;
+	  if (elem->value > 0) {
+	    DEBUG1("\t\tGet rid of variable %p", elem->variable);
+	    xbt_swag_remove(elem->variable, var_list);
 	  }
 	}
       }
     }
-  }
+  } while (xbt_swag_size(var_list));
 
+  xbt_swag_foreach_safe(cnst, cnst_next, cnst_list) {
+    xbt_swag_remove(cnst, cnst_list);
+  }
   sys->modified = 0;
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     DEBUG0("Fair bottleneck done");
