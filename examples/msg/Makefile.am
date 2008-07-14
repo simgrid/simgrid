@@ -23,6 +23,8 @@ EXTRA_DIST = msg_platform.xml \
              gtnets/r-n200-f50-s4-2-p.xml \
              gtnets/dogbone-d.xml \
              gtnets/dogbone-p.xml \
+             parallel_task/test_ptask_deployment.xml \
+             parallel_task/test_ptask_platform.xml \
              priority/deployment_priority.xml \
              properties/deployment_properties.xml
 
@@ -59,6 +61,7 @@ CLEANFILES = sendrecv/*~ \
              masterslave/masterslave_failure \
              masterslave/masterslave_bypass \
              parallel_task/parallel_task \
+             parallel_task/test_ptask \
              priority/priority \
              properties/msg_prop
 
@@ -75,6 +78,7 @@ noinst_PROGRAMS = sendrecv/sendrecv \
                   masterslave/masterslave_failure \
                   masterslave/masterslave_bypass \
                   parallel_task/parallel_task \
+                  parallel_task/test_ptask \
                   priority/priority \
                   properties/msg_prop
 
@@ -99,6 +103,8 @@ suspend_suspend_LDADD   = $(top_builddir)/src/libsimgrid.la
 # parallel task example
 parallel_task_parallel_task_SOURCES = parallel_task/parallel_task.c
 parallel_task_parallel_task_LDADD   = $(top_builddir)/src/libsimgrid.la
+parallel_task_test_ptask_SOURCES = parallel_task/test_ptask.c
+parallel_task_test_ptask_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 # playing with priorities example
 priority_priority_SOURCES = priority/priority.c
