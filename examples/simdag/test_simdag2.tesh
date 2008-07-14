@@ -8,7 +8,7 @@ $ $SG_TEST_EXENV ./sd_test2 ${srcdir:=.}/2clusters.xml
 > [0.000015] [sd_kernel/INFO] Task 'Initial' done
 > [0.000015] [sd_kernel/INFO] Executing task 'PtoP Comm 1'
 > [0.000015] [sd_kernel/INFO] Executing task 'PtoP Comm 2'
-> [0.027588] [sd_kernel/INFO] Task 'PtoP Comm 2' done
+> [0.037815] [sd_kernel/INFO] Task 'PtoP Comm 2' done
 > [0.375315] [sd_kernel/INFO] Task 'PtoP Comm 1' done
 > [0.375315] [sd_kernel/INFO] Executing task 'Par Comp without comm'
 > [1.375315] [sd_kernel/INFO] Task 'Par Comp without comm' done
