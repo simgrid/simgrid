@@ -164,7 +164,7 @@ unit_start(void* p)
 			if(!include->exit_code && !include->interrupted)
 				INFO1("Include from %s OK",include->fstream->name);
 			else if(include->exit_code)
-				ERROR3("Include `%s' NOK : (<%s> %s)", include->fstream->name, command->context->line, error_to_string(include->exit_code, include->err_kind));
+				ERROR3("Include `%s' NOK : (<%s> %s)", include->fstream->name, include->err_line, error_to_string(include->exit_code, include->err_kind));
 			else if(include->interrupted && !include->exit_code)
 				INFO1("Include `(%s)' INTR",include->fstream->name);
 		}
