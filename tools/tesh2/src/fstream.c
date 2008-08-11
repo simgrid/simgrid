@@ -986,10 +986,10 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 		
 	}
 	
-	p = line2 + 2;
-	
-	while(p && 1)
+	while(1)
 	{
+		p = line2 + 2;
+		
 		if((p = strchr(p, '$')))
 		{
 			if(*(p+1) != ' ')
