@@ -7,10 +7,6 @@
 
 #include <Msg.hpp>
 
-
-
-
-
 MSG_IMPLEMENT_DYNAMIC(Master, Process);
 
 int Master::main(int argc, char** argv)
