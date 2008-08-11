@@ -355,7 +355,7 @@ namespace SimGrid
 		void Process::sendTask(Task* task) 
 		throw(BadAllocException, MsgException)
 		{
-			char* alias = (char*)calloc( strlen(Host::currentHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
+			char* alias = (char*)calloc( strlen(this->getHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
 				
 			if(!alias)
 				throw BadAllocException("alias");
@@ -378,7 +378,7 @@ namespace SimGrid
 			if(timeout < 0 && timeout !=-1.0)
 				throw InvalidArgumentException("timeout (the timeout value must not be negative and different than -1.0)");
 			
-			char* alias = (char*)calloc(strlen(Host::currentHost().getName()) + strlen(nativeProcess->name) + 2 , sizeof(char));
+			char* alias = (char*)calloc( strlen(this->getHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
 				
 			if(!alias)
 				throw BadAllocException("alias");
@@ -414,7 +414,7 @@ namespace SimGrid
 		throw(BadAllocException, MsgException)
 		{
 			
-			char* alias = (char*)calloc(strlen(Host::currentHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
+			char* alias = (char*)calloc( strlen(this->getHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");	
@@ -463,7 +463,7 @@ namespace SimGrid
 				throw InvalidArgumentException("timeout (the timeout value must not be negative and different than -1.0)");
 				
 			
-			char* alias = (char*)calloc(strlen(Host::currentHost().getName()) + strlen(nativeProcess->name) + 2,  sizeof(char));
+			char* alias = (char*)calloc( strlen(this->getHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
@@ -511,7 +511,7 @@ namespace SimGrid
 			if(timeout < 0 && timeout !=-1.0)
 				throw InvalidArgumentException("timeout (the timeout value must not be negative and different than -1.0)");
 			
-			char* alias = (char*)calloc(strlen(Host::currentHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
+			char* alias = (char*)calloc( strlen(this->getHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
@@ -551,7 +551,7 @@ namespace SimGrid
 		Task* Process::receiveTask(const Host& rHost) 
 		throw(BadAllocException, MsgException)
 		{
-			char* alias = (char*)calloc(strlen(Host::currentHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
+			char* alias = (char*)calloc( strlen(this->getHost().getName()) + strlen(nativeProcess->name) + 2, sizeof(char));
 			
 			if(!alias)
 				throw BadAllocException("alias");
