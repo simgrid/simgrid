@@ -536,13 +536,23 @@ unit_summuarize(unit_t unit)
         return -1;
     }
 	
-	if((unit->description) && strlen(unit->description) < 78)
+	if((unit->description) && strlen(unit->description) < 76)
 		strcpy(title, unit->description);
 	else
 		sprintf(title, "file : %s",unit->fstream->name);
 		
 	if(unit->interrupted)
-		strcat(title, " (interrupted)");
+	{
+		if(strlen(title) + strlen(" (interrupted)") < 76)
+			strcat(title, " (interrupted)");
+		else
+		{
+			memset(title, 0, PATH_MAX + 1);
+			sprintf(title, "file : %s",unit->fstream->name);
+			strcat(title, " (interrupted)");
+
+		}
+	}
 		
 	print_title(title);
 	
