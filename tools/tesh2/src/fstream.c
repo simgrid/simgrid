@@ -988,7 +988,7 @@ fstream_lex_line(fstream_t fstream, context_t context, xbt_os_mutex_t mutex, con
 	
 	while(1)
 	{
-		p = line2 + 2;
+		p = line2 + (line2[0] =='<' ? 4 : 2);
 		
 		if((p = strchr(p, '$')))
 		{
