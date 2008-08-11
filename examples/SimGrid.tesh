@@ -8,7 +8,7 @@ $ cd ${EXAMPLE_DIR:=.}
 $ cd msg
 
 # Masterslave OK
-#! include masterslave/masterslave.tesh
+! include masterslave/masterslave.tesh
 
 # Outputs difference : __FILE__ difference between Windows and Linux
 #! include masterslave/masterslave_bypass.tesh
