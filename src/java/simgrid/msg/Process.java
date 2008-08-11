@@ -343,7 +343,7 @@ public abstract class Process extends Thread {
     /**
      * This method runs the process. Il calls the method function that you must overwrite.
      */
-  public synchronized void run() {
+  public /*synchronized*/ void run() {
 
       String[]args = null;      /* do not fill it before the signal or this.args will be empty */
 
@@ -445,14 +445,14 @@ public abstract class Process extends Thread {
   /** Send the given task in the mailbox associated with the default alias  (defaultAlias = "hostName:processName") */
   public void taskSend(Task task) throws NativeException, JniException {
   	
-  	String alias = Host.currentHost().getName() + ":" + this.msgName();
+  	String alias = this.getHost().getName() + ":" + this.msgName();
     MsgNative.taskSend(alias, task, -1);
   }
   
   /** Send the given task in the mailbox associated with the default alias (waiting at most given time) */
   public void taskSend(Task task, double timeout) throws NativeException, JniException {
   	
-  	String alias = Host.currentHost().getName() + ":" + this.msgName();
+  	String alias = this.getHost().getName() + ":" + this.msgName();
     MsgNative.taskSend(alias, task, timeout);
   }
   
@@ -466,7 +466,7 @@ public abstract class Process extends Thread {
   /** Receive a task on mailbox associated with the default alias */
    public Task taskReceive() throws NativeException,
     JniException {
-    String alias = Host.currentHost().getName() + ":" + this.msgName();
+    String alias = this.getHost().getName() + ":" + this.msgName();
     return MsgNative.taskReceive(alias, -1.0, null);
   }
   
@@ -480,7 +480,7 @@ public abstract class Process extends Thread {
   /** Receive a task on mailbox associated with the default alias (waiting at most given time) */
    public Task taskReceive(double timeout) throws NativeException,
     JniException {
-    String alias = Host.currentHost().getName() + ":" + this.msgName();
+    String alias = this.getHost().getName() + ":" + this.msgName();
     return MsgNative.taskReceive(alias, timeout, null);
   }
   
@@ -494,7 +494,7 @@ public abstract class Process extends Thread {
   /** Receive a task on mailbox associated with the default alias from given sender  (waiting at most given time) */
   public Task taskReceive(double timeout, Host host) throws NativeException,
     JniException {
-    String alias = Host.currentHost().getName() + ":" + this.msgName();
+    String alias = this.getHost().getName() + ":" + this.msgName();
     return MsgNative.taskReceive(alias, timeout, host);
   }
   
@@ -507,7 +507,7 @@ public abstract class Process extends Thread {
    /** Receive a task on mailbox associated with the default alias from given sender */
    public Task taskReceive( Host host) throws NativeException,
     JniException {
-    	String alias = Host.currentHost().getName() + ":" + this.msgName();
+    	String alias = this.getHost().getName() + ":" + this.msgName();
     return MsgNative.taskReceive(alias, -1.0, host);
   }
 }
