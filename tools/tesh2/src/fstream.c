@@ -327,7 +327,7 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 				unit->is_running_suite = 0;
 			}
 				
-			if(context->command_line)
+			if(context->command_line && !context->is_not_found)
 			{
 				if(fstream_launch_command(fstream, context, mutex) < 0)
 						break;
@@ -374,7 +374,7 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 	}
 	
 	/* Check that last command of the file ran well */
-	if(context->command_line)
+	if(context->command_line && !context->is_not_found)
 	{
 		if(fstream_launch_command(fstream, context, mutex) < 0)
 			return -1;
@@ -1306,9 +1306,21 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 		
 		if(!is_w32_cmd(command_line, fstream->unit->runner->path) && getpath(command_line, &path) < 0)
 		{
+			command_t command;
+
 			ERROR3("[%s] `%s' : NOK (%s)", filepos, command_line, error_to_string(ECMDNOTFOUND, 1));
 			unit_set_error(fstream->unit, ECMDNOTFOUND, 1, filepos);
+
+			context->is_not_found = 1;
+			
+			command = command_new(fstream->unit, context, mutex);
+
+			command->status = cs_failed;
+			command->reason = csr_command_not_found;
+
 			failure(unit);
+			
+			
 			return;
 		}
 		

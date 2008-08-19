@@ -318,6 +318,7 @@ typedef struct s_context
 	
 	#ifdef WIN32
 	char* t_command_line;				/* translate the command line on Windows								*/
+	unsigned is_not_found:1;
 	#endif
 
 }s_context_t,* context_t;

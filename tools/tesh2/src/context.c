@@ -37,6 +37,7 @@ context_new(void)
 
 	#ifdef WIN32
 	context->t_command_line = NULL;
+	context->is_not_found = 0;
 	#endif
 	
 	return context;
@@ -88,6 +89,9 @@ context_reset(context_t context)
 		free(context->t_command_line);
 		context->t_command_line = NULL;
 	}
+
+	context->is_not_found = 0;
+
 	#endif
 
 	if(context->pos)
@@ -132,6 +136,7 @@ context_dup(context_t context)
 	
 	#ifdef WIN32
 	dup->t_command_line = strdup(context->t_command_line);
+	dup->is_not_found = context->is_not_found;
 	#endif
 
 	dup->exit_code = context->exit_code;
@@ -187,6 +192,8 @@ context_clear(context_t context)
 		free(context->t_command_line);
 		context->t_command_line = NULL;
 	}
+	context->is_not_found = 0;
+
 	#endif
 
 	if(context->pos)
