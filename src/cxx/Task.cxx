@@ -28,7 +28,7 @@ namespace SimGrid
 	namespace Msg
 	{
 
-		MSG_IMPLEMENT_DYNAMIC(Task, Object);
+		MSG_IMPLEMENT_DYNAMIC(Task, Object)
 	
 		Task::Task()
 		{

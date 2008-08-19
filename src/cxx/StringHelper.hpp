@@ -243,3 +243,4 @@ namespace SimGrid
 
 
 #endif // !STRING_HELPER_HPP
+

@@ -69,8 +69,10 @@ throw (ClassNotFoundException)
 	for(cur = MSG_DELCARING_CLASSES.getHead(); cur; cur = cur->next)
 	{
 		if(!strcmp(name,cur->name))
+		{
+			MSG_DELCARING_CLASSES.unlock();
 			return cur;
-
+		}
 	}
 
 	MSG_DELCARING_CLASSES.unlock();

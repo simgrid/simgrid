@@ -43,7 +43,11 @@ namespace SimGrid
 			ProcessNotFoundException::ProcessNotFoundException(int PID)
 			{
 				char buff[7] = {0};
+				#ifdef WIN32
 				_itoa(PID, buff, 10);
+				#else
+				sprintf(buff,"%d",PID);
+				#endif
 				this->reason = (char*) calloc(strlen("Process not found : ") + strlen(buff) + 1, sizeof(char));
 				sprintf(this->reason, "Host not found : %s", buff);
 			}

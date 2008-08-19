@@ -125,7 +125,7 @@ namespace SimGrid
 			Class* c;
 			Process* process;
 			
-			// try to dynamicaly create an instance fo the process from its name (which is specified by the element function
+			// try to dynamicaly create an instance of the process from its name (which is specified by the element function
 			// in the xml application file.
 			// if this static method fails, it throws an exception of the class ClassNotFoundException
 			c = Class::fromName(this->function);

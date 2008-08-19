@@ -34,7 +34,7 @@ namespace SimGrid
 	namespace Msg
 	{
 
-		MSG_IMPLEMENT_DYNAMIC(Process, Object);
+		MSG_IMPLEMENT_DYNAMIC(Process, Object)
 
 		// Default constructor.
 		Process::Process()
@@ -151,7 +151,7 @@ namespace SimGrid
 			// check the parameters
 			
 			if(PID < 1)
-				throw InvalidArgumentException("PID (the PID of the process to retrieve is not less than 1)");
+				throw InvalidArgumentException("PID (the PID of the process to retrieve is less than 1)");
 				
 			Process* process = NULL;
 			m_process_t nativeProcess = MSG_process_from_PID(PID);
@@ -251,7 +251,7 @@ namespace SimGrid
 				throw InvalidArgumentException("channel (must not be negative)");
 				
 			if(timeout < 0 && timeout != -1.0)
-				throw InvalidArgumentException("timeout (must not be less than zero an different of -1.0)");
+				throw InvalidArgumentException("timeout (must not be less than zero and different of -1.0)");
 				
 			if(MSG_OK != MSG_task_put_with_timeout(task->nativeTask, rHost.nativeHost, channel, timeout))
 				throw MsgException("MSG_task_put_with_timeout() failed");
@@ -281,7 +281,7 @@ namespace SimGrid
 				throw InvalidArgumentException("channel (must not be negative)");
 				
 			if(timeout < 0 && timeout != -1.0)
-				throw InvalidArgumentException("timeout (must not be less than zero an different of -1.0)");
+				throw InvalidArgumentException("timeout (must not be less than zero and different of -1.0)");
 			
 			m_task_t nativeTask = NULL;
 			
@@ -314,7 +314,7 @@ namespace SimGrid
 				throw InvalidArgumentException("channel (must not be negative)");
 				
 			if(timeout < 0 && timeout != -1.0)
-				throw InvalidArgumentException("timeout (must not be less than zero an different of -1.0)");
+				throw InvalidArgumentException("timeout (must not be less than zero and different of -1.0)");
 			
 			m_task_t nativeTask = NULL;	
 			
@@ -577,7 +577,7 @@ namespace SimGrid
 			msg_mailbox_t mailbox;
 			
 			
-			// try to retrieve the host where to createt the process from its name
+			// try to retrieve the host where to create the process from its name
 			m_host_t nativeHost = rHost.nativeHost;
 			
 			if(!nativeHost)
@@ -590,18 +590,23 @@ namespace SimGrid
 			this->nativeProcess->simdata->m_host = nativeHost;
 			this->nativeProcess->simdata->PID = msg_global->PID++;
 			
-			// realloc the list of the argument to add the pointer to this process instance at the end
+			// realloc the list of the arguments to add the pointer to this process instance at the end
 			if(argc)
-				argv = (char**)realloc(argv , (argc + 1) * sizeof(char*));
+			{
+				argv = (char**)realloc(argv , (argc + 2) * sizeof(char*));
+			}
 			else
-				argv = (char**)calloc(1 ,sizeof(char*));
+			{
+				argv = (char**)calloc(2 ,sizeof(char*));
+			}
 			
 			// add the pointer to this instance at the end of the list of the arguments of the process
 			// so the static method Process::run() (passed as argument of the MSG function xbt_context_new())
 			// can retrieve the concerned process object by the run
 			// so Process::run() can call the method main() of the good process
 			// for more detail see Process::run() method
-			argv[argc] = (char*)this;
+			argv[argc] = NULL;
+			argv[argc + 1] = (char*)this;
 
 			this->nativeProcess->simdata->argc = argc;
 			this->nativeProcess->simdata->argv = argv;
@@ -638,7 +643,8 @@ namespace SimGrid
 		
 		Process* Process::fromNativeProcess(m_process_t nativeProcess)
 		{
-			return ((Process*)(nativeProcess->simdata->argv[nativeProcess->simdata->argc]));
+			return ((Process*)(nativeProcess->simdata->argv[nativeProcess->simdata->argc + 1]));
+			
 		}
 		
 		int Process::run(int argc, char** argv)
@@ -646,7 +652,8 @@ namespace SimGrid
 			
 			// the last argument of the process is the pointer to the process to run
 			// for more detail see Process::create() method
-			return ((Process*)argv[argc])->main(argc, argv);
+			return ((Process*)argv[argc + 1])->main(argc, argv);
+			
 		}
 
 		int Process::main(int argc, char** argv)
