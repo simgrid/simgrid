@@ -22,3 +22,4 @@ class Sender : public Process
 
 
 #endif // !SENDER_HPP
+

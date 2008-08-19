@@ -14,12 +14,12 @@ using namespace std;
 #define BUFFMAX 260
 #endif
 
-MSG_IMPLEMENT_DYNAMIC(Master, Process);
+MSG_IMPLEMENT_DYNAMIC(Master, Process)
 
 int Master::main(int argc, char** argv)
 {
 	int channel = 0;
-	char buff[BUFFMAX + 1] = {0};
+	
 	int numberOfTasks;		
 	double taskComputeSize;		
 	double taskCommunicateSize;
@@ -103,3 +103,4 @@ int Master::main(int argc, char** argv)
 
 	return 0;
 }
+

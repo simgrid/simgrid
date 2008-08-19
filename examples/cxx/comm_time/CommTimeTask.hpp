@@ -19,7 +19,8 @@ public:
 	:Task(name, computeDuration, messageSize){}
 	
 	// Destructor
-	virtual ~CommTimeTask() {}
+	virtual ~CommTimeTask() 
+	throw(MsgException){}
 	
 	void setTime(double timeVal)
 	{
@@ -35,8 +36,5 @@ private :
 	
 	double timeVal;
 };
-
-
-
 
 #endif // !COMMTIME_TASK_HPP

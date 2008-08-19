@@ -8,7 +8,7 @@
 #include <Msg.hpp>
 
 
-MSG_IMPLEMENT_DYNAMIC(Forwarder, Process);
+MSG_IMPLEMENT_DYNAMIC(Forwarder, Process)
 
 
 int Forwarder::main(int argc, char** argv)

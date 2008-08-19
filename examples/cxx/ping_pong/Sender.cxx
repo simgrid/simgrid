@@ -10,7 +10,7 @@ using namespace std;
 const double commSizeLat = 1;
 const double commSizeBw = 100000000;
 
-MSG_IMPLEMENT_DYNAMIC(Sender, Process);
+MSG_IMPLEMENT_DYNAMIC(Sender, Process)
 
 int Sender::main(int argc, char** argv)
 {
@@ -60,3 +60,4 @@ int Sender::main(int argc, char** argv)
 	return 0;
     
 }
+

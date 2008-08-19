@@ -22,3 +22,4 @@ class Receiver : public Process
 
 
 #endif // !RECEIVER_HPP
+

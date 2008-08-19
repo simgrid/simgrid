@@ -19,7 +19,8 @@ public:
 	:Task(name, computeDuration, messageSize){}
 	
 	// Destructor
-	virtual ~PingPongTask() {}
+	virtual ~PingPongTask() 
+	throw(MsgException){}
 	
 	void setTime(double timeVal)
 	{

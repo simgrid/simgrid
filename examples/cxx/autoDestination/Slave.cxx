@@ -7,7 +7,7 @@
 
 #include <Msg.hpp>
 
-MSG_IMPLEMENT_DYNAMIC(Slave, Process);
+MSG_IMPLEMENT_DYNAMIC(Slave, Process)
 
 int Slave::main(int argc, char** argv)
 {

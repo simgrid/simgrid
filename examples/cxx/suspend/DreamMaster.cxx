@@ -7,7 +7,7 @@
 #include <Msg.hpp>
 
 
-MSG_IMPLEMENT_DYNAMIC(DreamMaster, Process);
+MSG_IMPLEMENT_DYNAMIC(DreamMaster, Process)
 
 int DreamMaster::main(int argc, char** argv)
 {

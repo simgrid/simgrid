@@ -6,7 +6,8 @@ using namespace SimGrid::Msg;
 
 class LazyGuy : public Process
 {
-	MSG_DECLARE_DYNAMIC(LazyGuy);
+	// Not needed : DreamMaster directly constructs the object
+	// MSG_DECLARE_DYNAMIC(LazyGuy);
 
 	public:
 	
@@ -26,3 +27,4 @@ class LazyGuy : public Process
 
 
 #endif // !LAZYGUY_HPP
+

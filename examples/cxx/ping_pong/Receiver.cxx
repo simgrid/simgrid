@@ -6,7 +6,7 @@
 
 #include <Msg.hpp>
 
-MSG_IMPLEMENT_DYNAMIC(Receiver, Process);
+MSG_IMPLEMENT_DYNAMIC(Receiver, Process)
 
 const double commSizeLat = 1;
 const double commSizeBw = 100000000;

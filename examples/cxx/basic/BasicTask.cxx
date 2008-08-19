@@ -1,3 +1,3 @@
 #include "BasicTask.hpp"
 
-MSG_IMPLEMENT_DYNAMIC(BasicTask, Task);
+MSG_IMPLEMENT_DYNAMIC(BasicTask, Task)

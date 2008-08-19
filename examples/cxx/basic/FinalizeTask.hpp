@@ -15,7 +15,8 @@ public:
 	:Task("finalize", 0.0, 0.0){}
 	
 	// Destructor
-	virtual ~FinalizeTask() {}
+	virtual ~FinalizeTask()
+	throw(MsgException) {}
 	
 };
 

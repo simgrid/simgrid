@@ -22,3 +22,4 @@ class Slave : public Process
 
 
 #endif // !SLAVE_HPP
+

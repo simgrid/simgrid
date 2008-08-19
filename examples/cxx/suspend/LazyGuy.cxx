@@ -3,7 +3,8 @@
 
 #include <Msg.hpp>
 
-MSG_IMPLEMENT_DYNAMIC(LazyGuy, Process);
+// Not needed : DreamMaster directly constructs the object
+// MSG_IMPLEMENT_DYNAMIC(LazyGuy, Process)
 
 int LazyGuy::main(int argc, char** argv)
 {
@@ -17,8 +18,8 @@ int LazyGuy::main(int argc, char** argv)
 	
 	info("Mmmh, goodbye now."); 
 
-
 	delete this;
 
 	return 0;
 }
+

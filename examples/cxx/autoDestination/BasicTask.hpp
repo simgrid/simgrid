@@ -13,7 +13,8 @@ public:
 	BasicTask() {}
 	
 	// Destructor
-	virtual ~BasicTask() {}
+	virtual ~BasicTask()
+	throw (MsgException) {}
 	BasicTask(const char* name, double computeDuration, double messageSize)
 	throw (InvalidArgumentException, NullPointerException)
 	:Task(name, computeDuration, messageSize){}

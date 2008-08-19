@@ -8,7 +8,7 @@
 #include <Msg.hpp>
 using namespace std;
 
-MSG_IMPLEMENT_DYNAMIC(Slave, Process);
+MSG_IMPLEMENT_DYNAMIC(Slave, Process)
 
 int Slave::main(int argc, char** argv)
 {
