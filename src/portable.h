@@ -24,7 +24,9 @@
 
 /* Load this asap to make sure that GNU_SOURCE is defined on need when stdio gets loaded by some random system header */
 #ifdef HAVE_GETLINE
-#  define _GNU_SOURCE
+#  ifndef _GNU_SOUCE
+#    define _GNU_SOURCE
+#  endif
 #  include <stdio.h>
 #endif
 
@@ -124,7 +126,7 @@ extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list 
 #endif
 
 /* prototype of GNU functions  */
-#if defined(__GNUC__)
+#if (defined(__GNUC__) && !defined(__cplusplus))
 extern int asprintf  (char **ptr, const char *fmt, /*args*/ ...);
 extern int vasprintf (char **ptr, const char *fmt, va_list ap);
 #endif
