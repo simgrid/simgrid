@@ -351,7 +351,7 @@ libsimgrid_la_SOURCES += $(JMSG_C_SRC) # add the binding support to the library
 clean-local:
 	-rm -rf .classes
 
-jardir = $(prefix)/jar 
+jardir = $(prefix)/jar
 jar_DATA =  simgrid.jar
 
 simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/simgrid.dtd
