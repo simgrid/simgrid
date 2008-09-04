@@ -1228,16 +1228,16 @@ double get_cpu_power(const char *power)
   return power_scale;
 }
 
-int random_min, random_max, random_mean, random_std_deviation, random_generator;
+double random_min, random_max, random_mean, random_std_deviation, random_generator;
 char *random_id;
 
 static void init_randomness(void)
 {
   random_id = A_surfxml_random_id;
-  surf_parse_get_int(&random_min, A_surfxml_random_min);
-  surf_parse_get_int(&random_max, A_surfxml_random_max);
-  surf_parse_get_int(&random_mean, A_surfxml_random_mean);
-  surf_parse_get_int(&random_std_deviation, A_surfxml_random_std_deviation);
+  surf_parse_get_double(&random_min, A_surfxml_random_min);
+  surf_parse_get_double(&random_max, A_surfxml_random_max);
+  surf_parse_get_double(&random_mean, A_surfxml_random_mean);
+  surf_parse_get_double(&random_std_deviation, A_surfxml_random_std_deviation);
   random_generator = A_surfxml_random_generator;
 }
 
