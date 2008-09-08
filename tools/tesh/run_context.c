@@ -19,11 +19,11 @@ xbt_dynar_t bg_jobs = NULL;
 rctx_t armageddon_initiator = NULL;
 xbt_os_mutex_t armageddon_mutex = NULL;
 
-/* 
+/*
  * Module management
  */
 
-static void kill_it(void*r) {  
+static void kill_it(void*r) {
   rctx_t rctx = *(rctx_t*)r;
 
   VERB2("Join thread %p which were running background cmd <%s>",rctx->runner,rctx->filepos);
@@ -89,7 +89,7 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
       if (!rctx->reader_done) {
 	kill(rctx->pid,SIGTERM);
 	usleep(100);
-	kill(rctx->pid,SIGKILL);          
+	kill(rctx->pid,SIGKILL);
       }
     }
   }
@@ -114,7 +114,7 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
 void rctx_empty(rctx_t rc) {
   int i;
   char **env_it=environ;
-   
+
   if (rc->cmd)
     free(rc->cmd);
   rc->cmd = NULL;
@@ -122,12 +122,12 @@ void rctx_empty(rctx_t rc) {
     free(rc->filepos);
   if (rc->env)
      free(rc->env);
-   
+
   for (i=0;*env_it;i++,env_it++);
   i++;
   rc->env_size = i;
   rc->env = malloc(i*sizeof(char*));
-  memcpy(rc->env,environ,i*sizeof(char*)); 
+  memcpy(rc->env,environ,i*sizeof(char*));
 
   rc->filepos = NULL;
   rc->is_empty = 1;
@@ -189,7 +189,7 @@ void rctx_dump(rctx_t rctx, const char *str) {
  */
 
 void rctx_pushline(const char* filepos, char kind, char *line) {
-  
+
   switch (kind) {
   case '$':
   case '&':
@@ -209,14 +209,14 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
       rctx->is_background = 1;
     else
       rctx->is_background = 0;
-      
+
     rctx->cmd = xbt_strdup(line);
     rctx->filepos = xbt_strdup(filepos);
     INFO3("[%s] %s%s",filepos,rctx->cmd,
 	  ((rctx->is_background)?" (background command)":""));
 
     break;
-    
+
   case '<':
     rctx->is_empty = 0;
     xbt_strbuff_append(rctx->input,line);
@@ -244,7 +244,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
     } else if (!strncmp(line,"expect signal ",strlen("expect signal "))) {
       rctx->expected_signal = strdup(line + strlen("expect signal "));
       xbt_str_trim(rctx->expected_signal," \n");
-	   VERB2("[%s] (next command must raise signal %s)", 
+	   VERB2("[%s] (next command must raise signal %s)",
 		 filepos, rctx->expected_signal);
 
     } else if (!strncmp(line,"expect return ",strlen("expect return "))) {
@@ -255,7 +255,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
     } else if (!strncmp(line,"output ignore",strlen("output ignore"))) {
       rctx->output = e_output_ignore;
       VERB1("[%s] (ignore output of next command)", filepos);
-       
+
     } else if (!strncmp(line,"output display",strlen("output display"))) {
       rctx->output = e_output_display;
       VERB1("[%s] (ignore output of next command)", filepos);
@@ -265,7 +265,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
       rctx->env[rctx->env_size-2] = xbt_strdup(line+strlen("setenv "));
       rctx->env[rctx->env_size-1] = NULL;
       VERB1("[%s] (ignore output of next command)", filepos);
-       
+
     } else {
       ERROR2("%s: Malformed metacommand: %s",filepos,line);
       ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
@@ -276,7 +276,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
   }
 }
 
-/* 
+/*
  * Actually doing the job
  */
 
@@ -343,13 +343,13 @@ static void *thread_reader(void *r) {
     rctx_armageddon(rctx,4);
     return NULL;
   }
-   
+
   rctx->reader_done = 1;
   return NULL;
-} 
+}
 
-/* Start a new child, plug the pipes as expected and fire up the 
-   helping threads. Is also waits for the child to end if this is a 
+/* Start a new child, plug the pipes as expected and fire up the
+   helping threads. Is also waits for the child to end if this is a
    foreground job, or fire up a thread to wait otherwise. */
 
 void rctx_start(void) {
@@ -380,7 +380,7 @@ void rctx_start(void) {
 
     if (timeout_value > 0)
        rctx->end_time = time(NULL) + timeout_value;
-    else 
+    else
        rctx->end_time = -1;
 
     rctx->reader_done = 0;
@@ -398,7 +398,16 @@ void rctx_start(void) {
     dup2(child_out[1],2);
     close(child_out[1]);
 
-    execle ("/bin/sh", "sh", "-c", rctx->cmd, NULL, rctx->env);
+	xbt_dynar_t cmd = xbt_str_split_quoted(rctx->cmd);
+	char *file;
+	unsigned int it;
+	char *str;
+	xbt_dynar_get_cpy(cmd,0,&file);
+	char **args = xbt_new(char*,xbt_dynar_length(cmd)+1);
+	xbt_dynar_foreach(cmd,it,str)
+		args[it] = xbt_strdup(str);
+	args[it] = NULL;
+	execve(file, args, rctx->env);
   }
 
   rctx->is_stoppable = 1;
@@ -422,19 +431,19 @@ void rctx_start(void) {
   }
 }
 
-/* Waits for the child to end (or to timeout), and check its 
+/* Waits for the child to end (or to timeout), and check its
    ending conditions. This is launched from rctx_start but either in main
-   thread (for foreground jobs) or in a separate one for background jobs. 
+   thread (for foreground jobs) or in a separate one for background jobs.
    That explains the prototype, forced by xbt_os_thread_create. */
 
 void *rctx_wait(void* r) {
   rctx_t rctx = (rctx_t)r;
   int errcode = 0;
   int now = time(NULL);
-    
+
   rctx_dump(rctx,"wait");
 
-  if (!rctx->is_stoppable) 
+  if (!rctx->is_stoppable)
     THROW1(unknown_error,0,"Cmd '%s' not started yet. Cannot wait it",
 	   rctx->cmd);
 
@@ -443,17 +452,17 @@ void *rctx_wait(void* r) {
     usleep(100);
     now = time(NULL);
   }
-   
+
   xbt_os_mutex_acquire(rctx->interruption);
-  if (!rctx->interrupted && rctx->end_time > 0 && rctx->end_time < now) {    
+  if (!rctx->interrupted && rctx->end_time > 0 && rctx->end_time < now) {
     INFO1("<%s> timeouted. Kill the process.",rctx->filepos);
     rctx->timeout = 1;
     kill(rctx->pid,SIGTERM);
     usleep(100);
-    kill(rctx->pid,SIGKILL);    
+    kill(rctx->pid,SIGKILL);
     rctx->reader_done = 1;
   }
-   
+
   /* Make sure helper threads die.
      Cannot block since they wait for the child we just killed
      if not already dead. */
@@ -464,7 +473,7 @@ void *rctx_wait(void* r) {
   if (rctx->interrupted)
     return NULL;
     xbt_os_mutex_acquire(rctx->interruption);*/
- 
+
   xbt_strbuff_chomp(rctx->output_got);
   xbt_strbuff_chomp(rctx->output_wanted);
   xbt_strbuff_trim(rctx->output_got);
@@ -482,7 +491,7 @@ void *rctx_wait(void* r) {
     else
       INFO1("<%s> No output before timeout",
 	    rctx->filepos);
-    ERROR3("Test suite `%s': NOK (<%s> timeout after %d sec)", 
+    ERROR3("Test suite `%s': NOK (<%s> timeout after %d sec)",
 	   testsuite_name,rctx->filepos,timeout_value);
     DEBUG2("<%s> Interrupted = %d", rctx->filepos, rctx->interrupted);
     if (!rctx->interrupted) {
@@ -490,37 +499,37 @@ void *rctx_wait(void* r) {
       return NULL;
     }
   }
-      
+
   DEBUG2("RCTX=%p (pid=%d)",rctx,rctx->pid);
   DEBUG3("Status(%s|%d)=%d",rctx->cmd,rctx->pid,rctx->status);
 
   if (!rctx->interrupted) {
     if (WIFSIGNALED(rctx->status) && !rctx->expected_signal) {
-      ERROR3("Test suite `%s': NOK (<%s> got signal %s)", 
+      ERROR3("Test suite `%s': NOK (<%s> got signal %s)",
 	     testsuite_name, rctx->filepos,
 	     signal_name(WTERMSIG(rctx->status),NULL));
-      errcode = WTERMSIG(rctx->status)+4;	
+      errcode = WTERMSIG(rctx->status)+4;
     }
-    
+
     if (WIFSIGNALED(rctx->status) && rctx->expected_signal &&
 	strcmp(signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
 	       rctx->expected_signal)) {
-      ERROR4("Test suite `%s': NOK (%s got signal %s instead of %s)", 
+      ERROR4("Test suite `%s': NOK (%s got signal %s instead of %s)",
 	     testsuite_name, rctx->filepos,
 	     signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
 	     rctx->expected_signal);
-      errcode = WTERMSIG(rctx->status)+4;	
+      errcode = WTERMSIG(rctx->status)+4;
     }
-    
+
     if (!WIFSIGNALED(rctx->status) && rctx->expected_signal) {
-      ERROR3("Test suite `%s': NOK (child %s expected signal %s)", 
+      ERROR3("Test suite `%s': NOK (child %s expected signal %s)",
 	     testsuite_name, rctx->filepos,
 	     rctx->expected_signal);
       errcode = 5;
     }
-    
+
     if (WIFEXITED(rctx->status) && WEXITSTATUS(rctx->status) != rctx->expected_return ) {
-      if (rctx->expected_return) 
+      if (rctx->expected_return)
 	ERROR4("Test suite `%s': NOK (<%s> returned code %d instead of %d)",
 	       testsuite_name, rctx->filepos,
 	       WEXITSTATUS(rctx->status), rctx->expected_return);
@@ -528,10 +537,10 @@ void *rctx_wait(void* r) {
 	ERROR3("Test suite `%s': NOK (<%s> returned code %d)",
 	       testsuite_name, rctx->filepos, WEXITSTATUS(rctx->status));
       errcode = 40+WEXITSTATUS(rctx->status);
-      
+
     }
     rctx->expected_return = 0;
-  
+
     if(rctx->expected_signal){
       free(rctx->expected_signal);
       rctx->expected_signal = NULL;
@@ -542,13 +551,13 @@ void *rctx_wait(void* r) {
       && (    rctx->output_got->used != rctx->output_wanted->used
 	   || strcmp(rctx->output_got->data, rctx->output_wanted->data))) {
     if (XBT_LOG_ISENABLED(tesh,xbt_log_priority_info)) {
-       char *diff= xbt_str_diff(rctx->output_wanted->data,rctx->output_got->data);	  
+       char *diff= xbt_str_diff(rctx->output_wanted->data,rctx->output_got->data);
        ERROR2("Output of <%s> mismatch:\n%s",rctx->filepos,diff);
        free(diff);
-    }     
-    ERROR2("Test suite `%s': NOK (<%s> output mismatch)", 
+    }
+    ERROR2("Test suite `%s': NOK (<%s> output mismatch)",
 	   testsuite_name,rctx->filepos);
-     
+
     errcode=2;
   } else if (rctx->output == e_output_ignore) {
     INFO1("(ignoring the output of <%s> as requested)",rctx->filepos);
@@ -564,7 +573,7 @@ void *rctx_wait(void* r) {
     char *out = xbt_str_join(a,"\n||");
     xbt_dynar_free(&a);
     INFO2("Output of <%s> so far: \n||%s",rctx->filepos,out);
-    free(out);    
+    free(out);
   }
 
   if (!rctx->is_background) {
