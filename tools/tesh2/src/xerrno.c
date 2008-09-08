@@ -326,7 +326,7 @@ entry_t err[] =
 
 	{"EUNXPSIG", EUNXPSIG,1,  "unexpected signal caught"},
 
-	{"ESIGNOTRECEIPT", ESIGNOTRECEIPT,1,  "expected signal not receipt"},
+	{"ESIGNOTRECEIPT", ESIGNOTRECEIVED,1,  "expected signal not receipt"},
 
 	{"EPROCCMDLINE", EPROCCMDLINE, 1, "command line processing failed"},
 

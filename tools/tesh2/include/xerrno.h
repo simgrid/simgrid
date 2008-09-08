@@ -14,7 +14,7 @@ extern "C" {
 #define EOUTPUTNOTMATCH		((int)109)	/* the outputs don't match													*/
 #define ESIGNOTMATCH		((int)110)	/* the signals don't match													*/
 #define EUNXPSIG			((int)111)	/* Unexpected signal caught													*/
-#define ESIGNOTRECEIPT		((int)112)	/* the expected signal is not receipt										*/
+#define ESIGNOTRECEIVED		((int)112)	/* the expected signal is not receipt										*/
 #define EPROCCMDLINE		((int)116)	/* this is an internal error : the process_command_line() function failed	*/
 #define ENOARG				((int)117)	/* a none optional argument is not specified in the command line			*/
 #define ENOTPOSITIVENUM		((int)118)	/* the argument of the option is not strictly positive						*/

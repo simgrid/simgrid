@@ -168,7 +168,7 @@ typedef enum e_command_status_raison
 	csr_outputs_dont_match				= 12,
 	csr_signals_dont_match				= 13,
 	csr_unexpected_signal_caught		= 14,
-	csr_expected_signal_not_receipt		= 15,
+	csr_expected_signal_not_received		= 15,
 	csr_pipe_function_failed			= 16,		/* the function pipe() or CreatePipe() fails						*/
 	csr_dup2_function_failure			= 17,
 	csr_execlp_function_failure			= 18,
