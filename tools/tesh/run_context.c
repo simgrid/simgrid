@@ -12,6 +12,8 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
@@ -402,12 +404,56 @@ void rctx_start(void) {
 	char *file;
 	unsigned int it;
 	char *str;
+	char *long_cmd=xbt_strdup("");
 	xbt_dynar_get_cpy(cmd,0,&file);
 	char **args = xbt_new(char*,xbt_dynar_length(cmd)+1);
-	xbt_dynar_foreach(cmd,it,str)
+	xbt_dynar_foreach(cmd,it,str) {
 		args[it] = xbt_strdup(str);
+		long_cmd = bprintf("%s %s",long_cmd,str);
+	}
 	args[it] = NULL;
-	execve(file, args, rctx->env);
+
+	  /* To search for the right executable path when not trivial */
+	  struct stat stat_buf;
+	  char *binary_name = NULL;
+
+	  /* build the command line */
+	  if (stat(file, &stat_buf)) {
+	    /* Damn. binary not in current dir. We'll have to dig the PATH to find it */
+	    int i;
+
+	    for (i = 0; environ[i]; i++) {
+	      if (!strncmp("PATH=", environ[i], 5)) {
+	        xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
+
+	        xbt_dynar_foreach(path, it, str) {
+	          if (binary_name)
+	            free(binary_name);
+	          binary_name = bprintf("%s/%s", str, file);
+	          if (!stat(binary_name, &stat_buf)) {
+	            /* Found. */
+	            DEBUG1("Looked in the PATH for the binary. Found %s",
+	                   binary_name);
+	            xbt_dynar_free(&path);
+	            break;
+	          }
+	        }
+	        xbt_dynar_free(&path);
+	        if (stat(binary_name, &stat_buf)) {
+	          /* not found */
+	          ERROR1("Command %s not found",file);
+	          return;
+	        }
+	        break;
+	      }
+	    }
+	  } else {
+	    binary_name = xbt_strdup(file);
+	  }
+
+
+	DEBUG2("execve %s %s env",binary_name,long_cmd);
+	execve(binary_name, args, rctx->env);
   }
 
   rctx->is_stoppable = 1;
