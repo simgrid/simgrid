@@ -29,9 +29,9 @@ xbt_fifo_t xbt_fifo_new(void)
 
   if (item_mallocator == NULL) {
     item_mallocator = xbt_mallocator_new(256,
-					 fifo_item_mallocator_new_f,
-					 fifo_item_mallocator_free_f,
-					 fifo_item_mallocator_reset_f);
+                                         fifo_item_mallocator_new_f,
+                                         fifo_item_mallocator_free_f,
+                                         fifo_item_mallocator_reset_f);
   }
   return fifo;
 }
@@ -46,7 +46,7 @@ void xbt_fifo_free(xbt_fifo_t l)
   xbt_fifo_item_t b, tmp;
 
   for (b = xbt_fifo_get_first_item(l); b;
-       tmp = b, b = b->next, xbt_fifo_free_item(tmp));
+  tmp = b, b = b->next, xbt_fifo_free_item(tmp));
   xbt_free(l);
   return;
 }
@@ -73,7 +73,7 @@ xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t l, void *t)
  * \param l list
  * \returns the object stored at the tail of the list.
  *
- * Removes and returns the object stored at the tail of the list. 
+ * Removes and returns the object stored at the tail of the list.
  * Returns NULL if the list is empty.
  */
 void *xbt_fifo_pop(xbt_fifo_t l)
@@ -110,7 +110,7 @@ xbt_fifo_item_t xbt_fifo_unshift(xbt_fifo_t l, void *t)
  * \param l list
  * \returns the object stored at the head of the list.
  *
- * Removes and returns the object stored at the head of the list. 
+ * Removes and returns the object stored at the head of the list.
  * Returns NULL if the list is empty.
  */
 void *xbt_fifo_shift(xbt_fifo_t l)
@@ -120,7 +120,7 @@ void *xbt_fifo_shift(xbt_fifo_t l)
 
   if(l==NULL) return NULL;
   if(!(item = xbt_fifo_shift_item(l))) return NULL;
-  
+
   content = item->content;
   xbt_fifo_free_item(item);
   return content;
@@ -160,7 +160,7 @@ xbt_fifo_item_t xbt_fifo_pop_item(xbt_fifo_t l)
     return NULL;
 
   item = l->tail;
-  
+
   l->tail = item->prev;
   if (l->tail == NULL)
     l->head = NULL;
@@ -224,10 +224,10 @@ xbt_fifo_item_t xbt_fifo_shift_item(xbt_fifo_t l)
 }
 
 /**
- * \param l 
+ * \param l
  * \param t an objet
  *
- * removes the first occurence of \a t from \a l. 
+ * removes the first occurence of \a t from \a l.
  * \warning it will not remove duplicates
  * \return 1 if an item was removed and 0 otherwise.
  */
@@ -251,10 +251,10 @@ int  xbt_fifo_remove(xbt_fifo_t l, void *t)
 
 
 /**
- * \param l 
+ * \param l
  * \param t an objet
  *
- * removes all occurences of \a t from \a l. 
+ * removes all occurences of \a t from \a l.
  * \return 1 if an item was removed and 0 otherwise.
  */
 int  xbt_fifo_remove_all(xbt_fifo_t l, void *t)
@@ -278,8 +278,8 @@ int  xbt_fifo_remove_all(xbt_fifo_t l, void *t)
  * \param l a list
  * \param current a bucket
  *
- * removes a bucket \a current from the list \a l. This function implicitely 
- * assumes (and doesn't check!) that this item belongs to this list... 
+ * removes a bucket \a current from the list \a l. This function implicitely
+ * assumes (and doesn't check!) that this item belongs to this list...
  */
 void xbt_fifo_remove_item(xbt_fifo_t l, xbt_fifo_item_t current)
 {

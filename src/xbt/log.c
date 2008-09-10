@@ -28,11 +28,11 @@ XBT_PUBLIC_DATA(int) (*xbt_pid)();
 
 /** \addtogroup XBT_log
  *
- *  This section describes the API to the log functions used 
+ *  This section describes the API to the log functions used
  *  everywhere in this project.
 
 \section XBT_log_toc Table of contents
- 
+
  - \ref log_overview
    - \ref log_cat
    - \ref log_pri
@@ -56,26 +56,26 @@ XBT_PUBLIC_DATA(int) (*xbt_pid)();
    - \ref log_in_perf
    - \ref log_in_app
  - \ref XBT_log_cats
-     
+
 \section log_overview 1. Introduction
 
 This module is in charge of handling the log messages of every SimGrid
 program. The main design goal are:
 
-  - <b>configurability</b>: the user can choose <i>at runtime</i> what messages to show and 
+  - <b>configurability</b>: the user can choose <i>at runtime</i> what messages to show and
     what to hide, as well as how messages get displayed.
   - <b>ease of use</b>: both to the programmer (using preprocessor macros black magic)
     and to the user (with command line options)
   - <b>performances</b>: logging shouldn't slow down the program when turned off, for example
-  - deal with <b>distributed settings</b>: SimGrid programs are [often] distributed ones, 
+  - deal with <b>distributed settings</b>: SimGrid programs are [often] distributed ones,
     and the logging mecanism allows to syndicate each and every log source into the same place.
     At least, its design would allow to, once we write the last missing pieces
-     
+
 There is three main concepts in SimGrid's logging mecanism: <i>category</i>,
 <i>priority</i> and <i>appender</i>. These three concepts work together to
 enable developers to log messages according to message type and priority, and
 to control at runtime how these messages are formatted and where they are
-reported. 
+reported.
 
 \subsection log_cat 1.1 Category hierarchy
 
@@ -83,8 +83,8 @@ The first and foremost advantage of any logging API over plain printf()
 resides in its ability to disable certain log statements while allowing
 others to print unhindered. This capability assumes that the logging space,
 that is, the space of all possible logging statements, is categorized
-according to some developer-chosen criteria. 
-	  
+according to some developer-chosen criteria.
+
 This observation led to choosing category as the central concept of the
 system. In a certain sense, they can be considered as logging topics or
 channels.
@@ -94,7 +94,7 @@ channels.
 The user can naturally declare interest into this or that logging category, but
 he also can specify the desired level of details for each of them. This is
 controled by the <i>priority</i> concept (which should maybe be renamed to
-<i>severity</i>). 
+<i>severity</i>).
 
 Empirically, the user can specify that he wants to see every debuging message
 of GRAS while only being interested into the messages at level "error" or
@@ -114,10 +114,10 @@ One day, for sure ;)
 
 The message layouts are the elements in charge of choosing how each message
 will look like. Their result is a string which is then passed to the appender
-attached to the category to be displayed. 
+attached to the category to be displayed.
 
 For now, there is two layouts: The simple one, which is good for most cases,
-and another one allowing users to specify the format they want. 
+and another one allowing users to specify the format they want.
 \ref log_use_conf provides more info on this.
 
 \subsection log_hist 1.5 History of this module
@@ -135,8 +135,8 @@ is not object oriented.
 
 Every category is declared by providing a name and an optional
 parent. If no parent is explicitly named, the root category, LOG_ROOT_CAT is
-the category's parent. 
-      
+the category's parent.
+
 A category is created by a macro call at the top level of a file.  A
 category can be created with any one of the following macros:
 
@@ -149,12 +149,12 @@ category can be created with any one of the following macros:
  -  \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, ParentCat,desc);
     Like XBT_LOG_NEW_SUBCATEGORY, but the new category is the default one
       in this file
-	    
+
 The parent cat can be defined in the same file or in another file (in
 which case you want to use the \ref XBT_LOG_EXTERNAL_CATEGORY macro to make
 it visible in the current file), but each category may have only one
 definition.
-      
+
 Typically, there will be a Category for each module and sub-module, so you
 can independently control logging for each module.
 
@@ -167,7 +167,7 @@ it should be complete and accurate.
 A category may be assigned a threshold priorty. The set of priorites are
 defined by the \ref e_xbt_log_priority_t enum. All logging request under
 this priority will be discarded.
-	  
+
 If a given category is not assigned a threshold priority, then it inherits
 one from its closest ancestor with an assigned threshold. To ensure that all
 categories can eventually inherit a threshold, the root category always has
@@ -182,7 +182,7 @@ format. This is usualy a good idea.
 Because some C compilers do not support vararg macros, there is a version of
 the macro for any number of arguments from 0 to 6. The macro name ends with
 the total number of arguments.
-	
+
 Here is an example of the most basic type of macro. This is a logging
 request with priority <i>warning</i>.
 
@@ -192,8 +192,8 @@ request with priority <i>warning</i>.
 A logging request is said to be enabled if its priority is higher than or
 equal to the threshold priority of its category. Otherwise, the request is
 said to be disabled. A category without an assigned priority will inherit
-one from the hierarchy. 
-      
+one from the hierarchy.
+
 It is possible to use any non-negative integer as a priority. If, as in the
 example, one of the standard priorites is used, then there is a convenience
 macro that is typically used instead. For example, the above example is
@@ -207,12 +207,12 @@ It is sometimes useful to check whether a perticular category is
 enabled at a perticular priority. One example is when you want to do
 some extra computation to prepare a nice debugging message. There is
 no use of doing so if the message won't be used afterward because
-debugging is turned off. 
- 
+debugging is turned off.
+
 Doing so is extremely easy, thanks to the XBT_LOG_ISENABLED(category, priority).
 
 \section log_API_subcat 2.4 Using a default category (the easy interface)
-  
+
 If \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, Parent) or
 \ref XBT_LOG_NEW_DEFAULT_CATEGORY(MyCat) is used to create the
 category, then the even shorter form can be used:
@@ -236,7 +236,7 @@ This is because we want SimGrid itself to keep compilable on ancient
 compiler not supporting variable number of arguments to macros. But we
 should provide a macro simpler to use for the users not interested in SP3
 machines (FIXME).
-  
+
 Under GCC, these macro check there arguments the same way than printf does. So,
 if you compile with -Wall, the folliwing code will issue a warning:
 <code>DEBUG2("Found %s (id %f)", some_string, a_double)</code>
@@ -245,7 +245,7 @@ If you want to specify the category to log onto (for example because you
 have more than one category per file, add a C before the name of the log
 producing macro (ie, use #CDEBUG10, #CVERB10, #CINFO10, #CWARN10, #CERROR10 and
 #CCRITICAL10 and friends), and pass the category name as first argument.
-  
+
 The TRACE priority is not used the same way than the other. You should use
 the #XBT_IN, XBT_IN<n> (up to #XBT_IN5), #XBT_OUT and #XBT_HERE macros
 instead.
@@ -276,11 +276,11 @@ int main() {
        INFO1("Located nearest gas station.");
 
        / * This request is disabled, because DEBUG < INFO. * /
-       DEBUG1("Exiting gas station search"); 
+       DEBUG1("Exiting gas station search");
 }
 \endverbatim
 
-Another example can be found in the relevant part of the GRAS tutorial: 
+Another example can be found in the relevant part of the GRAS tutorial:
 \ref GRAS_tut_tour_logs.
 
 \section log_user 3. User interface
@@ -292,13 +292,13 @@ program initialization by invoking the xbt_log_control_set() method
 manually. A more conventionnal way is to use the --log command line
 argument. xbt_init() (called by MSG_init(), gras_init() and friends)
 checks and deals properly with such arguments.
- 
+
 The following command line arguments exist, but are deprecated and
 may disapear in the future: --xbt-log, --gras-log, --msg-log and
 --surf-log.
- 
+
 \subsection log_use_conf_thres 3.1.1 Thresold configuration
- 
+
 The most common setting is to control which logging event will get
 displayed by setting a threshold to each category through the
 <tt>thres</tt> keyword.
@@ -310,15 +310,15 @@ completely off.
 
 \subsection log_use_conf_multi 3.1.2 Passing several settings
 
-You can provide several of those arguments to change the setting of several 
+You can provide several of those arguments to change the setting of several
 categories, they will be applied from left to right. So,
 \verbatim --log="root.thres:debug root.thres:critical"\endverbatim should
 disable almost any logging.
- 
+
 Note that the quotes on above line are mandatory because there is a space in
 the argument, so we are protecting ourselves from the shell, not from SimGrid.
 We could also reach the same effect with this:
-\verbatim --log=root.thres:debug --log=root.thres:critical\endverbatim 
+\verbatim --log=root.thres:debug --log=root.thres:critical\endverbatim
 
 \subsection log_use_conf_fmt 3.1.3 Format configuration
 
@@ -347,13 +347,13 @@ Here are the existing format directives:
  - %%F: file name where the log event was raised (LOG4J compliant)
  - %%l: location where the log event was raised (LOG4J compliant, like '%%F:%%L' -- this is a l as in 'l'etter)
  - %%L: line number where the log event was raised (LOG4J compliant)
- - %%M: function name (LOG4J compliant -- called method name here of course). 
+ - %%M: function name (LOG4J compliant -- called method name here of course).
    Defined only when using gcc because there is no __FUNCTION__ elsewhere.
 
- - %%b: full backtrace (Called %%throwable in LOG4J). 
-   Defined only when using the GNU libc because backtrace() is not defined 
+ - %%b: full backtrace (Called %%throwable in LOG4J).
+   Defined only when using the GNU libc because backtrace() is not defined
    elsewhere.
- - %%B: short backtrace (only the first line of the %%b). 
+ - %%B: short backtrace (only the first line of the %%b).
    Called %%throwable{short} in LOG4J; defined where %%b is.
 
  - %%d: date (UNIX-like epoch)
@@ -410,8 +410,8 @@ requests are statically disabled and cost nothing. Released executables
 <i>might</i>  be compiled with (note that it will prevent users to debug their problems)
 \verbatim-DXBT_LOG_STATIC_THRESHOLD=gras_log_priority_infinite\endverbatim
 
-Compiling with the \verbatim-DNLOG\endverbatim option disables all logging 
-requests at compilation time while the \verbatim-DNDEBUG\endverbatim disables 
+Compiling with the \verbatim-DNLOG\endverbatim option disables all logging
+requests at compilation time while the \verbatim-DNDEBUG\endverbatim disables
 the requests of priority below INFO.
 
 \todo Logging performance *may* be improved further by improving the message
@@ -429,9 +429,9 @@ category performs the following actions:
   - if the category has an appender, the message is passed to the
     appender's doAppend() function,
   - if additivity is true for the category (which is the case by
-    default, and can be controlled by xbt_log_additivity_set()), the 
-    message is passed to the category's parent. 
-    
+    default, and can be controlled by xbt_log_additivity_set()), the
+    message is passed to the category's parent.
+
 By default, only the root category have an appender, and any other category has
 its additivity set to true. This causes all messages to be logged by the root
 category's appender.
@@ -443,7 +443,7 @@ This is on our TODO list for quite a while now, but your help would be
 welcome here, too.
 
 
-*//*'*/
+ *//*'*/
 
 
 xbt_log_appender_t xbt_log_default_appender = NULL; /* set in log_init */
@@ -469,25 +469,25 @@ static void _free_setting(void *s) {
   }
 }
 static void _xbt_log_cat_apply_set(xbt_log_category_t category,
-				   xbt_log_setting_t setting);
+                                   xbt_log_setting_t setting);
 
 const char *xbt_log_priority_names[8] = {
-  "NONE",
-  "TRACE",
-  "DEBUG",
-  "VERBOSE",
-  "INFO",
-  "WARNING",
-  "ERROR",
-  "CRITICAL"
+                                         "NONE",
+                                         "TRACE",
+                                         "DEBUG",
+                                         "VERBOSE",
+                                         "INFO",
+                                         "WARNING",
+                                         "ERROR",
+                                         "CRITICAL"
 };
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
-  NULL /*parent*/, NULL /* firstChild */, NULL /* nextSibling */,
-  "root", xbt_log_priority_uninitialized /* threshold */,
-  0 /* isThreshInherited */,
-  NULL /* appender */, NULL /* layout */, 
-  0 /* additivity */
+                                                    NULL /*parent*/, NULL /* firstChild */, NULL /* nextSibling */,
+                                                    "root", xbt_log_priority_uninitialized /* threshold */,
+                                                    0 /* isThreshInherited */,
+                                                    NULL /* appender */, NULL /* layout */,
+                                                    0 /* additivity */
 };
 
 XBT_LOG_NEW_CATEGORY(xbt,"All XBT categories (simgrid toolbox)");
@@ -498,51 +498,51 @@ XBT_LOG_NEW_CATEGORY(simix,"All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mechanism itself");
 
 /** @brief Get all logging settings from the command line
- * 
+ *
  * xbt_log_control_set() is called on each string we got from cmd line
  */
 void xbt_log_init(int *argc,char **argv) {
-	int i,j;
-	char *opt;
-	
-	/* create the default appender and install it in the root category,
+  int i,j;
+  char *opt;
+
+  /* create the default appender and install it in the root category,
 	   which were already created (damnit. Too slow little beetle)*/
-	xbt_log_default_appender = xbt_log_appender_file_new(NULL);
-	xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
-	_XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
-	_XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
-	_log_usable = 1;
-   
-//	_XBT_LOGV(log).threshold = xbt_log_priority_debug; /* uncomment to set the LOG category to debug directly */
+  xbt_log_default_appender = xbt_log_appender_file_new(NULL);
+  xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
+  _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
+  _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
+  _log_usable = 1;
 
-	/* Set logs and init log submodule */
-	for (i=1; i<*argc; i++){
-		if (!strncmp(argv[i],"--log=",strlen("--log=")) ||
-		    !strncmp(argv[i],"--gras-log=",strlen("--gras-log=")) ||
-		    !strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
-		    !strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
-		    !strncmp(argv[i],"--simix-log=",strlen("--simix-log=")) ||
-		    !strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))){
-			
-		  if (strncmp(argv[i],"--log=",strlen("--log=")))
-		      WARN2("Option %.*s is deprecated and will disapear in the future. Use --log instead.",
-			    (int)(strchr(argv[i],'=')-argv[i]),argv[i]);
+  //	_XBT_LOGV(log).threshold = xbt_log_priority_debug; /* uncomment to set the LOG category to debug directly */
 
-		  opt=strchr(argv[i],'=');
-		  opt++;
-		  xbt_log_control_set(opt);
-		  DEBUG1("Did apply '%s' as log setting",opt);
-		  /*remove this from argv*/
-		  
-		  for (j=i+1; j<*argc; j++){
-		    argv[j-1] = argv[j];
-		  } 
-		  
-		  argv[j-1] = NULL;
-		  (*argc)--;
-		  i--; /* compensate effect of next loop incrementation */
-		}
-	}
+  /* Set logs and init log submodule */
+  for (i=1; i<*argc; i++){
+    if (!strncmp(argv[i],"--log=",strlen("--log=")) ||
+        !strncmp(argv[i],"--gras-log=",strlen("--gras-log=")) ||
+        !strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
+        !strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
+        !strncmp(argv[i],"--simix-log=",strlen("--simix-log=")) ||
+        !strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))){
+
+      if (strncmp(argv[i],"--log=",strlen("--log=")))
+        WARN2("Option %.*s is deprecated and will disapear in the future. Use --log instead.",
+              (int)(strchr(argv[i],'=')-argv[i]),argv[i]);
+
+      opt=strchr(argv[i],'=');
+      opt++;
+      xbt_log_control_set(opt);
+      DEBUG1("Did apply '%s' as log setting",opt);
+      /*remove this from argv*/
+
+      for (j=i+1; j<*argc; j++){
+        argv[j-1] = argv[j];
+      }
+
+      argv[j-1] = NULL;
+      (*argc)--;
+      i--; /* compensate effect of next loop incrementation */
+    }
+  }
 }
 
 static void log_cat_exit(xbt_log_category_t cat) {
@@ -557,9 +557,9 @@ static void log_cat_exit(xbt_log_category_t cat) {
     if (cat->layout->free_)
       cat->layout->free_(cat->layout);
     free(cat->layout);
-  }    
+  }
 
-  for(child=cat->firstChild ; child != NULL; child = child->nextSibling) 
+  for(child=cat->firstChild ; child != NULL; child = child->nextSibling)
     log_cat_exit(child);
 }
 
@@ -571,17 +571,17 @@ void xbt_log_exit(void) {
 }
 
 void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
-  
+
   xbt_log_category_t cat = ev->cat;
   if (!_log_usable) {
-     /* Make sure that the layouts have been malloced */
-     xbt_log_default_appender = xbt_log_appender_file_new(NULL);
-     xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
-     _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
-     _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
-     _log_usable = 1;
+    /* Make sure that the layouts have been malloced */
+    xbt_log_default_appender = xbt_log_appender_file_new(NULL);
+    xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
+    _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
+    _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
+    _log_usable = 1;
   }
-   
+
   va_start(ev->ap, fmt);
   va_start(ev->ap_copy, fmt);
   while(1) {
@@ -594,80 +594,80 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
       break;
 
     cat = cat->parent;
-  } 
+  }
   va_end(ev->ap);
   va_end(ev->ap_copy);
-	
-  #ifdef WIN32
+
+#ifdef WIN32
   free(ev->buffer);
-  #endif
+#endif
 }
 
 static void _xbt_log_cat_apply_set(xbt_log_category_t category,
-				   xbt_log_setting_t setting) { 
+                                   xbt_log_setting_t setting) {
 
   s_xbt_log_event_t _log_ev;
 
   if (setting->thresh != xbt_log_priority_uninitialized) {
     xbt_log_threshold_set(category, setting->thresh);
-    
+
     if (category->threshold <= xbt_log_priority_debug) {
       _log_ev.cat = category;
       _log_ev.priority = xbt_log_priority_debug;
       _log_ev.fileName = __FILE__ ;
       _log_ev.functionName = _XBT_FUNCTION ;
       _log_ev.lineNum = __LINE__ ;
-      
+
       _xbt_log_event_log(&_log_ev,
-	  "Apply settings for category '%s': set threshold to %s (=%d)",
-			 category->name,
-			 xbt_log_priority_names[category->threshold],
-			 category->threshold);
+                         "Apply settings for category '%s': set threshold to %s (=%d)",
+                         category->name,
+                         xbt_log_priority_names[category->threshold],
+                         category->threshold);
     }
   }
 
   if (setting->fmt) {
     xbt_log_layout_set(category,xbt_log_layout_format_new(setting->fmt));
-    
+
     if (category->threshold <= xbt_log_priority_debug) {
       _log_ev.cat = category;
       _log_ev.priority = xbt_log_priority_debug;
       _log_ev.fileName = __FILE__ ;
       _log_ev.functionName = _XBT_FUNCTION ;
       _log_ev.lineNum = __LINE__ ;
-      
+
       _xbt_log_event_log(&_log_ev,
-	      "Apply settings for category '%s': set format to %s",
-			 category->name,
-			 setting->fmt);
+                         "Apply settings for category '%s': set format to %s",
+                         category->name,
+                         setting->fmt);
     }
   }
 
   if (setting->additivity != -1) {
     xbt_log_additivity_set(category,setting->additivity);
-    
+
     if (category->threshold <= xbt_log_priority_debug) {
       _log_ev.cat = category;
       _log_ev.priority = xbt_log_priority_debug;
       _log_ev.fileName = __FILE__ ;
       _log_ev.functionName = _XBT_FUNCTION ;
       _log_ev.lineNum = __LINE__ ;
-      
+
       _xbt_log_event_log(&_log_ev,
-		    "Apply settings for category '%s': set additivity to %s",
-			 category->name,
-			 (setting->additivity?"on":"off"));
+                         "Apply settings for category '%s': set additivity to %s",
+                         category->name,
+                         (setting->additivity?"on":"off"));
     }
   }
 
 }
 /*
  * This gets called the first time a category is referenced and performs the
- * initialization. 
+ * initialization.
  * Also resets threshold to inherited!
  */
 int _xbt_log_cat_init(xbt_log_category_t category,
-		      e_xbt_log_priority_t priority) {
+                      e_xbt_log_priority_t priority) {
   unsigned int cursor;
   xbt_log_setting_t setting=NULL;
   int found = 0;
@@ -675,17 +675,17 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 
   if (_XBT_LOGV(log).threshold <= xbt_log_priority_debug
       && _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
-     _log_ev.cat = &_XBT_LOGV(log);
-     _log_ev.priority = xbt_log_priority_debug;
-     _log_ev.fileName = __FILE__ ;
-     _log_ev.functionName = _XBT_FUNCTION ;
-     _log_ev.lineNum = __LINE__ ;  
-     _xbt_log_event_log(&_log_ev, "Initializing category '%s' (firstChild=%s, nextSibling=%s)",
-			category->name, 
-			(category->firstChild ?category->firstChild->name :"none"),
-			(category->nextSibling?category->nextSibling->name:"none"));
+    _log_ev.cat = &_XBT_LOGV(log);
+    _log_ev.priority = xbt_log_priority_debug;
+    _log_ev.fileName = __FILE__ ;
+    _log_ev.functionName = _XBT_FUNCTION ;
+    _log_ev.lineNum = __LINE__ ;
+    _xbt_log_event_log(&_log_ev, "Initializing category '%s' (firstChild=%s, nextSibling=%s)",
+                       category->name,
+                       (category->firstChild ?category->firstChild->name :"none"),
+                       (category->nextSibling?category->nextSibling->name:"none"));
   }
-   
+
   if(category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)){
     category->threshold = xbt_log_priority_info;/* xbt_log_priority_debug*/;
     category->appender = xbt_log_default_appender;
@@ -694,154 +694,154 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 
     if (!category->parent)
       category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
-    
+
     if (_XBT_LOGV(log).threshold <= xbt_log_priority_debug
-	&& _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
-       _log_ev.lineNum = __LINE__ ;
-       _xbt_log_event_log(&_log_ev, "Set %s (%s) as father of %s ", category->parent->name,
-			  (category->parent->threshold == xbt_log_priority_uninitialized ? "uninited":xbt_log_priority_names[category->parent->threshold]),
-			  category->name);
-    }     
-    xbt_log_parent_set(category, category->parent);
-     
-    if (_XBT_LOGV(log).threshold < xbt_log_priority_info
-	&& _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
-       char *buf,*res=NULL;
-       xbt_log_category_t cpp = category->parent->firstChild;
-       while (cpp) {
-	  if (res) {	       
-	     buf = bprintf("%s %s",res,cpp->name);
-	     free(res);
-	     res = buf;
-	  } else {
-	     res = xbt_strdup(cpp->name);
-	  }
-	  cpp = cpp->nextSibling;
-       }
-       
-       _log_ev.lineNum = __LINE__ ;
-       _xbt_log_event_log(&_log_ev,
-			  "Childs of %s: %s; nextSibling: %s", category->parent->name,res,
-			  (category->parent->nextSibling?category->parent->nextSibling->name:"none"));
-       
-       free(res);
+        && _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
+      _log_ev.lineNum = __LINE__ ;
+      _xbt_log_event_log(&_log_ev, "Set %s (%s) as father of %s ", category->parent->name,
+                         (category->parent->threshold == xbt_log_priority_uninitialized ? "uninited":xbt_log_priority_names[category->parent->threshold]),
+                         category->name);
     }
-     	   
+    xbt_log_parent_set(category, category->parent);
+
+    if (_XBT_LOGV(log).threshold < xbt_log_priority_info
+        && _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
+      char *buf,*res=NULL;
+      xbt_log_category_t cpp = category->parent->firstChild;
+      while (cpp) {
+        if (res) {
+          buf = bprintf("%s %s",res,cpp->name);
+          free(res);
+          res = buf;
+        } else {
+          res = xbt_strdup(cpp->name);
+        }
+        cpp = cpp->nextSibling;
+      }
+
+      _log_ev.lineNum = __LINE__ ;
+      _xbt_log_event_log(&_log_ev,
+                         "Childs of %s: %s; nextSibling: %s", category->parent->name,res,
+                         (category->parent->nextSibling?category->parent->nextSibling->name:"none"));
+
+      free(res);
+    }
+
   }
 
-  /* Apply the control */  
+  /* Apply the control */
   if (!xbt_log_settings)
     return priority >= category->threshold;
-  
+
   xbt_assert0(category,"NULL category");
   xbt_assert(category->name);
-  
+
   xbt_dynar_foreach(xbt_log_settings,cursor,setting) {
     xbt_assert0(setting,"Damnit, NULL cat in the list");
     xbt_assert1(setting->catname,"NULL setting(=%p)->catname",(void*)setting);
-    
+
     if (!strcmp(setting->catname,category->name)) {
-      
+
       found = 1;
-      
+
       _xbt_log_cat_apply_set(category,setting);
 
       xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
     }
   }
-  
+
   if (!found && category->threshold <= xbt_log_priority_verbose) {
-    
+
     _log_ev.cat = &_XBT_LOGV(log);
     _log_ev.priority = xbt_log_priority_verbose;
     _log_ev.fileName = __FILE__ ;
     _log_ev.functionName = _XBT_FUNCTION ;
     _log_ev.lineNum = __LINE__ ;
-    
+
     _xbt_log_event_log(&_log_ev,
-		       "Category '%s': inherited threshold = %s (=%d)",
-		       category->name,
-	    xbt_log_priority_names[category->threshold], category->threshold);
+                       "Category '%s': inherited threshold = %s (=%d)",
+                       category->name,
+                       xbt_log_priority_names[category->threshold], category->threshold);
   }
-    
+
   return priority >= category->threshold;
 }
 
 void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent)  {
-	
-	xbt_assert0(cat,"NULL category to be given a parent");
-	xbt_assert1(parent,"The parent category of %s is NULL",cat->name);
-	
-	/* 
-	 * if the threshold is initialized 
-	 * unlink from current parent 
-	 */
-	if(cat->threshold != xbt_log_priority_uninitialized){
 
-		xbt_log_category_t* cpp = &parent->firstChild;
-	
-		while(*cpp != cat && *cpp != NULL) {
-			cpp = &(*cpp)->nextSibling;
-		}
-		
-		xbt_assert(*cpp == cat);
-		*cpp = cat->nextSibling;
-	}
-	
-	cat->parent = parent;
-	cat->nextSibling = parent->firstChild;
-	
-	parent->firstChild = cat;
-	
-	if (parent->threshold == xbt_log_priority_uninitialized){
-		
-	  _xbt_log_cat_init(parent,
-			    xbt_log_priority_uninitialized/* ignored*/);
-	}
-	
-	cat->threshold = parent->threshold;
-	
-	cat->isThreshInherited = 1;
-	
+  xbt_assert0(cat,"NULL category to be given a parent");
+  xbt_assert1(parent,"The parent category of %s is NULL",cat->name);
+
+  /*
+   * if the threshold is initialized
+   * unlink from current parent
+   */
+  if(cat->threshold != xbt_log_priority_uninitialized){
+
+    xbt_log_category_t* cpp = &parent->firstChild;
+
+    while(*cpp != cat && *cpp != NULL) {
+      cpp = &(*cpp)->nextSibling;
+    }
+
+    xbt_assert(*cpp == cat);
+    *cpp = cat->nextSibling;
+  }
+
+  cat->parent = parent;
+  cat->nextSibling = parent->firstChild;
+
+  parent->firstChild = cat;
+
+  if (parent->threshold == xbt_log_priority_uninitialized){
+
+    _xbt_log_cat_init(parent,
+                      xbt_log_priority_uninitialized/* ignored*/);
+  }
+
+  cat->threshold = parent->threshold;
+
+  cat->isThreshInherited = 1;
+
 }
 
 static void _set_inherited_thresholds(xbt_log_category_t cat) {
-	
+
   xbt_log_category_t child = cat->firstChild;
-  
+
   for( ; child != NULL; child = child->nextSibling) {
     if (child->isThreshInherited) {
       if (cat != &_XBT_LOGV(log))
-	VERB3("Set category threshold of %s to %s (=%d)",
-	      child->name,xbt_log_priority_names[cat->threshold],cat->threshold);
+        VERB3("Set category threshold of %s to %s (=%d)",
+              child->name,xbt_log_priority_names[cat->threshold],cat->threshold);
       child->threshold = cat->threshold;
       _set_inherited_thresholds(child);
     }
   }
-  
- 
+
+
 }
 
 void xbt_log_threshold_set(xbt_log_category_t   cat,
-			    e_xbt_log_priority_t threshold) {
+                           e_xbt_log_priority_t threshold) {
   cat->threshold = threshold;
   cat->isThreshInherited = 0;
- 
+
   _set_inherited_thresholds(cat);
- 
+
 }
 
 static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
 
   xbt_log_setting_t set = xbt_new(s_xbt_log_setting_t,1);
   const char *name, *dot, *eq;
-  
+
   set->catname=NULL;
   set->thresh = xbt_log_priority_uninitialized;
   set->fmt = NULL;
   set->additivity = -1;
 
-  if (!*control_string) 
+  if (!*control_string)
     return set;
   DEBUG1("Parse log setting '%s'",control_string);
 
@@ -854,50 +854,50 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
   control_string += strcspn(control_string, " ");
 
   xbt_assert1(*dot == '.' && (*eq == '=' || *eq == ':'),
-	       "Invalid control string '%s'",control_string);
+              "Invalid control string '%s'",control_string);
 
   if (!strncmp(dot + 1, "thresh", (size_t)(eq - dot - 1))) {
     int i;
     char *neweq=xbt_strdup(eq+1);
     char *p=neweq-1;
-    
+
     while (*(++p) != '\0') {
       if (*p >= 'a' && *p <= 'z') {
-	*p-='a'-'A';
+        *p-='a'-'A';
       }
     }
-    
+
     DEBUG1("New priority name = %s",neweq);
     for (i=0; i<xbt_log_priority_infinite; i++) {
       if (!strncmp(xbt_log_priority_names[i],neweq,p-eq)) {
-	DEBUG1("This is priority %d",i);
-	break;
+        DEBUG1("This is priority %d",i);
+        break;
       }
     }
     if (i<xbt_log_priority_infinite) {
       set->thresh= (e_xbt_log_priority_t) i;
     } else {
       THROW1(arg_error,0,
-	     "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)",eq+1);
+             "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)",eq+1);
     }
     free(neweq);
   } else if ( !strncmp(dot + 1, "add", (size_t)(eq - dot - 1)) ||
-	      !strncmp(dot + 1, "additivity", (size_t)(eq - dot - 1)) ) {
+      !strncmp(dot + 1, "additivity", (size_t)(eq - dot - 1)) ) {
 
     char *neweq=xbt_strdup(eq+1);
     char *p=neweq-1;
-    
+
     while (*(++p) != '\0') {
       if (*p >= 'a' && *p <= 'z') {
-	*p-='a'-'A';
+        *p-='a'-'A';
       }
     }
     if ( !strcmp(neweq,"ON") ||
-	 !strcmp(neweq,"YES") ||
-	 !strcmp(neweq,"1") ) {
-      set->additivity = 1;      
+        !strcmp(neweq,"YES") ||
+        !strcmp(neweq,"1") ) {
+      set->additivity = 1;
     } else {
-      set->additivity = 0;      
+      set->additivity = 0;
     }
     free(neweq);
   } else if (!strncmp(dot + 1, "fmt", (size_t)(eq - dot - 1))) {
@@ -908,53 +908,53 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
     THROW1(arg_error,0,"Unknown setting of the log category: '%s'",buff);
   }
   set->catname=(char*)xbt_malloc(dot - name+1);
-    
+
   memcpy(set->catname,name,dot-name);
   set->catname[dot-name]='\0'; /* Just in case */
   DEBUG1("This is for cat '%s'", set->catname);
-  
+
   return set;
 }
 
 static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *name) {
   xbt_log_category_t child,res;
-  
+
   DEBUG4("Search '%s' into '%s' (firstChild='%s'; nextSibling='%s')",name,cat->name,
-	 (cat->firstChild  ? cat->firstChild->name :"none"),
-	 (cat->nextSibling ? cat->nextSibling->name:"none"));
-  if (!strcmp(cat->name,name)) 
+         (cat->firstChild  ? cat->firstChild->name :"none"),
+         (cat->nextSibling ? cat->nextSibling->name:"none"));
+  if (!strcmp(cat->name,name))
     return cat;
 
   for (child=cat->firstChild ; child != NULL; child = child->nextSibling) {
-     DEBUG1("Dig into %s",child->name);
-     res = _xbt_log_cat_searchsub(child,name);
-     if (res) 
-       return res;
+    DEBUG1("Dig into %s",child->name);
+    res = _xbt_log_cat_searchsub(child,name);
+    if (res)
+      return res;
   }
 
   return NULL;
 }
 
 /**
- * \ingroup XBT_log  
+ * \ingroup XBT_log
  * \param control_string What to parse
  *
  * Typically passed a command-line argument. The string has the syntax:
  *
  *      ( [category] "." [keyword] ":" value (" ")... )...
  *
- * where [category] is one the category names (see \ref XBT_log_cats for 
- * a complete list of the ones defined in the SimGrid library)  
+ * where [category] is one the category names (see \ref XBT_log_cats for
+ * a complete list of the ones defined in the SimGrid library)
  * and keyword is one of the following:
  *
  *    - thres: category's threshold priority. Possible values:
  *             TRACE,DEBUG,VERBOSE,INFO,WARNING,ERROR,CRITICAL
- *    - add or additivity: whether the logging actions must be passed to 
- *      the parent category. 
+ *    - add or additivity: whether the logging actions must be passed to
+ *      the parent category.
  *      Possible values: 0, 1, no, yes, on, off.
  *      Default value: yes.
  *    - fmt: the format to use. See \ref log_lay for more information.
- *            
+ *
  */
 void xbt_log_control_set(const char* control_string) {
   xbt_log_setting_t set;
@@ -971,21 +971,21 @@ void xbt_log_control_set(const char* control_string) {
   /* some initialization if this is the first time that this get called */
   if (xbt_log_settings == NULL)
     xbt_log_settings = xbt_dynar_new(sizeof(xbt_log_setting_t),
-				     _free_setting);
+                                     _free_setting);
 
   /* split the string, and remove empty entries */
   set_strings=xbt_str_split_quoted(control_string);
 
   if (xbt_dynar_length(set_strings) == 0) { /* vicious user! */
     xbt_dynar_free(&set_strings);
-    return; 
+    return;
   }
 
   /* Parse each entry and either use it right now (if the category was already
      created), or store it for further use */
   xbt_dynar_foreach(set_strings,cpt,str) {
     xbt_log_category_t cat=NULL;
-    
+
     set = _xbt_log_parse_setting(str);
     cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT),set->catname);
 
@@ -1001,7 +1001,7 @@ void xbt_log_control_set(const char* control_string) {
     }
   }
   xbt_dynar_free(&set_strings);
-} 
+}
 
 void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {
   if (cat->appender) {
@@ -1014,11 +1014,11 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {
 void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay) {
   if (!cat->appender) {
     VERB1("No appender to category %s. Setting the file appender as default",
-	  cat->name);
+          cat->name);
     xbt_log_appender_set(cat,xbt_log_appender_file_new(NULL));
   }
   if (cat->layout && cat != &_XBT_LOGV(root)) {
-    /* better leak the default layout than check every categories to 
+    /* better leak the default layout than check every categories to
        change it */
     if (cat->layout->free_) {
       cat->layout->free_(cat->layout);

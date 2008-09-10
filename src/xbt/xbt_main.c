@@ -47,7 +47,7 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_set);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_sync_os);
 
 /** @brief Initialize the xbt mechanisms. */
-void 
+void
 xbt_init(int *argc, char **argv) {
   xbt_initialized++;
 
@@ -62,13 +62,13 @@ xbt_init(int *argc, char **argv) {
   XBT_LOG_CONNECT(strbuff, xbt);
   XBT_LOG_CONNECT(xbt_cfg, xbt);
   XBT_LOG_CONNECT(xbt_dict, xbt);
-    XBT_LOG_CONNECT(xbt_dict_add, xbt_dict);
-    XBT_LOG_CONNECT(xbt_dict_collapse, xbt_dict);
-    XBT_LOG_CONNECT(xbt_dict_cursor, xbt_dict);
-    XBT_LOG_CONNECT(xbt_dict_elm, xbt_dict);
-    XBT_LOG_CONNECT(xbt_dict_multi, xbt_dict);
-    XBT_LOG_CONNECT(xbt_dict_remove, xbt_dict);
-    XBT_LOG_CONNECT(xbt_dict_search, xbt_dict);
+  XBT_LOG_CONNECT(xbt_dict_add, xbt_dict);
+  XBT_LOG_CONNECT(xbt_dict_collapse, xbt_dict);
+  XBT_LOG_CONNECT(xbt_dict_cursor, xbt_dict);
+  XBT_LOG_CONNECT(xbt_dict_elm, xbt_dict);
+  XBT_LOG_CONNECT(xbt_dict_multi, xbt_dict);
+  XBT_LOG_CONNECT(xbt_dict_remove, xbt_dict);
+  XBT_LOG_CONNECT(xbt_dict_search, xbt_dict);
   XBT_LOG_CONNECT(xbt_dyn, xbt);
   XBT_LOG_CONNECT(xbt_ex, xbt);
   XBT_LOG_CONNECT(xbt_fifo, xbt);
@@ -77,11 +77,11 @@ xbt_init(int *argc, char **argv) {
   XBT_LOG_CONNECT(xbt_queue, xbt);
   XBT_LOG_CONNECT(xbt_set, xbt);
   XBT_LOG_CONNECT(xbt_sync_os, xbt);
-   
+
   xbt_binary_name = xbt_strdup(argv[0]);
   srand((unsigned int)time(NULL));
   VERB0("Initialize XBT");
-  
+
   xbt_backtrace_init();
   xbt_log_init(argc,argv);
   xbt_os_thread_mod_init();
@@ -89,7 +89,7 @@ xbt_init(int *argc, char **argv) {
 }
 
 /** @brief Finalize the xbt mechanisms. */
-void 
+void
 xbt_exit(){
   xbt_initialized--;
   if (xbt_initialized == 0) {
@@ -107,11 +107,11 @@ xbt_exit(){
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like free, but you can be sure that it is a function  */
 XBT_PUBLIC(void) xbt_free_f(void* p) {
-   free(p);
+  free(p);
 }
 
 /** @brief should be given a pointer to pointer, and frees the second one */
 XBT_PUBLIC(void) xbt_free_ref(void *d){
-   free(*(void**)d);
+  free(*(void**)d);
 }
 

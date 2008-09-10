@@ -22,7 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator,xbt,"Mallocators");
  * in \a xbt_mallocator_release() when the stack is full, and when
  * the mallocator is freed.
  * \param reset_f function to reinitialise an object of your datatype, called
- * when you extract an object from the mallocator 
+ * when you extract an object from the mallocator
  *
  * Create and initialize a new mallocator for a given datatype.
  *
@@ -30,9 +30,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator,xbt,"Mallocators");
  * \see xbt_mallocator_free()
  */
 xbt_mallocator_t xbt_mallocator_new(int size,
-				    pvoid_f_void_t new_f,
-				    void_f_pvoid_t free_f,
-				    void_f_pvoid_t reset_f) {
+                                    pvoid_f_void_t new_f,
+                                    void_f_pvoid_t free_f,
+                                    void_f_pvoid_t reset_f) {
 
 
   xbt_mallocator_t m;
@@ -43,7 +43,7 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   m = xbt_new0(s_xbt_mallocator_t, 1);
   VERB1("Create mallocator %p",m);
   if (XBT_LOG_ISENABLED(xbt_mallocator,xbt_log_priority_verbose))
-      xbt_backtrace_display_current();
+    xbt_backtrace_display_current();
 
   m->objects = xbt_new0(void*, size);
   m->max_size = size;
@@ -84,10 +84,10 @@ void xbt_mallocator_free(xbt_mallocator_t m) {
  * This function is designed to be used instead of malloc().
  * If the mallocator is not empty, an object is
  * extracted from the mallocator and no malloc is done.
- * 
+ *
  * If the mallocator is empty, a new object is created,
  * by calling the function new_f().
- * 
+ *
  * In both cases, the function reset_f() is called on the object.
  *
  * \see xbt_mallocator_release()

@@ -19,7 +19,7 @@ void xbt_backtrace_current(xbt_ex_t * e) {
   e->used = backtrace((void **) e->bt, XBT_BACKTRACE_SIZE);
 }
 
-  
+
 void xbt_ex_setup_backtrace(xbt_ex_t * e)
 {
   int i;
@@ -44,12 +44,12 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   /* To search for the right executable path when not trivial */
   struct stat stat_buf;
   char *binary_name = NULL;
-   
+
   xbt_assert0(e && e->used,"Backtrace not setup yet, cannot set it up for display");
-   
+
   backtrace_syms = backtrace_symbols(e->bt, e->used);
   addrs = xbt_new(char *, e->used);
-   
+
   e->bt_strings = NULL;
 
   /* Some arches only have stubs of backtrace, no implementation (hppa comes to mind) */
@@ -184,7 +184,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
         if (found) {
           DEBUG3("%#lx in [%#lx-%#lx]", addr, first, last);
           DEBUG0
-            ("Symbol found, map lines not further displayed (even if looking for next ones)");
+          ("Symbol found, map lines not further displayed (even if looking for next ones)");
         }
       }
       fclose(maps);
@@ -192,13 +192,13 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
 
       if (!found) {
         VERB0
-          ("Problem while reading the maps file. Following backtrace will be mangled.");
+        ("Problem while reading the maps file. Following backtrace will be mangled.");
         DEBUG1("No dynamic. Static symbol: %s", backtrace_syms[i]);
         e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace_syms[i]);
         continue;
       }
 
-      /* Ok, Found the offset of the maps line containing the searched symbol. 
+      /* Ok, Found the offset of the maps line containing the searched symbol.
          We now need to substract this from the address we got from backtrace.
        */
 
@@ -206,7 +206,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
       addrs[i] = bprintf("0x%0*lx", addr_len - 2, addr - offset);
       DEBUG2("offset=%#lx new addr=%s", offset, addrs[i]);
 
-      /* Got it. We have our new address. Let's get the library path and we 
+      /* Got it. We have our new address. Let's get the library path and we
          are set */
       p = xbt_strdup(backtrace_syms[i]);
       if (p[0] == '[') {

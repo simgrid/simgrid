@@ -23,7 +23,7 @@
  * \param offset where the hookup is located in the structure
  * \see xbt_swag_offset
  *
- * Usage : xbt_swag_new(&obj.setA-&obj); 
+ * Usage : xbt_swag_new(&obj.setA-&obj);
  */
 xbt_swag_t xbt_swag_new(size_t offset)
 {
@@ -34,9 +34,9 @@ xbt_swag_t xbt_swag_new(size_t offset)
   return swag;
 }
 
-/** 
+/**
  * \param swag poor victim
- * 
+ *
  * kilkil a swag but not it's content. If you do not understand why
  * xbt_swag_free should not free its content, don't use swags.
  */
@@ -50,7 +50,7 @@ void xbt_swag_free(xbt_swag_t swag)
  * \param offset where the hookup is located in the structure
  * \see xbt_swag_offset
  *
- * Usage : xbt_swag_init(swag,&obj.setA-&obj); 
+ * Usage : xbt_swag_init(swag,&obj.setA-&obj);
  */
 void xbt_swag_init(xbt_swag_t swag, size_t offset)
 {
@@ -61,7 +61,7 @@ void xbt_swag_init(xbt_swag_t swag, size_t offset)
 }
 
 
-/** 
+/**
  * \param obj the objet to insert in the swag
  * \param swag a swag
  *
@@ -87,7 +87,7 @@ void xbt_swag_insert(void *obj, xbt_swag_t swag)
   swag->tail = obj;
 }
 
-/** 
+/**
  * \param obj the objet to insert in the swag
  * \param swag a swag
  *
@@ -114,7 +114,7 @@ void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
   swag->head = obj;
 }
 
-/** 
+/**
  * \param obj the objet to insert in the swag
  * \param swag a swag
  *
@@ -141,7 +141,7 @@ void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
   swag->tail = obj;
 }
 
-/** 
+/**
  * \param obj the objet to remove from the swag
  * \param swag a swag
  * \return \a obj if it was in the \a swag and NULL otherwise
@@ -156,7 +156,7 @@ void *xbt_swag_remove(void *obj, xbt_swag_t swag)
     return NULL;
   if(!xbt_swag_belongs(obj, swag)) /* Trying to remove an object that
 				      was not in this swag */
-      return NULL;
+    return NULL;
 
   if (swag->head == swag->tail) {	/* special case */
     if (swag->head != obj)	/* Trying to remove an object that was not in this swag */
@@ -181,7 +181,7 @@ void *xbt_swag_remove(void *obj, xbt_swag_t swag)
   return obj;
 }
 
-/** 
+/**
  * \param swag a swag
  * \return an object from the \a swag
  */
@@ -207,7 +207,7 @@ void *xbt_swag_extract(xbt_swag_t swag)
 
   return obj;
 }
-/** 
+/**
  * \param swag a swag
  * \return the number of objects in \a swag
  */
@@ -216,7 +216,7 @@ int xbt_swag_size(xbt_swag_t swag)
   return (swag->count);
 }
 
-/** 
+/**
  * \param obj an object
  * \param swag a swag
  * \return 1 if \a obj is in the \a swag and 0 otherwise
@@ -224,7 +224,7 @@ int xbt_swag_size(xbt_swag_t swag)
 int xbt_swag_belongs(void *obj, xbt_swag_t swag)
 {
   return ((NEXT(obj, swag->offset)) || (PREV(obj, swag->offset))
-	  || (swag->head == obj));
+      || (swag->head == obj));
 }
 
 
@@ -251,7 +251,7 @@ XBT_TEST_UNIT("basic",test_swag_basic,"Basic usage") {
 
   xbt_test_add0("Basic usage");
   xbt_test_log3("%p %p %ld\n",obj1,&(obj1->setB),
-		(long)((char *)&(obj1->setB) - (char *)obj1));
+                (long)((char *)&(obj1->setB) - (char *)obj1));
 
   setA = xbt_swag_new(xbt_swag_offset(*obj1,setA));
   setB = xbt_swag_new(xbt_swag_offset(*obj1,setB));
@@ -283,7 +283,7 @@ XBT_TEST_UNIT("basic",test_swag_basic,"Basic usage") {
 
   xbt_test_assert(xbt_swag_size(setA) == 2);
   xbt_test_assert(xbt_swag_size(setB) == 1);
-   
+
   xbt_swag_free(setA);
   xbt_swag_free(setB);
 }

@@ -12,7 +12,7 @@
 #include "xbt/function_types.h"
 
 static int xbt_fake_pid(void) {
-   return 0;
+  return 0;
 }
 
 int_f_void_t xbt_getpid=xbt_fake_pid;

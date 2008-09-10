@@ -20,34 +20,34 @@ XBT_LOG_NEW_SUBCATEGORY(xbt_dict_collapse,xbt_dict,"Dictionaries internals: post
 xbt_mallocator_t dict_elm_mallocator = NULL;
 
 xbt_dictelm_t xbt_dictelm_new(const char *key,
-			      int key_len,
-			      unsigned int hash_code,
-			      void *content,
-			      void_f_pvoid_t free_f) {
+                              int key_len,
+                              unsigned int hash_code,
+                              void *content,
+                              void_f_pvoid_t free_f) {
   xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
-  
+
   element->key = xbt_new(char, key_len + 1);
   strncpy(element->key, key, key_len);
   element->key[key_len] = '\0';
 
   element->key_len = key_len;
   element->hash_code = hash_code;
-   
+
   element->content = content;
   element->free_f = free_f;
   element->next = NULL;
-  
+
   return element;
 }
 
 void xbt_dictelm_free(xbt_dictelm_t element) {
   if (element != NULL) {
     xbt_free(element->key);
-    
+
     if (element->free_f != NULL && element->content != NULL) {
       element->free_f(element->content);
     }
-   
+
     xbt_mallocator_release(dict_elm_mallocator, element);
   }
 }

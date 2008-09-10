@@ -26,10 +26,10 @@ typedef struct xbt_dictelm_ {
   char *key;
   int key_len;
   unsigned int hash_code;
-   
+
   void *content;
   void_f_pvoid_t free_f;
-   
+
   xbt_dictelm_t next;
 } s_xbt_dictelm_t;
 
@@ -49,7 +49,7 @@ extern void dict_elm_mallocator_reset_f(void* elem);
 
 /*####[ Function prototypes ]################################################*/
 xbt_dictelm_t xbt_dictelm_new(const char *key, int key_len, unsigned int hash_code,
-			      void *content, void_f_pvoid_t free_f);
+                              void *content, void_f_pvoid_t free_f);
 void xbt_dictelm_free(xbt_dictelm_t element);
 void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element);
 

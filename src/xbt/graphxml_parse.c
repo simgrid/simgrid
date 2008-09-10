@@ -85,9 +85,9 @@ void  xbt_graph_parse_open(const char *file) {
     WARN0("I hope you know what you're doing... you just gave me a NULL pointer!");
     return;
   }
-  if(!xbt_graph_input_buffer_stack) 
+  if(!xbt_graph_input_buffer_stack)
     xbt_graph_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE),NULL);
-  if(!xbt_graph_file_to_parse_stack) 
+  if(!xbt_graph_file_to_parse_stack)
     xbt_graph_file_to_parse_stack = xbt_dynar_new(sizeof(FILE*),NULL);
 
   xbt_graph_file_to_parse = fopen(file,"r");  /* FIXME should use something like surf_fopen */
@@ -98,9 +98,9 @@ void  xbt_graph_parse_open(const char *file) {
 }
 
 void  xbt_graph_parse_close(void) {
-  if(xbt_graph_input_buffer_stack) 
+  if(xbt_graph_input_buffer_stack)
     xbt_dynar_free(&xbt_graph_input_buffer_stack);
-  if(xbt_graph_file_to_parse_stack) 
+  if(xbt_graph_file_to_parse_stack)
     xbt_dynar_free(&xbt_graph_file_to_parse_stack);
 
   if(xbt_graph_file_to_parse) {
@@ -118,11 +118,11 @@ static int _xbt_graph_parse(void)
 int_f_void_t xbt_graph_parse = _xbt_graph_parse;
 
 void xbt_graph_parse_get_double(double *value,const char *string)
-{ 
+{
   int ret = 0;
 
   ret = sscanf(string, "%lg", value);
   xbt_assert2((ret==1), "Parse error line %d : %s not a number", xbt_graph_parse_lineno,
-	      string);
+              string);
 }
 

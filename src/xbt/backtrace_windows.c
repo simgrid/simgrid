@@ -9,16 +9,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* 
+/*
  * Win32 (x86) implementation backtrace, backtrace_symbols:
  *  support for application self-debugging.
  */
 
 #if defined(_XBT_BORLAND_COMPILER) || defined(_XBT_VISUALC_COMPILER)
-  /* native windows build */
+/* native windows build */
 #  include <dbghelp.h>
 #else
-  /* gcc-based cross-compiling */
+/* gcc-based cross-compiling */
 #  include "xbt/wine_dbghelp.h"
 #endif
 
@@ -37,8 +37,8 @@ static fun_function_table_access_t fun_function_table_access;
 
 /* SymGetLineFromAddr() */
 typedef BOOL(WINAPI * fun_get_line_from_addr_t) (HANDLE, DWORD,
-						 PDWORD,
-						 PIMAGEHLP_LINE);
+    PDWORD,
+    PIMAGEHLP_LINE);
 static fun_get_line_from_addr_t fun_get_line_from_addr;
 
 /* SymGetModuleBase() */
@@ -55,16 +55,16 @@ static fun_set_options_t fun_set_options;
 
 /* Pointer function to SymGetSymFromAddr() */
 typedef BOOL(WINAPI *fun_get_sym_from_addr_t) (HANDLE, DWORD, PDWORD,
-					       OUT PIMAGEHLP_SYMBOL);
+    OUT PIMAGEHLP_SYMBOL);
 static fun_get_sym_from_addr_t fun_get_sym_from_addr;
 
 /* Pointer function to StackWalk() */
 typedef BOOL(WINAPI * fun_stack_walk_t) (DWORD, HANDLE, HANDLE,
-					    LPSTACKFRAME, PVOID,
-					    PREAD_PROCESS_MEMORY_ROUTINE,
-					    PFUNCTION_TABLE_ACCESS_ROUTINE,
-					    PGET_MODULE_BASE_ROUTINE,
-					    PTRANSLATE_ADDRESS_ROUTINE);
+    LPSTACKFRAME, PVOID,
+    PREAD_PROCESS_MEMORY_ROUTINE,
+    PFUNCTION_TABLE_ACCESS_ROUTINE,
+    PGET_MODULE_BASE_ROUTINE,
+    PTRANSLATE_ADDRESS_ROUTINE);
 static fun_stack_walk_t fun_stack_walk;
 
 static HINSTANCE hlp_dbg_instance = NULL;
@@ -72,7 +72,7 @@ static HANDLE process_handle = NULL;
 
 
 /* Module creation/destruction: nothing to do on linux */
-void xbt_backtrace_init(void) { 
+void xbt_backtrace_init(void) {
   process_handle = GetCurrentProcess();
 
   if (hlp_dbg_instance) {
@@ -85,52 +85,52 @@ void xbt_backtrace_init(void) {
 
   if (!hlp_dbg_instance)
     return;
- 
+
   /* get the pointers to debug help library exported functions */
-  fun_initialize = 
-     (fun_initialize_t) GetProcAddress(hlp_dbg_instance, "SymInitialize");
-  fun_cleanup = 
-     (fun_cleanup_t) GetProcAddress(hlp_dbg_instance, "SymCleanup");
-  fun_function_table_access = 
-     (fun_function_table_access_t) GetProcAddress(hlp_dbg_instance, "SymFunctionTableAccess");
-  fun_get_line_from_addr = 
-     (fun_get_line_from_addr_t) GetProcAddress(hlp_dbg_instance, "SymGetLineFromAddr");
-  fun_get_module_base = 
-     (fun_get_module_base_t) GetProcAddress(hlp_dbg_instance, "SymGetModuleBase");
-  fun_get_options = 
-     (fun_get_options_t) GetProcAddress(hlp_dbg_instance, "SymGetOptions");
-  fun_get_sym_from_addr = 
-     (fun_get_sym_from_addr_t) GetProcAddress(hlp_dbg_instance, "SymGetSymFromAddr");
-  fun_set_options = 
-     (fun_set_options_t) GetProcAddress(hlp_dbg_instance, "SymSetOptions");
-  fun_stack_walk = 
-     (fun_stack_walk_t) GetProcAddress(hlp_dbg_instance, "StackWalk");
+  fun_initialize =
+    (fun_initialize_t) GetProcAddress(hlp_dbg_instance, "SymInitialize");
+  fun_cleanup =
+    (fun_cleanup_t) GetProcAddress(hlp_dbg_instance, "SymCleanup");
+  fun_function_table_access =
+    (fun_function_table_access_t) GetProcAddress(hlp_dbg_instance, "SymFunctionTableAccess");
+  fun_get_line_from_addr =
+    (fun_get_line_from_addr_t) GetProcAddress(hlp_dbg_instance, "SymGetLineFromAddr");
+  fun_get_module_base =
+    (fun_get_module_base_t) GetProcAddress(hlp_dbg_instance, "SymGetModuleBase");
+  fun_get_options =
+    (fun_get_options_t) GetProcAddress(hlp_dbg_instance, "SymGetOptions");
+  fun_get_sym_from_addr =
+    (fun_get_sym_from_addr_t) GetProcAddress(hlp_dbg_instance, "SymGetSymFromAddr");
+  fun_set_options =
+    (fun_set_options_t) GetProcAddress(hlp_dbg_instance, "SymSetOptions");
+  fun_stack_walk =
+    (fun_stack_walk_t) GetProcAddress(hlp_dbg_instance, "StackWalk");
 
   /* Check that everything worked well */
   if (!fun_initialize ||
       !fun_cleanup ||
-      !fun_function_table_access || 
+      !fun_function_table_access ||
       !fun_get_line_from_addr ||
       !fun_get_module_base ||
       !fun_get_options ||
       !fun_get_sym_from_addr ||
       !fun_set_options ||
       !fun_stack_walk
-      ) {
+  ) {
     FreeLibrary(hlp_dbg_instance);
     hlp_dbg_instance = NULL;
     return;
   }
 
   (*fun_set_options) ((*fun_get_options) () |
-			SYMOPT_LOAD_LINES | SYMOPT_DEFERRED_LOADS);
+      SYMOPT_LOAD_LINES | SYMOPT_DEFERRED_LOADS);
 
   if (!(*fun_initialize) (process_handle, 0, 1)) {
     FreeLibrary(hlp_dbg_instance);
     hlp_dbg_instance = NULL;
   }
 }
-void xbt_backtrace_exit(void) { 
+void xbt_backtrace_exit(void) {
   if (!hlp_dbg_instance)
     return;
 
@@ -176,7 +176,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   char **backtrace_syms;
 
   xbt_assert0(e && e->used,"Backtrace not setup yet, cannot set it up for display");
-   
+
   backtrace_syms = backtrace_symbols(e->bt, e->used);
   e->bt_strings = NULL;
   /* parse the output and build a new backtrace */
@@ -199,8 +199,8 @@ int backtrace(void **buffer, int size)
   unsigned long offset = 0;
   IMAGEHLP_LINE line_info = { 0 };
   byte
-    __buffer[(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) +
-              sizeof(ULONG64) - 1) / sizeof(ULONG64)];
+  __buffer[(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) +
+      sizeof(ULONG64) - 1) / sizeof(ULONG64)];
 
   CONTEXT context = { CONTEXT_FULL };
   GetThreadContext(GetCurrentThread(), &context);
@@ -213,7 +213,7 @@ int backtrace(void **buffer, int size)
   _asm mov eax, esp
   _asm mov context.Esp, eax
   _asm mov context.Ebp, ebp
-     
+
   if ((NULL == hlp_dbg_instance) || (size <= 0) || (NULL == buffer)) {
     errno = EINVAL;
     return 0;
@@ -246,13 +246,13 @@ int backtrace(void **buffer, int size)
     stack_frame->AddrStack.Mode = AddrModeFlat;
 
     if ((*fun_stack_walk) (IMAGE_FILE_MACHINE_I386,
-			   process_handle,
-			   GetCurrentThread(),
-			   stack_frame,
-			   &context,
-			   NULL,
-			   fun_function_table_access,
-			   fun_get_module_base, NULL)
+        process_handle,
+        GetCurrentThread(),
+        stack_frame,
+        &context,
+        NULL,
+        fun_function_table_access,
+        fun_get_module_base, NULL)
         && !first) {
       if (stack_frame->AddrReturn.Offset) {
 
@@ -288,8 +288,8 @@ char **backtrace_symbols(void *const *buffer, int size)
   IMAGEHLP_LINE line_info = { 0 };
   IMAGEHLP_MODULE module = { 0 };
   byte
-    __buffer[(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) +
-              sizeof(ULONG64) - 1) / sizeof(ULONG64)];
+  __buffer[(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) +
+      sizeof(ULONG64) - 1) / sizeof(ULONG64)];
 
   if ((NULL == hlp_dbg_instance) || (size <= 0) || (NULL == buffer)) {
     errno = EINVAL;

@@ -26,7 +26,7 @@ xbt_swag_t context_to_destroy = NULL;
 /* this list contains the contexts in use						*/
 xbt_swag_t context_living = NULL;
 
-/* the context factory used to create the appropriate context	
+/* the context factory used to create the appropriate context
  * each context implementation define its own context factory
  * a context factory is responsable of the creation of the context
  * associated with the maestro and of all the context based on
@@ -97,7 +97,7 @@ void xbt_context_mod_exit(void)
     /* remove the context of the scheduler from the list of the contexts in use */
     xbt_swag_remove(maestro_context, context_living);
 
-    /*  
+    /*
      * kill all the contexts in use :
      * the killed contexts are added in the list of the contexts to destroy
      */
@@ -120,12 +120,12 @@ void xbt_context_mod_exit(void)
 /*******************************/
 /* Object creation/destruction */
 /*******************************/
-/** 
+/**
  * \param code a main function
  * \param startup_func a function to call when running the context for
  *      the first time and just before the main function \a code
  * \param startup_arg the argument passed to the previous function (\a startup_func)
- * \param cleanup_func a function to call when running the context, just after 
+ * \param cleanup_func a function to call when running the context, just after
         the termination of the main function \a code
  * \param cleanup_arg the argument passed to the previous function (\a cleanup_func)
  * \param argc first argument of function \a code
@@ -138,13 +138,13 @@ xbt_context_new(const char *name,
                 void *startup_arg,
                 void_f_pvoid_t cleanup_func,
                 void *cleanup_arg, int argc, char *argv[]
-  )
+)
 {
   /* use the appropriate context factory to create the appropriate context */
   xbt_context_t context =
     (*(context_factory->create_context)) (name, code, startup_func,
-                                          startup_arg, cleanup_func,
-                                          cleanup_arg, argc, argv);
+        startup_arg, cleanup_func,
+        cleanup_arg, argc, argv);
 
   /* add the context in the list of the contexts in use */
   xbt_swag_insert(context, context_living);
@@ -153,22 +153,22 @@ xbt_context_new(const char *name,
 }
 
 /* Scenario for the end of a context:
- * 
+ *
  * CASE 1: death after end of function
  *   __context_wrapper, called by os thread, calls xbt_context_stop after user code stops
  *   xbt_context_stop calls user cleanup_func if any (in context settings),
  *                    add current to trashbin
  *                    yields back to maestro (destroy os thread on need)
- *   From time to time, maestro calls xbt_context_empty_trash, 
+ *   From time to time, maestro calls xbt_context_empty_trash,
  *       which maps xbt_context_free on the content
- *   xbt_context_free frees some more memory, 
+ *   xbt_context_free frees some more memory,
  *                    joins os thread
- * 
+ *
  * CASE 2: brutal death
  *   xbt_context_kill (from any context)
  *                    set context->wannadie to 1
  *                    yields to the context
- *   the context is awaken in the middle of __yield. 
+ *   the context is awaken in the middle of __yield.
  *   At the end of it, it checks that wannadie == 1, and call xbt_context_stop
  *   (same than first case afterward)
  */
@@ -186,10 +186,10 @@ void xbt_context_kill(xbt_context_t context)
   (*(context->kill)) (context);
 }
 
-/** 
+/**
  * \param context the context to start
- * 
- * Calling this function prepares \a context to be run. It will 
+ *
+ * Calling this function prepares \a context to be run. It will
    however run effectively only when calling #xbt_context_schedule
  */
 void xbt_context_start(xbt_context_t context)
@@ -197,11 +197,11 @@ void xbt_context_start(xbt_context_t context)
   (*(context->start)) (context);
 }
 
-/** 
+/**
  * Calling this function makes the current context yield. The context
  * that scheduled it returns from xbt_context_schedule as if nothing
  * had happened.
- * 
+ *
  * Only the processes can call this function, giving back the control
  * to the maestro
  */
@@ -210,13 +210,13 @@ void xbt_context_yield(void)
   (*(current_context->yield)) ();
 }
 
-/** 
+/**
  * \param context the winner
  *
- * Calling this function blocks the current context and schedule \a context.  
+ * Calling this function blocks the current context and schedule \a context.
  * When \a context will call xbt_context_yield, it will return
  * to this function as if nothing had happened.
- * 
+ *
  * Only the maestro can call this function to run a given process.
  */
 void xbt_context_schedule(xbt_context_t context)

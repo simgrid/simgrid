@@ -30,7 +30,7 @@ struct xbt_dict_cursor_ {
 #undef xbt_dict_CURSOR_DEBUG
 /*#define xbt_dict_CURSOR_DEBUG 1*/
 
-/** @brief Creator 
+/** @brief Creator
  *  @param dict the dict
  */
 xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict) {
@@ -84,7 +84,7 @@ void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor) {
  * @param[out] cursor dest address
  */
 void xbt_dict_cursor_first(const xbt_dict_t   dict,
-			   xbt_dict_cursor_t *cursor){
+                           xbt_dict_cursor_t *cursor){
   DEBUG0("xbt_dict_cursor_first");
   if (!*cursor) {
     DEBUG0("Create the cursor on first use");
@@ -100,7 +100,7 @@ void xbt_dict_cursor_first(const xbt_dict_t   dict,
 
 
 /**
- * \brief Move to the next element. 
+ * \brief Move to the next element.
  */
 void xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
 
@@ -121,14 +121,14 @@ void xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
       current = current->next;
       DEBUG1("next element: %p", current);
     }
-    
+
     while (current == NULL && ++line <= cursor->dict->table_size) {
       DEBUG0("current is NULL, take the next line");
       current = cursor->dict->table[line];
       DEBUG1("element in the next line: %p", current);
     }
     DEBUG2("search finished, current = %p, line = %d", current, line);
-    
+
     cursor->current = current;
     cursor->line = line;
   }
@@ -140,8 +140,8 @@ void xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
  * @returns true if it's ok, false if there is no more data
  */
 int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
-				char               **key,
-				void               **data) {
+                                char               **key,
+                                void               **data) {
 
   xbt_dictelm_t current;
 
@@ -156,7 +156,7 @@ int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
     xbt_dict_cursor_free(cursor);
     return FALSE;
   }
-  
+
   *key = current->key;
   *data = current->content;
   return TRUE;

@@ -17,7 +17,7 @@
 #include "xbt/set.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_set,xbt,
-	     "set: data container consisting in dict+dynar");
+                                "set: data container consisting in dict+dynar");
 
 /*####[ Type definition ]####################################################*/
 typedef struct xbt_set_ {
@@ -66,35 +66,35 @@ static int _xbt_set_get_id(xbt_set_t set) {
   return id;
 }
 
-/** @brief Add an element to a set. 
+/** @brief Add an element to a set.
  *
  * \param set set to populate
- * \param elm element to add. 
- * \param free_func How to add the data 
+ * \param elm element to add.
+ * \param free_func How to add the data
  *
  * elm->name must be set;
  * if elm->name_len <= 0, it is recomputed. If >0, it's used as is;
  * elm->ID is attributed automatically.
  */
 void xbt_set_add    (xbt_set_t      set,
-		      xbt_set_elm_t  elm,
-		      void_f_pvoid_t free_func) {
+                     xbt_set_elm_t  elm,
+                     void_f_pvoid_t free_func) {
 
   int found = 1;
   xbt_set_elm_t found_in_dict = NULL;
   xbt_ex_t e;
 
   VERB1("add %s to the set",elm->name);
-   
+
   if (elm->name_len <= 0) {
     elm->name_len = strlen(elm->name);
   }
 
   TRY {
-    found_in_dict = xbt_dict_get_ext (set->dict, 
-				      elm->name, elm->name_len);
+    found_in_dict = xbt_dict_get_ext (set->dict,
+                                      elm->name, elm->name_len);
   } CATCH(e) {
-    if (e.category != not_found_error) 
+    if (e.category != not_found_error)
       RETHROW;
     found = 0;
     elm->ID = _xbt_set_get_id(set);
@@ -103,11 +103,11 @@ void xbt_set_add    (xbt_set_t      set,
     DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
     xbt_ex_free(e);
   }
-  
+
   if (found) {
     if (elm == found_in_dict) {
       DEBUG2("Ignoring request to insert the same element twice (key %s ; id %d)",
-	     elm->name, elm->ID);
+             elm->name, elm->ID);
       return;
     } else {
       elm->ID=found_in_dict->ID;
@@ -119,7 +119,7 @@ void xbt_set_add    (xbt_set_t      set,
   }
 }
 
-/** @brief Remove an element from a set. 
+/** @brief Remove an element from a set.
  *
  * \param set a set
  * \param elm element to remove
@@ -132,7 +132,7 @@ void xbt_set_remove (xbt_set_t set, xbt_set_elm_t elm) {
   xbt_dynar_set(set->dynar, id, &elm);
 }
 
-/** @brief Remove an element from a set providing its name. 
+/** @brief Remove an element from a set providing its name.
  *
  * \param set a set
  * \param key name of the element to remove
@@ -143,7 +143,7 @@ void xbt_set_remove_by_name (xbt_set_t set, const char *key) {
 }
 
 /** @brief Remove an element from a set providing its name
- * and the length of the name. 
+ * and the length of the name.
  *
  * \param set a set
  * \param key name of the element to remove
@@ -154,7 +154,7 @@ void xbt_set_remove_by_name_ext (xbt_set_t set, const char *key, int key_len) {
   xbt_set_remove(set, elm);
 }
 
-/** @brief Remove an element from a set providing its id. 
+/** @brief Remove an element from a set providing its id.
  *
  * \param set a set
  * \param id id of the element to remove
@@ -165,13 +165,13 @@ void xbt_set_remove_by_id (xbt_set_t set, int id) {
 }
 
 /** @brief Retrieve data by providing its name.
- * 
+ *
  * \param set
  * \param name Name of the searched cell
  * \returns the data you're looking for
  */
 xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t     set,
-				      const char     *name) {
+                                      const char     *name) {
   DEBUG1("Lookup key %s",name);
   return xbt_dict_get(set->dict, name);
 }
@@ -187,8 +187,8 @@ xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t     set,
  * as name, you weirdo.
  */
 xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t      set,
-				      const char     *name,
-				      int             name_len) {
+                                      const char     *name,
+                                      int             name_len) {
 
   return xbt_dict_get_ext (set->dict, name, name_len);
 }
@@ -203,26 +203,26 @@ xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t      set,
  */
 xbt_set_elm_t xbt_set_get_by_id (xbt_set_t set, int id) {
   xbt_set_elm_t res;
-  
+
   /* Don't bother checking the bounds, the dynar does so */
 
   res = xbt_dynar_get_as(set->dynar,id, xbt_set_elm_t);
   if (res == NULL) {
     THROW1(not_found_error, 0, "Invalid id: %d", id);
   }
-  DEBUG3("Lookup type of id %d (of %lu): %s", 
-	 id, xbt_dynar_length(set->dynar), res->name);
-  
+  DEBUG3("Lookup type of id %d (of %lu): %s",
+         id, xbt_dynar_length(set->dynar), res->name);
+
   return res;
 }
 
-/** 
+/**
  * \brief Returns the number of elements in the set
  * \param set a set
  * \return the number of elements in the set
  */
 unsigned long xbt_set_length (const xbt_set_t set) {
-   return xbt_dynar_length(set->dynar);
+  return xbt_dynar_length(set->dynar);
 }
 
 /***
@@ -235,7 +235,7 @@ typedef struct xbt_set_cursor_ {
 
 /** @brief Create the cursor if it does not exists, rewind it in any case. */
 void         xbt_set_cursor_first       (xbt_set_t         set,
-					  xbt_set_cursor_t *cursor) {
+                                         xbt_set_cursor_t *cursor) {
   xbt_dynar_t dynar;
 
   if (set != NULL) {
@@ -243,7 +243,7 @@ void         xbt_set_cursor_first       (xbt_set_t         set,
       DEBUG0("Create the cursor on first use");
       *cursor = xbt_new(s_xbt_set_cursor_t,1);
       xbt_assert0(*cursor,
-		   "Malloc error during the creation of the cursor");
+                  "Malloc error during the creation of the cursor");
     }
     (*cursor)->set = set;
 
@@ -266,15 +266,15 @@ void         xbt_set_cursor_step        (xbt_set_cursor_t cursor) {
     cursor->val++;
   }
   while (cursor->val < xbt_dynar_length(dynar) &&
-	 xbt_dynar_get_ptr(dynar, cursor->val) == NULL);
+      xbt_dynar_get_ptr(dynar, cursor->val) == NULL);
 }
 
 /** @brief Get current data
- * 
+ *
  * \return true if it's ok, false if there is no more data
  */
 int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *curs,
-					  xbt_set_elm_t    *elm) {
+                                         xbt_set_elm_t    *elm) {
   xbt_set_cursor_t cursor;
 
   if (!curs || !(*curs))
@@ -285,7 +285,7 @@ int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *curs,
   if (cursor->val >= xbt_dynar_length(cursor->set->dynar)) {
     free(cursor);
     *curs=NULL;
-    return FALSE;    
+    return FALSE;
   }
 
   xbt_dynar_get_cpy(cursor->set->dynar, cursor->val, elm);
@@ -320,8 +320,8 @@ static void my_elem_free(void *e) {
 }
 
 static void debuged_add(xbt_set_t  set,
-			const char *name,
-			const char *data) {
+                        const char *name,
+                        const char *data) {
   my_elem_t    elm;
 
   elm = xbt_new(s_my_elem_t,1);
@@ -355,14 +355,14 @@ static void search_name(xbt_set_t head,const char*key) {
   xbt_test_add1("Search by name %s",key);
   elm = (my_elem_t)xbt_set_get_by_name(head,key);
   xbt_test_log2(" Found %s (under ID %d)\n",
-		elm? elm->data:"(null)",
-		elm? elm->ID:-1);
+                elm? elm->data:"(null)",
+                   elm? elm->ID:-1);
   if (strcmp(key,elm->name))
     THROW2(mismatch_error,0,"The key (%s) is not the one expected (%s)",
-	   key,elm->name);
+           key,elm->name);
   if (strcmp(elm->name,elm->data))
     THROW2(mismatch_error,0,"The name (%s) != data (%s)",
-	   key,elm->name);
+           key,elm->name);
   fflush(stdout);
 }
 
@@ -372,30 +372,30 @@ static void search_id(xbt_set_t head,int id,const char*key) {
   xbt_test_add1("Search by id %d",id);
   elm = (my_elem_t) xbt_set_get_by_id(head,id);
   xbt_test_log2("Found %s (data %s)",
-		elm? elm->name:"(null)",
-		elm? elm->data:"(null)");
+                elm? elm->name:"(null)",
+                   elm? elm->data:"(null)");
   if (id != elm->ID)
     THROW2(mismatch_error,0,"The found ID (%d) is not the one expected (%d)",
-	   elm->ID,id);
+           elm->ID,id);
   if (strcmp(key,elm->name))
     THROW2(mismatch_error,0,"The key (%s) is not the one expected (%s)",
-	   elm->name,key);
+           elm->name,key);
   if (strcmp(elm->name,elm->data))
     THROW2(mismatch_error,0,"The name (%s) != data (%s)",
-	   elm->name,elm->data);
+           elm->name,elm->data);
 }
 
 
 static void traverse(xbt_set_t set) {
   xbt_set_cursor_t cursor=NULL;
   my_elem_t         elm=NULL;
- 
+
   xbt_set_foreach(set,cursor,elm) {
     xbt_test_assert0(elm,"Dude ! Got a null elm during traversal!");
     xbt_test_log3("Id(%d):  %s->%s\n",elm->ID,elm->name,elm->data);
     xbt_test_assert2(!strcmp(elm->name,elm->data),
-		     "Key(%s) != value(%s). Abording",
-		     elm->name,elm->data);
+                     "Key(%s) != value(%s). Abording",
+                     elm->name,elm->data);
   }
 }
 
@@ -407,9 +407,9 @@ static void search_not_found(xbt_set_t set, const char *data) {
     xbt_set_get_by_name(set,data);
     THROW1(unknown_error,0,"Found something which shouldn't be there (%s)",data);
   } CATCH(e) {
-    if (e.category != not_found_error) 
+    if (e.category != not_found_error)
       xbt_test_exception(e);
-    xbt_ex_free(e);  
+    xbt_ex_free(e);
   }
 }
 
@@ -421,7 +421,7 @@ XBT_TEST_UNIT("basic",test_set_basic,"Basic usage") {
 
   xbt_test_add0("Traverse the empty set");
   traverse(set);
-  
+
   xbt_test_add0("Free a data set");
   fill(&set);
   xbt_set_free(&set);

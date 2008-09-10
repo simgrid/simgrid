@@ -6,9 +6,9 @@
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. 
+ * under the terms of the license (GNU LGPL) which comes with this package.
  */
-  
+
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/str.h" /* headers of these functions */
@@ -17,15 +17,15 @@
 
 /**  @brief Strip whitespace (or other characters) from the end of a string.
  *
- * Strips the whitespaces from the end of s. 
+ * Strips the whitespaces from the end of s.
  * By default (when char_list=NULL), these characters get stripped:
- * 	
- *	- " "		(ASCII 32	(0x20))	space. 
- *	- "\t"		(ASCII 9	(0x09))	tab. 
- *	- "\n"		(ASCII 10	(0x0A))	line feed. 
- *	- "\r"		(ASCII 13	(0x0D))	carriage return. 
- *	- "\0"		(ASCII 0	(0x00))	NULL. 
- *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab. 
+ *
+ *	- " "		(ASCII 32	(0x20))	space.
+ *	- "\t"		(ASCII 9	(0x09))	tab.
+ *	- "\n"		(ASCII 10	(0x0A))	line feed.
+ *	- "\r"		(ASCII 13	(0x0D))	carriage return.
+ *	- "\0"		(ASCII 0	(0x00))	NULL.
+ *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab.
  *
  * @param s The string to strip. Modified in place.
  * @param char_list A string which contains the characters you want to strip.
@@ -37,7 +37,7 @@ xbt_str_rtrim(char* s, const char* char_list)
 	char* cur = s;
 	const char* __char_list = " \t\n\r\x0B";
 	char white_char[256] = {1,0};
-	
+
 	if(!s)
 		return;
 
@@ -64,13 +64,13 @@ xbt_str_rtrim(char* s, const char* char_list)
  *
  * Strips the whitespaces from the begining of s.
  * By default (when char_list=NULL), these characters get stripped:
- * 	
- *	- " "		(ASCII 32	(0x20))	space. 
- *	- "\t"		(ASCII 9	(0x09))	tab. 
- *	- "\n"		(ASCII 10	(0x0A))	line feed. 
- *	- "\r"		(ASCII 13	(0x0D))	carriage return. 
- *	- "\0"		(ASCII 0	(0x00))	NULL. 
- *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab. 
+ *
+ *	- " "		(ASCII 32	(0x20))	space.
+ *	- "\t"		(ASCII 9	(0x09))	tab.
+ *	- "\n"		(ASCII 10	(0x0A))	line feed.
+ *	- "\r"		(ASCII 13	(0x0D))	carriage return.
+ *	- "\0"		(ASCII 0	(0x00))	NULL.
+ *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab.
  *
  * @param s The string to strip. Modified in place.
  * @param char_list A string which contains the characters you want to strip.
@@ -82,7 +82,7 @@ xbt_str_ltrim( char* s, const char* char_list)
 	char* cur = s;
 	const char* __char_list = " \t\n\r\x0B";
 	char white_char[256] = {1,0};
-	
+
 	if(!s)
 		return;
 
@@ -106,13 +106,13 @@ xbt_str_ltrim( char* s, const char* char_list)
  *
  * Strips the whitespaces from both the beginning and the end of s.
  * By default (when char_list=NULL), these characters get stripped:
- * 	
- *	- " "		(ASCII 32	(0x20))	space. 
- *	- "\t"		(ASCII 9	(0x09))	tab. 
- *	- "\n"		(ASCII 10	(0x0A))	line feed. 
- *	- "\r"		(ASCII 13	(0x0D))	carriage return. 
- *	- "\0"		(ASCII 0	(0x00))	NULL. 
- *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab. 
+ *
+ *	- " "		(ASCII 32	(0x20))	space.
+ *	- "\t"		(ASCII 9	(0x09))	tab.
+ *	- "\n"		(ASCII 10	(0x0A))	line feed.
+ *	- "\r"		(ASCII 13	(0x0D))	carriage return.
+ *	- "\0"		(ASCII 0	(0x00))	NULL.
+ *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab.
  *
  * @param s The string to strip.
  * @param char_list A string which contains the characters you want to strip.
@@ -120,10 +120,10 @@ xbt_str_ltrim( char* s, const char* char_list)
  */
 void
 xbt_str_trim(char* s, const char* char_list ){
-	
+
 	if(!s)
 		return;
-		
+
     xbt_str_rtrim(s,char_list);
     xbt_str_ltrim(s,char_list);
 }
@@ -131,7 +131,7 @@ xbt_str_trim(char* s, const char* char_list ){
 /**  @brief Replace double whitespaces (but no other characters) from the string.
  *
  * The function modifies the string so that each time that several spaces appear,
- * they are replaced by a single space. It will only do so for spaces (ASCII 32, 0x20). 
+ * they are replaced by a single space. It will only do so for spaces (ASCII 32, 0x20).
  *
  * @param s The string to strip. Modified in place.
  *
@@ -147,22 +147,22 @@ xbt_str_strip_spaces(char *s) {
   while (1) {
     if (!*p)
       goto end;
-    
+
     if (*p != ' ')
       break;
-    
+
     p++;
   }
-  
+
   e = 1;
-  
+
   do {
     if (e)
       *s++ = *p;
-    
+
     if (!*++p)
       goto end;
-    
+
     if (e ^ (*p!=' '))
       if ((e = !e))
 	*s++ = ' ';
@@ -172,19 +172,19 @@ xbt_str_strip_spaces(char *s) {
   *s = '\0';
 }
 
-/** @brief Splits a string into a dynar of strings 
- * 
+/** @brief Splits a string into a dynar of strings
+ *
  * @param s: the string to split
  * @param sep: a string of all chars to consider as separator.
  *
- * By default (with sep=NULL), these characters are used as separator: 
- * 	
- *	- " "		(ASCII 32	(0x20))	space. 
- *	- "\t"		(ASCII 9	(0x09))	tab. 
- *	- "\n"		(ASCII 10	(0x0A))	line feed. 
- *	- "\r"		(ASCII 13	(0x0D))	carriage return. 
- *	- "\0"		(ASCII 0	(0x00))	NULL. 
- *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab. 
+ * By default (with sep=NULL), these characters are used as separator:
+ *
+ *	- " "		(ASCII 32	(0x20))	space.
+ *	- "\t"		(ASCII 9	(0x09))	tab.
+ *	- "\n"		(ASCII 10	(0x0A))	line feed.
+ *	- "\r"		(ASCII 13	(0x0D))	carriage return.
+ *	- "\0"		(ASCII 0	(0x00))	NULL.
+ *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab.
  */
 
 xbt_dynar_t xbt_str_split(const char *s, const char *sep) {
@@ -204,9 +204,9 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep) {
       is_sep[(unsigned char) *sep++] = 1;
   }
   is_sep[0] = 1; /* End of string is also separator */
-   
+
   /* Do the job */
-  p=q=s; 
+  p=q=s;
   done=0;
 
   if (s[0] == '\0')
@@ -239,11 +239,11 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char*), xbt_free_ref);
   int done;
   const char *p, *q;
- 
+
   p = q = s;
   done = 0;
- 
-  if (s[0] == '\0') 
+
+  if (s[0] == '\0')
     return res;
   if (sep[0] == '\0') {
     s = xbt_strdup(s);
@@ -279,9 +279,9 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
 }
 
 /** @brief Splits a string into a dynar of strings, taking quotes into account
- * 
- * It basically does the same argument separation than the shell, where white 
- * spaces can be escaped and where arguments are never splitted within a 
+ *
+ * It basically does the same argument separation than the shell, where white
+ * spaces can be escaped and where arguments are never splitted within a
  * quote group.
  * Several subsequent spaces are ignored (unless within quotes, of course).
  *
@@ -298,19 +298,19 @@ xbt_dynar_t xbt_str_split_quoted(const char *s) {
   if (s[0] == '\0')
     return res;
   beg = str = xbt_strdup(s);
-   
+
   /* trim leading spaces */
   xbt_str_ltrim(beg," ");
   end=beg;
-     
+
   while (!done) {
-    
-       
+
+
     switch (*end) {
     case '\\':
       ctn = 1;
       /* Protected char; move it closer */
-      memmove(end,end+1,strlen(end)); 
+      memmove(end,end+1,strlen(end));
       if (*end=='\0')
 	THROW0(arg_error,0,"String ends with \\");
       end++; /* Pass the protected char */
@@ -318,23 +318,23 @@ xbt_dynar_t xbt_str_split_quoted(const char *s) {
 
     case '\'':
       ctn = 1;
-      if (!in_double_quote) { 
+      if (!in_double_quote) {
 	in_simple_quote = !in_simple_quote;
 	memmove(end,end+1,strlen(end));
-      } else {	       
+      } else {
 	/* simple quote protected by double ones */
 	end++;
       }
       break;
     case '"':
       ctn = 1;
-      if (!in_simple_quote) { 
+      if (!in_simple_quote) {
 	in_double_quote = !in_double_quote;
 	memmove(end,end+1,strlen(end));
-      } else {	       
+      } else {
 	/* double quote protected by simple ones */
 	end++;
-      }	  
+      }
       break;
 
     case ' ':
@@ -349,7 +349,7 @@ xbt_dynar_t xbt_str_split_quoted(const char *s) {
       }
       if (in_simple_quote || in_double_quote) {
 	end++;
-      } else {	
+      } else {
 	if (ctn) {
 	  /* Found a separator. Push the string if contains something */
 	  char *topush=xbt_malloc(end-beg+1);
@@ -363,17 +363,17 @@ xbt_dynar_t xbt_str_split_quoted(const char *s) {
 	  done = 1;
 	  break;
 	}
-	
+
 	beg=++end;
 	xbt_str_ltrim(beg," ");
 	end=beg;
-      }	  
+      }
       break;
-      
+
     default:
       ctn = 1;
       end++;
-    }       
+    }
   }
   free(str);
   return res;
@@ -433,7 +433,7 @@ XBT_TEST_UNIT("xbt_str_split_str",test_split_str, "test the function xbt_str_spl
   mytest_str("Basic test", "toto##tutu",  "##", "totoXXXtutu");
 }
 #endif /* SIMGRID_TEST */
-   
+
 /** @brief Join a set of strings as a single string */
 
 char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
@@ -441,7 +441,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
   unsigned int cpt;
   char *cursor;
   char *res,*p;
-  
+
   if (!dyn_len)
     return xbt_strdup("");
 
@@ -455,62 +455,62 @@ char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
   p=res;
   xbt_dynar_foreach(dyn,cpt,cursor) {
     if ((int)cpt<dyn_len-1)
-      p+=sprintf(p,"%s%s",cursor,sep);    
+      p+=sprintf(p,"%s%s",cursor,sep);
     else
-      p+=sprintf(p,"%s",cursor);    
+      p+=sprintf(p,"%s",cursor);
   }
   return res;
 }
-   
+
 #if !defined(HAVE_GETLINE) || defined(DOXYGEN)
 /* prototype here, just in case */
 long getline(char **buf, size_t *n, FILE *stream);
 
 /** @brief Get a single line from the stream (reimplementation of the GNU getline)
- * 
+ *
  * This is a redefinition of the GNU getline function, used on platforms where it does not exists.
- * 
- * getline() reads an entire line from stream, storing the address of the buffer 
- * containing the text into *buf.  The buffer is null-terminated and includes 
+ *
+ * getline() reads an entire line from stream, storing the address of the buffer
+ * containing the text into *buf.  The buffer is null-terminated and includes
  * the newline character, if one was found.
- * 
- * If *buf is NULL, then getline() will allocate a buffer for storing the line, 
- * which should be freed by the user program.  Alternatively, before calling getline(), 
- * *buf can contain a pointer to a malloc()-allocated buffer *n bytes in size.  If the buffer 
- * is not large enough to hold the line, getline() resizes it with realloc(), updating *buf and *n 
- * as necessary.  In either case, on a successful call, *buf and *n will be updated to 
+ *
+ * If *buf is NULL, then getline() will allocate a buffer for storing the line,
+ * which should be freed by the user program.  Alternatively, before calling getline(),
+ * *buf can contain a pointer to a malloc()-allocated buffer *n bytes in size.  If the buffer
+ * is not large enough to hold the line, getline() resizes it with realloc(), updating *buf and *n
+ * as necessary.  In either case, on a successful call, *buf and *n will be updated to
  * reflect the buffer address and allocated size respectively.
  */
 long getline(char **buf, size_t *n, FILE *stream) {
-   
+
    size_t i;
    int ch;
-   
+
    if (!*buf) {
      *buf = xbt_malloc(512);
      *n = 512;
    }
-   
+
    if (feof(stream))
      return (ssize_t)-1;
-   
+
    for (i=0; (ch = fgetc(stream)) != EOF; i++)  {
-	
+
       if (i >= (*n) + 1)
 	*buf = xbt_realloc(*buf, *n += 512);
-	
+
       (*buf)[i] = ch;
-	
+
       if ((*buf)[i] == '\n')  {
 	 i++;
 	 (*buf)[i] = '\0';
 	 break;
-      }      
+      }
    }
-      
-   if (i == *n) 
+
+   if (i == *n)
      *buf = xbt_realloc(*buf, *n += 1);
-   
+
    (*buf)[i] = '\0';
 
    return (ssize_t)i;
@@ -519,11 +519,11 @@ long getline(char **buf, size_t *n, FILE *stream) {
 #endif /* HAVE_GETLINE */
 
 /*
- * Diff related functions 
+ * Diff related functions
  */
 static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db) {
   xbt_matrix_t C = xbt_matrix_new(xbt_dynar_length(da),xbt_dynar_length(db),
-				  sizeof(int),NULL); 
+				  sizeof(int),NULL);
   unsigned long i,j;
 
   /* Compute the LCS */
@@ -542,14 +542,14 @@ static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db) {
     return C[m,n]
 	  */
   if (xbt_dynar_length(db) != 0)
-    for (i=0; i<xbt_dynar_length(da); i++) 
+    for (i=0; i<xbt_dynar_length(da); i++)
       *((int*) xbt_matrix_get_ptr(C,i,0) ) = 0;
 
   if (xbt_dynar_length(da) != 0)
-    for (j=0; j<xbt_dynar_length(db); j++) 
+    for (j=0; j<xbt_dynar_length(db); j++)
       *((int*) xbt_matrix_get_ptr(C,0,j) ) = 0;
 
-  for (i=1; i<xbt_dynar_length(da); i++) 
+  for (i=1; i<xbt_dynar_length(da); i++)
     for (j=1; j<xbt_dynar_length(db); j++) {
 
       if (!strcmp(xbt_dynar_get_as(da,i,char*), xbt_dynar_get_as(db,j,char*)))
@@ -566,7 +566,7 @@ static void diff_build_diff(xbt_dynar_t res,
 			    xbt_dynar_t da, xbt_dynar_t db,
 			    int i,int j) {
   char *topush;
-  /* Construct the diff 
+  /* Construct the diff
   function printDiff(C[0..m,0..n], X[1..m], Y[1..n], i, j)
     if i > 0 and j > 0 and X[i] = Y[j]
         printDiff(C, X, Y, i-1, j-1)
@@ -585,22 +585,22 @@ static void diff_build_diff(xbt_dynar_t res,
     diff_build_diff(res,C,da,db,i-1,j-1);
     topush = bprintf("  %s",xbt_dynar_get_as(da,i,char*));
     xbt_dynar_push(res, &topush);
-  } else if (j>=0 && 
+  } else if (j>=0 &&
 	     (i<=0 ||j==0|| xbt_matrix_get_as(C,i,j-1,int) >= xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i,j-1);
     topush = bprintf("+ %s",xbt_dynar_get_as(db,j,char*));
     xbt_dynar_push(res,&topush);
-  } else if (i>=0 && 
+  } else if (i>=0 &&
 	     (j<=0 || xbt_matrix_get_as(C,i,j-1,int) < xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i-1,j);
     topush = bprintf("- %s",xbt_dynar_get_as(da,i,char*));
-    xbt_dynar_push(res,&topush);        
+    xbt_dynar_push(res,&topush);
   } else if (i<=0 && j<=0) {
     return;
   } else {
     THROW2(arg_error,0,"Invalid values: i=%d, j=%d",i,j);
   }
-   
+
 }
 
 /** @brief Compute the unified diff of two strings */
@@ -611,7 +611,7 @@ char *xbt_str_diff(char *a, char *b) {
   xbt_matrix_t C = diff_build_LCS(da,db);
   xbt_dynar_t diff = xbt_dynar_new(sizeof(char*),xbt_free_ref);
   char *res=NULL;
-  
+
   diff_build_diff(diff, C, da,db, xbt_dynar_length(da)-1, xbt_dynar_length(db)-1);
   /* Clean empty lines at the end */
   while (xbt_dynar_length(diff) > 0) {
@@ -622,14 +622,14 @@ char *xbt_str_diff(char *a, char *b) {
      } else {
 	xbt_dynar_push(diff,&str);
 	break;
-     }     
-  }   
+     }
+  }
   res = xbt_str_join(diff, "\n");
 
   xbt_dynar_free(&da);
   xbt_dynar_free(&db);
   xbt_dynar_free(&diff);
   xbt_matrix_free(C);
-  
+
   return res;
 }

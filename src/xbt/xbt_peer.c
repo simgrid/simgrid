@@ -15,40 +15,40 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(peer,xbt,"peer management");
 
 /** \brief constructor */
 xbt_peer_t xbt_peer_new(const char *name, int port)  {
-   xbt_peer_t res=xbt_new(s_xbt_peer_t, 1);
-   res->name = xbt_strdup(name);
-   res->port = port;
-   return res;
+  xbt_peer_t res=xbt_new(s_xbt_peer_t, 1);
+  res->name = xbt_strdup(name);
+  res->port = port;
+  return res;
 }
 
 xbt_peer_t xbt_peer_copy(xbt_peer_t h) {
-   return xbt_peer_new(h->name,h->port);
+  return xbt_peer_new(h->name,h->port);
 }
 
 /** \brief constructor. Argument should be of form '(peername):(port)'. */
 xbt_peer_t xbt_peer_from_string(const char *peerport)  {
-   xbt_peer_t res=xbt_new(s_xbt_peer_t, 1);
-   char *name=xbt_strdup(peerport);
-   char *port_str=strchr(name,':');
-   xbt_assert1(port_str,"argument of xbt_peer_from_string should be of form <peername>:<port>, it's '%s'", peerport);
-   *port_str='\0';
-   port_str++;
-   
-   res->name = xbt_strdup(name); /* it will be shorter now that we cut the port */
-   res->port = atoi(port_str);
-   free(name);
-   return res;
+  xbt_peer_t res=xbt_new(s_xbt_peer_t, 1);
+  char *name=xbt_strdup(peerport);
+  char *port_str=strchr(name,':');
+  xbt_assert1(port_str,"argument of xbt_peer_from_string should be of form <peername>:<port>, it's '%s'", peerport);
+  *port_str='\0';
+  port_str++;
+
+  res->name = xbt_strdup(name); /* it will be shorter now that we cut the port */
+  res->port = atoi(port_str);
+  free(name);
+  return res;
 }
 
 /** \brief destructor */
 void xbt_peer_free(xbt_peer_t peer) {
-   if (peer) {
-      if (peer->name) free(peer->name);
-      free(peer);
-   }
+  if (peer) {
+    if (peer->name) free(peer->name);
+    free(peer);
+  }
 }
 
 /** \brief Freeing function for dynars of xbt_peer_t */
 void xbt_peer_free_voidp(void *d) {
-   xbt_peer_free( (xbt_peer_t) *(void**)d );
+  xbt_peer_free( (xbt_peer_t) *(void**)d );
 }

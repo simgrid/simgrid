@@ -31,11 +31,11 @@ void
 xbt_multidict_set_ext(xbt_dict_t  mdict,
                       xbt_dynar_t keys, xbt_dynar_t     lens,
                       void       *data, void_f_pvoid_t  free_ctn) {
-      
+
   xbt_ex_t e;
   xbt_dict_t thislevel,nextlevel=NULL;
   int i;
-  
+
   unsigned long int thislen;
   char *thiskey;
   int keys_len=xbt_dynar_length(keys);
@@ -45,13 +45,13 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
 
   DEBUG2("xbt_multidict_set(%p,%d)", mdict, keys_len);
 
-  for (i=0         , thislevel = mdict    ; 
-       i<keys_len-1                       ; 
-       i++         , thislevel = nextlevel) {
-       
+  for (i=0         , thislevel = mdict    ;
+  i<keys_len-1                       ;
+  i++         , thislevel = nextlevel) {
+
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);
-    
+
     DEBUG5("multi_set: at level %d, len=%ld, key=%p |%*s|", i, thislen, thiskey, (int)thislen,thiskey);
 
     /* search the dict of next level */
@@ -59,7 +59,7 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
       nextlevel = xbt_dict_get_ext(thislevel, thiskey, thislen);
     } CATCH(e) {
       if (e.category != not_found_error)
-	RETHROW;
+        RETHROW;
 
       /* make sure the dict of next level exists */
       xbt_ex_free(e);
@@ -71,7 +71,7 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
 
   xbt_dynar_get_cpy(keys, i, &thiskey);
   xbt_dynar_get_cpy(lens, i, &thislen);
-  
+
   xbt_dict_set_ext(thislevel, thiskey, thislen, data, free_ctn);
 }
 
@@ -128,26 +128,26 @@ xbt_multidict_get_ext(xbt_dict_t  mdict,
 
   xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
   xbt_assert0(xbt_dynar_length(keys) >= 1, "Can't get a zero-long key set in a multidict");
-  
+
   DEBUG2("xbt_multidict_get(%p, %ld)", mdict, xbt_dynar_length(keys));
 
-  for (i=0         , thislevel=mdict      ; 
-       i<keys_len-1                       ; 
-       i++         , thislevel = nextlevel) {
-       
+  for (i=0         , thislevel=mdict      ;
+  i<keys_len-1                       ;
+  i++         , thislevel = nextlevel) {
+
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);
 
-    DEBUG6("multi_get: at level %d (%p), len=%ld, key=%p |%*s|", 
-      i, thislevel, thislen, thiskey, (int)thislen,thiskey);
+    DEBUG6("multi_get: at level %d (%p), len=%ld, key=%p |%*s|",
+           i, thislevel, thislen, thiskey, (int)thislen,thiskey);
 
     /* search the dict of next level: let mismatch raise if not found */
     nextlevel = xbt_dict_get_ext(thislevel, thiskey, thislen);
   }
-  
+
   xbt_dynar_get_cpy(keys, i, &thiskey);
   xbt_dynar_get_cpy(lens, i, &thislen);
-  
+
   return xbt_dict_get_ext(thislevel, thiskey, thislen);
 }
 
@@ -156,7 +156,7 @@ xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys) {
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
   unsigned long i;
   void *res;
-  
+
   for (i = 0; i < xbt_dynar_length(keys); i++) {
     char *thiskey = xbt_dynar_get_as(keys, i, char*);
     unsigned long int thislen = (unsigned long int) strlen(thiskey);
@@ -164,7 +164,7 @@ xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys) {
   }
 
   res = xbt_multidict_get_ext(mdict, keys, lens),
-  xbt_dynar_free(&lens);         
+  xbt_dynar_free(&lens);
   return res;
 }
 
@@ -195,10 +195,10 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens) {
   xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
   xbt_assert0(xbt_dynar_length(keys), "Can't remove a zero-long key set in a multidict");
 
-  for (i=0         , thislevel=mdict      ; 
-       i<keys_len-1                       ; 
-       i++         , thislevel = nextlevel) {
-       
+  for (i=0         , thislevel=mdict      ;
+  i<keys_len-1                       ;
+  i++         , thislevel = nextlevel) {
+
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);
 
@@ -207,16 +207,16 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens) {
       nextlevel = xbt_dict_get_ext(thislevel, thiskey, thislen);
     } CATCH(e) {
       /* If non-existant entry, nothing to do */
-      if (e.category == arg_error) 
-	xbt_ex_free(e);
-      else 
-	RETHROW;
+      if (e.category == arg_error)
+        xbt_ex_free(e);
+      else
+        RETHROW;
     }
   }
 
   xbt_dynar_get_cpy(keys, i, &thiskey);
   xbt_dynar_get_cpy(lens, i, &thislen);
-  
+
   xbt_dict_remove_ext(thislevel, thiskey, thislen);
 }
 
@@ -226,13 +226,13 @@ xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys) {
   xbt_ex_t e;
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
   unsigned long i;
-      
+
   for (i = 0; i < xbt_dynar_length(keys); i++) {
     char *thiskey = xbt_dynar_get_as(keys, i, char*);
     unsigned long int thislen = strlen(thiskey);
     xbt_dynar_push(lens,&thislen);
   }
-         
+
   TRY {
     xbt_multidict_remove_ext(mdict, keys, lens);
   } CLEANUP {

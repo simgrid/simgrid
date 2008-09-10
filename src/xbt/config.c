@@ -22,7 +22,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg,xbt,"configuration support");
 
-/* xbt_cfgelm_t: the typedef corresponding to a config variable. 
+/* xbt_cfgelm_t: the typedef corresponding to a config variable.
 
    Both data and DTD are mixed, but fixing it now would prevent me to ever
    defend my thesis. */
@@ -31,25 +31,25 @@ typedef struct {
   /* Allowed type of the variable */
   e_xbt_cfgelm_type_t type;
   int min,max;
-  
+
   /* Callbacks */
   xbt_cfg_cb_t cb_set;
   xbt_cfg_cb_t cb_rm;
 
-  /* actual content 
+  /* actual content
      (cannot be an union because type peer uses both str and i) */
   xbt_dynar_t content;
 } s_xbt_cfgelm_t,*xbt_cfgelm_t;
 
 static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count]=
-  {"int","double","string","peer","any"};
+{"int","double","string","peer","any"};
 
 /* Internal stuff used in cache to free a variable */
 static void xbt_cfgelm_free(void *data);
 
 /* Retrieve the variable we'll modify */
 static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
-				   e_xbt_cfgelm_type_t type);
+                                   e_xbt_cfgelm_type_t type);
 
 /*----[ Memory management ]-----------------------------------------------*/
 
@@ -73,10 +73,10 @@ xbt_cfg_t xbt_cfg_new(void) {
 
 void
 xbt_cfg_cpy(xbt_cfg_t tocopy,xbt_cfg_t *whereto) {
-  xbt_dict_cursor_t cursor=NULL; 
+  xbt_dict_cursor_t cursor=NULL;
   xbt_cfgelm_t variable=NULL;
   char *name=NULL;
-  
+
   DEBUG1("Copy cfg set %p",tocopy);
   *whereto=NULL;
   xbt_assert0(tocopy,"cannot copy NULL config");
@@ -101,10 +101,10 @@ void xbt_cfg_free(xbt_cfg_t *cfg) {
  */
 void xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
   xbt_dict_t dict = (xbt_dict_t) cfg;
-  xbt_dict_cursor_t cursor=NULL; 
+  xbt_dict_cursor_t cursor=NULL;
   xbt_cfgelm_t variable=NULL;
   char *key=NULL;
-  int i; 
+  int i;
   int size;
   int ival;
   char *sval;
@@ -119,42 +119,42 @@ void xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
 
     size = xbt_dynar_length(variable->content);
     printf("%d_to_%d_%s. Actual size=%d. prerm=%p,postset=%p, List of values:\n",
-	   variable->min,variable->max,xbt_cfgelm_type_name[variable->type],
-	   size,
+           variable->min,variable->max,xbt_cfgelm_type_name[variable->type],
+           size,
            variable->cb_rm, variable->cb_set);
 
     switch (variable->type) {
-       
-    case xbt_cfgelm_int:
-      for (i=0; i<size; i++) {
-	ival = xbt_dynar_get_as(variable->content,i,int);
-	printf ("%s    %d\n",indent,ival);
-      }
-      break;
 
-    case xbt_cfgelm_double:
-      for (i=0; i<size; i++) {
-	dval = xbt_dynar_get_as(variable->content,i,double);
-	printf ("%s    %f\n",indent,dval);
-      }
-      break;
+      case xbt_cfgelm_int:
+        for (i=0; i<size; i++) {
+          ival = xbt_dynar_get_as(variable->content,i,int);
+          printf ("%s    %d\n",indent,ival);
+        }
+        break;
 
-    case xbt_cfgelm_string:
-      for (i=0; i<size; i++) {
-	sval = xbt_dynar_get_as(variable->content,i,char*);
-	printf ("%s    %s\n",indent,sval);
-      }
-      break;
+      case xbt_cfgelm_double:
+        for (i=0; i<size; i++) {
+          dval = xbt_dynar_get_as(variable->content,i,double);
+          printf ("%s    %f\n",indent,dval);
+        }
+        break;
 
-    case xbt_cfgelm_peer:
-      for (i=0; i<size; i++) {
-	hval = xbt_dynar_get_as(variable->content,i,xbt_peer_t);
-	printf ("%s    %s:%d\n",indent,hval->name,hval->port);
-      }
-      break;
+      case xbt_cfgelm_string:
+        for (i=0; i<size; i++) {
+          sval = xbt_dynar_get_as(variable->content,i,char*);
+          printf ("%s    %s\n",indent,sval);
+        }
+        break;
 
-    default:
-      printf("%s    Invalid type!!\n",indent);
+      case xbt_cfgelm_peer:
+        for (i=0; i<size; i++) {
+          hval = xbt_dynar_get_as(variable->content,i,xbt_peer_t);
+          printf ("%s    %s:%d\n",indent,hval->name,hval->port);
+        }
+        break;
+
+      default:
+        printf("%s    Invalid type!!\n",indent);
     }
 
   }
@@ -191,9 +191,9 @@ void xbt_cfgelm_free(void *data) {
 
 void
 xbt_cfg_register(xbt_cfg_t cfg,
-		 const char *name, e_xbt_cfgelm_type_t type,
-		 int min, int max,
-		 xbt_cfg_cb_t cb_set,  xbt_cfg_cb_t cb_rm){
+                 const char *name, e_xbt_cfgelm_type_t type,
+                 int min, int max,
+                 xbt_cfg_cb_t cb_set,  xbt_cfg_cb_t cb_rm){
   xbt_cfgelm_t res;
 
   xbt_assert(cfg);
@@ -205,11 +205,11 @@ xbt_cfg_register(xbt_cfg_t cfg,
   if (res) {
     WARN1("Config elem %s registered twice.",name);
     /* Will be removed by the insertion of the new one */
-  } 
+  }
 
   res=xbt_new(s_xbt_cfgelm_t,1);
   DEBUG7("Register cfg elm %s (%d to %d %s (=%d) @%p in set %p)",
-	 name,min,max,xbt_cfgelm_type_name[type],type,res,cfg);
+         name,min,max,xbt_cfgelm_type_name[type],type,res,cfg);
 
   res->type=type;
   res->min=min;
@@ -218,34 +218,34 @@ xbt_cfg_register(xbt_cfg_t cfg,
   res->cb_rm  = cb_rm;
 
   switch (type) {
-  case xbt_cfgelm_int:
-    res->content = xbt_dynar_new(sizeof(int), NULL);
-    break;
+    case xbt_cfgelm_int:
+      res->content = xbt_dynar_new(sizeof(int), NULL);
+      break;
 
-  case xbt_cfgelm_double:
-    res->content = xbt_dynar_new(sizeof(double), NULL);
-    break;
+    case xbt_cfgelm_double:
+      res->content = xbt_dynar_new(sizeof(double), NULL);
+      break;
 
-  case xbt_cfgelm_string:
-   res->content = xbt_dynar_new(sizeof(char*),xbt_free_ref);
-   break;
+    case xbt_cfgelm_string:
+      res->content = xbt_dynar_new(sizeof(char*),xbt_free_ref);
+      break;
 
-  case xbt_cfgelm_peer:
-   res->content = xbt_dynar_new(sizeof(xbt_peer_t),xbt_peer_free_voidp);
-   break;
+    case xbt_cfgelm_peer:
+      res->content = xbt_dynar_new(sizeof(xbt_peer_t),xbt_peer_free_voidp);
+      break;
 
-  default:
-    ERROR1("%d is an invalide type code",type);
+    default:
+      ERROR1("%d is an invalide type code",type);
   }
-    
+
   xbt_dict_set((xbt_dict_t)cfg,name,res,&xbt_cfgelm_free);
 }
 
-/** @brief Unregister an element from a config set. 
- * 
+/** @brief Unregister an element from a config set.
+ *
  *  @arg cfg the config set
  *  @arg name the name of the elem to be freed
- * 
+ *
  *  Note that it removes both the description and the actual content.
  *  Throws not_found when no such element exists.
  */
@@ -262,7 +262,7 @@ xbt_cfg_unregister(xbt_cfg_t cfg,const char *name) {
  * @arg cfg the config set
  * @arg entry a string describing the element to register
  *
- * The string may consist in several variable descriptions separated by a space. 
+ * The string may consist in several variable descriptions separated by a space.
  * Each of them must use the following syntax: \<name\>:\<min nb\>_to_\<max nb\>_\<type\>
  * with type being one of  'string','int', 'peer' or 'double'.
  */
@@ -278,32 +278,32 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
 
   tok=strchr(entrycpy, ':');
   xbt_assert2(tok,"Invalid config element descriptor: %s%s",
-	      entry,
-	      "; Should be <name>:<min nb>_to_<max nb>_<type>");
+              entry,
+              "; Should be <name>:<min nb>_to_<max nb>_<type>");
   *(tok++)='\0';
 
   min=strtol(tok, &tok, 10);
   xbt_assert1(tok,"Invalid minimum in config element descriptor %s",entry);
 
   xbt_assert2(strcmp(tok,"_to_"),
-	      "Invalid config element descriptor : %s%s",	    
-	      entry,
-	      "; Should be <name>:<min nb>_to_<max nb>_<type>");
+              "Invalid config element descriptor : %s%s",
+              entry,
+              "; Should be <name>:<min nb>_to_<max nb>_<type>");
   tok += strlen("_to_");
 
   max=strtol(tok, &tok, 10);
   xbt_assert1(tok,"Invalid maximum in config element descriptor %s",entry);
 
   xbt_assert2( *(tok++) =='_',
-	       "Invalid config element descriptor: %s%s",entry,
-	       "; Should be <name>:<min nb>_to_<max nb>_<type>");
+               "Invalid config element descriptor: %s%s",entry,
+               "; Should be <name>:<min nb>_to_<max nb>_<type>");
 
-  for (type=0; 
-       type<xbt_cfgelm_type_count && strcmp(tok,xbt_cfgelm_type_name[type]); 
-       type++);
+  for (type=0;
+  type<xbt_cfgelm_type_count && strcmp(tok,xbt_cfgelm_type_name[type]);
+  type++);
   xbt_assert2(type < xbt_cfgelm_type_count,
-	  "Invalid type in config element descriptor: %s%s",entry,
-	  "; Should be one of 'string', 'int', 'peer' or 'double'.");
+              "Invalid type in config element descriptor: %s%s",entry,
+              "; Should be one of 'string', 'int', 'peer' or 'double'.");
 
   xbt_cfg_register(cfg,entrycpy,type,min,max,NULL,NULL);
 
@@ -314,7 +314,7 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
 
 void
 xbt_cfg_check(xbt_cfg_t cfg) {
-  xbt_dict_cursor_t cursor; 
+  xbt_dict_cursor_t cursor;
   xbt_cfgelm_t variable;
   char *name;
   int size;
@@ -324,24 +324,24 @@ xbt_cfg_check(xbt_cfg_t cfg) {
 
   xbt_dict_foreach((xbt_dict_t)cfg,cursor,name,variable) {
     size = xbt_dynar_length(variable->content);
-    if (variable->min > size) { 
+    if (variable->min > size) {
       xbt_dict_cursor_free(&cursor);
       THROW4(mismatch_error,0,
-	     "Config elem %s needs at least %d %s, but there is only %d values.",
-	     name,
-	     variable->min,
-	     xbt_cfgelm_type_name[variable->type],
-	     size); 
+             "Config elem %s needs at least %d %s, but there is only %d values.",
+             name,
+             variable->min,
+             xbt_cfgelm_type_name[variable->type],
+             size);
     }
 
     if (variable->max > 0 && variable->max < size) {
       xbt_dict_cursor_free(&cursor);
       THROW4(mismatch_error,0,
-	     "Config elem %s accepts at most %d %s, but there is %d values.",
-	     name,
-	     variable->max,
-	     xbt_cfgelm_type_name[variable->type],
-	     size);
+             "Config elem %s accepts at most %d %s, but there is %d values.",
+             name,
+             variable->max,
+             xbt_cfgelm_type_name[variable->type],
+             size);
     }
   }
 
@@ -349,20 +349,20 @@ xbt_cfg_check(xbt_cfg_t cfg) {
 }
 
 static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t  cfg,
-				   const char *name,
-				   e_xbt_cfgelm_type_t type){
+                                   const char *name,
+                                   e_xbt_cfgelm_type_t type){
   xbt_cfgelm_t res=NULL;
 
   res = xbt_dict_get_or_null((xbt_dict_t)cfg,name);
   if (!res)
     THROW1(not_found_error,0,
-	   "No registered variable '%s' in this config set",name);
+           "No registered variable '%s' in this config set",name);
 
   xbt_assert3(type == xbt_cfgelm_any || res->type == type,
-	       "You tried to access to the config element %s as an %s, but its type is %s.",
-	       name,
-	       xbt_cfgelm_type_name[type],
-	       xbt_cfgelm_type_name[res->type]);
+              "You tried to access to the config element %s as an %s, but its type is %s.",
+              name,
+              xbt_cfgelm_type_name[type],
+              xbt_cfgelm_type_name[res->type]);
 
   return res;
 }
@@ -370,12 +370,12 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t  cfg,
 /** @brief Get the type of this variable in that configuration set
  *
  * \arg cfg the config set
- * \arg name the name of the element 
+ * \arg name the name of the element
  * \arg type the result
  *
  */
 
-e_xbt_cfgelm_type_t 
+e_xbt_cfgelm_type_t
 xbt_cfg_get_type(xbt_cfg_t cfg, const char *name) {
 
   xbt_cfgelm_t variable = NULL;
@@ -383,7 +383,7 @@ xbt_cfg_get_type(xbt_cfg_t cfg, const char *name) {
   variable = xbt_dict_get_or_null((xbt_dict_t)cfg,name);
   if (!variable)
     THROW1(not_found_error,0,
-	   "Can't get the type of '%s' since this variable does not exist",name);
+           "Can't get the type of '%s' since this variable does not exist",name);
 
   INFO1("type in variable = %d",variable->type);
 
@@ -407,7 +407,7 @@ xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa) {
   e_xbt_cfgelm_type_t type=0; /* Set a dummy value to make gcc happy. It cannot get uninitialized */
 
   xbt_ex_t e;
-  
+
   TRY {
     type = xbt_cfg_get_type(cfg,name);
   } CATCH(e) {
@@ -419,29 +419,29 @@ xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa) {
   }
 
   switch (type) {
-  case xbt_cfgelm_peer:
-    str = va_arg(pa, char *);
-    i=va_arg(pa,int);
-    xbt_cfg_set_peer(cfg,name,str,i);
-    break;
-      
-  case xbt_cfgelm_string:
-    str=va_arg(pa, char *);
-    xbt_cfg_set_string(cfg, name, str);
-    break;
+    case xbt_cfgelm_peer:
+      str = va_arg(pa, char *);
+      i=va_arg(pa,int);
+      xbt_cfg_set_peer(cfg,name,str,i);
+      break;
 
-  case xbt_cfgelm_int:
-    i=va_arg(pa,int);
-    xbt_cfg_set_int(cfg,name,i);
-    break;
+    case xbt_cfgelm_string:
+      str=va_arg(pa, char *);
+      xbt_cfg_set_string(cfg, name, str);
+      break;
 
-  case xbt_cfgelm_double:
-    d=va_arg(pa,double);
-    xbt_cfg_set_double(cfg,name,d);
-    break;
+    case xbt_cfgelm_int:
+      i=va_arg(pa,int);
+      xbt_cfg_set_int(cfg,name,i);
+      break;
 
-  default:
-    xbt_assert2(0,"Config element variable %s not valid (type=%d)",name,type);
+    case xbt_cfgelm_double:
+      d=va_arg(pa,double);
+      xbt_cfg_set_double(cfg,name,d);
+      break;
+
+    default:
+      xbt_assert2(0,"Config element variable %s not valid (type=%d)",name,type);
   }
 }
 
@@ -465,7 +465,7 @@ void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...) {
  * \arg cfg config set to fill
  * \arg options a string containing the content to add to the config set. This
  * is a '\\t',' ' or '\\n' separated list of variables. Each individual variable is
- * like "[name]:[value]" where [name] is the name of an already registred 
+ * like "[name]:[value]" where [name] is the name of an already registred
  * variable, and [value] conforms to the data type under which this variable was
  * registred.
  *
@@ -496,12 +496,12 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
   option=optionlist_cpy;
   while (1) { /* breaks in the code */
 
-    if (!option) 
+    if (!option)
       break;
     name=option;
     len=strlen(name);
     DEBUG3("Still to parse and set: '%s'. len=%d; option-name=%ld",
-	   name,len,(long)(option-name));
+           name,len,(long)(option-name));
 
     /* Pass the value */
     while (option-name<=(len-1) && *option != ' ' && *option != '\n' && *option != '\t') {
@@ -514,17 +514,17 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
     } else {
       DEBUG3("Boundary on '%c'. len=%d;option-name=%ld",
-	     *option,len,(long)(option-name));
+             *option,len,(long)(option-name));
 
       /* Pass the following blank chars */
       *(option++)='\0';
-      while (option-name<(len-1) && 
-	     (*option == ' ' || *option == '\n' || *option == '\t')) {
-	/*      fprintf(stderr,"Ignore a blank char.\n");*/
-	option++;
+      while (option-name<(len-1) &&
+          (*option == ' ' || *option == '\n' || *option == '\t')) {
+        /*      fprintf(stderr,"Ignore a blank char.\n");*/
+        option++;
       }
       if (option-name == len-1)
-	option=NULL; /* don't do next iteration */
+        option=NULL; /* don't do next iteration */
     }
     DEBUG2("parse now:'%s'; parse later:'%s'",name,option);
 
@@ -532,13 +532,13 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       continue;
     if (!strlen(name))
       break;
-    
+
     val=strchr(name,':');
     if (!val) {
       free(optionlist_cpy);
       xbt_assert1(FALSE,
-	     "Option '%s' badly formated. Should be of the form 'name:value'",
-		  name);
+                  "Option '%s' badly formated. Should be of the form 'name:value'",
+                  name);
     }
     *(val++)='\0';
 
@@ -548,69 +548,69 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       variable = xbt_dict_get((xbt_dict_t)cfg,name);
     } CATCH(e) {
       /* put it back on what won't get freed, ie within "options" and out of "optionlist_cpy" */
-      name = (char*) (optionlist_cpy-name + options); 
+      name = (char*) (optionlist_cpy-name + options);
       free(optionlist_cpy);
       if (e.category == not_found_error) {
-	xbt_ex_free(e);
-	THROW1(not_found_error,0,"No registrated variable corresponding to '%s'.",name);
+        xbt_ex_free(e);
+        THROW1(not_found_error,0,"No registrated variable corresponding to '%s'.",name);
       }
       RETHROW;
     }
 
     TRY {
       switch (variable->type) {
-      case xbt_cfgelm_string:
-	xbt_cfg_set_string(cfg, name, val); /* throws */
-	break;
+        case xbt_cfgelm_string:
+          xbt_cfg_set_string(cfg, name, val); /* throws */
+          break;
 
-      case xbt_cfgelm_int:
-	i=strtol(val, &val, 0);
-	if (val==NULL) {
-	  free(optionlist_cpy);	
-	  xbt_assert1(FALSE,
-		      "Value of option %s not valid. Should be an integer",
-		      name);
-	}
+        case xbt_cfgelm_int:
+          i=strtol(val, &val, 0);
+          if (val==NULL) {
+            free(optionlist_cpy);
+            xbt_assert1(FALSE,
+                        "Value of option %s not valid. Should be an integer",
+                        name);
+          }
 
-	xbt_cfg_set_int(cfg,name,i); /* throws */
-	break;
+          xbt_cfg_set_int(cfg,name,i); /* throws */
+          break;
 
-      case xbt_cfgelm_double:
-	d=strtod(val, &val);
-	if (val==NULL) {
-	  free(optionlist_cpy);	
-	  xbt_assert1(FALSE,
-		      "Value of option %s not valid. Should be a double",
-		      name);
-	}
+        case xbt_cfgelm_double:
+          d=strtod(val, &val);
+          if (val==NULL) {
+            free(optionlist_cpy);
+            xbt_assert1(FALSE,
+                        "Value of option %s not valid. Should be a double",
+                        name);
+          }
 
-	xbt_cfg_set_double(cfg,name,d); /* throws */
-	break;
+          xbt_cfg_set_double(cfg,name,d); /* throws */
+          break;
 
-      case xbt_cfgelm_peer:
-	str=val;
-	val=strchr(val,':');
-	if (!val) {
-	  free(optionlist_cpy);	
-	  xbt_assert1(FALSE,
-		      "Value of option %s not valid. Should be an peer (machine:port)",
-		      name);
-	}
-	
-	*(val++)='\0';
-	i=strtol(val, &val, 0);
-	if (val==NULL) {
-	  free(optionlist_cpy);	
-	  xbt_assert1(FALSE,
-		      "Value of option %s not valid. Should be an peer (machine:port)",
-		      name);
-	}
+        case xbt_cfgelm_peer:
+          str=val;
+          val=strchr(val,':');
+          if (!val) {
+            free(optionlist_cpy);
+            xbt_assert1(FALSE,
+                        "Value of option %s not valid. Should be an peer (machine:port)",
+                        name);
+          }
 
-	xbt_cfg_set_peer(cfg,name,str,i); /* throws */ 
-	break;      
+          *(val++)='\0';
+          i=strtol(val, &val, 0);
+          if (val==NULL) {
+            free(optionlist_cpy);
+            xbt_assert1(FALSE,
+                        "Value of option %s not valid. Should be an peer (machine:port)",
+                        name);
+          }
 
-      default: 
-	THROW1(unknown_error,0,"Type of config element %s is not valid.",name);
+          xbt_cfg_set_peer(cfg,name,str,i); /* throws */
+          break;
+
+        default:
+          THROW1(unknown_error,0,"Type of config element %s is not valid.",name);
       }
     } CATCH(e) {
       free(optionlist_cpy);
@@ -626,7 +626,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
  * \arg cfg the config set
  * \arg name the name of the variable
  * \arg val the value of the variable
- */ 
+ */
 void
 xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
   xbt_cfgelm_t variable;
@@ -637,14 +637,14 @@ xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
       (*variable->cb_rm)(name, 0);
-          
+
     xbt_dynar_set(variable->content,0,&val);
   } else {
     if (variable->max && xbt_dynar_length(variable->content) == (unsigned long)variable->max)
       THROW3(mismatch_error,0,
              "Cannot add value %d to the config element %s since it's already full (size=%d)",
-             val,name,variable->max); 
-             
+             val,name,variable->max);
+
     xbt_dynar_push(variable->content,&val);
   }
 
@@ -653,11 +653,11 @@ xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
 }
 
 /** @brief Set or add a double value to \a name within \a cfg
- * 
+ *
  * \arg cfg the config set
  * \arg name the name of the variable
  * \arg val the doule to set
- */ 
+ */
 
 void
 xbt_cfg_set_double(xbt_cfg_t cfg,const char*name, double val) {
@@ -669,14 +669,14 @@ xbt_cfg_set_double(xbt_cfg_t cfg,const char*name, double val) {
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
       (*variable->cb_rm)(name, 0);
-          
+
     xbt_dynar_set(variable->content,0,&val);
   } else {
     if (variable->max && xbt_dynar_length(variable->content) == variable->max)
       THROW3(mismatch_error,0,
              "Cannot add value %f to the config element %s since it's already full (size=%d)",
-             val,name,variable->max); 
-             
+             val,name,variable->max);
+
     xbt_dynar_push(variable->content,&val);
   }
 
@@ -685,40 +685,40 @@ xbt_cfg_set_double(xbt_cfg_t cfg,const char*name, double val) {
 }
 
 /** @brief Set or add a string value to \a name within \a cfg
- * 
+ *
  * \arg cfg the config set
  * \arg name the name of the variable
  * \arg val the value to be added
  *
- */ 
+ */
 
 void
-xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) { 
+xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) {
   xbt_cfgelm_t variable;
   char *newval = xbt_strdup(val);
 
   VERB2("Configuration setting: %s=%s",name,val);
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_string);
   DEBUG5("Variable: %d to %d %s (=%d) @%p",
-	 variable->min,variable->max,xbt_cfgelm_type_name[variable->type],variable->type,variable);
+         variable->min,variable->max,xbt_cfgelm_type_name[variable->type],variable->type,variable);
 
   if (variable->max == 1) {
     if (xbt_dynar_length(variable->content)) {
-       if (variable->cb_rm)
-	 (*variable->cb_rm)(name, 0);
-       else if (variable->type == xbt_cfgelm_string) {
-	 char * sval=xbt_dynar_get_as(variable->content,0,char*);
-	 free(sval);
-       }
+      if (variable->cb_rm)
+        (*variable->cb_rm)(name, 0);
+      else if (variable->type == xbt_cfgelm_string) {
+        char * sval=xbt_dynar_get_as(variable->content,0,char*);
+        free(sval);
+      }
     }
-          
+
     xbt_dynar_set(variable->content,0,&newval);
   } else {
     if (variable->max && xbt_dynar_length(variable->content) == variable->max)
       THROW3(mismatch_error,0,
              "Cannot add value %s to the config element %s since it's already full (size=%d)",
-             name,val,variable->max); 
-             
+             name,val,variable->max);
+
     xbt_dynar_push(variable->content,&newval);
   }
 
@@ -727,18 +727,18 @@ xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) {
 }
 
 /** @brief Set or add an peer value to \a name within \a cfg
- * 
+ *
  * \arg cfg the config set
  * \arg name the name of the variable
  * \arg peer the peer
  * \arg port the port number
  *
  * \e peer values are composed of a string (peername) and an integer (port)
- */ 
+ */
 
 void
-xbt_cfg_set_peer(xbt_cfg_t cfg,const char*name, 
-		  const char *peer,int port) {
+xbt_cfg_set_peer(xbt_cfg_t cfg,const char*name,
+                 const char *peer,int port) {
   xbt_cfgelm_t variable;
   xbt_peer_t val=xbt_peer_new(peer,port);
 
@@ -749,14 +749,14 @@ xbt_cfg_set_peer(xbt_cfg_t cfg,const char*name,
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
       (*variable->cb_rm)(name, 0);
-          
+
     xbt_dynar_set(variable->content,0,&val);
   } else {
     if (variable->max && xbt_dynar_length(variable->content) == variable->max)
       THROW4(mismatch_error,0,
              "Cannot add value %s:%d to the config element %s since it's already full (size=%d)",
-             peer,port,name,variable->max); 
-             
+             peer,port,name,variable->max);
+
     xbt_dynar_push(variable->content,&val);
   }
 
@@ -779,11 +779,11 @@ void xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
   int seen;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_int);
-  
+
   if (xbt_dynar_length(variable->content) == variable->min)
     THROW3(mismatch_error,0,
            "Cannot remove value %d from the config element %s since it's already at its minimal size (=%d)",
-           val,name,variable->min); 
+           val,name,variable->min);
 
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (seen == val) {
@@ -794,7 +794,7 @@ void xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
   }
 
   THROW2(not_found_error,0,
-	 "Can't remove the value %d of config element %s: value not found.",val,name);
+         "Can't remove the value %d of config element %s: value not found.",val,name);
 }
 
 /** @brief Remove the provided \e val double value from a variable
@@ -810,23 +810,23 @@ void xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
   double seen;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_double);
-  
+
   if (xbt_dynar_length(variable->content) == variable->min)
     THROW3(mismatch_error,0,
            "Cannot remove value %f from the config element %s since it's already at its minimal size (=%d)",
-           val,name,variable->min); 
+           val,name,variable->min);
 
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (seen == val) {
       xbt_dynar_cursor_rm(variable->content,&cpt);
       if (variable->cb_rm)
-	(*variable->cb_rm)(name, cpt);
+        (*variable->cb_rm)(name, cpt);
       return;
     }
   }
 
   THROW2(not_found_error,0,
-	 "Can't remove the value %f of config element %s: value not found.",val,name);
+         "Can't remove the value %f of config element %s: value not found.",val,name);
 }
 
 /** @brief Remove the provided \e val string value from a variable
@@ -842,27 +842,27 @@ xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
   char *seen;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_string);
-  
+
   if (xbt_dynar_length(variable->content) == variable->min)
     THROW3(mismatch_error,0,
            "Cannot remove value %s from the config element %s since it's already at its minimal size (=%d)",
-           name,val,variable->min); 
-           
+           name,val,variable->min);
+
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (!strcpy(seen,val)) {
       if (variable->cb_rm)
-	(*variable->cb_rm)(name, cpt);
+        (*variable->cb_rm)(name, cpt);
       xbt_dynar_cursor_rm(variable->content,&cpt);
       return;
     }
   }
 
   THROW2(not_found_error,0,
-	 "Can't remove the value %s of config element %s: value not found.",val,name);
+         "Can't remove the value %s of config element %s: value not found.",val,name);
 }
 
 /** @brief Remove the provided \e val peer value from a variable
- * 
+ *
  * \arg cfg the config set
  * \arg name the name of the variable
  * \arg peer the peername
@@ -876,12 +876,12 @@ xbt_cfg_rm_peer(xbt_cfg_t cfg,const char*name, const char *peer,int port) {
   xbt_peer_t seen;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_peer);
-  
+
   if (xbt_dynar_length(variable->content) == variable->min)
     THROW4(mismatch_error,0,
            "Cannot remove value %s:%d from the config element %s since it's already at its minimal size (=%d)",
-           peer,port,name,variable->min); 
-           
+           peer,port,name,variable->min);
+
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (!strcpy(seen->name,peer) && seen->port == port) {
       if (variable->cb_rm) (*variable->cb_rm)(name, cpt);
@@ -891,8 +891,8 @@ xbt_cfg_rm_peer(xbt_cfg_t cfg,const char*name, const char *peer,int port) {
   }
 
   THROW3(not_found_error,0,
-	 "Can't remove the value %s:%d of config element %s: value not found.",
-	 peer,port,name);
+         "Can't remove the value %s:%d of config element %s: value not found.",
+         peer,port,name);
 }
 
 /** @brief Remove the \e pos th value from the provided variable */
@@ -902,18 +902,18 @@ void xbt_cfg_rm_at   (xbt_cfg_t cfg, const char *name, int pos) {
   xbt_cfgelm_t variable;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_any);
-  
+
   if (xbt_dynar_length(variable->content) == variable->min)
     THROW3(mismatch_error,0,
            "Cannot remove %dth value from the config element %s since it's already at its minimal size (=%d)",
-           pos,name,variable->min); 
-  
-  if (variable->cb_rm) (*variable->cb_rm)(name, pos);	  
+           pos,name,variable->min);
+
+  if (variable->cb_rm) (*variable->cb_rm)(name, pos);
   xbt_dynar_remove_at(variable->content, pos, NULL);
 }
 
 /** @brief Remove all the values from a variable
- * 
+ *
  * \arg cfg the config set
  * \arg name the name of the variable
  */
@@ -931,7 +931,7 @@ xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
 
     xbt_ex_free(e);
     THROW1(not_found_error,0,
-	   "Can't empty  '%s' since this config element does not exist", name);
+           "Can't empty  '%s' since this config element does not exist", name);
   }
 
   if (variable) {
@@ -955,31 +955,31 @@ xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
  * \arg val the wanted value
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using 
+ * If there is more than one value, it will issue a warning. Consider using
  * xbt_cfg_get_dynar() instead.
  *
  * \warning the returned value is the actual content of the config set
  */
-int 
+int
 xbt_cfg_get_int (xbt_cfg_t  cfg, const char *name) {
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_int);
 
   if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values",
-	  name, xbt_dynar_length(variable->content));
+          name, xbt_dynar_length(variable->content));
   }
 
   return xbt_dynar_get_as(variable->content, 0, int);
 }
 
 /** @brief Retrieve a double value of a variable (get a warning if not uniq)
- * 
+ *
  * \arg cfg the config set
  * \arg name the name of the variable
  * \arg val the wanted value
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using 
+ * If there is more than one value, it will issue a warning. Consider using
  * xbt_cfg_get_dynar() instead.
  *
  * \warning the returned value is the actual content of the config set
@@ -991,7 +991,7 @@ xbt_cfg_get_double(xbt_cfg_t  cfg, const char *name) {
 
   if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
-	     name, xbt_dynar_length(variable->content));
+          name, xbt_dynar_length(variable->content));
   }
 
   return xbt_dynar_get_as(variable->content, 0, double);
@@ -1004,7 +1004,7 @@ xbt_cfg_get_double(xbt_cfg_t  cfg, const char *name) {
  * \arg val the wanted value
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using 
+ * If there is more than one value, it will issue a warning. Consider using
  * xbt_cfg_get_dynar() instead.
  *
  * \warning the returned value is the actual content of the config set
@@ -1015,7 +1015,7 @@ char* xbt_cfg_get_string(xbt_cfg_t  cfg, const char *name) {
 
   if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
-	  name, xbt_dynar_length(variable->content));
+          name, xbt_dynar_length(variable->content));
   }
 
   return xbt_dynar_get_as(variable->content, 0, char *);
@@ -1036,7 +1036,7 @@ char* xbt_cfg_get_string(xbt_cfg_t  cfg, const char *name) {
  */
 
 void xbt_cfg_get_peer  (xbt_cfg_t   cfg,  const char *name,
-			char      **peer, int        *port) {
+                        char      **peer, int        *port) {
   xbt_cfgelm_t variable;
   xbt_peer_t  val;
 
@@ -1044,7 +1044,7 @@ void xbt_cfg_get_peer  (xbt_cfg_t   cfg,  const char *name,
 
   if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
-	     name, xbt_dynar_length(variable->content));
+          name, xbt_dynar_length(variable->content));
   }
 
   val = xbt_dynar_get_as(variable->content, 0, xbt_peer_t);
@@ -1053,12 +1053,12 @@ void xbt_cfg_get_peer  (xbt_cfg_t   cfg,  const char *name,
 }
 
 /** @brief Retrieve the dynar of all the values stored in a variable
- * 
+ *
  * \arg cfg where to search in
  * \arg name what to search for
  * \arg dynar result
  *
- * Get the data stored in the config set. 
+ * Get the data stored in the config set.
  *
  * \warning the returned value is the actual content of the config set
  */
@@ -1072,7 +1072,7 @@ xbt_dynar_t xbt_cfg_get_dynar (xbt_cfg_t    cfg, const char *name) {
     if (e.category == not_found_error) {
       xbt_ex_free(e);
       THROW1(not_found_error,0,
-	     "No registered variable %s in this config set",name);
+             "No registered variable %s in this config set",name);
     }
     RETHROW;
   }
@@ -1084,7 +1084,7 @@ xbt_dynar_t xbt_cfg_get_dynar (xbt_cfg_t    cfg, const char *name) {
 /** @brief Retrieve one of the integer value of a variable */
 int
 xbt_cfg_get_int_at(xbt_cfg_t cfg, const char *name, int pos) {
-                  
+
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_int);
   return xbt_dynar_get_as(variable->content, pos, int);
 }
@@ -1092,7 +1092,7 @@ xbt_cfg_get_int_at(xbt_cfg_t cfg, const char *name, int pos) {
 /** @brief Retrieve one of the double value of a variable */
 double
 xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos) {
-                  
+
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_double);
   return xbt_dynar_get_as(variable->content, pos, double);
 }
@@ -1101,7 +1101,7 @@ xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos) {
 /** @brief Retrieve one of the string value of a variable */
 char*
 xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos) {
-                  
+
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_string);
   return xbt_dynar_get_as(variable->content, pos, char*);
 }
@@ -1110,7 +1110,7 @@ xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos) {
 void
 xbt_cfg_get_peer_at(xbt_cfg_t cfg, const char *name, int pos,
                     char **peer, int *port) {
-                  
+
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_int);
   xbt_peer_t val = xbt_dynar_get_ptr(variable->content, pos);
 
@@ -1126,7 +1126,7 @@ xbt_cfg_get_peer_at(xbt_cfg_t cfg, const char *name, int pos,
 XBT_TEST_SUITE("config","Configuration support");
 
 static xbt_cfg_t make_set(){
-  xbt_cfg_t set=NULL; 
+  xbt_cfg_t set=NULL;
 
   set = xbt_cfg_new();
   xbt_cfg_register_str(set,"speed:1_to_2_int");
@@ -1147,14 +1147,14 @@ XBT_TEST_UNIT("memuse",test_config_memuse,"Alloc and free a config set") {
 XBT_TEST_UNIT("validation",test_config_validation,"Validation tests") {
   xbt_cfg_t set = set=make_set();
   xbt_ex_t e;
-  
+
   xbt_test_add0("Having too few elements for speed");
   xbt_cfg_set_parse(set, "peername:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
   TRY {
     xbt_cfg_check(set);
   } CATCH(e) {
-    if (e.category != mismatch_error || 
-	strncmp(e.msg,"Config elem speed needs",strlen("Config elem speed needs")))
+    if (e.category != mismatch_error ||
+        strncmp(e.msg,"Config elem speed needs",strlen("Config elem speed needs")))
       xbt_test_fail1("Got an exception. msg=%s",e.msg);
     xbt_ex_free(e);
   }
@@ -1164,14 +1164,14 @@ XBT_TEST_UNIT("validation",test_config_validation,"Validation tests") {
 
 
   xbt_test_add0("Having too much values of 'speed'");
-  set=make_set(); 
+  set=make_set();
   xbt_cfg_set_parse(set,"peername:toto:42 user:alegrand");
   TRY {
     xbt_cfg_set_parse(set,"speed:42 speed:24 speed:34");
   } CATCH(e) {
     if (e.category != mismatch_error ||
-	strncmp(e.msg,"Cannot add value 34 to the config elem speed",
-		strlen("Config elem speed needs")))
+        strncmp(e.msg,"Cannot add value 34 to the config elem speed",
+                strlen("Config elem speed needs")))
       xbt_test_fail1("Got an exception. msg=%s",e.msg);
     xbt_ex_free(e);
   }
@@ -1184,30 +1184,30 @@ XBT_TEST_UNIT("validation",test_config_validation,"Validation tests") {
 XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
 
   xbt_test_add0("Get a single value");
-  {	
+  {
     /* get_single_value */
     int ival;
     xbt_cfg_t myset=make_set();
-    
+
     xbt_cfg_set_parse(myset,"peername:toto:42 speed:42");
-    ival = xbt_cfg_get_int(myset,"speed"); 
-    if (ival != 42) 
+    ival = xbt_cfg_get_int(myset,"speed");
+    if (ival != 42)
       xbt_test_fail1("Speed value = %d, I expected 42",ival);
     xbt_cfg_free(&myset);
   }
 
   xbt_test_add0("Get multiple values");
-  {	
+  {
     /* get_multiple_value */
-    xbt_dynar_t dyn; 
+    xbt_dynar_t dyn;
     xbt_cfg_t myset=make_set();
-    
+
     xbt_cfg_set_parse(myset, "peername:veloce user:foo\nuser:bar\tuser:toto");
     xbt_cfg_set_parse(myset,"speed:42");
-    xbt_cfg_check(myset); 
+    xbt_cfg_check(myset);
     dyn = xbt_cfg_get_dynar(myset,"user");
 
-    if (xbt_dynar_length(dyn) != 3) 
+    if (xbt_dynar_length(dyn) != 3)
       xbt_test_fail1("Dynar length = %lu, I expected 3", xbt_dynar_length(dyn));
 
     if (strcmp(xbt_dynar_get_as(dyn,0,char*),"foo"))
@@ -1218,15 +1218,15 @@ XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
 
     if (strcmp(xbt_dynar_get_as(dyn,2,char*),"toto"))
       xbt_test_fail1("Dynar[2] = %s, I expected toto",  xbt_dynar_get_as(dyn,2,char*));
-    xbt_cfg_free(&myset);    
+    xbt_cfg_free(&myset);
   }
-  
+
   xbt_test_add0("Access to a non-existant entry");
-  {	
+  {
     /* non-existant_entry */
     xbt_cfg_t myset=make_set();
     xbt_ex_t e;
-    
+
     TRY {
       xbt_cfg_set_parse(myset, "color:blue");
     } CATCH(e) {
@@ -1234,7 +1234,7 @@ XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
         xbt_test_exception(e);
       xbt_ex_free(e);
     }
-    xbt_cfg_free(&myset);    
+    xbt_cfg_free(&myset);
   }
 }
 #endif /* SIMGRID_TEST */
