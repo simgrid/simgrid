@@ -43,9 +43,9 @@ void rctx_exit(void) {
   if (bg_jobs) {
     /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon from working */
     while (xbt_dynar_length(bg_jobs)) {
-       rctx_t rctx;
-       xbt_dynar_pop(bg_jobs,&rctx);
-       kill_it(&rctx);
+      rctx_t rctx;
+      xbt_dynar_pop(bg_jobs,&rctx);
+      kill_it(&rctx);
     }
     xbt_dynar_free(&bg_jobs);
   }
@@ -56,9 +56,9 @@ void rctx_wait_bg(void) {
   if (bg_jobs) {
     /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon from working */
     while (xbt_dynar_length(bg_jobs)) {
-       rctx_t rctx;
-       xbt_dynar_pop(bg_jobs,&rctx);
-       kill_it(&rctx);
+      rctx_t rctx;
+      xbt_dynar_pop(bg_jobs,&rctx);
+      kill_it(&rctx);
     }
     xbt_dynar_free(&bg_jobs);
   }
@@ -89,9 +89,9 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
       rctx->interrupted = 1;
       xbt_os_mutex_release(rctx->interruption);
       if (!rctx->reader_done) {
-	kill(rctx->pid,SIGTERM);
-	usleep(100);
-	kill(rctx->pid,SIGKILL);
+        kill(rctx->pid,SIGTERM);
+        usleep(100);
+        kill(rctx->pid,SIGKILL);
       }
     }
   }
@@ -109,8 +109,8 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
 # include <crt_externs.h>
 # define environ (*_NSGetEnviron())
 # else
- /* the environment, as specified by the opengroup, used to initialize the process properties */
- extern char **environ;
+/* the environment, as specified by the opengroup, used to initialize the process properties */
+extern char **environ;
 # endif
 
 void rctx_empty(rctx_t rc) {
@@ -123,7 +123,7 @@ void rctx_empty(rctx_t rc) {
   if (rc->filepos)
     free(rc->filepos);
   if (rc->env)
-     free(rc->env);
+    free(rc->env);
 
   for (i=0;*env_it;i++,env_it++);
   i++;
@@ -177,12 +177,12 @@ void rctx_free(rctx_t rctx) {
 
 void rctx_dump(rctx_t rctx, const char *str) {
   DEBUG9("%s RCTX %p={in%p={%d,%10s}, want={%d,%10s}, out={%d,%10s}}",
-	 str, rctx,
- 	 rctx->input,              rctx->input->used,        rctx->input->data,
-	 rctx->output_wanted->used,rctx->output_wanted->data,
-	 rctx->output_got->used,   rctx->output_got->data);
+         str, rctx,
+         rctx->input,              rctx->input->used,        rctx->input->data,
+         rctx->output_wanted->used,rctx->output_wanted->data,
+         rctx->output_got->used,   rctx->output_got->data);
   DEBUG5("%s RCTX %p=[cmd%p=%10s, pid=%d]",
-	 str,rctx,rctx->cmd,rctx->cmd,rctx->pid);
+         str,rctx,rctx->cmd,rctx->cmd,rctx->pid);
 
 }
 
@@ -193,88 +193,88 @@ void rctx_dump(rctx_t rctx, const char *str) {
 void rctx_pushline(const char* filepos, char kind, char *line) {
 
   switch (kind) {
-  case '$':
-  case '&':
-    if (rctx->cmd) {
-      if (!rctx->is_empty) {
-	ERROR2("[%s] More than one command in this chunk of lines (previous: %s).\n"
-	       " Dunno which input/output belongs to which command.",
-	       filepos,rctx->cmd);
-	ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
-	rctx_armageddon(rctx,1);
-	return;
+    case '$':
+    case '&':
+      if (rctx->cmd) {
+        if (!rctx->is_empty) {
+          ERROR2("[%s] More than one command in this chunk of lines (previous: %s).\n"
+                 " Dunno which input/output belongs to which command.",
+                 filepos,rctx->cmd);
+          ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
+          rctx_armageddon(rctx,1);
+          return;
+        }
+        rctx_start();
+        VERB1("[%s] More than one command in this chunk of lines",filepos);
       }
-      rctx_start();
-      VERB1("[%s] More than one command in this chunk of lines",filepos);
-    }
-    if (kind == '&')
-      rctx->is_background = 1;
-    else
-      rctx->is_background = 0;
+      if (kind == '&')
+        rctx->is_background = 1;
+      else
+        rctx->is_background = 0;
 
-    rctx->cmd = xbt_strdup(line);
-    rctx->filepos = xbt_strdup(filepos);
-    INFO3("[%s] %s%s",filepos,rctx->cmd,
-	  ((rctx->is_background)?" (background command)":""));
+      rctx->cmd = xbt_strdup(line);
+      rctx->filepos = xbt_strdup(filepos);
+      INFO3("[%s] %s%s",filepos,rctx->cmd,
+            ((rctx->is_background)?" (background command)":""));
 
-    break;
+      break;
 
-  case '<':
-    rctx->is_empty = 0;
-    xbt_strbuff_append(rctx->input,line);
-    xbt_strbuff_append(rctx->input,"\n");
-    break;
+    case '<':
+      rctx->is_empty = 0;
+      xbt_strbuff_append(rctx->input,line);
+      xbt_strbuff_append(rctx->input,"\n");
+      break;
 
-  case '>':
-    rctx->is_empty = 0;
-    xbt_strbuff_append(rctx->output_wanted,line);
-    xbt_strbuff_append(rctx->output_wanted,"\n");
-    break;
+    case '>':
+      rctx->is_empty = 0;
+      xbt_strbuff_append(rctx->output_wanted,line);
+      xbt_strbuff_append(rctx->output_wanted,"\n");
+      break;
 
-  case '!':
-    if (rctx->cmd)
-      rctx_start();
+    case '!':
+      if (rctx->cmd)
+        rctx_start();
 
-    if (!strncmp(line,"timeout no",strlen("timeout no"))) {
-      VERB1("[%s] (disable timeout)", filepos);
-      timeout_value = -1;
-    } else if (!strncmp(line,"timeout ",strlen("timeout "))) {
-      timeout_value=atoi(line+strlen("timeout"));
-      VERB2("[%s] (new timeout value: %d)",
-	     filepos,timeout_value);
+      if (!strncmp(line,"timeout no",strlen("timeout no"))) {
+        VERB1("[%s] (disable timeout)", filepos);
+        timeout_value = -1;
+      } else if (!strncmp(line,"timeout ",strlen("timeout "))) {
+        timeout_value=atoi(line+strlen("timeout"));
+        VERB2("[%s] (new timeout value: %d)",
+              filepos,timeout_value);
 
-    } else if (!strncmp(line,"expect signal ",strlen("expect signal "))) {
-      rctx->expected_signal = strdup(line + strlen("expect signal "));
-      xbt_str_trim(rctx->expected_signal," \n");
-	   VERB2("[%s] (next command must raise signal %s)",
-		 filepos, rctx->expected_signal);
+      } else if (!strncmp(line,"expect signal ",strlen("expect signal "))) {
+        rctx->expected_signal = strdup(line + strlen("expect signal "));
+        xbt_str_trim(rctx->expected_signal," \n");
+        VERB2("[%s] (next command must raise signal %s)",
+              filepos, rctx->expected_signal);
 
-    } else if (!strncmp(line,"expect return ",strlen("expect return "))) {
-      rctx->expected_return = atoi(line+strlen("expect return "));
-      VERB2("[%s] (next command must return code %d)",
-	    filepos, rctx->expected_return);
+      } else if (!strncmp(line,"expect return ",strlen("expect return "))) {
+        rctx->expected_return = atoi(line+strlen("expect return "));
+        VERB2("[%s] (next command must return code %d)",
+              filepos, rctx->expected_return);
 
-    } else if (!strncmp(line,"output ignore",strlen("output ignore"))) {
-      rctx->output = e_output_ignore;
-      VERB1("[%s] (ignore output of next command)", filepos);
+      } else if (!strncmp(line,"output ignore",strlen("output ignore"))) {
+        rctx->output = e_output_ignore;
+        VERB1("[%s] (ignore output of next command)", filepos);
 
-    } else if (!strncmp(line,"output display",strlen("output display"))) {
-      rctx->output = e_output_display;
-      VERB1("[%s] (ignore output of next command)", filepos);
+      } else if (!strncmp(line,"output display",strlen("output display"))) {
+        rctx->output = e_output_display;
+        VERB1("[%s] (ignore output of next command)", filepos);
 
-    } else if (!strncmp(line,"setenv ",strlen("setenv "))) {
-      rctx->env = realloc(rctx->env,++(rctx->env_size)*sizeof(char*));
-      rctx->env[rctx->env_size-2] = xbt_strdup(line+strlen("setenv "));
-      rctx->env[rctx->env_size-1] = NULL;
-      VERB1("[%s] (ignore output of next command)", filepos);
+      } else if (!strncmp(line,"setenv ",strlen("setenv "))) {
+        rctx->env = realloc(rctx->env,++(rctx->env_size)*sizeof(char*));
+        rctx->env[rctx->env_size-2] = xbt_strdup(line+strlen("setenv "));
+        rctx->env[rctx->env_size-1] = NULL;
+        VERB1("[%s] (ignore output of next command)", filepos);
 
-    } else {
-      ERROR2("%s: Malformed metacommand: %s",filepos,line);
-      ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
-      rctx_armageddon(rctx,1);
-      return;
-    }
-    break;
+      } else {
+        ERROR2("%s: Malformed metacommand: %s",filepos,line);
+        ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
+        rctx_armageddon(rctx,1);
+        return;
+      }
+      break;
   }
 }
 
@@ -296,12 +296,12 @@ static void* thread_writer(void *r) {
       posw+=got;
     if (got<0) {
       if (errno == EPIPE) {
-	rctx->brokenpipe = 1;
+        rctx->brokenpipe = 1;
       } else if (errno!=EINTR && errno!=EAGAIN && errno!=EPIPE) {
-	perror("Error while writing input to child");
-	ERROR1("Test suite `%s': NOK (system error)",testsuite_name);
-	rctx_armageddon(rctx,4);
-	return NULL;
+        perror("Error while writing input to child");
+        ERROR1("Test suite `%s': NOK (system error)",testsuite_name);
+        rctx_armageddon(rctx,4);
+        return NULL;
       }
     }
     DEBUG1("written %d chars so far",posw);
@@ -381,9 +381,9 @@ void rctx_start(void) {
     rctx->child_from = child_out[0];
 
     if (timeout_value > 0)
-       rctx->end_time = time(NULL) + timeout_value;
+      rctx->end_time = time(NULL) + timeout_value;
     else
-       rctx->end_time = -1;
+      rctx->end_time = -1;
 
     rctx->reader_done = 0;
     rctx->reader = xbt_os_thread_create("reader",thread_reader,(void*)rctx);
@@ -400,60 +400,60 @@ void rctx_start(void) {
     dup2(child_out[1],2);
     close(child_out[1]);
 
-	xbt_dynar_t cmd = xbt_str_split_quoted(rctx->cmd);
-	char *file;
-	unsigned int it;
-	char *str;
-	char *long_cmd=xbt_strdup("");
-	xbt_dynar_get_cpy(cmd,0,&file);
-	char **args = xbt_new(char*,xbt_dynar_length(cmd)+1);
-	xbt_dynar_foreach(cmd,it,str) {
-		args[it] = xbt_strdup(str);
-		long_cmd = bprintf("%s %s",long_cmd,str);
-	}
-	args[it] = NULL;
+    xbt_dynar_t cmd = xbt_str_split_quoted(rctx->cmd);
+    char *file;
+    unsigned int it;
+    char *str;
+    char *long_cmd=xbt_strdup("");
+    xbt_dynar_get_cpy(cmd,0,&file);
+    char **args = xbt_new(char*,xbt_dynar_length(cmd)+1);
+    xbt_dynar_foreach(cmd,it,str) {
+      args[it] = xbt_strdup(str);
+      long_cmd = bprintf("%s %s",long_cmd,str);
+    }
+    args[it] = NULL;
 
-	  /* To search for the right executable path when not trivial */
-	  struct stat stat_buf;
-	  char *binary_name = NULL;
+    /* To search for the right executable path when not trivial */
+    struct stat stat_buf;
+    char *binary_name = NULL;
 
-	  /* build the command line */
-	  if (stat(file, &stat_buf)) {
-	    /* Damn. binary not in current dir. We'll have to dig the PATH to find it */
-	    int i;
+    /* build the command line */
+    if (stat(file, &stat_buf)) {
+      /* Damn. binary not in current dir. We'll have to dig the PATH to find it */
+      int i;
 
-	    for (i = 0; environ[i]; i++) {
-	      if (!strncmp("PATH=", environ[i], 5)) {
-	        xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
+      for (i = 0; environ[i]; i++) {
+        if (!strncmp("PATH=", environ[i], 5)) {
+          xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
 
-	        xbt_dynar_foreach(path, it, str) {
-	          if (binary_name)
-	            free(binary_name);
-	          binary_name = bprintf("%s/%s", str, file);
-	          if (!stat(binary_name, &stat_buf)) {
-	            /* Found. */
-	            DEBUG1("Looked in the PATH for the binary. Found %s",
-	                   binary_name);
-	            xbt_dynar_free(&path);
-	            break;
-	          }
-	        }
-	        xbt_dynar_free(&path);
-	        if (stat(binary_name, &stat_buf)) {
-	          /* not found */
-	          ERROR1("Command %s not found",file);
-	          return;
-	        }
-	        break;
-	      }
-	    }
-	  } else {
-	    binary_name = xbt_strdup(file);
-	  }
+          xbt_dynar_foreach(path, it, str) {
+            if (binary_name)
+              free(binary_name);
+            binary_name = bprintf("%s/%s", str, file);
+            if (!stat(binary_name, &stat_buf)) {
+              /* Found. */
+              DEBUG1("Looked in the PATH for the binary. Found %s",
+                     binary_name);
+              xbt_dynar_free(&path);
+              break;
+            }
+          }
+          xbt_dynar_free(&path);
+          if (stat(binary_name, &stat_buf)) {
+            /* not found */
+            ERROR1("Command %s not found",file);
+            return;
+          }
+          break;
+        }
+      }
+    } else {
+      binary_name = xbt_strdup(file);
+    }
 
 
-	DEBUG2("execve %s %s env",binary_name,long_cmd);
-	execve(binary_name, args, rctx->env);
+    DEBUG2("execve %s %s env",binary_name,long_cmd);
+    execve(binary_name, args, rctx->env);
   }
 
   rctx->is_stoppable = 1;
@@ -472,7 +472,7 @@ void rctx_start(void) {
     runner = xbt_os_thread_create(old->cmd,rctx_wait,(void*)old);
     old->runner = runner;
     VERB3("Launched thread %p to wait for %s %d",
-	  runner,old->cmd, old->pid);
+          runner,old->cmd, old->pid);
     xbt_dynar_push(bg_jobs,&old);
   }
 }
@@ -491,7 +491,7 @@ void *rctx_wait(void* r) {
 
   if (!rctx->is_stoppable)
     THROW1(unknown_error,0,"Cmd '%s' not started yet. Cannot wait it",
-	   rctx->cmd);
+           rctx->cmd);
 
   /* Wait for the child to die or the timeout to happen (or an armageddon to happen) */
   while (!rctx->interrupted && !rctx->reader_done && (rctx->end_time <0 ||rctx->end_time >= now)) {
@@ -533,12 +533,12 @@ void *rctx_wait(void* r) {
   if (rctx->timeout) {
     if (rctx->output_got->data[0])
       INFO2("<%s> Output on timeout:\n%s",
-	    rctx->filepos,rctx->output_got->data);
+            rctx->filepos,rctx->output_got->data);
     else
       INFO1("<%s> No output before timeout",
-	    rctx->filepos);
+            rctx->filepos);
     ERROR3("Test suite `%s': NOK (<%s> timeout after %d sec)",
-	   testsuite_name,rctx->filepos,timeout_value);
+           testsuite_name,rctx->filepos,timeout_value);
     DEBUG2("<%s> Interrupted = %d", rctx->filepos, rctx->interrupted);
     if (!rctx->interrupted) {
       rctx_armageddon(rctx, 3);
@@ -552,36 +552,36 @@ void *rctx_wait(void* r) {
   if (!rctx->interrupted) {
     if (WIFSIGNALED(rctx->status) && !rctx->expected_signal) {
       ERROR3("Test suite `%s': NOK (<%s> got signal %s)",
-	     testsuite_name, rctx->filepos,
-	     signal_name(WTERMSIG(rctx->status),NULL));
+             testsuite_name, rctx->filepos,
+             signal_name(WTERMSIG(rctx->status),NULL));
       errcode = WTERMSIG(rctx->status)+4;
     }
 
     if (WIFSIGNALED(rctx->status) && rctx->expected_signal &&
-	strcmp(signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
-	       rctx->expected_signal)) {
+        strcmp(signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
+               rctx->expected_signal)) {
       ERROR4("Test suite `%s': NOK (%s got signal %s instead of %s)",
-	     testsuite_name, rctx->filepos,
-	     signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
-	     rctx->expected_signal);
+             testsuite_name, rctx->filepos,
+             signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
+             rctx->expected_signal);
       errcode = WTERMSIG(rctx->status)+4;
     }
 
     if (!WIFSIGNALED(rctx->status) && rctx->expected_signal) {
       ERROR3("Test suite `%s': NOK (child %s expected signal %s)",
-	     testsuite_name, rctx->filepos,
-	     rctx->expected_signal);
+             testsuite_name, rctx->filepos,
+             rctx->expected_signal);
       errcode = 5;
     }
 
     if (WIFEXITED(rctx->status) && WEXITSTATUS(rctx->status) != rctx->expected_return ) {
       if (rctx->expected_return)
-	ERROR4("Test suite `%s': NOK (<%s> returned code %d instead of %d)",
-	       testsuite_name, rctx->filepos,
-	       WEXITSTATUS(rctx->status), rctx->expected_return);
+        ERROR4("Test suite `%s': NOK (<%s> returned code %d instead of %d)",
+               testsuite_name, rctx->filepos,
+               WEXITSTATUS(rctx->status), rctx->expected_return);
       else
-	ERROR3("Test suite `%s': NOK (<%s> returned code %d)",
-	       testsuite_name, rctx->filepos, WEXITSTATUS(rctx->status));
+        ERROR3("Test suite `%s': NOK (<%s> returned code %d)",
+               testsuite_name, rctx->filepos, WEXITSTATUS(rctx->status));
       errcode = 40+WEXITSTATUS(rctx->status);
 
     }
@@ -595,14 +595,14 @@ void *rctx_wait(void* r) {
 
   if (   rctx->output == e_output_check
       && (    rctx->output_got->used != rctx->output_wanted->used
-	   || strcmp(rctx->output_got->data, rctx->output_wanted->data))) {
+          || strcmp(rctx->output_got->data, rctx->output_wanted->data))) {
     if (XBT_LOG_ISENABLED(tesh,xbt_log_priority_info)) {
-       char *diff= xbt_str_diff(rctx->output_wanted->data,rctx->output_got->data);
-       ERROR2("Output of <%s> mismatch:\n%s",rctx->filepos,diff);
-       free(diff);
+      char *diff= xbt_str_diff(rctx->output_wanted->data,rctx->output_got->data);
+      ERROR2("Output of <%s> mismatch:\n%s",rctx->filepos,diff);
+      free(diff);
     }
     ERROR2("Test suite `%s': NOK (<%s> output mismatch)",
-	   testsuite_name,rctx->filepos);
+           testsuite_name,rctx->filepos);
 
     errcode=2;
   } else if (rctx->output == e_output_ignore) {

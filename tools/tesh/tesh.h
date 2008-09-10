@@ -22,7 +22,7 @@
 const char* signal_name(unsigned int got, char *expected);
 
 #include "run_context.h"
-  
+
 /*** Options ***/
 int timeout_value; /* child timeout value */
 

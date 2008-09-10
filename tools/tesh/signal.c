@@ -17,36 +17,36 @@ typedef struct s_signal_entry {
 } s_signal_entry_t,* signal_entry_t;
 
 static const s_signal_entry_t signals[] = {
-	{"SIGHUP"	,SIGHUP},
-	{"SIGINT"	,SIGINT},
-	{"SIGQUIT"	,SIGQUIT},
-	{"SIGILL"	,SIGILL},
-	{"SIGTRAP"	,SIGTRAP},
-	{"SIGABRT"	,SIGABRT},
-	{"SIGFPE"	,SIGFPE},
-	{"SIGKILL"	,SIGKILL},
-	{"SIGBUS"	,SIGBUS},
-	{"SIGSEGV"	,SIGSEGV},
-	{"SIGSYS"	,SIGSYS},
-	{"SIGPIPE"	,SIGPIPE},
-	{"SIGALRM"	,SIGALRM},
-	{"SIGTERM"	,SIGTERM},
-	{"SIGURG"	,SIGURG},
-	{"SIGSTOP"	,SIGSTOP},
-	{"SIGTSTP"	,SIGTSTP},
-	{"SIGCONT"	,SIGCONT},
-	{"SIGCHLD"	,SIGCHLD},
-	{"SIGTTIN"	,SIGTTIN},
-	{"SIGTTOU"	,SIGTTOU},
-	{"SIGIO"	,SIGIO},
-	{"SIGXCPU"	,SIGXCPU},
-	{"SIGXFSZ"	,SIGXFSZ},
-	{"SIGVTALRM"	,SIGVTALRM},
-	{"SIGPROF"	,SIGPROF},
-	{"SIGWINCH"	,SIGWINCH},
-	{"SIGUSR1"	,SIGUSR1},
-	{"SIGUSR2"	,SIGUSR2},
-	{"SIG UNKNOWN"  ,-1}
+ {"SIGHUP"	,SIGHUP},
+ {"SIGINT"	,SIGINT},
+ {"SIGQUIT"	,SIGQUIT},
+ {"SIGILL"	,SIGILL},
+ {"SIGTRAP"	,SIGTRAP},
+ {"SIGABRT"	,SIGABRT},
+ {"SIGFPE"	,SIGFPE},
+ {"SIGKILL"	,SIGKILL},
+ {"SIGBUS"	,SIGBUS},
+ {"SIGSEGV"	,SIGSEGV},
+ {"SIGSYS"	,SIGSYS},
+ {"SIGPIPE"	,SIGPIPE},
+ {"SIGALRM"	,SIGALRM},
+ {"SIGTERM"	,SIGTERM},
+ {"SIGURG"	,SIGURG},
+ {"SIGSTOP"	,SIGSTOP},
+ {"SIGTSTP"	,SIGTSTP},
+ {"SIGCONT"	,SIGCONT},
+ {"SIGCHLD"	,SIGCHLD},
+ {"SIGTTIN"	,SIGTTIN},
+ {"SIGTTOU"	,SIGTTOU},
+ {"SIGIO"	,SIGIO},
+ {"SIGXCPU"	,SIGXCPU},
+ {"SIGXFSZ"	,SIGXFSZ},
+ {"SIGVTALRM"	,SIGVTALRM},
+ {"SIGPROF"	,SIGPROF},
+ {"SIGWINCH"	,SIGWINCH},
+ {"SIGUSR1"	,SIGUSR1},
+ {"SIGUSR2"	,SIGUSR2},
+ {"SIG UNKNOWN"  ,-1}
 };
 
 
@@ -57,7 +57,7 @@ const char* signal_name(unsigned int got, char *expected) {
      (segfault leads to any of them depending on the system) */
   if((got == SIGBUS) && !strcmp("SIGSEGV",expected))
     got = SIGSEGV;
-  
+
   for (i=0; signals[i].number != -1; i++)
     if (signals[i].number == got)
       return (signals[i].name);
