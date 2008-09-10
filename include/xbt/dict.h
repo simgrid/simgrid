@@ -18,20 +18,20 @@ SG_BEGIN_DECL()
 
 /** @addtogroup XBT_dict
  *  @brief The dictionnary data structure (comparable to hash tables)
- * 
+ *
  *  This section describes the API to a dictionnary structure that
  *  associates as string to a void* key. It provides the same
  *  functionnality than an hash table.
- * 
+ *
  *  Here is a little example of use:
  *  \verbatim xbt_dict_t mydict = xbt_dict_new();
  char buff[512];
 
  sprintf(buff,"some very precious data");
- xbt_dict_set(mydict,"my data", strdup(buff), free); 
+ xbt_dict_set(mydict,"my data", strdup(buff), free);
 
  sprintf(buff,"another good stuff");
- xbt_dict_set(mydict,"my data", strdup(buff), free); // previous data gets erased (and freed) by second add 
+ xbt_dict_set(mydict,"my data", strdup(buff), free); // previous data gets erased (and freed) by second add
 \endverbatim
  *
  */
@@ -66,8 +66,8 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(int) xbt_dict_length(xbt_dict_t dict);
   XBT_PUBLIC(void) xbt_dict_dump(xbt_dict_t dict, void (*output)(void*));
   XBT_PUBLIC(void) xbt_dict_dump_sizes(xbt_dict_t dict);
-   
-   
+
+
 /** @} */
 /** @defgroup XBT_dict_nnul Dictionnaries with non-nul terminated keys
  *  @ingroup XBT_dict
@@ -81,14 +81,15 @@ SG_BEGIN_DECL()
 		         void           *data,
 		         void_f_pvoid_t free_ctn);
   XBT_PUBLIC(void*) xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len);
+  XBT_PUBLIC(void*) xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len);
   XBT_PUBLIC(void)  xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len);
 
 
 /** @} */
-/** @defgroup XBT_dict_curs Cursors on dictionnaries 
+/** @defgroup XBT_dict_curs Cursors on dictionnaries
  *  @ingroup XBT_dict
  *
- *  Don't get impressed, there is a lot of functions here, but traversing a 
+ *  Don't get impressed, there is a lot of functions here, but traversing a
  *  dictionnary is imediate with the xbt_dict_foreach macro.
  *  You only need the other functions in rare cases (they are not used directly in SG itself).
  *
@@ -134,8 +135,8 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dict_multi Multi-level dictionnaries
  *  @ingroup XBT_dict
  *
- * They can be seen as dictionnary of multiple keys or as dictionnary of 
- * dictionnary of ... of data. Most of the functions here work the same way 
+ * They can be seen as dictionnary of multiple keys or as dictionnary of
+ * dictionnary of ... of data. Most of the functions here work the same way
  * than their simple dictionnary counterpart.
  *
  * Note that there is no xbt_multidict_free neither xbt_multi_dict_new functions.

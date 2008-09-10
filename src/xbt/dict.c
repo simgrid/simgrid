@@ -320,6 +320,27 @@ void *xbt_dict_get_ext(xbt_dict_t dict,
   }
 
   if (current == NULL)
+    return NULL;
+
+  return current->content;
+}
+/**
+ * \brief like xbt_dict_get_ext(), but returning NULL when not found
+ */
+void *xbt_dict_get_or_null_ext(xbt_dict_t dict,
+                               const char *key, int key_len) {
+  unsigned int hash_code = xbt_dict_hash_ext(key,key_len);
+  xbt_dictelm_t current;
+
+  xbt_assert(dict);
+
+  current = dict->table[hash_code & dict->table_size];
+  while (current != NULL &&
+      (hash_code != current->hash_code || key_len != current->key_len || memcmp(key, current->key, key_len))) {
+    current = current->next;
+  }
+
+  if (current == NULL)
     THROW2(not_found_error, 0, "key %.*s not found", key_len, key);
 
   return current->content;
