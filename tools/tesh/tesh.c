@@ -48,14 +48,14 @@ static void handle_line(const char * filepos, char *line) {
 
       if (rctx->cmd)
 	rctx_start();
-      
+
       /* search begining */
       while (*(dir++) == ' ');
       dir--;
       VERB1("Saw cd '%s'",dir);
       if (chdir(dir)) {
 	ERROR2("Chdir to %s failed: %s",dir,strerror(errno));
-	ERROR1("Test suite `%s': NOK (system error)", testsuite_name); 
+	ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
 	rctx_armageddon(rctx,4);
       }
       break;
@@ -64,7 +64,7 @@ static void handle_line(const char * filepos, char *line) {
   case '<':
   case '>':
   case '!':
-    rctx_pushline(filepos, line[0], line+2 /* pass '$ ' stuff*/);    
+    rctx_pushline(filepos, line[0], line+2 /* pass '$ ' stuff*/);
     break;
 
   case 'p':
@@ -89,7 +89,7 @@ static void handle_suite(const char* filename, FILE* IN) {
   char file_pos[256];
 
   xbt_strbuff_t buff=xbt_strbuff_new();
-  int buffbegin = 0;   
+  int buffbegin = 0;
 
   rctx = rctx_new();
 
@@ -98,13 +98,13 @@ static void handle_suite(const char* filename, FILE* IN) {
 
     /* Count the line length while checking wheather it's blank */
     int blankline=1;
-    int linelen = 0;    
+    int linelen = 0;
     while (line[linelen] != '\0') {
       if (line[linelen] != ' ' && line[linelen] != '\t' && line[linelen]!='\n')
 	blankline = 0;
       linelen++;
     }
-    
+
     if (blankline) {
       if (!rctx->cmd && !rctx->is_empty) {
 	ERROR1("[%d] Error: no command found in this chunk of lines.",
@@ -128,28 +128,28 @@ static void handle_suite(const char* filename, FILE* IN) {
       } else {
 	to_be_continued = 1;
 	line[linelen-2] = '\0';
-	linelen -= 2;  
+	linelen -= 2;
 	if (!buff->used)
 	  buffbegin = line_num;
       }
     }
 
-    if (buff->used || to_be_continued) { 
+    if (buff->used || to_be_continued) {
       xbt_strbuff_append(buff,line);
 
       if (!to_be_continued) {
 	snprintf(file_pos,256,"%s:%d",filename,buffbegin);
-	handle_line(file_pos, buff->data);    
+	handle_line(file_pos, buff->data);
 	xbt_strbuff_empty(buff);
       }
-	
+
     } else {
       snprintf(file_pos,256,"%s:%d",filename,line_num);
-      handle_line(file_pos, line);    
+      handle_line(file_pos, line);
     }
   }
   /* Check that last command of the file ran well */
-  if (rctx->cmd) 
+  if (rctx->cmd)
     rctx_start();
 
   /* Wait all background commands */
@@ -168,13 +168,13 @@ int main(int argc,char *argv[]) {
   FILE *IN;
 
   /* Ignore pipe issues.
-     They will show up when we try to send data to dead buddies, 
+     They will show up when we try to send data to dead buddies,
      but we will stop doing so when we're done with provided input */
   struct sigaction newact;
   memset(&newact,0, sizeof(newact));
   newact.sa_handler=SIG_IGN;
   sigaction(SIGPIPE,&newact,NULL);
-   
+
   xbt_init(&argc,argv);
   rctx_init();
 
@@ -184,10 +184,10 @@ int main(int argc,char *argv[]) {
     testsuite_name = xbt_strdup("(stdin)");
     handle_suite("stdin",stdin);
     INFO0("Test suite from stdin OK");
-     
+
   } else {
     int i;
-     
+
     for (i=1; i<argc; i++) {
       char *suitename=xbt_strdup(argv[i]);
       if (!strcmp("./",suitename))
@@ -206,7 +206,7 @@ int main(int argc,char *argv[]) {
        }
       handle_suite(suitename,IN);
       rctx_wait_bg();
-      fclose(IN); 
+      fclose(IN);
       INFO1("Test suite `%s' OK",suitename);
       free(suitename);
     }
@@ -214,6 +214,6 @@ int main(int argc,char *argv[]) {
 
   rctx_exit();
   xbt_exit();
-  return 0;  
+  return 0;
 }
 
