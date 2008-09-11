@@ -327,10 +327,18 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 				unit->is_running_suite = 0;
 			}
 				
-			if(context->command_line && !context->is_not_found)
+			if(context->command_line)
 			{
+				#ifdef WIN32
+				if(!context->is_not_found)
+				{
+				#endif
 				if(fstream_launch_command(fstream, context, mutex) < 0)
 						break;
+
+				#ifdef WIN32
+				}
+				#endif
 			}
 		
 			continue;
@@ -374,10 +382,19 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 	}
 	
 	/* Check that last command of the file ran well */
-	if(context->command_line && !context->is_not_found)
+	if(context->command_line)
 	{
+		#ifdef WIN32
+		if(!context->is_not_found)
+		{
+		#endif
+
 		if(fstream_launch_command(fstream, context, mutex) < 0)
 			return -1;
+
+		#ifdef WIN32
+		}
+		#endif
 	}
 	
 	/* clear buffers */
