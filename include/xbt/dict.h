@@ -14,14 +14,14 @@
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
 #include "xbt/dynar.h" /* void_f_pvoid_t */
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL();
 
 /** @addtogroup XBT_dict
- *  @brief The dictionnary data structure (comparable to hash tables)
+ *  @brief The dictionary data structure (comparable to hash tables)
  *
- *  This section describes the API to a dictionnary structure that
+ *  This section describes the API to a dictionary structure that
  *  associates as string to a void* key. It provides the same
- *  functionnality than an hash table.
+ *  functionality than an hash table.
  *
  *  Here is a little example of use:
  *  \verbatim xbt_dict_t mydict = xbt_dict_new();
@@ -42,14 +42,14 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  /** \brief Dictionnary data type (opaque structure) */
+  /** \brief Dictionary data type (opaque structure) */
   typedef struct xbt_dict_ *xbt_dict_t;
   XBT_PUBLIC(xbt_dict_t) xbt_dict_new(void);
   XBT_PUBLIC(void) xbt_dict_free(xbt_dict_t *dict);
   XBT_PUBLIC(unsigned int) xbt_dict_size(xbt_dict_t dict);
 
 /** @} */
-/** @defgroup XBT_dict_basic Dictionnaries basic usage
+/** @defgroup XBT_dict_basic Dictionaries basic usage
  *  @ingroup XBT_dict
  *
  * Careful, those functions assume that the key is null-terminated.
@@ -69,7 +69,7 @@ SG_BEGIN_DECL()
 
 
 /** @} */
-/** @defgroup XBT_dict_nnul Dictionnaries with non-nul terminated keys
+/** @defgroup XBT_dict_nnul Dictionaries with non-nul terminated keys
  *  @ingroup XBT_dict
  *
  * Those functions work even with non-null terminated keys.
@@ -86,14 +86,14 @@ SG_BEGIN_DECL()
 
 
 /** @} */
-/** @defgroup XBT_dict_curs Cursors on dictionnaries
+/** @defgroup XBT_dict_curs Cursors on dictionaries
  *  @ingroup XBT_dict
  *
  *  Don't get impressed, there is a lot of functions here, but traversing a
- *  dictionnary is imediate with the xbt_dict_foreach macro.
+ *  dictionary is immediate with the xbt_dict_foreach macro.
  *  You only need the other functions in rare cases (they are not used directly in SG itself).
  *
- *  Here is an example (assuming that the dictionnary contains strings, ie
+ *  Here is an example (assuming that the dictionary contains strings, ie
  *  that the <tt>data</tt> argument of xbt_dict_set was always a null-terminated char*):
 \verbatim xbt_dict_cursor_t cursor=NULL;
  char *key,*data;
@@ -107,7 +107,7 @@ SG_BEGIN_DECL()
  *
  *  @{ */
 
-  /** @brief Cursor on dictionnaries (opaque type) */
+  /** @brief Cursor on dictionaries (opaque type) */
   typedef struct xbt_dict_cursor_ *xbt_dict_cursor_t;
   XBT_PUBLIC(xbt_dict_cursor_t) xbt_dict_cursor_new(const xbt_dict_t dict);
   XBT_PUBLIC(void)               xbt_dict_cursor_free(xbt_dict_cursor_t *cursor);
@@ -132,12 +132,12 @@ SG_BEGIN_DECL()
          xbt_dict_cursor_step(cursor) )
 
 /** @} */
-/** @defgroup XBT_dict_multi Multi-level dictionnaries
+/** @defgroup XBT_dict_multi Multi-level dictionaries
  *  @ingroup XBT_dict
  *
- * They can be seen as dictionnary of multiple keys or as dictionnary of
- * dictionnary of ... of data. Most of the functions here work the same way
- * than their simple dictionnary counterpart.
+ * They can be seen as dictionary of multiple keys or as dictionary of
+ * dictionary of ... of data. Most of the functions here work the same way
+ * than their simple dictionary counterpart.
  *
  * Note that there is no xbt_multidict_free neither xbt_multi_dict_new functions.
  * Use xbt_dict_free() and xbt_dict_new() instead.
