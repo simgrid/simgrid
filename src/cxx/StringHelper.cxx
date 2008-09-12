@@ -463,7 +463,7 @@ namespace SimGrid
 		{
 			char toAppend[26] = {0};
 
-			sprintf(toAppend, "%e",d);
+			sprintf(toAppend, "%#7lf",d);
 
 			append(toAppend);
 
