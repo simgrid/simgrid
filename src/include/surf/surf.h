@@ -593,7 +593,7 @@ XBT_PUBLIC_DATA(int) route_action;
 /* This is used by all models when creating the routing table while parsing */
 XBT_PUBLIC_DATA(xbt_dict_t) route_table;
 XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
-XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
+
 
 /* For the trace and trace:connect tag (store their content till the end of the parsing) */
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
