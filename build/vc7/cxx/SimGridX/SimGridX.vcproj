@@ -46,6 +46,7 @@
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
+				SuppressStartupBanner="false"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 				DisableSpecificWarnings="4290"
@@ -183,14 +184,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\..\src\cxx\Application.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\cxx\ApplicationHandler.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\cxx\BadAllocException.cxx"
 				>
 			</File>
@@ -199,19 +192,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\cxx\Environment.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\cxx\Exception.cxx"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\cxx\FileNotFoundException.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\cxx\Host.cxx"
 				>
 			</File>
 			<File
@@ -231,7 +216,35 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\cxx\MsgApplication.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgApplicationHandler.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgEnvironment.cxx"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\cxx\MsgException.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgHost.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgProcess.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgSimulation.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgTask.cxx"
 				>
 			</File>
 			<File
@@ -247,23 +260,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\cxx\Process.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\cxx\ProcessNotFoundException.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\cxx\Simulation.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\cxx\StringHelper.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\cxx\Task.cxx"
 				>
 			</File>
 		</Filter>
@@ -272,14 +273,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\..\..\..\src\cxx\Application.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\cxx\ApplicationHandler.hpp"
-				>
-			</File>
 			<File
 				RelativePath="..\..\..\..\src\cxx\BadAllocException.hpp"
 				>
@@ -293,19 +286,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\cxx\Environment.hpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\cxx\Exception.hpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\cxx\FileNotFoundException.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\cxx\Host.hpp"
 				>
 			</File>
 			<File
@@ -325,7 +310,35 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\cxx\MsgApplication.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgApplicationHandler.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgEnvironment.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\cxx\MsgException.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgHost.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgProcess.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgSimulation.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\cxx\MsgTask.hpp"
 				>
 			</File>
 			<File
@@ -341,23 +354,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\cxx\Process.hpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\cxx\ProcessNotFoundException.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\cxx\Simulation.hpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\cxx\StringHelper.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\cxx\Task.hpp"
 				>
 			</File>
 		</Filter>
