@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "simgrid", "simgrid.vcproj", "{617987DE-296D-4E0C-BD53-8D639E6FDA09}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "masterslave_bypass", "..\examples\msg\masterslave_bypass\masterslave_bypass.vcproj", "{FD995103-FD5C-4A5B-95E6-AF512BC6D749}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "masterslave_failure", "..\examples\msg\masterslave_failure\masterslave_failure.vcproj", "{4A8A0642-2553-4BB1-ADB2-264F2E799EF9}"
@@ -40,8 +38,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "testsuite", "testsuite", "{24749C86-C5F3-4498-AA8D-2493979F76C9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{F356BA40-006E-4F59-AE49-E25171DF2016}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{B24BD5D4-9D03-4644-9792-416396F9C34E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "msg", "msg", "{61D5BE96-5482-49E0-8F2F-ED6944B04CAD}"
 EndProject
@@ -145,10 +141,6 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{617987DE-296D-4E0C-BD53-8D639E6FDA09}.Debug|Win32.ActiveCfg = Debug|Win32
-		{617987DE-296D-4E0C-BD53-8D639E6FDA09}.Debug|Win32.Build.0 = Debug|Win32
-		{617987DE-296D-4E0C-BD53-8D639E6FDA09}.Release|Win32.ActiveCfg = Release|Win32
-		{617987DE-296D-4E0C-BD53-8D639E6FDA09}.Release|Win32.Build.0 = Release|Win32
 		{FD995103-FD5C-4A5B-95E6-AF512BC6D749}.Debug|Win32.ActiveCfg = Debug|Win32
 		{FD995103-FD5C-4A5B-95E6-AF512BC6D749}.Debug|Win32.Build.0 = Debug|Win32
 		{FD995103-FD5C-4A5B-95E6-AF512BC6D749}.Release|Win32.ActiveCfg = Release|Win32
@@ -330,7 +322,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{617987DE-296D-4E0C-BD53-8D639E6FDA09} = {B24BD5D4-9D03-4644-9792-416396F9C34E}
 		{61D5BE96-5482-49E0-8F2F-ED6944B04CAD} = {F356BA40-006E-4F59-AE49-E25171DF2016}
 		{0E867394-9B56-42DA-AB3F-E59080B653A5} = {F356BA40-006E-4F59-AE49-E25171DF2016}
 		{65F6A759-3E01-4265-AB50-71EF60AD126C} = {F356BA40-006E-4F59-AE49-E25171DF2016}
