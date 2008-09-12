@@ -16,8 +16,8 @@
 
 
 #include <Msg.hpp>
-#include <Host.hpp>
-#include <Process.hpp>
+#include <MsgHost.hpp>
+#include <MsgProcess.hpp>
 
 
 #include <msg/msg.h>
@@ -59,7 +59,7 @@ namespace SimGrid
 		void info(const StringHelper& s)
 		{
 			StringHelper clock;
-			
+
 			cout << "[";
 			cout << Host::currentHost().getName();
 			cout << ":";
@@ -93,7 +93,7 @@ namespace SimGrid
 		void error(const StringHelper& s)
 		{
 			StringHelper clock;
-			
+
 			cout << "[";
 			cout << Host::currentHost().getName();
 			cout << ":";
