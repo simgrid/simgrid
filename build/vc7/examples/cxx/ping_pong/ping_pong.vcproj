@@ -43,7 +43,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SimGridX.lib"
+				AdditionalDependencies="simgrid.lib"
 				OutputFile="..\..\..\..\..\examples\cxx\ping_pong\$(ProjectName).exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -137,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SimGridX.lib"
+				AdditionalDependencies="simgrid.lib"
 				OutputFile="..\..\..\..\..\examples\cxx\ping_pong\$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

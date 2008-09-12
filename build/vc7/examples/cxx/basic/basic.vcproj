@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SimGridX.lib"
+				AdditionalDependencies="simgrid.lib"
 				OutputFile="..\..\..\..\..\examples\cxx\basic\$(ProjectName).exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -137,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SimGridX.lib"
+				AdditionalDependencies="simgrid.lib"
 				OutputFile="..\..\..\..\..\examples\cxx\basic\$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
