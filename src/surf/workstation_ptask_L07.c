@@ -542,14 +542,10 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
 
-  if (action->rate > 0)
-    action->variable =
-	lmm_variable_new(ptask_maxmin_system, action, 1.0, -1.0,
-			 workstation_nb + nb_link);
-  else
-    action->variable =
-	lmm_variable_new(ptask_maxmin_system, action, 1.0, action->rate,
-			 workstation_nb + nb_link);
+  action->variable =
+    lmm_variable_new(ptask_maxmin_system, action, 1.0, 
+		     (action->rate>0)?action->rate:-1.0,
+		     workstation_nb + nb_link);
 
   if (action->latency > 0) 
     lmm_update_variable_weight(ptask_maxmin_system,action->variable,0.0);
