@@ -18,8 +18,8 @@ $ cd msg
 
 ! include masterslave/masterslave_forwarder.tesh
 
-# Parllel task
-! include parallel_task/parallel_task.tesh
+# Parllel task (not work)
+#! include parallel_task/parallel_task.tesh
 
 # Priority
 ! include priority/priority.tesh
@@ -45,6 +45,10 @@ $ cd msg
 
 # Suspend
 ! include suspend/suspend.tesh
+
+
+##############################################################################################
+# java examples
 
 $ cd ..
 
@@ -81,6 +85,9 @@ $ cd ..
 $ cd explicitDestination
 
 ! include explicitDestination.tesh
+
+##########################################################################################
+# cxx examples 
 
 $ cd ..
 
