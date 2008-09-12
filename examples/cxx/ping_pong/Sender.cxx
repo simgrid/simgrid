@@ -1,6 +1,6 @@
 #include "Sender.hpp"
 #include "PingPongTask.hpp"
-#include <Host.hpp>
+#include <MsgHost.hpp>
 #include <HostNotFoundException.hpp>
 #include <Msg.hpp>
 
@@ -41,7 +41,7 @@ int Sender::main(int argc, char** argv)
 	for (int pos = 0; pos < hostCount; pos++) 
 	{ 
 		time = getClock(); 
-	
+		
 		info(TEXT_("Sender time : ") + TEXT_(time));
 	
 		task = new PingPongTask("no name",computeDuration,commSizeLat);

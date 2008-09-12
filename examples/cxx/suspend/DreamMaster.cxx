@@ -1,6 +1,6 @@
 #include "DreamMaster.hpp"
 #include "LazyGuy.hpp"
-#include <Host.hpp>
+#include <MsgHost.hpp>
 #include <HostNotFoundException.hpp>
 #include <Msg.hpp>
 

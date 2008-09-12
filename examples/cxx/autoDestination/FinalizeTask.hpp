@@ -1,7 +1,7 @@
 #ifndef FINALIZE_TASK_HPP
 #define FINALIZE_TASK_HPP
 
-#include <Task.hpp>
+#include <MsgTask.hpp>
 using namespace SimGrid::Msg;
 
 class FinalizeTask : public Task

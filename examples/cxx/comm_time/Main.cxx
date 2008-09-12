@@ -1,4 +1,4 @@
-#include <Simulation.hpp>
+#include <MsgSimulation.hpp>
 
 using namespace SimGrid::Msg;
 

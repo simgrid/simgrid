@@ -1,7 +1,7 @@
 #ifndef FORWARDER_HPP
 #define FORWARDER_HPP
 
-#include <Process.hpp>
+#include <MsgProcess.hpp>
 using namespace SimGrid::Msg;
 
 class Forwarder : public Process

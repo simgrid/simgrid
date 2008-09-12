@@ -2,7 +2,7 @@
 #include "FinalizeTask.hpp"
 #include "BasicTask.hpp"
 
-#include <Host.hpp>
+#include <MsgHost.hpp>
 #include <HostNotFoundException.hpp>
 
 #include <Msg.hpp>

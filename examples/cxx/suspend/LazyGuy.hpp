@@ -1,7 +1,7 @@
 #ifndef LAZYGUY_HPP
 #define LAZYGUY_HPP
 
-#include <Process.hpp>
+#include <MsgProcess.hpp>
 using namespace SimGrid::Msg;
 
 class LazyGuy : public Process

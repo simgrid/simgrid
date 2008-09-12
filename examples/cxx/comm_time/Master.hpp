@@ -1,7 +1,7 @@
 #ifndef MASTER_HPP
 #define MASTER_HPP
 
-#include <Process.hpp>
+#include <MsgProcess.hpp>
 using namespace SimGrid::Msg;
 
 class Master : public Process

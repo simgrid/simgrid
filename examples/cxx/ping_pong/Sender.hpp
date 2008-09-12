@@ -1,7 +1,7 @@
 #ifndef SENDER_HPP
 #define SENDER_HPP
 
-#include <Process.hpp>
+#include <MsgProcess.hpp>
 using namespace SimGrid::Msg;
 
 class Sender : public Process

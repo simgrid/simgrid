@@ -1,7 +1,7 @@
 #ifndef RECEIVER_HPP
 #define RECEIVER_HPP
 
-#include <Process.hpp>
+#include <MsgProcess.hpp>
 using namespace SimGrid::Msg;
 	
 class Receiver : public Process

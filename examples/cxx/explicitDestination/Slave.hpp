@@ -1,7 +1,7 @@
 #ifndef SLAVE_HPP
 #define SLAVE_HPP
 
-#include <Process.hpp>
+#include <MsgProcess.hpp>
 using namespace SimGrid::Msg;
 
 class Slave : public Process

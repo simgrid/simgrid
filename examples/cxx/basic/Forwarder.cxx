@@ -1,7 +1,7 @@
 #include "Forwarder.hpp"
 #include "BasicTask.hpp"
 #include "FinalizeTask.hpp"
-#include <Host.hpp>
+#include <MsgHost.hpp>
 #include <HostNotFoundException.hpp>
 
 #include <Msg.hpp>

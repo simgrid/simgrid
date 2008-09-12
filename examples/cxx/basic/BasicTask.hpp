@@ -1,7 +1,7 @@
 #ifndef BASIC_TASK_HPP
 #define BASIC_TASK_HPP
 
-#include <Task.hpp>
+#include <MsgTask.hpp>
 using namespace SimGrid::Msg;
 
 class BasicTask : public Task

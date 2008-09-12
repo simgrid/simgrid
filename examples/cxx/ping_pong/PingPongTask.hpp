@@ -1,7 +1,7 @@
 #ifndef PINGPONG_TASK_HPP
 #define PINGPONG_TASK_HPP
 
-#include <Task.hpp>
+#include <MsgTask.hpp>
 using namespace SimGrid::Msg;
 
 class PingPongTask : public Task

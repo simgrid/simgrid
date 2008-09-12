@@ -1,6 +1,6 @@
 #include "Slave.hpp"
 #include "FinalizeTask.hpp"
-#include <Host.hpp>
+#include <MsgHost.hpp>
 #include <HostNotFoundException.hpp>
 
 #include <iostream>

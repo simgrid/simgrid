@@ -1,7 +1,7 @@
 #ifndef COMMTIME_TASK_HPP
 #define COMMTIME_TASK_HPP
 
-#include <Task.hpp>
+#include <MsgTask.hpp>
 using namespace SimGrid::Msg;
 
 class CommTimeTask : public Task

@@ -1,6 +1,6 @@
 #include "Receiver.hpp"
 #include "PingPongTask.hpp"
-#include <Host.hpp>
+#include <MsgHost.hpp>
 #include <HostNotFoundException.hpp>
 #include <Msg.hpp>
 

@@ -1,7 +1,7 @@
 #ifndef DREAMMASTER_HPP
 #define DREAMMASTER_HPP
 
-#include <Process.hpp>
+#include <MsgProcess.hpp>
 using namespace SimGrid::Msg;
 
 class DreamMaster : public Process

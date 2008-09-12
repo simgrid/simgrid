@@ -1,7 +1,7 @@
 #include "Slave.hpp"
 #include "FinalizeTask.hpp"
 #include "CommTimeTask.hpp"
-#include <Host.hpp>
+#include <MsgHost.hpp>
 #include <HostNotFoundException.hpp>
 #include <Msg.hpp>
 
@@ -30,7 +30,7 @@ int Slave::main(int argc, char** argv)
 		if(time1 < task->getTime())
 			time1 = task->getTime();
 			
-		info(TEXT_("Processing \"") + TEXT_(task->getName()) + TEXT_("\" ") + TEXT_(getHost().getName()) + TEXT_(" (Communication time : ") + TEXT_((time2 - time1)) + TEXT_(")"));
+		//info(TEXT_("Processing \"") + TEXT_(task->getName()) + TEXT_("\" ") + TEXT_(getHost().getName()) + TEXT_(" (Communication time : ") + TEXT_((time2 - time1)) + TEXT_(")"));
 	 
 		task->execute();
 		
