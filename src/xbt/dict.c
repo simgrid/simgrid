@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* dict - a generic dictionnary, variation over the B-tree concept          */
+/* dict - a generic dictionary, variation over the B-tree concept          */
 
 /* Copyright (c) 2003,2004 Martin Quinson. All rights reserved.             */
 
@@ -19,7 +19,7 @@
 #include "dict_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict,xbt,
-                                "Dictionaries provide the same functionnalities than hash tables");
+                                "Dictionaries provide the same functionalities than hash tables");
 /*####[ Private prototypes ]#################################################*/
 
 static xbt_mallocator_t dict_mallocator = NULL;
@@ -35,7 +35,7 @@ static void dict_mallocator_reset_f(void* dict);
  * \return pointer to the destination
  * \see xbt_dict_new_ext(), xbt_dict_free()
  *
- * Creates and initialize a new dictionnary with a default hashtable size.
+ * Creates and initialize a new dictionary with a default hashtable size.
  */
 xbt_dict_t xbt_dict_new(void) {
   xbt_dict_t dict;
@@ -63,7 +63,7 @@ xbt_dict_t xbt_dict_new(void) {
 
 /**
  * \brief Destructor
- * \param dict the dictionnary to be freed
+ * \param dict the dictionary to be freed
  *
  * Frees a dictionary with all the data
  */
@@ -157,7 +157,7 @@ static XBT_INLINE unsigned int xbt_dict_hash(const char *str) {
     /* multiply by the 32 bit FNV magic prime mod 2^32 */
     hash += (hash<<1) + (hash<<4) + (hash<<7) + (hash<<8) + (hash<<24);
 
-    /* xor the bottom with the current octet */
+    /* xor the bottom with the current byte */
     hash ^= (unsigned int)*str++;
   }
 
@@ -224,7 +224,7 @@ static void xbt_dict_rehash(xbt_dict_t dict) {
  * \param key_len the size of the \a key
  * \param data the data to add in the dict
  * \param free_ctn function to call with (\a key as argument) when
- *        \a key is removed from the dictionnary
+ *        \a key is removed from the dictionary
  *
  * Set the \a data in the structure under the \a key, which can be any kind
  * of data, as long as its length is provided in \a key_len.
@@ -281,7 +281,7 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
  * \param key the key to set the new data
  * \param data the data to add in the dict
  * \param free_ctn function to call with (\a key as argument) when
- *        \a key is removed from the dictionnary
+ *        \a key is removed from the dictionary
  *
  * set the \a data in the structure under the \a key, which is a
  * null terminated string.
@@ -491,12 +491,12 @@ int xbt_dict_length(xbt_dict_t dict) {
 }
 
 /**
- * \brief Outputs the content of the structure (debuging purpose)
+ * \brief Outputs the content of the structure (debugging purpose)
  *
  * \param dict the exibitionist
  * \param output a function to dump each data in the tree
  *
- * Ouputs the content of the structure. (for debuging purpose). \a ouput is a
+ * Outputs the content of the structure. (for debugging purpose). \a output is a
  * function to output the data. If NULL, data won't be displayed.
  */
 
@@ -710,7 +710,7 @@ static void traverse(xbt_dict_t head) {
       xbt_test_log2("Seen #%d:  %s",++i,PRINTF_STR(key));
     }
     xbt_test_assert2(!data || !strcmp(key,data),
-                     "Key(%s) != value(%s). Abording",key,data);
+                     "Key(%s) != value(%s). Aborting",key,data);
   }
 }
 
@@ -754,10 +754,10 @@ char *data;
 
 
 XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse"){
-  xbt_test_add0("Traversal the null dictionnary");
+  xbt_test_add0("Traversal the null dictionary");
   traverse(head);
 
-  xbt_test_add0("Traversal and search the empty dictionnary");
+  xbt_test_add0("Traversal and search the empty dictionary");
   head = xbt_dict_new();
   traverse(head);
   TRY {
@@ -769,7 +769,7 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
   }
   xbt_dict_free(&head);
 
-  xbt_test_add0("Traverse the full dictionnary");
+  xbt_test_add0("Traverse the full dictionary");
   fill(&head);
   count(head, 7);
 
@@ -780,7 +780,7 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
   search(head,"12a");
   traverse(head);
 
-  xbt_test_add0("Free the dictionnary (twice)");
+  xbt_test_add0("Free the dictionary (twice)");
   xbt_dict_free(&head);
   xbt_dict_free(&head);
 
@@ -803,7 +803,7 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
   xbt_dict_set(head,"12a",strdup("12a"),&free);
   count(head, 7);
 
-  xbt_test_add0("Traverse the resulting dictionnary");
+  xbt_test_add0("Traverse the resulting dictionary");
   traverse(head);
 
   /* RETRIEVE */
@@ -823,16 +823,16 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
   search(head,"1234");
   search(head,"123457");
 
-  xbt_test_add0("Traverse the resulting dictionnary");
+  xbt_test_add0("Traverse the resulting dictionary");
   traverse(head);
 
   /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 
-  xbt_test_add0("Free the dictionnary twice");
+  xbt_test_add0("Free the dictionary twice");
   xbt_dict_free(&head);
   xbt_dict_free(&head);
 
-  xbt_test_add0("Traverse the resulting dictionnary");
+  xbt_test_add0("Traverse the resulting dictionary");
   traverse(head);
 }
 
@@ -851,7 +851,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
 
   xbt_dict_free(&head);
 
-  xbt_test_add0("Remove each data manually (traversing the resulting dictionnary each time)");
+  xbt_test_add0("Remove each data manually (traversing the resulting dictionary each time)");
   fill(&head);
   debuged_remove(head,"12a");    traverse(head);
   count(head, 6);
@@ -887,7 +887,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   count(head, 0);
   traverse(head);
 
-  xbt_test_add0("Free the dictionnary twice");
+  xbt_test_add0("Free the dictionary twice");
   xbt_dict_free(&head);
   xbt_dict_free(&head);
 }
@@ -1081,7 +1081,7 @@ XBT_TEST_UNIT("multicrash",test_dict_multicrash,"Multi-dict crash test"){
       data = xbt_multidict_get(mdict,keys);
 
       xbt_test_assert2(data && !strcmp((char*)data,key),
-                       "Retrieved value (%s) does not match the entrered one (%s)\n",
+                       "Retrieved value (%s) does not match the given one (%s)\n",
                        (char*)data,key);
     }
     xbt_dict_free(&mdict);
