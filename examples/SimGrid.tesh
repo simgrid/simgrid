@@ -14,7 +14,7 @@ $ cd msg
 #! include masterslave/masterslave_bypass.tesh
 
 # Outputs difference
-! include masterslave/masterslave_failure.tesh
+#! include masterslave/masterslave_failure.tesh
 
 ! include masterslave/masterslave_forwarder.tesh
 
@@ -50,7 +50,13 @@ $ cd msg
 ##############################################################################################
 # java examples
 
-$ cd ..
+$ cd ${MSG4JAVA_CLASSPATH}\simgrid\msg
+
+$ javac *.java
+> Note: Some input files use unchecked or unsafe operations.
+> Note: Recompile with -Xlint:unchecked for details.
+
+$ cd ${EXAMPLE_DIR:=.}
 
 $ cd java/basic
 
