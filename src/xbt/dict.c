@@ -320,7 +320,7 @@ void *xbt_dict_get_ext(xbt_dict_t dict,
   }
 
   if (current == NULL)
-    return NULL;
+    THROW2(not_found_error, 0, "key %.*s not found", key_len, key);
 
   return current->content;
 }
@@ -341,7 +341,7 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict,
   }
 
   if (current == NULL)
-    THROW2(not_found_error, 0, "key %.*s not found", key_len, key);
+    return NULL;
 
   return current->content;
 }
