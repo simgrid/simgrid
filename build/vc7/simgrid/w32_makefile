@@ -20,11 +20,17 @@
 LIBRARY=simgrid.dll
 
 # The default global goal
-all:
-	cd C:\buildslave\projects\simgrid\builddir\build\build\vc7\simgrid
-	nmake real_all
+#all:
+#	cd C:\buildslave\projects\simgrid\builddir\build\build\vc7\simgrid
+#	$(MAKE) real_all
 
-real_all: $(LIBRARY)
+#real_all: $(LIBRARY)
+
+!IF 1
+cd C:\buildslave\projects\simgrid\builddir\build\build\vc7\simgrid
+!ENDIF
+
+all: $(LIBRARY)
 
 ########################################################################################################################
 #
