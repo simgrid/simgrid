@@ -19,13 +19,13 @@
 # The name of the libray
 LIBRARY=simgrid.dll
 
-real_all: $(LIBRARY)
-
-
 # The default global goal
 all: 
 	cd C:\buildslave\projects\simgrid\builddir\build\build\vc7\simgrid
-	$(MAKE) real_all
+	$(MAKE) -f w32_makefile real_all
+
+real_all: $(LIBRARY)
+
 
 ########################################################################################################################
 #
