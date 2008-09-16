@@ -32,7 +32,6 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
                       xbt_dynar_t keys, xbt_dynar_t     lens,
                       void       *data, void_f_pvoid_t  free_ctn) {
 
-  xbt_ex_t e;
   xbt_dict_t thislevel,nextlevel=NULL;
   int i;
 
@@ -45,9 +44,9 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
 
   DEBUG2("xbt_multidict_set(%p,%d)", mdict, keys_len);
 
-  for (i=0         , thislevel = mdict    ;
-  i<keys_len-1                       ;
-  i++         , thislevel = nextlevel) {
+  for (i=0 , thislevel = mdict    ;
+       i<keys_len-1               ;
+       i++ , thislevel = nextlevel) {
 
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);
@@ -55,14 +54,9 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
     DEBUG5("multi_set: at level %d, len=%ld, key=%p |%*s|", i, thislen, thiskey, (int)thislen,thiskey);
 
     /* search the dict of next level */
-    TRY {
-      nextlevel = xbt_dict_get_ext(thislevel, thiskey, thislen);
-    } CATCH(e) {
-      if (e.category != not_found_error)
-        RETHROW;
-
+    nextlevel = xbt_dict_get_or_null_ext(thislevel, thiskey, thislen);
+    if (nextlevel == NULL) {
       /* make sure the dict of next level exists */
-      xbt_ex_free(e);
       nextlevel=xbt_dict_new();
       VERB1("Create a dict (%p)",nextlevel);
       xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel, &_free_dict);
