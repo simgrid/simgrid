@@ -203,7 +203,7 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Co
 	return retval;
 }
 
-// FIXME: should be in utilities
+// used by comm_split to sort ranks based on key values
 int smpi_compare_rankkeys(const void *a, const void *b);
 int smpi_compare_rankkeys(const void *a, const void *b) {
     int *x = (int *)a;
@@ -221,7 +221,6 @@ int smpi_compare_rankkeys(const void *a, const void *b) {
 }
 
 // FIXME: needs to return null in event of MPI_UNDEFINED color...
-// FIXME: seriously, this isn't pretty
 int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 {
 	int retval = MPI_SUCCESS;
@@ -299,7 +298,8 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 					request->data = tempcomm;
 					smpi_mpi_isend(request);
 					smpi_mpi_wait(request, &status);
-					xbt_mallocator_release(smpi_global->request_mallocator, request);
+					xbt_mallocator_release(smpi_global->request_mallocator,
+                        request);
 				} else {
 					*comm_out = tempcomm;
 				}
@@ -308,11 +308,13 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 	} else {
 		colorkey[0] = color;
 		colorkey[1] = key;
-		retval = smpi_create_request(colorkey, 2, MPI_INT, rank, 0, 0, comm, &request);
+		retval = smpi_create_request(colorkey, 2, MPI_INT, rank, 0, 0, comm,
+            &request);
 		smpi_mpi_isend(request);
 		smpi_mpi_wait(request, &status);
 		xbt_mallocator_release(smpi_global->request_mallocator, request);
-		retval = smpi_create_request(colorkey, 1, MPI_INT, 0, rank, 0, comm, &request);
+		retval = smpi_create_request(colorkey, 1, MPI_INT, 0, rank, 0, comm,
+            &request);
 		smpi_mpi_irecv(request);
 		smpi_mpi_wait(request, &status);
 		*comm_out = request->data;
