@@ -2,7 +2,7 @@
 
 /* xbt_str.c - various helping functions to deal with strings               */
 
-/* Copyright (C) 2005-2007 Malek Cherier, Martin Quinson.                   */
+/* Copyright (C) 2005-2008 The SimGrid Team.                                */
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -34,30 +34,30 @@
 void
 xbt_str_rtrim(char* s, const char* char_list)
 {
-	char* cur = s;
-	const char* __char_list = " \t\n\r\x0B";
-	char white_char[256] = {1,0};
+  char* cur = s;
+  const char* __char_list = " \t\n\r\x0B";
+  char white_char[256] = {1,0};
 
-	if(!s)
-		return;
+  if(!s)
+    return;
 
-	if(!char_list){
-		while(*__char_list) {
-			white_char[(unsigned char)*__char_list++] = 1;
-		}
-	}else{
-		while(*char_list) {
-			white_char[(unsigned char)*char_list++] = 1;
-		}
-	}
+  if(!char_list){
+    while(*__char_list) {
+      white_char[(unsigned char)*__char_list++] = 1;
+    }
+  }else{
+    while(*char_list) {
+      white_char[(unsigned char)*char_list++] = 1;
+    }
+  }
 
-	while(*cur)
-		++cur;
+  while(*cur)
+    ++cur;
 
-	while((cur >= s) && white_char[(unsigned char)*cur])
-		--cur;
+  while((cur >= s) && white_char[(unsigned char)*cur])
+    --cur;
 
-	*++cur = '\0';
+  *++cur = '\0';
 }
 
 /**  @brief Strip whitespace (or other characters) from the beginning of a string.
@@ -79,27 +79,27 @@ xbt_str_rtrim(char* s, const char* char_list)
 void
 xbt_str_ltrim( char* s, const char* char_list)
 {
-	char* cur = s;
-	const char* __char_list = " \t\n\r\x0B";
-	char white_char[256] = {1,0};
+  char* cur = s;
+  const char* __char_list = " \t\n\r\x0B";
+  char white_char[256] = {1,0};
 
-	if(!s)
-		return;
+  if(!s)
+    return;
 
-	if(!char_list){
-		while(*__char_list) {
-			white_char[(unsigned char)*__char_list++] = 1;
-		}
-	}else{
-		while(*char_list) {
-			white_char[(unsigned char)*char_list++] = 1;
-		}
-	}
+  if(!char_list){
+    while(*__char_list) {
+      white_char[(unsigned char)*__char_list++] = 1;
+    }
+  }else{
+    while(*char_list) {
+      white_char[(unsigned char)*char_list++] = 1;
+    }
+  }
 
-	while(*cur && white_char[(unsigned char)*cur])
-		++cur;
+  while(*cur && white_char[(unsigned char)*cur])
+    ++cur;
 
-	memmove(s,cur, strlen(cur)+1);
+  memmove(s,cur, strlen(cur)+1);
 }
 
 /**  @brief Strip whitespace (or other characters) from the end and the begining of a string.
@@ -121,11 +121,11 @@ xbt_str_ltrim( char* s, const char* char_list)
 void
 xbt_str_trim(char* s, const char* char_list ){
 
-	if(!s)
-		return;
+  if(!s)
+    return;
 
-    xbt_str_rtrim(s,char_list);
-    xbt_str_ltrim(s,char_list);
+  xbt_str_rtrim(s,char_list);
+  xbt_str_ltrim(s,char_list);
 }
 
 /**  @brief Replace double whitespaces (but no other characters) from the string.
@@ -165,11 +165,31 @@ xbt_str_strip_spaces(char *s) {
 
     if (e ^ (*p!=' '))
       if ((e = !e))
-	*s++ = ' ';
+        *s++ = ' ';
   } while (1);
 
- end:
+  end:
   *s = '\0';
+}
+
+/** @brief Substitutes a char for another in a string
+ *
+ * @param str the string to modify
+ * @param from char to search
+ * @param to char to put instead
+ * @param amount amount of changes to do (=0 means all)
+ */
+void xbt_str_subst(char *str, char from, char to, int occurence) {
+  char *p = str;
+  while (*p != '\0') {
+    if (*p == from) {
+      *p = to;
+      if (occurence == 1)
+        return;
+      occurence--;
+    }
+    p++;
+  }
 }
 
 /** @brief Splits a string into a dynar of strings
@@ -234,7 +254,7 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep) {
  * \brief This functions splits a string after using another string as separator
  * For example A!!B!!C splitted after !! will return the dynar {A,B,C}
  * \return An array of dynars containing the string tokens
-*/
+ */
 xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char*), xbt_free_ref);
   int done;
@@ -271,7 +291,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
       memcpy(to_push, p, q - p);
       //add string terminator
       to_push[q - p] = '\0';
-          xbt_dynar_push(res, &to_push);
+      xbt_dynar_push(res, &to_push);
       p = q +strlen(sep);
     }
   }
@@ -289,7 +309,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep) {
 
 xbt_dynar_t xbt_str_split_quoted(const char *s) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char*), xbt_free_ref);
-  char *str; /* we have to copy the string before, to handle backslashes */
+  char *str_to_free; /* we have to copy the string before, to handle backslashes */
   char *beg, *end; /* pointers around the parsed chunk */
   int in_simple_quote=0, in_double_quote=0;
   int done = 0;
@@ -297,7 +317,7 @@ xbt_dynar_t xbt_str_split_quoted(const char *s) {
 
   if (s[0] == '\0')
     return res;
-  beg = str = xbt_strdup(s);
+  beg = str_to_free = xbt_strdup(s);
 
   /* trim leading spaces */
   xbt_str_ltrim(beg," ");
@@ -307,75 +327,75 @@ xbt_dynar_t xbt_str_split_quoted(const char *s) {
 
 
     switch (*end) {
-    case '\\':
-      ctn = 1;
-      /* Protected char; move it closer */
-      memmove(end,end+1,strlen(end));
-      if (*end=='\0')
-	THROW0(arg_error,0,"String ends with \\");
-      end++; /* Pass the protected char */
-      break;
+      case '\\':
+        ctn = 1;
+        /* Protected char; move it closer */
+        memmove(end,end+1,strlen(end));
+        if (*end=='\0')
+          THROW0(arg_error,0,"String ends with \\");
+        end++; /* Pass the protected char */
+        break;
 
-    case '\'':
-      ctn = 1;
-      if (!in_double_quote) {
-	in_simple_quote = !in_simple_quote;
-	memmove(end,end+1,strlen(end));
-      } else {
-	/* simple quote protected by double ones */
-	end++;
-      }
-      break;
-    case '"':
-      ctn = 1;
-      if (!in_simple_quote) {
-	in_double_quote = !in_double_quote;
-	memmove(end,end+1,strlen(end));
-      } else {
-	/* double quote protected by simple ones */
-	end++;
-      }
-      break;
+      case '\'':
+        ctn = 1;
+        if (!in_double_quote) {
+          in_simple_quote = !in_simple_quote;
+          memmove(end,end+1,strlen(end));
+        } else {
+          /* simple quote protected by double ones */
+          end++;
+        }
+        break;
+      case '"':
+        ctn = 1;
+        if (!in_simple_quote) {
+          in_double_quote = !in_double_quote;
+          memmove(end,end+1,strlen(end));
+        } else {
+          /* double quote protected by simple ones */
+          end++;
+        }
+        break;
 
-    case ' ':
-    case '\t':
-    case '\n':
-    case '\0':
-      if (*end == '\0' && (in_simple_quote || in_double_quote)) {
-	THROW2(arg_error,0,
-	       "End of string found while searching for %c in %s",
-	       (in_simple_quote?'\'':'"'),
-	       s);
-      }
-      if (in_simple_quote || in_double_quote) {
-	end++;
-      } else {
-	if (ctn) {
-	  /* Found a separator. Push the string if contains something */
-	  char *topush=xbt_malloc(end-beg+1);
-	  memcpy(topush,beg,end-beg);
-	  topush[end - beg] = '\0';
-	  xbt_dynar_push(res,&topush);
-	}
-	ctn= 0;
+      case ' ':
+      case '\t':
+      case '\n':
+      case '\0':
+        if (*end == '\0' && (in_simple_quote || in_double_quote)) {
+          THROW2(arg_error,0,
+                 "End of string found while searching for %c in %s",
+                 (in_simple_quote?'\'':'"'),
+                 s);
+        }
+        if (in_simple_quote || in_double_quote) {
+          end++;
+        } else {
+          if (ctn) {
+            /* Found a separator. Push the string if contains something */
+            char *topush=xbt_malloc(end-beg+1);
+            memcpy(topush,beg,end-beg);
+            topush[end - beg] = '\0';
+            xbt_dynar_push(res,&topush);
+          }
+          ctn= 0;
 
-	if (*end == '\0') {
-	  done = 1;
-	  break;
-	}
+          if (*end == '\0') {
+            done = 1;
+            break;
+          }
 
-	beg=++end;
-	xbt_str_ltrim(beg," ");
-	end=beg;
-      }
-      break;
+          beg=++end;
+          xbt_str_ltrim(beg," ");
+          end=beg;
+        }
+        break;
 
-    default:
-      ctn = 1;
-      end++;
+      default:
+        ctn = 1;
+        end++;
     }
   }
-  free(str);
+  free(str_to_free);
   return res;
 }
 
@@ -387,10 +407,10 @@ xbt_dynar_t xbt_str_split_quoted(const char *s) {
   d=xbt_str_split_quoted(input); \
   s=xbt_str_join(d,"XXX"); \
   xbt_test_assert3(!strcmp(s,expected),\
-		   "Input (%s) leads to (%s) instead of (%s)", \
-		   input,s,expected);\
-  free(s); \
-  xbt_dynar_free(&d);
+                   "Input (%s) leads to (%s) instead of (%s)", \
+                   input,s,expected);\
+                   free(s); \
+                   xbt_dynar_free(&d);
 
 XBT_TEST_SUITE("xbt_str","String Handling");
 XBT_TEST_UNIT("xbt_str_split_quoted",test_split_quoted, "test the function xbt_str_split_quoted") {
@@ -417,10 +437,10 @@ XBT_TEST_UNIT("xbt_str_split_quoted",test_split_quoted, "test the function xbt_s
   d=xbt_str_split_str(input, separator); \
   s=xbt_str_join(d,"XXX"); \
   xbt_test_assert3(!strcmp(s,expected),\
-		   "Input (%s) leads to (%s) instead of (%s)", \
-		   input,s,expected);\
-  free(s); \
-  xbt_dynar_free(&d);
+                   "Input (%s) leads to (%s) instead of (%s)", \
+                   input,s,expected);\
+                   free(s); \
+                   xbt_dynar_free(&d);
 
 XBT_TEST_UNIT("xbt_str_split_str",test_split_str, "test the function xbt_str_split_str") {
   xbt_dynar_t d;
@@ -483,37 +503,37 @@ long getline(char **buf, size_t *n, FILE *stream);
  */
 long getline(char **buf, size_t *n, FILE *stream) {
 
-   size_t i;
-   int ch;
+  size_t i;
+  int ch;
 
-   if (!*buf) {
-     *buf = xbt_malloc(512);
-     *n = 512;
-   }
+  if (!*buf) {
+    *buf = xbt_malloc(512);
+    *n = 512;
+  }
 
-   if (feof(stream))
-     return (ssize_t)-1;
+  if (feof(stream))
+    return (ssize_t)-1;
 
-   for (i=0; (ch = fgetc(stream)) != EOF; i++)  {
+  for (i=0; (ch = fgetc(stream)) != EOF; i++)  {
 
-      if (i >= (*n) + 1)
-	*buf = xbt_realloc(*buf, *n += 512);
+    if (i >= (*n) + 1)
+      *buf = xbt_realloc(*buf, *n += 512);
 
-      (*buf)[i] = ch;
+    (*buf)[i] = ch;
 
-      if ((*buf)[i] == '\n')  {
-	 i++;
-	 (*buf)[i] = '\0';
-	 break;
-      }
-   }
+    if ((*buf)[i] == '\n')  {
+      i++;
+      (*buf)[i] = '\0';
+      break;
+    }
+  }
 
-   if (i == *n)
-     *buf = xbt_realloc(*buf, *n += 1);
+  if (i == *n)
+    *buf = xbt_realloc(*buf, *n += 1);
 
-   (*buf)[i] = '\0';
+  (*buf)[i] = '\0';
 
-   return (ssize_t)i;
+  return (ssize_t)i;
 }
 
 #endif /* HAVE_GETLINE */
@@ -523,7 +543,7 @@ long getline(char **buf, size_t *n, FILE *stream) {
  */
 static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db) {
   xbt_matrix_t C = xbt_matrix_new(xbt_dynar_length(da),xbt_dynar_length(db),
-				  sizeof(int),NULL);
+                                  sizeof(int),NULL);
   unsigned long i,j;
 
   /* Compute the LCS */
@@ -540,7 +560,7 @@ static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db) {
             else:
                 C[i,j] := max(C[i,j-1], C[i-1,j])
     return C[m,n]
-	  */
+   */
   if (xbt_dynar_length(db) != 0)
     for (i=0; i<xbt_dynar_length(da); i++)
       *((int*) xbt_matrix_get_ptr(C,i,0) ) = 0;
@@ -553,18 +573,18 @@ static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db) {
     for (j=1; j<xbt_dynar_length(db); j++) {
 
       if (!strcmp(xbt_dynar_get_as(da,i,char*), xbt_dynar_get_as(db,j,char*)))
-	*((int*) xbt_matrix_get_ptr(C,i,j) ) = xbt_matrix_get_as(C,i-1,j-1,int) + 1;
+        *((int*) xbt_matrix_get_ptr(C,i,j) ) = xbt_matrix_get_as(C,i-1,j-1,int) + 1;
       else
-	*((int*) xbt_matrix_get_ptr(C,i,j) ) = max(xbt_matrix_get_as(C,i  ,j-1,int),
-						   xbt_matrix_get_as(C,i-1,j,int));
+        *((int*) xbt_matrix_get_ptr(C,i,j) ) = max(xbt_matrix_get_as(C,i  ,j-1,int),
+                                                   xbt_matrix_get_as(C,i-1,j,int));
     }
   return C;
 }
 
 static void diff_build_diff(xbt_dynar_t res,
-			    xbt_matrix_t C,
-			    xbt_dynar_t da, xbt_dynar_t db,
-			    int i,int j) {
+                            xbt_matrix_t C,
+                            xbt_dynar_t da, xbt_dynar_t db,
+                            int i,int j) {
   char *topush;
   /* Construct the diff
   function printDiff(C[0..m,0..n], X[1..m], Y[1..n], i, j)
@@ -578,20 +598,20 @@ static void diff_build_diff(xbt_dynar_t res,
         else if i > 0 and (j = 0 or C[i,j-1] < C[i-1,j])
             printDiff(C, X, Y, i-1, j)
             print "- " + X[i]
-  */
+   */
 
   if (i>=0 && j >= 0 && !strcmp(xbt_dynar_get_as(da,i,char*),
-				xbt_dynar_get_as(db,j,char*))) {
+                                xbt_dynar_get_as(db,j,char*))) {
     diff_build_diff(res,C,da,db,i-1,j-1);
     topush = bprintf("  %s",xbt_dynar_get_as(da,i,char*));
     xbt_dynar_push(res, &topush);
   } else if (j>=0 &&
-	     (i<=0 ||j==0|| xbt_matrix_get_as(C,i,j-1,int) >= xbt_matrix_get_as(C,i-1,j,int))) {
+      (i<=0 ||j==0|| xbt_matrix_get_as(C,i,j-1,int) >= xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i,j-1);
     topush = bprintf("+ %s",xbt_dynar_get_as(db,j,char*));
     xbt_dynar_push(res,&topush);
   } else if (i>=0 &&
-	     (j<=0 || xbt_matrix_get_as(C,i,j-1,int) < xbt_matrix_get_as(C,i-1,j,int))) {
+      (j<=0 || xbt_matrix_get_as(C,i,j-1,int) < xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i-1,j);
     topush = bprintf("- %s",xbt_dynar_get_as(da,i,char*));
     xbt_dynar_push(res,&topush);
@@ -615,14 +635,14 @@ char *xbt_str_diff(char *a, char *b) {
   diff_build_diff(diff, C, da,db, xbt_dynar_length(da)-1, xbt_dynar_length(db)-1);
   /* Clean empty lines at the end */
   while (xbt_dynar_length(diff) > 0) {
-     char *str;
-     xbt_dynar_pop(diff,&str);
-     if (str[0]=='\0' || !strcmp(str,"  ")) {
-	free(str);
-     } else {
-	xbt_dynar_push(diff,&str);
-	break;
-     }
+    char *str;
+    xbt_dynar_pop(diff,&str);
+    if (str[0]=='\0' || !strcmp(str,"  ")) {
+      free(str);
+    } else {
+      xbt_dynar_push(diff,&str);
+      break;
+    }
   }
   res = xbt_str_join(diff, "\n");
 
@@ -633,3 +653,4 @@ char *xbt_str_diff(char *a, char *b) {
 
   return res;
 }
+

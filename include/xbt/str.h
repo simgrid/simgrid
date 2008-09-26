@@ -20,16 +20,16 @@ SG_BEGIN_DECL()
 
 /** @addtogroup XBT_str
  *  @brief String manipulation functions
- * 
- * This module defines several string related functions. We redefine some quite classical 
- * functions on the platforms were they are not nativaly defined (such as getline() or 
- * asprintf()), while some other are a bit more exotic. 
+ *
+ * This module defines several string related functions. We redefine some quite classical
+ * functions on the platforms were they are not nativaly defined (such as getline() or
+ * asprintf()), while some other are a bit more exotic.
  * @{
  */
-  
+
 /* snprintf related functions */
 /** @brief print to allocated string (reimplemented when not provided by the system)
- * 
+ *
  * The functions asprintf() and vasprintf() are analogues of
  * sprintf() and vsprintf(), except that they allocate a string large
  * enough to hold the output including the terminating null byte, and
@@ -39,12 +39,12 @@ SG_BEGIN_DECL()
  */
 XBT_PUBLIC(int) asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
 /** @brief print to allocated string (reimplemented when not provided by the system)
- * 
+ *
  * See asprintf()
  */
 XBT_PUBLIC(int) vasprintf (char **ptr, const char *fmt, va_list ap);
 /** @brief print to allocated string
- * 
+ *
  * Works just like asprintf(), but returns a pointer to the newly created string
  */
 XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
@@ -66,10 +66,13 @@ XBT_PUBLIC(xbt_dynar_t) xbt_str_split_str(const char *s, const char *sep);
 XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
 
 /* */
+void xbt_str_subst(char *str, char from, char to, int amount);
+
+/* */
 XBT_PUBLIC(void) xbt_str_strip_spaces(char *);
 XBT_PUBLIC(char *) xbt_str_diff(char *a, char *b);
 
-/** @brief Classical alias to (char*) 
+/** @brief Classical alias to (char*)
  *
  * This of almost no use, beside cosmetics and the GRAS parsing macro (see \ref GRAS_dd_auto).
  */
