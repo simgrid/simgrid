@@ -203,6 +203,23 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Co
 	return retval;
 }
 
+// FIXME: should be in utilities
+int smpi_compare_rankkeys(const void *a, const void *b);
+int smpi_compare_rankkeys(const void *a, const void *b) {
+    int *x = (int *)a;
+    int *y = (int *)b;
+
+    if (x[1] < y[1]) return -1;
+
+    if (x[1] == y[1]) {
+        if (x[0] < y[0]) return -1;
+        if (x[0] == y[0]) return 0;
+        return 1;
+    }
+
+    return 1;
+}
+
 // FIXME: needs to return null in event of MPI_UNDEFINED color...
 // FIXME: seriously, this isn't pretty
 int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
@@ -222,18 +239,17 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 	rank  = comm->index_to_rank_map[index];
 
 	if (0 == rank) {
-		int *color = xbt_new(int, comm->size);
-		int *key   = xbt_new(int, comm->size);
-		int i, j, k;
+		int colormap[comm->size];
+        int keymap[comm->size];
+        int rankkeymap[comm->size * 2];
+		int i, j;
 		smpi_mpi_communicator_t tempcomm = NULL;
 		int colortmp;
 		int keycount;
-		int *rankmap = xbt_new(int, comm->size);
-		int tmpval;
 		int indextmp;
 
-		color[0] = color;
-		key[0]   = key;
+		colormap[0] = color;
+        keymap[0]   = key;
 
 		// FIXME: use scatter/gather or similar instead of individual comms
 		for (i = 1; i < comm->size; i++) {
@@ -241,34 +257,26 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
                     rank, MPI_ANY_TAG, comm, &request);
 			smpi_mpi_irecv(request);
 			smpi_mpi_wait(request, &status);
-			color[status.MPI_SOURCE] = colorkey[0];
-			key[status.MPI_SOURCE]   = colorkey[1];
+			colormap[status.MPI_SOURCE] = colorkey[0];
+			keymap[status.MPI_SOURCE]   = colorkey[1];
 			xbt_mallocator_release(smpi_global->request_mallocator, request);
 		}
 
 		for (i = 0; i < comm->size; i++) {
-			if (-1 == color[i]) {
+			if (-1 == colormap[i]) {
 				continue;
 			}
-			colortmp = color[i];
+			colortmp = colormap[i];
 			keycount = 0;
 			for (j = i; j < comm->size; j++) {
-				if(colortmp == color[j]) {
-					color[j] = -1;
-					rankmap[keycount] = j;
+				if(colortmp == colormap[j]) {
+					colormap[j] = -1;
+					rankkeymap[keycount * 2]     = j;
+					rankkeymap[keycount * 2 + 1] = keymap[j];
 					keycount++;
 				}
 			}
-			// FIXME: yes, mock me, bubble sort...
-			for (j = 0; j < keycount; j++) {
-				for (k = j; k < keycount - 1; k++) {
-					if (key[rankmap[k]] > key[rankmap[k + 1]]) {
-						tmpval          = rankmap[k];
-						rankmap[k]     = rankmap[k + 1];
-						rankmap[k + 1] = tmpval;
-					}
-				}
-			}
+            qsort(rankkeymap, keycount, sizeof(int) * 2, &smpi_compare_rankkeys);
 			tempcomm                    = xbt_new(s_smpi_mpi_communicator_t, 1);
 			tempcomm->barrier_count     = 0;
 			tempcomm->size              = keycount;
@@ -280,13 +288,14 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 				tempcomm->index_to_rank_map[j] = -1;
 			}
 			for (j = 0; j < keycount; j++) {
-				indextmp = comm->rank_to_index_map[rankmap[j]];
+				indextmp = comm->rank_to_index_map[rankkeymap[j*2]];
 				tempcomm->rank_to_index_map[j]        = indextmp;
 				tempcomm->index_to_rank_map[indextmp] = j;
 			}
 			for (j = 0; j < keycount; j++) {
-				if (rankmap[j]) {
-					retval = smpi_create_request(&j, 1, MPI_INT, 0, rankmap[j], 0, comm, &request);
+				if (rankkeymap[j*2]) {
+					retval = smpi_create_request(&j, 1, MPI_INT, 0,
+                        rankkeymap[j*2], 0, comm, &request);
 					request->data = tempcomm;
 					smpi_mpi_isend(request);
 					smpi_mpi_wait(request, &status);
