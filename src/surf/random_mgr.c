@@ -17,12 +17,12 @@ struct drand48_data
 	unsigned long long int __a; /* Factor in congruential formula.  */
 };
 
-static struct drand48_data __libc_drand48_data = {0}; 
+static struct drand48_data __libc_drand48_data = {0};
 
 union ieee754_double
   {
 	double d;
-	
+
 	/* This is the IEEE 754 double-precision format.  */
 	struct
 	{
@@ -33,7 +33,7 @@ union ieee754_double
 		unsigned int negative:1;
 		/* Little endian.  */
 	} ieee;
-	
+
 	/* This format makes it easier to see if a NaN is a signalling NaN.  */
 	struct
 	{
@@ -43,7 +43,7 @@ union ieee754_double
 		unsigned int quiet_nan:1;
 		unsigned int exponent:11;
 		unsigned int negative:1;
-	
+
 	} ieee_nan;
 };
 
@@ -63,22 +63,22 @@ int
 _erand48_r (unsigned short int xsubi[3], struct drand48_data *buffer, double *result)
 {
 	union ieee754_double temp;
-	
+
 	/* Compute next state.  */
 	if (_drand48_iterate(xsubi, buffer) < 0)
 		return -1;
-	
+
 	/* Construct a positive double with the 48 random bits distributed over
 	its fractional part so the resulting FP number is [0.0,1.0).  */
-	
+
 	temp.ieee.negative = 0;
 	temp.ieee.exponent = IEEE754_DOUBLE_BIAS;
 	temp.ieee.mantissa0 = (xsubi[2] << 4) | (xsubi[1] >> 12);
 	temp.ieee.mantissa1 = ((xsubi[1] & 0xfff) << 20) | (xsubi[0] << 4);
-	
+
 	/* Please note the lower 4 bits of mantissa1 are always 0.  */
 	*result = temp.d - 1.0;
-	
+
 	return 0;
 }
 
@@ -87,29 +87,29 @@ _drand48_iterate (unsigned short int xsubi[3], struct drand48_data *buffer)
 {
 	uint64_t X;
 	uint64_t result;
-	
+
 	/* Initialize buffer, if not yet done.  */
-	
+
 	if(buffer->__init == 0)
 	{
 		buffer->__a = 0x5deece66dull;
 		buffer->__c = 0xb;
 		buffer->__init = 1;
 	}
-	
+
 	/* Do the real work.  We choose a data type which contains at least
 	48 bits.  Because we compute the modulus it does not care how
 	many bits really are computed.  */
-	
+
 	X = (uint64_t) xsubi[2] << 32 | (uint32_t) xsubi[1] << 16 | xsubi[0];
-	
+
 	result = X * buffer->__a + buffer->__c;
 
-	
+
 	xsubi[0] = result & 0xffff;
 	xsubi[1] = (result >> 16) & 0xffff;
 	xsubi[2] = (result >> 32) & 0xffff;
-	
+
 	return 0;
 }
 
@@ -118,9 +118,9 @@ double
 _drand48 (void)
 {
 	double result;
-	
+
 	(void) _erand48_r (__libc_drand48_data.__x, &__libc_drand48_data, &result);
-	
+
 	 return result;
  }
 
@@ -130,55 +130,55 @@ _srand(unsigned int seed)
 	_seed = seed;
 }
 
-int 
+int
 _rand(void)
 {
 	const long a = 16807;
 	const long m = 2147483647;
 	const long q = 127773; /* (m/a) */
 	const long r = 2836; /* (m%a) */
-	
+
 	long lo, k, s;
-	
+
 	s = (long)_seed;
-	
+
 	k = (long)(s/q);
-	
+
 	lo = (s - q * k);
-	
+
 	s = a * lo -r * k;
-	
+
 	if(s <= 0)
 		s += m;
-		
+
 	_seed = (int)(s & RAND_MAX);
-	
+
 	return _seed;
 }
 
-int 
+int
 _rand_r(unsigned int* pseed)
 {
 	const long a = 16807;
 	const long m = 2147483647;
 	const long q = 127773; 			/* (m/a) */
 	const long r = 2836; 			/* (m%a) */
-	
+
 	long lo, k, s;
-	
+
 	s = (long)*pseed;
-	
+
 	k = (long)(s/q);
-	
+
 	lo = (s - q * k);
-	
+
 	s = a * lo -r * k;
-	
+
 	if(s <= 0)
 		s += m;
-		
-	return (int)(s & RAND_MAX); 
-	
+
+	return (int)(s & RAND_MAX);
+
 }
 
 
@@ -192,9 +192,9 @@ static double custom_random(Generator generator, long int *seed){
 
     case DRAND48:
       return drand48();
-    case RAND: 
+    case RAND:
       return (double)rand_r((unsigned int*)seed)/RAND_MAX;
-    default: 
+    default:
       return drand48();
    }
 }
@@ -206,6 +206,9 @@ double random_generate(random_data_t random) {
   double U1, U2, V, W, X;
 
   if (random == NULL) return 0.0f;
+
+  if (random->std == 0)
+     return random->mean * (random->max - random->min) + random->min;
 
   a = random->mean * ( random->mean * (1 - random->mean) / (random->std*random->std) - 1 );
   b = (1 - random->mean) * ( random->mean * (1 - random->mean) / (random->std*random->std) - 1 );
@@ -235,12 +238,12 @@ double random_generate(random_data_t random) {
 }
 
 random_data_t random_new(Generator generator, long int seed,
-			 double min, double max, 
+			 double min, double max,
 			 double mean, double std){
   random_data_t random = xbt_new0(s_random_data_t, 1);
-   
+
   random->generator = generator;
-  random->seed = seed;   
+  random->seed = seed;
   random->min = min;
   random->max = max;
 
@@ -256,8 +259,8 @@ random_data_t random_new(Generator generator, long int seed,
   random->mean = (mean - min) / (max - min);
   random->std = std / (max - min);
 
-  if (random->mean * (1-random->mean) < random->std*random->std) 
+  if (random->mean * (1-random->mean) < random->std*random->std)
      THROW2(arg_error,0,"Invalid mean and standard deviation (%f and %f)",random->mean, random->std);
-   
+
   return random;
 }
