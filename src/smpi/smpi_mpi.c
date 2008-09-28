@@ -98,13 +98,15 @@ int SMPI_MPI_Barrier(MPI_Comm comm)
 	return retval;
 }
 
-int SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request *request)
+int SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
+    int tag, MPI_Comm comm, MPI_Request *request)
 {
 	int retval = MPI_SUCCESS;
 
 	smpi_bench_end();
 
-	retval = smpi_create_request(buf, count, datatype, src, 0, tag, comm, request);
+	retval = smpi_create_request(buf, count, datatype, src, 0, tag, comm,
+        request);
 	if (NULL != *request && MPI_SUCCESS == retval) {
 		retval = smpi_mpi_irecv(*request);
 	}
@@ -114,14 +116,16 @@ int SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag
 	return retval;
 }
 
-int SMPI_MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status)
+int SMPI_MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src,
+    int tag, MPI_Comm comm, MPI_Status *status)
 {
 	int retval = MPI_SUCCESS;
 	smpi_mpi_request_t request;
 
 	smpi_bench_end();
 
-	retval = smpi_create_request(buf, count, datatype, src, 0, tag, comm, &request);
+	retval = smpi_create_request(buf, count, datatype, src, 0, tag, comm,
+        &request);
 	if (NULL != request && MPI_SUCCESS == retval) {
 		retval = smpi_mpi_irecv(request);
 		if (MPI_SUCCESS == retval) {
@@ -135,13 +139,15 @@ int SMPI_MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
 	return retval;
 }
 
-int SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request)
+int SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
+    int tag, MPI_Comm comm, MPI_Request *request)
 {
 	int retval = MPI_SUCCESS;
 
 	smpi_bench_end();
 
-	retval = smpi_create_request(buf, count, datatype, 0, dst, tag, comm, request);
+	retval = smpi_create_request(buf, count, datatype, 0, dst, tag, comm,
+        request);
 	if (NULL != *request && MPI_SUCCESS == retval) {
 		retval = smpi_mpi_isend(*request);
 	}
@@ -151,14 +157,16 @@ int SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag
 	return retval;
 }
 
-int SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
+int SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst,
+    int tag, MPI_Comm comm)
 {
 	int retval = MPI_SUCCESS;
 	smpi_mpi_request_t request;
 
 	smpi_bench_end();
 
-	retval = smpi_create_request(buf, count, datatype, 0, dst, tag, comm, &request);
+	retval = smpi_create_request(buf, count, datatype, 0, dst, tag, comm,
+        &request);
 	if (NULL != request && MPI_SUCCESS == retval) {
 		retval = smpi_mpi_isend(request);
 		if (MPI_SUCCESS == retval) {
@@ -176,7 +184,9 @@ int SMPI_MPI_Wait(MPI_Request *request, MPI_Status *status) {
 	return smpi_mpi_wait(*request, status);
 }
 
-int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm) {
+int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
+    MPI_Comm comm)
+{
 
 	int retval = MPI_SUCCESS;
 	int rank;
@@ -187,11 +197,13 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Co
 	rank = smpi_mpi_comm_rank(comm);
 
 	if (rank == root) {
-		retval = smpi_create_request(buf, count, datatype, root, (root + 1) % comm->size, 0, comm, &request);
+		retval = smpi_create_request(buf, count, datatype, root,
+            (root + 1) % comm->size, 0, comm, &request);
 		request->forward = comm->size - 1;
 		smpi_mpi_isend(request);
 	} else {
-		retval = smpi_create_request(buf, count, datatype, MPI_ANY_SOURCE, rank, 0, comm, &request);
+		retval = smpi_create_request(buf, count, datatype, MPI_ANY_SOURCE, rank,
+            0, comm, &request);
 		smpi_mpi_irecv(request);
 	}
 
@@ -220,7 +232,6 @@ int smpi_compare_rankkeys(const void *a, const void *b) {
     return 1;
 }
 
-// FIXME: needs to return null in event of MPI_UNDEFINED color...
 int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 {
 	int retval = MPI_SUCCESS;
@@ -237,14 +248,17 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 	index = smpi_host_index();
 	rank  = comm->index_to_rank_map[index];
 
+    // default output
+    comm_out = NULL;
+
+    // root node does most of the real work
 	if (0 == rank) {
 		int colormap[comm->size];
         int keymap[comm->size];
         int rankkeymap[comm->size * 2];
 		int i, j;
 		smpi_mpi_communicator_t tempcomm = NULL;
-		int colortmp;
-		int keycount;
+		int count;
 		int indextmp;
 
 		colormap[0] = color;
@@ -262,36 +276,40 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 		}
 
 		for (i = 0; i < comm->size; i++) {
-			if (-1 == colormap[i]) {
+			if (MPI_UNDEFINED == colormap[i]) {
 				continue;
 			}
-			colortmp = colormap[i];
-			keycount = 0;
+
+            // make a list of nodes with current color and sort by keys
+			count = 0;
 			for (j = i; j < comm->size; j++) {
-				if(colortmp == colormap[j]) {
-					colormap[j] = -1;
-					rankkeymap[keycount * 2]     = j;
-					rankkeymap[keycount * 2 + 1] = keymap[j];
-					keycount++;
+				if(colormap[i] == colormap[j]) {
+					colormap[j] = MPI_UNDEFINED;
+					rankkeymap[count * 2]     = j;
+					rankkeymap[count * 2 + 1] = keymap[j];
+					count++;
 				}
 			}
-            qsort(rankkeymap, keycount, sizeof(int) * 2, &smpi_compare_rankkeys);
+            qsort(rankkeymap, count, sizeof(int) * 2,
+                &smpi_compare_rankkeys);
+
+            // new communicator
 			tempcomm                    = xbt_new(s_smpi_mpi_communicator_t, 1);
 			tempcomm->barrier_count     = 0;
-			tempcomm->size              = keycount;
+			tempcomm->size              = count;
 			tempcomm->barrier_mutex     = SIMIX_mutex_init();
 			tempcomm->barrier_cond      = SIMIX_cond_init();
-			tempcomm->rank_to_index_map = xbt_new(int, keycount);
+			tempcomm->rank_to_index_map = xbt_new(int, count);
 			tempcomm->index_to_rank_map = xbt_new(int, smpi_global->host_count);
 			for (j = 0; j < smpi_global->host_count; j++) {
 				tempcomm->index_to_rank_map[j] = -1;
 			}
-			for (j = 0; j < keycount; j++) {
+			for (j = 0; j < count; j++) {
 				indextmp = comm->rank_to_index_map[rankkeymap[j*2]];
 				tempcomm->rank_to_index_map[j]        = indextmp;
 				tempcomm->index_to_rank_map[indextmp] = j;
 			}
-			for (j = 0; j < keycount; j++) {
+			for (j = 0; j < count; j++) {
 				if (rankkeymap[j*2]) {
 					retval = smpi_create_request(&j, 1, MPI_INT, 0,
                         rankkeymap[j*2], 0, comm, &request);
@@ -313,11 +331,13 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 		smpi_mpi_isend(request);
 		smpi_mpi_wait(request, &status);
 		xbt_mallocator_release(smpi_global->request_mallocator, request);
-		retval = smpi_create_request(colorkey, 1, MPI_INT, 0, rank, 0, comm,
-            &request);
-		smpi_mpi_irecv(request);
-		smpi_mpi_wait(request, &status);
-		*comm_out = request->data;
+        if (MPI_UNDEFINED != color) {
+		    retval = smpi_create_request(colorkey, 1, MPI_INT, 0, rank, 0, comm,
+                &request);
+		    smpi_mpi_irecv(request);
+		    smpi_mpi_wait(request, &status);
+		    *comm_out = request->data;
+        }
 	}
 
 	smpi_bench_begin();
