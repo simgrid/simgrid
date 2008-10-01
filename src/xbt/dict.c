@@ -490,11 +490,17 @@ int xbt_dict_length(xbt_dict_t dict) {
   return dict->count;
 }
 
+/** @brief function to be used in xbt_dict_dump as long as the stored values are strings */
+void xbt_dict_dump_output_string(void *s) {
+  fputs(s,stdout);
+}
+
+
 /**
  * \brief Outputs the content of the structure (debugging purpose)
  *
  * \param dict the exibitionist
- * \param output a function to dump each data in the tree
+ * \param output a function to dump each data in the tree (check @ref xbt_dict_dump_output_string)
  *
  * Outputs the content of the structure. (for debugging purpose). \a output is a
  * function to output the data. If NULL, data won't be displayed.
@@ -511,11 +517,11 @@ void xbt_dict_dump(xbt_dict_t     dict,
       if (element) {
         printf("[\n");
         while (element != NULL) {
-          printf(" %s -> ", element->key);
+          printf(" %s -> '", element->key);
           if (output != NULL) {
             (*output)(element->content);
           }
-          printf("\n");
+          printf("'\n");
           element = element->next;
         }
         printf("]\n");
