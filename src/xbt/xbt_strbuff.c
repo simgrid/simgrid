@@ -94,6 +94,11 @@ void xbt_strbuff_trim(xbt_strbuff_t b) {
  * Both '$toto' and '${toto}' are valid (and the two writing are equivalent).
  *
  * If the variable name contains spaces, use the brace version (ie, ${toto tutu})
+ *
+ * You can provide a default value to use if the variable is not set in the dict by using
+ * '${var:=default}' or '${var:-default}'. These two forms are equivalent, even if they
+ * shouldn't to respect the shell standard (:= form should set the value in the dict,
+ * but does not) (BUG).
  */
 void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns) {
 
@@ -144,17 +149,18 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns) {
             /* Search name's end */
             end_var = beg_var;
             while (*end_var != '\0' && *end_var != '}') {
-              if (*end_var == ':') {
+              /* TODO: we do not respect the standard for ":=", we should set this value in the dict */
+              if (*end_var == ':' && ((*(end_var+1) == '=') || (*(end_var+1) == '-'))) {
                 /* damn, we have a default value */
-                char *p = end_var;
+                char *p = end_var+1;
                 while (*p != '\0' && *p != '}')
                   p++;
                 if (*p == '\0')
                   THROW0(arg_error,0,"Variable default value not terminated ('}' missing)");
 
-                default_value = xbt_malloc(p-end_var);
-                memcpy(default_value, end_var+1, p-end_var-1);
-                default_value[p-end_var-1] = '\0';
+                default_value = xbt_malloc(p-end_var-1);
+                memcpy(default_value, end_var+2, p-end_var-2);
+                default_value[p-end_var-2] = '\0';
 
                 end_subst = p+1; /* eat '}' */
 
@@ -208,11 +214,13 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns) {
             memmove(beg_subst,value,val_len); /* substitute */
 //            INFO3("Substitute '%s' with '%s' for %d chars",beg_subst+val_len,end_subst, b->used-(end_subst-b->data)+1);
             memmove(beg_subst+val_len,end_subst, b->used-(end_subst - b->data)+1); /* move the end of the string closer */
+            end = beg_subst+val_len; /* update the currently explored char in the overall loop*/
             b->used -= end_subst-beg_subst-val_len;  /* update string buffer used size */
           } else {
             /* we have to extend the data area */
             int tooshort = val_len-(end_subst-beg_subst) +1/*don't forget \0*/;
             int newused = b->used + tooshort;
+            end += tooshort; /* update the pointer of the overall loop */
 //            DEBUG2("Too short (by %d chars; %d chars left in area)",val_len- (end_subst-beg_subst), b->size - b->used);
             if (newused > b->size) {
               /* We have to realloc the data area before (because b->size is too small). We have to update our pointers, too */
@@ -229,12 +237,13 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns) {
           }
           free(value);
 
-
           if (default_value)
             free(default_value);
         }
+        break;
+
       case '\0':
-        return;
+        done=1;
     }
     end++;
   }
@@ -327,12 +336,14 @@ XBT_TEST_UNIT("xbt_strbuff_substitute",test_strbuff_substitute, "test the functi
   mytest("Escaped $", "\\$tutu", "tutu=t", "\\$tutu");
   mytest("Space in var name (with braces)", "${tu ti}", "tu_ti=t", "t");
 
+  mytest("Two variables", "$toto $tutu","toto=1 tutu=2", "1 2");
+
   // Commented: I'm too lazy to do a memmove in var name to remove the backslash after use.
   // Users should use braces.
   //  mytest("Escaped space in var name", "$tu\\ ti", "tu_ti=t", "t");
 
-  mytest("Default value", "${t:toto}", "", "toto");
-  mytest("Useless default value (variable already defined)", "${t:toto}", "t=TRUC", "TRUC");
+  mytest("Default value", "${t:-toto}", "", "toto");
+  mytest("Useless default value (variable already defined)", "${t:-toto}", "t=TRUC", "TRUC");
 
 }
 
