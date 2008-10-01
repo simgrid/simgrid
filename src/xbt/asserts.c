@@ -21,7 +21,8 @@ XBT_LOG_DEFAULT_CATEGORY(xbt);
  *
  * The message is handled by a CRITICAL logging request
  *
- * If you want to pass arguments to the format, you can always write xbt_assert1(0,"fmt",args)
+ * If you want to pass arguments to the format, you can always write xbt_assert1(0,"fmt",args) or
+ * xbt_die(bprintf("fmt", arg))
  */
 void xbt_die (const char *msg) {
   CRITICAL1("%s",msg);
