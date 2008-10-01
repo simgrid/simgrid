@@ -170,7 +170,7 @@ static void parse_environ(){
   for (i=0; environ[i];i++) {
     p=environ[i];
     char *eq = strchr(p,'=');
-    char *key = bprintf("%.*s",eq-p,p);
+    char *key = bprintf("%.*s",(int)(eq-p),p);
     xbt_dict_set(env,key,xbt_strdup(eq+1),xbt_free_f);
     free(key);
   }
