@@ -35,6 +35,21 @@ xbt_strbuff_t xbt_strbuff_new(void) {
   xbt_strbuff_empty(res);
   return res;
 }
+/** @brief creates a new string buffer containing the provided string
+ *
+ * Beware, we store the ctn directly, not a copy of it
+ */
+xbt_strbuff_t xbt_strbuff_from(char *ctn) {
+  xbt_strbuff_t res=malloc(sizeof(s_xbt_strbuff_t));
+  res->data=ctn;
+  res->used=res->size=strlen(ctn);
+  return res;
+}
+/** @brief frees only the container without touching to the contained string */
+void xbt_strbuff_free_container(xbt_strbuff_t b) {
+  free(b);
+}
+/** @brief frees the buffer and its content */
 void xbt_strbuff_free(xbt_strbuff_t b) {
   if (b) {
     if (b->data)
