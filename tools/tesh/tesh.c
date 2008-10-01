@@ -163,6 +163,19 @@ static void handle_suite(const char* filename, FILE* IN) {
 
 }
 
+static void parse_environ(){
+  char *p;
+  int i;
+  env = xbt_dict_new();
+  for (i=0; environ[i];i++) {
+    p=environ[i];
+    char *eq = strchr(p,'=');
+    char *key = bprintf("%.*s",eq-p,p);
+    xbt_dict_set(env,key,xbt_strdup(eq+1),xbt_free_f);
+    free(key);
+  }
+}
+
 int main(int argc,char *argv[]) {
 
   FILE *IN;
@@ -177,6 +190,7 @@ int main(int argc,char *argv[]) {
 
   xbt_init(&argc,argv);
   rctx_init();
+  parse_environ();
 
   /* Find the description file */
   if (argc == 1) {

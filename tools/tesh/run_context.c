@@ -104,15 +104,6 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
  * Memory management
  */
 
-# ifdef __APPLE__
-/* under darwin, the environment gets added to the process at startup time. So, it's not defined at library link time, forcing us to extra tricks */
-# include <crt_externs.h>
-# define environ (*_NSGetEnviron())
-# else
-/* the environment, as specified by the opengroup, used to initialize the process properties */
-extern char **environ;
-# endif
-
 void rctx_empty(rctx_t rc) {
   int i;
   char **env_it=environ;
@@ -266,7 +257,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
         rctx->env = realloc(rctx->env,++(rctx->env_size)*sizeof(char*));
         rctx->env[rctx->env_size-2] = xbt_strdup(line+strlen("setenv "));
         rctx->env[rctx->env_size-1] = NULL;
-        VERB1("[%s] (ignore output of next command)", filepos);
+        VERB2("[%s] setenv %s", filepos,line+strlen("setenv "));
 
       } else {
         ERROR2("%s: Malformed metacommand: %s",filepos,line);
@@ -350,14 +341,69 @@ static void *thread_reader(void *r) {
   return NULL;
 }
 
+/* function to be called from the child to start the actual process */
+static void start_command(rctx_t rctx){
+  xbt_dynar_t cmd = xbt_str_split_quoted(rctx->cmd);
+  char *binary_name = NULL;
+  unsigned int it;
+  char *str;
+  xbt_dynar_get_cpy(cmd,0,&binary_name);
+  char **args = xbt_new(char*,xbt_dynar_length(cmd)+1);
+
+  xbt_dynar_foreach(cmd,it,str) {
+    args[it] = xbt_strdup(str);
+  }
+  args[it] = NULL;
+
+  /* To search for the right executable path when not trivial */
+  struct stat stat_buf;
+
+  /* build the command line */
+  if (stat(binary_name, &stat_buf)) {
+    /* Damn. binary not in current dir. We'll have to dig the PATH to find it */
+    int i;
+
+    for (i = 0; environ[i]; i++) {
+      if (!strncmp("PATH=", environ[i], 5)) {
+        xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
+
+        xbt_dynar_foreach(path, it, str) {
+          if (binary_name)
+            free(binary_name);
+          binary_name = bprintf("%s/%s", str, args[0]);
+          if (!stat(binary_name, &stat_buf)) {
+            /* Found. */
+            DEBUG1("Looked in the PATH for the binary. Found %s",
+                   binary_name);
+            xbt_dynar_free(&path);
+            break;
+          }
+        }
+        xbt_dynar_free(&path);
+        if (stat(binary_name, &stat_buf)) {
+          /* not found */
+          ERROR1("Command %s not found",args[0]);
+          return;
+        }
+        break;
+      }
+    }
+  } else {
+    binary_name = xbt_strdup(args[0]);
+  }
+
+  execve(binary_name, args, rctx->env);
+}
+
 /* Start a new child, plug the pipes as expected and fire up the
    helping threads. Is also waits for the child to end if this is a
    foreground job, or fire up a thread to wait otherwise. */
-
 void rctx_start(void) {
   int child_in[2];
   int child_out[2];
 
+  DEBUG1("Cmd before rewriting %s",rctx->cmd);
+  rctx->cmd = xbt_str_varsubst(rctx->cmd,env);
   VERB2("Start %s %s",rctx->cmd,(rctx->is_background?"(background job)":""));
   if (pipe(child_in) || pipe(child_out)) {
     perror("Cannot open the pipes");
@@ -400,60 +446,7 @@ void rctx_start(void) {
     dup2(child_out[1],2);
     close(child_out[1]);
 
-    xbt_dynar_t cmd = xbt_str_split_quoted(rctx->cmd);
-    char *file;
-    unsigned int it;
-    char *str;
-    char *long_cmd=xbt_strdup("");
-    xbt_dynar_get_cpy(cmd,0,&file);
-    char **args = xbt_new(char*,xbt_dynar_length(cmd)+1);
-    xbt_dynar_foreach(cmd,it,str) {
-      args[it] = xbt_strdup(str);
-      long_cmd = bprintf("%s %s",long_cmd,str);
-    }
-    args[it] = NULL;
-
-    /* To search for the right executable path when not trivial */
-    struct stat stat_buf;
-    char *binary_name = NULL;
-
-    /* build the command line */
-    if (stat(file, &stat_buf)) {
-      /* Damn. binary not in current dir. We'll have to dig the PATH to find it */
-      int i;
-
-      for (i = 0; environ[i]; i++) {
-        if (!strncmp("PATH=", environ[i], 5)) {
-          xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
-
-          xbt_dynar_foreach(path, it, str) {
-            if (binary_name)
-              free(binary_name);
-            binary_name = bprintf("%s/%s", str, file);
-            if (!stat(binary_name, &stat_buf)) {
-              /* Found. */
-              DEBUG1("Looked in the PATH for the binary. Found %s",
-                     binary_name);
-              xbt_dynar_free(&path);
-              break;
-            }
-          }
-          xbt_dynar_free(&path);
-          if (stat(binary_name, &stat_buf)) {
-            /* not found */
-            ERROR1("Command %s not found",file);
-            return;
-          }
-          break;
-        }
-      }
-    } else {
-      binary_name = xbt_strdup(file);
-    }
-
-
-    DEBUG2("execve %s %s env",binary_name,long_cmd);
-    execve(binary_name, args, rctx->env);
+    start_command(rctx);
   }
 
   rctx->is_stoppable = 1;
