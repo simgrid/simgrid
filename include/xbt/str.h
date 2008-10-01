@@ -14,6 +14,7 @@
 #include <stdarg.h> /* va_* */
 #include "xbt/misc.h"
 #include "xbt/dynar.h"
+#include "xbt/dict.h"
 #include <stdio.h> /* FILE for getline */
 
 SG_BEGIN_DECL()
@@ -66,7 +67,8 @@ XBT_PUBLIC(xbt_dynar_t) xbt_str_split_str(const char *s, const char *sep);
 XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
 
 /* */
-void xbt_str_subst(char *str, char from, char to, int amount);
+XBT_PUBLIC(void) xbt_str_subst(char *str, char from, char to, int amount);
+XBT_PUBLIC(char *)xbt_str_varsubst(char *str, xbt_dict_t patterns);
 
 /* */
 XBT_PUBLIC(void) xbt_str_strip_spaces(char *);

@@ -39,7 +39,7 @@ xbt_strbuff_t xbt_strbuff_new(void) {
  *
  * Beware, we store the ctn directly, not a copy of it
  */
-xbt_strbuff_t xbt_strbuff_from(char *ctn) {
+xbt_strbuff_t xbt_strbuff_new_from(char *ctn) {
   xbt_strbuff_t res=malloc(sizeof(s_xbt_strbuff_t));
   res->data=ctn;
   res->used=res->size=strlen(ctn);
