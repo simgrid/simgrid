@@ -12,6 +12,7 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/str.h" /* headers of these functions */
+#include "xbt/strbuff.h"
 #include "portable.h"
 #include "xbt/matrix.h" /* for the diff */
 
@@ -191,6 +192,24 @@ void xbt_str_subst(char *str, char from, char to, int occurence) {
     p++;
   }
 }
+/** @brief Replaces a set of variables by their values
+ *
+ * @param str where to apply the change
+ * @param patterns what to change
+ * @return The string modified
+ *
+ * Check xbt_strbuff_varsubst() for more details, and remember that the string may be reallocated (moved) in the process.
+ */
+
+char *xbt_str_varsubst(char *str, xbt_dict_t patterns) {
+  xbt_strbuff_t buff = xbt_strbuff_new_from(str);
+  char * res;
+  xbt_strbuff_varsubst(buff,patterns);
+  res = buff->data;
+  xbt_strbuff_free_container(buff);
+  return res;
+}
+
 
 /** @brief Splits a string into a dynar of strings
  *
