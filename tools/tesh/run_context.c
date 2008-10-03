@@ -254,10 +254,17 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
         VERB1("[%s] (ignore output of next command)", filepos);
 
       } else if (!strncmp(line,"setenv ",strlen("setenv "))) {
+        int len = strlen("setenv ");
+        char *eq = strchr(line+len,'=');
+        char *key = bprintf("%.*s",(int)(eq-line-len),line+len);
+        xbt_dict_set(env,key,xbt_strdup(eq+1),xbt_free_f);
+
         rctx->env = realloc(rctx->env,++(rctx->env_size)*sizeof(char*));
-        rctx->env[rctx->env_size-2] = xbt_strdup(line+strlen("setenv "));
+        rctx->env[rctx->env_size-2] = xbt_strdup(line+len);
         rctx->env[rctx->env_size-1] = NULL;
-        VERB2("[%s] setenv %s", filepos,line+strlen("setenv "));
+        VERB2("[%s] setenv %s", filepos,line+len);
+
+//      } else if (!strncmp(line,"file ",strlen("file "))) {
 
       } else {
         ERROR2("%s: Malformed metacommand: %s",filepos,line);
