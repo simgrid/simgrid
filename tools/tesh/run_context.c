@@ -616,7 +616,7 @@ void *rctx_wait(void* r) {
     int marklen = strlen("TESH_ERROR ");
     char *endline = strchr(rctx->output_got->data,'\n');
 
-    CRITICAL2("%.*s",endline -rctx->output_got->data-marklen, rctx->output_got->data+marklen);
+    CRITICAL2("%.*s",(int)(endline -rctx->output_got->data-marklen), rctx->output_got->data+marklen);
     memmove(rctx->output_got->data, rctx->output_got->data+marklen, rctx->output_got->used - marklen);
     rctx->output_got->used -= endline -rctx->output_got->data+1;
     rctx->output_got->data[rctx->output_got->used] = '\0';
