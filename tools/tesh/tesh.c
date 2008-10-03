@@ -49,7 +49,7 @@ static void handle_line(const char * filepos, char *line) {
         if (rctx->cmd)
           rctx_start();
 
-        /* search begining */
+        /* search beginning */
         while (*(dir++) == ' ');
         dir--;
         VERB1("Saw cd '%s'",dir);
