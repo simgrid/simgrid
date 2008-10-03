@@ -189,7 +189,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
       if (rctx->cmd) {
         if (!rctx->is_empty) {
           ERROR2("[%s] More than one command in this chunk of lines (previous: %s).\n"
-                 " Dunno which input/output belongs to which command.",
+                 " Cannot guess which input/output belongs to which command.",
                  filepos,rctx->cmd);
           ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
           rctx_armageddon(rctx,1);
@@ -263,8 +263,6 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
         rctx->env[rctx->env_size-2] = xbt_strdup(line+len);
         rctx->env[rctx->env_size-1] = NULL;
         VERB2("[%s] setenv %s", filepos,line+len);
-
-//      } else if (!strncmp(line,"file ",strlen("file "))) {
 
       } else {
         ERROR2("%s: Malformed metacommand: %s",filepos,line);
@@ -348,6 +346,20 @@ static void *thread_reader(void *r) {
   return NULL;
 }
 
+/* Special command: mkfile is a building creating a file with the input data as content */
+static void rctx_mkfile(void) {
+  char *filename = xbt_strdup(rctx->cmd + strlen("mkfile "));
+  FILE*OUT;
+  xbt_str_trim(filename,NULL);
+  OUT=fopen(filename,"w");
+  if (!OUT) {
+    free(filename);
+    THROW3(system_error,errno,"%s: Cannot create file %s: %s",rctx->filepos,filename,strerror(errno));
+  }
+  fprintf(OUT,"%s",rctx->input->data);
+  fclose(OUT);
+}
+
 /* function to be called from the child to start the actual process */
 static void start_command(rctx_t rctx){
   xbt_dynar_t cmd = xbt_str_split_quoted(rctx->cmd);
@@ -356,6 +368,12 @@ static void start_command(rctx_t rctx){
   char *str;
   xbt_dynar_get_cpy(cmd,0,&binary_name);
   char **args = xbt_new(char*,xbt_dynar_length(cmd)+1);
+  int errcode;
+
+  if (!strncmp(rctx->cmd,"mkfile ",strlen("mkfile "))) {
+    rctx_mkfile();
+    exit(0); /* end the working child */
+  }
 
   xbt_dynar_foreach(cmd,it,str) {
     args[it] = xbt_strdup(str);
@@ -389,8 +407,8 @@ static void start_command(rctx_t rctx){
         xbt_dynar_free(&path);
         if (stat(binary_name, &stat_buf)) {
           /* not found */
-          ERROR1("Command %s not found",args[0]);
-          return;
+          printf("TESH_ERROR Command %s not found\n",args[0]);
+          exit(127);
         }
         break;
       }
@@ -399,7 +417,9 @@ static void start_command(rctx_t rctx){
     binary_name = xbt_strdup(args[0]);
   }
 
-  execve(binary_name, args, rctx->env);
+  errcode = execve(binary_name, args, rctx->env);
+  printf("TESH_ERROR %s: Cannot start %s: %s\n",rctx->filepos,rctx->cmd, strerror(errcode));
+  exit(127);
 }
 
 /* Start a new child, plug the pipes as expected and fire up the
@@ -592,6 +612,16 @@ void *rctx_wait(void* r) {
       rctx->expected_signal = NULL;
     }
   }
+  while (rctx->output_got->used && !strncmp(rctx->output_got->data,"TESH_ERROR ", strlen("TESH_ERROR "))) {
+    int marklen = strlen("TESH_ERROR ");
+    char *endline = strchr(rctx->output_got->data,'\n');
+
+    CRITICAL2("%.*s",endline -rctx->output_got->data-marklen, rctx->output_got->data+marklen);
+    memmove(rctx->output_got->data, rctx->output_got->data+marklen, rctx->output_got->used - marklen);
+    rctx->output_got->used -= endline -rctx->output_got->data+1;
+    rctx->output_got->data[rctx->output_got->used] = '\0';
+    errcode=1;
+  }
 
   if (   rctx->output == e_output_check
       && (    rctx->output_got->used != rctx->output_wanted->used
@@ -613,7 +643,7 @@ void *rctx_wait(void* r) {
     xbt_dynar_free(&a);
     INFO1("Here is the (ignored) command output: \n||%s",out);
     free(out);
-  } else if (errcode || rctx->interrupted) {
+  } else if ( (errcode&&errcode!=1) || rctx->interrupted) {
     /* checking output, and matching */
     xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
     char *out = xbt_str_join(a,"\n||");
