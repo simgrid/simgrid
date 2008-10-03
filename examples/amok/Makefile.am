@@ -54,11 +54,10 @@ EXTRA_DIST+=saturate/saturate.xml
 
 if GRAS_ARCH_32_BITS
   TESTS       += saturate/saturate_rl.tesh saturate/saturate_sg_32.tesh
-  XFAIL_TESTS += saturate/saturate_rl.tesh saturate/saturate_sg_32.tesh
 else
   TESTS       += saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
-  XFAIL_TESTS += saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
 endif
+XFAIL_TESTS += saturate/saturate_rl.tesh 
 
 
 noinst_PROGRAMS += \
