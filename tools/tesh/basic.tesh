@@ -4,7 +4,7 @@ p This is a basic test
 
 < TOTO \
 TUTU
-$ cat > tmp_fich
+$ mkfile tmp_fich
 
 $ cat tmp_fich
 > TOTO TUTU
@@ -17,7 +17,7 @@ p And now, some multilines examples
 < b
 < c
 < d
-$ cat > tmp_fich
+$ mkfile tmp_fich
 
 $ cat tmp_fich
 > a

@@ -19,7 +19,7 @@ $ cd temp_testdir
 <   }
 <   return 0;
 < }
-$ cat > getenv.c
+$ mkfile getenv.c
 
 $ gcc -o getenv getenv.c -g
 
