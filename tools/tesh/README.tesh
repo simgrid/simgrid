@@ -48,10 +48,26 @@ errors such as the following:
 
  $ cd toto
  > TOTO
- $ cat > file
+ $ mkfile file
 
 TOTO will be passed to the cd command, where the user clearly want to pass it
-to cat.
+to the mkfile buildin command (see below).
+
+Stream redirection
+------------------
+Stream redirections (">", "<" and "|" constructs in sh) are not
+implemented yet in tesh. This is a bit restrictive, but well, patch
+welcome...
+
+The situation in which it is mainly problematic is to create a
+temporary file. The solution is to use the "mkfile" buildin command,
+as in the following example:
+$ mkfile myFile
+> some content
+> to the file
+
+This will create a file called myFile (first argument of the mkfile
+command). Its content will be all the input provided to the command.
 
 RETURN CODE
 -----------
