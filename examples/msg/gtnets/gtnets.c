@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "msg/msg.h"
-/* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 
@@ -23,6 +22,8 @@ double start_time, end_time, elapsed_time;
 double   gl_data_size[NTASKS];
 m_task_t gl_task_array[NTASKS];
 int gl_task_array_id=0;
+
+#define FINALIZE ((void*)221297) /* a magic number to tell people to stop working */
 
 /** master */
 int master(int argc, char *argv[])
@@ -54,9 +55,9 @@ int master(int argc, char *argv[])
   }
 
   /* time measurement */
-  double start_time = MSG_get_clock();
+  start_time = MSG_get_clock();
   MSG_task_put(todo, slave, PORT_22);
-  double end_time = MSG_get_clock();
+  end_time = MSG_get_clock();
   INFO3("Send completed (to %s). Transfer time: %f\t Agregate bandwidth: %f",
 	slave->name, (end_time - start_time), task_comm_size/(end_time-start_time));
   INFO2("Completed peer: %s time: %f", slave->name, (end_time-start_time));
@@ -71,25 +72,24 @@ int slave(int argc, char *argv[])
   int a;
   int id=0;
   double remaining=0;
-
   a = MSG_task_get(&(task), PORT_22);
   if (a != MSG_OK) {
     INFO0("Hey?! What's up?");
     xbt_assert0(0,"Unexpected behavior.");
   }
-
+  
   elapsed_time = MSG_get_clock() - start_time;
 
   if(!bool_printed){
     bool_printed=1;
     for(id=0; id<NTASKS; id++){
       if(gl_task_array[id] == NULL){
-        INFO0("===> Task already done, skipping print statistics");
+	INFO0("===> Task already done, skipping print statistics");
       }else if(gl_task_array[id] == task){
-        INFO1("===> Bandwidth of first finishing (this) flow : %f.", gl_data_size[id]/elapsed_time);
+	INFO1("===> Estimated Bw of FLOWA : %f", gl_data_size[id]/elapsed_time);
       }else{
-        remaining = MSG_task_get_remaining_communication(gl_task_array[id]);
-        INFO1("===> Bandwidth of last finishing  flow        : %f.", (gl_data_size[id]-remaining)/elapsed_time);
+	remaining = MSG_task_get_remaining_communication(gl_task_array[id]);
+	INFO1("===> Estimated Bw of FLOWB : %f", (gl_data_size[id]-remaining)/elapsed_time);
       }
     }
   }
@@ -105,7 +105,7 @@ MSG_error_t test_all(const char *platform_file,
 {
   MSG_error_t res = MSG_OK;
 
-/*   MSG_config("workstation_model", "GTNETS"); */
+  /* MSG_config("workstation_model", "GTNETS"); */
   /* MSG_config("workstation_model","KCCFLN05"); */
   {				/*  Simulation setting */
     MSG_set_channel_number(MAX_CHANNEL);
@@ -121,11 +121,11 @@ MSG_error_t test_all(const char *platform_file,
   return res;
 } /* end_of_test_all */
 
-
 /** Main function */
 int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
+  bool_printed = 0;
 
   MSG_global_init(&argc,argv);
   if (argc < 3) {
@@ -139,18 +139,3 @@ int main(int argc, char *argv[])
   if(res==MSG_OK) return 0; 
   else return 1;
 } /* end_of_main */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
