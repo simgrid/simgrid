@@ -299,8 +299,8 @@ static int resource_used(void *resource_id)
 
 static int action_free(surf_action_t action)
 {
-  action->using--;
-  if (!action->using) {
+  action->refcount--;
+  if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
     /* KF: No explicit freeing needed for GTNeTS here */
     free(action);
@@ -311,7 +311,7 @@ static int action_free(surf_action_t action)
 
 static void action_use(surf_action_t action)
 {
-  action->using++;
+  action->refcount++;
 }
 
 static void action_cancel(surf_action_t action)
@@ -449,7 +449,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
 
   action = xbt_new0(s_surf_action_network_GTNETS_t, 1);
 
-  action->generic_action.using = 1;
+  action->generic_action.refcount = 1;
   action->generic_action.cost = size;
   action->generic_action.remains = size;
   /* Max durations are not supported */
