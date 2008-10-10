@@ -68,6 +68,7 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
+  char flow='A';
   m_task_t task = NULL;
   int a;
   int id=0;
@@ -86,10 +87,10 @@ int slave(int argc, char *argv[])
       if(gl_task_array[id] == NULL){
 	INFO0("===> Task already done, skipping print statistics");
       }else if(gl_task_array[id] == task){
-	INFO1("===> Estimated Bw of FLOWA : %f", gl_data_size[id]/elapsed_time);
+	INFO2("===> Estimated Bw of FLOW%c : %f", flow+id, gl_data_size[id]/elapsed_time);
       }else{
 	remaining = MSG_task_get_remaining_communication(gl_task_array[id]);
-	INFO1("===> Estimated Bw of FLOWB : %f", (gl_data_size[id]-remaining)/elapsed_time);
+	INFO3("===> Estimated Bw of FLOW%c : %f , with remaining %f", flow+id, (gl_data_size[id]-remaining)/elapsed_time, remaining);
       }
     }
   }
