@@ -101,6 +101,7 @@ static int network_card_new(const char *name)
 {
   static int card_count = -1;
 
+  XBT_IN1("(%s)",name);
   /* KF: Check that we haven't seen the network card before */
   network_card_GTNETS_t card =
       xbt_dict_get_or_null(network_card_set, name);
@@ -115,7 +116,9 @@ static int network_card_new(const char *name)
     card->id = card_count;
     xbt_dict_set(network_card_set, name, card, network_card_free);
   }
-
+  
+  LOG1(xbt_log_priority_trace, "   return %d",card->id);
+  XBT_OUT;
   /* KF: just return the GTNetS ID as the SURF ID */
   return card->id;
 }
@@ -125,6 +128,8 @@ static void route_new(int src_id, int dst_id, network_link_GTNETS_t *links, int 
 {
   int i;
   int *gtnets_links;
+  XBT_IN4("(src_id=%d, dst_id=%d, links=%p, nb_link=%d)",
+	  src_id,dst_id,links,nb_link);
 
   /* KF: Build the list of gtnets link IDs */
   gtnets_links = (int *) calloc(nb_link, sizeof(int));
@@ -136,6 +141,7 @@ static void route_new(int src_id, int dst_id, network_link_GTNETS_t *links, int 
   if (gtnets_add_route(src_id, dst_id, gtnets_links, nb_link)) {
     xbt_assert0(0, "Cannot create GTNetS route");
   }
+  XBT_OUT;
 }
 
 /* Instantiate a new route: MODIFY BY KF */
@@ -233,7 +239,32 @@ static void add_route()
   static network_link_GTNETS_t *link_list = NULL;
 
 
-  DEBUG0("Entering add_route()");
+  XBT_IN;
+  xbt_dict_foreach(route_table, cursor, key, data) {
+    char *link = NULL;
+    nb_link = 0;
+    links = (xbt_dynar_t)data;
+    keys = xbt_str_split_str(key, sep);
+
+    link_list_capacity = xbt_dynar_length(links);
+    link_list = xbt_new(network_link_GTNETS_t, link_list_capacity);
+
+    src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
+    dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
+    xbt_dynar_free(&keys);
+
+    xbt_dynar_foreach (links, cpt, link) {
+      TRY {
+        link_list[nb_link++] = xbt_dict_get(link_set, link);
+      }
+      CATCH(e) {
+        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
+      }     
+    }
+    if (nb_link == 1)
+      route_onehop_new(src_id, dst_id, link_list, nb_link);
+   }
+
   xbt_dict_foreach(route_table, cursor, key, data) {
     char *link = NULL;
     nb_link = 0;
@@ -257,12 +288,10 @@ static void add_route()
     }
     if (nb_link > 1)
       route_new(src_id, dst_id, link_list, nb_link);
-    if (nb_link == 1)
-      route_onehop_new(src_id, dst_id, link_list, nb_link);
    }
 
   xbt_dict_free(&route_table);
-  DEBUG0("Bailling add_route()");
+  XBT_OUT;
 }
 
 /* Main XML parsing */
