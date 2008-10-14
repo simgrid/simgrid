@@ -18,6 +18,8 @@ static void (*network_solve) (lmm_system_t) = NULL;
 xbt_dict_t link_set = NULL;
 xbt_dict_t network_card_set = NULL;
 
+double alpha_legrandvelho = 1;
+double beta_legrandvelho = 0;
 int card_number = 0;
 int host_number = 0;
 link_CM02_t **routing_table = NULL;
@@ -452,7 +454,7 @@ static void update_resource_state(void *id,
 						      lat_current));
       else
 	lmm_update_variable_bound(network_maxmin_system, action->variable,
-				  min(action->rate,
+				  min(action->rate*alpha_legrandvelho,
 				      SG_TCP_CTE_GAMMA / (2.0 *
 							  action->
 							  lat_current)));
@@ -565,13 +567,13 @@ static surf_action_t communicate(void *src, void *dst, double size,
   } else {
     if (action->lat_current > 0)
       lmm_update_variable_bound(network_maxmin_system, action->variable,
-				min(action->rate,
+				min(action->rate*alpha_legrandvelho,
 				    SG_TCP_CTE_GAMMA / (2.0 *
 							action->
 							lat_current)));
     else
       lmm_update_variable_bound(network_maxmin_system, action->variable,
-				action->rate);
+				action->rate*alpha_legrandvelho);
   }
   lmm_update_variable_latency(network_maxmin_system, action->variable,
 			      action->latency);
@@ -777,7 +779,8 @@ void surf_network_model_init_LegrandVelho(const char *filename)
   define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
-
+  alpha_legrandvelho = 0.92;
+  beta_legrandvelho = 10.4;
   update_model_description(surf_network_model_description,
 			   "LegrandVelho",
 			   (surf_model_t) surf_network_model);
