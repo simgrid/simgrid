@@ -286,6 +286,17 @@ XBT_PUBLIC(void) create_workstations(void);
  */
 XBT_PUBLIC_DATA(surf_network_model_t) surf_network_model;
 
+/** \brief Initializes the platform with the network model 'LagrangeVelho'
+ *  \ingroup SURF_models
+ *  \param filename XML platform file name
+ *
+ * This model is proposed by Arnaud Legrand and Pedro Velho based on
+ * the results obtained with the GTNets simulator for onelink and
+ * dogbone sharing scenarios.
+ *
+ *  \see surf_workstation_model_init_LegrandVelho()
+ */
+XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(const char *filename);
 
 /** \brief Initializes the platform with the network model 'Constant'
  *  \ingroup SURF_models

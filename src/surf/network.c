@@ -767,6 +767,24 @@ static void surf_network_model_init_internal(void)
 }
 
 /***************************************************************************/
+/* New TCP sharing model based on thesis experimantation and discussions.  */
+/***************************************************************************/
+void surf_network_model_init_LegrandVelho(const char *filename)
+{
+  if (surf_network_model)
+    return;
+  surf_network_model_init_internal();
+  define_callbacks(filename);
+  xbt_dynar_push(model_list, &surf_network_model);
+  network_solve = lmm_solve;
+
+  update_model_description(surf_network_model_description,
+			   "LegrandVelho",
+			   (surf_model_t) surf_network_model);
+  INFO0("LegrandVelho Model was chosen!!");
+}
+
+/***************************************************************************/
 /* The nice TCP sharing model designed by Loris Marchal and Henri Casanova */
 /***************************************************************************/
 /* @TechReport{      rr-lip2002-40, */
