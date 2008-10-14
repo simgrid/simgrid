@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+
+  <process host="Denise" function="master">
+      <argument value="100"/>
+      <argument value="Internet"/>
+  </process>
+
+  <process host="Boyer" function="master">
+      <argument value="100"/>
+      <argument value="Gratton"/>
+  </process>
+
+  <process host="Internet" function="slave"/>
+  <process host="Gratton" function="slave"/>
+
+</platform>

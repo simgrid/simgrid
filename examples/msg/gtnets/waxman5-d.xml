@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+
+  <process host="Marc" function="master">
+      <argument value="100"/>
+      <argument value="Boivin"/>
+  </process>
+
+  <process host="Emacs" function="master">
+      <argument value="100"/>
+      <argument value="Jackson"/>
+  </process>
+
+  <process host="Boivin" function="slave"/>
+  <process host="Jackson" function="slave"/>
+
+</platform>
