@@ -16,6 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 int use_sdp_solver = 0;
 int use_lagrange_solver = 0;
 
+extern double alpha_legrandvelho;
+extern double beta_legrandvelho;
+
 /* Additional declarations for Windows potability. */
 
 #ifndef MAX_DRIVE
@@ -206,9 +209,11 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   if (!action)
     return -1.0;
 
+  double action_latency= lmm_variable_getdf(VARIABLE(action));
+
   if (value > 0) {
     if(action->remains>0) 
-      min = action->remains / value;
+      min = (action->remains / (value*alpha_legrandvelho)) + beta_legrandvelho*action_latency;
     else 
       min = 0.0;
     if ((action->max_duration >= 0) && (action->max_duration < min))
@@ -223,7 +228,7 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
     value = lmm_variable_getvalue(VARIABLE(action));
     if (value > 0) {
       if(action->remains>0) 
-	value = action->remains / value;
+	value = (action->remains / (value*alpha_legrandvelho)) + beta_legrandvelho*action_latency;
       else 
 	value = 0.0;
       if (value < min) {
