@@ -213,11 +213,6 @@ double lmm_variable_getbound(lmm_variable_t var)
   return (var->bound);
 }
 
-double lmm_variable_getdf(lmm_variable_t var)
-{
-  return (var->df);
-}
-
 void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, double value)
 {
