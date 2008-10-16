@@ -38,6 +38,7 @@ typedef struct surf_action_network_CM02 {
   s_surf_action_t generic_action;
   double latency;
   double lat_current;
+  double weight;
   lmm_variable_t variable;
   double rate;
   int suspended;

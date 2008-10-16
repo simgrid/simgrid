@@ -21,7 +21,6 @@ xbt_dict_t network_card_set = NULL;
 double latency_factor = 1.0; /* default value */
 double bandwidth_factor = 1.0; /* default value */
 
-
 int card_number = 0;
 int host_number = 0;
 link_CM02_t **routing_table = NULL;
@@ -404,7 +403,7 @@ static void update_actions_state(double now, double delta)
       }
       if ((action->latency == 0.0) && !(action->suspended))
 	lmm_update_variable_weight(network_maxmin_system, action->variable,
-				   action->lat_current);
+				   action->weight);
     }
     double_update(&(action->generic_action.remains),
 		  lmm_variable_getvalue(action->variable) * deltap);
@@ -449,6 +448,7 @@ static void update_resource_state(void *id,
 	   (network_maxmin_system, nw_link->constraint, &elem))) {
       action = lmm_variable_id(var);
       action->lat_current += delta;
+      action->weight += delta;
       if (action->rate < 0)
 	lmm_update_variable_bound(network_maxmin_system, action->variable,
 				  SG_TCP_CTE_GAMMA / (2.0 *
@@ -462,7 +462,7 @@ static void update_resource_state(void *id,
 							  lat_current)));
       if (!(action->suspended))
 	lmm_update_variable_weight(network_maxmin_system, action->variable,
-				   action->lat_current);
+				   action->weight);
 
     }
   } else if (event_type == nw_link->state_event) {
@@ -545,6 +545,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
   action->lat_current = action->latency;
+  action->weight = action->latency;
   action->latency *= latency_factor;
 
 
@@ -645,7 +646,7 @@ static void action_resume(surf_action_t action)
 			       ((surf_action_network_CM02_t) action)->
 			       variable,
 			       ((surf_action_network_CM02_t) action)->
-			       lat_current);
+			       weight);
     ((surf_action_network_CM02_t) action)->suspended = 0;
   }
 }
