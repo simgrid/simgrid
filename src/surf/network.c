@@ -20,6 +20,7 @@ xbt_dict_t network_card_set = NULL;
 
 double latency_factor = 1.0; /* default value */
 double bandwidth_factor = 1.0; /* default value */
+double weight_S_parameter = 0.0; /* default value */
 
 int card_number = 0;
 int host_number = 0;
@@ -434,9 +435,24 @@ static void update_resource_state(void *id,
   /*     value, event_type); */
 
   if (event_type == nw_link->bw_event) {
+    double delta = weight_S_parameter/value - weight_S_parameter/nw_link->bw_current;
+    lmm_variable_t var = NULL;
+    lmm_element_t elem = NULL;
+    surf_action_network_CM02_t action = NULL;
+
     nw_link->bw_current = value;
     lmm_update_constraint_bound(network_maxmin_system, nw_link->constraint,
 				bandwidth_factor*nw_link->bw_current);
+    if(weight_S_parameter>0) {
+      while ((var= lmm_get_var_from_cnst
+	      (network_maxmin_system, nw_link->constraint, &elem))) {
+	action = lmm_variable_id(var);
+	action->weight += delta;
+	if (!(action->suspended))
+	  lmm_update_variable_weight(network_maxmin_system, action->variable,
+				     action->weight);
+      }
+    }
   } else if (event_type == nw_link->lat_event) {
     double delta = value - nw_link->lat_current;
     lmm_variable_t var = NULL;
@@ -540,14 +556,15 @@ static surf_action_t communicate(void *src, void *dst, double size,
   action->rate = rate;
 
   action->latency = 0.0;
-  for (i = 0; i < route_size; i++)
+  action->weight = 0.0;
+  for (i = 0; i < route_size; i++) {
     action->latency += route[i]->lat_current;
+    action->weight += route[i]->lat_current + weight_S_parameter/route[i]->bw_current;
+  }
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
   action->lat_current = action->latency;
-  action->weight = action->latency;
   action->latency *= latency_factor;
-
 
   /* LARGE PLATFORMS HACK:
      lmm_variable_new(..., total_route_size)*/
@@ -785,6 +802,7 @@ void surf_network_model_init_LegrandVelho(const char *filename)
 
   latency_factor = 10.4;
   bandwidth_factor = 0.92;
+  weight_S_parameter = 8775;
 
   update_model_description(surf_network_model_description,
 			   "LegrandVelho",
