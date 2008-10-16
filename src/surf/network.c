@@ -19,6 +19,8 @@ xbt_dict_t link_set = NULL;
 xbt_dict_t network_card_set = NULL;
 
 double latency_factor = 1.0; /* default value */
+double bandwidth_factor = 1.0; /* default value */
+
 
 int card_number = 0;
 int host_number = 0;
@@ -72,7 +74,7 @@ static link_CM02_t link_new(char *name,
 
   nw_link->constraint =
       lmm_constraint_new(network_maxmin_system, nw_link,
-			 nw_link->bw_current);
+			 bandwidth_factor*nw_link->bw_current);
 
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->constraint);
@@ -435,7 +437,7 @@ static void update_resource_state(void *id,
   if (event_type == nw_link->bw_event) {
     nw_link->bw_current = value;
     lmm_update_constraint_bound(network_maxmin_system, nw_link->constraint,
-				nw_link->bw_current);
+				bandwidth_factor*nw_link->bw_current);
   } else if (event_type == nw_link->lat_event) {
     double delta = value - nw_link->lat_current;
     lmm_variable_t var = NULL;
@@ -767,24 +769,25 @@ static void surf_network_model_init_internal(void)
     network_maxmin_system = lmm_system_new();
 }
 
-/***************************************************************************/
-/* New TCP sharing model based on thesis experimantation and discussions.  */
-/***************************************************************************/
+/************************************************************************/
+/* New model based on optimizations discussed during this thesis        */
+/************************************************************************/
 void surf_network_model_init_LegrandVelho(const char *filename)
 {
+
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
   define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
-   
+
   latency_factor = 10.4;
+  bandwidth_factor = 0.92;
 
   update_model_description(surf_network_model_description,
 			   "LegrandVelho",
 			   (surf_model_t) surf_network_model);
-  INFO0("LegrandVelho Model was chosen!!");
 }
 
 /***************************************************************************/
