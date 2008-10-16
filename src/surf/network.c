@@ -459,8 +459,7 @@ static void update_resource_state(void *id,
       if (!(action->suspended))
 	lmm_update_variable_weight(network_maxmin_system, action->variable,
 				   action->lat_current);
-      lmm_update_variable_latency(network_maxmin_system, action->variable,
-				  delta);
+
     }
   } else if (event_type == nw_link->state_event) {
     if (value > 0)
@@ -573,8 +572,6 @@ static surf_action_t communicate(void *src, void *dst, double size,
       lmm_update_variable_bound(network_maxmin_system, action->variable,
 				action->rate);
   }
-  lmm_update_variable_latency(network_maxmin_system, action->variable,
-			      action->latency);
 
   for (i = 0; i < route_size; i++)
     lmm_expand(network_maxmin_system, route[i]->constraint,

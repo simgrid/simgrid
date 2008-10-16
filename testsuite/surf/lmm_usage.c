@@ -134,10 +134,10 @@ void test1(method_t method)
   R_2 = lmm_variable_new(Sys, (void *) "R 2", 1.0, -1.0, 1);
   R_3 = lmm_variable_new(Sys, (void *) "R 3", 1.0, -1.0, 1);
 
-  lmm_update_variable_latency(Sys, R_1_2_3, 1.0);
-  lmm_update_variable_latency(Sys, R_1, 1.0);
-  lmm_update_variable_latency(Sys, R_2, 1.0);
-  lmm_update_variable_latency(Sys, R_3, 1.0);
+  lmm_update_variable_weight(Sys, R_1_2_3, 1.0);
+  lmm_update_variable_weight(Sys, R_1, 1.0);
+  lmm_update_variable_weight(Sys, R_2, 1.0);
+  lmm_update_variable_weight(Sys, R_3, 1.0);
 
   lmm_expand(Sys, L1, R_1_2_3, 1.0);
   lmm_expand(Sys, L2, R_1_2_3, 1.0);
@@ -263,8 +263,8 @@ void test2(method_t method)
   T1 = lmm_variable_new(Sys, (void *) "T1", 1.0, -1.0, 1);
   T2 = lmm_variable_new(Sys, (void *) "T2", 1.0, -1.0, 1);
 
-  lmm_update_variable_latency(Sys, T1, 1.0);
-  lmm_update_variable_latency(Sys, T2, 1.0);
+  lmm_update_variable_weight(Sys, T1, 1.0);
+  lmm_update_variable_weight(Sys, T2, 1.0);
 
 
   lmm_expand(Sys, CPU1, T1, 1.0);
@@ -432,7 +432,7 @@ void test3(method_t method)
     tmp_name[i + j] = bprintf("X_%03d", j);
     tmp_var[j] =
 	lmm_variable_new(Sys, (void *) tmp_name[i + j], 1.0, -1.0, 15);
-    lmm_update_variable_latency(Sys, tmp_var[j], 1.0);
+    lmm_update_variable_weight(Sys, tmp_var[j], 1.0);
   }
 
   /*

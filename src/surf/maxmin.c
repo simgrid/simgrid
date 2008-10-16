@@ -183,7 +183,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   var->weight = weight;
   var->bound = bound;
   var->value = 0.0;
-  var->df = 0.0;
+
 
   var->func_f = func_f_def;
   var->func_fp = func_fp_def;
@@ -607,24 +607,6 @@ void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
   var->bound = bound;
 }
 
-/** \brief Add the value delta to var->df (the sum of latencies).
- * 
- *  \param sys the lmm_system_t associated
- *  \param var the lmm_variable_t which need to updated
- *  \param delta the variation of the latency
- * 
- *  Add the value delta to var->df (the sum of latencys associated to the
- *  flow). Whenever this function is called a change is  signed in the system. To
- *  avoid false system changing detection it is a good idea to test 
- *  (delta != 0) before calling it.
- *
- */
-void lmm_update_variable_latency(lmm_system_t sys, lmm_variable_t var,
-				 double delta)
-{
-  sys->modified = 1;
-  var->df += delta;
-}
 
 void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
 				double weight)

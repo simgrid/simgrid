@@ -101,7 +101,7 @@ static double new_value(lmm_variable_t var)
   }
   if (var->bound > 0)
     tmp += var->mu;
-  DEBUG3("\t Working on var (%p). cost = %e; Df = %e", var, tmp, var->df);
+  DEBUG3("\t Working on var (%p). cost = %e; Weight = %e", var, tmp, var->weight);
   //uses the partial differential inverse function
   return var->func_fpi(var, tmp);
 }
@@ -229,7 +229,7 @@ void lagrange_solve(lmm_system_t sys)
 	var->new_mu = 2.0;
 	var->value = new_value(var);
       }
-      DEBUG2("#### var(%p) ->df :  %e", var, var->df);
+      DEBUG2("#### var(%p) ->weight :  %e", var, var->weight);
       DEBUG2("#### var(%p) ->mu :  %e", var, var->mu);
       DEBUG2("#### var(%p) ->weight: %e", var, var->weight);
       DEBUG2("#### var(%p) ->bound: %e", var, var->bound);
@@ -559,19 +559,19 @@ lmm_set_default_protocol_function(double (*func_f)
 double func_vegas_f(lmm_variable_t var, double x)
 {
   xbt_assert1(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return VEGAS_SCALING * var->df * log(x);
+  return VEGAS_SCALING * var->weight * log(x);
 }
 
 double func_vegas_fp(lmm_variable_t var, double x)
 {
   xbt_assert1(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return VEGAS_SCALING * var->df / x;
+  return VEGAS_SCALING * var->weight / x;
 }
 
 double func_vegas_fpi(lmm_variable_t var, double x)
 {
   xbt_assert1(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return var->df / (x / VEGAS_SCALING);
+  return var->weight / (x / VEGAS_SCALING);
 }
 
 /*
@@ -582,27 +582,27 @@ double func_vegas_fpi(lmm_variable_t var, double x)
 #define RENO_SCALING 1.0
 double func_reno_f(lmm_variable_t var, double x)
 {
-  xbt_assert0(var->df > 0.0, "Don't call me with stupid values!");
+  xbt_assert0(var->weight > 0.0, "Don't call me with stupid values!");
 
-  return RENO_SCALING * sqrt(3.0 / 2.0) / var->df * atan(sqrt(3.0 / 2.0) *
-							 var->df * x);
+  return RENO_SCALING * sqrt(3.0 / 2.0) / var->weight * atan(sqrt(3.0 / 2.0) *
+							 var->weight * x);
 }
 
 double func_reno_fp(lmm_variable_t var, double x)
 {
-  return RENO_SCALING * 3.0 / (3.0 * var->df * var->df * x * x + 2.0);
+  return RENO_SCALING * 3.0 / (3.0 * var->weight * var->weight * x * x + 2.0);
 }
 
 double func_reno_fpi(lmm_variable_t var, double x)
 {
   double res_fpi;
 
-  xbt_assert0(var->df > 0.0, "Don't call me with stupid values!");
+  xbt_assert0(var->weight > 0.0, "Don't call me with stupid values!");
   xbt_assert0(x > 0.0, "Don't call me with stupid values!");
 
   res_fpi =
-      1.0 / (var->df * var->df * (x / RENO_SCALING)) -
-      2.0 / (3.0 * var->df * var->df);
+      1.0 / (var->weight * var->weight * (x / RENO_SCALING)) -
+      2.0 / (3.0 * var->weight * var->weight);
   if (res_fpi <= 0.0)
     return 0.0;
 /*   xbt_assert0(res_fpi>0.0,"Don't call me with stupid values!"); */
@@ -612,19 +612,19 @@ double func_reno_fpi(lmm_variable_t var, double x)
 
 /* Implementing new Reno-2
  * For Reno-2:  $f(x)   = U_f(x_f) = \frac{{2}{D_f}}*ln(2+x*D_f)$
- * Therefore:   $fp(x)  = 2/(Df*x + 2)
- * Therefore:   $fpi(x) = (2*Df)/x - 4
+ * Therefore:   $fp(x)  = 2/(Weight*x + 2)
+ * Therefore:   $fpi(x) = (2*Weight)/x - 4
  */
 #define RENO2_SCALING 1.0
 double func_reno2_f(lmm_variable_t var, double x)
 {
-  xbt_assert0(var->df > 0.0, "Don't call me with stupid values!");
-  return RENO2_SCALING * (1.0/var->df) * log((x*var->df)/(2.0*x*var->df+3.0));
+  xbt_assert0(var->weight > 0.0, "Don't call me with stupid values!");
+  return RENO2_SCALING * (1.0/var->weight) * log((x*var->weight)/(2.0*x*var->weight+3.0));
 }
 
 double func_reno2_fp(lmm_variable_t var, double x)
 {
-  return RENO2_SCALING * 3.0/(var->df*x*(2.0*var->df*x+3.0));
+  return RENO2_SCALING * 3.0/(var->weight*x*(2.0*var->weight*x+3.0));
 }
 
 double func_reno2_fpi(lmm_variable_t var, double x)
@@ -633,7 +633,7 @@ double func_reno2_fpi(lmm_variable_t var, double x)
   double tmp;
 
   xbt_assert0(x > 0.0, "Don't call me with stupid values!");
-  tmp= x*var->df*var->df;
+  tmp= x*var->weight*var->weight;
   res_fpi= tmp*(9.0*x+24.0);
   
   if (res_fpi <= 0.0)
