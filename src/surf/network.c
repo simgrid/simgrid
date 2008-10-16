@@ -18,6 +18,8 @@ static void (*network_solve) (lmm_system_t) = NULL;
 xbt_dict_t link_set = NULL;
 xbt_dict_t network_card_set = NULL;
 
+double latency_factor = 1.0; /* default value */
+
 int card_number = 0;
 int host_number = 0;
 link_CM02_t **routing_table = NULL;
@@ -541,6 +543,8 @@ static surf_action_t communicate(void *src, void *dst, double size,
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
   action->lat_current = action->latency;
+  action->latency *= latency_factor;
+
 
   /* LARGE PLATFORMS HACK:
      lmm_variable_new(..., total_route_size)*/
@@ -774,6 +778,8 @@ void surf_network_model_init_LegrandVelho(const char *filename)
   define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
+   
+  latency_factor = 10.4;
 
   update_model_description(surf_network_model_description,
 			   "LegrandVelho",
