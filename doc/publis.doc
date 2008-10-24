@@ -33,6 +33,16 @@ Generic Framework for Large-Scale Distributed Experimentations</i>.
     describe the key features and benefits of SimGrid.\n
     http://www.loria.fr/~quinson/articles/SimGrid-uksim08.pdf
 
+\verbatim
+@InProceedings{simgrid,
+  author =    {Casanova, Henri and Legrand, Arnaud and Quinson, Martin},
+  title =     {{SimGrid: a Generic Framework for Large-Scale Distributed Experiments}},
+  booktitle = {10th IEEE International Conference on Computer Modeling and Simulation},
+  year =       2008,
+  month =      mar
+}
+\endverbatim					  
+
 \section publis_others Other publications
 
 A lot of other papers where published about SimGrid. The list is
