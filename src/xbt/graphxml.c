@@ -27,7 +27,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 34
+#define YY_FLEX_SUBMINOR_VERSION 35
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -72,7 +72,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -102,6 +101,8 @@ typedef unsigned int flex_uint32_t;
 #ifndef UINT32_MAX
 #define UINT32_MAX             (4294967295U)
 #endif
+
+#endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
 
@@ -209,13 +210,6 @@ extern FILE *xbt_graph_parse_in, *xbt_graph_parse_out;
 	while ( 0 )
 
 #define unput(c) yyunput( c, (yytext_ptr)  )
-
-/* The following is because we cannot portably get our hands on size_t
- * (without autoconf's help, which isn't available because we want
- * flex-generated scanners to compile on their own).
- * Given that the standard has decreed that size_t exists since 1989,
- * I guess we can afford to depend on it. Manoj.
- */
 
 #ifndef YY_TYPEDEF_YY_SIZE_T
 #define YY_TYPEDEF_YY_SIZE_T
@@ -370,11 +364,7 @@ void xbt_graph_parse_free (void *  );
 
 /* Begin user sect3 */
 
-#ifdef WIN32
-#define xbt_graph_parse_wrap() 1
-#else
 #define xbt_graph_parse_wrap(n) 1
-#endif
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -1350,6 +1340,35 @@ const char* *graphxml_statenames=NULL;
 
 static int yy_init_globals (void );
 
+/* Accessor methods to globals.
+   These are made visible to non-reentrant scanners for convenience. */
+
+int xbt_graph_parse_lex_destroy (void );
+
+int xbt_graph_parse_get_debug (void );
+
+void xbt_graph_parse_set_debug (int debug_flag  );
+
+YY_EXTRA_TYPE xbt_graph_parse_get_extra (void );
+
+void xbt_graph_parse_set_extra (YY_EXTRA_TYPE user_defined  );
+
+FILE *xbt_graph_parse_get_in (void );
+
+void xbt_graph_parse_set_in  (FILE * in_str  );
+
+FILE *xbt_graph_parse_get_out (void );
+
+void xbt_graph_parse_set_out  (FILE * out_str  );
+
+int xbt_graph_parse_get_leng (void );
+
+char *xbt_graph_parse_get_text (void );
+
+int xbt_graph_parse_get_lineno (void );
+
+void xbt_graph_parse_set_lineno (int line_number  );
+
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
  */
@@ -1398,7 +1417,7 @@ static int input (void );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO fwrite( xbt_graph_parse_text, xbt_graph_parse_leng, 1, xbt_graph_parse_out )
+#define ECHO do { if (fwrite( xbt_graph_parse_text, xbt_graph_parse_leng, 1, xbt_graph_parse_out )) {} } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -1409,7 +1428,7 @@ static int input (void );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		int n; \
+		size_t n; \
 		for ( n = 0; n < max_size && \
 			     (c = getc( xbt_graph_parse_in )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
@@ -2722,9 +2741,7 @@ static void xbt_graph_parse__load_buffer_state  (void)
 }
 
 #ifndef __cplusplus
-#ifndef WIN32
 extern int isatty (int );
-#endif
 #endif /* __cplusplus */
     
 /* Initializes or reinitializes a buffer.

@@ -151,12 +151,13 @@ static void xbt_test_log_free(void *log) {
 xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...) {
   xbt_test_suite_t suite = xbt_new0(struct s_xbt_test_suite,1);
   va_list ap;
+  int vres;
 
   if (!_xbt_test_suites)
     _xbt_test_suites = xbt_dynar_new(sizeof(xbt_test_suite_t),xbt_test_suite_free);
 
   va_start(ap, fmt);
-  vasprintf(&suite->title,fmt, ap);
+  vres = vasprintf(&suite->title,fmt, ap);
   suite->units = xbt_dynar_new(sizeof(xbt_test_unit_t), &xbt_test_unit_free);
   va_end(ap);
   suite->name = name;
@@ -174,6 +175,7 @@ xbt_test_suite_t xbt_test_suite_by_name(const char *name,const char *fmt, ...) {
 
   char *bufname;
   va_list ap;
+  int vres;
 
   if (_xbt_test_suites)
     xbt_dynar_foreach(_xbt_test_suites, it_suite, suite)
@@ -181,7 +183,7 @@ xbt_test_suite_t xbt_test_suite_by_name(const char *name,const char *fmt, ...) {
       return suite;
 
   va_start(ap, fmt);
-  vasprintf(&bufname,fmt, ap);
+  vres = vasprintf(&bufname,fmt, ap);
   va_end(ap);
   suite = xbt_test_suite_new(name,bufname,NULL);
   free(bufname);
@@ -208,6 +210,7 @@ void xbt_test_suite_dump(xbt_test_suite_t suite) {
 void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t func, const char *fmt, ...) {
   xbt_test_unit_t unit;
   va_list ap;
+  int vres;
 
   xbt_assert(suite);
   xbt_assert(func);
@@ -215,7 +218,7 @@ void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t 
 
   unit = xbt_new0(struct s_xbt_test_unit,1);
   va_start(ap, fmt);
-  vasprintf(&unit->title, fmt, ap);
+  vres = vasprintf(&unit->title, fmt, ap);
   va_end(ap);
   unit->name = (char*)name;
   unit->func = func;
@@ -240,6 +243,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
   unsigned int it_unit,it_test,it_log;
 
   int first=1; /* for result pretty printing */
+  int vres;
 
   if (suite == NULL)
     return 0;
@@ -276,7 +280,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
       unit->test_expect = 0;
 
       /* display unit title */
-      asprintf(&cp," Unit: %s ......................................"
+      vres=asprintf(&cp," Unit: %s ......................................"
                "......................................", unit->title);
       cp[70] = '\0';
       fprintf(stderr, "%s", cp);
@@ -644,13 +648,14 @@ void _xbt_test_add(const char*file,int line, const char *fmt, ...) {
   xbt_test_unit_t unit=_xbt_test_current_unit;
   xbt_test_test_t test;
   va_list ap;
+  int vres;
 
   xbt_assert(unit);
   xbt_assert(fmt);
 
   test = xbt_new0(struct s_xbt_test_test,1);
   va_start(ap, fmt);
-  vasprintf(&test->title, fmt, ap);
+  vres=vasprintf(&test->title, fmt, ap);
   va_end(ap);
   test->failed = 0;
   test->expected_failure = 0;
@@ -668,6 +673,7 @@ void _xbt_test_fail(const char*file,int line,const char *fmt, ...) {
   xbt_test_test_t test;
   xbt_test_log_t log;
   va_list ap;
+  int vres;
 
   xbt_assert(unit);
   xbt_assert(fmt);
@@ -678,7 +684,7 @@ void _xbt_test_fail(const char*file,int line,const char *fmt, ...) {
 
   log = xbt_new(struct s_xbt_test_log,1);
   va_start(ap, fmt);
-  vasprintf(&log->text,fmt, ap);
+  vres=vasprintf(&log->text,fmt, ap);
   va_end(ap);
   log->file = file;
   log->line = line;
@@ -719,6 +725,7 @@ void _xbt_test_log(const char*file,int line,const char *fmt, ...) {
   xbt_test_test_t test;
   xbt_test_log_t log;
   va_list ap;
+  int vres;
 
   xbt_assert(unit);
   xbt_assert(fmt);
@@ -728,7 +735,7 @@ void _xbt_test_log(const char*file,int line,const char *fmt, ...) {
 
   log = xbt_new(struct s_xbt_test_log,1);
   va_start(ap, fmt);
-  vasprintf(&log->text, fmt, ap);
+  vres=vasprintf(&log->text, fmt, ap);
   va_end(ap);
   log->file = file;
   log->line = line;

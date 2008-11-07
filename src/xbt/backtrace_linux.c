@@ -130,10 +130,15 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   }
 
   for (i = 0; i < e->used; i++) {
+    char *fgets_res;
     DEBUG2("Looking for symbol %d, addr = '%s'", i, addrs[i]);
-    fgets(line_func, 1024, pipe);
+    fgets_res = fgets(line_func, 1024, pipe);
+    if (fgets_res == NULL)
+      THROW2(system_error,0, "Cannot run fgets to look for symbol %d, addr %s",i, addrs[i]);
     line_func[strlen(line_func) - 1] = '\0';
-    fgets(line_pos, 1024, pipe);
+    fgets_res = fgets(line_pos, 1024, pipe);
+    if (fgets_res == NULL)
+      THROW2(system_error,0, "Cannot run fgets to look for symbol %d, addr %s",i, addrs[i]);
     line_pos[strlen(line_pos) - 1] = '\0';
 
     if (strcmp("??", line_func)) {
@@ -230,9 +235,13 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
           CRITICAL0("Cannot fork addr2line to display the backtrace");
           abort();
         }
-        fgets(line_func, 1024, subpipe);
+        fgets_res=fgets(line_func, 1024, subpipe);
+        if (fgets_res == NULL)
+          THROW1(system_error,0, "Cannot read result of subcommand %s",subcmd);
         line_func[strlen(line_func) - 1] = '\0';
-        fgets(line_pos, 1024, subpipe);
+        fgets_res = fgets(line_pos, 1024, subpipe);
+        if (fgets_res == NULL)
+          THROW1(system_error,0, "Cannot read result of subcommand %s",subcmd);
         line_pos[strlen(line_pos) - 1] = '\0';
         pclose(subpipe);
         free(subcmd);

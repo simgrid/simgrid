@@ -265,13 +265,12 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns) {
   "9.........1.........2.........3.........4.........5.........6.........7.........8.........9........." \
   "0.........1.........2.........3.........4.........5.........6.........7.........8.........9........."
 
-static void mytest(const char *name, const char *input, const char *patterns, const char *expected) {
+static void mytest(const char *input, const char *patterns, const char *expected) {
   xbt_dynar_t dyn_patterns; /* splited string */
   xbt_dict_t p; /* patterns */
   unsigned int cpt;  char *str; /*foreach*/
   xbt_strbuff_t sb; /* what we test */
 
-  xbt_test_add0(name);
   p=xbt_dict_new();
   dyn_patterns=xbt_str_split(patterns," ");
   xbt_dynar_foreach(dyn_patterns,cpt,str) {
@@ -295,55 +294,54 @@ static void mytest(const char *name, const char *input, const char *patterns, co
 
 XBT_TEST_SUITE("xbt_strbuff","String Buffers");
 XBT_TEST_UNIT("xbt_strbuff_substitute",test_strbuff_substitute, "test the function xbt_strbuff_substitute") {
-  mytest("Empty", "", "", "");
+  xbt_test_add0("Empty");mytest("", "", "");
 
-  mytest("Value shorter, no braces, only variable", "$tutu", "tutu=t", "t");
-  mytest("Value shorter, braces, only variable", "${tutu}", "tutu=t", "t");
-  mytest("Value shorter, no braces, data after", "$tutu toto", "tutu=t", "t toto");
-  mytest("Value shorter, braces, data after", "${tutu} toto", "tutu=t", "t toto");
-  mytest("Value shorter, no braces, data before", "toto $tutu", "tutu=t", "toto t");
-  mytest("Value shorter, braces, data before", "toto ${tutu}", "tutu=t", "toto t");
-  mytest("Value shorter, no braces, data before and after", "toto $tutu tata", "tutu=t", "toto t tata");
-  mytest("Value shorter, braces, data before and after", "toto ${tutu} tata", "tutu=t", "toto t tata");
+  xbt_test_add0("Value shorter, no braces, only variable");mytest("$tutu", "tutu=t", "t");
+  xbt_test_add0("Value shorter, braces, only variable");mytest("${tutu}", "tutu=t", "t");
+  xbt_test_add0("Value shorter, no braces, data after");mytest("$tutu toto", "tutu=t", "t toto");
+  xbt_test_add0("Value shorter, braces, data after");mytest("${tutu} toto", "tutu=t", "t toto");
+  xbt_test_add0("Value shorter, no braces, data before");mytest("toto $tutu", "tutu=t", "toto t");
+  xbt_test_add0("Value shorter, braces, data before");mytest("toto ${tutu}", "tutu=t", "toto t");
+  xbt_test_add0("Value shorter, no braces, data before and after");mytest("toto $tutu tata", "tutu=t", "toto t tata");
+  xbt_test_add0("Value shorter, braces, data before and after");mytest("toto ${tutu} tata", "tutu=t", "toto t tata");
 
-  mytest("Value as long, no braces, only variable", "$tutu", "tutu=12345", "12345");
-  mytest("Value as long, braces, only variable", "${tutu}", "tutu=1234567", "1234567");
-  mytest("Value as long, no braces, data after", "$tutu toto", "tutu=12345", "12345 toto");
-  mytest("Value as long, braces, data after", "${tutu} toto", "tutu=1234567", "1234567 toto");
-  mytest("Value as long, no braces, data before", "toto $tutu", "tutu=12345", "toto 12345");
-  mytest("Value as long, braces, data before", "toto ${tutu}", "tutu=1234567", "toto 1234567");
-  mytest("Value as long, no braces, data before and after", "toto $tutu tata", "tutu=12345", "toto 12345 tata");
-  mytest("Value as long, braces, data before and after", "toto ${tutu} tata", "tutu=1234567", "toto 1234567 tata");
+  xbt_test_add0("Value as long, no braces, only variable");mytest("$tutu", "tutu=12345", "12345");
+  xbt_test_add0("Value as long, braces, only variable");mytest("${tutu}", "tutu=1234567", "1234567");
+  xbt_test_add0("Value as long, no braces, data after");mytest("$tutu toto", "tutu=12345", "12345 toto");
+  xbt_test_add0("Value as long, braces, data after");mytest("${tutu} toto", "tutu=1234567", "1234567 toto");
+  xbt_test_add0("Value as long, no braces, data before");mytest("toto $tutu", "tutu=12345", "toto 12345");
+  xbt_test_add0("Value as long, braces, data before");mytest("toto ${tutu}", "tutu=1234567", "toto 1234567");
+  xbt_test_add0("Value as long, no braces, data before and after");mytest("toto $tutu tata", "tutu=12345", "toto 12345 tata");
+  xbt_test_add0("Value as long, braces, data before and after");mytest("toto ${tutu} tata", "tutu=1234567", "toto 1234567 tata");
 
-  mytest("Value longer, no braces, only variable", "$t", "t=tututu", "tututu");
-  mytest("Value longer, braces, only variable", "${t}", "t=tututu", "tututu");
-  mytest("Value longer, no braces, data after", "$t toto", "t=tututu", "tututu toto");
-  mytest("Value longer, braces, data after", "${t} toto", "t=tututu", "tututu toto");
-  mytest("Value longer, no braces, data before", "toto $t", "t=tututu", "toto tututu");
-  mytest("Value longer, braces, data before", "toto ${t}", "t=tututu", "toto tututu");
-  mytest("Value longer, no braces, data before and after", "toto $t tata", "t=tututu", "toto tututu tata");
-  mytest("Value longer, braces, data before and after", "toto ${t} tata", "t=tututu", "toto tututu tata");
+  xbt_test_add0("Value longer, no braces, only variable");mytest("$t", "t=tututu", "tututu");
+  xbt_test_add0("Value longer, braces, only variable");mytest("${t}", "t=tututu", "tututu");
+  xbt_test_add0("Value longer, no braces, data after");mytest("$t toto", "t=tututu", "tututu toto");
+  xbt_test_add0("Value longer, braces, data after");mytest("${t} toto", "t=tututu", "tututu toto");
+  xbt_test_add0("Value longer, no braces, data before");mytest("toto $t", "t=tututu", "toto tututu");
+  xbt_test_add0("Value longer, braces, data before");mytest("toto ${t}", "t=tututu", "toto tututu");
+  xbt_test_add0("Value longer, no braces, data before and after");mytest("toto $t tata", "t=tututu", "toto tututu tata");
+  xbt_test_add0("Value longer, braces, data before and after");mytest("toto ${t} tata", "t=tututu", "toto tututu tata");
 
-  mytest("Value much longer, no braces, only variable", "$t", "t=" force_resize, force_resize);
-  mytest("Value much longer, braces, only variable", "${t}", "t=" force_resize, force_resize);
-  mytest("Value much longer, no braces, data after", "$t toto", "t=" force_resize, force_resize " toto");
-  mytest("Value much longer, braces, data after", "${t} toto", "t=" force_resize, force_resize " toto");
-  mytest("Value much longer, no braces, data before", "toto $t", "t=" force_resize, "toto " force_resize);
-  mytest("Value much longer, braces, data before", "toto ${t}", "t=" force_resize, "toto " force_resize);
-  mytest("Value much longer, no braces, data before and after", "toto $t tata", "t=" force_resize, "toto " force_resize " tata");
-  mytest("Value much longer, braces, data before and after", "toto ${t} tata", "t=" force_resize, "toto " force_resize " tata");
+  xbt_test_add0("Value much longer, no braces, only variable");mytest("$t", "t=" force_resize, force_resize);
+  xbt_test_add0("Value much longer, no braces, data after");mytest("$t toto", "t=" force_resize, force_resize " toto");
+  xbt_test_add0("Value much longer, braces, data after");mytest("${t} toto", "t=" force_resize, force_resize " toto");
+  xbt_test_add0("Value much longer, no braces, data before");mytest("toto $t", "t=" force_resize, "toto " force_resize);
+  xbt_test_add0("Value much longer, braces, data before");mytest("toto ${t}", "t=" force_resize, "toto " force_resize);
+  xbt_test_add0("Value much longer, no braces, data before and after");mytest("toto $t tata", "t=" force_resize, "toto " force_resize " tata");
+  xbt_test_add0("Value much longer, braces, data before and after");mytest("toto ${t} tata", "t=" force_resize, "toto " force_resize " tata");
 
-  mytest("Escaped $", "\\$tutu", "tutu=t", "\\$tutu");
-  mytest("Space in var name (with braces)", "${tu ti}", "tu_ti=t", "t");
+  xbt_test_add0("Escaped $");mytest("\\$tutu", "tutu=t", "\\$tutu");
+  xbt_test_add0("Space in var name (with braces)");mytest("${tu ti}", "tu_ti=t", "t");
 
-  mytest("Two variables", "$toto $tutu","toto=1 tutu=2", "1 2");
+  xbt_test_add0("Two variables");mytest("$toto $tutu","toto=1 tutu=2", "1 2");
 
   // Commented: I'm too lazy to do a memmove in var name to remove the backslash after use.
   // Users should use braces.
-  //  mytest("Escaped space in var name", "$tu\\ ti", "tu_ti=t", "t");
+  //  xbt_test_add0("Escaped space in var name", "$tu\\ ti", "tu_ti=t", "t");
 
-  mytest("Default value", "${t:-toto}", "", "toto");
-  mytest("Useless default value (variable already defined)", "${t:-toto}", "t=TRUC", "TRUC");
+  xbt_test_add0("Default value");mytest("${t:-toto}", "", "toto");
+  xbt_test_add0("Useless default value (variable already defined)");mytest("${t:-toto}", "t=TRUC", "TRUC");
 
 }
 

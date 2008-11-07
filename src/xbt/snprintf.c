@@ -1050,11 +1050,11 @@ int portable_snprintf(char *str, size_t str_m, const char *fmt, /*args*/ ...) {
   char *bprintf(const char*fmt, ...) {
     va_list ap;
     char *res;
+    int len;
 
     va_start(ap, fmt);
 
-
-    vasprintf(&res,fmt,ap);
+    len = vasprintf(&res,fmt,ap);
 
     va_end(ap);
     return res;
