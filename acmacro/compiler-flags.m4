@@ -52,7 +52,7 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
       if test "x$enable_compile_warnings" = "xyes"; then
         warnCFLAGS=`echo $warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
         -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings \
-        -Wno-unused-function  -Wno-strict-aliasing  \
+        -Wno-unused-function  -Wno-strict-aliasing -Wno-format-nonliteral \
         -Werror \
 	| sed 's/ +/ /g'`
 	# -Wno-unused-variable  -Wno-unused-label
