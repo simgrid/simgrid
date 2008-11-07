@@ -17,6 +17,7 @@ AC_CONFIG_HEADERS([src/gras_config.h])
 AC_REVISION($Revision$)
 AC_CANONICAL_TARGET
 AC_LANG([C])
+AC_PROG_CXX
 AM_PROG_GCJ
 
 AM_INIT_AUTOMAKE([gnu -Wno-portability])
@@ -507,6 +508,7 @@ AC_CONFIG_FILES([
     tools/gras/Makefile
     tools/tesh/Makefile
 ])
+#    tools/tesh2/Makefile
 
 
 # GRAMINE_CUT_BEGIN
