@@ -1,8 +1,9 @@
 
 
 import re        
-from buildbot.process import step
-from buildbot.process.step import ShellCommand, SVN
+from buildbot.steps.source import SVN
+from buildbot.steps.shell import ShellCommand
+
 from buildbot.status import builder
 from buildbot.status.builder import SUCCESS,FAILURE, EXCEPTION,WARNINGS
 
