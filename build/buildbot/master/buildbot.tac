@@ -6,5 +6,6 @@ basedir = r'/var/lib/buildbot/simgrid/master'
 configfile = r'master.cfg'
 
 application = service.Application('buildmaster')
-BuildMaster(basedir, configfile).setServiceParent(application)
+BuildMaster(basedir,configfile).setServiceParent(application)
+
 
