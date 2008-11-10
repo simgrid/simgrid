@@ -4,96 +4,98 @@ use strict;
 
 my $progname="sg_unit_extractor";
 # Get the args 
-die "USAGE: $progname infile [outfile]\n"
-  if (scalar @ARGV == 0 || scalar @ARGV > 2);
-my ($infile,$outfile) = @ARGV;
+die "USAGE: $progname infile [infile+]\n"
+  if (scalar @ARGV == 0);
 
-if (not defined($outfile)) {
-  $outfile =  $infile;
-  $outfile =~ s/\.c$/_unit.c/;
-  $outfile =~ s|.*/([^/]*)$|$1| if $outfile =~ m|/|;
-}
+map {process_one($_)} @ARGV;
 
-# Get the unit data
-my ($unit_source,$suite_name,$suite_title)=("","","");
-my (%tests); # to detect multiple definition
-my (@tests); # actual content
+sub process_one($) {
+    
+    my $infile = shift;
+    my $outfile;
+    
+    $outfile =  $infile;
+    $outfile =~ s/\.c$/_unit.c/;
+    $outfile =~ s|.*/([^/]*)$|$1| if $outfile =~ m|/|;
+    
+    
+    # Get the unit data
+    my ($unit_source,$suite_name,$suite_title)=("","","");
+    my (%tests); # to detect multiple definition
+    my (@tests); # actual content
+    
+    open IN, "$infile" || die "$progname: Cannot open input file '$infile': $!\n";
+    
+    my $takeit=0;
+    my $line=0;
+    my $beginline=0;
+    while (<IN>) {
+	$line++;
+	if (m/ifdef +SIMGRID_TEST/) {
+	    $beginline = $line;
+	    $takeit = 1;
+	    next;
+	}
+	if (m/endif.*SIMGRID_TEST/) {
+	    $takeit = 0;
+	    next
+	}
+	
+	if (m/XBT_TEST_SUITE\(\w*"([^"]*)"\w*,(.*?)\);/) { #" {
+	    die "$progname: Multiple suites in the same file ($infile) are not supported yet\n" if length($suite_name);
+	    ($suite_name,$suite_title)=($1,$2);
+	    next;
+        } 
 
-open IN, "$infile" || die "$progname: Cannot open input file '$infile': $!\n";
-
-my $takeit=0;
-my $line=0;
-my $beginline=0;
-while (<IN>) {
-  $line++;
-  if (m/ifdef +SIMGRID_TEST/) {
-    $beginline = $line;
-    $takeit = 1;
-    next;
-  }
-  if (m/endif.*SIMGRID_TEST/) {
-    $takeit = 0;
-    next
-  }
-
-  if (m/XBT_TEST_SUITE\(\w*"([^"]*)"\w*,(.*?)\);/) { #"
-    die "$progname: Multiple suites in the same file ($infile) are not supported yet\n" 
-      if length($suite_name);
-    ($suite_name,$suite_title)=($1,$2);
-    next;
-  } 
-  
-  if (m/XBT_TEST_UNIT\(\w*"([^"]*)"\w*,([^,]*),(.*?)\)/) { #"
-    die "$progname: multiply defined unit in file $infile: $1\n"
-      if (defined($tests{$1}));
+        if (m/XBT_TEST_UNIT\(\w*"([^"]*)"\w*,([^,]*),(.*?)\)/) { #"{
+	    die "$progname: multiply defined unit in file $infile: $1\n" if (defined($tests{$1}));
       
-    my @t=($1,$2,$3);
-    push @tests,\@t;
-    $tests{$1} = 1;
-  }
-  $unit_source .= $_ if $takeit;
-}
-close IN || die "$progname: cannot close input file '$infile': $!\n";
+	    my @t=($1,$2,$3);
+	    push @tests,\@t;
+	    $tests{$1} = 1;
+	}
+        $unit_source .= $_ if $takeit;
+    }
+    close IN || die "$progname: cannot close input file '$infile': $!\n";
 
 
-if ($takeit) {
-  die "$progname: end of file reached in SIMGRID_TEST block.\n".
-     "You should end each of the with a line matching: /endif.*SIMGRID_TEST/\n".
-     "Example:\n".
-     "#endif /* SIMGRID_TEST */\n"
-}
+    if ($takeit) {
+	die "$progname: end of file reached in SIMGRID_TEST block.\n".
+	  "You should end each of the with a line matching: /endif.*SIMGRID_TEST/\n".
+	  "Example:\n".
+	  "#endif /* SIMGRID_TEST */\n"
+    }
 
-die "$progname: no suite defined in $infile\n"
-  unless (length($suite_name));
+    die "$progname: no suite defined in $infile\n" unless (length($suite_name));
   
-# Write the test
+    # Write the test
 
-my ($GENERATED)=("/*******************************/\n".
-                 "/* GENERATED FILE, DO NOT EDIT */\n".
-                 "/*******************************/\n\n");
-$beginline+=2;
-open OUT,">$outfile" || die "$progname: Cannot open output file '$outfile': $!\n";
-print OUT $GENERATED;
-print OUT "#include <stdio.h>\n";
-print OUT "#include \"xbt.h\"\n";
-print OUT $GENERATED;
-print OUT "# $beginline \"$infile\" \n";
-print OUT "$unit_source";
-print OUT $GENERATED;
-close OUT || die "$progname: Cannot close output file '$outfile': $!\n";
+    my ($GENERATED)=("/*******************************/\n".
+	             "/* GENERATED FILE, DO NOT EDIT */\n".
+                     "/*******************************/\n\n");
+    $beginline+=2;
+    open OUT,">$outfile" || die "$progname: Cannot open output file '$outfile': $!\n";
+    print OUT $GENERATED;
+    print OUT "#include <stdio.h>\n";
+    print OUT "#include \"xbt.h\"\n";
+    print OUT $GENERATED;
+    print OUT "# $beginline \"$infile\" \n";
+    print OUT "$unit_source";
+    print OUT $GENERATED;
+    close OUT || die "$progname: Cannot close output file '$outfile': $!\n";
 
-# write the main skeleton if needed
-if (! -e "simgrid_units_main.c") {
-  open OUT,">simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
-  print OUT $GENERATED;
-  print OUT "#include <stdio.h>\n\n";
-  print OUT "#include \"xbt.h\"\n\n";
-  print OUT "extern xbt_test_unit_t _xbt_current_unit;\n\n";
-  print OUT "/* SGU: BEGIN PROTOTYPES */\n";
-  print OUT "/* SGU: END PROTOTYPES */\n\n";
-  print OUT $GENERATED;
-#  print OUT "# 93 \"sg_unit_extractor.pl\"\n";
-  print OUT <<EOF;
+    # write the main skeleton if needed
+    if (! -e "simgrid_units_main.c") {
+	open OUT,">simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
+	print OUT $GENERATED;
+	print OUT "#include <stdio.h>\n\n";
+	print OUT "#include \"xbt.h\"\n\n";
+	print OUT "extern xbt_test_unit_t _xbt_current_unit;\n\n";
+	print OUT "/* SGU: BEGIN PROTOTYPES */\n";
+	print OUT "/* SGU: END PROTOTYPES */\n\n";
+	print OUT $GENERATED;
+	#  print OUT "# 93 \"sg_unit_extractor.pl\"\n";
+	print OUT <<EOF;
 int main(int argc, char *argv[]) {
   xbt_test_suite_t suite; 
   char selection[1024];
@@ -153,99 +155,100 @@ int main(int argc, char *argv[]) {
   return res;
 }
 EOF
-  print OUT $GENERATED;
-  close OUT || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
-}
-
-print "  Suite $suite_name: $suite_title (".(scalar @tests)." tests)\n";
-map {
-  my ($name,$func,$title) = @{$_};
-  print "    unit $name: func=$func; title=$title\n";
-} @tests;
-
-#while (my $t = shift @tests) {
-
-# add this suite to the main
-my $newmain="";
-open IN,"simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
-  # search prototypes
-  while (<IN>) {
-    $newmain .= $_;
-#    print "Look for proto: $_";
-    last if /SGU: BEGIN PROTOTYPES/;
-  }
-
-  # search my prototype
-  while (<IN>) {
-#    print "Seek protos: $_";
-    last if  (/SGU: END PROTOTYPES/ || /SGU: BEGIN FILE $infile/);
-    $newmain .= $_;
-  }
-  if (/SGU: BEGIN FILE $infile/) { # found an old section for this file. Kill it    
-    while (<IN>) {
-      last if /SGU: END FILE/;
+	print OUT $GENERATED;
+	close OUT || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
     }
-    $_ = <IN>; # pass extra blank line
-    chomp;
-    die "this line should be blank ($_). Did you edit the file?" if /\W/;
-  }
-  my ($old_)=($_);
-  # add my section
-  $newmain .= "  /* SGU: BEGIN FILE $infile */\n";
-  map {
-    my ($name,$func,$title) = @{$_};
-    $newmain .=  "    void $func(void);\n"
-  } @tests;
 
-  $newmain .= "  /* SGU: END FILE */\n\n";
-  if ($old_ =~ /SGU: BEGIN FILE/ || $old_ =~ /SGU: END PROTOTYPES/) {
-    $newmain .= $old_;
-  }
+   print "  Suite $suite_name: $suite_title (".(scalar @tests)." tests)\n";
+   map {
+       my ($name,$func,$title) = @{$_};
+       print "    unit $name: func=$func; title=$title\n";
+   } @tests;
 
-  # pass remaining prototypes, search declarations
-  while (<IN>) {
-    $newmain .= $_ unless /SGU: END PROTOTYPES/;
-    last if /SGU: BEGIN SUITES DECLARATION/;
-  }
+   #while (my $t = shift @tests) {
 
-  ### Done with prototypes. And now, the actual code
-  
-  # search my prototype
-  while (<IN>) {
-    last if  (/SGU: END SUITES DECLARATION/ || /SGU: BEGIN FILE $infile/);
-    $newmain .= $_;
-  }
-  if (/SGU: BEGIN FILE $infile/) { # found an old section for this file. Kill it    
-    while (<IN>) {
-      last if /SGU: END FILE/;
-    }
-    $_ = <IN>; # pass extra blank line
-    chomp;
-    die "this line should be blank ($_). Did you edit the file?" if /\W/;
-  }
-  my ($old_)=($_);
-  # add my section
-  $newmain .= "    /* SGU: BEGIN FILE $infile */\n";
-  $newmain .= "      suite = xbt_test_suite_by_name(\"$suite_name\",$suite_title);\n";
-  map {
-    my ($name,$func,$title) = @{$_};
-    $newmain .=  "      xbt_test_suite_push(suite, \"$name\", $func, $title);\n";
-  } @tests;
+   # add this suite to the main
+   my $newmain="";
+   open IN,"simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
+    # search prototypes
+       while (<IN>) {
+	   $newmain .= $_;
+	   #    print "Look for proto: $_";
+	   last if /SGU: BEGIN PROTOTYPES/;
+       }
 
-  $newmain .= "    /* SGU: END FILE */\n\n";
-  if ($old_ =~ /SGU: BEGIN FILE/ || $old_ =~ /SGU: END SUITES DECLARATION/) {
-    $newmain .= $old_;
-  }
-
-  # pass the remaining 
-  while (<IN>) {
-    $newmain .= $_;
-  }
-close IN || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
-
-# write it back to main
-open OUT,">simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
-print OUT $newmain;
-close OUT || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
+       # search my prototype
+       while (<IN>) {
+	   #    print "Seek protos: $_";
+	   last if  (/SGU: END PROTOTYPES/ || /SGU: BEGIN FILE $infile/);
+	   $newmain .= $_;
+       }
+       if (/SGU: BEGIN FILE $infile/) { # found an old section for this file. Kill it    
+	   while (<IN>) {
+	       last if /SGU: END FILE/;
+	   }
+	   $_ = <IN>; # pass extra blank line
+	   chomp;
+	   die "this line should be blank ($_). Did you edit the file?" if /\W/;
+       }
+       my ($old_)=($_);
+       # add my section
+       $newmain .= "  /* SGU: BEGIN FILE $infile */\n";
+       map {
+	   my ($name,$func,$title) = @{$_};
+	   $newmain .=  "    void $func(void);\n"
+       } @tests;
+       
+       $newmain .= "  /* SGU: END FILE */\n\n";
+       if ($old_ =~ /SGU: BEGIN FILE/ || $old_ =~ /SGU: END PROTOTYPES/) {
+	   $newmain .= $old_;
+       }
+       
+       # pass remaining prototypes, search declarations
+       while (<IN>) {
+	   $newmain .= $_ unless /SGU: END PROTOTYPES/;
+	   last if /SGU: BEGIN SUITES DECLARATION/;
+       }
+       
+       ### Done with prototypes. And now, the actual code
+       
+       # search my prototype
+       while (<IN>) {
+	   last if  (/SGU: END SUITES DECLARATION/ || /SGU: BEGIN FILE $infile/);
+	   $newmain .= $_;
+       }
+       if (/SGU: BEGIN FILE $infile/) { # found an old section for this file. Kill it    
+	   while (<IN>) {
+	       last if /SGU: END FILE/;
+	   }
+	   $_ = <IN>; # pass extra blank line
+	   chomp;
+	   die "this line should be blank ($_). Did you edit the file?" if /\W/;
+       }
+       my ($old_)=($_);
+       # add my section
+       $newmain .= "    /* SGU: BEGIN FILE $infile */\n";
+       $newmain .= "      suite = xbt_test_suite_by_name(\"$suite_name\",$suite_title);\n";
+       map {
+	   my ($name,$func,$title) = @{$_};
+	   $newmain .=  "      xbt_test_suite_push(suite, \"$name\", $func, $title);\n";
+       } @tests;
+       
+       $newmain .= "    /* SGU: END FILE */\n\n";
+       if ($old_ =~ /SGU: BEGIN FILE/ || $old_ =~ /SGU: END SUITES DECLARATION/) {
+	   $newmain .= $old_;
+       }
+       
+       # pass the remaining 
+       while (<IN>) {
+	   $newmain .= $_;
+       }
+       close IN || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
+       
+       # write it back to main
+       open OUT,">simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
+       print OUT $newmain;
+       close OUT || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
+} # end if process_one($)
 
 0;

@@ -386,7 +386,7 @@ TEST_CFILES=xbt/cunit.c  xbt/ex.c          \
             xbt/config.c 
 TEST_UNITS= @builddir@/cunit_unit.c   @builddir@/ex_unit.c         \
             @builddir@/dynar_unit.c   @builddir@/dict_unit.c @builddir@/set_unit.c @builddir@/swag_unit.c \
-	    @builddir@/xbt_str_unit.c @builddir@/xbt_sha_unit.c\
+	    @builddir@/xbt_str_unit.c @builddir@/xbt_strbuff_unit.c @builddir@/xbt_sha_unit.c\
             @builddir@/config_unit.c 
 
 BUILT_SOURCES=../include/surf/simgrid_dtd.h surf/simgrid_dtd.c \
@@ -404,23 +404,8 @@ EXTRA_DIST+=$(testall_SOURCES)
 if MAINTAINER_MODE
 CLEANFILES=$(TEST_UNITS)
 
-@builddir@/cunit_unit.c: xbt/cunit.c
-	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@builddir@/ex_unit.c: xbt/ex.c
-	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@builddir@/xbt_str_unit.c: xbt/xbt_str.c
-	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@builddir@/xbt_sha_unit.c: xbt/xbt_sha.c
-	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@builddir@/dynar_unit.c: xbt/dynar.c
-	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@builddir@/dict_unit.c: xbt/dict.c
-	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@builddir@/set_unit.c: xbt/set.c
-	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@builddir@/swag_unit.c: xbt/swag.c
-	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@builddir@/config_unit.c: xbt/config.c
+$(TEST_UNITS): xbt/cunit.c xbt/ex.c xbt/xbt_str.c xbt/xbt_strbuff.c xbt/xbt_sha.c\
+               xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c xbt/config.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 
 @builddir@/simgrid_units_main.c: $(TEST_UNITS)
