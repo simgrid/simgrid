@@ -64,6 +64,11 @@ am__aclocal_m4_deps = $(top_srcdir)/acmacro/ac_func_snprintf.m4 \
 	$(top_srcdir)/acmacro/fancy_configury.m4 \
 	$(top_srcdir)/acmacro/flex.m4 \
 	$(top_srcdir)/acmacro/gras_arch.m4 \
+	$(top_srcdir)/acmacro/libtool.m4 \
+	$(top_srcdir)/acmacro/ltoptions.m4 \
+	$(top_srcdir)/acmacro/ltsugar.m4 \
+	$(top_srcdir)/acmacro/ltversion.m4 \
+	$(top_srcdir)/acmacro/lt~obsolete.m4 \
 	$(top_srcdir)/acmacro/print_null.m4 \
 	$(top_srcdir)/acmacro/va_copy.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -156,12 +161,13 @@ DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
 DOXYGEN = @DOXYGEN@
 DSYMUTIL = @DSYMUTIL@
-ECHO = @ECHO@
+DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FGREP = @FGREP@
 FLEXML = @FLEXML@
 GCJ = @GCJ@
 GCJDEPMODE = @GCJDEPMODE@
@@ -176,6 +182,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
 JAVA = @JAVA@
 JAVAC = @JAVAC@
+LD = @LD@
 LDFLAGS = @LDFLAGS@
 LD_DYNAMIC_FLAGS = @LD_DYNAMIC_FLAGS@
 LEX = @LEX@
@@ -184,14 +191,18 @@ LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
+LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OTOOL = @OTOOL@
+OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -216,6 +227,7 @@ abs_top_srcdir = @abs_top_srcdir@
 ac_configure_args = @ac_configure_args@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -247,6 +259,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
