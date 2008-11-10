@@ -77,6 +77,11 @@ am__aclocal_m4_deps = $(top_srcdir)/acmacro/ac_func_snprintf.m4 \
 	$(top_srcdir)/acmacro/fancy_configury.m4 \
 	$(top_srcdir)/acmacro/flex.m4 \
 	$(top_srcdir)/acmacro/gras_arch.m4 \
+	$(top_srcdir)/acmacro/libtool.m4 \
+	$(top_srcdir)/acmacro/ltoptions.m4 \
+	$(top_srcdir)/acmacro/ltsugar.m4 \
+	$(top_srcdir)/acmacro/ltversion.m4 \
+	$(top_srcdir)/acmacro/lt~obsolete.m4 \
 	$(top_srcdir)/acmacro/print_null.m4 \
 	$(top_srcdir)/acmacro/va_copy.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -215,12 +220,13 @@ am__testall_SOURCES_DIST = @builddir@/cunit_unit.c \
 	@builddir@/ex_unit.c @builddir@/dynar_unit.c \
 	@builddir@/dict_unit.c @builddir@/set_unit.c \
 	@builddir@/swag_unit.c @builddir@/xbt_str_unit.c \
-	@builddir@/xbt_sha_unit.c @builddir@/config_unit.c \
-	@builddir@/simgrid_units_main.c
+	@builddir@/xbt_strbuff_unit.c @builddir@/xbt_sha_unit.c \
+	@builddir@/config_unit.c @builddir@/simgrid_units_main.c
 @GRAMINE_MODE_FALSE@am__objects_21 = cunit_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	ex_unit.$(OBJEXT) dynar_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	dict_unit.$(OBJEXT) set_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	swag_unit.$(OBJEXT) xbt_str_unit.$(OBJEXT) \
+@GRAMINE_MODE_FALSE@	xbt_strbuff_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	xbt_sha_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	config_unit.$(OBJEXT)
 @GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_21) \
@@ -285,12 +291,13 @@ DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
 DOXYGEN = @DOXYGEN@
 DSYMUTIL = @DSYMUTIL@
-ECHO = @ECHO@
+DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FGREP = @FGREP@
 FLEXML = @FLEXML@
 GCJ = @GCJ@
 GCJDEPMODE = @GCJDEPMODE@
@@ -305,6 +312,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
 JAVA = @JAVA@
 JAVAC = @JAVAC@
+LD = @LD@
 LDFLAGS = @LDFLAGS@
 LD_DYNAMIC_FLAGS = @LD_DYNAMIC_FLAGS@
 LEX = @LEX@
@@ -313,14 +321,18 @@ LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
+LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OTOOL = @OTOOL@
+OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -345,6 +357,7 @@ abs_top_srcdir = @abs_top_srcdir@
 ac_configure_args = @ac_configure_args@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -376,6 +389,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -636,7 +650,7 @@ libsmpi_la_LIBADD = libsimgrid.la
 libsmpi_la_SOURCES = $(SMPI_SRC)
 libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm \
 	$(am__append_7)
-@HAVE_JAVA_TRUE@jardir = $(prefix)/jar 
+@HAVE_JAVA_TRUE@jardir = $(prefix)/jar
 @HAVE_JAVA_TRUE@jar_DATA = simgrid.jar
 @GRAMINE_MODE_FALSE@TEST_CFILES = xbt/cunit.c  xbt/ex.c          \
 @GRAMINE_MODE_FALSE@            xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
@@ -645,7 +659,7 @@ libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm \
 
 @GRAMINE_MODE_FALSE@TEST_UNITS = @builddir@/cunit_unit.c   @builddir@/ex_unit.c         \
 @GRAMINE_MODE_FALSE@            @builddir@/dynar_unit.c   @builddir@/dict_unit.c @builddir@/set_unit.c @builddir@/swag_unit.c \
-@GRAMINE_MODE_FALSE@	    @builddir@/xbt_str_unit.c @builddir@/xbt_sha_unit.c\
+@GRAMINE_MODE_FALSE@	    @builddir@/xbt_str_unit.c @builddir@/xbt_strbuff_unit.c @builddir@/xbt_sha_unit.c\
 @GRAMINE_MODE_FALSE@            @builddir@/config_unit.c 
 
 @GRAMINE_MODE_FALSE@BUILT_SOURCES = ../include/surf/simgrid_dtd.h surf/simgrid_dtd.c \
@@ -916,6 +930,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_str.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_str_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_strbuff.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_strbuff_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_virtu.Plo@am__quote@
 
 .c.o:
@@ -1912,6 +1927,20 @@ xbt_str_unit.obj: @builddir@/xbt_str_unit.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_str_unit.obj `if test -f '@builddir@/xbt_str_unit.c'; then $(CYGPATH_W) '@builddir@/xbt_str_unit.c'; else $(CYGPATH_W) '$(srcdir)/@builddir@/xbt_str_unit.c'; fi`
 
+xbt_strbuff_unit.o: @builddir@/xbt_strbuff_unit.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_strbuff_unit.o -MD -MP -MF $(DEPDIR)/xbt_strbuff_unit.Tpo -c -o xbt_strbuff_unit.o `test -f '@builddir@/xbt_strbuff_unit.c' || echo '$(srcdir)/'`@builddir@/xbt_strbuff_unit.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xbt_strbuff_unit.Tpo $(DEPDIR)/xbt_strbuff_unit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='@builddir@/xbt_strbuff_unit.c' object='xbt_strbuff_unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_strbuff_unit.o `test -f '@builddir@/xbt_strbuff_unit.c' || echo '$(srcdir)/'`@builddir@/xbt_strbuff_unit.c
+
+xbt_strbuff_unit.obj: @builddir@/xbt_strbuff_unit.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_strbuff_unit.obj -MD -MP -MF $(DEPDIR)/xbt_strbuff_unit.Tpo -c -o xbt_strbuff_unit.obj `if test -f '@builddir@/xbt_strbuff_unit.c'; then $(CYGPATH_W) '@builddir@/xbt_strbuff_unit.c'; else $(CYGPATH_W) '$(srcdir)/@builddir@/xbt_strbuff_unit.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xbt_strbuff_unit.Tpo $(DEPDIR)/xbt_strbuff_unit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='@builddir@/xbt_strbuff_unit.c' object='xbt_strbuff_unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_strbuff_unit.obj `if test -f '@builddir@/xbt_strbuff_unit.c'; then $(CYGPATH_W) '@builddir@/xbt_strbuff_unit.c'; else $(CYGPATH_W) '$(srcdir)/@builddir@/xbt_strbuff_unit.c'; fi`
+
 xbt_sha_unit.o: @builddir@/xbt_sha_unit.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_sha_unit.o -MD -MP -MF $(DEPDIR)/xbt_sha_unit.Tpo -c -o xbt_sha_unit.o `test -f '@builddir@/xbt_sha_unit.c' || echo '$(srcdir)/'`@builddir@/xbt_sha_unit.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xbt_sha_unit.Tpo $(DEPDIR)/xbt_sha_unit.Po
@@ -2294,23 +2323,8 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 @HAVE_JAVA_TRUE@	cp $(srcdir)/surf/simgrid.dtd .classes/surf
 @HAVE_JAVA_TRUE@	$(JAR) cvf simgrid.jar -C .classes .
 
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/cunit_unit.c: xbt/cunit.c
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/ex_unit.c: xbt/ex.c
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/xbt_str_unit.c: xbt/xbt_str.c
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/xbt_sha_unit.c: xbt/xbt_sha.c
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/dynar_unit.c: xbt/dynar.c
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/dict_unit.c: xbt/dict.c
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/set_unit.c: xbt/set.c
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/swag_unit.c: xbt/swag.c
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/config_unit.c: xbt/config.c
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@$(TEST_UNITS): xbt/cunit.c xbt/ex.c xbt/xbt_str.c xbt/xbt_strbuff.c xbt/xbt_sha.c\
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@               xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c xbt/config.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
 
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/simgrid_units_main.c: $(TEST_UNITS)
