@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 604 "xbt/dict.c" 
+# 639 "xbt/dict.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 #include "portable.h"
@@ -33,7 +33,7 @@ static void debuged_add_ext(xbt_dict_t head,const char*key,const char*data_to_fi
   }
 }
 static void debuged_add(xbt_dict_t head,const char*key) {
-   debuged_add_ext(head,key,key);
+  debuged_add_ext(head,key,key);
 }
 
 static void fill(xbt_dict_t *head) {
@@ -54,7 +54,7 @@ static void fill(xbt_dict_t *head) {
 
 static void search_ext(xbt_dict_t head,const char*key, const char *data) {
   void *found;
-  
+
   xbt_test_add1("Search %s",key);
   found=xbt_dict_get(head,key);
   xbt_test_log1("Found %s",(char *)found);
@@ -83,13 +83,13 @@ static void traverse(xbt_dict_t head) {
   int i = 0;
 
   xbt_dict_foreach(head,cursor,key,data) {
-    if (!key || !data || strcmp(key,data)) {	    
-       xbt_test_log3("Seen #%d:  %s->%s",++i,PRINTF_STR(key),PRINTF_STR(data));
+    if (!key || !data || strcmp(key,data)) {
+      xbt_test_log3("Seen #%d:  %s->%s",++i,PRINTF_STR(key),PRINTF_STR(data));
     } else {
-       xbt_test_log2("Seen #%d:  %s",++i,PRINTF_STR(key));
+      xbt_test_log2("Seen #%d:  %s",++i,PRINTF_STR(key));
     }
     xbt_test_assert2(!data || !strcmp(key,data),
-		     "Key(%s) != value(%s). Abording",key,data);
+                     "Key(%s) != value(%s). Aborting",key,data);
   }
 }
 
@@ -99,11 +99,11 @@ static void search_not_found(xbt_dict_t head, const char *data) {
 
   xbt_test_add1("Search %s (expected not to be found)",data);
 
-  TRY {    
+  TRY {
     data = xbt_dict_get(head, data);
     THROW1(unknown_error,0,"Found something which shouldn't be there (%s)",data);
   } CATCH(e) {
-    if (e.category != not_found_error) 
+    if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
     ok=1;
@@ -120,7 +120,7 @@ static void count(xbt_dict_t dict, int length) {
 
   xbt_test_add1("Count elements (expecting %d)", length);
   xbt_test_assert2(xbt_dict_length(dict) == length, "Announced length(%d) != %d.", xbt_dict_length(dict), length);
-   
+
   xbt_dict_foreach(dict,cursor,key,data) {
     effective++;
   }
@@ -133,25 +133,25 @@ char *data;
 
 
 XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse"){
-  xbt_test_add0("Traversal the null dictionnary");
+  xbt_test_add0("Traversal the null dictionary");
   traverse(head);
 
-  xbt_test_add0("Traversal and search the empty dictionnary");
+  xbt_test_add0("Traversal and search the empty dictionary");
   head = xbt_dict_new();
   traverse(head);
   TRY {
     debuged_remove(head,"12346");
   } CATCH(e) {
-    if (e.category != not_found_error) 
+    if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
   }
   xbt_dict_free(&head);
 
-  xbt_test_add0("Traverse the full dictionnary");
+  xbt_test_add0("Traverse the full dictionary");
   fill(&head);
   count(head, 7);
-   
+
   debuged_add_ext(head,"toto","tutu");
   search_ext(head,"toto","tutu");
   debuged_remove(head,"toto");
@@ -159,7 +159,7 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
   search(head,"12a");
   traverse(head);
 
-  xbt_test_add0("Free the dictionnary (twice)");
+  xbt_test_add0("Free the dictionary (twice)");
   xbt_dict_free(&head);
   xbt_dict_free(&head);
 
@@ -182,9 +182,9 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
   xbt_dict_set(head,"12a",strdup("12a"),&free);
   count(head, 7);
 
-  xbt_test_add0("Traverse the resulting dictionnary");
+  xbt_test_add0("Traverse the resulting dictionary");
   traverse(head);
-  
+
   /* RETRIEVE */
   xbt_test_add0("Search 123");
   data = xbt_dict_get(head,"123");
@@ -202,16 +202,16 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
   search(head,"1234");
   search(head,"123457");
 
-  xbt_test_add0("Traverse the resulting dictionnary");
+  xbt_test_add0("Traverse the resulting dictionary");
   traverse(head);
 
   /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 
-  xbt_test_add0("Free the dictionnary twice");
+  xbt_test_add0("Free the dictionary twice");
   xbt_dict_free(&head);
   xbt_dict_free(&head);
 
-  xbt_test_add0("Traverse the resulting dictionnary");
+  xbt_test_add0("Traverse the resulting dictionary");
   traverse(head);
 }
 
@@ -222,7 +222,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   TRY {
     debuged_remove(head,"Does not exist");
   } CATCH(e) {
-    if (e.category != not_found_error) 
+    if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
   }
@@ -230,7 +230,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
 
   xbt_dict_free(&head);
 
-  xbt_test_add0("Remove each data manually (traversing the resulting dictionnary each time)");
+  xbt_test_add0("Remove each data manually (traversing the resulting dictionary each time)");
   fill(&head);
   debuged_remove(head,"12a");    traverse(head);
   count(head, 6);
@@ -243,22 +243,22 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   TRY {
     debuged_remove(head,"12346");
   } CATCH(e) {
-    if (e.category != not_found_error) 
+    if (e.category != not_found_error)
       xbt_test_exception(e);
-    xbt_ex_free(e);         
+    xbt_ex_free(e);
     traverse(head);
-  } 
+  }
   debuged_remove(head,"1234");   traverse(head);
   debuged_remove(head,"123457"); traverse(head);
   debuged_remove(head,"123");    traverse(head);
   TRY {
     debuged_remove(head,"12346");
   } CATCH(e) {
-    if (e.category != not_found_error) 
+    if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
   }                              traverse(head);
-  
+
   xbt_test_add0("Free dict, create new fresh one, and then reset the dict");
   xbt_dict_free(&head);
   fill(&head);
@@ -266,9 +266,9 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   count(head, 0);
   traverse(head);
 
-  xbt_test_add0("Free the dictionnary twice");
+  xbt_test_add0("Free the dictionary twice");
   xbt_dict_free(&head);
-  xbt_dict_free(&head);      
+  xbt_dict_free(&head);
 }
 
 XBT_TEST_UNIT("nulldata",test_dict_nulldata,"NULL data management"){
@@ -285,14 +285,14 @@ XBT_TEST_UNIT("nulldata",test_dict_nulldata,"NULL data management"){
     int found=0;
 
     xbt_dict_foreach(head,cursor,key,data) {
-      if (!key || !data || strcmp(key,data)) {	    
-	 xbt_test_log2("Seen:  %s->%s",PRINTF_STR(key),PRINTF_STR(data));
+      if (!key || !data || strcmp(key,data)) {
+        xbt_test_log2("Seen:  %s->%s",PRINTF_STR(key),PRINTF_STR(data));
       } else {
-	 xbt_test_log1("Seen:  %s",PRINTF_STR(key));
+        xbt_test_log1("Seen:  %s",PRINTF_STR(key));
       }
-     
+
       if (!strcmp(key,"null"))
-	found = 1;
+        found = 1;
     }
     xbt_test_assert0(found,"the key 'null', associated to NULL is not found");
   }
@@ -312,7 +312,7 @@ static int countelems(xbt_dict_t head) {
   }
   return res;
 }
-   
+
 XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
   xbt_dict_t head=NULL;
   int i,j,k, nb;
@@ -332,18 +332,18 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
       char *data = NULL;
       key=xbt_malloc(SIZEOFKEY);
 
-      do {	    
-	 for (k=0;k<SIZEOFKEY-1;k++)
-	   key[k]=rand() % ('z' - 'a') + 'a';
-	 key[k]='\0';
-	 /*      printf("[%d %s]\n",j,key); */
-	 data = xbt_dict_get_or_null(head,key);
+      do {
+        for (k=0;k<SIZEOFKEY-1;k++)
+          key[k]=rand() % ('z' - 'a') + 'a';
+        key[k]='\0';
+        /*      printf("[%d %s]\n",j,key); */
+        data = xbt_dict_get_or_null(head,key);
       } while (data != NULL);
-        
+
       xbt_dict_set(head,key,key,&free);
       data = xbt_dict_get(head,key);
       xbt_test_assert2(!strcmp(key,data), "Retrieved value (%s) != Injected value (%s)",key,data);
-       
+
       count(head,j+1);
     }
     /*    xbt_dict_dump(head,(void (*)(void*))&printf); */
@@ -359,12 +359,12 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
     /* if (!(j%1000)) { printf("."); fflush(stdout); } */
 
     key = xbt_malloc(10);
-    
+
     sprintf(key,"%d",j);
     xbt_dict_set(head,key,key,&free);
   }
-   /*xbt_dict_dump(head,(void (*)(void*))&printf);*/
-   
+  /*xbt_dict_dump(head,(void (*)(void*))&printf);*/
+
   xbt_test_add0("Count the elements (retrieving the key and data for each)");
   i = countelems(head);
   xbt_test_log1("There is %d elements",i);
@@ -374,14 +374,14 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
   for (i=0;i<20;i++) {
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (j=0;j<NB_ELM;j++) {
-      
+
       sprintf(key,"%d",j);
       data = xbt_dict_get(head,key);
       xbt_test_assert2(!strcmp(key,(char*)data),
-		       "with get, key=%s != data=%s",key,(char*)data);
+                       "with get, key=%s != data=%s",key,(char*)data);
       data = xbt_dict_get_ext(head,key,strlen(key));
       xbt_test_assert2(!strcmp(key,(char*)data),
-		       "with get_ext, key=%s != data=%s",key,(char*)data);
+                       "with get_ext, key=%s != data=%s",key,(char*)data);
     }
   }
   free(key);
@@ -390,13 +390,13 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
   key=xbt_malloc(10);
   for (j=0;j<NB_ELM;j++) {
     /* if (!(j%10000)) printf("."); fflush(stdout); */
-    
+
     sprintf(key,"%d",j);
     xbt_dict_remove(head,key);
   }
   free(key);
 
-  
+
   xbt_test_add0("Free the structure (twice)");
   xbt_dict_free(&head);
   xbt_dict_free(&head);
@@ -414,7 +414,7 @@ XBT_TEST_UNIT("multicrash",test_dict_multicrash,"Multi-dict crash test"){
 #define DEPTH 5
 #define KEY_SIZE 512
 #define NB_TEST 20 /*20*/
-int verbose=0;
+  int verbose=0;
 
   xbt_dict_t mdict = NULL;
   int i,j,k,l;
@@ -425,13 +425,13 @@ int verbose=0;
 
   xbt_test_add0("Generic multicache CRASH test");
   xbt_test_log4(" Fill the struct and frees it %d times, using %d elements, "
-		"depth of multicache=%d, key size=%d",
-		NB_TEST,NB_ELM,DEPTH,KEY_SIZE);
+                "depth of multicache=%d, key size=%d",
+                NB_TEST,NB_ELM,DEPTH,KEY_SIZE);
 
   for (l=0 ; l<DEPTH ; l++) {
     key=xbt_malloc(KEY_SIZE);
     xbt_dynar_push(keys,&key);
-  }	
+  }
 
   for (i=0;i<NB_TEST;i++) {
     mdict = xbt_dict_new();
@@ -439,38 +439,38 @@ int verbose=0;
     if (verbose>0)
       printf("Test %d\n",i);
     /* else if (i%10) printf("."); else printf("%d",i/10);*/
-    
+
     for (j=0;j<NB_ELM;j++) {
       if (verbose>0) printf ("  Add {");
-      
+
       for (l=0 ; l<DEPTH ; l++) {
         key=*(char**)xbt_dynar_get_ptr(keys,l);
-        
-	for (k=0;k<KEY_SIZE-1;k++) 
-	  key[k]=rand() % ('z' - 'a') + 'a';
-	  
-	key[k]='\0';
-	
-	if (verbose>0) printf("%p=%s %s ",key, key,(l<DEPTH-1?";":"}"));
+
+        for (k=0;k<KEY_SIZE-1;k++)
+          key[k]=rand() % ('z' - 'a') + 'a';
+
+        key[k]='\0';
+
+        if (verbose>0) printf("%p=%s %s ",key, key,(l<DEPTH-1?";":"}"));
       }
       if (verbose>0) printf("in multitree %p.\n",mdict);
-                                                        
+
       xbt_multidict_set(mdict,keys,xbt_strdup(key),free);
 
       data = xbt_multidict_get(mdict,keys);
 
       xbt_test_assert2(data && !strcmp((char*)data,key),
-		       "Retrieved value (%s) does not match the entrered one (%s)\n",
-		       (char*)data,key);
+                       "Retrieved value (%s) does not match the given one (%s)\n",
+                       (char*)data,key);
     }
     xbt_dict_free(&mdict);
   }
-  
+
   xbt_dynar_free(&keys);
 
-/*  if (verbose>0)
+  /*  if (verbose>0)
     xbt_dict_dump(mdict,&xbt_dict_print);*/
-    
+
   xbt_dict_free(&mdict);
   xbt_dynar_free(&keys);
 

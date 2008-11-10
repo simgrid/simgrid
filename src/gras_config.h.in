@@ -74,7 +74,7 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
-/* Indicates whether we have the GTNETS library or not */
+/* Indicates that we have GTNETS support */
 #undef HAVE_GTNETS
 
 /* Define to 1 if you have the <inttypes.h> header file. */
@@ -156,6 +156,9 @@
 /* Define to 1 if you have the `usleep' function. */
 #undef HAVE_USLEEP
 
+/* Define to 1 if you have the <valgrind/valgrind.h> header file. */
+#undef HAVE_VALGRIND_VALGRIND_H
+
 /* Define if va_copy() macro exists (and no fallback implementation is
    required) */
 #undef HAVE_VA_COPY
@@ -171,6 +174,10 @@
 
 /* Define to 1 if you have the <winsock.h> header file. */
 #undef HAVE_WINSOCK_H
+
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
 
 /* enable the asprintf replacement */
 #undef NEED_ASPRINTF

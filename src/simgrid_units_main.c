@@ -20,6 +20,19 @@ extern xbt_test_unit_t _xbt_current_unit;
     void test_cleanup(void);
   /* SGU: END FILE */
 
+  /* SGU: BEGIN FILE xbt/xbt_str.c */
+    void test_split_quoted(void);
+    void test_split_str(void);
+  /* SGU: END FILE */
+
+  /* SGU: BEGIN FILE xbt/xbt_strbuff.c */
+    void test_strbuff_substitute(void);
+  /* SGU: END FILE */
+
+  /* SGU: BEGIN FILE xbt/xbt_sha.c */
+    void test_crypto_sha(void);
+  /* SGU: END FILE */
+
   /* SGU: BEGIN FILE xbt/dynar.c */
     void test_dynar_int(void);
     void test_dynar_double(void);
@@ -44,15 +57,6 @@ extern xbt_test_unit_t _xbt_current_unit;
 
   /* SGU: BEGIN FILE xbt/swag.c */
     void test_swag_basic(void);
-  /* SGU: END FILE */
-
-  /* SGU: BEGIN FILE xbt/xbt_str.c */
-    void test_split_quoted(void);
-    void test_split_str(void);
-  /* SGU: END FILE */
-
-  /* SGU: BEGIN FILE xbt/xbt_sha.c */
-    void test_crypto_sha(void);
   /* SGU: END FILE */
 
   /* SGU: BEGIN FILE xbt/config.c */
@@ -87,6 +91,22 @@ int main(int argc, char *argv[]) {
       xbt_test_suite_push(suite, "cleanup", test_cleanup, "cleanup handling");
     /* SGU: END FILE */
 
+    /* SGU: BEGIN FILE xbt/xbt_str.c */
+      suite = xbt_test_suite_by_name("xbt_str","String Handling");
+      xbt_test_suite_push(suite, "xbt_str_split_quoted", test_split_quoted,  "test the function xbt_str_split_quoted");
+      xbt_test_suite_push(suite, "xbt_str_split_str", test_split_str,  "test the function xbt_str_split_str");
+    /* SGU: END FILE */
+
+    /* SGU: BEGIN FILE xbt/xbt_strbuff.c */
+      suite = xbt_test_suite_by_name("xbt_strbuff","String Buffers");
+      xbt_test_suite_push(suite, "xbt_strbuff_substitute", test_strbuff_substitute,  "test the function xbt_strbuff_substitute");
+    /* SGU: END FILE */
+
+    /* SGU: BEGIN FILE xbt/xbt_sha.c */
+      suite = xbt_test_suite_by_name("hash","Various hash functions");
+      xbt_test_suite_push(suite, "sha", test_crypto_sha, "Test of the sha algorithm");
+    /* SGU: END FILE */
+
     /* SGU: BEGIN FILE xbt/dynar.c */
       suite = xbt_test_suite_by_name("dynar","Dynar data container");
       xbt_test_suite_push(suite, "int", test_dynar_int, "Dynars of integers");
@@ -115,17 +135,6 @@ int main(int argc, char *argv[]) {
     /* SGU: BEGIN FILE xbt/swag.c */
       suite = xbt_test_suite_by_name("swag","Swag data container");
       xbt_test_suite_push(suite, "basic", test_swag_basic, "Basic usage");
-    /* SGU: END FILE */
-
-    /* SGU: BEGIN FILE xbt/xbt_str.c */
-      suite = xbt_test_suite_by_name("xbt_str","String Handling");
-      xbt_test_suite_push(suite, "xbt_str_split_quoted", test_split_quoted,  "test the function xbt_str_split_quoted");
-      xbt_test_suite_push(suite, "xbt_str_split_str", test_split_str,  "test the function xbt_str_split_str");
-    /* SGU: END FILE */
-
-    /* SGU: BEGIN FILE xbt/xbt_sha.c */
-      suite = xbt_test_suite_by_name("hash","Various hash functions");
-      xbt_test_suite_push(suite, "sha", test_crypto_sha, "Test of the sha algorithm");
     /* SGU: END FILE */
 
     /* SGU: BEGIN FILE xbt/config.c */
@@ -183,6 +192,7 @@ int main(int argc, char *argv[]) {
   /* Got all my tests to do */
       
   res = xbt_test_run(selection);
+  xbt_test_exit();
   xbt_exit();
   return res;
 }

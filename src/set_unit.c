@@ -35,8 +35,8 @@ static void my_elem_free(void *e) {
 }
 
 static void debuged_add(xbt_set_t  set,
-			const char *name,
-			const char *data) {
+                        const char *name,
+                        const char *data) {
   my_elem_t    elm;
 
   elm = xbt_new(s_my_elem_t,1);
@@ -70,14 +70,14 @@ static void search_name(xbt_set_t head,const char*key) {
   xbt_test_add1("Search by name %s",key);
   elm = (my_elem_t)xbt_set_get_by_name(head,key);
   xbt_test_log2(" Found %s (under ID %d)\n",
-		elm? elm->data:"(null)",
-		elm? elm->ID:-1);
+                elm? elm->data:"(null)",
+                   elm? elm->ID:-1);
   if (strcmp(key,elm->name))
     THROW2(mismatch_error,0,"The key (%s) is not the one expected (%s)",
-	   key,elm->name);
+           key,elm->name);
   if (strcmp(elm->name,elm->data))
     THROW2(mismatch_error,0,"The name (%s) != data (%s)",
-	   key,elm->name);
+           key,elm->name);
   fflush(stdout);
 }
 
@@ -87,30 +87,30 @@ static void search_id(xbt_set_t head,int id,const char*key) {
   xbt_test_add1("Search by id %d",id);
   elm = (my_elem_t) xbt_set_get_by_id(head,id);
   xbt_test_log2("Found %s (data %s)",
-		elm? elm->name:"(null)",
-		elm? elm->data:"(null)");
+                elm? elm->name:"(null)",
+                   elm? elm->data:"(null)");
   if (id != elm->ID)
     THROW2(mismatch_error,0,"The found ID (%d) is not the one expected (%d)",
-	   elm->ID,id);
+           elm->ID,id);
   if (strcmp(key,elm->name))
     THROW2(mismatch_error,0,"The key (%s) is not the one expected (%s)",
-	   elm->name,key);
+           elm->name,key);
   if (strcmp(elm->name,elm->data))
     THROW2(mismatch_error,0,"The name (%s) != data (%s)",
-	   elm->name,elm->data);
+           elm->name,elm->data);
 }
 
 
 static void traverse(xbt_set_t set) {
   xbt_set_cursor_t cursor=NULL;
   my_elem_t         elm=NULL;
- 
+
   xbt_set_foreach(set,cursor,elm) {
     xbt_test_assert0(elm,"Dude ! Got a null elm during traversal!");
     xbt_test_log3("Id(%d):  %s->%s\n",elm->ID,elm->name,elm->data);
     xbt_test_assert2(!strcmp(elm->name,elm->data),
-		     "Key(%s) != value(%s). Abording",
-		     elm->name,elm->data);
+                     "Key(%s) != value(%s). Abording",
+                     elm->name,elm->data);
   }
 }
 
@@ -122,9 +122,9 @@ static void search_not_found(xbt_set_t set, const char *data) {
     xbt_set_get_by_name(set,data);
     THROW1(unknown_error,0,"Found something which shouldn't be there (%s)",data);
   } CATCH(e) {
-    if (e.category != not_found_error) 
+    if (e.category != not_found_error)
       xbt_test_exception(e);
-    xbt_ex_free(e);  
+    xbt_ex_free(e);
   }
 }
 
@@ -136,7 +136,7 @@ XBT_TEST_UNIT("basic",test_set_basic,"Basic usage") {
 
   xbt_test_add0("Traverse the empty set");
   traverse(set);
-  
+
   xbt_test_add0("Free a data set");
   fill(&set);
   xbt_set_free(&set);

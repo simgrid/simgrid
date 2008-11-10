@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 387 "xbt/xbt_str.c" 
+# 423 "xbt/xbt_str.c" 
 #include "xbt/str.h"
 
 #define mytest(name, input, expected) \
@@ -16,10 +16,10 @@
   d=xbt_str_split_quoted(input); \
   s=xbt_str_join(d,"XXX"); \
   xbt_test_assert3(!strcmp(s,expected),\
-		   "Input (%s) leads to (%s) instead of (%s)", \
-		   input,s,expected);\
-  free(s); \
-  xbt_dynar_free(&d);
+                   "Input (%s) leads to (%s) instead of (%s)", \
+                   input,s,expected);\
+                   free(s); \
+                   xbt_dynar_free(&d);
 
 XBT_TEST_UNIT("xbt_str_split_quoted",test_split_quoted, "test the function xbt_str_split_quoted") {
   xbt_dynar_t d;
@@ -45,10 +45,10 @@ XBT_TEST_UNIT("xbt_str_split_quoted",test_split_quoted, "test the function xbt_s
   d=xbt_str_split_str(input, separator); \
   s=xbt_str_join(d,"XXX"); \
   xbt_test_assert3(!strcmp(s,expected),\
-		   "Input (%s) leads to (%s) instead of (%s)", \
-		   input,s,expected);\
-  free(s); \
-  xbt_dynar_free(&d);
+                   "Input (%s) leads to (%s) instead of (%s)", \
+                   input,s,expected);\
+                   free(s); \
+                   xbt_dynar_free(&d);
 
 XBT_TEST_UNIT("xbt_str_split_str",test_split_str, "test the function xbt_str_split_str") {
   xbt_dynar_t d;

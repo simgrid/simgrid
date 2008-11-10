@@ -8,17 +8,17 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 731 "xbt/cunit.c" 
+# 752 "xbt/cunit.c" 
 
 
 XBT_TEST_UNIT("expect",test_expected_failure,"expected failures") {
-    xbt_test_add0("Skipped test");
-    xbt_test_skip(); 
+  xbt_test_add0("Skipped test");
+  xbt_test_skip();
 
-    xbt_test_add2("%s %s","EXPECTED","FAILURE");
-    xbt_test_expect_failure();
-    xbt_test_log2("%s %s","Test","log");
-    xbt_test_fail0("EXPECTED FAILURE");
+  xbt_test_add2("%s %s","EXPECTED","FAILURE");
+  xbt_test_expect_failure();
+  xbt_test_log2("%s %s","Test","log");
+  xbt_test_fail0("EXPECTED FAILURE");
 }
 
 /*******************************/

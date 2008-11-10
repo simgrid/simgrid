@@ -30,7 +30,7 @@ XBT_TEST_UNIT("basic",test_swag_basic,"Basic usage") {
 
   xbt_test_add0("Basic usage");
   xbt_test_log3("%p %p %ld\n",obj1,&(obj1->setB),
-		(long)((char *)&(obj1->setB) - (char *)obj1));
+                (long)((char *)&(obj1->setB) - (char *)obj1));
 
   setA = xbt_swag_new(xbt_swag_offset(*obj1,setA));
   setB = xbt_swag_new(xbt_swag_offset(*obj1,setB));
@@ -62,7 +62,7 @@ XBT_TEST_UNIT("basic",test_swag_basic,"Basic usage") {
 
   xbt_test_assert(xbt_swag_size(setA) == 2);
   xbt_test_assert(xbt_swag_size(setB) == 1);
-   
+
   xbt_swag_free(setA);
   xbt_swag_free(setB);
 }

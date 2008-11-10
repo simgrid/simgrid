@@ -8,13 +8,13 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 1145 "xbt/config.c" 
+# 1124 "xbt/config.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 
 
 static xbt_cfg_t make_set(){
-  xbt_cfg_t set=NULL; 
+  xbt_cfg_t set=NULL;
 
   set = xbt_cfg_new();
   xbt_cfg_register_str(set,"speed:1_to_2_int");
@@ -35,14 +35,14 @@ XBT_TEST_UNIT("memuse",test_config_memuse,"Alloc and free a config set") {
 XBT_TEST_UNIT("validation",test_config_validation,"Validation tests") {
   xbt_cfg_t set = set=make_set();
   xbt_ex_t e;
-  
+
   xbt_test_add0("Having too few elements for speed");
   xbt_cfg_set_parse(set, "peername:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
   TRY {
     xbt_cfg_check(set);
   } CATCH(e) {
-    if (e.category != mismatch_error || 
-	strncmp(e.msg,"Config elem speed needs",strlen("Config elem speed needs")))
+    if (e.category != mismatch_error ||
+        strncmp(e.msg,"Config elem speed needs",strlen("Config elem speed needs")))
       xbt_test_fail1("Got an exception. msg=%s",e.msg);
     xbt_ex_free(e);
   }
@@ -52,14 +52,14 @@ XBT_TEST_UNIT("validation",test_config_validation,"Validation tests") {
 
 
   xbt_test_add0("Having too much values of 'speed'");
-  set=make_set(); 
+  set=make_set();
   xbt_cfg_set_parse(set,"peername:toto:42 user:alegrand");
   TRY {
     xbt_cfg_set_parse(set,"speed:42 speed:24 speed:34");
   } CATCH(e) {
     if (e.category != mismatch_error ||
-	strncmp(e.msg,"Cannot add value 34 to the config elem speed",
-		strlen("Config elem speed needs")))
+        strncmp(e.msg,"Cannot add value 34 to the config elem speed",
+                strlen("Config elem speed needs")))
       xbt_test_fail1("Got an exception. msg=%s",e.msg);
     xbt_ex_free(e);
   }
@@ -72,30 +72,30 @@ XBT_TEST_UNIT("validation",test_config_validation,"Validation tests") {
 XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
 
   xbt_test_add0("Get a single value");
-  {	
+  {
     /* get_single_value */
     int ival;
     xbt_cfg_t myset=make_set();
-    
+
     xbt_cfg_set_parse(myset,"peername:toto:42 speed:42");
-    ival = xbt_cfg_get_int(myset,"speed"); 
-    if (ival != 42) 
+    ival = xbt_cfg_get_int(myset,"speed");
+    if (ival != 42)
       xbt_test_fail1("Speed value = %d, I expected 42",ival);
     xbt_cfg_free(&myset);
   }
 
   xbt_test_add0("Get multiple values");
-  {	
+  {
     /* get_multiple_value */
-    xbt_dynar_t dyn; 
+    xbt_dynar_t dyn;
     xbt_cfg_t myset=make_set();
-    
+
     xbt_cfg_set_parse(myset, "peername:veloce user:foo\nuser:bar\tuser:toto");
     xbt_cfg_set_parse(myset,"speed:42");
-    xbt_cfg_check(myset); 
+    xbt_cfg_check(myset);
     dyn = xbt_cfg_get_dynar(myset,"user");
 
-    if (xbt_dynar_length(dyn) != 3) 
+    if (xbt_dynar_length(dyn) != 3)
       xbt_test_fail1("Dynar length = %lu, I expected 3", xbt_dynar_length(dyn));
 
     if (strcmp(xbt_dynar_get_as(dyn,0,char*),"foo"))
@@ -106,15 +106,15 @@ XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
 
     if (strcmp(xbt_dynar_get_as(dyn,2,char*),"toto"))
       xbt_test_fail1("Dynar[2] = %s, I expected toto",  xbt_dynar_get_as(dyn,2,char*));
-    xbt_cfg_free(&myset);    
+    xbt_cfg_free(&myset);
   }
-  
+
   xbt_test_add0("Access to a non-existant entry");
-  {	
+  {
     /* non-existant_entry */
     xbt_cfg_t myset=make_set();
     xbt_ex_t e;
-    
+
     TRY {
       xbt_cfg_set_parse(myset, "color:blue");
     } CATCH(e) {
@@ -122,7 +122,7 @@ XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
         xbt_test_exception(e);
       xbt_ex_free(e);
     }
-    xbt_cfg_free(&myset);    
+    xbt_cfg_free(&myset);
   }
 }
 /*******************************/
