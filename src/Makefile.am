@@ -224,7 +224,7 @@ JMSG_C_SRC = \
   java/jmsg_host.c          java/jmsg_host.h           \
   java/jmsg_process.c       java/jmsg_process.h        \
   java/jmsg_task.c          java/jmsg_task.h           \
-  java/jmsg_application_handler.c
+  java/jmsg_application_handler.c jmsg_application_handler.h
 
 JMSG_JAVA_SRC = \
   java/simgrid/msg/MsgException.java                 \
