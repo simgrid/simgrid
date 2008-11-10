@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
  */
 /** @addtogroup m_process_management
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Agents" --> \endhtmlonly
- * 
+ *
  *  We need to simulate many independent scheduling decisions, so
  *  the concept of <em>process</em> is at the heart of the
  *  simulator. A process may be defined as a <em>code</em>, with
@@ -58,7 +58,7 @@ void *_MSG_process_create_from_SIMIX(const char *name,
 /** \ingroup m_process_management
  * \brief Creates and runs a new #m_process_t.
  *
- * Does exactly the same as #MSG_process_create_with_arguments but without 
+ * Does exactly the same as #MSG_process_create_with_arguments but without
    providing standard arguments (\a argc, \a argv, \a start_time, \a kill_time).
  * \sa MSG_process_create_with_arguments
  */
@@ -73,7 +73,7 @@ m_process_t MSG_process_create(const char *name,
 /** \ingroup m_process_management
  * \brief Creates and runs a new #m_process_t.
 
- * A constructor for #m_process_t taking four arguments and returning the 
+ * A constructor for #m_process_t taking four arguments and returning the
  * corresponding object. The structure (and the corresponding thread) is
  * created, and put in the list of ready process.
  * \param name a name for the object. It is for user-level information
@@ -100,14 +100,14 @@ m_process_t MSG_process_create_with_arguments(const char *name,
 					      void *data, m_host_t host,
 					      int argc, char **argv)
 {
-  return MSG_process_create_with_environment(name, code, data, host, 
+  return MSG_process_create_with_environment(name, code, data, host,
 					     argc,argv,NULL);
 }
 
 /** \ingroup m_process_management
  * \brief Creates and runs a new #m_process_t.
 
- * A constructor for #m_process_t taking four arguments and returning the 
+ * A constructor for #m_process_t taking four arguments and returning the
  * corresponding object. The structure (and the corresponding thread) is
  * created, and put in the list of ready process.
  * \param name a name for the object. It is for user-level information
@@ -217,7 +217,7 @@ MSG_error_t MSG_process_change_host(m_host_t host)
 /** \ingroup m_process_management
  * \brief Return the user data of a #m_process_t.
  *
- * This function checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not
    and return the user data associated to \a process if it is possible.
  */
 void *MSG_process_get_data(m_process_t process)
@@ -230,7 +230,7 @@ void *MSG_process_get_data(m_process_t process)
 /** \ingroup m_process_management
  * \brief Set the user data of a #m_process_t.
  *
- * This function checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not
    and set the user data associated to \a process if it is possible.
  */
 MSG_error_t MSG_process_set_data(m_process_t process, void *data)
@@ -246,8 +246,8 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data)
 /** \ingroup m_process_management
  * \brief Return the location on which an agent is running.
  *
- * This function checks whether \a process is a valid pointer or not 
-   and return the m_host_t corresponding to the location on which \a 
+ * This function checks whether \a process is a valid pointer or not
+   and return the m_host_t corresponding to the location on which \a
    process is running.
  */
 m_host_t MSG_process_get_host(m_process_t process)
@@ -262,8 +262,8 @@ m_host_t MSG_process_get_host(m_process_t process)
  *
  * \brief Return a #m_process_t given its PID.
  *
- * This function search in the list of all the created m_process_t for a m_process_t 
-   whose PID is equal to \a PID. If no host is found, \c NULL is returned. 
+ * This function search in the list of all the created m_process_t for a m_process_t
+   whose PID is equal to \a PID. If no host is found, \c NULL is returned.
    Note that the PID are uniq in the whole simulation, not only on a given host.
  */
 m_process_t MSG_process_from_PID(int PID)
@@ -281,12 +281,12 @@ m_process_t MSG_process_from_PID(int PID)
 /** \ingroup m_process_management
  * \brief Returns the process ID of \a process.
  *
- * This function checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not
    and return its PID (or 0 in case of problem).
  */
 int MSG_process_get_PID(m_process_t process)
 {
-  /* Do not raise an exception here: this function is used in the logs, 
+  /* Do not raise an exception here: this function is used in the logs,
      and it will be called back by the exception handling stuff */
   if (process == NULL || process->simdata == NULL)
     return 0;
@@ -297,8 +297,8 @@ int MSG_process_get_PID(m_process_t process)
 /** \ingroup m_process_management
  * \brief Returns the process ID of the parent of \a process.
  *
- * This function checks whether \a process is a valid pointer or not 
-   and return its PID. Returns -1 if the agent has not been created by 
+ * This function checks whether \a process is a valid pointer or not
+   and return its PID. Returns -1 if the agent has not been created by
    another agent.
  */
 int MSG_process_get_PPID(m_process_t process)
@@ -312,7 +312,7 @@ int MSG_process_get_PPID(m_process_t process)
 /** \ingroup m_process_management
  * \brief Return the name of an agent.
  *
- * This function checks whether \a process is a valid pointer or not 
+ * This function checks whether \a process is a valid pointer or not
    and return its name.
  */
 const char *MSG_process_get_name(m_process_t process)

@@ -22,7 +22,7 @@ MSG_Global_t msg_global = NULL;
 
 /** \defgroup msg_simulation   MSG simulation Functions
  *  \brief This section describes the functions you need to know to
- *  set up a simulation. You should have a look at \ref MSG_examples 
+ *  set up a simulation. You should have a look at \ref MSG_examples
  *  to have an overview of their usage.
  */
 /** @addtogroup msg_simulation
@@ -57,7 +57,7 @@ void MSG_global_init(int *argc, char **argv)
     XBT_LOG_CONNECT(msg_kernel, msg);
     XBT_LOG_CONNECT(msg_mailbox, msg);
     XBT_LOG_CONNECT(msg_process, msg);
-     
+
     SIMIX_global_init(argc, argv);
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
@@ -66,6 +66,7 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->process_list = xbt_fifo_new();
     msg_global->max_channel = 0;
     msg_global->PID = 1;
+    msg_global->sent_msg = 0;
 
 	/* initialization of the mailbox module */
 	MSG_mailbox_mod_init();
@@ -91,7 +92,7 @@ void MSG_paje_output(const char *filename)
  */
 /** @addtogroup m_channel_management
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Channels" --> \endhtmlonly
- * 
+ *
  *
  *  For convenience, the simulator provides the notion of channel
  *  that is close to the tag notion in MPI. A channel is not a
@@ -124,7 +125,7 @@ MSG_error_t MSG_set_channel_number(int number)
 /** \ingroup m_channel_management
  * \brief Return the number of channel in the simulation.
  *
- * This function has to be called once the number of channel is fixed. I can't 
+ * This function has to be called once the number of channel is fixed. I can't
    figure out a reason why anyone would like to call this function but nevermind.
  * \return the number of channel in the simulation.
  */
@@ -251,7 +252,7 @@ MSG_error_t MSG_clean(void)
 
   SIMIX_clean();
 
-  
+
 
   return MSG_OK;
 }
@@ -263,4 +264,8 @@ MSG_error_t MSG_clean(void)
 double MSG_get_clock(void)
 {
   return SIMIX_get_clock();
+}
+
+unsigned long int MSG_get_sent_msg() {
+  return msg_global->sent_msg;
 }

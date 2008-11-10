@@ -1,12 +1,12 @@
 /*     $Id$      */
-  
+
 /* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
 /* Copyright (c) 2007 Bruno Donassolo.                                      */
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-  
+
 #ifndef METASIMGRID_PRIVATE_H
 #define METASIMGRID_PRIVATE_H
 
@@ -34,7 +34,7 @@ typedef struct s_msg_mailbox
 	char* hostname;						/* the name of the host containing the mailbox				*/
 }s_msg_mailbox_t;
 
-typedef struct simdata_host 
+typedef struct simdata_host
 {
 	smx_host_t smx_host;				/* SURF modeling								*/
 	struct s_msg_mailbox** mailboxes;	/* mailboxes to store msg tasks of of the host	*/
@@ -48,7 +48,7 @@ typedef struct simdata_task {
   smx_action_t comm;	        /* SURF modeling of communication  */
   double message_size;		/* Data size  */
   double computation_amount;	/* Computation size  */
-	smx_cond_t cond;					
+	smx_cond_t cond;
 	smx_mutex_t mutex; 				/* Task mutex */
   m_process_t sender;
   m_process_t receiver;
@@ -95,12 +95,13 @@ typedef struct MSG_Global {
   int max_channel;
   int PID;
   int session;
+  unsigned long int sent_msg; /* Total amount of messages sent during the simulation */
 } s_MSG_Global_t, *MSG_Global_t;
 
 /*extern MSG_Global_t msg_global;*/
 XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
-      
+
 /*************************************************************/
 
 #define PROCESS_SET_ERRNO(val) (MSG_process_self()->simdata->last_errno=val)

@@ -24,7 +24,7 @@ void MSG_mailbox_mod_exit(void);
  * by the parameter alias and add it in the global dictionary.
  *
  * \param alias		The alias of the mailbox to create.
- * 
+ *
  * \return		The newly created mailbox.
  */
 XBT_PUBLIC(msg_mailbox_t)
@@ -38,7 +38,7 @@ MSG_mailbox_new(const char *alias);
  * this type of mailbox is associated with a channel.
  *
  * \param alias		The alias of the mailbox to create.
- * 
+ *
  * \return		The newly created mailbox.
  */
 msg_mailbox_t
@@ -81,7 +81,7 @@ MSG_mailbox_get_by_alias(const char *alias);
  *
  * \return The mailbox of the specified host associated the channel
  *         specified as parameter.
- *		
+ *
  */
 XBT_PUBLIC(msg_mailbox_t)
 MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel);
@@ -160,16 +160,6 @@ MSG_mailbox_set_hostname(msg_mailbox_t mailbox, const char *hostname);
 XBT_PUBLIC(int)
 MSG_mailbox_is_empty(msg_mailbox_t mailbox);
 
-/*! \brief MSG_mailbox_put - put a task in a mailbox.
- *
- * The MSG_mailbox_put puts a task in a specified mailbox.
- *
- * \param mailbox	The mailbox where put the task.
- * \param task		The task to put in the mailbox.
- */
-XBT_PUBLIC(void)
-MSG_mailbox_put(msg_mailbox_t mailbox, m_task_t task);
-
 /*! \brief MSG_mailbox_remove - remove a task from a mailbox.
  *
  * The MSG_mailbox_remove removes a task from a specified mailbox.
@@ -220,7 +210,7 @@ MSG_mailbox_pop_head(msg_mailbox_t mailbox);
 XBT_PUBLIC(m_task_t)
 MSG_mailbox_get_first_host_task(msg_mailbox_t mailbox, m_host_t host);
 
-/*! \brief MSG_mailbox_get_count_host_waiting_tasks - Return the number of tasks 
+/*! \brief MSG_mailbox_get_count_host_waiting_tasks - Return the number of tasks
    waiting to be received in a mailbox and sent by a host.
  *
  * \param mailbox	The mailbox concerned by the operation.

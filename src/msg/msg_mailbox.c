@@ -51,11 +51,6 @@ void MSG_mailbox_free(void *mailbox)
   free(_mailbox);
 }
 
-void MSG_mailbox_put(msg_mailbox_t mailbox, m_task_t task)
-{
-  xbt_fifo_push(mailbox->tasks, task);
-}
-
 smx_cond_t MSG_mailbox_get_cond(msg_mailbox_t mailbox)
 {
   return mailbox->cond;
@@ -332,6 +327,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   task_simdata->refcount ++;
   local_host = ((simdata_process_t) process->simdata)->m_host;
+  msg_global->sent_msg++;
 
   /* get the host name containing the mailbox */
   hostname = MSG_mailbox_get_hostname(mailbox);
@@ -350,7 +346,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   SIMIX_mutex_lock(remote_host->simdata->mutex);
 
   /* put the task in the mailbox */
-  MSG_mailbox_put(mailbox, task);
+  xbt_fifo_push(mailbox->tasks, task);
 
   if ((cond = MSG_mailbox_get_cond(mailbox))) {
     DEBUG0("Somebody is listening. Let's wake him up!");
