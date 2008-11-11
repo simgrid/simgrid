@@ -4,7 +4,8 @@
 # You can redistribute and/or modify it under the terms of the
 # GNU LGPL (v2.1) licence.
 
-SUBDIRS=gras tesh
+SUBDIRS=gras tesh 
+#tesh2
 include $(top_srcdir)/acmacro/dist-files.mk
 if GRAMINE_MODE
 else
