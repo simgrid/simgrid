@@ -198,8 +198,12 @@ EXTRA_DIST      += simdag/platforms/one_cluster_foreach.xml \
                    simdag/platforms/two_clusters_symmetric.xml \
                    simdag/platforms/two_clusters.xml \
                    simdag/platforms/two_hosts_multi_hop.xml \
-                   simdag/platforms/two_hosts_one_link.xml
-
+                   simdag/platforms/two_hosts_one_link.xml \
+		   simdag/platforms/bob.fail \
+		   simdag/platforms/bob.trace \
+		   simdag/platforms/link1.bw \
+		   simdag/platforms/link1.fail \
+		   simdag/platforms/link1.lat 
 
 # from L.C. Canon
 noinst_PROGRAMS += simdag/basic0 \
