@@ -3,9 +3,13 @@
 import re        
 from buildbot.steps.source import SVN
 from buildbot.steps.shell import ShellCommand
+from buildbot.steps.transfer import FileDownload
 
 from buildbot.status import builder
 from buildbot.status.builder import SUCCESS,FAILURE, EXCEPTION,WARNINGS
+
+from buildbot.process.properties import WithProperties
+
 
 # Define a new builder status
 # Configure return the exit code 77 when the target platform don't
@@ -78,7 +82,19 @@ class CustomConfigure(ShellCommand):
         return []
 
 
+"""
+Cleanup the build dir, and setup a SVN revision in the waterfall afterward
+"""
+class CleanupCommand(ShellCommand):
+   name="cleanup"
+   descriptionDone="cleanup"
+   command=["bash","-c","rm -rf * .svn"]
 
+   def maybeGetText2(self,cmd,results):
+       if self.build.getProperty("revision") == None:
+           return ["Missing svn revision"]
+       return ["SVN r%s" % self.build.getProperty("revision")]
+        
 """
 Just like a plain SVN, but displays the current revision in the waterfall afterall
 """
@@ -97,7 +113,7 @@ class CustomSVN(SVN):
        lines = cmd.logs['stdio'].getText()
        r = re.search(' (\d+).',lines)
        if results == SUCCESS and r:
-           return ["SVN revision %s" % r.group(1)]
+           return ["SVN r%s" % r.group(1)]
        else:
            return []
               
