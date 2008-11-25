@@ -68,8 +68,6 @@ int master(int argc, char *argv[])
 
   /* time measurement */
   start_time = MSG_get_clock();
-  //MSG_task_put(todo, slave, PORT_22);
-  INFO1("Sending to %s", id_alias);
   MSG_task_send(todo, id_alias);  
 
   end_time = MSG_get_clock();
@@ -97,11 +95,7 @@ int slave(int argc, char *argv[])
   id = atoi(argv[1]);
   sprintf(id_alias, "%d",id);
 
-
-  //a = MSG_task_get(&(task), PORT_22);
-  INFO1("Receiving on %s", id_alias);
-  a = MSG_task_receive(&(task), id_alias );
-  
+  a = MSG_task_receive(&(task), id_alias ); 
 
   if (a != MSG_OK) {
     INFO0("Hey?! What's up?");
