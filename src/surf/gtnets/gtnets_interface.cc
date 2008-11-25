@@ -53,12 +53,32 @@ int gtnets_create_flow(int src, int dst, long datasize, void* metadata){
 // get the time (double) until a flow completes (the first such flow)
 // if no flows exist, return -1.0
 double gtnets_get_time_to_next_flow_completion(){
-  return gtnets_sim->get_time_to_next_flow_completion();
+  ofstream file;
+  double value;
+  file.open ("/dev/null");
+  streambuf* sbuf = cout.rdbuf();
+  cout.rdbuf(file.rdbuf());
+
+  value = gtnets_sim->get_time_to_next_flow_completion();
+
+  cout.rdbuf(sbuf);
+
+  return value;
 }
 
 // run until a flow completes (returns that flow's metadata)
 int gtnets_run_until_next_flow_completion(void ***metadata, int *number_of_flows){
-  return gtnets_sim->run_until_next_flow_completion(metadata, number_of_flows);
+  ofstream file;
+  double value;
+  file.open ("/dev/null");
+  streambuf* sbuf = cout.rdbuf();
+  cout.rdbuf(file.rdbuf());
+
+  value = gtnets_sim->run_until_next_flow_completion(metadata, number_of_flows);
+
+  cout.rdbuf(sbuf);
+
+  return value;
 }
 
 // get the total received in bytes using the TCPServer object totRx field
