@@ -16,11 +16,13 @@ typedef enum {
 } channel_t;
 
 //keep a pointer to all surf running tasks.
-#define NTASKS 2
+#define NTASKS 150
 int bool_printed=0;
 double start_time, end_time, elapsed_time;
 double   gl_data_size[NTASKS];
 m_task_t gl_task_array[NTASKS];
+const char * slavenames[NTASKS];
+const char * masternames[NTASKS];
 int gl_task_array_id=0;
 
 #define FINALIZE ((void*)221297) /* a magic number to tell people to stop working */
@@ -32,8 +34,13 @@ int master(int argc, char *argv[])
   double task_comm_size = 0;
   m_task_t todo;
   m_host_t slave;
+  char id_alias[10];
   //unique id to control statistics
-  int id=gl_task_array_id++;
+  int id = -1;
+
+  if(argc != 4){
+    INFO1("Strange number of arguments expected 3 got %d", argc-1 );
+  }
 
   /* data size */
   xbt_assert1(sscanf(argv[1],"%lg", &task_comm_size),
@@ -41,6 +48,11 @@ int master(int argc, char *argv[])
 
   /* slave name */
   slavename = argv[2];
+  id = atoi(argv[3]);
+  sprintf(id_alias, "%d",id);
+  slavenames[id] = slavename;
+
+  masternames[id] = MSG_host_get_name(MSG_host_self());
   
   { /*  Task creation.  */
     char sprintf_buffer[64] = "Task_0";
@@ -56,7 +68,9 @@ int master(int argc, char *argv[])
 
   /* time measurement */
   start_time = MSG_get_clock();
-  MSG_task_put(todo, slave, PORT_22);
+  //MSG_task_put(todo, slave, PORT_22);
+  MSG_task_send(todo, id_alias);  
+
   end_time = MSG_get_clock();
   INFO3("Send completed (to %s). Transfer time: %f\t Agregate bandwidth: %f",
 	slave->name, (end_time - start_time), task_comm_size/(end_time-start_time));
@@ -68,12 +82,25 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  char flow='A';
+
   m_task_t task = NULL;
   int a;
   int id=0;
   double remaining=0;
-  a = MSG_task_get(&(task), PORT_22);
+  char id_alias[10];
+
+  if(argc != 2){
+    INFO1("Strange number of arguments expected 1 got %d", argc-1 );
+  }
+
+  id = atoi(argv[1]);
+  sprintf(id_alias, "%d",id);
+
+
+  //a = MSG_task_get(&(task), PORT_22);
+  a = MSG_task_receive(&(task), id_alias );
+  
+
   if (a != MSG_OK) {
     INFO0("Hey?! What's up?");
     xbt_assert0(0,"Unexpected behavior.");
@@ -85,17 +112,19 @@ int slave(int argc, char *argv[])
     bool_printed=1;
     for(id=0; id<NTASKS; id++){
       if(gl_task_array[id] == NULL){
-	INFO0("===> Task already done, skipping print statistics");
+
       }else if(gl_task_array[id] == task){
-	INFO2("===> Estimated Bw of FLOW%c : %f", flow+id, gl_data_size[id]/elapsed_time);
+	INFO5("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f", id,  gl_data_size[id]/elapsed_time, masternames[id], slavenames[id],  0.0);
       }else{
 	remaining = MSG_task_get_remaining_communication(gl_task_array[id]);
-	INFO3("===> Estimated Bw of FLOW%c : %f , with remaining %f", flow+id, (gl_data_size[id]-remaining)/elapsed_time, remaining);
+	INFO5("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f", id,  (gl_data_size[id]-remaining)/elapsed_time, masternames[id], slavenames[id],  remaining);
       }
     }
+    exit(0);
   }
 
   MSG_task_destroy(task);
+  
 
   return 0;
 } /* end_of_slave */
