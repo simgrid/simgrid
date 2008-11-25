@@ -847,6 +847,10 @@ void surf_network_model_init_Reno(const char *filename)
 				    func_reno_fpi);
   network_solve = lagrange_solve;
 
+  latency_factor = 10.4;
+  bandwidth_factor = 0.92;
+  weight_S_parameter = 8775;
+
   update_model_description(surf_network_model_description,
 			   "Reno",
 			   (surf_model_t) surf_network_model);
@@ -865,6 +869,10 @@ void surf_network_model_init_Reno2(const char *filename)
 				    func_reno2_fpi);
   network_solve = lagrange_solve;
 
+  latency_factor = 10.4;
+  bandwidth_factor = 0.92;
+  weight_S_parameter = 8775;
+
   update_model_description(surf_network_model_description,
 			   "Reno2",
 			   (surf_model_t) surf_network_model);
@@ -881,6 +889,10 @@ void surf_network_model_init_Vegas(const char *filename)
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
 				    func_vegas_fpi);
   network_solve = lagrange_solve;
+
+  latency_factor = 10.4;
+  bandwidth_factor = 0.92;
+  weight_S_parameter = 8775;
 
   update_model_description(surf_network_model_description,
 			   "Vegas",
