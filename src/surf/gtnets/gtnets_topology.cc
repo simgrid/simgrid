@@ -304,7 +304,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
     int tmpdst2 = nodeid_from_hostid(dst);
     if (((tmpsrc1 == tmpsrc2) && (tmpdst1 == tmpdst2)) ||
 	((tmpsrc1 == tmpdst2) && (tmpdst1 == tmpsrc2))){
-      fprintf(stderr, "Route already exists\n");
+      //fprintf(stderr, "Route already exists\n");
     }else{
       fprintf(stderr, "Different one hop route defined\n");
       return -1;
