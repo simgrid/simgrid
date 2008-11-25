@@ -5,14 +5,19 @@
   <process host="S1" function="master">
       <argument value="10000000"/>
       <argument value="C1"/>
+      <argument value="0"/>
   </process>
 
   <process host="S2" function="master">
       <argument value="10000000"/>
       <argument value="C2"/>
+      <argument value="1"/>
   </process>
 
-  <process host="C1" function="slave"/>
-  <process host="C2" function="slave"/>
-
+  <process host="C1" function="slave">
+      <argument value="0"/>
+  </process>
+  <process host="C2" function="slave">
+      <argument value="1"/>
+  </process>
 </platform>
