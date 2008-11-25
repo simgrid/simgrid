@@ -250,11 +250,11 @@ int GTSim::create_flow(int src, int dst, long datasize, void* metadata){
 
   gtnets_servers_[nflow_] = (TCPServer*) gtnets_nodes_[dst_node]->
        AddApplication(TCPServer(TCPReno()));
-  gtnets_servers_[nflow_]->BindAndListen(80);
+  gtnets_servers_[nflow_]->BindAndListen(1000+nflow_);
 
   gtnets_clients_[nflow_] = (TCPSend*)gtnets_nodes_[src_node]->
     AddApplication(TCPSend(metadata, gtnets_nodes_[dst_node]->GetIPAddr(), 
-			   80, Constant(datasize), TCPReno()));
+			   1000+nflow_, Constant(datasize), TCPReno()));
   gtnets_clients_[nflow_]->SetSendCallBack(tcp_sent_callback);
   gtnets_clients_[nflow_]->Start(0);
 
