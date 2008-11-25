@@ -66,7 +66,7 @@ CLEANFILES = sendrecv/*~ \
              properties/msg_prop
 
 if HAVE_GTNETS
-             CLEANFILES += gtnets/gtnets 
+             CLEANFILES += gtnets/gtnets gtnets/gtnets_kayo
 endif
 
 
@@ -83,7 +83,7 @@ noinst_PROGRAMS = sendrecv/sendrecv \
                   properties/msg_prop
 
 if HAVE_GTNETS
-  noinst_PROGRAMS += gtnets/gtnets 
+  noinst_PROGRAMS += gtnets/gtnets gtnets/gtnets_kayo
 endif
 
 
@@ -124,10 +124,12 @@ masterslave_masterslave_bypass_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 # verify if the GTNETS feature is working
 if HAVE_GTNETS
-gtnets_gtnets_SOURCES = gtnets/gtnets.c
+gtnets_gtnets_SOURCES  = gtnets/gtnets.c
+gtnets_gtnets_kayo_SOURCES  = gtnets/gtnets_kayo.c
 gtnets_gtnets_LDADD   = $(top_builddir)/src/libsimgrid.la
+gtnets_gtnets_kayo_LDADD   = $(top_builddir)/src/libsimgrid.la
 else
-  EXTRA_DIST+= gtnets/gtnets.c
+  EXTRA_DIST+= gtnets/gtnets.c gtnets/gtnets_kayo.c
 endif
 
 EXTRA_DIST+=$(TESTS)
