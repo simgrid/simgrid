@@ -2,253 +2,253 @@
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
   <process host="S1" function="master">
-      <argument value="100000"/>
-      <argument value="C1"/>
+      <argument value="10000000"/>
+      <argument value="C1"/><argument value="1"/>
   </process>
   <process host="S2" function="master">
-      <argument value="100000"/>
-      <argument value="C2"/>
+      <argument value="10000000"/>
+      <argument value="C2"/><argument value="2"/>
   </process>
   <process host="S3" function="master">
-      <argument value="100000"/>
-      <argument value="C3"/>
+      <argument value="10000000"/>
+      <argument value="C3"/><argument value="3"/>
   </process>
   <process host="S4" function="master">
-      <argument value="100000"/>
-      <argument value="C4"/>
+      <argument value="10000000"/>
+      <argument value="C4"/><argument value="4"/>
   </process>
   <process host="S5" function="master">
-      <argument value="100000"/>
-      <argument value="C5"/>
+      <argument value="10000000"/>
+      <argument value="C5"/><argument value="5"/>
   </process>
   <process host="S6" function="master">
-      <argument value="100000"/>
-      <argument value="C6"/>
+      <argument value="10000000"/>
+      <argument value="C6"/><argument value="6"/>
   </process>
   <process host="S7" function="master">
-      <argument value="100000"/>
-      <argument value="C7"/>
+      <argument value="10000000"/>
+      <argument value="C7"/><argument value="7"/>
   </process>
   <process host="S8" function="master">
-      <argument value="100000"/>
-      <argument value="C8"/>
+      <argument value="10000000"/>
+      <argument value="C8"/><argument value="8"/>
   </process>
   <process host="S9" function="master">
-      <argument value="100000"/>
-      <argument value="C9"/>
+      <argument value="10000000"/>
+      <argument value="C9"/><argument value="9"/>
   </process>
   <process host="S10" function="master">
-      <argument value="100000"/>
-      <argument value="C10"/>
+      <argument value="10000000"/>
+      <argument value="C10"/><argument value="10"/>
   </process>
   <process host="S11" function="master">
-      <argument value="100000"/>
-      <argument value="C11"/>
+      <argument value="10000000"/>
+      <argument value="C11"/><argument value="11"/>
   </process>
   <process host="S12" function="master">
-      <argument value="100000"/>
-      <argument value="C12"/>
+      <argument value="10000000"/>
+      <argument value="C12"/><argument value="12"/>
   </process>
   <process host="S13" function="master">
-      <argument value="100000"/>
-      <argument value="C13"/>
+      <argument value="10000000"/>
+      <argument value="C13"/><argument value="13"/>
   </process>
   <process host="S14" function="master">
-      <argument value="100000"/>
-      <argument value="C14"/>
+      <argument value="10000000"/>
+      <argument value="C14"/><argument value="14"/>
   </process>
   <process host="S15" function="master">
-      <argument value="100000"/>
-      <argument value="C15"/>
+      <argument value="10000000"/>
+      <argument value="C15"/><argument value="15"/>
   </process>
   <process host="S16" function="master">
-      <argument value="100000"/>
-      <argument value="C16"/>
+      <argument value="10000000"/>
+      <argument value="C16"/><argument value="16"/>
   </process>
   <process host="S17" function="master">
-      <argument value="100000"/>
-      <argument value="C17"/>
+      <argument value="10000000"/>
+      <argument value="C17"/><argument value="17"/>
   </process>
   <process host="S18" function="master">
-      <argument value="100000"/>
-      <argument value="C18"/>
+      <argument value="10000000"/>
+      <argument value="C18"/><argument value="18"/>
   </process>
   <process host="S19" function="master">
-      <argument value="100000"/>
-      <argument value="C19"/>
+      <argument value="10000000"/>
+      <argument value="C19"/><argument value="19"/>
   </process>
   <process host="S20" function="master">
-      <argument value="100000"/>
-      <argument value="C20"/>
+      <argument value="10000000"/>
+      <argument value="C20"/><argument value="20"/>
   </process>
   <process host="S21" function="master">
-      <argument value="100000"/>
-      <argument value="C21"/>
+      <argument value="10000000"/>
+      <argument value="C21"/><argument value="21"/>
   </process>
   <process host="S22" function="master">
-      <argument value="100000"/>
-      <argument value="C22"/>
+      <argument value="10000000"/>
+      <argument value="C22"/><argument value="22"/>
   </process>
   <process host="S23" function="master">
-      <argument value="100000"/>
-      <argument value="C23"/>
+      <argument value="10000000"/>
+      <argument value="C23"/><argument value="23"/>
   </process>
   <process host="S24" function="master">
-      <argument value="100000"/>
-      <argument value="C24"/>
+      <argument value="10000000"/>
+      <argument value="C24"/><argument value="24"/>
   </process>
   <process host="S25" function="master">
-      <argument value="100000"/>
-      <argument value="C25"/>
+      <argument value="10000000"/>
+      <argument value="C25"/><argument value="25"/>
   </process>
   <process host="S26" function="master">
-      <argument value="100000"/>
-      <argument value="C26"/>
+      <argument value="10000000"/>
+      <argument value="C26"/><argument value="26"/>
   </process>
   <process host="S27" function="master">
-      <argument value="100000"/>
-      <argument value="C27"/>
+      <argument value="10000000"/>
+      <argument value="C27"/><argument value="27"/>
   </process>
   <process host="S28" function="master">
-      <argument value="100000"/>
-      <argument value="C28"/>
+      <argument value="10000000"/>
+      <argument value="C28"/><argument value="28"/>
   </process>
   <process host="S29" function="master">
-      <argument value="100000"/>
-      <argument value="C29"/>
+      <argument value="10000000"/>
+      <argument value="C29"/><argument value="29"/>
   </process>
   <process host="S30" function="master">
-      <argument value="100000"/>
-      <argument value="C30"/>
+      <argument value="10000000"/>
+      <argument value="C30"/><argument value="30"/>
   </process>
   <process host="S31" function="master">
-      <argument value="100000"/>
-      <argument value="C31"/>
+      <argument value="10000000"/>
+      <argument value="C31"/><argument value="31"/>
   </process>
   <process host="S32" function="master">
-      <argument value="100000"/>
-      <argument value="C32"/>
+      <argument value="10000000"/>
+      <argument value="C32"/><argument value="32"/>
   </process>
   <process host="S33" function="master">
-      <argument value="100000"/>
-      <argument value="C33"/>
+      <argument value="10000000"/>
+      <argument value="C33"/><argument value="33"/>
   </process>
   <process host="S34" function="master">
-      <argument value="100000"/>
-      <argument value="C34"/>
+      <argument value="10000000"/>
+      <argument value="C34"/><argument value="34"/>
   </process>
   <process host="S35" function="master">
-      <argument value="100000"/>
-      <argument value="C35"/>
+      <argument value="10000000"/>
+      <argument value="C35"/><argument value="35"/>
   </process>
   <process host="S36" function="master">
-      <argument value="100000"/>
-      <argument value="C36"/>
+      <argument value="10000000"/>
+      <argument value="C36"/><argument value="36"/>
   </process>
   <process host="S37" function="master">
-      <argument value="100000"/>
-      <argument value="C37"/>
+      <argument value="10000000"/>
+      <argument value="C37"/><argument value="37"/>
   </process>
   <process host="S38" function="master">
-      <argument value="100000"/>
-      <argument value="C38"/>
+      <argument value="10000000"/>
+      <argument value="C38"/><argument value="38"/>
   </process>
   <process host="S39" function="master">
-      <argument value="100000"/>
-      <argument value="C39"/>
+      <argument value="10000000"/>
+      <argument value="C39"/><argument value="39"/>
   </process>
   <process host="S40" function="master">
-      <argument value="100000"/>
-      <argument value="C40"/>
+      <argument value="10000000"/>
+      <argument value="C40"/><argument value="40"/>
   </process>
   <process host="S41" function="master">
-      <argument value="100000"/>
-      <argument value="C41"/>
+      <argument value="10000000"/>
+      <argument value="C41"/><argument value="41"/>
   </process>
   <process host="S42" function="master">
-      <argument value="100000"/>
-      <argument value="C42"/>
+      <argument value="10000000"/>
+      <argument value="C42"/><argument value="42"/>
   </process>
   <process host="S43" function="master">
-      <argument value="100000"/>
-      <argument value="C43"/>
+      <argument value="10000000"/>
+      <argument value="C43"/><argument value="43"/>
   </process>
   <process host="S44" function="master">
-      <argument value="100000"/>
-      <argument value="C44"/>
+      <argument value="10000000"/>
+      <argument value="C44"/><argument value="44"/>
   </process>
   <process host="S45" function="master">
-      <argument value="100000"/>
-      <argument value="C45"/>
+      <argument value="10000000"/>
+      <argument value="C45"/><argument value="45"/>
   </process>
   <process host="S46" function="master">
-      <argument value="100000"/>
-      <argument value="C46"/>
+      <argument value="10000000"/>
+      <argument value="C46"/><argument value="46"/>
   </process>
   <process host="S47" function="master">
-      <argument value="100000"/>
-      <argument value="C47"/>
+      <argument value="10000000"/>
+      <argument value="C47"/><argument value="47"/>
   </process>
   <process host="S48" function="master">
-      <argument value="100000"/>
-      <argument value="C48"/>
+      <argument value="10000000"/>
+      <argument value="C48"/><argument value="48"/>
   </process>
   <process host="S49" function="master">
-      <argument value="100000"/>
-      <argument value="C49"/>
+      <argument value="10000000"/>
+      <argument value="C49"/><argument value="49"/>
   </process>
   <process host="S50" function="master">
-      <argument value="100000"/>
-      <argument value="C50"/>
+      <argument value="10000000"/>
+      <argument value="C50"/><argument value="50"/>
   </process>
-  <process host="C1" function="slave"/>
-  <process host="C2" function="slave"/>
-  <process host="C3" function="slave"/>
-  <process host="C4" function="slave"/>
-  <process host="C5" function="slave"/>
-  <process host="C6" function="slave"/>
-  <process host="C7" function="slave"/>
-  <process host="C8" function="slave"/>
-  <process host="C9" function="slave"/>
-  <process host="C10" function="slave"/>
-  <process host="C11" function="slave"/>
-  <process host="C12" function="slave"/>
-  <process host="C13" function="slave"/>
-  <process host="C14" function="slave"/>
-  <process host="C15" function="slave"/>
-  <process host="C16" function="slave"/>
-  <process host="C17" function="slave"/>
-  <process host="C18" function="slave"/>
-  <process host="C19" function="slave"/>
-  <process host="C20" function="slave"/>
-  <process host="C21" function="slave"/>
-  <process host="C22" function="slave"/>
-  <process host="C23" function="slave"/>
-  <process host="C24" function="slave"/>
-  <process host="C25" function="slave"/>
-  <process host="C26" function="slave"/>
-  <process host="C27" function="slave"/>
-  <process host="C28" function="slave"/>
-  <process host="C29" function="slave"/>
-  <process host="C30" function="slave"/>
-  <process host="C31" function="slave"/>
-  <process host="C32" function="slave"/>
-  <process host="C33" function="slave"/>
-  <process host="C34" function="slave"/>
-  <process host="C35" function="slave"/>
-  <process host="C36" function="slave"/>
-  <process host="C37" function="slave"/>
-  <process host="C38" function="slave"/>
-  <process host="C39" function="slave"/>
-  <process host="C40" function="slave"/>
-  <process host="C41" function="slave"/>
-  <process host="C42" function="slave"/>
-  <process host="C43" function="slave"/>
-  <process host="C44" function="slave"/>
-  <process host="C45" function="slave"/>
-  <process host="C46" function="slave"/>
-  <process host="C47" function="slave"/>
-  <process host="C48" function="slave"/>
-  <process host="C49" function="slave"/>
-  <process host="C50" function="slave"/>
+  <process host="C1" function="slave"><argument value="1"/></process>
+  <process host="C2" function="slave"><argument value="2"/></process>
+  <process host="C3" function="slave"><argument value="3"/></process>
+  <process host="C4" function="slave"><argument value="4"/></process>
+  <process host="C5" function="slave"><argument value="5"/></process>
+  <process host="C6" function="slave"><argument value="6"/></process>
+  <process host="C7" function="slave"><argument value="7"/></process>
+  <process host="C8" function="slave"><argument value="8"/></process>
+  <process host="C9" function="slave"><argument value="9"/></process>
+  <process host="C10" function="slave"><argument value="10"/></process>
+  <process host="C11" function="slave"><argument value="11"/></process>
+  <process host="C12" function="slave"><argument value="12"/></process>
+  <process host="C13" function="slave"><argument value="13"/></process>
+  <process host="C14" function="slave"><argument value="14"/></process>
+  <process host="C15" function="slave"><argument value="15"/></process>
+  <process host="C16" function="slave"><argument value="16"/></process>
+  <process host="C17" function="slave"><argument value="17"/></process>
+  <process host="C18" function="slave"><argument value="18"/></process>
+  <process host="C19" function="slave"><argument value="19"/></process>
+  <process host="C20" function="slave"><argument value="20"/></process>
+  <process host="C21" function="slave"><argument value="21"/></process>
+  <process host="C22" function="slave"><argument value="22"/></process>
+  <process host="C23" function="slave"><argument value="23"/></process>
+  <process host="C24" function="slave"><argument value="24"/></process>
+  <process host="C25" function="slave"><argument value="25"/></process>
+  <process host="C26" function="slave"><argument value="26"/></process>
+  <process host="C27" function="slave"><argument value="27"/></process>
+  <process host="C28" function="slave"><argument value="28"/></process>
+  <process host="C29" function="slave"><argument value="29"/></process>
+  <process host="C30" function="slave"><argument value="30"/></process>
+  <process host="C31" function="slave"><argument value="31"/></process>
+  <process host="C32" function="slave"><argument value="32"/></process>
+  <process host="C33" function="slave"><argument value="33"/></process>
+  <process host="C34" function="slave"><argument value="34"/></process>
+  <process host="C35" function="slave"><argument value="35"/></process>
+  <process host="C36" function="slave"><argument value="36"/></process>
+  <process host="C37" function="slave"><argument value="37"/></process>
+  <process host="C38" function="slave"><argument value="38"/></process>
+  <process host="C39" function="slave"><argument value="39"/></process>
+  <process host="C40" function="slave"><argument value="40"/></process>
+  <process host="C41" function="slave"><argument value="41"/></process>
+  <process host="C42" function="slave"><argument value="42"/></process>
+  <process host="C43" function="slave"><argument value="43"/></process>
+  <process host="C44" function="slave"><argument value="44"/></process>
+  <process host="C45" function="slave"><argument value="45"/></process>
+  <process host="C46" function="slave"><argument value="46"/></process>
+  <process host="C47" function="slave"><argument value="47"/></process>
+  <process host="C48" function="slave"><argument value="48"/></process>
+  <process host="C49" function="slave"><argument value="49"/></process>
+  <process host="C50" function="slave"><argument value="50"/></process>
 </platform>
