@@ -115,10 +115,10 @@ int slave(int argc, char *argv[])
     for(id=0; id<NTASKS; id++){
       if(gl_task_array[id] == NULL){
       }else if(gl_task_array[id] == task){
-	INFO5("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f", id,  gl_data_size[id]/elapsed_time, masternames[id], slavenames[id],  0.0);
+	INFO5("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f", id+1,  gl_data_size[id]/elapsed_time, masternames[id], slavenames[id],  0.0);
       }else{
 	remaining = MSG_task_get_remaining_communication(gl_task_array[id]);
-	INFO5("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f", id,  (gl_data_size[id]-remaining)/elapsed_time, masternames[id], slavenames[id],  remaining);
+	INFO5("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f", id+1,  (gl_data_size[id]-remaining)/elapsed_time, masternames[id], slavenames[id],  remaining);
       }
     }
     exit(0);
