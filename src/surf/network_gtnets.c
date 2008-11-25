@@ -286,7 +286,7 @@ static void add_route()
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
       }     
     }
-    if (nb_link > 1)
+    if (nb_link >= 1)
       route_new(src_id, dst_id, link_list, nb_link);
    }
 
