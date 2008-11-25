@@ -16,7 +16,7 @@ typedef enum {
 } channel_t;
 
 //keep a pointer to all surf running tasks.
-#define NTASKS 150
+#define NTASKS 1500
 int bool_printed=0;
 double start_time, end_time, elapsed_time;
 double   gl_data_size[NTASKS];
@@ -69,6 +69,7 @@ int master(int argc, char *argv[])
   /* time measurement */
   start_time = MSG_get_clock();
   //MSG_task_put(todo, slave, PORT_22);
+  INFO1("Sending to %s", id_alias);
   MSG_task_send(todo, id_alias);  
 
   end_time = MSG_get_clock();
@@ -98,6 +99,7 @@ int slave(int argc, char *argv[])
 
 
   //a = MSG_task_get(&(task), PORT_22);
+  INFO1("Receiving on %s", id_alias);
   a = MSG_task_receive(&(task), id_alias );
   
 
@@ -112,7 +114,6 @@ int slave(int argc, char *argv[])
     bool_printed=1;
     for(id=0; id<NTASKS; id++){
       if(gl_task_array[id] == NULL){
-
       }else if(gl_task_array[id] == task){
 	INFO5("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f", id,  gl_data_size[id]/elapsed_time, masternames[id], slavenames[id],  0.0);
       }else{
@@ -123,8 +124,13 @@ int slave(int argc, char *argv[])
     exit(0);
   }
 
-  MSG_task_destroy(task);
-  
+  for(id=0; id<NTASKS; id++){
+    if(gl_task_array[id] == task){
+      MSG_task_destroy(task);
+      gl_task_array[id] = NULL;
+      return 0;
+    }
+  }
 
   return 0;
 } /* end_of_slave */
