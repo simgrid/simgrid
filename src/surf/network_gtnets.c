@@ -291,6 +291,7 @@ static void add_route()
    }
 
   xbt_dict_free(&route_table);
+  gtnets_print_topology();
   XBT_OUT;
 }
 

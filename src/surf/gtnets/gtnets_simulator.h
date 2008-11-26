@@ -47,6 +47,7 @@ public:
   // returns the total received by the TCPServer peer of the given action
   double gtnets_get_flow_rx(void *metadata);
   void create_gtnets_topology();
+  void print_topology();
 private:
   void add_nodes();
   void node_connect();

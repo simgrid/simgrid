@@ -22,6 +22,8 @@ extern "C" {
   int gtnets_run_until_next_flow_completion(void*** metadata, int* number_of_flows);
   double gtnets_get_flow_rx(void *metadata);
 
+  void gtnets_print_topology(void);
+
   int gtnets_run(double delta);
   int gtnets_finalize();
 

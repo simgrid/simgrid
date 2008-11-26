@@ -101,3 +101,8 @@ int gtnets_finalize(){
   return 0;
 }
 
+// print topology
+void gtnets_print_topology(void){
+  gtnets_sim->print_topology();
+}
+

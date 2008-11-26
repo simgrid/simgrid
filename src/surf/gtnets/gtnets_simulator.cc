@@ -157,6 +157,10 @@ void GTSim::create_gtnets_topology(){
   node_connect();
 }
 
+void GTSim::print_topology(){
+  topo_->print_topology();
+}
+
 // Add a route that includes more than one hop. All one hop
 // routes must have been added. When this function is called
 // for the first time, all gtnets nodes are generated.
