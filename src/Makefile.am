@@ -50,6 +50,9 @@ EXTRA_DIST= \
 	surf/network_private.h \
 	surf/network_common.h \
 	surf/network_gtnets_private.h \
+	surf/gtnets/gtnets_interface.h \
+	surf/gtnets/gtnets_simulator.h \
+	surf/gtnets/gtnets_topology.h  \
 	\
 	include/surf/maxmin.h \
 	include/surf/trace_mgr.h \
