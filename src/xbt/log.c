@@ -427,7 +427,7 @@ When a category is passed a message by one of the logging macros, the
 category performs the following actions:
 
   - if the category has an appender, the message is passed to the
-    appender's doAppend() function,
+    appender's do_append() function,
   - if additivity is true for the category (which is the case by
     default, and can be controlled by xbt_log_additivity_set()), the
     message is passed to the category's parent.
