@@ -9,6 +9,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This file is to be included in ex.c, so the following headers are not mandatory, but it's to make sure that eclipse see them too */
+#include "xbt/ex.h"
+#include "xbt/str.h"
+#include "xbt/module.h" /* xbt_binary_name */
+#include "xbt_modinter.h" /* backtrace initialization headers */
+/* end of "useless" inclusions */
+
 extern char **environ;          /* the environment, as specified by the opengroup */
 
 /* Module creation/destruction: nothing to do on linux */
@@ -48,6 +55,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   xbt_assert0(e && e->used,"Backtrace not setup yet, cannot set it up for display");
 
   backtrace_syms = backtrace_symbols(e->bt, e->used);
+  /* ignore first one, which is this xbt_backtrace_current() */
+  e->used--;
+  memmove(backtrace_syms,backtrace_syms+1,sizeof(char*)*e->used);
   addrs = xbt_new(char *, e->used);
 
   e->bt_strings = NULL;
