@@ -1,16 +1,16 @@
 
 p latency check, 2 x 1 byte, opposite direction, shared link
 
-$ simdag/network/p2p/test_latency3 simdag/network/p2p/platform_2p_1sl.xml --log=sd_kernel.thres=warning
+$ simdag/network/p2p/test_latency3 simdag/network/p2p/platform_2p_1sl.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
 > 2.5
 
 p latency check, 2 x 1 byte, opposite direction, fat pipe
 
-$ simdag/network/p2p/test_latency3 simdag/network/p2p/platform_2p_1fl.xml --log=sd_kernel.thres=warning
+$ simdag/network/p2p/test_latency3 simdag/network/p2p/platform_2p_1fl.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
 > 1.5
 
 p latency check, 2 x 1 byte, opposite direction, link - switch - link 
 
-$ simdag/network/p2p/test_latency3 simdag/network/p2p/platform_2p_1switch.xml --log=sd_kernel.thres=warning
+$ simdag/network/p2p/test_latency3 simdag/network/p2p/platform_2p_1switch.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
 > 4
 

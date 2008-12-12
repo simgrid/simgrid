@@ -1,5 +1,5 @@
 
 p latency bounded by large latency link
 
-$ simdag/network/p2p/test_latency_bound simdag/network/p2p/platform_2p_1bb.xml --log=sd_kernel.thres=warning
+$ simdag/network/p2p/test_latency_bound simdag/network/p2p/platform_2p_1bb.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
 > 10001.5

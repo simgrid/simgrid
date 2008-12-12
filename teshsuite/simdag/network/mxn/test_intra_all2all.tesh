@@ -1,5 +1,5 @@
 
 p all 2 all test, only fat pipe switch is used concurrently
 
-$ simdag/network/mxn/test_intra_all2all simdag/network/mxn/platform_4p_1switch.xml --log=sd_kernel.thres=warning
+$ simdag/network/mxn/test_intra_all2all simdag/network/mxn/platform_4p_1switch.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
 > 8
