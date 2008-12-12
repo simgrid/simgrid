@@ -50,6 +50,7 @@ XBT_PUBLIC_DATA(int) (*xbt_pid)();
      - \ref log_use_conf_thres
      - \ref log_use_conf_multi
      - \ref log_use_conf_fmt
+     - \ref log_use_conf_app
      - \ref log_use_conf_add
    - \ref log_use_misc
  - \ref log_internals
@@ -68,10 +69,10 @@ program. The main design goal are:
     and to the user (with command line options)
   - <b>performances</b>: logging shouldn't slow down the program when turned off, for example
   - deal with <b>distributed settings</b>: SimGrid programs are [often] distributed ones,
-    and the logging mecanism allows to syndicate each and every log source into the same place.
+    and the logging mechanism allows to syndicate each and every log source into the same place.
     At least, its design would allow to, once we write the last missing pieces
 
-There is three main concepts in SimGrid's logging mecanism: <i>category</i>,
+There is three main concepts in SimGrid's logging mechanism: <i>category</i>,
 <i>priority</i> and <i>appender</i>. These three concepts work together to
 enable developers to log messages according to message type and priority, and
 to control at runtime how these messages are formatted and where they are
@@ -93,22 +94,23 @@ channels.
 
 The user can naturally declare interest into this or that logging category, but
 he also can specify the desired level of details for each of them. This is
-controled by the <i>priority</i> concept (which should maybe be renamed to
+controlled by the <i>priority</i> concept (which should maybe be renamed to
 <i>severity</i>).
 
-Empirically, the user can specify that he wants to see every debuging message
+Empirically, the user can specify that he wants to see every debugging message
 of GRAS while only being interested into the messages at level "error" or
 higher about the XBT internals.
 
 \subsection log_app 1.3 Message appenders
 
 The message appenders are the elements in charge of actually displaying the
-message to the user. For now, there is only one appender: the one able to print
-stuff on stderr. But everything is in place internally to write new ones, such
-as the one able to send the strings to a central server in charge of
-syndicating the logs of every distributed daemons on a well known location.
+message to the user. For now, only two appenders exist: the default one prints
+stuff on stderr while it is possible to create appenders printing to a specific
+file.
 
-One day, for sure ;)
+Other are planed (such as the one sending everything to a remote server,
+or the one using only a fixed amount of lines in a file, and rotating content on
+need). One day, for sure ;)
 
 \subsection log_lay 1.4 Message layouts
 
@@ -164,7 +166,7 @@ it should be complete and accurate.
 
 \section log_API_pri 2.2 Declaring message priority
 
-A category may be assigned a threshold priorty. The set of priorites are
+A category may be assigned a threshold priority. The set of priorities are
 defined by the \ref e_xbt_log_priority_t enum. All logging request under
 this priority will be discarded.
 
@@ -177,7 +179,7 @@ Logging requests are made by invoking a logging macro on a category.  All of
 the macros have a printf-style format string followed by arguments. If you
 compile with the -Wall option, gcc will warn you for unmatched arguments, ie
 when you pass a pointer to a string where an integer was specified by the
-format. This is usualy a good idea.
+format. This is usually a good idea.
 
 Because some C compilers do not support vararg macros, there is a version of
 the macro for any number of arguments from 0 to 6. The macro name ends with
@@ -195,16 +197,16 @@ said to be disabled. A category without an assigned priority will inherit
 one from the hierarchy.
 
 It is possible to use any non-negative integer as a priority. If, as in the
-example, one of the standard priorites is used, then there is a convenience
+example, one of the standard priorities is used, then there is a convenience
 macro that is typically used instead. For example, the above example is
 equivalent to the shorter:
 
 <code>CWARN4(MyCat, "Values are: %d and '%s'", 5, "oops");</code>
 
-\section log_API_isenabled 2.3 Checking if a perticular category/priority is enabled
+\section log_API_isenabled 2.3 Checking if a particular category/priority is enabled
 
-It is sometimes useful to check whether a perticular category is
-enabled at a perticular priority. One example is when you want to do
+It is sometimes useful to check whether a particular category is
+enabled at a particular priority. One example is when you want to do
 some extra computation to prepare a nice debugging message. There is
 no use of doing so if the message won't be used afterward because
 debugging is turned off.
@@ -238,7 +240,7 @@ should provide a macro simpler to use for the users not interested in SP3
 machines (FIXME).
 
 Under GCC, these macro check there arguments the same way than printf does. So,
-if you compile with -Wall, the folliwing code will issue a warning:
+if you compile with -Wall, the following code will issue a warning:
 <code>DEBUG2("Found %s (id %f)", some_string, a_double)</code>
 
 If you want to specify the category to log onto (for example because you
@@ -289,15 +291,15 @@ Another example can be found in the relevant part of the GRAS tutorial:
 
 Although rarely done, it is possible to configure the logs during
 program initialization by invoking the xbt_log_control_set() method
-manually. A more conventionnal way is to use the --log command line
+manually. A more conventional way is to use the --log command line
 argument. xbt_init() (called by MSG_init(), gras_init() and friends)
 checks and deals properly with such arguments.
 
 The following command line arguments exist, but are deprecated and
-may disapear in the future: --xbt-log, --gras-log, --msg-log and
+may disappear in the future: --xbt-log, --gras-log, --msg-log and
 --surf-log.
 
-\subsection log_use_conf_thres 3.1.1 Thresold configuration
+\subsection log_use_conf_thres 3.1.1 Threshold configuration
 
 The most common setting is to control which logging event will get
 displayed by setting a threshold to each category through the
@@ -331,28 +333,28 @@ process ID, everything.
 Here are the existing format directives:
 
  - %%: the % char
- - %%n: platform-dependant line separator (LOG4J compliant)
+ - %%n: platform-dependent line separator (LOG4J compatible)
  - %%e: plain old space (SimGrid extension)
 
  - %%m: user-provided message
 
- - %%c: Category name (LOG4J compliant)
- - %%p: Priority name (LOG4J compliant)
+ - %%c: Category name (LOG4J compatible)
+ - %%p: Priority name (LOG4J compatible)
 
  - %%h: Hostname (SimGrid extension)
  - %%P: Process name (SimGrid extension)
- - %%t: Thread "name" (LOG4J compliant -- actually the address of the thread in memory)
+ - %%t: Thread "name" (LOG4J compatible -- actually the address of the thread in memory)
  - %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)
 
- - %%F: file name where the log event was raised (LOG4J compliant)
- - %%l: location where the log event was raised (LOG4J compliant, like '%%F:%%L' -- this is a l as in 'l'etter)
- - %%L: line number where the log event was raised (LOG4J compliant)
- - %%M: function name (LOG4J compliant -- called method name here of course).
+ - %%F: file name where the log event was raised (LOG4J compatible)
+ - %%l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as in 'l'etter)
+ - %%L: line number where the log event was raised (LOG4J compatible)
+ - %%M: function name (LOG4J compatible -- called method name here of course).
    Defined only when using gcc because there is no __FUNCTION__ elsewhere.
 
  - %%b: full backtrace (Called %%throwable in LOG4J).
-   Defined only when using the GNU libc because backtrace() is not defined
-   elsewhere.
+   Defined only under windows or when using the GNU libc because backtrace() is not defined
+   elsewhere, and we only have a fallback for windows boxes, not mac ones for example.
  - %%B: short backtrace (only the first line of the %%b).
    Called %%throwable{short} in LOG4J; defined where %%b is.
 
@@ -360,26 +362,41 @@ Here are the existing format directives:
  - %%r: application age (time elapsed since the beginning of the application)
 
 
-If you want to mimick the simple layout with the format one, you would use this
+If you want to mimic the simple layout with the format one, you would use this
 format: '[%%h:%%i:(%%I) %%r] %%l: [%%c/%%p] %%m%%n'. This is not completely correct
 because the simple layout do not display the message location for messages at
 priority INFO (thus, the fmt is '[%%h:%%i:(%%I) %%r] %%l: [%%c/%%p] %%m%%n' in this
-case). Moreover, if there is no process name (ie, messages comming from the
+case). Moreover, if there is no process name (ie, messages coming from the
 library itself, or test programs doing strange things) do not display the
 process identity (thus, fmt is '[%%r] %%l: [%%c/%%p] %%m%%n' in that case, and '[%%r]
 [%%c/%%p] %%m%%n' if they are at priority INFO).
 
-For now, there is only one format modifyier: the precision field. You
+For now, there is only one format modifier: the precision field. You
 can for example specify %.4r to get the application age with 4
 numbers after the radix. Another limitation is that you cannot set
 specific layouts to the several priorities.
 
-\subsection log_use_conf_add 3.1.4 Category additivity
+\subsection log_use_conf_app 3.1.4 Category appender
+
+As with SimGrid 3.3, it is possible to control the appender of log
+messages. This is done through the <tt>app</tt> keyword. For example,
+\verbatim --log=root.app:file:mylogfile\endverbatim redirects the output
+to the file mylogfile.
+
+Any appender setup this way have its own layout format (simple one by default),
+so you may have to change it too afterward. Moreover, the additivity of the log category
+is also set to false to prevent log event displayed by this appender to "leak" to any other
+appender higher in the hierarchy. If it is not what you wanted, you can naturally change it
+manually.
+
+\subsection log_use_conf_add 3.1.5 Category additivity
 
 The <tt>add</tt> keyword allows to specify the additivity of a
-category (see \ref log_in_app). This is rarely useful since you
-cannot specify an alternative appender. Anyway, '0', '1', 'no',
-'yes', 'on' and 'off' are all valid values, with 'yes' as default.
+category (see \ref log_in_app). '0', '1', 'no', 'yes', 'on'
+and 'off' are all valid values, with 'yes' as default.
+
+The following example resets the additivity of the xbt category to true (which is its default value).
+\verbatim --log=xbt.add:yes\endverbatim
 
 \section log_use_misc 3.2 Misc and Caveats
 
@@ -406,7 +423,7 @@ requires an a single comparison of a static variable to a constant.
 There is also compile time constant, \ref XBT_LOG_STATIC_THRESHOLD, which
 causes all logging requests with a lower priority to be optimized to 0 cost
 by the compiler. By setting it to gras_log_priority_infinite, all logging
-requests are statically disabled and cost nothing. Released executables
+requests are statically disabled at compile time and cost nothing. Released executables
 <i>might</i>  be compiled with (note that it will prevent users to debug their problems)
 \verbatim-DXBT_LOG_STATIC_THRESHOLD=gras_log_priority_infinite\endverbatim
 
@@ -420,7 +437,7 @@ propagation from appender to appender in the category tree.
 \section log_in_app 4.2 Appenders
 
 Each category has an optional appender. An appender is a pointer to a
-structure which starts with a pointer to a doAppend() function. DoAppend()
+structure which starts with a pointer to a do_append() function. do_append()
 prints a message to a log.
 
 When a category is passed a message by one of the logging macros, the
@@ -428,17 +445,19 @@ category performs the following actions:
 
   - if the category has an appender, the message is passed to the
     appender's do_append() function,
-  - if additivity is true for the category (which is the case by
-    default, and can be controlled by xbt_log_additivity_set()), the
-    message is passed to the category's parent.
+  - if additivity is true for the category, the message is passed to
+    the category's parent. Additivity is true by default, and can be
+    controlled by xbt_log_additivity_set() or something like --log=root.add:1 (see \ref log_use_conf_add).
+    Also, when you add an appender to a category, its additivity is automatically turned to off.
+    Turn it back on afterward if it is not what you wanted.
 
 By default, only the root category have an appender, and any other category has
 its additivity set to true. This causes all messages to be logged by the root
 category's appender.
 
-The default appender function currently prints to stderr, and no other one
-exist, even if more would be needed, like the one able to send the logs to a
-remote dedicated server, or other ones offering different output formats.
+The default appender function currently prints to stderr, and the only other
+existing one writes to the specified file. More would be needed, like the one
+able to send the logs to a remote dedicated server.
 This is on our TODO list for quite a while now, but your help would be
 welcome here, too.
 
@@ -455,6 +474,7 @@ typedef struct {
   e_xbt_log_priority_t thresh;
   char *fmt;
   int additivity;
+  xbt_log_appender_t appender;
 } s_xbt_log_setting_t,*xbt_log_setting_t;
 
 static xbt_dynar_t xbt_log_settings=NULL;
@@ -659,6 +679,24 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category,
                          (setting->additivity?"on":"off"));
     }
   }
+  if (setting->appender) {
+	  xbt_log_appender_set(category,setting->appender);
+	  if (!category->layout)
+		  xbt_log_layout_set(category,xbt_log_layout_simple_new(NULL));
+	  category->additivity = 0;
+	  if (category->threshold <= xbt_log_priority_debug) {
+	      _log_ev.cat = category;
+	      _log_ev.priority = xbt_log_priority_debug;
+	      _log_ev.fileName = __FILE__ ;
+	      _log_ev.functionName = _XBT_FUNCTION ;
+	      _log_ev.lineNum = __LINE__ ;
+
+	      _xbt_log_event_log(&_log_ev,
+	                         "Set %p as appender of category '%s'",
+	                         setting->appender,
+	                         category->name);
+	    }
+  }
 
 }
 /*
@@ -840,6 +878,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
   set->thresh = xbt_log_priority_uninitialized;
   set->fmt = NULL;
   set->additivity = -1;
+  set->appender = NULL;
 
   if (!*control_string)
     return set;
@@ -900,6 +939,17 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
       set->additivity = 0;
     }
     free(neweq);
+  } else if ( !strncmp(dot + 1, "app", (size_t)(eq - dot - 1)) ||
+      !strncmp(dot + 1, "appender", (size_t)(eq - dot - 1)) ) {
+
+    char *neweq=xbt_strdup(eq+1);
+
+    if ( !strncmp(neweq,"file:",5) ) {
+      set->appender = xbt_log_appender_file_new(neweq+5);
+    } else {
+    	THROW1(arg_error,0,"Unknown appender log type: '%s'",neweq);
+    }
+    free(neweq);
   } else if (!strncmp(dot + 1, "fmt", (size_t)(eq - dot - 1))) {
     set->fmt = xbt_strdup(eq+1);
   } else {
@@ -953,7 +1003,9 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *na
  *      the parent category.
  *      Possible values: 0, 1, no, yes, on, off.
  *      Default value: yes.
- *    - fmt: the format to use. See \ref log_lay for more information.
+ *    - fmt: the format to use. See \ref log_use_conf_fmt for more information.
+ *    - app or appender: the appender to use. See \ref log_use_conf_app for more
+ *      information.
  *
  */
 void xbt_log_control_set(const char* control_string) {
