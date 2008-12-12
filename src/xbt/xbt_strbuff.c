@@ -102,13 +102,13 @@ void xbt_strbuff_trim(xbt_strbuff_t b) {
  */
 void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns) {
 
-  char *beg, *end; /* pointers around the parsed chunk */
+  char *end; /* pointers around the parsed chunk */
   int in_simple_quote=0, in_double_quote=0;
   int done = 0;
 
   if (b->data[0] == '\0')
     return;
-  end = beg = b->data;
+  end = b->data;
 
   while (!done) {
 
@@ -228,10 +228,11 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns) {
               int offset = newdata - b->data;
               b->data = newdata;
               b->size = b->used + MAX(minimal_increment,tooshort);
+              end += offset;
               beg_subst += offset;
               end_subst += offset;
             }
-            memmove(beg_subst+val_len,end_subst, b->used-(end_subst - b->data)+1); /* move the end of the string a bit further */
+            memmove(beg_subst+val_len,end_subst, b->used-(end_subst - b->data)+2); /* move the end of the string a bit further */
             memmove(beg_subst,value,val_len); /* substitute */
             b->used = newused;
           }
