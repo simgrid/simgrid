@@ -136,6 +136,7 @@ int sender (int argc,char *argv[]) {
   }
 
   /* Free the allocated resources, and shut GRAS down */
+  free(data);
   xbt_dynar_free(&peers);
      
   gras_exit();

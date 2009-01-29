@@ -76,7 +76,10 @@ int multiplier (int argc,char *argv[])
     j++;
     GRAS_BENCH_ONCE_RUN_ONCE_END();
   }
-
+  free(A);
+  free(B);
+  free(C);
+   
   gras_exit();
   return 0;
 }
