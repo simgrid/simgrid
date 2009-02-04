@@ -1,0 +1,10 @@
+.classes
+context_sysv_config.h
+gras_config.h
+libgras.la
+libsimgrid.la
+libsmpi.la
+smpi/smpicc
+smpi/smpirun
+stamp-h1
+testall

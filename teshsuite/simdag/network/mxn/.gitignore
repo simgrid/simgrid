@@ -1,0 +1,3 @@
+test_intra_all2all
+test_intra_independent_comm
+test_intra_scatter

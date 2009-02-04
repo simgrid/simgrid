@@ -1,0 +1,14 @@
+Doxyfile
+.FAQ.doc.toc
+.contrib.doc.toc
+.gtut-introduction.doc.toc
+.history.doc.toc
+.index.doc.toc
+html
+index-API.doc
+index.php
+logcategories.doc
+simgrid.tag
+simgrid_modules.map
+simgrid_modules.png
+simgrid_modules2.png
