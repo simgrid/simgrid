@@ -256,6 +256,16 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 			       t->name, t_simdata->message_size,
 			       t_simdata->rate);
 
+  /* This is a hack. We know that both the receiver and the sender will
+     need to look at the content of t_simdata->comm. And it needs to be
+     destroyed. However, we don't known whether the receiver or the sender
+     will get to it first. So by setting whit refcount to 2 we can enforce
+     that things happen correctly. An alternative would be to only do ++ and
+     -- on this refcount and to sprinkle them judiciously throughout the code,
+     which appears perhaps worse? Or perhaps the refcount field of
+     task->simdata can be used for this? At any rate, this will do for now */
+  t_simdata->comm->refcount = 2;
+
   /* if the process is suspend, create the action but stop its execution, it will be restart when the sender process resume */
   if (MSG_process_is_suspended(t_simdata->sender)) {
     DEBUG1("Process sender (%s) suspended", t_simdata->sender->name);
@@ -286,18 +296,30 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 
 
   if (SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
-    SIMIX_action_destroy(t_simdata->comm);
-    t_simdata->comm = NULL;
+    if (t_simdata->comm->refcount == 1) {
+      SIMIX_action_destroy(t_simdata->comm);
+      t_simdata->comm = NULL;
+    } else {
+      t_simdata->comm->refcount --;
+    }
     t_simdata->refcount --;
     MSG_RETURN(MSG_OK);
   } else if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
-    SIMIX_action_destroy(t_simdata->comm);
-    t_simdata->comm = NULL;
+    if (t_simdata->comm->refcount == 1) {
+      SIMIX_action_destroy(t_simdata->comm);
+      t_simdata->comm = NULL;
+    } else {
+      t_simdata->comm->refcount --;
+    }
     t_simdata->refcount --;
     MSG_RETURN(MSG_HOST_FAILURE);
   } else {
-    SIMIX_action_destroy(t_simdata->comm);
-    t_simdata->comm = NULL;
+    if (t_simdata->comm->refcount ==1 ) {
+      SIMIX_action_destroy(t_simdata->comm);
+      t_simdata->comm = NULL;
+    } else {
+      t_simdata->comm->refcount --;
+    }
     t_simdata->refcount --;
     MSG_RETURN(MSG_TRANSFER_FAILURE);
   }
@@ -309,23 +331,23 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 {
   m_process_t process = MSG_process_self();
   const char *hostname;
-  simdata_task_t task_simdata = NULL;
+  simdata_task_t t_simdata = NULL;
   m_host_t local_host = NULL;
   m_host_t remote_host = NULL;
   smx_cond_t cond = NULL;
 
   CHECK_HOST();
 
-  task_simdata = task->simdata;
-  task_simdata->sender = process;
-  task_simdata->source = MSG_process_get_host(process);
+  t_simdata = task->simdata;
+  t_simdata->sender = process;
+  t_simdata->source = MSG_process_get_host(process);
 
-  xbt_assert0(task_simdata->refcount  == 1,
+  xbt_assert0(t_simdata->refcount  == 1,
 	      "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
-  task_simdata->comm = NULL;
+  t_simdata->comm = NULL;
 
-  task_simdata->refcount ++;
+  t_simdata->refcount ++;
   local_host = ((simdata_process_t) process->simdata)->m_host;
   msg_global->sent_msg++;
 
@@ -340,7 +362,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   DEBUG4
       ("Trying to send a task (%g kB) from %s to %s on the channel aliased by the alias %s",
-       task->simdata->message_size / 1000, local_host->name,
+       t_simdata->message_size / 1000, local_host->name,
        remote_host->name, MSG_mailbox_get_alias(mailbox));
 
   SIMIX_mutex_lock(remote_host->simdata->mutex);
@@ -355,7 +377,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   SIMIX_mutex_unlock(remote_host->simdata->mutex);
 
-  SIMIX_mutex_lock(task->simdata->mutex);
+  SIMIX_mutex_lock(t_simdata->mutex);
 
   process->simdata->waiting_task = task;
 
@@ -369,11 +391,11 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
       /*verify if the action that ends is the correct. Call the wait_timeout with the new time. If the timeout occurs, an exception is raised */
       while (1) {
 	time_elapsed = SIMIX_get_clock() - time;
-	SIMIX_cond_wait_timeout(task->simdata->cond, task->simdata->mutex,
+	SIMIX_cond_wait_timeout(t_simdata->cond, t_simdata->mutex,
 				timeout - time_elapsed);
 
-	if ((task->simdata->comm != NULL)
-	    && (SIMIX_action_get_state(task->simdata->comm) !=
+	if ((t_simdata->comm != NULL)
+	    && (SIMIX_action_get_state(t_simdata->comm) !=
 		SURF_ACTION_RUNNING))
 	  break;
       }
@@ -382,19 +404,19 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
       if (e.category == timeout_error) {
 	xbt_ex_free(e);
 	/* verify if the timeout happened and the communication didn't started yet */
-	if (task->simdata->comm == NULL) {
+	if (t_simdata->comm == NULL) {
 	  process->simdata->waiting_task = NULL;
 
 	  /* remove the task from the mailbox */
 	  MSG_mailbox_remove(mailbox, task);
 
-	  if (task->simdata->receiver) {
-	    task->simdata->receiver->simdata->waiting_task = NULL;
+	  if (t_simdata->receiver) {
+	    t_simdata->receiver->simdata->waiting_task = NULL;
 	  }
 
-	  task->simdata->sender = NULL;
+	  t_simdata->sender = NULL;
 
-	  SIMIX_mutex_unlock(task->simdata->mutex);
+	  SIMIX_mutex_unlock(t_simdata->mutex);
 	  MSG_RETURN(MSG_TRANSFER_FAILURE);
 	}
       } else {
@@ -403,9 +425,9 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
     }
   } else {
     while (1) {
-      SIMIX_cond_wait(task->simdata->cond, task->simdata->mutex);
+      SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
 
-      if (SIMIX_action_get_state(task->simdata->comm) !=
+      if (SIMIX_action_get_state(t_simdata->comm) !=
 	  SURF_ACTION_RUNNING)
 	break;
     }
@@ -415,18 +437,36 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   process->simdata->waiting_task = NULL;
 
   /* the task has already finished and the pointer must be null */
-  if (task->simdata->receiver) {
-    task->simdata->receiver->simdata->waiting_task = NULL;
+  if (t_simdata->receiver) {
+    t_simdata->receiver->simdata->waiting_task = NULL;
   }
 
-  task->simdata->sender = NULL;
+  t_simdata->sender = NULL;
   SIMIX_mutex_unlock(task->simdata->mutex);
 
-  if (SIMIX_action_get_state(task->simdata->comm) == SURF_ACTION_DONE) {
+  if (SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
+    if (t_simdata->comm->refcount == 1) {
+      SIMIX_action_destroy(t_simdata->comm);
+      t_simdata->comm = NULL;
+    } else {
+      t_simdata->comm->refcount --;
+    }
     MSG_RETURN(MSG_OK);
   } else if (SIMIX_host_get_state(local_host->simdata->smx_host) == 0) {
+    if (t_simdata->comm->refcount == 1) {
+      SIMIX_action_destroy(t_simdata->comm);
+      t_simdata->comm = NULL;
+    } else {
+      t_simdata->comm->refcount --;
+    }
     MSG_RETURN(MSG_HOST_FAILURE);
   } else {
+    if (t_simdata->comm->refcount == 1) {
+      SIMIX_action_destroy(t_simdata->comm);
+      t_simdata->comm = NULL;
+    } else {
+      t_simdata->comm->refcount --;
+    }
     MSG_RETURN(MSG_TRANSFER_FAILURE);
   }
 }
