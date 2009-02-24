@@ -452,6 +452,7 @@ void lmm_solve(lmm_system_t sys)
   xbt_swag_t var_list = NULL;
   xbt_swag_t elem_list = NULL;
   double min_usage = -1;
+  double min_bound = -1;
 
   if (!(sys->modified))
     return;
@@ -514,8 +515,11 @@ void lmm_solve(lmm_system_t sys)
 	   var, var->bound, var->weight, min_usage,
 	   var->bound * var->weight);
       if ((var->bound > 0) && (var->bound * var->weight < min_usage)) {
-	min_usage = var->bound * var->weight;
-	DEBUG1("Updated min_usage=%f", min_usage);
+	if(min_bound<0)
+	  min_bound = var->bound;
+	else
+	  min_bound = MIN(min_bound,var->bound);
+	DEBUG1("Updated min_bound=%f", min_bound);
       }
     }
 
@@ -523,7 +527,16 @@ void lmm_solve(lmm_system_t sys)
     while ((var = xbt_swag_getFirst(var_list))) {
       int i;
 
-      var->value = min_usage / var->weight;
+      if(min_bound<0) {
+	var->value = min_usage / var->weight;
+      } else {
+	if(min_bound == var->bound)
+	  var->value = var->bound;
+	else {
+	  xbt_swag_remove(var, var_list);
+	  continue;
+	}
+      }
       DEBUG5("Min usage: %f, Var(%p)->weight: %f, Var(%p)->value: %f ",
 	     min_usage, var, var->weight, var, var->value);
 
@@ -560,6 +573,7 @@ void lmm_solve(lmm_system_t sys)
     /* Find out which variables reach the maximum */
     cnst_list = &(sys->active_constraint_set);
     min_usage = -1;
+    min_bound = -1;
     xbt_swag_foreach(cnst, cnst_list) {
       saturated_constraint_set_update(sys, cnst, &min_usage);
     }
