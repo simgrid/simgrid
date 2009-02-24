@@ -12,7 +12,7 @@
 #define _XBT_QUEUE_H
 
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
-//#include "xbt/function_types.h"
+/* #include "xbt/function_types.h" */
 
 SG_BEGIN_DECL()
 

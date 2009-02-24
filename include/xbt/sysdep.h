@@ -60,7 +60,7 @@ static XBT_INLINE char *xbt_strdup(const char *s) {
     @hideinitializer */
 static XBT_INLINE void *xbt_malloc(unsigned int n){
   void *res;
-//  if (n==0) xbt_die("malloc(0) is not portable");
+/*  if (n==0) xbt_die("malloc(0) is not portable"); */
   res=malloc(n);
   if (!res)
      xbt_die(bprintf("Memory allocation of %d bytes failed",n));
@@ -71,7 +71,7 @@ static XBT_INLINE void *xbt_malloc(unsigned int n){
     @hideinitializer */
 static XBT_INLINE void *xbt_malloc0(unsigned int n) {
   void *res;
-//  if (n==0) xbt_die("calloc(0) is not portable");
+/*  if (n==0) xbt_die("calloc(0) is not portable"); */
   res=calloc(n,1);
   if (!res)
      xbt_die(bprintf("Memory callocation of %d bytes failed",n));
@@ -82,7 +82,7 @@ static XBT_INLINE void *xbt_malloc0(unsigned int n) {
     @hideinitializer */
 static XBT_INLINE void *xbt_realloc(void*p,unsigned int s){
   void *res=res;
-//  if (s==0) xbt_die("realloc(0) is not portable");
+/*  if (s==0) xbt_die("realloc(0) is not portable"); */
   if (s) {
     if (p) {
       res=realloc(p,s);

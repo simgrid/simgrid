@@ -413,7 +413,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
      xbt_backtrace_current( (xbt_ex_t *) &(_throw_ctx->ctx_ex) );         \
      DO_THROW(_throw_ctx->ctx_ex);                                        \
   } while (0)
-//     __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,XBT_BACKTRACE_SIZE);
+/*     __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,XBT_BACKTRACE_SIZE); */
 
 /** @brief Builds and throws an exception with a string taking no arguments
     @hideinitializer */
