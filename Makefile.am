@@ -80,14 +80,16 @@ publish: dist
 	 $(MAKE) -C ~/public_html
 
 sync-gforge: 
+	chmod g+rw -R doc/
+	chmod a+rX -R doc/
 	rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times \
 	    --recursive --links --perms --times --omit-dir-times  \
-	    doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/doc/ || true
-	scp doc/index.php doc/webcruft/robots.txt scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
-	scp doc/webcruft/simgrid_modules2.png doc/webcruft/simgrid_modules.png doc/webcruft/simgrid_logo.png doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
-	ssh scm.gforge.inria.fr "chgrp -R simgrid /var/lib/gforge/chroot/home/groups/simgrid/htdocs/"
-	ssh scm.gforge.inria.fr "chmod g+rw -R /var/lib/gforge/chroot/home/groups/simgrid/htdocs/* || true"
-	ssh scm.gforge.inria.fr "chmod a+rX -R /var/lib/gforge/chroot/home/groups/simgrid/htdocs/* || true"
+	    doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/doc/ || true
+	scp doc/index.php doc/webcruft/robots.txt scm.gforge.inria.fr:/home/groups/simgrid/htdocs/
+	scp doc/simgrid_modules2.png doc/simgrid_modules.png doc/webcruft/simgrid_logo.png doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/
+#	ssh scm.gforge.inria.fr "chgrp -R simgrid /home/groups/simgrid/htdocs/"
+#	ssh scm.gforge.inria.fr "chmod g+rw -R /home/groups/simgrid/htdocs/* || true"
+#	ssh scm.gforge.inria.fr "chmod a+rX -R /home/groups/simgrid/htdocs/* || true"
 
 mail:
 	 @ver=`dpkg-parsechangelog -lChangeLog | egrep '^Version: ' | sed 's/Version: //'`;\
