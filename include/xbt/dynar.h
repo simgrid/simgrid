@@ -40,8 +40,8 @@ SG_BEGIN_DECL()
   *
   * \section XBT_dynar_exptr Example with pointed data
   * 
-  * \skip doxygen_string_cruft
-  * \skip function
+  * \skip test_dynar_string
+  * \skip dynar_t
   * \until s2
   * \skip Populate_str
   * \skip dyn
