@@ -1008,7 +1008,7 @@ XBT_TEST_UNIT("double",test_dynar_double,"Dynars of doubles") {
 /*******************************************************************************/
 /*******************************************************************************/
 /*******************************************************************************/
-XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
+XBT_TEST_UNIT("string",test_dynar_string,"Dynars of strings") {
   xbt_dynar_t d;
   int cpt;
   unsigned int iter;
