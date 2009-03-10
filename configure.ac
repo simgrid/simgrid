@@ -95,7 +95,7 @@ dnl ##
 dnl ##  CONTEXT IMPLEMENTATION
 dnl ##
 
-SG_CONFIGURE_PART([Checking for threads, contexts or assimilated...])
+SG_CONFIGURE_PART([Checking threads, contexts or assimilated...])
 
 dnl #
 dnl #  1. determine possibilities
@@ -306,7 +306,7 @@ AC_ARG_WITH(csdp,
   csdp_path="$withval",csdp_path="no")
   AC_MSG_CHECKING(for CSDP option:)
 if test "x$csdp_path" = "xno" ; then
-  AC_MSG_RESULT(no, eventually you will come to csdp.)
+  AC_MSG_RESULT([no, eventually you will come to csdp.])
 else  
   AC_MSG_RESULT(***** You have decided to use csdp. Let's check whether it works or not *****)
   AC_MSG_CHECKING(for csdp)
@@ -411,7 +411,7 @@ if test -e .svn && test x$USE_MAINTAINER_MODE != xyes && test x$botbuild != xyes
 fi
 
 
-SG_CONFIGURE_PART(Check for Java bindings...)
+SG_CONFIGURE_PART(Checking Java bindings...)
 # Java cruft
 AC_ARG_ENABLE(java,
 	      AS_HELP_STRING([--disable-java], [To not compile the Java bindings even if the tools are found]),
@@ -423,11 +423,7 @@ else
   AC_PATH_PROG([JAVA],  [java] , `which java`)
   AC_PATH_PROG([JAR],   [jar]  , `which jar`)
   AC_CHECK_HEADERS(jni.h)
-  if test -n "$JAVAC"   \
-     && test -n "$JAVA" \
-     && test -n "$JAR"  \
-     && test "x$ac_cv_header_jni_h" = "xyes" ; then
-   
+  if test -n "$JAVAC" -a test -n "$JAVA" -a test -n "$JAR" -a test "x$ac_cv_header_jni_h" = "xyes" ; then
      use_java="yes"
      AC_DEFINE(HAVE_JAVA,1, [defines whether Java bindings must be compiled or not])
   else   
@@ -442,7 +438,7 @@ AM_CONDITIONAL(HAVE_JAVA,test "x$use_java" = "xyes")
 ## Check for programs
 ##
 
-SG_CONFIGURE_PART(Check for programs...)
+SG_CONFIGURE_PART(Checking programs...)
 AC_CHECK_PROG(BASH, bash, `which bash`, /bin/sh)
 WARNING="This file is generated, do not edit"
 AC_SUBST(WARNING)
