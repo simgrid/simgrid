@@ -29,25 +29,24 @@ int receiver (int argc,char *argv[]) {
   int myport; /* port on which I receive stuff */
   int todo; /* amount of messages I should get */
   char *data; /* message content */
- 
+
   gras_socket_t mysock;  /* socket on which other people contact me */
   gras_socket_t expeditor;  /* to notice who wrote me */
- 
+
   /* Init the GRAS infrastructure and declare my globals */
   gras_init(&argc,argv);
- 
+
   /* Get my settings from the command line */
   myport=atoi(argv[1]);
   todo=atoi(argv[2]);
 
-  /* Create my master socket */
-  mysock = gras_socket_server(myport);
-
   /* Register the known messages */
   gras_msgtype_declare("data", gras_datadesc_by_name("string"));
 
-  /* Get the data */
+  /* Create my master socket */
+  mysock = gras_socket_server(myport);
 
+  /* Get the data */
   INFO2("Listening on port %d (expecting %d messages)",
 	gras_socket_my_port(mysock),
 	todo);
@@ -57,7 +56,7 @@ int receiver (int argc,char *argv[]) {
 		   &expeditor,
 		   &data);
      todo--;
-     
+
      INFO3("Got Data from %s:%d (still %d to go)",
 	   gras_socket_peer_name(expeditor), gras_socket_peer_port(expeditor),
 	   todo);
@@ -82,24 +81,24 @@ int sender (int argc,char *argv[]) {
   int datasize; /* size of message */
   xbt_peer_t h; /* iterator */
   int connected = 0;
-  
+
   gras_socket_t peer=NULL;  /* socket to node */
-  
- 
+
+
   /* xbt_dynar for peers */
   xbt_dynar_t peers = xbt_dynar_new(sizeof(xbt_peer_t),&xbt_peer_free_voidp);
- 
+
   /* Init the GRAS infrastructure and declare my globals */
   gras_init(&argc,argv);
- 
+
   /* Get the node location from argc/argv */
   for (iter=1; iter<argc-1; iter++){
     xbt_peer_t peer = xbt_peer_from_string(argv[iter]);
     xbt_dynar_push(peers,&peer);
   }
-  
+
   datasize=atoi(argv[argc-1]);
-  
+
   data=(char *) malloc(datasize+1);  // allocation of datasize octets
   memset(data, 32, datasize);
   data[datasize] = '\0';
@@ -130,15 +129,15 @@ int sender (int argc,char *argv[]) {
 	INFO2("  Sent Data from %s to %s", gras_os_myname(),h->name);
      } else {
 	INFO0("  Sent Data");
-     }     
-      
+     }
+
      gras_socket_close(peer);
   }
 
   /* Free the allocated resources, and shut GRAS down */
   free(data);
   xbt_dynar_free(&peers);
-     
+
   gras_exit();
   return 0;
 } /* end_of_sender */
