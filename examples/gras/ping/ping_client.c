@@ -11,7 +11,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(Ping);
 
 int client(int argc,char *argv[]) {
-  xbt_ex_t e; 
+  xbt_ex_t e;
   gras_socket_t toserver=NULL; /* peer */
   int connected = 0;
 
@@ -23,19 +23,16 @@ int client(int argc,char *argv[]) {
 
   /* 1. Init the GRAS's infrastructure */
   gras_init(&argc, argv);
-   
+
   /* 2. Get the server's address. The command line override defaults when specified */
   if (argc == 3) {
     host=argv[1];
     port=atoi(argv[2]);
-  } 
+  }
 
   INFO2("Launch client (server on %s:%d)",host,port);
-   
-  /* 3. Wait for the server startup */
-  gras_os_sleep(1);
-   
-  /* 4. Create a socket to speak to the server */
+
+  /* 3. Create a socket to speak to the server */
   while (!connected) {
      TRY {
 	toserver=gras_socket_client(host,port);
@@ -49,17 +46,17 @@ int client(int argc,char *argv[]) {
      }
   }
 
-  INFO2("Connected to %s:%d.",host,port);    
+  INFO2("Connected to %s:%d.",host,port);
 
-  /* 5. Register the messages. 
+  /* 4. Register the messages.
         See, it doesn't have to be done completely at the beginning, only before use */
   ping_register_messages();
 
-  /* 6. Keep the user informed of what's going on */
-  INFO2(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<", 
+  /* 5. Keep the user informed of what's going on */
+  INFO2(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
 
-  /* 7. Prepare and send the ping message to the server */
+  /* 6. Prepare and send the ping message to the server */
   ping = 1234;
   TRY {
     gras_msg_send(toserver, "ping", &ping);
@@ -71,7 +68,7 @@ int client(int argc,char *argv[]) {
 	ping,
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
 
-  /* 8. Wait for the answer from the server, and deal with issues */
+  /* 7. Wait for the answer from the server, and deal with issues */
   TRY {
     gras_msg_wait(6000,"pong", &from,&pong);
   } CATCH(e) {
@@ -79,12 +76,12 @@ int client(int argc,char *argv[]) {
     RETHROW0("Why can't I get my PONG message like everyone else: %s");
   }
 
-  /* 9. Keep the user informed of what's going on, again */
-  INFO3(">>>>>>>> Got PONG(%d) from %s:%d <<<<<<<<", 
+  /* 8. Keep the user informed of what's going on, again */
+  INFO3(">>>>>>>> Got PONG(%d) from %s:%d <<<<<<<<",
 	pong,
 	gras_socket_peer_name(from),gras_socket_peer_port(from));
 
-  /* 10. Free the allocated resources, and shut GRAS down */
+  /* 9. Free the allocated resources, and shut GRAS down */
   gras_socket_close(toserver);
   INFO0("Done.");
   gras_exit();
