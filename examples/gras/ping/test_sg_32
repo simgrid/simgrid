@@ -1,19 +1,19 @@
 p Runs the 'ping' test within the simulator (simulation times valid for 32bits architectures)
 
-$ $SG_TEST_EXENV ./ping_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/ping.xml
+$ $SG_TEST_EXENV ./ping_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/ping.xml $ARGS
 > [Tremblay:server:(1) 0.000000] [Ping/INFO] Launch server (port=4000)
-> [Tremblay:server:(1) 0.000000] [Ping/INFO] Messages registered
-> [Tremblay:server:(1) 0.000000] [Ping/INFO] Messages registered
-> [Tremblay:server:(1) 0.000000] [Ping/INFO] >>>>>>>> Listening on port 4000 <<<<<<<<
 > [Fafard:client:(2) 0.000000] [Ping/INFO] Launch client (server on Tremblay:4000)
-> [Fafard:client:(2) 1.000000] [Ping/INFO] Connected to Tremblay:4000.
-> [Fafard:client:(2) 1.000000] [Ping/INFO] Messages registered
-> [Fafard:client:(2) 1.000000] [Ping/INFO] >>>>>>>> Connected to server which is on Tremblay:4000 <<<<<<<<
-> [Fafard:client:(2) 1.001977] [Ping/INFO] >>>>>>>> Message PING(1234) sent to Tremblay:4000 <<<<<<<<
-> [Tremblay:server:(1) 1.001977] [Ping/INFO] >>>>>>>> Got message PING(1234) from Fafard:0 <<<<<<<<
-> [Tremblay:server:(1) 1.003954] [Ping/INFO] >>>>>>>> Answered with PONG(4321) <<<<<<<<
-> [Tremblay:server:(1) 1.003954] [Ping/INFO] Done.
-> [Tremblay:server:(1) 1.003954] [gras/INFO] Exiting GRAS
-> [Fafard:client:(2) 1.003954] [Ping/INFO] >>>>>>>> Got PONG(4321) from Tremblay:4000 <<<<<<<<
-> [Fafard:client:(2) 1.003954] [Ping/INFO] Done.
-> [Fafard:client:(2) 1.003954] [gras/INFO] Exiting GRAS
+> [Tremblay:server:(1) 0.000015] [Ping/INFO] Messages registered
+> [Tremblay:server:(1) 0.000015] [Ping/INFO] Messages registered
+> [Tremblay:server:(1) 0.000015] [Ping/INFO] >>>>>>>> Listening on port 4000 <<<<<<<<
+> [Fafard:client:(2) 0.000015] [Ping/INFO] Connected to Tremblay:4000.
+> [Fafard:client:(2) 0.000015] [Ping/INFO] Messages registered
+> [Fafard:client:(2) 0.000015] [Ping/INFO] >>>>>>>> Connected to server which is on Tremblay:4000 <<<<<<<<
+> [Fafard:client:(2) 0.001992] [Ping/INFO] >>>>>>>> Message PING(1234) sent to Tremblay:4000 <<<<<<<<
+> [Tremblay:server:(1) 0.001992] [Ping/INFO] >>>>>>>> Got message PING(1234) from Fafard:0 <<<<<<<<
+> [Tremblay:server:(1) 0.003969] [Ping/INFO] >>>>>>>> Answered with PONG(4321) <<<<<<<<
+> [Tremblay:server:(1) 0.003969] [Ping/INFO] Done.
+> [Tremblay:server:(1) 0.003969] [gras/INFO] Exiting GRAS
+> [Fafard:client:(2) 0.003969] [Ping/INFO] >>>>>>>> Got PONG(4321) from Tremblay:4000 <<<<<<<<
+> [Fafard:client:(2) 0.003969] [Ping/INFO] Done.
+> [Fafard:client:(2) 0.003969] [gras/INFO] Exiting GRAS
