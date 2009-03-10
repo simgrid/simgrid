@@ -16,7 +16,7 @@
 #include "xbt/fifo.h"
 
 /*
- * Data of this module specific to each process 
+ * Data of this module specific to each process
  * (used by sg_process.c to check some usual errors at the end of the simulation)
  * FIXME: it could be cleaned up ?
  */
@@ -34,10 +34,10 @@ typedef struct {
 
   /* registered callbacks for each message */
   xbt_dynar_t cbl_list; /* elm type: gras_cblist_t */
-   
+
   /* registered timers */
   xbt_dynar_t timers; /* elm type: s_gras_timer_t */
-	
+
 	/* queue storing the msgs that have to received and the process synchronization made (wait the surf action done) */
 	xbt_fifo_t msg_to_receive_queue; /* elm type: s_gras_msg_t */
 	xbt_fifo_t msg_to_receive_queue_meas; /* elm type: s_gras_msg_t */
@@ -47,9 +47,10 @@ typedef struct {
 } s_gras_msg_procdata_t,*gras_msg_procdata_t;
 
 
-void gras_msg_send_namev(gras_socket_t  sock, 
-			 const char    *namev, 
+void gras_msg_send_namev(gras_socket_t  sock,
+			 const char    *namev,
 			 void          *payload);
+void gras_msg_listener_awake(void);
 
 #define GRAS_PROTOCOL_VERSION '\0';
 
