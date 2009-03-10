@@ -17,14 +17,23 @@ _*.c
 config.log
 config.status
 Makefile.in
+
 src/*_unit.c
 src/simgrid_units_main.c
-tools/graspe_master
-examples/java/*
+src/gras_config.h.in
 
+tools/graspe_master
+examples/java/*/classnoinst.stamp
 ###
 
 aclocal.m4
+config.guess
+config.sub
+configure
+install-sh
+libtool
+ltmain.sh
+
 autom4te.cache/*
 doc/Doxyfile
 examples/amok/bandwidth/bandwidth_maestro
@@ -60,6 +69,7 @@ examples/msg/masterslave/masterslave_failure
 examples/msg/masterslave/masterslave_forwarder
 examples/msg/masterslave/masterslave_mailbox
 examples/msg/parallel_task/parallel_task
+examples/msg/parallel_task/test_ptask
 examples/msg/priority/priority
 examples/msg/properties/msg_prop
 examples/msg/sendrecv/sendrecv
@@ -68,6 +78,8 @@ examples/simdag/metaxml/sd_meta
 examples/simdag/properties/sd_prop
 examples/simdag/sd_test
 examples/simdag/sd_test2
+teshsuite/simdag/platforms/basic_parsing_test
+teshsuite/simdag/platforms/flatifier
 simgrid-3.3-svn/*
 src/.classes/*
 src/context_sysv_config.h
