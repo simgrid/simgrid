@@ -67,7 +67,7 @@ splited in 3 pages (also accessible from the navbar on top of this page):
                  <td>2008</td><td>2009</td><td>Total</td></tr>
   <tr><td>Amount of papers external to the core team</td>
                  <td>-</td>   <td>-</td>   <td>-</td>   <td>3</td>   <td>6</td>   <td>3</td>   <td>8</td>   <td>6</td>
-		 <td>3</td><td>3</td><td>30</td></tr>
+		 <td>5</td><td>3</td><td>32</td></tr>
   <tr><td>Amount of papers co-signed by one team member</td>
                  <td>1</td>   <td>1</td>   <td>1</td>   <td>2</td>   <td>2</td>   <td>-</td>   <td>4</td>   <td>4</td>
 		 <td>1</td><td>1</td><td>16</td></tr>
@@ -218,6 +218,9 @@ next section).
     by <em>Sascha Hunold,  Thomas Rauber and Frédéric Suter</em>.\n
     Proceedings of the 3rd International Workshop on Workflow Systems in
     e-Science (WSES 08), Lyon, France, May 2008.
+  - <b>Computing Low Latency Batches with Unreliable Workers in Volunteer Computing Environments</b>\n
+    by <em>Eric Heien, N. Fujimoto, and Kenichi Hagihara</em>.\n
+    In PCGrid 2008, Workshop on Volunteer Computing and Desktop Grids.
 - 2007
   - <b>Reliable DAG Scheduling with Rewinding and Migration</b>\n
     by <em>Israel Hernandez and Murray Cole</em>.\n
