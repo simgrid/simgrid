@@ -3,12 +3,12 @@ p Runs the 'msg_handle' test within the simulator (simulation times valid for 32
 $ $SG_TEST_EXENV gras/msg_handle/msg_handle_simulator$EXEEXT ${srcdir:=.}/../examples/msg/small_platform.xml ${srcdir:=.}/gras/msg_handle/msg_handle.xml
 > [Tremblay:server:(1) 0.000000] [test/INFO] Launch server (port=4000)
 > [Fafard:client:(2) 0.000000] [test/INFO] Launch client (port=4000)
-> [Tremblay:server:(1) 1.000000] [test/INFO] Initialization done.
-> [Tremblay:server:(1) 1.000000] [test/INFO] gras_msg_handle(0) works as expected (immediate timeout)
-> [Fafard:client:(2) 1.000000] [test/INFO] Initialization done.
-> [Tremblay:server:(1) 2.000000] [test/INFO] gras_msg_handle(1) works as expected (delayed timeout)
-> [Tremblay:server:(1) 5.000000] [test/INFO] Unlock pal
-> [Tremblay:server:(1) 5.001976] [gras/INFO] Exiting GRAS
-> [Fafard:client:(2) 5.001976] [test/INFO] Got the message
-> [Fafard:client:(2) 5.001976] [test/INFO] gras_msg_handle(-1) works as expected (locked)
-> [Fafard:client:(2) 5.001976] [gras/INFO] Exiting GRAS
+> [Tremblay:server:(1) 1.000030] [test/INFO] Initialization done.
+> [Tremblay:server:(1) 1.000030] [test/INFO] gras_msg_handle(0) works as expected (immediate timeout)
+> [Fafard:client:(2) 1.000030] [test/INFO] Initialization done.
+> [Tremblay:server:(1) 2.000030] [test/INFO] gras_msg_handle(1) works as expected (delayed timeout)
+> [Tremblay:server:(1) 5.000030] [test/INFO] Unlock pal
+> [Tremblay:server:(1) 5.002006] [gras/INFO] Exiting GRAS
+> [Fafard:client:(2) 5.002006] [test/INFO] Got the message
+> [Fafard:client:(2) 5.002006] [test/INFO] gras_msg_handle(-1) works as expected (locked)
+> [Fafard:client:(2) 5.002006] [gras/INFO] Exiting GRAS

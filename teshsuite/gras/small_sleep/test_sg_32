@@ -4,6 +4,6 @@ $ $SG_TEST_EXENV ./gras/small_sleep/small_sleep_simulator${EXEEXT:=} ${srcdir:=.
 > [Tremblay:function:(1) 0.000000] [test/INFO] Let's go 1E-5
 > [Tremblay:function:(1) 0.000010] [test/INFO] Let's go 1E-10
 > [Tremblay:function:(1) 0.000020] [test/INFO] Let's go 1E-15
-> [Tremblay:function:(1) 0.000030] [test/INFO] Let's go 1E-20
-> [Tremblay:function:(1) 0.000030] [test/INFO] done
-> [Tremblay:function:(1) 0.000030] [gras/INFO] Exiting GRAS
+> [Tremblay:function:(1) 0.000020] [test/INFO] Let's go 1E-20
+> [Tremblay:function:(1) 0.000020] [test/INFO] done
+> [Tremblay:function:(1) 0.000020] [gras/INFO] Exiting GRAS
