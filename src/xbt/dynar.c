@@ -41,7 +41,7 @@ static XBT_INLINE void _sanity_check_idx(int idx) {
 }
 
 static XBT_INLINE void _check_inbound_idx(xbt_dynar_t dynar, int idx) {
-	if (idx>=dynar->used) {
+	if (idx<0 || idx>=dynar->used) {
 		_dynar_unlock(dynar);
 		THROW2(bound_error,idx,
 				"dynar is not that long. You asked %d, but it's only %lu long",
@@ -147,7 +147,6 @@ _xbt_dynar_remove_at(xbt_dynar_t  const dynar,
 	unsigned long offset;
 
 	_sanity_check_dynar(dynar);
-	_sanity_check_idx(idx);
 	_check_inbound_idx(dynar, idx);
 
 	if (object) {
@@ -340,7 +339,6 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
                   void       * const dst) {
   _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
-  _sanity_check_idx(idx);
   _check_inbound_idx(dynar, idx);
 
   _xbt_dynar_get_elm(dst, dynar, idx);
@@ -362,7 +360,6 @@ xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx) {
   void *res;
   _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
-  _sanity_check_idx(idx);
   _check_inbound_idx(dynar, idx);
 
   res = _xbt_dynar_elm(dynar, idx);
