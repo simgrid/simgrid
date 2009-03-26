@@ -10,15 +10,16 @@
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
 #include "xbt/ex.h"
+#include "gras/Msg/msg_interface.h" /* gras_msg_listener_awake */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_file,gras_trp,
 	"Pseudo-transport to write to/read from a file");
 
 /***
- *** Prototypes 
+ *** Prototypes
  ***/
 void gras_trp_file_close(gras_socket_t sd);
-  
+
 void gras_trp_file_chunk_send_raw(gras_socket_t sd,
 				  const char *data,
 				  unsigned long int size);
@@ -85,7 +86,7 @@ gras_socket_client_from_file(const char*path) {
 
   if (strcmp("-", path)) {
     res->sd = open(path, O_TRUNC|O_WRONLY|O_CREAT | O_BINARY, S_IRUSR|S_IWUSR|S_IRGRP );
-    
+
     if ( res->sd < 0) {
       THROW2(system_error,0,
 	     "Cannot create a client socket from file %s: %s",
@@ -98,7 +99,7 @@ gras_socket_client_from_file(const char*path) {
   DEBUG5("sock_client_from_file(%s): sd=%d in=%c out=%c accept=%c",
 	 path,
 	 res->sd,
-	 res->incoming?'y':'n', 
+	 res->incoming?'y':'n',
 	 res->outgoing?'y':'n',
 	 res->accepting?'y':'n');
 
@@ -139,18 +140,19 @@ gras_socket_t gras_socket_server_from_file(const char*path) {
 
   DEBUG4("sd=%d in=%c out=%c accept=%c",
 	 res->sd,
-	 res->incoming?'y':'n', 
+	 res->incoming?'y':'n',
 	 res->outgoing?'y':'n',
 	 res->accepting?'y':'n');
 
   xbt_dynar_push(((gras_trp_procdata_t)
 		  gras_libdata_by_id(gras_trp_libdata_id))->sockets,&res);
+  gras_msg_listener_awake();
   return res;
 }
 
 void gras_trp_file_close(gras_socket_t sock){
   gras_trp_file_plug_data_t *data;
-  
+
   if (!sock) return; /* close only once */
   data=sock->plugin->data;
 
@@ -166,7 +168,7 @@ void gras_trp_file_close(gras_socket_t sock){
 
     /* close the socket */
     if(close(sock->sd) < 0) {
-      WARN2("error while closing file %d: %s", 
+      WARN2("error while closing file %d: %s",
 	       sock->sd, strerror(errno));
     }
   }
@@ -188,22 +190,22 @@ void
 gras_trp_file_chunk_send_raw(gras_socket_t sock,
 			     const char *data,
 			     unsigned long int size) {
-  
+
   xbt_assert0(sock->outgoing, "Cannot write on client file socket");
   xbt_assert0(size >= 0, "Cannot send a negative amount of data");
 
   while (size) {
     int status = 0;
-    
+
     DEBUG3("write(%d, %p, %ld);", sock->sd, data, (long int)size);
     status = write(sock->sd, data, (long int)size);
-    
+
     if (status == -1) {
       THROW4(system_error,0,"write(%d,%p,%d) failed: %s",
 	     sock->sd, data, (int)size,
 	     strerror(errno));
     }
-    
+
     if (status) {
       size  -= status;
       data  += status;
@@ -233,20 +235,20 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
      sock->recvd = 0;
      got++;
      size--;
-  }   
-   
+  }
+
   while (size) {
     int status = 0;
-    
+
     status = read(sock->sd, data+got, (long int)size);
     DEBUG3("read(%d, %p, %ld);", sock->sd, data+got, size);
-    
+
     if (status < 0) {
       THROW4(system_error,0,"read(%d,%p,%d) failed: %s",
 	     sock->sd, data+got, (int)size,
 	     strerror(errno));
     }
-    
+
     if (status) {
       size    -= status;
       got    += status;
