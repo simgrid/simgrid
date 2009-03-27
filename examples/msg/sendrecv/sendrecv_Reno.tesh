@@ -15,13 +15,11 @@ $ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrec
 > [Inmos:sender:(1) 0.000000] [msg_test/INFO] host = Bellevue
 > [Inmos:sender:(1) 0.000000] [msg_test/INFO] task_la->data = 0.000000e+00
 > [Bellevue:receiver:(2) 0.000000] [msg_test/INFO] receiver
-> [Inmos:sender:(1) 0.100100] [msg_test/INFO] task_bw->data = 1.001000e-01
-> [Bellevue:receiver:(2) 0.100100] [msg_test/INFO] Task received : latency task
-> [Bellevue:receiver:(2) 0.100100] [msg_test/INFO] Communic. time 1.001000e-01
-> [Bellevue:receiver:(2) 0.100100] [msg_test/INFO] --- la 0.100100 ----
-> [Bellevue:receiver:(2) 10000.200100] [msg_test/INFO] Task received : bandwidth task
-> [Bellevue:receiver:(2) 10000.200100] [msg_test/INFO] Communic. time 1.000010e+04
-> [Bellevue:receiver:(2) 10000.200100] [msg_test/INFO] --- bw 99999.000010 ----
-> [10000.200100] [msg_test/INFO] Total simulation time: 1.000020e+04
-
-
+> [Inmos:sender:(1) 1.040100] [msg_test/INFO] task_bw->data = 1.040100e+00
+> [Bellevue:receiver:(2) 1.040100] [msg_test/INFO] Task received : latency task
+> [Bellevue:receiver:(2) 1.040100] [msg_test/INFO] Communic. time 1.040100e+00
+> [Bellevue:receiver:(2) 1.040100] [msg_test/INFO] --- la 1.040100 ----
+> [Bellevue:receiver:(2) 10002.080100] [msg_test/INFO] Task received : bandwidth task
+> [Bellevue:receiver:(2) 10002.080100] [msg_test/INFO] Communic. time 1.000104e+04
+> [Bellevue:receiver:(2) 10002.080100] [msg_test/INFO] --- bw 99989.601081 ----
+> [10002.080100] [msg_test/INFO] Total simulation time: 1.000208e+04
