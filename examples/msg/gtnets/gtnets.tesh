@@ -5,14 +5,60 @@ p Testing simple communication patterns
 $ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml 
 > [S1:master:(1) 0.000000] [msg_test/INFO] Send completed (to C1). Transfer time: 0.110000	 Agregate bandwidth: 9090.909091
 > [S1:master:(1) 0.000000] [msg_test/INFO] Completed peer: C1 time: 0.110000
+> [C1:slave:(2) 0.000000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 9090.909091 ;  message from S1 to C1  with remaining : 0.000000
 
 $ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml 
-> [S1:master:(1) 0.000000] [msg_test/INFO] Send completed (to C1). Transfer time: 150.020000	 Agregate bandwidth: 66657.778963
-> [S1:master:(1) 0.000000] [msg_test/INFO] Completed peer: C1 time: 150.020000
-> [S2:master:(2) 50.020000] [msg_test/INFO] Send completed (to C2). Transfer time: 200.040000	 Agregate bandwidth: 49990.002000
-> [S2:master:(2) 50.020000] [msg_test/INFO] Completed peer: C2 time: 200.040000
+> [S1:master:(1) 0.000000] [msg_test/INFO] Send completed (to C1). Transfer time: 0.170000	 Agregate bandwidth: 58823.529412
+> [S1:master:(1) 0.000000] [msg_test/INFO] Completed peer: C1 time: 0.170000
+> [C1:slave:(3) 0.000000] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 58823.529412 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(3) 0.000000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 17647.058824 ;  message from S2 to C2  with remaining : 7000.000000
 
 $ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation_model=compound --cfg=network_model=GTNets --cfg=cpu_model=Cas01
-$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation_model=compound --cfg=network_model=GTNets --cfg=cpu_model=Cas01
+> [0.000000] [simix_kernel/INFO] setting 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] type in variable = 2
+> [0.000000] [simix_kernel/INFO] setting 'network_model' to 'GTNets'
+> [0.000000] [xbt_cfg/INFO] type in variable = 2
+> [0.000000] [simix_kernel/INFO] setting 'cpu_model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] type in variable = 2
+> <<<<<================================>>>>>
+> Dumping GTNETS topollogy information
+> == LINKID: 0
+>   [SRC] ID: 0, router?: 0, hosts[]: [ 0]
+>   [DST] ID: 1, router?: 0, hosts[]: [ 1]
+> >>>>>================================<<<<<
+> [S1:master:(1) 0.171000] [msg_test/INFO] Send completed (to C1). Transfer time: 0.171000	 Agregate bandwidth: 5847.953216
+> [S1:master:(1) 0.171000] [msg_test/INFO] Completed peer: C1 time: 0.171000
+> [C1:slave:(2) 0.171000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 5847.953216 ;  message from S1 to C1  with remaining : 0.000000
 
+
+
+$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation_model=compound --cfg=network_model=GTNets --cfg=cpu_model=Cas01
+> [0.000000] [simix_kernel/INFO] setting 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] type in variable = 2
+> [0.000000] [simix_kernel/INFO] setting 'network_model' to 'GTNets'
+> [0.000000] [xbt_cfg/INFO] type in variable = 2
+> [0.000000] [simix_kernel/INFO] setting 'cpu_model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] type in variable = 2
+> <<<<<================================>>>>>
+> Dumping GTNETS topollogy information
+> == LINKID: 0
+>   [SRC] ID: 4, router?: 0, hosts[]: [ 2]
+>   [DST] ID: 3, router?: 1, hosts[]: [ 0]
+> == LINKID: 1
+>   [SRC] ID: 3, router?: 1, hosts[]: [ 0]
+>   [DST] ID: 0, router?: 1, hosts[]: [ 1]
+> == LINKID: 2
+>   [SRC] ID: 0, router?: 1, hosts[]: [ 1]
+>   [DST] ID: 1, router?: 0, hosts[]: [ 3]
+> == LINKID: 3
+>   [SRC] ID: 5, router?: 0, hosts[]: [ 4]
+>   [DST] ID: 3, router?: 1, hosts[]: [ 0]
+> == LINKID: 4
+>   [SRC] ID: 0, router?: 1, hosts[]: [ 1]
+>   [DST] ID: 2, router?: 0, hosts[]: [ 5]
+> >>>>>================================<<<<<
+> [S1:master:(1) 0.468142] [msg_test/INFO] Send completed (to C1). Transfer time: 0.468142	 Agregate bandwidth: 21361.021775
+> [S1:master:(1) 0.468142] [msg_test/INFO] Completed peer: C1 time: 0.468142
+> [C1:slave:(3) 0.468142] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 21361.021775 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(3) 0.468142] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 4272.204355 ;  message from S2 to C2  with remaining : 8000.000000
 
