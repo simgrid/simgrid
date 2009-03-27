@@ -5,8 +5,11 @@
   <process host="S1" function="master">
       <argument value="1000"/>
       <argument value="C1"/>
+      <argument value="1"/>
   </process>
 
-  <process host="C1" function="slave"/>
-
+  <process host="C1" function="slave">
+    <argument value="1"/>
+  </process>
+  
 </platform>

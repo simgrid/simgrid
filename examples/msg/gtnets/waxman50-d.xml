@@ -5,14 +5,21 @@
   <process host="Denise" function="master">
       <argument value="100"/>
       <argument value="Internet"/>
+      <argument value="1"/>
   </process>
 
   <process host="Boyer" function="master">
       <argument value="100"/>
       <argument value="Gratton"/>
+      <argument value="2"/>
   </process>
 
-  <process host="Internet" function="slave"/>
-  <process host="Gratton" function="slave"/>
+  <process host="Internet" function="slave">
+    <argument value="1"/>
+  </process>
+
+  <process host="Gratton" function="slave">
+    <argument value="2"/>
+  </process>
 
 </platform>
