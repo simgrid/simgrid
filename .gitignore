@@ -3,6 +3,7 @@ TAGS
 *.mk
 *.l[oa]
 *.[oa]
+*.class
 .libs
 .deps
 .dirstamp
