@@ -423,7 +423,7 @@ else
   AC_PATH_PROG([JAVA],  [java] , `which java`)
   AC_PATH_PROG([JAR],   [jar]  , `which jar`)
   AC_CHECK_HEADERS(jni.h)
-  if test -n "$JAVAC" -a test -n "$JAVA" -a test -n "$JAR" -a test "x$ac_cv_header_jni_h" = "xyes" ; then
+  if test -n "$JAVAC" && test -n "$JAVA" && test -n "$JAR" && test "x$ac_cv_header_jni_h" = "xyes" ; then
      use_java="yes"
      AC_DEFINE(HAVE_JAVA,1, [defines whether Java bindings must be compiled or not])
   else   
