@@ -9,6 +9,12 @@
 
 amversions="${amver:-1.10}"
 
+if [ ! -e bootstrap ] ; then
+  if [ -e ../bootstrap ] ; then
+    cd ..
+  fi
+fi
+
 check_version()
 {
     eval $2 --version 2>/dev/null | grep -i "$1.*$3" >/dev/null
