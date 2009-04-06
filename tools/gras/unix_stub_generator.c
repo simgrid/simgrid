@@ -313,7 +313,7 @@ void generate_makefile_local(char *project, char *deployment) {
 	  "GRAS_ROOT?= $(shell if [ -e /usr/local/lib/libgras.so ] ; then echo /usr/local ; else echo \"\\\"<<<< GRAS_ROOT undefined !!! >>>>\\\"\"; fi)\n\n"
 	  "# You can fiddle the following to make it fit your taste\n"
 	  "INCLUDES = -I$(GRAS_ROOT)/include\n"
-	  "CFLAGS ?= -O3 -w -g\n"
+	  "CFLAGS ?= -O3 -w -g -Wall\n"
 	  "LIBS_SIM = -lm  -L$(GRAS_ROOT)/lib/ -lsimgrid\n"
 	  "LIBS_RL = -lm  -L$(GRAS_ROOT)/lib/ -lgras\n"
 	  "LIBS = \n"
