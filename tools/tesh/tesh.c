@@ -179,6 +179,7 @@ static void parse_environ(){
 int main(int argc,char *argv[]) {
 
   FILE *IN;
+  int i;
 
   /* Ignore pipe issues.
      They will show up when we try to send data to dead buddies,
@@ -192,6 +193,23 @@ int main(int argc,char *argv[]) {
   rctx_init();
   parse_environ();
 
+  /* Get args */
+  for (i=1; i<argc; i++) {
+     if (!strncmp(argv[i],"--cd",strlen("--cd")+1)) {
+	if (i == argc-1) {
+	   ERROR0("--cd argument requires an argument");
+	   exit(1);
+	} 
+	if (chdir(argv[i+1])) {	     
+	   ERROR2("Cannot change directory to %s: %s",argv[i+1],strerror(errno));
+	   exit(1);
+	}	
+	INFO1("Change directory to %s",argv[i+1]);
+	memmove(argv+i,argv+i+2,argc-i-1);
+	argc-=2;
+     }     
+  }
+   
   /* Find the description file */
   if (argc == 1) {
     INFO0("Test suite from stdin");
@@ -200,8 +218,6 @@ int main(int argc,char *argv[]) {
     INFO0("Test suite from stdin OK");
 
   } else {
-    int i;
-
     for (i=1; i<argc; i++) {
       char *suitename=xbt_strdup(argv[i]);
       if (!strcmp("./",suitename))
