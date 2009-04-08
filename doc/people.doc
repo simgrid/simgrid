@@ -2,13 +2,14 @@
 
 \section core_team Core team
 
-SimGrid is a joint project between University of Hawai at Manoa, LIG
-Laboratory (Grenoble, France) and University of Nancy (France). The
-authors of SimGrid are:
+SimGrid is a joint project between University of Hawai at Manoa, LIG Laboratory
+(INRIA MEScal project, Grenoble, France) and University of Nancy (INRIA
+Algorille project, Nancy, France). The authors of SimGrid are:
 
- - Henri Casanova <casanova#cs.ucsd.edu> (Information and Computer Sciences Department, University of Hawai`i at Manoa)
- - Arnaud Legrand <arnaud.legrand#imag.fr> (LIG Laboratory (Grenoble, France), MEScal project)
- - Martin Quinson <martin.quinson#loria.fr> (University of Nancy I (Nancy, France), LORIA Laboratory, Algorille project)
+
+ - Henri Casanova <casanova::cs.ucsd.edu> (Information and Computer Sciences Department, University of Hawai`i at Manoa)
+ - Arnaud Legrand <arnaud.legrand#imag.fr> (CNRS, LIG Laboratory (Grenoble, France), INRIA MEScal project)
+ - Martin Quinson <martin.quinson#loria.fr> (University of Nancy I (Nancy, France), LORIA Laboratory, INRIA Algorille project)
 
 \section contributers Contributers and alumni project members
 
@@ -25,7 +26,8 @@ authors of SimGrid are:
    engineer position in the INRIA Grand Est (2006-2008).
  - Christophe Thiery: brought back the old SG to life with SimDag during a
    two months internship (june-july 2006) in the INRIA Grand Est.
- - Loris Marchal: designed the algorithm for simulation TCP bandwidth-sharing.
+ - Loris Marchal: designed the algorithm for simulation TCP bandwidth-sharing
+   during a two-months internship (june-july 2002) in UCSD.
  - Julien Lerouge : wrote a XML parser for ENV descriptions and helped for
    the general design during a 4 months internship (march-june 2002)
    in the ENS-Lyon.
