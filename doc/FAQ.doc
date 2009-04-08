@@ -5,12 +5,16 @@
 \section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
 
 You are at the right place... Having a look to these
-<a href="http://graal.ens-lyon.fr/~alegrand/articles/slides_g5k_simul.pdf">slides</a>
-(or to these
+<a href="http://www.loria.fr/~quinson/articles/simgrid-tutorial.pdf">the tutorial slides</a> 
+(or to these <a href="http://graal.ens-lyon.fr/~alegrand/articles/slides_g5k_simul.pdf">old slides</a>,
+or to these
 <a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">"obsolete" slides</a>)
 may give you some insights on what SimGrid can help you to do and what
 are its limitations. Then you definitely should read the \ref
-MSG_examples. There is also a mailing list: <simgrid-user@lists.gforge.inria.fr>.
+MSG_examples. The \ref GRAS_tut can also help you.
+
+If you are stuck at any point and if this FAQ cannot help you, please drop us a
+mail to the user mailing list: <simgrid-user@lists.gforge.inria.fr>.
 
 \subsection faq_interfaces What is the difference between MSG, SimDag, and GRAS? Do they serve the same purpose?
 
@@ -115,7 +119,7 @@ not familiar with compiling C files under UNIX. If you follow these
 instructions and still have some troubles, drop an e-mail to
 <simgrid-user@lists.gforge.inria.fr>.
 
-\subsection faq_compiling Compiling SimGrid from an archive
+\subsection faq_compiling Compiling SimGrid from a stable archive
 
 First of all, you need to download the latest version of SimGrid from 
 <a href="http://gforge.inria.fr/frs/?group_id=12">here</a>.
@@ -169,6 +173,27 @@ Thus, there is two ways to link your program with SimGrid:
 \verbatim export LD_LIBRARY_PATH=$HOME/lib/:$LD_LIBRARY_PATH
 \endverbatim
 
+\subsection faq_compiling_snapshoot SimGrid development snapshots
+
+We have very high standards on software quality, and we are reluctant releasing
+a stable release as long as there is still some known bug in the code base. In
+addition, we added quite an extensive test base, making sure that we correctly
+test the most important parts of the tool. 
+
+As an infortunate conclusion, there may be some time between the stable
+releases. If you want to benefit from the most recent features we introduced,
+but don't want to take the risk of an untested version from the SVN, then
+development snapshots are done for you. 
+
+These are pre-releases of SimGrid that still fail some tests about features
+that almost nobody use, or on platforms not being in our core target (which is
+linux, mac, other unixes and windows, from the most important to the less
+one). That means that using this development releases should be safe for most
+users. 
+
+These archives can be found on 
+<a href="http://www.loria.fr/~quinson/simgrid.html">this web page</a>. Once you 
+got the lastest archive, you can compile it just like any archive (see above).
 
 \subsection faq_compiling_svn Compiling SimGrid from the SVN
 
@@ -307,7 +332,7 @@ perform some more complex compilations...
 If you use the GRAS interface instead of the MSG one, then previous section
 is not the better source of information. Instead, you should check the GRAS
 tutorial in general, and the \ref GRAS_tut_tour_setup in particular.
-
+*/
 \subsection faq_crosscompile Cross-compiling a Windows DLL of SimGrid from linux
 
 At the moment, we do not distribute Windows pre-compiled version of SimGrid
@@ -405,7 +430,7 @@ configure.ac. It means that we exported any symbols which need to be.
 Nowadays, functions get automatically exported, so we don't need to load our
 header files with tons of __declspec(dllexport) cruft. We only need to do so
 for data, but there is no public data in SimGrid so we are good.
-
+/*!
 \section faq_howto Feature related questions
 
 \subsection faq_MIA "Could you please add (your favorite feature here) to SimGrid?"
