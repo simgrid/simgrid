@@ -255,28 +255,85 @@ yourself will deadlock (althrough it may change in the future).
 
 \subsection GRAS_tut_intro_model_commmodel Communication model
 
-Send operations are <b>as synchronous as possible pratically</b>. They
-block the process until the message actually gets delivered to the receiving
-process (an acknoledgment is awaited). We thus have an <b>1-port model in
-emission</b>. This limitation allows the framework to signal error condition
+Send operations are <b>as synchronous as possible pratically</b>. They block
+the process until the message actually gets delivered to the receiving
+process. An acknoledgment is awaited in SG, and we consider the fact that RL
+does not the same as a bug to be fixed one day. We thus have an <b>1-port model
+in emission</b>. This limitation allows the framework to signal error condition
 to the user code in the section which asked for the transmission, without
 having to rely on an interuption mecanism to signal errors asynchronously.
-This communication model is not completely synchronous in that sense that
-the receiver cannot be sure that the acknoledgment has been delivered
-(this is the classical byzantin generals problem). Pratically, the
-acknoledgment is so small that there is a good probability that the message
-where delivered. If you need more guaranty, you will need to implement
-better solutions in the user space.
+This communication model is not completely synchronous in that sense that the
+receiver cannot be sure that the acknoledgment has been delivered (this is the
+classical byzantin generals problem). Pratically, the acknoledgment is so small
+that there is a good probability that the message where delivered. If you need
+more guaranty, you will need to implement better solutions in the user space.
 
-Receive operations can be done in parallel, thanks to a specific thread
-within the framework. Moreover, the messages not matching the criterion in
-explicite receive are queued. The model is thus <b>N-port in reception</b>.
+As in SimGrid v3.3, receive operations are done in a separated thread, but they
+are done sequentially by this thread. The model is thus <b>1-port in
+reception</b>, but something like 2-port in general. Moreover, the messages not
+matching the criterion in explicite receive (see for example \ref
+gras_msg_wait) are queued for further use.
 
-Previous paragraph describes the model we are targeting, but the current
-state of the implementation is a bit different: an acknoledgment is awaited
-in send operation only in SG (this is a bug of RL), and there is no specific
-thread for handling incoming communications yet. This shouldn't last long
-until we solve this.
+Here is a graphical representation of a scenario involving two processes A and
+B.  Both are naturally composed of two threads: the one running user code, and
+the listener in charge of listening incoming messages from the network. Both
+processes also have a queue for the communication between the two threads, even
+if only the queue of process B is depicted in the graph. 
+
+The experimental scenario is as follows: <ul>
+
+<li>Process A sends a first message (depicted in red) with gras_msg_send(), do
+    some more computation, and then send another message (depicted in
+    yellow). Then, this process handles any incomming message with
+    gras_msg_handle(). Since no message is already queued in process A at this
+    point, this is a blocking call until the third message (depicted in
+    magenta) arrives from the other process.</li>
+
+<li>On its side, the process B explicitely wait for the second message with
+    gras_msg_wait(), do some computation with it, and then call
+    gras_msg_handle() to handle any incomming message. This will pop the red
+    message from the queue, and start the callback attached to that kind of
+    messages. This callback sends back a new message (depicted in magenta) back
+    to process A.</li>
+</ul>
+
+<img src="gras_comm.png">
+
+This figure is a bit dense, and there is several point to detail here:<ul>
+
+<li>The timings associated to a given data exchange are detailed for the first
+message. The time (1) corresponds to the network latency. That is the time to
+reach the machine on which B is running from the machine running on A. The time
+(2) is mainly given by the network bandwidth. This is the time for all bytes of
+the messages to travel from one machine to the other. Please note that the
+models used by SimGrid are a bit more complicated to keep realistic, as
+explained in <a href="http://www.loria.fr/~quinson/articles/simgrid-tutorial.pdf">the 
+tutorial slides</a>, but this not that important here. The time (3) is mainly
+found in the SG version and not in RL (and that's a bug). This is the time to
+make sure that message were received on machine B. In real life, some buffering
+at system and network level may give the illusion to machine A that the message
+were already received before it's actually delivered to the listener of machine
+B (this would reduce the time (3)). To circumvent this, machine B should send a
+little acknoledgment message when it's done, but this is not implemented yet.</li>
+
+<li>As you can see on the figure, sending is blocking until the message is
+received by the listener on the other side, but the main thread of the receiver
+side is not involved in this operation. Sender will get released from its send
+even if the main thread of receiver is occuped elsewhere.</li>
+
+<li>Incomming messages not matching the expectations of a gras_msg_wait() (such
+as the red one) are queued for further use. The next message receiving
+operation will explore this queue in order, and if empty, block on the
+network. The order of unexpected messages and subsequent ones is thus preserved
+from the receiver point of view.</li>
+
+<li>gras_msg_wait() and gras_msg_handle() accept timeouts as argument to
+specify how long you are willing to wait at most for incomming messages. These
+were ignored here to not complexify the example any further. It is worth
+mentionning that the send operation cannot be timeouted. The existance of the
+listener should make it useless.</li>
+
+</ul>
 
 \subsection GRAS_tut_intro_model_timing_policy Timing policy
 

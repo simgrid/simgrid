@@ -332,105 +332,8 @@ perform some more complex compilations...
 If you use the GRAS interface instead of the MSG one, then previous section
 is not the better source of information. Instead, you should check the GRAS
 tutorial in general, and the \ref GRAS_tut_tour_setup in particular.
-*/
-\subsection faq_crosscompile Cross-compiling a Windows DLL of SimGrid from linux
 
-At the moment, we do not distribute Windows pre-compiled version of SimGrid
-because the support for this platform is still experimental. We know that
-some parts of the GRAS environment do not work, and we think that the others
-environments (MSG and SD) have good chances to work, but we didn't test
-ourselves. This section explains how we generate the SimGrid DLL so that you
-can build it for yourself. First of all, you need to have a version more
-recent than 3.1 (ie, a SVN version as time of writting).
 
-In order to cross-compile the package to windows from linux, you need to
-install mingw32 (minimalist gnu win32). On Debian, you can do so by
-installing the packages mingw32 (compiler), mingw32-binutils (linker and
-so), mingw32-runtime.
-
-You can use the VPATH support of configure to compile at the same time for
-linux and windows without dupplicating the source nor cleaning the tree
-between each. Just run bootstrap (if you use the SVN) to run the autotools.
-Then, create a linux and a win directories. Then, type:
-\verbatim  cd linux; ../configure --srcdir=.. <usual configure flags>; make; cd ..
-cd win;  ../configure --srcdir=.. --host=i586-mingw32msvc <flags>; make; cd ..
-\endverbatim
-The trick to VPATH builds is to call configure from another directory,
-passing it an extra --srcdir argument to tell it where all the sources are.
-It will understand you want to use VPATH. Then, the trick to cross-compile
-is simply to add a --host argument specifying the target you want to build
-for. The i586-mingw32msvc string is what you have to pass to use the mingw32
-environment as distributed in Debian.
-
-After that, you can run all make targets from both directories, and test
-easily that what you change for one arch does not break the other one. 
-
-It is possible that this VPATH build thing breaks from time to time in the
-SVN since it's quite fragile, but it's granted to work in any released
-version. If you experience problems, drop us a mail. 
-
-Another possible source of issue is that at the moment, building the
-examples request to use the gras_stub_generator tool, which is a compiled
-program, not a script. In cross-compilation, you need to cross-execute with
-wine for example, which is not really pleasant. We are working on this, but
-in the meanwhile, simply don't build the examples in cross-compilation
-(<tt>cd src</tt> before running make).
-    
-Program (cross-)compiled with mingw32 do request an extra DLL at run-time to be
-usable. For example, if you want to test your build with wine, you should do
-the following to put this library where wine looks for DLLs.
-\verbatim 
-cp /usr/share/doc/mingw32-runtime/mingwm10.dll.gz ~/.wine/c/windows/system/
-gunzip ~/.wine/c/windows/system/mingwm10.dll.gz
-\endverbatim
-
-The DLL is builded in src/.libs, and installed in the <i>prefix</i>/bin directory
-when you run make install. 
-
-If you want to use it in a native project on windows, you need to use 
-simgrid.dll and mingwm10.dll. For each DLL, you need to build .def file
-under linux (listing the defined symbols), and convert it into a .lib file
-under windows (specifying this in a way that windows compilers like). To
-generate the def files, run (under linux):
-\verbatim echo "LIBRARY libsimgrid-0.dll" > simgrid.def
-echo EXPORTS >> simgrid.def
-nm libsimgrid-0.dll | grep ' T _' | sed 's/.* T _//' >> simgrid.def
-nm libsimgrid-0.dll | grep ' D _' | sed 's/.* D _//' | sed 's/$/ DATA/' >> simgrid.def
-
-echo "LIBRARY mingwm10.dll" > mingwm10.def
-echo EXPORTS >> mingwm10.def
-nm mingwm10.dll | grep ' T _' | sed 's/.* T _//' >> mingwm10.def
-nm mingwm10.dll | grep ' D _' | sed 's/.* D _//' | sed 's/$/ DATA/' >> mingwm10.def
-\endverbatim
-
-To create the import .lib files, use the <tt>lib</tt> windows tool (from
-MSVC) the following way to produce simgrid.lib and mingwm10.lib
-\verbatim lib /def:simgrid.def
-lib /def:mingwm10.def
-\endverbatim
-
-If you happen to use Borland C Builder, the right command line is the
-following (note that you don't need any file.def to get this working).
-\verbatim implib simgrid.lib libsimgrid-0.dll
-implib mingwm10.lib mingwm10.dll
-\endverbatim
-
-Then, set the following parameters in Visual C++ 2005:
-Linker -> Input -> Additional dependencies = simgrid.lib mingwm10.lib
-
-Just in case you wonder how to generate a DLL from libtool in another
-project, we added -no-undefined to any lib*_la_LDFLAGS variables so that
-libtool accepts to generate a dynamic library under windows. Then, to make
-it true, we pass any dependencies (such as -lws2 under windows or -lpthread
-on need) on the linking line. Passing such deps is a good idea anyway so
-that they get noted in the library itself, avoiding the users to know about
-our dependencies and put them manually on their compilation line. Then we
-added the AC_LIBTOOL_WIN32_DLL macro just before AC_PROG_LIBTOOL in the
-configure.ac. It means that we exported any symbols which need to be.
-Nowadays, functions get automatically exported, so we don't need to load our
-header files with tons of __declspec(dllexport) cruft. We only need to do so
-for data, but there is no public data in SimGrid so we are good.
-/*!
 \section faq_howto Feature related questions
 
 \subsection faq_MIA "Could you please add (your favorite feature here) to SimGrid?"
@@ -1326,4 +1229,107 @@ specific at all, but it's full of good advices).
 
 
 */
+
+******************************************************************
+*              OLD CRUFT NOT USED ANYMORE                        *
+******************************************************************
+
+
+\subsection faq_crosscompile Cross-compiling a Windows DLL of SimGrid from linux
+
+At the moment, we do not distribute Windows pre-compiled version of SimGrid
+because the support for this platform is still experimental. We know that
+some parts of the GRAS environment do not work, and we think that the others
+environments (MSG and SD) have good chances to work, but we didn't test
+ourselves. This section explains how we generate the SimGrid DLL so that you
+can build it for yourself. First of all, you need to have a version more
+recent than 3.1 (ie, a SVN version as time of writting).
+
+In order to cross-compile the package to windows from linux, you need to
+install mingw32 (minimalist gnu win32). On Debian, you can do so by
+installing the packages mingw32 (compiler), mingw32-binutils (linker and
+so), mingw32-runtime.
+
+You can use the VPATH support of configure to compile at the same time for
+linux and windows without dupplicating the source nor cleaning the tree
+between each. Just run bootstrap (if you use the SVN) to run the autotools.
+Then, create a linux and a win directories. Then, type:
+\verbatim  cd linux; ../configure --srcdir=.. <usual configure flags>; make; cd ..
+cd win;  ../configure --srcdir=.. --host=i586-mingw32msvc <flags>; make; cd ..
+\endverbatim
+The trick to VPATH builds is to call configure from another directory,
+passing it an extra --srcdir argument to tell it where all the sources are.
+It will understand you want to use VPATH. Then, the trick to cross-compile
+is simply to add a --host argument specifying the target you want to build
+for. The i586-mingw32msvc string is what you have to pass to use the mingw32
+environment as distributed in Debian.
+
+After that, you can run all make targets from both directories, and test
+easily that what you change for one arch does not break the other one. 
+
+It is possible that this VPATH build thing breaks from time to time in the
+SVN since it's quite fragile, but it's granted to work in any released
+version. If you experience problems, drop us a mail. 
+
+Another possible source of issue is that at the moment, building the
+examples request to use the gras_stub_generator tool, which is a compiled
+program, not a script. In cross-compilation, you need to cross-execute with
+wine for example, which is not really pleasant. We are working on this, but
+in the meanwhile, simply don't build the examples in cross-compilation
+(<tt>cd src</tt> before running make).
+    
+Program (cross-)compiled with mingw32 do request an extra DLL at run-time to be
+usable. For example, if you want to test your build with wine, you should do
+the following to put this library where wine looks for DLLs.
+\verbatim 
+cp /usr/share/doc/mingw32-runtime/mingwm10.dll.gz ~/.wine/c/windows/system/
+gunzip ~/.wine/c/windows/system/mingwm10.dll.gz
+\endverbatim
+
+The DLL is builded in src/.libs, and installed in the <i>prefix</i>/bin directory
+when you run make install. 
+
+If you want to use it in a native project on windows, you need to use 
+simgrid.dll and mingwm10.dll. For each DLL, you need to build .def file
+under linux (listing the defined symbols), and convert it into a .lib file
+under windows (specifying this in a way that windows compilers like). To
+generate the def files, run (under linux):
+\verbatim echo "LIBRARY libsimgrid-0.dll" > simgrid.def
+echo EXPORTS >> simgrid.def
+nm libsimgrid-0.dll | grep ' T _' | sed 's/.* T _//' >> simgrid.def
+nm libsimgrid-0.dll | grep ' D _' | sed 's/.* D _//' | sed 's/$/ DATA/' >> simgrid.def
+
+echo "LIBRARY mingwm10.dll" > mingwm10.def
+echo EXPORTS >> mingwm10.def
+nm mingwm10.dll | grep ' T _' | sed 's/.* T _//' >> mingwm10.def
+nm mingwm10.dll | grep ' D _' | sed 's/.* D _//' | sed 's/$/ DATA/' >> mingwm10.def
+\endverbatim
+
+To create the import .lib files, use the <tt>lib</tt> windows tool (from
+MSVC) the following way to produce simgrid.lib and mingwm10.lib
+\verbatim lib /def:simgrid.def
+lib /def:mingwm10.def
+\endverbatim
+
+If you happen to use Borland C Builder, the right command line is the
+following (note that you don't need any file.def to get this working).
+\verbatim implib simgrid.lib libsimgrid-0.dll
+implib mingwm10.lib mingwm10.dll
+\endverbatim
+
+Then, set the following parameters in Visual C++ 2005:
+Linker -> Input -> Additional dependencies = simgrid.lib mingwm10.lib
+
+Just in case you wonder how to generate a DLL from libtool in another
+project, we added -no-undefined to any lib*_la_LDFLAGS variables so that
+libtool accepts to generate a dynamic library under windows. Then, to make
+it true, we pass any dependencies (such as -lws2 under windows or -lpthread
+on need) on the linking line. Passing such deps is a good idea anyway so
+that they get noted in the library itself, avoiding the users to know about
+our dependencies and put them manually on their compilation line. Then we
+added the AC_LIBTOOL_WIN32_DLL macro just before AC_PROG_LIBTOOL in the
+configure.ac. It means that we exported any symbols which need to be.
+Nowadays, functions get automatically exported, so we don't need to load our
+header files with tons of __declspec(dllexport) cruft. We only need to do so
+for data, but there is no public data in SimGrid so we are good.
 
