@@ -12,6 +12,7 @@
 
 #include <xbt/misc.h>
 #include <xbt/sysdep.h>
+#include <xbt/str.h>
 #include <xbt/function_types.h>
 
 #include <xbt/asserts.h>
