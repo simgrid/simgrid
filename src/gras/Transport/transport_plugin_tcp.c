@@ -90,7 +90,7 @@ static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
 
   if (setsockopt(sock->sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size)) ||
       setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size))) {
-     WARN1("setsockopt failed, cannot set buffer size: %s",sock_errstr(sock_errno));
+     VERB1("setsockopt failed, cannot set buffer size: %s",sock_errstr(sock_errno));
   }
   
   he = gethostbyname (sock->peer_name);
