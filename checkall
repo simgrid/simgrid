@@ -18,7 +18,8 @@ if (-e "CMakeLists.txt") { # launched from dart
 open LOG,(">checkall.log") || die "Cannot open log file: $!";
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-print LOG "Build started on $hour:$min:$sec $mon/$mday/$year\n\n";
+print LOG "Build started on $hour:$min:$sec $mon/$mday/$year\n";
+print LOG "Current svn version is: ".qx(svnversion)."\n\n";
 open MAKE,("make 2>&1 |") || die "Cannot fork a make: $!";
 while (<MAKE>) {
     print     $_;
