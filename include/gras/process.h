@@ -34,6 +34,7 @@ void gras_agent_spawn(const char *name, void *data, xbt_main_func_t code, int ar
  * and use \ref gras_userdata_set yourself), and \ref gras_userdata_get to
  * retrieve a reference to it.
  * 
+ * 
  * For more info on this, you may want to check the relevant lesson of the GRAS tutorial:
  * \ref GRAS_tut_tour_globals
  */
@@ -51,7 +52,15 @@ XBT_PUBLIC(void*) gras_userdata_get(void);
  */
 XBT_PUBLIC(void) gras_userdata_set(void *ud);
 
-/** \brief Malloc and set the data associated with the current process. */
+/** \brief Malloc and set the data associated with the current process.
+ *
+ * @warnug gras_userdata_new() expects the pointed type, not the
+ * pointer type. We know it'a a bit troublesome, but it seems like
+ * the only solution since this macro has to compute the size to
+ * malloc and should thus know the pointed type. 
+ *
+ * You'll find an example in the tutorial:  \ref GRAS_tut_tour_globals
+ */
 #define gras_userdata_new(type) (gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())
 /* @} */
 

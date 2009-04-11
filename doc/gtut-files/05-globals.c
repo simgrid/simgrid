@@ -33,7 +33,7 @@ int server(int argc, char *argv[]) {
   
   gras_init(&argc,argv);
 
-  globals=gras_userdata_new(server_data_t*);
+  globals=gras_userdata_new(server_data_t);
   globals->killed=0;
 
   gras_msgtype_declare("hello", NULL);
