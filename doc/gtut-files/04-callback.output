@@ -1,14 +1,14 @@
 $ ./test_server 23451 & ./test_client 127.0.0.1 23451
 Client ready; listening on 1024
 That's it, we sent the data to the server on 127.0.0.1
-[blaise:client:(17261) 0.000012] [gras/INFO] Exiting GRAS
+[arthur:client:(27507) 0.000019] [gras/INFO] Exiting GRAS
 Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(17259) 0.000011] [gras/INFO] Exiting GRAS
+[arthur:server:(27505) 0.000013] [gras/INFO] Exiting GRAS
 $
 $ ./test_simulator platform.xml test.xml
 Client ready; listening on 1024
-Cool, we received the message from Boivin:1024.
-[Jacquelin:server:(1) 0.000000] [gras/INFO] Exiting GRAS
 That's it, we sent the data to the server on Jacquelin
 [Boivin:client:(2) 0.000000] [gras/INFO] Exiting GRAS
+Cool, we received the message from Boivin:1024.
+[Jacquelin:server:(1) 0.000000] [gras/INFO] Exiting GRAS
 $

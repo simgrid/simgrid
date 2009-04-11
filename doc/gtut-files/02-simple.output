@@ -1,7 +1,7 @@
 $ ./test_simulator platform.xml test.xml
 Client ready; listening on 1024
-Cool, we received the message from Boivin:1024.
-[Jacquelin:server:(1) 0.000000] [gras/INFO] Exiting GRAS
 That's it, we sent the data to the server
 [Boivin:client:(2) 0.000000] [gras/INFO] Exiting GRAS
+Cool, we received the message from Boivin:1024.
+[Jacquelin:server:(1) 0.000000] [gras/INFO] Exiting GRAS
 $

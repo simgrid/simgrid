@@ -1,18 +1,18 @@
 $ ./test_server 12345 & ./test_client 127.0.0.1 12345
-[blaise:client:(17701) 0.000018] [test/INFO] we sent the hello to the server on 127.0.0.1.
-[blaise:client:(17701) 0.000080] [test/INFO] Gave the server more 0.5 second to live
-[blaise:client:(17701) 0.000103] [gras/INFO] Exiting GRAS
-[blaise:server:(17698) 0.000013] [test/INFO] Cool, we received a message from 127.0.0.1:1024. Here it is: "Nice to meet you"
-[blaise:server:(17698) 0.000075] test.c:16: [test/CRITICAL] Argh, 127.0.0.1:1024 gave me 0.50 seconds before suicide!
-[blaise:server:(17698) 0.500296] test.c:18: [test/CRITICAL] Bye folks...
-[blaise:server:(17698) 0.500337] [gras/INFO] Exiting GRAS
+[arthur:client:(27970) 0.000025] [test/INFO] we sent the hello to the server on 127.0.0.1.
+[arthur:client:(27970) 0.000124] [test/INFO] Gave the server more 0.5 second to live
+[arthur:client:(27970) 0.000152] [gras/INFO] Exiting GRAS
+[arthur:server:(27967) 0.000013] [test/INFO] Cool, we received a message from 127.0.0.1:1024. Here it is: "Nice to meet you"
+[arthur:server:(27967) 0.000105] test.c:16: [test/CRITICAL] Argh, 127.0.0.1:1024 gave me 0.50 seconds before suicide!
+[arthur:server:(27967) 0.500236] test.c:18: [test/CRITICAL] Bye folks...
+[arthur:server:(27967) 0.500303] [gras/INFO] Exiting GRAS
 $
 $ ./test_simulator platform.xml test.xml
-[Jacquelin:server:(1) 0.000000] [test/INFO] Cool, we received a message from Boivin:1024. Here it is: "Nice to meet you"
 [Boivin:client:(2) 0.000000] [test/INFO] we sent the hello to the server on Jacquelin.
-[Jacquelin:server:(1) 0.000539] test.c:16: [test/CRITICAL] Argh, Boivin:1024 gave me 0.50 seconds before suicide!
+[Jacquelin:server:(1) 0.000000] [test/INFO] Cool, we received a message from Boivin:1024. Here it is: "Nice to meet you"
 [Boivin:client:(2) 0.000539] [test/INFO] Gave the server more 0.5 second to live
 [Boivin:client:(2) 0.000539] [gras/INFO] Exiting GRAS
+[Jacquelin:server:(1) 0.000539] test.c:16: [test/CRITICAL] Argh, Boivin:1024 gave me 0.50 seconds before suicide!
 [Jacquelin:server:(1) 0.500539] test.c:18: [test/CRITICAL] Bye folks...
 [Jacquelin:server:(1) 0.500539] [gras/INFO] Exiting GRAS
 $

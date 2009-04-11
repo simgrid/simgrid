@@ -4,17 +4,17 @@ we sent the data to the server on 127.0.0.1. Let's do it again for fun
 Ok. Enough. Have a rest, and then kill the server
 Cool, we received the message from 127.0.0.1:1024.
 Cool, we received the message from 127.0.0.1:1024.
-[blaise:client:(17314) 0.000015] [gras/INFO] Exiting GRAS
+[arthur:client:(28822) 0.000027] [gras/INFO] Exiting GRAS
 Argh, killed by 127.0.0.1:1024! Bye folks...
-[blaise:server:(17312) 0.000007] [gras/INFO] Exiting GRAS
+[arthur:server:(28820) 0.000013] [gras/INFO] Exiting GRAS
 $
 $ ./test_simulator platform.xml test.xml
 Client ready; listening on 1024
-Cool, we received the message from Boivin:1024.
 we sent the data to the server on Jacquelin. Let's do it again for fun
 Cool, we received the message from Boivin:1024.
 Ok. Enough. Have a rest, and then kill the server
+Cool, we received the message from Boivin:1024.
+[Boivin:client:(2) 0.000000] [gras/INFO] Exiting GRAS
 Argh, killed by Boivin:1024! Bye folks...
 [Jacquelin:server:(1) 0.000000] [gras/INFO] Exiting GRAS
-[Boivin:client:(2) 0.000000] [gras/INFO] Exiting GRAS
 $

@@ -1,18 +1,18 @@
 $ ./test_server 12345 --log=test.fmt:%m%n & ./test_client 127.0.0.1 12345 --log=test.fmt:%m%n
-we sent the data to the server on 127.0.0.1. Let's do it again for fun
-Ok. Enough. Have a rest, and then kill the server
-[blaise:client:(17371) 0.000031] [gras/INFO] Exiting GRAS
 Cool, we received the message from 127.0.0.1:1024.
 nCool, we received the message from 127.0.0.1:1024.
 nArgh, killed by 127.0.0.1:1024! Bye folks...
-n[blaise:server:(17368) 0.000010] [gras/INFO] Exiting GRAS
+n[arthur:server:(27630) 0.000011] [gras/INFO] Exiting GRAS
+we sent the data to the server on 127.0.0.1. Let's do it again for fun
+Ok. Enough. Have a rest, and then kill the server
+[arthur:client:(27634) 0.000019] [gras/INFO] Exiting GRAS
 $
 $ ./test_simulator platform.xml test.xml --log=test.fmt:%m%n
-Cool, we received the message from Boivin:1024.
 we sent the data to the server on Jacquelin. Let's do it again for fun
 Cool, we received the message from Boivin:1024.
 Ok. Enough. Have a rest, and then kill the server
+Cool, we received the message from Boivin:1024.
+[Boivin:client:(2) 0.000000] [gras/INFO] Exiting GRAS
 Argh, killed by Boivin:1024! Bye folks...
 [Jacquelin:server:(1) 0.000000] [gras/INFO] Exiting GRAS
-[Boivin:client:(2) 0.000000] [gras/INFO] Exiting GRAS
 $

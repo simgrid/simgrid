@@ -1,51 +1,52 @@
 $ ./test_server & ./test_client 127.0.0.1 12345 & ./test_client 127.0.0.1 12345 
-[blaise:server:(17821) 0.000012] [test/INFO] grant 127.0.0.1:1024 since nobody wanted it
-[blaise:client:(17818) 0.000012] [test/INFO] Granted by server
-[blaise:server:(17821) 0.001209] [test/INFO] put 127.0.0.1:1025 in waiting queue
-[blaise:client:(17818) 0.100223] [test/INFO] Release the token
-[blaise:server:(17821) 0.100445] [test/INFO] grant 127.0.0.1:1025 since token released
-[blaise:client:(17819) 0.000010] [test/INFO] Granted by server
-[blaise:server:(17821) 0.200513] [test/INFO] put 127.0.0.1:1024 in waiting queue
-[blaise:client:(17819) 0.100051] [test/INFO] Release the token
-[blaise:server:(17821) 0.200647] [test/INFO] grant 127.0.0.1:1024 since token released
-[blaise:client:(17818) 0.200575] [test/INFO] Granted by server
-[blaise:server:(17821) 0.300735] [test/INFO] put 127.0.0.1:1025 in waiting queue
-[blaise:client:(17818) 0.300635] [test/INFO] Release the token
-[blaise:server:(17821) 0.300826] [test/INFO] grant 127.0.0.1:1025 since token released
-[blaise:client:(17819) 0.200359] [test/INFO] Granted by server
-[blaise:server:(17821) 0.400961] [test/INFO] put 127.0.0.1:1024 in waiting queue
-[blaise:client:(17819) 0.300474] [test/INFO] Release the token
-[blaise:server:(17821) 0.401069] [test/INFO] grant 127.0.0.1:1024 since token released
-[blaise:client:(17818) 0.401000] [test/INFO] Granted by server
-[blaise:server:(17821) 0.501196] [test/INFO] put 127.0.0.1:1025 in waiting queue
-[blaise:client:(17818) 0.501096] [test/INFO] Release the token
-[blaise:server:(17821) 0.501267] [test/INFO] grant 127.0.0.1:1025 since token released
-[blaise:client:(17819) 0.400766] [test/INFO] Granted by server
-[blaise:server:(17821) 0.601367] [test/INFO] put 127.0.0.1:1024 in waiting queue
-[blaise:client:(17819) 0.500870] [test/INFO] Release the token
-[blaise:server:(17821) 0.601459] [test/INFO] grant 127.0.0.1:1024 since token released
-[blaise:client:(17818) 0.601388] [test/INFO] Granted by server
-[blaise:server:(17821) 0.701581] [test/INFO] put 127.0.0.1:1025 in waiting queue
-[blaise:client:(17818) 0.701486] [test/INFO] Release the token
-[blaise:server:(17821) 0.701682] [test/INFO] grant 127.0.0.1:1025 since token released
-[blaise:client:(17819) 0.601215] [test/INFO] Granted by server
-[blaise:client:(17819) 0.701407] [test/INFO] Release the token
-[blaise:server:(17821) 0.802039] [test/INFO] put 127.0.0.1:1024 in waiting queue
-[blaise:server:(17821) 0.802084] [test/INFO] grant 127.0.0.1:1024 since token released
-[blaise:client:(17818) 0.802014] [test/INFO] Granted by server
-[blaise:client:(17818) 0.902093] [test/INFO] Release the token
-[blaise:client:(17818) 0.902139] [gras/INFO] Exiting GRAS
-[blaise:server:(17821) 0.902661] [test/INFO] grant 127.0.0.1:1025 since nobody wanted it
-[blaise:client:(17819) 0.802198] [test/INFO] Granted by server
-[blaise:client:(17819) 0.902396] [test/INFO] Release the token
-[blaise:client:(17819) 0.902449] [gras/INFO] Exiting GRAS
-[blaise:server:(17821) 1.003093] [gras/INFO] Exiting GRAS
+[arthur:server:(28159) 0.000023] [test/INFO] grant 127.0.0.1:1024 since nobody wanted it
+[arthur:client:(28160) 0.000013] [test/INFO] Granted by server
+[arthur:server:(28159) 0.014750] [test/INFO] put 127.0.0.1:1025 in waiting queue
+[arthur:client:(28160) 0.100254] [test/INFO] Release the token
+[arthur:server:(28159) 0.100950] [test/INFO] grant 127.0.0.1:1025 since token released
+[arthur:client:(28162) 0.000014] [test/INFO] Granted by server
+[arthur:server:(28159) 0.201146] [test/INFO] put 127.0.0.1:1024 in waiting queue
+[arthur:client:(28162) 0.100169] [test/INFO] Release the token
+[arthur:server:(28159) 0.201593] [test/INFO] grant 127.0.0.1:1024 since token released
+[arthur:client:(28160) 0.201472] [test/INFO] Granted by server
+[arthur:client:(28160) 0.301560] [test/INFO] Release the token
+[arthur:server:(28159) 0.302114] [test/INFO] put 127.0.0.1:1025 in waiting queue
+[arthur:server:(28159) 0.302172] [test/INFO] grant 127.0.0.1:1025 since token released
+[arthur:client:(28162) 0.201166] [test/INFO] Granted by server
+[arthur:server:(28159) 0.402342] [test/INFO] put 127.0.0.1:1024 in waiting queue
+[arthur:client:(28162) 0.301265] [test/INFO] Release the token
+[arthur:server:(28159) 0.402687] [test/INFO] grant 127.0.0.1:1024 since token released
+[arthur:client:(28160) 0.402605] [test/INFO] Granted by server
+[arthur:server:(28159) 0.503013] [test/INFO] put 127.0.0.1:1025 in waiting queue
+[arthur:client:(28160) 0.502739] [test/INFO] Release the token
+[arthur:server:(28159) 0.503260] [test/INFO] grant 127.0.0.1:1025 since token released
+[arthur:client:(28162) 0.402236] [test/INFO] Granted by server
+[arthur:server:(28159) 0.603517] [test/INFO] put 127.0.0.1:1024 in waiting queue
+[arthur:client:(28162) 0.502304] [test/INFO] Release the token
+[arthur:server:(28159) 0.603699] [test/INFO] grant 127.0.0.1:1024 since token released
+[arthur:client:(28160) 0.603564] [test/INFO] Granted by server
+[arthur:client:(28160) 0.703651] [test/INFO] Release the token
+[arthur:server:(28159) 0.704098] [test/INFO] put 127.0.0.1:1025 in waiting queue
+[arthur:server:(28159) 0.704146] [test/INFO] grant 127.0.0.1:1025 since token released
+[arthur:client:(28162) 0.603133] [test/INFO] Granted by server
+[arthur:server:(28159) 0.804385] [test/INFO] put 127.0.0.1:1024 in waiting queue
+[arthur:client:(28162) 0.703226] [test/INFO] Release the token
+[arthur:server:(28159) 0.804647] [test/INFO] grant 127.0.0.1:1024 since token released
+[arthur:client:(28160) 0.804530] [test/INFO] Granted by server
+[arthur:client:(28160) 0.904608] [test/INFO] Release the token
+[arthur:server:(28159) 0.905011] [test/INFO] put 127.0.0.1:1025 in waiting queue
+[arthur:client:(28160) 0.904749] [gras/INFO] Exiting GRAS
+[arthur:server:(28159) 0.905159] [test/INFO] grant 127.0.0.1:1025 since token released
+[arthur:client:(28162) 0.804870] [test/INFO] Granted by server
+[arthur:client:(28162) 0.905010] [test/INFO] Release the token
+[arthur:client:(28162) 0.905181] [gras/INFO] Exiting GRAS
+[arthur:server:(28159) 1.007620] [gras/INFO] Exiting GRAS
 $
 $
 $ ./test_simulator platform-3nodes.xml test.xml
 [Jacquelin:server:(1) 0.000000] [test/INFO] grant Boivin:1024 since nobody wanted it
+[Jacquelin:server:(1) 0.000537] [test/INFO] put Geoff:1024 in waiting queue
 [Boivin:client:(2) 0.000537] [test/INFO] Granted by server
-[Jacquelin:server:(1) 0.000727] [test/INFO] put Geoff:1024 in waiting queue
 [Boivin:client:(2) 0.100537] [test/INFO] Release the token
 [Jacquelin:server:(1) 0.101074] [test/INFO] grant Geoff:1024 since token released
 [Geoff:client:(3) 0.101264] [test/INFO] Granted by server
@@ -79,10 +80,10 @@ $ ./test_simulator platform-3nodes.xml test.xml
 [Boivin:client:(2) 0.807740] [test/INFO] Granted by server
 [Jacquelin:server:(1) 0.907393] [test/INFO] put Geoff:1024 in waiting queue
 [Boivin:client:(2) 0.907740] [test/INFO] Release the token
-[Jacquelin:server:(1) 0.908277] [test/INFO] grant Geoff:1024 since token released
 [Boivin:client:(2) 0.908277] [gras/INFO] Exiting GRAS
+[Jacquelin:server:(1) 0.908277] [test/INFO] grant Geoff:1024 since token released
 [Geoff:client:(3) 0.908467] [test/INFO] Granted by server
 [Geoff:client:(3) 1.008467] [test/INFO] Release the token
-[Jacquelin:server:(1) 1.008657] [gras/INFO] Exiting GRAS
 [Geoff:client:(3) 1.008657] [gras/INFO] Exiting GRAS
+[Jacquelin:server:(1) 1.008657] [gras/INFO] Exiting GRAS
 $

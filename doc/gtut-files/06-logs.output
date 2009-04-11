@@ -1,18 +1,18 @@
 $ ./test_server 12345 & ./test_client 127.0.0.1 12345
-[blaise:client:(17508) 0.000015] [test/INFO] we sent the data to the server on 127.0.0.1. Let's do it again for fun
-[blaise:client:(17508) 0.000077] [test/INFO] Ok. Enough. Have a rest, and then kill the server
-[blaise:client:(17508) 5.000240] [gras/INFO] Exiting GRAS
-[blaise:server:(17505) 0.000010] [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(17505) 0.000060] [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(17505) 4.999482] test.c:15: [test/CRITICAL] Argh, killed by 127.0.0.1:1024! Bye folks...
-[blaise:server:(17505) 4.999508] [gras/INFO] Exiting GRAS
+[arthur:client:(27755) 0.000016] [test/INFO] we sent the data to the server on 127.0.0.1. Let's do it again for fun
+[arthur:client:(27755) 0.000148] [test/INFO] Ok. Enough. Have a rest, and then kill the server
+[arthur:client:(27755) 5.000415] [gras/INFO] Exiting GRAS
+[arthur:server:(27752) 0.000010] [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[arthur:server:(27752) 0.000409] [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[arthur:server:(27752) 5.001363] test.c:15: [test/CRITICAL] Argh, killed by 127.0.0.1:1024! Bye folks...
+[arthur:server:(27752) 5.001409] [gras/INFO] Exiting GRAS
 $
 $ ./test_simulator platform.xml test.xml
-[Jacquelin:server:(1) 0.000000] [test/INFO] Cool, we received the message from Boivin:1024.
 [Boivin:client:(2) 0.000000] [test/INFO] we sent the data to the server on Jacquelin. Let's do it again for fun
-[Jacquelin:server:(1) 0.000537] [test/INFO] Cool, we received the message from Boivin:1024.
+[Jacquelin:server:(1) 0.000000] [test/INFO] Cool, we received the message from Boivin:1024.
 [Boivin:client:(2) 0.000537] [test/INFO] Ok. Enough. Have a rest, and then kill the server
+[Jacquelin:server:(1) 0.000537] [test/INFO] Cool, we received the message from Boivin:1024.
+[Boivin:client:(2) 5.001074] [gras/INFO] Exiting GRAS
 [Jacquelin:server:(1) 5.001074] test.c:15: [test/CRITICAL] Argh, killed by Boivin:1024! Bye folks...
 [Jacquelin:server:(1) 5.001074] [gras/INFO] Exiting GRAS
-[Boivin:client:(2) 5.001074] [gras/INFO] Exiting GRAS
 $

@@ -1,27 +1,26 @@
 $ ./test_server & ./test_client 127.0.0.1 
-[blaise:client:(17757) 0.000012] [test/INFO] Ask to convert 4321
-[blaise:client:(17757) 0.000679] [test/INFO] The server says that 4321 is equal to "4321".
-[blaise:client:(17757) 0.000699] [test/INFO] Ask to convert 1234
-[blaise:client:(17757) 0.000817] [test/INFO] The server says that "1234" is equal to 1234.
-[blaise:client:(17757) 0.008084] [test/INFO] The server refuses to convert azerty. Here is the received exception:
-** SimGrid: UNCAUGHT EXCEPTION received on blaise(17757): category: invalid_arg; value: 0
+[arthur:server:(28048) 0.000012] [test/INFO] Convert 4321 to string
+[arthur:server:(28048) 0.000085] [test/INFO] 4321 converted to string: 4321
+[arthur:server:(28048) 0.000617] [test/INFO] Convert 1234 to long
+[arthur:server:(28048) 0.000952] [test/INFO] Convert azerty to long
+[arthur:server:(28048) 0.110106] [test/INFO] Server done
+[arthur:server:(28048) 0.110150] [gras/INFO] Exiting GRAS
+[arthur:client:(28052) 0.000016] [test/INFO] Ask to convert 4321
+[arthur:client:(28052) 0.000856] [test/INFO] The server says that 4321 is equal to "4321".
+[arthur:client:(28052) 0.000886] [test/INFO] Ask to convert 1234
+[arthur:client:(28052) 0.001223] [test/INFO] The server says that "1234" is equal to 1234.
+[arthur:client:(28052) 0.110165] [test/INFO] The server refuses to convert azerty. Here is the received exception:
+** SimGrid: UNCAUGHT EXCEPTION received on arthur(28052): category: invalid_arg; value: 0
 ** Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
-** Thrown by server() in this process
-[blaise:client:(17757) 0.008113] xbt/ex.c:323: [xbt_ex/CRITICAL] Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
+** Thrown by server() on host arthur(28048)
+[arthur:client:(28052) 0.110266] xbt/ex.c:113: [xbt_ex/CRITICAL] Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
 
-**   In server_convert_a2i_cb() at /home/mquinson/CVSIMPORT/gras/pure/doc/gtut-files/test.c:48
-**   In gras_msg_handle() at /home/mquinson/CVSIMPORT/gras/pure/src/gras/Msg/gras_msg_exchange.c:414
-**   In server() at /home/mquinson/CVSIMPORT/gras/pure/doc/gtut-files/test.c:71
-**   In main() at /home/mquinson/CVSIMPORT/gras/pure/doc/gtut-files/_test_server.c:31
-[blaise:client:(17757) 0.008128] [test/INFO] Again, previous exception was excepted
-[blaise:client:(17757) 0.008147] [test/INFO] Stopped the server
-[blaise:client:(17757) 0.008154] [gras/INFO] Exiting GRAS
-[blaise:server:(17754) 0.000005] [test/INFO] Convert 4321 to string
-[blaise:server:(17754) 0.000022] [test/INFO] 4321 converted to string: 4321
-[blaise:server:(17754) 0.000183] [test/INFO] Convert 1234 to long
-[blaise:server:(17754) 0.000246] [test/INFO] Convert azerty to long
-[blaise:server:(17754) 0.007738] [test/INFO] Server done
-[blaise:server:(17754) 0.007750] [gras/INFO] Exiting GRAS
+**   In server_convert_a2i_cb() at /home/mquinson/Code/simgrid-git/doc/gtut-files/test.c:48
+**   In gras_msg_handle() at /home/mquinson/Code/simgrid-git/src/gras/Msg/gras_msg_exchange.c:400
+**   In server() at /home/mquinson/Code/simgrid-git/doc/gtut-files/test.c:71
+[arthur:client:(28052) 0.110314] [test/INFO] Again, previous exception was excepted
+[arthur:client:(28052) 0.110415] [test/INFO] Stopped the server
+[arthur:client:(28052) 0.110442] [gras/INFO] Exiting GRAS
 $
 $ killall test_server
 $
@@ -34,18 +33,22 @@ $ ./test_simulator platform.xml test.xml
 [Jacquelin:server:(1) 0.001615] [test/INFO] Convert 1234 to long
 [Boivin:client:(2) 0.002153] [test/INFO] The server says that "1234" is equal to 1234.
 [Jacquelin:server:(1) 0.002692] [test/INFO] Convert azerty to long
-[Boivin:client:(2) 0.003358] [test/INFO] The server refuses to convert azerty. Here is the received exception:
+[Boivin:client:(2) 0.003429] [test/INFO] The server refuses to convert azerty. Here is the received exception:
 ** SimGrid: UNCAUGHT EXCEPTION received on Boivin(2): category: invalid_arg; value: 0
 ** Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
-** Thrown by server() in this process
-[Boivin:client:(2) 0.003358] xbt/ex.c:323: [xbt_ex/CRITICAL] Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
+** Thrown by server() on host Jacquelin(1)
+[Boivin:client:(2) 0.003429] xbt/ex.c:113: [xbt_ex/CRITICAL] Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
 
-**   In server_convert_a2i_cb() at /home/mquinson/CVSIMPORT/gras/pure/doc/gtut-files/test.c:48
-**   In gras_msg_handle() at /home/mquinson/CVSIMPORT/gras/pure/src/gras/Msg/gras_msg_exchange.c:414
-**   In server() at /home/mquinson/CVSIMPORT/gras/pure/doc/gtut-files/test.c:71
-[Boivin:client:(2) 0.003358] [test/INFO] Again, previous exception was excepted
-[Jacquelin:server:(1) 0.003895] [test/INFO] Server done
-[Jacquelin:server:(1) 0.003895] [gras/INFO] Exiting GRAS
-[Boivin:client:(2) 0.003895] [test/INFO] Stopped the server
-[Boivin:client:(2) 0.003895] [gras/INFO] Exiting GRAS
+**   In server_convert_a2i_cb() at /home/mquinson/Code/simgrid-git/doc/gtut-files/test.c:48
+**   In gras_msg_handle() at /home/mquinson/Code/simgrid-git/src/gras/Msg/gras_msg_exchange.c:400
+**   In server() at /home/mquinson/Code/simgrid-git/doc/gtut-files/test.c:71
+**   In xbt_ctx_thread_wrapper() at /home/mquinson/Code/simgrid-git/src/xbt/xbt_context_thread.c:276
+**   In wrapper_start_routine() at /home/mquinson/Code/simgrid-git/src/xbt/xbt_os_thread.c:124
+**   In start_thread() at ??:0
+**   In __clone() at ??:0
+[Boivin:client:(2) 0.003429] [test/INFO] Again, previous exception was excepted
+[Boivin:client:(2) 0.003966] [test/INFO] Stopped the server
+[Boivin:client:(2) 0.003966] [gras/INFO] Exiting GRAS
+[Jacquelin:server:(1) 0.003966] [test/INFO] Server done
+[Jacquelin:server:(1) 0.003966] [gras/INFO] Exiting GRAS
 $

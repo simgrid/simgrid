@@ -1,7 +1,7 @@
 $ ./test_client
-[blaise:client:(17112) 0.000007] [gras/INFO] Exiting GRAS
+[arthur:client:(28729) 0.000011] [gras/INFO] Exiting GRAS
 $ ./test_server
-[blaise:server:(17115) 0.000007] [gras/INFO] Exiting GRAS
+[arthur:server:(28733) 0.000012] [gras/INFO] Exiting GRAS
 $
 $ ./test_simulator platform.xml test.xml
 [Jacquelin:server:(1) 0.000000] [gras/INFO] Exiting GRAS
