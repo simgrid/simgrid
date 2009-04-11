@@ -72,7 +72,8 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
         *-O*) ;;
         *) optCFLAGS="$optCFLAGS -O3" ;;
         esac
-        optCFLAGS="$optCFLAGS -finline-functions -ffast-math -funroll-loops -fno-strict-aliasing"
+        optCFLAGS="$optCFLAGS -finline-functions -funroll-loops -fno-strict-aliasing"
+	# now that surf uses advanced maths in lagrangian, -ffast-math do break things
       
         GCC_VER=`gcc --version | head -n 1 | sed 's/^[^0-9]*\([^ ]*\).*$/\1/'`
         GCC_VER_MAJ=`echo $GCC_VER | sed 's/^\(.\).*$/\1/'`
