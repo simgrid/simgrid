@@ -32,7 +32,10 @@ void gras_agent_spawn(const char *name, void *data, xbt_main_func_t code, int ar
  * 
  * Use the \ref gras_userdata_new macro to create a new user data (or malloc it
  * and use \ref gras_userdata_set yourself), and \ref gras_userdata_get to
- * retrieve a reference to it. 
+ * retrieve a reference to it.
+ * 
+ * For more info on this, you may want to check the relevant lesson of the GRAS tutorial:
+ * \ref GRAS_tut_tour_globals
  */
 /* @{ */
 
