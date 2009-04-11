@@ -50,7 +50,7 @@ XBT_PUBLIC(void*) gras_userdata_get(void);
  * \brief Set the data associated with the current process.
  * \ingroup GRAS_globals
  */
-XBT_PUBLIC(void) gras_userdata_set(void *ud);
+XBT_PUBLIC(void*) gras_userdata_set(void *ud);
 
 /** \brief Malloc and set the data associated with the current process.
  *
@@ -61,7 +61,7 @@ XBT_PUBLIC(void) gras_userdata_set(void *ud);
  *
  * You'll find an example in the tutorial:  \ref GRAS_tut_tour_globals
  */
-#define gras_userdata_new(type) ((type*)gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())
+#define gras_userdata_new(type) ((type*)gras_userdata_set(xbt_new0(type,1)))
 /* @} */
 
 SG_END_DECL()
