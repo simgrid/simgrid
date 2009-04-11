@@ -272,7 +272,10 @@ As in SimGrid v3.3, receive operations are done in a separated thread, but they
 are done sequentially by this thread. The model is thus <b>1-port in
 reception</b>, but something like 2-port in general. Moreover, the messages not
 matching the criterion in explicite receive (see for example \ref
-gras_msg_wait) are queued for further use.
+gras_msg_wait) are queued for further use. Thanks to this specific
+thread, the emission and reception are completely decorelated. Ie, the
+main thread can perfectly send a message while the listener is
+receiving something. We thus have a classical <b>1-port model</b>.
 
 Here is a graphical representation of a scenario involving two processes A and
 B.  Both are naturally composed of two threads: the one running user code, and
