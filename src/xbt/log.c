@@ -155,7 +155,8 @@ category can be created with any one of the following macros:
 The parent cat can be defined in the same file or in another file (in
 which case you want to use the \ref XBT_LOG_EXTERNAL_CATEGORY macro to make
 it visible in the current file), but each category may have only one
-definition.
+definition. Likewise, you can use a category defined in another file as 
+default one using \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY
 
 Typically, there will be a Category for each module and sub-module, so you
 can independently control logging for each module.
