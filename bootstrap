@@ -44,19 +44,19 @@ amver=`find_version automake ${amversions}`
 
 lt=`which libtoolize`
 if [ "x$lt" = "x" ] ; then
-  echo "Libtool not found. Please install the libtool package to proceed with a CVS checkout"
+  echo "Libtool not found. Please install the libtool package to proceed with a SVN checkout"
   exit 1
 fi
 
 am=`which automake-$amver`
 if [ "x$am" = "x" ] ; then
-  echo "automake versions $amversions not found. Please install the relevant package to proceed with a CVS checkout"
+  echo "automake versions $amversions not found. Please install the relevant package to proceed with a SVN checkout"
   exit 1
 fi
 
 ac=`which autoconf`
 if [ "x$ac" = "x" ] ; then
-  echo "autoconf not found. Please install the relevant package to proceed with a CVS checkout"
+  echo "autoconf not found. Please install the relevant package to proceed with a SVN checkout"
   exit 1
 fi
 
@@ -81,7 +81,7 @@ echo "----------------------------------"
 
 echo 
 echo "Most common flags:"
-echo "  --enable-maintainer-mode         mandatory if you use the CVS version"
+echo "  --enable-maintainer-mode         mandatory if you use the SVN version"
 echo "  --disable-compile-optimizations  useful if your gdb gets fooled"
 echo
 
