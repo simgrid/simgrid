@@ -20,6 +20,19 @@ open LOG,(">checkall.log") || die "Cannot open log file: $!";
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 print LOG "Build started on $hour:$min:$sec $mon/$mday/$year\n";
 print LOG "Current svn version is: ".qx(svnversion)."\n\n";
+
+print LOG "\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n";
+print LOG "XXX Include config.log since it contains valuable information XXX\n";
+print LOG "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n";
+open CFG,"<config.log" || die "Cannot open config.log: $!*";
+while (<CFG>) {
+    print LOG "$_";
+}
+close CFG;
+
+print LOG "\nXXXXXXXXXXXXXXXX\n";
+print LOG "XXX Run make XXX\n";
+print LOG "XXXXXXXXXXXXXXXX\n";
 open MAKE,("make 2>&1 |") || die "Cannot fork a make: $!";
 while (<MAKE>) {
     print     $_;
@@ -35,6 +48,9 @@ if (!close MAKE) {
     exit 1;
 }
     
+print LOG "\nXXXXXXXXXXXXXXXXXXXXXX\n";
+print LOG "XXX Run make check XXX\n";
+print LOG "XXXXXXXXXXXXXXXXXXXXXX\n";
 open CHECK,("make -k check 2>&1 |") || die "Cannot fork a make check: $!";
 while (<CHECK>) {
     print     $_;
@@ -68,7 +84,7 @@ if (scalar @fail == 0) {
 }
 $banner = "# $banner #";
 my $dashes = $banner;
-$dashes =~ s/./#/g;
+$dashes =~ s/./X/g;
 print LOG "\n$dashes\n$banner\n$dashes\n\n";
 print     "\n$dashes\n$banner (full logs in checkall.log)\n$dashes\n\n";
 
