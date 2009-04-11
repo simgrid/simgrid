@@ -54,7 +54,7 @@ XBT_PUBLIC(void*) gras_userdata_set(void *ud);
 
 /** \brief Malloc and set the data associated with the current process.
  *
- * @warnug gras_userdata_new() expects the pointed type, not the
+ * @warnig gras_userdata_new() expects the pointed type, not the
  * pointer type. We know it'a a bit troublesome, but it seems like
  * the only solution since this macro has to compute the size to
  * malloc and should thus know the pointed type. 
