@@ -61,7 +61,7 @@ XBT_PUBLIC(void) gras_userdata_set(void *ud);
  *
  * You'll find an example in the tutorial:  \ref GRAS_tut_tour_globals
  */
-#define gras_userdata_new(type) (gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())
+#define gras_userdata_new(type) ((type*)gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())
 /* @} */
 
 SG_END_DECL()
