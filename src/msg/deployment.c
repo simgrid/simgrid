@@ -53,6 +53,17 @@ void MSG_function_register(const char *name, xbt_main_func_t code)
 }
 
 /** \ingroup msg_easier_life
+ * \brief Registers a function as the default main function of agents.
+ *
+ * Registers a code function as being the default value. This function will get used by MSG_launch_application() when there is no registered function of the requested name in.
+ * \param code the function (must have the same prototype than the main function of any C program: int ..(int argc, char *argv[]))
+ */
+void MSG_function_register_default(xbt_main_func_t code)
+{
+  SIMIX_function_register_default(code);
+}
+
+/** \ingroup msg_easier_life
  * \brief Retrieves a registered main function
  *
  * Registers a code function in a global table. 

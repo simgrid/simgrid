@@ -149,6 +149,21 @@ void SIMIX_function_register(const char *name, xbt_main_func_t code)
   xbt_dict_set(simix_global->registered_functions, name, code, NULL);
 }
 
+static xbt_main_func_t default_function = NULL;
+/**
+ * \brief Registers a #smx_process_code_t code as default value.
+ *
+ * Registers a code function as being the default value. This function will get used by SIMIX_launch_application() when there is no registered function of the requested name in.
+ * \param code the function
+ */
+void SIMIX_function_register_default(xbt_main_func_t code)
+{
+  xbt_assert0(simix_global,
+	      "SIMIX_global_init has to be called before SIMIX_function_register.");
+
+  default_function = code;
+}
+
 /**
  * \brief Gets a #smx_process_t code from the global table.
  *
@@ -162,5 +177,6 @@ xbt_main_func_t SIMIX_get_registered_function(const char *name)
   xbt_assert0(simix_global,
 	      "SIMIX_global_init has to be called before SIMIX_get_registered_function.");
 
-  return xbt_dict_get_or_null(simix_global->registered_functions, name);
+  xbt_main_func_t res = xbt_dict_get_or_null(simix_global->registered_functions, name);
+  return res ? res : default_function;
 }
