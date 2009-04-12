@@ -56,6 +56,7 @@ int receiver (int argc,char *argv[]) {
 		   &expeditor,
 		   &data);
      todo--;
+     free(data);
 
      INFO3("Got Data from %s:%d (still %d to go)",
 	   gras_socket_peer_name(expeditor), gras_socket_peer_port(expeditor),

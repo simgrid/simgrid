@@ -85,6 +85,7 @@ static xbt_set_t _gras_modules = NULL; /* content: s_gras_module_t */
 
 static void gras_module_freep(void *p) {
    free( ((gras_module_t)p) ->name);
+   free(p);
 }
 
 

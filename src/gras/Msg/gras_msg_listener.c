@@ -42,10 +42,13 @@ static void listener_function(void *p) {
        char got = *(char*)msg.payl;
        if (got == '1') {
 	  VERB0("Asked to get awake");
+	  free(msg.payl);
        } else {
 	  VERB0("Asked to die");
+//	  gras_socket_close(me->wakeup_sock_listener_side);
+	  free(msg.payl);
 	  return ;
-       }               
+       }
     }
      /* empty the list of sockets to trash */
      TRY {
@@ -107,6 +110,7 @@ void gras_msg_listener_shutdown(gras_msg_listener_t l) {
    if (gras_if_RL()) 
      xbt_thread_join(pd->listener->listener);
 
+//  gras_socket_close(pd->listener->wakeup_sock_master_side); FIXME: uncommenting this leads to deadlock at terminaison
   xbt_queue_free(&l->incomming_messages);
   xbt_queue_free(&l->socks_to_close);
   xbt_free(l);
