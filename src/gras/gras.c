@@ -129,9 +129,11 @@ void gras_init(int *argc,char **argv) {
    
   /* and then init amok */
   amok_init();
-	pd = gras_procdata_get();
-	msg_pd = gras_libdata_by_name("gras_msg");
-	pd->listener = gras_msg_listener_launch(msg_pd->msg_received);
+   
+  /* And finally, launch the listener thread */
+   pd = gras_procdata_get();
+   msg_pd = gras_libdata_by_name("gras_msg");
+   pd->listener = gras_msg_listener_launch(msg_pd->msg_received);
 }
 
 void gras_exit(void) {
