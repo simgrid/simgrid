@@ -15,6 +15,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
 #include "gras/Transport/transport_private.h"
+#include "gras/Msg/msg_interface.h" /* listener_close_socket */
 
 /* FIXME maybe READV is sometime a good thing? */
 #undef HAVE_READV
@@ -249,28 +250,9 @@ static void gras_trp_sock_socket_close(gras_socket_t sock){
   if (!sock) return; /* close only once */
 
   VERB1("close tcp connection %d", sock->sd);
-
-  /* FIXME: no pipe in GRAS so far  
-  if(!FD_ISSET(sd, &connectedPipes)) {
-    if(shutdown(sd, 2) < 0) {
-      GetNWSLock(&lock);
-      tmp_errno = errno;
-      ReleaseNWSLock(&lock);
-      
-      / * The other side may have beaten us to the reset. * /
-      if ((tmp_errno!=ENOTCONN) && (tmp_errno!=ECONNRESET)) {
-	WARN1("CloseSocket: shutdown error %d\n", tmp_errno);
-      }
-    }
-  } */
-
    
-  /* close the socket */
-  if(tcp_close(sock->sd) < 0) {
-    WARN3("error while closing tcp socket %d: %d (%s)\n", 
-	     sock->sd, sock_errno, sock_errstr(sock_errno));
-  }
-
+  /* ask the listener to close the socket */
+  gras_msg_listener_close_socket(sock->sd);
 }
 /************************************/
 /****[ end of SOCKET MANAGEMENT ]****/

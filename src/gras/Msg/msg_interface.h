@@ -43,7 +43,6 @@ typedef struct {
 	xbt_fifo_t msg_to_receive_queue_meas; /* elm type: s_gras_msg_t */
 	xbt_queue_t msg_received;
 
-
 } s_gras_msg_procdata_t,*gras_msg_procdata_t;
 
 
@@ -51,7 +50,8 @@ void gras_msg_send_namev(gras_socket_t  sock,
 			 const char    *namev,
 			 void          *payload);
 void gras_msg_listener_awake(void);
-
+void  gras_msg_listener_close_socket(int sd);
+     
 #define GRAS_PROTOCOL_VERSION '\0';
 
 
