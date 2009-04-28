@@ -26,9 +26,9 @@ static void parse_process_init(void)
 {
   parse_host = xbt_strdup(A_surfxml_process_host);
   xbt_assert1(SIMIX_host_get_by_name(parse_host),
-	      "Unknown host %s", parse_host);
+	      "Host '%s' unknown", parse_host);
   parse_code = SIMIX_get_registered_function(A_surfxml_process_function);
-  xbt_assert1(parse_code, "Unknown function %s",
+  xbt_assert1(parse_code, "Function '%s' unknown",
 	      A_surfxml_process_function);
   parse_argc = 0;
   parse_argv = NULL;
