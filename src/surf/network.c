@@ -253,8 +253,8 @@ static void add_traces(void) {
       tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
       link_CM02_t link = xbt_dict_get_or_null(link_set, elm);
       
-      xbt_assert1(link, "Link %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined", trace_name,elm);
+      xbt_assert2(trace, "Cannot connect trace %s to link %s: trace undefined", trace_name,elm);
       
       link->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
    }
@@ -263,8 +263,8 @@ static void add_traces(void) {
       tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
       link_CM02_t link = xbt_dict_get_or_null(link_set, elm);
       
-      xbt_assert1(link, "Link %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined", trace_name,elm);
+      xbt_assert2(trace, "Cannot connect trace %s to link %s: trace undefined", trace_name,elm);
       
       link->bw_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
    }
@@ -273,8 +273,8 @@ static void add_traces(void) {
       tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
       link_CM02_t link = xbt_dict_get_or_null(link_set, elm);
       
-      xbt_assert1(link, "Link %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
+      xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined", trace_name,elm);
+      xbt_assert2(trace, "Cannot connect trace %s to link %s: trace undefined", trace_name,elm);
       
       link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
    }

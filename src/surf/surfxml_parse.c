@@ -1199,7 +1199,8 @@ static void parse_trace_c_connect(void)
       xbt_dict_set(trace_connect_list_latency, A_surfxml_trace_c_connect_trace, xbt_strdup(A_surfxml_trace_c_connect_element), free);
       break;
     default:
-      xbt_die("kind of trace unknown");
+      xbt_die(bprintf("Cannot connect trace %s to %s: kind of trace unknown",
+		      A_surfxml_trace_c_connect_trace,A_surfxml_trace_c_connect_element));
    }   
 }
 
