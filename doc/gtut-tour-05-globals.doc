@@ -64,6 +64,13 @@ loop:
 \skip while
 \until }
 
+Please note that in our example, only one process creates a global
+structure. But this is naturally completely ok to have several
+processes creating their globals this way. Each of these globals will
+be separated, so process A cannot access globals defined by process B.
+Maybe this implies that the name "globals" is a bit misleading. It
+should be "process state" or something similar.
+
 \section GRAS_tut_tour_callback_pitfall Common pitfall of globals
 
 There is an error that I do myself every other day using globals in GRAS.
@@ -81,6 +88,12 @@ The problem is that you call gras_userdata_new() before gras_init(). Doing so,
 embarass GRAS since it does not have its internal buffer initialized yet,
 and cannot store your data anywhere. That is why doing so triggers an error
 at run time.
+
+Also, as noted above, the gras_userdata_new expects the pointed type,
+not the pointer type. As you can see, in our example, you should pass
+server_data_t to the macro, even if the global variable is later
+defined as being of type server_data_t*.
+
 
 \section GRAS_tut_tour_callback_recap Recaping everything together
 
