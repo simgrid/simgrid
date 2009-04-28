@@ -1,3 +1,18 @@
+SimGrid (3.4-svn) unstable; urgency=high
+
+ OVERALL CHANGES:
+  * Also include strbuff from xbt.h public header
+  
+ GRAS:
+  * fix a bug on struct sizeof computation, which prevented the
+    exchange of arrays of structs in some conditions
+    
+ SIMIX:
+  * Add SIMIX_process_set_name() to change the name of the current
+    process in the log messages.
+
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Sun Apr 12 05:20:36 CEST 2009
+
 SimGrid (3.3) stable; urgency=high
 
  OVERALL CHANGES:
