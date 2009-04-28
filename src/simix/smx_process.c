@@ -262,6 +262,21 @@ const char *SIMIX_process_get_name(smx_process_t process)
   return (process->name);
 }
 
+/**
+ * \brief Changes the name of an agent.
+ *
+ * This functions checks whether \a process is a valid pointer or not and return its name.
+ * \param process SIMIX process
+ * \param name The new process name
+ */
+void SIMIX_process_set_name(smx_process_t process, char *name)
+{
+  xbt_assert0(((process != NULL)
+	       && (process->simdata)), "Invalid parameters");
+
+  process->name = name;
+}
+
 /** \ingroup m_process_management
  * \brief Return the properties
  *

@@ -65,6 +65,7 @@ XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
 XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
 
 XBT_PUBLIC(const char *) SIMIX_host_get_name(smx_host_t host);
+XBT_PUBLIC(void) SIMIX_process_set_name(smx_process_t process, char *name);
 XBT_PUBLIC(smx_host_t) SIMIX_host_self(void);
 XBT_PUBLIC(double) SIMIX_host_get_speed(smx_host_t host);
 XBT_PUBLIC(double) SIMIX_host_get_available_speed(smx_host_t host);
