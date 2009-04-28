@@ -119,9 +119,9 @@ gras_datadesc_memcpy_rec(gras_cbps_t           state,
   gras_datadesc_type_t sub_type; /* type on which we recurse */
   int count = 0;
 
-  VERB4("Copy a %s (%s) from %p to %p", 
+  VERB5("Copy a %s (%s) from %p to %p (local sizeof=%ld)",
 	type->name, gras_datadesc_cat_names[type->category_code],
-	src,dst);	
+	src,dst,type->size[GRAS_THISARCH]);
    
   if (type->send) {
     type->send(type,state,src);
