@@ -3,7 +3,6 @@
 ###
 
 Document the fact that gras processes display the backtrace on sigusr and sigint
-Document XBT_LOG_EXTERNAL_DEFAULT_CATEGORY
 Document host module
 
 /* FIXME: better place? */
@@ -54,7 +53,6 @@ received by the other side (implemented with an ACK mechanism).
     initializations, and more)
   * Allow each actor to have its own setting
   * a init/exit mecanism for logging appender
-  * Several appenders; fix the setting stuff to change the appender
   * more logging appenders (take those from Ralf in l2)
 
 [modules]
@@ -78,24 +76,6 @@ received by the other side (implemented with an ACK mechanism).
     examples, too
 
 [transport]  
-  * Spawn threads handling the communication
-    - Data sending cannot be delegated if we want to be kept informed
-      (*easily*) of errors here.
-      - Actor execution flow shouldn't be interrupted
-      - It should be allowed to access (both in read and write access) 
-        any data available (ie, referenced) from the actor without 
-        requesting to check for a condition before.
-        (in other word, no mutex or assimilated)
-      - I know that enforcing those rules prevent the implementation of
-        really cleaver stuff. Keeping the stuff simple for the users is more
-        important to me than allowing them to do cleaver tricks. Black magic
-        should be done *within* gras to reach a good performance level.
-
-    - Data receiving can be delegated (and should)
-      The first step here is a "simple" mailbox mecanism, with a fifo of
-        messages protected by semaphore.
-      The rest is rather straightforward too.
-
   * use poll(2) instead of select(2) when available. (first need to check
     the advantage of doing so ;)
 

@@ -1,4 +1,4 @@
-SimGrid (3.3-rc1) unstable; urgency=low
+SimGrid (3.3) stable; urgency=high
 
  OVERALL CHANGES:
 
@@ -22,7 +22,10 @@ SimGrid (3.3-rc1) unstable; urgency=low
     not scheduled in the same order with the old and new version. This
     may be enough to completely change the execution of simulations in
     some cases. Sorry for the inconvenience.
-  
+
+  * Cleanup and upgrade the XML format to push further scalability
+    issues (check http://hal.inria.fr/inria-00256883/ for more info)
+
   * Improve the testing infrastructure with tesh. Now a very large part of
     the code is tested not only by being run but also by checking that the
     output match an expected output [Mt].
@@ -36,6 +39,12 @@ SimGrid (3.3-rc1) unstable; urgency=low
     [contributed by Sékou Diakite, many thanks]
 
  GRAS:
+  * Introduce a listener thread in charge of receiving incomming
+    messages from the network. It allows to overlap communication and
+    computation but most notably, it removes some stupid deadlocks due
+    to the fact that so far, a process could not send and receive at
+    the same time. This made most non trivial communication schema
+    impossible.
   * Convert the PIDs from long int to int to match the MSG ones (and
     linux ones too) [Mt]
   * New function: gras_agent_spawn() to launch a new process on
@@ -88,9 +97,9 @@ SimGrid (3.3-rc1) unstable; urgency=low
   * Use the SURF command line configuration mechanism.
   * 0-size tasks (for synchronization) should now work.
 
- -- 
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Sun Apr 12 05:20:36 CEST 2009
 
-SimGrid (3.2) unstable; urgency=low
+SimGrid (3.2) stable; urgency=high
 
   OVERALL CHANGES:
    * Port to windows.
@@ -195,7 +204,7 @@ SimGrid (3.2) unstable; urgency=low
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Fri Mar 16 21:11:46 CET 2007
 
-SimGrid (3.1) unstable; urgency=low
+SimGrid (3.1) stable; urgency=high
 
   General:
   * Port to gcc 4.x   
@@ -291,7 +300,7 @@ SimGrid (3.1) unstable; urgency=low
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Fri, 14 Jul 2006 01:32:27 +0200
 
-SimGrid (3.0.1) unstable; urgency=low
+SimGrid (3.0.1) stable; urgency=low
 
   XBT:
   * Unfortunately, I had missed 5 misnamed functions:
@@ -388,7 +397,7 @@ SimGrid (3.0.1) unstable; urgency=low
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>  Fri, 21 Oct 2005 14:42:20 +0200
 
-SimGrid (3.00) stable; urgency=low
+SimGrid (3.00) stable; urgency=high
   
  SURF:
   * New! Give the possibility to hijack the surf parser and thus bypass 
@@ -1161,3 +1170,7 @@ SimGrid (2.90) unstable; urgency=low
   - Get rid of libgrasutils.a since it makes more trouble than it solves.
     Build examples against the RL library, since there is no way to disable
     its creation for now.
+
+For information, the beginning of coding on GRAS was back in june
+2003. I guess that every line has been rewritten at least twice since
+then.

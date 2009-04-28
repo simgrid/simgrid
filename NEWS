@@ -1,25 +1,67 @@
-This is a shortened version of the changelog.
+<pre>
+     ____  _            ____      _     _ 
+    / ___|(_)_ __ ___  / ___|_ __(_) __| |
+    \___ \| | '_ ` _ \| |  _| '__| |/ _` |
+     ___) | | | | | | | |_| | |  | | (_| |
+    |____/|_|_| |_| |_|\____|_|  |_|\__,_|                                       
+                    _               _____  _____ 
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ / 
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \ 
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |  
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/ 
+               _             _           _ 
+     _  _ _ _ | |___ __ _ __| |_  ___ __| |
+    | || | ' \| / -_) _` (_-< ' \/ -_) _` |
+     \_,_|_||_|_\___\__,_/__/_||_\___\__,_|
+                                       
+</pre>
 
-0.2 (2004-07-24)
- - Bug fixes, API and build process polishing, documentation improvement
- - build shared libs
+homepage: http://simgrid.gforge.inria.fr/
+download: http://gforge.inria.fr/frs/?group_id=12
 
-0.1 (2004-07-13)
- - No major issue discovered, time to change the versionning schema
+At least, after 2 years of hard work, we managed to release the 3.3
+version of the SimGrid framework. There is so many changes that the
+changelog only lists the most important ones, leaving alone the small
+improvements, bug fixing and new gadgets. 
 
-0.0.4 (2004-07-11)
- - compute the inter-field paddings of structure correctly
- - macro to parse [simple] datatypes w/o the pain of declaring them manually
- - toysuite to automatize remote compilation
+In short:
+ * Java bindings
+ * New simulation models, and improvement of the GTNetS wrapper
+ 
+ * Large memory savings (mainly in parser)
+ * Faster (twice faster is not uncommon, and from 20 hours to 2
+           minutes on very large scenarios)
+ * Much better scalability (tested up to 250,000 processes)
+ 
+ * Complete regression testing framework so that you can trust the tool
+ * Lot of neat new modules in the XBT toolbox
+ 
+This version was throughfully tested on linux 32bits and 64bits
+(debian), as well as Mac OSX (leopard). 
 
-0.0.3 (2004-07-07)
- - implement convertion between
+Unfortunately, our windows-guy left, and we cannot release the windows
+version at the same time than the other archs. Any help would be
+really welcomed here.
 
-0.0.2 (2004-07-05)
- - ping test works in SG
+Some of the 96 included test suites are known to fail, but everything
+should work anyway (don't panic):
+ * The amok module does not work in real deployment ATM, but I don't
+   see this as release critical since I'm not aware of anyone needing
+   this right now   
+ * Some tests about the ability of GRAS to receive messages from
+   exotic platforms fail because I've lost access to these platforms
+   (such as AIX)
+ * the example/gras/pmm sometimes fails (about 1/10 of cases). I'm
+   quite puzzled, but I suspect a bug in the test, not in the lib.
+ * the tesh auto-tests "fail" on Mac OSX. This is because "rm -rf" is
+   sometimes too verbose (when the OS creates hidden files, I
+   suspect), but tesh definitly work as the rest on this arch.
+   
+We hope to manage to do more timely releases in the future, even if
+that may turn out difficult since big stuff is comming (I don't say
+much here for the suspense ;)
 
-0.0.1 (2004-06-21)
- - ping test works in RL
+We hope you'll enjoy this new version, and please report any feedback
+on the <simgrid-user@lists.gforge.inria.fr> list.
 
-Begin of the coding back in june 2003. The first prototype was completely
-rewriten /at least once/ since then.
+Martin Quinson (for Da SimGrid Team)
