@@ -26,7 +26,7 @@ static gras_dd_cat_field_t
  */
 void gras_ddt_freev(void *ddt) {
   gras_datadesc_type_t type= (gras_datadesc_type_t)ddt;
-  
+
   if (type) {
     gras_datadesc_free(&type);
   }
@@ -41,7 +41,7 @@ static gras_datadesc_type_t gras_ddt_new(const char *name) {
   res->name = (char*)strdup(name);
   res->name_len = strlen(name);
   res->cycle = 0;
-      
+
   xbt_set_add(gras_datadesc_set_local,
 	       (xbt_set_elm_t)res,gras_ddt_freev);
   XBT_OUT;
@@ -52,7 +52,7 @@ static gras_datadesc_type_t gras_ddt_new(const char *name) {
 gras_datadesc_type_t gras_datadesc_by_name_or_null (const char *name) {
   xbt_ex_t e;
   gras_datadesc_type_t res = NULL;
-   
+
   TRY {
      res = gras_datadesc_by_name(name);
   } CATCH(e) {
@@ -77,8 +77,8 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name) {
     xbt_ex_free(e);
   }
   if (!found)
-    THROW1(not_found_error,0,"No registred datatype of that name: %s",name);     
-   
+    THROW1(not_found_error,0,"No registred datatype of that name: %s",name);
+
   return res;
 }
 
@@ -100,9 +100,9 @@ gras_datadesc_type_t gras_datadesc_by_id(long int code) {
 }
 
 /**
- * Create a new scalar and give a pointer to it 
+ * Create a new scalar and give a pointer to it
  */
-gras_datadesc_type_t 
+gras_datadesc_type_t
   gras_datadesc_scalar(const char                      *name,
 		       gras_ddt_scalar_type_t           type,
 		       enum e_gras_dd_scalar_encoding   encoding) {
@@ -121,7 +121,7 @@ gras_datadesc_type_t
 		 "Redefinition of type %s does not match", name);
     VERB1("Discarding redefinition of %s",name);
     return res;
-  } 
+  }
   res = gras_ddt_new(name);
 
   for (arch = 0; arch < gras_arch_count; arch ++) {
@@ -134,7 +134,7 @@ gras_datadesc_type_t
   res->category.scalar_data.encoding = encoding;
   res->category.scalar_data.type     = type;
   XBT_OUT;
-  
+
   return res;
 }
 
@@ -144,7 +144,7 @@ void gras_dd_cat_field_free(void *f) {
   gras_dd_cat_field_t field = *(gras_dd_cat_field_t *)f;
   XBT_IN;
   if (field) {
-    if (field->name) 
+    if (field->name)
       free(field->name);
     free(field);
   }
@@ -152,12 +152,12 @@ void gras_dd_cat_field_free(void *f) {
 }
 
 /** \brief Declare a new structure description */
-gras_datadesc_type_t 
+gras_datadesc_type_t
   gras_datadesc_struct(const char            *name) {
 
   gras_datadesc_type_t res;
   long int arch;
-  
+
   XBT_IN1("(%s)",name);
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
@@ -175,7 +175,7 @@ gras_datadesc_type_t
     res->aligned_size[arch] = 0;
   }
   res->category_code = e_gras_datadesc_type_cat_struct;
-  res->category.struct_data.fields = 
+  res->category.struct_data.fields =
        xbt_dynar_new(sizeof(gras_dd_cat_field_t),
 		      gras_dd_cat_field_free);
 
@@ -205,17 +205,17 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
   xbt_assert1(field_type->size != 0,
 	       "Cannot add a dynamically sized field in structure %s",
 	       struct_type->name);
-    
+
   field=xbt_new(s_gras_dd_cat_field_t,1);
   field->name   = (char*)strdup(name);
 
   DEBUG0("----------------");
   DEBUG3("PRE s={size=%ld,align=%ld,asize=%ld}",
-	 struct_type->size[GRAS_THISARCH], 
-	 struct_type->alignment[GRAS_THISARCH], 
+	 struct_type->size[GRAS_THISARCH],
+	 struct_type->alignment[GRAS_THISARCH],
 	 struct_type->aligned_size[GRAS_THISARCH]);
-     
-     
+
+
   for (arch=0; arch<gras_arch_count; arch ++) {
     field->offset[arch] = ddt_aligned(struct_type->size[arch],
 				      field_type->alignment[arch]);
@@ -229,44 +229,48 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
   field->type   = field_type;
   field->send   = NULL;
   field->recv   = NULL;
-  
+
   xbt_dynar_push(struct_type->category.struct_data.fields, &field);
 
   DEBUG3("Push a %s into %s at offset %ld.",
 	 field_type->name, struct_type->name,field->offset[GRAS_THISARCH]);
   DEBUG3("  f={size=%ld,align=%ld,asize=%ld}",
-	 field_type->size[GRAS_THISARCH], 
-	 field_type->alignment[GRAS_THISARCH], 
+	 field_type->size[GRAS_THISARCH],
+	 field_type->alignment[GRAS_THISARCH],
 	 field_type->aligned_size[GRAS_THISARCH]);
   DEBUG3("  s={size=%ld,align=%ld,asize=%ld}",
-	 struct_type->size[GRAS_THISARCH], 
-	 struct_type->alignment[GRAS_THISARCH], 
+	 struct_type->size[GRAS_THISARCH],
+	 struct_type->alignment[GRAS_THISARCH],
 	 struct_type->aligned_size[GRAS_THISARCH]);
   XBT_OUT;
 }
 
 /** \brief Close a structure description
- * 
+ *
  * No new field can be added afterward, and it is mandatory to close the structure before using it.
  */
 void
 gras_datadesc_struct_close(gras_datadesc_type_t struct_type) {
+	int arch;
   XBT_IN;
   struct_type->category.struct_data.closed = 1;
+  for (arch=0; arch<gras_arch_count; arch ++) {
+    struct_type->size[arch] = struct_type->aligned_size[arch];
+  }
   DEBUG4("structure %s closed. size=%ld,align=%ld,asize=%ld",
 	 struct_type->name,
-	 struct_type->size[GRAS_THISARCH], 
-	 struct_type->alignment[GRAS_THISARCH], 
+	 struct_type->size[GRAS_THISARCH],
+	 struct_type->alignment[GRAS_THISARCH],
 	 struct_type->aligned_size[GRAS_THISARCH]);
 }
 
 /**
  * gras_datadesc_cycle_set:
- * 
+ *
  * Tell GRAS that the pointers of the type described by ddt may present
  * some loop, and that the cycle detection mechanism is needed.
  *
- * Note that setting this option when not needed have a rather bad effect 
+ * Note that setting this option when not needed have a rather bad effect
  * on the performance (several times slower on big data).
  */
 void
@@ -276,7 +280,7 @@ gras_datadesc_cycle_set(gras_datadesc_type_t ddt) {
 
 /**
  * gras_datadesc_cycle_unset:
- * 
+ *
  * Tell GRAS that the pointers of the type described by ddt do not present
  * any loop and that cycle detection mechanism are not needed.
  * (default)
@@ -287,7 +291,7 @@ gras_datadesc_cycle_unset(gras_datadesc_type_t ddt) {
 }
 
 /** \brief Declare a new union description */
-gras_datadesc_type_t 
+gras_datadesc_type_t
   gras_datadesc_union(const char                   *name,
 		      gras_datadesc_type_cb_int_t   selector) {
 
@@ -344,13 +348,13 @@ void gras_datadesc_union_append(gras_datadesc_type_t  union_type,
 	   union_type->name);
     return;
   }
-    
+
   field=xbt_new0(s_gras_dd_cat_field_t,1);
 
   field->name   = (char*)strdup(name);
   field->type   = field_type;
   /* All offset are left to 0 in an union */
-  
+
   xbt_dynar_push(union_type->category.union_data.fields, &field);
 
   for (arch=0; arch<gras_arch_count; arch ++) {
@@ -364,7 +368,7 @@ void gras_datadesc_union_append(gras_datadesc_type_t  union_type,
 }
 
 
-/** \brief Close an union description 
+/** \brief Close an union description
  *
  * No new field can be added afterward, and it is mandatory to close the union before using it.
  */
@@ -374,23 +378,23 @@ gras_datadesc_union_close(gras_datadesc_type_t union_type) {
 }
 
 /** \brief Copy a type under another name
- * 
+ *
  * This may reveal useful to circumvent parsing macro limitations
  */
-gras_datadesc_type_t 
+gras_datadesc_type_t
   gras_datadesc_copy(const char           *name,
 		     gras_datadesc_type_t  copied) {
 
      gras_datadesc_type_t res = gras_ddt_new(name);
      char *name_cpy = res->name;
-     
+
      memcpy(res,copied,sizeof(s_gras_datadesc_type_t));
      res->name = name_cpy;
      return res;
   }
 
 /** \brief Declare a new type being a reference to the one passed in arg */
-gras_datadesc_type_t 
+gras_datadesc_type_t
   gras_datadesc_ref(const char           *name,
 		    gras_datadesc_type_t  referenced_type) {
 
@@ -414,13 +418,13 @@ gras_datadesc_type_t
   res = gras_ddt_new(name);
 
   xbt_assert0(pointer_type, "Cannot get the description of data pointer");
-      
+
   for (arch=0; arch<gras_arch_count; arch ++){
     res->size[arch] = pointer_type->size[arch];
     res->alignment[arch] = pointer_type->alignment[arch];
     res->aligned_size[arch] = pointer_type->aligned_size[arch];
   }
-  
+
   res->category_code	 	  = e_gras_datadesc_type_cat_ref;
   res->category.ref_data.type     = referenced_type;
   res->category.ref_data.selector = NULL;
@@ -428,12 +432,12 @@ gras_datadesc_type_t
   return res;
 }
 /** \brief Declare a new type being a generic reference.
- * 
+ *
  * The callback passed in argument is to be used to select which type is currently used.
- * So, when GRAS wants to send a generic reference, it passes the current data to the selector 
- * callback and expects it to return the type description to use. 
+ * So, when GRAS wants to send a generic reference, it passes the current data to the selector
+ * callback and expects it to return the type description to use.
  */
-gras_datadesc_type_t 
+gras_datadesc_type_t
   gras_datadesc_ref_generic(const char                *name,
 			    gras_datadesc_selector_t   selector) {
 
@@ -457,7 +461,7 @@ gras_datadesc_type_t
   res = gras_ddt_new(name);
 
   xbt_assert0(pointer_type, "Cannot get the description of data pointer");
-      
+
   for (arch=0; arch<gras_arch_count; arch ++) {
     res->size[arch] = pointer_type->size[arch];
     res->alignment[arch] = pointer_type->alignment[arch];
@@ -473,7 +477,7 @@ gras_datadesc_type_t
 }
 
 /** \brief Declare a new type being an array of fixed size and content */
-gras_datadesc_type_t 
+gras_datadesc_type_t
   gras_datadesc_array_fixed(const char           *name,
 			    gras_datadesc_type_t  element_type,
 			    long int              fixed_size) {
@@ -486,13 +490,13 @@ gras_datadesc_type_t
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_array,
 		 "Redefinition of type %s does not match", name);
-     
+
     if (res->category.array_data.type != element_type) {
        ERROR1("Redefinition of type %s does not match: array elements differ", name);
        gras_datadesc_type_dump(res->category.array_data.type);
        gras_datadesc_type_dump(element_type);
     }
-     
+
     xbt_assert1(res->category.array_data.fixed_size == fixed_size,
 		 "Redefinition of type %s does not match", name);
     xbt_assert1(res->category.array_data.dynamic_size == NULL,
@@ -508,7 +512,7 @@ gras_datadesc_type_t
     res->size[arch] = fixed_size * element_type->aligned_size[arch];
     res->alignment[arch] = element_type->alignment[arch];
     res->aligned_size[arch] = res->size[arch];
-  }  
+  }
 
   res->category_code		= e_gras_datadesc_type_cat_array;
 
@@ -564,29 +568,29 @@ gras_datadesc_type_t gras_datadesc_array_dyn(const char                 *name,
   return res;
 }
 
-/** \brief Declare a new type being an array which size can be found with \ref gras_cbps_i_pop 
- * 
+/** \brief Declare a new type being an array which size can be found with \ref gras_cbps_i_pop
+ *
  * Most of the time, you want to include a reference in your structure which
- * is a pointer to a dynamic array whose size is fixed by another field of 
+ * is a pointer to a dynamic array whose size is fixed by another field of
  * your structure.
  *
  * This case pops up so often that this function was created to take care of
- * this case. It creates a dynamic array type whose size is poped from the 
+ * this case. It creates a dynamic array type whose size is poped from the
  * current cbps, and then create a reference to it.
  *
  * The name of the created datatype will be the name of the element type, with
  * '[]*' appended to it.
  *
  * Then to use it, you just have to make sure that your structure pre-callback
- * does push the size of the array in the cbps (using #gras_cbps_i_push), and 
- * you are set. 
+ * does push the size of the array in the cbps (using #gras_cbps_i_push), and
+ * you are set.
  *
  * But be remember that this is a stack. If you have two different pop_arr, you
- * should push the second one first, so that the first one is on the top of the 
+ * should push the second one first, so that the first one is on the top of the
  * list when the first field gets transfered.
  *
  */
-gras_datadesc_type_t 
+gras_datadesc_type_t
   gras_datadesc_ref_pop_arr(gras_datadesc_type_t element_type) {
 
   gras_datadesc_type_t res;
@@ -615,16 +619,16 @@ gras_datadesc_type_t
 static void gras_datadesc_dynar_cb(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data) {
   gras_datadesc_type_t subtype;
   xbt_dynar_t dynar=(xbt_dynar_t)data;
-   
+
   memcpy(&dynar->free_f, &typedesc->extra, sizeof(dynar->free_f));
 
   /* search for the elemsize in what we have. If elements are "int", typedesc got is "int[]*" */
   subtype = gras_dd_find_field(typedesc,"data")->type;
-  
+
   /* this is now a ref to array of what we're looking for */
   subtype = subtype->category.ref_data.type;
   subtype = subtype->category.array_data.type;
-   
+
   DEBUG1("subtype is %s",subtype->name);
 
   dynar->elmsize = subtype->size[GRAS_THISARCH];
@@ -633,46 +637,46 @@ static void gras_datadesc_dynar_cb(gras_datadesc_type_t typedesc, gras_cbps_t va
 }
 
 /** \brief Declare a new type being a dynar in which each elements are of the given type
- * 
+ *
  *  The type gets registered under the name "dynar(%s)_s", where %s is the name of the subtype.
- *  For example, a dynar of doubles will be called "dynar(double)_s" and a dynar of dynar of 
+ *  For example, a dynar of doubles will be called "dynar(double)_s" and a dynar of dynar of
  *  strings will be called "dynar(dynar(string)_s)_s".
- * 
+ *
  *  \param elm_t: the datadesc of the elements
  *  \param free_func: the function to use to free the elements when the dynar gets freed
  */
 gras_datadesc_type_t
 gras_datadesc_dynar(gras_datadesc_type_t elm_t,
 		    void_f_pvoid_t free_func) {
-   
+
   char *buffname;
   gras_datadesc_type_t res;
-  
+
   asprintf(&buffname,"s_xbt_dynar_of_%s",elm_t->name);
-   
+
   res = gras_datadesc_struct(buffname);
-  
-  gras_datadesc_struct_append(res, "size",    
+
+  gras_datadesc_struct_append(res, "size",
 			      gras_datadesc_by_name("unsigned long int"));
-   
-  gras_datadesc_struct_append(res, "used",    
+
+  gras_datadesc_struct_append(res, "used",
 			      gras_datadesc_by_name("unsigned long int"));
-   
-  gras_datadesc_struct_append(res, "elmsize", 
+
+  gras_datadesc_struct_append(res, "elmsize",
 			      gras_datadesc_by_name("unsigned long int"));
-   
-  gras_datadesc_struct_append(res, "data",    
+
+  gras_datadesc_struct_append(res, "data",
 			      gras_datadesc_ref_pop_arr (elm_t));
 
-  gras_datadesc_struct_append(res, "free_f",  
+  gras_datadesc_struct_append(res, "free_f",
 			      gras_datadesc_by_name("function pointer"));
   memcpy(res->extra,&free_func,sizeof(free_func));
-      
+
   gras_datadesc_struct_append(res, "mutex",
 			      gras_datadesc_by_name("data pointer"));
-   
+
   gras_datadesc_struct_close(res);
-   
+
   gras_datadesc_cb_field_push(res, "used");
   gras_datadesc_cb_recv(res,  &gras_datadesc_dynar_cb);
 
@@ -688,16 +692,16 @@ gras_datadesc_dynar(gras_datadesc_type_t elm_t,
 static void gras_datadesc_matrix_cb(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data) {
   gras_datadesc_type_t subtype;
   xbt_matrix_t matrix=(xbt_matrix_t)data;
-   
+
   memcpy(&matrix->free_f, &typedesc->extra, sizeof(matrix->free_f));
 
   /* search for the elemsize in what we have. If elements are "int", typedesc got is "int[]*" */
   subtype = gras_dd_find_field(typedesc,"data")->type;
-  
+
   /* this is now a ref to array of what we're looking for */
   subtype = subtype->category.ref_data.type;
   subtype = subtype->category.array_data.type;
-   
+
   DEBUG1("subtype is %s",subtype->name);
 
   matrix->elmsize = subtype->size[GRAS_THISARCH];
@@ -708,23 +712,23 @@ gras_datadesc_matrix(gras_datadesc_type_t elm_t,
   char *buffname;
   gras_datadesc_type_t res;
 
-  asprintf(&buffname,"s_xbt_matrix_t(%s)",elm_t->name);   
+  asprintf(&buffname,"s_xbt_matrix_t(%s)",elm_t->name);
   res = gras_datadesc_struct(buffname);
-  
-  gras_datadesc_struct_append(res, "lines",    
+
+  gras_datadesc_struct_append(res, "lines",
 			      gras_datadesc_by_name("unsigned int"));
-  gras_datadesc_struct_append(res, "rows",    
+  gras_datadesc_struct_append(res, "rows",
 			      gras_datadesc_by_name("unsigned int"));
-   
-  gras_datadesc_struct_append(res, "elmsize", 
+
+  gras_datadesc_struct_append(res, "elmsize",
 			      gras_datadesc_by_name("unsigned long int"));
-   
-  gras_datadesc_struct_append(res, "data",    
+
+  gras_datadesc_struct_append(res, "data",
 			      gras_datadesc_ref_pop_arr (elm_t));
-  gras_datadesc_struct_append(res, "free_f",  
-			      gras_datadesc_by_name("function pointer"));      
+  gras_datadesc_struct_append(res, "free_f",
+			      gras_datadesc_by_name("function pointer"));
   gras_datadesc_struct_close(res);
-    
+
   gras_datadesc_cb_field_push(res, "lines");
   gras_datadesc_cb_field_push_multiplier(res, "rows");
 
@@ -762,17 +766,17 @@ void gras_datadesc_cb_recv(gras_datadesc_type_t          type,
 }
 /*
  * gras_dd_find_field:
- * 
+ *
  * Returns the type descriptor of the given field. Abort on error.
  */
 static gras_dd_cat_field_t
   gras_dd_find_field(gras_datadesc_type_t  type,
 		     const char           *field_name) {
    xbt_dynar_t         field_array;
-   
+
    gras_dd_cat_field_t  field=NULL;
    unsigned int         field_num;
-   
+
    if (type->category_code == e_gras_datadesc_type_cat_union) {
       field_array = type->category.union_data.fields;
    } else if (type->category_code == e_gras_datadesc_type_cat_struct) {
@@ -790,7 +794,7 @@ static gras_dd_cat_field_t
    xbt_abort();
 
 }
-				  
+
 /**
  * The given datadesc must be a struct or union (abort if not).
  * (useful to push the sizes of the upcoming arrays, for example)
@@ -798,23 +802,23 @@ static gras_dd_cat_field_t
 void gras_datadesc_cb_field_send (gras_datadesc_type_t          type,
 				  const char                   *field_name,
 				  gras_datadesc_type_cb_void_t  send) {
-   
-   gras_dd_cat_field_t field=gras_dd_find_field(type,field_name);   
+
+   gras_dd_cat_field_t field=gras_dd_find_field(type,field_name);
    field->send = send;
 }
 
 
 /**
  * The value, which must be an int, unsigned int, long int or unsigned long int
- * is pushed to the stacks of sizes and can then be retrieved with 
+ * is pushed to the stacks of sizes and can then be retrieved with
  * \ref gras_datadesc_ref_pop_arr or directly with \ref gras_cbps_i_pop.
  */
 void gras_datadesc_cb_field_push (gras_datadesc_type_t  type,
 				  const char           *field_name) {
-   
+
    gras_dd_cat_field_t  field=gras_dd_find_field(type,field_name);
    gras_datadesc_type_t sub_type=field->type;
-   
+
    DEBUG3("add a PUSHy cb to '%s' field (type '%s') of '%s'",
 	  field_name,sub_type->name,type->name);
    if (!strcmp("int",sub_type->name)) {
@@ -842,10 +846,10 @@ void gras_datadesc_cb_field_push (gras_datadesc_type_t  type,
  */
 void gras_datadesc_cb_field_push_multiplier (gras_datadesc_type_t  type,
 					     const char         *field_name) {
-   
+
    gras_dd_cat_field_t  field=gras_dd_find_field(type,field_name);
    gras_datadesc_type_t sub_type=field->type;
-   
+
    DEBUG3("add a MPUSHy cb to '%s' field (type '%s') of '%s'",
 	  field_name,sub_type->name,type->name);
    if (!strcmp("int",sub_type->name)) {
@@ -870,33 +874,33 @@ void gras_datadesc_cb_field_push_multiplier (gras_datadesc_type_t  type,
 void gras_datadesc_cb_field_recv(gras_datadesc_type_t          type,
 				 const char                   *field_name,
 				 gras_datadesc_type_cb_void_t  recv) {
-   
-   gras_dd_cat_field_t field=gras_dd_find_field(type,field_name);   
+
+   gras_dd_cat_field_t field=gras_dd_find_field(type,field_name);
    field->recv = recv;
 }
 
 /*
- * Free a datadesc. Should only be called at xbt_exit. 
+ * Free a datadesc. Should only be called at xbt_exit.
  */
 void gras_datadesc_free(gras_datadesc_type_t *type) {
 
   DEBUG1("Let's free ddt %s",(*type)->name);
-  
+
   switch ((*type)->category_code) {
   case e_gras_datadesc_type_cat_scalar:
   case e_gras_datadesc_type_cat_ref:
   case e_gras_datadesc_type_cat_array:
     /* nothing to free in there */
     break;
-    
+
   case e_gras_datadesc_type_cat_struct:
     xbt_dynar_free(&( (*type)->category.struct_data.fields ));
     break;
-    
+
   case e_gras_datadesc_type_cat_union:
     xbt_dynar_free(&( (*type)->category.union_data.fields ));
     break;
-    
+
   default:
     /* datadesc was invalid. Killing it is like euthanasy, I guess */
     break;
@@ -911,7 +915,7 @@ void gras_datadesc_free(gras_datadesc_type_t *type) {
  *
  * Compares two datadesc types with the same semantic than strcmp.
  *
- * This comparison does not take the set headers into account (name and ID), 
+ * This comparison does not take the set headers into account (name and ID),
  * but only the payload (actual type description).
  */
 int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
@@ -983,81 +987,81 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
     if (d1->category.scalar_data.encoding != d2->category.scalar_data.encoding)
       return d1->category.scalar_data.encoding > d2->category.scalar_data.encoding ? 1 : -1 ;
     break;
-    
-  case e_gras_datadesc_type_cat_struct:    
-    if (xbt_dynar_length(d1->category.struct_data.fields) != 
+
+  case e_gras_datadesc_type_cat_struct:
+    if (xbt_dynar_length(d1->category.struct_data.fields) !=
 	xbt_dynar_length(d2->category.struct_data.fields)) {
       DEBUG4("ddt_cmp: %s (having %lu fields) !=  %s (having %lu fields)",
 	     d1->name, xbt_dynar_length(d1->category.struct_data.fields),
 	     d2->name, xbt_dynar_length(d2->category.struct_data.fields));
-      
+
       return xbt_dynar_length(d1->category.struct_data.fields) >
 	xbt_dynar_length(d2->category.struct_data.fields) ?
 	1 : -1;
     }
     xbt_dynar_foreach(d1->category.struct_data.fields, cpt, field1) {
-      
+
       field2 = xbt_dynar_get_as(d2->category.struct_data.fields, cpt, gras_dd_cat_field_t);
       field_desc_1 = field1->type;
       field_desc_2 = field2->type;
       ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
       if (ret) {
 	DEBUG6("%s->field[%d]=%s != %s->field[%d]=%s",
-	       d1->name,cpt,field1->name, 	       
+	       d1->name,cpt,field1->name,
 	       d2->name,cpt,field2->name);
 	return ret;
       }
-      
+
     }
     break;
-    
+
   case e_gras_datadesc_type_cat_union:
-    if (d1->category.union_data.selector != d2->category.union_data.selector) 
+    if (d1->category.union_data.selector != d2->category.union_data.selector)
       return 1;  /* ISO C forbids ordered comparisons of pointers to functions */
-    
-    if (xbt_dynar_length(d1->category.union_data.fields) != 
+
+    if (xbt_dynar_length(d1->category.union_data.fields) !=
 	xbt_dynar_length(d2->category.union_data.fields))
       return xbt_dynar_length(d1->category.union_data.fields) >
 	     xbt_dynar_length(d2->category.union_data.fields) ?
 	1 : -1;
-    
+
     xbt_dynar_foreach(d1->category.union_data.fields, cpt, field1) {
-      
+
       field2 = xbt_dynar_get_as(d2->category.union_data.fields, cpt, gras_dd_cat_field_t);
       field_desc_1 = field1->type;
       field_desc_2 = field2->type;
       ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
       if (ret)
 	return ret;
-      
+
     }
     break;
-    
-    
+
+
   case e_gras_datadesc_type_cat_ref:
-    if (d1->category.ref_data.selector != d2->category.ref_data.selector) 
+    if (d1->category.ref_data.selector != d2->category.ref_data.selector)
       return 1; /* ISO C forbids ordered comparisons of pointers to functions */
-    
-    if (d1->category.ref_data.type != d2->category.ref_data.type) 
+
+    if (d1->category.ref_data.type != d2->category.ref_data.type)
       return d1->category.ref_data.type > d2->category.ref_data.type ? 1 : -1;
     break;
-    
+
   case e_gras_datadesc_type_cat_array:
-    if (d1->category.array_data.type != d2->category.array_data.type) 
+    if (d1->category.array_data.type != d2->category.array_data.type)
       return d1->category.array_data.type > d2->category.array_data.type ? 1 : -1;
-    
-    if (d1->category.array_data.fixed_size != d2->category.array_data.fixed_size) 
+
+    if (d1->category.array_data.fixed_size != d2->category.array_data.fixed_size)
       return d1->category.array_data.fixed_size > d2->category.array_data.fixed_size ? 1 : -1;
-    
-    if (d1->category.array_data.dynamic_size != d2->category.array_data.dynamic_size) 
+
+    if (d1->category.array_data.dynamic_size != d2->category.array_data.dynamic_size)
       return 1; /* ISO C forbids ordered comparisons of pointers to functions */
-    
+
     break;
-    
+
   default:
     /* two stupidly created ddt are equally stupid ;) */
     break;
   }
   return 0;
-  
+
 }
