@@ -80,7 +80,8 @@ noinst_PROGRAMS = sendrecv/sendrecv \
                   parallel_task/parallel_task \
                   parallel_task/test_ptask \
                   priority/priority \
-                  properties/msg_prop
+                  properties/msg_prop \
+                  actions/actions
 
 if HAVE_GTNETS
   noinst_PROGRAMS += gtnets/gtnets gtnets/gtnets_kayo
@@ -90,6 +91,10 @@ endif
 # property handle example
 properties_msg_prop_SOURCES = properties/msg_prop.c
 properties_msg_prop_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# actions example
+actions_actions_SOURCES = actions/actions.c
+actions_actions_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 
 # sendrecv simple example

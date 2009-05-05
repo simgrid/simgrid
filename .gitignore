@@ -2,6 +2,7 @@ checkall.log
 TAGS
 *.mk
 *.l[oa]
+*.loT
 *.[oa]
 *.class
 .libs
@@ -64,6 +65,7 @@ examples/gras/spawn/spawn_child
 examples/gras/spawn/spawn_father
 examples/gras/synchro/synchro_philosopher
 examples/gras/timer/timer_client
+examples/msg/actions/actions
 examples/msg/gtnets/gtnets
 examples/msg/masterslave/masterslave_bypass
 examples/msg/masterslave/masterslave_failure

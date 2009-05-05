@@ -71,6 +71,9 @@ void MSG_global_init(int *argc, char **argv)
 	/* initialization of the mailbox module */
 	MSG_mailbox_mod_init();
 
+	/* initialization of the action module */
+	_MSG_action_init();
+
     SIMIX_function_register_process_create(_MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(__MSG_process_cleanup);
     SIMIX_function_register_process_kill(_MSG_process_kill_from_SIMIX);

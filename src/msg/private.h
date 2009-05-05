@@ -124,5 +124,7 @@ void *_MSG_process_create_from_SIMIX(const char *name,
 				     char * hostname, int argc, char **argv, xbt_dict_t properties);
 void _MSG_process_kill_from_SIMIX(void *p);
 
+void _MSG_action_init(void);
+
 SG_END_DECL()
 #endif
