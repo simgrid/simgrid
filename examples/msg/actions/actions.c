@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
 	MSG_action_register("send", send);
 	MSG_action_register("recv", recv);
 	MSG_action_register("sleep", sleep);
-	MSG_action_register("compute", sleep);
+	MSG_action_register("compute", compute);
 
 	/* Actually do the simulation using MSG_action_trace_run */
 	res = MSG_action_trace_run(argv[3]);
