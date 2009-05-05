@@ -13,16 +13,36 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 
 /* My actions */
 static void send(xbt_dynar_t action) {
-	INFO1("Send: %s",xbt_str_join(action," "));
+	char *name=xbt_str_join(action," ");
+	char *to = xbt_dynar_get_as(action,2,char*);
+	char *size=xbt_dynar_get_as(action,3,char*);
+	INFO1("Send: %s",name);
+	MSG_task_send(MSG_task_create(name, 0, atoi(size), NULL), to);
+	INFO1("Sent %s",name);
 }
 static void recv(xbt_dynar_t action) {
-	INFO1("Recv: %s",xbt_str_join(action," "));
+	m_task_t task = NULL;
+	INFO1("Receiving: %s",xbt_str_join(action," "));
+	//FIXME: argument of action ignored so far; semantic not clear
+	//char *from=xbt_dynar_get_as(action,2,char*);
+	MSG_task_receive(&task,MSG_process_get_name(MSG_process_self()));
+	INFO1("Received %s",MSG_task_get_name(task));
+	MSG_task_destroy(task);
 }
 static void sleep(xbt_dynar_t action) {
-	INFO1("Recv: %s",xbt_str_join(action," "));
+	char *duration=xbt_dynar_get_as(action,2,char*);
+	INFO1("sleep: %s",xbt_str_join(action," "));
+	MSG_process_sleep(atoi(duration));
+	INFO1("sleept: %s",xbt_str_join(action," "));
 }
 static void compute(xbt_dynar_t action) {
-	INFO1("compute: %s",xbt_str_join(action," "));
+	char *name=xbt_str_join(action," ");
+	char *amout=xbt_dynar_get_as(action,2,char*);
+	m_task_t task = MSG_task_create(name, atoi(amout), 0, NULL);
+	INFO1("computing: %s",name);
+	MSG_task_execute(task);
+	MSG_task_destroy(task);
+	INFO1("computed: %s",name);
 }
 
 /** Main function */
