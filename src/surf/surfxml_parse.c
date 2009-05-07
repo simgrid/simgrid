@@ -359,7 +359,7 @@ void STag_surfxml_foreach(void)
 }
 
 void ETag_surfxml_foreach(void)
-{ 
+{
   surfxml_call_cb_functions(ETag_surfxml_foreach_cb_list);
 
   /* free the temporary dynar and restore original */
@@ -493,7 +493,7 @@ void surf_parse_get_int(int *value, const char *string)
   int ret = 0;
 
   ret = sscanf(string, "%d", value);
-  if (ret != 1) 
+  if (ret != 1)
      surf_parse_error(bprintf("%s is not an integer", string));
 }
 
@@ -511,7 +511,7 @@ void parse_properties(void)
 
   if(!current_property_set) current_property_set = xbt_dict_new();
 
-   value = xbt_strdup(A_surfxml_prop_value);  
+   value = xbt_strdup(A_surfxml_prop_value);
    xbt_dict_set(current_property_set, A_surfxml_prop_id, value, free);
 }
 
@@ -540,7 +540,7 @@ static void init_data(void)
   xbt_dynar_free(&route_link_list);
   route_table = xbt_dict_new();
 
-  if(!surfxml_bufferstack_stack) 
+  if(!surfxml_bufferstack_stack)
     surfxml_bufferstack_stack=xbt_dynar_new(sizeof(char*),NULL);
   route_multi_table = xbt_dict_new();
   route_multi_elements = xbt_dynar_new(sizeof(char*), NULL);
@@ -569,7 +569,7 @@ static void init_data(void)
   surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
 }
 
-static void free_data(void) 
+static void free_data(void)
 {
   char *key,*data;
   xbt_dict_cursor_t cursor = NULL;
@@ -602,6 +602,7 @@ static void free_data(void)
 
   xbt_dynar_free(&surfxml_bufferstack_stack);
 
+  xbt_dict_free(&traces_set_list);
   xbt_dict_free(&trace_connect_list_host_avail);
   xbt_dict_free(&trace_connect_list_power);
   xbt_dict_free(&trace_connect_list_link_avail);
@@ -624,7 +625,7 @@ void parse_platform_file(const char* file)
 static void parse_make_temporary_route(const char *src, const char *dst, int action)
 {
   int AX_ptr = 0;
-  
+
   A_surfxml_route_action = action;
   SURFXML_BUFFER_SET(route_src,                     src);
   SURFXML_BUFFER_SET(route_dst,                     dst);
@@ -634,7 +635,7 @@ static void parse_change_cpu_data(const char* hostName, const char* surfxml_host
 					const char* surfxml_host_availability_file, const char* surfxml_host_state_file)
 {
   int AX_ptr = 0;
- 
+
   SURFXML_BUFFER_SET(host_id,                     hostName);
   SURFXML_BUFFER_SET(host_power,                  surfxml_host_power /*hostPower*/);
   SURFXML_BUFFER_SET(host_availability,           surfxml_host_availability);
@@ -646,7 +647,7 @@ static void parse_change_link_data(const char* linkName, const char* surfxml_lin
 					const char* surfxml_link_latency, const char* surfxml_link_latency_file, const char* surfxml_link_state_file)
 {
   int AX_ptr = 0;
- 
+
   SURFXML_BUFFER_SET(link_id,                linkName);
   SURFXML_BUFFER_SET(link_bandwidth,         surfxml_link_bandwidth);
   SURFXML_BUFFER_SET(link_bandwidth_file,    surfxml_link_bandwidth_file);
@@ -672,15 +673,15 @@ static void parse_sets(void)
   prefix = xbt_strdup(A_surfxml_set_prefix);
   suffix = xbt_strdup(A_surfxml_set_suffix);
   radical = xbt_strdup(A_surfxml_set_radical);
-  
+
   if (xbt_dict_get_or_null(set_list, id))
      surf_parse_error(bprintf("Set '%s' declared several times in the platform file.",id));
-   
+
   current_set = xbt_dynar_new(sizeof(char*), NULL);
 
   radical_elements = xbt_str_split(radical,",");
   xbt_dynar_foreach(radical_elements,iter, groups) {
-	
+
      radical_ends = xbt_str_split(groups, "-");
      switch (xbt_dynar_length(radical_ends)) {
       case 1:
@@ -688,7 +689,7 @@ static void parse_sets(void)
 	value = bprintf("%s%d%s", prefix, start, suffix);
 	xbt_dynar_push(current_set, &value);
 	break;
-	
+
       case 2:
 
 	surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char*));
@@ -698,16 +699,16 @@ static void parse_sets(void)
 	for (i=start; i<=end; i++) {
 	   value = bprintf("%s%d%s", prefix, i, suffix);
 	   xbt_dynar_push(current_set, &value);
-	} 
+	}
 	break;
-	
+
       default:
 	surf_parse_error(xbt_strdup("Malformed radical"));
-     } 
-     
+     }
+
      xbt_dynar_free(&radical_ends);
   }
-   
+
   xbt_dict_set(set_list, id, current_set, NULL);
 
   xbt_dynar_free(&radical_elements);
@@ -736,19 +737,19 @@ static void finalize_host_foreach(void)
   unsigned int cpt = 0;
   char *name;
   xbt_dict_cursor_t cursor = NULL;
-  char *key,*data; 
+  char *key,*data;
 
   xbt_dict_t cluster_host_props = current_property_set;
-  
+
   names = xbt_dict_get_or_null(set_list, foreach_set_name);
   if (!names)
      surf_parse_error(bprintf("Set name '%s' used in <foreach> not found.",
 			       foreach_set_name));
   if (strcmp(A_surfxml_host_id, "$1"))
-     surf_parse_error(bprintf("The host id within <foreach> should point to the foreach set_id (use $1 instead of %s)", 
+     surf_parse_error(bprintf("The host id within <foreach> should point to the foreach set_id (use $1 instead of %s)",
 			      A_surfxml_host_id));
 
-	
+
   /* foreach name in set call the main host callback */
   xbt_dynar_foreach (names, cpt, name) {
     push_surfxml_bufferstack(1);
@@ -790,7 +791,7 @@ static void finalize_link_foreach(void)
   unsigned int cpt = 0;
   char *name;
   xbt_dict_cursor_t cursor = NULL;
-  char *key,*data; 
+  char *key,*data;
 
   xbt_dict_t cluster_link_props = current_property_set;
 
@@ -799,7 +800,7 @@ static void finalize_link_foreach(void)
      surf_parse_error(bprintf("Set name '%s' used in <foreach> not found.",
 			       foreach_set_name));
   if (strcmp(A_surfxml_link_id, "$1"))
-     surf_parse_error(bprintf("The host id within <foreach> should point to the foreach set_id (use $1 instead of %s)", 
+     surf_parse_error(bprintf("The host id within <foreach> should point to the foreach set_id (use $1 instead of %s)",
 			      A_surfxml_link_id));
 
   /* for each name in set call the main link callback */
@@ -844,7 +845,7 @@ static void parse_foreach(void)
   surfxml_add_callback(ETag_surfxml_link_cb_list, &finalize_link_foreach);
 
   /* get set name */
-  foreach_set_name = xbt_strdup(A_surfxml_foreach_set_id); 
+  foreach_set_name = xbt_strdup(A_surfxml_foreach_set_id);
 }
 
 /* Route:multi functions */
@@ -858,14 +859,14 @@ static void parse_route_elem(void)
   char *val;
 
   val = xbt_strdup(A_surfxml_link_c_ctn_id);
-  
+
   xbt_dynar_push(route_link_list, &val);
 }
 
 static void parse_route_multi_set_endpoints(void)
 {
-  src_name = xbt_strdup(A_surfxml_route_c_multi_src); 
-  dst_name = xbt_strdup(A_surfxml_route_c_multi_dst); 
+  src_name = xbt_strdup(A_surfxml_route_c_multi_src);
+  dst_name = xbt_strdup(A_surfxml_route_c_multi_dst);
   route_action = A_surfxml_route_c_multi_action;
   is_symmetric_route = A_surfxml_route_c_multi_symmetric;
   route_multi_size++;
@@ -884,7 +885,7 @@ static int contains(xbt_dynar_t list, const char* value)
   return 0;
 }
 
-/* 
+/*
    This function is used to append or override the contents of an already existing route in the case a new one with its name is found.
    The decision is based upon the value of action specified in the xml route:multi attribute action
  */
@@ -900,12 +901,12 @@ void manage_route(xbt_dict_t routing_table, const char *route_name, int action, 
   if (links != NULL) {
      switch (action) {
         case A_surfxml_route_action_PREPEND: /* add existing links at the end; route_link_list + links */
-				    xbt_dynar_foreach(links, cpt, value) {	
+				    xbt_dynar_foreach(links, cpt, value) {
                                        xbt_dynar_push(route_link_list,&value);
 				    }
 				    xbt_dynar_free(&links);
                                     break;
-        case A_surfxml_route_action_POSTPEND: /* add existing links in front; links + route_link_list */ 
+        case A_surfxml_route_action_POSTPEND: /* add existing links in front; links + route_link_list */
 				    xbt_dynar_foreach(route_link_list, cpt, value) {
                                        xbt_dynar_push(links,&value);
 				    }
@@ -919,7 +920,7 @@ void manage_route(xbt_dict_t routing_table, const char *route_name, int action, 
      }
   }
   /* this is the final route; do not add if name is a set; add only if name is in set list */
-  if (!isMultiRoute){    
+  if (!isMultiRoute){
     xbt_dict_set(routing_table, route_name, route_link_list, NULL);
   }
 }
@@ -934,10 +935,10 @@ static void parse_route_multi_set_route(void)
 
   /* Add route */
   xbt_dict_set(route_multi_table, route_name, route_link_list, NULL);
-  /* add symmetric if it is the case */ 
+  /* add symmetric if it is the case */
   if (is_symmetric_route == 1) {
     char * symmetric_name = bprintf("%s#%s#%d#%d#%d", dst_name, src_name, route_action, !is_symmetric_route, route_multi_size);
-  
+
     xbt_dict_set(route_multi_table, symmetric_name, route_link_list, NULL);
     xbt_dynar_push(route_multi_elements, &symmetric_name);
     is_symmetric_route = 0;
@@ -956,7 +957,7 @@ static void add_multi_links(const char* src, const char* dst, xbt_dynar_t links,
    parse_make_temporary_route(src_name, dst_name, route_action);
    surfxml_call_cb_functions(STag_surfxml_route_cb_list);
    DEBUG2("\tADDING ROUTE: %s -> %s", src_name, dst_name);
-   /* Build link list */ 
+   /* Build link list */
    xbt_dynar_foreach(links, cpt, value) {
      if (strcmp(value, src) == 0)
        val =  xbt_strdup(src_name);
@@ -970,7 +971,7 @@ static void add_multi_links(const char* src, const char* dst, xbt_dynar_t links,
        val = xbt_strdup(value);
      DEBUG1("\t\tELEMENT: %s", val);
      xbt_dynar_push(route_link_list, &val);
-   }    
+   }
    surfxml_call_cb_functions(ETag_surfxml_route_cb_list);
    pop_surfxml_bufferstack(1);
 }
@@ -980,7 +981,7 @@ static void convert_route_multi_to_routes(void)
   xbt_dict_cursor_t cursor_w;
   int symmetric;
   unsigned int cpt, cpt2, cursor;
-  char *src_host_name, *dst_host_name, *key, *src, *dst, *val, *key_w, *data_w; 
+  char *src_host_name, *dst_host_name, *key, *src, *dst, *val, *key_w, *data_w;
   const char* sep="#";
   xbt_dict_t set;
   xbt_dynar_t src_names = NULL, dst_names = NULL, links;
@@ -988,15 +989,15 @@ static void convert_route_multi_to_routes(void)
   if (!route_multi_elements) return;
 
   set = cpu_set;
-  DEBUG1("%d", xbt_dict_length(workstation_set));				
+  DEBUG1("%d", xbt_dict_length(workstation_set));
   if (workstation_set != NULL && xbt_dict_length(workstation_set) > 0)
      set = workstation_set;
-  
+
 
   push_surfxml_bufferstack(0);
   /* Get all routes in the exact order they were entered in the platform file */
   xbt_dynar_foreach(route_multi_elements, cursor, key) {
-     /* Get links for the route */     
+     /* Get links for the route */
      links = (xbt_dynar_t)xbt_dict_get_or_null(route_multi_table, key);
      keys = xbt_str_split_str(key, sep);
      /* Get route ends */
@@ -1005,7 +1006,7 @@ static void convert_route_multi_to_routes(void)
      route_action = atoi(xbt_dynar_get_as(keys, 2, char*));
      symmetric = atoi(xbt_dynar_get_as(keys, 3, char*));
 
-    /* Create the dynar of src and dst hosts for the new routes */ 
+    /* Create the dynar of src and dst hosts for the new routes */
     /* NOTE: src and dst can be either set names or simple host names */
     src_names = (xbt_dynar_t)xbt_dict_get_or_null(set_list, src);
     dst_names = (xbt_dynar_t)xbt_dict_get_or_null(set_list, dst);
@@ -1033,33 +1034,33 @@ static void convert_route_multi_to_routes(void)
         if (strcmp(src_host_name,"$*") != 0 && strcmp(dst_host_name,"$*") == 0){
 		  xbt_dict_foreach(set, cursor_w, key_w, data_w) {
                           //int n = xbt_dynar_member(src_names, (char*)key_w);
-       			    add_multi_links(src, dst, links, src_host_name, key_w);               
+       			    add_multi_links(src, dst, links, src_host_name, key_w);
 		  }
         }
         /* If src is $* then set this route to have its dst point to all hosts */
         if (strcmp(src_host_name,"$*") == 0 && strcmp(dst_host_name,"$*") != 0){
 	   	  xbt_dict_foreach(set, cursor_w, key_w, data_w) {
                      // if (!symmetric || (symmetric && !contains(dst_names, key_w)))
-      			add_multi_links(src, dst, links, key_w, dst_host_name);               
+      			add_multi_links(src, dst, links, key_w, dst_host_name);
                 }
         }
         /* if none of them are equal to $* */
         if (strcmp(src_host_name,"$*") != 0 && strcmp(dst_host_name,"$*") != 0) {
-   			add_multi_links(src, dst, links, src_host_name, dst_host_name);               
-	}     
+   			add_multi_links(src, dst, links, src_host_name, dst_host_name);
+	}
       }
     }
     xbt_dynar_free(&keys);
-  }  
+  }
   pop_surfxml_bufferstack(0);
 }
 
 /* Cluster tag functions */
 
 static void parse_cluster(void)
-{  
+{
    static int AX_ptr = 0;
- 
+
    char* cluster_id = A_surfxml_cluster_id;
    char* cluster_prefix = A_surfxml_cluster_prefix;
    char* cluster_suffix = A_surfxml_cluster_suffix;
@@ -1078,7 +1079,7 @@ static void parse_cluster(void)
    SURFXML_BUFFER_SET(set_prefix, cluster_prefix);
    SURFXML_BUFFER_SET(set_suffix, cluster_suffix);
    SURFXML_BUFFER_SET(set_radical, cluster_radical);
-  
+
    SURFXML_START_TAG(set);
    SURFXML_END_TAG(set);
 
@@ -1098,7 +1099,7 @@ static void parse_cluster(void)
      parse_change_link_data("$1", cluster_bw, "", cluster_lat, "", "");
      A_surfxml_link_state = A_surfxml_link_state_ON;
      A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
- 
+
      SURFXML_START_TAG(link);
      SURFXML_END_TAG(link);
 
@@ -1109,7 +1110,7 @@ static void parse_cluster(void)
    parse_change_link_data(backbone_name, cluster_bb_bw, "", cluster_bb_lat, "", "");
    A_surfxml_link_state = A_surfxml_link_state_ON;
    A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_FATPIPE;
- 
+
    SURFXML_START_TAG(link);
    SURFXML_END_TAG(link);
 
@@ -1118,11 +1119,11 @@ static void parse_cluster(void)
    SURFXML_BUFFER_SET(route_c_multi_dst, "$*");
    A_surfxml_route_c_multi_symmetric = A_surfxml_route_c_multi_symmetric_NO;
    A_surfxml_route_c_multi_action = A_surfxml_route_c_multi_action_OVERRIDE;
-   
+
    SURFXML_START_TAG(route_c_multi);
 
      SURFXML_BUFFER_SET(link_c_ctn_id, "$src");
-    
+
      SURFXML_START_TAG(link_c_ctn);
      SURFXML_END_TAG(link_c_ctn);
 
@@ -1133,14 +1134,14 @@ static void parse_cluster(void)
    SURFXML_BUFFER_SET(route_c_multi_dst, cluster_id);
    A_surfxml_route_c_multi_action = A_surfxml_route_c_multi_action_POSTPEND;
    A_surfxml_route_c_multi_symmetric = A_surfxml_route_c_multi_symmetric_NO;
-   
+
    SURFXML_START_TAG(route_c_multi);
-    
+
      SURFXML_BUFFER_SET(link_c_ctn_id, backbone_name);
-    
+
      SURFXML_START_TAG(link_c_ctn);
      SURFXML_END_TAG(link_c_ctn);
-    
+
    SURFXML_END_TAG(route_c_multi);
 
 
@@ -1172,7 +1173,7 @@ static void parse_trace_finalize(void)
   else {
     if (strcmp(surfxml_pcdata, "") == 0) trace = NULL;
     else
-      trace = tmgr_trace_new_from_string(trace_id, surfxml_pcdata, trace_periodicity);  
+      trace = tmgr_trace_new_from_string(trace_id, surfxml_pcdata, trace_periodicity);
   }
   xbt_dict_set(traces_set_list, trace_id, (void *)trace, NULL);
 }
@@ -1181,7 +1182,7 @@ static void parse_trace_c_connect(void)
 {
    xbt_assert2(xbt_dict_get_or_null(traces_set_list, A_surfxml_trace_c_connect_trace),
 	      "Cannot connect trace %s to %s: trace unknown", A_surfxml_trace_c_connect_trace,A_surfxml_trace_c_connect_element);
-   
+
    switch (A_surfxml_trace_c_connect_kind) {
     case A_surfxml_trace_c_connect_kind_HOST_AVAIL:
       xbt_dict_set(trace_connect_list_host_avail, A_surfxml_trace_c_connect_trace, xbt_strdup(A_surfxml_trace_c_connect_element), free);
@@ -1201,22 +1202,22 @@ static void parse_trace_c_connect(void)
     default:
       xbt_die(bprintf("Cannot connect trace %s to %s: kind of trace unknown",
 		      A_surfxml_trace_c_connect_trace,A_surfxml_trace_c_connect_element));
-   }   
+   }
 }
 
 /* Random tag functions */
 
 double get_cpu_power(const char *power)
-{ 
+{
   double power_scale = 0.0;
   const char *p, *q;
   char *generator;
-  random_data_t random = NULL; 
+  random_data_t random = NULL;
   /* randomness is inserted like this: power="$rand(my_random)" */
   if (((p = strstr(power, "$rand(")) != NULL) && ((q = strstr(power, ")")) != NULL)) {
      if (p < q) {
        generator = xbt_malloc(q - (p + 6) + 1);
-       memcpy(generator, p + 6, q - (p + 6)); 
+       memcpy(generator, p + 6, q - (p + 6));
        generator[q - (p + 6)] = '\0';
        xbt_assert1((random = xbt_dict_get_or_null(random_data_list, generator)),
 	      "Random generator %s undefined", generator);

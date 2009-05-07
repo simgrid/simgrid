@@ -19,21 +19,26 @@ static void send(xbt_dynar_t action) {
 	INFO1("Send: %s",name);
 	MSG_task_send(MSG_task_create(name, 0, atoi(size), NULL), to);
 	INFO1("Sent %s",name);
+   free(name);
 }
 static void recv(xbt_dynar_t action) {
+	char *name=xbt_str_join(action," ");
 	m_task_t task = NULL;
-	INFO1("Receiving: %s",xbt_str_join(action," "));
+	INFO1("Receiving: %s",name);
 	//FIXME: argument of action ignored so far; semantic not clear
 	//char *from=xbt_dynar_get_as(action,2,char*);
 	MSG_task_receive(&task,MSG_process_get_name(MSG_process_self()));
 	INFO1("Received %s",MSG_task_get_name(task));
 	MSG_task_destroy(task);
+   free(name);
 }
 static void sleep(xbt_dynar_t action) {
+	char *name=xbt_str_join(action," ");
 	char *duration=xbt_dynar_get_as(action,2,char*);
-	INFO1("sleep: %s",xbt_str_join(action," "));
+	INFO1("sleep: %s",name);
 	MSG_process_sleep(atoi(duration));
-	INFO1("sleept: %s",xbt_str_join(action," "));
+	INFO1("sleept: %s",name);
+   free(name);
 }
 static void compute(xbt_dynar_t action) {
 	char *name=xbt_str_join(action," ");
@@ -43,6 +48,7 @@ static void compute(xbt_dynar_t action) {
 	MSG_task_execute(task);
 	MSG_task_destroy(task);
 	INFO1("computed: %s",name);
+   free(name);
 }
 
 /** Main function */

@@ -252,6 +252,7 @@ MSG_process_sleep(double nb_sec)
 		MSG_RETURN(MSG_HOST_FAILURE);
 	}
 
+	SIMIX_action_destroy(act_sleep);
 	MSG_RETURN(MSG_OK);
 }
 
