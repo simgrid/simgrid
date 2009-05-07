@@ -7,11 +7,19 @@ SimGrid (3.4-svn) unstable; urgency=high
   * fix a bug on struct sizeof computation, which prevented the
     exchange of arrays of structs in some conditions
     
+ MSG:
+  * Allow to control the simulation from a trace file.
+    New functions MSG_action_register() and MSG_action_trace_run()
+    The first one allows to associate a function execution to each
+     kind of action while the second one parses a trace file and
+     triggers the corresponding actions within the system.
+    For now, only a toy example is provided in examples/msg/actions
+    
  SIMIX:
   * Add SIMIX_process_set_name() to change the name of the current
     process in the log messages.
 
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Sun Apr 12 05:20:36 CEST 2009
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 
 SimGrid (3.3) stable; urgency=high
 
