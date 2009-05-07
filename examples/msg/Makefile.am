@@ -17,6 +17,7 @@ EXTRA_DIST = msg_platform.xml \
              suspend/deployment_suspend.xml \
              masterslave/deployment_masterslave_forwarder.xml \
              masterslave/deployment_masterslave.xml \
+             migration/migration.deploy \
              gtnets/r-n200-f50-s4-2-d.xml \
              gtnets/onelink-p.xml \
              gtnets/onelink-d.xml \
@@ -40,6 +41,7 @@ TESTS = sendrecv/sendrecv_CLM03.tesh \
 	masterslave/masterslave_forwarder.tesh \
 	masterslave/masterslave_failure.tesh \
         masterslave/masterslave_bypass.tesh \
+        migration/migration.tesh \
         parallel_task/parallel_task.tesh \
         priority/priority.tesh \
 	properties/msg_prop.tesh
@@ -77,6 +79,7 @@ noinst_PROGRAMS = sendrecv/sendrecv \
                   masterslave/masterslave_forwarder \
                   masterslave/masterslave_failure \
                   masterslave/masterslave_bypass \
+                  migration/migration \
                   parallel_task/parallel_task \
                   parallel_task/test_ptask \
                   priority/priority \
@@ -95,6 +98,10 @@ properties_msg_prop_LDADD   = $(top_builddir)/src/libsimgrid.la
 # actions example
 actions_actions_SOURCES = actions/actions.c
 actions_actions_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# migration example
+migration_migration_SOURCES = migration/migration.c
+migration_migration_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 
 # sendrecv simple example

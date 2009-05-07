@@ -1,0 +1,10 @@
+#! ./tesh
+
+p Testing the migration feature of MSG
+
+$ $SG_TEST_EXENV migration/migration ${srcdir:=.}/msg_platform.xml ${srcdir:=.}/migration/migration.deploy 
+> [Jacquelin:emigrant:(1) 0.000000] [msg_test/INFO] I'll look for a new job on another machine where the grass is greener.
+> [Boivin:emigrant:(1) 0.000000] [msg_test/INFO] Yeah, found something to do
+> [Boivin:emigrant:(1) 1.000000] [msg_test/INFO] Moving back home after work
+> [Jacquelin:emigrant:(1) 1.000000] [msg_test/INFO] Uh, nothing to do here. Stopping now
+> [1.000000] [msg_test/INFO] Simulation time 1

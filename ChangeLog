@@ -14,6 +14,7 @@ SimGrid (3.4-svn) unstable; urgency=high
      kind of action while the second one parses a trace file and
      triggers the corresponding actions within the system.
     For now, only a toy example is provided in examples/msg/actions
+  * Add an exemple of process migration in examples/msg/migration
     
  SIMIX:
   * Add SIMIX_process_set_name() to change the name of the current

@@ -71,6 +71,7 @@ examples/msg/masterslave/masterslave_bypass
 examples/msg/masterslave/masterslave_failure
 examples/msg/masterslave/masterslave_forwarder
 examples/msg/masterslave/masterslave_mailbox
+examples/msg/migration/migration
 examples/msg/parallel_task/parallel_task
 examples/msg/parallel_task/test_ptask
 examples/msg/priority/priority
