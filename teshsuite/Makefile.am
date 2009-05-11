@@ -151,6 +151,17 @@ else
   TESTS += gras/small_sleep/test_sg_64
 endif
 
+#############
+# MSG tests #
+#############
+
+noinst_PROGRAMS += msg/get_sender
+EXTRA_DIST      += msg/get_sender.xml \
+		   msg/get_sender.tesh
+msg_get_sender_SOURCES = msg/get_sender.c
+msg_get_sender_LDADD   = $(LDADD_SG)
+TESTS += msg/get_sender.tesh
+
 ###################################
 # network model test via SimDag API
 ###################################

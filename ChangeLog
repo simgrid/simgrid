@@ -15,7 +15,11 @@ SimGrid (3.4-svn) unstable; urgency=high
      triggers the corresponding actions within the system.
     For now, only a toy example is provided in examples/msg/actions
   * Add an exemple of process migration in examples/msg/migration
-    
+  * Fix a bug in task exchange which broke MSG_task_get_sender()
+    Add a teshsuite regression test for that.
+    [Bug: if MSG_task_get_sender() is called after sender exit,
+     bad things happen]
+     
  SIMIX:
   * Add SIMIX_process_set_name() to change the name of the current
     process in the log messages.

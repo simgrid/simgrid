@@ -82,8 +82,6 @@ examples/simdag/metaxml/sd_meta
 examples/simdag/properties/sd_prop
 examples/simdag/sd_test
 examples/simdag/sd_test2
-teshsuite/simdag/platforms/basic_parsing_test
-teshsuite/simdag/platforms/flatifier
 simgrid-3.3-svn/*
 src/.classes/*
 src/context_sysv_config.h
@@ -101,6 +99,7 @@ teshsuite/gras/msg_handle/msg_handle_server
 teshsuite/gras/small_sleep/log.txt
 teshsuite/gras/small_sleep/small_sleep_function
 teshsuite/gras/modelcheck/modelcheck_checker
+teshsuite/msg/get_sender
 teshsuite/simdag/basic0
 teshsuite/simdag/basic1
 teshsuite/simdag/basic2
@@ -116,6 +115,8 @@ teshsuite/simdag/network/p2p/test_latency2
 teshsuite/simdag/network/p2p/test_latency3
 teshsuite/simdag/network/p2p/test_latency_bound
 teshsuite/simdag/network/test_reinit_costs
+teshsuite/simdag/platforms/basic_parsing_test
+teshsuite/simdag/platforms/flatifier
 teshsuite/simdag/partask/test_comp_only_par
 teshsuite/simdag/partask/test_comp_only_seq
 teshsuite/xbt/log_large_test

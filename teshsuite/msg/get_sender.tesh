@@ -1,0 +1,5 @@
+$ msg/get_sender msg/get_sender.xml
+> [toto:send:(1) 0.000000] [test/INFO] Sending
+> [toto:receive:(2) 0.000000] [test/INFO] Receiving
+> [toto:receive:(2) 0.000000] [test/INFO] Got a message sent by 'send'
+> [toto:send:(1) 1.000000] [test/INFO] Exiting

@@ -259,7 +259,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   /* This is a hack. We know that both the receiver and the sender will
      need to look at the content of t_simdata->comm. And it needs to be
      destroyed. However, we don't known whether the receiver or the sender
-     will get to it first. So by setting whit refcount to 2 we can enforce
+     will get to it first. So by setting with refcount to 2 we can enforce
      that things happen correctly. An alternative would be to only do ++ and
      -- on this refcount and to sprinkle them judiciously throughout the code,
      which appears perhaps worse? Or perhaps the refcount field of
@@ -285,13 +285,12 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   SIMIX_unregister_action_to_condition(t_simdata->comm, t_simdata->cond);
   process->simdata->waiting_task = NULL;
 
-  /* the task has already finished and the pointer must be null */
-  if (t->simdata->sender) {
+  /* If sender still around (it didn't free the comm yet), note that it's not waiting anymore */
+  if (t_simdata->comm->refcount == 2) {
     t->simdata->sender->simdata->waiting_task = NULL;
   }
 
   /* for this process, don't need to change in get function */
-  t->simdata->receiver = NULL;
   SIMIX_mutex_unlock(t_simdata->mutex);
 
 
@@ -360,10 +359,9 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
     THROW1(not_found_error, 0, "Host %s not fount", hostname);
 
 
-  DEBUG4
-      ("Trying to send a task (%g kB) from %s to %s on the channel aliased by the alias %s",
-       t_simdata->message_size / 1000, local_host->name,
-       remote_host->name, MSG_mailbox_get_alias(mailbox));
+  DEBUG4("Trying to send a task (%g kB) from %s to %s on the channel %s",
+		  t_simdata->message_size / 1000, local_host->name,
+		  remote_host->name, MSG_mailbox_get_alias(mailbox));
 
   SIMIX_mutex_lock(remote_host->simdata->mutex);
 
@@ -410,11 +408,9 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 	  /* remove the task from the mailbox */
 	  MSG_mailbox_remove(mailbox, task);
 
-	  if (t_simdata->receiver) {
+	  if (t_simdata->receiver && t_simdata->receiver->simdata) { /* receiver still around */
 	    t_simdata->receiver->simdata->waiting_task = NULL;
 	  }
-
-	  t_simdata->sender = NULL;
 
 	  SIMIX_mutex_unlock(t_simdata->mutex);
 	  MSG_RETURN(MSG_TRANSFER_FAILURE);
@@ -436,12 +432,10 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   DEBUG1("Action terminated %s", task->name);
   process->simdata->waiting_task = NULL;
 
-  /* the task has already finished and the pointer must be null */
-  if (t_simdata->receiver) {
+  if (t_simdata->comm->refcount == 2) { //receiver didn't free it yet: he's still around
     t_simdata->receiver->simdata->waiting_task = NULL;
   }
 
-  t_simdata->sender = NULL;
   SIMIX_mutex_unlock(task->simdata->mutex);
 
   if (SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
