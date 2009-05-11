@@ -317,8 +317,8 @@ int MSG_process_get_PPID(m_process_t process)
  */
 const char *MSG_process_get_name(m_process_t process)
 {
-  xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+	  xbt_assert0(process, "Invalid parameter: process is NULL");
+	  xbt_assert0(process->simdata, "Invalid parameter: process->simdata is NULL");
 
   return (process->name);
 }
