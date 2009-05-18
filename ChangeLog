@@ -3,6 +3,7 @@ SimGrid (3.4-svn) unstable; urgency=high
  GRAS:
   * fix a bug on struct sizeof computation, which prevented the
     exchange of arrays of structs in some conditions
+    - added a regression test about this in datadesc_usage
   * Allow the exchange of 0-long dynamic vectors.
     - for that, use -1 as indicator of dynamic size instead of 0
     - This implied to change any size from unsigned long to long,
@@ -11,7 +12,8 @@ SimGrid (3.4-svn) unstable; urgency=high
     - This also induce a protocol change, thus bumping network protocol
       version from 0 to 1 (if we have external users, we have to get
       clean on that point too ;)
-    
+    - added two regression tests about this in datadesc_usage
+
  MSG:
   * Allow to control the simulation from a trace file.
     New functions MSG_action_register() and MSG_action_trace_run()

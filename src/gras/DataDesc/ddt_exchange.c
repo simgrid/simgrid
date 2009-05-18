@@ -808,12 +808,14 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 
 				subsub_type = array_data.type;
 
-
-				gras_dd_alloc_ref(refs,
-						subsub_type->size[GRAS_THISARCH] * subsubcount,
-						r_ref,pointer_type->size[r_arch],
-						(char**)&l_referenced,
-						detect_cycle);
+				if (subsubcount != 0)
+					gras_dd_alloc_ref(refs,
+							subsub_type->size[GRAS_THISARCH] * subsubcount,
+							r_ref,pointer_type->size[r_arch],
+							(char**)&l_referenced,
+							detect_cycle);
+				else
+					l_referenced = NULL;
 			} else {
 				gras_dd_alloc_ref(refs,sub_type->size[GRAS_THISARCH],
 						r_ref,pointer_type->size[r_arch],
@@ -821,10 +823,11 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 						detect_cycle);
 			}
 
-			gras_datadesc_recv_rec(sock,state,refs, sub_type,
-					r_arch,r_ref,pointer_type->size[r_arch],
-					(char*)l_referenced, subsubcount,
-					detect_cycle || sub_type->cycle);
+			if (l_referenced != NULL)
+				gras_datadesc_recv_rec(sock,state,refs, sub_type,
+						r_arch,r_ref,pointer_type->size[r_arch],
+						(char*)l_referenced, subsubcount,
+						detect_cycle || sub_type->cycle);
 
 			*(void**)l_data=l_referenced;
 			VERB3("'%s' remotely referenced at %p locally at %p",
