@@ -110,6 +110,7 @@ int client(int argc, char *argv[]) {
   } CATCH(e) {
      INFO1("The server refuses to convert %s. Here is the received exception:",string_to_convert);
      xbt_ex_display(&e);
+     xbt_ex_free(e);
      INFO0("Again, previous exception was excepted");
   }    	
    
