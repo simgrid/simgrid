@@ -21,22 +21,22 @@
  * FIXME: it could be cleaned up ?
  */
 typedef struct {
-  /* set headers */
-  unsigned int ID;
-  char        *name;
-  unsigned int name_len;
+	/* set headers */
+	unsigned int ID;
+	char        *name;
+	unsigned int name_len;
 
-  /* queue storing the msgs got while msg_wait'ing for something else. Reuse them ASAP. */
-  xbt_dynar_t msg_queue; /* elm type: s_gras_msg_t */
+	/* queue storing the msgs got while msg_wait'ing for something else. Reuse them ASAP. */
+	xbt_dynar_t msg_queue; /* elm type: s_gras_msg_t */
 
-  /* queue storing the msgs without callback got when handling. Feed them to wait() */
-  xbt_dynar_t msg_waitqueue; /* elm type: s_gras_msg_t */
+	/* queue storing the msgs without callback got when handling. Feed them to wait() */
+	xbt_dynar_t msg_waitqueue; /* elm type: s_gras_msg_t */
 
-  /* registered callbacks for each message */
-  xbt_dynar_t cbl_list; /* elm type: gras_cblist_t */
+	/* registered callbacks for each message */
+	xbt_dynar_t cbl_list; /* elm type: gras_cblist_t */
 
-  /* registered timers */
-  xbt_dynar_t timers; /* elm type: s_gras_timer_t */
+	/* registered timers */
+	xbt_dynar_t timers; /* elm type: s_gras_timer_t */
 
 	/* queue storing the msgs that have to received and the process synchronization made (wait the surf action done) */
 	xbt_fifo_t msg_to_receive_queue; /* elm type: s_gras_msg_t */
@@ -47,11 +47,11 @@ typedef struct {
 
 
 void gras_msg_send_namev(gras_socket_t  sock,
-			 const char    *namev,
-			 void          *payload);
+		const char    *namev,
+		void          *payload);
 void gras_msg_listener_awake(void);
 void  gras_msg_listener_close_socket(int sd);
-     
+
 #define GRAS_PROTOCOL_VERSION '\0';
 
 
