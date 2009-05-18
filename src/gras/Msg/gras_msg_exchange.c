@@ -423,7 +423,7 @@ gras_msg_handle(double timeOut) {
 						msg.type->name,
 						gras_socket_peer_name(msg.expe),
 						gras_socket_peer_port(msg.expe));
-				if (XBT_LOG_ISENABLED(gras_msg,xbt_log_priority_info))
+				if (XBT_LOG_ISENABLED(gras_msg,xbt_log_priority_verbose))
 					xbt_ex_display(&e);
 				gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
 						msg.ID, msg.type, &e);

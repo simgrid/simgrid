@@ -3,6 +3,17 @@
 > Listening on port 4002
 > Got message PING(1234) from 127.0.0.1:0
 > Answered with PONG(4321)
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
 > Asked to die by 127.0.0.1:0
 > Done.
 > Exiting GRAS
@@ -10,10 +21,15 @@
 & $SG_TEST_EXENV ./rpc_forwarder$EXEEXT 4003 127.0.0.1 4002 --log=root.fmt:%m%n $@
 > Launch forwarder (port=4003)
 > Forward a request
+> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:0
 > Forward a request
+> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:0
 > Forward a request
+> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:0
 > Forward a request
+> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:0
 > Forward a request
+> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:0
 > Asked to die by 127.0.0.1:0
 > Done.
 > Exiting GRAS

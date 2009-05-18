@@ -13,6 +13,8 @@ SimGrid (3.4-svn) unstable; urgency=high
       version from 0 to 1 (if we have external users, we have to get
       clean on that point too ;)
     - added two regression tests about this in datadesc_usage
+  * Be more verbose when propagating local exceptions
+    This helps debugging.
 
  MSG:
   * Allow to control the simulation from a trace file.
