@@ -315,9 +315,7 @@ gras_cbps_i_pop(gras_cbps_t ps) {
  * Used by \ref gras_datadesc_ref_pop_arr
  */
 int gras_datadesc_cb_pop(gras_datadesc_type_t ignored, gras_cbps_t vars, void *data) {
-	int res =  gras_cbps_i_pop(vars);
-	DEBUG1("Pop %d as a size",res);
-	return res;
+	return gras_cbps_i_pop(vars);
 }
 
 /* ************************* */
