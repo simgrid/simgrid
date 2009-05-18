@@ -37,7 +37,8 @@ SimGrid (3.4-svn) unstable; urgency=high
   * Also include strbuff from xbt.h public header
   * xbt_ex_display(): do not free the exception after displaying 
     This allows to do more with the given exception afterward.
-    Users should call xbt_ex_free() themselves. 
+    Users should call xbt_ex_free() themselves.
+  * Do not allow malloc(0) since that's not portable
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 

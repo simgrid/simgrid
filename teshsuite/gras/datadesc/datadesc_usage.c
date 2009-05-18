@@ -554,7 +554,7 @@ static void test_clause_empty(gras_socket_t sock, int direction) {
 	i=xbt_new(Clause,1);
 
 	i->num_lits = 0;
-	i->literals = xbt_new(int, 0);
+	i->literals = NULL;
 	DEBUG3("created data=%p (within %p @%p)",&(i->num_lits),i,&i);
 	DEBUG1("created count=%d",i->num_lits);
 
