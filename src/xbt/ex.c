@@ -112,9 +112,6 @@ void xbt_ex_display(xbt_ex_t *e)  {
           e->procname,thrower?thrower:" in this process");
   CRITICAL1("%s",e->msg);
 
-  if (thrower)
-    free(thrower);
-
   if (!e->remote && !e->bt_strings)
     xbt_ex_setup_backtrace(e);
 
@@ -132,7 +129,6 @@ void xbt_ex_display(xbt_ex_t *e)  {
   fprintf(stderr," at %s:%d:%s (no backtrace available on that arch)\n",
           e->file,e->line,e->func);
 #endif
-  xbt_ex_free(*e);
 }
 
 
