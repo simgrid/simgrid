@@ -9,13 +9,16 @@ $ gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.big32_
 > ---- Test on a reference to an integer ----
 > ---- Test on string (ref to dynamic array) ----
 > ---- Test on dynar containing integers ----
+> ---- Test on empty dynar of integers ----
 > ---- Test on all possible struct having 3 fields (49 structs) ----
 > ---- Test on homogeneous structure ----
 > ---- Test on heterogeneous structure ----
 > ---- Test on nested structures ----
+> ---- Test on heterogeneous structure arrays ----
 > ---- Test on chained list ----
 > ---- Test on graph (cyclique chained list of 3 items) ----
 > ---- Test on dynar containing integers ----
 > ---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----
 > ---- Test on struct containing dynamic array and its size (cbps test) ----
+> ---- Test on struct containing dynamic array and its size when size=0 (cbps test) ----
 > Exiting GRAS

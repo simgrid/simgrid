@@ -65,7 +65,6 @@ TESTS += \
 XFAIL_TESTS+= \
   gras/datadesc/datadesc_r_little32.tesh   \
   gras/datadesc/datadesc_r_big32_8.tesh    \
-  gras/datadesc/datadesc_r_big32_8_4.tesh  \
   gras/datadesc/datadesc_r_big32_2.tesh
 
 noinst_PROGRAMS += gras/datadesc/datadesc_usage   
