@@ -2,9 +2,7 @@
 
 /* ddt_new - creation/deletion of datatypes structs (private to this module)*/
 
-/* Copyright (c) 2003 Olivier Aumage.                                       */
-/* Copyright (c) 2003, 2004 Martin Quinson.                                 */
-/* All rights reserved.                                                     */
+/* Copyright (c) 2003-2009 The SimGrid Team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -202,7 +200,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
 		return;
 	}
 
-	xbt_assert1(field_type->size != 0,
+	xbt_assert1(field_type->size[GRAS_THISARCH] >= 0,
 			"Cannot add a dynamically sized field in structure %s",
 			struct_type->name);
 
@@ -339,7 +337,7 @@ void gras_datadesc_union_append(gras_datadesc_type_t  union_type,
 	int arch;
 
 	XBT_IN3("(%s %s.%s;)",field_type->name,union_type->name,name);
-	xbt_assert1(field_type->size != 0,
+	xbt_assert1(field_type->size[GRAS_THISARCH] >= 0,
 			"Cannot add a dynamically sized field in union %s",
 			union_type->name);
 
@@ -507,7 +505,7 @@ gras_datadesc_array_fixed(const char           *name,
 	}
 	res = gras_ddt_new(name);
 
-	xbt_assert1(fixed_size > 0, "'%s' is a array of null fixed size",name);
+	xbt_assert1(fixed_size >= 0, "'%s' is a array of negative fixed size",name);
 	for (arch=0; arch<gras_arch_count; arch ++) {
 		res->size[arch] = fixed_size * element_type->aligned_size[arch];
 		res->alignment[arch] = element_type->alignment[arch];
@@ -542,7 +540,7 @@ gras_datadesc_type_t gras_datadesc_array_dyn(const char                 *name,
 				"Redefinition of type %s does not match", name);
 		xbt_assert1(res->category.array_data.type == element_type,
 				"Redefinition of type %s does not match", name);
-		xbt_assert1(res->category.array_data.fixed_size == 0,
+		xbt_assert1(res->category.array_data.fixed_size == -1,
 				"Redefinition of type %s does not match", name);
 		xbt_assert1(res->category.array_data.dynamic_size == dynamic_size,
 				"Redefinition of type %s does not match", name);
@@ -562,7 +560,7 @@ gras_datadesc_type_t gras_datadesc_array_dyn(const char                 *name,
 	res->category_code		= e_gras_datadesc_type_cat_array;
 
 	res->category.array_data.type         = element_type;
-	res->category.array_data.fixed_size   = 0;
+	res->category.array_data.fixed_size   = -1;
 	res->category.array_data.dynamic_size = dynamic_size;
 
 	return res;

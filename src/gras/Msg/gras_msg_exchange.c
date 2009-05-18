@@ -2,8 +2,7 @@
 
 /* gras message exchanges                                                   */
 
-/* Copyright (c) 2003, 2004, 2005, 2006, 2007 Martin Quinson.               */
-/* All rights reserved.                                                     */
+/* Copyright (c) 2003-2009. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -395,7 +394,7 @@ gras_msg_handle(double timeOut) {
 		TRY {
 			xbt_dynar_foreach(list->cbs,cpt,cb) {
 				if (!ran_ok) {
-					DEBUG4("Use the callback #%d (@%p) for incomming msg %s (payload_size=%d)",
+					DEBUG4("Use the callback #%d (@%p) for incomming msg '%s' (payload_size=%d)",
 							cpt+1,cb,msg.type->name,msg.payl_size);
 					if (!(*cb)(&ctx,msg.payl)) {
 						/* cb handled the message */
@@ -418,12 +417,14 @@ gras_msg_handle(double timeOut) {
 					e.host = (char*)gras_os_myname();
 					xbt_ex_setup_backtrace(&e);
 				}
-				VERB5("Propagate %s exception ('%s') from '%s' RPC cb back to %s:%d",
+				INFO5("Propagate %s exception ('%s') from '%s' RPC cb back to %s:%d",
 						(e.remote ? "remote" : "local"),
 						e.msg,
 						msg.type->name,
 						gras_socket_peer_name(msg.expe),
 						gras_socket_peer_port(msg.expe));
+				if (XBT_LOG_ISENABLED(gras_msg,xbt_log_priority_info))
+					xbt_ex_display(&e);
 				gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
 						msg.ID, msg.type, &e);
 				e.file=old_file;
@@ -431,7 +432,8 @@ gras_msg_handle(double timeOut) {
 				ctx.answer_due = 0;
 				ran_ok=1;
 			} else {
-				RETHROW0("Callback raised an exception: %s");
+				RETHROW4("Callback #%d (@%p) to message '%s' (payload size: %d) raised an exception: %s",
+						cpt+1,cb,msg.type->name,msg.payl_size);
 			}
 		}
 

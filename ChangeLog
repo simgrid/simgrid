@@ -1,11 +1,16 @@
 SimGrid (3.4-svn) unstable; urgency=high
 
- OVERALL CHANGES:
-  * Also include strbuff from xbt.h public header
-  
  GRAS:
   * fix a bug on struct sizeof computation, which prevented the
     exchange of arrays of structs in some conditions
+  * Allow the exchange of 0-long dynamic vectors.
+    - for that, use -1 as indicator of dynamic size instead of 0
+    - This implied to change any size from unsigned long to long,
+      reducing a bit communication abilities, but I guess that with
+      64bits being quite common, this is more than enough.
+    - This also induce a protocol change, thus bumping network protocol
+      version from 0 to 1 (if we have external users, we have to get
+      clean on that point too ;)
     
  MSG:
   * Allow to control the simulation from a trace file.
@@ -25,6 +30,7 @@ SimGrid (3.4-svn) unstable; urgency=high
     process in the log messages.
 
  XBT:
+  * Also include strbuff from xbt.h public header
   * xbt_ex_display(): do not free the exception after displaying 
     This allows to do more with the given exception afterward.
     Users should call xbt_ex_free() themselves. 

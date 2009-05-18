@@ -52,7 +52,7 @@ void gras_msg_send_namev(gras_socket_t  sock,
 void gras_msg_listener_awake(void);
 void  gras_msg_listener_close_socket(int sd);
 
-#define GRAS_PROTOCOL_VERSION '\0';
+#define GRAS_PROTOCOL_VERSION '\1';
 
 
 #endif  /* GRAS_MSG_INTERFACE_H */

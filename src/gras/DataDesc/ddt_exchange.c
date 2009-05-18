@@ -2,9 +2,7 @@
 
 /* ddt_exchange - send/recv data described                                  */
 
-/* Copyright (c) 2003 Olivier Aumage.                                       */
-/* Copyright (c) 2003, 2004, 2005 Martin Quinson.                           */
-/* All rights reserved.                                                     */
+/* Copyright (c) 2003-2009 The SimGrid Team.  All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,42 +18,42 @@ const char *gras_datadesc_cat_names[9] = {
 		"scalar", "struct", "union", "ref", "array", "ignored",
 		"invalid"};
 
-static gras_datadesc_type_t uint_type = NULL;
+static gras_datadesc_type_t int_type = NULL;
 static gras_datadesc_type_t pointer_type = NULL;
 
 static XBT_INLINE void
-gras_dd_send_uint(gras_socket_t sock,unsigned int *i, int stable) {
+gras_dd_send_int(gras_socket_t sock, int *i, int stable) {
 
-	if (!uint_type) {
-		uint_type = gras_datadesc_by_name("unsigned int");
-		xbt_assert(uint_type);
+	if (!int_type) {
+		int_type = gras_datadesc_by_name("int");
+		xbt_assert(int_type);
 	}
 
-	DEBUG1("send_uint(%u)",*i);
-	gras_trp_send(sock, (char*)i, uint_type->size[GRAS_THISARCH], stable);
+	DEBUG1("send_int(%u)",*i);
+	gras_trp_send(sock, (char*)i, int_type->size[GRAS_THISARCH], stable);
 }
 
 static XBT_INLINE void
-gras_dd_recv_uint(gras_socket_t sock, int r_arch, unsigned int *i) {
+gras_dd_recv_int(gras_socket_t sock, int r_arch, int *i) {
 
-	if (!uint_type) {
-		uint_type = gras_datadesc_by_name("unsigned int");
-		xbt_assert(uint_type);
+	if (!int_type) {
+		int_type = gras_datadesc_by_name("int");
+		xbt_assert(int_type);
 	}
 
-	if (uint_type->size[GRAS_THISARCH] >= uint_type->size[r_arch]) {
-		gras_trp_recv(sock, (char*)i, uint_type->size[r_arch]);
+	if (int_type->size[GRAS_THISARCH] >= int_type->size[r_arch]) {
+		gras_trp_recv(sock, (char*)i, int_type->size[r_arch]);
 		if (r_arch != GRAS_THISARCH)
-			gras_dd_convert_elm(uint_type,1,r_arch, i,i);
+			gras_dd_convert_elm(int_type,1,r_arch, i,i);
 	} else {
-		void *ptr = xbt_malloc(uint_type->size[r_arch]);
+		void *ptr = xbt_malloc(int_type->size[r_arch]);
 
-		gras_trp_recv(sock, (char*)ptr, uint_type->size[r_arch]);
+		gras_trp_recv(sock, (char*)ptr, int_type->size[r_arch]);
 		if (r_arch != GRAS_THISARCH)
-			gras_dd_convert_elm(uint_type,1,r_arch, ptr,i);
+			gras_dd_convert_elm(int_type,1,r_arch, ptr,i);
 		free(ptr);
 	}
-	DEBUG1("recv_uint(%u)",*i);
+	DEBUG1("recv_int(%u)",*i);
 }
 
 /*
@@ -253,7 +251,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t           state,
 		}
 
 		if (reference_is_to_cpy) {
-			int subsubcount = 0;
+			int subsubcount = -1;
 			void *l_referenced=NULL;
 			VERB2("Copy a ref to '%s' referenced at %p",sub_type->name, (void*)*o_ref);
 
@@ -263,21 +261,21 @@ gras_datadesc_memcpy_rec(gras_cbps_t           state,
 			}
 
 			if (sub_type->category_code == e_gras_datadesc_type_cat_array) {
-				/* Damn. Reference to a dynamic array. Allocating the space for it
-	    is more complicated */
+				/* Damn. Reference to a dynamic array. Allocating the space for it is more complicated */
 				gras_dd_cat_array_t array_data = sub_type->category.array_data;
 				gras_datadesc_type_t subsub_type;
 
 				subsub_type = array_data.type;
 				subsubcount = array_data.fixed_size;
-				if (subsubcount == 0)
+				if (subsubcount == -1)
 					subsubcount = array_data.dynamic_size(subsub_type,state,*o_ref);
 
-				gras_dd_alloc_ref(refs,
-						subsub_type->size[GRAS_THISARCH] * subsubcount,
-						o_ref,pointer_type->size[GRAS_THISARCH],
-						(char**)&l_referenced,
-						detect_cycle);
+				if (subsubcount != 0)
+					gras_dd_alloc_ref(refs,
+							subsub_type->size[GRAS_THISARCH] * subsubcount,
+							o_ref,pointer_type->size[GRAS_THISARCH],
+							(char**)&l_referenced,
+							detect_cycle);
 			} else {
 				gras_dd_alloc_ref(refs,sub_type->size[GRAS_THISARCH],
 						o_ref,pointer_type->size[GRAS_THISARCH],
@@ -314,9 +312,9 @@ gras_datadesc_memcpy_rec(gras_cbps_t           state,
 
 		/* determine and send the element count */
 		array_count = array_data.fixed_size;
-		if (array_count == 0)
+		if (array_count == -1)
 			array_count = subsize;
-		if (array_count == 0) {
+		if (array_count == -1) {
 			array_count = array_data.dynamic_size(type,state,src);
 			xbt_assert1(array_count >=0,
 					"Invalid (negative) array size for type %s",type->name);
@@ -354,7 +352,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t           state,
 	}
 
 	default:
-		xbt_assert0(0, "Invalid type");
+		xbt_die("Invalid type");
 	}
 
 	return count;
@@ -375,6 +373,7 @@ int gras_datadesc_memcpy(gras_datadesc_type_t type,
 
 	xbt_assert0(type,"called with NULL type descriptor");
 
+	DEBUG3("Memcopy a %s from %p to %p",gras_datadesc_get_name(type),src,dst);
 	if (!state) {
 		state = gras_cbps_new();
 		refs = xbt_dict_new();
@@ -458,7 +457,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 	case e_gras_datadesc_type_cat_union: {
 		gras_dd_cat_union_t union_data;
 		gras_dd_cat_field_t field=NULL;
-		unsigned int        field_num;
+		int field_num;
 
 		union_data = type->category.union_data;
 
@@ -477,7 +476,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 				type->name, field_num, xbt_dynar_length(union_data.fields));
 
 		/* Send the field number */
-		gras_dd_send_uint(sock, &field_num, 0 /* not stable */);
+		gras_dd_send_int(sock, &field_num, 0 /* not stable */);
 
 		/* Send the content */
 		field = xbt_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t);
@@ -503,7 +502,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 		sub_type = ref_data.type;
 		if (sub_type == NULL) {
 			sub_type = (*ref_data.selector)(type,state,data);
-			gras_dd_send_uint(sock, &(sub_type->code),1 /*stable*/);
+			gras_dd_send_int(sock, &(sub_type->code),1 /*stable*/);
 		}
 
 		/* Send the actual value of the pointer for cycle handling */
@@ -551,7 +550,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 
 	case e_gras_datadesc_type_cat_array: {
 		gras_dd_cat_array_t    array_data;
-		unsigned int           count;
+		int                    count;
 		char                  *ptr=data;
 		long int               elm_size;
 
@@ -559,11 +558,11 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 
 		/* determine and send the element count */
 		count = array_data.fixed_size;
-		if (count == 0) {
+		if (count == -1) {
 			count = array_data.dynamic_size(type,state,data);
 			xbt_assert1(count >=0,
 					"Invalid (negative) array size for type %s",type->name);
-			gras_dd_send_uint(sock, &count, 0/*non-stable*/);
+			gras_dd_send_int(sock, &count, 0/*non-stable*/);
 		}
 
 		/* send the content */
@@ -595,7 +594,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 	}
 
 	default:
-		xbt_assert0(0, "Invalid type");
+		xbt_die("Invalid type");
 	}
 }
 
@@ -711,7 +710,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 	case e_gras_datadesc_type_cat_union: {
 		gras_dd_cat_union_t union_data;
 		gras_dd_cat_field_t field=NULL;
-		unsigned int        field_num;
+		int field_num;
 
 		union_data = type->category.union_data;
 
@@ -719,7 +718,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 				"Please call gras_datadesc_declare_union_close on %s before receiving it",
 				type->name);
 		/* retrieve the field number */
-		gras_dd_recv_uint(sock, r_arch, &field_num);
+		gras_dd_recv_int(sock, r_arch, &field_num);
 		if (field_num < 0)
 			THROW1(mismatch_error,0,
 					"Received union field for %s is negative", type->name);
@@ -753,8 +752,8 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 		/* Get the referenced type locally or from peer */
 		sub_type = ref_data.type;
 		if (sub_type == NULL) {
-			unsigned int ref_code;
-			gras_dd_recv_uint(sock, r_arch, &ref_code);
+			int ref_code;
+			gras_dd_recv_int(sock, r_arch, &ref_code);
 			sub_type = gras_datadesc_by_id(ref_code);
 		}
 
@@ -793,20 +792,19 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 		}
 
 		if (reference_is_to_recv) {
-			unsigned int subsubcount = 0;
+			int subsubcount = -1;
 			void *l_referenced=NULL;
 
 			VERB2("Receiving a ref to '%s', remotely @%p",
 					sub_type->name, *(void**)r_ref);
 			if (sub_type->category_code == e_gras_datadesc_type_cat_array) {
-				/* Damn. Reference to a dynamic array. Allocating the space for it
-	   is more complicated */
+				/* Damn. Reference to a dynamic array. Allocating the space for it is more complicated */
 				gras_dd_cat_array_t array_data = sub_type->category.array_data;
 				gras_datadesc_type_t subsub_type;
 
 				subsubcount = array_data.fixed_size;
-				if (subsubcount == 0)
-					gras_dd_recv_uint(sock, r_arch, &subsubcount);
+				if (subsubcount == -1)
+					gras_dd_recv_int(sock, r_arch, &subsubcount);
 
 				subsub_type = array_data.type;
 
@@ -845,20 +843,20 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 
 	case e_gras_datadesc_type_cat_array: {
 		gras_dd_cat_array_t    array_data;
-		unsigned int count;
+		int count;
 		char     *ptr;
 		long int  elm_size;
 
 		array_data = type->category.array_data;
 		/* determine element count locally, or from caller, or from peer */
 		count = array_data.fixed_size;
-		if (count == 0)
+		if (count == -1)
 			count = subsize;
-		if (count == 0)
-			gras_dd_recv_uint(sock, r_arch, &count);
-		if (count == 0)
+		if (count == -1)
+			gras_dd_recv_int(sock, r_arch, &count);
+		if (count == -1)
 			THROW1(mismatch_error,0,
-					"Invalid (=0) array size for type %s",type->name);
+					"Invalid (=-1) array size for type %s",type->name);
 
 		/* receive the content */
 		sub_type = array_data.type;
@@ -880,7 +878,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 				free(ptr);
 			}
 		} else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
-				sub_type->category.array_data.fixed_size > 0 &&
+				sub_type->category.array_data.fixed_size >= 0 &&
 				sub_type->category.array_data.type->category_code == e_gras_datadesc_type_cat_scalar) {
 			gras_datadesc_type_t subsub_type;
 			array_data = sub_type->category.array_data;
@@ -923,7 +921,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 	}
 
 	default:
-		xbt_assert0(0, "Invalid type");
+		xbt_die("Invalid type");
 	}
 
 	if (type->recv)
