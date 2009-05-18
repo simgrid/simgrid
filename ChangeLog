@@ -1,5 +1,8 @@
 SimGrid (3.4-svn) unstable; urgency=high
 
+ OVERALL CHANGES:
+  * Tested successfully on AIX
+
  GRAS:
   * fix a bug on struct sizeof computation, which prevented the
     exchange of arrays of structs in some conditions
@@ -39,6 +42,9 @@ SimGrid (3.4-svn) unstable; urgency=high
     This allows to do more with the given exception afterward.
     Users should call xbt_ex_free() themselves.
   * Do not allow malloc(0) since that's not portable
+  
+ Build Chain:
+  * Do not require doxygen in maintainer mode
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 

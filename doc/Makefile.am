@@ -19,7 +19,8 @@ CLEANFILES = .*.toc
 DISTCLEANFILES = index-API.doc simgrid.tag
 MAINTAINERCLEANFILES = html
 
-if MAINTAINER_MODE
+if MAINTAINER_MODE 
+if HAVE_DOXYGEN
 simgrid_modules.map: fig/simgrid_modules.fig
 	fig2dev -Lmap fig/simgrid_modules.fig | grep -e IMG -e MAP -e AREA | \
 	sed 's/imagemap/simgrid_modules/g' | sed 's/\.gif/.png/' | \
@@ -66,6 +67,7 @@ html/simdag.html:
 
 publish:
 	$(MAKE) -C .. sync-gforge
+endif
 endif
 
 ./logcategories.doc: $(DOCSOURCES)

@@ -14,7 +14,7 @@ AC_CONFIG_SRCDIR([include/gras.h])
 AC_CONFIG_HEADERS([src/gras_config.h])
 # A CI_PREREQ(2003.01.16) # We need a recent ACI when having sub-modules
 
-AC_REVISION($Revision$)
+AC_REVISION($Revision: 6267 $)
 AC_CANONICAL_TARGET
 AC_LANG([C])
 AC_PROG_CXX
@@ -460,9 +460,7 @@ then
    # Check for doxygen when in maintainer mode since dist* targets fail
    # without it
    AC_PATH_PROG(DOXYGEN,doxygen,`which doxygen`)
-   if test x$DOXYGEN = x ; then 
-     AC_MSG_ERROR([doxygen is mandatory in maintainer mode])
-   fi
+   AM_CONDITIONAL(HAVE_DOXYGEN,test x$DOXYGEN != x)
 fi
 
 # Can we extract really usable backtraces? (also need the popen function)
