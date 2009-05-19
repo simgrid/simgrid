@@ -31,6 +31,7 @@ SimGrid (3.4-svn) unstable; urgency=high
     Add a teshsuite regression test for that.
     [Bug: if MSG_task_get_sender() is called after sender exit,
      bad things happen]
+  * Fix a bug which prevented suspend/resume to work properly
      
  SIMIX:
   * Add SIMIX_process_set_name() to change the name of the current
