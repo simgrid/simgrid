@@ -18,6 +18,8 @@ SimGrid (3.4-svn) unstable; urgency=high
     - added two regression tests about this in datadesc_usage
   * Be more verbose when propagating local exceptions
     This helps debugging.
+  * Display the status of simulated processes when receiving SIGINT in
+    simulation mode
 
  MSG:
   * Allow to control the simulation from a trace file.

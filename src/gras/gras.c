@@ -36,7 +36,10 @@ static void gras_sigusr_handler(int sig) {
 static void gras_sigint_handler(int sig) {
    static double lastone = 0;
    if (lastone == 0 || xbt_os_time() - lastone > 5) {
-      xbt_backtrace_display_current();
+      if (gras_if_RL())
+    	  xbt_backtrace_display_current();
+      else
+    	  SIMIX_display_process_status();
       fprintf(stderr,
 	      "\nBacktrace displayed because Ctrl-C was pressed. Press again (within 5 sec) to abort the process.\n");
       lastone = xbt_os_time();
@@ -73,9 +76,9 @@ void gras_init(int *argc,char **argv) {
   xbt_getpid = gras_os_getpid;
   /* First initialize the XBT */
   xbt_init(argc,argv);
-   
-  /* module registrations: 
-   *    - declare process specific data we need (without creating them) 
+
+  /* module registrations:
+   *    - declare process specific data we need (without creating them)
    */
   if (gras_running_process == 0) {
      /* Connect our log channels: that must be done manually under windows */
@@ -86,31 +89,31 @@ void gras_init(int *argc,char **argv) {
        XBT_LOG_CONNECT(gras_ddt_exchange, gras_ddt);
        XBT_LOG_CONNECT(gras_ddt_lexer, gras_ddt_parse);
        XBT_LOG_CONNECT(gras_ddt_parse, gras_ddt);
-     
+
      XBT_LOG_CONNECT(gras_modules, gras);
-     
+
      XBT_LOG_CONNECT(gras_msg, gras);
        XBT_LOG_CONNECT(gras_msg_read, gras_msg);
        XBT_LOG_CONNECT(gras_msg_rpc, gras_msg);
-     
+
      XBT_LOG_CONNECT(gras_timer, gras);
-     
+
      XBT_LOG_CONNECT(gras_trp, gras);
        XBT_LOG_CONNECT(gras_trp_meas, gras_trp);
-     
+
      XBT_LOG_CONNECT(gras_virtu, gras);
        XBT_LOG_CONNECT(gras_virtu_emul, gras_virtu);
        XBT_LOG_CONNECT(gras_virtu_process, gras_virtu);
-     
+
      gras_trp_register();
      gras_msg_register();
   }
-   
+
   /*
    * Initialize the process specific stuff
    */
   gras_process_init(); /* calls procdata_init, which creates process specific data for each module */
-  
+
   /*
    * Initialize the global stuff if it's not the first process created
    */
@@ -124,12 +127,12 @@ void gras_init(int *argc,char **argv) {
     signal(SIGUSR1,gras_sigusr_handler);
 # endif
     signal(SIGINT,gras_sigint_handler);
-#endif     
+#endif
   }
-   
+
   /* and then init amok */
   amok_init();
-   
+
   /* And finally, launch the listener thread */
    pd = gras_procdata_get();
    msg_pd = gras_libdata_by_name("gras_msg");
@@ -158,15 +161,15 @@ const char *hexa_str(unsigned char *data, int size, int downside) {
   static char*buff=NULL;
   static int buffsize=0;
   int i,pos=0;
-  int begin,increment;	
-  
+  int begin,increment;
+
   if (buffsize<5*(size+1)) {
     if (buff)
       free(buff);
     buffsize=5*(size+1);
     buff=xbt_malloc(buffsize);
   }
-   
+
 
   if (downside) {
      begin=size-1;
@@ -175,7 +178,7 @@ const char *hexa_str(unsigned char *data, int size, int downside) {
      begin=0;
      increment=1;
   }
-   
+
   for (i=begin; 0<=i && i<size ; i+=increment)  {
     if (data[i]<32 || data[i]>126)
       sprintf(buff+pos,".");
@@ -191,7 +194,7 @@ const char *hexa_str(unsigned char *data, int size, int downside) {
    }
   sprintf(buff+pos,")");
   while (buff[++pos]);
-  buff[pos]='\0';  
+  buff[pos]='\0';
   return buff;
 }
 void hexa_print(const char*name, unsigned char *data, int size) {
