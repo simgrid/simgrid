@@ -30,7 +30,7 @@ SG_BEGIN_DECL()
  */
 typedef struct surf_action *surf_action_t;
 
-/** \brief Resource datatype
+/** \brief Model datatype
  *  \ingroup SURF_models
  *  
  *  Generic data structure for a model. The workstations,
@@ -148,7 +148,7 @@ typedef struct surf_model_public {
  */
 typedef struct surf_model_private *surf_model_private_t;
 
-/** \brief Resource datatype
+/** \brief Model datatype
  *  \ingroup SURF_models
  *  
  *  Generic data structure for a model. The workstations,
