@@ -151,7 +151,7 @@ SG_BEGIN_DECL()
    *  @hideinitializer */
 #  define xbt_dynar_push_as(dynar,type,value) \
           *(type*)xbt_dynar_push_ptr(dynar)=value
-  /** @brief Quick insertion of scalar content 
+  /** @brief Quick removal of scalar content
    *  @hideinitializer */
 #  define xbt_dynar_pop_as(dynar,type) \
            (*(type*)xbt_dynar_pop_ptr(dynar))
