@@ -259,6 +259,7 @@ if test xpthread=xyes ; then
     GRAS_DEP="-lpthread"
   fi
 fi
+AC_SEARCH_LIBS([connect],[socket],[],[],[]) # need -lsocket on solaris
 
 #########################################
 ## Build optional modules (gtnets)
@@ -455,13 +456,9 @@ AC_PROG_FLEX(2.5.30)
 AC_CHECK_PROG(FLEXML,flexml,`which flexml`,NOTFOUND)
 AM_CONDITIONAL(HAVE_FLEXML,test x$FLEXML != xNOTFOUND)
 
-if test x$USE_MAINTAINER_MODE = xyes 
-then
-   # Check for doxygen when in maintainer mode since dist* targets fail
-   # without it
-   AC_PATH_PROG(DOXYGEN,doxygen,`which doxygen`)
-   AM_CONDITIONAL(HAVE_DOXYGEN,test x$DOXYGEN != x)
-fi
+# Check for doxygen when in maintainer mode which is helpful to build doc & dist
+AC_PATH_PROG(DOXYGEN,doxygen,`which doxygen`)
+AM_CONDITIONAL(HAVE_DOXYGEN,test x$DOXYGEN != x)
 
 # Can we extract really usable backtraces? (also need the popen function)
 AC_PATH_PROG(ADDR2LINE, addr2line)
