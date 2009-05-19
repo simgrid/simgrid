@@ -42,6 +42,7 @@ MSG_task_execute(m_task_t task)
 {
 	simdata_task_t simdata = NULL;
 	m_process_t self = MSG_process_self();
+	e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
 	CHECK_HOST();
 
 	simdata = task->simdata;
@@ -56,7 +57,10 @@ MSG_task_execute(m_task_t task)
 
 	self->simdata->waiting_task = task;
 	SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
-	SIMIX_cond_wait(simdata->cond, simdata->mutex);
+	do {
+	  SIMIX_cond_wait(simdata->cond, simdata->mutex);
+	  state = SIMIX_action_get_state(simdata->compute);
+	} while(state==SURF_ACTION_READY || state==SURF_ACTION_RUNNING);
 	SIMIX_unregister_action_to_condition(simdata->compute, simdata->cond);
 	self->simdata->waiting_task = NULL;
 
@@ -150,6 +154,7 @@ MSG_parallel_task_execute(m_task_t task)
 {
 	simdata_task_t simdata = NULL;
 	m_process_t self = MSG_process_self();
+	e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
 	CHECK_HOST();
 
 	simdata = task->simdata;
@@ -168,7 +173,11 @@ MSG_parallel_task_execute(m_task_t task)
 
 	self->simdata->waiting_task = task;
 	SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
-	SIMIX_cond_wait(simdata->cond, simdata->mutex);
+	do {
+	  SIMIX_cond_wait(simdata->cond, simdata->mutex);
+	  state = SIMIX_action_get_state(task->simdata->compute);
+	} while(state==SURF_ACTION_READY || state==SURF_ACTION_RUNNING);
+
 	SIMIX_unregister_action_to_condition(simdata->compute, simdata->cond);
 	self->simdata->waiting_task = NULL;
 
@@ -217,6 +226,7 @@ MSG_process_sleep(double nb_sec)
 {
 	smx_action_t act_sleep;
 	m_process_t proc = MSG_process_self();
+	e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
 	smx_mutex_t mutex;
 	smx_cond_t cond;
 
@@ -230,7 +240,10 @@ MSG_process_sleep(double nb_sec)
 	cond = SIMIX_cond_init();
 
 	SIMIX_register_action_to_condition(act_sleep, cond);
-	SIMIX_cond_wait(cond, mutex);
+	do {
+	  SIMIX_cond_wait(cond, mutex);
+	  state = SIMIX_action_get_state(act_sleep);
+	} while(state==SURF_ACTION_READY || state==SURF_ACTION_RUNNING);
 	SIMIX_unregister_action_to_condition(act_sleep, cond);
 	SIMIX_mutex_unlock(mutex);
 
