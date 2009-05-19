@@ -4,7 +4,7 @@
   <!-- ljlkj -->
   <host id="Tremblay" power="98095000"/>
   <host id="Jupiter" power="76296000" state_file="jupiter_state.trace"/>
-  <host id="Fafard" power="76296000"/>
+  <host id="Fafard" power="76296000" state_file="fafard_state.trace"/>
   <host id="Ginette" power="48492000"/>
   <host id="Bourassa" power="48492000"/>
   <link id="6" bandwidth="41279125" latency="5.9904e-05"/>
