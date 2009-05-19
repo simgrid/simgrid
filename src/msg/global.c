@@ -141,21 +141,6 @@ int MSG_get_channel_number(void)
   return msg_global->max_channel;
 }
 
-void __MSG_display_process_status(void)
-{
-}
-
-
-/* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
-#include <signal.h>
-
-static void _XBT_CALL inthandler(int ignored)
-{
-  INFO0("CTRL-C pressed. Displaying status and bailing out");
-  __MSG_display_process_status();
-  exit(1);
-}
-
 /** \ingroup msg_simulation
  * \brief Launch the MSG simulation
  */
@@ -165,9 +150,6 @@ MSG_error_t MSG_main(void)
   smx_action_t smx_action;
   xbt_fifo_t actions_done = xbt_fifo_new();
   xbt_fifo_t actions_failed = xbt_fifo_new();
-
-  /* Prepare to display some more info when dying on Ctrl-C pressing */
-  signal(SIGINT, inthandler);
 
   /* Clean IO before the run */
   fflush(stdout);

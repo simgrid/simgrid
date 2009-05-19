@@ -97,6 +97,17 @@ static void simix_cfg_init(int *argc, char **argv)
   }
 }
 
+/* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
+#include <signal.h>
+
+static void _XBT_CALL inthandler(int ignored)
+{
+  INFO0("CTRL-C pressed. Displaying status and bailing out");
+  SIMIX_display_process_status();
+  exit(1);
+}
+
+
 /**
  * \brief Initialize some SIMIX internal data.
  *
@@ -120,10 +131,13 @@ void SIMIX_global_init(int *argc, char **argv)
 	xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->current_process = NULL;
     simix_global->registered_functions = xbt_dict_new();
-	
+
     simix_global->create_process_function = NULL;
     simix_global->kill_process_function = NULL;
     simix_global->cleanup_process_function = SIMIX_process_cleanup;
+
+    /* Prepare to display some more info when dying on Ctrl-C pressing */
+    signal(SIGINT, inthandler);
   }
 }
 
@@ -181,15 +195,6 @@ void SIMIX_display_process_status(void)
   }
 }
 
-/* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
-#include <signal.h>
-
-static void _XBT_CALL inthandler(int ignored)
-{
-  INFO0("CTRL-C pressed. Displaying status and bailing out");
-  SIMIX_display_process_status();
-  exit(1);
-}
 
 /**
  * \brief Launch the SIMIX simulation, debug purpose
@@ -201,9 +206,6 @@ void __SIMIX_main(void)
   smx_action_t smx_action;
   xbt_fifo_t actions_done = xbt_fifo_new();
   xbt_fifo_t actions_failed = xbt_fifo_new();
-
-  /* Prepare to display some more info when dying on Ctrl-C pressing */
-  signal(SIGINT, inthandler);
 
   /* Clean IO before the run */
   fflush(stdout);
@@ -271,7 +273,7 @@ void SIMIX_process_killall()
   return;
 }
 
-/** 
+/**
  * \brief Clean the SIMIX simulation
  *
  * This functions remove all memories needed to the SIMIX execution
@@ -291,7 +293,7 @@ void SIMIX_clean(void)
   simix_config_finalize();
   free(simix_global);
   simix_global = NULL;
-  
+
   surf_exit();
 
   return;
@@ -309,8 +311,8 @@ double SIMIX_get_clock(void)
 }
 
 /**
- * 	\brief Finish the simulation initialization 
- * 
+ * 	\brief Finish the simulation initialization
+ *
  *      Must be called before the first call to SIMIX_solve()
  */
 void SIMIX_init(void) {
@@ -320,7 +322,7 @@ void SIMIX_init(void) {
 /**
  * 	\brief Does a turn of the simulation
  *
- *	Executes a step in the surf simulation, adding to the two lists all the actions that finished on this turn. Schedules all processus in the process_to_run list. 	
+ *	Executes a step in the surf simulation, adding to the two lists all the actions that finished on this turn. Schedules all processus in the process_to_run list.
  * 	\param actions_done List of actions done
  * 	\param actions_failed List of actions failed
  * 	\return The time spent to execute the simulation or -1 if the simulation ended
@@ -337,7 +339,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
   if (xbt_swag_size(simix_global->process_to_run) && (elapsed_time > 0)) {
     DEBUG0("**************************************************");
   }
- 
+
   while ((process = xbt_swag_extract(simix_global->process_to_run))) {
     DEBUG2("Scheduling %s on %s",
 	   process->name, process->simdata->smx_host->name);
