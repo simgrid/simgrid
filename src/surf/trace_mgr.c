@@ -59,8 +59,8 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* id, const char *input, doubl
   trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
   list = xbt_str_split(input,"\n\r");
-  
-  
+
+
   xbt_dynar_foreach(list, cpt, val) {
      linecount++;
      xbt_str_trim(val, " \t\n\r\x0B");
@@ -200,7 +200,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
   trace_event->model = model;
 
   xbt_assert0((trace_event->idx < xbt_dynar_length(trace->event_list)),
-	      "You're refering to an event that does not exist!");
+	      "You're referring to an event that does not exist!");
 
   xbt_heap_push(h->heap, trace_event, start_time);
 
