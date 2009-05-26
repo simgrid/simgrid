@@ -35,7 +35,6 @@ const char *e_gras_msg_kind_names[e_gras_msg_kind_count]=
 
 void
 gras_msg_wait_ext_(double           timeout,
-
 		gras_msgtype_t   msgt_want,
 		gras_socket_t    expe_want,
 		gras_msg_filter_t filter,
@@ -375,8 +374,8 @@ gras_msg_handle(double timeOut) {
 		}
 	}
 	if (!list) {
-		INFO3("No callback for message '%s' from %s:%d. Queue it for later gras_msg_wait() use.",
-				msg.type->name,
+		INFO4("No callback for message '%s' (type:%s) from %s:%d. Queue it for later gras_msg_wait() use.",
+				msg.type->name,e_gras_msg_kind_names[msg.kind],
 				gras_socket_peer_name(msg.expe),gras_socket_peer_port(msg.expe));
 		xbt_dynar_push(pd->msg_waitqueue,&msg);
 		return; /* FIXME: maybe we should call ourselves again until the end of the timer or a proper msg is got */
