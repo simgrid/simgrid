@@ -79,6 +79,12 @@ publish: dist
 	 cp ChangeLog ~/public_html/simgrid2/
 	 $(MAKE) -C ~/public_html
 
+indent:
+	indent -br -brs -ce -bbo -bap --dont-break-procedure-type \
+	--no-tabs --cuddle-do-while --cuddle-else --indent-level2 \
+	--leave-preprocessor-space --no-space-after-function-call-names \
+	`$(MAKE) dist-files | grep '\.[ch]$$'|grep -v '/_' |grep -v '_unit.c'`
+
 sync-gforge: 
 	chmod g+rw -R doc/
 	chmod a+rX -R doc/
