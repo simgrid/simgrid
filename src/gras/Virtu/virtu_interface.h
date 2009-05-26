@@ -23,9 +23,9 @@
 SG_BEGIN_DECL()
 
 /* shutdown the module mechanism (world-wide cleanups) */
-void gras_moddata_exit(void);
+     void gras_moddata_exit(void);
 /* shutdown this process wrt module mecanism (process-wide cleanups) */
-void gras_moddata_leave(void);
+     void gras_moddata_leave(void);
 
 
 /* Perform the various intialisations needed by gras. Each process must run it */
@@ -39,11 +39,11 @@ XBT_PUBLIC(void) gras_process_exit(void);
 
 /* declare a new process specific data 
    (used by gras_<module>_register to make sure that gras_process_init will create it) */
-int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor);
+     int gras_procdata_add(const char *name, pvoid_f_void_t creator,
+                           void_f_pvoid_t destructor);
 
-void* gras_libdata_by_name(const char *name);
-void* gras_libdata_by_id(int id);
+     void *gras_libdata_by_name(const char *name);
+     void *gras_libdata_by_id(int id);
 
 SG_END_DECL()
-
-#endif  /* GRAS_VIRTU_INTERFACE_H */
+#endif /* GRAS_VIRTU_INTERFACE_H */

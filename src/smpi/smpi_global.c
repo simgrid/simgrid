@@ -4,24 +4,25 @@
 
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories");
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi,
+                                "Logging specific to SMPI (kernel)");
 
-smpi_global_t     smpi_global     = NULL;
+smpi_global_t smpi_global = NULL;
 
 void *smpi_request_new(void);
 
 void *smpi_request_new()
 {
-	smpi_mpi_request_t request = xbt_new(s_smpi_mpi_request_t, 1);
+  smpi_mpi_request_t request = xbt_new(s_smpi_mpi_request_t, 1);
 
-	request->buf       = NULL;
-	request->completed = 0;
-	request->mutex     = SIMIX_mutex_init();
-	request->cond      = SIMIX_cond_init();
-	request->data      = NULL;
-	request->forward   = 0;
+  request->buf = NULL;
+  request->completed = 0;
+  request->mutex = SIMIX_mutex_init();
+  request->cond = SIMIX_cond_init();
+  request->data = NULL;
+  request->forward = 0;
 
-	return request;
+  return request;
 }
 
 void smpi_request_free(void *pointer);
@@ -29,27 +30,27 @@ void smpi_request_free(void *pointer);
 void smpi_request_free(void *pointer)
 {
 
-	smpi_mpi_request_t request = pointer;
+  smpi_mpi_request_t request = pointer;
 
-	SIMIX_cond_destroy(request->cond);
-	SIMIX_mutex_destroy(request->mutex);
-	xbt_free(request);
+  SIMIX_cond_destroy(request->cond);
+  SIMIX_mutex_destroy(request->mutex);
+  xbt_free(request);
 
-	return;
+  return;
 }
 
 void smpi_request_reset(void *pointer);
 
 void smpi_request_reset(void *pointer)
 {
-	smpi_mpi_request_t request = pointer;
+  smpi_mpi_request_t request = pointer;
 
-	request->buf       = NULL;
-	request->completed = 0;
-	request->data      = NULL;
-	request->forward   = 0;
+  request->buf = NULL;
+  request->completed = 0;
+  request->data = NULL;
+  request->forward = 0;
 
-	return;
+  return;
 }
 
 
@@ -57,276 +58,282 @@ void *smpi_message_new(void);
 
 void *smpi_message_new()
 {
-	smpi_received_message_t message = xbt_new(s_smpi_received_message_t, 1);
-	message->buf = NULL;
-	return message;
+  smpi_received_message_t message = xbt_new(s_smpi_received_message_t, 1);
+  message->buf = NULL;
+  return message;
 }
 
 void smpi_message_free(void *pointer);
 
 void smpi_message_free(void *pointer)
 {
-	xbt_free(pointer);
-	return;
+  xbt_free(pointer);
+  return;
 }
 
 void smpi_message_reset(void *pointer);
 
 void smpi_message_reset(void *pointer)
 {
-	smpi_received_message_t message = pointer;
-	message->buf = NULL;
-	return;
+  smpi_received_message_t message = pointer;
+  message->buf = NULL;
+  return;
 }
 
 int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
-	int src, int dst, int tag, smpi_mpi_communicator_t comm, smpi_mpi_request_t *requestptr)
+                        int src, int dst, int tag,
+                        smpi_mpi_communicator_t comm,
+                        smpi_mpi_request_t * requestptr)
 {
-	int retval = MPI_SUCCESS;
+  int retval = MPI_SUCCESS;
 
-	smpi_mpi_request_t request = NULL;
+  smpi_mpi_request_t request = NULL;
 
-	// parameter checking prob belongs in smpi_mpi, but this is less repeat code
-	if (NULL == buf) {
-		retval = MPI_ERR_INTERN;
-	} else if (0 > count) {
-		retval = MPI_ERR_COUNT;
-	} else if (NULL == datatype) {
-		retval = MPI_ERR_TYPE;
-	} else if (MPI_ANY_SOURCE != src && (0 > src || comm->size <= src)) {
-		retval = MPI_ERR_RANK;
-	} else if (0 > dst || comm->size <= dst) {
-		retval = MPI_ERR_RANK;
-	} else if (MPI_ANY_TAG != tag && 0 > tag) {
-		retval = MPI_ERR_TAG;
-	} else if (NULL == comm) {
-		retval = MPI_ERR_COMM;
-	} else if (NULL == requestptr) {
-		retval = MPI_ERR_ARG;
-	} else {
-		request           = xbt_mallocator_get(smpi_global->request_mallocator);
-		request->comm     = comm;
-		request->src      = src;
-		request->dst      = dst;
-		request->tag      = tag;
-		request->buf      = buf;
-		request->datatype = datatype;
-		request->count    = count;
+  // parameter checking prob belongs in smpi_mpi, but this is less repeat code
+  if (NULL == buf) {
+    retval = MPI_ERR_INTERN;
+  } else if (0 > count) {
+    retval = MPI_ERR_COUNT;
+  } else if (NULL == datatype) {
+    retval = MPI_ERR_TYPE;
+  } else if (MPI_ANY_SOURCE != src && (0 > src || comm->size <= src)) {
+    retval = MPI_ERR_RANK;
+  } else if (0 > dst || comm->size <= dst) {
+    retval = MPI_ERR_RANK;
+  } else if (MPI_ANY_TAG != tag && 0 > tag) {
+    retval = MPI_ERR_TAG;
+  } else if (NULL == comm) {
+    retval = MPI_ERR_COMM;
+  } else if (NULL == requestptr) {
+    retval = MPI_ERR_ARG;
+  } else {
+    request = xbt_mallocator_get(smpi_global->request_mallocator);
+    request->comm = comm;
+    request->src = src;
+    request->dst = dst;
+    request->tag = tag;
+    request->buf = buf;
+    request->datatype = datatype;
+    request->count = count;
 
-		*requestptr       = request;
-	}
-	return retval;
+    *requestptr = request;
+  }
+  return retval;
 }
 
 void smpi_global_init()
 {
-	int i;
+  int i;
 
-	int size = SIMIX_host_get_number();
+  int size = SIMIX_host_get_number();
 
-	/* Connect our log channels: that must be done manually under windows */
+  /* Connect our log channels: that must be done manually under windows */
 #ifdef XBT_LOG_CONNECT
-	XBT_LOG_CONNECT(smpi_base, smpi);
-	XBT_LOG_CONNECT(smpi_bench, smpi);
-	XBT_LOG_CONNECT(smpi_kernel, smpi);
-	XBT_LOG_CONNECT(smpi_mpi, smpi);
-	XBT_LOG_CONNECT(smpi_receiver, smpi);
-	XBT_LOG_CONNECT(smpi_sender, smpi);
-	XBT_LOG_CONNECT(smpi_util, smpi);
+  XBT_LOG_CONNECT(smpi_base, smpi);
+  XBT_LOG_CONNECT(smpi_bench, smpi);
+  XBT_LOG_CONNECT(smpi_kernel, smpi);
+  XBT_LOG_CONNECT(smpi_mpi, smpi);
+  XBT_LOG_CONNECT(smpi_receiver, smpi);
+  XBT_LOG_CONNECT(smpi_sender, smpi);
+  XBT_LOG_CONNECT(smpi_util, smpi);
 #endif
 
-	smpi_global                                      = xbt_new(s_smpi_global_t, 1);
-	// config variable
-	smpi_global->reference_speed                     = SMPI_DEFAULT_SPEED;
+  smpi_global = xbt_new(s_smpi_global_t, 1);
+  // config variable
+  smpi_global->reference_speed = SMPI_DEFAULT_SPEED;
 
-	smpi_global->root_ready                          = 0;
-	smpi_global->ready_process_count                 = 0;
+  smpi_global->root_ready = 0;
+  smpi_global->ready_process_count = 0;
 
-	// start/stop
-	smpi_global->start_stop_mutex                    = SIMIX_mutex_init();
-	smpi_global->start_stop_cond                     = SIMIX_cond_init();
+  // start/stop
+  smpi_global->start_stop_mutex = SIMIX_mutex_init();
+  smpi_global->start_stop_cond = SIMIX_cond_init();
 
-	// host info blank until sim starts
-	// FIXME: is this okay?
-	smpi_global->hosts                               = NULL;
-	smpi_global->host_count                          = 0;
+  // host info blank until sim starts
+  // FIXME: is this okay?
+  smpi_global->hosts = NULL;
+  smpi_global->host_count = 0;
 
-	// running hosts
-	smpi_global->running_hosts_count_mutex           = SIMIX_mutex_init();
-        smpi_global->running_hosts_count                 = 0;
+  // running hosts
+  smpi_global->running_hosts_count_mutex = SIMIX_mutex_init();
+  smpi_global->running_hosts_count = 0;
 
-	// mallocators
-	smpi_global->request_mallocator                  = xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE,
-	                                                     smpi_request_new, smpi_request_free, smpi_request_reset);
-	smpi_global->message_mallocator                  = xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE,
-	                                                     smpi_message_new, smpi_message_free, smpi_message_reset);
+  // mallocators
+  smpi_global->request_mallocator =
+    xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, smpi_request_new,
+                       smpi_request_free, smpi_request_reset);
+  smpi_global->message_mallocator =
+    xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE, smpi_message_new,
+                       smpi_message_free, smpi_message_reset);
 
-	// queues
-	smpi_global->pending_send_request_queues         = xbt_new(xbt_fifo_t,  size);
-	smpi_global->pending_send_request_queues_mutexes = xbt_new(smx_mutex_t, size);
-	smpi_global->pending_recv_request_queues         = xbt_new(xbt_fifo_t,  size);
-	smpi_global->pending_recv_request_queues_mutexes = xbt_new(smx_mutex_t, size);
-	smpi_global->received_message_queues             = xbt_new(xbt_fifo_t,  size);
-	smpi_global->received_message_queues_mutexes     = xbt_new(smx_mutex_t, size);
+  // queues
+  smpi_global->pending_send_request_queues = xbt_new(xbt_fifo_t, size);
+  smpi_global->pending_send_request_queues_mutexes =
+    xbt_new(smx_mutex_t, size);
+  smpi_global->pending_recv_request_queues = xbt_new(xbt_fifo_t, size);
+  smpi_global->pending_recv_request_queues_mutexes =
+    xbt_new(smx_mutex_t, size);
+  smpi_global->received_message_queues = xbt_new(xbt_fifo_t, size);
+  smpi_global->received_message_queues_mutexes = xbt_new(smx_mutex_t, size);
 
-	// sender/receiver processes
-	smpi_global->sender_processes                    = xbt_new(smx_process_t, size);
-	smpi_global->receiver_processes                  = xbt_new(smx_process_t, size);
+  // sender/receiver processes
+  smpi_global->sender_processes = xbt_new(smx_process_t, size);
+  smpi_global->receiver_processes = xbt_new(smx_process_t, size);
 
-	// timers
-	smpi_global->timer                               = xbt_os_timer_new();
-	smpi_global->timer_mutex                         = SIMIX_mutex_init();
-	smpi_global->timer_cond                          = SIMIX_cond_init();
+  // timers
+  smpi_global->timer = xbt_os_timer_new();
+  smpi_global->timer_mutex = SIMIX_mutex_init();
+  smpi_global->timer_cond = SIMIX_cond_init();
 
-	smpi_global->do_once_duration_nodes              = NULL;
-	smpi_global->do_once_duration                    = NULL;
-	smpi_global->do_once_mutex                       = SIMIX_mutex_init();
+  smpi_global->do_once_duration_nodes = NULL;
+  smpi_global->do_once_duration = NULL;
+  smpi_global->do_once_mutex = SIMIX_mutex_init();
 
-	for (i = 0; i < size; i++) {
-		smpi_global->pending_send_request_queues[i]         = xbt_fifo_new();
-		smpi_global->pending_send_request_queues_mutexes[i] = SIMIX_mutex_init();
-		smpi_global->pending_recv_request_queues[i]         = xbt_fifo_new();
-		smpi_global->pending_recv_request_queues_mutexes[i] = SIMIX_mutex_init();
-		smpi_global->received_message_queues[i]             = xbt_fifo_new();
-		smpi_global->received_message_queues_mutexes[i]     = SIMIX_mutex_init();
-	}
+  for (i = 0; i < size; i++) {
+    smpi_global->pending_send_request_queues[i] = xbt_fifo_new();
+    smpi_global->pending_send_request_queues_mutexes[i] = SIMIX_mutex_init();
+    smpi_global->pending_recv_request_queues[i] = xbt_fifo_new();
+    smpi_global->pending_recv_request_queues_mutexes[i] = SIMIX_mutex_init();
+    smpi_global->received_message_queues[i] = xbt_fifo_new();
+    smpi_global->received_message_queues_mutexes[i] = SIMIX_mutex_init();
+  }
 
 }
 
 void smpi_global_destroy()
 {
-	int i;
+  int i;
 
-	int size = SIMIX_host_get_number();
+  int size = SIMIX_host_get_number();
 
-	smpi_do_once_duration_node_t curr, next;
+  smpi_do_once_duration_node_t curr, next;
 
-	// start/stop
-	SIMIX_mutex_destroy(smpi_global->start_stop_mutex);
-	SIMIX_cond_destroy(smpi_global->start_stop_cond);
+  // start/stop
+  SIMIX_mutex_destroy(smpi_global->start_stop_mutex);
+  SIMIX_cond_destroy(smpi_global->start_stop_cond);
 
-	// processes
-	xbt_free(smpi_global->sender_processes);
-	xbt_free(smpi_global->receiver_processes);
+  // processes
+  xbt_free(smpi_global->sender_processes);
+  xbt_free(smpi_global->receiver_processes);
 
-	// running hosts
-	SIMIX_mutex_destroy(smpi_global->running_hosts_count_mutex);
+  // running hosts
+  SIMIX_mutex_destroy(smpi_global->running_hosts_count_mutex);
 
-	// mallocators
-	xbt_mallocator_free(smpi_global->request_mallocator);
-	xbt_mallocator_free(smpi_global->message_mallocator);
+  // mallocators
+  xbt_mallocator_free(smpi_global->request_mallocator);
+  xbt_mallocator_free(smpi_global->message_mallocator);
 
-	xbt_os_timer_free(smpi_global->timer);
-	SIMIX_mutex_destroy(smpi_global->timer_mutex);
-	SIMIX_cond_destroy(smpi_global->timer_cond);
+  xbt_os_timer_free(smpi_global->timer);
+  SIMIX_mutex_destroy(smpi_global->timer_mutex);
+  SIMIX_cond_destroy(smpi_global->timer_cond);
 
-	for(curr = smpi_global->do_once_duration_nodes; NULL != curr; curr = next) {
-		next = curr->next;
-		xbt_free(curr->file);
-		xbt_free(curr);
-	}
+  for (curr = smpi_global->do_once_duration_nodes; NULL != curr; curr = next) {
+    next = curr->next;
+    xbt_free(curr->file);
+    xbt_free(curr);
+  }
 
-	SIMIX_mutex_destroy(smpi_global->do_once_mutex);
+  SIMIX_mutex_destroy(smpi_global->do_once_mutex);
 
-	for(i = 0; i < size; i++) {
-		xbt_fifo_free(smpi_global->pending_send_request_queues[i]);
-		SIMIX_mutex_destroy(smpi_global->pending_send_request_queues_mutexes[i]);
-		xbt_fifo_free(smpi_global->pending_recv_request_queues[i]);
-		SIMIX_mutex_destroy(smpi_global->pending_recv_request_queues_mutexes[i]);
-		xbt_fifo_free(smpi_global->received_message_queues[i]);
-		SIMIX_mutex_destroy(smpi_global->received_message_queues_mutexes[i]);
-	}
+  for (i = 0; i < size; i++) {
+    xbt_fifo_free(smpi_global->pending_send_request_queues[i]);
+    SIMIX_mutex_destroy(smpi_global->pending_send_request_queues_mutexes[i]);
+    xbt_fifo_free(smpi_global->pending_recv_request_queues[i]);
+    SIMIX_mutex_destroy(smpi_global->pending_recv_request_queues_mutexes[i]);
+    xbt_fifo_free(smpi_global->received_message_queues[i]);
+    SIMIX_mutex_destroy(smpi_global->received_message_queues_mutexes[i]);
+  }
 
-	xbt_free(smpi_global->pending_send_request_queues);
-	xbt_free(smpi_global->pending_send_request_queues_mutexes);
-	xbt_free(smpi_global->pending_recv_request_queues);
-	xbt_free(smpi_global->pending_recv_request_queues_mutexes);
-	xbt_free(smpi_global->received_message_queues);
-	xbt_free(smpi_global->received_message_queues_mutexes);
+  xbt_free(smpi_global->pending_send_request_queues);
+  xbt_free(smpi_global->pending_send_request_queues_mutexes);
+  xbt_free(smpi_global->pending_recv_request_queues);
+  xbt_free(smpi_global->pending_recv_request_queues_mutexes);
+  xbt_free(smpi_global->received_message_queues);
+  xbt_free(smpi_global->received_message_queues_mutexes);
 
-	xbt_free(smpi_global);
+  xbt_free(smpi_global);
 
-	smpi_global = NULL;
+  smpi_global = NULL;
 }
 
 int smpi_host_index()
 {
-	smx_host_t host = SIMIX_host_self();
-	smpi_host_data_t hdata = (smpi_host_data_t)SIMIX_host_get_data(host);
-	return hdata->index;
+  smx_host_t host = SIMIX_host_self();
+  smpi_host_data_t hdata = (smpi_host_data_t) SIMIX_host_get_data(host);
+  return hdata->index;
 }
 
 smx_mutex_t smpi_host_mutex()
 {
-	smx_host_t host = SIMIX_host_self();
-	smpi_host_data_t hdata = (smpi_host_data_t)SIMIX_host_get_data(host);
-	return hdata->mutex;
+  smx_host_t host = SIMIX_host_self();
+  smpi_host_data_t hdata = (smpi_host_data_t) SIMIX_host_get_data(host);
+  return hdata->mutex;
 }
 
 smx_cond_t smpi_host_cond()
 {
-	smx_host_t host = SIMIX_host_self();
-	smpi_host_data_t hdata = (smpi_host_data_t)SIMIX_host_get_data(host);
-	return hdata->cond;
+  smx_host_t host = SIMIX_host_self();
+  smpi_host_data_t hdata = (smpi_host_data_t) SIMIX_host_get_data(host);
+  return hdata->cond;
 }
 
 int smpi_run_simulation(int *argc, char **argv)
 {
-	smx_cond_t   cond           = NULL;
-	smx_action_t action         = NULL;
+  smx_cond_t cond = NULL;
+  smx_action_t action = NULL;
 
-	xbt_fifo_t   actions_failed = xbt_fifo_new();
-	xbt_fifo_t   actions_done   = xbt_fifo_new();
+  xbt_fifo_t actions_failed = xbt_fifo_new();
+  xbt_fifo_t actions_done = xbt_fifo_new();
 
-	srand(SMPI_RAND_SEED);
+  srand(SMPI_RAND_SEED);
 
-	SIMIX_global_init(argc, argv);
+  SIMIX_global_init(argc, argv);
 
-	SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
-	SIMIX_function_register("smpi_sender",         smpi_sender);
-	SIMIX_function_register("smpi_receiver",       smpi_receiver);
+  SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
+  SIMIX_function_register("smpi_sender", smpi_sender);
+  SIMIX_function_register("smpi_receiver", smpi_receiver);
 
-	// FIXME: ought to verify these files...
-	SIMIX_create_environment(argv[1]);
+  // FIXME: ought to verify these files...
+  SIMIX_create_environment(argv[1]);
 
-	// must initialize globals between creating environment and launching app....
-	smpi_global_init();
+  // must initialize globals between creating environment and launching app....
+  smpi_global_init();
 
-	SIMIX_launch_application(argv[2]);
+  SIMIX_launch_application(argv[2]);
 
-	/* Prepare to display some more info when dying on Ctrl-C pressing */
-	// FIXME: doesn't work
-	//signal(SIGINT, inthandler);
+  /* Prepare to display some more info when dying on Ctrl-C pressing */
+  // FIXME: doesn't work
+  //signal(SIGINT, inthandler);
 
-	/* Clean IO before the run */
-	fflush(stdout);
-	fflush(stderr);
-        SIMIX_init();
+  /* Clean IO before the run */
+  fflush(stdout);
+  fflush(stderr);
+  SIMIX_init();
 
-	while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
-		while ((action = xbt_fifo_pop(actions_failed))) {
-			DEBUG1("** %s failed **", action->name);
-			while((cond = xbt_fifo_pop(action->cond_list))) {
-				SIMIX_cond_broadcast(cond);
-			}
-		}
-		while((action = xbt_fifo_pop(actions_done))) {
-			DEBUG1("** %s done **",action->name);
-			while((cond = xbt_fifo_pop(action->cond_list))) {
-				SIMIX_cond_broadcast(cond);
-			}
-		}
-	}
+  while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
+    while ((action = xbt_fifo_pop(actions_failed))) {
+      DEBUG1("** %s failed **", action->name);
+      while ((cond = xbt_fifo_pop(action->cond_list))) {
+        SIMIX_cond_broadcast(cond);
+      }
+    }
+    while ((action = xbt_fifo_pop(actions_done))) {
+      DEBUG1("** %s done **", action->name);
+      while ((cond = xbt_fifo_pop(action->cond_list))) {
+        SIMIX_cond_broadcast(cond);
+      }
+    }
+  }
 
-	// FIXME: cleanup incomplete
-	xbt_fifo_free(actions_failed);
-	xbt_fifo_free(actions_done);
+  // FIXME: cleanup incomplete
+  xbt_fifo_free(actions_failed);
+  xbt_fifo_free(actions_done);
 
-	INFO1("simulation time %g", SIMIX_get_clock());
+  INFO1("simulation time %g", SIMIX_get_clock());
 
-	smpi_global_destroy();
+  smpi_global_destroy();
 
-	SIMIX_clean();
+  SIMIX_clean();
 
-	return 0;
+  return 0;
 }

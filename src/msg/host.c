@@ -31,41 +31,40 @@
 /********************************* Host **************************************/
 m_host_t __MSG_host_create(smx_host_t workstation, void *data)
 {
-	const char *name;
-	simdata_host_t simdata = xbt_new0(s_simdata_host_t, 1);
-	m_host_t host = xbt_new0(s_m_host_t, 1);
-	int i;
-	
-	char alias[MAX_ALIAS_NAME +1] = {0}; /* buffer used to build the key of the mailbox */
-	
-	name = SIMIX_host_get_name(workstation);
-	/* Host structure */
-	host->name = xbt_strdup(name);
-	host->simdata = simdata;
-	host->data = data;
-	
-	simdata->smx_host = workstation;
+  const char *name;
+  simdata_host_t simdata = xbt_new0(s_simdata_host_t, 1);
+  m_host_t host = xbt_new0(s_m_host_t, 1);
+  int i;
 
-	if (msg_global->max_channel>0)   
-		simdata->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
-	
-	for (i = 0; i < msg_global->max_channel; i++)
-	{
-		sprintf(alias,"%s:%d",name,i);
-		
-		/* the key of the mailbox (in this case) is build from the name of the host and the channel number */
-		simdata->mailboxes[i] = MSG_mailbox_create(alias);
-		MSG_mailbox_set_hostname(simdata->mailboxes[i],name);
-		memset(alias,0,MAX_ALIAS_NAME +1);
-	}
-	
-	simdata->mutex = SIMIX_mutex_init();
-	SIMIX_host_set_data(workstation, host);
-	
-	/* Update global variables */
-	xbt_fifo_unshift(msg_global->host, host);
-	
-	return host;
+  char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
+
+  name = SIMIX_host_get_name(workstation);
+  /* Host structure */
+  host->name = xbt_strdup(name);
+  host->simdata = simdata;
+  host->data = data;
+
+  simdata->smx_host = workstation;
+
+  if (msg_global->max_channel > 0)
+    simdata->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
+
+  for (i = 0; i < msg_global->max_channel; i++) {
+    sprintf(alias, "%s:%d", name, i);
+
+    /* the key of the mailbox (in this case) is build from the name of the host and the channel number */
+    simdata->mailboxes[i] = MSG_mailbox_create(alias);
+    MSG_mailbox_set_hostname(simdata->mailboxes[i], name);
+    memset(alias, 0, MAX_ALIAS_NAME + 1);
+  }
+
+  simdata->mutex = SIMIX_mutex_init();
+  SIMIX_host_set_data(workstation, host);
+
+  /* Update global variables */
+  xbt_fifo_unshift(msg_global->host, host);
+
+  return host;
 }
 
 /** \ingroup m_host_management
@@ -113,7 +112,7 @@ const char *MSG_host_get_name(m_host_t host)
 {
 
   xbt_assert0((host != NULL)
-	      && (host->simdata != NULL), "Invalid parameters");
+              && (host->simdata != NULL), "Invalid parameters");
 
   /* Return data */
   return (host->name);
@@ -135,32 +134,31 @@ m_host_t MSG_host_self(void)
  */
 void __MSG_host_destroy(m_host_t host)
 {
-	simdata_host_t simdata = NULL;
-	int i = 0;
-	char alias[MAX_ALIAS_NAME +1] = {0}; /* buffer used to build the key of the mailbox */
-	
-	xbt_assert0((host != NULL), "Invalid parameters");
-	
-	/* Clean Simulator data */
-	/* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
-	simdata = (host)->simdata;
-	
-	for (i = 0; i < msg_global->max_channel; i++)
-	{
-		sprintf(alias,"%s:%d",host->name,i);
-		MSG_mailbox_free((void*)(simdata->mailboxes[i]));
-		memset(alias,0,MAX_ALIAS_NAME +1);
-	}
-	
-	if (msg_global->max_channel>0)   
-		free(simdata->mailboxes);
-	SIMIX_mutex_destroy(simdata->mutex);
-	free(simdata);
-	
-	/* Clean host structure */
-	free(host->name);
-	free(host);
-	
+  simdata_host_t simdata = NULL;
+  int i = 0;
+  char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
+
+  xbt_assert0((host != NULL), "Invalid parameters");
+
+  /* Clean Simulator data */
+  /* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
+  simdata = (host)->simdata;
+
+  for (i = 0; i < msg_global->max_channel; i++) {
+    sprintf(alias, "%s:%d", host->name, i);
+    MSG_mailbox_free((void *) (simdata->mailboxes[i]));
+    memset(alias, 0, MAX_ALIAS_NAME + 1);
+  }
+
+  if (msg_global->max_channel > 0)
+    free(simdata->mailboxes);
+  SIMIX_mutex_destroy(simdata->mutex);
+  free(simdata);
+
+  /* Clean host structure */
+  free(host->name);
+  free(host);
+
 
 }
 
@@ -210,7 +208,7 @@ double MSG_get_host_speed(m_host_t h)
  * \param name a property name
  * \return value of a property (or NULL if property not set)
  */
-const char* MSG_host_get_property_value(m_host_t host, const char* name)
+const char *MSG_host_get_property_value(m_host_t host, const char *name)
 {
   return xbt_dict_get_or_null(MSG_host_get_properties(host), name);
 }

@@ -19,7 +19,7 @@
 void mmrpc_register_messages(void);
 
 /* Function prototypes */
-int server (int argc,char *argv[]);
-int client (int argc,char *argv[]);
+int server(int argc, char *argv[]);
+int client(int argc, char *argv[]);
 
 #endif /* MMRPC_H */

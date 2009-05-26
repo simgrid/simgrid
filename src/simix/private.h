@@ -25,7 +25,7 @@
 /********************************** Host ************************************/
 
 typedef struct s_smx_simdata_host {
-  void *host;			/* SURF modeling */
+  void *host;                   /* SURF modeling */
   xbt_swag_t process_list;
 } s_smx_simdata_host_t;
 
@@ -48,14 +48,14 @@ extern SIMIX_Global_t simix_global;
 /******************************* Process *************************************/
 
 typedef struct s_smx_simdata_process {
-  smx_host_t smx_host;		/* the host on which the process is running */
-  xbt_context_t context;	/* the context that executes the scheduler fonction */
+  smx_host_t smx_host;          /* the host on which the process is running */
+  xbt_context_t context;        /* the context that executes the scheduler fonction */
   int blocked;
   int suspended;
-  smx_mutex_t mutex;		/* mutex on which the process is blocked  */
-  smx_cond_t cond;		/* cond on which the process is blocked  */
-  int argc;			/* arguments number if any */
-  char **argv;			/* arguments table if any */
+  smx_mutex_t mutex;            /* mutex on which the process is blocked  */
+  smx_cond_t cond;              /* cond on which the process is blocked  */
+  int argc;                     /* arguments number if any */
+  char **argv;                  /* arguments table if any */
   xbt_dict_t properties;
 } s_smx_simdata_process_t;
 
@@ -75,8 +75,8 @@ typedef struct s_smx_process_arg {
 typedef struct s_smx_mutex {
 
   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_mutex */
-  xbt_swag_t sleeping;		/* list of sleeping process */
-  int refcount ;
+  xbt_swag_t sleeping;          /* list of sleeping process */
+  int refcount;
   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_mutex */
 
 } s_smx_mutex_t;
@@ -84,9 +84,9 @@ typedef struct s_smx_mutex {
 typedef struct s_smx_cond {
 
   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_cond */
-  xbt_swag_t sleeping;		/* list of sleeping process */
+  xbt_swag_t sleeping;          /* list of sleeping process */
   smx_mutex_t mutex;
-  xbt_fifo_t actions;		/* list of actions */
+  xbt_fifo_t actions;           /* list of actions */
   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_cond */
 
 } s_smx_cond_t;
@@ -94,7 +94,7 @@ typedef struct s_smx_cond {
 /********************************* Action **************************************/
 
 typedef struct s_smx_simdata_action {
-  surf_action_t surf_action;	/* SURF modeling of computation  */
+  surf_action_t surf_action;    /* SURF modeling of computation  */
 
   smx_host_t source;
 
@@ -104,11 +104,11 @@ typedef struct s_smx_simdata_action {
 
 /******************************* Configuration support **********************************/
 
-void simix_config_init(void);	/* create the config set, call this before use! */
-void simix_config_finalize(void);	/* destroy the config set, call this at cleanup. */
-extern int _simix_init_status;	/* 0: beginning of time; 
-				   1: pre-inited (cfg_set created); 
-				   2: inited (running) */
+void simix_config_init(void);   /* create the config set, call this before use! */
+void simix_config_finalize(void);       /* destroy the config set, call this at cleanup. */
+extern int _simix_init_status;  /* 0: beginning of time; 
+                                   1: pre-inited (cfg_set created); 
+                                   2: inited (running) */
 extern xbt_cfg_t _simix_cfg_set;
 
 
@@ -117,8 +117,8 @@ extern xbt_cfg_t _simix_cfg_set;
                                   "Host failed, you cannot call this function.")
 
 smx_host_t __SIMIX_host_create(const char *name, void *workstation,
-			       void *data);
-void __SIMIX_host_destroy(void* host);
+                               void *data);
+void __SIMIX_host_destroy(void *host);
 
 void __SIMIX_cond_wait(smx_cond_t cond);
 

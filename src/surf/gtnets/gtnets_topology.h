@@ -18,47 +18,51 @@ using namespace std;
 
 class GTNETS_Link;
 
-class GTNETS_Node{
+class GTNETS_Node {
 
- public:
+public:
   GTNETS_Node(int);
-  GTNETS_Node(const GTNETS_Node& node);
-  ~GTNETS_Node();
+    GTNETS_Node(const GTNETS_Node & node);
+   ~GTNETS_Node();
 
   int add_host(int);
   int add_router(int);
-  int id(){return ID_;};
+  int id() {
+    return ID_;
+  };
   bool is_router();
   bool include(int);
   void print_hosts();
 
- private:
+private:
   int ID_;
   int is_router_;
-  set<int> hosts_; //simgrid hosts
+  set < int >hosts_;            //simgrid hosts
 };
 
-class GTNETS_Link{
+class GTNETS_Link {
 
- public:
+public:
   GTNETS_Link();
   GTNETS_Link(int id);
-  GTNETS_Link(const GTNETS_Link&);
-  ~GTNETS_Link();
+    GTNETS_Link(const GTNETS_Link &);
+   ~GTNETS_Link();
 
-  GTNETS_Node* src_node();
-  GTNETS_Node* dst_node();
+  GTNETS_Node *src_node();
+  GTNETS_Node *dst_node();
   int peer_node(int);
-  int id(){return ID_;};
+  int id() {
+    return ID_;
+  };
   void print_link_status();
-  int add_src(GTNETS_Node*);
-  int add_dst(GTNETS_Node*);
+  int add_src(GTNETS_Node *);
+  int add_dst(GTNETS_Node *);
   bool route_exists();
 
- private:
+private:
   int ID_;
-  GTNETS_Node* src_node_;
-  GTNETS_Node* dst_node_;
+  GTNETS_Node *src_node_;
+  GTNETS_Node *dst_node_;
 
 };
 
@@ -66,8 +70,8 @@ class GTNETS_Link{
 // 1. add links
 // 2. add routers
 // 3. add onehop links
-class GTNETS_Topology{
- public:
+class GTNETS_Topology {
+public:
   GTNETS_Topology();
   ~GTNETS_Topology();
 
@@ -76,23 +80,23 @@ class GTNETS_Topology{
   int add_link(int id);
   int add_router(int id);
   int add_onehop_route(int src, int dst, int link);
-  
+
   int nodeid_from_hostid(int);
   int link_size();
   int node_size();
   void print_topology();
-  const vector<GTNETS_Node*>& nodes();
-  const map<int, GTNETS_Link*>& links();
-  
- private:
+  const vector < GTNETS_Node * >&nodes();
+  const map < int, GTNETS_Link * >&links();
+
+private:
 
   int nodeID_;
-  map<int, GTNETS_Link*> links_;
-  vector<GTNETS_Node*> nodes_;
+    map < int, GTNETS_Link * >links_;
+    vector < GTNETS_Node * >nodes_;
 
-  map<int, int> hosts_; //hostid->nodeid
+    map < int, int >hosts_;     //hostid->nodeid
 
-  set<int> routers_;
+    set < int >routers_;
 };
 
 #endif

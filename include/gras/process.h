@@ -10,14 +10,15 @@
 #ifndef GRAS_PROCESS_H
 #define GRAS_PROCESS_H
 
-#include "xbt/misc.h"  /* SG_BEGIN_DECL */
+#include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/dict.h"
 
 SG_BEGIN_DECL()
 
-void gras_agent_spawn(const char *name, void *data, xbt_main_func_t code, int argc, char *argv[], xbt_dict_t properties);
-  
-  
+     void gras_agent_spawn(const char *name, void *data, xbt_main_func_t code,
+                           int argc, char *argv[], xbt_dict_t properties);
+
+
 /****************************************************************************/
 /* Manipulating User Data                                                   */
 /****************************************************************************/
@@ -44,13 +45,13 @@ void gras_agent_spawn(const char *name, void *data, xbt_main_func_t code, int ar
  * \brief Get the data associated with the current process.
  * \ingroup GRAS_globals
  */
-XBT_PUBLIC(void*) gras_userdata_get(void);
+XBT_PUBLIC(void *) gras_userdata_get(void);
 
 /**
  * \brief Set the data associated with the current process.
  * \ingroup GRAS_globals
  */
-XBT_PUBLIC(void*) gras_userdata_set(void *ud);
+XBT_PUBLIC(void *) gras_userdata_set(void *ud);
 
 /** \brief Malloc and set the data associated with the current process.
  *
@@ -65,6 +66,4 @@ XBT_PUBLIC(void*) gras_userdata_set(void *ud);
 /* @} */
 
 SG_END_DECL()
-
 #endif /* GRAS_PROCESS_H */
-

@@ -9,16 +9,17 @@
  * This contains the implementation of the functions in relation with the java
  * channel instance. 
  */
- 
+
 #include "jmsg_channel.h"
 #include "jmsg.h"
 #include "jxbt_utilities.h"
 
-jint jchannel_get_id(jobject jchannel,JNIEnv* env) {
-  jmethodID id  = jxbt_get_smethod(env, "simgrid/msg/Channel", "getId", "()I");
-	
-  if(!id)
+jint jchannel_get_id(jobject jchannel, JNIEnv * env)
+{
+  jmethodID id = jxbt_get_smethod(env, "simgrid/msg/Channel", "getId", "()I");
+
+  if (!id)
     return -1;
-	
-  return (*env)->CallIntMethod(env,jchannel, id);		
+
+  return (*env)->CallIntMethod(env, jchannel, id);
 }

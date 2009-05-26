@@ -10,19 +10,18 @@
 
 #include "xbt/log.h"
 struct xbt_log_appender_s {
-  void (*do_append) (xbt_log_appender_t this_appender,
-      char *event);
+  void (*do_append) (xbt_log_appender_t this_appender, char *event);
   void (*free_) (xbt_log_appender_t this_);
   void *data;
 };
 
 struct xbt_log_layout_s {
-  void (*do_layout)(xbt_log_layout_t l,
-      xbt_log_event_t event, const char *fmt,
-      xbt_log_appender_t appender);
+  void (*do_layout) (xbt_log_layout_t l,
+                     xbt_log_event_t event, const char *fmt,
+                     xbt_log_appender_t appender);
   void (*free_) (xbt_log_layout_t l);
   void *data;
-} ;
+};
 
 
 /**

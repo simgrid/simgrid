@@ -12,13 +12,12 @@
 
 #include "gras.h"
 
-int function (int argc,char *argv[]);
+int function(int argc, char *argv[]);
 
-int function (int argc,char *argv[]) { 
-  gras_init(&argc,argv);
+int function(int argc, char *argv[])
+{
+  gras_init(&argc, argv);
   //  gras_os_sleep(3);
   gras_exit();
   return 0;
-} 
-
-
+}

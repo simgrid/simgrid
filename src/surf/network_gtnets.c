@@ -10,10 +10,10 @@
 #include "xbt/str.h"
 
 
-static   double time_to_next_flow_completion=-1;
+static double time_to_next_flow_completion = -1;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
-				"Logging specific to the SURF network module");
+                                "Logging specific to the SURF network module");
 
 /** QUESTIONS for GTNetS integration
  **   1. Check that we did the right thing with name_service and get_resource_name
@@ -32,7 +32,7 @@ static int dst_id = -1;
 static void link_free(void *nw_link)
 {
   free(((network_link_GTNETS_t) nw_link)->name);
-  xbt_dict_free(&(((network_link_GTNETS_t)nw_link)->properties));
+  xbt_dict_free(&(((network_link_GTNETS_t) nw_link)->properties));
   free(nw_link);
 }
 
@@ -101,10 +101,9 @@ static int network_card_new(const char *name)
 {
   static int card_count = -1;
 
-  XBT_IN1("(%s)",name);
+  XBT_IN1("(%s)", name);
   /* KF: Check that we haven't seen the network card before */
-  network_card_GTNETS_t card =
-      xbt_dict_get_or_null(network_card_set, name);
+  network_card_GTNETS_t card = xbt_dict_get_or_null(network_card_set, name);
 
   if (!card) {
     /* KF: Increment the card counter for GTNetS */
@@ -116,20 +115,21 @@ static int network_card_new(const char *name)
     card->id = card_count;
     xbt_dict_set(network_card_set, name, card, network_card_free);
   }
-  
-  LOG1(xbt_log_priority_trace, "   return %d",card->id);
+
+  LOG1(xbt_log_priority_trace, "   return %d", card->id);
   XBT_OUT;
   /* KF: just return the GTNetS ID as the SURF ID */
   return card->id;
 }
 
 /* Instantiate a new route: MODIFY BY KF */
-static void route_new(int src_id, int dst_id, network_link_GTNETS_t *links, int nb_link)
+static void route_new(int src_id, int dst_id, network_link_GTNETS_t * links,
+                      int nb_link)
 {
   int i;
   int *gtnets_links;
   XBT_IN4("(src_id=%d, dst_id=%d, links=%p, nb_link=%d)",
-	  src_id,dst_id,links,nb_link);
+          src_id, dst_id, links, nb_link);
 
   /* KF: Build the list of gtnets link IDs */
   gtnets_links = (int *) calloc(nb_link, sizeof(int));
@@ -145,7 +145,8 @@ static void route_new(int src_id, int dst_id, network_link_GTNETS_t *links, int 
 }
 
 /* Instantiate a new route: MODIFY BY KF */
-static void route_onehop_new(int src_id, int dst_id, network_link_GTNETS_t *links, int nb_link)
+static void route_onehop_new(int src_id, int dst_id,
+                             network_link_GTNETS_t * links, int nb_link)
 {
   int linkid;
 
@@ -180,7 +181,7 @@ static void parse_link_init(void)
   tmgr_trace_t bw_trace;
   tmgr_trace_t state_trace;
   tmgr_trace_t lat_trace;
-  
+
   surf_parse_get_trace(&bw_trace, A_surfxml_link_bandwidth_file);
   surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
   surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
@@ -220,20 +221,20 @@ static void parse_route_set_route(void)
 {
   char *name;
   if (src_id != -1 && dst_id != -1) {
-    name = bprintf("%x#%x",src_id, dst_id);
+    name = bprintf("%x#%x", src_id, dst_id);
     manage_route(route_table, name, route_action, 0);
-    free(name);    
+    free(name);
   }
 }
 
 static void add_route()
 {
   xbt_ex_t e;
-  unsigned int cpt = 0;    
+  unsigned int cpt = 0;
   int link_list_capacity = 0;
   int nb_link = 0;
   xbt_dict_cursor_t cursor = NULL;
-  char *key,*data, *end;
+  char *key, *data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
   static network_link_GTNETS_t *link_list = NULL;
@@ -243,52 +244,52 @@ static void add_route()
   xbt_dict_foreach(route_table, cursor, key, data) {
     char *link = NULL;
     nb_link = 0;
-    links = (xbt_dynar_t)data;
+    links = (xbt_dynar_t) data;
     keys = xbt_str_split_str(key, sep);
 
     link_list_capacity = xbt_dynar_length(links);
     link_list = xbt_new(network_link_GTNETS_t, link_list_capacity);
 
-    src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
-    dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
+    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
+    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
     xbt_dynar_free(&keys);
 
-    xbt_dynar_foreach (links, cpt, link) {
+    xbt_dynar_foreach(links, cpt, link) {
       TRY {
         link_list[nb_link++] = xbt_dict_get(link_set, link);
       }
       CATCH(e) {
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
-      }     
+      }
     }
     if (nb_link == 1)
       route_onehop_new(src_id, dst_id, link_list, nb_link);
-   }
+  }
 
   xbt_dict_foreach(route_table, cursor, key, data) {
     char *link = NULL;
     nb_link = 0;
-    links = (xbt_dynar_t)data;
+    links = (xbt_dynar_t) data;
     keys = xbt_str_split_str(key, sep);
 
     link_list_capacity = xbt_dynar_length(links);
     link_list = xbt_new(network_link_GTNETS_t, link_list_capacity);
 
-    src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
-    dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
+    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
+    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
     xbt_dynar_free(&keys);
 
-    xbt_dynar_foreach (links, cpt, link) {
+    xbt_dynar_foreach(links, cpt, link) {
       TRY {
         link_list[nb_link++] = xbt_dict_get(link_set, link);
       }
       CATCH(e) {
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
-      }     
+      }
     }
     if (nb_link >= 1)
       route_new(src_id, dst_id, link_list, nb_link);
-   }
+  }
 
   xbt_dict_free(&route_table);
   gtnets_print_topology();
@@ -298,11 +299,12 @@ static void add_route()
 /* Main XML parsing */
 static void define_callbacks(const char *file)
 {
-  surfxml_add_callback(STag_surfxml_router_cb_list,   &parse_route_set_routers);
-  surfxml_add_callback(STag_surfxml_link_cb_list,     &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list,    &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_route_cb_list,      &parse_route_set_route);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list,   &add_route);
+  surfxml_add_callback(STag_surfxml_router_cb_list, &parse_route_set_routers);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
+  surfxml_add_callback(STag_surfxml_route_cb_list,
+                       &parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
 }
 
 static void *name_service(const char *name)
@@ -324,7 +326,7 @@ static xbt_dict_t get_properties(void *link)
 /* We do not care about this: only used for traces */
 static int resource_used(void *resource_id)
 {
-  return 0;			/* We don't care */
+  return 0;                     /* We don't care */
 }
 
 static int action_free(surf_action_t action)
@@ -357,7 +359,7 @@ static void action_recycle(surf_action_t action)
 }
 
 static void action_change_state(surf_action_t action,
-				e_surf_action_state_t state)
+                                e_surf_action_state_t state)
 {
 /*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
 /*     if(((surf_action_network_GTNETS_t)action)->variable) { */
@@ -373,14 +375,16 @@ static void action_change_state(surf_action_t action,
 /* share_resources() */
 static double share_resources(double now)
 {
-  xbt_swag_t running_actions = surf_network_model->common_public->states.running_action_set;
+  xbt_swag_t running_actions =
+    surf_network_model->common_public->states.running_action_set;
 
   //get the first relevant value from the running_actions list
   if (!xbt_swag_size(running_actions))
     return -1.0;
 
-  xbt_assert0(time_to_next_flow_completion, "Time to next flow completion not initialized!\n");
-  
+  xbt_assert0(time_to_next_flow_completion,
+              "Time to next flow completion not initialized!\n");
+
   time_to_next_flow_completion = gtnets_get_time_to_next_flow_completion();
 
   return time_to_next_flow_completion;
@@ -398,7 +402,7 @@ static void update_actions_state(double now, double delta)
   surf_action_network_GTNETS_t action = NULL;
   //  surf_action_network_GTNETS_t next_action = NULL;
   xbt_swag_t running_actions =
-      surf_network_model->common_public->states.running_action_set;
+    surf_network_model->common_public->states.running_action_set;
 
   /* If there are no renning flows, just return */
   if (time_to_next_flow_completion < 0.0) {
@@ -406,7 +410,7 @@ static void update_actions_state(double now, double delta)
   }
 
   /*KF: if delta == time_to_next_flow_completion, too. */
-  if (time_to_next_flow_completion <= delta) {	/* run until the first flow completes */
+  if (time_to_next_flow_completion <= delta) {  /* run until the first flow completes */
     void **metadata;
     int i, num_flows;
 
@@ -414,36 +418,38 @@ static void update_actions_state(double now, double delta)
 
     if (gtnets_run_until_next_flow_completion(&metadata, &num_flows)) {
       xbt_assert0(0,
-		  "Cannot run GTNetS simulation until next flow completion");
+                  "Cannot run GTNetS simulation until next flow completion");
     }
     if (num_flows < 1) {
       xbt_assert0(0,
-		  "GTNetS simulation couldn't find a flow that would complete");
+                  "GTNetS simulation couldn't find a flow that would complete");
     }
 
     xbt_swag_foreach(action, running_actions) {
-      DEBUG2("Action (%p) remains old value: %f", action, action->generic_action.remains);
+      DEBUG2("Action (%p) remains old value: %f", action,
+             action->generic_action.remains);
       double remain = gtnets_get_flow_rx(action);
       DEBUG1("Remain value returned by GTNetS : %f", remain);
       //need to trust this remain value
-      if(remain == 0){
-	action->generic_action.remains=0;
-      }else {
-	action->generic_action.remains=action->generic_action.cost-remain;
+      if (remain == 0) {
+        action->generic_action.remains = 0;
+      } else {
+        action->generic_action.remains = action->generic_action.cost - remain;
       }
-      DEBUG2("Action (%p) remains new value: %f", action, action->generic_action.remains);
+      DEBUG2("Action (%p) remains new value: %f", action,
+             action->generic_action.remains);
     }
 
     for (i = 0; i < num_flows; i++) {
-      action =  (surf_action_network_GTNETS_t) (metadata[i]);
-      
+      action = (surf_action_network_GTNETS_t) (metadata[i]);
+
       action->generic_action.finish = now + time_to_next_flow_completion;
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-      DEBUG1("----> Action (%p) just terminated",action);
+      DEBUG1("----> Action (%p) just terminated", action);
     }
 
 
-  } else {			/* run for a given number of seconds */
+  } else {                      /* run for a given number of seconds */
     if (gtnets_run(delta)) {
       xbt_assert0(0, "Cannot run GTNetS simulation");
     }
@@ -454,8 +460,8 @@ static void update_actions_state(double now, double delta)
 
 /* UNUSED HERE: no traces */
 static void update_resource_state(void *id,
-				  tmgr_trace_event_t event_type,
-				  double value, double date)
+                                  tmgr_trace_event_t event_type,
+                                  double value, double date)
 {
   xbt_assert0(0, "Cannot update model state for GTNetS simulation");
   return;
@@ -463,7 +469,7 @@ static void update_resource_state(void *id,
 
 /* KF: Rate not supported */
 static surf_action_t communicate(void *src, void *dst, double size,
-				 double rate)
+                                 double rate)
 {
   surf_action_network_GTNETS_t action = NULL;
   network_card_GTNETS_t card_src = src;
@@ -486,11 +492,10 @@ static surf_action_t communicate(void *src, void *dst, double size,
   action->generic_action.max_duration = NO_MAX_DURATION;
   action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
-  action->generic_action.model_type =
-      (surf_model_t) surf_network_model;
+  action->generic_action.model_type = (surf_model_t) surf_network_model;
 
   action->generic_action.state_set =
-      surf_network_model->common_public->states.running_action_set;
+    surf_network_model->common_public->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
 
@@ -498,7 +503,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   if (gtnets_create_flow(card_src->id, card_dst->id, size, (void *) action)
       < 0) {
     xbt_assert2(0, "Not route between host %s and host %s", card_src->name,
-		card_dst->name);
+                card_dst->name);
   }
 
   return (surf_action_t) action;
@@ -508,14 +513,14 @@ static surf_action_t communicate(void *src, void *dst, double size,
 static void action_suspend(surf_action_t action)
 {
   xbt_assert0(0,
-	      "action_suspend() not supported for the GTNets network model");
+              "action_suspend() not supported for the GTNets network model");
 }
 
 /* Resume a flow() */
 static void action_resume(surf_action_t action)
 {
   xbt_assert0(0,
-	      "action_resume() not supported for the GTNets network model");
+              "action_resume() not supported for the GTNets network model");
 }
 
 /* Test whether a flow is suspended */
@@ -531,14 +536,10 @@ static void finalize(void)
 #endif
   xbt_dict_free(&network_card_set);
   xbt_dict_free(&link_set);
-  xbt_swag_free(surf_network_model->common_public->states.
-		ready_action_set);
-  xbt_swag_free(surf_network_model->common_public->states.
-		running_action_set);
-  xbt_swag_free(surf_network_model->common_public->states.
-		failed_action_set);
-  xbt_swag_free(surf_network_model->common_public->states.
-		done_action_set);
+  xbt_swag_free(surf_network_model->common_public->states.ready_action_set);
+  xbt_swag_free(surf_network_model->common_public->states.running_action_set);
+  xbt_swag_free(surf_network_model->common_public->states.failed_action_set);
+  xbt_swag_free(surf_network_model->common_public->states.done_action_set);
   free(surf_network_model->common_public);
   free(surf_network_model->common_private);
   free(surf_network_model->extension_public);
@@ -555,42 +556,38 @@ static void surf_network_model_init_internal(void)
 
   surf_network_model = xbt_new0(s_surf_network_model_t, 1);
 
-  surf_network_model->common_private =
-      xbt_new0(s_surf_model_private_t, 1);
-  surf_network_model->common_public =
-      xbt_new0(s_surf_model_public_t, 1);
+  surf_network_model->common_private = xbt_new0(s_surf_model_private_t, 1);
+  surf_network_model->common_public = xbt_new0(s_surf_model_public_t, 1);
   surf_network_model->extension_public =
-      xbt_new0(s_surf_network_model_extension_public_t, 1);
+    xbt_new0(s_surf_network_model_extension_public_t, 1);
 
   surf_network_model->common_public->states.ready_action_set =
-      xbt_swag_new(xbt_swag_offset(action, state_hookup));
+    xbt_swag_new(xbt_swag_offset(action, state_hookup));
   surf_network_model->common_public->states.running_action_set =
-      xbt_swag_new(xbt_swag_offset(action, state_hookup));
+    xbt_swag_new(xbt_swag_offset(action, state_hookup));
   surf_network_model->common_public->states.failed_action_set =
-      xbt_swag_new(xbt_swag_offset(action, state_hookup));
+    xbt_swag_new(xbt_swag_offset(action, state_hookup));
   surf_network_model->common_public->states.done_action_set =
-      xbt_swag_new(xbt_swag_offset(action, state_hookup));
+    xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_network_model->common_public->name_service = name_service;
-  surf_network_model->common_public->get_resource_name =
-      get_resource_name;
-  surf_network_model->common_public->action_get_state =
-      surf_action_get_state;
+  surf_network_model->common_public->get_resource_name = get_resource_name;
+  surf_network_model->common_public->action_get_state = surf_action_get_state;
   surf_network_model->common_public->action_use = action_use;
   surf_network_model->common_public->action_free = action_free;
   surf_network_model->common_public->action_cancel = action_cancel;
   surf_network_model->common_public->action_recycle = action_recycle;
   surf_network_model->common_public->action_change_state =
-      action_change_state;
-  surf_network_model->common_public->action_set_data =
-      surf_action_set_data;
+    action_change_state;
+  surf_network_model->common_public->action_set_data = surf_action_set_data;
   surf_network_model->common_public->name = "network";
 
   surf_network_model->common_private->resource_used = resource_used;
   surf_network_model->common_private->share_resources = share_resources;
   surf_network_model->common_private->update_actions_state =
-      update_actions_state;
-  surf_network_model->common_private->update_resource_state = update_resource_state;
+    update_actions_state;
+  surf_network_model->common_private->update_resource_state =
+    update_resource_state;
   surf_network_model->common_private->finalize = finalize;
 
   surf_network_model->common_public->suspend = action_suspend;
@@ -599,8 +596,8 @@ static void surf_network_model_init_internal(void)
 
   surf_network_model->extension_public->communicate = communicate;
 
-  /*for the props of the link*/
-  surf_network_model->common_public->get_properties =  get_properties;
+  /*for the props of the link */
+  surf_network_model->common_public->get_properties = get_properties;
 
   link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();
@@ -621,7 +618,6 @@ void surf_network_model_init_GTNETS(const char *filename)
   xbt_dynar_push(model_list, &surf_network_model);
 
   update_model_description(surf_network_model_description,
-			   "GTNets",
-			   (surf_model_t) surf_network_model);
+                           "GTNets", (surf_model_t) surf_network_model);
 }
 #endif

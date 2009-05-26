@@ -10,9 +10,9 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-int _simix_init_status = 0;	/* 0: beginning of time; 
-				   1: pre-inited (cfg_set created); 
-				   2: inited (running) */
+int _simix_init_status = 0;     /* 0: beginning of time; 
+                                   1: pre-inited (cfg_set created); 
+                                   2: inited (running) */
 xbt_cfg_t _simix_cfg_set = NULL;
 
 /* callback of the workstation_model variable */
@@ -21,12 +21,12 @@ static void _simix_cfg_cb__workstation_model(const char *name, int pos)
   char *val;
 
   xbt_assert0(_simix_init_status < 2,
-	      "Cannot change the model after the initialization");
+              "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_simix_cfg_set, name);
   /* New Module missing */
 
-  find_model_description(surf_workstation_model_description,val);
+  find_model_description(surf_workstation_model_description, val);
 }
 
 /* callback of the cpu_model variable */
@@ -35,7 +35,7 @@ static void _simix_cfg_cb__cpu_model(const char *name, int pos)
   char *val;
 
   xbt_assert0(_simix_init_status < 2,
-	      "Cannot change the model after the initialization");
+              "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_simix_cfg_set, name);
   /* New Module missing */
@@ -48,7 +48,7 @@ static void _simix_cfg_cb__network_model(const char *name, int pos)
   char *val;
 
   xbt_assert0(_simix_init_status < 2,
-	      "Cannot change the model after the initialization");
+              "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_simix_cfg_set, name);
   /* New Module missing */
@@ -69,7 +69,7 @@ void simix_config_init(void)
 {
 
   if (_simix_init_status)
-    return;			/* Already inited, nothing to do */
+    return;                     /* Already inited, nothing to do */
 
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(simix_action, simix);
@@ -79,20 +79,20 @@ void simix_config_init(void)
   XBT_LOG_CONNECT(simix_kernel, simix);
   XBT_LOG_CONNECT(simix_process, simix);
   XBT_LOG_CONNECT(simix_synchro, simix);
-  
+
   _simix_init_status = 1;
   _simix_cfg_set = xbt_cfg_new();
 
   xbt_cfg_register(_simix_cfg_set,
-		   "workstation_model", xbt_cfgelm_string, 1, 1,
-		   &_simix_cfg_cb__workstation_model, NULL);
+                   "workstation_model", xbt_cfgelm_string, 1, 1,
+                   &_simix_cfg_cb__workstation_model, NULL);
 
   xbt_cfg_register(_simix_cfg_set,
-		   "cpu_model", xbt_cfgelm_string, 1, 1,
-		   &_simix_cfg_cb__cpu_model, NULL);
+                   "cpu_model", xbt_cfgelm_string, 1, 1,
+                   &_simix_cfg_cb__cpu_model, NULL);
   xbt_cfg_register(_simix_cfg_set,
-		   "network_model", xbt_cfgelm_string, 1, 1,
-		   &_simix_cfg_cb__network_model, NULL);
+                   "network_model", xbt_cfgelm_string, 1, 1,
+                   &_simix_cfg_cb__network_model, NULL);
 
   xbt_cfg_set_string(_simix_cfg_set, "workstation_model", "CLM03");
 }
@@ -101,7 +101,7 @@ void simix_config_finalize(void)
 {
 
   if (!_simix_init_status)
-    return;			/* Not initialized yet. Nothing to do */
+    return;                     /* Not initialized yet. Nothing to do */
 
   xbt_cfg_free(&_simix_cfg_set);
   _simix_init_status = 0;

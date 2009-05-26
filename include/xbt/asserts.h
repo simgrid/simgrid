@@ -12,7 +12,7 @@
 #include "xbt/misc.h"
 #include "xbt/log.h"
 #include "xbt/ex.h"
-  
+
 SG_BEGIN_DECL()
 
 /**
@@ -24,7 +24,6 @@ SG_BEGIN_DECL()
  *
  * @{
  */
-
 #ifdef NDEBUG
 #define xbt_assert(cond)
 #define xbt_assert0(cond,msg)
@@ -53,10 +52,6 @@ SG_BEGIN_DECL()
      /** @hideinitializer  */
 #define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) THROW6(0,0,msg,a,b,c,d,e,f)
 #endif
-     
-
-/** @} */     
-  
-SG_END_DECL()
-
+/** @} */
+  SG_END_DECL()
 #endif /* _XBT_ASSERTS_H */

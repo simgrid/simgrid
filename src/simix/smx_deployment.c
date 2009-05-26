@@ -14,7 +14,7 @@
 #include "surf/surfxml_parse_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
-				"Logging specific to SIMIX (deployment)");
+                                "Logging specific to SIMIX (deployment)");
 static int parse_argc = -1;
 static char **parse_argv = NULL;
 static xbt_main_func_t parse_code = NULL;
@@ -26,10 +26,10 @@ static void parse_process_init(void)
 {
   parse_host = xbt_strdup(A_surfxml_process_host);
   xbt_assert1(SIMIX_host_get_by_name(parse_host),
-	      "Host '%s' unknown", parse_host);
+              "Host '%s' unknown", parse_host);
   parse_code = SIMIX_get_registered_function(A_surfxml_process_function);
   xbt_assert1(parse_code, "Function '%s' unknown",
-	      A_surfxml_process_function);
+              A_surfxml_process_function);
   parse_argc = 0;
   parse_argv = NULL;
   parse_argc++;
@@ -64,16 +64,14 @@ static void parse_process_finalize(void)
     arg->properties = current_property_set;
 
     DEBUG3("Process %s(%s) will be started at time %f", arg->name,
-	   arg->hostname, start_time);
+           arg->hostname, start_time);
     if (simix_global->create_process_function)
-      surf_timer_model->extension_public->set(start_time,
-						 (void *) simix_global->
-						 create_process_function,
-						 arg);
+      surf_timer_model->extension_public->set(start_time, (void *)
+                                              simix_global->create_process_function,
+                                              arg);
     else
       surf_timer_model->extension_public->set(start_time, (void *)
-						 &SIMIX_process_create,
-						 arg);
+                                              &SIMIX_process_create, arg);
 
   }
   if ((start_time < 0) || (start_time == SIMIX_get_clock())) {
@@ -81,24 +79,24 @@ static void parse_process_finalize(void)
 
     if (simix_global->create_process_function)
       process =
-	 (*simix_global->create_process_function)(parse_argv[0], parse_code,
-						NULL, parse_host,
-						parse_argc, parse_argv, /*the props*/ current_property_set);
+        (*simix_global->create_process_function) (parse_argv[0], parse_code,
+                                                  NULL, parse_host,
+                                                  parse_argc, parse_argv,
+                                                  /*the props */
+                                                  current_property_set);
     else
-      process =
-	  SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host,
-			       parse_argc, parse_argv, /*the props*/ current_property_set);
+      process = SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,       /*the props */
+                                     current_property_set);
 
     if (kill_time > SIMIX_get_clock()) {
       if (simix_global->kill_process_function)
-	surf_timer_model->extension_public->set(start_time,
-						   (void *) simix_global->
-						   kill_process_function,
-						   arg);
+        surf_timer_model->extension_public->set(start_time, (void *)
+                                                simix_global->kill_process_function,
+                                                arg);
       else
-	surf_timer_model->extension_public->set(kill_time, (void *)
-						   &SIMIX_process_kill,
-						   (void *) process);
+        surf_timer_model->extension_public->set(kill_time, (void *)
+                                                &SIMIX_process_kill,
+                                                (void *) process);
     }
     xbt_free(parse_host);
   }
@@ -121,7 +119,7 @@ static void parse_process_finalize(void)
 void SIMIX_launch_application(const char *file)
 {
   xbt_assert0(simix_global,
-	      "SIMIX_global_init has to be called before SIMIX_launch_application.");
+              "SIMIX_global_init has to be called before SIMIX_launch_application.");
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_process_cb_list, parse_process_init);
   surfxml_add_callback(ETag_surfxml_argument_cb_list, parse_argument);
@@ -144,7 +142,7 @@ void SIMIX_launch_application(const char *file)
 void SIMIX_function_register(const char *name, xbt_main_func_t code)
 {
   xbt_assert0(simix_global,
-	      "SIMIX_global_init has to be called before SIMIX_function_register.");
+              "SIMIX_global_init has to be called before SIMIX_function_register.");
 
   xbt_dict_set(simix_global->registered_functions, name, code, NULL);
 }
@@ -159,7 +157,7 @@ static xbt_main_func_t default_function = NULL;
 void SIMIX_function_register_default(xbt_main_func_t code)
 {
   xbt_assert0(simix_global,
-	      "SIMIX_global_init has to be called before SIMIX_function_register.");
+              "SIMIX_global_init has to be called before SIMIX_function_register.");
 
   default_function = code;
 }
@@ -175,8 +173,9 @@ void SIMIX_function_register_default(xbt_main_func_t code)
 xbt_main_func_t SIMIX_get_registered_function(const char *name)
 {
   xbt_assert0(simix_global,
-	      "SIMIX_global_init has to be called before SIMIX_get_registered_function.");
+              "SIMIX_global_init has to be called before SIMIX_get_registered_function.");
 
-  xbt_main_func_t res = xbt_dict_get_or_null(simix_global->registered_functions, name);
+  xbt_main_func_t res =
+    xbt_dict_get_or_null(simix_global->registered_functions, name);
   return res ? res : default_function;
 }

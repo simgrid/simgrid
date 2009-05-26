@@ -1,18 +1,17 @@
 #include <stdio.h>
-#include "msg/msg.h"		/* Yeah! If you want to use msg, you
-				   need to include msg/msg.h */
-#include "xbt/sysdep.h"		/* calloc, printf */
+#include "msg/msg.h"            /* Yeah! If you want to use msg, you
+                                   need to include msg/msg.h */
+#include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-			     "Messages specific for this msg example");
+                             "Messages specific for this msg example");
 
 int execute(int argc, char *argv[]);
 int redistribute(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file,
-		     const char *application_file);
+MSG_error_t test_all(const char *platform_file, const char *application_file);
 
 typedef enum {
   PORT_22 = 0,
@@ -40,29 +39,29 @@ int execute(int argc, char *argv[])
   for (i = 1; i <= host_list_size; i++) {
     m_host_list[i - 1] = MSG_get_host_by_name(argv[i]);
     xbt_assert1(m_host_list[i - 1] != NULL,
-		"Unknown host %s. Stopping Now! ", argv[i]);
+                "Unknown host %s. Stopping Now! ", argv[i]);
   }
 
   xbt_assert1(sscanf(argv[argc - 2], "%lg", &computation_amount),
-	      "Invalid argument %s\n",argv[argc - 2]);
+              "Invalid argument %s\n", argv[argc - 2]);
   xbt_assert1(sscanf(argv[argc - 1], "%lg", &communication_amount),
-	      "Invalid argument %s\n",argv[argc - 1]);
+              "Invalid argument %s\n", argv[argc - 1]);
   computation_duration = (double *) calloc(host_list_size, sizeof(double));
   communication_table =
-      (double *) calloc(host_list_size * host_list_size, sizeof(double));
+    (double *) calloc(host_list_size * host_list_size, sizeof(double));
   for (i = 0; i < host_list_size; i++) {
     computation_duration[i] = computation_amount / host_list_size;
     for (j = 0; j < host_list_size; j++)
-      communication_table[i * host_list_size + j]  =
-	communication_amount / (host_list_size * host_list_size);
+      communication_table[i * host_list_size + j] =
+        communication_amount / (host_list_size * host_list_size);
   }
 
   sprintf(buffer, "redist#0\n");
   task = MSG_parallel_task_create(buffer,
-				  host_list_size,
-				  m_host_list,
-				  computation_duration,
-				  communication_table, NULL);
+                                  host_list_size,
+                                  m_host_list,
+                                  computation_duration,
+                                  communication_table, NULL);
 
   execution_time = MSG_get_clock();
   MSG_parallel_task_execute(task);
@@ -93,26 +92,26 @@ int redistribute(int argc, char *argv[])
   for (i = 1; i <= host_list_size; i++) {
     m_host_list[i - 1] = MSG_get_host_by_name(argv[i]);
     xbt_assert1(m_host_list[i - 1] != NULL,
-		"Unknown host %s. Stopping Now! ", argv[i]);
+                "Unknown host %s. Stopping Now! ", argv[i]);
   }
 
   xbt_assert1(sscanf(argv[argc - 1], "%lg", &communication_amount),
-	      "Invalid argument %s\n",argv[argc - 1]);
+              "Invalid argument %s\n", argv[argc - 1]);
   computation_duration = (double *) calloc(host_list_size, sizeof(double));
   communication_table =
-      (double *) calloc(host_list_size * host_list_size, sizeof(double));
+    (double *) calloc(host_list_size * host_list_size, sizeof(double));
   for (i = 0; i < host_list_size; i++) {
     for (j = 0; j < host_list_size; j++)
-      communication_table[i * host_list_size + j]  =
-	communication_amount / (host_list_size * host_list_size);
+      communication_table[i * host_list_size + j] =
+        communication_amount / (host_list_size * host_list_size);
   }
 
   sprintf(buffer, "redist#0\n");
   task = MSG_parallel_task_create(buffer,
-				  host_list_size,
-				  m_host_list,
-				  computation_duration,
-				  communication_table, NULL);
+                                  host_list_size,
+                                  m_host_list,
+                                  computation_duration,
+                                  communication_table, NULL);
 
   redistribution_time = MSG_get_clock();
   MSG_parallel_task_execute(task);
@@ -124,23 +123,22 @@ int redistribute(int argc, char *argv[])
 }
 
 
-MSG_error_t test_all(const char *platform_file,
-		     const char *application_file)
+MSG_error_t test_all(const char *platform_file, const char *application_file)
 {
   MSG_error_t res = MSG_OK;
 
 
-  MSG_config("workstation_model","ptask_L07");
+  MSG_config("workstation_model", "ptask_L07");
 
   /*  Simulation setting */
   MSG_set_channel_number(MAX_CHANNEL);
   MSG_create_environment(platform_file);
-  
+
   /*   Application deployment */
   MSG_function_register("execute", execute);
   MSG_function_register("redistribute", redistribute);
   MSG_launch_application(application_file);
-  
+
   res = MSG_main();
 
   INFO1("Simulation time %g", MSG_get_clock());

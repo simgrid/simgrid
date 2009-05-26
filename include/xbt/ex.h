@@ -46,29 +46,30 @@
 /*-*-* end of debugging stuff *-*-*/
 
 #if defined(__EX_MCTX_MCSC__)
-#include <ucontext.h>            /* POSIX.1 ucontext(3) */
+#include <ucontext.h>           /* POSIX.1 ucontext(3) */
 #define __ex_mctx_struct         ucontext_t uc;
 #define __ex_mctx_save(mctx)     (getcontext(&(mctx)->uc) == 0)
-#define __ex_mctx_restored(mctx) /* noop */
+#define __ex_mctx_restored(mctx)        /* noop */
 #define __ex_mctx_restore(mctx)  (void)setcontext(&(mctx)->uc)
 
 #elif defined(__EX_MCTX_SSJLJ__)
-#include <setjmp.h>              /* POSIX.1 sigjmp_buf(3) */
+#include <setjmp.h>             /* POSIX.1 sigjmp_buf(3) */
 #define __ex_mctx_struct         sigjmp_buf jb;
 #define __ex_mctx_save(mctx)     (sigsetjmp((mctx)->jb, 1) == 0)
-#define __ex_mctx_restored(mctx) /* noop */
+#define __ex_mctx_restored(mctx)        /* noop */
 #define __ex_mctx_restore(mctx)  (void)siglongjmp((mctx)->jb, 1)
 
 #elif defined(__EX_MCTX_SJLJ__) || !defined(__EX_MCTX_CUSTOM__) || defined(__EX_MAYDAY)
-#include <setjmp.h>              /* ISO-C jmp_buf(3) */
+#include <setjmp.h>             /* ISO-C jmp_buf(3) */
 #define __ex_mctx_struct         jmp_buf jb;
 #define __ex_mctx_save(mctx)     ( MAYDAY_SAVE(mctx) setjmp((mctx)->jb) == 0)
-#define __ex_mctx_restored(mctx) /* noop */
+#define __ex_mctx_restored(mctx)        /* noop */
 #define __ex_mctx_restore(mctx)  ( MAYDAY_RESTORE(mctx) (void)longjmp((mctx)->jb, 1))
 #endif
 
 /* declare the machine context type */
-typedef struct { __ex_mctx_struct } __ex_mctx_t;
+typedef struct {
+__ex_mctx_struct} __ex_mctx_t;
 
 /** @addtogroup XBT_ex
  *  @brief A set of macros providing exception a la C++ in ANSI C (grounding feature)
@@ -225,47 +226,50 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
 
 /** @brief different kind of errors */
 typedef enum {
-  unknown_error=0,  /**< unknown error */
+  unknown_error = 0,/**< unknown error */
   arg_error,        /**< Invalid argument */
   bound_error,      /**< Out of bounds argument */
   mismatch_error,   /**< The provided ID does not match */
   not_found_error,  /**< The searched element was not found */
-  
+
   system_error,   /**< a syscall did fail */
   network_error,  /**< error while sending/receiving data */
   timeout_error,  /**< not quick enough, dude */
   thread_error,    /**< error while [un]locking */
-	host_error			/**< host failed */
+  host_error                            /**< host failed */
 } xbt_errcat_t;
 
 XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);
 
 /** @brief Structure describing an exception */
-typedef struct {
-  char        *msg;      /**< human readable message */
-  xbt_errcat_t category; /**< category like HTTP (what went wrong) */
-  int          value;    /**< like errno (why did it went wrong) */
-  /* throw point */
-  short int remote; /**< whether it was raised remotely */
-  char *host;     /**< NULL locally thrown exceptions; full hostname if remote ones */
-  /* FIXME: host should be hostname:port[#thread] */
-  char *procname; /**< Name of the process who thrown this */
-  int pid;        /**< PID of the process who thrown this */
-  char *file;     /**< Thrown point */
-  int   line;     /**< Thrown point */
-  char *func;     /**< Thrown point */
-  /* Backtrace */
-  int   used;
-  char **bt_strings; /* only filed on display (or before the network propagation) */
-  void *bt[XBT_BACKTRACE_SIZE];
-} xbt_ex_t;
+     typedef struct {
+       char *msg;        /**< human readable message */
+       xbt_errcat_t category;
+                         /**< category like HTTP (what went wrong) */
+       int value;        /**< like errno (why did it went wrong) */
+       /* throw point */
+       short int remote;
+                    /**< whether it was raised remotely */
+       char *host;/**< NULL locally thrown exceptions; full hostname if remote ones */
+       /* FIXME: host should be hostname:port[#thread] */
+       char *procname;
+                  /**< Name of the process who thrown this */
+       int pid;   /**< PID of the process who thrown this */
+       char *file;/**< Thrown point */
+       int line;  /**< Thrown point */
+       char *func;/**< Thrown point */
+       /* Backtrace */
+       int used;
+       char **bt_strings;       /* only filed on display (or before the network propagation) */
+       void *bt[XBT_BACKTRACE_SIZE];
+     } xbt_ex_t;
 
 /* declare the context type (private) */
-typedef struct {
-    __ex_mctx_t  *ctx_mctx;     /* permanent machine context of enclosing try/catch */
-    volatile int ctx_caught;    /* temporary flag whether exception was caught */
-    volatile xbt_ex_t ctx_ex;   /* temporary exception storage */
-} ex_ctx_t;
+     typedef struct {
+       __ex_mctx_t *ctx_mctx;   /* permanent machine context of enclosing try/catch */
+       volatile int ctx_caught; /* temporary flag whether exception was caught */
+       volatile xbt_ex_t ctx_ex;        /* temporary exception storage */
+     } ex_ctx_t;
 
 /* the static and dynamic initializers for a context structure */
 #define XBT_CTX_INITIALIZER \
@@ -301,14 +305,14 @@ typedef struct {
     } while (0)
 
 /* the exception context */
-typedef ex_ctx_t *(*ex_ctx_cb_t)(void);
+     typedef ex_ctx_t *(*ex_ctx_cb_t) (void);
 XBT_PUBLIC_DATA(ex_ctx_cb_t) __xbt_ex_ctx;
-extern ex_ctx_t *__xbt_ex_ctx_default(void);
+     extern ex_ctx_t *__xbt_ex_ctx_default(void);
 
 /* the termination handler */
-typedef void (*ex_term_cb_t)(xbt_ex_t *);
+     typedef void (*ex_term_cb_t) (xbt_ex_t *);
 XBT_PUBLIC_DATA(ex_term_cb_t) __xbt_ex_terminate;
-extern void __xbt_ex_terminate_default(xbt_ex_t *e);
+     extern void __xbt_ex_terminate_default(xbt_ex_t * e);
 
 /** @brief Introduce a block where exception may be dealed with 
  *  @hideinitializer
@@ -344,7 +348,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 #  ifdef __cplusplus
 #    define XBT_EX_T_CPLUSPLUSCAST (xbt_ex_t&)
 #  else
-#    define XBT_EX_T_CPLUSPLUSCAST 
+#    define XBT_EX_T_CPLUSPLUSCAST
 #  endif
 #endif
 
@@ -375,7 +379,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
        __xbt_ex_terminate((xbt_ex_t *)&(e)); /* not catched */\
      else                                                                      \
        __ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx); /* catched somewhere */    \
-     abort()/* nope, stupid GCC, we won't survive a THROW (this won't be reached) */
+     abort()                    /* nope, stupid GCC, we won't survive a THROW (this won't be reached) */
 
 /** @brief Helper macro for THROWS0-6
  *  @hideinitializer
@@ -505,10 +509,9 @@ XBT_PUBLIC(void) xbt_ex_free(xbt_ex_t e);
 /** @brief Shows a backtrace of the current location */
 XBT_PUBLIC(void) xbt_backtrace_display_current(void);
 /** @brief Captures a backtrace for further use */
-XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t *e);
+XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t * e);
 /** @brief Display a previously captured backtrace */
-XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t *e);
+XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t * e);
 
 /** @} */
 #endif /* __XBT_EX_H__ */
- 

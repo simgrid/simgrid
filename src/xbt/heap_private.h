@@ -8,7 +8,7 @@
 #ifndef _XBT_HEAP_PRIVATE_H
 #define _XBT_HEAP_PRIVATE_H
 
-#include "xbt/dynar.h" /* void_f_pvoid_t */
+#include "xbt/dynar.h"          /* void_f_pvoid_t */
 #include "xbt/heap.h"
 
 typedef struct xbt_heapItem {
@@ -33,4 +33,4 @@ typedef struct xbt_heap {
 static void xbt_heap_maxHeapify(xbt_heap_t H);
 static void xbt_heap_increaseKey(xbt_heap_t H, int i);
 
-#endif				/* _XBT_HEAP_PRIVATE_H */
+#endif /* _XBT_HEAP_PRIVATE_H */

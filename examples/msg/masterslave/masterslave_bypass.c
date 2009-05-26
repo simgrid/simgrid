@@ -6,13 +6,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include "msg/msg.h"  /* Yeah! If you want to use msg, you need to include msg/msg.h */
+#include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
 #include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
-#define FINALIZE ((void*)221297) /* a magic number to tell people to stop working */
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
+                             "Messages specific for this msg example");
+#define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
 static int surf_parse_bypass_platform(void)
 {
@@ -21,14 +22,14 @@ static int surf_parse_bypass_platform(void)
 
   /* allocating memory for the buffer, I think 2kB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
-  
+
   /* <platform> */
-  SURFXML_BUFFER_SET(platform_version,"2");
+  SURFXML_BUFFER_SET(platform_version, "2");
 
   SURFXML_START_TAG(platform);
 
 /*   <host id="host A" power="100000000.00"/> */
-  SURFXML_BUFFER_SET(host_id,"host A");
+  SURFXML_BUFFER_SET(host_id, "host A");
   SURFXML_BUFFER_SET(host_power, "100000000.00");
   SURFXML_BUFFER_SET(host_availability, "1.0");
   SURFXML_BUFFER_SET(host_availability_file, "");
@@ -107,18 +108,19 @@ static int surf_parse_bypass_platform(void)
   return 0;
 }
 
-static int surf_parse_bypass_application(void) {   
+static int surf_parse_bypass_application(void)
+{
   static int AX_ptr;
   static int surfxml_bufferstack_size = 2048;
 
   /* allocating memory to the buffer, I think 2MB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
-  
+
   /* <platform> */
-  SURFXML_BUFFER_SET(platform_version,"2");
+  SURFXML_BUFFER_SET(platform_version, "2");
 
   SURFXML_START_TAG(platform);
-   
+
 /*   <process host="host A" function="master"> */
   SURFXML_BUFFER_SET(process_host, "host A");
   SURFXML_BUFFER_SET(process_function, "master");
@@ -186,33 +188,34 @@ int master(int argc, char *argv[])
 
   int i;
 
-  xbt_assert1(sscanf(argv[1],"%d", &number_of_tasks),
-	 "Invalid argument %s\n",argv[1]);
-  xbt_assert1(sscanf(argv[2],"%lg", &task_comp_size),
-	 "Invalid argument %s\n",argv[2]);
-  xbt_assert1(sscanf(argv[3],"%lg", &task_comm_size),
-	 "Invalid argument %s\n",argv[3]);
+  xbt_assert1(sscanf(argv[1], "%d", &number_of_tasks),
+              "Invalid argument %s\n", argv[1]);
+  xbt_assert1(sscanf(argv[2], "%lg", &task_comp_size),
+              "Invalid argument %s\n", argv[2]);
+  xbt_assert1(sscanf(argv[3], "%lg", &task_comm_size),
+              "Invalid argument %s\n", argv[3]);
 
-  {                  /*  Task creation */
+  {                             /*  Task creation */
     char sprintf_buffer[64];
 
-    todo = xbt_new0(m_task_t,number_of_tasks);
+    todo = xbt_new0(m_task_t, number_of_tasks);
 
     for (i = 0; i < number_of_tasks; i++) {
       sprintf(sprintf_buffer, "Task_%d", i);
-      todo[i] = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
+      todo[i] =
+        MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
     }
   }
 
-  {                  /* Process organisation */
+  {                             /* Process organisation */
     slaves_count = argc - 4;
-    slaves = xbt_new0(m_host_t,slaves_count);
-    
+    slaves = xbt_new0(m_host_t, slaves_count);
+
     for (i = 4; i < argc; i++) {
-      slaves[i-4] = MSG_get_host_by_name(argv[i]);
-      if(slaves[i-4]==NULL) {
-	INFO1("Unknown host %s. Stopping Now! ", argv[i]);
-	abort();
+      slaves[i - 4] = MSG_get_host_by_name(argv[i]);
+      if (slaves[i - 4] == NULL) {
+        INFO1("Unknown host %s. Stopping Now! ", argv[i]);
+        abort();
       }
     }
   }
@@ -228,40 +231,39 @@ int master(int argc, char *argv[])
 
   for (i = 0; i < number_of_tasks; i++) {
     INFO2("Sending \"%s\" to \"%s\"",
-                  todo[i]->name,
-                  slaves[i % slaves_count]->name);
-    if(MSG_host_self()==slaves[i % slaves_count]) {
+          todo[i]->name, slaves[i % slaves_count]->name);
+    if (MSG_host_self() == slaves[i % slaves_count]) {
       INFO0("Hey ! It's me ! :)");
     }
-    MSG_task_put(todo[i], slaves[i % slaves_count],
-                 PORT_22);
+    MSG_task_put(todo[i], slaves[i % slaves_count], PORT_22);
     INFO0("Send completed");
   }
-  
-  INFO0("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (i = 0; i < slaves_count; i++) 
+
+  INFO0
+    ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+  for (i = 0; i < slaves_count; i++)
     MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
-		 slaves[i], PORT_22);
-  
+                 slaves[i], PORT_22);
+
   INFO0("Goodbye now!");
   free(slaves);
   free(todo);
   return 0;
-} /* end_of_master */
+}                               /* end_of_master */
 
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
   INFO0("I'm a slave");
-  while(1) {
+  while (1) {
     m_task_t task = NULL;
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
       INFO1("Received \"%s\" ", MSG_task_get_name(task));
-      if(MSG_task_get_data(task)==FINALIZE) {
-	MSG_task_destroy(task);
-	break;
+      if (MSG_task_get_data(task) == FINALIZE) {
+        MSG_task_destroy(task);
+        break;
       }
       INFO1("Processing \"%s\" ", MSG_task_get_name(task));
       MSG_task_execute(task);
@@ -269,46 +271,47 @@ int slave(int argc, char *argv[])
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
-      xbt_assert0(0,"Unexpected behavior");
+      xbt_assert0(0, "Unexpected behavior");
     }
   }
   INFO0("I'm done. See you!");
   return 0;
-} /* end_of_slave */
+}                               /* end_of_slave */
 
 /** Test function */
 MSG_error_t test_all(void)
 {
   MSG_error_t res = MSG_OK;
 
-   /*  Simulation setting */
-   MSG_set_channel_number(MAX_CHANNEL);
-   MSG_paje_output("msg_test.trace");
-   surf_parse = surf_parse_bypass_platform;
-   MSG_create_environment(NULL);
-  
-   /*   Application deployment */
-   MSG_function_register("master", master);
-   MSG_function_register("slave", slave);
-   surf_parse = surf_parse_bypass_application;
-   MSG_launch_application(NULL);
-   
-   res = MSG_main();
-  
-  INFO1("Simulation time %g",MSG_get_clock());
+  /*  Simulation setting */
+  MSG_set_channel_number(MAX_CHANNEL);
+  MSG_paje_output("msg_test.trace");
+  surf_parse = surf_parse_bypass_platform;
+  MSG_create_environment(NULL);
+
+  /*   Application deployment */
+  MSG_function_register("master", master);
+  MSG_function_register("slave", slave);
+  surf_parse = surf_parse_bypass_application;
+  MSG_launch_application(NULL);
+
+  res = MSG_main();
+
+  INFO1("Simulation time %g", MSG_get_clock());
   return res;
-} /* end_of_test_all */
+}                               /* end_of_test_all */
 
 /** Main function */
 int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
-  MSG_global_init(&argc,argv);
+  MSG_global_init(&argc, argv);
   res = test_all();
   MSG_clean();
 
-  if(res==MSG_OK) return 0; 
-  else return 1;
-} /* end_of_main */
-
+  if (res == MSG_OK)
+    return 0;
+  else
+    return 1;
+}                               /* end_of_main */

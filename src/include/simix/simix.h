@@ -1,4 +1,4 @@
-/* 	$Id: simix.h 5610 2008-06-12 09:38:58Z alegrand $	 */
+/* 	$Id$	 */
 
 /* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
    All rights reserved.                                          */
@@ -23,7 +23,8 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(void) SIMIX_config(const char *name, va_list pa);
 XBT_PUBLIC(void) SIMIX_global_init(int *argc, char **argv);
 XBT_PUBLIC(void) SIMIX_clean(void);
-XBT_PUBLIC(void) SIMIX_function_register(const char *name, xbt_main_func_t code);
+XBT_PUBLIC(void) SIMIX_function_register(const char *name,
+                                         xbt_main_func_t code);
 XBT_PUBLIC(void) SIMIX_function_register_default(xbt_main_func_t code);
 XBT_PUBLIC(xbt_main_func_t) SIMIX_get_registered_function(const char *name);
 
@@ -31,10 +32,11 @@ XBT_PUBLIC(void) SIMIX_launch_application(const char *file);
 
 XBT_PUBLIC(double) SIMIX_get_clock(void);
 XBT_PUBLIC(void) SIMIX_init(void);
-XBT_PUBLIC(double) SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed);
+XBT_PUBLIC(double) SIMIX_solve(xbt_fifo_t actions_done,
+                               xbt_fifo_t actions_failed);
 
 /* Timer functions */
-XBT_PUBLIC(void) SIMIX_timer_set (double date, void *function, void *arg);
+XBT_PUBLIC(void) SIMIX_timer_set(double date, void *function, void *arg);
 XBT_PUBLIC(int) SIMIX_timer_get(void **function, void **arg);
 
 /* only for tests */
@@ -48,21 +50,24 @@ XBT_PUBLIC(void) __SIMIX_main(void);
  * int argc, char **argv: parameters passed to code
  *
  * */
-typedef void *(*smx_creation_func_t)(/*name*/     const char *,
-				     /*code*/     xbt_main_func_t, 
-				     /*userdata*/ void *,
-				     /*hostname*/ char *, 
-				     /* argc */   int,
-				     /* argv */   char **,
-                                     /* props */ xbt_dict_t);
-XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
-XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_f_pvoid_t function);
-XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_f_pvoid_t function);
+     typedef void *(*smx_creation_func_t) ( /*name */ const char *,
+                                           /*code */ xbt_main_func_t,
+                                           /*userdata */ void *,
+                                           /*hostname */ char *,
+                                           /* argc */ int,
+                                           /* argv */ char **,
+                                           /* props */ xbt_dict_t);
+XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t
+                                                        function);
+XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_f_pvoid_t
+                                                      function);
+XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_f_pvoid_t
+                                                         function);
 
 /************************** Host handling ***********************************/
 
 XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
-XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
+XBT_PUBLIC(void *) SIMIX_host_get_data(smx_host_t host);
 
 XBT_PUBLIC(const char *) SIMIX_host_get_name(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_process_set_name(smx_process_t process, char *name);
@@ -84,26 +89,30 @@ XBT_PUBLIC(int) SIMIX_host_get_state(smx_host_t host);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC(smx_process_t) SIMIX_process_create(const char *name,
-					       xbt_main_func_t code, void *data,
-					       const char * hostname, int argc, char **argv, xbt_dict_t properties);
+                                               xbt_main_func_t code,
+                                               void *data,
+                                               const char *hostname, int argc,
+                                               char **argv,
+                                               xbt_dict_t properties);
 
-XBT_PUBLIC(void) SIMIX_jprocess_create(const char *name, 
-				       smx_host_t host,
-				       void *data,
-				       void *jprocess, void *jenv,
-				       smx_process_t* res);
+XBT_PUBLIC(void) SIMIX_jprocess_create(const char *name,
+                                       smx_host_t host,
+                                       void *data,
+                                       void *jprocess, void *jenv,
+                                       smx_process_t * res);
 
 XBT_PUBLIC(void) SIMIX_process_kill(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_cleanup(void *arg);
 XBT_PUBLIC(void) SIMIX_process_killall(void);
-XBT_PUBLIC(void) SIMIX_process_change_host(smx_process_t process, char *source, char *dest);
+XBT_PUBLIC(void) SIMIX_process_change_host(smx_process_t process,
+                                           char *source, char *dest);
 
 //above layer
-XBT_PUBLIC(void*) SIMIX_process_get_data(smx_process_t process);
+XBT_PUBLIC(void *) SIMIX_process_get_data(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_set_data(smx_process_t process, void *data);
 
 XBT_PUBLIC(smx_host_t) SIMIX_process_get_host(smx_process_t process);
-XBT_PUBLIC(const char *)SIMIX_process_get_name(smx_process_t process);
+XBT_PUBLIC(const char *) SIMIX_process_get_name(smx_process_t process);
 XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 
 XBT_PUBLIC(void) SIMIX_process_suspend(smx_process_t process);
@@ -125,38 +134,46 @@ XBT_PUBLIC(void) SIMIX_mutex_destroy(smx_mutex_t mutex);
 /*****Conditional*****/
 XBT_PUBLIC(smx_cond_t) SIMIX_cond_init(void);
 XBT_PUBLIC(void) SIMIX_cond_signal(smx_cond_t cond);
-XBT_PUBLIC(void) SIMIX_cond_wait(smx_cond_t cond,smx_mutex_t mutex);
-XBT_PUBLIC(void) SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, double max_duration);
+XBT_PUBLIC(void) SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
+XBT_PUBLIC(void) SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
+                                         double max_duration);
 XBT_PUBLIC(void) SIMIX_cond_broadcast(smx_cond_t cond);
 XBT_PUBLIC(void) SIMIX_cond_destroy(smx_cond_t cond);
 XBT_PUBLIC(xbt_fifo_t) SIMIX_cond_get_actions(smx_cond_t cond);
 XBT_PUBLIC(void) SIMIX_cond_display_info(smx_cond_t cond);
 
 /************************** Action handling ************************************/
-XBT_PUBLIC(smx_action_t) SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver, const char *name,
-																									double size, double rate);
-XBT_PUBLIC(smx_action_t) SIMIX_action_execute(smx_host_t host, const char *name, double amount);
+XBT_PUBLIC(smx_action_t) SIMIX_action_communicate(smx_host_t sender,
+                                                  smx_host_t receiver,
+                                                  const char *name,
+                                                  double size, double rate);
+XBT_PUBLIC(smx_action_t) SIMIX_action_execute(smx_host_t host,
+                                              const char *name,
+                                              double amount);
 XBT_PUBLIC(smx_action_t) SIMIX_action_sleep(smx_host_t host, double amount);
 XBT_PUBLIC(void) SIMIX_action_cancel(smx_action_t action);
-XBT_PUBLIC(void) SIMIX_action_set_priority(smx_action_t action, double priority);
+XBT_PUBLIC(void) SIMIX_action_set_priority(smx_action_t action,
+                                           double priority);
 XBT_PUBLIC(void) SIMIX_action_destroy(smx_action_t action);
-XBT_PUBLIC(void) SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond);
-XBT_PUBLIC(void) SIMIX_unregister_action_to_condition(smx_action_t action, smx_cond_t cond);
+XBT_PUBLIC(void) SIMIX_register_action_to_condition(smx_action_t action,
+                                                    smx_cond_t cond);
+XBT_PUBLIC(void) SIMIX_unregister_action_to_condition(smx_action_t action,
+                                                      smx_cond_t cond);
 XBT_PUBLIC(double) SIMIX_action_get_remains(smx_action_t action);
 
 XBT_PUBLIC(e_surf_action_state_t) SIMIX_action_get_state(smx_action_t action);
 
-XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(char * name, 
-						       int host_nb,      
-						       smx_host_t *host_list,
-						       double *computation_amount,
-						       double *communication_amount,
-						       double amount,
-						       double rate);
+XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(char *name,
+                                                       int host_nb,
+                                                       smx_host_t * host_list,
+                                                       double
+                                                       *computation_amount, double
+                                                       *communication_amount,
+                                                       double amount,
+                                                       double rate);
 
-void SIMIX_display_process_status(void);
+     void SIMIX_display_process_status(void);
 
 
 SG_END_DECL()
-
-#endif                          /* _SIMIX_SIMIX_H */
+#endif /* _SIMIX_SIMIX_H */

@@ -12,7 +12,7 @@
 #include "xbt/xbt_os_time.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
-				"Logging specific to SIMIX (environment)");
+                                "Logging specific to SIMIX (environment)");
 
 /********************************* SIMIX **************************************/
 
@@ -40,17 +40,17 @@ void SIMIX_create_environment(const char *file)
   int workstation_id = -1;
   double start, end;
 
-  simix_config_init();		/* make sure that our configuration set is created */
+  simix_config_init();          /* make sure that our configuration set is created */
   surf_timer_model_init(file);
 
   /* which model do you want today? */
   workstation_model_name =
-      xbt_cfg_get_string(_simix_cfg_set, "workstation_model");
+    xbt_cfg_get_string(_simix_cfg_set, "workstation_model");
 
   DEBUG1("Model : %s", workstation_model_name);
   workstation_id =
-      find_model_description(surf_workstation_model_description,
-			     workstation_model_name);
+    find_model_description(surf_workstation_model_description,
+                           workstation_model_name);
   if (!strcmp(workstation_model_name, "compound")) {
     xbt_ex_t e;
     char *network_model_name = NULL;
@@ -62,42 +62,40 @@ void SIMIX_create_environment(const char *file)
       cpu_model_name = xbt_cfg_get_string(_simix_cfg_set, "cpu_model");
     } CATCH(e) {
       if (e.category == bound_error) {
-	xbt_assert0(0,
-		    "Set a cpu model to use with the 'compound' workstation model");
-	xbt_ex_free(e);
+        xbt_assert0(0,
+                    "Set a cpu model to use with the 'compound' workstation model");
+        xbt_ex_free(e);
       } else {
-	RETHROW;
+        RETHROW;
       }
     }
 
     TRY {
       network_model_name =
-	  xbt_cfg_get_string(_simix_cfg_set, "network_model");
+        xbt_cfg_get_string(_simix_cfg_set, "network_model");
     }
     CATCH(e) {
       if (e.category == bound_error) {
-	xbt_assert0(0,
-		    "Set a network model to use with the 'compound' workstation model");
-	xbt_ex_free(e);
+        xbt_assert0(0,
+                    "Set a network model to use with the 'compound' workstation model");
+        xbt_ex_free(e);
       } else {
-	RETHROW;
+        RETHROW;
       }
     }
 
     network_id =
-	find_model_description(surf_network_model_description,
-			       network_model_name);
+      find_model_description(surf_network_model_description,
+                             network_model_name);
     cpu_id =
-	find_model_description(surf_cpu_model_description,
-			       cpu_model_name);
+      find_model_description(surf_cpu_model_description, cpu_model_name);
 
     surf_cpu_model_description[cpu_id].model_init(file);
     surf_network_model_description[network_id].model_init(file);
 
 
-  } 
-  surf_workstation_model_description[workstation_id].
-    model_init(file);
+  }
+  surf_workstation_model_description[workstation_id].model_init(file);
 
   start = xbt_os_time();
   parse_platform_file(file);
@@ -105,9 +103,9 @@ void SIMIX_create_environment(const char *file)
   if (surf_workstation_model_description[workstation_id].create_ws != NULL)
     surf_workstation_model_description[workstation_id].create_ws();
   end = xbt_os_time();
-  DEBUG1("PARSE TIME: %lg", (end-start));
+  DEBUG1("PARSE TIME: %lg", (end - start));
 
-  _simix_init_status = 2;	/* inited; don't change settings now */
+  _simix_init_status = 2;       /* inited; don't change settings now */
 
   xbt_dict_foreach(workstation_set, cursor, name, workstation) {
     __SIMIX_host_create(name, workstation, NULL);

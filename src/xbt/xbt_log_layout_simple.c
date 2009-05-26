@@ -8,9 +8,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
-#include "xbt/strbuff.h" /* For dynamic version when the static one fails */
+#include "xbt/strbuff.h"        /* For dynamic version when the static one fails */
 #include "xbt/log_private.h"
-#include "xbt/synchro.h" /* xbt_thread_name */
+#include "xbt/synchro.h"        /* xbt_thread_name */
 
 #include "gras/virtu.h"
 #include <stdio.h>
@@ -22,34 +22,40 @@ static double begin_of_time = -1;
 
 static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
                                           xbt_log_event_t ev,
-                                          const char*fmt,
-                                          xbt_log_appender_t app) {
+                                          const char *fmt,
+                                          xbt_log_appender_t app)
+{
   xbt_strbuff_t buff = xbt_strbuff_new();
   char loc_buff[256];
   char *p;
 
   /* Put every static information in a static buffer, and copy them in the dyn one */
   p = loc_buff;
-  p += snprintf(p,256-(p-ev->buffer),"[");
+  p += snprintf(p, 256 - (p - ev->buffer), "[");
 
-  if(strlen(xbt_procname()))
-    p += snprintf(p,256-(p-ev->buffer),"%s:%s:(%d) ",
-                  gras_os_myname(), xbt_procname(),(*xbt_getpid)());
-  p += snprintf(p,256-(p-ev->buffer),"%f] ", gras_os_time()-begin_of_time);
+  if (strlen(xbt_procname()))
+    p += snprintf(p, 256 - (p - ev->buffer), "%s:%s:(%d) ",
+                  gras_os_myname(), xbt_procname(), (*xbt_getpid) ());
+  p +=
+    snprintf(p, 256 - (p - ev->buffer), "%f] ",
+             gras_os_time() - begin_of_time);
   if (ev->priority != xbt_log_priority_info)
-    p += snprintf(p,256-(p-ev->buffer), "%s:%d: ", ev->fileName, ev->lineNum);
-  p += snprintf(p,256-(p-ev->buffer), "[%s/%s] ",
-                ev->cat->name, xbt_log_priority_names[ev->priority] );
+    p +=
+      snprintf(p, 256 - (p - ev->buffer), "%s:%d: ", ev->fileName,
+               ev->lineNum);
+  p +=
+    snprintf(p, 256 - (p - ev->buffer), "[%s/%s] ", ev->cat->name,
+             xbt_log_priority_names[ev->priority]);
 
-  xbt_strbuff_append(buff,loc_buff);
+  xbt_strbuff_append(buff, loc_buff);
 
-  vasprintf(&p,fmt,ev->ap_copy);
-  xbt_strbuff_append(buff,p);
+  vasprintf(&p, fmt, ev->ap_copy);
+  xbt_strbuff_append(buff, p);
   free(p);
 
-  xbt_strbuff_append(buff,"\n");
+  xbt_strbuff_append(buff, "\n");
 
-  app->do_append(app,buff->data);
+  app->do_append(app, buff->data);
   xbt_strbuff_free(buff);
 }
 
@@ -63,53 +69,59 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
 static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
                                        xbt_log_event_t ev,
                                        const char *fmt,
-                                       xbt_log_appender_t app) {
+                                       xbt_log_appender_t app)
+{
   char *p;
 
-  xbt_assert0(ev->priority>=0,
+  xbt_assert0(ev->priority >= 0,
               "Negative logging priority naturally forbidden");
-  xbt_assert1(ev->priority<sizeof(xbt_log_priority_names),
+  xbt_assert1(ev->priority < sizeof(xbt_log_priority_names),
               "Priority %d is greater than the biggest allowed value",
               ev->priority);
 
-  if (begin_of_time<0)
-    begin_of_time=gras_os_time();
+  if (begin_of_time < 0)
+    begin_of_time = gras_os_time();
 
   p = ev->buffer;
-  p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"[");
+  p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "[");
   check_overflow;
 
   /* Display the proc info if available */
-  if(strlen(xbt_procname())) {
-    p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%s:%s:(%d) ",
-                  gras_os_myname(), xbt_procname(),(*xbt_getpid)());
+  if (strlen(xbt_procname())) {
+    p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%s:(%d) ",
+                  gras_os_myname(), xbt_procname(), (*xbt_getpid) ());
     check_overflow;
   }
 
   /* Display the date */
-  p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%f] ", gras_os_time()-begin_of_time);
+  p +=
+    snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%f] ",
+             gras_os_time() - begin_of_time);
   check_overflow;
 
-  /* Display file position if not INFO*/
+  /* Display file position if not INFO */
   if (ev->priority != xbt_log_priority_info)
-    p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%s:%d: ", ev->fileName, ev->lineNum);
+    p +=
+      snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%d: ",
+               ev->fileName, ev->lineNum);
 
   /* Display category name */
-  p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "[%s/%s] ",
-                ev->cat->name, xbt_log_priority_names[ev->priority] );
+  p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "[%s/%s] ",
+                ev->cat->name, xbt_log_priority_names[ev->priority]);
 
   /* Display user-provided message */
-  p += vsnprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), fmt, ev->ap);
+  p += vsnprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), fmt, ev->ap);
   check_overflow;
 
   /* End it */
-  p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "\n");
+  p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "\n");
   check_overflow;
-  app->do_append(app,ev->buffer);
+  app->do_append(app, ev->buffer);
 }
 
-xbt_log_layout_t xbt_log_layout_simple_new(char *arg) {
-  xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t,1);
+xbt_log_layout_t xbt_log_layout_simple_new(char *arg)
+{
+  xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
   res->do_layout = xbt_log_layout_simple_doit;
   return res;
 }

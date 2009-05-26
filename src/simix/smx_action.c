@@ -11,7 +11,7 @@
 #include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_action, simix,
-				"Logging specific to SIMIX (action)");
+                                "Logging specific to SIMIX (action)");
 
 /************************************* Actions *********************************/
 /** \brief Creates a new SIMIX action to communicate two hosts.
@@ -25,23 +25,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_action, simix,
  * 	\return A new SIMIX action
  * */
 smx_action_t SIMIX_action_communicate(smx_host_t sender,
-				      smx_host_t receiver, const char *name,
-				      double size, double rate)
+                                      smx_host_t receiver, const char *name,
+                                      double size, double rate)
 {
-	 smx_action_t act;
-	 smx_simdata_action_t simdata;
+  smx_action_t act;
+  smx_simdata_action_t simdata;
 
   /* check if the host is active */
-  if (surf_workstation_model->extension_public->
-      get_state(sender->simdata->host) != SURF_CPU_ON) {
-    THROW1(network_error, 0,
-	   "Host %s failed, you cannot call this function", sender->name);
+  if (surf_workstation_model->
+      extension_public->get_state(sender->simdata->host) != SURF_CPU_ON) {
+    THROW1(network_error, 0, "Host %s failed, you cannot call this function",
+           sender->name);
   }
-  if (surf_workstation_model->extension_public->
-      get_state(receiver->simdata->host) != SURF_CPU_ON) {
-    THROW1(network_error, 0,
-	   "Host %s failed, you cannot call this function",
-	   receiver->name);
+  if (surf_workstation_model->
+      extension_public->get_state(receiver->simdata->host) != SURF_CPU_ON) {
+    THROW1(network_error, 0, "Host %s failed, you cannot call this function",
+           receiver->name);
   }
 
   /* alloc structures */
@@ -55,12 +54,13 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
   simdata->source = sender;
 
 
-  simdata->surf_action = surf_workstation_model->extension_public->
-      communicate(sender->simdata->host,
-		  receiver->simdata->host, size, rate);
-  surf_workstation_model->common_public->action_set_data(simdata->
-							    surf_action,
-							    act);
+  simdata->surf_action =
+    surf_workstation_model->extension_public->communicate(sender->simdata->
+                                                          host,
+                                                          receiver->simdata->
+                                                          host, size, rate);
+  surf_workstation_model->common_public->action_set_data(simdata->surf_action,
+                                                         act);
 
   DEBUG1("Create communicate action %p", act);
   return act;
@@ -75,16 +75,16 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
  * 	\return A new SIMIX action
  * */
 smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
-				  double amount)
+                                  double amount)
 {
-	 smx_action_t act;
-	 smx_simdata_action_t simdata;
+  smx_action_t act;
+  smx_simdata_action_t simdata;
 
   /* check if the host is active */
-  if (surf_workstation_model->extension_public->
-      get_state(host->simdata->host) != SURF_CPU_ON) {
+  if (surf_workstation_model->
+      extension_public->get_state(host->simdata->host) != SURF_CPU_ON) {
     THROW1(host_error, 0, "Host %s failed, you cannot call this function",
-	   host->name);
+           host->name);
   }
 
   /* alloc structures */
@@ -98,12 +98,12 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
   act->name = xbt_strdup(name);
 
   /* set communication */
-  simdata->surf_action = surf_workstation_model->extension_public->
-      execute(host->simdata->host, amount);
+  simdata->surf_action =
+    surf_workstation_model->extension_public->execute(host->simdata->host,
+                                                      amount);
 
-  surf_workstation_model->common_public->action_set_data(simdata->
-							    surf_action,
-							    act);
+  surf_workstation_model->common_public->action_set_data(simdata->surf_action,
+                                                         act);
 
   DEBUG1("Create execute action %p", act);
   return act;
@@ -123,10 +123,10 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
   smx_action_t act;
 
   /* check if the host is active */
-  if (surf_workstation_model->extension_public->
-      get_state(host->simdata->host) != SURF_CPU_ON) {
+  if (surf_workstation_model->
+      extension_public->get_state(host->simdata->host) != SURF_CPU_ON) {
     THROW1(host_error, 0, "Host %s failed, you cannot call this function",
-	   host->name);
+           host->name);
   }
 
   /* alloc structures */
@@ -139,12 +139,12 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
   simdata->source = host;
   act->name = xbt_strdup(name);
 
-  simdata->surf_action = surf_workstation_model->extension_public->
-      sleep(host->simdata->host, duration);
+  simdata->surf_action =
+    surf_workstation_model->extension_public->sleep(host->simdata->host,
+                                                    duration);
 
-  surf_workstation_model->common_public->action_set_data(simdata->
-							    surf_action,
-							    act);
+  surf_workstation_model->common_public->action_set_data(simdata->surf_action,
+                                                         act);
 
   DEBUG1("Create sleep action %p", act);
   return act;
@@ -163,8 +163,7 @@ void SIMIX_action_cancel(smx_action_t action)
   DEBUG1("Cancel action %p", action);
   if (action->simdata->surf_action) {
     surf_workstation_model->common_public->action_cancel(action->
-							    simdata->
-							    surf_action);
+                                                         simdata->surf_action);
   }
   return;
 }
@@ -179,10 +178,10 @@ void SIMIX_action_cancel(smx_action_t action)
 void SIMIX_action_set_priority(smx_action_t action, double priority)
 {
   xbt_assert0((action != NULL)
-	      && (action->simdata != NULL), "Invalid parameter");
+              && (action->simdata != NULL), "Invalid parameter");
 
-  surf_workstation_model->common_public->
-      set_priority(action->simdata->surf_action, priority);
+  surf_workstation_model->common_public->set_priority(action->simdata->
+                                                      surf_action, priority);
   return;
 }
 
@@ -197,8 +196,8 @@ void SIMIX_action_destroy(smx_action_t action)
   xbt_assert0((action != NULL), "Invalid parameter");
 
   xbt_assert1((xbt_fifo_size(action->cond_list) == 0),
-	      "Conditional list not empty %d. There is a problem. Cannot destroy it now!",
-	      xbt_fifo_size(action->cond_list));
+              "Conditional list not empty %d. There is a problem. Cannot destroy it now!",
+              xbt_fifo_size(action->cond_list));
 
   DEBUG1("Destroy action %p", action);
   if (action->name)
@@ -207,8 +206,8 @@ void SIMIX_action_destroy(smx_action_t action)
   xbt_fifo_free(action->cond_list);
 
   if (action->simdata->surf_action)
-    action->simdata->surf_action->model_type->common_public->
-	action_free(action->simdata->surf_action);
+    action->simdata->surf_action->model_type->
+      common_public->action_free(action->simdata->surf_action);
 
   xbt_free(action->simdata);
   xbt_free(action);
@@ -222,8 +221,7 @@ void SIMIX_action_destroy(smx_action_t action)
  *	\param action SIMIX action
  *	\param cond SIMIX cond
  */
-void SIMIX_register_action_to_condition(smx_action_t action,
-					smx_cond_t cond)
+void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
 {
   xbt_assert0((action != NULL) && (cond != NULL), "Invalid parameters");
 
@@ -245,7 +243,7 @@ void SIMIX_register_action_to_condition(smx_action_t action,
  *	\param cond SIMIX cond
  */
 void SIMIX_unregister_action_to_condition(smx_action_t action,
-					  smx_cond_t cond)
+                                          smx_cond_t cond)
 {
   xbt_assert0((action != NULL) && (cond != NULL), "Invalid parameters");
 
@@ -270,10 +268,10 @@ double SIMIX_action_get_remains(smx_action_t action)
 }
 
 smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
-					   smx_host_t *host_list,
-					   double *computation_amount,
-					   double *communication_amount,
-					   double amount, double rate)
+                                           smx_host_t * host_list,
+                                           double *computation_amount,
+                                           double *communication_amount,
+                                           double amount, double rate)
 {
   void **workstation_list = NULL;
   smx_simdata_action_t simdata;
@@ -291,19 +289,20 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
 
   /* set action */
 
-  workstation_list = xbt_new0(void *,host_nb);
+  workstation_list = xbt_new0(void *, host_nb);
   for (i = 0; i < host_nb; i++)
     workstation_list[i] = host_list[i]->simdata->host;
 
   simdata->surf_action =
-      surf_workstation_model->extension_public->
-      execute_parallel_task(host_nb, workstation_list,
-			    computation_amount, communication_amount,
-			    amount, rate);
+    surf_workstation_model->extension_public->execute_parallel_task(host_nb,
+                                                                    workstation_list,
+                                                                    computation_amount,
+                                                                    communication_amount,
+                                                                    amount,
+                                                                    rate);
 
-  surf_workstation_model->common_public->action_set_data(simdata->
-							 surf_action,
-							 act);
+  surf_workstation_model->common_public->action_set_data(simdata->surf_action,
+                                                         act);
 
   return act;
 }
@@ -311,8 +310,9 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
 e_surf_action_state_t SIMIX_action_get_state(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
-  return surf_workstation_model->common_public->
-      action_get_state(action->simdata->surf_action);
+  return surf_workstation_model->common_public->action_get_state(action->
+                                                                 simdata->
+                                                                 surf_action);
 
 }
 
@@ -323,7 +323,7 @@ void __SIMIX_cond_display_actions(smx_cond_t cond)
 
   DEBUG1("Actions for condition %p", cond);
   xbt_fifo_foreach(cond->actions, item, action, smx_action_t)
-      DEBUG1("\t %p", action);
+    DEBUG1("\t %p", action);
 }
 
 void __SIMIX_action_display_conditions(smx_action_t action)
@@ -333,5 +333,5 @@ void __SIMIX_action_display_conditions(smx_action_t action)
 
   DEBUG1("Conditions for action %p", action);
   xbt_fifo_foreach(action->cond_list, item, cond, smx_cond_t)
-      DEBUG1("\t %p", cond);
+    DEBUG1("\t %p", cond);
 }

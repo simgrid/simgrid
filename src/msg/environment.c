@@ -1,4 +1,4 @@
-/*     $Id: environment.c 5354 2008-04-30 08:55:54Z mquinson $      */
+/*     $Id$      */
 
 /* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
 /* Copyright (c) 2007 Bruno Donassolo.                                      */
@@ -67,7 +67,7 @@ void MSG_create_environment(const char *file)
   SIMIX_create_environment(file);
 
   /* Initialize MSG hosts */
-  xbt_dict_foreach(SIMIX_host_get_dict(),c,name,h) {
+  xbt_dict_foreach(SIMIX_host_get_dict(), c, name, h) {
     __MSG_host_create(h, NULL);
   }
   return;

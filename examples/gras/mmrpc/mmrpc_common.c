@@ -9,19 +9,18 @@
 
 #include "mmrpc.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(MatMult,"Messages specific to this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(MatMult, "Messages specific to this example");
 
 /* register messages which may be sent and their payload
    (common to client and server) */
-void mmrpc_register_messages(void) {
+void mmrpc_register_messages(void)
+{
   gras_datadesc_type_t matrix_type, request_type;
 
-  matrix_type=gras_datadesc_matrix(gras_datadesc_by_name("double"),
-				   NULL);
-  request_type=gras_datadesc_array_fixed("s_matrix_t(double)[2]",matrix_type,2);
-  
+  matrix_type = gras_datadesc_matrix(gras_datadesc_by_name("double"), NULL);
+  request_type =
+    gras_datadesc_array_fixed("s_matrix_t(double)[2]", matrix_type, 2);
+
   gras_msgtype_declare("answer", matrix_type);
   gras_msgtype_declare("request", request_type);
 }
-
-

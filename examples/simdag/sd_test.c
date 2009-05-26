@@ -5,11 +5,12 @@
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
-			     "Logging specific to this SimDag example");
+                             "Logging specific to this SimDag example");
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int i;
-  const char * platform_file;
+  const char *platform_file;
   const SD_workstation_t *workstations;
   const char *name1;
   const char *name2;
@@ -25,7 +26,7 @@ int main(int argc, char **argv) {
   const int workstation_number = 2;
   SD_workstation_t workstation_list[2];
   double computation_amount[2];
-  double communication_amount[4] = {0};
+  double communication_amount[4] = { 0 };
   double rate = -1.0;
   SD_workstation_t w1, w2;
 
@@ -56,30 +57,34 @@ int main(int argc, char **argv) {
   communication_amount12 = 2000000;
   communication_amount21 = 3000000;
   INFO3("Computation time for %f flops on %s: %f", computation_amount1, name1,
-	SD_workstation_get_computation_time(w1, computation_amount1));
+        SD_workstation_get_computation_time(w1, computation_amount1));
   INFO3("Computation time for %f flops on %s: %f", computation_amount2, name2,
-	SD_workstation_get_computation_time(w2, computation_amount2));
+        SD_workstation_get_computation_time(w2, computation_amount2));
 
   INFO2("Route between %s and %s:", name1, name2);
   route = SD_route_get_list(w1, w2);
   route_size = SD_route_get_size(w1, w2);
   for (i = 0; i < route_size; i++) {
-    INFO3("   Link %s: latency = %f, bandwidth = %f", SD_link_get_name(route[i]),
-	  SD_link_get_current_latency(route[i]), SD_link_get_current_bandwidth(route[i]));
+    INFO3("   Link %s: latency = %f, bandwidth = %f",
+          SD_link_get_name(route[i]), SD_link_get_current_latency(route[i]),
+          SD_link_get_current_bandwidth(route[i]));
   }
-  INFO2("Route latency = %f, route bandwidth = %f", SD_route_get_current_latency(w1, w2),
-	SD_route_get_current_bandwidth(w1, w2));
-  INFO4("Communication time for %f bytes between %s and %s: %f", communication_amount12, name1, name2,
-	SD_route_get_communication_time(w1, w2, communication_amount12));
-  INFO4("Communication time for %f bytes between %s and %s: %f", communication_amount21, name2, name1,
-	SD_route_get_communication_time(w2, w1, communication_amount21));
+  INFO2("Route latency = %f, route bandwidth = %f",
+        SD_route_get_current_latency(w1, w2),
+        SD_route_get_current_bandwidth(w1, w2));
+  INFO4("Communication time for %f bytes between %s and %s: %f",
+        communication_amount12, name1, name2,
+        SD_route_get_communication_time(w1, w2, communication_amount12));
+  INFO4("Communication time for %f bytes between %s and %s: %f",
+        communication_amount21, name2, name1,
+        SD_route_get_communication_time(w2, w1, communication_amount21));
 
   /* creation of the tasks and their dependencies */
   taskA = SD_task_create("Task A", NULL, 10.0);
   taskB = SD_task_create("Task B", NULL, 40.0);
   taskC = SD_task_create("Task C", NULL, 30.0);
   taskD = SD_task_create("Task D", NULL, 60.0);
-  
+
 
   SD_task_dependency_add(NULL, NULL, taskB, taskA);
   SD_task_dependency_add(NULL, NULL, taskC, taskA);
@@ -87,43 +92,43 @@ int main(int argc, char **argv) {
   SD_task_dependency_add(NULL, NULL, taskD, taskC);
   /*  SD_task_dependency_add(NULL, NULL, taskA, taskD); /\* deadlock */
 
-  
+
 
   TRY {
-    SD_task_dependency_add(NULL, NULL, taskA, taskA); /* shouldn't work and must raise an exception */
+    SD_task_dependency_add(NULL, NULL, taskA, taskA);   /* shouldn't work and must raise an exception */
     xbt_die("Hey, I can add a dependency between Task A and Task A!");
   }
-  CATCH (ex) {
+  CATCH(ex) {
     if (ex.category != arg_error)
-      RETHROW; /* this is a serious error */
+      RETHROW;                  /* this is a serious error */
     xbt_ex_free(ex);
   }
-  
+
   TRY {
-    SD_task_dependency_add(NULL, NULL, taskB, taskA); /* shouldn't work and must raise an exception */
+    SD_task_dependency_add(NULL, NULL, taskB, taskA);   /* shouldn't work and must raise an exception */
     xbt_die("Oh oh, I can add an already existing dependency!");
   }
-  CATCH (ex) {
+  CATCH(ex) {
     if (ex.category != arg_error)
       RETHROW;
     xbt_ex_free(ex);
   }
 
   TRY {
-    SD_task_dependency_remove(taskA, taskC); /* shouldn't work and must raise an exception */
+    SD_task_dependency_remove(taskA, taskC);    /* shouldn't work and must raise an exception */
     xbt_die("Dude, I can remove an unknown dependency!");
   }
-  CATCH (ex) {
+  CATCH(ex) {
     if (ex.category != arg_error)
       RETHROW;
     xbt_ex_free(ex);
   }
 
   TRY {
-    SD_task_dependency_remove(taskC, taskC); /* shouldn't work and must raise an exception */
+    SD_task_dependency_remove(taskC, taskC);    /* shouldn't work and must raise an exception */
     xbt_die("Wow, I can remove a dependency between Task C and itself!");
   }
-  CATCH (ex) {
+  CATCH(ex) {
     if (ex.category != arg_error)
       RETHROW;
     xbt_ex_free(ex);
@@ -136,46 +141,46 @@ int main(int argc, char **argv) {
   SD_task_watch(taskD, SD_DONE);
   SD_task_watch(taskB, SD_DONE);
   SD_task_unwatch(taskD, SD_DONE);
-  
+
 
   /* scheduling parameters */
   workstation_list[0] = w1;
   workstation_list[1] = w2;
   computation_amount[0] = computation_amount1;
   computation_amount[1] = computation_amount2;
-  
+
   communication_amount[1] = communication_amount12;
   communication_amount[2] = communication_amount21;
 
   /* estimated time */
   task = taskD;
   INFO2("Estimated time for '%s': %f", SD_task_get_name(task),
-	SD_task_get_execution_time(task, workstation_number, workstation_list,
-				   computation_amount, communication_amount, rate));
+        SD_task_get_execution_time(task, workstation_number, workstation_list,
+                                   computation_amount, communication_amount,
+                                   rate));
 
   /* let's launch the simulation! */
 
   SD_task_schedule(taskA, workstation_number, workstation_list,
-		   computation_amount, communication_amount, rate);
+                   computation_amount, communication_amount, rate);
   SD_task_schedule(taskB, workstation_number, workstation_list,
-		   computation_amount, communication_amount, rate);
+                   computation_amount, communication_amount, rate);
   SD_task_schedule(taskC, workstation_number, workstation_list,
-		   computation_amount, communication_amount, rate);
+                   computation_amount, communication_amount, rate);
   SD_task_schedule(taskD, workstation_number, workstation_list,
-		   computation_amount, communication_amount, rate);
+                   computation_amount, communication_amount, rate);
 
   changed_tasks = SD_simulate(-1.0);
   for (i = 0; changed_tasks[i] != NULL; i++) {
     INFO3("Task '%s' start time: %f, finish time: %f",
-	  SD_task_get_name(changed_tasks[i]),
-	  SD_task_get_start_time(changed_tasks[i]),
-	  SD_task_get_finish_time(changed_tasks[i]));
+          SD_task_get_name(changed_tasks[i]),
+          SD_task_get_start_time(changed_tasks[i]),
+          SD_task_get_finish_time(changed_tasks[i]));
   }
-  
+
   xbt_assert0(changed_tasks[0] == taskD &&
-	      changed_tasks[1] == taskB &&
-	      changed_tasks[2] == NULL,
-	      "Unexpected simulation results");
+              changed_tasks[1] == taskB &&
+              changed_tasks[2] == NULL, "Unexpected simulation results");
 
   xbt_free(changed_tasks);
 
@@ -191,4 +196,3 @@ int main(int argc, char **argv) {
   SD_exit();
   return 0;
 }
-

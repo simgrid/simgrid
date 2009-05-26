@@ -30,8 +30,8 @@ typedef struct lmm_constraint {
   s_xbt_swag_hookup_t active_constraint_set_hookup;
   s_xbt_swag_hookup_t saturated_constraint_set_hookup;
 
-  s_xbt_swag_t element_set;	/* a list of lmm_mat_element_t */
-  s_xbt_swag_t active_element_set;	/* a list of lmm_mat_element_t */
+  s_xbt_swag_t element_set;     /* a list of lmm_mat_element_t */
+  s_xbt_swag_t active_element_set;      /* a list of lmm_mat_element_t */
   double bound;
   double lambda;
   double new_lambda;
@@ -53,25 +53,25 @@ typedef struct lmm_variable {
   double bound;
   double value;
   void *id;
-  int index; /* FOR SDP ONLY */
+  int index;                    /* FOR SDP ONLY */
   /* \begin{For Lagrange only} */
   double mu;
   double new_mu;
-  double (* func_f)  (struct lmm_variable *var, double x);  /* (f)    */
-  double (* func_fp)  (struct lmm_variable *var, double x);  /* (f')    */
-  double (* func_fpi)  (struct lmm_variable *var, double x);  /* (f')^{-1}    */
+  double (*func_f) (struct lmm_variable * var, double x);       /* (f)    */
+  double (*func_fp) (struct lmm_variable * var, double x);      /* (f')    */
+  double (*func_fpi) (struct lmm_variable * var, double x);     /* (f')^{-1}    */
   /* \end{For Lagrange only} */
 } s_lmm_variable_t;
 
 typedef struct lmm_system {
   int modified;
-  s_xbt_swag_t variable_set;	/* a list of lmm_variable_t */
-  s_xbt_swag_t constraint_set;	/* a list of lmm_constraint_t */
+  s_xbt_swag_t variable_set;    /* a list of lmm_variable_t */
+  s_xbt_swag_t constraint_set;  /* a list of lmm_constraint_t */
 
-  s_xbt_swag_t active_constraint_set;	/* a list of lmm_constraint_t */
+  s_xbt_swag_t active_constraint_set;   /* a list of lmm_constraint_t */
 
-  s_xbt_swag_t saturated_variable_set;	/* a list of lmm_variable_t */
-  s_xbt_swag_t saturated_constraint_set;	/* a list of lmm_constraint_t_t */
+  s_xbt_swag_t saturated_variable_set;  /* a list of lmm_variable_t */
+  s_xbt_swag_t saturated_constraint_set;        /* a list of lmm_constraint_t_t */
 
   xbt_mallocator_t variable_mallocator;
 } s_lmm_system_t;
@@ -92,8 +92,8 @@ static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst);
 
 void lmm_print(lmm_system_t sys);
 
-extern double (* func_f_def )  (lmm_variable_t , double);
-extern double (* func_fp_def ) (lmm_variable_t , double);
-extern double (* func_fpi_def )(lmm_variable_t , double);
+extern double (*func_f_def) (lmm_variable_t, double);
+extern double (*func_fp_def) (lmm_variable_t, double);
+extern double (*func_fpi_def) (lmm_variable_t, double);
 
-#endif				/* _SURF_MAXMIN_PRIVATE_H */
+#endif /* _SURF_MAXMIN_PRIVATE_H */

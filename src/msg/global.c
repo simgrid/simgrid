@@ -11,11 +11,11 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/virtu.h"
-#include "xbt/ex.h"		/* ex_backtrace_display */
+#include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mailbox.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
-				"Logging specific to MSG (kernel)");
+                                "Logging specific to MSG (kernel)");
 
 MSG_Global_t msg_global = NULL;
 
@@ -68,11 +68,11 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->PID = 1;
     msg_global->sent_msg = 0;
 
-	/* initialization of the mailbox module */
-	MSG_mailbox_mod_init();
+    /* initialization of the mailbox module */
+    MSG_mailbox_mod_init();
 
-	/* initialization of the action module */
-	_MSG_action_init();
+    /* initialization of the action module */
+    _MSG_action_init();
 
     SIMIX_function_register_process_create(_MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(__MSG_process_cleanup);
@@ -117,8 +117,8 @@ void MSG_paje_output(const char *filename)
 MSG_error_t MSG_set_channel_number(int number)
 {
   xbt_assert0((msg_global)
-	      && (msg_global->max_channel == 0),
-	      "Channel number already set!");
+              && (msg_global->max_channel == 0),
+              "Channel number already set!");
 
   msg_global->max_channel = number;
 
@@ -135,8 +135,8 @@ MSG_error_t MSG_set_channel_number(int number)
 int MSG_get_channel_number(void)
 {
   xbt_assert0((msg_global)
-	      && (msg_global->max_channel != 0),
-	      "Channel number not set yet!");
+              && (msg_global->max_channel != 0),
+              "Channel number not set yet!");
 
   return msg_global->max_channel;
 }
@@ -166,7 +166,7 @@ MSG_error_t MSG_main(void)
 
       DEBUG1("** %s failed **", smx_action->name);
       while ((cond = xbt_fifo_pop(smx_action->cond_list))) {
-	SIMIX_cond_broadcast(cond);
+        SIMIX_cond_broadcast(cond);
       }
     }
 
@@ -174,7 +174,7 @@ MSG_error_t MSG_main(void)
 
       DEBUG1("** %s done **", smx_action->name);
       while ((cond = xbt_fifo_pop(smx_action->cond_list))) {
-	SIMIX_cond_broadcast(cond);
+        SIMIX_cond_broadcast(cond);
       }
     }
   }
@@ -251,6 +251,7 @@ double MSG_get_clock(void)
   return SIMIX_get_clock();
 }
 
-unsigned long int MSG_get_sent_msg() {
+unsigned long int MSG_get_sent_msg()
+{
   return msg_global->sent_msg;
 }

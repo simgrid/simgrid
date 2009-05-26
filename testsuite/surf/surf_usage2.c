@@ -14,7 +14,7 @@
 #include "surf/surf.h"
 
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
 const char *string_action(e_surf_action_state_t state);
 const char *string_action(e_surf_action_state_t state)
@@ -48,7 +48,7 @@ void test(char *platform)
   double now = -1.0;
 
   int workstation_id =
-      find_model_description(surf_workstation_model_description,"CLM03");
+    find_model_description(surf_workstation_model_description, "CLM03");
 
   surf_workstation_model_description[workstation_id].model_init(platform);
   parse_platform_file(platform);
@@ -56,35 +56,31 @@ void test(char *platform)
     surf_workstation_model_description[workstation_id].create_ws();
 
   /*********************** WORKSTATION ***********************************/
-  workstationA =
-      surf_workstation_model->common_public->name_service("Cpu A");
-  workstationB =
-      surf_workstation_model->common_public->name_service("Cpu B");
+  workstationA = surf_workstation_model->common_public->name_service("Cpu A");
+  workstationB = surf_workstation_model->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
   DEBUG2("%s : %p",
-	 surf_workstation_model->common_public->
-	 get_resource_name(workstationA), workstationA);
+         surf_workstation_model->common_public->
+         get_resource_name(workstationA), workstationA);
   DEBUG2("%s : %p",
-	 surf_workstation_model->common_public->
-	 get_resource_name(workstationB), workstationB);
+         surf_workstation_model->common_public->
+         get_resource_name(workstationB), workstationB);
 
   /* Let's do something on it */
   actionA =
-      surf_workstation_model->extension_public->execute(workstationA,
-							   1000.0);
+    surf_workstation_model->extension_public->execute(workstationA, 1000.0);
   actionB =
-      surf_workstation_model->extension_public->execute(workstationB,
-							   1000.0);
+    surf_workstation_model->extension_public->execute(workstationB, 1000.0);
   actionC =
-      surf_workstation_model->extension_public->sleep(workstationB,
-							 7.32);
+    surf_workstation_model->extension_public->sleep(workstationB, 7.32);
 
   commAB =
-      surf_workstation_model->extension_public->
-      communicate(workstationA, workstationB, 150.0, -1.0);
+    surf_workstation_model->extension_public->communicate(workstationA,
+                                                          workstationB, 150.0,
+                                                          -1.0);
 
-  surf_solve();			/* Takes traces into account. Returns 0.0 */
+  surf_solve();                 /* Takes traces into account. Returns 0.0 */
   do {
     surf_action_t action = NULL;
     unsigned int iter;
@@ -96,19 +92,19 @@ void test(char *platform)
     xbt_dynar_foreach(model_list, iter, model) {
       DEBUG1("\t %s actions", model->common_public->name);
       while ((action =
-	     xbt_swag_extract(model->common_public->states.
-			      failed_action_set))) {
-	DEBUG1("\t * Failed : %p", action);
-	model->common_public->action_free(action);
+              xbt_swag_extract(model->common_public->states.
+                               failed_action_set))) {
+        DEBUG1("\t * Failed : %p", action);
+        model->common_public->action_free(action);
       }
       while ((action =
-	     xbt_swag_extract(model->common_public->states.
-			      done_action_set))) {
-	DEBUG1("\t * Done : %p", action);
-	model->common_public->action_free(action);
+              xbt_swag_extract(model->common_public->states.
+                               done_action_set))) {
+        DEBUG1("\t * Done : %p", action);
+        model->common_public->action_free(action);
       }
     }
-  } while (surf_solve()>=0.0);
+  } while (surf_solve() >= 0.0);
 
   DEBUG0("Simulation Terminated");
 
@@ -120,11 +116,11 @@ void test(char *platform)
 
 int main(int argc, char **argv)
 {
-  surf_init(&argc, argv);	/* Initialize some common structures */
-  if(argc==1) {
-     fprintf(stderr,"Usage : %s platform.txt\n",argv[0]);
-     surf_exit();
-     return 1;
+  surf_init(&argc, argv);       /* Initialize some common structures */
+  if (argc == 1) {
+    fprintf(stderr, "Usage : %s platform.txt\n", argv[0]);
+    surf_exit();
+    return 1;
   }
   test(argv[1]);
 

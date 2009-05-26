@@ -12,12 +12,12 @@
 
 #include "xbt/synchro.h"
 typedef struct xbt_dynar_s {
-  unsigned long          size;
-  unsigned long          used;
-  unsigned long          elmsize;
-  void           *data;
+  unsigned long size;
+  unsigned long used;
+  unsigned long elmsize;
+  void *data;
   void_f_pvoid_t free_f;
-  xbt_mutex_t    mutex;
+  xbt_mutex_t mutex;
 } s_xbt_dynar_t;
 
 #endif /* DYNAR_PRIVATE_H */

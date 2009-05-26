@@ -17,10 +17,10 @@
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 
-#include "gras/emul.h"       /* gras_if_RL() */
+#include "gras/emul.h"          /* gras_if_RL() */
 
-#include "gras_modinter.h"   /* module init/exit */
-#include "gras/transport.h"  /* rest of module interface */
+#include "gras_modinter.h"      /* module init/exit */
+#include "gras/transport.h"     /* rest of module interface */
 
 #include "gras/Transport/transport_interface.h" /* semi-public API */
 #include "gras/Virtu/virtu_interface.h" /* libdata management */
@@ -51,46 +51,45 @@ extern gras_socket_t _gras_lastly_selected_socket;
  */
 typedef struct gras_trp_bufdata_ gras_trp_bufdata_t;
 
-typedef struct s_gras_socket  {
+typedef struct s_gras_socket {
   gras_trp_plugin_t plugin;
-    
-  int incoming :1; /* true if we can read from this sock */
-  int outgoing :1; /* true if we can write on this sock */
-  int accepting :1; /* true if master incoming sock in tcp */
-  int meas :1; /* true if this is an experiment socket instead of messaging */
-  int valid :1; /* false if a select returned that the peer quitted, forcing us to "close" the socket */
-  int moredata :1; /* TCP socket use a buffer and read operation get as much 
-		      data as possible. It is possible that several messages
-		      are received in one shoot, and select won't catch them 
-		      afterward again. 
-		      This boolean indicates that this is the case, so that we
-		      don't call select in that case.  Note that measurement
-		      sockets are not concerned since they use the TCP
-		      interface directly, with no buffer. */
-   
-  int recvd :1; /* true if the recvd_val field contains one byte of the stream (that we peek'ed to check the socket validity) */
-  char recvd_val; /* what we peeked from the socket, if any */
-   
-  unsigned long int buf_size; /* what to say to the OS. 
-				 Field here to remember it when accepting */
-   
-  int  sd; 
-  int  port; /* port on this side */
-  int  peer_port; /* port on the other side */
-  char *peer_name; /* hostname of the other side */
-  char *peer_proc; /* process on the other side */
 
-  void *data;    /* plugin specific data */
+  int incoming:1;               /* true if we can read from this sock */
+  int outgoing:1;               /* true if we can write on this sock */
+  int accepting:1;              /* true if master incoming sock in tcp */
+  int meas:1;                   /* true if this is an experiment socket instead of messaging */
+  int valid:1;                  /* false if a select returned that the peer quitted, forcing us to "close" the socket */
+  int moredata:1;               /* TCP socket use a buffer and read operation get as much 
+                                   data as possible. It is possible that several messages
+                                   are received in one shoot, and select won't catch them 
+                                   afterward again. 
+                                   This boolean indicates that this is the case, so that we
+                                   don't call select in that case.  Note that measurement
+                                   sockets are not concerned since they use the TCP
+                                   interface directly, with no buffer. */
+
+  int recvd:1;                  /* true if the recvd_val field contains one byte of the stream (that we peek'ed to check the socket validity) */
+  char recvd_val;               /* what we peeked from the socket, if any */
+
+  unsigned long int buf_size;   /* what to say to the OS. 
+                                   Field here to remember it when accepting */
+
+  int sd;
+  int port;                     /* port on this side */
+  int peer_port;                /* port on the other side */
+  char *peer_name;              /* hostname of the other side */
+  char *peer_proc;              /* process on the other side */
+
+  void *data;                   /* plugin specific data */
 
   /* buffer plugin specific data. Yeah, C is not OO, so I got to trick */
-  gras_trp_bufdata_t *bufdata; 
-}s_gras_socket_t;
-	
-void gras_trp_socket_new(int incomming,
-			 gras_socket_t *dst);
+  gras_trp_bufdata_t *bufdata;
+} s_gras_socket_t;
+
+void gras_trp_socket_new(int incomming, gras_socket_t * dst);
 
 /* The drivers */
-typedef void (*gras_trp_setup_t)(gras_trp_plugin_t dst);
+typedef void (*gras_trp_setup_t) (gras_trp_plugin_t dst);
 
 void gras_trp_tcp_setup(gras_trp_plugin_t plug);
 void gras_trp_iov_setup(gras_trp_plugin_t plug);

@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h> /* abort */
+#include <stdlib.h>             /* abort */
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 
@@ -24,12 +24,14 @@ XBT_LOG_DEFAULT_CATEGORY(xbt);
  * If you want to pass arguments to the format, you can always write xbt_assert1(0,"fmt",args) or
  * xbt_die(bprintf("fmt", arg))
  */
-void xbt_die (const char *msg) {
-  CRITICAL1("%s",msg);
+void xbt_die(const char *msg)
+{
+  CRITICAL1("%s", msg);
   xbt_abort();
 }
 
 /** @brief Kill the program in silence */
-void xbt_abort(void) {
+void xbt_abort(void)
+{
   abort();
 }

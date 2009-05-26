@@ -10,7 +10,8 @@
 #include "gras/module.h"
 #include "virtu_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_modules,gras,"Module and moddata handling");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_modules, gras,
+                                "Module and moddata handling");
 
 /* IMPLEMENTATION NOTE
 
@@ -68,24 +69,25 @@ typedef struct s_gras_module {
   XBT_SET_HEADERS;
 
   unsigned int datasize;
-  int refcount; /* Number of processes using this module */
+  int refcount;                 /* Number of processes using this module */
   /* FIXME: we should keep a count of references within a given process to
      allow modules initializing other modules while tracking dependencies
      properly and leave() only when needed. This would allow dynamic module
      loading/unloading */
 
-  int *p_id; /* where the module stores the libdata ID (a global somewhere), to tweak it on need */
-  void_f_void_t init_f;  /* First time the module is referenced. */
-  void_f_void_t exit_f;  /* When last process referencing it stops doing so. */
-  void_f_pvoid_t join_f;  /* Called by each process in initialization phase (init_f called once for all processes) */
-  void_f_pvoid_t leave_f; /* Called by each process in finalization phase. Should free moddata passed */
+  int *p_id;                    /* where the module stores the libdata ID (a global somewhere), to tweak it on need */
+  void_f_void_t init_f;         /* First time the module is referenced. */
+  void_f_void_t exit_f;         /* When last process referencing it stops doing so. */
+  void_f_pvoid_t join_f;        /* Called by each process in initialization phase (init_f called once for all processes) */
+  void_f_pvoid_t leave_f;       /* Called by each process in finalization phase. Should free moddata passed */
 } s_gras_module_t, *gras_module_t;
 
-static xbt_set_t _gras_modules = NULL; /* content: s_gras_module_t */
+static xbt_set_t _gras_modules = NULL;  /* content: s_gras_module_t */
 
-static void gras_module_freep(void *p) {
-   free( ((gras_module_t)p) ->name);
-   free(p);
+static void gras_module_freep(void *p)
+{
+  free(((gras_module_t) p)->name);
+  free(p);
 }
 
 
@@ -107,9 +109,10 @@ static void gras_module_freep(void *p) {
  */
 
 void gras_module_add(const char *name, unsigned int datasize, int *ID,
-		     void_f_void_t  init_f, void_f_void_t  exit_f,
-		     void_f_pvoid_t join_f, void_f_pvoid_t leave_f) {
-  gras_module_t mod=NULL;
+                     void_f_void_t init_f, void_f_void_t exit_f,
+                     void_f_pvoid_t join_f, void_f_pvoid_t leave_f)
+{
+  gras_module_t mod = NULL;
   xbt_ex_t e;
   volatile int found = 0;
 
@@ -117,9 +120,10 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
     _gras_modules = xbt_set_new();
 
   TRY {
-    mod=(gras_module_t)xbt_set_get_by_name (_gras_modules,name);
+    mod = (gras_module_t) xbt_set_get_by_name(_gras_modules, name);
     found = 1;
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != not_found_error)
       RETHROW;
     xbt_ex_free(e);
@@ -127,23 +131,23 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
 
   if (found) {
     xbt_assert1(mod->init_f == init_f,
-		"Module %s reregistered with a different init_f!", name);
+                "Module %s reregistered with a different init_f!", name);
     xbt_assert1(mod->exit_f == exit_f,
-		"Module %s reregistered with a different exit_f!", name);
+                "Module %s reregistered with a different exit_f!", name);
     xbt_assert1(mod->join_f == join_f,
-		"Module %s reregistered with a different join_f!", name);
+                "Module %s reregistered with a different join_f!", name);
     xbt_assert1(mod->leave_f == leave_f,
-		"Module %s reregistered with a different leave_f!", name);
+                "Module %s reregistered with a different leave_f!", name);
     xbt_assert1(mod->datasize == datasize,
-		"Module %s reregistered with a different datasize!", name);
+                "Module %s reregistered with a different datasize!", name);
     xbt_assert1(mod->p_id == ID,
-		"Module %s reregistered with a different p_id field!", name);
+                "Module %s reregistered with a different p_id field!", name);
 
-    DEBUG1("Module %s already registered. Ignoring re-registration",name);
+    DEBUG1("Module %s already registered. Ignoring re-registration", name);
     return;
   }
 
-  VERB1("Register module %s",name);
+  VERB1("Register module %s", name);
   mod = xbt_new(s_gras_module_t, 1);
   mod->name = xbt_strdup(name);
   mod->name_len = strlen(name);
@@ -158,91 +162,100 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
 
   *mod->p_id = xbt_set_length(_gras_modules);
 
-  xbt_set_add(_gras_modules,(void*)mod,gras_module_freep);
+  xbt_set_add(_gras_modules, (void *) mod, gras_module_freep);
 }
 
 /* shutdown the module mechanism (world-wide cleanups) */
-void gras_moddata_exit(void) {
+void gras_moddata_exit(void)
+{
   xbt_set_free(&_gras_modules);
 }
 
 /* frees the moddata on this host (process-wide cleanups) */
-void gras_moddata_leave(void) {
-  gras_procdata_t *pd=gras_procdata_get();
+void gras_moddata_leave(void)
+{
+  gras_procdata_t *pd = gras_procdata_get();
 
   xbt_dynar_free(&pd->moddata);
 }
 
 /* Removes & frees a given moddata from the current host */
-static void moddata_freep(void *p) {
-  gras_procdata_t *pd=gras_procdata_get();
-  int id = xbt_dynar_search (pd->moddata, p);
-  gras_module_t mod = (gras_module_t)xbt_set_get_by_id(_gras_modules, id);
+static void moddata_freep(void *p)
+{
+  gras_procdata_t *pd = gras_procdata_get();
+  int id = xbt_dynar_search(pd->moddata, p);
+  gras_module_t mod = (gras_module_t) xbt_set_get_by_id(_gras_modules, id);
 
-  (*mod->leave_f)(gras_moddata_by_id(id));
+  (*mod->leave_f) (gras_moddata_by_id(id));
 }
 
-void gras_module_join(const char *name) {
+void gras_module_join(const char *name)
+{
   gras_procdata_t *pd;
   void *moddata;
-  gras_module_t mod = (gras_module_t)xbt_set_get_by_name(_gras_modules, name);
+  gras_module_t mod =
+    (gras_module_t) xbt_set_get_by_name(_gras_modules, name);
 
-  VERB2("Join to module %s (%p)",name,mod);
+  VERB2("Join to module %s (%p)", name, mod);
 
   /* NEW */
   if (mod->refcount == 0) {
-    VERB1("Init module %s",name);
+    VERB1("Init module %s", name);
     mod->name = xbt_strdup(name);
 
-    (*mod->init_f)();
+    (*mod->init_f) ();
   } else {
     DEBUG3("Module %s already inited. Refcount=%d ID=%d",
-	  mod->name, mod->refcount,*(mod->p_id));
+           mod->name, mod->refcount, *(mod->p_id));
   }
   mod->refcount++;
 
   /* JOIN */
-  pd=gras_procdata_get();
+  pd = gras_procdata_get();
 
-  if (!pd->moddata) /* Damn. I must be the first module on this process. Scary ;)*/
-    pd->moddata   = xbt_dynar_new(sizeof(gras_module_t),&moddata_freep);
+  if (!pd->moddata)             /* Damn. I must be the first module on this process. Scary ;) */
+    pd->moddata = xbt_dynar_new(sizeof(gras_module_t), &moddata_freep);
 
   moddata = xbt_malloc(mod->datasize);
 
   xbt_dynar_set(pd->moddata, *(mod->p_id), &moddata);
 
-  (*mod->join_f)(moddata);
+  (*mod->join_f) (moddata);
 
-  DEBUG2("Module %s joined successfully (ID=%d)", name,*(mod->p_id));
+  DEBUG2("Module %s joined successfully (ID=%d)", name, *(mod->p_id));
 }
-void gras_module_leave(const char *name) {
-  void *moddata;
-  gras_module_t mod = (gras_module_t)xbt_set_get_by_name(_gras_modules, name);
 
-  VERB1("Leave module %s",name);
+void gras_module_leave(const char *name)
+{
+  void *moddata;
+  gras_module_t mod =
+    (gras_module_t) xbt_set_get_by_name(_gras_modules, name);
+
+  VERB1("Leave module %s", name);
 
   /* LEAVE */
-  moddata = gras_moddata_by_id( *(mod->p_id) );
-  (*mod->leave_f)(moddata);
+  moddata = gras_moddata_by_id(*(mod->p_id));
+  (*mod->leave_f) (moddata);
 
   /* EXIT */
   mod->refcount--;
   if (!mod->refcount) {
-    VERB1("Exit module %s",name);
+    VERB1("Exit module %s", name);
 
-    (*mod->exit_f)();
+    (*mod->exit_f) ();
 
     /* Don't remove the module for real, sets don't allow to
 
        free(mod->name);
        free(mod);
-    */
+     */
   }
 }
 
 
-void *gras_moddata_by_id(unsigned int ID) {
-  gras_procdata_t *pd=gras_procdata_get();
+void *gras_moddata_by_id(unsigned int ID)
+{
+  gras_procdata_t *pd = gras_procdata_get();
   void *p;
 
   xbt_dynar_get_cpy(pd->moddata, ID, &p);

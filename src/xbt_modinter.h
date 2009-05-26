@@ -15,7 +15,7 @@
 void xbt_backtrace_init(void);
 void xbt_backtrace_exit(void);
 
-void xbt_log_init(int *argc,char **argv);
+void xbt_log_init(int *argc, char **argv);
 void xbt_log_exit(void);
 void xbt_fifo_exit(void);
 void xbt_dict_exit(void);
@@ -24,6 +24,6 @@ void xbt_context_mod_init(void);
 void xbt_context_mod_exit(void);
 
 void xbt_os_thread_mod_init(void);
-void xbt_os_thread_mod_exit(void);   
-   
+void xbt_os_thread_mod_exit(void);
+
 #endif /* XBT_MODINTER_H */

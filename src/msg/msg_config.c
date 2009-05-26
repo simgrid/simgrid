@@ -33,12 +33,12 @@ void MSG_config(const char *name, ...)
 
   if (!msg_global) {
     fprintf(stderr,
-	    "ERROR: Please call MSG_init() before using MSG_config()\n");
+            "ERROR: Please call MSG_init() before using MSG_config()\n");
     abort();
   }
 
 
-  
+
   /*  xbt_cfg_dump("msg_cfg_set","",_msg_cfg_set); */
   va_start(pa, name);
 

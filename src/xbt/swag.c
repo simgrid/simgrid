@@ -154,25 +154,25 @@ void *xbt_swag_remove(void *obj, xbt_swag_t swag)
 
   if ((!obj) || (!swag))
     return NULL;
-  if(!xbt_swag_belongs(obj, swag)) /* Trying to remove an object that
-				      was not in this swag */
+  if (!xbt_swag_belongs(obj, swag))     /* Trying to remove an object that
+                                           was not in this swag */
     return NULL;
 
-  if (swag->head == swag->tail) {	/* special case */
-    if (swag->head != obj)	/* Trying to remove an object that was not in this swag */
+  if (swag->head == swag->tail) {       /* special case */
+    if (swag->head != obj)      /* Trying to remove an object that was not in this swag */
       return NULL;
     swag->head = NULL;
     swag->tail = NULL;
     NEXT(obj, offset) = PREV(obj, offset) = NULL;
-  } else if (obj == swag->head) {	/* It's the head */
+  } else if (obj == swag->head) {       /* It's the head */
     swag->head = NEXT(obj, offset);
     PREV(swag->head, offset) = NULL;
     NEXT(obj, offset) = NULL;
-  } else if (obj == swag->tail) {	/* It's the tail */
+  } else if (obj == swag->tail) {       /* It's the tail */
     swag->tail = PREV(obj, offset);
     NEXT(swag->tail, offset) = NULL;
     PREV(obj, offset) = NULL;
-  } else {			/* It's in the middle */
+  } else {                      /* It's in the middle */
     NEXT(PREV(obj, offset), offset) = NEXT(obj, offset);
     PREV(NEXT(obj, offset), offset) = PREV(obj, offset);
     PREV(obj, offset) = NEXT(obj, offset) = NULL;
@@ -195,7 +195,7 @@ void *xbt_swag_extract(xbt_swag_t swag)
 
   obj = swag->head;
 
-  if (swag->head == swag->tail) {	/* special case */
+  if (swag->head == swag->tail) {       /* special case */
     swag->head = swag->tail = NULL;
     PREV(obj, offset) = NEXT(obj, offset) = NULL;
   } else {
@@ -207,6 +207,7 @@ void *xbt_swag_extract(xbt_swag_t swag)
 
   return obj;
 }
+
 /**
  * \param swag a swag
  * \return the number of objects in \a swag
@@ -224,13 +225,13 @@ int xbt_swag_size(xbt_swag_t swag)
 int xbt_swag_belongs(void *obj, xbt_swag_t swag)
 {
   return ((NEXT(obj, swag->offset)) || (PREV(obj, swag->offset))
-      || (swag->head == obj));
+          || (swag->head == obj));
 }
 
 
 #ifdef SIMGRID_TEST
 
-XBT_TEST_SUITE("swag","Swag data container");
+XBT_TEST_SUITE("swag", "Swag data container");
 
 typedef struct {
   s_xbt_swag_hookup_t setA;
@@ -239,22 +240,23 @@ typedef struct {
 } shmurtz, s_shmurtz_t, *shmurtz_t;
 
 
-XBT_TEST_UNIT("basic",test_swag_basic,"Basic usage") {
+XBT_TEST_UNIT("basic", test_swag_basic, "Basic usage")
+{
   shmurtz_t obj1, obj2, obj;
-  xbt_swag_t setA,setB;
+  xbt_swag_t setA, setB;
 
-  obj1 = xbt_new0(s_shmurtz_t,1);
-  obj2 = xbt_new0(s_shmurtz_t,1);
+  obj1 = xbt_new0(s_shmurtz_t, 1);
+  obj2 = xbt_new0(s_shmurtz_t, 1);
 
-  obj1->name="Obj 1";
-  obj2->name="Obj 2";
+  obj1->name = "Obj 1";
+  obj2->name = "Obj 2";
 
   xbt_test_add0("Basic usage");
-  xbt_test_log3("%p %p %ld\n",obj1,&(obj1->setB),
-                (long)((char *)&(obj1->setB) - (char *)obj1));
+  xbt_test_log3("%p %p %ld\n", obj1, &(obj1->setB),
+                (long) ((char *) &(obj1->setB) - (char *) obj1));
 
-  setA = xbt_swag_new(xbt_swag_offset(*obj1,setA));
-  setB = xbt_swag_new(xbt_swag_offset(*obj1,setB));
+  setA = xbt_swag_new(xbt_swag_offset(*obj1, setA));
+  setB = xbt_swag_new(xbt_swag_offset(*obj1, setB));
 
   xbt_swag_insert(obj1, setA);
   xbt_swag_insert(obj1, setB);
@@ -262,24 +264,24 @@ XBT_TEST_UNIT("basic",test_swag_basic,"Basic usage") {
   xbt_swag_insert(obj2, setB);
 
   xbt_swag_remove(obj1, setB);
-  /*  xbt_swag_remove(obj2, setB);*/
+  /*  xbt_swag_remove(obj2, setB); */
 
   xbt_test_add0("Traverse set A");
-  xbt_swag_foreach(obj,setA) {
-    xbt_test_log1("Saw: %s",obj->name);
+  xbt_swag_foreach(obj, setA) {
+    xbt_test_log1("Saw: %s", obj->name);
   }
 
   xbt_test_add0("Traverse set B");
-  xbt_swag_foreach(obj,setB) {
-    xbt_test_log1("Saw: %s",obj->name);
+  xbt_swag_foreach(obj, setB) {
+    xbt_test_log1("Saw: %s", obj->name);
   }
 
   xbt_test_add0("Ensure set content and length");
-  xbt_test_assert(  xbt_swag_belongs(obj1,setA));
-  xbt_test_assert(  xbt_swag_belongs(obj2,setA));
+  xbt_test_assert(xbt_swag_belongs(obj1, setA));
+  xbt_test_assert(xbt_swag_belongs(obj2, setA));
 
-  xbt_test_assert(! xbt_swag_belongs(obj1,setB));
-  xbt_test_assert(  xbt_swag_belongs(obj2,setB));
+  xbt_test_assert(!xbt_swag_belongs(obj1, setB));
+  xbt_test_assert(xbt_swag_belongs(obj2, setB));
 
   xbt_test_assert(xbt_swag_size(setA) == 2);
   xbt_test_assert(xbt_swag_size(setB) == 1);

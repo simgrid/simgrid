@@ -10,7 +10,7 @@
 #include "xbt/sysdep.h"
 #include "mallocator_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator,xbt,"Mallocators");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
 
 /**
  * \brief Constructor
@@ -32,20 +32,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator,xbt,"Mallocators");
 xbt_mallocator_t xbt_mallocator_new(int size,
                                     pvoid_f_void_t new_f,
                                     void_f_pvoid_t free_f,
-                                    void_f_pvoid_t reset_f) {
+                                    void_f_pvoid_t reset_f)
+{
 
 
   xbt_mallocator_t m;
 
   xbt_assert0(size > 0, "size must be positive");
-  xbt_assert0(new_f != NULL && free_f != NULL && reset_f != NULL,"invalid parameter");
+  xbt_assert0(new_f != NULL && free_f != NULL
+              && reset_f != NULL, "invalid parameter");
 
   m = xbt_new0(s_xbt_mallocator_t, 1);
-  VERB1("Create mallocator %p",m);
-  if (XBT_LOG_ISENABLED(xbt_mallocator,xbt_log_priority_verbose))
+  VERB1("Create mallocator %p", m);
+  if (XBT_LOG_ISENABLED(xbt_mallocator, xbt_log_priority_verbose))
     xbt_backtrace_display_current();
 
-  m->objects = xbt_new0(void*, size);
+  m->objects = xbt_new0(void *, size);
   m->max_size = size;
   m->current_size = 0;
   m->new_f = new_f;
@@ -63,14 +65,15 @@ xbt_mallocator_t xbt_mallocator_new(int size,
  *
  * \see xbt_mallocator_new()
  */
-void xbt_mallocator_free(xbt_mallocator_t m) {
+void xbt_mallocator_free(xbt_mallocator_t m)
+{
 
   int i;
   xbt_assert0(m != NULL, "Invalid parameter");
 
-  VERB3("Frees mallocator %p (size:%d/%d)",m,m->current_size,m->max_size);
+  VERB3("Frees mallocator %p (size:%d/%d)", m, m->current_size, m->max_size);
   for (i = 0; i < m->current_size; i++) {
-    (*(m->free_f))(m->objects[i]);
+    (*(m->free_f)) (m->objects[i]);
   }
   xbt_free(m->objects);
   xbt_free(m);
@@ -92,21 +95,23 @@ void xbt_mallocator_free(xbt_mallocator_t m) {
  *
  * \see xbt_mallocator_release()
  */
-void *xbt_mallocator_get(xbt_mallocator_t m) {
+void *xbt_mallocator_get(xbt_mallocator_t m)
+{
   void *object;
   xbt_assert0(m != NULL, "Invalid parameter");
 
   if (m->current_size > 0) {
     /* there is at least an available object */
-    DEBUG3("Reuse an old object for mallocator %p (size:%d/%d)",m,m->current_size,m->max_size);
+    DEBUG3("Reuse an old object for mallocator %p (size:%d/%d)", m,
+           m->current_size, m->max_size);
     object = m->objects[--m->current_size];
-  }
-  else {
+  } else {
     /* otherwise we must allocate a new object */
-    DEBUG3("Create a new object for mallocator %p (size:%d/%d)",m,m->current_size,m->max_size);
-    object = (*(m->new_f))();
+    DEBUG3("Create a new object for mallocator %p (size:%d/%d)", m,
+           m->current_size, m->max_size);
+    object = (*(m->new_f)) ();
   }
-  (*(m->reset_f))(object);
+  (*(m->reset_f)) (object);
   return object;
 }
 
@@ -123,17 +128,20 @@ void *xbt_mallocator_get(xbt_mallocator_t m) {
  *
  * \see xbt_mallocator_get()
  */
-void xbt_mallocator_release(xbt_mallocator_t m, void *object) {
+void xbt_mallocator_release(xbt_mallocator_t m, void *object)
+{
   xbt_assert0(m != NULL && object != NULL, "Invalid parameter");
 
   if (m->current_size < m->max_size) {
     /* there is enough place to push the object */
-    DEBUG3("Store deleted object in mallocator %p for further use (size:%d/%d)",m,m->current_size,m->max_size);
+    DEBUG3
+      ("Store deleted object in mallocator %p for further use (size:%d/%d)",
+       m, m->current_size, m->max_size);
     m->objects[m->current_size++] = object;
-  }
-  else {
+  } else {
     /* otherwise we don't have a choice, we must free the object */
-    DEBUG3("Free deleted object: mallocator %p is full (size:%d/%d)",m,m->current_size,m->max_size);
-    (*(m->free_f))(object);
+    DEBUG3("Free deleted object: mallocator %p is full (size:%d/%d)", m,
+           m->current_size, m->max_size);
+    (*(m->free_f)) (object);
   }
 }

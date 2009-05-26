@@ -25,9 +25,8 @@
  *
  * @return				The global reference to the original java task 
  *						instance.
- */			
-jobject
-jtask_new_global_ref(jobject jtask,JNIEnv* env);
+ */
+jobject jtask_new_global_ref(jobject jtask, JNIEnv * env);
 
 /**
  * This function delete a global reference to a java task instance.
@@ -35,8 +34,7 @@ jtask_new_global_ref(jobject jtask,JNIEnv* env);
  * @param				The global refernce to delete.
  * @param env			The environment of the current thread.
  */
-void
-jtask_delete_global_ref(jobject jtask,JNIEnv* env);
+void jtask_delete_global_ref(jobject jtask, JNIEnv * env);
 
 /**
  * This function associated a native task to a java task instance.
@@ -49,9 +47,8 @@ jtask_delete_global_ref(jobject jtask,JNIEnv* env);
  *						the ClassNotFoundException. If the field bind of 
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
- */		
-void
-jtask_bind(jobject jtask,m_task_t task,JNIEnv* env);
+ */
+void jtask_bind(jobject jtask, m_task_t task, JNIEnv * env);
 
 /**
  * This function returns a native task from a java task instance.
@@ -67,8 +64,7 @@ jtask_bind(jobject jtask,m_task_t task,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
  */
-m_task_t
-jtask_to_native_task(jobject jtask,JNIEnv* env);
+m_task_t jtask_to_native_task(jobject jtask, JNIEnv * env);
 
 /**
  * This function tests if a java task instance is valid.
@@ -81,7 +77,6 @@ jtask_to_native_task(jobject jtask,JNIEnv* env);
  * @return				If the java task is valid the function returns true.
  *						Otherwise the function returns false.
  */
-jboolean
-jtask_is_valid(jobject jtask,JNIEnv* env);
+jboolean jtask_is_valid(jobject jtask, JNIEnv * env);
 
 #endif /* !MSG_JTASK_H */

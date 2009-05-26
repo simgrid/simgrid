@@ -13,8 +13,8 @@
 #include "xbt/dict.h"
 
 typedef struct network_link_CM02 {
-  surf_model_t model;	/* Any such object, added in a trace
-				   should start by this field!!! */
+  surf_model_t model;           /* Any such object, added in a trace
+                                   should start by this field!!! */
   xbt_dict_t properties;
   /* Using this object with the public part of
      model does not make sense */
@@ -53,4 +53,4 @@ extern int *routing_table_size;
 #define ROUTE(i,j) routing_table[(i)+(j)*host_number]
 #define ROUTE_SIZE(i,j) routing_table_size[(i)+(j)*host_number]
 
-#endif				/* _SURF_NETWORK_PRIVATE_H */
+#endif /* _SURF_NETWORK_PRIVATE_H */

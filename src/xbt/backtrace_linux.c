@@ -12,17 +12,23 @@
 /* This file is to be included in ex.c, so the following headers are not mandatory, but it's to make sure that eclipse see them too */
 #include "xbt/ex.h"
 #include "xbt/str.h"
-#include "xbt/module.h" /* xbt_binary_name */
-#include "xbt_modinter.h" /* backtrace initialization headers */
+#include "xbt/module.h"         /* xbt_binary_name */
+#include "xbt_modinter.h"       /* backtrace initialization headers */
 /* end of "useless" inclusions */
 
 extern char **environ;          /* the environment, as specified by the opengroup */
 
 /* Module creation/destruction: nothing to do on linux */
-void xbt_backtrace_init(void) { }
-void xbt_backtrace_exit(void) { }
+void xbt_backtrace_init(void)
+{
+}
 
-void xbt_backtrace_current(xbt_ex_t * e) {
+void xbt_backtrace_exit(void)
+{
+}
+
+void xbt_backtrace_current(xbt_ex_t * e)
+{
   e->used = backtrace((void **) e->bt, XBT_BACKTRACE_SIZE);
 }
 
@@ -52,12 +58,14 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   struct stat stat_buf;
   char *binary_name = NULL;
 
-  xbt_assert0(e && e->used,"Backtrace not setup yet, cannot set it up for display");
+  xbt_assert0(e
+              && e->used,
+              "Backtrace not setup yet, cannot set it up for display");
 
   backtrace_syms = backtrace_symbols(e->bt, e->used);
   /* ignore first one, which is this xbt_backtrace_current() */
   e->used--;
-  memmove(backtrace_syms,backtrace_syms+1,sizeof(char*)*e->used);
+  memmove(backtrace_syms, backtrace_syms + 1, sizeof(char *) * e->used);
   addrs = xbt_new(char *, e->used);
 
   e->bt_strings = NULL;
@@ -144,11 +152,13 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
     DEBUG2("Looking for symbol %d, addr = '%s'", i, addrs[i]);
     fgets_res = fgets(line_func, 1024, pipe);
     if (fgets_res == NULL)
-      THROW2(system_error,0, "Cannot run fgets to look for symbol %d, addr %s",i, addrs[i]);
+      THROW2(system_error, 0,
+             "Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
     line_func[strlen(line_func) - 1] = '\0';
     fgets_res = fgets(line_pos, 1024, pipe);
     if (fgets_res == NULL)
-      THROW2(system_error,0, "Cannot run fgets to look for symbol %d, addr %s",i, addrs[i]);
+      THROW2(system_error, 0,
+             "Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
     line_pos[strlen(line_pos) - 1] = '\0';
 
     if (strcmp("??", line_func)) {
@@ -199,7 +209,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
         if (found) {
           DEBUG3("%#lx in [%#lx-%#lx]", addr, first, last);
           DEBUG0
-          ("Symbol found, map lines not further displayed (even if looking for next ones)");
+            ("Symbol found, map lines not further displayed (even if looking for next ones)");
         }
       }
       fclose(maps);
@@ -207,7 +217,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
 
       if (!found) {
         VERB0
-        ("Problem while reading the maps file. Following backtrace will be mangled.");
+          ("Problem while reading the maps file. Following backtrace will be mangled.");
         DEBUG1("No dynamic. Static symbol: %s", backtrace_syms[i]);
         e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace_syms[i]);
         continue;
@@ -245,13 +255,15 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
           CRITICAL0("Cannot fork addr2line to display the backtrace");
           abort();
         }
-        fgets_res=fgets(line_func, 1024, subpipe);
+        fgets_res = fgets(line_func, 1024, subpipe);
         if (fgets_res == NULL)
-          THROW1(system_error,0, "Cannot read result of subcommand %s",subcmd);
+          THROW1(system_error, 0, "Cannot read result of subcommand %s",
+                 subcmd);
         line_func[strlen(line_func) - 1] = '\0';
         fgets_res = fgets(line_pos, 1024, subpipe);
         if (fgets_res == NULL)
-          THROW1(system_error,0, "Cannot read result of subcommand %s",subcmd);
+          THROW1(system_error, 0, "Cannot read result of subcommand %s",
+                 subcmd);
         line_pos[strlen(line_pos) - 1] = '\0';
         pclose(subpipe);
         free(subcmd);

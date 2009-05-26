@@ -10,7 +10,7 @@
 #ifndef _XBT_DYNAR_H
 #define _XBT_DYNAR_H
 
-#include "xbt/misc.h" /* SG_BEGIN_DECL */
+#include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"
 
 SG_BEGIN_DECL()
@@ -52,29 +52,28 @@ SG_BEGIN_DECL()
   * \until }
   *
   */
-
 /** @defgroup XBT_dynar_cons Dynar constructor and destructor
  *  @ingroup XBT_dynar
  *
  *  @{
  */
    /** \brief Dynar data type (opaque type) */
-   typedef struct xbt_dynar_s *xbt_dynar_t;
+     typedef struct xbt_dynar_s *xbt_dynar_t;
 
 
-  XBT_PUBLIC(xbt_dynar_t)   xbt_dynar_new(const unsigned long elm_size, 
-					  void_f_pvoid_t const free_f);
-  XBT_PUBLIC(xbt_dynar_t)   xbt_dynar_new_sync(const unsigned long elm_size, 
-					       void_f_pvoid_t const free_f);
-  XBT_PUBLIC(void)          xbt_dynar_free(xbt_dynar_t *dynar);
-  XBT_PUBLIC(void)          xbt_dynar_free_voidp(void *dynar);
-  XBT_PUBLIC(void)          xbt_dynar_free_container(xbt_dynar_t *dynar);
+XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new(const unsigned long elm_size,
+                                      void_f_pvoid_t const free_f);
+XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new_sync(const unsigned long elm_size,
+                                           void_f_pvoid_t const free_f);
+XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
+XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
+XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
 
-  XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t dynar);
-  XBT_PUBLIC(void)          xbt_dynar_reset(xbt_dynar_t const dynar);
-  XBT_PUBLIC(void)          xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
+XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t dynar);
+XBT_PUBLIC(void) xbt_dynar_reset(xbt_dynar_t const dynar);
+XBT_PUBLIC(void) xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
 
-  XBT_PUBLIC(void)          xbt_dynar_dump(xbt_dynar_t dynar);
+XBT_PUBLIC(void) xbt_dynar_dump(xbt_dynar_t dynar);
 
 /** @} */
 /** @defgroup XBT_dynar_array Dynar as a regular array
@@ -83,16 +82,21 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  XBT_PUBLIC(void) xbt_dynar_get_cpy(const xbt_dynar_t dynar, const unsigned long idx, void * const dst);
-  
-  XBT_PUBLIC(void) xbt_dynar_set(xbt_dynar_t dynar, const int idx, const void *src);
-  XBT_PUBLIC(void) xbt_dynar_replace(xbt_dynar_t dynar, const unsigned long idx, const void *object);
+XBT_PUBLIC(void) xbt_dynar_get_cpy(const xbt_dynar_t dynar,
+                                   const unsigned long idx, void *const dst);
 
-  XBT_PUBLIC(void) xbt_dynar_insert_at(xbt_dynar_t  const dynar, const int  idx, const void *src);
-  XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t  const dynar, const int  idx, void * const dst);
+XBT_PUBLIC(void) xbt_dynar_set(xbt_dynar_t dynar, const int idx,
+                               const void *src);
+XBT_PUBLIC(void) xbt_dynar_replace(xbt_dynar_t dynar, const unsigned long idx,
+                                   const void *object);
 
-  XBT_PUBLIC(int)  xbt_dynar_search(xbt_dynar_t  const dynar, void *elem);
-  XBT_PUBLIC(int)  xbt_dynar_member(xbt_dynar_t  const dynar, void *elem);
+XBT_PUBLIC(void) xbt_dynar_insert_at(xbt_dynar_t const dynar, const int idx,
+                                     const void *src);
+XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx,
+                                     void *const dst);
+
+XBT_PUBLIC(int) xbt_dynar_search(xbt_dynar_t const dynar, void *elem);
+XBT_PUBLIC(int) xbt_dynar_member(xbt_dynar_t const dynar, void *elem);
 /** @} */
 /** @defgroup XBT_dynar_perl Perl-like use of dynars
  *  @ingroup XBT_dynar
@@ -100,11 +104,12 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  XBT_PUBLIC(void) xbt_dynar_push    (xbt_dynar_t  const dynar, const void *src);
-  XBT_PUBLIC(void) xbt_dynar_pop     (xbt_dynar_t  const dynar, void *const dst);
-  XBT_PUBLIC(void) xbt_dynar_unshift (xbt_dynar_t  const dynar, const void *src);
-  XBT_PUBLIC(void) xbt_dynar_shift   (xbt_dynar_t  const dynar, void *const dst);
-  XBT_PUBLIC(void) xbt_dynar_map     (const xbt_dynar_t dynar, void_f_pvoid_t const op);
+XBT_PUBLIC(void) xbt_dynar_push(xbt_dynar_t const dynar, const void *src);
+XBT_PUBLIC(void) xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst);
+XBT_PUBLIC(void) xbt_dynar_unshift(xbt_dynar_t const dynar, const void *src);
+XBT_PUBLIC(void) xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst);
+XBT_PUBLIC(void) xbt_dynar_map(const xbt_dynar_t dynar,
+                               void_f_pvoid_t const op);
 
 /** @} */
 /** @defgroup XBT_dynar_ctn Direct manipulation to the dynars content
@@ -115,10 +120,12 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  XBT_PUBLIC(void*) xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx);
-  XBT_PUBLIC(void*) xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar, const int idx);
-  XBT_PUBLIC(void*) xbt_dynar_push_ptr(xbt_dynar_t  const dynar);
-  XBT_PUBLIC(void*) xbt_dynar_pop_ptr(xbt_dynar_t  const dynar);
+XBT_PUBLIC(void *) xbt_dynar_get_ptr(const xbt_dynar_t dynar,
+                                     const unsigned long idx);
+XBT_PUBLIC(void *) xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
+                                           const int idx);
+XBT_PUBLIC(void *) xbt_dynar_push_ptr(xbt_dynar_t const dynar);
+XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
 
 /** @} */
 /** @defgroup XBT_dynar_speed Speed optimized access to dynars of scalars
@@ -174,13 +181,16 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  XBT_PUBLIC(void) _xbt_dynar_cursor_first (const xbt_dynar_t dynar, unsigned int * const cursor);
-  XBT_PUBLIC(void) _xbt_dynar_cursor_step  (const xbt_dynar_t dynar, unsigned int * const cursor);
-  XBT_PUBLIC(int)  _xbt_dynar_cursor_get   (const xbt_dynar_t dynar, unsigned int * const cursor, 
-					    void *whereto);
-  XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
-				       unsigned int *const cursor);
-  XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
+XBT_PUBLIC(void) _xbt_dynar_cursor_first(const xbt_dynar_t dynar,
+                                         unsigned int *const cursor);
+XBT_PUBLIC(void) _xbt_dynar_cursor_step(const xbt_dynar_t dynar,
+                                        unsigned int *const cursor);
+XBT_PUBLIC(int) _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
+                                      unsigned int *const cursor,
+                                      void *whereto);
+XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
+                                     unsigned int *const cursor);
+XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
 
 /** @brief Iterates over the whole dynar. 
  * 
@@ -207,5 +217,4 @@ xbt_dynar_foreach (dyn,cpt,str) {
 /** @} */
 
 SG_END_DECL()
-
 #endif /* _XBT_DYNAR_H */

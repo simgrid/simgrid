@@ -47,4 +47,4 @@ typedef struct xbt_fifo {
 /*   return NULL; */
 /* } */
 
-#endif				/* _XBT_FIFO_PRIVATE_H */
+#endif /* _XBT_FIFO_PRIVATE_H */

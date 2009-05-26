@@ -93,38 +93,46 @@ XBT_PUBLIC(void) amok_bw_init(void);
 XBT_PUBLIC(void) amok_bw_exit(void);
 
 XBT_PUBLIC(void) amok_bw_test(gras_socket_t peer,
-			     unsigned long int buf_size,
-			     unsigned long int msg_size,
-			     unsigned long int msg_amount,
-			     double min_duration,
-			     /*OUT*/ double *sec, double *bw);
+                              unsigned long int buf_size,
+                              unsigned long int msg_size,
+                              unsigned long int msg_amount,
+                              double min_duration,
+                              /*OUT*/ double *sec, double *bw);
 
-XBT_PUBLIC(void) amok_bw_request(const char* from_name,unsigned int from_port,
-		     const char* to_name,unsigned int to_port,
-				unsigned long int buf_size,
-				unsigned long int msg_size,
-				unsigned long int msg_amount,
-				double min_duration,
-				/*OUT*/ double *sec, double*bw);
+XBT_PUBLIC(void) amok_bw_request(const char *from_name,
+                                 unsigned int from_port, const char *to_name,
+                                 unsigned int to_port,
+                                 unsigned long int buf_size,
+                                 unsigned long int msg_size,
+                                 unsigned long int msg_amount,
+                                 double min_duration, /*OUT*/ double *sec,
+                                 double *bw);
 
-XBT_PUBLIC(double*) amok_bw_matrix(xbt_dynar_t hosts, /* dynar of xbt_host_t */
-				   int buf_size_bw, int msg_size_bw, int msg_amount_bw, double min_duration);
+XBT_PUBLIC(double *) amok_bw_matrix(xbt_dynar_t hosts,  /* dynar of xbt_host_t */
+                                    int buf_size_bw, int msg_size_bw,
+                                    int msg_amount_bw, double min_duration);
 
 /* ***************************************************************************
  * Link saturation
  * ***************************************************************************/
 
 
-XBT_PUBLIC(void) amok_bw_saturate_start(const char* from_name,unsigned int from_port,
-			    const char* to_name,unsigned int to_port,
-			    unsigned int msg_size, double duration);
+XBT_PUBLIC(void) amok_bw_saturate_start(const char *from_name,
+                                        unsigned int from_port,
+                                        const char *to_name,
+                                        unsigned int to_port,
+                                        unsigned int msg_size,
+                                        double duration);
 
-XBT_PUBLIC(void) amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
-			    unsigned int msg_size, double duration,
-			    /*out*/ double *elapsed, double *bw);
+XBT_PUBLIC(void) amok_bw_saturate_begin(const char *to_name,
+                                        unsigned int to_port,
+                                        unsigned int msg_size,
+                                        double duration,
+                                        /*out */ double *elapsed, double *bw);
 
-XBT_PUBLIC(void) amok_bw_saturate_stop(const char* from_name,unsigned int from_port,
-			   /*out*/ double *time, double *bw);
+XBT_PUBLIC(void) amok_bw_saturate_stop(const char *from_name,
+                                       unsigned int from_port,
+                                       /*out */ double *time, double *bw);
 
 /** @} */
 

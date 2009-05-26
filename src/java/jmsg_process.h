@@ -9,7 +9,7 @@
  * This contains the declarations of the functions in relation with the java
  * process instance.
  */
- 
+
 #ifndef MSG_JPROCESS_H
 #define MSG_JPROCESS_H
 
@@ -26,9 +26,8 @@
  *
  * @return				The global reference to the original java process 
  *						instance.
- */				
-jobject
-jprocess_new_global_ref(jobject jprocess,JNIEnv* env);
+ */
+jobject jprocess_new_global_ref(jobject jprocess, JNIEnv * env);
 
 /**
  * This function delete a global reference to a java process instance.
@@ -40,8 +39,7 @@ jprocess_new_global_ref(jobject jprocess,JNIEnv* env);
  * @see					jprocess_join()
  * @see					jprocess_exit()
  */
-void
-jprocess_delete_global_ref(jobject jprocess,JNIEnv* env);
+void jprocess_delete_global_ref(jobject jprocess, JNIEnv * env);
 
 /**
  *
@@ -59,9 +57,8 @@ jprocess_delete_global_ref(jobject jprocess,JNIEnv* env);
  *
  * @return				If the java process is alive the function returns
  *						true. Otherwise the function returns false.
- */ 
-jboolean
-jprocess_is_alive(jobject jprocess,JNIEnv* env);
+ */
+jboolean jprocess_is_alive(jobject jprocess, JNIEnv * env);
 
 /**
  * This function waits for a java process to terminate.
@@ -75,8 +72,7 @@ jprocess_is_alive(jobject jprocess,JNIEnv* env);
  *						NotSuchMethodException.	
  *
  */
-void
-jprocess_join(jobject jprocess,JNIEnv* env);
+void jprocess_join(jobject jprocess, JNIEnv * env);
 
 /**
  * This function starts the specified java process.
@@ -89,8 +85,7 @@ jprocess_join(jobject jprocess,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchMethodException.	
  */
-void
-jprocess_start(jobject jprocess,JNIEnv* env);
+void jprocess_start(jobject jprocess, JNIEnv * env);
 
 /**
  * This function forces the java process to stop.
@@ -103,8 +98,7 @@ jprocess_start(jobject jprocess,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchMethodException.	
  */
-void 
-jprocess_exit(jobject jprocess,JNIEnv* env);
+void jprocess_exit(jobject jprocess, JNIEnv * env);
 
 /**
  * This function associated a native process to a java process instance.
@@ -117,9 +111,8 @@ jprocess_exit(jobject jprocess,JNIEnv* env);
  *						the ClassNotFoundException. If the field bind of 
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
- */		
-void
-jprocess_bind(jobject jprocess,m_process_t process,JNIEnv* env);
+ */
+void jprocess_bind(jobject jprocess, m_process_t process, JNIEnv * env);
 
 /**
  * This function returns a native process from a java process instance.
@@ -135,8 +128,7 @@ jprocess_bind(jobject jprocess,m_process_t process,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
  */
-m_process_t
-jprocess_to_native_process(jobject jprocess,JNIEnv* env);
+m_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env);
 
 /**
  * This function gets the id of the specified java process.
@@ -151,8 +143,7 @@ jprocess_to_native_process(jobject jprocess,JNIEnv* env);
  *
  * @return				The id of the specified java process.
  */
-jlong
-jprocess_get_id(jobject jprocess,JNIEnv* env);
+jlong jprocess_get_id(jobject jprocess, JNIEnv * env);
 
 /**
  * This function tests if a java process instance is valid.
@@ -165,8 +156,7 @@ jprocess_get_id(jobject jprocess,JNIEnv* env);
  * @return				If the java process is valid the function returns true.
  *						Otherwise the function returns false.
  */
-jboolean
-jprocess_is_valid(jobject jprocess,JNIEnv* env);
+jboolean jprocess_is_valid(jobject jprocess, JNIEnv * env);
 
 /**
  * This function gets the name of the specified java process.
@@ -181,8 +171,7 @@ jprocess_is_valid(jobject jprocess,JNIEnv* env);
  *
  * @return				The name of the specified java process.
  */
-jstring
-jprocess_get_name(jobject jprocess,JNIEnv* env);
+jstring jprocess_get_name(jobject jprocess, JNIEnv * env);
 
 /**
  * This function yields the specified java process.
@@ -195,8 +184,7 @@ jprocess_get_name(jobject jprocess,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchMethodException.
  */
-void 
-jprocess_yield(jobject jprocess,JNIEnv* env);
+void jprocess_yield(jobject jprocess, JNIEnv * env);
 
 /**
  * This function locks the mutex of the specified java process.
@@ -209,8 +197,7 @@ jprocess_yield(jobject jprocess,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchMethodException.
  */
-void
-jprocess_lock_mutex(jobject jprocess,JNIEnv* env);
+void jprocess_lock_mutex(jobject jprocess, JNIEnv * env);
 
 /**
  * This function unlocks the mutex of the specified java process.
@@ -223,8 +210,7 @@ jprocess_lock_mutex(jobject jprocess,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchMethodException.
  */
-void
-jprocess_unlock_mutex(jobject jprocess,JNIEnv* env);
+void jprocess_unlock_mutex(jobject jprocess, JNIEnv * env);
 
 /**
  * This function signals the condition of the mutex of the specified java process.
@@ -237,8 +223,7 @@ jprocess_unlock_mutex(jobject jprocess,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchMethodException.
  */
-void
-jprocess_signal_cond(jobject jprocess,JNIEnv* env);
+void jprocess_signal_cond(jobject jprocess, JNIEnv * env);
 
 /**
  * This function waits the condition of the mutex of the specified java process.
@@ -251,14 +236,11 @@ jprocess_signal_cond(jobject jprocess,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchMethodException.
  */
-void
-jprocess_wait_cond(jobject jprocess,JNIEnv* env);
+void jprocess_wait_cond(jobject jprocess, JNIEnv * env);
 
-void
-jprocess_schedule(xbt_context_t context);
+void jprocess_schedule(xbt_context_t context);
 
-void
-jprocess_unschedule(xbt_context_t context);
+void jprocess_unschedule(xbt_context_t context);
 
 
 #endif /* !MSG_JPROCESS_H */

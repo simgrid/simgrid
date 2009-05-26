@@ -35,34 +35,30 @@ void generate_makefile_am(char *project, char *deployment);
 void generate_makefile_local(char *project, char *deployment);
 
 /* the gras.h header directory (used only in windows)*/
-extern char* __gras_path;
+extern char *__gras_path;
 
 /*
  * Generate a borland simulation poject file.
  * @param name The name of the simulation project
  */
-void
-generate_borland_simulation_project(const char* name);
+void generate_borland_simulation_project(const char *name);
 
 /*
  * Generate a borland project file for real life.
  * @param name The name of the project to create.
  */
-void
-generate_borland_real_life_project(const char* name);
+void generate_borland_real_life_project(const char *name);
 
 
 /*
  * Create the Microsoft visual C++ file project for the simulation.
  */
-int
-generate_simulation_dsp_file(const char* project_name);
+int generate_simulation_dsp_file(const char *project_name);
 
 /*
  * Create the Microsoft visual C++ real life project file.
  */
-int
-generate_real_live_dsp_file(const char* project_name);
+int generate_real_live_dsp_file(const char *project_name);
 
 
 #endif

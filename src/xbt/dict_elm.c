@@ -7,23 +7,28 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "dict_private.h"  /* prototypes of this module */
+#include "dict_private.h"       /* prototypes of this module */
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_elm,xbt_dict,"Dictionaries internals");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_elm, xbt_dict,
+                                "Dictionaries internals");
 
-XBT_LOG_NEW_SUBCATEGORY(xbt_dict_add,xbt_dict,"Dictionaries internals: elements addition");
-XBT_LOG_NEW_SUBCATEGORY(xbt_dict_search,xbt_dict,"Dictionaries internals: searching");
-XBT_LOG_NEW_SUBCATEGORY(xbt_dict_remove,xbt_dict,"Dictionaries internals: elements removal");
-XBT_LOG_NEW_SUBCATEGORY(xbt_dict_collapse,xbt_dict,"Dictionaries internals: post-removal cleanup");
+XBT_LOG_NEW_SUBCATEGORY(xbt_dict_add, xbt_dict,
+                        "Dictionaries internals: elements addition");
+XBT_LOG_NEW_SUBCATEGORY(xbt_dict_search, xbt_dict,
+                        "Dictionaries internals: searching");
+XBT_LOG_NEW_SUBCATEGORY(xbt_dict_remove, xbt_dict,
+                        "Dictionaries internals: elements removal");
+XBT_LOG_NEW_SUBCATEGORY(xbt_dict_collapse, xbt_dict,
+                        "Dictionaries internals: post-removal cleanup");
 
 xbt_mallocator_t dict_elm_mallocator = NULL;
 
 xbt_dictelm_t xbt_dictelm_new(const char *key,
                               int key_len,
                               unsigned int hash_code,
-                              void *content,
-                              void_f_pvoid_t free_f) {
+                              void *content, void_f_pvoid_t free_f)
+{
   xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
 
   element->key = xbt_new(char, key_len + 1);
@@ -40,7 +45,8 @@ xbt_dictelm_t xbt_dictelm_new(const char *key,
   return element;
 }
 
-void xbt_dictelm_free(xbt_dictelm_t element) {
+void xbt_dictelm_free(xbt_dictelm_t element)
+{
   if (element != NULL) {
     xbt_free(element->key);
 
@@ -52,14 +58,17 @@ void xbt_dictelm_free(xbt_dictelm_t element) {
   }
 }
 
-void* dict_elm_mallocator_new_f(void) {
+void *dict_elm_mallocator_new_f(void)
+{
   return xbt_new(s_xbt_dictelm_t, 1);
 }
 
-void dict_elm_mallocator_free_f(void* elem) {
+void dict_elm_mallocator_free_f(void *elem)
+{
   xbt_free(elem);
 }
 
-void dict_elm_mallocator_reset_f(void* elem) {
+void dict_elm_mallocator_reset_f(void *elem)
+{
 
 }

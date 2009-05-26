@@ -28,20 +28,21 @@ typedef struct {
    * This is the old interface, and will disapear before 3.2
    */
   xbt_set_t libdata;
-   
+
   /* data specific to each process for each module. 
    * Registered with gras_module_add(), retrieved with gras_moddata_get() 
    * This is the new interface
    */
   xbt_dynar_t moddata;
-	
-  int pid; /* pid of process, only for SG */
-  int ppid; /* ppid of process, only for SG */
-   
+
+  int pid;                      /* pid of process, only for SG */
+  int ppid;                     /* ppid of process, only for SG */
+
   gras_msg_listener_t listener; /* the thread in charge of the incomming communication for this process */
 } gras_procdata_t;
 
 gras_procdata_t *gras_procdata_get(void);
-void *gras_libdata_by_name_from_procdata(const char *name, gras_procdata_t* pd);
-   
-#endif  /* GRAS_VIRTU_PRIVATE_H */
+void *gras_libdata_by_name_from_procdata(const char *name,
+                                         gras_procdata_t * pd);
+
+#endif /* GRAS_VIRTU_PRIVATE_H */

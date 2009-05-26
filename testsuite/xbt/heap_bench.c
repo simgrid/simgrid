@@ -6,19 +6,19 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
- 
- #ifdef __BORLANDC__
- #pragma hdrstop
- #endif
+
+#ifdef __BORLANDC__
+#pragma hdrstop
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 
 #include "xbt/heap.h"
-#include "gras/virtu.h"		/* time manipulation in bench */
+#include "gras/virtu.h"         /* time manipulation in bench */
 
-#include "xbt/sysdep.h" /* calloc, printf */
+#include "xbt/sysdep.h"         /* calloc, printf */
 
 #define MAX_TEST 1000000
 
@@ -30,7 +30,7 @@ int compare_double(const void *a, const void *b);
 
 void test_heap_validity(int size);
 void test_heap_mean_operation(int size);
-void test_reset_heap(xbt_heap_t heap,int size);
+void test_reset_heap(xbt_heap_t heap, int size);
 
 
 int compare_double(const void *a, const void *b)
@@ -50,13 +50,13 @@ int compare_double(const void *a, const void *b)
 void test_heap_validity(int size)
 {
   xbt_heap_t heap = xbt_heap_new(size, NULL);
-  double *tab = xbt_new0(double,size);
+  double *tab = xbt_new0(double, size);
 
   int i;
 
   for (i = 0; i < size; i++) {
-    tab[i] = (double)(10.0 * rand() / (RAND_MAX + 1.0));
-    xbt_heap_push(heap, NULL, (double)tab[i]);
+    tab[i] = (double) (10.0 * rand() / (RAND_MAX + 1.0));
+    xbt_heap_push(heap, NULL, (double) tab[i]);
   }
 
   qsort(tab, size, sizeof(double), compare_double);
@@ -90,28 +90,28 @@ void test_heap_mean_operation(int size)
 
   date = gras_os_time() * 1000000;
   for (j = 0; j < MAX_TEST; j++) {
-    
-    if(!(j%size) && j)
-      test_reset_heap(heap,size);
-    
+
+    if (!(j % size) && j)
+      test_reset_heap(heap, size);
+
     val = xbt_heap_maxkey(heap);
     xbt_heap_pop(heap);
     xbt_heap_push(heap, NULL, 3.0 * val);
   }
   date = gras_os_time() * 1000000 - date;
   printf("Mean access time for a %d size heap : %g\n", size,
-	 date * 1.0 / (MAX_TEST + 0.0));
+         date * 1.0 / (MAX_TEST + 0.0));
 
   xbt_heap_free(heap);
 }
 
-void test_reset_heap(xbt_heap_t heap,int size)
+void test_reset_heap(xbt_heap_t heap, int size)
 {
   int i;
   xbt_heap_free(heap);
   heap = xbt_heap_new(size, NULL);
 
-  for (i = 0; i < size; i++){
+  for (i = 0; i < size; i++) {
     xbt_heap_push(heap, NULL, (10.0 * rand() / (RAND_MAX + 1.0)));
   }
 
@@ -119,7 +119,7 @@ void test_reset_heap(xbt_heap_t heap,int size)
 
 #ifdef __BORLANDC__
 #pragma argsused
-#endif 
+#endif
 
 int main(int argc, char **argv)
 {

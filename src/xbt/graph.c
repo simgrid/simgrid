@@ -68,7 +68,7 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
   xbt_dynar_push(src->out, &edge);
   if (g->directed)
     xbt_dynar_push(dst->in, &edge);
-  else				/* only the "out" field is used */
+  else                          /* only the "out" field is used */
     xbt_dynar_push(dst->out, &edge);
 
   edge->data = data;
@@ -86,13 +86,15 @@ xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst)
   unsigned int cursor;
 
   xbt_dynar_foreach(src->out, cursor, edge) {
-    DEBUG3("%p = %p--%p",edge,edge->src,edge->dst);
-    if((edge->src==src) && (edge->dst==dst)) return edge;
+    DEBUG3("%p = %p--%p", edge, edge->src, edge->dst);
+    if ((edge->src == src) && (edge->dst == dst))
+      return edge;
   }
-  if(!g->directed) {
+  if (!g->directed) {
     xbt_dynar_foreach(src->out, cursor, edge) {
-      DEBUG3("%p = %p--%p",edge,edge->src,edge->dst);
-      if((edge->dst==src) && (edge->src==dst)) return edge;
+      DEBUG3("%p = %p--%p", edge, edge->src, edge->dst);
+      if ((edge->dst == src) && (edge->src == dst))
+        return edge;
     }
   }
   return NULL;
@@ -140,23 +142,23 @@ void xbt_graph_free_graph(xbt_graph_t g,
     xbt_dynar_free(&(node->out));
     xbt_dynar_free(&(node->in));
     if (node_free_function)
-      (*node_free_function)(node->data);
+      (*node_free_function) (node->data);
   }
 
   xbt_dynar_foreach(g->edges, cursor, edge) {
     if (edge_free_function)
-      (*edge_free_function)(edge->data);
+      (*edge_free_function) (edge->data);
   }
 
   xbt_dynar_foreach(g->nodes, cursor, node)
-  free(node);
+    free(node);
   xbt_dynar_free(&(g->nodes));
 
   xbt_dynar_foreach(g->edges, cursor, edge)
-  free(edge);
+    free(edge);
   xbt_dynar_free(&(g->edges));
-  if(graph_free_function)
-    (*graph_free_function)(g->data);
+  if (graph_free_function)
+    (*graph_free_function) (g->data);
   free(g);
 
   return;
@@ -182,15 +184,15 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
     if ((edge->dst == n) || (edge->src == n)) {
       xbt_graph_free_edge(g, edge, edge_free_function);
     } else
-      cursor ++;
+      cursor++;
   }
 
   if ((node_free_function) && (n->data))
-    (*node_free_function)(n->data);
+    (*node_free_function) (n->data);
 
   cursor = 0;
   xbt_dynar_foreach(g->nodes, cursor, node)
-  if (node == n)
+    if (node == n)
     xbt_dynar_cursor_rm(g->nodes, &cursor);
 
   xbt_dynar_free(&(n->in));
@@ -210,14 +212,14 @@ void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
   xbt_edge_t edge = NULL;
 
   if ((free_function) && (e->data))
-    (*free_function)(e->data);
+    (*free_function) (e->data);
 
   xbt_dynar_foreach(g->edges, cursor, edge) {
     if (edge == e) {
       if (g->directed) {
         idx = __xbt_find_in_dynar(edge->dst->in, edge);
         xbt_dynar_remove_at(edge->dst->in, idx, NULL);
-      } else {			/* only the out field is used */
+      } else {                  /* only the out field is used */
         idx = __xbt_find_in_dynar(edge->dst->out, edge);
         xbt_dynar_remove_at(edge->dst->out, idx, NULL);
       }
@@ -314,7 +316,7 @@ double *xbt_graph_get_length_matrix(xbt_graph_t g)
     xbt_dynar_foreach(node->out, in_cursor, edge) {
       if (edge->dst == node)
         idx = __xbt_find_in_dynar(g->nodes, edge->src);
-      else			/*case of  undirected graphs */
+      else                      /*case of  undirected graphs */
         idx = __xbt_find_in_dynar(g->nodes, edge->dst);
       D(cursor, idx) = edge->length;
     }
@@ -446,7 +448,7 @@ xbt_edge_t *xbt_graph_spanning_tree_prim(xbt_graph_t g)
   node->xbtdata = (void *) 1;
   edge_list = node->out;
   xbt_dynar_foreach(edge_list, cursor, e)
-  xbt_heap_push(heap, e, -(e->length));
+    xbt_heap_push(heap, e, -(e->length));
 
   while ((edge = xbt_heap_pop(heap))) {
     if ((edge->src->xbtdata) && (edge->dst->xbtdata))
@@ -500,10 +502,10 @@ xbt_node_t *xbt_graph_topo_sort(xbt_graph_t g)
   sorted = xbt_malloc(n * sizeof(xbt_node_t));
 
   xbt_dynar_foreach(g->nodes, cursor, node)
-  node->xbtdata = xbt_new0(int, 1);
+    node->xbtdata = xbt_new0(int, 1);
 
   xbt_dynar_foreach(g->nodes, cursor, node)
-  xbt_graph_depth_visit(g, node, sorted, &idx);
+    xbt_graph_depth_visit(g, node, sorted, &idx);
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
     free(node->xbtdata);
@@ -541,9 +543,9 @@ static xbt_graph_t parsed_graph = NULL;
 static xbt_dict_t parsed_nodes = NULL;
 
 static void *(*__parse_node_label_and_data) (xbt_node_t, const char *,
-    const char *) = NULL;
+                                             const char *) = NULL;
 static void *(*__parse_edge_label_and_data) (xbt_edge_t, const char *,
-    const char *) = NULL;
+                                             const char *) = NULL;
 
 static void __parse_graph_begin(void)
 {
@@ -570,10 +572,8 @@ static void __parse_node(void)
   if (__parse_node_label_and_data)
     node->data = __parse_node_label_and_data(node, A_graphxml_node_label,
                                              A_graphxml_node_data);
-  xbt_graph_parse_get_double(&(node->position_x),
-                             A_graphxml_node_position_x);
-  xbt_graph_parse_get_double(&(node->position_y),
-                             A_graphxml_node_position_y);
+  xbt_graph_parse_get_double(&(node->position_x), A_graphxml_node_position_x);
+  xbt_graph_parse_get_double(&(node->position_y), A_graphxml_node_position_y);
 
   xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
 }
@@ -583,9 +583,9 @@ static void __parse_edge(void)
   xbt_edge_t edge = xbt_graph_new_edge(parsed_graph,
                                        xbt_dict_get(parsed_nodes,
                                                     A_graphxml_edge_source),
-                                                    xbt_dict_get(parsed_nodes,
-                                                                 A_graphxml_edge_target),
-                                                                 NULL);
+                                       xbt_dict_get(parsed_nodes,
+                                                    A_graphxml_edge_target),
+                                       NULL);
 
   if (__parse_edge_label_and_data)
     edge->data = __parse_edge_label_and_data(edge, A_graphxml_edge_label,
@@ -601,11 +601,11 @@ static void __parse_edge(void)
 /** @brief Import a graph from a file following the GraphXML format */
 xbt_graph_t xbt_graph_read(const char *filename,
                            void *(*node_label_and_data) (xbt_node_t,
-                               const char *,
-                               const char *),
-                               void *(*edge_label_and_data) (xbt_edge_t,
-                                   const char *,
-                                   const char *))
+                                                         const char *,
+                                                         const char *),
+                           void *(*edge_label_and_data) (xbt_edge_t,
+                                                         const char *,
+                                                         const char *))
 {
 
   xbt_graph_t graph = NULL;
@@ -621,7 +621,7 @@ xbt_graph_t xbt_graph_read(const char *filename,
   ETag_graphxml_edge_fun = __parse_edge;
 
   xbt_graph_parse_open(filename);
-  xbt_assert1((!(*xbt_graph_parse)()), "Parse error in %s", filename);
+  xbt_assert1((!(*xbt_graph_parse) ()), "Parse error in %s", filename);
   xbt_graph_parse_close();
 
   graph = parsed_graph;

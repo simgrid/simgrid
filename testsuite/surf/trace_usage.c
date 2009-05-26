@@ -17,7 +17,7 @@
 #include "surf/surf.h"
 
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
 void test(void);
 void test(void)
@@ -37,7 +37,7 @@ void test(void)
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     DEBUG1("%g" " : \n", next_event_date);
     while (tmgr_history_get_next_event_leq(history, next_event_date,
-					   &value, (void **) &resource)) {
+                                           &value, (void **) &resource)) {
       DEBUG2("\t %s : " "%g" "\n", resource, value);
     }
     if (next_event_date > 1000)
@@ -56,7 +56,7 @@ void test(void)
 
 int main(int argc, char **argv)
 {
-  surf_init(&argc,argv);
+  surf_init(&argc, argv);
   test();
   surf_exit();
   return 0;

@@ -1,4 +1,4 @@
-/* 	$Id: smx_host.c 4895 2007-10-27 07:34:39Z mquinson $	 */
+/* 	$Id$	 */
 
 /* Copyright (c) 2007 Arnaud Legrand, Bruno Donassolo.
    All rights reserved.                                          */
@@ -12,11 +12,11 @@
 #include "xbt/dict.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
-				"Logging specific to SIMIX (hosts)");
+                                "Logging specific to SIMIX (hosts)");
 
 /********************************* Host **************************************/
 smx_host_t __SIMIX_host_create(const char *name,
-			       void *workstation, void *data)
+                               void *workstation, void *data)
 {
   smx_simdata_host_t simdata = xbt_new0(s_smx_simdata_host_t, 1);
   smx_host_t host = xbt_new0(s_smx_host_t, 1);
@@ -30,10 +30,10 @@ smx_host_t __SIMIX_host_create(const char *name,
   simdata->host = workstation;
 
   simdata->process_list =
-      xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
+    xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
   /* Update global variables */
 
-  xbt_dict_set(simix_global->host,host->name, host,&__SIMIX_host_destroy);
+  xbt_dict_set(simix_global->host, host->name, host, &__SIMIX_host_destroy);
 
   return host;
 }
@@ -81,7 +81,7 @@ const char *SIMIX_host_get_name(smx_host_t host)
 {
 
   xbt_assert0((host != NULL)
-	      && (host->simdata != NULL), "Invalid parameters");
+              && (host->simdata != NULL), "Invalid parameters");
 
   /* Return data */
   return (host->name);
@@ -103,9 +103,9 @@ smx_host_t SIMIX_host_self(void)
  * MSG_host_destroy is just  a front_end that also removes it from 
  * msg_global->host
  */
-void __SIMIX_host_destroy(void* h)
+void __SIMIX_host_destroy(void *h)
 {
-  smx_host_t host = (smx_host_t)h;
+  smx_host_t host = (smx_host_t) h;
   smx_simdata_host_t simdata = NULL;
 
   xbt_assert0((host != NULL), "Invalid parameters");
@@ -116,7 +116,7 @@ void __SIMIX_host_destroy(void* h)
 
   if (xbt_swag_size(simdata->process_list) != 0) {
     char *msg =
-	bprintf("Shutting down host %s, but it's not empty:", host->name);
+      bprintf("Shutting down host %s, but it's not empty:", host->name);
     char *tmp;
     smx_process_t process = NULL;
 
@@ -155,17 +155,18 @@ int SIMIX_host_get_number(void)
  *
  * \return List of all hosts (in a newly allocated table)
  */
-smx_host_t* SIMIX_host_get_table(void) {
-   smx_host_t *res = xbt_new(smx_host_t,xbt_dict_size(simix_global->host));
-   smx_host_t h;
-   xbt_dict_cursor_t c;
-   char *name;
-   int i=0;
-   
-   xbt_dict_foreach(simix_global->host,c,name,h)
-     res[i++] = h;
-   
-   return res;
+smx_host_t *SIMIX_host_get_table(void)
+{
+  smx_host_t *res = xbt_new(smx_host_t, xbt_dict_size(simix_global->host));
+  smx_host_t h;
+  xbt_dict_cursor_t c;
+  char *name;
+  int i = 0;
+
+  xbt_dict_foreach(simix_global->host, c, name, h)
+    res[i++] = h;
+
+  return res;
 }
 
 /**
@@ -173,8 +174,9 @@ smx_host_t* SIMIX_host_get_table(void) {
  *
  * \return List of all hosts (as a #xbt_dict_t)
  */
-xbt_dict_t SIMIX_host_get_dict(void) {
-   return simix_global->host;
+xbt_dict_t SIMIX_host_get_dict(void)
+{
+  return simix_global->host;
 }
 
 /**
@@ -188,8 +190,8 @@ double SIMIX_host_get_speed(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->
-	  extension_public->get_speed(host->simdata->host, 1.0));
+  return (surf_workstation_model->extension_public->
+          get_speed(host->simdata->host, 1.0));
 }
 
 /**
@@ -202,8 +204,8 @@ double SIMIX_host_get_available_speed(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->
-	  extension_public->get_available_speed(host->simdata->host));
+  return (surf_workstation_model->extension_public->
+          get_available_speed(host->simdata->host));
 }
 
 /**
@@ -216,8 +218,7 @@ double SIMIX_host_get_available_speed(smx_host_t host)
 smx_host_t SIMIX_host_get_by_name(const char *name)
 {
   xbt_assert0(((simix_global != NULL)
-	       && (simix_global->host != NULL)),
-	      "Environment not set yet");
+               && (simix_global->host != NULL)), "Environment not set yet");
 
   return xbt_dict_get_or_null(simix_global->host, name);
 }
@@ -232,8 +233,8 @@ xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->
-	  common_public->get_properties(host->simdata->host));
+  return (surf_workstation_model->common_public->
+          get_properties(host->simdata->host));
 
 }
 
@@ -249,7 +250,7 @@ int SIMIX_host_get_state(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->
-	  extension_public->get_state(host->simdata->host));
+  return (surf_workstation_model->extension_public->
+          get_state(host->simdata->host));
 
 }

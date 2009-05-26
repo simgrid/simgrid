@@ -12,7 +12,7 @@
  *
  *
  */
- 
+
 /** \defgroup XBT_log_cats Existing log categories
  *  \ingroup XBT_log
  *  \brief (automatically extracted) 
@@ -43,21 +43,21 @@ SG_BEGIN_DECL()
  *
  * The different existing priorities.
 */
-typedef enum {
-  xbt_log_priority_none          = 0,  /* used internally (don't poke with) */
-  xbt_log_priority_trace         = 1,  /**< enter and return of some functions */
-  xbt_log_priority_debug         = 2,  /**< crufty output  */
-  xbt_log_priority_verbose       = 3,  /**< verbose output for the user wanting more */
-  xbt_log_priority_info          = 4,  /**< output about the regular functionning */
-  xbt_log_priority_warning       = 5,  /**< minor issue encountered */
-  xbt_log_priority_error         = 6,  /**< issue encountered */
-  xbt_log_priority_critical      = 7,  /**< major issue encountered */
+     typedef enum {
+       xbt_log_priority_none = 0,       /* used internally (don't poke with) */
+       xbt_log_priority_trace = 1,     /**< enter and return of some functions */
+       xbt_log_priority_debug = 2,     /**< crufty output  */
+       xbt_log_priority_verbose = 3,   /**< verbose output for the user wanting more */
+       xbt_log_priority_info = 4,      /**< output about the regular functionning */
+       xbt_log_priority_warning = 5,   /**< minor issue encountered */
+       xbt_log_priority_error = 6,     /**< issue encountered */
+       xbt_log_priority_critical = 7,  /**< major issue encountered */
 
-  xbt_log_priority_infinite      = 8,  /**< value for XBT_LOG_STATIC_THRESHOLD to not log */
+       xbt_log_priority_infinite = 8,  /**< value for XBT_LOG_STATIC_THRESHOLD to not log */
 
-  xbt_log_priority_uninitialized = -1  /* used internally (don't poke with) */
-} e_xbt_log_priority_t;
-	      
+       xbt_log_priority_uninitialized = -1      /* used internally (don't poke with) */
+     } e_xbt_log_priority_t;
+
 
 /*
  * define NLOG to disable at compilation time any logging request
@@ -114,9 +114,9 @@ typedef enum {
 #if defined(__STRICT_ANSI__) || defined(_MSC_VER)
 # define _XBT_LOG_PARENT_INITIALIZER(parent) NULL
 # define XBT_LOG_CONNECT(parent_cat,child)       _XBT_LOGV(child).parent = &_XBT_LOGV(parent_cat)
-#else 
+#else
 # define _XBT_LOG_PARENT_INITIALIZER(parent) &_XBT_LOGV(parent)
-# define XBT_LOG_CONNECT(parent_cat,child)     /*  xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent_cat))*/
+# define XBT_LOG_CONNECT(parent_cat,child)      /*  xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent_cat)) */
 #endif
 
 /* XBT_LOG_NEW_SUBCATEGORY_helper:
@@ -157,7 +157,7 @@ typedef enum {
  * Creates a new subcategory of the root category.
  */
 # define XBT_LOG_NEW_CATEGORY(catName,desc)  \
-   XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, desc)  
+   XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, desc)
 
 
 /**
@@ -168,11 +168,11 @@ typedef enum {
  * Indicates which category is the default one.
  */
 
-#if defined(XBT_LOG_MAYDAY) /*|| defined (NLOG) * turning logging off */
+#if defined(XBT_LOG_MAYDAY)     /*|| defined (NLOG) * turning logging off */
 # define XBT_LOG_DEFAULT_CATEGORY(cname)
 #else
 # define XBT_LOG_DEFAULT_CATEGORY(cname) \
-	 static xbt_log_category_t _XBT_LOGV(default) _XBT_GNUC_UNUSED = &_XBT_LOGV(cname) 
+	 static xbt_log_category_t _XBT_LOGV(default) _XBT_GNUC_UNUSED = &_XBT_LOGV(cname)
 #endif
 
 /**
@@ -228,48 +228,50 @@ typedef enum {
 
 /* Functions you may call */
 
-XBT_PUBLIC(void) xbt_log_control_set(const char* cs);
+XBT_PUBLIC(void) xbt_log_control_set(const char *cs);
 
 /* Forward declarations */
-typedef struct xbt_log_appender_s s_xbt_log_appender_t,*xbt_log_appender_t;
-typedef struct xbt_log_layout_s   s_xbt_log_layout_t,  *xbt_log_layout_t;
-typedef struct xbt_log_event_s    s_xbt_log_event_t,   *xbt_log_event_t;
-typedef struct xbt_log_category_s s_xbt_log_category_t,*xbt_log_category_t;
+     typedef struct xbt_log_appender_s s_xbt_log_appender_t,
+       *xbt_log_appender_t;
+     typedef struct xbt_log_layout_s s_xbt_log_layout_t, *xbt_log_layout_t;
+     typedef struct xbt_log_event_s s_xbt_log_event_t, *xbt_log_event_t;
+     typedef struct xbt_log_category_s s_xbt_log_category_t,
+       *xbt_log_category_t;
 
 /*
  * Do NOT access any members of this structure directly. FIXME: move to private?
  */
 #ifdef WIN32
-#define XBT_LOG_BUFF_SIZE  16384/* Size of the static string in which we build the log string */
+#define XBT_LOG_BUFF_SIZE  16384        /* Size of the static string in which we build the log string */
 #else
-#define XBT_LOG_BUFF_SIZE 2048 /* Size of the static string in which we build the log string */
+#define XBT_LOG_BUFF_SIZE 2048  /* Size of the static string in which we build the log string */
 #endif
-struct xbt_log_category_s {
-  xbt_log_category_t parent;
-  xbt_log_category_t firstChild; 
-  xbt_log_category_t nextSibling;
-  const char *name;
-  int threshold;
-  int isThreshInherited;
-  xbt_log_appender_t appender;
-  xbt_log_layout_t layout;
-  int additivity;
-};
+     struct xbt_log_category_s {
+       xbt_log_category_t parent;
+       xbt_log_category_t firstChild;
+       xbt_log_category_t nextSibling;
+       const char *name;
+       int threshold;
+       int isThreshInherited;
+       xbt_log_appender_t appender;
+       xbt_log_layout_t layout;
+       int additivity;
+     };
 
-struct xbt_log_event_s {
-  xbt_log_category_t cat;
-  e_xbt_log_priority_t priority;
-  const char* fileName;
-  const char* functionName;
-  int lineNum; 
-  va_list ap;
-  va_list ap_copy; /* need a copy to launch dynamic layouts when the static ones overflowed */
-  #ifdef WIN32
-  char* buffer;
-  #else
-  char buffer[XBT_LOG_BUFF_SIZE];
-  #endif
-};
+     struct xbt_log_event_s {
+       xbt_log_category_t cat;
+       e_xbt_log_priority_t priority;
+       const char *fileName;
+       const char *functionName;
+       int lineNum;
+       va_list ap;
+       va_list ap_copy;         /* need a copy to launch dynamic layouts when the static ones overflowed */
+#ifdef WIN32
+       char *buffer;
+#else
+       char buffer[XBT_LOG_BUFF_SIZE];
+#endif
+     };
 
 /**
  * \ingroup XBT_log_implem
@@ -279,7 +281,8 @@ struct xbt_log_event_s {
  * Programatically alters a category's threshold priority (don't use).
  */
 XBT_PUBLIC(void) xbt_log_threshold_set(xbt_log_category_t cat,
-				       e_xbt_log_priority_t thresholdPriority);
+                                       e_xbt_log_priority_t
+                                       thresholdPriority);
 
 /**
  * \ingroup XBT_log_implem  
@@ -291,7 +294,7 @@ XBT_PUBLIC(void) xbt_log_threshold_set(xbt_log_category_t cat,
  *
  */
 XBT_PUBLIC(void) xbt_log_appender_set(xbt_log_category_t cat,
-				      xbt_log_appender_t app);
+                                      xbt_log_appender_t app);
 /**
  * \ingroup XBT_log_implem  
  * \param cat the category (not only its name, but the variable)
@@ -301,8 +304,8 @@ XBT_PUBLIC(void) xbt_log_appender_set(xbt_log_category_t cat,
  * (the prefered interface is throught xbt_log_control_set())
  *
  */
-XBT_PUBLIC(void) xbt_log_layout_set(xbt_log_category_t cat, 
-				    xbt_log_layout_t lay);
+XBT_PUBLIC(void) xbt_log_layout_set(xbt_log_category_t cat,
+                                    xbt_log_layout_t lay);
 
 /**
  * \ingroup XBT_log_implem  
@@ -315,33 +318,33 @@ XBT_PUBLIC(void) xbt_log_layout_set(xbt_log_category_t cat,
  *
  */
 XBT_PUBLIC(void) xbt_log_additivity_set(xbt_log_category_t cat,
-					int additivity);
+                                        int additivity);
 
 /** @brief create a new simple layout 
  *
  * This layout is not as flexible as the pattern one
  */
-XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_simple_new(char*arg);
-XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_format_new(char*arg);
-XBT_PUBLIC(xbt_log_appender_t) xbt_log_appender_file_new(char*arg);
+XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_simple_new(char *arg);
+XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_format_new(char *arg);
+XBT_PUBLIC(xbt_log_appender_t) xbt_log_appender_file_new(char *arg);
 
 
 /* ********************************** */
 /* Functions that you shouldn't call  */
 /* ********************************** */
 XBT_PUBLIC(void) _xbt_log_event_log(xbt_log_event_t ev,
-				const char *fmt,
-				...) _XBT_GNUC_PRINTF(2,3);
+                                    const char *fmt,
+                                    ...) _XBT_GNUC_PRINTF(2, 3);
 
-XBT_PUBLIC(int) _xbt_log_cat_init(xbt_log_category_t   category,
-				  e_xbt_log_priority_t priority);
+XBT_PUBLIC(int) _xbt_log_cat_init(xbt_log_category_t category,
+                                  e_xbt_log_priority_t priority);
 
 
 XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
 
 
-extern xbt_log_appender_t xbt_log_default_appender;
-extern xbt_log_layout_t xbt_log_default_layout;
+     extern xbt_log_appender_t xbt_log_default_appender;
+     extern xbt_log_layout_t xbt_log_default_layout;
 
 /* ********************** */
 /* Public functions again */
@@ -401,7 +404,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
              {NULL,priority,__FILE__,_XBT_FUNCTION,__LINE__}; \
                 _log_ev.cat = &(catv);                           \
               _xbt_log_event_log(&_log_ev 			 \
-              
+
 #endif
 
 #define _XBT_LOG_POST                          \
@@ -413,19 +416,19 @@ extern xbt_log_layout_t xbt_log_default_layout;
 
 #ifdef XBT_LOG_MAYDAY
 # define CLOG0(c, p, f)                   fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__)
-# define CLOG1(c, p, f,a1)                fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1)               
-# define CLOG2(c, p, f,a1,a2)             fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2)            
-# define CLOG3(c, p, f,a1,a2,a3)          fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3)         
-# define CLOG4(c, p, f,a1,a2,a3,a4)       fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4)      
-# define CLOG5(c, p, f,a1,a2,a3,a4,a5)    fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5)   
+# define CLOG1(c, p, f,a1)                fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1)
+# define CLOG2(c, p, f,a1,a2)             fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2)
+# define CLOG3(c, p, f,a1,a2,a3)          fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3)
+# define CLOG4(c, p, f,a1,a2,a3,a4)       fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4)
+# define CLOG5(c, p, f,a1,a2,a3,a4,a5)    fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5)
 # define CLOG6(c, p, f,a1,a2,a3,a4,a5,a6) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6)
 # define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
 # define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
 # define CLOG9(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 # define CLOG10(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
 #else
-# define CLOG0(c, p, f)                   _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f _XBT_LOG_POST		   
-# define CLOG1(c, p, f,a1)                _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1 _XBT_LOG_POST		   
+# define CLOG0(c, p, f)                   _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f _XBT_LOG_POST
+# define CLOG1(c, p, f,a1)                _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1 _XBT_LOG_POST
 # define CLOG2(c, p, f,a1,a2)             _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2 _XBT_LOG_POST
 # define CLOG3(c, p, f,a1,a2,a3)          _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3 _XBT_LOG_POST
 # define CLOG4(c, p, f,a1,a2,a3,a4)       _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4 _XBT_LOG_POST
@@ -546,11 +549,11 @@ extern xbt_log_layout_t xbt_log_default_layout;
 
 #ifdef XBT_LOG_MAYDAY
 # define LOG0(p, f)                   fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__)
-# define LOG1(p, f,a1)                fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1)               
-# define LOG2(p, f,a1,a2)             fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2)            
-# define LOG3(p, f,a1,a2,a3)          fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3)         
-# define LOG4(p, f,a1,a2,a3,a4)       fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4)      
-# define LOG5(p, f,a1,a2,a3,a4,a5)    fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5)   
+# define LOG1(p, f,a1)                fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1)
+# define LOG2(p, f,a1,a2)             fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2)
+# define LOG3(p, f,a1,a2,a3)          fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3)
+# define LOG4(p, f,a1,a2,a3,a4)       fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4)
+# define LOG5(p, f,a1,a2,a3,a4,a5)    fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5)
 # define LOG6(p, f,a1,a2,a3,a4,a5,a6) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6)
 # define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
 # define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
@@ -705,5 +708,4 @@ extern xbt_log_layout_t xbt_log_default_layout;
 
 
 SG_END_DECL()
-
 #endif /* ! _XBT_LOG_H_ */

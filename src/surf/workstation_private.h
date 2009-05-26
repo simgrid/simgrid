@@ -11,8 +11,8 @@
 #include "surf_private.h"
 
 typedef struct workstation_CLM03 {
-  surf_model_t model;	/* Any such object, added in a trace
-				   should start by this field!!! */
+  surf_model_t model;           /* Any such object, added in a trace
+                                   should start by this field!!! */
   char *name;
   void *cpu;
   void *network_card;
@@ -25,4 +25,4 @@ typedef struct surf_action_parallel_task_CSL05 {
   int suspended;
 } s_surf_action_parallel_task_CSL05_t, *surf_action_parallel_task_CSL05_t;
 
-#endif				/* _SURF_WORKSTATION_PRIVATE_H */
+#endif /* _SURF_WORKSTATION_PRIVATE_H */

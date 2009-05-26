@@ -13,7 +13,7 @@
 #define _XBT_SWAG_H
 
 #include "xbt/misc.h"
-#include "xbt/sysdep.h" /* size_t */
+#include "xbt/sysdep.h"         /* size_t */
 
 SG_BEGIN_DECL()
 
@@ -28,7 +28,6 @@ SG_BEGIN_DECL()
  *  no call to malloc/free is done.
  *
  */
-
 /** @defgroup XBT_swag_type Swag types
     @ingroup XBT_swag
 
@@ -40,10 +39,10 @@ SG_BEGIN_DECL()
     those structs directly. Use them as an abstract datatype.
 */
 /* @{ */
-typedef struct xbt_swag_hookup {
-  void *next;
-  void *prev;
-} s_xbt_swag_hookup_t; 
+     typedef struct xbt_swag_hookup {
+       void *next;
+       void *prev;
+     } s_xbt_swag_hookup_t;
 /**< This type should be added to a type that is to be used in a swag. 
  *
  *  Whenever a new object with this struct is created, all fields have
@@ -70,15 +69,15 @@ typedef struct foo {
 }
 \endcode
 */
-typedef s_xbt_swag_hookup_t  *xbt_swag_hookup_t;
+     typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
 
 
-typedef struct xbt_swag {
-  void *head;
-  void *tail;
-  size_t offset;
-  int count;
-} s_xbt_swag_t, *xbt_swag_t;
+     typedef struct xbt_swag {
+       void *head;
+       void *tail;
+       size_t offset;
+       int count;
+     } s_xbt_swag_t, *xbt_swag_t;
 /**< A typical swag */
 /* @} */
 
@@ -94,12 +93,12 @@ XBT_PUBLIC(void) xbt_swag_init(xbt_swag_t swag, size_t offset);
 XBT_PUBLIC(void) xbt_swag_insert(void *obj, xbt_swag_t swag);
 XBT_PUBLIC(void) xbt_swag_insert_at_head(void *obj, xbt_swag_t swag);
 XBT_PUBLIC(void) xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag);
-XBT_PUBLIC(void*) xbt_swag_remove(void *obj, xbt_swag_t swag);
-XBT_PUBLIC(void*)xbt_swag_extract(xbt_swag_t swag);
+XBT_PUBLIC(void *) xbt_swag_remove(void *obj, xbt_swag_t swag);
+XBT_PUBLIC(void *) xbt_swag_extract(xbt_swag_t swag);
 XBT_PUBLIC(int) xbt_swag_size(xbt_swag_t swag);
 XBT_PUBLIC(int) xbt_swag_belongs(void *obj, xbt_swag_t swag);
 
-static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
+     static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
 {
   return (swag->head);
 }
@@ -161,5 +160,4 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
 /* @} */
 
 SG_END_DECL()
-
-#endif    /* _XBT_SWAG_H */
+#endif /* _XBT_SWAG_H */

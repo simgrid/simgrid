@@ -12,7 +12,7 @@
 #include "msg/mailbox.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
-				"Logging specific to SIMIX (process)");
+                                "Logging specific to SIMIX (process)");
 
 /******************************** Process ************************************/
 /**
@@ -29,8 +29,8 @@ void SIMIX_process_cleanup(void *arg)
   xbt_swag_remove(arg, simix_global->process_list);
   xbt_swag_remove(arg, simix_global->process_to_run);
   xbt_swag_remove(arg,
-		  ((smx_process_t) arg)->simdata->smx_host->simdata->
-		  process_list);
+                  ((smx_process_t) arg)->simdata->smx_host->
+                  simdata->process_list);
   free(((smx_process_t) arg)->name);
   ((smx_process_t) arg)->name = NULL;
 
@@ -54,17 +54,17 @@ void SIMIX_process_cleanup(void *arg)
  * \return The new corresponding object.
  */
 smx_process_t SIMIX_process_create(const char *name,
-				   xbt_main_func_t code, void *data,
-				   const char *hostname, int argc,
-				   char **argv, xbt_dict_t properties)
+                                   xbt_main_func_t code, void *data,
+                                   const char *hostname, int argc,
+                                   char **argv, xbt_dict_t properties)
 {
   smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t, 1);
   smx_process_t process = xbt_new0(s_smx_process_t, 1);
   smx_process_t self = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
   /*char alias[MAX_ALIAS_NAME + 1] = {0};
-  msg_mailbox_t mailbox;*/
-	
+     msg_mailbox_t mailbox; */
+
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
   /* Simulator Data */
 
@@ -73,17 +73,16 @@ smx_process_t SIMIX_process_create(const char *name,
   simdata->cond = NULL;
   simdata->argc = argc;
   simdata->argv = argv;
-  simdata->context = xbt_context_new(name,code, NULL, NULL,
-				     simix_global->
-				     cleanup_process_function, process,
-				     simdata->argc, simdata->argv);
+  simdata->context = xbt_context_new(name, code, NULL, NULL,
+                                     simix_global->cleanup_process_function,
+                                     process, simdata->argc, simdata->argv);
 
   /* Process structure */
   process->name = xbt_strdup(name);
   process->simdata = simdata;
   process->data = data;
 
-  /* Add properties*/
+  /* Add properties */
   simdata->properties = properties;
 
   xbt_swag_insert(process, host->simdata->process_list);
@@ -96,14 +95,15 @@ smx_process_t SIMIX_process_create(const char *name,
   xbt_swag_insert(process, simix_global->process_list);
   DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
   xbt_swag_insert(process, simix_global->process_to_run);
-  
+
   /*sprintf(alias,"%s:%s",hostname,process->name);
 
-	mailbox = MSG_mailbox_new(alias);
-	MSG_mailbox_set_hostname(mailbox, hostname);*/
+     mailbox = MSG_mailbox_new(alias);
+     MSG_mailbox_set_hostname(mailbox, hostname); */
 
   return process;
 }
+
 /** 
  * \brief Creates and runs a new #smx_process_t hosting a JAVA thread
  *
@@ -111,8 +111,8 @@ smx_process_t SIMIX_process_create(const char *name,
  * a context with no code, which leads to segfaults in plain libsimgrid 
  */
 void SIMIX_jprocess_create(const char *name, smx_host_t host,
-			   void *data,
-			   void *jprocess, void *jenv, smx_process_t * res)
+                           void *data,
+                           void *jprocess, void *jenv, smx_process_t * res)
 {
   smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t, 1);
   smx_process_t process = xbt_new0(s_smx_process_t, 1);
@@ -134,7 +134,7 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
 
 
   DEBUG5("jprocess_create(name=%s,host=%p,data=%p,jproc=%p,jenv=%p)",
-	 name, host, data, jprocess, jenv);
+         name, host, data, jprocess, jenv);
   xbt_assert0(host, "Invalid parameters");
   /* Simulator Data */
   simdata->smx_host = host;
@@ -143,12 +143,12 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
   simdata->argc = 0;
   simdata->argv = NULL;
 
- 
-  simdata->context = xbt_context_new(name,NULL, NULL, jprocess,
-				     simix_global->
-				     cleanup_process_function, process,
-				     /* argc/argv */ 0, NULL);
-	
+
+  simdata->context = xbt_context_new(name, NULL, NULL, jprocess,
+                                     simix_global->cleanup_process_function,
+                                     process,
+                                     /* argc/argv */ 0, NULL);
+
   /* Process structure */
   process->name = xbt_strdup(name);
   process->simdata = simdata;
@@ -158,9 +158,9 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
 
   /* fix current_process, about which xbt_context_start mocks around */
   self = simix_global->current_process;
- 
+
   xbt_context_start(process->simdata->context);
- 
+
   simix_global->current_process = self;
 
   xbt_swag_insert(process, simix_global->process_list);
@@ -181,7 +181,7 @@ void SIMIX_process_kill(smx_process_t process)
   smx_simdata_process_t p_simdata = process->simdata;
 
   DEBUG2("Killing process %s on %s", process->name,
-	 p_simdata->smx_host->name);
+         p_simdata->smx_host->name);
 
   /* Cleanup if we were waiting for something */
   if (p_simdata->mutex)
@@ -242,7 +242,7 @@ void SIMIX_process_set_data(smx_process_t process, void *data)
 smx_host_t SIMIX_process_get_host(smx_process_t process)
 {
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
 
   return (process->simdata->smx_host);
 }
@@ -257,7 +257,7 @@ smx_host_t SIMIX_process_get_host(smx_process_t process)
 const char *SIMIX_process_get_name(smx_process_t process)
 {
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
 
   return (process->name);
 }
@@ -272,7 +272,7 @@ const char *SIMIX_process_get_name(smx_process_t process)
 void SIMIX_process_set_name(smx_process_t process, char *name)
 {
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
 
   process->name = name;
 }
@@ -329,8 +329,8 @@ void SIMIX_process_suspend(smx_process_t process)
       simdata->suspended = 1;
       c = simdata->cond;
       xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-	surf_workstation_model->common_public->suspend(act->simdata->
-							  surf_action);
+        surf_workstation_model->common_public->suspend(act->
+                                                       simdata->surf_action);
       }
     } else {
       simdata->suspended = 1;
@@ -344,7 +344,8 @@ void SIMIX_process_suspend(smx_process_t process)
 
     cond = SIMIX_cond_init();
     dummy = SIMIX_action_execute(SIMIX_process_get_host(process), name, 0);
-    surf_workstation_model->common_public->suspend(dummy->simdata->surf_action);
+    surf_workstation_model->common_public->suspend(dummy->simdata->
+                                                   surf_action);
     SIMIX_register_action_to_condition(dummy, cond);
     __SIMIX_cond_wait(cond);
     SIMIX_unregister_action_to_condition(dummy, cond);
@@ -365,7 +366,7 @@ void SIMIX_process_resume(smx_process_t process)
   smx_simdata_process_t simdata = NULL;
 
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
   SIMIX_CHECK_HOST();
 
   if (process == SIMIX_process_self()) {
@@ -375,18 +376,19 @@ void SIMIX_process_resume(smx_process_t process)
   simdata = process->simdata;
   if (simdata->mutex) {
     DEBUG0("Resume process blocked on a mutex");
-    simdata->suspended = 0;	/* He'll wake up by itself */
+    simdata->suspended = 0;     /* He'll wake up by itself */
     return;
   } else if (simdata->cond) {
     /* temporaries variables */
     smx_cond_t c;
     xbt_fifo_item_t i;
     smx_action_t act;
-	DEBUG0("Resume process blocked on a conditional");
+    DEBUG0("Resume process blocked on a conditional");
     simdata->suspended = 0;
     c = simdata->cond;
     xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-      surf_workstation_model->common_public->resume(act->simdata->surf_action);
+      surf_workstation_model->common_public->resume(act->simdata->
+                                                    surf_action);
     }
     SIMIX_cond_signal(c);
     return;
@@ -402,12 +404,13 @@ void SIMIX_process_resume(smx_process_t process)
  *
  * This function changes the value of the host on which \a process is running.
  */
-void SIMIX_process_change_host(smx_process_t process, char *source, char *dest)
+void SIMIX_process_change_host(smx_process_t process, char *source,
+                               char *dest)
 {
   smx_simdata_process_t p_simdata = process->simdata;
   smx_host_t h1 = SIMIX_host_get_by_name(source);
   smx_host_t h2 = SIMIX_host_get_by_name(dest);
-  p_simdata->smx_host =  h2;
+  p_simdata->smx_host = h2;
   xbt_swag_remove(process, h1->simdata->process_list);
   xbt_swag_insert(process, h2->simdata->process_list);
 }
@@ -422,9 +425,7 @@ void SIMIX_process_change_host(smx_process_t process, char *source, char *dest)
 int SIMIX_process_is_suspended(smx_process_t process)
 {
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
 
   return (process->simdata->suspended);
 }
-
-

@@ -13,4 +13,4 @@
 extern xbt_dict_t network_card_set;
 
 
-#endif				/* _SURF_NETWORK_COMMON_H */
+#endif /* _SURF_NETWORK_COMMON_H */

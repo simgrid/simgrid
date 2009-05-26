@@ -19,31 +19,31 @@
  * see tesh file for expected output
  * 
  */
-int main(int argc, char **argv) {
-	double time;
-	double communication_amount[] = { 0.0, 1.0, 0.0, 0.0 };
-	const double no_cost[] = { 0.0, 0.0 };
-	SD_task_t task;
+int main(int argc, char **argv)
+{
+  double time;
+  double communication_amount[] = { 0.0, 1.0, 0.0, 0.0 };
+  const double no_cost[] = { 0.0, 0.0 };
+  SD_task_t task;
 
-	SD_init(&argc, argv);
-	SD_create_environment(argv[1]);
+  SD_init(&argc, argv);
+  SD_create_environment(argv[1]);
 
-	task = SD_task_create("Comm 1", NULL, 1.0);
+  task = SD_task_create("Comm 1", NULL, 1.0);
 
-	SD_task_schedule(task, 2, SD_workstation_get_list(), no_cost,
-			communication_amount, -1.0);
+  SD_task_schedule(task, 2, SD_workstation_get_list(), no_cost,
+                   communication_amount, -1.0);
 
-	SD_simulate(-1.0);
+  SD_simulate(-1.0);
 
-	time = SD_get_clock();
+  time = SD_get_clock();
 
-	printf("%g\n", time);
-	fflush(stdout);
+  printf("%g\n", time);
+  fflush(stdout);
 
-	SD_task_destroy(task);
+  SD_task_destroy(task);
 
-	SD_exit();
+  SD_exit();
 
-	return 0;
+  return 0;
 }
-

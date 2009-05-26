@@ -14,7 +14,7 @@
 #include "xbt/misc.h"
 /* 
  * win32 or win64 (__WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).	
-*/ 
+*/
 #ifdef _WIN32
 # include "win32/config.h"
 # include <windows.h>
@@ -47,11 +47,11 @@
 
 #ifdef HAVE_SYS_SOCKET_H
 #  include <sys/socket.h>
-#  include <netinet/in.h>   /* sometimes required for #include <arpa/inet.h> */
-#  include <netinet/tcp.h>  /* TCP_NODELAY */
-#  include <netdb.h>        /* getprotobyname() */
-#  include <arpa/inet.h>    /* inet_ntoa() */
-#  include <sys/types.h>    /* sometimes required for fd_set */
+#  include <netinet/in.h>       /* sometimes required for #include <arpa/inet.h> */
+#  include <netinet/tcp.h>      /* TCP_NODELAY */
+#  include <netdb.h>            /* getprotobyname() */
+#  include <arpa/inet.h>        /* inet_ntoa() */
+#  include <sys/types.h>        /* sometimes required for fd_set */
 # endif
 
 
@@ -112,27 +112,31 @@
 #if defined(HAVE_SNPRINTF)
 #include <stdio.h>
 #else
-   XBT_PUBLIC(int) snprintf(char *, size_t, const char *, /*args*/ ...);
-   XBT_PUBLIC(int) vsnprintf(char *, size_t, const char *, va_list);
+XBT_PUBLIC(int) snprintf(char *, size_t, const char *, /*args */ ...);
+XBT_PUBLIC(int) vsnprintf(char *, size_t, const char *, va_list);
 #endif
 
 
 /* use internal functions when OS provided ones are borken */
 #if defined(HAVE_SNPRINTF) && defined(PREFER_PORTABLE_SNPRINTF)
-extern int portable_snprintf(char *str, size_t str_m, const char *fmt, /*args*/ ...);
-extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap);
+     extern int portable_snprintf(char *str, size_t str_m, const char *fmt,
+                                  /*args */ ...);
+     extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
+                                   va_list ap);
 #define snprintf  portable_snprintf
 #define vsnprintf portable_vsnprintf
 #endif
 
 /* prototype of GNU functions  */
 #if (defined(__GNUC__) && !defined(__cplusplus))
-extern int asprintf  (char **ptr, const char *fmt, /*args*/ ...);
-extern int vasprintf (char **ptr, const char *fmt, va_list ap);
+     extern int asprintf(char **ptr, const char *fmt, /*args */ ...);
+     extern int vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
 
-extern int asnprintf (char **ptr, size_t str_m, const char *fmt, /*args*/ ...);
-extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
+     extern int asnprintf(char **ptr, size_t str_m, const char *fmt,    /*args */
+                          ...);
+     extern int vasnprintf(char **ptr, size_t str_m, const char *fmt,
+                           va_list ap);
 
 /*
  * That's needed to protect solaris's printf from ever seing NULL associated to a %s format
@@ -155,7 +159,7 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
 /****
  **** Some debugging functions. Can't we find a better place for this??
  ****/
-void hexa_print(const char*name, unsigned char *data, int size);
-const char *hexa_str(unsigned char *data, int size, int downside);
+     void hexa_print(const char *name, unsigned char *data, int size);
+     const char *hexa_str(unsigned char *data, int size, int downside);
 
 #endif /* GRAS_PORTABLE_H */

@@ -23,21 +23,21 @@
 # define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
 # define _XBT_GNUC_UNUSED  __attribute__((unused))
 
-#else   /* !__GNUC__ */
+#else /* !__GNUC__ */
 # define _XBT_GNUC_PRINTF( format_idx, arg_idx )
 # define _XBT_GNUC_SCANF( format_idx, arg_idx )
 # define _XBT_GNUC_FORMAT( arg_idx )
 # define _XBT_GNUC_NORETURN
 # define _XBT_GNUC_UNUSED
 
-#endif  /* !__GNUC__ */
+#endif /* !__GNUC__ */
 
 /* inline and __FUNCTION__ are only in GCC when -ansi is off */
 
 #if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
 # define _XBT_FUNCTION __FUNCTION__
 #elif (defined(__STDC__) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
-# define _XBT_FUNC__ __func__      /* ISO-C99 compliant */
+# define _XBT_FUNC__ __func__   /* ISO-C99 compliant */
 #else
 # define _XBT_FUNCTION "function"
 #endif
@@ -71,12 +71,12 @@
 /* 
  * Function calling convention (not used for now) 
  */
- 
+
 #ifdef _WIN32
 #  ifndef _XBT_CALL
 #    define _XBT_CALL __cdecl
 #   endif
-#else 
+#else
 #  define _XBT_CALL
 #endif
 
@@ -126,7 +126,7 @@
 #if defined(DLL_EXPORT)
 #  define XBT_PUBLIC(type)            __declspec(dllexport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __declspec(dllexport) type
-#  define XBT_IMPORT_NO_EXPORT(type)  type 
+#  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)	      __declspec(dllexport) type
 
 /* Pack everything up statically */
@@ -135,7 +135,7 @@
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
-     
+
 
 /* Link against the DLL */
 #elif (defined(_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
@@ -151,7 +151,7 @@
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
 #endif
-   
+
 #if !defined (max) && !defined(__cplusplus)
 #  define max(a,b)	(((a) > (b)) ? (a) : (b))
 #endif
@@ -162,13 +162,13 @@
 #define TRUE  1
 #define FALSE 0
 
-#define XBT_MAX_CHANNEL 10 /* FIXME: killme */
+#define XBT_MAX_CHANNEL 10      /* FIXME: killme */
 /*! C++ users need love */
 #ifndef SG_BEGIN_DECL
 # ifdef __cplusplus
 #  define SG_BEGIN_DECL() extern "C" {
 # else
-#  define SG_BEGIN_DECL() 
+#  define SG_BEGIN_DECL()
 # endif
 #endif
 
@@ -176,21 +176,16 @@
 # ifdef __cplusplus
 #  define SG_END_DECL() }
 # else
-#  define SG_END_DECL() 
+#  define SG_END_DECL()
 # endif
 #endif
 /* End of cruft for C++ */
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(const char *)xbt_procname(void);
+XBT_PUBLIC(const char *) xbt_procname(void);
 
-#define XBT_BACKTRACE_SIZE 10 /* FIXME: better place? Do document */
-   
+#define XBT_BACKTRACE_SIZE 10   /* FIXME: better place? Do document */
+
 SG_END_DECL()
-
 #endif /* XBT_MISC_H */
-
-
-
-

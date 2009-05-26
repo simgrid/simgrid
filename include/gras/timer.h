@@ -36,20 +36,20 @@ SG_BEGIN_DECL()
  * 
  *  @{
  */
+XBT_PUBLIC(void) gras_timer_delay(double delay, void_f_void_t action);
+XBT_PUBLIC(void) gras_timer_repeat(double interval, void_f_void_t action);
 
-  XBT_PUBLIC(void) gras_timer_delay(double delay, void_f_void_t action);
-  XBT_PUBLIC(void) gras_timer_repeat(double interval, void_f_void_t action);
+XBT_PUBLIC(void) gras_timer_cancel_delay(double interval,
+                                         void_f_void_t action);
+XBT_PUBLIC(void) gras_timer_cancel_repeat(double interval,
+                                          void_f_void_t action);
 
-  XBT_PUBLIC(void) gras_timer_cancel_delay(double interval, void_f_void_t action);
-  XBT_PUBLIC(void) gras_timer_cancel_repeat(double interval, void_f_void_t action);
+XBT_PUBLIC(void) gras_timer_cancel_delay_all(void);
+XBT_PUBLIC(void) gras_timer_cancel_repeat_all(void);
 
-  XBT_PUBLIC(void) gras_timer_cancel_delay_all(void);
-  XBT_PUBLIC(void) gras_timer_cancel_repeat_all(void);
-
-  XBT_PUBLIC(void) gras_timer_cancel_all(void);
+XBT_PUBLIC(void) gras_timer_cancel_all(void);
 
 /** @} */
 
 SG_END_DECL()
-
 #endif /* GRAS_TIMER_H */

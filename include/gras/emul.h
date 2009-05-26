@@ -2,7 +2,7 @@
 
 /* gras/emul.h - public interface to emulation support                      */
 /*                (specific parts for SG or RL)                             */
- 
+
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,7 @@
 #ifndef GRAS_COND_H
 #define GRAS_COND_H
 
-#include "xbt/misc.h" /* SG_BEGIN_DECL */
+#include "xbt/misc.h"           /* SG_BEGIN_DECL */
 
 SG_BEGIN_DECL()
 /** @addtogroup GRAS_emul
@@ -43,7 +43,6 @@ SG_BEGIN_DECL()
  * 
  *  @{
  */
-  
 /** \brief Returns true only if the program runs on real life */
 XBT_PUBLIC(int) gras_if_RL(void);
 
@@ -160,13 +159,11 @@ XBT_PUBLIC(int) gras_bench_once_end(void);
 
 /** \brief Start benchmarking this code block if it has never been benchmarked, ignore it if it was
     \hideinitializer */
-#define GRAS_BENCH_ONCE_RUN_ONCE_BEGIN()    if (gras_bench_once_begin(__FILE__, __LINE__)) { 
+#define GRAS_BENCH_ONCE_RUN_ONCE_BEGIN()    if (gras_bench_once_begin(__FILE__, __LINE__)) {
 /** \brief Stop benchmarking this part of the code
     \hideinitializer */
 #define GRAS_BENCH_ONCE_RUN_ONCE_END()      } gras_bench_once_end()
 /** @} */
 
 SG_END_DECL()
-
 #endif /* GRAS_COND_H */
-

@@ -31,4 +31,4 @@ typedef struct tmgr_history {
   xbt_heap_t heap;
 } s_tmgr_history_t;
 
-#endif				/* _SURF_TMGR_PRIVATE_H */
+#endif /* _SURF_TMGR_PRIVATE_H */

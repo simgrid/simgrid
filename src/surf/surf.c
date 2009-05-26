@@ -11,7 +11,7 @@
 #include "xbt/module.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
-				"Logging specific to SURF (kernel)");
+                                "Logging specific to SURF (kernel)");
 
 int use_sdp_solver = 0;
 int use_lagrange_solver = 0;
@@ -52,7 +52,7 @@ static const char *disk_drives_letter_table[MAX_DRIVE] = {
   "Y:\\",
   "Z:\\"
 };
-#endif				/* #ifdef _WIN32 */
+#endif /* #ifdef _WIN32 */
 
 /*
  * Returns the initial path. On Windows the initial path is
@@ -139,31 +139,31 @@ s_surf_model_description_t surf_network_model_description[] = {
   {"Reno", NULL, surf_network_model_init_Reno},
   {"Reno2", NULL, surf_network_model_init_Reno2},
   {"Vegas", NULL, surf_network_model_init_Vegas},
-  { NULL,NULL,NULL} /* this array must be NULL terminated */
+  {NULL, NULL, NULL}            /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
   {"Cas01", NULL, surf_cpu_model_init_Cas01},
-  { NULL,NULL,NULL} /* this array must be NULL terminated */
+  {NULL, NULL, NULL}            /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_workstation_model_description[] = {
   {"CLM03", NULL, surf_workstation_model_init_CLM03, create_workstations},
-  {"compound", NULL, surf_workstation_model_init_compound, create_workstations},
+  {"compound", NULL, surf_workstation_model_init_compound,
+   create_workstations},
   {"ptask_L07", NULL, surf_workstation_model_init_ptask_L07, NULL},
-  { NULL,NULL,NULL} /* this array must be NULL terminated */
+  {NULL, NULL, NULL}            /* this array must be NULL terminated */
 };
 
 void update_model_description(s_surf_model_description_t * table,
-			      const char *name,
-			      surf_model_t model)
+                              const char *name, surf_model_t model)
 {
   int i = find_model_description(table, name);
   table[i].model = model;
 }
 
 int find_model_description(s_surf_model_description_t * table,
-			   const char *name)
+                           const char *name)
 {
   int i;
   char *name_list = NULL;
@@ -175,19 +175,18 @@ int find_model_description(s_surf_model_description_t * table,
   name_list = strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
     name_list =
-	xbt_realloc(name_list,
-		    strlen(name_list) + strlen(table[i].name) + 2);
+      xbt_realloc(name_list, strlen(name_list) + strlen(table[i].name) + 2);
     strcat(name_list, ", ");
     strcat(name_list, table[i].name);
   }
   xbt_assert2(0, "Model '%s' is invalid! Valid models are: %s.", name,
-	      name_list);
+              name_list);
 }
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
-				      size_t offset,
-				      lmm_system_t sys,
-				      void (*solve) (lmm_system_t))
+                                      size_t offset,
+                                      lmm_system_t sys,
+                                      void (*solve) (lmm_system_t))
 {
   surf_action_t action = NULL;
   double min = -1;
@@ -207,9 +206,9 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
     return -1.0;
 
   if (value > 0) {
-    if(action->remains>0) 
+    if (action->remains > 0)
       min = action->remains / value;
-    else 
+    else
       min = 0.0;
     if ((action->max_duration >= 0) && (action->max_duration < min))
       min = action->max_duration;
@@ -218,17 +217,16 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
 
 
   for (action = xbt_swag_getNext(action, running_actions->offset);
-       action;
-       action = xbt_swag_getNext(action, running_actions->offset)) {
+       action; action = xbt_swag_getNext(action, running_actions->offset)) {
     value = lmm_variable_getvalue(VARIABLE(action));
     if (value > 0) {
-      if(action->remains>0) 
-	value = action->remains / value;
-      else 
-	value = 0.0;
+      if (action->remains > 0)
+        value = action->remains / value;
+      else
+        value = 0.0;
       if (value < min) {
-	min = value;
-	DEBUG2("Updating min (value) with %p: %f", action, min);
+        min = value;
+        DEBUG2("Updating min (value) with %p: %f", action, min);
       }
     }
     if ((action->max_duration >= 0) && (action->max_duration < min)) {
@@ -245,7 +243,7 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
 e_surf_action_state_t surf_action_get_state(surf_action_t action)
 {
   surf_action_state_t action_state =
-      &(action->model_type->common_public->states);
+    &(action->model_type->common_public->states);
 
   if (action->state_set == action_state->ready_action_set)
     return SURF_ACTION_READY;
@@ -276,10 +274,10 @@ void surf_action_free(surf_action_t * action)
 }
 
 void surf_action_change_state(surf_action_t action,
-			      e_surf_action_state_t state)
+                              e_surf_action_state_t state)
 {
   surf_action_state_t action_state =
-      &(action->model_type->common_public->states);
+    &(action->model_type->common_public->states);
   XBT_IN2("(%p,%s)", action, surf_action_state_names[state]);
   xbt_swag_remove(action, action->state_set);
 
@@ -315,11 +313,11 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_timer);
 XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
 
 #ifdef HAVE_SDP
-  XBT_LOG_EXTERNAL_CATEGORY(surf_sdp_out);
-  XBT_LOG_EXTERNAL_CATEGORY(surf_sdp);
+XBT_LOG_EXTERNAL_CATEGORY(surf_sdp_out);
+XBT_LOG_EXTERNAL_CATEGORY(surf_sdp);
 #endif
 #ifdef HAVE_GTNETS
-  XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
+XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 #endif
 
 void surf_init(int *argc, char **argv)
@@ -333,7 +331,7 @@ void surf_init(int *argc, char **argv)
   XBT_LOG_CONNECT(surf_cpu, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);
   XBT_LOG_CONNECT(surf_lagrange, surf);
-    XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
+  XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
   XBT_LOG_CONNECT(surf_maxmin, surf);
   XBT_LOG_CONNECT(surf_network, surf);
   XBT_LOG_CONNECT(surf_parse, surf);
@@ -347,7 +345,7 @@ void surf_init(int *argc, char **argv)
 #ifdef HAVE_GTNETS
   XBT_LOG_CONNECT(surf_network_gtnets, surf);
 #endif
-   
+
   xbt_init(argc, argv);
   if (!surf_path) {
 
@@ -355,23 +353,23 @@ void surf_init(int *argc, char **argv)
     initial_path = __surf_get_initial_path();
 
     xbt_assert0((initial_path),
-		"__surf_get_initial_path() failed! Can't resolves current Windows directory");
+                "__surf_get_initial_path() failed! Can't resolves current Windows directory");
 
     surf_path = xbt_dynar_new(sizeof(char *), NULL);
     xbt_dynar_push(surf_path, &initial_path);
 
     for (i = 1; i < *argc; i++) {
       if (!strncmp(argv[i], "--surf-path=", strlen("--surf-path="))) {
-	opt = strchr(argv[i], '=');
-	opt++;
-	xbt_dynar_push(surf_path, &opt);
-	/*remove this from argv */
-	for (j = i + 1; j < *argc; j++) {
-	  argv[j - 1] = argv[j];
-	}
-	argv[j - 1] = NULL;
-	(*argc)--;
-	i--;			/* compensate effect of next loop incrementation */
+        opt = strchr(argv[i], '=');
+        opt++;
+        xbt_dynar_push(surf_path, &opt);
+        /*remove this from argv */
+        for (j = i + 1; j < *argc; j++) {
+          argv[j - 1] = argv[j];
+        }
+        argv[j - 1] = NULL;
+        (*argc)--;
+        i--;                    /* compensate effect of next loop incrementation */
       }
     }
   }
@@ -387,17 +385,17 @@ FILE *surf_fopen(const char *name, const char *mode)
   unsigned int iter;
   char *path = NULL;
   FILE *file = NULL;
-  unsigned int path_name_len = 0;	/* don't count '\0' */
+  unsigned int path_name_len = 0;       /* don't count '\0' */
 
   xbt_assert0(name, "Need a non-NULL file name");
 
   xbt_assert0(surf_path,
-	      "surf_init has to be called before using surf_fopen");
+              "surf_init has to be called before using surf_fopen");
 
-  if (__surf_is_absolute_file_path(name)) {	/* don't mess with absolute file names */
+  if (__surf_is_absolute_file_path(name)) {     /* don't mess with absolute file names */
     return fopen(name, mode);
 
-  } else {			/* search relative files in the path */
+  } else {                      /* search relative files in the path */
 
     if (!path_name) {
       path_name_len = strlen(name);
@@ -406,17 +404,17 @@ FILE *surf_fopen(const char *name, const char *mode)
 
     xbt_dynar_foreach(surf_path, iter, path) {
       if (path_name_len < strlen(path) + strlen(name) + 1) {
-	path_name_len = strlen(path) + strlen(name) + 1;	/* plus '/' */
-	path_name = xbt_realloc(path_name, path_name_len + 1);
+        path_name_len = strlen(path) + strlen(name) + 1;        /* plus '/' */
+        path_name = xbt_realloc(path_name, path_name_len + 1);
       }
-      #ifdef WIN32
+#ifdef WIN32
       sprintf(path_name, "%s\\%s", path, name);
-      #else
+#else
       sprintf(path_name, "%s/%s", path, name);
-      #endif
+#endif
       file = fopen(path_name, mode);
       if (file)
-	return file;
+        return file;
     }
   }
   return file;
@@ -453,34 +451,35 @@ void surf_exit(void)
   }
   surf_parse_free_callbacks();
   xbt_dict_free(&route_table);
-  NOW=0; /* Just in case the user plans to restart the simulation afterward */
+  NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
   xbt_exit();
 }
 
-void surf_presolve(void) {
+void surf_presolve(void)
+{
   double next_event_date = -1.0;
   tmgr_trace_event_t event = NULL;
   double value = -1.0;
   surf_model_object_t model_obj = NULL;
   surf_model_t model = NULL;
   unsigned int iter;
-   
-    DEBUG0
-	("First Run! Let's \"purge\" events and put models in the right state");
-    while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
-      if (next_event_date > NOW)
-	break;
-      while ((event =
-	      tmgr_history_get_next_event_leq(history, next_event_date,
-					      &value,
-					      (void **) &model_obj))) {
-	model_obj->model->common_private->
-	  update_resource_state(model_obj, event, value,NOW);
-      }
+
+  DEBUG0
+    ("First Run! Let's \"purge\" events and put models in the right state");
+  while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
+    if (next_event_date > NOW)
+      break;
+    while ((event =
+            tmgr_history_get_next_event_leq(history, next_event_date,
+                                            &value, (void **) &model_obj))) {
+      model_obj->model->common_private->update_resource_state(model_obj,
+                                                              event, value,
+                                                              NOW);
     }
-    xbt_dynar_foreach(model_list, iter, model) {
-      model->common_private->update_actions_state(NOW, 0.0);
-    }
+  }
+  xbt_dynar_foreach(model_list, iter, model) {
+    model->common_private->update_actions_state(NOW, 0.0);
+  }
 }
 
 double surf_solve(void)
@@ -499,12 +498,11 @@ double surf_solve(void)
   DEBUG0("Looking for next action end");
   xbt_dynar_foreach(model_list, iter, model) {
     DEBUG1("Running for Resource [%s]", model->common_public->name);
-    model_next_action_end =
-	model->common_private->share_resources(NOW);
+    model_next_action_end = model->common_private->share_resources(NOW);
     DEBUG2("Resource [%s] : next action end = %f",
-	   model->common_public->name, model_next_action_end);
+           model->common_public->name, model_next_action_end);
     if (((min < 0.0) || (model_next_action_end < min))
-	&& (model_next_action_end >= 0.0))
+        && (model_next_action_end >= 0.0))
       min = model_next_action_end;
   }
   DEBUG1("Next action end : %f", min);
@@ -519,20 +517,18 @@ double surf_solve(void)
       break;
     DEBUG0("Updating models");
     while ((event =
-	    tmgr_history_get_next_event_leq(history, next_event_date,
-					    &value,
-					    (void **) &model_obj))) {
-      if (model_obj->model->common_private->
-	  resource_used(model_obj)) {
-	min = next_event_date - NOW;
-	DEBUG1
-	    ("This event will modify model state. Next event set to %f",
-	     min);
+            tmgr_history_get_next_event_leq(history, next_event_date,
+                                            &value, (void **) &model_obj))) {
+      if (model_obj->model->common_private->resource_used(model_obj)) {
+        min = next_event_date - NOW;
+        DEBUG1
+          ("This event will modify model state. Next event set to %f", min);
       }
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      model_obj->model->common_private->
-	update_resource_state(model_obj, event, value,NOW+min);
+      model_obj->model->common_private->update_resource_state(model_obj,
+                                                              event, value,
+                                                              NOW + min);
     }
   }
 

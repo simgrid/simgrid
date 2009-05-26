@@ -10,7 +10,6 @@
 SG_BEGIN_DECL()
 
 /************************** Link handling ***********************************/
-
 /** @defgroup SD_link_management Links
  *  @brief Functions for managing the network links
  * 
@@ -23,17 +22,19 @@ SG_BEGIN_DECL()
  *  @see SD_link_t
  *  @{
  */
-XBT_PUBLIC(const SD_link_t*)   SD_link_get_list(void);
-XBT_PUBLIC(int)                SD_link_get_number(void);
-XBT_PUBLIC(void*)              SD_link_get_data(SD_link_t link);
-XBT_PUBLIC(void)               SD_link_set_data(SD_link_t link, void *data);
-XBT_PUBLIC(const char*)        SD_link_get_name(SD_link_t link);
-XBT_PUBLIC(double)             SD_link_get_current_bandwidth(SD_link_t link);
-XBT_PUBLIC(double)             SD_link_get_current_latency(SD_link_t link);
-XBT_PUBLIC(e_SD_link_sharing_policy_t) SD_link_get_sharing_policy(SD_link_t link);
+XBT_PUBLIC(const SD_link_t *) SD_link_get_list(void);
+XBT_PUBLIC(int) SD_link_get_number(void);
+XBT_PUBLIC(void *) SD_link_get_data(SD_link_t link);
+XBT_PUBLIC(void) SD_link_set_data(SD_link_t link, void *data);
+XBT_PUBLIC(const char *) SD_link_get_name(SD_link_t link);
+XBT_PUBLIC(double) SD_link_get_current_bandwidth(SD_link_t link);
+XBT_PUBLIC(double) SD_link_get_current_latency(SD_link_t link);
+XBT_PUBLIC(e_SD_link_sharing_policy_t) SD_link_get_sharing_policy(SD_link_t
+                                                                  link);
 /*property handling functions*/
 XBT_PUBLIC(xbt_dict_t) SD_link_get_properties(SD_link_t link);
-XBT_PUBLIC(const char*) SD_link_get_property_value(SD_link_t link, const char* name);
+XBT_PUBLIC(const char *) SD_link_get_property_value(SD_link_t link,
+                                                    const char *name);
 /** @} */
 
 /************************** Workstation handling ****************************/
@@ -52,29 +53,45 @@ XBT_PUBLIC(const char*) SD_link_get_property_value(SD_link_t link, const char* n
  *  @see SD_workstation_t
  *  @{
  */
-XBT_PUBLIC(SD_workstation_t)        SD_workstation_get_by_name(const char *name);
-XBT_PUBLIC(const SD_workstation_t*) SD_workstation_get_list(void);
-XBT_PUBLIC(int)                     SD_workstation_get_number(void);
-XBT_PUBLIC(void)                    SD_workstation_set_data(SD_workstation_t workstation, void *data);
-XBT_PUBLIC(void*)                   SD_workstation_get_data(SD_workstation_t workstation);
-XBT_PUBLIC(const char*)             SD_workstation_get_name(SD_workstation_t workstation);
+XBT_PUBLIC(SD_workstation_t) SD_workstation_get_by_name(const char *name);
+XBT_PUBLIC(const SD_workstation_t *) SD_workstation_get_list(void);
+XBT_PUBLIC(int) SD_workstation_get_number(void);
+XBT_PUBLIC(void) SD_workstation_set_data(SD_workstation_t workstation,
+                                         void *data);
+XBT_PUBLIC(void *) SD_workstation_get_data(SD_workstation_t workstation);
+XBT_PUBLIC(const char *) SD_workstation_get_name(SD_workstation_t
+                                                 workstation);
 /*property handling functions*/
-XBT_PUBLIC(xbt_dict_t) SD_workstation_get_properties(SD_workstation_t workstation);
-XBT_PUBLIC(const char*) SD_workstation_get_property_value(SD_workstation_t workstation, const char* name);
- 
-XBT_PUBLIC(const SD_link_t*)              SD_route_get_list(SD_workstation_t src, SD_workstation_t dst);
-XBT_PUBLIC(int)                     SD_route_get_size(SD_workstation_t src, SD_workstation_t dst);
-XBT_PUBLIC(double)                  SD_workstation_get_power(SD_workstation_t workstation);
-XBT_PUBLIC(double)                  SD_workstation_get_available_power(SD_workstation_t workstation);
-XBT_PUBLIC(e_SD_workstation_access_mode_t) SD_workstation_get_access_mode(SD_workstation_t workstation);
-XBT_PUBLIC(void)                    SD_workstation_set_access_mode(SD_workstation_t workstation,
-						       e_SD_workstation_access_mode_t access_mode);
+XBT_PUBLIC(xbt_dict_t) SD_workstation_get_properties(SD_workstation_t
+                                                     workstation);
+XBT_PUBLIC(const char *) SD_workstation_get_property_value(SD_workstation_t
+                                                           workstation,
+                                                           const char *name);
 
-XBT_PUBLIC(double)    SD_workstation_get_computation_time(SD_workstation_t workstation, double computation_amount);
-XBT_PUBLIC(double)    SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst);
-XBT_PUBLIC(double)    SD_route_get_current_bandwidth(SD_workstation_t src, SD_workstation_t dst);
-XBT_PUBLIC(double)    SD_route_get_communication_time(SD_workstation_t src, SD_workstation_t dst,
-						      double communication_amount);
+XBT_PUBLIC(const SD_link_t *) SD_route_get_list(SD_workstation_t src,
+                                                SD_workstation_t dst);
+XBT_PUBLIC(int) SD_route_get_size(SD_workstation_t src, SD_workstation_t dst);
+XBT_PUBLIC(double) SD_workstation_get_power(SD_workstation_t workstation);
+XBT_PUBLIC(double) SD_workstation_get_available_power(SD_workstation_t
+                                                      workstation);
+XBT_PUBLIC(e_SD_workstation_access_mode_t)
+  SD_workstation_get_access_mode(SD_workstation_t workstation);
+XBT_PUBLIC(void) SD_workstation_set_access_mode(SD_workstation_t workstation,
+                                                e_SD_workstation_access_mode_t
+                                                access_mode);
+
+XBT_PUBLIC(double) SD_workstation_get_computation_time(SD_workstation_t
+                                                       workstation,
+                                                       double
+                                                       computation_amount);
+XBT_PUBLIC(double) SD_route_get_current_latency(SD_workstation_t src,
+                                                SD_workstation_t dst);
+XBT_PUBLIC(double) SD_route_get_current_bandwidth(SD_workstation_t src,
+                                                  SD_workstation_t dst);
+XBT_PUBLIC(double) SD_route_get_communication_time(SD_workstation_t src,
+                                                   SD_workstation_t dst,
+                                                   double
+                                                   communication_amount);
 
 /** @} */
 
@@ -94,26 +111,32 @@ XBT_PUBLIC(double)    SD_route_get_communication_time(SD_workstation_t src, SD_w
  *  @see SD_task_t, SD_task_dependency_management
  *  @{
  */
-XBT_PUBLIC(SD_task_t)         SD_task_create(const char *name, void *data, double amount);
-XBT_PUBLIC(void*)         SD_task_get_data(SD_task_t task);
-XBT_PUBLIC(void)              SD_task_set_data(SD_task_t task, void *data);
+XBT_PUBLIC(SD_task_t) SD_task_create(const char *name, void *data,
+                                     double amount);
+XBT_PUBLIC(void *) SD_task_get_data(SD_task_t task);
+XBT_PUBLIC(void) SD_task_set_data(SD_task_t task, void *data);
 XBT_PUBLIC(e_SD_task_state_t) SD_task_get_state(SD_task_t task);
-XBT_PUBLIC(const char*)       SD_task_get_name(SD_task_t task);
-XBT_PUBLIC(void)              SD_task_watch(SD_task_t task, e_SD_task_state_t state);
-XBT_PUBLIC(void)              SD_task_unwatch(SD_task_t task, e_SD_task_state_t state);
-XBT_PUBLIC(double)            SD_task_get_amount(SD_task_t task);
-XBT_PUBLIC(double)            SD_task_get_remaining_amount(SD_task_t task);
-XBT_PUBLIC(double)            SD_task_get_execution_time(SD_task_t task, int workstation_nb,
-					     const SD_workstation_t *workstation_list,
-					     const double *computation_amount, const double *communication_amount,
-					     double rate);
-XBT_PUBLIC(void)              SD_task_schedule(SD_task_t task, int workstation_nb,
-				   const SD_workstation_t *workstation_list, const double *computation_amount,
-				   const double *communication_amount, double rate);
-XBT_PUBLIC(void)              SD_task_unschedule(SD_task_t task);
-XBT_PUBLIC(double)            SD_task_get_start_time(SD_task_t task);
-XBT_PUBLIC(double)            SD_task_get_finish_time(SD_task_t task);
-XBT_PUBLIC(void)              SD_task_destroy(SD_task_t task);
+XBT_PUBLIC(const char *) SD_task_get_name(SD_task_t task);
+XBT_PUBLIC(void) SD_task_watch(SD_task_t task, e_SD_task_state_t state);
+XBT_PUBLIC(void) SD_task_unwatch(SD_task_t task, e_SD_task_state_t state);
+XBT_PUBLIC(double) SD_task_get_amount(SD_task_t task);
+XBT_PUBLIC(double) SD_task_get_remaining_amount(SD_task_t task);
+XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task,
+                                              int workstation_nb,
+                                              const SD_workstation_t *
+                                              workstation_list, const double
+                                              *computation_amount, const double
+                                              *communication_amount,
+                                              double rate);
+XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb,
+                                  const SD_workstation_t * workstation_list,
+                                  const double *computation_amount,
+                                  const double *communication_amount,
+                                  double rate);
+XBT_PUBLIC(void) SD_task_unschedule(SD_task_t task);
+XBT_PUBLIC(double) SD_task_get_start_time(SD_task_t task);
+XBT_PUBLIC(double) SD_task_get_finish_time(SD_task_t task);
+XBT_PUBLIC(void) SD_task_destroy(SD_task_t task);
 /** @} */
 
 
@@ -125,10 +148,11 @@ XBT_PUBLIC(void)              SD_task_destroy(SD_task_t task);
  *  @see SD_task_management
  *  @{
  */
-XBT_PUBLIC(void)              SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(void)              SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(void*)             SD_task_dependency_get_data(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(int)               SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
+XBT_PUBLIC(void) SD_task_dependency_add(const char *name, void *data,
+                                        SD_task_t src, SD_task_t dst);
+XBT_PUBLIC(void) SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
+XBT_PUBLIC(void *) SD_task_dependency_get_data(SD_task_t src, SD_task_t dst);
+XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @} */
 
 /************************** Global *******************************************/
@@ -141,14 +165,13 @@ XBT_PUBLIC(int)               SD_task_dependency_exists(SD_task_t src, SD_task_t
  *  
  *  @{
  */
-XBT_PUBLIC(void)              SD_init(int *argc, char **argv);
-XBT_PUBLIC(void)              SD_application_reinit(void);
-XBT_PUBLIC(void)              SD_create_environment(const char *platform_file);
-XBT_PUBLIC(SD_task_t*)        SD_simulate(double how_long);
-XBT_PUBLIC(double)            SD_get_clock(void);
-XBT_PUBLIC(void)              SD_exit(void);
+XBT_PUBLIC(void) SD_init(int *argc, char **argv);
+XBT_PUBLIC(void) SD_application_reinit(void);
+XBT_PUBLIC(void) SD_create_environment(const char *platform_file);
+XBT_PUBLIC(SD_task_t *) SD_simulate(double how_long);
+XBT_PUBLIC(double) SD_get_clock(void);
+XBT_PUBLIC(void) SD_exit(void);
 /** @} */
 
 SG_END_DECL()
-
 #endif

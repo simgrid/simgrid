@@ -12,20 +12,22 @@
 /*
  * Time elapsed since the begining of the simulation.
  */
-double xbt_time() {
+double xbt_time()
+{
   return SIMIX_get_clock();
 }
 
 /*
  * Freeze the process for the specified amount of time
  */
-void xbt_sleep(double sec) {
+void xbt_sleep(double sec)
+{
   smx_action_t act_sleep;
   smx_process_t proc = SIMIX_process_self();
   smx_mutex_t mutex;
   smx_cond_t cond;
   /* create action to sleep */
-  act_sleep = SIMIX_action_sleep(SIMIX_process_get_host(proc),sec);
+  act_sleep = SIMIX_action_sleep(SIMIX_process_get_host(proc), sec);
 
   mutex = SIMIX_mutex_init();
   SIMIX_mutex_lock(mutex);
@@ -33,7 +35,7 @@ void xbt_sleep(double sec) {
   cond = SIMIX_cond_init();
 
   SIMIX_register_action_to_condition(act_sleep, cond);
-  SIMIX_cond_wait(cond,mutex);
+  SIMIX_cond_wait(cond, mutex);
   SIMIX_mutex_unlock(mutex);
 
   /* remove variables */

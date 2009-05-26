@@ -9,11 +9,11 @@
 
 #ifndef GRAS_MODINTER_H
 #define GRAS_MODINTER_H
-#include <xbt/misc.h> /* XBT_PUBLIC */
+#include <xbt/misc.h>           /* XBT_PUBLIC */
 
 /* modules initialization functions */
 void gras_emul_init(void);
-void gras_emul_exit(void); 
+void gras_emul_exit(void);
 
 void gras_msg_register(void);
 void gras_msg_init(void);

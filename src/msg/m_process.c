@@ -13,7 +13,7 @@
 #include "../simix/private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
-				"Logging specific to MSG (process)");
+                                "Logging specific to MSG (process)");
 
 /** \defgroup m_process_management Management Functions of Agents
  *  \brief This section describes the agent structure of MSG
@@ -47,12 +47,13 @@ void __MSG_process_cleanup(void *arg)
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
 void *_MSG_process_create_from_SIMIX(const char *name,
-				     xbt_main_func_t code, void *data,
-				     char *hostname, int argc, char **argv, xbt_dict_t properties)
+                                     xbt_main_func_t code, void *data,
+                                     char *hostname, int argc, char **argv,
+                                     xbt_dict_t properties)
 {
   m_host_t host = MSG_get_host_by_name(hostname);
   return (void *) MSG_process_create_with_environment(name, code, data, host,
-						      argc, argv,properties);
+                                                      argc, argv, properties);
 }
 
 /** \ingroup m_process_management
@@ -63,11 +64,11 @@ void *_MSG_process_create_from_SIMIX(const char *name,
  * \sa MSG_process_create_with_arguments
  */
 m_process_t MSG_process_create(const char *name,
-			       xbt_main_func_t code, void *data,
-			       m_host_t host)
+                               xbt_main_func_t code, void *data,
+                               m_host_t host)
 {
   return MSG_process_create_with_environment(name, code, data, host, -1,
-					     NULL,NULL);
+                                             NULL, NULL);
 }
 
 /** \ingroup m_process_management
@@ -96,12 +97,12 @@ m_process_t MSG_process_create(const char *name,
  */
 
 m_process_t MSG_process_create_with_arguments(const char *name,
-					      xbt_main_func_t code,
-					      void *data, m_host_t host,
-					      int argc, char **argv)
+                                              xbt_main_func_t code,
+                                              void *data, m_host_t host,
+                                              int argc, char **argv)
 {
   return MSG_process_create_with_environment(name, code, data, host,
-					     argc,argv,NULL);
+                                             argc, argv, NULL);
 }
 
 /** \ingroup m_process_management
@@ -130,9 +131,10 @@ m_process_t MSG_process_create_with_arguments(const char *name,
  * \return The new corresponding object.
  */
 m_process_t MSG_process_create_with_environment(const char *name,
-					      xbt_main_func_t code,
-					      void *data, m_host_t host,
-					      int argc, char **argv, xbt_dict_t properties)
+                                                xbt_main_func_t code,
+                                                void *data, m_host_t host,
+                                                int argc, char **argv,
+                                                xbt_dict_t properties)
 {
   simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
   m_process_t process = xbt_new0(s_m_process_t, 1);
@@ -145,8 +147,8 @@ m_process_t MSG_process_create_with_environment(const char *name,
   simdata->argc = argc;
   simdata->argv = argv;
   simdata->s_process = SIMIX_process_create(name, code,
-					    (void *) process, host->name,
-					    argc, argv, properties);
+                                            (void *) process, host->name,
+                                            argc, argv, properties);
 
   if (SIMIX_process_self()) {
     simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
@@ -182,7 +184,7 @@ void MSG_process_kill(m_process_t process)
   simdata_process_t p_simdata = process->simdata;
 
   DEBUG3("Killing %s(%d) on %s",
-	 process->name, p_simdata->PID, p_simdata->m_host->name);
+         process->name, p_simdata->PID, p_simdata->m_host->name);
 
   if (p_simdata->waiting_task) {
     DEBUG1("Canceling waiting task %s", p_simdata->waiting_task->name);
@@ -210,7 +212,8 @@ MSG_error_t MSG_process_change_host(m_host_t host)
   m_process_t process = MSG_process_self();
   m_host_t now = process->simdata->m_host;
   process->simdata->m_host = host;
-  SIMIX_process_change_host(process->simdata->s_process, now->name, host->name);
+  SIMIX_process_change_host(process->simdata->s_process, now->name,
+                            host->name);
   return MSG_OK;
 }
 
@@ -253,7 +256,7 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data)
 m_host_t MSG_process_get_host(m_process_t process)
 {
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
 
   return (((simdata_process_t) process->simdata)->m_host);
 }
@@ -304,7 +307,7 @@ int MSG_process_get_PID(m_process_t process)
 int MSG_process_get_PPID(m_process_t process)
 {
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
 
   return (((simdata_process_t) process->simdata)->PPID);
 }
@@ -317,8 +320,9 @@ int MSG_process_get_PPID(m_process_t process)
  */
 const char *MSG_process_get_name(m_process_t process)
 {
-	  xbt_assert0(process, "Invalid parameter: process is NULL");
-	  xbt_assert0(process->simdata, "Invalid parameter: process->simdata is NULL");
+  xbt_assert0(process, "Invalid parameter: process is NULL");
+  xbt_assert0(process->simdata,
+              "Invalid parameter: process->simdata is NULL");
 
   return (process->name);
 }
@@ -330,7 +334,8 @@ const char *MSG_process_get_name(m_process_t process)
  * \param name a property name
  * \return value of a property (or NULL if the property is not set)
  */
-const char* MSG_process_get_property_value(m_process_t process, const char* name)
+const char *MSG_process_get_property_value(m_process_t process,
+                                           const char *name)
 {
   return xbt_dict_get_or_null(MSG_process_get_properties(process), name);
 }
@@ -342,9 +347,10 @@ const char* MSG_process_get_property_value(m_process_t process, const char* name
  */
 xbt_dict_t MSG_process_get_properties(m_process_t process)
 {
-   xbt_assert0((process != NULL), "Invalid parameters");
+  xbt_assert0((process != NULL), "Invalid parameters");
 
-  return (SIMIX_process_get_properties(((simdata_process_t)process->simdata)->s_process));
+  return (SIMIX_process_get_properties
+          (((simdata_process_t) process->simdata)->s_process));
 
 }
 
@@ -394,7 +400,7 @@ m_process_t MSG_process_self(void)
 MSG_error_t MSG_process_suspend(m_process_t process)
 {
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
   SIMIX_process_suspend(process->simdata->s_process);
@@ -411,7 +417,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
 {
 
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
   SIMIX_process_resume(process->simdata->s_process);
@@ -427,6 +433,6 @@ MSG_error_t MSG_process_resume(m_process_t process)
 int MSG_process_is_suspended(m_process_t process)
 {
   xbt_assert0(((process != NULL)
-	       && (process->simdata)), "Invalid parameters");
+               && (process->simdata)), "Invalid parameters");
   return SIMIX_process_is_suspended(process->simdata->s_process);
 }

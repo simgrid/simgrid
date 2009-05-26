@@ -7,21 +7,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "time.h" /* to seed the random generator */
+#include "time.h"               /* to seed the random generator */
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"
 #include "xbt/config.h"
 
-#include "xbt/module.h" /* this module */
+#include "xbt/module.h"         /* this module */
 
-#include "xbt_modinter.h"  /* prototype of other module's init/exit in XBT */
+#include "xbt_modinter.h"       /* prototype of other module's init/exit in XBT */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module,xbt, "module handling");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
 
-char *xbt_binary_name=NULL; /* Mandatory to retrieve neat backtraces */
-int xbt_initialized=0;
+char *xbt_binary_name = NULL;   /* Mandatory to retrieve neat backtraces */
+int xbt_initialized = 0;
 
 XBT_LOG_EXTERNAL_CATEGORY(graphxml_parse);
 XBT_LOG_EXTERNAL_CATEGORY(log);
@@ -47,11 +47,11 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_set);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_sync_os);
 
 /** @brief Initialize the xbt mechanisms. */
-void
-xbt_init(int *argc, char **argv) {
+void xbt_init(int *argc, char **argv)
+{
   xbt_initialized++;
 
-  if (xbt_initialized!=1)
+  if (xbt_initialized != 1)
     return;
 
   /* Connect our log channels: that must be done manually under windows */
@@ -79,18 +79,18 @@ xbt_init(int *argc, char **argv) {
   XBT_LOG_CONNECT(xbt_sync_os, xbt);
 
   xbt_binary_name = xbt_strdup(argv[0]);
-  srand((unsigned int)time(NULL));
+  srand((unsigned int) time(NULL));
   VERB0("Initialize XBT");
 
   xbt_backtrace_init();
-  xbt_log_init(argc,argv);
+  xbt_log_init(argc, argv);
   xbt_os_thread_mod_init();
   xbt_context_mod_init();
 }
 
 /** @brief Finalize the xbt mechanisms. */
-void
-xbt_exit(){
+void xbt_exit()
+{
   xbt_initialized--;
   if (xbt_initialized == 0) {
     xbt_fifo_exit();
@@ -106,12 +106,13 @@ xbt_exit(){
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like free, but you can be sure that it is a function  */
-XBT_PUBLIC(void) xbt_free_f(void* p) {
+XBT_PUBLIC(void) xbt_free_f(void *p)
+{
   free(p);
 }
 
 /** @brief should be given a pointer to pointer, and frees the second one */
-XBT_PUBLIC(void) xbt_free_ref(void *d){
-  free(*(void**)d);
+XBT_PUBLIC(void) xbt_free_ref(void *d)
+{
+  free(*(void **) d);
 }
-

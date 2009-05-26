@@ -11,7 +11,7 @@
 #ifndef _XBT_QUEUE_H
 #define _XBT_QUEUE_H
 
-#include "xbt/misc.h" /* SG_BEGIN_DECL */
+#include "xbt/misc.h"           /* SG_BEGIN_DECL */
 /* #include "xbt/function_types.h" */
 
 SG_BEGIN_DECL()
@@ -27,28 +27,30 @@ SG_BEGIN_DECL()
   * 
   * @{
   */
-
   /** \brief Queue data type (opaque type) */
-  typedef struct s_xbt_queue_ *xbt_queue_t;
+     typedef struct s_xbt_queue_ *xbt_queue_t;
 
 
-  XBT_PUBLIC(xbt_queue_t)   xbt_queue_new(int capacity, unsigned long elm_size);
-  XBT_PUBLIC(void)          xbt_queue_free(xbt_queue_t *queue);
+XBT_PUBLIC(xbt_queue_t) xbt_queue_new(int capacity, unsigned long elm_size);
+XBT_PUBLIC(void) xbt_queue_free(xbt_queue_t * queue);
 
-  XBT_PUBLIC(unsigned long) xbt_queue_length(const xbt_queue_t queue);
+XBT_PUBLIC(unsigned long) xbt_queue_length(const xbt_queue_t queue);
 
-  XBT_PUBLIC(void) xbt_queue_push     (xbt_queue_t queue, const void *src);
-  XBT_PUBLIC(void) xbt_queue_pop      (xbt_queue_t queue, void *const dst);
-  XBT_PUBLIC(void) xbt_queue_unshift (xbt_queue_t queue, const void *src);
-  XBT_PUBLIC(void) xbt_queue_shift   (xbt_queue_t queue, void *const dst);
+XBT_PUBLIC(void) xbt_queue_push(xbt_queue_t queue, const void *src);
+XBT_PUBLIC(void) xbt_queue_pop(xbt_queue_t queue, void *const dst);
+XBT_PUBLIC(void) xbt_queue_unshift(xbt_queue_t queue, const void *src);
+XBT_PUBLIC(void) xbt_queue_shift(xbt_queue_t queue, void *const dst);
 
-  XBT_PUBLIC(void) xbt_queue_push_timed    (xbt_queue_t queue, const void *src, double delay);
-  XBT_PUBLIC(void) xbt_queue_unshift_timed (xbt_queue_t queue, const void *src, double delay);
-  XBT_PUBLIC(void) xbt_queue_shift_timed   (xbt_queue_t queue, void *const dst, double delay);
-  XBT_PUBLIC(void) xbt_queue_pop_timed     (xbt_queue_t queue, void *const dst, double delay);
+XBT_PUBLIC(void) xbt_queue_push_timed(xbt_queue_t queue, const void *src,
+                                      double delay);
+XBT_PUBLIC(void) xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,
+                                         double delay);
+XBT_PUBLIC(void) xbt_queue_shift_timed(xbt_queue_t queue, void *const dst,
+                                       double delay);
+XBT_PUBLIC(void) xbt_queue_pop_timed(xbt_queue_t queue, void *const dst,
+                                     double delay);
 
 /** @} */
 
 SG_END_DECL()
-
 #endif /* _XBT_QUEUE_H */

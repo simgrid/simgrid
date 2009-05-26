@@ -13,9 +13,9 @@
 
 #include "xbt/ex.h"
 
-#include "xbt/synchro.h"     /* This module */
+#include "xbt/synchro.h"        /* This module */
 
-#include "simix/simix.h"     /* used implementation */
+#include "simix/simix.h"        /* used implementation */
 #include "simix/datatypes.h"
 
 /* the implementation would be cleaner (and faster) with ELF symbol aliasing */
@@ -28,17 +28,21 @@ typedef struct s_xbt_thread_ {
   void *father_data;
 } s_xbt_thread_t;
 
-static int xbt_thread_create_wrapper(int argc, char *argv[]) {
-  xbt_thread_t t = (xbt_thread_t)SIMIX_process_get_data(SIMIX_process_self());
-  SIMIX_process_set_data(SIMIX_process_self(),t->father_data);
-  (*t->code)(t->userparam);
+static int xbt_thread_create_wrapper(int argc, char *argv[])
+{
+  xbt_thread_t t =
+    (xbt_thread_t) SIMIX_process_get_data(SIMIX_process_self());
+  SIMIX_process_set_data(SIMIX_process_self(), t->father_data);
+  (*t->code) (t->userparam);
   free(t->name);
   free(t);
   return 0;
 }
 
-xbt_thread_t xbt_thread_create(const char*name,void_f_pvoid_t code, void* param)  {
-  xbt_thread_t res = xbt_new0(s_xbt_thread_t,1);
+xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
+                               void *param)
+{
+  xbt_thread_t res = xbt_new0(s_xbt_thread_t, 1);
   res->name = xbt_strdup(name);
   res->userparam = param;
   res->code = code;
@@ -46,105 +50,122 @@ xbt_thread_t xbt_thread_create(const char*name,void_f_pvoid_t code, void* param)
   //   char*name = bprintf("%s#%p",SIMIX_process_get_name(SIMIX_process_self()), param);
   res->s_process = SIMIX_process_create(name,
                                         xbt_thread_create_wrapper, res,
-                                        SIMIX_host_get_name(SIMIX_host_self()),
-                                        0,NULL,/*props*/NULL);
+                                        SIMIX_host_get_name(SIMIX_host_self
+                                                            ()), 0, NULL,
+                                        /*props */ NULL);
   //   free(name);
   return res;
 }
 
-const char* xbt_thread_name(xbt_thread_t t) {
+const char *xbt_thread_name(xbt_thread_t t)
+{
   return t->name;
 }
 
-const char* xbt_thread_self_name(void) {
+const char *xbt_thread_self_name(void)
+{
   xbt_thread_t me = xbt_thread_self();
   return me ? me->name : "maestro";
 }
 
 
-void
-xbt_thread_join(xbt_thread_t thread) {
-  THROW_UNIMPLEMENTED; /* FIXME */
+void xbt_thread_join(xbt_thread_t thread)
+{
+  THROW_UNIMPLEMENTED;          /* FIXME */
 }
 
-void
-xbt_thread_cancel(xbt_thread_t thread) {
+void xbt_thread_cancel(xbt_thread_t thread)
+{
   SIMIX_process_kill(thread->s_process);
   free(thread->name);
   free(thread);
 }
 
-void xbt_thread_exit() {
-  xbt_thread_t me=SIMIX_process_get_data(SIMIX_process_self());
+void xbt_thread_exit()
+{
+  xbt_thread_t me = SIMIX_process_get_data(SIMIX_process_self());
   SIMIX_process_kill(me->s_process);
   free(me);
 }
 
-xbt_thread_t xbt_thread_self(void) {
+xbt_thread_t xbt_thread_self(void)
+{
   smx_process_t p = SIMIX_process_self();
   return p ? SIMIX_process_get_data(p) : NULL;
 }
 
-void xbt_thread_yield(void) {
-  THROW_UNIMPLEMENTED; /* FIXME */
+void xbt_thread_yield(void)
+{
+  THROW_UNIMPLEMENTED;          /* FIXME */
 }
 
 /****** mutex related functions ******/
 struct s_xbt_mutex_ {
 
   /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_mutex */
-  xbt_swag_t sleeping;			/* list of sleeping process */
-  int refcount ;
+  xbt_swag_t sleeping;          /* list of sleeping process */
+  int refcount;
   /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_mutex */
 
 };
 
-xbt_mutex_t xbt_mutex_init(void) {
-  return (xbt_mutex_t)SIMIX_mutex_init();
+xbt_mutex_t xbt_mutex_init(void)
+{
+  return (xbt_mutex_t) SIMIX_mutex_init();
 }
 
-void xbt_mutex_acquire(xbt_mutex_t mutex) {
-  SIMIX_mutex_lock( (smx_mutex_t)mutex) ;
+void xbt_mutex_acquire(xbt_mutex_t mutex)
+{
+  SIMIX_mutex_lock((smx_mutex_t) mutex);
 }
 
-void xbt_mutex_release(xbt_mutex_t mutex) {
-  SIMIX_mutex_unlock( (smx_mutex_t)mutex );
+void xbt_mutex_release(xbt_mutex_t mutex)
+{
+  SIMIX_mutex_unlock((smx_mutex_t) mutex);
 }
 
-void xbt_mutex_destroy(xbt_mutex_t mutex) {
-  SIMIX_mutex_destroy( (smx_mutex_t)mutex );
+void xbt_mutex_destroy(xbt_mutex_t mutex)
+{
+  SIMIX_mutex_destroy((smx_mutex_t) mutex);
 }
 
 /***** condition related functions *****/
 struct s_xbt_cond_ {
 
   /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_cond */
-  xbt_swag_t sleeping; 			/* list of sleeping process */
-  smx_mutex_t  mutex;
-  xbt_fifo_t actions;			/* list of actions */
+  xbt_swag_t sleeping;          /* list of sleeping process */
+  smx_mutex_t mutex;
+  xbt_fifo_t actions;           /* list of actions */
   /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_cond */
 
 };
 
-xbt_cond_t xbt_cond_init(void) {
-  return (xbt_cond_t)SIMIX_cond_init();
+xbt_cond_t xbt_cond_init(void)
+{
+  return (xbt_cond_t) SIMIX_cond_init();
 }
 
-void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex) {
-  SIMIX_cond_wait( (smx_cond_t)cond , (smx_mutex_t)mutex );
+void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex)
+{
+  SIMIX_cond_wait((smx_cond_t) cond, (smx_mutex_t) mutex);
 }
 
-void xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay) {
-  SIMIX_cond_wait_timeout( (smx_cond_t)cond , (smx_mutex_t)mutex, delay );
+void xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay)
+{
+  SIMIX_cond_wait_timeout((smx_cond_t) cond, (smx_mutex_t) mutex, delay);
 }
 
-void xbt_cond_signal(xbt_cond_t cond) {
-  SIMIX_cond_signal( (smx_cond_t)cond );
+void xbt_cond_signal(xbt_cond_t cond)
+{
+  SIMIX_cond_signal((smx_cond_t) cond);
 }
 
-void xbt_cond_broadcast(xbt_cond_t cond){
-  SIMIX_cond_broadcast( (smx_cond_t)cond );
+void xbt_cond_broadcast(xbt_cond_t cond)
+{
+  SIMIX_cond_broadcast((smx_cond_t) cond);
 }
-void xbt_cond_destroy(xbt_cond_t cond){
-  SIMIX_cond_destroy( (smx_cond_t)cond );
+
+void xbt_cond_destroy(xbt_cond_t cond)
+{
+  SIMIX_cond_destroy((smx_cond_t) cond);
 }

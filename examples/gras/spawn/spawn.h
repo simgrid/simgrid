@@ -16,7 +16,7 @@
 void spawn_register_messages(void);
 
 /* Function prototypes */
-int father (int argc,char *argv[]);
-int child (int argc,char *argv[]);
+int father(int argc, char *argv[]);
+int child(int argc, char *argv[]);
 
 #endif

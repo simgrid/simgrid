@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include "surf/maxmin.h"
 #include "xbt/xbt_os_time.h"
-#include "xbt/sysdep.h"		/* time manipulation for benchmarking */
+#include "xbt/sysdep.h"         /* time manipulation for benchmarking */
 
 double date;
 
@@ -36,9 +36,9 @@ void test(int nb_cnst, int nb_var, int nb_elem);
 void test(int nb_cnst, int nb_var, int nb_elem)
 {
   lmm_system_t Sys = NULL;
-  lmm_constraint_t *cnst = xbt_new0(lmm_constraint_t,nb_cnst);
-  lmm_variable_t *var = xbt_new0(lmm_variable_t,nb_var);
-  int *used = xbt_new0(int,nb_cnst);
+  lmm_constraint_t *cnst = xbt_new0(lmm_constraint_t, nb_cnst);
+  lmm_variable_t *var = xbt_new0(lmm_variable_t, nb_var);
+  int *used = xbt_new0(int, nb_cnst);
   int i, j, k;
 
   Sys = lmm_system_new();
@@ -54,8 +54,8 @@ void test(int nb_cnst, int nb_var, int nb_elem)
     for (j = 0; j < nb_elem; j++) {
       k = int_random(nb_cnst);
       if (used[k]) {
-	j--;
-	continue;
+        j--;
+        continue;
       }
       lmm_expand(Sys, cnst[k], var[i], float_random(1.0));
       used[k] = 1;
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
   date = xbt_os_time() * 1000000;
   test(nb_cnst, nb_var, nb_elem);
   printf("One shot execution time for a total of %d constraints, "
-	 "%d variables with %d active constraint each : %g microsecondes \n",
-	 nb_cnst, nb_var, nb_elem, date);
+         "%d variables with %d active constraint each : %g microsecondes \n",
+         nb_cnst, nb_var, nb_elem, date);
   return 0;
 }

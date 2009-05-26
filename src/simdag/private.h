@@ -14,20 +14,20 @@
 /* Global variables */
 
 typedef struct SD_global {
-  xbt_dict_t workstations; /* workstation dictionary */
-  int workstation_count; /* number of workstations */
-  SD_workstation_t *workstation_list; /* array of workstations, created only if
-					 necessary in SD_workstation_get_list */
+  xbt_dict_t workstations;      /* workstation dictionary */
+  int workstation_count;        /* number of workstations */
+  SD_workstation_t *workstation_list;   /* array of workstations, created only if
+                                           necessary in SD_workstation_get_list */
 
-  xbt_dict_t links; /* links */
-  int link_count; /* number of links */
-  SD_link_t *link_list; /* array of links, created only if
-			   necessary in SD_link_get_list */
-  SD_link_t *recyclable_route; /* array returned by SD_route_get_list
-				  and mallocated only once */
+  xbt_dict_t links;             /* links */
+  int link_count;               /* number of links */
+  SD_link_t *link_list;         /* array of links, created only if
+                                   necessary in SD_link_get_list */
+  SD_link_t *recyclable_route;  /* array returned by SD_route_get_list
+                                   and mallocated only once */
 
-  int watch_point_reached; /* has a task just reached a watch point? */
-  
+  int watch_point_reached;      /* has a task just reached a watch point? */
+
   /* task state sets */
   xbt_swag_t not_scheduled_task_set;
   xbt_swag_t scheduled_task_set;
@@ -45,19 +45,19 @@ extern SD_global_t sd_global;
 
 /* Link */
 typedef struct SD_link {
-  void *surf_link; /* surf object */
-  void *data; /* user data */
-  e_SD_link_sharing_policy_t sharing_policy; 
+  void *surf_link;              /* surf object */
+  void *data;                   /* user data */
+  e_SD_link_sharing_policy_t sharing_policy;
 } s_SD_link_t;
 
 /* Workstation */
 typedef struct SD_workstation {
-  void *surf_workstation; /* surf object */
-  void *data; /* user data */
+  void *surf_workstation;       /* surf object */
+  void *data;                   /* user data */
   e_SD_workstation_access_mode_t access_mode;
 
-  xbt_fifo_t task_fifo; /* only used in sequential mode */
-  SD_task_t current_task; /* only used in sequential mode */
+  xbt_fifo_t task_fifo;         /* only used in sequential mode */
+  SD_task_t current_task;       /* only used in sequential mode */
 } s_SD_workstation_t;
 
 /* Task */
@@ -65,7 +65,7 @@ typedef struct SD_task {
   s_xbt_swag_hookup_t state_hookup;
   xbt_swag_t state_set;
   e_SD_task_state_t state;
-  void *data; /* user data */
+  void *data;                   /* user data */
   char *name;
   double amount;
   double remains;
@@ -74,8 +74,8 @@ typedef struct SD_task {
   surf_action_t surf_action;
   unsigned short watch_points;
 
-  int fifo_checked; /* used by SD_task_just_done to make sure we evaluate
-		       the task only once */
+  int fifo_checked;             /* used by SD_task_just_done to make sure we evaluate
+                                   the task only once */
 
   /* dependencies */
   xbt_dynar_t tasks_before;
@@ -83,7 +83,7 @@ typedef struct SD_task {
 
   /* scheduling parameters (only exist in state SD_SCHEDULED) */
   int workstation_nb;
-  SD_workstation_t *workstation_list; /* surf workstations */
+  SD_workstation_t *workstation_list;   /* surf workstations */
   double *computation_amount;
   double *communication_amount;
   double rate;
@@ -115,39 +115,46 @@ void __SD_task_just_done(SD_task_t task);
 /* Functions to test if the task is in a given state. */
 
 /* Returns whether the given task is scheduled or ready. */
-static XBT_INLINE int __SD_task_is_scheduled_or_ready(SD_task_t task) {
+static XBT_INLINE int __SD_task_is_scheduled_or_ready(SD_task_t task)
+{
   return task->state_set == sd_global->scheduled_task_set ||
     task->state_set == sd_global->ready_task_set;
 }
 
 /* Returns whether the state of the given task is SD_NOT_SCHEDULED. */
-static XBT_INLINE int __SD_task_is_not_scheduled(SD_task_t task) {
+static XBT_INLINE int __SD_task_is_not_scheduled(SD_task_t task)
+{
   return task->state_set == sd_global->not_scheduled_task_set;
 }
 
 /* Returns whether the state of the given task is SD_SCHEDULED. */
-static XBT_INLINE int __SD_task_is_scheduled(SD_task_t task) {
+static XBT_INLINE int __SD_task_is_scheduled(SD_task_t task)
+{
   return task->state_set == sd_global->scheduled_task_set;
 }
 
 /* Returns whether the state of the given task is SD_READY. */
-static XBT_INLINE int __SD_task_is_ready(SD_task_t task) {
+static XBT_INLINE int __SD_task_is_ready(SD_task_t task)
+{
   return task->state_set == sd_global->ready_task_set;
 }
 
 /* Returns whether the state of the given task is SD_IN_FIFO. */
-static XBT_INLINE int __SD_task_is_in_fifo(SD_task_t task) {
+static XBT_INLINE int __SD_task_is_in_fifo(SD_task_t task)
+{
   return task->state_set == sd_global->in_fifo_task_set;
 }
 
 /* Returns whether the state of the given task is SD_READY or SD_IN_FIFO. */
-static XBT_INLINE int __SD_task_is_ready_or_in_fifo(SD_task_t task) {
+static XBT_INLINE int __SD_task_is_ready_or_in_fifo(SD_task_t task)
+{
   return task->state_set == sd_global->ready_task_set ||
     task->state_set == sd_global->in_fifo_task_set;
 }
 
 /* Returns whether the state of the given task is SD_RUNNING. */
-static XBT_INLINE int __SD_task_is_running(SD_task_t task) {
+static XBT_INLINE int __SD_task_is_running(SD_task_t task)
+{
   return task->state_set == sd_global->running_task_set;
 }
 

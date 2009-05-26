@@ -23,7 +23,6 @@
  *
  * @return				The id of the channel.
  */
-jint
-jchannel_get_id(jobject jchannel,JNIEnv* env);
+jint jchannel_get_id(jobject jchannel, JNIEnv * env);
 
 #endif /* !MSG_JCHANNEL_H */

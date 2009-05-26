@@ -23,18 +23,16 @@
 #include <declarations.h>
 
 
-static void create_cross_link(struct constraintmatrix *myconstraints,
-			      int k);
+static void create_cross_link(struct constraintmatrix *myconstraints, int k);
 
 static void addentry(struct constraintmatrix *constraints,
-		     struct blockmatrix *, int matno, int blkno,
-		     int indexi, int indexj, double ent, int blocksize);
+                     struct blockmatrix *, int matno, int blkno,
+                     int indexi, int indexj, double ent, int blocksize);
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_sdp, surf,
-				"Logging specific to SURF (sdp)");
-XBT_LOG_NEW_SUBCATEGORY(surf_sdp_out, surf,
-			"Logging specific to SURF (sdp)");
+                                "Logging specific to SURF (sdp)");
+XBT_LOG_NEW_SUBCATEGORY(surf_sdp_out, surf, "Logging specific to SURF (sdp)");
 /*
 ########################################################################
 ######################## Simple Proportionnal fairness #################
@@ -118,7 +116,7 @@ XBT_LOG_NEW_SUBCATEGORY(surf_sdp_out, surf,
 
 #define get_y(a,b) (pow(2,a)+b-1)
 
-void sdp_solve (lmm_system_t sys)
+void sdp_solve(lmm_system_t sys)
 {
 
   /*
@@ -242,8 +240,8 @@ void sdp_solve (lmm_system_t sys)
    * The total number of constraints.
    */
   nb_cnsts =
-      nb_cnsts_capacity + nb_cnsts_struct + nb_cnsts_positivy +
-      nb_cnsts_latency;
+    nb_cnsts_capacity + nb_cnsts_struct + nb_cnsts_positivy +
+    nb_cnsts_latency;
   CDEBUG1(surf_sdp_out, "Number of constraints = %d", nb_cnsts);
   DEBUG1("Number of constraints in the SDP program : %d", nb_cnsts);
 
@@ -256,10 +254,10 @@ void sdp_solve (lmm_system_t sys)
 
   C.nblocks = nb_cnsts;
   C.blocks =
-      (struct blockrec *) calloc((C.nblocks + 1), sizeof(struct blockrec));
+    (struct blockrec *) calloc((C.nblocks + 1), sizeof(struct blockrec));
   constraints =
-      (struct constraintmatrix *) calloc((nb_var + 1),
-					 sizeof(struct constraintmatrix));
+    (struct constraintmatrix *) calloc((nb_var + 1),
+                                       sizeof(struct constraintmatrix));
 
   for (i = 1; i <= nb_var; i++) {
     constraints[i].blocks = NULL;
@@ -295,7 +293,7 @@ void sdp_solve (lmm_system_t sys)
     C.blocks[block_num].blockcategory = MATRIX;
     C.blocks[block_num].blocksize = block_size;
     C.blocks[block_num].data.mat =
-	(double *) calloc(block_size * block_size, sizeof(double));
+      (double *) calloc(block_size * block_size, sizeof(double));
 
     block_num++;
   }
@@ -329,22 +327,22 @@ void sdp_solve (lmm_system_t sys)
       matno = get_y(k, 2 * i - 1);
       CDEBUG2(surf_sdp_out, "%d %d 1 1 1", matno, block_num);
       addentry(constraints, &C, matno, block_num, 1, 1, 1.0,
-	       C.blocks[block_num].blocksize);
+               C.blocks[block_num].blocksize);
 
       matno = get_y(k, 2 * i);
       CDEBUG2(surf_sdp_out, "%d %d 2 2 1", matno, block_num);
       addentry(constraints, &C, matno, block_num, 2, 2, 1.0,
-	       C.blocks[block_num].blocksize);
+               C.blocks[block_num].blocksize);
 
       matno = get_y(k - 1, i);
       CDEBUG2(surf_sdp_out, "%d %d 1 2 1", matno, block_num);
       addentry(constraints, &C, matno, block_num, 1, 2, 1.0,
-	       C.blocks[block_num].blocksize);
+               C.blocks[block_num].blocksize);
 
       matno = get_y(k - 1, i);
       CDEBUG2(surf_sdp_out, "%d %d 2 1 1", matno, block_num);
       addentry(constraints, &C, matno, block_num, 2, 1, 1.0,
-	       C.blocks[block_num].blocksize);
+               C.blocks[block_num].blocksize);
 
       isdiag[block_num] = 0;
       block_num++;
@@ -359,17 +357,16 @@ void sdp_solve (lmm_system_t sys)
 
     CDEBUG2(surf_sdp_out, "0 %d 1 1 %f", block_num, -(cnst->bound));
     addentry(constraints, &C, 0, block_num, 1, 1, -(cnst->bound),
-	     C.blocks[block_num].blocksize);
+             C.blocks[block_num].blocksize);
 
     elem_list = &(cnst->element_set);
     xbt_swag_foreach(elem, elem_list) {
       if (elem->variable->weight <= 0)
-	break;
+        break;
       matno = get_y(K, elem->variable->index);
-      CDEBUG3(surf_sdp_out, "%d %d 1 1 %f", matno, block_num,
-	      -(elem->value));
+      CDEBUG3(surf_sdp_out, "%d %d 1 1 %f", matno, block_num, -(elem->value));
       addentry(constraints, &C, matno, block_num, 1, 1, -(elem->value),
-	       C.blocks[block_num].blocksize);
+               C.blocks[block_num].blocksize);
 
     }
     block_num++;
@@ -383,7 +380,7 @@ void sdp_solve (lmm_system_t sys)
     matno = get_y(K, i);
     CDEBUG2(surf_sdp_out, "%d %d 1 1 1", matno, block_num);
     addentry(constraints, &C, matno, block_num, 1, 1, 1.0,
-	     C.blocks[block_num].blocksize);
+             C.blocks[block_num].blocksize);
     block_num++;
   }
   /*
@@ -395,7 +392,7 @@ void sdp_solve (lmm_system_t sys)
       matno = get_y(K, var->index);
       CDEBUG3(surf_sdp_out, "%d %d 1 1 %f", matno, block_num, var->bound);
       addentry(constraints, &C, matno, block_num, 1, 1, var->bound,
-	       C.blocks[block_num].blocksize);
+               C.blocks[block_num].blocksize);
     }
   }
 
@@ -405,7 +402,7 @@ void sdp_solve (lmm_system_t sys)
    */
   for (i = 1; i <= nb_cnsts; i++) {
     if ((C.blocks[i].blockcategory != DIAG) &&
-	(isdiag[i] == 1) && (C.blocks[i].blocksize > 1)) {
+        (isdiag[i] == 1) && (C.blocks[i].blocksize > 1)) {
       /*
        * We have a hidden diagonal block!
        */
@@ -413,7 +410,7 @@ void sdp_solve (lmm_system_t sys)
       blocksz = C.blocks[i].blocksize;
       tempdiag = (double *) calloc((blocksz + 1), sizeof(double));
       for (j = 1; j <= blocksz; j++)
-	tempdiag[j] = C.blocks[i].data.mat[ijtok(j, j, blocksz)];
+        tempdiag[j] = C.blocks[i].data.mat[ijtok(j, j, blocksz)];
       free(C.blocks[i].data.mat);
       C.blocks[i].data.vec = tempdiag;
       C.blocks[i].blockcategory = DIAG;
@@ -432,14 +429,14 @@ void sdp_solve (lmm_system_t sys)
        * First, set issparse.
        */
       if (((p->numentries) > 0.25 * (p->blocksize))
-	  && ((p->numentries) > 15)) {
-	p->issparse = 0;
+          && ((p->numentries) > 15)) {
+        p->issparse = 0;
       } else {
-	p->issparse = 1;
+        p->issparse = 1;
       };
 
       if (C.blocks[p->blocknum].blockcategory == DIAG)
-	p->issparse = 1;
+        p->issparse = 1;
 
       /*
        * Setup the cross links.
@@ -481,8 +478,8 @@ void sdp_solve (lmm_system_t sys)
   stdout_sav = stdout;
   stdout = fopen("/dev/null", "w");
   ret =
-      easy_sdp(total_block_size, nb_var, C, a, constraints, 0.0, &X, &y,
-	       &Z, &pobj, &dobj);
+    easy_sdp(total_block_size, nb_var, C, a, constraints, 0.0, &X, &y,
+             &Z, &pobj, &dobj);
   fclose(stdout);
   stdout = stdout_sav;
 
@@ -498,7 +495,7 @@ void sdp_solve (lmm_system_t sys)
 
   case 3:
     DEBUG0
-	("Partial SUCCESS A solution has been found, but full accuracy was not achieved. One or more of primal infeasibility, dual infeasibility, or relative duality gap are larger than their tolerances, but by a factor of less than 1000.");
+      ("Partial SUCCESS A solution has been found, but full accuracy was not achieved. One or more of primal infeasibility, dual infeasibility, or relative duality gap are larger than their tolerances, but by a factor of less than 1000.");
     break;
 
   case 4:
@@ -524,7 +521,7 @@ void sdp_solve (lmm_system_t sys)
     elem_list = &(cnst->element_set);
     xbt_swag_foreach(elem, elem_list) {
       if (elem->variable->weight <= 0)
-	break;
+        break;
 
       i = (int) get_y(K, elem->variable->index);
       elem->variable->value = y[i];
@@ -572,30 +569,30 @@ void create_cross_link(struct constraintmatrix *myconstraints, int k)
     p = myconstraints[i].blocks;
     while (p != NULL) {
       if (p->nextbyblock == NULL) {
-	blk = p->blocknum;
+        blk = p->blocknum;
 
-	/*
-	 * link in the remaining blocks.
-	 */
-	for (j = i + 1; j <= k; j++) {
-	  q = myconstraints[j].blocks;
+        /*
+         * link in the remaining blocks.
+         */
+        for (j = i + 1; j <= k; j++) {
+          q = myconstraints[j].blocks;
 
-	  while (q != NULL) {
-	    if (q->blocknum == p->blocknum) {
-	      if (p->nextbyblock == NULL) {
-		p->nextbyblock = q;
-		q->nextbyblock = NULL;
-		prev = q;
-	      } else {
-		prev->nextbyblock = q;
-		q->nextbyblock = NULL;
-		prev = q;
-	      }
-	      break;
-	    }
-	    q = q->next;
-	  }
-	}
+          while (q != NULL) {
+            if (q->blocknum == p->blocknum) {
+              if (p->nextbyblock == NULL) {
+                p->nextbyblock = q;
+                q->nextbyblock = NULL;
+                prev = q;
+              } else {
+                prev->nextbyblock = q;
+                q->nextbyblock = NULL;
+                prev = q;
+              }
+              break;
+            }
+            q = q->next;
+          }
+        }
       }
       p = p->next;
     }
@@ -606,9 +603,9 @@ void create_cross_link(struct constraintmatrix *myconstraints, int k)
 
 
 void addentry(struct constraintmatrix *constraints,
-	      struct blockmatrix *C,
-	      int matno,
-	      int blkno, int indexi, int indexj, double ent, int blocksize)
+              struct blockmatrix *C,
+              int matno,
+              int blkno, int indexi, int indexj, double ent, int blocksize)
 {
   struct sparseblock *p;
   struct sparseblock *p_sav;
@@ -645,29 +642,29 @@ void addentry(struct constraintmatrix *constraints,
        * in the chain.
        */
       while (p != NULL) {
-	if (p->blocknum == blkno) {
-	  /*
-	   * Found the right block.
-	   */
-	  p->constraintnum = matno;
-	  p->blocknum = blkno;
-	  p->numentries = p->numentries + 1;
+        if (p->blocknum == blkno) {
+          /*
+           * Found the right block.
+           */
+          p->constraintnum = matno;
+          p->blocknum = blkno;
+          p->numentries = p->numentries + 1;
 
-	  p->entries =
-	      realloc(p->entries, (p->numentries + 1) * sizeof(double));
-	  p->iindices =
-	      realloc(p->iindices, (p->numentries + 1) * sizeof(int));
-	  p->jindices =
-	      realloc(p->jindices, (p->numentries + 1) * sizeof(int));
+          p->entries =
+            realloc(p->entries, (p->numentries + 1) * sizeof(double));
+          p->iindices =
+            realloc(p->iindices, (p->numentries + 1) * sizeof(int));
+          p->jindices =
+            realloc(p->jindices, (p->numentries + 1) * sizeof(int));
 
-	  p->entries[p->numentries] = ent;
-	  p->iindices[p->numentries] = indexi;
-	  p->jindices[p->numentries] = indexj;
+          p->entries[p->numentries] = ent;
+          p->iindices[p->numentries] = indexi;
+          p->jindices[p->numentries] = indexj;
 
-	  return;
-	}
-	p_sav = p;
-	p = p->next;
+          return;
+        }
+        p_sav = p;
+        p = p->next;
       }
 
       /*
@@ -699,10 +696,10 @@ void addentry(struct constraintmatrix *constraints,
     if (ent != 0.0) {
       int blksz = C->blocks[blkno].blocksize;
       if (C->blocks[blkno].blockcategory == DIAG) {
-	C->blocks[blkno].data.vec[indexi] = ent;
+        C->blocks[blkno].data.vec[indexi] = ent;
       } else {
-	C->blocks[blkno].data.mat[ijtok(indexi, indexj, blksz)] = ent;
-	C->blocks[blkno].data.mat[ijtok(indexj, indexi, blksz)] = ent;
+        C->blocks[blkno].data.mat[ijtok(indexi, indexj, blksz)] = ent;
+        C->blocks[blkno].data.mat[ijtok(indexj, indexi, blksz)] = ent;
       };
     };
 

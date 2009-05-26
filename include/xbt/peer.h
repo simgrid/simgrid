@@ -16,10 +16,10 @@
 
 SG_BEGIN_DECL()
 
-typedef struct {  
-   char *name;
-   int port;
-} s_xbt_peer_t, *xbt_peer_t;
+     typedef struct {
+       char *name;
+       int port;
+     } s_xbt_peer_t, *xbt_peer_t;
 
 XBT_PUBLIC(xbt_peer_t) xbt_peer_new(const char *name, int port);
 XBT_PUBLIC(xbt_peer_t) xbt_peer_from_string(const char *peerport);
@@ -28,6 +28,4 @@ XBT_PUBLIC(void) xbt_peer_free(xbt_peer_t peer);
 XBT_PUBLIC(void) xbt_peer_free_voidp(void *d);
 
 SG_END_DECL()
-
-
 #endif /* XBT_PEER_H */

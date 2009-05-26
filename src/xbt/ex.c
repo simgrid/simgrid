@@ -14,30 +14,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "portable.h" /* execinfo when available */
+#include "portable.h"           /* execinfo when available */
 #include "xbt/ex.h"
 #include "xbt/str.h"
-#include "xbt/module.h" /* xbt_binary_name */
-#include "xbt_modinter.h" /* backtrace initialization headers */
-#include "xbt/synchro.h" /* xbt_thread_self */
+#include "xbt/module.h"         /* xbt_binary_name */
+#include "xbt_modinter.h"       /* backtrace initialization headers */
+#include "xbt/synchro.h"        /* xbt_thread_self */
 
 #include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
 #include "xbt/ex_interface.h"
 
 #undef HAVE_BACKTRACE
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
-# define HAVE_BACKTRACE 1 /* Hello linux box */
+# define HAVE_BACKTRACE 1       /* Hello linux box */
 #endif
 
 #if defined(WIN32) && defined(_M_IX86) && !defined(__GNUC__)
-# define HAVE_BACKTRACE 1 /* Hello x86 windows box */
+# define HAVE_BACKTRACE 1       /* Hello x86 windows box */
 #endif
 
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex,xbt,"Exception mecanism");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mecanism");
 
 /* default __ex_ctx callback function */
-ex_ctx_t *__xbt_ex_ctx_default(void) {
+ex_ctx_t *__xbt_ex_ctx_default(void)
+{
   /* Don't scream: this is a default which is never used (so, yes,
      there is one setjump container by running entity).
 
@@ -54,26 +55,27 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
 }
 
 /* Change raw libc symbols to file names and line numbers */
-void xbt_ex_setup_backtrace(xbt_ex_t *e);
+void xbt_ex_setup_backtrace(xbt_ex_t * e);
 
-void xbt_backtrace_display(xbt_ex_t *e) {
+void xbt_backtrace_display(xbt_ex_t * e)
+{
   xbt_ex_setup_backtrace(e);
 
 #ifdef HAVE_BACKTRACE
   if (e->used == 0) {
-    fprintf(stderr,"(backtrace not set)\n");
+    fprintf(stderr, "(backtrace not set)\n");
   } else {
     int i;
 
-    fprintf(stderr,"Backtrace (displayed in thread %p):\n",
-            (void*)xbt_thread_self());
-    for (i=1; i<e->used; i++) /* no need to display "xbt_display_backtrace" */
-      fprintf(stderr,"---> %s\n",e->bt_strings[i] +4);
+    fprintf(stderr, "Backtrace (displayed in thread %p):\n",
+            (void *) xbt_thread_self());
+    for (i = 1; i < e->used; i++)       /* no need to display "xbt_display_backtrace" */
+      fprintf(stderr, "---> %s\n", e->bt_strings[i] + 4);
   }
 
   /* don't fool xbt_ex_free with uninitialized msg field */
-  e->msg=NULL;
-  e->remote=0;
+  e->msg = NULL;
+  e->remote = 0;
   xbt_ex_free(*e);
 #else
 
@@ -82,7 +84,8 @@ void xbt_backtrace_display(xbt_ex_t *e) {
 }
 
 /** \brief show the backtrace of the current point (lovely while debuging) */
-void xbt_backtrace_display_current(void) {
+void xbt_backtrace_display_current(void)
+{
   xbt_ex_t e;
   xbt_backtrace_current(&e);
   xbt_backtrace_display(&e);
@@ -97,20 +100,21 @@ void xbt_backtrace_display_current(void) {
 #endif
 
 /** @brief shows an exception content and the associated stack if available */
-void xbt_ex_display(xbt_ex_t *e)  {
-  char *thrower=NULL;
+void xbt_ex_display(xbt_ex_t * e)
+{
+  char *thrower = NULL;
 
   if (e->remote)
-    thrower = bprintf(" on host %s(%d)",e->host,e->pid);
+    thrower = bprintf(" on host %s(%d)", e->host, e->pid);
 
   fprintf(stderr,
           "** SimGrid: UNCAUGHT EXCEPTION received on %s(%d): category: %s; value: %d\n"
           "** %s\n"
           "** Thrown by %s()%s\n",
-          gras_os_myname(),(*xbt_getpid)(),
+          gras_os_myname(), (*xbt_getpid) (),
           xbt_ex_catname(e->category), e->value, e->msg,
-          e->procname,thrower?thrower:" in this process");
-  CRITICAL1("%s",e->msg);
+          e->procname, thrower ? thrower : " in this process");
+  CRITICAL1("%s", e->msg);
 
   if (!e->remote && !e->bt_strings)
     xbt_ex_setup_backtrace(e);
@@ -120,34 +124,38 @@ void xbt_ex_display(xbt_ex_t *e)  {
   {
     int i;
 
-    fprintf(stderr,"\n");
-    for (i=0; i<e->used; i++)
-      fprintf(stderr,"%s\n",e->bt_strings[i]);
+    fprintf(stderr, "\n");
+    for (i = 0; i < e->used; i++)
+      fprintf(stderr, "%s\n", e->bt_strings[i]);
 
   }
 #else
-  fprintf(stderr," at %s:%d:%s (no backtrace available on that arch)\n",
-          e->file,e->line,e->func);
+  fprintf(stderr, " at %s:%d:%s (no backtrace available on that arch)\n",
+          e->file, e->line, e->func);
 #endif
 }
 
 
 /* default __ex_terminate callback function */
-void __xbt_ex_terminate_default(xbt_ex_t *e)  {
+void __xbt_ex_terminate_default(xbt_ex_t * e)
+{
   xbt_ex_display(e);
 
   abort();
 }
 
 /* the externally visible API */
-XBT_EXPORT_NO_IMPORT(ex_ctx_cb_t)  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
-XBT_EXPORT_NO_IMPORT(ex_term_cb_t) __xbt_ex_terminate = &__xbt_ex_terminate_default;
+XBT_EXPORT_NO_IMPORT(ex_ctx_cb_t) __xbt_ex_ctx = &__xbt_ex_ctx_default;
+XBT_EXPORT_NO_IMPORT(ex_term_cb_t) __xbt_ex_terminate =
+  &__xbt_ex_terminate_default;
 
 
-void xbt_ex_free(xbt_ex_t e) {
+     void xbt_ex_free(xbt_ex_t e)
+{
   int i;
 
-  if (e.msg) free(e.msg);
+  if (e.msg)
+    free(e.msg);
   if (e.remote) {
     free(e.procname);
     free(e.file);
@@ -156,25 +164,35 @@ void xbt_ex_free(xbt_ex_t e) {
   }
 
   if (e.bt_strings) {
-    for (i=0; i<e.used; i++)
-      free((char*)e.bt_strings[i]);
-    free((char **)e.bt_strings);
+    for (i = 0; i < e.used; i++)
+      free((char *) e.bt_strings[i]);
+    free((char **) e.bt_strings);
   }
   /* memset(e,0,sizeof(xbt_ex_t)); */
 }
 
 /** \brief returns a short name for the given exception category */
-const char * xbt_ex_catname(xbt_errcat_t cat) {
+const char *xbt_ex_catname(xbt_errcat_t cat)
+{
   switch (cat) {
-    case unknown_error:   return  "unknown_err";
-    case arg_error:       return "invalid_arg";
-    case mismatch_error:  return "mismatch";
-    case not_found_error: return "not found";
-    case system_error:    return "system_err";
-    case network_error:   return "network_err";
-    case timeout_error:   return "timeout";
-    case thread_error:    return "thread_err";
-    default:              return "INVALID_ERR";
+  case unknown_error:
+    return "unknown_err";
+  case arg_error:
+    return "invalid_arg";
+  case mismatch_error:
+    return "mismatch";
+  case not_found_error:
+    return "not found";
+  case system_error:
+    return "system_err";
+  case network_error:
+    return "network_err";
+  case timeout_error:
+    return "timeout";
+  case thread_error:
+    return "thread_err";
+  default:
+    return "INVALID_ERR";
   }
 }
 
@@ -183,11 +201,12 @@ const char * xbt_ex_catname(xbt_errcat_t cat) {
 #include <stdio.h>
 #include "xbt/ex.h"
 
-XBT_TEST_SUITE("xbt_ex","Exception Handling");
+XBT_TEST_SUITE("xbt_ex", "Exception Handling");
 
-XBT_TEST_UNIT("controlflow",test_controlflow, "basic nested control flow") {
+XBT_TEST_UNIT("controlflow", test_controlflow, "basic nested control flow")
+{
   xbt_ex_t ex;
-  volatile int n=1;
+  volatile int n = 1;
 
   xbt_test_add0("basic nested control flow");
 
@@ -199,8 +218,9 @@ XBT_TEST_UNIT("controlflow",test_controlflow, "basic nested control flow") {
       if (n != 2)
         xbt_test_fail1("M2: n=%d (!= 2)", n);
       n++;
-      THROW0(unknown_error,0,"something");
-    } CATCH (ex) {
+      THROW0(unknown_error, 0, "something");
+    }
+    CATCH(ex) {
       if (n != 3)
         xbt_test_fail1("M3: n=%d (!= 3)", n);
       n++;
@@ -211,8 +231,9 @@ XBT_TEST_UNIT("controlflow",test_controlflow, "basic nested control flow") {
       if (n != 5)
         xbt_test_fail1("M2: n=%d (!= 5)", n);
       n++;
-      THROW0(unknown_error,0,"something");
-    } CATCH (ex) {
+      THROW0(unknown_error, 0, "something");
+    }
+    CATCH(ex) {
       if (n != 6)
         xbt_test_fail1("M3: n=%d (!= 6)", n);
       n++;
@@ -231,24 +252,27 @@ XBT_TEST_UNIT("controlflow",test_controlflow, "basic nested control flow") {
     xbt_test_fail1("M5: n=%d (!= 8)", n);
 }
 
-XBT_TEST_UNIT("value",test_value,"exception value passing") {
+XBT_TEST_UNIT("value", test_value, "exception value passing")
+{
   xbt_ex_t ex;
 
   TRY {
     THROW0(unknown_error, 2, "toto");
-  } CATCH(ex) {
+  }
+  CATCH(ex) {
     xbt_test_add0("exception value passing");
     if (ex.category != unknown_error)
       xbt_test_fail1("category=%d (!= 1)", ex.category);
     if (ex.value != 2)
       xbt_test_fail1("value=%d (!= 2)", ex.value);
-    if (strcmp(ex.msg,"toto"))
+    if (strcmp(ex.msg, "toto"))
       xbt_test_fail1("message=%s (!= toto)", ex.msg);
     xbt_ex_free(ex);
   }
 }
 
-XBT_TEST_UNIT("variables",test_variables,"variable value preservation") {
+XBT_TEST_UNIT("variables", test_variables, "variable value preservation")
+{
   xbt_ex_t ex;
   int r1, r2;
   volatile int v1, v2;
@@ -271,7 +295,8 @@ XBT_TEST_UNIT("variables",test_variables,"variable value preservation") {
   }
 }
 
-XBT_TEST_UNIT("cleanup",test_cleanup,"cleanup handling") {
+XBT_TEST_UNIT("cleanup", test_cleanup, "cleanup handling")
+{
   xbt_ex_t ex;
   volatile int v1;
   int c;
@@ -287,10 +312,11 @@ XBT_TEST_UNIT("cleanup",test_cleanup,"cleanup handling") {
     if (v1 != 5678)
       xbt_test_fail1("v1 = %d (!= 5678)", v1);
     c = 1;
-  } CATCH(ex) {
+  }
+  CATCH(ex) {
     if (v1 != 5678)
       xbt_test_fail1("v1 = %d (!= 5678)", v1);
-    if (!(ex.category == 1 && ex.value == 2 && !strcmp(ex.msg,"blah")))
+    if (!(ex.category == 1 && ex.value == 2 && !strcmp(ex.msg, "blah")))
       xbt_test_fail0("unexpected exception contents");
     xbt_ex_free(ex);
   }
@@ -304,15 +330,20 @@ XBT_TEST_UNIT("cleanup",test_cleanup,"cleanup handling") {
  * idea to check its syntax even if we don't try to run it.
  * And actually, it allows to put comments in the code despite doxygen.
  */
-static char *mallocex(int size) {
+static char *mallocex(int size)
+{
   return NULL;
 }
+
 #define SMALLAMOUNT 10
 #define TOOBIG 100000000
 
-#if 0 /* this contains syntax errors, actually */
-static void bad_example(void) {
-  struct {char*first;} *globalcontext;
+#if 0                           /* this contains syntax errors, actually */
+static void bad_example(void)
+{
+  struct {
+    char *first;
+  } *globalcontext;
   ex_t ex;
 
   /* BAD_EXAMPLE */
@@ -326,43 +357,51 @@ static void bad_example(void) {
     strcpy(cp1, "foo");
     strcpy(cp2, "bar");
   } CLEANUP {
-    if (cp3 != NULL) free(cp3);
-    if (cp2 != NULL) free(cp2);
-    if (cp1 != NULL) free(cp1);
-  } CATCH(ex) {
+    if (cp3 != NULL)
+      free(cp3);
+    if (cp2 != NULL)
+      free(cp2);
+    if (cp1 != NULL)
+      free(cp1);
+  }
+  CATCH(ex) {
     printf("cp3=%s", cp3);
     RETHROW;
   }
   /* end_of_bad_example */
 }
 #endif
-typedef struct {char *first;} global_context_t;
+typedef struct {
+  char *first;
+} global_context_t;
 
-static void good_example(void) {
-  global_context_t *global_context=malloc(sizeof(global_context_t));
+static void good_example(void)
+{
+  global_context_t *global_context = malloc(sizeof(global_context_t));
   xbt_ex_t ex;
 
   /* GOOD_EXAMPLE */
-  { /*01*/
-    char * volatile /*03*/ cp1 = NULL /*02*/;
-    char * volatile /*03*/ cp2 = NULL /*02*/;
-    char * volatile /*03*/ cp3 = NULL /*02*/;
+  {                             /*01 */
+    char *volatile /*03 */ cp1 = NULL /*02 */ ;
+    char *volatile /*03 */ cp2 = NULL /*02 */ ;
+    char *volatile /*03 */ cp3 = NULL /*02 */ ;
     TRY {
       cp1 = mallocex(SMALLAMOUNT);
       global_context->first = cp1;
-      cp1 = NULL /*05 give away*/;
+      cp1 = NULL /*05 give away */ ;
       cp2 = mallocex(TOOBIG);
       cp3 = mallocex(SMALLAMOUNT);
       strcpy(cp1, "foo");
       strcpy(cp2, "bar");
-    } CLEANUP { /*04*/
-      printf("cp3=%s", cp3 == NULL /*02*/ ? "" : cp3);
+    } CLEANUP {                 /*04 */
+      printf("cp3=%s", cp3 == NULL /*02 */ ? "" : cp3);
       if (cp3 != NULL)
         free(cp3);
       if (cp2 != NULL)
         free(cp2);
       /*05 cp1 was given away */
-    } CATCH(ex) {
+    }
+    CATCH(ex) {
       /*05 global context untouched */
       RETHROW;
     }

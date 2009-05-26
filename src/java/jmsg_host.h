@@ -9,7 +9,7 @@
  * This contains the declarations of the functions in relation with the java
  * host instance.
  */
- 
+
 #ifndef MSG_JHOST_H
 #define MSG_JHOST_H
 
@@ -28,8 +28,7 @@
  *						this class is not found the function throws the exception 
  *						NotSuchMethodException.
  */
-jobject
-jhost_new_instance(JNIEnv* env);
+jobject jhost_new_instance(JNIEnv * env);
 
 /**
  * This function returns a global reference to the  java host instance 
@@ -41,14 +40,14 @@ jhost_new_instance(JNIEnv* env);
  * @return				The global reference to the original java host 
  *						instance.
  */
-jobject jhost_ref(JNIEnv* env,jobject jhost);
+jobject jhost_ref(JNIEnv * env, jobject jhost);
 /**
  * This function delete a global reference to a java host instance.
  *
  * @param				The global refernce to delete.
  * @param env			The environment of the current thread
  */
-void jhost_unref(JNIEnv* env, jobject jhost);
+void jhost_unref(JNIEnv * env, jobject jhost);
 
 /**
  * This function associated a native host to a java host instance.
@@ -61,9 +60,8 @@ void jhost_unref(JNIEnv* env, jobject jhost);
  *						the ClassNotFoundException. If the field bind of 
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
- */		
-void
-jhost_bind(jobject jhost,m_host_t host,JNIEnv* env);
+ */
+void jhost_bind(jobject jhost, m_host_t host, JNIEnv * env);
 
 /**
  * This function returns a native host from a java host instance.
@@ -79,8 +77,7 @@ jhost_bind(jobject jhost,m_host_t host,JNIEnv* env);
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
  */
-m_host_t
-jhost_get_native(JNIEnv* env,jobject jhost);
+m_host_t jhost_get_native(JNIEnv * env, jobject jhost);
 
 /**
  * This function returns the name of a MSG host.
@@ -90,8 +87,7 @@ jhost_get_native(JNIEnv* env,jobject jhost);
  *
  * @return				The name of the host.
  */
-const char* 
-jhost_get_name(jobject jhost,JNIEnv* env);
+const char *jhost_get_name(jobject jhost, JNIEnv * env);
 
 
 /**
@@ -101,8 +97,7 @@ jhost_get_name(jobject jhost,JNIEnv* env);
  * @param jname			The new name of the host.
  * @param env			The environment of the current thread
  */
-void
-jhost_set_name(jobject jhost,jstring jname,JNIEnv* env);
+void jhost_set_name(jobject jhost, jstring jname, JNIEnv * env);
 
 /**
  * This function tests if a java host instance is valid.
@@ -114,8 +109,6 @@ jhost_set_name(jobject jhost,jstring jname,JNIEnv* env);
  * @return				If the java host is valid the function returns true.
  *						Otherwise the function returns false.
  */
-jboolean
-jhost_is_valid(jobject jhost,JNIEnv* env);
+jboolean jhost_is_valid(jobject jhost, JNIEnv * env);
 
 #endif /*!MSG_JHOST_H */
-

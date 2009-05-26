@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include "simdag/simdag.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   /* initialisation of SD */
   SD_init(&argc, argv);
 
@@ -12,4 +13,3 @@ int main(int argc, char **argv) {
   SD_exit();
   return 0;
 }
-

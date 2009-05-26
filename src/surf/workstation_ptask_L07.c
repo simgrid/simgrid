@@ -20,17 +20,17 @@ typedef enum {
 /********* cpu object *****************/
 /**************************************/
 typedef struct cpu_L07 {
-  surf_model_t model;	/* Do not move this field: must match model_obj_t */
-  xbt_dict_t properties;                /* Do not move this field: must match link_L07_t */
-  e_surf_workstation_model_type_t type;	/* Do not move this field: must match link_L07_t */
-  char *name;			        /* Do not move this field: must match link_L07_t */
-  lmm_constraint_t constraint;	        /* Do not move this field: must match link_L07_t */
+  surf_model_t model;           /* Do not move this field: must match model_obj_t */
+  xbt_dict_t properties;        /* Do not move this field: must match link_L07_t */
+  e_surf_workstation_model_type_t type; /* Do not move this field: must match link_L07_t */
+  char *name;                   /* Do not move this field: must match link_L07_t */
+  lmm_constraint_t constraint;  /* Do not move this field: must match link_L07_t */
   double power_scale;
   double power_current;
   tmgr_trace_event_t power_event;
   e_surf_cpu_state_t state_current;
   tmgr_trace_event_t state_event;
-  int id;			/* cpu and network card are a single object... */
+  int id;                       /* cpu and network card are a single object... */
 } s_cpu_L07_t, *cpu_L07_t;
 
 /**************************************/
@@ -38,11 +38,11 @@ typedef struct cpu_L07 {
 /**************************************/
 
 typedef struct link_L07 {
-  surf_model_t model;	/* Do not move this field: must match model_obj_t */
-  xbt_dict_t properties;                /* Do not move this field: must match link_L07_t */
-  e_surf_workstation_model_type_t type;	/* Do not move this field: must match cpu_L07_t */
-  char *name;	  		        /* Do not move this field: must match cpu_L07_t */
-  lmm_constraint_t constraint;	        /* Do not move this field: must match cpu_L07_t */
+  surf_model_t model;           /* Do not move this field: must match model_obj_t */
+  xbt_dict_t properties;        /* Do not move this field: must match link_L07_t */
+  e_surf_workstation_model_type_t type; /* Do not move this field: must match cpu_L07_t */
+  char *name;                   /* Do not move this field: must match cpu_L07_t */
+  lmm_constraint_t constraint;  /* Do not move this field: must match cpu_L07_t */
   double lat_current;
   tmgr_trace_event_t lat_event;
   double bw_current;
@@ -89,7 +89,7 @@ static void update_action_bound(surf_action_workstation_L07_t action)
   double lat_current = 0.0;
   double lat_bound = -1.0;
   int i, j, k;
-  
+
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       cpu_L07_t card_src = action->workstation_list[i];
@@ -97,12 +97,14 @@ static void update_action_bound(surf_action_workstation_L07_t action)
       int route_size = ROUTE(card_src->id, card_dst->id).size;
       link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
       double lat = 0.0;
-      
+
       if (action->communication_amount[i * workstation_nb + j] > 0) {
-	for (k = 0; k < route_size; k++) {
-	  lat += route[k]->lat_current;
-	}
-	lat_current=MAX(lat_current,lat*action->communication_amount[i * workstation_nb + j]);
+        for (k = 0; k < route_size; k++) {
+          lat += route[k]->lat_current;
+        }
+        lat_current =
+          MAX(lat_current,
+              lat * action->communication_amount[i * workstation_nb + j]);
       }
     }
   }
@@ -111,10 +113,10 @@ static void update_action_bound(surf_action_workstation_L07_t action)
   if ((action->latency == 0.0) && (action->suspended == 0)) {
     if (action->rate < 0)
       lmm_update_variable_bound(ptask_maxmin_system, action->variable,
-				lat_bound);
+                                lat_bound);
     else
       lmm_update_variable_bound(ptask_maxmin_system, action->variable,
-				min(action->rate,lat_bound));
+                                min(action->rate, lat_bound));
   }
 }
 
@@ -135,32 +137,33 @@ static const char *get_resource_name(void *resource_id)
 
   return ((cpu_L07_t) resource_id)->name;
 }
-static xbt_dict_t get_properties(void *r) {
+
+static xbt_dict_t get_properties(void *r)
+{
   /* We can freely cast as a cpu_L07_t since it has the same prefix than link_L07_t */
- return ((cpu_L07_t) r)->properties;
+  return ((cpu_L07_t) r)->properties;
 }
 
 /* action_get_state is inherited from the surf module */
 
 static void action_use(surf_action_t action)
 {
-  action->refcount ++;
+  action->refcount++;
   return;
 }
 
 static int action_free(surf_action_t action)
 {
-  action->refcount --;
+  action->refcount--;
 
-  if (!action->refcount ) {
+  if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
     if (((surf_action_workstation_L07_t) action)->variable)
       lmm_variable_free(ptask_maxmin_system,
-			((surf_action_workstation_L07_t) action)->
-			variable);
-    free(((surf_action_workstation_L07_t)action)->workstation_list);
-    free(((surf_action_workstation_L07_t)action)->communication_amount);
-    free(((surf_action_workstation_L07_t)action)->computation_amount);
+                        ((surf_action_workstation_L07_t) action)->variable);
+    free(((surf_action_workstation_L07_t) action)->workstation_list);
+    free(((surf_action_workstation_L07_t) action)->communication_amount);
+    free(((surf_action_workstation_L07_t) action)->computation_amount);
     free(action);
     return 1;
   }
@@ -188,8 +191,8 @@ static void action_suspend(surf_action_t action)
   if (((surf_action_workstation_L07_t) action)->suspended != 2) {
     ((surf_action_workstation_L07_t) action)->suspended = 1;
     lmm_update_variable_weight(ptask_maxmin_system,
-			       ((surf_action_workstation_L07_t)
-				action)->variable, 0.0);
+                               ((surf_action_workstation_L07_t)
+                                action)->variable, 0.0);
   }
   XBT_OUT;
 }
@@ -200,7 +203,7 @@ static void action_resume(surf_action_t action)
 
   XBT_IN1("(%p)", act);
   if (act->suspended != 2) {
-    lmm_update_variable_weight(ptask_maxmin_system,act->variable, 1.0);
+    lmm_update_variable_weight(ptask_maxmin_system, act->variable, 1.0);
     act->suspended = 0;
   }
   XBT_OUT;
@@ -212,7 +215,7 @@ static int action_is_suspended(surf_action_t action)
 }
 
 static void action_set_max_duration(surf_action_t action, double duration)
-{				/* FIXME: should inherit */
+{                               /* FIXME: should inherit */
   XBT_IN2("(%p,%g)", action, duration);
   action->max_duration = duration;
   XBT_OUT;
@@ -220,7 +223,7 @@ static void action_set_max_duration(surf_action_t action, double duration)
 
 
 static void action_set_priority(surf_action_t action, double priority)
-{				/* FIXME: should inherit */
+{                               /* FIXME: should inherit */
   XBT_IN2("(%p,%g)", action, priority);
   action->priority = priority;
   XBT_OUT;
@@ -235,8 +238,7 @@ static int resource_used(void *resource_id)
   /* We can freely cast as a link_L07_t because it has
      the same prefix as cpu_L07_t */
   return lmm_constraint_used(ptask_maxmin_system,
-			     ((link_L07_t) resource_id)->
-			     constraint);
+                             ((link_L07_t) resource_id)->constraint);
 
 }
 
@@ -246,23 +248,23 @@ static double share_resources(double now)
   surf_action_workstation_L07_t action = NULL;
 
   xbt_swag_t running_actions =
-      surf_workstation_model->common_public->states.running_action_set;
+    surf_workstation_model->common_public->states.running_action_set;
   double min = generic_maxmin_share_resources(running_actions,
-					      xbt_swag_offset(s_action,
-							      variable),
-					      ptask_maxmin_system,
-					      bottleneck_solve);
+                                              xbt_swag_offset(s_action,
+                                                              variable),
+                                              ptask_maxmin_system,
+                                              bottleneck_solve);
 
   xbt_swag_foreach(action, running_actions) {
     if (action->latency > 0) {
       if (min < 0) {
-	min = action->latency;
-	DEBUG3("Updating min (value) with %p (start %f): %f", action,
-	       action->generic_action.start, min);
+        min = action->latency;
+        DEBUG3("Updating min (value) with %p (start %f): %f", action,
+               action->generic_action.start, min);
       } else if (action->latency < min) {
-	min = action->latency;
-	DEBUG3("Updating min (latency) with %p (start %f): %f", action,
-	       action->generic_action.start, min);
+        min = action->latency;
+        DEBUG3("Updating min (latency) with %p (start %f): %f", action,
+               action->generic_action.start, min);
       }
     }
   }
@@ -278,40 +280,41 @@ static void update_actions_state(double now, double delta)
   surf_action_workstation_L07_t action = NULL;
   surf_action_workstation_L07_t next_action = NULL;
   xbt_swag_t running_actions =
-      surf_workstation_model->common_public->states.running_action_set;
+    surf_workstation_model->common_public->states.running_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     deltap = delta;
     if (action->latency > 0) {
       if (action->latency > deltap) {
-	double_update(&(action->latency), deltap);
-	deltap = 0.0;
+        double_update(&(action->latency), deltap);
+        deltap = 0.0;
       } else {
-	double_update(&(deltap), action->latency);
-	action->latency = 0.0;
+        double_update(&(deltap), action->latency);
+        action->latency = 0.0;
       }
       if ((action->latency == 0.0) && (action->suspended == 0)) {
-	update_action_bound(action);
-	lmm_update_variable_weight(ptask_maxmin_system,action->variable, 1.0);
+        update_action_bound(action);
+        lmm_update_variable_weight(ptask_maxmin_system, action->variable,
+                                   1.0);
       }
     }
     DEBUG3("Action (%p) : remains (%g) updated by %g.",
-	   action, action->generic_action.remains,
-	   lmm_variable_getvalue(action->variable) * delta);
+           action, action->generic_action.remains,
+           lmm_variable_getvalue(action->variable) * delta);
     double_update(&(action->generic_action.remains),
-		  lmm_variable_getvalue(action->variable) * delta);
+                  lmm_variable_getvalue(action->variable) * delta);
 
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
     DEBUG2("Action (%p) : remains (%g).",
-	   action, action->generic_action.remains);
+           action, action->generic_action.remains);
     if ((action->generic_action.remains <= 0) &&
-	(lmm_get_variable_weight(action->variable) > 0)) {
+        (lmm_get_variable_weight(action->variable) > 0)) {
       action->generic_action.finish = surf_get_clock();
       surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
-	       (action->generic_action.max_duration <= 0)) {
+               (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
       surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else {
@@ -321,9 +324,9 @@ static void update_actions_state(double now, double delta)
       void *constraint_id = NULL;
 
       while ((cnst =
-	      lmm_get_cnst_from_var(ptask_maxmin_system, action->variable,
-				    i++))) {
-	constraint_id = lmm_constraint_id(cnst);
+              lmm_get_cnst_from_var(ptask_maxmin_system, action->variable,
+                                    i++))) {
+        constraint_id = lmm_constraint_id(cnst);
 
 /* 	if(((link_L07_t)constraint_id)->type== */
 /* 	   SURF_WORKSTATION_RESOURCE_LINK) { */
@@ -339,20 +342,19 @@ static void update_actions_state(double now, double delta)
 /* 		 ((cpu_L07_t)constraint_id)->state_current==SURF_CPU_OFF?"Off":"On"); */
 /* 	} */
 
-	if (((((link_L07_t) constraint_id)->type ==
-	      SURF_WORKSTATION_RESOURCE_LINK) &&
-	     (((link_L07_t) constraint_id)->state_current ==
-	      SURF_LINK_OFF)) ||
-	    ((((cpu_L07_t) constraint_id)->type ==
-	      SURF_WORKSTATION_RESOURCE_CPU) &&
-	     (((cpu_L07_t) constraint_id)->state_current ==
-	      SURF_CPU_OFF))) {
-	  DEBUG1("Action (%p) Failed!!", action);
-	  action->generic_action.finish = surf_get_clock();
-	  surf_action_change_state((surf_action_t) action,
-				   SURF_ACTION_FAILED);
-	  break;
-	}
+        if (((((link_L07_t) constraint_id)->type ==
+              SURF_WORKSTATION_RESOURCE_LINK) &&
+             (((link_L07_t) constraint_id)->state_current ==
+              SURF_LINK_OFF)) ||
+            ((((cpu_L07_t) constraint_id)->type ==
+              SURF_WORKSTATION_RESOURCE_CPU) &&
+             (((cpu_L07_t) constraint_id)->state_current == SURF_CPU_OFF))) {
+          DEBUG1("Action (%p) Failed!!", action);
+          action->generic_action.finish = surf_get_clock();
+          surf_action_change_state((surf_action_t) action,
+                                   SURF_ACTION_FAILED);
+          break;
+        }
       }
     }
   }
@@ -360,8 +362,8 @@ static void update_actions_state(double now, double delta)
 }
 
 static void update_resource_state(void *id,
-				  tmgr_trace_event_t event_type,
-				  double value, double date)
+                                  tmgr_trace_event_t event_type,
+                                  double value, double date)
 {
   cpu_L07_t cpu = id;
   link_L07_t nw_link = id;
@@ -371,7 +373,7 @@ static void update_resource_state(void *id,
     if (event_type == nw_link->bw_event) {
       nw_link->bw_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, nw_link->constraint,
-				  nw_link->bw_current);
+                                  nw_link->bw_current);
     } else if (event_type == nw_link->lat_event) {
       lmm_variable_t var = NULL;
       surf_action_workstation_L07_t action = NULL;
@@ -379,18 +381,18 @@ static void update_resource_state(void *id,
 
       nw_link->lat_current = value;
       while ((var = lmm_get_var_from_cnst
-	     (ptask_maxmin_system, nw_link->constraint, &elem))) {
-	
+              (ptask_maxmin_system, nw_link->constraint, &elem))) {
 
-	action = lmm_variable_id(var);
-	update_action_bound(action);
+
+        action = lmm_variable_id(var);
+        update_action_bound(action);
       }
 
     } else if (event_type == nw_link->state_event) {
       if (value > 0)
-	nw_link->state_current = SURF_LINK_ON;
+        nw_link->state_current = SURF_LINK_ON;
       else
-	nw_link->state_current = SURF_LINK_OFF;
+        nw_link->state_current = SURF_LINK_OFF;
     } else {
       CRITICAL0("Unknown event ! \n");
       xbt_abort();
@@ -401,12 +403,12 @@ static void update_resource_state(void *id,
     if (event_type == cpu->power_event) {
       cpu->power_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, cpu->constraint,
-				  cpu->power_current * cpu->power_scale);
+                                  cpu->power_current * cpu->power_scale);
     } else if (event_type == cpu->state_event) {
       if (value > 0)
-	cpu->state_current = SURF_CPU_ON;
+        cpu->state_current = SURF_CPU_ON;
       else
-	cpu->state_current = SURF_CPU_OFF;
+        cpu->state_current = SURF_CPU_OFF;
     } else {
       CRITICAL0("Unknown event ! \n");
       xbt_abort();
@@ -427,14 +429,14 @@ static void finalize(void)
   if (parallel_task_link_set != NULL) {
     xbt_dict_free(&parallel_task_link_set);
   }
-  xbt_swag_free(surf_workstation_model->common_public->states.
-		ready_action_set);
-  xbt_swag_free(surf_workstation_model->common_public->states.
-		running_action_set);
-  xbt_swag_free(surf_workstation_model->common_public->states.
-		failed_action_set);
-  xbt_swag_free(surf_workstation_model->common_public->states.
-		done_action_set);
+  xbt_swag_free(surf_workstation_model->common_public->
+                states.ready_action_set);
+  xbt_swag_free(surf_workstation_model->common_public->
+                states.running_action_set);
+  xbt_swag_free(surf_workstation_model->common_public->
+                states.failed_action_set);
+  xbt_swag_free(surf_workstation_model->common_public->
+                states.done_action_set);
 
   free(surf_workstation_model->common_public);
   free(surf_workstation_model->common_private);
@@ -476,10 +478,10 @@ static double get_available_speed(void *cpu)
 }
 
 static surf_action_t execute_parallel_task(int workstation_nb,
-					   void **workstation_list,
-					   double *computation_amount,
-					   double *communication_amount,
-					   double amount, double rate)
+                                           void **workstation_list,
+                                           double *computation_amount,
+                                           double *communication_amount,
+                                           double amount, double rate)
 {
   surf_action_workstation_L07_t action = NULL;
   int i, j, k;
@@ -502,12 +504,12 @@ static surf_action_t execute_parallel_task(int workstation_nb,
       double lat = 0.0;
 
       if (communication_amount[i * workstation_nb + j] > 0)
-	for (k = 0; k < route_size; k++) {
-	  lat += route[k]->lat_current;
-	  xbt_dict_set(parallel_task_link_set, route[k]->name,
-		       route[k], NULL);
-	}
-      latency=MAX(latency,lat);
+        for (k = 0; k < route_size; k++) {
+          lat += route[k]->lat_current;
+          xbt_dict_set(parallel_task_link_set, route[k]->name,
+                       route[k], NULL);
+        }
+      latency = MAX(latency, lat);
     }
   }
 
@@ -520,54 +522,53 @@ static surf_action_t execute_parallel_task(int workstation_nb,
 
   action = xbt_new0(s_surf_action_workstation_L07_t, 1);
   DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.",
-	 action, workstation_nb, nb_link);
-  action->generic_action.refcount  = 1;
+         action, workstation_nb, nb_link);
+  action->generic_action.refcount = 1;
   action->generic_action.cost = amount;
   action->generic_action.remains = amount;
   action->generic_action.max_duration = NO_MAX_DURATION;
   action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
-  action->generic_action.model_type =
-      (surf_model_t) surf_workstation_model;
-  action->suspended = 0;	/* Should be useless because of the
-				   calloc but it seems to help valgrind... */
+  action->generic_action.model_type = (surf_model_t) surf_workstation_model;
+  action->suspended = 0;        /* Should be useless because of the
+                                   calloc but it seems to help valgrind... */
   action->workstation_nb = workstation_nb;
-  action->workstation_list = (cpu_L07_t *)workstation_list;
+  action->workstation_list = (cpu_L07_t *) workstation_list;
   action->computation_amount = computation_amount;
   action->communication_amount = communication_amount;
   action->latency = latency;
   action->generic_action.state_set =
-      surf_workstation_model->common_public->states.running_action_set;
+    surf_workstation_model->common_public->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
 
   action->variable =
-    lmm_variable_new(ptask_maxmin_system, action, 1.0, 
-		     (action->rate>0)?action->rate:-1.0,
-		     workstation_nb + nb_link);
+    lmm_variable_new(ptask_maxmin_system, action, 1.0,
+                     (action->rate > 0) ? action->rate : -1.0,
+                     workstation_nb + nb_link);
 
-  if (action->latency > 0) 
-    lmm_update_variable_weight(ptask_maxmin_system,action->variable,0.0);
+  if (action->latency > 0)
+    lmm_update_variable_weight(ptask_maxmin_system, action->variable, 0.0);
 
   for (i = 0; i < workstation_nb; i++)
     lmm_expand(ptask_maxmin_system,
-	       ((cpu_L07_t) workstation_list[i])->constraint,
-	       action->variable, computation_amount[i]);
-  
+               ((cpu_L07_t) workstation_list[i])->constraint,
+               action->variable, computation_amount[i]);
+
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       cpu_L07_t card_src = workstation_list[i];
       cpu_L07_t card_dst = workstation_list[j];
       int route_size = ROUTE(card_src->id, card_dst->id).size;
       link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
-      
-      if (communication_amount[i * workstation_nb + j] == 0.0) 
-	continue;
+
+      if (communication_amount[i * workstation_nb + j] == 0.0)
+        continue;
       for (k = 0; k < route_size; k++) {
-	  lmm_expand_add(ptask_maxmin_system, route[k]->constraint,
-			 action->variable,
-			 communication_amount[i * workstation_nb + j]);
+        lmm_expand_add(ptask_maxmin_system, route[k]->constraint,
+                       action->variable,
+                       communication_amount[i * workstation_nb + j]);
       }
     }
   }
@@ -591,11 +592,11 @@ static surf_action_t execute(void *cpu, double size)
   computation_amount[0] = size;
 
   return execute_parallel_task(1, workstation_list, computation_amount,
-			       communication_amount, 1, -1);
+                               communication_amount, 1, -1);
 }
 
 static surf_action_t communicate(void *src, void *dst, double size,
-				 double rate)
+                                 double rate)
 {
   void **workstation_list = xbt_new0(void *, 2);
   double *computation_amount = xbt_new0(double, 2);
@@ -607,8 +608,8 @@ static surf_action_t communicate(void *src, void *dst, double size,
   communication_amount[1] = size;
 
   res = execute_parallel_task(2, workstation_list,
-			      computation_amount, communication_amount,
-			      1, rate);
+                              computation_amount, communication_amount,
+                              1, rate);
 
   return res;
 }
@@ -673,20 +674,19 @@ static int link_shared(const void *link)
 static void cpu_free(void *cpu)
 {
   free(((cpu_L07_t) cpu)->name);
-  xbt_dict_free(&(((cpu_L07_t)cpu)->properties));
+  xbt_dict_free(&(((cpu_L07_t) cpu)->properties));
   free(cpu);
 }
 
 static cpu_L07_t cpu_new(const char *name, double power_scale,
-			 double power_initial,
-			 tmgr_trace_t power_trace,
-			 e_surf_cpu_state_t state_initial,
-			 tmgr_trace_t state_trace,
-                         xbt_dict_t cpu_properties)
+                         double power_initial,
+                         tmgr_trace_t power_trace,
+                         e_surf_cpu_state_t state_initial,
+                         tmgr_trace_t state_trace, xbt_dict_t cpu_properties)
 {
   cpu_L07_t cpu = xbt_new0(s_cpu_L07_t, 1);
-  xbt_assert1(! xbt_dict_get_or_null(workstation_set, name),
-	      "Host '%s' declared several times in the platform file.",name);
+  xbt_assert1(!xbt_dict_get_or_null(workstation_set, name),
+              "Host '%s' declared several times in the platform file.", name);
 
   cpu->model = (surf_model_t) surf_workstation_model;
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
@@ -699,19 +699,19 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
   cpu->power_current = power_initial;
   if (power_trace)
     cpu->power_event =
-	tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
+      tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
 
   cpu->state_current = state_initial;
   if (state_trace)
     cpu->state_event =
-	tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
+      tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
 
   cpu->constraint =
-      lmm_constraint_new(ptask_maxmin_system, cpu,
-			 cpu->power_current * cpu->power_scale);
+    lmm_constraint_new(ptask_maxmin_system, cpu,
+                       cpu->power_current * cpu->power_scale);
 
-  /*add the property set*/
-  cpu->properties =  current_property_set;
+  /*add the property set */
+  cpu->properties = current_property_set;
 
   xbt_dict_set(workstation_set, name, cpu, cpu_free);
 
@@ -720,7 +720,7 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
 
 static void create_routing_table(void)
 {
-   routing_table = xbt_new0(s_route_L07_t, nb_workstation * nb_workstation);
+  routing_table = xbt_new0(s_route_L07_t, nb_workstation * nb_workstation);
 }
 
 static void parse_cpu_init(void)
@@ -736,8 +736,8 @@ static void parse_cpu_init(void)
   surf_parse_get_trace(&power_trace, A_surfxml_host_availability_file);
 
   xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
-	      (A_surfxml_host_state == A_surfxml_host_state_OFF),
-	      "Invalid state");
+              (A_surfxml_host_state == A_surfxml_host_state_OFF),
+              "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
     state_initial = SURF_CPU_ON;
   if (A_surfxml_host_state == A_surfxml_host_state_OFF)
@@ -746,30 +746,30 @@ static void parse_cpu_init(void)
 
   current_property_set = xbt_dict_new();
   cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace,
-	  state_initial, state_trace,current_property_set);
+          state_initial, state_trace, current_property_set);
 }
 
 static void link_free(void *nw_link)
 {
   free(((link_L07_t) nw_link)->name);
-  xbt_dict_free(&(((link_L07_t)nw_link)->properties));
+  xbt_dict_free(&(((link_L07_t) nw_link)->properties));
   free(nw_link);
 }
 
 static link_L07_t link_new(char *name,
-			   double bw_initial,
-			   tmgr_trace_t bw_trace,
-			   double lat_initial,
-			   tmgr_trace_t lat_trace,
-			   e_surf_link_state_t
-			   state_initial,
-			   tmgr_trace_t state_trace,
-			   e_surf_link_sharing_policy_t
-			   policy, xbt_dict_t properties)
-{   
+                           double bw_initial,
+                           tmgr_trace_t bw_trace,
+                           double lat_initial,
+                           tmgr_trace_t lat_trace,
+                           e_surf_link_state_t
+                           state_initial,
+                           tmgr_trace_t state_trace,
+                           e_surf_link_sharing_policy_t
+                           policy, xbt_dict_t properties)
+{
   link_L07_t nw_link = xbt_new0(s_link_L07_t, 1);
-  xbt_assert1(! xbt_dict_get_or_null(link_set, name),
-	      "Link '%s' declared several times in the platform file.",name);
+  xbt_assert1(!xbt_dict_get_or_null(link_set, name),
+              "Link '%s' declared several times in the platform file.", name);
 
   nw_link->model = (surf_model_t) surf_workstation_model;
   nw_link->type = SURF_WORKSTATION_RESOURCE_LINK;
@@ -777,25 +777,24 @@ static link_L07_t link_new(char *name,
   nw_link->bw_current = bw_initial;
   if (bw_trace)
     nw_link->bw_event =
-	tmgr_history_add_trace(history, bw_trace, 0.0, 0, nw_link);
+      tmgr_history_add_trace(history, bw_trace, 0.0, 0, nw_link);
   nw_link->state_current = state_initial;
   nw_link->lat_current = lat_initial;
   if (lat_trace)
     nw_link->lat_event =
-	tmgr_history_add_trace(history, lat_trace, 0.0, 0, nw_link);
+      tmgr_history_add_trace(history, lat_trace, 0.0, 0, nw_link);
   if (state_trace)
     nw_link->state_event =
-	tmgr_history_add_trace(history, state_trace, 0.0, 0, nw_link);
+      tmgr_history_add_trace(history, state_trace, 0.0, 0, nw_link);
 
   nw_link->constraint =
-      lmm_constraint_new(ptask_maxmin_system, nw_link,
-			 nw_link->bw_current);
+    lmm_constraint_new(ptask_maxmin_system, nw_link, nw_link->bw_current);
 
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->constraint);
 
   nw_link->properties = properties;
-  
+
   xbt_dict_set(link_set, name, nw_link, link_free);
 
   return nw_link;
@@ -818,37 +817,36 @@ static void parse_link_init(void)
   surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
   surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
 
-  xbt_assert0((A_surfxml_link_state ==
-	       A_surfxml_link_state_ON)
-	      || (A_surfxml_link_state ==
-		  A_surfxml_link_state_OFF), "Invalid state");
+  xbt_assert0((A_surfxml_link_state == A_surfxml_link_state_ON)
+              || (A_surfxml_link_state ==
+                  A_surfxml_link_state_OFF), "Invalid state");
   if (A_surfxml_link_state == A_surfxml_link_state_ON)
     state_initial_link = SURF_LINK_ON;
-  else if (A_surfxml_link_state ==
-	   A_surfxml_link_state_OFF)
+  else if (A_surfxml_link_state == A_surfxml_link_state_OFF)
     state_initial_link = SURF_LINK_OFF;
 
-  if (A_surfxml_link_sharing_policy ==
-      A_surfxml_link_sharing_policy_SHARED)
+  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
     policy_initial_link = SURF_LINK_SHARED;
   else if (A_surfxml_link_sharing_policy ==
-	   A_surfxml_link_sharing_policy_FATPIPE)
+           A_surfxml_link_sharing_policy_FATPIPE)
     policy_initial_link = SURF_LINK_FATPIPE;
 
   surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
 
   current_property_set = xbt_dict_new();
   link_new(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
-		   state_initial_link, state_trace, policy_initial_link, current_property_set);
- }
+           state_initial_link, state_trace, policy_initial_link,
+           current_property_set);
+}
 
 static void route_new(int src_id, int dst_id,
-		      link_L07_t * link_list , int nb_link)
+                      link_L07_t * link_list, int nb_link)
 {
   route_L07_t route = &(ROUTE(src_id, dst_id));
 
   route->size = nb_link;
-  route->links = link_list = xbt_realloc(link_list, sizeof(link_L07_t) * nb_link); 
+  route->links = link_list =
+    xbt_realloc(link_list, sizeof(link_L07_t) * nb_link);
 }
 
 
@@ -874,11 +872,11 @@ static void parse_route_set_endpoints(void)
 
 static void parse_route_set_route(void)
 {
-  char* name;
+  char *name;
   if (src_id != -1 && dst_id != -1) {
-     name = bprintf("%x#%x",src_id, dst_id);
-     manage_route(route_table, name, route_action, 0);
-     free(name);
+    name = bprintf("%x#%x", src_id, dst_id);
+    manage_route(route_table, name, route_action, 0);
+    free(name);
   }
 }
 
@@ -890,10 +888,9 @@ static void add_loopback(void)
   for (i = 0; i < nb_workstation; i++)
     if (!ROUTE(i, i).size) {
       if (!loopback)
-	loopback = link_new(xbt_strdup("__MSG_loopback__"),
-				    498000000, NULL, 0.000015, NULL,
-				    SURF_LINK_ON, NULL,
-				    SURF_LINK_FATPIPE,NULL);
+        loopback = link_new(xbt_strdup("__MSG_loopback__"),
+                            498000000, NULL, 0.000015, NULL,
+                            SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL);
 
       ROUTE(i, i).size = 1;
       ROUTE(i, i).links = xbt_new0(link_L07_t, 1);
@@ -903,100 +900,103 @@ static void add_loopback(void)
 
 static void add_route(void)
 {
-    xbt_ex_t e;
-    int nb_link = 0;
-    unsigned int cpt = 0;
-    int link_list_capacity = 0;
-    link_L07_t *link_list = NULL;
-    xbt_dict_cursor_t cursor = NULL;
-    char *key,*data, *end;
-    const char *sep = "#";
-    xbt_dynar_t links, keys;
-	char* link = NULL;
+  xbt_ex_t e;
+  int nb_link = 0;
+  unsigned int cpt = 0;
+  int link_list_capacity = 0;
+  link_L07_t *link_list = NULL;
+  xbt_dict_cursor_t cursor = NULL;
+  char *key, *data, *end;
+  const char *sep = "#";
+  xbt_dynar_t links, keys;
+  char *link = NULL;
 
-    if (routing_table == NULL) create_routing_table();
+  if (routing_table == NULL)
+    create_routing_table();
 
-    xbt_dict_foreach(route_table, cursor, key, data) {
-       nb_link = 0;
-       links = (xbt_dynar_t)data;
-       keys = xbt_str_split_str(key, sep);
-       
-       src_id = strtol(xbt_dynar_get_as(keys, 0, char*), &end, 16);
-       dst_id = strtol(xbt_dynar_get_as(keys, 1, char*), &end, 16);
+  xbt_dict_foreach(route_table, cursor, key, data) {
+    nb_link = 0;
+    links = (xbt_dynar_t) data;
+    keys = xbt_str_split_str(key, sep);
 
-       link_list_capacity = xbt_dynar_length(links);
-       link_list = xbt_new(link_L07_t, link_list_capacity);
+    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
+    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
 
-       
-       xbt_dynar_foreach (links, cpt, link) {
-         TRY {
-           link_list[nb_link++] = xbt_dict_get(link_set, link);
-         }
-         CATCH(e) {
-           RETHROW1("Link %s not found (dict raised this exception: %s)", link);
-         }    
-       }
-       route_new(src_id, dst_id, link_list, nb_link);
-   }
+    link_list_capacity = xbt_dynar_length(links);
+    link_list = xbt_new(link_L07_t, link_list_capacity);
+
+
+    xbt_dynar_foreach(links, cpt, link) {
+      TRY {
+        link_list[nb_link++] = xbt_dict_get(link_set, link);
+      }
+      CATCH(e) {
+        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
+      }
+    }
+    route_new(src_id, dst_id, link_list, nb_link);
+  }
 }
 
-static void add_traces(void) {   
-   xbt_dict_cursor_t cursor=NULL;
-   char *trace_name,*elm;
-   
-   if (!trace_connect_list_host_avail) return;
- 
-   /* Connect traces relative to cpu */
-   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
-      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-      cpu_L07_t host = xbt_dict_get_or_null(workstation_set, elm);
-      
-      xbt_assert1(host, "Host %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
-      
-      host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); 
-   }
+static void add_traces(void)
+{
+  xbt_dict_cursor_t cursor = NULL;
+  char *trace_name, *elm;
 
-   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
-      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-      cpu_L07_t host = xbt_dict_get_or_null(workstation_set, elm);
-      
-      xbt_assert1(host, "Host %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
-      
-      host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); 
-   }
+  if (!trace_connect_list_host_avail)
+    return;
 
-   /* Connect traces relative to network */
-   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
-      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-      link_L07_t link = xbt_dict_get_or_null(link_set, elm);
-      
-      xbt_assert1(link, "Link %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
-      
-      link->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
-   }
+  /* Connect traces relative to cpu */
+  xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
+    tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+    cpu_L07_t host = xbt_dict_get_or_null(workstation_set, elm);
 
-   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
-      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-      link_L07_t link = xbt_dict_get_or_null(link_set, elm);
-      
-      xbt_assert1(link, "Link %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
-      
-      link->bw_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
-   }
-   
-   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
-      tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-      link_L07_t link = xbt_dict_get_or_null(link_set, elm);
-      
-      xbt_assert1(link, "Link %s undefined", elm);
-      xbt_assert1(trace, "Trace %s undefined", trace_name);
-      
-      link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
-   }
+    xbt_assert1(host, "Host %s undefined", elm);
+    xbt_assert1(trace, "Trace %s undefined", trace_name);
+
+    host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host);
+  }
+
+  xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
+    tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+    cpu_L07_t host = xbt_dict_get_or_null(workstation_set, elm);
+
+    xbt_assert1(host, "Host %s undefined", elm);
+    xbt_assert1(trace, "Trace %s undefined", trace_name);
+
+    host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host);
+  }
+
+  /* Connect traces relative to network */
+  xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
+    tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+    link_L07_t link = xbt_dict_get_or_null(link_set, elm);
+
+    xbt_assert1(link, "Link %s undefined", elm);
+    xbt_assert1(trace, "Trace %s undefined", trace_name);
+
+    link->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+  }
+
+  xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
+    tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+    link_L07_t link = xbt_dict_get_or_null(link_set, elm);
+
+    xbt_assert1(link, "Link %s undefined", elm);
+    xbt_assert1(trace, "Trace %s undefined", trace_name);
+
+    link->bw_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+  }
+
+  xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
+    tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
+    link_L07_t link = xbt_dict_get_or_null(link_set, elm);
+
+    xbt_assert1(link, "Link %s undefined", elm);
+    xbt_assert1(trace, "Trace %s undefined", trace_name);
+
+    link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+  }
 /*
    
    xbt_dynar_foreach (traces_connect_list, cpt, value) {
@@ -1033,7 +1033,8 @@ static void define_callbacks(const char *file)
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
   surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+  surfxml_add_callback(STag_surfxml_route_cb_list,
+                       &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
@@ -1052,79 +1053,70 @@ static void model_init_internal(void)
   surf_workstation_model = xbt_new0(s_surf_workstation_model_t, 1);
 
   surf_workstation_model->common_private =
-      xbt_new0(s_surf_model_private_t, 1);
-  surf_workstation_model->common_public =
-      xbt_new0(s_surf_model_public_t, 1);
+    xbt_new0(s_surf_model_private_t, 1);
+  surf_workstation_model->common_public = xbt_new0(s_surf_model_public_t, 1);
   surf_workstation_model->extension_public =
-      xbt_new0(s_surf_workstation_model_extension_public_t, 1);
+    xbt_new0(s_surf_workstation_model_extension_public_t, 1);
 
   surf_workstation_model->common_public->states.ready_action_set =
-      xbt_swag_new(xbt_swag_offset(action, state_hookup));
+    xbt_swag_new(xbt_swag_offset(action, state_hookup));
   surf_workstation_model->common_public->states.running_action_set =
-      xbt_swag_new(xbt_swag_offset(action, state_hookup));
+    xbt_swag_new(xbt_swag_offset(action, state_hookup));
   surf_workstation_model->common_public->states.failed_action_set =
-      xbt_swag_new(xbt_swag_offset(action, state_hookup));
+    xbt_swag_new(xbt_swag_offset(action, state_hookup));
   surf_workstation_model->common_public->states.done_action_set =
-      xbt_swag_new(xbt_swag_offset(action, state_hookup));
+    xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_workstation_model->common_public->name_service = name_service;
   surf_workstation_model->common_public->get_resource_name =
-      get_resource_name;
+    get_resource_name;
   surf_workstation_model->common_public->action_get_state =
-      surf_action_get_state;
+    surf_action_get_state;
   surf_workstation_model->common_public->action_get_start_time =
-      surf_action_get_start_time;
+    surf_action_get_start_time;
   surf_workstation_model->common_public->action_get_finish_time =
-      surf_action_get_finish_time;
+    surf_action_get_finish_time;
   surf_workstation_model->common_public->action_use = action_use;
   surf_workstation_model->common_public->action_free = action_free;
   surf_workstation_model->common_public->action_cancel = action_cancel;
-  surf_workstation_model->common_public->action_recycle =
-      action_recycle;
+  surf_workstation_model->common_public->action_recycle = action_recycle;
   surf_workstation_model->common_public->action_change_state =
-      surf_action_change_state;
+    surf_action_change_state;
   surf_workstation_model->common_public->action_set_data =
-      surf_action_set_data;
+    surf_action_set_data;
   surf_workstation_model->common_public->suspend = action_suspend;
   surf_workstation_model->common_public->resume = action_resume;
-  surf_workstation_model->common_public->is_suspended =
-      action_is_suspended;
+  surf_workstation_model->common_public->is_suspended = action_is_suspended;
   surf_workstation_model->common_public->set_max_duration =
-      action_set_max_duration;
-  surf_workstation_model->common_public->set_priority =
-      action_set_priority;
+    action_set_max_duration;
+  surf_workstation_model->common_public->set_priority = action_set_priority;
   surf_workstation_model->common_public->name = "Workstation ptask_L07";
 
   surf_workstation_model->common_private->resource_used = resource_used;
-  surf_workstation_model->common_private->share_resources =
-      share_resources;
+  surf_workstation_model->common_private->share_resources = share_resources;
   surf_workstation_model->common_private->update_actions_state =
-      update_actions_state;
+    update_actions_state;
   surf_workstation_model->common_private->update_resource_state =
-      update_resource_state;
+    update_resource_state;
   surf_workstation_model->common_private->finalize = finalize;
 
   surf_workstation_model->extension_public->execute = execute;
   surf_workstation_model->extension_public->sleep = action_sleep;
-  surf_workstation_model->extension_public->get_state =
-      resource_get_state;
+  surf_workstation_model->extension_public->get_state = resource_get_state;
   surf_workstation_model->extension_public->get_speed = get_speed;
   surf_workstation_model->extension_public->get_available_speed =
-      get_available_speed;
+    get_available_speed;
   surf_workstation_model->extension_public->communicate = communicate;
   surf_workstation_model->extension_public->execute_parallel_task =
-      execute_parallel_task;
+    execute_parallel_task;
   surf_workstation_model->extension_public->get_route = get_route;
-  surf_workstation_model->extension_public->get_route_size =
-      get_route_size;
-  surf_workstation_model->extension_public->get_link_name =
-      get_link_name;
+  surf_workstation_model->extension_public->get_route_size = get_route_size;
+  surf_workstation_model->extension_public->get_link_name = get_link_name;
   surf_workstation_model->extension_public->get_link_bandwidth =
-      get_link_bandwidth;
+    get_link_bandwidth;
   surf_workstation_model->extension_public->get_link_latency =
-      get_link_latency;
-  surf_workstation_model->extension_public->link_shared =
-      link_shared;
+    get_link_latency;
+  surf_workstation_model->extension_public->link_shared = link_shared;
 
   surf_workstation_model->common_public->get_properties = get_properties;
 
@@ -1141,13 +1133,12 @@ static void model_init_internal(void)
 void surf_workstation_model_init_ptask_L07(const char *filename)
 {
   xbt_assert0(!surf_cpu_model, "CPU model type already defined");
-  xbt_assert0(!surf_network_model,
-	      "network model type already defined");
+  xbt_assert0(!surf_network_model, "network model type already defined");
   model_init_internal();
   define_callbacks(filename);
 
   update_model_description(surf_workstation_model_description,
-			   "ptask_L07",
-			   (surf_model_t) surf_workstation_model);
+                           "ptask_L07",
+                           (surf_model_t) surf_workstation_model);
   xbt_dynar_push(model_list, &surf_workstation_model);
 }

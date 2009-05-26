@@ -43,14 +43,15 @@ typedef struct xbt_dict_ {
 typedef struct xbt_dict_cursor_ s_xbt_dict_cursor_t;
 
 extern xbt_mallocator_t dict_elm_mallocator;
-extern void* dict_elm_mallocator_new_f(void);
-extern void dict_elm_mallocator_free_f(void* elem);
-extern void dict_elm_mallocator_reset_f(void* elem);
+extern void *dict_elm_mallocator_new_f(void);
+extern void dict_elm_mallocator_free_f(void *elem);
+extern void dict_elm_mallocator_reset_f(void *elem);
 
 /*####[ Function prototypes ]################################################*/
-xbt_dictelm_t xbt_dictelm_new(const char *key, int key_len, unsigned int hash_code,
-                              void *content, void_f_pvoid_t free_f);
+xbt_dictelm_t xbt_dictelm_new(const char *key, int key_len,
+                              unsigned int hash_code, void *content,
+                              void_f_pvoid_t free_f);
 void xbt_dictelm_free(xbt_dictelm_t element);
 void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element);
 
-#endif  /* _XBT_DICT_PRIVATE_H_ */
+#endif /* _XBT_DICT_PRIVATE_H_ */

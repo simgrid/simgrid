@@ -21,8 +21,8 @@
 extern const char *surf_action_state_names[6];
 
 typedef enum {
-  SURF_LINK_ON = 1,	/* Ready        */
-  SURF_LINK_OFF = 0	/* Running      */
+  SURF_LINK_ON = 1,             /* Ready        */
+  SURF_LINK_OFF = 0             /* Running      */
 } e_surf_link_state_t;
 
 typedef enum {
@@ -38,7 +38,7 @@ typedef struct surf_model_private {
   /* Update the actions' state */
   void (*update_actions_state) (double now, double delta);
   void (*update_resource_state) (void *id, tmgr_trace_event_t event_type,
-				 double value, double time);
+                                 double value, double time);
   void (*finalize) (void);
 } s_surf_model_private_t;
 
@@ -49,9 +49,9 @@ extern int use_sdp_solver;
 extern int use_lagrange_solver;
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
-				       size_t offset,
-				       lmm_system_t sys,
-				       void (*solve)(lmm_system_t));
+                                      size_t offset,
+                                      lmm_system_t sys,
+                                      void (*solve) (lmm_system_t));
 
 /* Generic functions common to all modelss */
 e_surf_action_state_t surf_action_get_state(surf_action_t action);
@@ -59,10 +59,9 @@ double surf_action_get_start_time(surf_action_t action);
 double surf_action_get_finish_time(surf_action_t action);
 void surf_action_free(surf_action_t * action);
 void surf_action_change_state(surf_action_t action,
-			      e_surf_action_state_t state);
-void surf_action_set_data(surf_action_t action,
-			  void *data);
-FILE * surf_fopen(const char *name, const char *mode);
+                              e_surf_action_state_t state);
+void surf_action_set_data(surf_action_t action, void *data);
+FILE *surf_fopen(const char *name, const char *mode);
 
 extern tmgr_history_t history;
 extern xbt_dynar_t surf_path;
@@ -73,12 +72,12 @@ extern xbt_dynar_t surf_path;
  * case the function returns "./" that represents the current
  * directory on Unix/Linux platforms.
  */
-const char* __surf_get_initial_path(void);
+const char *__surf_get_initial_path(void);
 
 /* The __surf_is_absolute_file_path() returns 1 if
  * file_path is a absolute file path, in the other
  * case the function returns 0.
  */
-int __surf_is_absolute_file_path(const char* file_path);
+int __surf_is_absolute_file_path(const char *file_path);
 
-#endif				/* _SURF_SURF_PRIVATE_H */
+#endif /* _SURF_SURF_PRIVATE_H */

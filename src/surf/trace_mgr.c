@@ -24,7 +24,7 @@ tmgr_history_t tmgr_history_new(void)
 
   h = xbt_new0(s_tmgr_history_t, 1);
 
-  h->heap = xbt_heap_new(8, xbt_free_f);	/* Why 8 ? Well, why not... */
+  h->heap = xbt_heap_new(8, xbt_free_f);        /* Why 8 ? Well, why not... */
 
   return h;
 }
@@ -35,7 +35,8 @@ void tmgr_history_free(tmgr_history_t h)
   free(h);
 }
 
-tmgr_trace_t tmgr_trace_new_from_string(const char* id, const char *input, double periodicity)
+tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
+                                        double periodicity)
 {
   tmgr_trace_t trace = NULL;
   int linecount = 0;
@@ -43,7 +44,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* id, const char *input, doubl
   tmgr_event_t last_event = NULL;
   xbt_dynar_t list;
   unsigned int cpt;
-  char * val;
+  char *val;
 
   if (trace_list) {
     trace = xbt_dict_get_or_null(trace_list, id);
@@ -52,34 +53,39 @@ tmgr_trace_t tmgr_trace_new_from_string(const char* id, const char *input, doubl
   }
 
   if (periodicity <= 0) {
-    xbt_assert1(0, "Periodicity has to be positive. Your value %lg", periodicity);
+    xbt_assert1(0, "Periodicity has to be positive. Your value %lg",
+                periodicity);
   }
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
-  list = xbt_str_split(input,"\n\r");
+  list = xbt_str_split(input, "\n\r");
 
 
   xbt_dynar_foreach(list, cpt, val) {
-     linecount++;
-     xbt_str_trim(val, " \t\n\r\x0B");
-     if (strlen(val) > 0) {
-       if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2) {
-          xbt_assert2(0, "%s\n%d: Syntax error", input, linecount);
-       }
-       if (last_event) {
-           if ((last_event->delta = event.delta - last_event->delta) <= 0) {
-	       xbt_assert2(0, "%s\n%d: Invalid trace value, events have to be sorted", input, linecount);
-           }
-       }
-       xbt_dynar_push(trace->event_list, &event);
-       last_event = xbt_dynar_get_ptr(trace->event_list, xbt_dynar_length(trace->event_list) - 1);
-       if (periodicity > 0) {
-         if (last_event)
-           last_event->delta = periodicity;
-       }
-     }
+    linecount++;
+    xbt_str_trim(val, " \t\n\r\x0B");
+    if (strlen(val) > 0) {
+      if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2) {
+        xbt_assert2(0, "%s\n%d: Syntax error", input, linecount);
+      }
+      if (last_event) {
+        if ((last_event->delta = event.delta - last_event->delta) <= 0) {
+          xbt_assert2(0,
+                      "%s\n%d: Invalid trace value, events have to be sorted",
+                      input, linecount);
+        }
+      }
+      xbt_dynar_push(trace->event_list, &event);
+      last_event =
+        xbt_dynar_get_ptr(trace->event_list,
+                          xbt_dynar_length(trace->event_list) - 1);
+      if (periodicity > 0) {
+        if (last_event)
+          last_event->delta = periodicity;
+      }
+    }
   }
 
   if (!trace_list)
@@ -97,7 +103,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   FILE *f = NULL;
   int linecount = 0;
   char line[256];
-  double periodicity = -1.0;	/* No periodicity by default */
+  double periodicity = -1.0;    /* No periodicity by default */
   s_tmgr_event_t event;
   tmgr_event_t last_event = NULL;
 
@@ -120,31 +126,29 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
       continue;
 
     if (sscanf(line, "PERIODICITY " "%lg" "\n", &(periodicity))
-	== 1) {
+        == 1) {
       if (periodicity <= 0) {
-	xbt_assert2(0,
-		    "%s,%d: Syntax error. Periodicity has to be positive",
-		    filename, linecount);
+        xbt_assert2(0,
+                    "%s,%d: Syntax error. Periodicity has to be positive",
+                    filename, linecount);
       }
       continue;
     }
 
-    if (sscanf
-	(line, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2) {
+    if (sscanf(line, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2) {
       xbt_assert2(0, "%s,%d: Syntax error", filename, linecount);
     }
 
     if (last_event) {
       if ((last_event->delta = event.delta - last_event->delta) <= 0) {
-	xbt_assert2(0,
-		    "%s,%d: Invalid trace value, events have to be sorted",
-		    filename, linecount);
+        xbt_assert2(0,
+                    "%s,%d: Invalid trace value, events have to be sorted",
+                    filename, linecount);
       }
     }
     xbt_dynar_push(trace->event_list, &event);
     last_event = xbt_dynar_get_ptr(trace->event_list,
-				   xbt_dynar_length(trace->event_list) -
-				   1);
+                                   xbt_dynar_length(trace->event_list) - 1);
   }
 
   if (periodicity > 0) {
@@ -188,9 +192,9 @@ void tmgr_trace_free(tmgr_trace_t trace)
 }
 
 tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
-					  tmgr_trace_t trace,
-					  double start_time, unsigned int offset,
-					  void *model)
+                                          tmgr_trace_t trace,
+                                          double start_time,
+                                          unsigned int offset, void *model)
 {
   tmgr_trace_event_t trace_event = NULL;
 
@@ -200,7 +204,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
   trace_event->model = model;
 
   xbt_assert0((trace_event->idx < xbt_dynar_length(trace->event_list)),
-	      "You're referring to an event that does not exist!");
+              "You're referring to an event that does not exist!");
 
   xbt_heap_push(h->heap, trace_event, start_time);
 
@@ -216,9 +220,9 @@ double tmgr_history_next_date(tmgr_history_t h)
 }
 
 tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
-						   double date,
-						   double *value,
-						   void **model)
+                                                   double date,
+                                                   double *value,
+                                                   void **model)
 {
   double event_date = tmgr_history_next_date(h);
   tmgr_trace_event_t trace_event = NULL;
@@ -240,12 +244,12 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
   if (trace_event->idx < xbt_dynar_length(trace->event_list) - 1) {
     xbt_heap_push(h->heap, trace_event, event_date + event->delta);
     trace_event->idx++;
-  } else if (event->delta > 0) {	/* Last element, checking for periodicity */
+  } else if (event->delta > 0) {        /* Last element, checking for periodicity */
     xbt_heap_push(h->heap, trace_event, event_date + event->delta);
     trace_event->idx = 0;
-  } else {			/* We don't need this trace_event anymore */
+  } else {                      /* We don't need this trace_event anymore */
     free(trace_event);
-	return NULL;
+    return NULL;
   }
 
   return trace_event;

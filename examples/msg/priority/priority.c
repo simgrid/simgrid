@@ -6,13 +6,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include "msg/msg.h" /* Yeah! If you want to use msg, you need to include msg/msg.h */
-#include "xbt/sysdep.h" /* calloc, printf */
+#include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
+#include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
+                             "Messages specific for this msg example");
 
 static int test(int argc, char *argv[])
 {
@@ -21,66 +22,66 @@ static int test(int argc, char *argv[])
   m_task_t task = NULL;
 
 
-  xbt_assert1(sscanf(argv[1],"%lg", &computation_amount),
-	 "Invalid argument %s\n",argv[1]);
-  xbt_assert1(sscanf(argv[2],"%lg", &priority),
-	 "Invalid argument %s\n",argv[2]);
+  xbt_assert1(sscanf(argv[1], "%lg", &computation_amount),
+              "Invalid argument %s\n", argv[1]);
+  xbt_assert1(sscanf(argv[2], "%lg", &priority),
+              "Invalid argument %s\n", argv[2]);
 
   INFO2("Hello! Running a task of size %g with priority %g",
-	computation_amount, priority);
-  task = MSG_task_create("Task", computation_amount, 0.0,NULL);
+        computation_amount, priority);
+  task = MSG_task_create("Task", computation_amount, 0.0, NULL);
   MSG_task_set_priority(task, priority);
 
   MSG_task_execute(task);
 
-  
+
   INFO0("Goodbye now!");
   return 0;
-} 
+}
 
 static MSG_error_t test_all(const char *platform_file,
-			    const char *application_file)
+                            const char *application_file)
 {
   MSG_error_t res = MSG_OK;
 
-  {				/*  Simulation setting */
+  {                             /*  Simulation setting */
     MSG_set_channel_number(1);
     MSG_paje_output("msg_test.trace");
     MSG_create_environment(platform_file);
   }
-  {                            /*   Application deployment */
+  {                             /*   Application deployment */
     MSG_function_register("test", test);
     MSG_launch_application(application_file);
   }
   res = MSG_main();
-  
-  INFO1("Simulation time %g",MSG_get_clock());
+
+  INFO1("Simulation time %g", MSG_get_clock());
   return res;
 }
 
 int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
-  
-  #ifdef _MSC_VER
+
+#ifdef _MSC_VER
   unsigned int prev_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
-  #endif
+#endif
 
 
-  MSG_global_init(&argc,argv);
+  MSG_global_init(&argc, argv);
   if (argc < 3) {
-     printf ("Usage: %s platform_file deployment_file\n",argv[0]);
-     printf ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
-     exit(1);
+    printf("Usage: %s platform_file deployment_file\n", argv[0]);
+    printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
+    exit(1);
   }
-  res = test_all(argv[1],argv[2]);
+  res = test_all(argv[1], argv[2]);
   MSG_clean();
-  
-  #ifdef _MSC_VER
-  _set_output_format(prev_exponent_format);
-  #endif
 
-  if(res==MSG_OK)
+#ifdef _MSC_VER
+  _set_output_format(prev_exponent_format);
+#endif
+
+  if (res == MSG_OK)
     return 0;
   else
     return 1;

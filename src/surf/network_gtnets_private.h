@@ -12,15 +12,15 @@
 #include "xbt/dict.h"
 
 typedef struct network_link_GTNETS {
-  surf_model_t model;	/* Any such object, added in a trace
-				   should start by this field!!! */
+  surf_model_t model;           /* Any such object, added in a trace
+                                   should start by this field!!! */
   /* Using this object with the public part of
      model does not make sense */
   char *name;
   double bw_current;
   double lat_current;
   int id;
-  /*holds the properties associated witht the link*/
+  /*holds the properties associated witht the link */
   xbt_dict_t properties;
 } s_network_link_GTNETS_t, *network_link_GTNETS_t;
 
@@ -28,7 +28,7 @@ typedef struct network_link_GTNETS {
 typedef struct network_card_GTNETS {
   char *name;
   int id;
-  /*holds the properties associated witht the card*/
+  /*holds the properties associated witht the card */
   xbt_dict_t properties;
 } s_network_card_GTNETS_t, *network_card_GTNETS_t;
 
@@ -46,6 +46,4 @@ typedef struct surf_action_network_GTNETS {
 extern xbt_dict_t network_card_set;
 
 
-#endif				/* _SURF_NETWORK_PRIVATE_H */
-
-
+#endif /* _SURF_NETWORK_PRIVATE_H */

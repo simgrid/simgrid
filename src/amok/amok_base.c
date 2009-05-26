@@ -10,15 +10,16 @@
 #include "gras.h"
 #include "amok/amok_modinter.h"
 
-XBT_LOG_NEW_SUBCATEGORY(amok,XBT_LOG_ROOT_CAT,"All AMOK categories");
+XBT_LOG_NEW_SUBCATEGORY(amok, XBT_LOG_ROOT_CAT, "All AMOK categories");
 
-void amok_init(void) {
+void amok_init(void)
+{
 
   /* Create all the modules */
   amok_pm_modulecreate();
 }
 
-void amok_exit(void) {
-   /* FIXME: No real module mechanism in GRAS so far, nothing to do. */
+void amok_exit(void)
+{
+  /* FIXME: No real module mechanism in GRAS so far, nothing to do. */
 }
-

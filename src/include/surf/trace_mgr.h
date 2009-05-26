@@ -21,22 +21,26 @@ XBT_PUBLIC(tmgr_history_t) tmgr_history_new(void);
 XBT_PUBLIC(void) tmgr_history_free(tmgr_history_t history);
 
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new(const char *filename);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char* id, const char *input, double periodicity);
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
+                                                    const char *input,
+                                                    double periodicity);
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
 XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 
 XBT_PUBLIC(tmgr_trace_event_t) tmgr_history_add_trace(tmgr_history_t history,
-					  tmgr_trace_t trace,
-					  double start_time, unsigned int offset,
-					  void *model);
+                                                      tmgr_trace_t trace,
+                                                      double start_time,
+                                                      unsigned int offset,
+                                                      void *model);
 
 /* Access functions */
 XBT_PUBLIC(double) tmgr_history_next_date(tmgr_history_t history);
-XBT_PUBLIC(tmgr_trace_event_t) tmgr_history_get_next_event_leq(tmgr_history_t history,
-						   double date,
-						   double *value,
-						   void **model);
+XBT_PUBLIC(tmgr_trace_event_t) tmgr_history_get_next_event_leq(tmgr_history_t
+                                                               history,
+                                                               double date,
+                                                               double *value,
+                                                               void **model);
 
 XBT_PUBLIC(void) tmgr_finalize(void);
 
-#endif				/* _SURF_TMGR_H */
+#endif /* _SURF_TMGR_H */

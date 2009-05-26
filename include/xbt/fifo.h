@@ -7,7 +7,7 @@
 
 #ifndef _XBT_FIFO_H
 #define _XBT_FIFO_H
-#include "xbt/misc.h" /* SG_BEGIN_DECL */
+#include "xbt/misc.h"           /* SG_BEGIN_DECL */
 
 SG_BEGIN_DECL()
 
@@ -17,20 +17,18 @@ SG_BEGIN_DECL()
  * These functions provide the same kind of functionnality as dynamic arrays but in time O(1).
  * However these functions use malloc/free way too much often.            
  */
-
 /** @defgroup XBT_fifo_cons Fifo constructor and destructor
  *  @ingroup XBT_fifo
  *
  *  @{
  */
-
 /** \brief  Bucket structure 
 */
-typedef struct xbt_fifo_item *xbt_fifo_item_t;
+     typedef struct xbt_fifo_item *xbt_fifo_item_t;
 
 /** \brief  FIFO structure
 */
-typedef struct xbt_fifo *xbt_fifo_t;
+     typedef struct xbt_fifo *xbt_fifo_t;
 
 XBT_PUBLIC(xbt_fifo_t) xbt_fifo_new(void);
 XBT_PUBLIC(void) xbt_fifo_free(xbt_fifo_t);
@@ -42,9 +40,9 @@ XBT_PUBLIC(void) xbt_fifo_free(xbt_fifo_t);
  *  @{
  */
 XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_push(xbt_fifo_t, void *);
-XBT_PUBLIC(void*) xbt_fifo_pop(xbt_fifo_t);
+XBT_PUBLIC(void *) xbt_fifo_pop(xbt_fifo_t);
 XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_unshift(xbt_fifo_t, void *);
-XBT_PUBLIC(void*) xbt_fifo_shift(xbt_fifo_t);
+XBT_PUBLIC(void *) xbt_fifo_shift(xbt_fifo_t);
 XBT_PUBLIC(int) xbt_fifo_size(xbt_fifo_t);
 XBT_PUBLIC(int) xbt_fifo_is_in(xbt_fifo_t, void *);
 /** @} */
@@ -57,7 +55,7 @@ XBT_PUBLIC(int) xbt_fifo_is_in(xbt_fifo_t, void *);
 
 XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_new_item(void);
 XBT_PUBLIC(void) xbt_fifo_set_item_content(xbt_fifo_item_t, void *);
-XBT_PUBLIC(void*) xbt_fifo_get_item_content(xbt_fifo_item_t);
+XBT_PUBLIC(void *) xbt_fifo_get_item_content(xbt_fifo_item_t);
 XBT_PUBLIC(void) xbt_fifo_free_item(xbt_fifo_item_t);
 
 XBT_PUBLIC(void) xbt_fifo_push_item(xbt_fifo_t, xbt_fifo_item_t);
@@ -96,7 +94,7 @@ XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_prev_item(xbt_fifo_item_t i);
  *
  *  @{
  */
-XBT_PUBLIC(void**) xbt_fifo_to_array(xbt_fifo_t);
+XBT_PUBLIC(void **) xbt_fifo_to_array(xbt_fifo_t);
 XBT_PUBLIC(xbt_fifo_t) xbt_fifo_copy(xbt_fifo_t);
 /** @} */
 
@@ -110,6 +108,4 @@ XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_getPrevItem(xbt_fifo_item_t i);
 
 
 SG_END_DECL()
-
-
-#endif				/* _XBT_FIFO_H */
+#endif /* _XBT_FIFO_H */

@@ -11,7 +11,8 @@
 #include "xbt/swag.h"
 #include "xbt_context_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_context,xbt,"Context switching mecanism");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_context, xbt,
+                                "Context switching mecanism");
 
 /* the context associated with the current process 				*/
 xbt_context_t current_context = NULL;
@@ -138,13 +139,13 @@ xbt_context_new(const char *name,
                 void *startup_arg,
                 void_f_pvoid_t cleanup_func,
                 void *cleanup_arg, int argc, char *argv[]
-)
+  )
 {
   /* use the appropriate context factory to create the appropriate context */
   xbt_context_t context =
     (*(context_factory->create_context)) (name, code, startup_func,
-        startup_arg, cleanup_func,
-        cleanup_arg, argc, argv);
+                                          startup_arg, cleanup_func,
+                                          cleanup_arg, argc, argv);
 
   /* add the context in the list of the contexts in use */
   xbt_swag_insert(context, context_living);

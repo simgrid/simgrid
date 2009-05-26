@@ -11,13 +11,14 @@
 
 #include "gras.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Small sleep test");
+XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Small sleep test");
 
-int function (int argc,char *argv[]);
+int function(int argc, char *argv[]);
 
 
-int function (int argc,char *argv[]) {
-  gras_init(&argc,argv);
+int function(int argc, char *argv[])
+{
+  gras_init(&argc, argv);
   gras_msg_handleall(100);
   INFO0("Let's go 1E-5");
   gras_msg_handleall(1E-5);
@@ -30,6 +31,4 @@ int function (int argc,char *argv[]) {
   INFO0("done");
   gras_exit();
   return 0;
-} 
-
-
+}

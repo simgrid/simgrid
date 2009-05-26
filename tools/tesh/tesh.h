@@ -19,12 +19,12 @@
 /******************************************/
 /* return the name of a signal, aliasing SIGBUS to SIGSEGV since
    segfault leads to any of them depending on the system */
-const char* signal_name(unsigned int got, char *expected);
+const char *signal_name(unsigned int got, char *expected);
 
 #include "run_context.h"
 
 /*** Options ***/
-int timeout_value; /* child timeout value */
+int timeout_value;              /* child timeout value */
 
 rctx_t rctx;
 char *testsuite_name;
@@ -40,6 +40,6 @@ char *testsuite_name;
 extern char **environ;
 # endif
 
-xbt_dict_t env; /* the environment, stored as a dict (for variable substitution) */
+xbt_dict_t env;                 /* the environment, stored as a dict (for variable substitution) */
 
 #endif /* TESH_H */

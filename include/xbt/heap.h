@@ -9,7 +9,7 @@
 #define _XBT_HEAP_H
 
 #include "xbt/misc.h"
-#include "xbt/dynar.h" /* void_f_pvoid_t */
+#include "xbt/dynar.h"          /* void_f_pvoid_t */
 
 /** @addtogroup XBT_heap
  *  @brief This section describes the API to generic heap with O(log(n)) access.
@@ -24,10 +24,10 @@ XBT_PUBLIC(void) xbt_heap_free(xbt_heap_t H);
 XBT_PUBLIC(int) xbt_heap_size(xbt_heap_t H);
 
 XBT_PUBLIC(void) xbt_heap_push(xbt_heap_t H, void *content, double key);
-XBT_PUBLIC(void*) xbt_heap_pop(xbt_heap_t H);
+XBT_PUBLIC(void *) xbt_heap_pop(xbt_heap_t H);
 
 XBT_PUBLIC(double) xbt_heap_maxkey(xbt_heap_t H);
-XBT_PUBLIC(void*) xbt_heap_maxcontent(xbt_heap_t H);
+XBT_PUBLIC(void *) xbt_heap_maxcontent(xbt_heap_t H);
 
 /* @} */
-#endif				/* _XBT_HEAP_H */
+#endif /* _XBT_HEAP_H */

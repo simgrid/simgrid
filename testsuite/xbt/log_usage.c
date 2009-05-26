@@ -6,7 +6,7 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
- 
+
 #ifdef __BORLANDC__
 #pragma hdrstop
 #endif
@@ -15,25 +15,27 @@
 
 
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,"Logging specific to this test");
-XBT_LOG_NEW_CATEGORY(top,"Useless test channel");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top, "Logging specific to this test");
+XBT_LOG_NEW_CATEGORY(top, "Useless test channel");
 
 #ifdef __BORLANDC__
 #pragma argsused
 #endif
 
-static void dolog(const char *settings) {
-  INFO1("Test with the settings '%s'",settings);
+static void dolog(const char *settings)
+{
+  INFO1("Test with the settings '%s'", settings);
   xbt_log_control_set(settings);
   DEBUG1("val=%d", 1);
   WARN1("val=%d", 2);
   CDEBUG2(top, "val=%d%s", 3, "!");
-  CRITICAL6("false alarm%s%s%s%s%s%s", "","","","","","!");   
+  CRITICAL6("false alarm%s%s%s%s%s%s", "", "", "", "", "", "!");
 }
 
 
-int main(int argc, char **argv) {
-  xbt_init(&argc,argv);
+int main(int argc, char **argv)
+{
+  xbt_init(&argc, argv);
 
   dolog("");
   dolog(" ");
@@ -41,7 +43,7 @@ int main(int argc, char **argv) {
   dolog(" test.thres:debug ");
   dolog(" test.thres:verbose root.thres:error ");
   dolog(" test.thres:critical ");
-  
+
   xbt_exit();
   return 0;
 }

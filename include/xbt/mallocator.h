@@ -9,7 +9,7 @@
 #define _XBT_MALLOCATOR_H
 
 #include "xbt/function_types.h"
-#include "xbt/misc.h" /* SG_BEGIN_DECL */
+#include "xbt/misc.h"           /* SG_BEGIN_DECL */
 
 SG_BEGIN_DECL()
 
@@ -28,16 +28,17 @@ SG_BEGIN_DECL()
  *  new object, the object is just extracted from the mallocator. No malloc() is
  *  done, unless there is no more object in the mallocator.
  */
-
 /** @defgroup XBT_mallocator_cons Mallocator constructor and destructor
  *  @ingroup XBT_mallocator
  *
  *  @{
  */
-
 /** \brief Mallocator data type (opaque structure) */
-typedef struct s_xbt_mallocator *xbt_mallocator_t;
-XBT_PUBLIC(xbt_mallocator_t) xbt_mallocator_new(int size, pvoid_f_void_t new_f, void_f_pvoid_t free_f, void_f_pvoid_t reset_f);
+     typedef struct s_xbt_mallocator *xbt_mallocator_t;
+XBT_PUBLIC(xbt_mallocator_t) xbt_mallocator_new(int size,
+                                                pvoid_f_void_t new_f,
+                                                void_f_pvoid_t free_f,
+                                                void_f_pvoid_t reset_f);
 XBT_PUBLIC(void) xbt_mallocator_free(xbt_mallocator_t mallocator);
 /** @} */
 
@@ -47,10 +48,10 @@ XBT_PUBLIC(void) xbt_mallocator_free(xbt_mallocator_t mallocator);
  *
  *  @{
  */
-XBT_PUBLIC(void*) xbt_mallocator_get(xbt_mallocator_t mallocator);
-XBT_PUBLIC(void) xbt_mallocator_release(xbt_mallocator_t mallocator, void *object);
+XBT_PUBLIC(void *) xbt_mallocator_get(xbt_mallocator_t mallocator);
+XBT_PUBLIC(void) xbt_mallocator_release(xbt_mallocator_t mallocator,
+                                        void *object);
 /** @} */
 
 SG_END_DECL()
-
 #endif /* _XBT_MALLOCATOR_H */

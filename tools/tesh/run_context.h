@@ -13,14 +13,16 @@
 
 #include "tesh.h"
 
-typedef enum {e_output_check, e_output_display, e_output_ignore} e_output_handling_t;
+typedef enum { e_output_check, e_output_display,
+  e_output_ignore
+} e_output_handling_t;
 
 
 typedef struct {
   /* kind of job */
   char *cmd;
   char **env;
-  int  env_size;
+  int env_size;
   char *filepos;
   int pid;
   int is_background:1;
@@ -30,22 +32,22 @@ typedef struct {
   int brokenpipe:1;
   int timeout:1;
 
-  int reader_done:1; /* reader set this to true when he's done because
-			the child is dead. The main thread use it to detect
-			that the child is not dead before the end of timeout */
+  int reader_done:1;            /* reader set this to true when he's done because
+                                   the child is dead. The main thread use it to detect
+                                   that the child is not dead before the end of timeout */
 
-  int interrupted:1; /* Whether we got stopped by an armageddon */
-  xbt_os_mutex_t interruption; /* To allow main thread to kill a runner
-			       one only at certain points */
+  int interrupted:1;            /* Whether we got stopped by an armageddon */
+  xbt_os_mutex_t interruption;  /* To allow main thread to kill a runner
+                                   one only at certain points */
 
   e_output_handling_t output;
 
   int status;
 
   /* expected results */
-  int end_time; /* begin_time + timeout, as epoch */
-  char* expected_signal; /* name of signal to raise (or NULL if none) */
-  int expected_return; /* the exepeted return code of following command */
+  int end_time;                 /* begin_time + timeout, as epoch */
+  char *expected_signal;        /* name of signal to raise (or NULL if none) */
+  int expected_return;          /* the exepeted return code of following command */
 
   /* buffers */
   xbt_strbuff_t input;
@@ -53,8 +55,8 @@ typedef struct {
   xbt_strbuff_t output_got;
 
   /* Threads */
-  xbt_os_thread_t writer, reader; /* IO handlers */
-  xbt_os_thread_t runner; /* Main thread, counting for timeouts */
+  xbt_os_thread_t writer, reader;       /* IO handlers */
+  xbt_os_thread_t runner;       /* Main thread, counting for timeouts */
 
   /* Pipes from/to the child */
   int child_to, child_from;
@@ -77,16 +79,16 @@ void rctx_armageddon(rctx_t initiator, int exitcode);
 /* create a new empty running context */
 rctx_t rctx_new(void);
 void rctx_free(rctx_t rctx);
-void rctx_empty(rctx_t rc); /*reset to empty*/
-void rctx_dump(rctx_t rctx,const char *str);
+void rctx_empty(rctx_t rc);     /*reset to empty */
+void rctx_dump(rctx_t rctx, const char *str);
 
 
 /* Launch the current command */
 void rctx_start(void);
 /* Wait till the end of this command */
-void *rctx_wait(void* rctx);
+void *rctx_wait(void *rctx);
 
 /* Parse a line comming from the suite file, and add this into the rctx */
-void rctx_pushline(const char* filepos, char kind ,char *line);
+void rctx_pushline(const char *filepos, char kind, char *line);
 
 #endif /* TESH_RUN_CONTEXT_H */

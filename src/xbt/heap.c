@@ -45,7 +45,7 @@ void xbt_heap_free(xbt_heap_t H)
   int i;
   if (H->free)
     for (i = 0; i < H->count; i++)
-      (*(H->free))(H->items[i].content);
+      (*(H->free)) (H->items[i].content);
   free(H->items);
   free(H);
   return;
@@ -78,7 +78,8 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
 
   if (count > size) {
     H->size = 2 * size + 1;
-    H->items =(void *) realloc(H->items,(H->size) * sizeof(struct xbt_heapItem));
+    H->items =
+      (void *) realloc(H->items, (H->size) * sizeof(struct xbt_heapItem));
   }
 
   item = &(H->items[count - 1]);
@@ -112,8 +113,7 @@ void *xbt_heap_pop(xbt_heap_t H)
   if (H->count < H->size / 4 && H->size > 16) {
     H->size = H->size / 2 + 1;
     H->items =
-      (void *) realloc(H->items,
-                       (H->size) * sizeof(struct xbt_heapItem));
+      (void *) realloc(H->items, (H->size) * sizeof(struct xbt_heapItem));
   }
   return max;
 }
@@ -126,7 +126,7 @@ void *xbt_heap_pop(xbt_heap_t H)
  */
 double xbt_heap_maxkey(xbt_heap_t H)
 {
-  xbt_assert0(H->count != 0,"Empty heap");
+  xbt_assert0(H->count != 0, "Empty heap");
   return KEY(H, 0);
 }
 
@@ -139,7 +139,7 @@ double xbt_heap_maxkey(xbt_heap_t H)
  */
 void *xbt_heap_maxcontent(xbt_heap_t H)
 {
-  xbt_assert0(H->count != 0,"Empty heap");
+  xbt_assert0(H->count != 0, "Empty heap");
   return CONTENT(H, 0);
 }
 

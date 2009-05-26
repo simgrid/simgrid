@@ -10,8 +10,8 @@
 #ifndef GRAS_H
 #define GRAS_H
 
-#include <xbt.h> /* our toolbox */
-#include <xbt/ex.h> /* There's a whole bunch of exception handling in GRAS */
+#include <xbt.h>                /* our toolbox */
+#include <xbt/ex.h>             /* There's a whole bunch of exception handling in GRAS */
 
 #include <gras/process.h>
 #include <gras/module.h>

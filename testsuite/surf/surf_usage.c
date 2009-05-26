@@ -6,7 +6,7 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
- 
+
 #ifdef __BORLANDC__
 #pragma hdrstop
 #endif
@@ -15,7 +15,7 @@
 #include "surf/surf.h"
 
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
 const char *string_action(e_surf_action_state_t state);
 const char *string_action(e_surf_action_state_t state)
@@ -52,8 +52,8 @@ void test(char *platform)
   e_surf_action_state_t stateActionC;
   double now = -1.0;
 
-  surf_cpu_model_init_Cas01(platform);	/* Now it is possible to use CPUs */
-  surf_network_model_init_CM02(platform);	/* Now it is possible to use eth0 */
+  surf_cpu_model_init_Cas01(platform);  /* Now it is possible to use CPUs */
+  surf_network_model_init_CM02(platform);       /* Now it is possible to use eth0 */
 
   parse_platform_file(platform);
 
@@ -64,9 +64,9 @@ void test(char *platform)
 
   /* Let's check that those two processors exist */
   DEBUG2("%s : %p",
-	 surf_cpu_model->common_public->get_resource_name(cpuA), cpuA);
+         surf_cpu_model->common_public->get_resource_name(cpuA), cpuA);
   DEBUG2("%s : %p",
-	 surf_cpu_model->common_public->get_resource_name(cpuB), cpuB);
+         surf_cpu_model->common_public->get_resource_name(cpuB), cpuB);
 
   /* Let's do something on it */
   actionA = surf_cpu_model->extension_public->execute(cpuA, 1000.0);
@@ -74,9 +74,9 @@ void test(char *platform)
   actionC = surf_cpu_model->extension_public->sleep(cpuB, 7.32);
 
   /* Use whatever calling style you want... */
-  stateActionA = surf_cpu_model->common_public->action_get_state(actionA);	/* When you know actionA model type */
-  stateActionB = actionB->model_type->common_public->action_get_state(actionB);	/* If you're unsure about it's model type */
-  stateActionC = surf_cpu_model->common_public->action_get_state(actionC);	/* When you know actionA model type */
+  stateActionA = surf_cpu_model->common_public->action_get_state(actionA);      /* When you know actionA model type */
+  stateActionB = actionB->model_type->common_public->action_get_state(actionB); /* If you're unsure about it's model type */
+  stateActionC = surf_cpu_model->common_public->action_get_state(actionC);      /* When you know actionA model type */
 
   /* And just look at the state of these tasks */
   DEBUG2("actionA : %p (%s)", actionA, string_action(stateActionA));
@@ -90,50 +90,48 @@ void test(char *platform)
 
   /* Let's check that those two processors exist */
   DEBUG2("%s : %p",
-	 surf_network_model->common_public->get_resource_name(cardA),
-	 cardA);
+         surf_network_model->common_public->get_resource_name(cardA), cardA);
   DEBUG2("%s : %p",
-	 surf_network_model->common_public->get_resource_name(cardB),
-	 cardB);
+         surf_network_model->common_public->get_resource_name(cardB), cardB);
 
   /* Let's do something on it */
   commAB =
-      surf_network_model->extension_public->communicate(cardA, cardB,
-							   150.0,-1.0);
+    surf_network_model->extension_public->communicate(cardA, cardB,
+                                                      150.0, -1.0);
 
-  surf_solve();			/* Takes traces into account. Returns 0.0 */
+  surf_solve();                 /* Takes traces into account. Returns 0.0 */
   do {
     surf_action_t action = NULL;
     now = surf_get_clock();
     DEBUG1("Next Event : %g", now);
     DEBUG0("\t CPU actions");
     while ((action =
-	    xbt_swag_extract(surf_cpu_model->common_public->states.
-			     failed_action_set))) {
+            xbt_swag_extract(surf_cpu_model->common_public->states.
+                             failed_action_set))) {
       DEBUG1("\t * Failed : %p", action);
       action->model_type->common_public->action_free(action);
     }
     while ((action =
-	    xbt_swag_extract(surf_cpu_model->common_public->states.
-			     done_action_set))) {
+            xbt_swag_extract(surf_cpu_model->common_public->states.
+                             done_action_set))) {
       DEBUG1("\t * Done : %p", action);
       action->model_type->common_public->action_free(action);
     }
     DEBUG0("\t Network actions");
     while ((action =
-	    xbt_swag_extract(surf_network_model->common_public->states.
-			     failed_action_set))) {
+            xbt_swag_extract(surf_network_model->common_public->states.
+                             failed_action_set))) {
       DEBUG1("\t * Failed : %p", action);
       action->model_type->common_public->action_free(action);
     }
     while ((action =
-	    xbt_swag_extract(surf_network_model->common_public->states.
-			     done_action_set))) {
+            xbt_swag_extract(surf_network_model->common_public->states.
+                             done_action_set))) {
       DEBUG1("\t * Done : %p", action);
       action->model_type->common_public->action_free(action);
     }
 
-  } while (surf_solve()>=0.0);
+  } while (surf_solve() >= 0.0);
 
   DEBUG0("Simulation Terminated");
 }
@@ -144,10 +142,10 @@ void test(char *platform)
 
 int main(int argc, char **argv)
 {
-  surf_init(&argc, argv);	/* Initialize some common structures */
-  if(argc==1) {
-     fprintf(stderr,"Usage : %s platform.xml\n",argv[0]);
-     return 1;
+  surf_init(&argc, argv);       /* Initialize some common structures */
+  if (argc == 1) {
+    fprintf(stderr, "Usage : %s platform.xml\n", argv[0]);
+    return 1;
   }
   test(argv[1]);
 

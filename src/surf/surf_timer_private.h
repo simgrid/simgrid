@@ -17,8 +17,8 @@
 /* } s_surf_action_timer_t, *surf_action_timer_t; */
 
 typedef struct command {
-  surf_model_t model;	/* Any such object, added in a trace
-				   should start by this field!!! */
+  surf_model_t model;           /* Any such object, added in a trace
+                                   should start by this field!!! */
   void *function;
   void *args;
   s_xbt_swag_hookup_t command_set_hookup;
@@ -26,4 +26,4 @@ typedef struct command {
 
 extern xbt_dict_t command_set;
 
-#endif				/* _SURF_TIMER_PRIVATE_H */
+#endif /* _SURF_TIMER_PRIVATE_H */

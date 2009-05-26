@@ -12,14 +12,14 @@
 
 #include "gras/Virtu/virtu_private.h"
 #include "xbt/dynar.h"
-#include "simix/simix.h" /* SimGrid header */
+#include "simix/simix.h"        /* SimGrid header */
 #include "gras/Transport/transport_private.h"
 
 typedef struct {
-   int port;  /* list of ports used by a server socket */
-   int meas;   /* (boolean) the channel is for measurements or for messages */
-   smx_process_t process;
-   gras_socket_t socket;
+  int port;                     /* list of ports used by a server socket */
+  int meas;                     /* (boolean) the channel is for measurements or for messages */
+  smx_process_t process;
+  gras_socket_t socket;
 } gras_sg_portrec_t;
 
 /* Data for each host */
@@ -32,14 +32,14 @@ typedef struct {
 
 /* data for each socket (FIXME: find a better location for that)*/
 typedef struct {
-   smx_process_t from_process;
-   smx_process_t to_process;
+  smx_process_t from_process;
+  smx_process_t to_process;
 
-   smx_host_t to_host;   /* Who's on other side */
-   
-   smx_cond_t cond;
-   smx_mutex_t mutex;
-   gras_socket_t to_socket;
+  smx_host_t to_host;           /* Who's on other side */
+
+  smx_cond_t cond;
+  smx_mutex_t mutex;
+  gras_socket_t to_socket;
 } gras_trp_sg_sock_data_t;
 
 

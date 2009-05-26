@@ -10,7 +10,7 @@
 #ifndef _XBT_PORTABILITY_H
 #define _XBT_PORTABILITY_H
 
-#include <xbt/misc.h> /* XBT_PUBLIC */
+#include <xbt/misc.h>           /* XBT_PUBLIC */
 
 /** @brief get time in seconds 
 
@@ -20,11 +20,11 @@
 XBT_PUBLIC(double) xbt_os_time(void);
 XBT_PUBLIC(void) xbt_os_sleep(double sec);
 
-typedef struct s_xbt_os_timer *xbt_os_timer_t;
+     typedef struct s_xbt_os_timer *xbt_os_timer_t;
 XBT_PUBLIC(xbt_os_timer_t) xbt_os_timer_new(void);
-XBT_PUBLIC(void)   xbt_os_timer_free(xbt_os_timer_t timer);
-XBT_PUBLIC(void)   xbt_os_timer_start(xbt_os_timer_t timer);
-XBT_PUBLIC(void)   xbt_os_timer_stop(xbt_os_timer_t timer);
+XBT_PUBLIC(void) xbt_os_timer_free(xbt_os_timer_t timer);
+XBT_PUBLIC(void) xbt_os_timer_start(xbt_os_timer_t timer);
+XBT_PUBLIC(void) xbt_os_timer_stop(xbt_os_timer_t timer);
 XBT_PUBLIC(double) xbt_os_timer_elapsed(xbt_os_timer_t timer);
 
 #endif

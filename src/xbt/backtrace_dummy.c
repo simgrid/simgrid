@@ -11,12 +11,20 @@
 #include "xbt_modinter.h"
 
 /* Module creation/destruction */
-void xbt_backtrace_init(void) { }
-void xbt_backtrace_exit(void) { }
+void xbt_backtrace_init(void)
+{
+}
+
+void xbt_backtrace_exit(void)
+{
+}
 
 /* create a backtrace in the given exception */
-void xbt_backtrace_current(xbt_ex_t *e)  { }
+void xbt_backtrace_current(xbt_ex_t * e)
+{
+}
 
 /* prepare a backtrace for display */
-void xbt_ex_setup_backtrace(xbt_ex_t *e)  { }
-
+void xbt_ex_setup_backtrace(xbt_ex_t * e)
+{
+}

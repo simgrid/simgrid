@@ -15,13 +15,13 @@
 #include <map>
 
 //GTNetS include files
-#include "simulator.h"      // Definitions for the Simulator Object
-#include "node.h"           // Definitions for the Node Object
-#include "linkp2p.h"        // Definitions for point-to-point link objects
-#include "ratetimeparse.h"  // Definitions for Rate and Time objects
-#include "application-tcpserver.h" // Definitions for TCPServer application
-#include "application-tcpsend.h"   // Definitions for TCP Sending application
-#include "tcp-tahoe.h"      // Definitions for TCP Tahoe
+#include "simulator.h"          // Definitions for the Simulator Object
+#include "node.h"               // Definitions for the Node Object
+#include "linkp2p.h"            // Definitions for point-to-point link objects
+#include "ratetimeparse.h"      // Definitions for Rate and Time objects
+#include "application-tcpserver.h"      // Definitions for TCPServer application
+#include "application-tcpsend.h"        // Definitions for TCP Sending application
+#include "tcp-tahoe.h"          // Definitions for TCP Tahoe
 #include "tcp-reno.h"
 #include "tcp-newreno.h"
 #include "event.h"
@@ -35,14 +35,14 @@ class GTSim {
 public:
   GTSim();
   ~GTSim();
-public:   
+public:
   int add_link(int id, double bandwidth, double latency);
   int add_onehop_route(int src, int dst, int link);
-  int add_route(int src, int dst, int* links, int nlink);
+  int add_route(int src, int dst, int *links, int nlink);
   int add_router(int id);
-  int create_flow(int src, int dst, long datasize, void* metadata);
+  int create_flow(int src, int dst, long datasize, void *metadata);
   double get_time_to_next_flow_completion();
-  int run_until_next_flow_completion(void*** metadata, int* number_of_flows);
+  int run_until_next_flow_completion(void ***metadata, int *number_of_flows);
   int run(double deltat);
   // returns the total received by the TCPServer peer of the given action
   double gtnets_get_flow_rx(void *metadata);
@@ -54,25 +54,23 @@ private:
 
   bool node_include(int);
   bool link_include(int);
-  Simulator* sim_;
-  GTNETS_Topology* topo_;
-  RoutingManual* rm_;
+  Simulator *sim_;
+  GTNETS_Topology *topo_;
+  RoutingManual *rm_;
   int nnode_;
   int is_topology_;
   int nflow_;
 
-  map<int, TCPServer*> gtnets_servers_;
-  map<int, TCPSend*>   gtnets_clients_;
-  map<int, Linkp2p*>   gtnets_links_;
-  map<int, Node*>      gtnets_nodes_;
+    map < int, TCPServer * >gtnets_servers_;
+    map < int, TCPSend * >gtnets_clients_;
+    map < int, Linkp2p * >gtnets_links_;
+    map < int, Node * >gtnets_nodes_;
   //added by pedro in order to get statistics
-  map<void*, int>      gtnets_action_to_flow_;
+    map < void *, int >gtnets_action_to_flow_;
 
-  map<int, void*>      gtnets_metadata_;
+    map < int, void *>gtnets_metadata_;
 };
 
 #endif /* __cplusplus */
 
 #endif
-
-

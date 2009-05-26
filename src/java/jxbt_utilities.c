@@ -10,7 +10,7 @@
  *
  */
 
-#include <stdlib.h> /* abort */
+#include <stdlib.h>             /* abort */
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/str.h"
@@ -20,11 +20,12 @@
 /* JNI GETTERS */
 /* *********** */
 
-jclass jxbt_get_class(JNIEnv* env, const char*name) {
+jclass jxbt_get_class(JNIEnv * env, const char *name)
+{
   jclass cls = (*env)->FindClass(env, name);
-	
-  if(!cls) {
-    char *m=bprintf("Class %s not found",name);
+
+  if (!cls) {
+    char *m = bprintf("Class %s not found", name);
     jxbt_throw_jni(env, m);
     free(m);
     return NULL;
@@ -33,25 +34,29 @@ jclass jxbt_get_class(JNIEnv* env, const char*name) {
   return cls;
 }
 
-jmethodID jxbt_get_jmethod(JNIEnv* env, jclass cls, 
-			   const char *name,const char *signature) {
+jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls,
+                           const char *name, const char *signature)
+{
   jmethodID id;
 
   if (!cls)
     return 0;
-  id = (*env)->GetMethodID(env, cls, name,signature);
-	
-  if(!id) {
+  id = (*env)->GetMethodID(env, cls, name, signature);
 
-    jmethodID tostr_id = (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
-    jstring jclassname = (jstring) (*env)->CallObjectMethod(env, cls, tostr_id, NULL);
+  if (!id) {
+
+    jmethodID tostr_id =
+      (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
+    jstring jclassname =
+      (jstring) (*env)->CallObjectMethod(env, cls, tostr_id, NULL);
     const char *classname = (*env)->GetStringUTFChars(env, jclassname, 0);
 
-    char *m=bprintf("Cannot find method %s(%s) in %s", name, signature ,classname);
+    char *m =
+      bprintf("Cannot find method %s(%s) in %s", name, signature, classname);
 
-    (*env)->ReleaseStringUTFChars(env, jclassname, classname); 	
+    (*env)->ReleaseStringUTFChars(env, jclassname, classname);
 
-    jxbt_throw_jni(env,m);
+    jxbt_throw_jni(env, m);
 
     free(m);
     return 0;
@@ -60,25 +65,30 @@ jmethodID jxbt_get_jmethod(JNIEnv* env, jclass cls,
   return id;
 }
 
-jmethodID jxbt_get_static_jmethod(JNIEnv* env, jclass cls, 
-			   const char *name,const char *signature) {
+jmethodID jxbt_get_static_jmethod(JNIEnv * env, jclass cls,
+                                  const char *name, const char *signature)
+{
   jmethodID id;
 
   if (!cls)
     return 0;
-  id = (*env)->GetStaticMethodID(env, cls, name,signature);
-	
-  if(!id) {
+  id = (*env)->GetStaticMethodID(env, cls, name, signature);
 
-    jmethodID tostr_id = (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
-    jstring jclassname = (jstring) (*env)->CallObjectMethod(env, cls, tostr_id, NULL);
+  if (!id) {
+
+    jmethodID tostr_id =
+      (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
+    jstring jclassname =
+      (jstring) (*env)->CallObjectMethod(env, cls, tostr_id, NULL);
     const char *classname = (*env)->GetStringUTFChars(env, jclassname, 0);
 
-    char *m=bprintf("Cannot find static method %s(%s) in %s", name, signature ,classname);
+    char *m =
+      bprintf("Cannot find static method %s(%s) in %s", name, signature,
+              classname);
 
-    (*env)->ReleaseStringUTFChars(env, jclassname, classname); 	
+    (*env)->ReleaseStringUTFChars(env, jclassname, classname);
 
-    jxbt_throw_jni(env,m);
+    jxbt_throw_jni(env, m);
 
     free(m);
     return 0;
@@ -87,23 +97,26 @@ jmethodID jxbt_get_static_jmethod(JNIEnv* env, jclass cls,
   return id;
 }
 
-jmethodID jxbt_get_static_smethod(JNIEnv* env, const char *classname, 
-			  const char *name,const char *signature) { 
-  
-	jclass cls;
+jmethodID jxbt_get_static_smethod(JNIEnv * env, const char *classname,
+                                  const char *name, const char *signature)
+{
 
-	jmethodID id;
-	cls = jxbt_get_class(env,classname);
+  jclass cls;
+
+  jmethodID id;
+  cls = jxbt_get_class(env, classname);
 
   if (!cls)
     return 0;
 
-  id = (*env)->GetStaticMethodID(env, cls, name,signature);
-	
-  if(!id) {
-    char *m=bprintf("Cannot find static method %s(%s) in %s", name, signature,classname);
+  id = (*env)->GetStaticMethodID(env, cls, name, signature);
 
-    jxbt_throw_jni(env,m);
+  if (!id) {
+    char *m =
+      bprintf("Cannot find static method %s(%s) in %s", name, signature,
+              classname);
+
+    jxbt_throw_jni(env, m);
 
     free(m);
     return 0;
@@ -111,23 +124,25 @@ jmethodID jxbt_get_static_smethod(JNIEnv* env, const char *classname,
   return id;
 }
 
-jmethodID jxbt_get_smethod(JNIEnv* env, const char *classname, 
-			  const char *name,const char *signature) { 
-  
-	jclass cls;
+jmethodID jxbt_get_smethod(JNIEnv * env, const char *classname,
+                           const char *name, const char *signature)
+{
 
-	jmethodID id;
-	cls = jxbt_get_class(env,classname);
+  jclass cls;
+
+  jmethodID id;
+  cls = jxbt_get_class(env, classname);
 
   if (!cls)
     return 0;
 
-  id = (*env)->GetMethodID(env, cls, name,signature);
-	
-  if(!id) {
-    char *m=bprintf("Cannot find method %s(%s) in %s", name, signature,classname);
+  id = (*env)->GetMethodID(env, cls, name, signature);
 
-    jxbt_throw_jni(env,m);
+  if (!id) {
+    char *m =
+      bprintf("Cannot find method %s(%s) in %s", name, signature, classname);
+
+    jxbt_throw_jni(env, m);
 
     free(m);
     return 0;
@@ -135,24 +150,28 @@ jmethodID jxbt_get_smethod(JNIEnv* env, const char *classname,
   return id;
 }
 
-jfieldID jxbt_get_jfield(JNIEnv* env, jclass cls, 
-			 const char *name, const char *signature) {
+jfieldID jxbt_get_jfield(JNIEnv * env, jclass cls,
+                         const char *name, const char *signature)
+{
   jfieldID id;
 
   if (!cls)
     return 0;
 
   id = (*env)->GetFieldID(env, cls, name, signature);
-	
-  if(!id) {
-    jmethodID getname_id = (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
-    jstring jclassname = (jstring) (*env)->CallObjectMethod(env,cls, getname_id, NULL);
+
+  if (!id) {
+    jmethodID getname_id =
+      (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
+    jstring jclassname =
+      (jstring) (*env)->CallObjectMethod(env, cls, getname_id, NULL);
     const char *classname = (*env)->GetStringUTFChars(env, jclassname, 0);
-    char *m=bprintf("Cannot find field %s %s in %s",signature, name, classname);
+    char *m =
+      bprintf("Cannot find field %s %s in %s", signature, name, classname);
 
-    (*env)->ReleaseStringUTFChars(env, jclassname, classname); 	
+    (*env)->ReleaseStringUTFChars(env, jclassname, classname);
 
-    jxbt_throw_jni(env,m);
+    jxbt_throw_jni(env, m);
 
     free(m);
     return 0;
@@ -161,20 +180,22 @@ jfieldID jxbt_get_jfield(JNIEnv* env, jclass cls,
   return id;
 }
 
-jfieldID jxbt_get_sfield(JNIEnv* env, const char *classname, 
-			const char *name, const char *signature) {
-  jclass cls = jxbt_get_class(env,classname);
+jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
+                         const char *name, const char *signature)
+{
+  jclass cls = jxbt_get_class(env, classname);
   jfieldID id;
 
   if (!cls)
     return 0;
 
   id = (*env)->GetFieldID(env, cls, name, signature);
-	
-  if(!id) {
-    char *m=bprintf("Cannot find field %s %s in %s",signature, name, classname);
 
-    jxbt_throw_jni(env,m);
+  if (!id) {
+    char *m =
+      bprintf("Cannot find field %s %s in %s", signature, name, classname);
+
+    jxbt_throw_jni(env, m);
 
     free(m);
     return 0;
@@ -186,51 +207,62 @@ jfieldID jxbt_get_sfield(JNIEnv* env, const char *classname,
 /* ***************** */
 /* EXCEPTION RAISING */
 /* ***************** */
-static void jxbt_throw_by_name(JNIEnv* env,const char* name, char *msg) {
-   jclass cls = (*env)->FindClass(env, name);
+static void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg)
+{
+  jclass cls = (*env)->FindClass(env, name);
 
-   xbt_assert2(cls,"%s (Plus severe error: class %s not found)\n",
-	       msg,name);
+  xbt_assert2(cls, "%s (Plus severe error: class %s not found)\n", msg, name);
 
-   (*env)->ThrowNew(env,cls,msg);
+  (*env)->ThrowNew(env, cls, msg);
 
-   free(msg);
+  free(msg);
 }
 
 
 /* Errors in MSG */
-void jxbt_throw_jni(JNIEnv* env,const char* msg) {
+void jxbt_throw_jni(JNIEnv * env, const char *msg)
+{
   jxbt_throw_by_name(env,
-		     "simgrid/msg/JniException",
-		     bprintf("Internal or JNI error: %s",msg));
-}
-void jxbt_throw_notbound(JNIEnv* env,const char* kind, void *pointer) {
-  jxbt_throw_by_name(env,
-		     "simgrid/msg/JniException",
-		     bprintf("Internal error: %s %p not bound",kind, pointer));
+                     "simgrid/msg/JniException",
+                     bprintf("Internal or JNI error: %s", msg));
 }
 
-void jxbt_throw_native(JNIEnv* env,char* msg) {
+void jxbt_throw_notbound(JNIEnv * env, const char *kind, void *pointer)
+{
+  jxbt_throw_by_name(env,
+                     "simgrid/msg/JniException",
+                     bprintf("Internal error: %s %p not bound", kind,
+                             pointer));
+}
+
+void jxbt_throw_native(JNIEnv * env, char *msg)
+{
   jxbt_throw_by_name(env, "simgrid/msg/NativeException", msg);
 }
 
 /* *** */
-void jxbt_throw_null(JNIEnv* env, char* msg) {
+void jxbt_throw_null(JNIEnv * env, char *msg)
+{
   jxbt_throw_by_name(env, "java/lang/NullPointerException", msg);
 }
 
 
 /* Errors on user side */
-void jxbt_throw_illegal(JNIEnv* env, char* msg) {
+void jxbt_throw_illegal(JNIEnv * env, char *msg)
+{
   jxbt_throw_by_name(env, "java/lang/IllegalArgumentException", msg);
 }
-void jxbt_throw_host_not_found(JNIEnv* env, const char *invalid_name) {
+
+void jxbt_throw_host_not_found(JNIEnv * env, const char *invalid_name)
+{
   jxbt_throw_by_name(env,
-		     "simgrid/msg/HostNotFoundException",
-		     bprintf("No such host: %s",invalid_name));
+                     "simgrid/msg/HostNotFoundException",
+                     bprintf("No such host: %s", invalid_name));
 }
-void jxbt_throw_process_not_found(JNIEnv* env, const char *invalid_name) {
+
+void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name)
+{
   jxbt_throw_by_name(env,
-		     "simgrid/msg/ProcessNotFoundException",
-		     bprintf("No such process: %s",invalid_name));
+                     "simgrid/msg/ProcessNotFoundException",
+                     bprintf("No such process: %s", invalid_name));
 }
