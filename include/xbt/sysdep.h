@@ -12,9 +12,9 @@
 #define _XBT_SYSDEP_H
 
 #include <string.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <stdarg.h> /* va_list */
-   
+
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
 
@@ -24,14 +24,14 @@ SG_BEGIN_DECL()
    double declaration to cut dependency cycle */
 /**
  * @addtogroup XBT_error
- * 
+ *
  * @{
  */
 XBT_PUBLIC(void) xbt_abort(void) _XBT_GNUC_NORETURN;
 XBT_PUBLIC(void) xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 /** @} */
 
-/* these ones live in str.h, but redeclare them here so that we do 
+/* these ones live in str.h, but redeclare them here so that we do
    not need to load the whole str.h and its heavy dependencies */
 #ifndef __USE_GNU /* do not redeclare existing headers */
   XBT_PUBLIC(int) asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
@@ -51,22 +51,22 @@ static XBT_INLINE char *xbt_strdup(const char *s) {
   char *res = NULL;
   if (s) {
     res=strdup(s);
-    if (!res) 
+    if (!res)
       xbt_die("memory allocation error (strdup returned NULL)");
-  } 
+  }
   return res;
 }
 extern void xbt_backtrace_display_current(void);
 
-/** @brief Like malloc, but xbt_die() on error 
+/** @brief Like malloc, but xbt_die() on error
     @hideinitializer */
 static XBT_INLINE void *xbt_malloc(unsigned int n){
   void *res;
-  if (n==0) {
+/*  if (n==0) {
      xbt_backtrace_display_current();
      xbt_die("malloc(0) is not portable");
-  }
-   
+  }*/
+
   res=malloc(n);
   if (!res)
      xbt_die(bprintf("Memory allocation of %d bytes failed",n));
@@ -77,22 +77,22 @@ static XBT_INLINE void *xbt_malloc(unsigned int n){
     @hideinitializer */
 static XBT_INLINE void *xbt_malloc0(unsigned int n) {
   void *res;
-  if (n==0) xbt_die("calloc(0) is not portable"); 
+  //if (n==0) xbt_die("calloc(0) is not portable");
   res=calloc(n,1);
   if (!res)
      xbt_die(bprintf("Memory callocation of %d bytes failed",n));
   return res;
 }
-  
-/** @brief like realloc, but xbt_die() on error 
+
+/** @brief like realloc, but xbt_die() on error
     @hideinitializer */
 static XBT_INLINE void *xbt_realloc(void*p,unsigned int s){
   void *res=res;
-  if (s==0) xbt_die("realloc(0) is not portable"); 
+  //if (s==0) xbt_die("realloc(0) is not portable");
   if (s) {
     if (p) {
       res=realloc(p,s);
-      if (!res) 
+      if (!res)
 	xbt_die(bprintf("memory (re)allocation of %d bytes failed",s));
     } else {
       res=xbt_malloc(s);
@@ -128,9 +128,9 @@ XBT_PUBLIC(void) xbt_free_ref(void *d);
     @hideinitializer */
 #define xbt_new0(type, count) ((type*)xbt_malloc0 (sizeof (type) * (count)))
 
-/** @} */  
+/** @} */
 
-  
+
 SG_END_DECL()
 
 #endif /* _XBT_SYSDEP_H */
