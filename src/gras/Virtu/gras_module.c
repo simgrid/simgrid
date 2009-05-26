@@ -27,7 +27,7 @@ process-wide globals. An example may be the list of attached callbacks.
 That is why we have 4 functions per module: the join function is called by any
 process, and is in charge of creating the process-wide globals. If it is the
 first time a process uses the module, it also calls the init function, in
-charge of initializing the world-wide globals. We have the symetric functions
+charge of initializing the world-wide globals. We have the symmetric functions
 leave, called by any process not using the module anymore, and exit, in charge
 of freeing the world-wide globals when no process use it anymore.
 
@@ -36,12 +36,12 @@ creating the module, which contains a factory (the join function) able to
 create process-wide globals. The fact that indeed the calling sequence goes
 from join to init and not the other side is just an implementation bias ;)
 
-Then again, we want these functionnalities to be quick. We want to access
+Then again, we want these functionalities to be quick. We want to access
 the process-wide globals by providing their rank in a dynar, we don't want to
-search them in a dictionnary. This is especially true in the module
+search them in a dictionary. This is especially true in the module
 implementation, where each functions is likely to require them to work. The
 position could be a stored in a global variable only visible from the module
-implementation. 
+implementation.
 
 The need for an array in which to store the globals does not hold for
 world-wide globals: only one instance of them can exist in the same unix naming
@@ -59,7 +59,7 @@ will load their code in as plugin), we want to give the module handling library
 tables. This is why we have the ID field in the module structure: it points
 exactly to the implementation side global.
 
-Yeah, I know. All this is not that clear. But at least, writing this helped me 
+Yeah, I know. All this is not that clear. But at least, writing this helped me
 to design that crap ;)
 
 */
@@ -73,7 +73,7 @@ typedef struct s_gras_module {
      allow modules initializing other modules while tracking dependencies
      properly and leave() only when needed. This would allow dynamic module
      loading/unloading */
-   
+
   int *p_id; /* where the module stores the libdata ID (a global somewhere), to tweak it on need */
   void_f_void_t init_f;  /* First time the module is referenced. */
   void_f_void_t exit_f;  /* When last process referencing it stops doing so. */
@@ -94,11 +94,11 @@ static void gras_module_freep(void *p) {
  * @param name: name of the module, of course (beware of dupplicates!)
  * @param datasize: the size of your data, ie of the state this module has on each process
  * @param ID: address of a global you use as parameter to gras_module_data_by_id
- * @param init_f: function called the first time a module gets by a process of the naming space. 
+ * @param init_f: function called the first time a module gets by a process of the naming space.
  *                A classical use is to declare some messages the module uses, as well as the initialization
  *                of module constants (accross processes boundaries in SG).
  * @param exit_f: function called when the last process of this naming space unref this module.
- * @param join_f: function called each time a process references the module. 
+ * @param join_f: function called each time a process references the module.
  *                It is passed the moddata already malloced, and should initialize the fields as it wants.
  *                It can also attach some callbacks to the module messages.
  * @param leave_f: function called each time a process unrefs the module.
@@ -126,7 +126,7 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
   }
 
   if (found) {
-    xbt_assert1(mod->init_f == init_f, 
+    xbt_assert1(mod->init_f == init_f,
 		"Module %s reregistered with a different init_f!", name);
     xbt_assert1(mod->exit_f == exit_f,
 		"Module %s reregistered with a different exit_f!", name);
@@ -134,11 +134,11 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
 		"Module %s reregistered with a different join_f!", name);
     xbt_assert1(mod->leave_f == leave_f,
 		"Module %s reregistered with a different leave_f!", name);
-    xbt_assert1(mod->datasize == datasize, 
+    xbt_assert1(mod->datasize == datasize,
 		"Module %s reregistered with a different datasize!", name);
     xbt_assert1(mod->p_id == ID,
 		"Module %s reregistered with a different p_id field!", name);
-    
+
     DEBUG1("Module %s already registered. Ignoring re-registration",name);
     return;
   }
@@ -147,7 +147,7 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
   mod = xbt_new(s_gras_module_t, 1);
   mod->name = xbt_strdup(name);
   mod->name_len = strlen(name);
-  
+
   mod->datasize = datasize;
   mod->p_id = ID;
   mod->init_f = init_f;
@@ -155,9 +155,9 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
   mod->join_f = join_f;
   mod->leave_f = leave_f;
   mod->refcount = 0;
-  
+
   *mod->p_id = xbt_set_length(_gras_modules);
-  
+
   xbt_set_add(_gras_modules,(void*)mod,gras_module_freep);
 }
 
@@ -186,9 +186,9 @@ void gras_module_join(const char *name) {
   gras_procdata_t *pd;
   void *moddata;
   gras_module_t mod = (gras_module_t)xbt_set_get_by_name(_gras_modules, name);
-  
+
   VERB2("Join to module %s (%p)",name,mod);
-  
+
   /* NEW */
   if (mod->refcount == 0) {
     VERB1("Init module %s",name);
@@ -232,7 +232,7 @@ void gras_module_leave(const char *name) {
 
     (*mod->exit_f)();
 
-    /* Don't remove the module for real, sets don't allow to 
+    /* Don't remove the module for real, sets don't allow to
 
        free(mod->name);
        free(mod);
@@ -240,7 +240,7 @@ void gras_module_leave(const char *name) {
   }
 }
 
-   
+
 void *gras_moddata_by_id(unsigned int ID) {
   gras_procdata_t *pd=gras_procdata_get();
   void *p;
