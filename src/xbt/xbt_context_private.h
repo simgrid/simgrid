@@ -120,7 +120,6 @@ SG_BEGIN_DECL()
      void
 
 
-
       
        xbt_context_init_factory_by_name(xbt_context_factory_t * factory,
                                         const char *name);

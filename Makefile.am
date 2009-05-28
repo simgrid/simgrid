@@ -83,7 +83,9 @@ indent:
 	indent -br -brs -ce -bbo -bap --dont-break-procedure-type \
 	--no-tabs --cuddle-do-while --cuddle-else --indent-level2 \
 	--leave-preprocessor-space --no-space-after-function-call-names \
-	`$(MAKE) dist-files | grep '\.[ch]$$'|grep -v '/_' |grep -v '_unit.c'`
+	`$(MAKE) dist-files | grep '\.[ch]$$'|grep -v '/_' |grep -v '_unit.c'\
+                            | grep -v src/xbt/graphxml.c | grep -v datadesc_structs.c \
+                            `
 
 sync-gforge: 
 	chmod g+rw -R doc/
