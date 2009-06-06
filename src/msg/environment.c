@@ -65,6 +65,7 @@ void MSG_create_environment(const char *file)
   char *name;
 
   SIMIX_create_environment(file);
+  SIMIX_init();
 
   /* Initialize MSG hosts */
   xbt_dict_foreach(SIMIX_host_get_dict(), c, name, h) {
