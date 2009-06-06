@@ -3,7 +3,7 @@ p Testing the bypassing of the flexml parser
 
 
 $ $SG_TEST_EXENV masterslave/masterslave_bypass
-> [0.000000] surf/surfxml_parse.c:437: [surf_parse/WARNING] Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
+> [0.000000] surf/surfxml_parse.c:446: [surf_parse/WARNING] Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [host A:master:(1) 0.000000] [msg_test/INFO] Got 1 slave(s) :
 > [host A:master:(1) 0.000000] [msg_test/INFO] 	 host B
 > [host A:master:(1) 0.000000] [msg_test/INFO] Got 20 task to process :
