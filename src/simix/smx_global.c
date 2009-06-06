@@ -387,7 +387,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
                                        args->data, args->hostname,
                                        args->argc, args->argv,
                                        args->properties);
-        if (args->kill_time > SIMIX_get_clock()) {
+        if (process && args->kill_time > SIMIX_get_clock()) {
           surf_timer_model->extension_public->set(args->kill_time, (void *)
                                                   &SIMIX_process_kill,
                                                   (void *) process);

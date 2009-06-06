@@ -88,11 +88,11 @@ static void parse_process_finalize(void)
       process = SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,       /*the props */
                                      current_property_set);
 
-    if (kill_time > SIMIX_get_clock()) {
+    if (process && kill_time > SIMIX_get_clock()) {
       if (simix_global->kill_process_function)
-        surf_timer_model->extension_public->set(start_time, (void *)
-                                                simix_global->kill_process_function,
-                                                arg);
+	surf_timer_model->extension_public->set(start_time, (void *) 
+						simix_global->kill_process_function,
+						process);
       else
         surf_timer_model->extension_public->set(kill_time, (void *)
                                                 &SIMIX_process_kill,

@@ -136,9 +136,20 @@ m_process_t MSG_process_create_with_environment(const char *name,
                                                 int argc, char **argv,
                                                 xbt_dict_t properties)
 {
-  simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
+  simdata_process_t simdata = NULL;
   m_process_t process = xbt_new0(s_m_process_t, 1);
+  smx_process_t smx_process = NULL;
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
+
+  smx_process = SIMIX_process_create(name, code,
+                                     (void *) process, host->name,
+                                     argc, argv, properties);
+  if (!smx_process) {
+    xbt_free(process);
+    return NULL;
+  }
+
+  simdata = xbt_new0(s_simdata_process_t, 1);
 
   /* Simulator Data */
   simdata->PID = msg_global->PID++;
@@ -146,9 +157,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
   simdata->m_host = host;
   simdata->argc = argc;
   simdata->argv = argv;
-  simdata->s_process = SIMIX_process_create(name, code,
-                                            (void *) process, host->name,
-                                            argc, argv, properties);
+  simdata->s_process = smx_process;
 
   if (SIMIX_process_self()) {
     simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
