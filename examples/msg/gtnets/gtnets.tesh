@@ -60,5 +60,5 @@ $ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation_mode
 > [S1:master:(1) 0.468142] [msg_test/INFO] Send completed (to C1). Transfer time: 0.468142	 Agregate bandwidth: 21361.021775
 > [S1:master:(1) 0.468142] [msg_test/INFO] Completed peer: C1 time: 0.468142
 > [C1:slave:(3) 0.468142] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 21361.021775 ;  message from S1 to C1  with remaining : 0.000000
-> [C1:slave:(3) 0.468142] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 4272.204355 ;  message from S2 to C2  with remaining : 8000.000000
+> [C1:slave:(3) 0.468142] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 6408.306532 ;  message from S2 to C2  with remaining : 7000.000000
 
