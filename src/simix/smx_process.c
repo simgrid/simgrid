@@ -58,10 +58,17 @@ smx_process_t SIMIX_process_create(const char *name,
                                    const char *hostname, int argc,
                                    char **argv, xbt_dict_t properties)
 {
-  smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t, 1);
-  smx_process_t process = xbt_new0(s_smx_process_t, 1);
+  smx_simdata_process_t simdata = NULL;
+  smx_process_t process = NULL;
   smx_process_t self = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
+
+  if (!SIMIX_host_get_state(host)) {
+    WARN2("Cannot launch process '%s' on failed host '%s'", name, hostname);
+    return NULL;
+  }
+  simdata = xbt_new0(s_smx_simdata_process_t, 1);
+  process = xbt_new0(s_smx_process_t, 1);
   /*char alias[MAX_ALIAS_NAME + 1] = {0};
      msg_mailbox_t mailbox; */
 
