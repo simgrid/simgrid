@@ -180,17 +180,17 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   h = MSG_host_self();
   h_simdata = h->simdata;
 
-  SIMIX_mutex_lock(h->simdata->mutex);
+  SIMIX_mutex_lock(h_simdata->mutex);//FIXME: lock the mailbox instead
 
   if (MSG_mailbox_get_cond(mailbox)) {
-    CRITICAL1("A process is already blocked on the channel %s",
+    CRITICAL1("A process is already blocked on the channel %s (meaning that someone is already doing a get on this)",
               MSG_mailbox_get_alias(mailbox));
     SIMIX_cond_display_info(MSG_mailbox_get_cond(mailbox));
     xbt_die("Go fix your code!");
   }
 
   while (1) {
-    /* if the mailbox is empty (has no task */
+    /* if the mailbox is not empty (has a task) */
     if (!MSG_mailbox_is_empty(mailbox)) {
       if (!host) {
         /* pop the head of the mailbox */
@@ -203,8 +203,8 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
       }
     }
 
-    if ((timeout > 0) && (SIMIX_get_clock() - start_time >= timeout)) {
-      SIMIX_mutex_unlock(h->simdata->mutex);
+    if ((timeout > 0) && (SIMIX_get_clock() - start_time >= timeout)) { // Timeout already elapsed
+      SIMIX_mutex_unlock(h_simdata->mutex);
       MSG_mailbox_set_cond(mailbox, NULL);
       SIMIX_cond_destroy(cond);
       MSG_RETURN(MSG_TRANSFER_FAILURE);
@@ -216,12 +216,12 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     }
 
     if (timeout > 0)
-      SIMIX_cond_wait_timeout(cond, h->simdata->mutex, timeout - start_time);
+      SIMIX_cond_wait_timeout(cond, h_simdata->mutex, timeout - start_time);
     else
-      SIMIX_cond_wait(MSG_mailbox_get_cond(mailbox), h->simdata->mutex);
+      SIMIX_cond_wait(MSG_mailbox_get_cond(mailbox), h_simdata->mutex);
 
     if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
-      SIMIX_mutex_unlock(h->simdata->mutex);
+      SIMIX_mutex_unlock(h_simdata->mutex);
       MSG_mailbox_set_cond(mailbox, NULL);
       SIMIX_cond_destroy(cond);
       MSG_RETURN(MSG_HOST_FAILURE);
@@ -236,7 +236,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     SIMIX_cond_destroy(cond);
   }
 
-  SIMIX_mutex_unlock(h->simdata->mutex);
+  SIMIX_mutex_unlock(h_simdata->mutex);
 
   t_simdata = t->simdata;
   t_simdata->receiver = process;
@@ -260,9 +260,9 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     DEBUG1("Process sender (%s) suspended", t_simdata->sender->name);
     SIMIX_action_set_priority(t_simdata->comm, 0);
   }
-
-  process->simdata->waiting_task = t;
   SIMIX_register_action_to_condition(t_simdata->comm, t_simdata->cond);
+  // breaking point if asynchrounous
+  process->simdata->waiting_task = t;
 
   while (1) {
     SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
@@ -335,7 +335,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
          t_simdata->message_size / 1000, local_host->name,
          remote_host->name, MSG_mailbox_get_alias(mailbox));
 
-  SIMIX_mutex_lock(remote_host->simdata->mutex);
+  SIMIX_mutex_lock(remote_host->simdata->mutex); /* FIXME: lock the mailbox instead */
 
   /* put the task in the mailbox */
   xbt_fifo_push(mailbox->tasks, task);
@@ -349,7 +349,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   SIMIX_mutex_lock(t_simdata->mutex);
 
-  process->simdata->waiting_task = task;
+  process->simdata->waiting_task = task; // for debugging and status displaying purpose
 
   if (timeout > 0) {
     xbt_ex_t e;
@@ -398,7 +398,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
       }
     }
   } else {
-    while (1) {
+    while (1) {//FIXME: factorize with the code right above
       SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
 
       if (t_simdata->comm)
@@ -419,7 +419,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 /*     t_simdata->receiver->simdata->waiting_task = NULL; */
 /*   } */
 
-  SIMIX_mutex_unlock(task->simdata->mutex);
+  SIMIX_mutex_unlock(t_simdata->mutex);
 
   if (t_simdata->comm
       && SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
