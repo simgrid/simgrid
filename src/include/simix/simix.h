@@ -154,7 +154,9 @@ XBT_PUBLIC(smx_action_t) SIMIX_action_sleep(smx_host_t host, double amount);
 XBT_PUBLIC(void) SIMIX_action_cancel(smx_action_t action);
 XBT_PUBLIC(void) SIMIX_action_set_priority(smx_action_t action,
                                            double priority);
-XBT_PUBLIC(void) SIMIX_action_destroy(smx_action_t action);
+XBT_PUBLIC(int) SIMIX_action_destroy(smx_action_t action);
+XBT_PUBLIC(void) SIMIX_action_use(smx_action_t action);
+XBT_PUBLIC(void) SIMIX_action_release(smx_action_t action);
 XBT_PUBLIC(void) SIMIX_register_action_to_condition(smx_action_t action,
                                                     smx_cond_t cond);
 XBT_PUBLIC(void) SIMIX_unregister_action_to_condition(smx_action_t action,

@@ -163,7 +163,8 @@ void SIMIX_action_cancel(smx_action_t action)
   DEBUG1("Cancel action %p", action);
   if (action->simdata->surf_action) {
     surf_workstation_model->common_public->action_cancel(action->
-                                                         simdata->surf_action);
+                                                         simdata->
+                                                         surf_action);
   }
   return;
 }
@@ -191,9 +192,14 @@ void SIMIX_action_set_priority(smx_action_t action, double priority)
  *	Destroys an action, freing its memory. This function cannot be called if there are a conditional waiting for it. 
  *	\param action The SIMIX action
  */
-void SIMIX_action_destroy(smx_action_t action)
+int SIMIX_action_destroy(smx_action_t action)
 {
+  XBT_IN3("(%p:'%s',%d)", action, action->name, action->refcount);
   xbt_assert0((action != NULL), "Invalid parameter");
+
+  action->refcount--;
+  if (action->refcount > 0)
+    return 0;
 
   xbt_assert1((xbt_fifo_size(action->cond_list) == 0),
               "Conditional list not empty %d. There is a problem. Cannot destroy it now!",
@@ -211,6 +217,35 @@ void SIMIX_action_destroy(smx_action_t action)
 
   xbt_free(action->simdata);
   xbt_free(action);
+  return 1;
+}
+
+/**
+ * 	\brief Increase refcount of anan action
+ *
+ *	\param action The SIMIX action
+ */
+void SIMIX_action_use(smx_action_t action)
+{
+  XBT_IN3("(%p:'%s',%d)", action, action->name, action->refcount);
+  xbt_assert0((action != NULL), "Invalid parameter");
+
+  action->refcount++;
+
+  return;
+}
+
+/**
+ * 	\brief Decrease refcount of anan action
+ *
+ *	\param action The SIMIX action
+ */
+void SIMIX_action_release(smx_action_t action)
+{
+  xbt_assert0((action != NULL), "Invalid parameter");
+
+  action->refcount--;
+
   return;
 }
 
@@ -323,7 +358,7 @@ void __SIMIX_cond_display_actions(smx_cond_t cond)
 
   DEBUG1("Actions for condition %p", cond);
   xbt_fifo_foreach(cond->actions, item, action, smx_action_t)
-    DEBUG2("\t %p [%s]", action,action->name);
+    DEBUG2("\t %p [%s]", action, action->name);
 }
 
 void __SIMIX_action_display_conditions(smx_action_t action)
