@@ -43,6 +43,7 @@ SimGrid (3.4-svn) unstable; urgency=high
  SIMIX:
   * Add SIMIX_process_set_name() to change the name of the current
     process in the log messages.
+  * Store smx_hosts in a dict since we only retrieve them by name
 
  XBT:
   * Also include strbuff from xbt.h public header
