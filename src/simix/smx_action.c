@@ -323,7 +323,7 @@ void __SIMIX_cond_display_actions(smx_cond_t cond)
 
   DEBUG1("Actions for condition %p", cond);
   xbt_fifo_foreach(cond->actions, item, action, smx_action_t)
-    DEBUG1("\t %p", action);
+    DEBUG2("\t %p [%s]", action,action->name);
 }
 
 void __SIMIX_action_display_conditions(smx_action_t action)
