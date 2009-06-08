@@ -34,12 +34,11 @@ SimGrid (3.4-svn) unstable; urgency=high
     [Bug: if MSG_task_get_sender() is called after sender exit,
      bad things happen]
   * Fix a bug which prevented suspend/resume to work properly
-  * Display the status of simulated processes when receiving SIGINT 
-    This fixes a regression of v3.3. due to the introduction of SIMIX 
-  * Fix a bug in failure management (trace could not start by a failure at
-    time 0)
-  * Fix bugs in failure management (failure during communications were not
-    working)
+  * Display the status of simulated processes when receiving SIGINT
+    This fixes a regression of v3.3. due to the introduction of SIMIX
+  * Bug fixing in failure management:
+    - trace could not start by a failure at time 0
+    - failure during communications were not working
 	
  SIMIX:
   * Add SIMIX_process_set_name() to change the name of the current
