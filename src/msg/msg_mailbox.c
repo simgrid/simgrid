@@ -277,6 +277,10 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 
     if (SIMIX_action_get_state(t_simdata->comm) != SURF_ACTION_RUNNING)
       break;
+    if (!SIMIX_host_get_state(h_simdata->smx_host))
+      break;
+    if (!SIMIX_host_get_state(process->simdata->m_host->simdata->smx_host))
+      break;
   }
 
   SIMIX_unregister_action_to_condition(t_simdata->comm, t_simdata->cond);
@@ -393,6 +397,10 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
             && (SIMIX_action_get_state(t_simdata->comm) !=
                 SURF_ACTION_RUNNING))
           break;
+	if (!SIMIX_host_get_state(local_host->simdata->smx_host))
+	  break;
+	if (!SIMIX_host_get_state(remote_host->simdata->smx_host))
+	  break;
       }
     }
     CATCH(e) {
@@ -422,6 +430,10 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
       if (SIMIX_action_get_state(t_simdata->comm) != SURF_ACTION_RUNNING)
         break;
+      if (!SIMIX_host_get_state(local_host->simdata->smx_host))
+	break;
+      if (!SIMIX_host_get_state(remote_host->simdata->smx_host))
+	break;
     }
   }
 
