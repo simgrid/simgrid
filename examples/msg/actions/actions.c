@@ -6,11 +6,24 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
 #include "xbt.h"                /* calloc, printf */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+                 "Messages specific for this msg example");
+
+/* Helper function */
+static double parse_double(const char *string) {
+  double value;
+  char *endptr;
+
+  value=strtod(string, &endptr);
+  if (*endptr != '\0')
+	  THROW1(unknown_error, 0, "%s is not a double", string);
+  return value;
+}
+
 
 /* My actions */
 static void send(xbt_dynar_t action)
@@ -18,8 +31,8 @@ static void send(xbt_dynar_t action)
   char *name = xbt_str_join(action, " ");
   char *to = xbt_dynar_get_as(action, 2, char *);
   char *size = xbt_dynar_get_as(action, 3, char *);
-  INFO1("Send: %s", name);
-  MSG_task_send(MSG_task_create(name, 0, atoi(size), NULL), to);
+  INFO2("Send: %s (size: %lg)", name, parse_double(size));
+  MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
   INFO1("Sent %s", name);
   free(name);
 }
@@ -42,7 +55,7 @@ static void sleep(xbt_dynar_t action)
   char *name = xbt_str_join(action, " ");
   char *duration = xbt_dynar_get_as(action, 2, char *);
   INFO1("sleep: %s", name);
-  MSG_process_sleep(atoi(duration));
+  MSG_process_sleep(parse_double(duration));
   INFO1("sleept: %s", name);
   free(name);
 }
@@ -51,7 +64,7 @@ static void compute(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
   char *amout = xbt_dynar_get_as(action, 2, char *);
-  m_task_t task = MSG_task_create(name, atoi(amout), 0, NULL);
+  m_task_t task = MSG_task_create(name, parse_double(amout), 0, NULL);
   INFO1("computing: %s", name);
   MSG_task_execute(task);
   MSG_task_destroy(task);

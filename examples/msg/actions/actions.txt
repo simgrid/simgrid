@@ -1,5 +1,5 @@
 # sample action file
-tutu send toto 12
+tutu send toto 1e10
 toto recv any
 tutu sleep 12
 toto compute 12
