@@ -23,14 +23,6 @@ int smpi_receiver(int argc, char **argv)
 
   self = SIMIX_process_self();
 
-  // make sure root is done before own initialization
-  SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-  while (!smpi_global->root_ready) {
-    SIMIX_cond_wait(smpi_global->start_stop_cond,
-                    smpi_global->start_stop_mutex);
-  }
-  SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
-
   index = smpi_host_index();
 
   request_queue = smpi_global->pending_recv_request_queues[index];
@@ -40,18 +32,6 @@ int smpi_receiver(int argc, char **argv)
   message_queue_mutex = smpi_global->received_message_queues_mutexes[index];
 
   smpi_global->receiver_processes[index] = self;
-
-  // wait for all nodes to signal initializatin complete
-  SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-  smpi_global->ready_process_count++;
-  if (smpi_global->ready_process_count >= 3 * smpi_global->host_count) {
-    SIMIX_cond_broadcast(smpi_global->start_stop_cond);
-  }
-  while (smpi_global->ready_process_count < 3 * smpi_global->host_count) {
-    SIMIX_cond_wait(smpi_global->start_stop_cond,
-                    smpi_global->start_stop_mutex);
-  }
-  SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
   do {
 

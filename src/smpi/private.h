@@ -83,10 +83,6 @@ typedef struct smpi_global_t {
   double reference_speed;
 
   // state vars
-  int root_ready:1;
-  int ready_process_count;
-  smx_mutex_t start_stop_mutex;
-  smx_cond_t start_stop_cond;
 
   smx_host_t *hosts;
   int host_count;

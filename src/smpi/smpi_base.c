@@ -69,40 +69,6 @@ void smpi_init_process()
 
   SIMIX_host_set_data(host, hdata);
 
-  // node 0 sets the globals
-  if (0 == i) {
-
-
-    // signal all nodes to perform initialization
-    SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-    smpi_global->root_ready = 1;
-    SIMIX_cond_broadcast(smpi_global->start_stop_cond);
-    SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
-
-  } else {
-
-    // make sure root is done before own initialization
-    SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-    while (!smpi_global->root_ready) {
-      SIMIX_cond_wait(smpi_global->start_stop_cond,
-                      smpi_global->start_stop_mutex);
-    }
-    SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
-
-  }
-
-  // wait for all nodes to signal initializatin complete
-  SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-  smpi_global->ready_process_count++;
-  if (smpi_global->ready_process_count >= 3 * smpi_global->host_count) {
-    SIMIX_cond_broadcast(smpi_global->start_stop_cond);
-  }
-  while (smpi_global->ready_process_count < 3 * smpi_global->host_count) {
-    SIMIX_cond_wait(smpi_global->start_stop_cond,
-                    smpi_global->start_stop_mutex);
-  }
-  SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
-
   return;
 }
 
@@ -113,10 +79,6 @@ void smpi_mpi_finalize()
   SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
   i = --smpi_global->running_hosts_count;
   SIMIX_mutex_unlock(smpi_global->running_hosts_count_mutex);
-
-  SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-  smpi_global->ready_process_count--;
-  SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
   SIMIX_mutex_destroy(smpi_host_mutex());
   SIMIX_cond_destroy(smpi_host_cond());

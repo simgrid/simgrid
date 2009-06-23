@@ -147,13 +147,6 @@ void smpi_global_init()
   // config variable
   smpi_global->reference_speed = SMPI_DEFAULT_SPEED;
 
-  smpi_global->root_ready = 0;
-  smpi_global->ready_process_count = 0;
-
-  // start/stop
-  smpi_global->start_stop_mutex = SIMIX_mutex_init();
-  smpi_global->start_stop_cond = SIMIX_cond_init();
-
   // host info blank until sim starts
   // FIXME: is this okay?
   smpi_global->hosts = NULL;
@@ -246,10 +239,6 @@ void smpi_global_destroy()
   int size = SIMIX_host_get_number();
 
   smpi_do_once_duration_node_t curr, next;
-
-  // start/stop
-  SIMIX_mutex_destroy(smpi_global->start_stop_mutex);
-  SIMIX_cond_destroy(smpi_global->start_stop_cond);
 
   // processes
   xbt_free(smpi_global->sender_processes);
