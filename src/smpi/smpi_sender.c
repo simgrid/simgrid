@@ -11,7 +11,6 @@ int smpi_sender(int argc, char **argv)
   int index;
 
   xbt_fifo_t request_queue;
-  smx_mutex_t request_queue_mutex;
 
   int running_hosts_count;
 
@@ -35,16 +34,12 @@ int smpi_sender(int argc, char **argv)
   index = smpi_host_index();
 
   request_queue = smpi_global->pending_send_request_queues[index];
-  request_queue_mutex =
-    smpi_global->pending_send_request_queues_mutexes[index];
 
   smpi_global->sender_processes[index] = self;
 
   do {
 
-    SIMIX_mutex_lock(request_queue_mutex);
     request = xbt_fifo_shift(request_queue);
-    SIMIX_mutex_unlock(request_queue_mutex);
 
     if (NULL == request) {
       SIMIX_process_suspend(self);
@@ -71,9 +66,7 @@ int smpi_sender(int argc, char **argv)
       if (0 < request->forward) {
         request->dst =
           (request->dst + message->forward + 1) % request->comm->size;
-        SIMIX_mutex_lock(request_queue_mutex);
         xbt_fifo_push(request_queue, request);
-        SIMIX_mutex_unlock(request_queue_mutex);
       } else {
         request->completed = 1;
       }
@@ -93,10 +86,7 @@ int smpi_sender(int argc, char **argv)
         SIMIX_cond_wait(request->cond, request->mutex);
       }
 
-      SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[dindex]);
       xbt_fifo_push(smpi_global->received_message_queues[dindex], message);
-      SIMIX_mutex_unlock(smpi_global->received_message_queues_mutexes
-                         [dindex]);
 
       SIMIX_unregister_action_to_condition(action, request->cond);
       SIMIX_action_destroy(action);

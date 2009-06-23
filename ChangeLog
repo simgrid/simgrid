@@ -54,7 +54,8 @@ SimGrid (3.4-svn) unstable; urgency=high
  SMPI:
   * Cleanup the initialization process
   * Improve smpirun to accept -platform and -hostfile arguments
-  
+  * Kill a whole bunch of unneeded synchronization: processes run in
+    exclusive manner within the simulator  
   
  Build Chain:
   * Do not require doxygen in maintainer mode

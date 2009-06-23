@@ -9,9 +9,7 @@ int smpi_receiver(int argc, char **argv)
   int index;
 
   xbt_fifo_t request_queue;
-  smx_mutex_t request_queue_mutex;
   xbt_fifo_t message_queue;
-  smx_mutex_t message_queue_mutex;
 
   int running_hosts_count;
 
@@ -26,10 +24,7 @@ int smpi_receiver(int argc, char **argv)
   index = smpi_host_index();
 
   request_queue = smpi_global->pending_recv_request_queues[index];
-  request_queue_mutex =
-    smpi_global->pending_recv_request_queues_mutexes[index];
   message_queue = smpi_global->received_message_queues[index];
-  message_queue_mutex = smpi_global->received_message_queues_mutexes[index];
 
   smpi_global->receiver_processes[index] = self;
 
@@ -37,9 +32,6 @@ int smpi_receiver(int argc, char **argv)
 
     // FIXME: better algorithm, maybe some kind of balanced tree? or a heap?
 
-    // FIXME: not the best way to request multiple locks...
-    SIMIX_mutex_lock(request_queue_mutex);
-    SIMIX_mutex_lock(message_queue_mutex);
     for (request_item = xbt_fifo_get_first_item(request_queue);
          NULL != request_item;
          request_item = xbt_fifo_get_next_item(request_item)) {
@@ -64,9 +56,6 @@ int smpi_receiver(int argc, char **argv)
     message = NULL;
 
   stopsearch:
-    SIMIX_mutex_unlock(message_queue_mutex);
-    SIMIX_mutex_unlock(request_queue_mutex);
-
     if (NULL == request || NULL == message) {
       SIMIX_process_suspend(self);
     } else {

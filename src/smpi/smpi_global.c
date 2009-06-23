@@ -166,13 +166,8 @@ void smpi_global_init()
 
   // queues
   smpi_global->pending_send_request_queues = xbt_new(xbt_fifo_t, size);
-  smpi_global->pending_send_request_queues_mutexes =
-    xbt_new(smx_mutex_t, size);
   smpi_global->pending_recv_request_queues = xbt_new(xbt_fifo_t, size);
-  smpi_global->pending_recv_request_queues_mutexes =
-    xbt_new(smx_mutex_t, size);
   smpi_global->received_message_queues = xbt_new(xbt_fifo_t, size);
-  smpi_global->received_message_queues_mutexes = xbt_new(smx_mutex_t, size);
 
   // sender/receiver processes
   smpi_global->sender_processes = xbt_new(smx_process_t, size);
@@ -189,11 +184,8 @@ void smpi_global_init()
 
   for (i = 0; i < size; i++) {
     smpi_global->pending_send_request_queues[i] = xbt_fifo_new();
-    smpi_global->pending_send_request_queues_mutexes[i] = SIMIX_mutex_init();
     smpi_global->pending_recv_request_queues[i] = xbt_fifo_new();
-    smpi_global->pending_recv_request_queues_mutexes[i] = SIMIX_mutex_init();
     smpi_global->received_message_queues[i] = xbt_fifo_new();
-    smpi_global->received_message_queues_mutexes[i] = SIMIX_mutex_init();
   }
 
   smpi_global->hosts = SIMIX_host_get_table();
@@ -265,19 +257,13 @@ void smpi_global_destroy()
 
   for (i = 0; i < size; i++) {
     xbt_fifo_free(smpi_global->pending_send_request_queues[i]);
-    SIMIX_mutex_destroy(smpi_global->pending_send_request_queues_mutexes[i]);
     xbt_fifo_free(smpi_global->pending_recv_request_queues[i]);
-    SIMIX_mutex_destroy(smpi_global->pending_recv_request_queues_mutexes[i]);
     xbt_fifo_free(smpi_global->received_message_queues[i]);
-    SIMIX_mutex_destroy(smpi_global->received_message_queues_mutexes[i]);
   }
 
   xbt_free(smpi_global->pending_send_request_queues);
-  xbt_free(smpi_global->pending_send_request_queues_mutexes);
   xbt_free(smpi_global->pending_recv_request_queues);
-  xbt_free(smpi_global->pending_recv_request_queues_mutexes);
   xbt_free(smpi_global->received_message_queues);
-  xbt_free(smpi_global->received_message_queues_mutexes);
 
   xbt_free(smpi_global);
 

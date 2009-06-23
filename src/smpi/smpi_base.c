@@ -138,10 +138,7 @@ int smpi_mpi_isend(smpi_mpi_request_t request)
   if (NULL == request) {
     retval = MPI_ERR_INTERN;
   } else {
-    SIMIX_mutex_lock(smpi_global->pending_send_request_queues_mutexes[index]);
     xbt_fifo_push(smpi_global->pending_send_request_queues[index], request);
-    SIMIX_mutex_unlock(smpi_global->pending_send_request_queues_mutexes
-                       [index]);
 
     if (SIMIX_process_is_suspended(smpi_global->sender_processes[index])) {
       SIMIX_process_resume(smpi_global->sender_processes[index]);
@@ -159,10 +156,7 @@ int smpi_mpi_irecv(smpi_mpi_request_t request)
   if (NULL == request) {
     retval = MPI_ERR_INTERN;
   } else {
-    SIMIX_mutex_lock(smpi_global->pending_recv_request_queues_mutexes[index]);
     xbt_fifo_push(smpi_global->pending_recv_request_queues[index], request);
-    SIMIX_mutex_unlock(smpi_global->pending_recv_request_queues_mutexes
-                       [index]);
 
     if (SIMIX_process_is_suspended(smpi_global->receiver_processes[index])) {
       SIMIX_process_resume(smpi_global->receiver_processes[index]);
