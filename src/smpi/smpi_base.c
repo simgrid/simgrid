@@ -46,7 +46,7 @@ int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm)
   return comm->index_to_rank_map[smpi_host_index()];
 }
 
-void smpi_init_process()
+void smpi_process_init()
 {
   smx_host_t host;
   int i;
@@ -70,7 +70,7 @@ void smpi_init_process()
   return;
 }
 
-void smpi_mpi_finalize()
+void smpi_process_finalize()
 {
   int i;
 

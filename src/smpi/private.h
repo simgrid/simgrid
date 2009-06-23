@@ -120,8 +120,8 @@ typedef struct smpi_host_data_t {
 typedef struct smpi_host_data_t *smpi_host_data_t;
 
 // function prototypes
-void smpi_init_process(void);
-void smpi_mpi_finalize(void);
+void smpi_process_init(void);
+void smpi_process_finalize(void);
 int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm);
 
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm);

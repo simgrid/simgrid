@@ -58,7 +58,7 @@ unsigned int smpi_sleep(unsigned int seconds)
 void smpi_exit(int status)
 {
   smpi_bench_end();
-  smpi_mpi_finalize();
+  smpi_process_finalize();
   SIMIX_process_kill(SIMIX_process_self());
   return;
 }
