@@ -1,4 +1,5 @@
 #include "private.h"
+#include "xbt/time.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi,
                                 "Logging specific to SMPI (base)");
@@ -58,15 +59,22 @@ void smpi_process_init()
   host = SIMIX_host_self();
 
   hdata = xbt_new(s_smpi_host_data_t, 1);
+  SIMIX_host_set_data(host, hdata);
 
   for (i = 0; i < smpi_global->host_count && host != smpi_global->hosts[i]; i++);
 
   hdata->index = i;
   hdata->mutex = SIMIX_mutex_init();
   hdata->cond = SIMIX_cond_init();
-
-  SIMIX_host_set_data(host, hdata);
-
+  hdata->main = SIMIX_process_self();
+  hdata->sender = SIMIX_process_create("smpi_sender",
+          smpi_sender, hdata,
+          SIMIX_host_get_name(SIMIX_host_self()), 0, NULL,
+          /*props */ NULL);
+  hdata->receiver = SIMIX_process_create("smpi_receiver",
+          smpi_receiver, hdata,
+          SIMIX_host_get_name(SIMIX_host_self()), 0, NULL,
+          /*props */ NULL);
   return;
 }
 

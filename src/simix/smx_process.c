@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
 /**
  * \brief Creates and runs a new #smx_process_t.
  *
- * Does exactly the same as #SIMIX_process_create_with_arguments but without 
+ * Does exactly the same as #SIMIX_process_create_with_arguments but without
    providing standard arguments (\a argc, \a argv).
  * \see SIMIX_process_create_with_arguments
  */
@@ -39,7 +39,7 @@ void SIMIX_process_cleanup(void *arg)
   free(arg);
 }
 
-/** 
+/**
  * \brief Creates and runs a new #smx_process_t.
  *
  * A constructor for #m_process_t taking four arguments and returning the corresponding object. The structure (and the corresponding thread) is created, and put in the list of ready process.
@@ -49,7 +49,7 @@ void SIMIX_process_cleanup(void *arg)
  * \param host the location where the new agent is executed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
- * \param clean_process_function The cleanup function of user process. It will be called when the process finish. This function have to call the SIMIX_process_cleanup.	
+ * \param clean_process_function The cleanup function of user process. It will be called when the process finish. This function have to call the SIMIX_process_cleanup.
  * \see smx_process_t
  * \return The new corresponding object.
  */
@@ -62,6 +62,8 @@ smx_process_t SIMIX_process_create(const char *name,
   smx_process_t process = NULL;
   smx_process_t self = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
+
+  DEBUG2("Start process %s on host %s",name,hostname);
 
   if (!SIMIX_host_get_state(host)) {
     WARN2("Cannot launch process '%s' on failed host '%s'", name, hostname);
@@ -111,11 +113,11 @@ smx_process_t SIMIX_process_create(const char *name,
   return process;
 }
 
-/** 
+/**
  * \brief Creates and runs a new #smx_process_t hosting a JAVA thread
  *
  * Warning: this should only be used in libsimgrid4java, since it create
- * a context with no code, which leads to segfaults in plain libsimgrid 
+ * a context with no code, which leads to segfaults in plain libsimgrid
  */
 void SIMIX_jprocess_create(const char *name, smx_host_t host,
                            void *data,
@@ -126,11 +128,11 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
   smx_process_t self = NULL;
 
   /* HACK: We need this trick because when we xbt_context_new() do
-     syncronization stuff, the s_process field in the m_process needs 
-     to have a valid value, and we call xbt_context_new() before 
-     returning, of course, ie, before providing a right value to the 
-     caller (Java_simgrid_msg_Msg_processCreate) have time to store it  
-     in place. This way, we initialize the m_process->simdata->s_process 
+     syncronization stuff, the s_process field in the m_process needs
+     to have a valid value, and we call xbt_context_new() before
+     returning, of course, ie, before providing a right value to the
+     caller (Java_simgrid_msg_Msg_processCreate) have time to store it
+     in place. This way, we initialize the m_process->simdata->s_process
      field ourself ASAP.
 
      All this would be much simpler if the synchronization stuff would be done

@@ -131,8 +131,8 @@ for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
 	host="${hostnames[$j]}"
   fi
  
-  echo "  <process host=\"${host}\" function=\"smpi_sender\"/>" >> ${APPLICATIONTMP}
-  echo "  <process host=\"${host}\" function=\"smpi_receiver\"/>" >> ${APPLICATIONTMP}
+#  echo "  <process host=\"${host}\" function=\"smpi_sender\"/>" >> ${APPLICATIONTMP}
+#  echo "  <process host=\"${host}\" function=\"smpi_receiver\"/>" >> ${APPLICATIONTMP}
 done
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
@@ -140,10 +140,11 @@ cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
 APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
 
+echo ${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
 ${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
 
 echo "[$0] cleaning up temp files"
 if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP} 
 fi
-rm ${APPLICATIONTMP}
+#rm ${APPLICATIONTMP}

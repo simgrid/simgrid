@@ -3,8 +3,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_sender, smpi,
                                 "Logging specific to SMPI (sender)");
 
-int smpi_sender(int argc, char **argv)
-{
+int smpi_sender(int argc,char*argv[]) {
+	smpi_host_data_t mydata = SIMIX_process_get_data(SIMIX_process_self());
   smx_process_t self;
   smx_host_t shost;
 
@@ -31,7 +31,7 @@ int smpi_sender(int argc, char **argv)
   self = SIMIX_process_self();
   shost = SIMIX_host_self();
 
-  index = smpi_host_index();
+  index = mydata->index;
 
   request_queue = smpi_global->pending_send_request_queues[index];
 

@@ -116,6 +116,9 @@ typedef struct smpi_host_data_t {
   int index;
   smx_mutex_t mutex;
   smx_cond_t cond;
+  smx_process_t main;
+  smx_process_t sender;
+  smx_process_t receiver;
 } s_smpi_host_data_t;
 typedef struct smpi_host_data_t *smpi_host_data_t;
 
@@ -147,8 +150,7 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
                         smpi_mpi_communicator_t comm,
                         smpi_mpi_request_t * request);
 
-int smpi_sender(int argc, char **argv);
-
-int smpi_receiver(int argc, char **argv);
+int smpi_sender(int argc,char*argv[]);
+int smpi_receiver(int argc, char*argv[]);
 
 #endif

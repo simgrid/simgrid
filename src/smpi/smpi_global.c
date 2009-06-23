@@ -303,8 +303,6 @@ int smpi_run_simulation(int *argc, char **argv)
   SIMIX_create_environment(argv[1]);
 
   SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
-  SIMIX_function_register("smpi_sender", smpi_sender);
-  SIMIX_function_register("smpi_receiver", smpi_receiver);
   SIMIX_launch_application(argv[2]);
 
   // must initialize globals between creating environment and launching app....

@@ -3,10 +3,11 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_receiver, smpi,
                                 "Logging specific to SMPI (receiver)");
 
-int smpi_receiver(int argc, char **argv)
+int smpi_receiver(int argc, char*argv[])
 {
+	smpi_host_data_t mydata = SIMIX_process_get_data(SIMIX_process_self());
   smx_process_t self;
-  int index;
+  int index = mydata->index;
 
   xbt_fifo_t request_queue;
   xbt_fifo_t message_queue;
@@ -20,8 +21,6 @@ int smpi_receiver(int argc, char **argv)
   xbt_fifo_item_t message_item;
 
   self = SIMIX_process_self();
-
-  index = smpi_host_index();
 
   request_queue = smpi_global->pending_recv_request_queues[index];
   message_queue = smpi_global->received_message_queues[index];
