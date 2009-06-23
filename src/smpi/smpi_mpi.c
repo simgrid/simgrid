@@ -18,7 +18,7 @@ int SMPI_MPI_Finalize()
 }
 
 // right now this just exits the current node, should send abort signal to all
-// hosts in the communicator;
+// hosts in the communicator (TODO)
 int SMPI_MPI_Abort(MPI_Comm comm, int errorcode)
 {
   smpi_exit(errorcode);

@@ -32,14 +32,9 @@ int smpi_receiver(int argc, char **argv)
 
     // FIXME: better algorithm, maybe some kind of balanced tree? or a heap?
 
-    for (request_item = xbt_fifo_get_first_item(request_queue);
-         NULL != request_item;
-         request_item = xbt_fifo_get_next_item(request_item)) {
-      request = xbt_fifo_get_item_content(request_item);
-      for (message_item = xbt_fifo_get_first_item(message_queue);
-           NULL != message_item;
-           message_item = xbt_fifo_get_next_item(message_item)) {
-        message = xbt_fifo_get_item_content(message_item);
+	xbt_fifo_foreach(request_queue,request_item,request,smpi_mpi_request_t){
+	  xbt_fifo_foreach(message_queue,message_item,message, smpi_received_message_t) {
+
         if (request->comm == message->comm &&
             (MPI_ANY_SOURCE == request->src || request->src == message->src)
             && (MPI_ANY_TAG == request->tag || request->tag == message->tag)) {
