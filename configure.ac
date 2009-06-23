@@ -576,6 +576,13 @@ AC_CONFIG_FILES([
 AC_CONFIG_FILES([
   src/smpi/smpicc
   src/smpi/smpirun
+],[
+    for file in                                                 \
+      src/smpi/smpicc                                           \
+      src/smpi/smpirun                                          \
+    ; do                                                        \
+      test -e $file && chmod +x $file;                          \
+    done
 ])
 
 # GRAMINE_CUT_END
