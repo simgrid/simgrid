@@ -46,11 +46,9 @@ int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm)
   return comm->index_to_rank_map[smpi_host_index()];
 }
 
-void smpi_mpi_init()
+void smpi_init_process()
 {
   smx_host_t host;
-  smx_host_t *hosts;
-  int host_count;
   int i;
   smpi_host_data_t hdata;
 
@@ -60,12 +58,10 @@ void smpi_mpi_init()
 
   // initialize some local variables
   host = SIMIX_host_self();
-  hosts = SIMIX_host_get_table();
-  host_count = SIMIX_host_get_number();
 
   hdata = xbt_new(s_smpi_host_data_t, 1);
 
-  for (i = 0; i < host_count && host != hosts[i]; i++);
+  for (i = 0; i < smpi_global->host_count && host != smpi_global->hosts[i]; i++);
 
   hdata->index = i;
   hdata->mutex = SIMIX_mutex_init();
@@ -76,39 +72,6 @@ void smpi_mpi_init()
   // node 0 sets the globals
   if (0 == i) {
 
-    smpi_global->hosts = hosts;
-    smpi_global->host_count = host_count;
-
-    smpi_mpi_global = xbt_new(s_smpi_mpi_global_t, 1);
-
-    // global communicator
-    smpi_mpi_global->mpi_comm_world = xbt_new(s_smpi_mpi_communicator_t, 1);
-    smpi_mpi_global->mpi_comm_world->size = host_count;
-    smpi_mpi_global->mpi_comm_world->barrier_count = 0;
-    smpi_mpi_global->mpi_comm_world->barrier_mutex = SIMIX_mutex_init();
-    smpi_mpi_global->mpi_comm_world->barrier_cond = SIMIX_cond_init();
-    smpi_mpi_global->mpi_comm_world->rank_to_index_map =
-      xbt_new(int, host_count);
-    smpi_mpi_global->mpi_comm_world->index_to_rank_map =
-      xbt_new(int, host_count);
-    for (i = 0; i < host_count; i++) {
-      smpi_mpi_global->mpi_comm_world->rank_to_index_map[i] = i;
-      smpi_mpi_global->mpi_comm_world->index_to_rank_map[i] = i;
-    }
-
-    // mpi datatypes
-    smpi_mpi_global->mpi_byte = xbt_new(s_smpi_mpi_datatype_t, 1);
-    smpi_mpi_global->mpi_byte->size = (size_t) 1;
-    smpi_mpi_global->mpi_int = xbt_new(s_smpi_mpi_datatype_t, 1);
-    smpi_mpi_global->mpi_int->size = sizeof(int);
-    smpi_mpi_global->mpi_double = xbt_new(s_smpi_mpi_datatype_t, 1);
-    smpi_mpi_global->mpi_double->size = sizeof(double);
-
-    // mpi operations
-    smpi_mpi_global->mpi_land = xbt_new(s_smpi_mpi_op_t, 1);
-    smpi_mpi_global->mpi_land->func = smpi_mpi_land_func;
-    smpi_mpi_global->mpi_sum = xbt_new(s_smpi_mpi_op_t, 1);
-    smpi_mpi_global->mpi_sum->func = smpi_mpi_sum_func;
 
     // signal all nodes to perform initialization
     SIMIX_mutex_lock(smpi_global->start_stop_mutex);
@@ -131,10 +94,10 @@ void smpi_mpi_init()
   // wait for all nodes to signal initializatin complete
   SIMIX_mutex_lock(smpi_global->start_stop_mutex);
   smpi_global->ready_process_count++;
-  if (smpi_global->ready_process_count >= 3 * host_count) {
+  if (smpi_global->ready_process_count >= 3 * smpi_global->host_count) {
     SIMIX_cond_broadcast(smpi_global->start_stop_cond);
   }
-  while (smpi_global->ready_process_count < 3 * host_count) {
+  while (smpi_global->ready_process_count < 3 * smpi_global->host_count) {
     SIMIX_cond_wait(smpi_global->start_stop_cond,
                     smpi_global->start_stop_mutex);
   }

@@ -50,6 +50,9 @@ SimGrid (3.4-svn) unstable; urgency=high
   * xbt_ex_display(): do not free the exception after displaying 
     This allows to do more with the given exception afterward.
     Users should call xbt_ex_free() themselves.
+    
+ SMPI:
+  * Cleanup the initialization process
   
  Build Chain:
   * Do not require doxygen in maintainer mode

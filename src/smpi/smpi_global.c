@@ -120,6 +120,11 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
   }
   return retval;
 }
+/* FIXME: understand what they do and put the prototypes in a header file (live in smpi_base.c) */
+void smpi_mpi_land_func(void *a, void *b, int *length,
+                        MPI_Datatype * datatype);
+void smpi_mpi_sum_func(void *a, void *b, int *length,
+                       MPI_Datatype * datatype);
 
 void smpi_global_init()
 {
@@ -197,6 +202,40 @@ void smpi_global_init()
     smpi_global->received_message_queues[i] = xbt_fifo_new();
     smpi_global->received_message_queues_mutexes[i] = SIMIX_mutex_init();
   }
+
+  smpi_global->hosts = SIMIX_host_get_table();
+  smpi_global->host_count = SIMIX_host_get_number();
+
+  smpi_mpi_global = xbt_new(s_smpi_mpi_global_t, 1);
+
+  // global communicator
+  smpi_mpi_global->mpi_comm_world = xbt_new(s_smpi_mpi_communicator_t, 1);
+  smpi_mpi_global->mpi_comm_world->size = smpi_global->host_count;
+  smpi_mpi_global->mpi_comm_world->barrier_count = 0;
+  smpi_mpi_global->mpi_comm_world->barrier_mutex = SIMIX_mutex_init();
+  smpi_mpi_global->mpi_comm_world->barrier_cond = SIMIX_cond_init();
+  smpi_mpi_global->mpi_comm_world->rank_to_index_map =
+    xbt_new(int, smpi_global->host_count);
+  smpi_mpi_global->mpi_comm_world->index_to_rank_map =
+    xbt_new(int, smpi_global->host_count);
+  for (i = 0; i < smpi_global->host_count; i++) {
+    smpi_mpi_global->mpi_comm_world->rank_to_index_map[i] = i;
+    smpi_mpi_global->mpi_comm_world->index_to_rank_map[i] = i;
+  }
+
+  // mpi datatypes
+  smpi_mpi_global->mpi_byte = xbt_new(s_smpi_mpi_datatype_t, 1);
+  smpi_mpi_global->mpi_byte->size = (size_t) 1;
+  smpi_mpi_global->mpi_int = xbt_new(s_smpi_mpi_datatype_t, 1);
+  smpi_mpi_global->mpi_int->size = sizeof(int);
+  smpi_mpi_global->mpi_double = xbt_new(s_smpi_mpi_datatype_t, 1);
+  smpi_mpi_global->mpi_double->size = sizeof(double);
+
+  // mpi operations
+  smpi_mpi_global->mpi_land = xbt_new(s_smpi_mpi_op_t, 1);
+  smpi_mpi_global->mpi_land->func = smpi_mpi_land_func;
+  smpi_mpi_global->mpi_sum = xbt_new(s_smpi_mpi_op_t, 1);
+  smpi_mpi_global->mpi_sum->func = smpi_mpi_sum_func;
 
 }
 
@@ -289,17 +328,16 @@ int smpi_run_simulation(int *argc, char **argv)
 
   SIMIX_global_init(argc, argv);
 
+  // parse the platform file: get the host list
+  SIMIX_create_environment(argv[1]);
+
   SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
   SIMIX_function_register("smpi_sender", smpi_sender);
   SIMIX_function_register("smpi_receiver", smpi_receiver);
-
-  // FIXME: ought to verify these files...
-  SIMIX_create_environment(argv[1]);
+  SIMIX_launch_application(argv[2]);
 
   // must initialize globals between creating environment and launching app....
   smpi_global_init();
-
-  SIMIX_launch_application(argv[2]);
 
   /* Prepare to display some more info when dying on Ctrl-C pressing */
   // FIXME: doesn't work
