@@ -153,7 +153,6 @@ void smpi_global_init()
   smpi_global->host_count = 0;
 
   // running hosts
-  smpi_global->running_hosts_count_mutex = SIMIX_mutex_init();
   smpi_global->running_hosts_count = 0;
 
   // mallocators
@@ -235,9 +234,6 @@ void smpi_global_destroy()
   // processes
   xbt_free(smpi_global->sender_processes);
   xbt_free(smpi_global->receiver_processes);
-
-  // running hosts
-  SIMIX_mutex_destroy(smpi_global->running_hosts_count_mutex);
 
   // mallocators
   xbt_mallocator_free(smpi_global->request_mallocator);

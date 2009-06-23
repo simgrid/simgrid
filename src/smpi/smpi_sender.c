@@ -101,9 +101,7 @@ int smpi_sender(int argc, char **argv)
 
     }
 
-    SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
     running_hosts_count = smpi_global->running_hosts_count;
-    SIMIX_mutex_unlock(smpi_global->running_hosts_count_mutex);
 
   } while (0 < running_hosts_count);
 

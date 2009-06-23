@@ -52,9 +52,7 @@ void smpi_init_process()
   int i;
   smpi_host_data_t hdata;
 
-  SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
   smpi_global->running_hosts_count++;
-  SIMIX_mutex_unlock(smpi_global->running_hosts_count_mutex);
 
   // initialize some local variables
   host = SIMIX_host_self();
@@ -76,9 +74,7 @@ void smpi_mpi_finalize()
 {
   int i;
 
-  SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
   i = --smpi_global->running_hosts_count;
-  SIMIX_mutex_unlock(smpi_global->running_hosts_count_mutex);
 
   SIMIX_mutex_destroy(smpi_host_mutex());
   SIMIX_cond_destroy(smpi_host_cond());
