@@ -58,7 +58,7 @@ while [ -n "$1" ]; do
   fi
 done
 
-#CMDLINE="${CC} ${INCLUDEARGS} ${CMDLINE} ${LINKARGS}"
+CMDLINE="${CC} ${INCLUDEARGS} ${CMDLINE} ${LINKARGS}"
 
 #echo "${CMDLINE}"
 ${CMDLINE}
