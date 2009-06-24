@@ -29,10 +29,18 @@ while true; do
     ;;
    "-platform")
 	PLATFORM="$2"
+      if [ ! -f ${PLATFORM} ]; then
+		echo "[$0] ** error: the file '${PLATFORM}' does not exist. Aborting."
+		exit 1
+      fi
 	shift 2
     ;;
    "-hostfile")
 	HOSTFILE="$2"
+      if [ ! -f ${HOSTFILE} ]; then
+		echo "[$0] ** error: the file '${HOSTFILE}' does not exist. Aborting."
+		exit 1
+      fi
 	shift 2
     ;;
 
@@ -50,6 +58,11 @@ done
 
 EXEC="$1"
 shift
+
+##-----------------------------------
+
+
+
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
 if [ -z "${PLATFORM}" ]; then  
