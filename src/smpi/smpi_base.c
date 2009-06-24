@@ -47,10 +47,9 @@ int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm)
   return comm->index_to_rank_map[smpi_host_index()];
 }
 
-void smpi_process_init()
+void smpi_process_init(int *argc, char***argv)
 {
   smx_host_t host;
-  int i;
   smpi_host_data_t hdata;
 
   // initialize some local variables
@@ -60,9 +59,14 @@ void smpi_process_init()
   SIMIX_host_set_data(host, hdata);
   SIMIX_process_set_data(SIMIX_process_self(),hdata);
 
-  for (i = 0; i < smpi_global->host_count && host != smpi_global->hosts[i]; i++);
+  /* get rank from command line, and remove it from argv */
+  hdata->index = atoi( (*argv)[1] );
+  if (*argc>2) {
+	  memmove((*argv)[1],(*argv)[2], sizeof(char*)* (*argc-2));
+	  (*argv)[ (*argc)-1] = NULL;
+  }
+  (*argc)--;
 
-  hdata->index = i;
   hdata->mutex = SIMIX_mutex_init();
   hdata->cond = SIMIX_cond_init();
   hdata->finalize = 0;

@@ -54,7 +54,6 @@ shift
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
 if [ -z "${PLATFORM}" ]; then  
 	PLATFORMTMP="$(mktemp tmpXXXXXX)"
-	#PLATFORMTMP="pla.xml"
 
 	cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
@@ -117,6 +116,7 @@ for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
 	host="${hostnames[$j]}"
   fi
   echo "  <process host=\"${host}\" function=\"smpi_simulated_main\">" >> ${APPLICATIONTMP}
+    echo "    <argument value=\"$j\"/> <!-- rank -->" >> ${APPLICATIONTMP}
   for ARG in $*; do
     echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
   done

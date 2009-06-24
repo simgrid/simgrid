@@ -84,7 +84,6 @@ typedef struct smpi_global_t {
 
   // state vars
 
-  smx_host_t *hosts; //FIXME:killme
   int host_count;
   xbt_mallocator_t request_mallocator;
   xbt_mallocator_t message_mallocator;
@@ -122,7 +121,7 @@ typedef struct smpi_host_data_t {
 typedef struct smpi_host_data_t *smpi_host_data_t;
 
 // function prototypes
-void smpi_process_init(void);
+void smpi_process_init(int *argc,char ***argv);
 void smpi_process_finalize(void);
 int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm);
 

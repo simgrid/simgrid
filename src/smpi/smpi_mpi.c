@@ -5,7 +5,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
 
 int SMPI_MPI_Init(int *argc, char ***argv)
 {
-  smpi_process_init();
+  smpi_process_init(argc,argv);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }

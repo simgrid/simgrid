@@ -149,7 +149,6 @@ void smpi_global_init()
 
   // host info blank until sim starts
   // FIXME: is this okay?
-  smpi_global->hosts = NULL;
   smpi_global->host_count = 0;
 
   // mallocators
@@ -172,7 +171,6 @@ void smpi_global_init()
   smpi_global->do_once_duration = NULL;
   smpi_global->do_once_mutex = SIMIX_mutex_init();
 
-  smpi_global->hosts = SIMIX_host_get_table();
   smpi_global->host_count = SIMIX_host_get_number();
 
   smpi_mpi_global = xbt_new(s_smpi_mpi_global_t, 1);

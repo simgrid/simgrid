@@ -52,10 +52,14 @@ SimGrid (3.4-svn) unstable; urgency=high
     Users should call xbt_ex_free() themselves.
     
  SMPI:
-  * Cleanup the initialization process
-  * Improve smpirun to accept -platform and -hostfile arguments
-  * Kill a whole bunch of unneeded synchronization: processes run in
-    exclusive manner within the simulator  
+  * Massive internal cleanups:
+    - Cleanup the initialization/finalization process
+    - Kill a whole bunch of unneeded synchronization: 
+      processes run in exclusive manner within the simulator
+    - Move queues from global tables to process data fields
+  * Improve smpirun:
+    - now accept -platform and -hostfile arguments
+    - Pass the right rank value to processes according on hostfile
   
  Build Chain:
   * Do not require doxygen in maintainer mode
