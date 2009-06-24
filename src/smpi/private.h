@@ -84,13 +84,10 @@ typedef struct smpi_global_t {
 
   // state vars
 
-  smx_host_t *hosts;
+  smx_host_t *hosts; //FIXME:killme
   int host_count;
   xbt_mallocator_t request_mallocator;
   xbt_mallocator_t message_mallocator;
-
-  // FIXME: request queues should be moved to host data...
-  xbt_fifo_t *received_message_queues;
 
   smx_process_t *main_processes;
 
@@ -116,10 +113,11 @@ typedef struct smpi_host_data_t {
   smx_process_t sender;
   smx_process_t receiver;
 
-  int finalize; /* for main stopping sender&receiver */
+  int finalize; /* so that main process stops its sender&receiver */
 
   xbt_fifo_t pending_recv_request_queue;
   xbt_fifo_t pending_send_request_queue;
+  xbt_fifo_t received_message_queue;
 } s_smpi_host_data_t;
 typedef struct smpi_host_data_t *smpi_host_data_t;
 

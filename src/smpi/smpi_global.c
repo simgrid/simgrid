@@ -160,9 +160,6 @@ void smpi_global_init()
     xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE, smpi_message_new,
                        smpi_message_free, smpi_message_reset);
 
-  // queues
-  smpi_global->received_message_queues = xbt_new(xbt_fifo_t, size);
-
   // sender/receiver processes
   smpi_global->main_processes = xbt_new(smx_process_t, size);
 
@@ -174,10 +171,6 @@ void smpi_global_init()
   smpi_global->do_once_duration_nodes = NULL;
   smpi_global->do_once_duration = NULL;
   smpi_global->do_once_mutex = SIMIX_mutex_init();
-
-  for (i = 0; i < size; i++) {
-    smpi_global->received_message_queues[i] = xbt_fifo_new();
-  }
 
   smpi_global->hosts = SIMIX_host_get_table();
   smpi_global->host_count = SIMIX_host_get_number();
@@ -217,10 +210,6 @@ void smpi_global_init()
 
 void smpi_global_destroy()
 {
-  int i;
-
-  int size = SIMIX_host_get_number();
-
   smpi_do_once_duration_node_t curr, next;
 
   // processes
@@ -241,12 +230,6 @@ void smpi_global_destroy()
   }
 
   SIMIX_mutex_destroy(smpi_global->do_once_mutex);
-
-  for (i = 0; i < size; i++) {
-    xbt_fifo_free(smpi_global->received_message_queues[i]);
-  }
-
-  xbt_free(smpi_global->received_message_queues);
 
   xbt_free(smpi_global);
   smpi_global = NULL;

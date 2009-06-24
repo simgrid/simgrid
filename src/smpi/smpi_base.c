@@ -69,6 +69,7 @@ void smpi_process_init()
 
   hdata->pending_recv_request_queue = xbt_fifo_new();
   hdata->pending_send_request_queue = xbt_fifo_new();
+  hdata->received_message_queue = xbt_fifo_new();
 
   hdata->main = SIMIX_process_self();
   hdata->sender = SIMIX_process_create("smpi_sender",
@@ -99,6 +100,7 @@ void smpi_process_finalize()
   SIMIX_cond_destroy(hdata->cond);
   xbt_fifo_free(hdata->pending_recv_request_queue);
   xbt_fifo_free(hdata->pending_send_request_queue);
+  xbt_fifo_free(hdata->received_message_queue);
 }
 
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm)

@@ -21,7 +21,7 @@ int smpi_receiver(int argc, char*argv[])
   self = SIMIX_process_self();
 
   request_queue = mydata->pending_recv_request_queue;
-  message_queue = smpi_global->received_message_queues[index];
+  message_queue = mydata->received_message_queue;
 
   while (1) {
     // FIXME: better algorithm, maybe some kind of balanced tree? or a heap?

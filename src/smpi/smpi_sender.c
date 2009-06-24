@@ -48,7 +48,8 @@ int smpi_sender(int argc,char*argv[]) {
              request->datatype->size * request->count);
 
       dindex = request->comm->rank_to_index_map[request->dst];
-      dhost = smpi_global->hosts[dindex];
+      dhost = SIMIX_process_get_host(smpi_global->main_processes[dindex]);
+      smpi_host_data_t remote_host = SIMIX_host_get_data(dhost);
 
       message->forward = (request->forward - 1) / 2;
       request->forward = request->forward / 2;
@@ -76,7 +77,7 @@ int smpi_sender(int argc,char*argv[]) {
         SIMIX_cond_wait(request->cond, request->mutex);
       }
 
-      xbt_fifo_push(smpi_global->received_message_queues[dindex], message);
+      xbt_fifo_push(remote_host->received_message_queue, message);
 
       SIMIX_unregister_action_to_condition(action, request->cond);
       SIMIX_action_destroy(action);
@@ -84,7 +85,6 @@ int smpi_sender(int argc,char*argv[]) {
       SIMIX_mutex_unlock(request->mutex);
 
       // wake up receiver if necessary
-      smpi_host_data_t remote_host = SIMIX_host_get_data(SIMIX_process_get_host(smpi_global->main_processes[dindex]));
       SIMIX_process_resume(remote_host->receiver);
 
     } else if (mydata->finalize>0) { /* main wants me to die and nothing to do */
