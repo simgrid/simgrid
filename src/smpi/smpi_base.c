@@ -60,6 +60,7 @@ void smpi_process_init()
 
   hdata = xbt_new(s_smpi_host_data_t, 1);
   SIMIX_host_set_data(host, hdata);
+  SIMIX_process_set_data(SIMIX_process_self(),hdata);
 
   for (i = 0; i < smpi_global->host_count && host != smpi_global->hosts[i]; i++);
 
@@ -97,14 +98,16 @@ void smpi_process_finalize()
   if (0 >= i) {
 
     // wake up senders/receivers
+	  /* MQ: (FIXME) Don't do so: it breaks since some hosts are already gone
     for (i = 0; i < smpi_global->host_count; i++) {
-      if (SIMIX_process_is_suspended(smpi_global->sender_processes[i])) {
-        SIMIX_process_resume(smpi_global->sender_processes[i]);
-      }
-      if (SIMIX_process_is_suspended(smpi_global->receiver_processes[i])) {
-        SIMIX_process_resume(smpi_global->receiver_processes[i]);
-      }
-    }
+      smpi_host_data_t remote_hdata =  SIMIX_process_get_data(smpi_global->main_processes[i]);
+
+      if (SIMIX_process_is_suspended(remote_hdata->sender))
+        SIMIX_process_resume(remote_hdata->sender);
+
+      if (SIMIX_process_is_suspended(remote_hdata->receiver))
+        SIMIX_process_resume(remote_hdata->receiver);
+    }*/
 
     SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->barrier_mutex);
     SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->barrier_cond);
@@ -118,9 +121,7 @@ void smpi_process_finalize()
     xbt_free(smpi_mpi_global->mpi_sum);
 
     xbt_free(smpi_mpi_global);
-
   }
-
 }
 
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
@@ -143,16 +144,16 @@ int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
 
 int smpi_mpi_isend(smpi_mpi_request_t request)
 {
+	smpi_host_data_t hdata =  SIMIX_host_get_data(SIMIX_host_self());
   int retval = MPI_SUCCESS;
-  int index = smpi_host_index();
 
   if (NULL == request) {
     retval = MPI_ERR_INTERN;
   } else {
-    xbt_fifo_push(smpi_global->pending_send_request_queues[index], request);
+    xbt_fifo_push(smpi_global->pending_send_request_queues[hdata->index], request);
 
-    if (SIMIX_process_is_suspended(smpi_global->sender_processes[index])) {
-      SIMIX_process_resume(smpi_global->sender_processes[index]);
+    if (SIMIX_process_is_suspended(hdata->sender)) {
+      SIMIX_process_resume(hdata->sender);
     }
   }
 
@@ -169,8 +170,8 @@ int smpi_mpi_irecv(smpi_mpi_request_t request)
   } else {
     xbt_fifo_push(hdata->pending_recv_request_queue, request);
 
-    if (SIMIX_process_is_suspended(smpi_global->receiver_processes[hdata->index])) {
-      SIMIX_process_resume(smpi_global->receiver_processes[hdata->index]);
+    if (SIMIX_process_is_suspended(hdata->receiver)) {
+      SIMIX_process_resume(hdata->receiver);
     }
   }
 

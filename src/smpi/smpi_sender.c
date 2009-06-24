@@ -35,8 +35,6 @@ int smpi_sender(int argc,char*argv[]) {
 
   request_queue = smpi_global->pending_send_request_queues[index];
 
-  smpi_global->sender_processes[index] = self;
-
   do {
 
     request = xbt_fifo_shift(request_queue);
@@ -94,11 +92,10 @@ int smpi_sender(int argc,char*argv[]) {
       SIMIX_mutex_unlock(request->mutex);
 
       // wake up receiver if necessary
-      receiver_process = smpi_global->receiver_processes[dindex];
-      if (SIMIX_process_is_suspended(receiver_process)) {
+      smpi_host_data_t remote_host = SIMIX_host_get_data(SIMIX_process_get_host(smpi_global->main_processes[dindex]));
+      receiver_process = remote_host->receiver;
+      if (SIMIX_process_is_suspended(receiver_process))
         SIMIX_process_resume(receiver_process);
-      }
-
     }
 
     running_hosts_count = smpi_global->running_hosts_count;

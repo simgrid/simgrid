@@ -25,8 +25,6 @@ int smpi_receiver(int argc, char*argv[])
   request_queue = mydata->pending_recv_request_queue;
   message_queue = smpi_global->received_message_queues[index];
 
-  smpi_global->receiver_processes[index] = self;
-
   do {
 
     // FIXME: better algorithm, maybe some kind of balanced tree? or a heap?

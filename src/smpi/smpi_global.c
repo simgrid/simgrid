@@ -169,8 +169,6 @@ void smpi_global_init()
 
   // sender/receiver processes
   smpi_global->main_processes = xbt_new(smx_process_t, size);
-  smpi_global->sender_processes = xbt_new(smx_process_t, size);
-  smpi_global->receiver_processes = xbt_new(smx_process_t, size);
 
   // timers
   smpi_global->timer = xbt_os_timer_new();
@@ -232,8 +230,6 @@ void smpi_global_destroy()
 
   // processes
   xbt_free(smpi_global->main_processes);
-  xbt_free(smpi_global->sender_processes);
-  xbt_free(smpi_global->receiver_processes);
 
   // mallocators
   xbt_mallocator_free(smpi_global->request_mallocator);
