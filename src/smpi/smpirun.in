@@ -130,9 +130,6 @@ for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
   else
 	host="${hostnames[$j]}"
   fi
- 
-#  echo "  <process host=\"${host}\" function=\"smpi_sender\"/>" >> ${APPLICATIONTMP}
-#  echo "  <process host=\"${host}\" function=\"smpi_receiver\"/>" >> ${APPLICATIONTMP}
 done
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
