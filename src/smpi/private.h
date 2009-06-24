@@ -93,6 +93,7 @@ typedef struct smpi_global_t {
   xbt_fifo_t *pending_send_request_queues;
   xbt_fifo_t *received_message_queues;
 
+  smx_process_t *main_processes;
   smx_process_t *sender_processes;
   smx_process_t *receiver_processes;
 

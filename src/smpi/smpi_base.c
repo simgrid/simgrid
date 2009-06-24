@@ -78,6 +78,8 @@ void smpi_process_init()
           smpi_receiver, hdata,
           SIMIX_host_get_name(SIMIX_host_self()), 0, NULL,
           /*props */ NULL);
+
+  smpi_global->main_processes[hdata->index] = SIMIX_process_self();
   return;
 }
 

@@ -168,6 +168,7 @@ void smpi_global_init()
   smpi_global->received_message_queues = xbt_new(xbt_fifo_t, size);
 
   // sender/receiver processes
+  smpi_global->main_processes = xbt_new(smx_process_t, size);
   smpi_global->sender_processes = xbt_new(smx_process_t, size);
   smpi_global->receiver_processes = xbt_new(smx_process_t, size);
 
@@ -230,6 +231,7 @@ void smpi_global_destroy()
   smpi_do_once_duration_node_t curr, next;
 
   // processes
+  xbt_free(smpi_global->main_processes);
   xbt_free(smpi_global->sender_processes);
   xbt_free(smpi_global->receiver_processes);
 
