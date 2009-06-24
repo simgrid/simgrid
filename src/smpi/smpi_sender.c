@@ -12,8 +12,6 @@ int smpi_sender(int argc,char*argv[]) {
 
   xbt_fifo_t request_queue;
 
-  int running_hosts_count;
-
   smpi_mpi_request_t request;
 
   smx_host_t dhost;
@@ -26,8 +24,6 @@ int smpi_sender(int argc,char*argv[]) {
 
   int dindex;
 
-  smx_process_t receiver_process;
-
   self = SIMIX_process_self();
   shost = SIMIX_host_self();
 
@@ -35,14 +31,10 @@ int smpi_sender(int argc,char*argv[]) {
 
   request_queue = smpi_global->pending_send_request_queues[index];
 
-  do {
-
+  while (1) {
     request = xbt_fifo_shift(request_queue);
 
-    if (NULL == request) {
-      SIMIX_process_suspend(self);
-    } else {
-
+    if (NULL != request) {
       message = xbt_mallocator_get(smpi_global->message_mallocator);
 
       SIMIX_mutex_lock(request->mutex);
@@ -93,14 +85,15 @@ int smpi_sender(int argc,char*argv[]) {
 
       // wake up receiver if necessary
       smpi_host_data_t remote_host = SIMIX_host_get_data(SIMIX_process_get_host(smpi_global->main_processes[dindex]));
-      receiver_process = remote_host->receiver;
-      if (SIMIX_process_is_suspended(receiver_process))
-        SIMIX_process_resume(receiver_process);
+      SIMIX_process_resume(remote_host->receiver);
+
+    } else if (mydata->finalize>0) { /* main wants me to die and nothing to do */
+    	mydata->finalize--;
+    	SIMIX_cond_signal(mydata->cond);
+    	return 0;
+    } else {
+    	SIMIX_process_suspend(self);
     }
-
-    running_hosts_count = smpi_global->running_hosts_count;
-
-  } while (0 < running_hosts_count);
-
+  }
   return 0;
 }

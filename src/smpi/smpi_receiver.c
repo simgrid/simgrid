@@ -12,8 +12,6 @@ int smpi_receiver(int argc, char*argv[])
   xbt_fifo_t request_queue;
   xbt_fifo_t message_queue;
 
-  int running_hosts_count;
-
   smpi_mpi_request_t request;
   smpi_received_message_t message;
 
@@ -25,8 +23,7 @@ int smpi_receiver(int argc, char*argv[])
   request_queue = mydata->pending_recv_request_queue;
   message_queue = smpi_global->received_message_queues[index];
 
-  do {
-
+  while (1) {
     // FIXME: better algorithm, maybe some kind of balanced tree? or a heap?
 
 	xbt_fifo_foreach(request_queue,request_item,request,smpi_mpi_request_t){
@@ -48,36 +45,40 @@ int smpi_receiver(int argc, char*argv[])
     message = NULL;
 
   stopsearch:
-    if (NULL == request || NULL == message) {
-      SIMIX_process_suspend(self);
+  if (NULL != request) {
+	  if (NULL == message)
+		  DIE_IMPOSSIBLE;
+
+	  SIMIX_mutex_lock(request->mutex);
+	  memcpy(request->buf, message->buf,
+			  request->datatype->size * request->count);
+	  request->src = message->src;
+	  request->data = message->data;
+	  request->forward = message->forward;
+
+	  if (0 == request->forward) {
+		  request->completed = 1;
+		  SIMIX_cond_broadcast(request->cond);
+	  } else {
+		  request->src = request->comm->index_to_rank_map[index];
+		  request->dst = (request->src + 1) % request->comm->size;
+		  smpi_mpi_isend(request);
+	  }
+
+	  SIMIX_mutex_unlock(request->mutex);
+
+	  xbt_free(message->buf);
+	  xbt_mallocator_release(smpi_global->message_mallocator, message);
+
+    } else if (mydata->finalize>0) { /* main wants me to die and nothing to do */
+    	// FIXME: display the list of remaining requests and messages (user code synchronization faulty?)
+    	mydata->finalize--;
+    	SIMIX_cond_signal(mydata->cond);
+    	return 0;
     } else {
-
-      SIMIX_mutex_lock(request->mutex);
-      memcpy(request->buf, message->buf,
-             request->datatype->size * request->count);
-      request->src = message->src;
-      request->data = message->data;
-      request->forward = message->forward;
-
-      if (0 == request->forward) {
-        request->completed = 1;
-        SIMIX_cond_broadcast(request->cond);
-      } else {
-        request->src = request->comm->index_to_rank_map[index];
-        request->dst = (request->src + 1) % request->comm->size;
-        smpi_mpi_isend(request);
-      }
-
-      SIMIX_mutex_unlock(request->mutex);
-
-      xbt_free(message->buf);
-      xbt_mallocator_release(smpi_global->message_mallocator, message);
-
+    	SIMIX_process_suspend(self);
     }
-
-    running_hosts_count = smpi_global->running_hosts_count;
-
-  } while (0 < running_hosts_count);
+  }
 
   return 0;
 }

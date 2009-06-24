@@ -385,7 +385,7 @@ void SIMIX_process_resume(smx_process_t process)
   simdata = process->simdata;
   if (simdata->mutex) {
     DEBUG0("Resume process blocked on a mutex");
-    simdata->suspended = 0;     /* He'll wake up by itself */
+    simdata->suspended = 0;     /* It'll wake up by itself when mutex releases */
     return;
   } else if (simdata->cond) {
     /* temporaries variables */

@@ -67,6 +67,7 @@ void smpi_process_init()
   hdata->index = i;
   hdata->mutex = SIMIX_mutex_init();
   hdata->cond = SIMIX_cond_init();
+  hdata->finalize = 0;
 
   hdata->pending_recv_request_queue = xbt_fifo_new();
 
@@ -91,9 +92,17 @@ void smpi_process_finalize()
 
   i = --smpi_global->running_hosts_count;
 
-  SIMIX_mutex_destroy(smpi_host_mutex());
-  SIMIX_cond_destroy(smpi_host_cond());
+  hdata->finalize = 2; /* Tell sender and receiver to quit */
+  SIMIX_process_resume(hdata->sender);
+  SIMIX_process_resume(hdata->receiver);
+  while (hdata->finalize>0) { /* wait until it's done */
+	  SIMIX_cond_wait(hdata->cond,hdata->mutex);
+  }
+
+  SIMIX_mutex_destroy(hdata->mutex);
+  SIMIX_cond_destroy(hdata->cond);
   xbt_fifo_free(hdata->pending_recv_request_queue);
+
 
   if (0 >= i) {
 
