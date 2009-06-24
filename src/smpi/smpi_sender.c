@@ -29,7 +29,7 @@ int smpi_sender(int argc,char*argv[]) {
 
   index = mydata->index;
 
-  request_queue = smpi_global->pending_send_request_queues[index];
+  request_queue = mydata->pending_send_request_queue;
 
   while (1) {
     request = xbt_fifo_shift(request_queue);

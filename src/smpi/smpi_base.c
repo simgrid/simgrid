@@ -68,6 +68,7 @@ void smpi_process_init()
   hdata->finalize = 0;
 
   hdata->pending_recv_request_queue = xbt_fifo_new();
+  hdata->pending_send_request_queue = xbt_fifo_new();
 
   hdata->main = SIMIX_process_self();
   hdata->sender = SIMIX_process_create("smpi_sender",
@@ -97,6 +98,7 @@ void smpi_process_finalize()
   SIMIX_mutex_destroy(hdata->mutex);
   SIMIX_cond_destroy(hdata->cond);
   xbt_fifo_free(hdata->pending_recv_request_queue);
+  xbt_fifo_free(hdata->pending_send_request_queue);
 }
 
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
@@ -125,11 +127,8 @@ int smpi_mpi_isend(smpi_mpi_request_t request)
   if (NULL == request) {
     retval = MPI_ERR_INTERN;
   } else {
-    xbt_fifo_push(smpi_global->pending_send_request_queues[hdata->index], request);
-
-    if (SIMIX_process_is_suspended(hdata->sender)) {
-      SIMIX_process_resume(hdata->sender);
-    }
+    xbt_fifo_push(hdata->pending_send_request_queue, request);
+    SIMIX_process_resume(hdata->sender);
   }
 
   return retval;
