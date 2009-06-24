@@ -152,9 +152,6 @@ void smpi_global_init()
   smpi_global->hosts = NULL;
   smpi_global->host_count = 0;
 
-  // running hosts
-  smpi_global->running_hosts_count = 0;
-
   // mallocators
   smpi_global->request_mallocator =
     xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, smpi_request_new,
@@ -256,8 +253,22 @@ void smpi_global_destroy()
   xbt_free(smpi_global->received_message_queues);
 
   xbt_free(smpi_global);
-
   smpi_global = NULL;
+
+  /* free smpi_mpi_global */
+  SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->barrier_mutex);
+  SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->barrier_cond);
+  xbt_free(smpi_mpi_global->mpi_comm_world);
+
+  xbt_free(smpi_mpi_global->mpi_byte);
+  xbt_free(smpi_mpi_global->mpi_int);
+  xbt_free(smpi_mpi_global->mpi_double);
+
+  xbt_free(smpi_mpi_global->mpi_land);
+  xbt_free(smpi_mpi_global->mpi_sum);
+
+  xbt_free(smpi_mpi_global);
+
 }
 
 int smpi_host_index()

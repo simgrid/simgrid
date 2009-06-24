@@ -95,8 +95,6 @@ typedef struct smpi_global_t {
 
   smx_process_t *main_processes;
 
-  int running_hosts_count; //FIXME: killme
-
   xbt_os_timer_t timer;
   smx_mutex_t timer_mutex;
   smx_cond_t timer_cond;

@@ -53,8 +53,6 @@ void smpi_process_init()
   int i;
   smpi_host_data_t hdata;
 
-  smpi_global->running_hosts_count++;
-
   // initialize some local variables
   host = SIMIX_host_self();
 
@@ -87,10 +85,7 @@ void smpi_process_init()
 
 void smpi_process_finalize()
 {
-  int i;
   smpi_host_data_t hdata =  SIMIX_host_get_data(SIMIX_host_self());
-
-  i = --smpi_global->running_hosts_count;
 
   hdata->finalize = 2; /* Tell sender and receiver to quit */
   SIMIX_process_resume(hdata->sender);
@@ -102,35 +97,6 @@ void smpi_process_finalize()
   SIMIX_mutex_destroy(hdata->mutex);
   SIMIX_cond_destroy(hdata->cond);
   xbt_fifo_free(hdata->pending_recv_request_queue);
-
-
-  if (0 >= i) {
-
-    // wake up senders/receivers
-	  /* MQ: (FIXME) Don't do so: it breaks since some hosts are already gone
-    for (i = 0; i < smpi_global->host_count; i++) {
-      smpi_host_data_t remote_hdata =  SIMIX_process_get_data(smpi_global->main_processes[i]);
-
-      if (SIMIX_process_is_suspended(remote_hdata->sender))
-        SIMIX_process_resume(remote_hdata->sender);
-
-      if (SIMIX_process_is_suspended(remote_hdata->receiver))
-        SIMIX_process_resume(remote_hdata->receiver);
-    }*/
-
-    SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->barrier_mutex);
-    SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->barrier_cond);
-    xbt_free(smpi_mpi_global->mpi_comm_world);
-
-    xbt_free(smpi_mpi_global->mpi_byte);
-    xbt_free(smpi_mpi_global->mpi_int);
-    xbt_free(smpi_mpi_global->mpi_double);
-
-    xbt_free(smpi_mpi_global->mpi_land);
-    xbt_free(smpi_mpi_global->mpi_sum);
-
-    xbt_free(smpi_mpi_global);
-  }
 }
 
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
