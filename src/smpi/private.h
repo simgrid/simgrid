@@ -91,7 +91,6 @@ typedef struct smpi_global_t {
 
   // FIXME: request queues should be moved to host data...
   xbt_fifo_t *pending_send_request_queues;
-  xbt_fifo_t *pending_recv_request_queues;
   xbt_fifo_t *received_message_queues;
 
   smx_process_t *sender_processes;
@@ -116,9 +115,12 @@ typedef struct smpi_host_data_t {
   int index;
   smx_mutex_t mutex;
   smx_cond_t cond;
+
   smx_process_t main;
   smx_process_t sender;
   smx_process_t receiver;
+
+  xbt_fifo_t pending_recv_request_queue;
 } s_smpi_host_data_t;
 typedef struct smpi_host_data_t *smpi_host_data_t;
 

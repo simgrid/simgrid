@@ -22,7 +22,7 @@ int smpi_receiver(int argc, char*argv[])
 
   self = SIMIX_process_self();
 
-  request_queue = smpi_global->pending_recv_request_queues[index];
+  request_queue = mydata->pending_recv_request_queue;
   message_queue = smpi_global->received_message_queues[index];
 
   smpi_global->receiver_processes[index] = self;

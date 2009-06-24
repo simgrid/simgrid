@@ -66,6 +66,9 @@ void smpi_process_init()
   hdata->index = i;
   hdata->mutex = SIMIX_mutex_init();
   hdata->cond = SIMIX_cond_init();
+
+  hdata->pending_recv_request_queue = xbt_fifo_new();
+
   hdata->main = SIMIX_process_self();
   hdata->sender = SIMIX_process_create("smpi_sender",
           smpi_sender, hdata,
@@ -81,11 +84,13 @@ void smpi_process_init()
 void smpi_process_finalize()
 {
   int i;
+  smpi_host_data_t hdata =  SIMIX_host_get_data(SIMIX_host_self());
 
   i = --smpi_global->running_hosts_count;
 
   SIMIX_mutex_destroy(smpi_host_mutex());
   SIMIX_cond_destroy(smpi_host_cond());
+  xbt_fifo_free(hdata->pending_recv_request_queue);
 
   if (0 >= i) {
 
@@ -155,15 +160,15 @@ int smpi_mpi_isend(smpi_mpi_request_t request)
 int smpi_mpi_irecv(smpi_mpi_request_t request)
 {
   int retval = MPI_SUCCESS;
-  int index = smpi_host_index();
+  smpi_host_data_t hdata =  SIMIX_host_get_data(SIMIX_host_self());
 
   if (NULL == request) {
     retval = MPI_ERR_INTERN;
   } else {
-    xbt_fifo_push(smpi_global->pending_recv_request_queues[index], request);
+    xbt_fifo_push(hdata->pending_recv_request_queue, request);
 
-    if (SIMIX_process_is_suspended(smpi_global->receiver_processes[index])) {
-      SIMIX_process_resume(smpi_global->receiver_processes[index]);
+    if (SIMIX_process_is_suspended(smpi_global->receiver_processes[hdata->index])) {
+      SIMIX_process_resume(smpi_global->receiver_processes[hdata->index]);
     }
   }
 

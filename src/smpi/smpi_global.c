@@ -165,7 +165,6 @@ void smpi_global_init()
 
   // queues
   smpi_global->pending_send_request_queues = xbt_new(xbt_fifo_t, size);
-  smpi_global->pending_recv_request_queues = xbt_new(xbt_fifo_t, size);
   smpi_global->received_message_queues = xbt_new(xbt_fifo_t, size);
 
   // sender/receiver processes
@@ -183,7 +182,6 @@ void smpi_global_init()
 
   for (i = 0; i < size; i++) {
     smpi_global->pending_send_request_queues[i] = xbt_fifo_new();
-    smpi_global->pending_recv_request_queues[i] = xbt_fifo_new();
     smpi_global->received_message_queues[i] = xbt_fifo_new();
   }
 
@@ -253,12 +251,10 @@ void smpi_global_destroy()
 
   for (i = 0; i < size; i++) {
     xbt_fifo_free(smpi_global->pending_send_request_queues[i]);
-    xbt_fifo_free(smpi_global->pending_recv_request_queues[i]);
     xbt_fifo_free(smpi_global->received_message_queues[i]);
   }
 
   xbt_free(smpi_global->pending_send_request_queues);
-  xbt_free(smpi_global->pending_recv_request_queues);
   xbt_free(smpi_global->received_message_queues);
 
   xbt_free(smpi_global);
