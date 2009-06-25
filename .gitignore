@@ -29,6 +29,11 @@ examples/java/*/classnoinst.stamp
 ###
 
 aclocal.m4
+acmacro/libtool.m4
+acmacro/ltoptions.m4
+acmacro/ltsugar.m4
+acmacro/ltversion.m4
+acmacro/lt~obsolete.m4
 config.guess
 config.sub
 configure
