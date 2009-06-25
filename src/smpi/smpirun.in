@@ -176,4 +176,4 @@ fi
 if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP} 
 fi
-#rm ${APPLICATIONTMP}
+rm ${APPLICATIONTMP}

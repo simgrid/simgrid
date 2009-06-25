@@ -61,6 +61,6 @@ done
 
 CMDLINE="${CC} ${INCLUDEARGS} ${CFLAGS} ${CMDLINE} ${LINKARGS}"
 
-echo "${CMDLINE}"
+#echo "${CMDLINE}"
 ${CMDLINE}
-echo rm -rf ${TMPDIR}
+rm -rf ${TMPDIR}
