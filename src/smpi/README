@@ -23,15 +23,15 @@ Quick Notes : getting started with the examples
 ..:: Try the examples ::..
 
 Go to :
-# cd simgrid/src/smpi/sample
+# cd simgrid/examples/smpi
 
 To compile an example : 
-# ../smpicc bcast.c -o bcast
+# ../../src/smpi/smpicc bcast.c -o bcast
 
 Use 'smpirun' to use it then:
 
 To run it : 
-# ../smpirun -np 3 ./bcast 
+# ../../src/smpi/smpirun -np 3 ./bcast 
 node 0 has value 17
 node 2 has value 3
 node 1 has value 3
@@ -42,9 +42,11 @@ node 2 has value 17
 
 
 To run it with a specific platform:
-# ../smpirun -np 3 -platform platform.xml -hostfile hostfile ./bcast
+# ../../src/smpi/smpirun -np 3 -platform platform.xml -hostfile hostfile ./bcast
 
-
+Note that by default, the examples use the installed version of
+simgrid. So please install it before playing with the examples, or set
+a LD_LIBRARY_PATH variable pointing to src/.libs
 
 
 
