@@ -72,7 +72,7 @@ SG_BEGIN_DECL()
 #define MPI_INT           (smpi_mpi_global->mpi_int)
 
 #define MPI_LAND          (smpi_mpi_global->mpi_land)
-#define MPI_SUM           (smpi_mpi_glboal->mpi_sum)
+#define MPI_SUM           (smpi_mpi_global->mpi_sum)
 
 // MPI macros
 #define MPI_Init(a, b) SMPI_MPI_Init(a, b)

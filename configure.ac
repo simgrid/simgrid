@@ -571,6 +571,7 @@ AC_CONFIG_FILES([
       examples/gras/pmm/Makefile
       examples/gras/all2all/Makefile
     examples/amok/Makefile       
+    examples/smpi/Makefile       
 ])
 
 AC_CONFIG_FILES([

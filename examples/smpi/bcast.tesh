@@ -1,0 +1,23 @@
+# use the tested library, not the installed one
+! setenv LD_LIBRARY_PATH=../../src/.libs
+! setenv cmdline=../../src/smpi/smpirun -quiet -hostfile hostfile -platform ../msg/small_platform.xml 
+
+! output ignore
+p Test Broadcast with less processes than hosts
+$ ${cmdline} -np 3 ./bcast
+> [rank 0] -> Tremblay
+> [rank 1] -> Jupiter
+> [rank 2] -> Fafard
+> node 1 has value 3 before broadcast
+> node 0 has value 17 before broadcast
+> node 2 has value 3 before broadcast
+> node 1 has value 17 after broadcast
+> node 0 has value 17 after broadcast
+> node 2 has value 17 after broadcast
+> [0.000000] [smpi_kernel/INFO] simulation time 0.00343892
+
+p Test Broadcast with as much processes than hosts
+$ ${cmdline} -np 6 ./bcast
+
+p Test Broadcast with more processes than hosts
+$ ${cmdline} -np 12 ./bcast

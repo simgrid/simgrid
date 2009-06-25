@@ -7,6 +7,6 @@
 EXTRA_DIST= platforms/prop.xml \
             platforms/metaxml.xml platforms/metaxml-random.xml
 
-SUBDIRS= msg gras amok simdag java
+SUBDIRS= msg gras amok simdag java smpi
 
 include $(top_srcdir)/acmacro/dist-files.mk

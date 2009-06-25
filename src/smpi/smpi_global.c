@@ -154,7 +154,7 @@ void smpi_global_init()
                        smpi_message_free, smpi_message_reset);
 
   smpi_global->process_count = SIMIX_process_count();
-  fprintf(stderr,"There is %d processes\n",smpi_global->process_count);
+  DEBUG1("There is %d processes",smpi_global->process_count);
 
   // sender/receiver processes
   smpi_global->main_processes = xbt_new(smx_process_t, smpi_global->process_count);
@@ -311,9 +311,9 @@ int smpi_run_simulation(int *argc, char **argv)
   xbt_fifo_free(actions_failed);
   xbt_fifo_free(actions_done);
 
-  INFO1("simulation time %g", SIMIX_get_clock());
-
   smpi_global_destroy();
+
+  INFO1("simulation time %g", SIMIX_get_clock());
 
   SIMIX_clean();
 

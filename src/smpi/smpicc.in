@@ -25,6 +25,7 @@ function modsource {
 #include "xbt/asserts.h"
 #define sleep(x) smpi_sleep(x)
 #define gettimeofday(x, y) smpi_gettimeofday(x, y)
+int smpi_run_simulation(int *argc, char **argv);
 HEADER
   # very simplistic transform, will probably want full parser for next version
   grep -v "mpi.h" < ${SOURCE} | perl -pe 's/main/smpi_simulated_main/;' >> ${TMPSOURCE}
@@ -38,8 +39,8 @@ FOOTER
   fi
 }
 
-INCLUDEARGS=""
-LINKARGS="-L@libdir@ -lsimgrid -lsmpi "
+INCLUDEARGS="-I @top_srcdir@/include "
+LINKARGS="-L@top_builddir@/src/.libs -L@libdir@ -lsimgrid -lsmpi "
 
 CMDLINE=""
 while [ -n "$1" ]; do
@@ -49,7 +50,7 @@ while [ -n "$1" ]; do
       LINKARGS=""
       CMDLINE="${CMDLINE} -c "
   elif [ "${ARG%.c}" != "${ARG}" ]; then
-    INCLUDEARGS="-I . -I .. -I ../include -I @includedir@ "
+    INCLUDEARGS="${INCLUDEARGS} -I . -I .. -I ../include -I @includedir@ "
     SRCFILE="$(realpath ${ARG})"
     modsource ${SRCFILE}
     CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "
@@ -58,8 +59,8 @@ while [ -n "$1" ]; do
   fi
 done
 
-CMDLINE="${CC} ${INCLUDEARGS} ${CMDLINE} ${LINKARGS}"
+CMDLINE="${CC} ${INCLUDEARGS} ${CFLAGS} ${CMDLINE} ${LINKARGS}"
 
-#echo "${CMDLINE}"
+echo "${CMDLINE}"
 ${CMDLINE}
-rm -rf ${TMPDIR}
+echo rm -rf ${TMPDIR}

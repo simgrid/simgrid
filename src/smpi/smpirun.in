@@ -49,11 +49,16 @@ while true; do
       shift 1
    ;;
 
+   "-quiet")
+	QUIET="true"
+      shift 1
+   ;;
+
    "-help" | "--help" | "-h") 
       echo "usage:"
-      echo "$0 [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+      echo "$0 [-quiet] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
       echo "or (deprecated usage):"
-      echo "$0 [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
+      echo "$0 [-quiet] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
       echo
       exit
    ;;
@@ -160,10 +165,14 @@ cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
 APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
 
-echo ${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
+if [ -z "${QUIET}" ] ; then
+  echo ${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
+fi
 ${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
 
-echo "[$0] cleaning up temp files"
+if [ -z "${QUIET}" ] ; then
+  echo "[$0] cleaning up temp files"
+fi
 if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP} 
 fi
