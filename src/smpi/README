@@ -2,6 +2,26 @@
 Quick Notes : getting started with the examples
 ===============================================
 
+..:: What you need ::..
+
+- a platform file describing the environment. You can go to 
+  the Platform Description Archive (http://pda.gforge.inria.fr/) to
+  get an existing one or generate your own platform with the
+  SIMULACRUM tool (see 'Download' section there).
+
+- a hostfile. Like in almost all MPI distributions, the hostfile
+  list the hosts which the processes will be mapped on. At present,
+  the format is one hostname per line. The hostnames must be present
+  in the platform file. 
+
+  Note: the mapping of MPI processes (ranks) follows the order of the
+        hostfile. Rank 0 is mapped to first hostname in hostfile, Rank 1
+        on second hostname, etc. If n (where -np n) is greater than the
+        number l of lines in hostfile, the mapping is done round-robin. 
+
+
+..:: Try the examples ::..
+
 Go to :
 # cd simgrid/src/smpi/sample
 

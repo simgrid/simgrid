@@ -44,9 +44,16 @@ while true; do
 	shift 2
     ;;
 
+   "-map")
+	MAPOPT="on"
+      shift 1
+   ;;
+
    "-help" | "--help" | "-h") 
       echo "usage:"
-      echo "$0 [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] [-platform <xmldesc>] [-hostfile <hostfile>] program [program-options]"
+      echo "$0 [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+      echo "or (deprecated usage):"
+      echo "$0 [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
       echo
       exit
    ;;
@@ -113,6 +120,7 @@ APPLICATIONHEAD
 ##---- cache hostnames of hostfile---------------
 if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
 	hostnames=(`cat ${HOSTFILE} | tr \\\n " "`)
+      NUMHOSTS=`cat ${HOSTFILE} | wc -l`
 fi
 
 ##----------------------------------------------------------
@@ -121,28 +129,30 @@ fi
 ##  in hostfile (where -hostfile hostfile), or "host$i" if
 ##  hostfile has less than i lines.
 ##----------------------------------------------------------
-for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
-  j=$(( $i-1 ))
+
+##---- generate <process> tags------------------------------
+
+for i in `seq 0 $((${NUMPROCS}-1))` 
+do
+  if [ -n "${HOSTFILE}" ]; then
+	j=$(( $i % ${NUMHOSTS} ))
+  fi 
+  ##---- optional display of ranks to process mapping
+  if [ -n ${MAPOPT} ]; then
+	echo "[rank $j] -> ${hostnames[$j]}"  
+  fi
+
   if [ -z "${hostnames[$j]}" ]; then
-	host="host"$i
+	host="host"$(($j+1))
   else
 	host="${hostnames[$j]}"
   fi
   echo "  <process host=\"${host}\" function=\"smpi_simulated_main\">" >> ${APPLICATIONTMP}
-    echo "    <argument value=\"$j\"/> <!-- rank -->" >> ${APPLICATIONTMP}
+  echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
   for ARG in $*; do
     echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
   done
   echo "  </process>" >> ${APPLICATIONTMP}
-done
-
-for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
-  j=$(( $i-1 ))
-  if [ -z "${hostnames[$j]}" ]; then
-	host="host"$i
-  else
-	host="${hostnames[$j]}"
-  fi
 done
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
