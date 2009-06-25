@@ -1,8 +1,16 @@
-# use the tested library, not the installed one
-! setenv LD_LIBRARY_PATH=../../src/.libs
+# define a variable for the command line since it's so long
+# (since we use it only in rewriting in this file, defining it once is enough)
 ! setenv cmdline=../../src/smpi/smpirun -quiet -hostfile hostfile -platform ../msg/small_platform.xml 
 
-! output ignore
+# use the tested library, not the installed one
+# (since we want to pass it to the child, it has to be redefined before each command)
+! setenv LD_LIBRARY_PATH=../../src/.libs
+
+# Ignore the output since it contains timing information depending on the host speed
+#   (FIXME: add an option to SIMIX to not display this timing)
+! output display
+
+# Go for the first test
 p Test Broadcast with less processes than hosts
 $ ${cmdline} -np 3 ./bcast
 > [rank 0] -> Tremblay
@@ -16,8 +24,18 @@ $ ${cmdline} -np 3 ./bcast
 > node 2 has value 17 after broadcast
 > [0.000000] [smpi_kernel/INFO] simulation time 0.00343892
 
+
+
+# second test
 p Test Broadcast with as much processes than hosts
+! output display
+! setenv LD_LIBRARY_PATH=../../src/.libs
 $ ${cmdline} -np 6 ./bcast
 
+
+
+# Another test
 p Test Broadcast with more processes than hosts
+! output display
+! setenv LD_LIBRARY_PATH=../../src/.libs
 $ ${cmdline} -np 12 ./bcast
