@@ -144,7 +144,7 @@ do
   fi 
   ##---- optional display of ranks to process mapping
   if [ -n ${MAPOPT} ]; then
-	echo "[rank $j] -> ${hostnames[$j]}"  
+	echo "[rank $i] -> ${hostnames[$j]}"  
   fi
 
   if [ -z "${hostnames[$j]}" ]; then
