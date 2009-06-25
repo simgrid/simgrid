@@ -1,9 +1,64 @@
-This is the basic INSTALL file provided by autotools. Some more information
-about installing SimGrid can be found in the FAQ, in the doc/ directory (or
-online at http://simgrid.gforge.inria.fr/doc/faq.html )
+************************************************
+* Installation information specific to SimGrid *
+************************************************
+
+The main source of information to compile SimGrid is the project FAQ.
+It is available online from http://simgrid.gforge.inria.fr/doc/faq.html or
+in the doc/ directory of this archive.
+
+Quick way to compile
+====================
+
+In short, the way to compile SimGrid depends on whether you are
+compiling a tar.gz archive or directly from the SVN. In the latter
+case, you have to do an extra step (noted 0 below).
+
+(0) regenerate the autotools files (only needed from SVN):
+$ ./bootstrap
+
+(1) configure SimGrid (both in SVN and archives)
+$ ./configure <all options>
+Main options are:
+  --prefix=<path>: specify where to install SimGrid
+  --with-pthreads: use pthreads instead of Unix contextes (less
+                   efficient but maybe easier to debug)
+  --enable-maintainer-mode: get the makefiles regenerated automatically
+  --disable-compiler-optimizations: compile with -O0 instead of -O3
+See below for other configure options which are common to any project,
+not only SimGrid related.
+
+(2) Compile it
+$ make
+
+(3) Test it (optional)
+$ make check 
+     or
+$ ./checkall
+
+(4) Install it
+$ make install
 
 
+Dependencies
+============
+SimGrid archives do not have any firm dependencies. 
 
+If you want to compile from the svn, you have to have autotool,
+automake and libtool installed.
+
+If you want to compile the java bindings, you have to have a java
+compiler, and the jni.h header file (available from the JDK)
+
+If you want to compile the GTNetS backend, you have to have a patched
+version of GTNetS installed. The patch lives in the contrib section of
+the SVN.
+
+Again, you should check the FAQ for more information.
+
+****************************************************************************
+* Generic Installation information from autotools                          *
+* (provided for completion at the step where you have to launch configure) *
+****************************************************************************
 
 Copyright (C) 1994, 1995, 1996, 1999, 2000, 2001, 2002 Free Software
 Foundation, Inc.
@@ -174,7 +229,7 @@ eventually be run) with `--host=TYPE'.
 Sharing Defaults
 ================
 
-   If you want to set default values for `configure' scripts to share,
+<   If you want to set default values for `configure' scripts to share,
 you can create a site shell script called `config.site' that gives
 default values for variables like `CC', `cache_file', and `prefix'.
 `configure' looks for `PREFIX/share/config.site' if it exists, then
