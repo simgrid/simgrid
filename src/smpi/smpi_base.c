@@ -58,6 +58,7 @@ void smpi_process_init(int *argc, char***argv)
 
   /* get rank from command line, and remove it from argv */
   pdata->index = atoi( (*argv)[1] );
+  DEBUG1("I'm rank %d",pdata->index);
   if (*argc>2) {
 	  memmove((*argv)[1],(*argv)[2], sizeof(char*)* (*argc-2));
 	  (*argv)[ (*argc)-1] = NULL;

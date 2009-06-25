@@ -53,6 +53,9 @@ SimGrid (3.4-svn) unstable; urgency=high
     
  SMPI:
   * Massive internal cleanups:
+    - Store internal structures on processes instead of hosts (allows
+      to have more than one process per host, in addition of being more 
+      logical)
     - Cleanup the initialization/finalization process
     - Kill a whole bunch of unneeded synchronization: 
       processes run in exclusive manner within the simulator

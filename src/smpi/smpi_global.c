@@ -130,8 +130,6 @@ void smpi_global_init()
 {
   int i;
 
-  int size = SIMIX_host_get_number();
-
   /* Connect our log channels: that must be done manually under windows */
 #ifdef XBT_LOG_CONNECT
   XBT_LOG_CONNECT(smpi_base, smpi);
@@ -155,8 +153,11 @@ void smpi_global_init()
     xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE, smpi_message_new,
                        smpi_message_free, smpi_message_reset);
 
+  smpi_global->process_count = SIMIX_process_count();
+  fprintf(stderr,"There is %d processes\n",smpi_global->process_count);
+
   // sender/receiver processes
-  smpi_global->main_processes = xbt_new(smx_process_t, size);
+  smpi_global->main_processes = xbt_new(smx_process_t, smpi_global->process_count);
 
   // timers
   smpi_global->timer = xbt_os_timer_new();
@@ -167,7 +168,6 @@ void smpi_global_init()
   smpi_global->do_once_duration = NULL;
   smpi_global->do_once_mutex = SIMIX_mutex_init();
 
-  smpi_global->process_count = SIMIX_process_count();
 
   smpi_mpi_global = xbt_new(s_smpi_mpi_global_t, 1);
 
