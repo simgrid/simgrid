@@ -438,3 +438,13 @@ int SIMIX_process_is_suspended(smx_process_t process)
 
   return (process->simdata->suspended);
 }
+
+/**
+ * \brief Returns the amount of SIMIX processes in the system
+ *
+ * Maestro internal process is not counted, only user code processes are
+ */
+int SIMIX_process_count() {
+	return xbt_swag_size(simix_global->process_list);
+}
+

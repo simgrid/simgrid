@@ -121,6 +121,7 @@ XBT_PUBLIC(int) SIMIX_process_is_suspended(smx_process_t process);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) SIMIX_process_get_properties(smx_process_t host);
+XBT_PUBLIC(int) SIMIX_process_count(void);
 
 /************************** Synchro handling **********************************/
 
