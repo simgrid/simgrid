@@ -5,7 +5,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_receiver, smpi,
 
 int smpi_receiver(int argc, char*argv[])
 {
-	smpi_host_data_t mydata = SIMIX_process_get_data(SIMIX_process_self());
+	smpi_process_data_t mydata = SIMIX_process_get_data(SIMIX_process_self());
   smx_process_t self;
   int index = mydata->index;
 

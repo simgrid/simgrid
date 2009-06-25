@@ -31,8 +31,8 @@ unsigned int smpi_sleep(unsigned int seconds)
   smpi_bench_end();
 
   host = SIMIX_host_self();
-  mutex = smpi_host_mutex();
-  cond = smpi_host_cond();
+  mutex = smpi_process_mutex();
+  cond = smpi_process_cond();
 
   SIMIX_mutex_lock(mutex);
 

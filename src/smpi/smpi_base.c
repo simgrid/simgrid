@@ -44,67 +44,64 @@ void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 
 int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm)
 {
-  return comm->index_to_rank_map[smpi_host_index()];
+  return comm->index_to_rank_map[smpi_process_index()];
 }
 
 void smpi_process_init(int *argc, char***argv)
 {
-  smx_host_t host;
-  smpi_host_data_t hdata;
+  smpi_process_data_t pdata;
 
   // initialize some local variables
-  host = SIMIX_host_self();
 
-  hdata = xbt_new(s_smpi_host_data_t, 1);
-  SIMIX_host_set_data(host, hdata);
-  SIMIX_process_set_data(SIMIX_process_self(),hdata);
+  pdata = xbt_new(s_smpi_process_data_t, 1);
+  SIMIX_process_set_data(SIMIX_process_self(),pdata);
 
   /* get rank from command line, and remove it from argv */
-  hdata->index = atoi( (*argv)[1] );
+  pdata->index = atoi( (*argv)[1] );
   if (*argc>2) {
 	  memmove((*argv)[1],(*argv)[2], sizeof(char*)* (*argc-2));
 	  (*argv)[ (*argc)-1] = NULL;
   }
   (*argc)--;
 
-  hdata->mutex = SIMIX_mutex_init();
-  hdata->cond = SIMIX_cond_init();
-  hdata->finalize = 0;
+  pdata->mutex = SIMIX_mutex_init();
+  pdata->cond = SIMIX_cond_init();
+  pdata->finalize = 0;
 
-  hdata->pending_recv_request_queue = xbt_fifo_new();
-  hdata->pending_send_request_queue = xbt_fifo_new();
-  hdata->received_message_queue = xbt_fifo_new();
+  pdata->pending_recv_request_queue = xbt_fifo_new();
+  pdata->pending_send_request_queue = xbt_fifo_new();
+  pdata->received_message_queue = xbt_fifo_new();
 
-  hdata->main = SIMIX_process_self();
-  hdata->sender = SIMIX_process_create("smpi_sender",
-          smpi_sender, hdata,
+  pdata->main = SIMIX_process_self();
+  pdata->sender = SIMIX_process_create("smpi_sender",
+          smpi_sender, pdata,
           SIMIX_host_get_name(SIMIX_host_self()), 0, NULL,
           /*props */ NULL);
-  hdata->receiver = SIMIX_process_create("smpi_receiver",
-          smpi_receiver, hdata,
+  pdata->receiver = SIMIX_process_create("smpi_receiver",
+          smpi_receiver, pdata,
           SIMIX_host_get_name(SIMIX_host_self()), 0, NULL,
           /*props */ NULL);
 
-  smpi_global->main_processes[hdata->index] = SIMIX_process_self();
+  smpi_global->main_processes[pdata->index] = SIMIX_process_self();
   return;
 }
 
 void smpi_process_finalize()
 {
-  smpi_host_data_t hdata =  SIMIX_host_get_data(SIMIX_host_self());
+  smpi_process_data_t pdata =  SIMIX_process_get_data(SIMIX_process_self());
 
-  hdata->finalize = 2; /* Tell sender and receiver to quit */
-  SIMIX_process_resume(hdata->sender);
-  SIMIX_process_resume(hdata->receiver);
-  while (hdata->finalize>0) { /* wait until it's done */
-	  SIMIX_cond_wait(hdata->cond,hdata->mutex);
+  pdata->finalize = 2; /* Tell sender and receiver to quit */
+  SIMIX_process_resume(pdata->sender);
+  SIMIX_process_resume(pdata->receiver);
+  while (pdata->finalize>0) { /* wait until it's done */
+	  SIMIX_cond_wait(pdata->cond,pdata->mutex);
   }
 
-  SIMIX_mutex_destroy(hdata->mutex);
-  SIMIX_cond_destroy(hdata->cond);
-  xbt_fifo_free(hdata->pending_recv_request_queue);
-  xbt_fifo_free(hdata->pending_send_request_queue);
-  xbt_fifo_free(hdata->received_message_queue);
+  SIMIX_mutex_destroy(pdata->mutex);
+  SIMIX_cond_destroy(pdata->cond);
+  xbt_fifo_free(pdata->pending_recv_request_queue);
+  xbt_fifo_free(pdata->pending_send_request_queue);
+  xbt_fifo_free(pdata->received_message_queue);
 }
 
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
@@ -127,14 +124,14 @@ int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
 
 int smpi_mpi_isend(smpi_mpi_request_t request)
 {
-	smpi_host_data_t hdata =  SIMIX_host_get_data(SIMIX_host_self());
+	smpi_process_data_t pdata =  SIMIX_process_get_data(SIMIX_process_self());
   int retval = MPI_SUCCESS;
 
   if (NULL == request) {
     retval = MPI_ERR_INTERN;
   } else {
-    xbt_fifo_push(hdata->pending_send_request_queue, request);
-    SIMIX_process_resume(hdata->sender);
+    xbt_fifo_push(pdata->pending_send_request_queue, request);
+    SIMIX_process_resume(pdata->sender);
   }
 
   return retval;
@@ -143,15 +140,15 @@ int smpi_mpi_isend(smpi_mpi_request_t request)
 int smpi_mpi_irecv(smpi_mpi_request_t request)
 {
   int retval = MPI_SUCCESS;
-  smpi_host_data_t hdata =  SIMIX_host_get_data(SIMIX_host_self());
+  smpi_process_data_t pdata =  SIMIX_process_get_data(SIMIX_process_self());
 
   if (NULL == request) {
     retval = MPI_ERR_INTERN;
   } else {
-    xbt_fifo_push(hdata->pending_recv_request_queue, request);
+    xbt_fifo_push(pdata->pending_recv_request_queue, request);
 
-    if (SIMIX_process_is_suspended(hdata->receiver)) {
-      SIMIX_process_resume(hdata->receiver);
+    if (SIMIX_process_is_suspended(pdata->receiver)) {
+      SIMIX_process_resume(pdata->receiver);
     }
   }
 

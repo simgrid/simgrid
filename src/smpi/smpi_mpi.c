@@ -252,7 +252,7 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key,
 
   // FIXME: need to test parameters
 
-  index = smpi_host_index();
+  index = smpi_process_index();
   rank = comm->index_to_rank_map[index];
 
   // default output
@@ -305,8 +305,8 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key,
       tempcomm->barrier_mutex = SIMIX_mutex_init();
       tempcomm->barrier_cond = SIMIX_cond_init();
       tempcomm->rank_to_index_map = xbt_new(int, count);
-      tempcomm->index_to_rank_map = xbt_new(int, smpi_global->host_count);
-      for (j = 0; j < smpi_global->host_count; j++) {
+      tempcomm->index_to_rank_map = xbt_new(int, smpi_global->process_count);
+      for (j = 0; j < smpi_global->process_count; j++) {
         tempcomm->index_to_rank_map[j] = -1;
       }
       for (j = 0; j < count; j++) {

@@ -147,10 +147,6 @@ void smpi_global_init()
   // config variable
   smpi_global->reference_speed = SMPI_DEFAULT_SPEED;
 
-  // host info blank until sim starts
-  // FIXME: is this okay?
-  smpi_global->host_count = 0;
-
   // mallocators
   smpi_global->request_mallocator =
     xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, smpi_request_new,
@@ -171,21 +167,21 @@ void smpi_global_init()
   smpi_global->do_once_duration = NULL;
   smpi_global->do_once_mutex = SIMIX_mutex_init();
 
-  smpi_global->host_count = SIMIX_host_get_number();
+  smpi_global->process_count = SIMIX_process_count();
 
   smpi_mpi_global = xbt_new(s_smpi_mpi_global_t, 1);
 
   // global communicator
   smpi_mpi_global->mpi_comm_world = xbt_new(s_smpi_mpi_communicator_t, 1);
-  smpi_mpi_global->mpi_comm_world->size = smpi_global->host_count;
+  smpi_mpi_global->mpi_comm_world->size = smpi_global->process_count;
   smpi_mpi_global->mpi_comm_world->barrier_count = 0;
   smpi_mpi_global->mpi_comm_world->barrier_mutex = SIMIX_mutex_init();
   smpi_mpi_global->mpi_comm_world->barrier_cond = SIMIX_cond_init();
   smpi_mpi_global->mpi_comm_world->rank_to_index_map =
-    xbt_new(int, smpi_global->host_count);
+    xbt_new(int, smpi_global->process_count);
   smpi_mpi_global->mpi_comm_world->index_to_rank_map =
-    xbt_new(int, smpi_global->host_count);
-  for (i = 0; i < smpi_global->host_count; i++) {
+    xbt_new(int, smpi_global->process_count);
+  for (i = 0; i < smpi_global->process_count; i++) {
     smpi_mpi_global->mpi_comm_world->rank_to_index_map[i] = i;
     smpi_mpi_global->mpi_comm_world->index_to_rank_map[i] = i;
   }
@@ -248,25 +244,22 @@ void smpi_global_destroy()
 
 }
 
-int smpi_host_index()
+int smpi_process_index()
 {
-  smx_host_t host = SIMIX_host_self();
-  smpi_host_data_t hdata = (smpi_host_data_t) SIMIX_host_get_data(host);
-  return hdata->index;
+  smpi_process_data_t pdata = (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
+  return pdata->index;
 }
 
-smx_mutex_t smpi_host_mutex()
+smx_mutex_t smpi_process_mutex()
 {
-  smx_host_t host = SIMIX_host_self();
-  smpi_host_data_t hdata = (smpi_host_data_t) SIMIX_host_get_data(host);
-  return hdata->mutex;
+  smpi_process_data_t pdata = (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
+  return pdata->mutex;
 }
 
-smx_cond_t smpi_host_cond()
+smx_cond_t smpi_process_cond()
 {
-  smx_host_t host = SIMIX_host_self();
-  smpi_host_data_t hdata = (smpi_host_data_t) SIMIX_host_get_data(host);
-  return hdata->cond;
+  smpi_process_data_t pdata = (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
+  return pdata->cond;
 }
 
 int smpi_run_simulation(int *argc, char **argv)

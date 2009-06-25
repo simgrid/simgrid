@@ -7,8 +7,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
 void smpi_execute(double duration)
 {
   smx_host_t host = SIMIX_host_self();
-  smx_mutex_t mutex = smpi_host_mutex();
-  smx_cond_t cond = smpi_host_cond();
+  smx_mutex_t mutex = smpi_process_mutex();
+  smx_cond_t cond = smpi_process_cond();
   smx_action_t action;
   e_surf_action_state_t state;
 

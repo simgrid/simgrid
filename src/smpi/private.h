@@ -84,7 +84,7 @@ typedef struct smpi_global_t {
 
   // state vars
 
-  int host_count;
+  int process_count;
   xbt_mallocator_t request_mallocator;
   xbt_mallocator_t message_mallocator;
 
@@ -117,8 +117,8 @@ typedef struct smpi_host_data_t {
   xbt_fifo_t pending_recv_request_queue;
   xbt_fifo_t pending_send_request_queue;
   xbt_fifo_t received_message_queue;
-} s_smpi_host_data_t;
-typedef struct smpi_host_data_t *smpi_host_data_t;
+} s_smpi_process_data_t;
+typedef struct smpi_host_data_t *smpi_process_data_t;
 
 // function prototypes
 void smpi_process_init(int *argc,char ***argv);
@@ -139,9 +139,9 @@ void smpi_bench_skip(void);
 
 void smpi_global_init(void);
 void smpi_global_destroy(void);
-int smpi_host_index(void);
-smx_mutex_t smpi_host_mutex(void);
-smx_cond_t smpi_host_cond(void);
+int smpi_process_index(void);
+smx_mutex_t smpi_process_mutex(void);
+smx_cond_t smpi_process_cond(void);
 int smpi_run_simulation(int *argc, char **argv);
 int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
                         int src, int dst, int tag,
