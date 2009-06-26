@@ -108,7 +108,7 @@ static void update_action_bound(surf_action_workstation_L07_t action)
       }
     }
   }
-  lat_bound = SG_TCP_CTE_GAMMA / (2.0 * lat_current);
+  lat_bound = sg_tcp_gamma / (2.0 * lat_current);
   DEBUG2("action (%p) : lat_bound = %g", action, lat_bound);
   if ((action->latency == 0.0) && (action->suspended == 0)) {
     if (action->rate < 0)
@@ -998,11 +998,11 @@ static void add_traces(void)
     link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
   }
 /*
-   
+
    xbt_dynar_foreach (traces_connect_list, cpt, value) {
      trace_connect = xbt_str_split_str(value, "#");
      trace_id        = xbt_dynar_get_as(trace_connect, 0, char*);
-     connect_element = atoi(xbt_dynar_get_as(trace_connect, 1, char*)); 
+     connect_element = atoi(xbt_dynar_get_as(trace_connect, 1, char*));
      connect_kind    = atoi(xbt_dynar_get_as(trace_connect, 2, char*));
      connector_id    = xbt_dynar_get_as(trace_connect, 3, char*);
 

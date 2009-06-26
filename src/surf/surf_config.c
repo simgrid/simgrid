@@ -15,6 +15,42 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config,surf,"About the configuration of sur
 
 xbt_cfg_t _surf_cfg_set = NULL;
 
+
+/* Parse the command line, looking for options */
+static void surf_config_cmd_line(int *argc,char **argv)
+{
+	int i, j;
+	char *opt;
+
+	for (i = 1; i < *argc; i++) {
+		int remove_it = 0;
+		if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
+			opt = strchr(argv[i], '=');
+			opt++;
+
+			xbt_cfg_set_parse(_surf_cfg_set,opt);
+			DEBUG1("Did apply '%s' as config setting", opt);
+			remove_it = 1;
+		} else if (!strncmp(argv[i], "--cfg-help", strlen("--cfg-help")+1) ||
+				!strncmp(argv[i], "--help", strlen("--help")+1)) {
+			printf("Description of the configuration accepted by this simulator:\n");
+			xbt_cfg_help(_surf_cfg_set);
+			remove_it=1;
+			exit(0);
+		}
+		if (remove_it) { /*remove this from argv */
+			for (j = i + 1; j < *argc; j++) {
+				argv[j - 1] = argv[j];
+			}
+
+			argv[j - 1] = NULL;
+			(*argc)--;
+			i--;                      /* compensate effect of next loop incrementation */
+		}
+	}
+}
+
+
 int _surf_init_status = 0;     /* 0: beginning of time;
                                   1: pre-inited (cfg_set created);
                                   2: inited (running) */
@@ -59,39 +95,13 @@ static void _surf_cfg_cb__network_model(const char *name, int pos)
 	find_model_description(surf_network_model_description, val);
 }
 
-/* Parse the command line, looking for options */
-static void surf_config_cmd_line(int *argc,char **argv)
+/* callback of the cpu_model variable */
+static void _surf_cfg_cb__tcp_gamma(const char *name, int pos)
 {
-	int i, j;
-	char *opt;
-
-	for (i = 1; i < *argc; i++) {
-		int remove_it = 0;
-		if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
-			opt = strchr(argv[i], '=');
-			opt++;
-
-			xbt_cfg_set_parse(_surf_cfg_set,opt);
-			DEBUG1("Did apply '%s' as config setting", opt);
-			remove_it = 1;
-		} else if (!strncmp(argv[i], "--cfg-help", strlen("--cfg-help")+1) ||
-				!strncmp(argv[i], "--help", strlen("--help")+1)) {
-			printf("Description of the configuration accepted by this simulator:\n");
-			xbt_cfg_help(_surf_cfg_set);
-			remove_it=1;
-			exit(0);
-		}
-		if (remove_it) { /*remove this from argv */
-			for (j = i + 1; j < *argc; j++) {
-				argv[j - 1] = argv[j];
-			}
-
-			argv[j - 1] = NULL;
-			(*argc)--;
-			i--;                      /* compensate effect of next loop incrementation */
-		}
-	}
+	sg_tcp_gamma =  xbt_cfg_get_double(_surf_cfg_set, name);
 }
+
+
 
 /* create the config set, register what should be and parse the command line*/
 void surf_config_init(int *argc, char **argv) {
@@ -133,6 +143,10 @@ void surf_config_init(int *argc, char **argv) {
 		xbt_cfg_set_string(_surf_cfg_set, "workstation_model", "CLM03");
 		xbt_cfg_set_string(_surf_cfg_set, "cpu_model", "Cas01");
 		xbt_cfg_set_string(_surf_cfg_set, "network_model", "CM02");
+
+		xbt_cfg_register(_surf_cfg_set,"TCP_gamma","Size of the biggest TCP window",1,1,
+					xbt_cfgelm_double,_surf_cfg_cb__tcp_gamma,NULL);
+		xbt_cfg_set_double(_surf_cfg_set, "TCP_gamma", 20000.0);
 
 		surf_config_cmd_line(argc,argv);
 	}

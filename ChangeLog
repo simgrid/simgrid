@@ -50,12 +50,6 @@ SimGrid (3.4-svn) unstable; urgency=high
  SIMDAG:
   * Move the configuration infrastructure to surf
 
- XBT:
-  * Also include strbuff from xbt.h public header
-  * xbt_ex_display(): do not free the exception after displaying 
-    This allows to do more with the given exception afterward.
-    Users should call xbt_ex_free() themselves.
-    
  SMPI: 
   * Massive internal cleanups:
     - Store internal structures on processes instead of hosts (allows
@@ -71,6 +65,16 @@ SimGrid (3.4-svn) unstable; urgency=high
   * Compile the examples by default, and use them as regression tests
   * Implement MPI_Wtime()
   
+ SURF:
+  * TCP_gamma can now be specified as command line option using
+    --cfg=TCP_gamma:10000000.0
+  
+ XBT:
+  * Also include strbuff from xbt.h public header
+  * xbt_ex_display(): do not free the exception after displaying 
+    This allows to do more with the given exception afterward.
+    Users should call xbt_ex_free() themselves.
+    
  Build Chain:
   * Do not require doxygen in maintainer mode
 

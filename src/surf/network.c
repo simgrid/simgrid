@@ -473,13 +473,11 @@ static void update_resource_state(void *id,
       action->weight += delta;
       if (action->rate < 0)
         lmm_update_variable_bound(network_maxmin_system, action->variable,
-                                  SG_TCP_CTE_GAMMA / (2.0 *
-                                                      action->lat_current));
+                                  sg_tcp_gamma / (2.0 * action->lat_current));
       else
         lmm_update_variable_bound(network_maxmin_system, action->variable,
                                   min(action->rate,
-                                      SG_TCP_CTE_GAMMA / (2.0 *
-                                                          action->lat_current)));
+                                      sg_tcp_gamma / (2.0 * action->lat_current)));
       if (!(action->suspended))
         lmm_update_variable_weight(network_maxmin_system, action->variable,
                                    action->weight);
@@ -544,7 +542,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
   action->generic_action.model_type = (surf_model_t) surf_network_model;
-  action->suspended = 0;        /* Should be useless because of the 
+  action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
   action->generic_action.state_set =
     surf_network_model->common_public->states.running_action_set;
@@ -582,8 +580,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   if (action->rate < 0) {
     if (action->lat_current > 0)
       lmm_update_variable_bound(network_maxmin_system, action->variable,
-                                SG_TCP_CTE_GAMMA / (2.0 *
-                                                    action->lat_current));
+                                sg_tcp_gamma / (2.0 * action->lat_current));
     else
       lmm_update_variable_bound(network_maxmin_system, action->variable,
                                 -1.0);
@@ -591,8 +588,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
     if (action->lat_current > 0)
       lmm_update_variable_bound(network_maxmin_system, action->variable,
                                 min(action->rate,
-                                    SG_TCP_CTE_GAMMA / (2.0 *
-                                                        action->lat_current)));
+                                    sg_tcp_gamma / (2.0 * action->lat_current)));
     else
       lmm_update_variable_bound(network_maxmin_system, action->variable,
                                 action->rate);
