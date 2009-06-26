@@ -54,13 +54,23 @@ while true; do
       shift 1
    ;;
 
+   "-keep-temps")
+	KEEP="true"
+      shift 1
+   ;;
+
    "-help" | "--help" | "-h") 
       echo "usage:"
-      echo "$0 [-quiet] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+      echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
       echo "or (deprecated usage):"
-      echo "$0 [-quiet] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
+      echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
       echo
       exit
+   ;;
+   
+   "--cfg="*)
+     SIMOPTS="$SIMOPTS $1"
+     shift 1
    ;;
     *)
       break
@@ -166,14 +176,16 @@ APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
 
 if [ -z "${QUIET}" ] ; then
-  echo ${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
+  echo ${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 fi
-${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
+${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 
-if [ -z "${QUIET}" ] ; then
-  echo "[$0] cleaning up temp files"
-fi
-if [ -z "${PLATFORM}" ]; then
+if [ "x$?" == "x0" ] && [ -n ${KEEP} ] ; then
+  if [ -z "${QUIET}" ] ; then
+    echo "[$0] cleaning up temp files" 
+  fi
+   if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP} 
+   fi
+   rm ${APPLICATIONTMP}
 fi
-rm ${APPLICATIONTMP}
