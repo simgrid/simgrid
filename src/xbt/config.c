@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
 typedef struct {
   /* Description */
-  const char *desc;
+  char *desc;
 
   /* Allowed type of the variable */
   e_xbt_cfgelm_type_t type;
@@ -184,6 +184,7 @@ void xbt_cfgelm_free(void *data)
   DEBUG1("Frees cfgelm %p", c);
   if (!c)
     return;
+  xbt_free(c->desc);
   xbt_dynar_free(&(c->content));
   free(c);
 }
@@ -221,7 +222,7 @@ xbt_cfg_register(xbt_cfg_t *cfg,
   DEBUG8("Register cfg elm %s (%s) (%d to %d %s (=%d) @%p in set %p)",
          name, desc, min, max, xbt_cfgelm_type_name[type], type, res, *cfg);
 
-  res->desc = desc;
+  res->desc = xbt_strdup(desc);
   res->type = type;
   res->min = min;
   res->max = max;

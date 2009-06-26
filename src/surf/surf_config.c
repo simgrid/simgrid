@@ -121,9 +121,9 @@ void surf_config_init(int *argc, char **argv) {
 		while (*(++p) != '\0');
 		for (i=0;surf_workstation_model_description[i].name;i++)
 			p+=sprintf(p,"%s%s",(i==0?"":", "),surf_workstation_model_description[i].name);
-		default_value = (char*)"CLM03";
+		default_value = xbt_strdup("CLM03");
 		xbt_cfg_register(&_surf_cfg_set,
-				"workstation_model", xbt_strdup(description),  xbt_cfgelm_string, &default_value, 1, 1,
+				"workstation_model", description,  xbt_cfgelm_string, &default_value, 1, 1,
 				&_surf_cfg_cb__workstation_model, NULL);
 
 		sprintf(description,"The model to use for the CPU. Possible values: ");
@@ -131,9 +131,9 @@ void surf_config_init(int *argc, char **argv) {
 		while (*(++p) != '\0');
 		for (i=0;surf_cpu_model_description[i].name;i++)
 			p+=sprintf(p,"%s%s",(i==0?"":", "),surf_cpu_model_description[i].name);
-		default_value = (char*)"Cas01";
+		default_value = xbt_strdup("Cas01");
 		xbt_cfg_register(&_surf_cfg_set,
-				"cpu_model", xbt_strdup(description), xbt_cfgelm_string, &default_value, 1, 1,
+				"cpu_model", description, xbt_cfgelm_string, &default_value, 1, 1,
 				&_surf_cfg_cb__cpu_model, NULL);
 
 		sprintf(description,"The model to use for the network. Possible values: ");
@@ -141,10 +141,11 @@ void surf_config_init(int *argc, char **argv) {
 		while (*(++p) != '\0');
 		for (i=0;surf_network_model_description[i].name;i++)
 			p+=sprintf(p,"%s%s",(i==0?"":", "),surf_network_model_description[i].name);
-		default_value = (char*)"CM02";
+		default_value = xbt_strdup("CM02");
 		xbt_cfg_register(&_surf_cfg_set,
 				"network_model", description, xbt_cfgelm_string, &default_value, 1, 1,
 				&_surf_cfg_cb__network_model, NULL);
+		xbt_free(description);
 
 		double default_TCP_GAMMA = 20000.0;
 		xbt_cfg_register(&_surf_cfg_set,"TCP_gamma","Size of the biggest TCP window",
