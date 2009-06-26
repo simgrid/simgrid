@@ -169,11 +169,12 @@ XBT_SG_SRC = \
   xbt/xbt_sg_time.c     
 
 SURF_SRC= \
+  surf/surf_config.c                                                         \
   surf/maxmin.c                                                              \
-  surf/fair_bottleneck.c                                                              \
+  surf/fair_bottleneck.c                                                     \
   surf/lagrange.c                                                            \
   surf/trace_mgr.c                                                           \
-  surf/random_mgr.c                                                           \
+  surf/random_mgr.c                                                          \
   surf/surf.c                                                                \
   surf/surfxml_parse.c                                                       \
   surf/cpu.c   surf/network.c surf/network_constant.c surf/workstation.c     \
@@ -200,7 +201,6 @@ CTX_SRC= xbt/xbt_context.c
 SIMIX_SRC= \
   simix/smx_global.c \
   simix/smx_deployment.c \
-  simix/smx_config.c \
   simix/smx_environment.c \
   simix/smx_host.c \
   simix/smx_process.c \

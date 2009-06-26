@@ -44,6 +44,10 @@ SimGrid (3.4-svn) unstable; urgency=high
   * Add SIMIX_process_set_name() to change the name of the current
     process in the log messages.
   * Store smx_hosts in a dict since we only retrieve them by name
+  * Move the configuration infrastructure to surf
+
+ SIMDAG:
+  * Move the configuration infrastructure to surf
 
  XBT:
   * Also include strbuff from xbt.h public header
@@ -51,7 +55,7 @@ SimGrid (3.4-svn) unstable; urgency=high
     This allows to do more with the given exception afterward.
     Users should call xbt_ex_free() themselves.
     
- SMPI:
+ SMPI: 
   * Massive internal cleanups:
     - Store internal structures on processes instead of hosts (allows
       to have more than one process per host, in addition of being more 
@@ -62,7 +66,8 @@ SimGrid (3.4-svn) unstable; urgency=high
     - Move queues from global tables to process data fields
   * Improve smpirun:
     - now accept -platform and -hostfile arguments
-    - Pass the right rank value to processes according on hostfile
+    - Pass the right rank value to processes according to the hostfile
+  * Compile the examples by default, and use them as regression tests
   
  Build Chain:
   * Do not require doxygen in maintainer mode

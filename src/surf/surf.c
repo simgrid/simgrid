@@ -125,7 +125,7 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-
+/* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
   {"Constant", NULL, surf_network_model_init_Constant},
   {"CM02", NULL, surf_network_model_init_CM02},
@@ -311,6 +311,8 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_network);
 XBT_LOG_EXTERNAL_CATEGORY(surf_parse);
 XBT_LOG_EXTERNAL_CATEGORY(surf_timer);
 XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
+XBT_LOG_EXTERNAL_CATEGORY(surf_config);
+
 
 #ifdef HAVE_SDP
 XBT_LOG_EXTERNAL_CATEGORY(surf_sdp_out);
@@ -337,6 +339,7 @@ void surf_init(int *argc, char **argv)
   XBT_LOG_CONNECT(surf_parse, surf);
   XBT_LOG_CONNECT(surf_timer, surf);
   XBT_LOG_CONNECT(surf_workstation, surf);
+  XBT_LOG_CONNECT(surf_config, surf);
 
 #ifdef HAVE_SDP
   XBT_LOG_CONNECT(surf_sdp_out, surf);
@@ -377,6 +380,8 @@ void surf_init(int *argc, char **argv)
     model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
   if (!history)
     history = tmgr_history_new();
+
+  surf_config_init(argc,argv);
 }
 
 static char *path_name = NULL;
@@ -424,6 +429,8 @@ void surf_exit(void)
 {
   unsigned int iter;
   surf_model_t model = NULL;
+
+  surf_config_finalize();
 
   xbt_dynar_foreach(model_list, iter, model) {
     model->common_private->finalize();

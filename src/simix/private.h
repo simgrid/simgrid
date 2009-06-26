@@ -16,7 +16,6 @@
 #include "xbt/swag.h"
 #include "xbt/dict.h"
 #include "xbt/context.h"
-#include "xbt/config.h"
 #include "xbt/function_types.h"
 
 /******************************* Datatypes **********************************/
@@ -102,14 +101,7 @@ typedef struct s_smx_simdata_action {
 
 
 
-/******************************* Configuration support **********************************/
-
-void simix_config_init(void);   /* create the config set, call this before use! */
-void simix_config_finalize(void);       /* destroy the config set, call this at cleanup. */
-extern int _simix_init_status;  /* 0: beginning of time; 
-                                   1: pre-inited (cfg_set created); 
-                                   2: inited (running) */
-extern xbt_cfg_t _simix_cfg_set;
+/******************************* Other **********************************/
 
 
 #define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_model->extension_public-> \

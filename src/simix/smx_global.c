@@ -11,91 +11,18 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
+XBT_LOG_EXTERNAL_CATEGORY(simix);
+XBT_LOG_EXTERNAL_CATEGORY(simix_action);
+XBT_LOG_EXTERNAL_CATEGORY(simix_deployment);
+XBT_LOG_EXTERNAL_CATEGORY(simix_environment);
+XBT_LOG_EXTERNAL_CATEGORY(simix_host);
+XBT_LOG_EXTERNAL_CATEGORY(simix_process);
+XBT_LOG_EXTERNAL_CATEGORY(simix_synchro);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
                                 "Logging specific to SIMIX (kernel)");
 
 SIMIX_Global_t simix_global = NULL;
 
-/********************************* SIMIX **************************************/
-static void __simix_config_helper(const char *name, ...)
-{
-  va_list pa;
-  va_start(pa, name);
-
-  SIMIX_config(name, pa);
-
-  va_end(pa);
-}
-
-static void simix_cfg_control_set(const char *control_string)
-{
-  /* To split the string in commands, and the cursors */
-  xbt_dynar_t set_strings;
-  char *str;
-  unsigned int cpt;
-
-  if (!control_string)
-    return;
-  DEBUG1("Parse log settings '%s'", control_string);
-
-  /* split the string, and remove empty entries */
-  set_strings = xbt_str_split_quoted(control_string);
-
-  if (xbt_dynar_length(set_strings) == 0) {     /* vicious user! */
-    xbt_dynar_free(&set_strings);
-    return;
-  }
-  /* Parse each entry and either use it right now (if the category was already
-     created), or store it for further use */
-  xbt_dynar_foreach(set_strings, cpt, str) {
-    char *control_string, *control_string_sav, *name, *value;
-
-
-    control_string = control_string_sav = strdup(str);
-    control_string += strspn(control_string, " ");
-    name = control_string;
-    control_string += strcspn(str, ":=");
-    value = control_string;
-    *value = 0;
-    value++;
-
-    xbt_assert1(strlen(name) != 0, "Invalid name for configuration: '%s'",
-                name);
-    xbt_assert1(strlen(value) != 0,
-                "Invalid value for configuration: '%s'", value);
-    INFO2("setting '%s' to '%s'", name, value);
-
-    __simix_config_helper(name, value);
-
-    free(control_string_sav);
-  }
-  xbt_dynar_free(&set_strings);
-}
-
-static void simix_cfg_init(int *argc, char **argv)
-{
-  int i, j;
-  char *opt;
-
-  for (i = 1; i < *argc; i++) {
-    if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
-      opt = strchr(argv[i], '=');
-      opt++;
-
-      simix_cfg_control_set(opt);
-      DEBUG1("Did apply '%s' as config setting", opt);
-      /*remove this from argv */
-
-      for (j = i + 1; j < *argc; j++) {
-        argv[j - 1] = argv[j];
-      }
-
-      argv[j - 1] = NULL;
-      (*argc)--;
-      i--;                      /* compensate effect of next loop incrementation */
-    }
-  }
-}
 
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
@@ -107,9 +34,10 @@ static void _XBT_CALL inthandler(int ignored)
   exit(1);
 }
 
+/********************************* SIMIX **************************************/
 
 /**
- * \brief Initialize some SIMIX internal data.
+ * \brief Initialize SIMIX internal data.
  *
  * \param argc Argc
  * \param argv Argv
@@ -119,8 +47,14 @@ void SIMIX_global_init(int *argc, char **argv)
   s_smx_process_t proc;
 
   if (!simix_global) {
-    surf_init(argc, argv);      /* Initialize some common structures. Warning, it sets simix_global=NULL */
-    simix_cfg_init(argc, argv);
+    /* Connect our log channels: that must be done manually under windows */
+    XBT_LOG_CONNECT(simix_action, simix);
+    XBT_LOG_CONNECT(simix_deployment, simix);
+    XBT_LOG_CONNECT(simix_environment, simix);
+    XBT_LOG_CONNECT(simix_host, simix);
+    XBT_LOG_CONNECT(simix_kernel, simix);
+    XBT_LOG_CONNECT(simix_process, simix);
+    XBT_LOG_CONNECT(simix_synchro, simix);
 
     simix_global = xbt_new0(s_SIMIX_Global_t, 1);
 
@@ -138,6 +72,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
+    surf_init(argc, argv);      /* Initialize SURF structures */
   }
 }
 
@@ -296,7 +231,6 @@ void SIMIX_clean(void)
   xbt_swag_free(simix_global->process_to_run);
   xbt_swag_free(simix_global->process_list);
   xbt_dict_free(&(simix_global->registered_functions));
-  simix_config_finalize();
   free(simix_global);
   simix_global = NULL;
 

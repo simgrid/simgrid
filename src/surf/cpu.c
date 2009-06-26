@@ -33,7 +33,6 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
   xbt_assert1(!xbt_dict_get_or_null(cpu_set, name),
               "Host '%s' declared several times in the platform file", name);
-
   cpu->model = (surf_model_t) surf_cpu_model;
   cpu->name = name;
   cpu->power_scale = power_scale;
@@ -283,7 +282,7 @@ static surf_action_t execute(void *cpu, double size)
   action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
   action->generic_action.model_type = (surf_model_t) surf_cpu_model;
-  action->suspended = 0;        /* Should be useless because of the 
+  action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
 
   if (CPU->state_current == SURF_CPU_ON)

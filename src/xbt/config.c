@@ -28,6 +28,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
    defend my thesis. */
 
 typedef struct {
+  /* Description */
+  const char *desc;
+
   /* Allowed type of the variable */
   e_xbt_cfgelm_type_t type;
   int min, max;
@@ -83,7 +86,7 @@ void xbt_cfg_cpy(xbt_cfg_t tocopy, xbt_cfg_t * whereto)
   xbt_assert0(tocopy, "cannot copy NULL config");
 
   xbt_dict_foreach((xbt_dict_t) tocopy, cursor, name, variable) {
-    xbt_cfg_register(*whereto, name, variable->type, variable->min,
+    xbt_cfg_register(*whereto, name, variable->desc, variable->type, variable->min,
                      variable->max, variable->cb_set, variable->cb_rm);
   }
 }
@@ -197,7 +200,7 @@ void xbt_cfgelm_free(void *data)
 
 void
 xbt_cfg_register(xbt_cfg_t cfg,
-                 const char *name, e_xbt_cfgelm_type_t type,
+                 const char *name, const char *desc, e_xbt_cfgelm_type_t type,
                  int min, int max, xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm)
 {
   xbt_cfgelm_t res;
@@ -214,9 +217,10 @@ xbt_cfg_register(xbt_cfg_t cfg,
   }
 
   res = xbt_new(s_xbt_cfgelm_t, 1);
-  DEBUG7("Register cfg elm %s (%d to %d %s (=%d) @%p in set %p)",
-         name, min, max, xbt_cfgelm_type_name[type], type, res, cfg);
+  DEBUG8("Register cfg elm %s (%s) (%d to %d %s (=%d) @%p in set %p)",
+         name, desc, min, max, xbt_cfgelm_type_name[type], type, res, cfg);
 
+  res->desc = desc;
   res->type = type;
   res->min = min;
   res->max = max;
@@ -271,6 +275,8 @@ void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name)
  * The string may consist in several variable descriptions separated by a space.
  * Each of them must use the following syntax: \<name\>:\<min nb\>_to_\<max nb\>_\<type\>
  * with type being one of  'string','int', 'peer' or 'double'.
+ *
+ * @fixme: this does not allow to set the description
  */
 
 void xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry)
@@ -309,7 +315,7 @@ void xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry)
               "Invalid type in config element descriptor: %s%s", entry,
               "; Should be one of 'string', 'int', 'peer' or 'double'.");
 
-  xbt_cfg_register(cfg, entrycpy, type, min, max, NULL, NULL);
+  xbt_cfg_register(cfg, entrycpy, NULL, type, min, max, NULL, NULL);
 
   free(entrycpy);               /* strdup'ed by dict mechanism, but cannot be const */
 }
@@ -465,7 +471,7 @@ void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...)
  *
  * \arg cfg config set to fill
  * \arg options a string containing the content to add to the config set. This
- * is a '\\t',' ' or '\\n' separated list of variables. Each individual variable is
+ * is a '\\t',' ' or '\\n' or ',' separated list of variables. Each individual variable is
  * like "[name]:[value]" where [name] is the name of an already registred
  * variable, and [value] conforms to the data type under which this variable was
  * registred.
@@ -506,7 +512,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
 
     /* Pass the value */
     while (option - name <= (len - 1) && *option != ' ' && *option != '\n'
-           && *option != '\t') {
+           && *option != '\t' && *option != ',') {
       DEBUG1("Take %c.", *option);
       option++;
     }
@@ -544,7 +550,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
     }
     *(val++) = '\0';
 
-    DEBUG2("name='%s';val='%s'", name, val);
+    INFO2("Configuration change: Set '%s' to '%s'", name, val);
 
     TRY {
       variable = xbt_dict_get((xbt_dict_t) cfg, name);
@@ -1150,12 +1156,15 @@ xbt_cfg_get_peer_at(xbt_cfg_t cfg, const char *name, int pos,
 #include "xbt.h"
 #include "xbt/ex.h"
 
+XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
+
 XBT_TEST_SUITE("config", "Configuration support");
 
 static xbt_cfg_t make_set()
 {
   xbt_cfg_t set = NULL;
 
+  xbt_log_threshold_set(&_XBT_LOGV(xbt_cfg),xbt_log_priority_critical);
   set = xbt_cfg_new();
   xbt_cfg_register_str(set, "speed:1_to_2_int");
   xbt_cfg_register_str(set, "peername:1_to_1_string");

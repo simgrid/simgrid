@@ -13,6 +13,7 @@
 #include "xbt/dict.h"
 #include "xbt/misc.h"
 #include "portable.h"
+#include "xbt/config.h"
 
 SG_BEGIN_DECL()
 
@@ -21,7 +22,7 @@ SG_BEGIN_DECL()
 /* Actions and models are higly connected structures... */
 /** \brief Action datatype
  *  \ingroup SURF_actions
- *  
+ *
  * An action is some working amount on a model.
  * It is represented as a cost, a priority, a duration and a state.
  *
@@ -31,7 +32,7 @@ SG_BEGIN_DECL()
 
 /** \brief Model datatype
  *  \ingroup SURF_models
- *  
+ *
  *  Generic data structure for a model. The workstations,
  *  the CPUs and the network links are examples of models.
  */
@@ -57,7 +58,7 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
  *
  *  Never create s_surf_action_t by yourself ! The actions are created
  *  on the fly when you call execute or communicate on a model.
- *  
+ *
  *  \see e_surf_action_state_t
  */
      typedef struct surf_action {
@@ -172,7 +173,7 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 
 /** \brief Model datatype
  *  \ingroup SURF_models
- *  
+ *
  *  Generic data structure for a model. The workstations,
  *  the CPUs and the network links are examples of models.
  */
@@ -227,7 +228,7 @@ XBT_PUBLIC(void) surf_timer_model_init(const char *filename);
 
 /** \brief CPU model extension public
  *  \ingroup SURF_models
- *  
+ *
  *  Public functions specific to the CPU model.
  */
      typedef struct surf_cpu_model_extension_public {
@@ -392,7 +393,7 @@ XBT_PUBLIC(void) surf_network_model_init_Reno2(const char *filename);
  *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
- *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent 
+ *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent
  *  to the proportional fairness.
  *
  *  Reference:
@@ -414,7 +415,7 @@ XBT_PUBLIC(void) surf_network_model_init_Vegas(const char *filename);
  *
  *  Reference:
  *
- *  [TAG03]. Corinne Touati, Eitan Altman, and Jerome Galtier.  
+ *  [TAG03]. Corinne Touati, Eitan Altman, and Jerome Galtier.
  *  Semi-definite programming approach for bandwidth allocation and routing in networks.
  *  Game Theory and Applications, 9:169-179, December 2003. Nova publisher.
  *
@@ -558,6 +559,7 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 /*******************************************/
 /*** SURF Globals **************************/
 /*******************************************/
+xbt_cfg_t _surf_cfg_set;
 
 /** \brief Initialize SURF
  *  \ingroup SURF_simulation
@@ -574,6 +576,21 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
  *  surf_workstation_model_init_KCCFLN05(), surf_workstation_model_init_compound(), surf_exit()
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
+
+/** \brief Initialize the used models.
+ *
+ * Must be called after the surf_init so that configuration infrastructure is created
+ * Must be called before parsing/creating the environment
+ * Must not be called within the initialization process so that the use get a chance to change the settings from
+ * its code between, say, MSG_init and MSG_create_environment using MSG_config
+ */
+XBT_PUBLIC(void) surf_config_models_setup(const char *platform_file);
+
+/** \brief create the elements of the models
+ *
+ * Must be called after parsing the platform file and before using any elements
+ */
+XBT_PUBLIC(void) surf_config_models_create_elms(void);
 
 /** \brief Finish simulation initialization
  *  \ingroup SURF_simulation

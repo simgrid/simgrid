@@ -66,6 +66,11 @@ FILE *surf_fopen(const char *name, const char *mode);
 extern tmgr_history_t history;
 extern xbt_dynar_t surf_path;
 
+void surf_config_init(int *argc,char **argv);
+void surf_config_finalize(void);
+void surf_config(const char *name, va_list pa);
+
+
 /*
  * Returns the initial path. On Windows the initial path is
  * the current directory for the current process in the other
