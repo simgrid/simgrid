@@ -168,7 +168,8 @@ int forwarder(int argc, char *argv[])
       xbt_assert0(0, "Unexpected behavior");
     }
   }
-
+  xbt_free(slaves);
+   
   INFO0("I'm done. See you!");
   return 0;
 }                               /* end_of_forwarder */
