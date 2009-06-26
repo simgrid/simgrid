@@ -68,6 +68,7 @@ SimGrid (3.4-svn) unstable; urgency=high
     - now accept -platform and -hostfile arguments
     - Pass the right rank value to processes according to the hostfile
   * Compile the examples by default, and use them as regression tests
+  * Implement MPI_Wtime()
   
  Build Chain:
   * Do not require doxygen in maintainer mode
