@@ -27,6 +27,8 @@ int host_number = 0;
 link_CM02_t **routing_table = NULL;
 int *routing_table_size = NULL;
 static link_CM02_t loopback = NULL;
+double sg_tcp_gamma = 0.0;
+
 
 static void create_routing_table(void)
 {
