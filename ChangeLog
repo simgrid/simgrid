@@ -1,8 +1,8 @@
-SimGrid (3.4-svn) unstable; urgency=high
+SimGrid (3.3.1) stable; urgency=low
 
  OVERALL CHANGES:
-  * Tested successfully on AIX
   * Implement a --cfg-help to show existing configuration variables
+  * Build chain do not require doxygen in maintainer mode
 
  GRAS:
   * fix a bug on struct sizeof computation, which prevented the
@@ -77,10 +77,35 @@ SimGrid (3.4-svn) unstable; urgency=high
     This allows to do more with the given exception afterward.
     Users should call xbt_ex_free() themselves.
     
- Build Chain:
-  * Do not require doxygen in maintainer mode
+    
 
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
+ Portability report of this version:
+  * Main portability targets:
+    - Linux(debian)/x86/context   
+    - Linux(debian)/x86/pthreads 
+    - Linux(debian)/amd64/context 
+    - Linux(debian)/amd64/pthreads
+    These targets fail about 1/10 of times on gras/pmm, but we believe
+      that this is because of the test, not because of simgrid.
+    amok/saturate_sg fails even more rarely, and the test may not be
+      the problee.
+      
+    - Mac OSX Leopard/x86/context
+    The test suite still spits tons of errors because some obscure
+      force prevents us from removing the temporary directories
+      arguing that they still contain some metadata I've never heard of.
+    Smpi fails because seq is not installed.
+    Everything seems to work properly beside of that.
+    
+  * Exotic platforms:
+    - AIX version 5.3 (both contexts and pthread)
+      Smpi still fails there because mktemp is not installed. 
+      XML inclusions seems rosty on AIX.
+    
+  * Windows: it's still lagging behind. If you want to help, please
+    stand up.
+
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>  Sat, 27 Jun 2009 00:14:30 +0200
 
 SimGrid (3.3) stable; urgency=high
 
