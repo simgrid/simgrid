@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
         printf("prog: blocking, i: %d ", current_iteration);
 
         if (i == N) {
-          printf("ptime: %d us, stime: %d us, speedup: %.3f, nodes: %d, efficiency: %.3f\n",
+          printf("ptime: %ld us, stime: %ld us, speedup: %.3f, nodes: %d, efficiency: %.3f\n",
               parallel_usecs,
               sequential_usecs,
               (double)sequential_usecs / (double)parallel_usecs,
@@ -196,10 +196,10 @@ int main(int argc, char* argv[]) {
   if(0 == rank) {
     printf("prog: blocking, ");
     if(0 < successful_iterations) {
-      printf("iterations: %d, avg. ptime: %d us, avg. stime: %d us, avg. speedup: %.3f, nodes: %d, avg. efficiency: %.3f\n",
+      printf("iterations: %d, avg. ptime: %.3f us, avg. stime: %.3f us, avg. speedup: %.3f, nodes: %d, avg. efficiency: %.3f\n",
           successful_iterations,
-          parallel_usecs_total / successful_iterations,
-          sequential_usecs_total / successful_iterations,
+          (double) parallel_usecs_total / (double) successful_iterations,
+          (double) sequential_usecs_total / (double) successful_iterations,
           (double)sequential_usecs_total / (double)parallel_usecs_total,
           size,
           (double)sequential_usecs_total / ((double)parallel_usecs_total * (double)size));
