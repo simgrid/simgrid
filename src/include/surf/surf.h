@@ -559,7 +559,7 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 /*******************************************/
 /*** SURF Globals **************************/
 /*******************************************/
-xbt_cfg_t _surf_cfg_set;
+XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
 
 /** \brief Initialize SURF
  *  \ingroup SURF_simulation
