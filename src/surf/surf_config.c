@@ -66,14 +66,22 @@ static void surf_config_cmd_line(int *argc,char **argv)
 	char *opt;
 
 	for (i = 1; i < *argc; i++) {
+		int remove_it = 0;
 		if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
 			opt = strchr(argv[i], '=');
 			opt++;
 
 			xbt_cfg_set_parse(_surf_cfg_set,opt);
 			DEBUG1("Did apply '%s' as config setting", opt);
-			/*remove this from argv */
-
+			remove_it = 1;
+		} else if (!strncmp(argv[i], "--cfg-help", strlen("--cfg-help")+1) ||
+				!strncmp(argv[i], "--help", strlen("--help")+1)) {
+			printf("Description of the configuration accepted by this simulator:\n");
+			xbt_cfg_help(_surf_cfg_set);
+			remove_it=1;
+			exit(0);
+		}
+		if (remove_it) { /*remove this from argv */
 			for (j = i + 1; j < *argc; j++) {
 				argv[j - 1] = argv[j];
 			}
@@ -101,7 +109,7 @@ void surf_config_init(int *argc, char **argv) {
 			p+=sprintf(p,"%s%s",(i==0?"":", "),surf_workstation_model_description[i].name);
 
 		xbt_cfg_register(_surf_cfg_set,
-				"workstation_model", description,  xbt_cfgelm_string, 1, 1,
+				"workstation_model", xbt_strdup(description),  xbt_cfgelm_string, 1, 1,
 				&_surf_cfg_cb__workstation_model, NULL);
 
 		sprintf(description,"The model to use for the CPU. Possible values: ");
@@ -110,7 +118,7 @@ void surf_config_init(int *argc, char **argv) {
 		for (i=0;surf_cpu_model_description[i].name;i++)
 			p+=sprintf(p,"%s%s",(i==0?"":", "),surf_cpu_model_description[i].name);
 		xbt_cfg_register(_surf_cfg_set,
-				"cpu_model", description, xbt_cfgelm_string, 1, 1,
+				"cpu_model", xbt_strdup(description), xbt_cfgelm_string, 1, 1,
 				&_surf_cfg_cb__cpu_model, NULL);
 
 		sprintf(description,"The model to use for the network. Possible values: ");
@@ -123,6 +131,8 @@ void surf_config_init(int *argc, char **argv) {
 				&_surf_cfg_cb__network_model, NULL);
 
 		xbt_cfg_set_string(_surf_cfg_set, "workstation_model", "CLM03");
+		xbt_cfg_set_string(_surf_cfg_set, "cpu_model", "Cas01");
+		xbt_cfg_set_string(_surf_cfg_set, "network_model", "CM02");
 
 		surf_config_cmd_line(argc,argv);
 	}

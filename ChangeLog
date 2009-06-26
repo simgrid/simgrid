@@ -2,6 +2,7 @@ SimGrid (3.4-svn) unstable; urgency=high
 
  OVERALL CHANGES:
   * Tested successfully on AIX
+  * Implement a --cfg-help to show existing configuration variables
 
  GRAS:
   * fix a bug on struct sizeof computation, which prevented the

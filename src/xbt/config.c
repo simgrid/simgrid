@@ -320,8 +320,65 @@ void xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry)
   free(entrycpy);               /* strdup'ed by dict mechanism, but cannot be const */
 }
 
-/** @brief Check that each variable have the right amount of values */
+/** @brief Displays the declared options and their description */
+void xbt_cfg_help(xbt_cfg_t cfg) {
+	xbt_dict_cursor_t cursor;
+	xbt_cfgelm_t variable;
+	char *name;
 
+	  int i;
+	  int size;
+
+	xbt_dict_foreach((xbt_dict_t) cfg, cursor, name, variable) {
+		printf("   %s: %s\n",name,variable->desc);
+		printf("       Type: %s; ", xbt_cfgelm_type_name[variable->type]);
+		if (variable->min != 1 || variable->max != 1)
+			printf("Arrity: min:%d to max:%d; ",variable->min,variable->max);
+		printf("Current value: ");
+		size = xbt_dynar_length(variable->content);
+
+	    switch (variable->type) {
+		  int ival;
+		  char *sval;
+		  double dval;
+		  xbt_peer_t hval;
+
+	    case xbt_cfgelm_int:
+	      for (i = 0; i < size; i++) {
+	        ival = xbt_dynar_get_as(variable->content, i, int);
+	        printf("%s%d\n", (i==0?"":"              "),ival);
+	      }
+	      break;
+
+	    case xbt_cfgelm_double:
+	      for (i = 0; i < size; i++) {
+	        dval = xbt_dynar_get_as(variable->content, i, double);
+	        printf("%s%f\n", (i==0?"":"              "),dval);
+	      }
+	      break;
+
+	    case xbt_cfgelm_string:
+	      for (i = 0; i < size; i++) {
+	        sval = xbt_dynar_get_as(variable->content, i, char *);
+	        printf("%s'%s'\n", (i==0?"":"              "),sval);
+	      }
+	      break;
+
+	    case xbt_cfgelm_peer:
+	      for (i = 0; i < size; i++) {
+	        hval = xbt_dynar_get_as(variable->content, i, xbt_peer_t);
+	        printf("%s%s:%d\n", (i==0?"":"              "),hval->name, hval->port);
+	      }
+	      break;
+
+	    default:
+	      printf("Invalid type!!\n");
+	    }
+
+	}
+}
+
+/** @brief Check that each variable have the right amount of values */
 void xbt_cfg_check(xbt_cfg_t cfg)
 {
   xbt_dict_cursor_t cursor;
