@@ -277,7 +277,13 @@ int smpi_run_simulation(int *argc, char **argv)
   double default_reference_speed = 20000.0;
   xbt_cfg_register(&_surf_cfg_set,"reference_speed","Power of the host running the simulation (in flop/s). Used to bench the operations.",
 		  xbt_cfgelm_double,&default_reference_speed,1,1,smpi_cfg_cb_host_speed,NULL);
+
+  int default_display_timing = 0;
+  xbt_cfg_register(&_surf_cfg_set,"display_timing","Boolean indicating whether we should display the timing after simulation.",
+		  xbt_cfgelm_int,&default_display_timing,1,1,NULL,NULL);
+
   SIMIX_global_init(argc, argv);
+
 
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);
@@ -312,10 +318,11 @@ int smpi_run_simulation(int *argc, char **argv)
   xbt_fifo_free(actions_failed);
   xbt_fifo_free(actions_done);
 
+
+  if (xbt_cfg_get_int(_surf_cfg_set,"display_timing"))
+	  INFO1("simulation time %g", SIMIX_get_clock());
+
   smpi_global_destroy();
-
-  INFO1("simulation time %g", SIMIX_get_clock());
-
   SIMIX_clean();
 
   return 0;
