@@ -921,6 +921,7 @@ static void add_route(void)
 
     src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
+    xbt_dynar_free(&keys);
 
     link_list_capacity = xbt_dynar_length(links);
     link_list = xbt_new(link_L07_t, link_list_capacity);
