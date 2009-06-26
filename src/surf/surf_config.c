@@ -147,9 +147,9 @@ void surf_config_init(int *argc, char **argv) {
 				&_surf_cfg_cb__network_model, NULL);
 		xbt_free(description);
 
-		double default_TCP_GAMMA = 20000.0;
 		xbt_cfg_register(&_surf_cfg_set,"TCP_gamma","Size of the biggest TCP window",
-					xbt_cfgelm_double,&default_TCP_GAMMA,1,1,_surf_cfg_cb__tcp_gamma,NULL);
+					xbt_cfgelm_double,NULL,1,1,_surf_cfg_cb__tcp_gamma,NULL);
+		xbt_cfg_set_double(_surf_cfg_set,"TCP_gamma",20000.0);
 
 		xbt_cfg_register(&_surf_cfg_set,"path","Lookup path for inclusions in platform and deployment XML files",
 					xbt_cfgelm_string, NULL,0,0,_surf_cfg_cb__surf_path,NULL);
