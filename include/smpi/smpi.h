@@ -89,6 +89,7 @@ SG_BEGIN_DECL()
 #define MPI_Bcast(a, b, c, d, e) SMPI_MPI_Bcast(a, b, c, d, e)
 #define MPI_Wait(a, b) SMPI_MPI_Wait(a, b)
 #define MPI_Comm_split(a, b, c, d) SMPI_MPI_Comm_split(a, b, c, d)
+#define MPI_Wtime() SMPI_MPI_Wtime()
 
 // SMPI Functions
 XBT_PUBLIC(int) SMPI_MPI_Init(int *argc, char ***argv);
@@ -114,6 +115,7 @@ XBT_PUBLIC(int) SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype,
 XBT_PUBLIC(int) SMPI_MPI_Wait(MPI_Request * request, MPI_Status * status);
 XBT_PUBLIC(int) SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key,
                                     MPI_Comm * comm_out);
+XBT_PUBLIC(double) SMPI_MPI_Wtime(void);
 
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);

@@ -348,3 +348,8 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key,
 
   return retval;
 }
+
+double SMPI_MPI_Wtime( void ) 
+{ 
+	  return ( SIMIX_get_clock() );
+}
