@@ -1,2 +1,5 @@
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_cluster_properties_override.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_trace_file.xml
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_cluster_properties_override.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_host_trace_file.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'

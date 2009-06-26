@@ -38,11 +38,11 @@ xbt_TESTS=" \
 
 surf_TESTS="surf/lmm_usage@EXEEXT@;                                        \
             surf/maxmin_bench@EXEEXT@;                                        \
-	    surf/trace_usage@EXEEXT@ --surf-path=@srcdir@/surf/;              \
-	    surf/surf_usage@EXEEXT@  --surf-path=@srcdir@/surf/ platform.xml; \
-	    surf/surf_usage2@EXEEXT@ --surf-path=@srcdir@/surf/ platform.xml;"
+	    surf/trace_usage@EXEEXT@ --cfg=path:@srcdir@/surf/;              \
+	    surf/surf_usage@EXEEXT@  --cfg=path:@srcdir@/surf/ platform.xml; \
+	    surf/surf_usage2@EXEEXT@ --cfg=path:@srcdir@/surf/ platform.xml;"
 
-simdag_TESTS="simdag/sd_test --surf-path=@srcdir@/simdag @srcdir@/simdag/small_platform_variable.xml; \
+simdag_TESTS="simdag/sd_test --cfg=path:@srcdir@/simdag @srcdir@/simdag/small_platform_variable.xml; \
               simdag/sd_test @top_srcdir@/examples/msg/small_platform.xml; \
               simdag/sd_test @top_srcdir@/examples/msg/msg_platform.xml; "
 

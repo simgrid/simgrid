@@ -324,11 +324,6 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 
 void surf_init(int *argc, char **argv)
 {
-  int i, j;
-  char *opt;
-
-  const char *initial_path;
-
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);
@@ -350,32 +345,6 @@ void surf_init(int *argc, char **argv)
 #endif
 
   xbt_init(argc, argv);
-  if (!surf_path) {
-
-    /* retrieves the current directory of the current process */
-    initial_path = __surf_get_initial_path();
-
-    xbt_assert0((initial_path),
-                "__surf_get_initial_path() failed! Can't resolves current Windows directory");
-
-    surf_path = xbt_dynar_new(sizeof(char *), NULL);
-    xbt_dynar_push(surf_path, &initial_path);
-
-    for (i = 1; i < *argc; i++) {
-      if (!strncmp(argv[i], "--surf-path=", strlen("--surf-path="))) {
-        opt = strchr(argv[i], '=');
-        opt++;
-        xbt_dynar_push(surf_path, &opt);
-        /*remove this from argv */
-        for (j = i + 1; j < *argc; j++) {
-          argv[j - 1] = argv[j];
-        }
-        argv[j - 1] = NULL;
-        (*argc)--;
-        i--;                    /* compensate effect of next loop incrementation */
-      }
-    }
-  }
   if (!model_list)
     model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
   if (!history)

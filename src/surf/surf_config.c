@@ -95,10 +95,14 @@ static void _surf_cfg_cb__network_model(const char *name, int pos)
 	find_model_description(surf_network_model_description, val);
 }
 
-/* callback of the cpu_model variable */
-static void _surf_cfg_cb__tcp_gamma(const char *name, int pos)
-{
+/* callback of the tcp gamma variable */
+static void _surf_cfg_cb__tcp_gamma(const char *name, int pos) {
 	sg_tcp_gamma =  xbt_cfg_get_double(_surf_cfg_set, name);
+}
+
+static void _surf_cfg_cb__surf_path(const char *name, int pos) {
+	char *path = xbt_cfg_get_string_at(_surf_cfg_set, name,pos);
+    xbt_dynar_push(surf_path, &path);
 }
 
 
@@ -147,6 +151,18 @@ void surf_config_init(int *argc, char **argv) {
 		xbt_cfg_register(_surf_cfg_set,"TCP_gamma","Size of the biggest TCP window",1,1,
 					xbt_cfgelm_double,_surf_cfg_cb__tcp_gamma,NULL);
 		xbt_cfg_set_double(_surf_cfg_set, "TCP_gamma", 20000.0);
+
+		xbt_cfg_register(_surf_cfg_set,"path","Lookup path for inclusions in platform and deployment XML files",
+					xbt_cfgelm_string, 0,0,_surf_cfg_cb__surf_path,NULL);
+		if (!surf_path) {
+			/* retrieves the current directory of the	 current process */
+			const char *initial_path = __surf_get_initial_path();
+			xbt_assert0((initial_path),
+					"__surf_get_initial_path() failed! Can't resolves current Windows directory");
+
+			surf_path = xbt_dynar_new(sizeof(char *), NULL);
+			xbt_cfg_set_string(_surf_cfg_set,"path", initial_path);
+		}
 
 		surf_config_cmd_line(argc,argv);
 	}

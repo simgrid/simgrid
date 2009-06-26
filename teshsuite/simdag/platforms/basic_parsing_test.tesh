@@ -1,21 +1,62 @@
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_cluster_foreach.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_cluster_one_host_random.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_cluster_one_host.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_cluster_properties_foreach.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_cluster.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_availability.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_properties.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_state_file.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_state_off.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_state_on.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host_trace_inside.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_host.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_link_availability.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_link_fatpipe.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_link_shared.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms one_link_state_file.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms three_hosts_non_symmetric_route.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms two_clusters_symmetric.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms two_clusters.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms two_hosts_multi_hop.xml
-$ simdag/platforms/basic_parsing_test --surf-path=simdag/platforms two_hosts_one_link.xml
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_cluster_foreach.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_cluster_one_host_random.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_cluster_one_host.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_cluster_properties_foreach.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_cluster.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_host_availability.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_host_properties.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_host_state_file.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_host_state_off.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_host_state_on.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_host_trace_inside.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_host.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_link_availability.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_link_fatpipe.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_link_shared.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_link_state_file.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms three_hosts_non_symmetric_route.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms two_clusters_symmetric.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms two_clusters.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms two_hosts_multi_hop.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'
+
+$ simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms two_hosts_one_link.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to 'simdag/platforms'

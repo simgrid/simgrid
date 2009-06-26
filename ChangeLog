@@ -68,6 +68,7 @@ SimGrid (3.4-svn) unstable; urgency=high
  SURF:
   * TCP_gamma can now be specified as command line option using
     --cfg=TCP_gamma:10000000.0
+  * Change the --surf-path cmd line option into --cfg=path:
   
  XBT:
   * Also include strbuff from xbt.h public header
