@@ -111,19 +111,19 @@ static void _surf_cfg_cb__surf_path(const char *name, int pos) {
 void surf_config_init(int *argc, char **argv) {
 
 	/* Create the configuration support */
-	if (!_surf_cfg_set) { /* Only create stuff if not already inited */
-		_surf_cfg_set = xbt_cfg_new();
+	if (_surf_init_status==0) { /* Only create stuff if not already inited */
 		_surf_init_status = 1;
 
 		char *description = xbt_malloc(1024), *p = description;
+		char *default_value;
 		int i;
 		sprintf(description,"The model to use for the workstation. Possible values: ");
 		while (*(++p) != '\0');
 		for (i=0;surf_workstation_model_description[i].name;i++)
 			p+=sprintf(p,"%s%s",(i==0?"":", "),surf_workstation_model_description[i].name);
-
-		xbt_cfg_register(_surf_cfg_set,
-				"workstation_model", xbt_strdup(description),  xbt_cfgelm_string, 1, 1,
+		default_value = (char*)"CLM03";
+		xbt_cfg_register(&_surf_cfg_set,
+				"workstation_model", xbt_strdup(description),  xbt_cfgelm_string, &default_value, 1, 1,
 				&_surf_cfg_cb__workstation_model, NULL);
 
 		sprintf(description,"The model to use for the CPU. Possible values: ");
@@ -131,8 +131,9 @@ void surf_config_init(int *argc, char **argv) {
 		while (*(++p) != '\0');
 		for (i=0;surf_cpu_model_description[i].name;i++)
 			p+=sprintf(p,"%s%s",(i==0?"":", "),surf_cpu_model_description[i].name);
-		xbt_cfg_register(_surf_cfg_set,
-				"cpu_model", xbt_strdup(description), xbt_cfgelm_string, 1, 1,
+		default_value = (char*)"Cas01";
+		xbt_cfg_register(&_surf_cfg_set,
+				"cpu_model", xbt_strdup(description), xbt_cfgelm_string, &default_value, 1, 1,
 				&_surf_cfg_cb__cpu_model, NULL);
 
 		sprintf(description,"The model to use for the network. Possible values: ");
@@ -140,20 +141,17 @@ void surf_config_init(int *argc, char **argv) {
 		while (*(++p) != '\0');
 		for (i=0;surf_network_model_description[i].name;i++)
 			p+=sprintf(p,"%s%s",(i==0?"":", "),surf_network_model_description[i].name);
-		xbt_cfg_register(_surf_cfg_set,
-				"network_model", description, xbt_cfgelm_string, 1, 1,
+		default_value = (char*)"CM02";
+		xbt_cfg_register(&_surf_cfg_set,
+				"network_model", description, xbt_cfgelm_string, &default_value, 1, 1,
 				&_surf_cfg_cb__network_model, NULL);
 
-		xbt_cfg_set_string(_surf_cfg_set, "workstation_model", "CLM03");
-		xbt_cfg_set_string(_surf_cfg_set, "cpu_model", "Cas01");
-		xbt_cfg_set_string(_surf_cfg_set, "network_model", "CM02");
+		double default_TCP_GAMMA = 20000.0;
+		xbt_cfg_register(&_surf_cfg_set,"TCP_gamma","Size of the biggest TCP window",
+					xbt_cfgelm_double,&default_TCP_GAMMA,1,1,_surf_cfg_cb__tcp_gamma,NULL);
 
-		xbt_cfg_register(_surf_cfg_set,"TCP_gamma","Size of the biggest TCP window",1,1,
-					xbt_cfgelm_double,_surf_cfg_cb__tcp_gamma,NULL);
-		xbt_cfg_set_double(_surf_cfg_set, "TCP_gamma", 20000.0);
-
-		xbt_cfg_register(_surf_cfg_set,"path","Lookup path for inclusions in platform and deployment XML files",
-					xbt_cfgelm_string, 0,0,_surf_cfg_cb__surf_path,NULL);
+		xbt_cfg_register(&_surf_cfg_set,"path","Lookup path for inclusions in platform and deployment XML files",
+					xbt_cfgelm_string, NULL,0,0,_surf_cfg_cb__surf_path,NULL);
 		if (!surf_path) {
 			/* retrieves the current directory of the	 current process */
 			const char *initial_path = __surf_get_initial_path();

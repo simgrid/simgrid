@@ -64,6 +64,7 @@ SimGrid (3.4-svn) unstable; urgency=high
     - Pass the right rank value to processes according to the hostfile
   * Compile the examples by default, and use them as regression tests
   * Implement MPI_Wtime()
+  * Change the reference speed to a command line option
   
  SURF:
   * TCP_gamma can now be specified as command line option using

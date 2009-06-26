@@ -142,8 +142,6 @@ void smpi_global_init()
 #endif
 
   smpi_global = xbt_new(s_smpi_global_t, 1);
-  // config variable
-  smpi_global->reference_speed = SMPI_DEFAULT_SPEED;
 
   // mallocators
   smpi_global->request_mallocator =
@@ -262,6 +260,10 @@ smx_cond_t smpi_process_cond()
   return pdata->cond;
 }
 
+static void smpi_cfg_cb_host_speed(const char *name, int pos) {
+	smpi_global->reference_speed = xbt_cfg_get_double_at(_surf_cfg_set,name,pos);
+}
+
 int smpi_run_simulation(int *argc, char **argv)
 {
   smx_cond_t cond = NULL;
@@ -272,6 +274,9 @@ int smpi_run_simulation(int *argc, char **argv)
 
   srand(SMPI_RAND_SEED);
 
+  double default_reference_speed = 20000.0;
+  xbt_cfg_register(&_surf_cfg_set,"reference_speed","Power of the host running the simulation (in flop/s). Used to bench the operations.",
+		  xbt_cfgelm_double,&default_reference_speed,1,1,smpi_cfg_cb_host_speed,NULL);
   SIMIX_global_init(argc, argv);
 
   // parse the platform file: get the host list
@@ -282,10 +287,6 @@ int smpi_run_simulation(int *argc, char **argv)
 
   // must initialize globals between creating environment and launching app....
   smpi_global_init();
-
-  /* Prepare to display some more info when dying on Ctrl-C pressing */
-  // FIXME: doesn't work
-  //signal(SIGINT, inthandler);
 
   /* Clean IO before the run */
   fflush(stdout);

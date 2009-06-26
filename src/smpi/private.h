@@ -83,7 +83,6 @@ typedef struct smpi_global_t {
   double reference_speed;
 
   // state vars
-
   int process_count;
   xbt_mallocator_t request_mallocator;
   xbt_mallocator_t message_mallocator;

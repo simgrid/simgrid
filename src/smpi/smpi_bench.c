@@ -15,7 +15,7 @@ void smpi_execute(double duration)
   SIMIX_mutex_lock(mutex);
 
   action =
-    SIMIX_action_execute(host, "execute", duration * SMPI_DEFAULT_SPEED);
+    SIMIX_action_execute(host, "execute", duration * smpi_global->reference_speed);
 
   SIMIX_register_action_to_condition(action, cond);
   for (state = SIMIX_action_get_state(action);
