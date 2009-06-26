@@ -51,7 +51,8 @@ while [ -n "$1" ]; do
       CMDLINE="${CMDLINE} -c "
   elif [ "${ARG%.c}" != "${ARG}" ]; then
     INCLUDEARGS="${INCLUDEARGS} -I . -I .. -I ../include -I @includedir@ "
-    SRCFILE="$(realpath ${ARG})"
+#    SRCFILE="$(realpath ${ARG})"
+    SRCFILE="$(/bin/readlink -f ${ARG})"
     modsource ${SRCFILE}
     CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "
   else
