@@ -16,7 +16,7 @@
 #include "surf/random_mgr.h"
 
 #define NO_MAX_DURATION -1.0
-double sg_tcp_gamma;
+extern double sg_tcp_gamma;
 
 extern const char *surf_action_state_names[6];
 
