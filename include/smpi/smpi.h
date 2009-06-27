@@ -21,6 +21,7 @@ SG_BEGIN_DECL()
 #define MPI_ERR_COUNT   6
 #define MPI_ERR_RANK    7
 #define MPI_ERR_TAG     8
+
 // MPI_Comm
      typedef struct smpi_mpi_communicator_t *smpi_mpi_communicator_t;
      typedef smpi_mpi_communicator_t MPI_Comm;
@@ -53,10 +54,13 @@ SG_BEGIN_DECL()
 
        smpi_mpi_datatype_t mpi_byte;
        smpi_mpi_datatype_t mpi_int;
+       smpi_mpi_datatype_t mpi_float;
        smpi_mpi_datatype_t mpi_double;
 
        smpi_mpi_op_t mpi_land;
        smpi_mpi_op_t mpi_sum;
+       smpi_mpi_op_t mpi_min;
+       smpi_mpi_op_t mpi_max;
 
      } s_smpi_mpi_global_t;
      typedef struct smpi_mpi_global_t *smpi_mpi_global_t;
@@ -68,11 +72,14 @@ SG_BEGIN_DECL()
 #define MPI_STATUS_IGNORE NULL
 
 #define MPI_BYTE          (smpi_mpi_global->mpi_byte)
-#define MPI_DOUBLE        (smpi_mpi_global->mpi_double)
 #define MPI_INT           (smpi_mpi_global->mpi_int)
+#define MPI_FLOAT         (smpi_mpi_global->mpi_float)
+#define MPI_DOUBLE        (smpi_mpi_global->mpi_double)
 
 #define MPI_LAND          (smpi_mpi_global->mpi_land)
 #define MPI_SUM           (smpi_mpi_global->mpi_sum)
+#define MPI_MIN           (smpi_mpi_global->mpi_min)
+#define MPI_MAX           (smpi_mpi_global->mpi_max)
 
 // MPI macros
 #define MPI_Init(a, b) SMPI_MPI_Init(a, b)
@@ -90,6 +97,7 @@ SG_BEGIN_DECL()
 #define MPI_Wait(a, b) SMPI_MPI_Wait(a, b)
 #define MPI_Comm_split(a, b, c, d) SMPI_MPI_Comm_split(a, b, c, d)
 #define MPI_Wtime() SMPI_MPI_Wtime()
+#define MPI_Reduce( a, b, c, d, e, f, g) SMPI_MPI_Reduce( a, b, c, d, e, f, g) 
 
 // SMPI Functions
 XBT_PUBLIC(int) SMPI_MPI_Init(int *argc, char ***argv);
@@ -116,6 +124,9 @@ XBT_PUBLIC(int) SMPI_MPI_Wait(MPI_Request * request, MPI_Status * status);
 XBT_PUBLIC(int) SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key,
                                     MPI_Comm * comm_out);
 XBT_PUBLIC(double) SMPI_MPI_Wtime(void);
+
+XBT_PUBLIC(int) SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count, 
+		                    MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
 
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);

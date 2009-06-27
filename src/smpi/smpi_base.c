@@ -13,6 +13,9 @@ XBT_LOG_EXTERNAL_CATEGORY(smpi_util);
 
 smpi_mpi_global_t smpi_mpi_global = NULL;
 
+/**
+ * Operations of MPI_OP : implemented=land,sum,min,max
+ **/
 void smpi_mpi_land_func(void *a, void *b, int *length,
                         MPI_Datatype * datatype);
 
@@ -28,20 +31,119 @@ void smpi_mpi_land_func(void *a, void *b, int *length,
   }
 }
 
+/**
+ * sum two vectors element-wise
+ *
+ * @param a the first vectors 
+ * @param b the second vectors
+ * @return the second vector is modified and contains the element-wise sums
+ **/
 void smpi_mpi_sum_func(void *a, void *b, int *length,
                        MPI_Datatype * datatype);
 
 void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-  int i;
-  if (*datatype == smpi_mpi_global->mpi_int) {
-    int *x = a, *y = b;
-    for (i = 0; i < *length; i++) {
-      y[i] = x[i] + y[i];
-    }
-  }
+	  int i;
+	  if (*datatype == smpi_mpi_global->mpi_byte) {
+				char *x = a, *y = b;
+				for (i = 0; i < *length; i++) {
+					  y[i] = x[i] + y[i];
+				}
+	  } else {
+	  if (*datatype == smpi_mpi_global->mpi_int) {
+				int *x = a, *y = b;
+				for (i = 0; i < *length; i++) {
+					  y[i] = x[i] + y[i];
+				}
+	  } else {
+	  if (*datatype == smpi_mpi_global->mpi_float) {
+				float *x = a, *y = b;
+				for (i = 0; i < *length; i++) {
+					  y[i] = x[i] + y[i];
+				}
+	  } else {
+	  if (*datatype == smpi_mpi_global->mpi_double) {
+				double *x = a, *y = b;
+				for (i = 0; i < *length; i++) {
+					  y[i] = x[i] + y[i];
+				}
+	  }}}}
+}
+/**
+ * compute the min of two vectors element-wise
+ **/
+void smpi_mpi_min_func(void *a, void *b, int *length, MPI_Datatype * datatype);
+
+void smpi_mpi_min_func(void *a, void *b, int *length, MPI_Datatype * datatype)
+{
+	  int i;
+	  if (*datatype == smpi_mpi_global->mpi_byte) {
+				char *x = a, *y = b;
+				for (i = 0; i < *length; i++) {
+					  y[i] = x[i] < y[i] ? x[i] : y[i];
+				}
+	  } else {
+	  if (*datatype == smpi_mpi_global->mpi_int) {
+				int *x = a, *y = b;
+				for (i = 0; i < *length; i++) {
+					  y[i] = x[i] < y[i] ? x[i] : y[i];
+				}
+	  } else {
+	  if (*datatype == smpi_mpi_global->mpi_float) {
+				float *x = a, *y = b;
+				for (i = 0; i < *length; i++) {
+					  y[i] = x[i] < y[i] ? x[i] : y[i];
+				}
+	  } else {
+	  if (*datatype == smpi_mpi_global->mpi_double) {
+				double *x = a, *y = b;
+				for (i = 0; i < *length; i++) {
+					  y[i] = x[i] < y[i] ? x[i] : y[i];
+				}
+
+	  }}}}
+}
+/**
+ * compute the max of two vectors element-wise
+ **/
+void smpi_mpi_max_func(void *a, void *b, int *length, MPI_Datatype * datatype);
+
+void smpi_mpi_max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
+{
+	  int i;
+	  if (*datatype == smpi_mpi_global->mpi_byte) {
+				char *x = a, *y = b;
+				for (i = 0; i < *length; i++) {
+					  y[i] = x[i] > y[i] ? x[i] : y[i];
+				}
+	  } else {
+	  if (*datatype == smpi_mpi_global->mpi_int) {
+				int *x = a, *y = b;
+				for (i = 0; i > *length; i++) {
+					  y[i] = x[i] < y[i] ? x[i] : y[i];
+				}
+	  } else {
+	  if (*datatype == smpi_mpi_global->mpi_float) {
+				float *x = a, *y = b;
+				for (i = 0; i > *length; i++) {
+					  y[i] = x[i] < y[i] ? x[i] : y[i];
+				}
+	  } else {
+	  if (*datatype == smpi_mpi_global->mpi_double) {
+				double *x = a, *y = b;
+				for (i = 0; i > *length; i++) {
+					  y[i] = x[i] < y[i] ? x[i] : y[i];
+				}
+
+	  }}}}
 }
 
+
+
+
+/**
+ * tell the MPI rank of the calling process (from its SIMIX process id)
+ **/
 int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm)
 {
   return comm->index_to_rank_map[smpi_process_index()];

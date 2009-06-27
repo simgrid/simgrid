@@ -89,6 +89,7 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
 
   smpi_mpi_request_t request = NULL;
 
+	    printf("in create-req():  MPI_ANY_SOURCE=%d,src=%d,comm->size=%d\n",MPI_ANY_SOURCE,src,comm->size);
   // parameter checking prob belongs in smpi_mpi, but this is less repeat code
   if (NULL == buf) {
     retval = MPI_ERR_INTERN;
@@ -99,6 +100,7 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
   } else if (MPI_ANY_SOURCE != src && (0 > src || comm->size <= src)) {
     retval = MPI_ERR_RANK;
   } else if (0 > dst || comm->size <= dst) {
+	    printf("err MPI_ERR_RANK => MPI_ANY_SOURCE=%d,src=%d,dst=%d,comm->size=%d\n",MPI_ANY_SOURCE,src,dst,comm->size);
     retval = MPI_ERR_RANK;
   } else if (MPI_ANY_TAG != tag && 0 > tag) {
     retval = MPI_ERR_TAG;
@@ -121,10 +123,10 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
   return retval;
 }
 /* FIXME: understand what they do and put the prototypes in a header file (live in smpi_base.c) */
-void smpi_mpi_land_func(void *a, void *b, int *length,
-                        MPI_Datatype * datatype);
-void smpi_mpi_sum_func(void *a, void *b, int *length,
-                       MPI_Datatype * datatype);
+void smpi_mpi_land_func(void *a, void *b, int *length, MPI_Datatype * datatype);
+void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype * datatype);
+void smpi_mpi_min_func(void *a, void *b, int *length, MPI_Datatype * datatype);
+void smpi_mpi_max_func(void *a, void *b, int *length, MPI_Datatype * datatype);
 
 void smpi_global_init()
 {
@@ -197,6 +199,10 @@ void smpi_global_init()
   smpi_mpi_global->mpi_land->func = smpi_mpi_land_func;
   smpi_mpi_global->mpi_sum = xbt_new(s_smpi_mpi_op_t, 1);
   smpi_mpi_global->mpi_sum->func = smpi_mpi_sum_func;
+  smpi_mpi_global->mpi_min = xbt_new(s_smpi_mpi_op_t, 1);
+  smpi_mpi_global->mpi_min->func = smpi_mpi_min_func;
+  smpi_mpi_global->mpi_max = xbt_new(s_smpi_mpi_op_t, 1);
+  smpi_mpi_global->mpi_min->func = smpi_mpi_max_func;
 
 }
 
