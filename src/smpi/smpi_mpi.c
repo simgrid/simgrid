@@ -224,28 +224,24 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
  * MPI_Reduce
  **/
 
-int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
+int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
    		         MPI_Op op, int root, MPI_Comm comm )
 {
   int retval = MPI_SUCCESS;
   int rank;
   int size;
   int i;
-  smpi_mpi_request_t *tabrequest; 
+  smpi_mpi_request_t *tabrequest;
 
   smpi_bench_end();
 
   rank = smpi_mpi_comm_rank(comm);
-  size = comm->size; 
+  size = comm->size;
 
-  tabrequest = malloc((size)*sizeof(smpi_mpi_request_t));
-  if (NULL==tabrequest) {
-	fprintf(stderr,"[smpi] %s:%d : cannot alloc memory for %d requests. Exiting.\n",__FILE__,__LINE__,size);
-	exit(1);
-  }
+  tabrequest = xbt_malloc((size)*sizeof(smpi_mpi_request_t));
 
   if (rank != root) { // if i am not root, simply send my buffer to root
-	    retval = smpi_create_request(sendbuf, count, datatype, 
+	    retval = smpi_create_request(sendbuf, count, datatype,
 				  rank, root, 0, comm, &(tabrequest[rank]));
 	    smpi_mpi_isend(tabrequest[rank]);
   	    smpi_mpi_wait(tabrequest[rank], MPI_STATUS_IGNORE);
@@ -257,7 +253,7 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 	    for (i=0; i<comm->size; i++) {
 			if ( rank != i ) { // except for me
 				  // reminder: for smpi_create_request() the src is always the process sending.
-				  retval = smpi_create_request(recvbuf, count, datatype, MPI_ANY_SOURCE, root, 
+				  retval = smpi_create_request(recvbuf, count, datatype, MPI_ANY_SOURCE, root,
 							0, comm, &(tabrequest[i]));
 				  if (NULL != tabrequest[i] && MPI_SUCCESS == retval) {
 					    if (MPI_SUCCESS == retval) {
@@ -267,19 +263,19 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 			}
 	    }
 	    // now, wait for completion of all irecv's.
-	    // FIXME: we should implement smpi_waill_all for a more asynchronous behavior
+	    // FIXME: we should implement smpi_wait_all for a more asynchronous behavior
 	    for (i=0; i<comm->size; i++) {
 			if ( rank != i ) { // except for me
 				  smpi_mpi_wait(tabrequest[i], MPI_STATUS_IGNORE);
 
 				  // FIXME: the core part is here. To be written ...
+
 				  fprintf(stderr,"[smpi] %s:%d : MPI_Reduce *Not yet implemented*.\n",__FILE__,__LINE__);
-
 			}
-
 	    }
+
   }
-  for (i=0; i<comm->size; i++) 
+  for (i=0; i<comm->size; i++)
 	    xbt_mallocator_release(smpi_global->request_mallocator, tabrequest[i]);
 
   smpi_bench_begin();
@@ -419,7 +415,7 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key,
   return retval;
 }
 
-double SMPI_MPI_Wtime( void ) 
-{ 
+double SMPI_MPI_Wtime( void )
+{
 	  return ( SIMIX_get_clock() );
 }

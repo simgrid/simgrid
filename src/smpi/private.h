@@ -41,6 +41,7 @@ typedef struct smpi_mpi_request_t {
   smpi_mpi_datatype_t datatype;
 
   short int completed:1;
+  short int consumed:1; /* for waitany */
 
   smx_mutex_t mutex;
   smx_cond_t cond;
@@ -128,6 +129,8 @@ int smpi_mpi_barrier(smpi_mpi_communicator_t comm);
 int smpi_mpi_isend(smpi_mpi_request_t request);
 int smpi_mpi_irecv(smpi_mpi_request_t request);
 int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status);
+int smpi_mpi_wait_all(int count, smpi_mpi_request_t *requests, smpi_mpi_status_t **status);
+int smpi_mpi_wait_any(int count, smpi_mpi_request_t *requests, int *index, smpi_mpi_status_t *status);
 
 void smpi_execute(double duration);
 void smpi_start_timer(void);

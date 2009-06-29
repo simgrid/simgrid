@@ -34,7 +34,7 @@ void smpi_mpi_land_func(void *a, void *b, int *length,
 /**
  * sum two vectors element-wise
  *
- * @param a the first vectors 
+ * @param a the first vectors
  * @param b the second vectors
  * @return the second vector is modified and contains the element-wise sums
  **/
@@ -49,25 +49,22 @@ void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 				for (i = 0; i < *length; i++) {
 					  y[i] = x[i] + y[i];
 				}
-	  } else {
-	  if (*datatype == smpi_mpi_global->mpi_int) {
+	  } else if (*datatype == smpi_mpi_global->mpi_int) {
 				int *x = a, *y = b;
 				for (i = 0; i < *length; i++) {
 					  y[i] = x[i] + y[i];
 				}
-	  } else {
-	  if (*datatype == smpi_mpi_global->mpi_float) {
+	  } else if (*datatype == smpi_mpi_global->mpi_float) {
 				float *x = a, *y = b;
 				for (i = 0; i < *length; i++) {
 					  y[i] = x[i] + y[i];
 				}
-	  } else {
-	  if (*datatype == smpi_mpi_global->mpi_double) {
+	  } else if (*datatype == smpi_mpi_global->mpi_double) {
 				double *x = a, *y = b;
 				for (i = 0; i < *length; i++) {
 					  y[i] = x[i] + y[i];
 				}
-	  }}}}
+	  }
 }
 /**
  * compute the min of two vectors element-wise
@@ -278,4 +275,61 @@ int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status)
   }
 
   return retval;
+}
+
+int smpi_mpi_wait_all(int count, smpi_mpi_request_t *requests, smpi_mpi_status_t **status) {
+	int cpt;
+	int index;
+	int retval;
+	smpi_mpi_status_t stat;
+
+	for (cpt=0; cpt<count;cpt++) {
+		retval = smpi_mpi_wait_any(count,requests, &index,&stat);
+		if (retval != MPI_SUCCESS)
+			return retval;
+		memcpy(status[index],&stat,sizeof(stat));
+	}
+	return MPI_SUCCESS;
+}
+
+int smpi_mpi_wait_any(int count, smpi_mpi_request_t *requests, int *index, smpi_mpi_status_t *status) {
+	  int cpt;
+
+	  *index = MPI_UNDEFINED;
+	  if (NULL == requests) {
+	    return MPI_ERR_INTERN;
+	  }
+	  /* First check if one of them is already done */
+	  for (cpt=0;cpt<count;cpt++) {
+		  if (requests[cpt]->completed && !requests[cpt]->consumed) { /* got ya */
+			  *index=cpt;
+			  goto found_request;
+		  }
+	  }
+	  /* If none found, block */
+	  /* FIXME: should use a SIMIX_cond_waitany, when implemented. For now, block on the first one */
+	  while (1) {
+		  for (cpt=0;cpt<count;cpt++) {
+			  if (!requests[cpt]->completed) { /* this one is not done, wait on it */
+				  while (!requests[cpt]->completed)
+				      SIMIX_cond_wait(requests[cpt]->cond, requests[cpt]->mutex);
+
+				  *index=cpt;
+				  goto found_request;
+			  }
+		  }
+		  if (cpt == count) /* they are all done. Damn user */
+			  return MPI_ERR_REQUEST;
+	  }
+
+	  found_request:
+	  requests[*index]->consumed = 1;
+
+	   if (NULL != status) {
+	      status->MPI_SOURCE = requests[*index]->src;
+	      status->MPI_TAG = requests[*index]->tag;
+	      status->MPI_ERROR = MPI_SUCCESS;
+	    }
+	  return MPI_SUCCESS;
+
 }

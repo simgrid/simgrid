@@ -47,6 +47,7 @@ void smpi_request_reset(void *pointer)
 
   request->buf = NULL;
   request->completed = 0;
+  request->consumed = 0;
   request->data = NULL;
   request->forward = 0;
 

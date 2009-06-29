@@ -1,5 +1,9 @@
 SimGrid (3.3.1-svn) unstable; urgency=low
 
+ SMPI:
+  * Implement MPI_Waitany and MPI_Waitall 
+    (not available from user side yet)
+
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.3.1) stable; urgency=low
