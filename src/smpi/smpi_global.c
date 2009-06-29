@@ -90,7 +90,6 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
 
   smpi_mpi_request_t request = NULL;
 
-	    printf("in create-req():  MPI_ANY_SOURCE=%d,src=%d,comm->size=%d\n",MPI_ANY_SOURCE,src,comm->size);
   // parameter checking prob belongs in smpi_mpi, but this is less repeat code
   if (NULL == buf) {
     retval = MPI_ERR_INTERN;
@@ -101,7 +100,6 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
   } else if (MPI_ANY_SOURCE != src && (0 > src || comm->size <= src)) {
     retval = MPI_ERR_RANK;
   } else if (0 > dst || comm->size <= dst) {
-	    printf("err MPI_ERR_RANK => MPI_ANY_SOURCE=%d,src=%d,dst=%d,comm->size=%d\n",MPI_ANY_SOURCE,src,dst,comm->size);
     retval = MPI_ERR_RANK;
   } else if (MPI_ANY_TAG != tag && 0 > tag) {
     retval = MPI_ERR_TAG;
@@ -192,6 +190,8 @@ void smpi_global_init()
   smpi_mpi_global->mpi_byte->size = (size_t) 1;
   smpi_mpi_global->mpi_int = xbt_new(s_smpi_mpi_datatype_t, 1);
   smpi_mpi_global->mpi_int->size = sizeof(int);
+  smpi_mpi_global->mpi_float = xbt_new(s_smpi_mpi_datatype_t, 1);
+  smpi_mpi_global->mpi_float->size = sizeof(float);
   smpi_mpi_global->mpi_double = xbt_new(s_smpi_mpi_datatype_t, 1);
   smpi_mpi_global->mpi_double->size = sizeof(double);
 
