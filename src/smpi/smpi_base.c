@@ -277,22 +277,22 @@ int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status)
   return retval;
 }
 
-int smpi_mpi_wait_all(int count, smpi_mpi_request_t *requests, smpi_mpi_status_t **status) {
+int smpi_mpi_waitall(int count, smpi_mpi_request_t requests[], smpi_mpi_status_t status[]) {
 	int cpt;
 	int index;
 	int retval;
 	smpi_mpi_status_t stat;
 
 	for (cpt=0; cpt<count;cpt++) {
-		retval = smpi_mpi_wait_any(count,requests, &index,&stat);
+		retval = smpi_mpi_waitany(count,requests, &index,&stat);
 		if (retval != MPI_SUCCESS)
 			return retval;
-		memcpy(status[index],&stat,sizeof(stat));
+		memcpy(&(status[index]),&stat,sizeof(stat));
 	}
 	return MPI_SUCCESS;
 }
 
-int smpi_mpi_wait_any(int count, smpi_mpi_request_t *requests, int *index, smpi_mpi_status_t *status) {
+int smpi_mpi_waitany(int count, smpi_mpi_request_t *requests, int *index, smpi_mpi_status_t *status) {
 	  int cpt;
 
 	  *index = MPI_UNDEFINED;

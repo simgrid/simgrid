@@ -186,6 +186,12 @@ int SMPI_MPI_Wait(MPI_Request * request, MPI_Status * status)
   return smpi_mpi_wait(*request, status);
 }
 
+int SMPI_MPI_Waitall(int count, MPI_Request requests[], MPI_Status status[]) {
+	return smpi_mpi_waitall(count, requests,status);
+}
+int SMPI_MPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status status[]) {
+	return smpi_mpi_waitany(count, requests, index,status);
+}
 /**
  * MPI_Bcast
  **/
