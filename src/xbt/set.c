@@ -182,6 +182,18 @@ xbt_set_elm_t xbt_set_get_by_name(xbt_set_t set, const char *name)
   return xbt_dict_get(set->dict, name);
 }
 
+/** @brief Retrieve data by providing its name.
+ *
+ * \param set
+ * \param name Name of the searched cell
+ * \returns the data you're looking for, returns NULL if not found
+ */
+xbt_set_elm_t xbt_set_get_by_name_or_null    (xbt_set_t     set,
+                                      const char     *name) {
+  DEBUG1("Lookup key %s",name);
+  return xbt_dict_get_or_null(set->dict, name);
+}
+
 /** @brief Retrieve data by providing its name and the length of the name
  *
  * \param set

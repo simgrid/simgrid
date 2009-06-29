@@ -17,7 +17,7 @@ SG_BEGIN_DECL()
 
 /** @addtogroup XBT_set
  *  @brief A data container consisting in \ref XBT_dict and \ref XBT_dynar
- * 
+ *
  *  The elements stored in such a data structure can be retrieve both by
  *  name and by ID. For this to work, the first fields of the structures
  *  stored must begin with the following fields:
@@ -25,22 +25,22 @@ SG_BEGIN_DECL()
  unsigned int ID;
  char        *name;
  unsigned int name_len;
- // my other fields, constituting the payload 
+ // my other fields, constituting the payload
 } my_element_type_t; \endverbatim
- * 
- *  Since we are casting elements around, no protection is ensured by the 
- * compiler. It is thus safer to define the headers using the macro 
+ *
+ *  Since we are casting elements around, no protection is ensured by the
+ * compiler. It is thus safer to define the headers using the macro
  * defined to that extend:
  *  \verbatim struct {
  XBT_SET_HEADERS;
 
- // my other fields, constituting the payload 
+ // my other fields, constituting the payload
 } my_element_type_t; \endverbatim
  *
  *  It is now possible to remove an element from such a data structure.
  *
  *  @todo
- *  Such a datastructure was necessary/useful to store the GRAS type 
+ *  Such a datastructure was necessary/useful to store the GRAS type
  *  descriptions, but it should be reworked to become generic.
  *
  */
@@ -80,6 +80,7 @@ XBT_PUBLIC(void) xbt_set_add(xbt_set_t set, xbt_set_elm_t elm,
                              void_f_pvoid_t free_func);
 XBT_PUBLIC(void) xbt_set_remove(xbt_set_t set, xbt_set_elm_t elm);
 XBT_PUBLIC(void) xbt_set_remove_by_name(xbt_set_t set, const char *key);
+XBT_PUBLIC(xbt_set_elm_t) xbt_set_get_by_name_or_null(xbt_set_t set, const char *key);
 XBT_PUBLIC(void) xbt_set_remove_by_name_ext(xbt_set_t set, const char *key,
                                             int key_len);
 XBT_PUBLIC(void) xbt_set_remove_by_id(xbt_set_t set, int id);
