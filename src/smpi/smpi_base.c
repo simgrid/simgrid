@@ -113,26 +113,23 @@ void smpi_mpi_max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 				for (i = 0; i < *length; i++) {
 					  y[i] = x[i] > y[i] ? x[i] : y[i];
 				}
-	  } else {
-	  if (*datatype == smpi_mpi_global->mpi_int) {
+	  } else if (*datatype == smpi_mpi_global->mpi_int) {
 				int *x = a, *y = b;
 				for (i = 0; i > *length; i++) {
-					  y[i] = x[i] < y[i] ? x[i] : y[i];
+					  y[i] = x[i] > y[i] ? x[i] : y[i];
 				}
-	  } else {
-	  if (*datatype == smpi_mpi_global->mpi_float) {
+	  } else if (*datatype == smpi_mpi_global->mpi_float) {
 				float *x = a, *y = b;
 				for (i = 0; i > *length; i++) {
-					  y[i] = x[i] < y[i] ? x[i] : y[i];
+					  y[i] = x[i] > y[i] ? x[i] : y[i];
 				}
-	  } else {
-	  if (*datatype == smpi_mpi_global->mpi_double) {
+	  } else if (*datatype == smpi_mpi_global->mpi_double) {
 				double *x = a, *y = b;
 				for (i = 0; i > *length; i++) {
-					  y[i] = x[i] < y[i] ? x[i] : y[i];
+					  y[i] = x[i] > y[i] ? x[i] : y[i];
 				}
 
-	  }}}}
+	  }
 }
 
 

@@ -229,6 +229,9 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
   return retval;
 }
 
+/**
+ * debugging helper function
+ **/
 void print_buffer_int( void *buf, int len, const char *msg) ;
 void print_buffer_int( void *buf, int len, const char *msg) {
 	  int tmp, *v;
@@ -252,6 +255,7 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   int rank;
   int size;
   int i;
+  int tag=0;
   smpi_mpi_request_t *tabrequest;
   smpi_mpi_request_t request;
 
@@ -261,11 +265,11 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   rank = smpi_mpi_comm_rank(comm);
   size = comm->size;
 
-  printf("-->rank %d. Entering ....\n",rank);
-  print_buffer_int( sendbuf, count, "sendbuf");
+  //printf("-->rank %d. Entering ....\n",rank);
+  //print_buffer_int( sendbuf, count, "sendbuf");
 
   if (rank != root) { // if i am not ROOT, simply send my buffer to root
-	    retval = smpi_create_request(sendbuf, count, datatype, rank, root, 0, comm, &request);
+	    retval = smpi_create_request(sendbuf, count, datatype, rank, root, tag , comm, &request);
 	    smpi_mpi_isend(request);
 	    smpi_mpi_wait(request, MPI_STATUS_IGNORE);
 	    xbt_mallocator_release(smpi_global->request_mallocator, request);
@@ -274,15 +278,20 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 	    // i am the ROOT: wait for all buffers by creating one request by sender
 	    tabrequest = xbt_malloc((size-1)*sizeof(smpi_mpi_request_t));
 
-	    void *tmprecvbuf = xbt_malloc(count*datatype->size); // to store intermediate receptions
+          void **tmpbufs = xbt_malloc((size-1)*sizeof(void *));
+	    for (i=0; i<size-1; i++) {
+		  // we need 1 buffer per request to store intermediate receptions
+	        tmpbufs[i] = xbt_malloc(count*datatype->size); 
+	    }
 	    memcpy(recvbuf,sendbuf,count*datatype->size*sizeof(char)); // initiliaze recv buf with my own snd buf 
 
 	    // i can not use: 'request->forward = size-1;' (which would progagate size-1 receive reqs)
 	    // since we should op values as soon as one receiving request matches.
 	    for (i=0; i<comm->size-1; i++) {
 			// reminder: for smpi_create_request() the src is always the process sending.
-			retval = smpi_create_request(tmprecvbuf, count, datatype, MPI_ANY_SOURCE, root,
-					    0, comm, &(tabrequest[i]));
+			retval = smpi_create_request(tmpbufs[i], count, datatype, 
+					    MPI_ANY_SOURCE, root,
+					    tag, comm, &(tabrequest[i]));
 			if (NULL != tabrequest[i] && MPI_SUCCESS == retval) {
 				  if (MPI_SUCCESS == retval) {
 					    smpi_mpi_irecv(tabrequest[i]);
@@ -294,17 +303,19 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 			int index = MPI_UNDEFINED;
 			smpi_mpi_waitany(comm->size-1, tabrequest, &index, MPI_STATUS_IGNORE);
 
-			print_buffer_int( recvbuf, count, "rcvbuf");
-			printf("MPI_Waitany() unblocked: root received (completes req[%d]): ",index);
-			print_buffer_int( tmprecvbuf, count, "tmprecvbuf");
+			//print_buffer_int( recvbuf, count, "rcvbuf");
+			//printf("MPI_Waitany() unblocked: root received (completes req[index=%d]): ",index);
+			//print_buffer_int( tmpbufs[index], count, "tmpbufs[index]");
 
 			// arg 2 is modified 
-			op->func (tmprecvbuf,recvbuf,&count,&datatype);
-			print_buffer_int( recvbuf, count, "recvbuf after func");
-			//fprintf(stderr,"[smpi] %s:%d : MPI_Reduce *Not yet implemented*.\n",__FILE__,__LINE__);
-			xbt_mallocator_release(smpi_global->request_mallocator, tabrequest[i]);
+			op->func (tmpbufs[index],recvbuf,&count,&datatype);
+
+			// print_buffer_int( recvbuf, count, "recvbuf after func");
+			//xbt_mallocator_release(smpi_global->request_mallocator, tabrequest[i]);
+			//xbt_free( tmpbufs[index]);
 	    }
 	    xbt_free(tabrequest);
+	    xbt_free(tmpbufs);
   }
 
   smpi_bench_begin();

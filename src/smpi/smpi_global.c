@@ -203,7 +203,7 @@ void smpi_global_init()
   smpi_mpi_global->mpi_min = xbt_new(s_smpi_mpi_op_t, 1);
   smpi_mpi_global->mpi_min->func = smpi_mpi_min_func;
   smpi_mpi_global->mpi_max = xbt_new(s_smpi_mpi_op_t, 1);
-  smpi_mpi_global->mpi_min->func = smpi_mpi_max_func;
+  smpi_mpi_global->mpi_max->func = smpi_mpi_max_func;
 
 }
 
