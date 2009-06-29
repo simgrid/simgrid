@@ -262,7 +262,6 @@ xbt_dynar_t xbt_graph_get_edges(xbt_graph_t g)
 /** @brief Retrieve the node at the source of the given edge */
 xbt_node_t xbt_graph_edge_get_source(xbt_edge_t e)
 {
-
   return e->src;
 }
 
@@ -272,6 +271,11 @@ xbt_node_t xbt_graph_edge_get_target(xbt_edge_t e)
   return e->dst;
 }
 
+/** @brief Retrieve the outgoing edges of the given node */
+xbt_dynar_t xbt_graph_node_get_outedges(xbt_node_t n)
+{
+  return n->out;
+}
 
 /** @brief Set the weight of the given edge */
 void xbt_graph_edge_set_length(xbt_edge_t e, double length)

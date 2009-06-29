@@ -1,6 +1,6 @@
 /* 	$Id$	 */
 
-/* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand. 
+/* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand.
    All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,7 +14,7 @@ SG_BEGIN_DECL()
 
   /** @addtogroup XBT_graph
    *  @brief A graph data type with several interesting algorithms
-   * 
+   *
    * @{
    */
      typedef struct xbt_node *xbt_node_t;
@@ -53,6 +53,7 @@ XBT_PUBLIC(int) __xbt_find_in_dynar(xbt_dynar_t dynar, void *p);
 
 XBT_PUBLIC(xbt_dynar_t) xbt_graph_get_nodes(xbt_graph_t g);
 XBT_PUBLIC(xbt_dynar_t) xbt_graph_get_edges(xbt_graph_t g);
+XBT_PUBLIC(xbt_dynar_t) xbt_graph_node_get_outedges(xbt_node_t n);
 XBT_PUBLIC(xbt_node_t) xbt_graph_edge_get_source(xbt_edge_t e);
 XBT_PUBLIC(xbt_node_t) xbt_graph_edge_get_target(xbt_edge_t e);
 XBT_PUBLIC(xbt_graph_t) xbt_graph_read(const char *filename, void
@@ -85,8 +86,8 @@ XBT_PUBLIC(xbt_node_t *) xbt_graph_shortest_paths(xbt_graph_t g);
 
 
 /** @brief transforms the network structure of a directed acyclic graph given into a linear structure
-    @return: an array containing the nodes of the graph sorted in order reverse to the path of exploration 
-            if a cycle is detected an exception is raised  
+    @return: an array containing the nodes of the graph sorted in order reverse to the path of exploration
+            if a cycle is detected an exception is raised
   */
 
 XBT_PUBLIC(xbt_node_t *) xbt_graph_topo_sort(xbt_graph_t g);
