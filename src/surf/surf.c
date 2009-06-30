@@ -243,7 +243,7 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
 e_surf_action_state_t surf_action_get_state(surf_action_t action)
 {
   surf_action_state_t action_state =
-    &(action->model_type->common_public->states);
+    &(action->model_type->common_public.states);
 
   if (action->state_set == action_state->ready_action_set)
     return SURF_ACTION_READY;
@@ -268,7 +268,7 @@ double surf_action_get_finish_time(surf_action_t action)
 
 void surf_action_free(surf_action_t * action)
 {
-  (*action)->model_type->common_public->action_cancel(*action);
+  (*action)->model_type->common_public.action_cancel(*action);
   free(*action);
   *action = NULL;
 }
@@ -277,7 +277,7 @@ void surf_action_change_state(surf_action_t action,
                               e_surf_action_state_t state)
 {
   surf_action_state_t action_state =
-    &(action->model_type->common_public->states);
+    &(action->model_type->common_public.states);
   XBT_IN2("(%p,%s)", action, surf_action_state_names[state]);
   xbt_swag_remove(action, action->state_set);
 
@@ -473,10 +473,10 @@ double surf_solve(void)
 
   DEBUG0("Looking for next action end");
   xbt_dynar_foreach(model_list, iter, model) {
-    DEBUG1("Running for Resource [%s]", model->common_public->name);
+    DEBUG1("Running for Resource [%s]", model->common_public.name);
     model_next_action_end = model->common_private->share_resources(NOW);
     DEBUG2("Resource [%s] : next action end = %f",
-           model->common_public->name, model_next_action_end);
+           model->common_public.name, model_next_action_end);
     if (((min < 0.0) || (model_next_action_end < min))
         && (model_next_action_end >= 0.0))
       min = model_next_action_end;

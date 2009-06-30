@@ -178,9 +178,13 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
  *  the CPUs and the network links are examples of models.
  */
      typedef struct surf_model {
+       s_surf_model_public_t common_public;
        surf_model_private_t common_private;
-       surf_model_public_t common_public;
      } s_surf_model_t;
+
+     void surf_model_init(surf_model_t model);
+     void surf_model_exit(surf_model_t model);
+
 
 /**************************************/
 /* Implementations of model object */
@@ -201,8 +205,8 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
  *  \ingroup SURF_models
  */
      typedef struct surf_timer_model {
+       s_surf_model_public_t common_public;
        surf_model_private_t common_private;
-       surf_model_public_t common_public;
        surf_timer_model_extension_public_t extension_public;
      } s_surf_timer_model_t, *surf_timer_model_t;
 
@@ -244,8 +248,8 @@ XBT_PUBLIC(void) surf_timer_model_init(const char *filename);
  *  \ingroup SURF_models
  */
      typedef struct surf_cpu_model {
+       s_surf_model_public_t common_public;
        surf_model_private_t common_private;
-       surf_model_public_t common_public;
        surf_cpu_model_extension_public_t extension_public;
      } s_surf_cpu_model_t, *surf_cpu_model_t;
 
@@ -292,8 +296,8 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
  *  \ingroup SURF_models
  */
      typedef struct surf_network_model {
+       s_surf_model_public_t common_public;
        surf_model_private_t common_private;
-       surf_model_public_t common_public;
        surf_network_model_extension_public_t extension_public;
      } s_surf_network_model_t, *surf_network_model_t;
 
@@ -464,8 +468,8 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
  *
  */
      typedef struct surf_workstation_model {
+       s_surf_model_public_t common_public;
        surf_model_private_t common_private;
-       surf_model_public_t common_public;
        surf_workstation_model_extension_public_t extension_public;
      } s_surf_workstation_model_t, *surf_workstation_model_t;
 

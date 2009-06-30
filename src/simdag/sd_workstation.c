@@ -134,7 +134,7 @@ const char *SD_workstation_get_name(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_model->common_public->
+  return surf_workstation_model->common_public.
     get_resource_name(workstation->surf_workstation);
 }
 
@@ -163,7 +163,7 @@ xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
   SD_CHECK_INIT_DONE();
   xbt_assert0((workstation != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->common_public->
+  return (surf_workstation_model->common_public.
           get_properties(workstation->surf_workstation));
 
 }

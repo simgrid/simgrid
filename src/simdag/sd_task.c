@@ -129,13 +129,13 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   case SD_RUNNING:
     task->state_set = sd_global->running_task_set;
     task->start_time =
-      surf_workstation_model->common_public->action_get_start_time(task->
+      surf_workstation_model->common_public.action_get_start_time(task->
                                                                    surf_action);
     break;
   case SD_DONE:
     task->state_set = sd_global->done_task_set;
     task->finish_time =
-      surf_workstation_model->common_public->action_get_finish_time(task->
+      surf_workstation_model->common_public.action_get_finish_time(task->
                                                                     surf_action);
     task->remains = 0;
     break;
@@ -413,7 +413,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
   if (xbt_dynar_length(dst->tasks_before) == 0 && __SD_task_is_scheduled(dst))
     __SD_task_set_state(dst, SD_READY);
 
-  /*  __SD_print_dependencies(src); 
+  /*  __SD_print_dependencies(src);
      __SD_print_dependencies(dst); */
 }
 
@@ -476,7 +476,7 @@ static void __SD_print_watch_points(SD_task_t task)
  * SD_simulate() will stop as soon as the \ref e_SD_task_state_t "state" of this
  * task becomes the one given in argument. The
  * watch point is then automatically removed.
- * 
+ *
  * \param task a task
  * \param state the \ref e_SD_task_state_t "state" you want to watch
  * (cannot be #SD_NOT_SCHEDULED)
@@ -497,7 +497,7 @@ void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
 
 /**
  * \brief Removes a watch point from a task
- * 
+ *
  * \param task a task
  * \param state the \ref e_SD_task_state_t "state" you no longer want to watch
  * \see SD_task_watch()
@@ -515,10 +515,10 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
 
 /**
  * \brief Returns an approximative estimation of the execution time of a task.
- * 
+ *
  * The estimation is very approximative because the value returned is the time
  * the task would take if it was executed now and if it was the only task.
- * 
+ *
  * \param task the task to evaluate
  * \param workstation_nb number of workstations on which the task would be executed
  * \param workstation_list the workstations on which the task would be executed
@@ -570,7 +570,7 @@ double SD_task_get_execution_time(SD_task_t task,
  * The task state must be #SD_NOT_SCHEDULED.
  * Once scheduled, a task will be executed as soon as possible in SD_simulate(),
  * i.e. when its dependencies are satisfied.
- * 
+ *
  * \param task the task you want to schedule
  * \param workstation_nb number of workstations on which the task will be executed
  * \param workstation_list the workstations on which the task will be executed
@@ -645,7 +645,7 @@ void SD_task_unschedule(SD_task_t task)
     __SD_task_destroy_scheduling_data(task);
 
   if (__SD_task_is_running(task))       /* the task should become SD_FAILED */
-    surf_workstation_model->common_public->action_cancel(task->surf_action);
+    surf_workstation_model->common_public.action_cancel(task->surf_action);
   else
     __SD_task_set_state(task, SD_NOT_SCHEDULED);
   task->remains = task->amount;
@@ -769,7 +769,7 @@ void __SD_task_really_run(SD_task_t task)
     xbt_free(surf_workstations);
   }
 
-  surf_workstation_model->common_public->action_set_data(task->surf_action,
+  surf_workstation_model->common_public.action_set_data(task->surf_action,
                                                          task);
 
   DEBUG1("surf_action = %p", task->surf_action);
@@ -854,7 +854,7 @@ void __SD_task_just_done(SD_task_t task)
   candidates = xbt_new(SD_task_t, 8);
 
   __SD_task_set_state(task, SD_DONE);
-  surf_workstation_model->common_public->action_free(task->surf_action);
+  surf_workstation_model->common_public.action_free(task->surf_action);
   task->surf_action = NULL;
 
   DEBUG0("Looking for candidates");
@@ -1008,7 +1008,7 @@ double SD_task_get_start_time(SD_task_t task)
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
   if (task->surf_action)
-    return surf_workstation_model->common_public->action_get_start_time(task->
+    return surf_workstation_model->common_public.action_get_start_time(task->
                                                                         surf_action);
   else
     return task->start_time;
@@ -1019,7 +1019,7 @@ double SD_task_get_start_time(SD_task_t task)
  *
  * The task state must be SD_RUNNING, SD_DONE or SD_FAILED.
  * If the state is not completed yet, the returned value is an
- * estimation of the task finish time. This value can fluctuate 
+ * estimation of the task finish time. This value can fluctuate
  * until the task is completed.
  *
  * \param task: a task
@@ -1031,7 +1031,7 @@ double SD_task_get_finish_time(SD_task_t task)
   xbt_assert0(task != NULL, "Invalid parameter");
 
   if (task->surf_action)        /* should never happen as actions are destroyed right after their completion */
-    return surf_workstation_model->common_public->
+    return surf_workstation_model->common_public.
       action_get_finish_time(task->surf_action);
   else
     return task->finish_time;
@@ -1062,7 +1062,7 @@ void SD_task_destroy(SD_task_t task)
     xbt_free(task->name);
 
   if (task->surf_action != NULL)
-    surf_workstation_model->common_public->action_free(task->surf_action);
+    surf_workstation_model->common_public.action_free(task->surf_action);
 
   if (task->workstation_list != NULL)
     xbt_free(task->workstation_list);

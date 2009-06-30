@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_action, simix,
 /************************************* Actions *********************************/
 /** \brief Creates a new SIMIX action to communicate two hosts.
  *
- * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a network_error exception if the host is unavailable. 
+ * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a network_error exception if the host is unavailable.
  *	\param sender SIMIX host sender
  * 	\param receiver SIMIX host receiver
  * 	\param name Action name
@@ -59,7 +59,7 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
                                                           host,
                                                           receiver->simdata->
                                                           host, size, rate);
-  surf_workstation_model->common_public->action_set_data(simdata->surf_action,
+  surf_workstation_model->common_public.action_set_data(simdata->surf_action,
                                                          act);
 
   DEBUG1("Create communicate action %p", act);
@@ -68,7 +68,7 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
 
 /** \brief Creates a new SIMIX action to execute an action.
  *
- * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a host_error exception if the host crashed. 
+ * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a host_error exception if the host crashed.
  *	\param host SIMIX host where the action will be executed
  * 	\param name Action name
  * 	\param amount Task amount (in bytes)
@@ -102,7 +102,7 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
     surf_workstation_model->extension_public->execute(host->simdata->host,
                                                       amount);
 
-  surf_workstation_model->common_public->action_set_data(simdata->surf_action,
+  surf_workstation_model->common_public.action_set_data(simdata->surf_action,
                                                          act);
 
   DEBUG1("Create execute action %p", act);
@@ -111,7 +111,7 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
 
 /** \brief Creates a new sleep SIMIX action.
  *
- * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a host_error exception if the host crashed. The default SIMIX name of the action is "sleep".  
+ * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a host_error exception if the host crashed. The default SIMIX name of the action is "sleep".
  *	\param host SIMIX host where the sleep will run.
  * 	\param duration Time duration of the sleep.
  * 	\return A new SIMIX action
@@ -143,7 +143,7 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
     surf_workstation_model->extension_public->sleep(host->simdata->host,
                                                     duration);
 
-  surf_workstation_model->common_public->action_set_data(simdata->surf_action,
+  surf_workstation_model->common_public.action_set_data(simdata->surf_action,
                                                          act);
 
   DEBUG1("Create sleep action %p", act);
@@ -162,7 +162,7 @@ void SIMIX_action_cancel(smx_action_t action)
 
   DEBUG1("Cancel action %p", action);
   if (action->simdata->surf_action) {
-    surf_workstation_model->common_public->action_cancel(action->
+    surf_workstation_model->common_public.action_cancel(action->
                                                          simdata->
                                                          surf_action);
   }
@@ -181,7 +181,7 @@ void SIMIX_action_set_priority(smx_action_t action, double priority)
   xbt_assert0((action != NULL)
               && (action->simdata != NULL), "Invalid parameter");
 
-  surf_workstation_model->common_public->set_priority(action->simdata->
+  surf_workstation_model->common_public.set_priority(action->simdata->
                                                       surf_action, priority);
   return;
 }
@@ -189,7 +189,7 @@ void SIMIX_action_set_priority(smx_action_t action, double priority)
 /**
  * 	\brief Destroys an action
  *
- *	Destroys an action, freing its memory. This function cannot be called if there are a conditional waiting for it. 
+ *	Destroys an action, freing its memory. This function cannot be called if there are a conditional waiting for it.
  *	\param action The SIMIX action
  */
 int SIMIX_action_destroy(smx_action_t action)
@@ -213,7 +213,7 @@ int SIMIX_action_destroy(smx_action_t action)
 
   if (action->simdata->surf_action)
     action->simdata->surf_action->model_type->
-      common_public->action_free(action->simdata->surf_action);
+      common_public.action_free(action->simdata->surf_action);
 
   xbt_free(action->simdata);
   xbt_free(action);
@@ -252,7 +252,7 @@ void SIMIX_action_release(smx_action_t action)
 /**
  * 	\brief Set an action to a condition
  *
- * 	Creates the "link" between an action and a condition. You have to call this function when you create an action and want to wait its ending. 
+ * 	Creates the "link" between an action and a condition. You have to call this function when you create an action and want to wait its ending.
  *	\param action SIMIX action
  *	\param cond SIMIX cond
  */
@@ -336,7 +336,7 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
                                                                     amount,
                                                                     rate);
 
-  surf_workstation_model->common_public->action_set_data(simdata->surf_action,
+  surf_workstation_model->common_public.action_set_data(simdata->surf_action,
                                                          act);
 
   return act;
@@ -345,7 +345,7 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
 e_surf_action_state_t SIMIX_action_get_state(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
-  return surf_workstation_model->common_public->action_get_state(action->
+  return surf_workstation_model->common_public.action_get_state(action->
                                                                  simdata->
                                                                  surf_action);
 

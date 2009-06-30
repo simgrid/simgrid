@@ -38,7 +38,7 @@ smx_host_t __SIMIX_host_create(const char *name,
   return host;
 }
 
-/** 
+/**
  * \brief Set the user data of a #smx_host_t.
  *
  * This functions checks whether some data has already been associated to \a host or not and attach \a data to \a host if it is possible.
@@ -71,7 +71,7 @@ void *SIMIX_host_get_data(smx_host_t host)
   return (host->data);
 }
 
-/** 
+/**
  * \brief Return the name of the #smx_host_t.
  *
  * This functions checks whether \a host is a valid pointer or not and return its name.
@@ -87,7 +87,7 @@ const char *SIMIX_host_get_name(smx_host_t host)
   return (host->name);
 }
 
-/** 
+/**
  * \brief Return the location on which the current process is executed.
  *
  * Return the host,  more details in #SIMIX_process_get_host
@@ -100,7 +100,7 @@ smx_host_t SIMIX_host_self(void)
 
 /*
  * Real function for destroy a host.
- * MSG_host_destroy is just  a front_end that also removes it from 
+ * MSG_host_destroy is just  a front_end that also removes it from
  * msg_global->host
  */
 void __SIMIX_host_destroy(void *h)
@@ -233,7 +233,7 @@ xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->common_public->
+  return (surf_workstation_model->common_public.
           get_properties(host->simdata->host));
 
 }

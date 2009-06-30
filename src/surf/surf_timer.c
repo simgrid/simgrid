@@ -70,24 +70,6 @@ static int resource_used(void *resource_id)
   return 1;
 }
 
-static int action_free(surf_action_t action)
-{
-  DIE_IMPOSSIBLE;
-  return 1;
-}
-
-static void action_cancel(surf_action_t action)
-{
-  DIE_IMPOSSIBLE;
-  return;
-}
-
-static void action_recycle(surf_action_t action)
-{
-  DIE_IMPOSSIBLE;
-  return;
-}
-
 static void action_change_state(surf_action_t action,
                                 e_surf_action_state_t state)
 {
@@ -178,12 +160,8 @@ static void finalize(void)
   xbt_swag_free(command_pending);
   xbt_swag_free(command_to_run);
 
-  xbt_swag_free(surf_timer_model->common_public->states.ready_action_set);
-  xbt_swag_free(surf_timer_model->common_public->states.running_action_set);
-  xbt_swag_free(surf_timer_model->common_public->states.failed_action_set);
-  xbt_swag_free(surf_timer_model->common_public->states.done_action_set);
-  free(surf_timer_model->common_public);
-  free(surf_timer_model->common_private);
+  surf_model_exit((surf_model_t)surf_timer_model);
+
   free(surf_timer_model->extension_public);
 
   free(surf_timer_model);
@@ -192,34 +170,19 @@ static void finalize(void)
 
 static void surf_timer_model_init_internal(void)
 {
-  s_surf_action_t action;
-
   surf_timer_model = xbt_new0(s_surf_timer_model_t, 1);
 
-  surf_timer_model->common_private = xbt_new0(s_surf_model_private_t, 1);
-  surf_timer_model->common_public = xbt_new0(s_surf_model_public_t, 1);
+  surf_model_init((surf_model_t)surf_timer_model);
 
   surf_timer_model->extension_public =
     xbt_new0(s_surf_timer_model_extension_public_t, 1);
 
-  surf_timer_model->common_public->states.ready_action_set =
-    xbt_swag_new(xbt_swag_offset(action, state_hookup));
-  surf_timer_model->common_public->states.running_action_set =
-    xbt_swag_new(xbt_swag_offset(action, state_hookup));
-  surf_timer_model->common_public->states.failed_action_set =
-    xbt_swag_new(xbt_swag_offset(action, state_hookup));
-  surf_timer_model->common_public->states.done_action_set =
-    xbt_swag_new(xbt_swag_offset(action, state_hookup));
-
-  surf_timer_model->common_public->name_service = name_service;
-  surf_timer_model->common_public->get_resource_name = get_resource_name;
-  surf_timer_model->common_public->action_get_state = surf_action_get_state;
-  surf_timer_model->common_public->action_free = action_free;
-  surf_timer_model->common_public->action_cancel = action_cancel;
-  surf_timer_model->common_public->action_recycle = action_recycle;
-  surf_timer_model->common_public->action_change_state = action_change_state;
-  surf_timer_model->common_public->action_set_data = surf_action_set_data;
-  surf_timer_model->common_public->name = "TIMER";
+  surf_timer_model->common_public.name_service = name_service;
+  surf_timer_model->common_public.get_resource_name = get_resource_name;
+  surf_timer_model->common_public.action_get_state = surf_action_get_state;
+  surf_timer_model->common_public.action_change_state = action_change_state;
+  surf_timer_model->common_public.action_set_data = surf_action_set_data;
+  surf_timer_model->common_public.name = "TIMER";
 
   surf_timer_model->common_private->resource_used = resource_used;
   surf_timer_model->common_private->share_resources = share_resources;
@@ -229,9 +192,9 @@ static void surf_timer_model_init_internal(void)
     update_resource_state;
   surf_timer_model->common_private->finalize = finalize;
 
-  surf_timer_model->common_public->suspend = action_suspend;
-  surf_timer_model->common_public->resume = action_resume;
-  surf_timer_model->common_public->is_suspended = action_is_suspended;
+  surf_timer_model->common_public.suspend = action_suspend;
+  surf_timer_model->common_public.resume = action_resume;
+  surf_timer_model->common_public.is_suspended = action_is_suspended;
 
   surf_timer_model->extension_public->set = set;
   surf_timer_model->extension_public->get = get;
