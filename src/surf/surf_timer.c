@@ -166,23 +166,23 @@ static void surf_timer_model_init_internal(void)
 
   surf_model_init(surf_timer_model);
 
-  surf_timer_model->common_public.get_resource_name = get_resource_name;
-  surf_timer_model->common_public.action_get_state = surf_action_get_state;
-  surf_timer_model->common_public.action_change_state = action_change_state;
-  surf_timer_model->common_public.action_set_data = surf_action_set_data;
-  surf_timer_model->common_public.name = "TIMER";
+  surf_timer_model->get_resource_name = get_resource_name;
+  surf_timer_model->action_get_state = surf_action_get_state;
+  surf_timer_model->action_change_state = action_change_state;
+  surf_timer_model->action_set_data = surf_action_set_data;
+  surf_timer_model->name = "TIMER";
 
-  surf_timer_model->common_private->resource_used = resource_used;
-  surf_timer_model->common_private->share_resources = share_resources;
-  surf_timer_model->common_private->update_actions_state =
+  surf_timer_model->model_private->resource_used = resource_used;
+  surf_timer_model->model_private->share_resources = share_resources;
+  surf_timer_model->model_private->update_actions_state =
     update_actions_state;
-  surf_timer_model->common_private->update_resource_state =
+  surf_timer_model->model_private->update_resource_state =
     update_resource_state;
-  surf_timer_model->common_private->finalize = finalize;
+  surf_timer_model->model_private->finalize = finalize;
 
-  surf_timer_model->common_public.suspend = action_suspend;
-  surf_timer_model->common_public.resume = action_resume;
-  surf_timer_model->common_public.is_suspended = action_is_suspended;
+  surf_timer_model->suspend = action_suspend;
+  surf_timer_model->resume = action_resume;
+  surf_timer_model->is_suspended = action_is_suspended;
 
   surf_timer_model->extension.timer.set = set;
   surf_timer_model->extension.timer.get = get;

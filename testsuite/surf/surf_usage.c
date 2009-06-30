@@ -106,27 +106,27 @@ void test(char *platform)
     DEBUG1("Next Event : %g", now);
     DEBUG0("\t CPU actions");
     while ((action =
-            xbt_swag_extract(surf_cpu_model->common_public->states.
-                             failed_action_set))) {
+            xbt_swag_extract(surf_cpu_model->common_public->
+                             states.failed_action_set))) {
       DEBUG1("\t * Failed : %p", action);
       action->model_type->common_public->action_free(action);
     }
     while ((action =
-            xbt_swag_extract(surf_cpu_model->common_public->states.
-                             done_action_set))) {
+            xbt_swag_extract(surf_cpu_model->common_public->
+                             states.done_action_set))) {
       DEBUG1("\t * Done : %p", action);
       action->model_type->common_public->action_free(action);
     }
     DEBUG0("\t Network actions");
     while ((action =
-            xbt_swag_extract(surf_network_model->common_public->states.
-                             failed_action_set))) {
+            xbt_swag_extract(surf_network_model->common_public->
+                             states.failed_action_set))) {
       DEBUG1("\t * Failed : %p", action);
       action->model_type->common_public->action_free(action);
     }
     while ((action =
-            xbt_swag_extract(surf_network_model->common_public->states.
-                             done_action_set))) {
+            xbt_swag_extract(surf_network_model->common_public->
+                             states.done_action_set))) {
       DEBUG1("\t * Done : %p", action);
       action->model_type->common_public->action_free(action);
     }

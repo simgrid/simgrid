@@ -113,8 +113,8 @@ const char *SD_link_get_name(SD_link_t link)
 {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_model->extension.workstation.get_link_name(link->
-                                                                     surf_link);
+  return surf_workstation_model->extension.workstation.
+    get_link_name(link->surf_link);
 }
 
 /**
@@ -127,8 +127,8 @@ double SD_link_get_current_bandwidth(SD_link_t link)
 {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_model->extension.
-    workstation.get_link_bandwidth(link->surf_link);
+  return surf_workstation_model->extension.workstation.
+    get_link_bandwidth(link->surf_link);
 }
 
 /**
@@ -154,8 +154,7 @@ xbt_dict_t SD_link_get_properties(SD_link_t link)
   SD_CHECK_INIT_DONE();
   xbt_assert0((link != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->common_public.
-          get_properties(link->surf_link));
+  return (surf_workstation_model->get_properties(link->surf_link));
 
 }
 
@@ -169,8 +168,8 @@ double SD_link_get_current_latency(SD_link_t link)
 {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_model->extension.workstation.get_link_latency(link->
-                                                                        surf_link);
+  return surf_workstation_model->extension.workstation.
+    get_link_latency(link->surf_link);
 }
 
 /**

@@ -532,6 +532,9 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
 void lmm_set_default_protocol_function(double (*func_f)
 
 
+
+
+
                                         
                                        (lmm_variable_t var, double x),
                                        double (*func_fp) (lmm_variable_t var,

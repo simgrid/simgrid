@@ -238,8 +238,7 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
 
 e_surf_action_state_t surf_action_get_state(surf_action_t action)
 {
-  surf_action_state_t action_state =
-    &(action->model_type->common_public.states);
+  surf_action_state_t action_state = &(action->model_type->states);
 
   if (action->state_set == action_state->ready_action_set)
     return SURF_ACTION_READY;
@@ -264,7 +263,7 @@ double surf_action_get_finish_time(surf_action_t action)
 
 void surf_action_free(surf_action_t * action)
 {
-  (*action)->model_type->common_public.action_cancel(*action);
+  (*action)->model_type->action_cancel(*action);
   free(*action);
   *action = NULL;
 }
@@ -272,8 +271,7 @@ void surf_action_free(surf_action_t * action)
 void surf_action_change_state(surf_action_t action,
                               e_surf_action_state_t state)
 {
-  surf_action_state_t action_state =
-    &(action->model_type->common_public.states);
+  surf_action_state_t action_state = &(action->model_type->states);
   XBT_IN2("(%p,%s)", action, surf_action_state_names[state]);
   xbt_swag_remove(action, action->state_set);
 
@@ -398,7 +396,7 @@ void surf_exit(void)
   surf_config_finalize();
 
   xbt_dynar_foreach(model_list, iter, model) {
-    model->common_private->finalize();
+    model->model_private->finalize();
   }
 
   if (maxmin_system) {
@@ -444,13 +442,13 @@ void surf_presolve(void)
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value, (void **) &resource))) {
-      resource->model->common_private->update_resource_state(resource,
-                                                             event, value,
-                                                             NOW);
+      resource->model->model_private->update_resource_state(resource,
+                                                            event, value,
+                                                            NOW);
     }
   }
   xbt_dynar_foreach(model_list, iter, model) {
-    model->common_private->update_actions_state(NOW, 0.0);
+    model->model_private->update_actions_state(NOW, 0.0);
   }
 }
 
@@ -469,10 +467,10 @@ double surf_solve(void)
 
   DEBUG0("Looking for next action end");
   xbt_dynar_foreach(model_list, iter, model) {
-    DEBUG1("Running for Resource [%s]", model->common_public.name);
-    model_next_action_end = model->common_private->share_resources(NOW);
+    DEBUG1("Running for Resource [%s]", model->name);
+    model_next_action_end = model->model_private->share_resources(NOW);
     DEBUG2("Resource [%s] : next action end = %f",
-           model->common_public.name, model_next_action_end);
+           model->name, model_next_action_end);
     if (((min < 0.0) || (model_next_action_end < min))
         && (model_next_action_end >= 0.0))
       min = model_next_action_end;
@@ -491,16 +489,16 @@ double surf_solve(void)
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value, (void **) &resource))) {
-      if (resource->model->common_private->resource_used(resource)) {
+      if (resource->model->model_private->resource_used(resource)) {
         min = next_event_date - NOW;
         DEBUG1
           ("This event will modify model state. Next event set to %f", min);
       }
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      resource->model->common_private->update_resource_state(resource,
-                                                             event, value,
-                                                             NOW + min);
+      resource->model->model_private->update_resource_state(resource,
+                                                            event, value,
+                                                            NOW + min);
     }
   }
 
@@ -509,7 +507,7 @@ double surf_solve(void)
   NOW = NOW + min;
 
   xbt_dynar_foreach(model_list, iter, model) {
-    model->common_private->update_actions_state(NOW, min);
+    model->model_private->update_actions_state(NOW, min);
   }
 
   return min;

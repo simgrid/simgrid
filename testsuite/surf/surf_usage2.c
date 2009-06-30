@@ -61,11 +61,11 @@ void test(char *platform)
 
   /* Let's check that those two processors exist */
   DEBUG2("%s : %p",
-         surf_workstation_model->common_public->
-         get_resource_name(workstationA), workstationA);
+         surf_workstation_model->
+         common_public->get_resource_name(workstationA), workstationA);
   DEBUG2("%s : %p",
-         surf_workstation_model->common_public->
-         get_resource_name(workstationB), workstationB);
+         surf_workstation_model->
+         common_public->get_resource_name(workstationB), workstationB);
 
   /* Let's do something on it */
   actionA =
@@ -92,14 +92,14 @@ void test(char *platform)
     xbt_dynar_foreach(model_list, iter, model) {
       DEBUG1("\t %s actions", model->common_public->name);
       while ((action =
-              xbt_swag_extract(model->common_public->states.
-                               failed_action_set))) {
+              xbt_swag_extract(model->common_public->
+                               states.failed_action_set))) {
         DEBUG1("\t * Failed : %p", action);
         model->common_public->action_free(action);
       }
       while ((action =
-              xbt_swag_extract(model->common_public->states.
-                               done_action_set))) {
+              xbt_swag_extract(model->common_public->
+                               states.done_action_set))) {
         DEBUG1("\t * Done : %p", action);
         model->common_public->action_free(action);
       }

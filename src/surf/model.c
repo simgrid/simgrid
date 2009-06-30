@@ -23,37 +23,37 @@ void surf_model_init(surf_model_t model)
   s_surf_action_t action;
 
 
-  model->common_private = xbt_new0(s_surf_model_private_t, 1);
+  model->model_private = xbt_new0(s_surf_model_private_t, 1);
 
-  model->common_public.states.ready_action_set =
+  model->states.ready_action_set =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
-  model->common_public.states.running_action_set =
+  model->states.running_action_set =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
-  model->common_public.states.failed_action_set =
+  model->states.failed_action_set =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
-  model->common_public.states.done_action_set =
+  model->states.done_action_set =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
-  model->common_public.resource_set = xbt_dict_new();
+  model->resource_set = xbt_dict_new();
 
-  model->common_public.action_free = int_die_impossible_paction;
-  model->common_public.action_cancel = void_die_impossible_paction;
-  model->common_public.action_recycle = void_die_impossible_paction;
+  model->action_free = int_die_impossible_paction;
+  model->action_cancel = void_die_impossible_paction;
+  model->action_recycle = void_die_impossible_paction;
 
 }
 
 void *surf_model_resource_by_name(surf_model_t model, const char *name)
 {
-  return xbt_dict_get_or_null(model->common_public.resource_set, name);
+  return xbt_dict_get_or_null(model->resource_set, name);
 }
 
 
 /** @brief finalize common datastructures to all models */
 void surf_model_exit(surf_model_t model)
 {
-  xbt_swag_free(model->common_public.states.ready_action_set);
-  xbt_swag_free(model->common_public.states.running_action_set);
-  xbt_swag_free(model->common_public.states.failed_action_set);
-  xbt_swag_free(model->common_public.states.done_action_set);
-  xbt_dict_free(&model->common_public.resource_set);
-  free(model->common_private);
+  xbt_swag_free(model->states.ready_action_set);
+  xbt_swag_free(model->states.running_action_set);
+  xbt_swag_free(model->states.failed_action_set);
+  xbt_swag_free(model->states.done_action_set);
+  xbt_dict_free(&model->resource_set);
+  free(model->model_private);
 }

@@ -12,6 +12,7 @@ SimGrid (3.3.2-svn) unstable; urgency=low
      into surf_model_resource_by_name(model)
    (less redirections, less function to write when defining a model)
   * Unify the types of models in a uniq s_surf_model_t (using an union)
+  * Embeed every fields of common_public directly into s_surf_model_t
 
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]

@@ -457,19 +457,13 @@ static void test_dynar_ref(gras_socket_t sock, int direction)
 
 /**** PBIO *****/
 GRAS_DEFINE_TYPE(s_pbio, struct s_pbio {        /* structure presented in the IEEE article */
-                 int Cnstatv;
-                 double Cstatev[12];
+                 int Cnstatv; double Cstatev[12];
                  int Cnprops;
-                 double Cprops[110];
-                 int Cndi[4];
-                 int Cnshr;
-                 int Cnpt; double Cdtime; double Ctime[2]; int Cntens;
-                 double Cdfgrd0[373][3];
-                 double Cdfgrd1[3][3]; double Cstress[106];
-                 double Cddsdde[106][106];
-                 };
-
-  )
+                 double Cprops[110]; int Cndi[4]; int Cnshr; int Cnpt;
+                 double Cdtime;
+                 double Ctime[2];
+                 int Cntens; double Cdfgrd0[373][3]; double Cdfgrd1[3][3];
+                 double Cstress[106]; double Cddsdde[106][106];};)
 
      typedef struct s_pbio pbio_t;
 
@@ -547,9 +541,10 @@ GRAS_DEFINE_TYPE(s_pbio, struct s_pbio {        /* structure presented in the IE
 }
 
 GRAS_DEFINE_TYPE(s_clause, struct s_clause {
-                 int num_lits;
-                 int *literals GRAS_ANNOTE(size, num_lits);     /* Tells GRAS where to find the size */
-                 };)
+                 int num_lits; int *literals GRAS_ANNOTE(size, num_lits);       /* Tells GRAS where to find the size */
+                 };
+
+  )
 
      typedef struct s_clause Clause;
 

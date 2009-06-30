@@ -328,6 +328,9 @@ XBT_PUBLIC(gras_datadesc_type_t)
 /** \brief Prototype of type callbacks selecting a type. */
      typedef
 
+
+
+
       
        gras_datadesc_type_t(*gras_datadesc_selector_t) (gras_datadesc_type_t
                                                         typedesc,

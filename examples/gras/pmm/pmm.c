@@ -21,9 +21,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(pmm, "Parallel Matrix Multiplication");
 
 /* struct for recovering results */
 GRAS_DEFINE_TYPE(s_result, struct s_result {
-                 int linepos; int rowpos;
-                 xbt_matrix_t C GRAS_ANNOTE(subtype, double);
-                 });
+                 int linepos;
+                 int rowpos; xbt_matrix_t C GRAS_ANNOTE(subtype, double);});
 
 typedef struct s_result result_t;
 
@@ -34,8 +33,7 @@ GRAS_DEFINE_TYPE(s_pmm_assignment, struct s_pmm_assignment {
                  xbt_peer_t line[NEIGHBOR_COUNT];
                  xbt_peer_t row[NEIGHBOR_COUNT];
                  xbt_matrix_t A GRAS_ANNOTE(subtype, double);
-                 xbt_matrix_t B GRAS_ANNOTE(subtype, double);
-                 });
+                 xbt_matrix_t B GRAS_ANNOTE(subtype, double);});
 
 typedef struct s_pmm_assignment s_pmm_assignment_t;
 

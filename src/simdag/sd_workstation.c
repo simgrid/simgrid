@@ -134,8 +134,8 @@ const char *SD_workstation_get_name(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_model->common_public.
-    get_resource_name(workstation->surf_workstation);
+  return surf_workstation_model->get_resource_name(workstation->
+                                                   surf_workstation);
 }
 
 /**
@@ -163,8 +163,8 @@ xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
   SD_CHECK_INIT_DONE();
   xbt_assert0((workstation != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->common_public.
-          get_properties(workstation->surf_workstation));
+  return (surf_workstation_model->get_properties
+          (workstation->surf_workstation));
 
 }
 
@@ -208,8 +208,8 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src, SD_workstation_t dst)
 
   for (i = 0; i < route_size; i++) {
     link_name =
-      surf_workstation_model->extension.
-      workstation.get_link_name(surf_route[i]);
+      surf_workstation_model->extension.workstation.
+      get_link_name(surf_route[i]);
     sd_global->recyclable_route[i] =
       xbt_dict_get(sd_global->links, link_name);
   }
@@ -228,10 +228,8 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src, SD_workstation_t dst)
 int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
 {
   SD_CHECK_INIT_DONE();
-  return surf_workstation_model->extension.workstation.get_route_size(src->
-                                                                      surf_workstation,
-                                                                      dst->
-                                                                      surf_workstation);
+  return surf_workstation_model->extension.workstation.
+    get_route_size(src->surf_workstation, dst->surf_workstation);
 }
 
 /**
@@ -245,9 +243,8 @@ double SD_workstation_get_power(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_model->extension.workstation.get_speed(workstation->
-                                                                 surf_workstation,
-                                                                 1.0);
+  return surf_workstation_model->extension.workstation.
+    get_speed(workstation->surf_workstation, 1.0);
 }
 
 /**
@@ -261,8 +258,8 @@ double SD_workstation_get_available_power(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_model->extension.workstation.
-    get_available_speed(workstation->surf_workstation);
+  return surf_workstation_model->extension.
+    workstation.get_available_speed(workstation->surf_workstation);
 }
 
 /**
@@ -453,15 +450,15 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
 }
 
 /* Returns whether a task can start now on a workstation.
-                                                                                              *//*
-                                                   int __SD_workstation_can_start(SD_workstation_t workstation, SD_task_t task) {
-                                                   SD_CHECK_INIT_DONE();
-                                                   xbt_assert0(workstation != NULL && task != NULL, "Invalid parameter");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              *//*
+                                                                                                                                                                                                                                                                                                                                                                                                   int __SD_workstation_can_start(SD_workstation_t workstation, SD_task_t task) {
+                                                                                                                                                                                                                                                                                                                                                                                                   SD_CHECK_INIT_DONE();
+                                                                                                                                                                                                                                                                                                                                                                                                   xbt_assert0(workstation != NULL && task != NULL, "Invalid parameter");
 
-                                                   return !__SD_workstation_is_busy(workstation) &&
-                                                   (xbt_fifo_size(workstation->task_fifo) == 0) || xbt_fifo_get_first_item(workstation->task_fifo) == task);
-                                                   }
-                                                 */
+                                                                                                                                                                                                                                                                                                                                                                                                   return !__SD_workstation_is_busy(workstation) &&
+                                                                                                                                                                                                                                                                                                                                                                                                   (xbt_fifo_size(workstation->task_fifo) == 0) || xbt_fifo_get_first_item(workstation->task_fifo) == task);
+                                                                                                                                                                                                                                                                                                                                                                                                   }
+                                                                                                                                                                                                                                                                                                                                                                                                 */
 
 /* Returns whether a workstation is busy. A workstation is busy is it is
  * in sequential mode and a task is running on it or the fifo is not empty.

@@ -358,8 +358,7 @@ static double share_resources(double now)
 {
   s_surf_action_network_CM02_t s_action;
   surf_action_network_CM02_t action = NULL;
-  xbt_swag_t running_actions =
-    surf_network_model->common_public.states.running_action_set;
+  xbt_swag_t running_actions = surf_network_model->states.running_action_set;
   double min;
 
   min = generic_maxmin_share_resources(running_actions,
@@ -386,11 +385,10 @@ static void update_actions_state(double now, double delta)
   double deltap = 0.0;
   surf_action_network_CM02_t action = NULL;
   surf_action_network_CM02_t next_action = NULL;
-  xbt_swag_t running_actions =
-    surf_network_model->common_public.states.running_action_set;
+  xbt_swag_t running_actions = surf_network_model->states.running_action_set;
   /*
      xbt_swag_t failed_actions =
-     surf_network_model->common_public.states.failed_action_set;
+     surf_network_model->states.failed_action_set;
    */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
@@ -542,11 +540,11 @@ static surf_action_t communicate(void *src, void *dst, double size,
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
   action->generic_action.state_set =
-    surf_network_model->common_public.states.running_action_set;
+    surf_network_model->states.running_action_set;
   for (i = 0; i < route_size; i++)
     if (route[i]->state_current == SURF_LINK_OFF) {
       action->generic_action.state_set =
-        surf_network_model->common_public.states.failed_action_set;
+        surf_network_model->states.failed_action_set;
       break;
     }
 
@@ -702,32 +700,30 @@ static void surf_network_model_init_internal(void)
 
   surf_model_init(surf_network_model);
 
-  surf_network_model->common_public.get_resource_name = get_resource_name;
-  surf_network_model->common_public.action_get_state = surf_action_get_state;
-  surf_network_model->common_public.action_get_start_time =
-    surf_action_get_start_time;
-  surf_network_model->common_public.action_get_finish_time =
-    surf_action_get_finish_time;
-  surf_network_model->common_public.action_free = action_free;
-  surf_network_model->common_public.action_use = action_use;
-  surf_network_model->common_public.action_cancel = action_cancel;
-  surf_network_model->common_public.action_recycle = action_recycle;
-  surf_network_model->common_public.action_change_state = action_change_state;
-  surf_network_model->common_public.action_set_data = surf_action_set_data;
-  surf_network_model->common_public.name = "network";
+  surf_network_model->get_resource_name = get_resource_name;
+  surf_network_model->action_get_state = surf_action_get_state;
+  surf_network_model->action_get_start_time = surf_action_get_start_time;
+  surf_network_model->action_get_finish_time = surf_action_get_finish_time;
+  surf_network_model->action_free = action_free;
+  surf_network_model->action_use = action_use;
+  surf_network_model->action_cancel = action_cancel;
+  surf_network_model->action_recycle = action_recycle;
+  surf_network_model->action_change_state = action_change_state;
+  surf_network_model->action_set_data = surf_action_set_data;
+  surf_network_model->name = "network";
 
-  surf_network_model->common_private->resource_used = resource_used;
-  surf_network_model->common_private->share_resources = share_resources;
-  surf_network_model->common_private->update_actions_state =
+  surf_network_model->model_private->resource_used = resource_used;
+  surf_network_model->model_private->share_resources = share_resources;
+  surf_network_model->model_private->update_actions_state =
     update_actions_state;
-  surf_network_model->common_private->update_resource_state =
+  surf_network_model->model_private->update_resource_state =
     update_resource_state;
-  surf_network_model->common_private->finalize = finalize;
+  surf_network_model->model_private->finalize = finalize;
 
-  surf_network_model->common_public.suspend = action_suspend;
-  surf_network_model->common_public.resume = action_resume;
-  surf_network_model->common_public.is_suspended = action_is_suspended;
-  surf_cpu_model->common_public.set_max_duration = action_set_max_duration;
+  surf_network_model->suspend = action_suspend;
+  surf_network_model->resume = action_resume;
+  surf_network_model->is_suspended = action_is_suspended;
+  surf_cpu_model->set_max_duration = action_set_max_duration;
 
   surf_network_model->extension.network.communicate = communicate;
   surf_network_model->extension.network.get_route = get_route;
@@ -738,7 +734,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension.network.get_link_latency = get_link_latency;
   surf_network_model->extension.network.link_shared = link_shared;
 
-  surf_network_model->common_public.get_properties = get_properties;
+  surf_network_model->get_properties = get_properties;
 
   link_set = xbt_dict_new();
 

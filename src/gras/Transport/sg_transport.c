@@ -101,8 +101,8 @@ gras_socket_t gras_trp_select(double timeout)
 
   res->peer_port = ((gras_trp_procdata_t)
                     gras_libdata_by_name_from_remote("gras_trp",
-                                                     sockdata->
-                                                     to_process))->myport;
+                                                     sockdata->to_process))->
+    myport;
   sockdata->to_socket = active_socket;
   /*update the peer to_socket  variable */
   active_socket_data->to_socket = res;

@@ -357,8 +357,8 @@
 #endif
 
 /* some other values of possible interest: */
-                                                                                                                                                                                                  /* #define breakeven_point  8 *//* VAX 4000          - vaxc */
-                                                                                                                                                                                                  /* #define breakeven_point 19 *//* VAX 4000          - gcc 2.7.0 */
+                                                                                                                                                                                                                                                                                                                                  /* #define breakeven_point  8 *//* VAX 4000          - vaxc */
+                                                                                                                                                                                                                                                                                                                                  /* #define breakeven_point 19 *//* VAX 4000          - gcc 2.7.0 */
 
 #ifndef breakeven_point
 #  define breakeven_point   6   /* some reasonable one-size-fits-all value */

@@ -299,8 +299,8 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
     void *arg = NULL;
 
     xbt_dynar_foreach(model_list, iter, model) {
-      if (xbt_swag_size(model->common_public.states.failed_action_set)
-          || xbt_swag_size(model->common_public.states.done_action_set)) {
+      if (xbt_swag_size(model->states.failed_action_set)
+          || xbt_swag_size(model->states.done_action_set)) {
         state_modifications = 1;
         break;
       }
@@ -338,17 +338,13 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 
     /* Wake up all process waiting for the action finish */
     xbt_dynar_foreach(model_list, iter, model) {
-      while ((action =
-              xbt_swag_extract(model->common_public.
-                               states.failed_action_set))) {
+      while ((action = xbt_swag_extract(model->states.failed_action_set))) {
         smx_action = action->data;
         if (smx_action) {
           xbt_fifo_unshift(actions_failed, smx_action);
         }
       }
-      while ((action =
-              xbt_swag_extract(model->common_public.
-                               states.done_action_set))) {
+      while ((action = xbt_swag_extract(model->states.done_action_set))) {
         smx_action = action->data;
         if (smx_action) {
           xbt_fifo_unshift(actions_done, smx_action);

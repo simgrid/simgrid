@@ -85,7 +85,7 @@ indent:
 	--leave-preprocessor-space --no-space-after-function-call-names \
 	`$(MAKE) dist-files | grep '\.[ch]$$'|grep -v '/_' |grep -v '_unit.c'\
                             | grep -v src/xbt/graphxml.c | grep -v datadesc_structs.c \
-                            `
+                            | grep -v simgrid_dtd.[ch]`
 
 sync-gforge: 
 	chmod g+rw -R doc/

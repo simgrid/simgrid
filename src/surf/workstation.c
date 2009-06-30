@@ -82,9 +82,9 @@ static void parallel_action_use(surf_action_t action)
 static int action_free(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
-    return surf_network_model->common_public.action_free(action);
+    return surf_network_model->action_free(action);
   else if (action->model_type == surf_cpu_model)
-    return surf_cpu_model->common_public.action_free(action);
+    return surf_cpu_model->action_free(action);
   else if (action->model_type == surf_workstation_model)
     return parallel_action_free(action);
   else
@@ -95,9 +95,9 @@ static int action_free(surf_action_t action)
 static void action_use(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
-    surf_network_model->common_public.action_use(action);
+    surf_network_model->action_use(action);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->common_public.action_use(action);
+    surf_cpu_model->action_use(action);
   else if (action->model_type == surf_workstation_model)
     parallel_action_use(action);
   else
@@ -108,9 +108,9 @@ static void action_use(surf_action_t action)
 static void action_cancel(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
-    surf_network_model->common_public.action_cancel(action);
+    surf_network_model->action_cancel(action);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->common_public.action_cancel(action);
+    surf_cpu_model->action_cancel(action);
   else if (action->model_type == surf_workstation_model)
     parallel_action_cancel(action);
   else
@@ -122,9 +122,9 @@ static void action_change_state(surf_action_t action,
                                 e_surf_action_state_t state)
 {
   if (action->model_type == surf_network_model)
-    surf_network_model->common_public.action_change_state(action, state);
+    surf_network_model->action_change_state(action, state);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->common_public.action_change_state(action, state);
+    surf_cpu_model->action_change_state(action, state);
   else if (action->model_type == surf_workstation_model)
     surf_action_change_state(action, state);
   else
@@ -151,22 +151,22 @@ static void update_resource_state(void *id,
 
 static surf_action_t execute(void *workstation, double size)
 {
-  return surf_cpu_model->extension.
-    cpu.execute(((workstation_CLM03_t) workstation)->cpu, size);
+  return surf_cpu_model->extension.cpu.
+    execute(((workstation_CLM03_t) workstation)->cpu, size);
 }
 
 static surf_action_t action_sleep(void *workstation, double duration)
 {
-  return surf_cpu_model->extension.
-    cpu.sleep(((workstation_CLM03_t) workstation)->cpu, duration);
+  return surf_cpu_model->extension.cpu.
+    sleep(((workstation_CLM03_t) workstation)->cpu, duration);
 }
 
 static void action_suspend(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
-    surf_network_model->common_public.suspend(action);
+    surf_network_model->suspend(action);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->common_public.suspend(action);
+    surf_cpu_model->suspend(action);
   else
     DIE_IMPOSSIBLE;
 }
@@ -174,9 +174,9 @@ static void action_suspend(surf_action_t action)
 static void action_resume(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
-    surf_network_model->common_public.resume(action);
+    surf_network_model->resume(action);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->common_public.resume(action);
+    surf_cpu_model->resume(action);
   else
     DIE_IMPOSSIBLE;
 }
@@ -184,18 +184,18 @@ static void action_resume(surf_action_t action)
 static int action_is_suspended(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
-    return surf_network_model->common_public.is_suspended(action);
+    return surf_network_model->is_suspended(action);
   if (action->model_type == surf_cpu_model)
-    return surf_cpu_model->common_public.is_suspended(action);
+    return surf_cpu_model->is_suspended(action);
   DIE_IMPOSSIBLE;
 }
 
 static void action_set_max_duration(surf_action_t action, double duration)
 {
   if (action->model_type == surf_network_model)
-    surf_network_model->common_public.set_max_duration(action, duration);
+    surf_network_model->set_max_duration(action, duration);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->common_public.set_max_duration(action, duration);
+    surf_cpu_model->set_max_duration(action, duration);
   else
     DIE_IMPOSSIBLE;
 }
@@ -203,9 +203,9 @@ static void action_set_max_duration(surf_action_t action, double duration)
 static void action_set_priority(surf_action_t action, double priority)
 {
   if (action->model_type == surf_network_model)
-    surf_network_model->common_public.set_priority(action, priority);
+    surf_network_model->set_priority(action, priority);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->common_public.set_priority(action, priority);
+    surf_cpu_model->set_priority(action, priority);
   else
     DIE_IMPOSSIBLE;
 }
@@ -214,35 +214,35 @@ static surf_action_t communicate(void *workstation_src,
                                  void *workstation_dst, double size,
                                  double rate)
 {
-  return surf_network_model->extension.
-    network.communicate(((workstation_CLM03_t) workstation_src)->network_card,
-                        ((workstation_CLM03_t) workstation_dst)->network_card,
-                        size, rate);
+  return surf_network_model->extension.network.
+    communicate(((workstation_CLM03_t) workstation_src)->network_card,
+                ((workstation_CLM03_t) workstation_dst)->network_card, size,
+                rate);
 }
 
 static e_surf_cpu_state_t get_state(void *workstation)
 {
-  return surf_cpu_model->extension.
-    cpu.get_state(((workstation_CLM03_t) workstation)->cpu);
+  return surf_cpu_model->extension.cpu.
+    get_state(((workstation_CLM03_t) workstation)->cpu);
 }
 
 static double get_speed(void *workstation, double load)
 {
-  return surf_cpu_model->extension.
-    cpu.get_speed(((workstation_CLM03_t) workstation)->cpu, load);
+  return surf_cpu_model->extension.cpu.
+    get_speed(((workstation_CLM03_t) workstation)->cpu, load);
 }
 
 static double get_available_speed(void *workstation)
 {
-  return surf_cpu_model->extension.
-    cpu.get_available_speed(((workstation_CLM03_t)
-                             workstation)->cpu);
+  return surf_cpu_model->extension.cpu.
+    get_available_speed(((workstation_CLM03_t)
+                         workstation)->cpu);
 }
 
 static xbt_dict_t get_properties(void *workstation)
 {
   return surf_cpu_model->
-    common_public.get_properties(((workstation_CLM03_t) workstation)->cpu);
+    get_properties(((workstation_CLM03_t) workstation)->cpu);
 }
 
 static surf_action_t execute_parallel_task(int workstation_nb,
@@ -260,19 +260,17 @@ static const void **get_route(void *src, void *dst)
 {
   workstation_CLM03_t workstation_src = (workstation_CLM03_t) src;
   workstation_CLM03_t workstation_dst = (workstation_CLM03_t) dst;
-  return surf_network_model->extension.network.get_route(workstation_src->
-                                                         network_card,
-                                                         workstation_dst->
-                                                         network_card);
+  return surf_network_model->extension.network.
+    get_route(workstation_src->network_card, workstation_dst->network_card);
 }
 
 static int get_route_size(void *src, void *dst)
 {
   workstation_CLM03_t workstation_src = (workstation_CLM03_t) src;
   workstation_CLM03_t workstation_dst = (workstation_CLM03_t) dst;
-  return surf_network_model->extension.
-    network.get_route_size(workstation_src->network_card,
-                           workstation_dst->network_card);
+  return surf_network_model->extension.network.
+    get_route_size(workstation_src->network_card,
+                   workstation_dst->network_card);
 }
 
 static const char *get_link_name(const void *link)
@@ -310,36 +308,31 @@ static void surf_workstation_model_init_internal(void)
   surf_model_init(surf_workstation_model);
 /*   surf_workstation_model->extension_private = xbt_new0(s_surf_workstation_model_extension_private_t,1); */
 
-  surf_workstation_model->common_public.get_resource_name = get_resource_name;
-  surf_workstation_model->common_public.action_get_state =
-    surf_action_get_state;
-  surf_workstation_model->common_public.action_get_start_time =
-    surf_action_get_start_time;
-  surf_workstation_model->common_public.action_get_finish_time =
+  surf_workstation_model->get_resource_name = get_resource_name;
+  surf_workstation_model->action_get_state = surf_action_get_state;
+  surf_workstation_model->action_get_start_time = surf_action_get_start_time;
+  surf_workstation_model->action_get_finish_time =
     surf_action_get_finish_time;
-  surf_workstation_model->common_public.action_free = action_free;
-  surf_workstation_model->common_public.action_use = action_use;
-  surf_workstation_model->common_public.action_cancel = action_cancel;
-  surf_workstation_model->common_public.action_change_state =
-    action_change_state;
-  surf_workstation_model->common_public.action_set_data =
-    surf_action_set_data;
-  surf_workstation_model->common_public.name = "Workstation";
+  surf_workstation_model->action_free = action_free;
+  surf_workstation_model->action_use = action_use;
+  surf_workstation_model->action_cancel = action_cancel;
+  surf_workstation_model->action_change_state = action_change_state;
+  surf_workstation_model->action_set_data = surf_action_set_data;
+  surf_workstation_model->name = "Workstation";
 
-  surf_workstation_model->common_private->resource_used = resource_used;
-  surf_workstation_model->common_private->share_resources = share_resources;
-  surf_workstation_model->common_private->update_actions_state =
+  surf_workstation_model->model_private->resource_used = resource_used;
+  surf_workstation_model->model_private->share_resources = share_resources;
+  surf_workstation_model->model_private->update_actions_state =
     update_actions_state;
-  surf_workstation_model->common_private->update_resource_state =
+  surf_workstation_model->model_private->update_resource_state =
     update_resource_state;
-  surf_workstation_model->common_private->finalize = finalize;
+  surf_workstation_model->model_private->finalize = finalize;
 
-  surf_workstation_model->common_public.suspend = action_suspend;
-  surf_workstation_model->common_public.resume = action_resume;
-  surf_workstation_model->common_public.is_suspended = action_is_suspended;
-  surf_workstation_model->common_public.set_max_duration =
-    action_set_max_duration;
-  surf_workstation_model->common_public.set_priority = action_set_priority;
+  surf_workstation_model->suspend = action_suspend;
+  surf_workstation_model->resume = action_resume;
+  surf_workstation_model->is_suspended = action_is_suspended;
+  surf_workstation_model->set_max_duration = action_set_max_duration;
+  surf_workstation_model->set_priority = action_set_priority;
 
   surf_workstation_model->extension.workstation.execute = execute;
   surf_workstation_model->extension.workstation.sleep = action_sleep;
@@ -349,7 +342,7 @@ static void surf_workstation_model_init_internal(void)
     get_available_speed;
 
   /*manage the properties of the workstation */
-  surf_workstation_model->common_public.get_properties = get_properties;
+  surf_workstation_model->get_properties = get_properties;
 
   surf_workstation_model->extension.workstation.communicate = communicate;
   surf_workstation_model->extension.workstation.execute_parallel_task =

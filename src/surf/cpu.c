@@ -181,8 +181,8 @@ static void action_change_state(surf_action_t action,
 static double share_resources(double now)
 {
   s_surf_action_cpu_Cas01_t action;
-  return generic_maxmin_share_resources(surf_cpu_model->common_public.states.
-                                        running_action_set,
+  return generic_maxmin_share_resources(surf_cpu_model->
+                                        states.running_action_set,
                                         xbt_swag_offset(action, variable),
                                         cpu_maxmin_system, lmm_solve);
 }
@@ -191,11 +191,10 @@ static void update_actions_state(double now, double delta)
 {
   surf_action_cpu_Cas01_t action = NULL;
   surf_action_cpu_Cas01_t next_action = NULL;
-  xbt_swag_t running_actions =
-    surf_cpu_model->common_public.states.running_action_set;
+  xbt_swag_t running_actions = surf_cpu_model->states.running_action_set;
   /* FIXME: UNUSED
      xbt_swag_t failed_actions =
-     surf_cpu_model->common_public.states.failed_action_set;
+     surf_cpu_model->states.failed_action_set;
    */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
@@ -277,10 +276,10 @@ static surf_action_t execute(void *cpu, double size)
 
   if (CPU->state_current == SURF_CPU_ON)
     action->generic_action.state_set =
-      surf_cpu_model->common_public.states.running_action_set;
+      surf_cpu_model->states.running_action_set;
   else
     action->generic_action.state_set =
-      surf_cpu_model->common_public.states.failed_action_set;
+      surf_cpu_model->states.failed_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
 
@@ -410,31 +409,29 @@ static void surf_cpu_model_init_internal(void)
   running_action_set_that_does_not_need_being_checked =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
-  surf_cpu_model->common_public.get_resource_name = get_resource_name;
-  surf_cpu_model->common_public.action_get_state = surf_action_get_state;
-  surf_cpu_model->common_public.action_get_start_time =
-    surf_action_get_start_time;
-  surf_cpu_model->common_public.action_get_finish_time =
-    surf_action_get_finish_time;
-  surf_cpu_model->common_public.action_free = action_free;
-  surf_cpu_model->common_public.action_use = action_use;
-  surf_cpu_model->common_public.action_cancel = action_cancel;
-  surf_cpu_model->common_public.action_change_state = action_change_state;
-  surf_cpu_model->common_public.action_set_data = surf_action_set_data;
-  surf_cpu_model->common_public.name = "CPU";
+  surf_cpu_model->get_resource_name = get_resource_name;
+  surf_cpu_model->action_get_state = surf_action_get_state;
+  surf_cpu_model->action_get_start_time = surf_action_get_start_time;
+  surf_cpu_model->action_get_finish_time = surf_action_get_finish_time;
+  surf_cpu_model->action_free = action_free;
+  surf_cpu_model->action_use = action_use;
+  surf_cpu_model->action_cancel = action_cancel;
+  surf_cpu_model->action_change_state = action_change_state;
+  surf_cpu_model->action_set_data = surf_action_set_data;
+  surf_cpu_model->name = "CPU";
 
-  surf_cpu_model->common_private->resource_used = resource_used;
-  surf_cpu_model->common_private->share_resources = share_resources;
-  surf_cpu_model->common_private->update_actions_state = update_actions_state;
-  surf_cpu_model->common_private->update_resource_state =
+  surf_cpu_model->model_private->resource_used = resource_used;
+  surf_cpu_model->model_private->share_resources = share_resources;
+  surf_cpu_model->model_private->update_actions_state = update_actions_state;
+  surf_cpu_model->model_private->update_resource_state =
     update_resource_state;
-  surf_cpu_model->common_private->finalize = finalize;
+  surf_cpu_model->model_private->finalize = finalize;
 
-  surf_cpu_model->common_public.suspend = action_suspend;
-  surf_cpu_model->common_public.resume = action_resume;
-  surf_cpu_model->common_public.is_suspended = action_is_suspended;
-  surf_cpu_model->common_public.set_max_duration = action_set_max_duration;
-  surf_cpu_model->common_public.set_priority = action_set_priority;
+  surf_cpu_model->suspend = action_suspend;
+  surf_cpu_model->resume = action_resume;
+  surf_cpu_model->is_suspended = action_is_suspended;
+  surf_cpu_model->set_max_duration = action_set_max_duration;
+  surf_cpu_model->set_priority = action_set_priority;
   surf_cpu_model->extension.cpu.execute = execute;
   surf_cpu_model->extension.cpu.sleep = action_sleep;
 
@@ -442,7 +439,7 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->extension.cpu.get_speed = get_speed;
   surf_cpu_model->extension.cpu.get_available_speed = get_available_speed;
   /*manage the properties of the cpu */
-  surf_cpu_model->common_public.get_properties = get_properties;
+  surf_cpu_model->get_properties = get_properties;
 
   if (!cpu_maxmin_system)
     cpu_maxmin_system = lmm_system_new();

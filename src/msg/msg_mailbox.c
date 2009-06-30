@@ -248,8 +248,8 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   /* Transfer */
   /* create SIMIX action to the communication */
   t_simdata->comm =
-    SIMIX_action_communicate(t_simdata->sender->simdata->m_host->simdata->
-                             smx_host,
+    SIMIX_action_communicate(t_simdata->sender->simdata->m_host->
+                             simdata->smx_host,
                              process->simdata->m_host->simdata->smx_host,
                              t->name, t_simdata->message_size,
                              t_simdata->rate);

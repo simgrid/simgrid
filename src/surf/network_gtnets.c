@@ -532,8 +532,6 @@ static void finalize(void)
 
   surf_model_exit(surf_network_model);
 
-  free(surf_network_model->extension_public);
-
   free(surf_network_model);
   surf_network_model = NULL;
 
@@ -548,9 +546,6 @@ static void surf_network_model_init_internal(void)
 
   surf_model_init(surf_network_model);
 
-  surf_network_model->extension_public =
-    xbt_new0(s_surf_network_model_extension_public_t, 1);
-
   surf_network_model->common_public.name_service = name_service;
   surf_network_model->common_public.get_resource_name = get_resource_name;
   surf_network_model->common_public.action_get_state = surf_action_get_state;
@@ -562,19 +557,19 @@ static void surf_network_model_init_internal(void)
   surf_network_model->common_public.action_set_data = surf_action_set_data;
   surf_network_model->common_public.name = "network";
 
-  surf_network_model->common_private->resource_used = resource_used;
-  surf_network_model->common_private->share_resources = share_resources;
-  surf_network_model->common_private->update_actions_state =
+  surf_network_model->model_private->resource_used = resource_used;
+  surf_network_model->model_private->share_resources = share_resources;
+  surf_network_model->model_private->update_actions_state =
     update_actions_state;
-  surf_network_model->common_private->update_resource_state =
+  surf_network_model->model_private->update_resource_state =
     update_resource_state;
-  surf_network_model->common_private->finalize = finalize;
+  surf_network_model->model_private->finalize = finalize;
 
   surf_network_model->common_public.suspend = action_suspend;
   surf_network_model->common_public.resume = action_resume;
   surf_network_model->common_public.is_suspended = action_is_suspended;
 
-  surf_network_model->extension_public->communicate = communicate;
+  surf_network_model->extension.network.communicate = communicate;
 
   /*for the props of the link */
   surf_network_model->common_public.get_properties = get_properties;

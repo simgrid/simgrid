@@ -236,7 +236,7 @@ static double share_resources(double now)
   surf_action_workstation_L07_t action = NULL;
 
   xbt_swag_t running_actions =
-    surf_workstation_model->common_public.states.running_action_set;
+    surf_workstation_model->states.running_action_set;
   double min = generic_maxmin_share_resources(running_actions,
                                               xbt_swag_offset(s_action,
                                                               variable),
@@ -268,7 +268,7 @@ static void update_actions_state(double now, double delta)
   surf_action_workstation_L07_t action = NULL;
   surf_action_workstation_L07_t next_action = NULL;
   xbt_swag_t running_actions =
-    surf_workstation_model->common_public.states.running_action_set;
+    surf_workstation_model->states.running_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     deltap = delta;
@@ -515,7 +515,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   action->communication_amount = communication_amount;
   action->latency = latency;
   action->generic_action.state_set =
-    surf_workstation_model->common_public.states.running_action_set;
+    surf_workstation_model->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
@@ -1007,35 +1007,30 @@ static void model_init_internal(void)
 
   surf_model_init(surf_workstation_model);
 
-  surf_workstation_model->common_public.get_resource_name = get_resource_name;
-  surf_workstation_model->common_public.action_get_state =
-    surf_action_get_state;
-  surf_workstation_model->common_public.action_get_start_time =
-    surf_action_get_start_time;
-  surf_workstation_model->common_public.action_get_finish_time =
+  surf_workstation_model->get_resource_name = get_resource_name;
+  surf_workstation_model->action_get_state = surf_action_get_state;
+  surf_workstation_model->action_get_start_time = surf_action_get_start_time;
+  surf_workstation_model->action_get_finish_time =
     surf_action_get_finish_time;
-  surf_workstation_model->common_public.action_use = action_use;
-  surf_workstation_model->common_public.action_free = action_free;
-  surf_workstation_model->common_public.action_cancel = action_cancel;
-  surf_workstation_model->common_public.action_change_state =
-    surf_action_change_state;
-  surf_workstation_model->common_public.action_set_data =
-    surf_action_set_data;
-  surf_workstation_model->common_public.suspend = action_suspend;
-  surf_workstation_model->common_public.resume = action_resume;
-  surf_workstation_model->common_public.is_suspended = action_is_suspended;
-  surf_workstation_model->common_public.set_max_duration =
-    action_set_max_duration;
-  surf_workstation_model->common_public.set_priority = action_set_priority;
-  surf_workstation_model->common_public.name = "Workstation ptask_L07";
+  surf_workstation_model->action_use = action_use;
+  surf_workstation_model->action_free = action_free;
+  surf_workstation_model->action_cancel = action_cancel;
+  surf_workstation_model->action_change_state = surf_action_change_state;
+  surf_workstation_model->action_set_data = surf_action_set_data;
+  surf_workstation_model->suspend = action_suspend;
+  surf_workstation_model->resume = action_resume;
+  surf_workstation_model->is_suspended = action_is_suspended;
+  surf_workstation_model->set_max_duration = action_set_max_duration;
+  surf_workstation_model->set_priority = action_set_priority;
+  surf_workstation_model->name = "Workstation ptask_L07";
 
-  surf_workstation_model->common_private->resource_used = resource_used;
-  surf_workstation_model->common_private->share_resources = share_resources;
-  surf_workstation_model->common_private->update_actions_state =
+  surf_workstation_model->model_private->resource_used = resource_used;
+  surf_workstation_model->model_private->share_resources = share_resources;
+  surf_workstation_model->model_private->update_actions_state =
     update_actions_state;
-  surf_workstation_model->common_private->update_resource_state =
+  surf_workstation_model->model_private->update_resource_state =
     update_resource_state;
-  surf_workstation_model->common_private->finalize = finalize;
+  surf_workstation_model->model_private->finalize = finalize;
 
   surf_workstation_model->extension.workstation.execute = execute;
   surf_workstation_model->extension.workstation.sleep = action_sleep;
@@ -1057,7 +1052,7 @@ static void model_init_internal(void)
     get_link_latency;
   surf_workstation_model->extension.workstation.link_shared = link_shared;
 
-  surf_workstation_model->common_public.get_properties = get_properties;
+  surf_workstation_model->get_properties = get_properties;
 
   link_set = xbt_dict_new();
 
