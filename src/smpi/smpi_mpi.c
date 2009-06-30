@@ -347,6 +347,8 @@ int SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
  * Same as MPI_REDUCE except that the result appears in the receive buffer of all the group members.
  **/
 int SMPI_MPI_Allreduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+   		         MPI_Op op, MPI_Comm comm );
+int SMPI_MPI_Allreduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
    		         MPI_Op op, MPI_Comm comm )
 {
   int retval = MPI_SUCCESS;

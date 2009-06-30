@@ -181,8 +181,8 @@ static void action_change_state(surf_action_t action,
 static double share_resources(double now)
 {
   s_surf_action_cpu_Cas01_t action;
-  return generic_maxmin_share_resources(surf_cpu_model->
-                                        states.running_action_set,
+  return generic_maxmin_share_resources(surf_cpu_model->states.
+                                        running_action_set,
                                         xbt_swag_offset(action, variable),
                                         cpu_maxmin_system, lmm_solve);
 }
@@ -390,21 +390,17 @@ static void finalize(void)
   cpu_maxmin_system = NULL;
 
   surf_model_exit(surf_cpu_model);
+  surf_cpu_model = NULL;
 
   xbt_swag_free(running_action_set_that_does_not_need_being_checked);
   running_action_set_that_does_not_need_being_checked = NULL;
-
-  free(surf_cpu_model);
-  surf_cpu_model = NULL;
 }
 
 static void surf_cpu_model_init_internal(void)
 {
   s_surf_action_t action;
 
-  surf_cpu_model = xbt_new0(s_surf_model_t, 1);
-
-  surf_model_init(surf_cpu_model);
+  surf_cpu_model = surf_model_init();
 
   running_action_set_that_does_not_need_being_checked =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));

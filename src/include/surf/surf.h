@@ -43,8 +43,8 @@ SG_BEGIN_DECL()
      typedef struct surf_model_description {
        const char *name;
        surf_model_t model;
-       void (*model_init) (const char *filename);
-       void (*create_ws) (void);
+       void (*model_init_preparse) (const char *filename);
+       void (*model_init_postparse) (void);
      } s_surf_model_description_t, *surf_model_description_t;
 
 XBT_PUBLIC(void) update_model_description(s_surf_model_description_t * table,
@@ -255,10 +255,11 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
        } extension;
      } s_surf_model_t;
 
-     void surf_model_init(surf_model_t model);
+     surf_model_t surf_model_init(void);
+     void surf_model_exit(surf_model_t model);
+
      void *surf_model_resource_by_name(surf_model_t model, const char *name);
 #define surf_model_resource_set(model) (model)->resource_set
-     void surf_model_exit(surf_model_t model);
 
      typedef struct surf_resource {
        surf_model_t model;

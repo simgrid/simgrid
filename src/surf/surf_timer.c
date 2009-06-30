@@ -155,16 +155,12 @@ static void finalize(void)
   xbt_swag_free(command_to_run);
 
   surf_model_exit(surf_timer_model);
-
-  free(surf_timer_model);
   surf_timer_model = NULL;
 }
 
 static void surf_timer_model_init_internal(void)
 {
-  surf_timer_model = xbt_new0(s_surf_model_t, 1);
-
-  surf_model_init(surf_timer_model);
+  surf_timer_model = surf_model_init();
 
   surf_timer_model->get_resource_name = get_resource_name;
   surf_timer_model->action_get_state = surf_action_get_state;

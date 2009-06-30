@@ -418,8 +418,6 @@ static void finalize(void)
   }
 
   surf_model_exit(surf_workstation_model);
-
-  free(surf_workstation_model);
   surf_workstation_model = NULL;
 
   for (i = 0; i < nb_workstation; i++)
@@ -1003,9 +1001,7 @@ static void define_callbacks(const char *file)
 
 static void model_init_internal(void)
 {
-  surf_workstation_model = xbt_new0(s_surf_model_t, 1);
-
-  surf_model_init(surf_workstation_model);
+  surf_workstation_model = surf_model_init();
 
   surf_workstation_model->get_resource_name = get_resource_name;
   surf_workstation_model->action_get_state = surf_action_get_state;

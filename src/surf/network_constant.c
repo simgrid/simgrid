@@ -286,8 +286,6 @@ static void action_set_max_duration(surf_action_t action, double duration)
 static void finalize(void)
 {
   surf_model_exit(surf_network_model);
-
-  free(surf_network_model);
   surf_network_model = NULL;
 
   card_number = 0;
@@ -295,9 +293,7 @@ static void finalize(void)
 
 static void surf_network_model_init_internal(void)
 {
-  surf_network_model = xbt_new0(s_surf_model_t, 1);
-
-  surf_model_init(surf_network_model);
+  surf_network_model = surf_model_init();
 
   surf_network_model->get_resource_name = get_resource_name;
   surf_network_model->action_get_state = surf_action_get_state;
