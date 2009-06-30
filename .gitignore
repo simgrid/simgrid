@@ -87,6 +87,7 @@ examples/simdag/metaxml/sd_meta
 examples/simdag/properties/sd_prop
 examples/simdag/sd_test
 examples/simdag/sd_test2
+examples/smpi/reduce
 examples/smpi/bcast
 examples/smpi/bcbench
 examples/smpi/compute
