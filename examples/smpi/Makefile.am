@@ -40,7 +40,7 @@ mvmul: mvmul.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
 
 # List the tesh files below
-TESTS = bcast.tesh
+TESTS = bcast.tesh reduce.tesh
 
 # No need to change anything after that line
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
