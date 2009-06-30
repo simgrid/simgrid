@@ -126,8 +126,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
      typedef struct surf_model_public {
        s_surf_action_state_t states;
                                 /**< Any living action on this model */
-       void *(*name_service) (const char *name);
-                                            /**< Return a model given its name */
        const char *(*get_resource_name) (void *resource_id);
                                                         /**< Return the name of a resource */
 
@@ -164,6 +162,7 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
                                                     /**< Return the properties dictionary */
        const char *name;
                     /**< Name of this model */
+       xbt_dict_t resource_set;
      } s_surf_model_public_t, *surf_model_public_t;
 
 /** \brief Private data available on all models
@@ -183,6 +182,8 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
      } s_surf_model_t;
 
      void surf_model_init(surf_model_t model);
+     void* surf_model_resource_by_name(void* model, const char *name);
+#define surf_model_resource_set(model) (model)->common_public.resource_set
      void surf_model_exit(surf_model_t model);
 
 
@@ -553,8 +554,8 @@ XBT_PUBLIC_DATA(xbt_dict_t) link_set;
  *
  *  \see link_set
  */
-XBT_PUBLIC_DATA(xbt_dict_t) workstation_set;
-XBT_PUBLIC_DATA(xbt_dict_t) cpu_set;
+/*XBT_PUBLIC_DATA(xbt_dict_t) workstation_set; //KILLME
+XBT_PUBLIC_DATA(xbt_dict_t) cpu_set; //KILLME*/
 /** \brief List of initialized models
  *  \ingroup SURF_models
  */

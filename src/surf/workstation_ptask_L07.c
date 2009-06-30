@@ -9,7 +9,6 @@
 #include "xbt/str.h"
 #include "xbt/dict.h"
 #include "surf_private.h"
-/* extern lmm_system_t maxmin_system; */
 
 typedef enum {
   SURF_WORKSTATION_RESOURCE_CPU,
@@ -123,11 +122,6 @@ static void update_action_bound(surf_action_workstation_L07_t action)
 /**************************************/
 /******* Resource Public     **********/
 /**************************************/
-
-static void *name_service(const char *name)
-{
-  return xbt_dict_get_or_null(workstation_set, name);
-}
 
 static const char *get_resource_name(void *resource_id)
 {
@@ -419,7 +413,6 @@ static void finalize(void)
   int i, j;
 
   xbt_dict_free(&link_set);
-  xbt_dict_free(&workstation_set);
   if (parallel_task_link_set != NULL) {
     xbt_dict_free(&parallel_task_link_set);
   }
@@ -671,7 +664,7 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
                          tmgr_trace_t state_trace, xbt_dict_t cpu_properties)
 {
   cpu_L07_t cpu = xbt_new0(s_cpu_L07_t, 1);
-  xbt_assert1(!xbt_dict_get_or_null(workstation_set, name),
+  xbt_assert1(!surf_model_resource_by_name(surf_workstation_model, name),
               "Host '%s' declared several times in the platform file.", name);
 
   cpu->model = (surf_model_t) surf_workstation_model;
@@ -699,7 +692,7 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
   /*add the property set */
   cpu->properties = current_property_set;
 
-  xbt_dict_set(workstation_set, name, cpu, cpu_free);
+  xbt_dict_set(surf_model_resource_set(surf_workstation_model), name, cpu, cpu_free);
 
   return cpu;
 }
@@ -843,12 +836,12 @@ static void parse_route_set_endpoints(void)
 {
   cpu_L07_t cpu_tmp = NULL;
 
-  cpu_tmp = (cpu_L07_t) name_service(A_surfxml_route_src);
+  cpu_tmp = (cpu_L07_t) surf_model_resource_by_name(surf_workstation_model, A_surfxml_route_src);
   xbt_assert1(cpu_tmp, "Invalid cpu %s", A_surfxml_route_src);
   if (cpu_tmp != NULL)
     src_id = cpu_tmp->id;
 
-  cpu_tmp = (cpu_L07_t) name_service(A_surfxml_route_dst);
+  cpu_tmp = (cpu_L07_t) surf_model_resource_by_name(surf_workstation_model, A_surfxml_route_dst);
   xbt_assert1(cpu_tmp, "Invalid cpu %s", A_surfxml_route_dst);
   if (cpu_tmp != NULL)
     dst_id = cpu_tmp->id;
@@ -936,7 +929,7 @@ static void add_traces(void)
   /* Connect traces relative to cpu */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_L07_t host = xbt_dict_get_or_null(workstation_set, elm);
+    cpu_L07_t host = surf_model_resource_by_name(surf_workstation_model, elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -946,7 +939,7 @@ static void add_traces(void)
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_L07_t host = xbt_dict_get_or_null(workstation_set, elm);
+    cpu_L07_t host = surf_model_resource_by_name(surf_workstation_model, elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -984,34 +977,6 @@ static void add_traces(void)
 
     link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
   }
-/*
-
-   xbt_dynar_foreach (traces_connect_list, cpt, value) {
-     trace_connect = xbt_str_split_str(value, "#");
-     trace_id        = xbt_dynar_get_as(trace_connect, 0, char*);
-     connect_element = atoi(xbt_dynar_get_as(trace_connect, 1, char*));
-     connect_kind    = atoi(xbt_dynar_get_as(trace_connect, 2, char*));
-     connector_id    = xbt_dynar_get_as(trace_connect, 3, char*);
-
-     xbt_assert1((trace = xbt_dict_get_or_null(traces_set_list, trace_id)), "Trace %s undefined", trace_id);
-
-     if (connect_element == A_surfxml_trace_c_connect_element_HOST) {
-        xbt_assert1((host = xbt_dict_get_or_null(workstation_set, connector_id)), "Host %s undefined", connector_id);
-        switch (connect_kind) {
-           case A_surfxml_trace_c_connect_kind_AVAILABILITY: host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
-           case A_surfxml_trace_c_connect_kind_POWER: host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host); break;
-        }
-     }
-     else {
-        xbt_assert1((link = xbt_dict_get_or_null(link_set, connector_id)), "Link %s undefined", connector_id);
-        switch (connect_kind) {
-           case A_surfxml_trace_c_connect_kind_AVAILABILITY: link->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, link); break;
-           case A_surfxml_trace_c_connect_kind_BANDWIDTH: link->bw_event = tmgr_history_add_trace(history, trace, 0.0, 0, link); break;
-           case A_surfxml_trace_c_connect_kind_LATENCY: link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link); break;
-        }
-     }
-   }
-*/
 }
 
 static void define_callbacks(const char *file)
@@ -1041,7 +1006,6 @@ static void model_init_internal(void)
   surf_workstation_model->extension_public =
     xbt_new0(s_surf_workstation_model_extension_public_t, 1);
 
-  surf_workstation_model->common_public.name_service = name_service;
   surf_workstation_model->common_public.get_resource_name =
     get_resource_name;
   surf_workstation_model->common_public.action_get_state =
@@ -1093,7 +1057,6 @@ static void model_init_internal(void)
 
   surf_workstation_model->common_public.get_properties = get_properties;
 
-  workstation_set = xbt_dict_new();
   link_set = xbt_dict_new();
 
   if (!ptask_maxmin_system)

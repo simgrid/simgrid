@@ -53,12 +53,6 @@ static void parse_file(const char *file)
 {
 }
 
-static void *name_service(const char *name)
-{
-  DIE_IMPOSSIBLE;
-  return NULL;
-}
-
 static const char *get_resource_name(void *resource_id)
 {
   DIE_IMPOSSIBLE;
@@ -177,7 +171,6 @@ static void surf_timer_model_init_internal(void)
   surf_timer_model->extension_public =
     xbt_new0(s_surf_timer_model_extension_public_t, 1);
 
-  surf_timer_model->common_public.name_service = name_service;
   surf_timer_model->common_public.get_resource_name = get_resource_name;
   surf_timer_model->common_public.action_get_state = surf_action_get_state;
   surf_timer_model->common_public.action_change_state = action_change_state;

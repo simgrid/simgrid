@@ -43,7 +43,7 @@ typedef struct surf_action_network_GTNETS {
   network_card_GTNETS_t dst;
 } s_surf_action_network_GTNETS_t, *surf_action_network_GTNETS_t;
 
-extern xbt_dict_t network_card_set;
+//extern xbt_dict_t network_card_set;
 
 
 #endif /* _SURF_NETWORK_PRIVATE_H */

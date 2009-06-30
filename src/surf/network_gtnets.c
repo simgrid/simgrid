@@ -103,7 +103,7 @@ static int network_card_new(const char *name)
 
   XBT_IN1("(%s)", name);
   /* KF: Check that we haven't seen the network card before */
-  network_card_GTNETS_t card = xbt_dict_get_or_null(network_card_set, name);
+  network_card_GTNETS_t card = surf_model_resource_by_name(surf_network_model, name);
 
   if (!card) {
     /* KF: Increment the card counter for GTNetS */
@@ -113,7 +113,7 @@ static int network_card_new(const char *name)
     card = xbt_new0(s_network_card_GTNETS_t, 1);
     card->name = xbt_strdup(name);
     card->id = card_count;
-    xbt_dict_set(network_card_set, name, card, network_card_free);
+    xbt_dict_set(surf_model_resource_set(surf_network_model), name, card, network_card_free);
   }
 
   LOG1(xbt_log_priority_trace, "   return %d", card->id);
@@ -305,11 +305,6 @@ static void define_callbacks(const char *file)
                        &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
-}
-
-static void *name_service(const char *name)
-{
-  return xbt_dict_get_or_null(network_card_set, name);
 }
 
 static const char *get_resource_name(void *resource_id)
@@ -531,7 +526,6 @@ static int action_is_suspended(surf_action_t action)
 
 static void finalize(void)
 {
-  xbt_dict_free(&network_card_set);
   xbt_dict_free(&link_set);
 
   surf_model_exit((surf_model_t)surf_network_model);
@@ -585,7 +579,6 @@ static void surf_network_model_init_internal(void)
   surf_network_model->common_public.get_properties = get_properties;
 
   link_set = xbt_dict_new();
-  network_card_set = xbt_dict_new();
 
   /* KF: Added the initialization for GTNetS interface */
   if (gtnets_initialize()) {

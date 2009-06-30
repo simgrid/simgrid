@@ -16,7 +16,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
                                 "Logging specific to the SURF workstation module");
 
 surf_workstation_model_t surf_workstation_model = NULL;
-xbt_dict_t workstation_set = NULL;
+
+static void workstation_free(void *workstation)
+{
+  free(((workstation_CLM03_t) workstation)->name);
+  free(workstation);
+}
 
 static workstation_CLM03_t workstation_new(const char *name,
                                            void *cpu, void *card)
@@ -28,13 +33,9 @@ static workstation_CLM03_t workstation_new(const char *name,
   workstation->cpu = cpu;
   workstation->network_card = card;
 
-  return workstation;
-}
+  xbt_dict_set(surf_model_resource_set(surf_workstation_model),name,workstation,workstation_free);
 
-static void workstation_free(void *workstation)
-{
-  free(((workstation_CLM03_t) workstation)->name);
-  free(workstation);
+  return workstation;
 }
 
 void create_workstations(void)
@@ -44,18 +45,12 @@ void create_workstations(void)
   void *cpu = NULL;
   void *nw_card = NULL;
 
-  xbt_dict_foreach(cpu_set, cursor, name, cpu) {
-    nw_card = xbt_dict_get_or_null(network_card_set, name);
+  xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, name, cpu) {
+	nw_card = surf_model_resource_by_name(surf_network_model, name);
     xbt_assert1(nw_card, "No corresponding card found for %s", name);
 
-    xbt_dict_set(workstation_set, name,
-                 workstation_new(name, cpu, nw_card), workstation_free);
+    workstation_new(name,cpu,nw_card);
   }
-}
-
-static void *name_service(const char *name)
-{
-  return xbt_dict_get_or_null(workstation_set, name);
 }
 
 static const char *get_resource_name(void *resource_id)
@@ -304,8 +299,6 @@ static int link_shared(const void *link)
 
 static void finalize(void)
 {
-  xbt_dict_free(&workstation_set);
-
   surf_model_exit((surf_model_t)surf_workstation_model);
 
   free(surf_workstation_model->extension_public);
@@ -323,7 +316,6 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension_public =
     xbt_new0(s_surf_workstation_model_extension_public_t, 1);
 
-  surf_workstation_model->common_public.name_service = name_service;
   surf_workstation_model->common_public.get_resource_name =
     get_resource_name;
   surf_workstation_model->common_public.action_get_state =
@@ -377,8 +369,6 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension_public->get_link_latency =
     get_link_latency;
   surf_workstation_model->extension_public->link_shared = link_shared;
-
-  workstation_set = xbt_dict_new();
 }
 
 /********************************************************************/

@@ -1031,10 +1031,12 @@ static void convert_route_multi_to_routes(void)
   if (!route_multi_elements)
     return;
 
-  set = cpu_set;
-  DEBUG1("%d", xbt_dict_length(workstation_set));
-  if (workstation_set != NULL && xbt_dict_length(workstation_set) > 0)
-    set = workstation_set;
+  if (surf_cpu_model)
+	  set = surf_model_resource_set(surf_cpu_model);
+  if (surf_workstation_model != NULL &&
+		  surf_model_resource_set(surf_workstation_model) != NULL &&
+		  xbt_dict_length(surf_model_resource_set(surf_workstation_model)) > 0)
+    set = surf_model_resource_set(surf_workstation_model);
 
 
   push_surfxml_bufferstack(0);

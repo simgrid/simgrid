@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 surf_cpu_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
 
-xbt_dict_t cpu_set = NULL;
+
 static xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
 
 static void cpu_free(void *cpu)
@@ -31,7 +31,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
                            xbt_dict_t cpu_properties)
 {
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
-  xbt_assert1(!xbt_dict_get_or_null(cpu_set, name),
+  xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
               "Host '%s' declared several times in the platform file", name);
   cpu->model = (surf_model_t) surf_cpu_model;
   cpu->name = name;
@@ -56,7 +56,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
 
   current_property_set = cpu_properties;
 
-  xbt_dict_set(cpu_set, name, cpu, cpu_free);
+  xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu, cpu_free);
 
   return cpu;
 }
@@ -104,7 +104,7 @@ static void add_traces_cpu(void)
   /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_Cas01_t host = xbt_dict_get_or_null(cpu_set, elm);
+    cpu_Cas01_t host = surf_model_resource_by_name((surf_model_t)surf_cpu_model, elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -114,7 +114,7 @@ static void add_traces_cpu(void)
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_Cas01_t host = xbt_dict_get_or_null(cpu_set, elm);
+    cpu_Cas01_t host = surf_model_resource_by_name((surf_model_t)surf_cpu_model, elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -127,11 +127,6 @@ static void define_callbacks(const char *file)
 {
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
-}
-
-static void *name_service(const char *name)
-{
-  return xbt_dict_get_or_null(cpu_set, name);
 }
 
 static const char *get_resource_name(void *resource_id)
@@ -392,7 +387,6 @@ static xbt_dict_t get_properties(void *cpu)
 
 static void finalize(void)
 {
-  xbt_dict_free(&cpu_set);
   lmm_system_free(cpu_maxmin_system);
   cpu_maxmin_system = NULL;
 
@@ -420,7 +414,6 @@ static void surf_cpu_model_init_internal(void)
   running_action_set_that_does_not_need_being_checked =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
-  surf_cpu_model->common_public.name_service = name_service;
   surf_cpu_model->common_public.get_resource_name = get_resource_name;
   surf_cpu_model->common_public.action_get_state = surf_action_get_state;
   surf_cpu_model->common_public.action_get_start_time =
@@ -455,8 +448,6 @@ static void surf_cpu_model_init_internal(void)
   /*manage the properties of the cpu */
   surf_cpu_model->common_public.get_properties = get_properties;
 
-  if (!cpu_set)
-    cpu_set = xbt_dict_new();
   if (!cpu_maxmin_system)
     cpu_maxmin_system = lmm_system_new();
 }

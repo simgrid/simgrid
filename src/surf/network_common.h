@@ -8,9 +8,6 @@
 #ifndef _SURF_NETWORK_COMMON_H
 #define _SURF_NETWORK_COMMON_H
 
-#include "xbt/dict.h"
-
-extern xbt_dict_t network_card_set;
 
 
 #endif /* _SURF_NETWORK_COMMON_H */

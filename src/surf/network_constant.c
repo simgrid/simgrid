@@ -40,13 +40,13 @@ static void network_card_free(void *nw_card)
 static int network_card_new(const char *card_name)
 {
   network_card_Constant_t card =
-    xbt_dict_get_or_null(network_card_set, card_name);
+	  surf_model_resource_by_name(surf_network_model,card_name);
 
   if (!card) {
     card = xbt_new0(s_network_card_Constant_t, 1);
     card->name = xbt_strdup(card_name);
     card->id = card_number++;
-    xbt_dict_set(network_card_set, card_name, card, network_card_free);
+    xbt_dict_set(surf_model_resource_set(surf_network_model), card_name, card, network_card_free);
   }
   return card->id;
 }
@@ -83,12 +83,6 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(STag_surfxml_route_cb_list,
                        &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-}
-
-static void *name_service(const char *name)
-{
-  network_card_Constant_t card = xbt_dict_get_or_null(network_card_set, name);
-  return card;
 }
 
 static const char *get_resource_name(void *resource_id)
@@ -292,8 +286,6 @@ static void action_set_max_duration(surf_action_t action, double duration)
 
 static void finalize(void)
 {
-  xbt_dict_free(&network_card_set);
-
   surf_model_exit((surf_model_t)surf_network_model);
 
   free(surf_network_model->extension_public);
@@ -313,7 +305,6 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension_public =
     xbt_new0(s_surf_network_model_extension_public_t, 1);
 
-  surf_network_model->common_public.name_service = name_service;
   surf_network_model->common_public.get_resource_name = get_resource_name;
   surf_network_model->common_public.action_get_state = surf_action_get_state;
   surf_network_model->common_public.action_get_start_time =
@@ -352,8 +343,6 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension_public->link_shared = link_shared;
 
   surf_network_model->common_public.get_properties = get_properties;
-
-  network_card_set = xbt_dict_new();
 
   if (!random_latency)
     random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);

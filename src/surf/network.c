@@ -16,7 +16,6 @@ surf_network_model_t surf_network_model = NULL;
 static lmm_system_t network_maxmin_system = NULL;
 static void (*network_solve) (lmm_system_t) = NULL;
 xbt_dict_t link_set = NULL;
-xbt_dict_t network_card_set = NULL;
 
 double latency_factor = 1.0;    /* default value */
 double bandwidth_factor = 1.0;  /* default value */
@@ -100,13 +99,13 @@ static void network_card_free(void *nw_card)
 static int network_card_new(const char *card_name)
 {
   network_card_CM02_t card =
-    xbt_dict_get_or_null(network_card_set, card_name);
+	  surf_model_resource_by_name(surf_network_model,card_name);
 
   if (!card) {
     card = xbt_new0(s_network_card_CM02_t, 1);
     card->name = xbt_strdup(card_name);
     card->id = host_number++;
-    xbt_dict_set(network_card_set, card_name, card, network_card_free);
+    xbt_dict_set(surf_model_resource_set(surf_network_model), card_name, card, network_card_free);
   }
   return card->id;
 }
@@ -299,12 +298,6 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
-}
-
-static void *name_service(const char *name)
-{
-  network_card_CM02_t card = xbt_dict_get_or_null(network_card_set, name);
-  return card;
 }
 
 static const char *get_resource_name(void *resource_id)
@@ -680,7 +673,6 @@ static void finalize(void)
 {
   int i, j;
 
-  xbt_dict_free(&network_card_set);
   xbt_dict_free(&link_set);
 
   surf_model_exit((surf_model_t)surf_network_model);
@@ -711,7 +703,6 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension_public =
     xbt_new0(s_surf_network_model_extension_public_t, 1);
 
-  surf_network_model->common_public.name_service = name_service;
   surf_network_model->common_public.get_resource_name = get_resource_name;
   surf_network_model->common_public.action_get_state = surf_action_get_state;
   surf_network_model->common_public.action_get_start_time =
@@ -752,7 +743,6 @@ static void surf_network_model_init_internal(void)
   surf_network_model->common_public.get_properties = get_properties;
 
   link_set = xbt_dict_new();
-  network_card_set = xbt_dict_new();
 
   if (!network_maxmin_system)
     network_maxmin_system = lmm_system_new();

@@ -31,6 +31,4 @@ typedef struct cpu_Cas01 {
   xbt_dict_t properties;
 } s_cpu_Cas01_t, *cpu_Cas01_t;
 
-extern xbt_dict_t cpu_set;
-
 #endif /* _SURF_CPU_PRIVATE_H */

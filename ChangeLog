@@ -4,9 +4,13 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Implement MPI_Waitany and MPI_Waitall 
 
  SURF: 
-  * Factorize model_init/exit between models
   * Declare common_public as an embeeded struct to reduce redirections
     and mallocs
+  * Factorize model_init/exit between models
+  * Factorize the set of resources within common_public;
+   + change model->common_model->resource_name() 
+     into surf_model_resource_by_name(model)
+   (less redirections, less function to write when defining a model)
 
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]
