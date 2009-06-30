@@ -31,9 +31,8 @@ static int dst_id = -1;
 /* Free memory for a network link */
 static void link_free(void *nw_link)
 {
-  free(((network_link_GTNETS_t) nw_link)->name);
   xbt_dict_free(&(((network_link_GTNETS_t) nw_link)->properties));
-  free(nw_link);
+  surf_resource_free(nw_link);
 }
 
 /* Instantiate a new network link */
@@ -77,7 +76,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 
   /* KF: Insert entry in the dictionary */
   gtnets_link = xbt_new0(s_network_link_GTNETS_t, 1);
-  gtnets_link->name = name;
+  gtnets_link->generic_resource.name = name;
   gtnets_link->bw_current = bw;
   gtnets_link->lat_current = lat;
   gtnets_link->id = link_count;
@@ -87,13 +86,6 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   xbt_dict_set(link_set, name, gtnets_link, link_free);
 
   return;
-}
-
-/* free the network card */
-static void network_card_free(void *nw_card)
-{
-  free(((network_card_GTNETS_t) nw_card)->name);
-  free(nw_card);
 }
 
 /* Instantiate a new network card: MODIFYED BY KF */
@@ -112,10 +104,10 @@ static int network_card_new(const char *name)
 
     /* KF: just use the dictionary to map link names to link indices */
     card = xbt_new0(s_network_card_GTNETS_t, 1);
-    card->name = xbt_strdup(name);
+    card->generic_resource.name = xbt_strdup(name);
     card->id = card_count;
     xbt_dict_set(surf_model_resource_set(surf_network_model), name, card,
-                 network_card_free);
+                 surf_resource_free);
   }
 
   LOG1(xbt_log_priority_trace, "   return %d", card->id);
@@ -309,11 +301,6 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
 }
 
-static const char *get_resource_name(void *resource_id)
-{
-  return ((network_card_GTNETS_t) resource_id)->name;
-}
-
 static xbt_dict_t get_properties(void *link)
 {
   return ((network_card_GTNETS_t) link)->properties;
@@ -499,8 +486,8 @@ static surf_action_t communicate(void *src, void *dst, double size,
   /* KF: Add a flow to the GTNets Simulation, associated to this action */
   if (gtnets_create_flow(card_src->id, card_dst->id, size, (void *) action)
       < 0) {
-    xbt_assert2(0, "Not route between host %s and host %s", card_src->name,
-                card_dst->name);
+    xbt_assert2(0, "Not route between host %s and host %s", card_src->generic_resource.name,
+                card_dst->generic_resource.name);
   }
 
   return (surf_action_t) action;
@@ -509,15 +496,13 @@ static surf_action_t communicate(void *src, void *dst, double size,
 /* Suspend a flow() */
 static void action_suspend(surf_action_t action)
 {
-  xbt_assert0(0,
-              "action_suspend() not supported for the GTNets network model");
+  THROW_UNIMPLEMENTED;
 }
 
 /* Resume a flow() */
 static void action_resume(surf_action_t action)
 {
-  xbt_assert0(0,
-              "action_resume() not supported for the GTNets network model");
+  THROW_UNIMPLEMENTED;
 }
 
 /* Test whether a flow is suspended */
@@ -546,8 +531,6 @@ static void surf_network_model_init_internal(void)
 
   surf_model_init(surf_network_model);
 
-  surf_network_model->common_public.name_service = name_service;
-  surf_network_model->common_public.get_resource_name = get_resource_name;
   surf_network_model->common_public.action_get_state = surf_action_get_state;
   surf_network_model->common_public.action_use = action_use;
   surf_network_model->common_public.action_free = action_free;

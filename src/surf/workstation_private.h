@@ -11,9 +11,7 @@
 #include "surf_private.h"
 
 typedef struct workstation_CLM03 {
-  surf_model_t model;           /* Any such object, added in a trace
-                                   should start by this field!!! */
-  char *name;
+  s_surf_resource_t generic_resource; /* Must remain first to add this to a trace */
   void *cpu;
   void *network_card;
 } s_workstation_CLM03_t, *workstation_CLM03_t;

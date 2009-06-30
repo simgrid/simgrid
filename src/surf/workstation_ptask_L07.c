@@ -19,10 +19,9 @@ typedef enum {
 /********* cpu object *****************/
 /**************************************/
 typedef struct cpu_L07 {
-  surf_model_t model;           /* Do not move this field: must match model_obj_t */
+  s_surf_resource_t generic_resource;  /* Do not move this field: must match surf_resource_t */
   xbt_dict_t properties;        /* Do not move this field: must match link_L07_t */
   e_surf_workstation_model_type_t type; /* Do not move this field: must match link_L07_t */
-  char *name;                   /* Do not move this field: must match link_L07_t */
   lmm_constraint_t constraint;  /* Do not move this field: must match link_L07_t */
   double power_scale;
   double power_current;
@@ -37,10 +36,9 @@ typedef struct cpu_L07 {
 /**************************************/
 
 typedef struct link_L07 {
-  surf_model_t model;           /* Do not move this field: must match model_obj_t */
+  s_surf_resource_t generic_resource;  /* Do not move this field: must match surf_resource_t */
   xbt_dict_t properties;        /* Do not move this field: must match link_L07_t */
   e_surf_workstation_model_type_t type; /* Do not move this field: must match cpu_L07_t */
-  char *name;                   /* Do not move this field: must match cpu_L07_t */
   lmm_constraint_t constraint;  /* Do not move this field: must match cpu_L07_t */
   double lat_current;
   tmgr_trace_event_t lat_event;
@@ -122,15 +120,6 @@ static void update_action_bound(surf_action_workstation_L07_t action)
 /**************************************/
 /******* Resource Public     **********/
 /**************************************/
-
-static const char *get_resource_name(void *resource_id)
-{
-  /* We can freely cast as a cpu_L07_t because it has the same
-     prefix as link_L07_t. However, only cpu_L07_t
-     will theoretically be given as an argument here. */
-
-  return ((cpu_L07_t) resource_id)->name;
-}
 
 static xbt_dict_t get_properties(void *r)
 {
@@ -357,7 +346,7 @@ static void update_resource_state(void *id,
   link_L07_t nw_link = id;
 
   if (nw_link->type == SURF_WORKSTATION_RESOURCE_LINK) {
-    DEBUG2("Updating link %s (%p)", nw_link->name, nw_link);
+    DEBUG2("Updating link %s (%p)", nw_link->generic_resource.name, nw_link);
     if (event_type == nw_link->bw_event) {
       nw_link->bw_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, nw_link->constraint,
@@ -387,7 +376,7 @@ static void update_resource_state(void *id,
     }
     return;
   } else if (cpu->type == SURF_WORKSTATION_RESOURCE_CPU) {
-    DEBUG3("Updating cpu %s (%p) with value %g", cpu->name, cpu, value);
+    DEBUG3("Updating cpu %s (%p) with value %g", cpu->generic_resource.name, cpu, value);
     if (event_type == cpu->power_event) {
       cpu->power_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, cpu->constraint,
@@ -481,7 +470,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
       if (communication_amount[i * workstation_nb + j] > 0)
         for (k = 0; k < route_size; k++) {
           lat += route[k]->lat_current;
-          xbt_dict_set(parallel_task_link_set, route[k]->name,
+          xbt_dict_set(parallel_task_link_set, route[k]->generic_resource.name,
                        route[k], NULL);
         }
       latency = MAX(latency, lat);
@@ -593,7 +582,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
 {
   surf_action_workstation_L07_t action = NULL;
 
-  XBT_IN2("(%s,%g)", ((cpu_L07_t) cpu)->name, duration);
+  XBT_IN2("(%s,%g)", ((cpu_L07_t) cpu)->generic_resource.name, duration);
 
   action = (surf_action_workstation_L07_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
@@ -622,11 +611,6 @@ static int get_route_size(void *src, void *dst)
   return route->size;
 }
 
-static const char *get_link_name(const void *link)
-{
-  return ((link_L07_t) link)->name;
-}
-
 static double get_link_bandwidth(const void *link)
 {
   return ((link_L07_t) link)->bw_current;
@@ -648,9 +632,8 @@ static int link_shared(const void *link)
 
 static void cpu_free(void *cpu)
 {
-  free(((cpu_L07_t) cpu)->name);
   xbt_dict_free(&(((cpu_L07_t) cpu)->properties));
-  free(cpu);
+  surf_resource_free(cpu);
 }
 
 static cpu_L07_t cpu_new(const char *name, double power_scale,
@@ -663,9 +646,9 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
   xbt_assert1(!surf_model_resource_by_name(surf_workstation_model, name),
               "Host '%s' declared several times in the platform file.", name);
 
-  cpu->model = surf_workstation_model;
+  cpu->generic_resource.model = surf_workstation_model;
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
-  cpu->name = xbt_strdup(name);
+  cpu->generic_resource.name = xbt_strdup(name);
   cpu->id = nb_workstation++;
 
   cpu->power_scale = power_scale;
@@ -727,9 +710,8 @@ static void parse_cpu_init(void)
 
 static void link_free(void *nw_link)
 {
-  free(((link_L07_t) nw_link)->name);
   xbt_dict_free(&(((link_L07_t) nw_link)->properties));
-  free(nw_link);
+  surf_resource_free(nw_link);
 }
 
 static link_L07_t link_new(char *name,
@@ -747,9 +729,9 @@ static link_L07_t link_new(char *name,
   xbt_assert1(!xbt_dict_get_or_null(link_set, name),
               "Link '%s' declared several times in the platform file.", name);
 
-  nw_link->model = surf_workstation_model;
+  nw_link->generic_resource.model = surf_workstation_model;
   nw_link->type = SURF_WORKSTATION_RESOURCE_LINK;
-  nw_link->name = name;
+  nw_link->generic_resource.name = name;
   nw_link->bw_current = bw_initial;
   if (bw_trace)
     nw_link->bw_event =
@@ -1003,7 +985,6 @@ static void model_init_internal(void)
 {
   surf_workstation_model = surf_model_init();
 
-  surf_workstation_model->get_resource_name = get_resource_name;
   surf_workstation_model->action_get_state = surf_action_get_state;
   surf_workstation_model->action_get_start_time = surf_action_get_start_time;
   surf_workstation_model->action_get_finish_time =
@@ -1041,7 +1022,6 @@ static void model_init_internal(void)
   surf_workstation_model->extension.workstation.get_route = get_route;
   surf_workstation_model->extension.workstation.get_route_size =
     get_route_size;
-  surf_workstation_model->extension.workstation.get_link_name = get_link_name;
   surf_workstation_model->extension.workstation.get_link_bandwidth =
     get_link_bandwidth;
   surf_workstation_model->extension.workstation.get_link_latency =

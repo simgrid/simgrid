@@ -134,8 +134,7 @@ const char *SD_workstation_get_name(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_model->get_resource_name(workstation->
-                                                   surf_workstation);
+  return surf_resource_name(workstation->surf_workstation);
 }
 
 /**
@@ -207,9 +206,7 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src, SD_workstation_t dst)
 
 
   for (i = 0; i < route_size; i++) {
-    link_name =
-      surf_workstation_model->extension.workstation.
-      get_link_name(surf_route[i]);
+    link_name = surf_resource_name(surf_route[i]);
     sd_global->recyclable_route[i] =
       xbt_dict_get(sd_global->links, link_name);
   }

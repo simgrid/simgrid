@@ -39,9 +39,8 @@ static void create_routing_table(void)
 
 static void link_free(void *nw_link)
 {
-  free(((link_CM02_t) nw_link)->name);
   xbt_dict_free(&(((link_CM02_t) nw_link)->properties));
-  free(nw_link);
+  surf_resource_free(nw_link);
 }
 
 static link_CM02_t link_new(char *name,
@@ -59,8 +58,8 @@ static link_CM02_t link_new(char *name,
   xbt_assert1(!xbt_dict_get_or_null(link_set, name),
               "Link '%s' declared several times in the platform file.", name);
 
-  nw_link->model = surf_network_model;
-  nw_link->name = name;
+  nw_link->generic_resource.model = surf_network_model;
+  nw_link->generic_resource.name = name;
   nw_link->bw_current = bw_initial;
   if (bw_trace)
     nw_link->bw_event =
@@ -90,12 +89,6 @@ static link_CM02_t link_new(char *name,
   return nw_link;
 }
 
-static void network_card_free(void *nw_card)
-{
-  free(((network_card_CM02_t) nw_card)->name);
-  free(nw_card);
-}
-
 static int network_card_new(const char *card_name)
 {
   network_card_CM02_t card =
@@ -103,10 +96,10 @@ static int network_card_new(const char *card_name)
 
   if (!card) {
     card = xbt_new0(s_network_card_CM02_t, 1);
-    card->name = xbt_strdup(card_name);
+    card->generic_resource.name = xbt_strdup(card_name);
     card->id = host_number++;
     xbt_dict_set(surf_model_resource_set(surf_network_model), card_name, card,
-                 network_card_free);
+                 surf_resource_free);
   }
   return card->id;
 }
@@ -299,11 +292,6 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
-}
-
-static const char *get_resource_name(void *resource_id)
-{
-  return ((network_card_CM02_t) resource_id)->name;
 }
 
 static int resource_used(void *resource_id)
@@ -521,12 +509,12 @@ static surf_action_t communicate(void *src, void *dst, double size,
      total_route_size = route_size + src->link_nb + dst->nb */
   int i;
 
-  XBT_IN4("(%s,%s,%g,%g)", card_src->name, card_dst->name, size, rate);
+  XBT_IN4("(%s,%s,%g,%g)", card_src->generic_resource.name, card_dst->generic_resource.name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
   xbt_assert2(route_size,
               "You're trying to send data from %s to %s but there is no connexion between these two cards.",
-              card_src->name, card_dst->name);
+              card_src->generic_resource.name, card_dst->generic_resource.name);
 
   action = xbt_new0(s_surf_action_network_CM02_t, 1);
 
@@ -616,11 +604,6 @@ static int get_route_size(void *src, void *dst)
   return ROUTE_SIZE(card_src->id, card_dst->id);
 }
 
-static const char *get_link_name(const void *link)
-{
-  return ((link_CM02_t) link)->name;
-}
-
 static double get_link_bandwidth(const void *link)
 {
   return ((link_CM02_t) link)->bw_current;
@@ -696,7 +679,6 @@ static void surf_network_model_init_internal(void)
 {
   surf_network_model = surf_model_init();
 
-  surf_network_model->get_resource_name = get_resource_name;
   surf_network_model->action_get_state = surf_action_get_state;
   surf_network_model->action_get_start_time = surf_action_get_start_time;
   surf_network_model->action_get_finish_time = surf_action_get_finish_time;
@@ -724,7 +706,6 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension.network.communicate = communicate;
   surf_network_model->extension.network.get_route = get_route;
   surf_network_model->extension.network.get_route_size = get_route_size;
-  surf_network_model->extension.network.get_link_name = get_link_name;
   surf_network_model->extension.network.get_link_bandwidth =
     get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = get_link_latency;

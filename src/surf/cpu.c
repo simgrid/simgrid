@@ -18,9 +18,8 @@ static xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
 
 static void cpu_free(void *cpu)
 {
-  free(((cpu_Cas01_t) cpu)->name);
   xbt_dict_free(&(((cpu_Cas01_t) cpu)->properties));
-  free(cpu);
+  surf_resource_free(cpu);
 }
 
 static cpu_Cas01_t cpu_new(char *name, double power_scale,
@@ -33,8 +32,8 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
   xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
               "Host '%s' declared several times in the platform file", name);
-  cpu->model = surf_cpu_model;
-  cpu->name = name;
+  cpu->generic_resource.model = surf_cpu_model;
+  cpu->generic_resource.name = name;
   cpu->power_scale = power_scale;
   xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
   cpu->power_current = power_initial;
@@ -127,11 +126,6 @@ static void define_callbacks(const char *file)
 {
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
-}
-
-static const char *get_resource_name(void *resource_id)
-{
-  return ((cpu_Cas01_t) resource_id)->name;
 }
 
 static int resource_used(void *resource_id)
@@ -405,7 +399,6 @@ static void surf_cpu_model_init_internal(void)
   running_action_set_that_does_not_need_being_checked =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
-  surf_cpu_model->get_resource_name = get_resource_name;
   surf_cpu_model->action_get_state = surf_action_get_state;
   surf_cpu_model->action_get_start_time = surf_action_get_start_time;
   surf_cpu_model->action_get_finish_time = surf_action_get_finish_time;

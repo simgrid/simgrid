@@ -13,12 +13,11 @@
 #include "xbt/dict.h"
 
 typedef struct network_link_CM02 {
-  surf_model_t model;           /* Any such object, added in a trace
-                                   should start by this field!!! */
+  s_surf_resource_t generic_resource; /* must remain first to be added to a trace */
+
   xbt_dict_t properties;
   /* Using this object with the public part of
      model does not make sense */
-  char *name;
   double bw_current;
   tmgr_trace_event_t bw_event;
   double lat_current;
@@ -30,7 +29,7 @@ typedef struct network_link_CM02 {
 
 
 typedef struct network_card_CM02 {
-  char *name;
+  s_surf_resource_t generic_resource; /* must remain first to allow casts */
   int id;
 } s_network_card_CM02_t, *network_card_CM02_t;
 

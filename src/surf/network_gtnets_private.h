@@ -12,11 +12,9 @@
 #include "xbt/dict.h"
 
 typedef struct network_link_GTNETS {
-  surf_model_t model;           /* Any such object, added in a trace
-                                   should start by this field!!! */
+  s_surf_resource_t generic_resource; /* Must remain first to allow casting */
   /* Using this object with the public part of
      model does not make sense */
-  char *name;
   double bw_current;
   double lat_current;
   int id;

@@ -14,7 +14,13 @@ SimGrid (3.3.2-svn) unstable; urgency=low
    (less redirections, less function to write when defining a model)
   * Unify the types of models in a uniq s_surf_model_t (using an union)
   * Embeed every fields of common_public directly into s_surf_model_t
-
+  * Implement a generic resource; use it as ancestor to specific ones
+    Allows to kill duplicated code in models
+    The drawback is that network cards are more fat since they don't
+     use the model field of their ancestor. 
+    But hell, we wont fight for 8 bytes per host, will we?
+    TODO: integrate the properties into that ancestor
+    
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]
   * Add xbt_graph_node_get_outedges() [Silas De Munck]

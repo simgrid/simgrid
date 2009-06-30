@@ -113,8 +113,7 @@ const char *SD_link_get_name(SD_link_t link)
 {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_model->extension.workstation.
-    get_link_name(link->surf_link);
+  return surf_resource_name(link->surf_link);
 }
 
 /**

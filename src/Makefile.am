@@ -170,6 +170,7 @@ XBT_SG_SRC = \
 
 SURF_SRC= \
   surf/model.c                                                               \
+  surf/surf_resource.c                                                       \
   surf/surf_config.c                                                         \
   surf/maxmin.c                                                              \
   surf/fair_bottleneck.c                                                     \

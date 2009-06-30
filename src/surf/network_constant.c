@@ -13,7 +13,7 @@
 #include "xbt/log.h"
 
 typedef struct network_card_Constant {
-  char *name;
+  s_surf_resource_t generic_resource;
   int id;
 } s_network_card_Constant_t, *network_card_Constant_t;
 
@@ -31,12 +31,6 @@ static random_data_t random_latency = NULL;
 static int card_number = 0;
 static int host_number = 0;
 
-static void network_card_free(void *nw_card)
-{
-  free(((network_card_Constant_t) nw_card)->name);
-  free(nw_card);
-}
-
 static int network_card_new(const char *card_name)
 {
   network_card_Constant_t card =
@@ -44,10 +38,10 @@ static int network_card_new(const char *card_name)
 
   if (!card) {
     card = xbt_new0(s_network_card_Constant_t, 1);
-    card->name = xbt_strdup(card_name);
+    card->generic_resource.name = xbt_strdup(card_name);
     card->id = card_number++;
     xbt_dict_set(surf_model_resource_set(surf_network_model), card_name, card,
-                 network_card_free);
+                 surf_resource_free);
   }
   return card->id;
 }
@@ -84,11 +78,6 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(STag_surfxml_route_cb_list,
                        &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-}
-
-static const char *get_resource_name(void *resource_id)
-{
-  return ((network_card_Constant_t) resource_id)->name;
 }
 
 static int resource_used(void *resource_id)
@@ -193,7 +182,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   network_card_Constant_t card_src = src;
   network_card_Constant_t card_dst = dst;
 
-  XBT_IN4("(%s,%s,%g,%g)", card_src->name, card_dst->name, size, rate);
+  XBT_IN4("(%s,%s,%g,%g)", card_src->generic_resource.name, card_dst->generic_resource.name, size, rate);
 
   action = xbt_new0(s_surf_action_network_Constant_t, 1);
 
@@ -235,11 +224,6 @@ static int get_route_size(void *src, void *dst)
 {
   xbt_assert0(0, "Calling this function does not make any sense");
   return 0;
-}
-
-static const char *get_link_name(const void *link)
-{
-  DIE_IMPOSSIBLE;
 }
 
 static double get_link_bandwidth(const void *link)
@@ -295,7 +279,6 @@ static void surf_network_model_init_internal(void)
 {
   surf_network_model = surf_model_init();
 
-  surf_network_model->get_resource_name = get_resource_name;
   surf_network_model->action_get_state = surf_action_get_state;
   surf_network_model->action_get_start_time = surf_action_get_start_time;
   surf_network_model->action_get_finish_time = surf_action_get_finish_time;
@@ -323,7 +306,6 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension.network.communicate = communicate;
   surf_network_model->extension.network.get_route = get_route;
   surf_network_model->extension.network.get_route_size = get_route_size;
-  surf_network_model->extension.network.get_link_name = get_link_name;
   surf_network_model->extension.network.get_link_bandwidth =
     get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = get_link_latency;

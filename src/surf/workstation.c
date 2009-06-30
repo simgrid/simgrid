@@ -17,24 +17,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 
 surf_model_t surf_workstation_model = NULL;
 
-static void workstation_free(void *workstation)
-{
-  free(((workstation_CLM03_t) workstation)->name);
-  free(workstation);
-}
-
 static workstation_CLM03_t workstation_new(const char *name,
                                            void *cpu, void *card)
 {
   workstation_CLM03_t workstation = xbt_new0(s_workstation_CLM03_t, 1);
 
-  workstation->model = surf_workstation_model;
-  workstation->name = xbt_strdup(name);
+  workstation->generic_resource.model = surf_workstation_model;
+  workstation->generic_resource.name = xbt_strdup(name);
   workstation->cpu = cpu;
   workstation->network_card = card;
 
   xbt_dict_set(surf_model_resource_set(surf_workstation_model), name,
-               workstation, workstation_free);
+               workstation, surf_resource_free);
 
   return workstation;
 }
@@ -52,11 +46,6 @@ void create_workstations(void)
 
     workstation_new(name, cpu, nw_card);
   }
-}
-
-static const char *get_resource_name(void *resource_id)
-{
-  return ((workstation_CLM03_t) resource_id)->name;
 }
 
 static int resource_used(void *resource_id)
@@ -275,11 +264,6 @@ static int get_route_size(void *src, void *dst)
                            workstation_dst->network_card);
 }
 
-static const char *get_link_name(const void *link)
-{
-  return surf_network_model->extension.network.get_link_name(link);
-}
-
 static double get_link_bandwidth(const void *link)
 {
   return surf_network_model->extension.network.get_link_bandwidth(link);
@@ -306,7 +290,6 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model = surf_model_init();
 /*   surf_workstation_model->extension_private = xbt_new0(s_surf_workstation_model_extension_private_t,1); */
 
-  surf_workstation_model->get_resource_name = get_resource_name;
   surf_workstation_model->action_get_state = surf_action_get_state;
   surf_workstation_model->action_get_start_time = surf_action_get_start_time;
   surf_workstation_model->action_get_finish_time =
@@ -348,7 +331,6 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.get_route = get_route;
   surf_workstation_model->extension.workstation.get_route_size =
     get_route_size;
-  surf_workstation_model->extension.workstation.get_link_name = get_link_name;
   surf_workstation_model->extension.workstation.get_link_bandwidth =
     get_link_bandwidth;
   surf_workstation_model->extension.workstation.get_link_latency =

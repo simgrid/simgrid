@@ -17,16 +17,11 @@ static xbt_swag_t command_pending = NULL;
 static xbt_swag_t command_to_run = NULL;
 static xbt_heap_t timer_heap = NULL;
 
-static void timer_free(void *timer)
-{
-  free(timer);
-}
-
 static command_t command_new(void *fun, void *args)
 {
   command_t command = xbt_new0(s_command_t, 1);
 
-  command->model = surf_timer_model;
+  command->generic_resource.model = surf_timer_model;
   command->function = fun;
   command->args = args;
   xbt_swag_insert(command, command_pending);
@@ -35,13 +30,12 @@ static command_t command_new(void *fun, void *args)
 
 static void command_free(command_t command)
 {
-  free(command);
-
   if (xbt_swag_belongs(command, command_to_run)) {
     xbt_swag_remove(command, command_to_run);
   } else if (xbt_swag_belongs(command, command_pending)) {
     xbt_swag_remove(command, command_pending);
   }
+  surf_resource_free((surf_resource_t)command);
   return;
 }
 
@@ -51,12 +45,6 @@ static void parse_timer(void)
 
 static void parse_file(const char *file)
 {
-}
-
-static const char *get_resource_name(void *resource_id)
-{
-  DIE_IMPOSSIBLE;
-  return "";
 }
 
 static int resource_used(void *resource_id)
@@ -162,7 +150,6 @@ static void surf_timer_model_init_internal(void)
 {
   surf_timer_model = surf_model_init();
 
-  surf_timer_model->get_resource_name = get_resource_name;
   surf_timer_model->action_get_state = surf_action_get_state;
   surf_timer_model->action_change_state = action_change_state;
   surf_timer_model->action_set_data = surf_action_set_data;

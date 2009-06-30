@@ -11,14 +11,8 @@
 #include "surf_private.h"
 #include "xbt/dict.h"
 
-/* typedef struct surf_action_timer_Cas01 { */
-/*   s_surf_action_t generic_action; */
-/*   lmm_variable_t variable; */
-/* } s_surf_action_timer_t, *surf_action_timer_t; */
-
 typedef struct command {
-  surf_model_t model;           /* Any such object, added in a trace
-                                   should start by this field!!! */
+  s_surf_resource_t generic_resource; /* Must remain first, since we add this to a trace */
   void *function;
   void *args;
   s_xbt_swag_hookup_t command_set_hookup;

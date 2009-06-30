@@ -118,14 +118,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 /* Generic model object */
 /***************************/
 
-/** \brief Public data available on all models
- *  \ingroup SURF_models
- *
- *  These functions are implemented by all models.
- */
-     typedef struct surf_model_public {
-     } s_surf_model_public_t, *surf_model_public_t;
-
 /** \brief Private data available on all models
  *  \ingroup SURF_models
  */
@@ -176,7 +168,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
                                     double max_rate);
        const void **(*get_route) (void *src, void *dst);
        int (*get_route_size) (void *src, void *dst);
-       const char *(*get_link_name) (const void *link);
        double (*get_link_bandwidth) (const void *link);
        double (*get_link_latency) (const void *link);
        int (*link_shared) (const void *link);
@@ -205,7 +196,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
                                               double amount, double rate);
        const void **(*get_route) (void *src, void *dst);                                   /**< Return the network link list between two workstations */
        int (*get_route_size) (void *src, void *dst);                                       /**< Return the route size between two workstations */
-       const char *(*get_link_name) (const void *link);                                    /**< Return the name of a network link */
        double (*get_link_bandwidth) (const void *link);                                    /**< Return the current bandwidth of a network link */
        double (*get_link_latency) (const void *link);                                      /**< Return the current latency of a network link */
        int (*link_shared) (const void *link);
@@ -220,7 +210,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
      typedef struct surf_model {
        const char *name;/**< Name of this model */
        s_surf_action_state_t states; /**< Any living action on this model */
-       const char *(*get_resource_name) (void *resource_id);/**< Return the name of a resource */
 
        e_surf_action_state_t(*action_get_state) (surf_action_t action);/**< Return the state of an action */
        double (*action_get_start_time) (surf_action_t action);/**< Return the start time of an action */
@@ -263,8 +252,11 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 
      typedef struct surf_resource {
        surf_model_t model;
+       char *name;
      } s_surf_resource_t, *surf_resource_t;
 
+XBT_PUBLIC(const char*) surf_resource_name(const void *resource);
+XBT_PUBLIC(void) surf_resource_free(void* resource);
 /**************************************/
 /* Implementations of model object */
 /**************************************/
