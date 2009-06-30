@@ -14,8 +14,7 @@
 #    <simgrid>/tools/tesh/README.tesh
 #  - List the tesh file in the TESTS variable so that it gets tested on make check
 
-noinst_PROGRAMS = bcast bcbench compute compute2 compute3 first second mvmul ring_c split
-#reduce Not working yet (FIXME)
+noinst_PROGRAMS = bcast bcbench compute compute2 compute3 first second mvmul ring_c split reduce 
 
 bcast: bcast.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
