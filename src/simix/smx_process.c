@@ -63,7 +63,7 @@ smx_process_t SIMIX_process_create(const char *name,
   smx_process_t self = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
 
-  DEBUG2("Start process %s on host %s",name,hostname);
+  DEBUG2("Start process %s on host %s", name, hostname);
 
   if (!SIMIX_host_get_state(host)) {
     WARN2("Cannot launch process '%s' on failed host '%s'", name, hostname);
@@ -339,7 +339,7 @@ void SIMIX_process_suspend(smx_process_t process)
       c = simdata->cond;
       xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
         surf_workstation_model->common_public.suspend(act->
-                                                       simdata->surf_action);
+                                                      simdata->surf_action);
       }
     } else {
       simdata->suspended = 1;
@@ -354,7 +354,7 @@ void SIMIX_process_suspend(smx_process_t process)
     cond = SIMIX_cond_init();
     dummy = SIMIX_action_execute(SIMIX_process_get_host(process), name, 0);
     surf_workstation_model->common_public.suspend(dummy->simdata->
-                                                   surf_action);
+                                                  surf_action);
     SIMIX_register_action_to_condition(dummy, cond);
     __SIMIX_cond_wait(cond);
     SIMIX_unregister_action_to_condition(dummy, cond);
@@ -396,8 +396,7 @@ void SIMIX_process_resume(smx_process_t process)
     simdata->suspended = 0;
     c = simdata->cond;
     xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-      surf_workstation_model->common_public.resume(act->simdata->
-                                                    surf_action);
+      surf_workstation_model->common_public.resume(act->simdata->surf_action);
     }
     SIMIX_cond_signal(c);
     return;
@@ -444,7 +443,7 @@ int SIMIX_process_is_suspended(smx_process_t process)
  *
  * Maestro internal process is not counted, only user code processes are
  */
-int SIMIX_process_count() {
-	return xbt_swag_size(simix_global->process_list);
+int SIMIX_process_count()
+{
+  return xbt_swag_size(simix_global->process_list);
 }
-

@@ -169,7 +169,7 @@ int forwarder(int argc, char *argv[])
     }
   }
   xbt_free(slaves);
-   
+
   INFO0("I'm done. See you!");
   return 0;
 }                               /* end_of_forwarder */

@@ -3,9 +3,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_receiver, smpi,
                                 "Logging specific to SMPI (receiver)");
 
-int smpi_receiver(int argc, char*argv[])
+int smpi_receiver(int argc, char *argv[])
 {
-	smpi_process_data_t mydata = SIMIX_process_get_data(SIMIX_process_self());
+  smpi_process_data_t mydata = SIMIX_process_get_data(SIMIX_process_self());
   smx_process_t self;
   int index = mydata->index;
 
@@ -26,8 +26,9 @@ int smpi_receiver(int argc, char*argv[])
   while (1) {
     // FIXME: better algorithm, maybe some kind of balanced tree? or a heap?
 
-	xbt_fifo_foreach(request_queue,request_item,request,smpi_mpi_request_t){
-	  xbt_fifo_foreach(message_queue,message_item,message, smpi_received_message_t) {
+    xbt_fifo_foreach(request_queue, request_item, request, smpi_mpi_request_t) {
+      xbt_fifo_foreach(message_queue, message_item, message,
+                       smpi_received_message_t) {
 
         if (request->comm == message->comm &&
             (MPI_ANY_SOURCE == request->src || request->src == message->src)
@@ -45,38 +46,38 @@ int smpi_receiver(int argc, char*argv[])
     message = NULL;
 
   stopsearch:
-  if (NULL != request) {
-	  if (NULL == message)
-		  DIE_IMPOSSIBLE;
+    if (NULL != request) {
+      if (NULL == message)
+        DIE_IMPOSSIBLE;
 
-	  SIMIX_mutex_lock(request->mutex);
-	  memcpy(request->buf, message->buf,
-			  request->datatype->size * request->count);
-	  request->src = message->src;
-	  request->data = message->data;
-	  request->forward = message->forward;
+      SIMIX_mutex_lock(request->mutex);
+      memcpy(request->buf, message->buf,
+             request->datatype->size * request->count);
+      request->src = message->src;
+      request->data = message->data;
+      request->forward = message->forward;
 
-	  if (0 == request->forward) {
-		  request->completed = 1;
-		  SIMIX_cond_broadcast(request->cond);
-	  } else {
-		  request->src = request->comm->index_to_rank_map[index];
-		  request->dst = (request->src + 1) % request->comm->size;
-		  smpi_mpi_isend(request);
-	  }
+      if (0 == request->forward) {
+        request->completed = 1;
+        SIMIX_cond_broadcast(request->cond);
+      } else {
+        request->src = request->comm->index_to_rank_map[index];
+        request->dst = (request->src + 1) % request->comm->size;
+        smpi_mpi_isend(request);
+      }
 
-	  SIMIX_mutex_unlock(request->mutex);
+      SIMIX_mutex_unlock(request->mutex);
 
-	  xbt_free(message->buf);
-	  xbt_mallocator_release(smpi_global->message_mallocator, message);
+      xbt_free(message->buf);
+      xbt_mallocator_release(smpi_global->message_mallocator, message);
 
-    } else if (mydata->finalize>0) { /* main wants me to die and nothing to do */
-    	// FIXME: display the list of remaining requests and messages (user code synchronization faulty?)
-    	mydata->finalize--;
-    	SIMIX_cond_signal(mydata->cond);
-    	return 0;
+    } else if (mydata->finalize > 0) {  /* main wants me to die and nothing to do */
+      // FIXME: display the list of remaining requests and messages (user code synchronization faulty?)
+      mydata->finalize--;
+      SIMIX_cond_signal(mydata->cond);
+      return 0;
     } else {
-    	SIMIX_process_suspend(self);
+      SIMIX_process_suspend(self);
     }
   }
 

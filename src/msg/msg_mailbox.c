@@ -180,11 +180,12 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   h = MSG_host_self();
   h_simdata = h->simdata;
 
-  SIMIX_mutex_lock(h_simdata->mutex);//FIXME: lock the mailbox instead
+  SIMIX_mutex_lock(h_simdata->mutex);   //FIXME: lock the mailbox instead
 
   if (MSG_mailbox_get_cond(mailbox)) {
-    CRITICAL1("A process is already blocked on the channel %s (meaning that someone is already doing a get on this)",
-              MSG_mailbox_get_alias(mailbox));
+    CRITICAL1
+      ("A process is already blocked on the channel %s (meaning that someone is already doing a get on this)",
+       MSG_mailbox_get_alias(mailbox));
     SIMIX_cond_display_info(MSG_mailbox_get_cond(mailbox));
     xbt_die("Go fix your code!");
   }
@@ -335,7 +336,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
          t_simdata->message_size / 1000, local_host->name,
          remote_host->name, MSG_mailbox_get_alias(mailbox));
 
-  SIMIX_mutex_lock(remote_host->simdata->mutex); /* FIXME: lock the mailbox instead */
+  SIMIX_mutex_lock(remote_host->simdata->mutex);        /* FIXME: lock the mailbox instead */
 
   /* put the task in the mailbox */
   xbt_fifo_push(mailbox->tasks, task);
@@ -349,7 +350,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   SIMIX_mutex_lock(t_simdata->mutex);
 
-  process->simdata->waiting_task = task; // for debugging and status displaying purpose
+  process->simdata->waiting_task = task;        // for debugging and status displaying purpose
 
   if (timeout > 0) {
     xbt_ex_t e;
@@ -398,7 +399,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
       }
     }
   } else {
-    while (1) {//FIXME: factorize with the code right above
+    while (1) {                 //FIXME: factorize with the code right above
       SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
 
       if (t_simdata->comm)

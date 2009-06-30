@@ -170,6 +170,86 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
  */
      typedef struct surf_model_private *surf_model_private_t;
 
+     /** \brief Timer model extension public
+      * \ingroup SURF_model
+      *
+      * Additionnal functions specific to the timer model
+      */
+     typedef struct surf_timer_model_extension_public {
+       void (*set) (double date, void *function, void *arg);
+       int (*get) (void **function, void **arg);
+     } s_surf_timer_model_extension_public_t;
+
+          /* Cpu model */
+
+          /** \brief CPU state
+           *  \ingroup SURF_models
+           */
+     typedef enum {
+       SURF_CPU_ON = 1,                   /**< Up & ready        */
+       SURF_CPU_OFF = 0                   /**< Down & broken     */
+     } e_surf_cpu_state_t;
+
+          /** \brief CPU model extension public
+           *  \ingroup SURF_models
+           *
+           *  Public functions specific to the CPU model.
+           */
+     typedef struct surf_cpu_model_extension_public {
+       surf_action_t(*execute) (void *cpu, double size);
+       surf_action_t(*sleep) (void *cpu, double duration);
+       e_surf_cpu_state_t(*get_state) (void *cpu);
+       double (*get_speed) (void *cpu, double load);
+       double (*get_available_speed) (void *cpu);
+     } s_surf_cpu_model_extension_public_t;
+
+               /* Network model */
+
+               /** \brief Network model extension public
+                *  \ingroup SURF_models
+                *
+                *  Public functions specific to the network model
+                */
+     typedef struct surf_network_model_extension_public {
+       surf_action_t(*communicate) (void *src, void *dst, double size,
+                                    double max_rate);
+       const void **(*get_route) (void *src, void *dst);
+       int (*get_route_size) (void *src, void *dst);
+       const char *(*get_link_name) (const void *link);
+       double (*get_link_bandwidth) (const void *link);
+       double (*get_link_latency) (const void *link);
+       int (*link_shared) (const void *link);
+     } s_surf_network_model_extension_public_t;
+
+                    /** \brief Workstation model extension public
+                     *  \ingroup SURF_models
+                     *
+                     *  Public functions specific to the workstation model.
+                     */
+     typedef struct surf_workstation_model_extension_public {
+       surf_action_t(*execute) (void *workstation, double size);                           /**< Execute a computation amount on a workstation
+                    									and create the corresponding action */
+       surf_action_t(*sleep) (void *workstation, double duration);                         /**< Make a workstation sleep during a given duration */
+       e_surf_cpu_state_t(*get_state) (void *workstation);                                 /**< Return the CPU state of a workstation */
+       double (*get_speed) (void *workstation, double load);                               /**< Return the speed of a workstation */
+       double (*get_available_speed) (void *workstation);                                  /**< Return tha available speed of a workstation */
+       surf_action_t(*communicate) (void *workstation_src,                                 /**< Execute a communication amount between two workstations */
+                                    void *workstation_dst, double size,
+                                    double max_rate);
+
+       surf_action_t(*execute_parallel_task) (int workstation_nb,                          /**< Execute a parallel task on several workstations */
+                                              void **workstation_list,
+                                              double *computation_amount,
+                                              double *communication_amount,
+                                              double amount, double rate);
+       const void **(*get_route) (void *src, void *dst);                                   /**< Return the network link list between two workstations */
+       int (*get_route_size) (void *src, void *dst);                                       /**< Return the route size between two workstations */
+       const char *(*get_link_name) (const void *link);                                    /**< Return the name of a network link */
+       double (*get_link_bandwidth) (const void *link);                                    /**< Return the current bandwidth of a network link */
+       double (*get_link_latency) (const void *link);                                      /**< Return the current latency of a network link */
+       int (*link_shared) (const void *link);
+     } s_surf_workstation_model_extension_public_t;
+
 /** \brief Model datatype
  *  \ingroup SURF_models
  *
@@ -179,10 +259,16 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
      typedef struct surf_model {
        s_surf_model_public_t common_public;
        surf_model_private_t common_private;
+       union extension {
+         s_surf_timer_model_extension_public_t timer;
+         s_surf_cpu_model_extension_public_t cpu;
+         s_surf_network_model_extension_public_t network;
+         s_surf_workstation_model_extension_public_t workstation;
+       } extension;
      } s_surf_model_t;
 
      void surf_model_init(surf_model_t model);
-     void* surf_model_resource_by_name(void* model, const char *name);
+     void *surf_model_resource_by_name(surf_model_t model, const char *name);
 #define surf_model_resource_set(model) (model)->common_public.resource_set
      void surf_model_exit(surf_model_t model);
 
@@ -194,73 +280,21 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 /* Implementations of model object */
 /**************************************/
 
-/** \brief Timer model extension public
- * \ingroup SURF_model
- *
- * Additionnal functions specific to the timer model
- */
-     typedef struct surf_timer_model_extension_public {
-       void (*set) (double date, void *function, void *arg);
-       int (*get) (void **function, void **arg);
-     } s_surf_timer_model_extension_public_t,
-  *surf_timer_model_extension_public_t;
-
-/** \brief Timer model
- *  \ingroup SURF_models
- */
-     typedef struct surf_timer_model {
-       s_surf_model_public_t common_public;
-       surf_model_private_t common_private;
-       surf_timer_model_extension_public_t extension_public;
-     } s_surf_timer_model_t, *surf_timer_model_t;
 
 /** \brief The timer model
  *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(surf_timer_model_t) surf_timer_model;
+XBT_PUBLIC_DATA(surf_model_t) surf_timer_model;
 
 /** \brief Initializes the timer model
  *  \ingroup SURF_models
  */
 XBT_PUBLIC(void) surf_timer_model_init(const char *filename);
 
-/* Cpu model */
-
-/** \brief CPU state
- *  \ingroup SURF_models
- */
-     typedef enum {
-       SURF_CPU_ON = 1,         /**< Up & ready        */
-       SURF_CPU_OFF = 0         /**< Down & broken     */
-     } e_surf_cpu_state_t;
-
-/** \brief CPU model extension public
- *  \ingroup SURF_models
- *
- *  Public functions specific to the CPU model.
- */
-     typedef struct surf_cpu_model_extension_public {
-       surf_action_t(*execute) (void *cpu, double size);
-       surf_action_t(*sleep) (void *cpu, double duration);
-       e_surf_cpu_state_t(*get_state) (void *cpu);
-       double (*get_speed) (void *cpu, double load);
-       double (*get_available_speed) (void *cpu);
-     } s_surf_cpu_model_extension_public_t,
-  *surf_cpu_model_extension_public_t;
-
-/** \brief CPU model datatype
- *  \ingroup SURF_models
- */
-     typedef struct surf_cpu_model {
-       s_surf_model_public_t common_public;
-       surf_model_private_t common_private;
-       surf_cpu_model_extension_public_t extension_public;
-     } s_surf_cpu_model_t, *surf_cpu_model_t;
-
 /** \brief The CPU model
  *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model;
+XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model;
 
 /** \brief Initializes the CPU model with the model Cas01
  *  \ingroup SURF_models
@@ -277,34 +311,6 @@ XBT_PUBLIC(void) surf_cpu_model_init_Cas01(const char *filename);
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
 
-/* Network model */
-
-/** \brief Network model extension public
- *  \ingroup SURF_models
- *
- *  Public functions specific to the network model
- */
-     typedef struct surf_network_model_extension_public {
-       surf_action_t(*communicate) (void *src, void *dst, double size,
-                                    double max_rate);
-       const void **(*get_route) (void *src, void *dst);
-       int (*get_route_size) (void *src, void *dst);
-       const char *(*get_link_name) (const void *link);
-       double (*get_link_bandwidth) (const void *link);
-       double (*get_link_latency) (const void *link);
-       int (*link_shared) (const void *link);
-     } s_surf_network_model_extension_public_t,
-  *surf_network_model_extension_public_t;
-
-/** \brief Network model datatype
- *  \ingroup SURF_models
- */
-     typedef struct surf_network_model {
-       s_surf_model_public_t common_public;
-       surf_model_private_t common_private;
-       surf_network_model_extension_public_t extension_public;
-     } s_surf_network_model_t, *surf_network_model_t;
-
 XBT_PUBLIC(void) create_workstations(void);
 
 /** \brief The network model
@@ -315,7 +321,7 @@ XBT_PUBLIC(void) create_workstations(void);
  *  model should be accessed because depending on the platform model,
  *  the network model can be NULL.
  */
-XBT_PUBLIC_DATA(surf_network_model_t) surf_network_model;
+XBT_PUBLIC_DATA(surf_model_t) surf_network_model;
 
 /** \brief Initializes the platform with the network model 'LagrangeVelho'
  *  \ingroup SURF_models
@@ -437,45 +443,6 @@ XBT_PUBLIC(void) surf_network_model_init_SDP(const char *filename);
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
 
-/** \brief Workstation model extension public
- *  \ingroup SURF_models
- *
- *  Public functions specific to the workstation model.
- */
-     typedef struct surf_workstation_model_extension_public {
-       surf_action_t(*execute) (void *workstation, double size);       /**< Execute a computation amount on a workstation
-									and create the corresponding action */
-       surf_action_t(*sleep) (void *workstation, double duration);     /**< Make a workstation sleep during a given duration */
-       e_surf_cpu_state_t(*get_state) (void *workstation);             /**< Return the CPU state of a workstation */
-       double (*get_speed) (void *workstation, double load);           /**< Return the speed of a workstation */
-       double (*get_available_speed) (void *workstation);              /**< Return tha available speed of a workstation */
-         surf_action_t(*communicate) (void *workstation_src,           /**< Execute a communication amount between two workstations */
-                                      void *workstation_dst, double size,
-                                      double max_rate);
-
-         surf_action_t(*execute_parallel_task) (int workstation_nb,    /**< Execute a parallel task on several workstations */
-                                                void **workstation_list,
-                                                double *computation_amount,
-                                                double *communication_amount,
-                                                double amount, double rate);
-       const void **(*get_route) (void *src, void *dst);               /**< Return the network link list between two workstations */
-       int (*get_route_size) (void *src, void *dst);                   /**< Return the route size between two workstations */
-       const char *(*get_link_name) (const void *link);                /**< Return the name of a network link */
-       double (*get_link_bandwidth) (const void *link);                /**< Return the current bandwidth of a network link */
-       double (*get_link_latency) (const void *link);                  /**< Return the current latency of a network link */
-       int (*link_shared) (const void *link);
-     } s_surf_workstation_model_extension_public_t,
-  *surf_workstation_model_extension_public_t;
-
-/** \brief Workstation model datatype.
- *  \ingroup SURF_models
- *
- */
-     typedef struct surf_workstation_model {
-       s_surf_model_public_t common_public;
-       surf_model_private_t common_private;
-       surf_workstation_model_extension_public_t extension_public;
-     } s_surf_workstation_model_t, *surf_workstation_model_t;
 
 /** \brief The workstation model
  *  \ingroup SURF_models
@@ -485,7 +452,7 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
  *  because depending on the platform model, the network model and the CPU model
  *  may not exist.
  */
-XBT_PUBLIC_DATA(surf_workstation_model_t) surf_workstation_model;
+XBT_PUBLIC_DATA(surf_model_t) surf_workstation_model;
 
 /** \brief Initializes the platform with a compound workstation model
  *  \ingroup SURF_models
@@ -557,8 +524,6 @@ XBT_PUBLIC_DATA(xbt_dict_t) link_set;
  *
  *  \see link_set
  */
-/*XBT_PUBLIC_DATA(xbt_dict_t) workstation_set; //KILLME
-XBT_PUBLIC_DATA(xbt_dict_t) cpu_set; //KILLME*/
 /** \brief List of initialized models
  *  \ingroup SURF_models
  */

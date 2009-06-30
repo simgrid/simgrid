@@ -162,7 +162,8 @@ void SD_create_environment(const char *platform_file)
   parse_platform_file(platform_file);
 
   /* now let's create the SD wrappers for workstations and links */
-  xbt_dict_foreach(surf_model_resource_set(surf_workstation_model), cursor, name, surf_workstation) {
+  xbt_dict_foreach(surf_model_resource_set(surf_workstation_model), cursor,
+                   name, surf_workstation) {
     __SD_workstation_create(surf_workstation, NULL);
   }
 
@@ -208,8 +209,8 @@ SD_task_t *SD_simulate(double how_long)
   }
 
   if (how_long > 0) {
-    surf_timer_model->extension_public->set(surf_get_clock() + how_long,
-                                            NULL, NULL);
+    surf_timer_model->extension.timer.set(surf_get_clock() + how_long,
+                                          NULL, NULL);
   }
   sd_global->watch_point_reached = 0;
 
@@ -285,7 +286,7 @@ SD_task_t *SD_simulate(double how_long)
       }
     }
 
-    while (surf_timer_model->extension_public->get(&fun, (void *) &arg)) {
+    while (surf_timer_model->extension.timer.get(&fun, (void *) &arg)) {
     }
   }
 

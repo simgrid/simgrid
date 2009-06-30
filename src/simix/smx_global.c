@@ -312,7 +312,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
       DEBUG1("Elapsed_time %f", elapsed_time);
     }
 
-    while (surf_timer_model->extension_public->get(&fun, (void *) &arg)) {
+    while (surf_timer_model->extension.timer.get(&fun, (void *) &arg)) {
       DEBUG2("got %p %p", fun, arg);
       if (fun == SIMIX_process_create) {
         smx_process_arg_t args = arg;
@@ -322,9 +322,9 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
                                        args->argc, args->argv,
                                        args->properties);
         if (process && args->kill_time > SIMIX_get_clock()) {
-          surf_timer_model->extension_public->set(args->kill_time, (void *)
-                                                  &SIMIX_process_kill,
-                                                  (void *) process);
+          surf_timer_model->extension.timer.set(args->kill_time, (void *)
+                                                &SIMIX_process_kill,
+                                                (void *) process);
         }
         xbt_free(args);
       }
@@ -386,12 +386,12 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
  */
 void SIMIX_timer_set(double date, void *function, void *arg)
 {
-  surf_timer_model->extension_public->set(date, function, arg);
+  surf_timer_model->extension.timer.set(date, function, arg);
 }
 
 int SIMIX_timer_get(void **function, void **arg)
 {
-  return surf_timer_model->extension_public->get(function, arg);
+  return surf_timer_model->extension.timer.get(function, arg);
 }
 
 /**

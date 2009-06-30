@@ -10,7 +10,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF CPU module");
 
-surf_cpu_model_t surf_cpu_model = NULL;
+surf_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
 
 
@@ -33,7 +33,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
   xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
               "Host '%s' declared several times in the platform file", name);
-  cpu->model = (surf_model_t) surf_cpu_model;
+  cpu->model = surf_cpu_model;
   cpu->name = name;
   cpu->power_scale = power_scale;
   xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
@@ -104,7 +104,7 @@ static void add_traces_cpu(void)
   /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_Cas01_t host = surf_model_resource_by_name((surf_model_t)surf_cpu_model, elm);
+    cpu_Cas01_t host = surf_model_resource_by_name(surf_cpu_model, elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -114,7 +114,7 @@ static void add_traces_cpu(void)
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_Cas01_t host = surf_model_resource_by_name((surf_model_t)surf_cpu_model, elm);
+    cpu_Cas01_t host = surf_model_resource_by_name(surf_cpu_model, elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -271,7 +271,7 @@ static surf_action_t execute(void *cpu, double size)
   action->generic_action.max_duration = NO_MAX_DURATION;
   action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
-  action->generic_action.model_type = (surf_model_t) surf_cpu_model;
+  action->generic_action.model_type = surf_cpu_model;
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
 
@@ -390,11 +390,10 @@ static void finalize(void)
   lmm_system_free(cpu_maxmin_system);
   cpu_maxmin_system = NULL;
 
-  surf_model_exit((surf_model_t) surf_cpu_model);
+  surf_model_exit(surf_cpu_model);
 
   xbt_swag_free(running_action_set_that_does_not_need_being_checked);
   running_action_set_that_does_not_need_being_checked = NULL;
-  free(surf_cpu_model->extension_public);
 
   free(surf_cpu_model);
   surf_cpu_model = NULL;
@@ -404,12 +403,9 @@ static void surf_cpu_model_init_internal(void)
 {
   s_surf_action_t action;
 
-  surf_cpu_model = xbt_new0(s_surf_cpu_model_t, 1);
+  surf_cpu_model = xbt_new0(s_surf_model_t, 1);
 
-  surf_model_init((surf_model_t) surf_cpu_model);
-
-  surf_cpu_model->extension_public =
-    xbt_new0(s_surf_cpu_model_extension_public_t, 1);
+  surf_model_init(surf_cpu_model);
 
   running_action_set_that_does_not_need_being_checked =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
@@ -439,12 +435,12 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->common_public.is_suspended = action_is_suspended;
   surf_cpu_model->common_public.set_max_duration = action_set_max_duration;
   surf_cpu_model->common_public.set_priority = action_set_priority;
-  surf_cpu_model->extension_public->execute = execute;
-  surf_cpu_model->extension_public->sleep = action_sleep;
+  surf_cpu_model->extension.cpu.execute = execute;
+  surf_cpu_model->extension.cpu.sleep = action_sleep;
 
-  surf_cpu_model->extension_public->get_state = get_state;
-  surf_cpu_model->extension_public->get_speed = get_speed;
-  surf_cpu_model->extension_public->get_available_speed = get_available_speed;
+  surf_cpu_model->extension.cpu.get_state = get_state;
+  surf_cpu_model->extension.cpu.get_speed = get_speed;
+  surf_cpu_model->extension.cpu.get_available_speed = get_available_speed;
   /*manage the properties of the cpu */
   surf_cpu_model->common_public.get_properties = get_properties;
 

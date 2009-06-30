@@ -34,7 +34,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
  */
 void SIMIX_create_environment(const char *file)
 {
-	xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   void *workstation = NULL;
 
@@ -49,8 +49,9 @@ void SIMIX_create_environment(const char *file)
   end = xbt_os_time();
   DEBUG1("PARSE TIME: %lg", (end - start));
 
-  xbt_dict_foreach(surf_model_resource_set(surf_workstation_model), cursor, name, workstation) {
-	  __SIMIX_host_create(name, workstation, NULL);
+  xbt_dict_foreach(surf_model_resource_set(surf_workstation_model), cursor,
+                   name, workstation) {
+    __SIMIX_host_create(name, workstation, NULL);
   }
 
   return;

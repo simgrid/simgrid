@@ -121,11 +121,16 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
   }
   return retval;
 }
+
 /* FIXME: understand what they do and put the prototypes in a header file (live in smpi_base.c) */
-void smpi_mpi_land_func(void *a, void *b, int *length, MPI_Datatype * datatype);
-void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype * datatype);
-void smpi_mpi_min_func(void *a, void *b, int *length, MPI_Datatype * datatype);
-void smpi_mpi_max_func(void *a, void *b, int *length, MPI_Datatype * datatype);
+void smpi_mpi_land_func(void *a, void *b, int *length,
+                        MPI_Datatype * datatype);
+void smpi_mpi_sum_func(void *a, void *b, int *length,
+                       MPI_Datatype * datatype);
+void smpi_mpi_min_func(void *a, void *b, int *length,
+                       MPI_Datatype * datatype);
+void smpi_mpi_max_func(void *a, void *b, int *length,
+                       MPI_Datatype * datatype);
 
 void smpi_global_init()
 {
@@ -153,10 +158,11 @@ void smpi_global_init()
                        smpi_message_free, smpi_message_reset);
 
   smpi_global->process_count = SIMIX_process_count();
-  DEBUG1("There is %d processes",smpi_global->process_count);
+  DEBUG1("There is %d processes", smpi_global->process_count);
 
   // sender/receiver processes
-  smpi_global->main_processes = xbt_new(smx_process_t, smpi_global->process_count);
+  smpi_global->main_processes =
+    xbt_new(smx_process_t, smpi_global->process_count);
 
   // timers
   smpi_global->timer = xbt_os_timer_new();
@@ -255,24 +261,29 @@ void smpi_global_destroy()
 
 int smpi_process_index()
 {
-  smpi_process_data_t pdata = (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
+  smpi_process_data_t pdata =
+    (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
   return pdata->index;
 }
 
 smx_mutex_t smpi_process_mutex()
 {
-  smpi_process_data_t pdata = (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
+  smpi_process_data_t pdata =
+    (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
   return pdata->mutex;
 }
 
 smx_cond_t smpi_process_cond()
 {
-  smpi_process_data_t pdata = (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
+  smpi_process_data_t pdata =
+    (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
   return pdata->cond;
 }
 
-static void smpi_cfg_cb_host_speed(const char *name, int pos) {
-	smpi_global->reference_speed = xbt_cfg_get_double_at(_surf_cfg_set,name,pos);
+static void smpi_cfg_cb_host_speed(const char *name, int pos)
+{
+  smpi_global->reference_speed =
+    xbt_cfg_get_double_at(_surf_cfg_set, name, pos);
 }
 
 int smpi_run_simulation(int *argc, char **argv)
@@ -286,12 +297,15 @@ int smpi_run_simulation(int *argc, char **argv)
   srand(SMPI_RAND_SEED);
 
   double default_reference_speed = 20000.0;
-  xbt_cfg_register(&_surf_cfg_set,"reference_speed","Power of the host running the simulation (in flop/s). Used to bench the operations.",
-		  xbt_cfgelm_double,&default_reference_speed,1,1,smpi_cfg_cb_host_speed,NULL);
+  xbt_cfg_register(&_surf_cfg_set, "reference_speed",
+                   "Power of the host running the simulation (in flop/s). Used to bench the operations.",
+                   xbt_cfgelm_double, &default_reference_speed, 1, 1,
+                   smpi_cfg_cb_host_speed, NULL);
 
   int default_display_timing = 0;
-  xbt_cfg_register(&_surf_cfg_set,"display_timing","Boolean indicating whether we should display the timing after simulation.",
-		  xbt_cfgelm_int,&default_display_timing,1,1,NULL,NULL);
+  xbt_cfg_register(&_surf_cfg_set, "display_timing",
+                   "Boolean indicating whether we should display the timing after simulation.",
+                   xbt_cfgelm_int, &default_display_timing, 1, 1, NULL, NULL);
 
   SIMIX_global_init(argc, argv);
 
@@ -330,8 +344,8 @@ int smpi_run_simulation(int *argc, char **argv)
   xbt_fifo_free(actions_done);
 
 
-  if (xbt_cfg_get_int(_surf_cfg_set,"display_timing"))
-	  INFO1("simulation time %g", SIMIX_get_clock());
+  if (xbt_cfg_get_int(_surf_cfg_set, "display_timing"))
+    INFO1("simulation time %g", SIMIX_get_clock());
 
   smpi_global_destroy();
   SIMIX_clean();

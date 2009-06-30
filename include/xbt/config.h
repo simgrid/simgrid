@@ -169,13 +169,13 @@ XBT_PUBLIC(void) xbt_cfg_dump(const char *name, const char *indent,
  *
  *  @{
  */
-XBT_PUBLIC(void) xbt_cfg_register(xbt_cfg_t *cfg,
+XBT_PUBLIC(void) xbt_cfg_register(xbt_cfg_t * cfg,
                                   const char *name, const char *description,
-                                  e_xbt_cfgelm_type_t type, void *default_value,
-                                  int min, int max,
+                                  e_xbt_cfgelm_type_t type,
+                                  void *default_value, int min, int max,
                                   xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm);
 XBT_PUBLIC(void) xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
-XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t *cfg, const char *entry);
+XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry);
 XBT_PUBLIC(void) xbt_cfg_help(xbt_cfg_t cfg);
 XBT_PUBLIC(void) xbt_cfg_check(xbt_cfg_t cfg);
 XBT_PUBLIC(e_xbt_cfgelm_type_t) xbt_cfg_get_type(xbt_cfg_t cfg,

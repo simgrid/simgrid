@@ -66,12 +66,12 @@ static void parse_process_finalize(void)
     DEBUG3("Process %s(%s) will be started at time %f", arg->name,
            arg->hostname, start_time);
     if (simix_global->create_process_function)
-      surf_timer_model->extension_public->set(start_time, (void *)
-                                              simix_global->create_process_function,
-                                              arg);
+      surf_timer_model->extension.timer.set(start_time, (void *)
+                                            simix_global->create_process_function,
+                                            arg);
     else
-      surf_timer_model->extension_public->set(start_time, (void *)
-                                              &SIMIX_process_create, arg);
+      surf_timer_model->extension.timer.set(start_time, (void *)
+                                            &SIMIX_process_create, arg);
 
   }
   if ((start_time < 0) || (start_time == SIMIX_get_clock())) {
@@ -90,28 +90,28 @@ static void parse_process_finalize(void)
 
     if (process && kill_time > SIMIX_get_clock()) {
       if (simix_global->kill_process_function)
-	surf_timer_model->extension_public->set(start_time, (void *) 
-						simix_global->kill_process_function,
-						process);
+        surf_timer_model->extension.timer.set(start_time, (void *)
+                                              simix_global->kill_process_function,
+                                              process);
       else
-        surf_timer_model->extension_public->set(kill_time, (void *)
-                                                &SIMIX_process_kill,
-                                                (void *) process);
+        surf_timer_model->extension.timer.set(kill_time, (void *)
+                                              &SIMIX_process_kill,
+                                              (void *) process);
     }
     xbt_free(parse_host);
   }
 }
 
-/** 
+/**
  * \brief An application deployer.
  *
  * Creates the process described in \a file.
- * \param file a filename of a xml description of the application. This file 
+ * \param file a filename of a xml description of the application. This file
  * follows this DTD :
  *
  *     \include surfxml.dtd
  *
- * Here is a small example of such a platform 
+ * Here is a small example of such a platform
  *
  *     \include small_deployment.xml
  *
@@ -134,8 +134,8 @@ void SIMIX_launch_application(const char *file)
 /**
  * \brief Registers a #smx_process_code_t code in a global table.
  *
- * Registers a code function in a global table. 
- * This table is then used by #SIMIX_launch_application. 
+ * Registers a code function in a global table.
+ * This table is then used by #SIMIX_launch_application.
  * \param name the reference name of the function.
  * \param code the function
  */
@@ -166,7 +166,7 @@ void SIMIX_function_register_default(xbt_main_func_t code)
  * \brief Gets a #smx_process_t code from the global table.
  *
  * Gets a code function from the global table. Returns NULL if there are no function registered with the name.
- * This table is then used by #SIMIX_launch_application. 
+ * This table is then used by #SIMIX_launch_application.
  * \param name the reference name of the function.
  * \return The #smx_process_t or NULL.
  */

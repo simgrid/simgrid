@@ -54,7 +54,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   link_count++;
 
 /*
-  nw_link->model = (surf_model_t) surf_network_model;
+  nw_link->model =  surf_network_model;
   nw_link->name = name;
   nw_link->bw_current = bw_initial;
   if (bw_trace)
@@ -103,7 +103,8 @@ static int network_card_new(const char *name)
 
   XBT_IN1("(%s)", name);
   /* KF: Check that we haven't seen the network card before */
-  network_card_GTNETS_t card = surf_model_resource_by_name(surf_network_model, name);
+  network_card_GTNETS_t card =
+    surf_model_resource_by_name(surf_network_model, name);
 
   if (!card) {
     /* KF: Increment the card counter for GTNetS */
@@ -113,7 +114,8 @@ static int network_card_new(const char *name)
     card = xbt_new0(s_network_card_GTNETS_t, 1);
     card->name = xbt_strdup(name);
     card->id = card_count;
-    xbt_dict_set(surf_model_resource_set(surf_network_model), name, card, network_card_free);
+    xbt_dict_set(surf_model_resource_set(surf_network_model), name, card,
+                 network_card_free);
   }
 
   LOG1(xbt_log_priority_trace, "   return %d", card->id);
@@ -487,7 +489,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   action->generic_action.max_duration = NO_MAX_DURATION;
   action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
-  action->generic_action.model_type = (surf_model_t) surf_network_model;
+  action->generic_action.model_type = surf_network_model;
 
   action->generic_action.state_set =
     surf_network_model->common_public.states.running_action_set;
@@ -528,7 +530,7 @@ static void finalize(void)
 {
   xbt_dict_free(&link_set);
 
-  surf_model_exit((surf_model_t)surf_network_model);
+  surf_model_exit(surf_network_model);
 
   free(surf_network_model->extension_public);
 
@@ -544,7 +546,7 @@ static void surf_network_model_init_internal(void)
 
   surf_network_model = xbt_new0(s_surf_network_model_t, 1);
 
-  surf_model_init((surf_model_t)surf_network_model);
+  surf_model_init(surf_network_model);
 
   surf_network_model->extension_public =
     xbt_new0(s_surf_network_model_extension_public_t, 1);
@@ -556,8 +558,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->common_public.action_free = action_free;
   surf_network_model->common_public.action_cancel = action_cancel;
   surf_network_model->common_public.action_recycle = action_recycle;
-  surf_network_model->common_public.action_change_state =
-    action_change_state;
+  surf_network_model->common_public.action_change_state = action_change_state;
   surf_network_model->common_public.action_set_data = surf_action_set_data;
   surf_network_model->common_public.name = "network";
 
@@ -596,6 +597,6 @@ void surf_network_model_init_GTNETS(const char *filename)
   xbt_dynar_push(model_list, &surf_network_model);
 
   update_model_description(surf_network_model_description,
-                           "GTNets", (surf_model_t) surf_network_model);
+                           "GTNets", surf_network_model);
 }
 #endif

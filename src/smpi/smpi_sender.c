@@ -3,8 +3,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_sender, smpi,
                                 "Logging specific to SMPI (sender)");
 
-int smpi_sender(int argc,char*argv[]) {
-	smpi_process_data_t mydata = SIMIX_process_get_data(SIMIX_process_self());
+int smpi_sender(int argc, char *argv[])
+{
+  smpi_process_data_t mydata = SIMIX_process_get_data(SIMIX_process_self());
   smx_process_t self;
   smx_host_t shost;
 
@@ -48,7 +49,8 @@ int smpi_sender(int argc,char*argv[]) {
              request->datatype->size * request->count);
 
       dindex = request->comm->rank_to_index_map[request->dst];
-      smpi_process_data_t remote_process = SIMIX_process_get_data(smpi_global->main_processes[dindex]);
+      smpi_process_data_t remote_process =
+        SIMIX_process_get_data(smpi_global->main_processes[dindex]);
       dhost = SIMIX_process_get_host(smpi_global->main_processes[dindex]);
 
       message->forward = (request->forward - 1) / 2;
@@ -87,12 +89,12 @@ int smpi_sender(int argc,char*argv[]) {
       // wake up receiver if necessary
       SIMIX_process_resume(remote_process->receiver);
 
-    } else if (mydata->finalize>0) { /* main wants me to die and nothing to do */
-    	mydata->finalize--;
-    	SIMIX_cond_signal(mydata->cond);
-    	return 0;
+    } else if (mydata->finalize > 0) {  /* main wants me to die and nothing to do */
+      mydata->finalize--;
+      SIMIX_cond_signal(mydata->cond);
+      return 0;
     } else {
-    	SIMIX_process_suspend(self);
+      SIMIX_process_suspend(self);
     }
   }
   return 0;

@@ -130,13 +130,13 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     task->state_set = sd_global->running_task_set;
     task->start_time =
       surf_workstation_model->common_public.action_get_start_time(task->
-                                                                   surf_action);
+                                                                  surf_action);
     break;
   case SD_DONE:
     task->state_set = sd_global->done_task_set;
     task->finish_time =
       surf_workstation_model->common_public.action_get_finish_time(task->
-                                                                    surf_action);
+                                                                   surf_action);
     task->remains = 0;
     break;
   case SD_FAILED:
@@ -713,18 +713,14 @@ void __SD_task_really_run(SD_task_t task)
   task->surf_action = NULL;
   if ((task->workstation_nb == 1) && (task->communication_amount[0] == 0.0)) {
     task->surf_action =
-      surf_workstation_model->extension_public->execute(surf_workstations[0],
-                                                        task->
-                                                        computation_amount
-                                                        [0]);
+      surf_workstation_model->extension.
+      workstation.execute(surf_workstations[0], task->computation_amount[0]);
   } else if ((task->workstation_nb == 1)
              && (task->computation_amount[0] == 0.0)) {
     task->surf_action =
-      surf_workstation_model->
-      extension_public->communicate(surf_workstations[0],
-                                    surf_workstations[0],
-                                    task->communication_amount[0],
-                                    task->rate);
+      surf_workstation_model->extension.
+      workstation.communicate(surf_workstations[0], surf_workstations[0],
+                              task->communication_amount[0], task->rate);
   } else if ((task->workstation_nb == 2)
              && (task->computation_amount[0] == 0.0)
              && (task->computation_amount[1] == 0.0)) {
@@ -739,10 +735,9 @@ void __SD_task_really_run(SD_task_t task)
     }
     if (nb == 1) {
       task->surf_action =
-        surf_workstation_model->
-        extension_public->communicate(surf_workstations[0],
-                                      surf_workstations[1], value,
-                                      task->rate);
+        surf_workstation_model->extension.
+        workstation.communicate(surf_workstations[0], surf_workstations[1],
+                                value, task->rate);
     }
   }
   if (!task->surf_action) {
@@ -756,21 +751,17 @@ void __SD_task_really_run(SD_task_t task)
            sizeof(double) * task->workstation_nb * task->workstation_nb);
 
     task->surf_action =
-      surf_workstation_model->extension_public->execute_parallel_task(task->
-                                                                      workstation_nb,
-                                                                      surf_workstations,
-                                                                      computation_amount,
-                                                                      communication_amount,
-                                                                      task->
-                                                                      amount,
-                                                                      task->
-                                                                      rate);
+      surf_workstation_model->extension.
+      workstation.execute_parallel_task(task->workstation_nb,
+                                        surf_workstations, computation_amount,
+                                        communication_amount, task->amount,
+                                        task->rate);
   } else {
     xbt_free(surf_workstations);
   }
 
   surf_workstation_model->common_public.action_set_data(task->surf_action,
-                                                         task);
+                                                        task);
 
   DEBUG1("surf_action = %p", task->surf_action);
 
@@ -1009,7 +1000,7 @@ double SD_task_get_start_time(SD_task_t task)
   xbt_assert0(task != NULL, "Invalid parameter");
   if (task->surf_action)
     return surf_workstation_model->common_public.action_get_start_time(task->
-                                                                        surf_action);
+                                                                       surf_action);
   else
     return task->start_time;
 }

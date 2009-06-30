@@ -417,9 +417,7 @@ static void finalize(void)
     xbt_dict_free(&parallel_task_link_set);
   }
 
-  surf_model_exit((surf_model_t)surf_workstation_model);
-
-  free(surf_workstation_model->extension_public);
+  surf_model_exit(surf_workstation_model);
 
   free(surf_workstation_model);
   surf_workstation_model = NULL;
@@ -508,7 +506,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   action->generic_action.max_duration = NO_MAX_DURATION;
   action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
-  action->generic_action.model_type = (surf_model_t) surf_workstation_model;
+  action->generic_action.model_type = surf_workstation_model;
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
   action->workstation_nb = workstation_nb;
@@ -667,7 +665,7 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
   xbt_assert1(!surf_model_resource_by_name(surf_workstation_model, name),
               "Host '%s' declared several times in the platform file.", name);
 
-  cpu->model = (surf_model_t) surf_workstation_model;
+  cpu->model = surf_workstation_model;
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
   cpu->name = xbt_strdup(name);
   cpu->id = nb_workstation++;
@@ -692,7 +690,8 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
   /*add the property set */
   cpu->properties = current_property_set;
 
-  xbt_dict_set(surf_model_resource_set(surf_workstation_model), name, cpu, cpu_free);
+  xbt_dict_set(surf_model_resource_set(surf_workstation_model), name, cpu,
+               cpu_free);
 
   return cpu;
 }
@@ -750,7 +749,7 @@ static link_L07_t link_new(char *name,
   xbt_assert1(!xbt_dict_get_or_null(link_set, name),
               "Link '%s' declared several times in the platform file.", name);
 
-  nw_link->model = (surf_model_t) surf_workstation_model;
+  nw_link->model = surf_workstation_model;
   nw_link->type = SURF_WORKSTATION_RESOURCE_LINK;
   nw_link->name = name;
   nw_link->bw_current = bw_initial;
@@ -836,12 +835,16 @@ static void parse_route_set_endpoints(void)
 {
   cpu_L07_t cpu_tmp = NULL;
 
-  cpu_tmp = (cpu_L07_t) surf_model_resource_by_name(surf_workstation_model, A_surfxml_route_src);
+  cpu_tmp =
+    (cpu_L07_t) surf_model_resource_by_name(surf_workstation_model,
+                                            A_surfxml_route_src);
   xbt_assert1(cpu_tmp, "Invalid cpu %s", A_surfxml_route_src);
   if (cpu_tmp != NULL)
     src_id = cpu_tmp->id;
 
-  cpu_tmp = (cpu_L07_t) surf_model_resource_by_name(surf_workstation_model, A_surfxml_route_dst);
+  cpu_tmp =
+    (cpu_L07_t) surf_model_resource_by_name(surf_workstation_model,
+                                            A_surfxml_route_dst);
   xbt_assert1(cpu_tmp, "Invalid cpu %s", A_surfxml_route_dst);
   if (cpu_tmp != NULL)
     dst_id = cpu_tmp->id;
@@ -1000,14 +1003,11 @@ static void define_callbacks(const char *file)
 
 static void model_init_internal(void)
 {
-  surf_workstation_model = xbt_new0(s_surf_workstation_model_t, 1);
+  surf_workstation_model = xbt_new0(s_surf_model_t, 1);
 
-  surf_model_init((surf_model_t)surf_workstation_model);
-  surf_workstation_model->extension_public =
-    xbt_new0(s_surf_workstation_model_extension_public_t, 1);
+  surf_model_init(surf_workstation_model);
 
-  surf_workstation_model->common_public.get_resource_name =
-    get_resource_name;
+  surf_workstation_model->common_public.get_resource_name = get_resource_name;
   surf_workstation_model->common_public.action_get_state =
     surf_action_get_state;
   surf_workstation_model->common_public.action_get_start_time =
@@ -1037,23 +1037,25 @@ static void model_init_internal(void)
     update_resource_state;
   surf_workstation_model->common_private->finalize = finalize;
 
-  surf_workstation_model->extension_public->execute = execute;
-  surf_workstation_model->extension_public->sleep = action_sleep;
-  surf_workstation_model->extension_public->get_state = resource_get_state;
-  surf_workstation_model->extension_public->get_speed = get_speed;
-  surf_workstation_model->extension_public->get_available_speed =
+  surf_workstation_model->extension.workstation.execute = execute;
+  surf_workstation_model->extension.workstation.sleep = action_sleep;
+  surf_workstation_model->extension.workstation.get_state =
+    resource_get_state;
+  surf_workstation_model->extension.workstation.get_speed = get_speed;
+  surf_workstation_model->extension.workstation.get_available_speed =
     get_available_speed;
-  surf_workstation_model->extension_public->communicate = communicate;
-  surf_workstation_model->extension_public->execute_parallel_task =
+  surf_workstation_model->extension.workstation.communicate = communicate;
+  surf_workstation_model->extension.workstation.execute_parallel_task =
     execute_parallel_task;
-  surf_workstation_model->extension_public->get_route = get_route;
-  surf_workstation_model->extension_public->get_route_size = get_route_size;
-  surf_workstation_model->extension_public->get_link_name = get_link_name;
-  surf_workstation_model->extension_public->get_link_bandwidth =
+  surf_workstation_model->extension.workstation.get_route = get_route;
+  surf_workstation_model->extension.workstation.get_route_size =
+    get_route_size;
+  surf_workstation_model->extension.workstation.get_link_name = get_link_name;
+  surf_workstation_model->extension.workstation.get_link_bandwidth =
     get_link_bandwidth;
-  surf_workstation_model->extension_public->get_link_latency =
+  surf_workstation_model->extension.workstation.get_link_latency =
     get_link_latency;
-  surf_workstation_model->extension_public->link_shared = link_shared;
+  surf_workstation_model->extension.workstation.link_shared = link_shared;
 
   surf_workstation_model->common_public.get_properties = get_properties;
 
@@ -1074,7 +1076,6 @@ void surf_workstation_model_init_ptask_L07(const char *filename)
   define_callbacks(filename);
 
   update_model_description(surf_workstation_model_description,
-                           "ptask_L07",
-                           (surf_model_t) surf_workstation_model);
+                           "ptask_L07", surf_workstation_model);
   xbt_dynar_push(model_list, &surf_workstation_model);
 }

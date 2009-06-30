@@ -463,16 +463,14 @@ GRAS_DEFINE_TYPE(s_pbio, struct s_pbio {        /* structure presented in the IE
                  double Cprops[110];
                  int Cndi[4];
                  int Cnshr;
-                 int Cnpt;
-                 double Cdtime;
-                 double Ctime[2];
-                 int Cntens;
+                 int Cnpt; double Cdtime; double Ctime[2]; int Cntens;
                  double Cdfgrd0[373][3];
                  double Cdfgrd1[3][3]; double Cstress[106];
                  double Cddsdde[106][106];
                  };
 
   )
+
      typedef struct s_pbio pbio_t;
 
      static void test_pbio(gras_socket_t sock, int direction)

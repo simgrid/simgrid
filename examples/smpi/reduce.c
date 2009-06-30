@@ -24,41 +24,45 @@
  * ENHANCEMENTS, OR MODIFICATIONS.
  * ***************************************************************************
  **/
-int ibm_test( int rank, int size ) {
-	  int success=1;
+int ibm_test(int rank, int size)
+{
+  int success = 1;
 #define MAXLEN  10000
 
-	  int root,i,j,k;
-	  int out[MAXLEN];
-	  int in[MAXLEN];
-	  root = size/2;
+  int root, i, j, k;
+  int out[MAXLEN];
+  int in[MAXLEN];
+  root = size / 2;
 
-	  for(j=1;j<=MAXLEN;j*=10)  {
-		    for(i=0;i<j;i++)  out[i] = i;
+  for (j = 1; j <= MAXLEN; j *= 10) {
+    for (i = 0; i < j; i++)
+      out[i] = i;
 
-		    MPI_Reduce(out,in,j,MPI_INT,MPI_SUM,root,MPI_COMM_WORLD);
+    MPI_Reduce(out, in, j, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
 
-		    if(rank == root)  {
-				for(k=0;k<j;k++) {
-					  if(in[k] != k*size) {  
-						    printf("bad answer (%d) at index %d of %d (should be %d)", in[k],k,j,k*size);
-						    success=0;
-						    break; 
-					  }
-				}
-		    }
-	  }
-	  return( success );
+    if (rank == root) {
+      for (k = 0; k < j; k++) {
+        if (in[k] != k * size) {
+          printf("bad answer (%d) at index %d of %d (should be %d)", in[k], k,
+                 j, k * size);
+          success = 0;
+          break;
+        }
+      }
+    }
+  }
+  return (success);
 }
 
 
 
 
-int main (int argc, char **argv) {
-	  int size, rank;
-	  int root=0;
-	  int value;
-	  int sum=-99,sum_mirror=-99,min=999,max=-999;
+int main(int argc, char **argv)
+{
+  int size, rank;
+  int root = 0;
+  int value;
+  int sum = -99, sum_mirror = -99, min = 999, max = -999;
 
   double start_timer;
 
@@ -69,7 +73,7 @@ int main (int argc, char **argv) {
 
   start_timer = MPI_Wtime();
 
-  value=rank+1;  /* easy to verify that sum= (size*(size+1))/2; */
+  value = rank + 1;             /* easy to verify that sum= (size*(size+1))/2; */
 
   printf("[%d] has value %d\n", rank, value);
   MPI_Reduce(&value, &sum, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
@@ -77,37 +81,36 @@ int main (int argc, char **argv) {
 
   MPI_Reduce(&value, &min, 1, MPI_INT, MPI_MIN, root, MPI_COMM_WORLD);
   MPI_Reduce(&value, &max, 1, MPI_INT, MPI_MAX, root, MPI_COMM_WORLD);
-  if ( rank == root) {
-          printf("** Scalar Int Test Result:\n");
-	    printf("\t[%d] sum=%d ... validation ",rank,sum);
-          if (((size*(size+1))/2 == sum) && (sum_mirror==sum) )
-			printf("ok.\n");
-	    else 
-			printf("failed (sum=%d,sum_mirror=%d while both sould be %d.\n",
-					    sum,sum_mirror,(size*(size+1))/2);
-          printf("\t[%d] min=%d ... validation ",rank,min);
-          if (1 == min )
-			printf("ok.\n");
-	    else
-			printf("failed.\n");
-          printf("\t[%d] max=%d ... validation ",rank,max);
-          if ( size == max )
-			printf("ok.\n");
-	    else
-			printf("failed.\n");
-	    printf("Elapsed time=%lf s\n", MPI_Wtime()-start_timer);
+  if (rank == root) {
+    printf("** Scalar Int Test Result:\n");
+    printf("\t[%d] sum=%d ... validation ", rank, sum);
+    if (((size * (size + 1)) / 2 == sum) && (sum_mirror == sum))
+      printf("ok.\n");
+    else
+      printf("failed (sum=%d,sum_mirror=%d while both sould be %d.\n",
+             sum, sum_mirror, (size * (size + 1)) / 2);
+    printf("\t[%d] min=%d ... validation ", rank, min);
+    if (1 == min)
+      printf("ok.\n");
+    else
+      printf("failed.\n");
+    printf("\t[%d] max=%d ... validation ", rank, max);
+    if (size == max)
+      printf("ok.\n");
+    else
+      printf("failed.\n");
+    printf("Elapsed time=%lf s\n", MPI_Wtime() - start_timer);
   }
 
-  MPI_Barrier( MPI_COMM_WORLD );
+  MPI_Barrier(MPI_COMM_WORLD);
 
-  if ( 0 == rank ) 
-	    printf("** IBM Test Result: ... \n");
-  if (!ibm_test( rank, size))
-	    printf("\t[%d] failed.\n",rank);
+  if (0 == rank)
+    printf("** IBM Test Result: ... \n");
+  if (!ibm_test(rank, size))
+    printf("\t[%d] failed.\n", rank);
   else
-	    printf("\t[%d] ok.\n",rank);
+    printf("\t[%d] ok.\n", rank);
 
   MPI_Finalize();
   return 0;
 }
-

@@ -11,7 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_timer, surf,
                                 "Logging specific to SURF (timer)");
 
-surf_timer_model_t surf_timer_model = NULL;
+surf_model_t surf_timer_model = NULL;
 static tmgr_trace_t empty_trace = NULL;
 static xbt_swag_t command_pending = NULL;
 static xbt_swag_t command_to_run = NULL;
@@ -26,7 +26,7 @@ static command_t command_new(void *fun, void *args)
 {
   command_t command = xbt_new0(s_command_t, 1);
 
-  command->model = (surf_model_t) surf_timer_model;
+  command->model = surf_timer_model;
   command->function = fun;
   command->args = args;
   xbt_swag_insert(command, command_pending);
@@ -154,9 +154,7 @@ static void finalize(void)
   xbt_swag_free(command_pending);
   xbt_swag_free(command_to_run);
 
-  surf_model_exit((surf_model_t)surf_timer_model);
-
-  free(surf_timer_model->extension_public);
+  surf_model_exit(surf_timer_model);
 
   free(surf_timer_model);
   surf_timer_model = NULL;
@@ -164,12 +162,9 @@ static void finalize(void)
 
 static void surf_timer_model_init_internal(void)
 {
-  surf_timer_model = xbt_new0(s_surf_timer_model_t, 1);
+  surf_timer_model = xbt_new0(s_surf_model_t, 1);
 
-  surf_model_init((surf_model_t)surf_timer_model);
-
-  surf_timer_model->extension_public =
-    xbt_new0(s_surf_timer_model_extension_public_t, 1);
+  surf_model_init(surf_timer_model);
 
   surf_timer_model->common_public.get_resource_name = get_resource_name;
   surf_timer_model->common_public.action_get_state = surf_action_get_state;
@@ -189,8 +184,8 @@ static void surf_timer_model_init_internal(void)
   surf_timer_model->common_public.resume = action_resume;
   surf_timer_model->common_public.is_suspended = action_is_suspended;
 
-  surf_timer_model->extension_public->set = set;
-  surf_timer_model->extension_public->get = get;
+  surf_timer_model->extension.timer.set = set;
+  surf_timer_model->extension.timer.get = get;
 
   {
     s_command_t var;

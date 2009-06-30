@@ -1032,10 +1032,10 @@ static void convert_route_multi_to_routes(void)
     return;
 
   if (surf_cpu_model)
-	  set = surf_model_resource_set(surf_cpu_model);
+    set = surf_model_resource_set(surf_cpu_model);
   if (surf_workstation_model != NULL &&
-		  surf_model_resource_set(surf_workstation_model) != NULL &&
-		  xbt_dict_length(surf_model_resource_set(surf_workstation_model)) > 0)
+      surf_model_resource_set(surf_workstation_model) != NULL &&
+      xbt_dict_length(surf_model_resource_set(surf_workstation_model)) > 0)
     set = surf_model_resource_set(surf_workstation_model);
 
 

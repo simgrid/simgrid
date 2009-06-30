@@ -43,93 +43,100 @@ void smpi_mpi_sum_func(void *a, void *b, int *length,
 
 void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-	  int i;
-	  if (*datatype == smpi_mpi_global->mpi_byte) {
-				char *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] + y[i];
-				}
-	  } else if (*datatype == smpi_mpi_global->mpi_int) {
-				int *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] + y[i];
-				}
-	  } else if (*datatype == smpi_mpi_global->mpi_float) {
-				float *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] + y[i];
-				}
-	  } else if (*datatype == smpi_mpi_global->mpi_double) {
-				double *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] + y[i];
-				}
-	  }
+  int i;
+  if (*datatype == smpi_mpi_global->mpi_byte) {
+    char *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] + y[i];
+    }
+  } else if (*datatype == smpi_mpi_global->mpi_int) {
+    int *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] + y[i];
+    }
+  } else if (*datatype == smpi_mpi_global->mpi_float) {
+    float *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] + y[i];
+    }
+  } else if (*datatype == smpi_mpi_global->mpi_double) {
+    double *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] + y[i];
+    }
+  }
 }
+
 /**
  * compute the min of two vectors element-wise
  **/
-void smpi_mpi_min_func(void *a, void *b, int *length, MPI_Datatype * datatype);
+void smpi_mpi_min_func(void *a, void *b, int *length,
+                       MPI_Datatype * datatype);
 
 void smpi_mpi_min_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-	  int i;
-	  if (*datatype == smpi_mpi_global->mpi_byte) {
-				char *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] < y[i] ? x[i] : y[i];
-				}
-	  } else {
-	  if (*datatype == smpi_mpi_global->mpi_int) {
-				int *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] < y[i] ? x[i] : y[i];
-				}
-	  } else {
-	  if (*datatype == smpi_mpi_global->mpi_float) {
-				float *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] < y[i] ? x[i] : y[i];
-				}
-	  } else {
-	  if (*datatype == smpi_mpi_global->mpi_double) {
-				double *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] < y[i] ? x[i] : y[i];
-				}
+  int i;
+  if (*datatype == smpi_mpi_global->mpi_byte) {
+    char *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] < y[i] ? x[i] : y[i];
+    }
+  } else {
+    if (*datatype == smpi_mpi_global->mpi_int) {
+      int *x = a, *y = b;
+      for (i = 0; i < *length; i++) {
+        y[i] = x[i] < y[i] ? x[i] : y[i];
+      }
+    } else {
+      if (*datatype == smpi_mpi_global->mpi_float) {
+        float *x = a, *y = b;
+        for (i = 0; i < *length; i++) {
+          y[i] = x[i] < y[i] ? x[i] : y[i];
+        }
+      } else {
+        if (*datatype == smpi_mpi_global->mpi_double) {
+          double *x = a, *y = b;
+          for (i = 0; i < *length; i++) {
+            y[i] = x[i] < y[i] ? x[i] : y[i];
+          }
 
-	  }}}}
+        }
+      }
+    }
+  }
 }
+
 /**
  * compute the max of two vectors element-wise
  **/
-void smpi_mpi_max_func(void *a, void *b, int *length, MPI_Datatype * datatype);
+void smpi_mpi_max_func(void *a, void *b, int *length,
+                       MPI_Datatype * datatype);
 
 void smpi_mpi_max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
-	  int i;
-	  if (*datatype == smpi_mpi_global->mpi_byte) {
-				char *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] > y[i] ? x[i] : y[i];
-				}
-	  } else if (*datatype == smpi_mpi_global->mpi_int) {
-				int *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] > y[i] ? x[i] : y[i];
-				}
-	  } else if (*datatype == smpi_mpi_global->mpi_float) {
-				float *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] > y[i] ? x[i] : y[i];
-				}
-	  } else if (*datatype == smpi_mpi_global->mpi_double) {
-				double *x = a, *y = b;
-				for (i = 0; i < *length; i++) {
-					  y[i] = x[i] > y[i] ? x[i] : y[i];
-				}
+  int i;
+  if (*datatype == smpi_mpi_global->mpi_byte) {
+    char *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] > y[i] ? x[i] : y[i];
+    }
+  } else if (*datatype == smpi_mpi_global->mpi_int) {
+    int *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] > y[i] ? x[i] : y[i];
+    }
+  } else if (*datatype == smpi_mpi_global->mpi_float) {
+    float *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] > y[i] ? x[i] : y[i];
+    }
+  } else if (*datatype == smpi_mpi_global->mpi_double) {
+    double *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] > y[i] ? x[i] : y[i];
+    }
 
-	  }
+  }
 }
 
 
@@ -143,21 +150,21 @@ int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm)
   return comm->index_to_rank_map[smpi_process_index()];
 }
 
-void smpi_process_init(int *argc, char***argv)
+void smpi_process_init(int *argc, char ***argv)
 {
   smpi_process_data_t pdata;
 
   // initialize some local variables
 
   pdata = xbt_new(s_smpi_process_data_t, 1);
-  SIMIX_process_set_data(SIMIX_process_self(),pdata);
+  SIMIX_process_set_data(SIMIX_process_self(), pdata);
 
   /* get rank from command line, and remove it from argv */
-  pdata->index = atoi( (*argv)[1] );
-  DEBUG1("I'm rank %d",pdata->index);
-  if (*argc>2) {
-	  memmove((*argv)[1],(*argv)[2], sizeof(char*)* (*argc-2));
-	  (*argv)[ (*argc)-1] = NULL;
+  pdata->index = atoi((*argv)[1]);
+  DEBUG1("I'm rank %d", pdata->index);
+  if (*argc > 2) {
+    memmove((*argv)[1], (*argv)[2], sizeof(char *) * (*argc - 2));
+    (*argv)[(*argc) - 1] = NULL;
   }
   (*argc)--;
 
@@ -171,13 +178,15 @@ void smpi_process_init(int *argc, char***argv)
 
   pdata->main = SIMIX_process_self();
   pdata->sender = SIMIX_process_create("smpi_sender",
-          smpi_sender, pdata,
-          SIMIX_host_get_name(SIMIX_host_self()), 0, NULL,
-          /*props */ NULL);
+                                       smpi_sender, pdata,
+                                       SIMIX_host_get_name(SIMIX_host_self()),
+                                       0, NULL,
+                                       /*props */ NULL);
   pdata->receiver = SIMIX_process_create("smpi_receiver",
-          smpi_receiver, pdata,
-          SIMIX_host_get_name(SIMIX_host_self()), 0, NULL,
-          /*props */ NULL);
+                                         smpi_receiver, pdata,
+                                         SIMIX_host_get_name(SIMIX_host_self
+                                                             ()), 0, NULL,
+                                         /*props */ NULL);
 
   smpi_global->main_processes[pdata->index] = SIMIX_process_self();
   return;
@@ -185,13 +194,13 @@ void smpi_process_init(int *argc, char***argv)
 
 void smpi_process_finalize()
 {
-  smpi_process_data_t pdata =  SIMIX_process_get_data(SIMIX_process_self());
+  smpi_process_data_t pdata = SIMIX_process_get_data(SIMIX_process_self());
 
-  pdata->finalize = 2; /* Tell sender and receiver to quit */
+  pdata->finalize = 2;          /* Tell sender and receiver to quit */
   SIMIX_process_resume(pdata->sender);
   SIMIX_process_resume(pdata->receiver);
-  while (pdata->finalize>0) { /* wait until it's done */
-	  SIMIX_cond_wait(pdata->cond,pdata->mutex);
+  while (pdata->finalize > 0) { /* wait until it's done */
+    SIMIX_cond_wait(pdata->cond, pdata->mutex);
   }
 
   SIMIX_mutex_destroy(pdata->mutex);
@@ -222,7 +231,7 @@ int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
 
 int smpi_mpi_isend(smpi_mpi_request_t request)
 {
-	smpi_process_data_t pdata =  SIMIX_process_get_data(SIMIX_process_self());
+  smpi_process_data_t pdata = SIMIX_process_get_data(SIMIX_process_self());
   int retval = MPI_SUCCESS;
 
   if (NULL == request) {
@@ -238,7 +247,7 @@ int smpi_mpi_isend(smpi_mpi_request_t request)
 int smpi_mpi_irecv(smpi_mpi_request_t request)
 {
   int retval = MPI_SUCCESS;
-  smpi_process_data_t pdata =  SIMIX_process_get_data(SIMIX_process_self());
+  smpi_process_data_t pdata = SIMIX_process_get_data(SIMIX_process_self());
 
   if (NULL == request) {
     retval = MPI_ERR_INTERN;
@@ -275,59 +284,63 @@ int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status)
   return retval;
 }
 
-int smpi_mpi_waitall(int count, smpi_mpi_request_t requests[], smpi_mpi_status_t status[]) {
-	int cpt;
-	int index;
-	int retval;
-	smpi_mpi_status_t stat;
+int smpi_mpi_waitall(int count, smpi_mpi_request_t requests[],
+                     smpi_mpi_status_t status[])
+{
+  int cpt;
+  int index;
+  int retval;
+  smpi_mpi_status_t stat;
 
-	for (cpt=0; cpt<count;cpt++) {
-		retval = smpi_mpi_waitany(count,requests, &index,&stat);
-		if (retval != MPI_SUCCESS)
-			return retval;
-		memcpy(&(status[index]),&stat,sizeof(stat));
-	}
-	return MPI_SUCCESS;
+  for (cpt = 0; cpt < count; cpt++) {
+    retval = smpi_mpi_waitany(count, requests, &index, &stat);
+    if (retval != MPI_SUCCESS)
+      return retval;
+    memcpy(&(status[index]), &stat, sizeof(stat));
+  }
+  return MPI_SUCCESS;
 }
 
-int smpi_mpi_waitany(int count, smpi_mpi_request_t *requests, int *index, smpi_mpi_status_t *status) {
-	  int cpt;
+int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
+                     smpi_mpi_status_t * status)
+{
+  int cpt;
 
-	  *index = MPI_UNDEFINED;
-	  if (NULL == requests) {
-	    return MPI_ERR_INTERN;
-	  }
-	  /* First check if one of them is already done */
-	  for (cpt=0;cpt<count;cpt++) {
-		  if (requests[cpt]->completed && !requests[cpt]->consumed) { /* got ya */
-			  *index=cpt;
-			  goto found_request;
-		  }
-	  }
-	  /* If none found, block */
-	  /* FIXME: should use a SIMIX_cond_waitany, when implemented. For now, block on the first one */
-	  while (1) {
-		  for (cpt=0;cpt<count;cpt++) {
-			  if (!requests[cpt]->completed) { /* this one is not done, wait on it */
-				  while (!requests[cpt]->completed)
-				      SIMIX_cond_wait(requests[cpt]->cond, requests[cpt]->mutex);
+  *index = MPI_UNDEFINED;
+  if (NULL == requests) {
+    return MPI_ERR_INTERN;
+  }
+  /* First check if one of them is already done */
+  for (cpt = 0; cpt < count; cpt++) {
+    if (requests[cpt]->completed && !requests[cpt]->consumed) { /* got ya */
+      *index = cpt;
+      goto found_request;
+    }
+  }
+  /* If none found, block */
+  /* FIXME: should use a SIMIX_cond_waitany, when implemented. For now, block on the first one */
+  while (1) {
+    for (cpt = 0; cpt < count; cpt++) {
+      if (!requests[cpt]->completed) {  /* this one is not done, wait on it */
+        while (!requests[cpt]->completed)
+          SIMIX_cond_wait(requests[cpt]->cond, requests[cpt]->mutex);
 
-				  *index=cpt;
-				  goto found_request;
-			  }
-		  }
-		  if (cpt == count) /* they are all done. Damn user */
-			  return MPI_ERR_REQUEST;
-	  }
+        *index = cpt;
+        goto found_request;
+      }
+    }
+    if (cpt == count)           /* they are all done. Damn user */
+      return MPI_ERR_REQUEST;
+  }
 
-	  found_request:
-	  requests[*index]->consumed = 1;
+found_request:
+  requests[*index]->consumed = 1;
 
-	   if (NULL != status) {
-	      status->MPI_SOURCE = requests[*index]->src;
-	      status->MPI_TAG = requests[*index]->tag;
-	      status->MPI_ERROR = MPI_SUCCESS;
-	    }
-	  return MPI_SUCCESS;
+  if (NULL != status) {
+    status->MPI_SOURCE = requests[*index]->src;
+    status->MPI_TAG = requests[*index]->tag;
+    status->MPI_ERROR = MPI_SUCCESS;
+  }
+  return MPI_SUCCESS;
 
 }

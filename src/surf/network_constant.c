@@ -40,13 +40,14 @@ static void network_card_free(void *nw_card)
 static int network_card_new(const char *card_name)
 {
   network_card_Constant_t card =
-	  surf_model_resource_by_name(surf_network_model,card_name);
+    surf_model_resource_by_name(surf_network_model, card_name);
 
   if (!card) {
     card = xbt_new0(s_network_card_Constant_t, 1);
     card->name = xbt_strdup(card_name);
     card->id = card_number++;
-    xbt_dict_set(surf_model_resource_set(surf_network_model), card_name, card, network_card_free);
+    xbt_dict_set(surf_model_resource_set(surf_network_model), card_name, card,
+                 network_card_free);
   }
   return card->id;
 }
@@ -204,7 +205,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   action->generic_action.max_duration = NO_MAX_DURATION;
   action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
-  action->generic_action.model_type = (surf_model_t) surf_network_model;
+  action->generic_action.model_type = surf_network_model;
   action->suspended = 0;
 
   action->latency = random_generate(random_latency);
@@ -286,9 +287,7 @@ static void action_set_max_duration(surf_action_t action, double duration)
 
 static void finalize(void)
 {
-  surf_model_exit((surf_model_t)surf_network_model);
-
-  free(surf_network_model->extension_public);
+  surf_model_exit(surf_network_model);
 
   free(surf_network_model);
   surf_network_model = NULL;
@@ -298,12 +297,9 @@ static void finalize(void)
 
 static void surf_network_model_init_internal(void)
 {
-  surf_network_model = xbt_new0(s_surf_network_model_t, 1);
+  surf_network_model = xbt_new0(s_surf_model_t, 1);
 
-  surf_model_init((surf_model_t)surf_network_model);
-
-  surf_network_model->extension_public =
-    xbt_new0(s_surf_network_model_extension_public_t, 1);
+  surf_model_init(surf_network_model);
 
   surf_network_model->common_public.get_resource_name = get_resource_name;
   surf_network_model->common_public.action_get_state = surf_action_get_state;
@@ -315,8 +311,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->common_public.action_use = action_use;
   surf_network_model->common_public.action_cancel = action_cancel;
   surf_network_model->common_public.action_recycle = action_recycle;
-  surf_network_model->common_public.action_change_state =
-    action_change_state;
+  surf_network_model->common_public.action_change_state = action_change_state;
   surf_network_model->common_public.action_set_data = surf_action_set_data;
   surf_network_model->common_public.name = "network";
 
@@ -333,14 +328,14 @@ static void surf_network_model_init_internal(void)
   surf_network_model->common_public.is_suspended = action_is_suspended;
   surf_cpu_model->common_public.set_max_duration = action_set_max_duration;
 
-  surf_network_model->extension_public->communicate = communicate;
-  surf_network_model->extension_public->get_route = get_route;
-  surf_network_model->extension_public->get_route_size = get_route_size;
-  surf_network_model->extension_public->get_link_name = get_link_name;
-  surf_network_model->extension_public->get_link_bandwidth =
+  surf_network_model->extension.network.communicate = communicate;
+  surf_network_model->extension.network.get_route = get_route;
+  surf_network_model->extension.network.get_route_size = get_route_size;
+  surf_network_model->extension.network.get_link_name = get_link_name;
+  surf_network_model->extension.network.get_link_bandwidth =
     get_link_bandwidth;
-  surf_network_model->extension_public->get_link_latency = get_link_latency;
-  surf_network_model->extension_public->link_shared = link_shared;
+  surf_network_model->extension.network.get_link_latency = get_link_latency;
+  surf_network_model->extension.network.link_shared = link_shared;
 
   surf_network_model->common_public.get_properties = get_properties;
 
@@ -358,5 +353,5 @@ void surf_network_model_init_Constant(const char *filename)
   xbt_dynar_push(model_list, &surf_network_model);
 
   update_model_description(surf_network_model_description,
-                           "Constant", (surf_model_t) surf_network_model);
+                           "Constant", surf_network_model);
 }

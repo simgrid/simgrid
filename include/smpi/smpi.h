@@ -21,7 +21,6 @@ SG_BEGIN_DECL()
 #define MPI_ERR_COUNT   6
 #define MPI_ERR_RANK    7
 #define MPI_ERR_TAG     8
-
 // MPI_Comm
      typedef struct smpi_mpi_communicator_t *smpi_mpi_communicator_t;
      typedef smpi_mpi_communicator_t MPI_Comm;
@@ -123,14 +122,17 @@ XBT_PUBLIC(int) SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype,
 XBT_PUBLIC(int) SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype,
                                int root, MPI_Comm comm);
 XBT_PUBLIC(int) SMPI_MPI_Wait(MPI_Request * request, MPI_Status * status);
-XBT_PUBLIC(int) SMPI_MPI_Waitall(int count, MPI_Request requests[], MPI_Status status[]);
-XBT_PUBLIC(int) SMPI_MPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status status[]);
+XBT_PUBLIC(int) SMPI_MPI_Waitall(int count, MPI_Request requests[],
+                                 MPI_Status status[]);
+XBT_PUBLIC(int) SMPI_MPI_Waitany(int count, MPI_Request requests[],
+                                 int *index, MPI_Status status[]);
 XBT_PUBLIC(int) SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key,
                                     MPI_Comm * comm_out);
 XBT_PUBLIC(double) SMPI_MPI_Wtime(void);
 
 XBT_PUBLIC(int) SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
-		                    MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
+                                MPI_Datatype datatype, MPI_Op op, int root,
+                                MPI_Comm comm);
 
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);

@@ -103,13 +103,19 @@ XBT_PUBLIC(void) bottleneck_solve(lmm_system_t sys);
  */
 
 XBT_PUBLIC(void) lmm_set_default_protocol_function(double (*func_f)
+
+
                                                     
                                                    (lmm_variable_t var,
                                                     double x),
                                                    double (*func_fp)
+
+                                                    
                                                    (lmm_variable_t var,
                                                     double x),
                                                    double (*func_fpi)
+
+                                                    
                                                    (lmm_variable_t var,
                                                     double x));
 

@@ -41,7 +41,7 @@ typedef struct smpi_mpi_request_t {
   smpi_mpi_datatype_t datatype;
 
   short int completed:1;
-  short int consumed:1; /* for waitany */
+  short int consumed:1;         /* for waitany */
 
   smx_mutex_t mutex;
   smx_cond_t cond;
@@ -112,7 +112,7 @@ typedef struct smpi_host_data_t {
   smx_process_t sender;
   smx_process_t receiver;
 
-  int finalize; /* so that main process stops its sender&receiver */
+  int finalize;                 /* so that main process stops its sender&receiver */
 
   xbt_fifo_t pending_recv_request_queue;
   xbt_fifo_t pending_send_request_queue;
@@ -121,7 +121,7 @@ typedef struct smpi_host_data_t {
 typedef struct smpi_host_data_t *smpi_process_data_t;
 
 // function prototypes
-void smpi_process_init(int *argc,char ***argv);
+void smpi_process_init(int *argc, char ***argv);
 void smpi_process_finalize(void);
 int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm);
 
@@ -129,8 +129,10 @@ int smpi_mpi_barrier(smpi_mpi_communicator_t comm);
 int smpi_mpi_isend(smpi_mpi_request_t request);
 int smpi_mpi_irecv(smpi_mpi_request_t request);
 int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status);
-int smpi_mpi_waitall(int count, smpi_mpi_request_t requests[], smpi_mpi_status_t status[]);
-int smpi_mpi_waitany(int count, smpi_mpi_request_t requests[], int *index, smpi_mpi_status_t status[]);
+int smpi_mpi_waitall(int count, smpi_mpi_request_t requests[],
+                     smpi_mpi_status_t status[]);
+int smpi_mpi_waitany(int count, smpi_mpi_request_t requests[], int *index,
+                     smpi_mpi_status_t status[]);
 
 void smpi_execute(double duration);
 void smpi_start_timer(void);
@@ -150,7 +152,7 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
                         smpi_mpi_communicator_t comm,
                         smpi_mpi_request_t * request);
 
-int smpi_sender(int argc,char*argv[]);
-int smpi_receiver(int argc, char*argv[]);
+int smpi_sender(int argc, char *argv[]);
+int smpi_receiver(int argc, char *argv[]);
 
 #endif

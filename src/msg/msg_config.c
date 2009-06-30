@@ -37,7 +37,7 @@ void MSG_config(const char *name, ...)
     abort();
   }
   va_start(pa, name);
-  xbt_cfg_set_vargs(_surf_cfg_set,name,pa);
+  xbt_cfg_set_vargs(_surf_cfg_set, name, pa);
   va_end(pa);
   return;
 }

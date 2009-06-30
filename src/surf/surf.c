@@ -346,7 +346,7 @@ void surf_init(int *argc, char **argv)
   if (!history)
     history = tmgr_history_new();
 
-  surf_config_init(argc,argv);
+  surf_config_init(argc, argv);
 }
 
 static char *path_name = NULL;
@@ -445,8 +445,8 @@ void surf_presolve(void)
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value, (void **) &resource))) {
       resource->model->common_private->update_resource_state(resource,
-                                                              event, value,
-                                                              NOW);
+                                                             event, value,
+                                                             NOW);
     }
   }
   xbt_dynar_foreach(model_list, iter, model) {
@@ -499,8 +499,8 @@ double surf_solve(void)
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       resource->model->common_private->update_resource_state(resource,
-                                                              event, value,
-                                                              NOW + min);
+                                                             event, value,
+                                                             NOW + min);
     }
   }
 

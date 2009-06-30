@@ -86,8 +86,9 @@ void xbt_cfg_cpy(xbt_cfg_t tocopy, xbt_cfg_t * whereto)
   xbt_assert0(tocopy, "cannot copy NULL config");
 
   xbt_dict_foreach((xbt_dict_t) tocopy, cursor, name, variable) {
-    xbt_cfg_register(whereto, name, variable->desc, variable->type, NULL, variable->min,
-                     variable->max, variable->cb_set, variable->cb_rm);
+    xbt_cfg_register(whereto, name, variable->desc, variable->type, NULL,
+                     variable->min, variable->max, variable->cb_set,
+                     variable->cb_rm);
   }
 }
 
@@ -200,18 +201,19 @@ void xbt_cfgelm_free(void *data)
  */
 
 void
-xbt_cfg_register(xbt_cfg_t *cfg,
-                 const char *name, const char *desc, e_xbt_cfgelm_type_t type, void *default_value,
-                 int min, int max, xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm)
+xbt_cfg_register(xbt_cfg_t * cfg,
+                 const char *name, const char *desc, e_xbt_cfgelm_type_t type,
+                 void *default_value, int min, int max, xbt_cfg_cb_t cb_set,
+                 xbt_cfg_cb_t cb_rm)
 {
   xbt_cfgelm_t res;
 
-  if (*cfg==NULL)
-	 *cfg=xbt_cfg_new();
+  if (*cfg == NULL)
+    *cfg = xbt_cfg_new();
   xbt_assert4(type >= xbt_cfgelm_int && type <= xbt_cfgelm_peer,
               "type of %s not valid (%d should be between %d and %d)",
               name, type, xbt_cfgelm_int, xbt_cfgelm_peer);
-  res = xbt_dict_get_or_null((xbt_dict_t) *cfg, name);
+  res = xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
 
   if (res) {
     WARN1("Config elem %s registered twice.", name);
@@ -233,32 +235,32 @@ xbt_cfg_register(xbt_cfg_t *cfg,
   case xbt_cfgelm_int:
     res->content = xbt_dynar_new(sizeof(int), NULL);
     if (default_value)
-    	xbt_dynar_push(res->content,default_value);
+      xbt_dynar_push(res->content, default_value);
     break;
 
   case xbt_cfgelm_double:
     res->content = xbt_dynar_new(sizeof(double), NULL);
     if (default_value)
-    	xbt_dynar_push(res->content,default_value);
+      xbt_dynar_push(res->content, default_value);
     break;
 
   case xbt_cfgelm_string:
     res->content = xbt_dynar_new(sizeof(char *), xbt_free_ref);
     if (default_value)
-    	xbt_dynar_push(res->content,default_value);
+      xbt_dynar_push(res->content, default_value);
     break;
 
   case xbt_cfgelm_peer:
     res->content = xbt_dynar_new(sizeof(xbt_peer_t), xbt_peer_free_voidp);
     if (default_value)
-    	xbt_dynar_push(res->content,default_value);
+      xbt_dynar_push(res->content, default_value);
     break;
 
   default:
     ERROR1("%d is an invalide type code", type);
   }
 
-  xbt_dict_set((xbt_dict_t) *cfg, name, res, &xbt_cfgelm_free);
+  xbt_dict_set((xbt_dict_t) * cfg, name, res, &xbt_cfgelm_free);
 }
 
 /** @brief Unregister an element from a config set.
@@ -289,7 +291,7 @@ void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name)
  * @fixme: this does not allow to set the description
  */
 
-void xbt_cfg_register_str(xbt_cfg_t *cfg, const char *entry)
+void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
 {
   char *entrycpy = xbt_strdup(entry);
   char *tok;
@@ -331,61 +333,63 @@ void xbt_cfg_register_str(xbt_cfg_t *cfg, const char *entry)
 }
 
 /** @brief Displays the declared options and their description */
-void xbt_cfg_help(xbt_cfg_t cfg) {
-	xbt_dict_cursor_t cursor;
-	xbt_cfgelm_t variable;
-	char *name;
+void xbt_cfg_help(xbt_cfg_t cfg)
+{
+  xbt_dict_cursor_t cursor;
+  xbt_cfgelm_t variable;
+  char *name;
 
-	  int i;
-	  int size;
+  int i;
+  int size;
 
-	xbt_dict_foreach((xbt_dict_t) cfg, cursor, name, variable) {
-		printf("   %s: %s\n",name,variable->desc);
-		printf("       Type: %s; ", xbt_cfgelm_type_name[variable->type]);
-		if (variable->min != 1 || variable->max != 1)
-			printf("Arrity: min:%d to max:%d; ",variable->min,variable->max);
-		printf("Current value: ");
-		size = xbt_dynar_length(variable->content);
+  xbt_dict_foreach((xbt_dict_t) cfg, cursor, name, variable) {
+    printf("   %s: %s\n", name, variable->desc);
+    printf("       Type: %s; ", xbt_cfgelm_type_name[variable->type]);
+    if (variable->min != 1 || variable->max != 1)
+      printf("Arrity: min:%d to max:%d; ", variable->min, variable->max);
+    printf("Current value: ");
+    size = xbt_dynar_length(variable->content);
 
-	    switch (variable->type) {
-		  int ival;
-		  char *sval;
-		  double dval;
-		  xbt_peer_t hval;
+    switch (variable->type) {
+      int ival;
+      char *sval;
+      double dval;
+      xbt_peer_t hval;
 
-	    case xbt_cfgelm_int:
-	      for (i = 0; i < size; i++) {
-	        ival = xbt_dynar_get_as(variable->content, i, int);
-	        printf("%s%d\n", (i==0?"":"              "),ival);
-	      }
-	      break;
+    case xbt_cfgelm_int:
+      for (i = 0; i < size; i++) {
+        ival = xbt_dynar_get_as(variable->content, i, int);
+        printf("%s%d\n", (i == 0 ? "" : "              "), ival);
+      }
+      break;
 
-	    case xbt_cfgelm_double:
-	      for (i = 0; i < size; i++) {
-	        dval = xbt_dynar_get_as(variable->content, i, double);
-	        printf("%s%f\n", (i==0?"":"              "),dval);
-	      }
-	      break;
+    case xbt_cfgelm_double:
+      for (i = 0; i < size; i++) {
+        dval = xbt_dynar_get_as(variable->content, i, double);
+        printf("%s%f\n", (i == 0 ? "" : "              "), dval);
+      }
+      break;
 
-	    case xbt_cfgelm_string:
-	      for (i = 0; i < size; i++) {
-	        sval = xbt_dynar_get_as(variable->content, i, char *);
-	        printf("%s'%s'\n", (i==0?"":"              "),sval);
-	      }
-	      break;
+    case xbt_cfgelm_string:
+      for (i = 0; i < size; i++) {
+        sval = xbt_dynar_get_as(variable->content, i, char *);
+        printf("%s'%s'\n", (i == 0 ? "" : "              "), sval);
+      }
+      break;
 
-	    case xbt_cfgelm_peer:
-	      for (i = 0; i < size; i++) {
-	        hval = xbt_dynar_get_as(variable->content, i, xbt_peer_t);
-	        printf("%s%s:%d\n", (i==0?"":"              "),hval->name, hval->port);
-	      }
-	      break;
+    case xbt_cfgelm_peer:
+      for (i = 0; i < size; i++) {
+        hval = xbt_dynar_get_as(variable->content, i, xbt_peer_t);
+        printf("%s%s:%d\n", (i == 0 ? "" : "              "), hval->name,
+               hval->port);
+      }
+      break;
 
-	    default:
-	      printf("Invalid type!!\n");
-	    }
+    default:
+      printf("Invalid type!!\n");
+    }
 
-	}
+  }
 }
 
 /** @brief Check that each variable have the right amount of values */
@@ -426,7 +430,7 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
 
   res = xbt_dict_get_or_null((xbt_dict_t) cfg, name);
   if (!res) {
-	  xbt_cfg_help(cfg);
+    xbt_cfg_help(cfg);
     THROW1(not_found_error, 0,
            "No registered variable '%s' in this config set", name);
   }
@@ -1233,7 +1237,7 @@ static xbt_cfg_t make_set()
 {
   xbt_cfg_t set = NULL;
 
-  xbt_log_threshold_set(&_XBT_LOGV(xbt_cfg),xbt_log_priority_critical);
+  xbt_log_threshold_set(&_XBT_LOGV(xbt_cfg), xbt_log_priority_critical);
   xbt_cfg_register_str(&set, "speed:1_to_2_int");
   xbt_cfg_register_str(&set, "peername:1_to_1_string");
   xbt_cfg_register_str(&set, "user:1_to_10_string");
