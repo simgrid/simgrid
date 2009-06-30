@@ -4,7 +4,7 @@
 
 # Go for the first test
 p Test Broadcast with less processes than hosts
-$ ../../src/smpi/smpirun -quiet -hostfile hostfile -platform ../msg/small_platform.xml -np 3 ./bcast -q
+$ ../../src/smpi/smpirun -hostfile hostfile -platform ../msg/small_platform.xml -np 3 ./bcast -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
