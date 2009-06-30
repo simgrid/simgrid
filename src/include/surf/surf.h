@@ -186,6 +186,9 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 #define surf_model_resource_set(model) (model)->common_public.resource_set
      void surf_model_exit(surf_model_t model);
 
+     typedef struct surf_resource {
+       surf_model_t model;
+     } s_surf_resource_t, *surf_resource_t;
 
 /**************************************/
 /* Implementations of model object */

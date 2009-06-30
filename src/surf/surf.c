@@ -106,10 +106,6 @@ int __surf_is_absolute_file_path(const char *file_path)
 #endif
 }
 
-typedef struct surf_model_object {
-  surf_model_t model;
-} s_surf_model_object_t, *surf_model_object_t;
-
 static double NOW = 0;
 
 xbt_dynar_t model_list = NULL;
@@ -436,7 +432,7 @@ void surf_presolve(void)
   double next_event_date = -1.0;
   tmgr_trace_event_t event = NULL;
   double value = -1.0;
-  surf_model_object_t model_obj = NULL;
+  surf_resource_t resource = NULL;
   surf_model_t model = NULL;
   unsigned int iter;
 
@@ -447,8 +443,8 @@ void surf_presolve(void)
       break;
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
-                                            &value, (void **) &model_obj))) {
-      model_obj->model->common_private->update_resource_state(model_obj,
+                                            &value, (void **) &resource))) {
+      resource->model->common_private->update_resource_state(resource,
                                                               event, value,
                                                               NOW);
     }
@@ -464,7 +460,7 @@ double surf_solve(void)
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
-  surf_model_object_t model_obj = NULL;
+  surf_resource_t resource = NULL;
   surf_model_t model = NULL;
   tmgr_trace_event_t event = NULL;
   unsigned int iter;
@@ -494,15 +490,15 @@ double surf_solve(void)
     DEBUG0("Updating models");
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
-                                            &value, (void **) &model_obj))) {
-      if (model_obj->model->common_private->resource_used(model_obj)) {
+                                            &value, (void **) &resource))) {
+      if (resource->model->common_private->resource_used(resource)) {
         min = next_event_date - NOW;
         DEBUG1
           ("This event will modify model state. Next event set to %f", min);
       }
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      model_obj->model->common_private->update_resource_state(model_obj,
+      resource->model->common_private->update_resource_state(resource,
                                                               event, value,
                                                               NOW + min);
     }
