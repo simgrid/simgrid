@@ -1,7 +1,8 @@
 SimGrid (3.3.2-svn) unstable; urgency=low
 
  SMPI:
-  * Implement MPI_Waitany and MPI_Waitall 
+  * Implement some more MPI primitives: 
+    MPI_Waitany, MPI_Waitall, MPI_Allreduce
 
  SURF: 
   * Declare common_public as an embeeded struct to reduce redirections
