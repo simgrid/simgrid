@@ -99,6 +99,7 @@ SG_BEGIN_DECL()
 #define MPI_Comm_split(a, b, c, d) SMPI_MPI_Comm_split(a, b, c, d)
 #define MPI_Wtime() SMPI_MPI_Wtime()
 #define MPI_Reduce( a, b, c, d, e, f, g) SMPI_MPI_Reduce( a, b, c, d, e, f, g)
+#define MPI_Allreduce( a, b, c, d, e, f) SMPI_MPI_Allreduce( a, b, c, d, e, f)
 
 // SMPI Functions
 XBT_PUBLIC(int) SMPI_MPI_Init(int *argc, char ***argv);
@@ -133,6 +134,9 @@ XBT_PUBLIC(double) SMPI_MPI_Wtime(void);
 XBT_PUBLIC(int) SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
                                 MPI_Datatype datatype, MPI_Op op, int root,
                                 MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
+		                    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+
 
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
