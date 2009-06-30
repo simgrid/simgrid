@@ -199,6 +199,7 @@ void smpi_process_finalize()
   xbt_fifo_free(pdata->pending_recv_request_queue);
   xbt_fifo_free(pdata->pending_send_request_queue);
   xbt_fifo_free(pdata->received_message_queue);
+  xbt_free(pdata);
 }
 
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm)

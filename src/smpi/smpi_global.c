@@ -236,14 +236,18 @@ void smpi_global_destroy()
   /* free smpi_mpi_global */
   SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->barrier_mutex);
   SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->barrier_cond);
+  xbt_free(smpi_mpi_global->mpi_comm_world->rank_to_index_map);
   xbt_free(smpi_mpi_global->mpi_comm_world);
 
   xbt_free(smpi_mpi_global->mpi_byte);
   xbt_free(smpi_mpi_global->mpi_int);
   xbt_free(smpi_mpi_global->mpi_double);
+  xbt_free(smpi_mpi_global->mpi_float);
 
   xbt_free(smpi_mpi_global->mpi_land);
   xbt_free(smpi_mpi_global->mpi_sum);
+  xbt_free(smpi_mpi_global->mpi_max);
+  xbt_free(smpi_mpi_global->mpi_min);
 
   xbt_free(smpi_mpi_global);
 
