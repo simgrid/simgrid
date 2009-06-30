@@ -43,14 +43,9 @@ while true; do
       fi
 	shift 2
     ;;
-
+   
    "-map")
-	MAPOPT="on"
-      shift 1
-   ;;
-
-   "-quiet")
-	QUIET="true"
+	MAPOPT="true"
       shift 1
    ;;
 
@@ -153,7 +148,7 @@ do
 	j=$(( $i % ${NUMHOSTS} ))
   fi 
   ##---- optional display of ranks to process mapping
-  if [ -n ${MAPOPT} ]; then
+  if [ -n "${MAPOPT}" ]; then
 	echo "[rank $i] -> ${hostnames[$j]}"  
   fi
 
@@ -175,15 +170,12 @@ cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
 APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
 
-if [ -z "${QUIET}" ] ; then
+if [ -n "${KEEP}" ] ; then
   echo ${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 fi
 ${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 
-if [ "x$?" == "x0" ] && [ -n ${KEEP} ] ; then
-  if [ -z "${QUIET}" ] ; then
-    echo "[$0] cleaning up temp files" 
-  fi
+if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP} 
    fi
