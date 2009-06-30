@@ -1,0 +1,31 @@
+
+
+* MPI_Barrier()
+  Tue Jun 30 11:49:07 UTC 2009 - genaud
+
+  
+  several calls to MPI_Barrier() result in:
+  
+genaud@boa:~/Documents/svn/simgrid/simgrid/trunk/src/smpi$ ./smpirun -np 2 -platform g1.xml -hostfile hostfile ./barrier
+[0.000000] [simix_kernel/INFO] Oops ! Deadlock or code not perfectly clean.
+[0.000000] [simix_kernel/INFO] 6 processes are still running, waiting for something.
+[0.000000] [simix_kernel/INFO] Legend of the following listing: "<process> on <host>: <status>."
+[0.000000] [simix_kernel/INFO] smpi_simulated_main on grelon-1.nancy.grid5000.fr:  Blocked on condition 0xdead; Waiting for the following actions: 'sleep'(0xdead) 'sleep'(0xdead).
+[0.000000] [simix_kernel/INFO] smpi_simulated_main on grelon-2.nancy.grid5000.fr:  Blocked on condition 0xdead; Waiting for the following actions: 'sleep'(0xdead) 'sleep'(0xdead).
+[0.000000] [simix_kernel/INFO] smpi_sender on grelon-1.nancy.grid5000.fr: [SUSPENDED]  Blocked on condition 0xdead; Waiting for the following actions: 'dummy'(0xdead).
+[0.000000] [simix_kernel/INFO] smpi_receiver on grelon-1.nancy.grid5000.fr: [SUSPENDED]  Blocked on condition 0xdead; Waiting for the following actions: 'dummy'(0xdead).
+[0.000000] [simix_kernel/INFO] smpi_sender on grelon-2.nancy.grid5000.fr: [SUSPENDED]  Blocked on condition 0xdead; Waiting for the following actions: 'dummy'(0xdead).
+[0.000000] [simix_kernel/INFO] smpi_receiver on grelon-2.nancy.grid5000.fr: [SUSPENDED]  Blocked on condition 0xdead; Waiting for the following actions: 'dummy'(0xdead).
+[0.000000] [simix_kernel/INFO] Return a Warning.
+** SimGrid: UNCAUGHT EXCEPTION received on (0): category: unknown_err; value: 0
+** Cannot destroy conditional since someone is still using it
+** Thrown by () in this process
+[0.000000] xbt/ex.c:117: [xbt_ex/CRITICAL] Cannot destroy conditional since someone is still using it
+
+**   In SIMIX_cond_destroy() at /home/genaud/Documents/svn/simgrid/simgrid/trunk/src/simix/smx_synchro.c:302
+**   In smpi_global_destroy() at /home/genaud/Documents/svn/simgrid/simgrid/trunk/src/smpi/smpi_global.c:239
+**   In smpi_run_simulation() at /home/genaud/Documents/svn/simgrid/simgrid/trunk/src/smpi/smpi_global.c:333
+./smpirun: line 176: 18880 Abandon                 ${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+
+
+

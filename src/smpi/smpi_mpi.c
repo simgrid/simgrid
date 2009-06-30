@@ -229,25 +229,27 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
   return retval;
 }
 
+
+
+#ifdef DEBUG_REDUCE
 /**
  * debugging helper function
  **/
-void print_buffer_int( void *buf, int len, const char *msg) ;
-void print_buffer_int( void *buf, int len, const char *msg) {
+void print_buffer_int( void *buf, int len, const char *msg, int rank) ;
+void print_buffer_int( void *buf, int len, const char *msg, int rank) {
 	  int tmp, *v;
-	  printf("**%s: ",msg);
+	  printf("**[%d] %s: ",rank,msg);
 	  for (tmp=0;tmp<len;tmp++) {
 		    v = buf;
 		    printf("[%d]", v[tmp] );
 	  }
 	  printf("\n");
 }
-
+#endif
 
 /**
  * MPI_Reduce
  **/
-
 int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
    		         MPI_Op op, int root, MPI_Comm comm )
 {
@@ -259,16 +261,16 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   smpi_mpi_request_t *tabrequest;
   smpi_mpi_request_t request;
 
-
   smpi_bench_end();
 
   rank = smpi_mpi_comm_rank(comm);
   size = comm->size;
 
-  //printf("-->rank %d. Entering ....\n",rank);
-  //print_buffer_int( sendbuf, count, "sendbuf");
-
   if (rank != root) { // if i am not ROOT, simply send my buffer to root
+
+#ifdef DEBUG_REDUCE
+	    print_buffer_int( sendbuf, count, "sndbuf",rank);
+#endif
 	    retval = smpi_create_request(sendbuf, count, datatype, rank, root, tag , comm, &request);
 	    smpi_mpi_isend(request);
 	    smpi_mpi_wait(request, MPI_STATUS_IGNORE);
@@ -303,16 +305,19 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 			int index = MPI_UNDEFINED;
 			smpi_mpi_waitany(comm->size-1, tabrequest, &index, MPI_STATUS_IGNORE);
 
-			//print_buffer_int( recvbuf, count, "rcvbuf");
-			//printf("MPI_Waitany() unblocked: root received (completes req[index=%d]): ",index);
-			//print_buffer_int( tmpbufs[index], count, "tmpbufs[index]");
+#ifdef DEBUG_REDUCE
+			printf("MPI_Waitany() unblocked: root received (completes req[index=%d])\n",index);
+			print_buffer_int( tmpbufs[index], count, "tmpbufs[index]",rank);
+#endif
 
 			// arg 2 is modified 
 			op->func (tmpbufs[index],recvbuf,&count,&datatype);
+#ifdef DEBUG_REDUCE
+			print_buffer_int( recvbuf, count, "rcvbuf",rank);
 
-			// print_buffer_int( recvbuf, count, "recvbuf after func");
+#endif
 			//xbt_mallocator_release(smpi_global->request_mallocator, tabrequest[i]);
-			//xbt_free( tmpbufs[index]);
+			xbt_free( tmpbufs[index]);
 	    }
 	    xbt_free(tabrequest);
 	    xbt_free(tmpbufs);
