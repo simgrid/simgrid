@@ -341,6 +341,32 @@ int SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
   return retval;
 }
 
+/**
+ * MPI_Allreduce
+ *
+ * Same as MPI_REDUCE except that the result appears in the receive buffer of all the group members.
+ **/
+int SMPI_MPI_Allreduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+   		         MPI_Op op, MPI_Comm comm )
+{
+  int retval = MPI_SUCCESS;
+  int root=0;  // arbitrary choice
+
+  smpi_bench_end();
+
+  retval = SMPI_MPI_Reduce( sendbuf, recvbuf, count, datatype, op, root, comm);
+  if (MPI_SUCCESS != retval)
+	    return(retval);
+  retval = SMPI_MPI_Bcast( recvbuf, count, datatype, root, comm);
+
+  smpi_bench_begin();
+  return( retval );
+}
+
+
+
+
+
 // used by comm_split to sort ranks based on key values
 int smpi_compare_rankkeys(const void *a, const void *b);
 int smpi_compare_rankkeys(const void *a, const void *b)
