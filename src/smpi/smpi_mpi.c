@@ -235,8 +235,7 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
 /**
  * debugging helper function
  **/
-void print_buffer_int( void *buf, int len, char *msg, int rank) ;
-void print_buffer_int( void *buf, int len, char *msg, int rank) {
+static void print_buffer_int( void *buf, int len, const char *msg, int rank) {
 	  int tmp, *v;
 	  printf("**[%d] %s: ",rank,msg);
 	  for (tmp=0;tmp<len;tmp++) {
@@ -279,6 +278,7 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 
   } else {
 	    // i am the ROOT: wait for all buffers by creating one request by sender
+	    int src;
 	    tabrequest = xbt_malloc((size-1)*sizeof(smpi_mpi_request_t));
 
           void **tmpbufs = xbt_malloc((size-1)*sizeof(void *));
@@ -290,10 +290,11 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 
 	    // i can not use: 'request->forward = size-1;' (which would progagate size-1 receive reqs)
 	    // since we should op values as soon as one receiving request matches.
-	    for (i=0; i<comm->size-1; i++) {
+	    for (i=0; i<size-1; i++) {
 			// reminder: for smpi_create_request() the src is always the process sending.
-			retval = smpi_create_request(tmpbufs[i], count, datatype,
-					    MPI_ANY_SOURCE, root,
+			src = i < root ? i : i+1;
+			retval = smpi_create_request(tmpbufs[i], count, datatype, 
+					    src , root,
 					    tag, comm, &(tabrequest[i]));
 			if (NULL != tabrequest[i] && MPI_SUCCESS == retval) {
 				  if (MPI_SUCCESS == retval) {
@@ -302,13 +303,13 @@ int SMPI_MPI_Reduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 			}
 	    }
 	    // now, wait for completion of all irecv's.
-	    for (i=0; i<comm->size-1; i++) {
+	    for (i=0; i<size-1; i++) {
 			int index = MPI_UNDEFINED;
-			smpi_mpi_waitany(comm->size-1, tabrequest, &index, MPI_STATUS_IGNORE);
+			smpi_mpi_waitany(size-1, tabrequest, &index, MPI_STATUS_IGNORE);
 
 #ifdef DEBUG_REDUCE
 			printf("MPI_Waitany() unblocked: root received (completes req[index=%d])\n",index);
-			print_buffer_int( tmpbufs[index], count, bprintf("tmpbufs[index=%d]",index),rank);
+			print_buffer_int( tmpbufs[index], count, bprintf("tmpbufs[index=%d] (value received)",index),rank);
 #endif
 
 			// arg 2 is modified
