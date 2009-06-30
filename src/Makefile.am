@@ -169,7 +169,7 @@ XBT_SG_SRC = \
   xbt/xbt_sg_time.c     
 
 SURF_SRC= \
-  surf/model.c                                                               \
+  surf/surf_model.c                                                          \
   surf/surf_resource.c                                                       \
   surf/surf_config.c                                                         \
   surf/maxmin.c                                                              \
