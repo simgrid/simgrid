@@ -66,10 +66,7 @@ typedef struct surf_action_workstation_L07 {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_workstation);
 
-static int nb_workstation = 0;
-static xbt_dynar_t *routing_table = NULL;
-#define ROUTE(i,j) routing_table[(i)+(j)*nb_workstation]
-static link_L07_t loopback = NULL;
+static int host_count = 0;
 static xbt_dict_t parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
@@ -87,7 +84,7 @@ static void update_action_bound(surf_action_workstation_L07_t action)
     for (j = 0; j < workstation_nb; j++) {
       cpu_L07_t card_src = action->workstation_list[i];
       cpu_L07_t card_dst = action->workstation_list[j];
-      xbt_dynar_t route = ROUTE(card_src->id, card_dst->id);
+      xbt_dynar_t route = used_routing->get_route(card_src->id, card_dst->id);
       double lat = 0.0;
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
@@ -386,8 +383,6 @@ static void update_resource_state(void *id,
 
 static void finalize(void)
 {
-  int i, j;
-
   xbt_dict_free(&link_set);
   if (parallel_task_link_set != NULL) {
     xbt_dict_free(&parallel_task_link_set);
@@ -395,13 +390,9 @@ static void finalize(void)
 
   surf_model_exit(surf_workstation_model);
   surf_workstation_model = NULL;
+  used_routing->finalize();
 
-  for (i = 0; i < nb_workstation; i++)
-    for (j = 0; j < nb_workstation; j++)
-      xbt_dynar_free(&ROUTE(i, j));
-  free(routing_table);
-  routing_table = NULL;
-  nb_workstation = 0;
+  host_count = 0; // FIXME: KILLME?
 
   if (ptask_maxmin_system) {
     lmm_system_free(ptask_maxmin_system);
@@ -452,7 +443,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
       cpu_L07_t card_src = workstation_list[i];
       cpu_L07_t card_dst = workstation_list[j];
       link_L07_t link;
-      xbt_dynar_t route = ROUTE(card_src->id, card_dst->id);
+      xbt_dynar_t route = used_routing->get_route(card_src->id, card_dst->id);
       double lat = 0.0;
 
       if (communication_amount[i * workstation_nb + j] > 0)
@@ -513,7 +504,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
       cpu_L07_t card_src = workstation_list[i];
       cpu_L07_t card_dst = workstation_list[j];
       link_L07_t link;
-      xbt_dynar_t route = ROUTE(card_src->id, card_dst->id);
+      xbt_dynar_t route = used_routing->get_route(card_src->id, card_dst->id);
 
       if (communication_amount[i * workstation_nb + j] == 0.0)
         continue;
@@ -581,13 +572,12 @@ static surf_action_t action_sleep(void *cpu, double duration)
   return (surf_action_t) action;
 }
 
-/* returns a dynar of link_L07_t */
 static xbt_dynar_t get_route(void *src, void *dst)
 {
-  cpu_L07_t card_src = src;
-  cpu_L07_t card_dst = dst;
+  cpu_L07_t host_src = src;
+  cpu_L07_t host_dst = dst;
 
-  return ROUTE(card_src->id, card_dst->id);
+  return used_routing->get_route(host_src->id, host_dst->id);
 }
 
 static double get_link_bandwidth(const void *link)
@@ -628,7 +618,7 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
   cpu->generic_resource.model = surf_workstation_model;
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
   cpu->generic_resource.name = xbt_strdup(name);
-  cpu->id = nb_workstation++;
+  cpu->id = host_count++;
 
   cpu->power_scale = power_scale;
   xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
@@ -654,16 +644,6 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
                cpu_free);
 
   return cpu;
-}
-
-static void create_routing_table(void)
-{
-  int i,j;
-  routing_table = xbt_new0(xbt_dynar_t,       /*card_number * card_number */
-                           nb_workstation * nb_workstation);
-  for (i=0;i<nb_workstation;i++)
-    for (j=0;j<nb_workstation;j++)
-      ROUTE(i,j) = xbt_dynar_new(sizeof(link_L07_t),NULL);
 }
 
 static void parse_cpu_init(void)
@@ -781,91 +761,6 @@ static void parse_link_init(void)
            current_property_set);
 }
 
-static int src_id = -1;
-static int dst_id = -1;
-
-static void parse_route_set_endpoints(void)
-{
-  cpu_L07_t cpu_tmp = NULL;
-
-  cpu_tmp =
-    (cpu_L07_t) surf_model_resource_by_name(surf_workstation_model,
-                                            A_surfxml_route_src);
-  xbt_assert1(cpu_tmp, "Invalid cpu %s", A_surfxml_route_src);
-  if (cpu_tmp != NULL)
-    src_id = cpu_tmp->id;
-
-  cpu_tmp =
-    (cpu_L07_t) surf_model_resource_by_name(surf_workstation_model,
-                                            A_surfxml_route_dst);
-  xbt_assert1(cpu_tmp, "Invalid cpu %s", A_surfxml_route_dst);
-  if (cpu_tmp != NULL)
-    dst_id = cpu_tmp->id;
-
-  route_action = A_surfxml_route_action;
-}
-
-static void parse_route_set_route(void)
-{
-  char *name;
-  if (src_id != -1 && dst_id != -1) {
-    name = bprintf("%x#%x", src_id, dst_id);
-    manage_route(route_table, name, route_action, 0);
-    free(name);
-  }
-}
-
-static void add_loopback(void)
-{
-  int i;
-
-  /* Adding loopback if needed */
-  for (i = 0; i < nb_workstation; i++)
-    if (!xbt_dynar_length(ROUTE(i, i))) {
-      if (!loopback)
-        loopback = link_new(xbt_strdup("__MSG_loopback__"),
-                            498000000, NULL, 0.000015, NULL,
-                            SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL);
-
-      xbt_dynar_push(ROUTE(i,i),&loopback);
-    }
-}
-
-static void add_route(void)
-{
-  xbt_ex_t e;
-  int nb_link = 0;
-  unsigned int cpt = 0;
-  xbt_dict_cursor_t cursor = NULL;
-  char *key, *data, *end;
-  const char *sep = "#";
-  xbt_dynar_t links, keys;
-  char *link_name = NULL;
-
-  if (routing_table == NULL)
-    create_routing_table();
-
-  xbt_dict_foreach(route_table, cursor, key, data) {
-    nb_link = 0;
-    links = (xbt_dynar_t) data;
-    keys = xbt_str_split_str(key, sep);
-
-    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
-    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
-    xbt_dynar_free(&keys);
-
-    xbt_dynar_foreach(links, cpt, link_name) {
-      TRY {
-        link_L07_t link = xbt_dict_get(link_set, link_name);
-        xbt_dynar_push(ROUTE(src_id,dst_id),&link);
-      }
-      CATCH(e) {
-        RETHROW1("Link %s not found (dict raised this exception: %s)", link_name);
-      }
-    }
-  }
-}
-
 static void add_traces(void)
 {
   xbt_dict_cursor_t cursor = NULL;
@@ -933,11 +828,6 @@ static void define_callbacks(const char *file)
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
   surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list,
-                       &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
 }
 
@@ -976,9 +866,9 @@ static void model_init_internal(void)
   surf_workstation_model->extension.workstation.get_available_speed =
     get_available_speed;
   surf_workstation_model->extension.workstation.communicate = communicate;
+  surf_workstation_model->extension.workstation.get_route = get_route;
   surf_workstation_model->extension.workstation.execute_parallel_task =
     execute_parallel_task;
-  surf_workstation_model->extension.workstation.get_route = get_route;
   surf_workstation_model->extension.workstation.get_link_bandwidth =
     get_link_bandwidth;
   surf_workstation_model->extension.workstation.get_link_latency =
@@ -991,6 +881,12 @@ static void model_init_internal(void)
 
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();
+
+  routing_model_full_create(sizeof(link_L07_t),
+        link_new(xbt_strdup("__MSG_loopback__"),
+            498000000, NULL, 0.000015, NULL,
+            SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL));
+
 }
 
 /**************************************/
@@ -1000,8 +896,8 @@ void surf_workstation_model_init_ptask_L07(const char *filename)
 {
   xbt_assert0(!surf_cpu_model, "CPU model type already defined");
   xbt_assert0(!surf_network_model, "network model type already defined");
-  model_init_internal();
   define_callbacks(filename);
+  model_init_internal();
 
   update_model_description(surf_workstation_model_description,
                            "ptask_L07", surf_workstation_model);

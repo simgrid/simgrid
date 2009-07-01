@@ -163,14 +163,12 @@ static void update_resource_state(void *id,
   DIE_IMPOSSIBLE;
 }
 
-static surf_action_t communicate(void *src, void *dst, double size,
-                                 double rate)
+static surf_action_t communicate(const char *src_name,const char *dst_name,int src, int dst, double size,
+    double rate)
 {
   surf_action_network_Constant_t action = NULL;
-  network_card_Constant_t card_src = src;
-  network_card_Constant_t card_dst = dst;
 
-  XBT_IN4("(%s,%s,%g,%g)", card_src->generic_resource.name, card_dst->generic_resource.name, size, rate);
+  XBT_IN4("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
 
   action = xbt_new0(s_surf_action_network_Constant_t, 1);
 
@@ -279,7 +277,6 @@ static void surf_network_model_init_internal(void)
   surf_cpu_model->set_max_duration = action_set_max_duration;
 
   surf_network_model->extension.network.communicate = communicate;
-  surf_network_model->extension.network.get_route = get_route;
   surf_network_model->extension.network.get_link_bandwidth =
     get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = get_link_latency;

@@ -18,14 +18,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 surf_model_t surf_workstation_model = NULL;
 
 static workstation_CLM03_t workstation_new(const char *name,
-                                           void *cpu, void *card)
+                                           void *cpu, int id)
 {
   workstation_CLM03_t workstation = xbt_new0(s_workstation_CLM03_t, 1);
 
   workstation->generic_resource.model = surf_workstation_model;
   workstation->generic_resource.name = xbt_strdup(name);
   workstation->cpu = cpu;
-  workstation->network_card = card;
+  workstation->id = id;
 
   xbt_dict_set(surf_model_resource_set(surf_workstation_model), name,
                workstation, surf_resource_free);
@@ -38,13 +38,12 @@ void create_workstations(void)
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   void *cpu = NULL;
-  void *nw_card = NULL;
 
   xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, name, cpu) {
-    nw_card = surf_model_resource_by_name(surf_network_model, name);
-    xbt_assert1(nw_card, "No corresponding card found for %s", name);
+    int *id = xbt_dict_get_or_null(used_routing->host_id,name);
+    xbt_assert1(id, "No host %s found in the platform file", name);
 
-    workstation_new(name, cpu, nw_card);
+    workstation_new(name, cpu, *id);
   }
 }
 
@@ -185,10 +184,12 @@ static surf_action_t communicate(void *workstation_src,
                                  void *workstation_dst, double size,
                                  double rate)
 {
+  workstation_CLM03_t src = (workstation_CLM03_t) workstation_src;
+  workstation_CLM03_t dst = (workstation_CLM03_t) workstation_dst;
   return surf_network_model->extension.
-    network.communicate(((workstation_CLM03_t) workstation_src)->network_card,
-                        ((workstation_CLM03_t) workstation_dst)->network_card,
-                        size, rate);
+    network.communicate(surf_resource_name(src->cpu),surf_resource_name(dst->cpu),
+        src->id,dst->id,
+        size, rate);
 }
 
 static e_surf_cpu_state_t get_state(void *workstation)
@@ -231,10 +232,8 @@ static xbt_dynar_t get_route(void *src, void *dst)
 {
   workstation_CLM03_t workstation_src = (workstation_CLM03_t) src;
   workstation_CLM03_t workstation_dst = (workstation_CLM03_t) dst;
-  return surf_network_model->extension.network.get_route(workstation_src->
-                                                         network_card,
-                                                         workstation_dst->
-                                                         network_card);
+  return surf_network_model->extension.network.get_route(workstation_src->id,
+                                                         workstation_dst->id);
 }
 
 static double get_link_bandwidth(const void *link)
@@ -292,9 +291,9 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->get_properties = get_properties;
 
   surf_workstation_model->extension.workstation.communicate = communicate;
+  surf_workstation_model->extension.workstation.get_route = get_route;
   surf_workstation_model->extension.workstation.execute_parallel_task =
     execute_parallel_task;
-  surf_workstation_model->extension.workstation.get_route = get_route;
   surf_workstation_model->extension.workstation.get_link_bandwidth =
     get_link_bandwidth;
   surf_workstation_model->extension.workstation.get_link_latency =

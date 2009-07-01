@@ -22,22 +22,9 @@ double bandwidth_factor = 1.0;  /* default value */
 double weight_S_parameter = 0.0;        /* default value */
 
 int card_number = 0;
-int host_number = 0;
-xbt_dynar_t *routing_table = NULL;
-static link_CM02_t loopback = NULL;
+int host_count = 0;
 double sg_tcp_gamma = 0.0;
 
-
-static void create_routing_table(void)
-{
-  int i,j;
-  routing_table = xbt_new0(xbt_dynar_t,       /*card_number * card_number */
-                           host_number * host_number);
-  for (i=0;i<host_number;i++)
-    for (j=0;j<host_number;j++)
-      ROUTE(i,j) = xbt_dynar_new(sizeof(link_CM02_t),NULL);
-
-}
 
 static void link_free(void *nw_link)
 {
@@ -91,21 +78,6 @@ static link_CM02_t link_new(char *name,
   return nw_link;
 }
 
-static int network_card_new(const char *card_name)
-{
-  network_card_CM02_t card =
-    surf_model_resource_by_name(surf_network_model, card_name);
-
-  if (!card) {
-    card = xbt_new0(s_network_card_CM02_t, 1);
-    card->generic_resource.name = xbt_strdup(card_name);
-    card->id = host_number++;
-    xbt_dict_set(surf_model_resource_set(surf_network_model), card_name, card,
-                 surf_resource_free);
-  }
-  return card->id;
-}
-
 static void parse_link_init(void)
 {
   char *name_link;
@@ -144,87 +116,6 @@ static void parse_link_init(void)
            policy_initial_link, xbt_dict_new());
 
 }
-
-static int src_id = -1;
-static int dst_id = -1;
-
-static void parse_route_set_endpoints(void)
-{
-  src_id = network_card_new(A_surfxml_route_src);
-  dst_id = network_card_new(A_surfxml_route_dst);
-  route_action = A_surfxml_route_action;
-}
-
-static void parse_route_set_route(void)
-{
-  char *name;
-  if (src_id != -1 && dst_id != -1) {
-    name = bprintf("%x#%x", src_id, dst_id);
-    manage_route(route_table, name, route_action, 0);
-    free(name);
-  }
-}
-
-static void add_loopback(void)
-{
-  int i;
-  /* Adding loopback if needed */
-  for (i = 0; i < host_number; i++)
-    if (!xbt_dynar_length(ROUTE(i, i))) {
-      if (!loopback)
-        loopback = link_new(xbt_strdup("__MSG_loopback__"),
-                            498000000, NULL, 0.000015, NULL,
-                            SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL);
-      ROUTE(i, i) = xbt_dynar_new(sizeof(link_CM02_t),NULL);
-      xbt_dynar_push(ROUTE(i,i),&loopback);
-    }
-}
-
-static void add_route(void)
-{
-  xbt_ex_t e;
-  int nb_link = 0;
-  unsigned int cpt = 0;
-  xbt_dict_cursor_t cursor = NULL;
-  char *key, *data, *end;
-  const char *sep = "#";
-  xbt_dynar_t links, keys;
-
-  if (routing_table == NULL)
-    create_routing_table();
-
-  xbt_dict_foreach(route_table, cursor, key, data) {
-    char *link_name = NULL;
-    nb_link = 0;
-    links = (xbt_dynar_t) data;
-    keys = xbt_str_split_str(key, sep);
-
-    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
-    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
-    xbt_dynar_free(&keys);
-
-    xbt_dynar_foreach(links, cpt, link_name) {
-      TRY {
-        link_CM02_t link = xbt_dict_get(link_set, link_name);
-        xbt_dynar_push(ROUTE(src_id,dst_id),&link);
-      }
-      CATCH(e) {
-        RETHROW1("Link %s not found (dict raised this exception: %s)", link_name);
-      }
-    }
-  }
-
-  int i,j;
-  for (i=0;i<host_number;i++)
-    for (j=0;j<host_number;j++)
-      xbt_dynar_shrink(ROUTE(i,j),0);
-}
-
-static void count_hosts(void)
-{
-  host_number++;
-}
-
 
 static void add_traces(void)
 {
@@ -277,14 +168,8 @@ static void add_traces(void)
 static void define_callbacks(const char *file)
 {
   /* Figuring out the network links */
-  surfxml_add_callback(STag_surfxml_host_cb_list, &count_hosts);
   surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list,
-                       &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_loopback);
 }
 
 static int resource_used(void *resource_id)
@@ -469,26 +354,24 @@ static void update_resource_state(void *id,
   return;
 }
 
-static surf_action_t communicate(void *src, void *dst, double size,
+static surf_action_t communicate(const char *src_name, const char *dst_name,int src, int dst, double size,
                                  double rate)
 {
   surf_action_network_CM02_t action = NULL;
   /* LARGE PLATFORMS HACK:
      Add a link_CM02_t *link and a int link_nb to network_card_CM02_t. It will represent local links for this node
      Use the cluster_id for ->id */
-  network_card_CM02_t card_src = src;
-  network_card_CM02_t card_dst = dst;
-  xbt_dynar_t route = ROUTE(card_src->id, card_dst->id);
+  xbt_dynar_t route = used_routing->get_route(src, dst);
   /* LARGE PLATFORMS HACK:
      total_route_size = route_size + src->link_nb + dst->nb */
   unsigned int i;
 
-  XBT_IN4("(%s,%s,%g,%g)", card_src->generic_resource.name, card_dst->generic_resource.name, size, rate);
+  XBT_IN4("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
   xbt_assert2(xbt_dynar_length(route),
-              "You're trying to send data from %s to %s but there is no connection between these two cards.",
-              card_src->generic_resource.name, card_dst->generic_resource.name);
+              "You're trying to send data from %s to %s but there is no connection between these two hosts.",
+              src_name, dst_name);
 
   action = xbt_new0(s_surf_action_network_CM02_t, 1);
 
@@ -567,14 +450,6 @@ static surf_action_t communicate(void *src, void *dst, double size,
   return (surf_action_t) action;
 }
 
-/* returns an array of link_CM02_t */
-static xbt_dynar_t get_route(void *src, void *dst)
-{
-  network_card_CM02_t card_src = src;
-  network_card_CM02_t card_dst = dst;
-  return ROUTE(card_src->id, card_dst->id);
-}
-
 static double get_link_bandwidth(const void *link)
 {
   return ((link_CM02_t) link)->bw_current;
@@ -626,26 +501,20 @@ static void action_set_max_duration(surf_action_t action, double duration)
 
 static void finalize(void)
 {
-  int i, j;
-
   xbt_dict_free(&link_set);
 
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
 
-  loopback = NULL;
-  for (i = 0; i < host_number; i++)
-    for (j = 0; j < host_number; j++)
-      xbt_dynar_free(&ROUTE(i, j));
-  free(routing_table);
-  routing_table = NULL;
-  host_number = 0;
+  used_routing->finalize();
+  host_count = 0;
   lmm_system_free(network_maxmin_system);
   network_maxmin_system = NULL;
 }
 
 static void surf_network_model_init_internal(void)
 {
+  link_set = xbt_dict_new();
   surf_network_model = surf_model_init();
 
   surf_network_model->name = "network";
@@ -667,7 +536,6 @@ static void surf_network_model_init_internal(void)
   surf_cpu_model->set_max_duration = action_set_max_duration;
 
   surf_network_model->extension.network.communicate = communicate;
-  surf_network_model->extension.network.get_route = get_route;
   surf_network_model->extension.network.get_link_bandwidth =
     get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = get_link_latency;
@@ -675,10 +543,13 @@ static void surf_network_model_init_internal(void)
 
   surf_network_model->get_properties = get_properties;
 
-  link_set = xbt_dict_new();
-
   if (!network_maxmin_system)
     network_maxmin_system = lmm_system_new();
+
+  routing_model_full_create(sizeof(link_CM02_t),
+      link_new(xbt_strdup("__loopback__"),
+          498000000, NULL, 0.000015, NULL,
+          SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL));
 }
 
 /************************************************************************/

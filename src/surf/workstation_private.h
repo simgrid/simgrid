@@ -13,7 +13,7 @@
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource; /* Must remain first to add this to a trace */
   void *cpu;
-  void *network_card;
+  int id;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
 typedef struct surf_action_parallel_task_CSL05 {

@@ -120,6 +120,8 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 /***************************/
 /* Generic model object */
 /***************************/
+     typedef struct s_routing s_routing_t, *routing_t;
+     XBT_PUBLIC_DATA(routing_t) used_routing;
 
 /** \brief Private data available on all models
  *  \ingroup SURF_models
@@ -167,9 +169,9 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
       *  Public functions specific to the network model
       */
      typedef struct surf_network_model_extension_public {
-       surf_action_t(*communicate) (void *src, void *dst, double size,
-                                    double max_rate);
-       xbt_dynar_t (*get_route) (void *src, void *dst);
+       surf_action_t(*communicate) (const char *src_name,const char *dst_name,int src, int dst, double size,
+           double rate);
+       xbt_dynar_t (*get_route) (int src, int dst);
        double (*get_link_bandwidth) (const void *link);
        double (*get_link_latency) (const void *link);
        int (*link_shared) (const void *link);
@@ -190,13 +192,13 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
        surf_action_t(*communicate) (void *workstation_src,                                 /**< Execute a communication amount between two workstations */
                                     void *workstation_dst, double size,
                                     double max_rate);
+       xbt_dynar_t(*get_route)(void *workstation_src,void *workstation_dst);               /**< Get the list of links between two ws */
 
        surf_action_t(*execute_parallel_task) (int workstation_nb,                          /**< Execute a parallel task on several workstations */
                                               void **workstation_list,
                                               double *computation_amount,
                                               double *communication_amount,
                                               double amount, double rate);
-       xbt_dynar_t (*get_route) (void *src, void *dst);                                   /**< Return the network link list between two workstations */
        double (*get_link_bandwidth) (const void *link);                                    /**< Return the current bandwidth of a network link */
        double (*get_link_latency) (const void *link);                                      /**< Return the current latency of a network link */
        int (*link_shared) (const void *link);
@@ -611,7 +613,7 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_bandwidth;
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 
-XBT_PUBLIC_DATA(double) get_cpu_power(const char *power);
+XBT_PUBLIC(double) get_cpu_power(const char *power);
 
 
 SG_END_DECL()

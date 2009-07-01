@@ -5,6 +5,10 @@ SimGrid (3.3.2-svn) unstable; urgency=low
     MPI_Waitany, MPI_Waitall, MPI_Allreduce
 
  SURF: 
+  * Extract the routing logic into its own object.
+    - Was dupplicated in network.c and workstation_LV07.c
+    - We may want to implement other ways of storing that info
+    => kill now useless network_card concept
   * Declare common_public as an embeeded struct to reduce redirections
     and mallocs
   * Factorize model_init/exit between models
@@ -16,9 +20,6 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Embeed every fields of common_public directly into s_surf_model_t
   * Implement a generic resource; use it as ancestor to specific ones
     Allows to kill duplicated code in models
-    The drawback is that network cards are more fat since they don't
-     use the model field of their ancestor. 
-    But hell, we wont fight for 8 bytes per host, will we?
     TODO: integrate the properties into that ancestor
   * Rename model methods:
     action_free -> action_unref

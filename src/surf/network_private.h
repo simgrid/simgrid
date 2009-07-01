@@ -28,11 +28,6 @@ typedef struct network_link_CM02 {
 } s_link_CM02_t, *link_CM02_t;
 
 
-typedef struct network_card_CM02 {
-  s_surf_resource_t generic_resource; /* must remain first to allow casts */
-  int id;
-} s_network_card_CM02_t, *network_card_CM02_t;
-
 typedef struct surf_action_network_CM02 {
   s_surf_action_t generic_action;
   double latency;
@@ -41,13 +36,10 @@ typedef struct surf_action_network_CM02 {
   lmm_variable_t variable;
   double rate;
   int suspended;
-  network_card_CM02_t src;
-  network_card_CM02_t dst;
+#ifdef KILLME
+  int src;
+  int dst;
+#endif
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
-
-extern int card_number;
-extern xbt_dynar_t *routing_table;
-
-#define ROUTE(i,j) routing_table[(i)+(j)*host_number]
 
 #endif /* _SURF_NETWORK_PRIVATE_H */

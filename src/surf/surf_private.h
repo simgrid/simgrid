@@ -85,4 +85,17 @@ const char *__surf_get_initial_path(void);
  */
 int __surf_is_absolute_file_path(const char *file_path);
 
+/*
+ * Routing logic
+ */
+struct s_routing {
+  const char *name;
+  xbt_dict_t host_id; /* char* -> int* */
+
+  xbt_dynar_t (*get_route)(int src, int dst);
+  void (*finalize)(void);
+  int host_count;
+};
+XBT_PUBLIC(routing_t) routing_model_full_create(size_t size_of_link,void *loopback);
+
 #endif /* _SURF_SURF_PRIVATE_H */
