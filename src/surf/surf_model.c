@@ -40,6 +40,7 @@ surf_model_t surf_model_init(void)
   model->action_recycle = void_die_impossible_paction;
 
   model->action_state_get = surf_action_state_get;
+  model->action_state_set = surf_action_state_set;
   model->action_get_start_time = surf_action_get_start_time;
   model->action_get_finish_time = surf_action_get_finish_time;
   model->action_data_set = surf_action_data_set;
