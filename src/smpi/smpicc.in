@@ -11,7 +11,9 @@ TMPDIR="$(mktemp -d tmpXXXXXXX)"
 
 function modsource {
   SOURCE="$1"
-  SOURCEFILE="$(basename ${SOURCE})"
+  ## basename is not available on MAcOSX : SOURCEFILE="$(basename ${SOURCE})"
+  SOURCEFILE="`echo ${SOURCE} | egrep -o '[^/]+$'`"
+
   SOURCEDIR="${SOURCE%${SOURCEFILE}}"
   if [ -n "${SOURCEDIR}" ]; then
     mkdir -p ${TMPDIR}${SOURCEDIR}
@@ -52,7 +54,7 @@ while [ -n "$1" ]; do
   elif [ "${ARG%.c}" != "${ARG}" ]; then
     INCLUDEARGS="${INCLUDEARGS} -I . -I .. -I ../include -I @includedir@ "
 #    SRCFILE="$(realpath ${ARG})"
-    SRCFILE="$(/bin/readlink -f ${ARG})"
+    SRCFILE="$(readlink -f ${ARG})"
     modsource ${SRCFILE}
     CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "
   else

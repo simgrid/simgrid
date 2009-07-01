@@ -140,9 +140,22 @@ fi
 ##  hostfile has less than i lines.
 ##----------------------------------------------------------
 
+HAVE_SEQ="`which seq`"
+HAVE_JOT="`which jot`"
+
+if [ -n "${HAVE_SEQ}" ]; then
+	SEQ=`${HAVE_SEQ} 0 $((${NUMPROCS}-1))`
+else
+      cnt=0
+	while (( $cnt < ${NUMPROCS} )) ; do
+	    SEQ="$SEQ $cnt"
+	    cnt=$((cnt + 1));
+	done
+fi
+
 ##---- generate <process> tags------------------------------
 
-for i in `seq 0 $((${NUMPROCS}-1))` 
+for i in ${SEQ} 
 do
   if [ -n "${HOSTFILE}" ]; then
 	j=$(( $i % ${NUMHOSTS} ))
