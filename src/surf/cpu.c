@@ -148,11 +148,6 @@ static int action_unref(surf_action_t action)
   return 0;
 }
 
-static void action_ref(surf_action_t action)
-{
-  action->refcount++;
-}
-
 static void action_cancel(surf_action_t action)
 {
   surf_action_state_set(action, SURF_ACTION_FAILED);
@@ -402,7 +397,6 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->name = "CPU";
 
   surf_cpu_model->action_unref = action_unref;
-  surf_cpu_model->action_ref = action_ref;
   surf_cpu_model->action_cancel = action_cancel;
   surf_cpu_model->action_state_set = cpu_action_state_set;
 

@@ -314,11 +314,6 @@ static int action_unref(surf_action_t action)
   return 0;
 }
 
-static void action_ref(surf_action_t action)
-{
-  action->refcount++;
-}
-
 static void action_cancel(surf_action_t action)
 {
   return;
@@ -668,7 +663,6 @@ static void surf_network_model_init_internal(void)
 
   surf_network_model->name = "network";
   surf_network_model->action_unref = action_unref;
-  surf_network_model->action_ref = action_ref;
   surf_network_model->action_cancel = action_cancel;
   surf_network_model->action_recycle = action_recycle;
 

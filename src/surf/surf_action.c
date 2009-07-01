@@ -75,3 +75,8 @@ void surf_action_data_set(surf_action_t action, void *data)
 {
   action->data = data;
 }
+
+void surf_action_ref(surf_action_t action)
+{
+  action->refcount++;
+}

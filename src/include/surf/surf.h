@@ -28,7 +28,10 @@ SG_BEGIN_DECL()
  *
  * \see e_surf_action_state_t
  */
-     typedef struct surf_action *surf_action_t;
+typedef struct surf_action *surf_action_t;
+/** @Brief Specify that we use that action */
+XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
+
 
 /** \brief Model datatype
  *  \ingroup SURF_models
@@ -217,7 +220,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 
        double (*action_get_start_time) (surf_action_t action);/**< Return the start time of an action */
        double (*action_get_finish_time) (surf_action_t action);/**< Return the finish time of an action */
-       void (*action_ref) (surf_action_t action);/**< Specify that we use that action */
        int (*action_unref) (surf_action_t action);/**< Specify that we don't use that action anymore */
        void (*action_cancel) (surf_action_t action);/**< Cancel a running action */
        void (*action_recycle) (surf_action_t action);/**< Recycle an action */
