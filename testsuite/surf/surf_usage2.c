@@ -50,33 +50,29 @@ void test(char *platform)
   int workstation_id =
     find_model_description(surf_workstation_model_description, "CLM03");
 
-  surf_workstation_model_description[workstation_id].model_init(platform);
+  surf_workstation_model_description[workstation_id].model_init_preparse(platform);
   parse_platform_file(platform);
-  if (surf_workstation_model_description[workstation_id].create_ws)
-    surf_workstation_model_description[workstation_id].create_ws();
+  if (surf_workstation_model_description[workstation_id].model_init_postparse)
+    surf_workstation_model_description[workstation_id].model_init_postparse();
 
   /*********************** WORKSTATION ***********************************/
-  workstationA = surf_workstation_model->common_public->name_service("Cpu A");
-  workstationB = surf_workstation_model->common_public->name_service("Cpu B");
+  workstationA = surf_model_resource_by_name(surf_workstation_model,"Cpu A");
+  workstationB = surf_model_resource_by_name(surf_workstation_model,"Cpu B");
 
   /* Let's check that those two processors exist */
-  DEBUG2("%s : %p",
-         surf_workstation_model->
-         common_public->get_resource_name(workstationA), workstationA);
-  DEBUG2("%s : %p",
-         surf_workstation_model->
-         common_public->get_resource_name(workstationB), workstationB);
+  DEBUG2("%s : %p", surf_resource_name(workstationA), workstationA);
+  DEBUG2("%s : %p", surf_resource_name(workstationB), workstationB);
 
   /* Let's do something on it */
   actionA =
-    surf_workstation_model->extension_public->execute(workstationA, 1000.0);
+    surf_workstation_model->extension.workstation.execute(workstationA, 1000.0);
   actionB =
-    surf_workstation_model->extension_public->execute(workstationB, 1000.0);
+    surf_workstation_model->extension.workstation.execute(workstationB, 1000.0);
   actionC =
-    surf_workstation_model->extension_public->sleep(workstationB, 7.32);
+    surf_workstation_model->extension.workstation.sleep(workstationB, 7.32);
 
   commAB =
-    surf_workstation_model->extension_public->communicate(workstationA,
+    surf_workstation_model->extension.workstation.communicate(workstationA,
                                                           workstationB, 150.0,
                                                           -1.0);
 
@@ -90,18 +86,16 @@ void test(char *platform)
     DEBUG1("Next Event : %g", now);
 
     xbt_dynar_foreach(model_list, iter, model) {
-      DEBUG1("\t %s actions", model->common_public->name);
+      DEBUG1("\t %s actions", model->name);
       while ((action =
-              xbt_swag_extract(model->common_public->
-                               states.failed_action_set))) {
+              xbt_swag_extract(model->states.failed_action_set))) {
         DEBUG1("\t * Failed : %p", action);
-        model->common_public->action_unref(action);
+        model->action_unref(action);
       }
       while ((action =
-              xbt_swag_extract(model->common_public->
-                               states.done_action_set))) {
+              xbt_swag_extract(model->states.done_action_set))) {
         DEBUG1("\t * Done : %p", action);
-        model->common_public->action_unref(action);
+        model->action_unref(action);
       }
     }
   } while (surf_solve() >= 0.0);

@@ -59,24 +59,22 @@ void test(char *platform)
 
   /*********************** CPU ***********************************/
   DEBUG1("%p", surf_cpu_model);
-  cpuA = surf_cpu_model->common_public->name_service("Cpu A");
-  cpuB = surf_cpu_model->common_public->name_service("Cpu B");
+  cpuA = surf_model_resource_by_name(surf_cpu_model,"Cpu A");
+  cpuB = surf_model_resource_by_name(surf_cpu_model,"Cpu B");
 
   /* Let's check that those two processors exist */
-  DEBUG2("%s : %p",
-         surf_cpu_model->common_public->get_resource_name(cpuA), cpuA);
-  DEBUG2("%s : %p",
-         surf_cpu_model->common_public->get_resource_name(cpuB), cpuB);
+  DEBUG2("%s : %p",surf_resource_name(cpuA), cpuA);
+  DEBUG2("%s : %p",surf_resource_name(cpuB), cpuB);
 
   /* Let's do something on it */
-  actionA = surf_cpu_model->extension_public->execute(cpuA, 1000.0);
-  actionB = surf_cpu_model->extension_public->execute(cpuB, 1000.0);
-  actionC = surf_cpu_model->extension_public->sleep(cpuB, 7.32);
+  actionA = surf_cpu_model->extension.cpu.execute(cpuA, 1000.0);
+  actionB = surf_cpu_model->extension.cpu.execute(cpuB, 1000.0);
+  actionC = surf_cpu_model->extension.cpu.sleep(cpuB, 7.32);
 
   /* Use whatever calling style you want... */
-  stateActionA = surf_cpu_model->common_public->action_get_state(actionA);      /* When you know actionA model type */
-  stateActionB = actionB->model_type->common_public->action_get_state(actionB); /* If you're unsure about it's model type */
-  stateActionC = surf_cpu_model->common_public->action_get_state(actionC);      /* When you know actionA model type */
+  stateActionA = surf_cpu_model->action_state_get(actionA);      /* When you know actionA model type */
+  stateActionB = actionB->model_type->action_state_get(actionB); /* If you're unsure about it's model type */
+  stateActionC = surf_cpu_model->action_state_get(actionC);      /* When you know actionA model type */
 
   /* And just look at the state of these tasks */
   DEBUG2("actionA : %p (%s)", actionA, string_action(stateActionA));
@@ -85,18 +83,16 @@ void test(char *platform)
 
   /*********************** Network *******************************/
   DEBUG1("%p", surf_network_model);
-  cardA = surf_network_model->common_public->name_service("Cpu A");
-  cardB = surf_network_model->common_public->name_service("Cpu B");
+  cardA = surf_model_resource_by_name(surf_network_model,"Cpu A");
+  cardB = surf_model_resource_by_name(surf_network_model,"Cpu B");
 
   /* Let's check that those two processors exist */
-  DEBUG2("%s : %p",
-         surf_network_model->common_public->get_resource_name(cardA), cardA);
-  DEBUG2("%s : %p",
-         surf_network_model->common_public->get_resource_name(cardB), cardB);
+  DEBUG2("%s : %p", surf_resource_name(cardA), cardA);
+  DEBUG2("%s : %p", surf_resource_name(cardB), cardB);
 
   /* Let's do something on it */
   commAB =
-    surf_network_model->extension_public->communicate(cardA, cardB,
+    surf_network_model->extension.network.communicate(cardA, cardB,
                                                       150.0, -1.0);
 
   surf_solve();                 /* Takes traces into account. Returns 0.0 */
@@ -106,29 +102,25 @@ void test(char *platform)
     DEBUG1("Next Event : %g", now);
     DEBUG0("\t CPU actions");
     while ((action =
-            xbt_swag_extract(surf_cpu_model->common_public->
-                             states.failed_action_set))) {
+            xbt_swag_extract(surf_cpu_model->states.failed_action_set))) {
       DEBUG1("\t * Failed : %p", action);
-      action->model_type->common_public->action_unref(action);
+      action->model_type->action_unref(action);
     }
     while ((action =
-            xbt_swag_extract(surf_cpu_model->common_public->
-                             states.done_action_set))) {
+            xbt_swag_extract(surf_cpu_model->states.done_action_set))) {
       DEBUG1("\t * Done : %p", action);
-      action->model_type->common_public->action_unref(action);
+      action->model_type->action_unref(action);
     }
     DEBUG0("\t Network actions");
     while ((action =
-            xbt_swag_extract(surf_network_model->common_public->
-                             states.failed_action_set))) {
+            xbt_swag_extract(surf_network_model->states.failed_action_set))) {
       DEBUG1("\t * Failed : %p", action);
-      action->model_type->common_public->action_unref(action);
+      action->model_type->action_unref(action);
     }
     while ((action =
-            xbt_swag_extract(surf_network_model->common_public->
-                             states.done_action_set))) {
+            xbt_swag_extract(surf_network_model->states.done_action_set))) {
       DEBUG1("\t * Done : %p", action);
-      action->model_type->common_public->action_unref(action);
+      action->model_type->action_unref(action);
     }
 
   } while (surf_solve() >= 0.0);
