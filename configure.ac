@@ -380,7 +380,7 @@ AM_MAINTAINER_MODE
 if test x$USE_MAINTAINER_MODE = xyes 
 then
    # Maintainers have no choice ! I'm a BOFH, and I plainly assume. [Mt]
-   enable_compile_warnings=yes   
+   force_compile_warnings=yes   
 fi
 SG_COMPILE_FLAGS
 

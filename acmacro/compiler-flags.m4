@@ -35,7 +35,8 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
       fi;;
     esac
 
-  if test "x$enable_compile_warnings" = "xyes" ; then
+  if test "x$enable_compile_warnings" = "xyes" ||
+     test "x$force_compile_warnings" = "xyes"; then
     AC_MSG_CHECKING(the warning flags for this compiler)
     warnCFLAGS=
     if test "x$CC" = "xgcc" || test "x$GCC" = "xyes" ; then
@@ -49,14 +50,12 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
       
       ## -Wformat=2 chokes on the snprintf replacement because the format is passed to real sprintf
       ## -Wshadow chokes on try{ try{} } constructs
-      if test "x$enable_compile_warnings" = "xyes"; then
-        warnCFLAGS=`echo $warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
+      warnCFLAGS=`echo $warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
         -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings \
         -Wno-unused-function  -Wno-strict-aliasing -Wno-format-nonliteral \
         -Werror \
 	| sed 's/ +/ /g'`
 	# -Wno-unused-variable  -Wno-unused-label
-      fi
     fi
     AC_MSG_RESULT($warnCFLAGS)
     # placed before since gcc remembers the last one on conflict
