@@ -399,9 +399,6 @@ static void surf_cpu_model_init_internal(void)
   running_action_set_that_does_not_need_being_checked =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
-  surf_cpu_model->action_get_state = surf_action_get_state;
-  surf_cpu_model->action_get_start_time = surf_action_get_start_time;
-  surf_cpu_model->action_get_finish_time = surf_action_get_finish_time;
   surf_cpu_model->action_free = action_free;
   surf_cpu_model->action_use = action_use;
   surf_cpu_model->action_cancel = action_cancel;

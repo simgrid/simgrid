@@ -159,7 +159,6 @@ static void surf_timer_model_init_internal(void)
 {
   surf_timer_model = surf_model_init();
 
-  surf_timer_model->action_get_state = surf_action_get_state;
   surf_timer_model->action_change_state = action_change_state;
   surf_timer_model->action_set_data = surf_action_set_data;
   surf_timer_model->name = "TIMER";

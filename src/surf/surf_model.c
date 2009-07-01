@@ -39,6 +39,10 @@ surf_model_t surf_model_init(void)
   model->action_cancel = void_die_impossible_paction;
   model->action_recycle = void_die_impossible_paction;
 
+  model->action_get_state = surf_action_get_state;
+  model->action_get_start_time = surf_action_get_start_time;
+  model->action_get_finish_time = surf_action_get_finish_time;
+
   return model;
 }
 /** @brief finalize common datastructures to all models */

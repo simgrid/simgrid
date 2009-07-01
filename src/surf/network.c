@@ -679,9 +679,6 @@ static void surf_network_model_init_internal(void)
 {
   surf_network_model = surf_model_init();
 
-  surf_network_model->action_get_state = surf_action_get_state;
-  surf_network_model->action_get_start_time = surf_action_get_start_time;
-  surf_network_model->action_get_finish_time = surf_action_get_finish_time;
   surf_network_model->action_free = action_free;
   surf_network_model->action_use = action_use;
   surf_network_model->action_cancel = action_cancel;

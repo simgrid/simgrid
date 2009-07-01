@@ -531,7 +531,6 @@ static void surf_network_model_init_internal(void)
 
   surf_model_init(surf_network_model);
 
-  surf_network_model->common_public.action_get_state = surf_action_get_state;
   surf_network_model->common_public.action_use = action_use;
   surf_network_model->common_public.action_free = action_free;
   surf_network_model->common_public.action_cancel = action_cancel;

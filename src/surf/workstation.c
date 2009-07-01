@@ -290,10 +290,6 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model = surf_model_init();
 /*   surf_workstation_model->extension_private = xbt_new0(s_surf_workstation_model_extension_private_t,1); */
 
-  surf_workstation_model->action_get_state = surf_action_get_state;
-  surf_workstation_model->action_get_start_time = surf_action_get_start_time;
-  surf_workstation_model->action_get_finish_time =
-    surf_action_get_finish_time;
   surf_workstation_model->action_free = action_free;
   surf_workstation_model->action_use = action_use;
   surf_workstation_model->action_cancel = action_cancel;
