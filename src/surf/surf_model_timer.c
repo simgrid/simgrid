@@ -6,10 +6,19 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
-#include "surf_timer_private.h"
+#include "surf_private.h"
+#include "xbt/dict.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_timer, surf,
                                 "Logging specific to SURF (timer)");
+
+typedef struct command {
+  s_surf_resource_t generic_resource; /* Must remain first, since we add this to a trace */
+  void *function;
+  void *args;
+  s_xbt_swag_hookup_t command_set_hookup;
+} s_command_t, *command_t;
+
 
 surf_model_t surf_timer_model = NULL;
 static tmgr_trace_t empty_trace = NULL;

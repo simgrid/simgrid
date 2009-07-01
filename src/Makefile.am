@@ -42,7 +42,6 @@ EXTRA_DIST= \
 	surf/surf_private.h \
 	surf/cpu_private.h \
 	surf/workstation_private.h \
-	surf/surf_timer_private.h \
 	surf/surfxml_parse.c \
 	surf/simgrid_dtd.l \
 	surf/simgrid_dtd.c \
@@ -180,7 +179,7 @@ SURF_SRC= \
   surf/surf.c                                                                \
   surf/surfxml_parse.c                                                       \
   surf/cpu.c   surf/network.c surf/network_constant.c surf/workstation.c     \
-  surf/surf_timer.c                                                          \
+  surf/surf_model_timer.c                                                    \
   surf/workstation_ptask_L07.c                                               \
   xbt/xbt_sg_stubs.c
 
