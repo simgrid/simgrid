@@ -48,12 +48,6 @@ typedef struct link_L07 {
   tmgr_trace_event_t state_event;
 } s_link_L07_t, *link_L07_t;
 
-
-typedef struct s_route_L07 {
-  link_L07_t *links;
-  int size;
-} s_route_L07_t, *route_L07_t;
-
 /**************************************/
 /*************** actions **************/
 /**************************************/
@@ -73,7 +67,7 @@ typedef struct surf_action_workstation_L07 {
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_workstation);
 
 static int nb_workstation = 0;
-static s_route_L07_t *routing_table = NULL;
+static xbt_dynar_t *routing_table = NULL;
 #define ROUTE(i,j) routing_table[(i)+(j)*nb_workstation]
 static link_L07_t loopback = NULL;
 static xbt_dict_t parallel_task_link_set = NULL;
@@ -85,19 +79,20 @@ static void update_action_bound(surf_action_workstation_L07_t action)
   int workstation_nb = action->workstation_nb;
   double lat_current = 0.0;
   double lat_bound = -1.0;
-  int i, j, k;
+  int i, j;
+  unsigned int cpt;
+  link_L07_t link;
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       cpu_L07_t card_src = action->workstation_list[i];
       cpu_L07_t card_dst = action->workstation_list[j];
-      int route_size = ROUTE(card_src->id, card_dst->id).size;
-      link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
+      xbt_dynar_t route = ROUTE(card_src->id, card_dst->id);
       double lat = 0.0;
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
-        for (k = 0; k < route_size; k++) {
-          lat += route[k]->lat_current;
+        xbt_dynar_foreach(route,cpt,link) {
+          lat += link->lat_current;
         }
         lat_current =
           MAX(lat_current,
@@ -403,7 +398,7 @@ static void finalize(void)
 
   for (i = 0; i < nb_workstation; i++)
     for (j = 0; j < nb_workstation; j++)
-      free(ROUTE(i, j).links);
+      xbt_dynar_free(&ROUTE(i, j));
   free(routing_table);
   routing_table = NULL;
   nb_workstation = 0;
@@ -440,7 +435,8 @@ static surf_action_t execute_parallel_task(int workstation_nb,
                                            double amount, double rate)
 {
   surf_action_workstation_L07_t action = NULL;
-  int i, j, k;
+  int i, j;
+  unsigned int cpt;
   int nb_link = 0;
   int nb_host = 0;
   double latency = 0.0;
@@ -455,15 +451,15 @@ static surf_action_t execute_parallel_task(int workstation_nb,
     for (j = 0; j < workstation_nb; j++) {
       cpu_L07_t card_src = workstation_list[i];
       cpu_L07_t card_dst = workstation_list[j];
-      int route_size = ROUTE(card_src->id, card_dst->id).size;
-      link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
+      link_L07_t link;
+      xbt_dynar_t route = ROUTE(card_src->id, card_dst->id);
       double lat = 0.0;
 
       if (communication_amount[i * workstation_nb + j] > 0)
-        for (k = 0; k < route_size; k++) {
-          lat += route[k]->lat_current;
-          xbt_dict_set(parallel_task_link_set, route[k]->generic_resource.name,
-                       route[k], NULL);
+        xbt_dynar_foreach(route,cpt,link) {
+          lat += link->lat_current;
+          xbt_dict_set(parallel_task_link_set, link->generic_resource.name,
+                       link, NULL);
         }
       latency = MAX(latency, lat);
     }
@@ -516,13 +512,13 @@ static surf_action_t execute_parallel_task(int workstation_nb,
     for (j = 0; j < workstation_nb; j++) {
       cpu_L07_t card_src = workstation_list[i];
       cpu_L07_t card_dst = workstation_list[j];
-      int route_size = ROUTE(card_src->id, card_dst->id).size;
-      link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
+      link_L07_t link;
+      xbt_dynar_t route = ROUTE(card_src->id, card_dst->id);
 
       if (communication_amount[i * workstation_nb + j] == 0.0)
         continue;
-      for (k = 0; k < route_size; k++) {
-        lmm_expand_add(ptask_maxmin_system, route[k]->constraint,
+      xbt_dynar_foreach(route,cpt,link) {
+        lmm_expand_add(ptask_maxmin_system, link->constraint,
                        action->variable,
                        communication_amount[i * workstation_nb + j]);
       }
@@ -585,22 +581,13 @@ static surf_action_t action_sleep(void *cpu, double duration)
   return (surf_action_t) action;
 }
 
-/* returns an array of link_L07_t */
-static const void **get_route(void *src, void *dst)
+/* returns a dynar of link_L07_t */
+static xbt_dynar_t get_route(void *src, void *dst)
 {
   cpu_L07_t card_src = src;
   cpu_L07_t card_dst = dst;
-  route_L07_t route = &(ROUTE(card_src->id, card_dst->id));
 
-  return (const void **) route->links;
-}
-
-static int get_route_size(void *src, void *dst)
-{
-  cpu_L07_t card_src = src;
-  cpu_L07_t card_dst = dst;
-  route_L07_t route = &(ROUTE(card_src->id, card_dst->id));
-  return route->size;
+  return ROUTE(card_src->id, card_dst->id);
 }
 
 static double get_link_bandwidth(const void *link)
@@ -671,7 +658,12 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
 
 static void create_routing_table(void)
 {
-  routing_table = xbt_new0(s_route_L07_t, nb_workstation * nb_workstation);
+  int i,j;
+  routing_table = xbt_new0(xbt_dynar_t,       /*card_number * card_number */
+                           nb_workstation * nb_workstation);
+  for (i=0;i<nb_workstation;i++)
+    for (j=0;j<nb_workstation;j++)
+      ROUTE(i,j) = xbt_dynar_new(sizeof(link_L07_t),NULL);
 }
 
 static void parse_cpu_init(void)
@@ -789,17 +781,6 @@ static void parse_link_init(void)
            current_property_set);
 }
 
-static void route_new(int src_id, int dst_id,
-                      link_L07_t * link_list, int nb_link)
-{
-  route_L07_t route = &(ROUTE(src_id, dst_id));
-
-  route->size = nb_link;
-  route->links = link_list =
-    xbt_realloc(link_list, sizeof(link_L07_t) * nb_link);
-}
-
-
 static int src_id = -1;
 static int dst_id = -1;
 
@@ -840,15 +821,13 @@ static void add_loopback(void)
 
   /* Adding loopback if needed */
   for (i = 0; i < nb_workstation; i++)
-    if (!ROUTE(i, i).size) {
+    if (!xbt_dynar_length(ROUTE(i, i))) {
       if (!loopback)
         loopback = link_new(xbt_strdup("__MSG_loopback__"),
                             498000000, NULL, 0.000015, NULL,
                             SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL);
 
-      ROUTE(i, i).size = 1;
-      ROUTE(i, i).links = xbt_new0(link_L07_t, 1);
-      ROUTE(i, i).links[0] = loopback;
+      xbt_dynar_push(ROUTE(i,i),&loopback);
     }
 }
 
@@ -857,13 +836,11 @@ static void add_route(void)
   xbt_ex_t e;
   int nb_link = 0;
   unsigned int cpt = 0;
-  int link_list_capacity = 0;
-  link_L07_t *link_list = NULL;
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
-  char *link = NULL;
+  char *link_name = NULL;
 
   if (routing_table == NULL)
     create_routing_table();
@@ -877,19 +854,15 @@ static void add_route(void)
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
     xbt_dynar_free(&keys);
 
-    link_list_capacity = xbt_dynar_length(links);
-    link_list = xbt_new(link_L07_t, link_list_capacity);
-
-
-    xbt_dynar_foreach(links, cpt, link) {
+    xbt_dynar_foreach(links, cpt, link_name) {
       TRY {
-        link_list[nb_link++] = xbt_dict_get(link_set, link);
+        link_L07_t link = xbt_dict_get(link_set, link_name);
+        xbt_dynar_push(ROUTE(src_id,dst_id),&link);
       }
       CATCH(e) {
-        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
+        RETHROW1("Link %s not found (dict raised this exception: %s)", link_name);
       }
     }
-    route_new(src_id, dst_id, link_list, nb_link);
   }
 }
 
@@ -1006,8 +979,6 @@ static void model_init_internal(void)
   surf_workstation_model->extension.workstation.execute_parallel_task =
     execute_parallel_task;
   surf_workstation_model->extension.workstation.get_route = get_route;
-  surf_workstation_model->extension.workstation.get_route_size =
-    get_route_size;
   surf_workstation_model->extension.workstation.get_link_bandwidth =
     get_link_bandwidth;
   surf_workstation_model->extension.workstation.get_link_latency =

@@ -182,10 +182,10 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src, SD_workstation_t dst)
 {
   void *surf_src;
   void *surf_dst;
-  const void **surf_route;
-  int route_size;
+  xbt_dynar_t surf_route;
   const char *link_name;
-  int i;
+  void *surf_link;
+  unsigned int cpt;
 
   SD_CHECK_INIT_DONE();
 
@@ -200,14 +200,10 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src, SD_workstation_t dst)
   surf_route =
     surf_workstation_model->extension.workstation.get_route(surf_src,
                                                             surf_dst);
-  route_size =
-    surf_workstation_model->extension.workstation.get_route_size(surf_src,
-                                                                 surf_dst);
 
-
-  for (i = 0; i < route_size; i++) {
-    link_name = surf_resource_name(surf_route[i]);
-    sd_global->recyclable_route[i] =
+  xbt_dynar_foreach(surf_route, cpt, surf_link) {
+    link_name = surf_resource_name(surf_link);
+    sd_global->recyclable_route[cpt] =
       xbt_dict_get(sd_global->links, link_name);
   }
 
@@ -225,8 +221,8 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src, SD_workstation_t dst)
 int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
 {
   SD_CHECK_INIT_DONE();
-  return surf_workstation_model->extension.workstation.
-    get_route_size(src->surf_workstation, dst->surf_workstation);
+  return xbt_dynar_length(surf_workstation_model->extension.workstation.get_route(
+        src->surf_workstation,dst->surf_workstation));
 }
 
 /**

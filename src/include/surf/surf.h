@@ -169,8 +169,7 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
      typedef struct surf_network_model_extension_public {
        surf_action_t(*communicate) (void *src, void *dst, double size,
                                     double max_rate);
-       const void **(*get_route) (void *src, void *dst);
-       int (*get_route_size) (void *src, void *dst);
+       xbt_dynar_t (*get_route) (void *src, void *dst);
        double (*get_link_bandwidth) (const void *link);
        double (*get_link_latency) (const void *link);
        int (*link_shared) (const void *link);
@@ -197,8 +196,7 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
                                               double *computation_amount,
                                               double *communication_amount,
                                               double amount, double rate);
-       const void **(*get_route) (void *src, void *dst);                                   /**< Return the network link list between two workstations */
-       int (*get_route_size) (void *src, void *dst);                                       /**< Return the route size between two workstations */
+       xbt_dynar_t (*get_route) (void *src, void *dst);                                   /**< Return the network link list between two workstations */
        double (*get_link_bandwidth) (const void *link);                                    /**< Return the current bandwidth of a network link */
        double (*get_link_latency) (const void *link);                                      /**< Return the current latency of a network link */
        int (*link_shared) (const void *link);

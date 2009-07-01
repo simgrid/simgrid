@@ -26,6 +26,7 @@ SimGrid (3.3.2-svn) unstable; urgency=low
     action_get_state    -> action_state_get
   * Change model methods into classical functions:
     action_use  -> surf_action_ref
+  * Use dynar to represent routes
     
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]

@@ -227,7 +227,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
 
 
 /* returns an array of network_link_CM02_t */
-static const void **get_route(void *src, void *dst)
+static xbt_dynar_t get_route(void *src, void *dst)
 {
   workstation_CLM03_t workstation_src = (workstation_CLM03_t) src;
   workstation_CLM03_t workstation_dst = (workstation_CLM03_t) dst;
@@ -235,15 +235,6 @@ static const void **get_route(void *src, void *dst)
                                                          network_card,
                                                          workstation_dst->
                                                          network_card);
-}
-
-static int get_route_size(void *src, void *dst)
-{
-  workstation_CLM03_t workstation_src = (workstation_CLM03_t) src;
-  workstation_CLM03_t workstation_dst = (workstation_CLM03_t) dst;
-  return surf_network_model->extension.
-    network.get_route_size(workstation_src->network_card,
-                           workstation_dst->network_card);
 }
 
 static double get_link_bandwidth(const void *link)
@@ -304,8 +295,6 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.execute_parallel_task =
     execute_parallel_task;
   surf_workstation_model->extension.workstation.get_route = get_route;
-  surf_workstation_model->extension.workstation.get_route_size =
-    get_route_size;
   surf_workstation_model->extension.workstation.get_link_bandwidth =
     get_link_bandwidth;
   surf_workstation_model->extension.workstation.get_link_latency =

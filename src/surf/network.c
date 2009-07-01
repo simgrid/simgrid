@@ -23,18 +23,20 @@ double weight_S_parameter = 0.0;        /* default value */
 
 int card_number = 0;
 int host_number = 0;
-link_CM02_t **routing_table = NULL;
-int *routing_table_size = NULL;
+xbt_dynar_t *routing_table = NULL;
 static link_CM02_t loopback = NULL;
 double sg_tcp_gamma = 0.0;
 
 
 static void create_routing_table(void)
 {
-  routing_table = xbt_new0(link_CM02_t *,       /*card_number * card_number */
+  int i,j;
+  routing_table = xbt_new0(xbt_dynar_t,       /*card_number * card_number */
                            host_number * host_number);
-  routing_table_size =
-    xbt_new0(int, /*card_number * card_number */ host_number * host_number);
+  for (i=0;i<host_number;i++)
+    for (j=0;j<host_number;j++)
+      ROUTE(i,j) = xbt_dynar_new(sizeof(link_CM02_t),NULL);
+
 }
 
 static void link_free(void *nw_link)
@@ -104,14 +106,6 @@ static int network_card_new(const char *card_name)
   return card->id;
 }
 
-static void route_new(int src_id, int dst_id,
-                      link_CM02_t * link_list, int nb_link)
-{
-  ROUTE_SIZE(src_id, dst_id) = nb_link;
-  ROUTE(src_id, dst_id) = link_list =
-    xbt_realloc(link_list, sizeof(link_CM02_t) * nb_link);
-}
-
 static void parse_link_init(void)
 {
   char *name_link;
@@ -176,14 +170,13 @@ static void add_loopback(void)
   int i;
   /* Adding loopback if needed */
   for (i = 0; i < host_number; i++)
-    if (!ROUTE_SIZE(i, i)) {
+    if (!xbt_dynar_length(ROUTE(i, i))) {
       if (!loopback)
         loopback = link_new(xbt_strdup("__MSG_loopback__"),
                             498000000, NULL, 0.000015, NULL,
                             SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL);
-      ROUTE_SIZE(i, i) = 1;
-      ROUTE(i, i) = xbt_new0(link_CM02_t, 1);
-      ROUTE(i, i)[0] = loopback;
+      ROUTE(i, i) = xbt_dynar_new(sizeof(link_CM02_t),NULL);
+      xbt_dynar_push(ROUTE(i,i),&loopback);
     }
 }
 
@@ -192,8 +185,6 @@ static void add_route(void)
   xbt_ex_t e;
   int nb_link = 0;
   unsigned int cpt = 0;
-  int link_list_capacity = 0;
-  link_CM02_t *link_list = NULL;
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data, *end;
   const char *sep = "#";
@@ -203,28 +194,30 @@ static void add_route(void)
     create_routing_table();
 
   xbt_dict_foreach(route_table, cursor, key, data) {
-    char *link = NULL;
+    char *link_name = NULL;
     nb_link = 0;
     links = (xbt_dynar_t) data;
     keys = xbt_str_split_str(key, sep);
-
-    link_list_capacity = xbt_dynar_length(links);
-    link_list = xbt_new(link_CM02_t, link_list_capacity);
 
     src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
     xbt_dynar_free(&keys);
 
-    xbt_dynar_foreach(links, cpt, link) {
+    xbt_dynar_foreach(links, cpt, link_name) {
       TRY {
-        link_list[nb_link++] = xbt_dict_get(link_set, link);
+        link_CM02_t link = xbt_dict_get(link_set, link_name);
+        xbt_dynar_push(ROUTE(src_id,dst_id),&link);
       }
       CATCH(e) {
-        RETHROW1("Link %s not found (dict raised this exception: %s)", link);
+        RETHROW1("Link %s not found (dict raised this exception: %s)", link_name);
       }
     }
-    route_new(src_id, dst_id, link_list, nb_link);
   }
+
+  int i,j;
+  for (i=0;i<host_number;i++)
+    for (j=0;j<host_number;j++)
+      xbt_dynar_shrink(ROUTE(i,j),0);
 }
 
 static void count_hosts(void)
@@ -485,17 +478,16 @@ static surf_action_t communicate(void *src, void *dst, double size,
      Use the cluster_id for ->id */
   network_card_CM02_t card_src = src;
   network_card_CM02_t card_dst = dst;
-  int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
-  link_CM02_t *route = ROUTE(card_src->id, card_dst->id);
+  xbt_dynar_t route = ROUTE(card_src->id, card_dst->id);
   /* LARGE PLATFORMS HACK:
      total_route_size = route_size + src->link_nb + dst->nb */
-  int i;
+  unsigned int i;
 
   XBT_IN4("(%s,%s,%g,%g)", card_src->generic_resource.name, card_dst->generic_resource.name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
-  xbt_assert2(route_size,
-              "You're trying to send data from %s to %s but there is no connexion between these two cards.",
+  xbt_assert2(xbt_dynar_length(route),
+              "You're trying to send data from %s to %s but there is no connection between these two cards.",
               card_src->generic_resource.name, card_dst->generic_resource.name);
 
   action = xbt_new0(s_surf_action_network_CM02_t, 1);
@@ -511,22 +503,25 @@ static surf_action_t communicate(void *src, void *dst, double size,
                                    calloc but it seems to help valgrind... */
   action->generic_action.state_set =
     surf_network_model->states.running_action_set;
-  for (i = 0; i < route_size; i++)
-    if (route[i]->state_current == SURF_LINK_OFF) {
+
+  link_CM02_t link;
+  xbt_dynar_foreach(route,i,link) {
+    if (link->state_current == SURF_LINK_OFF) {
       action->generic_action.state_set =
         surf_network_model->states.failed_action_set;
       break;
     }
+  }
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
 
   action->latency = 0.0;
   action->weight = 0.0;
-  for (i = 0; i < route_size; i++) {
-    action->latency += route[i]->lat_current;
+  xbt_dynar_foreach(route,i,link) {
+    action->latency += link->lat_current;
     action->weight +=
-      route[i]->lat_current + weight_S_parameter / route[i]->bw_current;
+      link->lat_current + weight_S_parameter / link->bw_current;
   }
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
@@ -537,10 +532,10 @@ static surf_action_t communicate(void *src, void *dst, double size,
      lmm_variable_new(..., total_route_size) */
   if (action->latency > 0)
     action->variable =
-      lmm_variable_new(network_maxmin_system, action, 0.0, -1.0, route_size);
+      lmm_variable_new(network_maxmin_system, action, 0.0, -1.0, xbt_dynar_length(route));
   else
     action->variable =
-      lmm_variable_new(network_maxmin_system, action, 1.0, -1.0, route_size);
+      lmm_variable_new(network_maxmin_system, action, 1.0, -1.0, xbt_dynar_length(route));
 
   if (action->rate < 0) {
     if (action->lat_current > 0)
@@ -560,9 +555,10 @@ static surf_action_t communicate(void *src, void *dst, double size,
                                 action->rate);
   }
 
-  for (i = 0; i < route_size; i++)
-    lmm_expand(network_maxmin_system, route[i]->constraint,
+  xbt_dynar_foreach(route,i,link) {
+    lmm_expand(network_maxmin_system, link->constraint,
                action->variable, 1.0);
+  }
   /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
 
@@ -572,18 +568,11 @@ static surf_action_t communicate(void *src, void *dst, double size,
 }
 
 /* returns an array of link_CM02_t */
-static const void **get_route(void *src, void *dst)
+static xbt_dynar_t get_route(void *src, void *dst)
 {
   network_card_CM02_t card_src = src;
   network_card_CM02_t card_dst = dst;
-  return (const void **) ROUTE(card_src->id, card_dst->id);
-}
-
-static int get_route_size(void *src, void *dst)
-{
-  network_card_CM02_t card_src = src;
-  network_card_CM02_t card_dst = dst;
-  return ROUTE_SIZE(card_src->id, card_dst->id);
+  return ROUTE(card_src->id, card_dst->id);
 }
 
 static double get_link_bandwidth(const void *link)
@@ -647,11 +636,9 @@ static void finalize(void)
   loopback = NULL;
   for (i = 0; i < host_number; i++)
     for (j = 0; j < host_number; j++)
-      free(ROUTE(i, j));
+      xbt_dynar_free(&ROUTE(i, j));
   free(routing_table);
   routing_table = NULL;
-  free(routing_table_size);
-  routing_table_size = NULL;
   host_number = 0;
   lmm_system_free(network_maxmin_system);
   network_maxmin_system = NULL;
@@ -681,7 +668,6 @@ static void surf_network_model_init_internal(void)
 
   surf_network_model->extension.network.communicate = communicate;
   surf_network_model->extension.network.get_route = get_route;
-  surf_network_model->extension.network.get_route_size = get_route_size;
   surf_network_model->extension.network.get_link_bandwidth =
     get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = get_link_latency;

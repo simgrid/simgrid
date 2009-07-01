@@ -202,16 +202,9 @@ static surf_action_t communicate(void *src, void *dst, double size,
 }
 
 /* returns an array of link_Constant_t */
-static const void **get_route(void *src, void *dst)
+static xbt_dynar_t get_route(void *src, void *dst)
 {
-  xbt_assert0(0, "Calling this function does not make any sense");
-  return (const void **) NULL;
-}
-
-static int get_route_size(void *src, void *dst)
-{
-  xbt_assert0(0, "Calling this function does not make any sense");
-  return 0;
+  xbt_die("Calling this function does not make any sense");
 }
 
 static double get_link_bandwidth(const void *link)
@@ -287,7 +280,6 @@ static void surf_network_model_init_internal(void)
 
   surf_network_model->extension.network.communicate = communicate;
   surf_network_model->extension.network.get_route = get_route;
-  surf_network_model->extension.network.get_route_size = get_route_size;
   surf_network_model->extension.network.get_link_bandwidth =
     get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = get_link_latency;
