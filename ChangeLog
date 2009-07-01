@@ -6,28 +6,30 @@ SimGrid (3.3.2-svn) unstable; urgency=low
 
  SURF: 
   * Extract the routing logic into its own object.
-    - Was dupplicated in network.c and workstation_LV07.c
-    - We may want to implement other ways of storing that info
+    (was dupplicated in network.c and workstation_LV07.c;
+     Allows to implement other ways of storing that info)
     => kill now useless network_card concept
-  * Declare common_public as an embeeded struct to reduce redirections
-    and mallocs
-  * Factorize model_init/exit between models
-  * Factorize the set of resources within common_public;
-   + change model->common_model->resource_name() 
-     into surf_model_resource_by_name(model)
-   (less redirections, less function to write when defining a model)
-  * Unify the types of models in a uniq s_surf_model_t (using an union)
-  * Embeed every fields of common_public directly into s_surf_model_t
+    - Use dynar to represent routes (instead of void** + int*)
+
+  * Simplify model declaration
+    (less redirections, less function to write when defining a model)
+    - Factorize stuff between models:
+      - model_init/exit
+      - Set of resources:
+        surf_model_resource_set(model)
+        surf_model_resource_by_name(model, name)
+    - Unify the types of models in s_surf_model_t (using an union)
+    - Embeed fields of common_public directly into s_surf_model_t
+    - Rename model methods:
+      action_free ~> action_unref
+      action_change_state ~> action_state_set
+      action_get_state    ~> action_state_get
+    - Change model methods into functions :
+      (model)->common_public->action_use  ~> surf_action_ref
+      
   * Implement a generic resource; use it as ancestor to specific ones
-    Allows to kill duplicated code in models
+    (allows to kill duplicated code in models)
     TODO: integrate the properties into that ancestor
-  * Rename model methods:
-    action_free -> action_unref
-    action_change_state -> action_state_set
-    action_get_state    -> action_state_get
-  * Change model methods into classical functions:
-    action_use  -> surf_action_ref
-  * Use dynar to represent routes
     
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]
