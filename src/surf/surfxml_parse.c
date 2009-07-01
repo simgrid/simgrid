@@ -1025,7 +1025,7 @@ static void convert_route_multi_to_routes(void)
   char *src_host_name, *dst_host_name, *key, *src, *dst, *val, *key_w,
     *data_w;
   const char *sep = "#";
-  xbt_dict_t set;
+  xbt_dict_t set = NULL;
   xbt_dynar_t src_names = NULL, dst_names = NULL, links;
 
   if (!route_multi_elements)
