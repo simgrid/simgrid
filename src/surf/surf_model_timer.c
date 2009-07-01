@@ -61,7 +61,7 @@ static int resource_used(void *resource_id)
   return 1;
 }
 
-static void action_change_state(surf_action_t action,
+static void timer_action_state_set(surf_action_t action,
                                 e_surf_action_state_t state)
 {
   DIE_IMPOSSIBLE;
@@ -159,9 +159,8 @@ static void surf_timer_model_init_internal(void)
 {
   surf_timer_model = surf_model_init();
 
-  surf_timer_model->action_change_state = action_change_state;
-  surf_timer_model->action_set_data = surf_action_set_data;
   surf_timer_model->name = "TIMER";
+  surf_timer_model->action_state_set = timer_action_state_set;
 
   surf_timer_model->model_private->resource_used = resource_used;
   surf_timer_model->model_private->share_resources = share_resources;

@@ -155,7 +155,7 @@ static int action_free(surf_action_t action)
 
 static void action_cancel(surf_action_t action)
 {
-  surf_action_change_state(action, SURF_ACTION_FAILED);
+  surf_action_state_set(action, SURF_ACTION_FAILED);
   return;
 }
 
@@ -289,11 +289,11 @@ static void update_actions_state(double now, double delta)
     if ((action->generic_action.remains <= 0) &&
         (lmm_get_variable_weight(action->variable) > 0)) {
       action->generic_action.finish = surf_get_clock();
-      surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+      surf_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
                (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
-      surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+      surf_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     } else {
       /* Need to check that none of the model has failed */
       lmm_constraint_t cnst = NULL;
@@ -328,7 +328,7 @@ static void update_actions_state(double now, double delta)
              (((cpu_L07_t) constraint_id)->state_current == SURF_CPU_OFF))) {
           DEBUG1("Action (%p) Failed!!", action);
           action->generic_action.finish = surf_get_clock();
-          surf_action_change_state((surf_action_t) action,
+          surf_action_state_set((surf_action_t) action,
                                    SURF_ACTION_FAILED);
           break;
         }
@@ -988,8 +988,7 @@ static void model_init_internal(void)
   surf_workstation_model->action_use = action_use;
   surf_workstation_model->action_free = action_free;
   surf_workstation_model->action_cancel = action_cancel;
-  surf_workstation_model->action_change_state = surf_action_change_state;
-  surf_workstation_model->action_set_data = surf_action_set_data;
+  surf_workstation_model->action_state_set = surf_action_state_set;
   surf_workstation_model->suspend = action_suspend;
   surf_workstation_model->resume = action_resume;
   surf_workstation_model->is_suspended = action_is_suspended;

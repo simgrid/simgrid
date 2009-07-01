@@ -211,22 +211,23 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
        const char *name;/**< Name of this model */
        s_surf_action_state_t states; /**< Any living action on this model */
 
-       e_surf_action_state_t(*action_get_state) (surf_action_t action);/**< Return the state of an action */
+       e_surf_action_state_t(*action_state_get) (surf_action_t action);/**< Return the state of an action */
+       void (*action_state_set) (surf_action_t action,
+                                    e_surf_action_state_t state); /**< Change an action state*/
+
        double (*action_get_start_time) (surf_action_t action);/**< Return the start time of an action */
        double (*action_get_finish_time) (surf_action_t action);/**< Return the finish time of an action */
        void (*action_use) (surf_action_t action);/**< Set an action used */
        int (*action_free) (surf_action_t action);/**< Free an action */
        void (*action_cancel) (surf_action_t action);/**< Cancel a running action */
        void (*action_recycle) (surf_action_t action);/**< Recycle an action */
-       void (*action_change_state) (surf_action_t action,
-                                    e_surf_action_state_t state);
-                                                                 /**< Change an action state*/
-       void (*action_set_data) (surf_action_t action, void *data);/**< Set the user data of an action */
+       void (*action_data_set) (surf_action_t action, void *data);/**< Set the user data of an action */
        void (*suspend) (surf_action_t action);/**< Suspend an action */
        void (*resume) (surf_action_t action);/**< Resume a suspended action */
        int (*is_suspended) (surf_action_t action);/**< Return whether an action is suspended */
        void (*set_max_duration) (surf_action_t action, double duration);/**< Set the max duration of an action*/
        void (*set_priority) (surf_action_t action, double priority);/**< Set the priority of an action */
+
        xbt_dict_t(*get_properties) (void *resource_id);/**< Return the properties dictionary */
        xbt_dict_t resource_set;
 

@@ -757,7 +757,7 @@ void __SD_task_really_run(SD_task_t task)
     xbt_free(surf_workstations);
   }
 
-  surf_workstation_model->action_set_data(task->surf_action, task);
+  surf_workstation_model->action_data_set(task->surf_action, task);
 
   DEBUG1("surf_action = %p", task->surf_action);
 

@@ -54,13 +54,13 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
                                       void (*solve) (lmm_system_t));
 
 /* Generic functions common to all models */
-e_surf_action_state_t surf_action_get_state(surf_action_t action);
+e_surf_action_state_t surf_action_state_get(surf_action_t action);
 double surf_action_get_start_time(surf_action_t action);
 double surf_action_get_finish_time(surf_action_t action);
 void surf_action_free(surf_action_t * action);
-void surf_action_change_state(surf_action_t action,
+void surf_action_state_set(surf_action_t action,
                               e_surf_action_state_t state);
-void surf_action_set_data(surf_action_t action, void *data);
+void surf_action_data_set(surf_action_t action, void *data);
 FILE *surf_fopen(const char *name, const char *mode);
 
 extern tmgr_history_t history;

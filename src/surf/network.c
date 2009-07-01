@@ -329,7 +329,7 @@ static void action_recycle(surf_action_t action)
   return;
 }
 
-static void action_change_state(surf_action_t action,
+static void network_action_state_set(surf_action_t action,
                                 e_surf_action_state_t state)
 {
 /*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
@@ -338,7 +338,7 @@ static void action_change_state(surf_action_t action,
 /*       ((surf_action_network_CM02_t)action)->variable = NULL; */
 /*     } */
 
-  surf_action_change_state(action, state);
+  surf_action_state_set(action, state);
   return;
 }
 
@@ -401,11 +401,11 @@ static void update_actions_state(double now, double delta)
     if ((action->generic_action.remains <= 0) &&
         (lmm_get_variable_weight(action->variable) > 0)) {
       action->generic_action.finish = surf_get_clock();
-      action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+      network_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
                (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
-      action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+      network_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     }
   }
 
@@ -479,10 +479,10 @@ static void update_resource_state(void *id,
               (network_maxmin_system, cnst, &elem))) {
         surf_action_t action = lmm_variable_id(var);
 
-        if (surf_action_get_state(action) == SURF_ACTION_RUNNING ||
-            surf_action_get_state(action) == SURF_ACTION_READY) {
+        if (surf_action_state_get(action) == SURF_ACTION_RUNNING ||
+            surf_action_state_get(action) == SURF_ACTION_READY) {
           action->finish = date;
-          action_change_state(action, SURF_ACTION_FAILED);
+          network_action_state_set(action, SURF_ACTION_FAILED);
         }
       }
     }
@@ -679,13 +679,12 @@ static void surf_network_model_init_internal(void)
 {
   surf_network_model = surf_model_init();
 
+  surf_network_model->name = "network";
   surf_network_model->action_free = action_free;
   surf_network_model->action_use = action_use;
   surf_network_model->action_cancel = action_cancel;
   surf_network_model->action_recycle = action_recycle;
-  surf_network_model->action_change_state = action_change_state;
-  surf_network_model->action_set_data = surf_action_set_data;
-  surf_network_model->name = "network";
+  surf_network_model->action_state_set = network_action_state_set;
 
   surf_network_model->model_private->resource_used = resource_used;
   surf_network_model->model_private->share_resources = share_resources;

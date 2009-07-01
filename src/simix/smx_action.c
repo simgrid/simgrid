@@ -57,7 +57,7 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
   simdata->surf_action =
     surf_workstation_model->extension.workstation.
     communicate(sender->simdata->host, receiver->simdata->host, size, rate);
-  surf_workstation_model->action_set_data(simdata->surf_action, act);
+  surf_workstation_model->action_data_set(simdata->surf_action, act);
 
   DEBUG1("Create communicate action %p", act);
   return act;
@@ -99,7 +99,7 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
     surf_workstation_model->extension.workstation.execute(host->simdata->host,
                                                           amount);
 
-  surf_workstation_model->action_set_data(simdata->surf_action, act);
+  surf_workstation_model->action_data_set(simdata->surf_action, act);
 
   DEBUG1("Create execute action %p", act);
   return act;
@@ -139,7 +139,7 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
     surf_workstation_model->extension.workstation.sleep(host->simdata->host,
                                                         duration);
 
-  surf_workstation_model->action_set_data(simdata->surf_action, act);
+  surf_workstation_model->action_data_set(simdata->surf_action, act);
 
   DEBUG1("Create sleep action %p", act);
   return act;
@@ -327,7 +327,7 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
                                       computation_amount,
                                       communication_amount, amount, rate);
 
-  surf_workstation_model->action_set_data(simdata->surf_action, act);
+  surf_workstation_model->action_data_set(simdata->surf_action, act);
 
   return act;
 }
@@ -335,7 +335,7 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
 e_surf_action_state_t SIMIX_action_get_state(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
-  return surf_workstation_model->action_get_state(action->simdata->
+  return surf_workstation_model->action_state_get(action->simdata->
                                                   surf_action);
 
 }

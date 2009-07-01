@@ -16,7 +16,7 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-e_surf_action_state_t surf_action_get_state(surf_action_t action)
+e_surf_action_state_t surf_action_state_get(surf_action_t action)
 {
   surf_action_state_t action_state = &(action->model_type->states);
 
@@ -48,7 +48,7 @@ void surf_action_free(surf_action_t * action)
   *action = NULL;
 }
 
-void surf_action_change_state(surf_action_t action,
+void surf_action_state_set(surf_action_t action,
                               e_surf_action_state_t state)
 {
   surf_action_state_t action_state = &(action->model_type->states);
@@ -71,7 +71,7 @@ void surf_action_change_state(surf_action_t action,
   XBT_OUT;
 }
 
-void surf_action_set_data(surf_action_t action, void *data)
+void surf_action_data_set(surf_action_t action, void *data)
 {
   action->data = data;
 }

@@ -351,7 +351,7 @@ static void action_change_state(surf_action_t action,
 /*       ((surf_action_network_GTNETS_t)action)->variable = NULL; */
 /*     } */
 
-  surf_action_change_state(action, state);
+  surf_action_state_set(action, state);
   return;
 }
 
@@ -527,17 +527,14 @@ static void surf_network_model_init_internal(void)
 {
   s_surf_action_t action;
 
-  surf_network_model = xbt_new0(s_surf_network_model_t, 1);
+  surf_network_model = surf_model_init();
 
-  surf_model_init(surf_network_model);
-
-  surf_network_model->common_public.action_use = action_use;
-  surf_network_model->common_public.action_free = action_free;
-  surf_network_model->common_public.action_cancel = action_cancel;
-  surf_network_model->common_public.action_recycle = action_recycle;
-  surf_network_model->common_public.action_change_state = action_change_state;
-  surf_network_model->common_public.action_set_data = surf_action_set_data;
-  surf_network_model->common_public.name = "network";
+  surf_network_model->name = "network GTNetS";
+  surf_network_model->action_use = action_use;
+  surf_network_model->action_free = action_free;
+  surf_network_model->action_cancel = action_cancel;
+  surf_network_model->action_recycle = action_recycle;
+  surf_network_model->action_change_state = action_change_state;
 
   surf_network_model->model_private->resource_used = resource_used;
   surf_network_model->model_private->share_resources = share_resources;
@@ -547,14 +544,14 @@ static void surf_network_model_init_internal(void)
     update_resource_state;
   surf_network_model->model_private->finalize = finalize;
 
-  surf_network_model->common_public.suspend = action_suspend;
-  surf_network_model->common_public.resume = action_resume;
-  surf_network_model->common_public.is_suspended = action_is_suspended;
+  surf_network_model->suspend = action_suspend;
+  surf_network_model->resume = action_resume;
+  surf_network_model->is_suspended = action_is_suspended;
 
   surf_network_model->extension.network.communicate = communicate;
 
   /*for the props of the link */
-  surf_network_model->common_public.get_properties = get_properties;
+  surf_network_model->get_properties = get_properties;
 
   link_set = xbt_dict_new();
 

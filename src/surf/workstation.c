@@ -107,15 +107,15 @@ static void action_cancel(surf_action_t action)
   return;
 }
 
-static void action_change_state(surf_action_t action,
+static void ws_action_state_set(surf_action_t action,
                                 e_surf_action_state_t state)
 {
   if (action->model_type == surf_network_model)
-    surf_network_model->action_change_state(action, state);
+    surf_network_model->action_state_set(action, state);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->action_change_state(action, state);
+    surf_cpu_model->action_state_set(action, state);
   else if (action->model_type == surf_workstation_model)
-    surf_action_change_state(action, state);
+    surf_action_state_set(action, state);
   else
     DIE_IMPOSSIBLE;
   return;
@@ -288,14 +288,12 @@ static void finalize(void)
 static void surf_workstation_model_init_internal(void)
 {
   surf_workstation_model = surf_model_init();
-/*   surf_workstation_model->extension_private = xbt_new0(s_surf_workstation_model_extension_private_t,1); */
 
+  surf_workstation_model->name = "Workstation";
   surf_workstation_model->action_free = action_free;
   surf_workstation_model->action_use = action_use;
   surf_workstation_model->action_cancel = action_cancel;
-  surf_workstation_model->action_change_state = action_change_state;
-  surf_workstation_model->action_set_data = surf_action_set_data;
-  surf_workstation_model->name = "Workstation";
+  surf_workstation_model->action_state_set = ws_action_state_set;
 
   surf_workstation_model->model_private->resource_used = resource_used;
   surf_workstation_model->model_private->share_resources = share_resources;
