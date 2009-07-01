@@ -274,7 +274,7 @@ SD_task_t *SD_simulate(double how_long)
         task = action->data;
         INFO1("Task '%s' failed", SD_task_get_name(task));
         __SD_task_set_state(task, SD_FAILED);
-        surf_workstation_model->action_free(action);
+        surf_workstation_model->action_unref(action);
         task->surf_action = NULL;
 
         if (!xbt_dynar_member(changed_tasks, &task))

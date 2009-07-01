@@ -841,7 +841,7 @@ void __SD_task_just_done(SD_task_t task)
   candidates = xbt_new(SD_task_t, 8);
 
   __SD_task_set_state(task, SD_DONE);
-  surf_workstation_model->action_free(task->surf_action);
+  surf_workstation_model->action_unref(task->surf_action);
   task->surf_action = NULL;
 
   DEBUG0("Looking for candidates");
@@ -1047,7 +1047,7 @@ void SD_task_destroy(SD_task_t task)
     xbt_free(task->name);
 
   if (task->surf_action != NULL)
-    surf_workstation_model->action_free(task->surf_action);
+    surf_workstation_model->action_unref(task->surf_action);
 
   if (task->workstation_list != NULL)
     xbt_free(task->workstation_list);

@@ -68,12 +68,12 @@ static void parallel_action_use(surf_action_t action)
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
 }
 
-static int action_free(surf_action_t action)
+static int action_unref(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
-    return surf_network_model->action_free(action);
+    return surf_network_model->action_unref(action);
   else if (action->model_type == surf_cpu_model)
-    return surf_cpu_model->action_free(action);
+    return surf_cpu_model->action_unref(action);
   else if (action->model_type == surf_workstation_model)
     return parallel_action_free(action);
   else
@@ -81,12 +81,12 @@ static int action_free(surf_action_t action)
   return 0;
 }
 
-static void action_use(surf_action_t action)
+static void action_ref(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
-    surf_network_model->action_use(action);
+    surf_network_model->action_ref(action);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->action_use(action);
+    surf_cpu_model->action_ref(action);
   else if (action->model_type == surf_workstation_model)
     parallel_action_use(action);
   else
@@ -290,8 +290,8 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model = surf_model_init();
 
   surf_workstation_model->name = "Workstation";
-  surf_workstation_model->action_free = action_free;
-  surf_workstation_model->action_use = action_use;
+  surf_workstation_model->action_unref = action_unref;
+  surf_workstation_model->action_ref = action_ref;
   surf_workstation_model->action_cancel = action_cancel;
   surf_workstation_model->action_state_set = ws_action_state_set;
 

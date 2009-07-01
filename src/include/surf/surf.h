@@ -217,8 +217,8 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 
        double (*action_get_start_time) (surf_action_t action);/**< Return the start time of an action */
        double (*action_get_finish_time) (surf_action_t action);/**< Return the finish time of an action */
-       void (*action_use) (surf_action_t action);/**< Set an action used */
-       int (*action_free) (surf_action_t action);/**< Free an action */
+       void (*action_ref) (surf_action_t action);/**< Specify that we use that action */
+       int (*action_unref) (surf_action_t action);/**< Specify that we don't use that action anymore */
        void (*action_cancel) (surf_action_t action);/**< Cancel a running action */
        void (*action_recycle) (surf_action_t action);/**< Recycle an action */
        void (*action_data_set) (surf_action_t action, void *data);/**< Set the user data of an action */

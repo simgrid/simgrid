@@ -205,7 +205,7 @@ int SIMIX_action_destroy(smx_action_t action)
   xbt_fifo_free(action->cond_list);
 
   if (action->simdata->surf_action)
-    action->simdata->surf_action->model_type->action_free(action->
+    action->simdata->surf_action->model_type->action_unref(action->
                                                           simdata->surf_action);
 
   xbt_free(action->simdata);

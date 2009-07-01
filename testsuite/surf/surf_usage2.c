@@ -95,13 +95,13 @@ void test(char *platform)
               xbt_swag_extract(model->common_public->
                                states.failed_action_set))) {
         DEBUG1("\t * Failed : %p", action);
-        model->common_public->action_free(action);
+        model->common_public->action_unref(action);
       }
       while ((action =
               xbt_swag_extract(model->common_public->
                                states.done_action_set))) {
         DEBUG1("\t * Done : %p", action);
-        model->common_public->action_free(action);
+        model->common_public->action_unref(action);
       }
     }
   } while (surf_solve() >= 0.0);

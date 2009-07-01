@@ -134,7 +134,7 @@ static int resource_used(void *resource_id)
                              ((cpu_Cas01_t) resource_id)->constraint);
 }
 
-static int action_free(surf_action_t action)
+static int action_unref(surf_action_t action)
 {
   action->refcount--;
   if (!action->refcount) {
@@ -148,7 +148,7 @@ static int action_free(surf_action_t action)
   return 0;
 }
 
-static void action_use(surf_action_t action)
+static void action_ref(surf_action_t action)
 {
   action->refcount++;
 }
@@ -401,8 +401,8 @@ static void surf_cpu_model_init_internal(void)
 
   surf_cpu_model->name = "CPU";
 
-  surf_cpu_model->action_free = action_free;
-  surf_cpu_model->action_use = action_use;
+  surf_cpu_model->action_unref = action_unref;
+  surf_cpu_model->action_ref = action_ref;
   surf_cpu_model->action_cancel = action_cancel;
   surf_cpu_model->action_state_set = cpu_action_state_set;
 

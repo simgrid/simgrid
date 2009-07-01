@@ -129,13 +129,13 @@ static xbt_dict_t get_properties(void *r)
 
 /* action_get_state is inherited from the surf module */
 
-static void action_use(surf_action_t action)
+static void action_ref(surf_action_t action)
 {
   action->refcount++;
   return;
 }
 
-static int action_free(surf_action_t action)
+static int action_unref(surf_action_t action)
 {
   action->refcount--;
 
@@ -985,8 +985,8 @@ static void model_init_internal(void)
 {
   surf_workstation_model = surf_model_init();
 
-  surf_workstation_model->action_use = action_use;
-  surf_workstation_model->action_free = action_free;
+  surf_workstation_model->action_ref = action_ref;
+  surf_workstation_model->action_unref = action_unref;
   surf_workstation_model->action_cancel = action_cancel;
   surf_workstation_model->action_state_set = surf_action_state_set;
   surf_workstation_model->suspend = action_suspend;

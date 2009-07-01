@@ -20,6 +20,11 @@ SimGrid (3.3.2-svn) unstable; urgency=low
      use the model field of their ancestor. 
     But hell, we wont fight for 8 bytes per host, will we?
     TODO: integrate the properties into that ancestor
+  * Rename model methods:
+    action_free -> action_unref
+    action_use  -> action_ref
+    action_change_state -> action_state_set
+    action_get_state    -> action_state_get
     
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]
