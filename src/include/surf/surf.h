@@ -230,7 +230,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
        void (*set_max_duration) (surf_action_t action, double duration);/**< Set the max duration of an action*/
        void (*set_priority) (surf_action_t action, double priority);/**< Set the priority of an action */
 
-       xbt_dict_t(*get_properties) (void *resource_id);/**< Return the properties dictionary */
        xbt_dict_t resource_set;
 
 
@@ -256,9 +255,11 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
      typedef struct surf_resource {
        surf_model_t model;
        char *name;
+       xbt_dict_t properties;
      } s_surf_resource_t, *surf_resource_t;
 
-XBT_PUBLIC(const char*) surf_resource_name(const void *resource);
+     XBT_PUBLIC(const char*) surf_resource_name(const void *resource);
+     XBT_PUBLIC(xbt_dict_t) surf_resource_properties(const void *resource);
 XBT_PUBLIC(void) surf_resource_free(void* resource);
 /**************************************/
 /* Implementations of model object */

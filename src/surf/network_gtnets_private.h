@@ -18,16 +18,12 @@ typedef struct network_link_GTNETS {
   double bw_current;
   double lat_current;
   int id;
-  /*holds the properties associated with the link */
-  xbt_dict_t properties;
 } s_network_link_GTNETS_t, *network_link_GTNETS_t;
 
 
 typedef struct network_card_GTNETS {
   char *name;
   int id;
-  /*holds the properties associated with the card */
-  xbt_dict_t properties;
 } s_network_card_GTNETS_t, *network_card_GTNETS_t;
 
 typedef struct surf_action_network_GTNETS {

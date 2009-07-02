@@ -21,8 +21,6 @@ typedef struct cpu_Cas01 {
   e_surf_cpu_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
-  /*Handles the properties that can be added to cpu's */
-  xbt_dict_t properties;
 } s_cpu_Cas01_t, *cpu_Cas01_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
@@ -36,12 +34,6 @@ lmm_system_t cpu_maxmin_system = NULL;
 
 static xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
 
-static void cpu_free(void *cpu)
-{
-  xbt_dict_free(&(((cpu_Cas01_t) cpu)->properties));
-  surf_resource_free(cpu);
-}
-
 static cpu_Cas01_t cpu_new(char *name, double power_scale,
                            double power_initial,
                            tmgr_trace_t power_trace,
@@ -54,6 +46,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
               "Host '%s' declared several times in the platform file", name);
   cpu->generic_resource.model = surf_cpu_model;
   cpu->generic_resource.name = name;
+  current_property_set = cpu->generic_resource.properties = cpu_properties;
   cpu->power_scale = power_scale;
   xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
   cpu->power_current = power_initial;
@@ -70,12 +63,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
     lmm_constraint_new(cpu_maxmin_system, cpu,
                        cpu->power_current * cpu->power_scale);
 
-  /*add the property set */
-  cpu->properties = cpu_properties;
-
-  current_property_set = cpu_properties;
-
-  xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu, cpu_free);
+  xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu, surf_resource_free);
 
   return cpu;
 }
@@ -388,11 +376,6 @@ static double get_available_speed(void *cpu)
   return ((cpu_Cas01_t) cpu)->power_current;
 }
 
-static xbt_dict_t get_properties(void *cpu)
-{
-  return ((cpu_Cas01_t) cpu)->properties;
-}
-
 static void finalize(void)
 {
   lmm_system_free(cpu_maxmin_system);
@@ -438,8 +421,6 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->extension.cpu.get_state = get_state;
   surf_cpu_model->extension.cpu.get_speed = get_speed;
   surf_cpu_model->extension.cpu.get_available_speed = get_available_speed;
-  /*manage the properties of the cpu */
-  surf_cpu_model->get_properties = get_properties;
 
   if (!cpu_maxmin_system)
     cpu_maxmin_system = lmm_system_new();

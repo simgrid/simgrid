@@ -15,7 +15,6 @@
 typedef struct network_link_CM02 {
   s_surf_resource_t generic_resource; /* must remain first to be added to a trace */
 
-  xbt_dict_t properties;
   /* Using this object with the public part of
      model does not make sense */
   double bw_current;

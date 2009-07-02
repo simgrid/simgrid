@@ -175,11 +175,6 @@ static int link_shared(const void *link)
   DIE_IMPOSSIBLE;
 }
 
-static xbt_dict_t get_properties(void *link)
-{
-  DIE_IMPOSSIBLE;
-}
-
 static void action_suspend(surf_action_t action)
 {
   ((surf_action_network_Constant_t) action)->suspended = 1;
@@ -236,8 +231,6 @@ static void surf_network_model_init_internal(void)
     get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = get_link_latency;
   surf_network_model->extension.network.link_shared = link_shared;
-
-  surf_network_model->get_properties = get_properties;
 
   if (!random_latency)
     random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);

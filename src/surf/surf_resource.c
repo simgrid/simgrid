@@ -11,6 +11,8 @@ void surf_resource_free(void* r) {
   surf_resource_t resource = r;
   if (resource->name)
     free(resource->name);
+  if (resource->properties)
+    xbt_dict_free(&resource->properties);
   free(resource);
 }
 

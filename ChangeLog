@@ -30,7 +30,9 @@ SimGrid (3.3.2-svn) unstable; urgency=low
       
   * Implement a generic resource; use it as ancestor to specific ones
     (allows to kill duplicated code in models)
-    TODO: integrate the properties into that ancestor
+    Drawback: timer command don't need no name nor properties;
+              workstation_CLM03 don't need no properties
+    (but I guess we can live with those few bytes wasted)
     
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]

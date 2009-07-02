@@ -20,7 +20,6 @@ typedef enum {
 /**************************************/
 typedef struct cpu_L07 {
   s_surf_resource_t generic_resource;  /* Do not move this field: must match surf_resource_t */
-  xbt_dict_t properties;        /* Do not move this field: must match link_L07_t */
   e_surf_workstation_model_type_t type; /* Do not move this field: must match link_L07_t */
   lmm_constraint_t constraint;  /* Do not move this field: must match link_L07_t */
   double power_scale;
@@ -37,7 +36,6 @@ typedef struct cpu_L07 {
 
 typedef struct link_L07 {
   s_surf_resource_t generic_resource;  /* Do not move this field: must match surf_resource_t */
-  xbt_dict_t properties;        /* Do not move this field: must match link_L07_t */
   e_surf_workstation_model_type_t type; /* Do not move this field: must match cpu_L07_t */
   lmm_constraint_t constraint;  /* Do not move this field: must match cpu_L07_t */
   double lat_current;
@@ -112,12 +110,6 @@ static void update_action_bound(surf_action_workstation_L07_t action)
 /**************************************/
 /******* Resource Public     **********/
 /**************************************/
-
-static xbt_dict_t get_properties(void *r)
-{
-  /* We can freely cast as a cpu_L07_t since it has the same prefix than link_L07_t */
-  return ((cpu_L07_t) r)->properties;
-}
 
 static int action_unref(surf_action_t action)
 {
@@ -599,12 +591,6 @@ static int link_shared(const void *link)
 /*** Resource Creation & Destruction **/
 /**************************************/
 
-static void cpu_free(void *cpu)
-{
-  xbt_dict_free(&(((cpu_L07_t) cpu)->properties));
-  surf_resource_free(cpu);
-}
-
 static cpu_L07_t cpu_new(const char *name, double power_scale,
                          double power_initial,
                          tmgr_trace_t power_trace,
@@ -618,6 +604,7 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
   cpu->generic_resource.model = surf_workstation_model;
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
   cpu->generic_resource.name = xbt_strdup(name);
+  cpu->generic_resource.properties = current_property_set;
   cpu->id = host_count++;
 
   cpu->power_scale = power_scale;
@@ -637,11 +624,8 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
     lmm_constraint_new(ptask_maxmin_system, cpu,
                        cpu->power_current * cpu->power_scale);
 
-  /*add the property set */
-  cpu->properties = current_property_set;
-
   xbt_dict_set(surf_model_resource_set(surf_workstation_model), name, cpu,
-               cpu_free);
+               surf_resource_free);
 
   return cpu;
 }
@@ -672,12 +656,6 @@ static void parse_cpu_init(void)
           state_initial, state_trace, current_property_set);
 }
 
-static void link_free(void *nw_link)
-{
-  xbt_dict_free(&(((link_L07_t) nw_link)->properties));
-  surf_resource_free(nw_link);
-}
-
 static link_L07_t link_new(char *name,
                            double bw_initial,
                            tmgr_trace_t bw_trace,
@@ -694,8 +672,9 @@ static link_L07_t link_new(char *name,
               "Link '%s' declared several times in the platform file.", name);
 
   nw_link->generic_resource.model = surf_workstation_model;
-  nw_link->type = SURF_WORKSTATION_RESOURCE_LINK;
+  nw_link->generic_resource.properties = properties;
   nw_link->generic_resource.name = name;
+  nw_link->type = SURF_WORKSTATION_RESOURCE_LINK;
   nw_link->bw_current = bw_initial;
   if (bw_trace)
     nw_link->bw_event =
@@ -715,9 +694,8 @@ static link_L07_t link_new(char *name,
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->constraint);
 
-  nw_link->properties = properties;
 
-  xbt_dict_set(surf_network_model->resource_set, name, nw_link, link_free);
+  xbt_dict_set(surf_network_model->resource_set, name, nw_link, surf_resource_free);
 
   return nw_link;
 }
@@ -874,8 +852,6 @@ static void model_init_internal(void)
   surf_workstation_model->extension.workstation.get_link_latency =
     get_link_latency;
   surf_workstation_model->extension.workstation.link_shared = link_shared;
-
-  surf_workstation_model->get_properties = get_properties;
 
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();

@@ -153,7 +153,7 @@ xbt_dict_t SD_link_get_properties(SD_link_t link)
   SD_CHECK_INIT_DONE();
   xbt_assert0((link != NULL), "Invalid parameters");
 
-  return (surf_workstation_model->get_properties(link->surf_link));
+  return surf_resource_properties(link->surf_link);
 
 }
 

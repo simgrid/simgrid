@@ -25,11 +25,6 @@ int host_count = 0;
 double sg_tcp_gamma = 0.0;
 
 
-static void link_free(void *nw_link)
-{
-  xbt_dict_free(&(((link_CM02_t) nw_link)->properties));
-  surf_resource_free(nw_link);
-}
 
 static link_CM02_t link_new(char *name,
                             double bw_initial,
@@ -48,6 +43,7 @@ static link_CM02_t link_new(char *name,
 
   nw_link->generic_resource.model = surf_network_model;
   nw_link->generic_resource.name = name;
+  current_property_set = nw_link->generic_resource.properties = properties;
   nw_link->bw_current = bw_initial;
   if (bw_trace)
     nw_link->bw_event =
@@ -68,11 +64,7 @@ static link_CM02_t link_new(char *name,
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->constraint);
 
-  nw_link->properties = properties;
-
-  current_property_set = properties;
-
-  xbt_dict_set(surf_network_model->resource_set, name, nw_link, link_free);
+  xbt_dict_set(surf_network_model->resource_set, name, nw_link, surf_resource_free);
 
   return nw_link;
 }
@@ -464,11 +456,6 @@ static int link_shared(const void *link)
   return lmm_constraint_is_shared(((link_CM02_t) link)->constraint);
 }
 
-static xbt_dict_t get_properties(void *link)
-{
-  return ((link_CM02_t) link)->properties;
-}
-
 static void action_suspend(surf_action_t action)
 {
   ((surf_action_network_CM02_t) action)->suspended = 1;
@@ -536,8 +523,6 @@ static void surf_network_model_init_internal(void)
     get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = get_link_latency;
   surf_network_model->extension.network.link_shared = link_shared;
-
-  surf_network_model->get_properties = get_properties;
 
   if (!network_maxmin_system)
     network_maxmin_system = lmm_system_new();
