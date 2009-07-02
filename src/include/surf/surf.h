@@ -216,6 +216,7 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
        double (*get_link_bandwidth) (const void *link);                                    /**< Return the current bandwidth of a network link */
        double (*get_link_latency) (const void *link);                                      /**< Return the current latency of a network link */
        int (*link_shared) (const void *link);
+       xbt_dict_t (*get_properties)(const void*resource);
      } s_surf_model_extension_workstation_t;
 
 /** \brief Model datatype
@@ -273,7 +274,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
      } s_surf_resource_t, *surf_resource_t;
 
      XBT_PUBLIC(const char*) surf_resource_name(const void *resource);
-     XBT_PUBLIC(xbt_dict_t) surf_resource_properties(const void *resource);
 XBT_PUBLIC(void) surf_resource_free(void* resource);
 /**************************************/
 /* Implementations of model object */

@@ -98,4 +98,10 @@ struct s_routing {
 };
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link,void *loopback);
 
+
+/*
+ * Resource protected methods
+ */
+XBT_PUBLIC(xbt_dict_t) surf_resource_properties(const void *resource);
+
 #endif /* _SURF_SURF_PRIVATE_H */

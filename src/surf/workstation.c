@@ -255,6 +255,9 @@ static void finalize(void)
   surf_model_exit(surf_workstation_model);
   surf_workstation_model = NULL;
 }
+static xbt_dict_t get_properties(const void*ws){
+  return surf_resource_properties(((workstation_CLM03_t)ws)->cpu);
+}
 
 static void surf_workstation_model_init_internal(void)
 {
@@ -295,6 +298,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.get_link_latency =
     get_link_latency;
   surf_workstation_model->extension.workstation.link_shared = link_shared;
+  surf_workstation_model->extension.workstation.get_properties = get_properties;
 }
 
 /********************************************************************/

@@ -42,7 +42,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
               "Host '%s' declared several times in the platform file", name);
   cpu->generic_resource.model = surf_cpu_model;
   cpu->generic_resource.name = name;
-  current_property_set = cpu->generic_resource.properties = cpu_properties;
+  cpu->generic_resource.properties = cpu_properties;
   cpu->power_scale = power_scale;
   xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
   cpu->power_current = power_initial;

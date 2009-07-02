@@ -841,6 +841,8 @@ static void model_init_internal(void)
   surf_workstation_model->extension.workstation.get_link_latency =
     get_link_latency;
   surf_workstation_model->extension.workstation.link_shared = link_shared;
+  surf_workstation_model->extension.workstation.get_properties = surf_resource_properties;
+
 
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();
