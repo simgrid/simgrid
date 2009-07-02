@@ -12,59 +12,17 @@
 #include "xbt/str.h"
 #include "xbt/log.h"
 
-typedef struct network_card_Constant {
-  s_surf_resource_t generic_resource;
-  int id;
-} s_network_card_Constant_t, *network_card_Constant_t;
-
 typedef struct surf_action_network_Constant {
   s_surf_action_t generic_action;
   double latency;
   double lat_init;
   int suspended;
-  network_card_Constant_t src;
-  network_card_Constant_t dst;
 } s_surf_action_network_Constant_t, *surf_action_network_Constant_t;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static random_data_t random_latency = NULL;
 static int card_number = 0;
 static int host_number = 0;
-
-static int network_card_new(const char *card_name)
-{
-  network_card_Constant_t card =
-    surf_model_resource_by_name(surf_network_model, card_name);
-
-  if (!card) {
-    card = xbt_new0(s_network_card_Constant_t, 1);
-    card->generic_resource.name = xbt_strdup(card_name);
-    card->id = card_number++;
-    xbt_dict_set(surf_model_resource_set(surf_network_model), card_name, card,
-                 surf_resource_free);
-  }
-  return card->id;
-}
-
-static int src_id = -1;
-static int dst_id = -1;
-
-static void parse_route_set_endpoints(void)
-{
-  src_id = network_card_new(A_surfxml_route_src);
-  dst_id = network_card_new(A_surfxml_route_dst);
-  route_action = A_surfxml_route_action;
-}
-
-static void parse_route_set_route(void)
-{
-  char *name;
-  if (src_id != -1 && dst_id != -1) {
-    name = bprintf("%x#%x", src_id, dst_id);
-    manage_route(route_table, name, route_action, 0);
-    free(name);
-  }
-}
 
 static void count_hosts(void)
 {
@@ -75,9 +33,6 @@ static void define_callbacks(const char *file)
 {
   /* Figuring out the network links */
   surfxml_add_callback(STag_surfxml_host_cb_list, &count_hosts);
-  surfxml_add_callback(STag_surfxml_route_cb_list,
-                       &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
 }
 
 static int resource_used(void *resource_id)
