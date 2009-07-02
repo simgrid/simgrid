@@ -40,8 +40,6 @@ EXTRA_DIST= \
 	surf/maxmin_private.h \
 	surf/trace_mgr_private.h \
 	surf/surf_private.h \
-	surf/cpu_private.h \
-	surf/workstation_private.h \
 	surf/surfxml_parse.c \
 	surf/simgrid_dtd.l \
 	surf/simgrid_dtd.c \

@@ -8,9 +8,14 @@
 #include "xbt/ex.h"
 #include "xbt/dict.h"
 #include "portable.h"
-#include "workstation_private.h"
-#include "cpu_private.h"
+#include "surf_private.h"
 #include "network_common.h"
+
+typedef struct workstation_CLM03 {
+  s_surf_resource_t generic_resource; /* Must remain first to add this to a trace */
+  void *cpu;
+  int id;
+} s_workstation_CLM03_t, *workstation_CLM03_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
                                 "Logging specific to the SURF workstation module");

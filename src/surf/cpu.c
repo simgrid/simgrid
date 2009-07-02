@@ -5,10 +5,31 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "cpu_private.h"
+#include "surf_private.h"
+
+typedef struct surf_action_cpu_Cas01 {
+  s_surf_action_t generic_action;
+  lmm_variable_t variable;
+  int suspended;
+} s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
+
+typedef struct cpu_Cas01 {
+  s_surf_resource_t generic_resource;
+  char *name;
+  double power_scale;
+  double power_current;
+  tmgr_trace_event_t power_event;
+  e_surf_cpu_state_t state_current;
+  tmgr_trace_event_t state_event;
+  lmm_constraint_t constraint;
+  /*Handles the properties that can be added to cpu's */
+  xbt_dict_t properties;
+} s_cpu_Cas01_t, *cpu_Cas01_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF CPU module");
+
+
 
 surf_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
