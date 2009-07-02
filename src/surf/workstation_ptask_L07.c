@@ -455,16 +455,9 @@ static surf_action_t execute_parallel_task(int workstation_nb,
     if (computation_amount[i] > 0)
       nb_host++;
 
-  action = xbt_new0(s_surf_action_workstation_L07_t, 1);
+  action=surf_action_new(sizeof(s_surf_action_workstation_L07_t),amount,surf_workstation_model,0);
   DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.",
          action, workstation_nb, nb_link);
-  action->generic_action.refcount = 1;
-  action->generic_action.cost = amount;
-  action->generic_action.remains = amount;
-  action->generic_action.max_duration = NO_MAX_DURATION;
-  action->generic_action.start = surf_get_clock();
-  action->generic_action.finish = -1.0;
-  action->generic_action.model_type = surf_workstation_model;
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
   action->workstation_nb = workstation_nb;
@@ -472,10 +465,6 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   action->computation_amount = computation_amount;
   action->communication_amount = communication_amount;
   action->latency = latency;
-  action->generic_action.state_set =
-    surf_workstation_model->states.running_action_set;
-
-  xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
 
   action->variable =

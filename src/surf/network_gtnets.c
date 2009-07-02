@@ -433,26 +433,13 @@ static void update_resource_state(void *id,
 }
 
 /* KF: Rate not supported */
+/* Max durations are not supported */
 static surf_action_t communicate(const char *src_name, const char *dst_name,int src, int dst, double size,
                                  double rate)
 {
   surf_action_network_GTNETS_t action = NULL;
 
-  action = xbt_new0(s_surf_action_network_GTNETS_t, 1);
-
-  action->generic_action.refcount = 1;
-  action->generic_action.cost = size;
-  action->generic_action.remains = size;
-  /* Max durations are not supported */
-  action->generic_action.max_duration = NO_MAX_DURATION;
-  action->generic_action.start = surf_get_clock();
-  action->generic_action.finish = -1.0;
-  action->generic_action.model_type = surf_network_model;
-
-  action->generic_action.state_set =
-    surf_network_model->states.running_action_set;
-
-  xbt_swag_insert(action, action->generic_action.state_set);
+  action = surf_action_new(sizeof(s_surf_action_network_GTNETS_t),size,surf_network_model,0);
 
   /* KF: Add a flow to the GTNets Simulation, associated to this action */
   if (gtnets_create_flow(src, dst, size, (void *) action) < 0) {

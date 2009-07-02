@@ -7,11 +7,7 @@
 
 #include "surf_private.h"
 
-typedef struct surf_action_cpu_Cas01 {
-  s_surf_action_t generic_action;
-  lmm_variable_t variable;
-  int suspended;
-} s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
+typedef s_surf_action_maxmin_t s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
 typedef struct cpu_Cas01 {
   s_surf_resource_t generic_resource;
@@ -189,10 +185,6 @@ static void update_actions_state(double now, double delta)
   surf_action_cpu_Cas01_t action = NULL;
   surf_action_cpu_Cas01_t next_action = NULL;
   xbt_swag_t running_actions = surf_cpu_model->states.running_action_set;
-  /* FIXME: UNUSED
-     xbt_swag_t failed_actions =
-     surf_cpu_model->states.failed_action_set;
-   */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     double_update(&(action->generic_action.remains),
@@ -258,27 +250,11 @@ static surf_action_t execute(void *cpu, double size)
   cpu_Cas01_t CPU = cpu;
 
   XBT_IN2("(%s,%g)", CPU->generic_resource.name, size);
-  action = xbt_new0(s_surf_action_cpu_Cas01_t, 1);
+  action = surf_action_new(sizeof(s_surf_action_cpu_Cas01_t),size,surf_cpu_model,
+      CPU->state_current != SURF_CPU_ON);
 
-  action->generic_action.refcount = 1;
-  action->generic_action.cost = size;
-  action->generic_action.remains = size;
-  action->generic_action.priority = 1.0;
-  action->generic_action.max_duration = NO_MAX_DURATION;
-  action->generic_action.start = surf_get_clock();
-  action->generic_action.finish = -1.0;
-  action->generic_action.model_type = surf_cpu_model;
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
-
-  if (CPU->state_current == SURF_CPU_ON)
-    action->generic_action.state_set =
-      surf_cpu_model->states.running_action_set;
-  else
-    action->generic_action.state_set =
-      surf_cpu_model->states.failed_action_set;
-
-  xbt_swag_insert(action, action->generic_action.state_set);
 
   action->variable = lmm_variable_new(cpu_maxmin_system, action,
                                       action->generic_action.priority,

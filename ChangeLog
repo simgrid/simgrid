@@ -34,6 +34,10 @@ SimGrid (3.3.2-svn) unstable; urgency=low
               workstation_CLM03 don't need no properties
     (but I guess we can live with those few bytes wasted)
     
+  * Improve the action object model
+    - implement a constructor avoiding dupplicated code about field
+      initialization in generic_action part.
+    
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]
   * Add xbt_graph_node_get_outedges() [Silas De Munck]

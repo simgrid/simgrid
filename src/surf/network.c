@@ -364,28 +364,15 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,int 
               "You're trying to send data from %s to %s but there is no connection between these two hosts.",
               src_name, dst_name);
 
-  action = xbt_new0(s_surf_action_network_CM02_t, 1);
-
-  action->generic_action.refcount = 1;
-  action->generic_action.cost = size;
-  action->generic_action.remains = size;
-  action->generic_action.max_duration = NO_MAX_DURATION;
-  action->generic_action.start = surf_get_clock();
-  action->generic_action.finish = -1.0;
-  action->generic_action.model_type = surf_network_model;
-  action->suspended = 0;        /* Should be useless because of the
-                                   calloc but it seems to help valgrind... */
-  action->generic_action.state_set =
-    surf_network_model->states.running_action_set;
-
   link_CM02_t link;
+  int failed=0;
   xbt_dynar_foreach(route,i,link) {
     if (link->state_current == SURF_LINK_OFF) {
-      action->generic_action.state_set =
-        surf_network_model->states.failed_action_set;
+      failed = 1;
       break;
     }
   }
+  action = surf_action_new(sizeof(s_surf_action_network_CM02_t),size,surf_network_model,failed);
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;

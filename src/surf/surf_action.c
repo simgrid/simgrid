@@ -7,6 +7,10 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
+/*
+ * Generic action
+ */
+
 const char *surf_action_state_names[6] = {
   "SURF_ACTION_READY",
   "SURF_ACTION_RUNNING",
@@ -15,6 +19,27 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_TO_FREE",
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
+
+void* surf_action_new(size_t size,double cost,surf_model_t model,int failed) {
+  surf_action_t action = xbt_malloc0(size);
+  action->refcount = 1;
+  action->cost = cost;
+  action->remains = cost;
+  action->priority = 1.0;
+  action->max_duration = NO_MAX_DURATION;
+  action->start = surf_get_clock();
+  action->finish = -1.0;
+  action->model_type = model;
+
+  if (failed)
+    action->state_set = model->states.failed_action_set;
+  else
+    action->state_set = model->states.running_action_set;
+
+  xbt_swag_insert(action, action->state_set);
+
+  return action;
+}
 
 e_surf_action_state_t surf_action_state_get(surf_action_t action)
 {
@@ -80,3 +105,12 @@ void surf_action_ref(surf_action_t action)
 {
   action->refcount++;
 }
+/*
+void surf_action_suspend(surf_action_t action)
+{
+  action->suspended = 1;
+}*/
+
+/*
+ * Maxmin action
+ */

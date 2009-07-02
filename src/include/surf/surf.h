@@ -16,10 +16,18 @@
 #include "xbt/config.h"
 
 SG_BEGIN_DECL()
-
-
-
 /* Actions and models are higly connected structures... */
+
+
+/** \brief Model datatype
+ *  \ingroup SURF_models
+ *
+ *  Generic data structure for a model. The workstations,
+ *  the CPUs and the network links are examples of models.
+ */
+     typedef struct surf_model *surf_model_t;
+
+
 /** \brief Action datatype
  *  \ingroup SURF_actions
  *
@@ -31,15 +39,16 @@ SG_BEGIN_DECL()
 typedef struct surf_action *surf_action_t;
 /** @Brief Specify that we use that action */
 XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
-
-
-/** \brief Model datatype
- *  \ingroup SURF_models
+/** @brief Creates a new action.
  *
- *  Generic data structure for a model. The workstations,
- *  the CPUs and the network links are examples of models.
+ * @param size The size is the one of the subtype you want to create
+ * @param cost initial value
+ * @param model to which model we should attach this action
+ * @param failed whether we should start this action in failed mode
  */
-     typedef struct surf_model *surf_model_t;
+XBT_PUBLIC(void*) surf_action_new(size_t size,double cost,surf_model_t model, int failed);
+
+
 
 /** \brief Resource model description
  */
@@ -81,6 +90,11 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
        surf_model_t model_type;
      } s_surf_action_t;
 
+     typedef struct {
+       s_surf_action_t generic_action;
+       void *variable; /* of type lmm_variable_t, which is only visible by loading maxmin */
+       int suspended;
+     } s_surf_action_maxmin_t,*surf_action_maxmin_t;
 /** \brief Action states
  *  \ingroup SURF_actions
  *
