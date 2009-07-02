@@ -131,33 +131,6 @@ double SD_link_get_current_bandwidth(SD_link_t link)
 }
 
 /**
- * \brief Returns the value of a given link property
- *
- * \param link the inspected link
- * \param name a property name
- * \return value of a property (or NULL if property not set)
- */
-const char *SD_link_get_property_value(SD_link_t link, const char *name)
-{
-  return xbt_dict_get_or_null(SD_link_get_properties(link), name);
-}
-
-/**
- * \brief Returns a #xbt_dict_t consisting of the list of properties assigned to a link
- *
- * \param link a link
- * \return the dictionary containing the properties associated with the link
- */
-xbt_dict_t SD_link_get_properties(SD_link_t link)
-{
-  SD_CHECK_INIT_DONE();
-  xbt_assert0((link != NULL), "Invalid parameters");
-
-  return surf_resource_properties(link->surf_link);
-
-}
-
-/**
  * \brief Returns the current latency of a link
  *
  * \param link a link

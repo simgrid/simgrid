@@ -38,7 +38,11 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Improve the action object model
     - implement a constructor avoiding dupplicated code about field
       initialization in generic_action part.
-    
+ 
+ SimDag:
+  * Kill SD_link_get_properties: hard to maintain and makes very little sense
+    Shout out if you used it.
+
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]
   * Add xbt_graph_node_get_outedges() [Silas De Munck]

@@ -12,9 +12,9 @@ SG_BEGIN_DECL()
 /************************** Link handling ***********************************/
 /** @defgroup SD_link_management Links
  *  @brief Functions for managing the network links
- * 
+ *
  *  This section describes the functions for managing the network links.
- *  
+ *
  *  A link is a network node represented as a <em>name</em>, a <em>current
  *  bandwidth</em> and a <em>current latency</em>. The links are created
  *  when you call the function SD_create_environment.
@@ -31,19 +31,15 @@ XBT_PUBLIC(double) SD_link_get_current_bandwidth(SD_link_t link);
 XBT_PUBLIC(double) SD_link_get_current_latency(SD_link_t link);
 XBT_PUBLIC(e_SD_link_sharing_policy_t) SD_link_get_sharing_policy(SD_link_t
                                                                   link);
-/*property handling functions*/
-XBT_PUBLIC(xbt_dict_t) SD_link_get_properties(SD_link_t link);
-XBT_PUBLIC(const char *) SD_link_get_property_value(SD_link_t link,
-                                                    const char *name);
 /** @} */
 
 /************************** Workstation handling ****************************/
 
 /** @defgroup SD_workstation_management Workstations
  *  @brief Functions for managing the workstations
- * 
+ *
  *  This section describes the functions for managing the workstations.
- *  
+ *
  *  A workstation is a place where a task can be executed.
  *  A workstation is represented as a <em>physical
  *  resource with computing capabilities</em> and has a <em>name</em>.
@@ -99,15 +95,15 @@ XBT_PUBLIC(double) SD_route_get_communication_time(SD_workstation_t src,
 
 /** @defgroup SD_task_management Tasks
  *  @brief Functions for managing the tasks
- * 
+ *
  *  This section describes the functions for managing the tasks.
- *  
+ *
  *  A task is some <em>working amount</em> that can be executed
  *  in parallel on several workstations. A task may depend on other
  *  tasks, this means that the task cannot start until the other tasks are done.
  *  Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether
  *  the task is scheduled, running, done, etc.
- *  
+ *
  *  @see SD_task_t, SD_task_dependency_management
  *  @{
  */
@@ -159,10 +155,10 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 
 /** @defgroup SD_simulation Simulation
  *  @brief Functions for creating the environment and launching the simulation
- * 
+ *
  *  This section describes the functions for initialising SimDag, launching
  *  the simulation and exiting SimDag.
- *  
+ *
  *  @{
  */
 XBT_PUBLIC(void) SD_init(int *argc, char **argv);
