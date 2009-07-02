@@ -122,18 +122,6 @@ void surf_config_init(int *argc, char **argv)
     char *description = xbt_malloc(1024), *p = description;
     char *default_value;
     int i;
-    sprintf(description,
-            "The model to use for the workstation. Possible values: ");
-    while (*(++p) != '\0');
-    for (i = 0; surf_workstation_model_description[i].name; i++)
-      p +=
-        sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                surf_workstation_model_description[i].name);
-    default_value = xbt_strdup("CLM03");
-    xbt_cfg_register(&_surf_cfg_set,
-                     "workstation_model", description, xbt_cfgelm_string,
-                     &default_value, 1, 1, &_surf_cfg_cb__workstation_model,
-                     NULL);
 
     sprintf(description, "The model to use for the CPU. Possible values: ");
     p = description;
@@ -160,7 +148,28 @@ void surf_config_init(int *argc, char **argv)
                      "network_model", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__network_model,
                      NULL);
+
+    sprintf(description,
+            "The model to use for the workstation. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_workstation_model_description[i].name; i++)
+      p +=
+        sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                surf_workstation_model_description[i].name);
+    default_value = xbt_strdup("CLM03");
+    xbt_cfg_register(&_surf_cfg_set,
+                     "workstation_model", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__workstation_model,
+                     NULL);
+
     xbt_free(description);
+
+    default_value = xbt_strdup("Full");
+    xbt_cfg_register(&_surf_cfg_set, "routing",
+                     "Model to use to store the routing information",
+                     xbt_cfgelm_string, &default_value, 0, 0, NULL,
+                     NULL);
 
     xbt_cfg_register(&_surf_cfg_set, "TCP_gamma",
                      "Size of the biggest TCP window", xbt_cfgelm_double,
@@ -180,6 +189,7 @@ void surf_config_init(int *argc, char **argv)
       surf_path = xbt_dynar_new(sizeof(char *), NULL);
       xbt_cfg_set_string(_surf_cfg_set, "path", initial_path);
     }
+
 
     surf_config_cmd_line(argc, argv);
   }

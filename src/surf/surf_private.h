@@ -96,6 +96,6 @@ struct s_routing {
   void (*finalize)(void);
   int host_count;
 };
-XBT_PUBLIC(routing_t) routing_model_full_create(size_t size_of_link,void *loopback);
+XBT_PUBLIC(void) routing_model_create(size_t size_of_link,void *loopback);
 
 #endif /* _SURF_SURF_PRIVATE_H */

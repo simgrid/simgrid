@@ -845,8 +845,8 @@ static void model_init_internal(void)
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();
 
-  routing_model_full_create(sizeof(link_L07_t),
-        link_new(xbt_strdup("__MSG_loopback__"),
+  routing_model_create(sizeof(link_L07_t),
+        link_new(xbt_strdup("__loopback__"),
             498000000, NULL, 0.000015, NULL,
             SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL));
 

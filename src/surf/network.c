@@ -514,7 +514,7 @@ static void surf_network_model_init_internal(void)
   if (!network_maxmin_system)
     network_maxmin_system = lmm_system_new();
 
-  routing_model_full_create(sizeof(link_CM02_t),
+  routing_model_create(sizeof(link_CM02_t),
       link_new(xbt_strdup("__loopback__"),
           498000000, NULL, 0.000015, NULL,
           SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL));

@@ -6,19 +6,51 @@
 #include "surf_private.h"
 #include "xbt/dynar.h"
 #include "xbt/str.h"
+#include "xbt/config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route,surf,"Routing part of surf");// FIXME: connect this under windows
 
+routing_t used_routing = NULL;
+
+/* Prototypes of each model */
+static void routing_model_full_create(size_t size_of_link,void *loopback);
+
+/* Definition of each model */
+struct model_type {
+  const char *name;
+  const char *desc;
+  void (*fun)(size_t,void*);
+};
+struct model_type models[] =
+{ {"Full", "Full routing data (fast, large memory requirements, fully expressive)", routing_model_full_create },
+    {NULL,NULL}};
+
+
+void routing_model_create(size_t size_of_links, void* loopback) {
+
+  char * wanted=xbt_cfg_get_string(_surf_cfg_set,"routing");
+  int cpt;
+  for (cpt=0;models[cpt].name;cpt++) {
+    if (!strcmp(wanted,models[cpt].name)) {
+      (*(models[cpt].fun))(size_of_links,loopback);
+      return;
+    }
+  }
+  fprintf(stderr,"Routing model %s not found. Existing models:\n",wanted);
+  for (cpt=0;models[cpt].name;cpt++)
+    if (!strcmp(wanted,models[cpt].name))
+      fprintf(stderr,"   %s: %s\n",models[cpt].name,models[cpt].desc);
+  exit(1);
+}
+
+/* ************************************************************************** */
+/* *************************** FULL ROUTING ********************************* */
 typedef struct {
   s_routing_t generic_routing;
   xbt_dynar_t *routing_table;
   void *loopback;
   size_t size_of_link;
-}s_routing_full_t,*routing_full_t;
-
-routing_t used_routing = NULL;
-/* ************************************************************************** */
-/* *************************** FULL ROUTING ********************************* */
+} s_routing_full_t,*routing_full_t;
 
 #define ROUTE_FULL(i,j) ((routing_full_t)used_routing)->routing_table[(i)+(j)*(used_routing)->host_count]
 
@@ -124,26 +156,24 @@ static void routing_full_finalize(void) {
   }
 }
 
-routing_t routing_model_full_create(size_t size_of_link,void *loopback) {
+static void routing_model_full_create(size_t size_of_link,void *loopback) {
   /* initialize our structure */
-  routing_full_t res = xbt_new0(s_routing_full_t,1);
-  res->generic_routing.name = "Full";
-  res->generic_routing.host_count = 0;
-  res->generic_routing.get_route = routing_full_get_route;
-  res->generic_routing.finalize = routing_full_finalize;
-  res->size_of_link = size_of_link;
-  res->loopback = loopback;
+  routing_full_t routing = xbt_new0(s_routing_full_t,1);
+  routing->generic_routing.name = "Full";
+  routing->generic_routing.host_count = 0;
+  routing->generic_routing.get_route = routing_full_get_route;
+  routing->generic_routing.finalize = routing_full_finalize;
+  routing->size_of_link = size_of_link;
+  routing->loopback = loopback;
 
   /* Set it in position */
-  used_routing = (routing_t) res;
+  used_routing = (routing_t) routing;
 
   /* Setup the parsing callbacks we need */
-  used_routing->host_id = xbt_dict_new();
+  routing->generic_routing.host_id = xbt_dict_new();
   surfxml_add_callback(STag_surfxml_host_cb_list, &routing_full_parse_Shost);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &routing_full_parse_end);
   surfxml_add_callback(STag_surfxml_route_cb_list,
-                       &routing_full_parse_Sroute_set_endpoints);
+      &routing_full_parse_Sroute_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &routing_full_parse_Eroute);
-
-  return used_routing;
 }
