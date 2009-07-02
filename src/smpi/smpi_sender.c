@@ -61,6 +61,10 @@ int smpi_sender(int argc, char *argv[])
           (request->dst + message->forward + 1) % request->comm->size;
         xbt_fifo_push(request_queue, request);
       } else {
+//#define DEBUG_MATCH
+#ifdef DEBUG_MATCH
+ printf("**SENDER: request %p completed :=1\n",request);
+#endif
         request->completed = 1;
       }
 

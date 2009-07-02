@@ -262,6 +262,15 @@ int smpi_mpi_irecv(smpi_mpi_request_t request)
   return retval;
 }
 
+void  print_req( smpi_mpi_request_t r ); 
+void  print_req( smpi_mpi_request_t r ) {
+        printf("***req %p-> src=%d dst=%d tag=%d completed=0x%x consumed=0x%x\n",r,r->src,r->dst,r->tag,r->completed,r->consumed);
+}
+
+
+/**
+ * wait and friends ...
+ **/
 int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status)
 {
   int retval = MPI_SUCCESS;
@@ -270,6 +279,10 @@ int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status)
     retval = MPI_ERR_INTERN;
   } else {
     SIMIX_mutex_lock(request->mutex);
+
+#ifdef DEBUG_STEPH
+    print_req( request );  //@@
+#endif
     while (!request->completed) {
       SIMIX_cond_wait(request->cond, request->mutex);
     }
@@ -284,23 +297,30 @@ int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status)
   return retval;
 }
 
+/**
+ * waitall
+ **/
 int smpi_mpi_waitall(int count, smpi_mpi_request_t requests[],
-                     smpi_mpi_status_t status[])
+                smpi_mpi_status_t status[])
 {
-  int cpt;
-  int index;
-  int retval;
-  smpi_mpi_status_t stat;
+        int cpt;
+        int index;
+        int retval;
+        smpi_mpi_status_t stat;
 
-  for (cpt = 0; cpt < count; cpt++) {
-    retval = smpi_mpi_waitany(count, requests, &index, &stat);
-    if (retval != MPI_SUCCESS)
-      return retval;
-    memcpy(&(status[index]), &stat, sizeof(stat));
-  }
-  return MPI_SUCCESS;
+        for (cpt = 0; cpt < count; cpt++) {
+                retval = smpi_mpi_waitany(count, requests, &index, &stat);
+                if (retval != MPI_SUCCESS)
+                        return retval;
+                if (MPI_STATUS_IGNORE != status)
+                        memcpy(&(status[index]), &stat, sizeof(stat));
+        }
+        return MPI_SUCCESS;
 }
 
+/**
+ * waitany
+ **/
 int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
                      smpi_mpi_status_t * status)
 {
@@ -312,7 +332,9 @@ int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
   }
   /* First check if one of them is already done */
   for (cpt = 0; cpt < count; cpt++) {
+          printf("...exam req[%d] of msg from [%d]\n",cpt,requests[cpt]->src);
     if (requests[cpt]->completed && !requests[cpt]->consumed) { /* got ya */
+          printf("...found match req[%d] of msg from [%d]\n",cpt,requests[cpt]->src);
       *index = cpt;
       goto found_request;
     }
@@ -321,7 +343,12 @@ int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
   /* FIXME: should use a SIMIX_cond_waitany, when implemented. For now, block on the first one */
   while (1) {
     for (cpt = 0; cpt < count; cpt++) {
+
+#ifdef DEBUG_STEPH
+      print_req( requests[cpt] );
+#endif
       if (!requests[cpt]->completed) {  /* this one is not done, wait on it */
+              printf("... blocked waiting a msg %d->%d, tag=%d\n",requests[cpt]->src,requests[cpt]->dst,requests[cpt]->tag);
         while (!requests[cpt]->completed)
           SIMIX_cond_wait(requests[cpt]->cond, requests[cpt]->mutex);
 
@@ -334,8 +361,14 @@ int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
   }
 
 found_request:
+#ifdef DEBUG_STEPH
+      print_req( requests[cpt] );
+#endif
   requests[*index]->consumed = 1;
-
+#ifdef DEBUG_STEPH
+      print_req( requests[cpt] );
+#endif
+          printf("...accessing *req[%d]->consumed\n",cpt);
   if (NULL != status) {
     status->MPI_SOURCE = requests[*index]->src;
     status->MPI_TAG = requests[*index]->tag;

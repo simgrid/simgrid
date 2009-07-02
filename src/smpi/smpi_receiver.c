@@ -23,6 +23,8 @@ int smpi_receiver(int argc, char *argv[])
   request_queue = mydata->pending_recv_request_queue;
   message_queue = mydata->received_message_queue;
 
+
+
   while (1) {
     // FIXME: better algorithm, maybe some kind of balanced tree? or a heap?
 
@@ -30,6 +32,11 @@ int smpi_receiver(int argc, char *argv[])
       xbt_fifo_foreach(message_queue, message_item, message,
                        smpi_received_message_t) {
 
+//#define DEBUG_MATCH
+#ifdef DEBUG_MATCH
+        printf("[%s] try match (req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)\n",
+                        __FILE__,request->src,message->src,request->tag, message->tag);
+#endif
         if (request->comm == message->comm &&
             (MPI_ANY_SOURCE == request->src || request->src == message->src)
             && (MPI_ANY_TAG == request->tag || request->tag == message->tag)) {
@@ -37,6 +44,10 @@ int smpi_receiver(int argc, char *argv[])
           xbt_fifo_free_item(request_item);
           xbt_fifo_remove_item(message_queue, message_item);
           xbt_fifo_free_item(message_item);
+#ifdef DEBUG_MATCH
+        printf("[%s] found match: req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)\n",
+                        __FILE__,request->src,message->src,request->tag, message->tag);
+#endif
           goto stopsearch;
         }
       }

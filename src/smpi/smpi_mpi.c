@@ -1,4 +1,7 @@
+
+
 #include "private.h"
+#include "smpi_coll_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
                                 "Logging specific to SMPI (mpi)");
@@ -203,31 +206,50 @@ int SMPI_MPI_Waitany(int count, MPI_Request requests[], int *index,
 /**
  * MPI_Bcast
  **/
+
+/**
+ * flat bcast 
+ **/
+int flat_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+int flat_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
+                MPI_Comm comm)
+{
+        int rank;
+        int retval = MPI_SUCCESS;
+        smpi_mpi_request_t request;
+
+        rank = smpi_mpi_comm_rank(comm);
+        if (rank == root) {
+                retval = smpi_create_request(buf, count, datatype, root,
+                                (root + 1) % comm->size, 0, comm, &request);
+                request->forward = comm->size - 1;
+                smpi_mpi_isend(request);
+        } else {
+                retval = smpi_create_request(buf, count, datatype, MPI_ANY_SOURCE, rank,
+                                0, comm, &request);
+                smpi_mpi_irecv(request);
+        }
+
+        smpi_mpi_wait(request, MPI_STATUS_IGNORE);
+        xbt_mallocator_release(smpi_global->request_mallocator, request);
+
+        return(retval);
+
+}
+
+/**
+ * Bcast user entry point
+ **/
 int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
                    MPI_Comm comm)
 {
 
   int retval = MPI_SUCCESS;
-  int rank;
-  smpi_mpi_request_t request;
 
   smpi_bench_end();
 
-  rank = smpi_mpi_comm_rank(comm);
-
-  if (rank == root) {
-    retval = smpi_create_request(buf, count, datatype, root,
-                                 (root + 1) % comm->size, 0, comm, &request);
-    request->forward = comm->size - 1;
-    smpi_mpi_isend(request);
-  } else {
-    retval = smpi_create_request(buf, count, datatype, MPI_ANY_SOURCE, rank,
-                                 0, comm, &request);
-    smpi_mpi_irecv(request);
-  }
-
-  smpi_mpi_wait(request, MPI_STATUS_IGNORE);
-  xbt_mallocator_release(smpi_global->request_mallocator, request);
+  //retval = flat_tree_bcast(buf, count, datatype, root, comm);
+  retval = binomial_tree_bcast(buf, count, datatype, root, comm);
 
   smpi_bench_begin();
 

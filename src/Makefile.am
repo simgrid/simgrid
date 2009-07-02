@@ -215,7 +215,8 @@ SMPI_SRC= \
   smpi/smpi_mpi.c \
   smpi/smpi_sender.c \
   smpi/smpi_receiver.c \
-  smpi/smpi_util.c
+  smpi/smpi_util.c \
+  smpi/smpi_coll.c
 
 MSG_SRC=  msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
