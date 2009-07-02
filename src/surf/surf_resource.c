@@ -20,3 +20,6 @@ const char *surf_resource_name(const void *resource) {
   return ((surf_resource_t)resource)->name;
 }
 
+xbt_dict_t surf_resource_properties(const void *resource) {
+  return ((surf_resource_t)resource)->properties;
+}
