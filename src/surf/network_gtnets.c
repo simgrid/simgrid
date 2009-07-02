@@ -28,13 +28,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
 static int src_id = -1;
 static int dst_id = -1;
 
-/* Free memory for a network link */
-static void link_free(void *nw_link)
-{
-  xbt_dict_free(&(((network_link_GTNETS_t) nw_link)->properties));
-  surf_resource_free(nw_link);
-}
-
 /* Instantiate a new network link */
 /* name: some name for the link, from the XML */
 /* bw: The bandwidth value            */
@@ -77,13 +70,12 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   /* KF: Insert entry in the dictionary */
   gtnets_link = xbt_new0(s_network_link_GTNETS_t, 1);
   gtnets_link->generic_resource.name = name;
+  gtnets_link->generic_resource.properties = props;
   gtnets_link->bw_current = bw;
   gtnets_link->lat_current = lat;
   gtnets_link->id = link_count;
-  /* Add the properties */
-  gtnets_link->properties = props;
 
-  xbt_dict_set(surf_network_model->resource_set, name, gtnets_link, link_free);
+  xbt_dict_set(surf_network_model->resource_set, name, gtnets_link, surf_resource_free);
 
   return;
 }
@@ -104,7 +96,7 @@ static int network_card_new(const char *name)
 
     /* KF: just use the dictionary to map link names to link indices */
     card = xbt_new0(s_network_card_GTNETS_t, 1);
-    card->generic_resource.name = xbt_strdup(name);
+    card->name = xbt_strdup(name);
     card->id = card_count;
     xbt_dict_set(surf_model_resource_set(surf_network_model), name, card,
                  surf_resource_free);
@@ -301,12 +293,6 @@ static void define_callbacks(const char *file)
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
 }
 
-static xbt_dict_t get_properties(void *link)
-{
-  return ((network_card_GTNETS_t) link)->properties;
-}
-
-
 /* We do not care about this: only used for traces */
 static int resource_used(void *resource_id)
 {
@@ -337,7 +323,7 @@ static void action_recycle(surf_action_t action)
   return;
 }
 
-static void action_change_state(surf_action_t action,
+static void action_state_set(surf_action_t action,
                                 e_surf_action_state_t state)
 {
 /*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
@@ -355,7 +341,7 @@ static void action_change_state(surf_action_t action,
 static double share_resources(double now)
 {
   xbt_swag_t running_actions =
-    surf_network_model->common_public.states.running_action_set;
+    surf_network_model->states.running_action_set;
 
   //get the first relevant value from the running_actions list
   if (!xbt_swag_size(running_actions))
@@ -381,7 +367,7 @@ static void update_actions_state(double now, double delta)
   surf_action_network_GTNETS_t action = NULL;
   //  surf_action_network_GTNETS_t next_action = NULL;
   xbt_swag_t running_actions =
-    surf_network_model->common_public.states.running_action_set;
+    surf_network_model->states.running_action_set;
 
   /* If there are no renning flows, just return */
   if (time_to_next_flow_completion < 0.0) {
@@ -423,7 +409,7 @@ static void update_actions_state(double now, double delta)
       action = (surf_action_network_GTNETS_t) (metadata[i]);
 
       action->generic_action.finish = now + time_to_next_flow_completion;
-      action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+      action_state_set((surf_action_t) action, SURF_ACTION_DONE);
       DEBUG1("----> Action (%p) just terminated", action);
     }
 
@@ -447,20 +433,10 @@ static void update_resource_state(void *id,
 }
 
 /* KF: Rate not supported */
-static surf_action_t communicate(void *src, void *dst, double size,
+static surf_action_t communicate(const char *src_name, const char *dst_name,int src, int dst, double size,
                                  double rate)
 {
   surf_action_network_GTNETS_t action = NULL;
-  network_card_GTNETS_t card_src = src;
-  network_card_GTNETS_t card_dst = dst;
-/*
-  int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
-  network_link_GTNETS_t *route = ROUTE(card_src->id, card_dst->id);
-*/
-
-/*
-  xbt_assert2(route_size,"You're trying to send data from %s to %s but there is no connexion between these two cards.", card_src->name, card_dst->name);
-*/
 
   action = xbt_new0(s_surf_action_network_GTNETS_t, 1);
 
@@ -474,15 +450,14 @@ static surf_action_t communicate(void *src, void *dst, double size,
   action->generic_action.model_type = surf_network_model;
 
   action->generic_action.state_set =
-    surf_network_model->common_public.states.running_action_set;
+    surf_network_model->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
 
   /* KF: Add a flow to the GTNets Simulation, associated to this action */
-  if (gtnets_create_flow(card_src->id, card_dst->id, size, (void *) action)
-      < 0) {
-    xbt_assert2(0, "Not route between host %s and host %s", card_src->generic_resource.name,
-                card_dst->generic_resource.name);
+  if (gtnets_create_flow(src, dst, size, (void *) action) < 0) {
+    xbt_assert2(0, "Not route between host %s and host %s", src_name,
+                dst_name);
   }
 
   return (surf_action_t) action;
@@ -520,15 +495,13 @@ static void finalize(void)
 
 static void surf_network_model_init_internal(void)
 {
-  s_surf_action_t action;
-
   surf_network_model = surf_model_init();
 
   surf_network_model->name = "network GTNetS";
   surf_network_model->action_unref = action_unref;
   surf_network_model->action_cancel = action_cancel;
   surf_network_model->action_recycle = action_recycle;
-  surf_network_model->action_change_state = action_change_state;
+  surf_network_model->action_state_set = action_state_set;
 
   surf_network_model->model_private->resource_used = resource_used;
   surf_network_model->model_private->share_resources = share_resources;
@@ -543,9 +516,6 @@ static void surf_network_model_init_internal(void)
   surf_network_model->is_suspended = action_is_suspended;
 
   surf_network_model->extension.network.communicate = communicate;
-
-  /*for the props of the link */
-  surf_network_model->get_properties = get_properties;
 
   /* KF: Added the initialization for GTNetS interface */
   if (gtnets_initialize()) {

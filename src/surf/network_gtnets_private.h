@@ -20,7 +20,6 @@ typedef struct network_link_GTNETS {
   int id;
 } s_network_link_GTNETS_t, *network_link_GTNETS_t;
 
-
 typedef struct network_card_GTNETS {
   char *name;
   int id;
@@ -33,8 +32,10 @@ typedef struct surf_action_network_GTNETS {
   lmm_variable_t variable;
   double rate;
   int suspended;
+#ifdef KILLME
   network_card_GTNETS_t src;
   network_card_GTNETS_t dst;
+#endif
 } s_surf_action_network_GTNETS_t, *surf_action_network_GTNETS_t;
 
 //extern xbt_dict_t network_card_set;
