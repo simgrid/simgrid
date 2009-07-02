@@ -383,13 +383,13 @@ static void update_resource_state(void *id,
 
 static void finalize(void)
 {
-  xbt_dict_free(&link_set);
-  if (parallel_task_link_set != NULL) {
+  if (parallel_task_link_set != NULL)
     xbt_dict_free(&parallel_task_link_set);
-  }
 
   surf_model_exit(surf_workstation_model);
   surf_workstation_model = NULL;
+  surf_model_exit(surf_network_model);
+  surf_network_model = NULL;
   used_routing->finalize();
 
   host_count = 0; // FIXME: KILLME?
@@ -690,7 +690,7 @@ static link_L07_t link_new(char *name,
                            policy, xbt_dict_t properties)
 {
   link_L07_t nw_link = xbt_new0(s_link_L07_t, 1);
-  xbt_assert1(!xbt_dict_get_or_null(link_set, name),
+  xbt_assert1(!xbt_dict_get_or_null(surf_network_model->resource_set, name),
               "Link '%s' declared several times in the platform file.", name);
 
   nw_link->generic_resource.model = surf_workstation_model;
@@ -717,7 +717,7 @@ static link_L07_t link_new(char *name,
 
   nw_link->properties = properties;
 
-  xbt_dict_set(link_set, name, nw_link, link_free);
+  xbt_dict_set(surf_network_model->resource_set, name, nw_link, link_free);
 
   return nw_link;
 }
@@ -793,7 +793,7 @@ static void add_traces(void)
   /* Connect traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    link_L07_t link = xbt_dict_get_or_null(link_set, elm);
+    link_L07_t link = xbt_dict_get_or_null(surf_network_model->resource_set, elm);
 
     xbt_assert1(link, "Link %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -803,7 +803,7 @@ static void add_traces(void)
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    link_L07_t link = xbt_dict_get_or_null(link_set, elm);
+    link_L07_t link = xbt_dict_get_or_null(surf_network_model->resource_set, elm);
 
     xbt_assert1(link, "Link %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -813,7 +813,7 @@ static void add_traces(void)
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    link_L07_t link = xbt_dict_get_or_null(link_set, elm);
+    link_L07_t link = xbt_dict_get_or_null(surf_network_model->resource_set, elm);
 
     xbt_assert1(link, "Link %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -877,8 +877,6 @@ static void model_init_internal(void)
 
   surf_workstation_model->get_properties = get_properties;
 
-  link_set = xbt_dict_new();
-
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();
 
@@ -896,6 +894,7 @@ void surf_workstation_model_init_ptask_L07(const char *filename)
 {
   xbt_assert0(!surf_cpu_model, "CPU model type already defined");
   xbt_assert0(!surf_network_model, "network model type already defined");
+  surf_network_model = surf_model_init();
   define_callbacks(filename);
   model_init_internal();
 

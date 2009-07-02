@@ -45,7 +45,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   network_link_GTNETS_t gtnets_link;
 
   /* If link already exists, nothing to do (FIXME: check that multiple definition match?) */
-  if (xbt_dict_get_or_null(link_set, name)) {
+  if (xbt_dict_get_or_null(surf_network_model->resource_set, name)) {
     return;
   }
 
@@ -83,7 +83,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   /* Add the properties */
   gtnets_link->properties = props;
 
-  xbt_dict_set(link_set, name, gtnets_link, link_free);
+  xbt_dict_set(surf_network_model->resource_set, name, gtnets_link, link_free);
 
   return;
 }
@@ -250,7 +250,7 @@ static void add_route()
 
     xbt_dynar_foreach(links, cpt, link) {
       TRY {
-        link_list[nb_link++] = xbt_dict_get(link_set, link);
+        link_list[nb_link++] = xbt_dict_get(surf_network_model->resource_set, link);
       }
       CATCH(e) {
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
@@ -275,7 +275,7 @@ static void add_route()
 
     xbt_dynar_foreach(links, cpt, link) {
       TRY {
-        link_list[nb_link++] = xbt_dict_get(link_set, link);
+        link_list[nb_link++] = xbt_dict_get(surf_network_model->resource_set, link);
       }
       CATCH(e) {
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
@@ -508,7 +508,7 @@ static int action_is_suspended(surf_action_t action)
 
 static void finalize(void)
 {
-  xbt_dict_free(&link_set);
+  xbt_dict_free(&surf_network_model->resource_set);
 
   surf_model_exit(surf_network_model);
 
@@ -546,8 +546,6 @@ static void surf_network_model_init_internal(void)
 
   /*for the props of the link */
   surf_network_model->get_properties = get_properties;
-
-  link_set = xbt_dict_new();
 
   /* KF: Added the initialization for GTNetS interface */
   if (gtnets_initialize()) {

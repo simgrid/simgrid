@@ -15,7 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
 surf_model_t surf_network_model = NULL;
 static lmm_system_t network_maxmin_system = NULL;
 static void (*network_solve) (lmm_system_t) = NULL;
-xbt_dict_t link_set = NULL;
 
 double latency_factor = 1.0;    /* default value */
 double bandwidth_factor = 1.0;  /* default value */
@@ -44,7 +43,7 @@ static link_CM02_t link_new(char *name,
                             policy, xbt_dict_t properties)
 {
   link_CM02_t nw_link = xbt_new0(s_link_CM02_t, 1);
-  xbt_assert1(!xbt_dict_get_or_null(link_set, name),
+  xbt_assert1(!xbt_dict_get_or_null(surf_network_model->resource_set, name),
               "Link '%s' declared several times in the platform file.", name);
 
   nw_link->generic_resource.model = surf_network_model;
@@ -73,7 +72,7 @@ static link_CM02_t link_new(char *name,
 
   current_property_set = properties;
 
-  xbt_dict_set(link_set, name, nw_link, link_free);
+  xbt_dict_set(surf_network_model->resource_set, name, nw_link, link_free);
 
   return nw_link;
 }
@@ -130,7 +129,7 @@ static void add_traces(void)
   /* connect all traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    link_CM02_t link = xbt_dict_get_or_null(link_set, elm);
+    link_CM02_t link = xbt_dict_get_or_null(surf_network_model->resource_set, elm);
 
     xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined",
                 trace_name, elm);
@@ -142,7 +141,7 @@ static void add_traces(void)
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    link_CM02_t link = xbt_dict_get_or_null(link_set, elm);
+    link_CM02_t link = xbt_dict_get_or_null(surf_network_model->resource_set, elm);
 
     xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined",
                 trace_name, elm);
@@ -154,7 +153,7 @@ static void add_traces(void)
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    link_CM02_t link = xbt_dict_get_or_null(link_set, elm);
+    link_CM02_t link = xbt_dict_get_or_null(surf_network_model->resource_set, elm);
 
     xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined",
                 trace_name, elm);
@@ -501,8 +500,6 @@ static void action_set_max_duration(surf_action_t action, double duration)
 
 static void finalize(void)
 {
-  xbt_dict_free(&link_set);
-
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
 
@@ -514,7 +511,6 @@ static void finalize(void)
 
 static void surf_network_model_init_internal(void)
 {
-  link_set = xbt_dict_new();
   surf_network_model = surf_model_init();
 
   surf_network_model->name = "network";

@@ -492,22 +492,6 @@ XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(const char *filename);
 XBT_PUBLIC_DATA(s_surf_model_description_t)
   surf_workstation_model_description[];
 
-/** \brief The network links
- *  \ingroup SURF_models
- *
- *  This dict contains all network links.
- *
- *  \see workstation_set
- */
-XBT_PUBLIC_DATA(xbt_dict_t) link_set;
-
-/** \brief The workstations
- *  \ingroup SURF_models
- *
- *  This dict contains all workstations.
- *
- *  \see link_set
- */
 /** \brief List of initialized models
  *  \ingroup SURF_models
  */

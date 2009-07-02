@@ -83,7 +83,7 @@ static void routing_full_parse_end(void) {
     DEBUG4("Handle %d %d (from %d hosts): %ld links",
         src_id,dst_id,routing->generic_routing.host_count,xbt_dynar_length(links));
     xbt_dynar_foreach(links, cpt, link_name) {
-      void* link = xbt_dict_get_or_null(link_set, link_name);
+      void* link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
       if (link)
         xbt_dynar_push(ROUTE_FULL(src_id,dst_id),&link);
       else

@@ -10,6 +10,7 @@ SimGrid (3.3.2-svn) unstable; urgency=low
      Allows to implement other ways of storing that info)
     => kill now useless network_card concept
     - Use dynar to represent routes (instead of void** + int*)
+    - kill link_set (use surf_network_model->resource_set instead)
 
   * Simplify model declaration
     (less redirections, less function to write when defining a model)

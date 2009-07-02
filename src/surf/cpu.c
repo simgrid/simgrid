@@ -15,7 +15,6 @@ typedef struct surf_action_cpu_Cas01 {
 
 typedef struct cpu_Cas01 {
   s_surf_resource_t generic_resource;
-  char *name;
   double power_scale;
   double power_current;
   tmgr_trace_event_t power_event;
@@ -270,7 +269,7 @@ static surf_action_t execute(void *cpu, double size)
   surf_action_cpu_Cas01_t action = NULL;
   cpu_Cas01_t CPU = cpu;
 
-  XBT_IN2("(%s,%g)", CPU->name, size);
+  XBT_IN2("(%s,%g)", CPU->generic_resource.name, size);
   action = xbt_new0(s_surf_action_cpu_Cas01_t, 1);
 
   action->generic_action.refcount = 1;
@@ -308,7 +307,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN2("(%s,%g)", ((cpu_Cas01_t) cpu)->name, duration);
+  XBT_IN2("(%s,%g)", ((cpu_Cas01_t) cpu)->generic_resource.name, duration);
   action = (surf_action_cpu_Cas01_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;
