@@ -80,6 +80,7 @@ EXTRA_DIST= \
 	simix/private.h \
 	\
 	smpi/private.h \
+	smpi/smpi_coll_private.h \
 	smpi/README
 
 #LIBRARY_VERSION= 0:0:0
