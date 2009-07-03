@@ -14,9 +14,10 @@
 #include <string.h>
 
 #include "private.h"
+#include "smpi_coll_private.h"
 
 
-/* proctree taken and translated from P2P-MPI */
+/* proc_tree taken and translated from P2P-MPI */
 
 struct proc_tree {
         int PROCTREE_A;
@@ -36,7 +37,7 @@ void build_tree( int index, int extent, proc_tree_t *tree);
 proc_tree_t alloc_tree( int arity );
 void free_tree( proc_tree_t tree);
 void print_tree(proc_tree_t tree);
-int binomial_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+
 
 
 
@@ -110,7 +111,9 @@ void build_tree( int index, int extent, proc_tree_t *tree) {
         }
 }
 
-
+/**
+ * prints the tree as a graphical representation
+ **/
 void print_tree(proc_tree_t tree) {
       int i;
       char *spacer;
@@ -131,8 +134,9 @@ void print_tree(proc_tree_t tree) {
 /**
  * bcast
  **/
-int binomial_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
-                MPI_Comm comm)
+int tree_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, proc_tree_t tree);
+int tree_bcast( void *buf, int count, MPI_Datatype datatype, int root,
+                MPI_Comm comm, proc_tree_t tree) 
 {
         int system_tag = 999;  // used negative int but smpi_create_request() declares this illegal (to be checked)
         int rank;
@@ -140,12 +144,9 @@ int binomial_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
         int i;
         smpi_mpi_request_t request;
         smpi_mpi_request_t * requests;
-        void **tmpbufs; 
 
         rank = smpi_mpi_comm_rank(comm);
-        proc_tree_t tree = alloc_tree( 2 ); // arity=2: a binomial tree
 
-        build_tree( rank, comm->size, &tree );
         /* wait for data from my parent in the tree */
         if (!tree->isRoot) {
 #ifdef DEBUG_STEPH
@@ -164,9 +165,9 @@ int binomial_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                 printf("[%d] waiting on irecv from %d\n",rank , tree->parent);
 #endif
                 smpi_mpi_wait(request, MPI_STATUS_IGNORE);
+                xbt_mallocator_release(smpi_global->request_mallocator, request);
         }
 
-        tmpbufs  = xbt_malloc( tree->numChildren * sizeof(void *)); 
         requests = xbt_malloc( tree->numChildren * sizeof(smpi_mpi_request_t));
 #ifdef DEBUG_STEPH
         printf("[%d] creates %d requests\n",rank,tree->numChildren);
@@ -178,9 +179,7 @@ int binomial_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
 #ifdef DEBUG_STEPH
                         printf("[%d] send(%d->%d, tag=%d)\n",rank,rank, tree->child[i], system_tag+tree->child[i]);
 #endif
-                        tmpbufs[i] =  xbt_malloc( count * datatype->size);
-                        memcpy( tmpbufs[i], buf, count * datatype->size * sizeof(char));
-                        retval = smpi_create_request(tmpbufs[i], count, datatype, 
+                        retval = smpi_create_request(buf, count, datatype, 
                                         rank, tree->child[i], 
                                         system_tag + tree->child[i], 
                                         comm, &(requests[i]));
@@ -194,8 +193,7 @@ int binomial_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                         smpi_mpi_isend(requests[i]);
                         /* FIXME : we should not wait immediately here. See next FIXME. */
                         smpi_mpi_wait( requests[i], MPI_STATUS_IGNORE);
-                        xbt_free(tmpbufs[i]);
-                        xbt_free(requests[i]);
+                        xbt_mallocator_release(smpi_global->request_mallocator, requests[i]);
                 }
         }
         /* FIXME : normally, we sould wait only once all isend have been issued:
@@ -208,13 +206,130 @@ int binomial_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
          printf("[%d] reqs completed\n)",rank);
            */
         
-        xbt_free(tmpbufs);
         xbt_free(requests);
         return(retval);
+        /* checked ok with valgrind --leak-check=full*/
 }
 
+
 /**
+ * anti-bcast
+ **/
+int tree_antibcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, proc_tree_t tree);
+int tree_antibcast( void *buf, int count, MPI_Datatype datatype, int root,
+                MPI_Comm comm, proc_tree_t tree) 
+{
+        int system_tag = 999;  // used negative int but smpi_create_request() declares this illegal (to be checked)
+        int rank;
+        int retval = MPI_SUCCESS;
+        int i;
+        smpi_mpi_request_t request;
+        smpi_mpi_request_t * requests;
+
+        rank = smpi_mpi_comm_rank(comm);
+
+     	  //------------------anti-bcast-------------------
+        
+        // everyone sends to its parent, except root.
+        if (!tree->isRoot) {
+                retval = smpi_create_request(buf, count, datatype,
+                                rank,tree->parent,  
+                                system_tag + rank, 
+                                comm, &request);
+                if (MPI_SUCCESS != retval) {
+                        printf("** internal error: smpi_create_request() rank=%d returned retval=%d, %s:%d\n",
+                                        rank,retval,__FILE__,__LINE__);
+                }
+                smpi_mpi_isend(request);
+                smpi_mpi_wait(request, MPI_STATUS_IGNORE);
+                xbt_mallocator_release(smpi_global->request_mallocator, request);
+        }
+
+        //every one receives as many messages as it has children
+        requests = xbt_malloc( tree->numChildren * sizeof(smpi_mpi_request_t));
+        for (i=0; i < tree->numChildren; i++) {
+                if (tree->child[i] != -1) {
+                        retval = smpi_create_request(buf, count, datatype, 
+                                        tree->child[i], rank, 
+                                        system_tag + tree->child[i], 
+                                        comm, &(requests[i]));
+                        if (MPI_SUCCESS != retval) {
+                                printf("** internal error: smpi_create_request() rank=%d returned retval=%d, %s:%d\n",
+                                                rank,retval,__FILE__,__LINE__);
+                        }
+                        smpi_mpi_irecv(requests[i]);
+                        /* FIXME : we should not wait immediately here. See next FIXME. */
+                        smpi_mpi_wait( requests[i], MPI_STATUS_IGNORE);
+                        xbt_mallocator_release(smpi_global->request_mallocator, requests[i]);
+                }
+        }
+        xbt_free(requests);
+        return(retval);
+
+        /* checked ok with valgrind --leak-check=full*/
+} 
+
+/**
+ * bcast with a binary, ternary, or whatever tree .. 
+ **/
+int nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
+                MPI_Comm comm, int arity)
+{
+int rank;
+int retval;
+
+        rank = smpi_mpi_comm_rank( comm );
+        // arity=2: a binary tree, arity=4 seem to be a good setting (see P2P-MPI))
+        proc_tree_t tree = alloc_tree( arity ); 
+        build_tree( rank, comm->size, &tree );
+
+        retval = tree_bcast( buf, count, datatype, root, comm, tree );
+
+        free_tree( tree );
+        return( retval );
+}
+
+
+/**
+ * Barrier
+ **/
+
+int nary_tree_barrier( MPI_Comm comm , int arity)
+{
+        int rank;
+        int retval = MPI_SUCCESS;
+        char dummy='$';
+
+        rank = smpi_mpi_comm_rank(comm);
+        // arity=2: a binary tree, arity=4 seem to be a good setting (see P2P-MPI))
+        proc_tree_t tree = alloc_tree( arity ); 
+
+        build_tree( rank, comm->size, &tree );
+
+        retval = tree_antibcast( &dummy, 1, MPI_CHAR, 0, comm, tree);
+        if (MPI_SUCCESS != retval) {
+                printf("[%s:%d] ** Error: tree_antibcast() returned retval=%d\n",__FILE__,__LINE__,retval);
+        }
+        else {
+            retval = tree_bcast(&dummy,  1, MPI_CHAR, 0, comm, tree);
+        }
+
+        free_tree( tree );
+        return(retval);
+
+        /* checked ok with valgrind --leak-check=full*/
+}
+
+
+
+
+
+
+
+/**
+ * -----------------------------------------------------------------------------------------------------
  * example usage
+ * -----------------------------------------------------------------------------------------------------
  **/
 /*
  * int main() {

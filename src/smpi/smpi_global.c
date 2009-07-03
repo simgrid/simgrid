@@ -194,6 +194,8 @@ void smpi_global_init()
   // mpi datatypes
   smpi_mpi_global->mpi_byte = xbt_new(s_smpi_mpi_datatype_t, 1);
   smpi_mpi_global->mpi_byte->size = (size_t) 1;
+  smpi_mpi_global->mpi_char = xbt_new(s_smpi_mpi_datatype_t, 1);
+  smpi_mpi_global->mpi_char->size = (size_t) 1;
   smpi_mpi_global->mpi_int = xbt_new(s_smpi_mpi_datatype_t, 1);
   smpi_mpi_global->mpi_int->size = sizeof(int);
   smpi_mpi_global->mpi_float = xbt_new(s_smpi_mpi_datatype_t, 1);
@@ -246,6 +248,7 @@ void smpi_global_destroy()
   xbt_free(smpi_mpi_global->mpi_comm_world);
 
   xbt_free(smpi_mpi_global->mpi_byte);
+  xbt_free(smpi_mpi_global->mpi_char);
   xbt_free(smpi_mpi_global->mpi_int);
   xbt_free(smpi_mpi_global->mpi_double);
   xbt_free(smpi_mpi_global->mpi_float);

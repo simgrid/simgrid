@@ -211,7 +211,8 @@ void smpi_process_finalize()
   xbt_free(pdata);
 }
 
-int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
+
+/*int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
 {
 
   SIMIX_mutex_lock(comm->barrier_mutex);
@@ -228,6 +229,7 @@ int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
 
   return MPI_SUCCESS;
 }
+*/
 
 int smpi_mpi_isend(smpi_mpi_request_t request)
 {
@@ -332,9 +334,13 @@ int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
   }
   /* First check if one of them is already done */
   for (cpt = 0; cpt < count; cpt++) {
+#ifdef DEBUG_STEPH
           printf("...exam req[%d] of msg from [%d]\n",cpt,requests[cpt]->src);
+#endif
     if (requests[cpt]->completed && !requests[cpt]->consumed) { /* got ya */
+#ifdef DEBUG_STEPH
           printf("...found match req[%d] of msg from [%d]\n",cpt,requests[cpt]->src);
+#endif
       *index = cpt;
       goto found_request;
     }
@@ -348,7 +354,9 @@ int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
       print_req( requests[cpt] );
 #endif
       if (!requests[cpt]->completed) {  /* this one is not done, wait on it */
+#ifdef DEBUG_STEPH
               printf("... blocked waiting a msg %d->%d, tag=%d\n",requests[cpt]->src,requests[cpt]->dst,requests[cpt]->tag);
+#endif
         while (!requests[cpt]->completed)
           SIMIX_cond_wait(requests[cpt]->cond, requests[cpt]->mutex);
 
@@ -367,8 +375,8 @@ found_request:
   requests[*index]->consumed = 1;
 #ifdef DEBUG_STEPH
       print_req( requests[cpt] );
-#endif
           printf("...accessing *req[%d]->consumed\n",cpt);
+#endif
   if (NULL != status) {
     status->MPI_SOURCE = requests[*index]->src;
     status->MPI_TAG = requests[*index]->tag;
