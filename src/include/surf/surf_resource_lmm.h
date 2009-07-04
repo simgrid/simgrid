@@ -12,14 +12,14 @@
 static XBT_INLINE
 surf_resource_lmm_t surf_resource_lmm_new(size_t childsize,
     /* for superclass */ surf_model_t model, char *name, xbt_dict_t props,
-    lmm_constraint_t constraint,
+    lmm_system_t system, double constraint_value,
     tmgr_history_t history,
     int state_init, tmgr_trace_t state_trace,
     double metric_init, tmgr_trace_t metric_trace) {
 
   surf_resource_lmm_t res = (surf_resource_lmm_t)surf_resource_new(childsize,model,name,props);
 
-  res->constraint = constraint;
+  res->constraint = lmm_constraint_new(system, res, constraint_value);
   res->state_current = state_init;
   if (state_trace)
     res->state_event = tmgr_history_add_trace(history, state_trace, 0.0, 0, res);

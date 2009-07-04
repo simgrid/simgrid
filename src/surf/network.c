@@ -40,7 +40,7 @@ static link_CM02_t link_new(char *name,
   link_CM02_t nw_link = (link_CM02_t)
     surf_resource_lmm_new(sizeof(s_link_CM02_t),
         surf_network_model,name,properties,
-        lmm_constraint_new(network_maxmin_system, nw_link, bandwidth_factor * bw_initial),
+        network_maxmin_system, bandwidth_factor * bw_initial,
         history,
         state_initial,state_trace,
         bw_initial,bw_trace);
