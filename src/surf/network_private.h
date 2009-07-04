@@ -13,17 +13,12 @@
 #include "xbt/dict.h"
 
 typedef struct network_link_CM02 {
-  s_surf_resource_t generic_resource; /* must remain first to be added to a trace */
+  s_surf_resource_lmm_t lmm_resource; /* must remain first to be added to a trace */
 
   /* Using this object with the public part of
      model does not make sense */
-  double bw_current;
-  tmgr_trace_event_t bw_event;
   double lat_current;
   tmgr_trace_event_t lat_event;
-  e_surf_resource_state_t state_current;
-  tmgr_trace_event_t state_event;
-  lmm_constraint_t constraint;
 } s_link_CM02_t, *link_CM02_t;
 
 

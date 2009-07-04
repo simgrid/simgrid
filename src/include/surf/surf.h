@@ -253,16 +253,23 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
        xbt_dict_t properties;
      } s_surf_resource_t, *surf_resource_t;
 
+
+
 /**
  * Resource which have a metric handled by a maxmin system
  */
+typedef struct {
+  double current;
+  double max;
+  tmgr_trace_event_t event;
+} s_surf_metric_t;
+
 typedef struct surf_resource_lmm {
   s_surf_resource_t generic_resource;
   lmm_constraint_t constraint;
   e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
-  double metric_current;
-  tmgr_trace_event_t metric_event;
+  s_surf_metric_t power;
 }s_surf_resource_lmm_t, *surf_resource_lmm_t;
 
 /**************************************/
@@ -605,6 +612,7 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 XBT_PUBLIC(double) get_cpu_power(const char *power);
 
 #include "surf/surf_resource.h"
+#include "surf/surf_resource_lmm.h"
 
 SG_END_DECL()
 #endif /* _SURF_SURF_H */
