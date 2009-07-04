@@ -4,6 +4,7 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Implement some more MPI primitives: 
     MPI_Waitany, MPI_Waitall, MPI_Reduce, MPI_Allreduce
   * Add support for optimized collectives (Bcast is now binomial by default)
+  * Port smpirun and smpicc to OS X
 
  SURF: 
   * Extract the routing logic into its own object.
