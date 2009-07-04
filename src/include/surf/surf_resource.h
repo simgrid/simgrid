@@ -4,10 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf_private.h"
-#include "xbt/dict.h"
+#include "surf/surf.h"
+#ifndef SURF_RESOURCE_H
+#define SURF_RESOURCE_H
 
-void surf_resource_free(void* r) {
+static XBT_INLINE void surf_resource_free(void* r) {
   surf_resource_t resource = r;
   if (resource->name)
     free(resource->name);
@@ -16,10 +17,12 @@ void surf_resource_free(void* r) {
   free(resource);
 }
 
-const char *surf_resource_name(const void *resource) {
+static XBT_INLINE const char *surf_resource_name(const void *resource) {
   return ((surf_resource_t)resource)->name;
 }
 
-xbt_dict_t surf_resource_properties(const void *resource) {
+static XBT_INLINE xbt_dict_t surf_resource_properties(const void *resource) {
   return ((surf_resource_t)resource)->properties;
 }
+
+#endif /* SURF_RESOURCE_H */

@@ -253,9 +253,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
        xbt_dict_t properties;
      } s_surf_resource_t, *surf_resource_t;
 
-     XBT_PUBLIC(const char*) surf_resource_name(const void *resource);
-XBT_PUBLIC(void) surf_resource_free(void* resource);
-
 /**
  * Resource which have a metric handled by a maxmin system
  */
@@ -607,6 +604,7 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 XBT_PUBLIC(double) get_cpu_power(const char *power);
 
+#include "surf/surf_resource.h"
 
 SG_END_DECL()
 #endif /* _SURF_SURF_H */

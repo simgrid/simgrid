@@ -37,6 +37,7 @@ EXTRA_DIST= \
 	xbt/ex_interface.h \
         xbt/backtrace_linux.c xbt/backtrace_windows.c xbt/backtrace_dummy.c \
         \
+        surf/surf_resource.h  \
 	surf/maxmin_private.h \
 	surf/trace_mgr_private.h \
 	surf/surf_private.h \
@@ -169,7 +170,6 @@ XBT_SG_SRC = \
 
 SURF_SRC= \
   surf/surf_model.c                                                          \
-  surf/surf_resource.c                                                       \
   surf/surf_action.c                                                         \
   surf/surf_routing.c                                                        \
   surf/surf_config.c                                                         \
