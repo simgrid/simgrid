@@ -11,10 +11,7 @@
 #include "xbt/heap.h"
 #include "xbt/dynar.h"
 #include "surf/maxmin.h"
-
-typedef struct tmgr_history *tmgr_history_t;
-typedef struct tmgr_trace *tmgr_trace_t;
-typedef struct tmgr_trace_event *tmgr_trace_event_t;
+#include "surf/datatypes.h"
 
 /* Creation functions */
 XBT_PUBLIC(tmgr_history_t) tmgr_history_new(void);

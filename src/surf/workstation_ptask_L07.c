@@ -25,7 +25,7 @@ typedef struct cpu_L07 {
   double power_scale;
   double power_current;
   tmgr_trace_event_t power_event;
-  e_surf_cpu_state_t state_current;
+  e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
   int id;                       /* cpu and network card are a single object... */
 } s_cpu_L07_t, *cpu_L07_t;
@@ -42,7 +42,7 @@ typedef struct link_L07 {
   tmgr_trace_event_t lat_event;
   double bw_current;
   tmgr_trace_event_t bw_event;
-  e_surf_link_state_t state_current;
+  e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
 } s_link_L07_t, *link_L07_t;
 
@@ -298,10 +298,10 @@ static void update_actions_state(double now, double delta)
         if (((((link_L07_t) constraint_id)->type ==
               SURF_WORKSTATION_RESOURCE_LINK) &&
              (((link_L07_t) constraint_id)->state_current ==
-              SURF_LINK_OFF)) ||
+              SURF_RESOURCE_OFF)) ||
             ((((cpu_L07_t) constraint_id)->type ==
               SURF_WORKSTATION_RESOURCE_CPU) &&
-             (((cpu_L07_t) constraint_id)->state_current == SURF_CPU_OFF))) {
+             (((cpu_L07_t) constraint_id)->state_current == SURF_RESOURCE_OFF))) {
           DEBUG1("Action (%p) Failed!!", action);
           action->generic_action.finish = surf_get_clock();
           surf_action_state_set((surf_action_t) action,
@@ -343,9 +343,9 @@ static void update_resource_state(void *id,
 
     } else if (event_type == nw_link->state_event) {
       if (value > 0)
-        nw_link->state_current = SURF_LINK_ON;
+        nw_link->state_current = SURF_RESOURCE_ON;
       else
-        nw_link->state_current = SURF_LINK_OFF;
+        nw_link->state_current = SURF_RESOURCE_OFF;
     } else {
       CRITICAL0("Unknown event ! \n");
       xbt_abort();
@@ -359,9 +359,9 @@ static void update_resource_state(void *id,
                                   cpu->power_current * cpu->power_scale);
     } else if (event_type == cpu->state_event) {
       if (value > 0)
-        cpu->state_current = SURF_CPU_ON;
+        cpu->state_current = SURF_RESOURCE_ON;
       else
-        cpu->state_current = SURF_CPU_OFF;
+        cpu->state_current = SURF_RESOURCE_OFF;
     } else {
       CRITICAL0("Unknown event ! \n");
       xbt_abort();
@@ -396,7 +396,7 @@ static void finalize(void)
 /******* Resource Private    **********/
 /**************************************/
 
-static e_surf_cpu_state_t resource_get_state(void *cpu)
+static e_surf_resource_state_t resource_get_state(void *cpu)
 {
   return ((cpu_L07_t) cpu)->state_current;
 }
@@ -583,7 +583,7 @@ static int link_shared(const void *link)
 static cpu_L07_t cpu_new(const char *name, double power_scale,
                          double power_initial,
                          tmgr_trace_t power_trace,
-                         e_surf_cpu_state_t state_initial,
+                         e_surf_resource_state_t state_initial,
                          tmgr_trace_t state_trace, xbt_dict_t cpu_properties)
 {
   cpu_L07_t cpu = xbt_new0(s_cpu_L07_t, 1);
@@ -624,7 +624,7 @@ static void parse_cpu_init(void)
   double power_scale = 0.0;
   double power_initial = 0.0;
   tmgr_trace_t power_trace = NULL;
-  e_surf_cpu_state_t state_initial = SURF_CPU_OFF;
+  e_surf_resource_state_t state_initial = SURF_RESOURCE_OFF;
   tmgr_trace_t state_trace = NULL;
 
   power_scale = get_cpu_power(A_surfxml_host_power);
@@ -635,9 +635,9 @@ static void parse_cpu_init(void)
               (A_surfxml_host_state == A_surfxml_host_state_OFF),
               "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
-    state_initial = SURF_CPU_ON;
+    state_initial = SURF_RESOURCE_ON;
   if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-    state_initial = SURF_CPU_OFF;
+    state_initial = SURF_RESOURCE_OFF;
   surf_parse_get_trace(&state_trace, A_surfxml_host_state_file);
 
   current_property_set = xbt_dict_new();
@@ -650,7 +650,7 @@ static link_L07_t link_new(char *name,
                            tmgr_trace_t bw_trace,
                            double lat_initial,
                            tmgr_trace_t lat_trace,
-                           e_surf_link_state_t
+                           e_surf_resource_state_t
                            state_initial,
                            tmgr_trace_t state_trace,
                            e_surf_link_sharing_policy_t
@@ -696,7 +696,7 @@ static void parse_link_init(void)
   tmgr_trace_t bw_trace;
   double lat_initial;
   tmgr_trace_t lat_trace;
-  e_surf_link_state_t state_initial_link = SURF_LINK_ON;
+  e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
   e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
   tmgr_trace_t state_trace;
 
@@ -710,9 +710,9 @@ static void parse_link_init(void)
               || (A_surfxml_link_state ==
                   A_surfxml_link_state_OFF), "Invalid state");
   if (A_surfxml_link_state == A_surfxml_link_state_ON)
-    state_initial_link = SURF_LINK_ON;
+    state_initial_link = SURF_RESOURCE_ON;
   else if (A_surfxml_link_state == A_surfxml_link_state_OFF)
-    state_initial_link = SURF_LINK_OFF;
+    state_initial_link = SURF_RESOURCE_OFF;
 
   if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
     policy_initial_link = SURF_LINK_SHARED;
@@ -850,7 +850,7 @@ static void model_init_internal(void)
   routing_model_create(sizeof(link_L07_t),
         link_new(xbt_strdup("__loopback__"),
             498000000, NULL, 0.000015, NULL,
-            SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL));
+            SURF_RESOURCE_ON, NULL, SURF_LINK_FATPIPE, NULL));
 
 }
 

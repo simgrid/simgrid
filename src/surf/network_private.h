@@ -21,7 +21,7 @@ typedef struct network_link_CM02 {
   tmgr_trace_event_t bw_event;
   double lat_current;
   tmgr_trace_event_t lat_event;
-  e_surf_link_state_t state_current;
+  e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
 } s_link_CM02_t, *link_CM02_t;

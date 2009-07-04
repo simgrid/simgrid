@@ -251,7 +251,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   SIMIX_mutex_destroy(mutex);
 
   if (SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
-    if (SIMIX_host_get_state(SIMIX_host_self()) == SURF_CPU_OFF) {
+    if (SIMIX_host_get_state(SIMIX_host_self()) == SURF_RESOURCE_OFF) {
       SIMIX_action_destroy(act_sleep);
       MSG_RETURN(MSG_HOST_FAILURE);
     }

@@ -10,6 +10,7 @@
 
 #include "portable.h"
 #include "xbt/misc.h"
+#include "surf/datatypes.h"
 
 #define MAXMIN_PRECISION 0.00001
 static XBT_INLINE void double_update(double *variable, double value)
@@ -23,11 +24,6 @@ static XBT_INLINE int double_positive(double value)
 {
   return (value > MAXMIN_PRECISION);
 }
-
-typedef struct lmm_element *lmm_element_t;
-typedef struct lmm_variable *lmm_variable_t;
-typedef struct lmm_constraint *lmm_constraint_t;
-typedef struct lmm_system *lmm_system_t;
 
 XBT_PUBLIC(lmm_system_t) lmm_system_new(void);
 XBT_PUBLIC(void) lmm_system_free(lmm_system_t sys);
@@ -103,30 +99,11 @@ XBT_PUBLIC(void) bottleneck_solve(lmm_system_t sys);
  */
 
 XBT_PUBLIC(void) lmm_set_default_protocol_function(double (*func_f)
-
-
-
-
-
-                                                    
-                                                   (lmm_variable_t var,
-                                                    double x),
+                                                   (lmm_variable_t var, double x),
                                                    double (*func_fp)
-
-
-
-
-                                                    
-                                                   (lmm_variable_t var,
-                                                    double x),
+                                                   (lmm_variable_t var, double x),
                                                    double (*func_fpi)
-
-
-
-
-                                                    
-                                                   (lmm_variable_t var,
-                                                    double x));
+                                                   (lmm_variable_t var, double x));
 
 XBT_PUBLIC(double func_reno_f) (lmm_variable_t var, double x);
 XBT_PUBLIC(double func_reno_fp) (lmm_variable_t var, double x);

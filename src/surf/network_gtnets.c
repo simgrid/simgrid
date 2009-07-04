@@ -157,12 +157,12 @@ static void parse_link_init(void)
   char *name;
   double bw;
   double lat;
-  e_surf_link_state_t state;
+  e_surf_resource_state_t state;
 
   name = xbt_strdup(A_surfxml_link_id);
   surf_parse_get_double(&bw, A_surfxml_link_bandwidth);
   surf_parse_get_double(&lat, A_surfxml_link_latency);
-  state = SURF_LINK_ON;
+  state = SURF_RESOURCE_ON;
 
   tmgr_trace_t bw_trace;
   tmgr_trace_t state_trace;

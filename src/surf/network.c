@@ -31,7 +31,7 @@ static link_CM02_t link_new(char *name,
                             tmgr_trace_t bw_trace,
                             double lat_initial,
                             tmgr_trace_t lat_trace,
-                            e_surf_link_state_t
+                            e_surf_resource_state_t
                             state_initial,
                             tmgr_trace_t state_trace,
                             e_surf_link_sharing_policy_t
@@ -76,7 +76,7 @@ static void parse_link_init(void)
   tmgr_trace_t bw_trace;
   double lat_initial;
   tmgr_trace_t lat_trace;
-  e_surf_link_state_t state_initial_link = SURF_LINK_ON;
+  e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
   e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
   tmgr_trace_t state_trace;
 
@@ -90,9 +90,9 @@ static void parse_link_init(void)
               || (A_surfxml_link_state ==
                   A_surfxml_link_state_OFF), "Invalid state");
   if (A_surfxml_link_state == A_surfxml_link_state_ON)
-    state_initial_link = SURF_LINK_ON;
+    state_initial_link = SURF_RESOURCE_ON;
   else if (A_surfxml_link_state == A_surfxml_link_state_OFF)
-    state_initial_link = SURF_LINK_OFF;
+    state_initial_link = SURF_RESOURCE_OFF;
 
   if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
     policy_initial_link = SURF_LINK_SHARED;
@@ -319,13 +319,13 @@ static void update_resource_state(void *id,
     }
   } else if (event_type == nw_link->state_event) {
     if (value > 0)
-      nw_link->state_current = SURF_LINK_ON;
+      nw_link->state_current = SURF_RESOURCE_ON;
     else {
       lmm_constraint_t cnst = nw_link->constraint;
       lmm_variable_t var = NULL;
       lmm_element_t elem = NULL;
 
-      nw_link->state_current = SURF_LINK_OFF;
+      nw_link->state_current = SURF_RESOURCE_OFF;
       while ((var = lmm_get_var_from_cnst
               (network_maxmin_system, cnst, &elem))) {
         surf_action_t action = lmm_variable_id(var);
@@ -367,7 +367,7 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,int 
   link_CM02_t link;
   int failed=0;
   xbt_dynar_foreach(route,i,link) {
-    if (link->state_current == SURF_LINK_OFF) {
+    if (link->state_current == SURF_RESOURCE_OFF) {
       failed = 1;
       break;
     }
@@ -517,7 +517,7 @@ static void surf_network_model_init_internal(void)
   routing_model_create(sizeof(link_CM02_t),
       link_new(xbt_strdup("__loopback__"),
           498000000, NULL, 0.000015, NULL,
-          SURF_LINK_ON, NULL, SURF_LINK_FATPIPE, NULL));
+          SURF_RESOURCE_ON, NULL, SURF_LINK_FATPIPE, NULL));
 }
 
 /************************************************************************/

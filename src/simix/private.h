@@ -105,7 +105,7 @@ typedef struct s_smx_simdata_action {
 
 
 #define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_model->extension.workstation. \
-				  get_state(SIMIX_host_self()->simdata->host)==SURF_CPU_ON,\
+				  get_state(SIMIX_host_self()->simdata->host)==SURF_RESOURCE_ON,\
                                   "Host failed, you cannot call this function.")
 
 smx_host_t __SIMIX_host_create(const char *name, void *workstation,

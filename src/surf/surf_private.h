@@ -21,11 +21,6 @@ extern double sg_tcp_gamma;
 extern const char *surf_action_state_names[6];
 
 typedef enum {
-  SURF_LINK_ON = 1,             /* Ready        */
-  SURF_LINK_OFF = 0             /* Running      */
-} e_surf_link_state_t;
-
-typedef enum {
   SURF_LINK_SHARED = 1,
   SURF_LINK_FATPIPE = 0
 } e_surf_link_sharing_policy_t;

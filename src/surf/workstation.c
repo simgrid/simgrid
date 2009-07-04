@@ -197,7 +197,7 @@ static surf_action_t communicate(void *workstation_src,
         size, rate);
 }
 
-static e_surf_cpu_state_t get_state(void *workstation)
+static e_surf_resource_state_t get_state(void *workstation)
 {
   return surf_cpu_model->extension.
     cpu.get_state(((workstation_CLM03_t) workstation)->cpu);

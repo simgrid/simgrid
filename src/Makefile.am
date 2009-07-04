@@ -51,6 +51,7 @@ EXTRA_DIST= \
 	surf/gtnets/gtnets_simulator.h \
 	surf/gtnets/gtnets_topology.h  \
 	\
+	include/surf/datatypes.h \
 	include/surf/maxmin.h \
 	include/surf/trace_mgr.h \
 	include/surf/surf.h \

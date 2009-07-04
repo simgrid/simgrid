@@ -7,14 +7,14 @@
 
 #include "surf_private.h"
 
-typedef s_surf_action_maxmin_t s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
+typedef s_surf_action_lmm_t s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
 typedef struct cpu_Cas01 {
   s_surf_resource_t generic_resource;
   double power_scale;
   double power_current;
   tmgr_trace_event_t power_event;
-  e_surf_cpu_state_t state_current;
+  e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
 } s_cpu_Cas01_t, *cpu_Cas01_t;
@@ -33,7 +33,7 @@ static xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
 static cpu_Cas01_t cpu_new(char *name, double power_scale,
                            double power_initial,
                            tmgr_trace_t power_trace,
-                           e_surf_cpu_state_t state_initial,
+                           e_surf_resource_state_t state_initial,
                            tmgr_trace_t state_trace,
                            xbt_dict_t cpu_properties)
 {
@@ -70,7 +70,7 @@ static void parse_cpu_init(void)
   double power_scale = 0.0;
   double power_initial = 0.0;
   tmgr_trace_t power_trace = NULL;
-  e_surf_cpu_state_t state_initial = SURF_CPU_OFF;
+  e_surf_resource_state_t state_initial = SURF_RESOURCE_OFF;
   tmgr_trace_t state_trace = NULL;
 
   power_scale = get_cpu_power(A_surfxml_host_power);
@@ -81,9 +81,9 @@ static void parse_cpu_init(void)
               (A_surfxml_host_state == A_surfxml_host_state_OFF),
               "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
-    state_initial = SURF_CPU_ON;
+    state_initial = SURF_RESOURCE_ON;
   if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-    state_initial = SURF_CPU_OFF;
+    state_initial = SURF_RESOURCE_OFF;
   surf_parse_get_trace(&state_trace, A_surfxml_host_state_file);
 
   current_property_set = xbt_dict_new();
@@ -217,13 +217,13 @@ static void update_resource_state(void *id,
                                 cpu->power_current * cpu->power_scale);
   } else if (event_type == cpu->state_event) {
     if (value > 0)
-      cpu->state_current = SURF_CPU_ON;
+      cpu->state_current = SURF_RESOURCE_ON;
     else {
       lmm_constraint_t cnst = cpu->constraint;
       lmm_variable_t var = NULL;
       lmm_element_t elem = NULL;
 
-      cpu->state_current = SURF_CPU_OFF;
+      cpu->state_current = SURF_RESOURCE_OFF;
 
       while ((var = lmm_get_var_from_cnst(cpu_maxmin_system, cnst, &elem))) {
         surf_action_t action = lmm_variable_id(var);
@@ -251,7 +251,7 @@ static surf_action_t execute(void *cpu, double size)
 
   XBT_IN2("(%s,%g)", CPU->generic_resource.name, size);
   action = surf_action_new(sizeof(s_surf_action_cpu_Cas01_t),size,surf_cpu_model,
-      CPU->state_current != SURF_CPU_ON);
+      CPU->state_current != SURF_RESOURCE_ON);
 
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
@@ -336,7 +336,7 @@ static void action_set_priority(surf_action_t action, double priority)
   XBT_OUT;
 }
 
-static e_surf_cpu_state_t get_state(void *cpu)
+static e_surf_resource_state_t get_state(void *cpu)
 {
   return ((cpu_Cas01_t) cpu)->state_current;
 }
