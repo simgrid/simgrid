@@ -37,7 +37,6 @@ EXTRA_DIST= \
 	xbt/ex_interface.h \
         xbt/backtrace_linux.c xbt/backtrace_windows.c xbt/backtrace_dummy.c \
         \
-        surf/surf_resource.h  \
 	surf/maxmin_private.h \
 	surf/trace_mgr_private.h \
 	surf/surf_private.h \
@@ -52,6 +51,7 @@ EXTRA_DIST= \
 	surf/gtnets/gtnets_simulator.h \
 	surf/gtnets/gtnets_topology.h  \
 	\
+        include/surf/surf_resource.h  \
 	include/surf/datatypes.h \
 	include/surf/maxmin.h \
 	include/surf/trace_mgr.h \
