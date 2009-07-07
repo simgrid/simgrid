@@ -44,6 +44,10 @@ SimGrid (3.3.2-svn) unstable; urgency=low
  SimDag:
   * Kill SD_link_get_properties: hard to maintain and makes very little sense
     Shout out if you used it.
+    
+ GRAS:
+  * Display the list of still queued messages in SG mode when existing
+    the process.
 
  XBT:
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]

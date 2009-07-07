@@ -96,9 +96,16 @@ void gras_process_exit()
   VERB2("GRAS: Finalizing process '%s' (%d)",
         SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid());
 
-  if (xbt_dynar_length(msg_pd->msg_queue))
-    WARN1("process %d terminated, but some messages are still queued",
-          gras_os_getpid());
+  if (xbt_dynar_length(msg_pd->msg_queue)) {
+    unsigned int cpt;
+    s_gras_msg_t msg;
+    WARN2("process %d terminated, but %ld messages are still queued. Message list:",
+          gras_os_getpid(),xbt_dynar_length(msg_pd->msg_queue));
+    xbt_dynar_foreach(msg_pd->msg_queue,cpt, msg) {
+      WARN5("   Message %s (%s) from %s@%s:%d",msg.type->name,e_gras_msg_kind_names[msg.kind],
+          gras_socket_peer_proc(msg.expe),gras_socket_peer_name(msg.expe),gras_socket_peer_port(msg.expe));
+    }
+  }
 
   /* if each process has its sockets list, we need to close them when the
      process finish */
