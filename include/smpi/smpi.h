@@ -52,6 +52,7 @@ SG_BEGIN_DECL()
        smpi_mpi_communicator_t mpi_comm_world;
 
        smpi_mpi_datatype_t mpi_byte;
+       smpi_mpi_datatype_t mpi_char;
        smpi_mpi_datatype_t mpi_int;
        smpi_mpi_datatype_t mpi_float;
        smpi_mpi_datatype_t mpi_double;
@@ -71,6 +72,7 @@ SG_BEGIN_DECL()
 #define MPI_STATUS_IGNORE NULL
 
 #define MPI_BYTE          (smpi_mpi_global->mpi_byte)
+#define MPI_CHAR          (smpi_mpi_global->mpi_char)
 #define MPI_INT           (smpi_mpi_global->mpi_int)
 #define MPI_FLOAT         (smpi_mpi_global->mpi_float)
 #define MPI_DOUBLE        (smpi_mpi_global->mpi_double)
