@@ -683,17 +683,12 @@ subtasks.
 
 There is several little examples in the archive, in the examples/msg
 directory. From time to time, we are asked for other files, but we
-don't have any at hand right now. 
+don't have much at hand right now. 
 
-We do have a description of the Grid'5000 platform, but because of
-some flaws in the current formalism, this file is actually 500Mb,
-which is ways too big to be used in the parser. We have an internship
-currently working on xml syntax improvements which will allow to
-reduce the size of this file and release it.
-
-Once it's done, we plan to model manually other existing platforms the
-same way we did for G5K and also release those files in some sort of
-SimGrid platform catalog project.
+You should refer to the Platform Description Archive
+(http://pda.gforge.inria.fr) project to see the other platform file we
+have available, as well as the Simulacrum simulator, meant to generate
+SimGrid platforms using all classical generation algorithms.
 
 \subsubsection faq_platform_alnem How can I automatically map an existing platform?
 
