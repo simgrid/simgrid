@@ -391,6 +391,79 @@ int SMPI_MPI_Allreduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype da
 }
 
 
+/**
+ * MPI_Scatter user entry point
+ **/
+//int SMPI_MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype datatype, 
+//		         void *recvbuf, int recvcount, MPI_Datatype recvtype,int root,
+//		        MPI_Comm comm);
+int SMPI_MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype datatype, 
+		         void *recvbuf, int recvcount, MPI_Datatype recvtype,
+			   int root, MPI_Comm comm)
+{
+  int retval = MPI_SUCCESS;
+  int i;
+  int cnt=0;  
+  int rank;
+  int tag=0;
+  char *cbuf;  // to manipulate the void * buffers
+  smpi_mpi_request_t *requests;
+  smpi_mpi_request_t request;
+  smpi_mpi_status_t status;
+
+
+  smpi_bench_end();
+
+  rank = smpi_mpi_comm_rank(comm);
+
+  requests = xbt_malloc((comm->size-1) * sizeof(smpi_mpi_request_t));
+  if (rank == root) {
+	    // i am the root: distribute my sendbuf
+	    for (i=0; i < comm->size; i++) {
+				  cbuf = sendbuf;
+				  cbuf += i*sendcount*datatype->size;
+			if ( i!=root ) { // send to processes ...
+
+				  retval = smpi_create_request((void *)cbuf, sendcount, 
+							datatype, root, i, tag, comm, &(requests[cnt++]));
+				  if (NULL != requests[cnt] && MPI_SUCCESS == retval) {
+					    if (MPI_SUCCESS == retval) {
+							smpi_mpi_isend(requests[cnt]);
+					    }
+				  }
+				  cnt++;
+			} 
+			else { // ... except if it's me.
+				  memcpy(recvbuf, (void *)cbuf, recvcount*recvtype->size*sizeof(char));
+			}
+	    }
+	    for(i=0; i<cnt; i++) { // wait for send to complete
+			    /* FIXME: waitall() should be slightly better */
+			    smpi_mpi_wait(requests[i], &status);
+			    xbt_mallocator_release(smpi_global->request_mallocator, requests[i]);
+
+	    }
+  } 
+  else {  // i am a non-root process: wait data from the root
+	    retval = smpi_create_request(recvbuf,recvcount, 
+				  recvtype, root, rank, tag, comm, &request);
+	    if (NULL != request && MPI_SUCCESS == retval) {
+			if (MPI_SUCCESS == retval) {
+				  smpi_mpi_irecv(request);
+			}
+	    }
+	    smpi_mpi_wait(request, &status);
+	    xbt_mallocator_release(smpi_global->request_mallocator, request);
+  }
+  xbt_free(requests);
+
+  smpi_bench_begin();
+
+  return retval;
+}
+
+
+
 
 
 
