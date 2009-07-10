@@ -264,11 +264,11 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
 
 
 
-#ifdef DEBUG_REDUCE
+//#ifdef DEBUG_REDUCE
 /**
  * debugging helper function
  **/
-static void print_buffer_int(void *buf, int len, const char *msg, int rank)
+static void print_buffer_int(void *buf, int len, char *msg, int rank)
 {
   int tmp, *v;
   printf("**[%d] %s: ", rank, msg);
@@ -279,8 +279,21 @@ static void print_buffer_int(void *buf, int len, const char *msg, int rank)
   printf("\n");
   free(msg);
 }
-#endif
+static void print_buffer_double(void *buf, int len, char *msg, int rank)
+{
+  int tmp;
+  double *v;
+  printf("**[%d] %s: ", rank, msg);
+  for (tmp = 0; tmp < len; tmp++) {
+    v = buf;
+    printf("[%lf]", v[tmp]);
+  }
+  printf("\n");
+  free(msg);
+}
 
+
+//#endif
 /**
  * MPI_Reduce
  **/
@@ -406,7 +419,7 @@ int SMPI_MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype datatype,
   int cnt=0;  
   int rank;
   int tag=0;
-  char *cbuf;  // to manipulate the void * buffers
+  char *cptr;  // to manipulate the void * buffers
   smpi_mpi_request_t *requests;
   smpi_mpi_request_t request;
   smpi_mpi_status_t status;
@@ -418,24 +431,25 @@ int SMPI_MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype datatype,
 
   requests = xbt_malloc((comm->size-1) * sizeof(smpi_mpi_request_t));
   if (rank == root) {
-	    // i am the root: distribute my sendbuf
-	    for (i=0; i < comm->size; i++) {
-				  cbuf = sendbuf;
-				  cbuf += i*sendcount*datatype->size;
-			if ( i!=root ) { // send to processes ...
+          // i am the root: distribute my sendbuf
+          //print_buffer_int(sendbuf, comm->size, xbt_strdup("rcvbuf"), rank);
+          cptr = sendbuf;
+          for (i=0; i < comm->size; i++) {
+                  if ( i!=root ) { // send to processes ...
 
-				  retval = smpi_create_request((void *)cbuf, sendcount, 
-							datatype, root, i, tag, comm, &(requests[cnt++]));
-				  if (NULL != requests[cnt] && MPI_SUCCESS == retval) {
-					    if (MPI_SUCCESS == retval) {
-							smpi_mpi_isend(requests[cnt]);
-					    }
+                          retval = smpi_create_request((void *)cptr, sendcount, 
+                                          datatype, root, i, tag, comm, &(requests[cnt]));
+                          if (NULL != requests[cnt] && MPI_SUCCESS == retval) {
+                                  if (MPI_SUCCESS == retval) {
+                                          smpi_mpi_isend(requests[cnt]);
+                                  }
 				  }
 				  cnt++;
 			} 
 			else { // ... except if it's me.
-				  memcpy(recvbuf, (void *)cbuf, recvcount*recvtype->size*sizeof(char));
+				  memcpy(recvbuf, (void *)cptr, recvcount*recvtype->size*sizeof(char));
 			}
+                  cptr += sendcount*datatype->size;
 	    }
 	    for(i=0; i<cnt; i++) { // wait for send to complete
 			    /* FIXME: waitall() should be slightly better */
