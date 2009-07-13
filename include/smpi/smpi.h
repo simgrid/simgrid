@@ -59,6 +59,7 @@ SG_BEGIN_DECL()
 
        smpi_mpi_op_t mpi_land;
        smpi_mpi_op_t mpi_sum;
+       smpi_mpi_op_t mpi_prod;
        smpi_mpi_op_t mpi_min;
        smpi_mpi_op_t mpi_max;
 
@@ -79,6 +80,7 @@ SG_BEGIN_DECL()
 
 #define MPI_LAND          (smpi_mpi_global->mpi_land)
 #define MPI_SUM           (smpi_mpi_global->mpi_sum)
+#define MPI_PROD          (smpi_mpi_global->mpi_prod)
 #define MPI_MIN           (smpi_mpi_global->mpi_min)
 #define MPI_MAX           (smpi_mpi_global->mpi_max)
 
@@ -94,6 +96,7 @@ SG_BEGIN_DECL()
 #define MPI_Recv(a, b, c, d, e, f, g) SMPI_MPI_Recv(a, b, c, d, e, f, g)
 #define MPI_Isend(a, b, c, d, e, f, g) SMPI_MPI_Isend(a, b, c, d, e, f, g)
 #define MPI_Send(a, b, c, d, e, f) SMPI_MPI_Send(a, b, c, d, e, f)
+#define MPI_Sendrecv( a, b, c, d, e, f, g, h, i, j, k, l) SMPI_MPI_Sendrecv(a, b, c, d, e, f, g, h, i, j, k, l) 
 #define MPI_Bcast(a, b, c, d, e) SMPI_MPI_Bcast(a, b, c, d, e)
 #define MPI_Wait(a, b) SMPI_MPI_Wait(a, b)
 #define MPI_Waitall(a, b, c) SMPI_MPI_Waitall(a, b, c)
@@ -103,6 +106,7 @@ SG_BEGIN_DECL()
 #define MPI_Reduce( a, b, c, d, e, f, g) SMPI_MPI_Reduce( a, b, c, d, e, f, g)
 #define MPI_Allreduce( a, b, c, d, e, f) SMPI_MPI_Allreduce( a, b, c, d, e, f)
 #define MPI_Scatter( a, b, c, d, e, f, g, h )  SMPI_MPI_Scatter( a, b, c, d, e, f, g, h)
+#define MPI_Alltoall( a, b, c, d, e, f, g )  SMPI_MPI_Alltoall( a, b, c, d, e, f, g)
 
 // SMPI Functions
 XBT_PUBLIC(int) SMPI_MPI_Init(int *argc, char ***argv);
@@ -123,6 +127,11 @@ XBT_PUBLIC(int) SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype,
                                MPI_Request * request);
 XBT_PUBLIC(int) SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype,
                               int dst, int tag, MPI_Comm comm);
+
+XBT_PUBLIC(int) SMPI_MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, 
+		                  void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag, 
+					MPI_Comm comm, MPI_Status *status);
+
 XBT_PUBLIC(int) SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype,
                                int root, MPI_Comm comm);
 XBT_PUBLIC(int) SMPI_MPI_Wait(MPI_Request * request, MPI_Status * status);
@@ -142,6 +151,9 @@ XBT_PUBLIC(int) SMPI_MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
 
 XBT_PUBLIC(int) SMPI_MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype datatype,
 		                     void *recvbuf, int recvcount, MPI_Datatype recvtype,int root, MPI_Comm comm);
+
+XBT_PUBLIC(int) SMPI_MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype datatype,
+		                     void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
 
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
