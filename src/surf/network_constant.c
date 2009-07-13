@@ -21,7 +21,6 @@ typedef struct surf_action_network_Constant {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static random_data_t random_latency = NULL;
-static int card_number = 0;
 static int host_number = 0;
 
 static void count_hosts(void)
@@ -187,8 +186,6 @@ static void finalize(void)
 {
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
-
-  card_number = 0;
 }
 
 static void surf_network_model_init_internal(void)

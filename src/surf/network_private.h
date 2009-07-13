@@ -30,10 +30,6 @@ typedef struct surf_action_network_CM02 {
   lmm_variable_t variable;
   double rate;
   int suspended;
-#ifdef KILLME
-  int src;
-  int dst;
-#endif
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 
 #endif /* _SURF_NETWORK_PRIVATE_H */

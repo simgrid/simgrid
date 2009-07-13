@@ -20,10 +20,7 @@ double latency_factor = 1.0;    /* default value */
 double bandwidth_factor = 1.0;  /* default value */
 double weight_S_parameter = 0.0;        /* default value */
 
-int card_number = 0;
-int host_count = 0;
 double sg_tcp_gamma = 0.0;
-
 
 
 static link_CM02_t link_new(char *name,
@@ -470,7 +467,6 @@ static void finalize(void)
   surf_network_model = NULL;
 
   used_routing->finalize();
-  host_count = 0;
   lmm_system_free(network_maxmin_system);
   network_maxmin_system = NULL;
 }

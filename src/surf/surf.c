@@ -13,8 +13,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
 
-//int use_lagrange_solver = 0; KILLME
-
 /* Additional declarations for Windows potability. */
 
 #ifndef MAX_DRIVE
