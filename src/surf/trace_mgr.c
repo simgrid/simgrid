@@ -12,6 +12,8 @@
 #include "trace_mgr_private.h"
 #include "surf_private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf,"Surf trace management");
+
 static xbt_dict_t trace_list = NULL;
 static void _tmgr_trace_free(void *trace)
 {
@@ -107,15 +109,19 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   s_tmgr_event_t event;
   tmgr_event_t last_event = NULL;
 
+  if ((!filename) || (strcmp(filename, "") == 0))
+    return NULL;
+
   if (trace_list) {
     trace = xbt_dict_get_or_null(trace_list, filename);
-    if (trace)
+    if (trace) {
+      WARN1("Ignoring redefinition of trace %s",filename);
       return trace;
+    }
   }
 
-  if ((f = surf_fopen(filename, "r")) == NULL) {
-    xbt_assert1(0, "Cannot open file '%s'", filename);
-  }
+  f = surf_fopen(filename, "r");
+  xbt_assert1(f!=NULL, "Cannot open file '%s'", filename);
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);

@@ -14,6 +14,5 @@
 #include "surf/surfxml_parse.h"
 #include "surf/trace_mgr.h"
 
-void surf_parse_get_trace(tmgr_trace_t * trace, const char *string);
 
 #endif

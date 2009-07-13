@@ -235,6 +235,7 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_lagrange);
 XBT_LOG_EXTERNAL_CATEGORY(surf_lagrange_dichotomy);
 XBT_LOG_EXTERNAL_CATEGORY(surf_maxmin);
 XBT_LOG_EXTERNAL_CATEGORY(surf_network);
+XBT_LOG_EXTERNAL_CATEGORY(surf_trace);
 XBT_LOG_EXTERNAL_CATEGORY(surf_parse);
 XBT_LOG_EXTERNAL_CATEGORY(surf_timer);
 XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
@@ -258,6 +259,7 @@ void surf_init(int *argc, char **argv)
   XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
   XBT_LOG_CONNECT(surf_maxmin, surf);
   XBT_LOG_CONNECT(surf_network, surf);
+  XBT_LOG_CONNECT(surf_trace, surf);
   XBT_LOG_CONNECT(surf_parse, surf);
   XBT_LOG_CONNECT(surf_timer, surf);
   XBT_LOG_CONNECT(surf_workstation, surf);

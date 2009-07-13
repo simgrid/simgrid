@@ -506,14 +506,6 @@ void surf_parse_get_int(int *value, const char *string)
     surf_parse_error(bprintf("%s is not an integer", string));
 }
 
-void surf_parse_get_trace(tmgr_trace_t * trace, const char *string)
-{
-  if ((!string) || (strcmp(string, "") == 0))
-    *trace = NULL;
-  else
-    *trace = tmgr_trace_new(string);
-}
-
 void parse_properties(void)
 {
   char *value = NULL;
@@ -1222,7 +1214,7 @@ static void parse_trace_finalize(void)
 {
   tmgr_trace_t trace;
   if (!trace_file || strcmp(trace_file, "") != 0) {
-    surf_parse_get_trace(&trace, trace_file);
+    trace = tmgr_trace_new(trace_file);
   } else {
     if (strcmp(surfxml_pcdata, "") == 0)
       trace = NULL;

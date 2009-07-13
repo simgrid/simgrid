@@ -74,9 +74,9 @@ static void parse_link_init(void)
 
   name_link = xbt_strdup(A_surfxml_link_id);
   surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
-  surf_parse_get_trace(&bw_trace, A_surfxml_link_bandwidth_file);
+  bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
   surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
-  surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
+  lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
 
   xbt_assert0((A_surfxml_link_state == A_surfxml_link_state_ON)
               || (A_surfxml_link_state ==
@@ -92,7 +92,7 @@ static void parse_link_init(void)
            A_surfxml_link_sharing_policy_FATPIPE)
     policy_initial_link = SURF_LINK_FATPIPE;
 
-  surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
+  state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
   link_new(name_link, bw_initial, bw_trace,
            lat_initial, lat_trace, state_initial_link, state_trace,

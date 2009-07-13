@@ -629,7 +629,7 @@ static void parse_cpu_init(void)
 
   power_scale = get_cpu_power(A_surfxml_host_power);
   surf_parse_get_double(&power_initial, A_surfxml_host_availability);
-  surf_parse_get_trace(&power_trace, A_surfxml_host_availability_file);
+ power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
 
   xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
               (A_surfxml_host_state == A_surfxml_host_state_OFF),
@@ -638,7 +638,7 @@ static void parse_cpu_init(void)
     state_initial = SURF_RESOURCE_ON;
   if (A_surfxml_host_state == A_surfxml_host_state_OFF)
     state_initial = SURF_RESOURCE_OFF;
-  surf_parse_get_trace(&state_trace, A_surfxml_host_state_file);
+  state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 
   current_property_set = xbt_dict_new();
   cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace,
@@ -702,9 +702,9 @@ static void parse_link_init(void)
 
   name_link = xbt_strdup(A_surfxml_link_id);
   surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
-  surf_parse_get_trace(&bw_trace, A_surfxml_link_bandwidth_file);
+  bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
   surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
-  surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
+  lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
 
   xbt_assert0((A_surfxml_link_state == A_surfxml_link_state_ON)
               || (A_surfxml_link_state ==
@@ -720,7 +720,7 @@ static void parse_link_init(void)
            A_surfxml_link_sharing_policy_FATPIPE)
     policy_initial_link = SURF_LINK_FATPIPE;
 
-  surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
+  state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
   current_property_set = xbt_dict_new();
   link_new(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
