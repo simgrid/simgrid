@@ -13,10 +13,6 @@ $ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
 > [0.000000] [test/INFO] Modify an existing property
 > [0.000000] [test/INFO] 	Property: SG_TEST_Hdd old value: 120
 > [0.000000] [test/INFO] 	Property: SG_TEST_Hdd new value: 250
-> [0.000000] [test/INFO] 	Link l1 property: type has value: Ethernet
-> [0.000000] [test/INFO] 	Property: NoProp for link l1 is undefined
-> [0.000000] [test/INFO] 	Link l2 property: type has value: ethernet
-> [0.000000] [test/INFO] 	Property: NoProp for link l2 is undefined
 
 
 
