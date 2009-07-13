@@ -291,7 +291,6 @@ static void smpi_cfg_cb_host_speed(const char *name, int pos)
 
 int smpi_run_simulation(int *argc, char **argv)
 {
-  smx_cond_t cond = NULL;
   smx_action_t action = NULL;
 
   xbt_fifo_t actions_failed = xbt_fifo_new();
@@ -329,16 +328,12 @@ int smpi_run_simulation(int *argc, char **argv)
 
   while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
     while ((action = xbt_fifo_pop(actions_failed))) {
-      DEBUG1("** %s failed **", action->name);
-      while ((cond = xbt_fifo_pop(action->cond_list))) {
-        SIMIX_cond_broadcast(cond);
-      }
+      DEBUG1("** %s failed **", SIMIX_action_get_name(action));
+      SIMIX_action_signal_all(action);
     }
     while ((action = xbt_fifo_pop(actions_done))) {
-      DEBUG1("** %s done **", action->name);
-      while ((cond = xbt_fifo_pop(action->cond_list))) {
-        SIMIX_cond_broadcast(cond);
-      }
+      DEBUG1("** %s done **", SIMIX_action_get_name(action));
+      SIMIX_action_signal_all(action);
     }
   }
 

@@ -175,7 +175,10 @@ XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(char *name,
                                                        double amount,
                                                        double rate);
 
-     void SIMIX_display_process_status(void);
+XBT_PUBLIC(char *) SIMIX_action_get_name(smx_action_t action);
+XBT_PUBLIC(void) SIMIX_action_signal_all(smx_action_t action);
+
+void SIMIX_display_process_status(void);
 
 
 SG_END_DECL()

@@ -2,8 +2,9 @@
 #define SMX_MAILBOX_H
 
 #include "xbt/fifo.h"
-#include "simix/private.h"
+#include "simix/simix.h"
 #include "msg/datatypes.h"
+
 
 SG_BEGIN_DECL()
 #define MAX_ALIAS_NAME	((size_t)260)

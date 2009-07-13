@@ -108,14 +108,16 @@ typedef struct s_smx_cond {
 
 /********************************* Action **************************************/
 
-typedef struct s_smx_simdata_action {
+/** @brief Action datatype 
+    @ingroup m_datatypes_management_details */
+typedef struct s_smx_action {
+  char *name;              /**< @brief action name if any */
+  xbt_fifo_t cond_list;    /*< conditional variables that must be signaled when the action finish. */
+  void *data;              /**< @brief user data */
+  int refcount;            /**< @brief reference counter */
   surf_action_t surf_action;    /* SURF modeling of computation  */
-
   smx_host_t source;
-
-} s_smx_simdata_action_t;
-
-
+} s_smx_action_t;
 
 /******************************* Other **********************************/
 

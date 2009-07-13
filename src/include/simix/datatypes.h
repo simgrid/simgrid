@@ -39,18 +39,6 @@ SG_BEGIN_DECL()
 
 
 /********************************** Action *************************************/
-     typedef struct s_smx_simdata_action *smx_simdata_action_t;
-/** @brief Action datatype 
-    @ingroup m_datatypes_management_details */
-     typedef struct s_smx_action {
-       char *name;              /**< @brief action name if any */
-       smx_simdata_action_t simdata;
-                                /**< @brief simulator data */
-       xbt_fifo_t cond_list;    /*< conditional variables that must be signaled when the action finish. */
-       void *data;              /**< @brief user data */
-       int refcount;            /**< @brief reference counter */
-     } s_smx_action_t;
-
      typedef struct s_smx_action *smx_action_t;
 
 

@@ -146,7 +146,6 @@ int MSG_get_channel_number(void)
  */
 MSG_error_t MSG_main(void)
 {
-  smx_cond_t cond = NULL;
   smx_action_t smx_action;
   xbt_fifo_t actions_done = xbt_fifo_new();
   xbt_fifo_t actions_failed = xbt_fifo_new();
@@ -162,20 +161,13 @@ MSG_error_t MSG_main(void)
   while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
 
     while ((smx_action = xbt_fifo_pop(actions_failed))) {
-
-
-      DEBUG1("** %s failed **", smx_action->name);
-      while ((cond = xbt_fifo_pop(smx_action->cond_list))) {
-        SIMIX_cond_broadcast(cond);
-      }
+      DEBUG1("** %s failed **", SIMIX_action_get_name(smx_action));
+      SIMIX_action_signal_all(smx_action);
     }
 
     while ((smx_action = xbt_fifo_pop(actions_done))) {
-
-      DEBUG1("** %s done **", smx_action->name);
-      while ((cond = xbt_fifo_pop(smx_action->cond_list))) {
-        SIMIX_cond_broadcast(cond);
-      }
+      DEBUG1("** %s done **", SIMIX_action_get_name(smx_action));
+      SIMIX_action_signal_all(smx_action);      
     }
   }
   xbt_fifo_free(actions_failed);

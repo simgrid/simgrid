@@ -29,7 +29,6 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
                                       double size, double rate)
 {
   smx_action_t act;
-  smx_simdata_action_t simdata;
 
   /* check if the host is active */
   if (surf_workstation_model->extension.
@@ -45,19 +44,17 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
 
   /* alloc structures */
   act = xbt_new0(s_smx_action_t, 1);
-  act->simdata = xbt_new0(s_smx_simdata_action_t, 1);
-  simdata = act->simdata;
   act->cond_list = xbt_fifo_new();
 
   /* initialize them */
   act->name = xbt_strdup(name);
-  simdata->source = sender;
+  act->source = sender;
 
 
-  simdata->surf_action =
+  act->surf_action =
     surf_workstation_model->extension.workstation.
     communicate(sender->host, receiver->host, size, rate);
-  surf_workstation_model->action_data_set(simdata->surf_action, act);
+  surf_workstation_model->action_data_set(act->surf_action, act);
 
   DEBUG1("Create communicate action %p", act);
   return act;
@@ -75,7 +72,6 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
                                   double amount)
 {
   smx_action_t act;
-  smx_simdata_action_t simdata;
 
   /* check if the host is active */
   if (surf_workstation_model->extension.
@@ -86,20 +82,18 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
 
   /* alloc structures */
   act = xbt_new0(s_smx_action_t, 1);
-  act->simdata = xbt_new0(s_smx_simdata_action_t, 1);
-  simdata = act->simdata;
   act->cond_list = xbt_fifo_new();
 
   /* initialize them */
-  simdata->source = host;
+  act->source = host;
   act->name = xbt_strdup(name);
 
   /* set communication */
-  simdata->surf_action =
+  act->surf_action =
     surf_workstation_model->extension.workstation.execute(host->host,
                                                           amount);
 
-  surf_workstation_model->action_data_set(simdata->surf_action, act);
+  surf_workstation_model->action_data_set(act->surf_action, act);
 
   DEBUG1("Create execute action %p", act);
   return act;
@@ -115,7 +109,6 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
 smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
 {
   char name[] = "sleep";
-  smx_simdata_action_t simdata;
   smx_action_t act;
 
   /* check if the host is active */
@@ -127,19 +120,17 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
 
   /* alloc structures */
   act = xbt_new0(s_smx_action_t, 1);
-  act->simdata = xbt_new0(s_smx_simdata_action_t, 1);
-  simdata = act->simdata;
   act->cond_list = xbt_fifo_new();
 
   /* initialize them */
-  simdata->source = host;
+  act->source = host;
   act->name = xbt_strdup(name);
 
-  simdata->surf_action =
+  act->surf_action =
     surf_workstation_model->extension.workstation.sleep(host->host,
                                                         duration);
 
-  surf_workstation_model->action_data_set(simdata->surf_action, act);
+  surf_workstation_model->action_data_set(act->surf_action, act);
 
   DEBUG1("Create sleep action %p", act);
   return act;
@@ -156,8 +147,8 @@ void SIMIX_action_cancel(smx_action_t action)
   xbt_assert0((action != NULL), "Invalid parameter");
 
   DEBUG1("Cancel action %p", action);
-  if (action->simdata->surf_action) {
-    surf_workstation_model->action_cancel(action->simdata->surf_action);
+  if (action->surf_action) {
+    surf_workstation_model->action_cancel(action->surf_action);
   }
   return;
 }
@@ -171,10 +162,9 @@ void SIMIX_action_cancel(smx_action_t action)
  */
 void SIMIX_action_set_priority(smx_action_t action, double priority)
 {
-  xbt_assert0((action != NULL)
-              && (action->simdata != NULL), "Invalid parameter");
+  xbt_assert0((action != NULL), "Invalid parameter");
 
-  surf_workstation_model->set_priority(action->simdata->surf_action,
+  surf_workstation_model->set_priority(action->surf_action,
                                        priority);
   return;
 }
@@ -204,11 +194,9 @@ int SIMIX_action_destroy(smx_action_t action)
 
   xbt_fifo_free(action->cond_list);
 
-  if (action->simdata->surf_action)
-    action->simdata->surf_action->model_type->action_unref(action->
-                                                          simdata->surf_action);
+  if (action->surf_action)
+    action->surf_action->model_type->action_unref(action->surf_action);
 
-  xbt_free(action->simdata);
   xbt_free(action);
   return 1;
 }
@@ -270,8 +258,7 @@ void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
  *	\param action SIMIX action
  *	\param cond SIMIX cond
  */
-void SIMIX_unregister_action_to_condition(smx_action_t action,
-                                          smx_cond_t cond)
+void SIMIX_unregister_action_to_condition(smx_action_t action, smx_cond_t cond)
 {
   xbt_assert0((action != NULL) && (cond != NULL), "Invalid parameters");
 
@@ -292,7 +279,7 @@ void SIMIX_unregister_action_to_condition(smx_action_t action,
 double SIMIX_action_get_remains(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
-  return action->simdata->surf_action->remains;
+  return action->surf_action->remains;
 }
 
 smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
@@ -302,14 +289,11 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
                                            double amount, double rate)
 {
   void **workstation_list = NULL;
-  smx_simdata_action_t simdata;
   smx_action_t act;
   int i;
 
   /* alloc structures */
   act = xbt_new0(s_smx_action_t, 1);
-  act->simdata = xbt_new0(s_smx_simdata_action_t, 1);
-  simdata = act->simdata;
   act->cond_list = xbt_fifo_new();
 
   /* initialize them */
@@ -321,7 +305,7 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
   for (i = 0; i < host_nb; i++)
     workstation_list[i] = host_list[i]->host;
 
-  simdata->surf_action =
+  act->surf_action =
     surf_workstation_model->extension.
     workstation.execute_parallel_task(host_nb, workstation_list,
                                       computation_amount,
@@ -335,9 +319,8 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
 e_surf_action_state_t SIMIX_action_get_state(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
-  return surf_workstation_model->action_state_get(action->simdata->
+  return surf_workstation_model->action_state_get(action->
                                                   surf_action);
-
 }
 
 void __SIMIX_cond_display_actions(smx_cond_t cond)
@@ -358,4 +341,20 @@ void __SIMIX_action_display_conditions(smx_action_t action)
   DEBUG1("Conditions for action %p", action);
   xbt_fifo_foreach(action->cond_list, item, cond, smx_cond_t)
     DEBUG1("\t %p", cond);
+}
+
+char * SIMIX_action_get_name(smx_action_t action)
+{
+  xbt_assert0((action != NULL), "Invalid parameter");
+  return action->name;
+}
+
+void SIMIX_action_signal_all(smx_action_t action)
+{
+  smx_cond_t cond;
+
+  while((cond = xbt_fifo_pop(action->cond_list)))
+    SIMIX_cond_broadcast(cond);
+
+  return;
 }
