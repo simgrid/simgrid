@@ -78,7 +78,7 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
        surf_model_t model_type;
      } s_surf_action_t;
 
-     typedef struct {
+     typedef struct surf_action_lmm {
        s_surf_action_t generic_action;
        lmm_variable_t variable;
        int suspended;
