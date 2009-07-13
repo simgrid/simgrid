@@ -1196,8 +1196,7 @@ static void poper_f(void *a)
 }
 
 
-XBT_TEST_UNIT("synchronized int", test_dynar_sync_int,
-              "Synchronized dynars of integers")
+XBT_TEST_UNIT("synchronized int", test_dynar_sync_int,"Synchronized dynars of integers")
 {
   /* Vars_decl [doxygen cruft] */
   xbt_dynar_t d;

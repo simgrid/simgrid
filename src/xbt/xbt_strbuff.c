@@ -321,8 +321,7 @@ static void mytest(const char *input, const char *patterns,
 }
 
 XBT_TEST_SUITE("xbt_strbuff", "String Buffers");
-XBT_TEST_UNIT("xbt_strbuff_substitute", test_strbuff_substitute,
-              "test the function xbt_strbuff_substitute")
+XBT_TEST_UNIT("xbt_strbuff_substitute", test_strbuff_substitute,"test the function xbt_strbuff_substitute")
 {
   xbt_test_add0("Empty");
   mytest("", "", "");

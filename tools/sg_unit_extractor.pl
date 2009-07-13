@@ -48,18 +48,24 @@ sub process_one($) {
 	    next
 	}
 	
-	if (m/XBT_TEST_SUITE\(\w*"([^"]*)"\w*,(.*?)\);/) { #" {
+	if (m/XBT_TEST_SUITE\(\w*"([^"]*)"\w*, *(.*?)\);/) { #" {
 	    die "$progname: Multiple suites in the same file ($infile) are not supported yet\n" if length($suite_name);
 	    ($suite_name,$suite_title)=($1,$2);
+	    die "$progname: Empty suite name in $infile" unless length($suite_name);
+	    die "$progname: Empty suite title in $infile" unless length($suite_title);
 	    next;
-        } 
+        } elsif (m/XBT_TEST_SUITE/) {
+	    die "$progname: Parse error: This line seem to be a test suite declaration, but failed to parse it\n$_\n";
+	}
 
         if (m/XBT_TEST_UNIT\(\w*"([^"]*)"\w*,([^,]*),(.*?)\)/) { #"{
 	    die "$progname: multiply defined unit in file $infile: $1\n" if (defined($tests{$1}));
-      
+            
 	    my @t=($1,$2,$3);
 	    push @tests,\@t;
 	    $tests{$1} = 1;
+	} elsif (m/XBT_TEST_UNIT/) {
+	    die "$progname: Parse error: This line seem to be a test unit, but failed to parse it\n$_\n";
 	}
         $unit_source .= $_ if $takeit;
     }

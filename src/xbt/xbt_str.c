@@ -434,8 +434,7 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
                    xbt_dynar_free(&d);
 
 XBT_TEST_SUITE("xbt_str", "String Handling");
-XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted,
-              "test the function xbt_str_split_quoted")
+XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted,"test the function xbt_str_split_quoted")
 {
   xbt_dynar_t d;
   char *s;
@@ -467,8 +466,7 @@ XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted,
                    free(s); \
                    xbt_dynar_free(&d);
 
-XBT_TEST_UNIT("xbt_str_split_str", test_split_str,
-              "test the function xbt_str_split_str")
+XBT_TEST_UNIT("xbt_str_split_str", test_split_str,"test the function xbt_str_split_str")
 {
   xbt_dynar_t d;
   char *s;
