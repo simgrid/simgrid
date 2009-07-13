@@ -23,19 +23,41 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
  * \see SIMIX_process_create_with_arguments
  */
 
-
 void SIMIX_process_cleanup(void *arg)
 {
-  xbt_swag_remove(arg, simix_global->process_list);
   xbt_swag_remove(arg, simix_global->process_to_run);
-  xbt_swag_remove(arg,((smx_process_t) arg)->smx_host->process_list);
-  free(((smx_process_t) arg)->name);
-  ((smx_process_t) arg)->name = NULL;
-
-  free(arg);
+  xbt_swag_remove(arg, simix_global->process_list);
+  xbt_swag_insert(arg, simix_global->process_to_destroy);
 }
 
+
 /**
+ * \brief Creates and runs the maestro process
+ *
+ */
+
+void __SIMIX_create_maestro_process()
+{
+  smx_process_t process = NULL;
+  process = xbt_new0(s_smx_process_t, 1);
+
+  /* Process data */
+  process->name = (char *)"maestro";
+
+  /*Create the right context type (FIXME: check the return value for success)*/
+  SIMIX_context_create_maestro(&process);
+
+  /* Set it as the maestro process */
+  simix_global->maestro_process = process;
+  
+  /* Now insert it in the global process list and in the process to run list */
+  /* FIXME should it be included in the process_list ??? */
+  xbt_swag_insert(process, simix_global->process_list);
+
+  return;
+}
+
+/** 
  * \brief Creates and runs a new #smx_process_t.
  *
  * A constructor for #m_process_t taking four arguments and returning the corresponding object. The structure (and the corresponding thread) is created, and put in the list of ready process.
@@ -65,8 +87,6 @@ smx_process_t SIMIX_process_create(const char *name,
     return NULL;
   }
   process = xbt_new0(s_smx_process_t, 1);
-  /*char alias[MAX_ALIAS_NAME + 1] = {0};
-     msg_mailbox_t mailbox; */
 
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
 
@@ -77,10 +97,13 @@ smx_process_t SIMIX_process_create(const char *name,
   process->argv = argv;
   process->mutex = NULL;
   process->cond = NULL;
-  process->context = xbt_context_new(name, code, NULL, NULL,
-                                     simix_global->cleanup_process_function,
-                                     process, process->argc, process->argv);
+
+  /*Create the right context type (FIXME: check the return value for success)*/
+  SIMIX_context_new(&process, code);
+
   process->data = data;
+  process->cleanup_func = simix_global->cleanup_process_function;
+  process->cleanup_arg = process;
 
   /* Add properties */
   process->properties = properties;
@@ -88,20 +111,15 @@ smx_process_t SIMIX_process_create(const char *name,
   /* Add the process to it's host process list */
   xbt_swag_insert(process, host->process_list);
 
-  /* fix current_process, about which xbt_context_start mocks around */
+  /* fix current_process, about which SIMIX_context_start mocks around */
   self = simix_global->current_process;
-  xbt_context_start(process->context);
+  SIMIX_context_start(process);
   simix_global->current_process = self;
 
-  /* Now insert it in the global process list */
+  /* Now insert it in the global process list and in the process to run list */
   xbt_swag_insert(process, simix_global->process_list);
   DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
   xbt_swag_insert(process, simix_global->process_to_run);
-
-  /*sprintf(alias,"%s:%s",hostname,process->name);
-
-     mailbox = MSG_mailbox_new(alias);
-     MSG_mailbox_set_hostname(mailbox, hostname); */
 
   return process;
 }
@@ -143,19 +161,18 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
   process->argv = NULL;
   process->mutex = NULL;
   process->cond = NULL;
-  process->context = xbt_context_new(name, NULL, NULL, jprocess,
-                                     simix_global->cleanup_process_function,
-                                     process, 0, NULL);
+  SIMIX_context_new(&process, jprocess);
   process->data = data;
 
   /* Add the process to it's host process list */
-  xbt_swag_insert(process, host->process_list);
+  xbt_swag_insert(&process, host->process_list);
 
   /* fix current_process, about which xbt_context_start mocks around */
   self = simix_global->current_process;
-  xbt_context_start(process->context);
+  SIMIX_context_start(process);
   simix_global->current_process = self;
 
+  /* Now insert it in the global process list and in the process to run list */
   xbt_swag_insert(process, simix_global->process_list);
   DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
   xbt_swag_insert(process, simix_global->process_to_run);
@@ -181,12 +198,13 @@ void SIMIX_process_kill(smx_process_t process)
 
   xbt_swag_remove(process, simix_global->process_to_run);
   xbt_swag_remove(process, simix_global->process_list);
+
   DEBUG2("%p here! killing %p", simix_global->current_process, process);
-  xbt_context_kill(process->context);
+  SIMIX_context_kill(process);
 
   if (process == SIMIX_process_self()) {
     /* I just killed myself */
-    xbt_context_yield();
+    SIMIX_context_yield();
   }
 }
 

@@ -20,9 +20,6 @@ void xbt_log_exit(void);
 void xbt_fifo_exit(void);
 void xbt_dict_exit(void);
 
-void xbt_context_mod_init(void);
-void xbt_context_mod_exit(void);
-
 void xbt_os_thread_mod_init(void);
 void xbt_os_thread_mod_exit(void);
 

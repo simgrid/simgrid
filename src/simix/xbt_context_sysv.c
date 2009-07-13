@@ -22,12 +22,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_context);
 
 typedef struct s_xbt_ctx_sysv {
   XBT_CTX_BASE_T;
-  ucontext_t uc;                /* the thread that execute the code                             */
-  char stack[STACK_SIZE];       /* the thread stack size                                        */
-  struct s_xbt_ctx_sysv *prev;  /* the previous thread                                          */
+  ucontext_t uc;                /* the thread that execute the code */
+  char stack[STACK_SIZE];       /* the thread stack size */
+  smx_process_t prev;           /* the previous process */
 #ifdef HAVE_VALGRIND_VALGRIND_H
-  unsigned int valgrind_stack_id;       /* the valgrind stack id.       */
-#endif                          /* HAVE_VALGRIND_VALGRIND_H */
+  unsigned int valgrind_stack_id;       /* the valgrind stack id */
+#endif                          
 } s_xbt_ctx_sysv_t, *xbt_ctx_sysv_t;
 
 
@@ -37,46 +37,41 @@ static ex_ctx_t *xbt_jcontext_ex_ctx(void);
 /* callback: termination */
 static void xbt_jcontext_ex_terminate(xbt_ex_t * e);
 
-static xbt_context_t
-xbt_ctx_sysv_factory_create_context(const char *name, xbt_main_func_t code,
-                                    void_f_pvoid_t startup_func,
-                                    void *startup_arg,
-                                    void_f_pvoid_t cleanup_func,
-                                    void *cleanup_arg, int argc, char **argv);
-
-static int xbt_ctx_sysv_factory_finalize(xbt_context_factory_t * factory);
-
 static int
-xbt_ctx_sysv_factory_create_maestro_context(xbt_context_t * maestro);
+smx_ctx_sysv_factory_create_context(smx_process_t *smx_process, xbt_main_func_t code);
 
-static void xbt_ctx_sysv_free(xbt_context_t context);
+static int smx_ctx_sysv_factory_finalize(smx_context_factory_t * factory);
 
-static void xbt_ctx_sysv_kill(xbt_context_t context);
+static int smx_ctx_sysv_factory_create_maestro_context(smx_process_t * maestro);
 
-static void xbt_ctx_sysv_schedule(xbt_context_t context);
+static void smx_ctx_sysv_free(smx_process_t process);
 
-static void xbt_ctx_sysv_yield(void);
+static void smx_ctx_sysv_kill(smx_process_t process);
 
-static void xbt_ctx_sysv_start(xbt_context_t context);
+static void smx_ctx_sysv_schedule(smx_process_t process);
 
-static void xbt_ctx_sysv_stop(int exit_code);
+static void smx_ctx_sysv_yield(void);
 
-static void xbt_ctx_sysv_swap(xbt_context_t context);
+static void smx_ctx_sysv_start(smx_process_t process);
 
-static void xbt_ctx_sysv_schedule(xbt_context_t context);
+static void smx_ctx_sysv_stop(int exit_code);
 
-static void xbt_ctx_sysv_yield(void);
+static void smx_ctx_sysv_swap(smx_process_t process);
 
-static void xbt_ctx_sysv_suspend(xbt_context_t context);
+static void smx_ctx_sysv_schedule(smx_process_t process);
 
-static void xbt_ctx_sysv_resume(xbt_context_t context);
+static void smx_ctx_sysv_yield(void);
 
-static void xbt_ctx_sysv_wrapper(void);
+static void smx_ctx_sysv_suspend(smx_process_t process);
+
+static void smx_ctx_sysv_resume(smx_process_t process);
+
+static void smx_ctx_sysv_wrapper(void);
 
 /* callback: context fetching */
 static ex_ctx_t *xbt_ctx_sysv_ex_ctx(void)
 {
-  return current_context->exception;
+  return simix_global->current_process->context->exception;
 }
 
 /* callback: termination */
@@ -86,65 +81,55 @@ static void xbt_ctx_sysv_ex_terminate(xbt_ex_t * e)
   abort();
 }
 
-
-void xbt_ctx_sysv_factory_init(xbt_context_factory_t * factory)
+void SIMIX_ctx_sysv_factory_init(smx_context_factory_t * factory)
 {
-  *factory = xbt_new0(s_xbt_context_factory_t, 1);
+  *factory = xbt_new0(s_smx_context_factory_t, 1);
 
-  (*factory)->create_context = xbt_ctx_sysv_factory_create_context;
-  (*factory)->finalize = xbt_ctx_sysv_factory_finalize;
-  (*factory)->create_maestro_context = xbt_ctx_sysv_factory_create_maestro_context;
-  (*factory)->free = xbt_ctx_sysv_free;
-  (*factory)->kill = xbt_ctx_sysv_kill;
-  (*factory)->schedule = xbt_ctx_sysv_schedule;
-  (*factory)->yield = xbt_ctx_sysv_yield;
-  (*factory)->start = xbt_ctx_sysv_start;
-  (*factory)->stop = xbt_ctx_sysv_stop;
-  (*factory)->name = "ctx_sysv_context_factory";
+  (*factory)->create_context = smx_ctx_sysv_factory_create_context;
+  (*factory)->finalize = smx_ctx_sysv_factory_finalize;
+  (*factory)->create_maestro_context = smx_ctx_sysv_factory_create_maestro_context;
+  (*factory)->free = smx_ctx_sysv_free;
+  (*factory)->kill = smx_ctx_sysv_kill;
+  (*factory)->schedule = smx_ctx_sysv_schedule;
+  (*factory)->yield = smx_ctx_sysv_yield;
+  (*factory)->start = smx_ctx_sysv_start;
+  (*factory)->stop = smx_ctx_sysv_stop;
+  (*factory)->name = "smx_sysv_context_factory";
 
   /* context exception handlers */
   __xbt_ex_ctx = xbt_ctx_sysv_ex_ctx;
   __xbt_ex_terminate = xbt_ctx_sysv_ex_terminate;
 }
 
-static int
-xbt_ctx_sysv_factory_create_maestro_context(xbt_context_t * maestro)
+static int smx_ctx_sysv_factory_create_maestro_context(smx_process_t *maestro)
 {
-
   xbt_ctx_sysv_t context = xbt_new0(s_xbt_ctx_sysv_t, 1);
-
-  context->name = (char *) "maestro";
 
   context->exception = xbt_new(ex_ctx_t, 1);
   XBT_CTX_INITIALIZE(context->exception);
 
-  *maestro = (xbt_context_t) context;
+  (*maestro)->context = (xbt_context_t) context;
 
   return 0;
 
 }
 
 
-static int xbt_ctx_sysv_factory_finalize(xbt_context_factory_t * factory)
+static int smx_ctx_sysv_factory_finalize(smx_context_factory_t * factory)
 {
-  free(maestro_context->exception);
+  /*FIXME free(maestro_context->exception);*/
   free(*factory);
   *factory = NULL;
   return 0;
 }
 
-static xbt_context_t
-xbt_ctx_sysv_factory_create_context(const char *name, xbt_main_func_t code,
-                                    void_f_pvoid_t startup_func,
-                                    void *startup_arg,
-                                    void_f_pvoid_t cleanup_func,
-                                    void *cleanup_arg, int argc, char **argv)
+static int
+smx_ctx_sysv_factory_create_context(smx_process_t *smx_process, xbt_main_func_t code)
 {
-  VERB1("Create context %s", name);
+  VERB1("Create context %s", (*smx_process)->name);
   xbt_ctx_sysv_t context = xbt_new0(s_xbt_ctx_sysv_t, 1);
 
   context->code = code;
-  context->name = xbt_strdup(name);
 
   xbt_assert2(getcontext(&(context->uc)) == 0,
               "Error in context saving: %d (%s)", errno, strerror(errno));
@@ -162,31 +147,17 @@ xbt_ctx_sysv_factory_create_context(const char *name, xbt_main_func_t code,
 
   context->exception = xbt_new(ex_ctx_t, 1);
   XBT_CTX_INITIALIZE(context->exception);
-  context->iwannadie = 0;       /* useless but makes valgrind happy */
-  context->argc = argc;
-  context->argv = argv;
-  context->startup_func = startup_func;
-  context->startup_arg = startup_arg;
-  context->cleanup_func = cleanup_func;
-  context->cleanup_arg = cleanup_arg;
+  (*smx_process)->context = (xbt_context_t)context;
+  (*smx_process)->iwannadie = 0;
 
-  return (xbt_context_t) context;
+  /* FIXME: Check what should return */
+  return 1;
 }
 
-static void xbt_ctx_sysv_free(xbt_context_t context)
+static void smx_ctx_sysv_free(smx_process_t process)
 {
-  if (context) {
-    free(context->name);
-
-    if (context->argv) {
-      int i;
-
-      for (i = 0; i < context->argc; i++)
-        if (context->argv[i])
-          free(context->argv[i]);
-
-      free(context->argv);
-    }
+  xbt_ctx_sysv_t context = (xbt_ctx_sysv_t)process->context;   
+  if (context){
 
     if (context->exception)
       free(context->exception);
@@ -195,17 +166,17 @@ static void xbt_ctx_sysv_free(xbt_context_t context)
     VALGRIND_STACK_DEREGISTER(((xbt_ctx_sysv_t) context)->valgrind_stack_id);
 #endif /* HAVE_VALGRIND_VALGRIND_H */
 
-    /* finally destroy the context */
+    /* destroy the context */
     free(context);
   }
 }
 
-static void xbt_ctx_sysv_kill(xbt_context_t context)
+static void smx_ctx_sysv_kill(smx_process_t process)
 {
-  DEBUG2("Kill context '%s' (from '%s')", context->name,
-         current_context->name);
-  context->iwannadie = 1;
-  xbt_ctx_sysv_swap(context);
+  DEBUG2("Kill process '%s' (from '%s')", process->name,
+         simix_global->current_process->name);
+  process->iwannadie = 1;
+  smx_ctx_sysv_swap(process);
 }
 
 /** 
@@ -217,12 +188,12 @@ static void xbt_ctx_sysv_kill(xbt_context_t context)
  * 
  * Only the maestro can call this function to run a given process.
  */
-static void xbt_ctx_sysv_schedule(xbt_context_t context)
+static void smx_ctx_sysv_schedule(smx_process_t process)
 {
-  DEBUG1("Schedule context '%s'", context->name);
-  xbt_assert0((current_context == maestro_context),
+  DEBUG1("Schedule process '%s'", process->name);
+  xbt_assert0((simix_global->current_process == simix_global->maestro_process),
               "You are not supposed to run this function here!");
-  xbt_ctx_sysv_swap(context);
+  smx_ctx_sysv_swap(process);
 }
 
 /** 
@@ -233,84 +204,80 @@ static void xbt_ctx_sysv_schedule(xbt_context_t context)
  * Only the processes can call this function, giving back the control
  * to the maestro
  */
-static void xbt_ctx_sysv_yield(void)
+static void smx_ctx_sysv_yield(void)
 {
-  DEBUG1("Yielding context '%s'", current_context->name);
-  xbt_assert0((current_context != maestro_context),
+  DEBUG1("Yielding context '%s'", simix_global->current_process->name);
+  xbt_assert0((simix_global->current_process != simix_global->maestro_process),
               "You are not supposed to run this function here!");
-  xbt_ctx_sysv_swap(current_context);
+  smx_ctx_sysv_swap(simix_global->current_process);
 }
 
-static void xbt_ctx_sysv_start(xbt_context_t context)
+static void smx_ctx_sysv_start(smx_process_t process)
 {
-  DEBUG1("Start context '%s'", context->name);
-  makecontext(&(((xbt_ctx_sysv_t) context)->uc), xbt_ctx_sysv_wrapper, 0);
+  /*DEBUG1("Start context '%s'", context->name);*/
+  makecontext(&(((xbt_ctx_sysv_t) process->context)->uc), smx_ctx_sysv_wrapper, 0);
 }
 
-static void xbt_ctx_sysv_stop(int exit_code)
+static void smx_ctx_sysv_stop(int exit_code)
 {
   /* please no debug here: our procdata was already free'd */
-  if (current_context->cleanup_func)
-    ((*current_context->cleanup_func)) (current_context->cleanup_arg);
+  if (simix_global->current_process->cleanup_func)
+    ((*simix_global->current_process->cleanup_func)) (simix_global->current_process->cleanup_arg);
 
-  xbt_swag_remove(current_context, context_living);
-  xbt_swag_insert(current_context, context_to_destroy);
-
-  xbt_ctx_sysv_swap(current_context);
+  smx_ctx_sysv_swap(simix_global->current_process);
 }
 
-static void xbt_ctx_sysv_swap(xbt_context_t context)
+static void smx_ctx_sysv_swap(smx_process_t process)
 {
-  DEBUG2("Swap context: '%s' -> '%s'", current_context->name, context->name);
-  xbt_assert0(current_context, "You have to call context_init() first.");
-  xbt_assert0(context, "Invalid argument");
+  DEBUG2("Swap context: '%s' -> '%s'", simix_global->current_process->name, process->name);
+  xbt_assert0(simix_global->current_process, "You have to call context_init() first.");
+  xbt_assert0(process, "Invalid argument");
 
-  if (((xbt_ctx_sysv_t) context)->prev == NULL)
-    xbt_ctx_sysv_resume(context);
+  if (((xbt_ctx_sysv_t) process->context)->prev == NULL)
+    smx_ctx_sysv_resume(process);
   else
-    xbt_ctx_sysv_suspend(context);
+    smx_ctx_sysv_suspend(process);
 
-  if (current_context->iwannadie)
-    xbt_ctx_sysv_stop(1);
+  if (simix_global->current_process->iwannadie)
+    smx_ctx_sysv_stop(1);
 }
 
-static void xbt_ctx_sysv_wrapper(void)
+static void smx_ctx_sysv_wrapper(void)
 {
-  if (current_context->startup_func)
-    (*current_context->startup_func) (current_context->startup_arg);
-
-  xbt_ctx_sysv_stop((*(current_context->code))
-                    (current_context->argc, current_context->argv));
+  smx_ctx_sysv_stop((*(simix_global->current_process->context->code))
+                    (simix_global->current_process->argc, simix_global->current_process->argv));
 }
 
-static void xbt_ctx_sysv_suspend(xbt_context_t context)
+static void smx_ctx_sysv_suspend(smx_process_t process)
 {
   int rv;
 
-  DEBUG1("Suspend context: '%s'", current_context->name);
-  xbt_ctx_sysv_t prev_context = ((xbt_ctx_sysv_t) context)->prev;
+  DEBUG1("Suspend context: '%s'", simix_global->current_process->name);
+  smx_process_t prev_process = ((xbt_ctx_sysv_t) process->context)->prev;
 
-  current_context = (xbt_context_t) (((xbt_ctx_sysv_t) context)->prev);
+  simix_global->current_process = (smx_process_t) (((xbt_ctx_sysv_t) process->context)->prev);
 
-  ((xbt_ctx_sysv_t) context)->prev = NULL;
+  ((xbt_ctx_sysv_t) process->context)->prev = NULL;
 
-  rv = swapcontext(&(((xbt_ctx_sysv_t) context)->uc), &(prev_context->uc));
+  rv = swapcontext(&(((xbt_ctx_sysv_t) process->context)->uc), &(((xbt_ctx_sysv_t)prev_process->context)->uc));
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
 
-static void xbt_ctx_sysv_resume(xbt_context_t context)
+static void smx_ctx_sysv_resume(smx_process_t process)
 {
   int rv;
+  xbt_ctx_sysv_t new_context = (xbt_ctx_sysv_t)process->context;
+  xbt_ctx_sysv_t prev_context = (xbt_ctx_sysv_t)simix_global->current_process->context;
 
-  DEBUG2("Resume context: '%s' (from '%s')", context->name,
-         current_context->name);
-  ((xbt_ctx_sysv_t) context)->prev = (xbt_ctx_sysv_t) current_context;
+  DEBUG2("Resume context: '%s' (from '%s')", process->name,
+         simix_global->current_process->name);
 
-  current_context = context;
+  ((xbt_ctx_sysv_t) process->context)->prev = simix_global->current_process;
 
-  rv = swapcontext(&(((xbt_ctx_sysv_t) context)->prev->uc),
-                   &(((xbt_ctx_sysv_t) context)->uc));
+  simix_global->current_process = process;
+
+  rv = swapcontext(&prev_context->uc, &new_context->uc);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }

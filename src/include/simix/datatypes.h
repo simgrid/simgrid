@@ -33,14 +33,11 @@ SG_BEGIN_DECL()
 
 
 /* ******************************** Syncro ************************************ */
-
      typedef struct s_smx_mutex *smx_mutex_t;
      typedef struct s_smx_cond *smx_cond_t;
 
-
 /********************************** Action *************************************/
      typedef struct s_smx_action *smx_action_t;
-
 
 /* ****************************** Process *********************************** */
 /** @brief Agent datatype  

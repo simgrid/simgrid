@@ -45,7 +45,7 @@ static void _XBT_CALL inthandler(int ignored)
 void SIMIX_global_init(int *argc, char **argv)
 {
   s_smx_process_t proc;
-
+  
   if (!simix_global) {
     /* Connect our log channels: that must be done manually under windows */
     XBT_LOG_CONNECT(simix_action, simix);
@@ -63,13 +63,20 @@ void SIMIX_global_init(int *argc, char **argv)
       xbt_swag_new(xbt_swag_offset(proc, synchro_hookup));
     simix_global->process_list =
       xbt_swag_new(xbt_swag_offset(proc, process_hookup));
+    simix_global->process_to_destroy =
+      xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
+
     simix_global->current_process = NULL;
+    simix_global->maestro_process = NULL;
     simix_global->registered_functions = xbt_dict_new();
 
     simix_global->create_process_function = NULL;
     simix_global->kill_process_function = NULL;
     simix_global->cleanup_process_function = SIMIX_process_cleanup;
 
+    SIMIX_context_mod_init();
+    __SIMIX_create_maestro_process();
+    
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
     surf_init(argc, argv);      /* Initialize SURF structures */
@@ -202,10 +209,10 @@ void SIMIX_process_killall()
       SIMIX_process_kill(p);
   }
 
-  xbt_context_empty_trash();
+  SIMIX_context_empty_trash();
 
   if (self) {
-    xbt_context_yield();
+    SIMIX_context_yield();
   }
 
   return;
@@ -226,13 +233,22 @@ void SIMIX_clean(void)
 
   xbt_dict_free(&(simix_global->host));
   xbt_swag_free(simix_global->process_to_run);
-  xbt_swag_free(simix_global->process_list);
   xbt_dict_free(&(simix_global->registered_functions));
   free(simix_global);
   simix_global = NULL;
 
   surf_exit();
 
+  /*FIXME Remove maestro's smx_process from the process_list before calling
+    SIMIX_context_mod_exit() and delete it afterwards (it should be the last one) */
+  SIMIX_context_mod_exit();
+  xbt_swag_free(simix_global->process_list);
+  xbt_swag_free(simix_global->process_to_destroy);
+
+  /* Let's free maestro */
+  SIMIX_context_free(simix_global->maestro_process);
+  free(simix_global->maestro_process);
+  
   return;
 }
 
@@ -273,7 +289,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
   double elapsed_time = 0.0;
   static int state_modifications = 1;
 
-  xbt_context_empty_trash();
+  SIMIX_context_empty_trash();
   if (xbt_swag_size(simix_global->process_to_run) && (elapsed_time > 0)) {
     DEBUG0("**************************************************");
   }
@@ -282,7 +298,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
     DEBUG2("Scheduling %s on %s",
            process->name, process->smx_host->name);
     simix_global->current_process = process;
-    xbt_context_schedule(process->context);
+    SIMIX_context_schedule(process);
     /*       fflush(NULL); */
     simix_global->current_process = NULL;
   }

@@ -14,18 +14,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_context, xbt,
                                 "Context switching mecanism");
 
-/* the context associated with the current process 				*/
-xbt_context_t current_context = NULL;
-
-/* the context associated with the maestro						*/
-xbt_context_t maestro_context = NULL;
-
-/* this list contains the contexts to destroy					*/
-xbt_swag_t context_to_destroy = NULL;
-
-/* this list contains the contexts in use						*/
-xbt_swag_t context_living = NULL;
-
 /* the context factory used to create the appropriate context
  * each context implementation define its own context factory
  * a context factory is responsable of the creation of the context
@@ -36,83 +24,49 @@ xbt_swag_t context_living = NULL;
  * java implementation of the context and the java factory build
  * the context depending of this implementation.
  */
-static xbt_context_factory_t context_factory = NULL;
 
 /**
- * This function is call by the xbt_init() function to initialize the context module.
+ * This function is call by SIMIX_global_init() to initialize the context module.
  */
-void xbt_context_mod_init(void)
+void SIMIX_context_mod_init(void)
 {
-  if (!context_factory) {
+  if (!simix_global->context_factory) {
     /* select context factory to use to create the context(depends of the macro definitions) */
 
 #ifdef CONTEXT_THREADS
     /* context switch based os thread */
-    xbt_ctx_thread_factory_init(&context_factory);
+    SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
 #elif !defined(WIN32)
     /* context switch based ucontext */
-    xbt_ctx_sysv_factory_init(&context_factory);
+    SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
 #else
     /* context switch is not allowed on Windows */
 #error ERROR [__FILE__, line __LINE__]: no context based implementation specified.
 #endif
-
-    /* maestro context specialisation (this create the maestro with the good implementation */
-    (*(context_factory->create_maestro_context)) (&maestro_context);
-
-    /* the current context is the context of the maestro */
-    current_context = maestro_context;
-
-    /* the current context doesn't want to die */
-    current_context->iwannadie = 0;
-
-    /* intantiation of the lists containing the contexts to destroy and the contexts in use */
-    context_to_destroy =
-      xbt_swag_new(xbt_swag_offset(*current_context, hookup));
-    context_living = xbt_swag_new(xbt_swag_offset(*current_context, hookup));
-
-    /* insert the current context in the list of the contexts in use */
-    xbt_swag_insert(current_context, context_living);
-
   }
 }
 
 /**
- * This function is call by the xbt_exit() function to finalize the context module.
+ * This function is call by SIMIX_clean() to finalize the context module.
  */
-void xbt_context_mod_exit(void)
+void SIMIX_context_mod_exit(void)
 {
-  if (context_factory) {
-    xbt_context_t context = NULL;
-    xbt_pfn_context_factory_finalize_t finalize_factory;
+  if (simix_global->context_factory) {
+    smx_process_t process = NULL;
+    smx_pfn_context_factory_finalize_t finalize_factory;
 
-    /* destroy all contexts in the list of contexts to destroy */
-    xbt_context_empty_trash();
+    /* kill all the processes (except maestro)
+     * the killed processes are added in the list of the processes to destroy */
+    
+    while ((process = xbt_swag_extract(simix_global->process_list)))
+      (*(simix_global->context_factory->kill)) (process);
 
-    /* remove the context of the scheduler from the list of the contexts in use */
-    xbt_swag_remove(maestro_context, context_living);
-
-    /*
-     * kill all the contexts in use :
-     * the killed contexts are added in the list of the contexts to destroy
-     */
-    while ((context = xbt_swag_extract(context_living)))
-      (*(context_factory->kill)) (context);
-
-    /* destroy all contexts in the list of contexts to destroy */
-    xbt_context_empty_trash();
+    /* destroy all processes in the list of process to destroy */
+    SIMIX_context_empty_trash();
 
     /* finalize the context factory */
-    finalize_factory = context_factory->finalize;
-
-    (*finalize_factory) (&context_factory);
-    
-    free(maestro_context);
-    maestro_context = current_context = NULL;
-
-    /* destroy the lists */
-    xbt_swag_free(context_to_destroy);    
-    xbt_swag_free(context_living);
+    finalize_factory = simix_global->context_factory->finalize;
+    (*finalize_factory) (&simix_global->context_factory);
   }
 }
 
@@ -120,35 +74,19 @@ void xbt_context_mod_exit(void)
 /* Object creation/destruction */
 /*******************************/
 /**
+ * \param smx_process the simix process that contains this context
  * \param code a main function
- * \param startup_func a function to call when running the context for
- *      the first time and just before the main function \a code
- * \param startup_arg the argument passed to the previous function (\a startup_func)
- * \param cleanup_func a function to call when running the context, just after
-        the termination of the main function \a code
- * \param cleanup_arg the argument passed to the previous function (\a cleanup_func)
- * \param argc first argument of function \a code
- * \param argv seconde argument of function \a code
  */
-xbt_context_t
-xbt_context_new(const char *name,
-                xbt_main_func_t code,
-                void_f_pvoid_t startup_func,
-                void *startup_arg,
-                void_f_pvoid_t cleanup_func,
-                void *cleanup_arg, int argc, char *argv[]
-  )
+int SIMIX_context_new(smx_process_t *process, xbt_main_func_t code)
 {
   /* use the appropriate context factory to create the appropriate context */
-  xbt_context_t context =
-    (*(context_factory->create_context)) (name, code, startup_func,
-                                          startup_arg, cleanup_func,
-                                          cleanup_arg, argc, argv);
+    return (*(simix_global->context_factory->create_context)) (process, code);
+}
 
-  /* add the context in the list of the contexts in use */
-  xbt_swag_insert(context, context_living);
 
-  return context;
+int SIMIX_context_create_maestro(smx_process_t *process)
+{
+  return (*(simix_global->context_factory->create_maestro_context)) (process);
 }
 
 /* Scenario for the end of a context:
@@ -174,117 +112,110 @@ xbt_context_new(const char *name,
 
 
 /* Argument must be stopped first -- runs in maestro context */
-void xbt_context_free(xbt_context_t context)
+void SIMIX_context_free(smx_process_t process)
 {
-  (*(context_factory->free)) (context);
+  (*(simix_global->context_factory->free)) (process);
 }
 
-
-void xbt_context_kill(xbt_context_t context)
+void SIMIX_context_kill(smx_process_t process)
 {
-  (*(context_factory->kill)) (context);
+  (*(simix_global->context_factory->kill)) (process);
 }
 
 /**
  * \param context the context to start
  *
- * Calling this function prepares \a context to be run. It will
-   however run effectively only when calling #xbt_context_schedule
+ * Calling this function prepares \a process to be run. It will
+   however run effectively only when calling #SIMIX_context_schedule
  */
-void xbt_context_start(xbt_context_t context)
+void SIMIX_context_start(smx_process_t process)
 {
-  (*(context_factory->start)) (context);
+  (*(simix_global->context_factory->start)) (process);
 }
 
 /**
- * Calling this function makes the current context yield. The context
- * that scheduled it returns from xbt_context_schedule as if nothing
+ * Calling this function makes the current process yield. The process
+ * that scheduled it returns from SIMIX_context_schedule as if nothing
  * had happened.
  *
  * Only the processes can call this function, giving back the control
  * to the maestro
  */
-void xbt_context_yield(void)
+void SIMIX_context_yield(void)
 {
-  (*(context_factory->yield)) ();
+  (*(simix_global->context_factory->yield)) ();
 }
 
 /**
- * \param context the winner
+ * \param process to be scheduled
  *
- * Calling this function blocks the current context and schedule \a context.
- * When \a context will call xbt_context_yield, it will return
+ * Calling this function blocks the current process and schedule \a process.
+ * When \a process would call SIMIX_context_yield, it will return
  * to this function as if nothing had happened.
  *
  * Only the maestro can call this function to run a given process.
  */
-void xbt_context_schedule(xbt_context_t context)
+void SIMIX_context_schedule(smx_process_t process)
 {
-  (*(context_factory->schedule)) (context);
+  (*(simix_global->context_factory->schedule)) (process);
 }
 
-void xbt_context_stop(int exit_code)
+void SIMIX_context_stop(int exit_code)
 {
-
-  (*(context_factory->stop)) (exit_code);
+  (*(simix_global->context_factory->stop)) (exit_code);
 }
 
-int xbt_context_select_factory(const char *name)
+int SIMIX_context_select_factory(const char *name)
 {
-  /* if a factory is already instantiated (xbt_context_mod_init() was called) */
-  if (NULL != context_factory) {
-    /* if the desired factory is different of the current factory, call xbt_context_mod_exit() */
-    if (strcmp(context_factory->name, name))
-      xbt_context_mod_exit();
+  /* if a factory is already instantiated (SIMIX_context_mod_init() was called) */
+  if (simix_global->context_factory != NULL) {
+    /* if the desired factory is different of the current factory, call SIMIX_context_mod_exit() */
+    if (strcmp(simix_global->context_factory->name, name))
+      SIMIX_context_mod_exit();
     else
       /* the same context factory is requested return directly */
       return 0;
   }
 
   /* get the desired factory */
-  xbt_context_init_factory_by_name(&context_factory, name);
+  SIMIX_context_init_factory_by_name(&simix_global->context_factory, name);
 
-  /* maestro context specialisation */
-  (*(context_factory->create_maestro_context)) (&maestro_context);
+  /* maestro process specialisation */
+  (*(simix_global->context_factory->create_maestro_context)) (&simix_global->maestro_process);
 
-  /* the current context is the context of the maestro */
-  current_context = maestro_context;
+  /* the current process is the process of the maestro */
+  simix_global->current_process = simix_global->maestro_process;
 
   /* the current context doesn't want to die */
-  current_context->iwannadie = 0;
-
-  /* intantiation of the lists containing the contexts to destroy and the contexts in use */
-  context_to_destroy =
-    xbt_swag_new(xbt_swag_offset(*current_context, hookup));
-  context_living = xbt_swag_new(xbt_swag_offset(*current_context, hookup));
+  simix_global->current_process->iwannadie = 0;
 
   /* insert the current context in the list of the contexts in use */
-  xbt_swag_insert(current_context, context_living);
+  xbt_swag_insert(simix_global->current_process, simix_global->process_list);
 
   return 0;
 }
 
 void
-xbt_context_init_factory_by_name(xbt_context_factory_t * factory,
-                                 const char *name)
+SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
+                                   const char *name)
 {
   if (!strcmp(name, "java"))
 #ifdef HAVE_JAVA     
-    xbt_ctx_java_factory_init(factory);
+    SIMIX_ctx_java_factory_init(factory);
 #else
     THROW0(not_found_error, 0, "Factory 'Java' does not exist: Java support was not compiled in the SimGrid library");
 #endif /* HAVE_JAVA */
    
   else if (!strcmp(name, "thread"))
 #ifdef CONTEXT_THREADS
-    xbt_ctx_thread_factory_init(factory);
+    SIMIX_ctx_thread_factory_init(factory);
 #else
     THROW0(not_found_error, 0, "Factory 'thread' does not exist: thread support was not compiled in the SimGrid library");
 #endif /* CONTEXT_THREADS */
    
   else if (!strcmp(name, "sysv"))
 #if !defined(WIN32) && !defined(CONTEXT_THREADS)
-    xbt_ctx_sysv_factory_init(factory);
+    SIMIX_ctx_sysv_factory_init(factory);
 #else
     THROW0(not_found_error, 0, "Factory 'sysv' does not exist: no System V thread support under Windows");
 #endif   
@@ -294,13 +225,27 @@ xbt_context_init_factory_by_name(xbt_context_factory_t * factory,
 
 /** Garbage collection
  *
- * Should be called some time to time to free the memory allocated for contexts
- * that have finished executing their main functions.
+ * Should be called some time to time to free the memory allocated for processes
+ * that have finished (or killed).
  */
-void xbt_context_empty_trash(void)
-{
-  xbt_context_t context = NULL;
+void SIMIX_context_empty_trash(void)
+{ 
+  smx_process_t process = NULL;
+  int i;  
 
-  while ((context = xbt_swag_extract(context_to_destroy)))
-    (*(context_factory->free)) (context);
+  while ((process = xbt_swag_extract(simix_global->process_to_destroy))){
+
+    free(process->name);
+    process->name = NULL;
+  
+    if (process->argv) {
+      for (i = 0; i < process->argc; i++)
+        if (process->argv[i])
+          free(process->argv[i]);
+
+      free(process->argv);
+    }
+  
+    free(process);
+  }
 }
