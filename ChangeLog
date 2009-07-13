@@ -56,6 +56,7 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Add xbt_set_get_by_name_or_null() [Silas De Munck]
   * Add xbt_graph_node_get_outedges() [Silas De Munck]
   * Add xbt_str_from_file(FILE*)
+  * Add xbt_dict_get_key achieving a linear reverse search
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

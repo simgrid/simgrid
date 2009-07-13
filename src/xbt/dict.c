@@ -358,6 +358,28 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
 }
 
 /**
+ * @brief retrieve the key associated to that object. Warning, that's a linear search
+ *
+ * Returns NULL if the object cannot be found
+ */
+char *xbt_dict_get_key(xbt_dict_t dict, void*data) {
+  int i;
+  xbt_dictelm_t current;
+
+
+  for (i = 0; i <= dict->table_size; i++) {
+    current = dict->table[i];
+    while (current != NULL) {
+      if (current->content == data)
+        return current->key;
+      current = current->next;
+    }
+  }
+
+  return NULL;
+}
+
+/**
  * \brief Retrieve data from the dict (null-terminated key)
  *
  * \param dict the dealer of data
@@ -790,11 +812,37 @@ static void count(xbt_dict_t dict, int length)
                    "Announced length(%d) != %d.", xbt_dict_length(dict),
                    length);
 
-  xbt_dict_foreach(dict, cursor, key, data) {
+  xbt_dict_foreach(dict, cursor, key, data)
     effective++;
-  }
+
   xbt_test_assert2(effective == length, "Effective length(%d) != %d.",
                    effective, length);
+
+}
+
+static void count_check_get_key(xbt_dict_t dict, int length)
+{
+  xbt_dict_cursor_t cursor;
+  char *key,*key2;
+  void *data;
+  int effective = 0;
+
+
+  xbt_test_add1("Count elements (expecting %d), and test the getkey function", length);
+  xbt_test_assert2(xbt_dict_length(dict) == length,
+                   "Announced length(%d) != %d.", xbt_dict_length(dict),
+                   length);
+
+  xbt_dict_foreach(dict, cursor, key, data) {
+    effective++;
+    key2 = xbt_dict_get_key(dict,data);
+    xbt_assert2(!strcmp(key,key2),
+          "The data was registered under %s instead of %s as expected",key2,key);
+  }
+
+  xbt_test_assert2(effective == length, "Effective length(%d) != %d.",
+                   effective, length);
+
 }
 
 xbt_ex_t e;
@@ -802,8 +850,7 @@ xbt_dict_t head = NULL;
 char *data;
 
 
-XBT_TEST_UNIT("basic", test_dict_basic,
-              "Basic usage: change, retrieve, traverse")
+XBT_TEST_UNIT("basic", test_dict_basic,"Basic usage: change, retrieve, traverse")
 {
   xbt_test_add0("Traversal the null dictionary");
   traverse(head);
@@ -822,7 +869,7 @@ XBT_TEST_UNIT("basic", test_dict_basic,
 
   xbt_test_add0("Traverse the full dictionary");
   fill(&head);
-  count(head, 7);
+  count_check_get_key(head, 7);
 
   debuged_add_ext(head, "toto", "tutu");
   search_ext(head, "toto", "tutu");
@@ -837,22 +884,22 @@ XBT_TEST_UNIT("basic", test_dict_basic,
 
   /* CHANGING */
   fill(&head);
-  count(head, 7);
+  count_check_get_key(head, 7);
   xbt_test_add0("Change 123 to 'Changed 123'");
   xbt_dict_set(head, "123", strdup("Changed 123"), &free);
-  count(head, 7);
+  count_check_get_key(head, 7);
 
   xbt_test_add0("Change 123 back to '123'");
   xbt_dict_set(head, "123", strdup("123"), &free);
-  count(head, 7);
+  count_check_get_key(head, 7);
 
   xbt_test_add0("Change 12a to 'Dummy 12a'");
   xbt_dict_set(head, "12a", strdup("Dummy 12a"), &free);
-  count(head, 7);
+  count_check_get_key(head, 7);
 
   xbt_test_add0("Change 12a to '12a'");
   xbt_dict_set(head, "12a", strdup("12a"), &free);
-  count(head, 7);
+  count_check_get_key(head, 7);
 
   xbt_test_add0("Traverse the resulting dictionary");
   traverse(head);
