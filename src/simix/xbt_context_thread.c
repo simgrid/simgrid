@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/function_types.h"
-#include "xbt/xbt_context_private.h"
+#include "xbt_context_private.h"
 
 #include "portable.h"           /* loads context system definitions */
 #include "xbt/swag.h"
@@ -67,8 +67,13 @@ void xbt_ctx_thread_factory_init(xbt_context_factory_t * factory)
 
   (*factory)->create_context = xbt_ctx_thread_factory_create_context;
   (*factory)->finalize = xbt_ctx_thread_factory_finalize;
-  (*factory)->create_maestro_context =
-    xbt_ctx_thread_factory_create_master_context;
+  (*factory)->create_maestro_context = xbt_ctx_thread_factory_create_master_context;
+  (*factory)->free = xbt_ctx_thread_free;
+  (*factory)->kill = xbt_ctx_thread_kill;
+  (*factory)->schedule = xbt_ctx_thread_schedule;
+  (*factory)->yield = xbt_ctx_thread_yield;
+  (*factory)->start = xbt_ctx_thread_start;
+  (*factory)->stop = xbt_ctx_thread_stop;
   (*factory)->name = "ctx_thread_factory";
 }
 
@@ -109,13 +114,6 @@ xbt_ctx_thread_factory_create_context(const char *name, xbt_main_func_t code,
   context->startup_arg = startup_arg;
   context->cleanup_func = cleanup_func;
   context->cleanup_arg = cleanup_arg;
-
-  context->free = xbt_ctx_thread_free;
-  context->kill = xbt_ctx_thread_kill;
-  context->schedule = xbt_ctx_thread_schedule;
-  context->yield = xbt_ctx_thread_yield;
-  context->start = xbt_ctx_thread_start;
-  context->stop = xbt_ctx_thread_stop;
 
   return (xbt_context_t) context;
 }

@@ -89,13 +89,17 @@ static void xbt_ctx_sysv_ex_terminate(xbt_ex_t * e)
 
 void xbt_ctx_sysv_factory_init(xbt_context_factory_t * factory)
 {
-  /* context exception */
   *factory = xbt_new0(s_xbt_context_factory_t, 1);
 
   (*factory)->create_context = xbt_ctx_sysv_factory_create_context;
   (*factory)->finalize = xbt_ctx_sysv_factory_finalize;
-  (*factory)->create_maestro_context =
-    xbt_ctx_sysv_factory_create_maestro_context;
+  (*factory)->create_maestro_context = xbt_ctx_sysv_factory_create_maestro_context;
+  (*factory)->free = xbt_ctx_sysv_free;
+  (*factory)->kill = xbt_ctx_sysv_kill;
+  (*factory)->schedule = xbt_ctx_sysv_schedule;
+  (*factory)->yield = xbt_ctx_sysv_yield;
+  (*factory)->start = xbt_ctx_sysv_start;
+  (*factory)->stop = xbt_ctx_sysv_stop;
   (*factory)->name = "ctx_sysv_context_factory";
 
   /* context exception handlers */
@@ -165,14 +169,6 @@ xbt_ctx_sysv_factory_create_context(const char *name, xbt_main_func_t code,
   context->startup_arg = startup_arg;
   context->cleanup_func = cleanup_func;
   context->cleanup_arg = cleanup_arg;
-
-
-  context->free = xbt_ctx_sysv_free;
-  context->kill = xbt_ctx_sysv_kill;
-  context->schedule = xbt_ctx_sysv_schedule;
-  context->yield = xbt_ctx_sysv_yield;
-  context->start = xbt_ctx_sysv_start;
-  context->stop = xbt_ctx_sysv_stop;
 
   return (xbt_context_t) context;
 }
@@ -313,9 +309,8 @@ static void xbt_ctx_sysv_resume(xbt_context_t context)
 
   current_context = context;
 
-  rv =
-    swapcontext(&(((xbt_ctx_sysv_t) context)->prev->uc),
-                &(((xbt_ctx_sysv_t) context)->uc));
+  rv = swapcontext(&(((xbt_ctx_sysv_t) context)->prev->uc),
+                   &(((xbt_ctx_sysv_t) context)->uc));
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }

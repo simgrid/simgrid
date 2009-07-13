@@ -86,11 +86,6 @@ void xbt_context_mod_exit(void)
     xbt_context_t context = NULL;
     xbt_pfn_context_factory_finalize_t finalize_factory;
 
-    /* finalize the context factory */
-    finalize_factory = context_factory->finalize;
-
-    (*finalize_factory) (&context_factory);
-
     /* destroy all contexts in the list of contexts to destroy */
     xbt_context_empty_trash();
 
@@ -102,17 +97,21 @@ void xbt_context_mod_exit(void)
      * the killed contexts are added in the list of the contexts to destroy
      */
     while ((context = xbt_swag_extract(context_living)))
-      (*(context->kill)) (context);
-
+      (*(context_factory->kill)) (context);
 
     /* destroy all contexts in the list of contexts to destroy */
     xbt_context_empty_trash();
 
+    /* finalize the context factory */
+    finalize_factory = context_factory->finalize;
+
+    (*finalize_factory) (&context_factory);
+    
     free(maestro_context);
     maestro_context = current_context = NULL;
 
     /* destroy the lists */
-    xbt_swag_free(context_to_destroy);
+    xbt_swag_free(context_to_destroy);    
     xbt_swag_free(context_living);
   }
 }
@@ -177,13 +176,13 @@ xbt_context_new(const char *name,
 /* Argument must be stopped first -- runs in maestro context */
 void xbt_context_free(xbt_context_t context)
 {
-  (*(context->free)) (context);
+  (*(context_factory->free)) (context);
 }
 
 
 void xbt_context_kill(xbt_context_t context)
 {
-  (*(context->kill)) (context);
+  (*(context_factory->kill)) (context);
 }
 
 /**
@@ -194,7 +193,7 @@ void xbt_context_kill(xbt_context_t context)
  */
 void xbt_context_start(xbt_context_t context)
 {
-  (*(context->start)) (context);
+  (*(context_factory->start)) (context);
 }
 
 /**
@@ -207,7 +206,7 @@ void xbt_context_start(xbt_context_t context)
  */
 void xbt_context_yield(void)
 {
-  (*(current_context->yield)) ();
+  (*(context_factory->yield)) ();
 }
 
 /**
@@ -221,13 +220,13 @@ void xbt_context_yield(void)
  */
 void xbt_context_schedule(xbt_context_t context)
 {
-  (*(context->schedule)) (context);
+  (*(context_factory->schedule)) (context);
 }
 
 void xbt_context_stop(int exit_code)
 {
 
-  (*(current_context->stop)) (exit_code);
+  (*(context_factory->stop)) (exit_code);
 }
 
 int xbt_context_select_factory(const char *name)
@@ -284,15 +283,13 @@ xbt_context_init_factory_by_name(xbt_context_factory_t * factory,
 #endif /* CONTEXT_THREADS */
    
   else if (!strcmp(name, "sysv"))
-#ifndef WIN32
+#if !defined(WIN32) && !defined(CONTEXT_THREADS)
     xbt_ctx_sysv_factory_init(factory);
 #else
     THROW0(not_found_error, 0, "Factory 'sysv' does not exist: no System V thread support under Windows");
-#endif
-   
+#endif   
   else
     THROW1(not_found_error, 0, "Factory '%s' does not exist", name);
-
 }
 
 /** Garbage collection
@@ -305,5 +302,5 @@ void xbt_context_empty_trash(void)
   xbt_context_t context = NULL;
 
   while ((context = xbt_swag_extract(context_to_destroy)))
-    (*(context->free)) (context);
+    (*(context_factory->free)) (context);
 }

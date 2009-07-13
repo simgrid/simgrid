@@ -80,8 +80,13 @@ void xbt_ctx_java_factory_init(xbt_context_factory_t * factory)
 
   (*factory)->create_context = xbt_ctx_java_factory_create_context;
   (*factory)->finalize = xbt_ctx_java_factory_finalize;
-  (*factory)->create_maestro_context =
-    xbt_ctx_java_factory_create_maestro_context;
+  (*factory)->create_maestro_context = xbt_ctx_java_factory_create_maestro_context;
+  (*factory)->free = xbt_ctx_java_free;
+  (*factory)->kill = xbt_ctx_java_kill;
+  (*factory)->schedule = xbt_ctx_java_schedule;
+  (*factory)->yield = xbt_ctx_java_yield;
+  (*factory)->start = xbt_ctx_java_start;
+  (*factory)->stop = xbt_ctx_java_stop;
   (*factory)->name = "ctx_java_factory";
 }
 
@@ -117,19 +122,10 @@ xbt_ctx_java_factory_create_context(const char *name, xbt_main_func_t code,
   xbt_ctx_java_t context = xbt_new0(s_xbt_ctx_java_t, 1);
 
   context->name = xbt_strdup(name);
-
   context->cleanup_func = cleanup_func;
   context->cleanup_arg = cleanup_arg;
-
   context->exception = xbt_new(ex_ctx_t, 1);
   XBT_CTX_INITIALIZE(context->exception);
-
-  context->free = xbt_ctx_java_free;
-  context->kill = xbt_ctx_java_kill;
-  context->schedule = xbt_ctx_java_schedule;
-  context->yield = xbt_ctx_java_yield;
-  context->start = xbt_ctx_java_start;
-  context->stop = xbt_ctx_java_stop;
   context->jprocess = (jobject) startup_arg;
   context->jenv = get_current_thread_env();
 

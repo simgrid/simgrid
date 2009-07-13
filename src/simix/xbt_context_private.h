@@ -21,18 +21,6 @@ SG_BEGIN_DECL()
 /* the following function pointers types describe the interface that all context
    concepts must implement */
 
-typedef void (*xbt_pfn_context_free_t) (xbt_context_t);    /* function used to destroy the specified context */
-
-typedef void (*xbt_pfn_context_kill_t) (xbt_context_t);    /* function used to kill the specified context */
-
-typedef void (*xbt_pfn_context_schedule_t) (xbt_context_t);    /* function used to resume the specified context */
-
-typedef void (*xbt_pfn_context_yield_t) (void);    /* function used to yield the specified context */
-
-typedef void (*xbt_pfn_context_start_t) (xbt_context_t);   /* function used to start the specified context */
-
-typedef void (*xbt_pfn_context_stop_t) (int);    /* function used to stop the current context */
-
 /* each context type must contain this macro at its begining -- OOP in C :/ */
 #define XBT_CTX_BASE_T \
   s_xbt_swag_hookup_t hookup; \
@@ -45,13 +33,7 @@ typedef void (*xbt_pfn_context_stop_t) (int);    /* function used to stop the cu
   int argc; \
   char **argv; \
   void_f_pvoid_t startup_func; \
-  void *startup_arg; \
-  xbt_pfn_context_free_t free; \
-  xbt_pfn_context_kill_t kill; \
-  xbt_pfn_context_schedule_t schedule; \
-  xbt_pfn_context_yield_t yield; \
-  xbt_pfn_context_start_t start; \
-  xbt_pfn_context_stop_t stop
+  void *startup_arg;
 
 /* all other context types derive from this structure */
 typedef struct s_xbt_context {
@@ -89,11 +71,35 @@ typedef int (*xbt_pfn_context_factory_create_maestro_context_t) (xbt_context_t*)
 /* this function finalize the specified context factory */
 typedef int (*xbt_pfn_context_factory_finalize_t) (xbt_context_factory_t*);
 
+/* function used to destroy the specified context */
+typedef void (*xbt_pfn_context_free_t) (xbt_context_t);
+
+/* function used to kill the specified context */
+typedef void (*xbt_pfn_context_kill_t) (xbt_context_t);
+
+/* function used to resume the specified context */
+typedef void (*xbt_pfn_context_schedule_t) (xbt_context_t);
+
+/* function used to yield the specified context */
+typedef void (*xbt_pfn_context_yield_t) (void);
+
+/* function used to start the specified context */
+typedef void (*xbt_pfn_context_start_t) (xbt_context_t);
+
+/* function used to stop the current context */
+typedef void (*xbt_pfn_context_stop_t) (int);
+
 /* interface of the context factories */
 typedef struct s_xbt_context_factory {
   xbt_pfn_context_factory_create_maestro_context_t create_maestro_context;
   xbt_pfn_context_factory_create_context_t create_context;
   xbt_pfn_context_factory_finalize_t finalize;
+  xbt_pfn_context_free_t free;
+  xbt_pfn_context_kill_t kill;
+  xbt_pfn_context_schedule_t schedule;
+  xbt_pfn_context_yield_t yield;
+  xbt_pfn_context_start_t start;
+  xbt_pfn_context_stop_t stop;
   const char *name;
 } s_xbt_context_factory_t;
 
