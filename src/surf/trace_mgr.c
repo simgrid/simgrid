@@ -15,10 +15,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf,"Surf trace management");
 
 static xbt_dict_t trace_list = NULL;
-static void _tmgr_trace_free(void *trace)
-{
-  tmgr_trace_free(trace);
-}
 
 tmgr_history_t tmgr_history_new(void)
 {
@@ -50,50 +46,52 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
 
   if (trace_list) {
     trace = xbt_dict_get_or_null(trace_list, id);
-    if (trace)
+    if (trace)  {
+      WARN1("Ignoring redefinition of trace %s",id);
       return trace;
+    }
   }
 
-  if (periodicity <= 0) {
-    xbt_assert1(0, "Periodicity has to be positive. Your value %lg",
-                periodicity);
-  }
+  xbt_assert1(periodicity>=0,
+      "Invalid periodicity %lg (must be positive)", periodicity);
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
   list = xbt_str_split(input, "\n\r");
 
-
   xbt_dynar_foreach(list, cpt, val) {
     linecount++;
     xbt_str_trim(val, " \t\n\r\x0B");
-    if (strlen(val) > 0) {
-      if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2) {
-        xbt_assert2(0, "%s\n%d: Syntax error", input, linecount);
+    if (val[0] == '#' || val[0] == '\0' || val[0] == '%')
+      continue;
+
+    if (sscanf(val, "PERIODICITY " "%lg" "\n", &periodicity) == 1)
+      continue;
+
+    if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2)
+      xbt_die(bprintf("%s:%d: Syntax error in trace\n%s", id, linecount, input));
+
+    if (last_event) {
+      if (last_event->delta > event.delta) {
+        xbt_die(bprintf("%s:%d: Invalid trace: Events must be sorted, but time %lg > time %lg.\n%s",
+            id,linecount, last_event->delta, event.delta, input));
       }
-      if (last_event) {
-        if ((last_event->delta = event.delta - last_event->delta) <= 0) {
-          xbt_assert2(0,
-                      "%s\n%d: Invalid trace value, events have to be sorted",
-                      input, linecount);
-        }
-      }
-      xbt_dynar_push(trace->event_list, &event);
-      last_event =
-        xbt_dynar_get_ptr(trace->event_list,
-                          xbt_dynar_length(trace->event_list) - 1);
-      if (periodicity > 0) {
-        if (last_event)
-          last_event->delta = periodicity;
-      }
+      last_event->delta = event.delta - last_event->delta;
     }
+    xbt_dynar_push(trace->event_list, &event);
+    last_event =
+      xbt_dynar_get_ptr(trace->event_list,
+          xbt_dynar_length(trace->event_list) - 1);
   }
+  if (periodicity > 0)
+    if (last_event)
+      last_event->delta = periodicity;
 
   if (!trace_list)
     trace_list = xbt_dict_new();
 
-  xbt_dict_set(trace_list, id, (void *) trace, _tmgr_trace_free);
+  xbt_dict_set(trace_list, id, (void *) trace, (void(*)(void*))tmgr_trace_free);
 
   xbt_dynar_free(&list);
   return trace;
@@ -101,13 +99,8 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
 
 tmgr_trace_t tmgr_trace_new(const char *filename)
 {
-  tmgr_trace_t trace = NULL;
   FILE *f = NULL;
-  int linecount = 0;
-  char line[256];
-  double periodicity = -1.0;    /* No periodicity by default */
-  s_tmgr_event_t event;
-  tmgr_event_t last_event = NULL;
+  tmgr_trace_t trace = NULL;
 
   if ((!filename) || (strcmp(filename, "") == 0))
     return NULL;
@@ -123,51 +116,10 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   f = surf_fopen(filename, "r");
   xbt_assert1(f!=NULL, "Cannot open file '%s'", filename);
 
-  trace = xbt_new0(s_tmgr_trace_t, 1);
-  trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
-
-  while (fgets(line, 256, f)) {
-    linecount++;
-    if ((line[0] == '#') || (line[0] == '\n') || (line[0] == '%'))
-      continue;
-
-    if (sscanf(line, "PERIODICITY " "%lg" "\n", &(periodicity))
-        == 1) {
-      if (periodicity <= 0) {
-        xbt_assert2(0,
-                    "%s,%d: Syntax error. Periodicity has to be positive",
-                    filename, linecount);
-      }
-      continue;
-    }
-
-    if (sscanf(line, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2) {
-      xbt_assert2(0, "%s,%d: Syntax error", filename, linecount);
-    }
-
-    if (last_event) {
-      if ((last_event->delta = event.delta - last_event->delta) <= 0) {
-        xbt_assert2(0,
-                    "%s,%d: Invalid trace value, events have to be sorted",
-                    filename, linecount);
-      }
-    }
-    xbt_dynar_push(trace->event_list, &event);
-    last_event = xbt_dynar_get_ptr(trace->event_list,
-                                   xbt_dynar_length(trace->event_list) - 1);
-  }
-
-  if (periodicity > 0) {
-    if (last_event)
-      last_event->delta = periodicity;
-  }
-
-  if (!trace_list)
-    trace_list = xbt_dict_new();
-
-  xbt_dict_set(trace_list, filename, (void *) trace, _tmgr_trace_free);
-
+  char *tstr = xbt_str_from_file(f);
   fclose(f);
+  trace = tmgr_trace_new_from_string(filename, tstr, 0.);
+  xbt_free(tstr);
 
   return trace;
 }
@@ -175,8 +127,6 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
 tmgr_trace_t tmgr_empty_trace_new(void)
 {
   tmgr_trace_t trace = NULL;
-  /*double periodicity = -1.0;   No periodicity by default; unused variables
-     tmgr_event_t last_event = NULL; */
   s_tmgr_event_t event;
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
