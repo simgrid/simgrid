@@ -44,7 +44,7 @@ void smpi_mpi_sum_func(void *a, void *b, int *length,
 void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   int i;
-  if (*datatype == smpi_mpi_global->mpi_byte) {
+  if ((*datatype == smpi_mpi_global->mpi_byte) || (*datatype == smpi_mpi_global->mpi_char)) {
     char *x = a, *y = b;
     for (i = 0; i < *length; i++) {
       y[i] = x[i] + y[i];
@@ -66,7 +66,41 @@ void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
     }
   }
 }
+/**
+ *i multiply two vectors element-wise
+ *
+ * @param a the first vectors
+ * @param b the second vectors
+ * @return the second vector is modified and contains the element-wise products
+ **/
+void smpi_mpi_prod_func(void *a, void *b, int *length,
+                       MPI_Datatype * datatype);
 
+void smpi_mpi_prod_func(void *a, void *b, int *length, MPI_Datatype * datatype)
+{
+  int i;
+  if ((*datatype == smpi_mpi_global->mpi_byte) || (*datatype == smpi_mpi_global->mpi_char)) {
+    char *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] * y[i];
+    }
+  } else if (*datatype == smpi_mpi_global->mpi_int) {
+    int *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] * y[i];
+    }
+  } else if (*datatype == smpi_mpi_global->mpi_float) {
+    float *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] * y[i];
+    }
+  } else if (*datatype == smpi_mpi_global->mpi_double) {
+    double *x = a, *y = b;
+    for (i = 0; i < *length; i++) {
+      y[i] = x[i] * y[i];
+    }
+  }
+}
 /**
  * compute the min of two vectors element-wise
  **/
@@ -76,7 +110,7 @@ void smpi_mpi_min_func(void *a, void *b, int *length,
 void smpi_mpi_min_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   int i;
-  if (*datatype == smpi_mpi_global->mpi_byte) {
+  if ((*datatype == smpi_mpi_global->mpi_byte) || (*datatype == smpi_mpi_global->mpi_char)) {
     char *x = a, *y = b;
     for (i = 0; i < *length; i++) {
       y[i] = x[i] < y[i] ? x[i] : y[i];
@@ -115,7 +149,7 @@ void smpi_mpi_max_func(void *a, void *b, int *length,
 void smpi_mpi_max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   int i;
-  if (*datatype == smpi_mpi_global->mpi_byte) {
+  if ((*datatype == smpi_mpi_global->mpi_byte) || (*datatype == smpi_mpi_global->mpi_char)) {
     char *x = a, *y = b;
     for (i = 0; i < *length; i++) {
       y[i] = x[i] > y[i] ? x[i] : y[i];

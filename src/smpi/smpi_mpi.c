@@ -192,6 +192,40 @@ int SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst,
 }
 
 /**
+ * MPI_Sendrecv
+ **/
+int SMPI_MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, 
+		    void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag,
+		    MPI_Comm comm, MPI_Status *status)
+{
+int rank;
+int retval = MPI_SUCCESS;
+smpi_mpi_request_t srequest;
+smpi_mpi_request_t rrequest;
+
+	  rank = smpi_mpi_comm_rank(comm);
+
+	  /* send */
+	  retval = smpi_create_request(sendbuf, sendcount, sendtype, 
+				rank,dest,sendtag, 
+				comm, &srequest);
+	  smpi_mpi_isend(srequest);
+
+
+	  /* recv */
+	  retval = smpi_create_request(recvbuf, recvcount, recvtype, 
+				source,rank,recvtag, 
+				comm, &rrequest);
+	  smpi_mpi_irecv(rrequest);
+
+	  smpi_mpi_wait(srequest, MPI_STATUS_IGNORE);
+	  smpi_mpi_wait(rrequest, MPI_STATUS_IGNORE);
+
+	  return(retval);
+}
+
+
+/**
  * MPI_Wait and friends
  **/
 int SMPI_MPI_Wait(MPI_Request * request, MPI_Status * status)
@@ -477,6 +511,45 @@ int SMPI_MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype datatype,
 }
 
 
+/**
+ * MPI_Alltoall user entry point
+ * 
+ * Uses the logic of OpenMPI (upto 1.2.7 or greater) for the optimizations
+ * ompi/mca/coll/tuned/coll_tuned_module.c
+ **/
+int SMPI_MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype datatype, 
+		         void *recvbuf, int recvcount, MPI_Datatype recvtype,
+			   MPI_Comm comm)
+{
+  int retval = MPI_SUCCESS;
+  int block_dsize;
+  int rank;
+
+  smpi_bench_end();
+
+  rank = smpi_mpi_comm_rank(comm);
+  block_dsize = datatype->size * sendcount;
+
+  if ((block_dsize < 200) && (comm->size > 12)) {
+	    retval = smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, datatype,
+				  recvbuf, recvcount, recvtype, comm);
+
+  } else if (block_dsize < 3000) {
+/* use this one !!	    retval = smpi_coll_tuned_alltoall_basic_linear(sendbuf, sendcount, datatype,
+				  recvbuf, recvcount, recvtype, comm);
+				  */
+  retval = smpi_coll_tuned_alltoall_pairwise(sendbuf, sendcount, datatype,
+				  recvbuf, recvcount, recvtype, comm);
+  } else {
+
+  retval = smpi_coll_tuned_alltoall_pairwise(sendbuf, sendcount, datatype,
+				  recvbuf, recvcount, recvtype, comm);
+  }
+
+  smpi_bench_begin();
+
+  return retval;
+}
 
 
 

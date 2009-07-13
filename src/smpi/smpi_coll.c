@@ -322,8 +322,183 @@ int nary_tree_barrier( MPI_Comm comm , int arity)
 
 
 
+int smpi_coll_tuned_alltoall_pairwise (void *sendbuf, int sendcount, MPI_Datatype datatype,
+		    void* recvbuf, int recvcount, MPI_Datatype recvdatatype, MPI_Comm comm)
+{
+        int retval = MPI_SUCCESS;
+	  int rank;
+	  int size = comm->size;
+	  int step;
+	  int sendto, recvfrom;
+	  int tag_alltoall=999;
+	  void * tmpsend, *tmprecv;
+
+	  rank = smpi_mpi_comm_rank(comm);
+	  /* Perform pairwise exchange - starting from 1 so the local copy is last */
+	  for (step = 1; step < size+1; step++) {
+
+		    /* who do we talk to in this step? */
+		    sendto  = (rank+step)%size;
+		    recvfrom = (rank+size-step)%size;
+
+		    /* where from are we sending and where from are we receiving actual data ? */
+		    tmpsend = (char*)sendbuf+sendto*datatype->size*sendcount;
+		    tmprecv = (char*)recvbuf+recvfrom*recvdatatype->size*recvcount;
+
+		    /* send and receive */
+		    /* in OpenMPI, they use :
+			 err = ompi_coll_tuned_sendrecv( tmpsend, scount, sdtype, sendto, MCA_COLL_BASE_TAG_ALLTOALL,
+			 tmprecv, rcount, rdtype, recvfrom, MCA_COLL_BASE_TAG_ALLTOALL,
+			 comm, MPI_STATUS_IGNORE, rank);
+		     */
+		    retval = MPI_Sendrecv(tmpsend, sendcount, datatype, sendto, tag_alltoall,
+					        tmprecv, recvcount, recvdatatype, recvfrom, tag_alltoall,
+						  comm, MPI_STATUS_IGNORE);
+	  }
+	  return(retval);
+
+}
+
+int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype sdtype,
+		    void* recvbuf, int recvcount, MPI_Datatype rdtype, MPI_Comm comm)
+{
+	  /*
+	  int i, k, line = -1;
+	  int rank, size;
+	  int sendto, recvfrom, distance, *displs=NULL, *blen=NULL;
+	  int maxpacksize, packsize, position;
+	  char * tmpbuf=NULL, *packbuf=NULL;
+	  ptrdiff_t lb, sext, rext;
+	  int err = 0;
+	  int weallocated = 0;
+	  MPI_Datatype iddt;
+
+	  size = ompi_comm_size(comm);
+	  rank = ompi_comm_rank(comm);
+
+	  OPAL_OUTPUT((ompi_coll_tuned_stream,"coll:tuned:alltoall_intra_bruck rank %d", rank));
+
+	  err = ompi_ddt_get_extent (sdtype, &lb, &sext);
+	  if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl; }
+
+	  err = ompi_ddt_get_extent (rdtype, &lb, &rext);
+	  if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl; }
 
 
+	  displs = (int *) malloc(size*sizeof(int));
+	  if (displs == NULL) { line = __LINE__; err = -1; goto err_hndl; }
+	  blen = (int *) malloc(size*sizeof(int));
+	  if (blen == NULL) { line = __LINE__; err = -1; goto err_hndl; }
+	  weallocated = 1;
+*/
+	  /* Prepare for packing data */
+	  /*err = MPI_Pack_size( scount*size, sdtype, comm, &maxpacksize );
+	  if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl;  }
+*/
+	  /* pack buffer allocation */
+/*	  packbuf = (char*) malloc((unsigned) maxpacksize);
+	  if (packbuf == NULL) { line = __LINE__; err = -1; goto err_hndl; }
+*/
+	  /* tmp buffer allocation for message data */
+/*	  tmpbuf = (char *) malloc(scount*size*sext);
+	  if (tmpbuf == NULL) { line = __LINE__; err = -1; goto err_hndl; }
+*/
+
+	  /* Step 1 - local rotation - shift up by rank */
+/*	  err = ompi_ddt_copy_content_same_ddt (sdtype, (int32_t) ((size-rank)*scount),
+				tmpbuf, ((char*)sbuf)+rank*scount*sext);
+	  if (err<0) {
+		    line = __LINE__; err = -1; goto err_hndl;
+	  }
+
+	  if (rank != 0) {
+		    err = ompi_ddt_copy_content_same_ddt (sdtype, (int32_t) (rank*scount),
+					  tmpbuf+(size-rank)*scount*sext, (char*)sbuf);
+		    if (err<0) {
+				line = __LINE__; err = -1; goto err_hndl;
+		    }
+	  }
+*/
+	  /* perform communication step */
+/*	  for (distance = 1; distance < size; distance<<=1) {
+*/
+		    /* send data to "sendto" */
+/*		    sendto = (rank+distance)%size;
+		    recvfrom = (rank-distance+size)%size;
+		    packsize = 0;
+		    k = 0;
+*/
+		    /* create indexed datatype */
+//		    for (i = 1; i < size; i++) {
+//				if ((i&distance) == distance) {
+//					  displs[k] = i*scount; blen[k] = scount;
+//					  k++;
+//				}
+//		    }
+		    /* Set indexes and displacements */
+//		    err = MPI_Type_indexed(k, blen, displs, sdtype, &iddt);
+//		    if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl;  }
+//		    /* Commit the new datatype */
+///		    err = MPI_Type_commit(&iddt);
+//		    if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl;  }
+
+		    /* have the new distribution ddt, pack and exchange data */
+//		    err = MPI_Pack(tmpbuf, 1, iddt, packbuf, maxpacksize, &packsize, comm);
+//		    if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl;  }
+
+		    /* Sendreceive */
+//		    err = ompi_coll_tuned_sendrecv ( packbuf, packsize, MPI_PACKED, sendto,
+//					  MCA_COLL_BASE_TAG_ALLTOALL,
+//					  rbuf, packsize, MPI_PACKED, recvfrom,
+//					  MCA_COLL_BASE_TAG_ALLTOALL,
+//					  comm, MPI_STATUS_IGNORE, rank);
+//		    if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl; }
+
+		    /* Unpack data from rbuf to tmpbuf */
+//		    position = 0;
+//	    err = MPI_Unpack(rbuf, packsize, &position,
+//					  tmpbuf, 1, iddt, comm);
+//		    if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl; }
+
+		    /* free ddt */
+//		    err = MPI_Type_free(&iddt);
+//		    if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl;  }
+//	  } /* end of for (distance = 1... */
+
+	  /* Step 3 - local rotation - */
+//	  for (i = 0; i < size; i++) {
+
+//		    err = ompi_ddt_copy_content_same_ddt (rdtype, (int32_t) rcount,
+//					  ((char*)rbuf)+(((rank-i+size)%size)*rcount*rext),
+//					  tmpbuf+i*rcount*rext);
+//
+//	  if (err<0) {
+//				line = __LINE__; err = -1; goto err_hndl;
+//		    }
+//	  }
+
+	  /* Step 4 - clean up */
+/*	  if (tmpbuf != NULL) free(tmpbuf);
+	  if (packbuf != NULL) free(packbuf);
+	  if (weallocated) {
+		    if (displs != NULL) free(displs);
+		    if (blen != NULL) free(blen);
+	  }
+	  return OMPI_SUCCESS;
+
+err_hndl:
+	  OPAL_OUTPUT((ompi_coll_tuned_stream,"%s:%4d\tError occurred %d, rank %2d", __FILE__,line,err,rank));
+	  if (tmpbuf != NULL) free(tmpbuf);
+	  if (packbuf != NULL) free(packbuf);
+	  if (weallocated) {
+		    if (displs != NULL) free(displs);
+		    if (blen != NULL) free(blen);
+	  }
+	  return err;
+	  */
+	  int NOTYET=1;
+	  return NOTYET;
+}
 
 
 /**

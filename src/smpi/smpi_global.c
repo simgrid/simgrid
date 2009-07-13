@@ -127,6 +127,8 @@ void smpi_mpi_land_func(void *a, void *b, int *length,
                         MPI_Datatype * datatype);
 void smpi_mpi_sum_func(void *a, void *b, int *length,
                        MPI_Datatype * datatype);
+void smpi_mpi_prod_func(void *a, void *b, int *length,
+                       MPI_Datatype * datatype);
 void smpi_mpi_min_func(void *a, void *b, int *length,
                        MPI_Datatype * datatype);
 void smpi_mpi_max_func(void *a, void *b, int *length,
@@ -208,6 +210,8 @@ void smpi_global_init()
   smpi_mpi_global->mpi_land->func = smpi_mpi_land_func;
   smpi_mpi_global->mpi_sum = xbt_new(s_smpi_mpi_op_t, 1);
   smpi_mpi_global->mpi_sum->func = smpi_mpi_sum_func;
+  smpi_mpi_global->mpi_prod = xbt_new(s_smpi_mpi_op_t, 1);
+  smpi_mpi_global->mpi_prod->func = smpi_mpi_prod_func;
   smpi_mpi_global->mpi_min = xbt_new(s_smpi_mpi_op_t, 1);
   smpi_mpi_global->mpi_min->func = smpi_mpi_min_func;
   smpi_mpi_global->mpi_max = xbt_new(s_smpi_mpi_op_t, 1);
@@ -255,6 +259,7 @@ void smpi_global_destroy()
 
   xbt_free(smpi_mpi_global->mpi_land);
   xbt_free(smpi_mpi_global->mpi_sum);
+  xbt_free(smpi_mpi_global->mpi_prod);
   xbt_free(smpi_mpi_global->mpi_max);
   xbt_free(smpi_mpi_global->mpi_min);
 
