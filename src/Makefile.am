@@ -45,7 +45,6 @@ EXTRA_DIST= \
 	surf/simgrid_dtd.c \
 	surf/simgrid.dtd \
 	surf/network_private.h \
-	surf/network_common.h \
 	surf/network_gtnets_private.h \
 	surf/gtnets/gtnets_interface.h \
 	surf/gtnets/gtnets_simulator.h \

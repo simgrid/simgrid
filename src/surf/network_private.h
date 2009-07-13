@@ -9,7 +9,6 @@
 #define _SURF_NETWORK_PRIVATE_H
 
 #include "surf_private.h"
-#include "network_common.h"
 #include "xbt/dict.h"
 
 typedef struct network_link_CM02 {

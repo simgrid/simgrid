@@ -9,7 +9,6 @@
 #include "xbt/dict.h"
 #include "portable.h"
 #include "surf_private.h"
-#include "network_common.h"
 
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource; /* Must remain first to add this to a trace */
