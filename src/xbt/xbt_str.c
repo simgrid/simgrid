@@ -708,6 +708,7 @@ char* xbt_str_from_file(FILE *file) {
   xbt_strbuff_t buff = xbt_strbuff_new();
   char *res;
   char bread[1024];
+  memset(bread,0,1024);
 
   while (!feof(file)) {
     fread(bread, 1, 1023, file);
