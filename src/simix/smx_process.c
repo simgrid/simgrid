@@ -43,7 +43,7 @@ void __SIMIX_create_maestro_process()
   process = xbt_new0(s_smx_process_t, 1);
 
   /* Process data */
-  process->name = (char *)"maestro";
+  process->name = (char *)"";
 
   /*Create the right context type (FIXME: check the return value for success)*/
   SIMIX_context_create_maestro(&process);
