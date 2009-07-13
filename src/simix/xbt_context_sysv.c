@@ -255,7 +255,7 @@ static void smx_ctx_sysv_suspend(smx_process_t process)
   DEBUG1("Suspend context: '%s'", simix_global->current_process->name);
   smx_process_t prev_process = ((xbt_ctx_sysv_t) process->context)->prev;
 
-  simix_global->current_process = (smx_process_t) (((xbt_ctx_sysv_t) process->context)->prev);
+  simix_global->current_process = prev_process;
 
   ((xbt_ctx_sysv_t) process->context)->prev = NULL;
 

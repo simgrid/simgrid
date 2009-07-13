@@ -27,6 +27,7 @@ void SIMIX_process_cleanup(void *arg)
 {
   xbt_swag_remove(arg, simix_global->process_to_run);
   xbt_swag_remove(arg, simix_global->process_list);
+  xbt_swag_remove(arg, ((smx_process_t)arg)->smx_host->process_list);
   xbt_swag_insert(arg, simix_global->process_to_destroy);
 }
 
@@ -49,11 +50,8 @@ void __SIMIX_create_maestro_process()
 
   /* Set it as the maestro process */
   simix_global->maestro_process = process;
+  simix_global->current_process = process;
   
-  /* Now insert it in the global process list and in the process to run list */
-  /* FIXME should it be included in the process_list ??? */
-  xbt_swag_insert(process, simix_global->process_list);
-
   return;
 }
 
@@ -195,9 +193,6 @@ void SIMIX_process_kill(smx_process_t process)
 
   if (process->cond)
     xbt_swag_remove(process, process->cond->sleeping);
-
-  xbt_swag_remove(process, simix_global->process_to_run);
-  xbt_swag_remove(process, simix_global->process_list);
 
   DEBUG2("%p here! killing %p", simix_global->current_process, process);
   SIMIX_context_kill(process);

@@ -211,7 +211,7 @@ void SIMIX_process_killall()
 
   SIMIX_context_empty_trash();
 
-  if (self) {
+  if (self != simix_global->maestro_process) {
     SIMIX_context_yield();
   }
 
@@ -221,33 +221,35 @@ void SIMIX_process_killall()
 /**
  * \brief Clean the SIMIX simulation
  *
- * This functions remove all memories needed to the SIMIX execution
+ * This functions remove the memory used by SIMIX
  */
 void SIMIX_clean(void)
 {
-  smx_process_t p = NULL;
+  /* Kill everyone (except maestro) */
+  SIMIX_process_killall();
 
-  while ((p = xbt_swag_extract(simix_global->process_list))) {
-    SIMIX_process_kill(p);
-  }
-
+  /* Destroy the hosts list (and the hosts) */
   xbt_dict_free(&(simix_global->host));
+  
+  simix_config_finalize();
+  
+  /* Free the remaining data structures*/
   xbt_swag_free(simix_global->process_to_run);
+  xbt_swag_free(simix_global->process_to_destroy);
+  xbt_swag_free(simix_global->process_list);
+  simix_global->process_list = NULL;
   xbt_dict_free(&(simix_global->registered_functions));
+
+  /* Let's free maestro now */
+  SIMIX_context_free(simix_global->maestro_process);
+  free(simix_global->maestro_process);  
+
+  /* Finish context module and SURF */
+  SIMIX_context_mod_exit();
+  surf_exit();
+  
   free(simix_global);
   simix_global = NULL;
-
-  surf_exit();
-
-  /*FIXME Remove maestro's smx_process from the process_list before calling
-    SIMIX_context_mod_exit() and delete it afterwards (it should be the last one) */
-  SIMIX_context_mod_exit();
-  xbt_swag_free(simix_global->process_list);
-  xbt_swag_free(simix_global->process_to_destroy);
-
-  /* Let's free maestro */
-  SIMIX_context_free(simix_global->maestro_process);
-  free(simix_global->maestro_process);
   
   return;
 }
@@ -295,12 +297,8 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
   }
 
   while ((process = xbt_swag_extract(simix_global->process_to_run))) {
-    DEBUG2("Scheduling %s on %s",
-           process->name, process->smx_host->name);
-    simix_global->current_process = process;
+    DEBUG2("Scheduling %s on %s", process->name, process->smx_host->name);
     SIMIX_context_schedule(process);
-    /*       fflush(NULL); */
-    simix_global->current_process = NULL;
   }
 
   {

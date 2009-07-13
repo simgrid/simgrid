@@ -187,7 +187,8 @@ int gras_os_getpid(void)
   
   if (process != NULL){
     data = (gras_procdata_t *)SIMIX_process_get_data(process);
-    return data->pid;
+    if(data != NULL)
+      return data->pid;
   }
   
   return 0;

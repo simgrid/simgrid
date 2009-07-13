@@ -52,18 +52,12 @@ void SIMIX_context_mod_init(void)
 void SIMIX_context_mod_exit(void)
 {
   if (simix_global->context_factory) {
-    smx_process_t process = NULL;
     smx_pfn_context_factory_finalize_t finalize_factory;
 
-    /* kill all the processes (except maestro)
-     * the killed processes are added in the list of the processes to destroy */
+    /* if there are living processes then kill them (except maestro) */
+    if(simix_global->process_list != NULL)
+      SIMIX_process_killall();
     
-    while ((process = xbt_swag_extract(simix_global->process_list)))
-      (*(simix_global->context_factory->kill)) (process);
-
-    /* destroy all processes in the list of process to destroy */
-    SIMIX_context_empty_trash();
-
     /* finalize the context factory */
     finalize_factory = simix_global->context_factory->finalize;
     (*finalize_factory) (&simix_global->context_factory);
@@ -234,7 +228,6 @@ void SIMIX_context_empty_trash(void)
   int i;  
 
   while ((process = xbt_swag_extract(simix_global->process_to_destroy))){
-
     free(process->name);
     process->name = NULL;
   
