@@ -30,7 +30,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
 typedef enum {
   MAXMIN,
-  SDP,
   LAGRANGE_RENO,
   LAGRANGE_VEGAS,
 } method_t;
@@ -151,10 +150,6 @@ void test1(method_t method)
 
   if (method == MAXMIN) {
     lmm_solve(Sys);
-#ifdef HAVE_SDP
-  } else if (method == SDP) {
-    sdp_solve(Sys);
-#endif
   } else if (method == LAGRANGE_VEGAS) {
     double x = 3 * a / 4 - 3 * b / 8 +
       sqrt(9 * b * b + 4 * a * a - 4 * a * b) / 8;
@@ -269,10 +264,6 @@ void test2(method_t method)
 
   if (method == MAXMIN) {
     lmm_solve(Sys);
-#ifdef HAVE_SDP
-  } else if (method == SDP) {
-    sdp_solve(Sys);
-#endif
   } else if (method == LAGRANGE_VEGAS) {
     lagrange_solve(Sys);
   } else if (method == LAGRANGE_RENO) {
@@ -445,10 +436,6 @@ void test3(method_t method)
 
   if (method == MAXMIN) {
     lmm_solve(Sys);
-#ifdef HAVE_SDP
-  } else if (method == SDP) {
-    sdp_solve(Sys);
-#endif
   } else if (method == LAGRANGE_VEGAS) {
     lagrange_solve(Sys);
   } else if (method == LAGRANGE_RENO) {
@@ -477,10 +464,6 @@ int main(int argc, char **argv)
 
   INFO0("***** Test 1 (Max-Min)");
   test1(MAXMIN);
-#ifdef HAVE_SDP
-  INFO0("***** Test 1 (SDP)");
-  test1(SDP);
-#endif
   INFO0("***** Test 1 (Lagrange - Vegas)");
   test1(LAGRANGE_VEGAS);
   INFO0("***** Test 1 (Lagrange - Reno)");
@@ -490,10 +473,6 @@ int main(int argc, char **argv)
 
   INFO0("***** Test 2 (Max-Min)");
   test2(MAXMIN);
-#ifdef HAVE_SDP
-  INFO0("***** Test 2 (SDP)");
-  test2(SDP);
-#endif
   INFO0("***** Test 2 (Lagrange - Vegas)");
   test2(LAGRANGE_VEGAS);
   INFO0("***** Test 2 (Lagrange - Reno)");
@@ -502,10 +481,6 @@ int main(int argc, char **argv)
 
   INFO0("***** Test 3 (Max-Min)");
   test3(MAXMIN);
-#ifdef HAVE_SDP
-  INFO0("***** Test 3 (SDP)");
-  test3(SDP);
-#endif
   INFO0("***** Test 3 (Lagrange - Vegas)");
   test3(LAGRANGE_VEGAS);
   INFO0("***** Test 3 (Lagrange - Reno)");

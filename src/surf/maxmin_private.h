@@ -53,7 +53,6 @@ typedef struct lmm_variable {
   double bound;
   double value;
   void *id;
-  int index;                    /* FOR SDP ONLY */
   /* \begin{For Lagrange only} */
   double mu;
   double new_mu;

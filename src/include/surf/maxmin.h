@@ -86,10 +86,6 @@ XBT_PUBLIC(void) lmm_update_constraint_bound(lmm_system_t sys,
 
 XBT_PUBLIC(void) lmm_solve(lmm_system_t sys);
 
-#ifdef HAVE_SDP
-XBT_PUBLIC(void) sdp_solve(lmm_system_t sys);
-#endif /* HAVE_SDP */
-
 XBT_PUBLIC(void) lagrange_solve(lmm_system_t sys);
 XBT_PUBLIC(void) bottleneck_solve(lmm_system_t sys);
 

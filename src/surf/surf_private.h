@@ -40,8 +40,7 @@ typedef struct surf_model_private {
 /* #define pub2priv(r) ((surf_model_private_t) ((char *)(r) -(sizeof(struct surf_model_private_part)))) */
 /* #define priv2pub(r) ((void *) ((char *)(r) +(sizeof(struct surf_model_private_part)))) */
 
-extern int use_sdp_solver;
-extern int use_lagrange_solver;
+//extern int use_lagrange_solver;
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
                                       size_t offset,

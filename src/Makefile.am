@@ -312,13 +312,6 @@ else
   EXTRA_DIST+=$(GTNETS_SRC)
 endif
 
-if HAVE_SDP
-  SDP_SRC= surf/sdp.c
-else 
-  SDP_SRC=
-  EXTRA_DIST+=surf/sdp.c
-endif
-
 ###
 ### Declare the library content
 ###
@@ -328,7 +321,7 @@ lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la
 libgras_la_SOURCES=  $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
-libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
+libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) \
                         $(SIMIX_SRC) $(CTX_SRC) \
                         $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)

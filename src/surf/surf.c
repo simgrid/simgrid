@@ -13,8 +13,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
 
-int use_sdp_solver = 0;
-int use_lagrange_solver = 0;
+//int use_lagrange_solver = 0; KILLME
 
 /* Additional declarations for Windows potability. */
 
@@ -120,9 +119,6 @@ s_surf_model_description_t surf_network_model_description[] = {
   {"LegrandVelho", NULL, surf_network_model_init_LegrandVelho},
 #ifdef HAVE_GTNETS
   {"GTNets", NULL, surf_network_model_init_GTNETS},
-#endif
-#ifdef HAVE_SDP
-  {"SDP", NULL, surf_network_model_init_SDP},
 #endif
   {"Reno", NULL, surf_network_model_init_Reno},
   {"Reno2", NULL, surf_network_model_init_Reno2},
@@ -242,10 +238,6 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
 XBT_LOG_EXTERNAL_CATEGORY(surf_config);
 
 
-#ifdef HAVE_SDP
-XBT_LOG_EXTERNAL_CATEGORY(surf_sdp_out);
-XBT_LOG_EXTERNAL_CATEGORY(surf_sdp);
-#endif
 #ifdef HAVE_GTNETS
 XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 #endif
@@ -265,10 +257,6 @@ void surf_init(int *argc, char **argv)
   XBT_LOG_CONNECT(surf_workstation, surf);
   XBT_LOG_CONNECT(surf_config, surf);
 
-#ifdef HAVE_SDP
-  XBT_LOG_CONNECT(surf_sdp_out, surf);
-  XBT_LOG_CONNECT(surf_sdp, surf);
-#endif
 #ifdef HAVE_GTNETS
   XBT_LOG_CONNECT(surf_network_gtnets, surf);
 #endif

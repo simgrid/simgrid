@@ -297,48 +297,6 @@ AM_CONDITIONAL(HAVE_GTNETS, test "x$gtnets" != "xno")
 
 
 
-
-#########################################
-## Build optional modules (csdp)
-##
-csdp=no
-AC_ARG_WITH(csdp,
-  AS_HELP_STRING([--with-csdp], [Path to csdp installation (default to empty, i.e. not using csdp)]),
-  csdp_path="$withval",csdp_path="no")
-  AC_MSG_CHECKING(for CSDP option:)
-if test "x$csdp_path" = "xno" ; then
-  AC_MSG_RESULT([no, eventually you will come to csdp.])
-else  
-  AC_MSG_RESULT(***** You have decided to use csdp. Let's check whether it works or not *****)
-  AC_MSG_CHECKING(for csdp)
-  CSDP_LDFLAGS="-L$csdp_path/lib -lsdp -llapack -lblas -lm"
-  CSDP_CPPFLAGS="-I$csdp_path/include -I$csdp_path/include/csdp"
-
-  AC_CHECK_LIB(sdp,easy_sdp, csdp_lib=yes, csdp_lib=no,$CSDP_LDFLAGS)
-  
-  CPPFLAGS_SAV=$CPPFLAGS
-  CPPFLAGS+=$CSDP_CPPFLAGS
-  AC_CHECK_HEADER(declarations.h, csdp_header=yes, csdp_header=no, [])
-  CPPFLAGS=$CPPFLAGS_SAV
-
-  
-
-  if test "x$csdp_lib = xyes" -a "x$csdp_header = xyes" ; then
-     csdp=yes;
-  else 
-     csdp=no;
-  fi
-  if test "x$csdp" = xyes; then 
-    AM_CPPFLAGS="$AM_CPPFLAGS $CSDP_CPPFLAGS"
-    SIMGRID_DEP="$SIMGRID_DEP $CSDP_LDFLAGS"
-    AC_MSG_RESULT(Found working sdp library.)
-    AC_DEFINE([HAVE_SDP], 1, [Indicates whether we have the CSDP library or not])
-  else
-    AC_MSG_RESULT(Could not find any working sdp library.)
-  fi;
-fi
-AM_CONDITIONAL(HAVE_SDP,test x$csdp != xno)
-
 AC_SUBST([SIMGRID_DEP])
 AC_SUBST([SMPI_DEP])
 

@@ -40,6 +40,9 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Improve the action object model
     - implement a constructor avoiding dupplicated code about field
       initialization in generic_action part.
+      
+  * Kill the SDP model: it has an external dependency, is deprecated
+    in flavor of modern lmm models, and didn't compile since a while
  
  SimDag:
   * Kill SD_link_get_properties: hard to maintain and makes very little sense

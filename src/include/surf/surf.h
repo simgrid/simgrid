@@ -415,25 +415,6 @@ XBT_PUBLIC(void) surf_network_model_init_Reno2(const char *filename);
  */
 XBT_PUBLIC(void) surf_network_model_init_Vegas(const char *filename);
 
-#ifdef HAVE_SDP
-/** \brief Initializes the platform with the network model based on SDP
- *  \ingroup SURF_models
- *  \param filename XML platform file name
- *
- *  This function implements the proportional fairness known as the maximization
- *  of x1*x2*...*xn .
- *
- *  Reference:
- *
- *  [TAG03]. Corinne Touati, Eitan Altman, and Jerome Galtier.
- *  Semi-definite programming approach for bandwidth allocation and routing in networks.
- *  Game Theory and Applications, 9:169-179, December 2003. Nova publisher.
- *
- *  Call this function only if you plan using surf_workstation_model_init_compound.
- */
-XBT_PUBLIC(void) surf_network_model_init_SDP(const char *filename);
-#endif
-
 /** \brief The list of all available network model models
  *  \ingroup SURF_models
  */

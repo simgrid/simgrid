@@ -37,10 +37,6 @@ $ cd msg
 
 ! include sendrecv/sendrecv_Reno.tesh
 
-# Modele non valid
-#! include sendrecv/sendrecv_SDP.tesh
-
-
 ! include sendrecv/sendrecv_Vegas.tesh
 
 # Suspend

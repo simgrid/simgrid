@@ -46,10 +46,6 @@ TESTS = sendrecv/sendrecv_CLM03.tesh \
         priority/priority.tesh \
 	properties/msg_prop.tesh
 
-
-if HAVE_SDP
-  BROKEN_TESTS = sendrecv/sendrecv_SDP.tesh
-endif
 if HAVE_GTNETS
   TESTS += gtnets/gtnets.tesh
 endif

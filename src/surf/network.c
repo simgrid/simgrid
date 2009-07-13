@@ -617,19 +617,3 @@ void surf_network_model_init_Vegas(const char *filename)
   update_model_description(surf_network_model_description,
                            "Vegas", surf_network_model);
 }
-
-#ifdef HAVE_SDP
-void surf_network_model_init_SDP(const char *filename)
-{
-  if (surf_network_model)
-    return;
-  surf_network_model_init_internal();
-  define_callbacks(filename);
-
-  xbt_dynar_push(model_list, &surf_network_model);
-  network_solve = sdp_solve;
-
-  update_model_description(surf_network_model_description,
-                           "SDP", surf_network_model);
-}
-#endif
