@@ -249,7 +249,7 @@ static surf_action_t execute(void *cpu, double size)
   surf_action_cpu_Cas01_t action = NULL;
   cpu_Cas01_t CPU = cpu;
 
-  XBT_IN2("(%s,%g)", CPU->generic_resource.name, size);
+  XBT_IN2("(%s,%g)", surf_resource_name(CPU), size);
   action = surf_action_new(sizeof(s_surf_action_cpu_Cas01_t),size,surf_cpu_model,
       CPU->state_current != SURF_RESOURCE_ON);
 
@@ -271,7 +271,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN2("(%s,%g)", ((cpu_Cas01_t) cpu)->generic_resource.name, duration);
+  XBT_IN2("(%s,%g)", surf_resource_name(cpu), duration);
   action = (surf_action_cpu_Cas01_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;

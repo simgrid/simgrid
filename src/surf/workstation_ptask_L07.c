@@ -322,7 +322,7 @@ static void update_resource_state(void *id,
   link_L07_t nw_link = id;
 
   if (nw_link->type == SURF_WORKSTATION_RESOURCE_LINK) {
-    DEBUG2("Updating link %s (%p)", nw_link->generic_resource.name, nw_link);
+    DEBUG2("Updating link %s (%p)", surf_resource_name(nw_link), nw_link);
     if (event_type == nw_link->bw_event) {
       nw_link->bw_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, nw_link->constraint,
@@ -352,7 +352,7 @@ static void update_resource_state(void *id,
     }
     return;
   } else if (cpu->type == SURF_WORKSTATION_RESOURCE_CPU) {
-    DEBUG3("Updating cpu %s (%p) with value %g", cpu->generic_resource.name, cpu, value);
+    DEBUG3("Updating cpu %s (%p) with value %g", surf_resource_name(cpu), cpu, value);
     if (event_type == cpu->power_event) {
       cpu->power_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, cpu->constraint,
@@ -384,7 +384,7 @@ static void finalize(void)
   surf_network_model = NULL;
   used_routing->finalize();
 
-  host_count = 0; // FIXME: KILLME?
+  host_count = 0;
 
   if (ptask_maxmin_system) {
     lmm_system_free(ptask_maxmin_system);
@@ -542,7 +542,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
 {
   surf_action_workstation_L07_t action = NULL;
 
-  XBT_IN2("(%s,%g)", ((cpu_L07_t) cpu)->generic_resource.name, duration);
+  XBT_IN2("(%s,%g)", surf_resource_name(cpu), duration);
 
   action = (surf_action_workstation_L07_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
