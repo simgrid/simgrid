@@ -268,45 +268,34 @@ void surf_init(int *argc, char **argv)
   surf_config_init(argc, argv);
 }
 
-static char *path_name = NULL;
+#ifdef WIN32
+# define FILE_DELIM "\\"
+#else
+# define FILE_DELIM "/" /* FIXME: move to better location */
+#endif
+
 FILE *surf_fopen(const char *name, const char *mode)
 {
-  unsigned int iter;
-  char *path = NULL;
+  unsigned int cpt;
+  char *path_elm = NULL;
+  char *buff;
   FILE *file = NULL;
-  unsigned int path_name_len = 0;       /* don't count '\0' */
 
-  xbt_assert0(name, "Need a non-NULL file name");
+  xbt_assert(name);
 
-  xbt_assert0(surf_path,
-              "surf_init has to be called before using surf_fopen");
-
-  if (__surf_is_absolute_file_path(name)) {     /* don't mess with absolute file names */
+  if (__surf_is_absolute_file_path(name))     /* don't mess with absolute file names */
     return fopen(name, mode);
 
-  } else {                      /* search relative files in the path */
+  /* search relative files in the path */
+  xbt_dynar_foreach(surf_path, cpt, path_elm) {
+    buff = bprintf("%s" FILE_DELIM "%s", path_elm,name);
+    file = fopen(buff, mode);
+    free(buff);
 
-    if (!path_name) {
-      path_name_len = strlen(name);
-      path_name = xbt_new0(char, path_name_len + 1);
-    }
-
-    xbt_dynar_foreach(surf_path, iter, path) {
-      if (path_name_len < strlen(path) + strlen(name) + 1) {
-        path_name_len = strlen(path) + strlen(name) + 1;        /* plus '/' */
-        path_name = xbt_realloc(path_name, path_name_len + 1);
-      }
-#ifdef WIN32
-      sprintf(path_name, "%s\\%s", path, name);
-#else
-      sprintf(path_name, "%s/%s", path, name);
-#endif
-      file = fopen(path_name, mode);
-      if (file)
-        return file;
-    }
+    if (file)
+      return file;
   }
-  return file;
+  return NULL;
 }
 
 void surf_exit(void)
@@ -336,10 +325,6 @@ void surf_exit(void)
 
   tmgr_finalize();
   surf_parse_lex_destroy();
-  if (path_name) {
-    free(path_name);
-    path_name = NULL;
-  }
   surf_parse_free_callbacks();
   xbt_dict_free(&route_table);
   NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
