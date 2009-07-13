@@ -11,7 +11,19 @@
 #include "xbt.h"                /* calloc, printf */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+                 "Messages specific for this msg example");
+
+/* Helper function */
+static double parse_double(const char *string) {
+  double value;
+  char *endptr;
+
+  value=strtod(string, &endptr);
+  if (*endptr != '\0')
+	  THROW1(unknown_error, 0, "%s is not a double", string);
+  return value;
+}
+
 
 /* Helper function */
 static double parse_double(const char *string)
