@@ -259,8 +259,8 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
  * Resource which have a metric handled by a maxmin system
  */
 typedef struct {
-  double current;
-  double max;
+  double scale;
+  double peak;
   tmgr_trace_event_t event;
 } s_surf_metric_t;
 

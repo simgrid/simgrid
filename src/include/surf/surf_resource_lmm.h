@@ -15,7 +15,7 @@ surf_resource_lmm_t surf_resource_lmm_new(size_t childsize,
     lmm_system_t system, double constraint_value,
     tmgr_history_t history,
     int state_init, tmgr_trace_t state_trace,
-    double metric_init, tmgr_trace_t metric_trace) {
+    double metric_peak, tmgr_trace_t metric_trace) {
 
   surf_resource_lmm_t res = (surf_resource_lmm_t)surf_resource_new(childsize,model,name,props);
 
@@ -24,7 +24,8 @@ surf_resource_lmm_t surf_resource_lmm_new(size_t childsize,
   if (state_trace)
     res->state_event = tmgr_history_add_trace(history, state_trace, 0.0, 0, res);
 
-  res->power.current = metric_init;
+  res->power.scale = 1.0;
+  res->power.peak = metric_peak;
   if (metric_trace)
     res->power.event = tmgr_history_add_trace(history, metric_trace, 0.0, 0, res);
   return res;

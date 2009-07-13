@@ -263,14 +263,15 @@ static void update_resource_state(void *id,
 
   if (event_type == nw_link->lmm_resource.power.event) {
     double delta =
-      weight_S_parameter / value - weight_S_parameter / nw_link->lmm_resource.power.current;
+      weight_S_parameter / value - weight_S_parameter /
+          (nw_link->lmm_resource.power.peak * nw_link->lmm_resource.power.scale);
     lmm_variable_t var = NULL;
     lmm_element_t elem = NULL;
     surf_action_network_CM02_t action = NULL;
 
-    nw_link->lmm_resource.power.current = value;
+    nw_link->lmm_resource.power.peak = value;
     lmm_update_constraint_bound(network_maxmin_system, nw_link->lmm_resource.constraint,
-                                bandwidth_factor * nw_link->lmm_resource.power.current);
+                                bandwidth_factor * (nw_link->lmm_resource.power.peak * nw_link->lmm_resource.power.scale));
     if (weight_S_parameter > 0) {
       while ((var = lmm_get_var_from_cnst
               (network_maxmin_system, nw_link->lmm_resource.constraint, &elem))) {
@@ -371,7 +372,9 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,int 
   xbt_dynar_foreach(route,i,link) {
     action->latency += link->lat_current;
     action->weight +=
-      link->lat_current + weight_S_parameter / link->lmm_resource.power.current;
+      link->lat_current +
+      weight_S_parameter /
+        (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
   }
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
@@ -419,7 +422,8 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,int 
 
 static double get_link_bandwidth(const void *link)
 {
-  return ((link_CM02_t) link)->lmm_resource.power.current;
+  surf_resource_lmm_t lmm = (surf_resource_lmm_t)link;
+  return lmm->power.peak * lmm->power.scale;
 }
 
 static double get_link_latency(const void *link)
