@@ -15,7 +15,6 @@
 #include "xbt/fifo.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
-#include "xbt/config.h"
 #include "xbt/function_types.h"
 
 /******************************** Datatypes ***********************************/
@@ -23,7 +22,7 @@
 
 /*********************************** Host *************************************/
 
-/** @brief Host datatype 
+/** @brief Host datatype
     @ingroup m_datatypes_management_details */
 typedef struct s_smx_host {
   char *name;              /**< @brief host name if any */
@@ -56,7 +55,7 @@ extern SIMIX_Global_t simix_global;
 
 typedef struct s_smx_context *smx_context_t;
 
-/** @brief Process datatype 
+/** @brief Process datatype
     @ingroup m_datatypes_management_details @{ */
      typedef struct s_smx_process {
        s_xbt_swag_hookup_t process_hookup;
@@ -116,7 +115,7 @@ typedef struct s_smx_cond {
 
 /********************************* Action *************************************/
 
-/** @brief Action datatype 
+/** @brief Action datatype
     @ingroup m_datatypes_management_details */
 typedef struct s_smx_action {
   char *name;              /**< @brief action name if any */
@@ -129,16 +128,12 @@ typedef struct s_smx_action {
 
 /************************** Configuration support *****************************/
 
-void simix_config_init(void);   /* create the config set, call this before use! */
-void simix_config_finalize(void);       /* destroy the config set, call this at cleanup. */
-extern int _simix_init_status;  /* 0: beginning of time; 
-                                   1: pre-inited (cfg_set created); 
+extern int _simix_init_status;  /* 0: beginning of time; FIXME: KILLME ?
+                                   1: pre-inited (cfg_set created);
                                    2: inited (running) */
-extern xbt_cfg_t _simix_cfg_set;
 
-
-#define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_model->extension_public-> \
-				  get_state(SIMIX_host_self()->host)==SURF_CPU_ON,\
+#define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_model->extension.workstation. \
+				  get_state(SIMIX_host_self()->host)==SURF_RESOURCE_ON,\
                                   "Host failed, you cannot call this function.")
 
 smx_host_t __SIMIX_host_create(const char *name, void *workstation, void *data);
@@ -161,11 +156,11 @@ void SIMIX_context_start(smx_process_t process);
 void SIMIX_context_yield(void);
 
 void SIMIX_context_schedule(smx_process_t process);
-     
+
 void SIMIX_context_empty_trash(void);
 
 void SIMIX_context_stop(int exit_code);
-     
+
 void SIMIX_context_free(smx_process_t process);
 
 void SIMIX_context_mod_init(void);

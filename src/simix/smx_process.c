@@ -51,11 +51,11 @@ void __SIMIX_create_maestro_process()
   /* Set it as the maestro process */
   simix_global->maestro_process = process;
   simix_global->current_process = process;
-  
+
   return;
 }
 
-/** 
+/**
  * \brief Creates and runs a new #smx_process_t.
  *
  * A constructor for #m_process_t taking four arguments and returning the corresponding object. The structure (and the corresponding thread) is created, and put in the list of ready process.
@@ -404,7 +404,7 @@ void SIMIX_process_change_host(smx_process_t process, char *source, char *dest)
  */
 int SIMIX_process_is_suspended(smx_process_t process)
 {
-  xbt_assert0(((process != NULL), "Invalid parameters");
+  xbt_assert0((process != NULL), "Invalid parameters");
 
   return (process->suspended);
 }

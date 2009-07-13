@@ -24,20 +24,6 @@ static double parse_double(const char *string) {
   return value;
 }
 
-
-/* Helper function */
-static double parse_double(const char *string)
-{
-  double value;
-  char *endptr;
-
-  value = strtod(string, &endptr);
-  if (*endptr != '\0')
-    THROW1(unknown_error, 0, "%s is not a double", string);
-  return value;
-}
-
-
 /* My actions */
 static void send(xbt_dynar_t action)
 {

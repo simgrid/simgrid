@@ -45,7 +45,7 @@ static void _XBT_CALL inthandler(int ignored)
 void SIMIX_global_init(int *argc, char **argv)
 {
   s_smx_process_t proc;
-  
+
   if (!simix_global) {
     /* Connect our log channels: that must be done manually under windows */
     XBT_LOG_CONNECT(simix_action, simix);
@@ -76,7 +76,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
     SIMIX_context_mod_init();
     __SIMIX_create_maestro_process();
-    
+
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
     surf_init(argc, argv);      /* Initialize SURF structures */
@@ -227,9 +227,7 @@ void SIMIX_clean(void)
 {
   /* Kill everyone (except maestro) */
   SIMIX_process_killall();
-  
-  simix_config_finalize();
-  
+
   /* Free the remaining data structures*/
   xbt_swag_free(simix_global->process_to_run);
   xbt_swag_free(simix_global->process_to_destroy);
@@ -237,18 +235,18 @@ void SIMIX_clean(void)
   simix_global->process_list = NULL;
   xbt_dict_free(&(simix_global->registered_functions));
   xbt_dict_free(&(simix_global->host));
-  
+
   /* Let's free maestro now */
   SIMIX_context_free(simix_global->maestro_process);
-  free(simix_global->maestro_process);  
+  free(simix_global->maestro_process);
 
   /* Finish context module and SURF */
   SIMIX_context_mod_exit();
   surf_exit();
-  
+
   free(simix_global);
   simix_global = NULL;
-  
+
   return;
 }
 

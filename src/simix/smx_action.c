@@ -75,7 +75,7 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
 
   /* check if the host is active */
   if (surf_workstation_model->extension.
-      workstation.get_state(host->>host) != SURF_RESOURCE_ON) {
+      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
     THROW1(host_error, 0, "Host %s failed, you cannot call this function",
            host->name);
   }
@@ -311,7 +311,7 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
                                       computation_amount,
                                       communication_amount, amount, rate);
 
-  surf_workstation_model->action_data_set(simdata->surf_action, act);
+  surf_workstation_model->action_data_set(act->surf_action, act);
 
   return act;
 }

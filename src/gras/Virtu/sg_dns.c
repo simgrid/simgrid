@@ -12,8 +12,8 @@
 
 const char *gras_os_myname(void)
 {
-  smx_process_t process = SIMIX_process_self();
-  if (process != NULL)
+  smx_host_t host = SIMIX_host_self();
+  if (host != NULL)
     return SIMIX_host_get_name(SIMIX_host_self());
   else
     return "";
