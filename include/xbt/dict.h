@@ -61,7 +61,7 @@ XBT_PUBLIC(void) xbt_dict_set(xbt_dict_t dict, const char *key, void *data,
                               void_f_pvoid_t free_ctn);
 XBT_PUBLIC(void *) xbt_dict_get(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(void *) xbt_dict_get_or_null(xbt_dict_t dict, const char *key);
-XBT_PUBLIC(char *) xbt_dict_get_key(xbt_dict_t dict, void*data);
+XBT_PUBLIC(char *) xbt_dict_get_key(xbt_dict_t dict, const void*data);
 
 XBT_PUBLIC(void) xbt_dict_remove(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(void) xbt_dict_reset(xbt_dict_t dict);

@@ -362,7 +362,7 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
  *
  * Returns NULL if the object cannot be found
  */
-char *xbt_dict_get_key(xbt_dict_t dict, void*data) {
+char *xbt_dict_get_key(xbt_dict_t dict, const void*data) {
   int i;
   xbt_dictelm_t current;
 
