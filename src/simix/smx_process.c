@@ -213,7 +213,6 @@ void SIMIX_process_kill(smx_process_t process)
 void *SIMIX_process_get_data(smx_process_t process)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
-
   return (process->data);
 }
 

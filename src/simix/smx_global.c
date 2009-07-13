@@ -227,9 +227,6 @@ void SIMIX_clean(void)
 {
   /* Kill everyone (except maestro) */
   SIMIX_process_killall();
-
-  /* Destroy the hosts list (and the hosts) */
-  xbt_dict_free(&(simix_global->host));
   
   simix_config_finalize();
   
@@ -239,7 +236,8 @@ void SIMIX_clean(void)
   xbt_swag_free(simix_global->process_list);
   simix_global->process_list = NULL;
   xbt_dict_free(&(simix_global->registered_functions));
-
+  xbt_dict_free(&(simix_global->host));
+  
   /* Let's free maestro now */
   SIMIX_context_free(simix_global->maestro_process);
   free(simix_global->maestro_process);  

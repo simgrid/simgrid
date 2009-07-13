@@ -77,8 +77,8 @@ EXTRA_DIST= \
 	include/simix/simix.h include/simix/datatypes.h \
 	include/simix/context.h \
 	simix/private.h \
-        simix/xbt_context_private.h \
-        simix/xbt_context_java.h \
+        simix/smx_context_private.h \
+        simix/smx_context_java.h \
 	\
 	smpi/private.h \
 	smpi/smpi_coll_private.h \
@@ -196,7 +196,7 @@ GTNETS_SRC= \
 
 # Separated because src/gras/rl_stubs also define the function xbt_context_mod_init() and xbt_context_mod_exit()
 # so there is an implementation of these functions in the simgrid library and an implementatin in the gras library 
-CTX_SRC= simix/xbt_context.c
+CTX_SRC= simix/smx_context.c
 
 SIMIX_SRC= \
   simix/smx_global.c \
@@ -208,9 +208,9 @@ SIMIX_SRC= \
   simix/smx_synchro.c
   
 if CONTEXT_THREADS
-  SURF_SRC += simix/xbt_context_thread.c  
+  SURF_SRC += simix/smx_context_thread.c  
 else  
-  SURF_SRC += simix/xbt_context_sysv.c
+  SURF_SRC += simix/smx_context_sysv.c
 endif  
 
 SMPI_SRC= \
@@ -229,7 +229,7 @@ MSG_SRC=  msg/msg_config.c \
   msg/msg_actions.c
 
 JMSG_C_SRC = \
-  simix/xbt_context_java.c \
+  simix/smx_context_java.c \
   java/jxbt_utilities.c     java/jxbt_utilities.h      \
   java/jmsg.c               java/jmsg.h                \
   java/jmsg_channel.c       java/jmsg_channel.h        \

@@ -54,7 +54,7 @@ extern SIMIX_Global_t simix_global;
 
 /******************************** Process *************************************/
 
-typedef struct s_xbt_context *xbt_context_t;
+typedef struct s_smx_context *smx_context_t;
 
 /** @brief Process datatype 
     @ingroup m_datatypes_management_details @{ */
@@ -66,7 +66,7 @@ typedef struct s_xbt_context *xbt_context_t;
 
        char *name;              /**< @brief process name if any */
        smx_host_t smx_host;     /* the host on which the process is running */
-       xbt_context_t context;   /* the context that executes the scheduler function */
+       smx_context_t context;   /* the context that executes the scheduler function */
        int argc;                /* arguments number if any */
        char **argv;             /* arguments table if any */
        int blocked : 1;
@@ -127,11 +127,18 @@ typedef struct s_smx_action {
   smx_host_t source;
 } s_smx_action_t;
 
-/******************************* Other **********************************/
+/************************** Configuration support *****************************/
+
+void simix_config_init(void);   /* create the config set, call this before use! */
+void simix_config_finalize(void);       /* destroy the config set, call this at cleanup. */
+extern int _simix_init_status;  /* 0: beginning of time; 
+                                   1: pre-inited (cfg_set created); 
+                                   2: inited (running) */
+extern xbt_cfg_t _simix_cfg_set;
 
 
-#define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_model->extension.workstation. \
-				  get_state(SIMIX_host_self()->host)==SURF_RESOURCE_ON,\
+#define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_model->extension_public-> \
+				  get_state(SIMIX_host_self()->host)==SURF_CPU_ON,\
                                   "Host failed, you cannot call this function.")
 
 smx_host_t __SIMIX_host_create(const char *name, void *workstation, void *data);
@@ -146,14 +153,20 @@ void __SIMIX_create_maestro_process(void);
 int SIMIX_context_create_maestro(smx_process_t *process);
 
 int SIMIX_context_new(smx_process_t *process, xbt_main_func_t code);
-void SIMIX_context_kill(smx_process_t process);
-void SIMIX_context_start(smx_process_t process);
-void SIMIX_context_yield(void);
-void SIMIX_context_schedule(smx_process_t process);
-     void SIMIX_context_empty_trash(void);
+
+void SIMIX_context_kill(smx_process_t process);
+
+void SIMIX_context_start(smx_process_t process);
+
+void SIMIX_context_yield(void);
+
+void SIMIX_context_schedule(smx_process_t process);
+     
+void SIMIX_context_empty_trash(void);
 
 void SIMIX_context_stop(int exit_code);
-     void SIMIX_context_free(smx_process_t process);
+     
+void SIMIX_context_free(smx_process_t process);
 
 void SIMIX_context_mod_init(void);
 

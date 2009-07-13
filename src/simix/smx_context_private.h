@@ -22,15 +22,15 @@ SG_BEGIN_DECL()
    concepts must implement */
 
 /* each context type must contain this macro at its begining -- OOP in C :/ */
-#define XBT_CTX_BASE_T \
+#define SMX_CTX_BASE_T \
   s_xbt_swag_hookup_t hookup; \
   ex_ctx_t *exception; \
   xbt_main_func_t code; \
 
 /* all other context types derive from this structure */
-typedef struct s_xbt_context {
-  XBT_CTX_BASE_T;
-} s_xbt_context_t;
+typedef struct s_smx_context {
+  SMX_CTX_BASE_T;
+} s_smx_context_t;
 
 /* *********************** */
 /* factory type definition */

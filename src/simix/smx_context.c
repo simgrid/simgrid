@@ -9,10 +9,9 @@
 #include "portable.h"
 #include "xbt/log.h"
 #include "xbt/swag.h"
-#include "xbt_context_private.h"
+#include "smx_context_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_context, xbt,
-                                "Context switching mecanism");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smx_context, simix, "Context switching mecanism");
 
 /* the context factory used to create the appropriate context
  * each context implementation define its own context factory
@@ -31,7 +30,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_context, xbt,
 void SIMIX_context_mod_init(void)
 {
   if (!simix_global->context_factory) {
-    /* select context factory to use to create the context(depends of the macro definitions) */
+  /* select context factory to use to create the context(depends of the macro definitions) */
 
 #ifdef CONTEXT_THREADS
     /* context switch based os thread */
@@ -86,21 +85,21 @@ int SIMIX_context_create_maestro(smx_process_t *process)
 /* Scenario for the end of a context:
  *
  * CASE 1: death after end of function
- *   __context_wrapper, called by os thread, calls xbt_context_stop after user code stops
- *   xbt_context_stop calls user cleanup_func if any (in context settings),
+ *   __context_wrapper, called by os thread, calls smx_context_stop after user code stops
+ *   smx_context_stop calls user cleanup_func if any (in context settings),
  *                    add current to trashbin
  *                    yields back to maestro (destroy os thread on need)
- *   From time to time, maestro calls xbt_context_empty_trash,
- *       which maps xbt_context_free on the content
- *   xbt_context_free frees some more memory,
+ *   From time to time, maestro calls smx_context_empty_trash,
+ *       which maps smx_context_free on the content
+ *   smx_context_free frees some more memory,
  *                    joins os thread
  *
  * CASE 2: brutal death
- *   xbt_context_kill (from any context)
+ *   smx_context_kill (from any context)
  *                    set context->wannadie to 1
  *                    yields to the context
  *   the context is awaken in the middle of __yield.
- *   At the end of it, it checks that wannadie == 1, and call xbt_context_stop
+ *   At the end of it, it checks that wannadie == 1, and call smx_context_stop
  *   (same than first case afterward)
  */
 
