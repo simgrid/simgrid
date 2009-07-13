@@ -31,8 +31,6 @@ EXTRA_DIST= \
 	xbt/graphxml.l \
 	xbt/graphxml.c \
 	xbt/graphxml.dtd \
-        xbt/xbt_context_private.h \
-        xbt/xbt_context_java.h \
 	xbt/log_private.h \
 	xbt/ex_interface.h \
         xbt/backtrace_linux.c xbt/backtrace_windows.c xbt/backtrace_dummy.c \
@@ -59,7 +57,6 @@ EXTRA_DIST= \
 	include/surf/random_mgr.h \
 	\
 	include/xbt/wine_dbghelp.h \
-	include/xbt/context.h \
 	include/xbt/xbt_os_time.h \
 	include/xbt/xbt_os_thread.h \
 	\
@@ -78,7 +75,10 @@ EXTRA_DIST= \
 	amok/amok_modinter.h \
 	\
 	include/simix/simix.h include/simix/datatypes.h \
+	include/simix/context.h \
 	simix/private.h \
+        simix/xbt_context_private.h \
+        simix/xbt_context_java.h \
 	\
 	smpi/private.h \
 	smpi/smpi_coll_private.h \
