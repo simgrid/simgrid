@@ -136,9 +136,9 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond)
 #endif
 
 
-#ifndef HAVE_JAVA
+/*#ifndef HAVE_JAVA
 #include "xbt/xbt_context_private.h"
 void xbt_ctx_java_factory_init(xbt_context_factory_t * factory)
 {
 }
-#endif
+#endif*/

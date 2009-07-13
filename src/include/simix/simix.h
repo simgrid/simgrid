@@ -117,6 +117,7 @@ XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 XBT_PUBLIC(void) SIMIX_process_suspend(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_resume(smx_process_t process);
 XBT_PUBLIC(int) SIMIX_process_is_suspended(smx_process_t process);
+XBT_PUBLIC(int) SIMIX_process_is_blocked(smx_process_t process);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) SIMIX_process_get_properties(smx_process_t host);

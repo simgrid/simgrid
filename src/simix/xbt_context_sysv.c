@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex_interface.h"
-#include "xbt/xbt_context_private.h"
+#include "xbt_context_private.h"
 
 #include "context_sysv_config.h"        /* loads context system definitions                             */
 #include "portable.h"

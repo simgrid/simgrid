@@ -172,7 +172,7 @@ const char *xbt_procname(void)
 {
   const char *res = NULL;
   smx_process_t process = SIMIX_process_self();
-  if ((process != NULL) && (process->simdata))
+  if (process != NULL)
     res = SIMIX_process_get_name(process);
   if (res)
     return res;
@@ -182,15 +182,16 @@ const char *xbt_procname(void)
 
 int gras_os_getpid(void)
 {
-
+  gras_procdata_t *data;
   smx_process_t process = SIMIX_process_self();
-
-  if ((process != NULL) && (process->data))
-    return ((gras_procdata_t *) process->data)->pid;
-  else
-    return 0;
+  
+  if (process != NULL){
+    data = (gras_procdata_t *)SIMIX_process_get_data(process);
+    return data->pid;
+  }
+  
+  return 0;
 }
-
 
 /** @brief retrieve the value of a given host property (or NULL if not defined) */
 const char *gras_os_host_property_value(const char *name)

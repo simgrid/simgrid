@@ -49,13 +49,13 @@ void SIMIX_mutex_lock(smx_mutex_t mutex)
   if (mutex->refcount) {
     /* somebody using the mutex, block */
     xbt_swag_insert(self, mutex->sleeping);
-    self->simdata->mutex = mutex;
+    self->mutex = mutex;
     /* wait for some process make the unlock and wake up me from mutex->sleeping */
     xbt_context_yield();
-    self->simdata->mutex = NULL;
+    self->mutex = NULL;
 
     /* verify if the process was suspended */
-    while (self->simdata->suspended) {
+    while (self->suspended) {
       xbt_context_yield();
     }
 
@@ -148,7 +148,7 @@ smx_cond_t SIMIX_cond_init()
 /**
  * \brief Signalizes a condition.
  *
- * Signalizes a condition and wakes up a sleping process. If there are no process sleeping, no action is done.
+ * Signalizes a condition and wakes up a sleeping process. If there are no process sleeping, no action is done.
  * \param cond A condition
  */
 void SIMIX_cond_signal(smx_cond_t cond)
@@ -211,11 +211,11 @@ void __SIMIX_cond_wait(smx_cond_t cond)
 
   /* process status */
 
-  self->simdata->cond = cond;
+  self->cond = cond;
   xbt_swag_insert(self, cond->sleeping);
   xbt_context_yield();
-  self->simdata->cond = NULL;
-  while (self->simdata->suspended) {
+  self->cond = NULL;
+  while (self->suspended) {
     xbt_context_yield();
   }
   return;
@@ -326,7 +326,7 @@ void SIMIX_cond_display_info(smx_cond_t cond)
     INFO0("Blocked process on this condition:");
     xbt_swag_foreach(process, cond->sleeping) {
       INFO2("\t %s running on host %s", process->name,
-            process->simdata->smx_host->name);
+            process->smx_host->name);
     }
   }
 }

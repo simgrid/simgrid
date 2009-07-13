@@ -34,12 +34,12 @@
 m_host_t MSG_get_host_by_name(const char *name)
 {
   smx_host_t simix_h = NULL;
-
   simix_h = SIMIX_host_get_by_name(name);
-  if (simix_h == NULL) {
+  
+  if (simix_h == NULL)
     return NULL;
-  } else
-    return (m_host_t) simix_h->data;
+
+  return (m_host_t)SIMIX_host_get_data(simix_h);
 }
 
 /** \ingroup msg_easier_life

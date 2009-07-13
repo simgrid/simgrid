@@ -18,24 +18,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
 smx_host_t __SIMIX_host_create(const char *name,
                                void *workstation, void *data)
 {
-  smx_simdata_host_t simdata = xbt_new0(s_smx_simdata_host_t, 1);
-  smx_host_t host = xbt_new0(s_smx_host_t, 1);
+  smx_host_t smx_host = xbt_new0(s_smx_host_t, 1);
   s_smx_process_t proc;
 
   /* Host structure */
-  host->name = xbt_strdup(name);
-  host->simdata = simdata;
-  host->data = data;
+  smx_host->name = xbt_strdup(name);
+  smx_host->data = data;
+  smx_host->host = workstation;
+  smx_host->process_list = xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
-  simdata->host = workstation;
-
-  simdata->process_list =
-    xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
   /* Update global variables */
+  xbt_dict_set(simix_global->host, smx_host->name, smx_host, &__SIMIX_host_destroy);
 
-  xbt_dict_set(simix_global->host, host->name, host, &__SIMIX_host_destroy);
-
-  return host;
+  return smx_host;
 }
 
 /**
@@ -68,7 +63,7 @@ void *SIMIX_host_get_data(smx_host_t host)
   xbt_assert0((host != NULL), "Invalid parameters");
 
   /* Return data */
-  return (host->data);
+  return host->data;
 }
 
 /**
@@ -80,11 +75,10 @@ void *SIMIX_host_get_data(smx_host_t host)
 const char *SIMIX_host_get_name(smx_host_t host)
 {
 
-  xbt_assert0((host != NULL)
-              && (host->simdata != NULL), "Invalid parameters");
+  xbt_assert0((host != NULL), "Invalid parameters");
 
   /* Return data */
-  return (host->name);
+  return host->name;
 }
 
 /**
@@ -106,21 +100,16 @@ smx_host_t SIMIX_host_self(void)
 void __SIMIX_host_destroy(void *h)
 {
   smx_host_t host = (smx_host_t) h;
-  smx_simdata_host_t simdata = NULL;
 
   xbt_assert0((host != NULL), "Invalid parameters");
 
-
   /* Clean Simulator data */
-  simdata = host->simdata;
-
-  if (xbt_swag_size(simdata->process_list) != 0) {
-    char *msg =
-      bprintf("Shutting down host %s, but it's not empty:", host->name);
+  if (xbt_swag_size(host->process_list) != 0) {
+    char *msg = bprintf("Shutting down host %s, but it's not empty:", host->name);
     char *tmp;
     smx_process_t process = NULL;
 
-    xbt_swag_foreach(process, simdata->process_list) {
+    xbt_swag_foreach(process, host->process_list) {
       tmp = bprintf("%s\n\t%s", msg, process->name);
       free(msg);
       msg = tmp;
@@ -128,9 +117,7 @@ void __SIMIX_host_destroy(void *h)
     THROW1(arg_error, 0, "%s", msg);
   }
 
-  xbt_swag_free(simdata->process_list);
-
-  free(simdata);
+  xbt_swag_free(host->process_list);
 
   /* Clean host structure */
   free(host->name);
@@ -191,7 +178,7 @@ double SIMIX_host_get_speed(smx_host_t host)
   xbt_assert0((host != NULL), "Invalid parameters");
 
   return (surf_workstation_model->extension.workstation.
-          get_speed(host->simdata->host, 1.0));
+          get_speed(host->host, 1.0));
 }
 
 /**
@@ -205,7 +192,7 @@ double SIMIX_host_get_available_speed(smx_host_t host)
   xbt_assert0((host != NULL), "Invalid parameters");
 
   return (surf_workstation_model->extension.workstation.
-          get_available_speed(host->simdata->host));
+          get_available_speed(host->host));
 }
 
 /**
@@ -233,8 +220,7 @@ xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  return surf_workstation_model->extension.workstation.get_properties(host->simdata->host);
-
+  return surf_workstation_model->extension.workstation.get_properties(host->host);
 }
 
 
@@ -250,6 +236,5 @@ int SIMIX_host_get_state(smx_host_t host)
   xbt_assert0((host != NULL), "Invalid parameters");
 
   return (surf_workstation_model->extension.workstation.
-          get_state(host->simdata->host));
-
+          get_state(host->host));
 }

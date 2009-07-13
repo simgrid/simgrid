@@ -89,34 +89,31 @@ void SIMIX_display_process_status(void)
   INFO0
     ("Legend of the following listing: \"<process> on <host>: <status>.\"");
   xbt_swag_foreach(process, simix_global->process_list) {
-    smx_simdata_process_t p_simdata =
-      (smx_simdata_process_t) process->simdata;
-    // simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
     char *who, *who2;
 
     asprintf(&who, "%s on %s: %s",
              process->name,
-             p_simdata->smx_host->name,
-             (process->simdata->blocked) ? "[BLOCKED] "
-             : ((process->simdata->suspended) ? "[SUSPENDED] " : ""));
+             process->smx_host->name,
+             (process->blocked) ? "[BLOCKED] "
+             : ((process->suspended) ? "[SUSPENDED] " : ""));
 
-    if (p_simdata->mutex) {
+    if (process->mutex) {
       who2 =
         bprintf("%s Blocked on mutex %p", who,
                 (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
-                p_simdata->mutex : (void *) 0xdead);
+                process->mutex : (void *) 0xdead);
       free(who);
       who = who2;
-    } else if (p_simdata->cond) {
+    } else if (process->cond) {
       who2 =
         bprintf
         ("%s Blocked on condition %p; Waiting for the following actions:",
          who,
          (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
-         p_simdata->cond : (void *) 0xdead);
+         process->cond : (void *) 0xdead);
       free(who);
       who = who2;
-      xbt_fifo_foreach(p_simdata->cond->actions, item, act, smx_action_t) {
+      xbt_fifo_foreach(process->cond->actions, item, act, smx_action_t) {
         who2 =
           bprintf("%s '%s'(%p)", who, act->name,
                   (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose))
@@ -165,7 +162,7 @@ void __SIMIX_main(void)
       xbt_fifo_foreach(smx_action->cond_list, _cursor, cond, smx_cond_t) {
         xbt_swag_foreach(process, cond->sleeping) {
           DEBUG2("\t preparing to wake up %s on %s",
-                 process->name, process->simdata->smx_host->name);
+                 process->name, process->smx_host->name);
         }
         SIMIX_cond_broadcast(cond);
         /* remove conditional from action */
@@ -180,7 +177,7 @@ void __SIMIX_main(void)
       xbt_fifo_foreach(smx_action->cond_list, _cursor, cond, smx_cond_t) {
         xbt_swag_foreach(process, cond->sleeping) {
           DEBUG2("\t preparing to wake up %s on %s",
-                 process->name, process->simdata->smx_host->name);
+                 process->name, process->smx_host->name);
         }
         SIMIX_cond_broadcast(cond);
         /* remove conditional from action */
@@ -283,9 +280,9 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 
   while ((process = xbt_swag_extract(simix_global->process_to_run))) {
     DEBUG2("Scheduling %s on %s",
-           process->name, process->simdata->smx_host->name);
+           process->name, process->smx_host->name);
     simix_global->current_process = process;
-    xbt_context_schedule(process->simdata->context);
+    xbt_context_schedule(process->context);
     /*       fflush(NULL); */
     simix_global->current_process = NULL;
   }
@@ -331,7 +328,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
       if (fun == SIMIX_process_kill) {
         process = arg;
         DEBUG2("Killing %s on %s", process->name,
-               process->simdata->smx_host->name);
+               process->smx_host->name);
         SIMIX_process_kill(process);
       }
     }

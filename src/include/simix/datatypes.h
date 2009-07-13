@@ -15,17 +15,7 @@
 SG_BEGIN_DECL()
 
 /* ******************************** Host ************************************ */
-/** @defgroup m_datatypes_management_details Details on SIMIX datatypes
-    @ingroup  m_datatypes_management*/
-     typedef struct s_smx_simdata_host *smx_simdata_host_t;
-/** @brief Host datatype 
-    @ingroup m_datatypes_management_details */
-     typedef struct s_smx_host {
-       char *name;              /**< @brief host name if any */
-       smx_simdata_host_t simdata;
-                                /**< @brief simulator data */
-       void *data;              /**< @brief user data */
-     } s_smx_host_t;
+/** @defgroup m_datatypes_management_details Details on SIMIX datatypes */
 /** @brief Host datatype  
     @ingroup m_datatypes_management
 
@@ -65,19 +55,6 @@ SG_BEGIN_DECL()
 
 
 /* ****************************** Process *********************************** */
-     typedef struct s_smx_simdata_process *smx_simdata_process_t;
-/** @brief Process datatype 
-    @ingroup m_datatypes_management_details @{ */
-     typedef struct s_smx_process {
-
-       char *name;              /**< @brief process name if any */
-       smx_simdata_process_t simdata;   /**< @brief simulator data */
-       s_xbt_swag_hookup_t process_hookup;
-       s_xbt_swag_hookup_t synchro_hookup;
-       s_xbt_swag_hookup_t host_proc_hookup;
-       void *data;              /**< @brief user data */
-     } s_smx_process_t;
-/** @} */
 /** @brief Agent datatype  
     @ingroup m_datatypes_management 
 

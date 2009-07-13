@@ -15,7 +15,8 @@
 #include "xbt/fifo.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
-#include "xbt/context.h"
+#include "simix/context.h"
+#include "xbt/config.h"
 #include "xbt/function_types.h"
 
 /******************************* Datatypes **********************************/
@@ -23,10 +24,14 @@
 
 /********************************** Host ************************************/
 
-typedef struct s_smx_simdata_host {
-  void *host;                   /* SURF modeling */
+/** @brief Host datatype 
+    @ingroup m_datatypes_management_details */
+typedef struct s_smx_host {
+  char *name;              /**< @brief host name if any */
+  void *host;              /* SURF modeling */
   xbt_swag_t process_list;
-} s_smx_simdata_host_t;
+  void *data;              /**< @brief user data */
+} s_smx_host_t;
 
 /********************************* Simix Global ******************************/
 
@@ -46,17 +51,28 @@ extern SIMIX_Global_t simix_global;
 
 /******************************* Process *************************************/
 
-typedef struct s_smx_simdata_process {
-  smx_host_t smx_host;          /* the host on which the process is running */
-  xbt_context_t context;        /* the context that executes the scheduler fonction */
-  int blocked;
-  int suspended;
-  smx_mutex_t mutex;            /* mutex on which the process is blocked  */
-  smx_cond_t cond;              /* cond on which the process is blocked  */
-  int argc;                     /* arguments number if any */
-  char **argv;                  /* arguments table if any */
-  xbt_dict_t properties;
-} s_smx_simdata_process_t;
+/** @brief Process datatype 
+    @ingroup m_datatypes_management_details @{ */
+     typedef struct s_smx_process {
+       s_xbt_swag_hookup_t process_hookup;
+       s_xbt_swag_hookup_t synchro_hookup;
+       s_xbt_swag_hookup_t host_proc_hookup;
+
+       char *name;              /**< @brief process name if any */
+       smx_host_t smx_host;     /* the host on which the process is running */
+       xbt_context_t context;   /* the context that executes the scheduler function */
+       int argc;                /* arguments number if any */
+       char **argv;             /* arguments table if any */
+       int blocked : 1;
+       int suspended : 1;
+       int iwannadie : 1;
+       smx_mutex_t mutex;       /* mutex on which the process is blocked  */
+       smx_cond_t cond;         /* cond on which the process is blocked  */
+       xbt_dict_t properties;
+       void *data;              /* kept for compatibility, it should be replaced with moddata */
+
+     } s_smx_process_t;
+/** @} */
 
 typedef struct s_smx_process_arg {
   const char *name;
@@ -105,7 +121,7 @@ typedef struct s_smx_simdata_action {
 
 
 #define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_model->extension.workstation. \
-				  get_state(SIMIX_host_self()->simdata->host)==SURF_RESOURCE_ON,\
+				  get_state(SIMIX_host_self()->host)==SURF_RESOURCE_ON,\
                                   "Host failed, you cannot call this function.")
 
 smx_host_t __SIMIX_host_create(const char *name, void *workstation,

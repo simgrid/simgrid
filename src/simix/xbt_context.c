@@ -20,7 +20,6 @@ xbt_context_t current_context = NULL;
 /* the context associated with the maestro						*/
 xbt_context_t maestro_context = NULL;
 
-
 /* this list contains the contexts to destroy					*/
 xbt_swag_t context_to_destroy = NULL;
 
@@ -271,16 +270,29 @@ xbt_context_init_factory_by_name(xbt_context_factory_t * factory,
                                  const char *name)
 {
   if (!strcmp(name, "java"))
+#ifdef HAVE_JAVA     
     xbt_ctx_java_factory_init(factory);
-#ifdef CONTEXT_THREADS
+#else
+    THROW0(not_found_error, 0, "Factory 'Java' does not exist: Java support was not compiled in the SimGrid library");
+#endif /* HAVE_JAVA */
+   
   else if (!strcmp(name, "thread"))
+#ifdef CONTEXT_THREADS
     xbt_ctx_thread_factory_init(factory);
-#elif !defined(WIN32)
+#else
+    THROW0(not_found_error, 0, "Factory 'thread' does not exist: thread support was not compiled in the SimGrid library");
+#endif /* CONTEXT_THREADS */
+   
   else if (!strcmp(name, "sysv"))
+#ifndef WIN32
     xbt_ctx_sysv_factory_init(factory);
+#else
+    THROW0(not_found_error, 0, "Factory 'sysv' does not exist: no System V thread support under Windows");
 #endif
+   
   else
     THROW1(not_found_error, 0, "Factory '%s' does not exist", name);
+
 }
 
 /** Garbage collection

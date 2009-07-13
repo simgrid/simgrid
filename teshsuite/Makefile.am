@@ -71,14 +71,14 @@ noinst_PROGRAMS += gras/datadesc/datadesc_usage
 gras_datadesc_datadesc_usage_SOURCES=   gras/datadesc/datadesc_usage.c gras/datadesc/datadesc_structs.c
 gras_datadesc_datadesc_usage_LDADD=     $(LDADD_RL)
 
-gras/datadesc/datadesc_structs.c: gras/datadesc/mk_datadesc_structs.pl
+gras/datadesc/datadesc_structs.c: gras/datadesc/mk_datadesc_structs.pl; \
 	perl $(top_srcdir)/teshsuite/gras/datadesc/mk_datadesc_structs.pl > $@
 
   ## Ensures the gras_msg_handle semantic ##
   ##########################################
 EXTRA_DIST += gras/msg_handle/msg_handle.xml \
               gras/msg_handle/test_rl \
-	      gras/msg_handle/test_sg_32 gras/msg_handle/test_sg_64
+              gras/msg_handle/test_sg_32 gras/msg_handle/test_sg_64
 noinst_PROGRAMS+=\
   gras/msg_handle/msg_handle_client \
   gras/msg_handle/msg_handle_server \
@@ -92,7 +92,7 @@ gras_msg_handle_msg_handle_simulator_LDADD=   $(LDADD_SG)
 gras_msg_handle_msg_handle_client_LDADD=      $(LDADD_RL)
 gras_msg_handle_msg_handle_server_LDADD=      $(LDADD_RL)
 
-gras/msg_handle/_msg_handle_simulator.c gras/msg_handle/_msg_handle_client.c gras/msg_handle/_msg_handle_server.c : gras/msg_handle/msg_handle.c gras/msg_handle/msg_handle.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
+gras/msg_handle/_msg_handle_simulator.c gras/msg_handle/_msg_handle_client.c gras/msg_handle/_msg_handle_server.c : gras/msg_handle/msg_handle.c gras/msg_handle/msg_handle.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@; \
 	mkdir -p gras/msg_handle; \
 	  cd gras/msg_handle;\
 	  $(abs_top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle $(abs_top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
@@ -118,7 +118,7 @@ gras_empty_main_empty_main_function_SOURCES=  gras/empty_main/empty_main.c gras/
 gras_empty_main_empty_main_simulator_LDADD=   $(LDADD_SG)
 gras_empty_main_empty_main_function_LDADD=    $(LDADD_RL)
 
-gras/empty_main/_empty_main_simulator.c gras/empty_main/_empty_main_function.c : gras/empty_main/empty_main.c gras/empty_main/empty_main.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
+gras/empty_main/_empty_main_simulator.c gras/empty_main/_empty_main_function.c : gras/empty_main/empty_main.c gras/empty_main/empty_main.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ ; \
 	mkdir -p gras/empty_main; \
 	  cd gras/empty_main;\
 	  $(abs_top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ empty_main $(abs_top_srcdir)/teshsuite/gras/empty_main/empty_main.xml
@@ -139,7 +139,7 @@ gras_small_sleep_small_sleep_function_SOURCES=  gras/small_sleep/small_sleep.c g
 gras_small_sleep_small_sleep_simulator_LDADD=   $(LDADD_SG)
 gras_small_sleep_small_sleep_function_LDADD=    $(LDADD_RL)
 
-gras/small_sleep/_small_sleep_simulator.c gras/small_sleep/_small_sleep_function.c : gras/small_sleep/small_sleep.c gras/small_sleep/small_sleep.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
+gras/small_sleep/_small_sleep_simulator.c gras/small_sleep/_small_sleep_function.c : gras/small_sleep/small_sleep.c gras/small_sleep/small_sleep.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@; \
 	mkdir -p gras/small_sleep; \
 	  cd gras/small_sleep;\
 	  $(abs_top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ small_sleep $(abs_top_srcdir)/teshsuite/gras/small_sleep/small_sleep.xml
