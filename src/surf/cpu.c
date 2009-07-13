@@ -11,8 +11,8 @@ typedef s_surf_action_lmm_t s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
 typedef struct cpu_Cas01 {
   s_surf_resource_t generic_resource;
+  double power_peak;
   double power_scale;
-  double power_current;
   tmgr_trace_event_t power_event;
   e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
@@ -30,8 +30,8 @@ lmm_system_t cpu_maxmin_system = NULL;
 
 static xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
 
-static cpu_Cas01_t cpu_new(char *name, double power_scale,
-                           double power_initial,
+static cpu_Cas01_t cpu_new(char *name, double power_peak,
+                           double power_scale,
                            tmgr_trace_t power_trace,
                            e_surf_resource_state_t state_initial,
                            tmgr_trace_t state_trace,
@@ -43,9 +43,9 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
   cpu->generic_resource.model = surf_cpu_model;
   cpu->generic_resource.name = name;
   cpu->generic_resource.properties = cpu_properties;
+  cpu->power_peak = power_peak;
+  xbt_assert0(cpu->power_peak > 0, "Power has to be >0");
   cpu->power_scale = power_scale;
-  xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
-  cpu->power_current = power_initial;
   if (power_trace)
     cpu->power_event =
       tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
@@ -57,7 +57,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
 
   cpu->constraint =
     lmm_constraint_new(cpu_maxmin_system, cpu,
-                       cpu->power_current * cpu->power_scale);
+                       cpu->power_scale * cpu->power_peak);
 
   xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu, surf_resource_free);
 
@@ -67,14 +67,14 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
 
 static void parse_cpu_init(void)
 {
+  double power_peak = 0.0;
   double power_scale = 0.0;
-  double power_initial = 0.0;
   tmgr_trace_t power_trace = NULL;
   e_surf_resource_state_t state_initial = SURF_RESOURCE_OFF;
   tmgr_trace_t state_trace = NULL;
 
-  power_scale = get_cpu_power(A_surfxml_host_power);
-  surf_parse_get_double(&power_initial, A_surfxml_host_availability);
+  power_peak = get_cpu_power(A_surfxml_host_power);
+  surf_parse_get_double(&power_scale, A_surfxml_host_availability);
   power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
 
   xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
@@ -87,7 +87,7 @@ static void parse_cpu_init(void)
   state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 
   current_property_set = xbt_dict_new();
-  cpu_new(xbt_strdup(A_surfxml_host_id), power_scale, power_initial,
+  cpu_new(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
           power_trace, state_initial, state_trace, current_property_set);
 
 }
@@ -212,9 +212,9 @@ static void update_resource_state(void *id,
   cpu_Cas01_t cpu = id;
 
   if (event_type == cpu->power_event) {
-    cpu->power_current = value;
+    cpu->power_scale = value;
     lmm_update_constraint_bound(cpu_maxmin_system, cpu->constraint,
-                                cpu->power_current * cpu->power_scale);
+                                cpu->power_scale * cpu->power_peak);
   } else if (event_type == cpu->state_event) {
     if (value > 0)
       cpu->state_current = SURF_RESOURCE_ON;
@@ -343,13 +343,13 @@ static e_surf_resource_state_t get_state(void *cpu)
 
 static double get_speed(void *cpu, double load)
 {
-  return load * (((cpu_Cas01_t) cpu)->power_scale);
+  return load * (((cpu_Cas01_t) cpu)->power_peak);
 }
 
 static double get_available_speed(void *cpu)
 {
   /* number between 0 and 1 */
-  return ((cpu_Cas01_t) cpu)->power_current;
+  return ((cpu_Cas01_t) cpu)->power_scale;
 }
 
 static void finalize(void)
