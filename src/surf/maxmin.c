@@ -486,6 +486,7 @@ void lmm_solve(lmm_system_t sys)
     elem_list = &(cnst->element_set);
     cnst->usage = 0.0;
     xbt_swag_foreach(elem, elem_list) {
+      /* 0-weighted elements (ie, sleep actions) are at the end of the swag and we don't want to consider them */
       if (elem->variable->weight <= 0)
         break;
       if ((elem->value > 0)) {
