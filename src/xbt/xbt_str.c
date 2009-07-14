@@ -709,8 +709,8 @@ char* xbt_str_from_file(FILE *file) {
   memset(bread,0,1024);
 
   while (!feof(file)) {
-    fread(bread, 1, 1023, file);
-    bread[1023] = '\0';
+    int got = fread(bread, 1, 1023, file);
+    bread[got] = '\0';
     xbt_strbuff_append(buff,bread);
   }
 
