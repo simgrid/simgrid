@@ -42,8 +42,8 @@ received by the other side (implemented with an ACK mechanism).
   * maybe a memory pool so that we can cleanly kill an actor
 
 [errors/exception]
-  * Better split casual errors from programing errors.
-    The first ones should be repported to the user, the second should kill
+  * Better split casual errors from programming errors.
+    The first ones should be reported to the user, the second should kill
     the program (or, yet better, only the msg handler)
   * Allows the use of an error handler depending on the current module (ie,
     the same philosophy as log4c using GSL's error functions)
@@ -80,7 +80,7 @@ received by the other side (implemented with an ACK mechanism).
     the advantage of doing so ;)
 
     Another idea we spoke about was to simulate this feature with a bunch of
-    threads blocked in a read(1) on each incomming socket. The latency is
+    threads blocked in a read(1) on each incoming socket. The latency is
     reduced by the cost of a syscall, but the more I think about it, the
     less I find the idea adapted to our context.
 
@@ -172,7 +172,6 @@ received by the other side (implemented with an ACK mechanism).
 [bandwidth]
   * add a version guessing the appropriate datasizes automatically
 [other modules]
-  * provide a way to retrieve the host load as in NWS
   * log control, management, dynamic token ring
   * a way using SSH to ask a remote host to open a socket back on me
  
