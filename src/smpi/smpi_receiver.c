@@ -23,11 +23,13 @@ int smpi_receiver(int argc, char *argv[])
   request_queue = mydata->pending_recv_request_queue;
   message_queue = mydata->received_message_queue;
 
+  DEBUG0("Up and running");
 
 
   while (1) {
     // FIXME: better algorithm, maybe some kind of balanced tree? or a heap?
 
+    DEBUG0("Look for matching");
     xbt_fifo_foreach(request_queue, request_item, request, smpi_mpi_request_t) {
       xbt_fifo_foreach(message_queue, message_item, message,
                        smpi_received_message_t) {
@@ -48,6 +50,8 @@ int smpi_receiver(int argc, char *argv[])
         printf("[%s] found match: req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)\n",
                         __FILE__,request->src,message->src,request->tag, message->tag);
 #endif
+       DEBUG4("found match: (req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)",
+                        request->src,message->src,request->tag, message->tag);
           goto stopsearch;
         }
       }
@@ -84,11 +88,14 @@ int smpi_receiver(int argc, char *argv[])
 
     } else if (mydata->finalize > 0) {  /* main wants me to die and nothing to do */
       // FIXME: display the list of remaining requests and messages (user code synchronization faulty?)
+      DEBUG0("Main wants me to die and I'm done. Bye, guys.");
       mydata->finalize--;
       SIMIX_cond_signal(mydata->cond);
       return 0;
     } else {
+      DEBUG0("Nothing to do. Let's get a nap");
       SIMIX_process_suspend(self);
+      DEBUG0("Uh? Someone called me?");
     }
   }
 

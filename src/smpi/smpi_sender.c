@@ -30,6 +30,8 @@ int smpi_sender(int argc, char *argv[])
 
   index = mydata->index;
 
+  DEBUG0("Up and running");
+
   request_queue = mydata->pending_send_request_queue;
 
   while (1) {
@@ -53,6 +55,7 @@ int smpi_sender(int argc, char *argv[])
         SIMIX_process_get_data(smpi_global->main_processes[dindex]);
       dhost = SIMIX_process_get_host(smpi_global->main_processes[dindex]);
 
+      DEBUG3("Handle send request %p to %s (tag:%d)",request,SIMIX_host_get_name(dhost),message->tag);
       message->forward = (request->forward - 1) / 2;
       request->forward = request->forward / 2;
 
@@ -61,10 +64,7 @@ int smpi_sender(int argc, char *argv[])
           (request->dst + message->forward + 1) % request->comm->size;
         xbt_fifo_push(request_queue, request);
       } else {
-//#define DEBUG_MATCH
-#ifdef DEBUG_MATCH
- printf("**SENDER: request %p completed :=1\n",request);
-#endif
+        DEBUG3("DONE Handling send request %p to %s (tag:%d)",request, SIMIX_host_get_name(dhost),message->tag);
         request->completed = 1;
       }
 
@@ -94,11 +94,14 @@ int smpi_sender(int argc, char *argv[])
       SIMIX_process_resume(remote_process->receiver);
 
     } else if (mydata->finalize > 0) {  /* main wants me to die and nothing to do */
+      DEBUG0("Main wants me to die and I'm done. Bye, guys.");
       mydata->finalize--;
       SIMIX_cond_signal(mydata->cond);
       return 0;
     } else {
+      DEBUG0("Nothing to do. Let's get a nap");
       SIMIX_process_suspend(self);
+      DEBUG0("Uh? Someone called me?");
     }
   }
   return 0;
