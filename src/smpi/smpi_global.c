@@ -168,7 +168,6 @@ void smpi_global_init()
 
   // timers
   smpi_global->timer = xbt_os_timer_new();
-  smpi_global->timer_mutex = SIMIX_mutex_init();
   smpi_global->timer_cond = SIMIX_cond_init();
 
   smpi_global->do_once_duration_nodes = NULL;
@@ -231,7 +230,6 @@ void smpi_global_destroy()
   xbt_mallocator_free(smpi_global->message_mallocator);
 
   xbt_os_timer_free(smpi_global->timer);
-  SIMIX_mutex_destroy(smpi_global->timer_mutex);
   SIMIX_cond_destroy(smpi_global->timer_cond);
 
   for (curr = smpi_global->do_once_duration_nodes; NULL != curr; curr = next) {

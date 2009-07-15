@@ -91,7 +91,6 @@ typedef struct smpi_global_t {
   smx_process_t *main_processes;
 
   xbt_os_timer_t timer;
-  smx_mutex_t timer_mutex;
   smx_cond_t timer_cond;
 
   // keeps track of previous times

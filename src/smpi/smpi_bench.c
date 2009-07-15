@@ -12,6 +12,9 @@ void smpi_execute(double duration)
   smx_action_t action;
   e_surf_action_state_t state;
 
+  if (duration < 0.001)
+    return;
+  DEBUG1("Sleep for %f to handle real computation time",duration);
   SIMIX_mutex_lock(mutex);
 
   action =
@@ -35,7 +38,6 @@ void smpi_execute(double duration)
 
 void smpi_start_timer()
 {
-  SIMIX_mutex_lock(smpi_global->timer_mutex);
   xbt_os_timer_start(smpi_global->timer);
 }
 
@@ -44,7 +46,6 @@ double smpi_stop_timer()
   double duration;
   xbt_os_timer_stop(smpi_global->timer);
   duration = xbt_os_timer_elapsed(smpi_global->timer);
-  SIMIX_mutex_unlock(smpi_global->timer_mutex);
   return duration;
 }
 
