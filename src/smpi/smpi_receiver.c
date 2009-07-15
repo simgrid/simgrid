@@ -53,6 +53,9 @@ int smpi_receiver(int argc, char *argv[])
        DEBUG4("found match: (req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)",
                         request->src,message->src,request->tag, message->tag);
           goto stopsearch;
+        } else {
+          DEBUG4("Matching fails: (req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)",
+                        request->src,message->src,request->tag, message->tag);
         }
       }
     }
