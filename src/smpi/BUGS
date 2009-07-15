@@ -1,4 +1,5 @@
-
+* Vérifier que la condition et le mutex de la requete sont clean lors du mallocator_reset
+ 
 
 * MPI_Barrier()
   Tue Jun 30 11:49:07 UTC 2009 - genaud
