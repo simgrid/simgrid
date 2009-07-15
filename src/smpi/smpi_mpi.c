@@ -438,14 +438,16 @@ int SMPI_MPI_Allreduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype da
   int retval = MPI_SUCCESS;
   int root=1;  // arbitrary choice
 
-  smpi_bench_end();
+  //smpi_bench_end(); //FIXME: restaure after calling smpi_mpi_reduce instead
 
+  DEBUG0("Reduce");
   retval = SMPI_MPI_Reduce( sendbuf, recvbuf, count, datatype, op, root, comm);
   if (MPI_SUCCESS != retval)
 	    return(retval);
 
+  DEBUG0("Reduce done, time to bcast");
   retval = SMPI_MPI_Bcast( sendbuf, count, datatype, root, comm);
-  smpi_bench_begin();
+//  smpi_bench_begin();
   return( retval );
 }
 
