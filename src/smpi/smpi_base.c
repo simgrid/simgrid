@@ -315,7 +315,7 @@ int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status)
     retval = MPI_ERR_INTERN;
   } else {
     SIMIX_mutex_lock(request->mutex);
-#define DEBUG_STEPH
+//#define DEBUG_STEPH
 #ifdef DEBUG_STEPH
     print_req( request );  //@@
 #endif

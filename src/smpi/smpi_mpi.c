@@ -289,6 +289,17 @@ int flat_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
         return(retval);
 
 }
+/**
+ * Bcast internal level 
+ **/
+int smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root,
+                   MPI_Comm comm)
+{
+  int retval = MPI_SUCCESS;
+  //retval = flat_tree_bcast(buf, count, datatype, root, comm);
+  retval = nary_tree_bcast(buf, count, datatype, root, comm, 2 );
+  return retval;
+}
 
 /**
  * Bcast user entry point
@@ -299,10 +310,7 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
   int retval = MPI_SUCCESS;
 
   smpi_bench_end();
-
-  //retval = flat_tree_bcast(buf, count, datatype, root, comm);
-  retval = nary_tree_bcast(buf, count, datatype, root, comm, 2 );
-
+  smpi_mpi_bcast(buf,count,datatype,root,comm);
   smpi_bench_begin();
 
   return retval;
@@ -310,7 +318,7 @@ int SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
 
 
 
-//#ifdef DEBUG_REDUCE
+#ifdef DEBUG_REDUCE
 /**
  * debugging helper function
  **/
@@ -339,11 +347,11 @@ static void print_buffer_double(void *buf, int len, char *msg, int rank)
 }
 
 
-//#endif
+#endif
 /**
  * MPI_Reduce
  **/
-int SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
+int smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
                 MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 {
         int retval = MPI_SUCCESS;
@@ -364,8 +372,7 @@ int SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
 #ifdef DEBUG_REDUCE
                 print_buffer_int(sendbuf, count, xbt_strdup("sndbuf"), rank);
 #endif
-                retval =
-                        smpi_create_request(sendbuf, count, datatype, rank, root, tag, comm,
+                retval = smpi_create_request(sendbuf, count, datatype, rank, root, tag, comm,
                                         &request);
                 smpi_mpi_isend(request);
                 smpi_mpi_wait(request, MPI_STATUS_IGNORE);
@@ -421,9 +428,26 @@ int SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
                 xbt_free(requests);
                 xbt_free(tmpbufs);
         }
-        smpi_bench_begin();
         return retval;
 }
+
+/**
+ * MPI_Reduce user entry point
+ **/
+int SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
+		    MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
+{
+int retval = MPI_SUCCESS;
+
+	  smpi_bench_end();
+
+	  retval = smpi_mpi_reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
+
+	  smpi_bench_begin();
+	  return retval;
+}
+
+
 
 /**
  * MPI_Allreduce
@@ -431,24 +455,21 @@ int SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
  * Same as MPI_REDUCE except that the result appears in the receive buffer of all the group members.
  **/
 int SMPI_MPI_Allreduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
-   		         MPI_Op op, MPI_Comm comm );
-int SMPI_MPI_Allreduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
-   		         MPI_Op op, MPI_Comm comm )
+		    MPI_Op op, MPI_Comm comm )
 {
-  int retval = MPI_SUCCESS;
-  int root=1;  // arbitrary choice
+int retval = MPI_SUCCESS;
+int root=0;  // arbitrary choice
 
-  //smpi_bench_end(); //FIXME: restaure after calling smpi_mpi_reduce instead
+	  smpi_bench_end();
 
-  DEBUG0("Reduce");
-  retval = SMPI_MPI_Reduce( sendbuf, recvbuf, count, datatype, op, root, comm);
-  if (MPI_SUCCESS != retval)
-	    return(retval);
+	  retval = smpi_mpi_reduce( sendbuf, recvbuf, count, datatype, op, root, comm);
+	  if (MPI_SUCCESS != retval)
+		    return(retval);
 
-  DEBUG0("Reduce done, time to bcast");
-  retval = SMPI_MPI_Bcast( sendbuf, count, datatype, root, comm);
-//  smpi_bench_begin();
-  return( retval );
+	  retval = smpi_mpi_bcast( sendbuf, count, datatype, root, comm);
+
+	  smpi_bench_end();
+	  return( retval );
 }
 
 
