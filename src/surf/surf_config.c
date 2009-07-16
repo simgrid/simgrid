@@ -213,42 +213,30 @@ void surf_config_models_setup(const char *platform_file)
 
   workstation_model_name =
     xbt_cfg_get_string(_surf_cfg_set, "workstation_model");
+  char *network_model_name = xbt_cfg_get_string(_surf_cfg_set, "network_model");
+  char *cpu_model_name = xbt_cfg_get_string(_surf_cfg_set, "cpu_model");
 
-  DEBUG1("Model : %s", workstation_model_name);
+  if ((strcmp(network_model_name,"CM02") || strcmp(cpu_model_name,"Cas01"))
+      && !strcmp(workstation_model_name, "CLM03")){
+    const char *val = "compound";
+    INFO0("Switching workstation model to compound since you changed the network and/or cpu model(s)");
+    xbt_cfg_set_string(_surf_cfg_set,"workstation_model",val);
+    workstation_model_name = (char*)"compound";
+  }
+
+  DEBUG1("Workstation model: %s", workstation_model_name);
   workstation_id =
     find_model_description(surf_workstation_model_description,
                            workstation_model_name);
   if (!strcmp(workstation_model_name, "compound")) {
-    xbt_ex_t e;
-    char *network_model_name = NULL;
-    char *cpu_model_name = NULL;
     int network_id = -1;
     int cpu_id = -1;
 
-    TRY {
-      cpu_model_name = xbt_cfg_get_string(_surf_cfg_set, "cpu_model");
-    } CATCH(e) {
-      if (e.category == bound_error) {
-        xbt_assert0(0,
-                    "Set a cpu model to use with the 'compound' workstation model");
-        xbt_ex_free(e);
-      } else {
-        RETHROW;
-      }
-    }
+    xbt_assert0(cpu_model_name,
+        "Set a cpu model to use with the 'compound' workstation model");
 
-    TRY {
-      network_model_name = xbt_cfg_get_string(_surf_cfg_set, "network_model");
-    }
-    CATCH(e) {
-      if (e.category == bound_error) {
-        xbt_assert0(0,
-                    "Set a network model to use with the 'compound' workstation model");
-        xbt_ex_free(e);
-      } else {
-        RETHROW;
-      }
-    }
+    xbt_assert0(network_model_name,
+        "Set a network model to use with the 'compound' workstation model");
 
     network_id =
       find_model_description(surf_network_model_description,
