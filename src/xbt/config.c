@@ -1106,7 +1106,7 @@ double xbt_cfg_get_double(xbt_cfg_t cfg, const char *name)
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using
- * xbt_cfg_get_dynar() instead.
+ * xbt_cfg_get_dynar() instead. Returns NULL if there is no value.
  *
  * \warning the returned value is the actual content of the config set
  */
@@ -1119,6 +1119,8 @@ char *xbt_cfg_get_string(xbt_cfg_t cfg, const char *name)
     WARN2
       ("You asked for the first value of the config element '%s', but there is %lu values\n",
        name, xbt_dynar_length(variable->content));
+  } else if (xbt_dynar_length(variable->content) == 0) {
+    return NULL;
   }
 
   return xbt_dynar_get_as(variable->content, 0, char *);
