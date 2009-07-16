@@ -156,7 +156,6 @@ void SD_create_environment(const char *platform_file)
 
   DEBUG0("SD_create_environment");
 
-  surf_timer_model_init(platform_file);
   surf_config_models_setup(platform_file);
 
   parse_platform_file(platform_file);

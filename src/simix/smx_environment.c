@@ -40,7 +40,6 @@ void SIMIX_create_environment(const char *file)
 
   double start, end;
 
-  surf_timer_model_init(file);
   surf_config_models_setup(file);
   parse_platform_file(file);
   surf_config_models_create_elms();
@@ -53,6 +52,4 @@ void SIMIX_create_environment(const char *file)
                    name, workstation) {
     __SIMIX_host_create(name, workstation, NULL);
   }
-
-  return;
 }
