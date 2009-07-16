@@ -45,9 +45,8 @@ void create_workstations(void)
 
   xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, name, cpu) {
     int *id = xbt_dict_get_or_null(used_routing->host_id,name);
-    xbt_assert1(id, "No host %s found in the platform file", name);
 
-    workstation_new(name, cpu, *id);
+    workstation_new(name, cpu, id?*id:0);
   }
 }
 

@@ -125,8 +125,9 @@ static surf_action_t communicate(const char *src_name,const char *dst_name,int s
 
   action->suspended = 0;
 
-  action->latency = random_generate(random_latency);
+  action->latency = 1;//random_generate(random_latency);
   action->lat_init = action->latency;
+  INFO1("Latency: %f",action->latency);
 
   if (action->latency <= 0.0) {
     action->generic_action.state_set =
@@ -187,11 +188,17 @@ static void finalize(void)
   surf_network_model = NULL;
 }
 
-static void surf_network_model_init_internal(void)
+
+
+void surf_network_model_init_Constant(const char *filename)
 {
+  xbt_assert(surf_network_model == NULL);
+  if (surf_network_model)
+    return;
   surf_network_model = surf_model_init();
 
-  surf_network_model->name = "network constant";
+  INFO0("Blah");
+  surf_network_model->name = "constant time network";
   surf_network_model->action_unref = action_unref;
   surf_network_model->action_cancel = action_cancel;
   surf_network_model->action_recycle = action_recycle;
@@ -217,17 +224,13 @@ static void surf_network_model_init_internal(void)
 
   if (!random_latency)
     random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
-}
-
-void surf_network_model_init_Constant(const char *filename)
-{
-
-  if (surf_network_model)
-    return;
-  surf_network_model_init_internal();
   define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
 
   update_model_description(surf_network_model_description,
                            "Constant", surf_network_model);
+
+  xbt_cfg_set_string(_surf_cfg_set,"routing","none");
+  routing_model_create(sizeof(double),NULL);
 }
+

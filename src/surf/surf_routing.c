@@ -20,6 +20,7 @@ static void routing_model_full_create(size_t size_of_link,void *loopback);
 static void routing_model_floyd_create(size_t size_of_link, void*loopback);
 static void routing_model_dijkstra_create(size_t size_of_link, void*loopback);
 static void routing_model_dijkstracache_create(size_t size_of_link, void*loopback);
+static void routing_model_none_create(size_t size_of_link, void*loopback);
 
 /* Definition of each model */
 struct model_type {
@@ -32,6 +33,7 @@ struct model_type models[] =
   {"Floyd", "Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)", routing_model_floyd_create },
   {"Dijkstra", "Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)", routing_model_dijkstra_create },
   {"DijkstraCache", "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)", routing_model_dijkstracache_create },
+  {"none", "No routing (usable with Constant network only)", routing_model_none_create },
     {NULL,NULL,NULL}};
 
 
@@ -340,6 +342,7 @@ static void routing_model_floyd_create(size_t size_of_link,void *loopback) {
   routing_floyd_t routing = xbt_new0(s_routing_floyd_t,1);
   routing->generic_routing.name = "Floyd";
   routing->generic_routing.host_count = 0;
+  routing->generic_routing.host_id = xbt_dict_new();
   routing->generic_routing.get_route = routing_floyd_get_route;
   routing->generic_routing.finalize = routing_floyd_finalize;
   routing->generic_routing.finalize_route = routing_floyd_finalize_route;
@@ -350,7 +353,6 @@ static void routing_model_floyd_create(size_t size_of_link,void *loopback) {
   used_routing = (routing_t) routing;
   
   /* Setup the parsing callbacks we need */
-  routing->generic_routing.host_id = xbt_dict_new();
   surfxml_add_callback(STag_surfxml_host_cb_list, &routing_full_parse_Shost);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &routing_floyd_parse_end);
   surfxml_add_callback(STag_surfxml_route_cb_list, 
@@ -737,4 +739,28 @@ static void routing_model_dijkstra_create(size_t size_of_link,void *loopback) {
 
 static void routing_model_dijkstracache_create(size_t size_of_link,void *loopback) {
   routing_model_dijkstraboth_create(size_of_link, loopback, 1);
+}
+
+/* ************************************************** */
+/* ********** NO ROUTING **************************** */
+
+static void routing_none_finalize(void) {
+  if (used_routing) {
+    xbt_dict_free(&used_routing->host_id);
+    free(used_routing);
+    used_routing=NULL;
+  }
+}
+
+static void routing_model_none_create(size_t size_of_link,void *loopback) {
+  routing_t routing = xbt_new0(s_routing_t,1);
+  INFO0("Null routing");
+  routing->name = "none";
+  routing->host_count = 0;
+  routing->host_id = xbt_dict_new();
+  routing->get_route = NULL;
+  routing->finalize = routing_none_finalize;
+
+  /* Set it in position */
+  used_routing = (routing_t) routing;
 }
