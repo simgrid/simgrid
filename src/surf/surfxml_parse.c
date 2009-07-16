@@ -12,6 +12,8 @@
 #include "surf/surfxml_parse_private.h"
 #include "surf/surf_private.h"
 
+#define NO_IMPLICIT_ROUTES
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
                                 "Logging specific to the SURF parsing module");
 #undef CLEANUP
@@ -1111,8 +1113,10 @@ static void parse_cluster(void)
   char *cluster_suffix = A_surfxml_cluster_suffix;
   char *cluster_radical = A_surfxml_cluster_radical;
   char *cluster_power = A_surfxml_cluster_power;
+#if !defined NO_IMPLICIT_ROUTES
   char *cluster_bw = A_surfxml_cluster_bw;
   char *cluster_lat = A_surfxml_cluster_lat;
+#endif
   char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
   char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
   char *backbone_name;
@@ -1139,7 +1143,7 @@ static void parse_cluster(void)
 
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
-
+#ifndef NO_IMPLICIT_ROUTES
   /* Make link for the foreach */
   parse_change_link_data("$1", cluster_bw, "", cluster_lat, "", "");
   A_surfxml_link_state = A_surfxml_link_state_ON;
@@ -1147,7 +1151,7 @@ static void parse_cluster(void)
 
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
-
+#endif
   SURFXML_END_TAG(foreach);
 
   /* Make backbone link */
@@ -1159,7 +1163,7 @@ static void parse_cluster(void)
 
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
-
+#ifndef NO_IMPLICIT_ROUTES
   /* Make route multi with the outside world, i.e. cluster->$* */
   SURFXML_BUFFER_SET(route_c_multi_src, cluster_id);
   SURFXML_BUFFER_SET(route_c_multi_dst, "$*");
@@ -1189,7 +1193,7 @@ static void parse_cluster(void)
   SURFXML_END_TAG(link_c_ctn);
 
   SURFXML_END_TAG(route_c_multi);
-
+#endif
 
   free(backbone_name);
 

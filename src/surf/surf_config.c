@@ -168,7 +168,7 @@ void surf_config_init(int *argc, char **argv)
     default_value = xbt_strdup("Full");
     xbt_cfg_register(&_surf_cfg_set, "routing",
                      "Model to use to store the routing information",
-                     xbt_cfgelm_string, &default_value, 0, 0, NULL,
+                     xbt_cfgelm_string, &default_value, 1, 1, NULL,
                      NULL);
 
     xbt_cfg_register(&_surf_cfg_set, "TCP_gamma",

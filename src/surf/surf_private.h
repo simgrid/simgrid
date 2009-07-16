@@ -82,6 +82,7 @@ struct s_routing {
   xbt_dict_t host_id; /* char* -> int* */
 
   xbt_dynar_t (*get_route)(int src, int dst);
+  void (*finalize_route)(xbt_dynar_t route);
   void (*finalize)(void);
   int host_count;
 };

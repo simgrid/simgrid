@@ -1,5 +1,10 @@
 SimGrid (3.3.2-svn) unstable; urgency=low
 
+ The "Simplicity does not preceed complexity, but follows it" release.
+
+ The main contributors of this release were (lexical order):
+   Silas De Munck, Stéphane Genaud, Martin Quinson, Cristian Rosa.
+
  SMPI:
   * Implement some more MPI primitives: 
     MPI_Waitany, MPI_Waitall, MPI_Reduce, MPI_Allreduce, MPI_Sendrecv
@@ -14,6 +19,12 @@ SimGrid (3.3.2-svn) unstable; urgency=low
     - Use dynar to represent routes (instead of void** + int*)
     - kill link_set (use surf_network_model->resource_set instead)
     - Add a command-line option to choose the routing schema to use
+    - Add three new models: 
+      * Floyd (shortest path computed at initialization)
+      * Dijikstra (shortest path recomputed all the time)
+      * Cached Dijikstra (shortest path computed on need)
+      All these models where contributed by Silas De Munck, and are
+      described in his ICCS09 paper.
 
   * Simplify model declaration
     (less redirections, less function to write when defining a model)
