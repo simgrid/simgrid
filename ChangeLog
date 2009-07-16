@@ -2,7 +2,7 @@ SimGrid (3.3.2-svn) unstable; urgency=low
 
  SMPI:
   * Implement some more MPI primitives: 
-    MPI_Waitany, MPI_Waitall, MPI_Reduce, MPI_Allreduce
+    MPI_Waitany, MPI_Waitall, MPI_Reduce, MPI_Allreduce, MPI_Sendrecv
   * Add support for optimized collectives (Bcast is now binomial by default)
   * Port smpirun and smpicc to OS X
 

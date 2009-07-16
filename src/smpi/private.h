@@ -130,6 +130,9 @@ int smpi_mpi_barrier(smpi_mpi_communicator_t comm);
 int smpi_mpi_isend(smpi_mpi_request_t request);
 int smpi_mpi_irecv(smpi_mpi_request_t request);
 int smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
+int smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, 
+		    	    void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag,
+		          MPI_Comm comm, MPI_Status *status);
 int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status);
 int smpi_mpi_waitall(int count, smpi_mpi_request_t requests[], smpi_mpi_status_t status[]);
 int smpi_mpi_waitany(int count, smpi_mpi_request_t requests[], int *index, smpi_mpi_status_t status[]);
