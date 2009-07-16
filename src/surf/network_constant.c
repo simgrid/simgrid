@@ -127,7 +127,6 @@ static surf_action_t communicate(const char *src_name,const char *dst_name,int s
 
   action->latency = 1;//random_generate(random_latency);
   action->lat_init = action->latency;
-  INFO1("Latency: %f",action->latency);
 
   if (action->latency <= 0.0) {
     action->generic_action.state_set =
