@@ -14,7 +14,8 @@
 #    <simgrid>/tools/tesh/README.tesh
 #  - List the tesh file in the TESTS variable so that it gets tested on make check
 
-noinst_PROGRAMS = allreduce bcast bcbench compute compute2 compute3 first second mvmul ring_c split scatter reduce  sendrecv 
+noinst_PROGRAMS = allreduce bcast bcbench compute compute2 compute3 first pingpong second sendrecv mvmul ring_c split scatter reduce 
+
 allreduce: allreduce.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
 bcast: bcast.c
@@ -29,6 +30,8 @@ compute3: compute3.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
 first: mvmul.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
+pingpong: pingpong.c
+	$(top_builddir)/src/smpi/smpicc $^ -o $@
 second: second.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
 scatter: scatter.c
@@ -36,6 +39,8 @@ scatter: scatter.c
 reduce: reduce.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
 ring_c: ring_c.c
+	$(top_builddir)/src/smpi/smpicc $^ -o $@
+sendrecv: sendrecv.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
 split: split.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@

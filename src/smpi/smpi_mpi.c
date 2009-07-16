@@ -210,7 +210,7 @@ smpi_mpi_request_t rrequest;
 	    retval = smpi_create_request(sendbuf, sendcount, sendtype, 
 				rank,dest,sendtag, 
 				comm, &srequest);
-	  printf("[%d] isend request src=%d -> dst=%d (retval=%d)\n",rank,rank,dest,retval);
+	  //printf("[%d] isend request src=%d -> dst=%d (retval=%d)\n",rank,rank,dest,retval);
 	  smpi_mpi_isend(srequest);
         
 	  
@@ -221,17 +221,17 @@ smpi_mpi_request_t rrequest;
 	  retval = smpi_create_request(recvbuf, recvcount, recvtype, 
 				source, rank,recvtag, 
 				comm, &rrequest);
-	  printf("[%d] irecv request src=%d -> dst=%d (retval=%d)\n",rank,source,rank,retval);
+	  //printf("[%d] irecv request src=%d -> dst=%d (retval=%d)\n",rank,source,rank,retval);
 	  smpi_mpi_irecv(rrequest);
 
 	  //retval = MPI_Irecv( recvbuf, recvcount, recvtype, source, recvtag, MPI_COMM_WORLD, &rrequest);
 
 
 	  smpi_mpi_wait(srequest, MPI_STATUS_IGNORE);
-	  printf("[%d] isend request src=%d dst=%d tag=%d COMPLETED (retval=%d) \n",rank,rank,dest,sendtag,retval);
+	  //printf("[%d] isend request src=%d dst=%d tag=%d COMPLETED (retval=%d) \n",rank,rank,dest,sendtag,retval);
 
 	  smpi_mpi_wait(rrequest, MPI_STATUS_IGNORE);
-	  printf("[%d] irecv request src=%d -> dst=%d tag=%d COMPLETED (retval=%d)\n",rank,source,rank,recvtag,retval);
+	  //printf("[%d] irecv request src=%d -> dst=%d tag=%d COMPLETED (retval=%d)\n",rank,source,rank,recvtag,retval);
 
 	  return(retval);
 }

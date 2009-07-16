@@ -1,26 +1,63 @@
 #include "mpi.h"
 #include <stdio.h>
- 
-int main(int argc, char *argv[])
-{
-#define TAG_RCV 998
+
+int test(int myid, int numprocs) {
+// The tags should match on the sender and receiver side.
+// The distinction between sendtag and recvtag is mainly
+// useful to make some other Recv or Send calls match the sendrecv. 
+#define TAG_RCV 999
 #define TAG_SND 999
-    int myid, numprocs, left, right;
-    int buffer[10], buffer2[10];
+
+
+#define BUFLEN 10
+    int left, right;
+    int buffer[BUFLEN], buffer2[BUFLEN];
+    int i;
     MPI_Request request;
     MPI_Status status;
- 
-    MPI_Init(&argc,&argv);
-    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
- 
+
+    for (i=0;i<BUFLEN;i++) {
+		buffer[i]=myid;
+    }
+
     right = (myid + 1) % numprocs;
     left = myid - 1;
     if (left < 0)
         left = numprocs - 1;
- 
+
+    /* performs a right-to-left shift of vectors */ 
     MPI_Sendrecv(buffer, 10, MPI_INT, left, TAG_SND, buffer2, 10, MPI_INT, right, TAG_RCV, MPI_COMM_WORLD, &status);
  
+    for (i=0;i<BUFLEN;i++) {
+		if (buffer2[i]!=((myid+1)%numprocs)) {
+			  fprintf(stderr,"[%d] error: should have values %d, has %d\n",myid,myid-1,buffer[i]);
+			  return(0);
+	      }
+    }
+    return(1);
+}
+ 
+int main(int argc, char *argv[])
+{
+
+   int myid, numprocs;
+
+    MPI_Init(&argc,&argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+
+
+    if (0==myid) 
+		printf("\n    *** MPI_Sendrecv test ***\n\n");
+
+    if ( test(myid,numprocs)) {
+		fprintf(stderr,"[%d] ok.\n",myid);
+    }
+    else {
+		fprintf(stderr,"[%d] failed.\n",myid);
+    }
+
+
     MPI_Finalize();
     return 0;
 }
