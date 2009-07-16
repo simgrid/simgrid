@@ -209,7 +209,7 @@ void surf_config_models_setup(const char *platform_file)
   char *workstation_model_name;
   int workstation_id = -1;
 
-  surf_timer_model_init(file);
+  surf_timer_model_init(platform_file);
 
   workstation_model_name =
     xbt_cfg_get_string(_surf_cfg_set, "workstation_model");
