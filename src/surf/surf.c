@@ -305,9 +305,9 @@ void surf_exit(void)
 
   surf_config_finalize();
 
-  xbt_dynar_foreach(model_list, iter, model) {
+  xbt_dynar_foreach(model_list, iter, model)
     model->model_private->finalize();
-  }
+  xbt_dynar_free(&model_list);
 
   if (maxmin_system) {
     lmm_system_free(maxmin_system);
@@ -317,8 +317,6 @@ void surf_exit(void)
     tmgr_history_free(history);
     history = NULL;
   }
-  if (model_list)
-    xbt_dynar_free(&model_list);
 
   if (surf_path)
     xbt_dynar_free(&surf_path);
@@ -353,9 +351,8 @@ void surf_presolve(void)
                                                             NOW);
     }
   }
-  xbt_dynar_foreach(model_list, iter, model) {
+  xbt_dynar_foreach(model_list, iter, model)
     model->model_private->update_actions_state(NOW, 0.0);
-  }
 }
 
 double surf_solve(void)
@@ -412,9 +409,8 @@ double surf_solve(void)
 
   NOW = NOW + min;
 
-  xbt_dynar_foreach(model_list, iter, model) {
+  xbt_dynar_foreach(model_list, iter, model)
     model->model_private->update_actions_state(NOW, min);
-  }
 
   return min;
 }
