@@ -16,6 +16,8 @@
 #include "private.h"
 #include "smpi_coll_private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
+                                "Logging specific to SMPI (coll)");
 
 /* proc_tree taken and translated from P2P-MPI */
 
@@ -293,7 +295,6 @@ int retval;
 /**
  * Barrier
  **/
-
 int nary_tree_barrier( MPI_Comm comm , int arity)
 {
         int rank;
@@ -321,6 +322,16 @@ int nary_tree_barrier( MPI_Comm comm , int arity)
 }
 
 
+/**
+ * Alltoall pairwise
+ *
+ * this algorithm performs size steps (1<=s<=size) and
+ * at each step s, a process p sends iand receive to.from a unique distinct remote process
+ * size=5 : s=1:  4->0->1, 0->1->2, 1->2->3, ... 
+ *          s=2:  3->0->2, 4->1->3, 0->2->4, 1->3->0 , 2->4->1
+ *          .... 
+ * Openmpi calls this routine when the message size sent to each rank is greater than 3000 bytes
+ **/
 
 int smpi_coll_tuned_alltoall_pairwise (void *sendbuf, int sendcount, MPI_Datatype datatype,
 		    void* recvbuf, int recvcount, MPI_Datatype recvdatatype, MPI_Comm comm)
@@ -356,15 +367,147 @@ int smpi_coll_tuned_alltoall_pairwise (void *sendbuf, int sendcount, MPI_Datatyp
 						  comm, MPI_STATUS_IGNORE);
 	  }
 	  return(retval);
-
 }
+
+/**
+ * helper: copy a datatype into another (in the simple case dt1=dt2) 
+**/
+int copy_dt( void *sbuf, int scount, const MPI_Datatype sdtype, void *rbuf, int rcount, const MPI_Datatype rdtype);
+int copy_dt( void *sbuf, int scount, const MPI_Datatype sdtype,
+             void *rbuf, int rcount, const MPI_Datatype rdtype)
+{
+    /* First check if we really have something to do */
+    if (0 == rcount) {
+        return ((0 == scount) ? MPI_SUCCESS : MPI_ERR_TRUNCATE);
+    }
+   /* If same datatypes used, just copy. */
+   if (sdtype == rdtype) {
+      int count = ( scount < rcount ? scount : rcount );
+      memcpy( rbuf, sbuf, sdtype->size*count);
+      return ((scount > rcount) ? MPI_ERR_TRUNCATE : MPI_SUCCESS);
+   }
+   /* FIXME:  cases 
+    * - If receive packed. 
+    * - If send packed
+    * to be treated once we have the MPI_Pack things ...
+    **/
+     return( MPI_SUCCESS );
+}
+
+/**
+ *
+ **/
+int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype sdtype,
+		    void* rbuf, int rcount, MPI_Datatype rdtype, MPI_Comm comm)
+{
+	  int i;
+        int system_tag = 999;
+	  int rank;
+	  int size = comm->size;
+	  int err;
+	  char *psnd;
+	  char *prcv;
+        int nreq = 0;
+	  MPI_Aint lb;
+	  MPI_Aint sndinc;
+	  MPI_Aint rcvinc;
+	  MPI_Request *reqs;
+
+	  /* Initialize. */
+	  rank = smpi_mpi_comm_rank(comm);
+
+        err = smpi_mpi_type_get_extent(sdtype, &lb, &sndinc);
+        err = smpi_mpi_type_get_extent(rdtype, &lb, &rcvinc);
+	  /* simple optimization */
+	  psnd = ((char *) sbuf) + (rank * sndinc);
+	  prcv = ((char *) rbuf) + (rank * rcvinc);
+
+	  err = copy_dt( psnd, scount, sdtype, prcv, rcount, rdtype );
+	  if (MPI_SUCCESS != err) {
+		    return err;
+	  }
+
+	  /* If only one process, we're done. */
+	  if (1 == size) {
+		    return MPI_SUCCESS;
+	  }
+
+	  /* Initiate all send/recv to/from others. */
+	  reqs =  xbt_malloc(2*(size-1) * sizeof(smpi_mpi_request_t));
+
+	  prcv = (char *) rbuf;
+	  psnd = (char *) sbuf;
+
+	  /* Post all receives first -- a simple optimization */
+	  for (i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
+		    err = smpi_create_request( prcv + (i * rcvinc), rcount, rdtype,
+                                        i, rank,
+                                        system_tag + i,
+                                        comm, &(reqs[nreq]));
+                if (MPI_SUCCESS != err) {
+                        DEBUG2("[%d] failed to create request for rank %d\n",rank,i);
+                        for (i=0;i< nreq;i++) 
+                                xbt_mallocator_release(smpi_global->request_mallocator, reqs[i]);
+                        return err;
+                }
+                nreq++;
+	  }
+	  /* Now post all sends in reverse order 
+	   *        - We would like to minimize the search time through message queue
+	   *                 when messages actually arrive in the order in which they were posted.
+	   *                      */
+	  for (i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size ) {
+		    err = smpi_create_request (psnd + (i * sndinc), scount, sdtype, 
+                                         rank, i,
+						     system_tag + i, 
+                                         comm, &(reqs[nreq]));
+                if (MPI_SUCCESS != err) {
+                        DEBUG2("[%d] failed to create request for rank %d\n",rank,i);
+                        for (i=0;i< nreq;i++) 
+                                xbt_mallocator_release(smpi_global->request_mallocator, reqs[i]);
+                        return err;
+                }
+                nreq++;
+        }
+
+        /* Start your engines.  This will never return an error. */
+        for ( i=0; i< nreq/2; i++ ) {
+            smpi_mpi_irecv( reqs[i] );
+        }
+        for ( i= nreq/2; i<nreq; i++ ) {
+            smpi_mpi_isend( reqs[i] );
+        }
+
+
+        /* Wait for them all.  If there's an error, note that we don't
+         * care what the error was -- just that there *was* an error.  The
+         * PML will finish all requests, even if one or more of them fail.
+         * i.e., by the end of this call, all the requests are free-able.
+         * So free them anyway -- even if there was an error, and return
+         * the error after we free everything. */
+
+	  err = smpi_mpi_waitall(nreq, reqs, MPI_STATUS_IGNORE);
+
+	  /* Free the reqs */
+        for (i=0;i< 2*(size-1);i++) {
+            xbt_mallocator_release(smpi_global->request_mallocator, reqs[i]);
+        }
+	  return err;
+}
+
+
+/**
+ * Alltoall Bruck 
+ *
+ * Openmpi calls this routine when the message size sent to each rank < 2000 bytes and size < 12
+ **/
+
 
 int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype sdtype,
 		    void* recvbuf, int recvcount, MPI_Datatype rdtype, MPI_Comm comm)
 {
-	  /*
+/*	  int size = comm->size;
 	  int i, k, line = -1;
-	  int rank, size;
 	  int sendto, recvfrom, distance, *displs=NULL, *blen=NULL;
 	  int maxpacksize, packsize, position;
 	  char * tmpbuf=NULL, *packbuf=NULL;
@@ -373,35 +516,27 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype sd
 	  int weallocated = 0;
 	  MPI_Datatype iddt;
 
-	  size = ompi_comm_size(comm);
-	  rank = ompi_comm_rank(comm);
+	  rank = smpi_mpi_comm_rank(comm);
+*/
+	  INFO0("coll:tuned:alltoall_intra_bruck ** NOT IMPLEMENTED YET**");
+/*
+	  displs = xbt_malloc(size*sizeof(int));
+	  blen =   xbt_malloc(size*sizeof(int));
 
-	  OPAL_OUTPUT((ompi_coll_tuned_stream,"coll:tuned:alltoall_intra_bruck rank %d", rank));
-
-	  err = ompi_ddt_get_extent (sdtype, &lb, &sext);
-	  if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl; }
-
-	  err = ompi_ddt_get_extent (rdtype, &lb, &rext);
-	  if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl; }
-
-
-	  displs = (int *) malloc(size*sizeof(int));
-	  if (displs == NULL) { line = __LINE__; err = -1; goto err_hndl; }
-	  blen = (int *) malloc(size*sizeof(int));
-	  if (blen == NULL) { line = __LINE__; err = -1; goto err_hndl; }
 	  weallocated = 1;
 */
 	  /* Prepare for packing data */
-	  /*err = MPI_Pack_size( scount*size, sdtype, comm, &maxpacksize );
-	  if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl;  }
+/*
+	  err = MPI_Pack_size( scount*size, sdtype, comm, &maxpacksize );
+	  if (err != MPI_SUCCESS) {  }
 */
 	  /* pack buffer allocation */
 /*	  packbuf = (char*) malloc((unsigned) maxpacksize);
-	  if (packbuf == NULL) { line = __LINE__; err = -1; goto err_hndl; }
+	  if (packbuf == NULL) { }
 */
 	  /* tmp buffer allocation for message data */
-/*	  tmpbuf = (char *) malloc(scount*size*sext);
-	  if (tmpbuf == NULL) { line = __LINE__; err = -1; goto err_hndl; }
+/*	  tmpbuf = xbt_malloc(scount*size*sext);
+	  if (tmpbuf == NULL) {  }
 */
 
 	  /* Step 1 - local rotation - shift up by rank */
@@ -496,8 +631,7 @@ err_hndl:
 	  }
 	  return err;
 	  */
-	  int NOTYET=1;
-	  return NOTYET;
+	  return -1; /* FIXME: to be changed*/
 }
 
 

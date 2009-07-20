@@ -51,3 +51,52 @@ a LD_LIBRARY_PATH variable pointing to src/.libs
 
 
 
+What's implemented
+==================
+
+As a proof of concept, and due to lack of time, the implementation is far from complete
+with respect to a MPI-1.2 specification. Here is what is implemented so far. Please update
+if you can.
+
+
+* MPI_Datatypes:
+MPI_BYTE  
+MPI_CHAR  
+MPI_INT   
+MPI_FLOAT
+MPI_DOUBLE
+
+
+* MPI_Op:
+MPI_LAND  
+MPI_SUM   
+MPI_PROD  
+MPI_MIN   
+MPI_MAX   
+
+*primitives:
+MPI_Init
+MPI_Finalize
+MPI_Abort
+MPI_Comm_size
+MPI_Comm_split
+MPI_Comm_rank
+MPI_Type_size
+MPI_Barrier
+MPI_Irecv
+MPI_Recv
+MPI_Isend
+MPI_Send
+MPI_Sendrecv
+MPI_Bcast
+MPI_Wait
+MPI_Waitall
+MPI_Waitany
+MPI_Wtime
+MPI_Reduce
+MPI_Allreduce
+MPI_Scatter
+MPI_Alltoall
+
+
+

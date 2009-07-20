@@ -27,6 +27,10 @@ typedef struct smpi_mpi_communicator_t {
 // smpi mpi datatype
 typedef struct smpi_mpi_datatype_t {
   size_t size;
+  ptrdiff_t lb;
+  ptrdiff_t ub;
+  uint16_t flags; /* flags: has it been committed, etc ...*/
+  uint16_t id;    /* data id, normally the index in the data array. */
 } s_smpi_mpi_datatype_t;
 
 // smpi mpi request
@@ -123,6 +127,7 @@ typedef struct smpi_host_data_t *smpi_process_data_t;
 void smpi_process_init(int *argc, char ***argv);
 void smpi_process_finalize(void);
 int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm);
+int smpi_mpi_type_get_extent(MPI_Datatype datatype, MPI_Aint *lb, MPI_Aint *extent);
 
 int smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm);

@@ -66,6 +66,11 @@ int SMPI_MPI_Comm_rank(MPI_Comm comm, int *rank)
   return retval;
 }
 
+
+//------------------------------- Datatypes ---------------------------------------
+/**
+ * query the size of the type
+ **/
 int SMPI_MPI_Type_size(MPI_Datatype datatype, size_t * size)
 {
   int retval = MPI_SUCCESS;
@@ -84,6 +89,18 @@ int SMPI_MPI_Type_size(MPI_Datatype datatype, size_t * size)
 
   return retval;
 }
+
+
+/**
+ * query extent and lower bound of the type 
+ **/
+int SMPI_MPI_Type_get_extent( MPI_Datatype datatype, int *lb, int *extent) 
+{
+        return( smpi_mpi_type_get_extent( datatype, lb, extent));
+}
+
+
+
 
 int SMPI_MPI_Barrier(MPI_Comm comm)
 {
@@ -575,10 +592,7 @@ int SMPI_MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype datatype,
 				  recvbuf, recvcount, recvtype, comm);
 
   } else if (block_dsize < 3000) {
-/* use this one !!	    retval = smpi_coll_tuned_alltoall_basic_linear(sendbuf, sendcount, datatype,
-				  recvbuf, recvcount, recvtype, comm);
-				  */
-  retval = smpi_coll_tuned_alltoall_pairwise(sendbuf, sendcount, datatype,
+	    retval = smpi_coll_tuned_alltoall_basic_linear(sendbuf, sendcount, datatype,
 				  recvbuf, recvcount, recvtype, comm);
   } else {
 

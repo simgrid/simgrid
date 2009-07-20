@@ -21,6 +21,7 @@ SG_BEGIN_DECL()
 #define MPI_ERR_COUNT   6
 #define MPI_ERR_RANK    7
 #define MPI_ERR_TAG     8
+#define MPI_ERR_TRUNCATE 9
 // MPI_Comm
      typedef struct smpi_mpi_communicator_t *smpi_mpi_communicator_t;
      typedef smpi_mpi_communicator_t MPI_Comm;
@@ -71,6 +72,7 @@ SG_BEGIN_DECL()
 #define MPI_COMM_NULL     NULL
 
 #define MPI_STATUS_IGNORE NULL
+#define MPI_Aint ptrdiff_t
 
 #define MPI_BYTE          (smpi_mpi_global->mpi_byte)
 #define MPI_CHAR          (smpi_mpi_global->mpi_char)
@@ -89,8 +91,11 @@ SG_BEGIN_DECL()
 #define MPI_Finalize() SMPI_MPI_Finalize()
 #define MPI_Abort(a, b) SMPI_MPI_Abort(a, b)
 #define MPI_Comm_size(a, b) SMPI_MPI_Comm_size(a, b)
+#define MPI_Comm_split(a, b, c, d) SMPI_MPI_Comm_split(a, b, c, d)
 #define MPI_Comm_rank(a, b) SMPI_MPI_Comm_rank(a, b)
 #define MPI_Type_size(a, b) SMPI_MPI_Type_size(a, b)
+#define MPI_Type_get_extent(a, b, c) SMPI_MPI_Type_get_extent(a, b, c)
+
 #define MPI_Barrier(a) SMPI_MPI_Barrier(a)
 #define MPI_Irecv(a, b, c, d, e, f, g) SMPI_MPI_Irecv(a, b, c, d, e, f, g)
 #define MPI_Recv(a, b, c, d, e, f, g) SMPI_MPI_Recv(a, b, c, d, e, f, g)
@@ -101,7 +106,6 @@ SG_BEGIN_DECL()
 #define MPI_Wait(a, b) SMPI_MPI_Wait(a, b)
 #define MPI_Waitall(a, b, c) SMPI_MPI_Waitall(a, b, c)
 #define MPI_Waitany(a, b, c, d) SMPI_MPI_Waitany(a, b, c, d)
-#define MPI_Comm_split(a, b, c, d) SMPI_MPI_Comm_split(a, b, c, d)
 #define MPI_Wtime() SMPI_MPI_Wtime()
 #define MPI_Reduce( a, b, c, d, e, f, g) SMPI_MPI_Reduce( a, b, c, d, e, f, g)
 #define MPI_Allreduce( a, b, c, d, e, f) SMPI_MPI_Allreduce( a, b, c, d, e, f)
@@ -115,6 +119,8 @@ XBT_PUBLIC(int) SMPI_MPI_Abort(MPI_Comm comm, int errorcode);
 XBT_PUBLIC(int) SMPI_MPI_Comm_size(MPI_Comm comm, int *size);
 XBT_PUBLIC(int) SMPI_MPI_Comm_rank(MPI_Comm comm, int *rank);
 XBT_PUBLIC(int) SMPI_MPI_Type_size(MPI_Datatype datatype, size_t * size);
+XBT_PUBLIC(int) SMPI_MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint *extent);
+
 XBT_PUBLIC(int) SMPI_MPI_Barrier(MPI_Comm comm);
 XBT_PUBLIC(int) SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype,
                                int src, int tag, MPI_Comm comm,
