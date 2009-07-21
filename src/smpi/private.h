@@ -30,7 +30,7 @@ typedef struct smpi_mpi_datatype_t {
   ptrdiff_t lb;
   ptrdiff_t ub;
   uint16_t flags; /* flags: has it been committed, etc ...*/
-  uint16_t id;    /* data id, normally the index in the data array. */
+  uint16_t id;    /* unused so far : data id, normally the index in the data array. */
 } s_smpi_mpi_datatype_t;
 
 // smpi mpi request

@@ -3,32 +3,18 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi,
                                 "Logging specific to SMPI (base)");
-XBT_LOG_EXTERNAL_CATEGORY(smpi_coll);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_base);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_bench);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_kernel);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_mpi);
+XBT_LOG_EXTERNAL_CATEGORY(smpi_mpi_dt);
+XBT_LOG_EXTERNAL_CATEGORY(smpi_coll);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_receiver);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_sender);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_util);
 
 smpi_mpi_global_t smpi_mpi_global = NULL;
 
-
-/**
- * Get the lower bound and extent for a Datatype 
- *
- * FIXME: this an incomplete implementation as we do not support yet MPI_Type_commit.
- * Hence, this can be called only for primitive type MPI_INT, MPI_DOUBLE, ...
- *
- * remark: MPI-1 has also the deprecated 
- * int MPI_Type_extent(MPI_Datatype datatype, *MPI_Aint *extent);
- *
- **/
-int smpi_mpi_type_get_extent(MPI_Datatype datatype, MPI_Aint *lb, MPI_Aint *extent) {
-        *extent =  datatype->ub - datatype->lb;
-        return( MPI_SUCCESS );
-}
 
 /**
  * Operations of MPI_OP : implemented=land,sum,min,max

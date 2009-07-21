@@ -82,6 +82,7 @@ EXTRA_DIST= \
 	\
 	smpi/private.h \
 	smpi/smpi_coll_private.h \
+      smpi/smpi_mpi_dt_private.h \
 	smpi/README
 
 #LIBRARY_VERSION= 0:0:0
@@ -221,7 +222,8 @@ SMPI_SRC= \
   smpi/smpi_sender.c \
   smpi/smpi_receiver.c \
   smpi/smpi_util.c \
-  smpi/smpi_coll.c
+  smpi/smpi_coll.c \
+  smpi/smpi_mpi_dt.c
 
 MSG_SRC=  msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \

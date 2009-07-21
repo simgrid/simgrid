@@ -151,9 +151,7 @@ int tree_bcast( void *buf, int count, MPI_Datatype datatype, int root,
 
         /* wait for data from my parent in the tree */
         if (!tree->isRoot) {
-#ifdef DEBUG_STEPH
-                printf("[%d] recv(%d  from %d, tag=%d)\n",rank,rank, tree->parent, system_tag+rank);
-#endif
+                DEBUG4("[%d] recv(%d  from %d, tag=%d)\n",rank,rank, tree->parent, system_tag+rank);
                 retval = smpi_create_request(buf, count, datatype, 
                                 tree->parent, rank, 
                                 system_tag + rank, 
@@ -163,31 +161,23 @@ int tree_bcast( void *buf, int count, MPI_Datatype datatype, int root,
                                         rank,retval,__FILE__,__LINE__);
                 }
                 smpi_mpi_irecv(request);
-#ifdef DEBUG_STEPH
-                printf("[%d] waiting on irecv from %d\n",rank , tree->parent);
-#endif
+                DEBUG2("[%d] waiting on irecv from %d\n",rank , tree->parent);
                 smpi_mpi_wait(request, MPI_STATUS_IGNORE);
                 xbt_mallocator_release(smpi_global->request_mallocator, request);
         }
 
         requests = xbt_malloc( tree->numChildren * sizeof(smpi_mpi_request_t));
-#ifdef DEBUG_STEPH
-        printf("[%d] creates %d requests\n",rank,tree->numChildren);
-#endif
+        DEBUG2("[%d] creates %d requests\n",rank,tree->numChildren);
 
         /* iniates sends to ranks lower in the tree */
         for (i=0; i < tree->numChildren; i++) {
                 if (tree->child[i] != -1) {
-#ifdef DEBUG_STEPH
-                        printf("[%d] send(%d->%d, tag=%d)\n",rank,rank, tree->child[i], system_tag+tree->child[i]);
-#endif
+                        DEBUG4("[%d] send(%d->%d, tag=%d)\n",rank,rank, tree->child[i], system_tag+tree->child[i]);
                         retval = smpi_create_request(buf, count, datatype, 
                                         rank, tree->child[i], 
                                         system_tag + tree->child[i], 
                                         comm, &(requests[i]));
-#ifdef DEBUG_STEPH
-                        printf("[%d] after create req[%d]=%p req->(src=%d,dst=%d)\n",rank , i, requests[i],requests[i]->src,requests[i]->dst );
-#endif
+                        DEBUG5("[%d] after create req[%d]=%p req->(src=%d,dst=%d)\n",rank,i,requests[i],requests[i]->src,requests[i]->dst );
                         if (MPI_SUCCESS != retval) {
                               printf("** internal error: smpi_create_request() rank=%d returned retval=%d, %s:%d\n",
                                               rank,retval,__FILE__,__LINE__);
@@ -345,6 +335,9 @@ int smpi_coll_tuned_alltoall_pairwise (void *sendbuf, int sendcount, MPI_Datatyp
 	  void * tmpsend, *tmprecv;
 
 	  rank = smpi_mpi_comm_rank(comm);
+        INFO1("[%d] algorithm alltoall_pairwise() called.\n",rank);
+
+
 	  /* Perform pairwise exchange - starting from 1 so the local copy is last */
 	  for (step = 1; step < size+1; step++) {
 
@@ -401,7 +394,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype s
 		    void* rbuf, int rcount, MPI_Datatype rdtype, MPI_Comm comm)
 {
 	  int i;
-        int system_tag = 999;
+        int system_alltoall_tag = 888;
 	  int rank;
 	  int size = comm->size;
 	  int err;
@@ -415,6 +408,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype s
 
 	  /* Initialize. */
 	  rank = smpi_mpi_comm_rank(comm);
+        INFO1("[%d] algorithm alltoall_basic_linear() called.\n",rank);
 
         err = smpi_mpi_type_get_extent(sdtype, &lb, &sndinc);
         err = smpi_mpi_type_get_extent(rdtype, &lb, &rcvinc);
@@ -442,7 +436,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype s
 	  for (i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
 		    err = smpi_create_request( prcv + (i * rcvinc), rcount, rdtype,
                                         i, rank,
-                                        system_tag + i,
+                                        system_alltoall_tag,
                                         comm, &(reqs[nreq]));
                 if (MPI_SUCCESS != err) {
                         DEBUG2("[%d] failed to create request for rank %d\n",rank,i);
@@ -459,7 +453,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype s
 	  for (i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size ) {
 		    err = smpi_create_request (psnd + (i * sndinc), scount, sdtype, 
                                          rank, i,
-						     system_tag + i, 
+						     system_alltoall_tag, 
                                          comm, &(reqs[nreq]));
                 if (MPI_SUCCESS != err) {
                         DEBUG2("[%d] failed to create request for rank %d\n",rank,i);

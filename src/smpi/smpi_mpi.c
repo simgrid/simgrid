@@ -2,6 +2,7 @@
 
 #include "private.h"
 #include "smpi_coll_private.h"
+#include "smpi_mpi_dt_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
                                 "Logging specific to SMPI (mpi)");
@@ -67,41 +68,10 @@ int SMPI_MPI_Comm_rank(MPI_Comm comm, int *rank)
 }
 
 
-//------------------------------- Datatypes ---------------------------------------
-/**
- * query the size of the type
- **/
-int SMPI_MPI_Type_size(MPI_Datatype datatype, size_t * size)
-{
-  int retval = MPI_SUCCESS;
-
-  smpi_bench_end();
-
-  if (NULL == datatype) {
-    retval = MPI_ERR_TYPE;
-  } else if (NULL == size) {
-    retval = MPI_ERR_ARG;
-  } else {
-    *size = datatype->size;
-  }
-
-  smpi_bench_begin();
-
-  return retval;
-}
-
 
 /**
- * query extent and lower bound of the type 
+ * Barrier
  **/
-int SMPI_MPI_Type_get_extent( MPI_Datatype datatype, int *lb, int *extent) 
-{
-        return( smpi_mpi_type_get_extent( datatype, lb, extent));
-}
-
-
-
-
 int SMPI_MPI_Barrier(MPI_Comm comm)
 {
   int retval = MPI_SUCCESS;
@@ -125,6 +95,8 @@ int SMPI_MPI_Barrier(MPI_Comm comm)
 
   return retval;
 }
+
+
 
 int SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
                    int tag, MPI_Comm comm, MPI_Request * request)
@@ -185,6 +157,9 @@ int SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
   return retval;
 }
 
+/**
+ * MPI_Send user level
+ **/
 int SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst,
                   int tag, MPI_Comm comm)
 {
@@ -586,6 +561,7 @@ int SMPI_MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype datatype,
 
   rank = smpi_mpi_comm_rank(comm);
   block_dsize = datatype->size * sendcount;
+  INFO2("[%d] optimized alltoall() called. Block size sent to each rank=%d.\n",rank,block_dsize);
 
   if ((block_dsize < 200) && (comm->size > 12)) {
 	    retval = smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, datatype,

@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "private.h"
+#include "smpi_mpi_dt_private.h"
 
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories");
 
@@ -195,28 +196,33 @@ void smpi_global_init()
   // mpi datatypes
   smpi_mpi_global->mpi_byte = xbt_new(s_smpi_mpi_datatype_t, 1); /* we can think of it as a placeholder for value*/
   smpi_mpi_global->mpi_byte->size = (size_t) 1;
-  smpi_mpi_global->mpi_byte->lb = (ptrdiff_t) &(smpi_mpi_global->mpi_byte);
+  smpi_mpi_global->mpi_byte->lb = (ptrdiff_t) 0; 
   smpi_mpi_global->mpi_byte->ub = smpi_mpi_global->mpi_byte->lb + smpi_mpi_global->mpi_byte->size;
+  smpi_mpi_global->mpi_byte->flags = DT_FLAG_BASIC;
 
   smpi_mpi_global->mpi_char = xbt_new(s_smpi_mpi_datatype_t, 1);
   smpi_mpi_global->mpi_char->size = (size_t) 1;
-  smpi_mpi_global->mpi_char->lb = (ptrdiff_t) &(smpi_mpi_global->mpi_char);
+  smpi_mpi_global->mpi_char->lb = (ptrdiff_t) 0; //&(smpi_mpi_global->mpi_char);
   smpi_mpi_global->mpi_char->ub = smpi_mpi_global->mpi_char->lb + smpi_mpi_global->mpi_char->size; 
+  smpi_mpi_global->mpi_char->flags = DT_FLAG_BASIC;
 
   smpi_mpi_global->mpi_int = xbt_new(s_smpi_mpi_datatype_t, 1);
   smpi_mpi_global->mpi_int->size = sizeof(int);
-  smpi_mpi_global->mpi_int->lb = (ptrdiff_t) &(smpi_mpi_global->mpi_int);
+  smpi_mpi_global->mpi_int->lb = (ptrdiff_t) 0; // &(smpi_mpi_global->mpi_int);
   smpi_mpi_global->mpi_int->ub = smpi_mpi_global->mpi_int->lb + smpi_mpi_global->mpi_int->size;
+  smpi_mpi_global->mpi_int->flags = DT_FLAG_BASIC;
 
   smpi_mpi_global->mpi_float = xbt_new(s_smpi_mpi_datatype_t, 1);
   smpi_mpi_global->mpi_float->size = sizeof(float);
-  smpi_mpi_global->mpi_float->lb = (ptrdiff_t) &(smpi_mpi_global->mpi_float);
+  smpi_mpi_global->mpi_float->lb = (ptrdiff_t) 0; // &(smpi_mpi_global->mpi_float);
   smpi_mpi_global->mpi_float->ub = smpi_mpi_global->mpi_float->lb + smpi_mpi_global->mpi_float->size;
+  smpi_mpi_global->mpi_float->flags = DT_FLAG_BASIC;
 
   smpi_mpi_global->mpi_double = xbt_new(s_smpi_mpi_datatype_t, 1);
   smpi_mpi_global->mpi_double->size = sizeof(double);
-  smpi_mpi_global->mpi_double->lb = (ptrdiff_t) &(smpi_mpi_global->mpi_float);
+  smpi_mpi_global->mpi_double->lb = (ptrdiff_t) 0; //&(smpi_mpi_global->mpi_float);
   smpi_mpi_global->mpi_double->ub = smpi_mpi_global->mpi_double->lb + smpi_mpi_global->mpi_double->size;
+  smpi_mpi_global->mpi_double->flags = DT_FLAG_BASIC;
 
   // mpi operations
   smpi_mpi_global->mpi_land = xbt_new(s_smpi_mpi_op_t, 1);

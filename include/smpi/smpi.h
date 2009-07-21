@@ -72,7 +72,7 @@ SG_BEGIN_DECL()
 #define MPI_COMM_NULL     NULL
 
 #define MPI_STATUS_IGNORE NULL
-#define MPI_Aint ptrdiff_t
+#define MPI_Aint          ptrdiff_t
 
 #define MPI_BYTE          (smpi_mpi_global->mpi_byte)
 #define MPI_CHAR          (smpi_mpi_global->mpi_char)
@@ -95,6 +95,8 @@ SG_BEGIN_DECL()
 #define MPI_Comm_rank(a, b) SMPI_MPI_Comm_rank(a, b)
 #define MPI_Type_size(a, b) SMPI_MPI_Type_size(a, b)
 #define MPI_Type_get_extent(a, b, c) SMPI_MPI_Type_get_extent(a, b, c)
+#define MPI_Type_lb(a, b) SMPI_MPI_Type_lb(a, b)
+#define MPI_Type_ub(a, b) SMPI_MPI_Type_ub(a, b)
 
 #define MPI_Barrier(a) SMPI_MPI_Barrier(a)
 #define MPI_Irecv(a, b, c, d, e, f, g) SMPI_MPI_Irecv(a, b, c, d, e, f, g)
@@ -120,6 +122,9 @@ XBT_PUBLIC(int) SMPI_MPI_Comm_size(MPI_Comm comm, int *size);
 XBT_PUBLIC(int) SMPI_MPI_Comm_rank(MPI_Comm comm, int *rank);
 XBT_PUBLIC(int) SMPI_MPI_Type_size(MPI_Datatype datatype, size_t * size);
 XBT_PUBLIC(int) SMPI_MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint *extent);
+XBT_PUBLIC(int) SMPI_MPI_Type_lb(MPI_Datatype datatype, MPI_Aint* disp);
+XBT_PUBLIC(int) SMPI_MPI_Type_ub(MPI_Datatype datatype, MPI_Aint* disp);
+
 
 XBT_PUBLIC(int) SMPI_MPI_Barrier(MPI_Comm comm);
 XBT_PUBLIC(int) SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype,
