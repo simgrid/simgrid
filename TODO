@@ -175,3 +175,13 @@ received by the other side (implemented with an ACK mechanism).
   * log control, management, dynamic token ring
   * a way using SSH to ask a remote host to open a socket back on me
  
+
+*
+* SURF
+******
+
+[maxmin]
+  * select portion of the system that changed instead of recomputing
+  * the whole system solution at each action change
+ 
+
