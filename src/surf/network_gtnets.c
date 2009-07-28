@@ -168,9 +168,9 @@ static void parse_link_init(void)
   tmgr_trace_t state_trace;
   tmgr_trace_t lat_trace;
 
-  surf_parse_get_trace(&bw_trace, A_surfxml_link_bandwidth_file);
-  surf_parse_get_trace(&lat_trace, A_surfxml_link_latency_file);
-  surf_parse_get_trace(&state_trace, A_surfxml_link_state_file);
+  bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
+  lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
+  state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
   if (bw_trace)
     INFO0("The GTNetS network model doesn't support bandwidth state traces");
