@@ -40,22 +40,18 @@ int smpi_receiver(int argc, char *argv[])
                         __FILE__,request->src,message->src,request->tag, message->tag);
 #endif
         if (request->comm == message->comm &&
-            (MPI_ANY_SOURCE == request->src || request->src == message->src)
-            && (MPI_ANY_TAG == request->tag || request->tag == message->tag)) {
-          xbt_fifo_remove_item(request_queue, request_item);
-          xbt_fifo_free_item(request_item);
-          xbt_fifo_remove_item(message_queue, message_item);
-          xbt_fifo_free_item(message_item);
-#ifdef DEBUG_MATCH
-        printf("[%s] found match: req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)\n",
-                        __FILE__,request->src,message->src,request->tag, message->tag);
-#endif
-       DEBUG4("found match: (req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)",
-                        request->src,message->src,request->tag, message->tag);
-          goto stopsearch;
+                        (MPI_ANY_SOURCE == request->src || request->src == message->src)
+                        && (MPI_ANY_TAG == request->tag || request->tag == message->tag)) {
+                xbt_fifo_remove_item(request_queue, request_item);
+                xbt_fifo_free_item(request_item);
+                xbt_fifo_remove_item(message_queue, message_item);
+                xbt_fifo_free_item(message_item);
+                DEBUG5("found matching request %p: (req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)",
+                                request,request->src,message->src,request->tag, message->tag);
+                goto stopsearch;
         } else {
-          DEBUG4("Matching fails: (req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)",
-                        request->src,message->src,request->tag, message->tag);
+                DEBUG5("fail to match request %p: (req_src=%d,msg_src=%d)x(req_tag=%d,msg_tag=%d)",
+                                request,request->src,message->src,request->tag, message->tag);
         }
       }
     }
@@ -98,7 +94,7 @@ int smpi_receiver(int argc, char *argv[])
     } else {
       DEBUG0("Nothing to do. Let's get a nap");
       SIMIX_process_suspend(self);
-      DEBUG0("Uh? Someone called me?");
+      DEBUG0("=== Uh? Someone called me? ===");
     }
   }
 

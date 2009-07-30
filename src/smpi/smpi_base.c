@@ -198,7 +198,7 @@ void smpi_process_init(int *argc, char ***argv)
 
   /* get rank from command line, and remove it from argv */
   pdata->index = atoi((*argv)[1]);
-  DEBUG1("I'm rank %d", pdata->index);
+  DEBUG1("I'm rank <%d>", pdata->index);
   if (*argc > 2) {
     memmove((*argv)[1], (*argv)[2], sizeof(char *) * (*argc - 2));
     (*argv)[(*argc) - 1] = NULL;
@@ -303,7 +303,7 @@ int smpi_mpi_irecv(smpi_mpi_request_t request)
 
 void  print_req( smpi_mpi_request_t r ); 
 void  print_req( smpi_mpi_request_t r ) {
-        printf("***req %p-> src=%d dst=%d tag=%d completed=0x%x consumed=0x%x\n",r,r->src,r->dst,r->tag,r->completed,r->consumed);
+        fprintf(stderr,"***req %p-> src=%d dst=%d tag=%d completed=0x%x consumed=0x%x\n",r,r->src,r->dst,r->tag,r->completed,r->consumed);
 }
 
 
@@ -317,6 +317,9 @@ int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status)
   if (NULL == request) {
     retval = MPI_ERR_INTERN;
   } else {
+
+  DEBUG3("entered smpi_mpi_wait() for req_src=%d,req_dst=%d,req_tag=%d",
+                  request->src,request->dst,request->tag);
     SIMIX_mutex_lock(request->mutex);
 //#define DEBUG_STEPH
 #ifdef DEBUG_STEPH
@@ -365,19 +368,16 @@ int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
 {
   int cpt;
 
+  DEBUG0("entering smpi_wait_any() ...");
   *index = MPI_UNDEFINED;
   if (NULL == requests) {
     return MPI_ERR_INTERN;
   }
   /* First check if one of them is already done */
   for (cpt = 0; cpt < count; cpt++) {
-#ifdef DEBUG_STEPH
-          printf("...exam req[%d] of msg from [%d]\n",cpt,requests[cpt]->src);
-#endif
+          DEBUG2(" exam req[%d] of msg from <%d>",cpt,requests[cpt]->src);
     if (requests[cpt]->completed && !requests[cpt]->consumed) { /* got ya */
-#ifdef DEBUG_STEPH
-          printf("...found match req[%d] of msg from [%d]\n",cpt,requests[cpt]->src);
-#endif
+          DEBUG2("smpi_wait_any() found match req[%d] of msg from <%d>",cpt,requests[cpt]->src);
       *index = cpt;
       goto found_request;
     }
@@ -391,9 +391,7 @@ int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
       print_req( requests[cpt] );
 #endif
       if (!requests[cpt]->completed) {  /* this one is not done, wait on it */
-#ifdef DEBUG_STEPH
-              printf("... blocked waiting a msg %d->%d, tag=%d\n",requests[cpt]->src,requests[cpt]->dst,requests[cpt]->tag);
-#endif
+              DEBUG3("smpi_waitany() blocked waiting a msg <%d> -> <%d>, tag=%d",requests[cpt]->src,requests[cpt]->dst,requests[cpt]->tag);
         while (!requests[cpt]->completed)
           SIMIX_cond_wait(requests[cpt]->cond, requests[cpt]->mutex);
 
@@ -407,17 +405,17 @@ int smpi_mpi_waitany(int count, smpi_mpi_request_t * requests, int *index,
 
 found_request:
 #ifdef DEBUG_STEPH
-      print_req( requests[cpt] );
+  print_req( requests[cpt] );
 #endif
   requests[*index]->consumed = 1;
 #ifdef DEBUG_STEPH
-      print_req( requests[cpt] );
-          printf("...accessing *req[%d]->consumed\n",cpt);
+  print_req( requests[cpt] );
 #endif
+  DEBUG2("smpi_waitany() request %p unblocked ... mark *req[%d]->consumed",requests[*index],cpt);
   if (NULL != status) {
-    status->MPI_SOURCE = requests[*index]->src;
-    status->MPI_TAG = requests[*index]->tag;
-    status->MPI_ERROR = MPI_SUCCESS;
+          status->MPI_SOURCE = requests[*index]->src;
+          status->MPI_TAG = requests[*index]->tag;
+          status->MPI_ERROR = MPI_SUCCESS;
   }
   return MPI_SUCCESS;
 

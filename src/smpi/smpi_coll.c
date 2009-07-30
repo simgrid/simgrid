@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "private.h"
 #include "smpi_coll_private.h"
@@ -151,7 +152,7 @@ int tree_bcast( void *buf, int count, MPI_Datatype datatype, int root,
 
         /* wait for data from my parent in the tree */
         if (!tree->isRoot) {
-                DEBUG4("[%d] recv(%d  from %d, tag=%d)\n",rank,rank, tree->parent, system_tag+rank);
+                DEBUG3("<%d> tree_bcast(): i am not root: recv from %d, tag=%d)",rank,tree->parent,system_tag+rank);
                 retval = smpi_create_request(buf, count, datatype, 
                                 tree->parent, rank, 
                                 system_tag + rank, 
@@ -161,23 +162,22 @@ int tree_bcast( void *buf, int count, MPI_Datatype datatype, int root,
                                         rank,retval,__FILE__,__LINE__);
                 }
                 smpi_mpi_irecv(request);
-                DEBUG2("[%d] waiting on irecv from %d\n",rank , tree->parent);
+                DEBUG2("<%d> tree_bcast(): waiting on irecv from %d",rank, tree->parent);
                 smpi_mpi_wait(request, MPI_STATUS_IGNORE);
                 xbt_mallocator_release(smpi_global->request_mallocator, request);
         }
 
         requests = xbt_malloc( tree->numChildren * sizeof(smpi_mpi_request_t));
-        DEBUG2("[%d] creates %d requests\n",rank,tree->numChildren);
+        DEBUG2("<%d> creates %d requests (1 per child)\n",rank,tree->numChildren);
 
         /* iniates sends to ranks lower in the tree */
         for (i=0; i < tree->numChildren; i++) {
                 if (tree->child[i] != -1) {
-                        DEBUG4("[%d] send(%d->%d, tag=%d)\n",rank,rank, tree->child[i], system_tag+tree->child[i]);
+                        DEBUG3("<%d> send to <%d>,tag=%d",rank,tree->child[i], system_tag+tree->child[i]);
                         retval = smpi_create_request(buf, count, datatype, 
                                         rank, tree->child[i], 
                                         system_tag + tree->child[i], 
                                         comm, &(requests[i]));
-                        DEBUG5("[%d] after create req[%d]=%p req->(src=%d,dst=%d)\n",rank,i,requests[i],requests[i]->src,requests[i]->dst );
                         if (MPI_SUCCESS != retval) {
                               printf("** internal error: smpi_create_request() rank=%d returned retval=%d, %s:%d\n",
                                               rank,retval,__FILE__,__LINE__);
@@ -271,6 +271,7 @@ int rank;
 int retval;
 
         rank = smpi_mpi_comm_rank( comm );
+        DEBUG2("<%d> entered nary_tree_bcast(), arity=%d",rank,arity);
         // arity=2: a binary tree, arity=4 seem to be a good setting (see P2P-MPI))
         proc_tree_t tree = alloc_tree( arity ); 
         build_tree( rank, comm->size, &tree );
@@ -335,7 +336,7 @@ int smpi_coll_tuned_alltoall_pairwise (void *sendbuf, int sendcount, MPI_Datatyp
 	  void * tmpsend, *tmprecv;
 
 	  rank = smpi_mpi_comm_rank(comm);
-        INFO1("[%d] algorithm alltoall_pairwise() called.\n",rank);
+        INFO1("<%d> algorithm alltoall_pairwise() called.\n",rank);
 
 
 	  /* Perform pairwise exchange - starting from 1 so the local copy is last */
@@ -408,10 +409,12 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype s
 
 	  /* Initialize. */
 	  rank = smpi_mpi_comm_rank(comm);
-        INFO1("[%d] algorithm alltoall_basic_linear() called.\n",rank);
+        DEBUG1("<%d> algorithm alltoall_basic_linear() called.",rank);
 
         err = smpi_mpi_type_get_extent(sdtype, &lb, &sndinc);
         err = smpi_mpi_type_get_extent(rdtype, &lb, &rcvinc);
+        sndinc *= scount;
+        rcvinc *= rcount;
 	  /* simple optimization */
 	  psnd = ((char *) sbuf) + (rank * sndinc);
 	  prcv = ((char *) rbuf) + (rank * rcvinc);
@@ -439,7 +442,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype s
                                         system_alltoall_tag,
                                         comm, &(reqs[nreq]));
                 if (MPI_SUCCESS != err) {
-                        DEBUG2("[%d] failed to create request for rank %d\n",rank,i);
+                        DEBUG2("<%d> failed to create request for rank %d",rank,i);
                         for (i=0;i< nreq;i++) 
                                 xbt_mallocator_release(smpi_global->request_mallocator, reqs[i]);
                         return err;
@@ -456,7 +459,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype s
 						     system_alltoall_tag, 
                                          comm, &(reqs[nreq]));
                 if (MPI_SUCCESS != err) {
-                        DEBUG2("[%d] failed to create request for rank %d\n",rank,i);
+                        DEBUG2("<%d> failed to create request for rank %d\n",rank,i);
                         for (i=0;i< nreq;i++) 
                                 xbt_mallocator_release(smpi_global->request_mallocator, reqs[i]);
                         return err;
@@ -466,9 +469,11 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype s
 
         /* Start your engines.  This will never return an error. */
         for ( i=0; i< nreq/2; i++ ) {
+            DEBUG3("<%d> issued irecv request reqs[%d]=%p",rank,i,reqs[i]);
             smpi_mpi_irecv( reqs[i] );
         }
         for ( i= nreq/2; i<nreq; i++ ) {
+            DEBUG3("<%d> issued isend request reqs[%d]=%p",rank,i,reqs[i]);
             smpi_mpi_isend( reqs[i] );
         }
 
@@ -480,12 +485,19 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype s
          * So free them anyway -- even if there was an error, and return
          * the error after we free everything. */
 
-	  err = smpi_mpi_waitall(nreq, reqs, MPI_STATUS_IGNORE);
+        DEBUG2("<%d> wait for %d requests",rank,nreq);
+        // waitall is buggy: use a loop instead for the moment
+        // err = smpi_mpi_waitall(nreq, reqs, MPI_STATUS_IGNORE);
+        for (i=0;i<nreq;i++) {
+                err = smpi_mpi_wait( reqs[i], MPI_STATUS_IGNORE);
+        }
 
 	  /* Free the reqs */
-        for (i=0;i< 2*(size-1);i++) {
+        assert( nreq == 2*(size-1) );
+        for (i=0;i< nreq;i++) {
             xbt_mallocator_release(smpi_global->request_mallocator, reqs[i]);
         }
+        xbt_free( reqs );
 	  return err;
 }
 

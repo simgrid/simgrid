@@ -1,10 +1,14 @@
-* Vérifier que la condition et le mutex de la requete sont clean lors du mallocator_reset
- 
+
+
+* if the program has a different main() prototype than
+   int main( int argc, char *argv[] )
+  then the compilation smpicc fails : conflicting types for ‘smpi_simulated_main’
+  since smpicc substitutes smpi_simulated_main for the user main() declaration.
+   
 
 * MPI_Barrier()
   Tue Jun 30 11:49:07 UTC 2009 - genaud
 
-  
   several calls to MPI_Barrier() result in:
   
 genaud@boa:~/Documents/svn/simgrid/simgrid/trunk/src/smpi$ ./smpirun -np 2 -platform g1.xml -hostfile hostfile ./barrier

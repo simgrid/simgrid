@@ -296,6 +296,9 @@ int smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                    MPI_Comm comm)
 {
   int retval = MPI_SUCCESS;
+  int rank = smpi_mpi_comm_rank(comm);
+
+  DEBUG1("<%d> entered smpi_mpi_bcast(). Calls nary_tree_bcast()",rank);
   //retval = flat_tree_bcast(buf, count, datatype, root, comm);
   retval = nary_tree_bcast(buf, count, datatype, root, comm, 2 );
   return retval;
@@ -358,7 +361,7 @@ int smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
         int rank;
         int size;
         int i;
-        int tag = 0;
+        int system_tag = 666;
         smpi_mpi_request_t *requests;
         smpi_mpi_request_t request;
 
@@ -366,13 +369,14 @@ int smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
 
         rank = smpi_mpi_comm_rank(comm);
         size = comm->size;
+        DEBUG1("<%d> entered smpi_mpi_reduce()",rank);
 
         if (rank != root) {           // if i am not ROOT, simply send my buffer to root
 
 #ifdef DEBUG_REDUCE
                 print_buffer_int(sendbuf, count, xbt_strdup("sndbuf"), rank);
 #endif
-                retval = smpi_create_request(sendbuf, count, datatype, rank, root, tag, comm,
+                retval = smpi_create_request(sendbuf, count, datatype, rank, root, system_tag, comm,
                                         &request);
                 smpi_mpi_isend(request);
                 smpi_mpi_wait(request, MPI_STATUS_IGNORE);
@@ -397,7 +401,7 @@ int smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
                         // reminder: for smpi_create_request() the src is always the process sending.
                         src = i < root ? i : i + 1;
                         retval = smpi_create_request(tmpbufs[i], count, datatype,
-                                        src, root, tag, comm, &(requests[i]));
+                                        src, root, system_tag, comm, &(requests[i]));
                         if (NULL != requests[i] && MPI_SUCCESS == retval) {
                                 if (MPI_SUCCESS == retval) {
                                         smpi_mpi_irecv(requests[i]);
@@ -408,8 +412,9 @@ int smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
                 for (i = 0; i < size-1; i++) {
                         int index = MPI_UNDEFINED;
                         smpi_mpi_waitany( size-1, requests, &index, MPI_STATUS_IGNORE);
+                        DEBUG3("<%d> waitany() unblocked by reception (completes request[%d]) (%d reqs remaining)",
+                                        rank,index,size-i-2);
 #ifdef DEBUG_REDUCE
-                        printf ("MPI_Waitany() unblocked: root received (completes req[index=%d])\n",index);
                         print_buffer_int(tmpbufs[index], count, bprintf("tmpbufs[index=%d] (value received)", index),
                                         rank);
 #endif
@@ -561,7 +566,7 @@ int SMPI_MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype datatype,
 
   rank = smpi_mpi_comm_rank(comm);
   block_dsize = datatype->size * sendcount;
-  INFO2("[%d] optimized alltoall() called. Block size sent to each rank=%d.\n",rank,block_dsize);
+  DEBUG2("<%d> optimized alltoall() called. Block size sent to each rank: %d bytes.",rank,block_dsize);
 
   if ((block_dsize < 200) && (comm->size > 12)) {
 	    retval = smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, datatype,
