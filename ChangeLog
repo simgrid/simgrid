@@ -7,7 +7,13 @@ SimGrid (3.3.2-svn) unstable; urgency=low
 
  SMPI:
   * Implement some more MPI primitives: 
-    MPI_Waitany, MPI_Waitall, MPI_Reduce, MPI_Allreduce, MPI_Sendrecv
+    MPI_Bcast, MPI_Waitany, MPI_Waitall, MPI_Reduce, MPI_Allreduce, MPI_Sendrecv, MPI_Alltoall
+    -implementation: Bcast: flat or 2-ary tree (default), 
+                     Barrier: 4-ary tree,
+                     Reduce: flat tree
+                     Allreduce: Reduce then Bcast
+                     Alltoall: basic_linear if data per proc < 3Kb, otherwise pairwise. 
+                               Not yet implemented: bruck for data per proc < 200b and comm size > 12
   * Add support for optimized collectives (Bcast is now binomial by default)
   * Port smpirun and smpicc to OS X
 
