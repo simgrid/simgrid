@@ -18,6 +18,7 @@ void *smpi_request_new()
 
   request->buf = NULL;
   request->completed = 0;
+  request->consumed = 0;
   request->mutex = SIMIX_mutex_init();
   request->cond = SIMIX_cond_init();
   request->data = NULL;
