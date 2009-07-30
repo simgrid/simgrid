@@ -93,6 +93,134 @@ static void routing_full_parse_Eroute(void)
   }
 }
 
+/* Cluster tag functions */
+
+static void routing_full_parse_change_cpu_data(const char *hostName,
+                                  const char *surfxml_host_power,
+                                  const char *surfxml_host_availability,
+                                  const char *surfxml_host_availability_file,
+                                  const char *surfxml_host_state_file)
+{
+  int AX_ptr = 0;
+
+  SURFXML_BUFFER_SET(host_id, hostName);
+  SURFXML_BUFFER_SET(host_power, surfxml_host_power /*hostPower */ );
+  SURFXML_BUFFER_SET(host_availability, surfxml_host_availability);
+  SURFXML_BUFFER_SET(host_availability_file, surfxml_host_availability_file);
+  SURFXML_BUFFER_SET(host_state_file, surfxml_host_state_file);
+}
+
+static void routing_full_parse_change_link_data(const char *linkName,
+                                   const char *surfxml_link_bandwidth,
+                                   const char *surfxml_link_bandwidth_file,
+                                   const char *surfxml_link_latency,
+                                   const char *surfxml_link_latency_file,
+                                   const char *surfxml_link_state_file)
+{
+  int AX_ptr = 0;
+
+  SURFXML_BUFFER_SET(link_id, linkName);
+  SURFXML_BUFFER_SET(link_bandwidth, surfxml_link_bandwidth);
+  SURFXML_BUFFER_SET(link_bandwidth_file, surfxml_link_bandwidth_file);
+  SURFXML_BUFFER_SET(link_latency, surfxml_link_latency);
+  SURFXML_BUFFER_SET(link_latency_file, surfxml_link_latency_file);
+  SURFXML_BUFFER_SET(link_state_file, surfxml_link_state_file);
+}
+
+static void routing_full_parse_Scluster(void)
+{
+  static int AX_ptr = 0;
+
+  char *cluster_id = A_surfxml_cluster_id;
+  char *cluster_prefix = A_surfxml_cluster_prefix;
+  char *cluster_suffix = A_surfxml_cluster_suffix;
+  char *cluster_radical = A_surfxml_cluster_radical;
+  char *cluster_power = A_surfxml_cluster_power;
+  char *cluster_bw = A_surfxml_cluster_bw;
+  char *cluster_lat = A_surfxml_cluster_lat;
+  char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
+  char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
+  char *backbone_name;
+
+  surfxml_bufferstack_push(1);
+
+  /* Make set */
+  SURFXML_BUFFER_SET(set_id, cluster_id);
+  SURFXML_BUFFER_SET(set_prefix, cluster_prefix);
+  SURFXML_BUFFER_SET(set_suffix, cluster_suffix);
+  SURFXML_BUFFER_SET(set_radical, cluster_radical);
+
+  SURFXML_START_TAG(set);
+  SURFXML_END_TAG(set);
+
+  /* Make foreach */
+  SURFXML_BUFFER_SET(foreach_set_id, cluster_id);
+
+  SURFXML_START_TAG(foreach);
+
+  /* Make host for the foreach */
+  routing_full_parse_change_cpu_data("$1", cluster_power, "1.0", "", "");
+  A_surfxml_host_state = A_surfxml_host_state_ON;
+
+  SURFXML_START_TAG(host);
+  SURFXML_END_TAG(host);
+
+  /* Make link for the foreach */
+  routing_full_parse_change_link_data("$1", cluster_bw, "", cluster_lat, "", "");
+  A_surfxml_link_state = A_surfxml_link_state_ON;
+  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+
+  SURFXML_START_TAG(link);
+  SURFXML_END_TAG(link);
+
+  SURFXML_END_TAG(foreach);
+
+  /* Make backbone link */
+  backbone_name = bprintf("%s_bb", cluster_id);
+  routing_full_parse_change_link_data(backbone_name, cluster_bb_bw, "", cluster_bb_lat, "",
+                         "");
+  A_surfxml_link_state = A_surfxml_link_state_ON;
+  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_FATPIPE;
+
+  SURFXML_START_TAG(link);
+  SURFXML_END_TAG(link);
+
+  /* Make route multi with the outside world, i.e. cluster->$* */
+  SURFXML_BUFFER_SET(route_c_multi_src, cluster_id);
+  SURFXML_BUFFER_SET(route_c_multi_dst, "$*");
+  A_surfxml_route_c_multi_symmetric = A_surfxml_route_c_multi_symmetric_NO;
+  A_surfxml_route_c_multi_action = A_surfxml_route_c_multi_action_OVERRIDE;
+
+  SURFXML_START_TAG(route_c_multi);
+
+  SURFXML_BUFFER_SET(link_c_ctn_id, "$src");
+
+  SURFXML_START_TAG(link_c_ctn);
+  SURFXML_END_TAG(link_c_ctn);
+
+  SURFXML_END_TAG(route_c_multi);
+
+  /* Make route multi between cluster hosts, i.e. cluster->cluster */
+  SURFXML_BUFFER_SET(route_c_multi_src, cluster_id);
+  SURFXML_BUFFER_SET(route_c_multi_dst, cluster_id);
+  A_surfxml_route_c_multi_action = A_surfxml_route_c_multi_action_POSTPEND;
+  A_surfxml_route_c_multi_symmetric = A_surfxml_route_c_multi_symmetric_NO;
+
+  SURFXML_START_TAG(route_c_multi);
+
+  SURFXML_BUFFER_SET(link_c_ctn_id, backbone_name);
+
+  SURFXML_START_TAG(link_c_ctn);
+  SURFXML_END_TAG(link_c_ctn);
+
+  SURFXML_END_TAG(route_c_multi);
+
+  free(backbone_name);
+
+  /* Restore buff */
+  surfxml_bufferstack_pop(1);
+}
+
 
 static void routing_full_parse_end(void) {
   routing_full_t routing = (routing_full_t) used_routing;
@@ -187,23 +315,77 @@ static void routing_model_full_create(size_t size_of_link,void *loopback) {
   surfxml_add_callback(STag_surfxml_route_cb_list,
       &routing_full_parse_Sroute_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &routing_full_parse_Eroute);
+  surfxml_add_callback(STag_surfxml_cluster_cb_list, &routing_full_parse_Scluster);
+}
+
+/* ************************************************************************** */
+
+static void routing_shortest_path_parse_Scluster(void)
+{
+  static int AX_ptr = 0;
+
+  char *cluster_id = A_surfxml_cluster_id;
+  char *cluster_prefix = A_surfxml_cluster_prefix;
+  char *cluster_suffix = A_surfxml_cluster_suffix;
+  char *cluster_radical = A_surfxml_cluster_radical;
+  char *cluster_power = A_surfxml_cluster_power;
+  char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
+  char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
+  char *backbone_name;
+
+  surfxml_bufferstack_push(1);
+
+  /* Make set */
+  SURFXML_BUFFER_SET(set_id, cluster_id);
+  SURFXML_BUFFER_SET(set_prefix, cluster_prefix);
+  SURFXML_BUFFER_SET(set_suffix, cluster_suffix);
+  SURFXML_BUFFER_SET(set_radical, cluster_radical);
+
+  SURFXML_START_TAG(set);
+  SURFXML_END_TAG(set);
+
+  /* Make foreach */
+  SURFXML_BUFFER_SET(foreach_set_id, cluster_id);
+
+  SURFXML_START_TAG(foreach);
+
+  /* Make host for the foreach */
+  routing_full_parse_change_cpu_data("$1", cluster_power, "1.0", "", "");
+  A_surfxml_host_state = A_surfxml_host_state_ON;
+
+  SURFXML_START_TAG(host);
+  SURFXML_END_TAG(host);
+
+  SURFXML_END_TAG(foreach);
+
+  /* Make backbone link */
+  backbone_name = bprintf("%s_bb", cluster_id);
+  routing_full_parse_change_link_data(backbone_name, cluster_bb_bw, "", cluster_bb_lat, "",
+                         "");
+  A_surfxml_link_state = A_surfxml_link_state_ON;
+  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_FATPIPE;
+
+  SURFXML_START_TAG(link);
+  SURFXML_END_TAG(link);
+
+  free(backbone_name);
+
+  /* Restore buff */
+  surfxml_bufferstack_pop(1);
 }
 
 /* ************************************************************************** */
 /* *************************** FLOYD ROUTING ********************************* */
 typedef struct {
   s_routing_t generic_routing;
-  double *cost_table;
   int *predecessor_table;
   void** link_table;
-  
+  xbt_dynar_t last_route;
   void *loopback;
   size_t size_of_link;
 } s_routing_floyd_t,*routing_floyd_t;
 
-
-
-#define FLOYD_COST(i,j) ((routing_floyd_t)used_routing)->cost_table[(i)+(j)*(used_routing)->host_count]
+#define FLOYD_COST(i,j) cost_table[(i)+(j)*(used_routing)->host_count]
 #define FLOYD_PRED(i,j) ((routing_floyd_t)used_routing)->predecessor_table[(i)+(j)*(used_routing)->host_count]
 #define FLOYD_LINK(i,j) ((routing_floyd_t)used_routing)->link_table[(i)+(j)*(used_routing)->host_count]
 
@@ -211,22 +393,22 @@ static void routing_floyd_parse_end(void) {
 
   routing_floyd_t routing = (routing_floyd_t) used_routing;
   int nb_link = 0;
-  unsigned int cpt = 0;    
   void* link_list = NULL;
+  double * cost_table;
   xbt_dict_cursor_t cursor = NULL;
   char *key,*data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
-  char *link_name = NULL;
 
   unsigned int i,j;
 
   int host_count = routing->generic_routing.host_count;
 
   /* Create Cost, Predecessor and Link tables */
-  routing->cost_table = xbt_new0(double, host_count * host_count); //link cost from host to host
+  cost_table = xbt_new0(double, host_count * host_count); //link cost from host to host
   routing->predecessor_table = xbt_new0(int, host_count*host_count); //predecessor host numbers
   routing->link_table = xbt_new0(void*,host_count*host_count); //actual link between src and dst
+  routing->last_route = xbt_dynar_new(routing->size_of_link, NULL);
 
   /* Initialize costs and predecessors*/
   for(i = 0; i<host_count;i++)
@@ -250,14 +432,13 @@ static void routing_floyd_parse_end(void) {
         src_id,dst_id,routing->generic_routing.host_count,xbt_dynar_length(links));
     xbt_assert3(xbt_dynar_length(links) == 1, "%ld links in route between host %d and %d, should be 1", xbt_dynar_length(links), src_id, dst_id);
     
-    xbt_dynar_foreach (links, cpt, link_name) {
-      void* link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
-      if (link)
-        link_list = link;
-      else
-        THROW1(mismatch_error,0,"Link %s not found", link_name);
+    char * link_name = xbt_dynar_getfirst_as(links, char*);
+    void * link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+    if (link)
+      link_list = link;
+    else
+      THROW1(mismatch_error,0,"Link %s not found", link_name);
     
-    }
 
     FLOYD_LINK(src_id,dst_id) = link_list;
     FLOYD_PRED(src_id, dst_id) = src_id;
@@ -290,6 +471,9 @@ static void routing_floyd_parse_end(void) {
       }
     }
   }
+
+  //cleanup
+  free(cost_table);
 }
 
 /*
@@ -302,7 +486,7 @@ static xbt_dynar_t routing_floyd_get_route(int src_id,int dst_id) {
   int pred = dst_id;
   int prev_pred = 0;
 
-  xbt_dynar_t link_list = xbt_dynar_new(routing->size_of_link, NULL);
+  xbt_dynar_reset(routing->last_route);
 
   do {
     prev_pred = pred;
@@ -311,17 +495,13 @@ static xbt_dynar_t routing_floyd_get_route(int src_id,int dst_id) {
     if(pred == -1) // if no pred in route -> no route to host
         break;
 
-    xbt_dynar_unshift(link_list, &FLOYD_LINK(pred,prev_pred));
+    xbt_dynar_unshift(routing->last_route, &FLOYD_LINK(pred,prev_pred));
 
   } while(pred != src_id);
 
   xbt_assert2(pred != -1, "no route from host %d to %d", src_id, dst_id);
 
-  return link_list;
-}
-
-static void routing_floyd_finalize_route(xbt_dynar_t route) {
-  xbt_dynar_free(&route);
+  return routing->last_route;
 }
 
 static void routing_floyd_finalize(void) {
@@ -329,8 +509,8 @@ static void routing_floyd_finalize(void) {
 
   if (routing) {
     free(routing->link_table);
-    free(routing->cost_table);
     free(routing->predecessor_table);
+    xbt_dynar_free(&routing->last_route);
     xbt_dict_free(&used_routing->host_id);
     free(routing);
     routing=NULL;
@@ -345,7 +525,6 @@ static void routing_model_floyd_create(size_t size_of_link,void *loopback) {
   routing->generic_routing.host_id = xbt_dict_new();
   routing->generic_routing.get_route = routing_floyd_get_route;
   routing->generic_routing.finalize = routing_floyd_finalize;
-  routing->generic_routing.finalize_route = routing_floyd_finalize_route;
   routing->size_of_link = size_of_link;
   routing->loopback = loopback;
 
@@ -358,6 +537,7 @@ static void routing_model_floyd_create(size_t size_of_link,void *loopback) {
   surfxml_add_callback(STag_surfxml_route_cb_list, 
       &routing_full_parse_Sroute_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &routing_full_parse_Eroute);
+  surfxml_add_callback(STag_surfxml_cluster_cb_list, &routing_shortest_path_parse_Scluster);
   
 }
 
@@ -366,8 +546,9 @@ static void routing_model_floyd_create(size_t size_of_link,void *loopback) {
 typedef struct {
   s_routing_t generic_routing;
   xbt_graph_t route_graph;
-  xbt_set_t graph_node_map;
-  xbt_set_t route_cache;
+  xbt_dict_t graph_node_map;
+  xbt_dict_t route_cache;
+  xbt_dynar_t last_route;
   int cached;
   void *loopback;
   size_t size_of_link;
@@ -376,18 +557,14 @@ typedef struct {
 
 typedef struct graph_node_data {
   int id; 
-  int graph_id; //used for caching internal id's
+  int graph_id; //used for caching internal graph id's
 } s_graph_node_data_t, * graph_node_data_t;
 
 typedef struct graph_node_map_element {
-  XBT_SET_HEADERS;
-
   xbt_node_t node;
 } s_graph_node_map_element_t, * graph_node_map_element_t;
 
 typedef struct route_cache_element {
-  XBT_SET_HEADERS;
-
   int * pred_arr;
   int size;
 } s_route_cache_element_t, * route_cache_element_t;	
@@ -399,7 +576,6 @@ static void route_cache_elem_free(void *e) {
   route_cache_element_t elm=(route_cache_element_t)e;
 
   if (elm) {
-    free(elm->name);
     free(elm->pred_arr);
     free(elm);
   }
@@ -409,7 +585,6 @@ static void graph_node_map_elem_free(void *e) {
   graph_node_map_element_t elm = (graph_node_map_element_t)e;
 
   if(elm) {
-    free(elm->name);
     free(elm);
   }
 }
@@ -426,11 +601,8 @@ static xbt_node_t route_graph_new_node(int id, int graph_id) {
   xbt_node_t node = xbt_graph_new_node(routing->route_graph, data);
 
   graph_node_map_element_t elm = xbt_new0(struct graph_node_map_element, sizeof(struct graph_node_map_element));
-  elm->name_len = 0;
-  elm->name = bprintf("%d",id);
   elm->node = node;
-
-  xbt_set_add(routing->graph_node_map, (xbt_set_elm_t)elm, &graph_node_map_elem_free);
+  xbt_dict_set_ext(routing->graph_node_map, (char*)(&id), sizeof(int), (xbt_set_elm_t)elm, &graph_node_map_elem_free);
 
   return node;
 }
@@ -438,9 +610,7 @@ static xbt_node_t route_graph_new_node(int id, int graph_id) {
 static graph_node_map_element_t graph_node_map_search(int id) {
   routing_dijkstra_t routing = (routing_dijkstra_t) used_routing;
 
-  char * id_str = bprintf("%d",id);
-  graph_node_map_element_t elm = (graph_node_map_element_t)xbt_set_get_by_name_or_null(routing->graph_node_map, id_str);
-  free(id_str);
+  graph_node_map_element_t elm = (graph_node_map_element_t)xbt_dict_get_or_null_ext(routing->graph_node_map, (char*)(&id), sizeof(int));
 
   return elm;
 }
@@ -453,12 +623,8 @@ static void route_new_dijkstra(int src_id, int dst_id, void* link) {
 
   xbt_node_t src = NULL;
   xbt_node_t dst = NULL;
-  char * src_id_str = bprintf("%d",src_id);
-  char * dst_id_str = bprintf("%d",dst_id);
-  graph_node_map_element_t src_elm = (graph_node_map_element_t)xbt_set_get_by_name_or_null(routing->graph_node_map, src_id_str);
-  graph_node_map_element_t dst_elm = (graph_node_map_element_t)xbt_set_get_by_name_or_null(routing->graph_node_map, dst_id_str);
-  free(src_id_str);
-  free(dst_id_str);
+  graph_node_map_element_t src_elm = (graph_node_map_element_t)xbt_dict_get_or_null_ext(routing->graph_node_map, (char*)(&src_id), sizeof(int));
+  graph_node_map_element_t dst_elm = (graph_node_map_element_t)xbt_dict_get_or_null_ext(routing->graph_node_map, (char*)(&dst_id), sizeof(int));
 
   if(src_elm)
     src = src_elm->node;
@@ -514,18 +680,17 @@ static void add_loopback_dijkstra(void) {
 static void routing_dijkstra_parse_end(void) {
   routing_dijkstra_t routing = (routing_dijkstra_t) used_routing;
   int nb_link = 0;
-  unsigned int cpt = 0;
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
-  char *link_name = NULL;
 
   /* Create the topology graph */
   routing->route_graph = xbt_graph_new_graph(1, NULL);
-  routing->graph_node_map = xbt_set_new();
+  routing->graph_node_map = xbt_dict_new();
+  routing->last_route = xbt_dynar_new(routing->size_of_link, NULL);
   if(routing->cached)
-    routing->route_cache = xbt_set_new();
+    routing->route_cache = xbt_dict_new();
 
 
   /* Put the routes in position */
@@ -543,13 +708,12 @@ static void routing_dijkstra_parse_end(void) {
 
     xbt_assert3(xbt_dynar_length(links) == 1, "%ld links in route between host %d and %d, should be 1", xbt_dynar_length(links), src_id, dst_id);
 
-    xbt_dynar_foreach(links, cpt, link_name) {
-      void* link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
-      if (link)
-        route_new_dijkstra(src_id,dst_id,link);
-      else
-        THROW1(mismatch_error,0,"Link %s not found", link_name);
-    }
+    char* link_name = xbt_dynar_getfirst_as(links, char*);
+    void* link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+    if (link)
+      route_new_dijkstra(src_id,dst_id,link);
+    else
+      THROW1(mismatch_error,0,"Link %s not found", link_name);
     
   }
 
@@ -588,9 +752,7 @@ static xbt_dynar_t routing_dijkstra_get_route(int src_id,int dst_id) {
   route_cache_element_t elm = NULL;
   if(routing->cached) {
     /*check if there is a cached predecessor list avail */
-    char * src_id_str = bprintf("%d",src_id);
-    elm = (route_cache_element_t)xbt_set_get_by_name_or_null(routing->route_cache, src_id_str);
-    free(src_id_str);
+    elm = (route_cache_element_t)xbt_dict_get_or_null_ext(routing->route_cache, (char*)(&src_id), sizeof(int));
   }
 
   if(elm) { //cached mode and cache hit
@@ -655,7 +817,7 @@ static xbt_dynar_t routing_dijkstra_get_route(int src_id,int dst_id) {
   }
 
   //compose route path with links
-  xbt_dynar_t link_list = xbt_dynar_new(routing->size_of_link, NULL);
+  xbt_dynar_reset(routing->last_route);
 
   int v;
   int size = 0;
@@ -667,7 +829,7 @@ static xbt_dynar_t routing_dijkstra_get_route(int src_id,int dst_id) {
     xbt_assert2(edge != NULL, "no route between host %d and %d", src_id, dst_id);
 
     void * link = xbt_graph_edge_get_data(edge);
-    xbt_dynar_unshift(link_list, &link);
+    xbt_dynar_unshift(routing->last_route, &link);
     size++;
   }
 
@@ -675,31 +837,27 @@ static xbt_dynar_t routing_dijkstra_get_route(int src_id,int dst_id) {
   if(routing->cached && elm == NULL) {
     //add to predecessor list of the current src-host to cache
     elm = xbt_new0(struct route_cache_element, sizeof(struct route_cache_element));
-    elm->name = bprintf("%d",src_id);
-    elm->name_len = 0;
     elm->pred_arr = pred_arr;
     elm->size = size;
-    xbt_set_add(routing->route_cache, (xbt_set_elm_t)elm, &route_cache_elem_free);
+    xbt_dict_set_ext(routing->route_cache, (char*)(&src_id), sizeof(int), (xbt_set_elm_t)elm, &route_cache_elem_free);
   }
 
   if(!routing->cached)
     free(pred_arr);
 
-  return link_list;
+  return routing->last_route;
 }
 
-static void routing_dijkstra_finalize_route(xbt_dynar_t route) {
-  xbt_dynar_free(&route);
-}
 
 static void routing_dijkstra_finalize(void) {
   routing_dijkstra_t routing = (routing_dijkstra_t)used_routing;
 
   if (routing) {
     xbt_graph_free_graph(routing->route_graph, &free, NULL, &free);
-    xbt_set_free(&routing->graph_node_map);
+    xbt_dict_free(&routing->graph_node_map);
     if(routing->cached)
-      xbt_set_free(&routing->route_cache);
+      xbt_dict_free(&routing->route_cache);
+    xbt_dynar_free(&routing->last_route);
     xbt_dict_free(&used_routing->host_id);
     free(routing);
     routing=NULL;
@@ -716,7 +874,6 @@ static void routing_model_dijkstraboth_create(size_t size_of_link,void *loopback
   routing->generic_routing.host_count = 0;
   routing->generic_routing.get_route = routing_dijkstra_get_route;
   routing->generic_routing.finalize = routing_dijkstra_finalize;
-  routing->generic_routing.finalize_route = routing_dijkstra_finalize_route;
   routing->size_of_link = size_of_link;
   routing->loopback = loopback;
   routing->cached = cached;
@@ -731,6 +888,7 @@ static void routing_model_dijkstraboth_create(size_t size_of_link,void *loopback
   surfxml_add_callback(STag_surfxml_route_cb_list,
       &routing_full_parse_Sroute_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &routing_full_parse_Eroute);
+  surfxml_add_callback(STag_surfxml_cluster_cb_list, &routing_shortest_path_parse_Scluster);
 }
 
 static void routing_model_dijkstra_create(size_t size_of_link,void *loopback) {

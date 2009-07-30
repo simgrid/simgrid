@@ -31,11 +31,11 @@ xbt_dict_t trace_connect_list_latency = NULL;
 
 /* This buffer is used to store the original buffer before substituing it by out own buffer. Usefull for the foreach tag */
 static xbt_dynar_t surfxml_bufferstack_stack = NULL;
-static int surfxml_bufferstack_size = 2048;
+int surfxml_bufferstack_size = 2048;
 static char *old_buff = NULL;
 static void surf_parse_error(char *msg);
 
-static void push_surfxml_bufferstack(int new)
+void surfxml_bufferstack_push(int new)
 {
   if (!new)
     old_buff = surfxml_bufferstack;
@@ -45,7 +45,7 @@ static void push_surfxml_bufferstack(int new)
   }
 }
 
-static void pop_surfxml_bufferstack(int new)
+void surfxml_bufferstack_pop(int new)
 {
   if (!new)
     surfxml_bufferstack = old_buff;
@@ -125,7 +125,6 @@ static void parse_foreach(void);
 static void parse_sets(void);
 static void parse_route_multi_set_endpoints(void);
 static void parse_route_multi_set_route(void);
-static void parse_cluster(void);
 static void parse_trace_init(void);
 static void parse_trace_finalize(void);
 static void parse_trace_c_connect(void);
@@ -365,7 +364,7 @@ void ETag_surfxml_set(void)
 void STag_surfxml_foreach(void)
 {
   /* Save the current buffer */
-  push_surfxml_bufferstack(0);
+  surfxml_bufferstack_push(0);
   surfxml_call_cb_functions(STag_surfxml_foreach_cb_list);
 }
 
@@ -570,7 +569,6 @@ static void init_data(void)
   surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list,
                        &parse_route_multi_set_route);
   surfxml_add_callback(STag_surfxml_foreach_cb_list, &parse_foreach);
-  surfxml_add_callback(STag_surfxml_cluster_cb_list, &parse_cluster);
   surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_trace_init);
   surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_trace_finalize);
   surfxml_add_callback(STag_surfxml_trace_c_connect_cb_list,
@@ -773,7 +771,7 @@ static void finalize_host_foreach(void)
 
   /* foreach name in set call the main host callback */
   xbt_dynar_foreach(names, cpt, name) {
-    push_surfxml_bufferstack(1);
+    surfxml_bufferstack_push(1);
     parse_change_cpu_data(name, surfxml_host_power, surfxml_host_availability,
                           surfxml_host_availability_file,
                           surfxml_host_state_file);
@@ -785,12 +783,12 @@ static void finalize_host_foreach(void)
     }
 
     surfxml_call_cb_functions(main_ETag_surfxml_host_cb_list);
-    pop_surfxml_bufferstack(1);
+    surfxml_bufferstack_pop(1);
   }
 
   current_property_set = xbt_dict_new();
 
-  pop_surfxml_bufferstack(0);
+  surfxml_bufferstack_pop(0);
 }
 
 static const char *surfxml_link_bandwidth;
@@ -829,7 +827,7 @@ static void finalize_link_foreach(void)
 
   /* for each name in set call the main link callback */
   xbt_dynar_foreach(names, cpt, name) {
-    push_surfxml_bufferstack(1);
+    surfxml_bufferstack_push(1);
     parse_change_link_data(name, surfxml_link_bandwidth,
                            surfxml_link_bandwidth_file, surfxml_link_latency,
                            surfxml_link_latency_file,
@@ -842,12 +840,12 @@ static void finalize_link_foreach(void)
     }
 
     surfxml_call_cb_functions(main_ETag_surfxml_link_cb_list);
-    pop_surfxml_bufferstack(1);
+    surfxml_bufferstack_pop(1);
   }
 
   current_property_set = xbt_dict_new();
 
-  pop_surfxml_bufferstack(0);
+  surfxml_bufferstack_pop(0);
   free(foreach_set_name);
   foreach_set_name = NULL;
 }
@@ -987,7 +985,7 @@ static void add_multi_links(const char *src, const char *dst,
   unsigned int cpt;
   char *value, *val;
 
-  push_surfxml_bufferstack(1);
+  surfxml_bufferstack_push(1);
 
   parse_make_temporary_route(src_name, dst_name, route_action);
   surfxml_call_cb_functions(STag_surfxml_route_cb_list);
@@ -1008,7 +1006,7 @@ static void add_multi_links(const char *src, const char *dst,
     xbt_dynar_push(route_link_list, &val);
   }
   surfxml_call_cb_functions(ETag_surfxml_route_cb_list);
-  pop_surfxml_bufferstack(1);
+  surfxml_bufferstack_pop(1);
 }
 
 static void convert_route_multi_to_routes(void)
@@ -1033,7 +1031,7 @@ static void convert_route_multi_to_routes(void)
     set = surf_model_resource_set(surf_workstation_model);
 
 
-  push_surfxml_bufferstack(0);
+  surfxml_bufferstack_push(0);
   /* Get all routes in the exact order they were entered in the platform file */
   xbt_dynar_foreach(route_multi_elements, cursor, key) {
     /* Get links for the route */
@@ -1099,107 +1097,9 @@ static void convert_route_multi_to_routes(void)
     }
     xbt_dynar_free(&keys);
   }
-  pop_surfxml_bufferstack(0);
+  surfxml_bufferstack_pop(0);
 }
 
-/* Cluster tag functions */
-
-static void parse_cluster(void)
-{
-  static int AX_ptr = 0;
-
-  char *cluster_id = A_surfxml_cluster_id;
-  char *cluster_prefix = A_surfxml_cluster_prefix;
-  char *cluster_suffix = A_surfxml_cluster_suffix;
-  char *cluster_radical = A_surfxml_cluster_radical;
-  char *cluster_power = A_surfxml_cluster_power;
-#if !defined NO_IMPLICIT_ROUTES
-  char *cluster_bw = A_surfxml_cluster_bw;
-  char *cluster_lat = A_surfxml_cluster_lat;
-#endif
-  char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
-  char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
-  char *backbone_name;
-
-  push_surfxml_bufferstack(1);
-
-  /* Make set */
-  SURFXML_BUFFER_SET(set_id, cluster_id);
-  SURFXML_BUFFER_SET(set_prefix, cluster_prefix);
-  SURFXML_BUFFER_SET(set_suffix, cluster_suffix);
-  SURFXML_BUFFER_SET(set_radical, cluster_radical);
-
-  SURFXML_START_TAG(set);
-  SURFXML_END_TAG(set);
-
-  /* Make foreach */
-  SURFXML_BUFFER_SET(foreach_set_id, cluster_id);
-
-  SURFXML_START_TAG(foreach);
-
-  /* Make host for the foreach */
-  parse_change_cpu_data("$1", cluster_power, "1.0", "", "");
-  A_surfxml_host_state = A_surfxml_host_state_ON;
-
-  SURFXML_START_TAG(host);
-  SURFXML_END_TAG(host);
-#ifndef NO_IMPLICIT_ROUTES
-  /* Make link for the foreach */
-  parse_change_link_data("$1", cluster_bw, "", cluster_lat, "", "");
-  A_surfxml_link_state = A_surfxml_link_state_ON;
-  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-
-  SURFXML_START_TAG(link);
-  SURFXML_END_TAG(link);
-#endif
-  SURFXML_END_TAG(foreach);
-
-  /* Make backbone link */
-  backbone_name = bprintf("%s_bb", cluster_id);
-  parse_change_link_data(backbone_name, cluster_bb_bw, "", cluster_bb_lat, "",
-                         "");
-  A_surfxml_link_state = A_surfxml_link_state_ON;
-  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_FATPIPE;
-
-  SURFXML_START_TAG(link);
-  SURFXML_END_TAG(link);
-#ifndef NO_IMPLICIT_ROUTES
-  /* Make route multi with the outside world, i.e. cluster->$* */
-  SURFXML_BUFFER_SET(route_c_multi_src, cluster_id);
-  SURFXML_BUFFER_SET(route_c_multi_dst, "$*");
-  A_surfxml_route_c_multi_symmetric = A_surfxml_route_c_multi_symmetric_NO;
-  A_surfxml_route_c_multi_action = A_surfxml_route_c_multi_action_OVERRIDE;
-
-  SURFXML_START_TAG(route_c_multi);
-
-  SURFXML_BUFFER_SET(link_c_ctn_id, "$src");
-
-  SURFXML_START_TAG(link_c_ctn);
-  SURFXML_END_TAG(link_c_ctn);
-
-  SURFXML_END_TAG(route_c_multi);
-
-  /* Make route multi between cluster hosts, i.e. cluster->cluster */
-  SURFXML_BUFFER_SET(route_c_multi_src, cluster_id);
-  SURFXML_BUFFER_SET(route_c_multi_dst, cluster_id);
-  A_surfxml_route_c_multi_action = A_surfxml_route_c_multi_action_POSTPEND;
-  A_surfxml_route_c_multi_symmetric = A_surfxml_route_c_multi_symmetric_NO;
-
-  SURFXML_START_TAG(route_c_multi);
-
-  SURFXML_BUFFER_SET(link_c_ctn_id, backbone_name);
-
-  SURFXML_START_TAG(link_c_ctn);
-  SURFXML_END_TAG(link_c_ctn);
-
-  SURFXML_END_TAG(route_c_multi);
-#endif
-
-  free(backbone_name);
-
-  /* Restore buff */
-  pop_surfxml_bufferstack(1);
-}
 
 /* Trace management functions */
 

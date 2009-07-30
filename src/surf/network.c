@@ -415,10 +415,6 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,int 
   /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
 
-  /* Cleanup route if required */
-  if(used_routing->finalize_route)
-    used_routing->finalize_route(route);
-
   XBT_OUT;
 
   return (surf_action_t) action;
