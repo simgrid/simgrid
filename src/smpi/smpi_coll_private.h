@@ -22,3 +22,8 @@ int smpi_coll_tuned_alltoall_pairwise (void *sendbuf, int sendcount, MPI_Datatyp
 int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype sdtype,
                                 void* rbuf, int rcount, MPI_Datatype rdtype, MPI_Comm comm);
 
+int smpi_coll_basic_alltoallv(void *sendbuf, int *scounts, int *sdisps, MPI_Datatype datatype, 
+		                  void *recvbuf, int *rcounts, int *rdisps, MPI_Datatype recvtype,
+			            MPI_Comm comm);
+
+

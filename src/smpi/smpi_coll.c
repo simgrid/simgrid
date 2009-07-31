@@ -229,7 +229,7 @@ int tree_antibcast( void *buf, int count, MPI_Datatype datatype, int root,
                                 system_tag + rank, 
                                 comm, &request);
                 if (MPI_SUCCESS != retval) {
-                        printf("** internal error: smpi_create_request() rank=%d returned retval=%d, %s:%d\n",
+                        ERROR4("** internal error: smpi_create_request() rank=%d returned retval=%d, %s:%d\n",
                                         rank,retval,__FILE__,__LINE__);
                 }
                 smpi_mpi_isend(request);
@@ -389,7 +389,7 @@ int copy_dt( void *sbuf, int scount, const MPI_Datatype sdtype,
 }
 
 /**
- *
+ * Alltoall basic_linear
  **/
 int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype sdtype,
 		    void* rbuf, int rcount, MPI_Datatype rdtype, MPI_Comm comm)
@@ -639,6 +639,157 @@ err_hndl:
 	  */
 	  return -1; /* FIXME: to be changed*/
 }
+
+static void print_buffer_int(void *buf, int len, char *msg, int rank);
+static void print_buffer_int(void *buf, int len, char *msg, int rank)
+{
+  int tmp, *v;
+  fprintf(stderr,"**<%d> %s (#%d): ", rank, msg,len);
+  for (tmp = 0; tmp < len; tmp++) {
+    v = buf;
+    fprintf(stderr,"[%d (%p)]", v[tmp],v+tmp);
+  }
+  fprintf(stderr,"\n");
+  free(msg);
+}
+
+
+
+/**
+ * alltoallv basic 
+ **/
+
+int smpi_coll_basic_alltoallv(void *sbuf, int *scounts, int *sdisps, MPI_Datatype sdtype, 
+                              void *rbuf, int *rcounts, int *rdisps, MPI_Datatype rdtype,
+                              MPI_Comm comm) {
+
+        int i;
+        int system_alltoallv_tag = 889;
+        int rank;
+        int size = comm->size;
+        int err;
+        char *psnd;
+        char *prcv;
+        //int nreq = 0;
+        int rreq = 0;
+        int sreq = 0;
+        MPI_Aint lb;
+        MPI_Aint sndextent;
+        MPI_Aint rcvextent;
+        MPI_Request *reqs;
+
+        /* Initialize. */
+        rank = smpi_mpi_comm_rank(comm);
+        DEBUG1("<%d> algorithm basic_alltoallv() called.",rank);
+
+        err = smpi_mpi_type_get_extent(sdtype, &lb, &sndextent);
+        err = smpi_mpi_type_get_extent(rdtype, &lb, &rcvextent);
+        DEBUG3("<%d> sizeof(sndttype)=%d,sizeof(rcvtype)=%d",rank,sndextent,rcvextent);
+
+        psnd = (char *)sbuf;
+        print_buffer_int(psnd,size*size,xbt_strdup("sbuff"),rank);
+
+        /* copy the local sbuf to rbuf when it's me */
+        psnd = ((char *) sbuf) + (sdisps[rank] * sndextent);
+        prcv = ((char *) rbuf) + (rdisps[rank] * rcvextent);
+
+        if (0 != scounts[rank]) {
+                err = copy_dt( psnd, scounts[rank], sdtype, prcv, rcounts[rank], rdtype );
+                print_buffer_int(psnd,scounts[rank],strdup("copy_dt"),rank);
+                if (MPI_SUCCESS != err) {
+                        return err;
+                }
+        }
+
+        /* If only one process, we're done. */
+        if (1 == size) {
+                return MPI_SUCCESS;
+        }
+
+        /* Initiate all send/recv to/from others. */
+        reqs =  xbt_malloc(2*(size-1) * sizeof(smpi_mpi_request_t));
+
+
+        /* Create all receives that will be posted first */
+        for (i = 0; i < size; ++i) {
+                if (i == rank || 0 == rcounts[i]) {
+                        DEBUG3("<%d> skip req creation i=%d,rcounts[i]=%d",rank,i, rcounts[i]);
+                        continue;
+                }
+                prcv = ((char *) rbuf) + (rdisps[i] * rcvextent);
+
+                err = smpi_create_request( prcv, rcounts[i], rdtype,
+                                i, rank,
+                                system_alltoallv_tag,
+                                comm, &(reqs[rreq]));
+                if (MPI_SUCCESS != err) {
+                        DEBUG2("<%d> failed to create request for rank %d",rank,i);
+                        for (i=0;i< rreq;i++) 
+                                xbt_mallocator_release(smpi_global->request_mallocator, reqs[i]);
+                        return err;
+                }
+                rreq++;
+        }
+        DEBUG2("<%d> %d irecv reqs created",rank,rreq);
+        /* Now create all sends  */
+        for (i = 0; i < size; ++i) {
+                if (i == rank || 0 == scounts[i]) {
+                        DEBUG3("<%d> skip req creation i=%d,scounts[i]=%d",rank,i, scounts[i]);
+                        continue;
+                }
+                psnd = ((char *) sbuf) + (sdisps[i] * sndextent);
+
+                fprintf(stderr,"<%d> send %d elems to <%d>\n",rank,scounts[i],i);
+                print_buffer_int(psnd,scounts[i],xbt_strdup("sbuff part"),rank);
+                err = smpi_create_request (psnd, scounts[i], sdtype,
+                                rank, i,
+                                system_alltoallv_tag, 
+                                comm, &(reqs[rreq+sreq]));
+                if (MPI_SUCCESS != err) {
+                        DEBUG2("<%d> failed to create request for rank %d\n",rank,i);
+                        for (i=0;i< rreq+sreq;i++) 
+                                xbt_mallocator_release(smpi_global->request_mallocator, reqs[i]);
+                        return err;
+                }
+                sreq++;
+        }
+        DEBUG2("<%d> %d isend reqs created",rank,sreq);
+
+        /* Start your engines.  This will never return an error. */
+        for ( i=0; i< rreq; i++ ) {
+                DEBUG3("<%d> issued irecv request reqs[%d]=%p",rank,i,reqs[i]);
+                smpi_mpi_irecv( reqs[i] );
+        }
+        for ( i=rreq; i<sreq; i++ ) {
+                DEBUG3("<%d> issued isend request reqs[%d]=%p",rank,i,reqs[i]);
+                smpi_mpi_isend( reqs[i] );
+        }
+
+
+        /* Wait for them all.  If there's an error, note that we don't
+         * care what the error was -- just that there *was* an error.  The
+         * PML will finish all requests, even if one or more of them fail.
+         * i.e., by the end of this call, all the requests are free-able.
+         * So free them anyway -- even if there was an error, and return
+         * the error after we free everything. */
+
+        DEBUG2("<%d> wait for %d requests",rank,rreq+sreq);
+        // waitall is buggy: use a loop instead for the moment
+        // err = smpi_mpi_waitall(nreq, reqs, MPI_STATUS_IGNORE);
+        for (i=0;i< rreq+sreq;i++) {
+                err = smpi_mpi_wait( reqs[i], MPI_STATUS_IGNORE);
+        }
+
+        /* Free the reqs */
+        /* nreq might be < 2*(size-1) since some request creations are skipped */
+        for (i=0;i< rreq+sreq;i++) {
+                xbt_mallocator_release(smpi_global->request_mallocator, reqs[i]);
+        }
+        xbt_free( reqs );
+        return err;
+}
+
+
 
 
 /**

@@ -1,3 +1,14 @@
+/* $Id: $tag */
+
+/* smpi_mpi.c -- 
+ *
+ * Eventually will contain the user level MPI primitives and its corresponding 
+ * internal wrapper. The implementations of these primitives should go to specific
+ * files. For example, a SMPI_MPI_Bcast() in this file, should call the wrapper 
+ * smpi_mpi_bcast(), which decides which implementation to call. Currently, it
+ * calls nary_tree_bcast() in smpi_coll.c.  (Stéphane Genaud).
+ * */
+
 
 
 #include "private.h"
@@ -457,7 +468,7 @@ int retval = MPI_SUCCESS;
 /**
  * MPI_Allreduce
  *
- * Same as MPI_REDUCE except that the result appears in the receive buffer of all the group members.
+ * Same as MPI_Reduce except that the result appears in the receive buffer of all the group members.
  **/
 int SMPI_MPI_Allreduce( void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
 		    MPI_Op op, MPI_Comm comm )
@@ -555,8 +566,8 @@ int SMPI_MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype datatype,
  * ompi/mca/coll/tuned/coll_tuned_module.c
  **/
 int SMPI_MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype datatype, 
-		         void *recvbuf, int recvcount, MPI_Datatype recvtype,
-			   MPI_Comm comm)
+		          void *recvbuf, int recvcount, MPI_Datatype recvtype,
+			    MPI_Comm comm)
 {
   int retval = MPI_SUCCESS;
   int block_dsize;
@@ -582,6 +593,29 @@ int SMPI_MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype datatype,
   }
 
   smpi_bench_begin();
+
+  return retval;
+}
+
+/**
+ * MPI_Alltoallv user entry point
+ * 
+ * As in OpenMPI, alltoallv is not optimized
+ * ompi/mca/coll/basic/coll_basic_alltoallv.c 
+ **/
+int SMPI_MPI_Alltoallv(void *sendbuf, int *scounts, int *sdisps, MPI_Datatype datatype, 
+		           void *recvbuf, int *rcounts, int *rdisps, MPI_Datatype recvtype,
+			     MPI_Comm comm)
+{
+  int retval = MPI_SUCCESS;
+  int rank;
+
+  rank = smpi_mpi_comm_rank(comm);
+  DEBUG1("<%d> basic alltoallv() called.",rank);
+
+  retval = smpi_coll_basic_alltoallv(sendbuf, scounts, sdisps, datatype, 
+                                     recvbuf, rcounts, rdisps, recvtype,
+                                     comm); 
 
   return retval;
 }

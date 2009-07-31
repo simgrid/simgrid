@@ -47,6 +47,16 @@ int smpi_mpi_type_get_extent(MPI_Datatype datatype, MPI_Aint *lb, MPI_Aint *exte
         *extent =  datatype->ub - datatype->lb;
         return( MPI_SUCCESS );
 }
+
+
+/**
+ * query extent and lower bound of the type 
+ **/
+int SMPI_MPI_Type_get_extent( MPI_Datatype datatype, int *lb, int *extent) 
+{
+        return( smpi_mpi_type_get_extent( datatype, lb, extent));
+}
+
 /**
  * query the size of the type
  **/
@@ -69,15 +79,6 @@ int SMPI_MPI_Type_size(MPI_Datatype datatype, size_t * size)
   return retval;
 }
 
-
-
-/**
- * query extent and lower bound of the type 
- **/
-int SMPI_MPI_Type_get_extent( MPI_Datatype datatype, int *lb, int *extent) 
-{
-        return( smpi_mpi_type_get_extent( datatype, lb, extent));
-}
 
 /* Deprecated Functions. 
  * The MPI-2 standard deprecated a number of routines because MPI-2 provides better versions. 
