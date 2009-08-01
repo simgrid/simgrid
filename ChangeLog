@@ -14,6 +14,7 @@ SimGrid (3.3.2-svn) unstable; urgency=low
                      Allreduce: Reduce then Bcast
                      Alltoall: "basic_linear" if data per proc < 3Kb, "otherwise pairwise". 
                                Not yet implemented: "Bruck" for data per proc < 200b and comm size > 12
+                     Alltoallv: flat tree, like ompi
                      Scatter: flat tree
   * Add support for optimized collectives (Bcast is now binomial by default)
   * Port smpirun and smpicc to OS X

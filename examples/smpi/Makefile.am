@@ -16,6 +16,12 @@
 
 noinst_PROGRAMS = allreduce bcast bcbench compute compute2 compute3 first pingpong second sendrecv mvmul ring_c split scatter reduce 
 
+alltoall2: alltoall2.c
+	$(top_builddir)/src/smpi/smpicc $^ -o $@
+alltoall_basic: alltoall_basic.c
+	$(top_builddir)/src/smpi/smpicc $^ -o $@
+alltoallv: alltoallv.c
+	$(top_builddir)/src/smpi/smpicc $^ -o $@
 allreduce: allreduce.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
 bcast: bcast.c

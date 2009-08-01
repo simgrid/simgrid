@@ -1,4 +1,4 @@
-/* $Id: $tag */
+/* $Id$tag */
 
 /* smpi_mpi_dt.c -- MPI primitives to handle datatypes                        */
  

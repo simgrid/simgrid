@@ -684,10 +684,9 @@ int smpi_coll_basic_alltoallv(void *sbuf, int *scounts, int *sdisps, MPI_Datatyp
 
         err = smpi_mpi_type_get_extent(sdtype, &lb, &sndextent);
         err = smpi_mpi_type_get_extent(rdtype, &lb, &rcvextent);
-        DEBUG3("<%d> sizeof(sndttype)=%d,sizeof(rcvtype)=%d",rank,sndextent,rcvextent);
 
         psnd = (char *)sbuf;
-        print_buffer_int(psnd,size*size,xbt_strdup("sbuff"),rank);
+        //print_buffer_int(psnd,size*size,xbt_strdup("sbuff"),rank);
 
         /* copy the local sbuf to rbuf when it's me */
         psnd = ((char *) sbuf) + (sdisps[rank] * sndextent);
@@ -695,7 +694,6 @@ int smpi_coll_basic_alltoallv(void *sbuf, int *scounts, int *sdisps, MPI_Datatyp
 
         if (0 != scounts[rank]) {
                 err = copy_dt( psnd, scounts[rank], sdtype, prcv, rcounts[rank], rdtype );
-                print_buffer_int(psnd,scounts[rank],strdup("copy_dt"),rank);
                 if (MPI_SUCCESS != err) {
                         return err;
                 }
@@ -739,8 +737,8 @@ int smpi_coll_basic_alltoallv(void *sbuf, int *scounts, int *sdisps, MPI_Datatyp
                 }
                 psnd = ((char *) sbuf) + (sdisps[i] * sndextent);
 
-                fprintf(stderr,"<%d> send %d elems to <%d>\n",rank,scounts[i],i);
-                print_buffer_int(psnd,scounts[i],xbt_strdup("sbuff part"),rank);
+                //fprintf(stderr,"<%d> send %d elems to <%d>\n",rank,scounts[i],i);
+                //print_buffer_int(psnd,scounts[i],xbt_strdup("sbuff part"),rank);
                 err = smpi_create_request (psnd, scounts[i], sdtype,
                                 rank, i,
                                 system_alltoallv_tag, 
@@ -760,7 +758,8 @@ int smpi_coll_basic_alltoallv(void *sbuf, int *scounts, int *sdisps, MPI_Datatyp
                 DEBUG3("<%d> issued irecv request reqs[%d]=%p",rank,i,reqs[i]);
                 smpi_mpi_irecv( reqs[i] );
         }
-        for ( i=rreq; i<sreq; i++ ) {
+                DEBUG3("<%d> for (i=%d;i<%d)",rank,rreq,sreq);
+        for ( i=rreq; i< rreq+sreq; i++ ) {
                 DEBUG3("<%d> issued isend request reqs[%d]=%p",rank,i,reqs[i]);
                 smpi_mpi_isend( reqs[i] );
         }

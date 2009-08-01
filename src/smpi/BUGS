@@ -1,36 +1,31 @@
 
-
+___________________________________________________________________________________________
 * if the program has a different main() prototype than
    int main( int argc, char *argv[] )
   then the compilation smpicc fails : conflicting types for ‘smpi_simulated_main’
   since smpicc substitutes smpi_simulated_main for the user main() declaration.
    
+___________________________________________________________________________________________
+* MPI_Alltoallv()
+  samedi 1 août 2009, 10:12:08 (UTC+0200) - genaud
 
-* MPI_Barrier()
-  Tue Jun 30 11:49:07 UTC 2009 - genaud
+  pass the test 'alltoallv.c' (from mpich2) for many number of processors but shows a segfault 
+  after TEST COMPLETE.
 
-  several calls to MPI_Barrier() result in:
-  
-genaud@boa:~/Documents/svn/simgrid/simgrid/trunk/src/smpi$ ./smpirun -np 2 -platform g1.xml -hostfile hostfile ./barrier
-[0.000000] [simix_kernel/INFO] Oops ! Deadlock or code not perfectly clean.
-[0.000000] [simix_kernel/INFO] 6 processes are still running, waiting for something.
-[0.000000] [simix_kernel/INFO] Legend of the following listing: "<process> on <host>: <status>."
-[0.000000] [simix_kernel/INFO] smpi_simulated_main on grelon-1.nancy.grid5000.fr:  Blocked on condition 0xdead; Waiting for the following actions: 'sleep'(0xdead) 'sleep'(0xdead).
-[0.000000] [simix_kernel/INFO] smpi_simulated_main on grelon-2.nancy.grid5000.fr:  Blocked on condition 0xdead; Waiting for the following actions: 'sleep'(0xdead) 'sleep'(0xdead).
-[0.000000] [simix_kernel/INFO] smpi_sender on grelon-1.nancy.grid5000.fr: [SUSPENDED]  Blocked on condition 0xdead; Waiting for the following actions: 'dummy'(0xdead).
-[0.000000] [simix_kernel/INFO] smpi_receiver on grelon-1.nancy.grid5000.fr: [SUSPENDED]  Blocked on condition 0xdead; Waiting for the following actions: 'dummy'(0xdead).
-[0.000000] [simix_kernel/INFO] smpi_sender on grelon-2.nancy.grid5000.fr: [SUSPENDED]  Blocked on condition 0xdead; Waiting for the following actions: 'dummy'(0xdead).
-[0.000000] [simix_kernel/INFO] smpi_receiver on grelon-2.nancy.grid5000.fr: [SUSPENDED]  Blocked on condition 0xdead; Waiting for the following actions: 'dummy'(0xdead).
-[0.000000] [simix_kernel/INFO] Return a Warning.
-** SimGrid: UNCAUGHT EXCEPTION received on (0): category: unknown_err; value: 0
-** Cannot destroy conditional since someone is still using it
-** Thrown by () in this process
-[0.000000] xbt/ex.c:117: [xbt_ex/CRITICAL] Cannot destroy conditional since someone is still using it
-
-**   In SIMIX_cond_destroy() at /home/genaud/Documents/svn/simgrid/simgrid/trunk/src/simix/smx_synchro.c:302
-**   In smpi_global_destroy() at /home/genaud/Documents/svn/simgrid/simgrid/trunk/src/smpi/smpi_global.c:239
-**   In smpi_run_simulation() at /home/genaud/Documents/svn/simgrid/simgrid/trunk/src/smpi/smpi_global.c:333
-./smpirun: line 176: 18880 Abandon                 ${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+  Program received signal SIGSEGV, Segmentation fault.
+  SIMIX_mutex_lock (mutex=0x657475) at simix/smx_synchro.c:49
+  49    if (mutex->refcount) {
+  (gdb) bt
+  #0  SIMIX_mutex_lock (mutex=0x657475) at simix/smx_synchro.c:49
+  #1  0xb7fc0cb0 in SIMIX_cond_wait (cond=0x9f5eba0, mutex=0x9f5eb78) at simix/smx_synchro.c:196
+  #2  0xb7f473a0 in smpi_sender (argc=0, argv=0x0) at smpi/smpi_sender.c:85
+  #3  0xb7fb8f71 in smx_ctx_sysv_wrapper () at simix/smx_context_sysv.c:247
+  #4  0xb7e032bb in makecontext () from /lib/tls/i686/cmov/libc.so.6
+  #5  0x00000000 in ?? ()
+  (gdb) quit
 
 
+  as soon as to -np > 8 using the plaform/hosts : 
+  ./smpirun -np 9 -platform ../../examples/msg/small_platform.xml -hostfile ../../examples/smpi/hostfile ./alltoallv
 
+___________________________________________________________________________________________

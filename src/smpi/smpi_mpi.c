@@ -1,4 +1,4 @@
-/* $Id: $tag */
+/* $Id$tag */
 
 /* smpi_mpi.c -- 
  *
