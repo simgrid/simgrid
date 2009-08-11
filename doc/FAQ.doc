@@ -898,6 +898,50 @@ include/surf/surfxml_parse.h to ease the writing of the bypass
 functions. An example of this trick is distributed in the file
 examples/msg/masterslave/masterslave_bypass.c
 
+\subsection faq_simgrid_configuration Changing SimGrid's behavior
+
+A number of options can be given at runtime to change the default
+SimGrid behavior. In particular, you can change the default cpu and
+network models...
+
+\subsubsection faq_simgrid_configuration_gtnets Using GTNetS
+
+For example, it is possible to use a packet-level network simulator
+instead of the default flow-based simulation. You may want to use such
+an approach if you have doubts about the validity of the default model
+or if you want to perform some validation experiments. At the moment,
+we support the GTNetS simulator (it is still rather experimental
+though, so leave us a message if you play with it). 
+
+Everything you need to use this feature is in the 
+<a href="http://gforge.inria.fr/plugins/scmsvn/viewcvs.php/contrib/trunk/GTNetS/?root=simgrid">SVN</a>.
+
+Once you have followed all the instructions for compiling and
+installing given in the corresponding 
+<a href='http://gforge.inria.fr/plugins/scmsvn/viewcvs.php/contrib/trunk/GTNetS/README?root=simgrid'>README</a>,
+you can activate this feature at runtime with the following options:
+
+\verbatim
+gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation_model:compound --cfg=network_model:GTNets --cfg=cpu_model:Cas01
+\endverbatim
+
+\subsubsection faq_simgrid_configuration_alternate_network Using alternative flow models
+
+The default simgrid network model uses a max-min based aproach as
+explained in the research report
+<a href="ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.gz">A Network Model for Simulation of Grid Application</a>.
+Other models have been proposed and implemented since then (see for example 
+<a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>)
+and can be activated at runtime. For example:
+\verbatim
+./mycode platform.xml deployment.xml --cfg=workstation_model:compound --cfg=network_model:LegrandVelho --cfg=cpu_model:Cas01
+\endverbatim
+
+Possible models for the network are currently "Constant", "CM02",
+"LegrandVelho", "GTNets", Reno", "Reno2", "Vegas". Others will
+probably be added in the future and many of the previous ones are
+experimental and are likely to disappear without notice...
+
 \section faq_troubleshooting Troubleshooting
 
 \subsection faq_trouble_lib_compil SimGrid compilation and installation problems
