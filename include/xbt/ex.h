@@ -18,6 +18,8 @@
 #include "xbt/misc.h"
 #include "xbt/virtu.h"
 
+SG_BEGIN_DECL()
+
 /*-*-* Emergency debuging: define this when the exceptions get crazy *-*-*/
 #undef __EX_MAYDAY
 
@@ -512,6 +514,8 @@ XBT_PUBLIC(void) xbt_backtrace_display_current(void);
 XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t * e);
 /** @brief Display a previously captured backtrace */
 XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t * e);
+
+SG_END_DECL()
 
 /** @} */
 #endif /* __XBT_EX_H__ */

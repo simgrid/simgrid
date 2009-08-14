@@ -59,7 +59,7 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
   return res;
 }
 
-extern void xbt_backtrace_display_current(void);
+XBT_PUBLIC(void) xbt_backtrace_display_current(void);
 
 /** @brief Like malloc, but xbt_die() on error
     @hideinitializer */
