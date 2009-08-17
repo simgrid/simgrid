@@ -43,10 +43,10 @@ $ ../../src/smpi/smpirun -map -hostfile hostfile -platform ../msg/small_platform
 > 	[0] max=6 ... validation ok.
 > Elapsed time=0.007907 s
 > ** IBM Test Result: ... 
-> 	[4] ok.
 > 	[2] ok.
-> 	[0] ok.
 > 	[5] ok.
+> 	[4] ok.
+> 	[0] ok.
 > 	[1] ok.
 > 	[3] ok.
 
@@ -87,13 +87,13 @@ $ ../../src/smpi/smpirun -map -hostfile hostfile -platform ../msg/small_platform
 > ** IBM Test Result: ... 
 > 	[1] ok.
 > 	[11] ok.
-> 	[0] ok.
 > 	[5] ok.
 > 	[10] ok.
+> 	[0] ok.
 > 	[3] ok.
 > 	[8] ok.
-> 	[4] ok.
 > 	[9] ok.
-> 	[2] ok.
+> 	[4] ok.
 > 	[7] ok.
+> 	[2] ok.
 > 	[6] ok.
