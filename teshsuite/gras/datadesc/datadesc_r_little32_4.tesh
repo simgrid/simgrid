@@ -1,7 +1,7 @@
 
 p Check the marshaling facilities (trying to read the result of linux/x86)
 $ gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.little32_4 --log=root.fmt:%m%n
-> Read from file ./gras/datadesc/datadesc.little32_4
+> Read from file datadesc.little32_4
 > ---- Test on integer ----
 > ---- Test on float ----
 > ---- Test on double ----

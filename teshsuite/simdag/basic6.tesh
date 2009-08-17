@@ -1,4 +1,4 @@
-$ simdag/basic6 simdag/network/p2p/platform_2p_1sl.xml --surf-path=${srcdir}
+$ simdag/basic6 ${srcdir:=.}/simdag/network/p2p/platform_2p_1sl.xml --surf-path=${srcdir}
 > [0.000000] [sd_kernel/INFO] Starting simulation...
 > [0.000000] [sd_kernel/INFO] Executing task 'Task A'
 > [0.000000] [sd_kernel/INFO] Executing task 'Task B'

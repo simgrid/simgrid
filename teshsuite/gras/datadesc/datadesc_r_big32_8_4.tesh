@@ -1,7 +1,7 @@
 
 p Check the marshaling facilities (trying to read the result of AIX)
 $ gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.big32_8_4 --log=root.fmt:%m%n
-> Read from file ./gras/datadesc/datadesc.big32_8_4
+> Read from file datadesc.big32_8_4
 > ---- Test on integer ----
 > ---- Test on float ----
 > ---- Test on double ----

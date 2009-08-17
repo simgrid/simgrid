@@ -1,10 +1,10 @@
 
 p par task comp only, no comm, homogeneous
 
-$ simdag/partask/test_comp_only_par simdag/partask/platform_2p_1sl.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
+$ simdag/partask/test_comp_only_par ${srcdir:=.}/simdag/partask/platform_2p_1sl.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
 > 1
 
 p par task comp only, no comm, heterogeneous
 
-$ simdag/partask/test_comp_only_par simdag/partask/platform_2p_1sl_hetero.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
+$ simdag/partask/test_comp_only_par ${srcdir:=.}/simdag/partask/platform_2p_1sl_hetero.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
 > 1

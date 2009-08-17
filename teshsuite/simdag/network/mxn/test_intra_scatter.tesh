@@ -1,6 +1,6 @@
 
 p scatter test
 
-$ simdag/network/mxn/test_intra_scatter simdag/network/mxn/platform_4p_1switch.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
+$ simdag/network/mxn/test_intra_scatter ${srcdir:=.}/simdag/network/mxn/platform_4p_1switch.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
 > 8
 

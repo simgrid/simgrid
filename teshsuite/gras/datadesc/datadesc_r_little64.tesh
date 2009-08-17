@@ -1,7 +1,7 @@
 
 p Check the marshaling facilities (trying to read the result of linux/amd64)
 $ $SG_TEST_EXENV gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.little64 --log=root.fmt:%m%n $ARGS
-> Read from file ./gras/datadesc/datadesc.little64
+> Read from file datadesc.little64
 > ---- Test on integer ----
 > ---- Test on float ----
 > ---- Test on double ----

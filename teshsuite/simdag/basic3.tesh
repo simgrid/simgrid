@@ -1,4 +1,4 @@
-$ simdag/basic3 simdag/basic_platform.xml --surf-path=${srcdir}
+$ simdag/basic3 ${srcdir:=.}/simdag/basic_platform.xml --surf-path=${srcdir}
 > [0.000000] [sd_kernel/INFO] Starting simulation...
 > [0.000000] [sd_kernel/INFO] Executing task 'Task Init'
 > [0.000000] [sd_kernel/INFO] Task 'Task Init' done

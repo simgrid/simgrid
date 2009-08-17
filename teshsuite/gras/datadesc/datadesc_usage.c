@@ -737,11 +737,11 @@ int main(int argc, char *argv[])
   }
 
   if (direction == WRITE) {
-    INFO1("Write to file %s", filename);
+    INFO1("Write to file %s", strrchr(filename,'/')?strrchr(filename,'/')+1:filename);
     sock = gras_socket_client_from_file(filename);
   }
   if (direction == READ) {
-    INFO1("Read from file %s", filename);
+    INFO1("Read from file %s", strrchr(filename,'/')?strrchr(filename,'/')+1:filename);
     sock = gras_socket_server_from_file(filename);
   }
   if (direction == COPY) {
