@@ -33,11 +33,11 @@ public final class Msg {
   static {
     try {
       System.loadLibrary("simgrid");
-      MsgNative.selectContextFactory("java");
-    } catch(NativeException e) {
+      //MsgNative.selectContextFactory("java");
+ /*   } catch(NativeException e) {
       System.err.println(e.toString());
       e.printStackTrace();
-      System.exit(1);
+      System.exit(1);*/
     } catch(UnsatisfiedLinkError e) {
       System.err.println("Cannot load simgrid library : ");
       e.printStackTrace();

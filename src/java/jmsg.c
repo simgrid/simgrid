@@ -950,6 +950,7 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 
   MSG_global_init(&argc, argv);
   MSG_set_channel_number(10);   /* FIXME: this should not be fixed statically */
+  SIMIX_context_select_factory("java");
 
   for (index = 0; index < argc; index++)
     free(argv[index]);
