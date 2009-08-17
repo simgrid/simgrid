@@ -14,7 +14,7 @@
 #include "jmsg.h"
 #include "jxbt_utilities.h"
 
-#include "xbt/xbt_context_java.h"
+#include "simix/smx_context_java.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -184,7 +184,7 @@ jboolean jprocess_is_valid(jobject jprocess, JNIEnv * env)
   return (*env)->GetLongField(env, jprocess, id) ? JNI_TRUE : JNI_FALSE;
 }
 
-void jprocess_schedule(xbt_context_t context)
+void jprocess_schedule(smx_context_t context)
 {
   JNIEnv *env;
   jmethodID id;
@@ -196,12 +196,12 @@ void jprocess_schedule(xbt_context_t context)
   if (!id)
     return;
 
-  (*env)->CallVoidMethod(env, ((xbt_ctx_java_t) context)->jprocess, id);
+  (*env)->CallVoidMethod(env, ((smx_ctx_java_t) context)->jprocess, id);
 }
 
 
 
-void jprocess_unschedule(xbt_context_t context)
+void jprocess_unschedule(smx_context_t context)
 {
   JNIEnv *env;
   jmethodID id;
@@ -214,5 +214,5 @@ void jprocess_unschedule(xbt_context_t context)
   if (!id)
     return;
 
-  (*env)->CallVoidMethod(env, ((xbt_ctx_java_t) context)->jprocess, id);
+  (*env)->CallVoidMethod(env, ((smx_ctx_java_t) context)->jprocess, id);
 }

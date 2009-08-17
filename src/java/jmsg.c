@@ -12,7 +12,7 @@
 #include "msg/msg.h"
 #include "msg/private.h"
 #include "simix/private.h"
-#include "xbt/xbt_context_java.h"
+#include "simix/smx_context_java.h"
 
 #include "jmsg_process.h"
 #include "jmsg_host.h"
@@ -51,8 +51,8 @@ JNIEnv *get_current_thread_env(void)
 
 static jobject native_to_java_process(m_process_t process)
 {
-  return ((xbt_ctx_java_t)
-          (process->simdata->s_process->simdata->context))->jprocess;
+  return ((smx_ctx_java_t)
+          (process->simdata->s_process->context))->jprocess;
 }
 
 
@@ -1021,7 +1021,7 @@ Java_simgrid_msg_MsgNative_processExit(JNIEnv * env, jclass cls,
     return;
   }
 
-  xbt_context_stop(0);
+  SIMIX_context_stop(0);
 }
 
 JNIEXPORT void JNICALL
@@ -1097,7 +1097,7 @@ Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv * env, jclass class,
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
 
   TRY {
-    xbt_context_select_factory(name);
+    SIMIX_context_select_factory(name);
   } CATCH(e) {
     errmsg = xbt_strdup(e.msg);
     xbt_ex_free(e);

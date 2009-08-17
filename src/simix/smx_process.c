@@ -14,7 +14,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
                                 "Logging specific to SIMIX (process)");
 
-/******************************** Process ************************************/
 /**
  * \brief Move a process to the list of process to destroy. *
  */

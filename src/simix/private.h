@@ -54,9 +54,7 @@ extern SIMIX_Global_t simix_global;
 
 /******************************** Process *************************************/
 
-typedef struct s_smx_context *smx_context_t;
-
-/** @brief Process datatype
+/** @brief Process datatype 
     @ingroup m_datatypes_management_details @{ */
      typedef struct s_smx_process {
        s_xbt_swag_hookup_t process_hookup;

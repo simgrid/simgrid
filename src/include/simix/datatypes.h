@@ -50,5 +50,6 @@ SG_BEGIN_DECL()
      typedef struct s_smx_process *smx_process_t;
 /** @} */
 
+     typedef struct s_smx_context *smx_context_t;
 SG_END_DECL()
 #endif

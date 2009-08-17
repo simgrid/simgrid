@@ -15,7 +15,7 @@
 
 #include <jni.h>
 #include "msg/msg.h"
-#include "xbt/context.h"
+#include "simix/simix.h"
 
 /**
  * This function returns a global reference to the  java process instance 
@@ -238,9 +238,9 @@ void jprocess_signal_cond(jobject jprocess, JNIEnv * env);
  */
 void jprocess_wait_cond(jobject jprocess, JNIEnv * env);
 
-void jprocess_schedule(xbt_context_t context);
+void jprocess_schedule(smx_context_t context);
 
-void jprocess_unschedule(xbt_context_t context);
+void jprocess_unschedule(smx_context_t context);
 
 
 #endif /* !MSG_JPROCESS_H */
