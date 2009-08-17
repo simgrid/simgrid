@@ -229,8 +229,6 @@ MSG_error_t MSG_clean(void)
 
   SIMIX_clean();
 
-
-
   return MSG_OK;
 }
 

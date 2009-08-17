@@ -970,10 +970,9 @@ JNIEXPORT void JNICALL
 
   /* Run everything */
   if (MSG_OK != MSG_main()) {
-    CRITICAL0("We are here!");
     jxbt_throw_native(env, xbt_strdup("MSG_main() failed"));
   }
-  INFO0
+  DEBUG0
     ("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
 
   DEBUG0("Clean java world");
@@ -985,13 +984,11 @@ JNIEXPORT void JNICALL
       jhost_unref(env, jhost);
   }
 
-  INFO0("Clean native world");
+  DEBUG0("Clean native world");
   /* cleanup native stuff */
   if (MSG_OK != MSG_clean()){
-    CRITICAL0("We are there!");
     jxbt_throw_native(env, xbt_strdup("MSG_main() failed"));
   }
-  INFO0("All good");
 }
 
 JNIEXPORT jint JNICALL

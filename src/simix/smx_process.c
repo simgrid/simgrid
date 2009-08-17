@@ -162,7 +162,10 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
   process->smx_host = host;
   process->mutex = NULL;
   process->cond = NULL;
-  process->context = SIMIX_context_new(jprocess, 0, NULL, NULL, NULL);
+  process->context = SIMIX_context_new(jprocess, 0, NULL, 
+                                       simix_global->cleanup_process_function,
+                                       process);
+
   process->data = data;
 
   /* Add the process to it's host process list */
