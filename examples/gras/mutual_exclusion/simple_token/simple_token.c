@@ -136,9 +136,9 @@ int node(int argc, char *argv[])
   globals->create = 0;
   globals->tosuccessor = NULL;
 
-  if (!gras_os_getpid() % 100)
-    INFO4("Launch node %d (successor on %s:%d; listening on %d)",
-          gras_os_getpid(), host, peerport, myport);
+  if (!gras_os_getpid() % 100 || gras_if_RL())
+    INFO3("Launch node listening on %d (successor on %s:%d)",
+          myport, host, peerport);
 
   /* 4. Register the known messages.  */
   gras_msgtype_declare("stoken", gras_datadesc_by_name("int"));

@@ -1,4 +1,5 @@
 & $SG_TEST_EXENV ./simple_token_node$EXEEXT 4000 127.0.0.1 4010 --create-token --log=root.fmt:%m%n $@ 
+> Launch node listening on 4000 (successor on 127.0.0.1:4010)
 > Create the token (with value 0) and send it to 127.0.0.1:4010
 > Begin a new loop. Still to do: 2
 > Begin a new loop. Still to do: 1
@@ -7,16 +8,21 @@
 > Exiting GRAS
 
 & $SG_TEST_EXENV ./simple_token_node$EXEEXT 4010 127.0.0.1 4020 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4010 (successor on 127.0.0.1:4020)
 > Exiting GRAS
 
 & $SG_TEST_EXENV ./simple_token_node$EXEEXT 4020 127.0.0.1 4030 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4020 (successor on 127.0.0.1:4030)
 > Exiting GRAS
 
 & $SG_TEST_EXENV ./simple_token_node$EXEEXT 4030 127.0.0.1 4040 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4030 (successor on 127.0.0.1:4040)
 > Exiting GRAS
 
 & $SG_TEST_EXENV ./simple_token_node$EXEEXT 4040 127.0.0.1 4050 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4040 (successor on 127.0.0.1:4050)
 > Exiting GRAS
 
 & $SG_TEST_EXENV ./simple_token_node$EXEEXT 4050 127.0.0.1 4000 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4050 (successor on 127.0.0.1:4000)
 > Exiting GRAS
