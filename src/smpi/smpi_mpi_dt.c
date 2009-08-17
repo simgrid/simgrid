@@ -52,7 +52,7 @@ int smpi_mpi_type_get_extent(MPI_Datatype datatype, MPI_Aint *lb, MPI_Aint *exte
 /**
  * query extent and lower bound of the type 
  **/
-int SMPI_MPI_Type_get_extent( MPI_Datatype datatype, int *lb, int *extent) 
+int SMPI_MPI_Type_get_extent( MPI_Datatype datatype, MPI_Aint *lb, MPI_Aint *extent)
 {
         return( smpi_mpi_type_get_extent( datatype, lb, extent));
 }
