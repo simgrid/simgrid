@@ -46,7 +46,7 @@ void create_workstations(void)
   xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, name, cpu) {
     int *id = NULL;
     if (used_routing && used_routing->host_id)
-      xbt_dict_get_or_null(used_routing->host_id,name);
+      id = xbt_dict_get_or_null(used_routing->host_id,name);
 
     workstation_new(name, cpu, id?*id:0);
   }
