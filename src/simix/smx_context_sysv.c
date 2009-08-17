@@ -20,7 +20,7 @@
 #  include <valgrind/valgrind.h>
 #endif /* HAVE_VALGRIND_VALGRIND_H */
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smx_context);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 typedef struct s_smx_ctx_sysv {
   SMX_CTX_BASE_T;

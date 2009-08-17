@@ -18,7 +18,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
 /**
  * \brief Move a process to the list of process to destroy. *
  */
-
 void SIMIX_process_cleanup(void *arg)
 {
   xbt_swag_remove(arg, simix_global->process_to_run);
@@ -47,7 +46,6 @@ void SIMIX_process_empty_trash(void)
 
 /**
  * \brief Creates and runs the maestro process
- *
  */
 void __SIMIX_create_maestro_process()
 {

@@ -18,6 +18,7 @@ XBT_LOG_EXTERNAL_CATEGORY(simix_environment);
 XBT_LOG_EXTERNAL_CATEGORY(simix_host);
 XBT_LOG_EXTERNAL_CATEGORY(simix_process);
 XBT_LOG_EXTERNAL_CATEGORY(simix_synchro);
+XBT_LOG_EXTERNAL_CATEGORY(simix_context);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
                                 "Logging specific to SIMIX (kernel)");
 
@@ -55,6 +56,7 @@ void SIMIX_global_init(int *argc, char **argv)
     XBT_LOG_CONNECT(simix_kernel, simix);
     XBT_LOG_CONNECT(simix_process, simix);
     XBT_LOG_CONNECT(simix_synchro, simix);
+    XBT_LOG_CONNECT(simix_context, simix);
 
     simix_global = xbt_new0(s_SIMIX_Global_t, 1);
 

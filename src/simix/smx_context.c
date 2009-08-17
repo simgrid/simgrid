@@ -11,7 +11,7 @@
 #include "xbt/swag.h"
 #include "private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smx_context, simix, "Context switching mecanism");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mecanism");
 
 
 /**

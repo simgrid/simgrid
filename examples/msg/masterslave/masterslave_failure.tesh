@@ -3,7 +3,7 @@
 p Testing a simple master/slave example application handling failures
 
 $ masterslave/masterslave_failure$EXEEXT small_platform_with_failures.xml masterslave/deployment_masterslave.xml
-> [0.000000] simix/smx_process.c:84: [simix_process/WARNING] Cannot launch process 'slave' on failed host 'Fafard'
+> [0.000000] simix/smx_process.c:92: [simix_process/WARNING] Cannot launch process 'slave' on failed host 'Fafard'
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slave(s) :
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Jupiter
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Fafard

@@ -170,14 +170,19 @@ xbt_dict_t gras_process_properties(void)
 
 const char *xbt_procname(void)
 {
-  const char *res = NULL;
   smx_process_t process = SIMIX_process_self();
-  if (process != NULL)
-    res = SIMIX_process_get_name(process);
-  if (res)
-    return res;
-  else
-    return "";
+  /*FIXME: maestro used not have a simix process, now it does so 
+    SIMIX_process_self will return something different to NULL. This breaks
+    the old xbt_log logic that assumed that NULL was equivalent to maestro,
+    thus when printing it searches for maestro host name (which doesn't exists)
+    and breaks the logging.
+    As a hack we check for maestro by looking to the assigned host, if it is
+    NULL then we are sure is maestro
+  */
+  if (process != NULL && SIMIX_host_self())
+    return SIMIX_process_get_name(process);
+
+  return "";
 }
 
 int gras_os_getpid(void)

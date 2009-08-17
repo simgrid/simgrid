@@ -14,7 +14,7 @@
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smx_context);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 typedef struct s_smx_ctx_thread {
   SMX_CTX_BASE_T;
