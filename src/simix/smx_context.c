@@ -42,16 +42,6 @@ void SIMIX_context_mod_exit(void)
 {
   if (simix_global->context_factory) {
     smx_pfn_context_factory_finalize_t finalize_factory;
-
-    /* Check that there are no living process or to destroy */
-    xbt_assert0((simix_global->process_list == NULL),
-               "There are living process!");
-
-    xbt_assert0((simix_global->process_to_destroy == NULL), 
-               "There are process to destroy!");
-
-    xbt_assert0((simix_global->maestro_process == NULL),
-               "The maestro process is alive!");
     
     /* finalize the context factory */
     finalize_factory = simix_global->context_factory->finalize;
@@ -74,19 +64,19 @@ int SIMIX_context_select_factory(const char *name)
     if (strcmp(simix_global->context_factory->name, name)){
 
       SIMIX_process_killall();
-
+      
       /* kill maestro process */
       SIMIX_context_free(simix_global->maestro_process->context);
       free(simix_global->maestro_process);  
       simix_global->maestro_process = NULL;
-      
+
       SIMIX_context_mod_exit();
     }
     else
       /* the same context factory is requested return directly */
       return 0;
   }
-
+  
   /* init the desired factory */
   SIMIX_context_init_factory_by_name(&simix_global->context_factory, name);
 
