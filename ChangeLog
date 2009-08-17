@@ -19,6 +19,17 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Add support for optimized collectives (Bcast is now binomial by default)
   * Port smpirun and smpicc to OS X
 
+ SIMIX:
+  * Relocation of the context module from XBT to SIMIX.
+    (the context were decoupled from the simix processes, duplicating a lot of code)
+    => a lot of code was factorized
+    - less overhead is introduced during scheduling
+    - simpler API for the context factory
+    - the logic for process creation,destruction and manipulation was simplified
+  * Simplification of the s_smx_process_t data structure.
+    => accesing the simix level data associated to a process is faster now, 
+       and the code is a lot more readable.
+       
  SURF: 
   * Extract the routing logic into its own object.
     (was dupplicated in network.c and workstation_LV07.c;
@@ -76,7 +87,8 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Add xbt_graph_node_get_outedges() [Silas De Munck]
   * Add xbt_str_from_file(FILE*)
   * Add xbt_dict_get_key achieving a linear reverse search
-
+  * Remove the context module [Cristian Rosa]
+  
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.3.1) stable; urgency=low
