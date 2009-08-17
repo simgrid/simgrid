@@ -128,7 +128,6 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
   end = b->data;
 
   while (!done) {
-
     switch (*end) {
     case '\\':
       /* Protected char; pass the protection */
@@ -209,42 +208,54 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
           if (end_var == beg_var)
             THROW0(arg_error, 0, "Variable name empty ($ is not valid)");
         }
-//          DEBUG1("End_var = %s",end_var);
+/*        DEBUG5("var='%.*s'; subst='%.*s'; End_var = '%s'",
+            end_var-beg_var,beg_var,
+            end_subst-beg_subst,beg_subst,
+            end_var);*/
 
         /* ok, we now have the variable name. Search the dictionary for the substituted value */
         value =
           xbt_dict_get_or_null_ext(patterns, beg_var, end_var - beg_var);
-//          DEBUG4("Search for %.*s, found %s (default value = %s)\n",
-//                  end_var-beg_var,beg_var,
-//                  (value?value:"NULL"),
-//                  (default_value?default_value:"NULL"));
+/*        DEBUG1("Deal with '%s'",b->data);
+        DEBUG4("Search for %.*s, found %s (default value = %s)\n",
+            end_var-beg_var,beg_var,
+            (value?value:"(no value)"),
+            (default_value?default_value:"(no value)"));*/
 
         if (value)
           value = xbt_strdup(value);
-        else
+        else if (default_value)
           value = xbt_strdup(default_value);
-
-        if (!value)
+        else
           value = xbt_strdup("");
 
         /* En route for the actual substitution */
         val_len = strlen(value);
-//          DEBUG2("val_len = %d, key_len=%d",val_len,end_subst-beg_subst);
+//        DEBUG2("val_len = %d, key_len=%d",val_len,end_subst-beg_subst);
         if (val_len <= end_subst - beg_subst) {
           /* enough room to do the substitute in place */
-//            INFO3("Substitute '%s' with '%s' for %d chars",beg_subst,value, val_len);
+//          DEBUG4("Substitute key name by its value: ie '%.*s' by '%.*s'",end_subst-beg_subst,beg_subst,val_len,value);
           memmove(beg_subst, value, val_len);   /* substitute */
-//            INFO3("Substitute '%s' with '%s' for %d chars",beg_subst+val_len,end_subst, b->used-(end_subst-b->data)+1);
+//          DEBUG1("String is now: '%s'",b->data);
+/*          DEBUG8("Move end of string closer (%d chars moved) :\n-'%.*s%.*s'\n+'%.*s%s'",
+              b->used - (end_subst - b->data) + 1,
+              beg_subst-b->data,b->data,
+              b->used-(end_subst-b->data)+1,beg_subst+val_len,
+              beg_subst-b->data,b->data,
+              end_subst);*/
           memmove(beg_subst + val_len, end_subst, b->used - (end_subst - b->data) + 1); /* move the end of the string closer */
+//          DEBUG1("String is now: '%s'",b->data);
           end = beg_subst + val_len;    /* update the currently explored char in the overall loop */
+//          DEBUG1("end of substituted section is now '%s'",end);
           b->used -= end_subst - beg_subst - val_len;   /* update string buffer used size */
+//          DEBUG3("Used:%d end:%d ending char:%d",b->used,end-b->data,*end);
         } else {
           /* we have to extend the data area */
           int tooshort =
             val_len - (end_subst - beg_subst) + 1 /*don't forget \0 */ ;
           int newused = b->used + tooshort;
           end += tooshort;      /* update the pointer of the overall loop */
-//            DEBUG2("Too short (by %d chars; %d chars left in area)",val_len- (end_subst-beg_subst), b->size - b->used);
+//          DEBUG2("Too short (by %d chars; %d chars left in area)",val_len- (end_subst-beg_subst), b->size - b->used);
           if (newused > b->size) {
             /* We have to realloc the data area before (because b->size is too small). We have to update our pointers, too */
             char *newdata =
@@ -259,11 +270,14 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
           memmove(beg_subst + val_len, end_subst, b->used - (end_subst - b->data) + 2); /* move the end of the string a bit further */
           memmove(beg_subst, value, val_len);   /* substitute */
           b->used = newused;
+//          DEBUG1("String is now: %s",b->data);
         }
         free(value);
 
         if (default_value)
           free(default_value);
+
+        end--; /* compensate the next end++*/
       }
       break;
 
