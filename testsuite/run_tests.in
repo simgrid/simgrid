@@ -32,7 +32,6 @@ fi
 ##
 xbt_TESTS=" \
             xbt/log_usage@EXEEXT@;        \
-            xbt/context_usage@EXEEXT@;    \
             xbt/graphxml_usage@EXEEXT@ @srcdir@/xbt/graph.xml;    \
             xbt/heap_bench@EXEEXT@;"
 

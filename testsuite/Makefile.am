@@ -21,8 +21,7 @@ EXTRA_DIST=run_tests.in \
 xbt_tests =                                                      \
 	xbt/log_usage                                            \
 	xbt/heap_bench                                           \
-	xbt/graphxml_usage                                       \
-	xbt/context_usage                                        
+	xbt/graphxml_usage                                       
 
 SG_tests =                                              \
 	surf/maxmin_bench surf/lmm_usage \
@@ -49,7 +48,6 @@ xbt_heap_bench_LDADD=         $(LDADD_RL)
 
 xbt_graphxml_usage_LDADD=     $(LDADD_SG)
 
-xbt_context_usage_LDADD=      $(LDADD_SG)
 
 surf_maxmin_bench_LDADD=      $(LDADD_SG)
 surf_lmm_usage_LDADD=         $(LDADD_SG)
