@@ -46,8 +46,6 @@ reduce: reduce.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
 ring_c: ring_c.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
-sendrecv: sendrecv.c
-	$(top_builddir)/src/smpi/smpicc $^ -o $@
 split: split.c
 	$(top_builddir)/src/smpi/smpicc $^ -o $@
 mvmul: mvmul.c
