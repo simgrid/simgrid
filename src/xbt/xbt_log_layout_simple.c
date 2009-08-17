@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: xbt_log_layout_simple.c 6309 2009-05-26 15:29:22Z mquinson $ */
 
 /* layout_simple - a dumb log layout                                        */
 
@@ -31,20 +31,20 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
 
   /* Put every static information in a static buffer, and copy them in the dyn one */
   p = loc_buff;
-  p += snprintf(p, 256 - (p - ev->buffer), "[");
+  p += snprintf(p, 256 - (p - loc_buff), "[");
 
   if (strlen(xbt_procname()))
-    p += snprintf(p, 256 - (p - ev->buffer), "%s:%s:(%d) ",
+    p += snprintf(p, 256 - (p - loc_buff), "%s:%s:(%d) ",
                   gras_os_myname(), xbt_procname(), (*xbt_getpid) ());
   p +=
-    snprintf(p, 256 - (p - ev->buffer), "%f] ",
+    snprintf(p, 256 - (p - loc_buff), "%f] ",
              gras_os_time() - begin_of_time);
   if (ev->priority != xbt_log_priority_info)
     p +=
-      snprintf(p, 256 - (p - ev->buffer), "%s:%d: ", ev->fileName,
+      snprintf(p, 256 - (p - loc_buff), "%s:%d: ", ev->fileName,
                ev->lineNum);
   p +=
-    snprintf(p, 256 - (p - ev->buffer), "[%s/%s] ", ev->cat->name,
+    snprintf(p, 256 - (p - loc_buff), "[%s/%s] ", ev->cat->name,
              xbt_log_priority_names[ev->priority]);
 
   xbt_strbuff_append(buff, loc_buff);
