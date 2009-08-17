@@ -969,10 +969,11 @@ JNIEXPORT void JNICALL
   jobject jhost;
 
   /* Run everything */
-  if (MSG_OK != MSG_main())
+  if (MSG_OK != MSG_main()) {
+    CRITICAL0("We are here!");
     jxbt_throw_native(env, xbt_strdup("MSG_main() failed"));
-
-  DEBUG0
+  }
+  INFO0
     ("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
 
   DEBUG0("Clean java world");
@@ -984,11 +985,13 @@ JNIEXPORT void JNICALL
       jhost_unref(env, jhost);
   }
 
-  DEBUG0("Clean native world");
+  INFO0("Clean native world");
   /* cleanup native stuff */
-  if (MSG_OK != MSG_clean())
+  if (MSG_OK != MSG_clean()){
+    CRITICAL0("We are there!");
     jxbt_throw_native(env, xbt_strdup("MSG_main() failed"));
-
+  }
+  INFO0("All good");
 }
 
 JNIEXPORT jint JNICALL
@@ -1022,7 +1025,7 @@ Java_simgrid_msg_MsgNative_processExit(JNIEnv * env, jclass cls,
     return;
   }
 
-  SIMIX_context_stop(0);
+  SIMIX_context_stop(SIMIX_process_self()->context);
 }
 
 JNIEXPORT void JNICALL
