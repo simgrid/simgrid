@@ -212,7 +212,7 @@ void SIMIX_process_killall()
   SIMIX_process_empty_trash();
 
   if (self != simix_global->maestro_process) {
-    SIMIX_context_yield();
+    __SIMIX_process_yield();
   }
 
   return;
@@ -294,7 +294,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 
   while ((process = xbt_swag_extract(simix_global->process_to_run))) {
     DEBUG2("Scheduling %s on %s", process->name, process->smx_host->name);
-    SIMIX_context_schedule(process);
+    __SIMIX_process_schedule(process);
   }
 
   {

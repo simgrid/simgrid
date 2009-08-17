@@ -16,11 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
 
 /******************************** Process ************************************/
 /**
- * \brief Creates and runs a new #smx_process_t.
- *
- * Does exactly the same as #SIMIX_process_create_with_arguments but without
-   providing standard arguments (\a argc, \a argv).
- * \see SIMIX_process_create_with_arguments
+ * \brief Move a process to the list of process to destroy. *
  */
 
 void SIMIX_process_cleanup(void *arg)
@@ -31,7 +27,8 @@ void SIMIX_process_cleanup(void *arg)
   xbt_swag_insert(arg, simix_global->process_to_destroy);
 }
 
-/** Garbage collection
+/** 
+ * Garbage collection
  *
  * Should be called some time to time to free the memory allocated for processes
  * that have finished (or killed).
@@ -100,7 +97,6 @@ smx_process_t SIMIX_process_create(const char *name,
                                    char **argv, xbt_dict_t properties)
 {
   smx_process_t process = NULL;
-  smx_process_t self = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
 
   DEBUG2("Start process %s on host %s", name, hostname);
@@ -133,12 +129,9 @@ smx_process_t SIMIX_process_create(const char *name,
 
   /* Add the process to it's host process list */
   xbt_swag_insert(process, host->process_list);
-
-  /* fix current_process, about which SIMIX_context_start mocks around */
-  self = simix_global->current_process;
+  
   SIMIX_context_start(process);
-  simix_global->current_process = self;
-
+   
   /* Now insert it in the global process list and in the process to run list */
   xbt_swag_insert(process, simix_global->process_list);
   DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
@@ -209,8 +202,7 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
  */
 void SIMIX_process_kill(smx_process_t process)
 {
-  DEBUG2("Killing process %s on %s", process->name,
-         process->smx_host->name);
+  DEBUG2("Killing process %s on %s", process->name, process->smx_host->name);
 
   /* Cleanup if we were waiting for something */
   if (process->mutex)
@@ -220,7 +212,10 @@ void SIMIX_process_kill(smx_process_t process)
     xbt_swag_remove(process, process->cond->sleeping);
 
   DEBUG2("%p here! killing %p", simix_global->current_process, process);
-  SIMIX_context_kill(process);
+
+  /*FIXME: If we are killing the running process we might call stop directly */  
+  process->iwannadie = 1;
+  __SIMIX_process_schedule(process);
 
   if (process == SIMIX_process_self()) {
     /* I just killed myself */
@@ -442,4 +437,41 @@ int SIMIX_process_is_suspended(smx_process_t process)
 int SIMIX_process_count()
 {
   return xbt_swag_size(simix_global->process_list);
+}
+
+/** 
+ * Calling this function makes the process process to yield. The process
+ * that scheduled it returns from __SIMIX_process_schedule as if nothing
+ * had happened.
+ * 
+ * Only the processes can call this function, giving back the control
+ * to the maestro
+ */
+void __SIMIX_process_yield(void)
+{
+  DEBUG1("Yield process '%s'", simix_global->current_process->name);
+  xbt_assert0((simix_global->current_process != simix_global->maestro_process),
+              "You are not supposed to run this function here!");
+
+  SIMIX_context_yield();
+
+  if (simix_global->current_process->iwannadie)
+    SIMIX_context_stop(1);
+}
+
+void __SIMIX_process_schedule(smx_process_t process)
+{
+  DEBUG1("Scheduling context: '%s'", process->name);
+
+  /* save the current process */
+  smx_process_t self = simix_global->current_process;
+
+  /* update the current process */
+  simix_global->current_process = process;
+
+  /* schedule the context */
+  SIMIX_context_schedule(process);
+
+  /* restore the current process to the previously saved process */
+  simix_global->current_process = self;
 }

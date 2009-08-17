@@ -125,7 +125,7 @@ static void smx_ctx_thread_kill(smx_process_t process)
 {
   DEBUG1("Kill process '%s'", process->name);
   process->iwannadie = 1;
-  smx_ctx_thread_swap(process);
+  //smx_ctx_thread_swap(process);
 }
 
 /** 
@@ -140,9 +140,10 @@ static void smx_ctx_thread_kill(smx_process_t process)
 static void smx_ctx_thread_schedule(smx_process_t process)
 {
   DEBUG1("Schedule process '%s'", process->name);
-  xbt_assert0((simix_global->current_process == simix_global->maestro_process),
-              "You are not supposed to run this function here!");
-  smx_ctx_thread_swap(process);
+  /*xbt_assert0((simix_global->current_process == simix_global->maestro_process),
+              "You are not supposed to run this function here!");*/
+  smx_ctx_thread_resume(process);
+  /*smx_ctx_thread_swap(process);*/
 }
 
 /** 
@@ -155,10 +156,7 @@ static void smx_ctx_thread_schedule(smx_process_t process)
  */
 static void smx_ctx_thread_yield(void)
 {
-  DEBUG1("Yield process '%s'", simix_global->current_process->name);
-  xbt_assert0((simix_global->current_process != simix_global->maestro_process),
-              "You are not supposed to run this function here!");
-  smx_ctx_thread_swap(simix_global->current_process);
+  smx_ctx_thread_suspend(simix_global->current_process);
 }
 
 static void smx_ctx_thread_start(smx_process_t process)
@@ -188,47 +186,10 @@ static void smx_ctx_thread_stop(int exit_code)
   xbt_os_thread_exit(NULL);     /* We should provide return value in case other wants it */
 }
 
+/*FIXME: erase this function*/
 static void smx_ctx_thread_swap(smx_process_t process)
 {
-  
-  DEBUG2("Swap context: '%s' -> '%s'", simix_global->current_process->name, process->name);
-  if ((simix_global->current_process != simix_global->maestro_process) && !process->iwannadie) {
-    /* (0) it's not the scheduler and the process doesn't want to die, it just wants to yield */
-
-    /* yield itself, resume the maestro */
-    smx_ctx_thread_suspend(process);
-  } else {
-    /* (1) the current process is the scheduler and the process doesn't want to die
-     *      <-> the maestro wants to schedule the process
-     *              -> the maestro schedules the process and waits
-     *
-     * (2) the current process is the scheduler and the process wants to die
-     *      <-> the maestro wants to kill the process (has called the function smx_context_kill())
-     *              -> the maestro schedule the process and waits (xbt_os_sem_acquire(context->end))
-     *              -> if the process stops (smx_context_stop())
-     *                      -> the process resumes the maestro (xbt_os_sem_release(current_context->end)) and exit (xbt_os_thread_exit())
-     *              -> else the process call smx_context_yield()
-     *                      -> goto (3.1)
-     *
-     * (3) the current process is not the scheduler and the process wants to die
-     *              -> (3.1) if the current process is the process who wants to die
-     *                      -> (resume not need) goto (4)
-     *              -> (3.2) else the current process is not the process who wants to die
-     *                      <-> the current process wants to kill an other process
-     *                              -> the current process resumes the process to die and waits
-     *                              -> if the process to kill stops
-     *                                      -> it resumes the process who kill it and exit
-     *                              -> else if the process to kill calls to smx_context_yield()
-     *                                      -> goto (3.1)
-     */
-    /* schedule the process associated with this context */
-    smx_ctx_thread_resume(process);
-
-  }
-
-  /* (4) the current process wants to die */
-  if (simix_global->current_process->iwannadie)
-    smx_ctx_thread_stop(1);
+  return;
 }
 
 static void *smx_ctx_thread_wrapper(void *param)
@@ -239,40 +200,21 @@ static void *smx_ctx_thread_wrapper(void *param)
   xbt_os_sem_release(context->end);
   xbt_os_sem_acquire(context->begin);
 
-  smx_ctx_thread_stop((context->code) (simix_global->current_process->argc, simix_global->current_process->argv));
+  smx_ctx_thread_stop((context->code) (simix_global->current_process->argc, 
+                                       simix_global->current_process->argv));
   return NULL;
 }
 
 static void smx_ctx_thread_suspend(smx_process_t process)
 {
-  /* save the current process */
-  smx_process_t self = simix_global->current_process;
-
   DEBUG1("Suspend context '%s'", process->name);
-
-  /* update the current process to this process */
-  simix_global->current_process = process;
-
   xbt_os_sem_release(((smx_ctx_thread_t) process->context)->end);
   xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->begin);
-
-  /* restore the current process to the previously saved process */
-  simix_global->current_process = self;
 }
 
 static void smx_ctx_thread_resume(smx_process_t process)
 {
-  /* save the current process */
-  smx_process_t self = simix_global->current_process;
-
   DEBUG1("Resume context '%s'", process->name);
-
-  /* update the current process */
-  simix_global->current_process = process;
-
   xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
   xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
-
-  /* restore the current process to the previously saved process */
-  simix_global->current_process = self;
 }

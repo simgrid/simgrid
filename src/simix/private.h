@@ -15,6 +15,7 @@
 #include "xbt/fifo.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
+#include "xbt/config.h"
 #include "xbt/function_types.h"
 
 /******************************** Datatypes ***********************************/
@@ -93,6 +94,8 @@ typedef struct s_smx_process_arg {
 } s_smx_process_arg_t, *smx_process_arg_t;
 
 void SIMIX_process_empty_trash(void);
+void __SIMIX_process_schedule(smx_process_t process);
+void __SIMIX_process_yield(void);
 
 /*************************** Mutex and Conditional ****************************/
 
