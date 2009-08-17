@@ -189,31 +189,29 @@ typedef struct s_smx_context {
  */
 
 /* function used to create a new context */
-typedef int (*smx_pfn_context_factory_create_context_t) (smx_process_t *, xbt_main_func_t);
+typedef smx_context_t (*smx_pfn_context_factory_create_context_t) (xbt_main_func_t);
 
 /* function used to create the context for the maestro process */
-typedef int (*smx_pfn_context_factory_create_maestro_context_t) (smx_process_t*);
+typedef smx_context_t (*smx_pfn_context_factory_create_maestro_context_t) (void);
 
 /* this function finalize the specified context factory */
 typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
 
 /* function used to destroy the specified context */
-typedef void (*smx_pfn_context_free_t) (smx_process_t);
-
-/* function used to kill the specified context */
-typedef void (*smx_pfn_context_kill_t) (smx_process_t);
-
-/* function used to resume the specified context */
-typedef void (*smx_pfn_context_schedule_t) (smx_process_t);
-
-/* function used to yield the specified context */
-typedef void (*smx_pfn_context_yield_t) (void);
+typedef void (*smx_pfn_context_free_t) (smx_context_t);
 
 /* function used to start the specified context */
-typedef void (*smx_pfn_context_start_t) (smx_process_t);
+typedef void (*smx_pfn_context_start_t) (smx_context_t);
 
 /* function used to stop the current context */
 typedef void (*smx_pfn_context_stop_t) (int);
+
+/* function used to suspend the current context */
+typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
+
+/* function used to resume the current context */
+typedef void (*smx_pfn_context_resume_t) (smx_context_t old_context, 
+                                          smx_context_t new_context);
 
 /* interface of the context factories */
 typedef struct s_smx_context_factory {
@@ -221,11 +219,10 @@ typedef struct s_smx_context_factory {
   smx_pfn_context_factory_create_context_t create_context;
   smx_pfn_context_factory_finalize_t finalize;
   smx_pfn_context_free_t free;
-  smx_pfn_context_kill_t kill;
-  smx_pfn_context_schedule_t schedule;
-  smx_pfn_context_yield_t yield;
   smx_pfn_context_start_t start;
   smx_pfn_context_stop_t stop;
+  smx_pfn_context_suspend_t suspend;
+  smx_pfn_context_resume_t resume;
   const char *name;
 } s_smx_context_factory_t;
 
@@ -253,18 +250,18 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
 /**
  * \param smx_process the simix maestro process that contains this context
  */
-static inline int SIMIX_context_create_maestro(smx_process_t *process)
+static inline smx_context_t SIMIX_context_create_maestro()
 {
-  return (*(simix_global->context_factory->create_maestro_context)) (process);
+  return (*(simix_global->context_factory->create_maestro_context)) ();
 }
 
 /**
  * \param smx_process the simix process that contains this context
  * \param code a main function
  */
-static inline int SIMIX_context_new(smx_process_t *process, xbt_main_func_t code)
+static inline smx_context_t SIMIX_context_new(xbt_main_func_t code)
 {
-    return (*(simix_global->context_factory->create_context)) (process, code);
+    return (*(simix_global->context_factory->create_context)) (code);
 }
 
 /* Scenario for the end of a context:
@@ -287,15 +284,11 @@ static inline int SIMIX_context_new(smx_process_t *process, xbt_main_func_t code
  *   At the end of it, it checks that wannadie == 1, and call smx_context_stop
  *   (same than first case afterward)
  */
-static inline void SIMIX_context_kill(smx_process_t process)
-{
-  (*(simix_global->context_factory->kill)) (process);
-}
 
 /* Argument must be stopped first -- runs in maestro context */
-static inline void SIMIX_context_free(smx_process_t process)
+static inline void SIMIX_context_free(smx_context_t context)
 {
-  (*(simix_global->context_factory->free)) (process);
+  (*(simix_global->context_factory->free)) (context);
 }
 
 /**
@@ -304,41 +297,25 @@ static inline void SIMIX_context_free(smx_process_t process)
  * Calling this function prepares \a process to be run. It will
    however run effectively only when calling #SIMIX_context_schedule
  */
-static inline void SIMIX_context_start(smx_process_t process)
+static inline void SIMIX_context_start(smx_context_t context)
 {
-  (*(simix_global->context_factory->start)) (process);
-}
-
-/**
- * Calling this function makes the current process yield. The process
- * that scheduled it returns from SIMIX_context_schedule as if nothing
- * had happened.
- *
- * Only the processes can call this function, giving back the control
- * to the maestro
- */
-static inline void SIMIX_context_yield(void)
-{
-  (*(simix_global->context_factory->yield)) ();
-}
-
-/**
- * \param process to be scheduled
- *
- * Calling this function blocks the current process and schedule \a process.
- * When \a process would call SIMIX_context_yield, it will return
- * to this function as if nothing had happened.
- *
- * Only the maestro can call this function to run a given process.
- */
-static inline void SIMIX_context_schedule(smx_process_t process)
-{
-  (*(simix_global->context_factory->schedule)) (process);
+  (*(simix_global->context_factory->start)) (context);
 }
 
 static inline void SIMIX_context_stop(int exit_code)
 {
   (*(simix_global->context_factory->stop)) (exit_code);
+}
+
+static inline void SIMIX_context_resume(smx_context_t old_context,
+                                        smx_context_t new_context)
+{
+  (*(simix_global->context_factory->resume)) (old_context, new_context);
+}
+
+static inline void SIMIX_context_suspend(smx_context_t context)
+{
+  (*(simix_global->context_factory->suspend)) (context);
 }
 
 #endif

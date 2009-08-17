@@ -73,7 +73,7 @@ int SIMIX_context_select_factory(const char *name)
   SIMIX_context_init_factory_by_name(&simix_global->context_factory, name);
 
   /* maestro process specialisation */
-  (*(simix_global->context_factory->create_maestro_context)) (&simix_global->maestro_process);
+  simix_global->maestro_process->context = SIMIX_context_create_maestro ();
 
   /* the current process is the process of the maestro */
   simix_global->current_process = simix_global->maestro_process;

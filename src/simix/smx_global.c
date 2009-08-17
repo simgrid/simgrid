@@ -237,8 +237,8 @@ void SIMIX_clean(void)
   xbt_dict_free(&(simix_global->host));
 
   /* Let's free maestro now */
-  SIMIX_context_free(simix_global->maestro_process);
-  free(simix_global->maestro_process);
+  SIMIX_context_free(simix_global->maestro_process->context);
+  free(simix_global->maestro_process);  
 
   /* Finish context module and SURF */
   SIMIX_context_mod_exit();

@@ -58,7 +58,6 @@ void SIMIX_process_empty_trash(void)
  * \brief Creates and runs the maestro process
  *
  */
-
 void __SIMIX_create_maestro_process()
 {
   smx_process_t process = NULL;
@@ -67,8 +66,8 @@ void __SIMIX_create_maestro_process()
   /* Process data */
   process->name = (char *)"";
 
-  /*Create the right context type (FIXME: check the return value for success)*/
-  SIMIX_context_create_maestro(&process);
+  /* Create the right context type */
+  process->context = SIMIX_context_create_maestro();
 
   /* Set it as the maestro process */
   simix_global->maestro_process = process;
@@ -83,7 +82,7 @@ void __SIMIX_create_maestro_process()
  * A constructor for #m_process_t taking four arguments and returning the corresponding object. The structure (and the corresponding thread) is created, and put in the list of ready process.
  *
  * \param name a name for the object. It is for user-level information and can be NULL.
-* \param data a pointer to any data one may want to attach to the new object.  It is for user-level information and can be NULL. It can be retrieved with the function \ref MSG_process_get_data.
+ * \param data a pointer to any data one may want to attach to the new object.  It is for user-level information and can be NULL. It can be retrieved with the function \ref MSG_process_get_data.
  * \param host the location where the new agent is executed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
@@ -116,9 +115,10 @@ smx_process_t SIMIX_process_create(const char *name,
   process->argv = argv;
   process->mutex = NULL;
   process->cond = NULL;
+  process->iwannadie = 0;
 
-  /*Create the right context type (FIXME: check the return value for success)*/
-  SIMIX_context_new(&process, code);
+  VERB1("Create context %s", process->name);
+  process->context = SIMIX_context_new(code);
 
   process->data = data;
   process->cleanup_func = simix_global->cleanup_process_function;
@@ -129,8 +129,9 @@ smx_process_t SIMIX_process_create(const char *name,
 
   /* Add the process to it's host process list */
   xbt_swag_insert(process, host->process_list);
-  
-  SIMIX_context_start(process);
+
+  DEBUG1("Start context '%s'", process->name);
+  SIMIX_context_start(process->context);
    
   /* Now insert it in the global process list and in the process to run list */
   xbt_swag_insert(process, simix_global->process_list);
@@ -177,7 +178,7 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
   process->argv = NULL;
   process->mutex = NULL;
   process->cond = NULL;
-  SIMIX_context_new(&process, jprocess);
+  SIMIX_context_new(jprocess);
   process->data = data;
 
   /* Add the process to it's host process list */
@@ -185,7 +186,7 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
 
   /* fix current_process, about which xbt_context_start mocks around */
   self = simix_global->current_process;
-  SIMIX_context_start(process);
+  SIMIX_context_start(process->context);
   simix_global->current_process = self;
 
   /* Now insert it in the global process list and in the process to run list */
@@ -213,14 +214,14 @@ void SIMIX_process_kill(smx_process_t process)
 
   DEBUG2("%p here! killing %p", simix_global->current_process, process);
 
-  /*FIXME: If we are killing the running process we might call stop directly */  
   process->iwannadie = 1;
-  __SIMIX_process_schedule(process);
 
-  if (process == SIMIX_process_self()) {
-    /* I just killed myself */
-    SIMIX_context_yield();
-  }
+  /* If I'm killing myself then stop otherwise schedule the process to kill */
+  if (process == SIMIX_process_self())
+    SIMIX_context_stop(1);
+  else
+    __SIMIX_process_schedule(process);
+  
 }
 
 /**
@@ -453,25 +454,25 @@ void __SIMIX_process_yield(void)
   xbt_assert0((simix_global->current_process != simix_global->maestro_process),
               "You are not supposed to run this function here!");
 
-  SIMIX_context_yield();
+  SIMIX_context_suspend(simix_global->current_process->context);
 
   if (simix_global->current_process->iwannadie)
     SIMIX_context_stop(1);
 }
 
-void __SIMIX_process_schedule(smx_process_t process)
+void __SIMIX_process_schedule(smx_process_t new_process)
 {
-  DEBUG1("Scheduling context: '%s'", process->name);
+  DEBUG1("Scheduling context: '%s'", new_process->name);
 
   /* save the current process */
-  smx_process_t self = simix_global->current_process;
+  smx_process_t old_process = simix_global->current_process;
 
   /* update the current process */
-  simix_global->current_process = process;
+  simix_global->current_process = new_process;
 
   /* schedule the context */
-  SIMIX_context_schedule(process);
+  SIMIX_context_resume(old_process->context, new_process->context);
 
   /* restore the current process to the previously saved process */
-  simix_global->current_process = self;
+  simix_global->current_process = old_process;
 }
