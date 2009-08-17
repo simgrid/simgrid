@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex_interface.h"
-#include "smx_context_private.h"
+#include "private.h"
 
 #include "context_sysv_config.h"        /* loads context system definitions                             */
 #include "portable.h"
@@ -114,7 +114,6 @@ static int smx_ctx_sysv_factory_create_maestro_context(smx_process_t *maestro)
 
 }
 
-
 static int smx_ctx_sysv_factory_finalize(smx_context_factory_t * factory)
 {
   /*FIXME free(maestro_context->exception);*/
@@ -206,7 +205,7 @@ static void smx_ctx_sysv_schedule(smx_process_t process)
  */
 static void smx_ctx_sysv_yield(void)
 {
-  DEBUG1("Yielding context '%s'", simix_global->current_process->name);
+  DEBUG1("Yielding process '%s'", simix_global->current_process->name);
   xbt_assert0((simix_global->current_process != simix_global->maestro_process),
               "You are not supposed to run this function here!");
   smx_ctx_sysv_swap(simix_global->current_process);

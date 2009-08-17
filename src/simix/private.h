@@ -92,6 +92,8 @@ typedef struct s_smx_process_arg {
   xbt_dict_t properties;
 } s_smx_process_arg_t, *smx_process_arg_t;
 
+void SIMIX_process_empty_trash(void);
+
 /*************************** Mutex and Conditional ****************************/
 
 typedef struct s_smx_mutex {
@@ -145,25 +147,195 @@ void __SIMIX_create_maestro_process(void);
 
 /******************************** Context *************************************/
 
-int SIMIX_context_create_maestro(smx_process_t *process);
-
-int SIMIX_context_new(smx_process_t *process, xbt_main_func_t code);
-
-void SIMIX_context_kill(smx_process_t process);
-
-void SIMIX_context_start(smx_process_t process);
-
-void SIMIX_context_yield(void);
-
-void SIMIX_context_schedule(smx_process_t process);
-
-void SIMIX_context_empty_trash(void);
-
-void SIMIX_context_stop(int exit_code);
-
-void SIMIX_context_free(smx_process_t process);
-
 void SIMIX_context_mod_init(void);
 
 void SIMIX_context_mod_exit(void);
+
+/* *********************** */
+/* Context type definition */
+/* *********************** */
+/* the following function pointers types describe the interface that all context
+   concepts must implement */
+
+/* each context type must contain this macro at its begining -- OOP in C :/ */
+#define SMX_CTX_BASE_T \
+  s_xbt_swag_hookup_t hookup; \
+  ex_ctx_t *exception; \
+  xbt_main_func_t code; \
+
+/* all other context types derive from this structure */
+typedef struct s_smx_context {
+  SMX_CTX_BASE_T;
+} s_smx_context_t;
+
+/* *********************** */
+/* factory type definition */
+/* *********************** */
+
+/* Each context implementation define its own context factory
+ * A context factory is responsable of the creation and manipulation of the 
+ * execution context of all the simulated processes (and maestro) using the
+ * selected implementation.
+ *
+ * For example, the context switch based on java thread use the
+ * java implementation of the context and the java factory to build and control
+ * the contexts depending on this implementation.
+
+ * The following function pointer types describe the interface that any context 
+ * factory should implement.
+ */
+
+/* function used to create a new context */
+typedef int (*smx_pfn_context_factory_create_context_t) (smx_process_t *, xbt_main_func_t);
+
+/* function used to create the context for the maestro process */
+typedef int (*smx_pfn_context_factory_create_maestro_context_t) (smx_process_t*);
+
+/* this function finalize the specified context factory */
+typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
+
+/* function used to destroy the specified context */
+typedef void (*smx_pfn_context_free_t) (smx_process_t);
+
+/* function used to kill the specified context */
+typedef void (*smx_pfn_context_kill_t) (smx_process_t);
+
+/* function used to resume the specified context */
+typedef void (*smx_pfn_context_schedule_t) (smx_process_t);
+
+/* function used to yield the specified context */
+typedef void (*smx_pfn_context_yield_t) (void);
+
+/* function used to start the specified context */
+typedef void (*smx_pfn_context_start_t) (smx_process_t);
+
+/* function used to stop the current context */
+typedef void (*smx_pfn_context_stop_t) (int);
+
+/* interface of the context factories */
+typedef struct s_smx_context_factory {
+  smx_pfn_context_factory_create_maestro_context_t create_maestro_context;
+  smx_pfn_context_factory_create_context_t create_context;
+  smx_pfn_context_factory_finalize_t finalize;
+  smx_pfn_context_free_t free;
+  smx_pfn_context_kill_t kill;
+  smx_pfn_context_schedule_t schedule;
+  smx_pfn_context_yield_t yield;
+  smx_pfn_context_start_t start;
+  smx_pfn_context_stop_t stop;
+  const char *name;
+} s_smx_context_factory_t;
+
+/* Selects a context factory associated with the name specified by the parameter name.
+ * If successful the function returns 0. Otherwise the function returns the error code.
+ */
+int SIMIX_context_select_factory(const char *name);
+
+/* Initializes a context factory from the name specified by the parameter name.
+ * If the factory cannot be found, an exception is raised.
+ */
+void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory, const char *name);
+
+/* All factories init */
+void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory);
+
+void SIMIX_ctx_sysv_factory_init(smx_context_factory_t * factory);
+
+void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
+
+/* ******************************* */
+/* contexts manipulation functions */
+/* ******************************* */
+
+/**
+ * \param smx_process the simix maestro process that contains this context
+ */
+static inline int SIMIX_context_create_maestro(smx_process_t *process)
+{
+  return (*(simix_global->context_factory->create_maestro_context)) (process);
+}
+
+/**
+ * \param smx_process the simix process that contains this context
+ * \param code a main function
+ */
+static inline int SIMIX_context_new(smx_process_t *process, xbt_main_func_t code)
+{
+    return (*(simix_global->context_factory->create_context)) (process, code);
+}
+
+/* Scenario for the end of a context:
+ *
+ * CASE 1: death after end of function
+ *   __context_wrapper, called by os thread, calls smx_context_stop after user code stops
+ *   smx_context_stop calls user cleanup_func if any (in context settings),
+ *                    add current to trashbin
+ *                    yields back to maestro (destroy os thread on need)
+ *   From time to time, maestro calls smx_context_empty_trash,
+ *       which maps smx_context_free on the content
+ *   smx_context_free frees some more memory,
+ *                    joins os thread
+ *
+ * CASE 2: brutal death
+ *   smx_context_kill (from any context)
+ *                    set context->wannadie to 1
+ *                    yields to the context
+ *   the context is awaken in the middle of __yield.
+ *   At the end of it, it checks that wannadie == 1, and call smx_context_stop
+ *   (same than first case afterward)
+ */
+static inline void SIMIX_context_kill(smx_process_t process)
+{
+  (*(simix_global->context_factory->kill)) (process);
+}
+
+/* Argument must be stopped first -- runs in maestro context */
+static inline void SIMIX_context_free(smx_process_t process)
+{
+  (*(simix_global->context_factory->free)) (process);
+}
+
+/**
+ * \param context the context to start
+ *
+ * Calling this function prepares \a process to be run. It will
+   however run effectively only when calling #SIMIX_context_schedule
+ */
+static inline void SIMIX_context_start(smx_process_t process)
+{
+  (*(simix_global->context_factory->start)) (process);
+}
+
+/**
+ * Calling this function makes the current process yield. The process
+ * that scheduled it returns from SIMIX_context_schedule as if nothing
+ * had happened.
+ *
+ * Only the processes can call this function, giving back the control
+ * to the maestro
+ */
+static inline void SIMIX_context_yield(void)
+{
+  (*(simix_global->context_factory->yield)) ();
+}
+
+/**
+ * \param process to be scheduled
+ *
+ * Calling this function blocks the current process and schedule \a process.
+ * When \a process would call SIMIX_context_yield, it will return
+ * to this function as if nothing had happened.
+ *
+ * Only the maestro can call this function to run a given process.
+ */
+static inline void SIMIX_context_schedule(smx_process_t process)
+{
+  (*(simix_global->context_factory->schedule)) (process);
+}
+
+static inline void SIMIX_context_stop(int exit_code)
+{
+  (*(simix_global->context_factory->stop)) (exit_code);
+}
+
 #endif

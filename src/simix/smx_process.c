@@ -31,6 +31,31 @@ void SIMIX_process_cleanup(void *arg)
   xbt_swag_insert(arg, simix_global->process_to_destroy);
 }
 
+/** Garbage collection
+ *
+ * Should be called some time to time to free the memory allocated for processes
+ * that have finished (or killed).
+ */
+void SIMIX_process_empty_trash(void)
+{ 
+  smx_process_t process = NULL;
+  int i;  
+
+  while ((process = xbt_swag_extract(simix_global->process_to_destroy))){
+    free(process->name);
+    process->name = NULL;
+  
+    if (process->argv) {
+      for (i = 0; i < process->argc; i++)
+        if (process->argv[i])
+          free(process->argv[i]);
+
+      free(process->argv);
+    }
+  
+    free(process);
+  }
+}
 
 /**
  * \brief Creates and runs the maestro process

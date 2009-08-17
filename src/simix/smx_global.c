@@ -209,7 +209,7 @@ void SIMIX_process_killall()
       SIMIX_process_kill(p);
   }
 
-  SIMIX_context_empty_trash();
+  SIMIX_process_empty_trash();
 
   if (self != simix_global->maestro_process) {
     SIMIX_context_yield();
@@ -287,7 +287,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
   double elapsed_time = 0.0;
   static int state_modifications = 1;
 
-  SIMIX_context_empty_trash();
+  SIMIX_process_empty_trash();
   if (xbt_swag_size(simix_global->process_to_run) && (elapsed_time > 0)) {
     DEBUG0("**************************************************");
   }
