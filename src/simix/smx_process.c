@@ -36,20 +36,11 @@ void SIMIX_process_cleanup(void *arg)
 void SIMIX_process_empty_trash(void)
 { 
   smx_process_t process = NULL;
-  int i;  
 
   while ((process = xbt_swag_extract(simix_global->process_to_destroy))){
+    SIMIX_context_free(process->context);
     free(process->name);
     process->name = NULL;
-  
-    if (process->argv) {
-      for (i = 0; i < process->argc; i++)
-        if (process->argv[i])
-          free(process->argv[i]);
-
-      free(process->argv);
-    }
-  
     free(process);
   }
 }
@@ -111,18 +102,16 @@ smx_process_t SIMIX_process_create(const char *name,
   /* Process data */
   process->name = xbt_strdup(name);
   process->smx_host = host;
-  process->argc = argc;
-  process->argv = argv;
   process->mutex = NULL;
   process->cond = NULL;
   process->iwannadie = 0;
 
   VERB1("Create context %s", process->name);
-  process->context = SIMIX_context_new(code);
+  process->context = SIMIX_context_new(code, argc, argv, 
+                                       simix_global->cleanup_process_function,
+                                       process);
 
   process->data = data;
-  process->cleanup_func = simix_global->cleanup_process_function;
-  process->cleanup_arg = process;
 
   /* Add properties */
   process->properties = properties;
@@ -174,11 +163,9 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
   /* Process data */
   process->name = xbt_strdup(name);
   process->smx_host = host;
-  process->argc = 0;
-  process->argv = NULL;
   process->mutex = NULL;
   process->cond = NULL;
-  SIMIX_context_new(jprocess);
+  SIMIX_context_new(jprocess, 0, NULL, NULL, NULL);
   process->data = data;
 
   /* Add the process to it's host process list */
@@ -218,7 +205,7 @@ void SIMIX_process_kill(smx_process_t process)
 
   /* If I'm killing myself then stop otherwise schedule the process to kill */
   if (process == SIMIX_process_self())
-    SIMIX_context_stop(1);
+    SIMIX_context_stop(process->context);
   else
     __SIMIX_process_schedule(process);
   
@@ -457,7 +444,7 @@ void __SIMIX_process_yield(void)
   SIMIX_context_suspend(simix_global->current_process->context);
 
   if (simix_global->current_process->iwannadie)
-    SIMIX_context_stop(1);
+    SIMIX_context_stop(simix_global->current_process->context);
 }
 
 void __SIMIX_process_schedule(smx_process_t new_process)

@@ -23,7 +23,9 @@ typedef struct s_smx_ctx_thread {
   xbt_os_sem_t end;             /* this semaphore is used to schedule/unschedule the process   */
 } s_smx_ctx_thread_t, *smx_ctx_thread_t;
 
-static smx_context_t smx_ctx_thread_factory_create_context(xbt_main_func_t code);
+static smx_context_t
+smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
+                                      void_f_pvoid_t cleanup_func, void* cleanup_arg);
 
 static smx_context_t smx_ctx_thread_factory_create_master_context(void);
 
@@ -33,12 +35,12 @@ static void smx_ctx_thread_free(smx_context_t context);
 
 static void smx_ctx_thread_start(smx_context_t context);
 
-static void smx_ctx_thread_stop(int exit_code);
+static void smx_ctx_thread_stop(smx_context_t context);
 
 static void smx_ctx_thread_suspend(smx_context_t context);
 
-static void smx_ctx_thread_resume(smx_context_t old_context,
-                                  smx_context_t new_context);
+static void 
+  smx_ctx_thread_resume(smx_context_t old_context, smx_context_t new_context);
 
 static void *smx_ctx_thread_wrapper(void *param);
 
@@ -69,11 +71,17 @@ static int smx_ctx_thread_factory_finalize(smx_context_factory_t * factory)
   return 0;
 }
 
-static smx_context_t smx_ctx_thread_factory_create_context(xbt_main_func_t code)
+static smx_context_t 
+smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
+                                      void_f_pvoid_t cleanup_func, void* cleanup_arg)
 {
   smx_ctx_thread_t context = xbt_new0(s_smx_ctx_thread_t, 1);
 
   context->code = code;
+  context->argc = argc;
+  context->argv = argv;
+  context->cleanup_func = cleanup_func;
+  context->cleanup_arg = cleanup_arg;
   context->begin = xbt_os_sem_init(0);
   context->end = xbt_os_sem_init(0);
 
@@ -82,17 +90,26 @@ static smx_context_t smx_ctx_thread_factory_create_context(xbt_main_func_t code)
 
 static void smx_ctx_thread_free(smx_context_t pcontext)
 {
+  int i;
   smx_ctx_thread_t context = (smx_ctx_thread_t)pcontext;
 
-  /* Check if this is the context of maestro (it doesn't has a real thread) */  
+  /* check if this is the context of maestro (it doesn't has a real thread) */  
   if (context->thread) {
     /* wait about the thread terminason */
     xbt_os_thread_join(context->thread, NULL);
-    free(context->thread);
     
     /* destroy the synchronisation objects */
     xbt_os_sem_destroy(context->begin);
     xbt_os_sem_destroy(context->end);
+  }
+  
+  /* free argv */
+  if (context->argv) {
+    for (i = 0; i < context->argc; i++)
+      if (context->argv[i])
+        free(context->argv[i]);
+
+    free(context->argv);
   }
     
   /* finally destroy the context */
@@ -105,7 +122,7 @@ static void smx_ctx_thread_start(smx_context_t context)
 
   /* create and start the process */
   /* NOTE: The first argument to xbt_os_thread_create used to be the process *
-   * name, but now the name is stored at simix level, so we pass a null      */
+   * name, but now the name is stored at SIMIX level, so we pass a null      */
   ctx_thread->thread =
     xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, ctx_thread);
 
@@ -113,17 +130,21 @@ static void smx_ctx_thread_start(smx_context_t context)
   xbt_os_sem_acquire(ctx_thread->end);
 }
 
-static void smx_ctx_thread_stop(int exit_code)
+static void smx_ctx_thread_stop(smx_context_t pcontext)
 {
+
+  smx_ctx_thread_t context = (smx_ctx_thread_t)pcontext;
+  
   /* please no debug here: our procdata was already free'd */
-  if (simix_global->current_process->cleanup_func)
-    (*simix_global->current_process->cleanup_func) (simix_global->current_process->cleanup_arg);
+  if (context->cleanup_func)
+    (*context->cleanup_func) (context->cleanup_arg);
 
   /* signal to the maestro that it has finished */
-  xbt_os_sem_release(((smx_ctx_thread_t) simix_global->current_process->context)->end);
+  xbt_os_sem_release(((smx_ctx_thread_t) context)->end);
 
   /* exit */
-  xbt_os_thread_exit(NULL);     /* We should provide return value in case other wants it */
+  /* We should provide return value in case other wants it */
+  xbt_os_thread_exit(NULL);     
 }
 
 static void *smx_ctx_thread_wrapper(void *param)
@@ -134,8 +155,9 @@ static void *smx_ctx_thread_wrapper(void *param)
   xbt_os_sem_release(context->end);
   xbt_os_sem_acquire(context->begin);
 
-  smx_ctx_thread_stop((context->code) (simix_global->current_process->argc, 
-                                       simix_global->current_process->argv));
+  (context->code) (context->argc, context->argv);
+
+  smx_ctx_thread_stop((smx_context_t)context);
   return NULL;
 }
 

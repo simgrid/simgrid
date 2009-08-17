@@ -9,11 +9,13 @@
 
 #include "xbt/ex_interface.h"
 #include "private.h"
-
-#include "context_sysv_config.h"        /* loads context system definitions                             */
+#include "context_sysv_config.h"        /* loads context system definitions */
 #include "portable.h"
-#include <ucontext.h>           /* context relative declarations                                */
-#define STACK_SIZE 128*1024     /* lower this if you want to reduce the memory consumption      */
+#include <ucontext.h>           /* context relative declarations */
+
+/* lower this if you want to reduce the memory consumption  */
+#define STACK_SIZE 128*1024
+
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
 #endif /* HAVE_VALGRIND_VALGRIND_H */
@@ -37,7 +39,9 @@ static ex_ctx_t *xbt_jcontext_ex_ctx(void);
 /* callback: termination */
 static void xbt_jcontext_ex_terminate(xbt_ex_t *e);
 
-static smx_context_t smx_ctx_sysv_factory_create_context(xbt_main_func_t code);
+static smx_context_t 
+smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
+                                    void_f_pvoid_t cleanup_func, void* cleanup_arg);
 
 static int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory);
 
@@ -47,18 +51,19 @@ static void smx_ctx_sysv_free(smx_context_t context);
 
 static void smx_ctx_sysv_start(smx_context_t context);
 
-static void smx_ctx_sysv_stop(int exit_code);
+static void smx_ctx_sysv_stop(smx_context_t context);
 
 static void smx_ctx_sysv_suspend(smx_context_t context);
 
-static void smx_ctx_sysv_resume(smx_context_t old_context,
-                                smx_context_t new_context);
+static void 
+  smx_ctx_sysv_resume(smx_context_t old_context, smx_context_t new_context);
 
 static void smx_ctx_sysv_wrapper(void);
 
 /* callback: context fetching */
 static ex_ctx_t *xbt_ctx_sysv_ex_ctx(void)
 {
+  /*FIXME: the factory should access simix level datastructures! */
   return simix_global->current_process->context->exception;
 }
 
@@ -106,7 +111,9 @@ static int smx_ctx_sysv_factory_finalize(smx_context_factory_t * factory)
   return 0;
 }
 
-static smx_context_t smx_ctx_sysv_factory_create_context(xbt_main_func_t code)
+static smx_context_t 
+smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
+                                    void_f_pvoid_t cleanup_func, void* cleanup_arg)
 {
   smx_ctx_sysv_t context = xbt_new0(s_smx_ctx_sysv_t, 1);
 
@@ -128,12 +135,16 @@ static smx_context_t smx_ctx_sysv_factory_create_context(xbt_main_func_t code)
 
   context->exception = xbt_new(ex_ctx_t, 1);
   XBT_CTX_INITIALIZE(context->exception);
-  
+  context->argc = argc;
+  context->argv = argv;
+  context->cleanup_func = cleanup_func;
+  context->cleanup_arg = cleanup_arg;
   return (smx_context_t)context;
 }
 
 static void smx_ctx_sysv_free(smx_context_t pcontext)
 {
+  int i;
   smx_ctx_sysv_t context = (smx_ctx_sysv_t)pcontext;   
   if (context){
 
@@ -144,30 +155,50 @@ static void smx_ctx_sysv_free(smx_context_t pcontext)
     VALGRIND_STACK_DEREGISTER(((smx_ctx_sysv_t) context)->valgrind_stack_id);
 #endif /* HAVE_VALGRIND_VALGRIND_H */
 
+    /* free argv */
+    if (context->argv) {
+      for (i = 0; i < context->argc; i++)
+        if (context->argv[i])
+          free(context->argv[i]);
+
+      free(context->argv);
+    }
+    
     /* destroy the context */
     free(context);
   }
 }
 
 static void smx_ctx_sysv_start(smx_context_t context)
-{
+{  
   makecontext(&((smx_ctx_sysv_t)context)->uc, smx_ctx_sysv_wrapper, 0);
 }
 
-static void smx_ctx_sysv_stop(int exit_code)
+static void smx_ctx_sysv_stop(smx_context_t pcontext)
 {
-  if (simix_global->current_process->cleanup_func)
-    ((*simix_global->current_process->cleanup_func))
-      (simix_global->current_process->cleanup_arg);
+  smx_ctx_sysv_t context = (smx_ctx_sysv_t)pcontext;
+  
+  if (context->cleanup_func)
+    (*context->cleanup_func) (context->cleanup_arg);
 
-  smx_ctx_sysv_suspend(simix_global->current_process->context);
+  smx_ctx_sysv_suspend((smx_context_t)context);
 }
 
-static void smx_ctx_sysv_wrapper(void)
+static void smx_ctx_sysv_wrapper()
 {
-  smx_ctx_sysv_stop((*(simix_global->current_process->context->code))
-                        (simix_global->current_process->argc, 
-                         simix_global->current_process->argv));
+  /*FIXME: I would like to avoid accesing simix_global to get the current
+    context by passing it as an argument of the wrapper function. The problem
+    is that this function is called from smx_ctx_sysv_start, and uses
+    makecontext for calling it, and the stupid posix specification states that
+    all the arguments of the function should be int(32 bits), making it useless
+    in 64-bit architectures where pointers are 64 bit long.
+   */
+  smx_ctx_sysv_t context = 
+    (smx_ctx_sysv_t)simix_global->current_process->context;
+  
+  (context->code) (context->argc, context->argv);
+  
+  smx_ctx_sysv_stop((smx_context_t)context);
 }
 
 static void smx_ctx_sysv_suspend(smx_context_t context)
@@ -183,8 +214,8 @@ static void smx_ctx_sysv_suspend(smx_context_t context)
   xbt_assert0((rv == 0), "Context swapping failure");
 }
 
-static void smx_ctx_sysv_resume(smx_context_t old_context,
-                                smx_context_t new_context)
+static void 
+smx_ctx_sysv_resume(smx_context_t old_context, smx_context_t new_context)
 {
   int rv;
 
