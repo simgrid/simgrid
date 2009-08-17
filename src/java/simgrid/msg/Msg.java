@@ -33,11 +33,6 @@ public final class Msg {
   static {
     try {
       System.loadLibrary("simgrid");
-      //MsgNative.selectContextFactory("java");
- /*   } catch(NativeException e) {
-      System.err.println(e.toString());
-      e.printStackTrace();
-      System.exit(1);*/
     } catch(UnsatisfiedLinkError e) {
       System.err.println("Cannot load simgrid library : ");
       e.printStackTrace();
@@ -128,13 +123,12 @@ public final class Msg {
     Msg.init(args);
 
     if (args.length < 2) {
-
       Msg.info("Usage: Msg platform_file deployment_file");
       System.exit(1);
     }
 
     /* Load the platform and deploy the application */
-      Msg.createEnvironment(args[0]);
+    Msg.createEnvironment(args[0]);
     Msg.deployApplication(args[1]);
 
     /* Execute the simulation */
