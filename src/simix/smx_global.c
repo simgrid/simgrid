@@ -199,23 +199,18 @@ void __SIMIX_main(void)
 
 /**
  * \brief Kill all running process
- *
+ *  Only maestro can kill everyone :)
  */
 void SIMIX_process_killall()
 {
   smx_process_t p = NULL;
-  smx_process_t self = SIMIX_process_self();
+  xbt_assert0((simix_global->current_process == simix_global->maestro_process),
+              "You are not supposed to run this function here!");
 
-  while ((p = xbt_swag_extract(simix_global->process_list))) {
-    if (p != self)
-      SIMIX_process_kill(p);
-  }
+  while ((p = xbt_swag_extract(simix_global->process_list)))
+    SIMIX_process_kill(p);
 
   SIMIX_process_empty_trash();
-
-  if (self != simix_global->maestro_process) {
-    __SIMIX_process_yield();
-  }
 
   return;
 }
@@ -235,13 +230,15 @@ void SIMIX_clean(void)
   xbt_swag_free(simix_global->process_to_destroy);
   xbt_swag_free(simix_global->process_list);
   simix_global->process_list = NULL;
+  simix_global->process_to_destroy = NULL;
   xbt_dict_free(&(simix_global->registered_functions));
   xbt_dict_free(&(simix_global->host));
 
   /* Let's free maestro now */
   SIMIX_context_free(simix_global->maestro_process->context);
   free(simix_global->maestro_process);  
-
+  simix_global->maestro_process = NULL;
+  
   /* Finish context module and SURF */
   SIMIX_context_mod_exit();
   surf_exit();

@@ -25,8 +25,6 @@ static smx_context_t
 smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
                                     void_f_pvoid_t cleanup_func, void* cleanup_arg);
 
-static smx_context_t smx_ctx_java_factory_create_maestro_context(void);
-
 static int smx_ctx_java_factory_finalize(smx_context_factory_t * factory);
 
 static void smx_ctx_java_free(smx_context_t context);
@@ -65,7 +63,6 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 
   (*factory)->create_context = smx_ctx_java_factory_create_context;
   (*factory)->finalize = smx_ctx_java_factory_finalize;
-  (*factory)->create_maestro_context = smx_ctx_java_factory_create_maestro_context;
   (*factory)->free = smx_ctx_java_free;
   (*factory)->start = smx_ctx_java_start;
   (*factory)->stop = smx_ctx_java_stop;
@@ -73,16 +70,6 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
   (*factory)->resume = smx_ctx_java_resume;
 
   (*factory)->name = "ctx_java_factory";
-}
-
-static smx_context_t smx_ctx_java_factory_create_maestro_context(void)
-{
-  smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
-
-  context->exception = xbt_new(ex_ctx_t, 1);
-  XBT_CTX_INITIALIZE(context->exception);
-
-  return (smx_context_t) context;
 }
 
 static int smx_ctx_java_factory_finalize(smx_context_factory_t * factory)
@@ -100,13 +87,18 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv,
 {
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
 
-  context->cleanup_func = cleanup_func;
-  context->cleanup_arg = cleanup_arg;
   context->exception = xbt_new(ex_ctx_t, 1);
   XBT_CTX_INITIALIZE(context->exception);
-  context->jprocess = (jobject) code;
-  context->jenv = get_current_thread_env();
 
+  /* If the user provided a function for the process then use it
+     otherwise is the context for maestro */
+  if(code){
+    context->cleanup_func = cleanup_func;
+    context->cleanup_arg = cleanup_arg;
+    context->jprocess = (jobject) code;
+    context->jenv = get_current_thread_env();
+  }
+    
   return (smx_context_t) context;
 }
 

@@ -13,6 +13,7 @@
 #include "portable.h"           /* loads context system definitions */
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
+#include "xbt_modinter.h"       /* prototype of os thread module's init/exit in XBT */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
@@ -26,8 +27,6 @@ typedef struct s_smx_ctx_thread {
 static smx_context_t
 smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
                                       void_f_pvoid_t cleanup_func, void* cleanup_arg);
-
-static smx_context_t smx_ctx_thread_factory_create_master_context(void);
 
 static int smx_ctx_thread_factory_finalize(smx_context_factory_t * factory);
 
@@ -46,11 +45,13 @@ static void *smx_ctx_thread_wrapper(void *param);
 
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
 {
+  /* Initialize the thread portability layer 
+  xbt_os_thread_mod_init();*/
+  
   *factory = xbt_new0(s_smx_context_factory_t, 1);
 
   (*factory)->create_context = smx_ctx_thread_factory_create_context;
   (*factory)->finalize = smx_ctx_thread_factory_finalize;
-  (*factory)->create_maestro_context = smx_ctx_thread_factory_create_master_context;
   (*factory)->free = smx_ctx_thread_free;
   (*factory)->start = smx_ctx_thread_start;
   (*factory)->stop = smx_ctx_thread_stop;
@@ -59,13 +60,10 @@ void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
   (*factory)->name = "ctx_thread_factory";
 }
 
-static smx_context_t smx_ctx_thread_factory_create_master_context(void)
-{
-  return (smx_context_t) xbt_new0(s_smx_ctx_thread_t, 1);
-}
-
 static int smx_ctx_thread_factory_finalize(smx_context_factory_t * factory)
 {
+  /* Stop the thread portability layer 
+  xbt_os_thread_mod_exit();*/
   free(*factory);
   *factory = NULL;
   return 0;
@@ -77,14 +75,18 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** arg
 {
   smx_ctx_thread_t context = xbt_new0(s_smx_ctx_thread_t, 1);
 
-  context->code = code;
-  context->argc = argc;
-  context->argv = argv;
-  context->cleanup_func = cleanup_func;
-  context->cleanup_arg = cleanup_arg;
-  context->begin = xbt_os_sem_init(0);
-  context->end = xbt_os_sem_init(0);
-
+  /* If the user provided a function for the process then use it
+     otherwise is the context for maestro */
+  if(code){
+    context->code = code;
+    context->argc = argc;
+    context->argv = argv;
+    context->cleanup_func = cleanup_func;
+    context->cleanup_arg = cleanup_arg;
+    context->begin = xbt_os_sem_init(0);
+    context->end = xbt_os_sem_init(0);
+  }
+    
   return (smx_context_t)context;
 }
 

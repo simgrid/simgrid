@@ -190,9 +190,6 @@ typedef struct s_smx_context {
 typedef smx_context_t (*smx_pfn_context_factory_create_context_t) 
                       (xbt_main_func_t, int, char**, void_f_pvoid_t, void*);
 
-/* function used to create the context for the maestro process */
-typedef smx_context_t (*smx_pfn_context_factory_create_maestro_context_t) (void);
-
 /* this function finalize the specified context factory */
 typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
 
@@ -214,7 +211,6 @@ typedef void (*smx_pfn_context_resume_t) (smx_context_t old_context,
 
 /* interface of the context factories */
 typedef struct s_smx_context_factory {
-  smx_pfn_context_factory_create_maestro_context_t create_maestro_context;
   smx_pfn_context_factory_create_context_t create_context;
   smx_pfn_context_factory_finalize_t finalize;
   smx_pfn_context_free_t free;
@@ -262,14 +258,6 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
  *   SIMIX_process_yield function, and at the end of it, it checks that
  *   iwannadie == 1, and call SIMIX_context_stop(same than first case afterward)
  */
-
-/**
- * \brief creates the context for the maestro process
- */
-static inline smx_context_t SIMIX_context_create_maestro()
-{
-  return (*(simix_global->context_factory->create_maestro_context)) ();
-}
 
 /**
  * \brief creates a new context for a user level process

@@ -45,8 +45,6 @@ smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv,
 
 static int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory);
 
-static smx_context_t smx_ctx_sysv_factory_create_maestro_context(void);
-
 static void smx_ctx_sysv_free(smx_context_t context);
 
 static void smx_ctx_sysv_start(smx_context_t context);
@@ -80,7 +78,6 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 
   (*factory)->create_context = smx_ctx_sysv_factory_create_context;
   (*factory)->finalize = smx_ctx_sysv_factory_finalize;
-  (*factory)->create_maestro_context = smx_ctx_sysv_factory_create_maestro_context;
   (*factory)->free = smx_ctx_sysv_free;
   (*factory)->start = smx_ctx_sysv_start;
   (*factory)->stop = smx_ctx_sysv_stop;
@@ -91,16 +88,6 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
   /* context exception handlers */
   __xbt_ex_ctx = xbt_ctx_sysv_ex_ctx;
   __xbt_ex_terminate = xbt_ctx_sysv_ex_terminate;
-}
-
-static smx_context_t smx_ctx_sysv_factory_create_maestro_context()
-{
-  smx_ctx_sysv_t context = xbt_new0(s_smx_ctx_sysv_t, 1);
-
-  context->exception = xbt_new(ex_ctx_t, 1);  
-  XBT_CTX_INITIALIZE(context->exception);
-
-  return (smx_context_t)context;
 }
 
 static int smx_ctx_sysv_factory_finalize(smx_context_factory_t * factory)
@@ -117,28 +104,38 @@ smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv,
 {
   smx_ctx_sysv_t context = xbt_new0(s_smx_ctx_sysv_t, 1);
 
-  context->code = code;
-
-  xbt_assert2(getcontext(&(context->uc)) == 0,
-              "Error in context saving: %d (%s)", errno, strerror(errno));
-  context->uc.uc_link = NULL;
-  context->uc.uc_stack.ss_sp =
-    pth_skaddr_makecontext(context->stack, STACK_SIZE);
-  context->uc.uc_stack.ss_size =
-    pth_sksize_makecontext(context->stack, STACK_SIZE);
-#ifdef HAVE_VALGRIND_VALGRIND_H
-  context->valgrind_stack_id =
-    VALGRIND_STACK_REGISTER(context->uc.uc_stack.ss_sp,
-                            ((char *) context->uc.uc_stack.ss_sp) +
-                            context->uc.uc_stack.ss_size);
-#endif /* HAVE_VALGRIND_VALGRIND_H */
-
   context->exception = xbt_new(ex_ctx_t, 1);
   XBT_CTX_INITIALIZE(context->exception);
-  context->argc = argc;
-  context->argv = argv;
-  context->cleanup_func = cleanup_func;
-  context->cleanup_arg = cleanup_arg;
+  
+  /* If the user provided a function for the process then use it
+     otherwise is the context for maestro */
+  if(code){
+    context->code = code;
+
+    xbt_assert2(getcontext(&(context->uc)) == 0,
+                "Error in context saving: %d (%s)", errno, strerror(errno));
+
+    context->uc.uc_link = NULL;
+
+    context->uc.uc_stack.ss_sp =
+      pth_skaddr_makecontext(context->stack, STACK_SIZE);
+
+    context->uc.uc_stack.ss_size =
+      pth_sksize_makecontext(context->stack, STACK_SIZE);
+
+#ifdef HAVE_VALGRIND_VALGRIND_H
+    context->valgrind_stack_id =
+      VALGRIND_STACK_REGISTER(context->uc.uc_stack.ss_sp,
+                              ((char *) context->uc.uc_stack.ss_sp) +
+                              context->uc.uc_stack.ss_size);
+#endif /* HAVE_VALGRIND_VALGRIND_H */
+
+    context->argc = argc;
+    context->argv = argv;
+    context->cleanup_func = cleanup_func;
+    context->cleanup_arg = cleanup_arg;
+  }
+  
   return (smx_context_t)context;
 }
 

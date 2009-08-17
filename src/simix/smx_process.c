@@ -54,8 +54,8 @@ void __SIMIX_create_maestro_process()
   /* Process data */
   process->name = (char *)"";
 
-  /* Create the right context type */
-  process->context = SIMIX_context_create_maestro();
+  /* Create a dummy context for maestro */
+  process->context = SIMIX_context_new(NULL, 0, NULL, NULL, NULL);
 
   /* Set it as the maestro process */
   simix_global->maestro_process = process;

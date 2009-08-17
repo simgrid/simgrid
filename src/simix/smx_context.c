@@ -43,9 +43,15 @@ void SIMIX_context_mod_exit(void)
   if (simix_global->context_factory) {
     smx_pfn_context_factory_finalize_t finalize_factory;
 
-    /* if there are living processes then kill them (except maestro) */
-    if(simix_global->process_list != NULL)
-      SIMIX_process_killall();
+    /* Check that there are no living process or to destroy */
+    xbt_assert0((simix_global->process_list == NULL),
+               "There are living process!");
+
+    xbt_assert0((simix_global->process_to_destroy == NULL), 
+               "There are process to destroy!");
+
+    xbt_assert0((simix_global->maestro_process == NULL),
+               "The maestro process is alive!");
     
     /* finalize the context factory */
     finalize_factory = simix_global->context_factory->finalize;
@@ -55,35 +61,37 @@ void SIMIX_context_mod_exit(void)
 
 /**
  * This function is used to change the context factory.
- * Warning: it destroy all the existing contexts
+ * Warning: it destroy all the existing processes (even for maestro), and it
+ * will create a new maestro process using the new context factory.
  */
 int SIMIX_context_select_factory(const char *name)
 {
-  /* if a factory is already instantiated (SIMIX_context_mod_init() was called) */
+  /* if a context factory is already instantiated and it is different from the
+     newly selected one, then kill all the processes, exit the context module
+     and initialize the new factory.
+  */
   if (simix_global->context_factory != NULL) {
-    /* if the desired factory is different of the current factory, call SIMIX_context_mod_exit() */
-    if (strcmp(simix_global->context_factory->name, name))
+    if (strcmp(simix_global->context_factory->name, name)){
+
+      SIMIX_process_killall();
+
+      /* kill maestro process */
+      SIMIX_context_free(simix_global->maestro_process->context);
+      free(simix_global->maestro_process);  
+      simix_global->maestro_process = NULL;
+      
       SIMIX_context_mod_exit();
+    }
     else
       /* the same context factory is requested return directly */
       return 0;
   }
 
-  /* get the desired factory */
+  /* init the desired factory */
   SIMIX_context_init_factory_by_name(&simix_global->context_factory, name);
 
-  /* maestro process specialisation */
-  simix_global->maestro_process->context = SIMIX_context_create_maestro ();
-
-  /* the current process is the process of the maestro */
-  simix_global->current_process = simix_global->maestro_process;
-
-  /* the current context doesn't want to die */
-  simix_global->current_process->iwannadie = 0;
-
-  /* insert the current context in the list of the contexts in use */
-  xbt_swag_insert(simix_global->current_process, simix_global->process_list);
-
+  __SIMIX_create_maestro_process ();
+  
   return 0;
 }
 
