@@ -4,7 +4,7 @@
 
 JAVAROOT=.
 
-AM_JAVACFLAGS=-classpath $(top_srcdir)/src/simgrid.jar:.
+AM_JAVACFLAGS=-classpath $(top_srcdir)/src/simgrid.jar:../../../src/simgrid.jar:..
 
 
 ##########################
@@ -16,7 +16,7 @@ AM_JAVACFLAGS=-classpath $(top_srcdir)/src/simgrid.jar:.
 # Damn...
 if HAVE_JAVA
   TESTS_ENVIRONMENT=LD_LIBRARY_PATH="$(top_srcdir)/src/.libs:$$LD_LIBRARY_PATH" \
-                    CLASSPATH=".:$(top_srcdir)/src/simgrid.jar:$$CLASSPATH" \
+                    CLASSPATH=".:../../../src/simgrid.jar:$(top_srcdir)/src/simgrid.jar:$$CLASSPATH" \
                     $(srcdir)/../runtest 
 else
   TESTS_ENVIRONMENT=DO_NOT_HAVE_JAVA=1 $(srcdir)/../runtest 

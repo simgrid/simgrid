@@ -357,7 +357,7 @@ if HAVE_JAVA
 libsimgrid_la_SOURCES += $(JMSG_C_SRC) # add the binding support to the library
 
 clean-local:
-	-rm -rf .classes
+	-rm -rf .classes simgrid.jar
 
 jardir = $(prefix)/jar
 jar_DATA =  simgrid.jar
@@ -369,7 +369,7 @@ simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/simgrid.dtd
 	cp $(srcdir)/surf/simgrid.dtd .classes/surf
 	$(JAR) cvf simgrid.jar -C .classes .
 else
-EXTRA_DIST+=$(JMSG_C_SRC) $(MSG_SRC)
+EXTRA_DIST+=$(JMSG_C_SRC) $(JMSG_JAVA_SRC) $(MSG_SRC)
 endif
 
 if GRAMINE_MODE
