@@ -74,9 +74,12 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 
 static int smx_ctx_java_factory_finalize(smx_context_factory_t * factory)
 {
-  /*FIXME: free(maestro_context->exception);*/
   free(*factory);
   *factory = NULL;
+
+  /* Restore the default exception setup */
+  __xbt_ex_ctx = &__xbt_ex_ctx_default;
+  __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
   return 0;
 }

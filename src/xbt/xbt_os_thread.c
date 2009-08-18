@@ -118,6 +118,10 @@ void xbt_os_thread_mod_exit(void)
 #ifndef HAVE_SEM_WAIT
   xbt_os_mutex_destroy(next_sem_ID_lock);
 #endif
+
+  /* Restore the default exception setup */
+  __xbt_ex_ctx = &__xbt_ex_ctx_default;
+  __xbt_ex_terminate = &__xbt_ex_terminate_default;
 }
 
 static void *wrapper_start_routine(void *s)
