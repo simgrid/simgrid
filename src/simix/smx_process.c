@@ -107,7 +107,7 @@ smx_process_t SIMIX_process_create(const char *name,
   process->context = SIMIX_context_new(code, argc, argv, 
                                        simix_global->cleanup_process_function,
                                        process);
-
+  
   process->data = data;
 
   /* Add properties */
@@ -125,61 +125,6 @@ smx_process_t SIMIX_process_create(const char *name,
   xbt_swag_insert(process, simix_global->process_to_run);
 
   return process;
-}
-
-/**
- * \brief Creates and runs a new #smx_process_t hosting a JAVA thread
- *
- * Warning: this should only be used in libsimgrid4java, since it create
- * a context with no code, which leads to segfaults in plain libsimgrid
- */
-void SIMIX_jprocess_create(const char *name, smx_host_t host,
-                           void *data,
-                           void *jprocess, void *jenv, smx_process_t * res)
-{
-  smx_process_t process = xbt_new0(s_smx_process_t, 1);
-  smx_process_t self = NULL;
-
-  /* HACK: We need this trick because when we xbt_context_new() do
-     syncronization stuff, the s_process field in the m_process needs
-     to have a valid value, and we call xbt_context_new() before
-     returning, of course, ie, before providing a right value to the
-     caller (Java_simgrid_msg_Msg_processCreate) have time to store it
-     in place. This way, we initialize the m_process->simdata->s_process
-     field ourself ASAP.
-
-     All this would be much simpler if the synchronization stuff would be done
-     in the JAVA world, I think.
-   */
-  *res = process;
-
-  DEBUG5("jprocess_create(name=%s,host=%p,data=%p,jproc=%p,jenv=%p)",
-         name, host, data, jprocess, jenv);
-  xbt_assert0(host, "Invalid parameters");
-
-  /* Process data */
-  process->name = xbt_strdup(name);
-  process->smx_host = host;
-  process->mutex = NULL;
-  process->cond = NULL;
-  process->context = SIMIX_context_new(jprocess, 0, NULL, 
-                                       simix_global->cleanup_process_function,
-                                       process);
-
-  process->data = data;
-
-  /* Add the process to it's host process list */
-  xbt_swag_insert(&process, host->process_list);
-
-  /* fix current_process, about which xbt_context_start mocks around */
-  self = simix_global->current_process;
-  SIMIX_context_start(process->context);
-  simix_global->current_process = self;
-
-  /* Now insert it in the global process list and in the process to run list */
-  xbt_swag_insert(process, simix_global->process_list);
-  DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
-  xbt_swag_insert(process, simix_global->process_to_run);
 }
 
 /** \brief Kill a SIMIX process

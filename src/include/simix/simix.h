@@ -94,12 +94,6 @@ XBT_PUBLIC(smx_process_t) SIMIX_process_create(const char *name,
                                                char **argv,
                                                xbt_dict_t properties);
 
-XBT_PUBLIC(void) SIMIX_jprocess_create(const char *name,
-                                       smx_host_t host,
-                                       void *data,
-                                       void *jprocess, void *jenv,
-                                       smx_process_t * res);
-
 XBT_PUBLIC(void) SIMIX_process_kill(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_cleanup(void *arg);
 XBT_PUBLIC(void) SIMIX_process_killall(void);
