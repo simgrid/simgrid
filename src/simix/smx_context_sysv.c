@@ -7,7 +7,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/ex_interface.h"
 #include "private.h"
 #include "context_sysv_config.h"        /* loads context system definitions */
 #include "portable.h"
@@ -32,13 +31,6 @@ typedef struct s_smx_ctx_sysv {
 #endif                          
 } s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
 
-
-/* callback: context fetching */
-static ex_ctx_t *xbt_jcontext_ex_ctx(void);
-
-/* callback: termination */
-static void xbt_jcontext_ex_terminate(xbt_ex_t *e);
-
 static smx_context_t 
 smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
                                     void_f_pvoid_t cleanup_func, void* cleanup_arg);
@@ -58,20 +50,6 @@ static void
 
 static void smx_ctx_sysv_wrapper(void);
 
-/* callback: context fetching */
-static ex_ctx_t *xbt_ctx_sysv_ex_ctx(void)
-{
-  /*FIXME: the factory should access simix level datastructures! */
-  return simix_global->current_process->context->exception;
-}
-
-/* callback: termination */
-static void xbt_ctx_sysv_ex_terminate(xbt_ex_t * e)
-{
-  xbt_ex_display(e);
-  abort();
-}
-
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 {
   *factory = xbt_new0(s_smx_context_factory_t, 1);
@@ -84,21 +62,12 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
   (*factory)->suspend = smx_ctx_sysv_suspend;
   (*factory)->resume = smx_ctx_sysv_resume;
   (*factory)->name = "smx_sysv_context_factory";
-
-  /* context exception handlers */
-  __xbt_ex_ctx = xbt_ctx_sysv_ex_ctx;
-  __xbt_ex_terminate = xbt_ctx_sysv_ex_terminate;
 }
 
 static int smx_ctx_sysv_factory_finalize(smx_context_factory_t * factory)
 {
   free(*factory);
   *factory = NULL;
-
-  /* Restore the default exception setup */
-  __xbt_ex_ctx = &__xbt_ex_ctx_default;
-  __xbt_ex_terminate = &__xbt_ex_terminate_default;
-
   return 0;
 }
 
@@ -107,9 +76,6 @@ smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv,
                                     void_f_pvoid_t cleanup_func, void* cleanup_arg)
 {
   smx_ctx_sysv_t context = xbt_new0(s_smx_ctx_sysv_t, 1);
-
-  context->exception = xbt_new(ex_ctx_t, 1);
-  XBT_CTX_INITIALIZE(context->exception);
   
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
@@ -148,9 +114,6 @@ static void smx_ctx_sysv_free(smx_context_t pcontext)
   int i;
   smx_ctx_sysv_t context = (smx_ctx_sysv_t)pcontext;   
   if (context){
-
-    if (context->exception)
-      free(context->exception);
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
     VALGRIND_STACK_DEREGISTER(((smx_ctx_sysv_t) context)->valgrind_stack_id);

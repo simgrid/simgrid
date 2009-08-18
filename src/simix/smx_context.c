@@ -80,7 +80,7 @@ int SIMIX_context_select_factory(const char *name)
   /* init the desired factory */
   SIMIX_context_init_factory_by_name(&simix_global->context_factory, name);
 
-  __SIMIX_create_maestro_process ();
+  SIMIX_create_maestro_process ();
   
   return 0;
 }

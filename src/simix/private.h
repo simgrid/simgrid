@@ -17,6 +17,7 @@
 #include "xbt/dict.h"
 #include "xbt/config.h"
 #include "xbt/function_types.h"
+#include "xbt/ex_interface.h"
 
 /******************************** Datatypes ***********************************/
 
@@ -65,6 +66,7 @@ extern SIMIX_Global_t simix_global;
        char *name;              /**< @brief process name if any */
        smx_host_t smx_host;     /* the host on which the process is running */
        smx_context_t context;   /* the context that executes the scheduler function */
+       ex_ctx_t *exception;
        int blocked : 1;
        int suspended : 1;
        int iwannadie : 1;
@@ -87,9 +89,13 @@ typedef struct s_smx_process_arg {
   xbt_dict_t properties;
 } s_smx_process_arg_t, *smx_process_arg_t;
 
+void SIMIX_create_maestro_process(void);
 void SIMIX_process_empty_trash(void);
-void __SIMIX_process_schedule(smx_process_t process);
-void __SIMIX_process_yield(void);
+void SIMIX_process_schedule(smx_process_t process);
+void SIMIX_process_yield(void);
+ex_ctx_t *SIMIX_process_get_exception(void);
+void SIMIX_process_exception_terminate(xbt_ex_t * e);
+
 
 /*************************** Mutex and Conditional ****************************/
 
@@ -140,7 +146,6 @@ void __SIMIX_host_destroy(void *host);
 void __SIMIX_cond_wait(smx_cond_t cond);
 void __SIMIX_cond_display_actions(smx_cond_t cond);
 void __SIMIX_action_display_conditions(smx_action_t action);
-void __SIMIX_create_maestro_process(void);
 
 /******************************** Context *************************************/
 
@@ -157,7 +162,6 @@ void SIMIX_context_mod_exit(void);
 /* each context type must contain this macro at its begining -- OOP in C :/ */
 #define SMX_CTX_BASE_T \
   s_xbt_swag_hookup_t hookup; \
-  ex_ctx_t *exception; \
   xbt_main_func_t code; \
   int argc; \
   char **argv; \

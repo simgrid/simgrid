@@ -51,12 +51,12 @@ void SIMIX_mutex_lock(smx_mutex_t mutex)
     xbt_swag_insert(self, mutex->sleeping);
     self->mutex = mutex;
     /* wait for some process make the unlock and wake up me from mutex->sleeping */
-    __SIMIX_process_yield();
+    SIMIX_process_yield();
     self->mutex = NULL;
 
     /* verify if the process was suspended */
     while (self->suspended) {
-      __SIMIX_process_yield();
+      SIMIX_process_yield();
     }
 
     mutex->refcount = 1;
@@ -213,10 +213,10 @@ void __SIMIX_cond_wait(smx_cond_t cond)
 
   self->cond = cond;
   xbt_swag_insert(self, cond->sleeping);
-  __SIMIX_process_yield();
+  SIMIX_process_yield();
   self->cond = NULL;
   while (self->suspended) {
-    __SIMIX_process_yield();
+    SIMIX_process_yield();
   }
   return;
 

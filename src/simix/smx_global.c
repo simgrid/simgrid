@@ -77,7 +77,12 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->cleanup_process_function = SIMIX_process_cleanup;
 
     SIMIX_context_mod_init();
-    __SIMIX_create_maestro_process();
+    SIMIX_create_maestro_process();
+
+    /* context exception handlers */
+    __xbt_ex_ctx = SIMIX_process_get_exception;
+    __xbt_ex_terminate = SIMIX_process_exception_terminate;
+
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
@@ -236,14 +241,20 @@ void SIMIX_clean(void)
 
   /* Let's free maestro now */
   SIMIX_context_free(simix_global->maestro_process->context);
-  free(simix_global->maestro_process);  
+  xbt_free(simix_global->maestro_process->exception);
+  xbt_free(simix_global->maestro_process);  
   simix_global->maestro_process = NULL;
+
+  /* Restore the default exception setup */
+  __xbt_ex_ctx = &__xbt_ex_ctx_default;
+  __xbt_ex_terminate = &__xbt_ex_terminate_default;
   
   /* Finish context module and SURF */
   SIMIX_context_mod_exit();
+
   surf_exit();
 
-  free(simix_global);
+  xbt_free(simix_global);
   simix_global = NULL;
 
   return;
@@ -293,7 +304,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 
   while ((process = xbt_swag_extract(simix_global->process_to_run))) {
     DEBUG2("Scheduling %s on %s", process->name, process->smx_host->name);
-    __SIMIX_process_schedule(process);
+    SIMIX_process_schedule(process);
   }
 
   {

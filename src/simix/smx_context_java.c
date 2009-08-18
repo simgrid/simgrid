@@ -9,17 +9,10 @@
 
 
 #include "xbt/function_types.h"
-#include "xbt/ex_interface.h"
 #include "private.h"
 #include "smx_context_java.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg, "MSG for Java(TM)");
-
-/* callback: context fetching */
-static ex_ctx_t *xbt_ctx_java_ex_ctx(void);
-
-/* callback: termination */
-static void xbt_ctx_java_ex_terminate(xbt_ex_t * e);
 
 static smx_context_t
 smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
@@ -38,26 +31,8 @@ static void smx_ctx_java_suspend(smx_context_t context);
 static void
   smx_ctx_java_resume(smx_context_t old_context, smx_context_t new_context);
 
-
-/* callback: context fetching */
-static ex_ctx_t *xbt_ctx_java_ex_ctx(void)
-{
-  return simix_global->current_process->context->exception;
-}
-
-/* callback: termination */
-static void xbt_ctx_java_ex_terminate(xbt_ex_t * e)
-{
-  xbt_ex_display(e);
-  abort();
-}
-
 void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 {
-  /* context exception handlers */
-  __xbt_ex_ctx = xbt_ctx_java_ex_ctx;
-  __xbt_ex_terminate = xbt_ctx_java_ex_terminate;
-
   /* instantiate the context factory */
   *factory = xbt_new0(s_smx_context_factory_t, 1);
 
@@ -76,11 +51,6 @@ static int smx_ctx_java_factory_finalize(smx_context_factory_t * factory)
 {
   free(*factory);
   *factory = NULL;
-
-  /* Restore the default exception setup */
-  __xbt_ex_ctx = &__xbt_ex_ctx_default;
-  __xbt_ex_terminate = &__xbt_ex_terminate_default;
-
   return 0;
 }
 
@@ -89,9 +59,6 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv,
                                     void_f_pvoid_t cleanup_func, void* cleanup_arg)
 {
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
-
-  context->exception = xbt_new(ex_ctx_t, 1);
-  XBT_CTX_INITIALIZE(context->exception);
 
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
@@ -119,9 +86,6 @@ static void smx_ctx_java_free(smx_context_t context)
       if (jprocess_is_alive(jprocess, get_current_thread_env()))
         jprocess_join(jprocess, get_current_thread_env());
     }
-
-    if (ctx_java->exception)
-      free(ctx_java->exception);
 
     free(context);
     context = NULL;

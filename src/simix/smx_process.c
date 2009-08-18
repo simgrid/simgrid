@@ -37,6 +37,11 @@ void SIMIX_process_empty_trash(void)
 
   while ((process = xbt_swag_extract(simix_global->process_to_destroy))){
     SIMIX_context_free(process->context);
+
+    /* Free the exception allocated at creation time */
+    if (process->exception)
+      free(process->exception);
+
     free(process->name);
     process->name = NULL;
     free(process);
@@ -46,7 +51,7 @@ void SIMIX_process_empty_trash(void)
 /**
  * \brief Creates and runs the maestro process
  */
-void __SIMIX_create_maestro_process()
+void SIMIX_create_maestro_process()
 {
   smx_process_t process = NULL;
   process = xbt_new0(s_smx_process_t, 1);
@@ -54,6 +59,9 @@ void __SIMIX_create_maestro_process()
   /* Process data */
   process->name = (char *)"";
 
+  process->exception = xbt_new(ex_ctx_t, 1);
+  XBT_CTX_INITIALIZE(process->exception);
+  
   /* Create a dummy context for maestro */
   process->context = SIMIX_context_new(NULL, 0, NULL, NULL, NULL);
 
@@ -102,13 +110,15 @@ smx_process_t SIMIX_process_create(const char *name,
   process->mutex = NULL;
   process->cond = NULL;
   process->iwannadie = 0;
-
+  process->data = data;
+  
   VERB1("Create context %s", process->name);
   process->context = SIMIX_context_new(code, argc, argv, 
                                        simix_global->cleanup_process_function,
                                        process);
-  
-  process->data = data;
+
+  process->exception = xbt_new(ex_ctx_t, 1);
+  XBT_CTX_INITIALIZE(process->exception);
 
   /* Add properties */
   process->properties = properties;
@@ -152,7 +162,7 @@ void SIMIX_process_kill(smx_process_t process)
   if (process == SIMIX_process_self())
     SIMIX_context_stop(process->context);
   else
-    __SIMIX_process_schedule(process);
+    SIMIX_process_schedule(process);
   
 }
 
@@ -380,7 +390,7 @@ int SIMIX_process_count()
  * Only the processes can call this function, giving back the control
  * to the maestro
  */
-void __SIMIX_process_yield(void)
+void SIMIX_process_yield(void)
 {
   DEBUG1("Yield process '%s'", simix_global->current_process->name);
   xbt_assert0((simix_global->current_process != simix_global->maestro_process),
@@ -392,7 +402,7 @@ void __SIMIX_process_yield(void)
     SIMIX_context_stop(simix_global->current_process->context);
 }
 
-void __SIMIX_process_schedule(smx_process_t new_process)
+void SIMIX_process_schedule(smx_process_t new_process)
 {
   DEBUG1("Scheduling context: '%s'", new_process->name);
 
@@ -408,3 +418,18 @@ void __SIMIX_process_schedule(smx_process_t new_process)
   /* restore the current process to the previously saved process */
   simix_global->current_process = old_process;
 }
+
+/* callback: context fetching */
+ex_ctx_t *SIMIX_process_get_exception(void)
+{
+  return simix_global->current_process->exception;
+}
+
+/* callback: termination */
+void SIMIX_process_exception_terminate(xbt_ex_t * e)
+{
+  xbt_ex_display(e);
+  abort();
+}
+
+

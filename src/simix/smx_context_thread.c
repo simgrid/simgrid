@@ -45,9 +45,6 @@ static void *smx_ctx_thread_wrapper(void *param);
 
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
 {
-  /* Initialize the thread portability layer 
-  xbt_os_thread_mod_init();*/
-  
   *factory = xbt_new0(s_smx_context_factory_t, 1);
 
   (*factory)->create_context = smx_ctx_thread_factory_create_context;
@@ -62,8 +59,6 @@ void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
 
 static int smx_ctx_thread_factory_finalize(smx_context_factory_t * factory)
 {
-  /* Stop the thread portability layer 
-  xbt_os_thread_mod_exit();*/
   free(*factory);
   *factory = NULL;
   return 0;
