@@ -17,6 +17,7 @@
 #include "portable.h"
 
 extern const char *xbt_log_priority_names[7];
+extern int xbt_log_no_loc;
 
 static double begin_of_time = -1;
 
@@ -39,7 +40,7 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
   p +=
     snprintf(p, 256 - (p - loc_buff), "%f] ",
              gras_os_time() - begin_of_time);
-  if (ev->priority != xbt_log_priority_info)
+  if (ev->priority != xbt_log_priority_info && xbt_log_no_loc==0)
     p +=
       snprintf(p, 256 - (p - loc_buff), "%s:%d: ", ev->fileName,
                ev->lineNum);
@@ -100,7 +101,7 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
   check_overflow;
 
   /* Display file position if not INFO */
-  if (ev->priority != xbt_log_priority_info)
+  if (ev->priority != xbt_log_priority_info && !xbt_log_no_loc)
     p +=
       snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%d: ",
                ev->fileName, ev->lineNum);

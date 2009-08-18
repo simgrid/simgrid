@@ -25,6 +25,7 @@
 #include "xbt/dynar.h"
 
 XBT_PUBLIC_DATA(int) (*xbt_pid) ();
+int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 
 /** \addtogroup XBT_log
  *
@@ -1050,6 +1051,11 @@ void xbt_log_control_set(const char *control_string)
     return;
   DEBUG1("Parse log settings '%s'", control_string);
 
+  /* Special handling of no_loc request, which asks for any file localization to be omitted (for tesh runs) */
+  if (!strcmp(control_string,"no_loc")) {
+    xbt_log_no_loc=1;
+    return;
+  }
   /* some initialization if this is the first time that this get called */
   if (xbt_log_settings == NULL)
     xbt_log_settings = xbt_dynar_new(sizeof(xbt_log_setting_t),
