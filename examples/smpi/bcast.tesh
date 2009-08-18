@@ -4,7 +4,7 @@
 
 # Go for the first test
 p Test Broadcast with less processes than hosts
-$ ../../src/smpi/smpirun -map -hostfile hostfile -platform ../msg/small_platform.xml -np 3 ./bcast -q
+$ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 3 ./bcast -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -20,7 +20,7 @@ $ ../../src/smpi/smpirun -map -hostfile hostfile -platform ../msg/small_platform
 # second test
 p Test Broadcast with as much processes than hosts
 ! setenv LD_LIBRARY_PATH=../../src/.libs
-$ ../../src/smpi/smpirun -map -hostfile hostfile -platform ../msg/small_platform.xml -np 6 ./bcast -q
+$ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 6 ./bcast -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -44,7 +44,7 @@ $ ../../src/smpi/smpirun -map -hostfile hostfile -platform ../msg/small_platform
 # Another test
 p Test Broadcast with more processes than hosts
 ! setenv LD_LIBRARY_PATH=../../src/.libs
-$ ../../src/smpi/smpirun -map -hostfile hostfile -platform ../msg/small_platform.xml -np 12 ./bcast -q
+$ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 12 ./bcast -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
