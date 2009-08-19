@@ -91,6 +91,8 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
     if test "x$cflags_set" != "xyes" ; then  
       CFLAGS="$optCFLAGS $CFLAGS"
     fi
+  else
+    CFLAGS="$CFLAGS -O0"
   fi
 
   if test x$lt_cv_prog_gnu_ld = xyes ; then
