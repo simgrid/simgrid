@@ -110,7 +110,6 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
 {
 
 
-  xbt_ex_t e;
   unsigned int cpt;
   gras_datadesc_type_t sub_type;        /* type on which we recurse */
   int count = 0;
@@ -243,21 +242,11 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
       }
       o_ref = (char **) src;
 
-      reference_is_to_cpy = 0;
-      TRY {
-        if (detect_cycle) {
-          /* return ignored. Just checking whether it's known or not */
-          n_ref = xbt_dict_get_ext(refs, (char *) o_ref, sizeof(char *));
-        } else {
-          reference_is_to_cpy = 1;
-        }
-      }
-      CATCH(e) {
-        if (e.category != not_found_error)
-          RETHROW;
-        reference_is_to_cpy = 1;
-        xbt_ex_free(e);
-      }
+      reference_is_to_cpy = 1;
+      if (detect_cycle &&
+           (n_ref=xbt_dict_get_or_null_ext(refs, (char *) o_ref, sizeof(char *))))
+        /* already known, no need to copy it */
+        reference_is_to_cpy = 0;
 
       if (reference_is_to_cpy) {
         int subsubcount = -1;
@@ -421,7 +410,6 @@ gras_datadesc_send_rec(gras_socket_t sock,
                        char *data, int detect_cycle)
 {
 
-  xbt_ex_t e;
   unsigned int cpt;
   gras_datadesc_type_t sub_type;        /* type on which we recurse */
 
@@ -539,20 +527,10 @@ gras_datadesc_send_rec(gras_socket_t sock,
         break;
       }
 
-      reference_is_to_send = 0;
-      TRY {
-        if (detect_cycle)
-          /* return ignored. Just checking whether it's known or not */
-          xbt_dict_get_ext(refs, (char *) ref, sizeof(char *));
-        else
-          reference_is_to_send = 1;
-      }
-      CATCH(e) {
-        if (e.category != not_found_error)
-          RETHROW;
-        reference_is_to_send = 1;
-        xbt_ex_free(e);
-      }
+      reference_is_to_send = 1;
+      /* return ignored. Just checking whether it's known or not */
+      if (detect_cycle && xbt_dict_get_or_null_ext(refs, (char *) ref, sizeof(char *)))
+        reference_is_to_send = 0;
 
       if (reference_is_to_send) {
         VERB1("Sending data referenced at %p", (void *) *ref);
@@ -679,7 +657,6 @@ gras_datadesc_recv_rec(gras_socket_t sock,
 
   unsigned int cpt;
   gras_datadesc_type_t sub_type;
-  xbt_ex_t e;
 
   VERB2("Recv a %s @%p", type->name, (void *) l_data);
   xbt_assert(l_data);
@@ -800,22 +777,11 @@ gras_datadesc_recv_rec(gras_socket_t sock,
         break;
       }
 
-      reference_is_to_recv = 0;
-      TRY {
-        if (detect_cycle) {
-          l_ref =
-            xbt_dict_get_ext(refs, (char *) r_ref,
-                             pointer_type->size[r_arch]);
-        } else {
-          reference_is_to_recv = 1;
-        }
-      }
-      CATCH(e) {
-        if (e.category != not_found_error)
-          RETHROW;
-        reference_is_to_recv = 1;
-        xbt_ex_free(e);
-      }
+      reference_is_to_recv = 1;
+      if (detect_cycle && (l_ref =
+            xbt_dict_get_or_null_ext(refs, (char *) r_ref,
+                             pointer_type->size[r_arch])))
+        reference_is_to_recv = 0;
 
       if (reference_is_to_recv) {
         int subsubcount = -1;
