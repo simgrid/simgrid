@@ -114,7 +114,8 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   }
 
   f = surf_fopen(filename, "r");
-  xbt_assert1(f!=NULL, "Cannot open file '%s'", filename);
+  xbt_assert2(f!=NULL, "Cannot open file '%s' (path=%s)", filename,
+       xbt_str_join(surf_path,":"));
 
   char *tstr = xbt_str_from_file(f);
   fclose(f);
