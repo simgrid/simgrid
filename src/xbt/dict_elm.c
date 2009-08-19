@@ -32,7 +32,7 @@ xbt_dictelm_t xbt_dictelm_new(const char *key,
   xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
 
   element->key = xbt_new(char, key_len + 1);
-  strncpy(element->key, key, key_len);
+  memcpy((void *)element->key, (void *)key, key_len);
   element->key[key_len] = '\0';
 
   element->key_len = key_len;
