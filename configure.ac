@@ -9,7 +9,7 @@ dnl GNU LGPL (v2.1) licence.
 ##
 
 AC_PREREQ(2.59)
-AC_INIT([simgrid],[3.3.2],[simgrid-devel@lists.gforge.inria.fr])
+AC_INIT([simgrid],[3.3.3-svn],[simgrid-devel@lists.gforge.inria.fr])
 AC_CONFIG_SRCDIR([include/gras.h])
 AC_CONFIG_HEADERS([src/gras_config.h])
 # A CI_PREREQ(2003.01.16) # We need a recent ACI when having sub-modules
