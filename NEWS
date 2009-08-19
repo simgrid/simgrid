@@ -1,3 +1,17 @@
+                    _               _____  _____  ____  
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ / |___ \ 
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \   __) |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) | / __/ 
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____(_)_____|
+                                                        
+The "Simplicity does not preceed complexity, but follows it" release.
+Most important changes:
+ * surf and simix modules reworked for simplification.
+   It lays the ground for future extensions and improvements of SimGrid
+ * SMPI was further improved, altrough not ready for production use yet.
+
+On the way, we gained a bit more than 5% on the classical master/slave
+example. More to come on this in future releases.
                     _               _____  _____  _ 
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \ | |

@@ -1,4 +1,4 @@
-SimGrid (3.3.2-svn) unstable; urgency=low
+SimGrid (3.3.2) stable; urgency=low
 
  The "Simplicity does not preceed complexity, but follows it" release.
 
@@ -88,8 +88,39 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Add xbt_str_from_file(FILE*)
   * Add xbt_dict_get_key achieving a linear reverse search
   * Remove the context module 
-  
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
+ Portability report of this version:
+  * Main portability targets:
+    - Linux(debian)/x86/context   
+    - Linux(debian)/x86/pthreads 
+    - Linux(debian)/amd64/context 
+    - Linux(debian)/amd64/pthreads
+    On these, we still have the eratic breakages of gras/pmm and 
+      amok/saturate_sg reported in previous version. We still think
+      that the tests are the cause of the fault, not the tested code.
+      
+    - Mac OSX Leopard/x86/context
+    Still false negative in tesh autotesting.
+    Smpi still fails, but this time because readlink does not accept -f
+    Everything seems to work properly beside of that.
+    
+  * Exotic platforms:
+    - AIX version 5.3 (only tested contexts this time)
+      Smpi still fails there because mktemp is not installed. 
+      Everything seems to work properly beside of that.
+    - OpenSolaris 11
+      I managed to compile it for the first time, but several breakages.
+      Won't delay the release for this exotic platform.
+    
+  * Windows: it's still lagging behind. If you want to help, please
+    stand up.
+
+ Timing report of this version:
+  This version seem to be more than 5% faster than 3.3.1 (on linux
+    64bits with contextes). The gain is less than expected, we are
+    investigating this for next release.
+
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Wed, 19 Aug 2009 17:07:12 +0200
 
 SimGrid (3.3.1) stable; urgency=low
 
