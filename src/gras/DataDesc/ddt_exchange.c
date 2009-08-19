@@ -246,7 +246,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
       if (detect_cycle &&
            (n_ref=xbt_dict_get_or_null_ext(refs, (char *) o_ref, sizeof(char *)))) {
         /* already known, no need to copy it */
-        INFO0("Cycle detected");
+        //INFO0("Cycle detected");
         reference_is_to_cpy = 0;
       }
 
@@ -532,7 +532,7 @@ gras_datadesc_send_rec(gras_socket_t sock,
       reference_is_to_send = 1;
       /* return ignored. Just checking whether it's known or not */
       if (detect_cycle && xbt_dict_get_or_null_ext(refs, (char *) ref, sizeof(char *))) {
-        INFO0("Cycle detected");
+        //INFO0("Cycle detected");
         reference_is_to_send = 0;
       }
 
@@ -786,7 +786,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
             xbt_dict_get_or_null_ext(refs, (char *) r_ref,
                              pointer_type->size[r_arch]))) {
         reference_is_to_recv = 0;
-        INFO0("Cycle detected");
+        //INFO0("Cycle detected");
       }
 
       if (reference_is_to_recv) {
