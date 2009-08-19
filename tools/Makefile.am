@@ -9,5 +9,5 @@ SUBDIRS=gras tesh
 include $(top_srcdir)/acmacro/dist-files.mk
 if GRAMINE_MODE
 else
-EXTRA_DIST= simgrid_update_xml.pl graspe-master
+EXTRA_DIST= simgrid_update_xml.pl graspe-master sg_unit_extractor.pl
 endif
