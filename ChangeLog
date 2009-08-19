@@ -4,31 +4,6 @@ SimGrid (3.3.2-svn) unstable; urgency=low
 
  The main contributors of this release were (lexical order):
    Silas De Munck, Stéphane Genaud, Martin Quinson, Cristian Rosa.
-
- SMPI:
-  * Implement some more MPI primitives: 
-    MPI_Bcast, MPI_Waitany, MPI_Waitall, MPI_Reduce, MPI_Allreduce, MPI_Scatter, MPI_Sendrecv, MPI_Alltoall
-    -implementation: Bcast: flat or 2-ary tree (default), 
-                     Barrier: 4-ary tree,
-                     Reduce: flat tree
-                     Allreduce: Reduce then Bcast
-                     Alltoall: "basic_linear" if data per proc < 3Kb, "otherwise pairwise". 
-                               Not yet implemented: "Bruck" for data per proc < 200b and comm size > 12
-                     Alltoallv: flat tree, like ompi
-                     Scatter: flat tree
-  * Add support for optimized collectives (Bcast is now binomial by default)
-  * Port smpirun and smpicc to OS X
-
- SIMIX:
-  * Relocation of the context module from XBT to SIMIX.
-    (the context were decoupled from the simix processes, duplicating a lot of code)
-    => a lot of code was factorized
-    - less overhead is introduced during scheduling
-    - simpler API for the context factory
-    - the logic for process creation,destruction and manipulation was simplified
-  * Simplification of the s_smx_process_t data structure.
-    => accesing the simix level data associated to a process is faster now, 
-       and the code is a lot more readable.
        
  SURF: 
   * Extract the routing logic into its own object.
@@ -74,6 +49,31 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Kill the SDP model: it has an external dependency, is deprecated
     in flavor of modern lmm models, and didn't compile since a while
  
+ SIMIX:
+  * Relocation of the context module from XBT to SIMIX.
+    (the context were decoupled from the simix processes, duplicating a lot of code)
+    => a lot of code was factorized
+    - less overhead is introduced during scheduling
+    - simpler API for the context factory
+    - the logic for process creation,destruction and manipulation was simplified
+  * Simplification of the s_smx_process_t data structure.
+    => accesing the simix level data associated to a process is faster now, 
+       and the code is a lot more readable.
+       
+ SMPI:
+  * Implement some more MPI primitives: 
+    MPI_Bcast, MPI_Waitany, MPI_Waitall, MPI_Reduce, MPI_Allreduce, MPI_Scatter, MPI_Sendrecv, MPI_Alltoall
+    -implementation: Bcast: flat or 2-ary tree (default), 
+                     Barrier: 4-ary tree,
+                     Reduce: flat tree
+                     Allreduce: Reduce then Bcast
+                     Alltoall: "basic_linear" if data per proc < 3Kb, "otherwise pairwise". 
+                               Not yet implemented: "Bruck" for data per proc < 200b and comm size > 12
+                     Alltoallv: flat tree, like ompi
+                     Scatter: flat tree
+  * Add support for optimized collectives (Bcast is now binomial by default)
+  * Port smpirun and smpicc to OS X
+
  SimDag:
   * Kill SD_link_get_properties: hard to maintain and makes very little sense
     Shout out if you used it.
@@ -87,7 +87,7 @@ SimGrid (3.3.2-svn) unstable; urgency=low
   * Add xbt_graph_node_get_outedges() [Silas De Munck]
   * Add xbt_str_from_file(FILE*)
   * Add xbt_dict_get_key achieving a linear reverse search
-  * Remove the context module [Cristian Rosa]
+  * Remove the context module 
   
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
@@ -181,7 +181,7 @@ SimGrid (3.3.1) stable; urgency=low
     These targets fail about 1/10 of times on gras/pmm, but we believe
       that this is because of the test, not because of simgrid.
     amok/saturate_sg fails even more rarely, and the test may not be
-      the problee.
+      the problem.
       
     - Mac OSX Leopard/x86/context
     The test suite still spits tons of errors because some obscure
