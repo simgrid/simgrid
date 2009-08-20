@@ -22,7 +22,6 @@ EXTRA_DIST= \
 	portable.h \
 	\
         xbt/mallocator_private.h \
-	xbt/dynar_private.h \
         xbt/dict_private.h \
         xbt/heap_private.h \
         xbt/fifo_private.h \
