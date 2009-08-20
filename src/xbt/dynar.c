@@ -15,9 +15,6 @@
 #include "xbt/dynar.h"
 #include <sys/types.h>
 
-#include "xbt/dynar_private.h"  /* type definition, which we share with the
-                                   code in charge of sending this across the net */
-
 /* IMPLEMENTATION NOTE ON SYNCHRONIZATION: every functions which name is prefixed by _
  * assumes that the dynar is already locked if we have to.
  * Other functions (public ones) check for this.
@@ -659,67 +656,14 @@ static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
 void xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
 {
 
-  _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
+  _dynar_lock(dynar);
 
   _dynar_map(dynar, op);
 
   _dynar_unlock(dynar);
 }
 
-/** @brief Put the cursor at the begining of the dynar.
- *
- * Actually, the cursor is set one step before the begining, so that you
- * can iterate over the dynar with a for loop.
- *
- * @warning Do not call this function directly, but only through xbt_dynar_foreach.
- */
-void
-_xbt_dynar_cursor_first(const xbt_dynar_t dynar, unsigned int *const cursor)
-{
-
-  _dynar_lock(dynar);
-  DEBUG1("Set cursor on %p to the first position", (void *) dynar);
-  *cursor = 0;
-}
-
-/** @brief Move the cursor to the next value
- *
- * @warning Do not call this function directly, but only through xbt_dynar_foreach.
- */
-void
-_xbt_dynar_cursor_step(const xbt_dynar_t dynar, unsigned int *const cursor)
-{
-
-  (*cursor)++;
-}
-
-/** @brief Get the data currently pointed by the cursor
- *
- * @warning Do not call this function directly, but only through xbt_dynar_foreach.
- */
-int
-_xbt_dynar_cursor_get(const xbt_dynar_t dynar,
-                      unsigned int *const cursor, void *const dst)
-{
-
-  _sanity_check_dynar(dynar);
-  {
-
-    const unsigned long idx = *cursor;
-
-    if (idx >= dynar->used) {
-      DEBUG1("Cursor on %p already on last elem", (void *) dynar);
-      _dynar_unlock(dynar);
-      return FALSE;
-    }
-    DEBUG2("Cash out cursor on %p at %lu", (void *) dynar, idx);
-
-    _xbt_dynar_get_elm(dst, dynar, idx);
-  }
-  return TRUE;
-
-}
 
 /** @brief Removes and free the entry pointed by the cursor
  *

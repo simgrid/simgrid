@@ -632,7 +632,6 @@ gras_datadesc_ref_pop_arr(gras_datadesc_type_t element_type)
  *##
  */
 
-#include "xbt/dynar_private.h"
 static void gras_datadesc_dynar_cb(gras_datadesc_type_t typedesc,
                                    gras_cbps_t vars, void *data)
 {

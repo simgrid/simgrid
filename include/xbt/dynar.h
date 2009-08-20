@@ -10,6 +10,7 @@
 #ifndef _XBT_DYNAR_H
 #define _XBT_DYNAR_H
 
+#include <string.h> /* memcpy */
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"
 
@@ -181,16 +182,56 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
  *  @{
  */
 
-XBT_PUBLIC(void) _xbt_dynar_cursor_first(const xbt_dynar_t dynar,
-                                         unsigned int *const cursor);
-XBT_PUBLIC(void) _xbt_dynar_cursor_step(const xbt_dynar_t dynar,
-                                        unsigned int *const cursor);
-XBT_PUBLIC(int) _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
-                                      unsigned int *const cursor,
-                                      void *whereto);
 XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
                                      unsigned int *const cursor);
 XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
+
+/* do not use this structure internals directly, but use the public interface
+ * This was made public to allow:
+ *  - the inlining of the foreach elements
+ *  - sending such beasts over the network
+ */
+
+#include "xbt/synchro.h"
+typedef struct xbt_dynar_s {
+  unsigned long size;
+  unsigned long used;
+  unsigned long elmsize;
+  void *data;
+  void_f_pvoid_t free_f;
+  xbt_mutex_t mutex;
+} s_xbt_dynar_t;
+
+static XBT_INLINE void
+_xbt_dynar_cursor_first(const xbt_dynar_t dynar, unsigned int *const cursor)
+{
+  /* don't test for dynar!=NULL. The segfault would tell us */
+  if (dynar->mutex)  /* ie _dynar_lock(dynar) but not public */
+    xbt_mutex_acquire(dynar->mutex);
+
+  //DEBUG1("Set cursor on %p to the first position", (void *) dynar);
+  *cursor = 0;
+}
+
+static XBT_INLINE int
+_xbt_dynar_cursor_get(const xbt_dynar_t dynar,
+                      unsigned int idx, void *const dst)
+{
+
+  if (idx >= dynar->used) {
+    //DEBUG1("Cursor on %p already on last elem", (void *) dynar);
+    if (dynar->mutex) /* unlock */
+      xbt_mutex_release(dynar->mutex);
+    return FALSE;
+  }
+  //  DEBUG2("Cash out cursor on %p at %u", (void *) dynar, *idx);
+
+  memcpy(dst, ((char*)dynar->data) + idx * dynar->elmsize, dynar->elmsize);
+
+  return TRUE;
+}
+
+
 
 /** @brief Iterates over the whole dynar. 
  * 
@@ -211,8 +252,8 @@ xbt_dynar_foreach (dyn,cpt,str) {
  */
 #define xbt_dynar_foreach(_dynar,_cursor,_data) \
        for (_xbt_dynar_cursor_first(_dynar,&(_cursor))      ; \
-	    _xbt_dynar_cursor_get(_dynar,&(_cursor),&_data) ; \
-            _xbt_dynar_cursor_step(_dynar,&(_cursor))         )
+	    _xbt_dynar_cursor_get(_dynar,_cursor,&_data) ; \
+            (_cursor)++         )
 
 /** @} */
 

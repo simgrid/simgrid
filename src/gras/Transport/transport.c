@@ -359,7 +359,7 @@ void gras_socket_close(gras_socket_t sock)
     /* FIXME: Cannot get the dynar mutex, because it can be already locked */
 //              _xbt_dynar_foreach(sockets,cursor,sock_iter) {
     for (cursor = 0; cursor < xbt_dynar_length(sockets); cursor++) {
-      _xbt_dynar_cursor_get(sockets, &cursor, &sock_iter);
+      _xbt_dynar_cursor_get(sockets, cursor, &sock_iter);
       if (sock == sock_iter) {
         DEBUG2("remove sock cursor %d dize %lu\n", cursor,
                xbt_dynar_length(sockets));
