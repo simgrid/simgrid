@@ -31,7 +31,7 @@ SimGrid (3.3.3) stable; urgency=low
   - live with low performance 
   - switch to a decent compiler such as icc (not quite possible).
 
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Thu, 20 Aug 2009 21:21:33 +0200
 
 SimGrid (3.3.2) stable; urgency=low
 
