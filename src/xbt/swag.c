@@ -15,9 +15,6 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 
-#define PREV(obj,offset) xbt_swag_getPrev(obj,offset)
-#define NEXT(obj,offset) xbt_swag_getNext(obj,offset)
-
 
 /** Creates a new swag.
  * \param offset where the hookup is located in the structure
@@ -81,8 +78,8 @@ void xbt_swag_insert(void *obj, xbt_swag_t swag)
     return;
   }
 
-  PREV(obj, swag->offset) = swag->tail;
-  NEXT(PREV(obj, swag->offset), swag->offset) = obj;
+  xbt_swag_getPrev(obj, swag->offset) = swag->tail;
+  xbt_swag_getNext(xbt_swag_getPrev(obj, swag->offset), swag->offset) = obj;
 
   swag->tail = obj;
 }
@@ -108,8 +105,8 @@ void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
     return;
   }
 
-  NEXT(obj, swag->offset) = swag->head;
-  PREV(NEXT(obj, swag->offset), swag->offset) = obj;
+  xbt_swag_getNext(obj, swag->offset) = swag->head;
+  xbt_swag_getPrev(xbt_swag_getNext(obj, swag->offset), swag->offset) = obj;
 
   swag->head = obj;
 }
@@ -135,8 +132,8 @@ void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
     return;
   }
 
-  PREV(obj, swag->offset) = swag->tail;
-  NEXT(PREV(obj, swag->offset), swag->offset) = obj;
+  xbt_swag_getPrev(obj, swag->offset) = swag->tail;
+  xbt_swag_getNext(xbt_swag_getPrev(obj, swag->offset), swag->offset) = obj;
 
   swag->tail = obj;
 }
@@ -163,19 +160,19 @@ void *xbt_swag_remove(void *obj, xbt_swag_t swag)
       return NULL;
     swag->head = NULL;
     swag->tail = NULL;
-    NEXT(obj, offset) = PREV(obj, offset) = NULL;
+    xbt_swag_getNext(obj, offset) = xbt_swag_getPrev(obj, offset) = NULL;
   } else if (obj == swag->head) {       /* It's the head */
-    swag->head = NEXT(obj, offset);
-    PREV(swag->head, offset) = NULL;
-    NEXT(obj, offset) = NULL;
+    swag->head = xbt_swag_getNext(obj, offset);
+    xbt_swag_getPrev(swag->head, offset) = NULL;
+    xbt_swag_getNext(obj, offset) = NULL;
   } else if (obj == swag->tail) {       /* It's the tail */
-    swag->tail = PREV(obj, offset);
-    NEXT(swag->tail, offset) = NULL;
-    PREV(obj, offset) = NULL;
+    swag->tail = xbt_swag_getPrev(obj, offset);
+    xbt_swag_getNext(swag->tail, offset) = NULL;
+    xbt_swag_getPrev(obj, offset) = NULL;
   } else {                      /* It's in the middle */
-    NEXT(PREV(obj, offset), offset) = NEXT(obj, offset);
-    PREV(NEXT(obj, offset), offset) = PREV(obj, offset);
-    PREV(obj, offset) = NEXT(obj, offset) = NULL;
+    xbt_swag_getNext(xbt_swag_getPrev(obj, offset), offset) = xbt_swag_getNext(obj, offset);
+    xbt_swag_getPrev(xbt_swag_getNext(obj, offset), offset) = xbt_swag_getPrev(obj, offset);
+    xbt_swag_getPrev(obj, offset) = xbt_swag_getNext(obj, offset) = NULL;
   }
   (swag->count)--;
   return obj;
@@ -197,11 +194,11 @@ void *xbt_swag_extract(xbt_swag_t swag)
 
   if (swag->head == swag->tail) {       /* special case */
     swag->head = swag->tail = NULL;
-    PREV(obj, offset) = NEXT(obj, offset) = NULL;
+    xbt_swag_getPrev(obj, offset) = xbt_swag_getNext(obj, offset) = NULL;
   } else {
-    swag->head = NEXT(obj, offset);
-    PREV(swag->head, offset) = NULL;
-    NEXT(obj, offset) = NULL;
+    swag->head = xbt_swag_getNext(obj, offset);
+    xbt_swag_getPrev(swag->head, offset) = NULL;
+    xbt_swag_getNext(obj, offset) = NULL;
   }
   (swag->count)--;
 
@@ -215,17 +212,6 @@ void *xbt_swag_extract(xbt_swag_t swag)
 int xbt_swag_size(xbt_swag_t swag)
 {
   return (swag->count);
-}
-
-/**
- * \param obj an object
- * \param swag a swag
- * \return 1 if \a obj is in the \a swag and 0 otherwise
- */
-int xbt_swag_belongs(void *obj, xbt_swag_t swag)
-{
-  return ((NEXT(obj, swag->offset)) || (PREV(obj, swag->offset))
-          || (swag->head == obj));
 }
 
 
