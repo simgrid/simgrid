@@ -11,7 +11,7 @@
 #include "xbt/graph.h"
 #include "xbt/set.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route,surf,"Routing part of surf");// FIXME: connect this under windows
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route,surf,"Routing part of surf");
 
 routing_t used_routing = NULL;
 

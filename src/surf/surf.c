@@ -234,6 +234,7 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_parse);
 XBT_LOG_EXTERNAL_CATEGORY(surf_timer);
 XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
 XBT_LOG_EXTERNAL_CATEGORY(surf_config);
+XBT_LOG_EXTERNAL_CATEGORY(surf_routing);
 
 
 #ifdef HAVE_GTNETS
@@ -254,6 +255,7 @@ void surf_init(int *argc, char **argv)
   XBT_LOG_CONNECT(surf_timer, surf);
   XBT_LOG_CONNECT(surf_workstation, surf);
   XBT_LOG_CONNECT(surf_config, surf);
+  XBT_LOG_CONNECT(surf_routing, surf);
 
 #ifdef HAVE_GTNETS
   XBT_LOG_CONNECT(surf_network_gtnets, surf);
