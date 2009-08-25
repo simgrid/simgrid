@@ -242,13 +242,23 @@ void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
   xbt_assert0((action != NULL) && (cond != NULL), "Invalid parameters");
 
   DEBUG2("Register action %p to cond %p", action, cond);
-  __SIMIX_cond_display_actions(cond);
+  if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
+    __SIMIX_cond_display_actions(cond);
+
   xbt_fifo_push(cond->actions, action);
-  __SIMIX_cond_display_actions(cond);
+
+  if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
+    __SIMIX_cond_display_actions(cond);
+
   DEBUG2("Register condition %p to action %p", cond, action);
-  __SIMIX_action_display_conditions(action);
+
+  if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
+    __SIMIX_action_display_conditions(action);
+
   xbt_fifo_push(action->cond_list, cond);
-  __SIMIX_action_display_conditions(action);
+
+  if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
+    __SIMIX_action_display_conditions(action);
 }
 
 /**
@@ -262,12 +272,21 @@ void SIMIX_unregister_action_to_condition(smx_action_t action, smx_cond_t cond)
 {
   xbt_assert0((action != NULL) && (cond != NULL), "Invalid parameters");
 
-  __SIMIX_cond_display_actions(cond);
+  if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
+    __SIMIX_cond_display_actions(cond);
+
   xbt_fifo_remove_all(cond->actions, action);
-  __SIMIX_cond_display_actions(cond);
-  __SIMIX_action_display_conditions(action);
+
+  if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
+    __SIMIX_cond_display_actions(cond);
+
+  if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
+    __SIMIX_action_display_conditions(action);
+     
   xbt_fifo_remove_all(action->cond_list, cond);
-  __SIMIX_action_display_conditions(action);
+
+  if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
+    __SIMIX_action_display_conditions(action);
 }
 
 /**
