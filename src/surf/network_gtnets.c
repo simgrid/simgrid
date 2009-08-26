@@ -75,7 +75,8 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   gtnets_link->lat_current = lat;
   gtnets_link->id = link_count;
 
-  xbt_dict_set(surf_network_model->resource_set, name, gtnets_link, surf_resource_free);
+  xbt_dict_set(surf_network_model->resource_set, name, gtnets_link,
+               surf_resource_free);
 
   return;
 }
@@ -242,7 +243,8 @@ static void add_route()
 
     xbt_dynar_foreach(links, cpt, link) {
       TRY {
-        link_list[nb_link++] = xbt_dict_get(surf_network_model->resource_set, link);
+        link_list[nb_link++] =
+          xbt_dict_get(surf_network_model->resource_set, link);
       }
       CATCH(e) {
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
@@ -267,7 +269,8 @@ static void add_route()
 
     xbt_dynar_foreach(links, cpt, link) {
       TRY {
-        link_list[nb_link++] = xbt_dict_get(surf_network_model->resource_set, link);
+        link_list[nb_link++] =
+          xbt_dict_get(surf_network_model->resource_set, link);
       }
       CATCH(e) {
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
@@ -323,8 +326,13 @@ static void action_recycle(surf_action_t action)
   return;
 }
 
+static double action_get_remains(surf_action_t action)
+{
+  return action->remains;
+}
+
 static void action_state_set(surf_action_t action,
-                                e_surf_action_state_t state)
+                             e_surf_action_state_t state)
 {
 /*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
 /*     if(((surf_action_network_GTNETS_t)action)->variable) { */
@@ -340,8 +348,7 @@ static void action_state_set(surf_action_t action,
 /* share_resources() */
 static double share_resources(double now)
 {
-  xbt_swag_t running_actions =
-    surf_network_model->states.running_action_set;
+  xbt_swag_t running_actions = surf_network_model->states.running_action_set;
 
   //get the first relevant value from the running_actions list
   if (!xbt_swag_size(running_actions))
@@ -366,8 +373,7 @@ static void update_actions_state(double now, double delta)
 {
   surf_action_network_GTNETS_t action = NULL;
   //  surf_action_network_GTNETS_t next_action = NULL;
-  xbt_swag_t running_actions =
-    surf_network_model->states.running_action_set;
+  xbt_swag_t running_actions = surf_network_model->states.running_action_set;
 
   /* If there are no renning flows, just return */
   if (time_to_next_flow_completion < 0.0) {
@@ -434,12 +440,14 @@ static void update_resource_state(void *id,
 
 /* KF: Rate not supported */
 /* Max durations are not supported */
-static surf_action_t communicate(const char *src_name, const char *dst_name,int src, int dst, double size,
-                                 double rate)
+static surf_action_t communicate(const char *src_name, const char *dst_name,
+                                 int src, int dst, double size, double rate)
 {
   surf_action_network_GTNETS_t action = NULL;
 
-  action = surf_action_new(sizeof(s_surf_action_network_GTNETS_t),size,surf_network_model,0);
+  action =
+    surf_action_new(sizeof(s_surf_action_network_GTNETS_t), size,
+                    surf_network_model, 0);
 
   /* KF: Add a flow to the GTNets Simulation, associated to this action */
   if (gtnets_create_flow(src, dst, size, (void *) action) < 0) {
@@ -489,6 +497,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->action_cancel = action_cancel;
   surf_network_model->action_recycle = action_recycle;
   surf_network_model->action_state_set = action_state_set;
+  surf_network_model->get_remains = action_get_remains;
 
   surf_network_model->model_private->resource_used = resource_used;
   surf_network_model->model_private->share_resources = share_resources;

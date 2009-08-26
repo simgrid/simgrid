@@ -12,7 +12,7 @@
 #include "trace_mgr_private.h"
 #include "surf_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf,"Surf trace management");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
 static xbt_dict_t trace_list = NULL;
 
@@ -34,7 +34,7 @@ void tmgr_history_free(tmgr_history_t h)
 }
 
 tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
-                                        double periodicity)
+                                        double periodicity, double timestep)
 {
   tmgr_trace_t trace = NULL;
   int linecount = 0;
@@ -46,14 +46,14 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
 
   if (trace_list) {
     trace = xbt_dict_get_or_null(trace_list, id);
-    if (trace)  {
-      WARN1("Ignoring redefinition of trace %s",id);
+    if (trace) {
+      WARN1("Ignoring redefinition of trace %s", id);
       return trace;
     }
   }
 
-  xbt_assert1(periodicity>=0,
-      "Invalid periodicity %lg (must be positive)", periodicity);
+  xbt_assert1(periodicity >= 0,
+              "Invalid periodicity %lg (must be positive)", periodicity);
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
@@ -69,29 +69,36 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
     if (sscanf(val, "PERIODICITY " "%lg" "\n", &periodicity) == 1)
       continue;
 
+    if (sscanf(val, "TIMESTEP " "%lg" "\n", &timestep) == 1)
+      continue;
+
     if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2)
-      xbt_die(bprintf("%s:%d: Syntax error in trace\n%s", id, linecount, input));
+      xbt_die(bprintf
+              ("%s:%d: Syntax error in trace\n%s", id, linecount, input));
 
     if (last_event) {
       if (last_event->delta > event.delta) {
-        xbt_die(bprintf("%s:%d: Invalid trace: Events must be sorted, but time %lg > time %lg.\n%s",
-            id,linecount, last_event->delta, event.delta, input));
+        xbt_die(bprintf
+                ("%s:%d: Invalid trace: Events must be sorted, but time %lg > time %lg.\n%s",
+                 id, linecount, last_event->delta, event.delta, input));
       }
       last_event->delta = event.delta - last_event->delta;
     }
     xbt_dynar_push(trace->event_list, &event);
     last_event =
       xbt_dynar_get_ptr(trace->event_list,
-          xbt_dynar_length(trace->event_list) - 1);
+                        xbt_dynar_length(trace->event_list) - 1);
   }
-  if (periodicity > 0)
-    if (last_event)
-      last_event->delta = periodicity;
+  if (last_event)
+    last_event->delta = periodicity;
+
+  trace->timestep = timestep;
 
   if (!trace_list)
     trace_list = xbt_dict_new();
 
-  xbt_dict_set(trace_list, id, (void *) trace, (void(*)(void*))tmgr_trace_free);
+  xbt_dict_set(trace_list, id, (void *) trace,
+               (void (*)(void *)) tmgr_trace_free);
 
   xbt_dynar_free(&list);
   return trace;
@@ -108,7 +115,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   if (trace_list) {
     trace = xbt_dict_get_or_null(trace_list, filename);
     if (trace) {
-      WARN1("Ignoring redefinition of trace %s",filename);
+      WARN1("Ignoring redefinition of trace %s", filename);
       return trace;
     }
   }
@@ -119,7 +126,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
 
   char *tstr = xbt_str_from_file(f);
   fclose(f);
-  trace = tmgr_trace_new_from_string(filename, tstr, 0.);
+  trace = tmgr_trace_new_from_string(filename, tstr, 0., 10.);
   xbt_free(tstr);
 
   return trace;
@@ -205,8 +212,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
     xbt_heap_push(h->heap, trace_event, event_date + event->delta);
     trace_event->idx = 0;
   } else {                      /* We don't need this trace_event anymore */
-    free(trace_event);
-    return NULL;
+    trace_event->free_me = 1;
   }
 
   return trace_event;
@@ -215,4 +221,13 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
 void tmgr_finalize(void)
 {
   xbt_dict_free(&trace_list);
+}
+
+int tmgr_trace_event_free(tmgr_trace_event_t trace_event)
+{
+  if (trace_event->free_me) {
+    xbt_free(trace_event);
+    return 1;
+  }
+  return 0;
 }

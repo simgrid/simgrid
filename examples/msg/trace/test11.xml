@@ -1,0 +1,31 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+
+<platform version="2">
+
+<trace id="1" periodicity="10" timestep="0.1">
+0  0.5
+10  0.5
+20  1.00
+30  0.5
+40  0.5
+50  0.5
+60  0.5
+</trace>
+
+<host id="CPU1" power="20"/>
+<trace:connect kind="POWER" trace="1" element="CPU1"/>
+<process host="CPU1" function="test_trace">
+<argument value="420"/>
+<argument value="2.0"/>
+</process>
+<process host="CPU1" function="test_trace">
+<argument value="310"/>
+<argument value="1.0"/>
+</process>
+<process host="CPU1" function="test_trace" start_time="50">
+<argument value="990"/>
+<argument value="9.0"/>
+</process>
+
+</platform>

@@ -21,6 +21,7 @@ typedef struct xbt_heap {
   int count;
   xbt_heapItem_t items;
   void_f_pvoid_t free;
+  void (*update_callback) (void *, int);
 } s_xbt_heap_t;
 
 #define PARENT(i)  i/2
@@ -29,6 +30,8 @@ typedef struct xbt_heap {
 
 #define KEY(H,i)     ((H->items)[i]).key
 #define CONTENT(H,i) ((H->items)[i]).content
+
+#define MIN_KEY_VALUE -10000
 
 static void xbt_heap_maxHeapify(xbt_heap_t H);
 static void xbt_heap_increaseKey(xbt_heap_t H, int i);

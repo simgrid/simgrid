@@ -126,6 +126,8 @@ s_surf_model_description_t surf_network_model_description[] = {
 
 s_surf_model_description_t surf_cpu_model_description[] = {
   {"Cas01", NULL, surf_cpu_model_init_Cas01},
+  {"Cas01_IM", NULL, surf_cpu_model_init_Cas01_im},
+  {"CpuTI", NULL, surf_cpu_model_init_ti},
   {NULL, NULL, NULL}            /* this array must be NULL terminated */
 };
 
@@ -273,7 +275,7 @@ void surf_init(int *argc, char **argv)
 #ifdef WIN32
 # define FILE_DELIM "\\"
 #else
-# define FILE_DELIM "/" /* FIXME: move to better location */
+# define FILE_DELIM "/"         /* FIXME: move to better location */
 #endif
 
 FILE *surf_fopen(const char *name, const char *mode)
@@ -285,12 +287,12 @@ FILE *surf_fopen(const char *name, const char *mode)
 
   xbt_assert(name);
 
-  if (__surf_is_absolute_file_path(name))     /* don't mess with absolute file names */
+  if (__surf_is_absolute_file_path(name))       /* don't mess with absolute file names */
     return fopen(name, mode);
 
   /* search relative files in the path */
   xbt_dynar_foreach(surf_path, cpt, path_elm) {
-    buff = bprintf("%s" FILE_DELIM "%s", path_elm,name);
+    buff = bprintf("%s" FILE_DELIM "%s", path_elm, name);
     file = fopen(buff, mode);
     free(buff);
 
@@ -387,7 +389,7 @@ double surf_solve(void)
 
   DEBUG0("Looking for next event");
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
-    DEBUG1("Next event : %f", next_event_date);
+    DEBUG1("Next TRACE event : %f", next_event_date);
     if (next_event_date > NOW + min)
       break;
     DEBUG0("Updating models");
@@ -401,9 +403,10 @@ double surf_solve(void)
       }
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      resource->model->model_private->update_resource_state(resource,
-                                                            event, value,
-                                                            NOW + min);
+      DEBUG2("Calling update_resource_state for resource %s with min %lf",
+             resource->model->name, min);
+      resource->model->model_private->update_resource_state(resource, event,
+                                                            value, NOW + min);
     }
   }
 

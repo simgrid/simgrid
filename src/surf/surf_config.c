@@ -109,7 +109,10 @@ static void _surf_cfg_cb__surf_path(const char *name, int pos)
   xbt_dynar_push(surf_path, &path);
 }
 
-
+static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name, int pos)
+{
+	sg_maxmin_selective_update = xbt_cfg_get_int(_surf_cfg_set, name);
+}
 
 /* create the config set, register what should be and parse the command line*/
 void surf_config_init(int *argc, char **argv)
@@ -121,6 +124,7 @@ void surf_config_init(int *argc, char **argv)
 
     char *description = xbt_malloc(1024), *p = description;
     char *default_value;
+		int default_value_int;
     int i;
 
     sprintf(description, "The model to use for the CPU. Possible values: ");
@@ -180,6 +184,11 @@ void surf_config_init(int *argc, char **argv)
                      "Lookup path for inclusions in platform and deployment XML files",
                      xbt_cfgelm_string, NULL, 0, 0, _surf_cfg_cb__surf_path,
                      NULL);
+
+		default_value_int = 0;
+    xbt_cfg_register(&_surf_cfg_set, "maxmin_selective_update",
+                     "Update the constraint set propagating recursively to others constraints",
+                     xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb__surf_maxmin_selective_update, NULL);
     if (!surf_path) {
       /* retrieves the current directory of the        current process */
       const char *initial_path = __surf_get_initial_path();

@@ -59,6 +59,11 @@ static void action_recycle(surf_action_t action)
   return;
 }
 
+static double action_get_remains(surf_action_t action)
+{
+  return action->remains;
+}
+
 static double share_resources(double now)
 {
   surf_action_network_Constant_t action = NULL;
@@ -98,11 +103,13 @@ static void update_actions_state(double now, double delta)
 
     if (action->generic_action.remains <= 0) {
       action->generic_action.finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
-               (action->generic_action.max_duration <= 0)) {
+      surf_network_model->action_state_set((surf_action_t) action,
+                                           SURF_ACTION_DONE);
+    } else if ((action->generic_action.max_duration != NO_MAX_DURATION)
+               && (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action, SURF_ACTION_DONE);
+      surf_network_model->action_state_set((surf_action_t) action,
+                                           SURF_ACTION_DONE);
     }
   }
 }
@@ -114,18 +121,20 @@ static void update_resource_state(void *id,
   DIE_IMPOSSIBLE;
 }
 
-static surf_action_t communicate(const char *src_name,const char *dst_name,int src, int dst, double size,
-    double rate)
+static surf_action_t communicate(const char *src_name, const char *dst_name,
+                                 int src, int dst, double size, double rate)
 {
   surf_action_network_Constant_t action = NULL;
 
   XBT_IN4("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
 
-  action = surf_action_new(sizeof(s_surf_action_network_Constant_t),size,surf_network_model,0);
+  action =
+    surf_action_new(sizeof(s_surf_action_network_Constant_t), size,
+                    surf_network_model, 0);
 
   action->suspended = 0;
 
-  action->latency = 1;//random_generate(random_latency);
+  action->latency = 1;          //random_generate(random_latency);
   action->lat_init = action->latency;
 
   if (action->latency <= 0.0) {
@@ -201,6 +210,7 @@ void surf_network_model_init_Constant(const char *filename)
   surf_network_model->action_unref = action_unref;
   surf_network_model->action_cancel = action_cancel;
   surf_network_model->action_recycle = action_recycle;
+  surf_network_model->get_remains = action_get_remains;
 
   surf_network_model->model_private->resource_used = resource_used;
   surf_network_model->model_private->share_resources = share_resources;
@@ -229,7 +239,6 @@ void surf_network_model_init_Constant(const char *filename)
   update_model_description(surf_network_model_description,
                            "Constant", surf_network_model);
 
-  xbt_cfg_set_string(_surf_cfg_set,"routing","none");
-  routing_model_create(sizeof(double),NULL);
+  xbt_cfg_set_string(_surf_cfg_set, "routing", "none");
+  routing_model_create(sizeof(double), NULL);
 }
-

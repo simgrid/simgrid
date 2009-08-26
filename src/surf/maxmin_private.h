@@ -28,6 +28,7 @@ typedef struct lmm_constraint {
   /* hookup to system */
   s_xbt_swag_hookup_t constraint_set_hookup;
   s_xbt_swag_hookup_t active_constraint_set_hookup;
+  s_xbt_swag_hookup_t modified_constraint_set_hookup;
   s_xbt_swag_hookup_t saturated_constraint_set_hookup;
 
   s_xbt_swag_t element_set;     /* a list of lmm_mat_element_t */
@@ -39,12 +40,14 @@ typedef struct lmm_constraint {
   int shared;
   double usage;
   void *id;
+  int id_int;
 } s_lmm_constraint_t;
 
 typedef struct lmm_variable {
   /* hookup to system */
   s_xbt_swag_hookup_t variable_set_hookup;
   s_xbt_swag_hookup_t saturated_variable_set_hookup;
+  s_xbt_swag_hookup_t modified_variable_set_hookup;
 
   s_lmm_element_t *cnsts;
   int cnsts_size;
@@ -53,6 +56,7 @@ typedef struct lmm_variable {
   double bound;
   double value;
   void *id;
+  int id_int;
   /* \begin{For Lagrange only} */
   double mu;
   double new_mu;
@@ -64,13 +68,18 @@ typedef struct lmm_variable {
 
 typedef struct lmm_system {
   int modified;
+  int selective_update_active;  /* flag to update partially the system only selecting changed portions */
+
   s_xbt_swag_t variable_set;    /* a list of lmm_variable_t */
   s_xbt_swag_t constraint_set;  /* a list of lmm_constraint_t */
 
   s_xbt_swag_t active_constraint_set;   /* a list of lmm_constraint_t */
+  s_xbt_swag_t modified_constraint_set; /* a list of modified lmm_constraint_t */
 
   s_xbt_swag_t saturated_variable_set;  /* a list of lmm_variable_t */
   s_xbt_swag_t saturated_constraint_set;        /* a list of lmm_constraint_t_t */
+
+  s_xbt_swag_t modified_variable_set;   /* list of modified variables used in new model CpuIM */
 
   xbt_mallocator_t variable_mallocator;
 } s_lmm_system_t;

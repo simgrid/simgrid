@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_timer, surf,
                                 "Logging specific to SURF (timer)");
 
 typedef struct command {
-  s_surf_resource_t generic_resource; /* Must remain first, since we add this to a trace */
+  s_surf_resource_t generic_resource;   /* Must remain first, since we add this to a trace */
   void *function;
   void *args;
   s_xbt_swag_hookup_t command_set_hookup;
@@ -44,7 +44,7 @@ static void command_free(command_t command)
   } else if (xbt_swag_belongs(command, command_pending)) {
     xbt_swag_remove(command, command_pending);
   }
-  surf_resource_free((surf_resource_t)command);
+  surf_resource_free((surf_resource_t) command);
   return;
 }
 
@@ -62,7 +62,7 @@ static int resource_used(void *resource_id)
 }
 
 static void timer_action_state_set(surf_action_t action,
-                                e_surf_action_state_t state)
+                                   e_surf_action_state_t state)
 {
   DIE_IMPOSSIBLE;
   return;
@@ -70,19 +70,18 @@ static void timer_action_state_set(surf_action_t action,
 
 static double share_resources(double now)
 {
-  if (xbt_heap_size(timer_heap))
+  if (xbt_heap_size(timer_heap)) {
+    DEBUG1("Share resoure returning %lf", xbt_heap_maxkey(timer_heap));
     return (xbt_heap_maxkey(timer_heap));
-  else
+  } else
     return -1.0;
 }
 
 static void update_actions_state(double now, double delta)
 {
-  if (xbt_heap_size(timer_heap)) {
-    if (xbt_heap_maxkey(timer_heap) <= now + delta) {
-      xbt_heap_pop(timer_heap);
-    }
-  }
+  while ((xbt_heap_size(timer_heap)) > 0
+         && (xbt_heap_maxkey(timer_heap) <= now + delta))
+    xbt_heap_pop(timer_heap);
   return;
 }
 
@@ -95,6 +94,9 @@ static void update_resource_state(void *id,
   /* Move this command to the list of commands to execute */
   xbt_swag_remove(command, command_pending);
   xbt_swag_insert(command, command_to_run);
+  tmgr_trace_event_free(event_type);
+
+  DEBUG1("Insert command on date %lf", date);
 
   return;
 }
@@ -107,6 +109,8 @@ static void set(double date, void *function, void *arg)
 
   tmgr_history_add_trace(history, empty_trace, date, 0, command);
   xbt_heap_push(timer_heap, NULL, date);
+
+  DEBUG1("Putting value %lf on heap", date);
 }
 
 
@@ -118,6 +122,7 @@ static int get(void **function, void **arg)
   if (command) {
     *function = command->function;
     *arg = command->args;
+    xbt_free(command);
     return 1;
   } else {
     return 0;

@@ -20,7 +20,9 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-void* surf_action_new(size_t size,double cost,surf_model_t model,int failed) {
+void *surf_action_new(size_t size, double cost, surf_model_t model,
+                      int failed)
+{
   surf_action_t action = xbt_malloc0(size);
   action->refcount = 1;
   action->cost = cost;
@@ -63,7 +65,8 @@ double surf_action_get_start_time(surf_action_t action)
 
 double surf_action_get_finish_time(surf_action_t action)
 {
-  return action->finish;
+  /* keep the function behavior, some models (cpu_ti) change the finish time before the action end */
+  return action->remains == 0 ? action->finish : -1;
 }
 
 void surf_action_free(surf_action_t * action)
@@ -73,8 +76,7 @@ void surf_action_free(surf_action_t * action)
   *action = NULL;
 }
 
-void surf_action_state_set(surf_action_t action,
-                              e_surf_action_state_t state)
+void surf_action_state_set(surf_action_t action, e_surf_action_state_t state)
 {
   surf_action_state_t action_state = &(action->model_type->states);
   XBT_IN2("(%p,%s)", action, surf_action_state_names[state]);
@@ -105,6 +107,7 @@ void surf_action_ref(surf_action_t action)
 {
   action->refcount++;
 }
+
 /*
 void surf_action_suspend(surf_action_t action)
 {

@@ -11,6 +11,7 @@
 <!ATTLIST trace id CDATA #REQUIRED>
 <!ATTLIST trace file CDATA "">
 <!ATTLIST trace periodicity CDATA #REQUIRED>
+<!ATTLIST trace timestep CDATA "10.0">
 
 <!ELEMENT random (prop*)>
 <!ATTLIST random id CDATA #REQUIRED>

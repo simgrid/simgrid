@@ -11,7 +11,7 @@
 #include "surf_private.h"
 
 typedef struct workstation_CLM03 {
-  s_surf_resource_t generic_resource; /* Must remain first to add this to a trace */
+  s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
   void *cpu;
   int id;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
@@ -48,7 +48,7 @@ void create_workstations(void)
     if (used_routing && used_routing->host_id)
       id = xbt_dict_get_or_null(used_routing->host_id,name);
 
-    workstation_new(name, cpu, id?*id:0);
+    workstation_new(name, cpu, id ? *id : 0);
   }
 }
 
@@ -126,14 +126,14 @@ static void update_resource_state(void *id,
 
 static surf_action_t execute(void *workstation, double size)
 {
-  return surf_cpu_model->extension.
-    cpu.execute(((workstation_CLM03_t) workstation)->cpu, size);
+  return surf_cpu_model->extension.cpu.
+    execute(((workstation_CLM03_t) workstation)->cpu, size);
 }
 
 static surf_action_t action_sleep(void *workstation, double duration)
 {
-  return surf_cpu_model->extension.
-    cpu.sleep(((workstation_CLM03_t) workstation)->cpu, duration);
+  return surf_cpu_model->extension.cpu.
+    sleep(((workstation_CLM03_t) workstation)->cpu, duration);
 }
 
 static void action_suspend(surf_action_t action)
@@ -185,35 +185,43 @@ static void action_set_priority(surf_action_t action, double priority)
     DIE_IMPOSSIBLE;
 }
 
+static double action_get_remains(surf_action_t action)
+{
+  if (action->model_type == surf_network_model)
+    return surf_network_model->get_remains(action);
+  if (action->model_type == surf_cpu_model)
+    return surf_cpu_model->get_remains(action);
+  DIE_IMPOSSIBLE;
+}
+
 static surf_action_t communicate(void *workstation_src,
                                  void *workstation_dst, double size,
                                  double rate)
 {
   workstation_CLM03_t src = (workstation_CLM03_t) workstation_src;
   workstation_CLM03_t dst = (workstation_CLM03_t) workstation_dst;
-  return surf_network_model->extension.
-    network.communicate(surf_resource_name(src->cpu),surf_resource_name(dst->cpu),
-        src->id,dst->id,
-        size, rate);
+  return surf_network_model->extension.network.
+    communicate(surf_resource_name(src->cpu), surf_resource_name(dst->cpu),
+                src->id, dst->id, size, rate);
 }
 
 static e_surf_resource_state_t get_state(void *workstation)
 {
-  return surf_cpu_model->extension.
-    cpu.get_state(((workstation_CLM03_t) workstation)->cpu);
+  return surf_cpu_model->extension.cpu.
+    get_state(((workstation_CLM03_t) workstation)->cpu);
 }
 
 static double get_speed(void *workstation, double load)
 {
-  return surf_cpu_model->extension.
-    cpu.get_speed(((workstation_CLM03_t) workstation)->cpu, load);
+  return surf_cpu_model->extension.cpu.
+    get_speed(((workstation_CLM03_t) workstation)->cpu, load);
 }
 
 static double get_available_speed(void *workstation)
 {
-  return surf_cpu_model->extension.
-    cpu.get_available_speed(((workstation_CLM03_t)
-                             workstation)->cpu);
+  return surf_cpu_model->extension.cpu.
+    get_available_speed(((workstation_CLM03_t)
+                         workstation)->cpu);
 }
 
 static surf_action_t execute_parallel_task(int workstation_nb,
@@ -255,8 +263,10 @@ static void finalize(void)
   surf_model_exit(surf_workstation_model);
   surf_workstation_model = NULL;
 }
-static xbt_dict_t get_properties(const void*ws){
-  return surf_resource_properties(((workstation_CLM03_t)ws)->cpu);
+
+static xbt_dict_t get_properties(const void *ws)
+{
+  return surf_resource_properties(((workstation_CLM03_t) ws)->cpu);
 }
 
 static void surf_workstation_model_init_internal(void)
@@ -281,6 +291,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->is_suspended = action_is_suspended;
   surf_workstation_model->set_max_duration = action_set_max_duration;
   surf_workstation_model->set_priority = action_set_priority;
+  surf_workstation_model->get_remains = action_get_remains;
 
   surf_workstation_model->extension.workstation.execute = execute;
   surf_workstation_model->extension.workstation.sleep = action_sleep;
@@ -298,7 +309,8 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.get_link_latency =
     get_link_latency;
   surf_workstation_model->extension.workstation.link_shared = link_shared;
-  surf_workstation_model->extension.workstation.get_properties = get_properties;
+  surf_workstation_model->extension.workstation.get_properties =
+    get_properties;
 }
 
 /********************************************************************/

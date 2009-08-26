@@ -1,0 +1,155 @@
+#! ./tesh
+
+p Testing trace integration using file.trace and test1.xml, a < max(time), b < max(time)
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test1.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task size: 400.000000
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(1) 40.000000] [test_trace_integration/INFO] Test finished
+
+p Testing trace integration using file.trace and test2.xml, a < max(time), max(time) < b < 2 max(time) 
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test2.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task size: 850.000000
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(1) 85.000000] [test_trace_integration/INFO] Test finished
+
+
+p Testing trace integration using file.trace and test3.xml, a < max(time), b > 2 max(time) 
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test3.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task size: 1980.000000
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(1) 178.000000] [test_trace_integration/INFO] Test finished
+
+p Testing trace integration using file.trace and test4.xml, max(time) < a < 2max(time), max(time) < b < 2max(time)
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test4.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 80.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 80.000000] [test_trace_integration/INFO] Task size: 400.000000
+> [CPU1:test_trace:(1) 80.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(1) 110.000000] [test_trace_integration/INFO] Test finished
+
+p Testing trace integration using file.trace and test5.xml, max(time) < a < 2max(time), 2max(time) < b < 3max(time)
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test5.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 90.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 90.000000] [test_trace_integration/INFO] Task size: 850.000000
+> [CPU1:test_trace:(1) 90.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(1) 162.500000] [test_trace_integration/INFO] Test finished
+
+p Testing trace integration using file.trace and test6.xml, max(time) < a < 2max(time), b > 3max(time)
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test6.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 80.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 80.000000] [test_trace_integration/INFO] Task size: 1980.000000
+> [CPU1:test_trace:(1) 80.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(1) 248.000000] [test_trace_integration/INFO] Test finished
+
+p Testing trace integration using file.trace and test7.xml, two process with same priority
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test7.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task size: 400.000000
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task prio: 1.500000
+> [CPU1:test_trace:(2) 20.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(2) 20.000000] [test_trace_integration/INFO] Task size: 300.000000
+> [CPU1:test_trace:(2) 20.000000] [test_trace_integration/INFO] Task prio: 1.500000
+> [CPU1:test_trace:(1) 70.000000] [test_trace_integration/INFO] Test finished
+> [CPU1:test_trace:(2) 70.000000] [test_trace_integration/INFO] Test finished
+
+p Testing trace integration using file.trace and test8.xml, two process with different priority
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test8.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task size: 400.000000
+> [CPU1:test_trace:(1) 10.000000] [test_trace_integration/INFO] Task prio: 2.500000
+> [CPU1:test_trace:(2) 10.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(2) 10.000000] [test_trace_integration/INFO] Task size: 400.000000
+> [CPU1:test_trace:(2) 10.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(1) 56.000000] [test_trace_integration/INFO] Test finished
+> [CPU1:test_trace:(2) 80.000000] [test_trace_integration/INFO] Test finished
+
+p Testing trace integration using file.trace and test9.xml, three process with same priority
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test9.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 0.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 0.000000] [test_trace_integration/INFO] Task size: 400.000000
+> [CPU1:test_trace:(1) 0.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(2) 0.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(2) 0.000000] [test_trace_integration/INFO] Task size: 400.000000
+> [CPU1:test_trace:(2) 0.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(3) 30.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(3) 30.000000] [test_trace_integration/INFO] Task size: 2000.000000
+> [CPU1:test_trace:(3) 30.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(1) 90.000000] [test_trace_integration/INFO] Test finished
+> [CPU1:test_trace:(2) 90.000000] [test_trace_integration/INFO] Test finished
+> [CPU1:test_trace:(3) 240.000000] [test_trace_integration/INFO] Test finished
+
+p Testing trace integration using file.trace and test10.xml, three process with different priority
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test10.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 0.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 0.000000] [test_trace_integration/INFO] Task size: 420.000000
+> [CPU1:test_trace:(1) 0.000000] [test_trace_integration/INFO] Task prio: 2.000000
+> [CPU1:test_trace:(2) 0.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(2) 0.000000] [test_trace_integration/INFO] Task size: 310.000000
+> [CPU1:test_trace:(2) 0.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(3) 50.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(3) 50.000000] [test_trace_integration/INFO] Task size: 990.000000
+> [CPU1:test_trace:(3) 50.000000] [test_trace_integration/INFO] Task prio: 9.000000
+> [CPU1:test_trace:(1) 62.000000] [test_trace_integration/INFO] Test finished
+> [CPU1:test_trace:(2) 152.000000] [test_trace_integration/INFO] Test finished
+> [CPU1:test_trace:(3) 152.000000] [test_trace_integration/INFO] Test finished
+
+p Testing trace integration using file.trace and test11.xml, three process with different priority. Changed timestep to 0.1.
+
+$ $SG_TEST_EXENV trace/test_trace_integration$EXEEXT ${srcdir:=.}/trace/test11.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+> [CPU1:test_trace:(1) 0.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(1) 0.000000] [test_trace_integration/INFO] Task size: 420.000000
+> [CPU1:test_trace:(1) 0.000000] [test_trace_integration/INFO] Task prio: 2.000000
+> [CPU1:test_trace:(2) 0.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(2) 0.000000] [test_trace_integration/INFO] Task size: 310.000000
+> [CPU1:test_trace:(2) 0.000000] [test_trace_integration/INFO] Task prio: 1.000000
+> [CPU1:test_trace:(3) 50.000000] [test_trace_integration/INFO] Testing the trace integration cpu model: CpuTI
+> [CPU1:test_trace:(3) 50.000000] [test_trace_integration/INFO] Task size: 990.000000
+> [CPU1:test_trace:(3) 50.000000] [test_trace_integration/INFO] Task prio: 9.000000
+> [CPU1:test_trace:(1) 62.000000] [test_trace_integration/INFO] Test finished
+> [CPU1:test_trace:(2) 152.000000] [test_trace_integration/INFO] Test finished
+> [CPU1:test_trace:(3) 152.000000] [test_trace_integration/INFO] Test finished

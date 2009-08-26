@@ -27,7 +27,20 @@ EXTRA_DIST = msg_platform.xml \
              parallel_task/test_ptask_deployment.xml \
              parallel_task/test_ptask_platform.xml \
              priority/deployment_priority.xml \
-             properties/deployment_properties.xml
+             properties/deployment_properties.xml \
+             trace/test_trace_integration.xml \
+             trace/file.trace \
+             trace/test1.xml \
+             trace/test2.xml \
+             trace/test3.xml \
+             trace/test4.xml \
+             trace/test5.xml \
+             trace/test6.xml \
+             trace/test7.xml \
+             trace/test8.xml \
+             trace/test9.xml \
+             trace/test10.xml \
+             trace/test11.xml
 
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
@@ -44,7 +57,8 @@ TESTS = sendrecv/sendrecv_CLM03.tesh \
         migration/migration.tesh \
         parallel_task/parallel_task.tesh \
         priority/priority.tesh \
-	properties/msg_prop.tesh
+	properties/msg_prop.tesh \
+  	trace/trace.tesh
 
 if HAVE_GTNETS
   TESTS += gtnets/gtnets.tesh
@@ -61,7 +75,8 @@ CLEANFILES = sendrecv/*~ \
              parallel_task/parallel_task \
              parallel_task/test_ptask \
              priority/priority \
-             properties/msg_prop
+             properties/msg_prop \
+             trace/test_trace_integration
 
 if HAVE_GTNETS
              CLEANFILES += gtnets/gtnets gtnets/gtnets_kayo
@@ -80,7 +95,8 @@ noinst_PROGRAMS = sendrecv/sendrecv \
                   parallel_task/test_ptask \
                   priority/priority \
                   properties/msg_prop \
-                  actions/actions
+                  actions/actions \
+                  trace/test_trace_integration
 
 if HAVE_GTNETS
   noinst_PROGRAMS += gtnets/gtnets gtnets/gtnets_kayo
@@ -129,6 +145,10 @@ masterslave_masterslave_failure_LDADD   = $(top_builddir)/src/libsimgrid.la
 # bypass the surf xml parser
 masterslave_masterslave_bypass_SOURCES = masterslave/masterslave_bypass.c
 masterslave_masterslave_bypass_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# bypass the surf xml parser
+trace_test_trace_integration_SOURCES = trace/test_trace_integration.c
+trace_test_trace_integration_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 # verify if the GTNETS feature is working
 if HAVE_GTNETS

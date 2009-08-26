@@ -46,6 +46,7 @@ EXTRA_DIST= \
 	surf/gtnets/gtnets_interface.h \
 	surf/gtnets/gtnets_simulator.h \
 	surf/gtnets/gtnets_topology.h  \
+	surf/cpu_ti_private.h \
 	\
         include/surf/surf_resource.h  \
 	include/surf/datatypes.h \
@@ -183,6 +184,8 @@ SURF_SRC= \
   surf/cpu.c   surf/network.c surf/network_constant.c surf/workstation.c     \
   surf/surf_model_timer.c                                                    \
   surf/workstation_ptask_L07.c                                               \
+  surf/cpu_ti.c                                               \
+  surf/cpu_im.c                                               \
   xbt/xbt_sg_stubs.c
 
 if CONTEXT_THREADS

@@ -28,6 +28,8 @@ XBT_PUBLIC(void *) xbt_heap_pop(xbt_heap_t H);
 
 XBT_PUBLIC(double) xbt_heap_maxkey(xbt_heap_t H);
 XBT_PUBLIC(void *) xbt_heap_maxcontent(xbt_heap_t H);
+XBT_PUBLIC(void) xbt_heap_set_update_callback(xbt_heap_t H, void (*update_callback)(void*, int));
+XBT_PUBLIC(void*) xbt_heap_remove(xbt_heap_t H, int i);
 
 /* @} */
 #endif /* _XBT_HEAP_H */

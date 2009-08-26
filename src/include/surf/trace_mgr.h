@@ -20,9 +20,18 @@ XBT_PUBLIC(void) tmgr_history_free(tmgr_history_t history);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new(const char *filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
                                                     const char *input,
-                                                    double periodicity);
+                                                    double periodicity,
+                                                    double timestep);
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
 XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
+/**
+ * \brief Free a trace event structure
+ *
+ * This function frees a trace_event if it can be freed, ie, if it has the free_me flag set to 1. This flag indicates whether the structure is still used somewhere or not.
+ * \param	trace_event		Trace event structure
+ * \return 1 if the structure was freed, 0 otherwise
+*/
+XBT_PUBLIC(int) tmgr_trace_event_free(tmgr_trace_event_t trace_event);
 
 XBT_PUBLIC(tmgr_trace_event_t) tmgr_history_add_trace(tmgr_history_t history,
                                                       tmgr_trace_t trace,

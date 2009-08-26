@@ -37,6 +37,18 @@ xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t const free_func)
 }
 
 /**
+ * @brief Set the update callback function.
+ * @param H the heap we're working on
+ * \param update_callback function to call on each element to update its index when needed.
+ */
+void xbt_heap_set_update_callback(xbt_heap_t H,
+                                  void (*update_callback) (void *, int))
+{
+  H->update_callback = update_callback;
+}
+
+
+/**
  * @brief kilkil a heap and its content
  * @param H poor victim
  */
@@ -115,7 +127,30 @@ void *xbt_heap_pop(xbt_heap_t H)
     H->items =
       (void *) realloc(H->items, (H->size) * sizeof(struct xbt_heapItem));
   }
+
+  H->update_callback ? H->update_callback(max, -1) : NULL;
   return max;
+}
+
+/**
+ * @brief Extracts from the heap and returns the element at position i.
+ * \param H the heap we're working on
+ * \param i	element position
+ * \return the element at position i if ok, NULL otherwise
+ *
+ * Extracts from the heap and returns the element at position i. The head is automatically reorded.
+ */
+void *xbt_heap_remove(xbt_heap_t H, int i)
+{
+  if ((i < 0) || (i > H->count - 1))
+    return NULL;
+  /* put element i at head */
+  if (i > 0) {
+    KEY(H, i) = MIN_KEY_VALUE;
+    xbt_heap_increaseKey(H, i);
+  }
+
+  return xbt_heap_pop(H);
 }
 
 /**
@@ -164,9 +199,12 @@ static void xbt_heap_maxHeapify(xbt_heap_t H)
       struct xbt_heapItem tmp = H->items[i];
       H->items[i] = H->items[greatest];
       H->items[greatest] = tmp;
+      H->update_callback ? H->update_callback(CONTENT(H, i), i) : NULL;
       i = greatest;
-    } else
+    } else {
+      H->update_callback ? H->update_callback(CONTENT(H, i), i) : NULL;
       return;
+    }
   }
 }
 
@@ -183,7 +221,10 @@ static void xbt_heap_increaseKey(xbt_heap_t H, int i)
     struct xbt_heapItem tmp = H->items[i];
     H->items[i] = H->items[PARENT(i)];
     H->items[PARENT(i)] = tmp;
+    H->update_callback ? H->update_callback(CONTENT(H, i), i) : NULL;
     i = PARENT(i);
   }
+  H->update_callback ? H->update_callback(CONTENT(H, i), i) : NULL;
   return;
 }
+

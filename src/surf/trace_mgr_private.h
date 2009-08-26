@@ -19,12 +19,14 @@ typedef struct tmgr_event {
 
 typedef struct tmgr_trace {
   xbt_dynar_t event_list;
+  double timestep;
 } s_tmgr_trace_t;
 
 typedef struct tmgr_trace_event {
   tmgr_trace_t trace;
   unsigned int idx;
   void *model;
+  int free_me;
 } s_tmgr_trace_event_t;
 
 typedef struct tmgr_history {

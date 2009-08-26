@@ -1,10 +1,10 @@
 /* XML processor/application API for surf/simgrid.dtd.
- * Generated 2008/03/06 08:58:39.
+ * Generated 2009/08/14 11:23:44.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.63 2007/10/11 14:46:08 mquinson Exp).
+ * (Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -47,8 +47,6 @@
 
 #ifndef _FLEXML_simgrid_H
 #define _FLEXML_simgrid_H
-
- SG_BEGIN_DECL()
 
 /* XML application entry points. */
 XBT_PUBLIC(void) STag_surfxml_platform(void);
@@ -187,6 +185,8 @@ XBT_PUBLIC(void) ETag_surfxml_argument(void);
 #define AU_surfxml_prop_value NULL
      typedef int AT_surfxml_route_impact_on_src_with_other_recv;
 #define AU_surfxml_route_impact_on_src_with_other_recv NULL
+     typedef int AT_surfxml_trace_timestep;
+#define AU_surfxml_trace_timestep NULL
      typedef int AT_surfxml_link_state_file;
 #define AU_surfxml_link_state_file NULL
      typedef int AT_surfxml_set_prefix;
@@ -351,6 +351,8 @@ XBT_PUBLIC_DATA(AT_surfxml_prop_value) AX_surfxml_prop_value;
 XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_src_with_other_recv)
   AX_surfxml_route_impact_on_src_with_other_recv;
 #define A_surfxml_route_impact_on_src_with_other_recv (surfxml_bufferstack + AX_surfxml_route_impact_on_src_with_other_recv)
+XBT_PUBLIC_DATA(AT_surfxml_trace_timestep) AX_surfxml_trace_timestep;
+#define A_surfxml_trace_timestep (surfxml_bufferstack + AX_surfxml_trace_timestep)
 XBT_PUBLIC_DATA(AT_surfxml_link_state_file) AX_surfxml_link_state_file;
 #define A_surfxml_link_state_file (surfxml_bufferstack + AX_surfxml_link_state_file)
 XBT_PUBLIC_DATA(AT_surfxml_set_prefix) AX_surfxml_set_prefix;
@@ -410,6 +412,4 @@ XBT_PUBLIC(int) yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
      const char *surfxml_parse_err_msg(void);
-
-SG_END_DECL()
 #endif

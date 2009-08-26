@@ -230,7 +230,7 @@ void SIMIX_clean(void)
   /* Kill everyone (except maestro) */
   SIMIX_process_killall();
 
-  /* Free the remaining data structures*/
+  /* Free the remaining data structures */
   xbt_swag_free(simix_global->process_to_run);
   xbt_swag_free(simix_global->process_to_destroy);
   xbt_swag_free(simix_global->process_list);
@@ -338,8 +338,40 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
                                        args->data, args->hostname,
                                        args->argc, args->argv,
                                        args->properties);
-        if (process && args->kill_time > SIMIX_get_clock()) {
-          surf_timer_model->extension.timer.set(args->kill_time, (void *)
+        /* verify if process has been created */
+		if (!process) {
+			xbt_free(args);
+			continue;
+		}
+		if (args->kill_time > SIMIX_get_clock()) {
+			surf_timer_model->extension.timer.set(args->kill_time, (void *)
+												&SIMIX_process_kill,
+												(void *) process);
+		}
+        xbt_free(args);
+      }
+      if (fun == simix_global->create_process_function) {
+        smx_process_arg_t args = arg;
+        DEBUG2("Launching %s on %s", args->name, args->hostname);
+        process =
+          (*simix_global->create_process_function) (args->name, args->code,
+                                                    args->data,
+                                                    args->hostname,
+                                                    args->argc, args->argv,
+                                                    args->properties);
+        /* verify if process has been created */
+        if (!process) {
+        	xbt_free(args);
+        	continue;
+        }
+        if (args->kill_time > SIMIX_get_clock()) {
+        	if (simix_global->kill_process_function)
+        		surf_timer_model->extension.timer.set(args->kill_time, (void *)
+                                                simix_global->
+                                                kill_process_function,
+                                                process);
+        	else
+        		surf_timer_model->extension.timer.set(args->kill_time, (void *)
                                                 &SIMIX_process_kill,
                                                 (void *) process);
         }
@@ -347,9 +379,12 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
       }
       if (fun == SIMIX_process_kill) {
         process = arg;
-        DEBUG2("Killing %s on %s", process->name,
-               process->smx_host->name);
+        DEBUG2("Killing %s on %s", process->name, process->smx_host->name);
         SIMIX_process_kill(process);
+      }
+      if (fun == simix_global->kill_process_function) {
+        process = arg;
+        (*simix_global->kill_process_function) (process);
       }
     }
 

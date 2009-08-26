@@ -19,7 +19,7 @@ typedef enum {
 /********* cpu object *****************/
 /**************************************/
 typedef struct cpu_L07 {
-  s_surf_resource_t generic_resource;  /* Do not move this field: must match surf_resource_t */
+  s_surf_resource_t generic_resource;   /* Do not move this field: must match surf_resource_t */
   e_surf_workstation_model_type_t type; /* Do not move this field: must match link_L07_t */
   lmm_constraint_t constraint;  /* Do not move this field: must match link_L07_t */
   double power_scale;
@@ -35,7 +35,7 @@ typedef struct cpu_L07 {
 /**************************************/
 
 typedef struct link_L07 {
-  s_surf_resource_t generic_resource;  /* Do not move this field: must match surf_resource_t */
+  s_surf_resource_t generic_resource;   /* Do not move this field: must match surf_resource_t */
   e_surf_workstation_model_type_t type; /* Do not move this field: must match cpu_L07_t */
   lmm_constraint_t constraint;  /* Do not move this field: must match cpu_L07_t */
   double lat_current;
@@ -86,7 +86,7 @@ static void update_action_bound(surf_action_workstation_L07_t action)
       double lat = 0.0;
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
-        xbt_dynar_foreach(route,cpt,link) {
+        xbt_dynar_foreach(route, cpt, link) {
           lat += link->lat_current;
         }
         lat_current =
@@ -179,6 +179,13 @@ static void action_set_priority(surf_action_t action, double priority)
 {                               /* FIXME: should inherit */
   XBT_IN2("(%p,%g)", action, priority);
   action->priority = priority;
+  XBT_OUT;
+}
+
+static double action_get_remains(surf_action_t action)
+{
+  XBT_IN1("(%p)", action);
+  return action->remains;
   XBT_OUT;
 }
 
@@ -301,11 +308,11 @@ static void update_actions_state(double now, double delta)
               SURF_RESOURCE_OFF)) ||
             ((((cpu_L07_t) constraint_id)->type ==
               SURF_WORKSTATION_RESOURCE_CPU) &&
-             (((cpu_L07_t) constraint_id)->state_current == SURF_RESOURCE_OFF))) {
+             (((cpu_L07_t) constraint_id)->state_current ==
+              SURF_RESOURCE_OFF))) {
           DEBUG1("Action (%p) Failed!!", action);
           action->generic_action.finish = surf_get_clock();
-          surf_action_state_set((surf_action_t) action,
-                                   SURF_ACTION_FAILED);
+          surf_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
           break;
         }
       }
@@ -327,6 +334,8 @@ static void update_resource_state(void *id,
       nw_link->bw_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, nw_link->constraint,
                                   nw_link->bw_current);
+      if (tmgr_trace_event_free(event_type))
+        nw_link->bw_event = NULL;
     } else if (event_type == nw_link->lat_event) {
       lmm_variable_t var = NULL;
       surf_action_workstation_L07_t action = NULL;
@@ -340,28 +349,37 @@ static void update_resource_state(void *id,
         action = lmm_variable_id(var);
         update_action_bound(action);
       }
+      if (tmgr_trace_event_free(event_type))
+        nw_link->lat_event = NULL;
 
     } else if (event_type == nw_link->state_event) {
       if (value > 0)
         nw_link->state_current = SURF_RESOURCE_ON;
       else
         nw_link->state_current = SURF_RESOURCE_OFF;
+      if (tmgr_trace_event_free(event_type))
+        nw_link->state_event = NULL;
     } else {
       CRITICAL0("Unknown event ! \n");
       xbt_abort();
     }
     return;
   } else if (cpu->type == SURF_WORKSTATION_RESOURCE_CPU) {
-    DEBUG3("Updating cpu %s (%p) with value %g", surf_resource_name(cpu), cpu, value);
+    DEBUG3("Updating cpu %s (%p) with value %g", surf_resource_name(cpu), cpu,
+           value);
     if (event_type == cpu->power_event) {
       cpu->power_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, cpu->constraint,
                                   cpu->power_current * cpu->power_scale);
+      if (tmgr_trace_event_free(event_type))
+        cpu->power_event = NULL;
     } else if (event_type == cpu->state_event) {
       if (value > 0)
         cpu->state_current = SURF_RESOURCE_ON;
       else
         cpu->state_current = SURF_RESOURCE_OFF;
+      if (tmgr_trace_event_free(event_type))
+        cpu->state_event = NULL;
     } else {
       CRITICAL0("Unknown event ! \n");
       xbt_abort();
@@ -439,10 +457,10 @@ static surf_action_t execute_parallel_task(int workstation_nb,
       double lat = 0.0;
 
       if (communication_amount[i * workstation_nb + j] > 0)
-        xbt_dynar_foreach(route,cpt,link) {
-          lat += link->lat_current;
-          xbt_dict_set(parallel_task_link_set, link->generic_resource.name,
-                       link, NULL);
+        xbt_dynar_foreach(route, cpt, link) {
+        lat += link->lat_current;
+        xbt_dict_set(parallel_task_link_set, link->generic_resource.name,
+                     link, NULL);
         }
       latency = MAX(latency, lat);
     }
@@ -455,9 +473,11 @@ static surf_action_t execute_parallel_task(int workstation_nb,
     if (computation_amount[i] > 0)
       nb_host++;
 
-  action=surf_action_new(sizeof(s_surf_action_workstation_L07_t),amount,surf_workstation_model,0);
-  DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.",
-         action, workstation_nb, nb_link);
+  action =
+    surf_action_new(sizeof(s_surf_action_workstation_L07_t), amount,
+                    surf_workstation_model, 0);
+  DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.", action,
+         workstation_nb, nb_link);
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
   action->workstation_nb = workstation_nb;
@@ -489,7 +509,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
 
       if (communication_amount[i * workstation_nb + j] == 0.0)
         continue;
-      xbt_dynar_foreach(route,cpt,link) {
+      xbt_dynar_foreach(route, cpt, link) {
         lmm_expand_add(ptask_maxmin_system, link->constraint,
                        action->variable,
                        communication_amount[i * workstation_nb + j]);
@@ -629,7 +649,7 @@ static void parse_cpu_init(void)
 
   power_scale = get_cpu_power(A_surfxml_host_power);
   surf_parse_get_double(&power_initial, A_surfxml_host_availability);
- power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
+  power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
 
   xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
               (A_surfxml_host_state == A_surfxml_host_state_OFF),
@@ -684,7 +704,8 @@ static link_L07_t link_new(char *name,
     lmm_constraint_shared(nw_link->constraint);
 
 
-  xbt_dict_set(surf_network_model->resource_set, name, nw_link, surf_resource_free);
+  xbt_dict_set(surf_network_model->resource_set, name, nw_link,
+               surf_resource_free);
 
   return nw_link;
 }
@@ -760,7 +781,8 @@ static void add_traces(void)
   /* Connect traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    link_L07_t link = xbt_dict_get_or_null(surf_network_model->resource_set, elm);
+    link_L07_t link =
+      xbt_dict_get_or_null(surf_network_model->resource_set, elm);
 
     xbt_assert1(link, "Link %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -770,7 +792,8 @@ static void add_traces(void)
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    link_L07_t link = xbt_dict_get_or_null(surf_network_model->resource_set, elm);
+    link_L07_t link =
+      xbt_dict_get_or_null(surf_network_model->resource_set, elm);
 
     xbt_assert1(link, "Link %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -780,7 +803,8 @@ static void add_traces(void)
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    link_L07_t link = xbt_dict_get_or_null(surf_network_model->resource_set, elm);
+    link_L07_t link =
+      xbt_dict_get_or_null(surf_network_model->resource_set, elm);
 
     xbt_assert1(link, "Link %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -815,6 +839,7 @@ static void model_init_internal(void)
   surf_workstation_model->is_suspended = action_is_suspended;
   surf_workstation_model->set_max_duration = action_set_max_duration;
   surf_workstation_model->set_priority = action_set_priority;
+  surf_workstation_model->get_remains = action_get_remains;
   surf_workstation_model->name = "Workstation ptask_L07";
 
   surf_workstation_model->model_private->resource_used = resource_used;
@@ -841,16 +866,18 @@ static void model_init_internal(void)
   surf_workstation_model->extension.workstation.get_link_latency =
     get_link_latency;
   surf_workstation_model->extension.workstation.link_shared = link_shared;
-  surf_workstation_model->extension.workstation.get_properties = surf_resource_properties;
+  surf_workstation_model->extension.workstation.get_properties =
+    surf_resource_properties;
 
 
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();
 
   routing_model_create(sizeof(link_L07_t),
-        link_new(xbt_strdup("__loopback__"),
-            498000000, NULL, 0.000015, NULL,
-            SURF_RESOURCE_ON, NULL, SURF_LINK_FATPIPE, NULL));
+                       link_new(xbt_strdup("__loopback__"),
+                                498000000, NULL, 0.000015, NULL,
+                                SURF_RESOURCE_ON, NULL, SURF_LINK_FATPIPE,
+                                NULL));
 
 }
 

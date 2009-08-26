@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <host id="CPU1" power="20" availability_file="trace/file.trace"/>
+  <process host="CPU1" function="test_trace" start_time="10">
+  	<argument value="850"/>
+  	<argument value="1.0"/>
+  </process>
+</platform>

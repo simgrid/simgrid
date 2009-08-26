@@ -1104,6 +1104,7 @@ static void convert_route_multi_to_routes(void)
 /* Trace management functions */
 
 static double trace_periodicity = -1.0;
+static double trace_timestep = -1.0;
 static char *trace_file = NULL;
 static char *trace_id;
 
@@ -1112,6 +1113,7 @@ static void parse_trace_init(void)
   trace_id = strdup(A_surfxml_trace_id);
   trace_file = strdup(A_surfxml_trace_file);
   surf_parse_get_double(&trace_periodicity, A_surfxml_trace_periodicity);
+  surf_parse_get_double(&trace_timestep, A_surfxml_trace_timestep);
 }
 
 static void parse_trace_finalize(void)
@@ -1125,7 +1127,7 @@ static void parse_trace_finalize(void)
     else
       trace =
         tmgr_trace_new_from_string(trace_id, surfxml_pcdata,
-                                   trace_periodicity);
+                                   trace_periodicity, trace_timestep);
   }
   xbt_dict_set(traces_set_list, trace_id, (void *) trace, NULL);
 }

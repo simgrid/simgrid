@@ -1,0 +1,6 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <host id="CPU1" power="20"/>
+  <process host="CPU1" function="test_trace"/>
+</platform>

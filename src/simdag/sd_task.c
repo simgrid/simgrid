@@ -193,7 +193,7 @@ double SD_task_get_remaining_amount(SD_task_t task)
   xbt_assert0(task != NULL, "Invalid parameter");
 
   if (task->surf_action)
-    return task->surf_action->remains;
+    return surf_workstation_model->get_remains(task->surf_action);
   else
     return task->remains;
 }
@@ -711,14 +711,14 @@ void __SD_task_really_run(SD_task_t task)
   task->surf_action = NULL;
   if ((task->workstation_nb == 1) && (task->communication_amount[0] == 0.0)) {
     task->surf_action =
-      surf_workstation_model->extension.workstation.
-      execute(surf_workstations[0], task->computation_amount[0]);
+      surf_workstation_model->extension.
+      workstation.execute(surf_workstations[0], task->computation_amount[0]);
   } else if ((task->workstation_nb == 1)
              && (task->computation_amount[0] == 0.0)) {
     task->surf_action =
-      surf_workstation_model->extension.workstation.
-      communicate(surf_workstations[0], surf_workstations[0],
-                  task->communication_amount[0], task->rate);
+      surf_workstation_model->extension.
+      workstation.communicate(surf_workstations[0], surf_workstations[0],
+                              task->communication_amount[0], task->rate);
   } else if ((task->workstation_nb == 2)
              && (task->computation_amount[0] == 0.0)
              && (task->computation_amount[1] == 0.0)) {
@@ -733,9 +733,9 @@ void __SD_task_really_run(SD_task_t task)
     }
     if (nb == 1) {
       task->surf_action =
-        surf_workstation_model->extension.workstation.
-        communicate(surf_workstations[0], surf_workstations[1], value,
-                    task->rate);
+        surf_workstation_model->extension.
+        workstation.communicate(surf_workstations[0], surf_workstations[1],
+                                value, task->rate);
     }
   }
   if (!task->surf_action) {
@@ -749,10 +749,11 @@ void __SD_task_really_run(SD_task_t task)
            sizeof(double) * task->workstation_nb * task->workstation_nb);
 
     task->surf_action =
-      surf_workstation_model->extension.workstation.
-      execute_parallel_task(task->workstation_nb, surf_workstations,
-                            computation_amount, communication_amount,
-                            task->amount, task->rate);
+      surf_workstation_model->extension.
+      workstation.execute_parallel_task(task->workstation_nb,
+                                        surf_workstations, computation_amount,
+                                        communication_amount, task->amount,
+                                        task->rate);
   } else {
     xbt_free(surf_workstations);
   }

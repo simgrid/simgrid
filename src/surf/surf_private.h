@@ -17,6 +17,7 @@
 
 #define NO_MAX_DURATION -1.0
 extern double sg_tcp_gamma;
+extern int sg_maxmin_selective_update;
 
 extern const char *surf_action_state_names[6];
 
