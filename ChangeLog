@@ -14,15 +14,16 @@ SimGrid (3.3.3) stable; urgency=low
 
  Here are some approximate speedup measurements (on master/slaves
   simulations lasting between 10s and 20s each):
-   3.3.1                   -> 3.3.2: -15%
-   3.3.2                   -> 3.3.3: +40%
-   3.3.1                   -> 3.3.3: +40%
-   3.3.1 with inline patch -> 3.3.3: +30%
+   3.3.1                   -> 3.3.2: about same performance
+   3.3.2                   -> 3.3.3: 40% speedup
+   3.3.1                   -> 3.3.3: 40% speedup
+   3.3.1 with inline patch -> 3.3.3: 30% speedup
    
  Our reading is that the refactoring which occurred in 3.3.2 made us
   suffer much more from the xbt_dynar_foreach low performance, but
   once we solved this, this refactoring proved to be very performance
-  effective.
+  effective. From the 40% speedup, somehow, 10% are due to the
+  inlining and 30% to the refactoring.
 
  That's a pitty that gcc cannot inline functions placed in other files
   alone. We have to choose between:
