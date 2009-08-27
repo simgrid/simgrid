@@ -86,8 +86,6 @@ XBT_PUBLIC(void) lmm_update_constraint_bound(lmm_system_t sys,
 
 XBT_PUBLIC(void) lmm_solve(lmm_system_t sys);
 
-XBT_PUBLIC(void *) lmm_extract_modified_variable(lmm_system_t sys);
-
 XBT_PUBLIC(void) lagrange_solve(lmm_system_t sys);
 XBT_PUBLIC(void) bottleneck_solve(lmm_system_t sys);
 

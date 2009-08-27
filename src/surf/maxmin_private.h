@@ -47,7 +47,6 @@ typedef struct lmm_variable {
   /* hookup to system */
   s_xbt_swag_hookup_t variable_set_hookup;
   s_xbt_swag_hookup_t saturated_variable_set_hookup;
-  s_xbt_swag_hookup_t modified_variable_set_hookup;
 
   s_lmm_element_t *cnsts;
   int cnsts_size;
@@ -78,8 +77,6 @@ typedef struct lmm_system {
 
   s_xbt_swag_t saturated_variable_set;  /* a list of lmm_variable_t */
   s_xbt_swag_t saturated_constraint_set;        /* a list of lmm_constraint_t_t */
-
-  s_xbt_swag_t modified_variable_set;   /* list of modified variables used in new model CpuIM */
 
   xbt_mallocator_t variable_mallocator;
 } s_lmm_system_t;

@@ -221,46 +221,47 @@ static double share_resources(double now)
   double value;
   cpu_Cas01_im_t cpu, cpu_next;
 
-  xbt_swag_foreach_safe(cpu, cpu_next, modified_cpu) {
+  xbt_swag_foreach(cpu, modified_cpu)
     cpu_update_remains(cpu, now);
-    xbt_swag_remove(cpu, modified_cpu);
-  }
 
   lmm_solve(cpu_im_maxmin_system);
 
-  while ((action = lmm_extract_modified_variable(cpu_im_maxmin_system))) {
-    min = -1;
-    value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
-    if (value > 0) {
-      if (GENERIC_ACTION(action).remains > 0)
-        value = GENERIC_ACTION(action).remains / value;
-      else
-        value = 0.0;
-    }
-    if (value > 0)
-      min = now + value;
+  xbt_swag_foreach_safe(cpu, cpu_next, modified_cpu) {
+    xbt_swag_foreach(action, cpu->action_set) {
+      min = -1;
+      value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
+      if (value > 0) {
+        if (GENERIC_ACTION(action).remains > 0)
+          value = GENERIC_ACTION(action).remains / value;
+        else
+          value = 0.0;
+      }
+      if (value > 0)
+        min = now + value;
 
-    if ((GENERIC_ACTION(action).max_duration != NO_MAX_DURATION)
-        && (min == -1
-            || GENERIC_ACTION(action).start +
-            GENERIC_ACTION(action).max_duration < min))
-      min =
-        GENERIC_ACTION(action).start + GENERIC_ACTION(action).max_duration;
+      if ((GENERIC_ACTION(action).max_duration != NO_MAX_DURATION)
+          && (min == -1
+              || GENERIC_ACTION(action).start +
+              GENERIC_ACTION(action).max_duration < min))
+        min =
+          GENERIC_ACTION(action).start + GENERIC_ACTION(action).max_duration;
 
-    DEBUG4("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
-           GENERIC_ACTION(action).start, now + value,
-           GENERIC_ACTION(action).max_duration);
+      DEBUG4("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
+             GENERIC_ACTION(action).start, now + value,
+             GENERIC_ACTION(action).max_duration);
 
-    if (action->index_heap >= 0) {
-      surf_action_cpu_Cas01_im_t heap_act =
-        xbt_heap_remove(action_heap, action->index_heap);
-      if (heap_act != action)
-        DIE_IMPOSSIBLE;
+      if (action->index_heap >= 0) {
+        surf_action_cpu_Cas01_im_t heap_act =
+          xbt_heap_remove(action_heap, action->index_heap);
+        if (heap_act != action)
+          DIE_IMPOSSIBLE;
+      }
+      if (min != -1) {
+        xbt_heap_push(action_heap, action, min);
+        DEBUG2("Insert at heap action(%p) min %lf", action, min);
+      }
     }
-    if (min != -1) {
-      xbt_heap_push(action_heap, action, min);
-      DEBUG2("Insert at heap action(%p) min %lf", action, min);
-    }
+    xbt_swag_remove(cpu, modified_cpu);
   }
   return xbt_heap_size(action_heap) >
     0 ? xbt_heap_maxkey(action_heap) - now : -1;
@@ -412,29 +413,11 @@ static int action_is_suspended(surf_action_t action)
 
 static void action_set_max_duration(surf_action_t action, double duration)
 {
-  surf_action_cpu_Cas01_im_t ACT = (surf_action_cpu_Cas01_im_t) action;
-  double min_finish;
-
   XBT_IN2("(%p,%g)", action, duration);
 
   action->max_duration = duration;
-
-  if (duration >= 0)
-    min_finish =
-      (action->start + action->max_duration) <
-      action->finish ? (action->start +
-                        action->max_duration) : action->finish;
-  else
-    min_finish = action->finish;
-
-  /* add in action heap */
-  if (ACT->index_heap >= 0) {
-    surf_action_cpu_Cas01_im_t heap_act =
-      xbt_heap_remove(action_heap, ACT->index_heap);
-    if (heap_act != ACT)
-      DIE_IMPOSSIBLE;
-  }
-  xbt_heap_push(action_heap, ACT, min_finish);
+  /* insert cpu in modified_cpu set to notice the max duration change */
+  xbt_swag_insert(ACTION_GET_CPU(action), modified_cpu);
   XBT_OUT;
 }
 
@@ -453,6 +436,7 @@ static void action_set_priority(surf_action_t action, double priority)
 static double action_get_remains(surf_action_t action)
 {
   XBT_IN1("(%p)", action);
+  /* update remains before return it */
   cpu_update_remains(ACTION_GET_CPU(action), surf_get_clock());
   return action->remains;
   XBT_OUT;

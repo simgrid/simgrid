@@ -53,9 +53,6 @@ lmm_system_t lmm_system_new(void)
   xbt_swag_init(&(l->saturated_constraint_set),
                 xbt_swag_offset(cnst, saturated_constraint_set_hookup));
 
-  xbt_swag_init(&(l->modified_variable_set),
-                xbt_swag_offset(var, modified_variable_set_hookup));
-
   l->variable_mallocator = xbt_mallocator_new(64,
                                               lmm_variable_mallocator_new_f,
                                               lmm_variable_mallocator_free_f,
@@ -494,11 +491,8 @@ void lmm_solve(lmm_system_t sys)
     //DEBUG1("Variable set : %d", xbt_swag_size(elem_list));
     xbt_swag_foreach(elem, elem_list) {
       var = elem->variable;
-      xbt_swag_insert(var, &(sys->modified_variable_set));
-      /* FIXME: modified this test because we need all actions in cpu_im */
       if (var->weight <= 0.0)
-        //break;
-        continue;
+        break;
       var->value = 0.0;
     }
   }
@@ -572,7 +566,6 @@ void lmm_solve(lmm_system_t sys)
 
     while ((var = xbt_swag_getFirst(var_list))) {
       int i;
-      xbt_swag_insert(var, &(sys->modified_variable_set));
 
       if (min_bound < 0) {
         var->value = min_usage / var->weight;
@@ -619,8 +612,7 @@ void lmm_solve(lmm_system_t sys)
 
     /* Find out which variables reach the maximum */
     cnst_list =
-      sys->selective_update_active ? &(sys->
-                                       modified_constraint_set) :
+      sys->selective_update_active ? &(sys->modified_constraint_set) :
       &(sys->active_constraint_set);
     min_usage = -1;
     min_bound = -1;
@@ -800,13 +792,4 @@ static void lmm_remove_all_modified_set(lmm_system_t sys)
   xbt_swag_foreach_safe(elem, elem_next, elem_list) {
     xbt_swag_remove(elem, elem_list);
   }
-}
-
-void *lmm_extract_modified_variable(lmm_system_t sys)
-{
-  lmm_variable_t var;
-  var = xbt_swag_extract(&(sys->modified_variable_set));
-  if (var)
-    return var->id;
-  return NULL;
 }
