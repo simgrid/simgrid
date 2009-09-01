@@ -85,6 +85,15 @@ static surf_cpu_ti_timeSeries_t surf_cpu_ti_time_series_new(tmgr_trace_t
       series->values[(series->nb_points)++] = value;
       previous_time += spacing;
     }
+    /* special case, it happens only if the trace has just 1 point and periodicity = 0
+     * FIXME: if the trace is always cyclic and periodicity must be > 0 it isn't necessary */
+    if (previous_time == 0) {
+      series->values = xbt_realloc(series->values,
+                                   (series->nb_points + 1) * sizeof(double));
+      series->values[(series->nb_points)++] = value;
+      previous_time += spacing;
+      break;
+    }
   }
 
   return series;
@@ -186,6 +195,8 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
   trace->last_time =
     power_trace->timestep * ((double) (trace->levels[0]->nb_points));
   trace->total = surf_cpu_integrate_trace(trace, 0.0, trace->last_time);
+
+  DEBUG2("Total integral %lf, last_time %lf", trace->total, trace->last_time);
 
   return trace;
 }
@@ -469,10 +480,10 @@ static void cpu_update_action_finish_date(cpu_ti_t cpu, double now)
     if (min_finish != NO_MAX_DURATION)
       xbt_heap_push(action_heap, action, min_finish);
 
-    DEBUG4
-      ("Update finish time: Action: %p, Start Time: %lf Finish Time: %lf Max duration %lf",
-       action, GENERIC_ACTION(action).start, GENERIC_ACTION(action).finish,
-       GENERIC_ACTION(action).max_duration);
+    DEBUG5
+      ("Update finish time: Cpu(%s) Action: %p, Start Time: %lf Finish Time: %lf Max duration %lf",
+       cpu->generic_resource.name, action, GENERIC_ACTION(action).start,
+       GENERIC_ACTION(action).finish, GENERIC_ACTION(action).max_duration);
   }
   /* remove from modified cpu */
   xbt_swag_remove(cpu, modified_cpu);
@@ -1076,8 +1087,7 @@ static double surf_cpu_solve_trace_somewhat_simple(surf_cpu_ti_tgmr_t trace,
   double amount_till_end;
   double b;
 
-  DEBUG2("In solveTraceIntegralSomewhatSimple(): [%.2f, amount=%.2f]",
-         a, amount);
+  DEBUG2("Solve integral: [%.2f, amount=%.2f]", a, amount);
 
   amount_till_end = surf_cpu_integrate_trace(trace, a, trace->last_time);
   /*
@@ -1206,6 +1216,7 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
   }
 
   DEBUG0("Steady");
+  top_level = i;
 
   /* n-th level */
   current_spacing = trace->levels[top_level]->spacing;
