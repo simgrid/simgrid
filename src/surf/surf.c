@@ -384,13 +384,10 @@ double surf_solve(void)
   }
   DEBUG1("Next action end : %f", min);
 
-  if (min < 0.0)
-    return -1.0;
-
   DEBUG0("Looking for next event");
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     DEBUG1("Next TRACE event : %f", next_event_date);
-    if (next_event_date > NOW + min)
+    if ((min != -1.0) && (next_event_date > NOW + min))
       break;
     DEBUG0("Updating models");
     while ((event =
@@ -409,6 +406,12 @@ double surf_solve(void)
                                                             value, NOW + min);
     }
   }
+
+  /* FIXME: Moved this test to here to avoid stoping simulation if there are actions running on cpus and all cpus are with availability = 0. 
+   * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
+   * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
+  if (min < 0.0)
+    return -1.0;
 
   DEBUG1("Duration set to %f", min);
 
