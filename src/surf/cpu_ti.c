@@ -1211,8 +1211,11 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
       }
       index++;
     }
-    if (done)
+    if (done) {
+      /* found chunk, fix the index to top level */
+      i++;
       break;
+    }
   }
 
   DEBUG0("Steady");
@@ -1224,19 +1227,22 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
 
   DEBUG1("L%d:", top_level);
 
-  while (index < trace->levels[top_level]->nb_points) {
-    next_chunk = current_spacing * trace->levels[top_level]->values[index];
-    if (remains - next_chunk <= 0.0) {  /* Too far */
-      break;
-    } else {
-      DEBUG2("%.2f->%.2f|",
-             index * (trace->levels[top_level]->spacing),
-             (index + 1) * (trace->levels[top_level]->spacing));
+  /* iterate over the last level only if it hasn't found the chunk where the amount is */
+  if (!done) {
+    while (index < trace->levels[top_level]->nb_points) {
+      next_chunk = current_spacing * trace->levels[top_level]->values[index];
+      if (remains - next_chunk <= 0.0) {        /* Too far */
+        break;
+      } else {
+        DEBUG2("%.2f->%.2f|",
+               index * (trace->levels[top_level]->spacing),
+               (index + 1) * (trace->levels[top_level]->spacing));
 
-      remains -= next_chunk;
-      b = (index + 1) * (current_spacing);
+        remains -= next_chunk;
+        b = (index + 1) * (current_spacing);
+      }
+      index++;
     }
-    index++;
   }
   DEBUG2("remains = %.2f b=%.2f", remains, b);
 
