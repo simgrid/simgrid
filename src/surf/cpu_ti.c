@@ -60,42 +60,61 @@ static surf_cpu_ti_timeSeries_t surf_cpu_ti_time_series_new(tmgr_trace_t
                                                             double spacing)
 {
   surf_cpu_ti_timeSeries_t series;
-  double time, value;
+  double time = 0.0, value = 0.0, sum_delta = 0.0;
   double previous_time = 0.0;
+  double old_time = 0.0;
+  int event_lost = 0;
   unsigned int cpt;
+
   s_tmgr_event_t val;
   series = xbt_new0(s_surf_cpu_ti_timeSeries_t, 1);
   series->spacing = spacing;
 
-  time = 0.0;
+  /* FIXME: it doesn't work with traces with only one point and periodicity = 0
+   * if the trace is always cyclic and periodicity must be > 0 it works */
   xbt_dynar_foreach(power_trace->event_list, cpt, val) {
     /* delta = the next trace event
      * value = state until next event */
     time += val.delta;
-    value = val.value;
 
-    /* ignore events if time is less than spacing */
-    if (time < (series->nb_points) * spacing) {
+    /* ignore events until next spacing */
+    if (time < (series->nb_points + 1) * spacing) {
+      value += val.value * val.delta;
+      sum_delta += val.delta;
+      old_time = time;
+      event_lost = 1;
       continue;
     }
 
-    while (previous_time < time) {
-      series->values = xbt_realloc(series->values,
-                                   (series->nb_points + 1) * sizeof(double));
-      series->values[(series->nb_points)++] = value;
-      previous_time += spacing;
-    }
-    /* special case, it happens only if the trace has just 1 point and periodicity = 0
-     * FIXME: if the trace is always cyclic and periodicity must be > 0 it isn't necessary */
-    if (previous_time == 0) {
-      series->values = xbt_realloc(series->values,
-                                   (series->nb_points + 1) * sizeof(double));
-      series->values[(series->nb_points)++] = value;
-      previous_time += spacing;
-      break;
-    }
-  }
+    /* update value and sum_delta with the space between last point in trace(old_time) and next spacing */
+    value += val.value * ((series->nb_points + 1) * spacing - old_time);
+    sum_delta += ((series->nb_points + 1) * spacing - old_time);
+    /* calcule the value to next spacing */
+    value /= sum_delta;
 
+    while (previous_time + spacing <= time) {
+      series->values = xbt_realloc(series->values,
+                                   (series->nb_points + 1) * sizeof(double));
+      /* update first spacing with mean of points
+       * others with the right value */
+      series->values[(series->nb_points)++] = event_lost ? value : val.value;
+      event_lost = 0;
+      previous_time += spacing;
+    }
+    /* update value and sum_delta, interval: [time, next spacing] */
+    value = (previous_time + spacing - time) * val.value;
+    sum_delta = (previous_time + spacing - time);
+    old_time = time;
+
+  }
+  /* last spacing */
+  if (old_time < (series->nb_points) * spacing) {
+    value /= sum_delta;
+    series->values = xbt_realloc(series->values,
+                                 (series->nb_points + 1) * sizeof(double));
+    series->values[(series->nb_points)++] = value;
+    previous_time += spacing;
+  }
   return series;
 }
 
