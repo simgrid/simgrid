@@ -12,11 +12,16 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_timer, surf,
                                 "Logging specific to SURF (timer)");
 
+typedef struct surf_action_timer {
+  s_surf_action_t generic_action;
+} s_surf_action_timer_t, *surf_action_timer_t;
+
 typedef struct command {
   s_surf_resource_t generic_resource;   /* Must remain first, since we add this to a trace */
   void *function;
   void *args;
   s_xbt_swag_hookup_t command_set_hookup;
+  surf_action_timer_t action;
 } s_command_t, *command_t;
 
 
@@ -34,6 +39,8 @@ static command_t command_new(void *fun, void *args)
   command->function = fun;
   command->args = args;
   xbt_swag_insert(command, command_pending);
+  command->action =
+    surf_action_new(sizeof(s_surf_action_timer_t), 0, surf_timer_model, 0);
   return command;
 }
 
@@ -44,6 +51,9 @@ static void command_free(command_t command)
   } else if (xbt_swag_belongs(command, command_pending)) {
     xbt_swag_remove(command, command_pending);
   }
+  xbt_swag_remove(command->action,
+                  surf_timer_model->states.running_action_set);
+  xbt_free(command->action);
   surf_resource_free((surf_resource_t) command);
   return;
 }
@@ -122,7 +132,7 @@ static int get(void **function, void **arg)
   if (command) {
     *function = command->function;
     *arg = command->args;
-    xbt_free(command);
+    command_free(command);
     return 1;
   } else {
     return 0;

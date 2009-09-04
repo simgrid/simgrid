@@ -209,7 +209,8 @@ void __SIMIX_main(void)
 void SIMIX_process_killall()
 {
   smx_process_t p = NULL;
-  xbt_assert0((simix_global->current_process == simix_global->maestro_process),
+  xbt_assert0((simix_global->current_process ==
+               simix_global->maestro_process),
               "You are not supposed to run this function here!");
 
   while ((p = xbt_swag_extract(simix_global->process_list)))
@@ -242,13 +243,13 @@ void SIMIX_clean(void)
   /* Let's free maestro now */
   SIMIX_context_free(simix_global->maestro_process->context);
   xbt_free(simix_global->maestro_process->exception);
-  xbt_free(simix_global->maestro_process);  
+  xbt_free(simix_global->maestro_process);
   simix_global->maestro_process = NULL;
 
   /* Restore the default exception setup */
   __xbt_ex_ctx = &__xbt_ex_ctx_default;
   __xbt_ex_terminate = &__xbt_ex_terminate_default;
-  
+
   /* Finish context module and SURF */
   SIMIX_context_mod_exit();
 
@@ -296,6 +297,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
   unsigned int iter;
   double elapsed_time = 0.0;
   static int state_modifications = 1;
+  int actions_on_system = 0;
 
   SIMIX_process_empty_trash();
   if (xbt_swag_size(simix_global->process_to_run) && (elapsed_time > 0)) {
@@ -321,15 +323,22 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
         state_modifications = 1;
         break;
       }
+      if (xbt_swag_size(model->states.running_action_set)
+          || xbt_swag_size(model->states.ready_action_set)) {
+        actions_on_system = 1;
+      }
     }
-
-    if (!state_modifications) {
+    /* only calls surf_solve if there are actions to run */
+    if (!state_modifications && actions_on_system) {
       DEBUG1("%f : Calling surf_solve", SIMIX_get_clock());
       elapsed_time = surf_solve();
       DEBUG1("Elapsed_time %f", elapsed_time);
     }
 
+    actions_on_system = 0;
     while (surf_timer_model->extension.timer.get(&fun, (void *) &arg)) {
+      /* change in process, don't quit */
+      actions_on_system = 1;
       DEBUG2("got %p %p", fun, arg);
       if (fun == SIMIX_process_create) {
         smx_process_arg_t args = arg;
@@ -339,15 +348,15 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
                                        args->argc, args->argv,
                                        args->properties);
         /* verify if process has been created */
-		if (!process) {
-			xbt_free(args);
-			continue;
-		}
-		if (args->kill_time > SIMIX_get_clock()) {
-			surf_timer_model->extension.timer.set(args->kill_time, (void *)
-												&SIMIX_process_kill,
-												(void *) process);
-		}
+        if (!process) {
+          xbt_free(args);
+          continue;
+        }
+        if (args->kill_time > SIMIX_get_clock()) {
+          surf_timer_model->extension.timer.set(args->kill_time, (void *)
+                                                &SIMIX_process_kill,
+                                                (void *) process);
+        }
         xbt_free(args);
       }
       if (fun == simix_global->create_process_function) {
@@ -361,19 +370,19 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
                                                     args->properties);
         /* verify if process has been created */
         if (!process) {
-        	xbt_free(args);
-        	continue;
+          xbt_free(args);
+          continue;
         }
         if (args->kill_time > SIMIX_get_clock()) {
-        	if (simix_global->kill_process_function)
-        		surf_timer_model->extension.timer.set(args->kill_time, (void *)
-                                                simix_global->
-                                                kill_process_function,
-                                                process);
-        	else
-        		surf_timer_model->extension.timer.set(args->kill_time, (void *)
-                                                &SIMIX_process_kill,
-                                                (void *) process);
+          if (simix_global->kill_process_function)
+            surf_timer_model->extension.timer.set(args->kill_time, (void *)
+                                                  simix_global->
+                                                  kill_process_function,
+                                                  process);
+          else
+            surf_timer_model->extension.timer.set(args->kill_time, (void *)
+                                                  &SIMIX_process_kill,
+                                                  (void *) process);
         }
         xbt_free(args);
       }
@@ -390,6 +399,13 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 
     /* Wake up all process waiting for the action finish */
     xbt_dynar_foreach(model_list, iter, model) {
+      /* stop simulation case there are no actions to run */
+      if ((xbt_swag_size(model->states.running_action_set)) ||
+          (xbt_swag_size(model->states.ready_action_set)) ||
+          (xbt_swag_size(model->states.done_action_set)) ||
+          (xbt_swag_size(model->states.failed_action_set)))
+        actions_on_system = 1;
+
       while ((action = xbt_swag_extract(model->states.failed_action_set))) {
         smx_action = action->data;
         if (smx_action) {
@@ -405,6 +421,8 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
     }
   }
   state_modifications = 0;
+  if (!actions_on_system)
+    elapsed_time = -1;
 
   if (elapsed_time == -1) {
     if (xbt_swag_size(simix_global->process_list) == 0) {
