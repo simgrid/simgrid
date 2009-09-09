@@ -1,3 +1,14 @@
+SimGrid (3.3.4) unstable; urgency=low
+
+ The "Desktop Grid needs love too" release.
+
+ * Use LV08 as default network model since it gives better accuracy
+    for small messages and shouldn't change things for big ones.
+   Use --cfg=network_model:CM02 to get the previous behavior.
+
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
+
+
 SimGrid (3.3.3) stable; urgency=low
 
  The "Need for Speed" release.
