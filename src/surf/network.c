@@ -561,7 +561,7 @@ void surf_network_model_init_LegrandVelho(const char *filename)
   weight_S_parameter = 8775;
 
   update_model_description(surf_network_model_description,
-                           "LegrandVelho", surf_network_model);
+                           "LV08", surf_network_model);
 }
 
 /***************************************************************************/

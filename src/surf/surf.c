@@ -114,7 +114,7 @@ xbt_dynar_t surf_path = NULL;
 s_surf_model_description_t surf_network_model_description[] = {
   {"Constant", NULL, surf_network_model_init_Constant},
   {"CM02", NULL, surf_network_model_init_CM02},
-  {"LegrandVelho", NULL, surf_network_model_init_LegrandVelho},
+  {"LV08", NULL, surf_network_model_init_LegrandVelho},
 #ifdef HAVE_GTNETS
   {"GTNets", NULL, surf_network_model_init_GTNETS},
 #endif
