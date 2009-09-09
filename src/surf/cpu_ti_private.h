@@ -14,6 +14,9 @@ typedef struct surf_cpu_ti_timeSeries {
   long nb_points;               /*< Number of points in the series */
   double spacing;               /*< Spacing between two points */
   double *values;               /*< Array of size nb_points */
+  tmgr_trace_t power_trace;     /*< Copy of power trace structure */
+  int *trace_index;             /*< Array of index. Each element is the index of first point in interval [spacing*i, spacing*(i+1)[ . Negative value indicates that there are no points in this spacing interval */
+  double *trace_value;          /*< Array with the date when the event trace_index[i] happens. */
 } s_surf_cpu_ti_timeSeries_t, *surf_cpu_ti_timeSeries_t;
 
 /* TRACE */
@@ -26,7 +29,8 @@ typedef struct surf_cpu_ti_tgmr {
   double value;                 /*< Percentage of cpu power disponible. Value fixed between 0 and 1 */
 
   /* Dynamic */
-  double last_time;             /*< Integral interval last point */
+  double last_time;             /*< Integral interval last point (discret time) */
+  double actual_last_time;      /*< Actual size of integral interval */
   double total;                 /*< Integral total between 0 and last_pointn */
 
   surf_cpu_ti_timeSeries_t *levels;     /*< Availability information */

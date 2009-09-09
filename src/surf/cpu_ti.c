@@ -36,11 +36,17 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
 
 static void surf_cpu_free_trace(surf_cpu_ti_tgmr_t trace);
 static void surf_cpu_free_time_series(surf_cpu_ti_timeSeries_t timeSeries);
+static double surf_cpu_integrate_exactly(surf_cpu_ti_tgmr_t trace, int index,
+                                         double a, double b);
+static double surf_cpu_solve_exactly(surf_cpu_ti_tgmr_t trace, int index,
+                                     double a, double amount);
 /* end prototypes */
 
 static void surf_cpu_free_time_series(surf_cpu_ti_timeSeries_t timeSeries)
 {
   xbt_free(timeSeries->values);
+  xbt_free(timeSeries->trace_index);
+  xbt_free(timeSeries->trace_value);
   xbt_free(timeSeries);
 }
 
@@ -57,21 +63,30 @@ static void surf_cpu_free_trace(surf_cpu_ti_tgmr_t trace)
 
 static surf_cpu_ti_timeSeries_t surf_cpu_ti_time_series_new(tmgr_trace_t
                                                             power_trace,
-                                                            double spacing)
+                                                            double spacing,
+                                                            double total_time)
 {
   surf_cpu_ti_timeSeries_t series;
   double time = 0.0, value = 0.0, sum_delta = 0.0;
-  double previous_time = 0.0;
-  double old_time = 0.0;
-  int event_lost = 0;
+  double previous_time = 0.0, old_time = 0.0;
+  int event_lost = 0, next_index = 0;
+  double next_time = 0.0;
+  int total_alloc = 0;
+  s_tmgr_event_t val;
   unsigned int cpt;
 
-  s_tmgr_event_t val;
   series = xbt_new0(s_surf_cpu_ti_timeSeries_t, 1);
   series->spacing = spacing;
+  series->power_trace = power_trace;
 
-  /* FIXME: it doesn't work with traces with only one point and periodicity = 0
-   * if the trace is always cyclic and periodicity must be > 0 it works */
+  /* alloc memory only once, it's faster than doing realloc each time */
+  total_alloc = (int) ceil((total_time / spacing));
+  series->values = xbt_malloc0(sizeof(double) * total_alloc);
+  series->trace_index = xbt_malloc0(sizeof(int) * total_alloc);
+  series->trace_value = xbt_malloc0(sizeof(double) * total_alloc);
+
+/* FIXME: it doesn't work with traces with only one point and periodicity = 0
+ * if the trace is always cyclic and periodicity must be > 0 it works */
   xbt_dynar_foreach(power_trace->event_list, cpt, val) {
     /* delta = the next trace event
      * value = state until next event */
@@ -93,42 +108,59 @@ static surf_cpu_ti_timeSeries_t surf_cpu_ti_time_series_new(tmgr_trace_t
     value /= sum_delta;
 
     while (previous_time + spacing <= time) {
-      series->values = xbt_realloc(series->values,
-                                   (series->nb_points + 1) * sizeof(double));
-      /* update first spacing with mean of points
+      /* update first spacing with mean of points.
        * others with the right value */
-      series->values[(series->nb_points)++] = event_lost ? value : val.value;
-      event_lost = 0;
+      if (event_lost) {
+        series->values[series->nb_points] = value;
+        series->trace_index[series->nb_points] = next_index;
+        series->trace_value[series->nb_points] = next_time;
+        event_lost = 0;
+      } else {
+        series->values[series->nb_points] = val.value;
+        series->trace_index[series->nb_points] = -1;
+      }
+      (series->nb_points)++;
       previous_time += spacing;
     }
     /* update value and sum_delta, interval: [time, next spacing] */
-    value = (previous_time + spacing - time) * val.value;
-    sum_delta = (previous_time + spacing - time);
+    value = (time - previous_time) * val.value;
+    sum_delta = (time - previous_time);
     old_time = time;
-
+    next_index = (int) cpt + 1;
+    next_time = time;
+    event_lost = 1;
   }
-  /* last spacing */
-  if (old_time < (series->nb_points) * spacing) {
-    value /= sum_delta;
-    series->values = xbt_realloc(series->values,
-                                 (series->nb_points + 1) * sizeof(double));
-    series->values[(series->nb_points)++] = value;
-    previous_time += spacing;
+  /* last spacing
+   * ignore small amount at end */
+  double_update(&time, (series->nb_points) * spacing);
+  if (time > 0) {
+    /* here the value is divided by spacing in order to have exactly the value of last chunk (independently of its size). After, when we calcule the integral, we multiply by actual_last_time insted of last_time */
+    value /= spacing;
+    series->values[series->nb_points] = value;
+    /* update first spacing with mean of points
+     * others with the right value */
+    if (event_lost) {
+      series->trace_index[series->nb_points] = next_index;
+      series->trace_value[series->nb_points] = next_time;
+    } else {
+      series->trace_index[series->nb_points] = -1;
+    }
+    (series->nb_points)++;
   }
   return series;
 }
 
 /**
- * \brief Create new levels of points.
- *
- * This function assumes that the input series is
- * evenly spaces, starting at time 0. That is the sort
- * of series produced by surf_cpu_ti_time_series_new()
- *
- * \param	original	Original timeSeries structure
- * \param	factor		New factor to spacing
- * \return					New timeSeries structure with spacing*factor
- */
+* \brief Create new levels of points.
+*
+* This function assumes that the input series is
+* evenly spaces, starting at time 0. That is the sort
+* of series produced by surf_cpu_ti_time_series_new()
+*
+* \param	original	Original timeSeries structure
+* \param	factor		New factor to spacing
+* \return					New timeSeries structure with spacing*factor
+*/
 static surf_cpu_ti_timeSeries_t
 surf_cpu_ti_time_series_coarsen(surf_cpu_ti_timeSeries_t original, int factor)
 {
@@ -163,22 +195,25 @@ surf_cpu_ti_time_series_coarsen(surf_cpu_ti_timeSeries_t original, int factor)
 }
 
 /**
- * \brief Create a new integration trace from a tmgr_trace_t
- *
- * \param	power_trace		CPU availability trace
- * \param	value					Percentage of CPU power disponible (usefull to fixed tracing)
- * \param	spacing				Initial spacing
- * \return	Integration trace structure
- */
+* \brief Create a new integration trace from a tmgr_trace_t
+*
+* \param	power_trace		CPU availability trace
+* \param	value					Percentage of CPU power disponible (usefull to fixed tracing)
+* \param	spacing				Initial spacing
+* \return	Integration trace structure
+*/
 static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
                                              double value)
 {
   surf_cpu_ti_tgmr_t trace;
   surf_cpu_ti_timeSeries_t series;
   int i;
+  double total_time = 0.0;
+  s_tmgr_event_t val;
+  unsigned int cpt;
   trace = xbt_new0(s_surf_cpu_ti_tgmr_t, 1);
 
-  /* no availability file, fixed trace */
+/* no availability file, fixed trace */
   if (!power_trace) {
     trace->type = TRACE_FIXED;
     trace->value = value;
@@ -186,8 +221,16 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
     return trace;
   }
 
+  /* count the total time of trace file */
+  xbt_dynar_foreach(power_trace->event_list, cpt, val) {
+    total_time += val.delta;
+  }
+  trace->actual_last_time = total_time;
+
   DEBUG2("Value %lf, Spacing %lf", value, power_trace->timestep);
-  series = surf_cpu_ti_time_series_new(power_trace, power_trace->timestep);
+  series =
+    surf_cpu_ti_time_series_new(power_trace, power_trace->timestep,
+                                total_time);
   if (!series)
     return NULL;
 
@@ -196,7 +239,7 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
   trace->levels = xbt_new0(surf_cpu_ti_timeSeries_t, 1);
   trace->levels[(trace->nb_levels)++] = series;
 
-  /* Do the coarsening with some arbitrary factors */
+/* Do the coarsening with some arbitrary factors */
   for (i = 1; i < TRACE_NB_LEVELS; i++) {
     series = surf_cpu_ti_time_series_coarsen(trace->levels[i - 1], 4 * i);
 
@@ -209,13 +252,14 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
       break;
     }
   }
-
-  /* calcul of initial integrate */
+/* calcul of initial integrate */
   trace->last_time =
     power_trace->timestep * ((double) (trace->levels[0]->nb_points));
+
   trace->total = surf_cpu_integrate_trace(trace, 0.0, trace->last_time);
 
-  DEBUG2("Total integral %lf, last_time %lf", trace->total, trace->last_time);
+  DEBUG3("Total integral %lf, last_time %lf actual_last_time %lf",
+         trace->total, trace->last_time, trace->actual_last_time);
 
   return trace;
 }
@@ -290,7 +334,7 @@ static void add_traces_cpu(void)
     return;
   called = 1;
 
-  /* connect all traces relative to hosts */
+/* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     cpu_ti_t cpu = surf_model_resource_by_name(surf_cpu_model, elm);
@@ -367,22 +411,22 @@ static void cpu_action_state_set(surf_action_t action,
 }
 
 /**
- * \brief Update the remaning amount of actions
- *
- * \param	cpu		Cpu on which the actions are running
- * \param	now		Current time
- */
+* \brief Update the remaning amount of actions
+*
+* \param	cpu		Cpu on which the actions are running
+* \param	now		Current time
+*/
 static void cpu_update_remaining_amount(cpu_ti_t cpu, double now)
 {
 #define GENERIC_ACTION(action) action->generic_action
   double area_total;
   surf_action_cpu_ti_t action;
 
-  /* alrealdy updated */
+/* alrealdy updated */
   if (cpu->last_update == now)
     return;
 
-  /* calcule the surface */
+/* calcule the surface */
   area_total =
     surf_cpu_integrate_trace(cpu->avail_trace, cpu->last_update,
                              now) * cpu->power_peak;
@@ -423,18 +467,18 @@ static void cpu_update_remaining_amount(cpu_ti_t cpu, double now)
 }
 
 /**
- * \brief Update the finish date of action if necessary
- *
- * \param	cpu		Cpu on which the actions are running
- * \param	now		Current time
- */
+* \brief Update the finish date of action if necessary
+*
+* \param	cpu		Cpu on which the actions are running
+* \param	now		Current time
+*/
 static void cpu_update_action_finish_date(cpu_ti_t cpu, double now)
 {
 #define GENERIC_ACTION(action) action->generic_action
   surf_action_cpu_ti_t action;
   double sum_priority = 0.0, total_area, min_finish = -1;
 
-  /* update remaning amount of actions */
+/* update remaning amount of actions */
   cpu_update_remaining_amount(cpu, now);
 
   xbt_swag_foreach(action, cpu->action_set) {
@@ -504,7 +548,7 @@ static void cpu_update_action_finish_date(cpu_ti_t cpu, double now)
        cpu->generic_resource.name, action, GENERIC_ACTION(action).start,
        GENERIC_ACTION(action).finish, GENERIC_ACTION(action).max_duration);
   }
-  /* remove from modified cpu */
+/* remove from modified cpu */
   xbt_swag_remove(cpu, modified_cpu);
 #undef GENERIC_ACTION
 }
@@ -514,11 +558,11 @@ static double share_resources(double now)
   cpu_ti_t cpu, cpu_next;
   double min_action_duration = -1;
 
-  /* iterates over modified cpus to update share resources */
+/* iterates over modified cpus to update share resources */
   xbt_swag_foreach_safe(cpu, cpu_next, modified_cpu) {
     cpu_update_action_finish_date(cpu, now);
   }
-  /* get the min next event if heap not empty */
+/* get the min next event if heap not empty */
   if (xbt_heap_size(action_heap) > 0)
     min_action_duration = xbt_heap_maxkey(action_heap) - now;
 
@@ -679,7 +723,7 @@ static void action_set_max_duration(surf_action_t action, double duration)
   else
     min_finish = action->finish;
 
-  /* add in action heap */
+/* add in action heap */
   if (ACT->index_heap >= 0) {
     surf_action_cpu_ti_t heap_act =
       xbt_heap_remove(action_heap, ACT->index_heap);
@@ -719,12 +763,12 @@ static double get_speed(void *cpu, double load)
 }
 
 /**
- * \brief Auxiliar function to update the cpu power scale.
- *
- *	This function uses the trace structure to return the power scale at the determined time a.
- * \param trace		Trace structure to search the updated power scale
- * \param a				Time
- * \return Cpu power scale
+* \brief Auxiliar function to update the cpu power scale.
+*
+*	This function uses the trace structure to return the power scale at the determined time a.
+* \param trace		Trace structure to search the updated power scale
+* \param a				Time
+* \return Cpu power scale
 */
 static double surf_cpu_get_power_scale(surf_cpu_ti_tgmr_t trace, double a)
 {
@@ -741,7 +785,7 @@ static double get_available_speed(void *cpu)
   cpu_ti_t CPU = cpu;
   CPU->power_scale =
     surf_cpu_get_power_scale(CPU->avail_trace, surf_get_clock());
-  /* number between 0 and 1 */
+/* number between 0 and 1 */
   return CPU->power_scale;
 }
 
@@ -822,16 +866,16 @@ void surf_cpu_model_init_ti(const char *filename)
 ///////////////// BEGIN INTEGRAL //////////////
 
 /**
- * \brief Integrate trace
- *  
- * Wrapper around surf_cpu_integrate_trace_simple() to get
- * the cyclic effect.
- *
- * \param trace Trace structure.
- * \param a			Begin of interval
- * \param b			End of interval
- * \return the integrate value. -1 if an error occurs.
- */
+* \brief Integrate trace
+*
+* Wrapper around surf_cpu_integrate_trace_simple() to get
+* the cyclic effect.
+*
+* \param trace Trace structure.
+* \param a			Begin of interval
+* \param b			End of interval
+* \return the integrate value. -1 if an error occurs.
+*/
 static double surf_cpu_integrate_trace(surf_cpu_ti_tgmr_t trace, double a,
                                        double b)
 {
@@ -884,16 +928,16 @@ static double surf_cpu_integrate_trace(surf_cpu_ti_tgmr_t trace, double a,
 }
 
 /**
- * \brief Integrate the trace between a and b.
- *
- *  integrates without taking cyclic-traces into account.
- *  [a,b] \subset [0,last_time]
- *
- * \param trace Trace structure.
- * \param a			Begin of interval
- * \param b			End of interval
- * \return the integrate value. -1 if an error occurs.
- */
+* \brief Integrate the trace between a and b.
+*
+*  integrates without taking cyclic-traces into account.
+*  [a,b] \subset [0,last_time]
+*
+* \param trace Trace structure.
+* \param a			Begin of interval
+* \param b			End of interval
+* \return the integrate value. -1 if an error occurs.
+*/
 static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
                                               double a, double b)
 {
@@ -907,7 +951,7 @@ static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
   double current_spacing;
   DEBUG2("Computing simple integral on [%.2f , %.2f]\n", a, b);
 
-  /* Sanity checks */
+/* Sanity checks */
   if ((a < 0.0) || (b < a) || (a > trace->last_time)
       || (b > trace->last_time)) {
     CRITICAL2
@@ -937,18 +981,18 @@ static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
   }
   DEBUG1("top_level=%d\n", top_level);
 
-  /* Are a and b BOTH in the same chunk of level 0 ? */
+/* Are a and b BOTH in the same chunk of level 0 ? */
   if (l_bounds[0] > u_bounds[0]) {
     return (b - a) * (trace->levels[0]->values[u_bounds[0]]);
   }
 
-  /* first sub-level amount */
+/* first sub-level amount */
   integral += ((l_bounds[0]) * (trace->levels[0]->spacing) - a) *
     (trace->levels[0]->values[l_bounds[0] - 1]);
 
   DEBUG1("Initial level 0 amount is %.2f\n", integral);
 
-  /* first n-1 levels */
+/* first n-1 levels */
   for (i = 0; i < top_level; i++) {
 
     if (l_bounds[i] >= u_bounds[i])
@@ -974,7 +1018,7 @@ static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
 
   DEBUG1("After going up: %.2f\n", integral);
 
-  /* n-th level */
+/* n-th level */
   current_spacing = trace->levels[top_level]->spacing;
   index = l_bounds[top_level];
 
@@ -993,7 +1037,7 @@ static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
   DEBUG0("\n");
   DEBUG1("After steady : %.2f\n", integral);
 
-  /* And going back down */
+/* And going back down */
   for (i = top_level - 1; i >= 0; i--) {
     if (l_bounds[i] > u_bounds[i])
       break;
@@ -1015,10 +1059,9 @@ static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
   DEBUG1("After going down : %.2f", integral);
 
 
-  /* Little piece at the end */
+/* Little piece at the end */
   integral += (b - u_bounds[0] * (trace->levels[0]->spacing)) *
     (trace->levels[0]->values[u_bounds[0]]);
-
   DEBUG1("After last bit : %.2f", integral);
 
   return integral;
@@ -1026,15 +1069,15 @@ static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
 
 
 /**
- * \brief Calcul the time needed to execute "amount" on cpu.
- *
- * Here, amount can span multiple trace periods
- *
- * \param trace 	CPU trace structure
- * \param a				Initial time
- * \param amount	Amount of calcul to be executed
- * \return	End time
- */
+* \brief Calcul the time needed to execute "amount" on cpu.
+*
+* Here, amount can span multiple trace periods
+*
+* \param trace 	CPU trace structure
+* \param a				Initial time
+* \param amount	Amount of calcul to be executed
+* \return	End time
+*/
 static double surf_cpu_solve_trace(surf_cpu_ti_tgmr_t trace, double a,
                                    double amount)
 {
@@ -1044,7 +1087,7 @@ static double surf_cpu_solve_trace(surf_cpu_ti_tgmr_t trace, double a,
   double reduced_a;
   double b;
 
-  /* Fix very small negative numbers */
+/* Fix very small negative numbers */
   if ((a < 0.0) && (a > -EPSILON)) {
     a = 0.0;
   }
@@ -1052,7 +1095,7 @@ static double surf_cpu_solve_trace(surf_cpu_ti_tgmr_t trace, double a,
     amount = 0.0;
   }
 
-  /* Sanity checks */
+/* Sanity checks */
   if ((a < 0.0) || (amount < 0.0)) {
     CRITICAL2
       ("Error, invalid parameters [a = %.2f, amount = %.2f]. You probably have a task executing with negative computation amount. Check your code.",
@@ -1060,17 +1103,18 @@ static double surf_cpu_solve_trace(surf_cpu_ti_tgmr_t trace, double a,
     xbt_abort();
   }
 
-  /* At this point, a and amount are positive */
+/* At this point, a and amount are positive */
 
   if (amount < EPSILON)
     return a;
 
-  /* Is the trace fixed ? */
+/* Is the trace fixed ? */
   if (trace->type == TRACE_FIXED) {
     return (a + (amount / trace->value));
   }
 
-  /* Reduce the problem to one where amount <= trace_total */
+  DEBUG2("amount %lf total %lf", amount, trace->total);
+/* Reduce the problem to one where amount <= trace_total */
   quotient = (int) (floor(amount / trace->total));
   reduced_amount = (trace->total) * ((amount / trace->total) -
                                      floor(amount / trace->total));
@@ -1079,27 +1123,27 @@ static double surf_cpu_solve_trace(surf_cpu_ti_tgmr_t trace, double a,
   DEBUG3("Quotient: %d reduced_amount: %lf reduced_a: %lf", quotient,
          reduced_amount, reduced_a);
 
-  /* Now solve for new_amount which is <= trace_total */
-  /*
-     fprintf(stderr,"reduced_a = %.2f\n",reduced_a);
-     fprintf(stderr,"reduced_amount = %.2f\n",reduced_amount);
-   */
+/* Now solve for new_amount which is <= trace_total */
+/*
+	 fprintf(stderr,"reduced_a = %.2f\n",reduced_a);
+	 fprintf(stderr,"reduced_amount = %.2f\n",reduced_amount);
+ */
   reduced_b =
     surf_cpu_solve_trace_somewhat_simple(trace, reduced_a, reduced_amount);
 
-  /* Re-map to the original b and amount */
+/* Re-map to the original b and amount */
   b = (trace->last_time) * (int) (floor(a / trace->last_time)) +
-    (quotient * trace->last_time) + reduced_b;
+    (quotient * trace->actual_last_time) + reduced_b;
   return b;
 }
 
 /**
- * \brief Auxiliar function to solve integral
- *
- * Here, amount is <= trace->total
- * and a <=trace->last_time
- *
- */
+* \brief Auxiliar function to solve integral
+*
+* Here, amount is <= trace->total
+* and a <=trace->last_time
+*
+*/
 static double surf_cpu_solve_trace_somewhat_simple(surf_cpu_ti_tgmr_t trace,
                                                    double a, double amount)
 {
@@ -1109,9 +1153,9 @@ static double surf_cpu_solve_trace_somewhat_simple(surf_cpu_ti_tgmr_t trace,
   DEBUG2("Solve integral: [%.2f, amount=%.2f]", a, amount);
 
   amount_till_end = surf_cpu_integrate_trace(trace, a, trace->last_time);
-  /*
-     fprintf(stderr,"amount_till_end=%.2f\n",amount_till_end);
-   */
+/*
+	 fprintf(stderr,"amount_till_end=%.2f\n",amount_till_end);
+ */
 
   if (amount_till_end > amount) {
     b = surf_cpu_solve_trace_simple(trace, a, amount);
@@ -1124,15 +1168,15 @@ static double surf_cpu_solve_trace_somewhat_simple(surf_cpu_ti_tgmr_t trace,
 }
 
 /**
- * \brief Auxiliar function to solve integral
- * surf_cpu_solve_trace_simple()
- *
- *  solve for the upper bound without taking 
- *  cyclic-traces into account.
- *
- *  [a,y] \subset [0,last_time]
- *  
- */
+* \brief Auxiliar function to solve integral
+* surf_cpu_solve_trace_simple()
+*
+*  solve for the upper bound without taking
+*  cyclic-traces into account.
+*
+*  [a,y] \subset [0,last_time]
+*
+*/
 static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
                                           double amount)
 {
@@ -1149,7 +1193,7 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
 
   DEBUG2("Solving simple integral [x=%.2f,amount=%.2f]", a, amount);
 
-  /* Sanity checks */
+/* Sanity checks */
   if ((a < 0.0) || (amount < 0.0) || (a > trace->last_time)) {
     CRITICAL2
       ("Error, invalid parameters [a = %.2f, amount = %.2f]. You probably have a task executing with negative computation amount. Check your code.",
@@ -1180,13 +1224,21 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
   }
 
   remains = amount;
-  /* first sub-level amount */
+/* first sub-level amount */
+/* old code, keep here for a while */
+#if 0
   next_chunk = ((l_bounds[0]) * (trace->levels[0]->spacing) - a) *
     (trace->levels[0]->values[l_bounds[0] - 1]);
+#endif
+  next_chunk =
+    surf_cpu_integrate_exactly(trace, l_bounds[0] - 1, a,
+                               (l_bounds[0]) * (trace->levels[0]->spacing));
 
   if (remains - next_chunk < 0.0) {
+#if 0
     b = a + (amount / trace->levels[0]->values[l_bounds[0] - 1]);
-
+#endif
+    b = a + surf_cpu_solve_exactly(trace, l_bounds[0] - 1, a, amount);
     DEBUG1("Returning sub-level[0] result %.2f", b);
 
     return b;
@@ -1196,7 +1248,7 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
   }
   DEBUG2("After sub-0 stuff: remains %.2f (b=%.2f)", remains, b);
 
-  /* first n-1 levels */
+/* first n-1 levels */
   DEBUG0("Going up levels");
 
   done = 0;
@@ -1240,13 +1292,13 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
   DEBUG0("Steady");
   top_level = i;
 
-  /* n-th level */
+/* n-th level */
   current_spacing = trace->levels[top_level]->spacing;
   index = l_bounds[top_level];
 
   DEBUG1("L%d:", top_level);
 
-  /* iterate over the last level only if it hasn't found the chunk where the amount is */
+/* iterate over the last level only if it hasn't found the chunk where the amount is */
   if (!done) {
     while (index < trace->levels[top_level]->nb_points) {
       next_chunk = current_spacing * trace->levels[top_level]->values[index];
@@ -1265,22 +1317,25 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
   }
   DEBUG2("remains = %.2f b=%.2f", remains, b);
 
-  /* And going back down */
+/* And going back down */
   DEBUG0("Going back down");
   for (i = top_level - 1; i >= 0; i--) {
 
     current_spacing = trace->levels[i]->spacing;
-    index = b / (trace->levels[i]->spacing);
+    /* use rint to trunc index due to precision problems */
+    index = rint(b / trace->levels[i]->spacing);
 
     DEBUG1("L%d:", i);
 
     while (index < trace->levels[i]->nb_points) {
       next_chunk = current_spacing * trace->levels[i]->values[index];
+      DEBUG3("remains %lf nextchu %lf value %lf", remains, next_chunk,
+             trace->levels[i]->values[index]);
       if (remains - next_chunk <= 0.0) {        /* Too far */
         break;
       } else {
-        DEBUG2("%.2f->%.2f|",
-               index * (current_spacing), (index + 1) * (current_spacing));
+        DEBUG3("%.2f->%.2f| b %lf",
+               index * (current_spacing), (index + 1) * (current_spacing), b);
 
         remains -= next_chunk;
         b += current_spacing;
@@ -1292,10 +1347,149 @@ static double surf_cpu_solve_trace_simple(surf_cpu_ti_tgmr_t trace, double a,
   DEBUG2("remains = %.2f b=%.2f\n", remains, b);
   DEBUG1("Last bit index=%ld\n", index);
 
-  /* Little piece at the end */
+/* Little piece at the end */
+#if 0
   b += (remains) / (trace->levels[0]->values[index]);
-
+#endif
+  b += surf_cpu_solve_exactly(trace, index, b, remains);
+  DEBUG1("Total b %lf", b);
   return b;
+}
+
+/**
+* \brief This function calcules the exactly value of integral between a and b. It uses directly the tmgr_trace_t strucure.
+* It works only if the two points are in the same timestep.
+* \param trace	Trace structure
+* \param index	Index of timestep where the points are located
+* \param a			First point of interval
+* \param b			Second point
+* \return	the integral value
+*/
+static double surf_cpu_integrate_exactly(surf_cpu_ti_tgmr_t trace, int index,
+                                         double a, double b)
+{
+  int tmgr_index;
+  double integral = 0.0;
+  double time = a;
+  double tmgr_date;
+  s_tmgr_event_t elem;
+
+  tmgr_index = trace->levels[0]->trace_index[index];
+  tmgr_date = trace->levels[0]->trace_value[index];
+
+  DEBUG6
+    ("Start time: %lf End time: %lf index %d tmgr_index %d tmgr_date %lf value %lf",
+     a, b, index, tmgr_index, tmgr_date, trace->levels[0]->values[index]);
+
+  if (tmgr_index < 0)
+    return (b - a) * (trace->levels[0]->values[index]);
+
+  while (a > tmgr_date) {
+    xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list, tmgr_index,
+                      &elem);
+    tmgr_date += elem.delta;
+    if (a <= tmgr_date)
+      break;
+    tmgr_index++;
+  }
+  /* sum first slice [a, tmgr_date[ */
+  if (a < tmgr_date) {
+    xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list,
+                      tmgr_index - 1, &elem);
+    if (b < tmgr_date) {
+      return (b - a) * elem.value;
+    }
+
+    integral = (tmgr_date - a) * elem.value;
+    time = tmgr_date;
+  }
+
+  while (tmgr_index <
+         xbt_dynar_length(trace->levels[0]->power_trace->event_list)) {
+    xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list, tmgr_index,
+                      &elem);
+    if (b <= time + elem.delta) {
+      integral += (b - time) * elem.value;
+      break;
+    }
+    integral += elem.delta * elem.value;
+    time += elem.delta;
+    tmgr_index++;
+  }
+
+  return integral;
+}
+
+/**
+* \brief This function calcules the exactly time needed to compute amount flops. It uses directly the tmgr_trace_t structure.
+* It works only if the two points are in the same timestep.
+* \param trace	Trace structure
+* \param index	Index of timestep where the points are located
+* \param a			Start time
+* \param amount			Total amount
+* \return	number of seconds needed to compute amount flops
+*/
+static double surf_cpu_solve_exactly(surf_cpu_ti_tgmr_t trace, int index,
+                                     double a, double amount)
+{
+  int tmgr_index;
+  double remains;
+  double time, tmgr_date;
+  double slice_amount;
+  s_tmgr_event_t elem;
+
+
+  tmgr_index = trace->levels[0]->trace_index[index];
+  tmgr_date = trace->levels[0]->trace_value[index];
+  remains = amount;
+  time = a;
+
+  DEBUG6
+    ("Start time: %lf Amount: %lf index %d tmgr_index %d tmgr_date %lf value %lf",
+     a, amount, index, tmgr_index, tmgr_date,
+     trace->levels[0]->values[index]);
+  if (tmgr_index < 0)
+    return amount / (trace->levels[0]->values[index]);
+
+  while (a > tmgr_date) {
+    xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list, tmgr_index,
+                      &elem);
+    tmgr_date += elem.delta;
+    if (a <= tmgr_date)
+      break;
+    tmgr_index++;
+  }
+  /* sum first slice [a, tmgr_date[ */
+  if (a < tmgr_date) {
+    xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list,
+                      tmgr_index - 1, &elem);
+    slice_amount = (tmgr_date - a) * elem.value;
+    DEBUG5("slice amount %lf a %lf tmgr_date %lf elem_value %lf delta %lf",
+           slice_amount, a, tmgr_date, elem.value, elem.delta);
+    if (remains <= slice_amount) {
+      return (remains / elem.value);
+    }
+
+    remains -= (tmgr_date - a) * elem.value;
+    time = tmgr_date;
+  }
+
+  while (1) {
+    xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list, tmgr_index,
+                      &elem);
+    slice_amount = elem.delta * elem.value;
+    DEBUG5("slice amount %lf a %lf tmgr_date %lf elem_value %lf delta %lf",
+           slice_amount, a, tmgr_date, elem.value, elem.delta);
+    if (remains <= slice_amount) {
+      time += remains / elem.value;
+      break;
+    }
+    time += elem.delta;
+    remains -= elem.delta * elem.value;
+    tmgr_index++;
+  }
+
+  return time - a;
 }
 
 //////////// END INTEGRAL /////////////////
