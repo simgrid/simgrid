@@ -116,8 +116,8 @@ static surf_cpu_ti_timeSeries_t surf_cpu_ti_time_series_new(tmgr_trace_t
         series->trace_value[series->nb_points] = next_time;
         event_lost = 0;
       } else {
-        series->values[series->nb_points] = val.value;
         series->trace_index[series->nb_points] = -1;
+        series->values[series->nb_points] = val.value;
       }
       (series->nb_points)++;
       previous_time += spacing;
@@ -142,9 +142,8 @@ static surf_cpu_ti_timeSeries_t surf_cpu_ti_time_series_new(tmgr_trace_t
     if (event_lost) {
       series->trace_index[series->nb_points] = next_index;
       series->trace_value[series->nb_points] = next_time;
-    } else {
+    } else
       series->trace_index[series->nb_points] = -1;
-    }
     (series->nb_points)++;
   }
   return series;
@@ -221,6 +220,14 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
     return trace;
   }
 
+  /* only one point available, fixed trace */
+  if (xbt_dynar_length(power_trace->event_list) == 1) {
+    xbt_dynar_get_cpy(power_trace->event_list, 0, &val);
+    trace->type = TRACE_FIXED;
+    trace->value = val.value;
+    return trace;
+  }
+
   /* count the total time of trace file */
   xbt_dynar_foreach(power_trace->event_list, cpt, val) {
     total_time += val.delta;
@@ -256,7 +263,8 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
   trace->last_time =
     power_trace->timestep * ((double) (trace->levels[0]->nb_points));
 
-  trace->total = surf_cpu_integrate_trace(trace, 0.0, trace->last_time);
+  trace->total =
+    surf_cpu_integrate_trace(trace, 0.0, trace->actual_last_time);
 
   DEBUG3("Total integral %lf, last_time %lf actual_last_time %lf",
          trace->total, trace->last_time, trace->actual_last_time);
@@ -271,6 +279,8 @@ static cpu_ti_t cpu_new(char *name, double power_peak,
                         e_surf_resource_state_t state_initial,
                         tmgr_trace_t state_trace, xbt_dict_t cpu_properties)
 {
+  tmgr_trace_t empty_trace;
+  s_tmgr_event_t val;
   cpu_ti_t cpu = xbt_new0(s_cpu_ti_t, 1);
   s_surf_action_cpu_ti_t ti_action;
   xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
@@ -288,7 +298,17 @@ static cpu_ti_t cpu_new(char *name, double power_peak,
   if (state_trace)
     cpu->state_event =
       tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
-
+  if (power_trace && xbt_dynar_length(power_trace->event_list) > 1) {
+    /* add a fake trace event if periodicity == 0 */
+    xbt_dynar_get_cpy(power_trace->event_list,
+                      xbt_dynar_length(power_trace->event_list) - 1, &val);
+    if (val.delta == 0) {
+      empty_trace = tmgr_empty_trace_new();
+      cpu->power_event =
+        tmgr_history_add_trace(history, empty_trace,
+                               cpu->avail_trace->actual_last_time, 0, cpu);
+    }
+  }
   xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu,
                surf_resource_free);
 
@@ -422,8 +442,8 @@ static void cpu_update_remaining_amount(cpu_ti_t cpu, double now)
   double area_total;
   surf_action_cpu_ti_t action;
 
-/* alrealdy updated */
-  if (cpu->last_update == now)
+/* already updated */
+  if (cpu->last_update >= now)
     return;
 
 /* calcule the surface */
@@ -595,7 +615,35 @@ static void update_resource_state(void *id,
 {
   cpu_ti_t cpu = id;
   surf_action_cpu_ti_t action;
-  if (event_type == cpu->state_event) {
+
+  if (event_type == cpu->power_event) {
+    tmgr_trace_t power_trace;
+    surf_cpu_ti_tgmr_t trace;
+    s_tmgr_event_t val;
+
+    DEBUG3("Finish trace date: %lf value %lf date %lf", surf_get_clock(),
+           value, date);
+    /* update remaining of actions and put in modified cpu swag */
+    cpu_update_remaining_amount(cpu, date);
+    xbt_swag_insert(cpu, modified_cpu);
+
+    power_trace = cpu->avail_trace->levels[0]->power_trace;
+    xbt_dynar_get_cpy(power_trace->event_list,
+                      xbt_dynar_length(power_trace->event_list) - 1, &val);
+    /* free old trace */
+    surf_cpu_free_trace(cpu->avail_trace);
+    cpu->power_scale = val.value;
+
+    trace = xbt_new0(s_surf_cpu_ti_tgmr_t, 1);
+    trace->type = TRACE_FIXED;
+    trace->value = val.value;
+    DEBUG1("value %lf", val.value);
+
+    cpu->avail_trace = trace;
+
+    if (tmgr_trace_event_free(event_type))
+      cpu->power_event = NULL;
+  } else if (event_type == cpu->state_event) {
     if (value > 0)
       cpu->state_current = SURF_RESOURCE_ON;
     else {
@@ -983,7 +1031,10 @@ static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
 
 /* Are a and b BOTH in the same chunk of level 0 ? */
   if (l_bounds[0] > u_bounds[0]) {
+    return surf_cpu_integrate_exactly(trace, u_bounds[0], a, b);
+#if 0
     return (b - a) * (trace->levels[0]->values[u_bounds[0]]);
+#endif
   }
 
 /* first sub-level amount */
@@ -1043,8 +1094,8 @@ static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
       break;
 
     current_spacing = trace->levels[i]->spacing;
-    index = u_bounds[i + 1] * (trace->levels[i + 1]->spacing /
-                               current_spacing);
+    index = rint(u_bounds[i + 1] * (trace->levels[i + 1]->spacing /
+                                    current_spacing));
     DEBUG1("L%d:", i);
     while (double_positive
            ((u_bounds[i]) * current_spacing - index * current_spacing)) {
@@ -1060,8 +1111,13 @@ static double surf_cpu_integrate_trace_simple(surf_cpu_ti_tgmr_t trace,
 
 
 /* Little piece at the end */
+#if 0
   integral += (b - u_bounds[0] * (trace->levels[0]->spacing)) *
     (trace->levels[0]->values[u_bounds[0]]);
+#endif
+  integral +=
+    surf_cpu_integrate_exactly(trace, u_bounds[0],
+                               u_bounds[0] * (trace->levels[0]->spacing), b);
   DEBUG1("After last bit : %.2f", integral);
 
   return integral;
@@ -1374,6 +1430,9 @@ static double surf_cpu_integrate_exactly(surf_cpu_ti_tgmr_t trace, int index,
   double tmgr_date;
   s_tmgr_event_t elem;
 
+  /* already at the end */
+  if (index >= trace->levels[0]->nb_points && !double_positive(b - a))
+    return 0.0;
   tmgr_index = trace->levels[0]->trace_index[index];
   tmgr_date = trace->levels[0]->trace_value[index];
 
@@ -1388,8 +1447,6 @@ static double surf_cpu_integrate_exactly(surf_cpu_ti_tgmr_t trace, int index,
     xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list, tmgr_index,
                       &elem);
     tmgr_date += elem.delta;
-    if (a <= tmgr_date)
-      break;
     tmgr_index++;
   }
   /* sum first slice [a, tmgr_date[ */
@@ -1455,8 +1512,6 @@ static double surf_cpu_solve_exactly(surf_cpu_ti_tgmr_t trace, int index,
     xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list, tmgr_index,
                       &elem);
     tmgr_date += elem.delta;
-    if (a <= tmgr_date)
-      break;
     tmgr_index++;
   }
   /* sum first slice [a, tmgr_date[ */
