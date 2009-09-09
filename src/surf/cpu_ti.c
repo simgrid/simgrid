@@ -597,8 +597,8 @@ static void update_actions_state(double now, double delta)
   surf_action_cpu_ti_t action;
   while ((xbt_heap_size(action_heap) > 0)
          && (xbt_heap_maxkey(action_heap) <= now)) {
-    DEBUG1("Action %p: finish", action);
     action = xbt_heap_pop(action_heap);
+    DEBUG1("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     GENERIC_ACTION(action).remains = 0;
