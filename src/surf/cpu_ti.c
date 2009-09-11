@@ -85,8 +85,6 @@ static surf_cpu_ti_timeSeries_t surf_cpu_ti_time_series_new(tmgr_trace_t
   series->trace_index = xbt_malloc0(sizeof(int) * total_alloc);
   series->trace_value = xbt_malloc0(sizeof(double) * total_alloc);
 
-/* FIXME: it doesn't work with traces with only one point and periodicity = 0
- * if the trace is always cyclic and periodicity must be > 0 it works */
   xbt_dynar_foreach(power_trace->event_list, cpt, val) {
     /* delta = the next trace event
      * value = state until next event */
