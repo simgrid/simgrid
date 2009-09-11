@@ -123,7 +123,9 @@ void test(char *platform)
       action->model_type->action_unref(action);
     }
 
-  } while (surf_solve() >= 0.0);
+  } while ((xbt_swag_size(surf_network_model->states.running_action_set) ||
+            xbt_swag_size(surf_cpu_model->states.running_action_set)) &&
+            surf_solve() >= 0.0);
 
   DEBUG0("Simulation Terminated");
 }

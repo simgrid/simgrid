@@ -46,6 +46,7 @@ void test(char *platform)
   surf_action_t actionC = NULL;
   surf_action_t commAB = NULL;
   double now = -1.0;
+  int running;
 
   int workstation_id =
     find_model_description(surf_workstation_model_description, "CLM03");
@@ -81,6 +82,7 @@ void test(char *platform)
     surf_action_t action = NULL;
     unsigned int iter;
     surf_model_t model = NULL;
+    running = 0;
 
     now = surf_get_clock();
     DEBUG1("Next Event : %g", now);
@@ -97,8 +99,12 @@ void test(char *platform)
         DEBUG1("\t * Done : %p", action);
         model->action_unref(action);
       }
+      if (xbt_swag_size(model->states.running_action_set)) {
+        DEBUG1("running %s", model->name);
+        running = 1;
+      }
     }
-  } while (surf_solve() >= 0.0);
+  } while (running && surf_solve() >= 0.0);
 
   DEBUG0("Simulation Terminated");
 
