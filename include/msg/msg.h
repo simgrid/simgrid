@@ -201,5 +201,11 @@ XBT_PUBLIC(void) MSG_action_unregister(const char *action_name);
      MSG_error_t MSG_action_trace_run(char *path);
 
 
+#ifdef MSG_USE_DEPRECATED
+#define MSG_mailbox_put_with_time_out(mailbox, task, timeout) \
+        MSG_mailbox_put_with_timeout(mailbox, task, timeout)
+
+#endif
+
 SG_END_DECL()
 #endif
