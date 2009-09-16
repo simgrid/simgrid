@@ -217,9 +217,9 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     }
 
     if (timeout > 0)
-      SIMIX_cond_wait_timeout(cond, h_simdata->mutex, timeout - start_time);
+      SIMIX_cond_wait_timeout(cond, h_simdata->mutex, timeout - start_time + SIMIX_get_clock());
     else
-      SIMIX_cond_wait(MSG_mailbox_get_cond(mailbox), h_simdata->mutex);
+      SIMIX_cond_wait(cond, h_simdata->mutex);
 
     if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
       SIMIX_mutex_unlock(h_simdata->mutex);
