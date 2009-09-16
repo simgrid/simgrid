@@ -11,6 +11,7 @@ SimGrid (3.3.4) unstable; urgency=low
  * Fix a source-level compatibility glitch from 3.2: after defining
    MSG_USE_DEPRECATED, you can use the old name
    MSG_task_put_with_time_out() for MSG_task_put_with_timeout()
+ * Allow to compile from the SVN with automake 1.11
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 

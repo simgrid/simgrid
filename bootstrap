@@ -7,7 +7,7 @@
 # You can redistribute and/or modify it under the terms of the
 # GNU LGPL (v2.1) licence.
 
-amversions="${amver:-1.10}"
+amversions="1.10 1.11"
 
 if [ ! -e bootstrap ] ; then
   if [ -e ../bootstrap ] ; then
