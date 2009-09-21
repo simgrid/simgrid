@@ -5,13 +5,27 @@ SimGrid (3.3.4) unstable; urgency=low
  * Use LV08 as default network model since it gives better accuracy
     for small messages and shouldn't change things for big ones.
    Use --cfg=network_model:CM02 to get the previous behavior.
- * Fix a major regresion from 3.2 where the timeout provided to
+ * Fix a major regression from 3.2 where the timeout provided to
    MSG_task_put_with_timeout() was used as absolute time before which
    the comm should be done.
  * Fix a source-level compatibility glitch from 3.2: after defining
    MSG_USE_DEPRECATED, you can use the old name
    MSG_task_put_with_time_out() for MSG_task_put_with_timeout()
  * Allow to compile from the SVN with automake 1.11
+ * Invalidate maxmin system partially
+   This feature optimizes the maxmin solution through partial invalidation of maxmin system.
+   Use "--cfg:maxmin-selective-update=1" to enable it.
+ * Cas01_IM (Cas01 IMproved)
+   This CPU model is the same Cas01 model, but it uses the maxmin-selective-update flag
+   and a heap structure to manage actions on SURF kernel. It reduces the complexity to
+   find the next action to finish and, consequently, it's faster than the old Cas01.
+   Use "--cfg=cpu_model:Cas01_IM" to change to this CPU model.
+ * CpuTI (CPU Trace Integration)
+   A new CPU model whose objective is simulate faster when using availability trace files.
+   It does the pre-integration of traces files to calculate the amount of CPU power available,
+   and so, executes faster than the old CPU models.
+   Use "--cfg=cpu_model:CpuTI" to change to this CPU model.
+ * Fix some problems when using the "start_time" tag in deployment XMLs.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 
