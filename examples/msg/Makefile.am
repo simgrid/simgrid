@@ -58,7 +58,9 @@ TESTS = sendrecv/sendrecv_CLM03.tesh \
         parallel_task/parallel_task.tesh \
         priority/priority.tesh \
 	properties/msg_prop.tesh \
-  	trace/trace.tesh
+    trace/trace.tesh \
+	masterslave/masterslave_cas01_im.tesh \
+	masterslave/masterslave_cpu_ti.tesh
 
 if HAVE_GTNETS
   TESTS += gtnets/gtnets.tesh
