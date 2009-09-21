@@ -1,7 +1,6 @@
 #! ./tesh
 p Testing the bypassing of the flexml parser
 
-
 $ $SG_TEST_EXENV masterslave/masterslave_bypass --log=no_loc 
 > [0.000000] [surf_parse/WARNING] Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [host A:master:(1) 0.000000] [msg_test/INFO] Got 1 slave(s) :
@@ -29,107 +28,107 @@ $ $SG_TEST_EXENV masterslave/masterslave_bypass --log=no_loc
 > [host A:master:(1) 0.000000] [msg_test/INFO] 	"Task_19"
 > [host A:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" to "host B"
 > [host B:slave:(2) 0.000000] [msg_test/INFO] I'm a slave
-> [host A:master:(1) 2.200000] [msg_test/INFO] Send completed
-> [host A:master:(1) 2.200000] [msg_test/INFO] Sending "Task_1" to "host B"
-> [host B:slave:(2) 2.200000] [msg_test/INFO] Received "Task_0" 
-> [host B:slave:(2) 2.200000] [msg_test/INFO] Processing "Task_0" 
-> [host B:slave:(2) 2.250000] [msg_test/INFO] "Task_0" done 
-> [host A:master:(1) 4.450000] [msg_test/INFO] Send completed
-> [host A:master:(1) 4.450000] [msg_test/INFO] Sending "Task_2" to "host B"
-> [host B:slave:(2) 4.450000] [msg_test/INFO] Received "Task_1" 
-> [host B:slave:(2) 4.450000] [msg_test/INFO] Processing "Task_1" 
-> [host B:slave:(2) 4.500000] [msg_test/INFO] "Task_1" done 
-> [host A:master:(1) 6.700000] [msg_test/INFO] Send completed
-> [host A:master:(1) 6.700000] [msg_test/INFO] Sending "Task_3" to "host B"
-> [host B:slave:(2) 6.700000] [msg_test/INFO] Received "Task_2" 
-> [host B:slave:(2) 6.700000] [msg_test/INFO] Processing "Task_2" 
-> [host B:slave:(2) 6.750000] [msg_test/INFO] "Task_2" done 
-> [host A:master:(1) 8.950000] [msg_test/INFO] Send completed
-> [host A:master:(1) 8.950000] [msg_test/INFO] Sending "Task_4" to "host B"
-> [host B:slave:(2) 8.950000] [msg_test/INFO] Received "Task_3" 
-> [host B:slave:(2) 8.950000] [msg_test/INFO] Processing "Task_3" 
-> [host B:slave:(2) 9.000000] [msg_test/INFO] "Task_3" done 
-> [host A:master:(1) 11.200000] [msg_test/INFO] Send completed
-> [host A:master:(1) 11.200000] [msg_test/INFO] Sending "Task_5" to "host B"
-> [host B:slave:(2) 11.200000] [msg_test/INFO] Received "Task_4" 
-> [host B:slave:(2) 11.200000] [msg_test/INFO] Processing "Task_4" 
-> [host B:slave:(2) 11.250000] [msg_test/INFO] "Task_4" done 
-> [host A:master:(1) 13.450000] [msg_test/INFO] Send completed
-> [host A:master:(1) 13.450000] [msg_test/INFO] Sending "Task_6" to "host B"
-> [host B:slave:(2) 13.450000] [msg_test/INFO] Received "Task_5" 
-> [host B:slave:(2) 13.450000] [msg_test/INFO] Processing "Task_5" 
-> [host B:slave:(2) 13.500000] [msg_test/INFO] "Task_5" done 
-> [host A:master:(1) 15.700000] [msg_test/INFO] Send completed
-> [host A:master:(1) 15.700000] [msg_test/INFO] Sending "Task_7" to "host B"
-> [host B:slave:(2) 15.700000] [msg_test/INFO] Received "Task_6" 
-> [host B:slave:(2) 15.700000] [msg_test/INFO] Processing "Task_6" 
-> [host B:slave:(2) 15.750000] [msg_test/INFO] "Task_6" done 
-> [host A:master:(1) 17.950000] [msg_test/INFO] Send completed
-> [host A:master:(1) 17.950000] [msg_test/INFO] Sending "Task_8" to "host B"
-> [host B:slave:(2) 17.950000] [msg_test/INFO] Received "Task_7" 
-> [host B:slave:(2) 17.950000] [msg_test/INFO] Processing "Task_7" 
-> [host B:slave:(2) 18.000000] [msg_test/INFO] "Task_7" done 
-> [host A:master:(1) 20.200000] [msg_test/INFO] Send completed
-> [host A:master:(1) 20.200000] [msg_test/INFO] Sending "Task_9" to "host B"
-> [host B:slave:(2) 20.200000] [msg_test/INFO] Received "Task_8" 
-> [host B:slave:(2) 20.200000] [msg_test/INFO] Processing "Task_8" 
-> [host B:slave:(2) 20.250000] [msg_test/INFO] "Task_8" done 
-> [host A:master:(1) 22.450000] [msg_test/INFO] Send completed
-> [host A:master:(1) 22.450000] [msg_test/INFO] Sending "Task_10" to "host B"
-> [host B:slave:(2) 22.450000] [msg_test/INFO] Received "Task_9" 
-> [host B:slave:(2) 22.450000] [msg_test/INFO] Processing "Task_9" 
-> [host B:slave:(2) 22.500000] [msg_test/INFO] "Task_9" done 
-> [host A:master:(1) 24.700000] [msg_test/INFO] Send completed
-> [host A:master:(1) 24.700000] [msg_test/INFO] Sending "Task_11" to "host B"
-> [host B:slave:(2) 24.700000] [msg_test/INFO] Received "Task_10" 
-> [host B:slave:(2) 24.700000] [msg_test/INFO] Processing "Task_10" 
-> [host B:slave:(2) 24.750000] [msg_test/INFO] "Task_10" done 
-> [host A:master:(1) 26.950000] [msg_test/INFO] Send completed
-> [host A:master:(1) 26.950000] [msg_test/INFO] Sending "Task_12" to "host B"
-> [host B:slave:(2) 26.950000] [msg_test/INFO] Received "Task_11" 
-> [host B:slave:(2) 26.950000] [msg_test/INFO] Processing "Task_11" 
-> [host B:slave:(2) 27.000000] [msg_test/INFO] "Task_11" done 
-> [host A:master:(1) 29.200000] [msg_test/INFO] Send completed
-> [host A:master:(1) 29.200000] [msg_test/INFO] Sending "Task_13" to "host B"
-> [host B:slave:(2) 29.200000] [msg_test/INFO] Received "Task_12" 
-> [host B:slave:(2) 29.200000] [msg_test/INFO] Processing "Task_12" 
-> [host B:slave:(2) 29.250000] [msg_test/INFO] "Task_12" done 
-> [host A:master:(1) 31.450000] [msg_test/INFO] Send completed
-> [host A:master:(1) 31.450000] [msg_test/INFO] Sending "Task_14" to "host B"
-> [host B:slave:(2) 31.450000] [msg_test/INFO] Received "Task_13" 
-> [host B:slave:(2) 31.450000] [msg_test/INFO] Processing "Task_13" 
-> [host B:slave:(2) 31.500000] [msg_test/INFO] "Task_13" done 
-> [host A:master:(1) 33.700000] [msg_test/INFO] Send completed
-> [host A:master:(1) 33.700000] [msg_test/INFO] Sending "Task_15" to "host B"
-> [host B:slave:(2) 33.700000] [msg_test/INFO] Received "Task_14" 
-> [host B:slave:(2) 33.700000] [msg_test/INFO] Processing "Task_14" 
-> [host B:slave:(2) 33.750000] [msg_test/INFO] "Task_14" done 
-> [host A:master:(1) 35.950000] [msg_test/INFO] Send completed
-> [host A:master:(1) 35.950000] [msg_test/INFO] Sending "Task_16" to "host B"
-> [host B:slave:(2) 35.950000] [msg_test/INFO] Received "Task_15" 
-> [host B:slave:(2) 35.950000] [msg_test/INFO] Processing "Task_15" 
-> [host B:slave:(2) 36.000000] [msg_test/INFO] "Task_15" done 
-> [host A:master:(1) 38.200000] [msg_test/INFO] Send completed
-> [host A:master:(1) 38.200000] [msg_test/INFO] Sending "Task_17" to "host B"
-> [host B:slave:(2) 38.200000] [msg_test/INFO] Received "Task_16" 
-> [host B:slave:(2) 38.200000] [msg_test/INFO] Processing "Task_16" 
-> [host B:slave:(2) 38.250000] [msg_test/INFO] "Task_16" done 
-> [host A:master:(1) 40.450000] [msg_test/INFO] Send completed
-> [host A:master:(1) 40.450000] [msg_test/INFO] Sending "Task_18" to "host B"
-> [host B:slave:(2) 40.450000] [msg_test/INFO] Received "Task_17" 
-> [host B:slave:(2) 40.450000] [msg_test/INFO] Processing "Task_17" 
-> [host B:slave:(2) 40.500000] [msg_test/INFO] "Task_17" done 
-> [host A:master:(1) 42.700000] [msg_test/INFO] Send completed
-> [host A:master:(1) 42.700000] [msg_test/INFO] Sending "Task_19" to "host B"
-> [host B:slave:(2) 42.700000] [msg_test/INFO] Received "Task_18" 
-> [host B:slave:(2) 42.700000] [msg_test/INFO] Processing "Task_18" 
-> [host B:slave:(2) 42.750000] [msg_test/INFO] "Task_18" done 
-> [host A:master:(1) 44.950000] [msg_test/INFO] Send completed
-> [host A:master:(1) 44.950000] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
-> [host B:slave:(2) 44.950000] [msg_test/INFO] Received "Task_19" 
-> [host B:slave:(2) 44.950000] [msg_test/INFO] Processing "Task_19" 
-> [host B:slave:(2) 45.000000] [msg_test/INFO] "Task_19" done 
-> [host A:master:(1) 45.200000] [msg_test/INFO] Goodbye now!
-> [host B:slave:(2) 45.200000] [msg_test/INFO] Received "finalize" 
-> [host B:slave:(2) 45.200000] [msg_test/INFO] I'm done. See you!
-> [45.200000] [msg_test/INFO] Simulation time 45.2
+> [host A:master:(1) 4.080000] [msg_test/INFO] Send completed
+> [host A:master:(1) 4.080000] [msg_test/INFO] Sending "Task_1" to "host B"
+> [host B:slave:(2) 4.080000] [msg_test/INFO] Received "Task_0" 
+> [host B:slave:(2) 4.080000] [msg_test/INFO] Processing "Task_0" 
+> [host B:slave:(2) 4.130000] [msg_test/INFO] "Task_0" done 
+> [host A:master:(1) 8.210000] [msg_test/INFO] Send completed
+> [host A:master:(1) 8.210000] [msg_test/INFO] Sending "Task_2" to "host B"
+> [host B:slave:(2) 8.210000] [msg_test/INFO] Received "Task_1" 
+> [host B:slave:(2) 8.210000] [msg_test/INFO] Processing "Task_1" 
+> [host B:slave:(2) 8.260000] [msg_test/INFO] "Task_1" done 
+> [host A:master:(1) 12.340000] [msg_test/INFO] Send completed
+> [host A:master:(1) 12.340000] [msg_test/INFO] Sending "Task_3" to "host B"
+> [host B:slave:(2) 12.340000] [msg_test/INFO] Received "Task_2" 
+> [host B:slave:(2) 12.340000] [msg_test/INFO] Processing "Task_2" 
+> [host B:slave:(2) 12.390000] [msg_test/INFO] "Task_2" done 
+> [host A:master:(1) 16.470000] [msg_test/INFO] Send completed
+> [host A:master:(1) 16.470000] [msg_test/INFO] Sending "Task_4" to "host B"
+> [host B:slave:(2) 16.470000] [msg_test/INFO] Received "Task_3" 
+> [host B:slave:(2) 16.470000] [msg_test/INFO] Processing "Task_3" 
+> [host B:slave:(2) 16.520000] [msg_test/INFO] "Task_3" done 
+> [host A:master:(1) 20.600000] [msg_test/INFO] Send completed
+> [host A:master:(1) 20.600000] [msg_test/INFO] Sending "Task_5" to "host B"
+> [host B:slave:(2) 20.600000] [msg_test/INFO] Received "Task_4" 
+> [host B:slave:(2) 20.600000] [msg_test/INFO] Processing "Task_4" 
+> [host B:slave:(2) 20.650000] [msg_test/INFO] "Task_4" done 
+> [host A:master:(1) 24.730000] [msg_test/INFO] Send completed
+> [host A:master:(1) 24.730000] [msg_test/INFO] Sending "Task_6" to "host B"
+> [host B:slave:(2) 24.730000] [msg_test/INFO] Received "Task_5" 
+> [host B:slave:(2) 24.730000] [msg_test/INFO] Processing "Task_5" 
+> [host B:slave:(2) 24.780000] [msg_test/INFO] "Task_5" done 
+> [host A:master:(1) 28.860000] [msg_test/INFO] Send completed
+> [host A:master:(1) 28.860000] [msg_test/INFO] Sending "Task_7" to "host B"
+> [host B:slave:(2) 28.860000] [msg_test/INFO] Received "Task_6" 
+> [host B:slave:(2) 28.860000] [msg_test/INFO] Processing "Task_6" 
+> [host B:slave:(2) 28.910000] [msg_test/INFO] "Task_6" done 
+> [host A:master:(1) 32.990000] [msg_test/INFO] Send completed
+> [host A:master:(1) 32.990000] [msg_test/INFO] Sending "Task_8" to "host B"
+> [host B:slave:(2) 32.990000] [msg_test/INFO] Received "Task_7" 
+> [host B:slave:(2) 32.990000] [msg_test/INFO] Processing "Task_7" 
+> [host B:slave:(2) 33.040000] [msg_test/INFO] "Task_7" done 
+> [host A:master:(1) 37.120000] [msg_test/INFO] Send completed
+> [host A:master:(1) 37.120000] [msg_test/INFO] Sending "Task_9" to "host B"
+> [host B:slave:(2) 37.120000] [msg_test/INFO] Received "Task_8" 
+> [host B:slave:(2) 37.120000] [msg_test/INFO] Processing "Task_8" 
+> [host B:slave:(2) 37.170000] [msg_test/INFO] "Task_8" done 
+> [host A:master:(1) 41.250000] [msg_test/INFO] Send completed
+> [host A:master:(1) 41.250000] [msg_test/INFO] Sending "Task_10" to "host B"
+> [host B:slave:(2) 41.250000] [msg_test/INFO] Received "Task_9" 
+> [host B:slave:(2) 41.250000] [msg_test/INFO] Processing "Task_9" 
+> [host B:slave:(2) 41.300000] [msg_test/INFO] "Task_9" done 
+> [host A:master:(1) 45.380000] [msg_test/INFO] Send completed
+> [host A:master:(1) 45.380000] [msg_test/INFO] Sending "Task_11" to "host B"
+> [host B:slave:(2) 45.380000] [msg_test/INFO] Received "Task_10" 
+> [host B:slave:(2) 45.380000] [msg_test/INFO] Processing "Task_10" 
+> [host B:slave:(2) 45.430000] [msg_test/INFO] "Task_10" done 
+> [host A:master:(1) 49.510000] [msg_test/INFO] Send completed
+> [host A:master:(1) 49.510000] [msg_test/INFO] Sending "Task_12" to "host B"
+> [host B:slave:(2) 49.510000] [msg_test/INFO] Received "Task_11" 
+> [host B:slave:(2) 49.510000] [msg_test/INFO] Processing "Task_11" 
+> [host B:slave:(2) 49.560000] [msg_test/INFO] "Task_11" done 
+> [host A:master:(1) 53.640000] [msg_test/INFO] Send completed
+> [host A:master:(1) 53.640000] [msg_test/INFO] Sending "Task_13" to "host B"
+> [host B:slave:(2) 53.640000] [msg_test/INFO] Received "Task_12" 
+> [host B:slave:(2) 53.640000] [msg_test/INFO] Processing "Task_12" 
+> [host B:slave:(2) 53.690000] [msg_test/INFO] "Task_12" done 
+> [host A:master:(1) 57.770000] [msg_test/INFO] Send completed
+> [host A:master:(1) 57.770000] [msg_test/INFO] Sending "Task_14" to "host B"
+> [host B:slave:(2) 57.770000] [msg_test/INFO] Received "Task_13" 
+> [host B:slave:(2) 57.770000] [msg_test/INFO] Processing "Task_13" 
+> [host B:slave:(2) 57.820000] [msg_test/INFO] "Task_13" done 
+> [host A:master:(1) 61.900000] [msg_test/INFO] Send completed
+> [host A:master:(1) 61.900000] [msg_test/INFO] Sending "Task_15" to "host B"
+> [host B:slave:(2) 61.900000] [msg_test/INFO] Received "Task_14" 
+> [host B:slave:(2) 61.900000] [msg_test/INFO] Processing "Task_14" 
+> [host B:slave:(2) 61.950000] [msg_test/INFO] "Task_14" done 
+> [host A:master:(1) 66.030000] [msg_test/INFO] Send completed
+> [host A:master:(1) 66.030000] [msg_test/INFO] Sending "Task_16" to "host B"
+> [host B:slave:(2) 66.030000] [msg_test/INFO] Received "Task_15" 
+> [host B:slave:(2) 66.030000] [msg_test/INFO] Processing "Task_15" 
+> [host B:slave:(2) 66.080000] [msg_test/INFO] "Task_15" done 
+> [host A:master:(1) 70.160000] [msg_test/INFO] Send completed
+> [host A:master:(1) 70.160000] [msg_test/INFO] Sending "Task_17" to "host B"
+> [host B:slave:(2) 70.160000] [msg_test/INFO] Received "Task_16" 
+> [host B:slave:(2) 70.160000] [msg_test/INFO] Processing "Task_16" 
+> [host B:slave:(2) 70.210000] [msg_test/INFO] "Task_16" done 
+> [host A:master:(1) 74.290000] [msg_test/INFO] Send completed
+> [host A:master:(1) 74.290000] [msg_test/INFO] Sending "Task_18" to "host B"
+> [host B:slave:(2) 74.290000] [msg_test/INFO] Received "Task_17" 
+> [host B:slave:(2) 74.290000] [msg_test/INFO] Processing "Task_17" 
+> [host B:slave:(2) 74.340000] [msg_test/INFO] "Task_17" done 
+> [host A:master:(1) 78.420000] [msg_test/INFO] Send completed
+> [host A:master:(1) 78.420000] [msg_test/INFO] Sending "Task_19" to "host B"
+> [host B:slave:(2) 78.420000] [msg_test/INFO] Received "Task_18" 
+> [host B:slave:(2) 78.420000] [msg_test/INFO] Processing "Task_18" 
+> [host B:slave:(2) 78.470000] [msg_test/INFO] "Task_18" done 
+> [host A:master:(1) 82.550000] [msg_test/INFO] Send completed
+> [host A:master:(1) 82.550000] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [host B:slave:(2) 82.550000] [msg_test/INFO] Received "Task_19" 
+> [host B:slave:(2) 82.550000] [msg_test/INFO] Processing "Task_19" 
+> [host B:slave:(2) 82.600000] [msg_test/INFO] "Task_19" done 
+> [host A:master:(1) 84.680000] [msg_test/INFO] Goodbye now!
+> [host B:slave:(2) 84.680000] [msg_test/INFO] Received "finalize" 
+> [host B:slave:(2) 84.680000] [msg_test/INFO] I'm done. See you!
+> [84.680000] [msg_test/INFO] Simulation time 84.68
