@@ -67,7 +67,7 @@ splited in 3 pages (also accessible from the navbar on top of this page):
                  <td>2008</td><td>2009</td><td>Total</td></tr>
   <tr><td>Amount of papers external to the core team</td>
                  <td>-</td>   <td>-</td>   <td>-</td>   <td>3</td>   <td>6</td>   <td>3</td>   <td>8</td>   <td>6</td>
-		 <td>5</td><td>3</td><td>32</td></tr>
+		 <td>5</td><td>5</td><td>34</td></tr>
   <tr><td>Amount of papers co-signed by one team member</td>
                  <td>1</td>   <td>1</td>   <td>1</td>   <td>2</td>   <td>2</td>   <td>-</td>   <td>4</td>   <td>4</td>
 		 <td>1</td><td>1</td><td>16</td></tr>
@@ -196,6 +196,18 @@ external to the development group, but we also use our tool ourselves (see
 next section).
 
 - 2009
+  - <a href="http://www.irit.fr/Toulouse2009/Toulouse2009/papiers/paper14.pdf"><b>Ordonnancement
+    et reallocation de taches sur une grille de calcul</b>\n  
+    by <em>Ghislain Charrier and Yves Caniou</em>.\n
+    19emes Rencontres francophonnes du Parallelisme (RenPar'19),
+    Toulouse, France, Septembre 2009.
+  - <a href="http://www.irit.fr/Toulouse2009/Toulouse2009/papiers/paper10.pdf"><b>Comparaisons 
+       entre le simulateur SimGrid et une application
+       reelle pour evaluer les algorithmes d’equilibre de charge et de
+       redistribution de donnees</b>\n
+    by <em>Helene Renard</em>.\n
+    19emes Rencontres francophonnes du Parallelisme (RenPar'19),
+    Toulouse, France, Septembre 2009.
   - <b>Efficient Scheduling of Task Graph Collections on Heterogeneous Resources</b>\n
     by <em>Matthieu Gallet and Loris Marchal and Frédéric Vivien</em>.\n
     International Parallel and Distributed Processing Symposium (IPDPS'2009).\n
