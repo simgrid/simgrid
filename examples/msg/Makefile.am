@@ -59,7 +59,6 @@ TESTS = sendrecv/sendrecv_CLM03.tesh \
         priority/priority.tesh \
 	properties/msg_prop.tesh \
     trace/trace.tesh \
-	masterslave/masterslave_cas01_im.tesh \
 	masterslave/masterslave_cpu_ti.tesh
 
 if HAVE_GTNETS

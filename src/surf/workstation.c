@@ -327,7 +327,7 @@ static void surf_workstation_model_init_internal(void)
 void surf_workstation_model_init_CLM03(const char *filename)
 {
   surf_workstation_model_init_internal();
-  surf_cpu_model_init_Cas01(filename);
+  surf_cpu_model_init_Cas01_im(filename);
   surf_network_model_init_LegrandVelho(filename);
   update_model_description(surf_workstation_model_description,
                            "CLM03", surf_workstation_model);

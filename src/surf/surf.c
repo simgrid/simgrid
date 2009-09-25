@@ -125,8 +125,8 @@ s_surf_model_description_t surf_network_model_description[] = {
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01", NULL, surf_cpu_model_init_Cas01},
-  {"Cas01_IM", NULL, surf_cpu_model_init_Cas01_im},
+  {"Cas01_fullupdate", NULL, surf_cpu_model_init_Cas01},
+  {"Cas01", NULL, surf_cpu_model_init_Cas01_im},
   {"CpuTI", NULL, surf_cpu_model_init_ti},
   {NULL, NULL, NULL}            /* this array must be NULL terminated */
 };
