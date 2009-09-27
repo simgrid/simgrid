@@ -2,32 +2,49 @@ SimGrid (3.3.4) unstable; urgency=low
 
  The "Desktop Grid needs love too" release.
 
- * Allow major speedup in the maxmin system solving by using lazy evaluation
-   This feature allows to not solve the maxmin system completely at each iteration, but only invalidate (and recompute) the modified parts.
-   This new feature is enabled by default since we changed the default CPU model.
-   Use "--cfg:maxmin-selective-update=1" to enable it.
+ Models improvements:
+ * Major speedup in the maxmin system solving by using lazy evaluation
+   Instead of solving completely the maxmin system at each iteration, 
+     only invalidate (and recompute) the modified parts. 
+   This new feature is enabled in default models but you can try to
+     turn it on with "--cfg:maxmin-selective-update=1" for other models.
  * Cas01 IMproved as default CPU model
-   This CPU model is the same Cas01 model, but it uses the maxmin-selective-update flag
-   and a heap structure to manage actions on SURF kernel. It reduces the complexity to
-   find the next action to finish and, consequently, it's faster than the old Cas01.
-   This is the new default CPU model (Cas01).
-    **************************************
-    *DO NOT MIX 3.3.3 RESULTS WITH 3.3.4 ONES* The new CPU model may changes simulations!
-    **************************************
-    The point is that events occurring at the exact same timestamp are
-    not scheduled in the same order with the old and new version. This
-    may be enough to completely change the execution of simulations in
-    some cases. Sorry for the inconvenience.
+   This CPU model is the same Cas01 model, but it uses the
+     maxmin-selective-update flag and a heap structure to manage
+     actions on SURF kernel. 
+   It reduces the complexity to find the next action to finish and,
+     consequently, it's faster than the old Cas01.
+   This is the new default CPU model (Cas01).   
  * Rename the old Cas01 model to Cas01_fullupdate
    Keep the old cpu model Cas01 with the new name of Cas01_fullupdate.
    Use "--cfg=cpu_model:Cas01_fullupdate" to use the old default CPU model.
  * CpuTI (CPU Trace Integration)
-   A new CPU model whose objective is simulate faster when using availability trace files.
-   Instead of using a full featured, over engineered maxmin system for CPU modeling, this model does the pre-integration of traces files to calculate the amount of CPU power available, and so, executes faster than the old CPU models.
+   A new CPU model whose objective is simulate faster when using
+     availability trace files. 
+   Instead of using a full featured, over engineered maxmin system for
+     CPU modeling, this model does the pre-integration of traces files
+     to calculate the amount of CPU power available, and so, executes
+     faster than the old CPU models. 
    Use "--cfg=cpu_model:CpuTI" to change to this CPU model.
  * Use LV08 as default network model since it gives better accuracy
     for small messages and shouldn't change things for big ones.
    Use --cfg=network_model:CM02 to get the previous behavior.
+   
+   
+         ******************************************
+         *DO NOT MIX 3.3.4 RESULTS WITH OLDER ONES* 
+         ******************************************
+   * The new CPU model may changes simulations!
+     The point is that events occurring at the exact same timestamp
+        are not scheduled in the same order with the old and new 
+        version. This may be enough to completely change the execution
+        of simulations in some cases. 
+   * The new network model will change simulations!
+     This new model is more realistic than the previous one, so you
+       should consider redoing your old experiments with this model.
+     Sorry for the inconvenience.
+
+ Bug fixes:
  * Fix a major regression from 3.2 where the timeout provided to
    MSG_task_put_with_timeout() was used as absolute time before which
    the comm should be done.
@@ -38,7 +55,6 @@ SimGrid (3.3.4) unstable; urgency=low
  * Fix some problems when using the "start_time" tag in deployment XMLs.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
-
 
 SimGrid (3.3.3) stable; urgency=low
 
