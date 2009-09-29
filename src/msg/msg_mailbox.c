@@ -217,7 +217,8 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     }
 
     if (timeout > 0)
-      SIMIX_cond_wait_timeout(cond, h_simdata->mutex, timeout - start_time + SIMIX_get_clock());
+      SIMIX_cond_wait_timeout(cond, h_simdata->mutex,
+                              timeout - start_time + SIMIX_get_clock());
     else
       SIMIX_cond_wait(cond, h_simdata->mutex);
 
@@ -263,7 +264,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   }
   SIMIX_register_action_to_condition(t_simdata->comm, t_simdata->cond);
   // breaking point if asynchrounous
-  process->simdata->waiting_task = t;
+  process->simdata->waiting_action = t_simdata->comm;
 
   while (1) {
     SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
@@ -277,7 +278,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   }
 
   SIMIX_unregister_action_to_condition(t_simdata->comm, t_simdata->cond);
-  process->simdata->waiting_task = NULL;
+  process->simdata->waiting_action = NULL;
 
   /* for this process, don't need to change in get function */
   SIMIX_mutex_unlock(t_simdata->mutex);
@@ -350,7 +351,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   SIMIX_mutex_lock(t_simdata->mutex);
 
-  process->simdata->waiting_task = task;        // for debugging and status displaying purpose
+  process->simdata->waiting_action = t_simdata->comm;   // for debugging and status displaying purpose
 
   if (timeout > 0) {
     xbt_ex_t e;
@@ -382,7 +383,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
         /* verify if the timeout happened and the communication didn't started yet */
         if (t_simdata->comm == NULL) {
           DEBUG1("Action terminated %s (there was a timeout)", task->name);
-          process->simdata->waiting_task = NULL;
+          process->simdata->waiting_action = NULL;
 
           /* remove the task from the mailbox */
           MSG_mailbox_remove(mailbox, task);
@@ -415,7 +416,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   }
 
   DEBUG1("Action terminated %s", task->name);
-  process->simdata->waiting_task = NULL;
+  process->simdata->waiting_action = NULL;
 /*   if (t_simdata->receiver && t_simdata->receiver->simdata) {    /\* receiver still around *\/ */
 /*     t_simdata->receiver->simdata->waiting_task = NULL; */
 /*   } */

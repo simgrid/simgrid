@@ -57,14 +57,15 @@ MSG_error_t MSG_task_execute(m_task_t task)
                          simdata->computation_amount);
   SIMIX_action_set_priority(simdata->compute, simdata->priority);
 
-  self->simdata->waiting_task = task;
+  /* changed to waiting action since we are always waiting one action (execute, communicate or sleep) */
+  self->simdata->waiting_action = simdata->compute;
   SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
   do {
     SIMIX_cond_wait(simdata->cond, simdata->mutex);
     state = SIMIX_action_get_state(simdata->compute);
   } while (state == SURF_ACTION_READY || state == SURF_ACTION_RUNNING);
   SIMIX_unregister_action_to_condition(simdata->compute, simdata->cond);
-  self->simdata->waiting_task = NULL;
+  self->simdata->waiting_action = NULL;
 
   SIMIX_mutex_unlock(simdata->mutex);
   simdata->refcount--;
@@ -174,7 +175,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
                                   simdata->host_list, simdata->comp_amount,
                                   simdata->comm_amount, 1.0, -1.0);
 
-  self->simdata->waiting_task = task;
+  self->simdata->waiting_action = simdata->compute;
   SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
   do {
     SIMIX_cond_wait(simdata->cond, simdata->mutex);
@@ -182,7 +183,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   } while (state == SURF_ACTION_READY || state == SURF_ACTION_RUNNING);
 
   SIMIX_unregister_action_to_condition(simdata->compute, simdata->cond);
-  self->simdata->waiting_task = NULL;
+  self->simdata->waiting_action = NULL;
 
 
   SIMIX_mutex_unlock(simdata->mutex);
@@ -238,11 +239,13 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   /* create conditional and register action to it */
   cond = SIMIX_cond_init();
 
+  proc->simdata->waiting_action = act_sleep;
   SIMIX_register_action_to_condition(act_sleep, cond);
   do {
     SIMIX_cond_wait(cond, mutex);
     state = SIMIX_action_get_state(act_sleep);
   } while (state == SURF_ACTION_READY || state == SURF_ACTION_RUNNING);
+  proc->simdata->waiting_action = NULL;
   SIMIX_unregister_action_to_condition(act_sleep, cond);
   SIMIX_mutex_unlock(mutex);
 

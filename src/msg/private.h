@@ -68,7 +68,7 @@ SG_BEGIN_DECL()
        int PPID;                /* The parent PID */
        m_host_t put_host;       /* used for debugging purposes */
        m_channel_t put_channel; /* used for debugging purposes */
-       m_task_t waiting_task;
+       smx_action_t waiting_action;
        int argc;                /* arguments number if any */
        char **argv;             /* arguments table if any */
        MSG_error_t last_errno;  /* the last value returned by a MSG_function */

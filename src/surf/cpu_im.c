@@ -180,6 +180,8 @@ static void action_cancel(surf_action_t action)
   surf_action_state_set(action, SURF_ACTION_FAILED);
   xbt_heap_remove(action_heap,
                   ((surf_action_cpu_Cas01_im_t) action)->index_heap);
+  xbt_swag_remove(action,
+                  ((cpu_Cas01_im_t) ACTION_GET_CPU(action))->action_set);
   return;
 }
 
