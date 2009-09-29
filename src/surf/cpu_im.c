@@ -272,7 +272,7 @@ static void update_actions_state(double now, double delta)
   surf_action_cpu_Cas01_im_t action;
 
   while ((xbt_heap_size(action_heap) > 0)
-         && (xbt_heap_maxkey(action_heap) <= now)) {
+         && (double_equals(xbt_heap_maxkey(action_heap), now))) {
     action = xbt_heap_pop(action_heap);
     DEBUG1("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();

@@ -8,6 +8,7 @@
 #ifndef _SURF_MAXMIN_H
 #define _SURF_MAXMIN_H
 
+#include <math.h>
 #include "portable.h"
 #include "xbt/misc.h"
 #include "surf/datatypes.h"
@@ -23,6 +24,11 @@ static XBT_INLINE void double_update(double *variable, double value)
 static XBT_INLINE int double_positive(double value)
 {
   return (value > MAXMIN_PRECISION);
+}
+
+static XBT_INLINE int double_equals(double value1, double value2)
+{
+  return (fabs(value1 - value2) < MAXMIN_PRECISION);
 }
 
 XBT_PUBLIC(lmm_system_t) lmm_system_new(void);
