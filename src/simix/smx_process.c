@@ -158,6 +158,10 @@ void SIMIX_process_kill(smx_process_t process)
 
     if (process->cond)
       xbt_swag_remove(process, process->cond->sleeping);
+    if (process->waiting_action) {
+      SIMIX_unregister_action_to_condition(process->waiting_action, process->cond);
+      SIMIX_action_destroy(process->waiting_action);
+    }
     SIMIX_context_stop(process->context);
   } else {
     DEBUG2("%p here! killing %p", simix_global->current_process, process);
@@ -168,6 +172,11 @@ void SIMIX_process_kill(smx_process_t process)
 
     if (process->cond)
       xbt_swag_remove(process, process->cond->sleeping);
+
+    if (process->waiting_action) {
+      SIMIX_unregister_action_to_condition(process->waiting_action, process->cond);
+      SIMIX_action_destroy(process->waiting_action);
+    }
   }
 }
 
@@ -301,9 +310,11 @@ void SIMIX_process_suspend(smx_process_t process)
 
     cond = SIMIX_cond_init();
     dummy = SIMIX_action_execute(SIMIX_process_get_host(process), name, 0);
+    SIMIX_process_self()->waiting_action = dummy;
     surf_workstation_model->suspend(dummy->surf_action);
     SIMIX_register_action_to_condition(dummy, cond);
     __SIMIX_cond_wait(cond);
+    SIMIX_process_self()->waiting_action = NULL;
     SIMIX_unregister_action_to_condition(dummy, cond);
     SIMIX_action_destroy(dummy);
     SIMIX_cond_destroy(cond);

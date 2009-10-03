@@ -72,6 +72,7 @@ extern SIMIX_Global_t simix_global;
        int iwannadie : 1;
        smx_mutex_t mutex;       /* mutex on which the process is blocked  */
        smx_cond_t cond;         /* cond on which the process is blocked  */
+       smx_action_t waiting_action;
        xbt_dict_t properties;
        void *data;              /* kept for compatibility, it should be replaced with moddata */
 

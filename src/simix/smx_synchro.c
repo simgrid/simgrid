@@ -185,8 +185,10 @@ void SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
   /* always create an action null in case there is a host failure */
 /*   if (xbt_fifo_size(cond->actions) == 0) { */
   act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
+  SIMIX_process_self()->waiting_action = act_sleep;
   SIMIX_register_action_to_condition(act_sleep, cond);
   __SIMIX_cond_wait(cond);
+  SIMIX_process_self()->waiting_action = NULL;
   SIMIX_unregister_action_to_condition(act_sleep, cond);
   SIMIX_action_destroy(act_sleep);
 /*   } else { */
@@ -244,7 +246,9 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
   if (max_duration >= 0) {
     act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
     SIMIX_register_action_to_condition(act_sleep, cond);
+    SIMIX_process_self()->waiting_action = act_sleep;
     __SIMIX_cond_wait(cond);
+    SIMIX_process_self()->waiting_action = NULL;
     SIMIX_unregister_action_to_condition(act_sleep, cond);
     if (SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
       SIMIX_action_destroy(act_sleep);
