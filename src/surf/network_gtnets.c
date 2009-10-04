@@ -1,5 +1,3 @@
-/*     $Id$     */
-
 /* Copyright (c) 2005 Henri Casanova. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,12 +6,25 @@
 #include "network_gtnets_private.h"
 #include "gtnets/gtnets_interface.h"
 #include "xbt/str.h"
+#include "surf_private.h"
+#include "surf/datatypes.h"
+
+/* ************************************************************************** */
+/* *************************** FULL ROUTING ********************************* */
+typedef struct {
+  s_routing_t generic_routing;
+  xbt_dynar_t *routing_table;
+  void *loopback;
+  size_t size_of_link;
+} s_routing_full_t,*routing_full_t;
 
 
 static double time_to_next_flow_completion = -1;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
-                                "Logging specific to the SURF network module");
+                                "Logging specific to the SURF network GTNetS module");
+
+extern routing_t used_routing;
 
 /** QUESTIONS for GTNetS integration
  **   1. Check that we did the right thing with name_service and get_resource_name
@@ -150,6 +161,13 @@ static void route_onehop_new(int src_id, int dst_id,
   }
 }
 
+/* Read hosts using a full-fledged topollogy */
+static void routing_full_parse_Shost(void) {
+  int *val = xbt_malloc(sizeof(int));
+  DEBUG2("Seen host %s (#%d)",A_surfxml_host_id,used_routing->host_count);
+  *val = used_routing->host_count++;
+  xbt_dict_set(used_routing->host_id,A_surfxml_host_id,val,xbt_free);
+}
 
 
 /* Parse the XML for a network link */
@@ -209,7 +227,22 @@ static void parse_route_set_route(void)
   char *name;
   if (src_id != -1 && dst_id != -1) {
     name = bprintf("%x#%x", src_id, dst_id);
+    DEBUG0("Calling manage route with route_action=");
+    switch (route_action) {
+           case A_surfxml_route_action_PREPEND:
+				   DEBUG0("PREPEND");
+				   break;
+           case A_surfxml_route_action_POSTPEND:
+				   DEBUG0("POSTPEND");
+   				   break;
+           case A_surfxml_route_action_OVERRIDE:
+   				   DEBUG0("OVERRIDE");
+                   break;
+           default:break;
+    }
     manage_route(route_table, name, route_action, 0);
+
+    DEBUG2("Setting a route from NIC %d to NIC %d", src_id, dst_id);
     free(name);
   }
 }
@@ -250,8 +283,10 @@ static void add_route()
         RETHROW1("Link %s not found (dict raised this exception: %s)", link);
       }
     }
-    if (nb_link == 1)
+    if (nb_link == 1){
+      DEBUG0("Calling a one link route");
       route_onehop_new(src_id, dst_id, link_list, nb_link);
+    }
   }
 
   xbt_dict_foreach(route_table, cursor, key, data) {
@@ -281,19 +316,29 @@ static void add_route()
   }
 
   xbt_dict_free(&route_table);
-  gtnets_print_topology();
+  if (XBT_LOG_ISENABLED(surf_network_gtnets, xbt_log_priority_debug)) {
+	  gtnets_print_topology();
+  }
   XBT_OUT;
 }
 
 /* Main XML parsing */
 static void define_callbacks(const char *file)
 {
+  routing_full_t routing = xbt_new0(s_routing_full_t,1);
+  routing->generic_routing.name = "Full";
+  routing->generic_routing.host_count = 0;
+  routing->generic_routing.host_id = xbt_dict_new();
+  used_routing = (routing_t) routing;
+  surfxml_add_callback(STag_surfxml_host_cb_list, &routing_full_parse_Shost);
+
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_route_set_routers);
   surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
   surfxml_add_callback(STag_surfxml_route_cb_list,
                        &parse_route_set_endpoints);
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_route);
+
 }
 
 /* We do not care about this: only used for traces */
@@ -357,7 +402,9 @@ static double share_resources(double now)
   xbt_assert0(time_to_next_flow_completion,
               "Time to next flow completion not initialized!\n");
 
+  DEBUG0("Calling gtnets_get_time_to_next_flow_completion");
   time_to_next_flow_completion = gtnets_get_time_to_next_flow_completion();
+  DEBUG1("gtnets_get_time_to_next_flow_completion received %lg", time_to_next_flow_completion);
 
   return time_to_next_flow_completion;
 }
@@ -445,6 +492,8 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,
 {
   surf_action_network_GTNETS_t action = NULL;
 
+  DEBUG4("Setting flow src %d \"%s\", dst %d \"%s\"", src, src_name, dst, dst_name);
+
   action =
     surf_action_new(sizeof(s_surf_action_network_GTNETS_t), size,
                     surf_network_model, 0);
@@ -517,6 +566,7 @@ static void surf_network_model_init_internal(void)
   if (gtnets_initialize()) {
     xbt_assert0(0, "impossible to initialize GTNetS interface");
   }
+
 }
 
 #ifdef HAVE_GTNETS
