@@ -4,17 +4,30 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+
 #include "gtnets_simulator.h"
 #include "gtnets_interface.h"
+#ifdef DEBUG0
+	#undef DEBUG0
+#endif
+#include "xbt/log.h"
+#include "xbt/asserts.h"
 
 static GTSim* gtnets_sim = 0;
 
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets_interface, surf_network_gtnets,
+                                "Logging specific to the SURF network GTNetS interface");
+
+
+
 // initialize the GTNetS interface and environment
 int gtnets_initialize(){
-  if (gtnets_sim){
-    fprintf(stderr, "gtnets already initialized.\n");
-    return -1;
-  }
+
+  DEBUG0("Using logging.");
+
+  xbt_assert0(!gtnets_sim, "gtnets already initialized");
+
   gtnets_sim = new GTSim();
   return 0;
 }
@@ -54,30 +67,48 @@ int gtnets_create_flow(int src, int dst, long datasize, void* metadata){
 // if no flows exist, return -1.0
 double gtnets_get_time_to_next_flow_completion(){
   ofstream file;
+  streambuf* sbuf;
   double value;
-  file.open ("/dev/null");
-  streambuf* sbuf = cout.rdbuf();
-  cout.rdbuf(file.rdbuf());
+
+  if (!XBT_LOG_ISENABLED(surf_network_gtnets_interface, xbt_log_priority_debug)) {
+	  file.open ("/dev/null");
+	  sbuf = cout.rdbuf();
+	  cout.rdbuf(file.rdbuf());
+	  DEBUG0("Enable GTNetS library quite mode");
+  }else {
+	  DEBUG0("Disable GTNetS library quite mode");
+  }
 
   value = gtnets_sim->get_time_to_next_flow_completion();
 
-  cout.rdbuf(sbuf);
-
+  if (!XBT_LOG_ISENABLED(surf_network_gtnets_interface, xbt_log_priority_debug)) {
+	  cout.rdbuf(sbuf);
+	  file.close();
+  }
   return value;
 }
 
 // run until a flow completes (returns that flow's metadata)
 int gtnets_run_until_next_flow_completion(void ***metadata, int *number_of_flows){
   ofstream file;
+  streambuf* sbuf;
   double value;
-  file.open ("/dev/null");
-  streambuf* sbuf = cout.rdbuf();
-  cout.rdbuf(file.rdbuf());
+
+  if (!XBT_LOG_ISENABLED(surf_network_gtnets_interface, xbt_log_priority_debug)) {
+	  file.open ("/dev/null");
+	  sbuf = cout.rdbuf();
+	  cout.rdbuf(file.rdbuf());
+	  DEBUG0("Enable GTNetS library quite mode");
+  }else {
+	  DEBUG0("Disable GTNetS library quite mode");
+  }
 
   value = gtnets_sim->run_until_next_flow_completion(metadata, number_of_flows);
 
-  cout.rdbuf(sbuf);
-
+  if (!XBT_LOG_ISENABLED(surf_network_gtnets_interface, xbt_log_priority_debug)) {
+	  cout.rdbuf(sbuf);
+	  file.close();
+  }
   return value;
 }
 
