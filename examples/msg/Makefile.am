@@ -18,12 +18,12 @@ EXTRA_DIST = msg_platform.xml \
              masterslave/deployment_masterslave_forwarder.xml \
              masterslave/deployment_masterslave.xml \
              migration/migration.deploy \
-             gtnets/r-n200-f50-s4-2-d.xml \
              gtnets/onelink-p.xml \
              gtnets/onelink-d.xml \
-             gtnets/r-n200-f50-s4-2-p.xml \
              gtnets/dogbone-d.xml \
              gtnets/dogbone-p.xml \
+             gtnets/waxman-d.xml \
+             gtnets/waxman-p.xml \
              parallel_task/test_ptask_deployment.xml \
              parallel_task/test_ptask_platform.xml \
              priority/deployment_priority.xml \
@@ -80,7 +80,7 @@ CLEANFILES = sendrecv/*~ \
              trace/test_trace_integration
 
 if HAVE_GTNETS
-             CLEANFILES += gtnets/gtnets gtnets/gtnets_kayo
+             CLEANFILES += gtnets/gtnets
 endif
 
 
@@ -100,7 +100,7 @@ noinst_PROGRAMS = sendrecv/sendrecv \
                   trace/test_trace_integration
 
 if HAVE_GTNETS
-  noinst_PROGRAMS += gtnets/gtnets gtnets/gtnets_kayo
+  noinst_PROGRAMS += gtnets/gtnets
 endif
 
 
@@ -154,11 +154,9 @@ trace_test_trace_integration_LDADD   = $(top_builddir)/src/libsimgrid.la
 # verify if the GTNETS feature is working
 if HAVE_GTNETS
 gtnets_gtnets_SOURCES  = gtnets/gtnets.c
-gtnets_gtnets_kayo_SOURCES  = gtnets/gtnets_kayo.c
 gtnets_gtnets_LDADD   = $(top_builddir)/src/libsimgrid.la
-gtnets_gtnets_kayo_LDADD   = $(top_builddir)/src/libsimgrid.la
 else
-  EXTRA_DIST+= gtnets/gtnets.c gtnets/gtnets_kayo.c
+  EXTRA_DIST+= gtnets/gtnets.c
 endif
 
 EXTRA_DIST+=$(TESTS)
