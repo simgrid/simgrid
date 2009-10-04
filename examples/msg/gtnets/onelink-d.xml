@@ -3,7 +3,7 @@
 <platform version="2">
 
   <process host="S1" function="master">
-      <argument value="1000"/>
+      <argument value="1000000"/>
       <argument value="C1"/>
       <argument value="1"/>
   </process>
