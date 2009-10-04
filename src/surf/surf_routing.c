@@ -68,6 +68,13 @@ typedef struct {
 /*
  * Parsing
  */
+static void routing_full_parse_Srouter(void) {
+  int *val = xbt_malloc(sizeof(int));
+  DEBUG2("Seen router %s (#%d)",A_surfxml_host_id,used_routing->host_count);
+  *val = used_routing->host_count++;
+  xbt_dict_set(used_routing->host_id,A_surfxml_host_id,val,xbt_free);
+}
+
 static void routing_full_parse_Shost(void) {
   int *val = xbt_malloc(sizeof(int));
   DEBUG2("Seen host %s (#%d)",A_surfxml_host_id,used_routing->host_count);
@@ -311,6 +318,7 @@ static void routing_model_full_create(size_t size_of_link,void *loopback) {
   /* Setup the parsing callbacks we need */
   routing->generic_routing.host_id = xbt_dict_new();
   surfxml_add_callback(STag_surfxml_host_cb_list, &routing_full_parse_Shost);
+  surfxml_add_callback(STag_surfxml_router_cb_list, &routing_full_parse_Srouter);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &routing_full_parse_end);
   surfxml_add_callback(STag_surfxml_route_cb_list,
       &routing_full_parse_Sroute_set_endpoints);
