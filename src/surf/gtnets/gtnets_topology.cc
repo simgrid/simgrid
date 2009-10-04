@@ -46,7 +46,10 @@ int GTNETS_Node::add_host(int hostid){
 // return -1.
 int GTNETS_Node::add_router(int routerid){
   xbt_assert0(!(hosts_.size() > 1), "Router node should have only one router");
-  xbt_assert1(((hosts_.size() == 1)&&(hosts_.find(routerid) != hosts_.end())), "Node %d is a different router", routerid);
+  if (hosts_.size() == 1){
+	  xbt_assert1((hosts_.find(routerid) != hosts_.end()), "Node %d is a different router", routerid);
+	  return 0;
+  }
   is_router_ = true;
   hosts_.insert(routerid);
   return 0;
@@ -64,7 +67,7 @@ bool GTNETS_Node::include(int hostid){
 void GTNETS_Node::print_hosts(){
   set<int>::iterator it;
   for (it = hosts_.begin(); it != hosts_.end(); it++){
-    DEBUG1("      host id %d", *it);
+    DEBUG1("host id %d", *it);
   }
 }
 
@@ -92,14 +95,14 @@ GTNETS_Link::~GTNETS_Link(){
 }
 
 void GTNETS_Link::print_link_status(){
-  DEBUG1("  link id: %d", ID_);
+  DEBUG1("link id: %d", ID_);
   if (src_node_){
-    DEBUG2("    [src] id: %d, is it router?: %d, host list: ",src_node_->id(), src_node_->is_router());
+    DEBUG2("[src] id: %d, is it router?: %d, host list: ",src_node_->id(), src_node_->is_router());
     src_node_->print_hosts();
   }
 
   if (dst_node_){
-    DEBUG2("    [dst] id: %d, is it router?: %d, host list: ",dst_node_->id(), dst_node_->is_router());
+    DEBUG2("[dst] id: %d, is it router?: %d, host list: ",dst_node_->id(), dst_node_->is_router());
     dst_node_->print_hosts();
   }
 }
@@ -220,7 +223,6 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
     dst_node->print_hosts();
   }
 
-  xbt_assert0((src_node && dst_node), "Either src or dst is null");
 
   // If not exists a route, add one.
   if (!link->route_exists()){
@@ -260,6 +262,8 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
       nodes_[d_node_id]->add_host(dst);
 
     link->add_dst(nodes_[d_node_id]);
+  }else if (src_node && dst_node){
+      xbt_assert0((src_node && dst_node), "Either src or dst is null");
   }
 
   // case 1: link has two routers
@@ -275,7 +279,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
   // case 2: link has one router and one host
   else if (src_node->is_router() && !dst_node->is_router()){
     int newsrc, newdst;
-    xbt_assert0( ((is_router(src))||(is_router(dst))), "one of nodes should be a router");
+    xbt_assert0( ((is_router(src))||(is_router(dst))), "One of nodes should be a router");
 
     if (is_router(src)){
       newsrc = src;
