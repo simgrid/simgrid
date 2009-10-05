@@ -175,22 +175,22 @@ XBT_PUBLIC(void) SIMIX_display_process_status(void);
 /************************** Comunication Handling *****************************/
 
 /* Public */
-XBT_PUBLIC(smx_rvpoint_t) SIMIX_rvpoint_create(char *name);
-XBT_PUBLIC(void) SIMIX_rvpoint_destroy(smx_rvpoint_t rvp);
-XBT_PUBLIC(void) SIMIX_network_send(smx_rvpoint_t rdv, void *data, size_t size, double rate, double timeout);
-XBT_PUBLIC(void) SIMIX_network_recv(smx_rvpoint_t rvp, void **data, size_t *size, double timeout);
+XBT_PUBLIC(smx_rdv_t) SIMIX_rdv_create(char *name);
+XBT_PUBLIC(void) SIMIX_rdv_destroy(smx_rdv_t rvp);
+XBT_PUBLIC(void) SIMIX_network_send(smx_rdv_t rdv, void *data, size_t size, double rate, double timeout);
+XBT_PUBLIC(void) SIMIX_network_recv(smx_rdv_t rvp, void **data, size_t *size, double timeout);
 XBT_PUBLIC(void) SIMIX_network_wait(smx_action_t comm);
 XBT_PUBLIC(int) SIMIX_network_test(smx_action_t comm);
 
 /* These should be private to SIMIX */
 smx_comm_t SIMIX_communication_new(smx_host_t src_host, smx_host_t dst_host,
-                                   smx_rvpoint_t rdv);
+                                   smx_rdv_t rdv);
 void SIMIX_communication_destroy(smx_comm_t comm);
-smx_comm_t SIMIX_rvpoint_get_receiver(smx_rvpoint_t rvp);
-smx_comm_t SIMIX_rvpoint_get_sender(smx_rvpoint_t rvp);
-static inline void SIMIX_rvpoint_push(smx_rvpoint_t rvp, smx_comm_t comm);
-static inline smx_cond_t SIMIX_rvpoint_get_cond(smx_rvpoint_t rvp);
-static inline smx_mutex_t SIMIX_rvpoint_get_comm_mutex(smx_rvpoint_t rvp);
+smx_comm_t SIMIX_rvpoint_get_receiver_or_create_request(smx_rdv_t rvp);
+smx_comm_t SIMIX_rvpoint_get_sender_or_create(smx_rdv_t rvp);
+static inline void SIMIX_rvpoint_push(smx_rdv_t rvp, smx_comm_t comm);
+static inline smx_cond_t SIMIX_rvpoint_get_cond(smx_rdv_t rvp);
+static inline smx_mutex_t SIMIX_rvpoint_get_comm_mutex(smx_rdv_t rvp);
 
 SG_END_DECL()
 #endif /* _SIMIX_SIMIX_H */

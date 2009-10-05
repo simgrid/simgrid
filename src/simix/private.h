@@ -125,14 +125,13 @@ typedef struct s_smx_rvpoint {
   char *name;
   smx_mutex_t read;
   smx_mutex_t write;
-  smx_mutex_t comm_mutex;
   xbt_fifo_t comm_fifo;  
 } s_smx_rvpoint_t;
 
 typedef struct s_smx_comm {
   smx_host_t src_host;
   smx_host_t dst_host;
-  smx_rvpoint_t rdv;
+  smx_rdv_t rdv;
   smx_cond_t cond;
   smx_action_t act;
   void *data;
