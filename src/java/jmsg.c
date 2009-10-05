@@ -149,10 +149,7 @@ Java_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
           process->name);
 
   mailbox = MSG_mailbox_new(alias);
-  MSG_mailbox_set_hostname(mailbox,
-                           process->simdata->m_host->simdata->smx_host->name);
-
-
+  
 }
 
 JNIEXPORT void JNICALL

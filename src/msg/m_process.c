@@ -195,10 +195,13 @@ void MSG_process_kill(m_process_t process)
   DEBUG3("Killing %s(%d) on %s",
          process->name, p_simdata->PID, p_simdata->m_host->name);
 
-  if (p_simdata->waiting_action) {
-    DEBUG1("Canceling waiting task %s",
-           SIMIX_action_get_name(p_simdata->waiting_action));
-    SIMIX_action_cancel(p_simdata->waiting_action);
+  if (p_simdata->waiting_task) {
+    DEBUG1("Canceling waiting task %s", p_simdata->waiting_task->name);
+    if (p_simdata->waiting_task->simdata->compute) {
+      SIMIX_action_cancel(p_simdata->waiting_task->simdata->compute);
+    } else if (p_simdata->waiting_task->simdata->comm) {
+      SIMIX_communication_cancel(p_simdata->waiting_task->simdata->comm);
+    }
   }
 
   xbt_fifo_remove(msg_global->process_list, process);

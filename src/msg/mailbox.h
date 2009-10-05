@@ -119,30 +119,6 @@ XBT_PUBLIC(smx_cond_t)
  */
 XBT_PUBLIC(void) MSG_mailbox_set_cond(msg_mailbox_t mailbox, smx_cond_t cond);
 
-/*! \brief MSG_mailbox_get_hostname - get the name of the host owned a mailbox.
- *
- * The function MSG_mailbox_get_hostname returns name of the host
- * owned the mailbox specified by the parameter mailbox.
- *
- * \param mailbox	The mailbox to get the name of the host.
- *
- * \return The name of the host owned the mailbox specified by the parameter mailbox.
- */
-XBT_PUBLIC(const char *) MSG_mailbox_get_hostname(msg_mailbox_t mailbox);
-
-/*! \brief MSG_mailbox_set_hostname - set the name of the host owned a mailbox.
- *
- * The function MSG_mailbox_set_hostname sets the name of the host
- * owned the mailbox specified by the parameter mailbox.
- *
- * \param mailbox	The mailbox to set the name of the host.
- * \param hostname	The name of the owner of the mailbox.
- *
- */
-XBT_PUBLIC(void)
-MSG_mailbox_set_hostname(msg_mailbox_t mailbox, const char *hostname);
-
-
 /*! \brief MSG_mailbox_is_empty - test if a mailbox is empty.
  *
  * The function MSG_mailbox_is_empty tests if a mailbox is empty
@@ -154,15 +130,6 @@ MSG_mailbox_set_hostname(msg_mailbox_t mailbox, const char *hostname);
  *		returns 0.
  */
 XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
-
-/*! \brief MSG_mailbox_remove - remove a task from a mailbox.
- *
- * The MSG_mailbox_remove removes a task from a specified mailbox.
- *
- * \param mailbox	The mailbox concerned by this operation.
- * \param task		The task to remove from the mailbox.
- */
-XBT_PUBLIC(void) MSG_mailbox_remove(msg_mailbox_t mailbox, m_task_t task);
 
 /*! \brief MSG_mailbox_get_head - get the task at the head of a mailbox.
  *
@@ -176,33 +143,6 @@ XBT_PUBLIC(void) MSG_mailbox_remove(msg_mailbox_t mailbox, m_task_t task);
  */
 XBT_PUBLIC(m_task_t)
   MSG_mailbox_get_head(msg_mailbox_t mailbox);
-
-/*! \brief MSG_mailbox_pop_head - get the task at the head of a mailbox
- * and remove it from it.
- *
- * The MSG_mailbox_pop_head returns the task at the head of the mailbox
- * and remove it from it.
- *
- * \param mailbox	The mailbox concerned by the operation.
- *
- * \return		The task at the head of the mailbox.
- */
-XBT_PUBLIC(m_task_t)
-  MSG_mailbox_pop_head(msg_mailbox_t mailbox);
-
-/*! \brief MSG_mailbox_get_first_host_task - get the first msg task
- * of a specified mailbox, sended by a process of a specified host.
- *
- * \param mailbox	The mailbox concerned by the operation.
- * \param host		The msg host of the process that has sended the
- *			task.
- *
- * \return		The first task in the mailbox specified by the
- *			parameter mailbox and sended by a process located
- *			on the host specified by the parameter host.
- */
-XBT_PUBLIC(m_task_t)
-  MSG_mailbox_get_first_host_task(msg_mailbox_t mailbox, m_host_t host);
 
 /*! \brief MSG_mailbox_get_count_host_waiting_tasks - Return the number of tasks
    waiting to be received in a mailbox and sent by a host.

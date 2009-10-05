@@ -20,10 +20,8 @@ msg_mailbox_t MSG_mailbox_create(const char *alias)
 {
   msg_mailbox_t mailbox = xbt_new0(s_msg_mailbox_t, 1);
 
-  mailbox->tasks = xbt_fifo_new();
   mailbox->cond = NULL;
   mailbox->alias = alias ? xbt_strdup(alias) : NULL;
-  mailbox->hostname = NULL;
   mailbox->rdv = SIMIX_rdv_create(alias);
   
   return mailbox;
@@ -43,10 +41,6 @@ void MSG_mailbox_free(void *mailbox)
 {
   msg_mailbox_t _mailbox = (msg_mailbox_t) mailbox;
 
-  if (_mailbox->hostname)
-    free(_mailbox->hostname);
-
-  xbt_fifo_free(_mailbox->tasks);
   free(_mailbox->alias);
   SIMIX_rdv_destroy(_mailbox->rdv);
   
@@ -58,59 +52,25 @@ smx_cond_t MSG_mailbox_get_cond(msg_mailbox_t mailbox)
   return mailbox->cond;
 }
 
-void MSG_mailbox_remove(msg_mailbox_t mailbox, m_task_t task)
-{
-  xbt_fifo_remove(mailbox->tasks, task);
-}
-
 int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 {
-  return (NULL == xbt_fifo_get_first_item(mailbox->tasks));
-}
-
-m_task_t MSG_mailbox_pop_head(msg_mailbox_t mailbox)
-{
-  return (m_task_t) xbt_fifo_shift(mailbox->tasks);
+  return (NULL == SIMIX_rdv_get_head(mailbox->rdv));
 }
 
 m_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 {
-  xbt_fifo_item_t item;
+  smx_comm_t comm = SIMIX_rdv_get_head(mailbox->rdv);
 
-  if (!(item = xbt_fifo_get_first_item(mailbox->tasks)))
-    return NULL;
-
-  return (m_task_t) xbt_fifo_get_item_content(item);
-}
-
-
-m_task_t MSG_mailbox_get_first_host_task(msg_mailbox_t mailbox, m_host_t host)
-{
-  m_task_t task = NULL;
-  xbt_fifo_item_t item = NULL;
-
-  xbt_fifo_foreach(mailbox->tasks, item, task, m_task_t)
-    if (task->simdata->source == host) {
-    xbt_fifo_remove_item(mailbox->tasks, item);
-    return task;
-  }
-
-  return NULL;
+  if(!comm)
+    return NULL; 
+  
+  return (m_task_t)SIMIX_communication_get_data(comm);
 }
 
 int
 MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox, m_host_t host)
 {
-  m_task_t task = NULL;
-  xbt_fifo_item_t item = NULL;
-  int count = 0;
-
-  xbt_fifo_foreach(mailbox->tasks, item, task, m_task_t) {
-    if (task->simdata->source == host)
-      count++;
-  }
-
-  return count;
+  return SIMIX_rdv_get_count_waiting_comm (mailbox->rdv, host->simdata->smx_host);
 }
 
 void MSG_mailbox_set_cond(msg_mailbox_t mailbox, smx_cond_t cond)
@@ -123,25 +83,13 @@ const char *MSG_mailbox_get_alias(msg_mailbox_t mailbox)
   return mailbox->alias;
 }
 
-const char *MSG_mailbox_get_hostname(msg_mailbox_t mailbox)
-{
-  return mailbox->hostname;
-}
-
-void MSG_mailbox_set_hostname(msg_mailbox_t mailbox, const char *hostname)
-{
-  mailbox->hostname = xbt_strdup(hostname);
-}
-
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 {
 
   msg_mailbox_t mailbox = xbt_dict_get_or_null(msg_mailboxes, alias);
 
-  if (!mailbox) {
+  if (!mailbox)
     mailbox = MSG_mailbox_new(alias);
-    MSG_mailbox_set_hostname(mailbox, MSG_host_self()->name);
-  }
 
   return mailbox;
 }
@@ -157,14 +105,19 @@ msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel)
 }
 
 MSG_error_t
-MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task,
-                         m_host_t host, double timeout)
+MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
+                         double timeout)
 {
   xbt_ex_t e;
-  MSG_error_t ret;
-  smx_host_t smx_host;
-  size_t task_size = sizeof(void*);
+  MSG_error_t ret = MSG_OK;
+  size_t buff_size = 0;
+  smx_comm_t comm;
   CHECK_HOST();
+
+  /* Kept for compatibility with older implementation */
+  xbt_assert1(!MSG_mailbox_get_cond(mailbox),
+              "A process is already blocked on this channel %s", 
+              MSG_mailbox_get_alias(mailbox));
 
   /* Sanity check */
   xbt_assert0(task, "Null pointer for the task storage");
@@ -173,10 +126,13 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task,
     CRITICAL0
       ("MSG_task_get() was asked to write in a non empty task struct.");
 
-  smx_host = host ? host->simdata->smx_host : NULL;
-  
+  /* We no loger support getting a task from a specific host */
+  if(host)
+    THROW_UNIMPLEMENTED;
+
+  /* Try to receive it by calling SIMIX network layer */
   TRY{
-    SIMIX_network_recv(mailbox->rdv, timeout, task, &task_size);
+    SIMIX_network_recv(mailbox->rdv, timeout, NULL, &buff_size, &comm);
   }
   CATCH(e){
     switch(e.category){
@@ -190,16 +146,18 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task,
         ret = MSG_TRANSFER_FAILURE;
         break;      
       default:
-        ret = MSG_OK;
-        RETHROW;
-        break;
-        /*xbt_die("Unhandled SIMIX network exception");*/
+        xbt_die("Unhandled SIMIX network exception");
     }
-    xbt_ex_free(e);
-    MSG_RETURN(ret);        
+    xbt_ex_free(e);        
   }
- 
-  MSG_RETURN (MSG_OK);
+
+  *task = SIMIX_communication_get_data(comm);
+
+  /* If the sender didn't decremented the refcount so far then do it */
+  if (*task && (*task)->simdata->refcount > 1)
+    (*task)->simdata->refcount--;
+  
+  MSG_RETURN(ret);        
 }
 
 MSG_error_t
@@ -207,43 +165,33 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
                              double timeout)
 {
   xbt_ex_t e;
-  MSG_error_t ret;
-  m_process_t process = MSG_process_self();
-  const char *hostname;
+  MSG_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
-  m_host_t local_host = NULL;
-  m_host_t remote_host = NULL;
-
+  m_process_t process = MSG_process_self();
+  
   CHECK_HOST();
 
+  /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = MSG_process_get_host(process);
+  t_simdata->source = MSG_host_self();
 
   xbt_assert0(t_simdata->refcount == 1,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
-  t_simdata->comm = NULL;
-
-  /*t_simdata->refcount++;*/
-  local_host = ((simdata_process_t) process->simdata)->m_host;
+  t_simdata->refcount++;
   msg_global->sent_msg++;
 
-  /* get the host name containing the mailbox */
-  hostname = MSG_mailbox_get_hostname(mailbox);
+  process->simdata->waiting_task = task;
 
-  remote_host = MSG_get_host_by_name(hostname);
-
-  if (!remote_host)
-    THROW1(not_found_error, 0, "Host %s not fount", hostname);
-
-  DEBUG4("Trying to send a task (%g kB) from %s to %s on the channel %s",
-         t_simdata->message_size / 1000, local_host->name,
-         remote_host->name, MSG_mailbox_get_alias(mailbox));
-
+  /* Try to send it by calling SIMIX network layer */
   TRY{
+    /* Kept for semantical compatibility with older implementation */
+    if(mailbox->cond)
+      SIMIX_cond_signal(mailbox->cond);
+
     SIMIX_network_send(mailbox->rdv, t_simdata->message_size, t_simdata->rate,
-                       timeout, &task, sizeof(void *));
+                       timeout, NULL, 0, &t_simdata->comm, task);
   }
 
   CATCH(e){
@@ -258,15 +206,19 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
         ret = MSG_TRANSFER_FAILURE;
         break;      
       default:
-        ret = MSG_OK;
-        RETHROW;
-        break;
         xbt_die("Unhandled SIMIX network exception");
     }
     xbt_ex_free(e);
-    MSG_RETURN(ret);        
+    /* If the receiver end didn't decremented the refcount so far then do it */
+    if (t_simdata->refcount > 1)
+      t_simdata->refcount--;
   }
 
-  /*t_simdata->refcount--;*/
-  MSG_RETURN (MSG_OK);
+  process->simdata->waiting_task = NULL;
+
+  /* If the receiver end didn't decremented the refcount so far then do it */
+  if (t_simdata->refcount > 1)
+    t_simdata->refcount--;
+  
+  MSG_RETURN(ret);        
 }

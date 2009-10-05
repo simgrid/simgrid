@@ -148,9 +148,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   action = task->simdata->compute;
   if (action)
     SIMIX_action_destroy(action);
-  action = task->simdata->comm;
-  if (action)
-    SIMIX_action_destroy(action);
+  
   /* parallel tasks only */
   if (task->simdata->host_list)
     xbt_free(task->simdata->host_list);
@@ -177,7 +175,7 @@ MSG_error_t MSG_task_cancel(m_task_t task)
     return MSG_OK;
   }
   if (task->simdata->comm) {
-    SIMIX_action_cancel(task->simdata->comm);
+    SIMIX_communication_cancel(task->simdata->comm);
     return MSG_OK;
   }
 
@@ -223,7 +221,7 @@ double MSG_task_get_remaining_communication(m_task_t task)
   xbt_assert0((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
 
-  return SIMIX_action_get_remains(task->simdata->comm);
+  return SIMIX_communication_get_remains(task->simdata->comm);
 }
 
 /** \ingroup m_task_management

@@ -90,6 +90,39 @@ smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type)
   return NULL;
 }
 
+/**
+ *  \brief counts the number of communication requests of a given host pending
+ *         on a rendez-vous point
+ *  \param rdv The rendez-vous point
+ *  \param host The host to be counted
+ *  \return The number of comm request pending in the rdv
+ */
+int 
+SIMIX_rdv_get_count_waiting_comm(smx_rdv_t rdv, smx_host_t host)
+{
+  smx_comm_t comm = NULL;
+  xbt_fifo_item_t item = NULL;
+  int count = 0;
+
+  xbt_fifo_foreach(rdv->comm_fifo, item, comm, smx_comm_t) {
+    if (comm->src_proc->smx_host == host)
+      count++;
+  }
+
+  return count;
+}
+
+/**
+ *  \brief returns the communication at the head of the rendez-vous
+ *  \param rdv The rendez-vous point
+ *  \return The communication or NULL if empty
+ */
+smx_comm_t SIMIX_rdv_get_head(smx_rdv_t rdv)
+{
+  return (smx_comm_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
+}
+
+
 /******************************************************************************/
 /*                           Communication Requests                           */
 /******************************************************************************/ 
@@ -193,7 +226,7 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
       if(e.category == timeout_error){
         DEBUG1("Communication timeout! %p", comm);
         if(comm->act && SIMIX_action_get_state(comm->act) == SURF_ACTION_RUNNING)
-          SIMIX_action_cancel(comm->act);
+          SIMIX_communication_cancel(comm);
         else
           SIMIX_rdv_remove(comm->rdv, comm);
           
@@ -220,6 +253,16 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
   SIMIX_unregister_action_to_condition(comm->act, comm->cond);
 }
 
+void SIMIX_communication_cancel(smx_comm_t comm)
+{
+  SIMIX_action_cancel(comm->act);
+}
+
+double SIMIX_communication_get_remains(smx_comm_t comm)
+{
+  return SIMIX_action_get_remains(comm->act);
+}  
+
 /**
  *  \brief Copy the communication data from the sender's buffer to the receiver's one
  *  \param comm The communication
@@ -228,18 +271,31 @@ void SIMIX_network_copy_data(smx_comm_t comm)
 {
   size_t src_buff_size = comm->src_buff_size;
   size_t dst_buff_size = *comm->dst_buff_size;
-
+  
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   dst_buff_size = MIN(dst_buff_size, src_buff_size);
-
+  
   /* Update the receiver's buffer size to the copied amount */
   *comm->dst_buff_size = dst_buff_size;
+
+  if(dst_buff_size == 0)
+    return;
 
   memcpy(comm->dst_buff, comm->src_buff, dst_buff_size);
 
   DEBUG4("Copying comm %p data from %s -> %s (%zu bytes)", 
          comm, comm->src_proc->smx_host->name, comm->dst_proc->smx_host->name,
          dst_buff_size);
+}
+
+/**
+ *  \brief Return the user data associated to the communication
+ *  \param comm The communication
+ *  \return the user data
+ */
+void *SIMIX_communication_get_data(smx_comm_t comm)
+{
+  return comm->data;
 }
 
 /******************************************************************************/
@@ -251,7 +307,8 @@ void SIMIX_network_copy_data(smx_comm_t comm)
  *   - network_error if network failed or peer issued a timeout
  */
 void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate, 
-                        double timeout, void *data, size_t data_size)
+                        double timeout, void *src_buff, size_t src_buff_size,
+                        smx_comm_t *comm_ref, void *data)
 {
   smx_comm_t comm;
   
@@ -264,12 +321,16 @@ void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
     SIMIX_rdv_push(rdv, comm);
   }
 
+  /* Update the communication reference with the comm to be used */
+  *comm_ref = comm;
+  
   /* Setup the communication request */
   comm->src_proc = SIMIX_process_self();
   comm->task_size = task_size;
   comm->rate = rate;
-  comm->src_buff = data;
-  comm->src_buff_size = data_size;
+  comm->src_buff = src_buff;
+  comm->src_buff_size = src_buff_size;
+  comm->data = data;
 
   SIMIX_communication_start(comm);
 
@@ -284,7 +345,8 @@ void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
  *   - timeout_error if communication reached the timeout specified
  *   - network_error if network failed or peer issued a timeout
  */
-void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *data, size_t *data_size)
+void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buff, 
+                        size_t *dst_buff_size, smx_comm_t *comm_ref)
 {
   smx_comm_t comm;
 
@@ -297,10 +359,13 @@ void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *data, size_t *data_
     SIMIX_rdv_push(rdv, comm);
   }
 
+  /* Update the communication reference with the comm to be used */
+  *comm_ref = comm;
+ 
   /* Setup communication request */
   comm->dst_proc = SIMIX_process_self();
-  comm->dst_buff = data;
-  comm->dst_buff_size = data_size;
+  comm->dst_buff = dst_buff;
+  comm->dst_buff_size = dst_buff_size;
 
   SIMIX_communication_start(comm);
 
