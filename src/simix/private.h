@@ -135,10 +135,10 @@ typedef struct s_smx_comm {
   smx_rdv_t rdv;
   smx_cond_t cond;
   smx_action_t act;
-  void *data;
-  size_t data_size;
-  void *dest_buff;
-  size_t *dest_buff_size;
+  void *src_buff;
+  size_t src_buff_size;
+  void *dst_buff;
+  size_t *dst_buff_size;
   double rate;
   double task_size;
   int refcount;

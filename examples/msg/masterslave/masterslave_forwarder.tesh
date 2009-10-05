@@ -10,114 +10,114 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/msg_platf
 > [iRMX:slave:(4) 4.772530] [msg_test/INFO] Received "Task_0"
 > [iRMX:slave:(4) 4.772530] [msg_test/INFO] Processing "Task_0"
 > [iRMX:slave:(4) 4.845345] [msg_test/INFO] "Task_0" done
-> [Jacquelin:master:(1) 6.900351] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 6.900351] [msg_test/INFO] Sending "Task_2" to "Bousquet"
 > [Casavant:forwarder:(3) 6.900351] [msg_test/INFO] Received "Task_1"
 > [Casavant:forwarder:(3) 6.900351] [msg_test/INFO] Sending "Task_1" to "Robert"
-> [Jacquelin:master:(1) 8.491392] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 8.491392] [msg_test/INFO] Sending "Task_3" to "Soucy"
+> [Jacquelin:master:(1) 6.900351] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 6.900351] [msg_test/INFO] Sending "Task_2" to "Bousquet"
 > [Bousquet:slave:(5) 8.491392] [msg_test/INFO] Received "Task_2"
 > [Bousquet:slave:(5) 8.491392] [msg_test/INFO] Processing "Task_2"
+> [Jacquelin:master:(1) 8.491392] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 8.491392] [msg_test/INFO] Sending "Task_3" to "Soucy"
 > [Bousquet:slave:(5) 8.607896] [msg_test/INFO] "Task_2" done
 > [Robert:slave:(10) 9.260549] [msg_test/INFO] Received "Task_1"
 > [Robert:slave:(10) 9.260549] [msg_test/INFO] Processing "Task_1"
 > [Robert:slave:(10) 9.296956] [msg_test/INFO] "Task_1" done
-> [Jacquelin:master:(1) 10.755127] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 10.755127] [msg_test/INFO] Sending "Task_4" to "Jackson"
 > [Soucy:slave:(6) 10.755127] [msg_test/INFO] Received "Task_3"
 > [Soucy:slave:(6) 10.755127] [msg_test/INFO] Processing "Task_3"
+> [Jacquelin:master:(1) 10.755127] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 10.755127] [msg_test/INFO] Sending "Task_4" to "Jackson"
 > [Soucy:slave:(6) 10.791535] [msg_test/INFO] "Task_3" done
-> [Jacquelin:master:(1) 12.090242] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 12.090242] [msg_test/INFO] Sending "Task_5" to "iRMX"
 > [Jackson:forwarder:(2) 12.090242] [msg_test/INFO] Received "Task_4"
 > [Jackson:forwarder:(2) 12.090242] [msg_test/INFO] Sending "Task_4" to "Kuenning"
+> [Jacquelin:master:(1) 12.090242] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 12.090242] [msg_test/INFO] Sending "Task_5" to "iRMX"
 > [Kuenning:slave:(7) 12.173866] [msg_test/INFO] Received "Task_4"
 > [Kuenning:slave:(7) 12.173866] [msg_test/INFO] Processing "Task_4"
 > [Kuenning:slave:(7) 12.232118] [msg_test/INFO] "Task_4" done
-> [Jacquelin:master:(1) 16.862772] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 16.862772] [msg_test/INFO] Sending "Task_6" to "Casavant"
 > [iRMX:slave:(4) 16.862772] [msg_test/INFO] Received "Task_5"
 > [iRMX:slave:(4) 16.862772] [msg_test/INFO] Processing "Task_5"
+> [Jacquelin:master:(1) 16.862772] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 16.862772] [msg_test/INFO] Sending "Task_6" to "Casavant"
 > [iRMX:slave:(4) 16.935587] [msg_test/INFO] "Task_5" done
-> [Jacquelin:master:(1) 18.990593] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 18.990593] [msg_test/INFO] Sending "Task_7" to "Bousquet"
 > [Casavant:forwarder:(3) 18.990593] [msg_test/INFO] Received "Task_6"
 > [Casavant:forwarder:(3) 18.990593] [msg_test/INFO] Sending "Task_6" to "Sirois"
+> [Jacquelin:master:(1) 18.990593] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 18.990593] [msg_test/INFO] Sending "Task_7" to "Bousquet"
 > [Sirois:slave:(11) 19.793293] [msg_test/INFO] Received "Task_6"
 > [Sirois:slave:(11) 19.793293] [msg_test/INFO] Processing "Task_6"
 > [Sirois:slave:(11) 19.836983] [msg_test/INFO] "Task_6" done
-> [Jacquelin:master:(1) 20.581634] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 20.581634] [msg_test/INFO] Sending "Task_8" to "Soucy"
 > [Bousquet:slave:(5) 20.581634] [msg_test/INFO] Received "Task_7"
 > [Bousquet:slave:(5) 20.581634] [msg_test/INFO] Processing "Task_7"
+> [Jacquelin:master:(1) 20.581634] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 20.581634] [msg_test/INFO] Sending "Task_8" to "Soucy"
 > [Bousquet:slave:(5) 20.698138] [msg_test/INFO] "Task_7" done
-> [Jacquelin:master:(1) 22.845369] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 22.845369] [msg_test/INFO] Sending "Task_9" to "Jackson"
 > [Soucy:slave:(6) 22.845369] [msg_test/INFO] Received "Task_8"
 > [Soucy:slave:(6) 22.845369] [msg_test/INFO] Processing "Task_8"
+> [Jacquelin:master:(1) 22.845369] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 22.845369] [msg_test/INFO] Sending "Task_9" to "Jackson"
 > [Soucy:slave:(6) 22.881777] [msg_test/INFO] "Task_8" done
-> [Jacquelin:master:(1) 24.180485] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 24.180485] [msg_test/INFO] Sending "Task_10" to "iRMX"
 > [Jackson:forwarder:(2) 24.180485] [msg_test/INFO] Received "Task_9"
 > [Jackson:forwarder:(2) 24.180485] [msg_test/INFO] Sending "Task_9" to "Browne"
+> [Jacquelin:master:(1) 24.180485] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 24.180485] [msg_test/INFO] Sending "Task_10" to "iRMX"
 > [Browne:slave:(8) 27.009931] [msg_test/INFO] Received "Task_9"
 > [Browne:slave:(8) 27.009931] [msg_test/INFO] Processing "Task_9"
 > [Browne:slave:(8) 27.046339] [msg_test/INFO] "Task_9" done
-> [Jacquelin:master:(1) 28.953014] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 28.953014] [msg_test/INFO] Sending "Task_11" to "Casavant"
 > [iRMX:slave:(4) 28.953014] [msg_test/INFO] Received "Task_10"
 > [iRMX:slave:(4) 28.953014] [msg_test/INFO] Processing "Task_10"
+> [Jacquelin:master:(1) 28.953014] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 28.953014] [msg_test/INFO] Sending "Task_11" to "Casavant"
 > [iRMX:slave:(4) 29.025830] [msg_test/INFO] "Task_10" done
-> [Jacquelin:master:(1) 31.080835] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 31.080835] [msg_test/INFO] Sending "Task_12" to "Bousquet"
 > [Casavant:forwarder:(3) 31.080835] [msg_test/INFO] Received "Task_11"
 > [Casavant:forwarder:(3) 31.080835] [msg_test/INFO] Sending "Task_11" to "Monique"
+> [Jacquelin:master:(1) 31.080835] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 31.080835] [msg_test/INFO] Sending "Task_12" to "Bousquet"
 > [Monique:slave:(12) 32.472434] [msg_test/INFO] Received "Task_11"
 > [Monique:slave:(12) 32.472434] [msg_test/INFO] Processing "Task_11"
 > [Monique:slave:(12) 32.516124] [msg_test/INFO] "Task_11" done
-> [Jacquelin:master:(1) 32.671876] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 32.671876] [msg_test/INFO] Sending "Task_13" to "Soucy"
 > [Bousquet:slave:(5) 32.671876] [msg_test/INFO] Received "Task_12"
 > [Bousquet:slave:(5) 32.671876] [msg_test/INFO] Processing "Task_12"
+> [Jacquelin:master:(1) 32.671876] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 32.671876] [msg_test/INFO] Sending "Task_13" to "Soucy"
 > [Bousquet:slave:(5) 32.788380] [msg_test/INFO] "Task_12" done
-> [Jacquelin:master:(1) 34.935611] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 34.935611] [msg_test/INFO] Sending "Task_14" to "Jackson"
 > [Soucy:slave:(6) 34.935611] [msg_test/INFO] Received "Task_13"
 > [Soucy:slave:(6) 34.935611] [msg_test/INFO] Processing "Task_13"
+> [Jacquelin:master:(1) 34.935611] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 34.935611] [msg_test/INFO] Sending "Task_14" to "Jackson"
 > [Soucy:slave:(6) 34.972019] [msg_test/INFO] "Task_13" done
-> [Jacquelin:master:(1) 36.270727] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 36.270727] [msg_test/INFO] Sending "Task_15" to "iRMX"
 > [Jackson:forwarder:(2) 36.270727] [msg_test/INFO] Received "Task_14"
 > [Jackson:forwarder:(2) 36.270727] [msg_test/INFO] Sending "Task_14" to "Stephen"
+> [Jacquelin:master:(1) 36.270727] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 36.270727] [msg_test/INFO] Sending "Task_15" to "iRMX"
 > [Stephen:slave:(9) 40.508273] [msg_test/INFO] Received "Task_14"
 > [Stephen:slave:(9) 40.508273] [msg_test/INFO] Processing "Task_14"
 > [Stephen:slave:(9) 40.581088] [msg_test/INFO] "Task_14" done
-> [Jacquelin:master:(1) 41.043257] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 41.043257] [msg_test/INFO] Sending "Task_16" to "Casavant"
 > [iRMX:slave:(4) 41.043257] [msg_test/INFO] Received "Task_15"
 > [iRMX:slave:(4) 41.043257] [msg_test/INFO] Processing "Task_15"
+> [Jacquelin:master:(1) 41.043257] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 41.043257] [msg_test/INFO] Sending "Task_16" to "Casavant"
 > [iRMX:slave:(4) 41.116072] [msg_test/INFO] "Task_15" done
-> [Jacquelin:master:(1) 43.171078] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 43.171078] [msg_test/INFO] Sending "Task_17" to "Bousquet"
 > [Casavant:forwarder:(3) 43.171078] [msg_test/INFO] Received "Task_16"
 > [Casavant:forwarder:(3) 43.171078] [msg_test/INFO] Sending "Task_16" to "Robert"
-> [Jacquelin:master:(1) 44.762118] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 44.762118] [msg_test/INFO] Sending "Task_18" to "Soucy"
+> [Jacquelin:master:(1) 43.171078] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 43.171078] [msg_test/INFO] Sending "Task_17" to "Bousquet"
 > [Bousquet:slave:(5) 44.762118] [msg_test/INFO] Received "Task_17"
 > [Bousquet:slave:(5) 44.762118] [msg_test/INFO] Processing "Task_17"
+> [Jacquelin:master:(1) 44.762118] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 44.762118] [msg_test/INFO] Sending "Task_18" to "Soucy"
 > [Bousquet:slave:(5) 44.878622] [msg_test/INFO] "Task_17" done
 > [Robert:slave:(10) 45.531275] [msg_test/INFO] Received "Task_16"
 > [Robert:slave:(10) 45.531275] [msg_test/INFO] Processing "Task_16"
 > [Robert:slave:(10) 45.567683] [msg_test/INFO] "Task_16" done
-> [Jacquelin:master:(1) 47.025854] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 47.025854] [msg_test/INFO] Sending "Task_19" to "Jackson"
 > [Soucy:slave:(6) 47.025854] [msg_test/INFO] Received "Task_18"
 > [Soucy:slave:(6) 47.025854] [msg_test/INFO] Processing "Task_18"
+> [Jacquelin:master:(1) 47.025854] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 47.025854] [msg_test/INFO] Sending "Task_19" to "Jackson"
 > [Soucy:slave:(6) 47.062262] [msg_test/INFO] "Task_18" done
-> [Jacquelin:master:(1) 48.360969] [msg_test/INFO] Sent
-> [Jacquelin:master:(1) 48.360969] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
 > [Jackson:forwarder:(2) 48.360969] [msg_test/INFO] Received "Task_19"
 > [Jackson:forwarder:(2) 48.360969] [msg_test/INFO] Sending "Task_19" to "Kuenning"
+> [Jacquelin:master:(1) 48.360969] [msg_test/INFO] Sent
+> [Jacquelin:master:(1) 48.360969] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
 > [Kuenning:slave:(7) 48.444592] [msg_test/INFO] Received "Task_19"
 > [Kuenning:slave:(7) 48.444592] [msg_test/INFO] Processing "Task_19"
 > [Kuenning:slave:(7) 48.502845] [msg_test/INFO] "Task_19" done
@@ -133,17 +133,17 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/msg_platf
 > [Sirois:slave:(11) 53.491253] [msg_test/INFO] I'm done. See you!
 > [Soucy:slave:(6) 53.843975] [msg_test/INFO] Received "finalize"
 > [Soucy:slave:(6) 53.843975] [msg_test/INFO] I'm done. See you!
-> [Casavant:forwarder:(3) 54.200695] [msg_test/INFO] I'm done. See you!
 > [Monique:slave:(12) 54.200695] [msg_test/INFO] Received "finalize"
 > [Monique:slave:(12) 54.200695] [msg_test/INFO] I'm done. See you!
-> [Jacquelin:master:(1) 54.524622] [msg_test/INFO] Goodbye now!
+> [Casavant:forwarder:(3) 54.200695] [msg_test/INFO] I'm done. See you!
 > [Jackson:forwarder:(2) 54.524622] [msg_test/INFO] Received "finalize"
 > [Jackson:forwarder:(2) 54.524622] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [Jacquelin:master:(1) 54.524622] [msg_test/INFO] Goodbye now!
 > [Kuenning:slave:(7) 54.529294] [msg_test/INFO] Received "finalize"
 > [Kuenning:slave:(7) 54.529294] [msg_test/INFO] I'm done. See you!
 > [Browne:slave:(8) 55.971757] [msg_test/INFO] Received "finalize"
 > [Browne:slave:(8) 55.971757] [msg_test/INFO] I'm done. See you!
-> [Jackson:forwarder:(2) 58.132075] [msg_test/INFO] I'm done. See you!
 > [Stephen:slave:(9) 58.132075] [msg_test/INFO] Received "finalize"
 > [Stephen:slave:(9) 58.132075] [msg_test/INFO] I'm done. See you!
+> [Jackson:forwarder:(2) 58.132075] [msg_test/INFO] I'm done. See you!
 > [58.132075] [msg_test/INFO] Simulation time 58.1321

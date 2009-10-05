@@ -23,56 +23,66 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
  */
 smx_rdv_t SIMIX_rdv_create(const char *name)
 {
-  smx_rdv_t rvp = xbt_new0(s_smx_rvpoint_t, 1);
-  rvp->name = name ? xbt_strdup(name) : NULL;
-  rvp->read = SIMIX_mutex_init();
-  rvp->write = SIMIX_mutex_init();
-  rvp->comm_fifo = xbt_fifo_new();
+  smx_rdv_t rdv = xbt_new0(s_smx_rvpoint_t, 1);
+  rdv->name = name ? xbt_strdup(name) : NULL;
+  rdv->read = SIMIX_mutex_init();
+  rdv->write = SIMIX_mutex_init();
+  rdv->comm_fifo = xbt_fifo_new();
 
-  return rvp;
+  return rdv;
 }
 
 /**
  *  \brief Destroy a rendez-vous point
  *  \param name The rendez-vous point to destroy
  */
-void SIMIX_rdv_destroy(smx_rdv_t rvp)
+void SIMIX_rdv_destroy(smx_rdv_t rdv)
 {
-  if(rvp->name)
-    xbt_free(rvp->name);
-  SIMIX_mutex_destroy(rvp->read);
-  SIMIX_mutex_destroy(rvp->write);
-  xbt_fifo_free(rvp->comm_fifo);
-  xbt_free(rvp);
+  if(rdv->name)
+    xbt_free(rdv->name);
+  SIMIX_mutex_destroy(rdv->read);
+  SIMIX_mutex_destroy(rdv->write);
+  xbt_fifo_free(rdv->comm_fifo);
+  xbt_free(rdv);
 }
 
 /**
  *  \brief Push a communication request into a rendez-vous point
- *  The communications request are dequeued by the two functions below
- *  \param rvp The rendez-vous point
+ *  \param rdv The rendez-vous point
  *  \param comm The communication request
  */
-static inline void SIMIX_rdv_push(smx_rdv_t rvp, smx_comm_t comm)
+static inline void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm)
 {
-  xbt_fifo_push(rvp->comm_fifo, comm);
+  xbt_fifo_push(rdv->comm_fifo, comm);
 }
 
 /**
+ *  \brief Remove a communication request from a rendez-vous point
+ *  \param rdv The rendez-vous point
+ *  \param comm The communication request
+ */
+static inline void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm)
+{
+  xbt_fifo_remove(rdv->comm_fifo, comm);
+}
+  
+
+/**
  *  \brief Checks if there is a communication request queued in a rendez-vous matching our needs
- *  \param rvp The rendez-vous with the queue
+ *  \param rdv The rendez-vous with the queue
  *  \param look_for_src boolean. True: we are receiver looking for sender; False: other way round
  *  \return The communication request if found, or a newly created one otherwise.
  */
-smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rvp, int (filter)(smx_comm_t, void*), void *arg) {
+smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, int (filter)(smx_comm_t, void*), void *arg) {
   smx_comm_t comm;
   xbt_fifo_item_t item;
 
   /* Traverse the rendez-vous queue looking for a comm request matching the
      filter conditions. If found return it and remove it from the list. */
-  xbt_fifo_foreach(rvp->comm_fifo, item, comm, smx_comm_t) {
+  xbt_fifo_foreach(rdv->comm_fifo, item, comm, smx_comm_t) {
     if(filter(comm, arg)){
       SIMIX_communication_use(comm);
-      xbt_fifo_remove_item(rvp->comm_fifo, item);
+      xbt_fifo_remove_item(rdv->comm_fifo, item);
       DEBUG1("Communication request found! %p", comm);
       return comm;
     }
@@ -145,7 +155,8 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
     DEBUG1("Starting communication %p", comm);
     comm->act = SIMIX_action_communicate(comm->src_host, comm->dst_host, NULL, 
                                          comm->task_size, comm->rate);
-    /* Add the communication as user data into the action, so it can be reached from it later */
+
+    /* Add the communication as user data of the action */
     comm->act->data = comm;
     
     SIMIX_register_action_to_condition(comm->act, comm->cond);
@@ -178,10 +189,12 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
       /* If it's a timeout then cancel the communication and signal the other peer */
       if(e.category == timeout_error){
         DEBUG1("Communication timeout! %p", comm);
-        if(SIMIX_action_get_state(comm->act) == SURF_ACTION_RUNNING)
+        if(comm->act && SIMIX_action_get_state(comm->act) == SURF_ACTION_RUNNING)
           SIMIX_action_cancel(comm->act);
+        else
+          SIMIX_rdv_remove(comm->rdv, comm);
+          
         SIMIX_cond_signal(comm->cond);
-        /* FIXME: remove from the rvp if the communication didn't started */
         SIMIX_communication_destroy(comm);
       }
       RETHROW;
@@ -193,12 +206,9 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
   DEBUG1("Communication %p complete! Let's check for errors", comm);
   
   /* Check for errors */
-  if (SIMIX_host_get_state(comm->dst_host) == 0){
+  if(!SIMIX_host_get_state(SIMIX_host_self())){
     SIMIX_communication_destroy(comm);
-    THROW1(host_error, 0, "Destination host %s failed", comm->dst_host->name);
-  } else if (SIMIX_host_get_state(comm->src_host) == 0){
-    SIMIX_communication_destroy(comm);
-    THROW1(host_error, 0, "Source host %s failed", comm->src_host->name);
+    THROW0(host_error, 0, "Host failed");
   } else if (SIMIX_action_get_state(comm->act) == SURF_ACTION_FAILED){
     SIMIX_communication_destroy(comm);
     THROW0(network_error, 0, "Link failure");
@@ -213,35 +223,19 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
  */
 void SIMIX_network_copy_data(smx_comm_t comm)
 {
-  /* Copy the minimum between the size of the sender's message and the size of the
-     receiver's buffer */
-  *comm->dest_buff_size = *comm->dest_buff_size < comm->data_size ? 
-                            *comm->dest_buff_size : comm->data_size;
+  size_t src_buff_size = comm->src_buff_size;
+  size_t dst_buff_size = *comm->dst_buff_size;
 
-  DEBUG4("Copying comm %p data from %s -> %s (%zu bytes)", comm, 
-         comm->src_host->name, comm->dst_host->name, *comm->dest_buff_size);
+  /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
+  dst_buff_size = MIN(dst_buff_size, src_buff_size);
 
-  memcpy(comm->dest_buff, comm->data, *comm->dest_buff_size);
-}
+  /* Update the receiver's buffer size to the copied amount */
+  *comm->dst_buff_size = dst_buff_size;
 
-/**
- *  \brief Checks if a communication is a send request
- *  \param comm The communication
- *  \return Boolean value
- */
-int SIMIX_communication_isSend(smx_comm_t comm)
-{
-  return comm->type == comm_send ? TRUE : FALSE;
-}
+  memcpy(comm->dst_buff, comm->src_buff, dst_buff_size);
 
-/**
- *  \brief Checks if a communication is a recv request
- *  \param comm The communication
- *  \return Boolean value
- */
-int SIMIX_communication_isRecv(smx_comm_t comm)
-{
-  return comm->type == comm_recv ? TRUE : FALSE;
+  DEBUG4("Copying comm %p data from %s -> %s (%zu bytes)", 
+         comm, comm->src_host->name, comm->dst_host->name, dst_buff_size);
 }
 
 /* FIXME: move to some other place */
@@ -288,14 +282,13 @@ void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
   comm->src_host = SIMIX_host_self();
   comm->task_size = task_size;
   comm->rate = rate;
-  comm->data = data;
-  comm->data_size = data_size;
+  comm->src_buff = data;
+  comm->src_buff_size = data_size;
 
   SIMIX_communication_start(comm);
 
   /* Wait for communication completion */
   /* FIXME: if the semantic is non blocking, it shouldn't wait on the condition here */
-  /* FIXME: add timeout checking stuff */
   SIMIX_communication_wait_for_completion(comm, timeout);
 
   SIMIX_communication_destroy(comm);
@@ -322,14 +315,13 @@ void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *data,
 
   /* Setup communication request */
   comm->dst_host = SIMIX_host_self();
-  comm->dest_buff = data;
-  comm->dest_buff_size = data_size;
+  comm->dst_buff = data;
+  comm->dst_buff_size = data_size;
 
   SIMIX_communication_start(comm);
 
   /* Wait for communication completion */
   /* FIXME: if the semantic is non blocking, it shouldn't wait on the condition here */
-  /* FIXME: add timeout checking stuff */
   SIMIX_communication_wait_for_completion(comm, timeout);
 
   SIMIX_communication_destroy(comm);
@@ -343,9 +335,9 @@ void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *data,
 void SIMIX_network_wait(smx_action_t comm, double timeout)
 {
     if (timeout > 0)
-      SIMIX_cond_wait_timeout(rvp_cond, rvp_comm_mutex, timeout - start_time);
+      SIMIX_cond_wait_timeout(rdv_cond, rdv_comm_mutex, timeout - start_time);
     else
-      SIMIX_cond_wait(rvp_cond, rvp_comm_mutex);    
+      SIMIX_cond_wait(rdv_cond, rdv_comm_mutex);    
 
 }
 

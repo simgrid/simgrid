@@ -2,8 +2,8 @@
 
 p Testing a simple master/slave example application
 
-$ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/masterslave/deployment_masterslave.xml --cfg=cpu_model:CpuTI
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+$ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/masterslave/deployment_masterslave.xml --cfg=cpu_model:Cas01_IM
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01_IM'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slaves and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" to "Jupiter"
@@ -126,8 +126,8 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_pla
 
 p Testing a master/slave example application with a forwarder module
 
-$ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/msg_platform.xml ${srcdir:=.}/masterslave/deployment_masterslave_forwarder.xml --cfg=cpu_model:CpuTI
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+$ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/msg_platform.xml ${srcdir:=.}/masterslave/deployment_masterslave_forwarder.xml --cfg=cpu_model:Cas01_IM
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01_IM'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Got 5 slaves and 20 tasks to process
 > [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" to "iRMX"
@@ -276,7 +276,7 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/msg_platf
 
 p Testing a simple master/slave example application handling failures
 
-$ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/small_platform_with_failures.xml ${srcdir:=.}/masterslave/deployment_masterslave.xml --cfg=path:${srcdir} --cfg=cpu_model:CpuTI
+$ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/small_platform_with_failures.xml ${srcdir:=.}/masterslave/deployment_masterslave.xml --cfg=path:${srcdir} --cfg=cpu_model:Cas01_IM
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [0.000000] [simix_process/WARNING] Cannot launch process 'slave' on failed host 'Fafard'
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slave(s) :
@@ -370,8 +370,8 @@ $ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_l
 
 p Testing the bypassing of the flexml parser
 
-$ $SG_TEST_EXENV masterslave/masterslave_bypass --log=no_loc --cfg=cpu_model:CpuTI
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'CpuTI'
+$ $SG_TEST_EXENV masterslave/masterslave_bypass --log=no_loc --cfg=cpu_model:Cas01_IM
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01_IM'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [0.000000] [surf_parse/WARNING] Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [host A:master:(1) 0.000000] [msg_test/INFO] Got 1 slave(s) :
@@ -503,3 +503,4 @@ $ $SG_TEST_EXENV masterslave/masterslave_bypass --log=no_loc --cfg=cpu_model:Cpu
 > [host B:slave:(2) 84.680000] [msg_test/INFO] Received "finalize" 
 > [host B:slave:(2) 84.680000] [msg_test/INFO] I'm done. See you!
 > [84.680000] [msg_test/INFO] Simulation time 84.68
+

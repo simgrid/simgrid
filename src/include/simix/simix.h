@@ -196,9 +196,10 @@ smx_comm_t SIMIX_communication_new(smx_comm_type_t type, smx_rdv_t rdv);
 void SIMIX_communication_destroy(smx_comm_t comm);
 static inline void SIMIX_communication_use(smx_comm_t comm);
 static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout);
-smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rvp, int (filter)(smx_comm_t, void *), void *arg);
-static inline void SIMIX_rdv_push(smx_rdv_t rvp, smx_comm_t comm);
-static inline smx_cond_t SIMIX_rdv_get_cond(smx_rdv_t rvp);
+smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, int (filter)(smx_comm_t, void *), void *arg);
+static inline void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm);
+static inline void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm);
+static inline smx_cond_t SIMIX_rdv_get_cond(smx_rdv_t rdv);
 void SIMIX_network_copy_data(smx_comm_t comm);
 
 SG_END_DECL()

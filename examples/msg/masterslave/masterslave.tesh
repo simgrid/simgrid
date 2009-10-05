@@ -9,23 +9,23 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_pla
 > [Tremblay:master:(1) 0.165962] [msg_test/INFO] Sending "Task_1" to "Fafard"
 > [Jupiter:slave:(3) 0.165962] [msg_test/INFO] Received "Task_0"
 > [Jupiter:slave:(3) 0.165962] [msg_test/INFO] Processing "Task_0"
-> [Tremblay:master:(1) 0.384115] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 0.384115] [msg_test/INFO] Sending "Task_2" to "Ginette"
 > [Fafard:slave:(4) 0.384115] [msg_test/INFO] Received "Task_1"
 > [Fafard:slave:(4) 0.384115] [msg_test/INFO] Processing "Task_1"
-> [Tremblay:master:(1) 0.524575] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 0.524575] [msg_test/INFO] Sending "Task_3" to "Bourassa"
+> [Tremblay:master:(1) 0.384115] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 0.384115] [msg_test/INFO] Sending "Task_2" to "Ginette"
 > [Ginette:slave:(5) 0.524575] [msg_test/INFO] Received "Task_2"
 > [Ginette:slave:(5) 0.524575] [msg_test/INFO] Processing "Task_2"
+> [Tremblay:master:(1) 0.524575] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 0.524575] [msg_test/INFO] Sending "Task_3" to "Bourassa"
+> [Bourassa:slave:(6) 0.740447] [msg_test/INFO] Received "Task_3"
+> [Bourassa:slave:(6) 0.740447] [msg_test/INFO] Processing "Task_3"
 > [Tremblay:master:(1) 0.740447] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 0.740447] [msg_test/INFO] Sending "Task_4" to "Tremblay"
 > [Tremblay:master:(1) 0.740447] [msg_test/INFO] Hey ! It's me ! :)
-> [Bourassa:slave:(6) 0.740447] [msg_test/INFO] Received "Task_3"
-> [Bourassa:slave:(6) 0.740447] [msg_test/INFO] Processing "Task_3"
-> [Tremblay:master:(1) 0.742786] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 0.742786] [msg_test/INFO] Sending "Task_5" to "Jupiter"
 > [Tremblay:slave:(2) 0.742786] [msg_test/INFO] Received "Task_4"
 > [Tremblay:slave:(2) 0.742786] [msg_test/INFO] Processing "Task_4"
+> [Tremblay:master:(1) 0.742786] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 0.742786] [msg_test/INFO] Sending "Task_5" to "Jupiter"
 > [Jupiter:slave:(3) 0.821304] [msg_test/INFO] "Task_0" done
 > [Tremblay:master:(1) 0.987266] [msg_test/INFO] Sent
 > [Tremblay:master:(1) 0.987266] [msg_test/INFO] Sending "Task_6" to "Fafard"
@@ -50,18 +50,18 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_pla
 > [Tremblay:master:(1) 1.987417] [msg_test/INFO] Hey ! It's me ! :)
 > [Bourassa:slave:(6) 1.987417] [msg_test/INFO] Received "Task_8"
 > [Bourassa:slave:(6) 1.987417] [msg_test/INFO] Processing "Task_8"
-> [Tremblay:master:(1) 1.989756] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 1.989756] [msg_test/INFO] Sending "Task_10" to "Jupiter"
 > [Tremblay:slave:(2) 1.989756] [msg_test/INFO] Received "Task_9"
 > [Tremblay:slave:(2) 1.989756] [msg_test/INFO] Processing "Task_9"
-> [Tremblay:master:(1) 2.155718] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 2.155718] [msg_test/INFO] Sending "Task_11" to "Fafard"
+> [Tremblay:master:(1) 1.989756] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 1.989756] [msg_test/INFO] Sending "Task_10" to "Jupiter"
 > [Jupiter:slave:(3) 2.155718] [msg_test/INFO] Received "Task_10"
 > [Jupiter:slave:(3) 2.155718] [msg_test/INFO] Processing "Task_10"
-> [Tremblay:master:(1) 2.373871] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 2.373871] [msg_test/INFO] Sending "Task_12" to "Ginette"
+> [Tremblay:master:(1) 2.155718] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 2.155718] [msg_test/INFO] Sending "Task_11" to "Fafard"
 > [Fafard:slave:(4) 2.373871] [msg_test/INFO] Received "Task_11"
 > [Fafard:slave:(4) 2.373871] [msg_test/INFO] Processing "Task_11"
+> [Tremblay:master:(1) 2.373871] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 2.373871] [msg_test/INFO] Sending "Task_12" to "Ginette"
 > [Tremblay:slave:(2) 2.499466] [msg_test/INFO] "Task_9" done
 > [Ginette:slave:(5) 2.727230] [msg_test/INFO] "Task_7" done
 > [Jupiter:slave:(3) 2.811060] [msg_test/INFO] "Task_10" done
@@ -76,18 +76,18 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_pla
 > [Tremblay:master:(1) 3.234387] [msg_test/INFO] Hey ! It's me ! :)
 > [Bourassa:slave:(6) 3.234387] [msg_test/INFO] Received "Task_13"
 > [Bourassa:slave:(6) 3.234387] [msg_test/INFO] Processing "Task_13"
-> [Tremblay:master:(1) 3.236726] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 3.236726] [msg_test/INFO] Sending "Task_15" to "Jupiter"
 > [Tremblay:slave:(2) 3.236726] [msg_test/INFO] Received "Task_14"
 > [Tremblay:slave:(2) 3.236726] [msg_test/INFO] Processing "Task_14"
-> [Tremblay:master:(1) 3.402688] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 3.402688] [msg_test/INFO] Sending "Task_16" to "Fafard"
+> [Tremblay:master:(1) 3.236726] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 3.236726] [msg_test/INFO] Sending "Task_15" to "Jupiter"
 > [Jupiter:slave:(3) 3.402688] [msg_test/INFO] Received "Task_15"
 > [Jupiter:slave:(3) 3.402688] [msg_test/INFO] Processing "Task_15"
-> [Tremblay:master:(1) 3.620841] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 3.620841] [msg_test/INFO] Sending "Task_17" to "Ginette"
+> [Tremblay:master:(1) 3.402688] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 3.402688] [msg_test/INFO] Sending "Task_16" to "Fafard"
 > [Fafard:slave:(4) 3.620841] [msg_test/INFO] Received "Task_16"
 > [Fafard:slave:(4) 3.620841] [msg_test/INFO] Processing "Task_16"
+> [Tremblay:master:(1) 3.620841] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 3.620841] [msg_test/INFO] Sending "Task_17" to "Ginette"
 > [Tremblay:slave:(2) 3.746436] [msg_test/INFO] "Task_14" done
 > [Ginette:slave:(5) 3.898788] [msg_test/INFO] "Task_12" done
 > [Tremblay:master:(1) 4.039247] [msg_test/INFO] Sent
@@ -102,10 +102,10 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_pla
 > [Tremblay:master:(1) 4.481357] [msg_test/INFO] Hey ! It's me ! :)
 > [Bourassa:slave:(6) 4.481357] [msg_test/INFO] Received "Task_18"
 > [Bourassa:slave:(6) 4.481357] [msg_test/INFO] Processing "Task_18"
-> [Tremblay:master:(1) 4.483696] [msg_test/INFO] Sent
-> [Tremblay:master:(1) 4.483696] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
 > [Tremblay:slave:(2) 4.483696] [msg_test/INFO] Received "Task_19"
 > [Tremblay:slave:(2) 4.483696] [msg_test/INFO] Processing "Task_19"
+> [Tremblay:master:(1) 4.483696] [msg_test/INFO] Sent
+> [Tremblay:master:(1) 4.483696] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
 > [Jupiter:slave:(3) 4.498896] [msg_test/INFO] Received "finalize"
 > [Jupiter:slave:(3) 4.498896] [msg_test/INFO] I'm done. See you!
 > [Fafard:slave:(4) 4.519447] [msg_test/INFO] Received "finalize"
@@ -117,7 +117,7 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_pla
 > [Bourassa:slave:(6) 5.512455] [msg_test/INFO] "Task_18" done
 > [Bourassa:slave:(6) 5.532791] [msg_test/INFO] Received "finalize"
 > [Bourassa:slave:(6) 5.532791] [msg_test/INFO] I'm done. See you!
-> [Tremblay:master:(1) 5.532947] [msg_test/INFO] Goodbye now!
 > [Tremblay:slave:(2) 5.532947] [msg_test/INFO] Received "finalize"
 > [Tremblay:slave:(2) 5.532947] [msg_test/INFO] I'm done. See you!
+> [Tremblay:master:(1) 5.532947] [msg_test/INFO] Goodbye now!
 > [5.532947] [msg_test/INFO] Simulation time 5.53295
