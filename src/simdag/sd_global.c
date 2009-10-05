@@ -1,3 +1,8 @@
+/* Copyright (c) 2007-2009 Da SimGrid Team.  All rights reserved.           */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
@@ -12,14 +17,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd,
                                 "Logging specific to SimDag (kernel)");
 
 SD_global_t sd_global = NULL;
-
-/* $Id$ */
-
-/* Copyright (c) 2007 Arnaud Legrand.
-   All rights reserved.                                          */
-
-/* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. */
 
 XBT_LOG_EXTERNAL_CATEGORY(sd_kernel);
 XBT_LOG_EXTERNAL_CATEGORY(sd_task);
