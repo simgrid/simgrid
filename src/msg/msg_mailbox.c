@@ -151,7 +151,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
   }
 
   *task = SIMIX_communication_get_data(comm);
-
+  
   /* If the sender didn't decremented the refcount so far then do it */
   if (*task && (*task)->simdata->refcount > 1)
     (*task)->simdata->refcount--;
@@ -182,7 +182,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   msg_global->sent_msg++;
 
   process->simdata->waiting_task = task;
-
+  
   /* Try to send it by calling SIMIX network layer */
   TRY{
     /* Kept for semantical compatibility with older implementation */
@@ -211,7 +211,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   }
 
   process->simdata->waiting_task = NULL;
-
+  
   /* If the receiver end didn't decremented the refcount so far then do it */
   if (t_simdata->refcount > 1)
     t_simdata->refcount--;

@@ -68,6 +68,7 @@ SG_BEGIN_DECL()
        m_host_t put_host;       /* used for debugging purposes */
        m_channel_t put_channel; /* used for debugging purposes */
        smx_action_t waiting_action;
+       m_task_t waiting_task;
        int argc;                /* arguments number if any */
        char **argv;             /* arguments table if any */
        MSG_error_t last_errno;  /* the last value returned by a MSG_function */
