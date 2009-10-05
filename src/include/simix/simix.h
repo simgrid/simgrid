@@ -175,8 +175,19 @@ XBT_PUBLIC(void) SIMIX_display_process_status(void);
 /************************** Comunication Handling *****************************/
 
 /* Public */
+/*****Rendez-vous points*****/
 XBT_PUBLIC(smx_rdv_t) SIMIX_rdv_create(const char *name);
 XBT_PUBLIC(void) SIMIX_rdv_destroy(smx_rdv_t rvp);
+XBT_PUBLIC(int) SIMIX_rdv_get_count_waiting_comm(smx_rdv_t rdv, smx_host_t host);
+XBT_PUBLIC(smx_comm_t) SIMIX_rdv_get_head(smx_rdv_t rdv);
+XBT_PUBLIC(smx_comm_t) SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type);
+
+/*****Communication Requests*****/
+XBT_PUBLIC(void) SIMIX_communication_cancel(smx_comm_t comm);
+XBT_PUBLIC(double) SIMIX_communication_get_remains(smx_comm_t comm);
+XBT_PUBLIC(void *) SIMIX_communication_get_data(smx_comm_t comm);
+
+/*****Networking*****/
 XBT_PUBLIC(void) SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
                                     double timeout, void *src_buff,
                                     size_t src_buff_size, smx_comm_t *comm, void *data);
@@ -184,22 +195,6 @@ XBT_PUBLIC(void) SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buf
                                     size_t *dst_buff_size, smx_comm_t *comm);
 XBT_PUBLIC(void) SIMIX_network_wait(smx_action_t comm);
 XBT_PUBLIC(int) SIMIX_network_test(smx_action_t comm);
-XBT_PUBLIC(void) SIMIX_communication_cancel(smx_comm_t comm);
-XBT_PUBLIC(double) SIMIX_communication_get_remains(smx_comm_t comm);
-XBT_PUBLIC(int) SIMIX_rdv_get_count_waiting_comm(smx_rdv_t rdv, smx_host_t host);
-XBT_PUBLIC(smx_comm_t) SIMIX_rdv_get_head(smx_rdv_t rdv);
-XBT_PUBLIC(void *) SIMIX_communication_get_data(smx_comm_t comm);
-
-/* These should be private to SIMIX */
-smx_comm_t SIMIX_communication_new(smx_comm_type_t type);
-void SIMIX_communication_destroy(smx_comm_t comm);
-static inline void SIMIX_communication_use(smx_comm_t comm);
-static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout);
-smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type);
-static inline void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm);
-static inline void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm);
-static inline smx_cond_t SIMIX_rdv_get_cond(smx_rdv_t rdv);
-void SIMIX_network_copy_data(smx_comm_t comm);
 
 SG_END_DECL()
 #endif /* _SIMIX_SIMIX_H */

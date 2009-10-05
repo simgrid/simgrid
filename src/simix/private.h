@@ -151,6 +151,14 @@ typedef struct s_smx_comm {
   void *data;             /* User data associated to communication */
 } s_smx_comm_t;
 
+void SIMIX_network_copy_data(smx_comm_t comm);
+smx_comm_t SIMIX_communication_new(smx_comm_type_t type);
+void SIMIX_communication_destroy(smx_comm_t comm);
+static inline void SIMIX_communication_use(smx_comm_t comm);
+static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout);
+static inline void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm);
+static inline void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm);
+
 /********************************* Action *************************************/
 
 typedef enum {ready, ongoing, done, failed} smx_action_state_t;
