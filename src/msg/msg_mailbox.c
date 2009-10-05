@@ -110,7 +110,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
 {
   xbt_ex_t e;
   MSG_error_t ret = MSG_OK;
-  size_t buff_size = 0;
   smx_comm_t comm;
   CHECK_HOST();
 
@@ -132,7 +131,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
 
   /* Try to receive it by calling SIMIX network layer */
   TRY{
-    SIMIX_network_recv(mailbox->rdv, timeout, NULL, &buff_size, &comm);
+    SIMIX_network_recv(mailbox->rdv, timeout, NULL, NULL, &comm);
   }
   CATCH(e){
     switch(e.category){
@@ -209,9 +208,6 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
         xbt_die("Unhandled SIMIX network exception");
     }
     xbt_ex_free(e);
-    /* If the receiver end didn't decremented the refcount so far then do it */
-    if (t_simdata->refcount > 1)
-      t_simdata->refcount--;
   }
 
   process->simdata->waiting_task = NULL;

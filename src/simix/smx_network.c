@@ -196,8 +196,6 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
     comm->act->data = comm;
     
     SIMIX_register_action_to_condition(comm->act, comm->cond);
-  }else{
-    DEBUG1("Communication %p cannot be started, peer missing", comm);
   }
 }
 
@@ -222,7 +220,9 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
       SIMIX_cond_wait_timeout(comm->cond, NULL, timeout);
     }
     CATCH(e){
-      /* If it's a timeout then cancel the communication and signal the other peer */
+      /* If there is a timeout then cancel the communication if it is running or 
+         remove it from the rendez-vous otherwise. Then signal the other peer,
+         destroy the communication and retrow the exception. */
       if(e.category == timeout_error){
         DEBUG1("Communication timeout! %p", comm);
         if(comm->act && SIMIX_action_get_state(comm->act) == SURF_ACTION_RUNNING)
@@ -241,7 +241,7 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
 
   DEBUG1("Communication %p complete! Let's check for errors", comm);
   
-  /* Check for errors */
+  /* Check for errors other than timeouts (they are catched above) */
   if(!SIMIX_host_get_state(SIMIX_host_self())){
     SIMIX_communication_destroy(comm);
     THROW0(host_error, 0, "Host failed");
@@ -253,11 +253,19 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
   SIMIX_unregister_action_to_condition(comm->act, comm->cond);
 }
 
+/**
+ *  \brief Cancels a communication
+ *  \brief comm The communication to cancel
+ */
 void SIMIX_communication_cancel(smx_comm_t comm)
 {
   SIMIX_action_cancel(comm->act);
 }
 
+/**
+ *  \brief get the amount remaining from the communication
+ *  \param comm The communication
+ */
 double SIMIX_communication_get_remains(smx_comm_t comm)
 {
   return SIMIX_action_get_remains(comm->act);
@@ -269,6 +277,10 @@ double SIMIX_communication_get_remains(smx_comm_t comm)
  */
 void SIMIX_network_copy_data(smx_comm_t comm)
 {
+  /* If there is no data to be copy then return */
+  if(!comm->src_buff || !comm->dst_buff)
+    return;
+  
   size_t src_buff_size = comm->src_buff_size;
   size_t dst_buff_size = *comm->dst_buff_size;
   
@@ -301,7 +313,18 @@ void *SIMIX_communication_get_data(smx_comm_t comm)
 /******************************************************************************/
 /*                        Synchronous Communication                           */
 /******************************************************************************/
-/*  Throws:
+/**
+ *  \brief Put a send communication request in a rendez-vous point and waits for
+ *         its completion (blocking)
+ *  \param rdv The rendez-vous point
+ *  \param task_size The size of the communication action (for surf simulation)
+ *  \param rate The rate of the communication action (for surf)
+ *  \param timeout The timeout used for the waiting the completion 
+ *  \param src_buff The source buffer containing the message to be sent
+ *  \param src_buff_size The size of the source buffer
+ *  \param comm_ref The communication object used for the send
+ *  \param data User data associated to the communication object
+ *  Throws:
  *   - host_error if peer failed
  *   - timeout_error if communication reached the timeout specified
  *   - network_error if network failed or peer issued a timeout
@@ -340,7 +363,15 @@ void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
   SIMIX_communication_destroy(comm);
 }
 
-/*  Throws:
+/**
+ *  \brief Put a receive communication request in a rendez-vous point and waits
+ *         for its completion (blocking)
+ *  \param rdv The rendez-vous point
+ *  \param timeout The timeout used for the waiting the completion 
+ *  \param dst_buff The destination buffer to copy the received message
+ *  \param src_buff_size The size of the destination buffer
+ *  \param comm_ref The communication object used for the send
+ *  Throws:
  *   - host_error if peer failed
  *   - timeout_error if communication reached the timeout specified
  *   - network_error if network failed or peer issued a timeout
