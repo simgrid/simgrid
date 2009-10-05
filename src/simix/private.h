@@ -129,19 +129,25 @@ typedef struct s_smx_rvpoint {
 } s_smx_rvpoint_t;
 
 typedef struct s_smx_comm {
-  smx_comm_type_t type;
-  smx_host_t src_host;
-  smx_host_t dst_host;
-  smx_rdv_t rdv;
-  smx_cond_t cond;
+
+
+  smx_comm_type_t type;   /* Type of the communication (comm_send,comm_recv) */
+  smx_rdv_t rdv;          /* Rendez-vous where the comm is queued */
+  smx_cond_t cond;        /* Condition associated to the surf simulation */
+  int refcount;           /* Number of processes involved in the cond */
+
+  /* Surf action data */
+  smx_process_t src_proc;
+  smx_process_t dst_proc;
   smx_action_t act;
+  double rate;
+  double task_size;
+
+  /* Data to be transfered */
   void *src_buff;
   size_t src_buff_size;
   void *dst_buff;
   size_t *dst_buff_size;
-  double rate;
-  double task_size;
-  int refcount;
 } s_smx_comm_t;
 
 /********************************* Action *************************************/

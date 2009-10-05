@@ -243,32 +243,13 @@ void gras_function_register(const char *name, xbt_main_func_t code)
 
 void gras_main()
 {
-  smx_action_t action;
-  xbt_fifo_t actions_done = xbt_fifo_new();
-  xbt_fifo_t actions_failed = xbt_fifo_new();
-
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
   SIMIX_init();
 
-  while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
-    while ((action = xbt_fifo_pop(actions_failed))) {
-      DEBUG1("** %s failed **", SIMIX_action_get_name(action));
-      SIMIX_action_signal_all (action);
-      /* action finished, destroy it */
-      //        SIMIX_action_destroy(action);
-    }
-
-    while ((action = xbt_fifo_pop(actions_done))) {
-      DEBUG1("** %s done **", SIMIX_action_get_name(action));
-      SIMIX_action_signal_all (action);
-      /* action finished, destroy it */
-      //SIMIX_action_destroy(action);
-    }
-  }
-  xbt_fifo_free(actions_failed);
-  xbt_fifo_free(actions_done);
+  while (SIMIX_solve(NULL, NULL) != -1.0);
+  
   return;
 }
 

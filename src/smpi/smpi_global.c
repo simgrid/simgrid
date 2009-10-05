@@ -315,11 +315,6 @@ static void smpi_cfg_cb_host_speed(const char *name, int pos)
 
 int smpi_run_simulation(int *argc, char **argv)
 {
-  smx_action_t action = NULL;
-
-  xbt_fifo_t actions_failed = xbt_fifo_new();
-  xbt_fifo_t actions_done = xbt_fifo_new();
-
   srand(SMPI_RAND_SEED);
 
   double default_reference_speed = 20000.0;
@@ -350,21 +345,9 @@ int smpi_run_simulation(int *argc, char **argv)
   fflush(stderr);
   SIMIX_init();
 
-  while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
-    while ((action = xbt_fifo_pop(actions_failed))) {
-      DEBUG1("** %s failed **", SIMIX_action_get_name(action));
-      SIMIX_action_signal_all(action);
-    }
-    while ((action = xbt_fifo_pop(actions_done))) {
-      DEBUG1("** %s done **", SIMIX_action_get_name(action));
-      SIMIX_action_signal_all(action);
-    }
-  }
-
+  while (SIMIX_solve(NULL, NULL) != -1.0);
+  
   // FIXME: cleanup incomplete
-  xbt_fifo_free(actions_failed);
-  xbt_fifo_free(actions_done);
-
 
   if (xbt_cfg_get_int(_surf_cfg_set, "display_timing"))
     INFO1("simulation time %g", SIMIX_get_clock());

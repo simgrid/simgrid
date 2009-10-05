@@ -176,8 +176,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task,
   smx_host = host ? host->simdata->smx_host : NULL;
   
   TRY{
-    SIMIX_network_recv(mailbox->rdv, timeout, task, &task_size, 
-                       comm_filter_get, smx_host);
+    SIMIX_network_recv(mailbox->rdv, timeout, task, &task_size);
   }
   CATCH(e){
     switch(e.category){
@@ -244,7 +243,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   TRY{
     SIMIX_network_send(mailbox->rdv, t_simdata->message_size, t_simdata->rate,
-                       timeout, &task, sizeof(void *), comm_filter_put, NULL);
+                       timeout, &task, sizeof(void *));
   }
 
   CATCH(e){
@@ -262,12 +261,12 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
         ret = MSG_OK;
         RETHROW;
         break;
-        /*xbt_die("Unhandled SIMIX network exception");*/
+        xbt_die("Unhandled SIMIX network exception");
     }
     xbt_ex_free(e);
     MSG_RETURN(ret);        
   }
 
- /* t_simdata->refcount--;*/
+  /*t_simdata->refcount--;*/
   MSG_RETURN (MSG_OK);
 }
