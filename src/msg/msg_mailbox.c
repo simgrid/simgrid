@@ -191,7 +191,10 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task,
         ret = MSG_TRANSFER_FAILURE;
         break;      
       default:
-        xbt_die("Unhandled SIMIX network exception");       
+        ret = MSG_OK;
+        RETHROW;
+        break;
+        /*xbt_die("Unhandled SIMIX network exception");*/
     }
     xbt_ex_free(e);
     MSG_RETURN(ret);        
@@ -223,7 +226,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   t_simdata->comm = NULL;
 
-  t_simdata->refcount++;
+  /*t_simdata->refcount++;*/
   local_host = ((simdata_process_t) process->simdata)->m_host;
   msg_global->sent_msg++;
 
@@ -256,12 +259,15 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
         ret = MSG_TRANSFER_FAILURE;
         break;      
       default:
-        xbt_die("Unhandled SIMIX network exception");       
+        ret = MSG_OK;
+        RETHROW;
+        break;
+        /*xbt_die("Unhandled SIMIX network exception");*/
     }
     xbt_ex_free(e);
     MSG_RETURN(ret);        
   }
 
-  t_simdata->refcount--;
+ /* t_simdata->refcount--;*/
   MSG_RETURN (MSG_OK);
 }

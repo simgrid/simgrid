@@ -9,6 +9,9 @@
 #include "private.h"
 #include "xbt/log.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
+                                "Logging specific to SIMIX (network)");
+
 /******************************************************************************/
 /*                           Rendez-Vous Points                               */
 /******************************************************************************/ 
@@ -70,11 +73,13 @@ smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rvp, int (filter)(smx_comm_t, void*),
     if(filter(comm, arg)){
       SIMIX_communication_use(comm);
       xbt_fifo_remove_item(rvp->comm_fifo, item);
+      DEBUG1("Communication request found! %p", comm);
       return comm;
     }
   }
 
   /* no relevant request found. Return NULL */
+  DEBUG0("Communication request not found");
   return NULL;
 }
 
@@ -137,12 +142,15 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
 {
   /* If both the sender and the receiver are already there, start the communication */
   if(comm->src_host != NULL && comm->dst_host != NULL){
+    DEBUG1("Starting communication %p", comm);
     comm->act = SIMIX_action_communicate(comm->src_host, comm->dst_host, NULL, 
                                          comm->task_size, comm->rate);
     /* Add the communication as user data into the action, so it can be reached from it later */
     comm->act->data = comm;
     
     SIMIX_register_action_to_condition(comm->act, comm->cond);
+  }else{
+    DEBUG1("Communication %p cannot be started, peer missing", comm);
   }
 }
 
@@ -159,6 +167,8 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
 static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout)
 {
   xbt_ex_t e;
+
+  DEBUG1("Waiting for the completion of communication %p", comm);
   
   if(timeout > 0){
     TRY{
@@ -166,25 +176,35 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
     }
     CATCH(e){
       /* If it's a timeout then cancel the communication and signal the other peer */
-      if(e.category == timeout_error)
-        SIMIX_action_cancel(comm->act);
-        SIMIX_cond_signal(comm->cond);   
+      if(e.category == timeout_error){
+        DEBUG1("Communication timeout! %p", comm);
+        if(SIMIX_action_get_state(comm->act) == SURF_ACTION_RUNNING)
+          SIMIX_action_cancel(comm->act);
+        SIMIX_cond_signal(comm->cond);
+        /* FIXME: remove from the rvp if the communication didn't started */
+        SIMIX_communication_destroy(comm);
+      }
       RETHROW;
     }
   }else{
     SIMIX_cond_wait(comm->cond, NULL);
   }
 
-  SIMIX_unregister_action_to_condition(comm->act, comm->cond);
+  DEBUG1("Communication %p complete! Let's check for errors", comm);
   
   /* Check for errors */
   if (SIMIX_host_get_state(comm->dst_host) == 0){
+    SIMIX_communication_destroy(comm);
     THROW1(host_error, 0, "Destination host %s failed", comm->dst_host->name);
   } else if (SIMIX_host_get_state(comm->src_host) == 0){
+    SIMIX_communication_destroy(comm);
     THROW1(host_error, 0, "Source host %s failed", comm->src_host->name);
   } else if (SIMIX_action_get_state(comm->act) == SURF_ACTION_FAILED){
+    SIMIX_communication_destroy(comm);
     THROW0(network_error, 0, "Link failure");
   }
+
+  SIMIX_unregister_action_to_condition(comm->act, comm->cond);
 }
 
 /**
@@ -197,6 +217,9 @@ void SIMIX_network_copy_data(smx_comm_t comm)
      receiver's buffer */
   *comm->dest_buff_size = *comm->dest_buff_size < comm->data_size ? 
                             *comm->dest_buff_size : comm->data_size;
+
+  DEBUG4("Copying comm %p data from %s -> %s (%zu bytes)", comm, 
+         comm->src_host->name, comm->dst_host->name, *comm->dest_buff_size);
 
   memcpy(comm->dest_buff, comm->data, *comm->dest_buff_size);
 }
@@ -251,7 +274,7 @@ void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
                         int (filter)(smx_comm_t, void *), void *arg)
 {
   smx_comm_t comm;
-
+  
   /* Look for communication request matching our needs. 
      If it is not found then create it and push it into the rendez-vous point */
   comm = SIMIX_rdv_get_request(rdv, filter, arg);
@@ -293,7 +316,7 @@ void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *data,
   comm = SIMIX_rdv_get_request(rdv, filter, arg);
 
   if(comm == NULL){
-    comm = SIMIX_communication_new(comm_send, rdv);
+    comm = SIMIX_communication_new(comm_recv, rdv);
     SIMIX_rdv_push(rdv, comm);
   }
 
