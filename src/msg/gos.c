@@ -44,9 +44,9 @@ MSG_error_t MSG_task_execute(m_task_t task)
   CHECK_HOST();
 
   simdata = task->simdata;
-  xbt_assert0((!simdata->compute)
+  xbt_assert1((!simdata->compute)
               && (task->simdata->refcount == 1),
-              "This task is executed somewhere else. Go fix your code!");
+              "This task is executed somewhere else. Go fix your code! %d", task->simdata->refcount);
 
   DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
 

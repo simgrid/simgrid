@@ -146,32 +146,13 @@ int MSG_get_channel_number(void)
  */
 MSG_error_t MSG_main(void)
 {
-  smx_action_t smx_action;
-  xbt_fifo_t actions_done = xbt_fifo_new();
-  xbt_fifo_t actions_failed = xbt_fifo_new();
-
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
   SIMIX_init();
 
-  //surf_solve(); /* Takes traces into account. Returns 0.0 */
-  /* xbt_fifo_size(msg_global->process_to_run) */
-
-  while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
-
-    while ((smx_action = xbt_fifo_pop(actions_failed))) {
-      DEBUG1("** %s failed **", SIMIX_action_get_name(smx_action));
-      SIMIX_action_signal_all(smx_action);
-    }
-
-    while ((smx_action = xbt_fifo_pop(actions_done))) {
-      DEBUG1("** %s done **", SIMIX_action_get_name(smx_action));
-      SIMIX_action_signal_all(smx_action);      
-    }
-  }
-  xbt_fifo_free(actions_failed);
-  xbt_fifo_free(actions_done);
+  while (SIMIX_solve(NULL, NULL) != -1.0);
+  
   return MSG_OK;
 }
 

@@ -25,10 +25,11 @@ SG_BEGIN_DECL()
 /**************** datatypes **********************************/
 /* this structure represents a mailbox */
      typedef struct s_msg_mailbox {
-       char *alias;             /* the key of the mailbox in the global dictionary                      */
-       xbt_fifo_t tasks;        /* the list of the tasks in the mailbox                                         */
-       smx_cond_t cond;         /* the condition on the mailbox                                                         */
-       char *hostname;          /* the name of the host containing the mailbox                          */
+       char *alias;             /* the key of the mailbox in the global dictionary */
+       xbt_fifo_t tasks;        /* the list of the tasks in the mailbox */
+       smx_cond_t cond;         /* the condition on the mailbox */
+       char *hostname;          /* the name of the host containing the mailbox */
+       smx_rdv_t rdv;           /* SIMIX rendez-vous point */
      } s_msg_mailbox_t;
 
      typedef struct simdata_host {

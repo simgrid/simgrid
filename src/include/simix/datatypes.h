@@ -55,6 +55,9 @@ SG_BEGIN_DECL()
 /******************************* Networking ***********************************/
     typedef struct s_smx_rvpoint *smx_rdv_t;
     typedef struct s_smx_comm *smx_comm_t;
+    typedef enum {comm_send,
+                  comm_recv
+    } smx_comm_type_t;
 
 
 

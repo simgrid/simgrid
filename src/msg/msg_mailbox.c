@@ -24,7 +24,8 @@ msg_mailbox_t MSG_mailbox_create(const char *alias)
   mailbox->cond = NULL;
   mailbox->alias = alias ? xbt_strdup(alias) : NULL;
   mailbox->hostname = NULL;
-
+  mailbox->rdv = SIMIX_rdv_create(alias);
+  
   return mailbox;
 }
 
@@ -47,7 +48,8 @@ void MSG_mailbox_free(void *mailbox)
 
   xbt_fifo_free(_mailbox->tasks);
   free(_mailbox->alias);
-
+  SIMIX_rdv_destroy(_mailbox->rdv);
+  
   free(_mailbox);
 }
 
@@ -155,18 +157,13 @@ msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel)
 }
 
 MSG_error_t
-MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
+MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task,
                          m_host_t host, double timeout)
 {
-  m_process_t process = MSG_process_self();
-  m_task_t t = NULL;
-  m_host_t h = NULL;
-  simdata_task_t t_simdata = NULL;
-  simdata_host_t h_simdata = NULL;
-  double start_time = SIMIX_get_clock();
-
-  smx_cond_t cond = NULL;       //conditional wait if the task isn't on the channel yet
-
+  xbt_ex_t e;
+  MSG_error_t ret;
+  smx_host_t smx_host;
+  size_t task_size = sizeof(void*);
   CHECK_HOST();
 
   /* Sanity check */
@@ -176,138 +173,44 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     CRITICAL0
       ("MSG_task_get() was asked to write in a non empty task struct.");
 
-  /* Get the task */
-  h = MSG_host_self();
-  h_simdata = h->simdata;
-
-  SIMIX_mutex_lock(h_simdata->mutex);   //FIXME: lock the mailbox instead
-
-  if (MSG_mailbox_get_cond(mailbox)) {
-    CRITICAL1
-      ("A process is already blocked on the channel %s (meaning that someone is already doing a get on this)",
-       MSG_mailbox_get_alias(mailbox));
-    SIMIX_cond_display_info(MSG_mailbox_get_cond(mailbox));
-    xbt_die("Go fix your code!");
+  smx_host = host ? host->simdata->smx_host : NULL;
+  
+  TRY{
+    SIMIX_network_recv(mailbox->rdv, timeout, task, &task_size, 
+                       comm_filter_get, smx_host);
   }
-
-  while (1) {
-    /* if the mailbox is not empty (has a task) */
-    if (!MSG_mailbox_is_empty(mailbox)) {
-      if (!host) {
-        /* pop the head of the mailbox */
-        t = MSG_mailbox_pop_head(mailbox);
+  CATCH(e){
+    switch(e.category){
+      case host_error:
+        ret = MSG_HOST_FAILURE;
         break;
-      } else {
-        /* get the first task of the host */
-        if ((t = MSG_mailbox_get_first_host_task(mailbox, host)))
-          break;
-      }
+      case network_error:
+        ret = MSG_TRANSFER_FAILURE;
+        break;
+      case timeout_error:
+        ret = MSG_TRANSFER_FAILURE;
+        break;      
+      default:
+        xbt_die("Unhandled SIMIX network exception");       
     }
-
-    if ((timeout > 0) && (SIMIX_get_clock() - start_time >= timeout)) { // Timeout already elapsed
-      SIMIX_mutex_unlock(h_simdata->mutex);
-      MSG_mailbox_set_cond(mailbox, NULL);
-      SIMIX_cond_destroy(cond);
-      MSG_RETURN(MSG_TRANSFER_FAILURE);
-    }
-
-    if (!cond) {
-      cond = SIMIX_cond_init();
-      MSG_mailbox_set_cond(mailbox, cond);
-    }
-
-    if (timeout > 0)
-      SIMIX_cond_wait_timeout(cond, h_simdata->mutex,
-                              timeout - start_time + SIMIX_get_clock());
-    else
-      SIMIX_cond_wait(cond, h_simdata->mutex);
-
-    if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
-      SIMIX_mutex_unlock(h_simdata->mutex);
-      MSG_mailbox_set_cond(mailbox, NULL);
-      SIMIX_cond_destroy(cond);
-      MSG_RETURN(MSG_HOST_FAILURE);
-    }
+    xbt_ex_free(e);
+    MSG_RETURN(ret);        
   }
-
-
-  DEBUG1("OK, got a task (%s)", t->name);
-  /* clean conditional */
-  if (cond) {
-    MSG_mailbox_set_cond(mailbox, NULL);
-    SIMIX_cond_destroy(cond);
-  }
-
-  SIMIX_mutex_unlock(h_simdata->mutex);
-
-  t_simdata = t->simdata;
-  t_simdata->receiver = process;
-  *task = t;
-
-  SIMIX_mutex_lock(t_simdata->mutex);
-
-  /* Transfer */
-  /* create SIMIX action to the communication */
-  t_simdata->comm =
-    SIMIX_action_communicate(t_simdata->sender->simdata->m_host->
-                             simdata->smx_host,
-                             process->simdata->m_host->simdata->smx_host,
-                             t->name, t_simdata->message_size,
-                             t_simdata->rate);
-
-  SIMIX_action_use(t_simdata->comm);
-
-  /* if the process is suspend, create the action but stop its execution, it will be restart when the sender process resume */
-  if (MSG_process_is_suspended(t_simdata->sender)) {
-    DEBUG1("Process sender (%s) suspended", t_simdata->sender->name);
-    SIMIX_action_set_priority(t_simdata->comm, 0);
-  }
-  SIMIX_register_action_to_condition(t_simdata->comm, t_simdata->cond);
-  // breaking point if asynchrounous
-  process->simdata->waiting_action = t_simdata->comm;
-
-  while (1) {
-    SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
-
-    if (SIMIX_action_get_state(t_simdata->comm) != SURF_ACTION_RUNNING)
-      break;
-    if (!SIMIX_host_get_state(h_simdata->smx_host))
-      break;
-    if (!SIMIX_host_get_state(process->simdata->m_host->simdata->smx_host))
-      break;
-  }
-
-  SIMIX_unregister_action_to_condition(t_simdata->comm, t_simdata->cond);
-  process->simdata->waiting_action = NULL;
-
-  /* for this process, don't need to change in get function */
-  SIMIX_mutex_unlock(t_simdata->mutex);
-
-  if (SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
-    if (SIMIX_action_destroy(t_simdata->comm))
-      t_simdata->comm = NULL;
-    MSG_RETURN(MSG_OK);
-  } else if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
-    if (SIMIX_action_destroy(t_simdata->comm))
-      t_simdata->comm = NULL;
-    MSG_RETURN(MSG_HOST_FAILURE);
-  } else {
-    if (SIMIX_action_destroy(t_simdata->comm))
-      t_simdata->comm = NULL;
-    MSG_RETURN(MSG_TRANSFER_FAILURE);
-  }
+ 
+  MSG_RETURN (MSG_OK);
 }
 
 MSG_error_t
 MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
                              double timeout)
 {
+  xbt_ex_t e;
+  MSG_error_t ret;
   m_process_t process = MSG_process_self();
   const char *hostname;
   simdata_task_t t_simdata = NULL;
   m_host_t local_host = NULL;
   m_host_t remote_host = NULL;
-  smx_cond_t cond = NULL;
 
   CHECK_HOST();
 
@@ -332,110 +235,33 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   if (!remote_host)
     THROW1(not_found_error, 0, "Host %s not fount", hostname);
 
-
   DEBUG4("Trying to send a task (%g kB) from %s to %s on the channel %s",
          t_simdata->message_size / 1000, local_host->name,
          remote_host->name, MSG_mailbox_get_alias(mailbox));
 
-  SIMIX_mutex_lock(remote_host->simdata->mutex);        /* FIXME: lock the mailbox instead */
-
-  /* put the task in the mailbox */
-  xbt_fifo_push(mailbox->tasks, task);
-
-  if ((cond = MSG_mailbox_get_cond(mailbox))) {
-    DEBUG0("Somebody is listening. Let's wake him up!");
-    SIMIX_cond_signal(cond);
+  TRY{
+    SIMIX_network_send(mailbox->rdv, t_simdata->message_size, t_simdata->rate,
+                       timeout, &task, sizeof(void *), comm_filter_put, NULL);
   }
 
-  SIMIX_mutex_unlock(remote_host->simdata->mutex);
-
-  SIMIX_mutex_lock(t_simdata->mutex);
-
-  process->simdata->waiting_action = t_simdata->comm;   // for debugging and status displaying purpose
-
-  if (timeout > 0) {
-    xbt_ex_t e;
-    double time;
-    double time_elapsed;
-    time = SIMIX_get_clock();
-
-    TRY {
-      /*verify if the action that ends is the correct. Call the wait_timeout with the new time. If the timeout occurs, an exception is raised */
-      while (1) {
-        time_elapsed = SIMIX_get_clock() - time;
-        SIMIX_cond_wait_timeout(t_simdata->cond, t_simdata->mutex,
-                                timeout - time_elapsed);
-
-        if (t_simdata->comm)
-          SIMIX_action_use(t_simdata->comm);
-        if (t_simdata->comm && (SIMIX_action_get_state(t_simdata->comm) !=
-                                SURF_ACTION_RUNNING))
-          break;
-        if (!SIMIX_host_get_state(local_host->simdata->smx_host))
-          break;
-        if (!SIMIX_host_get_state(remote_host->simdata->smx_host))
-          break;
-      }
-    }
-    CATCH(e) {
-      if (e.category == timeout_error) {
-        xbt_ex_free(e);
-        /* verify if the timeout happened and the communication didn't started yet */
-        if (t_simdata->comm == NULL) {
-          DEBUG1("Action terminated %s (there was a timeout)", task->name);
-          process->simdata->waiting_action = NULL;
-
-          /* remove the task from the mailbox */
-          MSG_mailbox_remove(mailbox, task);
-
-/*           if (t_simdata->receiver && t_simdata->receiver->simdata) {    /\* receiver still around *\/ */
-/*             t_simdata->receiver->simdata->waiting_task = NULL; */
-/*           } */
-
-          SIMIX_mutex_unlock(t_simdata->mutex);
-          MSG_RETURN(MSG_TRANSFER_FAILURE);
-        }
-      } else {
-        RETHROW;
-      }
-    }
-  } else {
-    while (1) {                 //FIXME: factorize with the code right above
-      SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
-
-      if (t_simdata->comm)
-        SIMIX_action_use(t_simdata->comm);
-      if (t_simdata->comm
-          && SIMIX_action_get_state(t_simdata->comm) != SURF_ACTION_RUNNING)
+  CATCH(e){
+    switch(e.category){
+      case host_error:
+        ret = MSG_HOST_FAILURE;
         break;
-      if (!SIMIX_host_get_state(local_host->simdata->smx_host))
+      case network_error:
+        ret = MSG_TRANSFER_FAILURE;
         break;
-      if (!SIMIX_host_get_state(remote_host->simdata->smx_host))
-        break;
+      case timeout_error:
+        ret = MSG_TRANSFER_FAILURE;
+        break;      
+      default:
+        xbt_die("Unhandled SIMIX network exception");       
     }
+    xbt_ex_free(e);
+    MSG_RETURN(ret);        
   }
 
-  DEBUG1("Action terminated %s", task->name);
-  process->simdata->waiting_action = NULL;
-/*   if (t_simdata->receiver && t_simdata->receiver->simdata) {    /\* receiver still around *\/ */
-/*     t_simdata->receiver->simdata->waiting_task = NULL; */
-/*   } */
-
-  SIMIX_mutex_unlock(t_simdata->mutex);
-
-  if (t_simdata->comm
-      && SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
-    if (SIMIX_action_destroy(t_simdata->comm))
-      t_simdata->comm = NULL;
-    t_simdata->refcount--;
-    MSG_RETURN(MSG_OK);
-  } else if (SIMIX_host_get_state(local_host->simdata->smx_host) == 0) {
-    if (t_simdata->comm && SIMIX_action_destroy(t_simdata->comm))
-      t_simdata->comm = NULL;
-    MSG_RETURN(MSG_HOST_FAILURE);
-  } else {
-    if (t_simdata->comm && SIMIX_action_destroy(t_simdata->comm))
-      t_simdata->comm = NULL;
-    MSG_RETURN(MSG_TRANSFER_FAILURE);
-  }
+  t_simdata->refcount--;
+  MSG_RETURN (MSG_OK);
 }

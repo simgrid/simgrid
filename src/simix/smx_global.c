@@ -409,13 +409,17 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
       while ((action = xbt_swag_extract(model->states.failed_action_set))) {
         smx_action = action->data;
         if (smx_action) {
-          xbt_fifo_unshift(actions_failed, smx_action);
+          SIMIX_action_signal_all(smx_action);
         }
       }
       while ((action = xbt_swag_extract(model->states.done_action_set))) {
         smx_action = action->data;
         if (smx_action) {
-          xbt_fifo_unshift(actions_done, smx_action);
+          /* Copy the transfered data of the completed communication actions */
+          /* FIXME: find a better way to determine if its a comm action */
+          if(smx_action->data != NULL)
+            SIMIX_network_copy_data((smx_comm_t)smx_action->data);
+          SIMIX_action_signal_all(smx_action);      
         }
       }
     }

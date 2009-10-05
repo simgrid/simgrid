@@ -129,6 +129,7 @@ typedef struct s_smx_rvpoint {
 } s_smx_rvpoint_t;
 
 typedef struct s_smx_comm {
+  smx_comm_type_t type;
   smx_host_t src_host;
   smx_host_t dst_host;
   smx_rdv_t rdv;
@@ -136,7 +137,7 @@ typedef struct s_smx_comm {
   smx_action_t act;
   void *data;
   size_t data_size;
-  void **dest_buff;
+  void *dest_buff;
   size_t *dest_buff_size;
   double rate;
   double task_size;
