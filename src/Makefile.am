@@ -198,18 +198,16 @@ GTNETS_SRC= \
   surf/gtnets/gtnets_interface.cc \
   surf/network_gtnets.c
 
-# Separated because src/gras/rl_stubs also define the function xbt_context_mod_init() and xbt_context_mod_exit()
-# so there is an implementation of these functions in the simgrid library and an implementatin in the gras library 
-CTX_SRC= simix/smx_context.c
-
 SIMIX_SRC= \
   simix/smx_global.c \
   simix/smx_deployment.c \
   simix/smx_environment.c \
   simix/smx_host.c \
   simix/smx_process.c \
+  simix/smx_context.c \
   simix/smx_action.c \
-  simix/smx_synchro.c
+  simix/smx_synchro.c \
+  simix/smx_network.c
   
 if CONTEXT_THREADS
   SURF_SRC += simix/smx_context_thread.c  
@@ -330,8 +328,7 @@ libgras_la_SOURCES=  $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
 libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) \
-                        $(SIMIX_SRC) $(CTX_SRC) \
-                        $(MSG_SRC) $(SIMDAG_SRC) \
+                        $(SIMIX_SRC) $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 # -Wl,--entry -Wl,simgrid_version

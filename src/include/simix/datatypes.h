@@ -51,5 +51,12 @@ SG_BEGIN_DECL()
 /** @} */
 
      typedef struct s_smx_context *smx_context_t;
+
+/******************************* Networking ***********************************/
+    typedef struct s_smx_rvpoint *smx_rvpoint_t;
+    typedef struct s_smx_comm *smx_comm_t;
+
+
+
 SG_END_DECL()
 #endif

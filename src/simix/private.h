@@ -97,7 +97,6 @@ void SIMIX_process_yield(void);
 ex_ctx_t *SIMIX_process_get_exception(void);
 void SIMIX_process_exception_terminate(xbt_ex_t * e);
 
-
 /*************************** Mutex and Conditional ****************************/
 
 typedef struct s_smx_mutex {
@@ -119,7 +118,34 @@ typedef struct s_smx_cond {
 
 } s_smx_cond_t;
 
+/******************************* Networking ***********************************/
+
+/** @brief Rendez-vous point datatype */
+typedef struct s_smx_rvpoint {
+  char *name;
+  smx_mutex_t read;
+  smx_mutex_t write;
+  smx_mutex_t comm_mutex;
+  xbt_fifo_t comm_fifo;  
+} s_smx_rvpoint_t;
+
+typedef struct s_smx_comm {
+  smx_host_t src_host;
+  smx_host_t dst_host;
+  smx_rvpoint_t rdv;
+  smx_cond_t cond;
+  smx_action_t act;
+  void *data;
+  size_t data_size;
+  void **dest_buff;
+  size_t dest_buff_size;
+  double rate;
+  int refcount;
+} s_smx_comm_t;
+
 /********************************* Action *************************************/
+
+typedef enum {ready, ongoing, done, failed} smx_action_state_t;
 
 /** @brief Action datatype
     @ingroup m_datatypes_management_details */
