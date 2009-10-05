@@ -1,13 +1,13 @@
 $ $SG_TEST_EXENV bandwidth/bandwidth_simulator${EXEEXT} ${srcdir:=.}/../msg/small_platform.xml ${srcdir:=.}/bandwidth/bandwidth.xml
 > [Ginette:maestro:(3) 0.000000] [Bandwidth/INFO] Maestro starting
-> [Tremblay:sensor:(1) 0.000015] [Bandwidth/INFO] Sensor starting (on port 3000)
-> [Jupiter:sensor:(2) 0.000015] [Bandwidth/INFO] Sensor starting (on port 3000)
-> [Ginette:maestro:(3) 0.000015] [Bandwidth/INFO] Wait for peers for 5 sec
-> [Ginette:maestro:(3) 5.000015] [Bandwidth/INFO] Contact Tremblay:3000
-> [Ginette:maestro:(3) 5.000030] [Bandwidth/INFO] Test the BW between me and one of the sensors
-> [Ginette:maestro:(3) 6.137822] [Bandwidth/INFO] Experience between me and Tremblay:3000 (initially 1 msgs of 524288 bytes, maybe modified to fill the pipe at least 1.0s) took 1.062123 sec, achieving 7657.304762 kb/s
-> [Ginette:maestro:(3) 6.137822] [Bandwidth/INFO] Test the BW between Tremblay:3000 and Jupiter:3000
-> [Ginette:maestro:(3) 7.289823] [Bandwidth/INFO] Experience between Tremblay:3000 and Jupiter:3000 took took 1.062501 sec, achieving 6663.458290 kb/s
-> [Ginette:maestro:(3) 7.293859] [gras/INFO] Exiting GRAS
-> [Jupiter:sensor:(2) 7.293859] [gras/INFO] Exiting GRAS
-> [Tremblay:sensor:(1) 8.289823] [gras/INFO] Exiting GRAS
+> [Tremblay:sensor:(1) 0.000156] [Bandwidth/INFO] Sensor starting (on port 3000)
+> [Ginette:maestro:(3) 0.000156] [Bandwidth/INFO] Wait for peers for 5 sec
+> [Jupiter:sensor:(2) 0.000156] [Bandwidth/INFO] Sensor starting (on port 3000)
+> [Ginette:maestro:(3) 5.000156] [Bandwidth/INFO] Contact Tremblay:3000
+> [Ginette:maestro:(3) 5.000312] [Bandwidth/INFO] Test the BW between me and one of the sensors
+> [Ginette:maestro:(3) 7.091307] [Bandwidth/INFO] Experience between me and Tremblay:3000 (initially 1 msgs of 524288 bytes, maybe modified to fill the pipe at least 1.0s) took 1.090703 sec, achieving 7489.460506 kb/s
+> [Ginette:maestro:(3) 7.091307] [Bandwidth/INFO] Test the BW between Tremblay:3000 and Jupiter:3000
+> [Ginette:maestro:(3) 9.249135] [Bandwidth/INFO] Experience between Tremblay:3000 and Jupiter:3000 took took 1.089859 sec, achieving 6296.831079 kb/s
+> [Ginette:maestro:(3) 9.291110] [gras/INFO] Exiting GRAS
+> [Jupiter:sensor:(2) 9.291110] [gras/INFO] Exiting GRAS
+> [Tremblay:sensor:(1) 10.249135] [gras/INFO] Exiting GRAS

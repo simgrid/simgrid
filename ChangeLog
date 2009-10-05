@@ -2,6 +2,15 @@ SimGrid (3.3.4) unstable; urgency=low
 
  The "Desktop Grid needs love too" release.
 
+ MSG:
+ * Port of MSG's mailbox on top of SIMIX network
+   The put/get mechanism was greatly simplified thanks to the new SIMIX module.
+
+ SIMIX:
+ * New SIMIX network module
+   It provides a rendez-vous point (aka mailbox) based send/recv API to perform
+   synchronous communication. 
+
  Models improvements:
  * Major speedup in the maxmin system solving by using lazy evaluation
    Instead of solving completely the maxmin system at each iteration, 

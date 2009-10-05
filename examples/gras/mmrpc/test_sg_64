@@ -1,9 +1,10 @@
 $ $SG_TEST_EXENV ./mmrpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/mmrpc.xml
 > [Tremblay:server:(1) 0.000000] [MatMult/INFO] Launch server (port=4000)
 > [Fafard:client:(2) 0.000000] [MatMult/INFO] Launch client (server on Tremblay:4000)
-> [Fafard:client:(2) 0.000015] [MatMult/INFO] Connected to Tremblay:4000.
-> [Fafard:client:(2) 0.000015] [MatMult/INFO] >>>>>>>> Connected to server which is on Tremblay:4000 <<<<<<<<
-> [Fafard:client:(2) 0.053801] [MatMult/INFO] >>>>>>>> Request sent to Tremblay:4000 <<<<<<<<
-> [Tremblay:server:(1) 0.081682] [gras/INFO] Exiting GRAS
-> [Fafard:client:(2) 0.081682] [MatMult/INFO] >>>>>>>> Got answer from Tremblay:4000 (values are right) <<<<<<<<
-> [Fafard:client:(2) 0.081682] [gras/INFO] Exiting GRAS
+> [Fafard:client:(2) 0.000156] [MatMult/INFO] Connected to Tremblay:4000.
+> [Fafard:client:(2) 0.000156] [MatMult/INFO] >>>>>>>> Connected to server which is on Tremblay:4000 <<<<<<<<
+> [Fafard:client:(2) 0.072516] [MatMult/INFO] >>>>>>>> Request sent to Tremblay:4000 <<<<<<<<
+> [Tremblay:server:(1) 0.118972] [gras/INFO] Exiting GRAS
+> [Fafard:client:(2) 0.118972] [MatMult/INFO] >>>>>>>> Got answer from Tremblay:4000 (values are right) <<<<<<<<
+> [Fafard:client:(2) 0.118972] [gras/INFO] Exiting GRAS
+
