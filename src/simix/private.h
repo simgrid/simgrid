@@ -137,8 +137,9 @@ typedef struct s_smx_comm {
   void *data;
   size_t data_size;
   void **dest_buff;
-  size_t dest_buff_size;
+  size_t *dest_buff_size;
   double rate;
+  double task_size;
   int refcount;
 } s_smx_comm_t;
 

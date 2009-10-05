@@ -176,14 +176,16 @@ void SIMIX_cond_signal(smx_cond_t cond)
 void SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
 {
   smx_action_t act_sleep;
-  xbt_assert0((mutex != NULL), "Invalid parameters");
 
   DEBUG1("Wait condition %p", cond);
-  cond->mutex = mutex;
 
-  SIMIX_mutex_unlock(mutex);
-  /* always create an action null in case there is a host failure */
-/*   if (xbt_fifo_size(cond->actions) == 0) { */
+  /* If there is a mutex unlock it */
+  if(mutex != NULL){
+    cond->mutex = mutex;
+    SIMIX_mutex_unlock(mutex);
+  }
+  
+  /* Always create an action null in case there is a host failure */
   act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
   SIMIX_process_self()->waiting_action = act_sleep;
   SIMIX_register_action_to_condition(act_sleep, cond);
@@ -191,11 +193,10 @@ void SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
   SIMIX_process_self()->waiting_action = NULL;
   SIMIX_unregister_action_to_condition(act_sleep, cond);
   SIMIX_action_destroy(act_sleep);
-/*   } else { */
-/*     __SIMIX_cond_wait(cond); */
-/*   } */
-  /* get the mutex again */
-  SIMIX_mutex_lock(cond->mutex);
+
+  /* get the mutex again if necessary */
+  if(mutex != NULL)
+    SIMIX_mutex_lock(cond->mutex);
 
   return;
 }
@@ -221,7 +222,6 @@ void __SIMIX_cond_wait(smx_cond_t cond)
     SIMIX_process_yield();
   }
   return;
-
 }
 
 /**
@@ -235,14 +235,16 @@ void __SIMIX_cond_wait(smx_cond_t cond)
 void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
                              double max_duration)
 {
-
   smx_action_t act_sleep;
-  xbt_assert0((mutex != NULL), "Invalid parameters");
 
   DEBUG1("Timed wait condition %p", cond);
-  cond->mutex = mutex;
 
-  SIMIX_mutex_unlock(mutex);
+  /* If there is a mutex unlock it */
+  if(mutex != NULL){
+    cond->mutex = mutex;
+    SIMIX_mutex_unlock(mutex);
+  }
+
   if (max_duration >= 0) {
     act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
     SIMIX_register_action_to_condition(act_sleep, cond);
@@ -260,8 +262,9 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
   } else
     __SIMIX_cond_wait(cond);
 
-  /* get the mutex again */
-  SIMIX_mutex_lock(cond->mutex);
+  /* get the mutex again if necessary */
+  if(mutex != NULL)
+    SIMIX_mutex_lock(cond->mutex);
 
   return;
 }
