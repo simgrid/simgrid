@@ -13,10 +13,10 @@
   <router id="R2"/>
 
   <link id="1" bandwidth="100000000" latency="0.01"/>
-  <link id="2" bandwidth="100000" latency="0.02"/>
+  <link id="2" bandwidth="100000000" latency="0.01"/>
   <link id="3" bandwidth="100000000" latency="0.01"/>
   <link id="4" bandwidth="100000000" latency="0.01"/>
-  <link id="5" bandwidth="100000000" latency="0.05"/>
+  <link id="5" bandwidth="100000000" latency="0.01"/>
 
 
   <route src="S1" dst="C1">
