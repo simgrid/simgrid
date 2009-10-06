@@ -180,8 +180,11 @@ int GTNETS_Topology::add_link(int id){
 
 int GTNETS_Topology::add_router(int id){
   set<int>::iterator iter = routers_.find(id);
-  xbt_assert1((iter == routers_.end()), "Router %d already exists", id);
-  routers_.insert(id);
+  if(iter == routers_.end()){
+	  routers_.insert(id);
+  }else{
+	  DEBUG1("Router (#%d) already exists", id);
+  }
   return 0;
 }
 
@@ -217,16 +220,9 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
   src_node = link->src_node();
   dst_node = link->dst_node();
 
-  if (XBT_LOG_ISENABLED(surf_network_gtnets_topology, xbt_log_priority_debug)) {
-    link->print_link_status();
-    src_node->print_hosts();
-    dst_node->print_hosts();
-  }
-
-
   // If not exists a route, add one.
   if (!link->route_exists()){
-    //check whether there exists a node for the src host/router.
+    //check whether there exists a node for the src.
     int s_node_id = nodeid_from_hostid(src);
     int node_id;
 
@@ -262,7 +258,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
       nodes_[d_node_id]->add_host(dst);
 
     link->add_dst(nodes_[d_node_id]);
-  }else if (src_node && dst_node){
+  }else if (!(src_node && dst_node)){
       xbt_assert0((src_node && dst_node), "Either src or dst is null");
   }
 
@@ -365,6 +361,13 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
   else{
     xbt_assert0(0, "Shouldn't be here");
   }
+
+  if (XBT_LOG_ISENABLED(surf_network_gtnets_topology, xbt_log_priority_debug)) {
+    link->print_link_status();
+    src_node->print_hosts();
+    dst_node->print_hosts();
+  }
+
   return 0;
 }
 
