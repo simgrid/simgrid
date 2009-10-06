@@ -54,12 +54,8 @@ SimGrid (3.3.4) unstable; urgency=low
    synchronous communication. 
    
  SimDag:
- * new function SD_task_dump() for debuging display
  * new function SD_daxload(char*) to load a DAX file 
    (see http://vtcpc.isi.edu/pegasus/index.php/WorkflowGenerator)
- * SD_task_dependency_exists() can now cope with having one of its
-   arguments NULL. If so, it tests whether the other argument has any 
-   dependency.
  * Introduce typed tasks. Specify its kind and cost at creation. 
    At scheduling, just give where it should be placed, and the cost
    for each involved resource is automatically computed.
@@ -67,6 +63,12 @@ SimGrid (3.3.4) unstable; urgency=low
     - SD_task_create_comm_e2e() for end-to-end communication
     - SD_task_create_comp_seq() for sequential computation
    Use SD_task_schedulev() / SD_task_schedulel() to schedule them.
+ * new function SD_task_dump() for debuging display
+ * new function SD_task_dotty(task,FILE*) writing to file the info
+   about the task in dotty format
+ * SD_task_dependency_exists() can now cope with having one of its
+   arguments NULL. If so, it tests whether the other argument has any 
+   dependency.
  * Add getters on list of preceding/following tasks:
     SD_task_get_parents(task) and SD_task_get_children(task)
  * Add getters on amount of workstations and list:

@@ -271,7 +271,7 @@ double SD_task_get_remaining_amount(SD_task_t task)
     return task->remains;
 }
 
-/* temporary function for debbuging */
+/** @brief Displays debugging informations about a task */
 void SD_task_dump(SD_task_t task)
 {
   unsigned int counter;
@@ -302,6 +302,24 @@ void SD_task_dump(SD_task_t task)
     xbt_dynar_foreach(task->tasks_after,counter,dependency) {
       INFO1("    %s",SD_task_get_name(dependency->dst));
     }
+  }
+}
+/** @brief Dumps the task in dotty formalism into the FILE* passed as second argument */
+void SD_task_dotty(SD_task_t task,void* out) {
+  unsigned int counter;
+  SD_dependency_t dependency;
+  fprintf(out, "  T%d [label=\"%.10s\"",(unsigned int)task,task->name);
+  switch(task->kind){
+    case SD_TASK_COMM_E2E:
+      fprintf(out,", shape=box");
+      break;
+    case SD_TASK_COMP_SEQ:
+      fprintf(out,", shape=circle");
+      break;
+  }
+  fprintf(out,"];\n");
+  xbt_dynar_foreach(task->tasks_before,counter,dependency) {
+    fprintf(out," T%d -> T%d;\n",(unsigned int)dependency->src,(unsigned int)dependency->dst);
   }
 }
 
