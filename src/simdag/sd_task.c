@@ -654,6 +654,19 @@ double SD_task_get_execution_time(SD_task_t task,
   }
   return max_time * SD_task_get_amount(task);
 }
+static inline void SD_task_do_schedule(SD_task_t task) {
+  SD_CHECK_INIT_DONE();
+
+   if (!__SD_task_is_not_scheduled(task))
+     THROW1(arg_error, 0, "Task '%s' has already been scheduled",
+            SD_task_get_name(task));
+
+ /* update the task state */
+  if (xbt_dynar_length(task->tasks_before) == 0)
+    __SD_task_set_state(task, SD_READY);
+  else
+    __SD_task_set_state(task, SD_SCHEDULED);
+}
 
 /**
  * \brief Schedules a task
@@ -670,45 +683,33 @@ double SD_task_get_execution_time(SD_task_t task,
  * \param rate task execution speed rate
  * \see SD_task_unschedule()
  */
-void SD_task_schedule(SD_task_t task, int workstation_nb,
+void SD_task_schedule(SD_task_t task, int workstation_count,
                       const SD_workstation_t * workstation_list,
                       const double *computation_amount,
                       const double *communication_amount, double rate)
 {
+  xbt_assert0(workstation_count > 0, "workstation_nb must be positive");
 
   int communication_nb;
 
-  SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert0(workstation_nb > 0, "workstation_nb must be positive");
-
-  if (!__SD_task_is_not_scheduled(task))
-    THROW1(arg_error, 0, "Task '%s' has already been scheduled",
-           SD_task_get_name(task));
-
-  task->workstation_nb = workstation_nb;
+  task->workstation_nb = workstation_count;
   task->rate = rate;
 
-  task->computation_amount = xbt_new(double, workstation_nb);
+  task->computation_amount = xbt_new(double, workstation_count);
   memcpy(task->computation_amount, computation_amount,
-         sizeof(double) * workstation_nb);
+         sizeof(double) * workstation_count);
 
-  communication_nb = workstation_nb * workstation_nb;
+  communication_nb = workstation_count * workstation_count;
   task->communication_amount = xbt_new(double, communication_nb);
   memcpy(task->communication_amount, communication_amount,
          sizeof(double) * communication_nb);
 
-  task->workstation_list = xbt_new(SD_workstation_t, workstation_nb);
+  task->workstation_list = xbt_new(SD_workstation_t, workstation_count);
   memcpy(task->workstation_list, workstation_list,
-         sizeof(SD_workstation_t) * workstation_nb);
+         sizeof(SD_workstation_t) * workstation_count);
 
-  /* update the task state */
-  if (xbt_dynar_length(task->tasks_before) == 0)
-    __SD_task_set_state(task, SD_READY);
-  else
-    __SD_task_set_state(task, SD_SCHEDULED);
+  SD_task_do_schedule(task);
 }
-
 /**
  * \brief Unschedules a task
  *
@@ -1156,6 +1157,14 @@ void SD_task_destroy(SD_task_t task)
 }
 
 
+static inline SD_task_t SD_task_create_sized(const char*name,void*data,double amount,int ws_count) {
+  SD_task_t task = SD_task_create(name,data,amount);
+  task->communication_amount = xbt_new0(double,ws_count*ws_count);
+  task->computation_amount = xbt_new0(double,ws_count);
+  task->workstation_nb = ws_count;
+  task->workstation_list = xbt_new0(SD_workstation_t,ws_count);
+  return task;
+}
 /** @brief create a end-to-end communication task that can then be auto-scheduled
  *
  * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
@@ -1167,7 +1176,8 @@ void SD_task_destroy(SD_task_t task)
  * specified at creation is sent from hosts[0] to hosts[1].
  */
 SD_task_t SD_task_create_comm_e2e(const char*name, void *data, double amount) {
-  SD_task_t res = SD_task_create(name,data,amount);
+  SD_task_t res = SD_task_create_sized(name,data,0,2);
+  res->communication_amount[1] = amount;
   res->kind=SD_TASK_COMM_E2E;
   return res;
 }
@@ -1182,7 +1192,8 @@ SD_task_t SD_task_create_comm_e2e(const char*name, void *data, double amount) {
  * specified at creation to be run on hosts[0].
  */
 SD_task_t SD_task_create_comp_seq(const char*name, void *data, double amount) {
-  SD_task_t res = SD_task_create(name,data,amount);
+  SD_task_t res = SD_task_create_sized(name,data,0,1);
+  res->computation_amount[0]=amount;
   res->kind=SD_TASK_COMP_SEQ;
   return res;
 }
@@ -1207,25 +1218,15 @@ SD_task_t SD_task_create_comp_seq(const char*name, void *data, double amount) {
  *  - idem+ internal communication. Task type not enough since we cannot store comm cost alongside to comp one)
  */
 void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
+  int i;
   xbt_assert1(task->kind != 0,"Task %s is not typed. Cannot automatically schedule it.",SD_task_get_name(task));
-  double *comp,*comms;
   switch(task->kind) {
   case SD_TASK_COMM_E2E:
-    xbt_assert2(count == 2,
-          "Task %s is end to end communication, but scheduled with %d hosts",
-          SD_task_get_name(task),count);
-    comms=xbt_new(double,count);
-    comms[0]=0;
-    comms[1]=SD_task_get_amount(task);
-    SD_task_schedule(task,count,list,NULL,comms,1);
-    break;
   case SD_TASK_COMP_SEQ:
-    xbt_assert2(count==1,
-        "Task %s is sequential computation, but scheduled with %d hosts",
-        SD_task_get_name(task),count);
-    comp=xbt_new(double,count);
-    comp[0]=SD_task_get_amount(task);
-    SD_task_schedule(task,count,list,comp,NULL,1);
+    xbt_assert(task->workstation_nb==count);
+    for (i=0;i<count;i++)
+      task->workstation_list[i]=list[i];
+    SD_task_do_schedule(task);
     break;
   default:
     xbt_die(bprintf("Kind of task %s not supported by SD_task_schedulev()",
@@ -1248,4 +1249,5 @@ void SD_task_schedulel(SD_task_t task, int count, ...) {
   }
   va_end(ap);
   SD_task_schedulev(task,count,list);
+  free(list);
 }
