@@ -67,6 +67,11 @@ SimGrid (3.3.4) unstable; urgency=low
     - SD_task_create_comm_e2e() for end-to-end communication
     - SD_task_create_comp_seq() for sequential computation
    Use SD_task_schedulev() / SD_task_schedulel() to schedule them.
+ * Add getters on list of preceding/following tasks:
+    SD_task_get_parents(task) and SD_task_get_children(task)
+ * Add getters on amount of workstations and list:
+    SD_task_get_workstation_count(t) and SD_task_get_workstation_list(t)
+
    
  Bug fixes:
  * GTNetS wrappers should now be usable again (and betterly tested too)

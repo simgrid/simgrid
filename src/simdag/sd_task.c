@@ -168,6 +168,77 @@ const char *SD_task_get_name(SD_task_t task)
   return task->name;
 }
 
+/** @brief Returns the dynar of the parents of a task
+ *
+ * \param task a task
+ * \return a newly allocated dynar comprising the parents of this task
+ */
+
+xbt_dynar_t SD_task_get_parents(SD_task_t task)
+{
+  unsigned int i;
+  xbt_dynar_t parents;
+  SD_dependency_t dep;
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL, "Invalid parameter");
+
+  parents = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  xbt_dynar_foreach(task->tasks_before, i, dep){
+    xbt_dynar_push(parents, &(dep->src));
+  }
+  return parents;
+}
+
+/** @brief Returns the dynar of the parents of a task
+ *
+ * \param task a task
+ * \return a newly allocated dynar comprising the parents of this task
+ */
+xbt_dynar_t SD_task_get_children(SD_task_t task)
+{
+  unsigned int i;
+  xbt_dynar_t children;
+  SD_dependency_t dep;
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL, "Invalid parameter");
+
+  children = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  xbt_dynar_foreach(task->tasks_after, i, dep){
+    xbt_dynar_push(children, &(dep->dst));
+  }
+  return children;
+}
+
+/**
+ * \brief Returns the amount of workstations involved in a task
+ *
+ * Only call this on already scheduled tasks!
+ * \param task a task
+ */
+int SD_task_get_workstation_count(SD_task_t task)
+{
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL, "Invalid parameter");
+  //  xbt_assert1( task->state_set != sd_global->scheduled_task_set, 
+  //	       "Unscheduled task %s", task->name);
+  return task->workstation_nb;
+}
+
+/**
+ * \brief Returns the list of workstations involved in a task
+ *
+ * Only call this on already scheduled tasks!
+ * \param task a task
+ */
+SD_workstation_t* SD_task_get_workstation_list(SD_task_t task)
+{
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL, "Invalid parameter");
+  //xbt_assert1( task->state_set != sd_global->scheduled_task_set, 
+  //	       "Unscheduled task %s", task->name);
+  return task->workstation_list;
+}
+
 /**
  * \brief Returns the total amount of a task
  *

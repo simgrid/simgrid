@@ -132,6 +132,10 @@ XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb,
 XBT_PUBLIC(void) SD_task_unschedule(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_start_time(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_finish_time(SD_task_t task);
+XBT_PUBLIC(xbt_dynar_t) SD_task_get_parents(SD_task_t task);
+XBT_PUBLIC(xbt_dynar_t) SD_task_get_children(SD_task_t task);
+XBT_PUBLIC(int) SD_task_get_workstation_count(SD_task_t task);
+XBT_PUBLIC(SD_workstation_t*) SD_task_get_workstation_list(SD_task_t task);
 XBT_PUBLIC(void) SD_task_destroy(SD_task_t task);
 XBT_PUBLIC(void) SD_task_dump(SD_task_t task);
 
