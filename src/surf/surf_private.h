@@ -85,6 +85,7 @@ struct s_routing {
   xbt_dynar_t (*get_route)(int src, int dst);
   void (*finalize)(void);
   int host_count;
+  int router_count;
 };
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link,void *loopback);
 

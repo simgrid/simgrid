@@ -64,6 +64,9 @@ typedef struct {
 } s_routing_full_t,*routing_full_t;
 
 #define ROUTE_FULL(i,j) ((routing_full_t)used_routing)->routing_table[(i)+(j)*(used_routing)->host_count]
+#define HOST2ROUTER(id) ((id)+(2<<29))
+#define ROUTER2HOST(id) ((id)-(2>>20))
+#define ROUTER(id) ((id)>=(2<<29))
 
 /*
  * Parsing
@@ -74,6 +77,15 @@ static void routing_full_parse_Shost(void) {
   *val = used_routing->host_count++;
   xbt_dict_set(used_routing->host_id,A_surfxml_host_id,val,xbt_free);
 }
+
+static void routing_full_parse_Srouter(void) {
+	int *val = xbt_malloc(sizeof(int));
+  DEBUG3("Seen router %s (%d -> #%d)",A_surfxml_router_id,used_routing->router_count,
+  		HOST2ROUTER(used_routing->router_count));
+  *val = HOST2ROUTER(used_routing->router_count++);
+  xbt_dict_set(used_routing->host_id,A_surfxml_router_id,val,xbt_free);
+}
+
 static int src_id = -1;
 static int dst_id = -1;
 static void routing_full_parse_Sroute_set_endpoints(void)
@@ -251,6 +263,12 @@ static void routing_full_parse_end(void) {
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
     xbt_dynar_free(&keys);
 
+    if(ROUTER(src_id) || ROUTER(dst_id)) {
+				DEBUG2("There is route with a router here: (%d ,%d)",src_id,dst_id);
+				/* Check there is only one link in the route and store the information */
+				continue;
+    }
+
     DEBUG4("Handle %d %d (from %d hosts): %ld links",
         src_id,dst_id,routing->generic_routing.host_count,xbt_dynar_length(links));
     xbt_dynar_foreach(links, cpt, link_name) {
@@ -311,6 +329,7 @@ static void routing_model_full_create(size_t size_of_link,void *loopback) {
   /* Setup the parsing callbacks we need */
   routing->generic_routing.host_id = xbt_dict_new();
   surfxml_add_callback(STag_surfxml_host_cb_list, &routing_full_parse_Shost);
+  surfxml_add_callback(STag_surfxml_router_cb_list, &routing_full_parse_Srouter);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &routing_full_parse_end);
   surfxml_add_callback(STag_surfxml_route_cb_list,
       &routing_full_parse_Sroute_set_endpoints);
