@@ -57,6 +57,9 @@ SimGrid (3.3.4) unstable; urgency=low
  * new function SD_task_dump() for debuging display
  * new function SD_daxload(char*) to load a DAX file 
    (see http://vtcpc.isi.edu/pegasus/index.php/WorkflowGenerator)
+ * SD_task_dependency_exists() can now cope with having one of its
+   arguments NULL. If so, it tests whether the other argument has any 
+   dependency.
    
  Bug fixes:
  * GTNetS wrappers should now be usable again (and betterly tested too)

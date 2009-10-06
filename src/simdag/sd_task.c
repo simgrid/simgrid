@@ -206,32 +206,23 @@ double SD_task_get_remaining_amount(SD_task_t task)
 /* temporary function for debbuging */
 void SD_task_dump(SD_task_t task)
 {
-  xbt_dynar_t dynar;
-  int length;
-  int i;
+  unsigned int counter;
   SD_dependency_t dependency;
 
-  INFO1("The following tasks must be executed before %s:",
-        SD_task_get_name(task));
-  dynar = task->tasks_before;
-  length = xbt_dynar_length(dynar);
-
-
-  for (i = 0; i < length; i++) {
-    xbt_dynar_get_cpy(dynar, i, &dependency);
-    INFO1(" %s", SD_task_get_name(dependency->src));
+  INFO1("Displaying task %s",SD_task_get_name(task));
+  INFO1("  - amount: %.0f",SD_task_get_amount(task));
+  if (xbt_dynar_length(task->tasks_before)) {
+    INFO0("  - pre-dependencies:");
+    xbt_dynar_foreach(task->tasks_before,counter,dependency) {
+      INFO1("    %s",SD_task_get_name(dependency->src));
+    }
   }
-
-  INFO1("The following tasks must be executed after %s:",
-        SD_task_get_name(task));
-
-  dynar = task->tasks_after;
-  length = xbt_dynar_length(dynar);
-  for (i = 0; i < length; i++) {
-    xbt_dynar_get_cpy(dynar, i, &dependency);
-    INFO1(" %s", SD_task_get_name(dependency->dst));
+  if (xbt_dynar_length(task->tasks_after)) {
+    INFO0("  - post-dependencies:");
+    xbt_dynar_foreach(task->tasks_after,counter,dependency) {
+      INFO1("    %s",SD_task_get_name(dependency->dst));
+    }
   }
-  INFO0("----------------------------");
 }
 
 /* Destroys a dependency between two tasks.
@@ -270,8 +261,6 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   dynar = src->tasks_after;
   length = xbt_dynar_length(dynar);
 
-
-
   if (src == dst)
     THROW1(arg_error, 0,
            "Cannot add a dependency between task '%s' and itself",
@@ -305,11 +294,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
 
   dependency = xbt_new(s_SD_dependency_t, 1);
 
-  if (name != NULL)
-    dependency->name = xbt_strdup(name);
-  else
-    dependency->name = NULL;
-
+  dependency->name = xbt_strdup(name); /* xbt_strdup is cleaver enough to deal with NULL args itself */
   dependency->data = data;
   dependency->src = src;
   dependency->dst = dst;
@@ -335,24 +320,29 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
  *
  * \param src a task
  * \param dst a task depending on \a src
+ *
+ * If src is NULL, checks whether dst has any pre-dependency.
+ * If dst is NULL, checks whether src has any post-dependency.
  */
 int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
 {
-  xbt_dynar_t dynar;
-  int length;
-  int i;
+  unsigned int counter;
   SD_dependency_t dependency;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert0(src != NULL || dst != NULL, "Invalid parameter: both src and dst are NULL");
 
-  dynar = src->tasks_after;
-  length = xbt_dynar_length(dynar);
-
-  for (i = 0; i < length; i++) {
-    xbt_dynar_get_cpy(dynar, i, &dependency);
-    if (dependency->dst == dst)
-      return 1;
+  if (src) {
+    if (dst) {
+      xbt_dynar_foreach(src->tasks_after,counter,dependency) {
+        if (dependency->dst == dst)
+          return 1;
+      }
+    } else {
+      return xbt_dynar_length(src->tasks_after);
+    }
+  } else {
+    return xbt_dynar_length(dst->tasks_before);
   }
   return 0;
 }
