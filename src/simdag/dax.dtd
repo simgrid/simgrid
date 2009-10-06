@@ -2,8 +2,8 @@
 <!ELEMENT adag (job*,child*)>
 <!ATTLIST adag xmlns CDATA "http://pegasus.isi.edu/schema/DAX">
 <!ATTLIST adag xmlns:xsi CDATA "http://www.w3.org/2001/XMLSchema-instance">
-<!ATTLIST adag xmlns:schemaLocation CDATA "http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd">
-<!ATTLIST adag version CDATA "0.0">
+<!ATTLIST adag xsi:schemaLocation CDATA "http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd">
+<!ATTLIST adag version CDATA "1.0">
 <!ATTLIST adag count CDATA "0">
 <!ATTLIST adag index CDATA "0">
 <!ATTLIST adag name CDATA "0">

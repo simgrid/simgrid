@@ -18,6 +18,10 @@ int main(int argc, char **argv) {
   unsigned int cursor;
   SD_task_t task;
 
+  /* initialisation of SD */
+  SD_init(&argc, argv);
+
+  /* Check our arguments */
   if (argc < 3) {
     INFO1("Usage: %s platform_file dax_file", argv[0]);
     INFO1("example: %s ../sd_platform.xml Montage_50.xml", argv[0]);

@@ -1,5 +1,5 @@
 /* XML processor/application API for simdag/dax.dtd.
- * Generated 2009/10/05 17:12:40.
+ * Generated 2009/10/05 18:47:24.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -98,10 +98,10 @@ typedef int AT_dax__job_name;
 #define AU_dax__job_name NULL
 typedef int AT_dax__adag_jobCount;
 #define AU_dax__adag_jobCount NULL
-typedef int AT_dax__adag_xmlns_c_schemaLocation;
-#define AU_dax__adag_xmlns_c_schemaLocation NULL
 typedef int AT_dax__job_version;
 #define AU_dax__job_version NULL
+typedef int AT_dax__adag_xsi_c_schemaLocation;
+#define AU_dax__adag_xsi_c_schemaLocation NULL
 typedef enum { AU_dax__uses_register, A_dax__uses_register_false,A_dax__uses_register_true } AT_dax__uses_register;
 typedef int AT_dax__adag_fileCount;
 #define AU_dax__adag_fileCount NULL
@@ -150,10 +150,10 @@ XBT_PUBLIC_DATA(AT_dax__job_name ) AX_dax__job_name;
 #define A_dax__job_name (dax__bufferstack + AX_dax__job_name)
 XBT_PUBLIC_DATA(AT_dax__adag_jobCount ) AX_dax__adag_jobCount;
 #define A_dax__adag_jobCount (dax__bufferstack + AX_dax__adag_jobCount)
-XBT_PUBLIC_DATA(AT_dax__adag_xmlns_c_schemaLocation ) AX_dax__adag_xmlns_c_schemaLocation;
-#define A_dax__adag_xmlns_c_schemaLocation (dax__bufferstack + AX_dax__adag_xmlns_c_schemaLocation)
 XBT_PUBLIC_DATA(AT_dax__job_version ) AX_dax__job_version;
 #define A_dax__job_version (dax__bufferstack + AX_dax__job_version)
+XBT_PUBLIC_DATA(AT_dax__adag_xsi_c_schemaLocation ) AX_dax__adag_xsi_c_schemaLocation;
+#define A_dax__adag_xsi_c_schemaLocation (dax__bufferstack + AX_dax__adag_xsi_c_schemaLocation)
 XBT_PUBLIC_DATA(AT_dax__uses_register ) AX_dax__uses_register;
 #define A_dax__uses_register AX_dax__uses_register
 XBT_PUBLIC_DATA(AT_dax__adag_fileCount ) AX_dax__adag_fileCount;

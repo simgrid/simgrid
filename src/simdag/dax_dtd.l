@@ -1,5 +1,5 @@
 /* Validating XML processor for simdag/dax.dtd.
- * Generated 2009/10/05 17:12:40.
+ * Generated 2009/10/05 18:47:24.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -126,10 +126,10 @@ AT_dax__job_name AX_dax__job_name;
 #define A_dax__job_name (dax__bufferstack + AX_dax__job_name)
 AT_dax__adag_jobCount AX_dax__adag_jobCount;
 #define A_dax__adag_jobCount (dax__bufferstack + AX_dax__adag_jobCount)
-AT_dax__adag_xmlns_c_schemaLocation AX_dax__adag_xmlns_c_schemaLocation;
-#define A_dax__adag_xmlns_c_schemaLocation (dax__bufferstack + AX_dax__adag_xmlns_c_schemaLocation)
 AT_dax__job_version AX_dax__job_version;
 #define A_dax__job_version (dax__bufferstack + AX_dax__job_version)
+AT_dax__adag_xsi_c_schemaLocation AX_dax__adag_xsi_c_schemaLocation;
+#define A_dax__adag_xsi_c_schemaLocation (dax__bufferstack + AX_dax__adag_xsi_c_schemaLocation)
 AT_dax__uses_register AX_dax__uses_register;
 #define A_dax__uses_register AX_dax__uses_register
 AT_dax__adag_fileCount AX_dax__adag_fileCount;
@@ -296,10 +296,10 @@ Literal		\'[^'']*\'|\"[^""]*\"
  */
 %x PROLOG DOCTYPE EPILOG INCOMMENT INPI VALUE1 VALUE2 CDATA
 %x ROOT_dax__adag AL_dax__adag S_dax__adag S_dax__adag_1 S_dax__adag_2 S_dax__adag_3 S_dax__adag_4 S_dax__adag_5 E_dax__adag
-%x ROOT_dax__job AL_dax__job S_dax__job S_dax__job_1 S_dax__job_2 E_dax__job
-%x ROOT_dax__uses AL_dax__uses E_dax__uses
-%x ROOT_dax__child AL_dax__child S_dax__child S_dax__child_1 S_dax__child_2 E_dax__child
-%x ROOT_dax__parent AL_dax__parent E_dax__parent
+%x AL_dax__job S_dax__job S_dax__job_1 S_dax__job_2 E_dax__job
+%x AL_dax__uses E_dax__uses
+%x AL_dax__child S_dax__child S_dax__child_1 S_dax__child_2 E_dax__child
+%x AL_dax__parent E_dax__parent
 %x IMPOSSIBLE
 
 %{
@@ -332,7 +332,7 @@ const char* *dax__statenames=NULL;
   dax__bufferliteral('\0', &bnext, "http://pegasus.isi.edu/schema/DAX");
   dax__bufferliteral('\0', &bnext, "http://www.w3.org/2001/XMLSchema-instance");
   dax__bufferliteral('\0', &bnext, "http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd");
-  dax__bufferliteral('\0', &bnext, "0.0");
+  dax__bufferliteral('\0', &bnext, "1.0");
   dax__bufferliteral('\0', &bnext, "0.0");
   dax__bufferliteral('\0', &bnext, "data");
   if(!dax__statenames) {dax__statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
@@ -353,29 +353,25 @@ const char* *dax__statenames=NULL;
   dax__statenames[S_dax__adag_4] = "adag";
   dax__statenames[S_dax__adag_5] = "adag";
   dax__statenames[E_dax__adag] = "adag";
-  dax__statenames[ROOT_dax__job] = NULL;
   dax__statenames[AL_dax__job] = NULL;
   dax__statenames[S_dax__job] = "job";
   dax__statenames[S_dax__job_1] = "job";
   dax__statenames[S_dax__job_2] = "job";
   dax__statenames[E_dax__job] = "job";
-  dax__statenames[ROOT_dax__uses] = NULL;
   dax__statenames[AL_dax__uses] = NULL;
   dax__statenames[E_dax__uses] = "uses";
-  dax__statenames[ROOT_dax__child] = NULL;
   dax__statenames[AL_dax__child] = NULL;
   dax__statenames[S_dax__child] = "child";
   dax__statenames[S_dax__child_1] = "child";
   dax__statenames[S_dax__child_2] = "child";
   dax__statenames[E_dax__child] = "child";
-  dax__statenames[ROOT_dax__parent] = NULL;
   dax__statenames[AL_dax__parent] = NULL;
   dax__statenames[E_dax__parent] = "parent";
   }
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-<ROOT_dax__adag,AL_dax__adag,S_dax__adag,S_dax__adag_1,S_dax__adag_2,S_dax__adag_3,S_dax__adag_4,S_dax__adag_5,E_dax__adag,ROOT_dax__job,AL_dax__job,S_dax__job,S_dax__job_1,S_dax__job_2,E_dax__job,ROOT_dax__uses,AL_dax__uses,E_dax__uses,ROOT_dax__child,AL_dax__child,S_dax__child,S_dax__child_1,S_dax__child_2,E_dax__child,ROOT_dax__parent,AL_dax__parent,E_dax__parent,PROLOG,DOCTYPE,EPILOG>{
+<ROOT_dax__adag,AL_dax__adag,S_dax__adag,S_dax__adag_1,S_dax__adag_2,S_dax__adag_3,S_dax__adag_4,S_dax__adag_5,E_dax__adag,AL_dax__job,S_dax__job,S_dax__job_1,S_dax__job_2,E_dax__job,AL_dax__uses,E_dax__uses,AL_dax__child,S_dax__child,S_dax__child_1,S_dax__child_2,E_dax__child,AL_dax__parent,E_dax__parent,PROLOG,DOCTYPE,EPILOG>{
  "<!--" ENTER(INCOMMENT);
  "<?" ENTER(INPI);
 }
@@ -395,21 +391,17 @@ const char* *dax__statenames=NULL;
 
  /* SPACES: skipped uniformly */
 
-<ROOT_dax__adag,AL_dax__adag,S_dax__adag,S_dax__adag_1,S_dax__adag_2,S_dax__adag_3,S_dax__adag_4,S_dax__adag_5,E_dax__adag,ROOT_dax__job,AL_dax__job,S_dax__job,S_dax__job_1,S_dax__job_2,E_dax__job,ROOT_dax__uses,AL_dax__uses,E_dax__uses,ROOT_dax__child,AL_dax__child,S_dax__child,S_dax__child_1,S_dax__child_2,E_dax__child,ROOT_dax__parent,AL_dax__parent,E_dax__parent,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
+<ROOT_dax__adag,AL_dax__adag,S_dax__adag,S_dax__adag_1,S_dax__adag_2,S_dax__adag_3,S_dax__adag_4,S_dax__adag_5,E_dax__adag,AL_dax__job,S_dax__job,S_dax__job_1,S_dax__job_2,E_dax__job,AL_dax__uses,E_dax__uses,AL_dax__child,S_dax__child,S_dax__child_1,S_dax__child_2,E_dax__child,AL_dax__parent,E_dax__parent,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
 
  /* PROLOG: determine root element and process it. */
 
 <PROLOG>{
- "<?xml"({S}version{Eq}(\'{VersionNum}\'|\"{VersionNum}\"))?({S}encoding{Eq}(\'[^']*\'|\"[^"]*\"))?"?>" SET(DOCTYPE); 
+ "<?xml"({S}version{Eq}(\'{VersionNum}\'|\"{VersionNum}\"))?({S}encoding{Eq}(\'[^']*\'|\"[^"]*\"))?"?>" SET(ROOT_dax__adag); 
  "<?xml"[^>]*">" FAIL("Bad declaration %s.",yytext);
 }
 
 <PROLOG,DOCTYPE>{
- "<!DOCTYPE"{S}"parent"{S}SYSTEM{S}("'dax.dtd'"|"\"dax.dtd\""){s}">" SET(ROOT_dax__parent);
- "<!DOCTYPE"{S}"uses"{S}SYSTEM{S}("'dax.dtd'"|"\"dax.dtd\""){s}">" SET(ROOT_dax__uses);
- "<!DOCTYPE"{S}"child"{S}SYSTEM{S}("'dax.dtd'"|"\"dax.dtd\""){s}">" SET(ROOT_dax__child);
  "<!DOCTYPE"{S}"adag"{S}SYSTEM{S}("'dax.dtd'"|"\"dax.dtd\""){s}">" SET(ROOT_dax__adag);
- "<!DOCTYPE"{S}"job"{S}SYSTEM{S}("'dax.dtd'"|"\"dax.dtd\""){s}">" SET(ROOT_dax__job);
  "<!"[^>-][^>]*">" FAIL("Bad declaration %s.",yytext);
  . 		FAIL("Unexpected character `%c' in prolog.", yytext[0]);
  <<EOF>> 	FAIL("EOF in prolog.");
@@ -424,7 +416,7 @@ const char* *dax__statenames=NULL;
 <ROOT_dax__adag>"<adag"{s} {
   AX_dax__adag_xmlns = 1;
   AX_dax__adag_xmlns_c_xsi = 35;
-  AX_dax__adag_xmlns_c_schemaLocation = 77;
+  AX_dax__adag_xsi_c_schemaLocation = 77;
   AX_dax__adag_version = 153;
   AX_dax__adag_count = 0;
   AX_dax__adag_index = 0;
@@ -442,8 +434,8 @@ const char* *dax__statenames=NULL;
  "xmlns:xsi"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_dax__adag_xmlns_c_xsi);
  "xmlns:xsi"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_dax__adag_xmlns_c_xsi);
 
- "xmlns:schemaLocation"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_dax__adag_xmlns_c_schemaLocation);
- "xmlns:schemaLocation"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_dax__adag_xmlns_c_schemaLocation);
+ "xsi:schemaLocation"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_dax__adag_xsi_c_schemaLocation);
+ "xsi:schemaLocation"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_dax__adag_xsi_c_schemaLocation);
 
  "version"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_dax__adag_version);
  "version"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_dax__adag_version);
@@ -494,9 +486,9 @@ const char* *dax__statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</adag>' expected.");
 }
 
-<S_dax__child_1,S_dax__job,S_dax__child_2,S_dax__adag_5,S_dax__job_1,E_dax__job,E_dax__adag,S_dax__child,S_dax__adag_4,S_dax__job_2,E_dax__child,S_dax__adag_1>"<job"{s} FAIL("Starting tag <job> is not allowed here.");
+<S_dax__child_1,S_dax__job,S_dax__child_2,ROOT_dax__job,S_dax__adag_5,S_dax__job_1,E_dax__job,E_dax__adag,S_dax__child,S_dax__adag_4,S_dax__job_2,E_dax__child,S_dax__adag_1>"<job"{s} FAIL("Starting tag <job> is not allowed here.");
 
-<ROOT_dax__job,S_dax__adag_2,S_dax__adag_3,S_dax__adag>"<job"{s} {
+<S_dax__adag_2,S_dax__adag_3,S_dax__adag>"<job"{s} {
   AX_dax__job_id = 0;
   AX_dax__job_namespace = 0;
   AX_dax__job_name = 0;
@@ -534,7 +526,6 @@ const char* *dax__statenames=NULL;
   LEAVE; STag_dax__job(); dax__pcdata_ix = 0; ETag_dax__job(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_dax__adag_2: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_3); break;
-   case ROOT_dax__job: SET(EPILOG); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of job element.", yytext[0]);
@@ -549,7 +540,6 @@ const char* *dax__statenames=NULL;
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_dax__adag_2: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_3); break;
-   case ROOT_dax__job: SET(EPILOG); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</job>' expected.",yytext);
@@ -557,9 +547,9 @@ const char* *dax__statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</job>' expected.");
 }
 
-<S_dax__child_1,S_dax__adag_3,S_dax__child_2,S_dax__adag_5,E_dax__job,E_dax__adag,S_dax__child,S_dax__adag_4,S_dax__adag,S_dax__adag_2,E_dax__child,S_dax__adag_1>"<uses"{s} FAIL("Starting tag <uses> is not allowed here.");
+<S_dax__child_1,S_dax__adag_3,S_dax__child_2,S_dax__adag_5,E_dax__job,E_dax__adag,S_dax__child,S_dax__adag_4,ROOT_dax__uses,S_dax__adag,S_dax__adag_2,E_dax__child,S_dax__adag_1>"<uses"{s} FAIL("Starting tag <uses> is not allowed here.");
 
-<ROOT_dax__uses,S_dax__job,S_dax__job_2,S_dax__job_1>"<uses"{s} {
+<S_dax__job,S_dax__job_2,S_dax__job_1>"<uses"{s} {
   AX_dax__uses_file = 0;
   AX_dax__uses_link = AU_dax__uses_link;
   AX_dax__uses_register = A_dax__uses_register_true;
@@ -611,7 +601,6 @@ const char* *dax__statenames=NULL;
   LEAVE; STag_dax__uses(); dax__pcdata_ix = 0; ETag_dax__uses(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_dax__job: case S_dax__job_2: case S_dax__job_1: SET(S_dax__job_2); break;
-   case ROOT_dax__uses: SET(EPILOG); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of uses element.", yytext[0]);
@@ -626,7 +615,6 @@ const char* *dax__statenames=NULL;
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_dax__job: case S_dax__job_2: case S_dax__job_1: SET(S_dax__job_2); break;
-   case ROOT_dax__uses: SET(EPILOG); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</uses>' expected.",yytext);
@@ -634,9 +622,9 @@ const char* *dax__statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</uses>' expected.");
 }
 
-<S_dax__child_1,S_dax__job,S_dax__child_2,S_dax__job_1,E_dax__job,E_dax__adag,S_dax__child,S_dax__job_2,S_dax__adag_2,E_dax__child>"<child"{s} FAIL("Starting tag <child> is not allowed here.");
+<S_dax__child_1,S_dax__job,S_dax__child_2,S_dax__job_1,E_dax__job,E_dax__adag,S_dax__child,S_dax__job_2,S_dax__adag_2,E_dax__child,ROOT_dax__child>"<child"{s} FAIL("Starting tag <child> is not allowed here.");
 
-<ROOT_dax__child,S_dax__adag_1,S_dax__adag_4,S_dax__adag_5,S_dax__adag_3,S_dax__adag>"<child"{s} {
+<S_dax__adag_1,S_dax__adag_4,S_dax__adag_5,S_dax__adag_3,S_dax__adag>"<child"{s} {
   AX_dax__child_ref = 0;
   ENTER(AL_dax__child); pushbuffer(0);
   }
@@ -654,7 +642,6 @@ const char* *dax__statenames=NULL;
   LEAVE; STag_dax__child(); dax__pcdata_ix = 0; ETag_dax__child(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_dax__adag_1: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_5); break;
-   case ROOT_dax__child: SET(EPILOG); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of child element.", yytext[0]);
@@ -669,7 +656,6 @@ const char* *dax__statenames=NULL;
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_dax__adag_1: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_5); break;
-   case ROOT_dax__child: SET(EPILOG); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</child>' expected.",yytext);
@@ -677,9 +663,9 @@ const char* *dax__statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</child>' expected.");
 }
 
-<S_dax__job,S_dax__adag_3,S_dax__adag_5,S_dax__job_1,E_dax__job,E_dax__adag,S_dax__adag_4,S_dax__job_2,S_dax__adag,S_dax__adag_2,E_dax__child,S_dax__adag_1>"<parent"{s} FAIL("Starting tag <parent> is not allowed here.");
+<S_dax__job,S_dax__adag_3,S_dax__adag_5,S_dax__job_1,E_dax__job,E_dax__adag,S_dax__adag_4,ROOT_dax__parent,S_dax__job_2,S_dax__adag,S_dax__adag_2,E_dax__child,S_dax__adag_1>"<parent"{s} FAIL("Starting tag <parent> is not allowed here.");
 
-<ROOT_dax__parent,S_dax__child_2,S_dax__child,S_dax__child_1>"<parent"{s} {
+<S_dax__child_2,S_dax__child,S_dax__child_1>"<parent"{s} {
   AX_dax__parent_ref = 0;
   ENTER(AL_dax__parent); pushbuffer(0);
   }
@@ -696,7 +682,6 @@ const char* *dax__statenames=NULL;
   if (!AX_dax__parent_ref) FAIL("Required attribute `ref' not set for `parent' element.");
   LEAVE; STag_dax__parent(); dax__pcdata_ix = 0; ETag_dax__parent(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case ROOT_dax__parent: SET(EPILOG); break;
    case S_dax__child_2: case S_dax__child: case S_dax__child_1: SET(S_dax__child_2); break;
   }
  }
@@ -711,7 +696,6 @@ const char* *dax__statenames=NULL;
   ETag_dax__parent();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case ROOT_dax__parent: SET(EPILOG); break;
    case S_dax__child_2: case S_dax__child: case S_dax__child_1: SET(S_dax__child_2); break;
   }
  }

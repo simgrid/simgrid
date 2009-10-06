@@ -31,33 +31,44 @@ xbt_dynar_t SD_daxload(const char*filename) {
   dax_lineno = 1;
 
   result = xbt_dynar_new(sizeof(SD_task_t),SD_task_free);
-  xbt_assert1(dax_lex(),"Parse error in %s",filename);
+  xbt_assert2(!dax_lex(),"Parse error in %s: %s",filename,dax__parse_err_msg());
   dax__delete_buffer(input_buffer);
   fclose(in_file);
   return result;
 }
 
 void STag_dax__adag(void) {
+  double version = 0.0;
 
+  INFO0("See <adag>");
+  sscanf(A_dax__adag_version, "%lg", &version);
+
+  xbt_assert1((version == 2.1), "Expected version 2.1, got %f. Fix the parser or your file",version);
 }
 void STag_dax__job(void) {
-
+  INFO0("See <job>");
 }
 void STag_dax__child(void) {
-
+  INFO0("See <child>");
 }
 void STag_dax__parent(void) {
-
+  INFO0("See <parent>");
+}
+void STag_dax__uses(void) {
+  INFO0("See <uses>");
 }
 void ETag_dax__adag(void) {
-
+  INFO0("See </adag>");
 }
 void ETag_dax__job(void) {
-
+  INFO0("See </job>");
 }
 void ETag_dax__child(void) {
-
+  INFO0("See </child>");
 }
 void ETag_dax__parent(void) {
-
+  INFO0("See </parent>");
+}
+void ETag_dax__uses(void) {
+  INFO0("See </uses>");
 }

@@ -480,9 +480,10 @@ $(top_srcdir)/include/xbt/graphxml.h: $(srcdir)/xbt/graphxml.dtd
 	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 
 simdag/dax_dtd.l: simdag/dax.dtd
-	set -e; flexml -b 1000000 -P dax_ --sysid=dax.dtd -S $@ -L $^
+	set -e; flexml -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S $@ -L $^
+	sed -i 's/SET(DOCTYPE)/SET(ROOT_dax__adag)/' simdag/dax_dtd.l # DOCTYPE not mandatory
 simdag/dax_dtd.h: simdag/dax.dtd
-	set -e; flexml            -P dax_ --sysid=dax.dtd -H $@ -L $^
+	set -e; flexml            --root-tags adag -P dax_ --sysid=dax.dtd -H $@ -L $^
 	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 else
