@@ -1232,6 +1232,28 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
     xbt_die(bprintf("Kind of task %s not supported by SD_task_schedulev()",
           SD_task_get_name(task)));
   }
+  /* Iterate over all childs and parent being COMM_E2E to say where I am located (and start them if ready) */
+  if (task->kind == SD_TASK_COMP_SEQ) {
+    SD_dependency_t dep;
+    unsigned int cpt;
+    xbt_dynar_foreach(task->tasks_before,cpt,dep) {
+      SD_task_t before = dep->src;
+      if (before->kind == SD_TASK_COMM_E2E) {
+        before->workstation_list[1] = task->workstation_list[0];
+        if (before->workstation_list[0])
+          SD_task_do_schedule(before);
+      }
+    }
+    xbt_dynar_foreach(task->tasks_after,cpt,dep) {
+      SD_task_t after = dep->dst;
+      if (after->kind == SD_TASK_COMM_E2E) {
+        after->workstation_list[0] = task->workstation_list[0];
+        if (after->workstation_list[1])
+          SD_task_do_schedule(after);
+      }
+    }
+
+  }
 }
 /** @brief autoschedule a task on a list of workstations
  *
