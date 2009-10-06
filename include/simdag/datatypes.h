@@ -68,4 +68,15 @@ typedef enum {
   SD_FAILED = 0x0020         /**< @brief A problem occured during the execution of the task. */
 } e_SD_task_state_t;
 
+/** @brief Task kinds
+    @ingroup SD_datatypes_management
+
+    @see SD_task_management */
+typedef enum {
+  /* leave 0 for "not typed" */
+  SD_TASK_COMM_E2E  = 1,      /**< @brief end to end communication */
+  SD_TASK_COMP_SEQ  = 2,      /**< @brief sequential computation */
+} e_SD_task_kind_t;
+
+
 #endif

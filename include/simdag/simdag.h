@@ -135,6 +135,11 @@ XBT_PUBLIC(double) SD_task_get_finish_time(SD_task_t task);
 XBT_PUBLIC(void) SD_task_destroy(SD_task_t task);
 XBT_PUBLIC(void) SD_task_dump(SD_task_t task);
 
+XBT_PUBLIC(SD_task_t) SD_task_create_comp_seq(const char*name,void *data,double amount);
+XBT_PUBLIC(SD_task_t) SD_task_create_comm_e2e(const char*name,void *data,double amount);
+XBT_PUBLIC(void) SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list);
+XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
+
 /** @} */
 
 

@@ -33,11 +33,8 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
 
   /* general information */
   task->data = data;            /* user data */
-  if (name != NULL)
-    task->name = xbt_strdup(name);
-  else
-    task->name = NULL;
-
+  task->name = xbt_strdup(name);
+  task->kind = 0;
   task->state_hookup.prev = NULL;
   task->state_hookup.next = NULL;
   task->state_set = sd_global->not_scheduled_task_set;
@@ -1055,4 +1052,99 @@ void SD_task_destroy(SD_task_t task)
   sd_global->task_number--;
 
   DEBUG0("Task destroyed.");
+}
+
+
+/** @brief create a end-to-end communication task that can then be auto-scheduled
+ *
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
+ * allows to specify the task costs at creation, and decorelate them from the
+ * scheduling process where you just specify which resource should deliver the
+ * mandatory power.
+ *
+ * A end-to-end communication must be scheduled on 2 hosts, and the amount
+ * specified at creation is sent from hosts[0] to hosts[1].
+ */
+SD_task_t SD_task_create_comm_e2e(const char*name, void *data, double amount) {
+  SD_task_t res = SD_task_create(name,data,amount);
+  res->kind=SD_TASK_COMM_E2E;
+  return res;
+}
+/** @brief create a sequential computation task that can then be auto-scheduled
+ *
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
+ * allows to specify the task costs at creation, and decorelate them from the
+ * scheduling process where you just specify which resource should deliver the
+ * mandatory power.
+ *
+ * A sequential computation must be scheduled on 1 host, and the amount
+ * specified at creation to be run on hosts[0].
+ */
+SD_task_t SD_task_create_comp_seq(const char*name, void *data, double amount) {
+  SD_task_t res = SD_task_create(name,data,amount);
+  res->kind=SD_TASK_COMP_SEQ;
+  return res;
+}
+
+/** @brief Auto-schedules a task.
+ *
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
+ * allows to specify the task costs at creation, and decorelate them from the
+ * scheduling process where you just specify which resource should deliver the
+ * mandatory power.
+ *
+ * To be auto-schedulable, a task must be created with SD_task_create_comm_e2e() or
+ * SD_task_create_comp_seq(). Check their definitions for the exact semantic of each
+ * of them.
+ *
+ * @todo
+ * We should create tasks kind for the following categories:
+ *  - Point to point communication (done)
+ *  - Sequential computation       (done)
+ *  - group communication (redistribution, several kinds)
+ *  - parallel tasks with no internal communication (one kind per speedup model such as amdal)
+ *  - idem+ internal communication. Task type not enough since we cannot store comm cost alongside to comp one)
+ */
+void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
+  xbt_assert1(task->kind != 0,"Task %s is not typed. Cannot automatically schedule it.",SD_task_get_name(task));
+  double *comp,*comms;
+  switch(task->kind) {
+  case SD_TASK_COMM_E2E:
+    xbt_assert2(count == 2,
+          "Task %s is end to end communication, but scheduled with %d hosts",
+          SD_task_get_name(task),count);
+    comms=xbt_new(double,count);
+    comms[0]=0;
+    comms[1]=SD_task_get_amount(task);
+    SD_task_schedule(task,count,list,NULL,comms,1);
+    break;
+  case SD_TASK_COMP_SEQ:
+    xbt_assert2(count==1,
+        "Task %s is sequential computation, but scheduled with %d hosts",
+        SD_task_get_name(task),count);
+    comp=xbt_new(double,count);
+    comp[0]=SD_task_get_amount(task);
+    SD_task_schedule(task,count,list,comp,NULL,1);
+    break;
+  default:
+    xbt_die(bprintf("Kind of task %s not supported by SD_task_schedulev()",
+          SD_task_get_name(task)));
+  }
+}
+/** @brief autoschedule a task on a list of workstations
+ *
+ * This function is very similar to SD_task_schedulev(),
+ * but takes the list of workstations to schedule onto as separate parameters.
+ * It builds a proper vector of workstations and then call SD_task_schedulev()
+ */
+void SD_task_schedulel(SD_task_t task, int count, ...) {
+  va_list ap;
+  SD_workstation_t *list=xbt_new(SD_workstation_t,count);
+  int i;
+  va_start(ap,count);
+  for (i=0;i<count;i++) {
+      list[i] = va_arg(ap,SD_workstation_t);
+  }
+  va_end(ap);
+  SD_task_schedulev(task,count,list);
 }
