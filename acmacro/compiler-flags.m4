@@ -52,7 +52,7 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
       ## -Wshadow chokes on try{ try{} } constructs
       warnCFLAGS=`echo $warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
         -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings \
-        -Wno-unused-function  -Wno-strict-aliasing -Wno-format-nonliteral \
+        -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral \
         -Werror \
 	| sed 's/ +/ /g'`
 	# -Wno-unused-variable  -Wno-unused-label
