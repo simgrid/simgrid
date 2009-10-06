@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 
   /* Display all the tasks */
   xbt_dynar_foreach(dax,cursor,task) {
-
+    SD_task_dump(task);
   }
   /* exit */
   SD_exit();
