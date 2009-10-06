@@ -77,7 +77,7 @@ typedef struct SD_task {
   double start_time;
   double finish_time;
   surf_action_t surf_action;
-  unsigned short watch_points;
+  unsigned short watch_points; /* bit field xor()ed with masks */
 
   int fifo_checked;             /* used by SD_task_just_done to make sure we evaluate
                                    the task only once */
