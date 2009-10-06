@@ -1,5 +1,3 @@
-/* 	$Id$	 */
-
 /* a generic graph library.                                                 */
 
 /* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand.                     */

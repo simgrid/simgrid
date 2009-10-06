@@ -65,6 +65,7 @@ EXTRA_DIST= \
 	msg/mailbox.h \
 	\
 	simdag/private.h \
+	simdag/dax.dtd \
 	\
 	gras/DataDesc/ddt_parse.yy.l \
 	gras/Virtu/virtu_rl.h \
@@ -260,7 +261,8 @@ JMSG_JAVA_SRC = \
   java/simgrid/msg/Sem.java
 
 
-SIMDAG_SRC= simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c
+SIMDAG_SRC= simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c \
+  simdag/sd_daxloader.c
 
 GRAS_COMMON_SRC= \
   gras/gras.c  \
@@ -398,6 +400,7 @@ TEST_UNITS= @builddir@/cunit_unit.c   @builddir@/ex_unit.c         \
 
 BUILT_SOURCES=../include/surf/simgrid_dtd.h surf/simgrid_dtd.c \
               ../include/xbt/graphxml.h xbt/graphxml.c \
+              simdag/dax_dtd.h simdag/dax_dtd.c \
               gras/DataDesc/ddt_parse.yy.c \
 	      $(TEST_UNITS) @builddir@/simgrid_units_main.c
 
@@ -455,6 +458,9 @@ surf/simgrid_dtd.c: surf/simgrid_dtd.l
 xbt/graphxml.c: xbt/graphxml.l
 	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Pxbt_graph_parse_ --noline $^
 	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
+simdag/dax_dtd.c: simdag/dax_dtd.l
+	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Pdax_ --noline $^
+	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
 
 if HAVE_FLEXML
 surf/simgrid_dtd.l: $(srcdir)/surf/simgrid.dtd
@@ -472,6 +478,13 @@ $(top_srcdir)/include/xbt/graphxml.h: $(srcdir)/xbt/graphxml.dtd
 	set -e; flexml            -P graphxml --sysid=graphxml.dtd -H $@ -L $^
 	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
+
+simdag/dax_dtd.l: simdag/dax.dtd
+	set -e; flexml -b 1000000 -P dax_ --sysid=dax.dtd -S $@ -L $^
+simdag/dax_dtd.h: simdag/dax.dtd
+	set -e; flexml            -P dax_ --sysid=dax.dtd -H $@ -L $^
+	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
+	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
 else
 
 $(top_srcdir)/include/surf/simgrid_dtd.h surf/simgrid_dtd.l: $(top_srcdir)/src/surf/simgrid.dtd
@@ -483,6 +496,11 @@ $(top_srcdir)/include/xbt/graphxml.h xbt/graphxml.l: $(top_srcdir)/src/xbt/graph
 	@echo "ERROR: src/xbt/graphxml.dtd was modified, but the flexml program was not detected"
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
 	@echo "ERROR:   touch include/xbt/graphxml.h src/xbt/graphxml.l"
+	@exit 1
+simdag/dax_dtd.h simdag/dax_dtd.l: simdag/dax_dtd.dtd
+	@echo "ERROR: src/simdag/dax.dtd was modified, but the flexml program was not detected"
+	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
+	@echo "ERROR:   touch src/simdag/dax_dtd.h src/simdag/dax_dtd.l"
 	@exit 1
 endif
 endif

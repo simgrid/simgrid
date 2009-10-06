@@ -204,7 +204,7 @@ double SD_task_get_remaining_amount(SD_task_t task)
 }
 
 /* temporary function for debbuging */
-static void __SD_print_dependencies(SD_task_t task)
+void SD_task_dump(SD_task_t task)
 {
   xbt_dynar_t dynar;
   int length;

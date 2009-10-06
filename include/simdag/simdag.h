@@ -133,6 +133,8 @@ XBT_PUBLIC(void) SD_task_unschedule(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_start_time(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_finish_time(SD_task_t task);
 XBT_PUBLIC(void) SD_task_destroy(SD_task_t task);
+XBT_PUBLIC(void) SD_task_dump(SD_task_t task);
+
 /** @} */
 
 
@@ -167,6 +169,8 @@ XBT_PUBLIC(void) SD_create_environment(const char *platform_file);
 XBT_PUBLIC(SD_task_t *) SD_simulate(double how_long);
 XBT_PUBLIC(double) SD_get_clock(void);
 XBT_PUBLIC(void) SD_exit(void);
+XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char*filename);
+
 /** @} */
 
 SG_END_DECL()

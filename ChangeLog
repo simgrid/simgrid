@@ -53,6 +53,11 @@ SimGrid (3.3.4) unstable; urgency=low
    It provides a rendez-vous point (aka mailbox) based send/recv API to perform
    synchronous communication. 
    
+ SimDag:
+ * new function SD_task_dump() for debuging display
+ * new function SD_daxload(char*) to load a DAX file 
+   (see http://vtcpc.isi.edu/pegasus/index.php/WorkflowGenerator)
+   
  Bug fixes:
  * GTNetS wrappers should now be usable again (and betterly tested too)
  * Fix a major regression from 3.2 where the timeout provided to

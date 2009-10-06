@@ -1,0 +1,34 @@
+<!-- Small DTD for DAX files. -->
+<!ELEMENT adag (job*,child*)>
+<!ATTLIST adag xmlns CDATA "http://pegasus.isi.edu/schema/DAX">
+<!ATTLIST adag xmlns:xsi CDATA "http://www.w3.org/2001/XMLSchema-instance">
+<!ATTLIST adag xmlns:schemaLocation CDATA "http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd">
+<!ATTLIST adag version CDATA "0.0">
+<!ATTLIST adag count CDATA "0">
+<!ATTLIST adag index CDATA "0">
+<!ATTLIST adag name CDATA "0">
+<!ATTLIST adag jobCount CDATA "0">
+<!ATTLIST adag fileCount CDATA "0">
+<!ATTLIST adag childCount CDATA "0">
+
+<!ELEMENT job (uses*)>
+<!ATTLIST job id CDATA #REQUIRED>
+<!ATTLIST job namespace CDATA "">
+<!ATTLIST job name CDATA #REQUIRED>
+<!ATTLIST job version CDATA "0.0">
+<!ATTLIST job runtime CDATA #REQUIRED>
+
+<!ELEMENT uses EMPTY>
+<!ATTLIST uses file CDATA #REQUIRED>
+<!ATTLIST uses link (input|output)>
+<!ATTLIST uses register (false|true) "true">
+<!ATTLIST uses transfer (false|true) "true">
+<!ATTLIST uses optional (false|true) "false">
+<!ATTLIST uses type CDATA "data">
+<!ATTLIST uses size CDATA #REQUIRED>
+
+<!ELEMENT child (parent*)>
+<!ATTLIST child ref CDATA #REQUIRED>
+
+<!ELEMENT parent EMPTY>
+<!ATTLIST parent ref CDATA #REQUIRED>
