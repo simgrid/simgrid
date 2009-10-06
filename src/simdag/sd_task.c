@@ -279,6 +279,18 @@ void SD_task_dump(SD_task_t task)
 
   INFO1("Displaying task %s",SD_task_get_name(task));
   INFO1("  - amount: %.0f",SD_task_get_amount(task));
+  if (task->kind!=0) {
+    switch(task->kind){
+    case SD_TASK_COMM_E2E:
+      INFO0("  - kind: end-to-end communication");
+      break;
+    case SD_TASK_COMP_SEQ:
+      INFO0("  - kind: sequential computation");
+      break;
+    default:
+      INFO1("  - (unknown kind %d)",task->kind);
+    }
+  }
   if (xbt_dynar_length(task->tasks_before)) {
     INFO0("  - pre-dependencies:");
     xbt_dynar_foreach(task->tasks_before,counter,dependency) {
