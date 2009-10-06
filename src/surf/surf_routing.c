@@ -14,6 +14,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route,surf,"Routing part of surf");
 
 routing_t used_routing = NULL;
+xbt_dict_t onelink_routes = NULL;
 
 /* Prototypes of each model */
 static void routing_model_full_create(size_t size_of_link,void *loopback);
@@ -66,7 +67,17 @@ typedef struct {
 #define ROUTE_FULL(i,j) ((routing_full_t)used_routing)->routing_table[(i)+(j)*(used_routing)->host_count]
 #define HOST2ROUTER(id) ((id)+(2<<29))
 #define ROUTER2HOST(id) ((id)-(2>>29))
-#define ROUTER(id) ((id)>=(2<<29))
+#define ISROUTER(id) ((id)>=(2<<29))
+
+/*
+ * Free the onelink routes
+ */
+static void onelink_route_elem_free(void *e) {
+  s_onelink_t tmp = (s_onelink_t)e;
+  if(tmp) {
+    free(tmp);
+  }
+}
 
 /*
  * Parsing
@@ -263,7 +274,17 @@ static void routing_full_parse_end(void) {
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
     xbt_dynar_free(&keys);
 
-    if(ROUTER(src_id) || ROUTER(dst_id)) {
+    if(xbt_dynar_length(links) == 1){
+      s_onelink_t new_link = (s_onelink_t) xbt_malloc0(sizeof(s_onelink));
+      new_link->src_id = src_id;
+      new_link->dst_id = dst_id;
+      link_name = xbt_dynar_getfirst_as(links, char*);
+      new_link->link_ptr = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+      DEBUG3("Adding onelink route from (#%d) to (#%d), link_name %s",src_id, dst_id, link_name);
+      xbt_dict_set_ext(onelink_routes, link_name, sizeof(char *), (void *)new_link, onelink_route_elem_free);
+    }
+
+    if(ISROUTER(src_id) || ISROUTER(dst_id)) {
 				DEBUG2("There is route with a router here: (%d ,%d)",src_id,dst_id);
 				/* Check there is only one link in the route and store the information */
 				continue;
@@ -295,7 +316,16 @@ static void routing_full_parse_end(void) {
  * Business methods
  */
 static xbt_dynar_t routing_full_get_route(int src,int dst) {
+  xbt_assert0(!(ISROUTER(src) || ISROUTER(dst)), "Ask for route \"from\" or \"to\" a router node");
   return ROUTE_FULL(src,dst);
+}
+
+static xbt_dict_t routing_full_get_onelink_routes(void){
+  return onelink_routes;
+}
+
+static int routing_full_is_router(int id){
+	return ISROUTER(id);
 }
 
 static void routing_full_finalize(void) {
@@ -319,12 +349,18 @@ static void routing_model_full_create(size_t size_of_link,void *loopback) {
   routing->generic_routing.name = "Full";
   routing->generic_routing.host_count = 0;
   routing->generic_routing.get_route = routing_full_get_route;
+  routing->generic_routing.get_onelink_routes = routing_full_get_onelink_routes;
+  routing->generic_routing.is_router = routing_full_is_router;
   routing->generic_routing.finalize = routing_full_finalize;
+
   routing->size_of_link = size_of_link;
   routing->loopback = loopback;
 
   /* Set it in position */
   used_routing = (routing_t) routing;
+
+  /* Set the dict for onehop routes */
+  onelink_routes =  xbt_dict_new();
 
   /* Setup the parsing callbacks we need */
   routing->generic_routing.host_id = xbt_dict_new();
@@ -536,6 +572,14 @@ static void routing_floyd_finalize(void) {
   }
 }
 
+static xbt_dict_t routing_floyd_get_onelink_routes(void){
+  xbt_assert0(0,"The get_onelink_routes feature is not supported in routing model Floyd");
+}
+
+static int routing_floyd_is_router(int id){
+  xbt_assert0(0,"The get_is_router feature is not supported in routing model Floyd");
+}
+
 static void routing_model_floyd_create(size_t size_of_link,void *loopback) {
   /* initialize our structure */
   routing_floyd_t routing = xbt_new0(s_routing_floyd_t,1);
@@ -543,6 +587,8 @@ static void routing_model_floyd_create(size_t size_of_link,void *loopback) {
   routing->generic_routing.host_count = 0;
   routing->generic_routing.host_id = xbt_dict_new();
   routing->generic_routing.get_route = routing_floyd_get_route;
+  routing->generic_routing.get_onelink_routes = routing_floyd_get_onelink_routes;
+  routing->generic_routing.is_router = routing_floyd_is_router;
   routing->generic_routing.finalize = routing_floyd_finalize;
   routing->size_of_link = size_of_link;
   routing->loopback = loopback;
@@ -883,6 +929,14 @@ static void routing_dijkstra_finalize(void) {
   }
 }
 
+static xbt_dict_t routing_dijkstraboth_get_onelink_routes(void){
+  xbt_assert0(0,"The get_onelink_routes feature is not supported in routing model dijkstraboth");
+}
+
+static int routing_dijkstraboth_is_router(int id){
+  xbt_assert0(0,"The get_is_router feature is not supported in routing model dijkstraboth");
+}
+
 /*
  *
  */
@@ -892,6 +946,8 @@ static void routing_model_dijkstraboth_create(size_t size_of_link,void *loopback
   routing->generic_routing.name = "Dijkstra";
   routing->generic_routing.host_count = 0;
   routing->generic_routing.get_route = routing_dijkstra_get_route;
+  routing->generic_routing.get_onelink_routes = routing_dijkstraboth_get_onelink_routes;
+  routing->generic_routing.is_router = routing_dijkstraboth_is_router;
   routing->generic_routing.finalize = routing_dijkstra_finalize;
   routing->size_of_link = size_of_link;
   routing->loopback = loopback;
@@ -921,6 +977,7 @@ static void routing_model_dijkstracache_create(size_t size_of_link,void *loopbac
 /* ************************************************** */
 /* ********** NO ROUTING **************************** */
 
+
 static void routing_none_finalize(void) {
   if (used_routing) {
     xbt_dict_free(&used_routing->host_id);
@@ -935,7 +992,10 @@ static void routing_model_none_create(size_t size_of_link,void *loopback) {
   routing->name = "none";
   routing->host_count = 0;
   routing->host_id = xbt_dict_new();
+  routing->get_onelink_routes = NULL;
+  routing->is_router = NULL;
   routing->get_route = NULL;
+
   routing->finalize = routing_none_finalize;
 
   /* Set it in position */

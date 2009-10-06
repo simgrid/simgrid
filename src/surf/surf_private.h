@@ -76,13 +76,24 @@ const char *__surf_get_initial_path(void);
 int __surf_is_absolute_file_path(const char *file_path);
 
 /*
+ * One link routing list
+ */
+typedef struct {
+	int src_id;
+	int dst_id;
+	void *link_ptr;
+}s_onelink, *s_onelink_t;
+
+
+/*
  * Routing logic
  */
 struct s_routing {
   const char *name;
   xbt_dict_t host_id; /* char* -> int* */
-
   xbt_dynar_t (*get_route)(int src, int dst);
+  xbt_dict_t (*get_onelink_routes)(void);
+  int (*is_router)(int id);
   void (*finalize)(void);
   int host_count;
   int router_count;
