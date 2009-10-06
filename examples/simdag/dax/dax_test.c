@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "simdag/simdag.h"
 #include "xbt/log.h"
 
@@ -38,6 +39,15 @@ int main(int argc, char **argv) {
   xbt_dynar_foreach(dax,cursor,task) {
     SD_task_dump(task);
   }
+
+  FILE *out = fopen("dax.dot","w");
+  fprintf(out,"digraph A {\n");
+  xbt_dynar_foreach(dax,cursor,task) {
+    SD_task_dotty(task,out);
+  }
+  fprintf(out,"}\n");
+  fclose(out);
+
   /* exit */
   SD_exit();
   return 1;
