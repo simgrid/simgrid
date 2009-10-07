@@ -239,6 +239,8 @@ SD_task_t *SD_simulate(double how_long)
     xbt_dynar_foreach(model_list, iter, model) {
       while ((action = xbt_swag_extract(model->states.done_action_set))) {
         task = action->data;
+        task->start_time = surf_workstation_model->action_get_start_time(task->surf_action);
+        task->finish_time = surf_get_clock();
         INFO1("Task '%s' done", SD_task_get_name(task));
         DEBUG0("Calling __SD_task_just_done");
         __SD_task_just_done(task);
@@ -268,6 +270,8 @@ SD_task_t *SD_simulate(double how_long)
       /* let's see which tasks have just failed */
       while ((action = xbt_swag_extract(model->states.failed_action_set))) {
         task = action->data;
+        task->start_time = surf_workstation_model->action_get_start_time(task->surf_action);
+        task->finish_time = surf_get_clock();
         INFO1("Task '%s' failed", SD_task_get_name(task));
         __SD_task_set_state(task, SD_FAILED);
         surf_workstation_model->action_unref(action);

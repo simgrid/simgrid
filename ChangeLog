@@ -73,6 +73,7 @@ SimGrid (3.3.4) unstable; urgency=low
     SD_task_get_parents(task) and SD_task_get_children(task)
  * Add getters on amount of workstations and list:
     SD_task_get_workstation_count(t) and SD_task_get_workstation_list(t)
+ * Update the start_time and finish_time of tasks on completion/failure
 
    
  Bug fixes:
