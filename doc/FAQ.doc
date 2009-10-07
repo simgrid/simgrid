@@ -28,14 +28,14 @@ your application.
 With SimDag, you express your code as a collection of interdependent
 parallel tasks. So, in this model, applications can be seen as a DAG of
 tasks. This is the interface of choice for people wanting to port old
-code designed for SimGrid v1 or v2 to the lastest framework.
+code designed for SimGrid v1 or v2 to the framework current version.
 
 With both GRAS and MSG, your application is seen as a set of communicating
 processes, exchanging data by the way of messages and performing computation
 on their own.
 
 The difference between both is that MSG is somehow easier to use, but GRAS
-is not limitated to the simulator. Once you're done writing your GRAS code,
+is not limited to the simulator. Once you're done writing your GRAS code,
 you can run your code both in the simulator or on a real platform. For this,
 there is two implementations of the GRAS interface, one for simulation, one
 for real execution. So, you just have to relink your code to chose one of
@@ -54,7 +54,7 @@ If you decide to go for the GRAS interface, you should definitively
 read the \ref GRAS_tut. The first section constitutes an introduction
 to the tool and presents the model we use. The second section
 constitutes a complete step-by-step tutorial building a distributed
-application from the begining and exemplifying most of the GRAS
+application from the beginning and exemplifying most of the GRAS
 features in the process. The last section groups some HOWTOS
 highlighting a given feature of the framework in a more concise way.
 
@@ -80,20 +80,20 @@ generates an input to <a href="http://www-id.imag.fr/Logiciels/paje/">Paje</a>.
 \endhtmlonly
 </center>
 
-Vizualization with Paje can be seen as a kind of postmortem
+Visualization with Paje can be seen as a kind of postmortem
 analysis. However, as soon as you start playing with big simulations,
 you'll realize that processing such output is kind of tricky. There is
-so much generic informations that it is hard to find the information
+so much generic information that it is hard to find the information
 you are looking for.
 
-As a matter of fact, loging really depends on simulations (e.g. what
+As a matter of fact, logging really depends on simulations (e.g. what
 kind of events is important...). That is why we do not propose a big
 dump of your whole simulation (it would slow everything down) but give
 you neat tools to structure you logs. Have a look at \ref XBT_log. In
 fact, rather than a post-mortem analysis, you may want to do it on the
 fly. The process you are running can do whatever you want. Have you
 thought about adding a global structure where you directly compute the
-informations that are really important rather than writing everything
+information that are really important rather than writing everything
 down and then processing huge files?
 
 \subsection faq_C Argh! Do I really have to code in C?
@@ -129,7 +129,8 @@ simplest way to use SimGrid is to install it in your home
 directory. Change your directory to
 <tt>/home/joe/tmp/simgrid-3.0.1</tt> and type
 
-\verbatim./configure --prefix=$HOME
+\verbatim
+./configure --prefix=$HOME
 make
 make install
 \endverbatim
@@ -180,14 +181,14 @@ a stable release as long as there is still some known bug in the code base. In
 addition, we added quite an extensive test base, making sure that we correctly
 test the most important parts of the tool. 
 
-As an infortunate conclusion, there may be some time between the stable
+As an unfortunate conclusion, there may be some time between the stable
 releases. If you want to benefit from the most recent features we introduced,
 but don't want to take the risk of an untested version from the SVN, then
 development snapshots are done for you. 
 
 These are pre-releases of SimGrid that still fail some tests about features
 that almost nobody use, or on platforms not being in our core target (which is
-linux, mac, other unixes and windows, from the most important to the less
+Linux, Mac, other Unixes and Windows, from the most important to the less
 one). That means that using this development releases should be safe for most
 users. 
 
@@ -197,8 +198,8 @@ got the lastest archive, you can compile it just like any archive (see above).
 
 \subsection faq_compiling_svn Compiling SimGrid from the SVN
 
-The project development takes place in the svn, where all changes are
-commited when they happen. Then every once in a while, we make sure that the
+The project development takes place in the SVN, where all changes are
+committed when they happen. Then every once in a while, we make sure that the
 code quality meets our standard and release an archive from the code in the
 SVN. We afterward go back to the development in the SVN. So, if you need a
 recently added feature and can afford some little problem with the stability
@@ -222,7 +223,7 @@ autoconf, automake and libtool. Doing this step on exotic architectures/systems
 (i.e. anything different from a recent linux distribution) may be
 ... uncertain. If you need to compile the SVN version on a machine where all these
 dependencies are not met, the easiest is to do <tt>make dist</tt> in the SVN
-dir of another machine where all dependencies are met. It will create an
+directory of another machine where all dependencies are met. It will create an
 archive you may deploy on other sites just as a regular stable release.
 
 In summary, the following commands will checkout the SVN, regenerate the
@@ -245,7 +246,7 @@ Moreover, you should never call the autotools manually since you must run
 them in a specific order with specific arguments. Most of the times, the
 makefiles will automatically call the tools for you. When it's not possible
 (such as the first time you checkout the SVN), use the ./bootstrap command
-to call them explicitely.
+to call them explicitly.
 
 
 \subsection faq_setting_MSG Setting up your own MSG code
@@ -340,7 +341,7 @@ tutorial in general, and the \ref GRAS_tut_tour_setup in particular.
 
 Here is the deal. The whole SimGrid project (MSG, SURF, GRAS, ...) is
 meant to be kept as simple and generic as possible. We cannot add
-functions for everybody's need when these functions can easily be
+functions for everybody's needs when these functions can easily be
 built from the ones already in the API. Most of the time, it is
 possible and when it was not possible we always have upgraded the API
 accordingly. When somebody asks us a question like "How to do that?
@@ -375,7 +376,7 @@ start.
 
 We know. We should add some more examples, but not really some more
 complex ones... We should add some examples that illustrate some other
-functionalities (like how to simply encode asynchronous
+functionalists (like how to simply encode asynchronous
 communications, RPC, process migrations, thread synchronization, ...)
 and we will do it when we will have a little bit more time. We have
 tried to document the examples so that they are understandable. Tell
@@ -404,7 +405,7 @@ MSG_task_get_name(), MSG_task_get_compute_duration(),
 MSG_task_get_remaining_computation(), MSG_task_get_data_size(),
 and MSG_task_get_data().
 
-You could use a dictionnary (#xbt_dict_t) of dynars (#xbt_dynar_t). If
+You could use a dictionary (#xbt_dict_t) of dynars (#xbt_dynar_t). If
 you still don't see how to do it, please come back to us...
 
 \subsubsection faq_MIA_asynchronous I want to do asynchronous communications in MSG
@@ -510,7 +511,7 @@ int receiver()
 
 \subsubsection faq_SG_comm Implementing communication delays between tasks.
 
-A classic question of SimDag newcommers is about how to express a
+A classic question of SimDag newcomers is about how to express a
 communication delay between tasks. The thing is that in SimDag, both
 computation and communication are seen as tasks.  So, if you want to
 model a data dependency between two DAG tasks t1 and t2, you have to
@@ -644,7 +645,7 @@ planned because this is a very specific need (and doing it in a
 generic way is thus very hard). However some people have implemented
 their own batch schedulers. Vincent Garonne wrote one during his PhD
 and put his code in the contrib directory of our SVN so that other can
-keep working on it. You may find inspinring ideas in it.
+keep working on it. You may find inspiring ideas in it.
 
 \subsubsection faq_MIA_checkpointing I need a checkpointing thing
 
@@ -789,7 +790,7 @@ following platform file:
 </route>
 \endverbatim
 
-Althrough it is perfectly valid, it does not mean that data traveling
+Although it is perfectly valid, it does not mean that data traveling
 from A to C can either go directly (using link 3) or through B (using
 links 1 and 2). It simply means that the routing on the graph is not
 trivial, and that data do not following the shortest path in number of
@@ -800,7 +801,7 @@ id="3"/&gt;&lt;/route&gt;), without trying to build new routes by aggregating
 the provided ones.
   
 You are also free to declare platform where the routing is not
-symetric. For example, add the following to the previous file:
+symmetric. For example, add the following to the previous file:
 
 \verbatim
 <route src="C" dst="A">
@@ -817,7 +818,7 @@ that's another story).
 
 \subsubsection faq_flexml_bypassing Bypassing the XML parser with your own C functions
 
-So you want to bypass the XML files parser, uh? Maybe doin some parameter
+So you want to bypass the XML files parser, uh? Maybe doing some parameter
 sweep experiments on your simulations or so? This is possible, and
 it's not even really difficult (well. Such a brutal idea could be
 harder to implement). Here is how it goes.
@@ -906,35 +907,127 @@ network models...
 
 \subsubsection faq_simgrid_configuration_gtnets Using GTNetS
 
-For example, it is possible to use a packet-level network simulator
+It is possible to use a packet-level network simulator
 instead of the default flow-based simulation. You may want to use such
 an approach if you have doubts about the validity of the default model
 or if you want to perform some validation experiments. At the moment,
 we support the GTNetS simulator (it is still rather experimental
 though, so leave us a message if you play with it). 
 
-Everything you need to use this feature is in the 
-<a href="http://gforge.inria.fr/plugins/scmsvn/viewcvs.php/contrib/trunk/GTNetS/?root=simgrid">SVN</a>.
 
-Once you have followed all the instructions for compiling and
-installing given in the corresponding 
-<a href='http://gforge.inria.fr/plugins/scmsvn/viewcvs.php/contrib/trunk/GTNetS/README?root=simgrid'>README</a>,
-you can activate this feature at runtime with the following options:
+<i>
+To enable GTNetS model inside SimGrid it is needed to patch the GTNetS simulator source code 
+and build/install it from scratch
+</i>
 
-\verbatim
-gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation_model:compound --cfg=network_model:GTNets --cfg=cpu_model:Cas01
-\endverbatim
+ - <b>Download and enter the recent downloaded GTNetS directory</b>
+
+ \verbatim
+ svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/GTNetS/
+ cd GTNetS
+ \endverbatim
+
+
+ - <b>Use the following commands to unzip and patch GTNetS package to work within SimGrid.</b>
+
+ \verbatim
+ unzip gtnets-current.zip
+ cd gtnets-current
+ cp ../KAYO-PATCH-Added-RunUntilNextCompletion-and-some.patch .
+ cat .patch | patch -p1
+ \endverbatim
+
+ - <b>Compile GTNetS</b>
+
+   Due to portability issues it is possible that GTNetS does not compile in your architecture. Some
+   other patches are provided in GTNetS directory. Use those patches at your own risk.
+
+ \verbatim
+ cd gtnets-current
+ ln -sf Makefile.linux Makefile
+ make depend
+ make debug
+ \endverbatim
+
+ - If you have a problem compiling the GTNetS simulator a series of patches can be found <a href="http://mescal.imag.fr/membres/pedro.velho/simgrid/gtnets-current-patch.tgz">here</a>. Although, it is not
+guaranteed that these patches will make GTNetS compile in your architecture, they will just probably fix main issues when using the
+linux operating system.
+</p>
+
+ - <b>NOTE</b> A lot of warnings are expected but the application should compile
+ just fine. If the makefile insists in compiling some QT libraries
+ please try a make clean before asking for help.
+
+
+ - <b>To compile optimized version</b>
+
+ \verbatim
+ make opt
+ \endverbatim
+
+
+ - <b>Installing GTNetS</b>
+
+ Replace <userhome> by some path you have write access to.
+
+ \verbatim
+ ln -sf libgtsim-debug.so /<userhome>/usr/lib/libgtnets.so
+ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/<userhome>/usr/lib/libgtnets.so
+ mkdir /<userhome>/usr/include/gtnets
+ cp -fr SRC/*.h /<userhome>/usr/include/gtnets
+ \endverbatim
+
+
+ - <b>Enable GTNetS support in SimGrid</b>
+
+   \verbatim
+   ./configure --with-gtnets=/<userhome>/usr
+   \endverbatim
+
+ - <b>Once you have followed all the instructions for compiling and
+   installing successfully you can activate this feature at 
+   runntime with the following options:</b>
+
+   \verbatim
+   cd simgrid/example/msg/
+   make
+   make check
+   \endverbatim
+
+
+ - <b>Or try the GTNetS model dogbone example with</b>
+
+ \verbatim
+ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=network_model:GTNets
+ \endverbatim
+
+ 
+ A long version of this <a href="http://gforge.inria.fr/docman/view.php/12/6283/GTNetS HowTo.html">HowTo</a>  it is available 
+
+
+ More about GTNetS simulator at <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html">GTNetS Website</a>
+
+
+ - <b>DISCLAIMER</b>
+ The patches provided by us worked successfully with GTNetS found 
+ <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/software/gtnets-current.zip">here</a>, 
+ dated from 12th June 2008. Due to the discontinuing development of
+ GTNetS it is impossible to precise a version number. We STRONGLY recommend you
+ to download and install the GTNetS version found in SimGrid repository as explained above.
+ 
+
+
 
 \subsubsection faq_simgrid_configuration_alternate_network Using alternative flow models
 
-The default simgrid network model uses a max-min based aproach as
+The default simgrid network model uses a max-min based approach as
 explained in the research report
 <a href="ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.gz">A Network Model for Simulation of Grid Application</a>.
 Other models have been proposed and implemented since then (see for example 
 <a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>)
 and can be activated at runtime. For example:
 \verbatim
-./mycode platform.xml deployment.xml --cfg=workstation_model:compound --cfg=network_model:LegrandVelho --cfg=cpu_model:Cas01
+./mycode platform.xml deployment.xml --cfg=workstation_model:compound --cfg=network_model:LV08 -cfg=cpu_model:Cas01
 \endverbatim
 
 Possible models for the network are currently "Constant", "CM02",
@@ -948,9 +1041,9 @@ experimental and are likely to disappear without notice...
 
 \subsubsection faq_trouble_lib_config ./configure fails!
 
-We now only one reason for the configure to fail:
+We know only one reason for the configure to fail:
 
- - <b>You are using a borken build environment</b>\n
+ - <b>You are using a broken build environment</b>\n
    If symptom is that configure complains about gcc not being able to build
    executables, you are probably missing the libc6-dev package. Damn Ubuntu.
 
@@ -965,16 +1058,16 @@ http://bob.loria.fr:8010 if you don't believe us.
 There is several reasons which may cause the make check to fail on your
 machine:
 
- - <b>You are using a borken libc (probably concerning the contextes)</b>.\n
+ - <b>You are using a broken libc (probably concerning the contextes)</b>.\n
    The symptom is that the "make check" fails within the examples/msg directory.\n
    By default, SimGrid uses something called ucontexts. This is part of the
    libc, but it's quite undertested. For example, some (old) versions of the
    glibc on alpha do not implement these functions, but provide the stubs
-   (which return ENOSYS: not implemented). It may fool our detection mecanism
+   (which return ENOSYS: not implemented). It may fool our detection mechanism
    and leads to segfaults. There is not much we can do to fix the bug.
    A workaround is to compile with --with-context=pthread to avoid
-   ucontext completely. You'll be a bit more limitated in the number
-   of simulated processes you can start concurently, but 5000
+   ucontext completely. You'll be a bit more limited in the number
+   of simulated processes you can start concurrently, but 5000
    processes is still enough for most purposes, isn't it?\n
    This limitation is the reason why we insist on using this piece of ...
    software even if it's so troublesome.\n
@@ -995,7 +1088,7 @@ any default category in this file. You should refer to \ref XBT_log
 for all the details, but you simply forgot to call one of
 XBT_LOG_NEW_DEFAULT_CATEGORY() or XBT_LOG_NEW_DEFAULT_SUBCATEGORY().
 
-\subsubsection faq_trouble_pthreadstatic "gcc: undefinded reference to pthread_key_create"
+\subsubsection faq_trouble_pthreadstatic "gcc: undefined reference to pthread_key_create"
 
 This indicates that one of the library SimGrid depends on (libpthread
 here) was missing on the linking command line. Dependencies of
@@ -1016,7 +1109,7 @@ This is because your platform file is too big for the parser.
 Actually, the message comes directly from FleXML, the technology on top of
 which the parser is built. FleXML has the bad idea of fetching the whole
 document in memory before parsing it. And moreover, the memory buffer size
-must be determinded at compilation time.
+must be determined at compilation time.
 
 We use a value which seems big enough for our need without bloating the
 simulators footprints. But of course your mileage may vary. In this case,
@@ -1031,7 +1124,7 @@ Then recompile and everything should be fine, provided that your version of
 Flex is recent enough (>= 2.5.31). If not the compilation process should
 warn you.
 
-A while ago, we worked on FleXML to reduce a bit its memory consumtion, but
+A while ago, we worked on FleXML to reduce a bit its memory consumption, but
 these issues remain. There is two things we should do:
 
   - use a dynamic buffer instead of a static one so that the only limit
@@ -1052,14 +1145,14 @@ improved. The downside is that William also changed some things internally,
 and it breaks the hack we devised to bypass the parser, as explained in 
 \ref faq_flexml_bypassing. Indeed, this is not a classical usage of the
 parser, and Will didn't imagine that we may have used (and even documented)
-such a crude usage of FleXML. So, we now have to repare the bypassing
-functionnality to use the lastest FleXML version and fix the memory usage in
+such a crude usage of FleXML. So, we now have to repair the bypassing
+functionality to use the lastest FleXML version and fix the memory usage in
 SimGrid.
 
 \subsubsection faq_trouble_gras_transport GRAS spits networking error messages
 
 Gras, on real platforms, naturally use regular sockets to communicate. They
-are deeply hiden in the gras abstraction, but when things go wrong, you may
+are deeply hidden in the gras abstraction, but when things go wrong, you may
 get some weird error messages. Here are some example, with the probable
 reason:
 
@@ -1075,7 +1168,7 @@ reason:
  - <b>Socket closed by remote side</b>: if the remote process is not
    supposed to close the socket at this point, it may be dead.
    
- - <b>Connection reset by peer</b>: I found this on internet about this
+ - <b>Connection reset by peer</b>: I found this on Internet about this
    error. I think it's what's happening here, too:\n   
    <i>This basically means that a network error occurred while the client was
    receiving data from the server. But what is really happening is that the
@@ -1185,7 +1278,7 @@ more information.
 When debugging SimGrid, it's easier to pass the
 --disable-compiler-optimization flag to the configure if valgrind or
 gdb get fooled by the optimization done by the compiler. But you
-should remove these flages when everything works before going in
+should remove these flag when everything works before going in
 production (before launching your 1252135 experiments), or everything
 will run only one half of the true SimGrid potential.
 
@@ -1325,7 +1418,7 @@ cp /usr/share/doc/mingw32-runtime/mingwm10.dll.gz ~/.wine/c/windows/system/
 gunzip ~/.wine/c/windows/system/mingwm10.dll.gz
 \endverbatim
 
-The DLL is builded in src/.libs, and installed in the <i>prefix</i>/bin directory
+The DLL is built in src/.libs, and installed in the <i>prefix</i>/bin directory
 when you run make install. 
 
 If you want to use it in a native project on windows, you need to use 
