@@ -195,19 +195,21 @@ This list is a selection of articles. We list only papers written by people
 external to the development group, but we also use our tool ourselves (see
 next section).
 
-- 2009
-  - <a href="http://www.irit.fr/Toulouse2009/Toulouse2009/papiers/paper14.pdf"><b>Ordonnancement
+2009
+  - <b>Ordonnancement
     et reallocation de taches sur une grille de calcul</b>\n  
     by <em>Ghislain Charrier and Yves Caniou</em>.\n
     19emes Rencontres francophonnes du Parallelisme (RenPar'19),
-    Toulouse, France, Septembre 2009.
-  - <a href="http://www.irit.fr/Toulouse2009/Toulouse2009/papiers/paper10.pdf"><b>Comparaisons 
+    Toulouse, France, Septembre 2009.<br>
+    <a href="http://www.irit.fr/Toulouse2009/Toulouse2009/papiers/paper14.pdf">http://www.irit.fr/Toulouse2009/Toulouse2009/papiers/paper14.pdf</a>
+  - <b>Comparaisons 
        entre le simulateur SimGrid et une application
        reelle pour evaluer les algorithmes d’equilibre de charge et de
        redistribution de donnees</b>\n
     by <em>Helene Renard</em>.\n
     19emes Rencontres francophonnes du Parallelisme (RenPar'19),
-    Toulouse, France, Septembre 2009.
+    Toulouse, France, Septembre 2009.<br>
+    <a href="http://www.irit.fr/Toulouse2009/Toulouse2009/papiers/paper10.pdf">http://www.irit.fr/Toulouse2009/Toulouse2009/papiers/paper10.pdf</a>
   - <b>Efficient Scheduling of Task Graph Collections on Heterogeneous Resources</b>\n
     by <em>Matthieu Gallet and Loris Marchal and Frédéric Vivien</em>.\n
     International Parallel and Distributed Processing Symposium (IPDPS'2009).\n
