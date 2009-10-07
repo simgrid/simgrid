@@ -281,7 +281,7 @@ static void routing_full_parse_end(void) {
       link_name = xbt_dynar_getfirst_as(links, char*);
       new_link->link_ptr = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
       DEBUG3("Adding onelink route from (#%d) to (#%d), link_name %s",src_id, dst_id, link_name);
-      xbt_dict_set_ext(onelink_routes, link_name, sizeof(char *), (void *)new_link, onelink_route_elem_free);
+      xbt_dict_set(onelink_routes, link_name, (void *)new_link, onelink_route_elem_free);
     }
 
     if(ISROUTER(src_id) || ISROUTER(dst_id)) {
