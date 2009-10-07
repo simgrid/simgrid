@@ -69,9 +69,9 @@ xbt_dynar_t SD_daxload(const char*filename) {
 
   result = xbt_dynar_new(sizeof(SD_task_t),dax_task_free);
   files=xbt_dict_new();
-  root_task = SD_task_create("root",NULL,0);
+  root_task = SD_task_create_comp_seq("root",NULL,0);
   xbt_dynar_push(result,&root_task);
-  end_task = SD_task_create("end",NULL,0);
+  end_task = SD_task_create_comp_seq("end",NULL,0);
 
   xbt_assert2(!dax_lex(),"Parse error in %s: %s",filename,dax__parse_err_msg());
   dax__delete_buffer(input_buffer);
@@ -130,9 +130,11 @@ void STag_dax__adag(void) {
 }
 void STag_dax__job(void) {
   double runtime = dax_parse_double(A_dax__job_runtime);
+  char *name=bprintf("%s@%s",A_dax__job_id,A_dax__job_name);
   runtime*=4200000000.; /* Assume that timings were done on a 4.2GFlops machine. I mean, why not? */
 //  INFO3("See <job id=%s runtime=%s %.0f>",A_dax__job_id,A_dax__job_runtime,runtime);
-  current_job = SD_task_create_comp_seq(A_dax__job_id,NULL,runtime);
+  current_job = SD_task_create_comp_seq(name,NULL,runtime);
+  free(name);
   xbt_dynar_push(result,&current_job);
 
 }

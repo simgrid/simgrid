@@ -271,14 +271,29 @@ double SD_task_get_remaining_amount(SD_task_t task)
     return task->remains;
 }
 
+int SD_task_get_kind(SD_task_t task) {
+  return task->kind;
+}
+
 /** @brief Displays debugging informations about a task */
 void SD_task_dump(SD_task_t task)
 {
   unsigned int counter;
   SD_dependency_t dependency;
+  char *statename;
 
   INFO1("Displaying task %s",SD_task_get_name(task));
-  INFO1("  - amount: %.0f",SD_task_get_amount(task));
+  statename=bprintf("%s %s %s %s %s %s %s",
+      (task->state&SD_NOT_SCHEDULED?"not scheduled":""),
+      (task->state&SD_SCHEDULED?"scheduled":""),
+      (task->state&SD_READY?"ready":"not ready"),
+      (task->state&SD_IN_FIFO?"in fifo":""),
+      (task->state&SD_RUNNING?"running":""),
+      (task->state&SD_DONE?"done":""),
+      (task->state&SD_FAILED?"failed":""));
+  INFO1("  - state: %s",statename);
+  free(statename);
+
   if (task->kind!=0) {
     switch(task->kind){
     case SD_TASK_COMM_E2E:
@@ -291,6 +306,7 @@ void SD_task_dump(SD_task_t task)
       INFO1("  - (unknown kind %d)",task->kind);
     }
   }
+  INFO1("  - amount: %.0f",SD_task_get_amount(task));
   if (xbt_dynar_length(task->tasks_before)) {
     INFO0("  - pre-dependencies:");
     xbt_dynar_foreach(task->tasks_before,counter,dependency) {
@@ -308,7 +324,7 @@ void SD_task_dump(SD_task_t task)
 void SD_task_dotty(SD_task_t task,void* out) {
   unsigned int counter;
   SD_dependency_t dependency;
-  fprintf(out, "  T%d [label=\"%.10s\"",(unsigned int)task,task->name);
+  fprintf(out, "  T%d [label=\"%.20s\"",(unsigned int)task,task->name);
   switch(task->kind){
     case SD_TASK_COMM_E2E:
       fprintf(out,", shape=box");
@@ -1133,10 +1149,10 @@ void SD_task_destroy(SD_task_t task)
   DEBUG1("Destroying task %s...", SD_task_get_name(task));
 
   __SD_task_remove_dependencies(task);
-
   /* if the task was scheduled or ready we have to free the scheduling parameters */
   if (__SD_task_is_scheduled_or_ready(task))
     __SD_task_destroy_scheduling_data(task);
+  xbt_swag_remove(task,task->state_set);
 
   if (task->name != NULL)
     xbt_free(task->name);
@@ -1176,8 +1192,8 @@ static inline SD_task_t SD_task_create_sized(const char*name,void*data,double am
  * specified at creation is sent from hosts[0] to hosts[1].
  */
 SD_task_t SD_task_create_comm_e2e(const char*name, void *data, double amount) {
-  SD_task_t res = SD_task_create_sized(name,data,0,2);
-  res->communication_amount[1] = amount;
+  SD_task_t res = SD_task_create_sized(name,data,amount,2);
+  res->communication_amount[2] = amount;
   res->kind=SD_TASK_COMM_E2E;
   return res;
 }
@@ -1192,7 +1208,7 @@ SD_task_t SD_task_create_comm_e2e(const char*name, void *data, double amount) {
  * specified at creation to be run on hosts[0].
  */
 SD_task_t SD_task_create_comp_seq(const char*name, void *data, double amount) {
-  SD_task_t res = SD_task_create_sized(name,data,0,1);
+  SD_task_t res = SD_task_create_sized(name,data,amount,1);
   res->computation_amount[0]=amount;
   res->kind=SD_TASK_COMP_SEQ;
   return res;
@@ -1232,27 +1248,47 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
     xbt_die(bprintf("Kind of task %s not supported by SD_task_schedulev()",
           SD_task_get_name(task)));
   }
+  if (task->kind == SD_TASK_COMM_E2E) {
+    VERB4("Schedule comm task %s between %s -> %s. It costs %.f bytes",
+        SD_task_get_name(task),
+        SD_workstation_get_name(task->workstation_list[0]),SD_workstation_get_name(task->workstation_list[1]),
+        task->communication_amount[2]);
+
+  }
   /* Iterate over all childs and parent being COMM_E2E to say where I am located (and start them if ready) */
   if (task->kind == SD_TASK_COMP_SEQ) {
+    VERB3("Schedule computation task %s on %s. It costs %.f flops",
+        SD_task_get_name(task),SD_workstation_get_name(task->workstation_list[0]),
+        task->computation_amount[0]);
     SD_dependency_t dep;
     unsigned int cpt;
     xbt_dynar_foreach(task->tasks_before,cpt,dep) {
       SD_task_t before = dep->src;
       if (before->kind == SD_TASK_COMM_E2E) {
         before->workstation_list[1] = task->workstation_list[0];
-        if (before->workstation_list[0])
+        if (before->workstation_list[0] && __SD_task_is_not_scheduled(before)) {
           SD_task_do_schedule(before);
+          VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
+              SD_task_get_name(before),
+              SD_workstation_get_name(before->workstation_list[0]),SD_workstation_get_name(before->workstation_list[1]),
+              before->communication_amount[2]);
+        }
       }
     }
     xbt_dynar_foreach(task->tasks_after,cpt,dep) {
       SD_task_t after = dep->dst;
       if (after->kind == SD_TASK_COMM_E2E) {
         after->workstation_list[0] = task->workstation_list[0];
-        if (after->workstation_list[1])
+        if (after->workstation_list[1] && __SD_task_is_not_scheduled(after)) {
           SD_task_do_schedule(after);
+          VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
+              SD_task_get_name(after),
+              SD_workstation_get_name(after->workstation_list[0]),SD_workstation_get_name(after->workstation_list[1]),
+              after->communication_amount[2]);
+
+        }
       }
     }
-
   }
 }
 /** @brief autoschedule a task on a list of workstations
