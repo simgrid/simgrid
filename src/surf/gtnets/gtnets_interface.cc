@@ -137,3 +137,9 @@ void gtnets_print_topology(void){
   gtnets_sim->print_topology();
 }
 
+// set jitter
+void gtnets_set_jitter(double d){
+  gtnets_sim->set_jitter(d);
+}
+
+

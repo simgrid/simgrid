@@ -15,7 +15,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of surf (and the rest of the simulation)");
 
 xbt_cfg_t _surf_cfg_set = NULL;
-
+#ifdef HAVE_GTNETS
+extern double sg_gtnets_jitter;
+#endif
 
 /* Parse the command line, looking for options */
 static void surf_config_cmd_line(int *argc, char **argv)
@@ -114,6 +116,12 @@ static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name, int pos
 	sg_maxmin_selective_update = xbt_cfg_get_int(_surf_cfg_set, name);
 }
 
+#ifdef HAVE_GTNETS
+static void _surf_cfg_cb__gtnets_jitter(const char *name, int pos){
+	sg_gtnets_jitter = xbt_cfg_get_double(_surf_cfg_set, name);
+}
+#endif
+
 /* create the config set, register what should be and parse the command line*/
 void surf_config_init(int *argc, char **argv)
 {
@@ -189,6 +197,14 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_register(&_surf_cfg_set, "maxmin_selective_update",
                      "Update the constraint set propagating recursively to others constraints",
                      xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb__surf_maxmin_selective_update, NULL);
+
+#ifdef HAVE_GTNETS
+    xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",
+                     "Double value to inflate the link latency, latency plus random in [0,latency*gtnets_jitter)", xbt_cfgelm_double,
+                     NULL, 1, 1, _surf_cfg_cb__gtnets_jitter, NULL);
+    xbt_cfg_set_double(_surf_cfg_set, "gtnets_jitter", 1.0);
+#endif
+
     if (!surf_path) {
       /* retrieves the current directory of the        current process */
       const char *initial_path = __surf_get_initial_path();

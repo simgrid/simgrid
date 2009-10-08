@@ -27,7 +27,7 @@ extern "C" {
 
   int gtnets_run(double delta);
   int gtnets_finalize();
-
+  void gtnets_set_jitter(double);
 #ifdef __cplusplus
 }
 #endif

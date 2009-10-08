@@ -35,6 +35,7 @@ GTSim::GTSim(){
   nflow_ = 0;
   sim_ = new Simulator();
   topo_ = new GTNETS_Topology();
+  uniform_jitter_ = NULL;
 
   sim_->verbose=false;
   // Set default values.
@@ -98,6 +99,15 @@ int GTSim::add_link(int id, double bandwidth, double latency){
   xbt_assert1(!(topo_->add_link(id) < 0),"Can't add link %d. already exists", id);
   DEBUG3("Creating a new P2P, linkid %d, bandwidth %gl, latency %gl", id, bandwidth, latency);
   gtnets_links_[id] = new Linkp2p(bw, latency);
+  if(jitter_ > 0){
+	DEBUG1("Using jitter %f", jitter_);
+	double min = 0.0;
+	double max = jitter_*latency;
+	if(uniform_jitter_ == NULL){
+		uniform_jitter_ = new Uniform(min,max);
+	}
+	gtnets_links_[id]->Jitter((const Random &) *uniform_jitter_);
+  }
   return 0;
 }
 
@@ -297,6 +307,9 @@ int GTSim::run(double delta){
   return 0;
 }
 
+void GTSim::set_jitter(double d){
+  jitter_ = d;
+}
 
 void static tcp_sent_callback(void* action, double completion_time){
   // Schedule the flow complete event.

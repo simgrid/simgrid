@@ -48,6 +48,7 @@ public:
   double gtnets_get_flow_rx(void *metadata);
   void create_gtnets_topology();
   void print_topology();
+  void set_jitter(double);
 private:
   void add_nodes();
   void node_connect();
@@ -60,6 +61,8 @@ private:
   int nnode_;
   int is_topology_;
   int nflow_;
+  double jitter_;
+  Uniform *uniform_jitter_;
 
     map < int, TCPServer * >gtnets_servers_;
     map < int, TCPSend * >gtnets_clients_;
