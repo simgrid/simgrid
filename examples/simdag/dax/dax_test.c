@@ -10,6 +10,7 @@
 #include "simdag/simdag.h"
 #include "xbt/log.h"
 #include "xbt/ex.h"
+#include <string.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,
                              "Logging specific to this SimDag example");
@@ -42,39 +43,52 @@ int main(int argc, char **argv) {
     SD_task_dump(task);
   }
 
-  FILE *out = fopen("dax.dot","w");
-  fprintf(out,"digraph A {\n");
+  FILE *dotout = fopen("dax.dot","w");
+  fprintf(dotout,"digraph A {\n");
   xbt_dynar_foreach(dax,cursor,task) {
-    SD_task_dotty(task,out);
+    SD_task_dotty(task,dotout);
   }
-  fprintf(out,"}\n");
-  fclose(out);
+  fprintf(dotout,"}\n");
+  fclose(dotout);
 
   /* Schedule them all on the first workstation */
   INFO0("------------------- Schedule tasks ---------------------------");
   const SD_workstation_t *ws_list =  SD_workstation_get_list();
+  int count = SD_workstation_get_number();
   xbt_dynar_foreach(dax,cursor,task) {
-    if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ)
-      SD_task_schedulel(task,1,ws_list[0]);
+    if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {
+      if (!strcmp(SD_task_get_name(task),"end"))
+        SD_task_schedulel(task,1,ws_list[0]);
+      else
+        SD_task_schedulel(task,1,ws_list[cursor%count]);
+    }
   }
 
   INFO0("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);
   INFO0("------------------- Produce the trace file---------------------------");
+  char *last=strrchr(argv[2],'.');
+
+  char *filename=bprintf("%.*s.trace",last==NULL?strlen(argv[2]):last-argv[2],argv[2]);
+  INFO1("Producing the trace of the run into %s",filename);
+  FILE*out = fopen(filename,"w");
+  xbt_assert1(out,"Cannot write to %s",filename);
+  free(filename);
+
   xbt_dynar_foreach(dax,cursor,task) {
     int kind = SD_task_get_kind(task);
     SD_workstation_t *wsl = SD_task_get_workstation_list(task);
     switch (kind) {
     case SD_TASK_COMP_SEQ:
-      INFO4("[%f] %s compute %f # %s",SD_task_get_start_time(task),
+      fprintf(out,"[%f] %s compute %f # %s\n",SD_task_get_start_time(task),
           SD_workstation_get_name(wsl[0]),SD_task_get_amount(task),
           SD_task_get_name(task));
       break;
     case SD_TASK_COMM_E2E:
-      INFO5("[%f] %s send %s %f # %s",SD_task_get_start_time(task),
+      fprintf(out,"[%f] %s send %s %f # %s\n",SD_task_get_start_time(task),
           SD_workstation_get_name(wsl[0]),SD_workstation_get_name(wsl[1]),
           SD_task_get_amount(task), SD_task_get_name(task));
-      INFO5("[%f] %s recv %s %f # %s",SD_task_get_start_time(task),
+      fprintf(out,"[%f] %s recv %s %f # %s\n",SD_task_get_start_time(task),
           SD_workstation_get_name(wsl[1]),SD_workstation_get_name(wsl[0]),
           SD_task_get_amount(task), SD_task_get_name(task));
       break;
@@ -82,6 +96,8 @@ int main(int argc, char **argv) {
       xbt_die(bprintf("Task %s is of unknown kind %d",SD_task_get_name(task),SD_task_get_kind(task)));
     }
   }
+  fclose(out);
+
   /* exit */
   SD_exit();
   return 1;
