@@ -932,9 +932,10 @@ and build/install it from scratch
 
  \verbatim
  unzip gtnets-current.zip
+ tar zxvf gtnets-current-patch.tgz 
  cd gtnets-current
  cp ../KAYO-PATCH-Added-RunUntilNextCompletion-and-some.patch .
- cat .patch | patch -p1
+ cat *.patch | patch -p1
  \endverbatim
 
  - <b>Compile GTNetS</b>
