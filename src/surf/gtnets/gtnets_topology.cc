@@ -95,15 +95,13 @@ GTNETS_Link::~GTNETS_Link(){
 }
 
 void GTNETS_Link::print_link_status(){
-  DEBUG1("link id: %d", ID_);
+  DEBUG1("****** link id: %d", ID_);
   if (src_node_){
-    DEBUG2("[src] id: %d, is it router?: %d, host list: ",src_node_->id(), src_node_->is_router());
-    src_node_->print_hosts();
+    DEBUG2("[src] id: %d, is it router?: %d",src_node_->id(), src_node_->is_router());
   }
 
   if (dst_node_){
-    DEBUG2("[dst] id: %d, is it router?: %d, host list: ",dst_node_->id(), dst_node_->is_router());
-    dst_node_->print_hosts();
+    DEBUG2("[dst] id: %d, is it router?: %d",dst_node_->id(), dst_node_->is_router());
   }
 }
 
@@ -214,7 +212,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
   xbt_assert1(!(iter == links_.end()), "Link %d not found", linkid);
   link = iter->second;
 
-  DEBUG4("Add onehop route, src: %d, dst: %d, linkid: %d, %d",src, dst, linkid, link->id());
+  DEBUG4("Add onehop route, src (#%d), dst (#%d), linkid %d:(#%d)",src, dst, linkid, link->id());
 
   GTNETS_Node *src_node, *dst_node;
   src_node = link->src_node();
@@ -360,12 +358,6 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
   }
   else{
     xbt_assert0(0, "Shouldn't be here");
-  }
-
-  if (XBT_LOG_ISENABLED(surf_network_gtnets_topology, xbt_log_priority_debug)) {
-    link->print_link_status();
-    src_node->print_hosts();
-    dst_node->print_hosts();
   }
 
   return 0;
