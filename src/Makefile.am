@@ -153,7 +153,7 @@ XBT_SRC=\
   xbt/set.c                                                                  \
   xbt/xbt_matrix.c                                                           \
   \
-  xbt/xbt_queue.c                                                            \
+  xbt/xbt_queue.c  xbt/xbt_synchro.c                                         \
   \
   xbt/xbt_peer.c                                                             \
   \
@@ -391,12 +391,12 @@ else
 noinst_PROGRAMS=testall
 TEST_CFILES=xbt/cunit.c  xbt/ex.c          \
             xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
-	    xbt/xbt_str.c  xbt/xbt_sha.c                \
-            xbt/config.c 
+	    xbt/xbt_str.c  xbt/xbt_strbuff.c xbt/xbt_sha.c                \
+            xbt/config.c xbt/xbt_synchro.c
 TEST_UNITS= @builddir@/cunit_unit.c   @builddir@/ex_unit.c         \
             @builddir@/dynar_unit.c   @builddir@/dict_unit.c @builddir@/set_unit.c @builddir@/swag_unit.c \
 	    @builddir@/xbt_str_unit.c @builddir@/xbt_strbuff_unit.c @builddir@/xbt_sha_unit.c\
-            @builddir@/config_unit.c 
+            @builddir@/config_unit.c  @builddir@/xbt_synchro_unit.c
 
 BUILT_SOURCES=../include/surf/simgrid_dtd.h surf/simgrid_dtd.c \
               ../include/xbt/graphxml.h xbt/graphxml.c \
@@ -414,8 +414,7 @@ EXTRA_DIST+=$(testall_SOURCES)
 if MAINTAINER_MODE
 CLEANFILES=$(TEST_UNITS)
 
-$(TEST_UNITS): xbt/cunit.c xbt/ex.c xbt/xbt_str.c xbt/xbt_strbuff.c xbt/xbt_sha.c\
-               xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c xbt/config.c
+$(TEST_UNITS): $(TEST_CFILES)
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 
 @builddir@/simgrid_units_main.c: $(TEST_UNITS)
