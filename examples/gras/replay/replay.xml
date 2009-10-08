@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <process host="Tremblay" function="master">
+     <argument value="Montage_25.xml" /> <!-- trace file -->
+     <argument value="4000"/>            <!-- port number -->
+  </process>
+  <process host="Fafard" function="worker">
+     <argument value="Tremblay"/>   <!-- server host -->
+     <argument value="4000"/>       <!-- port number -->
+  </process>
+</platform>
