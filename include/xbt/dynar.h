@@ -192,7 +192,7 @@ XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
  *  - sending such beasts over the network
  */
 
-#include "xbt/synchro.h"
+#include "xbt/synchro_core.h"
 typedef struct xbt_dynar_s {
   unsigned long size;
   unsigned long used;

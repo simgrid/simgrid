@@ -29,7 +29,7 @@ nobase_include_HEADERS = \
 	xbt/graphxml.h \
 	\
 	xbt/time.h \
-	xbt/synchro.h \
+	xbt/synchro.h  xbt/synchro_core.h\
 	xbt/queue.h \
 	\
 	msg/msg.h \
