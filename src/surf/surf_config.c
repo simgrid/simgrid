@@ -200,7 +200,7 @@ void surf_config_init(int *argc, char **argv)
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",
-                     "Double value to inflate the link latency, latency plus random in [0,latency*gtnets_jitter)", xbt_cfgelm_double,
+                     "Double value to oscillate the link latency, uniformly in random interval [-latency*gtnets_jitter,latency*gtnets_jitter)", xbt_cfgelm_double,
                      NULL, 1, 1, _surf_cfg_cb__gtnets_jitter, NULL);
     xbt_cfg_set_double(_surf_cfg_set, "gtnets_jitter", 1.0);
 #endif

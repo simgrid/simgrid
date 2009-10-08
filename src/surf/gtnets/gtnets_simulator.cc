@@ -101,7 +101,7 @@ int GTSim::add_link(int id, double bandwidth, double latency){
   gtnets_links_[id] = new Linkp2p(bw, latency);
   if(jitter_ > 0){
 	DEBUG1("Using jitter %f", jitter_);
-	double min = 0.0;
+	double min = -1*jitter_*latency;
 	double max = jitter_*latency;
 	if(uniform_jitter_ == NULL){
 		uniform_jitter_ = new Uniform(min,max);
