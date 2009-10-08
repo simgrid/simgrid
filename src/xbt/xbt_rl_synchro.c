@@ -64,6 +64,7 @@ void xbt_thread_join(xbt_thread_t thread)
 {
   DEBUG1("Join thread %p", thread);
   xbt_os_thread_join(thread->os_thread, NULL);
+  xbt_free(thread);
 }
 
 void xbt_thread_exit()
