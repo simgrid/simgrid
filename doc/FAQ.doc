@@ -934,26 +934,26 @@ and build/install it from scratch
  unzip gtnets-current.zip
  tar zxvf gtnets-current-patch.tgz 
  cd gtnets-current
- cp ../KAYO-PATCH-Added-RunUntilNextCompletion-and-some.patch .
- cat *.patch | patch -p1
+ cat ../00*.patch | patch -p1
  \endverbatim
+
+  - <b>OPTIONALLY</b> you can use a patch for itanium 64bit processor family.
+
+  \verbatim
+  cat ../AMD64-FATAL-Removed-DUL_SIZE_DIFF-Added-fPIC-compillin.patch | patch -p1
+  \endverbatim
 
  - <b>Compile GTNetS</b>
 
-   Due to portability issues it is possible that GTNetS does not compile in your architecture. Some
-   other patches are provided in GTNetS directory. Use those patches at your own risk.
+   Due to portability issues it is possible that GTNetS does not compile in your architecture. The patches furnished in SimGrid SVN repository are intended for use in Linux architecture only. Unfortunately, we do not have the time, the money, neither the manpower to guarantee GTNetS portability. We advice you to use one of GTNetS communication channel to get more help in compiling GTNetS. 
+
 
  \verbatim
- cd gtnets-current
  ln -sf Makefile.linux Makefile
  make depend
  make debug
  \endverbatim
 
- - If you have a problem compiling the GTNetS simulator a series of patches can be found <a href="http://mescal.imag.fr/membres/pedro.velho/simgrid/gtnets-current-patch.tgz">here</a>. Although, it is not
-guaranteed that these patches will make GTNetS compile in your architecture, they will just probably fix main issues when using the
-linux operating system.
-</p>
 
  - <b>NOTE</b> A lot of warnings are expected but the application should compile
  just fine. If the makefile insists in compiling some QT libraries
