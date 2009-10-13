@@ -254,7 +254,7 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
     SIMIX_unregister_action_to_condition(act_sleep, cond);
     if (SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
       SIMIX_action_destroy(act_sleep);
-      THROW0(timeout_error, 0, "Condition timeout");
+      THROW1(timeout_error, 0, "Condition timeout after %f",max_duration);
     } else {
       SIMIX_action_destroy(act_sleep);
     }
