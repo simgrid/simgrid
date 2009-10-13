@@ -611,14 +611,30 @@ gras_datadesc_type_t
 gras_datadesc_ref_pop_arr(gras_datadesc_type_t element_type)
 {
 
-  gras_datadesc_type_t res;
+  gras_datadesc_type_t res,ddt2;
   char *name = (char *) xbt_malloc(strlen(element_type->name) + 4);
 
   sprintf(name, "%s[]", element_type->name);
+  /* Make sure we are not trying to redefine a ddt with the same name */
+  ddt2 = gras_datadesc_by_name_or_null(name);
+  int cpt=0;
+  while (ddt2) {
+    free(name);
+    name=bprintf("%s[]_%d",element_type->name,cpt++);
+    ddt2=gras_datadesc_by_name_or_null(name);
+  }
 
   res = gras_datadesc_array_dyn(name, element_type, gras_datadesc_cb_pop);
 
   sprintf(name, "%s[]*", element_type->name);
+  cpt=0;
+  ddt2 = gras_datadesc_by_name_or_null(name);
+  while (ddt2) {
+    free(name);
+    name=bprintf("%s[]*_%d",element_type->name,cpt++);
+    ddt2=gras_datadesc_by_name_or_null(name);
+  }
+
   res = gras_datadesc_ref(name, res);
 
   free(name);
