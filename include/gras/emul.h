@@ -163,6 +163,8 @@ XBT_PUBLIC(int) gras_bench_once_end(void);
 /** \brief Stop benchmarking this part of the code
     \hideinitializer */
 #define GRAS_BENCH_ONCE_RUN_ONCE_END()      } gras_bench_once_end()
+
+XBT_PUBLIC(void) gras_cpu_burn(double flops);
 /** @} */
 
 SG_END_DECL()

@@ -76,6 +76,9 @@ SimGrid (3.3.4) unstable; urgency=low
  * Add getter on task kind: SD_task_get_kind(task)
  * Update the start_time and finish_time of tasks on completion/failure
  * Bugfix: Remove task from state swags when destroyed
+ 
+ GRAS:
+ * New function: void gras_cpu_burn(double flops) -- a simple CPU burner
 
  XBT:
  * New function: xbt_dynar_dopar(dynar,fun) to map a function over the

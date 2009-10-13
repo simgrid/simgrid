@@ -18,7 +18,29 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_virtu_emul, gras_virtu,
                                 "Emulation support");
+/*** CPU burning */
+void gras_cpu_burn(double flops) {
+  smx_action_t act;
+  smx_cond_t cond;
+  smx_mutex_t mutex;
 
+  cond = SIMIX_cond_init();
+  mutex = SIMIX_mutex_init();
+
+  SIMIX_mutex_lock(mutex);
+  act =
+      SIMIX_action_execute(SIMIX_host_self(), "task", flops);
+
+  SIMIX_register_action_to_condition(act, cond);
+  SIMIX_cond_wait(cond, mutex);
+  SIMIX_unregister_action_to_condition(act, cond);
+
+  SIMIX_action_destroy(act);
+  SIMIX_mutex_unlock(mutex);
+
+  SIMIX_cond_destroy(cond);
+  SIMIX_mutex_destroy(mutex);
+}
 /*** Timing macros ***/
 static xbt_os_timer_t timer;
 static int benchmarking = 0;
@@ -75,33 +97,13 @@ int gras_bench_always_begin(const char *location, int line)
   return 0;
 }
 
-int gras_bench_always_end(void)
-{
-  smx_action_t act;
-  smx_cond_t cond;
-  smx_mutex_t mutex;
-
+int gras_bench_always_end(void) {
   xbt_assert0(benchmarking, "Not benchmarking yet");
   benchmarking = 0;
   xbt_os_timer_stop(timer);
   duration = xbt_os_timer_elapsed(timer);
 
-  cond = SIMIX_cond_init();
-  mutex = SIMIX_mutex_init();
-
-  SIMIX_mutex_lock(mutex);
-  act =
-    SIMIX_action_execute(SIMIX_host_self(), "task", (duration) / reference);
-
-  SIMIX_register_action_to_condition(act, cond);
-  SIMIX_cond_wait(cond, mutex);
-  SIMIX_unregister_action_to_condition(act, cond);
-
-  SIMIX_action_destroy(act);
-  SIMIX_mutex_unlock(mutex);
-
-  SIMIX_cond_destroy(cond);
-  SIMIX_mutex_destroy(mutex);
+  gras_cpu_burn(duration/reference);
 
   return 0;
 }
@@ -130,12 +132,7 @@ int gras_bench_once_begin(const char *location, int line)
   }
 }
 
-int gras_bench_once_end(void)
-{
-  smx_action_t act;
-  smx_cond_t cond;
-  smx_mutex_t mutex;
-
+int gras_bench_once_end(void) {
   xbt_assert0(benchmarking, "Not benchmarking yet");
   benchmarking = 0;
   if (duration > 0) {
@@ -146,22 +143,7 @@ int gras_bench_once_end(void)
     duration = get_from_dict(benchmark_set, locbuf);
   }
   DEBUG2("Simulate the run of a task of %f sec for %s", duration, locbuf);
-  cond = SIMIX_cond_init();
-  mutex = SIMIX_mutex_init();
-
-  SIMIX_mutex_lock(mutex);
-  act =
-    SIMIX_action_execute(SIMIX_host_self(), "task", (duration) / reference);
-
-  SIMIX_register_action_to_condition(act, cond);
-  SIMIX_cond_wait(cond, mutex);
-  SIMIX_unregister_action_to_condition(act, cond);
-
-  SIMIX_action_destroy(act);
-  SIMIX_mutex_unlock(mutex);
-
-  SIMIX_cond_destroy(cond);
-  SIMIX_mutex_destroy(mutex);
+  gras_cpu_burn(duration/reference);
   return 0;
 }
 

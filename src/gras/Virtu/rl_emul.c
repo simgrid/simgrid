@@ -13,6 +13,14 @@
 
 XBT_LOG_NEW_SUBCATEGORY(gras_virtu_emul, gras_virtu, "Emulation support");
 
+/*** CPU burning */
+void gras_cpu_burn(double flops) {
+  while (flops>0) {
+    flops-=2;
+  }
+}
+
+
 /*** Timing macros: nothing to do in RL. Actually do the job and shutup ***/
 
 void gras_emul_init(void)
