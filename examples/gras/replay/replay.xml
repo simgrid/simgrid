@@ -1,12 +1,34 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
-  <process host="Tremblay" function="master">
-     <argument value="Montage_25.xml" /> <!-- trace file -->
-     <argument value="4000"/>            <!-- port number -->
+  <process host="Dodge" function="master">
+     <argument value="Montage_25.trace" /> <!-- trace file -->
+     <argument value="4500"/>            <!-- port number -->
   </process>
-  <process host="Fafard" function="worker">
-     <argument value="Tremblay"/>   <!-- server host -->
-     <argument value="4000"/>       <!-- port number -->
-  </process>
+  <process host="Bescherelle" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Browne" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Croteau" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Dodge" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Ethernet" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Fafard" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Fernand" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Gaston" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Intel" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Jackson" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Jacquelin" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Jacques" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Jean_Yves" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Jill" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Jocelyne" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Juneau" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Kuenning" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Laroche" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Mathematica" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Monique" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Olivier" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Papineau" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Pronovost" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Provost" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="Stephen" function="worker"><argument value="Dodge:4500"/></process>
+  <process host="TeX" function="worker"><argument value="Dodge:4500"/></process>
 </platform>

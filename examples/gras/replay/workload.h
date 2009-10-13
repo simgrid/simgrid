@@ -21,6 +21,8 @@
 
 /* one command to do */
 typedef struct {
+  /* keep it in sync with function xbt_workload_declare_datadesc() */
+
   char *who;      /* the slave who should do it */
   char *comment;  /* a comment placed at the end of the line, if any */
   int action;     /* 0: compute(darg flops); 1: send darg bytes to strarg; 2: recv darg bytes from strarg */
@@ -36,5 +38,15 @@ XBT_PUBLIC(char *)xbt_workload_elm_to_string(xbt_workload_elm_t cmd);
 XBT_PUBLIC(int) xbt_workload_elm_cmp_who_date(const void* _c1, const void* _c2);
 XBT_PUBLIC(void) xbt_workload_sort_who_date(xbt_dynar_t c);
 XBT_PUBLIC(xbt_dynar_t) xbt_workload_parse_file(char *filename);
+
+XBT_PUBLIC(void) xbt_workload_declare_datadesc(void);
+
+
+typedef struct {
+  int size;
+  char *chunk;
+} s_xbt_workload_data_chunk_t,*xbt_workload_data_chunk_t;
+XBT_PUBLIC(xbt_workload_data_chunk_t) xbt_workload_data_chunk_new(int size);
+XBT_PUBLIC(void) xbt_workload_data_chunk_free(xbt_workload_data_chunk_t c);
 
 #endif /* XBT_WORKLOAD_H_ */

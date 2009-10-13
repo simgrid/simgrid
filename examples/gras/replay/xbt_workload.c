@@ -12,6 +12,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/str.h"
 #include "workload.h"
+#include "gras/datadesc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_workload,xbt, "Workload characterisation mecanisms");
 
@@ -153,4 +154,41 @@ xbt_dynar_t xbt_workload_parse_file(char *filename) {
   xbt_dynar_shrink(cmds,0);
   xbt_dynar_free(&in);
   return cmds;
+}
+
+
+void xbt_workload_declare_datadesc(void) {
+  gras_datadesc_type_t ddt;
+
+  ddt = gras_datadesc_struct("s_xbt_workload_elm_t");
+  gras_datadesc_struct_append(ddt,"who",gras_datadesc_by_name("string"));
+  gras_datadesc_struct_append(ddt,"comment",gras_datadesc_by_name("string"));
+  gras_datadesc_struct_append(ddt,"action",gras_datadesc_by_name("int"));
+  gras_datadesc_struct_append(ddt,"date",gras_datadesc_by_name("double"));
+  gras_datadesc_struct_append(ddt,"d_arg",gras_datadesc_by_name("double"));
+  gras_datadesc_struct_append(ddt,"str_arg",gras_datadesc_by_name("string"));
+  gras_datadesc_struct_close(ddt);
+
+  gras_datadesc_ref("xbt_workload_elm_t",ddt);
+
+  ddt = gras_datadesc_struct("s_xbt_workload_data_chunk_t");
+  gras_datadesc_struct_append(ddt,"size",gras_datadesc_by_name("int"));
+  gras_datadesc_cb_field_push(ddt, "size");
+  gras_datadesc_struct_append(ddt,"chunk",gras_datadesc_ref_pop_arr(gras_datadesc_by_name("char")));
+  gras_datadesc_struct_close(ddt);
+
+  gras_datadesc_ref("xbt_workload_data_chunk_t",ddt);
+}
+
+
+
+xbt_workload_data_chunk_t xbt_workload_data_chunk_new(int size) {
+  xbt_workload_data_chunk_t res = xbt_new0(s_xbt_workload_data_chunk_t,1);
+  res->size = size;
+  res->chunk = xbt_new(char,size-sizeof(res)-sizeof(int));
+  return res;
+}
+void xbt_workload_data_chunk_free(xbt_workload_data_chunk_t c) {
+  free(c->chunk);
+  free(c);
 }
