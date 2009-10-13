@@ -42,6 +42,7 @@ XBT_PUBLIC(gras_socket_t) gras_socket_client_from_string(const char *host);
 /** \brief Simply create a server socket (to ear from remote hosts speaking to you) */
 XBT_PUBLIC(gras_socket_t) gras_socket_server(unsigned short port);
 XBT_PUBLIC(void) gras_socket_close(gras_socket_t sd);
+XBT_PUBLIC(void) gras_socket_close_voidp(void *sock);
 
 /** \brief Create a client socket, full interface to all relevant settings */
 XBT_PUBLIC(gras_socket_t) gras_socket_client_ext(const char *host,

@@ -333,6 +333,10 @@ gras_socket_t gras_socket_client_from_string(const char *host)
   return res;
 }
 
+void gras_socket_close_voidp(void *sock) {
+  gras_socket_close((gras_socket_t)sock);
+}
+
 /** \brief Close socket */
 void gras_socket_close(gras_socket_t sock)
 {
