@@ -109,6 +109,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
                          double timeout)
 {
   xbt_ex_t e;
+  size_t task_size = sizeof(void*);
   MSG_error_t ret = MSG_OK;
   smx_comm_t comm;
   CHECK_HOST();
@@ -131,7 +132,8 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
 
   /* Try to receive it by calling SIMIX network layer */
   TRY{
-    SIMIX_network_recv(mailbox->rdv, timeout, NULL, NULL, &comm);
+    SIMIX_network_recv(mailbox->rdv, timeout, task, &task_size, &comm);
+    (*task)->simdata->refcount--;
   }
   CATCH(e){
     switch(e.category){
@@ -149,12 +151,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
     }
     xbt_ex_free(e);        
   }
-
-  *task = SIMIX_communication_get_data(comm);
-  
-  /* If the sender didn't decremented the refcount so far then do it */
-  if (*task && (*task)->simdata->refcount > 1)
-    (*task)->simdata->refcount--;
   
   MSG_RETURN(ret);        
 }
@@ -190,7 +186,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
       SIMIX_cond_signal(mailbox->cond);
 
     SIMIX_network_send(mailbox->rdv, t_simdata->message_size, t_simdata->rate,
-                       timeout, NULL, 0, &t_simdata->comm, task);
+                       timeout, &task, sizeof(void*), &t_simdata->comm, task);
   }
 
   CATCH(e){
@@ -203,18 +199,17 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
         break;
       case timeout_error:
         ret = MSG_TRANSFER_FAILURE;
-        break;      
+        break;
       default:
         xbt_die("Unhandled SIMIX network exception");
     }
     xbt_ex_free(e);
+
+    /* Decrement the refcount only on failure */
+    t_simdata->refcount--;
   }
 
   process->simdata->waiting_task = NULL;
-  
-  /* If the receiver end didn't decremented the refcount so far then do it */
-  if (t_simdata->refcount > 1)
-    t_simdata->refcount--;
-  
+   
   MSG_RETURN(ret);        
 }

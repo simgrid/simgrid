@@ -82,6 +82,7 @@ smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type)
     DEBUG0("Communication request found!");
     xbt_fifo_shift(rdv->comm_fifo);
     SIMIX_communication_use(comm);
+    comm->rdv = NULL;    
     return comm;
   }
 
@@ -150,13 +151,20 @@ smx_comm_t SIMIX_communication_new(smx_comm_type_t type)
 void SIMIX_communication_destroy(smx_comm_t comm)
 {
   comm->refcount--;
-  if(comm->refcount == 0){
-    if(comm->act != NULL)
-      SIMIX_action_destroy(comm->act);
+  if(comm->refcount > 0)
+    return;
 
-    xbt_free(comm->cond);
-    xbt_free(comm);
+  if(comm->cond){
+    SIMIX_cond_destroy(comm->cond);
+    comm->cond = NULL;
   }
+  
+  if(comm->act){
+    SIMIX_action_destroy(comm->act);
+    comm->act = NULL;
+  }
+  
+  xbt_free(comm);
 }
 
 /**
@@ -174,7 +182,7 @@ static inline void SIMIX_communication_use(smx_comm_t comm)
 
 /**
  *  \brief Start the simulation of a communication request
- *  \param comm The communication request
+ *  \param comm The   comm->rdv = NULL;communication request
  */
 static inline void SIMIX_communication_start(smx_comm_t comm)
 {
@@ -229,7 +237,7 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
           SIMIX_communication_cancel(comm);
         else
           SIMIX_rdv_remove(comm->rdv, comm);
-          
+
         SIMIX_cond_signal(comm->cond);
         SIMIX_communication_destroy(comm);
       }
@@ -243,14 +251,13 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
   
   /* Check for errors other than timeouts (they are catched above) */
   if(!SIMIX_host_get_state(SIMIX_host_self())){
+    SIMIX_rdv_remove(comm->rdv, comm);
     SIMIX_communication_destroy(comm);
     THROW0(host_error, 0, "Host failed");
   } else if (SIMIX_action_get_state(comm->act) == SURF_ACTION_FAILED){
     SIMIX_communication_destroy(comm);
     THROW0(network_error, 0, "Link failure");
   }
-
-  SIMIX_unregister_action_to_condition(comm->act, comm->cond);
 }
 
 /**
