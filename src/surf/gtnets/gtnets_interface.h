@@ -28,6 +28,8 @@ extern "C" {
   int gtnets_run(double delta);
   int gtnets_finalize();
   void gtnets_set_jitter(double);
+  void gtnets_set_jitter_seed(int);
+
 #ifdef __cplusplus
 }
 #endif

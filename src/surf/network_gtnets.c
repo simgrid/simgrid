@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
 
 extern routing_t used_routing;
 double sg_gtnets_jitter=0.0;
+int sg_gtnets_jitter_seed=10;
 
 static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 {
@@ -364,6 +365,7 @@ void surf_network_model_init_GTNETS(const char *filename)
 
   if(sg_gtnets_jitter > 0.0){
 	  gtnets_set_jitter(sg_gtnets_jitter);
+	  gtnets_set_jitter_seed(sg_gtnets_jitter_seed);
   }
 
   update_model_description(surf_network_model_description,

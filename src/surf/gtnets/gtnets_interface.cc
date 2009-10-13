@@ -142,4 +142,9 @@ void gtnets_set_jitter(double d){
   gtnets_sim->set_jitter(d);
 }
 
+// set jitter seed
+void gtnets_set_jitter_seed(int seed){
+  gtnets_sim->set_jitter_seed(seed);
+}
+
 

@@ -49,6 +49,7 @@ public:
   void create_gtnets_topology();
   void print_topology();
   void set_jitter(double);
+  void set_jitter_seed(int);
 private:
   void add_nodes();
   void node_connect();
@@ -62,6 +63,7 @@ private:
   int is_topology_;
   int nflow_;
   double jitter_;
+  int jitter_seed_;
   Uniform *uniform_jitter_;
 
     map < int, TCPServer * >gtnets_servers_;

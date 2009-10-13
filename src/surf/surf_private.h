@@ -18,6 +18,10 @@
 #define NO_MAX_DURATION -1.0
 extern double sg_tcp_gamma;
 extern int sg_maxmin_selective_update;
+#ifdef HAVE_GTNETS
+  extern double sg_gtnets_jitter;
+  extern int sg_gtnets_jitter_seed;
+#endif
 
 extern const char *surf_action_state_names[6];
 

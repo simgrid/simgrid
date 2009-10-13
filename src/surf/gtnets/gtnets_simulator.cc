@@ -36,6 +36,8 @@ GTSim::GTSim(){
   sim_ = new Simulator();
   topo_ = new GTNETS_Topology();
   uniform_jitter_ = NULL;
+  jitter_ = 0;
+  jitter_seed_ = 10;
 
   sim_->verbose=false;
   // Set default values.
@@ -100,10 +102,12 @@ int GTSim::add_link(int id, double bandwidth, double latency){
   DEBUG3("Creating a new P2P, linkid %d, bandwidth %gl, latency %gl", id, bandwidth, latency);
   gtnets_links_[id] = new Linkp2p(bw, latency);
   if(jitter_ > 0){
-	DEBUG1("Using jitter %f", jitter_);
+	DEBUG2("Using jitter %f, and seed %u", jitter_, jitter_seed_);
 	double min = -1*jitter_*latency;
 	double max = jitter_*latency;
 	if(uniform_jitter_ == NULL){
+		Random::GlobalSeed(jitter_seed_  , jitter_seed_+1, jitter_seed_+2,
+						   jitter_seed_+3, jitter_seed_+4, jitter_seed_+5);
 		uniform_jitter_ = new Uniform(min,max);
 	}
 	gtnets_links_[id]->Jitter((const Random &) *uniform_jitter_);
@@ -309,6 +313,10 @@ int GTSim::run(double delta){
 
 void GTSim::set_jitter(double d){
   jitter_ = d;
+}
+
+void GTSim::set_jitter_seed(int s){
+  jitter_seed_ = s;
 }
 
 void static tcp_sent_callback(void* action, double completion_time){

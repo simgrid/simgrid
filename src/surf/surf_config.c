@@ -15,9 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of surf (and the rest of the simulation)");
 
 xbt_cfg_t _surf_cfg_set = NULL;
-#ifdef HAVE_GTNETS
-extern double sg_gtnets_jitter;
-#endif
+
 
 /* Parse the command line, looking for options */
 static void surf_config_cmd_line(int *argc, char **argv)
@@ -120,6 +118,9 @@ static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name, int pos
 static void _surf_cfg_cb__gtnets_jitter(const char *name, int pos){
 	sg_gtnets_jitter = xbt_cfg_get_double(_surf_cfg_set, name);
 }
+static void _surf_cfg_cb__gtnets_jitter_seed(const char *name, int pos){
+	sg_gtnets_jitter_seed = xbt_cfg_get_int(_surf_cfg_set, name);
+}
 #endif
 
 /* create the config set, register what should be and parse the command line*/
@@ -132,7 +133,8 @@ void surf_config_init(int *argc, char **argv)
 
     char *description = xbt_malloc(1024), *p = description;
     char *default_value;
-		int default_value_int;
+	int default_value_int;
+	int default_value_int_seed;
     int i;
 
     sprintf(description, "The model to use for the CPU. Possible values: ");
@@ -203,6 +205,11 @@ void surf_config_init(int *argc, char **argv)
                      "Double value to oscillate the link latency, uniformly in random interval [-latency*gtnets_jitter,latency*gtnets_jitter)", xbt_cfgelm_double,
                      NULL, 1, 1, _surf_cfg_cb__gtnets_jitter, NULL);
     xbt_cfg_set_double(_surf_cfg_set, "gtnets_jitter", 0.0);
+
+    default_value_int_seed = 10;
+    xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter_seed",
+                     "Use a positive seed to reproduce jitted results, value must be in [1,1e8], default is 10",
+                     xbt_cfgelm_int, &default_value_int_seed, 0, 1, _surf_cfg_cb__gtnets_jitter_seed, NULL);
 #endif
 
     if (!surf_path) {
