@@ -251,7 +251,8 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
   
   /* Check for errors other than timeouts (they are catched above) */
   if(!SIMIX_host_get_state(SIMIX_host_self())){
-    SIMIX_rdv_remove(comm->rdv, comm);
+    if(comm->rdv)
+      SIMIX_rdv_remove(comm->rdv, comm);
     SIMIX_communication_destroy(comm);
     THROW0(host_error, 0, "Host failed");
   } else if (SIMIX_action_get_state(comm->act) == SURF_ACTION_FAILED){

@@ -324,7 +324,7 @@ void SD_task_dump(SD_task_t task)
 void SD_task_dotty(SD_task_t task,void* out) {
   unsigned int counter;
   SD_dependency_t dependency;
-  fprintf(out, "  T%d [label=\"%.20s\"",(unsigned int)task,task->name);
+  fprintf(out, "  T%p [label=\"%.20s\"",task, task->name);
   switch(task->kind){
     case SD_TASK_COMM_E2E:
       fprintf(out,", shape=box");
@@ -335,7 +335,7 @@ void SD_task_dotty(SD_task_t task,void* out) {
   }
   fprintf(out,"];\n");
   xbt_dynar_foreach(task->tasks_before,counter,dependency) {
-    fprintf(out," T%d -> T%d;\n",(unsigned int)dependency->src,(unsigned int)dependency->dst);
+    fprintf(out," T%p -> T%p;\n",dependency->src, dependency->dst);
   }
 }
 
