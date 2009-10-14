@@ -19,7 +19,6 @@ public class Slave extends simgrid.msg.Process {
       while(true) {
 	 double time1 = Msg.getClock();       
 	 Task t = Task.get(0);	
-	 double time2 = Msg.getClock();
  
 	 if (t instanceof FinalizeTask) {
 	    break;
@@ -29,7 +28,8 @@ public class Slave extends simgrid.msg.Process {
 	 if(time1 < task.getTime())
 	   time1 = task.getTime();
 	 
-/*	 Msg.info("Processing \"" + task.getName() + "\" " + getHost().getName() + 
+/*	 double time2 = Msg.getClock();
+	 Msg.info("Processing \"" + task.getName() + "\" " + getHost().getName() + 
 		  " (Communication time : " +  (time2 - time1) + ")");
 */	     
 	 task.execute();
