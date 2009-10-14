@@ -117,13 +117,13 @@ FILE *surf_file_to_parse = NULL;
 
 static void convert_route_multi_to_routes(void);
 static void parse_route_elem(void);
-static void parse_foreach(void);
+static void parse_Stag_foreach(void);
 static void parse_sets(void);
-static void parse_route_multi_set_endpoints(void);
-static void parse_route_multi_set_route(void);
-static void parse_trace_init(void);
-static void parse_trace_finalize(void);
-static void parse_trace_c_connect(void);
+static void parse_Stag_route_multi(void);
+static void parse_Etag_route_multi(void);
+static void parse_Stag_trace(void);
+static void parse_Etag_trace(void);
+static void parse_Stag_trace_c_connect(void);
 static void init_randomness(void);
 static void add_randomness(void);
 
@@ -553,14 +553,14 @@ static void init_data(void)
                        &parse_route_set_endpoints);
   surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
   surfxml_add_callback(STag_surfxml_route_c_multi_cb_list,
-                       &parse_route_multi_set_endpoints);
+                       &parse_Stag_route_multi);
   surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list,
-                       &parse_route_multi_set_route);
-  surfxml_add_callback(STag_surfxml_foreach_cb_list, &parse_foreach);
-  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_trace_init);
-  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_trace_finalize);
+                       &parse_Etag_route_multi);
+  surfxml_add_callback(STag_surfxml_foreach_cb_list, &parse_Stag_foreach);
+  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
+  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
   surfxml_add_callback(STag_surfxml_trace_c_connect_cb_list,
-                       &parse_trace_c_connect);
+                       &parse_Stag_trace_c_connect);
   surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
   surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
 }
@@ -802,7 +802,7 @@ static void parse_link_foreach(void) {
   foreach_set_name = NULL;
 }
 
-static void parse_foreach(void)
+static void parse_Stag_foreach(void)
 {
   /* save the host & link callbacks */
   main_STag_surfxml_host_cb_list = STag_surfxml_host_cb_list;
@@ -834,7 +834,7 @@ static void parse_route_elem(void)
   xbt_dynar_push(route_link_list, &val);
 }
 
-static void parse_route_multi_set_endpoints(void)
+static void parse_Stag_route_multi(void)
 {
   src_name = xbt_strdup(A_surfxml_route_c_multi_src);
   dst_name = xbt_strdup(A_surfxml_route_c_multi_dst);
@@ -843,17 +843,6 @@ static void parse_route_multi_set_endpoints(void)
   route_multi_size++;
 
   route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-
-static int contains(xbt_dynar_t list, const char *value)
-{
-  unsigned int cpt;
-  char *val;
-  xbt_dynar_foreach(list, cpt, val) {
-    if (strcmp(val, value) == 0)
-      return 1;
-  }
-  return 0;
 }
 
 /*
@@ -898,7 +887,7 @@ void manage_route(xbt_dict_t routing_table, const char *route_name,
   }
 }
 
-static void parse_route_multi_set_route(void)
+static void parse_Etag_route_multi(void)
 {
   char *route_name;
 
@@ -1054,7 +1043,7 @@ static double trace_timestep = -1.0;
 static char *trace_file = NULL;
 static char *trace_id;
 
-static void parse_trace_init(void)
+static void parse_Stag_trace(void)
 {
   trace_id = strdup(A_surfxml_trace_id);
   trace_file = strdup(A_surfxml_trace_file);
@@ -1062,7 +1051,7 @@ static void parse_trace_init(void)
   surf_parse_get_double(&trace_timestep, A_surfxml_trace_timestep);
 }
 
-static void parse_trace_finalize(void)
+static void parse_Etag_trace(void)
 {
   tmgr_trace_t trace;
   if (!trace_file || strcmp(trace_file, "") != 0) {
@@ -1078,7 +1067,7 @@ static void parse_trace_finalize(void)
   xbt_dict_set(traces_set_list, trace_id, (void *) trace, NULL);
 }
 
-static void parse_trace_c_connect(void)
+static void parse_Stag_trace_c_connect(void)
 {
   xbt_assert2(xbt_dict_get_or_null
               (traces_set_list, A_surfxml_trace_c_connect_trace),
