@@ -832,6 +832,7 @@ static void parse_route_elem(void)
   val = xbt_strdup(A_surfxml_link_c_ctn_id);
 
   xbt_dynar_push(route_link_list, &val);
+  //INFO2("Push %s (size now:%ld)",val,xbt_dynar_length(route_link_list));
 }
 
 static void parse_Stag_route_multi(void)
@@ -858,7 +859,11 @@ void manage_route(xbt_dict_t routing_table, const char *route_name,
 
   /* get already existing list if it exists */
   links = xbt_dict_get_or_null(routing_table, route_name);
-  DEBUG1("ROUTE: %s", route_name);
+  DEBUG3("ROUTE: %s (action:%s; len:%ld)", route_name,
+      (action==A_surfxml_route_action_OVERRIDE?"override":(
+          action==A_surfxml_route_action_PREPEND?"prepend":"postpend")),
+       (links?xbt_dynar_length(links):0));
+
   if (links != NULL) {
     switch (action) {
     case A_surfxml_route_action_PREPEND:       /* add existing links at the end; route_link_list + links */
@@ -878,6 +883,8 @@ void manage_route(xbt_dict_t routing_table, const char *route_name,
       xbt_dynar_free(&links);
       break;
     default:
+      xbt_die(bprintf("While dealing with routes of %s, got action=%d. Please report this bug.",
+          route_name,action));
       break;
     }
   }

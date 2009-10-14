@@ -89,6 +89,13 @@ SimGrid (3.3.4) unstable; urgency=low
  * Fix a major regression from 3.2 where the timeout provided to
    MSG_task_put_with_timeout() was used as absolute time before which
    the comm should be done.
+ * Start to fix the <cluster> tag. 
+   - Internal links should be good now (beside of the loopback, which
+     use the private link instead)
+   - paths to the external world is still rather broken
+   - the <route:multi> tag is just broken. Actually that's brain-dead.
+     We need sth like <route:multi src="myCluster" dst="$*-${myCluster}">
+     to make it less stupid   
  * Fix a source-level compatibility glitch from 3.2: after defining
    MSG_USE_DEPRECATED, you can use the old name
    MSG_task_put_with_time_out() for MSG_task_put_with_timeout()

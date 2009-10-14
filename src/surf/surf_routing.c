@@ -167,7 +167,7 @@ static void routing_full_parse_Scluster(void)
 
   surfxml_bufferstack_push(1);
 
-  /* Make set */
+  /* Make set a set to parse the prefix/suffix/radical into a neat list of names */
   DEBUG4("Make <set id='%s' prefix='%s' suffix='%s' radical='%s'>",
       cluster_id,cluster_prefix,cluster_suffix,cluster_radical);
   SURFXML_BUFFER_SET(set_id, cluster_id);
@@ -178,29 +178,26 @@ static void routing_full_parse_Scluster(void)
   SURFXML_START_TAG(set);
   SURFXML_END_TAG(set);
 
-  /* Make foreach */
-  DEBUG1("Make <foreach set_id='%s'>",cluster_id);
-  SURFXML_BUFFER_SET(foreach_set_id, cluster_id);
+  xbt_dynar_t names = xbt_dict_get(set_list,cluster_id);
 
-  SURFXML_START_TAG(foreach);
+  unsigned int it1,it2;
+  char *name1,*name2;
+  xbt_dynar_foreach(names,it1,name1) {
+    /* create the host */
+    routing_full_parse_change_cpu_data(name1, cluster_power, "1.0", "", "");
+    A_surfxml_host_state = A_surfxml_host_state_ON;
 
-  /* Make host for the foreach */
-  routing_full_parse_change_cpu_data("$1", cluster_power, "1.0", "", "");
-  A_surfxml_host_state = A_surfxml_host_state_ON;
+    SURFXML_START_TAG(host);
+    SURFXML_END_TAG(host);
 
-  SURFXML_START_TAG(host);
-  SURFXML_END_TAG(host);
+    /* Here comes the link */
+    routing_full_parse_change_link_data(name1, cluster_bw, "", cluster_lat, "", "");
+    A_surfxml_link_state = A_surfxml_link_state_ON;
+    A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
 
-  /* Make link for the foreach */
-  routing_full_parse_change_link_data("$1", cluster_bw, "", cluster_lat, "", "");
-  A_surfxml_link_state = A_surfxml_link_state_ON;
-  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-
-  SURFXML_START_TAG(link);
-  SURFXML_END_TAG(link);
-
-  DEBUG0("Make </foreach>");
-  SURFXML_END_TAG(foreach);
+    SURFXML_START_TAG(link);
+    SURFXML_END_TAG(link);
+  }
 
   /* Make backbone link */
   backbone_name = bprintf("%s_bb", cluster_id);
@@ -212,30 +209,57 @@ static void routing_full_parse_Scluster(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
+  /* And now the internal routes */
+  xbt_dynar_foreach(names,it1,name1) {
+    xbt_dynar_foreach(names,it2,name2) {
+      if (strcmp(name1,name2)) {
+        A_surfxml_route_action = A_surfxml_route_action_POSTPEND;
+        SURFXML_BUFFER_SET(route_src,name1);
+        SURFXML_BUFFER_SET(route_dst,name2);
+        SURFXML_START_TAG(route); {
+          /* FIXME: name1 link is added by error about 20 lines below, so don't add it here
+          SURFXML_BUFFER_SET(link_c_ctn_id, name1);
+          SURFXML_START_TAG(link_c_ctn);
+          SURFXML_END_TAG(link_c_ctn);
+           */
+          SURFXML_BUFFER_SET(link_c_ctn_id, backbone_name);
+          SURFXML_START_TAG(link_c_ctn);
+          SURFXML_END_TAG(link_c_ctn);
+
+          SURFXML_BUFFER_SET(link_c_ctn_id, name2);
+          SURFXML_START_TAG(link_c_ctn);
+          SURFXML_END_TAG(link_c_ctn);
+
+        } SURFXML_END_TAG(route);
+      }
+    }
+  }
+
   /* Make route multi with the outside world, i.e. cluster->$* */
+
+  /* FIXME
+   * This also adds an elements to the routes within the cluster,
+   * and I guess it's wrong, but since this element is commented out in the above
+   * code creating the internal routes, we're good.
+   * To fix it, I'd say that we need a way to understand "$*-${cluster_id}" as "whole world, but the guys in that cluster"
+   * But for that, we need to install a real expression parser for src/dst attributes
+   *
+   * FIXME
+   * This also adds a dumb element (the private link) in place of the loopback. Then, since
+   * the loopback is added only if no link to self already exist, this fails.
+   * That's really dumb.
+   *
+   * FIXME
+   * It seems to me that it does not add the backbone to the path to outside world...
+   */
   SURFXML_BUFFER_SET(route_c_multi_src, cluster_id);
   SURFXML_BUFFER_SET(route_c_multi_dst, "$*");
   A_surfxml_route_c_multi_symmetric = A_surfxml_route_c_multi_symmetric_NO;
-  A_surfxml_route_c_multi_action = A_surfxml_route_c_multi_action_OVERRIDE;
+  A_surfxml_route_c_multi_action = A_surfxml_route_c_multi_action_PREPEND;
 
   SURFXML_START_TAG(route_c_multi);
 
   SURFXML_BUFFER_SET(link_c_ctn_id, "$src");
-
-  SURFXML_START_TAG(link_c_ctn);
-  SURFXML_END_TAG(link_c_ctn);
-
-  SURFXML_END_TAG(route_c_multi);
-
-  /* Make route multi between cluster hosts, i.e. cluster->cluster */
-  SURFXML_BUFFER_SET(route_c_multi_src, cluster_id);
-  SURFXML_BUFFER_SET(route_c_multi_dst, cluster_id);
-  A_surfxml_route_c_multi_action = A_surfxml_route_c_multi_action_POSTPEND;
-  A_surfxml_route_c_multi_symmetric = A_surfxml_route_c_multi_symmetric_NO;
-
-  SURFXML_START_TAG(route_c_multi);
-
-  SURFXML_BUFFER_SET(link_c_ctn_id, backbone_name);
 
   SURFXML_START_TAG(link_c_ctn);
   SURFXML_END_TAG(link_c_ctn);
