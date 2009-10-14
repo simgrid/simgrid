@@ -1,3 +1,99 @@
+$ ./simdag/platforms/flatifier --cfg=path:${srcdir:=.}/simdag/platforms/ one_cluster.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to './simdag/platforms/'
+> <?xml version='1.0'?>
+> <!DOCTYPE platform SYSTEM "simgrid.dtd">
+> <platform version="2">
+>   <host id="bob0.hamburger.edu" power="1000000000"/>
+>   <host id="bob2.hamburger.edu" power="1000000000"/>
+>   <host id="bob3.hamburger.edu" power="1000000000"/>
+>   <host id="bob4.hamburger.edu" power="1000000000"/>
+>   <host id="bob6.hamburger.edu" power="1000000000"/>
+>   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="bob0.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob2.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob3.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob4.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob6.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_bb" bandwidth="2250000000" latency="0.000500000" sharing_policy="FATPIPE"/>
+>   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
+>     <link:ctn id="__loopback__"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob2.hamburger.edu">
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob3.hamburger.edu">
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob4.hamburger.edu">
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob6.hamburger.edu">
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob0.hamburger.edu">
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob2.hamburger.edu">
+>     <link:ctn id="__loopback__"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob3.hamburger.edu">
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob4.hamburger.edu">
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob6.hamburger.edu">
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob0.hamburger.edu">
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob2.hamburger.edu">
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob3.hamburger.edu">
+>     <link:ctn id="__loopback__"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob4.hamburger.edu">
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob6.hamburger.edu">
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob0.hamburger.edu">
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob2.hamburger.edu">
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob3.hamburger.edu">
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob4.hamburger.edu">
+>     <link:ctn id="__loopback__"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob6.hamburger.edu">
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob0.hamburger.edu">
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob2.hamburger.edu">
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob3.hamburger.edu">
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob4.hamburger.edu">
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob6.hamburger.edu">
+>     <link:ctn id="__loopback__"/>
+>   </route>
+> </platform>
+
+p stop here.
+$ false
 
 $ ./simdag/platforms/flatifier --cfg=path:${srcdir:=.}/simdag/platforms/ one_cluster_foreach.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to './simdag/platforms/'
@@ -424,100 +520,6 @@ $ ./simdag/platforms/flatifier --cfg=path:${srcdir:=.}/simdag/platforms/ one_clu
 
 $ ./simdag/platforms/flatifier --cfg=path:${srcdir:=.}/simdag/platforms/ one_cluster_properties_override.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to './simdag/platforms/'
-
-$ ./simdag/platforms/flatifier --cfg=path:${srcdir:=.}/simdag/platforms/ one_cluster.xml
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to './simdag/platforms/'
-> <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
->   <host id="bob0.hamburger.edu" power="1000000000"/>
->   <host id="bob2.hamburger.edu" power="1000000000"/>
->   <host id="bob3.hamburger.edu" power="1000000000"/>
->   <host id="bob4.hamburger.edu" power="1000000000"/>
->   <host id="bob6.hamburger.edu" power="1000000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
->   <link id="bob0.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob2.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob3.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob4.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob6.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_bb" bandwidth="2250000000" latency="0.000500000" sharing_policy="FATPIPE"/>
->   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="__loopback__"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="__loopback__"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="__loopback__"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="__loopback__"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="__loopback__"/>
->   </route>
-> </platform>
 
 $ ./simdag/platforms/flatifier --cfg=path:${srcdir:=.}/simdag/platforms/ one_host_availability.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to './simdag/platforms/'
