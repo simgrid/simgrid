@@ -56,9 +56,7 @@ void surfxml_bufferstack_pop(int new)
 /* Stores the set name reffered to by the foreach tag */
 static char *foreach_set_name;
 static xbt_dynar_t main_STag_surfxml_host_cb_list = NULL;
-static xbt_dynar_t main_ETag_surfxml_host_cb_list = NULL;
 static xbt_dynar_t main_STag_surfxml_link_cb_list = NULL;
-static xbt_dynar_t main_ETag_surfxml_link_cb_list = NULL;
 
 /* make sure these symbols are defined as strong ones in this file so that the linked can resolve them */
 xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
@@ -372,18 +370,11 @@ void ETag_surfxml_foreach(void)
 
   /* free the temporary dynar and restore original */
   xbt_dynar_free(&STag_surfxml_host_cb_list);
-  xbt_dynar_free(&ETag_surfxml_host_cb_list);
-
   STag_surfxml_host_cb_list = main_STag_surfxml_host_cb_list;
-  ETag_surfxml_host_cb_list = main_ETag_surfxml_host_cb_list;
 
   /* free the temporary dynar and restore original */
   xbt_dynar_free(&STag_surfxml_link_cb_list);
-  xbt_dynar_free(&ETag_surfxml_link_cb_list);
-
   STag_surfxml_link_cb_list = main_STag_surfxml_link_cb_list;
-  ETag_surfxml_link_cb_list = main_ETag_surfxml_link_cb_list;
-
 }
 
 void STag_surfxml_route_c_multi(void)
@@ -526,7 +517,6 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
   unsigned int iterator;
   void_f_void_t fun;
   xbt_dynar_foreach(cb_list, iterator, fun) {
-    DEBUG2("call %p %p", fun, *fun);
     (*fun) ();
   }
 }
@@ -626,7 +616,7 @@ void parse_platform_file(const char *file)
   surf_parse_close();
 }
 
-/* Functions to bypass route, host and link tags. Used by the foreach and route:multi tags */
+/* Functions to bypass route tag. Used by the route:multi tag */
 
 static void parse_make_temporary_route(const char *src, const char *dst,
                                        int action)
@@ -636,38 +626,6 @@ static void parse_make_temporary_route(const char *src, const char *dst,
   A_surfxml_route_action = action;
   SURFXML_BUFFER_SET(route_src, src);
   SURFXML_BUFFER_SET(route_dst, dst);
-}
-
-static void parse_change_cpu_data(const char *hostName,
-                                  const char *surfxml_host_power,
-                                  const char *surfxml_host_availability,
-                                  const char *surfxml_host_availability_file,
-                                  const char *surfxml_host_state_file)
-{
-  int AX_ptr = 0;
-
-  SURFXML_BUFFER_SET(host_id, hostName);
-  SURFXML_BUFFER_SET(host_power, surfxml_host_power /*hostPower */ );
-  SURFXML_BUFFER_SET(host_availability, surfxml_host_availability);
-  SURFXML_BUFFER_SET(host_availability_file, surfxml_host_availability_file);
-  SURFXML_BUFFER_SET(host_state_file, surfxml_host_state_file);
-}
-
-static void parse_change_link_data(const char *linkName,
-                                   const char *surfxml_link_bandwidth,
-                                   const char *surfxml_link_bandwidth_file,
-                                   const char *surfxml_link_latency,
-                                   const char *surfxml_link_latency_file,
-                                   const char *surfxml_link_state_file)
-{
-  int AX_ptr = 0;
-
-  SURFXML_BUFFER_SET(link_id, linkName);
-  SURFXML_BUFFER_SET(link_bandwidth, surfxml_link_bandwidth);
-  SURFXML_BUFFER_SET(link_bandwidth_file, surfxml_link_bandwidth_file);
-  SURFXML_BUFFER_SET(link_latency, surfxml_link_latency);
-  SURFXML_BUFFER_SET(link_latency_file, surfxml_link_latency_file);
-  SURFXML_BUFFER_SET(link_state_file, surfxml_link_state_file);
 }
 
 /* Functions for the sets and foreach tags */
@@ -734,26 +692,18 @@ static void parse_sets(void)
   free(id);
 }
 
-static const char *surfxml_host_power;
-static const char *surfxml_host_availability;
-static const char *surfxml_host_availability_file;
-static const char *surfxml_host_state_file;
-
-static void parse_host_foreach(void)
-{
-  surfxml_host_power = A_surfxml_host_power;
-  surfxml_host_availability = A_surfxml_host_availability;
-  surfxml_host_availability_file = A_surfxml_host_availability_file;
-  surfxml_host_state_file = A_surfxml_host_state_file;
-}
-
-static void finalize_host_foreach(void)
-{
+static void parse_host_foreach(void){
   xbt_dynar_t names = NULL;
   unsigned int cpt = 0;
   char *name;
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;
+
+  const char *surfxml_host_power = A_surfxml_host_power;
+  const char *surfxml_host_availability = A_surfxml_host_availability;
+  const char *surfxml_host_availability_file = A_surfxml_host_availability_file;
+  const char *surfxml_host_state_file = A_surfxml_host_state_file;
+
 
   xbt_dict_t cluster_host_props = current_property_set;
 
@@ -769,10 +719,16 @@ static void finalize_host_foreach(void)
 
   /* foreach name in set call the main host callback */
   xbt_dynar_foreach(names, cpt, name) {
+    int AX_ptr = 0; /* needed by the SURFXML_BUFFER_SET macro */
+
     surfxml_bufferstack_push(1);
-    parse_change_cpu_data(name, surfxml_host_power, surfxml_host_availability,
-                          surfxml_host_availability_file,
-                          surfxml_host_state_file);
+
+    SURFXML_BUFFER_SET(host_id, name);
+    SURFXML_BUFFER_SET(host_power, surfxml_host_power /*hostPower */ );
+    SURFXML_BUFFER_SET(host_availability, surfxml_host_availability);
+    SURFXML_BUFFER_SET(host_availability_file, surfxml_host_availability_file);
+    SURFXML_BUFFER_SET(host_state_file, surfxml_host_state_file);
+
     surfxml_call_cb_functions(main_STag_surfxml_host_cb_list);
 
     xbt_dict_foreach(cluster_host_props, cursor, key, data) {
@@ -780,7 +736,8 @@ static void finalize_host_foreach(void)
                    free);
     }
 
-    surfxml_call_cb_functions(main_ETag_surfxml_host_cb_list);
+    /* Call the (unmodified) callbacks of </host>, if any */
+    surfxml_call_cb_functions(ETag_surfxml_host_cb_list);
     surfxml_bufferstack_pop(1);
   }
 
@@ -789,23 +746,13 @@ static void finalize_host_foreach(void)
   surfxml_bufferstack_pop(0);
 }
 
-static const char *surfxml_link_bandwidth;
-static const char *surfxml_link_bandwidth_file;
-static const char *surfxml_link_latency;
-static const char *surfxml_link_latency_file;
-static const char *surfxml_link_state_file;
+static void parse_link_foreach(void) {
+  const char *surfxml_link_bandwidth = A_surfxml_link_bandwidth;
+  const char *surfxml_link_bandwidth_file = A_surfxml_link_bandwidth_file;
+  const char *surfxml_link_latency = A_surfxml_link_latency;
+  const char *surfxml_link_latency_file = A_surfxml_link_latency_file;
+  const char *surfxml_link_state_file = A_surfxml_link_state_file;
 
-static void parse_link_foreach(void)
-{
-  surfxml_link_bandwidth = A_surfxml_link_bandwidth;
-  surfxml_link_bandwidth_file = A_surfxml_link_bandwidth_file;
-  surfxml_link_latency = A_surfxml_link_latency;
-  surfxml_link_latency_file = A_surfxml_link_latency_file;
-  surfxml_link_state_file = A_surfxml_link_state_file;
-}
-
-static void finalize_link_foreach(void)
-{
   xbt_dynar_t names = NULL;
   unsigned int cpt = 0;
   char *name;
@@ -825,11 +772,17 @@ static void finalize_link_foreach(void)
 
   /* for each name in set call the main link callback */
   xbt_dynar_foreach(names, cpt, name) {
+    int AX_ptr = 0; /* needed by the SURFXML_BUFFER_SET */
+
     surfxml_bufferstack_push(1);
-    parse_change_link_data(name, surfxml_link_bandwidth,
-                           surfxml_link_bandwidth_file, surfxml_link_latency,
-                           surfxml_link_latency_file,
-                           surfxml_link_state_file);
+
+    SURFXML_BUFFER_SET(link_id, name);
+    SURFXML_BUFFER_SET(link_bandwidth, surfxml_link_bandwidth);
+    SURFXML_BUFFER_SET(link_bandwidth_file, surfxml_link_bandwidth_file);
+    SURFXML_BUFFER_SET(link_latency, surfxml_link_latency);
+    SURFXML_BUFFER_SET(link_latency_file, surfxml_link_latency_file);
+    SURFXML_BUFFER_SET(link_state_file, surfxml_link_state_file);
+
     surfxml_call_cb_functions(main_STag_surfxml_link_cb_list);
 
     xbt_dict_foreach(cluster_link_props, cursor, key, data) {
@@ -837,7 +790,8 @@ static void finalize_link_foreach(void)
                    free);
     }
 
-    surfxml_call_cb_functions(main_ETag_surfxml_link_cb_list);
+    /* Call the (unmodified) callbacks of </link>, if any */
+    surfxml_call_cb_functions(ETag_surfxml_link_cb_list);
     surfxml_bufferstack_pop(1);
   }
 
@@ -852,20 +806,14 @@ static void parse_foreach(void)
 {
   /* save the host & link callbacks */
   main_STag_surfxml_host_cb_list = STag_surfxml_host_cb_list;
-  main_ETag_surfxml_host_cb_list = ETag_surfxml_host_cb_list;
   main_STag_surfxml_link_cb_list = STag_surfxml_link_cb_list;
-  main_ETag_surfxml_link_cb_list = ETag_surfxml_link_cb_list;
 
-  /* define host & link callbacks to be used only by the foreach tag */
+  /* redefine host & link callbacks to be used only by the foreach tag */
   STag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_host_foreach);
-  surfxml_add_callback(ETag_surfxml_host_cb_list, &finalize_host_foreach);
   surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_foreach);
-  surfxml_add_callback(ETag_surfxml_link_cb_list, &finalize_link_foreach);
 
   /* get set name */
   foreach_set_name = xbt_strdup(A_surfxml_foreach_set_id);
