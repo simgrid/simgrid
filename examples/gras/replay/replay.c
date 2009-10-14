@@ -185,7 +185,7 @@ int worker(int argc,char *argv[]) {
   globals = gras_userdata_new(s_worker_data_t);
   /* Create the connexions */
   globals->mysock = gras_socket_server(4000); /* FIXME: shouldn't be hardcoded */
-  gras_socket_t master;
+  gras_socket_t master=NULL;
   int connected=0;
 
   gras_cb_register("commands", worker_commands_cb);
