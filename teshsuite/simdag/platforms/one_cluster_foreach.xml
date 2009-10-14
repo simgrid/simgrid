@@ -12,7 +12,7 @@
   <link id="bob_backbone" bandwidth="2250000000" latency="5E-4"
 	sharing_policy="FATPIPE"/>
  
-  <route:multi src="myCluster" dst="myCluster">
+  <route:multi src="myCluster" dst="myCluster" symmetric="NO">
     <link:ctn id="$src"/>
     <link:ctn id="bob_backbone"/>
     <link:ctn id="$dst"/>
