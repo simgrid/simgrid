@@ -17,79 +17,79 @@ $ ./simdag/platforms/flatifier --cfg=path:${srcdir:=.}/simdag/platforms/ one_clu
 >   <link id="bob6.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_backbone" bandwidth="2250000000" latency="0.000500000" sharing_policy="FATPIPE"/>
 >   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/>
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/>
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/>
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/>
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_backbone"/><link:ctn id="bob6.hamburger.edu"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 > </platform>
 
@@ -205,109 +205,109 @@ $ ./simdag/platforms/flatifier --cfg=path:${srcdir:=.}/simdag/platforms/ one_clu
 >   <link id="bob4.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_bb" bandwidth="2250000000" latency="0.000500000" sharing_policy="FATPIPE"/>
 >   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob1.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob1.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="trudy">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="backbone"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="backbone"/>
 >   </route>
 >   <route src="bob1.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob1.hamburger.edu" dst="bob1.hamburger.edu">
->     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob1.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob1.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob1.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob1.hamburger.edu" dst="trudy">
->     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="backbone"/>
+>     <link:ctn id="bob1.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="backbone"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob1.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="trudy">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="backbone"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="backbone"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob1.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob1.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="trudy">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="backbone"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="backbone"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob1.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob1.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="trudy">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="backbone"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="backbone"/>
 >   </route>
 >   <route src="trudy" dst="bob0.hamburger.edu">
->     <link:ctn id="backbone"/>
+>     <link:ctn id="backbone"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="trudy" dst="bob1.hamburger.edu">
->     <link:ctn id="backbone"/>
+>     <link:ctn id="backbone"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob1.hamburger.edu"/>
 >   </route>
 >   <route src="trudy" dst="bob2.hamburger.edu">
->     <link:ctn id="backbone"/>
+>     <link:ctn id="backbone"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="trudy" dst="bob3.hamburger.edu">
->     <link:ctn id="backbone"/>
+>     <link:ctn id="backbone"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="trudy" dst="bob4.hamburger.edu">
->     <link:ctn id="backbone"/>
+>     <link:ctn id="backbone"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="trudy" dst="trudy">
 >     <link:ctn id="__loopback__"/>
@@ -443,79 +443,79 @@ $ ./simdag/platforms/flatifier --cfg=path:${srcdir:=.}/simdag/platforms/ one_clu
 >   <link id="bob6.hamburger.edu" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_bb" bandwidth="2250000000" latency="0.000500000" sharing_policy="FATPIPE"/>
 >   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob0.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob2.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob2.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob3.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob3.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 >   <route src="bob4.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob4.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob6.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob0.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob0.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob2.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob2.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob3.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob3.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob4.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/><link:ctn id="bob4.hamburger.edu"/>
 >   </route>
 >   <route src="bob6.hamburger.edu" dst="bob6.hamburger.edu">
->     <link:ctn id="bob6.hamburger.edu"/><link:ctn id="bob_cluster_bb"/>
+>     <link:ctn id="__loopback__"/>
 >   </route>
 > </platform>
 
