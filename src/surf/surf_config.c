@@ -134,7 +134,6 @@ void surf_config_init(int *argc, char **argv)
     char *description = xbt_malloc(1024), *p = description;
     char *default_value;
 	int default_value_int;
-	int default_value_int_seed;
     int i;
 
     sprintf(description, "The model to use for the CPU. Possible values: ");
@@ -206,10 +205,10 @@ void surf_config_init(int *argc, char **argv)
                      NULL, 1, 1, _surf_cfg_cb__gtnets_jitter, NULL);
     xbt_cfg_set_double(_surf_cfg_set, "gtnets_jitter", 0.0);
 
-    default_value_int_seed = 10;
+    default_value_int = 10;
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter_seed",
                      "Use a positive seed to reproduce jitted results, value must be in [1,1e8], default is 10",
-                     xbt_cfgelm_int, &default_value_int_seed, 0, 1, _surf_cfg_cb__gtnets_jitter_seed, NULL);
+                     xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb__gtnets_jitter_seed, NULL);
 #endif
 
     if (!surf_path) {
