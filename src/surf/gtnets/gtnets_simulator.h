@@ -64,13 +64,12 @@ private:
   int nflow_;
   double jitter_;
   int jitter_seed_;
-  Uniform *uniform_jitter_;
+  map< int, Uniform * > uniform_jitter_generator_;
 
     map < int, TCPServer * >gtnets_servers_;
     map < int, TCPSend * >gtnets_clients_;
     map < int, Linkp2p * >gtnets_links_;
     map < int, Node * >gtnets_nodes_;
-  //added by pedro in order to get statistics
     map < void *, int >gtnets_action_to_flow_;
 
     map < int, void *>gtnets_metadata_;

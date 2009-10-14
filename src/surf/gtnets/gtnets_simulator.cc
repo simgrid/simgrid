@@ -35,7 +35,6 @@ GTSim::GTSim(){
   nflow_ = 0;
   sim_ = new Simulator();
   topo_ = new GTNETS_Topology();
-  uniform_jitter_ = NULL;
   jitter_ = 0;
   jitter_seed_ = 10;
 
@@ -59,6 +58,13 @@ GTSim::~GTSim(){
   }
   while (!gtnets_links_.empty())
     gtnets_links_.erase(gtnets_links_.begin());
+
+  map<int, Uniform*>::iterator it2;
+  for (it2 = uniform_jitter_generator_.begin(); it2 != uniform_jitter_generator_.end(); it2++){
+    delete it2->second;
+  }
+  while (!uniform_jitter_generator_.empty())
+    uniform_jitter_generator_.erase(uniform_jitter_generator_.begin());
 
   map<int, Node*>::iterator it3;
   for (it3 = gtnets_nodes_.begin(); it3 != gtnets_nodes_.end(); it3++){
@@ -105,12 +111,13 @@ int GTSim::add_link(int id, double bandwidth, double latency){
 	DEBUG2("Using jitter %f, and seed %u", jitter_, jitter_seed_);
 	double min = -1*jitter_*latency;
 	double max = jitter_*latency;
-	if(uniform_jitter_ == NULL){
+	//initialize the random seed only once, when adding the first link
+	if(uniform_jitter_generator_.empty()){
 		Random::GlobalSeed(jitter_seed_  , jitter_seed_+1, jitter_seed_+2,
-						   jitter_seed_+3, jitter_seed_+4, jitter_seed_+5);
-		uniform_jitter_ = new Uniform(min,max);
+					       jitter_seed_+3, jitter_seed_+4, jitter_seed_+5);
 	}
-	gtnets_links_[id]->Jitter((const Random &) *uniform_jitter_);
+	uniform_jitter_generator_[id] = new Uniform(min,max);
+	gtnets_links_[id]->Jitter((const Random &) *(uniform_jitter_generator_[id]));
   }
   return 0;
 }
@@ -312,6 +319,7 @@ int GTSim::run(double delta){
 }
 
 void GTSim::set_jitter(double d){
+  xbt_assert1(((0 <= d)&&(d <= 1)), "The jitter value must be within interval [0.0;1.0], got %f", d);
   jitter_ = d;
 }
 
