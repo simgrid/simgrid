@@ -168,6 +168,8 @@ static void routing_full_parse_Scluster(void)
   surfxml_bufferstack_push(1);
 
   /* Make set */
+  DEBUG4("Make <set id='%s' prefix='%s' suffix='%s' radical='%s'>",
+      cluster_id,cluster_prefix,cluster_suffix,cluster_radical);
   SURFXML_BUFFER_SET(set_id, cluster_id);
   SURFXML_BUFFER_SET(set_prefix, cluster_prefix);
   SURFXML_BUFFER_SET(set_suffix, cluster_suffix);
@@ -177,6 +179,7 @@ static void routing_full_parse_Scluster(void)
   SURFXML_END_TAG(set);
 
   /* Make foreach */
+  DEBUG1("Make <foreach set_id='%s'>",cluster_id);
   SURFXML_BUFFER_SET(foreach_set_id, cluster_id);
 
   SURFXML_START_TAG(foreach);
@@ -196,6 +199,7 @@ static void routing_full_parse_Scluster(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
+  DEBUG0("Make </foreach>");
   SURFXML_END_TAG(foreach);
 
   /* Make backbone link */
