@@ -324,7 +324,7 @@ void SD_task_dump(SD_task_t task)
 void SD_task_dotty(SD_task_t task,void* out) {
   unsigned int counter;
   SD_dependency_t dependency;
-  fprintf(out, "  T%p [label=\"%.20s\"",task, task->name);
+  fprintf(out, "  T%ld [label=\"%.20s\"",(unsigned long int)task, task->name);
   switch(task->kind){
     case SD_TASK_COMM_E2E:
       fprintf(out,", shape=box");
