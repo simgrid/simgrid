@@ -71,7 +71,7 @@ int crasher(int argc, char *argv[])
   /* spawn threads */
   for (i = 0; i < crasher_amount; i++) {
     char *name = bprintf("thread %d", i);
-    crashers[i] = xbt_thread_create(name, &crasher_thread, &id[i]);
+    crashers[i] = xbt_thread_create(name, &crasher_thread, &id[i],0/*not joinable*/);
     free(name);
   }
 

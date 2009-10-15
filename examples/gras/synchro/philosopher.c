@@ -130,7 +130,7 @@ int philosopher(int argc, char *argv[])
   /* spawn threads */
   for (i = 0; i < philosopher_amount; i++) {
     char *name = bprintf("thread %d", i);
-    philosophers[i] = xbt_thread_create(name, philo_thread, &id[i]);
+    philosophers[i] = xbt_thread_create(name, philo_thread, &id[i],0/*not joinable*/);
     free(name);
   }
 

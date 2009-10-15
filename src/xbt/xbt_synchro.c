@@ -39,7 +39,7 @@ void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function) {
     w->function = function;
     w->rank=cursor;
     xbt_dynar_push(workers,&w);
-    w->worker = xbt_thread_create("dopar worker",worker_wrapper,w);
+    w->worker = xbt_thread_create("dopar worker",worker_wrapper,w,1/*joinable*/);
   }
   /* wait them all */
   xbt_dynar_free(&workers);

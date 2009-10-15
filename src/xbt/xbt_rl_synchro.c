@@ -39,7 +39,7 @@ static void *xbt_thread_create_wrapper(void *p)
 
 
 xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
-                               void *param)
+                               void *param, int joinable)
 {
 
   xbt_thread_t res = xbt_new0(s_xbt_thread_t, 1);

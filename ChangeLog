@@ -83,6 +83,9 @@ SimGrid (3.3.4) unstable; urgency=low
  XBT:
  * New function: xbt_dynar_dopar(dynar,fun) to map a function over the
    dynar with one separate thread per value of the dynar.
+ * Change the prototype of xbt_thread_create(), sorry. 
+   Added a boolean parameter indicating whether we want to join this
+   thread (used in SG only for now)
    
  Bug fixes:
  * GTNetS wrappers should now be usable again (and betterly tested too)
