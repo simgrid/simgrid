@@ -24,22 +24,24 @@ void gras_cpu_burn(double flops) {
   smx_cond_t cond;
   smx_mutex_t mutex;
 
-  cond = SIMIX_cond_init();
-  mutex = SIMIX_mutex_init();
+  if (flops>0) {
+    cond = SIMIX_cond_init();
+    mutex = SIMIX_mutex_init();
 
-  SIMIX_mutex_lock(mutex);
-  act =
-      SIMIX_action_execute(SIMIX_host_self(), "task", flops);
+    SIMIX_mutex_lock(mutex);
+    act =
+        SIMIX_action_execute(SIMIX_host_self(), "task", flops);
 
-  SIMIX_register_action_to_condition(act, cond);
-  SIMIX_cond_wait(cond, mutex);
-  SIMIX_unregister_action_to_condition(act, cond);
+    SIMIX_register_action_to_condition(act, cond);
+    SIMIX_cond_wait(cond, mutex);
+    SIMIX_unregister_action_to_condition(act, cond);
 
-  SIMIX_action_destroy(act);
-  SIMIX_mutex_unlock(mutex);
+    SIMIX_action_destroy(act);
+    SIMIX_mutex_unlock(mutex);
 
-  SIMIX_cond_destroy(cond);
-  SIMIX_mutex_destroy(mutex);
+    SIMIX_cond_destroy(cond);
+    SIMIX_mutex_destroy(mutex);
+  }
 }
 /*** Timing macros ***/
 static xbt_os_timer_t timer;
