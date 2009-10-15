@@ -70,6 +70,9 @@ examples/gras/spawn/spawn_child
 examples/gras/spawn/spawn_father
 examples/gras/synchro/synchro_philosopher
 examples/gras/timer/timer_client
+examples/gras/replay/replay_simulator
+examples/gras/replay/replay_master
+examples/gras/replay/replay_worker
 examples/msg/actions/actions
 examples/msg/gtnets/gtnets
 examples/msg/masterslave/masterslave_bypass
@@ -99,6 +102,10 @@ examples/smpi/mvmul
 examples/smpi/ring_c
 examples/smpi/second
 examples/smpi/split
+examples/smpi/allreduce
+examples/smpi/pingpong
+examples/smpi/scatter
+examples/smpi/sendrecv
 simgrid-*-svn/*
 src/.classes/*
 src/context_sysv_config.h
