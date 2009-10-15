@@ -15,6 +15,14 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,
                              "Logging specific to this SimDag example");
 
+static int name_compare_hosts(const void *n1, const void *n2)
+{
+  char name1[80], name2[80];
+  strcpy(name1, SD_workstation_get_name(*((SD_workstation_t *) n1)));
+  strcpy(name2, SD_workstation_get_name(*((SD_workstation_t *) n2)));
+
+  return strcmp(name1, name2);
+}
 
 int main(int argc, char **argv) {
   xbt_dynar_t dax;
@@ -26,9 +34,17 @@ int main(int argc, char **argv) {
 
   /* Check our arguments */
   if (argc < 3) {
-    INFO1("Usage: %s platform_file dax_file", argv[0]);
-    INFO1("example: %s ../sd_platform.xml Montage_50.xml", argv[0]);
+    INFO1("Usage: %s platform_file dax_file [trace_file]", argv[0]);
+    INFO1("example: %s ../sd_platform.xml Montage_50.xml Montage_50.mytrace", argv[0]);
     exit(1);
+  }
+  char *tracefilename;
+  if (argc == 3) {
+    char *last=strrchr(argv[2],'.');
+
+    tracefilename=bprintf("%.*s.trace",last==NULL?strlen(argv[2]):last-argv[2],argv[2]);
+  } else {
+    tracefilename = xbt_strdup(argv[3]);
   }
 
   /* creation of the environment */
@@ -54,6 +70,10 @@ int main(int argc, char **argv) {
   /* Schedule them all on the first workstation */
   INFO0("------------------- Schedule tasks ---------------------------");
   const SD_workstation_t *ws_list =  SD_workstation_get_list();
+  int totalHosts = SD_workstation_get_number();
+  qsort((void *) ws_list, totalHosts, sizeof(SD_workstation_t),
+        name_compare_hosts);
+
   int count = SD_workstation_get_number();
   xbt_dynar_foreach(dax,cursor,task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {
@@ -67,13 +87,10 @@ int main(int argc, char **argv) {
   INFO0("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);
   INFO0("------------------- Produce the trace file---------------------------");
-  char *last=strrchr(argv[2],'.');
-
-  char *filename=bprintf("%.*s.trace",last==NULL?strlen(argv[2]):last-argv[2],argv[2]);
-  INFO1("Producing the trace of the run into %s",filename);
-  FILE*out = fopen(filename,"w");
-  xbt_assert1(out,"Cannot write to %s",filename);
-  free(filename);
+  INFO1("Producing the trace of the run into %s",tracefilename);
+  FILE*out = fopen(tracefilename,"w");
+  xbt_assert1(out,"Cannot write to %s",tracefilename);
+  free(tracefilename);
 
   xbt_dynar_foreach(dax,cursor,task) {
     int kind = SD_task_get_kind(task);
@@ -100,5 +117,5 @@ int main(int argc, char **argv) {
 
   /* exit */
   SD_exit();
-  return 1;
+  return 0;
 }
