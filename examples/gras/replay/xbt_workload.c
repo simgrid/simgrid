@@ -184,8 +184,8 @@ void xbt_workload_declare_datadesc(void) {
 
 xbt_workload_data_chunk_t xbt_workload_data_chunk_new(int size) {
   xbt_workload_data_chunk_t res = xbt_new0(s_xbt_workload_data_chunk_t,1);
-  res->size = size;
-  res->chunk = xbt_new(char,size-sizeof(res)-sizeof(int));
+  res->size = size-sizeof(res)-sizeof(int);
+  res->chunk = xbt_new(char,res->size);
   return res;
 }
 void xbt_workload_data_chunk_free(xbt_workload_data_chunk_t c) {
