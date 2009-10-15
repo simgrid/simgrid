@@ -32,7 +32,15 @@ void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function) {
   xbt_dynar_t workers = xbt_dynar_new(sizeof(worker_data_t),worker_wait_n_free);
   unsigned int cursor;
   void *data;
+  if (xbt_dynar_length(datas)==0)
+    return; /* nothing to do */
+  if (xbt_dynar_length(datas)==1) {
+    /* don't start any new thread, do it directly */
+    (*function)(0,xbt_dynar_get_ptr(datas,0));
+    return;
+  }
   /* Start all workers */
+  INFO1("Dopar for %ld elements",xbt_dynar_length(datas));
   xbt_dynar_foreach(datas,cursor,data){
     worker_data_t w = xbt_new0(s_worker_data_t,1);
     w->data = datas;
