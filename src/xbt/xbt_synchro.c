@@ -9,6 +9,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 #include "xbt/synchro.h"
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_sync);
 
 typedef struct {
   xbt_dynar_t data;
@@ -25,7 +26,6 @@ static void worker_wait_n_free(void*w) {
 static void worker_wrapper(void *w) {
   worker_data_t me=(worker_data_t)w;
   (*me->function)(me->rank,xbt_dynar_get_ptr(me->data,me->rank));
-  xbt_thread_exit();
 }
 
 void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function) {
