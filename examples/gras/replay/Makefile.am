@@ -5,7 +5,7 @@
 # GNU LGPL (v2.1) licence.
 
 
-INCLUDES= -I$(top_srcdir)/include
+INCLUDES= -I$(top_srcdir)/include -I$(top_srcdir)/src/include
 EXTRA_DIST=
 include $(top_srcdir)/examples/gras/tests.mk
 
