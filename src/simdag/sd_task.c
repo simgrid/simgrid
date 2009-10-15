@@ -324,7 +324,7 @@ void SD_task_dump(SD_task_t task)
 void SD_task_dotty(SD_task_t task,void* out) {
   unsigned int counter;
   SD_dependency_t dependency;
-  fprintf(out, "  T%ld [label=\"%.20s\"",(unsigned long int)task, task->name);
+  fprintf(out, "  T%p [label=\"%.20s\"",task, task->name);
   switch(task->kind){
     case SD_TASK_COMM_E2E:
       fprintf(out,", shape=box");
@@ -332,6 +332,8 @@ void SD_task_dotty(SD_task_t task,void* out) {
     case SD_TASK_COMP_SEQ:
       fprintf(out,", shape=circle");
       break;
+    default:
+      xbt_die("Unknown task type!");
   }
   fprintf(out,"];\n");
   xbt_dynar_foreach(task->tasks_before,counter,dependency) {
@@ -772,6 +774,7 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
 
   xbt_free(task->computation_amount);
   xbt_free(task->communication_amount);
+  task->computation_amount = task->communication_amount = NULL;
 }
 
 /* Runs a task. This function is directly called by __SD_task_try_to_run if the task
@@ -1162,6 +1165,12 @@ void SD_task_destroy(SD_task_t task)
 
   if (task->workstation_list != NULL)
     xbt_free(task->workstation_list);
+
+  if (task->communication_amount)
+    xbt_free(task->communication_amount);
+
+  if (task->computation_amount)
+    xbt_free(task->computation_amount);
 
   xbt_dynar_free(&task->tasks_before);
   xbt_dynar_free(&task->tasks_after);

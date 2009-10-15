@@ -85,7 +85,8 @@ int main(int argc, char **argv) {
   }
 
   INFO0("------------------- Run the schedule ---------------------------");
-  SD_simulate(-1);
+  SD_task_t *changed = SD_simulate(-1);
+  free(changed);
   INFO0("------------------- Produce the trace file---------------------------");
   INFO1("Producing the trace of the run into %s",tracefilename);
   FILE*out = fopen(tracefilename,"w");
@@ -112,6 +113,7 @@ int main(int argc, char **argv) {
     default:
       xbt_die(bprintf("Task %s is of unknown kind %d",SD_task_get_name(task),SD_task_get_kind(task)));
     }
+    SD_task_destroy(task);
   }
   fclose(out);
 
