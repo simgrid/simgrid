@@ -86,6 +86,7 @@ SimGrid (3.3.4) unstable; urgency=low
  * Change the prototype of xbt_thread_create(), sorry. 
    Added a boolean parameter indicating whether we want to join this
    thread (used in SG only for now)
+ * Implement xbt_thread_join and xbt_thread_yield in SG also.
    
  Bug fixes:
  * GTNetS wrappers should now be usable again (and betterly tested too)

@@ -18,6 +18,9 @@
 #include "simix/simix.h"        /* used implementation */
 #include "simix/datatypes.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_sg, xbt,
+                                "Synchronization mechanism (SG)");
+
 /* the implementation would be cleaner (and faster) with ELF symbol aliasing */
 
 typedef struct s_xbt_thread_ {
@@ -26,6 +29,10 @@ typedef struct s_xbt_thread_ {
   void_f_pvoid_t code;
   void *userparam;
   void *father_data;
+  /* stuff to allow other people to wait on me with xbt_thread_join */
+  int joinable;
+  xbt_cond_t cond;
+  xbt_mutex_t mutex;
 } s_xbt_thread_t;
 
 static int xbt_thread_create_wrapper(int argc, char *argv[])
@@ -34,13 +41,21 @@ static int xbt_thread_create_wrapper(int argc, char *argv[])
     (xbt_thread_t) SIMIX_process_get_data(SIMIX_process_self());
   SIMIX_process_set_data(SIMIX_process_self(), t->father_data);
   (*t->code) (t->userparam);
-  free(t->name);
-  free(t);
+  if (t->joinable) {
+    xbt_mutex_acquire(t->mutex);
+    xbt_cond_broadcast(t->cond);
+    xbt_mutex_release(t->mutex);
+  } else {
+    xbt_mutex_destroy(t->mutex);
+    xbt_cond_destroy(t->cond);
+    free(t->name);
+    free(t);
+  }
   return 0;
 }
 
 xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
-                               void *param)
+                               void *param,int joinable)
 {
   xbt_thread_t res = xbt_new0(s_xbt_thread_t, 1);
   res->name = xbt_strdup(name);
@@ -53,6 +68,9 @@ xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
                                         SIMIX_host_get_name(SIMIX_host_self
                                                             ()), 0, NULL,
                                         /*props */ NULL);
+  res->joinable = joinable;
+  res->cond = xbt_cond_init();
+  res->mutex = xbt_mutex_init();
   //   free(name);
   return res;
 }
@@ -71,7 +89,16 @@ const char *xbt_thread_self_name(void)
 
 void xbt_thread_join(xbt_thread_t thread)
 {
-  THROW_UNIMPLEMENTED;          /* FIXME */
+  xbt_mutex_acquire(thread->mutex);
+  xbt_assert1(thread->joinable,"Cannot join on %p: wasn't created joinable",thread);
+  xbt_cond_wait(thread->cond,thread->mutex);
+  xbt_mutex_release(thread->mutex);
+
+  xbt_mutex_destroy(thread->mutex);
+  xbt_cond_destroy(thread->cond);
+  free(thread->name);
+  free(thread);
+
 }
 
 void xbt_thread_cancel(xbt_thread_t thread)
@@ -83,9 +110,7 @@ void xbt_thread_cancel(xbt_thread_t thread)
 
 void xbt_thread_exit()
 {
-  xbt_thread_t me = SIMIX_process_get_data(SIMIX_process_self());
-  SIMIX_process_kill(me->s_process);
-  free(me);
+  SIMIX_process_kill(SIMIX_process_self());
 }
 
 xbt_thread_t xbt_thread_self(void)
@@ -94,9 +119,8 @@ xbt_thread_t xbt_thread_self(void)
   return p ? SIMIX_process_get_data(p) : NULL;
 }
 
-void xbt_thread_yield(void)
-{
-  THROW_UNIMPLEMENTED;          /* FIXME */
+void xbt_thread_yield(void) {
+  SIMIX_process_yield();
 }
 
 /****** mutex related functions ******/
