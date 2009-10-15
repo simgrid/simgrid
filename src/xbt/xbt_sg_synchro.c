@@ -18,8 +18,8 @@
 #include "simix/simix.h"        /* used implementation */
 #include "simix/datatypes.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_sg, xbt,
-                                "Synchronization mechanism (SG)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt,
+                                "Synchronization mechanism");
 
 /* the implementation would be cleaner (and faster) with ELF symbol aliasing */
 

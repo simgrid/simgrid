@@ -20,8 +20,8 @@
 #include "xbt/xbt_os_thread.h"  /* The implementation we use */
 
 /* the implementation would be cleaner (and faster) with ELF symbol aliasing */
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_rl, xbt,
-                                "Synchronization mechanism (RL)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt,
+                                "Synchronization mechanism");
 
 typedef struct s_xbt_thread_ {
   xbt_os_thread_t os_thread;
