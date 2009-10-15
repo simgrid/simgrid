@@ -30,7 +30,7 @@ typedef struct s_xbt_thread_ {
   void *userparam;
   void *father_data;
   /* stuff to allow other people to wait on me with xbt_thread_join */
-  int joinable;
+  int joinable:1,done:1;
   xbt_cond_t cond;
   xbt_mutex_t mutex;
 } s_xbt_thread_t;
@@ -42,6 +42,7 @@ static int xbt_thread_create_wrapper(int argc, char *argv[])
   SIMIX_process_set_data(SIMIX_process_self(), t->father_data);
   (*t->code) (t->userparam);
   if (t->joinable) {
+    t->done=1;
     xbt_mutex_acquire(t->mutex);
     xbt_cond_broadcast(t->cond);
     xbt_mutex_release(t->mutex);
@@ -69,6 +70,7 @@ xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
                                                             ()), 0, NULL,
                                         /*props */ NULL);
   res->joinable = joinable;
+  res->done = 0;
   res->cond = xbt_cond_init();
   res->mutex = xbt_mutex_init();
   //   free(name);
@@ -91,8 +93,10 @@ void xbt_thread_join(xbt_thread_t thread)
 {
   xbt_mutex_acquire(thread->mutex);
   xbt_assert1(thread->joinable,"Cannot join on %p: wasn't created joinable",thread);
-  xbt_cond_wait(thread->cond,thread->mutex);
-  xbt_mutex_release(thread->mutex);
+  if (!thread->done) {
+    xbt_cond_wait(thread->cond,thread->mutex);
+    xbt_mutex_release(thread->mutex);
+  }
 
   xbt_mutex_destroy(thread->mutex);
   xbt_cond_destroy(thread->cond);
