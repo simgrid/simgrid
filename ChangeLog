@@ -95,7 +95,8 @@ SimGrid (3.3.4) unstable; urgency=low
    - paths to the external world is still rather broken
    - the <route:multi> tag is just broken. Actually that's brain-dead.
      We need sth like <route:multi src="myCluster" dst="$*-${myCluster}">
-     to make it less stupid   
+     to make it less stupid
+   ** Check your platform with teshsuite/simdag/platforms/flatifier **
  * Fix a source-level compatibility glitch from 3.2: after defining
    MSG_USE_DEPRECATED, you can use the old name
    MSG_task_put_with_time_out() for MSG_task_put_with_timeout()
