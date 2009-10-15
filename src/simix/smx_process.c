@@ -412,7 +412,7 @@ void SIMIX_process_yield(void)
   DEBUG1("Yield process '%s'", simix_global->current_process->name);
   xbt_assert0((simix_global->current_process !=
                simix_global->maestro_process),
-              "You are not supposed to run this function here!");
+              "You are not supposed to run this function in maestro context!");
 
   SIMIX_context_suspend(simix_global->current_process->context);
 
