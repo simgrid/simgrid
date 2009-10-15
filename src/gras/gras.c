@@ -146,8 +146,7 @@ void gras_init(int *argc, char **argv)
 void gras_exit(void)
 {
   gras_procdata_t *pd;
-  if (gras_if_RL())
-    INFO0("Exiting GRAS");
+  INFO0("Exiting GRAS");
   amok_exit();
   gras_moddata_leave();
   pd = gras_procdata_get();
