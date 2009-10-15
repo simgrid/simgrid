@@ -108,6 +108,7 @@ XBT_PUBLIC(smx_host_t) SIMIX_process_get_host(smx_process_t process);
 XBT_PUBLIC(const char *) SIMIX_process_get_name(smx_process_t process);
 XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 
+XBT_PUBLIC(void) SIMIX_process_yield(void);
 XBT_PUBLIC(void) SIMIX_process_suspend(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_resume(smx_process_t process);
 XBT_PUBLIC(int) SIMIX_process_is_suspended(smx_process_t process);

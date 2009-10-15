@@ -93,7 +93,6 @@ typedef struct s_smx_process_arg {
 void SIMIX_create_maestro_process(void);
 void SIMIX_process_empty_trash(void);
 void SIMIX_process_schedule(smx_process_t process);
-void SIMIX_process_yield(void);
 ex_ctx_t *SIMIX_process_get_exception(void);
 void SIMIX_process_exception_terminate(xbt_ex_t * e);
 
