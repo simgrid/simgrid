@@ -126,7 +126,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
     CRITICAL0
       ("MSG_task_get() was asked to write in a non empty task struct.");
 
-  /* We no loger support getting a task from a specific host */
+  /* We no longer support getting a task from a specific host */
   if(host)
     THROW_UNIMPLEMENTED;
 
@@ -144,7 +144,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
         ret = MSG_TRANSFER_FAILURE;
         break;
       case timeout_error:
-        ret = MSG_TRANSFER_FAILURE;
+        ret = MSG_TIMEOUT_FAILURE;
         break;      
       default:
         xbt_die("Unhandled SIMIX network exception");
@@ -198,7 +198,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
         ret = MSG_TRANSFER_FAILURE;
         break;
       case timeout_error:
-        ret = MSG_TRANSFER_FAILURE;
+        ret = MSG_TIMEOUT_FAILURE;
         break;
       default:
         xbt_die("Unhandled SIMIX network exception");

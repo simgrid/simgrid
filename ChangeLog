@@ -107,6 +107,8 @@ SimGrid (3.3.4) unstable; urgency=low
  * Allow to compile from the SVN with automake 1.11
  * Fix some problems when using the "start_time" tag in deployment XMLs.
  * Fix #8569: XBT/synchro.h has redundant declarations
+ * Fix #8563: MSG return values and exceptions
+   Introduce a MSG_TIMEOUT_FAILURE return code and use it consistently.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 

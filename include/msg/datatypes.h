@@ -121,6 +121,7 @@ SG_BEGIN_DECL()
        MSG_WARNING,
                /**< @brief Mmmh! Something must be not perfectly clean. But I
       may be a paranoid freak... ! */
+       MSG_TIMEOUT_FAILURE, /**< @brief nothing good happened before the timer you provided elapsed */
        MSG_TRANSFER_FAILURE,
                         /**< @brief There has been a problem during you task
       transfer. Either the network is down or the remote host has been
