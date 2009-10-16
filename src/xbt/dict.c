@@ -80,7 +80,9 @@ void xbt_dict_free(xbt_dict_t * dict)
   if (dict != NULL && *dict != NULL) {
     table_size = (*dict)->table_size;
     table = (*dict)->table;
-    for (i = 0; (*dict)->count && i < table_size; i++) {
+    /* Warning: the size of the table is 'table_size+1'...
+     * This is because table_size is used as a binary mask in xbt_dict_rehash */
+    for (i = 0; (*dict)->count && i <= table_size; i++) {
       current = table[i];
       while (current != NULL) {
         previous = current;

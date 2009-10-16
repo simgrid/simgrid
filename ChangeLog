@@ -111,6 +111,8 @@ SimGrid (3.3.4) unstable; urgency=low
    Introduce a MSG_TIMEOUT_FAILURE return code and use it consistently.
  * Integrate patch #8636: Obey DESTDIR when installing documentation.
    Thanks to Robson Peixoto.
+ * Fix a vicious bug in dictionaries inducing that some elements were
+   not freed on xbt_dict_free()
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 
