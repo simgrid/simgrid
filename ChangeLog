@@ -109,6 +109,8 @@ SimGrid (3.3.4) unstable; urgency=low
  * Fix #8569: XBT/synchro.h has redundant declarations
  * Fix #8563: MSG return values and exceptions
    Introduce a MSG_TIMEOUT_FAILURE return code and use it consistently.
+ * Integrate patch #8636: Obey DESTDIR when installing documentation.
+   Thanks to Robson Peixoto.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 

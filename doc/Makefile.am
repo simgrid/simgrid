@@ -81,11 +81,11 @@ endif
 install-data-local: 
 	@for file in `find html/ -type d` ; do \
 	   echo "test -z \"$(prefix)/doc/simgrid/$$file\" || $(mkdir_p) \"$(prefix)/doc/simgrid/$$file\"";\
-	   test -z "$(prefix)/doc/simgrid/$$file" || $(mkdir_p) "$(prefix)/doc/simgrid/$$file";\
+	   test -z "$(DESTDIR)/$(prefix)/doc/simgrid/$$file" || $(mkdir_p) "$(DESTDIR)/$(prefix)/doc/simgrid/$$file";\
 	done
 	@for file in `find html/ -type f` ; do \
-	   echo " $(INSTALL_DATA) '$$file' '$(prefix)/doc/simgrid/$$file'";\
-	   $(INSTALL_DATA) $$file $(prefix)/doc/simgrid/$$file ;\
+	   echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)/$(prefix)/doc/simgrid/$$file'";\
+	   $(INSTALL_DATA) $$file $(DESTDIR)/$(prefix)/doc/simgrid/$$file ;\
 	done
 
 uninstall-local:
