@@ -171,6 +171,7 @@ XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(char *name,
                                                        double rate);
 
 XBT_PUBLIC(char *) SIMIX_action_get_name(smx_action_t action);
+XBT_PUBLIC(void) SIMIX_action_set_name(smx_action_t action,char *name);
 XBT_PUBLIC(void) SIMIX_action_signal_all(smx_action_t action);
 XBT_PUBLIC(void) SIMIX_display_process_status(void);
 /************************** Comunication Handling *****************************/

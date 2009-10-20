@@ -101,7 +101,10 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
 
 /** \brief Creates a new sleep SIMIX action.
  *
- * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a host_error exception if the host crashed. The default SIMIX name of the action is "sleep".
+ * This function creates a SURF action and allocates the data necessary
+ * to create the SIMIX action. It can raise a host_error exception if the
+ * host crashed. The default SIMIX name of the action is "sleep".
+ *
  *	\param host SIMIX host where the sleep will run.
  * 	\param duration Time duration of the sleep.
  * 	\return A new SIMIX action
@@ -363,6 +366,11 @@ char *SIMIX_action_get_name(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
   return action->name;
+}
+/** @brief Change the name of the action. Warning, the string you provide is not strdup()ed */
+void SIMIX_action_set_name(smx_action_t action,char *name)
+{
+  action->name = name;
 }
 
 void SIMIX_action_signal_all(smx_action_t action)
