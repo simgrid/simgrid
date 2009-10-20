@@ -76,7 +76,7 @@ void gras_msg_send_ext(gras_socket_t sock,
 typedef struct s_gras_msg_listener_ *gras_msg_listener_t;
 gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_exchange);
 /* The caller has the responsability to cleanup the queues himself */
-void gras_msg_listener_shutdown(gras_msg_listener_t);
+void gras_msg_listener_shutdown(void);
 
 /**
  * gras_cblist_t:

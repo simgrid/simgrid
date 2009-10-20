@@ -103,28 +103,22 @@ gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_exchange)
 }
 
 #include "gras/Virtu/virtu_private.h"   /* procdata_t content */
-void gras_msg_listener_shutdown(gras_msg_listener_t l)
+void gras_msg_listener_shutdown()
 {
   gras_procdata_t *pd = gras_procdata_get();
   char kill = '0';
   DEBUG0("Listener quit");
 
-
   if (pd->listener)
     gras_msg_send(pd->listener->wakeup_sock_master_side, "_wakeup_listener",
-                  &kill);
+          &kill);
 
-  /* FIXME: thread_join is not implemented in SG (remove next conditional when fixed)
-   * But I guess it's not a big deal since we're terminating the thread mainly to
-   * make it free its OS locks on darwin.
-   * darwin is definitly different from the neat & nice SG world */
-  if (gras_if_RL())
-    xbt_thread_join(pd->listener->listener);
+  xbt_thread_join(pd->listener->listener);
 
   //  gras_socket_close(pd->listener->wakeup_sock_master_side); FIXME: uncommenting this leads to deadlock at terminaison
-  xbt_queue_free(&l->incomming_messages);
-  xbt_queue_free(&l->socks_to_close);
-  xbt_free(l);
+  xbt_queue_free(&pd->listener->incomming_messages);
+  xbt_queue_free(&pd->listener->socks_to_close);
+  xbt_free(pd->listener);
 }
 
 void gras_msg_listener_awake()
