@@ -46,12 +46,15 @@ SimGrid (3.3.4) unstable; urgency=low
 
  MSG:
  * Port of MSG's mailbox on top of SIMIX network
-   The put/get mechanism was greatly simplified thanks to the new SIMIX module.
+   The put/get mechanism was greatly simplified on the way.
 
  SIMIX:
- * New SIMIX network module
-   It provides a rendez-vous point (aka mailbox) based send/recv API to perform
-   synchronous communication.
+ * New SIMIX network module. Provides:
+   - Mailbox: rendez-vous mecanism to find with who you want to speak
+   - Synchronous send/recv: easier and hopefully faster since the
+     logic is handled in the maestro process directly now
+   - Asynchronous send/recv: you dreamt of it? It's here now
+     Too bad that nobody cared enough to propagate the change to MSG.
  * Add semaphores as SIMIX synchronization mechanism.
    
  SimDag:

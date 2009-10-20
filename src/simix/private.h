@@ -143,7 +143,7 @@ typedef struct s_smx_comm {
 
   smx_comm_type_t type;   /* Type of the communication (comm_send,comm_recv) */
   smx_rdv_t rdv;          /* Rendez-vous where the comm is queued */
-  smx_cond_t cond;        /* Condition associated to the surf simulation */
+  smx_sem_t sem;        /* Semaphore associated to the surf simulation */
   int refcount;           /* Number of processes involved in the cond */
 
   /* Surf action data */

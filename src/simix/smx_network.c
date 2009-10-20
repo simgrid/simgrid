@@ -146,7 +146,7 @@ smx_comm_t SIMIX_communication_new(smx_comm_type_t type)
   /* alloc structures */
   smx_comm_t comm = xbt_new0(s_smx_comm_t, 1);
   comm->type = type;
-  comm->cond = SIMIX_cond_init();
+  comm->sem = SIMIX_sem_init(0);
   comm->refcount = 1;
   
   return comm;
@@ -162,9 +162,9 @@ void SIMIX_communication_destroy(smx_comm_t comm)
   if(comm->refcount > 0)
     return;
 
-  if(comm->cond){
-    SIMIX_cond_destroy(comm->cond);
-    comm->cond = NULL;
+  if(comm->sem){
+    SIMIX_sem_destroy(comm->sem);
+    comm->sem = NULL;
   }
   
   if(comm->act){
@@ -202,7 +202,7 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
                                          comm->task_size, comm->rate);
 
     /* If any of the process is suspend, create the action but stop its execution,
-       it will be restart when the sender process resume */
+       it will be restarted when the sender process resume */
     if(SIMIX_process_is_suspended(comm->src_proc) || 
        SIMIX_process_is_suspended(comm->dst_proc)) {
       SIMIX_action_set_priority(comm->act, 0);
@@ -210,8 +210,11 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
     
     /* Add the communication as user data of the action */
     comm->act->data = comm;
-    
-    SIMIX_register_action_to_condition(comm->act, comm->cond);
+
+    /* The semaphore will only get signaled once, but since the first unlocked guy will
+     * release_forever() the semaphore, that will unlock the second (and any other)
+     * communication partner */
+    SIMIX_register_action_to_semaphore(comm->act, comm->sem);
   }
 }
 
@@ -233,7 +236,7 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
   
   if(timeout > 0){
     TRY{
-      SIMIX_cond_wait_timeout(comm->cond, NULL, timeout);
+      SIMIX_sem_acquire_timeout(comm->sem, timeout);
     }
     CATCH(e){
       /* If there is a timeout then cancel the communication if it is running or 
@@ -246,16 +249,20 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
         else
           SIMIX_rdv_remove(comm->rdv, comm);
 
-        SIMIX_cond_signal(comm->cond);
+        /* Make sure that everyone sleeping on that semaphore is awake, and that nobody will ever block on it */
+        SIMIX_sem_release_forever(comm->sem);
         SIMIX_communication_destroy(comm);
       }
       RETHROW;
     }
-  }else{
-    SIMIX_cond_wait(comm->cond, NULL);
+  } else {
+    SIMIX_sem_acquire(comm->sem);
   }
 
   DEBUG1("Communication %p complete! Let's check for errors", comm);
+
+  /* Make sure that everyone sleeping on that semaphore is awake, and that nobody will ever block on it */
+  SIMIX_sem_release_forever(comm->sem);
   
   /* Check for errors other than timeouts (they are catched above) */
   if(!SIMIX_host_get_state(SIMIX_host_self())){
@@ -339,7 +346,7 @@ void *SIMIX_communication_get_data(smx_comm_t comm)
  *  \param timeout The timeout used for the waiting the completion 
  *  \param src_buff The source buffer containing the message to be sent
  *  \param src_buff_size The size of the source buffer
- *  \param comm_ref The communication object used for the send
+ *  \param comm_ref The communication object used for the send  (useful if someone else wants to cancel this communication afterward)
  *  \param data User data associated to the communication object
  *  Throws:
  *   - host_error if peer failed
@@ -350,34 +357,8 @@ void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
                         double timeout, void *src_buff, size_t src_buff_size,
                         smx_comm_t *comm_ref, void *data)
 {
-  smx_comm_t comm;
-  
-  /* Look for communication request matching our needs. 
-     If it is not found then create it and push it into the rendez-vous point */
-  comm = SIMIX_rdv_get_request(rdv, comm_recv);
-
-  if(!comm){
-    comm = SIMIX_communication_new(comm_send);
-    SIMIX_rdv_push(rdv, comm);
-  }
-
-  /* Update the communication reference with the comm to be used */
-  *comm_ref = comm;
-  
-  /* Setup the communication request */
-  comm->src_proc = SIMIX_process_self();
-  comm->task_size = task_size;
-  comm->rate = rate;
-  comm->src_buff = src_buff;
-  comm->src_buff_size = src_buff_size;
-  comm->data = data;
-
-  SIMIX_communication_start(comm);
-
-  /* Wait for communication completion */
-  SIMIX_communication_wait_for_completion(comm, timeout);
-
-  SIMIX_communication_destroy(comm);
+  *comm_ref = SIMIX_network_isend(rdv,task_size,rate,src_buff,src_buff_size,data);
+  SIMIX_network_wait(*comm_ref,timeout);
 }
 
 /**
@@ -387,7 +368,7 @@ void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
  *  \param timeout The timeout used for the waiting the completion 
  *  \param dst_buff The destination buffer to copy the received message
  *  \param src_buff_size The size of the destination buffer
- *  \param comm_ref The communication object used for the send
+ *  \param comm_ref The communication object used for the send (useful if someone else wants to cancel this communication afterward)
  *  Throws:
  *   - host_error if peer failed
  *   - timeout_error if communication reached the timeout specified
@@ -396,9 +377,43 @@ void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
 void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buff, 
                         size_t *dst_buff_size, smx_comm_t *comm_ref)
 {
+  *comm_ref = SIMIX_network_irecv(rdv,dst_buff,dst_buff_size);
+  SIMIX_network_wait(*comm_ref,timeout);
+}
+
+/******************************************************************************/
+/*                        Asynchronous Communication                          */
+/******************************************************************************/
+smx_comm_t SIMIX_network_isend(smx_rdv_t rdv, double task_size, double rate,
+    void *src_buff, size_t src_buff_size, void *data)
+{
   smx_comm_t comm;
 
-  /* Look for communication request matching our needs. 
+  /* Look for communication request matching our needs.
+     If it is not found then create it and push it into the rendez-vous point */
+  comm = SIMIX_rdv_get_request(rdv, comm_recv);
+
+  if(!comm){
+    comm = SIMIX_communication_new(comm_send);
+    SIMIX_rdv_push(rdv, comm);
+  }
+
+  /* Setup the communication request */
+  comm->src_proc = SIMIX_process_self();
+  comm->task_size = task_size;
+  comm->rate = rate;
+  comm->src_buff = src_buff;
+  comm->src_buff_size = src_buff_size;
+  comm->data = data;
+
+  SIMIX_communication_start(comm);
+  return comm;
+}
+
+smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size) {
+  smx_comm_t comm;
+
+  /* Look for communication request matching our needs.
      If it is not found then create it and push it into the rendez-vous point */
   comm = SIMIX_rdv_get_request(rdv, comm_send);
 
@@ -407,35 +422,25 @@ void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buff,
     SIMIX_rdv_push(rdv, comm);
   }
 
-  /* Update the communication reference with the comm to be used */
-  *comm_ref = comm;
- 
   /* Setup communication request */
   comm->dst_proc = SIMIX_process_self();
   comm->dst_buff = dst_buff;
   comm->dst_buff_size = dst_buff_size;
 
   SIMIX_communication_start(comm);
+  return comm;
+}
 
+void SIMIX_network_wait(smx_comm_t comm, double timeout) {
   /* Wait for communication completion */
   SIMIX_communication_wait_for_completion(comm, timeout);
 
   SIMIX_communication_destroy(comm);
 }
 
-/******************************************************************************/
-/*                        Asynchronous Communication                          */
-/******************************************************************************/
-
-
-void SIMIX_network_wait(smx_action_t comm, double timeout)
-{
-  THROW_UNIMPLEMENTED;
-}
-
-XBT_PUBLIC(int) SIMIX_network_test(smx_action_t comm)
-{
-  THROW_UNIMPLEMENTED;
+/** @Returns whether the (asynchronous) communication is done yet or not */
+int SIMIX_network_test(smx_comm_t comm) {
+  return comm->sem?SIMIX_sem_would_block(comm->sem):0;
 }
 
 
