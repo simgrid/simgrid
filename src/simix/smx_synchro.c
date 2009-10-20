@@ -187,6 +187,7 @@ void SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
   
   /* Always create an action null in case there is a host failure */
   act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
+  SIMIX_action_set_name(act_sleep,bprintf("Wait condition %p", cond));
   SIMIX_process_self()->waiting_action = act_sleep;
   SIMIX_register_action_to_condition(act_sleep, cond);
   __SIMIX_cond_wait(cond);
@@ -247,6 +248,7 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
 
   if (max_duration >= 0) {
     act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
+    SIMIX_action_set_name(act_sleep,bprintf("Timed wait condition %p (max_duration:%f)", cond,max_duration));
     SIMIX_register_action_to_condition(act_sleep, cond);
     SIMIX_process_self()->waiting_action = act_sleep;
     __SIMIX_cond_wait(cond);
