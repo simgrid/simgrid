@@ -45,6 +45,7 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
   /* alloc structures */
   act = xbt_new0(s_smx_action_t, 1);
   act->cond_list = xbt_fifo_new();
+  act->sem_list = xbt_fifo_new();
 
   /* initialize them */
   act->name = xbt_strdup(name);
@@ -84,6 +85,7 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
   /* alloc structures */
   act = xbt_new0(s_smx_action_t, 1);
   act->cond_list = xbt_fifo_new();
+  act->sem_list = xbt_fifo_new();
 
   /* initialize them */
   act->source = host;
@@ -124,6 +126,7 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
   /* alloc structures */
   act = xbt_new0(s_smx_action_t, 1);
   act->cond_list = xbt_fifo_new();
+  act->sem_list = xbt_fifo_new();
 
   /* initialize them */
   act->source = host;
@@ -189,11 +192,16 @@ int SIMIX_action_destroy(smx_action_t action)
               "Conditional list not empty %d. There is a problem. Cannot destroy it now!",
               xbt_fifo_size(action->cond_list));
 
+  xbt_assert1((xbt_fifo_size(action->sem_list) == 0),
+              "Semaphore list not empty %d. There is a problem. Cannot destroy it now!",
+              xbt_fifo_size(action->sem_list));
+
   DEBUG1("Destroy action %p", action);
   if (action->name)
     xbt_free(action->name);
 
   xbt_fifo_free(action->cond_list);
+  xbt_fifo_free(action->sem_list);
 
   if (action->surf_action)
     action->surf_action->model_type->action_unref(action->surf_action);
@@ -232,11 +240,11 @@ void SIMIX_action_release(smx_action_t action)
 }
 
 /**
- * 	\brief Set an action to a condition
+ *  \brief Set an action to a condition
  *
- * 	Creates the "link" between an action and a condition. You have to call this function when you create an action and want to wait its ending.
- *	\param action SIMIX action
- *	\param cond SIMIX cond
+ *  Creates the "link" between an action and a condition. You have to call this function when you create an action and want to wait its ending.
+ *  \param action SIMIX action
+ *  \param cond SIMIX cond
  */
 void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
 {
@@ -263,11 +271,11 @@ void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
 }
 
 /**
- * 	\brief Unset an action to a condition.
+ *  \brief Unset an action to a condition.
  *
- * 	Destroys the "links" from the condition to this action.
- *	\param action SIMIX action
- *	\param cond SIMIX cond
+ *  Destroys the "links" from the condition to this action.
+ *  \param action SIMIX action
+ *  \param cond SIMIX cond
  */
 void SIMIX_unregister_action_to_condition(smx_action_t action,
                                           smx_cond_t cond)
@@ -284,11 +292,33 @@ void SIMIX_unregister_action_to_condition(smx_action_t action,
 
   if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
     __SIMIX_action_display_conditions(action);
-     
+
   xbt_fifo_remove_all(action->cond_list, cond);
 
   if(XBT_LOG_ISENABLED(simix_action, xbt_log_priority_debug))
     __SIMIX_action_display_conditions(action);
+}
+/**
+ *  \brief Link an action to a semaphore
+ *
+ *  When the action terminates, the semaphore gets signaled automatically.
+ */
+void SIMIX_register_action_to_semaphore(smx_action_t action, smx_sem_t sem) {
+
+  DEBUG2("Register action %p to semaphore %p (and otherwise)", action, sem);
+  xbt_fifo_push(sem->actions, action);
+  xbt_fifo_push(action->sem_list, sem);
+}
+/**
+ *  \brief Unset an action to a semaphore.
+ *
+ *  Destroys the "links" from the semaphore to this action.
+ */
+void SIMIX_unregister_action_to_semaphore(smx_action_t action,
+                                          smx_sem_t sem)
+{
+  xbt_fifo_remove_all(sem->actions, action);
+  xbt_fifo_remove_all(action->sem_list, sem);
 }
 
 /**
@@ -316,6 +346,7 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
   /* alloc structures */
   act = xbt_new0(s_smx_action_t, 1);
   act->cond_list = xbt_fifo_new();
+  act->sem_list = xbt_fifo_new();
 
   /* initialize them */
   act->name = xbt_strdup(name);
@@ -373,12 +404,14 @@ void SIMIX_action_set_name(smx_action_t action,char *name)
   action->name = name;
 }
 
-void SIMIX_action_signal_all(smx_action_t action)
-{
+/** @brief broadcast any condition and release any semaphore including this action */
+void SIMIX_action_signal_all(smx_action_t action){
   smx_cond_t cond;
+  smx_sem_t sem;
 
   while ((cond = xbt_fifo_pop(action->cond_list)))
     SIMIX_cond_broadcast(cond);
 
-  return;
+  while ((sem = xbt_fifo_pop(action->sem_list)))
+    SIMIX_sem_release(sem);
 }

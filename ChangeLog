@@ -51,7 +51,8 @@ SimGrid (3.3.4) unstable; urgency=low
  SIMIX:
  * New SIMIX network module
    It provides a rendez-vous point (aka mailbox) based send/recv API to perform
-   synchronous communication. 
+   synchronous communication.
+ * Add semaphores as SIMIX synchronization mechanism.
    
  SimDag:
  * new function SD_daxload(char*) to load a DAX file 

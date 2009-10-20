@@ -72,6 +72,7 @@ extern SIMIX_Global_t simix_global;
        int iwannadie : 1;
        smx_mutex_t mutex;       /* mutex on which the process is blocked  */
        smx_cond_t cond;         /* cond on which the process is blocked  */
+       smx_sem_t sem;         /* semaphore on which the process is blocked  */
        smx_action_t waiting_action;
        xbt_dict_t properties;
        void *data;              /* kept for compatibility, it should be replaced with moddata */
@@ -116,6 +117,15 @@ typedef struct s_smx_cond {
   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_cond */
 
 } s_smx_cond_t;
+
+typedef struct s_smx_sem {
+  /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_sem */
+  xbt_swag_t sleeping;          /* list of sleeping process */
+  int capacity;
+  xbt_fifo_t actions;           /* list of actions */
+  /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_sem */
+
+} s_smx_sem_t;
 
 /******************************* Networking ***********************************/
 
@@ -168,6 +178,7 @@ typedef enum {ready, ongoing, done, failed} smx_action_state_t;
 typedef struct s_smx_action {
   char *name;              /**< @brief action name if any */
   xbt_fifo_t cond_list;    /*< conditional variables that must be signaled when the action finish. */
+  xbt_fifo_t sem_list;    /*< semaphores that must be signaled when the action finish. */
   void *data;              /**< @brief user data */
   int refcount;            /**< @brief reference counter */
   surf_action_t surf_action;    /* SURF modeling of computation  */

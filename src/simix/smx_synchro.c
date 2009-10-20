@@ -131,7 +131,8 @@ void SIMIX_mutex_destroy(smx_mutex_t mutex)
 /**
  * \brief Initialize a condition.
  *
- * Allocs and creates the data for the condition. It have to be called before the utilisation of the condition.
+ * Allocates and creates the data for the condition.
+ * It have to be called before the use of the condition.
  * \return A condition
  */
 smx_cond_t SIMIX_cond_init()
@@ -267,8 +268,6 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
   /* get the mutex again if necessary */
   if(mutex != NULL)
     SIMIX_mutex_lock(cond->mutex);
-
-  return;
 }
 
 /**
@@ -289,8 +288,6 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
     xbt_swag_remove(proc, cond->sleeping);
     xbt_swag_insert(proc, simix_global->process_to_run);
   }
-
-  return;
 }
 
 /**
@@ -338,4 +335,161 @@ void SIMIX_cond_display_info(smx_cond_t cond)
             process->smx_host->name);
     }
   }
+}
+
+/* ************************** Semaphores ************************************** */
+#define SMX_SEM_NOLIMIT 99999
+/** @brief Initialize a semaphore */
+smx_sem_t SIMIX_sem_init(int capacity) {
+  smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
+  s_smx_process_t p;
+
+  sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
+  sem->actions = xbt_fifo_new();
+  sem->capacity = capacity;
+  return sem;
+}
+/** @brief Destroys a semaphore */
+void SIMIX_sem_destroy(smx_sem_t sem) {
+  DEBUG1("Destroy semaphore %p", sem);
+  if (sem == NULL)
+    return;
+
+  xbt_fifo_item_t item = NULL;
+  smx_action_t action = NULL;
+
+  xbt_assert0(xbt_swag_size(sem->sleeping) == 0,
+      "Cannot destroy semaphore since someone is still using it");
+  xbt_swag_free(sem->sleeping);
+
+  DEBUG1("%d actions registered", xbt_fifo_size(sem->actions));
+  xbt_fifo_foreach(sem->actions, item, action, smx_action_t) {
+    SIMIX_unregister_action_to_semaphore(action, sem);
+  }
+
+  xbt_fifo_free(sem->actions);
+  xbt_free(sem);
+}
+
+/** @brief release the semaphore
+ *
+ * The first locked process on this semaphore is unlocked.
+ * If no one was blocked, the semaphore capacity is increased by 1.
+ * */
+void SIMIX_sem_release(smx_sem_t sem) {
+  if (xbt_swag_size(sem->sleeping) >= 1) {
+    smx_process_t proc = xbt_swag_extract(sem->sleeping);
+    xbt_swag_insert(proc, simix_global->process_to_run);
+  } else if (sem->capacity != SMX_SEM_NOLIMIT) {
+    sem->capacity++;
+  }
+}
+/** @brief make sure the semaphore will never be blocking again
+ *
+ * This function is not really in the semaphore spirit. It makes
+ * sure that the semaphore will never be blocking anymore.
+ *
+ * Releasing and acquiring the semaphore after calling this
+ * function is a noop. Such "broken" semaphores are useful to
+ * implement something between condition variables (with broadcast)
+ * and semaphore (with memory). It's like a semaphore signaled for ever.
+ *
+ * There is no way to reset the semaphore to a more regular state afterward.
+ * */
+void SIMIX_sem_release_forever(smx_sem_t sem) {
+  smx_process_t proc = NULL;
+  smx_process_t proc_next = NULL;
+
+  DEBUG1("Broadcast semaphore %p", sem);
+  xbt_swag_foreach_safe(proc, proc_next, sem->sleeping) {
+    xbt_swag_remove(proc, sem->sleeping);
+    xbt_swag_insert(proc, simix_global->process_to_run);
+  }
+}
+
+static inline void SIMIX_sem_block_onto(smx_sem_t sem) {
+  smx_process_t self = SIMIX_process_self();
+
+  /* process status */
+  self->sem = sem;
+  xbt_swag_insert(self, sem->sleeping);
+  SIMIX_process_yield();
+  self->sem = NULL;
+  while (self->suspended)
+    SIMIX_process_yield();
+}
+
+/** @brief Returns true if acquiring this semaphore would block */
+int SIMIX_sem_would_block(smx_sem_t sem) {
+  return (sem->capacity>0);
+}
+
+/**
+ * \brief Waits on a semaphore
+ *
+ * If the capacity>0, decrease the capacity.
+ *
+ * If capacity==0, locks the current process
+ * until someone call SIMIX_sem_release() on this semaphore
+ */
+void SIMIX_sem_acquire(smx_sem_t sem) {
+  smx_action_t act_sleep;
+
+  DEBUG1("Wait semaphore %p", sem);
+
+  if (sem->capacity == SMX_SEM_NOLIMIT)
+    return; /* don't even decrease it if wide open */
+
+  /* If capacity sufficient, decrease it */
+  if (sem->capacity>0) {
+    sem->capacity--;
+    return;
+  }
+
+  /* Always create an action null in case there is a host failure */
+  act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
+  SIMIX_action_set_name(act_sleep,bprintf("Locked in semaphore %p", sem));
+  SIMIX_process_self()->waiting_action = act_sleep;
+  SIMIX_register_action_to_semaphore(act_sleep, sem);
+  SIMIX_sem_block_onto(sem);
+  SIMIX_process_self()->waiting_action = NULL;
+  SIMIX_unregister_action_to_semaphore(act_sleep, sem);
+  SIMIX_action_destroy(act_sleep);
+}
+/**
+ * \brief Tries to acquire a semaphore before a timeout
+ *
+ * Same behavior of #SIMIX_sem_acquire, but waits a maximum time and throws an timeout_error if it happens.
+ */
+void SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration) {
+  smx_action_t act_sleep;
+
+  DEBUG2("Timed wait semaphore %p (timeout:%f)", sem,max_duration);
+
+  if (sem->capacity == SMX_SEM_NOLIMIT)
+    return; /* don't even decrease it if wide open */
+
+  /* If capacity sufficient, decrease it */
+  if (sem->capacity>0) {
+    sem->capacity--;
+    return;
+  }
+
+  if (max_duration >= 0) {
+    act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
+    SIMIX_action_set_name(act_sleep,bprintf("Timed wait semaphore %p (max_duration:%f)", sem,max_duration));
+    SIMIX_register_action_to_semaphore(act_sleep, sem);
+    SIMIX_process_self()->waiting_action = act_sleep;
+    SIMIX_sem_block_onto(sem);
+    SIMIX_process_self()->waiting_action = NULL;
+    SIMIX_unregister_action_to_semaphore(act_sleep, sem);
+    if (SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
+      SIMIX_action_destroy(act_sleep);
+      THROW1(timeout_error, 0, "Semaphore acquire timeouted after %f",max_duration);
+    } else {
+      SIMIX_action_destroy(act_sleep);
+    }
+
+  } else
+    SIMIX_sem_block_onto(sem);
 }

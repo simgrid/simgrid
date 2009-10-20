@@ -138,6 +138,18 @@ XBT_PUBLIC(void) SIMIX_cond_destroy(smx_cond_t cond);
 XBT_PUBLIC(xbt_fifo_t) SIMIX_cond_get_actions(smx_cond_t cond);
 XBT_PUBLIC(void) SIMIX_cond_display_info(smx_cond_t cond);
 
+/*****Semaphores*******/
+
+
+XBT_PUBLIC(smx_sem_t) SIMIX_sem_init(int capacity);
+XBT_PUBLIC(void) SIMIX_sem_destroy(smx_sem_t sem);
+XBT_PUBLIC(void) SIMIX_sem_release(smx_sem_t sem);
+XBT_PUBLIC(void) SIMIX_sem_release_forever(smx_sem_t sem);
+XBT_PUBLIC(int) SIMIX_sem_would_block(smx_sem_t sem);
+XBT_PUBLIC(void) SIMIX_sem_acquire(smx_sem_t sem);
+XBT_PUBLIC(void) SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration);
+
+
 /************************** Action handling ************************************/
 XBT_PUBLIC(smx_action_t) SIMIX_action_communicate(smx_host_t sender,
                                                   smx_host_t receiver,
@@ -153,10 +165,15 @@ XBT_PUBLIC(void) SIMIX_action_set_priority(smx_action_t action,
 XBT_PUBLIC(int) SIMIX_action_destroy(smx_action_t action);
 XBT_PUBLIC(void) SIMIX_action_use(smx_action_t action);
 XBT_PUBLIC(void) SIMIX_action_release(smx_action_t action);
+
 XBT_PUBLIC(void) SIMIX_register_action_to_condition(smx_action_t action,
                                                     smx_cond_t cond);
 XBT_PUBLIC(void) SIMIX_unregister_action_to_condition(smx_action_t action,
                                                       smx_cond_t cond);
+XBT_PUBLIC(void) SIMIX_register_action_to_semaphore(smx_action_t action, smx_sem_t sem);
+XBT_PUBLIC(void) SIMIX_unregister_action_to_semaphore(smx_action_t action, smx_sem_t sem);
+
+
 XBT_PUBLIC(double) SIMIX_action_get_remains(smx_action_t action);
 
 XBT_PUBLIC(e_surf_action_state_t) SIMIX_action_get_state(smx_action_t action);
@@ -197,8 +214,12 @@ XBT_PUBLIC(void) SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate
                                     size_t src_buff_size, smx_comm_t *comm, void *data);
 XBT_PUBLIC(void) SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buff,
                                     size_t *dst_buff_size, smx_comm_t *comm);
-XBT_PUBLIC(void) SIMIX_network_wait(smx_action_t comm, double timeout);
-XBT_PUBLIC(int) SIMIX_network_test(smx_action_t comm);
+XBT_PUBLIC(smx_comm_t) SIMIX_network_isend(smx_rdv_t rdv, double task_size, double rate,
+                                           void *src_buff, size_t src_buff_size, void *data);
+XBT_PUBLIC(smx_comm_t) SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size);
+
+XBT_PUBLIC(void) SIMIX_network_wait(smx_comm_t comm, double timeout);
+XBT_PUBLIC(int) SIMIX_network_test(smx_comm_t comm);
 
 SG_END_DECL()
 #endif /* _SIMIX_SIMIX_H */
