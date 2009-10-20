@@ -263,7 +263,7 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
     }
 
   } else
-    __SIMIX_cond_wait(cond);
+    SIMIX_cond_wait(cond,NULL);
 
   /* get the mutex again if necessary */
   if(mutex != NULL)
@@ -491,5 +491,5 @@ void SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration) {
     }
 
   } else
-    SIMIX_sem_block_onto(sem);
+    SIMIX_sem_acquire(sem);
 }
