@@ -493,3 +493,60 @@ void SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration) {
   } else
     SIMIX_sem_acquire(sem);
 }
+/**
+ * \brief Blocks on a set of semaphore
+ *
+ * If any of the semaphores has some more capacity, it gets decreased.
+ * If not, blocks until the capacity of one of the semaphores becomes more friendly.
+ *
+ * \return the semaphore which just got locked from the set (it's not removed from the set).
+ */
+smx_sem_t SIMIX_sem_acquire_any(xbt_dynar_t sems) {
+  smx_sem_t sem,result=NULL;
+  unsigned int counter;
+  smx_action_t act_sleep;
+  smx_process_t self = SIMIX_process_self();
+
+  xbt_assert0(xbt_dynar_length(sems),
+      "I refuse to commit sucide by locking on an **empty** set of semaphores!!");
+  DEBUG1("Wait on semaphore set %p", sems);
+
+  xbt_dynar_foreach(sems,counter,sem) {
+    if (!SIMIX_sem_would_block(sem))
+      SIMIX_sem_acquire(sem);
+    return sem;
+  }
+
+  /* Always create an action null in case there is a host failure */
+  act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
+  SIMIX_action_set_name(act_sleep,bprintf("Locked in semaphore %p", sem));
+  self->waiting_action = act_sleep;
+  SIMIX_register_action_to_semaphore(act_sleep, xbt_dynar_get_as(sems,0,smx_sem_t));
+
+  /* Get listed as member of all the provided semaphores */
+  self->sem = (smx_sem_t)sems; /* FIXME: we pass a pointer to dynar where a pointer to sem is expected...*/
+  xbt_dynar_foreach(sems,counter,sem) {
+    xbt_swag_insert(self, sem->sleeping);
+  }
+  SIMIX_process_yield();
+  while (self->suspended)
+    SIMIX_process_yield();
+
+  /* one of the semaphore unsuspended us -- great, let's search which one (and get out of the others) */
+  self->sem = NULL;
+  xbt_dynar_foreach(sems,counter,sem) {
+    if (xbt_swag_belongs(self,sem->sleeping))
+      xbt_swag_remove(self,sem->sleeping);
+    else {
+      xbt_assert0(!result,"More than one semaphore unlocked us. Dunno what to do");
+      result = sem;
+    }
+  }
+  xbt_assert0(result,"Cannot find which semaphore unlocked me!");
+
+  /* Destroy the waiting action */
+  self->waiting_action = NULL;
+  SIMIX_unregister_action_to_semaphore(act_sleep, xbt_dynar_get_as(sems,0,smx_sem_t));
+  SIMIX_action_destroy(act_sleep);
+  return result;
+}
