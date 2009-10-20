@@ -218,7 +218,7 @@ XBT_PUBLIC(void) SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buf
 XBT_PUBLIC(smx_comm_t) SIMIX_network_isend(smx_rdv_t rdv, double task_size, double rate,
                                            void *src_buff, size_t src_buff_size, void *data);
 XBT_PUBLIC(smx_comm_t) SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size);
-
+XBT_PUBLIC(smx_comm_t) SIMIX_network_waitany(xbt_dynar_t comms);
 XBT_PUBLIC(void) SIMIX_network_wait(smx_comm_t comm, double timeout);
 XBT_PUBLIC(int) SIMIX_network_test(smx_comm_t comm);
 

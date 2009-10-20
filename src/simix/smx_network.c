@@ -431,6 +431,7 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
   return comm;
 }
 
+/** @brief blocks until the communication terminates or the timeout occurs */
 void SIMIX_network_wait(smx_comm_t comm, double timeout) {
   /* Wait for communication completion */
   SIMIX_communication_wait_for_completion(comm, timeout);
@@ -443,9 +444,46 @@ int SIMIX_network_test(smx_comm_t comm) {
   return comm->sem?SIMIX_sem_would_block(comm->sem):0;
 }
 
+/** @brief wait for the completion of any communication of a set
+ *
+ *  @Returns the communication which finished, destroy it after identifying which one it is (not removed from the dynar)
+ */
+smx_comm_t SIMIX_network_waitany(xbt_dynar_t comms) {
+  xbt_dynar_t sems = xbt_dynar_new(sizeof(smx_sem_t),NULL);
+  unsigned int cursor;
+  smx_comm_t comm,comm_finished=NULL;
+  smx_sem_t sem;
 
+  xbt_dynar_foreach(comms,cursor,comm){
+    xbt_dynar_push(sems,&(comm->sem));
+  }
 
+  DEBUG1("Waiting for the completion of communication set %p", comms);
 
+  sem = SIMIX_sem_acquire_any(sems);
+  xbt_dynar_foreach(comms,cursor,comm){
+    if (comm->sem == sem) {
+      comm_finished = comm;
+    }
+  }
+  xbt_assert0(comm_finished,"Cannot find which communication finished");
 
+  DEBUG1("Communication %p complete! Let's check for errors", comm_finished);
 
+  /* Make sure that everyone sleeping on that semaphore is awake,
+   * and that nobody will ever block on it */
+  SIMIX_sem_release_forever(comm_finished->sem);
 
+  /* Check for errors other than timeouts (they are catched above) */
+  if(!SIMIX_host_get_state(SIMIX_host_self())){
+    if(comm_finished->rdv)
+      SIMIX_rdv_remove(comm_finished->rdv, comm_finished);
+    SIMIX_communication_destroy(comm_finished);
+    THROW0(host_error, 0, "Host failed");
+  } else if (SIMIX_action_get_state(comm_finished->act) == SURF_ACTION_FAILED){
+    SIMIX_communication_destroy(comm_finished);
+    THROW0(network_error, 0, "Link failure");
+  }
+
+  return comm_finished;
+}
