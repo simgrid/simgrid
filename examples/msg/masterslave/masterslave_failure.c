@@ -86,6 +86,11 @@ int master(int argc, char *argv[])
         ("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!",
          slaves[i % slaves_count]->name);
       MSG_task_destroy(task);
+    } else if (a == MSG_TIMEOUT_FAILURE) {
+      INFO1
+        ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
+         slaves[i % slaves_count]->name);
+      MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
       xbt_assert0(0, "Unexpected behavior");
@@ -106,6 +111,11 @@ int master(int argc, char *argv[])
     } else if (a == MSG_TRANSFER_FAILURE) {
       INFO1("Mmh. Can't reach '%s'! Nevermind. Let's keep going!",
             slaves[i]->name);
+      MSG_task_destroy(task);
+    } else if (a == MSG_TIMEOUT_FAILURE) {
+      INFO1
+        ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
+         slaves[i % slaves_count]->name);
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
