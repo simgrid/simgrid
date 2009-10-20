@@ -446,13 +446,12 @@ int SIMIX_network_test(smx_comm_t comm) {
 
 /** @brief wait for the completion of any communication of a set
  *
- *  @Returns the communication which finished, destroy it after identifying which one it is (not removed from the dynar)
+ *  @Returns the rank in the dynar of communication which finished; destroy it after identifying which one it is
  */
-smx_comm_t SIMIX_network_waitany(xbt_dynar_t comms) {
+unsigned int SIMIX_network_waitany(xbt_dynar_t comms) {
   xbt_dynar_t sems = xbt_dynar_new(sizeof(smx_sem_t),NULL);
-  unsigned int cursor;
+  unsigned int cursor, found_comm=-1;
   smx_comm_t comm,comm_finished=NULL;
-  smx_sem_t sem;
 
   xbt_dynar_foreach(comms,cursor,comm){
     xbt_dynar_push(sems,&(comm->sem));
@@ -460,13 +459,9 @@ smx_comm_t SIMIX_network_waitany(xbt_dynar_t comms) {
 
   DEBUG1("Waiting for the completion of communication set %p", comms);
 
-  sem = SIMIX_sem_acquire_any(sems);
-  xbt_dynar_foreach(comms,cursor,comm){
-    if (comm->sem == sem) {
-      comm_finished = comm;
-    }
-  }
-  xbt_assert0(comm_finished,"Cannot find which communication finished");
+  found_comm = SIMIX_sem_acquire_any(sems);
+  xbt_assert0(found_comm!=-1,"Cannot find which communication finished");
+  xbt_dynar_get_cpy(comms,found_comm,&comm_finished);
 
   DEBUG1("Communication %p complete! Let's check for errors", comm_finished);
 
@@ -474,7 +469,7 @@ smx_comm_t SIMIX_network_waitany(xbt_dynar_t comms) {
    * and that nobody will ever block on it */
   SIMIX_sem_release_forever(comm_finished->sem);
 
-  /* Check for errors other than timeouts (they are catched above) */
+  /* Check for errors */
   if(!SIMIX_host_get_state(SIMIX_host_self())){
     if(comm_finished->rdv)
       SIMIX_rdv_remove(comm_finished->rdv, comm_finished);
@@ -485,5 +480,5 @@ smx_comm_t SIMIX_network_waitany(xbt_dynar_t comms) {
     THROW0(network_error, 0, "Link failure");
   }
 
-  return comm_finished;
+  return found_comm;
 }

@@ -499,11 +499,11 @@ void SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration) {
  * If any of the semaphores has some more capacity, it gets decreased.
  * If not, blocks until the capacity of one of the semaphores becomes more friendly.
  *
- * \return the semaphore which just got locked from the set (it's not removed from the set).
+ * \return the rank in the dynar of the semaphore which just got locked from the set
  */
-smx_sem_t SIMIX_sem_acquire_any(xbt_dynar_t sems) {
-  smx_sem_t sem,result=NULL;
-  unsigned int counter;
+unsigned int SIMIX_sem_acquire_any(xbt_dynar_t sems) {
+  smx_sem_t sem;
+  unsigned int counter,result=-1;
   smx_action_t act_sleep;
   smx_process_t self = SIMIX_process_self();
 
@@ -514,7 +514,7 @@ smx_sem_t SIMIX_sem_acquire_any(xbt_dynar_t sems) {
   xbt_dynar_foreach(sems,counter,sem) {
     if (!SIMIX_sem_would_block(sem))
       SIMIX_sem_acquire(sem);
-    return sem;
+    return counter;
   }
 
   /* Always create an action null in case there is a host failure */
@@ -538,11 +538,11 @@ smx_sem_t SIMIX_sem_acquire_any(xbt_dynar_t sems) {
     if (xbt_swag_belongs(self,sem->sleeping))
       xbt_swag_remove(self,sem->sleeping);
     else {
-      xbt_assert0(!result,"More than one semaphore unlocked us. Dunno what to do");
-      result = sem;
+      xbt_assert0(result==-1,"More than one semaphore unlocked us. Dunno what to do");
+      result = counter;
     }
   }
-  xbt_assert0(result,"Cannot find which semaphore unlocked me!");
+  xbt_assert0(counter!=-1,"Cannot find which semaphore unlocked me!");
 
   /* Destroy the waiting action */
   self->waiting_action = NULL;
