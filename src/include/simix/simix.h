@@ -183,6 +183,8 @@ XBT_PUBLIC(void) SIMIX_rdv_destroy(smx_rdv_t rvp);
 XBT_PUBLIC(int) SIMIX_rdv_get_count_waiting_comm(smx_rdv_t rdv, smx_host_t host);
 XBT_PUBLIC(smx_comm_t) SIMIX_rdv_get_head(smx_rdv_t rdv);
 XBT_PUBLIC(smx_comm_t) SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type);
+XBT_PUBLIC(void) SIMIX_rdv_set_data(smx_rdv_t rdv,void *data);
+XBT_PUBLIC(void*) SIMIX_rdv_get_data(smx_rdv_t rdv);
 
 /*****Communication Requests*****/
 XBT_PUBLIC(void) SIMIX_communication_cancel(smx_comm_t comm);
@@ -195,7 +197,7 @@ XBT_PUBLIC(void) SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate
                                     size_t src_buff_size, smx_comm_t *comm, void *data);
 XBT_PUBLIC(void) SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buff,
                                     size_t *dst_buff_size, smx_comm_t *comm);
-XBT_PUBLIC(void) SIMIX_network_wait(smx_action_t comm);
+XBT_PUBLIC(void) SIMIX_network_wait(smx_action_t comm, double timeout);
 XBT_PUBLIC(int) SIMIX_network_test(smx_action_t comm);
 
 SG_END_DECL()

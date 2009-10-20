@@ -123,6 +123,14 @@ smx_comm_t SIMIX_rdv_get_head(smx_rdv_t rdv)
   return (smx_comm_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
 }
 
+/** @brief adds some API-related data to the rendez-vous point */
+void SIMIX_rdv_set_data(smx_rdv_t rdv,void *data) {
+  rdv->data=data;
+}
+/** @brief gets API-related data from the rendez-vous point */
+void *SIMIX_rdv_get_data(smx_rdv_t rdv) {
+  return rdv->data;
+}
 
 /******************************************************************************/
 /*                           Communication Requests                           */
@@ -296,7 +304,8 @@ void SIMIX_network_copy_data(smx_comm_t comm)
   dst_buff_size = MIN(dst_buff_size, src_buff_size);
   
   /* Update the receiver's buffer size to the copied amount */
-  *comm->dst_buff_size = dst_buff_size;
+  if (comm->dst_buff_size)
+    *comm->dst_buff_size = dst_buff_size;
 
   if(dst_buff_size == 0)
     return;
@@ -418,16 +427,16 @@ void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buff,
 /*                        Asynchronous Communication                          */
 /******************************************************************************/
 
-/*
+
 void SIMIX_network_wait(smx_action_t comm, double timeout)
 {
-  TO BE IMPLEMENTED
+  THROW_UNIMPLEMENTED;
 }
 
 XBT_PUBLIC(int) SIMIX_network_test(smx_action_t comm)
 {
-  TO BE IMPLEMENTED
-}*/
+  THROW_UNIMPLEMENTED;
+}
 
 
 

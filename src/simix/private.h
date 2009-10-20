@@ -125,6 +125,7 @@ typedef struct s_smx_rvpoint {
   smx_mutex_t read;
   smx_mutex_t write;
   xbt_fifo_t comm_fifo;  
+  void *data;
 } s_smx_rvpoint_t;
 
 typedef struct s_smx_comm {
