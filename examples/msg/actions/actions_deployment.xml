@@ -3,4 +3,5 @@
 <platform version="2">
   <process host="Tremblay" function="toto"/>
   <process host="Jupiter" function="tutu"/>
+  <process host="Fafard" function="titi"/>
 </platform>

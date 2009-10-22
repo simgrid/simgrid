@@ -10,8 +10,14 @@
 #include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
 #include "xbt.h"                /* calloc, printf */
 
+typedef enum {
+  LOCAL = 0,
+  MAX_CHANNEL
+} channel_t;
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                  "Messages specific for this msg example");
+
 
 /* Helper function */
 static double parse_double(const char *string) {
@@ -46,6 +52,48 @@ static void recv(xbt_dynar_t action)
   MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
   INFO1("Received %s", MSG_task_get_name(task));
   MSG_task_destroy(task);
+  free(name);
+}
+
+static int spawned_recv(int argc, char *argv[])
+{
+  m_task_t task = NULL;
+  char* name = (char *) MSG_process_get_data(MSG_process_self());
+  INFO1("Receiving on %s", name);
+  MSG_task_receive(&task, name);
+  INFO1("Received %s", MSG_task_get_name(task));
+
+  MSG_task_put(MSG_task_create("waiter", 0, 0, NULL),
+	MSG_process_get_host(MSG_process_self()), LOCAL);
+  
+  MSG_task_destroy(task);
+  return 0;
+}
+
+static void Irecv(xbt_dynar_t action)
+{
+  char *name = xbt_str_join(action, " ");
+  m_process_t comm_helper;
+
+   INFO1("Irecv on %s: spawn process ", 
+	 MSG_process_get_name(MSG_process_self()));
+
+  comm_helper = 
+    MSG_process_create("spawned_recv",
+		       spawned_recv, 
+		       (void *) MSG_process_get_name(MSG_process_self()),
+		       MSG_process_get_host(MSG_process_self())); 	
+ 
+  free(name);
+}
+
+static void wait(xbt_dynar_t action)
+{
+  char *name = xbt_str_join(action, " ");
+  m_task_t task = NULL;
+  INFO1("wait: %s", name);
+  MSG_task_get(&(task), LOCAL);
+  INFO1("waited: %s", name);
   free(name);
 }
 
@@ -86,6 +134,7 @@ int main(int argc, char *argv[])
   }
 
   /*  Simulation setting */
+  MSG_set_channel_number(MAX_CHANNEL);
   MSG_create_environment(argv[1]);
 
   /* No need to register functions as in classical MSG programs: the actions get started anyway */
@@ -94,6 +143,8 @@ int main(int argc, char *argv[])
   /*   Action registration */
   MSG_action_register("send", send);
   MSG_action_register("recv", recv);
+  MSG_action_register("Irecv", Irecv);
+  MSG_action_register("wait", wait);
   MSG_action_register("sleep", sleep);
   MSG_action_register("compute", compute);
 

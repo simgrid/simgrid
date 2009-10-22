@@ -1,0 +1,14 @@
+# sample action file
+tutu send toto 1e9
+tutu compute 1e9
+tutu recv
+
+toto Irecv 
+toto compute 1e9
+toto wait
+toto send titi 1e9
+
+titi Irecv
+titi compute 5e8
+titi wait
+titi send tutu 1e9

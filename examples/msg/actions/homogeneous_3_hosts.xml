@@ -1,0 +1,33 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <host id="Tremblay" power="1e7"/>
+  <host id="Jupiter" power="1e7"/>
+  <host id="Fafard" power="1e7"/>
+  <link id="0" bandwidth="1e9" latency="5e-4"/>
+  <link id="1" bandwidth="1e9" latency="5e-4"/>
+  <link id="2" bandwidth="1e9" latency="5e-4"/>
+  
+  <link id="loopback" bandwidth="498000000" latency="0.000015" sharing_policy="FATPIPE"/>
+  <route src="Tremblay" dst="Tremblay"><link:ctn id="loopback"/></route>
+  <route src="Jupiter" dst="Jupiter"><link:ctn id="loopback"/></route>
+  <route src="Fafard" dst="Fafard"><link:ctn id="loopback"/></route>
+  <route src="Tremblay" dst="Jupiter">
+    <link:ctn id="0"/>
+  </route>
+  <route src="Tremblay" dst="Fafard">
+    <link:ctn id="1"/>
+  </route>
+  <route src="Jupiter" dst="Tremblay">
+    <link:ctn id="0"/>
+  </route>
+  <route src="Jupiter" dst="Fafard">
+    <link:ctn id="2"/>
+  </route>
+  <route src="Fafard" dst="Tremblay">
+    <link:ctn id="1"/>
+  </route>
+  <route src="Fafard" dst="Jupiter">
+    <link:ctn id="2"/>
+  </route>
+</platform>
