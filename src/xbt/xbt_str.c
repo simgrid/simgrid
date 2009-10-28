@@ -9,11 +9,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package.
  */
 
+#include "portable.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/str.h"            /* headers of these functions */
 #include "xbt/strbuff.h"
-#include "portable.h"
 #include "xbt/matrix.h"         /* for the diff */
 
 /**  @brief Strip whitespace (or other characters) from the end of a string.
