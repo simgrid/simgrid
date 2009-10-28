@@ -284,7 +284,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite)
     sprintf(suite_title + 40 - (suite_len + 4) / 2, "[ %s ]", suite->title);
     suite_title[40 + (suite_len + 5) / 2] = '=';
     if (!suite->enabled)
-      sprintf(suite_title + 70, " DISABLED ");
+      snprintf(suite_title + 70, 11, " DISABLED ");
     fprintf(stderr, "\n%s\n", suite_title);
   }
 

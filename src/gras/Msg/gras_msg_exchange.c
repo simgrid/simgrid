@@ -86,7 +86,7 @@ gras_msg_wait_ext_(double timeout,
   restart_receive:             /* Goto here when the receive of a message failed */
     need_restart = 0;
     now = gras_os_time();
-    memset(&msg, sizeof(msg), 0);
+    memset(&msg, 0, sizeof(msg));
 
     TRY {
       xbt_queue_shift_timed(pd->msg_received, &msg,

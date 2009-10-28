@@ -112,7 +112,7 @@ void gras_msg_ctx_mallocator_free_f(void *ctx)
 
 void gras_msg_ctx_mallocator_reset_f(void *ctx)
 {
-  memset(ctx, sizeof(s_gras_msg_cb_ctx_t), 0);
+  memset(ctx, 0, sizeof(s_gras_msg_cb_ctx_t));
 }
 
 /** @brief Launch a RPC call, but do not block for the answer */
