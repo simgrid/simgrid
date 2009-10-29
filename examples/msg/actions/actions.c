@@ -193,7 +193,6 @@ int main(int argc, char *argv[])
   res = MSG_action_trace_run(argv[3]);
 
   INFO1("Simulation time %g", MSG_get_clock());
-  xbt_dynar_free_container(&comm_world);
   MSG_clean();
 
   if (res == MSG_OK)
