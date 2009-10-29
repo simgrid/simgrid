@@ -1,0 +1,19 @@
+process0 comm_size 3
+process0 bcast 5e8
+process1 bcast 5e8
+process2 bcast 5e8
+
+process0 compute 5e8
+process1 compute 2e8
+process2 compute 5e8
+
+process0 bcast 5e8
+process1 bcast 5e8
+process2 bcast 5e8
+
+
+process0 bcast 5e8
+process1 bcast 5e8
+process2 bcast 5e8
+
+

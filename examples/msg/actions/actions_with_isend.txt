@@ -11,4 +11,5 @@ toto send titi 1e9
 titi Irecv
 titi compute 5e8
 titi wait
-titi send tutu 1e9
+titi Isend tutu 1e9
+titi compute 5e8
