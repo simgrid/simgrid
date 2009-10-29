@@ -401,6 +401,7 @@ char *SIMIX_action_get_name(smx_action_t action)
 /** @brief Change the name of the action. Warning, the string you provide is not strdup()ed */
 void SIMIX_action_set_name(smx_action_t action,char *name)
 {
+  xbt_free(action->name);
   action->name = name;
 }
 
