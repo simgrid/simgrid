@@ -43,33 +43,37 @@ static void send(xbt_dynar_t action)
   free(name);
 }
 
+
 static int spawned_send(int argc, char *argv[])
 {
-  xbt_dynar_t action= (xbt_dynar_t) MSG_process_get_data(MSG_process_self());
-  char *name = xbt_str_join(action, " ");
-  char *to = xbt_dynar_get_as(action, 2, char *);
-  char *size = xbt_dynar_get_as(action, 3, char *);
-  INFO3("name is %s, to is %s, sizeis %s", name, to, size);
-  INFO1("Sending on %s\n", name);
-  MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
-  INFO1("Sent %s", name);
-  free(name);
+  INFO3("%s: Sending %s on %s", MSG_process_self()->name, 
+	argv[1],argv[0]);
+  MSG_task_send(MSG_task_create(argv[0], 0, parse_double(argv[1]), NULL), 
+		argv[0]);
   return 0;
 }
 
 static void Isend(xbt_dynar_t action)
 {
-  char *name = xbt_str_join(action, " ");
+  char spawn_name[80];
+  char *to = xbt_dynar_get_as(action, 2, char *);
+  char *size = xbt_dynar_get_as(action, 3, char *);
+  char **myargv;
   m_process_t comm_helper;
 
   INFO1("Isend on %s: spawn process ", 
-	 MSG_process_get_name(MSG_process_self()));
+	 MSG_process_self()->name);
 
-  sprintf(name,"%s_wait",MSG_process_self()->name);
-  comm_helper = MSG_process_create(name,spawned_send,
-				   (void *) action,
-				   MSG_host_self());
-  free(name);
+  myargv = (char**) calloc (3, sizeof (char*));
+  
+  myargv[0] = xbt_strdup(to);
+  myargv[1] = xbt_strdup(size);
+  myargv[2] = NULL;
+
+  sprintf(spawn_name,"%s_wait",MSG_process_self()->name);
+  comm_helper =
+    MSG_process_create_with_arguments(spawn_name, spawned_send, 
+				      NULL, MSG_host_self(), 2, myargv);
 }
 
 
@@ -141,18 +145,6 @@ static void barrier (xbt_dynar_t action)
 
 }
 
-static int bcast_spawned_send(int argc, char *argv[])
-{
-  char name[80];
-  INFO3("%s: Sending %s on %s", MSG_process_self()->name, 
-	argv[1],argv[0]);
-  MSG_task_send(MSG_task_create(argv[0], 0, parse_double(argv[1]), NULL), 
-		argv[0]);
-  
-  sprintf(name,"%s_wait",argv[0]);
-  return 0;
-}
-
 static void bcast (xbt_dynar_t action)
 {
   int i;
@@ -189,7 +181,7 @@ static void bcast (xbt_dynar_t action)
 
       sprintf(spawn_name,"%s_%d", myargv[0], i);
       comm_helper = 
-	MSG_process_create_with_arguments(spawn_name, bcast_spawned_send, 
+	MSG_process_create_with_arguments(spawn_name, spawned_send, 
 					  NULL, MSG_host_self(), 2, myargv);
     }
     
