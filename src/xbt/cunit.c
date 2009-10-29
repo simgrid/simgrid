@@ -267,7 +267,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite)
 
   /* suite title pretty-printing */
   {
-    char suite_title[80];
+    char suite_title[81];
     int suite_len = strlen(suite->title);
     int i;
 
@@ -276,10 +276,10 @@ static int xbt_test_suite_run(xbt_test_suite_t suite)
                 suite->title, suite_len);
 
     suite_title[0] = ' ';
-    for (i = 1; i < 79; i++)
+    for (i = 1; i < 80; i++)
       suite_title[i] = '=';
     suite_title[i++] = '\n';
-    suite_title[79] = '\0';
+    suite_title[80] = '\0';
 
     sprintf(suite_title + 40 - (suite_len + 4) / 2, "[ %s ]", suite->title);
     suite_title[40 + (suite_len + 5) / 2] = '=';
