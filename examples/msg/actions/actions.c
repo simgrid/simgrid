@@ -26,6 +26,7 @@ static double parse_double(const char *string) {
   return value;
 }
 
+
 /* My actions */
 static void send(xbt_dynar_t action)
 {
@@ -37,6 +38,36 @@ static void send(xbt_dynar_t action)
   INFO1("Sent %s", name);
   free(name);
 }
+
+static int spawned_send(int argc, char *argv[])
+{
+  xbt_dynar_t action= (xbt_dynar_t) MSG_process_get_data(MSG_process_self());
+  char *name = xbt_str_join(action, " ");
+  char *to = xbt_dynar_get_as(action, 2, char *);
+  char *size = xbt_dynar_get_as(action, 3, char *);
+  
+  INFO1("Sending on %s", name);
+  MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
+  INFO1("Sent %s", name);
+  free(name);
+  return 0;
+}
+
+static void Isend(xbt_dynar_t action)
+{
+  char *name = xbt_str_join(action, " ");
+  m_process_t comm_helper;
+
+  INFO1("Isend on %s: spawn process ", 
+	 MSG_process_get_name(MSG_process_self()));
+
+  sprintf(name,"%s_wait",MSG_process_self()->name);
+  comm_helper = MSG_process_create(name,spawned_send,
+				   (void *) action,
+				   MSG_host_self());
+  free(name);
+}
+
 
 static void recv(xbt_dynar_t action)
 {
@@ -64,6 +95,7 @@ static int spawned_recv(int argc, char *argv[])
   return 0;
 }
 
+
 static void Irecv(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
@@ -81,6 +113,7 @@ static void Irecv(xbt_dynar_t action)
   free(name);
 }
 
+
 static void wait(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
@@ -94,6 +127,15 @@ static void wait(xbt_dynar_t action)
   free(name);
 }
 
+static void barrier (xbt_dynar_t action)
+{
+  char *name = xbt_str_join(action, " ");
+  INFO1("barrier: %s", name);
+  
+
+  free(name);
+
+}
 static void sleep(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
@@ -138,16 +180,20 @@ int main(int argc, char *argv[])
 
   /*   Action registration */
   MSG_action_register("send", send);
+  MSG_action_register("Isend", Isend);
   MSG_action_register("recv", recv);
   MSG_action_register("Irecv", Irecv);
   MSG_action_register("wait", wait);
+  MSG_action_register("barrier", barrier);
   MSG_action_register("sleep", sleep);
   MSG_action_register("compute", compute);
+
 
   /* Actually do the simulation using MSG_action_trace_run */
   res = MSG_action_trace_run(argv[3]);
 
   INFO1("Simulation time %g", MSG_get_clock());
+  xbt_dynar_free_container(&comm_world);
   MSG_clean();
 
   if (res == MSG_OK)
