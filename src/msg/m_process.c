@@ -250,7 +250,6 @@ void *MSG_process_get_data(m_process_t process)
 MSG_error_t MSG_process_set_data(m_process_t process, void *data)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
-  xbt_assert0((process->data == NULL), "Data already set");
 
   process->data = data;
 
