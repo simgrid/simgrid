@@ -1442,6 +1442,12 @@ static double surf_cpu_integrate_exactly(surf_cpu_ti_tgmr_t trace, int index,
     return (b - a) * (trace->levels[0]->values[index]);
 
   while (a > tmgr_date) {
+    /* too big timestep */
+    if (tmgr_index >=
+        xbt_dynar_length(trace->levels[0]->power_trace->event_list)) {
+      return (b - a) * (trace->levels[0]->values[index]);
+    }
+
     xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list, tmgr_index,
                       &elem);
     tmgr_date += elem.delta;
@@ -1507,6 +1513,12 @@ static double surf_cpu_solve_exactly(surf_cpu_ti_tgmr_t trace, int index,
     return amount / (trace->levels[0]->values[index]);
 
   while (a > tmgr_date) {
+    /* too big timestep */
+    if (tmgr_index >=
+        xbt_dynar_length(trace->levels[0]->power_trace->event_list)) {
+      return (amount) * (trace->levels[0]->values[index]);
+    }
+
     xbt_dynar_get_cpy(trace->levels[0]->power_trace->event_list, tmgr_index,
                       &elem);
     tmgr_date += elem.delta;
