@@ -3,7 +3,7 @@
 
 <platform version="2">
 
-<trace id="1" periodicity="10" timestep="0.1">
+<trace id="1" periodicity="10">
 0  0.5
 10  0.5
 20  1.00
