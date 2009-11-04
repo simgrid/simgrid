@@ -202,13 +202,22 @@ static void cpu_update_remains(cpu_Cas01_im_t cpu, double now)
 {
   surf_action_cpu_Cas01_im_t action;
 
+  if (cpu->last_update >= now)
+    return;
   xbt_swag_foreach(action, cpu->action_set) {
+    if (GENERIC_ACTION(action).state_set !=
+        surf_cpu_model->states.running_action_set)
+      continue;
+
+    /* bogus priority, skip it */
+    if (GENERIC_ACTION(action).priority <= 0)
+      continue;
+
     if (GENERIC_ACTION(action).remains > 0) {
       double_update(&(GENERIC_ACTION(action).remains),
                     lmm_variable_getvalue(GENERIC_LMM_ACTION
                                           (action).variable) * (now -
-                                                                cpu->
-                                                                last_update));
+                                                                cpu->last_update));
       DEBUG2("Update action(%p) remains %lf", action,
              GENERIC_ACTION(action).remains);
     }
@@ -230,6 +239,14 @@ static double share_resources(double now)
 
   xbt_swag_foreach_safe(cpu, cpu_next, modified_cpu) {
     xbt_swag_foreach(action, cpu->action_set) {
+      if (GENERIC_ACTION(action).state_set !=
+          surf_cpu_model->states.running_action_set)
+        continue;
+
+      /* bogus priority, skip it */
+      if (GENERIC_ACTION(action).priority <= 0)
+        continue;
+
       min = -1;
       value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
       if (value > 0) {
@@ -281,7 +298,7 @@ static void update_actions_state(double now, double delta)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     GENERIC_ACTION(action).remains = 0;
     cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    xbt_swag_insert(action->cpu, modified_cpu);
+    cpu_update_remains(action->cpu, surf_get_clock());
   }
   return;
 }
