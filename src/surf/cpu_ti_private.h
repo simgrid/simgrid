@@ -9,15 +9,11 @@
 #ifndef _SURF_CPU_TI_PRIVATE_H
 #define _SURF_CPU_TI_PRIVATE_H
 
-/* TIMESERIES */
-typedef struct surf_cpu_ti_timeSeries {
-  long nb_points;               /*< Number of points in the series */
-  double spacing;               /*< Spacing between two points */
-  double *values;               /*< Array of size nb_points */
-  tmgr_trace_t power_trace;     /*< Copy of power trace structure */
-  int *trace_index;             /*< Array of index. Each element is the index of first point in interval [spacing*i, spacing*(i+1)[ . Negative value indicates that there are no points in this spacing interval */
-  double *trace_value;          /*< Array with the date when the event trace_index[i] happens. */
-} s_surf_cpu_ti_timeSeries_t, *surf_cpu_ti_timeSeries_t;
+typedef struct surf_cpu_ti_trace {
+  double *time_points;
+  double *integral;
+  int nb_points;
+} s_surf_cpu_ti_trace_t, *surf_cpu_ti_trace_t;
 
 /* TRACE */
 typedef struct surf_cpu_ti_tgmr {
@@ -30,11 +26,11 @@ typedef struct surf_cpu_ti_tgmr {
 
   /* Dynamic */
   double last_time;             /*< Integral interval last point (discret time) */
-  double actual_last_time;      /*< Actual size of integral interval */
   double total;                 /*< Integral total between 0 and last_pointn */
 
-  surf_cpu_ti_timeSeries_t *levels;     /*< Availability information */
-  int nb_levels;                /*< Number of levels */
+  surf_cpu_ti_trace_t trace;
+  tmgr_trace_t power_trace;
+
 } s_surf_cpu_ti_tgmr_t, *surf_cpu_ti_tgmr_t;
 
 
@@ -61,10 +57,6 @@ typedef struct surf_action_ti {
   int index_heap;
 } s_surf_action_cpu_ti_t, *surf_action_cpu_ti_t;
 
-/* Time-step for resource performance traces */
-#define TRACE_TIMESTEP 10.00
-/* Number of levels for resource performance traces */
-#define TRACE_NB_LEVELS 4
 /* Epsilon */
 #define EPSILON 0.000000001
 /* Usefull define to get the cpu where action is running on */
