@@ -34,7 +34,7 @@ void tmgr_history_free(tmgr_history_t h)
 }
 
 tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
-                                        double periodicity, double timestep)
+                                        double periodicity)
 {
   tmgr_trace_t trace = NULL;
   int linecount = 0;
@@ -69,9 +69,6 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
     if (sscanf(val, "PERIODICITY " "%lg" "\n", &periodicity) == 1)
       continue;
 
-    if (sscanf(val, "TIMESTEP " "%lg" "\n", &timestep) == 1)
-      continue;
-
     if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2)
       xbt_die(bprintf
               ("%s:%d: Syntax error in trace\n%s", id, linecount, input));
@@ -91,8 +88,6 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
   }
   if (last_event)
     last_event->delta = periodicity;
-
-  trace->timestep = timestep;
 
   if (!trace_list)
     trace_list = xbt_dict_new();
@@ -126,7 +121,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
 
   char *tstr = xbt_str_from_file(f);
   fclose(f);
-  trace = tmgr_trace_new_from_string(filename, tstr, 0., 10.);
+  trace = tmgr_trace_new_from_string(filename, tstr, 0.);
   xbt_free(tstr);
 
   return trace;

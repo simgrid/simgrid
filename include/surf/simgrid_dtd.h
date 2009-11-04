@@ -1,5 +1,5 @@
 /* XML processor/application API for surf/simgrid.dtd.
- * Generated 2009/09/09 17:39:05.
+ * Generated 2009/11/04 12:57:47.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -172,8 +172,6 @@ typedef int AT_surfxml_prop_value;
 #define AU_surfxml_prop_value NULL
 typedef int AT_surfxml_route_impact_on_src_with_other_recv;
 #define AU_surfxml_route_impact_on_src_with_other_recv NULL
-typedef int AT_surfxml_trace_timestep;
-#define AU_surfxml_trace_timestep NULL
 typedef int AT_surfxml_link_state_file;
 #define AU_surfxml_link_state_file NULL
 typedef int AT_surfxml_set_prefix;
@@ -312,8 +310,6 @@ XBT_PUBLIC_DATA(AT_surfxml_prop_value ) AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
 XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_src_with_other_recv ) AX_surfxml_route_impact_on_src_with_other_recv;
 #define A_surfxml_route_impact_on_src_with_other_recv (surfxml_bufferstack + AX_surfxml_route_impact_on_src_with_other_recv)
-XBT_PUBLIC_DATA(AT_surfxml_trace_timestep ) AX_surfxml_trace_timestep;
-#define A_surfxml_trace_timestep (surfxml_bufferstack + AX_surfxml_trace_timestep)
 XBT_PUBLIC_DATA(AT_surfxml_link_state_file ) AX_surfxml_link_state_file;
 #define A_surfxml_link_state_file (surfxml_bufferstack + AX_surfxml_link_state_file)
 XBT_PUBLIC_DATA(AT_surfxml_set_prefix ) AX_surfxml_set_prefix;

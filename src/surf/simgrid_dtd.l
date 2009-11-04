@@ -1,5 +1,5 @@
 /* Validating XML processor for surf/simgrid.dtd.
- * Generated 2009/08/26 17:00:32.
+ * Generated 2009/11/04 12:57:47.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -178,8 +178,6 @@ AT_surfxml_prop_value AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
 AT_surfxml_route_impact_on_src_with_other_recv AX_surfxml_route_impact_on_src_with_other_recv;
 #define A_surfxml_route_impact_on_src_with_other_recv (surfxml_bufferstack + AX_surfxml_route_impact_on_src_with_other_recv)
-AT_surfxml_trace_timestep AX_surfxml_trace_timestep;
-#define A_surfxml_trace_timestep (surfxml_bufferstack + AX_surfxml_trace_timestep)
 AT_surfxml_link_state_file AX_surfxml_link_state_file;
 #define A_surfxml_link_state_file (surfxml_bufferstack + AX_surfxml_link_state_file)
 AT_surfxml_set_prefix AX_surfxml_set_prefix;
@@ -434,7 +432,6 @@ const char* *surfxml_statenames=NULL;
   surfxml_bufferliteral('\0', &bnext, "0.0");
   surfxml_bufferliteral('\0', &bnext, "http://simgrid.gforge.inria.fr/");
   surfxml_bufferliteral('\0', &bnext, "http://simgrid.gforge.inria.fr/");
-  surfxml_bufferliteral('\0', &bnext, "10.0");
   surfxml_bufferliteral('\0', &bnext, "1.0");
   surfxml_bufferliteral('\0', &bnext, "1.0");
   surfxml_bufferliteral('\0', &bnext, "1.0");
@@ -657,7 +654,6 @@ const char* *surfxml_statenames=NULL;
   AX_surfxml_trace_id = 0;
   AX_surfxml_trace_file = 0;
   AX_surfxml_trace_periodicity = 0;
-  AX_surfxml_trace_timestep = 69;
   ENTER(AL_surfxml_trace); pushbuffer(0);
   }
 
@@ -670,9 +666,6 @@ const char* *surfxml_statenames=NULL;
 
  "periodicity"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_periodicity);
  "periodicity"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_periodicity);
-
- "timestep"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_timestep);
- "timestep"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_timestep);
 
  ">" {
   if (!AX_surfxml_trace_id) FAIL("Required attribute `id' not set for `trace' element.");
@@ -938,14 +931,14 @@ const char* *surfxml_statenames=NULL;
 <S_surfxml_foreach,S_surfxml_platform_2,S_surfxml_platform_3,S_surfxml_platform>"<host"{s} {
   AX_surfxml_host_id = 0;
   AX_surfxml_host_power = 0;
-  AX_surfxml_host_availability = 74;
+  AX_surfxml_host_availability = 69;
   AX_surfxml_host_availability_file = 0;
   AX_surfxml_host_state = A_surfxml_host_state_ON;
   AX_surfxml_host_state_file = 0;
-  AX_surfxml_host_interference_send = 78;
-  AX_surfxml_host_interference_recv = 82;
-  AX_surfxml_host_interference_send_recv = 86;
-  AX_surfxml_host_max_outgoing_rate = 90;
+  AX_surfxml_host_interference_send = 73;
+  AX_surfxml_host_interference_recv = 77;
+  AX_surfxml_host_interference_send_recv = 81;
+  AX_surfxml_host_max_outgoing_rate = 85;
   ENTER(AL_surfxml_host); pushbuffer(0);
   }
 
@@ -1205,7 +1198,7 @@ const char* *surfxml_statenames=NULL;
   AX_surfxml_link_id = 0;
   AX_surfxml_link_bandwidth = 0;
   AX_surfxml_link_bandwidth_file = 0;
-  AX_surfxml_link_latency = 95;
+  AX_surfxml_link_latency = 90;
   AX_surfxml_link_latency_file = 0;
   AX_surfxml_link_state = A_surfxml_link_state_ON;
   AX_surfxml_link_state_file = 0;
@@ -1335,10 +1328,10 @@ const char* *surfxml_statenames=NULL;
 <S_surfxml_platform_5,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_platform_3,S_surfxml_platform_4>"<route"{s} {
   AX_surfxml_route_src = 0;
   AX_surfxml_route_dst = 0;
-  AX_surfxml_route_impact_on_src = 99;
-  AX_surfxml_route_impact_on_dst = 103;
-  AX_surfxml_route_impact_on_src_with_other_recv = 107;
-  AX_surfxml_route_impact_on_dst_with_other_send = 111;
+  AX_surfxml_route_impact_on_src = 94;
+  AX_surfxml_route_impact_on_dst = 98;
+  AX_surfxml_route_impact_on_src_with_other_recv = 102;
+  AX_surfxml_route_impact_on_dst_with_other_send = 106;
   AX_surfxml_route_action = A_surfxml_route_action_POSTPEND;
   ENTER(AL_surfxml_route); pushbuffer(0);
   }
@@ -1449,8 +1442,8 @@ const char* *surfxml_statenames=NULL;
 <S_surfxml_platform_5,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_platform_3,S_surfxml_platform_4>"<process"{s} {
   AX_surfxml_process_host = 0;
   AX_surfxml_process_function = 0;
-  AX_surfxml_process_start_time = 115;
-  AX_surfxml_process_kill_time = 120;
+  AX_surfxml_process_start_time = 110;
+  AX_surfxml_process_kill_time = 115;
   ENTER(AL_surfxml_process); pushbuffer(0);
   }
 
