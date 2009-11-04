@@ -497,22 +497,6 @@ void lmm_solve(lmm_system_t sys)
     }
   }
 
-  /* Init: special case where all constraints are 0 */
-  var_list = &(sys->variable_set);
-  DEBUG1("Variable set : %d", xbt_swag_size(var_list));
-  xbt_swag_foreach(var, var_list) {
-    int nb = 0;
-    int i;
-    if (var->weight <= 0.0)
-      break;
-    for (i = 0; i < var->cnsts_number; i++) {
-      if (var->cnsts[i].value == 0.0)
-        nb++;
-    }
-    if ((nb == var->cnsts_number) && (var->weight > 0.0))
-      var->value = 1.0;
-  }
-
   DEBUG1("Active constraints : %d", xbt_swag_size(cnst_list));
   xbt_swag_foreach(cnst, cnst_list) {
     /* INIT */
