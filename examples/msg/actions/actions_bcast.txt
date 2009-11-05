@@ -11,9 +11,12 @@ process0 bcast 5e8
 process1 bcast 5e8
 process2 bcast 5e8
 
+process0 compute 5e8
+process1 compute 2e8
+process2 compute 5e8
 
-process0 bcast 5e8
-process1 bcast 5e8
-process2 bcast 5e8
+process0 reduce 5e8 5e8
+process1 reduce 5e8 5e8
+process2 reduce 5e8 5e8
 
 

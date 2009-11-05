@@ -18,6 +18,7 @@ int communicator_size=0;
 typedef struct coll_ctr_t{
   int bcast_counter;
   int reduce_counter;
+  int allReduce_counter;
 } *coll_ctr;
 
 /* Helper function */
@@ -63,7 +64,7 @@ static void Isend(xbt_dynar_t action)
   m_process_t comm_helper;
 
   INFO1("Isend on %s: spawn process ", 
-	 MSG_process_self()->name);
+	 MSG_process_get_name(MSG_process_self()));
 
   myargv = (char**) calloc (3, sizeof (char*));
   
@@ -71,7 +72,7 @@ static void Isend(xbt_dynar_t action)
   myargv[1] = xbt_strdup(size);
   myargv[2] = NULL;
 
-  sprintf(spawn_name,"%s_wait",MSG_process_self()->name);
+  sprintf(spawn_name,"%s_wait",MSG_process_get_name(MSG_process_self()));
   comm_helper =
     MSG_process_create_with_arguments(spawn_name, spawned_send, 
 				      NULL, MSG_host_self(), 2, myargv);
@@ -94,12 +95,12 @@ static void recv(xbt_dynar_t action)
 static int spawned_recv(int argc, char *argv[])
 {
   m_task_t task = NULL;
-  char* name = (char *) MSG_process_self()->data;
+  char* name = (char *) MSG_process_get_data(MSG_process_self());
   INFO1("Receiving on %s", name);
   MSG_task_receive(&task, name);
   INFO1("Received %s", MSG_task_get_name(task));
-  INFO1("waiter on %s", MSG_process_self()->name);
-  MSG_task_send(MSG_task_create("waiter",0,0,NULL),MSG_process_self()->name); 
+  INFO1("waiter on %s", MSG_process_get_name(MSG_process_self()));
+  MSG_task_send(MSG_task_create("waiter",0,0,NULL),MSG_process_get_name(MSG_process_self())); 
   
   MSG_task_destroy(task);
   return 0;
@@ -114,9 +115,9 @@ static void Irecv(xbt_dynar_t action)
   INFO1("Irecv on %s: spawn process ", 
 	 MSG_process_get_name(MSG_process_self()));
 
-  sprintf(name,"%s_wait",MSG_process_self()->name);
+  sprintf(name,"%s_wait",MSG_process_get_name(MSG_process_self()));
   comm_helper = MSG_process_create(name,spawned_recv,
-                 (void *) MSG_process_self()->name,
+                 (void *) MSG_process_get_name(MSG_process_self()),
                  MSG_host_self());
 
 
@@ -131,7 +132,7 @@ static void wait(xbt_dynar_t action)
   m_task_t task = NULL;
   
   INFO1("wait: %s", name);
-  sprintf(task_name,"%s_wait",MSG_process_self()->name);
+  sprintf(task_name,"%s_wait",MSG_process_get_name(MSG_process_self()));
   MSG_task_receive(&task,task_name);
   MSG_task_destroy(task);
   INFO1("waited: %s", name);
@@ -165,9 +166,7 @@ static void reduce(xbt_dynar_t action)
   xbt_assert0(communicator_size, "Size of Communicator is not defined"
 	      ", can't use collective operations");
 
-  MSG_process_self()->data=NULL;
-
-  process_name = MSG_process_self()->name;
+  process_name = MSG_process_get_name(MSG_process_self());
 
   if (!counters){
     DEBUG0("Initialize the counters");
@@ -228,9 +227,8 @@ static void bcast (xbt_dynar_t action)
   xbt_assert0(communicator_size, "Size of Communicator is not defined"
 	      ", can't use collective operations");
 
-  MSG_process_self()->data=NULL;
 
-  process_name = MSG_process_self()->name;
+  process_name = MSG_process_get_name(MSG_process_self());
   if (!counters){
     DEBUG0("Initialize the counters");
     counters = (coll_ctr) calloc (1, sizeof(struct coll_ctr_t));
@@ -286,6 +284,101 @@ static void sleep(xbt_dynar_t action)
   free(name);
 }
 
+static void allReduce(xbt_dynar_t action)
+{
+  int i;
+  char *name;
+  char task_name[80];
+  char spawn_name[80];
+  char **myargv;
+  char *comm_size = xbt_dynar_get_as(action, 2, char *);
+  char *comp_size = xbt_dynar_get_as(action, 3, char *);
+  m_process_t comm_helper=NULL;
+  m_task_t task=NULL, comp_task=NULL;
+  const char* process_name;
+  
+  coll_ctr counters =  (coll_ctr) MSG_process_get_data(MSG_process_self());
+
+  xbt_assert0(communicator_size, "Size of Communicator is not defined"
+	      ", can't use collective operations");
+
+  process_name = MSG_process_get_name(MSG_process_self());
+
+  if (!counters){
+    DEBUG0("Initialize the counters");
+    counters = (coll_ctr) calloc (1, sizeof(struct coll_ctr_t));
+  }
+
+  name = bprintf("allReduce_%d", counters->allReduce_counter++);
+
+  if (!strcmp(process_name, "process0")){
+    INFO2("%s: %s is the Root",name, process_name);
+    for(i=1;i<communicator_size;i++){
+      sprintf(spawn_name,"%s_process%d", name, i);
+      sprintf(task_name,"%s_wait", spawn_name);
+      comm_helper = 
+	MSG_process_create(task_name, spawned_recv, 
+			   (void *) xbt_strdup(spawn_name),
+			   MSG_host_self());      
+    }
+
+    for(i=1;i<communicator_size;i++){
+      sprintf(task_name,"%s_process%d_wait", name, i);
+      MSG_task_receive(&task,task_name);
+      MSG_task_destroy(task);
+      task=NULL;
+    }
+
+    comp_task = 
+      MSG_task_create("allReduce_comp", parse_double(comp_size), 0, NULL);
+    INFO1("%s: computing 'reduce_comp'", name);
+    MSG_task_execute(comp_task);
+    MSG_task_destroy(comp_task);
+    INFO1("%s: computed", name);
+
+    for(i=1;i<communicator_size;i++){
+      myargv = (char**) calloc (3, sizeof (char*));
+      myargv[0] = xbt_strdup(name);
+      myargv[1] = xbt_strdup(comm_size);
+      myargv[2] = NULL;
+
+      sprintf(spawn_name,"%s_%d", myargv[0], i);
+      comm_helper = 
+	MSG_process_create_with_arguments(spawn_name, spawned_send, 
+					  NULL, MSG_host_self(), 2, myargv);
+    }
+    
+    for(i=1;i<communicator_size;i++){
+      sprintf(task_name,"process%d_wait", i);
+      DEBUG1("get on %s", task_name);
+      MSG_task_receive(&task,task_name);      
+      MSG_task_destroy(task);
+      task=NULL;
+    }
+    INFO2("%s: all messages sent by %s have been received",
+	  name, process_name);
+
+  } else {
+    INFO2("%s: %s sends", name, process_name);
+    sprintf(task_name,"%s_%s", name, process_name);
+    INFO1("put on %s", task_name);
+    MSG_task_send(MSG_task_create(name, 0, parse_double(comm_size), NULL),
+		  task_name);
+
+    MSG_task_receive(&task, name);
+    MSG_task_destroy(task);
+    INFO2("%s: %s has received", name,process_name);
+    sprintf(task_name,"%s_wait", process_name);
+    DEBUG1("put on %s", task_name);
+    MSG_task_send(MSG_task_create("waiter",0,0,NULL),task_name);
+
+  }
+
+  MSG_process_set_data(MSG_process_self(), (void*)counters);
+  free(name);
+
+}
+
 static void comm_size(xbt_dynar_t action)
 {
   char *size = xbt_dynar_get_as(action, 2, char *);
@@ -334,6 +427,7 @@ int main(int argc, char *argv[])
   MSG_action_register("barrier", barrier);
   MSG_action_register("bcast", bcast);
   MSG_action_register("reduce", reduce);
+  MSG_action_register("allReduce", allReduce);
   MSG_action_register("sleep", sleep);
   MSG_action_register("compute", compute);
 
