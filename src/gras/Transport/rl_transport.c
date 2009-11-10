@@ -175,7 +175,7 @@ gras_socket_t gras_trp_select(double timeout)
       /* Got a socket to serve */
       ready--;
 
-      if (sock_iter->is_master && sock_iter->plugin->socket_accept) {
+      if (sock_iter->accepting && sock_iter->plugin->socket_accept) {
         /* not a socket but an ear. accept on it and serve next socket */
         gras_socket_t accepted = NULL;
 

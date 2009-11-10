@@ -26,14 +26,6 @@ typedef struct s_gras_msg_listener_ {
   xbt_thread_t listener;
 } s_gras_msg_listener_t;
 
-static void do_close_socket(gras_socket_t sock) {
-  if (sock->plugin->socket_close)
-     (*sock->plugin->socket_close) (sock);
-   /* free the memory */
-   if (sock->peer_name)
-     free(sock->peer_name);
-   free(sock);
-}
 static void listener_function(void *p)
 {
   gras_msg_listener_t me = (gras_msg_listener_t) p;
@@ -64,9 +56,12 @@ static void listener_function(void *p)
     /* empty the list of sockets to trash */
     TRY {
       while (1) {
-        gras_socket_t sock;
+        int sock;
         xbt_queue_shift_timed(me->socks_to_close, &sock, 0);
-        do_close_socket(sock);
+        if (tcp_close(sock) < 0) {
+          WARN3("error while closing tcp socket %d: %d (%s)\n",
+                sock, sock_errno, sock_errstr(sock_errno));
+        }
       }
     }
     CATCH(e) {
@@ -139,14 +134,14 @@ void gras_msg_listener_awake()
   }
 }
 
-void gras_msg_listener_close_socket(gras_socket_t sock)
+void gras_msg_listener_close_socket(int sd)
 {
   gras_procdata_t *pd = gras_procdata_get();
   if (pd->listener) {
-    xbt_queue_push(pd->listener->socks_to_close, &sock);
+    xbt_queue_push(pd->listener->socks_to_close, &sd);
     gras_msg_listener_awake();
   } else {
     /* do it myself */
-    do_close_socket(sock);
+    tcp_close(sd);
   }
 }

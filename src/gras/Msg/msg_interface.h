@@ -49,7 +49,7 @@ typedef struct {
 void gras_msg_send_namev(gras_socket_t sock,
                          const char *namev, void *payload);
 void gras_msg_listener_awake(void);
-void gras_msg_listener_close_socket(gras_socket_t sock);
+void gras_msg_listener_close_socket(int sd);
 
 #define GRAS_PROTOCOL_VERSION '\1';
 

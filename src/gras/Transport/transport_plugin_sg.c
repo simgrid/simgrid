@@ -24,6 +24,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_sg, gras_trp,
  *** Prototypes 
  ***/
 
+/* retrieve the port record associated to a numerical port on an host */
+static void find_port(gras_hostdata_t * hd, int port,
+                      gras_sg_portrec_t * hpd);
+
 
 void gras_trp_sg_socket_client(gras_trp_plugin_t self,
                                /* OUT */ gras_socket_t sock);
@@ -44,27 +48,36 @@ int gras_trp_sg_chunk_recv(gras_socket_t sd,
  *** Specific plugin part
  ***/
 typedef struct {
-  xbt_dict_t sockets; /* all known sockets */
-} s_gras_trp_sg_plug_data_t,*gras_trp_sg_plug_data_t;
+  int placeholder;              /* nothing plugin specific so far */
+} gras_trp_sg_plug_data_t;
 
 
 /***
  *** Code
  ***/
+static void find_port(gras_hostdata_t * hd, int port, gras_sg_portrec_t * hpd)
+{
+  unsigned int cpt;
+  gras_sg_portrec_t pr;
 
-static void gras_trp_sg_exit(gras_trp_plugin_t plug){
-  gras_trp_sg_plug_data_t mydata = (gras_trp_sg_plug_data_t) plug->data;
-  xbt_dict_free(&(mydata->sockets));
-  xbt_free(plug->data);
+  xbt_assert0(hd, "Please run gras_process_init on each process");
+
+  xbt_dynar_foreach(hd->ports, cpt, pr) {
+    if (pr.port == port) {
+      memcpy(hpd, &pr, sizeof(gras_sg_portrec_t));
+      return;
+    }
+  }
+  THROW1(mismatch_error, 0, "Unable to find any portrec for port #%d", port);
 }
+
+
 void gras_trp_sg_setup(gras_trp_plugin_t plug)
 {
-  gras_trp_sg_plug_data_t data = xbt_new(s_gras_trp_sg_plug_data_t, 1);
+
+  gras_trp_sg_plug_data_t *data = xbt_new(gras_trp_sg_plug_data_t, 1);
 
   plug->data = data;
-  data->sockets = xbt_dict_new();
-
-  plug->exit = gras_trp_sg_exit;
 
   plug->socket_client = gras_trp_sg_socket_client;
   plug->socket_server = gras_trp_sg_socket_server;
@@ -78,120 +91,155 @@ void gras_trp_sg_setup(gras_trp_plugin_t plug)
 }
 
 void gras_trp_sg_socket_client(gras_trp_plugin_t self,
-                               /* OUT */ gras_socket_t sock) {
+                               /* OUT */ gras_socket_t sock)
+{
+  xbt_ex_t e;
 
   smx_host_t peer;
+  gras_hostdata_t *hd;
   gras_trp_sg_sock_data_t *data;
-  gras_trp_procdata_t pd= (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
-
-
-  if (!(peer = SIMIX_host_get_by_name(sock->peer_name)))
-    THROW1(mismatch_error, 0,
-           "Can't connect to %s: no such host", sock->peer_name);
+  gras_sg_portrec_t pr;
 
   /* make sure this socket will reach someone */
-  xbt_dict_t all_sockets = ((gras_trp_sg_plug_data_t)self->data)->sockets;
-  char *sock_name=bprintf("%s:%d",sock->peer_name,sock->peer_port);
-  gras_socket_t server = xbt_dict_get_or_null(all_sockets,sock_name);
-  free(sock_name);
+  if (!(peer = SIMIX_host_get_by_name(sock->peer_name)))
+    THROW1(mismatch_error, 0,
+           "Can't connect to %s: no such host.\n", sock->peer_name);
 
-  if (!server)
-    THROW2(mismatch_error, 0,
-           "can't connect to %s:%d, no process listen on this port",
-           sock->peer_name, sock->peer_port);
+  if (!(hd = (gras_hostdata_t *) SIMIX_host_get_data(peer)))
+    THROW1(mismatch_error, 0,
+           "can't connect to %s: no process on this host", sock->peer_name);
 
-  if (server->meas && !sock->meas) {
+  TRY {
+    find_port(hd, sock->peer_port, &pr);
+  }
+  CATCH(e) {
+    if (e.category == mismatch_error) {
+      xbt_ex_free(e);
+      THROW2(mismatch_error, 0,
+             "can't connect to %s:%d, no process listen on this port",
+             sock->peer_name, sock->peer_port);
+    }
+    RETHROW;
+  }
+
+  if (pr.meas && !sock->meas) {
     THROW2(mismatch_error, 0,
            "can't connect to %s:%d in regular mode, the process listen "
            "in measurement mode on this port", sock->peer_name,
            sock->peer_port);
   }
-  if (!server->meas && sock->meas) {
+  if (!pr.meas && sock->meas) {
     THROW2(mismatch_error, 0,
            "can't connect to %s:%d in measurement mode, the process listen "
            "in regular mode on this port", sock->peer_name, sock->peer_port);
   }
   /* create the socket */
-  data = xbt_new0(gras_trp_sg_sock_data_t, 1);
-  data->rdv = ((gras_trp_sg_sock_data_t *)server->data)->rdv;
+  data = xbt_new(gras_trp_sg_sock_data_t, 1);
   data->from_process = SIMIX_process_self();
+  data->to_process = pr.process;
+  data->to_host = peer;
+
+  /* initialize mutex and condition of the socket */
+  data->mutex = SIMIX_mutex_init();
+  data->cond = SIMIX_cond_init();
+  data->to_socket = pr.socket;
 
   sock->data = data;
   sock->incoming = 1;
-
-  /* Create a smx comm object about this socket */
-  data->ongoing_msg_size = sizeof(s_gras_msg_t);
-  smx_comm_t comm = SIMIX_network_irecv(data->rdv,&(data->ongoing_msg),&(data->ongoing_msg_size));
-  xbt_dynar_push(pd->comms,&comm);
 
   DEBUG5("%s (PID %d) connects in %s mode to %s:%d",
          SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
          sock->meas ? "meas" : "regular", sock->peer_name, sock->peer_port);
 }
 
-void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock) {
-  gras_trp_procdata_t pd= (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
-  xbt_dict_t all_sockets = ((gras_trp_sg_plug_data_t)self->data)->sockets;
+void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock)
+{
 
-  /* Make sure that this socket was not opened so far */
-  char *sock_name=bprintf("%s:%d",gras_os_myname(),sock->port);
-  gras_socket_t old = xbt_dict_get_or_null(all_sockets,sock_name);
-  if (old)
-    THROW1(mismatch_error, 0,
-           "can't listen on address %s: port already in use.",
-           sock_name);
+  gras_hostdata_t *hd =
+    (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
+  gras_sg_portrec_t pr;
+  gras_trp_sg_sock_data_t *data;
+  volatile int found;
 
+  const char *host = SIMIX_host_get_name(SIMIX_host_self());
 
-  /* Create the data associated to the socket */
-  gras_trp_sg_sock_data_t *data = xbt_new0(gras_trp_sg_sock_data_t, 1);
-  data->rdv = SIMIX_rdv_create(sock_name);
+  xbt_ex_t e;
+
+  xbt_assert0(hd, "Please run gras_process_init on each process");
+
+  sock->accepting = 0;          /* no such nuisance in SG */
+  found = 0;
+  TRY {
+    find_port(hd, sock->port, &pr);
+    found = 1;
+  } CATCH(e) {
+    if (e.category == mismatch_error)
+      xbt_ex_free(e);
+    else
+      RETHROW;
+  }
+
+  if (found)
+    THROW2(mismatch_error, 0,
+           "can't listen on address %s:%d: port already in use.",
+           host, sock->port);
+
+  pr.port = sock->port;
+  pr.meas = sock->meas;
+  pr.socket = sock;
+  pr.process = SIMIX_process_self();
+  xbt_dynar_push(hd->ports, &pr);
+
+  /* Create the socket */
+  data = xbt_new(gras_trp_sg_sock_data_t, 1);
   data->from_process = SIMIX_process_self();
-  SIMIX_rdv_set_data(data->rdv,sock);
+  data->to_process = NULL;
+  data->to_host = SIMIX_host_self();
 
-  sock->is_master = 1;
-  sock->incoming = 1;
+  data->cond = SIMIX_cond_init();
+  data->mutex = SIMIX_mutex_init();
 
   sock->data = data;
 
-  /* Register the socket to the set of sockets known simulation-wide */
-  xbt_dict_set(all_sockets,sock_name,sock,NULL); /* FIXME: add a function to raise a warning at simulation end for non-closed sockets */
-
-  /* Create a smx comm object about this socket */
-  data->ongoing_msg_size = sizeof(s_gras_msg_t);
-  smx_comm_t comm = SIMIX_network_irecv(data->rdv,&(data->ongoing_msg),&(data->ongoing_msg_size));
-  INFO2("irecv comm %p onto %p",comm,&(data->ongoing_msg));
-  xbt_dynar_push(pd->comms,&comm);
-
   VERB6("'%s' (%d) ears on %s:%d%s (%p)",
         SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
-        gras_os_myname(), sock->port, sock->meas ? " (mode meas)" : "", sock);
-  free(sock_name);
+        host, sock->port, sock->meas ? " (mode meas)" : "", sock);
+
 }
 
-void gras_trp_sg_socket_close(gras_socket_t sock) {
-  gras_trp_procdata_t pd= (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
-  if (sock->is_master) {
-    /* server mode socket. Unregister it from 'OS' tables */
-    char *sock_name=bprintf("%s:%d",gras_os_myname(),sock->port);
+void gras_trp_sg_socket_close(gras_socket_t sock)
+{
+  gras_hostdata_t *hd =
+    (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
+  unsigned int cpt;
+  gras_sg_portrec_t pr;
 
-    xbt_dict_t sockets = ((gras_trp_sg_plug_data_t)sock->plugin->data)->sockets;
-    gras_socket_t old = xbt_dict_get_or_null(sockets,sock_name);
-    if (!old)
-      WARN2("socket_close called on the unknown server socket %p (port=%d)",
-            sock, sock->port);
-    xbt_dict_remove(sockets,sock_name);
-    free(sock_name);
+  XBT_IN1(" (sock=%p)", sock);
 
-  }
+  if (!sock)
+    return;
+
+  xbt_assert0(hd, "Please run gras_process_init on each process");
 
   if (sock->data) {
-    SIMIX_rdv_destroy(((gras_trp_sg_sock_data_t *) sock->data)->rdv);
+    SIMIX_cond_destroy(((gras_trp_sg_sock_data_t *) sock->data)->cond);
+    SIMIX_mutex_destroy(((gras_trp_sg_sock_data_t *) sock->data)->mutex);
     free(sock->data);
   }
 
-  xbt_dynar_push(pd->sockets_to_close,&sock);
-  gras_msg_listener_awake();
-
+  if (sock->incoming && !sock->outgoing && sock->port >= 0) {
+    /* server mode socket. Unregister it from 'OS' tables */
+    xbt_dynar_foreach(hd->ports, cpt, pr) {
+      DEBUG2("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
+      if (pr.port == sock->port) {
+        xbt_dynar_cursor_rm(hd->ports, &cpt);
+        XBT_OUT;
+        return;
+      }
+    }
+    WARN2("socket_close called on the unknown incoming socket %p (port=%d)",
+          sock, sock->port);
+  }
   XBT_OUT;
 }
 
@@ -213,7 +261,10 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   char name[256];
   static unsigned int count = 0;
 
+  smx_action_t act;             /* simix action */
   gras_trp_sg_sock_data_t *sock_data;
+  gras_trp_procdata_t trp_remote_proc;
+  gras_msg_procdata_t msg_remote_proc;
   gras_msg_t msg;               /* message to send */
 
   sock_data = (gras_trp_sg_sock_data_t *) sock->data;
@@ -221,6 +272,7 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   xbt_assert0(sock->meas,
               "SG chunk exchange shouldn't be used on non-measurement sockets");
 
+  SIMIX_mutex_lock(sock_data->mutex);
   sprintf(name, "Chunk[%d]", count++);
   /*initialize gras message */
   msg = xbt_new(s_gras_msg_t, 1);
@@ -233,22 +285,73 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   } else {
     msg->payl = NULL;
   }
-  SIMIX_network_send(sock_data->rdv,size,-1.,-1.,&msg,sizeof(msg),(smx_comm_t*)&(msg->comm),msg);
+
+
+  /* put his socket on the selectable socket queue */
+  trp_remote_proc = (gras_trp_procdata_t)
+    gras_libdata_by_name_from_remote("gras_trp", sock_data->to_process);
+  xbt_queue_push(trp_remote_proc->meas_selectable_sockets, &sock);
+
+  /* put message on msg_queue */
+  msg_remote_proc = (gras_msg_procdata_t)
+    gras_libdata_by_name_from_remote("gras_msg", sock_data->to_process);
+
+  xbt_fifo_push(msg_remote_proc->msg_to_receive_queue_meas, msg);
+
+  /* wait for the receiver */
+  SIMIX_cond_wait(sock_data->cond, sock_data->mutex);
+
+  /* creates simix action and waits its ends, waits in the sender host
+     condition */
+  DEBUG5("send chunk %s from %s to  %s:%d (size=%ld)",
+         name, SIMIX_host_get_name(SIMIX_host_self()),
+         SIMIX_host_get_name(sock_data->to_host), sock->peer_port, size);
+
+  act = SIMIX_action_communicate(SIMIX_host_self(), sock_data->to_host,
+                                 name, size, -1);
+  SIMIX_register_action_to_condition(act, sock_data->cond);
+  SIMIX_cond_wait(sock_data->cond, sock_data->mutex);
+  SIMIX_unregister_action_to_condition(act, sock_data->cond);
+  /* error treatmeant (FIXME) */
+
+  /* cleanup structures */
+  SIMIX_action_destroy(act);
+
+  SIMIX_mutex_unlock(sock_data->mutex);
 }
 
 int gras_trp_sg_chunk_recv(gras_socket_t sock,
                            char *data, unsigned long int size)
 {
   gras_trp_sg_sock_data_t *sock_data;
+  gras_trp_sg_sock_data_t *remote_sock_data;
+  gras_socket_t remote_socket = NULL;
   gras_msg_t msg_got;
-  smx_comm_t comm;
+  gras_msg_procdata_t msg_procdata =
+    (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");
+  gras_trp_procdata_t trp_proc =
+    (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
 
   xbt_assert0(sock->meas,
               "SG chunk exchange shouldn't be used on non-measurement sockets");
+  xbt_queue_shift_timed(trp_proc->meas_selectable_sockets,
+                        &remote_socket, 60);
+
+  if (remote_socket == NULL) {
+    THROW0(timeout_error, 0, "Timeout");
+  }
+
+  remote_sock_data = (gras_trp_sg_sock_data_t *) remote_socket->data;
+  msg_got = xbt_fifo_shift(msg_procdata->msg_to_receive_queue_meas);
 
   sock_data = (gras_trp_sg_sock_data_t *) sock->data;
 
-  SIMIX_network_recv(sock_data->rdv,-1.,&msg_got,NULL,&comm);
+  /* ok, I'm here, you can continue the communication */
+  SIMIX_cond_signal(remote_sock_data->cond);
+
+  SIMIX_mutex_lock(remote_sock_data->mutex);
+  /* wait for communication end */
+  SIMIX_cond_wait(remote_sock_data->cond, remote_sock_data->mutex);
 
   if (msg_got->payl_size != size)
     THROW5(mismatch_error, 0,
@@ -264,5 +367,6 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
     xbt_free(msg_got->payl);
 
   xbt_free(msg_got);
+  SIMIX_mutex_unlock(remote_sock_data->mutex);
   return 0;
 }

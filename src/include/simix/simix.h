@@ -207,7 +207,7 @@ XBT_PUBLIC(void*) SIMIX_rdv_get_data(smx_rdv_t rdv);
 /*****Communication Requests*****/
 XBT_PUBLIC(void) SIMIX_communication_cancel(smx_comm_t comm);
 XBT_PUBLIC(double) SIMIX_communication_get_remains(smx_comm_t comm);
-XBT_PUBLIC(void *) SIMIX_communication_get_sentdata(smx_comm_t comm);
+XBT_PUBLIC(void *) SIMIX_communication_get_data(smx_comm_t comm);
 
 /*****Networking*****/
 XBT_PUBLIC(void) SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,

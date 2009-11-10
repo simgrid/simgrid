@@ -48,6 +48,7 @@ void gras_process_init()
     /* First process on this host */
     hd = xbt_new(gras_hostdata_t, 1);
     hd->refcount = 1;
+    hd->ports = xbt_dynar_new(sizeof(gras_sg_portrec_t), NULL);
     SIMIX_host_set_data(SIMIX_host_self(), (void *) hd);
   } else {
     hd->refcount++;
@@ -61,7 +62,9 @@ void gras_process_init()
   } else
     pd->ppid = -1;
 
-  trp_pd->sockets_to_close = xbt_dynar_new(sizeof(gras_socket_t),NULL);
+  trp_pd->msg_selectable_sockets = xbt_queue_new(0, sizeof(gras_socket_t));
+
+  trp_pd->meas_selectable_sockets = xbt_queue_new(0, sizeof(gras_socket_t));
 
   VERB2("Creating process '%s' (%d)",
         SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid());
@@ -83,7 +86,9 @@ void gras_process_exit()
   gras_trp_procdata_t trp_pd =
     (gras_trp_procdata_t) gras_libdata_by_name("gras_trp");
 
-  xbt_dynar_free(&trp_pd->sockets_to_close);
+  xbt_queue_free(&trp_pd->msg_selectable_sockets);
+
+  xbt_queue_free(&trp_pd->meas_selectable_sockets);
 
 
   xbt_assert0(hd, "Run gras_process_init (ie, gras_init)!!");
@@ -110,6 +115,7 @@ void gras_process_exit()
     gras_socket_close(sock_iter);
   }
   if (!--(hd->refcount)) {
+    xbt_dynar_free(&hd->ports);
     free(hd);
   }
   gras_procdata_exit();

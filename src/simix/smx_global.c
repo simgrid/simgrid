@@ -19,7 +19,6 @@ XBT_LOG_EXTERNAL_CATEGORY(simix_host);
 XBT_LOG_EXTERNAL_CATEGORY(simix_process);
 XBT_LOG_EXTERNAL_CATEGORY(simix_synchro);
 XBT_LOG_EXTERNAL_CATEGORY(simix_context);
-XBT_LOG_EXTERNAL_CATEGORY(simix_network);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
                                 "Logging specific to SIMIX (kernel)");
 
@@ -58,7 +57,6 @@ void SIMIX_global_init(int *argc, char **argv)
     XBT_LOG_CONNECT(simix_process, simix);
     XBT_LOG_CONNECT(simix_synchro, simix);
     XBT_LOG_CONNECT(simix_context, simix);
-    XBT_LOG_CONNECT(simix_network, simix);
 
     simix_global = xbt_new0(s_SIMIX_Global_t, 1);
 
@@ -419,10 +417,8 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
         if (smx_action) {
           /* Copy the transfered data of the completed communication actions */
           /* FIXME: find a better way to determine if its a comm action */
-          if(smx_action->data != NULL) {
-            CDEBUG1(simix_network,"Communication %p finished",smx_action->data);
+          if(smx_action->data != NULL)
             SIMIX_network_copy_data((smx_comm_t)smx_action->data);
-          }
           SIMIX_action_signal_all(smx_action);      
         }
       }

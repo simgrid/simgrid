@@ -103,10 +103,10 @@ void *gras_libdata_by_name_from_procdata(const char *name,
   }
   return res;
 }
-void *gras_libdata_by_id(int id) {
-  return gras_libdata_by_id_from_procdata(id,gras_procdata_get());
-}
-void *gras_libdata_by_id_from_procdata(int id,gras_procdata_t *pd) {
+
+void *gras_libdata_by_id(int id)
+{
+  gras_procdata_t *pd = gras_procdata_get();
   if (xbt_set_length(pd->libdata) < xbt_dynar_length(_gras_procdata_fabrics)) {
     /* Damn, some new modules were added since procdata_init(). Amok? */
     /* Get 'em all */

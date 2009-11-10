@@ -225,7 +225,7 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
   res->plugin = sock->plugin;
   res->incoming = sock->incoming;
   res->outgoing = sock->outgoing;
-  res->is_master = 0;
+  res->accepting = 0;
   res->sd = sd;
   res->port = -1;
 
@@ -266,10 +266,8 @@ static void gras_trp_sock_socket_close(gras_socket_t sock)
 
   VERB1("close tcp connection %d", sock->sd);
 
-  if (tcp_close(sock->sd) < 0) {
-    WARN3("error while closing tcp socket %d: %d (%s)\n",
-          sock->sd, sock_errno, sock_errstr(sock_errno));
-  }
+  /* ask the listener to close the socket */
+  gras_msg_listener_close_socket(sock->sd);
 }
 
 /************************************/

@@ -10,7 +10,6 @@
 #include "xbt/ex.h"
 #include "gras/Transport/transport_private.h"
 #include "gras/Virtu/virtu_sg.h"
-#include "simix/private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_trp);
 
@@ -28,61 +27,8 @@ gras_socket_t _gras_lastly_selected_socket = NULL;
  *
  * if timeout>0 and no message there, wait at most that amount of time before giving up.
  */
-gras_socket_t gras_trp_select(double timeout) {
-  static int warned=0;
-  if (timeout>=0 && !warned) {
-    warned=1;
-    WARN0("Timed select not implemented in SG. Switching to blocking select");
-  }
-  gras_trp_procdata_t pd =
-    (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
-
-  gras_socket_t sock_iter, active_socket;
-  gras_trp_sg_sock_data_t *active_socket_data;
-  smx_comm_t comm;
-  unsigned int cursor;
-
-
-  /* FIXME: make sure that the ongoing comm is canceled&destroyed when the corresponding socket is closed */
-  xbt_assert(xbt_dynar_length(pd->sockets)==xbt_dynar_length(pd->comms));
-
-  /* Wait for the first terminating comm object */
-  int rank = SIMIX_network_waitany(pd->comms);
-
-  /* Don't wait on this socket until the comm object is recreated by gras_msg_recv */
-  comm = NULL;
-  xbt_dynar_set(pd->comms,rank,&comm);
-
-  /* Ok, got something. Open a socket back to the expeditor */
-  active_socket = xbt_dynar_get_as(pd->sockets,rank,gras_socket_t);
-  active_socket_data = (gras_trp_sg_sock_data_t *) active_socket->data;
-
-  /* Try to reuse an already opened socket to that expeditor */
-  DEBUG1("Open sockets size %lu", xbt_dynar_length(pd->sockets));
-  xbt_dynar_foreach(pd->sockets, cursor, sock_iter) {
-    gras_trp_sg_sock_data_t *sock_data;
-    DEBUG1("Consider %p as outgoing socket to expeditor", sock_iter);
-
-    if (sock_iter->meas || !sock_iter->outgoing)
-      continue;
-    sock_data = ((gras_trp_sg_sock_data_t *) sock_iter->data);
-
-    if ((sock_data->to_socket == active_socket) &&
-        (sock_data->to_host ==
-         SIMIX_process_get_host(active_socket_data->from_process))) {
-      xbt_dynar_cursor_unlock(pd->sockets);
-      return sock_iter;
-    }
-  }
-
-  /* Socket to expeditor not created yet */
-  DEBUG0("Create a socket to the expeditor");
-
-
-
-  return sock_iter;
-
-#if 0 /* KILLME */
+gras_socket_t gras_trp_select(double timeout)
+{
   gras_socket_t res;
   gras_trp_procdata_t pd =
     (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
@@ -139,7 +85,7 @@ gras_socket_t gras_trp_select(double timeout) {
 
   res->incoming = 1;
   res->outgoing = 1;
-  res->is_master = 0;
+  res->accepting = 0;
   res->sd = -1;
 
   res->port = -1;
@@ -177,7 +123,6 @@ gras_socket_t gras_trp_select(double timeout) {
          SIMIX_process_get_name(sockdata->to_process), res->port);
 
   return res;
-#endif
 }
 
 

@@ -26,21 +26,20 @@ typedef struct {
 typedef struct {
   int refcount;
 
-  /* Nothing in particular (anymore) */
+  xbt_dynar_t ports;
+
 } gras_hostdata_t;
 
 /* data for each socket (FIXME: find a better location for that)*/
 typedef struct {
-  smx_rdv_t rdv;
+  smx_process_t from_process;
+  smx_process_t to_process;
 
-  smx_process_t from_process; /* the one who created the socket */
   smx_host_t to_host;           /* Who's on other side */
-  smx_comm_t comm; /* Ongoing communication */
 
-  s_gras_msg_t ongoing_msg;
-  size_t ongoing_msg_size;
-
-  gras_socket_t to_socket; /* If != NULL, this socket was created as accept when receiving onto to_socket */
+  smx_cond_t cond;
+  smx_mutex_t mutex;
+  gras_socket_t to_socket;
 } gras_trp_sg_sock_data_t;
 
 

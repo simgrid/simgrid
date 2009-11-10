@@ -99,8 +99,12 @@ XBT_PUBLIC(gras_trp_plugin_t)
        int myport;              /* Port on which I listen myself */
 
        xbt_dynar_t sockets;     /* all sockets known to this process */
-       xbt_dynar_t comms; /* SG cruft: the ongoing communications */
-       xbt_dynar_t sockets_to_close; /* The listener is in charge of closing the sockets */
+
+       /* SG only elements. In RL, they are part of the OS ;) */
+
+       /* List of sockets ready to be select()ed */
+       xbt_queue_t msg_selectable_sockets;      /* regular sockets  */
+       xbt_queue_t meas_selectable_sockets;     /* measurement ones */
 
      } s_gras_trp_procdata_t, *gras_trp_procdata_t;
 
