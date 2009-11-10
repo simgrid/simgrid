@@ -52,7 +52,7 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 
 /* the gettext function. It gets redefined here only if not yet available */
 #if !defined(__USE_GNU) || defined(DOXYGEN)
-XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
+//XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
 #endif
 
 /* Trim related functions */
