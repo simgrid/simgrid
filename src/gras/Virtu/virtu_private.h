@@ -44,5 +44,7 @@ typedef struct {
 gras_procdata_t *gras_procdata_get(void);
 void *gras_libdata_by_name_from_procdata(const char *name,
                                          gras_procdata_t * pd);
+void *gras_libdata_by_id_from_procdata(int id,gras_procdata_t *pd);
+
 
 #endif /* GRAS_VIRTU_PRIVATE_H */

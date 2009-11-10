@@ -98,7 +98,7 @@ gras_socket_t gras_socket_client_from_file(const char *path)
          path,
          res->sd,
          res->incoming ? 'y' : 'n',
-         res->outgoing ? 'y' : 'n', res->accepting ? 'y' : 'n');
+         res->outgoing ? 'y' : 'n', res->is_master ? 'y' : 'n');
 
   xbt_dynar_push(((gras_trp_procdata_t)
                   gras_libdata_by_id(gras_trp_libdata_id))->sockets, &res);
@@ -138,7 +138,7 @@ gras_socket_t gras_socket_server_from_file(const char *path)
   DEBUG4("sd=%d in=%c out=%c accept=%c",
          res->sd,
          res->incoming ? 'y' : 'n',
-         res->outgoing ? 'y' : 'n', res->accepting ? 'y' : 'n');
+         res->outgoing ? 'y' : 'n', res->is_master ? 'y' : 'n');
 
   xbt_dynar_push(((gras_trp_procdata_t)
                   gras_libdata_by_id(gras_trp_libdata_id))->sockets, &res);

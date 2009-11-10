@@ -87,7 +87,7 @@ smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type)
   }
 
   /* no relevant request found. Return NULL */
-  DEBUG0("Communication request not found");
+  DEBUG0("Communication request not found. I assume that other side will arrive later on.");
   return NULL;
 }
 
@@ -300,36 +300,32 @@ double SIMIX_communication_get_remains(smx_comm_t comm)
  */
 void SIMIX_network_copy_data(smx_comm_t comm)
 {
-  /* If there is no data to be copy then return */
-  if(!comm->src_buff || !comm->dst_buff)
-    return;
-  
   size_t src_buff_size = comm->src_buff_size;
   size_t dst_buff_size = *comm->dst_buff_size;
-  
-  /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
-  dst_buff_size = MIN(dst_buff_size, src_buff_size);
-  
-  /* Update the receiver's buffer size to the copied amount */
-  if (comm->dst_buff_size)
-    *comm->dst_buff_size = dst_buff_size;
 
-  if(dst_buff_size == 0)
+  xbt_assert(src_buff_size == dst_buff_size);
+
+  /* If there is no data to copy then return */
+  if(!comm->src_buff || !comm->dst_buff || dst_buff_size == 0)
     return;
 
   memcpy(comm->dst_buff, comm->src_buff, dst_buff_size);
 
-  DEBUG4("Copying comm %p data from %s -> %s (%zu bytes)", 
+  DEBUG6("Copying comm %p data from %s -> %s (%zu bytes %p->%p)",
          comm, comm->src_proc->smx_host->name, comm->dst_proc->smx_host->name,
-         dst_buff_size);
+         dst_buff_size,comm->src_buff,comm->dst_buff);
 }
 
 /**
  *  \brief Return the user data associated to the communication
+ *
+ *  In MSG and GRAS, that data is the exchanged task/msg itself, since
+ *  (i) In MSG, the receiver still wants to read the task although the communication didn't complete.
+ *  (ii) In GRAS, we need to retrieve that gras_msg_t during the select
  *  \param comm The communication
  *  \return the user data
  */
-void *SIMIX_communication_get_data(smx_comm_t comm)
+void *SIMIX_communication_get_sentdata(smx_comm_t comm)
 {
   return comm->data;
 }
@@ -427,6 +423,7 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
   comm->dst_buff = dst_buff;
   comm->dst_buff_size = dst_buff_size;
 
+  DEBUG2("Receive data for %p into %p",comm,comm->dst_buff);
   SIMIX_communication_start(comm);
   return comm;
 }

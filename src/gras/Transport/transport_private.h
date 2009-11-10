@@ -56,7 +56,7 @@ typedef struct s_gras_socket {
 
   int incoming:1;               /* true if we can read from this sock */
   int outgoing:1;               /* true if we can write on this sock */
-  int accepting:1;              /* true if master incoming sock in tcp */
+  int is_master:1;              /* true if master incoming sock */
   int meas:1;                   /* true if this is an experiment socket instead of messaging */
   int valid:1;                  /* false if a select returned that the peer quitted, forcing us to "close" the socket */
   int moredata:1;               /* TCP socket use a buffer and read operation get as much 

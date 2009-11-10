@@ -157,7 +157,7 @@ void gras_trp_socket_new(int incoming, gras_socket_t * dst)
 
   sock->incoming = incoming ? 1 : 0;
   sock->outgoing = incoming ? 0 : 1;
-  sock->accepting = incoming ? 1 : 0;
+  sock->is_master = incoming ? 1 : 0;
   sock->meas = 0;
   sock->recvd = 0;
   sock->valid = 1;
@@ -211,7 +211,7 @@ gras_socket_server_ext(unsigned short port,
     trp->socket_server(trp, sock);
     DEBUG3("in=%c out=%c accept=%c",
            sock->incoming ? 'y' : 'n',
-           sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
+           sock->outgoing ? 'y' : 'n', sock->is_master ? 'y' : 'n');
   } CATCH(e) {
 
     free(sock);
@@ -297,7 +297,7 @@ gras_socket_client_ext(const char *host,
     (*trp->socket_client) (trp, sock);
     DEBUG3("in=%c out=%c accept=%c",
            sock->incoming ? 'y' : 'n',
-           sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
+           sock->outgoing ? 'y' : 'n', sock->is_master ? 'y' : 'n');
   } CATCH(e) {
     free(sock);
     RETHROW;
@@ -340,7 +340,7 @@ void gras_socket_close_voidp(void *sock) {
 /** \brief Close socket */
 void gras_socket_close(gras_socket_t sock)
 {
-  xbt_dynar_t sockets =
+  xbt_dynar_t my_sockets =
     ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
   gras_socket_t sock_iter = NULL;
   unsigned int cursor;
@@ -358,23 +358,17 @@ void gras_socket_close(gras_socket_t sock)
   }
 
   /* FIXME: Issue an event when the socket is closed */
-  DEBUG1("sockets pointer before %p", sockets);
+  DEBUG1("sockets pointer before %p", my_sockets);
   if (sock) {
     /* FIXME: Cannot get the dynar mutex, because it can be already locked */
 //              _xbt_dynar_foreach(sockets,cursor,sock_iter) {
-    for (cursor = 0; cursor < xbt_dynar_length(sockets); cursor++) {
-      _xbt_dynar_cursor_get(sockets, cursor, &sock_iter);
+    for (cursor = 0; cursor < xbt_dynar_length(my_sockets); cursor++) {
+      _xbt_dynar_cursor_get(my_sockets, cursor, &sock_iter);
       if (sock == sock_iter) {
         DEBUG2("remove sock cursor %d dize %lu\n", cursor,
-               xbt_dynar_length(sockets));
-        xbt_dynar_cursor_rm(sockets, &cursor);
-        if (sock->plugin->socket_close)
-          (*sock->plugin->socket_close) (sock);
-
-        /* free the memory */
-        if (sock->peer_name)
-          free(sock->peer_name);
-        free(sock);
+               xbt_dynar_length(my_sockets));
+        xbt_dynar_cursor_rm(my_sockets, &cursor);
+        gras_msg_listener_close_socket(sock);
         XBT_OUT;
         return;
       }
@@ -574,7 +568,7 @@ gras_socket_t gras_socket_meas_accept(gras_socket_t peer)
   xbt_assert0(peer->meas,
               "No need to accept on non-measurement sockets (it's automatic)");
 
-  if (!peer->accepting) {
+  if (!peer->is_master) {
     /* nothing to accept here (must be in SG) */
     /* BUG: FIXME: this is BAD! it makes tricky to free the accepted socket */
     return peer;
@@ -598,6 +592,7 @@ static void *gras_trp_procdata_new(void)
   res->name = xbt_strdup("gras_trp");
   res->name_len = 0;
   res->sockets = xbt_dynar_new_sync(sizeof(gras_socket_t *), NULL);
+  res->comms = xbt_dynar_new(sizeof(void*),NULL); /* stores some smx_comm_t in SG (not used in RL) */
   res->myport = 0;
 
   return (void *) res;
@@ -611,6 +606,7 @@ static void gras_trp_procdata_free(void *data)
   gras_trp_procdata_t res = (gras_trp_procdata_t) data;
 
   xbt_dynar_free(&(res->sockets));
+  xbt_dynar_free(&(res->comms));
   free(res->name);
   free(res);
 }

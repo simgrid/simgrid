@@ -64,7 +64,7 @@ m_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
   if(!comm)
     return NULL; 
   
-  return (m_task_t)SIMIX_communication_get_data(comm);
+  return (m_task_t)SIMIX_communication_get_sentdata(comm);
 }
 
 int

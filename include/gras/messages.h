@@ -281,6 +281,7 @@ XBT_PUBLIC(void) gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,
        gras_msgtype_t type;
        unsigned long int ID;
        void *payl;
+       void *comm; /* simix_comm in SG */
        int payl_size;
      } s_gras_msg_t, *gras_msg_t;
 
