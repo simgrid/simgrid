@@ -91,7 +91,7 @@ int client(int argc, char *argv[]) {
   
   VERB1("Client ready; listening on %d", gras_socket_my_port(mysock));
   
-  globals=gras_userdata_new(server_data_t*);
+  globals=gras_userdata_new(client_data_t*);
   globals->done = 0;
   
   gras_os_sleep(1.5); /* sleep 1 second and half */
