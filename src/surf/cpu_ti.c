@@ -402,6 +402,7 @@ static void cpu_update_action_finish_date(cpu_ti_t cpu, double now)
   cpu->sum_priority = sum_priority;
 
   xbt_swag_foreach(action, cpu->action_set) {
+    min_finish = -1;
     /* action not running, skip it */
     if (GENERIC_ACTION(action).state_set !=
         surf_cpu_model->states.running_action_set)
@@ -617,6 +618,7 @@ static void action_suspend(surf_action_t action)
   XBT_IN1("(%p)", action);
   if (((surf_action_cpu_ti_t) action)->suspended != 2) {
     ((surf_action_cpu_ti_t) action)->suspended = 1;
+    xbt_heap_remove(action_heap, ((surf_action_cpu_ti_t) action)->index_heap);
     xbt_swag_insert(ACTION_GET_CPU(action), modified_cpu);
   }
   XBT_OUT;

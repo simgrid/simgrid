@@ -407,6 +407,8 @@ static void action_suspend(surf_action_t action)
     lmm_update_variable_weight(cpu_im_maxmin_system,
                                ((surf_action_lmm_t) action)->variable, 0.0);
     ((surf_action_lmm_t) action)->suspended = 1;
+    xbt_heap_remove(action_heap,
+                    ((surf_action_cpu_Cas01_im_t) action)->index_heap);
     xbt_swag_insert(ACTION_GET_CPU(action), modified_cpu);
   }
   XBT_OUT;
