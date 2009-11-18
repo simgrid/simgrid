@@ -58,7 +58,7 @@ TESTS = bcast.tesh reduce.tesh
 
 # No need to change anything after that line
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-EXTRA_DIST = $(TESTS)
+EXTRA_DIST = $(TESTS) hostfile
 CLEANFILES = *~
 
 include $(top_srcdir)/acmacro/dist-files.mk
