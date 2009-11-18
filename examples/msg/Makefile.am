@@ -40,7 +40,8 @@ EXTRA_DIST = msg_platform.xml \
              trace/test8.xml \
              trace/test9.xml \
              trace/test10.xml \
-             trace/test11.xml
+             trace/test11.xml \
+	     fafard_state.trace jupiter_state.trace link5_state.trace
 
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
