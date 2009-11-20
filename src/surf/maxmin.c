@@ -21,7 +21,7 @@ static void lmm_variable_mallocator_free_f(void *var);
 static void lmm_variable_mallocator_reset_f(void *var);
 static void lmm_update_modified_set(lmm_system_t sys, lmm_constraint_t cnst);
 static void lmm_remove_all_modified_set(lmm_system_t sys);
-int sg_maxmin_selective_update = 0;
+int sg_maxmin_selective_update = 1;
 static int Global_debug_id = 1;
 static int Global_const_debug_id = 1;
 lmm_system_t lmm_system_new(void)
@@ -76,7 +76,7 @@ void lmm_system_free(lmm_system_t sys)
   free(sys);
 }
 
-void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
+XBT_INLINE void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
 {
   int i;
   lmm_element_t elem = NULL;
@@ -327,7 +327,7 @@ XBT_INLINE void *lmm_variable_id(lmm_variable_t var)
   return var->id;
 }
 
-static void saturated_constraint_set_update(lmm_system_t sys,
+static XBT_INLINE void saturated_constraint_set_update(lmm_system_t sys,
                                             lmm_constraint_t cnst,
                                             double *min_usage)
 {
@@ -358,7 +358,7 @@ static void saturated_constraint_set_update(lmm_system_t sys,
   XBT_OUT;
 }
 
-static void saturated_variable_set_update(lmm_system_t sys)
+static XBT_INLINE void saturated_variable_set_update(lmm_system_t sys)
 {
   lmm_constraint_t cnst = NULL;
   xbt_swag_t cnst_list = NULL;
