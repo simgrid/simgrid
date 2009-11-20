@@ -483,6 +483,7 @@ AC_CONFIG_FILES([
     for file in                                                 \
      tools/graspe-slave           tools/graspe-master           \
      checkall                     examples/java/runtest         \
+     src/mk_supernovae.sh                                       \
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done

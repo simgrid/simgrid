@@ -68,6 +68,7 @@ EXTRA_DIST= \
 	simdag/dax.dtd \
 	\
 	gras/DataDesc/ddt_parse.yy.l \
+        gras/DataDesc/ddt_parse.yy.h \
 	gras/Virtu/virtu_rl.h \
 	gras/Virtu/virtu_sg.h \
 	gras/Virtu/virtu_interface.h \
@@ -278,7 +279,7 @@ GRAS_COMMON_SRC= \
   gras/DataDesc/ddt_convert.c         gras/DataDesc/ddt_exchange.c     \
   gras/DataDesc/cbps.c                gras/DataDesc/datadesc.c         \
   gras/DataDesc/datadesc_interface.h  gras/DataDesc/datadesc_private.h \
-  gras/DataDesc/ddt_parse.c           gras/DataDesc/ddt_parse.yy.c         gras/DataDesc/ddt_parse.yy.h
+  gras/DataDesc/ddt_parse.c           gras/DataDesc/ddt_parse.yy.c
 
 GRAS_RL_SRC= \
   gras/rl_stubs.c                     xbt/xbt_os_thread.c                    \
@@ -326,12 +327,14 @@ endif
 
 lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la
 
-libgras_la_SOURCES=  $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
+gras_sources=$(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
+simgrid_sources=$(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) \
+                $(SIMIX_SRC) $(MSG_SRC) $(SIMDAG_SRC) \
+		$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
+
+
 libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
-libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) \
-                        $(SIMIX_SRC) $(MSG_SRC) $(SIMDAG_SRC) \
-			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 # -Wl,--entry -Wl,simgrid_version
 
@@ -355,7 +358,7 @@ endif
 EXTRA_DIST+=$(JMSG_JAVA_SRC)
 
 if HAVE_JAVA
-libsimgrid_la_SOURCES += $(JMSG_C_SRC) # add the binding support to the library
+simgrid_sources += $(JMSG_C_SRC) # add the binding support to the library
 
 clean-local:
 	-rm -rf .classes simgrid.jar
@@ -371,6 +374,29 @@ simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/simgrid.dtd
 	$(JAR) cvf simgrid.jar -C .classes .
 else
 EXTRA_DIST+=$(JMSG_C_SRC) $(JMSG_JAVA_SRC) $(MSG_SRC)
+endif
+
+##
+## Compile the libs
+CLEANFILES=
+if SUPERNOVAE_MODE
+  
+simgrid_fragile_sources=gras/DataDesc/ddt_parse.yy.c surf/surfxml_parse.c xbt/graphxml_parse.c simdag/sd_daxloader.c
+gras_fragile_sources=gras/DataDesc/ddt_parse.yy.c xbt/graphxml_parse.c
+
+supernovae_sg.c: Makefile.am
+	./mk_supernovae.sh supernovae_sg.c $(filter-out $(simgrid_fragile_sources),$(simgrid_sources))
+supernovae_gras.c: Makefile.am
+	./mk_supernovae.sh supernovae_gras.c $(filter-out $(gras_fragile_sources),$(gras_sources))
+supernovae_smpi.c: Makefile.am
+	./mk_supernovae.sh supernovae_smpi.c $(filter-out $(smpi_fragile_sources),$(smpi_sources))
+CLEANFILES+=supernovae_sg.c supernovae_gras.c supernovae_smpi.c
+
+libsimgrid_la_SOURCES = supernovae_sg.c $(simgrid_fragile_sources)
+libgras_la_SOURCES = supernovae_gras.c $(gras_fragile_sources)
+else
+libsimgrid_la_SOURCES = $(simgrid_sources)
+libgras_la_SOURCES=$(gras_sources)
 endif
 
 if GRAMINE_MODE
@@ -412,7 +438,7 @@ TESTS_ENVIRONMENT=$(SG_TEST_EXENV)
 EXTRA_DIST+=$(testall_SOURCES)
 
 if MAINTAINER_MODE
-CLEANFILES=$(TEST_UNITS)
+CLEANFILES+=$(TEST_UNITS)
 
 $(TEST_UNITS): $(TEST_CFILES)
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
