@@ -170,12 +170,22 @@ void SIMIX_process_kill(smx_process_t process)
     if (process->mutex)
       xbt_swag_remove(process, process->mutex->sleeping);
 
-    if (process->cond)
+    if (process->cond) {
       xbt_swag_remove(process, process->cond->sleeping);
 
-    if (process->waiting_action) {
-      SIMIX_unregister_action_to_condition(process->waiting_action, process->cond);
-      SIMIX_action_destroy(process->waiting_action);
+      if (process->waiting_action) {
+        SIMIX_unregister_action_to_condition(process->waiting_action, process->cond);
+        SIMIX_action_destroy(process->waiting_action);
+      }
+    }
+
+    if (process->sem) {
+    	xbt_swag_remove(process, process->sem->sleeping);
+
+      if (process->waiting_action) {
+      	SIMIX_unregister_action_to_semaphore(process->waiting_action, process->sem);
+      	SIMIX_action_destroy(process->waiting_action);
+      }
     }
   }
 }
