@@ -64,7 +64,7 @@ XBT_INLINE void xbt_swag_init(xbt_swag_t swag, size_t offset)
  *
  * insert \a obj in \a swag
  */
-void xbt_swag_insert(void *obj, xbt_swag_t swag)
+XBT_INLINE void xbt_swag_insert(void *obj, xbt_swag_t swag)
 {
 
   if (xbt_swag_belongs(obj, swag))
@@ -91,7 +91,7 @@ void xbt_swag_insert(void *obj, xbt_swag_t swag)
  * insert (at the head... you probably had a very good reason to do
  * that, I hope you know what you're doing) \a obj in \a swag
  */
-void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
+XBT_INLINE void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
 {
 
   if (xbt_swag_belongs(obj, swag))
@@ -118,7 +118,7 @@ void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
  * insert (at the tail... you probably had a very good reason to do
  * that, I hope you know what you're doing) \a obj in \a swag
  */
-void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
+XBT_INLINE void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
 {
 
   if (xbt_swag_belongs(obj, swag))
@@ -145,7 +145,7 @@ void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
  *
  * removes \a obj from \a swag
  */
-void *xbt_swag_remove(void *obj, xbt_swag_t swag)
+XBT_INLINE void *xbt_swag_remove(void *obj, xbt_swag_t swag)
 {
   size_t offset = swag->offset;
 
