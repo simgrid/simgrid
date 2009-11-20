@@ -333,7 +333,6 @@ then
 fi
 AM_CONDITIONAL(GRAMINE_MODE,test x$gramine_mode != xno)
 
-
 AM_MAINTAINER_MODE
 if test x$USE_MAINTAINER_MODE = xyes 
 then
@@ -341,6 +340,21 @@ then
    force_compile_warnings=yes   
 fi
 SG_COMPILE_FLAGS
+
+##
+## Support for the supernovae compilation mode
+##
+if test x$USE_MAINTAINER_MODE = xyes 
+then
+   not_maintainer_mode=yes
+else
+   not_maintainer_mode=no
+fi
+
+AC_ARG_ENABLE(supernovae,
+              AS_HELP_STRING([--enable-supernovae],[Put the whole library in one compilation unit only to help gcc optimizing the code]),
+	      supernovae=$enableval,supernovae=$not_maintainer_mode)
+AM_CONDITIONAL(SUPERNOVAE_MODE, test x$supernovae != xno)
 
 AC_SUBST([CFLAGS])
 AC_SUBST([CPPFLAGS])
@@ -563,6 +577,7 @@ Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (
 	Compile Java:    ${use_java}
 	
 	Maintainer mode: ${USE_MAINTAINER_MODE}
+	Supernovae mode: ${supernovae}
 
 "
 if test x$botbuild = xyes ; then
