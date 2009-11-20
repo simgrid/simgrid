@@ -29,7 +29,6 @@ static void netcste_count_hosts(void)
 
 static void netcste_define_callbacks(const char *file)
 {
-  /* Figuring out the network links */
   surfxml_add_callback(STag_surfxml_host_cb_list, &netcste_count_hosts);
 }
 
