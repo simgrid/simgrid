@@ -16,10 +16,10 @@
 #include <stdio.h>
 #include "portable.h"
 
-extern const char *xbt_log_priority_names[7];
+extern const char *xbt_log_priority_names[8];
 extern int xbt_log_no_loc;
 
-static double begin_of_time = -1;
+static double simple_begin_of_time = -1;
 
 static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
                                           xbt_log_event_t ev,
@@ -39,7 +39,7 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
                   gras_os_myname(), xbt_procname(), (*xbt_getpid) ());
   p +=
     snprintf(p, 256 - (p - loc_buff), "%f] ",
-             gras_os_time() - begin_of_time);
+             gras_os_time() - simple_begin_of_time);
   if (ev->priority != xbt_log_priority_info && xbt_log_no_loc==0)
     p +=
       snprintf(p, 256 - (p - loc_buff), "%s:%d: ", ev->fileName,
@@ -61,6 +61,7 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
 }
 
 /* only used after the format using: we suppose that the buffer is big enough to display our data */
+#undef check_overflow
 #define check_overflow \
   if (p-ev->buffer > XBT_LOG_BUFF_SIZE) { /* buffer overflow */ \
   xbt_log_layout_simple_dynamic(l,ev,fmt,app); \
@@ -80,8 +81,8 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
               "Priority %d is greater than the biggest allowed value",
               ev->priority);
 
-  if (begin_of_time < 0)
-    begin_of_time = gras_os_time();
+  if (simple_begin_of_time < 0)
+    simple_begin_of_time = gras_os_time();
 
   p = ev->buffer;
   p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "[");
@@ -97,7 +98,7 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
   /* Display the date */
   p +=
     snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%f] ",
-             gras_os_time() - begin_of_time);
+             gras_os_time() - simple_begin_of_time);
   check_overflow;
 
   /* Display file position if not INFO */

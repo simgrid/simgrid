@@ -7,6 +7,9 @@
 
 #include "surf_private.h"
 
+#undef GENERIC_LMM_ACTION
+#undef GENERIC_ACTION
+#undef ACTION_GET_CPU
 #define GENERIC_LMM_ACTION(action) action->generic_lmm_action
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 #define ACTION_GET_CPU(action) ((surf_action_cpu_Cas01_im_t) action)->cpu
@@ -36,14 +39,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_im, surf,
 
 
 lmm_system_t cpu_im_maxmin_system = NULL;
-static xbt_swag_t modified_cpu = NULL;
-static xbt_heap_t action_heap = NULL;
+static xbt_swag_t cpu_im_modified_cpu = NULL;
+static xbt_heap_t cpu_im_action_heap = NULL;
 extern int sg_maxmin_selective_update;
 
 
-static xbt_swag_t running_action_set_that_does_not_need_being_checked = NULL;
+static xbt_swag_t cpu_im_running_action_set_that_does_not_need_being_checked = NULL;
 
-static cpu_Cas01_im_t cpu_new(char *name, double power_peak,
+static cpu_Cas01_im_t cpu_im_new(char *name, double power_peak,
                               double power_scale,
                               tmgr_trace_t power_trace,
                               e_surf_resource_state_t state_initial,
@@ -81,7 +84,7 @@ static cpu_Cas01_im_t cpu_new(char *name, double power_peak,
 }
 
 
-static void parse_cpu_init(void)
+static void parse_cpu_im_init(void)
 {
   double power_peak = 0.0;
   double power_scale = 0.0;
@@ -103,12 +106,12 @@ static void parse_cpu_init(void)
   state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 
   current_property_set = xbt_dict_new();
-  cpu_new(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
+  cpu_im_new(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
           power_trace, state_initial, state_trace, current_property_set);
 
 }
 
-static void add_traces_cpu(void)
+static void cpu_im_add_traces_cpu(void)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *trace_name, *elm;
@@ -142,20 +145,20 @@ static void add_traces_cpu(void)
   }
 }
 
-static void define_callbacks(const char *file)
+static void cpu_im_define_callbacks(const char *file)
 {
   surf_parse_reset_parser();
-  surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu);
+  surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_im_init);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &cpu_im_add_traces_cpu);
 }
 
-static int resource_used(void *resource_id)
+static int cpu_im_resource_used(void *resource_id)
 {
   return lmm_constraint_used(cpu_im_maxmin_system,
                              ((cpu_Cas01_im_t) resource_id)->constraint);
 }
 
-static int action_unref(surf_action_t action)
+static int cpu_im_action_unref(surf_action_t action)
 {
   action->refcount--;
   if (!action->refcount) {
@@ -164,28 +167,28 @@ static int action_unref(surf_action_t action)
       lmm_variable_free(cpu_im_maxmin_system,
                         ((surf_action_lmm_t) action)->variable);
     /* remove from heap */
-    xbt_heap_remove(action_heap,
+    xbt_heap_remove(cpu_im_action_heap,
                     ((surf_action_cpu_Cas01_im_t) action)->index_heap);
     xbt_swag_remove(action,
                     ((cpu_Cas01_im_t) ACTION_GET_CPU(action))->action_set);
-    xbt_swag_insert(ACTION_GET_CPU(action), modified_cpu);
+    xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
     free(action);
     return 1;
   }
   return 0;
 }
 
-static void action_cancel(surf_action_t action)
+static void cpu_im_action_cancel(surf_action_t action)
 {
   surf_action_state_set(action, SURF_ACTION_FAILED);
-  xbt_heap_remove(action_heap,
+  xbt_heap_remove(cpu_im_action_heap,
                   ((surf_action_cpu_Cas01_im_t) action)->index_heap);
   xbt_swag_remove(action,
                   ((cpu_Cas01_im_t) ACTION_GET_CPU(action))->action_set);
   return;
 }
 
-static void cpu_action_state_set(surf_action_t action,
+static void cpu_im_cpu_action_state_set(surf_action_t action,
                                  e_surf_action_state_t state)
 {
 /*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
@@ -198,7 +201,7 @@ static void cpu_action_state_set(surf_action_t action,
   return;
 }
 
-static void cpu_update_remains(cpu_Cas01_im_t cpu, double now)
+static void cpu_im_update_remains(cpu_Cas01_im_t cpu, double now)
 {
   surf_action_cpu_Cas01_im_t action;
 
@@ -225,19 +228,19 @@ static void cpu_update_remains(cpu_Cas01_im_t cpu, double now)
   cpu->last_update = now;
 }
 
-static double share_resources(double now)
+static double cpu_im_share_resources(double now)
 {
   surf_action_cpu_Cas01_im_t action;
   double min;
   double value;
   cpu_Cas01_im_t cpu, cpu_next;
 
-  xbt_swag_foreach(cpu, modified_cpu)
-    cpu_update_remains(cpu, now);
+  xbt_swag_foreach(cpu, cpu_im_modified_cpu)
+    cpu_im_update_remains(cpu, now);
 
   lmm_solve(cpu_im_maxmin_system);
 
-  xbt_swag_foreach_safe(cpu, cpu_next, modified_cpu) {
+  xbt_swag_foreach_safe(cpu, cpu_next, cpu_im_modified_cpu) {
     xbt_swag_foreach(action, cpu->action_set) {
       if (GENERIC_ACTION(action).state_set !=
           surf_cpu_model->states.running_action_set)
@@ -271,39 +274,39 @@ static double share_resources(double now)
 
       if (action->index_heap >= 0) {
         surf_action_cpu_Cas01_im_t heap_act =
-          xbt_heap_remove(action_heap, action->index_heap);
+          xbt_heap_remove(cpu_im_action_heap, action->index_heap);
         if (heap_act != action)
           DIE_IMPOSSIBLE;
       }
       if (min != -1) {
-        xbt_heap_push(action_heap, action, min);
+        xbt_heap_push(cpu_im_action_heap, action, min);
         DEBUG2("Insert at heap action(%p) min %lf", action, min);
       }
     }
-    xbt_swag_remove(cpu, modified_cpu);
+    xbt_swag_remove(cpu, cpu_im_modified_cpu);
   }
-  return xbt_heap_size(action_heap) >
-    0 ? xbt_heap_maxkey(action_heap) - now : -1;
+  return xbt_heap_size(cpu_im_action_heap) >
+    0 ? xbt_heap_maxkey(cpu_im_action_heap) - now : -1;
 }
 
-static void update_actions_state(double now, double delta)
+static void cpu_im_update_actions_state(double now, double delta)
 {
   surf_action_cpu_Cas01_im_t action;
 
-  while ((xbt_heap_size(action_heap) > 0)
-         && (double_equals(xbt_heap_maxkey(action_heap), now))) {
-    action = xbt_heap_pop(action_heap);
+  while ((xbt_heap_size(cpu_im_action_heap) > 0)
+         && (double_equals(xbt_heap_maxkey(cpu_im_action_heap), now))) {
+    action = xbt_heap_pop(cpu_im_action_heap);
     DEBUG1("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     GENERIC_ACTION(action).remains = 0;
-    cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    cpu_update_remains(action->cpu, surf_get_clock());
+    cpu_im_cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
+    cpu_im_update_remains(action->cpu, surf_get_clock());
   }
   return;
 }
 
-static void update_resource_state(void *id,
+static void cpu_im_update_resource_state(void *id,
                                   tmgr_trace_event_t event_type,
                                   double value, double date)
 {
@@ -313,7 +316,7 @@ static void update_resource_state(void *id,
     cpu->power_scale = value;
     lmm_update_constraint_bound(cpu_im_maxmin_system, cpu->constraint,
                                 cpu->power_scale * cpu->power_peak);
-    xbt_swag_insert(cpu, modified_cpu);
+    xbt_swag_insert(cpu, cpu_im_modified_cpu);
     if (tmgr_trace_event_free(event_type))
       cpu->power_event = NULL;
   } else if (event_type == cpu->state_event) {
@@ -333,7 +336,7 @@ static void update_resource_state(void *id,
             surf_action_state_get(action) == SURF_ACTION_READY ||
             surf_action_state_get(action) == SURF_ACTION_NOT_IN_THE_SYSTEM) {
           action->finish = date;
-          cpu_action_state_set(action, SURF_ACTION_FAILED);
+          cpu_im_cpu_action_state_set(action, SURF_ACTION_FAILED);
         }
       }
     }
@@ -347,7 +350,7 @@ static void update_resource_state(void *id,
   return;
 }
 
-static surf_action_t execute(void *cpu, double size)
+static surf_action_t cpu_im_execute(void *cpu, double size)
 {
   surf_action_cpu_Cas01_im_t action = NULL;
   cpu_Cas01_im_t CPU = cpu;
@@ -365,7 +368,7 @@ static surf_action_t execute(void *cpu, double size)
                      GENERIC_ACTION(action).priority, -1.0, 1);
   action->index_heap = -1;
   action->cpu = CPU;
-  xbt_swag_insert(CPU, modified_cpu);
+  xbt_swag_insert(CPU, cpu_im_modified_cpu);
   xbt_swag_insert(action, CPU->action_set);
   lmm_expand(cpu_im_maxmin_system, CPU->constraint,
              GENERIC_LMM_ACTION(action).variable, 1.0);
@@ -373,7 +376,7 @@ static surf_action_t execute(void *cpu, double size)
   return (surf_action_t) action;
 }
 
-static surf_action_t action_sleep(void *cpu, double duration)
+static surf_action_t cpu_im_action_sleep(void *cpu, double duration)
 {
   surf_action_cpu_Cas01_im_t action = NULL;
 
@@ -381,7 +384,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
     duration = MAX(duration, MAXMIN_PRECISION);
 
   XBT_IN2("(%s,%g)", surf_resource_name(cpu), duration);
-  action = (surf_action_cpu_Cas01_im_t) execute(cpu, 1.0);
+  action = (surf_action_cpu_Cas01_im_t) cpu_im_execute(cpu, 1.0);
   GENERIC_ACTION(action).max_duration = duration;
   GENERIC_LMM_ACTION(action).suspended = 2;
   if (duration == NO_MAX_DURATION) {
@@ -389,32 +392,32 @@ static surf_action_t action_sleep(void *cpu, double duration)
        is used to speed up update_resource_state  */
     xbt_swag_remove(action, ((surf_action_t) action)->state_set);
     ((surf_action_t) action)->state_set =
-      running_action_set_that_does_not_need_being_checked;
+      cpu_im_running_action_set_that_does_not_need_being_checked;
     xbt_swag_insert(action, ((surf_action_t) action)->state_set);
   }
 
   lmm_update_variable_weight(cpu_im_maxmin_system,
                              GENERIC_LMM_ACTION(action).variable, 0.0);
-  xbt_swag_insert(cpu, modified_cpu);
+  xbt_swag_insert(cpu, cpu_im_modified_cpu);
   XBT_OUT;
   return (surf_action_t) action;
 }
 
-static void action_suspend(surf_action_t action)
+static void cpu_im_action_suspend(surf_action_t action)
 {
   XBT_IN1("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_im_maxmin_system,
                                ((surf_action_lmm_t) action)->variable, 0.0);
     ((surf_action_lmm_t) action)->suspended = 1;
-    xbt_heap_remove(action_heap,
+    xbt_heap_remove(cpu_im_action_heap,
                     ((surf_action_cpu_Cas01_im_t) action)->index_heap);
-    xbt_swag_insert(ACTION_GET_CPU(action), modified_cpu);
+    xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
   }
   XBT_OUT;
 }
 
-static void action_resume(surf_action_t action)
+static void cpu_im_action_resume(surf_action_t action)
 {
   XBT_IN1("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
@@ -422,27 +425,27 @@ static void action_resume(surf_action_t action)
                                ((surf_action_lmm_t) action)->variable,
                                action->priority);
     ((surf_action_lmm_t) action)->suspended = 0;
-    xbt_swag_insert(ACTION_GET_CPU(action), modified_cpu);
+    xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
   }
   XBT_OUT;
 }
 
-static int action_is_suspended(surf_action_t action)
+static int cpu_im_action_is_suspended(surf_action_t action)
 {
   return (((surf_action_lmm_t) action)->suspended == 1);
 }
 
-static void action_set_max_duration(surf_action_t action, double duration)
+static void cpu_im_action_set_max_duration(surf_action_t action, double duration)
 {
   XBT_IN2("(%p,%g)", action, duration);
 
   action->max_duration = duration;
   /* insert cpu in modified_cpu set to notice the max duration change */
-  xbt_swag_insert(ACTION_GET_CPU(action), modified_cpu);
+  xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
   XBT_OUT;
 }
 
-static void action_set_priority(surf_action_t action, double priority)
+static void cpu_im_action_set_priority(surf_action_t action, double priority)
 {
   XBT_IN2("(%p,%g)", action, priority);
   action->priority = priority;
@@ -450,41 +453,41 @@ static void action_set_priority(surf_action_t action, double priority)
                              ((surf_action_lmm_t) action)->variable,
                              priority);
 
-  xbt_swag_insert(ACTION_GET_CPU(action), modified_cpu);
+  xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
   XBT_OUT;
 }
 
-static double action_get_remains(surf_action_t action)
+static double cpu_im_action_get_remains(surf_action_t action)
 {
   XBT_IN1("(%p)", action);
   /* update remains before return it */
-  cpu_update_remains(ACTION_GET_CPU(action), surf_get_clock());
+  cpu_im_update_remains(ACTION_GET_CPU(action), surf_get_clock());
   return action->remains;
   XBT_OUT;
 }
 
-static e_surf_resource_state_t get_state(void *cpu)
+static e_surf_resource_state_t cpu_im_get_state(void *cpu)
 {
   return ((cpu_Cas01_im_t) cpu)->state_current;
 }
 
-static double get_speed(void *cpu, double load)
+static double cpu_im_get_speed(void *cpu, double load)
 {
   return load * (((cpu_Cas01_im_t) cpu)->power_peak);
 }
 
-static double get_available_speed(void *cpu)
+static double cpu_im_get_available_speed(void *cpu)
 {
   /* number between 0 and 1 */
   return ((cpu_Cas01_im_t) cpu)->power_scale;
 }
 
-static void action_update_index_heap(void *action, int i)
+static void cpu_im_action_update_index_heap(void *action, int i)
 {
   ((surf_action_cpu_Cas01_im_t) action)->index_heap = i;
 }
 
-static void finalize(void)
+static void cpu_im_finalize(void)
 {
   void *cpu;
   xbt_dict_cursor_t cursor;
@@ -500,56 +503,56 @@ static void finalize(void)
   surf_model_exit(surf_cpu_model);
   surf_cpu_model = NULL;
 
-  xbt_swag_free(running_action_set_that_does_not_need_being_checked);
-  running_action_set_that_does_not_need_being_checked = NULL;
-  xbt_heap_free(action_heap);
-  xbt_swag_free(modified_cpu);
+  xbt_swag_free(cpu_im_running_action_set_that_does_not_need_being_checked);
+  cpu_im_running_action_set_that_does_not_need_being_checked = NULL;
+  xbt_heap_free(cpu_im_action_heap);
+  xbt_swag_free(cpu_im_modified_cpu);
 }
 
-static void surf_cpu_model_init_internal(void)
+static void surf_cpu_im_model_init_internal(void)
 {
   s_surf_action_t action;
   s_cpu_Cas01_im_t cpu;
 
   surf_cpu_model = surf_model_init();
 
-  running_action_set_that_does_not_need_being_checked =
+  cpu_im_running_action_set_that_does_not_need_being_checked =
     xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_cpu_model->name = "CPU_IM";
 
-  surf_cpu_model->action_unref = action_unref;
-  surf_cpu_model->action_cancel = action_cancel;
-  surf_cpu_model->action_state_set = cpu_action_state_set;
+  surf_cpu_model->action_unref = cpu_im_action_unref;
+  surf_cpu_model->action_cancel = cpu_im_action_cancel;
+  surf_cpu_model->action_state_set = cpu_im_cpu_action_state_set;
 
-  surf_cpu_model->model_private->resource_used = resource_used;
-  surf_cpu_model->model_private->share_resources = share_resources;
-  surf_cpu_model->model_private->update_actions_state = update_actions_state;
+  surf_cpu_model->model_private->resource_used = cpu_im_resource_used;
+  surf_cpu_model->model_private->share_resources = cpu_im_share_resources;
+  surf_cpu_model->model_private->update_actions_state = cpu_im_update_actions_state;
   surf_cpu_model->model_private->update_resource_state =
-    update_resource_state;
-  surf_cpu_model->model_private->finalize = finalize;
+    cpu_im_update_resource_state;
+  surf_cpu_model->model_private->finalize = cpu_im_finalize;
 
-  surf_cpu_model->suspend = action_suspend;
-  surf_cpu_model->resume = action_resume;
-  surf_cpu_model->is_suspended = action_is_suspended;
-  surf_cpu_model->set_max_duration = action_set_max_duration;
-  surf_cpu_model->set_priority = action_set_priority;
-  surf_cpu_model->get_remains = action_get_remains;
+  surf_cpu_model->suspend = cpu_im_action_suspend;
+  surf_cpu_model->resume = cpu_im_action_resume;
+  surf_cpu_model->is_suspended = cpu_im_action_is_suspended;
+  surf_cpu_model->set_max_duration = cpu_im_action_set_max_duration;
+  surf_cpu_model->set_priority = cpu_im_action_set_priority;
+  surf_cpu_model->get_remains = cpu_im_action_get_remains;
 
-  surf_cpu_model->extension.cpu.execute = execute;
-  surf_cpu_model->extension.cpu.sleep = action_sleep;
+  surf_cpu_model->extension.cpu.execute = cpu_im_execute;
+  surf_cpu_model->extension.cpu.sleep = cpu_im_action_sleep;
 
-  surf_cpu_model->extension.cpu.get_state = get_state;
-  surf_cpu_model->extension.cpu.get_speed = get_speed;
-  surf_cpu_model->extension.cpu.get_available_speed = get_available_speed;
+  surf_cpu_model->extension.cpu.get_state = cpu_im_get_state;
+  surf_cpu_model->extension.cpu.get_speed = cpu_im_get_speed;
+  surf_cpu_model->extension.cpu.get_available_speed = cpu_im_get_available_speed;
 
   if (!cpu_im_maxmin_system) {
     sg_maxmin_selective_update = 1;
     cpu_im_maxmin_system = lmm_system_new();
   }
-  action_heap = xbt_heap_new(8, NULL);
-  xbt_heap_set_update_callback(action_heap, action_update_index_heap);
-  modified_cpu = xbt_swag_new(xbt_swag_offset(cpu, modified_cpu_hookup));
+  cpu_im_action_heap = xbt_heap_new(8, NULL);
+  xbt_heap_set_update_callback(cpu_im_action_heap, cpu_im_action_update_index_heap);
+  cpu_im_modified_cpu = xbt_swag_new(xbt_swag_offset(cpu, modified_cpu_hookup));
 }
 
 /*********************************************************************/
@@ -571,7 +574,7 @@ void surf_cpu_model_init_Cas01_im(const char *filename)
 {
   if (surf_cpu_model)
     return;
-  surf_cpu_model_init_internal();
-  define_callbacks(filename);
+  surf_cpu_im_model_init_internal();
+  cpu_im_define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_cpu_model);
 }

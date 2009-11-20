@@ -52,42 +52,42 @@ void create_workstations(void)
   }
 }
 
-static int resource_used(void *resource_id)
+static int ws_resource_used(void *resource_id)
 {
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }
 
-static void parallel_action_cancel(surf_action_t action)
+static void ws_parallel_action_cancel(surf_action_t action)
 {
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
 }
 
-static int parallel_action_free(surf_action_t action)
+static int ws_parallel_action_free(surf_action_t action)
 {
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
 }
 
-static int action_unref(surf_action_t action)
+static int ws_action_unref(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
     return surf_network_model->action_unref(action);
   else if (action->model_type == surf_cpu_model)
     return surf_cpu_model->action_unref(action);
   else if (action->model_type == surf_workstation_model)
-    return parallel_action_free(action);
+    return ws_parallel_action_free(action);
   else
     DIE_IMPOSSIBLE;
   return 0;
 }
 
-static void action_cancel(surf_action_t action)
+static void ws_action_cancel(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
     surf_network_model->action_cancel(action);
   else if (action->model_type == surf_cpu_model)
     surf_cpu_model->action_cancel(action);
   else if (action->model_type == surf_workstation_model)
-    parallel_action_cancel(action);
+    ws_parallel_action_cancel(action);
   else
     DIE_IMPOSSIBLE;
   return;
@@ -107,36 +107,36 @@ static void ws_action_state_set(surf_action_t action,
   return;
 }
 
-static double share_resources(double now)
+static double ws_share_resources(double now)
 {
   return -1.0;
 }
 
-static void update_actions_state(double now, double delta)
+static void ws_update_actions_state(double now, double delta)
 {
   return;
 }
 
-static void update_resource_state(void *id,
+static void ws_update_resource_state(void *id,
                                   tmgr_trace_event_t event_type,
                                   double value, double date)
 {
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }
 
-static surf_action_t execute(void *workstation, double size)
+static surf_action_t ws_execute(void *workstation, double size)
 {
   return surf_cpu_model->extension.cpu.
     execute(((workstation_CLM03_t) workstation)->cpu, size);
 }
 
-static surf_action_t action_sleep(void *workstation, double duration)
+static surf_action_t ws_action_sleep(void *workstation, double duration)
 {
   return surf_cpu_model->extension.cpu.
     sleep(((workstation_CLM03_t) workstation)->cpu, duration);
 }
 
-static void action_suspend(surf_action_t action)
+static void ws_action_suspend(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
     surf_network_model->suspend(action);
@@ -146,7 +146,7 @@ static void action_suspend(surf_action_t action)
     DIE_IMPOSSIBLE;
 }
 
-static void action_resume(surf_action_t action)
+static void ws_action_resume(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
     surf_network_model->resume(action);
@@ -156,7 +156,7 @@ static void action_resume(surf_action_t action)
     DIE_IMPOSSIBLE;
 }
 
-static int action_is_suspended(surf_action_t action)
+static int ws_action_is_suspended(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
     return surf_network_model->is_suspended(action);
@@ -165,7 +165,7 @@ static int action_is_suspended(surf_action_t action)
   DIE_IMPOSSIBLE;
 }
 
-static void action_set_max_duration(surf_action_t action, double duration)
+static void ws_action_set_max_duration(surf_action_t action, double duration)
 {
   if (action->model_type == surf_network_model)
     surf_network_model->set_max_duration(action, duration);
@@ -175,7 +175,7 @@ static void action_set_max_duration(surf_action_t action, double duration)
     DIE_IMPOSSIBLE;
 }
 
-static void action_set_priority(surf_action_t action, double priority)
+static void ws_action_set_priority(surf_action_t action, double priority)
 {
   if (action->model_type == surf_network_model)
     surf_network_model->set_priority(action, priority);
@@ -185,7 +185,7 @@ static void action_set_priority(surf_action_t action, double priority)
     DIE_IMPOSSIBLE;
 }
 
-static double action_get_remains(surf_action_t action)
+static double ws_action_get_remains(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
     return surf_network_model->get_remains(action);
@@ -194,7 +194,7 @@ static double action_get_remains(surf_action_t action)
   DIE_IMPOSSIBLE;
 }
 
-static surf_action_t communicate(void *workstation_src,
+static surf_action_t ws_communicate(void *workstation_src,
                                  void *workstation_dst, double size,
                                  double rate)
 {
@@ -205,26 +205,26 @@ static surf_action_t communicate(void *workstation_src,
                 src->id, dst->id, size, rate);
 }
 
-static e_surf_resource_state_t get_state(void *workstation)
+static e_surf_resource_state_t ws_get_state(void *workstation)
 {
   return surf_cpu_model->extension.cpu.
     get_state(((workstation_CLM03_t) workstation)->cpu);
 }
 
-static double get_speed(void *workstation, double load)
+static double ws_get_speed(void *workstation, double load)
 {
   return surf_cpu_model->extension.cpu.
     get_speed(((workstation_CLM03_t) workstation)->cpu, load);
 }
 
-static double get_available_speed(void *workstation)
+static double ws_get_available_speed(void *workstation)
 {
   return surf_cpu_model->extension.cpu.
     get_available_speed(((workstation_CLM03_t)
                          workstation)->cpu);
 }
 
-static surf_action_t execute_parallel_task(int workstation_nb,
+static surf_action_t ws_execute_parallel_task(int workstation_nb,
                                            void **workstation_list,
                                            double *computation_amount,
                                            double *communication_amount,
@@ -235,7 +235,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
 
 
 /* returns an array of network_link_CM02_t */
-static xbt_dynar_t get_route(void *src, void *dst)
+static xbt_dynar_t ws_get_route(void *src, void *dst)
 {
   workstation_CLM03_t workstation_src = (workstation_CLM03_t) src;
   workstation_CLM03_t workstation_dst = (workstation_CLM03_t) dst;
@@ -243,28 +243,28 @@ static xbt_dynar_t get_route(void *src, void *dst)
                                                          workstation_dst->id);
 }
 
-static double get_link_bandwidth(const void *link)
+static double ws_get_link_bandwidth(const void *link)
 {
   return surf_network_model->extension.network.get_link_bandwidth(link);
 }
 
-static double get_link_latency(const void *link)
+static double ws_get_link_latency(const void *link)
 {
   return surf_network_model->extension.network.get_link_latency(link);
 }
 
-static int link_shared(const void *link)
+static int ws_link_shared(const void *link)
 {
   return surf_network_model->extension.network.get_link_latency(link);
 }
 
-static void finalize(void)
+static void ws_finalize(void)
 {
   surf_model_exit(surf_workstation_model);
   surf_workstation_model = NULL;
 }
 
-static xbt_dict_t get_properties(const void *ws)
+static xbt_dict_t ws_get_properties(const void *ws)
 {
   return surf_resource_properties(((workstation_CLM03_t) ws)->cpu);
 }
@@ -274,43 +274,43 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model = surf_model_init();
 
   surf_workstation_model->name = "Workstation";
-  surf_workstation_model->action_unref = action_unref;
-  surf_workstation_model->action_cancel = action_cancel;
+  surf_workstation_model->action_unref = ws_action_unref;
+  surf_workstation_model->action_cancel = ws_action_cancel;
   surf_workstation_model->action_state_set = ws_action_state_set;
 
-  surf_workstation_model->model_private->resource_used = resource_used;
-  surf_workstation_model->model_private->share_resources = share_resources;
+  surf_workstation_model->model_private->resource_used = ws_resource_used;
+  surf_workstation_model->model_private->share_resources = ws_share_resources;
   surf_workstation_model->model_private->update_actions_state =
-    update_actions_state;
+    ws_update_actions_state;
   surf_workstation_model->model_private->update_resource_state =
-    update_resource_state;
-  surf_workstation_model->model_private->finalize = finalize;
+    ws_update_resource_state;
+  surf_workstation_model->model_private->finalize = ws_finalize;
 
-  surf_workstation_model->suspend = action_suspend;
-  surf_workstation_model->resume = action_resume;
-  surf_workstation_model->is_suspended = action_is_suspended;
-  surf_workstation_model->set_max_duration = action_set_max_duration;
-  surf_workstation_model->set_priority = action_set_priority;
-  surf_workstation_model->get_remains = action_get_remains;
+  surf_workstation_model->suspend = ws_action_suspend;
+  surf_workstation_model->resume = ws_action_resume;
+  surf_workstation_model->is_suspended = ws_action_is_suspended;
+  surf_workstation_model->set_max_duration = ws_action_set_max_duration;
+  surf_workstation_model->set_priority = ws_action_set_priority;
+  surf_workstation_model->get_remains = ws_action_get_remains;
 
-  surf_workstation_model->extension.workstation.execute = execute;
-  surf_workstation_model->extension.workstation.sleep = action_sleep;
-  surf_workstation_model->extension.workstation.get_state = get_state;
-  surf_workstation_model->extension.workstation.get_speed = get_speed;
+  surf_workstation_model->extension.workstation.execute = ws_execute;
+  surf_workstation_model->extension.workstation.sleep = ws_action_sleep;
+  surf_workstation_model->extension.workstation.get_state = ws_get_state;
+  surf_workstation_model->extension.workstation.get_speed = ws_get_speed;
   surf_workstation_model->extension.workstation.get_available_speed =
-    get_available_speed;
+    ws_get_available_speed;
 
-  surf_workstation_model->extension.workstation.communicate = communicate;
-  surf_workstation_model->extension.workstation.get_route = get_route;
+  surf_workstation_model->extension.workstation.communicate = ws_communicate;
+  surf_workstation_model->extension.workstation.get_route = ws_get_route;
   surf_workstation_model->extension.workstation.execute_parallel_task =
-    execute_parallel_task;
+    ws_execute_parallel_task;
   surf_workstation_model->extension.workstation.get_link_bandwidth =
-    get_link_bandwidth;
+    ws_get_link_bandwidth;
   surf_workstation_model->extension.workstation.get_link_latency =
-    get_link_latency;
-  surf_workstation_model->extension.workstation.link_shared = link_shared;
+    ws_get_link_latency;
+  surf_workstation_model->extension.workstation.link_shared = ws_link_shared;
   surf_workstation_model->extension.workstation.get_properties =
-    get_properties;
+    ws_get_properties;
 }
 
 /********************************************************************/

@@ -23,7 +23,7 @@ double weight_S_parameter = 0.0;        /* default value */
 double sg_tcp_gamma = 0.0;
 
 
-static link_CM02_t link_new(char *name,
+static link_CM02_t net_link_new(char *name,
                             double bw_initial,
                             tmgr_trace_t bw_trace,
                             double lat_initial,
@@ -60,7 +60,7 @@ static link_CM02_t link_new(char *name,
   return nw_link;
 }
 
-static void parse_link_init(void)
+static void net_parse_link_init(void)
 {
   char *name_link;
   double bw_initial;
@@ -93,13 +93,13 @@ static void parse_link_init(void)
 
   state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
-  link_new(name_link, bw_initial, bw_trace,
+  net_link_new(name_link, bw_initial, bw_trace,
            lat_initial, lat_trace, state_initial_link, state_trace,
            policy_initial_link, xbt_dict_new());
 
 }
 
-static void add_traces(void)
+static void net_add_traces(void)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *trace_name, *elm;
@@ -152,20 +152,20 @@ static void add_traces(void)
   }
 }
 
-static void define_callbacks(const char *file)
+static void net_define_callbacks(const char *file)
 {
   /* Figuring out the network links */
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &net_parse_link_init);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &net_add_traces);
 }
 
-static int resource_used(void *resource_id)
+static int net_resource_used(void *resource_id)
 {
   return lmm_constraint_used(network_maxmin_system,
                              ((surf_resource_lmm_t) resource_id)->constraint);
 }
 
-static int action_unref(surf_action_t action)
+static int net_action_unref(surf_action_t action)
 {
   action->refcount--;
   if (!action->refcount) {
@@ -179,22 +179,22 @@ static int action_unref(surf_action_t action)
   return 0;
 }
 
-static void action_cancel(surf_action_t action)
+static void net_action_cancel(surf_action_t action)
 {
   return;
 }
 
-static void action_recycle(surf_action_t action)
+static void net_action_recycle(surf_action_t action)
 {
   return;
 }
 
-static double action_get_remains(surf_action_t action)
+static double net_action_get_remains(surf_action_t action)
 {
   return action->remains;
 }
 
-static double share_resources(double now)
+static double net_share_resources(double now)
 {
   s_surf_action_network_CM02_t s_action;
   surf_action_network_CM02_t action = NULL;
@@ -220,7 +220,7 @@ static double share_resources(double now)
   return min;
 }
 
-static void update_actions_state(double now, double delta)
+static void net_update_actions_state(double now, double delta)
 {
   double deltap = 0.0;
   surf_action_network_CM02_t action = NULL;
@@ -266,7 +266,7 @@ static void update_actions_state(double now, double delta)
   return;
 }
 
-static void update_resource_state(void *id,
+static void net_update_resource_state(void *id,
                                   tmgr_trace_event_t event_type,
                                   double value, double date)
 {
@@ -360,7 +360,7 @@ static void update_resource_state(void *id,
   return;
 }
 
-static surf_action_t communicate(const char *src_name, const char *dst_name,
+static surf_action_t net_communicate(const char *src_name, const char *dst_name,
                                  int src, int dst, double size, double rate)
 {
   surf_action_network_CM02_t action = NULL;
@@ -449,23 +449,23 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,
   return (surf_action_t) action;
 }
 
-static double get_link_bandwidth(const void *link)
+static double net_get_link_bandwidth(const void *link)
 {
   surf_resource_lmm_t lmm = (surf_resource_lmm_t) link;
   return lmm->power.peak * lmm->power.scale;
 }
 
-static double get_link_latency(const void *link)
+static double net_get_link_latency(const void *link)
 {
   return ((link_CM02_t) link)->lat_current;
 }
 
-static int link_shared(const void *link)
+static int net_link_shared(const void *link)
 {
   return lmm_constraint_is_shared(((surf_resource_lmm_t) link)->constraint);
 }
 
-static void action_suspend(surf_action_t action)
+static void net_action_suspend(surf_action_t action)
 {
   ((surf_action_network_CM02_t) action)->suspended = 1;
   lmm_update_variable_weight(network_maxmin_system,
@@ -473,7 +473,7 @@ static void action_suspend(surf_action_t action)
                              0.0);
 }
 
-static void action_resume(surf_action_t action)
+static void net_action_resume(surf_action_t action)
 {
   if (((surf_action_network_CM02_t) action)->suspended) {
     lmm_update_variable_weight(network_maxmin_system,
@@ -484,17 +484,17 @@ static void action_resume(surf_action_t action)
   }
 }
 
-static int action_is_suspended(surf_action_t action)
+static int net_action_is_suspended(surf_action_t action)
 {
   return ((surf_action_network_CM02_t) action)->suspended;
 }
 
-static void action_set_max_duration(surf_action_t action, double duration)
+static void net_action_set_max_duration(surf_action_t action, double duration)
 {
   action->max_duration = duration;
 }
 
-static void finalize(void)
+static void net_finalize(void)
 {
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
@@ -509,35 +509,35 @@ static void surf_network_model_init_internal(void)
   surf_network_model = surf_model_init();
 
   surf_network_model->name = "network";
-  surf_network_model->action_unref = action_unref;
-  surf_network_model->action_cancel = action_cancel;
-  surf_network_model->action_recycle = action_recycle;
-  surf_network_model->get_remains = action_get_remains;
+  surf_network_model->action_unref = net_action_unref;
+  surf_network_model->action_cancel = net_action_cancel;
+  surf_network_model->action_recycle = net_action_recycle;
+  surf_network_model->get_remains = net_action_get_remains;
 
-  surf_network_model->model_private->resource_used = resource_used;
-  surf_network_model->model_private->share_resources = share_resources;
+  surf_network_model->model_private->resource_used = net_resource_used;
+  surf_network_model->model_private->share_resources = net_share_resources;
   surf_network_model->model_private->update_actions_state =
-    update_actions_state;
+    net_update_actions_state;
   surf_network_model->model_private->update_resource_state =
-    update_resource_state;
-  surf_network_model->model_private->finalize = finalize;
+    net_update_resource_state;
+  surf_network_model->model_private->finalize = net_finalize;
 
-  surf_network_model->suspend = action_suspend;
-  surf_network_model->resume = action_resume;
-  surf_network_model->is_suspended = action_is_suspended;
-  surf_cpu_model->set_max_duration = action_set_max_duration;
+  surf_network_model->suspend = net_action_suspend;
+  surf_network_model->resume = net_action_resume;
+  surf_network_model->is_suspended = net_action_is_suspended;
+  surf_cpu_model->set_max_duration = net_action_set_max_duration;
 
-  surf_network_model->extension.network.communicate = communicate;
+  surf_network_model->extension.network.communicate = net_communicate;
   surf_network_model->extension.network.get_link_bandwidth =
-    get_link_bandwidth;
-  surf_network_model->extension.network.get_link_latency = get_link_latency;
-  surf_network_model->extension.network.link_shared = link_shared;
+    net_get_link_bandwidth;
+  surf_network_model->extension.network.get_link_latency = net_get_link_latency;
+  surf_network_model->extension.network.link_shared = net_link_shared;
 
   if (!network_maxmin_system)
     network_maxmin_system = lmm_system_new();
 
   routing_model_create(sizeof(link_CM02_t),
-                       link_new(xbt_strdup("__loopback__"),
+                       net_link_new(xbt_strdup("__loopback__"),
                                 498000000, NULL, 0.000015, NULL,
                                 SURF_RESOURCE_ON, NULL, SURF_LINK_FATPIPE,
                                 NULL));
@@ -552,7 +552,7 @@ void surf_network_model_init_LegrandVelho(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  define_callbacks(filename);
+  net_define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
@@ -581,7 +581,7 @@ void surf_network_model_init_CM02(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  define_callbacks(filename);
+  net_define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
@@ -594,7 +594,7 @@ void surf_network_model_init_Reno(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  define_callbacks(filename);
+  net_define_callbacks(filename);
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
@@ -614,7 +614,7 @@ void surf_network_model_init_Reno2(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  define_callbacks(filename);
+  net_define_callbacks(filename);
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp,
@@ -634,7 +634,7 @@ void surf_network_model_init_Vegas(const char *filename)
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  define_callbacks(filename);
+  net_define_callbacks(filename);
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,

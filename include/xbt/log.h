@@ -168,7 +168,7 @@ SG_BEGIN_DECL()
  * Indicates which category is the default one.
  */
 
-#if defined(XBT_LOG_MAYDAY)     /*|| defined (NLOG) * turning logging off */
+#if defined(XBT_LOG_MAYDAY) || defined(SUPERNOVAE_MODE)     /*|| defined (NLOG) * turning logging off */
 # define XBT_LOG_DEFAULT_CATEGORY(cname)
 #else
 # define XBT_LOG_DEFAULT_CATEGORY(cname) \

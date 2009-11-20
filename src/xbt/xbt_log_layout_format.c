@@ -15,9 +15,9 @@
 #include "xbt/synchro.h"        /* xbt_thread_self_name */
 #include <stdio.h>
 
-extern const char *xbt_log_priority_names[7];
+extern const char *xbt_log_priority_names[8];
 
-static double begin_of_time = -1;
+static double format_begin_of_time = -1;
 
 #define append1(fmt,fmt2,elm)                                         \
   do {                                                               \
@@ -147,7 +147,7 @@ static void xbt_log_layout_format_dynamic(xbt_log_layout_t l,
         append1("%f", "%.*f", gras_os_time());
         break;
       case 'r':                /* application age; LOG4J compliant */
-        append1("%f", "%.*f", gras_os_time() - begin_of_time);
+        append1("%f", "%.*f", gras_os_time() - format_begin_of_time);
         break;
 
       case 'm':                /* user-provided message; LOG4J compliant */
@@ -172,6 +172,7 @@ static void xbt_log_layout_format_dynamic(xbt_log_layout_t l,
   xbt_strbuff_free(buff);
 }
 
+#undef check_overflow
 #define check_overflow \
   if (p-ev->buffer > XBT_LOG_BUFF_SIZE) { /* buffer overflow */ \
   xbt_log_layout_format_dynamic(l,ev,msg_fmt,app); \
@@ -185,8 +186,8 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
   char *p, *q;
   int precision = -1;
 
-  if (begin_of_time < 0)
-    begin_of_time = gras_os_time();
+  if (format_begin_of_time < 0)
+    format_begin_of_time = gras_os_time();
 
   p = ev->buffer;
   q = l->data;
@@ -444,13 +445,13 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
         if (precision == -1) {
           p +=
             snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%f",
-                     gras_os_time() - begin_of_time);
+                     gras_os_time() - format_begin_of_time);
           check_overflow;
         } else {
           p +=
             sprintf(p, "%.*f",
                     (int) MIN(XBT_LOG_BUFF_SIZE - (p - ev->buffer),
-                              precision), gras_os_time() - begin_of_time);
+                              precision), gras_os_time() - format_begin_of_time);
           check_overflow;
           precision = -1;
         }

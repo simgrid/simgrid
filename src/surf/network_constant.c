@@ -22,23 +22,23 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static random_data_t random_latency = NULL;
 static int host_number = 0;
 
-static void count_hosts(void)
+static void netcste_count_hosts(void)
 {
   host_number++;
 }
 
-static void define_callbacks(const char *file)
+static void netcste_define_callbacks(const char *file)
 {
   /* Figuring out the network links */
-  surfxml_add_callback(STag_surfxml_host_cb_list, &count_hosts);
+  surfxml_add_callback(STag_surfxml_host_cb_list, &netcste_count_hosts);
 }
 
-static int resource_used(void *resource_id)
+static int netcste_resource_used(void *resource_id)
 {
   return 0;
 }
 
-static int action_unref(surf_action_t action)
+static int netcste_action_unref(surf_action_t action)
 {
   action->refcount--;
   if (!action->refcount) {
@@ -49,22 +49,22 @@ static int action_unref(surf_action_t action)
   return 0;
 }
 
-static void action_cancel(surf_action_t action)
+static void netcste_action_cancel(surf_action_t action)
 {
   return;
 }
 
-static void action_recycle(surf_action_t action)
+static void netcste_action_recycle(surf_action_t action)
 {
   return;
 }
 
-static double action_get_remains(surf_action_t action)
+static double netcste_action_get_remains(surf_action_t action)
 {
   return action->remains;
 }
 
-static double share_resources(double now)
+static double netcste_share_resources(double now)
 {
   surf_action_network_Constant_t action = NULL;
   xbt_swag_t running_actions = surf_network_model->states.running_action_set;
@@ -82,7 +82,7 @@ static double share_resources(double now)
   return min;
 }
 
-static void update_actions_state(double now, double delta)
+static void netcste_update_actions_state(double now, double delta)
 {
   surf_action_network_Constant_t action = NULL;
   surf_action_network_Constant_t next_action = NULL;
@@ -114,14 +114,14 @@ static void update_actions_state(double now, double delta)
   }
 }
 
-static void update_resource_state(void *id,
+static void netcste_update_resource_state(void *id,
                                   tmgr_trace_event_t event_type,
                                   double value, double time)
 {
   DIE_IMPOSSIBLE;
 }
 
-static surf_action_t communicate(const char *src_name, const char *dst_name,
+static surf_action_t netcste_communicate(const char *src_name, const char *dst_name,
                                  int src, int dst, double size, double rate)
 {
   surf_action_network_Constant_t action = NULL;
@@ -149,17 +149,17 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,
 }
 
 /* returns an array of link_Constant_t */
-static xbt_dynar_t get_route(void *src, void *dst)
+static xbt_dynar_t netcste_get_route(void *src, void *dst)
 {
   xbt_die("Calling this function does not make any sense");
 }
 
-static double get_link_bandwidth(const void *link)
+static double netcste_get_link_bandwidth(const void *link)
 {
   DIE_IMPOSSIBLE;
 }
 
-static double get_link_latency(const void *link)
+static double netcste_get_link_latency(const void *link)
 {
   DIE_IMPOSSIBLE;
 }
@@ -169,28 +169,28 @@ static int link_shared(const void *link)
   DIE_IMPOSSIBLE;
 }
 
-static void action_suspend(surf_action_t action)
+static void netcste_action_suspend(surf_action_t action)
 {
   ((surf_action_network_Constant_t) action)->suspended = 1;
 }
 
-static void action_resume(surf_action_t action)
+static void netcste_action_resume(surf_action_t action)
 {
   if (((surf_action_network_Constant_t) action)->suspended)
     ((surf_action_network_Constant_t) action)->suspended = 0;
 }
 
-static int action_is_suspended(surf_action_t action)
+static int netcste_action_is_suspended(surf_action_t action)
 {
   return ((surf_action_network_Constant_t) action)->suspended;
 }
 
-static void action_set_max_duration(surf_action_t action, double duration)
+static void netcste_action_set_max_duration(surf_action_t action, double duration)
 {
   action->max_duration = duration;
 }
 
-static void finalize(void)
+static void netcste_finalize(void)
 {
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
@@ -207,33 +207,33 @@ void surf_network_model_init_Constant(const char *filename)
 
   INFO0("Blah");
   surf_network_model->name = "constant time network";
-  surf_network_model->action_unref = action_unref;
-  surf_network_model->action_cancel = action_cancel;
-  surf_network_model->action_recycle = action_recycle;
-  surf_network_model->get_remains = action_get_remains;
+  surf_network_model->action_unref = netcste_action_unref;
+  surf_network_model->action_cancel = netcste_action_cancel;
+  surf_network_model->action_recycle = netcste_action_recycle;
+  surf_network_model->get_remains = netcste_action_get_remains;
 
-  surf_network_model->model_private->resource_used = resource_used;
-  surf_network_model->model_private->share_resources = share_resources;
+  surf_network_model->model_private->resource_used = netcste_resource_used;
+  surf_network_model->model_private->share_resources = netcste_share_resources;
   surf_network_model->model_private->update_actions_state =
-    update_actions_state;
+    netcste_update_actions_state;
   surf_network_model->model_private->update_resource_state =
-    update_resource_state;
-  surf_network_model->model_private->finalize = finalize;
+    netcste_update_resource_state;
+  surf_network_model->model_private->finalize = netcste_finalize;
 
-  surf_network_model->suspend = action_suspend;
-  surf_network_model->resume = action_resume;
-  surf_network_model->is_suspended = action_is_suspended;
-  surf_cpu_model->set_max_duration = action_set_max_duration;
+  surf_network_model->suspend = netcste_action_suspend;
+  surf_network_model->resume = netcste_action_resume;
+  surf_network_model->is_suspended = netcste_action_is_suspended;
+  surf_cpu_model->set_max_duration = netcste_action_set_max_duration;
 
-  surf_network_model->extension.network.communicate = communicate;
+  surf_network_model->extension.network.communicate = netcste_communicate;
   surf_network_model->extension.network.get_link_bandwidth =
-    get_link_bandwidth;
-  surf_network_model->extension.network.get_link_latency = get_link_latency;
+    netcste_get_link_bandwidth;
+  surf_network_model->extension.network.get_link_latency = netcste_get_link_latency;
   surf_network_model->extension.network.link_shared = link_shared;
 
   if (!random_latency)
     random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
-  define_callbacks(filename);
+  netcste_define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
 
   update_model_description(surf_network_model_description,

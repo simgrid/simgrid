@@ -64,12 +64,12 @@ typedef struct surf_action_workstation_L07 {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_workstation);
 
-static int host_count = 0;
-static xbt_dict_t parallel_task_link_set = NULL;
+static int ptask_host_count = 0;
+static xbt_dict_t ptask_parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
 
-static void update_action_bound(surf_action_workstation_L07_t action)
+static void ptask_update_action_bound(surf_action_workstation_L07_t action)
 {
   int workstation_nb = action->workstation_nb;
   double lat_current = 0.0;
@@ -111,7 +111,7 @@ static void update_action_bound(surf_action_workstation_L07_t action)
 /******* Resource Public     **********/
 /**************************************/
 
-static int action_unref(surf_action_t action)
+static int ptask_action_unref(surf_action_t action)
 {
   action->refcount--;
 
@@ -129,7 +129,7 @@ static int action_unref(surf_action_t action)
   return 0;
 }
 
-static void action_cancel(surf_action_t action)
+static void ptask_action_cancel(surf_action_t action)
 {
   surf_action_state_set(action, SURF_ACTION_FAILED);
   return;
@@ -138,7 +138,7 @@ static void action_cancel(surf_action_t action)
 /* action_change_state is inherited from the surf module */
 /* action_set_data is inherited from the surf module */
 
-static void action_suspend(surf_action_t action)
+static void ptask_action_suspend(surf_action_t action)
 {
   XBT_IN1("(%p))", action);
   if (((surf_action_workstation_L07_t) action)->suspended != 2) {
@@ -150,7 +150,7 @@ static void action_suspend(surf_action_t action)
   XBT_OUT;
 }
 
-static void action_resume(surf_action_t action)
+static void ptask_action_resume(surf_action_t action)
 {
   surf_action_workstation_L07_t act = (surf_action_workstation_L07_t) action;
 
@@ -162,12 +162,12 @@ static void action_resume(surf_action_t action)
   XBT_OUT;
 }
 
-static int action_is_suspended(surf_action_t action)
+static int ptask_action_is_suspended(surf_action_t action)
 {
   return (((surf_action_workstation_L07_t) action)->suspended == 1);
 }
 
-static void action_set_max_duration(surf_action_t action, double duration)
+static void ptask_action_set_max_duration(surf_action_t action, double duration)
 {                               /* FIXME: should inherit */
   XBT_IN2("(%p,%g)", action, duration);
   action->max_duration = duration;
@@ -175,14 +175,14 @@ static void action_set_max_duration(surf_action_t action, double duration)
 }
 
 
-static void action_set_priority(surf_action_t action, double priority)
+static void ptask_action_set_priority(surf_action_t action, double priority)
 {                               /* FIXME: should inherit */
   XBT_IN2("(%p,%g)", action, priority);
   action->priority = priority;
   XBT_OUT;
 }
 
-static double action_get_remains(surf_action_t action)
+static double ptask_action_get_remains(surf_action_t action)
 {
   XBT_IN1("(%p)", action);
   return action->remains;
@@ -193,7 +193,7 @@ static double action_get_remains(surf_action_t action)
 /******* Resource Private    **********/
 /**************************************/
 
-static int resource_used(void *resource_id)
+static int ptask_resource_used(void *resource_id)
 {
   /* We can freely cast as a link_L07_t because it has
      the same prefix as cpu_L07_t */
@@ -202,7 +202,7 @@ static int resource_used(void *resource_id)
 
 }
 
-static double share_resources(double now)
+static double ptask_share_resources(double now)
 {
   s_surf_action_workstation_L07_t s_action;
   surf_action_workstation_L07_t action = NULL;
@@ -234,7 +234,7 @@ static double share_resources(double now)
   return min;
 }
 
-static void update_actions_state(double now, double delta)
+static void ptask_update_actions_state(double now, double delta)
 {
   double deltap = 0.0;
   surf_action_workstation_L07_t action = NULL;
@@ -253,7 +253,7 @@ static void update_actions_state(double now, double delta)
         action->latency = 0.0;
       }
       if ((action->latency == 0.0) && (action->suspended == 0)) {
-        update_action_bound(action);
+        ptask_update_action_bound(action);
         lmm_update_variable_weight(ptask_maxmin_system, action->variable,
                                    1.0);
       }
@@ -321,7 +321,7 @@ static void update_actions_state(double now, double delta)
   return;
 }
 
-static void update_resource_state(void *id,
+static void ptask_update_resource_state(void *id,
                                   tmgr_trace_event_t event_type,
                                   double value, double date)
 {
@@ -347,7 +347,7 @@ static void update_resource_state(void *id,
 
 
         action = lmm_variable_id(var);
-        update_action_bound(action);
+        ptask_update_action_bound(action);
       }
       if (tmgr_trace_event_free(event_type))
         nw_link->lat_event = NULL;
@@ -391,10 +391,10 @@ static void update_resource_state(void *id,
   return;
 }
 
-static void finalize(void)
+static void ptask_finalize(void)
 {
-  if (parallel_task_link_set != NULL)
-    xbt_dict_free(&parallel_task_link_set);
+  if (ptask_parallel_task_link_set != NULL)
+    xbt_dict_free(&ptask_parallel_task_link_set);
 
   surf_model_exit(surf_workstation_model);
   surf_workstation_model = NULL;
@@ -402,7 +402,7 @@ static void finalize(void)
   surf_network_model = NULL;
   used_routing->finalize();
 
-  host_count = 0;
+  ptask_host_count = 0;
 
   if (ptask_maxmin_system) {
     lmm_system_free(ptask_maxmin_system);
@@ -414,22 +414,22 @@ static void finalize(void)
 /******* Resource Private    **********/
 /**************************************/
 
-static e_surf_resource_state_t resource_get_state(void *cpu)
+static e_surf_resource_state_t ptask_resource_get_state(void *cpu)
 {
   return ((cpu_L07_t) cpu)->state_current;
 }
 
-static double get_speed(void *cpu, double load)
+static double ptask_get_speed(void *cpu, double load)
 {
   return load * (((cpu_L07_t) cpu)->power_scale);
 }
 
-static double get_available_speed(void *cpu)
+static double ptask_get_available_speed(void *cpu)
 {
   return ((cpu_L07_t) cpu)->power_current;
 }
 
-static surf_action_t execute_parallel_task(int workstation_nb,
+static surf_action_t ptask_execute_parallel_task(int workstation_nb,
                                            void **workstation_list,
                                            double *computation_amount,
                                            double *communication_amount,
@@ -442,10 +442,10 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   int nb_host = 0;
   double latency = 0.0;
 
-  if (parallel_task_link_set == NULL)
-    parallel_task_link_set = xbt_dict_new();
+  if (ptask_parallel_task_link_set == NULL)
+    ptask_parallel_task_link_set = xbt_dict_new();
 
-  xbt_dict_reset(parallel_task_link_set);
+  xbt_dict_reset(ptask_parallel_task_link_set);
 
   /* Compute the number of affected resources... */
   for (i = 0; i < workstation_nb; i++) {
@@ -459,15 +459,15 @@ static surf_action_t execute_parallel_task(int workstation_nb,
       if (communication_amount[i * workstation_nb + j] > 0)
         xbt_dynar_foreach(route, cpt, link) {
         lat += link->lat_current;
-        xbt_dict_set(parallel_task_link_set, link->generic_resource.name,
+        xbt_dict_set(ptask_parallel_task_link_set, link->generic_resource.name,
                      link, NULL);
         }
       latency = MAX(latency, lat);
     }
   }
 
-  nb_link = xbt_dict_length(parallel_task_link_set);
-  xbt_dict_reset(parallel_task_link_set);
+  nb_link = xbt_dict_length(ptask_parallel_task_link_set);
+  xbt_dict_reset(ptask_parallel_task_link_set);
 
   for (i = 0; i < workstation_nb; i++)
     if (computation_amount[i] > 0)
@@ -525,7 +525,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   return (surf_action_t) action;
 }
 
-static surf_action_t execute(void *cpu, double size)
+static surf_action_t ptask_execute(void *cpu, double size)
 {
   void **workstation_list = xbt_new0(void *, 1);
   double *computation_amount = xbt_new0(double, 1);
@@ -535,11 +535,11 @@ static surf_action_t execute(void *cpu, double size)
   communication_amount[0] = 0.0;
   computation_amount[0] = size;
 
-  return execute_parallel_task(1, workstation_list, computation_amount,
+  return ptask_execute_parallel_task(1, workstation_list, computation_amount,
                                communication_amount, 1, -1);
 }
 
-static surf_action_t communicate(void *src, void *dst, double size,
+static surf_action_t ptask_communicate(void *src, void *dst, double size,
                                  double rate)
 {
   void **workstation_list = xbt_new0(void *, 2);
@@ -551,20 +551,20 @@ static surf_action_t communicate(void *src, void *dst, double size,
   workstation_list[1] = dst;
   communication_amount[1] = size;
 
-  res = execute_parallel_task(2, workstation_list,
+  res = ptask_execute_parallel_task(2, workstation_list,
                               computation_amount, communication_amount,
                               1, rate);
 
   return res;
 }
 
-static surf_action_t action_sleep(void *cpu, double duration)
+static surf_action_t ptask_action_sleep(void *cpu, double duration)
 {
   surf_action_workstation_L07_t action = NULL;
 
   XBT_IN2("(%s,%g)", surf_resource_name(cpu), duration);
 
-  action = (surf_action_workstation_L07_t) execute(cpu, 1.0);
+  action = (surf_action_workstation_L07_t) ptask_execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;
   lmm_update_variable_weight(ptask_maxmin_system, action->variable, 0.0);
@@ -573,7 +573,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
   return (surf_action_t) action;
 }
 
-static xbt_dynar_t get_route(void *src, void *dst)
+static xbt_dynar_t ptask_get_route(void *src, void *dst)
 {
   cpu_L07_t host_src = src;
   cpu_L07_t host_dst = dst;
@@ -581,17 +581,17 @@ static xbt_dynar_t get_route(void *src, void *dst)
   return used_routing->get_route(host_src->id, host_dst->id);
 }
 
-static double get_link_bandwidth(const void *link)
+static double ptask_get_link_bandwidth(const void *link)
 {
   return ((link_L07_t) link)->bw_current;
 }
 
-static double get_link_latency(const void *link)
+static double ptask_get_link_latency(const void *link)
 {
   return ((link_L07_t) link)->lat_current;
 }
 
-static int link_shared(const void *link)
+static int ptask_link_shared(const void *link)
 {
   return lmm_constraint_is_shared(((link_L07_t) link)->constraint);
 }
@@ -600,7 +600,7 @@ static int link_shared(const void *link)
 /*** Resource Creation & Destruction **/
 /**************************************/
 
-static cpu_L07_t cpu_new(const char *name, double power_scale,
+static cpu_L07_t ptask_cpu_new(const char *name, double power_scale,
                          double power_initial,
                          tmgr_trace_t power_trace,
                          e_surf_resource_state_t state_initial,
@@ -614,7 +614,7 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
   cpu->generic_resource.name = xbt_strdup(name);
   cpu->generic_resource.properties = current_property_set;
-  cpu->id = host_count++;
+  cpu->id = ptask_host_count++;
 
   cpu->power_scale = power_scale;
   xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
@@ -639,7 +639,7 @@ static cpu_L07_t cpu_new(const char *name, double power_scale,
   return cpu;
 }
 
-static void parse_cpu_init(void)
+static void ptask_parse_cpu_init(void)
 {
   double power_scale = 0.0;
   double power_initial = 0.0;
@@ -661,11 +661,11 @@ static void parse_cpu_init(void)
   state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 
   current_property_set = xbt_dict_new();
-  cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace,
+  ptask_cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace,
           state_initial, state_trace, current_property_set);
 }
 
-static link_L07_t link_new(char *name,
+static link_L07_t ptask_link_new(char *name,
                            double bw_initial,
                            tmgr_trace_t bw_trace,
                            double lat_initial,
@@ -710,7 +710,7 @@ static link_L07_t link_new(char *name,
   return nw_link;
 }
 
-static void parse_link_init(void)
+static void ptask_parse_link_init(void)
 {
   char *name_link;
   double bw_initial;
@@ -744,12 +744,12 @@ static void parse_link_init(void)
   state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
   current_property_set = xbt_dict_new();
-  link_new(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
+  ptask_link_new(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
            state_initial_link, state_trace, policy_initial_link,
            current_property_set);
 }
 
-static void add_traces(void)
+static void ptask_add_traces(void)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *trace_name, *elm;
@@ -813,13 +813,13 @@ static void add_traces(void)
   }
 }
 
-static void define_callbacks(const char *file)
+static void ptask_define_callbacks(const char *file)
 {
   /* Adding callback functions */
   surf_parse_reset_parser();
-  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces);
+  surfxml_add_callback(STag_surfxml_host_cb_list, &ptask_parse_cpu_init);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &ptask_parse_link_init);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &ptask_add_traces);
 }
 
 
@@ -827,45 +827,45 @@ static void define_callbacks(const char *file)
 /********* Module  creation ***********/
 /**************************************/
 
-static void model_init_internal(void)
+static void ptask_model_init_internal(void)
 {
   surf_workstation_model = surf_model_init();
 
-  surf_workstation_model->action_unref = action_unref;
-  surf_workstation_model->action_cancel = action_cancel;
+  surf_workstation_model->action_unref = ptask_action_unref;
+  surf_workstation_model->action_cancel = ptask_action_cancel;
   surf_workstation_model->action_state_set = surf_action_state_set;
-  surf_workstation_model->suspend = action_suspend;
-  surf_workstation_model->resume = action_resume;
-  surf_workstation_model->is_suspended = action_is_suspended;
-  surf_workstation_model->set_max_duration = action_set_max_duration;
-  surf_workstation_model->set_priority = action_set_priority;
-  surf_workstation_model->get_remains = action_get_remains;
+  surf_workstation_model->suspend = ptask_action_suspend;
+  surf_workstation_model->resume = ptask_action_resume;
+  surf_workstation_model->is_suspended = ptask_action_is_suspended;
+  surf_workstation_model->set_max_duration = ptask_action_set_max_duration;
+  surf_workstation_model->set_priority = ptask_action_set_priority;
+  surf_workstation_model->get_remains = ptask_action_get_remains;
   surf_workstation_model->name = "Workstation ptask_L07";
 
-  surf_workstation_model->model_private->resource_used = resource_used;
-  surf_workstation_model->model_private->share_resources = share_resources;
+  surf_workstation_model->model_private->resource_used = ptask_resource_used;
+  surf_workstation_model->model_private->share_resources = ptask_share_resources;
   surf_workstation_model->model_private->update_actions_state =
-    update_actions_state;
+    ptask_update_actions_state;
   surf_workstation_model->model_private->update_resource_state =
-    update_resource_state;
-  surf_workstation_model->model_private->finalize = finalize;
+    ptask_update_resource_state;
+  surf_workstation_model->model_private->finalize = ptask_finalize;
 
-  surf_workstation_model->extension.workstation.execute = execute;
-  surf_workstation_model->extension.workstation.sleep = action_sleep;
+  surf_workstation_model->extension.workstation.execute = ptask_execute;
+  surf_workstation_model->extension.workstation.sleep = ptask_action_sleep;
   surf_workstation_model->extension.workstation.get_state =
-    resource_get_state;
-  surf_workstation_model->extension.workstation.get_speed = get_speed;
+    ptask_resource_get_state;
+  surf_workstation_model->extension.workstation.get_speed = ptask_get_speed;
   surf_workstation_model->extension.workstation.get_available_speed =
-    get_available_speed;
-  surf_workstation_model->extension.workstation.communicate = communicate;
-  surf_workstation_model->extension.workstation.get_route = get_route;
+    ptask_get_available_speed;
+  surf_workstation_model->extension.workstation.communicate = ptask_communicate;
+  surf_workstation_model->extension.workstation.get_route = ptask_get_route;
   surf_workstation_model->extension.workstation.execute_parallel_task =
-    execute_parallel_task;
+    ptask_execute_parallel_task;
   surf_workstation_model->extension.workstation.get_link_bandwidth =
-    get_link_bandwidth;
+    ptask_get_link_bandwidth;
   surf_workstation_model->extension.workstation.get_link_latency =
-    get_link_latency;
-  surf_workstation_model->extension.workstation.link_shared = link_shared;
+    ptask_get_link_latency;
+  surf_workstation_model->extension.workstation.link_shared = ptask_link_shared;
   surf_workstation_model->extension.workstation.get_properties =
     surf_resource_properties;
 
@@ -874,7 +874,7 @@ static void model_init_internal(void)
     ptask_maxmin_system = lmm_system_new();
 
   routing_model_create(sizeof(link_L07_t),
-                       link_new(xbt_strdup("__loopback__"),
+                       ptask_link_new(xbt_strdup("__loopback__"),
                                 498000000, NULL, 0.000015, NULL,
                                 SURF_RESOURCE_ON, NULL, SURF_LINK_FATPIPE,
                                 NULL));
@@ -889,8 +889,8 @@ void surf_workstation_model_init_ptask_L07(const char *filename)
   xbt_assert0(!surf_cpu_model, "CPU model type already defined");
   xbt_assert0(!surf_network_model, "network model type already defined");
   surf_network_model = surf_model_init();
-  define_callbacks(filename);
-  model_init_internal();
+  ptask_define_callbacks(filename);
+  ptask_model_init_internal();
 
   update_model_description(surf_workstation_model_description,
                            "ptask_L07", surf_workstation_model);

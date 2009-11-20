@@ -15,7 +15,7 @@
  * The root category's default logging function.
  */
 
-extern const char *xbt_log_priority_names[7];
+extern const char *xbt_log_priority_names[8];
 
 
 static void append_file(xbt_log_appender_t this_appender, char *str)

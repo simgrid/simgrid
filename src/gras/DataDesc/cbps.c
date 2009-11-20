@@ -123,7 +123,7 @@ void
 gras_cbps_v_pop(gras_cbps_t ps,
                 const char *name, gras_datadesc_type_t * ddt, void **res)
 {
-  xbt_dynar_t varstack, frame;
+  xbt_dynar_t varstack=NULL, frame=NULL;
   gras_cbps_elm_t var = NULL;
   void *data = NULL;
   xbt_ex_t e;
