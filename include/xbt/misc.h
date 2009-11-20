@@ -80,17 +80,6 @@
 #  define _XBT_CALL
 #endif
 
-/* Support for SuperNovae compilation mode, where we stuff every source file
- *  into the same compilation unit to help GCC inlining what should be.
- * To go further on this, the internal getters/setters are then marked
- *  "static inline", while they are regular symbols otherwise.
- */
-#ifdef SUPERNOVAE_MODE
-# define SUPERNOVAE_INLINE static inline
-#else
-# define SUPERNOVAE_INLINE
-#endif
-
 /* Handle import/export stuff
  * 
  * Rational of XBT_PUBLIC: 
