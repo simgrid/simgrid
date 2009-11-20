@@ -48,7 +48,7 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 
 #if defined(__GNUC__) || defined(DOXYGEN)
 /** @brief Like strdup, but xbt_die() on error */
-     static XBT_INLINE char *xbt_strdup(const char *s)
+static inline __attribute__((always_inline)) char *xbt_strdup(const char *s)
 {
   char *res = NULL;
   if (s) {
@@ -63,7 +63,7 @@ XBT_PUBLIC(void) xbt_backtrace_display_current(void);
 
 /** @brief Like malloc, but xbt_die() on error
     @hideinitializer */
-static XBT_INLINE void *xbt_malloc(unsigned int n)
+static inline __attribute__((always_inline)) void *xbt_malloc(unsigned int n)
 {
   void *res;
 /*  if (n==0) {
@@ -79,7 +79,7 @@ static XBT_INLINE void *xbt_malloc(unsigned int n)
 
 /** @brief like malloc, but xbt_die() on error and memset data to 0
     @hideinitializer */
-static XBT_INLINE void *xbt_malloc0(unsigned int n)
+static inline __attribute__((always_inline)) void *xbt_malloc0(unsigned int n)
 {
   void *res;
   //if (n==0) xbt_die("calloc(0) is not portable");
@@ -91,7 +91,7 @@ static XBT_INLINE void *xbt_malloc0(unsigned int n)
 
 /** @brief like realloc, but xbt_die() on error
     @hideinitializer */
-static XBT_INLINE void *xbt_realloc(void *p, unsigned int s)
+static inline __attribute__((always_inline)) void *xbt_realloc(void *p, unsigned int s)
 {
   void *res = res;
   //if (s==0) xbt_die("realloc(0) is not portable");
