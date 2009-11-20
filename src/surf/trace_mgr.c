@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
 static xbt_dict_t trace_list = NULL;
 
-tmgr_history_t tmgr_history_new(void)
+XBT_INLINE tmgr_history_t tmgr_history_new(void)
 {
   tmgr_history_t h;
 
@@ -27,7 +27,7 @@ tmgr_history_t tmgr_history_new(void)
   return h;
 }
 
-void tmgr_history_free(tmgr_history_t h)
+XBT_INLINE void tmgr_history_free(tmgr_history_t h)
 {
   xbt_heap_free(h->heap);
   free(h);
@@ -142,7 +142,7 @@ tmgr_trace_t tmgr_empty_trace_new(void)
   return trace;
 }
 
-void tmgr_trace_free(tmgr_trace_t trace)
+XBT_INLINE void tmgr_trace_free(tmgr_trace_t trace)
 {
   if (!trace)
     return;
@@ -170,7 +170,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
   return trace_event;
 }
 
-double tmgr_history_next_date(tmgr_history_t h)
+XBT_INLINE double tmgr_history_next_date(tmgr_history_t h)
 {
   if (xbt_heap_size(h->heap))
     return (xbt_heap_maxkey(h->heap));
@@ -213,7 +213,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
   return trace_event;
 }
 
-void tmgr_finalize(void)
+XBT_INLINE void tmgr_finalize(void)
 {
   xbt_dict_free(&trace_list);
 }

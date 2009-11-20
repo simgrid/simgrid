@@ -384,14 +384,14 @@ static void fifo_item_mallocator_reset_f(void *item)
 /** Constructor
  * \return a new bucket
  */
-xbt_fifo_item_t xbt_fifo_new_item(void)
+XBT_INLINE xbt_fifo_item_t xbt_fifo_new_item(void)
 {
   return xbt_mallocator_get(item_mallocator);
 }
 
 /** \deprecated Use #xbt_fifo_new_item instead.
  */
-xbt_fifo_item_t xbt_fifo_newitem(void)
+XBT_INLINE xbt_fifo_item_t xbt_fifo_newitem(void)
 {
   WARN0("This function is deprecated. Use xbt_fifo_new_item.");
   return xbt_fifo_new_item();
@@ -403,7 +403,7 @@ xbt_fifo_item_t xbt_fifo_newitem(void)
  *
  * stores \a v in \a i.
  */
-void xbt_fifo_set_item_content(xbt_fifo_item_t i, void *v)
+XBT_INLINE void xbt_fifo_set_item_content(xbt_fifo_item_t i, void *v)
 {
   xbt_fifo_setItemcontent(i, v);
 }
@@ -412,7 +412,7 @@ void xbt_fifo_set_item_content(xbt_fifo_item_t i, void *v)
  * \param i a bucket
  * \return the object stored \a i.
  */
-void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
+XBT_INLINE void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
 {
   return xbt_fifo_getItemcontent(i);
 }
@@ -422,7 +422,7 @@ void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
  *
  * Free the bucket but does not modifies the object (if any) that was stored in it.
  */
-void xbt_fifo_free_item(xbt_fifo_item_t b)
+XBT_INLINE void xbt_fifo_free_item(xbt_fifo_item_t b)
 {
   xbt_mallocator_release(item_mallocator, b);
   return;
@@ -431,7 +431,7 @@ void xbt_fifo_free_item(xbt_fifo_item_t b)
 /** Destructor
  * \deprecated Use #xbt_fifo_free_item instead.
  */
-void xbt_fifo_freeitem(xbt_fifo_item_t b)
+XBT_INLINE void xbt_fifo_freeitem(xbt_fifo_item_t b)
 {
   WARN0("This function is deprecated. Use xbt_fifo_free_item.");
   xbt_fifo_free_item(b);
@@ -442,7 +442,7 @@ void xbt_fifo_freeitem(xbt_fifo_item_t b)
  * \param f a list
  * \return the number of buckets in \a f.
  */
-int xbt_fifo_size(xbt_fifo_t f)
+XBT_INLINE int xbt_fifo_size(xbt_fifo_t f)
 {
   return f->count;
 }
@@ -451,14 +451,14 @@ int xbt_fifo_size(xbt_fifo_t f)
  * \param l a list
  * \return the head of \a l.
  */
-xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
+XBT_INLINE xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
 {
   return l->head;
 }
 
 /** \deprecated Use #xbt_fifo_get_first_item instead.
  */
-xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
+XBT_INLINE xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
 {
   WARN0("This function is deprecated. Use xbt_fifo_get_first_item.");
   return xbt_fifo_get_first_item(l);
@@ -468,7 +468,7 @@ xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
  * \param i a bucket
  * \return the bucket that comes next
  */
-xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i)
+XBT_INLINE xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i)
 {
   if (i)
     return i->next;
@@ -487,7 +487,7 @@ xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i)
  * \param i a bucket
  * \return the bucket that is just before \a i.
  */
-xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i)
+XBT_INLINE xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i)
 {
   if (i)
     return i->prev;

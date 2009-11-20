@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(strbuff, xbt, "String buffers");
 ** Buffer code
 **/
 
-void xbt_strbuff_empty(xbt_strbuff_t b)
+XBT_INLINE void xbt_strbuff_empty(xbt_strbuff_t b)
 {
   b->used = 0;
   b->data[0] = '\n';
@@ -43,7 +43,7 @@ xbt_strbuff_t xbt_strbuff_new(void)
  *
  * Beware, we store the ctn directly, not a copy of it
  */
-xbt_strbuff_t xbt_strbuff_new_from(char *ctn)
+XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(char *ctn)
 {
   xbt_strbuff_t res = malloc(sizeof(s_xbt_strbuff_t));
   res->data = ctn;
@@ -52,13 +52,13 @@ xbt_strbuff_t xbt_strbuff_new_from(char *ctn)
 }
 
 /** @brief frees only the container without touching to the contained string */
-void xbt_strbuff_free_container(xbt_strbuff_t b)
+XBT_INLINE void xbt_strbuff_free_container(xbt_strbuff_t b)
 {
   free(b);
 }
 
 /** @brief frees the buffer and its content */
-void xbt_strbuff_free(xbt_strbuff_t b)
+XBT_INLINE void xbt_strbuff_free(xbt_strbuff_t b)
 {
   if (b) {
     if (b->data)
@@ -87,7 +87,7 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
   b->used += addlen;
 }
 
-void xbt_strbuff_chomp(xbt_strbuff_t b)
+XBT_INLINE void xbt_strbuff_chomp(xbt_strbuff_t b)
 {
   while (b->data[b->used] == '\n') {
     b->data[b->used] = '\0';
@@ -96,7 +96,7 @@ void xbt_strbuff_chomp(xbt_strbuff_t b)
   }
 }
 
-void xbt_strbuff_trim(xbt_strbuff_t b)
+XBT_INLINE void xbt_strbuff_trim(xbt_strbuff_t b)
 {
   xbt_str_trim(b->data, " ");
   b->used = strlen(b->data);

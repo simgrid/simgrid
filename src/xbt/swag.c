@@ -22,7 +22,7 @@
  *
  * Usage : xbt_swag_new(&obj.setA-&obj);
  */
-xbt_swag_t xbt_swag_new(size_t offset)
+XBT_INLINE xbt_swag_t xbt_swag_new(size_t offset)
 {
   xbt_swag_t swag = xbt_new0(s_xbt_swag_t, 1);
 
@@ -37,7 +37,7 @@ xbt_swag_t xbt_swag_new(size_t offset)
  * kilkil a swag but not it's content. If you do not understand why
  * xbt_swag_free should not free its content, don't use swags.
  */
-void xbt_swag_free(xbt_swag_t swag)
+XBT_INLINE void xbt_swag_free(xbt_swag_t swag)
 {
   free(swag);
 }
@@ -49,7 +49,7 @@ void xbt_swag_free(xbt_swag_t swag)
  *
  * Usage : xbt_swag_init(swag,&obj.setA-&obj);
  */
-void xbt_swag_init(xbt_swag_t swag, size_t offset)
+XBT_INLINE void xbt_swag_init(xbt_swag_t swag, size_t offset)
 {
   swag->tail = NULL;
   swag->head = NULL;
@@ -209,7 +209,7 @@ void *xbt_swag_extract(xbt_swag_t swag)
  * \param swag a swag
  * \return the number of objects in \a swag
  */
-int xbt_swag_size(xbt_swag_t swag)
+XBT_INLINE int xbt_swag_size(xbt_swag_t swag)
 {
   return (swag->count);
 }

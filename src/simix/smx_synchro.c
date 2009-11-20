@@ -74,7 +74,7 @@ void SIMIX_mutex_lock(smx_mutex_t mutex)
  * \param mutex The mutex
  * \return 1 - mutex free, 0 - mutex used
  */
-int SIMIX_mutex_trylock(smx_mutex_t mutex)
+XBT_INLINE int SIMIX_mutex_trylock(smx_mutex_t mutex)
 {
   xbt_assert0((mutex != NULL), "Invalid parameters");
 
@@ -115,7 +115,7 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex)
  * Destroys and frees the mutex's memory. 
  * \param mutex A mutex
  */
-void SIMIX_mutex_destroy(smx_mutex_t mutex)
+XBT_INLINE void SIMIX_mutex_destroy(smx_mutex_t mutex)
 {
   if (mutex == NULL)
     return;
@@ -203,7 +203,7 @@ void SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
   return;
 }
 
-xbt_fifo_t SIMIX_cond_get_actions(smx_cond_t cond)
+XBT_INLINE xbt_fifo_t SIMIX_cond_get_actions(smx_cond_t cond)
 {
   xbt_assert0((cond != NULL), "Invalid parameters");
   return cond->actions;
@@ -420,7 +420,7 @@ static inline void SIMIX_sem_block_onto(smx_sem_t sem) {
 }
 
 /** @brief Returns true if acquiring this semaphore would block */
-int SIMIX_sem_would_block(smx_sem_t sem) {
+XBT_INLINE int SIMIX_sem_would_block(smx_sem_t sem) {
   return (sem->capacity>0);
 }
 

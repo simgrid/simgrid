@@ -26,7 +26,7 @@
  *
  * Creates a new heap.
  */
-xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t const free_func)
+XBT_INLINE xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t const free_func)
 {
   xbt_heap_t H = xbt_new0(struct xbt_heap, 1);
   H->size = init_size;
@@ -41,7 +41,7 @@ xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t const free_func)
  * @param H the heap we're working on
  * \param update_callback function to call on each element to update its index when needed.
  */
-void xbt_heap_set_update_callback(xbt_heap_t H,
+XBT_INLINE void xbt_heap_set_update_callback(xbt_heap_t H,
                                   void (*update_callback) (void *, int))
 {
   H->update_callback = update_callback;
@@ -68,7 +68,7 @@ void xbt_heap_free(xbt_heap_t H)
  * @param H the heap we're working on
  * @return the number of elements in the heap
  */
-int xbt_heap_size(xbt_heap_t H)
+XBT_INLINE int xbt_heap_size(xbt_heap_t H)
 {
   return (H->count);
 }
@@ -159,7 +159,7 @@ void *xbt_heap_remove(xbt_heap_t H, int i)
  *
  * \return the smallest key in the heap without modifying the heap.
  */
-double xbt_heap_maxkey(xbt_heap_t H)
+XBT_INLINE double xbt_heap_maxkey(xbt_heap_t H)
 {
   xbt_assert0(H->count != 0, "Empty heap");
   return KEY(H, 0);

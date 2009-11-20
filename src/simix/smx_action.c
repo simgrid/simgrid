@@ -147,7 +147,7 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
  *	This functions stops the execution of an action. It calls a surf functions.
  *	\param action The SIMIX action
  */
-void SIMIX_action_cancel(smx_action_t action)
+XBT_INLINE void SIMIX_action_cancel(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
 
@@ -165,7 +165,7 @@ void SIMIX_action_cancel(smx_action_t action)
  *	\param action The SIMIX action
  *	\param priority The new priority
  */
-void SIMIX_action_set_priority(smx_action_t action, double priority)
+XBT_INLINE void SIMIX_action_set_priority(smx_action_t action, double priority)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
 
@@ -215,7 +215,7 @@ int SIMIX_action_destroy(smx_action_t action)
  *
  *	\param action The SIMIX action
  */
-void SIMIX_action_use(smx_action_t action)
+XBT_INLINE void SIMIX_action_use(smx_action_t action)
 {
   XBT_IN3("(%p:'%s',%d)", action, action->name, action->refcount);
   xbt_assert0((action != NULL), "Invalid parameter");
@@ -230,7 +230,7 @@ void SIMIX_action_use(smx_action_t action)
  *
  *	\param action The SIMIX action
  */
-void SIMIX_action_release(smx_action_t action)
+XBT_INLINE void SIMIX_action_release(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
 
@@ -303,7 +303,7 @@ void SIMIX_unregister_action_to_condition(smx_action_t action,
  *
  *  When the action terminates, the semaphore gets signaled automatically.
  */
-void SIMIX_register_action_to_semaphore(smx_action_t action, smx_sem_t sem) {
+XBT_INLINE void SIMIX_register_action_to_semaphore(smx_action_t action, smx_sem_t sem) {
 
   DEBUG2("Register action %p to semaphore %p (and otherwise)", action, sem);
   xbt_fifo_push(sem->actions, action);
@@ -314,7 +314,7 @@ void SIMIX_register_action_to_semaphore(smx_action_t action, smx_sem_t sem) {
  *
  *  Destroys the "links" from the semaphore to this action.
  */
-void SIMIX_unregister_action_to_semaphore(smx_action_t action,
+XBT_INLINE void SIMIX_unregister_action_to_semaphore(smx_action_t action,
                                           smx_sem_t sem)
 {
   xbt_fifo_remove_all(sem->actions, action);
@@ -327,7 +327,7 @@ void SIMIX_unregister_action_to_semaphore(smx_action_t action,
  * 	\param action The SIMIX action
  *	\return Remains cost
  */
-double SIMIX_action_get_remains(smx_action_t action)
+XBT_INLINE double SIMIX_action_get_remains(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
   return surf_workstation_model->get_remains(action->surf_action);
@@ -367,7 +367,7 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
   return act;
 }
 
-e_surf_action_state_t SIMIX_action_get_state(smx_action_t action)
+XBT_INLINE e_surf_action_state_t SIMIX_action_get_state(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
   return surf_workstation_model->action_state_get(action->surf_action);
@@ -393,13 +393,13 @@ void __SIMIX_action_display_conditions(smx_action_t action)
     DEBUG1("\t %p", cond);
 }
 
-char *SIMIX_action_get_name(smx_action_t action)
+XBT_INLINE char *SIMIX_action_get_name(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
   return action->name;
 }
 /** @brief Change the name of the action. Warning, the string you provide is not strdup()ed */
-void SIMIX_action_set_name(smx_action_t action,char *name)
+XBT_INLINE void SIMIX_action_set_name(smx_action_t action,char *name)
 {
   xbt_free(action->name);
   action->name = name;

@@ -267,7 +267,7 @@ void SIMIX_clean(void)
  *
  * \return Return the clock.
  */
-double SIMIX_get_clock(void)
+XBT_INLINE double SIMIX_get_clock(void)
 {
   return surf_get_clock();
 }
@@ -277,7 +277,7 @@ double SIMIX_get_clock(void)
  *
  *      Must be called before the first call to SIMIX_solve()
  */
-void SIMIX_init(void)
+XBT_INLINE void SIMIX_init(void)
 {
   surf_presolve();
 }
@@ -454,12 +454,12 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
  * 	\param arg Parameters of the function
  *
  */
-void SIMIX_timer_set(double date, void *function, void *arg)
+XBT_INLINE void SIMIX_timer_set(double date, void *function, void *arg)
 {
   surf_timer_model->extension.timer.set(date, function, arg);
 }
 
-int SIMIX_timer_get(void **function, void **arg)
+XBT_INLINE int SIMIX_timer_get(void **function, void **arg)
 {
   return surf_timer_model->extension.timer.get(function, arg);
 }
@@ -471,7 +471,7 @@ int SIMIX_timer_get(void **function, void **arg)
  *	\param function Create process function
  *
  */
-void SIMIX_function_register_process_create(smx_creation_func_t function)
+XBT_INLINE void SIMIX_function_register_process_create(smx_creation_func_t function)
 {
   xbt_assert0((simix_global->create_process_function == NULL),
               "Data already set");
@@ -486,7 +486,7 @@ void SIMIX_function_register_process_create(smx_creation_func_t function)
  *	\param function Kill process function
  *
  */
-void SIMIX_function_register_process_kill(void_f_pvoid_t function)
+XBT_INLINE void SIMIX_function_register_process_kill(void_f_pvoid_t function)
 {
   xbt_assert0((simix_global->kill_process_function == NULL),
               "Data already set");
@@ -501,7 +501,7 @@ void SIMIX_function_register_process_kill(void_f_pvoid_t function)
  *	\param function cleanup process function
  *
  */
-void SIMIX_function_register_process_cleanup(void_f_pvoid_t function)
+XBT_INLINE void SIMIX_function_register_process_cleanup(void_f_pvoid_t function)
 {
   simix_global->cleanup_process_function = function;
 }

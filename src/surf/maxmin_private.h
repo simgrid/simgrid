@@ -93,7 +93,7 @@ typedef struct lmm_system {
 #define make_constraint_inactive(sys,cnst) remove_active_constraint(sys,cnst)
 
 static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
-static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst);
+static XBT_INLINE void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst);
 
 void lmm_print(lmm_system_t sys);
 

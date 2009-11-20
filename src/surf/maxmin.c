@@ -105,7 +105,7 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
   xbt_mallocator_release(sys->variable_mallocator, var);
 }
 
-static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst)
+static XBT_INLINE void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst)
 {
 /*   xbt_assert0(xbt_swag_size(&(cnst->element_set)), */
 /* 	      "This list should be empty!"); */
@@ -135,17 +135,17 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
   return cnst;
 }
 
-void lmm_constraint_shared(lmm_constraint_t cnst)
+XBT_INLINE void lmm_constraint_shared(lmm_constraint_t cnst)
 {
   cnst->shared = 0;
 }
 
-int lmm_constraint_is_shared(lmm_constraint_t cnst)
+XBT_INLINE int lmm_constraint_is_shared(lmm_constraint_t cnst)
 {
   return (cnst->shared);
 }
 
-void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst)
+XBT_INLINE void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst)
 {
   remove_constraint(sys, cnst);
   lmm_cnst_free(sys, cnst);
@@ -218,12 +218,12 @@ void lmm_variable_free(lmm_system_t sys, lmm_variable_t var)
   lmm_var_free(sys, var);
 }
 
-double lmm_variable_getvalue(lmm_variable_t var)
+XBT_INLINE double lmm_variable_getvalue(lmm_variable_t var)
 {
   return (var->value);
 }
 
-double lmm_variable_getbound(lmm_variable_t var)
+XBT_INLINE double lmm_variable_getbound(lmm_variable_t var)
 {
   return (var->bound);
 }
@@ -289,7 +289,7 @@ void lmm_elem_set_value(lmm_system_t sys, lmm_constraint_t cnst,
     DIE_IMPOSSIBLE;
 }
 
-lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
+XBT_INLINE lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
                                        lmm_variable_t var, int num)
 {
   if (num < var->cnsts_number)
@@ -298,7 +298,7 @@ lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
     return NULL;
 }
 
-int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var)
+XBT_INLINE int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var)
 {
   return (var->cnsts_number);
 }
@@ -317,12 +317,12 @@ lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys,
     return NULL;
 }
 
-void *lmm_constraint_id(lmm_constraint_t cnst)
+XBT_INLINE void *lmm_constraint_id(lmm_constraint_t cnst)
 {
   return cnst->id;
 }
 
-void *lmm_variable_id(lmm_variable_t var)
+XBT_INLINE void *lmm_variable_id(lmm_variable_t var)
 {
   return var->id;
 }
@@ -690,12 +690,12 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
   XBT_OUT;
 }
 
-double lmm_get_variable_weight(lmm_variable_t var)
+XBT_INLINE double lmm_get_variable_weight(lmm_variable_t var)
 {
   return var->weight;
 }
 
-void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
+XBT_INLINE void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
                                  double bound)
 {
   sys->modified = 1;
@@ -703,17 +703,17 @@ void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
   cnst->bound = bound;
 }
 
-int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst)
+XBT_INLINE int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst)
 {
   return xbt_swag_belongs(cnst, &(sys->active_constraint_set));
 }
 
-lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t sys)
+XBT_INLINE lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t sys)
 {
   return xbt_swag_getFirst(&(sys->active_constraint_set));
 }
 
-lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys,
+XBT_INLINE lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys,
                                                 lmm_constraint_t cnst)
 {
   return xbt_swag_getNext(cnst, (sys->active_constraint_set).offset);

@@ -34,7 +34,7 @@ struct xbt_dict_cursor_ {
 /** @brief Creator
  *  @param dict the dict
  */
-xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict)
+XBT_INLINE xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict)
 {
   xbt_dict_cursor_t res = NULL;
 
@@ -50,7 +50,7 @@ xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict)
  * @brief Destructor
  * @param cursor poor victim
  */
-void xbt_dict_cursor_free(xbt_dict_cursor_t * cursor)
+XBT_INLINE void xbt_dict_cursor_free(xbt_dict_cursor_t * cursor)
 {
   if (*cursor) {
     xbt_free(*cursor);
@@ -68,7 +68,7 @@ static XBT_INLINE void __cursor_not_null(xbt_dict_cursor_t cursor)
 
 
 /** @brief Reinitialize the cursor. Mandatory after removal or add in dict. */
-void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
+XBT_INLINE void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
 {
   CDEBUG0(xbt_dict_cursor, "xbt_dict_cursor_rewind");
   xbt_assert(cursor);
@@ -87,7 +87,7 @@ void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
  * @param      dict   on what to let the cursor iterate
  * @param[out] cursor dest address
  */
-void xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t * cursor)
+XBT_INLINE void xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t * cursor)
 {
   DEBUG0("xbt_dict_cursor_first");
   if (!*cursor) {
@@ -105,10 +105,8 @@ void xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t * cursor)
 /**
  * \brief Move to the next element.
  */
-void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
+XBT_INLINE void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
 {
-
-
   xbt_dictelm_t current;
   int line;
 
@@ -143,7 +141,7 @@ void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
  *
  * @returns true if it's ok, false if there is no more data
  */
-int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
+XBT_INLINE int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
                                 char **key, void **data)
 {
 
@@ -171,7 +169,7 @@ int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
  * @param cursor: the cursor
  * @returns the current key
  */
-char *xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor)
+XBT_INLINE char *xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor)
 {
   __cursor_not_null(cursor);
 
@@ -183,7 +181,7 @@ char *xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor)
  * @param cursor the cursor
  * @returns the current data
  */
-void *xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor)
+XBT_INLINE void *xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor)
 {
   __cursor_not_null(cursor);
 

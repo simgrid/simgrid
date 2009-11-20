@@ -118,17 +118,17 @@ SIMIX_rdv_get_count_waiting_comm(smx_rdv_t rdv, smx_host_t host)
  *  \param rdv The rendez-vous point
  *  \return The communication or NULL if empty
  */
-smx_comm_t SIMIX_rdv_get_head(smx_rdv_t rdv)
+XBT_INLINE smx_comm_t SIMIX_rdv_get_head(smx_rdv_t rdv)
 {
   return (smx_comm_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
 }
 
 /** @brief adds some API-related data to the rendez-vous point */
-void SIMIX_rdv_set_data(smx_rdv_t rdv,void *data) {
+XBT_INLINE void SIMIX_rdv_set_data(smx_rdv_t rdv,void *data) {
   rdv->data=data;
 }
 /** @brief gets API-related data from the rendez-vous point */
-void *SIMIX_rdv_get_data(smx_rdv_t rdv) {
+XBT_INLINE void *SIMIX_rdv_get_data(smx_rdv_t rdv) {
   return rdv->data;
 }
 
@@ -280,7 +280,7 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
  *  \brief Cancels a communication
  *  \brief comm The communication to cancel
  */
-void SIMIX_communication_cancel(smx_comm_t comm)
+XBT_INLINE void SIMIX_communication_cancel(smx_comm_t comm)
 {
   SIMIX_action_cancel(comm->act);
 }
@@ -289,7 +289,7 @@ void SIMIX_communication_cancel(smx_comm_t comm)
  *  \brief get the amount remaining from the communication
  *  \param comm The communication
  */
-double SIMIX_communication_get_remains(smx_comm_t comm)
+XBT_INLINE double SIMIX_communication_get_remains(smx_comm_t comm)
 {
   return SIMIX_action_get_remains(comm->act);
 }  
@@ -329,7 +329,7 @@ void SIMIX_network_copy_data(smx_comm_t comm)
  *  \param comm The communication
  *  \return the user data
  */
-void *SIMIX_communication_get_data(smx_comm_t comm)
+XBT_INLINE void *SIMIX_communication_get_data(smx_comm_t comm)
 {
   return comm->data;
 }
@@ -353,7 +353,7 @@ void *SIMIX_communication_get_data(smx_comm_t comm)
  *   - timeout_error if communication reached the timeout specified
  *   - network_error if network failed or peer issued a timeout
  */
-void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate, 
+XBT_INLINE void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
                         double timeout, void *src_buff, size_t src_buff_size,
                         smx_comm_t *comm_ref, void *data)
 {
@@ -374,7 +374,7 @@ void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
  *   - timeout_error if communication reached the timeout specified
  *   - network_error if network failed or peer issued a timeout
  */
-void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buff, 
+XBT_INLINE void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buff,
                         size_t *dst_buff_size, smx_comm_t *comm_ref)
 {
   *comm_ref = SIMIX_network_irecv(rdv,dst_buff,dst_buff_size);
@@ -432,7 +432,7 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
 }
 
 /** @brief blocks until the communication terminates or the timeout occurs */
-void SIMIX_network_wait(smx_comm_t comm, double timeout) {
+XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout) {
   /* Wait for communication completion */
   SIMIX_communication_wait_for_completion(comm, timeout);
 
@@ -440,7 +440,7 @@ void SIMIX_network_wait(smx_comm_t comm, double timeout) {
 }
 
 /** @Returns whether the (asynchronous) communication is done yet or not */
-int SIMIX_network_test(smx_comm_t comm) {
+XBT_INLINE int SIMIX_network_test(smx_comm_t comm) {
   return comm->sem?SIMIX_sem_would_block(comm->sem):0;
 }
 

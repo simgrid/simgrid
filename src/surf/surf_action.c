@@ -58,18 +58,18 @@ e_surf_action_state_t surf_action_state_get(surf_action_t action)
   return SURF_ACTION_NOT_IN_THE_SYSTEM;
 }
 
-double surf_action_get_start_time(surf_action_t action)
+XBT_INLINE double surf_action_get_start_time(surf_action_t action)
 {
   return action->start;
 }
 
-double surf_action_get_finish_time(surf_action_t action)
+XBT_INLINE double surf_action_get_finish_time(surf_action_t action)
 {
   /* keep the function behavior, some models (cpu_ti) change the finish time before the action end */
   return action->remains == 0 ? action->finish : -1;
 }
 
-void surf_action_free(surf_action_t * action)
+XBT_INLINE void surf_action_free(surf_action_t * action)
 {
   (*action)->model_type->action_cancel(*action);
   free(*action);
@@ -98,12 +98,12 @@ void surf_action_state_set(surf_action_t action, e_surf_action_state_t state)
   XBT_OUT;
 }
 
-void surf_action_data_set(surf_action_t action, void *data)
+XBT_INLINE void surf_action_data_set(surf_action_t action, void *data)
 {
   action->data = data;
 }
 
-void surf_action_ref(surf_action_t action)
+XBT_INLINE void surf_action_ref(surf_action_t action)
 {
   action->refcount++;
 }

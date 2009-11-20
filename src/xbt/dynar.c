@@ -254,7 +254,7 @@ void xbt_dynar_free_container(xbt_dynar_t * dynar)
  *
  * \param dynar who to squeeze
  */
-void xbt_dynar_reset(xbt_dynar_t const dynar)
+XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
 {
   _dynar_lock(dynar);
 
@@ -313,7 +313,7 @@ void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
  * kilkil a dynar and its content
  */
 
-void xbt_dynar_free(xbt_dynar_t * dynar)
+XBT_INLINE void xbt_dynar_free(xbt_dynar_t * dynar)
 {
   if (dynar && *dynar) {
     xbt_dynar_reset(*dynar);
@@ -331,7 +331,7 @@ void xbt_dynar_free_voidp(void *d)
  *
  * \param dynar the dynar we want to mesure
  */
-unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
+XBT_INLINE unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
 {
   return (dynar ? (unsigned long) dynar->used : (unsigned long) 0);
 }
@@ -342,7 +342,7 @@ unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
  * \param idx index of the slot we want to retrieve
  * \param[out] dst where to put the result to.
  */
-void
+XBT_INLINE void
 xbt_dynar_get_cpy(const xbt_dynar_t dynar,
                   const unsigned long idx, void *const dst)
 {
@@ -363,7 +363,7 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
  * \warning The returned value is the actual content of the dynar.
  * Make a copy before fooling with it.
  */
-void *xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx)
+XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx)
 {
 
   void *res;
@@ -402,7 +402,7 @@ _xbt_dynar_set(xbt_dynar_t dynar,
  *
  * If you want to free the previous content, use xbt_dynar_replace().
  */
-void xbt_dynar_set(xbt_dynar_t dynar, const int idx, const void *const src)
+XBT_INLINE void xbt_dynar_set(xbt_dynar_t dynar, const int idx, const void *const src)
 {
 
   _dynar_lock(dynar);
@@ -487,7 +487,7 @@ void *xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar, const int idx)
  * moving the previously existing value and all subsequent ones to one
  * position right in the dynar.
  */
-void
+XBT_INLINE void
 xbt_dynar_insert_at(xbt_dynar_t const dynar,
                     const int idx, const void *const src)
 {
@@ -559,7 +559,7 @@ int xbt_dynar_member(xbt_dynar_t const dynar, void *const elem)
  * You can then use regular affectation to set its value instead of relying
  * on the slow memcpy. This is what xbt_dynar_push_as() does.
  */
-void *xbt_dynar_push_ptr(xbt_dynar_t const dynar)
+XBT_INLINE void *xbt_dynar_push_ptr(xbt_dynar_t const dynar)
 {
   void *res;
 
@@ -573,7 +573,7 @@ void *xbt_dynar_push_ptr(xbt_dynar_t const dynar)
 }
 
 /** @brief Add an element at the end of the dynar */
-void xbt_dynar_push(xbt_dynar_t const dynar, const void *const src)
+XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar, const void *const src)
 {
   _dynar_lock(dynar);
   /* checks done in xbt_dynar_insert_at_ptr */
@@ -586,7 +586,7 @@ void xbt_dynar_push(xbt_dynar_t const dynar, const void *const src)
  * You can then use regular affectation to set its value instead of relying
  * on the slow memcpy. This is what xbt_dynar_pop_as() does.
  */
-void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
+XBT_INLINE void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
 {
   void *res;
 
@@ -600,7 +600,7 @@ void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
 }
 
 /** @brief Get and remove the last element of the dynar */
-void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
+XBT_INLINE void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
 {
 
   /* sanity checks done by remove_at */
@@ -614,7 +614,7 @@ void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
  *
  * This is less efficient than xbt_dynar_push()
  */
-void xbt_dynar_unshift(xbt_dynar_t const dynar, const void *const src)
+XBT_INLINE void xbt_dynar_unshift(xbt_dynar_t const dynar, const void *const src)
 {
 
   /* sanity checks done by insert_at */
@@ -625,7 +625,7 @@ void xbt_dynar_unshift(xbt_dynar_t const dynar, const void *const src)
  *
  * This is less efficient than xbt_dynar_pop()
  */
-void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst)
+XBT_INLINE void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst)
 {
 
   /* sanity checks done by remove_at */
@@ -653,7 +653,7 @@ static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
  * operation, so make sure your function don't call any function
  * from xbt_dynar_* on it, or you'll get a deadlock.
  */
-void xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
+XBT_INLINE void xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
 {
 
   _sanity_check_dynar(dynar);
@@ -669,7 +669,7 @@ void xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
  *
  * This function can be used while traversing without problem.
  */
-void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int *const cursor)
+XBT_INLINE void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int *const cursor)
 {
 
   _xbt_dynar_remove_at(dynar, (*cursor)--, NULL);
@@ -681,7 +681,7 @@ void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int *const cursor)
  * xbt_dynar_foreach loop, but shouldn't be called at the end of a
  * regular traversal reaching the end of the elements
  */
-void xbt_dynar_cursor_unlock(xbt_dynar_t dynar)
+XBT_INLINE void xbt_dynar_cursor_unlock(xbt_dynar_t dynar)
 {
   _dynar_unlock(dynar);
 }

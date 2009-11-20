@@ -143,7 +143,7 @@ void SIMIX_launch_application(const char *file)
  * \param name the reference name of the function.
  * \param code the function
  */
-void SIMIX_function_register(const char *name, xbt_main_func_t code)
+XBT_INLINE void SIMIX_function_register(const char *name, xbt_main_func_t code)
 {
   xbt_assert0(simix_global,
               "SIMIX_global_init has to be called before SIMIX_function_register.");

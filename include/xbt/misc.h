@@ -155,15 +155,9 @@
 #  define XBT_IMPORT_NO_EXPORT(type)  	__declspec(dllimport) type
 #  define XBT_PUBLIC_DATA(type)		__declspec(dllimport) type
 
-/* UNIX build. If compiling in supernovae, try to inline everything */
-#elif defined(SUPERNOVAE_MODE)
-#  define XBT_PUBLIC(type)            inline type
-#  define XBT_EXPORT_NO_IMPORT(type)  type
-#  define XBT_IMPORT_NO_EXPORT(type)  type
-#  define XBT_PUBLIC_DATA(type)       extern type
-/* UNIX sain build... */
+/* UNIX build. Mark all functions as [potentially] inline, in case we are compiling in supernovae */
 #else
-#  define XBT_PUBLIC(type)            extern type
+#  define XBT_PUBLIC(type)            XBT_INLINE type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type

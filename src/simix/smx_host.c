@@ -41,7 +41,7 @@ smx_host_t __SIMIX_host_create(const char *name,
  *	\param data User data
  *
  */
-void SIMIX_host_set_data(smx_host_t host, void *data)
+XBT_INLINE void SIMIX_host_set_data(smx_host_t host, void *data)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
   xbt_assert0((host->data == NULL), "Data already set");
@@ -58,7 +58,7 @@ void SIMIX_host_set_data(smx_host_t host, void *data)
  * This functions checks whether \a host is a valid pointer or not and return the user data associated to \a host if it is possible.
  * \param host SIMIX host
  */
-void *SIMIX_host_get_data(smx_host_t host)
+XBT_INLINE void *SIMIX_host_get_data(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
@@ -72,7 +72,7 @@ void *SIMIX_host_get_data(smx_host_t host)
  * This functions checks whether \a host is a valid pointer or not and return its name.
  * \param host SIMIX host
  */
-const char *SIMIX_host_get_name(smx_host_t host)
+XBT_INLINE const char *SIMIX_host_get_name(smx_host_t host)
 {
 
   xbt_assert0((host != NULL), "Invalid parameters");
@@ -87,7 +87,7 @@ const char *SIMIX_host_get_name(smx_host_t host)
  * Return the host,  more details in #SIMIX_process_get_host
  * \return SIMIX host
  */
-smx_host_t SIMIX_host_self(void)
+XBT_INLINE smx_host_t SIMIX_host_self(void)
 {
   return SIMIX_process_get_host(SIMIX_process_self());
 }
@@ -131,7 +131,7 @@ void __SIMIX_host_destroy(void *h)
  *
  * \return Number of hosts
  */
-int SIMIX_host_get_number(void)
+XBT_INLINE int SIMIX_host_get_number(void)
 {
   return (xbt_dict_size(simix_global->host));
 }
@@ -161,7 +161,7 @@ smx_host_t *SIMIX_host_get_table(void)
  *
  * \return List of all hosts (as a #xbt_dict_t)
  */
-xbt_dict_t SIMIX_host_get_dict(void)
+XBT_INLINE xbt_dict_t SIMIX_host_get_dict(void)
 {
   return simix_global->host;
 }
@@ -173,7 +173,7 @@ xbt_dict_t SIMIX_host_get_dict(void)
  * \param host SIMIX host
  * \return Speed
  */
-double SIMIX_host_get_speed(smx_host_t host)
+XBT_INLINE double SIMIX_host_get_speed(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
@@ -187,7 +187,7 @@ double SIMIX_host_get_speed(smx_host_t host)
  * Return the available speed (in Mflop/s).
  * \return Speed
  */
-double SIMIX_host_get_available_speed(smx_host_t host)
+XBT_INLINE double SIMIX_host_get_available_speed(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
@@ -202,7 +202,7 @@ double SIMIX_host_get_available_speed(smx_host_t host)
  * \param name The name of an host.
  * \return The corresponding host
  */
-smx_host_t SIMIX_host_get_by_name(const char *name)
+XBT_INLINE smx_host_t SIMIX_host_get_by_name(const char *name)
 {
   xbt_assert0(((simix_global != NULL)
                && (simix_global->host != NULL)), "Environment not set yet");
@@ -216,7 +216,7 @@ smx_host_t SIMIX_host_get_by_name(const char *name)
  * \param host a host
  * \return the dynamic array consisting of property names
  */
-xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
+XBT_INLINE xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
@@ -231,7 +231,7 @@ xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
  * \param host The SIMIX host
  * \return 1 if host is available or 0 if not.
  */
-int SIMIX_host_get_state(smx_host_t host)
+XBT_INLINE int SIMIX_host_get_state(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 

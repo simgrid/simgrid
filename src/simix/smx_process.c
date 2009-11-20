@@ -197,7 +197,7 @@ void SIMIX_process_kill(smx_process_t process)
  * \param process SIMIX process
  * \return A void pointer to the user data
  */
-void *SIMIX_process_get_data(smx_process_t process)
+XBT_INLINE void *SIMIX_process_get_data(smx_process_t process)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
   return (process->data);
@@ -210,7 +210,7 @@ void *SIMIX_process_get_data(smx_process_t process)
  * \param process SIMIX process
  * \param data User data
  */
-void SIMIX_process_set_data(smx_process_t process, void *data)
+XBT_INLINE void SIMIX_process_set_data(smx_process_t process, void *data)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
 
@@ -225,7 +225,7 @@ void SIMIX_process_set_data(smx_process_t process, void *data)
  * \param process SIMIX process
  * \return SIMIX host
  */
-smx_host_t SIMIX_process_get_host(smx_process_t process)
+XBT_INLINE smx_host_t SIMIX_process_get_host(smx_process_t process)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
   return (process->smx_host);
@@ -238,7 +238,7 @@ smx_host_t SIMIX_process_get_host(smx_process_t process)
  * \param process SIMIX process
  * \return The process name
  */
-const char *SIMIX_process_get_name(smx_process_t process)
+XBT_INLINE const char *SIMIX_process_get_name(smx_process_t process)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
   return (process->name);
@@ -251,7 +251,7 @@ const char *SIMIX_process_get_name(smx_process_t process)
  * \param process SIMIX process
  * \param name The new process name
  */
-void SIMIX_process_set_name(smx_process_t process, char *name)
+XBT_INLINE void SIMIX_process_set_name(smx_process_t process, char *name)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
   process->name = name;
@@ -262,7 +262,7 @@ void SIMIX_process_set_name(smx_process_t process, char *name)
  *
  * This functions returns the properties associated with this process
  */
-xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
+XBT_INLINE xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 {
   return process->properties;
 }
@@ -273,7 +273,7 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
  * This functions returns the currently running #smx_process_t.
  * \return The SIMIX process
  */
-smx_process_t SIMIX_process_self(void)
+XBT_INLINE smx_process_t SIMIX_process_self(void)
 {
   return simix_global ? simix_global->current_process : NULL;
 }
@@ -392,7 +392,7 @@ void SIMIX_process_change_host(smx_process_t process, char *source,
  * \param process SIMIX process
  * \return 1, if the process is suspended, else 0.
  */
-int SIMIX_process_is_suspended(smx_process_t process)
+XBT_INLINE int SIMIX_process_is_suspended(smx_process_t process)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
 
@@ -404,7 +404,7 @@ int SIMIX_process_is_suspended(smx_process_t process)
  *
  * Maestro internal process is not counted, only user code processes are
  */
-int SIMIX_process_count()
+XBT_INLINE int SIMIX_process_count()
 {
   return xbt_swag_size(simix_global->process_list);
 }
