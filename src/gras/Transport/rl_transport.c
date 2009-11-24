@@ -126,6 +126,7 @@ gras_socket_t gras_trp_select(double timeout)
     max_fds = fd_setsize;
 #endif
 
+    tout.tv_sec = tout.tv_usec = 0;
     if (timeout > 0) {
       /* set the timeout */
       tout.tv_sec = (unsigned long) (wakeup - now);
