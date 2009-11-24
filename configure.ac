@@ -346,14 +346,15 @@ SG_COMPILE_FLAGS
 ##
 if test x$USE_MAINTAINER_MODE = xyes 
 then
-   not_maintainer_mode=yes
-else
    not_maintainer_mode=no
+else
+   not_maintainer_mode=yes
 fi
 
 AC_ARG_ENABLE(supernovae,
               AS_HELP_STRING([--enable-supernovae],[Put the whole library in one compilation unit only to help gcc optimizing the code]),
-	      supernovae=$enableval,supernovae=$not_maintainer_mode)
+	      [supernovae=$enableval],
+	      [supernovae=$not_maintainer_mode])
 AM_CONDITIONAL(SUPERNOVAE_MODE, test x$supernovae != xno)
 
 AC_SUBST([CFLAGS])
