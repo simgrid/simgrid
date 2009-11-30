@@ -39,16 +39,17 @@ static void send(xbt_dynar_t action)
   char *name = xbt_str_join(action, " ");
   char *to = xbt_dynar_get_as(action, 2, char *);
   char *size = xbt_dynar_get_as(action, 3, char *);
-  INFO2("Send: %s (size: %lg)", name, parse_double(size));
+  double clock = MSG_get_clock();
+  DEBUG2("Entering Send: %s (size: %lg)", name, parse_double(size));
   MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
-  INFO1("Sent %s", name);
+  INFO2("%s %f", name, MSG_get_clock()-clock);
   free(name);
 }
 
 
 static int spawned_send(int argc, char *argv[])
 {
-  INFO3("%s: Sending %s on %s", MSG_process_self()->name, 
+  DEBUG3("%s: Sending %s on %s", MSG_process_self()->name, 
 	argv[1],argv[0]);
   MSG_task_send(MSG_task_create(argv[0], 0, parse_double(argv[1]), NULL), 
 		argv[0]);
@@ -62,8 +63,8 @@ static void Isend(xbt_dynar_t action)
   char *size = xbt_dynar_get_as(action, 3, char *);
   char **myargv;
   m_process_t comm_helper;
-
-  INFO1("Isend on %s: spawn process ", 
+  double clock = MSG_get_clock();
+  DEBUG1("Isend on %s: spawn process ", 
 	 MSG_process_get_name(MSG_process_self()));
 
   myargv = (char**) calloc (3, sizeof (char*));
@@ -76,6 +77,7 @@ static void Isend(xbt_dynar_t action)
   comm_helper =
     MSG_process_create_with_arguments(spawn_name, spawned_send, 
 				      NULL, MSG_host_self(), 2, myargv);
+  INFO2("%s %f",xbt_str_join(action, " "), MSG_get_clock()-clock);
 }
 
 
@@ -83,11 +85,13 @@ static void recv(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
   m_task_t task = NULL;
-  INFO1("Receiving: %s", name);
+  double clock = MSG_get_clock();
   //FIXME: argument of action ignored so far; semantic not clear
   //char *from=xbt_dynar_get_as(action,2,char*);
+
+  DEBUG1("Receiving: %s", name);
   MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
-  INFO1("Received %s", MSG_task_get_name(task));
+  INFO2("%s %f", name, MSG_get_clock()-clock);
   MSG_task_destroy(task);
   free(name);
 }
@@ -96,10 +100,10 @@ static int spawned_recv(int argc, char *argv[])
 {
   m_task_t task = NULL;
   char* name = (char *) MSG_process_get_data(MSG_process_self());
-  INFO1("Receiving on %s", name);
+  DEBUG1("Receiving on %s", name);
   MSG_task_receive(&task, name);
-  INFO1("Received %s", MSG_task_get_name(task));
-  INFO1("waiter on %s", MSG_process_get_name(MSG_process_self()));
+  DEBUG1("Received %s", MSG_task_get_name(task));
+  DEBUG1("waiter on %s", MSG_process_get_name(MSG_process_self()));
   MSG_task_send(MSG_task_create("waiter",0,0,NULL),MSG_process_get_name(MSG_process_self())); 
   
   MSG_task_destroy(task);
@@ -111,8 +115,8 @@ static void Irecv(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
   m_process_t comm_helper;
-
-  INFO1("Irecv on %s: spawn process ", 
+  double clock = MSG_get_clock();
+  DEBUG1("Irecv on %s: spawn process ", 
 	 MSG_process_get_name(MSG_process_self()));
 
   sprintf(name,"%s_wait",MSG_process_get_name(MSG_process_self()));
@@ -120,7 +124,9 @@ static void Irecv(xbt_dynar_t action)
                  (void *) MSG_process_get_name(MSG_process_self()),
                  MSG_host_self());
 
-
+  INFO2("%s %f",  xbt_str_join(action, " "), 
+	MSG_get_clock()-clock);
+ 
   free(name);
 }
 
@@ -130,12 +136,13 @@ static void wait(xbt_dynar_t action)
   char *name = xbt_str_join(action, " ");
   char task_name[80];
   m_task_t task = NULL;
+  double clock = MSG_get_clock();
   
-  INFO1("wait: %s", name);
+  DEBUG1("Entering %s", name);
   sprintf(task_name,"%s_wait",MSG_process_get_name(MSG_process_self()));
   MSG_task_receive(&task,task_name);
   MSG_task_destroy(task);
-  INFO1("waited: %s", name);
+  INFO2("%s %f", name,	MSG_get_clock()-clock);
   free(name);
 }
 
@@ -160,6 +167,7 @@ static void reduce(xbt_dynar_t action)
   m_process_t comm_helper=NULL;
   m_task_t task=NULL, comp_task=NULL;
   const char* process_name;
+  double clock = MSG_get_clock();
   
   coll_ctr counters =  (coll_ctr) MSG_process_get_data(MSG_process_self());
 
@@ -176,7 +184,7 @@ static void reduce(xbt_dynar_t action)
   name = bprintf("reduce_%d", counters->reduce_counter++);
 
   if (!strcmp(process_name, "process0")){
-    INFO2("%s: %s is the Root",name, process_name);
+    DEBUG2("%s: %s is the Root",name, process_name);
     for(i=1;i<communicator_size;i++){
       sprintf(spawn_name,"%s_process%d", name, i);
       sprintf(task_name,"%s_wait", spawn_name);
@@ -195,19 +203,20 @@ static void reduce(xbt_dynar_t action)
 
     comp_task = 
       MSG_task_create("reduce_comp", parse_double(comp_size), 0, NULL);
-    INFO1("%s: computing 'reduce_comp'", name);
+    DEBUG1("%s: computing 'reduce_comp'", name);
     MSG_task_execute(comp_task);
     MSG_task_destroy(comp_task);
-    INFO1("%s: computed", name);
+    DEBUG1("%s: computed", name);
   } else {
-    INFO2("%s: %s sends", name, process_name);
+    DEBUG2("%s: %s sends", name, process_name);
     sprintf(task_name,"%s_%s", name, process_name);
-    INFO1("put on %s", task_name);
+    DEBUG1("put on %s", task_name);
     MSG_task_send(MSG_task_create(name, 0, parse_double(comm_size), NULL),
 		  task_name);
   }
 
   MSG_process_set_data(MSG_process_self(), (void*)counters);
+  INFO2("%s %f", xbt_str_join(action, " "), MSG_get_clock()-clock);
   free(name);
 }
 
@@ -223,7 +232,8 @@ static void bcast (xbt_dynar_t action)
   m_task_t task=NULL;
   char *size = xbt_dynar_get_as(action, 2, char *);
   coll_ctr counters =  (coll_ctr) MSG_process_get_data(MSG_process_self());
-
+  double clock = MSG_get_clock();
+  
   xbt_assert0(communicator_size, "Size of Communicator is not defined"
 	      ", can't use collective operations");
 
@@ -236,7 +246,7 @@ static void bcast (xbt_dynar_t action)
 
   name = bprintf("bcast_%d", counters->bcast_counter++);
   if (!strcmp(process_name, "process0")){
-    INFO2("%s: %s is the Root",name, process_name);
+    DEBUG2("%s: %s is the Root",name, process_name);
 
     for(i=1;i<communicator_size;i++){
       myargv = (char**) calloc (3, sizeof (char*));
@@ -257,19 +267,20 @@ static void bcast (xbt_dynar_t action)
       MSG_task_destroy(task);
       task=NULL;
     }
-    INFO2("%s: all messages sent by %s have been received",
+    DEBUG2("%s: all messages sent by %s have been received",
 	  name, process_name);
   } else {
-    INFO2("%s: %s receives", name, process_name);
+    DEBUG2("%s: %s receives", name, process_name);
     MSG_task_receive(&task, name);
     MSG_task_destroy(task);
-    INFO2("%s: %s has received", name,process_name);
+    DEBUG2("%s: %s has received", name,process_name);
     sprintf(task_name,"%s_wait", process_name);
     DEBUG1("put on %s", task_name);
     MSG_task_send(MSG_task_create("waiter",0,0,NULL),task_name);
   }
 
   MSG_process_set_data(MSG_process_self(), (void*)counters);
+  INFO2("%s %f", xbt_str_join(action, " "), MSG_get_clock()-clock);
   free(name);
 }
 
@@ -278,9 +289,10 @@ static void sleep(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
   char *duration = xbt_dynar_get_as(action, 2, char *);
-  INFO1("sleep: %s", name);
+  double clock = MSG_get_clock();
+  DEBUG1("Entering %s", name);
   MSG_process_sleep(parse_double(duration));
-  INFO1("sleept: %s", name);
+  INFO2("%s %f ", name, MSG_get_clock()-clock);
   free(name);
 }
 
@@ -296,7 +308,8 @@ static void allReduce(xbt_dynar_t action)
   m_process_t comm_helper=NULL;
   m_task_t task=NULL, comp_task=NULL;
   const char* process_name;
-  
+  double clock = MSG_get_clock();
+ 
   coll_ctr counters =  (coll_ctr) MSG_process_get_data(MSG_process_self());
 
   xbt_assert0(communicator_size, "Size of Communicator is not defined"
@@ -312,7 +325,7 @@ static void allReduce(xbt_dynar_t action)
   name = bprintf("allReduce_%d", counters->allReduce_counter++);
 
   if (!strcmp(process_name, "process0")){
-    INFO2("%s: %s is the Root",name, process_name);
+    DEBUG2("%s: %s is the Root",name, process_name);
     for(i=1;i<communicator_size;i++){
       sprintf(spawn_name,"%s_process%d", name, i);
       sprintf(task_name,"%s_wait", spawn_name);
@@ -331,10 +344,10 @@ static void allReduce(xbt_dynar_t action)
 
     comp_task = 
       MSG_task_create("allReduce_comp", parse_double(comp_size), 0, NULL);
-    INFO1("%s: computing 'reduce_comp'", name);
+    DEBUG1("%s: computing 'reduce_comp'", name);
     MSG_task_execute(comp_task);
     MSG_task_destroy(comp_task);
-    INFO1("%s: computed", name);
+    DEBUG1("%s: computed", name);
 
     for(i=1;i<communicator_size;i++){
       myargv = (char**) calloc (3, sizeof (char*));
@@ -355,19 +368,19 @@ static void allReduce(xbt_dynar_t action)
       MSG_task_destroy(task);
       task=NULL;
     }
-    INFO2("%s: all messages sent by %s have been received",
+    DEBUG2("%s: all messages sent by %s have been received",
 	  name, process_name);
 
   } else {
-    INFO2("%s: %s sends", name, process_name);
+    DEBUG2("%s: %s sends", name, process_name);
     sprintf(task_name,"%s_%s", name, process_name);
-    INFO1("put on %s", task_name);
+    DEBUG1("put on %s", task_name);
     MSG_task_send(MSG_task_create(name, 0, parse_double(comm_size), NULL),
 		  task_name);
 
     MSG_task_receive(&task, name);
     MSG_task_destroy(task);
-    INFO2("%s: %s has received", name,process_name);
+    DEBUG2("%s: %s has received", name,process_name);
     sprintf(task_name,"%s_wait", process_name);
     DEBUG1("put on %s", task_name);
     MSG_task_send(MSG_task_create("waiter",0,0,NULL),task_name);
@@ -375,8 +388,8 @@ static void allReduce(xbt_dynar_t action)
   }
 
   MSG_process_set_data(MSG_process_self(), (void*)counters);
+  INFO2("%s %f", xbt_str_join(action, " "), MSG_get_clock()-clock);
   free(name);
-
 }
 
 static void comm_size(xbt_dynar_t action)
@@ -390,10 +403,12 @@ static void compute(xbt_dynar_t action)
   char *name = xbt_str_join(action, " ");
   char *amout = xbt_dynar_get_as(action, 2, char *);
   m_task_t task = MSG_task_create(name, parse_double(amout), 0, NULL);
-  INFO1("computing: %s", name);
+  double clock = MSG_get_clock();
+
+  DEBUG1("Entering %s", name);
   MSG_task_execute(task);
   MSG_task_destroy(task);
-  INFO1("computed: %s", name);
+  INFO2("%s %f", name, MSG_get_clock()-clock);
   free(name);
 }
 
