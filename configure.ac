@@ -544,10 +544,10 @@ AC_CONFIG_FILES([
       examples/gras/mmrpc/Makefile
       examples/gras/pmm/Makefile
       examples/gras/all2all/Makefile
-      examples/gras/replay/Makefile
     examples/amok/Makefile       
     examples/smpi/Makefile       
 ])
+#      examples/gras/replay/Makefile
 
 AC_CONFIG_FILES([
   src/smpi/smpicc
