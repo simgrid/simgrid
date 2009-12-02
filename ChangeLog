@@ -43,6 +43,15 @@ SimGrid (3.3.4) unstable; urgency=low
      This new model is more realistic than the previous one, so you
        should consider redoing your old experiments with this model.
      Sorry for the inconvenience.
+     
+ Build System:
+ * Introduce the supernovae compilation mode
+   When compiled that way, the whole SimGrid (or almost) is put in a
+     single compilation unit and compiled in one shoot. 
+  This is to help gcc which has difficulties to inline stuff from one
+     file into another.
+  The speedup seem to be above 15%, althrough more tests are needed on
+     amd64 to confirm that gain.
 
  MSG:
  * Port of MSG's mailbox on top of SIMIX network
