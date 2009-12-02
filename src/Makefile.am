@@ -384,8 +384,9 @@ endif
 ##
 ## Compile the libs
 CLEANFILES=
-if SUPERNOVAE_MODE
   
+
+if SUPERNOVAE_MODE
 simgrid_fragile_sources=gras/DataDesc/ddt_parse.yy.c surf/surfxml_parse.c xbt/graphxml_parse.c simdag/sd_daxloader.c
 gras_fragile_sources=gras/DataDesc/ddt_parse.yy.c xbt/graphxml_parse.c
 
@@ -397,12 +398,17 @@ supernovae_smpi.c: Makefile.am
 	./mk_supernovae.sh supernovae_smpi.c $(filter-out $(smpi_fragile_sources),$(smpi_sources))
 CLEANFILES+=supernovae_sg.c supernovae_gras.c supernovae_smpi.c
 
-libsimgrid_la_SOURCES = supernovae_sg.c $(simgrid_fragile_sources)
-libgras_la_SOURCES = supernovae_gras.c $(gras_fragile_sources)
+simgrid_sources_to_use =  supernovae_sg.c $(simgrid_fragile_sources)
+gras_sources_to_use = supernovae_gras.c $(gras_fragile_sources)
 else
-libsimgrid_la_SOURCES = $(simgrid_sources)
-libgras_la_SOURCES=$(gras_sources)
+simgrid_sources_to_use = $(simgrid_sources)
+gras_sources_to_use = $(gras_sources)
 endif
+
+# Automake 11 has a bug if the 2 next variables are defined twice in #if branches. 
+# The dist target uses the first definition, regardless of whether it is the used branch or not
+libsimgrid_la_SOURCES = $(simgrid_sources_to_use)
+libgras_la_SOURCES = $(gras_sources_to_use)
 
 if GRAMINE_MODE
 else 
