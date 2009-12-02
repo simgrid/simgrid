@@ -66,6 +66,8 @@ EXTRA_DIST= \
 	\
 	simdag/private.h \
 	simdag/dax.dtd \
+	simdag/dax_dtd.h \
+	simdag/dax_dtd.c \
 	\
 	gras/DataDesc/ddt_parse.yy.l \
         gras/DataDesc/ddt_parse.yy.h \
@@ -86,7 +88,9 @@ EXTRA_DIST= \
 	smpi/private.h \
 	smpi/smpi_coll_private.h \
       smpi/smpi_mpi_dt_private.h \
-	smpi/README
+	smpi/README \
+	\
+	mk_supernovae.sh
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |
@@ -262,7 +266,8 @@ JMSG_JAVA_SRC = \
   java/simgrid/msg/Sem.java
 
 
-SIMDAG_SRC= simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c \
+SIMDAG_SRC= simdag/sd_global.c simdag/sd_link.c \
+  simdag/sd_task.c simdag/sd_workstation.c \
   simdag/sd_daxloader.c
 
 GRAS_COMMON_SRC= \
