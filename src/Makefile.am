@@ -383,12 +383,20 @@ endif
 
 ##
 ## Compile the libs
-CLEANFILES=
-  
+CLEANFILES=supernovae_sg.c supernovae_gras.c supernovae_smpi.c
+BUILT_SOURCES=
+
+# Cannot let automake autocompute the content of dist from
+#  lib*_la_SOURCES variables since it would include supernovae files,
+#  which are only generated sometimes, not always.
+# So, use nodist_lib*_la_SOURCES variables and add stuff to EXTRA_DIST manually
+
+EXTRA_DIST+=$(simgrid_sources) $(gras_sources)
 
 if SUPERNOVAE_MODE
 simgrid_fragile_sources=gras/DataDesc/ddt_parse.yy.c surf/surfxml_parse.c xbt/graphxml_parse.c simdag/sd_daxloader.c
 gras_fragile_sources=gras/DataDesc/ddt_parse.yy.c xbt/graphxml_parse.c
+BUILT_SOURCES+=supernovae_sg.c supernovae_gras.c supernovae_smpi.c
 
 supernovae_sg.c: Makefile.am
 	./mk_supernovae.sh supernovae_sg.c $(filter-out $(simgrid_fragile_sources),$(simgrid_sources))
@@ -396,19 +404,14 @@ supernovae_gras.c: Makefile.am
 	./mk_supernovae.sh supernovae_gras.c $(filter-out $(gras_fragile_sources),$(gras_sources))
 supernovae_smpi.c: Makefile.am
 	./mk_supernovae.sh supernovae_smpi.c $(filter-out $(smpi_fragile_sources),$(smpi_sources))
-CLEANFILES+=supernovae_sg.c supernovae_gras.c supernovae_smpi.c
 
-simgrid_sources_to_use =  supernovae_sg.c $(simgrid_fragile_sources)
-gras_sources_to_use = supernovae_gras.c $(gras_fragile_sources)
+nodist_libsimgrid_la_SOURCES =  supernovae_sg.c $(simgrid_fragile_sources)
+nodist_libgras_la_SOURCES = supernovae_gras.c $(gras_fragile_sources)
 else
-simgrid_sources_to_use = $(simgrid_sources)
-gras_sources_to_use = $(gras_sources)
+nodist_libsimgrid_la_SOURCES = $(simgrid_sources)
+nodist_libgras_la_SOURCES = $(gras_sources)
 endif
 
-# Automake 11 has a bug if the 2 next variables are defined twice in #if branches. 
-# The dist target uses the first definition, regardless of whether it is the used branch or not
-libsimgrid_la_SOURCES = $(simgrid_sources_to_use)
-libgras_la_SOURCES = $(gras_sources_to_use)
 
 if GRAMINE_MODE
 else 
@@ -435,7 +438,7 @@ TEST_UNITS= @builddir@/cunit_unit.c   @builddir@/ex_unit.c         \
 	    @builddir@/xbt_str_unit.c @builddir@/xbt_strbuff_unit.c @builddir@/xbt_sha_unit.c\
             @builddir@/config_unit.c  @builddir@/xbt_synchro_unit.c
 
-BUILT_SOURCES=../include/surf/simgrid_dtd.h surf/simgrid_dtd.c \
+BUILT_SOURCES+=../include/surf/simgrid_dtd.h surf/simgrid_dtd.c \
               ../include/xbt/graphxml.h xbt/graphxml.c \
               simdag/dax_dtd.h simdag/dax_dtd.c \
               gras/DataDesc/ddt_parse.yy.c \
