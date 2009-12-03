@@ -576,14 +576,14 @@ void lmm_solve(lmm_system_t sys)
         } else {                /* FIXME one day: We recompute usage.... :( */
           cnst->usage = 0.0;
           make_elem_inactive(elem);
+          elem_list = &(cnst->element_set);
           xbt_swag_foreach(elem, elem_list) {
             if (elem->variable->weight <= 0)
               break;
             if (elem->variable->value > 0)
               break;
             if ((elem->value > 0)) {
-              if (cnst->usage < elem->value / elem->variable->weight)
-                cnst->usage = elem->value / elem->variable->weight;
+              cnst->usage=MAX(cnst->usage,elem->value / elem->variable->weight);
               DEBUG2("Constraint Usage %d : %f", cnst->id_int, cnst->usage);
               make_elem_active(elem);
             }
