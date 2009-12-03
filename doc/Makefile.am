@@ -6,13 +6,13 @@
 
 
 DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") \
- $(shell find @srcdir@ -name "*.doc" |grep -v logcategories.doc)
+ $(shell find @srcdir@ -name "*.doc" |grep -v logcategories.doc) 
 FIGS=simgrid_modules.fig simgrid_modules2.fig amok_bw_test.fig amok_bw_sat.fig gras_comm.fig
 PNGS=$(patsubst %.fig,%.png,$(FIGS)) webcruft/simgrid_logo.png webcruft/simgrid_logo_small.png webcruft/poster_thumbnail.png
 
 EXTRA_DIST = html Doxyfile \
- modules.doc FAQ.doc contrib.doc index.doc publis.doc footer.html history.doc  \
- $(foreach file,$(FIGS),fig/$(file)) $(PNGS)
+ modules.doc FAQ.doc contrib.doc index.doc publis.doc publis2.doc footer.html history.doc  \
+ $(foreach file,$(FIGS),fig/$(file)) $(PNGS) all.bib
 
 
 CLEANFILES = .*.toc
@@ -31,7 +31,8 @@ simgrid_modules.map: fig/simgrid_modules.fig
 	fig2dev -Lpng $^ > $@
 
 html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES) \
-      html/gras.html html/amok.html html/msg.html html/simdag.html
+      html/gras.html html/amok.html html/msg.html html/simdag.html  \
+      publis_core_bib.html publis_extern_bib.html publis_intra_bib.html publis_count.html 
 	: # Setting up
 	touch index-API.doc .FAQ.doc.toc .index.doc.toc .contrib.doc.toc .history.doc.toc
 	test -e html || mkdir html
@@ -64,6 +65,27 @@ html/msg.html:
 html/simdag.html:
 	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>" > $@
 	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>DAG Simulator.</a></h2></center></html>" >> $@
+
+if HAVE_BIBTEX2HTML
+
+publis_count.html: all.bib
+	@top_srcdir@/tools/doxygen/bibtex2html_table_count.pl < $^ > $@
+
+publis_core.bib: all.bib 
+	$(BIBTOOL) -- 'select.by.string={category "core"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' $< > $@
+
+publis_extern.bib: all.bib 
+	$(BIBTOOL) -- 'select.by.string={category "extern"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' $< > $@
+
+publis_intra.bib: all.bib 
+	$(BIBTOOL) -- 'select.by.string={category "intra"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' $< > $@
+
+%_bib.latin1.html: %.bib
+	$(BIBTEX2HTML) -single-output -nv -force -sort year -copy-icons $^ | @top_srcdir@/tools/doxygen/bibtex2html_postprocessor.pl > $@
+
+%_bib.html: %_bib.latin1.html
+	$(ICONV) --from-code latin1 --to-code utf8 $^ --output $@
+endif
 
 publish:
 	$(MAKE) -C .. sync-gforge

@@ -1,0 +1,704 @@
+@InProceedings { VL_Simutools_09,
+  x-invited-conference = {no},
+  title = {Accuracy Study and Improvement of Network Simulation in the SimGrid Framework},
+  x-proceedings = {yes},
+  booktitle = {SIMUTools'09, 2nd International Conference on Simulation Tools and Techniques},
+  year = {2009},
+  x-international-audience = {yes},
+  author = {Velho , Pedro and Legrand, Arnaud},
+  pdf = {http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf},
+  category = {core}
+} 
+
+@InProceedings{simgrid,
+  author =    {Casanova, Henri and Legrand, Arnaud and Quinson, Martin},
+  title =     {{SimGrid: a Generic Framework for Large-Scale Distributed Experiments}},
+  booktitle = {10th IEEE International Conference on Computer Modeling and Simulation},
+  year =       2008,
+  month =      mar,
+  category = {core}
+}
+
+@InProceedings{nstools07,
+  title =     {Speed and Accuracy of Network Simulation in the SimGrid Framework},
+  author =    {Kayo Fujiwara and Henri Casanova},
+  booktitle = {Proceedings of the First International Workshop on Network Simulation Tools (NSTools)},
+  year =      {2007},
+  pdf = {http://navet.ics.hawaii.edu/~casanova/homepage/papers/fujiwara_nstool2007.pdf},
+  category = {core}
+}
+
+@MastersThesis{msc_kayo,
+  author = 	 {Kayo Fujiwara},
+  title = 	 {Cost and Accuracy of Packet-Level vs. Analytical Network Simulations: An Empirical Study},
+  school = 	 {Dept. of Information and Computer Sciences, University of Hawai`i at Manoa},
+  year = 	 {2007},
+  month = 	 apr,
+  pdf = {http://navet.ics.hawaii.edu/~casanova/homepage/theses/kayo_fujiwara_MS.pdf},
+  category = {core}
+}
+
+
+@InProceedings{gras-iasted06,
+  title =     {Gras: A Research & Development Framework for Grid and P2P Infrastructures},
+  author =    {Martin Quinson},
+  booktitle = {18th IASTED International Conference on Parallel and Distributed Computing and Systems (PDCS'06)},
+  year =      {2006},
+  pdf = {http://www.loria.fr/~quinson/articles/gras-iasted06.pdf},
+  note = {Best paper},
+  category = {core}
+}
+
+@InProceedings{hpdc06,
+  title =     {The SimGrid Project - Simulation and Deployment of Distributed Applications},
+  author =    {Arnaud Legrand and Martin Quinson and Kayo Fujiwara and Henri Casanova},
+  booktitle = {Proceedings of the IEEE International Symposium on High Performance Distributed Computing (HPDC-15)},
+  year =      {2006},
+  month = may,
+  address = {Paris, France},
+  note = {Poster},
+  pdf = {http://navet.ics.hawaii.edu/~casanova/homepage/papers/simgrid_hpdc06.pdf},
+  category = {core}
+}
+
+@InProceedings{ccgrid03,
+  title =     {Scheduling Distributed Applications: the SimGrid Simulation Framework},
+  author =    {Henri Casanova and Arnaud Legrand and Loris Marchal},
+  booktitle = {Proceedings of the third IEEE International Symposium on Cluster Computing and the Grid (CCGrid'03)},
+  year =      {2003},
+  pdf = {http://www-id.imag.fr/Laboratoire/Membres/Legrand_Arnaud/articles/simgrid2_CCgrid03.pdf},
+  category = {core}
+}
+
+
+@TechReport{RR2002-40,
+  author = 	 {Henri Casanova and Loris Marchal},
+  title = 	 {A Network Model for Simulation of Grid Application},
+  institution =  {LIP, ENS Lyon, France},
+  year = 	 {2002},
+  abstract =     {In this work we investigate network models that can be
+    potentially employed in the simulation of scheduling algorithms for
+    distributed computing applications. We seek to develop a model of TCP
+    communication which is both high-level and realistic. Previous research
+    works show that accurate and global modeling of wide-area networks, such
+    as the Internet, faces a number of challenging issues. However, some
+    global models of fairness and bandwidth-sharing exist, and can be link
+    withthe behavior of TCP. Using both previous results and simulation (with
+    NS), we attempt to understand the macroscopic behavior of
+    TCP communications. We then propose a global model of the network for the
+    Grid platform. We perform partial validation of this model in
+    simulation. The model leads to an algorithm for computing
+    bandwidth-sharing. This algorithm can then be implemented as part of Grid
+    application simulations. We provide such an implementation for the
+    SimGrid simulation toolkit.},
+  type = 	 {Research Report},
+  ps = {ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.z},
+  number = 	 {2002-40},
+  category = {core}
+}
+    
+
+@TechReport{RR2002-28,
+  author = 	 {Arnaud Legrand and Julien Lerouge},
+  title = 	 {MetaSimGrid : Towards realistic scheduling simulation of distributed applications},
+  institution =  {LIP, ENS Lyon, France},
+  year = 	 {2002},
+  abstract =     {Most scheduling problems are already hard on homogeneous
+    platforms, they become quite intractable in an heterogeneous
+    framework such as a metacomputing grid. In the best cases, a
+    guaranteed heuristic can be found, but most of the time, it is
+    not possible. Real experiments or simulations are often
+    involved to test or to compare heuristics. However, on a
+    distributed heterogeneous platform, such experiments are
+    technically difficult to drive, because of the genuine
+    instability of the platform. It is almost impossible to
+    guarantee that a platform which is not dedicated to the
+    experiment, will remain exactly the same between two tests,
+    thereby forbidding any meaningful comparison. Simulations are
+    then used to replace real experiments, so as to ensure the
+    reproducibility of measured data. A key issue is the
+    possibility to run the simulations against a realistic
+    environment. The main idea of trace-based simulation is to
+    record the platform parameters today, and to simulate the
+    algorithms tomorrow, against the recorded data: even though it
+    is not the current load of the platform, it is realistic,
+    because it represents a fair summary of what happened
+    previously. A good example of a trace-based simulation tool is
+    SimGrid, a toolkit providing a set of core abstractions and
+    functionalities that can be used to easily build simulators for
+    specific application domains and/or computing environment
+    topologies. Nevertheless, SimGrid lacks a number of convenient
+    features to craft simulations of a distributed application
+    where scheduling decisions are not taken by a single
+    process. Furthermore, modeling a complex platform by hand is
+    fastidious for a few hosts and is almost impossible for a real
+    grid. This report is a survey on simulation for scheduling
+    evaluation purposes and present MetaSimGrid, a simulator built
+    on top of SimGrid.},
+  type = 	 {Research Report},
+  ps = {ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-28.ps.gz},
+  number = 	 {2002-28},
+  category = {core}
+}
+
+
+ 	
+@InProceedings{CCGRID.2001,
+author = {Henri Casanova},
+title = {Simgrid: A Toolkit for the Simulation of Application Scheduling},
+booktitle ={Cluster Computing and the Grid, IEEE International Symposium on},
+year = {2001},
+pages = {430},
+  abstract = {Advances in hardware and software technologies have made it
+    possible to deploy parallel applications over increasingly large
+    sets of distributed resources. Consequently, the study of
+    scheduling algorithms for such applications has been an active area
+    of research. Given the nature of most scheduling problems one must
+    resort to simulation to effectively evaluate and compare their
+    efficacy over a wide range of scenarios. It has thus become
+    necessary to simulate those algorithms for increasingly complex
+    distributed, dynamic, heterogeneous environments. In this paper we
+    present SimGrid, a simulation toolkit for the study of scheduling
+    algorithms for distributed application. This paper gives the main
+    concepts and models behind SimGrid, describes its API and
+    highlights current implementation issues. We also give some
+    experimental results and describe work that builds on SimGrid's
+    functionalities.},
+doi = {http://doi.ieeecomputersociety.org/10.1109/CCGRID.2001.923223},
+publisher = {IEEE Computer Society},
+address = {Los Alamitos, CA, USA},
+  category = {core}
+}
+    
+@inproceedings{CC09,
+  Address = {Toulouse, France},
+  Author = {Charrier, Ghislain and Caniou, Yves},
+  Booktitle = {19emes Rencontres francophonnes du Parall{\'e}lisme (RenPar'19)},
+  Month = {Septembre 9-11},
+  Title = {Ordonnancement et r{\'e}allocation de t{\^a}ches sur une grille de calcul},
+  Year = {2009},
+  category = {extern}
+}
+
+@inproceedings{RenparLN09,
+  Address = {Toulouse, France},
+  Author = {Helene Renard},
+  Booktitle = {19emes Rencontres francophonnes du Parall{\'e}lisme (RenPar'19)},
+  Month = {Septembre 9-11},
+  Title = {Comparaisons 
+       entre le simulateur SimGrid et une application
+       r{\'e}elle pour {\'e}valuer les algorithmes d'{\'e}quilibre de charge et de
+       redistribution de donn{\'e}es},
+  pdf = {http://www.irit.fr/Toulouse2009/Toulouse2009/papiers/paper10.pdf},
+  Year = {2009},
+  category = {extern}
+}
+
+@inproceedings{1372508,
+ author = {Bouabache, Fatiha and Herault, Thomas and Fedak, Gilles and Cappello, Franck},
+ title = {Hierarchical Replication Techniques to Ensure Checkpoint Storage Reliability in Grid Environment},
+ booktitle = {CCGRID '08: Proceedings of the 2008 Eighth IEEE International Symposium on Cluster Computing and the Grid},
+ year = {2008},
+ isbn = {978-0-7695-3156-4},
+ pages = {475--483},
+ doi = {http://dx.doi.org/10.1109/CCGRID.2008.95},
+ publisher = {IEEE Computer Society},
+ address = {Washington, DC, USA},
+ category = {extern}
+}
+
+@InProceedings{gallet09,
+  title =     {Efficient Scheduling of Task Graph Collections on Heterogeneous Resources},
+  author =    {Matthieu Gallet and Loris Marchal and Fr{\'e}d{\'e}ric Vivien},
+  booktitle = {International Parallel and Distributed Processing Symposium (IPDPS'2009)},
+  year =      {2009},
+  category = {core},
+  category = {extern}
+}
+
+@InProceedings{Kurt09,
+  title =     {Improving The Scalability of SimGrid Using Dynamic Routing},
+  author =    {S. De Munck, K. Vanmechelen and J. Broeckhove},
+  booktitle = {Proceedings of ICCS},
+  year =      {2009},
+  category = {core},
+  category = {extern}
+}
+
+@InProceedings{benoit08,
+  title =     {Offline and online scheduling of concurrent bags-of-tasks on heterogeneous platforms},
+  author =    {Anne Benoit and Loris Marchal and Jean-Francois Pineau and Yves Robert and Fr{\'e}d{\'e}ric Vivien},
+  booktitle = {10th Workshop on Advances in Parallel and Distributed Computational Models (APDCM 2008), IEEE Computer Society Press},
+  year =      {2008},
+  category = {core},
+  category = {extern}
+}
+
+@InProceedings{Hernandez08,
+  title =     {Scheduling DAGs on Grids with Copying and Migration},
+  author =    {Israel Hernandez and Murray Cole},
+  booktitle = {Parallel Processing and Applied Mathematics 2007 (PPAM07), LNCS 4967},
+  pages = {1019-1028},
+  year = {2008},
+  url = {http://www.springerlink.com/content/l555166254q2778p/?p=754ec30fb8044cce9f3f18dc9f304f4f&pi=107},
+  category = {extern}
+}
+
+@InProceedings{Kurt08,
+  title =     {Scalability of Grid Simulators : An Evaluation},
+  author =    {W. Depoorter, N. De Moor, K. Vanmechelen and J. Broeckhove},
+  booktitle = {Proceedings of Europar 2008, Lecture Notes in Computer Science (LNCS 5168)},
+  pages = {544-553},
+  year ={2008},
+  category = {extern}
+}
+
+@InProceedings{Hunold08,
+  title =     {Scheduling Dynamic Workflows onto Clusters of Clusters using Postponing},
+  author =    {Sascha Hunold,  Thomas Rauber and Fr{\'e}d{\'e}ric Suter},
+  booktitle = {Proceedings of the 3rd International Workshop on Workflow Systems in e-Science (WSES 08)},
+  address= {Lyon, France},
+  month = may,
+  year = {2008},
+  category = {extern}
+}
+
+@InProceedings{Heien08,
+  title =     {Computing Low Latency Batches with Unreliable Workers in Volunteer Computing Environments},
+  author =    {Eric Heien, N. Fujimoto, and Kenichi Hagihara},
+  booktitle = {PCGrid 2008, Workshop on Volunteer Computing and Desktop Grids},
+  year = {2008},
+  category = {extern}
+}
+
+@InProceedings{Hernandez07,
+  title =     {Reliable DAG Scheduling with Rewinding and Migration},
+  author =    {Israel Hernandez and Murray Cole},
+  booktitle = {First International Conference on Networks for Grid Applications (GridNets07)},
+  pages = {1-8},
+  year = {2007},
+  url = {http://portal.acm.org/citation.cfm?id=1386610.1386614},
+  category = {extern}
+}
+
+@InProceedings{Hernandez07*2,
+  title =     {Reactive Grid Scheduling of DAG Applications},
+  author = {I. Hernandez and M. Cole},
+  booktitle = {Parallel and Distributed Computing and Networks},
+  year = {2007},
+  url = {http://www.actapress.com/PaperInfo.aspx?PaperID=29625},
+  category = {extern}
+}
+
+@InProceedings{Hunold07,
+  title =     {Dynamic Scheduling of Multi-Processor Tasks on Clusters of Clusters},
+  author =    {S. Hunold, T. Rauber and G. Rünger},
+  booktitle = {Proceedings of the Sixth International Workshop on Algorithms,
+    Models and Tools for Parallel Computing on Heterogeneous Networks
+    (Heteropar'07)},
+  address = {Austin, TX, USA},
+  month = sep,
+  year =  {2007},
+  category = {extern}
+}
+
+@InProceedings{Suter07,
+  title =     {Scheduling Delta-Critical Tasks in Mixed-Parallel Applications on a National Grid},
+  author =    {Fr{\'e}d{\'e}ric Suter},
+  booktitle = {8th IEEE/ACM International Conference on Grid Computing (Grid 2007)},
+  address = {Austin, TX, USA},
+  month = sep,
+  year = {2007},
+  category = {extern}
+}
+
+@Article{Berten07,
+  title =     {Brokering strategies in computational grids using stochastic prediction models},
+  author = {Vandy Berten and Bruno Gaujal},
+  journal = {Parallel Computing},
+  volume = 33,
+  number = {4-5},
+  pages = {238-249},
+  year = {2007},
+  url = {http://dev.ulb.ac.be/sched/articles/PARCO.pdf},
+  category = {extern}
+}
+
+@InProceedings{Ferrandiz07,
+  title =     {Managing Scheduling and Replication in the LHC Grid},
+  author = {Thomas Ferrandiz and Vania Marangozova},
+  booktitle = {CoreGrid Workshop on middleware},
+  year = {2007},
+  category = {extern}
+}
+
+@TechReport{Gay06,
+  title =     {Simbatch: an API for simulating and predicting the performance of parallel resources and batch systems.},
+  author =    {Jean-S{\'e}bastien Gay and Yves Caniou},
+  type = {Research Report},
+  number = {6040},
+  institution = {INRIA},
+  month = nov,
+  year = 2006,
+  url = {https://hal.inria.fr/inria-00115880},
+  category = {extern}
+}
+
+@InProceedings{GayRenpar06,
+  title =     {Simbatch : une API pour la simulation et la pr{\'e}diction de performances de syst{\`e}mes batch},
+  author =    {Jean-S{\'e}bastien Gay and Yves Caniou},
+  booktitle = {17{\`e}me Rencontres Francophones du Parall{\'e}lisme, des Architectures et des Syst{\`e}mes, RenPar'17},
+  month = oct,
+  year = 2006,
+  category = {extern}
+}
+
+@InProceedings{Vanderster06,
+  title =     {Metascheduling Multiple Resource Types using the MMKP},
+  author =    {D. Vanderster, N. Dimopoulos, R. Sobie},
+  booktitle = {7th IEEE/ACM International Conference on Grid Computing},
+  address = {Barcelona},
+  month = sep,
+  year = 2006,
+  category = {extern}
+}
+
+@InProceedings{Banino06,
+  title =     {Master-Slave Tasking on Asymmetric Networks},
+  author =    {Cyril Banino-Rokkones, Olivier Beaumont and Lasse Natvig},
+  booktitle = {Proceedings of 12th International Euro-Par Conference, Euro-Par'06},
+  month = aug,
+  year = 2006,
+  pages = {167-176},
+  address = {Dresden, Germany},
+  category = {extern}
+}
+
+@InProceedings{Tchimou06,
+  title =     {Critical Path and Area Based Scheduling of Parallel Task Graphs on Heterogeneous Platforms},
+  author =    {Tchimou N'Takp{\'e} and Fr{\'e}d{\'e}ric Suter},
+  booktitle = {Proceedings of the Twelfth International Conference on Parallel and Distributed Systems (ICPADS)},
+  address = {Minneapolis, MN},
+  month = july,
+  year = 2006,
+  category = {extern}
+}
+
+@InProceedings{Vanderster06*2,
+  title =     {Sensitivity Analysis of Knapsack-based Task Scheduling on the Grid},
+  author =    {D.C. Vanderster and N.J. Dimopoulos},
+  booktitle = {Proceedings of The 20th ACM International Conference on Supercomputing},
+  address = {Cairns, Australia},
+  month = jun,
+  year = 2006,
+  url = {http://portal.acm.org/citation.cfm?id=1183401.1183446&coll=GUIDE&dl=%23url.coll},
+  category = {extern}
+}
+
+@InProceedings{Senger06,
+  title =     {Hierarchical Scheduling of Independent Tasks with Shared Files},
+  author = {H. Senger, F. Silva, W. Nascimento},
+  booktitle = {Proceedings of the Sixth IEEE International Symposium on Cluster Computing and the Grid Workshop (CCGRIDW'06)},
+  address = {Singapore},
+  month = may,
+  year = 2006,
+  url = {http://www.unisantos.br/mestrado/informatica/hermes/File/senger-HierarchicalScheduling-Workshop-TB120.pdf},
+  category = {extern}
+}
+
+@InProceedings{Vanderster06*3,
+  title =     {Evaluation of Knapsack-based Scheduling using the NPACI JOBLOG},
+  author =    {D. Vanderster, N. Dimopoulos, R. Parra-Hernandez and R. Sobie},
+  booktitle = {20th International Symposium on High-Performance Computing in an Advanced Collaborative Environment (HPCS'06)},
+  address = {St. John's, Newfoundland, Canada},
+  month = may,
+  year = 2006,
+  url = {http://doi.ieeecomputersociety.org/10.1109/HPCS.2006.23},
+  category = {extern}
+}
+
+@InProceedings{Ohsaki05,
+  title =     {On Dynamic Resource Management Mechanism using Control Theoretic Approach for Wide-Area Grid Computing},
+  author =    {Hiroyuki Ohsaki, Soushi Watanabe, and Makoto Imase},
+  booktitle = {Proceedings of IEEE Conference on Control Applications (CCA 2005)},
+  month = aug,
+  year = 2005,
+  url = {http://www.ispl.jp/~oosaki/papers/Ohsaki05_CCA.pdf},
+  category = {extern}
+}
+
+@InProceedings{Caron05,
+  title =     {Evaluation of Meta-scheduler Architectures and Task Assignment Policies for high Throughput Computing},
+  author =    {Eddy Caron, Vincent Garonne and Andrei Tsaregorodtsev},
+  booktitle = {Proceedings of 4th Internationnal Symposium on Parallel and Distributed Computing Job Scheduling Strategies for Parallel Processing (ISPDC'05)},
+  month = jul,
+  year = 2005,
+  pdf = {http://www.ens-lyon.fr/LIP/Pub/Rapports/RR/RR2005/RR2005-27.pdf},
+  category = {extern}
+}
+
+@InProceedings{Renard05,
+  title =     {Algorithmes de redistribution de donn{\'e}es pour anneaux de processeurs h{\'e}t{\'e}rog{\`e}nes},
+  author =    {H{\'e}l{\'e}ne Renard, Yves Robert and Fr{\'e}d{\'e}ric Vivien},
+  booktitle = {16i{\`e}me Rencontres Francophones du Parall{\'e}lisme des Architectures et des Syst{\`e}mes},
+  address = {Le Croisic, France},
+  month = apr,
+  year = 2005,
+  ps = {http://www.polytech.unice.fr/~hrenard/recherche/Renpar16.ps},
+  category = {extern}
+}
+
+@InProceedings{Caron04,
+  title =     {Deadline Scheduling with Priority for Client-Server Systems on the Grid},
+  author =    {Eddy Caron, PK Chouhan, Fr{\'e}d{\'e}ric Desprez},
+  booktitle = {IEEE International Conference On Grid Computing. Super Computing 2004},
+  month = oct,
+  year = 2004,
+  category = {extern}
+}
+
+@InProceedings{Caniou04,
+  title =     {Efficient Scheduling Heuristics for GridRPC Systems},
+  author =    {Yves Caniou and Emmanuel Jeannot},
+  booktitle = {IEEE QoS and Dynamic System workshop (QDS) of International Conference on Parallel and Distributed Systems (ICPADS)},
+  address = {New-Port Beach California, USA},
+  pages = {621-630},
+  month = jul,
+  year = 2004,
+  ps = {http://graal.ens-lyon.fr/~ycaniou/QDS04.ps},
+  category = {extern}
+}
+
+@InProceedings{Santos04,
+  title =     {Exploiting Replication and Data Reuse to Efficiently Schedule Data-intensive Applications on Grids},
+  author =    {E. Santos-Neto, W. Cirne, F. Brasileiro, A. Lima.},
+  booktitle = {Proceedings of 10th Job Scheduling Strategies for Parallel Processing},
+  month = jun,
+  year = 2004,
+  pdf = {http://www.lsd.ufcg.edu.br/~elizeu/articles/jsspp.v6.pdf},
+  category = {extern}
+}
+
+@InProceedings{Hernandez04,
+  title =     {Resource Management and Knapsack Formulations on the Grid},
+  author =    {R. Parra-Hernandez, D. Vanderster and N. J. Dimopoulos},
+  booktitle = {Fifth IEEE/ACM International Workshop on Grid Computing (GRID'04)},
+  year = 2004,
+  url = {http://doi.ieeecomputersociety.org/10.1109/GRID.2004.54},
+  category = {extern}
+}
+
+@InProceedings{Ferreto04,
+  title =     {Scheduling BoT Applications in Grids using a Slave Oriented Adaptive Algorithm.},
+  author =    {T. Ferreto, C. A. F. De Rose and C. Northfleet.},
+  booktitle = {Second International Symposium on Parallel and Distributed Processing and Applications (ISPA)},
+  year = {2004},
+  address = {Hong Kong},
+  category = {extern}
+}
+
+@InProceedings{Renard04,
+  title =     {Data redistribution algorithms for heterogeneous processor rings},
+  author =    {H{\'e}l{\'e}ne Renard, Yves Robert and Fr{\'e}d{\'e}ric Vivien},
+  booktitle = {International Conference on High Performance Computing HiPC'2004},
+  year = 2004,
+  pdf = {http://www.polytech.unice.fr/~hrenard/recherche/Hipc.pdf},
+  category = {extern}
+}
+
+@InProceedings{Yao03,
+  title =     {Link-Contention-Aware Genetic Scheduling Using Task Duplication in Grid Environments},
+  author =    {Wensheng Yao, Xiao Xie and Jinyuan You},
+  booktitle = {Grid and Cooperative Computing: Second International Workshop, GCC 2003}, 
+  address = {Shanghai, China}, 
+  month = dec,
+  year = 2003,
+  pdf = {http://www.chinagrid.edu.cn/chinagrid/download/GCC2003/pdf/266.pdf},
+  category = {extern}
+}
+
+@InProceedings{caniou03,
+  title =     {New Dynamic Heuristics in the Client-Agent-Server Model},
+  author =    {Yves Caniou and Emmanuel Jeannot},
+  booktitle = {IEEE 13th Heteregeneous Computing Workshop - HCW'03}, 
+  address = {Nice, France},
+  month = apr,
+  year = 2003,
+  ps = {http://graal.ens-lyon.fr/~ycaniou/HCW03.ps},
+  category = {extern}
+}
+
+@InProceedings{caron03,
+  title =     {A Hierarchical Resource Reservation Algorithm for Network Enabled Servers},
+  author =    {Eddy Caron, Fr{\'e}d{\'e}ric Desprez, Franck Petit, V. Villain},
+  booktitle = {17th International Parallel and Distributed Processing Symposium -- IPDPS'03},
+  address = {Nice - France},
+  month = apr,
+  year =2003,
+  category = {extern}
+}
+
+
+
+
+
+
+
+
+
+@InProceedings{Bertin08,
+  title =     {Toward a Fully Decentralized Algorithm for Multiple Bag-of-tasks Application Scheduling on Grids},
+  author =    {R{\'e}mi Bertin, Arnaud Legrand, and Corinne Touati},
+  booktitle = {IEEE/ACM International Conference on Grid Computing (Grid)},
+  address = {Tsukuba, Japan},
+  year = 2008,
+  category = {intra}
+}
+
+@InProceedings{Dubois07,
+  title =     {Assessing the Quality of Automatically Built Network Representations},
+  author =    {Lionel Eyraud-Dubois and Martin Quinson},
+  booktitle = {Seventh IEEE International Symposium on Cluster Computing and the Grid (CCGrid 2007)},
+  month = may,
+  year = 2007,
+  address = {Rio de Janeiro, Brazil},
+  category = {intra}
+}
+
+@InProceedings{Tchimou07,
+  title =     {A Comparison of Scheduling Approaches for Mixed-Parallel Applications on Heterogeneous Platforms},
+  author =    {Tchimou N'takp{\'e}, Fr{\'e}d{\'e}ric Suter, and Henri Casanova},
+  booktitle = {6th International Symposium on Parallel and Distributed Computing},
+  address = {Hagenberg, Austria},
+  month = jul,
+  year = 2007,
+  category = {intra}
+}
+
+@InProceedings{Dubois07*2,
+  title =     {A First Step Towards Automatically Building Network Representations},
+  author =    {Lionel Eyraud-Dubois, Arnaud Legrand, Martin Quinson and Fr{\'e}d{\'e}ric Vivien},
+  booktitle = {12th International Euro-Par Conference},
+  month = aug,
+  year = 2007,
+  address = {Rennes, France},
+  category = {intra}
+}
+
+@Article{Beaumont07,
+  title =     {Centralized Versus Distributed Schedulers Multiple Bag-of-Tasks Applications},
+  author =    {Olivier Beaumont, Larry Carter, Jeanne Ferrante, Arnaud Legrand, Loris Marchal, and Yves Robert},
+  journal = {IEEE Trans. Parallel Distributed Systems}, 
+  year = 2007,
+  category = {intra}
+}
+
+@InProceedings{Casanova06,
+  title =     {On the Harmfulness of Redundant Batch Requests},
+  author =    {H. Casanova},
+  booktitle = {Proceedings of the IEEE International Symposium on High Performance Distributed Computing (HPDC-15)},
+  address = {Paris, France},
+  month = may,
+  year = 2006,
+  pdf = {http://navet.ics.hawaii.edu/~casanova/homepage/papers/hpdc_2006.pdf},
+  category = {intra}
+}
+
+@InProceedings{Cardinale06,
+  title =     {An evaluation of Job Scheduling Strategies for Divisible Loads on Grid Platforms},
+  author =    {Y. Cardinale, H. Casanova},
+  booktitle = {Proceedings of the High Performance Computing & Simulation Conference (HPC&S'06)},
+  address = {Bonn, Germany},
+  month = may,
+  year = 2006,
+  pdf = {http://navet.ics.hawaii.edu/~casanova/homepage/papers/cardinale_2006.pdf},
+  category = {intra}
+}
+
+@InProceedings{Beaumont06,
+  title =     {Centralized Versus Distributed Schedulers Multiple Bag-of-Tasks Applications},
+  author =    {Olivier Beaumont, Larry Carter, Jeanne Ferrante, Arnaud Legrand, Loris Marchal, and Yves Robert},
+  booktitle = {International Parallel and Distributed Processing Symposium IPDPS'2006},
+  year = 2006,
+  category = {intra}
+}
+
+@Article{Kreaseck05,
+  title =     {Interference-Aware Scheduling}, 
+  author =    {B. Kreaseck, L. Carter, H. Casanova, J. Ferrante, S. Nandy},
+  journal = {International Journal of High Performance Computing Applications (IJHPCA)},
+  year = 2005,
+  pdf = {http://navet.ics.hawaii.edu/~casanova/homepage/papers/kreaseck_ijhpca_2005.pdf},
+  category = {intra}
+}
+
+@InProceedings{Suter04,
+  title =     {From Heterogeneous Task Scheduling to Heterogeneous Mixed Data and Task Parallel Scheduling},
+  author =    {F. Suter, V. Boudet, F. Desprez, H. Casanova},
+  booktitle = {Proceedings of Europar, 230--237, (LCNS volume 3149)},
+  year = 2004,
+  month = aug,
+  address = {Pisa, Italy},
+  category = {intra}
+}
+
+@InProceedings{Kreaseck04,
+  title =     {On the Interference of Communication on Computation}, 
+  author =    {B. Kreaseck, L. Carter, H. Casanova, J. Ferrante}, 
+  booktitle = {Proceedings of the workshop on Performance Modeling, Evaluation, and Optimization of Parallel and Distributed Systems},
+  address = {Santa Fe},
+  month = apr,
+  year = 2004,
+  pdf = {http://navet.ics.hawaii.edu/~casanova/homepage/papers/k_pmeo2004.pdf
+},
+  category = {intra}
+}
+
+@InProceedings{Yang03,
+  title =     {RUMR: Robust Scheduling for Divisible Workloads}, 
+  author =    {Y. Yang, H. Casanova},
+  booktitle = {Proceedings of the 12th IEEE Symposium on High Performance and Distributed Computing (HPDC-12)},
+  address = {Seattle},
+  month = jun,
+  year = 2003,
+  pdf = {http://navet.ics.hawaii.edu/~casanova/homepage/papers/yang_hpdc2003.pdf},
+  category = {intra}
+}
+
+@Article{Faerman03,
+  title =     {Resource Allocation Strategies for Guided Parameter Space Searches},
+  author =    {M. Faerman, A. Birnbaum, F. Berman, H. Casanova},
+  booktitle = {International Journal of High Performance Computing Applications (IJHPCA)},
+  volume = 17,
+  number = 4,
+  pages = {383-402},
+  year = {2003},
+  category = {intra}
+}
+
+@InProceedings{Faerman02,
+  title =     {Resource Allocation for Steerable Parallel Parameter Searches},
+  author =    {M. Faerman, A. Birnbaum, H. Casanova, F. Berman},
+  booktitle = {Proceedings of the Grid Computing Workshop},
+  address = {Baltimore},
+  month = nov,
+  year = 2002,
+  pdf = {http://grail.sdsc.edu/projects/vi_itr/grid02.pdf},
+  category = {intra}
+}
+
+@InProceedings{Smallen01,
+  title =     {Applying Scheduling and Tuning to On-line Parallel Tomography },
+  author =    {Shava Smallen, Henri Casanova, Francine Berman},
+  booktitle = {Proceedings of Supercomputing},
+  year = 2001,
+  category = {intra}
+}
+
+@InProceedings{Casanova00,
+  title =     {Heuristics for Scheduling Parameter Sweep applications in Grid environments},
+  author =    {Henri Casanova, Arnaud Legrand, Dmitrii Zagorodnov and Francine Berman},
+  booktitle = {Proceedings of the 9th Heterogeneous Computing workshop (HCW'2000)},
+  year = 2000,
+  pdf = {http://navet.ics.hawaii.edu/~casanova/homepage/papers/hcw00_pst.pdf}
+}

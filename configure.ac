@@ -433,6 +433,32 @@ AM_CONDITIONAL(HAVE_FLEXML,test x$FLEXML != xNOTFOUND)
 AC_PATH_PROG(DOXYGEN,doxygen,`which doxygen`)
 AM_CONDITIONAL(HAVE_DOXYGEN,test x$DOXYGEN != x)
 
+# Can we rebuild the publication list from the bib file?
+AC_CHECK_PROG(BIBTEX,bibtex,`which flexml`,NOTFOUND)
+AC_CHECK_PROG(BIBTOOL,bibtool,`which bibtool`,NOTFOUND)
+AC_CHECK_PROG(ICONV,iconv,`which iconv`,NOTFOUND)
+AC_CHECK_PROG(BIBTEX2HTML,bibtex2html,`which bibtex2html`,NOTFOUND)
+
+BIBTEX2HTML_VER="date"
+if test "x$BIBTEX2HTML" != "xNOTFOUND" ; then
+   BIBTEX2HTML_VER=`$BIBTEX2HTML --help 2>&1 | grep date`
+fi;
+
+AC_MSG_CHECKING(whether you have the right bibtex2html and will be able to build HTML files from the bibtex file)
+AM_CONDITIONAL(HAVE_BIBTEX2HTML,test "x$BIBTEX2HTML_VER" == "x"     &&
+			        test "x$BIBTEX2HTML" != "xNOTFOUND" &&
+			        test "x$BIBTOOL" != "xNOTFOUND"     &&
+			        test "x$ICONV" != "xNOTFOUND"         )
+
+if test "x$BIBTEX2HTML_VER" == "x"     &&
+			        test "x$BIBTEX2HTML" != "xNOTFOUND" &&
+			        test "x$BIBTOOL" != "xNOTFOUND"     &&
+			        test "x$ICONV" != "xNOTFOUND"; then
+   AC_MSG_RESULT(yes)
+else
+   AC_MSG_RESULT(no)
+fi
+
 # Can we extract really usable backtraces? (also need the popen function)
 AC_PATH_PROG(ADDR2LINE, addr2line)
 if test x$ADDR2LINE != x ; then
