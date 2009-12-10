@@ -174,6 +174,38 @@ Thus, there is two ways to link your program with SimGrid:
 \verbatim export LD_LIBRARY_PATH=$HOME/lib/:$LD_LIBRARY_PATH
 \endverbatim
 
+\subsection faq_compiling_java Java bindings don't get compiled
+
+The configure script detects automatically whether you have the
+softwares needed to use the Java bindings or not. At the end of the
+configure, you can see the configuration picked by the script, which
+should look similar to 
+\verbatim Configuration of package simgrid' (version 3.3.4-svn) on
+little64 (=4):
+
+	 Compiler:	 gcc (version: )
+	 
+	 CFlags:       	  -O3 -finline-functions -funroll-loops -fno-strict-aliasing -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror -g3
+	 CPPFlags:   
+         LDFlags:	 
+				   
+         Context backend: ucontext
+         Compile Java: no
+							 
+         Maintainer mode: no
+         Supernovae mode: yes
+\endverbatim	   
+
+In this example, Java backends won't be compiled. 
+
+On Debian-like systems (which includes ubuntu), you need the following
+packages: sun-java6-jdk libgcj10-dev. If you cannot find the
+libgcj10-dev, try another version, like libgcj9-dev (on Ubuntu before
+9.10) or libgcj11-dev (not released yet, but certainly one day).
+Please note that you need to activate the contrib and non-free
+repositories in Debian, and the universe ones in Ubuntu. Java comes at
+this price...
+
 \subsection faq_compiling_snapshoot SimGrid development snapshots
 
 We have very high standards on software quality, and we are reluctant releasing
