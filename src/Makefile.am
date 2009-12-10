@@ -537,7 +537,7 @@ $(top_srcdir)/include/xbt/graphxml.h xbt/graphxml.l: $(top_srcdir)/src/xbt/graph
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
 	@echo "ERROR:   touch include/xbt/graphxml.h src/xbt/graphxml.l"
 	@exit 1
-simdag/dax_dtd.h simdag/dax_dtd.l: simdag/dax_dtd.dtd
+simdag/dax_dtd.h simdag/dax_dtd.l: simdag/dax.dtd
 	@echo "ERROR: src/simdag/dax.dtd was modified, but the flexml program was not detected"
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
 	@echo "ERROR:   touch src/simdag/dax_dtd.h src/simdag/dax_dtd.l"
