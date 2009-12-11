@@ -66,16 +66,38 @@ AC_CHECK_FUNCS([gettimeofday usleep \
                 sysconf\
                 readv\
 		popen\
-		signal\
-		getline])
-                
+		signal])
+  
+dnl GNU systems before POSIX2008 need the _GNU_SOURCE definition to find getline (and simgrid does pass this)             
+AC_MSG_CHECKING(a usable getline)
+AC_COMPILE_IFELSE([
+    #define _GNU_SOURCE
+    #include <stdio.h>
+    int main(void){
+      FILE * fp;
+      char * line = NULL;
+      size_t len = 0;
+      getline(&line, &len, fp);
+    }
+  ],[
+    AC_MSG_RESULT(found)
+  ],[
+    AC_SUBST(need_getline, ["#define SIMGRID_NEED_GETLINE 1 /* enable the getline replacement*/"])
+    AC_DEFINE(SIMGRID_NEED_GETLINE, 1, enable the getline replacement)
+    AC_MSG_RESULT(not found (activating internal implementation))
+  ])
+              
 # check for a working snprintf (or use xbt/snprintf.c, which comes from http://www.ijs.si/software/snprintf/)
 AC_FUNC_SNPRINTF
-# check for a working asprintf (or activate our replacement)
-AC_FUNC_ASPRINTF
 # check for asprintf function familly (or request the replacements from xbt/snprintf.c)
-dnl A C_CHECK_FUNC(  asprintf, :,   AC_DEFINE(NEED_ASPRINTF,  1,  enable the asprintf   replacement))
-dnl A C_CHECK_FUNC( vasprintf, :,   AC_DEFINE(NEED_VASPRINTF, 1,  enable the vasprintf  replacement))
+AC_CHECK_FUNC(  asprintf, :,[
+    AC_DEFINE(NEED_ASPRINTF,  1,  enable the asprintf replacement)
+    AC_SUBST(need_asprintf, ["#define SIMGRID_NEED_ASPRINTF 1 /* enable the asprintf replacement */"]) 
+   ])
+AC_CHECK_FUNC( vasprintf, :,[
+    AC_DEFINE(NEED_VASPRINTF, 1,  enable the vasprintf replacement)
+    AC_SUBST(need_vasprintf, ["#define SIMGRID_NEED_VASPRINTF 1 /*enable the vasprintf replacement */"]) 
+   ])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -490,6 +512,7 @@ SG_CONFIGURE_PART(Generating files...)
 AC_CONFIG_FILES([
   Makefile
   include/Makefile
+  include/simgrid_config.h
   src/Makefile
   src/context_sysv_config.h
 ])

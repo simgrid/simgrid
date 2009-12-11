@@ -27,33 +27,7 @@ SG_BEGIN_DECL()
  * asprintf()), while some other are a bit more exotic.
  * @{
  */
-/* snprintf related functions */
-/** @brief print to allocated string (reimplemented when not provided by the system)
- *
- * The functions asprintf() and vasprintf() are analogues of
- * sprintf() and vsprintf(), except that they allocate a string large
- * enough to hold the output including the terminating null byte, and
- * return a pointer to it via the first parameter.  This pointer
- * should be passed to free(3) to release the allocated storage when
- * it is no longer needed.
- */
-XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt,   /*args */
-                         ...) _XBT_GNUC_PRINTF(2, 3);
-/** @brief print to allocated string (reimplemented when not provided by the system)
- *
- * See asprintf()
- */
-XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
-/** @brief print to allocated string
- *
- * Works just like asprintf(), but returns a pointer to the newly created string
- */
-XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 
-/* the gettext function. It gets redefined here only if not yet available */
-#if !defined(__USE_GNU) || defined(DOXYGEN)
-//XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
-#endif
 
 /* Trim related functions */
 XBT_PUBLIC(void) xbt_str_rtrim(char *s, const char *char_list);

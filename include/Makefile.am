@@ -4,8 +4,9 @@
 # You can redistribute and/or modify it under the terms of the
 # GNU LGPL (v2.1) licence.
 
+EXTRA_DIST=simgrid_config.h.in
 
-include_HEADERS = gras.h xbt.h
+include_HEADERS = gras.h xbt.h simgrid_config.h
 nobase_include_HEADERS = \
 	xbt/misc.h \
 	xbt/sysdep.h \

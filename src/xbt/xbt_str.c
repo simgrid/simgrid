@@ -508,10 +508,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
   return res;
 }
 
-#if !defined(HAVE_GETLINE) || defined(DOXYGEN)
-/* prototype here, just in case */
-long getline(char **buf, size_t * n, FILE * stream);
-
+#if defined(SIMGRID_NEED_GETLINE) || defined(DOXYGEN)
 /** @brief Get a single line from the stream (reimplementation of the GNU getline)
  *
  * This is a redefinition of the GNU getline function, used on platforms where it does not exists.
