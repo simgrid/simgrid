@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
 #include "xbt.h"                /* calloc, printf */
-
+#include "simgrid_config.h"     /* getline */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                  "Messages specific for this msg example");
