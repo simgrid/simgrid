@@ -229,7 +229,7 @@ char *xbt_str_varsubst(char *str, xbt_dict_t patterns)
 
 xbt_dynar_t xbt_str_split(const char *s, const char *sep)
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), xbt_free_ref);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   const char *p, *q;
   int done;
   const char *sep_dflt = " \t\n\r\x0B";
@@ -278,7 +278,7 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
  */
 xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), xbt_free_ref);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   int done;
   const char *p, *q;
 
@@ -330,7 +330,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
 
 xbt_dynar_t xbt_str_split_quoted(const char *s)
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), xbt_free_ref);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   char *str_to_free;            /* we have to copy the string before, to handle backslashes */
   char *beg, *end;              /* pointers around the parsed chunk */
   int in_simple_quote = 0, in_double_quote = 0;
@@ -669,7 +669,7 @@ char *xbt_str_diff(char *a, char *b)
   xbt_dynar_t db = xbt_str_split(b, "\n");
 
   xbt_matrix_t C = diff_build_LCS(da, db);
-  xbt_dynar_t diff = xbt_dynar_new(sizeof(char *), xbt_free_ref);
+  xbt_dynar_t diff = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   char *res = NULL;
 
   diff_build_diff(diff, C, da, db, xbt_dynar_length(da) - 1,

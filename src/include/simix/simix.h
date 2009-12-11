@@ -106,7 +106,7 @@ XBT_PUBLIC(void) SIMIX_process_set_data(smx_process_t process, void *data);
 
 XBT_PUBLIC(smx_host_t) SIMIX_process_get_host(smx_process_t process);
 XBT_PUBLIC(const char *) SIMIX_process_get_name(smx_process_t process);
-XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
+XBT_INLINE XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 
 XBT_PUBLIC(void) SIMIX_process_yield(void);
 XBT_PUBLIC(void) SIMIX_process_suspend(smx_process_t process);
@@ -205,7 +205,7 @@ XBT_PUBLIC(void) SIMIX_rdv_set_data(smx_rdv_t rdv,void *data);
 XBT_PUBLIC(void*) SIMIX_rdv_get_data(smx_rdv_t rdv);
 
 /*****Communication Requests*****/
-XBT_PUBLIC(void) SIMIX_communication_cancel(smx_comm_t comm);
+XBT_INLINE XBT_PUBLIC(void) SIMIX_communication_cancel(smx_comm_t comm);
 XBT_PUBLIC(double) SIMIX_communication_get_remains(smx_comm_t comm);
 XBT_PUBLIC(void *) SIMIX_communication_get_data(smx_comm_t comm);
 
@@ -219,7 +219,7 @@ XBT_PUBLIC(smx_comm_t) SIMIX_network_isend(smx_rdv_t rdv, double task_size, doub
                                            void *src_buff, size_t src_buff_size, void *data);
 XBT_PUBLIC(smx_comm_t) SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size);
 XBT_PUBLIC(unsigned int) SIMIX_network_waitany(xbt_dynar_t comms);
-XBT_PUBLIC(void) SIMIX_network_wait(smx_comm_t comm, double timeout);
+XBT_INLINE XBT_PUBLIC(void) SIMIX_network_wait(smx_comm_t comm, double timeout);
 XBT_PUBLIC(int) SIMIX_network_test(smx_comm_t comm);
 
 SG_END_DECL()

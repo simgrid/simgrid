@@ -89,7 +89,7 @@ typedef struct foo {
 
 XBT_PUBLIC(xbt_swag_t) xbt_swag_new(size_t offset);
 XBT_PUBLIC(void) xbt_swag_free(xbt_swag_t swag);
-XBT_PUBLIC(void) xbt_swag_init(xbt_swag_t swag, size_t offset);
+XBT_INLINE XBT_PUBLIC(void) xbt_swag_init(xbt_swag_t swag, size_t offset);
 XBT_PUBLIC(void) xbt_swag_insert(void *obj, xbt_swag_t swag);
 XBT_PUBLIC(void) xbt_swag_insert_at_head(void *obj, xbt_swag_t swag);
 XBT_PUBLIC(void) xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag);

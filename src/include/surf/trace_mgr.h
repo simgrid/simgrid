@@ -22,7 +22,7 @@ XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
                                                     const char *input,
                                                     double periodicity);
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
-XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
+XBT_INLINE XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 /**
  * \brief Free a trace event structure
  *
