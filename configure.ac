@@ -70,7 +70,7 @@ AC_CHECK_FUNCS([gettimeofday usleep \
   
 dnl GNU systems before POSIX2008 need the _GNU_SOURCE definition to find getline (and simgrid does pass this)             
 AC_MSG_CHECKING(a usable getline)
-AC_COMPILE_IFELSE([
+AC_LINK_IFELSE([
     #define _GNU_SOURCE
     #include <stdio.h>
     int main(void){
