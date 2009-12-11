@@ -131,7 +131,7 @@ static void Irecv(xbt_dynar_t action)
 }
 
 
-static void wait(xbt_dynar_t action)
+static void wait_action(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
   char task_name[80];
@@ -438,7 +438,7 @@ int main(int argc, char *argv[])
   MSG_action_register("Isend", Isend);
   MSG_action_register("recv", recv);
   MSG_action_register("Irecv", Irecv);
-  MSG_action_register("wait", wait);
+  MSG_action_register("wait", wait_action);
   MSG_action_register("barrier", barrier);
   MSG_action_register("bcast", bcast);
   MSG_action_register("reduce", reduce);
