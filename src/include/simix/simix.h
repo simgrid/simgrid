@@ -79,7 +79,7 @@ XBT_PUBLIC(smx_host_t *) SIMIX_host_get_table(void);
 XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_dict(void);
 
 XBT_PUBLIC(void) SIMIX_create_environment(const char *file);
-XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(const char *name);
+XBT_INLINE XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(const char *name);
 
 XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_properties(smx_host_t host);
 
@@ -104,7 +104,7 @@ XBT_PUBLIC(void) SIMIX_process_change_host(smx_process_t process,
 XBT_PUBLIC(void *) SIMIX_process_get_data(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_set_data(smx_process_t process, void *data);
 
-XBT_PUBLIC(smx_host_t) SIMIX_process_get_host(smx_process_t process);
+XBT_INLINE XBT_PUBLIC(smx_host_t) SIMIX_process_get_host(smx_process_t process);
 XBT_PUBLIC(const char *) SIMIX_process_get_name(smx_process_t process);
 XBT_INLINE XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 
@@ -172,7 +172,7 @@ XBT_PUBLIC(void) SIMIX_register_action_to_condition(smx_action_t action,
 XBT_PUBLIC(void) SIMIX_unregister_action_to_condition(smx_action_t action,
                                                       smx_cond_t cond);
 XBT_PUBLIC(void) SIMIX_register_action_to_semaphore(smx_action_t action, smx_sem_t sem);
-XBT_PUBLIC(void) SIMIX_unregister_action_to_semaphore(smx_action_t action, smx_sem_t sem);
+XBT_INLINE XBT_PUBLIC(void) SIMIX_unregister_action_to_semaphore(smx_action_t action, smx_sem_t sem);
 
 
 XBT_PUBLIC(double) SIMIX_action_get_remains(smx_action_t action);
