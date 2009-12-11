@@ -11,7 +11,7 @@ FIGS=simgrid_modules.fig simgrid_modules2.fig amok_bw_test.fig amok_bw_sat.fig g
 PNGS=$(patsubst %.fig,%.png,$(FIGS)) webcruft/simgrid_logo.png webcruft/simgrid_logo_small.png webcruft/poster_thumbnail.png
 
 EXTRA_DIST = html Doxyfile \
- modules.doc FAQ.doc contrib.doc index.doc publis.doc publis2.doc footer.html history.doc  \
+ modules.doc FAQ.doc contrib.doc index.doc publis.doc footer.html history.doc  \
  $(foreach file,$(FIGS),fig/$(file)) $(PNGS) all.bib
 
 
