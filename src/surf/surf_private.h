@@ -48,13 +48,13 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
                                       void (*solve) (lmm_system_t));
 
 /* Generic functions common to all models */
-XBT_INLINE e_surf_action_state_t surf_action_state_get(surf_action_t action);
-XBT_INLINE double surf_action_get_start_time(surf_action_t action);
-XBT_INLINE double surf_action_get_finish_time(surf_action_t action);
+e_surf_action_state_t surf_action_state_get(surf_action_t action); /* cannot declare inline since we use a pointer to it */
+double surf_action_get_start_time(surf_action_t action); /* cannot declare inline since we use a pointer to it */
+double surf_action_get_finish_time(surf_action_t action); /* cannot declare inline since we use a pointer to it */
 void surf_action_free(surf_action_t * action);
 void surf_action_state_set(surf_action_t action,
                               e_surf_action_state_t state);
-XBT_INLINE void surf_action_data_set(surf_action_t action, void *data);
+void surf_action_data_set(surf_action_t action, void *data); /* cannot declare inline since we use a pointer to it */
 FILE *surf_fopen(const char *name, const char *mode);
 
 extern tmgr_history_t history;
