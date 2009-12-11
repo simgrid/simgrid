@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 #FIXME: .. paths...
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
@@ -54,7 +54,10 @@ while [ -n "$1" ]; do
   elif [ "${ARG%.c}" != "${ARG}" ]; then
     INCLUDEARGS="${INCLUDEARGS} -I . -I .. -I ../include -I @includedir@ "
 #    SRCFILE="$(realpath ${ARG})"
-    SRCFILE="$(readlink -f ${ARG})"
+    SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
+    if [ -z $SRCFILE ] ; then
+      SRCFILE="$ARG"
+    fi
     modsource ${SRCFILE}
     CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "
   else
