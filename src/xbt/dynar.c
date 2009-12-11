@@ -89,7 +89,6 @@ static XBT_INLINE
     char *const old_data = (char *) dynar->data;
 
     const unsigned long elmsize = dynar->elmsize;
-    const unsigned long old_length = old_size * elmsize;
 
     const unsigned long used = dynar->used;
     const unsigned long used_length = used * elmsize;
