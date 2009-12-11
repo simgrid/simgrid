@@ -162,4 +162,5 @@ XBT_PUBLIC(int) vsnprintf(char *, size_t, const char *, va_list);
      void hexa_print(const char *name, unsigned char *data, int size);
      const char *hexa_str(unsigned char *data, int size, int downside);
 
+#include "simgrid_config.h"
 #endif /* GRAS_PORTABLE_H */
