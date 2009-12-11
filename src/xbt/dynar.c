@@ -104,7 +104,6 @@ static XBT_INLINE
 
     if (old_data) {
       memcpy(new_data, old_data, used_length);
-      _xbt_clear_mem(old_data, old_length);
       free(old_data);
     }
 
