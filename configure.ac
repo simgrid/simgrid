@@ -71,9 +71,11 @@ AC_CHECK_FUNCS([gettimeofday usleep \
                 
 # check for a working snprintf (or use xbt/snprintf.c, which comes from http://www.ijs.si/software/snprintf/)
 AC_FUNC_SNPRINTF
+# check for a working asprintf (or activate our replacement)
+AC_FUNC_ASPRINTF
 # check for asprintf function familly (or request the replacements from xbt/snprintf.c)
-AC_CHECK_FUNC(  asprintf, :,   AC_DEFINE(NEED_ASPRINTF,  1,  enable the asprintf   replacement))
-AC_CHECK_FUNC( vasprintf, :,   AC_DEFINE(NEED_VASPRINTF, 1,  enable the vasprintf  replacement))
+dnl A C_CHECK_FUNC(  asprintf, :,   AC_DEFINE(NEED_ASPRINTF,  1,  enable the asprintf   replacement))
+dnl A C_CHECK_FUNC( vasprintf, :,   AC_DEFINE(NEED_VASPRINTF, 1,  enable the vasprintf  replacement))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
