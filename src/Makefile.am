@@ -399,11 +399,11 @@ gras_fragile_sources=gras/DataDesc/ddt_parse.yy.c xbt/graphxml_parse.c
 BUILT_SOURCES+=supernovae_sg.c supernovae_gras.c supernovae_smpi.c
 
 supernovae_sg.c: Makefile.am
-	./mk_supernovae.sh supernovae_sg.c $(filter-out $(simgrid_fragile_sources),$(simgrid_sources))
+	@top_srcdir@/src/mk_supernovae.sh supernovae_sg.c $(filter-out $(simgrid_fragile_sources),$(simgrid_sources))
 supernovae_gras.c: Makefile.am
-	./mk_supernovae.sh supernovae_gras.c $(filter-out $(gras_fragile_sources),$(gras_sources))
+	@top_srcdir@/src/mk_supernovae.sh supernovae_gras.c $(filter-out $(gras_fragile_sources),$(gras_sources))
 supernovae_smpi.c: Makefile.am
-	./mk_supernovae.sh supernovae_smpi.c $(filter-out $(smpi_fragile_sources),$(smpi_sources))
+	@top_srcdir@/src/mk_supernovae.sh supernovae_smpi.c $(filter-out $(smpi_fragile_sources),$(smpi_sources))
 
 nodist_libsimgrid_la_SOURCES =  supernovae_sg.c $(simgrid_fragile_sources)
 nodist_libgras_la_SOURCES = supernovae_gras.c $(gras_fragile_sources)
