@@ -8,7 +8,6 @@
 #ifndef _SURF_SURFXML_PARSE_PRIVATE_H
 #define _SURF_SURFXML_PARSE_PRIVATE_H
 
-#include <stdio.h>
 #include "xbt/misc.h"
 #include "xbt/function_types.h"
 #include "surf/surfxml_parse.h"

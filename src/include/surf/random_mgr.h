@@ -5,7 +5,6 @@
 #include "xbt/dict.h"
 #include <stdlib.h>
 #include <math.h>
-#include <stdio.h>
 
 SG_BEGIN_DECL()
 

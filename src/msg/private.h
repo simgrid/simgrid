@@ -10,7 +10,6 @@
 #ifndef METASIMGRID_PRIVATE_H
 #define METASIMGRID_PRIVATE_H
 
-#include <stdio.h>
 #include "msg/msg.h"
 #include "simix/simix.h"
 #include "surf/surf.h"

@@ -9,7 +9,6 @@
 #ifndef SIMIX_PRIVATE_H
 #define SIMIX_PRIVATE_H
 
-#include <stdio.h>
 #include "simix/simix.h"
 #include "surf/surf.h"
 #include "xbt/fifo.h"
