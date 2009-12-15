@@ -15,7 +15,7 @@
 #include "xbt/misc.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
-#include <stdio.h>              /* FILE for getline */
+#include "simgrid_config.h"     /* FILE for getline */
 
 SG_BEGIN_DECL()
 
