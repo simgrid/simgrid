@@ -11,6 +11,7 @@
 #ifndef GRAS_PORTABLE_H
 #define GRAS_PORTABLE_H
 
+#include "simgrid_config.h"
 #include "xbt/misc.h"
 /* 
  * win32 or win64 (__WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).	
@@ -20,14 +21,6 @@
 # include <windows.h>
 #else
 #  include "gras_config.h"
-#endif
-
-/* Load this asap to make sure that GNU_SOURCE is defined on need when stdio gets loaded by some random system header */
-#ifdef HAVE_GETLINE
-#  ifndef _GNU_SOUCE
-#    define _GNU_SOURCE
-#  endif
-#  include <stdio.h>
 #endif
 
 #include <stdarg.h>
