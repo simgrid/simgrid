@@ -23,6 +23,9 @@
 /* Use that config to declare missing elements */
 #ifdef SIMGRID_NEED_GETLINE
 XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
+#else
+#define _GNU_SOURCE
+#include <stdio.h>
 #endif
 
 
