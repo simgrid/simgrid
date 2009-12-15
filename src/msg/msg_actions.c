@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid_config.h"     /* getline */
 #include "msg/private.h"
 #include "xbt/str.h"
 #include "xbt/dynar.h"
