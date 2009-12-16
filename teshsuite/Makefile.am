@@ -184,6 +184,7 @@ noinst_PROGRAMS += simdag/platforms/flatifier
 simdag_platforms_flatifier_SOURCES = simdag/platforms/flatifier.c
 simdag_platforms_flatifier_LDADD = $(LDADD_SG)
 TESTS += simdag/platforms/flatifier.tesh
+XFAIL_TESTS += simdag/platforms/flatifier.tesh
 
 EXTRA_DIST      += simdag/platforms/one_cluster_foreach.xml \
                    simdag/platforms/one_cluster_one_host_random.xml \
