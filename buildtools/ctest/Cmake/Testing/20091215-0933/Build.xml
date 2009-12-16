@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="Linux-c++"
+	BuildStamp="20091215-0933-Experimental"
+	Name="Pierre Navarro"
+	Generator="ctest2.6-patch 4"	OSName="Linux"
+	Hostname="caraja"
+	OSRelease="2.6.31-16-generic"
+	OSVersion="#53-Ubuntu SMP Tue Dec 8 04:02:15 UTC 2009"
+	OSPlatform="x86_64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="23"
+	ProcessorCacheSize="3072"
+	NumberOfLogicalCPU="2"
+	NumberOfPhysicalCPU="2"
+	TotalVirtualMemory="3812"
+	TotalPhysicalMemory="3951"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="2401"
+>
+<Build>
+	<StartDateTime>Dec 15 10:33 CET</StartDateTime>
+	<StartBuildTime>1260869619</StartBuildTime>
+<BuildCommand>/usr/bin/make -i</BuildCommand>
+	<Log Encoding="base64" Compression="/bin/gzip">
+	</Log>
+	<EndDateTime>Dec 15 10:33 CET</EndDateTime>
+	<EndBuildTime>1260869619</EndBuildTime>
+<ElapsedMinutes>0</ElapsedMinutes></Build>
+</Site>

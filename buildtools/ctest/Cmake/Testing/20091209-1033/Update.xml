@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Update mode="Client" Generator="ctest-2.6-patch 4">
+	<Site>Pierre Navarro</Site>
+	<BuildName>Linux-c++</BuildName>
+	<BuildStamp>20091209-1033-Continuous</BuildStamp>
+	<StartDateTime>Dec 09 11:33 CET</StartDateTime>
+	<StartTime>1260354793</StartTime>
+	<UpdateCommand>"/usr/bin/cvs" -z3 update -d -A -P </UpdateCommand>
+	<UpdateType>CVS</UpdateType>
+	<EndDateTime>Dec 09 11:33 CET</EndDateTime>
+	<EndTime>1260354793</EndTime>
+<ElapsedMinutes>0</ElapsedMinutes>
+	<UpdateReturnStatus>Update error:  </UpdateReturnStatus>
+</Update>

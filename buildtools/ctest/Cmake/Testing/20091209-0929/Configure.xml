@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="Linux-c++"
+	BuildStamp="20091209-0929-Experimental"
+	Name="Pierre Navarro"
+	Generator="ctest2.6-patch 4"	OSName="Linux"
+	Hostname="caraja"
+	OSRelease="2.6.31-16-generic"
+	OSVersion="#52-Ubuntu SMP Thu Dec 3 22:07:16 UTC 2009"
+	OSPlatform="x86_64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="23"
+	ProcessorCacheSize="3072"
+	NumberOfLogicalCPU="2"
+	NumberOfPhysicalCPU="2"
+	TotalVirtualMemory="3812"
+	TotalPhysicalMemory="3951"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="2401"
+>
+<Configure>
+	<StartDateTime>Dec 09 10:29 CET</StartDateTime>
+	<StartConfigureTime>1260350982</StartConfigureTime>
+<ConfigureCommand>"/usr/bin/cmake" "/home/navarrop/Developments/simgrid/Cmake"</ConfigureCommand>
+<Log>-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/navarrop/Developments/simgrid/Cmake
+</Log>
+	<ConfigureStatus>0</ConfigureStatus>
+	<EndDateTime>Dec 09 10:29 CET</EndDateTime>
+	<EndConfigureTime>1260350982</EndConfigureTime>
+<ElapsedMinutes>0</ElapsedMinutes></Configure>
+</Site>

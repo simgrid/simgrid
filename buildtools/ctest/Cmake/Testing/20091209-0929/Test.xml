@@ -1,0 +1,1445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="Linux-c++"
+	BuildStamp="20091209-0929-Experimental"
+	Name="Pierre Navarro"
+	Generator="ctest2.6-patch 4"	OSName="Linux"
+	Hostname="caraja"
+	OSRelease="2.6.31-16-generic"
+	OSVersion="#52-Ubuntu SMP Thu Dec 3 22:07:16 UTC 2009"
+	OSPlatform="x86_64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="23"
+	ProcessorCacheSize="3072"
+	NumberOfLogicalCPU="2"
+	NumberOfPhysicalCPU="2"
+	TotalVirtualMemory="3812"
+	TotalPhysicalMemory="3951"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="1600"
+>
+<Testing>
+	<StartDateTime>Dec 09 10:29 CET</StartDateTime>
+	<StartTestTime>1260350982</StartTestTime>
+	<TestList>
+		<Test>./tesh-gras-dd-mem,</Test>
+		<Test>./tesh-gras-dd-rw,</Test>
+		<Test>./tesh-gras-dd-r_little32_4,</Test>
+		<Test>./tesh-gras-dd-r_little64,</Test>
+		<Test>./tesh-gras-dd-r_big32_8,</Test>
+		<Test>./tesh-gras-dd-r_big32_8_4,</Test>
+		<Test>./tesh-gras-dd-r_big32_2,</Test>
+		<Test>./tesh-gras-msg_handle-rl,</Test>
+		<Test>./tesh-gras-msg_handle-sg-32,</Test>
+		<Test>./tesh-gras-empty_main-rl,</Test>
+		<Test>./tesh-gras-empty_main-sg,</Test>
+		<Test>./tesh-gras-small_sleep-sg-32,</Test>
+		<Test>./gras-ping-rl,</Test>
+		<Test>./gras-rpc-rl,</Test>
+		<Test>./gras-spawn-rl,</Test>
+		<Test>./gras-timer-rl,</Test>
+		<Test>./gras-chrono-rl,</Test>
+		<Test>./gras-simple_token-rl,</Test>
+		<Test>./gras-mmrpc-rl,</Test>
+		<Test>./gras-all2all-rl,</Test>
+		<Test>./gras-pmm-rl,</Test>
+		<Test>./gras-synchro-rl,</Test>
+		<Test>./gras-properties-rl,</Test>
+		<Test>./gras-ping-sg-32,</Test>
+		<Test>./gras-rpc-sg-32,</Test>
+		<Test>./gras-spawn-sg-32,</Test>
+		<Test>./gras-timer-sg-32,</Test>
+		<Test>./gras-chrono-sg-32,</Test>
+		<Test>./gras-simple_token-sg-32,</Test>
+		<Test>./gras-mmrpc-sg-32,</Test>
+		<Test>./gras-all2all-sg-32,</Test>
+		<Test>./gras-pmm-sg-32,</Test>
+		<Test>./gras-synchro-sg-32,</Test>
+		<Test>./gras-properties-sg,</Test>
+	</TestList>
+	<Test Status="passed">
+		<Name>tesh-gras-dd-mem,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-dd-mem,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_mem.tesh</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.086534</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_mem.tesh</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000014] [tesh/INFO] Change directory to ../teshsuite
+[0.000089] [tesh/INFO] Test suite `gras/datadesc/datadesc_mem'
+[0.000187] [tesh/INFO] [gras/datadesc/datadesc_mem:2] Check the marshaling facilities (trying to to do a in-memory copy)
+[0.000210] [tesh/INFO] [gras/datadesc/datadesc_mem:3] gras/datadesc/datadesc_usage --copy --log=root.fmt:%m%n
+[0.034626] [tesh/INFO] Test suite `gras/datadesc/datadesc_mem' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>tesh-gras-dd-rw,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-dd-rw,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_rw.tesh</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0830262</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_rw.tesh</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000015] [tesh/INFO] Change directory to ../teshsuite
+[0.000092] [tesh/INFO] Test suite `gras/datadesc/datadesc_rw'
+[0.000191] [tesh/INFO] [gras/datadesc/datadesc_rw:2] Check the marshaling facilities (trying to read what we write)
+[0.000213] [tesh/INFO] [gras/datadesc/datadesc_rw:3] rm -f datadesc_usage.out
+[0.003954] [tesh/INFO] [gras/datadesc/datadesc_rw:5] gras/datadesc/datadesc_usage --write --log=root.fmt:%m%n
+[0.033712] [tesh/INFO] [gras/datadesc/datadesc_rw:28] gras/datadesc/datadesc_usage --read --log=root.fmt:%m%n
+[0.062449] [tesh/INFO] Test suite `gras/datadesc/datadesc_rw' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>tesh-gras-dd-r_little32_4,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-dd-r_little32_4,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_little32_4.tesh</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0582058</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_little32_4.tesh</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../teshsuite
+[0.000033] [tesh/INFO] Test suite `gras/datadesc/datadesc_r_little32_4'
+[0.000068] [tesh/INFO] [gras/datadesc/datadesc_r_little32_4:2] Check the marshaling facilities (trying to read the result of linux/x86)
+[0.000077] [tesh/INFO] [gras/datadesc/datadesc_r_little32_4:3] gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.little32_4 --log=root.fmt:%m%n
+[0.037600] [tesh/INFO] Test suite `gras/datadesc/datadesc_r_little32_4' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>tesh-gras-dd-r_little64,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-dd-r_little64,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_little64.tesh</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0425179</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_little64.tesh</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000005] [tesh/INFO] Change directory to ../teshsuite
+[0.000041] [tesh/INFO] Test suite `gras/datadesc/datadesc_r_little64'
+[0.000077] [tesh/INFO] [gras/datadesc/datadesc_r_little64:2] Check the marshaling facilities (trying to read the result of linux/amd64)
+[0.000091] [tesh/INFO] [gras/datadesc/datadesc_r_little64:3] $SG_TEST_EXENV gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.little64 --log=root.fmt:%m%n $ARGS
+[0.024885] [tesh/INFO] Test suite `gras/datadesc/datadesc_r_little64' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="failed">
+		<Name>tesh-gras-dd-r_big32_8,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-dd-r_big32_8,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_big32_8.tesh</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="text/string" name="Exit Code"><Value>Failed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Exit Value"><Value>2</Value></NamedMeasurement>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0813689</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_big32_8.tesh</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../teshsuite
+[0.000039] [tesh/INFO] Test suite `gras/datadesc/datadesc_r_big32_8'
+[0.000073] [tesh/INFO] [gras/datadesc/datadesc_r_big32_8:2] Check the marshaling facilities (trying to read the result of ppc or sparc)
+[0.000082] [tesh/INFO] [gras/datadesc/datadesc_r_big32_8:3] gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.big32_8 --log=root.fmt:%m%n
+[0.054863] run_context.c:603: [tesh/ERROR] Test suite `gras/datadesc/datadesc_r_big32_8': NOK (&lt;gras/datadesc/datadesc_r_big32_8:3&gt; got signal SIGABRT)
+[0.055020] run_context.c:663: [tesh/ERROR] Output of &lt;gras/datadesc/datadesc_r_big32_8:3&gt; mismatch:
+- Read from file ./gras/datadesc/datadesc.big32_8
+- ---- Test on integer ----
+- ---- Test on float ----
+- ---- Test on double ----
+- ---- Test on fixed array ----
+- ---- Test on a reference to an integer ----
+- ---- Test on string (ref to dynamic array) ----
+- ---- Test on dynar containing integers ----
+- ---- Test on all possible struct having 3 fields (49 structs) ----
+- ---- Test on homogeneous structure ----
+- ---- Test on heterogeneous structure ----
+- ---- Test on nested structures ----
+- ---- Test on chained list ----
+- ---- Test on graph (cyclique chained list of 3 items) ----
+- ---- Test on dynar containing integers ----
+- ---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----
+- ---- Test on struct containing dynamic array and its size (cbps test) ----
+- Exiting GRAS
++ Read from file datadesc.big32_8
++ ** SimGrid: UNCAUGHT EXCEPTION received on caraja(20213): category: mismatch; value: 0
++ ** Incoming bytes do not look like a GRAS message (header='....(05000000)'  not 'GRAS')
++ ** Thrown by () in this process
++ Incoming bytes do not look like a GRAS message (header='....(05000000)'  not 'GRAS')
++ 
++ **   In gras_msg_recv() at /home/navarrop/Developments/simgrid/src/gras/Msg/rl_msg.c:116
++ **   In listener_function() at /home/navarrop/Developments/simgrid/src/gras/Msg/gras_msg_listener.c:42
++ **   In xbt_thread_create_wrapper() at /home/navarrop/Developments/simgrid/src/xbt/xbt_rl_synchro.c:37
++ **   In wrapper_start_routine() at /home/navarrop/Developments/simgrid/src/xbt/xbt_os_thread.c:137
++ **   In start_thread() at ??:0
++ **   In ?? at /lib/libc.so.6(clone+0x6d) [0x7f1c99ce07bd]
+[0.055036] run_context.c:667: [tesh/ERROR] Test suite `gras/datadesc/datadesc_r_big32_8': NOK (&lt;gras/datadesc/datadesc_r_big32_8:3&gt; output mismatch)
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>tesh-gras-dd-r_big32_8_4,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-dd-r_big32_8_4,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_big32_8_4.tesh</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.11086</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_big32_8_4.tesh</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000014] [tesh/INFO] Change directory to ../teshsuite
+[0.000091] [tesh/INFO] Test suite `gras/datadesc/datadesc_r_big32_8_4'
+[0.000195] [tesh/INFO] [gras/datadesc/datadesc_r_big32_8_4:2] Check the marshaling facilities (trying to read the result of AIX)
+[0.000220] [tesh/INFO] [gras/datadesc/datadesc_r_big32_8_4:3] gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.big32_8_4 --log=root.fmt:%m%n
+[0.066780] [tesh/INFO] Test suite `gras/datadesc/datadesc_r_big32_8_4' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="failed">
+		<Name>tesh-gras-dd-r_big32_2,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-dd-r_big32_2,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_big32_2.tesh</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="text/string" name="Exit Code"><Value>Failed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Exit Value"><Value>2</Value></NamedMeasurement>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0715179</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/datadesc/datadesc_r_big32_2.tesh</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../teshsuite
+[0.000036] [tesh/INFO] Test suite `gras/datadesc/datadesc_r_big32_2'
+[0.000075] [tesh/INFO] [gras/datadesc/datadesc_r_big32_2:2] Check the marshaling facilities (trying to read the result of linux/mips?)
+[0.000084] [tesh/INFO] [gras/datadesc/datadesc_r_big32_2:3] gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.big32_2 --log=root.fmt:%m%n
+[0.050282] run_context.c:603: [tesh/ERROR] Test suite `gras/datadesc/datadesc_r_big32_2': NOK (&lt;gras/datadesc/datadesc_r_big32_2:3&gt; got signal SIGABRT)
+[0.050411] run_context.c:663: [tesh/ERROR] Output of &lt;gras/datadesc/datadesc_r_big32_2:3&gt; mismatch:
+- Read from file ./gras/datadesc/datadesc.big32_2
+- ---- Test on integer ----
+- ---- Test on float ----
+- ---- Test on double ----
+- ---- Test on fixed array ----
+- ---- Test on a reference to an integer ----
+- ---- Test on string (ref to dynamic array) ----
+- ---- Test on dynar containing integers ----
+- ---- Test on all possible struct having 3 fields (49 structs) ----
+- ---- Test on homogeneous structure ----
+- ---- Test on heterogeneous structure ----
+- ---- Test on nested structures ----
+- ---- Test on chained list ----
+- ---- Test on graph (cyclique chained list of 3 items) ----
+- ---- Test on dynar containing integers ----
+- ---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----
+- ---- Test on struct containing dynamic array and its size (cbps test) ----
+- Exiting GRAS
++ Read from file datadesc.big32_2
++ ** SimGrid: UNCAUGHT EXCEPTION received on caraja(20293): category: mismatch; value: 0
++ ** Incoming bytes do not look like a GRAS message (header='....(08000000)'  not 'GRAS')
++ ** Thrown by () in this process
++ Incoming bytes do not look like a GRAS message (header='....(08000000)'  not 'GRAS')
++ 
++ **   In gras_msg_recv() at /home/navarrop/Developments/simgrid/src/gras/Msg/rl_msg.c:116
++ **   In listener_function() at /home/navarrop/Developments/simgrid/src/gras/Msg/gras_msg_listener.c:42
++ **   In xbt_thread_create_wrapper() at /home/navarrop/Developments/simgrid/src/xbt/xbt_rl_synchro.c:37
++ **   In wrapper_start_routine() at /home/navarrop/Developments/simgrid/src/xbt/xbt_os_thread.c:137
++ **   In start_thread() at ??:0
++ **   In ?? at /lib/libc.so.6(clone+0x6d) [0x7f8844d2d7bd]
+[0.050423] run_context.c:667: [tesh/ERROR] Test suite `gras/datadesc/datadesc_r_big32_2': NOK (&lt;gras/datadesc/datadesc_r_big32_2:3&gt; output mismatch)
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>tesh-gras-msg_handle-rl,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-msg_handle-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/msg_handle/test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>5.05116</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/msg_handle/test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../teshsuite
+[0.000035] [tesh/INFO] Test suite `gras/msg_handle/test_rl'
+[0.000077] [tesh/INFO] [gras/msg_handle/test_rl:3] $SG_TEST_ENV gras/msg_handle/msg_handle_server$EXEEXT 4002 127.0.0.1:4003 --log=root.fmt=%P:%t%e%m%n $ARGS (background command)
+[0.004949] [tesh/INFO] [gras/msg_handle/test_rl:12] $SG_TEST_ENV gras/msg_handle/msg_handle_client$EXEEXT 4003 127.0.0.1:4002 --log=root.fmt=%P:%t%e%m%n $ARGS (background command)
+[5.028309] [tesh/INFO] Test suite `gras/msg_handle/test_rl' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="failed">
+		<Name>tesh-gras-msg_handle-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-msg_handle-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/msg_handle/test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="text/string" name="Exit Code"><Value>Failed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Exit Value"><Value>2</Value></NamedMeasurement>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0731719</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/msg_handle/test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000014] [tesh/INFO] Change directory to ../teshsuite
+[0.000087] [tesh/INFO] Test suite `gras/msg_handle/test_sg_32'
+[0.000186] [tesh/INFO] [gras/msg_handle/test_sg_32:1] Runs the 'msg_handle' test within the simulator (simulation times valid for 32bits architectures)
+[0.000220] [tesh/INFO] [gras/msg_handle/test_sg_32:3] $SG_TEST_EXENV gras/msg_handle/msg_handle_simulator$EXEEXT ${srcdir:=.}/../examples/msg/small_platform.xml ${srcdir:=.}/gras/msg_handle/msg_handle.xml
+[0.023168] run_context.c:663: [tesh/ERROR] Output of &lt;gras/msg_handle/test_sg_32:3&gt; mismatch:
+  [Tremblay:server:(1) 0.000000] [test/INFO] Launch server (port=4000)
+  [Fafard:client:(2) 0.000000] [test/INFO] Launch client (port=4000)
+- [Tremblay:server:(1) 1.000030] [test/INFO] Initialization done.
+- [Tremblay:server:(1) 1.000030] [test/INFO] gras_msg_handle(0) works as expected (immediate timeout)
+- [Fafard:client:(2) 1.000030] [test/INFO] Initialization done.
+- [Tremblay:server:(1) 2.000030] [test/INFO] gras_msg_handle(1) works as expected (delayed timeout)
+- [Tremblay:server:(1) 5.000030] [test/INFO] Unlock pal
+- [Tremblay:server:(1) 5.002006] [gras/INFO] Exiting GRAS
+- [Fafard:client:(2) 5.002006] [test/INFO] Got the message
+- [Fafard:client:(2) 5.002006] [test/INFO] gras_msg_handle(-1) works as expected (locked)
+- [Fafard:client:(2) 5.002006] [gras/INFO] Exiting GRAS
++ [Tremblay:server:(1) 1.000312] [test/INFO] Initialization done.
++ [Tremblay:server:(1) 1.000312] [test/INFO] gras_msg_handle(0) works as expected (immediate timeout)
++ [Fafard:client:(2) 1.000312] [test/INFO] Initialization done.
++ [Tremblay:server:(1) 2.000312] [test/INFO] gras_msg_handle(1) works as expected (delayed timeout)
++ [Tremblay:server:(1) 5.000312] [test/INFO] Unlock pal
++ [Tremblay:server:(1) 5.020863] [gras/INFO] Exiting GRAS
++ [Fafard:client:(2) 5.020863] [test/INFO] Got the message
++ [Fafard:client:(2) 5.020863] [test/INFO] gras_msg_handle(-1) works as expected (locked)
++ [Fafard:client:(2) 5.020863] [gras/INFO] Exiting GRAS
+[0.023189] run_context.c:667: [tesh/ERROR] Test suite `gras/msg_handle/test_sg_32': NOK (&lt;gras/msg_handle/test_sg_32:3&gt; output mismatch)
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>tesh-gras-empty_main-rl,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-empty_main-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/empty_main/test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.044771</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/empty_main/test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../teshsuite
+[0.000033] [tesh/INFO] Test suite `gras/empty_main/test_rl'
+[0.000072] [tesh/INFO] [gras/empty_main/test_rl:3] $SG_TEST_ENV ./gras/empty_main/empty_main_function$EXEEXT --log=root.fmt=%P:%t%e%m%n $ARGS (background command)
+[0.019014] [tesh/INFO] Test suite `gras/empty_main/test_rl' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>tesh-gras-empty_main-sg,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-empty_main-sg,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/empty_main/test_sg</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0600381</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/empty_main/test_sg</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000014] [tesh/INFO] Change directory to ../teshsuite
+[0.000089] [tesh/INFO] Test suite `gras/empty_main/test_sg'
+[0.000301] [tesh/INFO] [gras/empty_main/test_sg:1] Runs the 'empty_main' test within the simulator
+[0.000340] [tesh/INFO] [gras/empty_main/test_sg:3] $SG_TEST_EXENV ./gras/empty_main/empty_main_simulator${EXEEXT:=} ${srcdir:=.}/../examples/msg/small_platform.xml ${srcdir:=.}/gras/empty_main/empty_main.xml
+[0.023857] [tesh/INFO] Test suite `gras/empty_main/test_sg' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="failed">
+		<Name>tesh-gras-small_sleep-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./tesh-gras-small_sleep-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/small_sleep/test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="text/string" name="Exit Code"><Value>Failed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Exit Value"><Value>2</Value></NamedMeasurement>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0422699</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../teshsuite gras/small_sleep/test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../teshsuite
+[0.000034] [tesh/INFO] Test suite `gras/small_sleep/test_sg_32'
+[0.000070] [tesh/INFO] [gras/small_sleep/test_sg_32:1] Runs the 'small_sleep' test within the simulator
+[0.000083] [tesh/INFO] [gras/small_sleep/test_sg_32:3] $SG_TEST_EXENV ./gras/small_sleep/small_sleep_simulator${EXEEXT:=} ${srcdir:=.}/../examples/msg/small_platform.xml ${srcdir:=.}/gras/small_sleep/small_sleep.xml
+[0.025573] run_context.c:663: [tesh/ERROR] Output of &lt;gras/small_sleep/test_sg_32:3&gt; mismatch:
+  [Tremblay:function:(1) 0.000000] [test/INFO] Let's go 1E-5
+  [Tremblay:function:(1) 0.000010] [test/INFO] Let's go 1E-10
+  [Tremblay:function:(1) 0.000020] [test/INFO] Let's go 1E-15
+- [Tremblay:function:(1) 0.000030] [test/INFO] Let's go 1E-20
+- [Tremblay:function:(1) 0.000030] [test/INFO] done
+- [Tremblay:function:(1) 0.000030] [gras/INFO] Exiting GRAS
++ [Tremblay:function:(1) 0.000020] [test/INFO] Let's go 1E-20
++ [Tremblay:function:(1) 0.000020] [test/INFO] done
++ [Tremblay:function:(1) 0.000020] [gras/INFO] Exiting GRAS
+[0.025587] run_context.c:667: [tesh/ERROR] Test suite `gras/small_sleep/test_sg_32': NOK (&lt;gras/small_sleep/test_sg_32:3&gt; output mismatch)
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-ping-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-ping-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/ping test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0556052</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/ping test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/ping
+[0.000033] [tesh/INFO] Test suite `test_rl'
+[0.000073] [tesh/INFO] [test_rl:3] $SG_TEST_ENV ./ping_server$EXEEXT 4002 --log=root.fmt=%P:%t%e%m%n $ARGS (background command)
+[0.005648] [tesh/INFO] [test_rl:14] $SG_TEST_ENV ./ping_client$EXEEXT 127.0.0.1 4002 --log=root.fmt=%P:%t%e%m%n $ARGS (background command)
+[0.034849] [tesh/INFO] Test suite `test_rl' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-rpc-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-rpc-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/rpc test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>2.21893</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/rpc test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/rpc
+[0.000037] [tesh/INFO] Test suite `test_rl'
+[0.000076] [tesh/INFO] [test_rl:1] $SG_TEST_EXENV ./rpc_server$EXEEXT 4002 --log=root.fmt:%m%n $@ (background command)
+[0.007710] [tesh/INFO] [test_rl:21] $SG_TEST_EXENV ./rpc_forwarder$EXEEXT 4003 127.0.0.1 4002 --log=root.fmt:%m%n $@ (background command)
+[0.013738] [tesh/INFO] [test_rl:37] $SG_TEST_EXENV ./rpc_client$EXEEXT 127.0.0.1 4002 127.0.0.1 4003 --log=root.fmt:%m%n $@ (background command)
+[2.203080] [tesh/INFO] Test suite `test_rl' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-spawn-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-spawn-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/spawn test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.124554</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/spawn test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000014] [tesh/INFO] Change directory to ../examples/gras/spawn
+[0.000089] [tesh/INFO] Test suite `test_rl'
+[0.000196] [tesh/INFO] [test_rl:4] $SG_TEST_ENV ./spawn_father$EXEEXT 4002 5 --log=root.fmt=%m%n
+[0.063876] [tesh/INFO] (ignoring the output of &lt;test_rl:4&gt; as requested)
+[0.063989] [tesh/INFO] Test suite `test_rl' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-timer-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-timer-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/timer test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>7.06896</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/timer test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000005] [tesh/INFO] Change directory to ../examples/gras/timer
+[0.000032] [tesh/INFO] Test suite `test_rl'
+[0.000066] [tesh/INFO] [test_rl:2] This test is a bit long to run, since it setups timers and wait for them. Don't worry, that's expected
+[0.000078] [tesh/INFO] [test_rl:5] $SG_TEST_EXENV ./timer_client$EXEEXT --log=root.fmt:%m%n
+[7.021822] [tesh/INFO] Test suite `test_rl' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-chrono-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-chrono-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/chrono test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.162688</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/chrono test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000015] [tesh/INFO] Change directory to ../examples/gras/chrono
+[0.000089] [tesh/INFO] Test suite `test_rl'
+[0.000194] [tesh/INFO] [test_rl:3] $SG_TEST_EXENV ./chrono_multiplier$EXEEXT --log=root.fmt:%m%n $@
+[0.104791] [tesh/INFO] Here is the (ignored) command output: 
+||Begin matrix multiplication loop (time: 1.26035e+09)
+||Iteration 0 : 0.0229208 
+||Iteration 1 : 0.010381 
+||Iteration 2 : 0.0103819 
+||Iteration 3 : 0.0103648 
+||End matrix multiplication loop (time: 1.26035e+09; Duration: 0.0541842)
+||Begin malloc loop (time: 1.26035e+09)
+||Iteration 0 : 3.09944e-06 
+||Iteration 1 : 9.53674e-07 
+||Iteration 2 : 9.53674e-07 
+||Iteration 3 : 9.53674e-07 
+||Begin integer incrementation loop (time: 1.26035e+09)
+||Exiting GRAS
+||
+[0.104838] [tesh/INFO] Test suite `test_rl' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-simple_token-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-simple_token-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/mutual_exclusion/simple_token test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>2.10219</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/mutual_exclusion/simple_token test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000005] [tesh/INFO] Change directory to ../examples/gras/mutual_exclusion/simple_token
+[0.000035] [tesh/INFO] Test suite `test_rl'
+[0.000082] [tesh/INFO] [test_rl:1] $SG_TEST_EXENV ./simple_token_node$EXEEXT 4000 127.0.0.1 4010 --create-token --log=root.fmt:%m%n $@  (background command)
+[0.005182] [tesh/INFO] [test_rl:10] $SG_TEST_EXENV ./simple_token_node$EXEEXT 4010 127.0.0.1 4020 --log=root.fmt:%m%n $@  (background command)
+[0.007629] [tesh/INFO] [test_rl:14] $SG_TEST_EXENV ./simple_token_node$EXEEXT 4020 127.0.0.1 4030 --log=root.fmt:%m%n $@  (background command)
+[0.016504] [tesh/INFO] [test_rl:18] $SG_TEST_EXENV ./simple_token_node$EXEEXT 4030 127.0.0.1 4040 --log=root.fmt:%m%n $@  (background command)
+[0.020100] [tesh/INFO] [test_rl:22] $SG_TEST_EXENV ./simple_token_node$EXEEXT 4040 127.0.0.1 4050 --log=root.fmt:%m%n $@  (background command)
+[0.033532] [tesh/INFO] [test_rl:26] $SG_TEST_EXENV ./simple_token_node$EXEEXT 4050 127.0.0.1 4000 --log=root.fmt:%m%n $@  (background command)
+[2.083615] [tesh/I...
+The rest of the test output was removed since it exceeds the threshold of 1024 characters.
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-mmrpc-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-mmrpc-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/mmrpc test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.18686</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/mmrpc test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000007] [tesh/INFO] Change directory to ../examples/gras/mmrpc
+[0.000034] [tesh/INFO] Test suite `test_rl'
+[0.000069] [tesh/INFO] [test_rl:1] $SG_TEST_EXENV ./mmrpc_server$EXEEXT 4002 --log=root.fmt:%m%n  (background command)
+[0.000460] [tesh/INFO] [test_rl:5] $SG_TEST_EXENV ./mmrpc_client$EXEEXT 127.0.0.1 4002 --log=root.fmt:%m%n
+[0.142234] [tesh/INFO] Test suite `test_rl' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-all2all-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-all2all-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/all2all test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.47945</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/all2all test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/all2all
+[0.000040] [tesh/INFO] Test suite `test_rl'
+[0.000084] [tesh/INFO] [test_rl:3] $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4000 5 --log=root.fmt:%m%n (background command)
+[0.007343] [tesh/INFO] [test_rl:13] $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4001 5 --log=root.fmt:%m%n (background command)
+[0.029905] [tesh/INFO] [test_rl:23] $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4002 5 --log=root.fmt:%m%n (background command)
+[0.030103] [tesh/INFO] [test_rl:33] $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4003 5 --log=root.fmt:%m%n (background command)
+[0.030290] [tesh/INFO] [test_rl:43] $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4004 5 --log=root.fmt:%m%n (background command)
+[0.030511] [tesh/INFO] [test_rl:53] $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+[0.153609] [tesh/INFO] [test_rl:62] $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1...
+The rest of the test output was removed since it exceeds the threshold of 1024 characters.
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-pmm-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-pmm-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/pmm test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>6.16733</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/pmm test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/pmm
+[0.000038] [tesh/INFO] Test suite `test_rl'
+[0.000083] [tesh/INFO] [test_rl:4] $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 0 --log=root.fmt:%m%n (background command)
+[0.008025] [tesh/INFO] [test_rl:21] $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 1 --log=root.fmt:%m%n (background command)
+[0.013429] [tesh/INFO] [test_rl:38] $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 2 --log=root.fmt:%m%n (background command)
+[0.016430] [tesh/INFO] [test_rl:55] $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 3 --log=root.fmt:%m%n (background command)
+[0.016699] [tesh/INFO] [test_rl:72] $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 4 --log=root.fmt:%m%n (background command)
+[0.016944] [tesh/INFO] [test_rl:89] $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 5 --log=root.fmt:%m%n (background command)
+[0.017191] [tesh/INFO] [test_rl:106] $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 6 --log=root.fmt:%m%n (background command)
+[0.017469] [tesh/INF...
+The rest of the test output was removed since it exceeds the threshold of 1024 characters.
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-synchro-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-synchro-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/synchro test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.649528</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/synchro test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000007] [tesh/INFO] Change directory to ../examples/gras/synchro
+[0.000039] [tesh/INFO] Test suite `test_rl'
+[0.000079] [tesh/INFO] [test_rl:3] $SG_TEST_ENV ./synchro_philosopher${EXEEXT:=} 4 --log=root.fmt=%m%n
+[0.633360] [tesh/INFO] Here is the (ignored) command output: 
+||Spawn the 4 threads (10 lunches scheduled)
+||Thread 0 gets hungry (lunch #0)
+||Thread 0 eats
+||Thread 1 gets hungry (lunch #0)
+||Thread 0 is full
+||Thread 0 thinks
+||Thread 1 eats
+||Thread 2 gets hungry (lunch #0)
+||Thread 3 gets hungry (lunch #0)
+||Thread 3 eats
+||Thread 0 gets hungry (lunch #1)
+||Thread 1 is full
+||Thread 1 thinks
+||Thread 1 gets hungry (lunch #1)
+||Thread 1 eats
+||Thread 3 is full
+||Thread 3 thinks
+||Thread 1 is full
+||Thread 1 thinks
+||Thread 2 eats
+||Thread 0 eats
+||Thread 0 is full
+||Thread 0 thinks
+||Thread 0 gets hungry (lunch #2)
+||Thread 0 eats
+||Thread 0 is full
+||Thread 0 thinks
+||Thread 0 gets hungry (lunch #3)
+||Thread 0 eats
+||Thread 0 is full
+||Thread 0 thinks
+||Thread 0 gets hungry (lunch #4)
+||Thread ...
+The rest of the test output was removed since it exceeds the threshold of 1024 characters.
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-properties-rl,</Name>
+		<Path>.</Path>
+		<FullName>./gras-properties-rl,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/properties test_rl</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>2.12459</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/properties test_rl</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/properties
+[0.000034] [tesh/INFO] Test suite `test_rl'
+[0.000087] [tesh/INFO] [test_rl:3] $SG_TEST_ENV ./properties_alice --log=root.fmt=%P:%t%e%m%n $ARGS
+[1.017727] [tesh/INFO] [test_rl:12] $SG_TEST_ENV ./properties_bob --log=root.fmt=%P:%t%e%m%n $ARGS
+[2.074297] [tesh/INFO] Test suite `test_rl' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-ping-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-ping-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/ping test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.067353</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/ping test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/ping
+[0.000034] [tesh/INFO] Test suite `test_sg_32'
+[0.000069] [tesh/INFO] [test_sg_32:1] Runs the 'ping' test within the simulator (simulation times valid for 32bits architectures)
+[0.000078] [tesh/INFO] [test_sg_32:3] $SG_TEST_EXENV ./ping_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/ping.xml $ARGS
+[0.020409] [tesh/INFO] Test suite `test_sg_32' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="failed">
+		<Name>gras-rpc-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-rpc-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/rpc test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="text/string" name="Exit Code"><Value>Failed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Exit Value"><Value>2</Value></NamedMeasurement>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.241266</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/rpc test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/rpc
+[0.000035] [tesh/INFO] Test suite `test_sg_32'
+[0.000083] [tesh/INFO] [test_sg_32:7] $SG_TEST_EXENV ./rpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/rpc.xml --log=root.fmt:"'[%h:%P:(%i)] [%c/%p] %m%n'"
+[0.221834] run_context.c:663: [tesh/ERROR] Output of &lt;test_sg_32:7&gt; mismatch:
+- [Tremblay:server:(1)] [Rpc/INFO] Launch server (port=4000)
+- [Ginette:forwarder:(2)] [Rpc/INFO] Launch forwarder (port=4000)
++ [Tremblay:server:(1)] [Rpc/INFO] Launch server (port=4000)
+  [Fafard:client:(3)] [Rpc/INFO] Launch client (server on Tremblay:4000)
++ [Ginette:forwarder:(2)] [Rpc/INFO] Launch forwarder (port=4000)
+  [Tremblay:server:(1)] [Rpc/INFO] Listening on port 4000
+  [Fafard:client:(3)] [Rpc/INFO] Connected to Tremblay:4000.
+  [Fafard:client:(3)] [Rpc/INFO] Connected to server which is on Tremblay:4000
+  [Tremblay:server:(1)] [Rpc/INFO] Got message PING(1234) from Fafard:0
+  [Tremblay:server:(1)] [Rpc/INFO] Answered with PONG(4321)
+  [Fafard:client:(3)] [Rpc/INFO] The answer to PING(1234) on Tremblay:4000 is PONG(4321)
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+  [Fafard:client:(3)] [Rpc/INFO] Called the exception raising RPC
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=0)
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=1)
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=2)
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=3)
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=4)
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=0)
+  [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+  [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=1)
+  [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+  [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=2)
+  [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+  [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=3)
+  [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+  [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+  [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=4)
+  [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
+  [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+  [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+  [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+  [Fafard:client:(3)] [Rpc/INFO] Ask Ginette:4000 to die
+  [Fafard:client:(3)] [Rpc/INFO] Ask Tremblay:4000 to die
+  [Ginette:forwarder:(2)] [Rpc/INFO] Asked to die by Fafard:0
+  [Ginette:forwarder:(2)] [Rpc/INFO] Done.
+  [Ginette:forwarder:(2)] [gras/INFO] Exiting GRAS
+  [Fafard:client:(3)] [Rpc/INFO] Done.
+  [Fafard:client:(3)] [gras/INFO] Exiting GRAS
+  [Tremblay:server:(1)] [Rpc/INFO] Asked to die by Fafard:0
+  [Tremblay:server:(1)] [Rpc/INFO] Done.
+  [Tremblay:server:(1)] [gras/INFO] Exiting GRAS
+[0.221863] run_context.c:667: [tesh/ERROR] Test suite `test_sg_32': NOK (&lt;test_sg_32:7&gt; output mismatch)
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-spawn-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-spawn-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/spawn test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.061929</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/spawn test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/spawn
+[0.000033] [tesh/INFO] Test suite `test_sg_32'
+[0.000067] [tesh/INFO] [test_sg_32:1] Runs the 'spawn' test within the simulator (simulation times valid for 32bits architectures)
+[0.000076] [tesh/INFO] [test_sg_32:3] $SG_TEST_EXENV ./spawn_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/spawn.xml
+[0.037674] [tesh/INFO] Test suite `test_sg_32' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-timer-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-timer-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/timer test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0424008</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/timer test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/timer
+[0.000034] [tesh/INFO] Test suite `test_sg_32'
+[0.000073] [tesh/INFO] [test_sg_32:2] $SG_TEST_EXENV ./timer_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/timer.xml
+[0.020480] [tesh/INFO] Test suite `test_sg_32' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-chrono-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-chrono-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/chrono test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0601699</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/chrono test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/chrono
+[0.000036] [tesh/INFO] Test suite `test_sg_32'
+[0.000077] [tesh/INFO] [test_sg_32:3] $SG_TEST_EXENV ./chrono_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/chrono.xml
+[0.034572] [tesh/INFO] Here is the (ignored) command output: 
+||[Tremblay:multiplier:(1) 0.000000] [Chrono/INFO] Begin matrix multiplication loop (time: 0)
+||[Tremblay:multiplier:(1) 0.025878] [Chrono/INFO] Iteration 0 : 0.0258779 
+||[Tremblay:multiplier:(1) 0.051756] [Chrono/INFO] Iteration 1 : 0.0258779 
+||[Tremblay:multiplier:(1) 0.077634] [Chrono/INFO] Iteration 2 : 0.0258779 
+||[Tremblay:multiplier:(1) 0.103512] [Chrono/INFO] Iteration 3 : 0.0258779 
+||[Tremblay:multiplier:(1) 0.103512] [Chrono/INFO] End matrix multiplication loop (time: 0.103512; Duration: 0.103512)
+||[Tremblay:multiplier:(1) 0.103512] [Chrono/INFO] Begin malloc loop (time: 0.103512)
+||[Tremblay:multiplier:(1) 0.103517] [Chrono/INFO] Iteration 0 : 5.84679e-06 
+||[Tremblay:multiplier...
+The rest of the test output was removed since it exceeds the threshold of 1024 characters.
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-simple_token-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-simple_token-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/mutual_exclusion/simple_token test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.039398</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/mutual_exclusion/simple_token test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/mutual_exclusion/simple_token
+[0.000039] [tesh/INFO] Test suite `test_sg_32'
+[0.000082] [tesh/INFO] [test_sg_32:1] $SG_TEST_EXENV ./simple_token_simulator$EXEEXT ${srcdir:=.}/../../../msg/small_platform.xml ${srcdir:=.}/simple_token.xml
+[0.023661] [tesh/INFO] Test suite `test_sg_32' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="failed">
+		<Name>gras-mmrpc-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-mmrpc-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/mmrpc test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="text/string" name="Exit Code"><Value>Failed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Exit Value"><Value>2</Value></NamedMeasurement>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0799549</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/mmrpc test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000005] [tesh/INFO] Change directory to ../examples/gras/mmrpc
+[0.000033] [tesh/INFO] Test suite `test_sg_32'
+[0.000069] [tesh/INFO] [test_sg_32:1] $SG_TEST_EXENV ./mmrpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/mmrpc.xml
+[0.062498] run_context.c:663: [tesh/ERROR] Output of &lt;test_sg_32:1&gt; mismatch:
+  [Tremblay:server:(1) 0.000000] [MatMult/INFO] Launch server (port=4000)
+  [Fafard:client:(2) 0.000000] [MatMult/INFO] Launch client (server on Tremblay:4000)
+  [Fafard:client:(2) 0.000156] [MatMult/INFO] Connected to Tremblay:4000.
+  [Fafard:client:(2) 0.000156] [MatMult/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Connected to server which is on Tremblay:4000 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Fafard:client:(2) 0.072513] [MatMult/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Request sent to Tremblay:4000 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Tremblay:server:(1) 0.118967] [gras/INFO] Exiting GRAS
+- [Fafard:client:(2) 0.118967] [MatMult/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Got answer from Tremblay:4000 (values are right) &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Fafard:client:(2) 0.118967] [gras/INFO] Exiting GRAS
++ [Fafard:client:(2) 0.072516] [MatMult/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Request sent to Tremblay:4000 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
++ [Tremblay:server:(1) 0.118972] [gras/INFO] Exiting GRAS
++ [Fafard:client:(2) 0.118972] [MatMult/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Got answer from Tremblay:4000 (values are right) &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
++ [Fafard:client:(2) 0.118972] [gras/INFO] Exiting GRAS
+[0.062516] run_context.c:667: [tesh/ERROR] Test suite `test_sg_32': NOK (&lt;test_sg_32:1&gt; output mismatch)
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-all2all-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-all2all-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/all2all test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.0489011</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/all2all test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/all2all
+[0.000034] [tesh/INFO] Test suite `test_sg_32'
+[0.000084] [tesh/INFO] [test_sg_32:1] $SG_TEST_EXENV ./all2all_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/all2all.xml
+[0.025574] [tesh/INFO] Test suite `test_sg_32' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="failed">
+		<Name>gras-pmm-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-pmm-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/pmm test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="text/string" name="Exit Code"><Value>Failed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Exit Value"><Value>2</Value></NamedMeasurement>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.173258</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/pmm test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/pmm
+[0.000035] [tesh/INFO] Test suite `test_sg_32'
+[0.000072] [tesh/INFO] [test_sg_32:1] $SG_TEST_EXENV ./pmm_simulator$EXEEXT ${srcdir:=.}/../../msg/msg_platform.xml ${srcdir:=.}/pmm.xml
+[0.141619] run_context.c:603: [tesh/ERROR] Test suite `test_sg_32': NOK (&lt;test_sg_32:1&gt; got signal SIGSEGV)
+[0.142188] run_context.c:663: [tesh/ERROR] Output of &lt;test_sg_32:1&gt; mismatch:
+- [Jacquelin:master:(1) 0.000000] [pmm/INFO] Wait for peers for 5 sec
+- [Boivin:slave:(2) 0.000000] [pmm/INFO] Sensor 0 starting
+- [Jean_Yves:slave:(3) 0.000000] [pmm/INFO] Sensor 1 starting
+- [TeX:slave:(4) 0.000000] [pmm/INFO] Sensor 2 starting
+- [Geoff:slave:(5) 0.000000] [pmm/INFO] Sensor 3 starting
+- [Disney:slave:(6) 0.000000] [pmm/INFO] Sensor 4 starting
+- [iRMX:slave:(7) 0.000000] [pmm/INFO] Sensor 5 starting
+- [McGee:slave:(8) 0.000000] [pmm/INFO] Sensor 6 starting
+- [Gatien:slave:(9) 0.000000] [pmm/INFO] Sensor 7 starting
++ [Jacquelin:master:(1) 0.000000] [pmm/INFO] Wait for peers for 5 sec
+  [Laroche:slave:(10) 0.000000] [pmm/INFO] Sensor 8 starting
++ [Gatien:slave:(9) 0.000000] [pmm/INFO] Sensor 7 starting
++ [McGee:slave:(8) 0.000000] [pmm/INFO] Sensor 6 starting
++ [iRMX:slave:(7) 0.000000] [pmm/INFO] Sensor 5 starting
++ [Disney:slave:(6) 0.000000] [pmm/INFO] Sensor 4 starting
++ [Geoff:slave:(5) 0.000000] [pmm/INFO] Sensor 3 starting
++ [TeX:slave:(4) 0.000000] [pmm/INFO] Sensor 2 starting
++ [Jean_Yves:slave:(3) 0.000000] [pmm/INFO] Sensor 1 starting
++ [Boivin:slave:(2) 0.000000] [pmm/INFO] Sensor 0 starting
+  [Jacquelin:master:(1) 5.000000] [pmm/INFO] Got 9 pals
+- [Jacquelin:master:(1) 5.000135] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX begin Multiplication
+- [Boivin:slave:(2) 6.086061] [pmm/INFO] Receive my pos (0,0) and assignment
+- [Boivin:slave:(2) 6.086121] [pmm/INFO] LINE: step(0) = Myline(0). Broadcast my data.
+- [Boivin:slave:(2) 6.086121] [pmm/INFO] LINE:   Send to Geoff
+- [Jean_Yves:slave:(3) 6.161839] [pmm/INFO] Receive my pos (0,1) and assignment
+- [Jean_Yves:slave:(3) 6.161899] [pmm/INFO] LINE: step(0) = Myline(0). Broadcast my data.
+- [Jean_Yves:slave:(3) 6.161899] [pmm/INFO] LINE:   Send to Disney
+- [Boivin:slave:(2) 6.168770] [pmm/INFO] LINE:   Send to McGee
+- [Boivin:slave:(2) 6.177071] [pmm/INFO] ROW: step(0)=myrow(0). Broadcast my data.
+- [Boivin:slave:(2) 6.177071] [pmm/INFO] ROW:   Send to Jean_Yves
+- [TeX:slave:(4) 6.310384] [pmm/INFO] Receive my pos (0,2) and assignment
+- [TeX:slave:(4) 6.310444] [pmm/INFO] LINE: step(0) = Myline(0). Broadcast my data.
+- [TeX:slave:(4) 6.310444] [pmm/INFO] LINE:   Send to iRMX
+- [Geoff:slave:(5) 6.311049] [pmm/INFO] Receive my pos (1,0) and assignment
+- [Geoff:slave:(5) 6.311109] [pmm/INFO] LINE: step(0) &lt;&gt; Myline(1). Receive data from Boivin
+- [Geoff:slave:(5) 6.311109] [pmm/INFO] ROW: step(0)=myrow(0). Broadcast my data.
+- [Geoff:slave:(5) 6.311109] [pmm/INFO] ROW:   Send to Disney
+- [Boivin:slave:(2) 6.331800] [pmm/INFO] ROW:   Send to TeX
+- [Jean_Yves:slave:(3) 6.377981] [pmm/INFO] LINE:   Send to Gatien
+- [Disney:slave:(6) 6.460464] [pmm/INFO] Receive my pos (1,1) and assignment
+- [Geoff:slave:(5) 6.521984] [pmm/INFO] ROW:   Send to iRMX
+- [Disney:slave:(6) 6.522044] [pmm/INFO] LINE: step(0) &lt;&gt; Myline(1). Receive data from Jean_Yves
+- [Disney:slave:(6) 6.522044] [pmm/INFO] ROW: step(0)&lt;&gt;myrow(1). Receive data from Geoff
+- [Disney:slave:(6) 6.522044] [pmm/INFO] LINE: step(1) = Myline(1). Broadcast my data.
+- [Disney:slave:(6) 6.522044] [pmm/INFO] LINE:   Send to Jean_Yves
+- [Jean_Yves:slave:(3) 6.550575] [pmm/INFO] ROW: step(0)&lt;&gt;myrow(1). Receive data from Boivin
+- [TeX:slave:(4) 6.563291] [pmm/INFO] LINE:   Send to Laroche
+- [iRMX:slave:(7) 6.709782] [pmm/INFO] Receive my pos (1,2) and assignment
+- [TeX:slave:(4) 6.717690] [pmm/INFO] ROW: step(0)&lt;&gt;myrow(2). Receive data from Boivin
+- [Disney:slave:(6) 6.738127] [pmm/INFO] LINE:   Send to Gatien
+- [Jean_Yves:slave:(3) 6.738127] [pmm/INFO] LINE: step(1) &lt;&gt; Myline(0). Receive data from Disney
+- [Jean_Yves:slave:(3) 6.738127] [pmm/INFO] ROW: step(1)=myrow(1). Broadcast my data.
+- [Jean_Yves:slave:(3) 6.738127] [pmm/INFO] ROW:   Send to Boivin
+- [McGee:slave:(8) 6.782571] [pmm/INFO] Receive my pos (2,0) and assignment
+- [McGee:slave:(8) 6.782631] [pmm/INFO] LINE: step(0) &lt;&gt; Myline(2). Receive data from Boivin
+- [McGee:slave:(8) 6.782631] [pmm/INFO] ROW: step(0)=myrow(0). Broadcast my data.
+- [McGee:slave:(8) 6.782631] [pmm/INFO] ROW:   Send to Gatien
+- [Geoff:slave:(5) 6.803928] [pmm/INFO] LINE: step(1) = Myline(1). Broadcast my data.
+- [Geoff:slave:(5) 6.803928] [pmm/INFO] LINE:   Send to Boivin
+- [iRMX:slave:(7) 6.803988] [pmm/INFO] LINE: step(0) &lt;&gt; Myline(1). Receive data from TeX
+- [iRMX:slave:(7) 6.803988] [pmm/INFO] ROW: step(0)&lt;&gt;myrow(2). Receive data from Geoff
+- [iRMX:slave:(7) 6.803988] [pmm/INFO] LINE: step(1) = Myline(1). Broadcast my data.
+- [iRMX:slave:(7) 6.803988] [pmm/INFO] LINE:   Send to TeX
+- [Disney:slave:(6) 6.845139] [pmm/INFO] ROW: step(1)=myrow(1). Broadcast my data.
+- [Disney:slave:(6) 6.845139] [pmm/INFO] ROW:   Send to Geoff
+- [McGee:slave:(8) 6.876778] [pmm/INFO] ROW:   Send to Laroche
+- [Gatien:slave:(9) 6.887024] [pmm/INFO] Receive my pos (2,1) and assignment
+- [Gatien:slave:(9) 6.887084] [pmm/INFO] LINE: step(0) &lt;&gt; Myline(2). Receive data from Jean_Yves
+- [Gatien:slave:(9) 6.887084] [pmm/INFO] ROW: step(0)&lt;&gt;myrow(1). Receive data from McGee
+- [Gatien:slave:(9) 6.887084] [pmm/INFO] LINE: step(1) &lt;&gt; Myline(2). Receive data from Disney
+- [Gatien:slave:(9) 6.887084] [pmm/INFO] ROW: step(1)=myrow(1). Broadcast my data.
+- [Gatien:slave:(9) 6.887084] [pmm/INFO] ROW:   Send to McGee
+- [Jean_Yves:slave:(3) 6.892856] [pmm/INFO] ROW:   Send to TeX
+- [Gatien:slave:(9) 6.918722] [pmm/INFO] ROW:   Send to Laroche
+- [Geoff:slave:(5) 6.975505] [pmm/INFO] LINE:   Send to McGee
+- [Boivin:slave:(2) 6.975505] [pmm/INFO] LINE: step(1) &lt;&gt; Myline(0). Receive data from Geoff
+- [Boivin:slave:(2) 6.975505] [pmm/INFO] ROW: step(1)&lt;&gt;myrow(0). Receive data from Jean_Yves
+- [Disney:slave:(6) 6.989142] [pmm/INFO] ROW:   Send to iRMX
+- [Laroche:slave:(10) 7.034480] [pmm/INFO] Receive my pos (2,2) and assignment
+- [Geoff:slave:(5) 7.045440] [pmm/INFO] ROW: step(1)&lt;&gt;myrow(0). Receive data from Disney
+- [McGee:slave:(8) 7.045440] [pmm/INFO] LINE: step(1) &lt;&gt; Myline(2). Receive data from Geoff
+- [McGee:slave:(8) 7.045440] [pmm/INFO] ROW: step(1)&lt;&gt;myrow(0). Receive data from Gatien
+- [McGee:slave:(8) 7.045440] [pmm/INFO] LINE: step(2) = Myline(2). Broadcast my data.
+- [McGee:slave:(8) 7.045440] [pmm/INFO] LINE:   Send to Boivin
+- [McGee:slave:(8) 7.053739] [pmm/INFO] LINE:   Send to Geoff
+- [Boivin:slave:(2) 7.053739] [pmm/INFO] LINE: step(2) &lt;&gt; Myline(0). Receive data from McGee
+- [Gatien:slave:(9) 7.056597] [pmm/INFO] LINE: step(2) = Myline(2). Broadcast my data.
+- [Gatien:slave:(9) 7.056597] [pmm/INFO] LINE:   Send to Jean_Yves
+- [Laroche:slave:(10) 7.056657] [pmm/INFO] LINE: step(0) &lt;&gt; Myline(2). Receive data from TeX
+- [Laroche:slave:(10) 7.056657] [pmm/INFO] ROW: step(0)&lt;&gt;myrow(2). Receive data from McGee
+- [iRMX:slave:(7) 7.056835] [pmm/INFO] LINE:   Send to Laroche
+- [TeX:slave:(4) 7.056835] [pmm/INFO] LINE: step(1) &lt;&gt; Myline(0). Receive data from iRMX
+- [Geoff:slave:(5) 7.123674] [pmm/INFO] LINE: step(2) &lt;&gt; Myline(1). Receive data from McGee
+- [Laroche:slave:(10) 7.155604] [pmm/INFO] LINE: step(1) &lt;&gt; Myline(2). Receive data from iRMX
+- [Laroche:slave:(10) 7.155604] [pmm/INFO] ROW: step(1)&lt;&gt;myrow(2). Receive data from Gatien
+- [Laroche:slave:(10) 7.155604] [pmm/INFO] LINE: step(2) = Myline(2). Broadcast my data.
+- [Laroche:slave:(10) 7.155604] [pmm/INFO] LINE:   Send to TeX
+- [Gatien:slave:(9) 7.229191] [pmm/INFO] LINE:   Send to Disney
+- [iRMX:slave:(7) 7.242856] [pmm/INFO] ROW: step(1)&lt;&gt;myrow(2). Receive data from Disney
+- [Jean_Yves:slave:(3) 7.272050] [pmm/INFO] LINE: step(2) &lt;&gt; Myline(0). Receive data from Gatien
+- [TeX:slave:(4) 7.272050] [pmm/INFO] ROW: step(1)&lt;&gt;myrow(2). Receive data from Jean_Yves
+- [Disney:slave:(6) 7.336204] [pmm/INFO] LINE: step(2) &lt;&gt; Myline(1). Receive data from Gatien
+- [Laroche:slave:(10) 7.426450] [pmm/INFO] LINE:   Send to iRMX
+- [TeX:slave:(4) 7.426450] [pmm/INFO] LINE: step(2) &lt;&gt; Myline(0). Receive data from Laroche
+- [TeX:slave:(4) 7.426450] [pmm/INFO] ROW: step(2)=myrow(2). Broadcast my data.
+- [TeX:slave:(4) 7.426450] [pmm/INFO] ROW:   Send to Boivin
+- [TeX:slave:(4) 7.515791] [pmm/INFO] ROW:   Send to Jean_Yves
+- [Boivin:slave:(2) 7.515791] [pmm/INFO] ROW: step(2)&lt;&gt;myrow(0). Receive data from TeX
+- [Laroche:slave:(10) 7.525219] [pmm/INFO] ROW: step(2)=myrow(2). Broadcast my data.
+- [Laroche:slave:(10) 7.525219] [pmm/INFO] ROW:   Send to McGee
+- [iRMX:slave:(7) 7.525219] [pmm/INFO] LINE: step(2) &lt;&gt; Myline(1). Receive data from Laroche
+- [iRMX:slave:(7) 7.525219] [pmm/INFO] ROW: step(2)=myrow(2). Broadcast my data.
+- [iRMX:slave:(7) 7.525219] [pmm/INFO] ROW:   Send to Geoff
+- [Boivin:slave:(2) 7.598928] [pmm/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Result sent to Jacquelin:4242 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Laroche:slave:(10) 7.599840] [pmm/INFO] ROW:   Send to Gatien
+- [McGee:slave:(8) 7.599840] [pmm/INFO] ROW: step(2)&lt;&gt;myrow(0). Receive data from Laroche
+- [McGee:slave:(8) 7.670253] [pmm/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Result sent to Jacquelin:4242 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Gatien:slave:(9) 7.705039] [pmm/INFO] ROW: step(2)&lt;&gt;myrow(1). Receive data from Laroche
+- [Jean_Yves:slave:(3) 7.731006] [pmm/INFO] ROW: step(2)&lt;&gt;myrow(1). Receive data from TeX
+- [iRMX:slave:(7) 7.765856] [pmm/INFO] ROW:   Send to Disney
+- [Geoff:slave:(5) 7.765856] [pmm/INFO] ROW: step(2)&lt;&gt;myrow(0). Receive data from iRMX
+- [Laroche:slave:(10) 7.847761] [pmm/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Result sent to Jacquelin:4242 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Gatien:slave:(9) 7.948776] [pmm/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Result sent to Jacquelin:4242 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Disney:slave:(6) 8.019570] [pmm/INFO] ROW: step(2)&lt;&gt;myrow(1). Receive data from iRMX
+- [TeX:slave:(4) 8.092445] [pmm/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Result sent to Jacquelin:4242 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Jean_Yves:slave:(3) 8.165770] [pmm/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Result sent to Jacquelin:4242 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Geoff:slave:(5) 8.166301] [pmm/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Result sent to Jacquelin:4242 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [iRMX:slave:(7) 8.407548] [pmm/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Result sent to Jacquelin:4242 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Disney:slave:(6) 8.552085] [pmm/INFO] &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Result sent to Jacquelin:4242 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+- [Jacquelin:master:(1) 8.552085] [pmm/INFO] The Result of Multiplication is :
+- &gt;&gt;&gt; Matrix C:res dump (18 x 18)
+-    0.00 18.00 36.00 54.00 72.00 90.00 108.00 126.00 144.00 162.00 180.00 198.00 216.00 234.00 252.00 270.00 288.00 306.00
+-    1.00 19.00 37.00 55.00 73.00 91.00 109.00 127.00 145.00 163.00 181.00 199.00 217.00 235.00 253.00 271.00 289.00 307.00
+-    2.00 20.00 38.00 56.00 74.00 92.00 110.00 128.00 146.00 164.00 182.00 200.00 218.00 236.00 254.00 272.00 290.00 308.00
+-    3.00 21.00 39.00 57.00 75.00 93.00 111.00 129.00 147.00 165.00 183.00 201.00 219.00 237.00 255.00 273.00 291.00 309.00
+-    4.00 22.00 40.00 58.00 76.00 94.00 112.00 130.00 148.00 166.00 184.00 202.00 220.00 238.00 256.00 274.00 292.00 310.00
+-    5.00 23.00 41.00 59.00 77.00 95.00 113.00 131.00 149.00 167.00 185.00 203.00 221.00 239.00 257.00 275.00 293.00 311.00
+-    6.00 24.00 42.00 60.00 78.00 96.00 114.00 132.00 150.00 168.00 186.00 204.00 222.00 240.00 258.00 276.00 294.00 312.00
+-    7.00 25.00 43.00 61.00 79.00 97.00 115.00 133.00 151.00 169.00 187.00 205.00 223.00 241.00 259.00 277.00 295.00 313.00
+-    8.00 26.00 44.00 62.00 80.00 98.00 116.00 134.00 152.00 170.00 188.00 206.00 224.00 242.00 260.00 278.00 296.00 314.00
+-    9.00 27.00 45.00 63.00 81.00 99.00 117.00 135.00 153.00 171.00 189.00 207.00 225.00 243.00 261.00 279.00 297.00 315.00
+-    10.00 28.00 46.00 64.00 82.00 100.00 118.00 136.00 154.00 172.00 190.00 208.00 226.00 244.00 262.00 280.00 298.00 316.00
+-    11.00 29.00 47.00 65.00 83.00 101.00 119.00 137.00 155.00 173.00 191.00 209.00 227.00 245.00 263.00 281.00 299.00 317.00
+-    12.00 30.00 48.00 66.00 84.00 102.00 120.00 138.00 156.00 174.00 192.00 210.00 228.00 246.00 264.00 282.00 300.00 318.00
+-    13.00 31.00 49.00 67.00 85.00 103.00 121.00 139.00 157.00 175.00 193.00 211.00 229.00 247.00 265.00 283.00 301.00 319.00
+-    14.00 32.00 50.00 68.00 86.00 104.00 122.00 140.00 158.00 176.00 194.00 212.00 230.00 248.00 266.00 284.00 302.00 320.00
+-    15.00 33.00 51.00 69.00 87.00 105.00 123.00 141.00 159.00 177.00 195.00 213.00 231.00 249.00 267.00 285.00 303.00 321.00
+-    16.00 34.00 52.00 70.00 88.00 106.00 124.00 142.00 160.00 178.00 196.00 214.00 232.00 250.00 268.00 286.00 304.00 322.00
+-    17.00 35.00 53.00 71.00 89.00 107.00 125.00 143.00 161.00 179.00 197.00 215.00 233.00 251.00 269.00 287.00 305.00 323.00
+- &lt;&lt;&lt; end_of_matrix C:res dump
+- [Boivin:slave:(2) 8.632721] [gras/INFO] Exiting GRAS
+- [Jean_Yves:slave:(3) 8.703842] [gras/INFO] Exiting GRAS
+- [TeX:slave:(4) 8.843180] [gras/INFO] Exiting GRAS
+- [Geoff:slave:(5) 8.843605] [gras/INFO] Exiting GRAS
+- [Disney:slave:(6) 8.983785] [gras/INFO] Exiting GRAS
+- [iRMX:slave:(7) 9.217747] [gras/INFO] Exiting GRAS
+- [McGee:slave:(8) 9.286044] [gras/INFO] Exiting GRAS
+- [Gatien:slave:(9) 9.384018] [gras/INFO] Exiting GRAS
+- [Jacquelin:master:(1) 9.522437] [gras/INFO] Exiting GRAS
+- [Laroche:slave:(10) 9.522437] [gras/INFO] Exiting GRAS
+[0.142249] run_context.c:667: [tesh/ERROR] Test suite `test_sg_32': NOK (&lt;test_sg_32:1&gt; output mismatch)
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="failed">
+		<Name>gras-synchro-sg-32,</Name>
+		<Path>.</Path>
+		<FullName>./gras-synchro-sg-32,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/synchro test_sg_32</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="text/string" name="Exit Code"><Value>Failed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Exit Value"><Value>2</Value></NamedMeasurement>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.068455</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/synchro test_sg_32</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000006] [tesh/INFO] Change directory to ../examples/gras/synchro
+[0.000035] [tesh/INFO] Test suite `test_sg_32'
+[0.000078] [tesh/INFO] [test_sg_32:1] Runs the 'philosopher' test within the simulator
+[0.000088] [tesh/INFO] [test_sg_32:3] $SG_TEST_EXENV ./synchro_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/synchro.xml
+[0.041938] run_context.c:663: [tesh/ERROR] Output of &lt;test_sg_32:3&gt; mismatch:
+  [Tremblay:philosopher:(1) 0.000000] [philo/INFO] Spawn the 5 threads (10 lunches scheduled)
+  [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 gets hungry (lunch #0)
+  [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 1:(1) 0.000000] [philo/INFO] Thread 1 gets hungry (lunch #0)
+  [Tremblay:thread 2:(1) 0.000000] [philo/INFO] Thread 2 gets hungry (lunch #0)
+  [Tremblay:thread 2:(1) 0.000000] [philo/INFO] Thread 2 eats
+  [Tremblay:thread 3:(1) 0.000000] [philo/INFO] Thread 3 gets hungry (lunch #0)
+  [Tremblay:thread 4:(1) 0.000000] [philo/INFO] Thread 4 gets hungry (lunch #0)
+  [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 4:(1) 0.000000] [philo/INFO] Thread 4 eats
+  [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 gets hungry (lunch #1)
+  [Tremblay:thread 2:(1) 0.020000] [philo/INFO] Thread 2 is full
+  [Tremblay:thread 2:(1) 0.020000] [philo/INFO] Thread 2 thinks
+  [Tremblay:thread 1:(1) 0.020000] [philo/INFO] Thread 1 eats
+  [Tremblay:thread 1:(1) 0.030000] [philo/INFO] Thread 1 is full
+  [Tremblay:thread 1:(1) 0.030000] [philo/INFO] Thread 1 thinks
+  [Tremblay:thread 4:(1) 0.040000] [philo/INFO] Thread 4 is full
+  [Tremblay:thread 4:(1) 0.040000] [philo/INFO] Thread 4 thinks
+  [Tremblay:thread 1:(1) 0.040000] [philo/INFO] Thread 1 gets hungry (lunch #1)
+  [Tremblay:thread 1:(1) 0.040000] [philo/INFO] Thread 1 eats
+  [Tremblay:thread 2:(1) 0.040000] [philo/INFO] Thread 2 gets hungry (lunch #1)
+  [Tremblay:thread 3:(1) 0.040000] [philo/INFO] Thread 3 eats
+  [Tremblay:thread 1:(1) 0.050000] [philo/INFO] Thread 1 is full
+  [Tremblay:thread 1:(1) 0.050000] [philo/INFO] Thread 1 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #2)
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #3)
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #4)
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #5)
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #6)
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #7)
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #8)
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #9)
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
+  [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 tries to enter the dead-end; hopefully, the master will cancel it
+  [Tremblay:thread 1:(1) 0.060000] [philo/INFO] Thread 1 gets hungry (lunch #2)
+  [Tremblay:thread 1:(1) 0.060000] [philo/INFO] Thread 1 eats
+  [Tremblay:thread 3:(1) 0.070000] [philo/INFO] Thread 3 is full
+  [Tremblay:thread 3:(1) 0.070000] [philo/INFO] Thread 3 thinks
+  [Tremblay:thread 1:(1) 0.070000] [philo/INFO] Thread 1 is full
+  [Tremblay:thread 1:(1) 0.070000] [philo/INFO] Thread 1 thinks
+  [Tremblay:thread 2:(1) 0.070000] [philo/INFO] Thread 2 eats
+  [Tremblay:thread 4:(1) 0.080000] [philo/INFO] Thread 4 gets hungry (lunch #1)
+  [Tremblay:thread 4:(1) 0.080000] [philo/INFO] Thread 4 eats
+  [Tremblay:thread 1:(1) 0.080000] [philo/INFO] Thread 1 gets hungry (lunch #3)
+  [Tremblay:thread 2:(1) 0.090000] [philo/INFO] Thread 2 is full
+  [Tremblay:thread 2:(1) 0.090000] [philo/INFO] Thread 2 thinks
+  [Tremblay:thread 1:(1) 0.090000] [philo/INFO] Thread 1 eats
+  [Tremblay:thread 3:(1) 0.100000] [philo/INFO] Thread 3 gets hungry (lunch #1)
+  [Tremblay:thread 1:(1) 0.100000] [philo/INFO] Thread 1 is full
+  [Tremblay:thread 1:(1) 0.100000] [philo/INFO] Thread 1 thinks
+  [Tremblay:thread 1:(1) 0.110000] [philo/INFO] Thread 1 gets hungry (lunch #4)
+  [Tremblay:thread 1:(1) 0.110000] [philo/INFO] Thread 1 eats
+  [Tremblay:thread 2:(1) 0.110000] [philo/INFO] Thread 2 gets hungry (lunch #2)
+  [Tremblay:thread 4:(1) 0.120000] [philo/INFO] Thread 4 is full
+  [Tremblay:thread 4:(1) 0.120000] [philo/INFO] Thread 4 thinks
+  [Tremblay:thread 1:(1) 0.120000] [philo/INFO] Thread 1 is full
+  [Tremblay:thread 1:(1) 0.120000] [philo/INFO] Thread 1 thinks
+  [Tremblay:thread 3:(1) 0.120000] [philo/INFO] Thread 3 eats
+  [Tremblay:thread 1:(1) 0.130000] [philo/INFO] Thread 1 gets hungry (lunch #5)
+  [Tremblay:thread 1:(1) 0.130000] [philo/INFO] Thread 1 eats
+  [Tremblay:thread 1:(1) 0.140000] [philo/INFO] Thread 1 is full
+  [Tremblay:thread 1:(1) 0.140000] [philo/INFO] Thread 1 thinks
+  [Tremblay:thread 3:(1) 0.150000] [philo/INFO] Thread 3 is full
+  [Tremblay:thread 3:(1) 0.150000] [philo/INFO] Thread 3 thinks
+- [Tremblay:thread 2:(1) 0.150000] [philo/INFO] Thread 2 eats
+  [Tremblay:thread 1:(1) 0.150000] [philo/INFO] Thread 1 gets hungry (lunch #6)
++ [Tremblay:thread 1:(1) 0.150000] [philo/INFO] Thread 1 eats
+  [Tremblay:thread 4:(1) 0.160000] [philo/INFO] Thread 4 gets hungry (lunch #2)
+  [Tremblay:thread 4:(1) 0.160000] [philo/INFO] Thread 4 eats
+- [Tremblay:thread 2:(1) 0.170000] [philo/INFO] Thread 2 is full
+- [Tremblay:thread 2:(1) 0.170000] [philo/INFO] Thread 2 thinks
+- [Tremblay:thread 1:(1) 0.170000] [philo/INFO] Thread 1 eats
++ [Tremblay:thread 1:(1) 0.160000] [philo/INFO] Thread 1 is full
++ [Tremblay:thread 1:(1) 0.160000] [philo/INFO] Thread 1 thinks
++ [Tremblay:thread 2:(1) 0.160000] [philo/INFO] Thread 2 eats
++ [Tremblay:thread 1:(1) 0.170000] [philo/INFO] Thread 1 gets hungry (lunch #7)
+  [Tremblay:thread 3:(1) 0.180000] [philo/INFO] Thread 3 gets hungry (lunch #2)
+- [Tremblay:thread 1:(1) 0.180000] [philo/INFO] Thread 1 is full
+- [Tremblay:thread 1:(1) 0.180000] [philo/INFO] Thread 1 thinks
+- [Tremblay:thread 2:(1) 0.190000] [philo/INFO] Thread 2 gets hungry (lunch #3)
+- [Tremblay:thread 2:(1) 0.190000] [philo/INFO] Thread 2 eats
+- [Tremblay:thread 1:(1) 0.190000] [philo/INFO] Thread 1 gets hungry (lunch #7)
++ [Tremblay:thread 2:(1) 0.180000] [philo/INFO] Thread 2 is full
++ [Tremblay:thread 2:(1) 0.180000] [philo/INFO] Thread 2 thinks
++ [Tremblay:thread 1:(1) 0.180000] [philo/INFO] Thread 1 eats
++ [Tremblay:thread 1:(1) 0.190000] [philo/INFO] Thread 1 is full
++ [Tremblay:thread 1:(1) 0.190000] [philo/INFO] Thread 1 thinks
++ [Tremblay:thread 2:(1) 0.200000] [philo/INFO] Thread 2 gets hungry (lunch #3)
++ [Tremblay:thread 2:(1) 0.200000] [philo/INFO] Thread 2 eats
++ [Tremblay:thread 1:(1) 0.200000] [philo/INFO] Thread 1 gets hungry (lunch #8)
+  [Tremblay:thread 4:(1) 0.200000] [philo/INFO] Thread 4 is full
+  [Tremblay:thread 4:(1) 0.200000] [philo/INFO] Thread 4 thinks
+- [Tremblay:thread 2:(1) 0.210000] [philo/INFO] Thread 2 is full
+- [Tremblay:thread 2:(1) 0.210000] [philo/INFO] Thread 2 thinks
+- [Tremblay:thread 1:(1) 0.210000] [philo/INFO] Thread 1 eats
+- [Tremblay:thread 3:(1) 0.210000] [philo/INFO] Thread 3 eats
+- [Tremblay:thread 1:(1) 0.220000] [philo/INFO] Thread 1 is full
+- [Tremblay:thread 1:(1) 0.220000] [philo/INFO] Thread 1 thinks
+- [Tremblay:thread 2:(1) 0.230000] [philo/INFO] Thread 2 gets hungry (lunch #4)
+- [Tremblay:thread 1:(1) 0.230000] [philo/INFO] Thread 1 gets hungry (lunch #8)
+- [Tremblay:thread 1:(1) 0.230000] [philo/INFO] Thread 1 eats
+- [Tremblay:thread 3:(1) 0.240000] [philo/INFO] Thread 3 is full
+- [Tremblay:thread 3:(1) 0.240000] [philo/INFO] Thread 3 thinks
+- [Tremblay:thread 1:(1) 0.240000] [philo/INFO] Thread 1 is full
+- [Tremblay:thread 1:(1) 0.240000] [philo/INFO] Thread 1 thinks
+- [Tremblay:thread 2:(1) 0.240000] [philo/INFO] Thread 2 eats
++ [Tremblay:thread 2:(1) 0.220000] [philo/INFO] Thread 2 is full
++ [Tremblay:thread 2:(1) 0.220000] [philo/INFO] Thread 2 thinks
++ [Tremblay:thread 1:(1) 0.220000] [philo/INFO] Thread 1 eats
++ [Tremblay:thread 3:(1) 0.220000] [philo/INFO] Thread 3 eats
++ [Tremblay:thread 1:(1) 0.230000] [philo/INFO] Thread 1 is full
++ [Tremblay:thread 1:(1) 0.230000] [philo/INFO] Thread 1 thinks
++ [Tremblay:thread 2:(1) 0.240000] [philo/INFO] Thread 2 gets hungry (lunch #4)
++ [Tremblay:thread 1:(1) 0.240000] [philo/INFO] Thread 1 gets hungry (lunch #9)
++ [Tremblay:thread 1:(1) 0.240000] [philo/INFO] Thread 1 eats
+  [Tremblay:thread 4:(1) 0.240000] [philo/INFO] Thread 4 gets hungry (lunch #3)
+- [Tremblay:thread 4:(1) 0.240000] [philo/INFO] Thread 4 eats
+- [Tremblay:thread 1:(1) 0.250000] [philo/INFO] Thread 1 gets hungry (lunch #9)
+- [Tremblay:thread 2:(1) 0.260000] [philo/INFO] Thread 2 is full
+- [Tremblay:thread 2:(1) 0.260000] [philo/INFO] Thread 2 thinks
+- [Tremblay:thread 1:(1) 0.260000] [philo/INFO] Thread 1 eats
+- [Tremblay:thread 3:(1) 0.270000] [philo/INFO] Thread 3 gets hungry (lunch #3)
+- [Tremblay:thread 1:(1) 0.270000] [philo/INFO] Thread 1 is full
+- [Tremblay:thread 1:(1) 0.270000] [philo/INFO] Thread 1 thinks
+- [Tremblay:thread 4:(1) 0.280000] [philo/INFO] Thread 4 is full
+- [Tremblay:thread 4:(1) 0.280000] [philo/INFO] Thread 4 thinks
+- [Tremblay:thread 1:(1) 0.280000] [philo/INFO] Thread 1 tries to enter the dead-end; hopefully, the master will cancel it
+- [Tremblay:thread 2:(1) 0.280000] [philo/INFO] Thread 2 gets hungry (lunch #5)
+- [Tremblay:thread 2:(1) 0.280000] [philo/INFO] Thread 2 eats
+- [Tremblay:thread 2:(1) 0.300000] [philo/INFO] Thread 2 is full
+- [Tremblay:thread 2:(1) 0.300000] [philo/INFO] Thread 2 thinks
+- [Tremblay:thread 3:(1) 0.300000] [philo/INFO] Thread 3 eats
+- [Tremblay:thread 4:(1) 0.320000] [philo/INFO] Thread 4 gets hungry (lunch #4)
+- [Tremblay:thread 2:(1) 0.320000] [philo/INFO] Thread 2 gets hungry (lunch #6)
+- [Tremblay:thread 3:(1) 0.330000] [philo/INFO] Thread 3 is full
+- [Tremblay:thread 3:(1) 0.330000] [philo/INFO] Thread 3 thinks
+- [Tremblay:thread 2:(1) 0.330000] [philo/INFO] Thread 2 eats
+- [Tremblay:thread 4:(1) 0.330000] [philo/INFO] Thread 4 eats
+- [Tremblay:thread 2:(1) 0.350000] [philo/INFO] Thread 2 is full
+- [Tremblay:thread 2:(1) 0.350000] [philo/INFO] Thread 2 thinks
+- [Tremblay:thread 3:(1) 0.360000] [philo/INFO] Thread 3 gets hungry (lunch #4)
+- [Tremblay:thread 4:(1) 0.370000] [philo/INFO] Thread 4 is full
+- [Tremblay:thread 4:(1) 0.370000] [philo/INFO] Thread 4 thinks
+- [Tremblay:thread 3:(1) 0.370000] [philo/INFO] Thread 3 eats
+- [Tremblay:thread 2:(1) 0.370000] [philo/INFO] Thread 2 gets hungry (lunch #7)
+- [Tremblay:thread 3:(1) 0.400000] [philo/INFO] Thread 3 is full
+- [Tremblay:thread 3:(1) 0.400000] [philo/INFO] Thread 3 thinks
+- [Tremblay:thread 2:(1) 0.400000] [philo/INFO] Thread 2 eats
+- [Tremblay:thread 4:(1) 0.410000] [philo/INFO] Thread 4 gets hungry (lunch #5)
+- [Tremblay:thread 4:(1) 0.410000] [philo/INFO] Thread 4 eats
+- [Tremblay:thread 2:(1) 0.420000] [philo/INFO] Thread 2 is full
+- [Tremblay:thread 2:(1) 0.420000] [philo/INFO] Thread 2 thinks
+- [Tremblay:thread 3:(1) 0.430000] [philo/INFO] Thread 3 gets hungry (lunch #5)
+- [Tremblay:thread 2:(1) 0.440000] [philo/INFO] Thread 2 gets hungry (lunch #8)
+- [Tremblay:thread 2:(1) 0.440000] [philo/INFO] Thread 2 eats
+- [Tremblay:thread 4:(1) 0.450000] [philo/INFO] Thread 4 is full
+- [Tremblay:thread 4:(1) 0.450000] [philo/INFO] Thread 4 thinks
+- [Tremblay:thread 2:(1) 0.460000] [philo/INFO] Thread 2 is full
+- [Tremblay:thread 2:(1) 0.460000] [philo/INFO] Thread 2 thinks
+- [Tremblay:thread 3:(1) 0.460000] [philo/INFO] Thread 3 eats
+- [Tremblay:thread 2:(1) 0.480000] [philo/INFO] Thread 2 gets hungry (lunch #9)
+- [Tremblay:thread 4:(1) 0.490000] [philo/INFO] Thread 4 gets hungry (lunch #6)
+- [Tremblay:thread 3:(1) 0.490000] [philo/INFO] Thread 3 is full
+- [Tremblay:thread 3:(1) 0.490000] [philo/INFO] Thread 3 thinks
+- [Tremblay:thread 2:(1) 0.490000] [philo/INFO] Thread 2 eats
+- [Tremblay:thread 4:(1) 0.490000] [philo/INFO] Thread 4 eats
+- [Tremblay:thread 2:(1) 0.510000] [philo/INFO] Thread 2 is full
+- [Tremblay:thread 2:(1) 0.510000] [philo/INFO] Thread 2 thinks
+- [Tremblay:thread 3:(1) 0.520000] [philo/INFO] Thread 3 gets hungry (lunch #6)
+- [Tremblay:thread 4:(1) 0.530000] [philo/INFO] Thread 4 is full
+- [Tremblay:thread 4:(1) 0.530000] [philo/INFO] Thread 4 thinks
+- [Tremblay:thread 2:(1) 0.530000] [philo/INFO] Thread 2 tries to enter the dead-end; hopefully, the master will cancel it
+- [Tremblay:thread 3:(1) 0.530000] [philo/INFO] Thread 3 eats
+- [Tremblay:thread 3:(1) 0.560000] [philo/INFO] Thread 3 is full
+- [Tremblay:thread 3:(1) 0.560000] [philo/INFO] Thread 3 thinks
+- [Tremblay:thread 4:(1) 0.570000] [philo/INFO] Thread 4 gets hungry (lunch #7)
+- [Tremblay:thread 4:(1) 0.570000] [philo/INFO] Thread 4 eats
+- [Tremblay:thread 3:(1) 0.590000] [philo/INFO] Thread 3 gets hungry (lunch #7)
+- [Tremblay:thread 4:(1) 0.610000] [philo/INFO] Thread 4 is full
+- [Tremblay:thread 4:(1) 0.610000] [philo/INFO] Thread 4 thinks
+- [Tremblay:thread 3:(1) 0.610000] [philo/INFO] Thread 3 eats
+- [Tremblay:thread 3:(1) 0.640000] [philo/INFO] Thread 3 is full
+- [Tremblay:thread 3:(1) 0.640000] [philo/INFO] Thread 3 thinks
+- [Tremblay:thread 4:(1) 0.650000] [philo/INFO] Thread 4 gets hungry (lunch #8)
+- [Tremblay:thread 4:(1) 0.650000] [philo/INFO] Thread 4 eats
+- [Tremblay:thread 3:(1) 0.670000] [philo/INFO] Thread 3 gets hungry (lunch #8)
+- [Tremblay:thread 4:(1) 0.690000] [philo/INFO] Thread 4 is full
+- [Tremblay:thread 4:(1) 0.690000] [philo/INFO] Thread 4 thinks
+- [Tremblay:thread 3:(1) 0.690000] [philo/INFO] Thread 3 eats
+- [Tremblay:thread 3:(1) 0.720000] [philo/INFO] Thread 3 is full
+- [Tremblay:thread 3:(1) 0.720000] [philo/INFO] Thread 3 thinks
+- [Tremblay:thread 4:(1) 0.730000] [philo/INFO] Thread 4 gets hungry (lunch #9)
+- [Tremblay:thread 4:(1) 0.730000] [philo/INFO] Thread 4 eats
+- [Tremblay:thread 3:(1) 0.750000] [philo/INFO] Thread 3 gets hungry (lunch #9)
+- [Tremblay:thread 4:(1) 0.770000] [philo/INFO] Thread 4 is full
+- [Tremblay:thread 4:(1) 0.770000] [philo/INFO] Thread 4 thinks
+- [Tremblay:thread 3:(1) 0.770000] [philo/INFO] Thread 3 eats
+- [Tremblay:thread 3:(1) 0.800000] [philo/INFO] Thread 3 is full
+- [Tremblay:thread 3:(1) 0.800000] [philo/INFO] Thread 3 thinks
+- [Tremblay:thread 4:(1) 0.810000] [philo/INFO] Thread 4 tries to enter the dead-end; hopefully, the master will cancel it
+- [Tremblay:thread 3:(1) 0.830000] [philo/INFO] Thread 3 tries to enter the dead-end; hopefully, the master will cancel it
+- [Tremblay:philosopher:(1) 0.830000] [philo/INFO] Cancel all childs
+- [Tremblay:philosopher:(1) 0.830000] [gras/INFO] Exiting GRAS
++ [Tremblay:thread 3:(1) 0.250000] [philo/INFO] Thread 3 is full
++ [Tremblay:thread 3:(1) 0.250000] [philo/INFO] Thread 3 thinks
++ [Tremblay:thread 1:(1) 0.250000] [philo/INFO] Thread 1 is full
++ [Tremblay:thread 1:(1) 0.250000] [philo/INFO] Thread 1 thinks
++ [Tremblay:thread 2:(1) 0.250000] [philo/INFO] Thread 2 eats
++ [Tremblay:thread 4:(1) 0.250000] [philo/INFO] Thread 4 eats
++ [Tremblay:thread 1:(1) 0.260000] [philo/INFO] Thread 1 tries to enter the dead-end; hopefully, the master will cancel it
++ [Tremblay:thread 2:(1) 0.270000] [philo/INFO] Thread 2 is full
++ [Tremblay:thread 2:(1) 0.270000] [philo/INFO] Thread 2 thinks
++ [Tremblay:thread 3:(1) 0.280000] [philo/INFO] Thread 3 gets hungry (lunch #3)
++ [Tremblay:thread 4:(1) 0.290000] [philo/INFO] Thread 4 is full
++ [Tremblay:thread 4:(1) 0.290000] [philo/INFO] Thread 4 thinks
++ [Tremblay:thread 2:(1) 0.290000] [philo/INFO] Thread 2 gets hungry (lunch #5)
++ [Tremblay:thread 2:(1) 0.290000] [philo/INFO] Thread 2 eats
++ [Tremblay:thread 2:(1) 0.310000] [philo/INFO] Thread 2 is full
++ [Tremblay:thread 2:(1) 0.310000] [philo/INFO] Thread 2 thinks
++ [Tremblay:thread 3:(1) 0.310000] [philo/INFO] Thread 3 eats
++ [Tremblay:thread 4:(1) 0.330000] [philo/INFO] Thread 4 gets hungry (lunch #4)
++ [Tremblay:thread 2:(1) 0.330000] [philo/INFO] Thread 2 gets hungry (lunch #6)
++ [Tremblay:thread 3:(1) 0.340000] [philo/INFO] Thread 3 is full
++ [Tremblay:thread 3:(1) 0.340000] [philo/INFO] Thread 3 thinks
++ [Tremblay:thread 2:(1) 0.340000] [philo/INFO] Thread 2 eats
++ [Tremblay:thread 4:(1) 0.340000] [philo/INFO] Thread 4 eats
++ [Tremblay:thread 2:(1) 0.360000] [philo/INFO] Thread 2 is full
++ [Tremblay:thread 2:(1) 0.360000] [philo/INFO] Thread 2 thinks
++ [Tremblay:thread 3:(1) 0.370000] [philo/INFO] Thread 3 gets hungry (lunch #4)
++ [Tremblay:thread 4:(1) 0.380000] [philo/INFO] Thread 4 is full
++ [Tremblay:thread 4:(1) 0.380000] [philo/INFO] Thread 4 thinks
++ [Tremblay:thread 2:(1) 0.380000] [philo/INFO] Thread 2 gets hungry (lunch #7)
++ [Tremblay:thread 2:(1) 0.380000] [philo/INFO] Thread 2 eats
++ [Tremblay:thread 2:(1) 0.400000] [philo/INFO] Thread 2 is full
++ [Tremblay:thread 2:(1) 0.400000] [philo/INFO] Thread 2 thinks
++ [Tremblay:thread 3:(1) 0.400000] [philo/INFO] Thread 3 eats
++ [Tremblay:thread 4:(1) 0.420000] [philo/INFO] Thread 4 gets hungry (lunch #5)
++ [Tremblay:thread 2:(1) 0.420000] [philo/INFO] Thread 2 gets hungry (lunch #8)
++ [Tremblay:thread 3:(1) 0.430000] [philo/INFO] Thread 3 is full
++ [Tremblay:thread 3:(1) 0.430000] [philo/INFO] Thread 3 thinks
++ [Tremblay:thread 2:(1) 0.430000] [philo/INFO] Thread 2 eats
++ [Tremblay:thread 4:(1) 0.430000] [philo/INFO] Thread 4 eats
++ [Tremblay:thread 2:(1) 0.450000] [philo/INFO] Thread 2 is full
++ [Tremblay:thread 2:(1) 0.450000] [philo/INFO] Thread 2 thinks
++ [Tremblay:thread 3:(1) 0.460000] [philo/INFO] Thread 3 gets hungry (lunch #5)
++ [Tremblay:thread 4:(1) 0.470000] [philo/INFO] Thread 4 is full
++ [Tremblay:thread 4:(1) 0.470000] [philo/INFO] Thread 4 thinks
++ [Tremblay:thread 2:(1) 0.470000] [philo/INFO] Thread 2 gets hungry (lunch #9)
++ [Tremblay:thread 2:(1) 0.470000] [philo/INFO] Thread 2 eats
++ [Tremblay:thread 2:(1) 0.490000] [philo/INFO] Thread 2 is full
++ [Tremblay:thread 2:(1) 0.490000] [philo/INFO] Thread 2 thinks
++ [Tremblay:thread 3:(1) 0.490000] [philo/INFO] Thread 3 eats
++ [Tremblay:thread 4:(1) 0.510000] [philo/INFO] Thread 4 gets hungry (lunch #6)
++ [Tremblay:thread 2:(1) 0.510000] [philo/INFO] Thread 2 tries to enter the dead-end; hopefully, the master will cancel it
++ [Tremblay:thread 3:(1) 0.520000] [philo/INFO] Thread 3 is full
++ [Tremblay:thread 3:(1) 0.520000] [philo/INFO] Thread 3 thinks
++ [Tremblay:thread 4:(1) 0.520000] [philo/INFO] Thread 4 eats
++ [Tremblay:thread 3:(1) 0.550000] [philo/INFO] Thread 3 gets hungry (lunch #6)
++ [Tremblay:thread 4:(1) 0.560000] [philo/INFO] Thread 4 is full
++ [Tremblay:thread 4:(1) 0.560000] [philo/INFO] Thread 4 thinks
++ [Tremblay:thread 3:(1) 0.560000] [philo/INFO] Thread 3 eats
++ [Tremblay:thread 3:(1) 0.590000] [philo/INFO] Thread 3 is full
++ [Tremblay:thread 3:(1) 0.590000] [philo/INFO] Thread 3 thinks
++ [Tremblay:thread 4:(1) 0.600000] [philo/INFO] Thread 4 gets hungry (lunch #7)
++ [Tremblay:thread 4:(1) 0.600000] [philo/INFO] Thread 4 eats
++ [Tremblay:thread 3:(1) 0.620000] [philo/INFO] Thread 3 gets hungry (lunch #7)
++ [Tremblay:thread 4:(1) 0.640000] [philo/INFO] Thread 4 is full
++ [Tremblay:thread 4:(1) 0.640000] [philo/INFO] Thread 4 thinks
++ [Tremblay:thread 3:(1) 0.640000] [philo/INFO] Thread 3 eats
++ [Tremblay:thread 3:(1) 0.670000] [philo/INFO] Thread 3 is full
++ [Tremblay:thread 3:(1) 0.670000] [philo/INFO] Thread 3 thinks
++ [Tremblay:thread 4:(1) 0.680000] [philo/INFO] Thread 4 gets hungry (lunch #8)
++ [Tremblay:thread 4:(1) 0.680000] [philo/INFO] Thread 4 eats
++ [Tremblay:thread 3:(1) 0.700000] [philo/INFO] Thread 3 gets hungry (lunch #8)
++ [Tremblay:thread 4:(1) 0.720000] [philo/INFO] Thread 4 is full
++ [Tremblay:thread 4:(1) 0.720000] [philo/INFO] Thread 4 thinks
++ [Tremblay:thread 3:(1) 0.720000] [philo/INFO] Thread 3 eats
++ [Tremblay:thread 3:(1) 0.750000] [philo/INFO] Thread 3 is full
++ [Tremblay:thread 3:(1) 0.750000] [philo/INFO] Thread 3 thinks
++ [Tremblay:thread 4:(1) 0.760000] [philo/INFO] Thread 4 gets hungry (lunch #9)
++ [Tremblay:thread 4:(1) 0.760000] [philo/INFO] Thread 4 eats
++ [Tremblay:thread 3:(1) 0.780000] [philo/INFO] Thread 3 gets hungry (lunch #9)
++ [Tremblay:thread 4:(1) 0.800000] [philo/INFO] Thread 4 is full
++ [Tremblay:thread 4:(1) 0.800000] [philo/INFO] Thread 4 thinks
++ [Tremblay:thread 3:(1) 0.800000] [philo/INFO] Thread 3 eats
++ [Tremblay:thread 3:(1) 0.830000] [philo/INFO] Thread 3 is full
++ [Tremblay:thread 3:(1) 0.830000] [philo/INFO] Thread 3 thinks
++ [Tremblay:thread 4:(1) 0.840000] [philo/INFO] Thread 4 tries to enter the dead-end; hopefully, the master will cancel it
++ [Tremblay:thread 3:(1) 0.860000] [philo/INFO] Thread 3 tries to enter the dead-end; hopefully, the master will cancel it
++ [Tremblay:philosopher:(1) 0.860000] [philo/INFO] Cancel all childs
++ [Tremblay:philosopher:(1) 0.860000] [gras/INFO] Exiting GRAS
+[0.042020] run_context.c:667: [tesh/ERROR] Test suite `test_sg_32': NOK (&lt;test_sg_32:3&gt; output mismatch)
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>gras-properties-sg,</Name>
+		<Path>.</Path>
+		<FullName>./gras-properties-sg,</FullName>
+		<FullCommandLine>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/properties test_sg</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.057152</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/home/navarrop/Developments/simgrid/tools/tesh/tesh --cd ../examples/gras/properties test_sg</Value></NamedMeasurement>
+			<Measurement>
+				<Value>[0.000007] [tesh/INFO] Change directory to ../examples/gras/properties
+[0.000036] [tesh/INFO] Test suite `test_sg'
+[0.000073] [tesh/INFO] [test_sg:1] Runs the 'properties' test within the simulator (simulation times valid for 32bits architectures)
+[0.000083] [tesh/INFO] [test_sg:3] $SG_TEST_EXENV ./properties_simulator${EXEEXT:=} ${srcdir:=.}/../../platforms/prop.xml ${srcdir:=.}/properties.xml
+[0.035737] [tesh/INFO] Test suite `test_sg' OK
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<EndDateTime>Dec 09 10:30 CET</EndDateTime>
+	<EndTestTime>1260351010</EndTestTime>
+<ElapsedMinutes>0.4</ElapsedMinutes></Testing>
+</Site>

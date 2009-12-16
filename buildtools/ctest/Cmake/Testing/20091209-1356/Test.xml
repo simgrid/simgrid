@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="Linux-c++"
+	BuildStamp="20091209-1356-Experimental"
+	Name="Pierre Navarro"
+	Generator="ctest2.6-patch 4"	OSName="Linux"
+	Hostname="caraja"
+	OSRelease="2.6.31-16-generic"
+	OSVersion="#52-Ubuntu SMP Thu Dec 3 22:07:16 UTC 2009"
+	OSPlatform="x86_64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="23"
+	ProcessorCacheSize="3072"
+	NumberOfLogicalCPU="2"
+	NumberOfPhysicalCPU="2"
+	TotalVirtualMemory="3812"
+	TotalPhysicalMemory="3951"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="800"
+>
+<Testing>
+	<StartDateTime>Dec 09 14:56 CET</StartDateTime>
+	<StartTestTime>1260367008</StartTestTime>
+	<TestList>
+		<Test>./test_pierre_1,</Test>
+		<Test>./test_pierre_2,</Test>
+	</TestList>
+	<Test Status="passed">
+		<Name>test_pierre_1,</Name>
+		<Path>.</Path>
+		<FullName>./test_pierre_1,</FullName>
+		<FullCommandLine>/bin/echo hello</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.00159597</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/bin/echo hello</Value></NamedMeasurement>
+			<Measurement>
+				<Value>hello
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<Test Status="passed">
+		<Name>test_pierre_2,</Name>
+		<Path>.</Path>
+		<FullName>./test_pierre_2,</FullName>
+		<FullCommandLine>/usr/bin/java -version</FullCommandLine>
+		<Results>
+			<NamedMeasurement type="numeric/double" name="Execution Time"><Value>0.102298</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Completion Status"><Value>Completed</Value></NamedMeasurement>
+			<NamedMeasurement type="text/string" name="Command Line"><Value>/usr/bin/java -version</Value></NamedMeasurement>
+			<Measurement>
+				<Value>java version "1.6.0_0"
+OpenJDK Runtime Environment (IcedTea6 1.6.1) (6b16-1.6.1-3ubuntu1)
+OpenJDK 64-Bit Server VM (build 14.0-b16, mixed mode)
+</Value>
+			</Measurement>
+		</Results>
+	</Test>
+	<EndDateTime>Dec 09 14:56 CET</EndDateTime>
+	<EndTestTime>1260367008</EndTestTime>
+<ElapsedMinutes>0</ElapsedMinutes></Testing>
+</Site>
