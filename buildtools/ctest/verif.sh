@@ -18,17 +18,22 @@ mkdir  $BASEDIR/$OS
 mkdir  $BASEDIR/$OS/$node
 cd $BASEDIR/$OS/$node
 
-# load the simgrid directory
-echo "untar simgrid-3.3.4-svn.tar.gz"
-cp /home/mescal/navarro/simgrid-3.3.4-svn.tar.gz $BASEDIR/$OS/$node/simgrid-3.3.4-svn.tar.gz
-tar -xzf ./simgrid-3.3.4-svn.tar.gz
-cp /home/mescal/navarro/Cmake.tar.gz $BASEDIR/$OS/$node/simgrid-3.3.4-svn/Cmake.tar.gz
-cd $BASEDIR/$OS/$node/simgrid-3.3.4-svn
-tar -xzf $BASEDIR/$OS/$node/simgrid-3.3.4-svn/Cmake.tar.gz
+# load the simgrid directory from svn
+echo "load simgrid-svn"
+svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk
+mv trunk/ simgrid
+cp simgrid/buildtools/ctest/Cmake simgrid-svn/Cmake
+
+# Install dependencies
+echo "get dependencies"
+sudo aptitude install -y libtool automake1.10 autoconf libgcj10-dev gcc g++ bash flex flexml doxygen bibtex bibtool iconv bibtex2html addr2line valgrind
 
 # 1er test
+cd $BASEDIR/$OS/$node/simgrid
+echo "./bootstrap"
+./bootstrap
 echo "./configure"
-./configure
+./configure --enable-maintainer-mode --disable-compile-optimizations
 echo "make"
 make 
 echo "./checkall"
@@ -36,7 +41,7 @@ echo "./checkall"
 
 # 2eme test ctest
 sudo aptitude install -y cmake
-cd $BASEDIR/$OS/$node/simgrid-3.3.4-svn/Cmake
+cd $BASEDIR/$OS/$node/simgrid/Cmake
 cmake ./
 ctest -D Experimental
 
