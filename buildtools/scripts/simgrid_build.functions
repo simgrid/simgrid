@@ -10,7 +10,7 @@ get_version() {
       svn up
       version="simgrid-3.3.4-svn-r"`svnversion`
     else if [ -e .git ] ; then
-      version="simgrid-3.3.4-git-r"`git describe --long --all | sed 's|.*/||'`
+      version="simgrid-3.3.4-git-r"`git log --oneline -1 | sed 's| .*||'`
     fi fi
     export version
   fi

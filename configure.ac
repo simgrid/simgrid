@@ -40,7 +40,7 @@ if test -e .svn && echo $VERSION | grep -q svn; then
   PACKAGE_VERSION="$PACKAGE_VERSION-r`svnversion`"
   PACKAGE_STRING="$PACKAGE_STRING r`svnversion`"
 else if test -e .git && echo $VERSION | grep -q svn; then
-  ver=`git describe --long --all | sed 's|.*/||'`
+  ver=`git log --oneline -1 | sed 's| .*||'`
   VERSION=`echo "$VERSION-r$ver" | sed 's/svn/git/'`
   PACKAGE_VERSION=`echo "$PACKAGE_VERSION-r$ver" | sed 's/svn/git/'`
   PACKAGE_STRING=`echo "$PACKAGE_STRING r$ver" | sed 's/svn/git/'`
