@@ -1,9 +1,0 @@
-#! /bin/bash
-# This script waits that the make_dist script finishes building the right archive in ~/simgrid
-
-
-source ~/simgrid-svn/buildtools/Cmake/cmake_simgrid.conf
-
-get_version
-wait_archive
-
