@@ -29,10 +29,9 @@ make_dist() {
     if [ ! -e configure ] ; then
       ./bootstrap
     fi
-    if [ ! -e Makefile ] ; then
-       # Disable compilation optim to make it built faster
-       ./configure --enable-maintainer-mode --disable-compile-optimizations
-    fi
+    # Reconfigure in any case or the svn version won't get updated
+    # (disable compilation optim to make it built faster)
+    ./configure --enable-maintainer-mode --disable-compile-optimizations
     echo "Make the archive"
     make all dist
 
