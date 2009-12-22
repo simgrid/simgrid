@@ -21,16 +21,14 @@ ENDIF(SIZEOF_INT EQUAL 4)
 
 
 ### Enable tests
+INCLUDE(CTestConfig.cmake)
 ENABLE_TESTING()
 INCLUDE(CTest)
 INCLUDE(Dart)
-
-INCLUDE(CTestCustom.ctest)
 INCLUDE(CTestList.txt)
 
 # Install the CTest configuration in the build dir
-configure_file(CTestCustom.ctest ${CMAKE_BINARY_DIR}/CTestCustom.ctest
-COPYONLY)
+configure_file(CTestConfig.cmake ${CMAKE_BINARY_DIR}/CTestCustom.ctest COPYONLY)
 
 #SET (CMAKE_COMPILER_IS_GNUCXX 1)
 #SET (CMAKE_COMPILER_IS_GNUCC 1)
