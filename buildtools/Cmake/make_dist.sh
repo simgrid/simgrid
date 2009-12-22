@@ -4,7 +4,7 @@
 set -e
 
 # This script creates a new dist archive from the svn
-source cmake_simgrid.conf
+source ~/simgrid-svn/buildtools/Cmake/cmake_simgrid.conf
 
 echo "get Linux dependencies"
 sudo aptitude install -y libtool automake1.10 autoconf libgcj10-dev gcc g++ bash flex flexml doxygen bibtex bibtool iconv bibtex2html addr2line valgrind
