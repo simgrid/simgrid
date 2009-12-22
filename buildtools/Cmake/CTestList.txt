@@ -45,9 +45,9 @@ ADD_TEST(tesh-gras-dd-rw,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/d
 
 ADD_TEST(tesh-gras-dd-r_little32_4, "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_little32_4.tesh")
 ADD_TEST(tesh-gras-dd-r_little64,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_little64.tesh")
-# next three expected to fail until we regenerate the data
-ADD_TEST(tesh-gras-dd-r_big32_8,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_big32_8.tesh")
 ADD_TEST(tesh-gras-dd-r_big32_8_4, "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_big32_8_4.tesh")
+# next ones expected to fail until we regenerate the data
+ADD_TEST(tesh-gras-dd-r_big32_8,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_big32_8.tesh")
 ADD_TEST(tesh-gras-dd-r_big32_2,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_big32_2.tesh")
 
 ADD_TEST(tesh-gras-msg_handle-rl,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/msg_handle/test_rl")
@@ -66,6 +66,8 @@ ELSE(ARCH_32_BITS)
   ADD_TEST(tesh-gras-small_sleep-sg-64, "../../tools/tesh/tesh" --cd ../../teshsuite "gras/small_sleep/test_sg_64")
 ENDIF(ARCH_32_BITS)
 
+ADD_TEST(tesh-msg-get_sender, "../../tools/tesh/tesh" --cd ../../teshsuite "msg/get_sender.tesh")
+				    
 ADD_TEST(tesh-simdag-reinit_costs, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/network/test_reinit_costs.tesh")
 ADD_TEST(tesh-simdag-parser, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/platforms/basic_parsing_test.tesh")
 ADD_TEST(tesh-simdag-flatifier, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/platforms/flatifier.tesh")
@@ -87,7 +89,7 @@ ADD_TEST(tesh-simdag-mxn-3, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag
 
 ADD_TEST(tesh-simdag-par-1, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/partask/test_comp_only_seq.tesh")
 ADD_TEST(tesh-simdag-par-2, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/partask/test_comp_only_par.tesh")
-
+			    
 # MSG examples
 ADD_TEST(msg-sendrecv_CLM03, "../../tools/tesh/tesh" --cd ../../examples/msg sendrecv/sendrecv_CLM03.tesh)
 ADD_TEST(msg-sendrecv_Vegas, "../../tools/tesh/tesh" --cd ../../examples/msg sendrecv/sendrecv_Vegas.tesh)
@@ -97,9 +99,12 @@ ADD_TEST(msg-masterslave, "../../tools/tesh/tesh" --cd ../../examples/msg master
 ADD_TEST(msg-masterslave-forwarder, "../../tools/tesh/tesh" --cd ../../examples/msg masterslave/masterslave_forwarder.tesh)
 ADD_TEST(msg-masterslave-failure, "../../tools/tesh/tesh" --cd ../../examples/msg masterslave/masterslave_failure.tesh)
 ADD_TEST(msg-masterslave-bypass, "../../tools/tesh/tesh" --cd ../../examples/msg masterslave/masterslave_bypass.tesh)
+ADD_TEST(msg-migration, "../../tools/tesh/tesh" --cd ../../examples/msg migration/migration.tesh)
 ADD_TEST(msg-ptask, "../../tools/tesh/tesh" --cd ../../examples/msg parallel_task/parallel_task.tesh)
 ADD_TEST(msg-priority, "../../tools/tesh/tesh" --cd ../../examples/msg priority/priority.tesh)
 ADD_TEST(msg-properties, "../../tools/tesh/tesh" --cd ../../examples/msg properties/msg_prop.tesh)
+ADD_TEST(msg-trace, "../../tools/tesh/tesh" --cd ../../examples/msg trace/trace.tesh)
+ADD_TEST(msg-masterslave_cpu_ti, "../../tools/tesh/tesh" --cd ../../examples/msg masterslave/masterslave_cpu_ti.tesh)
 ADD_TEST(msg-gtnets, "../../tools/tesh/tesh" --cd ../../examples/msg gtnets/gtnets.tesh)
 
 # GRAS examples
@@ -163,9 +168,7 @@ ADD_TEST(java-pingpong, ./test_java.sh ../../examples/java/ping_pong PingPongTes
 ADD_TEST(java-comm_time, ./test_java.sh ../../examples/java/comm_time CommTimeTest)
 ADD_TEST(java-suspend, ./test_java.sh ../../examples/java/suspend SuspendTest)
 
-# pierre tests
-#ADD_TEST(test_pierre_1, echo hello)
-#ADD_TEST(test_pierre_2, java -version)
+# smpi examples
+ADD_TEST(smpi-bcast, ../../tools/tesh/tesh --cd ../../examples/smpi bcast.tesh)
+ADD_TEST(smpi-reduce, ../../tools/tesh/tesh --cd ../../examples/smpi reduce.tesh)
 
-#ADD_TEST(presence_1, ls ./CTestList.txt)
-#ADD_TEST(presence_2, ls ./CT.txt)
