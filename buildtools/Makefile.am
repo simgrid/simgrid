@@ -5,7 +5,7 @@ EXTRA_DIST = \
 	
 CLEANFILES = Cmake/CMakeCache.txt Cmake/cmake_install.cmake \
 	Cmake/Makefile Cmake/CTestTestfile.cmake Cmake/DartConfiguration.tcl \
-	Cmake/*~
+	Cmake/CTestCustom.ctest Cmake/*~
 
 clean-local:
 	-rm -rf Cmake/CMakeFiles Cmake/Testing

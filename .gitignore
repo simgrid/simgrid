@@ -49,6 +49,8 @@ buildtools/Cmake/CMakeFiles/
 buildtools/Cmake/CMakeCache.txt
 buildtools/Cmake/CTestTestfile.cmake
 buildtools/Cmake/cmake_install.cmake
+buildtools/Cmake/CTestCustom.ctest
+buildtools/Cmake/DartConfiguration.tcl
 include/simgrid_config.h
 examples/amok/bandwidth/bandwidth_maestro
 examples/amok/bandwidth/bandwidth_sensor
