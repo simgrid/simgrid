@@ -8,6 +8,7 @@ else
   source ~/.simgrid_build.conf
 fi
 
+set -e
 open_archive
 
 # Make sure we have cmake installed
