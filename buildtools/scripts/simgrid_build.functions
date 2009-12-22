@@ -6,8 +6,12 @@
 get_version() {
   if [ x$version = x ] ; then
     cd ${SIMGRID_SVN_ROOT}
-    svn up
-    version="simgrid-3.3.4-svn-r"`svnversion`
+    if [ -e .svn ] ; then
+      svn up
+      version="simgrid-3.3.4-svn-r"`svnversion`
+    else if [ -e .git ] ; then
+      version="simgrid-3.3.4-git-r"`git describe --long --all | sed 's|.*/||'`
+    fi fi
     export version
   fi
 }

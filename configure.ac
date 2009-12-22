@@ -38,8 +38,13 @@ AC_PROG_LIBTOOL
 if test -e .svn && echo $VERSION | grep -q svn; then
   VERSION="$VERSION-r`svnversion`"
   PACKAGE_VERSION="$PACKAGE_VERSION-r`svnversion`"
-  PACKAGE_STRING="$PACKAGE_STRING r`svnversion`"  
-fi
+  PACKAGE_STRING="$PACKAGE_STRING r`svnversion`"
+else if test -e .git && echo $VERSION | grep -q svn; then
+  ver=`git describe --long --all | sed 's|.*/||'`
+  VERSION=`echo "$VERSION-r$ver" | sed 's/svn/git/'`
+  PACKAGE_VERSION=`echo "$PACKAGE_VERSION-r$ver" | sed 's/svn/git/'`
+  PACKAGE_STRING=`echo "$PACKAGE_STRING r$ver" | sed 's/svn/git/'`
+fi fi
 
 ###############
 ## System checks
