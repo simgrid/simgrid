@@ -21,6 +21,7 @@ config.status
 Makefile.in
 
 src/*_unit.c
+src/supernovae_*.c
 src/simgrid_units_main.c
 src/gras_config.h.in
 
@@ -43,6 +44,10 @@ ltmain.sh
 
 autom4te.cache/*
 doc/Doxyfile
+buildtools/Cmake/Testing/
+buildtools/Cmake/CMakeFiles/
+buildtools/Cmake/CMakeCache.txt
+include/simgrid_config.h
 examples/amok/bandwidth/bandwidth_maestro
 examples/amok/bandwidth/bandwidth_sensor
 examples/amok/saturate/saturate_maestro
