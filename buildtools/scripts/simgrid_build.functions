@@ -33,7 +33,9 @@ make_dist() {
     # (disable compilation optim to make it built faster)
     ./configure --enable-maintainer-mode --disable-compile-optimizations
     echo "Make the archive"
-    make all dist
+    make -C src 
+    make -C tools
+    make dist
 
     echo "Copy the archive in position"
     mkdir -p ${SIMGRID_BASEDIR}
