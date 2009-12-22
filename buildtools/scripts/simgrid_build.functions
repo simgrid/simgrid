@@ -24,7 +24,7 @@ wait_archive() {
 make_dist() {
   get_version
   if [ ! -e ${SIMGRID_BASEDIR}/${version}.tar.gz ] ; then
-    cd ${SIMGRID_BASEDIR}
+    cd ${SIMGRID_SVN_ROOT}
     echo "rebuild the missing files for compilation"
     if [ ! -e configure ] ; then
       ./bootstrap
