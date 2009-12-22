@@ -35,10 +35,10 @@ AC_PROG_LIBTOOL
 ###############
 ## SVN version check
 ##
-if test -e .svn && cat $VERSION | grep -q svn; then
+if test -e .svn && echo $VERSION | grep -q svn; then
   VERSION="$VERSION-r`svnversion`"
   PACKAGE_VERSION="$PACKAGE_VERSION-r`svnversion`"
-  PACKAGE_STRING="PACKAGE_STRING r`svnversion`"  
+  PACKAGE_STRING="$PACKAGE_STRING r`svnversion`"  
 fi
 
 ###############
