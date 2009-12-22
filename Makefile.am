@@ -13,7 +13,8 @@ SG_EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS C
 	tools/graspe-slave.in \
 	tools/MSG_visualization \
 	tools/MSG_visualization/colorize.pl \
-	checkall
+	checkall \
+	buildtools/Cmake/CMakeLists.txt buildtools/Cmake/chdir_run.sh buildtools/Cmake/CTestList.txt
 # GRAMINE_CUT_END
 
 SUBDIRS= include src tools $(SG_SUBDIRS)
