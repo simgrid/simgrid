@@ -5,4 +5,6 @@
 
 source ~/simgrid-svn/buildtools/scripts/simgrid_build.conf
 
-build_from_autotools 
+open_archive
+./configure $@
+make
