@@ -539,9 +539,10 @@ AC_CONFIG_FILES([
     done
 ])
 
-# Testsuite
+# build tools && Testsuite
 
 AC_CONFIG_FILES([  
+  buildtools/Makefile
   testsuite/Makefile
   testsuite/run_tests    
 ],[
