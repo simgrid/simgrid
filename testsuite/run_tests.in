@@ -30,6 +30,11 @@ fi
 ##
 ## Tests defintions
 ##
+
+##########################################################################
+## UPDATE buildtools/Cmake/CTestList.txt WHEN YOU CHANGE SOMETHING HERE ##
+##########################################################################
+
 xbt_TESTS=" \
             xbt/log_usage@EXEEXT@;        \
             xbt/graphxml_usage@EXEEXT@ @srcdir@/xbt/graph.xml;    \
