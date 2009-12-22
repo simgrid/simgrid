@@ -88,6 +88,10 @@ $dashes =~ s/./X/g;
 print LOG "\n$dashes\n$banner\n$dashes\n\n";
 print     "\n$dashes\n$banner (full logs in checkall.log)\n$dashes\n\n";
 
+if (scalar @pass) {
+    print LOG "* ".(scalar @pass)." passed tests:\n";
+    map {print LOG "  $_\n"} @pass;
+}
 if (scalar @skip) {
     print LOG "* ".(scalar @skip)." skipped tests:\n";
     print     "* ".(scalar @skip)." skipped tests:\n";
