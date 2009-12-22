@@ -1,2 +1,6 @@
+# Configure CTest. For details, see:
+# http://www.cmake.org/Wiki/CMake_Testing_With_CTest#Customizing_CTest
+
 SET (CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "3000000")
 SET (CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "3000000")
+

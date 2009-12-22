@@ -16,7 +16,8 @@ SG_EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS C
 	checkall \
 	buildtools/Cmake/CMakeLists.txt buildtools/Cmake/chdir_run.sh \
         buildtools/Cmake/build.sh buildtools/Cmake/test_java.sh \
-	buildtools/Cmake/CTestList.txt buildtools/Cmake/CTestConfig.txt
+	buildtools/Cmake/CTestList.txt buildtools/Cmake/CTestConfig.txt \
+	buildtools/Cmake/CTestCustom.ctest
 # GRAMINE_CUT_END
 
 SUBDIRS= include src tools $(SG_SUBDIRS)

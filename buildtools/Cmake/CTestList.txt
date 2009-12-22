@@ -24,19 +24,18 @@ ADD_TEST(tesh-self-background,         "../../tools/tesh/tesh" --cd ../../tools/
 
 # testsuite directory
 ADD_TEST(test-xbt-log,      "./chdir_run.sh" ../../testsuite xbt/log_usage)
-ADD_TEST(test-xbt-context,  "./chdir_run.sh" ../../testsuite xbt/context_usage)
 ADD_TEST(test-xbt-graphxml, "./chdir_run.sh" ../../testsuite xbt/graphxml_usage ./xbt/graph.xml)
 ADD_TEST(test-xbt-heap,     "./chdir_run.sh" ../../testsuite xbt/heap_bench)
 
 ADD_TEST(test-surf-lmm,     "./chdir_run.sh" ../../testsuite surf/lmm_usage)
 ADD_TEST(test-surf-maxmin,  "./chdir_run.sh" ../../testsuite surf/maxmin_bench)
-ADD_TEST(test-surf-trace,   "./chdir_run.sh" ../../testsuite surf/trace_usage --surf-path=./surf/)
-ADD_TEST(test-surf-usage,   "./chdir_run.sh" ../../testsuite surf/surf_usage  --surf-path=./surf/ platform.xml)
-ADD_TEST(test-surf-usage2,  "./chdir_run.sh" ../../testsuite surf/surf_usage2 --surf-path=./surf/ platform.xml)
+ADD_TEST(test-surf-trace,   "./chdir_run.sh" ../../testsuite surf/trace_usage --cfg=path:./surf/)
+ADD_TEST(test-surf-usage,   "./chdir_run.sh" ../../testsuite surf/surf_usage  --cfg=path:./surf/ platform.xml)
+ADD_TEST(test-surf-usage2,  "./chdir_run.sh" ../../testsuite surf/surf_usage2 --cfg=path:./surf/ platform.xml)
 
-ADD_TEST(test-simdag-1, "./chdir_run.sh" ../../testsuite simdag/sd_test --surf-path=./simdag ./simdag/small_platform_variable.xml)
-ADD_TEST(test-simdag-2, "./chdir_run.sh" ../../testsuite simdag/sd_test --surf-path=./simdag ../../examples/msg/small_platform.xml)
-ADD_TEST(test-simdag-3, "./chdir_run.sh" ../../testsuite simdag/sd_test --surf-path=./simdag ../../examples/msg/msg_platform.xml)
+ADD_TEST(test-simdag-1, "./chdir_run.sh" ../../testsuite simdag/sd_test --cfg=path:./simdag ./simdag/small_platform_variable.xml)
+ADD_TEST(test-simdag-2, "./chdir_run.sh" ../../testsuite simdag/sd_test --cfg=path:./simdag ../../examples/msg/small_platform.xml)
+ADD_TEST(test-simdag-3, "./chdir_run.sh" ../../testsuite simdag/sd_test --cfg=path:./simdag ../../examples/msg/msg_platform.xml)
 
 # teshsuite directory
 ADD_TEST(tesh-log-large,    "../../tools/tesh/tesh" --cd ../../teshsuite "xbt/log_large_test.tesh")
