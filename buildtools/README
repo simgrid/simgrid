@@ -1,0 +1,19 @@
+The CMake configuration in this directory cannot be used to build SimGrid
+Instead, it can be used to auto-test it.
+
+To use it, you need a svn checkout under ~/simgrid-svn. Command to create it:
+   cd 
+   svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-svn
+
+Then, you need to create a distribution archive, with this command:
+   ~/simgrid-svn/buildtools/scripts/make_dist.sh
+The archive will be copied into the ~/simgrid directory.
+
+
+Then, you can test the archive with autotools only using that command:
+   ~/simgrid-svn/buildtools/scripts/test_dist_with_autotools.sh   
+Alternatively, you can test the archive with cmake using that command:
+   ~/simgrid-svn/buildtools/scripts/test_dist_with_cmake.sh
+
+Please note that autotools are needed in any cases. Only the test
+mechanism changes between the two pathes so far.

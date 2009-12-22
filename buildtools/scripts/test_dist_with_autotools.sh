@@ -6,5 +6,7 @@
 source ~/simgrid-svn/buildtools/scripts/simgrid_build.conf
 
 open_archive
-./configure $@
-make
+if [ ! -e Makefile ] ; then
+  ./configure $@
+fi
+./checkall
