@@ -14,8 +14,7 @@ rm -rf $BASEDIR/$OS/$node
 
 # create a new directory 
 echo "create new directory $BASEDIR/$OS/$node"
-mkdir  $BASEDIR/$OS
-mkdir  $BASEDIR/$OS/$node
+mkdir -p $BASEDIR/$OS/$node
 cd $BASEDIR/$OS/$node
 
 echo "DISTRIB"
@@ -29,8 +28,7 @@ rm $BASEDIR/simgrid*.tar.gz
 
 # load the simgrid directory from svn
 echo "load simgrid-svn"
-svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk
-mv trunk/ simgrid
+svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid
 cd $BASEDIR/$OS/$node/simgrid
 
 # ./bootstrap
