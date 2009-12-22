@@ -1,9 +1,0 @@
-Upload files:
-0	Build.xml
-1	Configure.xml
-2	Test.xml
-Using drop method: HTTP
-	Upload file: /home/navarrop/Developments/simgrid/Cmake/Testing/20091215-0947/Build.xml to Pierre Navarro___Linux-c++___20091215-0947-Experimental___XML___Build.xml
-   Error when uploading file: /home/navarrop/Developments/simgrid/Cmake/Testing/20091215-0947/Build.xml
-   Error message was: Couldn't resolve host 'imag.fr@http:'
-   Problems when submitting via HTTP

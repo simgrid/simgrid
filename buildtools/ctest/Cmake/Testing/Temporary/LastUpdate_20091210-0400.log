@@ -1,6 +1,0 @@
-* Update repository: 
-  Command: "/usr/bin/cvs" -z3 update -d -A -P -D "2009-12-10 04:00:00 UTC"
-  Output: 
-  Errors: No such file or directory
---- Update repository ---
-
