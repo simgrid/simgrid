@@ -16,6 +16,7 @@ TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = test_simdag.tesh test_simdag2.tesh properties/test_prop.tesh metaxml/metaxml_test.tesh
 noinst_PROGRAMS = sd_test sd_test2 properties/sd_prop metaxml/sd_meta\
  dax/dax_test
+XFAIL_TESTS = metaxml/metaxml_test.tesh
 
 properties_sd_prop_SOURCES = properties/sd_prop.c
 properties_sd_prop_LDADD = $(top_builddir)/src/libsimgrid.la
