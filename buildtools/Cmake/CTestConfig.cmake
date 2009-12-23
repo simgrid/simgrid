@@ -18,16 +18,16 @@ exec_program("${UNAME}" ARGS "${flag}" OUTPUT_VARIABLE "${name}")
 endmacro(getuname)
 MARK_AS_ADVANCED(UNAME)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "darwin")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   SET(DISTRIB2 "OSX")
-else(CMAKE_SYSTEM_NAME STREQUAL "darwin")
+else(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
   #Try to get the distrib
   find_program(CAT NAMES cat)
   exec_program("${CAT}" ARGS " /etc/issue" OUTPUT_VARIABLE DISTRIB)
   MARK_AS_ADVANCED(CAT)
   STRING(REPLACE "\\n \\l" "" DISTRIB2 ${DISTRIB})
-endif(CMAKE_SYSTEM_NAME STREQUAL "darwin")
+endif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
          
 getuname(osname -s)
 getuname(node -n)
