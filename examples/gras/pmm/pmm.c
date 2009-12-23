@@ -108,11 +108,11 @@ int master(int argc, char *argv[])
   peers = amok_pm_group_new("pmm");
 
   /* friends, we're ready. Come and play */
-  INFO0("Wait for peers for 5 sec");
-  gras_msg_handleall(5);
+  INFO0("Wait for peers for 2 sec");
+  gras_msg_handleall(2);
   while (xbt_dynar_length(peers)<9) {
-    INFO1("Got only %ld pals. Wait 5 more seconds", xbt_dynar_length(peers));
-    gras_msg_handleall(5);
+    INFO1("Got only %ld pals. Wait 2 more seconds", xbt_dynar_length(peers));
+    gras_msg_handleall(2);
   }
   INFO1("Good. Got %ld pals", xbt_dynar_length(peers));
 
@@ -190,6 +190,10 @@ int master(int argc, char *argv[])
   }
   /*    end of gather   */
 
+  if (xbt_matrix_double_is_seq(C))
+    INFO0("XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations");
+  else {
+    WARN0("the result seems wrong");
   if (DATA_MATRIX_SIZE < 30) {
     INFO0("The Result of Multiplication is :");
     xbt_matrix_dump(C, "C:res", 0, xbt_matrix_dump_display_double);
@@ -197,12 +201,12 @@ int master(int argc, char *argv[])
     INFO1("Matrix size too big (%d>30) to be displayed here",
           DATA_MATRIX_SIZE);
   }
+  }
 
   amok_pm_group_shutdown("pmm");        /* Ok, we're out of here */
 
-  for (i = 0; i < SLAVE_COUNT; i++) {
+  for (i = 0; i < SLAVE_COUNT; i++)
     gras_socket_close(socket[i]);
-  }
 
   xbt_matrix_free(A);
   xbt_matrix_free(B);
@@ -253,7 +257,10 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
   mydataA = assignment.A;
   mydataB = assignment.B;
 
-  INFO2("Receive my pos (%d,%d) and assignment", myline, myrow);
+  if (gras_if_RL())
+    INFO0("Receive my pos and assignment");
+  else
+    INFO2("Receive my pos (%d,%d) and assignment", myline, myrow);
 
   /* Get my neighborhood from the assignment message (skipping myself) */
   for (i = 0; i < PROC_MATRIX_SIZE - 1; i++) {
@@ -271,9 +278,9 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
 
     /* a line brodcast */
     if (myline == step) {
-      INFO2("LINE: step(%d) = Myline(%d). Broadcast my data.", step, myline);
+      VERB2("LINE: step(%d) = Myline(%d). Broadcast my data.", step, myline);
       for (l = 0; l < PROC_MATRIX_SIZE - 1; l++) {
-        INFO1("LINE:   Send to %s", gras_socket_peer_name(socket_row[l]));
+        VERB1("LINE:   Send to %s", gras_socket_peer_name(socket_row[l]));
         gras_msg_send(socket_row[l], "dataB", &mydataB);
       }
 
@@ -289,15 +296,15 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       CATCH(e) {
         RETHROW0("Can't get a data message from line : %s");
       }
-      INFO3("LINE: step(%d) <> Myline(%d). Receive data from %s", step,
+      VERB3("LINE: step(%d) <> Myline(%d). Receive data from %s", step,
             myline, gras_socket_peer_name(from));
     }
 
     /* a row brodcast */
     if (myrow == step) {
-      INFO2("ROW: step(%d)=myrow(%d). Broadcast my data.", step, myrow);
+      VERB2("ROW: step(%d)=myrow(%d). Broadcast my data.", step, myrow);
       for (l = 1; l < PROC_MATRIX_SIZE; l++) {
-        INFO1("ROW:   Send to %s", gras_socket_peer_name(socket_line[l - 1]));
+        VERB1("ROW:   Send to %s", gras_socket_peer_name(socket_line[l - 1]));
         gras_msg_send(socket_line[l - 1], "dataA", &mydataA);
       }
       xbt_matrix_free(bA);
@@ -311,7 +318,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       CATCH(e) {
         RETHROW0("Can't get a data message from row : %s");
       }
-      INFO3("ROW: step(%d)<>myrow(%d). Receive data from %s", step, myrow,
+      VERB3("ROW: step(%d)<>myrow(%d). Receive data from %s", step, myrow,
             gras_socket_peer_name(from));
     }
     xbt_matrix_double_addmult(bA, bB, bC);
@@ -329,7 +336,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
   CATCH(e) {
     RETHROW0("Failed to send answer to server: %s");
   }
-  INFO2(">>>>>>>> Result sent to %s:%d <<<<<<<<",
+  VERB2(">>>>>>>> Result sent to %s:%d <<<<<<<<",
         gras_socket_peer_name(master), gras_socket_peer_port(master));
   /*  Free the allocated resources, and shut GRAS down */
 
