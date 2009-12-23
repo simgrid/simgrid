@@ -48,7 +48,7 @@ int sensor(int argc, char *argv[])
     }
   }
 
-  amok_pm_group_join(master, "bandwidth", -1);
+  amok_pm_group_join(master, "bandwidth");
   amok_pm_mainloop(60);
 
   gras_socket_close(mysock);

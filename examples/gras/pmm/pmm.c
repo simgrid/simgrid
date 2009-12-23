@@ -78,7 +78,6 @@ typedef struct {
   int remaining_ack;
 } master_data_t;
 
-
 int master(int argc, char *argv[])
 {
 
@@ -111,10 +110,13 @@ int master(int argc, char *argv[])
   /* friends, we're ready. Come and play */
   INFO0("Wait for peers for 5 sec");
   gras_msg_handleall(5);
-  INFO1("Got %ld pals", xbt_dynar_length(peers));
+  while (xbt_dynar_length(peers)<9) {
+    INFO1("Got only %ld pals. Wait 5 more seconds", xbt_dynar_length(peers));
+    gras_msg_handleall(5);
+  }
+  INFO1("Good. Got %ld pals", xbt_dynar_length(peers));
 
   for (i = 0; i < xbt_dynar_length(peers) && i < SLAVE_COUNT; i++) {
-
     xbt_dynar_get_cpy(peers, i, &grid[i]);
     socket[i] = gras_socket_client(grid[i]->name, grid[i]->port);
   }
@@ -389,7 +391,7 @@ int slave(int argc, char *argv[])
   }
 
   /* Join and run the group */
-  amok_pm_group_join(master, "pmm", rank);
+  rank = amok_pm_group_join(master, "pmm");
   amok_pm_mainloop(600);
 
   /* housekeeping */

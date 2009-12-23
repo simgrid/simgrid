@@ -40,7 +40,7 @@ int sensor(int argc, char *argv[])
   gras_os_sleep(2);             /* let the master get ready */
   master = gras_socket_client_from_string(argv[1]);
 
-  amok_pm_group_join(master, "saturate", -1);
+  amok_pm_group_join(master, "saturate");
   amok_pm_mainloop(600);
 
   gras_socket_close(mysock);

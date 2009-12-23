@@ -69,8 +69,8 @@ XBT_PUBLIC(xbt_dynar_t) amok_pm_group_new(const char *group_name);
 XBT_PUBLIC(xbt_dynar_t) amok_pm_group_get(gras_socket_t master,
                                           const char *group_name);
 
-XBT_PUBLIC(void) amok_pm_group_join(gras_socket_t master,
-                                    const char *group_name, int rank);
+XBT_PUBLIC(int) amok_pm_group_join(gras_socket_t master,
+                                   const char *group_name);
 XBT_PUBLIC(void) amok_pm_group_leave(gras_socket_t master,
                                      const char *group_name);
 
