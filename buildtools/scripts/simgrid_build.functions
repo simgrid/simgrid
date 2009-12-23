@@ -7,8 +7,12 @@ get_version() {
   if [ x$version = x ] ; then
     cd ${SIMGRID_SVN_ROOT}
     if [ -e .svn ] ; then
-      svn up
-      version="simgrid-3.3.4-svn-r"`svnversion`
+      svn up 2>/dev/null
+      if [ $? = 0 ] ; then
+        version="simgrid-3.3.4-svn-r"`svnversion`
+      else
+        version="simgrid-3.3.4-svn-r"`head -n 4 .svn/entries |tail -n 1`
+      fi
     else if [ -e .git ] ; then
       version="simgrid-3.3.4-git-r"`git log --oneline -1 | sed 's| .*||'`
     fi fi
