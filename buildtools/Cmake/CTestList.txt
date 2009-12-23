@@ -46,11 +46,11 @@ ADD_TEST(tesh-gras-dd-rw,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/d
 ADD_TEST(tesh-gras-dd-r_little32_4, "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_little32_4.tesh")
 ADD_TEST(tesh-gras-dd-r_little64,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_little64.tesh")
 ADD_TEST(tesh-gras-dd-r_big32_8_4, "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_big32_8_4.tesh")
-# next ones expected to fail until we regenerate the data
+
 ADD_TEST(tesh-gras-dd-r_big32_8,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_big32_8.tesh")
-set_tests_properties(tesh-gras-dd-r_big32_8, PROPERTIES WILL_FAIL true)
+
 ADD_TEST(tesh-gras-dd-r_big32_2,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/datadesc/datadesc_r_big32_2.tesh")
-set_tests_properties(tesh-gras-dd-r_big32_2, PROPERTIES WILL_FAIL true)
+
 ADD_TEST(tesh-gras-msg_handle-rl,   "../../tools/tesh/tesh" --cd ../../teshsuite "gras/msg_handle/test_rl")
 IF(${ARCH_32_BITS})
   ADD_TEST(tesh-gras-msg_handle-sg-32, "../../tools/tesh/tesh" --cd ../../teshsuite "gras/msg_handle/test_sg_32")
@@ -72,7 +72,7 @@ ADD_TEST(tesh-msg-get_sender, "../../tools/tesh/tesh" --cd ../../teshsuite "msg/
 ADD_TEST(tesh-simdag-reinit_costs, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/network/test_reinit_costs.tesh")
 ADD_TEST(tesh-simdag-parser, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/platforms/basic_parsing_test.tesh")
 ADD_TEST(tesh-simdag-flatifier, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/platforms/flatifier.tesh")
-set_tests_properties(tesh-simdag-flatifier, PROPERTIES WILL_FAIL true)
+# 
 ADD_TEST(tesh-simdag-basic0, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/basic0.tesh")
 ADD_TEST(tesh-simdag-basic1, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/basic1.tesh")
 ADD_TEST(tesh-simdag-basic2, "../../tools/tesh/tesh" --cd ../../teshsuite "simdag/basic2.tesh")
@@ -108,7 +108,6 @@ ADD_TEST(msg-properties, "../../tools/tesh/tesh" --cd ../../examples/msg propert
 ADD_TEST(msg-trace, "../../tools/tesh/tesh" --cd ../../examples/msg trace/trace.tesh)
 ADD_TEST(msg-masterslave_cpu_ti, "../../tools/tesh/tesh" --cd ../../examples/msg masterslave/masterslave_cpu_ti.tesh)
 ADD_TEST(msg-gtnets, "../../tools/tesh/tesh" --cd ../../examples/msg gtnets/gtnets.tesh)
-set_tests_properties(msg-gtnets, PROPERTIES WILL_FAIL true)
 
 # GRAS examples
 ADD_TEST(gras-ping-rl, ../../tools/tesh/tesh --cd ../../examples/gras/ping test_rl)
@@ -133,7 +132,6 @@ IF(${ARCH_32_BITS})
   ADD_TEST(gras-mmrpc-sg-32, ../../tools/tesh/tesh --cd ../../examples/gras/mmrpc test_sg_32)
   ADD_TEST(gras-all2all-sg-32, ../../tools/tesh/tesh --cd ../../examples/gras/all2all test_sg_32)
   ADD_TEST(gras-pmm-sg-32, ../../tools/tesh/tesh --cd ../../examples/gras/pmm test_sg_32)
-set_tests_properties(gras-pmm-sg-32, PROPERTIES WILL_FAIL true)
   ADD_TEST(gras-synchro-sg-32, ../../tools/tesh/tesh --cd ../../examples/gras/synchro test_sg_32)
 ELSE(${ARCH_32_BITS})
   ADD_TEST(gras-ping-sg-64, ../../tools/tesh/tesh --cd ../../examples/gras/ping test_sg_64)
@@ -151,14 +149,10 @@ ADD_TEST(gras-properties-sg, ../../tools/tesh/tesh --cd ../../examples/gras/prop
 
 # amok examples
 ADD_TEST(amok-bandwidth-rl, ../../tools/tesh/tesh --cd ../../examples/amok bandwidth/bandwidth_rl.tesh)
-set_tests_properties(amok-bandwidth-rl, PROPERTIES WILL_FAIL true)
 ADD_TEST(amok-saturate-rl, ../../tools/tesh/tesh --cd ../../examples/amok saturate/saturate_rl.tesh)
-set_tests_properties(amok-saturate-rl, PROPERTIES WILL_FAIL true)
 IF(${ARCH_32_BITS})
   ADD_TEST(amok-bandwidth-sg-32, ../../tools/tesh/tesh --cd ../../examples/amok bandwidth/bandwidth_sg_32.tesh)
-  set_tests_properties(amok-bandwidth-sg-32, PROPERTIES WILL_FAIL true)  
   ADD_TEST(amok-saturate-sg-32, ../../tools/tesh/tesh --cd ../../examples/amok saturate/saturate_sg_32.tesh)
-  set_tests_properties(amok-saturate-sg-32, PROPERTIES WILL_FAIL true)
 ELSE(${ARCH_32_BITS})
   ADD_TEST(amok-bandwidth-sg-64, ../../tools/tesh/tesh --cd ../../examples/amok bandwidth/bandwidth_sg_64.tesh)
   ADD_TEST(amok-saturate-sg-64, ../../tools/tesh/tesh --cd ../../examples/amok saturate/saturate_sg_64.tesh)
@@ -169,7 +163,6 @@ ADD_TEST(simdag-test_simdag, ../../tools/tesh/tesh --cd ../../examples/simdag te
 ADD_TEST(simdag-test_simdag2, ../../tools/tesh/tesh --cd ../../examples/simdag test_simdag2.tesh)
 ADD_TEST(simdag-test_prop, ../../tools/tesh/tesh --cd ../../examples/simdag properties/test_prop.tesh)
 ADD_TEST(simdag-metaxml_test, ../../tools/tesh/tesh --cd ../../examples/simdag metaxml/metaxml_test.tesh)
-set_tests_properties(simdag-metaxml_test, PROPERTIES WILL_FAIL true)
 
 # java examples
 ADD_TEST(java-basic, ./test_java.sh ../../examples/java/basic BasicTest)
@@ -180,18 +173,44 @@ ADD_TEST(java-suspend, ./test_java.sh ../../examples/java/suspend SuspendTest)
 # smpi examples
 ADD_TEST(smpi-bcast, ../../tools/tesh/tesh --cd ../../examples/smpi bcast.tesh)
 ADD_TEST(smpi-reduce, ../../tools/tesh/tesh --cd ../../examples/smpi reduce.tesh)
-set_tests_properties(smpi-reduce, PROPERTIES WILL_FAIL true)
-# some tests which are expected to fail
+
+
+###
+### Declare that we know that some tests are broken
+###
+
+# we should install gtnets on the bots, maybe
+set_tests_properties(msg-gtnets, PROPERTIES WILL_FAIL true)
+
+
+# Amok is broken in RL since before v3.3 (should fix it one day)
+set_tests_properties(amok-bandwidth-rl, PROPERTIES WILL_FAIL true)
+set_tests_properties(amok-saturate-rl, PROPERTIES WILL_FAIL true)
+
+
+# Expected to fail until we regenerate the data
+set_tests_properties(tesh-gras-dd-r_big32_8, PROPERTIES WILL_FAIL true)
+set_tests_properties(tesh-gras-dd-r_big32_2, PROPERTIES WILL_FAIL true)
+
+
+# Expected to fail until the parser gets better (v3.3.5?)
+set_tests_properties(simdag-metaxml_test, PROPERTIES WILL_FAIL true)   
+set_tests_properties(tesh-simdag-flatifier, PROPERTIES WILL_FAIL true)
 
 
 
 
+# These are broken, but should have their timings updated, that's all
+#IF(${ARCH_32_BITS})
+#  set_tests_properties(amok-bandwidth-sg-32, PROPERTIES WILL_FAIL true)  
+#  set_tests_properties(amok-saturate-sg-32, PROPERTIES WILL_FAIL true)
+#ELSE(${ARCH_32_BITS})
+#  set_tests_properties(amok-bandwidth-sg-64, PROPERTIES WILL_FAIL true)  
+#  set_tests_properties(amok-saturate-sg-64, PROPERTIES WILL_FAIL true)
+#ENDIF(${ARCH_32_BITS})
 
-
-
-
-
-
+# Don't mark this one since we should fix it before 3.3.4 gets released
+# set_tests_properties(smpi-reduce, PROPERTIES WILL_FAIL true)
 
 
 
