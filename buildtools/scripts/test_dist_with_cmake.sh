@@ -12,10 +12,16 @@ set -e
 open_archive
 
 # Make sure we have cmake installed
-which_cmake=`which cmake` 
+which_cmake=`which cmake 2>/dev/null`
 if [ x$which_cmake = x ] ; then
   echo "Try to install cmake"
-  sudo apt-get install cmake
+  if [ -e /usr/bin/apt-get ] ; then # debian based
+    sudo apt-get install cmake
+  fi
+  if [ -e /usr/bin/yum ] ; then # fedora based
+    sudo yum update
+    sudo yum -y install cmake
+  fi
 fi
 
 # Launch CMake
