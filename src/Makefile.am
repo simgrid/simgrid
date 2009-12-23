@@ -66,6 +66,7 @@ EXTRA_DIST= \
 	\
 	simdag/private.h \
 	simdag/dax.dtd \
+	simdag/dax_dtd.l \
 	simdag/dax_dtd.h \
 	simdag/dax_dtd.c \
 	\
