@@ -18,23 +18,27 @@ exec_program("${UNAME}" ARGS "${flag}" OUTPUT_VARIABLE "${name}")
 endmacro(getuname)
 MARK_AS_ADVANCED(UNAME)
 
+find_program(CAT NAMES cat)
+exec_program("${CAT}" ARGS "version" OUTPUT_VARIABLE VERSION)
+
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   SET(DISTRIB2 "OSX")
 else(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
   #Try to get the distrib
-  find_program(CAT NAMES cat)
   exec_program("${CAT}" ARGS " /etc/issue" OUTPUT_VARIABLE DISTRIB)
   MARK_AS_ADVANCED(CAT)
-  STRING(REPLACE "\\n \\l" "" DISTRIB2 ${DISTRIB})
 endif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+
+STRING(REPLACE "\\n \\l" "" DISTRIB2 ${DISTRIB})
          
 getuname(osname -s)
 getuname(node -n)
 getuname(osrel  -r)
 getuname(cpu    -m)
 	
-SET (BUILDNAME "${osname}-${DISTRIB2}-${cpu}")
+SET (BUILDNAME "${VERSION}-${osname}-${DISTRIB2}-${cpu}")
 SET (SITE "${node}")
 SET (CTEST_PROJECT_NAME "Simgrid")
 SET (CTEST_DROP_METHOD "http")

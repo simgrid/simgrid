@@ -9,6 +9,7 @@ else
 fi
 
 set -e
+get_version
 open_archive
 
 # Make sure we have cmake installed
@@ -26,7 +27,8 @@ fi
 
 # Launch CMake
 cd buildtools/Cmake
+echo $version > version
 cmake ./
 
 # Run CTest, and push the results
-ctest -D Experimental CTEST_FULL_OUTPUT
+ctest -D Experimental
