@@ -195,10 +195,6 @@ SURF_SRC= \
   surf/cpu_im.c                                               \
   xbt/xbt_sg_stubs.c
 
-if CONTEXT_THREADS
-  SURF_SRC +=  xbt/xbt_os_thread.c
-endif
-
 GTNETS_SRC= \
   surf/gtnets/gtnets_simulator.cc \
   surf/gtnets/gtnets_topology.cc  \
@@ -217,9 +213,11 @@ SIMIX_SRC= \
   simix/smx_network.c
   
 if CONTEXT_THREADS
-  SURF_SRC += simix/smx_context_thread.c  
+  SURF_SRC += xbt/xbt_os_thread.c simix/smx_context_thread.c
+  EXTRA_DIST += simix/smx_context_sysv.c
 else  
   SURF_SRC += simix/smx_context_sysv.c
+  EXTRA_DIST += xbt/xbt_os_thread.c simix/smx_context_thread.c
 endif  
 
 SMPI_SRC= \
