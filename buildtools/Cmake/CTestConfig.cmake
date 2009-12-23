@@ -41,3 +41,5 @@ SET (CTEST_DROP_METHOD "http")
 SET (CTEST_DROP_SITE "cdash.inria.fr/CDash")
 SET (CTEST_DROP_LOCATION "/submit.php?project=Simgrid")
 SET (CTEST_DROP_SITE_CDASH TRUE)
+SET (CTEST_TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResults.cgi") 
+       
