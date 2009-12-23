@@ -528,20 +528,20 @@ simdag/dax_dtd.h: simdag/dax.dtd
 else
 
 $(top_srcdir)/include/surf/simgrid_dtd.h surf/simgrid_dtd.l: $(top_srcdir)/src/surf/simgrid.dtd
-	@echo "ERROR: src/surf/simgrid.dtd was modified, but the flexml program was not detected"
-	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
-	@echo "ERROR:   touch include/surf/simgrid_dtd.h src/surf/simgrid_dtd.l"
-	@exit 1
+	@echo "WARNING: src/surf/simgrid.dtd seem to be modified, but the flexml program was not detected"
+	@echo "WARNING: Please install it if you did modify this file."
+	@echo "WARNING: For now, I'll ignore the change"
+	touch include/surf/simgrid_dtd.h src/surf/simgrid_dtd.l
 $(top_srcdir)/include/xbt/graphxml.h xbt/graphxml.l: $(top_srcdir)/src/xbt/graphxml.dtd
-	@echo "ERROR: src/xbt/graphxml.dtd was modified, but the flexml program was not detected"
-	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
-	@echo "ERROR:   touch include/xbt/graphxml.h src/xbt/graphxml.l"
-	@exit 1
+	@echo "WARNING: src/xbt/graphxml.dtd seem to be modified, but the flexml program was not detected"
+	@echo "WARNING: Please install it if you did modify this file."
+	@echo "WARNING: For now, I'll ignore the change"
+	touch include/xbt/graphxml.h src/xbt/graphxml.l"
 simdag/dax_dtd.h simdag/dax_dtd.l: simdag/dax.dtd
-	@echo "ERROR: src/simdag/dax.dtd was modified, but the flexml program was not detected"
-	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
-	@echo "ERROR:   touch src/simdag/dax_dtd.h src/simdag/dax_dtd.l"
-	@exit 1
+	@echo "WARNING: src/simdag/dax.dtd seem to be modified, but the flexml program was not detected"
+	@echo "WARNING: Please install it if you did modify this file."
+	@echo "WARNING: For now, I'll ignore the change"
+	touch src/simdag/dax_dtd.h src/simdag/dax_dtd.l
 endif
 endif
 endif
