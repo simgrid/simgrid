@@ -9,13 +9,13 @@ get_version() {
     if [ -e .svn ] ; then
       set +e
       svn up 2>/dev/null
-      if [ $? = 0 ] ; then
-        version="simgrid-3.3.4-svn-r"`svnversion`
-      else
-        echo "Cannot use svn on that arch"
-        version="simgrid-3.3.4-svn-r"`head -n 4 .svn/entries |tail -n 1`
+      if [ $? != 0 ] ; then
+        set -e
+        ${SIMGRID_SVN_ROOT}/buildtools/buildtools/scripts/cchange-svn-wc-format.py ${SIMGRID_SVN_ROOT} 1.5
+        svn up
       fi
       set -e
+      version="simgrid-3.3.4-svn-r"`svnversion`
     else if [ -e .git ] ; then
       version="simgrid-3.3.4-git-r"`git log --oneline -1 | sed 's| .*||'`
     fi fi
