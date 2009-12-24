@@ -1,6 +1,6 @@
-SimGrid (3.3.4) unstable; urgency=low
+SimGrid (3.3.4) stable; urgency=low
 
- The "Desktop Grid needs love too" release.
+ The "Desktop Grid needs love too" release (also called Xmas release).
 
  Models improvements:
  * Major speedup in the maxmin system solving by using lazy evaluation
@@ -127,7 +127,21 @@ SimGrid (3.3.4) unstable; urgency=low
  * Fix a vicious bug in dictionaries inducing that some elements were
    not freed on xbt_dict_free()
 
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
+ Portability report of this version:
+  * Main portability targets:
+    - linux (ubuntu (804/810/910) /debian (4/5/testing) /fedora (core11)) 
+      on (amd64/i386/ia64)
+    - mac leopard on i386
+    Known problems: http://cdash.inria.fr/CDash/index.php?project=Simgrid
+     but nothing critical.
+  * Other platforms: windows, AIX and others were not tested for this release
+  
+ Timing report of this version:
+  * Lazy evaluation brings arbitrary speedup (ie, speedup depending on
+    scenario parameters). From 8h to a few seconds in desktop grid settings.
+  * Supernovae brings about 25% speedup on i386.
+
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Thu, 24 Dec 2009 19:07:39 +0100
 
 SimGrid (3.3.3) stable; urgency=low
 

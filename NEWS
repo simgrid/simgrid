@@ -1,3 +1,26 @@
+                    _               _____  _____ _  _   
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ /| || |  
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| || |_ 
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |__   _|
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____(_) |_|  
+                                           
+The "Need for Speed" release (also called "Xmas release").
+Most important changes:
+ * Big speedup through lazy evaluation of the linear models
+ * Supernovae mode: Compile everything in one unit to improve inlining
+ * Simix network module for internal cleanups
+ * Load DAX of applications into SimDag
+ * Lot of small cleanups and other bug fixes
+ 
+                    _               _____  _____  _____ 
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ / |___ / 
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \   |_ \ 
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) | ___) |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____(_)____/ 
+                                                        
+The "Need for Speed" release.
+Big speedup through some function inlining.
+
                     _               _____  _____  ____  
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / |___ \ 
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \   __) |
