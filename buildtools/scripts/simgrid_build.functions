@@ -12,6 +12,7 @@ get_version() {
       if [ $? = 0 ] ; then
         version="simgrid-3.3.4-svn-r"`svnversion`
       else
+        echo "Cannot use svn on that arch"
         version="simgrid-3.3.4-svn-r"`head -n 4 .svn/entries |tail -n 1`
       fi
       set -e

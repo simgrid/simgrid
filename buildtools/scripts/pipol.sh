@@ -1,6 +1,7 @@
 #! /bin/sh
 
-pipol-sub esn i386-linux-debian-testing.dd.gz none 00:30 ~/simgrid-svn/buildtools/scripts/make_dist.sh
+pipol-sub esn i386_xen-linux-debian-lenny none 00:30 ~/simgrid-svn/buildtools/scripts/make_dist.sh
+# i386-linux-debian-testing.dd.gz 
 sleep 300
 
 pipol-sub esn i386-linux-ubuntu-intrepid.dd.gz none 00:30 ~/simgrid-svn/buildtools/scripts/test_dist_with_cmake.sh
