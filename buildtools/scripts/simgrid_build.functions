@@ -44,6 +44,7 @@ make_dist() {
     # (disable compilation optim to make it built faster)
     ./configure --enable-maintainer-mode --disable-compile-optimizations
     echo "Make the archive"
+    make clean
     make -C src libgras.la
     make -C tools/gras
     make dist
