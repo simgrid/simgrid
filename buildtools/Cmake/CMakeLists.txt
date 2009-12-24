@@ -9,10 +9,15 @@ OPTION( SIMGRID_WITH_PTHREAD "Use pthread as context support." OFF )
 
 OPTION( SIMGRID_USE_GTNETS "Build SimGrid with GTNets support." OFF )
 
+### Display the version
+find_program(CAT NAMES cat)
+exec_program("${CAT}" ARGS "version" OUTPUT_VARIABLE VERSION)
+message("svn version: " ${VERSION})
+
+
 ### Check 32bits or 64bits
 INCLUDE (CheckTypeSize)
 CHECK_TYPE_SIZE("long" SIZEOF_LONG)
-#message("SIZEOF_LONG : ${SIZEOF_LONG}")
 IF(SIZEOF_LONG EQUAL 4)
   SET(ARCH_32_BITS 1)
 ELSE(SIZEOF_LONG EQUAL 4)
