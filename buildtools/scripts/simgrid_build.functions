@@ -11,7 +11,7 @@ get_version() {
       svn up 2>/dev/null
       if [ $? != 0 ] ; then
         set -e
-        ${SIMGRID_SVN_ROOT}/buildtools/buildtools/scripts/cchange-svn-wc-format.py ${SIMGRID_SVN_ROOT} 1.5
+        ${SIMGRID_SVN_ROOT}/buildtools/buildtools/scripts/change-svn-wc-format.py ${SIMGRID_SVN_ROOT} 1.4
         svn up
       fi
       set -e
