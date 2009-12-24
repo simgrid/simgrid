@@ -4,7 +4,7 @@
 
 # Go for the first test
 p Test Reduce with 3 processes 
-$ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 3 ./reduce 
+$ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 3 ./reduce -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -15,16 +15,15 @@ $ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir
 > 	[0] sum=6 ... validation ok.
 > 	[0] min=1 ... validation ok.
 > 	[0] max=3 ... validation ok.
-> Elapsed time=0.007907 s
 > ** IBM Test Result: ... 
-> 	[0] ok.
-> 	[2] ok.
-> 	[1] ok.
+> 	ok.
+> 	ok.
+> 	ok.
 
 # second test
 ! setenv LD_LIBRARY_PATH=../../src/.libs
 p Test Reduce with 6 processes 
-$ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 6 ./reduce 
+$ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 6 ./reduce -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -41,20 +40,19 @@ $ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir
 > 	[0] sum=21 ... validation ok.
 > 	[0] min=1 ... validation ok.
 > 	[0] max=6 ... validation ok.
-> Elapsed time=0.007907 s
 > ** IBM Test Result: ... 
-> 	[2] ok.
-> 	[5] ok.
-> 	[4] ok.
-> 	[0] ok.
-> 	[1] ok.
-> 	[3] ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
 
 
 # third test
 ! setenv LD_LIBRARY_PATH=../../src/.libs
 p Test Reduce with 12 processes 
-$ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 12 ./reduce 
+$ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 12 ./reduce -q 
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -83,17 +81,16 @@ $ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir
 > 	[0] sum=78 ... validation ok.
 > 	[0] min=1 ... validation ok.
 > 	[0] max=12 ... validation ok.
-> Elapsed time=0.007908 s
 > ** IBM Test Result: ... 
-> 	[1] ok.
-> 	[11] ok.
-> 	[5] ok.
-> 	[10] ok.
-> 	[0] ok.
-> 	[3] ok.
-> 	[8] ok.
-> 	[9] ok.
-> 	[4] ok.
-> 	[7] ok.
-> 	[2] ok.
-> 	[6] ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.
+> 	ok.

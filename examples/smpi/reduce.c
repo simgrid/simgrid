@@ -65,11 +65,15 @@ int main(int argc, char **argv)
   int sum = -99, sum_mirror = -99, min = 999, max = -999;
 
   double start_timer;
+  int quiet = 0;
 
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if (argc > 1 && !strcmp(argv[1], "-q"))
+    quiet = 1;
 
   start_timer = MPI_Wtime();
 
@@ -99,7 +103,8 @@ int main(int argc, char **argv)
       printf("ok.\n");
     else
       printf("failed.\n");
-    printf("Elapsed time=%lf s\n", MPI_Wtime() - start_timer);
+    if (!quiet)
+      printf("Elapsed time=%lf s\n", MPI_Wtime() - start_timer);
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
@@ -108,8 +113,10 @@ int main(int argc, char **argv)
     printf("** IBM Test Result: ... \n");
   if (!ibm_test(rank, size))
     printf("\t[%d] failed.\n", rank);
-  else
+  else if (!quiet)
     printf("\t[%d] ok.\n", rank);
+  else
+    printf("\tok.\n");
 
   MPI_Finalize();
   return 0;
