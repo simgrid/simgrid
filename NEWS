@@ -4,7 +4,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ /| || |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |__   _|
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____(_) |_|  
                                            
-The "Need for Speed" release (also called "Xmas release").
+The "Desktop Grid needs love too" release (also called "Xmas release").
 Most important changes:
  * Big speedup through lazy evaluation of the linear models
  * Supernovae mode: Compile everything in one unit to improve inlining
