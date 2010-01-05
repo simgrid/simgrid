@@ -14,7 +14,7 @@ AC_CONFIG_SRCDIR([include/gras.h])
 AC_CONFIG_HEADERS([src/gras_config.h])
 # A CI_PREREQ(2003.01.16) # We need a recent ACI when having sub-modules
 
-AC_REVISION($Revision: 6267 $)
+AC_REVISION($Revision: 6998 $)
 AC_CANONICAL_TARGET
 AC_LANG([C])
 AC_PROG_CXX
@@ -453,7 +453,9 @@ AM_CONDITIONAL(HAVE_FLEXML,test x$FLEXML != xNOTFOUND)
 
 # Check for doxygen when in maintainer mode which is helpful to build doc & dist
 AC_PATH_PROG(DOXYGEN,doxygen,`which doxygen`)
-AM_CONDITIONAL(HAVE_DOXYGEN,test x$DOXYGEN != x)
+AC_PATH_PROG(FIG2DEV,fig2dev,`which fig2dev`)
+AM_CONDITIONAL(HAVE_DOXYGEN,test x$DOXYGEN != x &&
+                            test x$FIG2DEV != x)
 
 # Can we rebuild the publication list from the bib file?
 AC_CHECK_PROG(BIBTEX,bibtex,`which flexml`,NOTFOUND)

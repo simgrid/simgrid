@@ -22,13 +22,13 @@ MAINTAINERCLEANFILES = html
 if MAINTAINER_MODE 
 if HAVE_DOXYGEN
 simgrid_modules.map: fig/simgrid_modules.fig
-	fig2dev -Lmap fig/simgrid_modules.fig | grep -e IMG -e MAP -e AREA | \
+	$(FIG2DEV) -Lmap fig/simgrid_modules.fig | grep -e IMG -e MAP -e AREA | \
 	sed 's/imagemap/simgrid_modules/g' | sed 's/\.gif/.png/' | \
 	sed 's/<IMG /<IMG style="border:0px "/g' | sed 's/\.gif/.png/' \
 	> simgrid_modules.map
 
 %.png: fig/%.fig
-	fig2dev -Lpng $^ > $@
+	$(FIG2DEV) -Lpng $^ > $@
 
 html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES) \
       html/gras.html html/amok.html html/msg.html html/simdag.html  \
@@ -40,13 +40,13 @@ html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES) \
 	cp @srcdir@/webcruft/Paje_MSG_screenshot_thn.jpg @srcdir@/webcruft/Paje_MSG_screenshot.jpg html/
 	cp @srcdir@/simgrid.css html/
 	: # First pass
-	doxygen Doxyfile >/dev/null
+	$(DOXYGEN) Doxyfile >/dev/null
 	@top_srcdir@/tools/doxygen/index_create.pl simgrid.tag index-API.doc
 	@top_srcdir@/tools/doxygen/toc_create.pl \
 	   @srcdir@/FAQ.doc @srcdir@/index.doc @srcdir@/contrib.doc \
 	   @srcdir@/gtut-introduction.doc @srcdir@/history.doc
 	: # Second pass
-	doxygen Doxyfile >/dev/null
+	$(DOXYGEN) Doxyfile >/dev/null
 	: # Post-processing
 	rm -f html/dir* 
 	@top_srcdir@/tools/doxygen/index_php.pl @srcdir@/index.php.in html/index.html index.php
