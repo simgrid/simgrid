@@ -1,52 +1,5 @@
-cmake_minimum_required(VERSION 2.6)
-SET(PROJECT_NAME "Simgrid_test")
-
-### need to set
-SET(disable_java 0)
-SET(disable_gtnets 1)
-SET(disable_context_threads 1)
-
-### Set some variables
-SET(LANGUAGE "Cxx")
-SET(PROJECT_DIRECTORY "/home/navarrop/Bureau/simgrid-trunk")
-SET(PROJECT_SOURCE_DIRECTORY "${PROJECT_DIRECTORY}/src")
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/bin")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
-set(INCLUDES "-I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src")
-
-### Initialize of CONTEXT
-if(${disable_java})
-  	SET(HAVE_JAVA 0)
-else(${disable_java})
-	include(FindJava)
-	include(FindJNI)
-	find_path(JAR	NAMES jar	PATHS NO_DEFAULT_PATHS	)	
-	if(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH)
-		SET(HAVE_JAVA 1)
-	else(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH) 
-		SET(HAVE_JAVA 0)
-	endif(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH)
-endif(${disable_java})
-
-if(${disable_gtnets})
-	SET(HAVE_GTNETS 0)
-else(${disable_gtnets})
-	SET(HAVE_GTNETS 1)
-	#AJOUT DES FLAGS GTNETS
-endif(${disable_gtnets})
-
-if(${disable_context_threads})
-	SET(CONTEXT_THREADS 0)
-else(${disable_context_threads})
-	SET(CONTEXT_THREADS 1)
-endif(${disable_context_threads})
-
-message("HAVE_JAVA ${HAVE_JAVA}")
-message("HAVE_GTNETS ${HAVE_GTNETS}")
-message("CONTEXT_THREADS ${CONTEXT_THREADS}")
-
-
 ### define source packages
+
 set(EXTRA_DIST 
 	portable.h
 	xbt/mallocator_private.h
@@ -399,27 +352,3 @@ else(${HAVE_JAVA})
 		${MSG_SRC}
 	)
 endif(${HAVE_JAVA})
-
-#message("\n\n")
-#message("simgrid_sources\n>>${simgrid_sources}<<")
-#message("\n\n")
-#message("gras_sources\n>>${gras_sources}<<")
-#message("\n\n")
-#message("surf_sources\n>>${SURF_SRC}<<")
-#message("\n\n")
-#message("EXTRA_DIST\n>>${EXTRA_DIST}<<")
-#message("\n\n")
-
-add_definitions("${INCLUDES}")
-
-add_library(simgrid SHARED ${simgrid_sources})
-add_library(gras SHARED ${gras_sources})
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,268 @@
+cmake_minimum_required(VERSION 2.6)
+include(CheckFunctionExists)
+include(CheckIncludeFile)
+include(CheckIncludeFiles)
+include(CheckLibraryExists)
+
+
+###############
+## SVN version check
+##
+if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
+	find_file(SVN ".svn" ${PROJECT_DIRECTORY})
+	exec_program("svnversion" OUTPUT_VARIABLE "SVN_VERSION")
+	message("SVN_VERSION ${SVN_VERSION}")
+endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
+
+if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
+	find_file(GIT ".git" ${PROJECT_DIRECTORY})
+	exec_program("git log --oneline -1 | sed 's| .*||'" OUTPUT_VARIABLE "GIT_VERSION")
+	message("GIT_VERSION ${GIT_VERSION}")
+endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
+
+#--------------------------------------------------------------------------------------------------
+### Initialize of CONTEXT JAVA
+if(${disable_java})
+  	SET(HAVE_JAVA 0)
+else(${disable_java})
+	include(FindJava)
+	include(FindJNI)
+	find_path(JAR	NAMES jar	PATHS NO_DEFAULT_PATHS	)	
+	if(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH)
+		SET(HAVE_JAVA 1)
+	else(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH) 
+		SET(HAVE_JAVA 0)
+	endif(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH)
+endif(${disable_java})
+message("HAVE_JAVA ${HAVE_JAVA}")
+
+#--------------------------------------------------------------------------------------------------
+### Initialize of CONTEXT GTNETS
+if(${disable_gtnets})
+	SET(HAVE_GTNETS 0)
+else(${disable_gtnets})
+	set(GTNETS_LDFLAGS "-lgtnets -L${gtnets_path}/lib")
+	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include -I${gtnets_path}/include/gtnets")
+	try_compile(COMPILE_GTNETS_VAR
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/src/tmp/prog_gtnets.c
+		CMAKE_FLAGS ${GTNETS_CPPFLAGS}
+		COMPILE_DEFINITIONS ${GTNETS_LDFLAGS}
+		OUTPUT_VARIABLE GETLINE_OUTPUT
+	)
+	if(COMPILE_GTNETS_VAR MATCHES "FALSE")
+		SET(HAVE_GTNETS 0)
+	else(COMPILE_GTNETS_VAR MATCHES "FALSE")
+		SET(HAVE_GTNETS 1)
+		set(INCLUDES
+			${INCLUDES}
+			${GTNETS_CPPFLAGS}
+		)
+		add_definitions(${GTNETS_LDFLAGS})
+	endif(COMPILE_GTNETS_VAR MATCHES "FALSE")
+endif(${disable_gtnets})
+message("HAVE_GTNETS ${HAVE_GTNETS}")
+
+###################################
+## SimGrid and GRAS specific checks
+##
+
+CHECK_INCLUDE_FILE(pthread.h HAVE_PTHREAD_H)
+CHECK_LIBRARY_EXISTS(pthread pthread_create NO_DEFAULT_PATHS HAVE_pthread_create)
+
+if(HAVE_pthread_create)
+	### HAVE_SEM_INIT
+  	CHECK_LIBRARY_EXISTS(pthread sem_init NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
+  	if(HAVE_SEM_INIT_LIB)
+	    	try_compile(HAVE_SEM_INIT_run
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/src/tmp/prog_sem_init.c
+		)
+	    	if(HAVE_SEM_INIT_run)
+			set(HAVE_SEM_INIT 1)
+			message("HAVE_SEM_INIT ${HAVE_SEM_INIT}")
+		endif(HAVE_SEM_INIT_run)
+  	endif(HAVE_SEM_INIT_LIB)
+
+	### HAVE_SEM_TIMEDWAIT
+	CHECK_LIBRARY_EXISTS(pthread sem_timedwait NO_DEFAULT_PATHS HAVE_SEM_TIMEDWAIT_LIB)
+	if(HAVE_SEM_TIMEDWAIT_LIB)
+	    	try_compile(HAVE_SEM_TIMEDWAIT_run
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/src/tmp/prog_sem_timedwait.c
+		)
+		if(HAVE_SEM_TIMEDWAIT_run)
+			set(HAVE_SEM_TIMEDWAIT 1)
+			message("HAVE_SEM_TIMEDWAIT ${HAVE_SEM_TIMEDWAIT}")
+		endif(HAVE_SEM_TIMEDWAIT_run)
+	endif(HAVE_SEM_TIMEDWAIT_LIB)
+
+	### HAVE_MUTEX_TIMEDLOCK
+	CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock NO_DEFAULT_PATHS HAVE_MUTEX_TIMEDLOCK_LIB)
+	if(HAVE_MUTEX_TIMEDLOCK_LIB)
+	    	try_compile(HAVE_MUTEX_TIMEDLOCK_run
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/src/tmp/prog_mutex_timedlock.c
+		)
+		if(HAVE_MUTEX_TIMEDLOCK_run)
+			set(HAVE_MUTEX_TIMEDLOCK 1)
+			message("HAVE_MUTEX_TIMEDLOCK ${HAVE_MUTEX_TIMEDLOCK}")
+		endif(HAVE_MUTEX_TIMEDLOCK_run)
+	endif(HAVE_MUTEX_TIMEDLOCK_LIB)
+
+endif(HAVE_pthread_create)
+
+#--------------------------------------------------------------------------------------------------
+### Initialize of CONTEXT THREADS
+if(${disable_context_threads})
+	SET(CONTEXT_THREADS 0)
+else(${disable_context_threads})
+	SET(CONTEXT_THREADS 1)
+endif(${disable_context_threads})
+message("CONTEXT_THREADS ${CONTEXT_THREADS}")
+
+CHECK_FUNCTION_EXISTS(makecontext HAVE_FCT_makecontext)
+message("HAVE_FCT_makecontext ${HAVE_FCT_makecontext}")
+
+if(HAVE_FCT_makecontext)
+
+	set(makecontext_CPPFLAGS "-DTEST_makecontext")
+	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/src/tmp/prog_stacksetup.c
+		COMPILE_DEFINITIONS ${makecontext_CPPFLAGS}
+		)
+	find_program(CAT_EXE NAMES cat)
+	exec_program("${CAT_EXE}" ARGS "${PROJECT_SOURCE_DIRECTORY}/conftestval" OUTPUT_VARIABLE "ac_cv_stacksetup_makecontext")
+
+	if(COMPILE_makecontext_VAR)
+		set(makecontext_type "ok")
+	elseif(COMPILE_makecontext_VAR)
+		set(makecontext_type "guessed")
+	endif(COMPILE_makecontext_VAR)
+
+	find_program(SED_EXE NAMES sed)
+	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_SOURCE_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_addr")
+	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_SOURCE_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_size")
+
+	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
+	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
+
+endif(HAVE_FCT_makecontext)
+
+configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${PROJECT_DIRECTORY}/src/context_sysv_config.h)
+
+#--------------------------------------------------------------------------------------------------
+
+###############
+## System checks
+##
+
+#SG_CONFIGURE_PART([System checks...])
+#AC_PROG_CC(xlC gcc cc) -auto
+#AM_SANITY_CHECK -auto
+
+#AC_PROG_MAKE_SET
+find_program(SET_MAKE NAMES make)
+
+#AC_PRINTF_NULL
+try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
+	${PROJECT_DIRECTORY}
+	${PROJECT_DIRECTORY}/src/tmp/prog_printf_null.c
+	)
+
+if(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
+SET(PRINTF_NULL_WORKING "0")
+else(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
+SET(PRINTF_NULL_WORKING "1")
+endif(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
+message("PRINTF_NULL_WORKING ${PRINTF_NULL_WORKING}")
+
+#AC_CHECK_VA_COPY
+
+# Checks for header files.
+
+CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
+CHECK_INCLUDE_FILES("time.h;sys/time.h" TIME_WITH_SYS_TIME)
+
+message("STDC_HEADERS ${STDC_HEADERS}")
+message("TIME_WITH_SYS_TIME ${TIME_WITH_SYS_TIME}")
+
+CHECK_INCLUDE_FILE(sys/socket.h HAVE_SOCKET_H)
+CHECK_INCLUDE_FILE(sys/stat.h HAVE_STAT_H)
+CHECK_INCLUDE_FILE(windows.h HAVE_WINDOWS_H)
+CHECK_INCLUDE_FILE(winsock.h HAVE_WINSOCK_H)
+CHECK_INCLUDE_FILE(winsock2.h HAVE_WINSOCK2_H)
+CHECK_INCLUDE_FILE(sys/time.h HAVE_TIME_H)
+CHECK_INCLUDE_FILE(errno.h HAVE_ERRNO_H)
+CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
+CHECK_INCLUDE_FILE(execinfo.h HAVE_EXECINFO_H)
+CHECK_INCLUDE_FILE(signal.h HAVE_SIGNAL_H)
+
+CHECK_FUNCTION_EXISTS(gettimeofday HAVE_gettimeofday)
+CHECK_FUNCTION_EXISTS(usleep HAVE_usleep)
+CHECK_FUNCTION_EXISTS(getdtablesize HAVE_getdtablesize)
+CHECK_FUNCTION_EXISTS(sysconf HAVE_sysconf)
+CHECK_FUNCTION_EXISTS(readv HAVE_readv)
+CHECK_FUNCTION_EXISTS(popen HAVE_popen)
+CHECK_FUNCTION_EXISTS(signal HAVE_signal)
+
+#--------------------------------------------------------------------------------------------------
+### Try execut getline command
+try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
+	${PROJECT_DIRECTORY}
+	${PROJECT_DIRECTORY}/src/tmp/prog_getline.c
+	OUTPUT_VARIABLE GETLINE_OUTPUT
+	)
+
+if(RUN_RESULT_VAR MATCHES "FAILED_TO_RUN")
+SET(need_getline "")
+else(RUN_RESULT_VAR MATCHES "FAILED_TO_RUN")
+SET(need_getline "#define SIMGRID_NEED_GETLINE 1")
+endif(RUN_RESULT_VAR MATCHES "FAILED_TO_RUN")
+
+### check for a working snprintf
+CHECK_FUNCTION_EXISTS(snprintf SNPRINTF_FUNC)
+CHECK_FUNCTION_EXISTS(vsnprintf VSNPRINTF_FUNC)
+if(SNPRINTF_FUNC AND VSNPRINTF_FUNC)
+
+	try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/src/tmp/prog_snprintf.c
+		)
+	if(CMAKE_CROSSCOMPILING)
+		message("SNPRINTF_FUNC CROSSCOMPILING")
+		set(RUN_SNPRINTF_FUNC "cross") 
+	endif(CMAKE_CROSSCOMPILING)
+
+	try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/src/tmp/prog_vsnprintf.c
+		)
+	if(CMAKE_CROSSCOMPILING)
+		message("VSNPRINTF_FUNC CROSSCOMPILING")
+		set(RUN_VSNPRINTF_FUNC "cross")
+	endif(CMAKE_CROSSCOMPILING)
+	
+	if(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN" AND RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
+	else(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN" AND RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
+		set(PREFER_PORTABLE_SNPRINTF 1)
+		message("PREFER_PORTABLE_SNPRINTF ${PREFER_PORTABLE_SNPRINTF}")
+	endif(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN" AND RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
+endif(SNPRINTF_FUNC AND VSNPRINTF_FUNC)
+
+### check for asprintf function familly
+CHECK_FUNCTION_EXISTS(asprintf ASPRINTF_FUNC)
+if(ASPRINTF_FUNC)
+	SET(need_asprintf "")
+else(ASPRINTF_FUNC)
+	SET(need_asprintf "#define SIMGRID_NEED_ASPRINTF 1")
+endif(ASPRINTF_FUNC)
+CHECK_FUNCTION_EXISTS(vasprintf VASPRINTF_FUNC)
+if(VASPRINTF_FUNC)
+	SET(need_vasprintf "")
+else(VASPRINTF_FUNC)
+	SET(need_vasprintf "#define SIMGRID_NEED_VASPRINTF 1")
+endif(VASPRINTF_FUNC)
+
+configure_file(${PROJECT_DIRECTORY}/include/simgrid_config.h.in ${PROJECT_DIRECTORY}/include/simgrid_config.h)
