@@ -1,0 +1,39 @@
+cmake_minimum_required(VERSION 2.6)
+
+### Make the distrib
+
+install(TARGETS simgrid	DESTINATION "lib/")
+install(TARGETS gras	DESTINATION "lib/")
+
+install(FILES ${simgrid_sources} DESTINATION "src/simgrid")
+install(FILES ${gras_sources} DESTINATION "src/gras")
+install(FILES ${EXTRA_DIST} DESTINATION "src/ExtraDist")
+install(FILES ${CMakeSources} DESTINATION "CPACK/")
+
+install(
+DIRECTORY "${PROJECT_DIRECTORY}/include/" 
+DESTINATION "include/" 
+PATTERN ".svn" EXCLUDE 
+PATTERN ".git" EXCLUDE 
+PATTERN "*~" EXCLUDE
+)
+install(
+DIRECTORY "${PROJECT_DIRECTORY}/CPACK/tmp" 
+DESTINATION "CPACK/" 
+PATTERN "*~" EXCLUDE
+)
+install(
+DIRECTORY "${PROJECT_DIRECTORY}/src" 
+DESTINATION "backup/"
+PATTERN ".svn" EXCLUDE 
+PATTERN ".git" EXCLUDE 
+PATTERN ".gitignore" EXCLUDE
+PATTERN "*~" EXCLUDE
+)
+
+set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
+set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
+set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
+set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}")
+set(CPACK_GENERATOR "TBZ2;TGZ;TZ;ZIP")
+include(CPack)

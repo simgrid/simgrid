@@ -1,0 +1,17 @@
+Pour utiliser CPACK:
+
+1 Mettre le dossier CPACK dans le repertoire racine du projet
+2 ouvrir dans un terminal le dossier CPACK
+3 "cmake ./" pour compiler
+4 "make" pour lancer le makefile et faire la lib simgrid et gras
+5 "cpack" pour faire la distrib (4 archives placées dans CMake/)
+6 "make clean" supprimer anciens .o
+
+Pour les options faire "cmake -D[nom de var]=[valeur] ./"
+
+[nom de var] 	disable_java		[valeur] 	ON/OFF ou TRUE/FALSE ou 1/0
+		disable_threads				ON/OFF ou TRUE/FALSE ou 1/0
+		disable_gtnets				ON/OFF ou TRUE/FALSE ou 1/0
+		gtnets_path				specifier un chemin
+
+
