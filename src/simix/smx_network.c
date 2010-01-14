@@ -282,7 +282,8 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
  */
 XBT_INLINE void SIMIX_communication_cancel(smx_comm_t comm)
 {
-  SIMIX_action_cancel(comm->act);
+  if (comm->act)
+    SIMIX_action_cancel(comm->act);
 }
 
 /**
