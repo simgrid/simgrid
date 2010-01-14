@@ -246,7 +246,7 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
         DEBUG1("Communication timeout! %p", comm);
         if(comm->act && SIMIX_action_get_state(comm->act) == SURF_ACTION_RUNNING)
           SIMIX_communication_cancel(comm);
-        else
+        else if (comm->rdv)
           SIMIX_rdv_remove(comm->rdv, comm);
 
         /* Make sure that everyone sleeping on that semaphore is awake, and that nobody will ever block on it */
