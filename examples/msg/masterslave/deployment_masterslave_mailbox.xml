@@ -1,0 +1,28 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <!-- The master process (with some arguments) -->
+  <process host="Tremblay" function="master">
+     <argument value="20"/>       <!-- Number of tasks -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="1000000"/>   <!-- Communication size of tasks -->
+     <argument value="5"/>         <!-- Number of slaves -->
+  </process>
+  <!-- The slave processes (with mailbox to listen on as argument) -->
+  <process host="Tremblay" function="slave">
+    <argument value="0"/>
+  </process>
+  <process host="Jupiter" function="slave">
+    <argument value="1"/>
+  </process>
+  <process host="Fafard" function="slave">
+    <argument value="2"/>
+  </process>
+  <process host="Ginette" function="slave">
+    <argument value="3"/>
+  </process>
+  <process host="Bourassa" function="slave">
+    <argument value="4"/>
+  </process>
+
+</platform>
