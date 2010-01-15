@@ -89,6 +89,7 @@ endif
 
 noinst_PROGRAMS = sendrecv/sendrecv \
                   suspend/suspend \
+                  masterslave/masterslave_mailbox \
                   masterslave/masterslave_forwarder \
                   masterslave/masterslave_failure \
                   masterslave/masterslave_bypass \
@@ -139,6 +140,10 @@ priority_priority_LDADD   = $(top_builddir)/src/libsimgrid.la
 # master/slave application example using a forwarder module
 masterslave_masterslave_forwarder_SOURCES = masterslave/masterslave_forwarder.c
 masterslave_masterslave_forwarder_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# master/slave application example using a mailboxes
+masterslave_masterslave_mailbox_SOURCES = masterslave/masterslave_mailbox.c
+masterslave_masterslave_mailbox_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 # master/slave application example with failures
 masterslave_masterslave_failure_SOURCES = masterslave/masterslave_failure.c
