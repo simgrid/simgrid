@@ -380,6 +380,12 @@ else
 EXTRA_DIST+=$(JMSG_C_SRC) $(JMSG_JAVA_SRC) $(MSG_SRC)
 endif
 
+LUA_SRC= simix/smx_context_lua.c bindings/lua/Msglua.c
+if HAVE_LUA
+  simgrid_sources += $(LUA_SRC)
+else
+  EXTRA_DIST += $(LUA_SRC)
+endif
 ##
 ## Compile the libs
 CLEANFILES=supernovae_sg.c supernovae_gras.c supernovae_smpi.c

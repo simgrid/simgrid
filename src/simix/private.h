@@ -292,6 +292,9 @@ void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory, const c
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory);
 
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t * factory);
+void SIMIX_ctx_lua_factory_init(smx_context_factory_t * factory);
+void SIMIX_ctx_lua_factory_loadfile(const char *file);
+
 
 void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
 

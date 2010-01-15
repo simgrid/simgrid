@@ -13,6 +13,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mecanism");
 
+const char *xbt_ctx_factory_to_use = NULL;
 
 /**
  * This function is call by SIMIX_global_init() to initialize the context module.
@@ -21,7 +22,9 @@ void SIMIX_context_mod_init(void)
 {
   if (!simix_global->context_factory) {
   /* select context factory to use to create the context(depends of the macro definitions) */
-
+    if (xbt_ctx_factory_to_use) {
+      SIMIX_context_select_factory(xbt_ctx_factory_to_use);
+    } else {
 #ifdef CONTEXT_THREADS
     /* context switch based os thread */
     SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
@@ -32,6 +35,7 @@ void SIMIX_context_mod_init(void)
     /* context switch is not allowed on Windows */
 #error ERROR [__FILE__, line __LINE__]: no context based implementation specified.
 #endif
+    }
   }
 }
 
@@ -105,12 +109,14 @@ void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
     THROW0(not_found_error, 0, "Factory 'thread' does not exist: thread support was not compiled in the SimGrid library");
 #endif /* CONTEXT_THREADS */
    
-  else if (!strcmp(name, "sysv"))
-#if !defined(WIN32) && !defined(CONTEXT_THREADS)
-    SIMIX_ctx_sysv_factory_init(factory);
-#else
-    THROW0(not_found_error, 0, "Factory 'sysv' does not exist: no System V thread support under Windows");
-#endif   
+    else if (!strcmp(name, "sysv"))
+  #if !defined(WIN32) && !defined(CONTEXT_THREADS)
+      SIMIX_ctx_sysv_factory_init(factory);
+  #else
+      THROW0(not_found_error, 0, "Factory 'sysv' does not exist: no System V thread support under Windows");
+  #endif
+    else if (!strcmp(name, "lua"))
+      SIMIX_ctx_lua_factory_init(factory);
   else
     THROW1(not_found_error, 0, "Factory '%s' does not exist", name);
 }

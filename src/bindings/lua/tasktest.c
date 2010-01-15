@@ -13,35 +13,18 @@
 
 
 // *** Testing Stuff !!
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-    "Messages specific for this msg example");
 
-int master_lua(int argc, char *argv[]); 
-int slave_lua(int argc, char *argv[]); 
-//int load_lua(char * file);
-//int forwarder(int argc, char *argv[]); LUA
-MSG_error_t test_all(const char *platform_file, const char *application_file);
-
-typedef enum {
-
-  PORT_22 = 0,
-      MAX_CHANNEL
-
-} channel_t;
+XBT_LOG_NEW_DEFAULT_CATEGORY(lua,"Lua bindings");
 
 char *lua_file;
 //***************************** LOAD LUA *************************************************
 static int load_lua(char * luaFile, lua_State *L) {
   luaL_openlibs(L);
 
-  // Lua Stuff
-  Task_register(L);
-  Host_register(L);
-  Process_register(L);
 
   if (luaL_loadfile(L, luaFile) || lua_pcall(L, 0, 0, 0)) {
     printf("error while parsing %s: %s", luaFile, lua_tostring(L, -1));
-    return -1;
+    exit(1);
   }
 
   return 0;
@@ -78,34 +61,33 @@ int lua_wrapper(int argc, char *argv[]) {
 
 //*****************************************************************************
 
-int main(int argc,char * argv[])
-{
+extern const char*xbt_ctx_factory_to_use; /*Hack: let msg load directly the right factory */
 
-
+int main(int argc,char * argv[]) {
   MSG_error_t res = MSG_OK;
+  void *lua_factory;
 
+  xbt_ctx_factory_to_use = "lua";
   MSG_global_init(&argc, argv);
 
-  if(argc < 4)
-  {
+
+  if(argc < 4) {
     printf("Usage: %s platform_file deployment_file lua_script\n", argv[0]);
     printf("example: %s msg_platform.xml msg_deployment.xml script_lua.lua\n", argv[0]);
     exit(1);
 
   }
 
-  lua_file=argv[3];
-//  load_lua(argv[3]);
-
   /* MSG_config("surf_workstation_model","KCCFLN05"); */
+  SIMIX_ctx_lua_factory_loadfile(argv[3]);
+
   MSG_create_environment(argv[1]);
-  MSG_function_register_default(&lua_wrapper);
   MSG_launch_application(argv[2]);
+
   res = MSG_main();
 
   fflush(stdout);
   INFO1("Simulation time %g", MSG_get_clock());
-
   MSG_clean();
 
   if (res == MSG_OK)

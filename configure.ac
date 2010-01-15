@@ -430,6 +430,25 @@ AC_MSG_RESULT(decide whether to compile java bindings... $use_java)
 AM_CONDITIONAL(HAVE_JAVA,test "x$use_java" = "xyes")
 
 
+SG_CONFIGURE_PART(Checking Lua bindings...)
+AC_ARG_ENABLE(lua,
+	      AS_HELP_STRING([--disable-lua], [To not compile the Lua bindings even if the tools are found]),
+	      disable_lua=$enableval,disable_lua=yes)
+if test "x$disable_lua" != "xyes" ; then
+   use_lua="disabled by user"
+else
+  AC_CHECK_HEADERS(lua5.1/lualib.h)
+  if test "x$ac_cv_header_lua5_1_lualib_h" = "xyes" ; then
+     use_lua="yes"
+     AC_DEFINE(HAVE_LUA,1, [defines whether Lua bindings must be compiled or not])
+     SIMGRID_DEP="${SIMGRID_DEP} -ldl -llua5.1"
+  else   
+     use_lua="no"
+  fi
+fi
+AC_MSG_RESULT(decide whether to compile lua bindings... $use_lua)
+AM_CONDITIONAL(HAVE_LUA,test "x$use_lua" = "xyes")
+
 #####################
 ## Check for programs
 ##
@@ -629,6 +648,7 @@ Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (
 
 	Context backend: ${with_context}
 	Compile Java:    ${use_java}
+	Compile Lua:     ${use_lua}
 	
 	Maintainer mode: ${USE_MAINTAINER_MODE}
 	Supernovae mode: ${supernovae}
