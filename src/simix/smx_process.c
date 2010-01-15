@@ -442,6 +442,7 @@ void SIMIX_process_schedule(smx_process_t new_process)
 
   /* schedule the context */
   SIMIX_context_resume(old_process->context, new_process->context);
+  DEBUG1("Resumed from scheduling context: '%s'", new_process->name);
 
   /* restore the current process to the previously saved process */
   simix_global->current_process = old_process;
