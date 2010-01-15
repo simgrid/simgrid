@@ -4,7 +4,8 @@
 
 // Msg Includes
 #include <stdio.h>
-#include "msg/msg.h"         
+#include "msg/msg.h"
+#include "msg/datatypes.h"
 #include "xbt/sysdep.h"        
 #include "xbt/log.h"
 #include "xbt/asserts.h"
@@ -20,16 +21,56 @@
 =============================================
 */
 
+XBT_LOG_NEW_DEFAULT_CATEGORY(lua,"Lua bindings");
 
 
-
-#define TASK "Task"
-#define HOST "Host"
-#define PROCESS "Process"
+#define TASK "Msg.Task"
+#define HOST "Msg.Host"
+#define PROCESS "Msg.Process"
 
 typedef m_task_t Task;
 typedef m_host_t Host;
 typedef m_process_t Process;
+
+
+static void stackDump (lua_State *L) {
+  int i;
+  int top = lua_gettop(L);
+  void *p;
+  fflush(stdout);
+  return;
+  INFO0("That's me");
+  printf("STACK(top=%d): ",top);
+  for (i = 1; i <= top; i++) {  /* repeat for each level */
+    int t = lua_type(L, i);
+    switch (t) {
+
+      case LUA_TSTRING:  /* strings */
+        printf("`%s'", lua_tostring(L, i));
+        break;
+
+      case LUA_TBOOLEAN:  /* booleans */
+        printf(lua_toboolean(L, i) ? "true" : "false");
+        break;
+
+      case LUA_TNUMBER:  /* numbers */
+        printf("%g", lua_tonumber(L, i));
+        break;
+
+      default:  /* other values */
+        if ((p = luaL_checkudata(L,i,TASK))) {
+          printf("task");
+        } else {
+          printf("%s", lua_typename(L, t));
+        }
+        break;
+
+    }
+    printf("  ");  /* put a separator */
+  }
+  printf("\n");  /* end the listing */
+  fflush(stdout);
+}
 
 //**********************************************************TASK SECTION***************************************************
 
@@ -77,7 +118,7 @@ static Task *pushTask (lua_State *L,Task tk)
 
 static int Task_new(lua_State* L)
 	{
-	char *name=luaL_checkstring(L,1);
+	const char *name=luaL_checkstring(L,1);
 	int comp_size = luaL_checkint(L,2);
 	int msg_size = luaL_checkint(L,3);
 	// We Will Set The Data as a Null for The Moment
@@ -179,7 +220,7 @@ static Host *pushHost (lua_State *L,Host ht)
 
 static int Host_new(lua_State* L)
 	{
-	char *host_name=luaL_checkstring(L,1);
+	const char *host_name=luaL_checkstring(L,1);
 	pushHost(L,MSG_get_host_by_name(host_name));
 	return 1;		
 	}
@@ -240,7 +281,7 @@ m_process_t MSG_process_create  	(  	const char *   	 name,
 
 static int Process_new(lua_State* L)
 	{
-	char *name=luaL_checkstring(L,1);
+	const char *name=luaL_checkstring(L,1);
 	//int code = luaL_checkint(L,2);
 	//xbt_main_func_t << code  
 	// We Will Set The Data as a Null for The Moment
@@ -264,24 +305,38 @@ static int Process_kill(lua_State *L)
 /**
 * Function to Send a Task
 */
-static void Task_send(lua_State *L)	{
+static int Task_send(lua_State *L)	{
   Task tk = checkTask(L,1);
-	char *mailbox = luaL_checkstring(L,2);
-	
+  const char *mailbox = luaL_checkstring(L,2);
+  stackDump(L);
   int res = MSG_task_send(tk,mailbox);
+  stackDump(L);
+  return 0;
 }
 /**
-* Function to Get ( Recieve !! ) a Task
+* Function Recieve a Task
 */
-static int Task_recv(lua_State *L)	{
-  m_task_t tk = NULL;
+static int Task_recv2(lua_State *L)	{
 
-	char *mailbox = luaL_checkstring(L,1);
-	int res = MSG_task_receive(&tk,mailbox);
-	pushTask(L,tk);
-	return 1;
+	Task *tk = (Task *)checkTask(L,1);
+	const char *mailbox = luaL_checkstring(L,2);
+	MSG_task_receive(tk,mailbox);
+	printf("Task Name Within Receive Fct: >>>%s\n",MSG_task_get_name(*tk));
+	
+	return 0;
 }
 
+
+static int Task_recv(lua_State *L)	{
+  Task tk = NULL;
+  //stackDump(L);
+	const char *mailbox = luaL_checkstring(L,1);
+	int res = MSG_task_receive(&tk,mailbox);
+	INFO1("Task Name : >>>%s",MSG_task_get_name(tk));
+	pushTask(L,tk);
+//	stackDump(L);
+	return 1;
+}
 
 //*******************************************************   PLATFORM & APPLICATION SECTION  ****************************************************************
 
@@ -338,6 +393,7 @@ static const luaL_reg Task_methods[] = {
 {"destroy",	Task_destroy},
 {"send",		Task_send},
 {"recv",		Task_recv},
+{"recv2",		Task_recv2},
 {0,0}
 };
 
@@ -364,8 +420,8 @@ static const luaL_reg Process_methods[] = {
 static int Task_gc(lua_State *L)
 	{
 	Task tk=toTask(L,1);
-	if (tk) MSG_task_destroy(tk);
-	printf("GoodBye Task(%p)\n",lua_touserdata(L,1));
+	//if (tk) MSG_task_destroy(tk);
+	//printf("GoodBye Task(%p)\n",lua_touserdata(L,1));
 	return 0; 
 	}
 

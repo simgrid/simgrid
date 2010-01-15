@@ -1,4 +1,14 @@
-#include "Msglua.h"
+#include <stdio.h>
+#include "lauxlib.h"
+#include "lualib.h"
+
+// Msg Includes
+#include <stdio.h>
+#include "msg/msg.h"
+#include "msg/datatypes.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/asserts.h"
 
 
 
@@ -8,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 int master_lua(int argc, char *argv[]); 
 int slave_lua(int argc, char *argv[]); 
-int load_lua(char * file);
+//int load_lua(char * file);
 //int forwarder(int argc, char *argv[]); LUA
 MSG_error_t test_all(const char *platform_file, const char *application_file);
 
@@ -19,12 +29,9 @@ typedef enum {
 
 } channel_t;
 
-lua_State *L;
-
+char *lua_file;
 //***************************** LOAD LUA *************************************************
-int load_lua(char * luaFile) {
-  L = lua_open();
-
+static int load_lua(char * luaFile, lua_State *L) {
   luaL_openlibs(L);
 
   // Lua Stuff
@@ -42,8 +49,8 @@ int load_lua(char * luaFile) {
 }
 
 int lua_wrapper(int argc, char *argv[]) {
-  // Table that Lua will read to read Arguments
-  lua_newtable(L);
+  lua_State *L = lua_open();
+  load_lua(lua_file, L);
 
   // Seek the right lua function
   lua_getglobal(L,argv[0]);
@@ -63,6 +70,7 @@ int lua_wrapper(int argc, char *argv[]) {
 
   // User process terminated
   lua_pop(L, 1);
+  lua_close(L);
   return 0;
 }
 
@@ -86,19 +94,19 @@ int main(int argc,char * argv[])
 
   }
 
-  load_lua(argv[3]);
+  lua_file=argv[3];
+//  load_lua(argv[3]);
 
   /* MSG_config("surf_workstation_model","KCCFLN05"); */
   MSG_create_environment(argv[1]);
   MSG_function_register_default(&lua_wrapper);
   MSG_launch_application(argv[2]);
-  MSG_set_channel_number(10);
   res = MSG_main();
 
+  fflush(stdout);
   INFO1("Simulation time %g", MSG_get_clock());
 
   MSG_clean();
-  lua_close(L);
 
   if (res == MSG_OK)
     return 0;

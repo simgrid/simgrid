@@ -1,0 +1,4 @@
+set -e
+make -C ../../
+gcc -g3 -o runner tasktest.c Msglua.c -I ../../../include/ -I /usr/include/lua5.1/ -I . -L../../.libs  -ldl -llua5.1 -lsimgrid
+valgrind -q ./runner ../../../examples/msg/small_platform.xml deploy.xml tasklua.lua
