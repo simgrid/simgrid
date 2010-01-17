@@ -116,7 +116,11 @@ void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
       THROW0(not_found_error, 0, "Factory 'sysv' does not exist: no System V thread support under Windows");
   #endif
     else if (!strcmp(name, "lua"))
+#ifdef HAVE_LUA
       SIMIX_ctx_lua_factory_init(factory);
+#else
+    THROW0(not_found_error, 0, "Factory 'lua' does not exist: Lua support was not compiled in the SimGrid library");
+#endif /* HAVE_LUA */
   else
     THROW1(not_found_error, 0, "Factory '%s' does not exist", name);
 }
