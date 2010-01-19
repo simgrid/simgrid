@@ -63,7 +63,7 @@ while true; do
       exit
    ;;
    
-   "--cfg="*)
+   "--cfg="*|"--log="*)
      SIMOPTS="$SIMOPTS $1"
      shift 1
    ;;
