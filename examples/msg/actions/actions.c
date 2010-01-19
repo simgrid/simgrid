@@ -37,9 +37,12 @@ static double parse_double(const char *string) {
 static void send(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
-  char *to = xbt_dynar_get_as(action, 2, char *);
+  char to[250];
   char *size = xbt_dynar_get_as(action, 3, char *);
   double clock = MSG_get_clock();
+  sprintf (to,"%s_%s", MSG_process_get_name(MSG_process_self()),
+	   xbt_dynar_get_as(action, 2, char *));
+  //  char *to =  xbt_dynar_get_as(action, 2, char *);
   DEBUG2("Entering Send: %s (size: %lg)", name, parse_double(size));
   MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
   INFO2("%s %f", name, MSG_get_clock()-clock);
@@ -49,7 +52,7 @@ static void send(xbt_dynar_t action)
 
 static int spawned_send(int argc, char *argv[])
 {
-  DEBUG3("%s: Sending %s on %s", MSG_process_self()->name, 
+  DEBUG3("%s: Sending %s on %s", MSG_process_get_name(MSG_process_self()), 
 	argv[1],argv[0]);
   MSG_task_send(MSG_task_create(argv[0], 0, parse_double(argv[1]), NULL), 
 		argv[0]);
@@ -59,7 +62,8 @@ static int spawned_send(int argc, char *argv[])
 static void Isend(xbt_dynar_t action)
 {
   char spawn_name[80];
-  char *to = xbt_dynar_get_as(action, 2, char *);
+  char to[250];
+  //  char *to = xbt_dynar_get_as(action, 2, char *);
   char *size = xbt_dynar_get_as(action, 3, char *);
   char **myargv;
   m_process_t comm_helper;
@@ -67,13 +71,16 @@ static void Isend(xbt_dynar_t action)
   DEBUG1("Isend on %s: spawn process ", 
 	 MSG_process_get_name(MSG_process_self()));
 
+  sprintf (to,"%s_%s", MSG_process_get_name(MSG_process_self()),
+	   xbt_dynar_get_as(action, 2, char *));
   myargv = (char**) calloc (3, sizeof (char*));
   
   myargv[0] = xbt_strdup(to);
   myargv[1] = xbt_strdup(size);
   myargv[2] = NULL;
 
-  sprintf(spawn_name,"%s_wait",MSG_process_get_name(MSG_process_self()));
+  //    sprintf(spawn_name,"%s_wait",MSG_process_get_name(MSG_process_self()));
+  sprintf(spawn_name,"%s_wait",to);
   comm_helper =
     MSG_process_create_with_arguments(spawn_name, spawned_send, 
 				      NULL, MSG_host_self(), 2, myargv);
@@ -84,13 +91,16 @@ static void Isend(xbt_dynar_t action)
 static void recv(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
+    char mailbox_name[250];
   m_task_t task = NULL;
   double clock = MSG_get_clock();
   //FIXME: argument of action ignored so far; semantic not clear
   //char *from=xbt_dynar_get_as(action,2,char*);
-
+  sprintf (mailbox_name,"%s_%s", xbt_dynar_get_as(action, 2, char *),
+	   MSG_process_get_name(MSG_process_self()));
   DEBUG1("Receiving: %s", name);
-  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
+  MSG_task_receive(&task, mailbox_name);
+  //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
   INFO2("%s %f", name, MSG_get_clock()-clock);
   MSG_task_destroy(task);
   free(name);
@@ -99,12 +109,12 @@ static void recv(xbt_dynar_t action)
 static int spawned_recv(int argc, char *argv[])
 {
   m_task_t task = NULL;
-  char* name = (char *) MSG_process_get_data(MSG_process_self());
-  DEBUG1("Receiving on %s", name);
-  MSG_task_receive(&task, name);
+  DEBUG1("Receiving on %s", argv[0]);
+  MSG_task_receive(&task, argv[0]);
   DEBUG1("Received %s", MSG_task_get_name(task));
   DEBUG1("waiter on %s", MSG_process_get_name(MSG_process_self()));
-  MSG_task_send(MSG_task_create("waiter",0,0,NULL),MSG_process_get_name(MSG_process_self())); 
+  MSG_task_send(MSG_task_create("waiter",0,0,NULL),
+		MSG_process_get_name(MSG_process_self())); 
   
   MSG_task_destroy(task);
   return 0;
@@ -115,14 +125,22 @@ static void Irecv(xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
   m_process_t comm_helper;
+  char mailbox_name[250];
+  char **myargv;
   double clock = MSG_get_clock();
   DEBUG1("Irecv on %s: spawn process ", 
 	 MSG_process_get_name(MSG_process_self()));
 
+  sprintf (mailbox_name,"%s_%s", xbt_dynar_get_as(action, 2, char *),
+	   MSG_process_get_name(MSG_process_self()));
   sprintf(name,"%s_wait",MSG_process_get_name(MSG_process_self()));
-  comm_helper = MSG_process_create(name,spawned_recv,
-                 (void *) MSG_process_get_name(MSG_process_self()),
-                 MSG_host_self());
+  myargv = (char**) calloc (2, sizeof (char*));
+  
+  myargv[0] = xbt_strdup(mailbox_name);
+  myargv[1] = NULL;
+  comm_helper = MSG_process_create_with_arguments(name,spawned_recv,
+						  NULL, MSG_host_self(),
+						  1, myargv);
 
   INFO2("%s %f",  xbt_str_join(action, " "), 
 	MSG_get_clock()-clock);
@@ -140,6 +158,7 @@ static void wait_action(xbt_dynar_t action)
   
   DEBUG1("Entering %s", name);
   sprintf(task_name,"%s_wait",MSG_process_get_name(MSG_process_self()));
+  INFO1("wait: %s", task_name);
   MSG_task_receive(&task,task_name);
   MSG_task_destroy(task);
   INFO2("%s %f", name,	MSG_get_clock()-clock);
