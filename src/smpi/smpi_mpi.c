@@ -113,10 +113,11 @@ int SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
                    int tag, MPI_Comm comm, MPI_Request * request)
 {
   int retval = MPI_SUCCESS;
+  int rank;
 
   smpi_bench_end();
-
-  retval = smpi_create_request(buf, count, datatype, src, 0, tag, comm,
+  rank = smpi_mpi_comm_rank(comm);
+  retval = smpi_create_request(buf, count, datatype, src, rank, tag, comm,
                                request);
   if (NULL != *request && MPI_SUCCESS == retval) {
     retval = smpi_mpi_irecv(*request);
@@ -131,11 +132,13 @@ int SMPI_MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src,
                   int tag, MPI_Comm comm, MPI_Status * status)
 {
   int retval = MPI_SUCCESS;
+  int rank;
   smpi_mpi_request_t request;
 
   smpi_bench_end();
 
-  retval = smpi_create_request(buf, count, datatype, src, 0, tag, comm,
+  rank = smpi_mpi_comm_rank(comm);
+  retval = smpi_create_request(buf, count, datatype, src, rank, tag, comm,
                                &request);
   if (NULL != request && MPI_SUCCESS == retval) {
     retval = smpi_mpi_irecv(request);
@@ -154,10 +157,12 @@ int SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm, MPI_Request * request)
 {
   int retval = MPI_SUCCESS;
+  int rank;
 
   smpi_bench_end();
 
-  retval = smpi_create_request(buf, count, datatype, 0, dst, tag, comm,
+  rank = smpi_mpi_comm_rank(comm);
+  retval = smpi_create_request(buf, count, datatype, rank, dst, tag, comm,
                                request);
   if (NULL != *request && MPI_SUCCESS == retval) {
     retval = smpi_mpi_isend(*request);
@@ -175,11 +180,13 @@ int SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst,
                   int tag, MPI_Comm comm)
 {
   int retval = MPI_SUCCESS;
+  int rank;
   smpi_mpi_request_t request;
 
   smpi_bench_end();
 
-  retval = smpi_create_request(buf, count, datatype, 0, dst, tag, comm,
+  rank = smpi_mpi_comm_rank(comm);
+  retval = smpi_create_request(buf, count, datatype, rank, dst, tag, comm,
                                &request);
   if (NULL != request && MPI_SUCCESS == retval) {
     retval = smpi_mpi_isend(request);
@@ -253,18 +260,33 @@ int retval = MPI_SUCCESS;
  **/
 int SMPI_MPI_Wait(MPI_Request * request, MPI_Status * status)
 {
-  return smpi_mpi_wait(*request, status);
+  int retval;
+
+  smpi_bench_end();
+  retval = smpi_mpi_wait(*request, status);
+  smpi_bench_begin();
+  return retval;
 }
 
 int SMPI_MPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
-  return smpi_mpi_waitall(count, requests, status);
+  int retval;
+
+  smpi_bench_end();
+  retval = smpi_mpi_waitall(count, requests, status);
+  smpi_bench_begin();
+  return retval;
 }
 
 int SMPI_MPI_Waitany(int count, MPI_Request requests[], int *index,
                      MPI_Status status[])
 {
-  return smpi_mpi_waitany(count, requests, index, status);
+  int retval;
+
+  smpi_bench_end();
+  retval = smpi_mpi_waitany(count, requests, index, status);
+  smpi_bench_begin();
+  return retval;
 }
 
 /**

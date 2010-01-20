@@ -153,6 +153,10 @@ void smpi_global_init()
 
   smpi_global = xbt_new(s_smpi_global_t, 1);
 
+  // config vars
+  smpi_global->reference_speed =
+    xbt_cfg_get_double(_surf_cfg_set, "reference_speed");
+
   // mallocators
   smpi_global->request_mallocator =
     xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, smpi_request_new,
