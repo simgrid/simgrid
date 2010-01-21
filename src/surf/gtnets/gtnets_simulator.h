@@ -26,6 +26,7 @@
 #include "tcp-newreno.h"
 #include "event.h"
 #include "routing-manual.h"
+#include "red.h"
 
 using namespace std;
 
@@ -59,6 +60,7 @@ private:
   Simulator *sim_;
   GTNETS_Topology *topo_;
   RoutingManual *rm_;
+  REDQueue *red_queue_;
   int nnode_;
   int is_topology_;
   int nflow_;

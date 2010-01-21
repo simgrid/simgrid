@@ -13,6 +13,7 @@
 #endif
 #include "xbt/log.h"
 #include "xbt/asserts.h"
+#include "RngStream.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets_simulator, surf_network_gtnets,
                                 "Logging specific to the SURF network GTNetS simulator");
@@ -33,17 +34,62 @@ GTSim::GTSim(){
   int wsize = 20000;
   is_topology_ = 0;
   nflow_ = 0;
-  sim_ = new Simulator();
-  topo_ = new GTNETS_Topology();
   jitter_ = 0;
   jitter_seed_ = 10;
 
-  sim_->verbose=false;
+  // EXTRACTED FROM GTNETS SOURCE CODE COMMENTS
+  //  REDQueue::REDQueue(
+  //     DCount_t in_w_q, Count_t in_min_th, Count_t in_max_th,
+  //     Count_t in_limit, DCount_t in_max_p, Count_t in_mean_pktsize) : iface(nil)
   // Set default values.
+  //Doc:Desc This constructor the critical RED parameters and builds a
+  //Doc:Desc correspoding RED queue
+  //Doc:Arg1 weight of the queue
+  //Doc:Arg2 minimum threshold
+  //Doc:Arg3 maximum threshold
+  //Doc:Arg4 Limit/max size for the queue
+  //Doc:Arg5 maximum value for mark/drop probability
+  //Doc:Arg6 Average packet size
+
+  //Default Parameters
+  //REDQueue *default_red_queue_ = new REDQueue(0.002, 2500, 7500, 30000, 0.10, 500);
+  //Same as above
+  //REDQueue *default_red_queue_ = new REDQueue();
+
+  //See for details of how those values are calucated below
+  //[1] Sally Floyd and Van Jacobson, "Random Early Detection Gateways with Congestion Avoidance",
+  //    IEEE/ACM Transactions on Networking, vol. 1, n. 4, august 1993.
+  //
+  //[2] Kostas Pentikousis, "Active Queue Management", ACM Crossroads, vol. 7, n. 5,
+  //    mid-summer 2001
+  //
+  //[3] Stefann De Cnodder, Omar Ecoumi, Kenny Paulwels, "RED behavior with different packet sizes",
+  //    5th IEEE Symposium on Computers and Communication, (ISCC 2000)
+  //
+  //[4] http://www.opalsoft.net/qos/DS-26.htm
+  //
+  //short explanation:
+  // q_weight = fixed to 0.002 in most literature
+  // min_bytes = max / 3 = 16,666,666
+  // max_bytes = mean_bw * max_tolerable_latency, set to 1e8 * 0.5 = 50,000,000
+  // limit_bytes = 8 * max = 400,000,000
+  // prob = follow most literature 0.02
+  // avgpkt = fixed to the same TCP segment size, 1000 Bytes
+  //
+  // burst = (2*(min+max))/(3*avgpkt) ***DON'T USED BY GTNetS***
+  REDQueue *default_red_queue_ = new REDQueue(0.002, 16666666, 50000000, 400000000, 0.02, 1000);
+
+  Queue::Default(*default_red_queue_);
+  delete default_red_queue_;
+
   TCP::DefaultAdvWin(wsize);
   TCP::DefaultSegSize(1000);
   TCP::DefaultTxBuffer(128000);
   TCP::DefaultRxBuffer(128000);
+
+  sim_ = new Simulator();
+  sim_->verbose=false;
+  topo_ = new GTNETS_Topology();
 
   // Manual routing
   rm_ = new RoutingManual();
@@ -111,11 +157,6 @@ int GTSim::add_link(int id, double bandwidth, double latency){
 	DEBUG2("Using jitter %f, and seed %u", jitter_, jitter_seed_);
 	double min = -1*jitter_*latency;
 	double max = jitter_*latency;
-	//initialize the random seed only once, when adding the first link
-	if(uniform_jitter_generator_.empty()){
-		Random::GlobalSeed(jitter_seed_  , jitter_seed_+1, jitter_seed_+2,
-					       jitter_seed_+3, jitter_seed_+4, jitter_seed_+5);
-	}
 	uniform_jitter_generator_[id] = new Uniform(min,max);
 	gtnets_links_[id]->Jitter((const Random &) *(uniform_jitter_generator_[id]));
   }
@@ -300,6 +341,7 @@ double GTSim::gtnets_get_flow_rx(void *metadata){
   return gtnets_servers_[flow_id]->GetTotRx(); 
 }
 
+
 int GTSim::run_until_next_flow_completion(void ***metadata, int *number_of_flows){
 
   meta_flows.clear();
@@ -319,12 +361,17 @@ int GTSim::run(double delta){
 }
 
 void GTSim::set_jitter(double d){
-  xbt_assert1(((0 <= d)&&(d <= 1)), "The jitter value must be within interval [0.0;1.0], got %f", d);
+  xbt_assert1(((0 <= d)&&(d <= 1)), "The jitter value must be within interval [0.0;1.0), got %f", d);
   jitter_ = d;
 }
 
 void GTSim::set_jitter_seed(int s){
   jitter_seed_ = s;
+
+  if(jitter_seed_ > 0.0){
+    INFO1("Setting the jitter_seed with %d", jitter_seed_ );
+    Random::GlobalSeed(jitter_seed_  , jitter_seed_  , jitter_seed_  ,jitter_seed_  ,jitter_seed_  ,jitter_seed_);
+  }
 }
 
 void static tcp_sent_callback(void* action, double completion_time){
