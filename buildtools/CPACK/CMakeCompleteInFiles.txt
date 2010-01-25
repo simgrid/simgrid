@@ -12,6 +12,9 @@ if(disable_java)
 else(disable_java)
 	include(FindJava)
 	include(FindJNI)
+	if(JAVA_INCLUDE_PATH)
+		set(HAVE_JNI_H 1)
+	endif(JAVA_INCLUDE_PATH)
 	find_path(JAR	NAMES jar	PATHS NO_DEFAULT_PATHS	)	
 	if(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH)
 		SET(HAVE_JAVA 1)
@@ -28,28 +31,79 @@ if(disable_gtnets)
 else(disable_gtnets)
 	set(GTNETS_LDFLAGS "-lgtnets -L${gtnets_path}/lib")
 	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include -I${gtnets_path}/include/gtnets")
-	try_compile(COMPILE_GTNETS_VAR
-		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/CPACK/tmp/prog_gtnets.c
-		CMAKE_FLAGS ${GTNETS_CPPFLAGS}
-		COMPILE_DEFINITIONS ${GTNETS_LDFLAGS}
-		OUTPUT_VARIABLE GETLINE_OUTPUT
-	)
-	if(COMPILE_GTNETS_VAR MATCHES "FALSE")
+	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/CPACK/tmp/prog_gtnets.cpp" OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
+	if(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 0)
-	else(COMPILE_GTNETS_VAR MATCHES "FALSE")
+	else(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 1)
 		set(INCLUDES
 			${INCLUDES}
 			${GTNETS_CPPFLAGS}
 		)
 		add_definitions(${GTNETS_LDFLAGS})
-	endif(COMPILE_GTNETS_VAR MATCHES "FALSE")
+	endif(COMPILE_GTNETS_VAR)
 endif(disable_gtnets)
 message("HAVE_GTNETS ${HAVE_GTNETS}")
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
+
+CHECK_INCLUDE_FILE(pthread.h HAVE_PTHREAD_H)
+CHECK_LIBRARY_EXISTS(pthread pthread_create NO_DEFAULT_PATHS pthread)
+
+if(pthread)
+	### HAVE_SEM_INIT
+  	CHECK_LIBRARY_EXISTS(pthread sem_init NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
+  	if(HAVE_SEM_INIT_LIB)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/CPACK/tmp/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
+	    	if(HAVE_SEM_INIT_run)
+			set(HAVE_SEM_INIT 0)
+	    	else(HAVE_SEM_INIT_run)
+			set(HAVE_SEM_INIT 1)
+		endif(HAVE_SEM_INIT_run)
+		message("HAVE_SEM_INIT ${HAVE_SEM_INIT}")
+  	endif(HAVE_SEM_INIT_LIB)
+
+	### HAVE_SEM_TIMEDWAIT
+	CHECK_LIBRARY_EXISTS(pthread sem_timedwait NO_DEFAULT_PATHS HAVE_SEM_TIMEDWAIT_LIB)
+	if(HAVE_SEM_TIMEDWAIT_LIB)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/CPACK/tmp/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		if(HAVE_SEM_TIMEDWAIT_run)
+			set(HAVE_SEM_TIMEDWAIT 0)
+		else(HAVE_SEM_TIMEDWAIT_run)
+			set(HAVE_SEM_TIMEDWAIT 1)
+		endif(HAVE_SEM_TIMEDWAIT_run)
+		message("HAVE_SEM_TIMEDWAIT ${HAVE_SEM_TIMEDWAIT}")
+	endif(HAVE_SEM_TIMEDWAIT_LIB)
+
+	### HAVE_MUTEX_TIMEDLOCK
+	CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock NO_DEFAULT_PATHS HAVE_MUTEX_TIMEDLOCK_LIB)
+	if(HAVE_MUTEX_TIMEDLOCK_LIB)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/CPACK/tmp/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		if(HAVE_MUTEX_TIMEDLOCK_run)
+			set(HAVE_MUTEX_TIMEDLOCK 0)
+		else(HAVE_MUTEX_TIMEDLOCK_run)
+			set(HAVE_MUTEX_TIMEDLOCK 1)
+		endif(HAVE_MUTEX_TIMEDLOCK_run)
+		message("HAVE_MUTEX_TIMEDLOCK ${HAVE_MUTEX_TIMEDLOCK}")
+	endif(HAVE_MUTEX_TIMEDLOCK_LIB)
+endif(pthread)
+
+# AC_CHECK_MCSC(mcsc=yes, mcsc=no) 
+try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
+	${PROJECT_DIRECTORY}
+	${PROJECT_DIRECTORY}/CPACK/tmp/prog_AC_CHECK_MCSC.c
+	)
+
+file(READ "${PROJECT_DIRECTORY}/CPACK/conftestval" mcsc)
+if(mcsc MATCHES "yes")
+	set(mcsc "yes")
+elseif(mcsc MATCHES "yes")
+	set(mcsc "no")
+endif(mcsc MATCHES "yes")
+
+#TODO configure.ac ligne 215
+
 if(disable_threads)
 	SET(CONTEXT_THREADS 0)
 else(disable_threads)
@@ -80,64 +134,112 @@ message("\n_____GRAS_&_SIMGRID____")
 ###################################
 ## SimGrid and GRAS specific checks
 ##
+include(TestBigEndian)
+TEST_BIG_ENDIAN(BIGENDIAN)
+# Check architecture signature begin
+try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
+	${PROJECT_DIRECTORY}
+	${PROJECT_DIRECTORY}/CPACK/tmp/prog_GRAS_ARCH.c
+	RUN_OUTPUT_VARIABLE var1
+	)
+if(BIGENDIAN)
+set(val_big "B${var1}")
+set(GRAS_BIGENDIAN 1)
+else(BIGENDIAN)
+set(val_big "l${var1}")
+set(GRAS_BIGENDIAN 0)
+endif(BIGENDIAN)
+message("GRAS_BIGENDIAN ${GRAS_BIGENDIAN}")
+message("${val_big}")
 
-CHECK_INCLUDE_FILE(pthread.h HAVE_PTHREAD_H)
-CHECK_LIBRARY_EXISTS(pthread pthread_create NO_DEFAULT_PATHS HAVE_pthread_create)
+if(val_big MATCHES "l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1:")
+	message("gras_arch=0; gras_size=32; gras_arch_name=little32_1;")
+	SET(GRAS_ARCH_32_BITS 1)
+	SET(GRAS_THISARCH 0)
+endif(val_big MATCHES "l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1:")
+if(val_big MATCHES "l_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:")
+	message("gras_arch=1; gras_size=32; gras_arch_name=little32_2;")
+	SET(GRAS_ARCH_32_BITS 1)
+	SET(GRAS_THISARCH 1)
+endif(val_big MATCHES "l_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:")
+if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:") 
+	message("gras_arch=2; gras_size=32; gras_arch_name=little32_4;")
+	SET(GRAS_ARCH_32_BITS 1)
+	SET(GRAS_THISARCH 2)
+endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
+if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:") 
+	message("gras_arch=3; gras_size=32; gras_arch_name=little32_8;")
+	SET(GRAS_ARCH_32_BITS 1)
+	SET(GRAS_THISARCH 3)
+endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:") 
+if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
+	message("gras_arch=4; gras_size=64; gras_arch_name=little64;")
+	SET(GRAS_ARCH_32_BITS 0)
+	SET(GRAS_THISARCH 4)
+endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 
-if(HAVE_pthread_create)
-	### HAVE_SEM_INIT
-  	CHECK_LIBRARY_EXISTS(pthread sem_init NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
-  	if(HAVE_SEM_INIT_LIB)
-	    	try_compile(HAVE_SEM_INIT_run
-		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/CPACK/tmp/prog_sem_init.c
-		)
-	    	if(HAVE_SEM_INIT_run)
-			set(HAVE_SEM_INIT 1)
-	    	else(HAVE_SEM_INIT_run)
-			set(HAVE_SEM_INIT 0)
-		endif(HAVE_SEM_INIT_run)
-		message("HAVE_SEM_INIT ${HAVE_SEM_INIT}")
-  	endif(HAVE_SEM_INIT_LIB)
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:") 
+	message("gras_arch=5; gras_size=32; gras_arch_name=big32;")
+	SET(GRAS_ARCH_32_BITS 1)
+	SET(GRAS_THISARCH 5)
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:")
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:") 
+	message("gras_arch=6; gras_size=32; gras_arch_name=big32_8_4;")
+	SET(GRAS_ARCH_32_BITS 1)
+	SET(GRAS_THISARCH 6)
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:")
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:") 
+	message("gras_arch=7; gras_size=32; gras_arch_name=big32_4;")
+	SET(GRAS_ARCH_32_BITS 1)
+	SET(GRAS_THISARCH 7)
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
+	message("gras_arch=8; gras_size=32; gras_arch_name=big32_2;")
+	SET(GRAS_ARCH_32_BITS 1)
+	SET(GRAS_THISARCH 8)
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
+	message("gras_arch=9; gras_size=64; gras_arch_name=big64;")
+	SET(GRAS_ARCH_32_BITS 0)
+	SET(GRAS_THISARCH 9)
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
+	message("gras_arch=10;gras_size=64; gras_arch_name=big64_8_4;")
+	SET(GRAS_ARCH_32_BITS 0)
+	SET(GRAS_THISARCH 10)
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
+	message("GRAS_ARCH_32_BITS ${GRAS_ARCH_32_BITS}")
 
-	### HAVE_SEM_TIMEDWAIT
-	CHECK_LIBRARY_EXISTS(pthread sem_timedwait NO_DEFAULT_PATHS HAVE_SEM_TIMEDWAIT_LIB)
-	if(HAVE_SEM_TIMEDWAIT_LIB)
-	    	try_compile(HAVE_SEM_TIMEDWAIT_run
-		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/CPACK/tmp/prog_sem_timedwait.c
-		)
-		if(HAVE_SEM_TIMEDWAIT_run)
-			set(HAVE_SEM_TIMEDWAIT 1)
-		else(HAVE_SEM_TIMEDWAIT_run)
-			set(HAVE_SEM_TIMEDWAIT 0)
-		endif(HAVE_SEM_TIMEDWAIT_run)
-		message("HAVE_SEM_TIMEDWAIT ${HAVE_SEM_TIMEDWAIT}")
-	endif(HAVE_SEM_TIMEDWAIT_LIB)
 
-	### HAVE_MUTEX_TIMEDLOCK
-	CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock NO_DEFAULT_PATHS HAVE_MUTEX_TIMEDLOCK_LIB)
-	if(HAVE_MUTEX_TIMEDLOCK_LIB)
-	    	try_compile(HAVE_MUTEX_TIMEDLOCK_run
-		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/CPACK/tmp/prog_mutex_timedlock.c
-		)
-		if(HAVE_MUTEX_TIMEDLOCK_run)
-			set(HAVE_MUTEX_TIMEDLOCK 1)
-		else(HAVE_MUTEX_TIMEDLOCK_run)
-			set(HAVE_MUTEX_TIMEDLOCK 0)
-		endif(HAVE_MUTEX_TIMEDLOCK_run)
-		message("HAVE_MUTEX_TIMEDLOCK ${HAVE_MUTEX_TIMEDLOCK}")
-	endif(HAVE_MUTEX_TIMEDLOCK_LIB)
+# Check architecture signature end
+try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
+	${PROJECT_DIRECTORY}
+	${PROJECT_DIRECTORY}/CPACK/tmp/prog_GRAS_CHECK_STRUCT_COMPACTION.c
+	RUN_OUTPUT_VARIABLE var2
+	)
+separate_arguments(var2)
+foreach(var_tmp ${var2})
+	set(${var_tmp} 1)
+	message("${var_tmp} ${${var_tmp}}")
+endforeach(var_tmp ${var2})
 
-endif(HAVE_pthread_create)
+# Check for [SIZEOF_MAX]
+try_run(RUN_SM_VAR COMPILE_SM_VAR
+	${PROJECT_DIRECTORY}
+	${PROJECT_DIRECTORY}/CPACK/tmp/prog_max_size.c
+	RUN_OUTPUT_VARIABLE var3
+	)
+SET(SIZEOF_MAX ${var3})
+message("SIZEOF_MAX ${SIZEOF_MAX}")
+
 
 #--------------------------------------------------------------------------------------------------
 
-CHECK_FUNCTION_EXISTS(makecontext HAVE_FCT_makecontext)
-message("HAVE_FCT_makecontext ${HAVE_FCT_makecontext}")
 
-if(HAVE_FCT_makecontext)
+CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
+message("HAVE_MAKECONTEXT ${HAVE_MAKECONTEXT}")
+
+if(HAVE_MAKECONTEXT)
 	set(makecontext_CPPFLAGS "-DTEST_makecontext")
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
@@ -159,11 +261,25 @@ if(HAVE_FCT_makecontext)
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
 	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
 
-endif(HAVE_FCT_makecontext)
-
-configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${PROJECT_DIRECTORY}/src/context_sysv_config.h)
+endif(HAVE_MAKECONTEXT)
 
 #--------------------------------------------------------------------------------------------------
+
+### check for stackgrowth
+
+	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/CPACK/tmp/prog_stackgrowth.c
+		)
+file(READ "${PROJECT_DIRECTORY}/CPACK/conftestval" stack)
+if(stack MATCHES "down")
+	set(PTH_STACKGROWTH "-1")
+endif(stack MATCHES "down")
+if(stack MATCHES "up")
+	set(PTH_STACKGROWTH "1")
+endif(stack MATCHES "up")
+message("PTH_STACKGROWTH ${PTH_STACKGROWTH}")
+
 
 ###############
 ## System checks
@@ -191,6 +307,107 @@ message("PRINTF_NULL_WORKING ${PRINTF_NULL_WORKING}")
 
 #AC_CHECK_VA_COPY
 
+set(diff_va "va_copy((d),(s))"
+"VA_COPY((d),(s))"
+"__va_copy((d),(s))"
+"__builtin_va_copy((d),(s))"
+"do { (d) = (s)\; } while (0)"
+"do { *(d) = *(s)\; } while (0)"
+"memcpy((void *)&(d), (void *)&(s)), sizeof((s))"
+"memcpy((void *)(d), (void *)(s)), sizeof(*(s))"
+)
+
+foreach(fct ${diff_va})
+	write_file("${PROJECT_DIRECTORY}/CPACK/tmp/prog_va_copy.c" "#include <stdlib.h>
+	#include <stdarg.h>
+	#include <string.h>
+	#define DO_VA_COPY(d,s) ${fct}
+	void test(char *str, ...)
+	{
+	    va_list ap, ap2;
+	    int i;
+	    va_start(ap, str);
+	    DO_VA_COPY(ap2, ap);
+	    for (i = 1; i <= 9; i++) {
+		int k = (int)va_arg(ap, int);
+		if (k != i)
+		    abort();
+	    }
+	    DO_VA_COPY(ap, ap2);
+	    for (i = 1; i <= 9; i++) {
+		int k = (int)va_arg(ap, int);
+		if (k != i)
+		    abort();
+	    }
+	    va_end(ap);
+	}
+	int main(int argc, char *argv[])
+	{
+	    test("test", 1, 2, 3, 4, 5, 6, 7, 8, 9);
+	    exit(0);
+	}"
+	)
+	try_run(RUN_VA_NULL_VAR COMPILE_VA_NULL_VAR
+	${PROJECT_DIRECTORY}
+	${PROJECT_DIRECTORY}/CPACK/tmp/prog_va_copy.c
+	)
+	if(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")
+	else(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")	
+
+		string(REGEX REPLACE "\;" "" fctbis ${fct})
+
+		if(${fctbis} STREQUAL "va_copy((d),(s))")
+			set(HAVE_VA_COPY 1)
+			message("HAVE_VA_COPY ${HAVE_VA_COPY}")
+			set(ac_cv_va_copy "C99")
+			set(__VA_COPY_USE_C99 "va_copy((d),(s))")	
+		endif(${fctbis} STREQUAL "va_copy((d),(s))")
+
+		if(${fctbis} STREQUAL "VA_COPY((d),(s))")
+			set(ac_cv_va_copy "GCM")
+			set(__VA_COPY_USE_GCM "VA_COPY((d),(s))")
+		endif(${fctbis} STREQUAL "VA_COPY((d),(s))")
+
+		if(${fctbis} STREQUAL "__va_copy((d),(s))")
+			set(ac_cv_va_copy "GCH")
+			set(__VA_COPY_USE_GCH "__va_copy((d),(s))")
+		endif(${fctbis} STREQUAL "__va_copy((d),(s))")
+
+		if(${fctbis} STREQUAL "__builtin_va_copy((d),(s))")
+			set(ac_cv_va_copy "GCB")
+			set(__VA_COPY_USE_GCB "__builtin_va_copy((d),(s))")
+		endif(${fctbis} STREQUAL "__builtin_va_copy((d),(s))")
+
+		if(${fctbis} STREQUAL "do { (d) = (s) } while (0)")
+			set(ac_cv_va_copy "ASS")
+			set(__VA_COPY_USE_ASS "do { (d) = (s)\; } while (0)")
+		endif(${fctbis} STREQUAL "do { (d) = (s) } while (0)")
+
+		if(${fctbis} STREQUAL "do { *(d) = *(s) } while (0)")
+			set(ac_cv_va_copy "ASP")
+			set(__VA_COPY_USE_ASP "do { *(d) = *(s)\; } while (0)")
+		endif(${fctbis} STREQUAL "do { *(d) = *(s) } while (0)")
+
+		if(${fctbis} STREQUAL "memcpy((void *)&(d), (void *)&(s)), sizeof((s))")
+			set(ac_cv_va_copy "CPS")
+			set(__VA_COPY_USE_CPS "memcpy((void *)&(d), (void *)&(s)), sizeof((s))")
+		endif(${fctbis} STREQUAL "memcpy((void *)&(d), (void *)&(s)), sizeof((s))")
+
+		if(${fctbis} STREQUAL "memcpy((void *)(d), (void *)(s)), sizeof(*(s))")
+			set(ac_cv_va_copy "CPP")
+			set(__VA_COPY_USE_CPP "memcpy((void *)(d), (void *)(s)), sizeof(*(s))")
+		endif(${fctbis} STREQUAL "memcpy((void *)(d), (void *)(s)), sizeof(*(s))")
+				
+		if(NOT STATUS_OK)
+		set(__VA_COPY_USE "__VA_COPY_USE_${ac_cv_va_copy}")
+		message("__VA_COPY_USE VA_COPY_USE_${ac_cv_va_copy}")
+		endif(NOT STATUS_OK)
+		message("__VA_COPY_USE_${ac_cv_va_copy} ${fctbis}")
+		set(STATUS_OK "1")
+
+	endif(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")
+endforeach(fct ${diff_va})
+
 # Checks for header files.
 
 CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
@@ -198,9 +415,9 @@ message("STDC_HEADERS ${STDC_HEADERS}")
 CHECK_INCLUDE_FILES("time.h;sys/time.h" TIME_WITH_SYS_TIME)
 message("TIME_WITH_SYS_TIME ${TIME_WITH_SYS_TIME}")
 
-CHECK_INCLUDE_FILE(sys/socket.h HAVE_SOCKET_H)
+CHECK_INCLUDE_FILE(sys/socket.h HAVE_SYS_SOCKET_H)
 message("HAVE_SOCKET_H ${HAVE_SOCKET_H}")
-CHECK_INCLUDE_FILE(sys/stat.h HAVE_STAT_H)
+CHECK_INCLUDE_FILE(sys/stat.h HAVE_SYS_STAT_H)
 message("HAVE_STAT_H ${HAVE_STAT_H}")
 CHECK_INCLUDE_FILE(windows.h HAVE_WINDOWS_H)
 message("HAVE_WINDOWS_H ${HAVE_WINDOWS_H}")
@@ -208,7 +425,7 @@ CHECK_INCLUDE_FILE(winsock.h HAVE_WINSOCK_H)
 message("HAVE_WINSOCK_H ${HAVE_WINSOCK_H}")
 CHECK_INCLUDE_FILE(winsock2.h HAVE_WINSOCK2_H)
 message("HAVE_WINSOCK2_H ${HAVE_WINSOCK2_H}")
-CHECK_INCLUDE_FILE(sys/time.h HAVE_TIME_H)
+CHECK_INCLUDE_FILE(sys/time.h HAVE_SYS_TIME_H)
 message("HAVE_TIME_H ${HAVE_TIME_H}")
 CHECK_INCLUDE_FILE(errno.h HAVE_ERRNO_H)
 message("HAVE_ERRNO_H ${HAVE_ERRNO_H}")
@@ -249,9 +466,9 @@ SET(need_getline "#define SIMGRID_NEED_GETLINE 1")
 endif(RUN_RESULT_VAR MATCHES "FAILED_TO_RUN")
 
 ### check for a working snprintf
-CHECK_FUNCTION_EXISTS(snprintf SNPRINTF_FUNC)
-CHECK_FUNCTION_EXISTS(vsnprintf VSNPRINTF_FUNC)
-if(SNPRINTF_FUNC AND VSNPRINTF_FUNC)
+CHECK_FUNCTION_EXISTS(snprintf HAVE_SNPRINTF)
+CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF)
+if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 	try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
 		${PROJECT_DIRECTORY}
@@ -277,21 +494,46 @@ if(SNPRINTF_FUNC AND VSNPRINTF_FUNC)
 		set(PREFER_PORTABLE_SNPRINTF 1)
 	endif(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN" OR RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
 	message("PREFER_PORTABLE_SNPRINTF ${PREFER_PORTABLE_SNPRINTF}")
-endif(SNPRINTF_FUNC AND VSNPRINTF_FUNC)
+endif(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 ### check for asprintf function familly
-CHECK_FUNCTION_EXISTS(asprintf ASPRINTF_FUNC)
-if(ASPRINTF_FUNC)
+CHECK_FUNCTION_EXISTS(asprintf HAVE_ASPRINTF)
+if(HAVE_ASPRINTF)
 	SET(need_asprintf "")
-else(ASPRINTF_FUNC)
+else(HAVE_ASPRINTF)
 	SET(need_asprintf "#define SIMGRID_NEED_ASPRINTF 1")
-endif(ASPRINTF_FUNC)
-CHECK_FUNCTION_EXISTS(vasprintf VASPRINTF_FUNC)
-if(VASPRINTF_FUNC)
+endif(HAVE_ASPRINTF)
+CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
+if(HAVE_VASPRINTF)
 	SET(need_vasprintf "")
-else(VASPRINTF_FUNC)
+else(HAVE_VASPRINTF)
 	SET(need_vasprintf "#define SIMGRID_NEED_VASPRINTF 1")
-endif(VASPRINTF_FUNC)
+endif(HAVE_VASPRINTF)
+
+### check for addr2line
+
+find_path(ADDR2LINE_tmp	NAMES addr2line	PATHS NO_DEFAULT_PATHS	)
+if(ADDR2LINE_tmp)
+set(ADDR2LINE "${ADDR2LINE_tmp}/addr2line")
+endif(ADDR2LINE_tmp)
+
+### check for include files
+CHECK_INCLUDE_FILE(dlfcn.h HAVE_DLFCN_H)
+CHECK_INCLUDE_FILE(inttypes.h HAVE_INTTYPES_H)
+CHECK_INCLUDE_FILE(memory.h HAVE_MEMORY_H)
+CHECK_INCLUDE_FILE(stdlib.h HAVE_STDLIB_H)
+CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
+CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
+CHECK_INCLUDE_FILE(valgrind/valgrind.h HAVE_VALGRIND_VALGRIND_H)
+
+### File to create
+
+configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${PROJECT_DIRECTORY}/src/context_sysv_config.h)
+
+SET( CMAKEDEFINE "#cmakedefine" )
+configure_file("${PROJECT_DIRECTORY}/CPACK/tmp/test_gras_config.h.in" "${PROJECT_DIRECTORY}/CPACK/tmp/test_gras_config_tmp.h.in" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/CPACK/tmp/test_gras_config_tmp.h.in" "${PROJECT_DIRECTORY}/src/test_gras_config.h" @ONLY IMMEDIATE)
 
 configure_file(${PROJECT_DIRECTORY}/include/simgrid_config.h.in ${PROJECT_DIRECTORY}/include/simgrid_config.h)
+
 message("__END_GRAS_&_SIMGRID____\n")

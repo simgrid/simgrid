@@ -1,0 +1,263 @@
+
+/* Define if building universal (internal helper macro) */
+#cmakedefine AC_APPLE_UNIVERSAL_BUILD @AC_APPLE_UNIVERSAL_BUILD@
+
+/* Arguments passed to the configure script */
+#cmakedefine AC_CONFIGURE_ARGS @AC_CONFIGURE_ARGS@
+
+/* Path to the addr2line tool */
+#cmakedefine ADDR2LINE @ADDR2LINE@
+
+/* Predefined possible va_copy() implementation (id: ASP) */
+#cmakedefine __VA_COPY_USE_ASP @__VA_COPY_USE_ASP@
+
+/* Predefined possible va_copy() implementation (id: ASS) */
+#cmakedefine __VA_COPY_USE_ASS @__VA_COPY_USE_ASS@
+
+/* Predefined possible va_copy() implementation (id: C99) */
+#cmakedefine __VA_COPY_USE_C99 @__VA_COPY_USE_C99@
+
+/* Define if xbt contexts are based on our threads implementation or not */
+#cmakedefine CONTEXT_THREADS @CONTEXT_THREADS@
+
+/* Define if xbt contexts are based on ucontext or not */
+#cmakedefine CONTEXT_UCONTEXT @CONTEXT_UCONTEXT@
+
+/* Predefined possible va_copy() implementation (id: CPP) */
+#cmakedefine __VA_COPY_USE_CPP @__VA_COPY_USE_CPP@
+
+/* Predefined possible va_copy() implementation (id: CPS) */
+#cmakedefine __VA_COPY_USE_CPS @__VA_COPY_USE_CPS@
+
+/* Predefined possible va_copy() implementation (id: GCB) */
+#cmakedefine __VA_COPY_USE_GCB @__VA_COPY_USE_GCB@
+
+/* Predefined possible va_copy() implementation (id: GCH) */
+#cmakedefine __VA_COPY_USE_GCH @__VA_COPY_USE_GCH@
+
+/* Predefined possible va_copy() implementation (id: GCM) */
+#cmakedefine __VA_COPY_USE_GCM @__VA_COPY_USE_GCM@
+
+/* Defined if arrays in struct can straddle struct alignment boundaries. This
+   is like than the structure compaction above, but this time, the argument to
+   be compacted is an array whom each element would be normally compacted.
+   Exemple: struct s { double d; int i; char c[6]; }; Arrays can straddle if c
+   is allowed to come just after i. Note that GRAS only support architecture
+   presenting this caracteristic so far. */
+#cmakedefine GRAS_ARRAY_STRADDLE_STRUCT @GRAS_ARRAY_STRADDLE_STRUCT@
+
+/* define if big endian */
+#define GRAS_BIGENDIAN @GRAS_BIGENDIAN@
+
+/* Defined if structures are compacted when possible. Consider this structure:
+   struct s {double d; int i; char c;}; If it is allowed, the char is placed
+   just after the int. If not, it has to be on the 8 bytes boundary imposed by
+   the double. For now, GRAS requires the structures to be compacted. */
+#cmakedefine GRAS_STRUCT_COMPACT @GRAS_STRUCT_COMPACT@
+
+/* defines the GRAS architecture signature of this machine */
+#define GRAS_THISARCH @GRAS_THISARCH@
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#cmakedefine HAVE_DLFCN_H @HAVE_DLFCN_H@
+
+/* Define to 1 if you have the <errno.h> header file. */
+#cmakedefine HAVE_ERRNO_H @HAVE_ERRNO_H@
+
+/* Define to 1 if you have the <execinfo.h> header file. */
+#cmakedefine HAVE_EXECINFO_H @HAVE_EXECINFO_H@
+
+/* Define to 1 if you have the `getdtablesize' function. */
+#cmakedefine HAVE_GETDTABLESIZE @HAVE_GETDTABLESIZE@
+
+/* Define to 1 if you have the `gettimeofday' function. */
+#cmakedefine HAVE_GETTIMEOFDAY @HAVE_GETTIMEOFDAY@
+
+/* Indicates that we have GTNETS support */
+#cmakedefine HAVE_GTNETS @HAVE_GTNETS@
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#cmakedefine HAVE_INTTYPES_H @HAVE_INTTYPES_H@
+
+/* defines whether Java bindings must be compiled or not */
+#cmakedefine HAVE_JAVA @HAVE_JAVA@
+
+/* Define to 1 if you have the <jni.h> header file. */
+#cmakedefine HAVE_JNI_H @HAVE_JNI_H@
+
+/* Define to 1 if you have the `makecontext' function. */
+#cmakedefine HAVE_MAKECONTEXT @HAVE_MAKECONTEXT@
+
+/* Define to 1 if you have the <memory.h> header file. */
+#cmakedefine HAVE_MEMORY_H @HAVE_MEMORY_H@
+
+/* Define if pthread_mutex_timedlock() is avaible or not (part of XPG6
+   standard only?) */
+#cmakedefine HAVE_MUTEX_TIMEDLOCK @HAVE_MUTEX_TIMEDLOCK@
+
+/* Define to 1 if you have the `popen' function. */
+#cmakedefine HAVE_POPEN @HAVE_POPEN@
+
+/* Define to 1 if you have the <pthread.h> header file. */
+#cmakedefine HAVE_PTHREAD_H @HAVE_PTHREAD_H@
+
+/* Define to 1 if you have the `readv' function. */
+#cmakedefine HAVE_READV @HAVE_READV@
+
+/* Define if sem_init() is avaible or not (part of XPG6 standard only) */
+#cmakedefine HAVE_SEM_INIT @HAVE_SEM_INIT@
+
+/* Define if sem_timedwait() is avaible or not (part of XPG6 standard only) */
+#cmakedefine HAVE_SEM_TIMEDWAIT @HAVE_SEM_TIMEDWAIT@
+
+/* Define to 1 if you have the `signal' function. */
+#cmakedefine HAVE_SIGNAL @HAVE_SIGNAL@
+
+/* Define to 1 if you have the <signal.h> header file. */
+#cmakedefine HAVE_SIGNAL_H @HAVE_SIGNAL_H@
+
+/* Define to 1 if you have the `snprintf' function. */
+#cmakedefine HAVE_SNPRINTF @HAVE_SNPRINTF@
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#cmakedefine HAVE_STDINT_H @HAVE_STDINT_H@
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#cmakedefine HAVE_STDLIB_H @HAVE_STDLIB_H@
+
+/* Define to 1 if you have the <strings.h> header file. */
+#cmakedefine HAVE_STRINGS_H @HAVE_STRINGS_H@
+
+/* Define to 1 if you have the <string.h> header file. */
+#cmakedefine HAVE_STRING_H @HAVE_STRING_H@
+
+/* Define to 1 if you have the `sysconf' function. */
+#cmakedefine HAVE_SYSCONF @HAVE_SYSCONF@
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#cmakedefine HAVE_SYS_SOCKET_H @HAVE_SYS_SOCKET_H@
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#cmakedefine HAVE_SYS_STAT_H @HAVE_SYS_STAT_H@
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#cmakedefine HAVE_SYS_TIME_H @HAVE_SYS_TIME_H@
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#cmakedefine HAVE_SYS_TYPES_H @HAVE_SYS_TYPES_H@
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@
+
+/* Define to 1 if you have the `usleep' function. */
+#cmakedefine HAVE_USLEEP @HAVE_USLEEP@
+
+/* Define to 1 if you have the <valgrind/valgrind.h> header file. */
+#cmakedefine HAVE_VALGRIND_VALGRIND_H @HAVE_VALGRIND_VALGRIND_H@
+
+/* Define if va_copy() macro exists (and no fallback implementation is
+   required) */
+#cmakedefine HAVE_VA_COPY @HAVE_VA_COPY@
+
+/* Define to 1 if you have the `vsnprintf' function. */
+#cmakedefine HAVE_VSNPRINTF @HAVE_VSNPRINTF@
+
+/* Define to 1 if you have the <windows.h> header file. */
+#cmakedefine HAVE_WINDOWS_H @HAVE_WINDOWS_H@
+
+/* Define to 1 if you have the <winsock2.h> header file. */
+#cmakedefine HAVE_WINSOCK2_H @HAVE_WINSOCK2_H@
+
+/* Define to 1 if you have the <winsock.h> header file. */
+#cmakedefine HAVE_WINSOCK_H @HAVE_WINSOCK_H@
+
+/* Define to the sub-directory in which libtool stores uninstalled libraries.*/
+#cmakedefine LT_OBJDIR @LT_OBJDIR@
+
+/* enable the asprintf replacement */
+#cmakedefine NEED_ASPRINTF @NEED_ASPRINTF@
+
+/* enable the vasprintf replacement */
+#cmakedefine NEED_VASPRINTF @NEED_VASPRINTF@
+
+/* Name of package */
+#cmakedefine PACKAGE @PACKAGE@
+
+/* Define to the address where bug reports for this package should be sent. */
+#cmakedefine PACKAGE_BUGREPORT @PACKAGE_BUGREPORT@ 
+
+/* Define to the full name of this package. */
+#cmakedefine PACKAGE_NAME @PACKAGE_NAME@
+
+/* Define to the full name and version of this package. */
+#cmakedefine PACKAGE_STRING @PACKAGE_STRING@
+
+/* Define to the one symbol short name of this package. */
+#cmakedefine PACKAGE_TARNAME @PACKAGE_TARNAME@
+
+/* Define to the home page for this package. */
+#cmakedefine PACKAGE_URL @PACKAGE_URL@
+
+/* Define to the version of this package. */
+#cmakedefine PACKAGE_VERSION @PACKAGE_VERSION@
+
+/* "enable replacement (v)snprintf if system (v)snprintf is broken" */
+#cmakedefine PREFER_PORTABLE_SNPRINTF @PREFER_PORTABLE_SNPRINTF@
+
+/* Indicates whether printf("%s",NULL) works */
+#cmakedefine PRINTF_NULL_WORKING @PRINTF_NULL_WORKING@
+
+/* define for stack growth */
+#cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@
+
+/* enable the getline replacement */
+#cmakedefine SIMGRID_NEED_GETLINE @SIMGRID_NEED_GETLINE@
+
+/* The maximal size of any scalar on this arch */
+#cmakedefine SIZEOF_MAX @SIZEOF_MAX@
+
+/* Define to 1 if you have the ANSI C header files. */
+#cmakedefine STDC_HEADERS @STDC_HEADERS@
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#cmakedefine TIME_WITH_SYS_TIME @TIME_WITH_SYS_TIME@
+
+/* Version number of package */
+#cmakedefine VERSION @VERSION@
+
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+/* #  undef WORDS_BIGENDIAN */
+# endif
+#endif
+
+/* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
+   `char[]'. */
+#cmakedefine YYTEXT_POINTER 
+
+/* Optional va_copy() implementation activation */
+#ifndef HAVE_VA_COPY
+#define va_copy(d, s) __VA_COPY_USE
+#endif
+
+
+/* Define to id of used va_copy() implementation */
+#cmakedefine __VA_COPY_USE @__VA_COPY_USE@
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#cmakedefine const @const@
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+#cmakedefine inline @inline@
+#endif
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+#cmakedefine size_t @size_t@
