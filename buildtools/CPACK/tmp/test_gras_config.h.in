@@ -85,6 +85,12 @@
 /* Define to 1 if you have the <jni.h> header file. */
 #cmakedefine HAVE_JNI_H @HAVE_JNI_H@
 
+/* defines whether Lua bindings must be compiled or not */
+#cmakedefine HAVE_LUA @HAVE_LUA@
+
+/* Define to 1 if you have the <lua5.1/lualib.h> header file. */
+#cmakedefine HAVE_LUA5_1_LUALIB_H @HAVE_LUA5_1_LUALIB_H@
+
 /* Define to 1 if you have the `makecontext' function. */
 #cmakedefine HAVE_MAKECONTEXT @HAVE_MAKECONTEXT@
 

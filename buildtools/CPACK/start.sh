@@ -1,6 +1,5 @@
 #! /bin/sh
 make clean
-cmake ./
 make
 ctest -D ExperimentalStart
 ctest -D ExperimentalUpdate

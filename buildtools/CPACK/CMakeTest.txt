@@ -21,5 +21,4 @@ INCLUDE(CTest)
 ENABLE_TESTING()
 add_test(MasterSlave_forwarder ${EXECUTABLE_OUTPUT_PATH}/masterslave_forwarder ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml ${PROJECT_DIRECTORY}/examples/msg/masterslave/deployment_masterslave_forwarder.xml)
 add_test(MasterSlave_failure ${EXECUTABLE_OUTPUT_PATH}/masterslave_forwarder ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml ${PROJECT_DIRECTORY}/examples/msg/masterslave/deployment_masterslave_forwarder.xml)
-
-INCLUDE(Dart)
+add_test(Test_run ${EXECUTABLE_OUTPUT_PATH}/Test)

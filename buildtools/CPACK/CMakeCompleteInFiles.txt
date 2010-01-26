@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
@@ -50,8 +49,13 @@ message("HAVE_GTNETS ${HAVE_GTNETS}")
 
 CHECK_INCLUDE_FILE(pthread.h HAVE_PTHREAD_H)
 CHECK_LIBRARY_EXISTS(pthread pthread_create NO_DEFAULT_PATHS pthread)
-
 if(pthread)
+set(pthread "yes")
+elseif(pthread)
+set(pthread "no")
+endif(pthread)
+
+if(pthread MATCHES "yes")
 	### HAVE_SEM_INIT
   	CHECK_LIBRARY_EXISTS(pthread sem_init NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
   	if(HAVE_SEM_INIT_LIB)
@@ -87,7 +91,7 @@ if(pthread)
 		endif(HAVE_MUTEX_TIMEDLOCK_run)
 		message("HAVE_MUTEX_TIMEDLOCK ${HAVE_MUTEX_TIMEDLOCK}")
 	endif(HAVE_MUTEX_TIMEDLOCK_LIB)
-endif(pthread)
+endif(pthread MATCHES "yes")
 
 # AC_CHECK_MCSC(mcsc=yes, mcsc=no) 
 try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
@@ -102,14 +106,80 @@ elseif(mcsc MATCHES "yes")
 	set(mcsc "no")
 endif(mcsc MATCHES "yes")
 
-#TODO configure.ac ligne 215
+if(mcsc MATCHES "no" AND pthread MATCHES "no")
+	CHECK_INCLUDE_FILE(windows.h HAVE_WINDOWS_H)
+	if(HAVE_WINDOWS_H)
+		set(windows_context "yes")
+		set(IS_WINDOWS 1)
+	elseif(HAVE_WINDOWS_H)
+		message("no appropriate backend found")
+	endif(HAVE_WINDOWS_H)
+endif(mcsc MATCHES "no" AND pthread MATCHES "no")
 
-if(disable_threads)
-	SET(CONTEXT_THREADS 0)
-else(disable_threads)
-	SET(CONTEXT_THREADS 1)
-endif(disable_threads)
+if(NOT disable_context AND with_context MATCHES "ucontext" AND mcsc MATCHES "no")
+	message(FATAL_ERROR "-Dwith-context=ucontext specified but ucontext unusable.")
+endif(NOT disable_context AND with_context MATCHES "ucontext" AND mcsc MATCHES "no")
+
+if(NOT disable_context)
+	set(with_context_ok 0)
+	if(with_context MATCHES "windows")
+		set(with_context_ok 1)
+	endif(with_context MATCHES "windows")
+
+	if(with_context MATCHES "pthreads")
+		set(with_context_ok 1)
+		set(with_context "pthread")
+	endif(with_context MATCHES "pthreads")
+
+	if(with_context MATCHES "auto")
+		set(with_context_ok 1)
+		set(with_context "ucontext")
+		message("with_context auto change to ucontext")
+	endif(with_context MATCHES "auto")
+
+	if(with_context MATCHES "ucontext")
+		set(with_context_ok 1)
+		if(mcsc MATCHES "yes")
+			set(CONTEXT_UCONTEXT 1)
+			CHECK_INCLUDE_FILE(valgrind/valgrind.h HAVE_VALGRIND_VALGRIND_H)
+		else(mcsc MATCHES "yes")
+			if(windows_context MATCHES "yes")
+				set(with_context "windows")
+			else(windows_context MATCHES "yes")
+				set(with_context "pthread")
+			endif(windows_context MATCHES "yes")
+		endif(mcsc MATCHES "yes")
+	endif(with_context MATCHES "ucontext")
+
+	if(with_context MATCHES "pthread")
+		set(with_context_ok 1)
+		if(pthread MATCHES "no")
+			message(FATAL_ERROR "Cannot find pthreads (try -Dwith_context=ucontext if you haven't already tried).")
+		endif(pthread MATCHES "no")
+		SET(CONTEXT_THREADS 1)
+	endif(with_context MATCHES "pthread")
+
+	if(with_context MATCHES "ucontext")
+		SET(CONTEXT_THREADS 0)
+	endif(with_context MATCHES "ucontext")
+	
+	if(NOT with_context_ok)
+		message(FATAL_ERROR "-Dwith-context must be either ucontext or pthread")
+	endif(NOT with_context_ok)
+endif(NOT disable_context)
+
+
 message("CONTEXT_THREADS ${CONTEXT_THREADS}")
+message("CONTEXT_UCONTEXT ${CONTEXT_UCONTEXT}")
+
+if(NOT disable_lua)
+	CHECK_INCLUDE_FILE(lua5.1/lualib.h HAVE_LUA5_1_LUALIB_H)
+	message("HAVE_LUA5_1_LUALIB_H ${HAVE_LUA5_1_LUALIB_H}")
+	if(HAVE_LUA5_1_LUALIB_H)
+		set(HAVE_LUA 1)
+	endif(HAVE_LUA5_1_LUALIB_H)
+endif(NOT disable_lua)
+message("HAVE_LUA ${HAVE_LUA}")
 
 message("______END_CONTEXT______")
 
@@ -512,19 +582,19 @@ endif(HAVE_VASPRINTF)
 
 ### check for addr2line
 
-find_path(ADDR2LINE_tmp	NAMES addr2line	PATHS NO_DEFAULT_PATHS	)
-if(ADDR2LINE_tmp)
-set(ADDR2LINE "${ADDR2LINE_tmp}/addr2line")
-endif(ADDR2LINE_tmp)
+find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS	)
+if(ADDR2LINE)
+set(ADDR2LINE "${ADDR2LINE}/addr2line")
+endif(ADDR2LINE)
+find_program(ADDR2LINE NAMES addr2line)
 
-### check for include files
+### check for include files and fct
 CHECK_INCLUDE_FILE(dlfcn.h HAVE_DLFCN_H)
 CHECK_INCLUDE_FILE(inttypes.h HAVE_INTTYPES_H)
 CHECK_INCLUDE_FILE(memory.h HAVE_MEMORY_H)
 CHECK_INCLUDE_FILE(stdlib.h HAVE_STDLIB_H)
 CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
 CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
-CHECK_INCLUDE_FILE(valgrind/valgrind.h HAVE_VALGRIND_VALGRIND_H)
 
 ### File to create
 
@@ -533,7 +603,6 @@ configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${PROJECT_DIREC
 SET( CMAKEDEFINE "#cmakedefine" )
 configure_file("${PROJECT_DIRECTORY}/CPACK/tmp/test_gras_config.h.in" "${PROJECT_DIRECTORY}/CPACK/tmp/test_gras_config_tmp.h.in" @ONLY IMMEDIATE)
 configure_file("${PROJECT_DIRECTORY}/CPACK/tmp/test_gras_config_tmp.h.in" "${PROJECT_DIRECTORY}/src/test_gras_config.h" @ONLY IMMEDIATE)
-
 configure_file(${PROJECT_DIRECTORY}/include/simgrid_config.h.in ${PROJECT_DIRECTORY}/include/simgrid_config.h)
 
 message("__END_GRAS_&_SIMGRID____\n")
