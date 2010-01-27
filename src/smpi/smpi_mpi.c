@@ -632,13 +632,14 @@ int SMPI_MPI_Alltoallv(void *sendbuf, int *scounts, int *sdisps, MPI_Datatype da
   int retval = MPI_SUCCESS;
   int rank;
 
+  smpi_bench_end();
   rank = smpi_mpi_comm_rank(comm);
   DEBUG1("<%d> basic alltoallv() called.",rank);
 
   retval = smpi_coll_basic_alltoallv(sendbuf, scounts, sdisps, datatype, 
                                      recvbuf, rcounts, rdisps, recvtype,
                                      comm); 
-
+  smpi_bench_begin();
   return retval;
 }
 
@@ -779,7 +780,12 @@ int SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key,
 
 double SMPI_MPI_Wtime(void)
 {
-  return (SIMIX_get_clock());
+  double time;
+
+  smpi_bench_end();
+  time = SIMIX_get_clock();
+  smpi_bench_begin();
+  return time;
 }
 
 

@@ -313,8 +313,11 @@ smx_cond_t smpi_process_cond()
 
 static void smpi_cfg_cb_host_speed(const char *name, int pos)
 {
-  smpi_global->reference_speed =
-    xbt_cfg_get_double_at(_surf_cfg_set, name, pos);
+  if(smpi_global)
+  {
+    smpi_global->reference_speed =
+      xbt_cfg_get_double_at(_surf_cfg_set, name, pos);
+  }
 }
 
 int smpi_run_simulation(int *argc, char **argv)
