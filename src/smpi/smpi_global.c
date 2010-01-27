@@ -364,3 +364,8 @@ int smpi_run_simulation(int *argc, char **argv)
 
   return 0;
 }
+
+int main(int argc, char** argv)
+{
+  return smpi_run_simulation(&argc, argv);
+}

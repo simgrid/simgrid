@@ -40,6 +40,7 @@ nobase_include_HEADERS = \
 	simdag/datatypes.h \
 	\
 	smpi/smpi.h \
+	smpi/mpi.h \
 	\
 	surf/surfxml_parse.h \
 	surf/simgrid_dtd.h \

@@ -5,43 +5,8 @@ exec_prefix="@exec_prefix@"
 
 CC="gcc"
 
-SEED="221238"
-
-TMPDIR="$(mktemp -d tmpXXXXXXX)"
-
-function modsource {
-  SOURCE="$1"
-  ## basename is not available on MAcOSX : SOURCEFILE="$(basename ${SOURCE})"
-  SOURCEFILE="`echo ${SOURCE} | egrep -o '[^/]+$'`"
-
-  SOURCEDIR="${SOURCE%${SOURCEFILE}}"
-  if [ -n "${SOURCEDIR}" ]; then
-    mkdir -p ${TMPDIR}${SOURCEDIR}
-  fi
-  TMPSOURCE="${TMPDIR}${SOURCE}"
-  cat > ${TMPSOURCE} <<HEADER
-#define SEED ${SEED}
-#include "smpi/smpi.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-#define sleep(x) smpi_sleep(x)
-#define gettimeofday(x, y) smpi_gettimeofday(x, y)
-int smpi_run_simulation(int *argc, char **argv);
-HEADER
-  # very simplistic transform, will probably want full parser for next version
-  grep -v "mpi.h" < ${SOURCE} | perl -pe 's/main/smpi_simulated_main/;' >> ${TMPSOURCE}
-  grep -q "smpi_simulated_main" ${TMPSOURCE}
-  if [ $? -eq 0 ]; then
-    cat >> ${TMPSOURCE} <<FOOTER
-int main(int argc, char **argv) {
-    return smpi_run_simulation(&argc, argv);
-}
-FOOTER
-  fi
-}
-
-INCLUDEARGS="-I @top_srcdir@/include "
+#FIXME: probably only want the last two pairs after 'make install'
+INCLUDEARGS="-I@top_srcdir@/include -I@top_srcdir@/include/smpi -I@includedir@ -I@includedir@/smpi"
 LINKARGS="-L@top_builddir@/src/.libs -L@libdir@ -lsimgrid -lsmpi "
 
 CMDLINE=""
@@ -52,14 +17,11 @@ while [ -n "$1" ]; do
       LINKARGS=""
       CMDLINE="${CMDLINE} -c "
   elif [ "${ARG%.c}" != "${ARG}" ]; then
-    INCLUDEARGS="${INCLUDEARGS} -I . -I .. -I ../include -I @includedir@ "
-#    SRCFILE="$(realpath ${ARG})"
     SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
     if [ -z $SRCFILE ] ; then
       SRCFILE="$ARG"
     fi
-    modsource ${SRCFILE}
-    CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "
+    CMDLINE="${CMDLINE} ${SRCFILE} "
   else
     CMDLINE="${CMDLINE} ${ARG} "
   fi
@@ -69,4 +31,3 @@ CMDLINE="${CC} ${INCLUDEARGS} ${CFLAGS} ${CMDLINE} ${LINKARGS}"
 
 #echo "${CMDLINE}"
 ${CMDLINE}
-rm -rf ${TMPDIR}
