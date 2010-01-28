@@ -501,6 +501,8 @@ void lmm_solve(lmm_system_t sys)
   xbt_swag_foreach(cnst, cnst_list) {
     /* INIT */
     cnst->remaining = cnst->bound;
+    if (cnst->remaining == 0)
+      continue;
     cnst->usage = 0;
     elem_list = &(cnst->element_set);
     xbt_swag_foreach(elem, elem_list) {
