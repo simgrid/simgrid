@@ -64,7 +64,7 @@ void _MSG_action_init()
 
 void _MSG_action_exit() {
   xbt_dict_free(&action_queues);
-  action_queues = xbt_dict_new();
+  xbt_dict_free(&action_funs);
 }
 
 static FILE *action_fp=NULL;
@@ -152,6 +152,8 @@ MSG_error_t MSG_action_trace_run(char *path)
   if (action_line)
     free(action_line);
   fclose(action_fp);
+  xbt_dict_free(&action_queues);
+  action_queues = xbt_dict_new();
 
   return res;
 }
