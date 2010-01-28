@@ -8,6 +8,8 @@
 #include "xbt/str.h"
 #include "xbt/dynar.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action,msg,"MSG actions for trace driven simulation");
+
 static xbt_dict_t action_funs;
 static xbt_dict_t action_queues;
 
@@ -44,10 +46,10 @@ static int MSG_action_runner(int argc, char *argv[])
   xbt_dynar_t evt=NULL;
 
   while ((evt = action_get_action(argv[0]))) {
-      msg_action_fun function =
+    msg_action_fun function =
         xbt_dict_get(action_funs, xbt_dynar_get_as(evt, 1, char *));
-      (*function) (evt);
-      xbt_dynar_free(&evt);
+    (*function) (evt);
+    xbt_dynar_free(&evt);
   }
 
   return 0;
@@ -78,7 +80,7 @@ static xbt_dynar_t action_get_action(char *name) {
   if (myqueue==NULL || xbt_dynar_length(myqueue)==0) { // nothing stored for me. Read the file further
 
     if (action_fp==NULL) { // File closed now. There's nothing more to read. I'm out of here
-      return NULL;
+      goto todo_done;
     }
 
     // Read lines until I reach something for me (which breaks in loop body) or end of file
@@ -101,17 +103,25 @@ static xbt_dynar_t action_get_action(char *name) {
         xbt_dynar_t otherqueue = xbt_dict_get_or_null(action_queues,evtname);
         if (otherqueue == NULL) { // Damn. Create the queue of that guy
           otherqueue = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
-          xbt_dict_set(action_queues ,evtname, otherqueue, NULL/*xbt_dynar_free_voidp*/);
+          xbt_dict_set(action_queues ,evtname, otherqueue, NULL);
         }
         xbt_dynar_push(otherqueue,&evt);
       }
     }
-    return NULL; // end of file reached in vain while searching for more work
+    goto todo_done; // end of file reached in vain while searching for more work
   } else {
     // Get something from my queue and return it
     xbt_dynar_shift(myqueue,&evt);
     return evt;
   }
+
+
+  todo_done: // I did all my actions for me in the file. cleanup before leaving
+  if (myqueue != NULL) {
+    xbt_dynar_free(&myqueue);
+    xbt_dict_remove(action_queues,name);
+  }
+  return NULL;
 }
 
 /** \ingroup msg_actions
@@ -127,6 +137,17 @@ MSG_error_t MSG_action_trace_run(char *path)
   xbt_assert2(action_fp != NULL, "Cannot open %s: %s", path, strerror(errno));
 
   res = MSG_main();
+
+  if (xbt_dict_size(action_queues)) {
+    WARN0("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
+    xbt_dict_cursor_t cursor;
+    char *name;
+    xbt_dynar_t todo;
+
+    xbt_dict_foreach(action_queues,cursor,name,todo) {
+      WARN2("Still %lu actions for %s",xbt_dynar_length(todo),name);
+    }
+  }
 
   if (action_line)
     free(action_line);
