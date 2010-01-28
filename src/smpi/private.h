@@ -151,6 +151,7 @@ void smpi_bench_begin(void);
 void smpi_bench_end(void);
 void smpi_bench_skip(void);
 
+void smpi_init(void);
 void smpi_global_init(void);
 void smpi_global_destroy(void);
 int smpi_process_index(void);

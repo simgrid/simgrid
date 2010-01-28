@@ -136,6 +136,11 @@ void smpi_mpi_min_func(void *a, void *b, int *length,
 void smpi_mpi_max_func(void *a, void *b, int *length,
                        MPI_Datatype * datatype);
 
+void smpi_init()
+{
+  smpi_global = xbt_new(s_smpi_global_t, 1);
+}
+
 void smpi_global_init()
 {
   int i;
@@ -150,8 +155,6 @@ void smpi_global_init()
   XBT_LOG_CONNECT(smpi_sender, smpi);
   XBT_LOG_CONNECT(smpi_util, smpi);
 #endif
-
-  smpi_global = xbt_new(s_smpi_global_t, 1);
 
   // config vars
   smpi_global->reference_speed =
@@ -313,11 +316,8 @@ smx_cond_t smpi_process_cond()
 
 static void smpi_cfg_cb_host_speed(const char *name, int pos)
 {
-  if(smpi_global)
-  {
-    smpi_global->reference_speed =
-      xbt_cfg_get_double_at(_surf_cfg_set, name, pos);
-  }
+  smpi_global->reference_speed =
+    xbt_cfg_get_double_at(_surf_cfg_set, name, pos);
 }
 
 int smpi_run_simulation(int *argc, char **argv)
@@ -334,6 +334,9 @@ int smpi_run_simulation(int *argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, "display_timing",
                    "Boolean indicating whether we should display the timing after simulation.",
                    xbt_cfgelm_int, &default_display_timing, 1, 1, NULL, NULL);
+
+  // Allocate minimal things before parsing command line arguments
+  smpi_init();
 
   SIMIX_global_init(argc, argv);
 
