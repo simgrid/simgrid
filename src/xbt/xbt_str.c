@@ -417,6 +417,7 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
     }
   }
   free(str_to_free);
+  xbt_dynar_shrink(res,0);
   return res;
 }
 
