@@ -366,6 +366,7 @@ static void routing_full_finalize(void) {
         xbt_dynar_free(&ROUTE_FULL(i, j));
     free(routing->routing_table);
     xbt_dict_free(&used_routing->host_id);
+    xbt_dict_free(&onelink_routes);
     free(routing);
     routing=NULL;
   }

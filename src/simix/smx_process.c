@@ -41,6 +41,8 @@ void SIMIX_process_empty_trash(void)
     /* Free the exception allocated at creation time */
     if (process->exception)
       free(process->exception);
+    if (process->properties)
+      xbt_dict_free(&process->properties);
 
     free(process->name);
     process->name = NULL;
