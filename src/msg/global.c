@@ -208,6 +208,9 @@ MSG_error_t MSG_clean(void)
   /* cleanup all resources in the mailbox module */
   MSG_mailbox_mod_exit();
 
+  /* initialization of the action module */
+  _MSG_action_exit();
+
   SIMIX_clean();
 
   return MSG_OK;

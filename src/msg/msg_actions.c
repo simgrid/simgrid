@@ -9,8 +9,9 @@
 #include "xbt/dynar.h"
 
 static xbt_dict_t action_funs;
-static xbt_dynar_t action_list;
+static xbt_dict_t action_queues;
 
+static xbt_dynar_t action_get_action(char *name);
 
 /** \ingroup msg_actions
  * \brief Registers a function to handle a kind of action
@@ -40,15 +41,13 @@ void MSG_action_unregister(const char *action_name)
 
 static int MSG_action_runner(int argc, char *argv[])
 {
-  xbt_dynar_t evt;
-  unsigned int cursor;
+  xbt_dynar_t evt=NULL;
 
-  xbt_dynar_foreach(action_list, cursor, evt) {
-    if (!strcmp(xbt_dynar_get_as(evt, 0, char *), argv[0])) {
+  while ((evt = action_get_action(argv[0]))) {
       msg_action_fun function =
         xbt_dict_get(action_funs, xbt_dynar_get_as(evt, 1, char *));
       (*function) (evt);
-    }
+      xbt_dynar_free(&evt);
   }
 
   return 0;
@@ -57,8 +56,62 @@ static int MSG_action_runner(int argc, char *argv[])
 void _MSG_action_init()
 {
   action_funs = xbt_dict_new();
-  action_list = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
+  action_queues = xbt_dict_new();
   MSG_function_register_default(MSG_action_runner);
+}
+
+void _MSG_action_exit() {
+  xbt_dict_free(&action_queues);
+  action_queues = xbt_dict_new();
+}
+
+static FILE *action_fp=NULL;
+static char *action_line = NULL;
+static size_t action_len = 0;
+
+static xbt_dynar_t action_get_action(char *name) {
+  ssize_t read;
+  xbt_dynar_t evt=NULL;
+
+
+  xbt_dynar_t myqueue = xbt_dict_get_or_null(action_queues,name);
+  if (myqueue==NULL || xbt_dynar_length(myqueue)==0) { // nothing stored for me. Read the file further
+
+    if (action_fp==NULL) { // File closed now. There's nothing more to read. I'm out of here
+      return NULL;
+    }
+
+    // Read lines until I reach something for me (which breaks in loop body) or end of file
+    while ((read = getline(&action_line, &action_len, action_fp)) != -1) {
+      // cleanup and split the string I just read
+      char *comment = strchr(action_line, '#');
+      if (comment != NULL)
+        *comment = '\0';
+      xbt_str_trim(action_line, NULL);
+      if (action_line[0] == '\0')
+        continue;
+      evt = xbt_str_split_quoted(action_line);
+
+      // if it's for me, I'm done
+      char *evtname = xbt_dynar_get_as(evt, 0, char *);
+      if (!strcmp(name,evtname)) {
+        return evt;
+      } else {
+        // Else, I have to store it for the relevant colleague
+        xbt_dynar_t otherqueue = xbt_dict_get_or_null(action_queues,evtname);
+        if (otherqueue == NULL) { // Damn. Create the queue of that guy
+          otherqueue = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
+          xbt_dict_set(action_queues ,evtname, otherqueue, NULL/*xbt_dynar_free_voidp*/);
+        }
+        xbt_dynar_push(otherqueue,&evt);
+      }
+    }
+    return NULL; // end of file reached in vain while searching for more work
+  } else {
+    // Get something from my queue and return it
+    xbt_dynar_shift(myqueue,&evt);
+    return evt;
+  }
 }
 
 /** \ingroup msg_actions
@@ -70,34 +123,14 @@ MSG_error_t MSG_action_trace_run(char *path)
 {
   MSG_error_t res;
 
-  FILE *fp;
-  char *line = NULL;
-  size_t len = 0;
-  ssize_t read;
-
-  xbt_dynar_t evt;
-
-  fp = fopen(path, "r");
-  xbt_assert2(fp != NULL, "Cannot open %s: %s", path, strerror(errno));
-
-  while ((read = getline(&line, &len, fp)) != -1) {
-    char *comment = strchr(line, '#');
-    if (comment != NULL)
-      *comment = '\0';
-    xbt_str_trim(line, NULL);
-    if (line[0] == '\0')
-      continue;
-    evt = xbt_str_split_quoted(line);
-    xbt_dynar_push(action_list, &evt);
-  }
-
-  if (line)
-    free(line);
-  fclose(fp);
+  action_fp = fopen(path, "r");
+  xbt_assert2(action_fp != NULL, "Cannot open %s: %s", path, strerror(errno));
 
   res = MSG_main();
-  xbt_dynar_free(&action_list);
-  action_list = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
+
+  if (action_line)
+    free(action_line);
+  fclose(action_fp);
 
   return res;
 }

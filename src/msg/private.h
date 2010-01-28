@@ -121,6 +121,7 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
      void _MSG_process_kill_from_SIMIX(void *p);
 
      void _MSG_action_init(void);
+     void _MSG_action_exit(void);
 
 SG_END_DECL()
 #endif
