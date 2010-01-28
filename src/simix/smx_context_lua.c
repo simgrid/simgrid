@@ -10,8 +10,17 @@
 #include "private.h"
 #include "context_sysv_config.h"        /* loads context system definitions */
 #include "portable.h"
+#include <ucontext.h>           /* context relative declarations */
 #include <lua5.1/lauxlib.h>
 #include <lua5.1/lualib.h>
+
+/* lower this if you want to reduce the memory consumption  */
+#define STACK_SIZE 128*1024
+
+#ifdef HAVE_VALGRIND_VALGRIND_H
+#  include <valgrind/valgrind.h>
+#endif /* HAVE_VALGRIND_VALGRIND_H */
+
 
 // FIXME: better location for that
 extern void MSG_register(lua_State *L);
@@ -20,6 +29,16 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smx_lua);
 
 typedef struct s_smx_ctx_sysv {
   SMX_CTX_BASE_T;
+
+  /* Ucontext info */
+  ucontext_t uc;                /* the thread that execute the code */
+  char stack[STACK_SIZE];       /* the thread stack size */
+  struct s_smx_ctx_sysv *prev;           /* the previous process */
+#ifdef HAVE_VALGRIND_VALGRIND_H
+  unsigned int valgrind_stack_id;       /* the valgrind stack id */
+#endif
+
+  /* lua state info */
   lua_State *state;
   int ref; /* to prevent the lua GC from collecting my threads, I ref them explicitely */
   int nargs; /* argument to lua_resume. First time: argc-1, afterward: 0 */
@@ -29,7 +48,7 @@ static lua_State *lua_state;
 
 static smx_context_t 
 smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv, 
-                                    void_f_pvoid_t cleanup_func, void* cleanup_arg);
+    void_f_pvoid_t cleanup_func, void* cleanup_arg);
 
 static int smx_ctx_lua_factory_finalize(smx_context_factory_t *factory);
 
@@ -42,7 +61,7 @@ static void smx_ctx_lua_stop(smx_context_t context);
 static void smx_ctx_lua_suspend(smx_context_t context);
 
 static void 
-  smx_ctx_lua_resume(smx_context_t old_context, smx_context_t new_context);
+smx_ctx_lua_resume(smx_context_t old_context, smx_context_t new_context);
 
 static void smx_ctx_sysv_wrapper(void);
 
@@ -81,7 +100,7 @@ static int smx_ctx_lua_factory_finalize(smx_context_factory_t * factory)
 
 static smx_context_t 
 smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv, 
-                                    void_f_pvoid_t cleanup_func, void* cleanup_arg)
+    void_f_pvoid_t cleanup_func, void* cleanup_arg)
 {
   smx_ctx_lua_t context = xbt_new0(s_smx_ctx_lua_t, 1);
 
@@ -89,6 +108,26 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
      otherwise is the context for maestro */
   if(code){
     context->code = code;
+
+    xbt_assert2(getcontext(&(context->uc)) == 0,
+        "Error in context saving: %d (%s)", errno, strerror(errno));
+
+    context->uc.uc_link = NULL;
+
+    context->uc.uc_stack.ss_sp =
+        pth_skaddr_makecontext(context->stack, STACK_SIZE);
+
+    context->uc.uc_stack.ss_size =
+        pth_sksize_makecontext(context->stack, STACK_SIZE);
+
+#ifdef HAVE_VALGRIND_VALGRIND_H
+    context->valgrind_stack_id =
+        VALGRIND_STACK_REGISTER(context->uc.uc_stack.ss_sp,
+            ((char *) context->uc.uc_stack.ss_sp) +
+            context->uc.uc_stack.ss_size);
+#endif /* HAVE_VALGRIND_VALGRIND_H */
+
+
     context->state = lua_newthread(lua_state);
 
     context->ref = luaL_ref(lua_state, LUA_REGISTRYINDEX);
@@ -102,7 +141,7 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
   } else {
     INFO0("Created context for maestro");
   }
-  
+
   return (smx_context_t)context;
 }
 
@@ -111,6 +150,9 @@ static void smx_ctx_lua_free(smx_context_t pcontext)
   int i;
   smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
   if (context){
+#ifdef HAVE_VALGRIND_VALGRIND_H
+    VALGRIND_STACK_DEREGISTER(((smx_ctx_lua_t) context)->valgrind_stack_id);
+#endif /* HAVE_VALGRIND_VALGRIND_H */
 
     /* free argv */
     if (context->argv) {
@@ -120,7 +162,8 @@ static void smx_ctx_lua_free(smx_context_t pcontext)
 
       free(context->argv);
     }
-    
+
+
     /* destroy the context */
     luaL_unref(lua_state,LUA_REGISTRYINDEX,context->ref );
     free(context);
@@ -129,6 +172,9 @@ static void smx_ctx_lua_free(smx_context_t pcontext)
 
 static void smx_ctx_lua_start(smx_context_t pcontext) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
+
+  makecontext(&context->uc, smx_ctx_sysv_wrapper, 0);
+
   INFO1("Starting '%s'",context->argv[0]);
 
   lua_getglobal(context->state,context->argv[0]);
@@ -148,23 +194,49 @@ static void smx_ctx_lua_start(smx_context_t pcontext) {
 
 static void smx_ctx_lua_stop(smx_context_t pcontext) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
-  
+
   if (context->cleanup_func)
     (*context->cleanup_func) (context->cleanup_arg);
 
-  // FIXME: DO it
+  smx_ctx_lua_suspend(pcontext);
+}
+
+static void smx_ctx_sysv_wrapper()
+{
+  /*FIXME: I would like to avoid accesing simix_global to get the current
+    context by passing it as an argument of the wrapper function. The problem
+    is that this function is called from smx_ctx_sysv_start, and uses
+    makecontext for calling it, and the stupid posix specification states that
+    all the arguments of the function should be int(32 bits), making it useless
+    in 64-bit architectures where pointers are 64 bit long.
+   */
+  smx_ctx_lua_t context =
+      (smx_ctx_lua_t)simix_global->current_process->context;
+
+  (context->code) (context->argc, context->argv);
+
+  smx_ctx_lua_stop((smx_context_t)context);
 }
 
 
 static void smx_ctx_lua_suspend(smx_context_t context)
 {
+  int rv;
   INFO1("Suspending %s",context->argv[0]);
   lua_yield(((smx_ctx_lua_t)context)->state,0); // Should be the last line of the function
-//  INFO1("Suspended %s",context->argv[0]);
+  smx_ctx_lua_t prev_context = ((smx_ctx_lua_t) context)->prev;
+
+  ((smx_ctx_lua_t) context)->prev = NULL;
+
+  rv = swapcontext(&((smx_ctx_lua_t) context)->uc, &prev_context->uc);
+
+  xbt_assert0((rv == 0), "Context swapping failure");
+  //  INFO1("Suspended %s",context->argv[0]);
 }
 
 static void 
 smx_ctx_lua_resume(smx_context_t old_context, smx_context_t new_context) {
+  int rv;
   smx_ctx_lua_t context = (smx_ctx_lua_t)new_context;
 
   INFO1("Resuming %s",context->argv[0]);
@@ -172,6 +244,13 @@ smx_ctx_lua_resume(smx_context_t old_context, smx_context_t new_context) {
   context->nargs = 0;
   INFO1("Resumed %s",context->argv[0]);
 
-//  INFO1("Process %s done ?",context->argv[0]);
-//  lua_resume(((smx_ctx_lua_t)new_context)->state,0);
+  ((smx_ctx_lua_t) new_context)->prev = (smx_ctx_lua_t)old_context;
+
+  rv = swapcontext(&((smx_ctx_lua_t)old_context)->uc,
+      &((smx_ctx_lua_t)new_context)->uc);
+
+  xbt_assert0((rv == 0), "Context swapping failure");
+
+  //  INFO1("Process %s done ?",context->argv[0]);
+  //  lua_resume(((smx_ctx_lua_t)new_context)->state,0);
 }
