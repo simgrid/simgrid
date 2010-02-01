@@ -1001,7 +1001,7 @@ and build/install it from scratch
 
  - <b>Installing GTNetS</b>
 
- It is important to put the full path of your libgtsim-xxxx.so file when creating the symbolic link. Replace <userhome> by some path you have write access to.
+ It is important to put the full path of your libgtsim-xxxx.so file when creating the symbolic link. Replace < userhome > by some path you have write access to.a
 
  \verbatim
  ln -sf /<absolute_path>/gtnets_current/libgtsim-debug.so /<userhome>/usr/lib/libgtnets.so
