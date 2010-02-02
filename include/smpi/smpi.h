@@ -114,7 +114,12 @@ SG_BEGIN_DECL()
 #define MPI_Scatter(a, b, c, d, e, f, g, h )  SMPI_MPI_Scatter(a, b, c, d, e, f, g, h)
 #define MPI_Alltoall(a, b, c, d, e, f, g )  SMPI_MPI_Alltoall(a, b, c, d, e, f, g)
 #define MPI_Alltoallv(a, b, c, d, e, f, g, h, i)  SMPI_MPI_Alltoallv(a, b, c, d, e, f, g, h, i)
-
+#define MPI_Gather(a, b, c, d, e, f, g, h) SMPI_MPI_Gather(a, b, c, d, e, f, g, h)
+#define MPI_Gatherv(a, b, c, d, e, f, g, h, i) SMPI_MPI_Gatherv(a, b, c, d, e, f, g, h, i)
+#define MPI_Scatterv(a, b, c, d, e, f, g, h, i) SMPI_MPI_Scatterv(a, b, c, d, e, f, g, h, i)
+#define MPI_Reduce_scatter(a, b, c, d, e, f) SMPI_MPI_Reduce_scatter(a, b, c, d, e, f)
+#define MPI_Allgather(a, b, c, d, e, f, g) SMPI_MPI_Allgather(a, b, c, d, e, f, g)
+#define MPI_Allgatherv(a, b, c, d, e, f, g, h) SMPI_MPI_Allgatherv(a, b, c, d, e, f, g, h)
 
 // SMPI Functions
 XBT_PUBLIC(int) SMPI_MPI_Init(int *argc, char ***argv);
@@ -170,8 +175,22 @@ XBT_PUBLIC(int) SMPI_MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype dat
 XBT_PUBLIC(int) SMPI_MPI_Alltoallv(void *sendbuf, int *scounts, int *sdisps, MPI_Datatype datatype, 
 		           void *recvbuf, int *rcounts, int *rdisps, MPI_Datatype recvtype,
 			     MPI_Comm comm);
-
-
+XBT_PUBLIC(int) SMPI_MPI_Gather(void* sendbuf, int sendcount, MPI_Datatype sendtype,
+                                void* recvbuf, int recvcount, MPI_Datatype recvtype,
+                                int root, MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Gatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype,
+                     void* recvbuf, int* recvcounts, int* displs, MPI_Datatype recvtype,
+                     int root, MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Scatterv(void* sendbuf, int *sendcounts, int *displs, MPI_Datatype sendtype,
+                      void* recvbuf, int recvcount, MPI_Datatype recvtype,
+                      int root, MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Reduce_scatter(void* sendbuf, void* recvbuf, int *recvcounts,
+                            MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Allgather(void* sendbuf, int sendcount, MPI_Datatype sendtype,
+                       void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
+XBT_PUBLIC(int) SMPI_MPI_Allgatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype,
+                       void* recvbuf, int *recvcounts, int *displs, MPI_Datatype recvtype,
+                       MPI_Comm comm);
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int);
