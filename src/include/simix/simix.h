@@ -146,6 +146,7 @@ XBT_PUBLIC(void) SIMIX_sem_destroy(smx_sem_t sem);
 XBT_PUBLIC(void) SIMIX_sem_release(smx_sem_t sem);
 XBT_PUBLIC(void) SIMIX_sem_release_forever(smx_sem_t sem);
 XBT_PUBLIC(int) SIMIX_sem_would_block(smx_sem_t sem);
+XBT_PUBLIC(void) SIMIX_sem_block_onto(smx_sem_t sem);
 XBT_PUBLIC(void) SIMIX_sem_acquire(smx_sem_t sem);
 XBT_PUBLIC(void) SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration);
 XBT_PUBLIC(unsigned int) SIMIX_sem_acquire_any(xbt_dynar_t sems);

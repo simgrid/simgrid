@@ -355,7 +355,6 @@ void SIMIX_sem_destroy(smx_sem_t sem) {
   if (sem == NULL)
     return;
 
-  xbt_fifo_item_t item = NULL;
   smx_action_t action = NULL;
 
   xbt_assert0(xbt_swag_size(sem->sleeping) == 0,
@@ -363,9 +362,8 @@ void SIMIX_sem_destroy(smx_sem_t sem) {
   xbt_swag_free(sem->sleeping);
 
   DEBUG1("%d actions registered", xbt_fifo_size(sem->actions));
-  xbt_fifo_foreach(sem->actions, item, action, smx_action_t) {
+  while((action=xbt_fifo_pop(sem->actions)))
     SIMIX_unregister_action_to_semaphore(action, sem);
-  }
 
   xbt_fifo_free(sem->actions);
   xbt_free(sem);
@@ -377,6 +375,7 @@ void SIMIX_sem_destroy(smx_sem_t sem) {
  * If no one was blocked, the semaphore capacity is increased by 1.
  * */
 void SIMIX_sem_release(smx_sem_t sem) {
+	DEBUG1("Sem release semaphore %p", sem);
   if (xbt_swag_size(sem->sleeping) >= 1) {
     smx_process_t proc = xbt_swag_extract(sem->sleeping);
     xbt_swag_insert(proc, simix_global->process_to_run);
@@ -407,7 +406,17 @@ void SIMIX_sem_release_forever(smx_sem_t sem) {
   }
 }
 
-static inline void SIMIX_sem_block_onto(smx_sem_t sem) {
+/**
+ * \brief Low level wait on a semaphore
+ *
+ * This function does not test the capacity of the semaphore and direcly locks
+ * the calling process on the semaphore (until someone call SIMIX_sem_release()
+ * on this semaphore). Do not call this function if you did not attach any action
+ * to this semaphore to be awaken. Note also that you may miss host failure if you
+ * do not attach a dummy action beforehand. SIMIX_sem_acquire does all these
+ * things for you so you it may be preferable to use.
+ */
+void SIMIX_sem_block_onto(smx_sem_t sem) {
   smx_process_t self = SIMIX_process_self();
 
   /* process status */
@@ -455,6 +464,7 @@ void SIMIX_sem_acquire(smx_sem_t sem) {
   SIMIX_process_self()->waiting_action = NULL;
   SIMIX_unregister_action_to_semaphore(act_sleep, sem);
   SIMIX_action_destroy(act_sleep);
+  DEBUG1("End of Wait on semaphore %p", sem);
 }
 /**
  * \brief Tries to acquire a semaphore before a timeout
