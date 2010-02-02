@@ -181,6 +181,8 @@ static int net_action_unref(surf_action_t action)
 
 static void net_action_cancel(surf_action_t action)
 {
+  surf_network_model->action_state_set((surf_action_t) action,
+                                       SURF_ACTION_FAILED);
   return;
 }
 
