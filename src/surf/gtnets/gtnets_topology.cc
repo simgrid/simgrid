@@ -14,6 +14,7 @@
 #endif
 #include "xbt/log.h"
 #include "xbt/asserts.h"
+#include <stdio.h> //for fflush in print_topology
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets_topology, surf_network_gtnets,
                                 "Logging specific to the SURF network GTNetS simulator");
