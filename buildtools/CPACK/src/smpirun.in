@@ -1,0 +1,196 @@
+#!/bin/bash
+DEFAULT_LOOPBACK_BANDWIDTH="498000000"
+DEFAULT_LOOPBACK_LATENCY="0.000004"
+DEFAULT_NETWORK_BANDWIDTH="$((26 * 1024 * 1024))"
+DEFAULT_NETWORK_LATENCY="0.000005"
+DEFAULT_NUMPROCS="4"
+DEFAULT_POWER="100"
+
+LOOPBACK_BANDWIDTH="${DEFAULT_LOOPBACK_BANDWIDTH}"
+LOOPBACK_LATENCY="${DEFAULT_LOOPBACK_LATENCY}"
+NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
+NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
+NUMPROCS="${DEFAULT_NUMPROCS}"
+POWER="${DEFAULT_POWER}"
+
+while true; do
+  case "$1" in
+   "-np" | "-n")
+      NUMPROCS="$2"
+      shift 2
+    ;;
+   "-bandwidth")
+      NETWORK_BANDWIDTH="$2"
+      shift 2
+    ;;
+   "-latency")
+      NETWORK_LATENCY="$2"
+      shift 2
+    ;;
+   "-platform")
+	PLATFORM="$2"
+      if [ ! -f ${PLATFORM} ]; then
+		echo "[$0] ** error: the file '${PLATFORM}' does not exist. Aborting."
+		exit 1
+      fi
+	shift 2
+    ;;
+   "-hostfile")
+	HOSTFILE="$2"
+      if [ ! -f ${HOSTFILE} ]; then
+		echo "[$0] ** error: the file '${HOSTFILE}' does not exist. Aborting."
+		exit 1
+      fi
+	shift 2
+    ;;
+   
+   "-map")
+	MAPOPT="true"
+      shift 1
+   ;;
+
+   "-keep-temps")
+	KEEP="true"
+      shift 1
+   ;;
+
+   "-help" | "--help" | "-h") 
+      echo "usage:"
+      echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+      echo "or (deprecated usage):"
+      echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
+      echo
+      exit
+   ;;
+   
+   "--cfg="*|"--log="*)
+     SIMOPTS="$SIMOPTS $1"
+     shift 1
+   ;;
+    *)
+      break
+    ;;
+  esac
+done
+
+EXEC="$1"
+shift
+
+##-----------------------------------
+
+
+
+
+##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
+if [ -z "${PLATFORM}" ]; then  
+	PLATFORMTMP="$(mktemp tmpXXXXXX)"
+
+	cat > ${PLATFORMTMP} <<PLATFORMHEAD
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+PLATFORMHEAD
+
+for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+  echo "  <host id=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
+  echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
+  echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
+done
+
+for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+  for (( j=${NUMPROCS}; $j ; j=$j-1 )) do
+    if [ $i -eq $j ]; then
+      echo "  <route src=\"host$i\" dst=\"host$j\"><link:ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
+    else
+      echo "  <route src=\"host$i\" dst=\"host$j\"><link:ctn id=\"link$i\"/><link:ctn id=\"link$j\"/></route>" >> ${PLATFORMTMP}
+    fi
+  done
+done
+
+cat >> ${PLATFORMTMP} <<PLATFORMFOOT
+</platform>
+PLATFORMFOOT
+
+else
+	PLATFORMTMP=${PLATFORM}
+fi
+##-------------------------------- end DEFAULT or SPECIFIED PLATFORM --------------------------------------
+
+##-------------------------------- DEFAULT APPLICATION --------------------------------------
+APPLICATIONTMP="$(mktemp tmpXXXXXX)"
+#APPLICATIONTMP="app.xml"
+
+
+cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+APPLICATIONHEAD
+
+##---- cache hostnames of hostfile---------------
+if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
+	hostnames=(`cat ${HOSTFILE} | tr \\\n " "`)
+      NUMHOSTS=`cat ${HOSTFILE} | wc -l`
+fi
+
+##----------------------------------------------------------
+##  generate application.xml with hostnames from hostfile:
+##  the name of host_i (1<=i<=p, where -np p) is the line i
+##  in hostfile (where -hostfile hostfile), or "host$i" if
+##  hostfile has less than i lines.
+##----------------------------------------------------------
+
+HAVE_SEQ="`which seq`"
+HAVE_JOT="`which jot`"
+
+if [ -n "${HAVE_SEQ}" ]; then
+	SEQ=`${HAVE_SEQ} 0 $((${NUMPROCS}-1))`
+else
+      cnt=0
+	while (( $cnt < ${NUMPROCS} )) ; do
+	    SEQ="$SEQ $cnt"
+	    cnt=$((cnt + 1));
+	done
+fi
+
+##---- generate <process> tags------------------------------
+
+for i in ${SEQ} 
+do
+  if [ -n "${HOSTFILE}" ]; then
+	j=$(( $i % ${NUMHOSTS} ))
+  fi 
+  ##---- optional display of ranks to process mapping
+  if [ -n "${MAPOPT}" ]; then
+	echo "[rank $i] -> ${hostnames[$j]}"  
+  fi
+
+  if [ -z "${hostnames[$j]}" ]; then
+	host="host"$(($j+1))
+  else
+	host="${hostnames[$j]}"
+  fi
+  echo "  <process host=\"${host}\" function=\"smpi_simulated_main\">" >> ${APPLICATIONTMP}
+  echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
+  for ARG in $*; do
+    echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
+  done
+  echo "  </process>" >> ${APPLICATIONTMP}
+done
+
+cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
+</platform>
+APPLICATIONFOOT
+##-------------------------------- end DEFAULT APPLICATION --------------------------------------
+
+if [ -n "${KEEP}" ] ; then
+  echo ${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+fi
+${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+
+if [ -z "${KEEP}" ] ; then
+   if [ -z "${PLATFORM}" ]; then
+	rm ${PLATFORMTMP} 
+   fi
+   rm ${APPLICATIONTMP}
+fi

@@ -1,0 +1,22 @@
+message("\n________ARGS_________")
+
+message("disable_java ${disable_java}")
+
+message("disable_threads ${disable_threads}")
+
+message("disable_gtnets ${disable_gtnets}")
+if(disable_gtnets)
+	set(gtnets_path "none" CACHE TYPE INTERNAL FORCE)	
+endif(disable_gtnets)
+message("  -> gtnets_path \"${gtnets_path}\"")
+
+message("disable_context ${disable_context}")
+if(disable_context)
+	set(with_context "none" CACHE TYPE INTERNAL FORCE)	
+endif(disable_context)
+message("  -> with_context \"${with_context}\"")
+
+message("disable_lua ${disable_lua}")
+
+message("_______END_ARGS_______")
+#--------------------------------------------------------------------------------------------------

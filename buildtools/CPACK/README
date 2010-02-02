@@ -1,10 +1,18 @@
 Pour utiliser CPACK:
 
-1 Mettre le dossier CPACK dans le repertoire racine du projet
-2 ouvrir dans un terminal le dossier CPACK
-3 "cmake ./" pour compiler
-4 "make" pour lancer le makefile et faire la lib simgrid et gras
-5 "cpack" pour faire la distrib (4 archives placées dans CMake/)
+Copier le dossier CPACK dans le project_directory de simgrid
+Fusionner le contenu de simgrid_CMakeList dans le project_directory de simgrid
+ouvrir dans un terminal le dossier project_directory de simgrid
+Faire les commandes suivantes :
+	cmake -Dinit=ON ./
+	make
+	cmake -Dinit=OFF ./
+	make
+Maintenant Cmake et prêt pour les tests ...
+
+3 "cmake ./" pour configurer le projet
+4 "make" pour lancer le makefile et faire les lib simgrid ,gras, smpi et les bins 
+5 "make package" pour faire la distrib
 6 "make clean" supprimer anciens .o
 
 Pour les options faire "cmake -D[nom de var]=[valeur] ./"
@@ -12,6 +20,11 @@ Pour les options faire "cmake -D[nom de var]=[valeur] ./"
 [nom de var] 	disable_java		[valeur] 	ON/OFF ou TRUE/FALSE ou 1/0
 		disable_threads				ON/OFF ou TRUE/FALSE ou 1/0
 		disable_gtnets				ON/OFF ou TRUE/FALSE ou 1/0
+		disable_context				ON/OFF ou TRUE/FALSE ou 1/0
+		disable_lua				ON/OFF ou TRUE/FALSE ou 1/0
+		init					ON/OFF ou TRUE/FALSE ou 1/0
 		gtnets_path				specifier un chemin
+		with_context				specifier un context
+
 
 

@@ -1,0 +1,245 @@
+### For code coverage
+### Set some variables
+SET(UPDATE_TYPE "svn")
+SET(DROP_METHOD "http")
+SET(DROP_SITE "cdash.inria.fr/CDash")
+SET(DROP_LOCATION "/submit.php?project=${PROJECT_NAME}")
+SET(DROP_SITE_CDASH TRUE)
+SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResults.cgi")
+SET(COVERAGE_COMMAND "${GCOV_PATH}/gcov")
+SET(VALGRIND_COMMAND "${VALGRIND_PATH}/valgrind")
+SET(MEMORYCHECK_COMMAND "${VALGRIND_PATH}/valgrind")
+set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no")
+#If you use the --read-var-info option Memcheck will run more slowly but may give a more detailed description of any illegal address.
+
+### Check 32bits or 64bits
+INCLUDE (CheckTypeSize)
+CHECK_TYPE_SIZE("long" SIZEOF_LONG)
+IF(SIZEOF_LONG EQUAL 4)
+  SET(ARCH_32_BITS 1)
+ELSE(SIZEOF_LONG EQUAL 4)
+  SET(ARCH_32_BITS 0)
+ENDIF(SIZEOF_LONG EQUAL 4)
+
+INCLUDE(CTest)
+ENABLE_TESTING()
+
+# TESH autotests
+ADD_TEST(tesh-self-basic 		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" basic.tesh)
+ADD_TEST(tesh-self-cd			${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" cd.tesh)
+ADD_TEST(tesh-self-IO-broken-pipe	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" IO-broken-pipe.tesh)
+ADD_TEST(tesh-self-IO-orders		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" IO-orders.tesh)
+ADD_TEST(tesh-self-IO-bigsize		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" IO-bigsize.tesh)
+ADD_TEST(tesh-self-set-return		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" set-return.tesh)
+ADD_TEST(tesh-self-set-signal		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" set-signal.tesh)
+ADD_TEST(tesh-self-set-timeout		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" set-timeout.tesh)
+ADD_TEST(tesh-self-set-ignore-output	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" set-ignore-output.tesh)
+ADD_TEST(tesh-self-catch-return		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" catch-return.tesh)
+ADD_TEST(tesh-self-catch-signal		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" catch-signal.tesh)
+ADD_TEST(tesh-self-catch-timeout	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" catch-timeout.tesh)
+ADD_TEST(tesh-self-catch-wrong-output	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" catch-wrong-output.tesh)
+ADD_TEST(tesh-self-bg-basic		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" bg-basic.tesh)
+ADD_TEST(tesh-self-bg-set-signal	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" bg-set-signal.tesh)
+ADD_TEST(tesh-self-background		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" background.tesh)
+
+# testsuite directory
+add_test(test-xbt-log		${PROJECT_DIRECTORY}/testsuite/xbt/log_usage)
+add_test(test-xbt-graphxml	${PROJECT_DIRECTORY}/testsuite/xbt/graphxml_usage ${PROJECT_DIRECTORY}/testsuite/xbt/graph.xml)
+add_test(test-xbt-heap		${PROJECT_DIRECTORY}/testsuite/xbt/heap_bench)
+
+add_test(test-surf-lmm		${PROJECT_DIRECTORY}/testsuite/surf/lmm_usage)
+add_test(test-surf-maxmin	${PROJECT_DIRECTORY}/testsuite/surf/maxmin_bench)
+add_test(test-surf-usage	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf_usage2	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage2  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf-trace	${PROJECT_DIRECTORY}/testsuite/surf/trace_usage --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/)
+
+add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag small_platform_variable.xml)
+add_test(test-simdag-2 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/small_platform.xml)
+add_test(test-simdag-3 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml)
+
+# teshsuite/xbt directory
+
+ADD_TEST(tesh-log-large		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite xbt/log_large_test.tesh)
+ADD_TEST(tesh-log-parallel	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite xbt/parallel_log_crashtest.tesh)
+
+# teshsuite/gras/datadesc directory
+ADD_TEST(tesh-gras-dd-mem	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_mem.tesh)
+ADD_TEST(tesh-gras-dd-rw 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_rw.tesh)
+
+ADD_TEST(tesh-gras-dd-r_little32_4	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_little32_4.tesh)
+ADD_TEST(tesh-gras-dd-r_little64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_little64.tesh)
+ADD_TEST(tesh-gras-dd-r_big32_8_4	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_big32_8_4.tesh)
+
+ADD_TEST(tesh-gras-dd-r_big32_8		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_big32_8.tesh)
+
+ADD_TEST(tesh-gras-dd-r_big32_2		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_big32_2.tesh)
+
+IF(${ARCH_32_BITS})
+  ADD_TEST(tesh-gras-msg_handle-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/msg_handle/test_sg_32)
+ELSE(${ARCH_32_BITS})
+  ADD_TEST(tesh-gras-msg_handle-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/msg_handle/test_sg_64)
+ENDIF(${ARCH_32_BITS})
+
+ADD_TEST(tesh-gras-empty_main-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/empty_main/test_rl)
+ADD_TEST(tesh-gras-empty_main-sg	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/empty_main/test_sg)
+
+IF(${ARCH_32_BITS})
+  ADD_TEST(tesh-gras-small_sleep-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/small_sleep/test_sg_32)
+ELSE(${ARCH_32_BITS})
+  ADD_TEST(tesh-gras-small_sleep-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/small_sleep/test_sg_64)
+ENDIF(${ARCH_32_BITS})
+
+ADD_TEST(tesh-msg-get_sender	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "msg/get_sender.tesh")
+				    
+ADD_TEST(tesh-simdag-reinit_costs	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/test_reinit_costs.tesh")
+ADD_TEST(tesh-simdag-parser		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/platforms/basic_parsing_test.tesh")
+ADD_TEST(tesh-simdag-flatifier		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/platforms/flatifier.tesh")
+
+ADD_TEST(tesh-simdag-basic0	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic0.tesh")
+ADD_TEST(tesh-simdag-basic1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic1.tesh")
+ADD_TEST(tesh-simdag-basic2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic2.tesh")
+ADD_TEST(tesh-simdag-basic3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic3.tesh")
+ADD_TEST(tesh-simdag-basic4	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic4.tesh")
+ADD_TEST(tesh-simdag-basic5	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic5.tesh")
+ADD_TEST(tesh-simdag-basic6	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic6.tesh")
+ADD_TEST(tesh-simdag-p2p-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/p2p/test_latency1.tesh")
+ADD_TEST(tesh-simdag-p2p-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/p2p/test_latency2.tesh")
+ADD_TEST(tesh-simdag-p2p-3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/p2p/test_latency3.tesh")
+ADD_TEST(tesh-simdag-p2p-3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/p2p/test_latency_bound.tesh")
+
+ADD_TEST(tesh-simdag-mxn-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/mxn/test_intra_all2all.tesh")
+ADD_TEST(tesh-simdag-mxn-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/mxn/test_intra_independent_comm.tesh")
+ADD_TEST(tesh-simdag-mxn-3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/mxn/test_intra_scatter.tesh")
+
+ADD_TEST(tesh-simdag-par-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/partask/test_comp_only_seq.tesh")
+ADD_TEST(tesh-simdag-par-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/partask/test_comp_only_par.tesh")
+
+# GRAS examples
+ADD_TEST(gras-ping-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/ping test_rl)
+ADD_TEST(gras-rpc-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/rpc test_rl)
+ADD_TEST(gras-spawn-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/spawn test_rl)
+ADD_TEST(gras-timer-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/timer test_rl)
+ADD_TEST(gras-chrono-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/chrono test_rl)
+ADD_TEST(gras-simple_token-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token test_rl)
+ADD_TEST(gras-mmrpc-rl		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/mmrpc test_rl)
+ADD_TEST(gras-all2all-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/all2all test_rl)
+ADD_TEST(gras-pmm-rl		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/pmm test_rl)
+ADD_TEST(gras-synchro-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/synchro test_rl)
+ADD_TEST(gras-properties-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/properties test_rl)
+
+# MSG examples
+ADD_TEST(msg-sendrecv_CLM03	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg sendrecv/sendrecv_CLM03.tesh)
+ADD_TEST(msg-sendrecv_Vegas	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg sendrecv/sendrecv_Vegas.tesh)
+ADD_TEST(msg-sendrecv_Reno	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg sendrecv/sendrecv_Reno.tesh)
+ADD_TEST(msg-suspend	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg suspend/suspend.tesh)
+ADD_TEST(msg-masterslave	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave.tesh)
+ADD_TEST(msg-masterslave-forwarder	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_forwarder.tesh)
+ADD_TEST(msg-masterslave-failure	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_failure.tesh)
+ADD_TEST(msg-masterslave-bypass	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_bypass.tesh)
+ADD_TEST(msg-migration	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg migration/migration.tesh)
+ADD_TEST(msg-ptask	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg parallel_task/parallel_task.tesh)
+ADD_TEST(msg-priority	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg priority/priority.tesh)
+ADD_TEST(msg-properties	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg properties/msg_prop.tesh)
+ADD_TEST(msg-trace	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg trace/trace.tesh)
+ADD_TEST(msg-masterslave_cpu_ti	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti.tesh)
+ADD_TEST(msg-gtnets	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets.tesh)
+
+IF(${ARCH_32_BITS})
+  ADD_TEST(gras-ping-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/ping test_sg_32)
+  ADD_TEST(gras-rpc-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/rpc test_sg_32)
+  ADD_TEST(gras-spawn-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/spawn test_sg_32)
+  ADD_TEST(gras-timer-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/timer test_sg_32)
+  ADD_TEST(gras-chrono-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/chrono test_sg_32)
+  ADD_TEST(gras-simple_token-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token test_sg_32)
+  ADD_TEST(gras-mmrpc-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/mmrpc test_sg_32)
+  ADD_TEST(gras-all2all-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/all2all test_sg_32)
+  ADD_TEST(gras-pmm-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/pmm test_sg_32)
+  ADD_TEST(gras-synchro-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/synchro test_sg_32)
+ELSE(${ARCH_32_BITS})
+  ADD_TEST(gras-ping-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/ping test_sg_64)
+  ADD_TEST(gras-rpc-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/rpc test_sg_64)
+  ADD_TEST(gras-spawn-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/spawn test_sg_64)
+  ADD_TEST(gras-timer-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/timer test_sg_64)
+  ADD_TEST(gras-chrono-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/chrono test_sg_64)
+  ADD_TEST(gras-simple_token-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token test_sg_64)
+  ADD_TEST(gras-mmrpc-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/mmrpc test_sg_64)
+  ADD_TEST(gras-all2all-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/all2all test_sg_64)
+  ADD_TEST(gras-pmm-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/pmm test_sg_64)
+  ADD_TEST(gras-synchro-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/synchro test_sg_64)
+ENDIF(${ARCH_32_BITS})
+ADD_TEST(gras-properties-sg	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/properties test_sg)
+
+# amok examples
+ADD_TEST(amok-bandwidth-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/amok bandwidth/bandwidth_rl.tesh)
+ADD_TEST(amok-saturate-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/amok saturate/saturate_rl.tesh)
+IF(${ARCH_32_BITS})
+  ADD_TEST(amok-bandwidth-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/amok bandwidth/bandwidth_sg_32.tesh)
+  ADD_TEST(amok-saturate-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/amok saturate/saturate_sg_32.tesh)
+ELSE(${ARCH_32_BITS})
+  ADD_TEST(amok-bandwidth-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/amok bandwidth/bandwidth_sg_64.tesh)
+  ADD_TEST(amok-saturate-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/amok saturate/saturate_sg_64.tesh)
+ENDIF(${ARCH_32_BITS})
+
+# simdag examples
+ADD_TEST(simdag-test_simdag	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag test_simdag.tesh)
+ADD_TEST(simdag-test_simdag2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag test_simdag2.tesh)
+ADD_TEST(simdag-test_prop	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag properties/test_prop.tesh)
+ADD_TEST(simdag-metaxml_test	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag metaxml/metaxml_test.tesh)
+
+#############################################################################################################################################################
+if(HAVE_JAVA)
+# java examples
+ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest)
+ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest)
+ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest)
+ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest)
+endif(HAVE_JAVA)
+# smpi examples
+ADD_TEST(smpi-bcast 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi bcast.tesh)
+ADD_TEST(smpi-reduce 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi reduce.tesh)
+
+#############################################################################################################################################################
+###
+### Declare that we know that some tests are broken
+###
+
+# we should install gtnets on the bots, maybe
+set_tests_properties(msg-gtnets PROPERTIES WILL_FAIL true)
+
+# Amok is broken in RL since before v3.3 (should fix it one day)
+set_tests_properties(amok-bandwidth-rl PROPERTIES WILL_FAIL true)
+set_tests_properties(amok-saturate-rl PROPERTIES WILL_FAIL true)
+
+# Expected to fail until we regenerate the data
+set_tests_properties(tesh-gras-dd-r_big32_8 PROPERTIES WILL_FAIL true)
+set_tests_properties(tesh-gras-dd-r_big32_2 PROPERTIES WILL_FAIL true)
+
+# Expected to fail until the parser gets better (v3.3.5?)
+set_tests_properties(simdag-metaxml_test PROPERTIES WILL_FAIL true)   
+set_tests_properties(tesh-simdag-flatifier PROPERTIES WILL_FAIL true)
+
+# These are broken, but should have their timings updated, that's all
+IF(${ARCH_32_BITS})
+  set_tests_properties(amok-bandwidth-sg-32 PROPERTIES WILL_FAIL true)  
+  set_tests_properties(amok-saturate-sg-32 PROPERTIES WILL_FAIL true)
+ELSE(${ARCH_32_BITS})
+  #set_tests_properties(amok-bandwidth-sg-64 PROPERTIES WILL_FAIL true)  
+ENDIF(${ARCH_32_BITS})
+
+# Don't mark this one since we should fix it before 3.3.4 gets released
+  set_tests_properties(smpi-reduce PROPERTIES WILL_FAIL true)
+
+#SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 50)
+#SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 50)
+#SET(CTEST_CUSTOM_TESTS_IGNORE ) 
+#SET(CTEST_CUSTOM_MEMCHECK_IGNORE
+#${CTEST_CUSTOM_MEMCHECK_IGNORE}
+#tesh-log-large
+#tesh-log-parallel
+#)
+
+
+
+
+
+

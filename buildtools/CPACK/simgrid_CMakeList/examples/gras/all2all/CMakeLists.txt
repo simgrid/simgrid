@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 2.6)
+
+set(EXECUTABLE_OUTPUT_PATH "./")
+set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(INCLUDES "-I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src -I/usr/include")
+
+set(CMAKE_CXX_FLAGS -fprofile-arcs -ftest-coverage)
+add_definitions (${INCLUDES} -fprofile-arcs -ftest-coverage)
+
+add_executable(all2all_simulator _all2all_simulator.c all2all.c)
+add_executable(all2all_sender _all2all_sender.c all2all.c)
+add_executable(all2all_receiver _all2all_receiver.c all2all.c)
+
+### Add definitions for compile
+target_link_libraries(all2all_simulator simgrid pthread m -fprofile-arcs)
+target_link_libraries(all2all_sender gras pthread m -fprofile-arcs)
+target_link_libraries(all2all_receiver gras pthread m -fprofile-arcs)

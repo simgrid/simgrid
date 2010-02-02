@@ -13,13 +13,12 @@ else(disable_java)
 	include(FindJNI)
 	if(JAVA_INCLUDE_PATH)
 		set(HAVE_JNI_H 1)
-	endif(JAVA_INCLUDE_PATH)
-	find_path(JAR	NAMES jar	PATHS NO_DEFAULT_PATHS	)	
-	if(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH)
+	endif(JAVA_INCLUDE_PATH)	
+	if(JAVA_RUNTIME AND JAVA_COMPILE AND JAVA_INCLUDE_PATH)
 		SET(HAVE_JAVA 1)
-	else(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH) 
+	else(JAVA_RUNTIME AND JAVA_COMPILE AND JAVA_INCLUDE_PATH) 
 		SET(HAVE_JAVA 0)
-	endif(JAVA_RUNTIME AND JAVA_COMPILE AND JAR AND JAVA_INCLUDE_PATH)
+	endif(JAVA_RUNTIME AND JAVA_COMPILE AND JAVA_INCLUDE_PATH)
 endif(disable_java)
 message("HAVE_JAVA ${HAVE_JAVA}")
 
@@ -30,7 +29,7 @@ if(disable_gtnets)
 else(disable_gtnets)
 	set(GTNETS_LDFLAGS "-lgtnets -L${gtnets_path}/lib")
 	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include -I${gtnets_path}/include/gtnets")
-	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/CPACK/tmp/prog_gtnets.cpp" OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
+	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/CPACK/prog_test/prog_gtnets.cpp" OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
 	if(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 0)
 	else(COMPILE_GTNETS_VAR)
@@ -59,7 +58,7 @@ if(pthread MATCHES "yes")
 	### HAVE_SEM_INIT
   	CHECK_LIBRARY_EXISTS(pthread sem_init NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
   	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/CPACK/tmp/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/CPACK/prog_test/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
 	    	else(HAVE_SEM_INIT_run)
@@ -71,7 +70,7 @@ if(pthread MATCHES "yes")
 	### HAVE_SEM_TIMEDWAIT
 	CHECK_LIBRARY_EXISTS(pthread sem_timedwait NO_DEFAULT_PATHS HAVE_SEM_TIMEDWAIT_LIB)
 	if(HAVE_SEM_TIMEDWAIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/CPACK/tmp/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/CPACK/prog_test/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_SEM_TIMEDWAIT_run)
 			set(HAVE_SEM_TIMEDWAIT 0)
 		else(HAVE_SEM_TIMEDWAIT_run)
@@ -83,7 +82,7 @@ if(pthread MATCHES "yes")
 	### HAVE_MUTEX_TIMEDLOCK
 	CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock NO_DEFAULT_PATHS HAVE_MUTEX_TIMEDLOCK_LIB)
 	if(HAVE_MUTEX_TIMEDLOCK_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/CPACK/tmp/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/CPACK/prog_test/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_MUTEX_TIMEDLOCK_run)
 			set(HAVE_MUTEX_TIMEDLOCK 0)
 		else(HAVE_MUTEX_TIMEDLOCK_run)
@@ -96,10 +95,10 @@ endif(pthread MATCHES "yes")
 # AC_CHECK_MCSC(mcsc=yes, mcsc=no) 
 try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/CPACK/tmp/prog_AC_CHECK_MCSC.c
+	${PROJECT_DIRECTORY}/CPACK/prog_test/prog_AC_CHECK_MCSC.c
 	)
 
-file(READ "${PROJECT_DIRECTORY}/CPACK/conftestval" mcsc)
+file(READ "${PROJECT_DIRECTORY}/conftestval" mcsc)
 if(mcsc MATCHES "yes")
 	set(mcsc "yes")
 elseif(mcsc MATCHES "yes")
@@ -188,6 +187,7 @@ message("______END_CONTEXT______")
 ##
 message("\n__________SVN__________")
 if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
+	#exec_program("svn up ${PROJECT_DIRECTORY}")
 	find_file(SVN ".svn" ${PROJECT_DIRECTORY})
 	exec_program("svnversion ${PROJECT_DIRECTORY}" OUTPUT_VARIABLE "SVN_VERSION")
 	message("SVN_VERSION ${SVN_VERSION}")
@@ -209,7 +209,7 @@ TEST_BIG_ENDIAN(BIGENDIAN)
 # Check architecture signature begin
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/CPACK/tmp/prog_GRAS_ARCH.c
+	${PROJECT_DIRECTORY}/CPACK/prog_test/prog_GRAS_ARCH.c
 	RUN_OUTPUT_VARIABLE var1
 	)
 if(BIGENDIAN)
@@ -284,7 +284,7 @@ endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:")
 # Check architecture signature end
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/CPACK/tmp/prog_GRAS_CHECK_STRUCT_COMPACTION.c
+	${PROJECT_DIRECTORY}/CPACK/prog_test/prog_GRAS_CHECK_STRUCT_COMPACTION.c
 	RUN_OUTPUT_VARIABLE var2
 	)
 separate_arguments(var2)
@@ -296,7 +296,7 @@ endforeach(var_tmp ${var2})
 # Check for [SIZEOF_MAX]
 try_run(RUN_SM_VAR COMPILE_SM_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/CPACK/tmp/prog_max_size.c
+	${PROJECT_DIRECTORY}/CPACK/prog_test/prog_max_size.c
 	RUN_OUTPUT_VARIABLE var3
 	)
 SET(SIZEOF_MAX ${var3})
@@ -313,7 +313,7 @@ if(HAVE_MAKECONTEXT)
 	set(makecontext_CPPFLAGS "-DTEST_makecontext")
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/CPACK/tmp/prog_stacksetup.c
+		${PROJECT_DIRECTORY}/CPACK/prog_test/prog_stacksetup.c
 		COMPILE_DEFINITIONS ${makecontext_CPPFLAGS}
 		)
 	find_program(CAT_EXE NAMES cat)
@@ -325,8 +325,8 @@ if(HAVE_MAKECONTEXT)
 		set(makecontext_type "guessed")
 	endif(COMPILE_makecontext_VAR)
 
-	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_DIRECTORY}/CPACK/conftestval" OUTPUT_VARIABLE "makecontext_addr")
-	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_DIRECTORY}/CPACK/conftestval" OUTPUT_VARIABLE "makecontext_size")
+	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_addr")
+	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_size")
 
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
 	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
@@ -339,9 +339,9 @@ endif(HAVE_MAKECONTEXT)
 
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/CPACK/tmp/prog_stackgrowth.c
+		${PROJECT_DIRECTORY}/CPACK/prog_test/prog_stackgrowth.c
 		)
-file(READ "${PROJECT_DIRECTORY}/CPACK/conftestval" stack)
+file(READ "${PROJECT_DIRECTORY}/conftestval" stack)
 if(stack MATCHES "down")
 	set(PTH_STACKGROWTH "-1")
 endif(stack MATCHES "down")
@@ -365,7 +365,7 @@ find_program(SET_MAKE NAMES make)
 #AC_PRINTF_NULL
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/CPACK/tmp/prog_printf_null.c
+	${PROJECT_DIRECTORY}/CPACK/prog_test/prog_printf_null.c
 	)
 
 if(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
@@ -388,7 +388,7 @@ set(diff_va "va_copy((d),(s))"
 )
 
 foreach(fct ${diff_va})
-	write_file("${PROJECT_DIRECTORY}/CPACK/tmp/prog_va_copy.c" "#include <stdlib.h>
+	write_file("${PROJECT_DIRECTORY}/CPACK/prog_test/prog_va_copy.c" "#include <stdlib.h>
 	#include <stdarg.h>
 	#include <string.h>
 	#define DO_VA_COPY(d,s) ${fct}
@@ -419,7 +419,7 @@ foreach(fct ${diff_va})
 	)
 	try_run(RUN_VA_NULL_VAR COMPILE_VA_NULL_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/CPACK/tmp/prog_va_copy.c
+	${PROJECT_DIRECTORY}/CPACK/prog_test/prog_va_copy.c
 	)
 	if(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")
 	else(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")	
@@ -450,12 +450,12 @@ foreach(fct ${diff_va})
 
 		if(${fctbis} STREQUAL "do { (d) = (s) } while (0)")
 			set(ac_cv_va_copy "ASS")
-			set(__VA_COPY_USE_ASS "do { (d) = (s)\; } while (0)")
+			set(__VA_COPY_USE_ASS "do { (d) = (s); } while (0)")
 		endif(${fctbis} STREQUAL "do { (d) = (s) } while (0)")
 
 		if(${fctbis} STREQUAL "do { *(d) = *(s) } while (0)")
 			set(ac_cv_va_copy "ASP")
-			set(__VA_COPY_USE_ASP "do { *(d) = *(s)\; } while (0)")
+			set(__VA_COPY_USE_ASP "do { *(d) = *(s); } while (0)")
 		endif(${fctbis} STREQUAL "do { *(d) = *(s) } while (0)")
 
 		if(${fctbis} STREQUAL "memcpy((void *)&(d), (void *)&(s)), sizeof((s))")
@@ -525,7 +525,7 @@ message("HAVE_SIGNAL ${HAVE_SIGNAL}")
 ### Try execut getline command
 try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/CPACK/tmp/prog_getline.c
+	${PROJECT_DIRECTORY}/CPACK/prog_test/prog_getline.c
 	OUTPUT_VARIABLE GETLINE_OUTPUT
 	)
 
@@ -542,7 +542,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 	try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/CPACK/tmp/prog_snprintf.c
+		${PROJECT_DIRECTORY}/CPACK/prog_test/prog_snprintf.c
 		)
 	if(CMAKE_CROSSCOMPILING)
 		message("SNPRINTF_FUNC CROSSCOMPILING")
@@ -551,18 +551,19 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 	try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/CPACK/tmp/prog_vsnprintf.c
+		${PROJECT_DIRECTORY}/CPACK/prog_test/prog_vsnprintf.c
 		)
 	if(CMAKE_CROSSCOMPILING)
 		message("VSNPRINTF_FUNC CROSSCOMPILING")
 		set(RUN_VSNPRINTF_FUNC "cross")
 	endif(CMAKE_CROSSCOMPILING)
-	
-	if(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN" OR RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
-		set(PREFER_PORTABLE_SNPRINTF 0)
-	else(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN" OR RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
+	set(PREFER_PORTABLE_SNPRINTF 0)
+	if(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
 		set(PREFER_PORTABLE_SNPRINTF 1)
-	endif(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN" OR RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
+	endif(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
+	if(RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
+		set(PREFER_PORTABLE_SNPRINTF 1)
+	endif(RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
 	message("PREFER_PORTABLE_SNPRINTF ${PREFER_PORTABLE_SNPRINTF}")
 endif(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
@@ -601,8 +602,20 @@ CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
 configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${PROJECT_DIRECTORY}/src/context_sysv_config.h)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${PROJECT_DIRECTORY}/CPACK/tmp/test_gras_config.h.in" "${PROJECT_DIRECTORY}/CPACK/tmp/test_gras_config_tmp.h.in" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/CPACK/tmp/test_gras_config_tmp.h.in" "${PROJECT_DIRECTORY}/src/test_gras_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/CPACK/src/gras_config.h.in" "${PROJECT_DIRECTORY}/CPACK/src/tmp_gras_config.h.in" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/CPACK/src/tmp_gras_config.h.in" "${PROJECT_DIRECTORY}/src/gras_config.h" @ONLY IMMEDIATE)
 configure_file(${PROJECT_DIRECTORY}/include/simgrid_config.h.in ${PROJECT_DIRECTORY}/include/simgrid_config.h)
+
+if(NOT prefix)
+	set(prefix /usr/local)
+endif(NOT prefix)
+set(exec_prefix ${prefix})
+set(top_srcdir ${PROJECT_DIRECTORY})
+set(includedir ${prefix}/include)
+set(top_builddir ${PROJECT_DIRECTORY})
+set(libdir ${exec_prefix}/lib)
+configure_file(${PROJECT_DIRECTORY}/CPACK/src/smpicc.in ${PROJECT_DIRECTORY}/src/smpi/smpicc @ONLY)
+configure_file(${PROJECT_DIRECTORY}/CPACK/src/smpirun.in ${PROJECT_DIRECTORY}/src/smpi/smpirun @ONLY)
+
 
 message("__END_GRAS_&_SIMGRID____\n")
