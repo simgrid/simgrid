@@ -88,7 +88,7 @@ while (<>) {
     $orgline = $thisline = $_;
 
     # Typical line  [Gatien:slave:(9) 11.243148] msg/gos.c:137: [msg_gos/DEBUG] Action terminated
-    if ($thisline =~ /^\[([^:]+):([^:]+):\((\d+)\) ([\d\.]*)\] ([^\[]*) \[([^\[]*)\] (.*)$/) {
+    if ($thisline =~ /^\[(.+):([^:]+):\((\d+)\) ([\d\.]*)\] ([^\[]*) \[([^\[]*)\] (.*)$/) {
 	$host=$1;
 	$procname=$2;
 	$pid=$3;
