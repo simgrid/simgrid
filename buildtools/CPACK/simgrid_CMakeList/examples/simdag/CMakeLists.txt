@@ -13,3 +13,16 @@ add_executable(ex_sd_test2 sd_test2.c)
 ### Add definitions for compile
 target_link_libraries(ex_sd_test simgrid pthread m -fprofile-arcs)
 target_link_libraries(ex_sd_test2 simgrid pthread m -fprofile-arcs)
+
+add_custom_command(TARGET ex_sd_test
+POST_BUILD
+COMMAND "cp" 
+ARGS ./ex_sd_test ./sd_test
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/simdag"
+)
+add_custom_command(TARGET ex_sd_test2
+POST_BUILD
+COMMAND "cp" 
+ARGS ./ex_sd_test2 ./sd_test2
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/simdag"
+)

@@ -44,3 +44,10 @@ target_link_libraries(ring_c m simgrid smpi -fprofile-arcs)
 target_link_libraries(split m simgrid smpi -fprofile-arcs)
 target_link_libraries(mvmul m simgrid smpi -fprofile-arcs)
 target_link_libraries(smpi_sendrecv m simgrid smpi -fprofile-arcs)
+
+add_custom_command(TARGET smpi_sendrecv
+POST_BUILD
+COMMAND "cp" 
+ARGS ./smpi_sendrecv ./sendrecv
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/smpi"
+)
