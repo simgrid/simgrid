@@ -148,6 +148,8 @@ typedef struct s_smx_comm {
   /* Surf action data */
   smx_process_t src_proc;
   smx_process_t dst_proc;
+  smx_action_t src_timeout;
+  smx_action_t dst_timeout;
   smx_action_t act;
   double rate;
   double task_size;

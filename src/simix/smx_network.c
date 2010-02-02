@@ -171,7 +171,17 @@ void SIMIX_communication_destroy(smx_comm_t comm)
     SIMIX_action_destroy(comm->act);
     comm->act = NULL;
   }
-  
+
+  if(comm->src_timeout){
+    SIMIX_action_destroy(comm->src_timeout);
+    comm->src_timeout = NULL;
+  }
+
+  if(comm->dst_timeout){
+      SIMIX_action_destroy(comm->dst_timeout);
+      comm->dst_timeout = NULL;
+    }
+
   xbt_free(comm);
 }
 
@@ -230,33 +240,45 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
  */
 static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout)
 {
-  xbt_ex_t e;
+  smx_action_t act_sleep = NULL;
+  int src_timeout = 0;
+  int dst_timeout = 0;
 
   DEBUG1("Waiting for the completion of communication %p", comm);
   
-  if(timeout > 0){
-    TRY{
-      SIMIX_sem_acquire_timeout(comm->sem, timeout);
-    }
-    CATCH(e){
-      /* If there is a timeout then cancel the communication if it is running or 
-         remove it from the rendez-vous otherwise. Then signal the other peer,
-         destroy the communication and retrow the exception. */
-      if(e.category == timeout_error){
-        DEBUG1("Communication timeout! %p", comm);
-        if(comm->act && SIMIX_action_get_state(comm->act) == SURF_ACTION_RUNNING)
-          SIMIX_communication_cancel(comm);
-        else if (comm->rdv)
-          SIMIX_rdv_remove(comm->rdv, comm);
-
-        /* Make sure that everyone sleeping on that semaphore is awake, and that nobody will ever block on it */
-        SIMIX_sem_release_forever(comm->sem);
-        SIMIX_communication_destroy(comm);
-      }
-      RETHROW;
-    }
+  if (timeout >= 0) {
+    act_sleep = SIMIX_action_sleep(SIMIX_host_self(), timeout);
+		if(SIMIX_process_self()==comm->src_proc)
+			comm->src_timeout = act_sleep;
+		else
+			comm->dst_timeout = act_sleep;
+    SIMIX_action_set_name(act_sleep,bprintf("Timeout for comm %p and wait on semaphore %p (max_duration:%f)", comm, comm->sem,timeout));
+    SIMIX_register_action_to_semaphore(act_sleep, comm->sem);
+    SIMIX_process_self()->waiting_action = act_sleep;
+    SIMIX_sem_block_onto(comm->sem);
+    SIMIX_process_self()->waiting_action = NULL;
+    SIMIX_unregister_action_to_semaphore(act_sleep, comm->sem);
   } else {
     SIMIX_sem_acquire(comm->sem);
+  }
+
+  /* Check for timeouts */
+  if ((src_timeout = ((comm->src_timeout) && (SIMIX_action_get_state(comm->src_timeout) == SURF_ACTION_DONE))) ||
+      (dst_timeout = ((comm->dst_timeout) && (SIMIX_action_get_state(comm->dst_timeout) == SURF_ACTION_DONE))) ) {
+			/* Somebody did a timeout! */
+    if (src_timeout) DEBUG1("Communication timeout from the src! %p", comm);
+    if (dst_timeout) DEBUG1("Communication timeout from the dst! %p", comm);
+
+    if(comm->act && SIMIX_action_get_state(comm->act) == SURF_ACTION_RUNNING)
+      SIMIX_communication_cancel(comm);
+    else if (comm->rdv)
+      SIMIX_rdv_remove(comm->rdv, comm);
+
+    /* Make sure that everyone sleeping on that semaphore is awake, and that nobody will ever block on it */
+    SIMIX_sem_release_forever(comm->sem);
+    SIMIX_communication_destroy(comm);
+
+    THROW1(timeout_error, 0, "Communication timeouted because of %s",src_timeout?"the source":"the destination");
   }
 
   DEBUG1("Communication %p complete! Let's check for errors", comm);
