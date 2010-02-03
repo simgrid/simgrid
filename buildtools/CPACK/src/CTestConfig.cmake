@@ -17,13 +17,13 @@ exec_program("${CAT}" ARGS "version" OUTPUT_VARIABLE VERSION)
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   SET(DISTRIB2 "OSX")
 else(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-
   #Try to get the distrib
   exec_program("${CAT}" ARGS " /etc/issue" OUTPUT_VARIABLE DISTRIB)
   MARK_AS_ADVANCED(CAT)
+  STRING(REPLACE " \\n \\l" "" DISTRIB2 ${DISTRIB})
 endif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
-STRING(REPLACE " \\n \\l" "" DISTRIB2 ${DISTRIB})
+
          
 getuname(osname -s)
 getuname(node -n)
