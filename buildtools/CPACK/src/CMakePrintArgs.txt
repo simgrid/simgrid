@@ -18,5 +18,8 @@ message("  -> with_context \"${with_context}\"")
 
 message("disable_lua ${disable_lua}")
 
+message("init ${init}")
+message("MAINTAINER_MODE ${MAINTAINER_MODE}")
+
 message("_______END_ARGS_______")
 #--------------------------------------------------------------------------------------------------

@@ -7,6 +7,7 @@
 #SET(disable_context ON)
 #SET(disable_lua ON)
 #SET(init OFF)
+#SET(MAINTAINER_MODE OFF)
 
 option(init "Set ON for make _*.c with gras_stub_generator" OFF)
 option(disable_java "This variable set the java context." ON)
@@ -14,3 +15,4 @@ option(disable_gtnets "This variable set the gtnets context." ON)
 option(disable_threads "This variable set the thread context." ON)
 option(disable_context "This variable set the context." ON)
 option(disable_lua "This variable set lua use." ON)
+option(MAINTAINER_MODE "Permit to make flex and flexml files." OFF)
