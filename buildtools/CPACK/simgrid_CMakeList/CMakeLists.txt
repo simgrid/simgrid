@@ -27,25 +27,25 @@ set(INCLUDES "-I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include 
 set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
 ### Setup Options
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeOption.txt OPTIONAL NO_POLICY_SCOPE)
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeOption.txt)
 
 ### Print ARGS
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakePrintArgs.txt OPTIONAL NO_POLICY_SCOPE)
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakePrintArgs.txt)
 
 ### Make the *.h files with *.h.in files
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeCompleteInFiles.txt OPTIONAL NO_POLICY_SCOPE)
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeCompleteInFiles.txt)
 
 ### Define source packages for Libs 
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDefinePackages.txt OPTIONAL NO_POLICY_SCOPE)
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDefinePackages.txt)
 
 ### Make Libs and Exes
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeMakeExeLib.txt OPTIONAL NO_POLICY_SCOPE)
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeMakeExeLib.txt)
 
 ### Make tests
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeTest.txt OPTIONAL NO_POLICY_SCOPE)
-include(${PROJECT_DIRECTORY}/CPACK/src/CTestConfig.cmake OPTIONAL NO_POLICY_SCOPE)
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeTest.txt)
+include(${PROJECT_DIRECTORY}/CPACK/src/CTestConfig.cmake)
 
 ### Setup the distrib
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDistrib.txt OPTIONAL NO_POLICY_SCOPE)
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDistrib.txt)
 
 INCLUDE(Dart)
