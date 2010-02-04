@@ -29,9 +29,9 @@ message("HAVE_FLEXML ${HAVE_FLEXML}")
 
 		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c -Psurf_parse_ --noline ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l"
 		OUTPUT_VARIABLE "FLEX_OK")		
-		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/xbt/graphxml.c -Pxbt_graph_parse_ --noline ${PROJECT_DIRECTORY}/xbt/graphxml.l"
+		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/xbt/graphxml.c -Pxbt_graph_parse_ --noline ${PROJECT_DIRECTORY}/src/xbt/graphxml.l"
 		OUTPUT_VARIABLE "FLEX_OK")
-		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c -Pdax_ --noline ${PROJECT_DIRECTORY}/simdag/dax_dtd.l"
+		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c -Pdax_ --noline ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l"
 		OUTPUT_VARIABLE "FLEX_OK")
 
 		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline ${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.l"	OUTPUT_VARIABLE "FLEX_OK")
