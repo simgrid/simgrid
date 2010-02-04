@@ -17,7 +17,6 @@ message("HAVE_FLEXML ${HAVE_FLEXML}")
 	file(REMOVE "${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c ${PROJECT_DIRECTORY}/src/xbt/graphxml.c ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c ${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h ${PROJECT_DIRECTORY}/include/xbt/graphxml.h ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h")
 
 	if(HAVE_FLEXML AND HAVE_FLEX)
-
 		exec_program("${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l -L ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd" OUTPUT_VARIABLE "FLEX_OK")
 		exec_program("${FLEXML_EXE} --root-tags platform -P surfxml --sysid=simgrid.dtd -H ${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h -L ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd" OUTPUT_VARIABLE "FLEX_OK")
 
