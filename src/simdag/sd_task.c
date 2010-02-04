@@ -670,7 +670,7 @@ double SD_task_get_execution_time(SD_task_t task,
       max_time = time;
     }
   }
-  return max_time * SD_task_get_amount(task);
+  return max_time;
 }
 static inline void SD_task_do_schedule(SD_task_t task) {
   SD_CHECK_INIT_DONE();
