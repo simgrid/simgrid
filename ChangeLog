@@ -1,5 +1,10 @@
 SimGrid (3.3.5-svn) unstable; urgency=low
 
+ SimDag:
+  * Kill the useless "rate" argument of SD_task_get_execution_time()
+    Everyone used to provide -1 as a value, it was not used, and the
+    semantic of a possible use wasn't even clear.
+
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 

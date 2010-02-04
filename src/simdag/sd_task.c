@@ -633,15 +633,13 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
  * \param workstation_list the workstations on which the task would be executed
  * \param computation_amount computation amount for each workstation
  * \param communication_amount communication amount between each pair of workstations
- * \param rate task execution speed rate
  * \see SD_schedule()
  */
 double SD_task_get_execution_time(SD_task_t task,
                                   int workstation_nb,
                                   const SD_workstation_t * workstation_list,
                                   const double *computation_amount,
-                                  const double *communication_amount,
-                                  double rate)
+                                  const double *communication_amount)
 {
   double time, max_time = 0.0;
   int i, j;

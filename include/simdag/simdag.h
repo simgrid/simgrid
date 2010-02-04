@@ -122,8 +122,7 @@ XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task,
                                               const SD_workstation_t *
                                               workstation_list, const double
                                               *computation_amount, const double
-                                              *communication_amount,
-                                              double rate);
+                                              *communication_amount);
 XBT_PUBLIC(int) SD_task_get_kind(SD_task_t task);
 XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb,
                                   const SD_workstation_t * workstation_list,
