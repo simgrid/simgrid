@@ -240,10 +240,10 @@ SD_workstation_t* SD_task_get_workstation_list(SD_task_t task)
 }
 
 /**
- * \brief Returns the total amount of a task
+ * \brief Returns the total amount of work contained in a task
  *
  * \param task a task
- * \return the total amount of this task
+ * \return the total amount of work (computation or data transfer) for this task
  * \see SD_task_get_remaining_amount()
  */
 double SD_task_get_amount(SD_task_t task)
@@ -254,10 +254,10 @@ double SD_task_get_amount(SD_task_t task)
 }
 
 /**
- * \brief Returns the remaining amount of a task
+ * \brief Returns the remaining amount work to do till the completion of a task
  *
  * \param task a task
- * \return the remaining amount of this task
+ * \return the remaining amount of work (computation or data transfer) of this task
  * \see SD_task_get_amount()
  */
 double SD_task_get_remaining_amount(SD_task_t task)
