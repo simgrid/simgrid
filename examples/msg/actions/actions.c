@@ -45,7 +45,7 @@ static void send(xbt_dynar_t action)
   //  char *to =  xbt_dynar_get_as(action, 2, char *);
   DEBUG2("Entering Send: %s (size: %lg)", name, parse_double(size));
   MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
-  INFO2("%s %f", name, MSG_get_clock()-clock);
+  DEBUG2("%s %f", name, MSG_get_clock()-clock);
   free(name);
 }
 
@@ -84,7 +84,7 @@ static void Isend(xbt_dynar_t action)
   comm_helper =
     MSG_process_create_with_arguments(spawn_name, spawned_send, 
 				      NULL, MSG_host_self(), 2, myargv);
-  INFO2("%s %f",xbt_str_join(action, " "), MSG_get_clock()-clock);
+  DEBUG2("%s %f",xbt_str_join(action, " "), MSG_get_clock()-clock);
 }
 
 
@@ -101,7 +101,7 @@ static void recv(xbt_dynar_t action)
   DEBUG1("Receiving: %s", name);
   MSG_task_receive(&task, mailbox_name);
   //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
-  INFO2("%s %f", name, MSG_get_clock()-clock);
+  DEBUG2("%s %f", name, MSG_get_clock()-clock);
   MSG_task_destroy(task);
   free(name);
 }
@@ -142,7 +142,7 @@ static void Irecv(xbt_dynar_t action)
 						  NULL, MSG_host_self(),
 						  1, myargv);
 
-  INFO2("%s %f",  xbt_str_join(action, " "), 
+  DEBUG2("%s %f",  xbt_str_join(action, " "), 
 	MSG_get_clock()-clock);
  
   free(name);
@@ -158,17 +158,17 @@ static void wait_action(xbt_dynar_t action)
   
   DEBUG1("Entering %s", name);
   sprintf(task_name,"%s_wait",MSG_process_get_name(MSG_process_self()));
-  INFO1("wait: %s", task_name);
+  DEBUG1("wait: %s", task_name);
   MSG_task_receive(&task,task_name);
   MSG_task_destroy(task);
-  INFO2("%s %f", name,	MSG_get_clock()-clock);
+  DEBUG2("%s %f", name,	MSG_get_clock()-clock);
   free(name);
 }
 
 static void barrier (xbt_dynar_t action)
 {
   char *name = xbt_str_join(action, " ");
-  INFO1("barrier: %s", name);
+  DEBUG1("barrier: %s", name);
   
 
   free(name);
@@ -181,6 +181,7 @@ static void reduce(xbt_dynar_t action)
   char *name;
   char task_name[80];
   char spawn_name[80];
+  char **myargv;
   char *comm_size = xbt_dynar_get_as(action, 2, char *);
   char *comp_size = xbt_dynar_get_as(action, 3, char *);
   m_process_t comm_helper=NULL;
@@ -202,19 +203,25 @@ static void reduce(xbt_dynar_t action)
 
   name = bprintf("reduce_%d", counters->reduce_counter++);
 
-  if (!strcmp(process_name, "process0")){
+  if (!strcmp(process_name, "p0")){
     DEBUG2("%s: %s is the Root",name, process_name);
     for(i=1;i<communicator_size;i++){
-      sprintf(spawn_name,"%s_process%d", name, i);
+      sprintf(spawn_name,"%s_p%d_%s", name, i,
+	   MSG_process_get_name(MSG_process_self()));
       sprintf(task_name,"%s_wait", spawn_name);
+      myargv = (char**) calloc (2, sizeof (char*));
+      
+      myargv[0] = xbt_strdup(spawn_name);
+      myargv[1] = NULL;
+
       comm_helper = 
-	MSG_process_create(task_name, spawned_recv, 
-			   (void *) xbt_strdup(spawn_name),
-			   MSG_host_self());      
+	MSG_process_create_with_arguments(task_name, spawned_recv, 
+					  NULL, MSG_host_self(),
+					  1, myargv);
     }
 
     for(i=1;i<communicator_size;i++){
-      sprintf(task_name,"%s_process%d_wait", name, i);
+      sprintf(task_name,"%s_p%d_p0_wait", name, i);
       MSG_task_receive(&task,task_name);
       MSG_task_destroy(task);
       task=NULL;
@@ -228,14 +235,14 @@ static void reduce(xbt_dynar_t action)
     DEBUG1("%s: computed", name);
   } else {
     DEBUG2("%s: %s sends", name, process_name);
-    sprintf(task_name,"%s_%s", name, process_name);
+    sprintf(task_name,"%s_%s_p0", name, process_name);
     DEBUG1("put on %s", task_name);
     MSG_task_send(MSG_task_create(name, 0, parse_double(comm_size), NULL),
 		  task_name);
   }
 
   MSG_process_set_data(MSG_process_self(), (void*)counters);
-  INFO2("%s %f", xbt_str_join(action, " "), MSG_get_clock()-clock);
+  DEBUG2("%s %f", xbt_str_join(action, " "), MSG_get_clock()-clock);
   free(name);
 }
 
@@ -264,7 +271,7 @@ static void bcast (xbt_dynar_t action)
   }
 
   name = bprintf("bcast_%d", counters->bcast_counter++);
-  if (!strcmp(process_name, "process0")){
+  if (!strcmp(process_name, "p0")){
     DEBUG2("%s: %s is the Root",name, process_name);
 
     for(i=1;i<communicator_size;i++){
@@ -280,7 +287,7 @@ static void bcast (xbt_dynar_t action)
     }
     
     for(i=1;i<communicator_size;i++){
-      sprintf(task_name,"process%d_wait", i);
+      sprintf(task_name,"p%d_wait", i);
       DEBUG1("get on %s", task_name);
       MSG_task_receive(&task,task_name);      
       MSG_task_destroy(task);
@@ -299,7 +306,7 @@ static void bcast (xbt_dynar_t action)
   }
 
   MSG_process_set_data(MSG_process_self(), (void*)counters);
-  INFO2("%s %f", xbt_str_join(action, " "), MSG_get_clock()-clock);
+  DEBUG2("%s %f", xbt_str_join(action, " "), MSG_get_clock()-clock);
   free(name);
 }
 
@@ -311,7 +318,7 @@ static void sleep(xbt_dynar_t action)
   double clock = MSG_get_clock();
   DEBUG1("Entering %s", name);
   MSG_process_sleep(parse_double(duration));
-  INFO2("%s %f ", name, MSG_get_clock()-clock);
+  DEBUG2("%s %f ", name, MSG_get_clock()-clock);
   free(name);
 }
 
@@ -343,19 +350,25 @@ static void allReduce(xbt_dynar_t action)
 
   name = bprintf("allReduce_%d", counters->allReduce_counter++);
 
-  if (!strcmp(process_name, "process0")){
+  if (!strcmp(process_name, "p0")){
     DEBUG2("%s: %s is the Root",name, process_name);
     for(i=1;i<communicator_size;i++){
-      sprintf(spawn_name,"%s_process%d", name, i);
+      sprintf(spawn_name,"%s_p%d_%s", name, i,
+	   MSG_process_get_name(MSG_process_self()));
       sprintf(task_name,"%s_wait", spawn_name);
+      myargv = (char**) calloc (2, sizeof (char*));
+      
+      myargv[0] = xbt_strdup(spawn_name);
+      myargv[1] = NULL;
+
       comm_helper = 
-	MSG_process_create(task_name, spawned_recv, 
-			   (void *) xbt_strdup(spawn_name),
-			   MSG_host_self());      
+	MSG_process_create_with_arguments(task_name, spawned_recv, 
+					  NULL, MSG_host_self(),
+					  1, myargv);
     }
 
     for(i=1;i<communicator_size;i++){
-      sprintf(task_name,"%s_process%d_wait", name, i);
+      sprintf(task_name,"%s_p%d_p0_wait", name, i);
       MSG_task_receive(&task,task_name);
       MSG_task_destroy(task);
       task=NULL;
@@ -381,7 +394,7 @@ static void allReduce(xbt_dynar_t action)
     }
     
     for(i=1;i<communicator_size;i++){
-      sprintf(task_name,"process%d_wait", i);
+      sprintf(task_name,"p%d_wait", i);
       DEBUG1("get on %s", task_name);
       MSG_task_receive(&task,task_name);      
       MSG_task_destroy(task);
@@ -392,7 +405,7 @@ static void allReduce(xbt_dynar_t action)
 
   } else {
     DEBUG2("%s: %s sends", name, process_name);
-    sprintf(task_name,"%s_%s", name, process_name);
+    sprintf(task_name,"%s_%s_p0", name, process_name);
     DEBUG1("put on %s", task_name);
     MSG_task_send(MSG_task_create(name, 0, parse_double(comm_size), NULL),
 		  task_name);
@@ -407,7 +420,7 @@ static void allReduce(xbt_dynar_t action)
   }
 
   MSG_process_set_data(MSG_process_self(), (void*)counters);
-  INFO2("%s %f", xbt_str_join(action, " "), MSG_get_clock()-clock);
+  DEBUG2("%s %f", xbt_str_join(action, " "), MSG_get_clock()-clock);
   free(name);
 }
 
@@ -427,7 +440,7 @@ static void compute(xbt_dynar_t action)
   DEBUG1("Entering %s", name);
   MSG_task_execute(task);
   MSG_task_destroy(task);
-  INFO2("%s %f", name, MSG_get_clock()-clock);
+  DEBUG2("%s %f", name, MSG_get_clock()-clock);
   free(name);
 }
 

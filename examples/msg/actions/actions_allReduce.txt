@@ -1,9 +1,9 @@
-process0 comm_size 3
-process0 allReduce 5e8 5e8
-process1 allReduce 5e8 5e8
-process2 allReduce 5e8 5e8
+p0 comm_size 3
+p0 allReduce 5e8 5e8
+p1 allReduce 5e8 5e8
+p2 allReduce 5e8 5e8
 
-process0 compute 5e8
-process1 compute 5e8
-process2 compute 5e8
+p0 compute 5e8
+p1 compute 5e8
+p2 compute 5e8
 
