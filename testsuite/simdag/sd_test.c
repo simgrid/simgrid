@@ -144,7 +144,7 @@ int main(int argc, char **argv)
     INFO2("Estimated time for '%s': %f", SD_task_get_name(task),
           SD_task_get_execution_time(task, workstation_number,
                                      workstation_list, computation_amount,
-                                     communication_amount, rate));
+                                     communication_amount));
 
     /* let's launch the simulation! */
 
