@@ -3,167 +3,97 @@
 
 #include "xbt/mallocator.h"
 #include "xbt/xbt_os_time.h"
-
 #include "simix/simix.h"
-
 #include "smpi/smpi.h"
 
-#define SMPI_DEFAULT_SPEED 100
-#define SMPI_REQUEST_MALLOCATOR_SIZE 100
-#define SMPI_MESSAGE_MALLOCATOR_SIZE 100
+struct s_smpi_process_data;
+typedef struct s_smpi_process_data* smpi_process_data_t;
 
-// smpi mpi communicator
-typedef struct smpi_mpi_communicator_t {
-  int size;
-  int barrier_count;
-  smx_mutex_t barrier_mutex;
-  smx_cond_t barrier_cond;
-
-  int *rank_to_index_map;
-  int *index_to_rank_map;
-
-} s_smpi_mpi_communicator_t;
-
-// smpi mpi datatype
-typedef struct smpi_mpi_datatype_t {
-  size_t size;
-  ptrdiff_t lb;
-  ptrdiff_t ub;
-  uint16_t flags; /* flags: has it been committed, etc ...*/
-  uint16_t id;    /* unused so far : data id, normally the index in the data array. */
-} s_smpi_mpi_datatype_t;
-
-// smpi mpi request
-typedef struct smpi_mpi_request_t {
-  smpi_mpi_communicator_t comm;
+typedef struct s_smpi_mpi_request {
+  MPI_Comm comm;
   int src;
   int dst;
   int tag;
-
-  void *buf;
-  int count;
-  smpi_mpi_datatype_t datatype;
-
-  short int completed:1;
-  short int consumed:1;         /* for waitany */
-
-  smx_mutex_t mutex;
-  smx_cond_t cond;
-
-  void *data;
-  int forward;
-
+  size_t size;
+  smx_rdv_t rdv;
+  smx_comm_t pair;
+  int complete;
 } s_smpi_mpi_request_t;
 
-// smpi mpi op
-typedef struct smpi_mpi_op_t {
-  void (*func) (void *a, void *b, int *length, MPI_Datatype * datatype);
-} s_smpi_mpi_op_t;
-
-// smpi received message
-typedef struct smpi_received_message_t {
-  smpi_mpi_communicator_t comm;
-  int src;
-  int tag;
-
-  void *buf;
-
-  void *data;
-  int forward;
-
-} s_smpi_received_message_t;
-typedef struct smpi_received_message_t *smpi_received_message_t;
-
-typedef struct smpi_do_once_duration_node_t {
-  char *file;
-  int line;
-  double duration;
-  struct smpi_do_once_duration_node_t *next;
-} s_smpi_do_once_duration_node_t;
-typedef struct smpi_do_once_duration_node_t *smpi_do_once_duration_node_t;
-
-typedef struct smpi_global_t {
-
-  // config vars
-  double reference_speed;
-
-  // state vars
-  int process_count;
-  xbt_mallocator_t request_mallocator;
-  xbt_mallocator_t message_mallocator;
-
-  smx_process_t *main_processes;
-
-  xbt_os_timer_t timer;
-  smx_cond_t timer_cond;
-
-  // keeps track of previous times
-  smpi_do_once_duration_node_t do_once_duration_nodes;
-  smx_mutex_t do_once_mutex;
-  double *do_once_duration;
-
-} s_smpi_global_t;
-typedef struct smpi_global_t *smpi_global_t;
-extern smpi_global_t smpi_global;
-
-typedef struct smpi_host_data_t {
-  int index;
-  smx_mutex_t mutex;
-  smx_cond_t cond;
-
-  smx_process_t main;
-  smx_process_t sender;
-  smx_process_t receiver;
-
-  int finalize;                 /* so that main process stops its sender&receiver */
-
-  xbt_fifo_t pending_recv_request_queue;
-  xbt_fifo_t pending_send_request_queue;
-  xbt_fifo_t received_message_queue;
-} s_smpi_process_data_t;
-typedef struct smpi_host_data_t *smpi_process_data_t;
-
-// function prototypes
-void smpi_process_init(int *argc, char ***argv);
-void smpi_process_finalize(void);
-int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm);
-int smpi_mpi_type_get_extent(MPI_Datatype datatype, MPI_Aint *lb, MPI_Aint *extent);
-
-int smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
-int smpi_mpi_barrier(smpi_mpi_communicator_t comm);
-
-int smpi_mpi_isend(smpi_mpi_request_t request);
-int smpi_mpi_irecv(smpi_mpi_request_t request);
-int smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
-int smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, 
-		    	    void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag,
-		          MPI_Comm comm, MPI_Status *status);
-int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t * status);
-int smpi_mpi_waitall(int count, smpi_mpi_request_t requests[], smpi_mpi_status_t status[]);
-int smpi_mpi_waitany(int count, smpi_mpi_request_t requests[], int *index, smpi_mpi_status_t status[]);
-
-
-// utilities
-void smpi_execute(double duration);
-void smpi_start_timer(void);
-double smpi_stop_timer(void);
-void smpi_bench_begin(void);
-void smpi_bench_end(void);
-void smpi_bench_skip(void);
-
-void smpi_init(void);
+smpi_process_data_t smpi_process_data(void);
+smpi_process_data_t smpi_process_remote_data(int index);
 void smpi_global_init(void);
 void smpi_global_destroy(void);
-int smpi_process_index(void);
-smx_mutex_t smpi_process_mutex(void);
-smx_cond_t smpi_process_cond(void);
-int smpi_run_simulation(int *argc, char **argv);
-int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
-                        int src, int dst, int tag,
-                        smpi_mpi_communicator_t comm,
-                        smpi_mpi_request_t * request);
 
-int smpi_sender(int argc, char *argv[]);
-int smpi_receiver(int argc, char *argv[]);
+void smpi_process_init(int* argc, char*** argv);
+void smpi_process_destroy(void);
+int smpi_process_count(void);
+int smpi_process_index(void);
+xbt_os_timer_t smpi_process_timer(void);
+void smpi_process_post_send(MPI_Comm comm, MPI_Request request);
+void smpi_process_post_recv(MPI_Request request);
+
+size_t smpi_datatype_size(MPI_Datatype datatype);
+MPI_Aint smpi_datatype_lb(MPI_Datatype datatype);
+MPI_Aint smpi_datatype_ub(MPI_Datatype datatype);
+int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint * extent);
+int smpi_datatype_copy(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype);
+
+MPI_Op smpi_op_new(MPI_User_function* function, int commute);
+void smpi_op_destroy(MPI_Op op);
+void smpi_op_apply(MPI_Op op, void* invec, void* inoutvec, int* len, MPI_Datatype* datatype);
+
+MPI_Group smpi_group_new(int size);
+void smpi_group_destroy(MPI_Group group);
+void smpi_group_set_mapping(MPI_Group group, int index, int rank);
+int smpi_group_index(MPI_Group group, int rank);
+int smpi_group_rank(MPI_Group group, int index);
+int smpi_group_use(MPI_Group group);
+int smpi_group_unuse(MPI_Group group);
+int smpi_group_size(MPI_Group group);
+int smpi_group_compare(MPI_Group group1, MPI_Group group2);
+
+MPI_Comm smpi_comm_new(MPI_Group group);
+void smpi_comm_destroy(MPI_Comm comm);
+MPI_Group smpi_comm_group(MPI_Comm comm);
+int smpi_comm_size(MPI_Comm comm);
+int smpi_comm_rank(MPI_Comm comm);
+
+MPI_Request smpi_mpi_isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+MPI_Request smpi_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
+void smpi_mpi_recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status* status);
+void smpi_mpi_send(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
+void smpi_mpi_sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
+int smpi_mpi_test(MPI_Request* request, MPI_Status* status);
+int smpi_mpi_testany(int count, MPI_Request requests[], int* index, MPI_Status* status);
+void smpi_mpi_wait(MPI_Request* request, MPI_Status* status);
+int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status* status);
+void smpi_mpi_waitall(int count, MPI_Request requests[],  MPI_Status status[]);
+int smpi_mpi_waitsome(int incount, MPI_Request requests[], int* indices, MPI_Status status[]);
+void smpi_mpi_bcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+void smpi_mpi_barrier(MPI_Comm comm);
+void smpi_mpi_gather(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+void smpi_mpi_gatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts, int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm);
+void smpi_mpi_allgather(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
+void smpi_mpi_allgatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts, int* displs, MPI_Datatype recvtype, MPI_Comm comm);
+void smpi_mpi_scatter(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+void smpi_mpi_scatterv(void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+void smpi_mpi_reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
+void smpi_mpi_allreduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+
+void nary_tree_bcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, int arity);
+void nary_tree_barrier(MPI_Comm comm, int arity);
+
+int smpi_coll_tuned_alltoall_bruck(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
+int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
+int smpi_coll_tuned_alltoall_pairwise(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
+int smpi_coll_basic_alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int *recvcounts, int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm);
+
+// utilities
+void smpi_bench_init(void);
+void smpi_bench_destroy(void);
+void smpi_execute(double duration);
+void smpi_bench_begin(void);
+void smpi_bench_end(void);
 
 #endif

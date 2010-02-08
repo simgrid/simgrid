@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdint.h>
 
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
@@ -8,338 +8,150 @@ XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi,
                                 "Logging specific to SMPI (kernel)");
 
-smpi_global_t smpi_global = NULL;
+typedef struct s_smpi_process_data {
+  int index;
+  xbt_fifo_t pending_sent;
+  xbt_fifo_t pending_recv;
+  xbt_os_timer_t timer;
+} s_smpi_process_data_t;
 
-void *smpi_request_new(void);
+static smpi_process_data_t* process_data = NULL;
+static int process_count = 0;
 
-void *smpi_request_new()
-{
-  smpi_mpi_request_t request = xbt_new(s_smpi_mpi_request_t, 1);
+MPI_Comm MPI_COMM_WORLD = MPI_COMM_NULL;
 
-  request->buf = NULL;
-  request->completed = 0;
-  request->consumed = 0;
-  request->mutex = SIMIX_mutex_init();
-  request->cond = SIMIX_cond_init();
-  request->data = NULL;
-  request->forward = 0;
-
-  return request;
+smpi_process_data_t smpi_process_data(void) {
+  return SIMIX_process_get_data(SIMIX_process_self());
 }
 
-void smpi_request_free(void *pointer);
-
-void smpi_request_free(void *pointer)
-{
-
-  smpi_mpi_request_t request = pointer;
-
-  SIMIX_cond_destroy(request->cond);
-  SIMIX_mutex_destroy(request->mutex);
-  xbt_free(request);
-
-  return;
+smpi_process_data_t smpi_process_remote_data(int index) {
+  return process_data[index];
 }
 
-void smpi_request_reset(void *pointer);
-
-void smpi_request_reset(void *pointer)
-{
-  smpi_mpi_request_t request = pointer;
-
-  request->buf = NULL;
-  request->completed = 0;
-  request->consumed = 0;
-  request->data = NULL;
-  request->forward = 0;
-
-  return;
+int smpi_process_count(void) {
+  return process_count;
 }
 
+int smpi_process_index(void) {
+  smpi_process_data_t data = smpi_process_data();
 
-void *smpi_message_new(void);
-
-void *smpi_message_new()
-{
-  smpi_received_message_t message = xbt_new(s_smpi_received_message_t, 1);
-  message->buf = NULL;
-  return message;
+  return data->index;
 }
 
-void smpi_message_free(void *pointer);
+xbt_os_timer_t smpi_process_timer(void) {
+  smpi_process_data_t data = smpi_process_data();
 
-void smpi_message_free(void *pointer)
-{
-  xbt_free(pointer);
-  return;
+  return data->timer;
 }
 
-void smpi_message_reset(void *pointer);
+void smpi_process_post_send(MPI_Comm comm, MPI_Request request) {
+  int index = smpi_group_index(smpi_comm_group(comm), request->dst);
+  smpi_process_data_t data = smpi_process_remote_data(index);
+  xbt_fifo_item_t item;
+  MPI_Request req;
 
-void smpi_message_reset(void *pointer)
-{
-  smpi_received_message_t message = pointer;
-  message->buf = NULL;
-  return;
-}
-
-int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
-                        int src, int dst, int tag,
-                        smpi_mpi_communicator_t comm,
-                        smpi_mpi_request_t * requestptr)
-{
-  int retval = MPI_SUCCESS;
-
-  smpi_mpi_request_t request = NULL;
-
-  // parameter checking prob belongs in smpi_mpi, but this is less repeat code
-  if (NULL == buf) {
-    retval = MPI_ERR_INTERN;
-  } else if (0 > count) {
-    retval = MPI_ERR_COUNT;
-  } else if (NULL == datatype) {
-    retval = MPI_ERR_TYPE;
-  } else if (MPI_ANY_SOURCE != src && (0 > src || comm->size <= src)) {
-    retval = MPI_ERR_RANK;
-  } else if (0 > dst || comm->size <= dst) {
-    retval = MPI_ERR_RANK;
-  } else if (MPI_ANY_TAG != tag && 0 > tag) {
-    retval = MPI_ERR_TAG;
-  } else if (NULL == comm) {
-    retval = MPI_ERR_COMM;
-  } else if (NULL == requestptr) {
-    retval = MPI_ERR_ARG;
-  } else {
-    request = xbt_mallocator_get(smpi_global->request_mallocator);
-    request->comm = comm;
-    request->src = src;
-    request->dst = dst;
-    request->tag = tag;
-    request->buf = buf;
-    request->datatype = datatype;
-    request->count = count;
-
-    *requestptr = request;
+  DEBUG4("isend for request %p [src = %d, dst = %d, tag = %d]",
+         request, request->src, request->dst, request->tag);
+  xbt_fifo_foreach(data->pending_recv, item, req, MPI_Request) {
+    if(req->comm == request->comm
+       && (req->src == MPI_ANY_SOURCE || req->src == request->src)
+       && (req->tag == MPI_ANY_TAG || req->tag == request->tag)){
+      DEBUG4("find matching request %p [src = %d, dst = %d, tag = %d]",
+             req, req->src, req->dst, req->tag);
+      xbt_fifo_remove_item(data->pending_recv, item);
+      /* Materialize the *_ANY_* fields from corresponding irecv request */
+      req->src = request->src;
+      req->tag = request->tag;
+      request->rdv = req->rdv;
+      return;
+    } else {
+      DEBUG4("not matching request %p [src = %d, dst = %d, tag = %d]",
+             req, req->src, req->dst, req->tag);
+    }
   }
-  return retval;
+  request->rdv = SIMIX_rdv_create(NULL);
+  xbt_fifo_push(data->pending_sent, request);
 }
 
-/* FIXME: understand what they do and put the prototypes in a header file (live in smpi_base.c) */
-void smpi_mpi_land_func(void *a, void *b, int *length,
-                        MPI_Datatype * datatype);
-void smpi_mpi_sum_func(void *a, void *b, int *length,
-                       MPI_Datatype * datatype);
-void smpi_mpi_prod_func(void *a, void *b, int *length,
-                       MPI_Datatype * datatype);
-void smpi_mpi_min_func(void *a, void *b, int *length,
-                       MPI_Datatype * datatype);
-void smpi_mpi_max_func(void *a, void *b, int *length,
-                       MPI_Datatype * datatype);
+void smpi_process_post_recv(MPI_Request request) {
+  smpi_process_data_t data = smpi_process_data();
+  xbt_fifo_item_t item;
+  MPI_Request req;
 
-void smpi_init()
-{
-  smpi_global = xbt_new(s_smpi_global_t, 1);
+  DEBUG4("irecv for request %p [src = %d, dst = %d, tag = %d]",
+         request, request->src, request->dst, request->tag);
+  xbt_fifo_foreach(data->pending_sent, item, req, MPI_Request) {
+    if(req->comm == request->comm
+       && (request->src == MPI_ANY_SOURCE || req->src == request->src)
+       && (request->tag == MPI_ANY_TAG || req->tag == request->tag)){
+      DEBUG4("find matching request %p [src = %d, dst = %d, tag = %d]",
+             req, req->src, req->dst, req->tag);
+      xbt_fifo_remove_item(data->pending_sent, item);
+      /* Materialize the *_ANY_* fields from the irecv request */
+      request->src = req->src;
+      request->tag = req->tag;
+      request->rdv = req->rdv;
+      return;
+    } else {
+      DEBUG4("not matching request %p [src = %d, dst = %d, tag = %d]",
+             req, req->src, req->dst, req->tag);
+    }
+  }
+  request->rdv = SIMIX_rdv_create(NULL);
+  xbt_fifo_push(data->pending_recv, request);
 }
 
-void smpi_global_init()
-{
+void smpi_global_init(void) {
+  int i;
+  MPI_Group group;
+
+  process_count = SIMIX_process_count();
+  process_data = xbt_new(smpi_process_data_t, process_count);
+  for(i = 0; i < process_count; i++) {
+    process_data[i] = xbt_new(s_smpi_process_data_t, 1);
+    process_data[i]->index = i;
+    process_data[i]->pending_sent = xbt_fifo_new();
+    process_data[i]->pending_recv = xbt_fifo_new();
+    process_data[i]->timer = xbt_os_timer_new();
+  }
+  group = smpi_group_new(process_count);
+  MPI_COMM_WORLD = smpi_comm_new(group);
+  for(i = 0; i < process_count; i++) {
+    smpi_group_set_mapping(group, i, i);
+  }
+}
+
+void smpi_global_destroy(void) {
+  int count = smpi_process_count();
   int i;
 
-  /* Connect our log channels: that must be done manually under windows */
-#ifdef XBT_LOG_CONNECT
-  XBT_LOG_CONNECT(smpi_base, smpi);
-  XBT_LOG_CONNECT(smpi_bench, smpi);
-  XBT_LOG_CONNECT(smpi_kernel, smpi);
-  XBT_LOG_CONNECT(smpi_mpi, smpi);
-  XBT_LOG_CONNECT(smpi_receiver, smpi);
-  XBT_LOG_CONNECT(smpi_sender, smpi);
-  XBT_LOG_CONNECT(smpi_util, smpi);
-#endif
-
-  // config vars
-  smpi_global->reference_speed =
-    xbt_cfg_get_double(_surf_cfg_set, "reference_speed");
-
-  // mallocators
-  smpi_global->request_mallocator =
-    xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, smpi_request_new,
-                       smpi_request_free, smpi_request_reset);
-  smpi_global->message_mallocator =
-    xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE, smpi_message_new,
-                       smpi_message_free, smpi_message_reset);
-
-  smpi_global->process_count = SIMIX_process_count();
-  DEBUG1("There is %d processes", smpi_global->process_count);
-
-  // sender/receiver processes
-  smpi_global->main_processes =
-    xbt_new(smx_process_t, smpi_global->process_count);
-
-  // timers
-  smpi_global->timer = xbt_os_timer_new();
-  smpi_global->timer_cond = SIMIX_cond_init();
-
-  smpi_global->do_once_duration_nodes = NULL;
-  smpi_global->do_once_duration = NULL;
-  smpi_global->do_once_mutex = SIMIX_mutex_init();
-
-
-  smpi_mpi_global = xbt_new(s_smpi_mpi_global_t, 1);
-
-  // global communicator
-  smpi_mpi_global->mpi_comm_world = xbt_new(s_smpi_mpi_communicator_t, 1);
-  smpi_mpi_global->mpi_comm_world->size = smpi_global->process_count;
-  smpi_mpi_global->mpi_comm_world->barrier_count = 0;
-  smpi_mpi_global->mpi_comm_world->barrier_mutex = SIMIX_mutex_init();
-  smpi_mpi_global->mpi_comm_world->barrier_cond = SIMIX_cond_init();
-  smpi_mpi_global->mpi_comm_world->rank_to_index_map =
-    xbt_new(int, smpi_global->process_count);
-  smpi_mpi_global->mpi_comm_world->index_to_rank_map =
-    xbt_new(int, smpi_global->process_count);
-  for (i = 0; i < smpi_global->process_count; i++) {
-    smpi_mpi_global->mpi_comm_world->rank_to_index_map[i] = i;
-    smpi_mpi_global->mpi_comm_world->index_to_rank_map[i] = i;
+  smpi_comm_destroy(MPI_COMM_WORLD);
+  MPI_COMM_WORLD = MPI_COMM_NULL;
+  for(i = 0; i < count; i++) {
+    xbt_os_timer_free(process_data[i]->timer);
+    xbt_fifo_free(process_data[i]->pending_recv);
+    xbt_fifo_free(process_data[i]->pending_sent);
+    xbt_free(process_data[i]);
   }
-
-  // mpi datatypes
-  smpi_mpi_global->mpi_byte = xbt_new(s_smpi_mpi_datatype_t, 1); /* we can think of it as a placeholder for value*/
-  smpi_mpi_global->mpi_byte->size = (size_t) 1;
-  smpi_mpi_global->mpi_byte->lb = (ptrdiff_t) 0; 
-  smpi_mpi_global->mpi_byte->ub = smpi_mpi_global->mpi_byte->lb + smpi_mpi_global->mpi_byte->size;
-  smpi_mpi_global->mpi_byte->flags = DT_FLAG_BASIC;
-
-  smpi_mpi_global->mpi_char = xbt_new(s_smpi_mpi_datatype_t, 1);
-  smpi_mpi_global->mpi_char->size = (size_t) 1;
-  smpi_mpi_global->mpi_char->lb = (ptrdiff_t) 0; //&(smpi_mpi_global->mpi_char);
-  smpi_mpi_global->mpi_char->ub = smpi_mpi_global->mpi_char->lb + smpi_mpi_global->mpi_char->size; 
-  smpi_mpi_global->mpi_char->flags = DT_FLAG_BASIC;
-
-  smpi_mpi_global->mpi_int = xbt_new(s_smpi_mpi_datatype_t, 1);
-  smpi_mpi_global->mpi_int->size = sizeof(int);
-  smpi_mpi_global->mpi_int->lb = (ptrdiff_t) 0; // &(smpi_mpi_global->mpi_int);
-  smpi_mpi_global->mpi_int->ub = smpi_mpi_global->mpi_int->lb + smpi_mpi_global->mpi_int->size;
-  smpi_mpi_global->mpi_int->flags = DT_FLAG_BASIC;
-
-  smpi_mpi_global->mpi_float = xbt_new(s_smpi_mpi_datatype_t, 1);
-  smpi_mpi_global->mpi_float->size = sizeof(float);
-  smpi_mpi_global->mpi_float->lb = (ptrdiff_t) 0; // &(smpi_mpi_global->mpi_float);
-  smpi_mpi_global->mpi_float->ub = smpi_mpi_global->mpi_float->lb + smpi_mpi_global->mpi_float->size;
-  smpi_mpi_global->mpi_float->flags = DT_FLAG_BASIC;
-
-  smpi_mpi_global->mpi_double = xbt_new(s_smpi_mpi_datatype_t, 1);
-  smpi_mpi_global->mpi_double->size = sizeof(double);
-  smpi_mpi_global->mpi_double->lb = (ptrdiff_t) 0; //&(smpi_mpi_global->mpi_float);
-  smpi_mpi_global->mpi_double->ub = smpi_mpi_global->mpi_double->lb + smpi_mpi_global->mpi_double->size;
-  smpi_mpi_global->mpi_double->flags = DT_FLAG_BASIC;
-
-  // mpi operations
-  smpi_mpi_global->mpi_land = xbt_new(s_smpi_mpi_op_t, 1);
-  smpi_mpi_global->mpi_land->func = smpi_mpi_land_func;
-  smpi_mpi_global->mpi_sum = xbt_new(s_smpi_mpi_op_t, 1);
-  smpi_mpi_global->mpi_sum->func = smpi_mpi_sum_func;
-  smpi_mpi_global->mpi_prod = xbt_new(s_smpi_mpi_op_t, 1);
-  smpi_mpi_global->mpi_prod->func = smpi_mpi_prod_func;
-  smpi_mpi_global->mpi_min = xbt_new(s_smpi_mpi_op_t, 1);
-  smpi_mpi_global->mpi_min->func = smpi_mpi_min_func;
-  smpi_mpi_global->mpi_max = xbt_new(s_smpi_mpi_op_t, 1);
-  smpi_mpi_global->mpi_max->func = smpi_mpi_max_func;
-
+  xbt_free(process_data);
+  process_data = NULL;
 }
 
-void smpi_global_destroy()
-{
-  smpi_do_once_duration_node_t curr, next;
-
-  // processes
-  xbt_free(smpi_global->main_processes);
-
-  // mallocators
-  xbt_mallocator_free(smpi_global->request_mallocator);
-  xbt_mallocator_free(smpi_global->message_mallocator);
-
-  xbt_os_timer_free(smpi_global->timer);
-  SIMIX_cond_destroy(smpi_global->timer_cond);
-
-  for (curr = smpi_global->do_once_duration_nodes; NULL != curr; curr = next) {
-    next = curr->next;
-    xbt_free(curr->file);
-    xbt_free(curr);
-  }
-
-  SIMIX_mutex_destroy(smpi_global->do_once_mutex);
-
-  xbt_free(smpi_global);
-  smpi_global = NULL;
-
-  /* free smpi_mpi_global */
-  SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->barrier_mutex);
-  SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->barrier_cond);
-  xbt_free(smpi_mpi_global->mpi_comm_world->rank_to_index_map);
-  xbt_free(smpi_mpi_global->mpi_comm_world);
-
-  xbt_free(smpi_mpi_global->mpi_byte);
-  xbt_free(smpi_mpi_global->mpi_char);
-  xbt_free(smpi_mpi_global->mpi_int);
-  xbt_free(smpi_mpi_global->mpi_double);
-  xbt_free(smpi_mpi_global->mpi_float);
-
-  xbt_free(smpi_mpi_global->mpi_land);
-  xbt_free(smpi_mpi_global->mpi_sum);
-  xbt_free(smpi_mpi_global->mpi_prod);
-  xbt_free(smpi_mpi_global->mpi_max);
-  xbt_free(smpi_mpi_global->mpi_min);
-
-  xbt_free(smpi_mpi_global);
-
-}
-
-int smpi_process_index()
-{
-  smpi_process_data_t pdata =
-    (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
-  return pdata->index;
-}
-
-smx_mutex_t smpi_process_mutex()
-{
-  smpi_process_data_t pdata =
-    (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
-  return pdata->mutex;
-}
-
-smx_cond_t smpi_process_cond()
-{
-  smpi_process_data_t pdata =
-    (smpi_process_data_t) SIMIX_process_get_data(SIMIX_process_self());
-  return pdata->cond;
-}
-
-static void smpi_cfg_cb_host_speed(const char *name, int pos)
-{
-  smpi_global->reference_speed =
-    xbt_cfg_get_double_at(_surf_cfg_set, name, pos);
-}
-
-int smpi_run_simulation(int *argc, char **argv)
+int main(int argc, char **argv)
 {
   srand(SMPI_RAND_SEED);
 
   double default_reference_speed = 20000.0;
   xbt_cfg_register(&_surf_cfg_set, "reference_speed",
                    "Power of the host running the simulation (in flop/s). Used to bench the operations.",
-                   xbt_cfgelm_double, &default_reference_speed, 1, 1,
-                   smpi_cfg_cb_host_speed, NULL);
+                   xbt_cfgelm_double, &default_reference_speed, 1, 1, NULL, NULL);
 
   int default_display_timing = 0;
   xbt_cfg_register(&_surf_cfg_set, "display_timing",
                    "Boolean indicating whether we should display the timing after simulation.",
                    xbt_cfgelm_int, &default_display_timing, 1, 1, NULL, NULL);
 
-  // Allocate minimal things before parsing command line arguments
-  smpi_init();
-
-  SIMIX_global_init(argc, argv);
-
+  SIMIX_global_init(&argc, argv);
 
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);
@@ -347,7 +159,6 @@ int smpi_run_simulation(int *argc, char **argv)
   SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
   SIMIX_launch_application(argv[2]);
 
-  // must initialize globals between creating environment and launching app....
   smpi_global_init();
 
   /* Clean IO before the run */
@@ -357,18 +168,11 @@ int smpi_run_simulation(int *argc, char **argv)
 
   while (SIMIX_solve(NULL, NULL) != -1.0);
   
-  // FIXME: cleanup incomplete
-
   if (xbt_cfg_get_int(_surf_cfg_set, "display_timing"))
     INFO1("simulation time %g", SIMIX_get_clock());
 
   smpi_global_destroy();
+
   SIMIX_clean();
-
   return 0;
-}
-
-int main(int argc, char** argv)
-{
-  return smpi_run_simulation(&argc, argv);
 }

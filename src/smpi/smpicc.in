@@ -4,6 +4,7 @@ prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 
 CC="gcc"
+CFLAGS="-Dmain=smpi_simulated_main"
 
 #FIXME: probably only want the last two pairs after 'make install'
 INCLUDEARGS="-I@top_srcdir@/include -I@top_srcdir@/include/smpi -I@includedir@ -I@includedir@/smpi"

@@ -6,7 +6,6 @@
  **/
 #include "private.h"
 
-/* flags for the datatypes. */
 #define DT_FLAG_DESTROYED     0x0001  /**< user destroyed but some other layers still have a reference */
 #define DT_FLAG_COMMITED      0x0002  /**< ready to be used for a send/recv operation */
 #define DT_FLAG_CONTIGUOUS    0x0004  /**< contiguous datatype */
@@ -25,16 +24,3 @@
  * datatypes. The DT_FLAG_BASIC is held by all predefined contiguous datatypes.
  */
 #define DT_FLAG_BASIC         (DT_FLAG_PREDEFINED | DT_FLAG_CONTIGUOUS | DT_FLAG_NO_GAPS | DT_FLAG_DATA | DT_FLAG_COMMITED)
-
-
-
-int smpi_mpi_type_get_extent(MPI_Datatype datatype, MPI_Aint *lb, MPI_Aint *extent);
-
-/* Deprecated Functions. 
- * The MPI-2 standard deprecated a number of routines because MPI-2 provides better versions. 
- * This routine is one of those that was deprecated. The routine may continue to be used, but 
- * new code should use the replacement routine. The replacement for this routine is MPI_Type_Get_extent.
- **/
-int SMPI_MPI_Type_ub( MPI_Datatype datatype, MPI_Aint *displacement);
-int SMPI_MPI_Type_lb( MPI_Datatype datatype, MPI_Aint *displacement);
-

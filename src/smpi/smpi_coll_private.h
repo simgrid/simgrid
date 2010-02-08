@@ -7,23 +7,3 @@
  *
  **/
 #include "private.h"
-
-int nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm,int arity);
-int nary_tree_barrier( MPI_Comm comm, int arity );
-
-int smpi_coll_tuned_alltoall_bruck(void *sbuf, int scount, MPI_Datatype sdtype, 
-		                       void* rbuf, int rcount, MPI_Datatype rdtype,
-				           MPI_Comm comm);
-
-int smpi_coll_tuned_alltoall_pairwise (void *sendbuf, int sendcount, MPI_Datatype datatype,
-		                           void* recvbuf, int recvcount, MPI_Datatype recvdatatype,
-						   MPI_Comm comm);
-
-int smpi_coll_tuned_alltoall_basic_linear(void *sbuf, int scount, MPI_Datatype sdtype,
-                                void* rbuf, int rcount, MPI_Datatype rdtype, MPI_Comm comm);
-
-int smpi_coll_basic_alltoallv(void *sendbuf, int *scounts, int *sdisps, MPI_Datatype datatype, 
-		                  void *recvbuf, int *rcounts, int *rdisps, MPI_Datatype recvtype,
-			            MPI_Comm comm);
-
-

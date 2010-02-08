@@ -7,201 +7,211 @@
 #include <xbt/function_types.h>
 
 SG_BEGIN_DECL()
+#define MPI_THREAD_SINGLE     0
+#define MPI_THREAD_FUNNELED   1
+#define MPI_THREAD_SERIALIZED 2
+#define MPI_THREAD_MULTIPLE   3
+
+//FIXME: check values
+#define MPI_MAX_PROCESSOR_NAME 100
+#define MPI_MAX_ERROR_STRING   100
+#define MPI_MAX_DATAREP_STRIN  100
+#define MPI_MAX_INFO_KEY       100
+#define MPI_MAX_INFO_VAL       100
+#define MPI_MAX_OBJECT_NAME    100
+#define MPI_MAX_PORT_NAME      100
+
 #define SMPI_RAND_SEED 5
 #define MPI_ANY_SOURCE -1
 #define MPI_ANY_TAG -1
 #define MPI_UNDEFINED -1
+
 // errorcodes
-#define MPI_SUCCESS     0
-#define MPI_ERR_COMM    1
-#define MPI_ERR_ARG     2
-#define MPI_ERR_TYPE    3
-#define MPI_ERR_REQUEST 4
-#define MPI_ERR_INTERN  5
-#define MPI_ERR_COUNT   6
-#define MPI_ERR_RANK    7
-#define MPI_ERR_TAG     8
-#define MPI_ERR_TRUNCATE 9
-// MPI_Comm
-     typedef struct smpi_mpi_communicator_t *smpi_mpi_communicator_t;
-     typedef smpi_mpi_communicator_t MPI_Comm;
+#define MPI_SUCCESS       0
+#define MPI_ERR_COMM      1
+#define MPI_ERR_ARG       2
+#define MPI_ERR_TYPE      3
+#define MPI_ERR_REQUEST   4
+#define MPI_ERR_INTERN    5
+#define MPI_ERR_COUNT     6
+#define MPI_ERR_RANK      7
+#define MPI_ERR_TAG       8
+#define MPI_ERR_TRUNCATE  9
+#define MPI_ERR_GROUP    10
+#define MPI_ERR_OP       11
 
-// MPI_Datatype
-     typedef struct smpi_mpi_datatype_t *smpi_mpi_datatype_t;
-     typedef smpi_mpi_datatype_t MPI_Datatype;
+#define MPI_IDENT     0
+#define MPI_SIMILAR   1
+#define MPI_UNEQUAL   2
+#define MPI_CONGRUENT 3
 
-// MPI_Request
-     typedef struct smpi_mpi_request_t *smpi_mpi_request_t;
-     typedef smpi_mpi_request_t MPI_Request;
+typedef ptrdiff_t MPI_Aint;
+typedef long long MPI_Offset;
 
-// MPI_Op
-     typedef struct smpi_mpi_op_t *smpi_mpi_op_t;
-     typedef smpi_mpi_op_t MPI_Op;
+struct s_smpi_mpi_datatype;
+typedef struct s_smpi_mpi_datatype* MPI_Datatype;
 
-// MPI_Status
-     struct smpi_mpi_status_t {
-       int MPI_SOURCE;
-       int MPI_TAG;
-       int MPI_ERROR;
-     };
-     typedef struct smpi_mpi_status_t smpi_mpi_status_t;
-     typedef smpi_mpi_status_t MPI_Status;
-
-// global SMPI data structure
-     typedef struct smpi_mpi_global_t {
-
-       smpi_mpi_communicator_t mpi_comm_world;
-
-       smpi_mpi_datatype_t mpi_byte;
-       smpi_mpi_datatype_t mpi_char;
-       smpi_mpi_datatype_t mpi_int;
-       smpi_mpi_datatype_t mpi_float;
-       smpi_mpi_datatype_t mpi_double;
-
-       smpi_mpi_op_t mpi_land;
-       smpi_mpi_op_t mpi_sum;
-       smpi_mpi_op_t mpi_prod;
-       smpi_mpi_op_t mpi_min;
-       smpi_mpi_op_t mpi_max;
-
-     } s_smpi_mpi_global_t;
-     typedef struct smpi_mpi_global_t *smpi_mpi_global_t;
-     extern smpi_mpi_global_t smpi_mpi_global;
-
-#define MPI_COMM_WORLD    (smpi_mpi_global->mpi_comm_world)
-#define MPI_COMM_NULL     NULL
+typedef struct {
+  int MPI_SOURCE;
+  int MPI_TAG;
+  int MPI_ERROR;
+} MPI_Status;
 
 #define MPI_STATUS_IGNORE NULL
-#define MPI_Aint          ptrdiff_t
 
-#define MPI_BYTE          (smpi_mpi_global->mpi_byte)
-#define MPI_CHAR          (smpi_mpi_global->mpi_char)
-#define MPI_INT           (smpi_mpi_global->mpi_int)
-#define MPI_FLOAT         (smpi_mpi_global->mpi_float)
-#define MPI_DOUBLE        (smpi_mpi_global->mpi_double)
+#define MPI_DATATYPE_NULL NULL
+extern MPI_Datatype MPI_CHAR;
+extern MPI_Datatype MPI_SHORT;
+extern MPI_Datatype MPI_INT;
+extern MPI_Datatype MPI_LONG;
+extern MPI_Datatype MPI_LONG_LONG;
+#define MPI_LONG_LONG_INT MPI_LONG_LONG
+extern MPI_Datatype MPI_SIGNED_CHAR;
+extern MPI_Datatype MPI_UNSIGNED_CHAR;
+extern MPI_Datatype MPI_UNSIGNED_SHORT;
+extern MPI_Datatype MPI_UNSIGNED;
+extern MPI_Datatype MPI_UNSIGNED_LONG;
+extern MPI_Datatype MPI_UNSIGNED_LONG_LONG;
+extern MPI_Datatype MPI_FLOAT;
+extern MPI_Datatype MPI_DOUBLE;
+extern MPI_Datatype MPI_LONG_DOUBLE;
+extern MPI_Datatype MPI_WCHAR;
+extern MPI_Datatype MPI_C_BOOL;
+extern MPI_Datatype MPI_INT8_T;
+extern MPI_Datatype MPI_INT16_T;
+extern MPI_Datatype MPI_INT32_T;
+extern MPI_Datatype MPI_INT64_T;
+extern MPI_Datatype MPI_UINT8_T;
+#define MPI_BYTE MPI_UINT8_T
+extern MPI_Datatype MPI_UINT16_T;
+extern MPI_Datatype MPI_UINT32_T;
+extern MPI_Datatype MPI_UINT64_T;
+extern MPI_Datatype MPI_C_FLOAT_COMPLEX;
+#define MPI_C_COMPLEX MPI_C_FLOAT_COMPLEX
+extern MPI_Datatype MPI_C_DOUBLE_COMPLEX;
+extern MPI_Datatype MPI_C_LONG_DOUBLE_COMPLEX;
+extern MPI_Datatype MPI_AINT;
+extern MPI_Datatype MPI_OFFSET;
 
-#define MPI_LAND          (smpi_mpi_global->mpi_land)
-#define MPI_SUM           (smpi_mpi_global->mpi_sum)
-#define MPI_PROD          (smpi_mpi_global->mpi_prod)
-#define MPI_MIN           (smpi_mpi_global->mpi_min)
-#define MPI_MAX           (smpi_mpi_global->mpi_max)
+typedef void MPI_User_function(void* invec, void* inoutvec, int* len, MPI_Datatype* datatype);
+struct s_smpi_mpi_op;
+typedef struct s_smpi_mpi_op* MPI_Op;
 
-// MPI macros
-#define MPI_Init(a, b) SMPI_MPI_Init(a, b)
-#define MPI_Finalize() SMPI_MPI_Finalize()
-#define MPI_Abort(a, b) SMPI_MPI_Abort(a, b)
-#define MPI_Comm_size(a, b) SMPI_MPI_Comm_size(a, b)
-#define MPI_Comm_split(a, b, c, d) SMPI_MPI_Comm_split(a, b, c, d)
-#define MPI_Comm_rank(a, b) SMPI_MPI_Comm_rank(a, b)
-#define MPI_Type_size(a, b) SMPI_MPI_Type_size(a, b)
-#define MPI_Type_get_extent(a, b, c) SMPI_MPI_Type_get_extent(a, b, c)
-#define MPI_Type_lb(a, b) SMPI_MPI_Type_lb(a, b)
-#define MPI_Type_ub(a, b) SMPI_MPI_Type_ub(a, b)
+#define MPI_OP_NULL NULL
+extern MPI_Op MPI_MAX;
+extern MPI_Op MPI_MIN;
+extern MPI_Op MPI_SUM;
+extern MPI_Op MPI_PROD;
+extern MPI_Op MPI_LAND;
+extern MPI_Op MPI_LOR;
+extern MPI_Op MPI_LXOR;
+extern MPI_Op MPI_BAND;
+extern MPI_Op MPI_BOR;
+extern MPI_Op MPI_BXOR;
 
-#define MPI_Barrier(a) SMPI_MPI_Barrier(a)
-#define MPI_Irecv(a, b, c, d, e, f, g) SMPI_MPI_Irecv(a, b, c, d, e, f, g)
-#define MPI_Recv(a, b, c, d, e, f, g) SMPI_MPI_Recv(a, b, c, d, e, f, g)
-#define MPI_Isend(a, b, c, d, e, f, g) SMPI_MPI_Isend(a, b, c, d, e, f, g)
-#define MPI_Send(a, b, c, d, e, f) SMPI_MPI_Send(a, b, c, d, e, f)
-#define MPI_Sendrecv( a, b, c, d, e, f, g, h, i, j, k, l) SMPI_MPI_Sendrecv(a, b, c, d, e, f, g, h, i, j, k, l) 
-#define MPI_Bcast(a, b, c, d, e) SMPI_MPI_Bcast(a, b, c, d, e)
-#define MPI_Wait(a, b) SMPI_MPI_Wait(a, b)
-#define MPI_Waitall(a, b, c) SMPI_MPI_Waitall(a, b, c)
-#define MPI_Waitany(a, b, c, d) SMPI_MPI_Waitany(a, b, c, d)
-#define MPI_Wtime() SMPI_MPI_Wtime()
-#define MPI_Reduce(a, b, c, d, e, f, g) SMPI_MPI_Reduce(a, b, c, d, e, f, g)
-#define MPI_Allreduce(a, b, c, d, e, f) SMPI_MPI_Allreduce(a, b, c, d, e, f)
-#define MPI_Scatter(a, b, c, d, e, f, g, h )  SMPI_MPI_Scatter(a, b, c, d, e, f, g, h)
-#define MPI_Alltoall(a, b, c, d, e, f, g )  SMPI_MPI_Alltoall(a, b, c, d, e, f, g)
-#define MPI_Alltoallv(a, b, c, d, e, f, g, h, i)  SMPI_MPI_Alltoallv(a, b, c, d, e, f, g, h, i)
-#define MPI_Gather(a, b, c, d, e, f, g, h) SMPI_MPI_Gather(a, b, c, d, e, f, g, h)
-#define MPI_Gatherv(a, b, c, d, e, f, g, h, i) SMPI_MPI_Gatherv(a, b, c, d, e, f, g, h, i)
-#define MPI_Scatterv(a, b, c, d, e, f, g, h, i) SMPI_MPI_Scatterv(a, b, c, d, e, f, g, h, i)
-#define MPI_Reduce_scatter(a, b, c, d, e, f) SMPI_MPI_Reduce_scatter(a, b, c, d, e, f)
-#define MPI_Allgather(a, b, c, d, e, f, g) SMPI_MPI_Allgather(a, b, c, d, e, f, g)
-#define MPI_Allgatherv(a, b, c, d, e, f, g, h) SMPI_MPI_Allgatherv(a, b, c, d, e, f, g, h)
+struct s_smpi_mpi_group;
+typedef struct s_smpi_mpi_group* MPI_Group;
 
-// SMPI Functions
-XBT_PUBLIC(int) SMPI_MPI_Init(int *argc, char ***argv);
-XBT_PUBLIC(int) SMPI_MPI_Finalize(void);
-XBT_PUBLIC(int) SMPI_MPI_Abort(MPI_Comm comm, int errorcode);
-XBT_PUBLIC(int) SMPI_MPI_Comm_size(MPI_Comm comm, int *size);
-XBT_PUBLIC(int) SMPI_MPI_Comm_rank(MPI_Comm comm, int *rank);
-XBT_PUBLIC(int) SMPI_MPI_Type_size(MPI_Datatype datatype, size_t * size);
-XBT_PUBLIC(int) SMPI_MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint *extent);
-XBT_PUBLIC(int) SMPI_MPI_Type_lb(MPI_Datatype datatype, MPI_Aint* disp);
-XBT_PUBLIC(int) SMPI_MPI_Type_ub(MPI_Datatype datatype, MPI_Aint* disp);
+#define MPI_GROUP_NULL NULL
+extern MPI_Group MPI_GROUP_EMPTY;
 
+struct s_smpi_mpi_communicator;
+typedef struct s_smpi_mpi_communicator* MPI_Comm;
 
-XBT_PUBLIC(int) SMPI_MPI_Barrier(MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Irecv(void *buf, int count, MPI_Datatype datatype,
-                               int src, int tag, MPI_Comm comm,
-                               MPI_Request * request);
-XBT_PUBLIC(int) SMPI_MPI_Recv(void *buf, int count, MPI_Datatype datatype,
-                              int src, int tag, MPI_Comm comm,
-                              MPI_Status * status);
-XBT_PUBLIC(int) SMPI_MPI_Isend(void *buf, int count, MPI_Datatype datatype,
-                               int dst, int tag, MPI_Comm comm,
-                               MPI_Request * request);
-XBT_PUBLIC(int) SMPI_MPI_Send(void *buf, int count, MPI_Datatype datatype,
-                              int dst, int tag, MPI_Comm comm);
+#define MPI_COMM_NULL NULL
+extern MPI_Comm MPI_COMM_WORLD;
 
-XBT_PUBLIC(int) SMPI_MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, 
-		                  void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag, 
-					MPI_Comm comm, MPI_Status *status);
+struct s_smpi_mpi_request;
+typedef struct s_smpi_mpi_request* MPI_Request;
 
-XBT_PUBLIC(int) SMPI_MPI_Bcast(void *buf, int count, MPI_Datatype datatype,
-                               int root, MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Wait(MPI_Request * request, MPI_Status * status);
-XBT_PUBLIC(int) SMPI_MPI_Waitall(int count, MPI_Request requests[],
-                                 MPI_Status status[]);
-XBT_PUBLIC(int) SMPI_MPI_Waitany(int count, MPI_Request requests[],
-                                 int *index, MPI_Status status[]);
-XBT_PUBLIC(int) SMPI_MPI_Comm_split(MPI_Comm comm, int color, int key,
-                                    MPI_Comm * comm_out);
-XBT_PUBLIC(double) SMPI_MPI_Wtime(void);
+#define MPI_REQUEST_NULL NULL
 
-XBT_PUBLIC(int) SMPI_MPI_Reduce(void *sendbuf, void *recvbuf, int count,
-                                MPI_Datatype datatype, MPI_Op op, int root,
-                                MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
-		                    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Init(int* argc, char*** argv);
+XBT_PUBLIC(int) MPI_Finalize(void);
+XBT_PUBLIC(int) MPI_Init_thread(int* argc, char*** argv, int required, int* provided);
+XBT_PUBLIC(int) MPI_Query_thread(int* provided);
+XBT_PUBLIC(int) MPI_Is_thread_main(int* flag);
+XBT_PUBLIC(int) MPI_Abort(MPI_Comm comm, int errorcode);
+XBT_PUBLIC(double) MPI_Wtime(void);
 
-XBT_PUBLIC(int) SMPI_MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype datatype,
-		                     void *recvbuf, int recvcount, MPI_Datatype recvtype,int root, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Type_size(MPI_Datatype datatype, size_t* size);
+XBT_PUBLIC(int) MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint* extent);
+XBT_PUBLIC(int) MPI_Type_lb(MPI_Datatype datatype, MPI_Aint* disp);
+XBT_PUBLIC(int) MPI_Type_ub(MPI_Datatype datatype, MPI_Aint* disp);
 
-XBT_PUBLIC(int) SMPI_MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype datatype,
-		                     void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Alltoallv(void *sendbuf, int *scounts, int *sdisps, MPI_Datatype datatype, 
-		           void *recvbuf, int *rcounts, int *rdisps, MPI_Datatype recvtype,
-			     MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Gather(void* sendbuf, int sendcount, MPI_Datatype sendtype,
-                                void* recvbuf, int recvcount, MPI_Datatype recvtype,
-                                int root, MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Gatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype,
-                     void* recvbuf, int* recvcounts, int* displs, MPI_Datatype recvtype,
-                     int root, MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Scatterv(void* sendbuf, int *sendcounts, int *displs, MPI_Datatype sendtype,
-                      void* recvbuf, int recvcount, MPI_Datatype recvtype,
-                      int root, MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Reduce_scatter(void* sendbuf, void* recvbuf, int *recvcounts,
-                            MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Allgather(void* sendbuf, int sendcount, MPI_Datatype sendtype,
-                       void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
-XBT_PUBLIC(int) SMPI_MPI_Allgatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype,
-                       void* recvbuf, int *recvcounts, int *displs, MPI_Datatype recvtype,
-                       MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Op_create(MPI_User_function* function, int commute, MPI_Op* op);
+XBT_PUBLIC(int) MPI_Op_free(MPI_Op* op);
+
+XBT_PUBLIC(int) MPI_Group_free(MPI_Group *group);
+XBT_PUBLIC(int) MPI_Group_size(MPI_Group group, int* size);
+XBT_PUBLIC(int) MPI_Group_rank(MPI_Group group, int* rank);
+XBT_PUBLIC(int) MPI_Group_translate_ranks (MPI_Group group1, int n, int* ranks1, MPI_Group group2, int* ranks2);
+XBT_PUBLIC(int) MPI_Group_compare(MPI_Group group1, MPI_Group group2, int* result);
+XBT_PUBLIC(int) MPI_Group_union(MPI_Group group1, MPI_Group group2, MPI_Group* newgroup);
+XBT_PUBLIC(int) MPI_Group_intersection(MPI_Group group1, MPI_Group group2, MPI_Group* newgroup);
+XBT_PUBLIC(int) MPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group* newgroup);
+XBT_PUBLIC(int) MPI_Group_incl(MPI_Group group, int n, int* ranks, MPI_Group* newgroup);
+XBT_PUBLIC(int) MPI_Group_excl(MPI_Group group, int n, int* ranks, MPI_Group* newgroup);
+XBT_PUBLIC(int) MPI_Group_range_incl(MPI_Group group, int n, int ranges[][3], MPI_Group* newgroup);
+XBT_PUBLIC(int) MPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MPI_Group* newgroup);
+
+XBT_PUBLIC(int) MPI_Comm_rank(MPI_Comm comm, int* rank);
+XBT_PUBLIC(int) MPI_Comm_size(MPI_Comm comm, int* size);
+XBT_PUBLIC(int) MPI_Comm_group(MPI_Comm comm, MPI_Group* group);
+XBT_PUBLIC(int) MPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int* result);
+XBT_PUBLIC(int) MPI_Comm_dup(MPI_Comm comm, MPI_Comm* newcomm);
+XBT_PUBLIC(int) MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm* newcomm);
+XBT_PUBLIC(int) MPI_Comm_free(MPI_Comm* comm);
+
+XBT_PUBLIC(int) MPI_Irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request* request);
+XBT_PUBLIC(int) MPI_Isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request);
+XBT_PUBLIC(int) MPI_Recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status* status);
+XBT_PUBLIC(int) MPI_Send(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
+XBT_PUBLIC(int) MPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, int sendtag, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
+
+XBT_PUBLIC(int) MPI_Test(MPI_Request* request, int* flag, MPI_Status* status);
+XBT_PUBLIC(int) MPI_Testany(int count, MPI_Request requests[], int* index, int* flag, MPI_Status* status);
+XBT_PUBLIC(int) MPI_Wait(MPI_Request* request, MPI_Status* status);
+XBT_PUBLIC(int) MPI_Waitany(int count, MPI_Request requests[], int* index, MPI_Status* status); 
+XBT_PUBLIC(int) MPI_Waitall(int count, MPI_Request requests[], MPI_Status status[]);
+XBT_PUBLIC(int) MPI_Waitsome(int incount, MPI_Request requests[], int* outcount, int* indices, MPI_Status status[]);
+
+XBT_PUBLIC(int) MPI_Bcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Barrier(MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Gather(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Gatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts, int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Allgather(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Allgatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts, int* displs, MPI_Datatype recvtype, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Scatter(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Scatterv(void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Allreduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Reduce_scatter(void* sendbuf, void* recvbuf, int* recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int *recvcounts, int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm);
+
+/*
+TODO
+XBT_PUBLIC(int) MPI_Comm_split(MPI_Comm comm, int color, int key,
+                               MPI_Comm* comm_out);
+*/
 // smpi functions
-XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
+XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char** argv);
+/*
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int);
 XBT_PUBLIC(void) smpi_exit(int);
-XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
+XBT_PUBLIC(int) smpi_gettimeofday(struct timeval* tv, struct timezone* tz);
+*/
 
-XBT_PUBLIC(void) smpi_do_once_1(const char *file, int line);
+/*
+TODO
+XBT_PUBLIC(void) smpi_do_once_1(const char* file, int line);
 XBT_PUBLIC(int) smpi_do_once_2(void);
 XBT_PUBLIC(void) smpi_do_once_3(void);
 
 #define SMPI_DO_ONCE for (smpi_do_once_1(__FILE__, __LINE__); smpi_do_once_2(); smpi_do_once_3())
+*/
 
 SG_END_DECL()
 #endif
