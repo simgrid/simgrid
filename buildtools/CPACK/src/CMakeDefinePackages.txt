@@ -154,8 +154,10 @@ set(SMPI_SRC
 	${PROJECT_DIRECTORY}/src/smpi/smpi_bench.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_global.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_mpi.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_sender.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_receiver.c
+	#${PROJECT_DIRECTORY}/src/smpi/smpi_sender.c
+	#${PROJECT_DIRECTORY}/src/smpi/smpi_receiver.c
+	${PROJECT_DIRECTORY}/src/smpi/smpi_comm.c
+	${PROJECT_DIRECTORY}/src/smpi/smpi_group.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_util.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_coll.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_mpi_dt.c

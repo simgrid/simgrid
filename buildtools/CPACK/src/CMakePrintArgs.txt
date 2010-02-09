@@ -1,9 +1,8 @@
 message("\n________ARGS_________")
-
+message("init ${init}")
+message("MAINTAINER_MODE ${MAINTAINER_MODE}")
 message("disable_java ${disable_java}")
-
-message("disable_threads ${disable_threads}")
-
+message("disable_lua ${disable_lua}")
 message("disable_gtnets ${disable_gtnets}")
 if(disable_gtnets)
 	set(gtnets_path "none" CACHE TYPE INTERNAL FORCE)	
@@ -15,11 +14,6 @@ if(disable_context)
 	set(with_context "none" CACHE TYPE INTERNAL FORCE)	
 endif(disable_context)
 message("  -> with_context \"${with_context}\"")
-
-message("disable_lua ${disable_lua}")
-
-message("init ${init}")
-message("MAINTAINER_MODE ${MAINTAINER_MODE}")
 
 message("_______END_ARGS_______")
 #--------------------------------------------------------------------------------------------------

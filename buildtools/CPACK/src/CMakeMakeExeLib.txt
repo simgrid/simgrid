@@ -6,7 +6,7 @@ add_library(simgrid SHARED ${simgrid_sources})
 add_library(gras SHARED ${gras_sources})
 add_library(smpi SHARED ${SMPI_SRC})
 
-set(GRAS_DEP "")
+set(GRAS_DEP "pthread")
 set(SIMGRID_DEP "")
 
 if(pthread)
@@ -14,15 +14,14 @@ if(pthread)
 		SET(SIMGRID_DEP pthread)
 		SET(ESPACE " ")
 	endif(with_context MATCHES pthread)
-
+	
 	if(with_context MATCHES windows)
-	elseif(with_context MATCHES windows)
-		SET(GRAS_DEP pthread)	
+		SET(GRAS_DEP "")
 	endif(with_context MATCHES windows)
 endif(pthread)
 
 if(HAVE_LUA)
-	SET(SIMGRID_DEP "${SIMGRID_DEP}${ESPACE}dl lua5.1")
+	SET(SIMGRID_DEP "${SIMGRID_DEP}${ESPACE}-ldl -llua5.1")
 endif(HAVE_LUA)
 
 if(HAVE_GTNETS)
@@ -36,7 +35,7 @@ message("GRAS_DEP \"${GRAS_DEP}\"")
 set(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage")
 add_definitions (${INCLUDES} -fprofile-arcs -ftest-coverage)
 target_link_libraries(simgrid ${SIMGRID_DEP} ${SIMGRID_DEP_GTNETS}-fprofile-arcs)
-target_link_libraries(gras ${GRAS_DEP} pthread -fprofile-arcs)
+target_link_libraries(gras ${GRAS_DEP} -fprofile-arcs)
 target_link_libraries(smpi -fprofile-arcs)
 
 ### Make EXEs
@@ -103,7 +102,7 @@ if(NOT init)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/dax)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/metaxml)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/properties)
-	add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
+	#add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
 
 	if(HAVE_JAVA)
 		message("Make : src/simgrid.jar with : ${JAVA_COMPILE}")
