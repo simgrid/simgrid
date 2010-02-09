@@ -2,7 +2,7 @@ require 'msg'
 require 'Semaphore'
 include MSG
 
-$debug = true  # This is a Gloabl Variable Useful for Debbuging
+$debug = true  # This is a Global Variable Useful for Debugging
 
 
 class RbProcess < Thread
@@ -64,21 +64,17 @@ class RbProcess < Thread
       type = args[0].type()
       
       if ( type.to_s == "String")
-          
-       host = Host.getByName(args[0])
-       
+        host = Host.getByName(args[0])
       end
       
       if ( type.to_s == "MSG::Host")
-      host = args[0]  
+        host = args[0]  
       end
       
       
       if $debug
-      puts host
+        puts host
       end
-      
-      
       
       
       raise "Process Name Cannot Be Null"   if args[1].empty?
@@ -86,7 +82,7 @@ class RbProcess < Thread
       @name = args[1] # First Arg
       
       if $debug
-      puts @name
+        puts @name
       end
       
       

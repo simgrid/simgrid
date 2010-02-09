@@ -41,6 +41,7 @@ size = array2.size
 
 
 task = Task.new('ninou',12,23)
+puts "Created task :"+task.to_s+" ; name: "+Task.name(task)
 #task2 =RbTask.new('task2')
 # task = RbTask.new()
 # host = Host.new("Brad")
@@ -55,7 +56,8 @@ task = Task.new('ninou',12,23)
 # task.bind
 number = 56
 
-# process = RbProcess.new()
+process = RbProcess.new("mon nom")
+puts "Created process :"+process.to_s+" ; name: "+RbProcess.name(task)
 # name = process.name
 puts name
 # puts process.alive?

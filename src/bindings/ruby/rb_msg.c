@@ -175,7 +175,7 @@ static void msg_registerFunction(VALUE class,VALUE function_name,VALUE code)
 {
   
  char * fct_name = RSTRING(function_name)->ptr;
- xbt_main_func_t fct_code 
+// xbt_main_func_t fct_code
   
 }
 // INFO

@@ -40,12 +40,12 @@ sitelibdir = $(sitedir)/$(ruby_version)
 CC = gcc
 LIBRUBY = $(LIBRUBY_SO)
 LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
-LIBRUBYARG_SHARED = -l$(RUBY_SO_NAME) -lsimgrid
+LIBRUBYARG_SHARED = -L../../.libs -l$(RUBY_SO_NAME) -lsimgrid
 LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static
 
 RUBY_EXTCONF_H = 
 CFLAGS   =  -fPIC -fno-strict-aliasing -g -g -O2  -fPIC $(cflags) 
-INCFLAGS = -I. -I$(topdir) -I$(hdrdir) -I$(srcdir)
+INCFLAGS = -I. -I$(topdir) -I$(hdrdir) -I$(srcdir) -I../../../include -I../../include -I../..
 DEFS     = -D_FILE_OFFSET_BITS=64
 CPPFLAGS =   $(DEFS) $(cppflags)
 CXXFLAGS = $(CFLAGS) 
