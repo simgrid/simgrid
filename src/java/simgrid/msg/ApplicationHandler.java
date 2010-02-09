@@ -27,7 +27,7 @@ import java.util.Hashtable;
  * @since SimGrid 3.3
  * @since JDK1.5011 
  */
-public final class ApplicationHandler{
+public final class ApplicationHandler {
 
 	/* 
 	 * This class is used to create the processes descibed in the deployment file.
@@ -158,9 +158,6 @@ public final class ApplicationHandler{
 	 */
 	public static ProcessFactory processFactory;
 
-	public ApplicationHandler() {
-		super();
-	}
 	/**
 	 * instanciates the process factory 
 	 */
@@ -168,8 +165,7 @@ public final class ApplicationHandler{
 		processFactory = new ProcessFactory();
 	}
 
-	public static void onBeginProcess(String hostName, String function)
-	{
+	public static void onBeginProcess(String hostName, String function) {
 		processFactory.setProcessIdentity(hostName, function);
 	}
 	public static void onProperty(String id, String value) {
@@ -181,10 +177,9 @@ public final class ApplicationHandler{
 	}
 
 	public static void onEndProcess() {
-
 		processFactory.createProcess();
 	}        
 
 	public static void onEndDocument() {
-	}  // NOTHING TODO
+	}  
 }
