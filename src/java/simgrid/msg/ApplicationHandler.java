@@ -37,9 +37,9 @@ public final class ApplicationHandler {
 		 * The vector which contains the arguments of the main function 
 		 * of the process object.
 		 */
-		public Vector args;
+		public Vector<String> args;
 
-		public Hashtable properties;
+		public Hashtable<String,String> properties;
 
 		/**
 		 * The name of the host of the process.
@@ -56,8 +56,8 @@ public final class ApplicationHandler {
 		 * Default constructor.
 		 */
 		public ProcessFactory() {
-			this.args = new Vector();
-			this.properties = new Hashtable();
+			this.args = new Vector<String>();
+			this.properties = new Hashtable<String,String>();
 			this.hostName = null;
 			this.function = null;
 		}
@@ -102,12 +102,12 @@ public final class ApplicationHandler {
 			 return hostName;
 		 }
 
+		 @SuppressWarnings("unchecked")
 		 public void createProcess() {
 			 try {
+				 Class<simgrid.msg.Process> cls = (Class<Process>) Class.forName(this.function);
 
-				 Class cls = Class.forName(this.function);
-
-				 simgrid.msg.Process process = (simgrid.msg.Process) cls.newInstance();
+				 simgrid.msg.Process process = cls.newInstance();
 				 process.name = this.function;
 				 process.id = simgrid.msg.Process.nextProcessId++;
 				 Host host = Host.getByName(this.hostName);
@@ -136,7 +136,7 @@ public final class ApplicationHandler {
 
 			 } catch(ClassNotFoundException e) {
 				 System.out.println(this.function +
-						 " class not found\n The attribut function of the element process  of your deployment file\n must correspond to the name of a Msg Proces class)");
+				 " class not found\n The attribut function of the element process  of your deployment file\n must correspond to the name of a Msg Proces class)");
 				 e.printStackTrace();
 
 			 } catch(InstantiationException e) {
