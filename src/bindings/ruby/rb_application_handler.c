@@ -1,0 +1,81 @@
+#include "rb_application_handler.h"
+#include "surf/surfxml_parse.h"
+#include <stdio.h>
+
+static void  r_init()
+{
+  
+  ruby_init();
+  ruby_init_loadpath();
+  rb_require("ApplicationHandler.rb");
+  
+} 
+
+static void  application_handler_on_start_document(void)
+{
+  
+   r_init();
+   //current One
+   current = rb_funcall3(rb_const_get(rb_cObject, rb_intern("ApplicationHandler")),  rb_intern("new"), 0, 0);
+   rb_funcall(current,rb_intern("onStartDocument"),0);
+  
+  
+}
+
+static void  application_handler_on_end_document(void)
+{
+  
+  //r_init();
+  rb_funcall(current,rb_intern("onEndDocument"),0); 
+
+}
+
+static void application_handler_on_begin_process(void) 
+{
+ 
+  
+  //r_init();
+  
+  VALUE hostName = rb_str_new2(A_surfxml_process_host);
+  VALUE function = rb_str_new2(A_surfxml_process_function);
+  
+   rb_funcall(current,rb_intern("onBeginProcess"),2,hostName,function); 
+  
+  
+}
+
+static void  application_handler_on_process_arg(void)
+{
+
+  //r_init();
+  
+   VALUE arg = rb_str_new2(A_surfxml_argument_value);
+  
+   rb_funcall(current,rb_intern("onProcessArg"),1,arg);
+  
+  
+}
+
+static void  application_handler_on_property(void)
+{
+ 
+  //r_init();
+  
+   VALUE id = rb_str_new2(A_surfxml_prop_id);
+   VALUE val =  rb_str_new2(A_surfxml_prop_value);
+  
+   rb_funcall(current,rb_intern("onProperty"),2,id,val);
+   
+   
+}
+
+
+static void application_handler_on_end_process(void)
+{
+  
+ //r_init();
+ 
+ rb_funcall(current,rb_intern("onEndProcess"),0);
+  
+  
+}
