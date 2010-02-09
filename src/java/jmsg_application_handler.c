@@ -1,3 +1,12 @@
+/*
+ * Copyright 2006,2007,2010 Da SimGrid Team.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package.
+ *
+ * Upcalls to the Java functions used as callback to the FleXML application file parser.
+ */
+
 #include "jmsg_application_handler.h"
 
 #include "jmsg.h"

@@ -1,13 +1,11 @@
 /*
- * $Id: jmsg_application_handler.h 3684 2007-07-08 20:51:53Z mquinson $
- *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier All right reserved. 
+ * Copyright 2006,2007,2010 Da SimGrid Team.
  *
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the license (GNU LGPL) which comes with this package.
  *
- * This contains the declarations of the functions in relation with the java
- * host instance.
+ * Upcalls to the Java functions used as callback to the FleXML application file parser.
+ *
  */  
   
 #ifndef MSG_JAPPLICATION_HANDLER_H
