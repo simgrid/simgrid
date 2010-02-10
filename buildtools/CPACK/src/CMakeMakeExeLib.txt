@@ -2,9 +2,13 @@
 
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFLEXml.txt)
 
-add_library(simgrid SHARED ${simgrid_sources})
-add_library(gras SHARED ${gras_sources})
-add_library(smpi SHARED ${SMPI_SRC})
+if(supernovae)
+	include(${PROJECT_DIRECTORY}/CPACK/src/CMakeSupernovae.txt)
+else(supernovae)
+	add_library(simgrid SHARED ${simgrid_sources})
+	add_library(gras SHARED ${gras_sources})
+	add_library(smpi SHARED ${SMPI_SRC})
+endif(supernovae)
 
 set(GRAS_DEP "pthread")
 set(SIMGRID_DEP "")

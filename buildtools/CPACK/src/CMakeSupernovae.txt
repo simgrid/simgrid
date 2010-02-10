@@ -1,0 +1,65 @@
+### Make supernovae files and libs
+
+set(simgrid_fragile_sources 
+${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c
+${PROJECT_DIRECTORY}/src/surf/surfxml_parse.c
+${PROJECT_DIRECTORY}/src/xbt/graphxml_parse.c
+${PROJECT_DIRECTORY}/src/simdag/sd_daxloader.c
+)
+set(gras_fragile_sources
+${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c
+${PROJECT_DIRECTORY}/src/xbt/graphxml_parse.c
+)
+set(temp_src_smpi "")
+set(temp_src_simgrid "")
+set(temp_src_gras "")
+
+foreach(file ${SMPI_SRC})
+set(temp_src_smpi "${temp_src_smpi} ${file}")
+endforeach(file ${SMPI_SRC})
+
+foreach(file ${simgrid_sources})
+	set(en_plus yes)
+	foreach(file_delete ${simgrid_fragile_sources})
+		if(file_delete MATCHES "${file}")
+			set(en_plus no)
+			#message("${file}")
+		endif(file_delete MATCHES "${file}")
+	endforeach (file_delete ${simgrid_fragile_sources})
+	if(en_plus)
+		if(file MATCHES "/home/navarrop/Bureau/simgrid-trunk/src/xbt/log.c")
+			set(file "xbt/log.c")
+		endif(file MATCHES "/home/navarrop/Bureau/simgrid-trunk/src/xbt/log.c")
+		set(temp_src_simgrid "${temp_src_simgrid} ${file}")
+	endif(en_plus)
+endforeach(file ${simgrid_sources})
+
+foreach(file ${gras_sources})
+	set(en_plus yes)
+	foreach(file_delete ${gras_fragile_sources})
+		if(file_delete MATCHES "${file}")
+			set(en_plus no)
+			#message("${file}")
+		endif(file_delete MATCHES "${file}")
+	endforeach (file_delete ${gras_fragile_sources})
+	if(en_plus)
+		if(file MATCHES "/home/navarrop/Bureau/simgrid-trunk/src/xbt/log.c")
+			set(file "xbt/log.c")
+		endif(file MATCHES "/home/navarrop/Bureau/simgrid-trunk/src/xbt/log.c")
+		set(temp_src_gras "${temp_src_gras} ${file}")
+	endif(en_plus)
+endforeach(file ${gras_sources})
+
+#message("simgrid : \n${temp_src_simgrid}")
+#message("gras : \n${temp_src_gras}")
+#message("smpi : \n${temp_src_smpi}")
+
+exec_program("rm ${PROJECT_DIRECTORY}/src/supernovae_sg.c ${PROJECT_DIRECTORY}/src/supernovae_gras.c ${PROJECT_DIRECTORY}/src/supernovae_smpi.c"OUTPUT_VARIABLE "SUPER_OK")
+
+exec_program("${PROJECT_DIRECTORY}/src/mk_supernovae.sh ${PROJECT_DIRECTORY}/src/supernovae_sg.c   ${temp_src_simgrid}" OUTPUT_VARIABLE "SUPER_OK")
+exec_program("${PROJECT_DIRECTORY}/src/mk_supernovae.sh ${PROJECT_DIRECTORY}/src/supernovae_gras.c ${temp_src_gras}"	OUTPUT_VARIABLE "SUPER_OK")
+exec_program("${PROJECT_DIRECTORY}/src/mk_supernovae.sh ${PROJECT_DIRECTORY}/src/supernovae_smpi.c ${temp_src_smpi}"	OUTPUT_VARIABLE "SUPER_OK")
+
+add_library(simgrid 	SHARED 	${PROJECT_DIRECTORY}/src/supernovae_sg.c ${simgrid_fragile_sources})
+add_library(gras 	SHARED 	${PROJECT_DIRECTORY}/src/supernovae_gras.c ${gras_fragile_sources})
+add_library(smpi 	SHARED 	${PROJECT_DIRECTORY}/src/supernovae_smpi.c)

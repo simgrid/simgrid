@@ -10,6 +10,7 @@
 
 option(init "Set ON for make _*.c with gras_stub_generator" OFF)
 option(MAINTAINER_MODE "Permit to make flex and flexml files." OFF)
+option(supernovae "Supernovae mode." OFF)
 option(disable_java "This variable set the java context." ON)
 option(disable_gtnets "This variable set the gtnets context." ON)
 option(disable_context "This variable set the context." ON)
