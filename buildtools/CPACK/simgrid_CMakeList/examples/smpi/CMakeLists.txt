@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "./")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(flags "-Dmain=smpi_simulated_main")
 set(INCLUDES "-I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src -I/usr/include -I${PROJECT_DIRECTORY}/include/smpi")
 
 set(CMAKE_CXX_FLAGS -fprofile-arcs -ftest-coverage)
-add_definitions (${INCLUDES} -fprofile-arcs -ftest-coverage)
+add_definitions (${INCLUDES} ${flags} -fprofile-arcs -ftest-coverage)
 
 add_executable(alltoall2 alltoall2.c )
 add_executable(alltoall_basic alltoall_basic.c)

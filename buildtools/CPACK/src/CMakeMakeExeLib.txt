@@ -110,7 +110,7 @@ if(NOT init)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/dax)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/metaxml)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/properties)
-	#add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
+	add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
 
 	if(HAVE_JAVA)
 		message("Make : src/simgrid.jar with : ${JAVA_COMPILE}")
