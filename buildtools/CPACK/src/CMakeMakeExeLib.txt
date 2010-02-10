@@ -12,6 +12,10 @@ endif(supernovae)
 
 set(GRAS_DEP "pthread")
 set(SIMGRID_DEP "")
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+	set(SIMGRID_DEP "-D_XOPEN_SOURCE")
+endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
 
 if(pthread)
 	if(with_context MATCHES pthread)
