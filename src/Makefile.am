@@ -222,11 +222,11 @@ endif
 
 SMPI_SRC= \
   smpi/smpi_base.c \
+  smpi/smpi_comm.c \
+  smpi/smpi_group.c \
   smpi/smpi_bench.c \
   smpi/smpi_global.c \
   smpi/smpi_mpi.c \
-  smpi/smpi_sender.c \
-  smpi/smpi_receiver.c \
   smpi/smpi_util.c \
   smpi/smpi_coll.c \
   smpi/smpi_mpi_dt.c
