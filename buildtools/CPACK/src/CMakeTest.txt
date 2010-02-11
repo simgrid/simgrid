@@ -227,7 +227,7 @@ ELSE(${ARCH_32_BITS})
 ENDIF(${ARCH_32_BITS})
 
 # Don't mark this one since we should fix it before 3.3.4 gets released
-  set_tests_properties(smpi-reduce PROPERTIES WILL_FAIL true)
+#  set_tests_properties(smpi-reduce PROPERTIES WILL_FAIL true)
 
 #SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 50)
 #SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 50)

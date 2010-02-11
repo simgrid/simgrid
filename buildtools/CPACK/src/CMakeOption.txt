@@ -15,4 +15,5 @@ option(disable_java "This variable set the java context." ON)
 option(disable_gtnets "This variable set the gtnets context." ON)
 option(disable_context "This variable set the context." ON)
 option(disable_lua "This variable set lua use." ON)
-
+option(enable_compile_warnings "" OFF)
+option(enable_compile_optimizations "" OFF)
