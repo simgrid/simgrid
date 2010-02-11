@@ -119,8 +119,16 @@ void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
 #ifdef HAVE_LUA
       SIMIX_ctx_lua_factory_init(factory);
 #else
+
     THROW0(not_found_error, 0, "Factory 'lua' does not exist: Lua support was not compiled in the SimGrid library");
 #endif /* HAVE_LUA */
+
+    else if (!strcmp(name,"ruby"))
+#ifdef HAVE_RUBY
+      SIMIX_ctx_ruby_factory_init(factory);
+#else
+     THROW0(not_found_error, 0, "Factory 'ruby' does not exist: Ruby support was not compiled in the SimGrid library");
+#endif
   else
     THROW1(not_found_error, 0, "Factory '%s' does not exist", name);
 }
