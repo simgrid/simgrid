@@ -10,7 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "private.h"
-#define HAVE_RUBY /* HACK HACK */
+//#define HAVE_RUBY /* HACK HACK */
 
 #ifdef HAVE_RUBY
 extern void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory);
