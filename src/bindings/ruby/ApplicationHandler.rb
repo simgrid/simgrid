@@ -1,6 +1,6 @@
 require 'ProcessFactory'
 
-$debug = true
+$DEBUG = true
 
 class ApplicationHandler
 
@@ -8,82 +8,72 @@ class ApplicationHandler
   
 #   Initialize
   def initialize()
-     
+     #Nothing todo
   end
   
-    
-#  onStartDocument
+    #  onStartDocument
   def onStartDocument()
     
     @processFactory = ProcessFactory.new
-    
-    if ($debug)
+    if ($DEBUG)
       puts "onStartDocument"
     end
       
-    
   end
   
 #   onBeginProcess
-  def onBeginProcess (hostName ,function)
+  def onBeginProcess(hostName,function)
     
     @processFactory.setProcessIdentity(hostName,function)
     
-     if ($debug)
+     if ($DEBUG)
       puts "onBeginProcess"
      end
     
   end
 
 #   onProperty
-  
-  def onProperty(id,value)
+    def onProperty(id,value)
     
     @processFactory.setProperty(id,value)
     
-     if ($debug)
+     if ($DEBUG)
       puts "onProperty"
      end
     
   end
   
 #   RegisterProcessArg
-  
-  def onProcessArg(arg)
+    def onProcessArg(arg)
     
     @processFactory.registerProcessArg(arg)
       
-      if ($debug)
+      if ($DEBUG)
       puts "onProcessArg"
       end
     
   end
 
 #   OnEndProcess
-  
- def onEndProcess()
+   def onEndProcess()
    
    @processFactory.createProcess()
    
-   if ($debug)
+   if ($DEBUG)
       puts "onEndProcess"
    end
       
  end
 
-
  #  onEndDocument
- 
- def onEndDocument()  
+  def onEndDocument()  
 #    Euh...Actually Nothin' to Do !!
    
-   if($debug)
+   if($DEBUG)
    puts "onEndDocument"
    end
  end
-  
  
-#  End Class
- 
-end
+ #  End Class
+ end
 

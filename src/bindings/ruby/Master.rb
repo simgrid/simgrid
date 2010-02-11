@@ -6,44 +6,37 @@ include MSG
 class Master < RbProcess
   
   
-
+  def initialize()
+    super()
+    p RbHost.number()
+      
+    
+  end
  
   
-  def initialize(*args)
-    
-    super()
-    channel = 0
-    puts "Hey ..from Master"#info("Hey")
-    
-   slaves = Array.new()
-   
+  def run(args) # args is an array Containin' arguments for function master
+   puts "Hey From Ruby...I'm The Master" 
    size = args.size
-   
-   puts "Args = " + size
+   puts "Number of Args for Master = " + size.to_s
    
    for i in 0..size-1
-     puts "argv :" + args[1]
+      puts  args[i]
    end
    
-   raise "Master needs 3 arguments" if size < 3
-   
-   numberOfTask = args[0] #convert to int
-   taskComputeSize = args[1] #convert to double
-   taskCommunicationSize = args[2] #convert to double
-   slaveCount = args[3] #convert to int
-   
-   
-#    todo = Array.new(numberOfTask)
+   raise "Master needs 3 arguments" if size < 3 
+   numberOfTask = Integer(args[0]) 
+   taskComputeSize = Float(args[1])
+   taskCommunicationSize = Float(args[2])
+   slaveCount = Integer(args[3]) 
    
    #Creating & Sending Task
-   for i in 0..numberOfTask 
+   for i in 0..numberOfTask
      
      task = RbTask.new("Task_" + i.to_s, taskComputeSize , taskCommunicationSize );
      s_alias = "slave " + (i%slaveCount).to_s
-     puts "Master Sending "+ RbTask.name(task) + " to " + s_alias
+     puts "Master Sending "+ RbTask.name(task) + " to " + s_alias + " with Comput Size " + RbTask.compSize(task).to_s 
      RbTask.send(task,s_alias)
      puts "Master Done Sending " +RbTask.name(task) + " to " + s_alias
-     
    end
   
    # Sending Finalize Tasks
@@ -53,11 +46,6 @@ class Master < RbProcess
      puts "Master Sending Finalize to " + s_alias
      RbTask.send(RbTask.new("finalize",0,0),s_alias)
    end
-     
    puts "Master : Everything's Done"
-   
-  end
-  
+  end  
 end
-
-

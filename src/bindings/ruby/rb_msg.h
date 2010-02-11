@@ -37,11 +37,17 @@ static void msg_registerFunction(VALUE Class,VALUE function_name,VALUE code);
 // Tools
 static void msg_info(VALUE Class,VALUE msg);
 
-//get Clock
+//get Clock  
 static VALUE msg_get_clock(VALUE Class);
 
 //pajeOutput
 static void msg_paje_output(VALUE Class,VALUE pajeFile);
 
+
+// Ruby Introspection : To instanciate a Ruby Class from its Name
+static VALUE msg_new_ruby_instance(VALUE Class,VALUE className);
+
+// The Same ... This Time with Args
+static VALUE msg_new_ruby_instance_with_args(VALUE Class,VALUE className,VALUE args);
 
 #endif

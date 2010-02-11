@@ -1,11 +1,22 @@
 require 'msg'
 require 'RubyProcess'
-
 require 'Master'
 require 'Slave'
 
-Msg.init()
-Msg.createEnvironment("../../../examples/msg/msg_platform.xml")
-Msg.deployApplication("MasterSlave_deploy.xml")
-Msg.run()
-Msg.exit()
+include MSG
+
+# raise "Bad Number Of Arguments" if ARGV.length != 2 
+
+# info("Bye")
+
+init(ARGV)
+raise "Bad Number Of Arguments " if (ARGV.length < 2)
+# p  Host.number()
+createEnvironment(ARGV[0])
+# p  Host.number()
+deployApplication(ARGV[1])
+# p  Host.number()
+
+ 
+# run()
+# exit()

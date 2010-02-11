@@ -12,27 +12,22 @@
 #include "rb_msg_process.c"
 #include "rb_application_handler.c"
 
-
+ 
 
 //Init Msg_Init From Ruby
 
 
 static void msg_init(VALUE Class,VALUE args)
 {
-  
   char **argv=NULL;  
   const char *tmp;
   int argc,type,i;
   VALUE *ptr ;
-  
-  
-  
   // Testing The Args Type
   type =  TYPE(args);
-  
   if (type != T_ARRAY )
   {
-    rb_raise(rb_eRuntimeError,"Argh!! Bad Arguments to msg_init");
+    rb_raise(rb_eRuntimeError,"Argh!!! Bad Arguments to msg_init");
     return;
   }
     
@@ -41,15 +36,12 @@ static void msg_init(VALUE Class,VALUE args)
   
 //   Create C Array to Hold Data_Get_Struct 
   argv = xbt_new0(char *, argc);  // argc or argc +1
-  
   argv[0] = strdup("ruby");
-  
-  
   for (i=0;i<argc;i++)
   {
    VALUE value = ptr[i];
    type = TYPE(value);
-//   if (type == T_STRING)
+//  if (type == T_STRING)
    tmp = RSTRING(value)->ptr;
    argv[i+1] = strdup(tmp);
     
@@ -59,7 +51,6 @@ static void msg_init(VALUE Class,VALUE args)
   MSG_global_init(&argc,argv);
   MSG_set_channel_number(10); // Okey !! Okey !! This Must Be Fixed Dynamiclly , But Later ;)
   SIMIX_context_select_factory("ruby"); 
-  
   // Free Stuffs 
   for (i=0;i<argc;i++)
    free(argv[i]) ;
@@ -70,9 +61,6 @@ static void msg_init(VALUE Class,VALUE args)
   return;
 }
 
-
-
-
 //Init Msg_Run From Ruby
 static void msg_run(VALUE class)
 {
@@ -80,7 +68,7 @@ static void msg_run(VALUE class)
  xbt_fifo_item_t item = NULL;
  m_host_t host = NULL;
  VALUE rbHost;
- 
+  
  // Let's Run
  if (MSG_OK != MSG_main()){
    
@@ -101,72 +89,55 @@ static void msg_run(VALUE class)
     
      rb_raise(rb_eRuntimeError,"MSG_clean() failed");
    }
-    
     return;
-    
 }
-
-
-
 
 // Create Environment
 static void msg_createEnvironment(VALUE class,VALUE plateformFile)
 {
  
-  
-  int type = TYPE(plateformFile);
-  
-  if ( type != T_STRING )
-    rb_raise(rb_eRuntimeError,"Bad Argument's Type");
-   
- const char * platform =  RSTRING(plateformFile)->ptr;
- 
- MSG_create_environment(platform);
+   int type = TYPE(plateformFile);
+   if ( type != T_STRING )
+      rb_raise(rb_eRuntimeError,"Bad Argument's Type");  
+   const char * platform =  RSTRING(plateformFile)->ptr;
+   MSG_create_environment(platform);
+   printf("Create Environment...Done\n");
  
  return; 
   
 }
 
 
-// deploy Application
+//deploy Application
 
 static void msg_deployApplication(VALUE class,VALUE deploymentFile )
 {
   
     int type = TYPE(deploymentFile);
-  
     if ( type != T_STRING )
-     rb_raise(rb_eRuntimeError,"Bad Argument's Type");
-  
+	rb_raise(rb_eRuntimeError,"Bad Argument's Type for deployApplication ");
     const char *dep_file = RSTRING(deploymentFile)->ptr;
-    
-    
     surf_parse_reset_parser();
-    
     surfxml_add_callback(STag_surfxml_process_cb_list,
 			 application_handler_on_begin_process);
     
-    surfxml_add_callback(STag_surfxml_argument_cb_list,
+    surfxml_add_callback(ETag_surfxml_argument_cb_list,
 			 application_handler_on_process_arg);
 
     surfxml_add_callback(STag_surfxml_prop_cb_list,
 			 application_handler_on_property);
 			 
-    surfxml_add_callback(STag_surfxml_process_cb_list,
+    surfxml_add_callback(ETag_surfxml_process_cb_list,
 			 application_handler_on_end_process);
-			 
+			  
     surf_parse_open(dep_file);
-			 
     application_handler_on_start_document();
-    
     if(surf_parse())
-      rb_raise(rb_eRuntimeError,"surf_parse() failed");
-    
-    surf_parse_close();
-    
+	rb_raise(rb_eRuntimeError,"surf_parse() failed");
+    surf_parse_close();   
     application_handler_on_end_document();
-    
-  
+    printf("Deploy Application...Done\n");
+ 
 }
 
 
@@ -192,7 +163,7 @@ static VALUE msg_get_clock(VALUE class)
  
   return DBL2NUM(MSG_get_clock());
   
-}
+}   
 
 //pajeOutput
 static void msg_paje_out(VALUE class,VALUE pajeFile)
@@ -202,6 +173,30 @@ static void msg_paje_out(VALUE class,VALUE pajeFile)
   
 }
 
+
+// Ruby intropspection : Instanciate a ruby Class From its Name 
+// Used by ProcessFactory::createProcess
+
+static VALUE msg_new_ruby_instance(VALUE class,VALUE className)
+{
+  ruby_init();
+  ruby_init_loadpath();
+  char * p_className = RSTRING(className)->ptr;
+  
+  return rb_funcall3(rb_const_get(rb_cObject, rb_intern(p_className)),  rb_intern("new"), 0, 0);
+  
+}
+
+//This Time With Args
+
+static VALUE msg_new_ruby_instance_with_args(VALUE class,VALUE className,VALUE args)
+{
+  ruby_init();
+  ruby_init_loadpath();
+  char * p_className = RSTRING(className)->ptr;
+  return rb_funcall(rb_const_get(rb_cObject, rb_intern(p_className)),  rb_intern("new"), 1, args);
+  
+}
 /*****************************************************************************************************************
 
 Wrapping MSG module and its Class ( Task,Host) & Methods ( Process's method...ect)
@@ -225,25 +220,27 @@ void Init_msg()
    rb_define_method(rb_msg,"info",msg_info,1);
    rb_define_method(rb_msg,"getClock",msg_get_clock,0);
    rb_define_method(rb_msg,"pajeOutput",msg_paje_out,1);
-   
+   rb_define_method(rb_msg,"rubyNewInstance",msg_new_ruby_instance,1);
+   rb_define_method(rb_msg,"rubyNewInstanceArgs",msg_new_ruby_instance_with_args,2);
+     
    // Associated Process Methods
-//    rb_define_method(rb_msg,"processCreate",processCreate,2);
+   rb_define_method(rb_msg,"processCreate",processCreate,2);
    rb_define_method(rb_msg,"processSuspend",processSuspend,1);
    rb_define_method(rb_msg,"processResume",processResume,1);
    rb_define_method(rb_msg,"processIsSuspend",processIsSuspend,1);
    rb_define_method(rb_msg,"processKill",processKill,1);
    rb_define_method(rb_msg,"processGetHost",processGetHost,1);
      
-   //Classes
+   //Classes       
    rb_task = rb_define_class_under(rb_msg,"Task",rb_cObject);
    rb_host = rb_define_class_under(rb_msg,"Host",rb_cObject);
-   
-   //Task Methods
+    
+   //Task Methods    
    rb_define_module_function(rb_task,"new",task_new,3);
    rb_define_module_function(rb_task,"compSize",task_comp,1);
    rb_define_module_function(rb_task,"name",task_name,1);
    rb_define_module_function(rb_task,"execute",task_execute,1);
-   rb_define_module_function(rb_task,"send",task_send,2);
+   rb_define_module_function(rb_task,"send",task_send,2); 
    rb_define_module_function(rb_task,"receive",task_receive,1);
    rb_define_module_function(rb_task,"receive2",task_receive2,2);
    rb_define_module_function(rb_task,"sender",task_sender,1);
@@ -255,10 +252,10 @@ void Init_msg()
    rb_define_module_function(rb_host,"getByName",host_get_by_name,1);
    rb_define_module_function(rb_host,"name",host_name,1);
    rb_define_module_function(rb_host,"speed",host_speed,1);
-   rb_define_module_function(rb_host,"number",host_number,0);
+   rb_define_module_function(rb_host,"number",host_number,0); 
    rb_define_module_function(rb_host,"setData",host_set_data,2);
    rb_define_module_function(rb_host,"getData",host_get_data,1);
-//    rb_define_module_function(rb_host,"hasData",host_has_data,1);
+   //rb_define_module_function(rb_host,"hasData",host_has_data,1);
    rb_define_module_function(rb_host,"isAvail",host_is_avail,1);
    
-}
+}  

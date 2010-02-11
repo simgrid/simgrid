@@ -1,5 +1,8 @@
 require 'msg'
 include MSG
+require 'RubyProcess'
+require 'Master'
+require 'RubyHost'
 
 
 array = Array.new()
@@ -7,6 +10,8 @@ array = Array.new()
 # puts array.empty?
 array << "Peace!!" << "Hey" << "Euh..."<< "Hey2" << "Euh...2"
 
+
+# process = rubyNewInstanceArgs("Master",array)
 
 # array.clear
 # puts array.empty?
@@ -35,31 +40,33 @@ array2 = array
 
 size = array2.size
 
-
-
-
-
-
-task = Task.new('ninou',12,23)
+task = Task.new('marine',12,23)
 puts "Created task :"+task.to_s+" ; name: "+Task.name(task)
+Task.send(task,"MailBox")
+# Task.send(Task.new("finalize",0,0),"alias")
 #task2 =RbTask.new('task2')
 # task = RbTask.new()
 # host = Host.new("Brad")
 
- 
+
  #host2 = Host.new()
 #  task_2 = Task.new('task2',12,23)
 #   name1 = task_2.name()
 #  name2 = Task.name(task)
 #  size = Task.compSize(task)
- name = Task.name(task)
+name = Task.name(task)
 # task.bind
 number = 56
 
-process = RbProcess.new("mon nom")
-puts "Created process :"+process.to_s+" ; name: "+RbProcess.name(task)
+process = rubyNewInstance("RbProcess");#RbProcess.new()
+ 
+p  process.class
+# puts "Created process :"+process.to_s+" ; name: "+RbProcess.name(task)
 # name = process.name
 puts name
+
+argue = ARGV[0]
+puts argue
 # puts process.alive?
 # Thread.stop
 # process2 = RbProcess.new()

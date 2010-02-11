@@ -60,15 +60,19 @@ static VALUE task_execute(VALUE class,VALUE task)
 
 // Sending Task
 
-static VALUE task_send(VALUE class,VALUE task,VALUE mailbox)
+static void task_send(VALUE class,VALUE task,VALUE mailbox)
 {
   
     // Wrap Ruby Value to m_task_t struct
+  
   m_task_t tk;
   Data_Get_Struct(task, m_task_t, tk);
-  return INT2NUM(MSG_task_send(tk,RSTRING(mailbox)->ptr));
+  int res = MSG_task_send(tk,RSTRING(mailbox)->ptr);
+ 
+  if(res != MSG_OK)
+   rb_raise(rb_eRuntimeError,"MSG_task_send failed");
   
-  
+  return;
 }
 
 // Recieving Task 

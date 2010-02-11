@@ -24,8 +24,8 @@ static VALUE task_name(VALUE Class,VALUE task);
 // Execute Task
 static VALUE task_execute(VALUE Class,VALUE task);
 
-// Sending Task
-static VALUE task_send(VALUE Class,VALUE task,VALUE mailbox);
+// Sending Task 
+static void task_send(VALUE Class,VALUE task,VALUE mailbox);
 
 // Recieve : return a task
 static VALUE task_receive(VALUE Class,VALUE mailbox);
