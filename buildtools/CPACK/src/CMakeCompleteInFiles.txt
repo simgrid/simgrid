@@ -321,8 +321,8 @@ if(HAVE_MAKECONTEXT)
 
 	find_program(CAT_EXE NAMES cat)
 
-	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_addr")
-	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_size")
+	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_DIRECTORY}/CPACK/prog_test/conftestval" OUTPUT_VARIABLE "makecontext_addr")
+	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_DIRECTORY}/CPACK/prog_test/conftestval" OUTPUT_VARIABLE "makecontext_size")
 	#message("${makecontext_addr}")
 	#message("${makecontext_size}")
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
