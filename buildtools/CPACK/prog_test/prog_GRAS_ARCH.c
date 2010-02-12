@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-void main (void)
+int main (void)
 {
 
 	int c = sizeof(char);
@@ -46,5 +46,6 @@ void main (void)
 	printf("struct-void * : %d\n",res6);*/
 
 	printf("_C:%d/%d:_I:%d/%d:%d/%d:%d/%d:%d/%d:_P:%d/%d:%d/%d:_D:4/%d:8/%d:",c,res0,si,res1,i,res2,li,res3,lli,res4,v,res6,vv,res6,f,res5);
+	return 1;
 }
 

@@ -5,7 +5,7 @@ set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 set(flags "-Dmain=smpi_simulated_main")
 set(INCLUDES "-I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src -I/usr/include -I${PROJECT_DIRECTORY}/include/smpi")
 
-set(CMAKE_CXX_FLAGS -fprofile-arcs -ftest-coverage)
+set(CMAKE_C_FLAGS "")
 add_definitions (${INCLUDES} ${flags} -fprofile-arcs -ftest-coverage)
 
 add_executable(alltoall2 alltoall2.c )

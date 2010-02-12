@@ -2,7 +2,7 @@
 #include <stddef.h> /* offsetof() */
 #include <stdio.h>
 
-void main (void)
+int main (void)
 {
 
 struct s0 {char c0; double d0;};
@@ -54,5 +54,7 @@ int gras_compact_struct;
 	if(gras_array_straddle_struct == 1) printf("GRAS_ARRAY_STRADDLE_STRUCT ");
 
 	if(gras_compact_struct == 1) printf("GRAS_COMPACT_STRUCT ");
+
+return 1;
 
 }

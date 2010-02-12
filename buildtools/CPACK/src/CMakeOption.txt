@@ -1,9 +1,16 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see after)
 ### ex: cmake -Ddisable_java=ON -Ddisable_gtnets=ON ./
 
+if(disable_gtnets)
+	set(gtnets_path "none" CACHE TYPE INTERNAL FORCE)	
+endif(disable_gtnets)
+
+if(NOT with_context)
+	set(with_context "auto" CACHE TYPE INTERNAL FORCE)
+endif(NOT with_context)
+
 #SET(disable_java ON) #default value
 #SET(disable_gtnets ON)
-#SET(disable_context ON)
 #SET(disable_lua ON)
 #SET(init OFF)
 #SET(MAINTAINER_MODE OFF)
@@ -13,7 +20,6 @@ option(MAINTAINER_MODE "Permit to make flex and flexml files." OFF)
 option(supernovae "Supernovae mode." OFF)
 option(disable_java "This variable set the java context." ON)
 option(disable_gtnets "This variable set the gtnets context." ON)
-option(disable_context "This variable set the context." ON)
 option(disable_lua "This variable set lua use." ON)
 option(enable_compile_warnings "" OFF)
 option(enable_compile_optimizations "" OFF)

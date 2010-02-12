@@ -29,14 +29,14 @@ set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 ### Setup Options
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeOption.txt)
 
-### Print ARGS
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakePrintArgs.txt)
-
 ### Make the *.h files with *.h.in files
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeCompleteInFiles.txt)
 
 ### Define source packages for Libs 
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDefinePackages.txt)
+
+### Setup gcc flags
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFlags.txt)
 
 ### Make Libs and Exes
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeMakeExeLib.txt)
@@ -47,5 +47,8 @@ include(${PROJECT_DIRECTORY}/CPACK/src/CTestConfig.cmake)
 
 ### Setup the distrib
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDistrib.txt)
+
+### Print ARGS
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakePrintArgs.txt)
 
 INCLUDE(Dart)

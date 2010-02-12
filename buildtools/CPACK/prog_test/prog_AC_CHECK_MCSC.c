@@ -2,8 +2,12 @@
 #include <stdlib.h>
 #include <ucontext.h>
 
+void child(void);
+
 ucontext_t uc_child;
 ucontext_t uc_main;
+
+
 
 void child(void)
 {
@@ -45,4 +49,5 @@ int main(int argc, char *argv[])
 
     /* die successfully */
     exit(0);
+	return 1;
 }

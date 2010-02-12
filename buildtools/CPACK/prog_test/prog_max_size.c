@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-void main (void)
+int main (void)
 {
 
 	int c = sizeof(char);
@@ -24,5 +24,6 @@ void main (void)
 
 	} 
 	printf("%d",max);
+	return 1;
 }
 

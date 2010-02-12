@@ -13,6 +13,6 @@ if(CMAKE_C_COMPILER MATCHES "/usr/bin/gcc")
 		set(optCFLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing ")
 	endif(enable_compile_optimizations)
 
-set(CMAKE_C_FLAGS "${optCFLAGS}${warnCFLAGS}${CMAKE_C_FLAGS}")
+	set(CMAKE_C_FLAGS "${optCFLAGS}${warnCFLAGS}${CMAKE_C_FLAGS}")
 
-endif(CMAKE_C_COMPILER:FILEPATH MATCHES "/usr/bin/gcc")
+endif(CMAKE_C_COMPILER MATCHES "/usr/bin/gcc")

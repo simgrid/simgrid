@@ -130,4 +130,5 @@ int main(int argc, char *argv[])
     fprintf(f, "%s\n", result);
     fclose(f);
     exit(0);
+	return 1;
 }
