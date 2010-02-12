@@ -26,6 +26,8 @@ set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/src/.libs")
 set(INCLUDES "-I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src -I/usr/include -L${gtnets_path}/lib")
 set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
+add_definitions (${INCLUDES} -fprofile-arcs -ftest-coverage)
+
 ### Setup Options
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeOption.txt)
 

@@ -42,7 +42,7 @@ endif(HAVE_GTNETS)
 #set(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage")
 #set(CMAKE_C_FLAGS "-fprofile-arcs -ftest-coverage")
 
-add_definitions (${INCLUDES} -fprofile-arcs -ftest-coverage)
+#add_definitions (-fprofile-arcs -ftest-coverage)
 target_link_libraries(simgrid ${SIMGRID_DEP} ${SIMGRID_DEP_GTNETS}-fprofile-arcs)
 target_link_libraries(gras ${GRAS_DEP} -fprofile-arcs)
 target_link_libraries(smpi -fprofile-arcs)

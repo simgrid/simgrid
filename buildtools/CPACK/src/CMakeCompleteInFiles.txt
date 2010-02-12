@@ -308,7 +308,7 @@ SET(SIZEOF_MAX ${var3})
 
 CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 #message("HAVE_MAKECONTEXT ${HAVE_MAKECONTEXT}")
-
+set(makecontext_CPPFLAGS_2 "")
 if(HAVE_MAKECONTEXT)
 	set(makecontext_CPPFLAGS "-DTEST_makecontext")
 	if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -316,15 +316,17 @@ if(HAVE_MAKECONTEXT)
 		#message("SYSTEM OSX")
 	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
-	exec_program("${CMAKE_C_COMPILER} ${PROJECT_DIRECTORY}/CPACK/prog_test/prog_stacksetup.c ${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}" OUTPUT_VARIABLE COMPILE_makecontext_VAR)
-	exec_program("${PROJECT_DIRECTORY}/CPACK/prog_test/a.out" OUTPUT_VARIABLE COMPILE_makecontext_VAR)
-
+	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/CPACK/prog_test/prog_stacksetup.c
+		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
+		)
 	find_program(CAT_EXE NAMES cat)
 
-	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_DIRECTORY}/CPACK/prog_test/conftestval" OUTPUT_VARIABLE "makecontext_addr")
-	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_DIRECTORY}/CPACK/prog_test/conftestval" OUTPUT_VARIABLE "makecontext_size")
-	#message("${makecontext_addr}")
-	#message("${makecontext_size}")
+	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_addr")
+	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_size")
+	message("${makecontext_addr}")
+	message("${makecontext_size}")
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
 	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
 
