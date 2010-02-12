@@ -16,6 +16,7 @@ set(SMPI_DEP "")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	set(SIMGRID_DEP "-D_XOPEN_SOURCE")
+	set(SMPI_DEP "-D_XOPEN_SOURCE")
 endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 
@@ -45,7 +46,7 @@ endif(HAVE_GTNETS)
 #add_definitions (-fprofile-arcs -ftest-coverage)
 target_link_libraries(simgrid ${SIMGRID_DEP} ${SIMGRID_DEP_GTNETS}-fprofile-arcs)
 target_link_libraries(gras ${GRAS_DEP} -fprofile-arcs)
-target_link_libraries(smpi -fprofile-arcs)
+target_link_libraries(smpi ${SMPI_DEP} -fprofile-arcs)
 
 ### Make EXEs
 
