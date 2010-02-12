@@ -22,16 +22,33 @@ else(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   MARK_AS_ADVANCED(CAT)
   STRING(REPLACE " \\n \\l" "" DISTRIB2 ${DISTRIB})
 endif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-
-
-         
+  
 getuname(osname -s)
 getuname(node -n)
 getuname(osrel  -r)
 getuname(cpu    -m)
 	
-SET(BUILDNAME "${osname}_${DISTRIB2}_${cpu}")
-SET(CTEST_SITE "${node}")
+#SET(BUILDNAME "${osname}_${DISTRIB2}_${cpu}")
+#SET(CTEST_SITE "${node}")
+SET(BUILDNAME "none" CACHE TYPE INTERNAL FORCE)
+
+if(with_context MATCHES ucontext AND NOT supernovae)
+	SET(BUILDNAME "ucontext" CACHE TYPE INTERNAL FORCE)
+endif(with_context MATCHES ucontext AND NOT supernovae)
+
+if(with_context MATCHES pthread AND NOT supernovae)
+	SET(BUILDNAME "pthread" CACHE TYPE INTERNAL FORCE)
+endif(with_context MATCHES pthread AND NOT supernovae)
+
+if(enable_compile_warnings AND enable_compile_optimizations)
+	SET(BUILDNAME "FULL_FLAGS" CACHE TYPE INTERNAL FORCE)
+endif(enable_compile_warnings AND enable_compile_optimizations)
+
+if(supernovae)
+	SET(BUILDNAME "SUPERNOVAE" CACHE TYPE INTERNAL FORCE)
+endif(supernovae)
+SET(SITE "${osname}_${DISTRIB2}_${cpu}")
+SET(CTEST_SITE "${osname}_${DISTRIB2}_${cpu}")
 SET(CTEST_PROJECT_NAME "${PROJECT_NAME}")
 SET(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "3000000")
 SET(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "3000000")

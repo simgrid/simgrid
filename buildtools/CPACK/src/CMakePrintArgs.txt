@@ -2,6 +2,8 @@ exec_program("echo `${CMAKE_C_COMPILER} --version | grep -E [0-9].[0-9].[0-9]$`"
 exec_program("echo `${CMAKE_CXX_COMPILER} --version | grep -E [0-9].[0-9].[0-9]$`" OUTPUT_VARIABLE "COMPILER_CXX_VERSION")
 
 message("\nConfiguration of package `simgrid' (revision ${SVN_VERSION}${GIT_VERSION}) on arch (=${GRAS_THISARCH}):")
+message("	BUILDNAME : 		${BUILDNAME}")
+message("	     SITE : 		${SITE}")
 message("")
 message("	Compiler: c++ : 	${CMAKE_CXX_COMPILER}")
 message("	       version:		${COMPILER_CXX_VERSION}")
