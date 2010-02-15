@@ -33,11 +33,11 @@ getuname(cpu    -m)
 SET(BUILDNAME "none" CACHE TYPE INTERNAL FORCE)
 
 if(with_context MATCHES ucontext AND NOT supernovae)
-	SET(BUILDNAME "ucontext" CACHE TYPE INTERNAL FORCE)
+	SET(BUILDNAME "UCONTEXT" CACHE TYPE INTERNAL FORCE)
 endif(with_context MATCHES ucontext AND NOT supernovae)
 
 if(with_context MATCHES pthread AND NOT supernovae)
-	SET(BUILDNAME "pthread" CACHE TYPE INTERNAL FORCE)
+	SET(BUILDNAME "PTHREAD" CACHE TYPE INTERNAL FORCE)
 endif(with_context MATCHES pthread AND NOT supernovae)
 
 if(enable_compile_warnings AND enable_compile_optimizations)
@@ -47,6 +47,12 @@ endif(enable_compile_warnings AND enable_compile_optimizations)
 if(supernovae)
 	SET(BUILDNAME "SUPERNOVAE" CACHE TYPE INTERNAL FORCE)
 endif(supernovae)
+
+if(HAVE_GTNETS)
+	SET(BUILDNAME "GTNETS" CACHE TYPE INTERNAL FORCE)
+endif(HAVE_GTNETS)
+
+
 SET(SITE "${osname}_${DISTRIB2}_${cpu}")
 SET(CTEST_SITE "${osname}_${DISTRIB2}_${cpu}")
 SET(CTEST_PROJECT_NAME "${PROJECT_NAME}")
