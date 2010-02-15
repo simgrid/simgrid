@@ -15,14 +15,13 @@ set(SIMGRID_DEP "")
 set(SMPI_DEP "")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-	set(SIMGRID_DEP "-D_XOPEN_SOURCE")
-	set(SMPI_DEP "-D_XOPEN_SOURCE")
+	add_definitions("-D_OPEN_SOURCE")
 endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 
 if(pthread)
 	if(with_context MATCHES pthread)
-		SET(SIMGRID_DEP pthread)
+		SET(SIMGRID_DEP ${SIMGRID_DEP}pthread)
 		SET(ESPACE " ")
 	endif(with_context MATCHES pthread)
 	
