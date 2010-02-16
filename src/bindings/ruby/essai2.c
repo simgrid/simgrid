@@ -66,11 +66,11 @@ int main(int argc, char ** argv)
   
   
   //keep...
-  VALUE current = rb_thread_current();
+  /*VALUE current = rb_thread_current(); // main One
   test = isAlive(current);
   
   if(TYPE(test) == T_TRUE)
-    printf("The Current Thread is Alive\n");
+    printf("The Current Thread is Alive\n");*/
     
   
   

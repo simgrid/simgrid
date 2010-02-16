@@ -30,10 +30,6 @@ static void msg_createEnvironment(VALUE Class,VALUE plateformFile);
 // deploy Application
 static void msg_deployApplication(VALUE Class,VALUE deploymntFile);
 
-
-// Register Function
-static void msg_registerFunction(VALUE Class,VALUE function_name,VALUE code);
-
 // Tools
 static void msg_info(VALUE Class,VALUE msg);
 
@@ -42,7 +38,6 @@ static VALUE msg_get_clock(VALUE Class);
 
 //pajeOutput
 static void msg_paje_output(VALUE Class,VALUE pajeFile);
-
 
 // Ruby Introspection : To instanciate a Ruby Class from its Name
 static VALUE msg_new_ruby_instance(VALUE Class,VALUE className);

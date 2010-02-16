@@ -14,7 +14,6 @@
 #include "xbt/sysdep.h"        
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-
 #include "rb_msg_host.h"
 
 
@@ -25,8 +24,6 @@ There are 2 section in This File:
 2 - Functions to Manage The Native Process Simulation Bound >> Down Call
 
 ***************************************************************************/
-
-
 // Init Ruby : To Call Ruby Methods From C
 
 static void initRuby();
@@ -102,5 +99,7 @@ static void processKill(VALUE Class,VALUE ruby_process);
 //ProcessGetHost
 static VALUE processGetHost(VALUE Class,VALUE ruby_process);
 
+//ProcessExit
+static void processExit(VALUE Class,VALUE ruby_process); 
 
 #endif

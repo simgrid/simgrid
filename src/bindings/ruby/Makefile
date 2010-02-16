@@ -39,9 +39,9 @@ sitelibdir = $(sitedir)/$(ruby_version)
 
 CC = gcc
 LIBRUBY = $(LIBRUBY_SO)
-LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
-LIBRUBYARG_SHARED = -L../../.libs -l$(RUBY_SO_NAME) -lsimgrid
-LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static
+LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a 
+LIBRUBYARG_SHARED = -l$(RUBY_SO_NAME) -I . ../../.libs/libsimgrid.a -ldl -llua5.1 
+LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static  
 
 RUBY_EXTCONF_H = 
 CFLAGS   =  -fPIC -fno-strict-aliasing -g -g -O2  -fPIC $(cflags) 

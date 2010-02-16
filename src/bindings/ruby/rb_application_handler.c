@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ *
+ * Copyright 2010 Martin Quinson, Mehdi Fekari           
+ * All right reserved. 
+ *
+ * This program is free software; you can redistribute 
+ * it and/or modify it under the terms of the license 
+ *(GNU LGPL) which comes with this package. 
+ */
 #include "rb_application_handler.h"
 #include "surf/surfxml_parse.h"
 #include <stdio.h>
@@ -16,7 +26,6 @@ static void  r_init()
 static void  application_handler_on_start_document(void)
 {
   
-   
    r_init();
    //current One
    current = rb_funcall3(rb_const_get(rb_cObject, rb_intern("ApplicationHandler")),  rb_intern("new"), 0, 0);
@@ -29,7 +38,6 @@ static void  application_handler_on_start_document(void)
 
 static void  application_handler_on_end_document(void)
 {
-  
   //r_init();
   rb_funcall(current,rb_intern("onEndDocument"),0); 
 
@@ -59,13 +67,10 @@ static void  application_handler_on_process_arg(void)
 static void  application_handler_on_property(void)
 {
  
-  //r_init();
-  
+  //r_init()
    VALUE id = rb_str_new2(A_surfxml_prop_id);
    VALUE val =  rb_str_new2(A_surfxml_prop_value);
-  
    rb_funcall(current,rb_intern("onProperty"),2,id,val);
-   
    
 }
 
@@ -73,9 +78,7 @@ static void  application_handler_on_property(void)
 static void application_handler_on_end_process(void)
 {
   
- //r_init();
- 
+ //r_init()
  rb_funcall(current,rb_intern("onEndProcess"),0);
-  
-  
+    
 }

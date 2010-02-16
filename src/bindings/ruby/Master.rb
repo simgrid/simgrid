@@ -3,22 +3,17 @@ require 'RubyProcess'
 
 include MSG
 
-class Master < RbProcess
-  
-  
+class Master < RbProcess  
   def initialize()
     super()
-    p RbHost.number()
-      
-    
   end
+
  
-  
-  def run(args) # args is an array Containin' arguments for function master
-   puts "Hey From Ruby...I'm The Master" 
-   size = args.size
-   puts "Number of Args for Master = " + size.to_s
-   
+  # msg_main : that function that will be executed when Running Simulation
+  def msg_main(args) # args is an array Containin' arguments for function master
+    puts "Hey From Ruby...I'm The Master" 
+    size = args.size
+    puts "Number of Args for Master = " + size.to_s
    for i in 0..size-1
       puts  args[i]
    end
@@ -31,12 +26,13 @@ class Master < RbProcess
    
    #Creating & Sending Task
    for i in 0..numberOfTask
-     
+  
      task = RbTask.new("Task_" + i.to_s, taskComputeSize , taskCommunicationSize );
-     s_alias = "slave " + (i%slaveCount).to_s
+     s_alias = "slave>>" + (i%slaveCount).to_s
      puts "Master Sending "+ RbTask.name(task) + " to " + s_alias + " with Comput Size " + RbTask.compSize(task).to_s 
      RbTask.send(task,s_alias)
      puts "Master Done Sending " +RbTask.name(task) + " to " + s_alias
+  
    end
   
    # Sending Finalize Tasks
@@ -48,4 +44,5 @@ class Master < RbProcess
    end
    puts "Master : Everything's Done"
   end  
+  
 end

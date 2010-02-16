@@ -1,9 +1,17 @@
+# 
+#  * $Id$
+#  *
+#  * Copyright 2010 Martin Quinson, Mehdi Fekari           
+#  * All right reserved. 
+#  *
+#  * This program is free software; you can redistribute 
+#  * it and/or modify it under the terms of the license 
+#  *(GNU LGPL) which comes with this package. 
+
 require 'msg'
 require 'Semaphore'
 include MSG
-
-$DEBUG = true  # This is a Global Variable Useful for Debugging
-
+$DEBUG = false  # This is a Global Variable Useful for Debugging
 
 class RbProcess < Thread 
   @@nextProcessId = 0
@@ -15,40 +23,22 @@ class RbProcess < Thread
   def initialize(*args)
     
     argc = args.size
-#      Default Init***************************** No Args
-    if argc == 0    #>>> new()
+# Default initializer
+    if argc == 0    #>>> new()  
     super() {
     @id = 0
     @bind = 0
     @name = ""
     @pargs = Array.new()
     init_var()
+    start()
      if $DEBUG
-	puts "Init Default Initialzer..."
+	puts "Init Default Initialzer...Nothing to do...Bye"
      end  
-#     Thread.pass  
-#     sleep   # Sleep Forever ... To Keep Thread Alive ?!!
-    
     }
     end
-    
-    
-    # Init with 1 Argument ***********************>>Name( Not Used )
-    if argc == 1
-      super(){
-	@name = args[0]
-	@pargs = Array.new()
-	init_var()
-	if $DEBUG
-	  puts "Init with Name..."
-	end
-      }
-    end
-    
-  
-    
+       
     # Init with 2 arguments **********************>>>(HostName,Name) Or (Host , Name)
-    
     if argc == 2   
       super(){
       type = args[0].type()
@@ -70,19 +60,14 @@ class RbProcess < Thread
       @@nextProcessId += 1
       @id = @@nextProcessId
       init_var()
+      start()
       createProcess(self,host)
-      if $DEBUG
-      puts "Initilize with 2 args"
-      end
-      
-#       sleep  
+	if $DEBUG
+	  puts "Initilize with 2 args"
+	end
       }
     
-    
     end
-    
-    
-    
        
     # Init with 3 arguments **********************(hostName,Name,args[]) or # (Host,Name,args[])
     
@@ -116,103 +101,90 @@ class RbProcess < Thread
 #       sleep #keep the thread running
 	}
     end
-
     end
 
-    
-    # Init_var Called By Initialize  
-    
-    
-  def init_var()
-    
+  # Init_var Called By Initialize  
+  def init_var()  
     @proprieties = Hash.new()
     # Process Synchronization Tools
-     @schedBegin = Semaphore.new(0)
-     @schedEnd = Semaphore.new(0)
-      
+    @schedBegin = Semaphore.new(0)
+    @schedEnd = Semaphore.new(0)    
   end
   
+  #main
+  def msg_main(args)
+    # To Be Implemented within The Process...
+    # The Main Code of The Process to be Executed ...
+  end
+     
   
-  
-  
+  # Start : To keep the Process Alive and waitin' via semaphore
+  def start()
+    
+    @schedBegin.acquire()
+    #execute The Main Code of The Process ( Example Master ; Slave ...)     
+    msg_main(@pargs)
+    processExit(self) #Exite the Native Process
+    @schedEnd.release()
+  end
+    
 #   NetxId
   def nextId ()
-    
     @@nextProcessId +=1
     return @@nextProcessId
-    
   end
 
   if $DEBUG
     #Process List
     def processList()
-      
       Thread.list.each {|t| p t}
-      
     end
   end
   
-  
   #Get Own ID
-  
   def getID()
-    
     return @id
-    
   end
   
   # set Id
-  
   def setID(id)
-    
     @id = id
-    
   end
   
   #Get a Process ID
-  
   def processID(process)
-    
     return process.id
-  
   end
   
-    #get Own Name
-  
+  #Get Own Name
   def getName()
-   
     return @name
-  
   end
   
-  #get a Process Name
-  
+  #Get a Process Name
   def processName(process)
-  
     return process.name
-  
   end
   
-  #get Bind
+  #Get Bind
   def getBind()
-    
     return @bind
-    
   end
   
-  #set Binds
+  #Get Binds
   def setBind(bind)
-    
     @bind = bind
-    
   end
     
-      # Stop
-  
   def unschedule() 
-    
-    Thread.pass
+#     Thread.pass
+    @schedEnd.release()
+    @schedBegin.acquire()
+  end
   
+  def schedule()
+    @schedBegin.release()
+    @schedEnd.release()
   end
   
    #C Simualateur Process Equivalent  Management
@@ -220,32 +192,23 @@ class RbProcess < Thread
   
 #   pause
   def pause()
-  
     processSuspend(self)
-  
   end
   
 #   restart
   def restart()
-   
     processResume(self)
-  
   end
   
 #   isSuspended
   def isSuspended()
-  
     processIsSuspended(self)
- 
   end
   
 #   getHost
   def getHost()
-  
     processGetHost(self)
-  
   end
   
-#    The Rest of Methods !!! To be Continued ...
-
+# The Rest of Methods !!! To be Continued ...
 end
