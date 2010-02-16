@@ -15,9 +15,9 @@ set(SIMGRID_DEP "")
 set(SMPI_DEP "")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-	set(GRAS_DEP "pthread -D_OPEN_SOURCE")
-	set(SIMGRID_DEP "-D_OPEN_SOURCE")
-	set(SMPI_DEP "-D_OPEN_SOURCE")
+	set(GRAS_DEP "pthread -D_OPEN_SOURCE ")
+	set(SIMGRID_DEP "-D_OPEN_SOURCE ")
+	set(SMPI_DEP "-D_OPEN_SOURCE ")
 endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 
