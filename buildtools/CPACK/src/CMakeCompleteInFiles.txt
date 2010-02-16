@@ -30,7 +30,7 @@ if(disable_gtnets)
 else(disable_gtnets)
 	SET(BUILDNAME "GTNETS" CACHE TYPE INTERNAL FORCE)
 	set(GTNETS_LDFLAGS "-lgtnets -L${gtnets_path}/lib")
-	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include -I${gtnets_path}/include/gtnets")
+	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include/gtnets")
 	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/CPACK/prog_test/prog_gtnets.cpp" OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
 	if(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 0)
@@ -96,9 +96,15 @@ if(pthread MATCHES "yes")
 endif(pthread MATCHES "yes")
 
 # AC_CHECK_MCSC(mcsc=yes, mcsc=no) 
+set(mcsc_flags "")
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+	set(mcsc_flags "-D_XOPEN_SOURCE")
+endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
 try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
 	${PROJECT_DIRECTORY}
 	${PROJECT_DIRECTORY}/CPACK/prog_test/prog_AC_CHECK_MCSC.c
+	COMPILE_DEFINITIONS "${mcsc_flags}"
 	)
 file(READ "${PROJECT_DIRECTORY}/conftestval" mcsc)
 if(mcsc MATCHES "yes")
