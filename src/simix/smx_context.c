@@ -10,19 +10,25 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "private.h"
-//#define HAVE_RUBY /* HACK HACK */
+#include <lua5.1/lauxlib.h>
+#include <ruby.h>
+#include "smx_context_ruby.c"
+
+#define HAVE_RUBY /* HACK HACK */
+// #define DEBUG 
 
 #ifdef HAVE_RUBY
-extern void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory);
-#endif
-
+ extern void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory);
+#endif 
+ 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mecanism");
 
 const char *xbt_ctx_factory_to_use = NULL;
 
-/**
+/** 
  * This function is call by SIMIX_global_init() to initialize the context module.
  */
+
 void SIMIX_context_mod_init(void)
 {
   if (!simix_global->context_factory) {
@@ -69,6 +75,8 @@ int SIMIX_context_select_factory(const char *name)
      newly selected one, then kill all the processes, exit the context module
      and initialize the new factory.
   */
+  
+
   if (simix_global->context_factory != NULL) {
     if (strcmp(simix_global->context_factory->name, name)){
 
@@ -90,6 +98,8 @@ int SIMIX_context_select_factory(const char *name)
   SIMIX_context_init_factory_by_name(&simix_global->context_factory, name);
 
   SIMIX_create_maestro_process ();
+
+
   
   return 0;
 }
@@ -100,6 +110,7 @@ int SIMIX_context_select_factory(const char *name)
 void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
                                         const char *name)
 {
+  
   if (!strcmp(name, "java"))
 #ifdef HAVE_JAVA     
     SIMIX_ctx_java_factory_init(factory);
@@ -130,7 +141,7 @@ void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
 
     else if (!strcmp(name,"ruby"))
 #ifdef HAVE_RUBY
-      SIMIX_ctx_ruby_factory_init(factory);
+    SIMIX_ctx_ruby_factory_init(factory);
 #else
      THROW0(not_found_error, 0, "Factory 'ruby' does not exist: Ruby support was not compiled in the SimGrid library");
 #endif

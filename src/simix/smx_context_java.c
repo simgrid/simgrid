@@ -90,7 +90,7 @@ static void smx_ctx_java_free(smx_context_t context)
     free(context);
     context = NULL;
   }
-}
+} 
 
 static void smx_ctx_java_start(smx_context_t context)
 {
