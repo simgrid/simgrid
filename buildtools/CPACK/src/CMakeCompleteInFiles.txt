@@ -530,9 +530,9 @@ try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
 	)
 
 if(RUN_RESULT_VAR MATCHES "FAILED_TO_RUN")
-SET(need_getline "")
-else(RUN_RESULT_VAR MATCHES "FAILED_TO_RUN")
 SET(need_getline "#define SIMGRID_NEED_GETLINE 1")
+else(RUN_RESULT_VAR MATCHES "FAILED_TO_RUN")
+SET(need_getline "")
 endif(RUN_RESULT_VAR MATCHES "FAILED_TO_RUN")
 
 ### check for a working snprintf
