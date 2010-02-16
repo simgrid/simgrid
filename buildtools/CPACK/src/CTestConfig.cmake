@@ -48,10 +48,9 @@ if(supernovae)
 	SET(BUILDNAME "SUPERNOVAE" CACHE TYPE INTERNAL FORCE)
 endif(supernovae)
 
-if(HAVE_GTNETS)
+if(NOT disable_gtnets)
 	SET(BUILDNAME "GTNETS" CACHE TYPE INTERNAL FORCE)
-endif(HAVE_GTNETS)
-
+endif(NOT disable_gtnets)
 
 SET(SITE "${osname}_${DISTRIB2}_${cpu}")
 SET(CTEST_SITE "${osname}_${DISTRIB2}_${cpu}")
