@@ -4,6 +4,20 @@ include(CheckIncludeFiles)
 include(CheckLibraryExists)
 set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
+SET(RUBY_PATH "non")
+find_program(FIND_EXE NAMES find)
+exec_program("${FIND_EXE} /usr/lib -name ruby.h" OUTPUT_VARIABLE RUBY_PATH)
+string(REPLACE "/ruby.h" "" RUBY_PATH ${RUBY_PATH})
+message("RUBY_PATH ${RUBY_PATH}")
+CHECK_INCLUDE_FILE(${RUBY_PATH}/ruby.h HAVE_RUBY_H)
+message("HAVE_RUBY_H ${HAVE_RUBY_H}")
+
+if(HAVE_RUBY_H)
+	set(INCLUDES
+		${INCLUDES}
+		"-I ${RUBY_PATH} -I ${${PROJECT_DIRECTORY}}/src/bindings/ruby"
+		)
+endif(HAVE_RUBY_H)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT JAVA
