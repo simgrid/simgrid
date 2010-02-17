@@ -10,13 +10,9 @@ exec_program("${FIND_EXE} /usr/lib -name ruby.h" OUTPUT_VARIABLE RUBY_PATH)
 string(REPLACE "/ruby.h" "" RUBY_PATH ${RUBY_PATH})
 message("RUBY_PATH ${RUBY_PATH}")
 CHECK_INCLUDE_FILE(${RUBY_PATH}/ruby.h HAVE_RUBY_H)
-message("HAVE_RUBY_H ${HAVE_RUBY_H}")
 
 if(HAVE_RUBY_H)
-	set(INCLUDES
-		${INCLUDES}
-		"-I${RUBY_PATH} -I${${PROJECT_DIRECTORY}}/src/bindings/ruby"
-		)
+	add_definitions("-I${RUBY_PATH} -I${PROJECT_DIRECTORY}/src/bindings/ruby -I${PROJECT_DIRECTORY}/src/simix")
 endif(HAVE_RUBY_H)
 
 #--------------------------------------------------------------------------------------------------
