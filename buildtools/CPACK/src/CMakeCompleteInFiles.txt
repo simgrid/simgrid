@@ -15,7 +15,7 @@ message("HAVE_RUBY_H ${HAVE_RUBY_H}")
 if(HAVE_RUBY_H)
 	set(INCLUDES
 		${INCLUDES}
-		"-I ${RUBY_PATH} -I ${${PROJECT_DIRECTORY}}/src/bindings/ruby"
+		"-I${RUBY_PATH} -I${${PROJECT_DIRECTORY}}/src/bindings/ruby"
 		)
 endif(HAVE_RUBY_H)
 
