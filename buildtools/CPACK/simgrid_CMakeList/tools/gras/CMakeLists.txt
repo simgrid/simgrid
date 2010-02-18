@@ -93,6 +93,20 @@ COMMAND "${PROJECT_DIRECTORY}/tools/gras/gras_stub_generator"
 ARGS msg_handle ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/msg_handle.xml
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle"
 )
+#teshsuite/gras/empty_main
+add_custom_command(TARGET gras_stub_generator
+POST_BUILD
+COMMAND "${PROJECT_DIRECTORY}/tools/gras/gras_stub_generator" 
+ARGS empty_main ${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/empty_main.xml
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/teshsuite/gras/empty_main"
+)
+#teshsuite/gras/small_sleep
+add_custom_command(TARGET gras_stub_generator
+POST_BUILD
+COMMAND "${PROJECT_DIRECTORY}/tools/gras/gras_stub_generator" 
+ARGS small_sleep ${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/small_sleep.xml
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep"
+)
 #examples/amok/bandwidth
 add_custom_command(TARGET gras_stub_generator
 POST_BUILD
