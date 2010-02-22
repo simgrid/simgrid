@@ -269,7 +269,7 @@ int smpi_coll_tuned_alltoall_pairwise(void* sendbuf, int sendcount, MPI_Datatype
 
 int smpi_coll_basic_alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int *recvcounts, int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm) {
   int system_tag = 889;
-  int i, rank, size, err, rcount, scount;
+  int i, rank, size, err, count;
   MPI_Aint lb, sendextent, recvextent;
   MPI_Request* requests;
 
@@ -284,28 +284,25 @@ int smpi_coll_basic_alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MP
   if(err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
-    rcount = 0;
+    count = 0;
     /* Create all receives that will be posted first */
     for(i = 0; i < size; ++i) {
       if(i == rank || recvcounts[i] == 0) {
         DEBUG3("<%d> skip request creation [src = %d, recvcounts[src] = %d]", rank, i, recvcounts[i]);
         continue;
       }
-      requests[rcount] = smpi_mpi_irecv(&((char*)recvbuf)[recvdisps[i] * recvextent], recvcounts[i], recvtype, i, system_tag, comm);
-      rcount++;
+      requests[count] = smpi_mpi_irecv(&((char*)recvbuf)[recvdisps[i] * recvextent], recvcounts[i], recvtype, i, system_tag, comm);
+      count++;
     }
-    DEBUG2("<%d> %d irecv requests created", rank, rcount);
-    scount = rcount;
     /* Now create all sends  */
     for(i = 0; i < size; ++i) {
       if(i == rank || sendcounts[i] == 0) {
         DEBUG3("<%d> skip request creation [dst = %d, sendcounts[dst] = %d]", rank, i, sendcounts[i]);
         continue;
       }
-      requests[scount] = smpi_mpi_isend(&((char*)sendbuf)[senddisps[i] * sendextent], sendcounts[i], sendtype, i, system_tag, comm);
-      scount++;
+      requests[count] = smpi_mpi_isend(&((char*)sendbuf)[senddisps[i] * sendextent], sendcounts[i], sendtype, i, system_tag, comm);
+      count++;
     }
-    DEBUG2("<%d> %d isend requests created", rank, scount);
     /* Wait for them all.  If there's an error, note that we don't
      * care what the error was -- just that there *was* an error.  The
      * PML will finish all requests, even if one or more of them fail.
@@ -313,8 +310,8 @@ int smpi_coll_basic_alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MP
      * So free them anyway -- even if there was an error, and return
      * the error after we free everything.
      */
-    DEBUG2("<%d> wait for %d requests", rank, rcount + scount);
-    smpi_mpi_waitall(rcount + scount, requests, MPI_STATUS_IGNORE);
+    DEBUG2("<%d> wait for %d requests", rank, count);
+    smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
     xbt_free(requests);
   }
   return err;
