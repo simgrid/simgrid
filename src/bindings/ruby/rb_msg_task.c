@@ -37,25 +37,18 @@ static VALUE task_comp(VALUE class,VALUE task)
   return rb_float_new(size);
 }
 
-
 //Get Name
-
 static VALUE task_name(VALUE class,VALUE task)
 {
   
   // Wrap Ruby Value to m_task_t struct
-  
   m_task_t tk;
   Data_Get_Struct(task, m_task_t, tk);
   return rb_str_new2(MSG_task_get_name(tk));
    
 }
 
-
-
-
 // Execute Task
-
 static VALUE task_execute(VALUE class,VALUE task)
 {
   
@@ -64,20 +57,16 @@ static VALUE task_execute(VALUE class,VALUE task)
   Data_Get_Struct(task, m_task_t, tk);
   return INT2NUM(MSG_task_execute(tk));
   
-  
 }
 
 // Sending Task
-
 static void task_send(VALUE class,VALUE task,VALUE mailbox)
 {
   
-    // Wrap Ruby Value to m_task_t struct
-  
+  // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, m_task_t, tk);
   int res = MSG_task_send(tk,RSTRING(mailbox)->ptr);
- 
   if(res != MSG_OK)
    rb_raise(rb_eRuntimeError,"MSG_task_send failed");
   
@@ -92,21 +81,21 @@ static void task_send(VALUE class,VALUE task,VALUE mailbox)
 
 static VALUE task_receive(VALUE class,VALUE mailbox)
 {
-  m_task_t tk; 
-  MSG_task_receive(tk,RSTRING(mailbox)->ptr); 
-  return Data_Wrap_Struct(class, 0, task_free, tk);
+  // Task
+  m_task_t task = NULL;
+  MSG_task_receive(&task,RSTRING(mailbox)->ptr);
+  return Data_Wrap_Struct(class, 0, task_free, task);
 }
 
 // Recieve Task 2
 // Not Appreciated 
-static VALUE task_receive2(VALUE class,VALUE task,VALUE mailbox)
+static void task_receive2(VALUE class,VALUE task,VALUE mailbox)
 {
   m_task_t tk;
   Data_Get_Struct(task, m_task_t, tk);
-  return INT2NUM(MSG_task_receive(tk,RSTRING(mailbox)->ptr)); 
+  MSG_task_receive(&tk,RSTRING(mailbox)->ptr);
   
 }
-
 
 // It Return a Native Process ( m_process_t )
 static VALUE task_sender(VALUE class,VALUE task)
@@ -170,6 +159,29 @@ static VALUE task_listen_host(VALUE class,VALUE task,VALUE alias,VALUE host)
  
  return Qfalse;
  
- 
+}
+
+
+// Put
+static void task_put(VALUE class,VALUE task,VALUE host)
+{
   
+ m_task_t tk;
+ m_host_t ht;
+ 
+ Data_Get_Struct(task,m_task_t,tk);
+ Data_Get_Struct(host,m_host_t,ht);
+ MSG_task_put(tk,ht,PORT_22);  //Channel set to 0
+ 
+}
+
+//get 
+static VALUE task_get(VALUE class)
+{
+  
+ m_task_t task = NULL;
+ int res = MSG_task_get(&task,PORT_22); // Channel set to 0
+ xbt_assert0(res == MSG_OK, "MSG_task_get failed");
+ return Data_Wrap_Struct(class, 0, task_free, task);
+ 
 }

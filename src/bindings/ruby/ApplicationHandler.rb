@@ -82,4 +82,3 @@ class ApplicationHandler
  
  #  End Class
  end
-

@@ -1,4 +1,4 @@
-/*
+/* 
  * $Id$
  *
  * Copyright 2010 Martin Quinson, Mehdi Fekari           
@@ -7,7 +7,7 @@
  * This program is free software; you can redistribute 
  * it and/or modify it under the terms of the license 
  *(GNU LGPL) which comes with this package. 
- */
+ */ 
 
 #include "rb_msg.h"
 #include "msg/msg.h"
@@ -21,11 +21,10 @@
 #include "rb_msg_process.c"
 #include "rb_application_handler.c"
 
-#define DEBUG
+#define MY_DEBUG
 //Init Msg_Init From Ruby
 static void msg_init(VALUE Class,VALUE args)
-{
-    
+{ 
   char **argv=NULL;    
   const char *tmp;
   int argc,type,i;
@@ -39,7 +38,7 @@ static void msg_init(VALUE Class,VALUE args)
   }
   ptr= RARRAY(args)->ptr;
   argc= RARRAY(args)->len;
-//   Create C Array to Hold Data_Get_Struct 
+//  Create C Array to Hold Data_Get_Struct 
   argc++; 
   argv = xbt_new0(char *, argc);  
   argv[0] = strdup("ruby");
@@ -61,8 +60,8 @@ static void msg_init(VALUE Class,VALUE args)
    free(argv[i]) ;
   
   free (argv);
-  #ifdef DEBUG
-  printf("Msg Init...Done\n");
+  #ifdef MY_DEBUG
+  INFO0("Msg Init...Done");
   #endif
   return;
 }
@@ -71,7 +70,9 @@ static void msg_init(VALUE Class,VALUE args)
 static void msg_run(VALUE class)
 {
   
- printf("msg_run msg_run msg_run msg_run...\n");
+ #ifdef MY_DEBUG
+ INFO0("Start Running...");
+ #endif
  xbt_fifo_item_t item = NULL;
  m_host_t host = NULL;
  VALUE rbHost;  
@@ -88,13 +89,15 @@ static void msg_run(VALUE class)
    xbt_fifo_foreach(msg_global->host, item, host, m_host_t) {
      //rbHost = (VALUE)host->data;// ??!!
       }
-    
-   printf("Let's Cleaaaaaaaaaaaaaaaaaaaaaaaan!!!\n"); 
+ #ifdef MY_DEBUG
+ INFO0("Start Cleaning...");
+ #endif
+   
    if (MSG_OK != MSG_clean()){
      rb_raise(rb_eRuntimeError,"MSG_clean() failed");
    }
     return;
-}
+} 
 
 //Create Environment
 static void msg_createEnvironment(VALUE class,VALUE plateformFile)
@@ -137,22 +140,23 @@ static void msg_deployApplication(VALUE class,VALUE deploymentFile )
 	rb_raise(rb_eRuntimeError,"surf_parse() failed");
     surf_parse_close();   
     application_handler_on_end_document();
-    printf("Deploy Application...Done\n");
-   
+    #ifdef MY_DEBUG
+    INFO0("Deploy Application...Done");
+    #endif
 }
-
+ 
 // INFO
 static void msg_info(VALUE class,VALUE msg)
 {
  const char *s = RSTRING(msg)->ptr;
- INFO("%s",s);
+ INFO1("%s",s);
 }
 
 // Get Clock
-static VALUE msg_get_clock(VALUE class)
+static void msg_get_clock(VALUE class)
 {
  
-  return DBL2NUM(MSG_get_clock());
+  printf("Simulation time %f\n",MSG_get_clock());
   
 }   
 
@@ -183,15 +187,14 @@ static VALUE msg_new_ruby_instance_with_args(VALUE class,VALUE className,VALUE a
   ruby_init();
   ruby_init_loadpath();
   char * p_className = RSTRING(className)->ptr;
-  return rb_funcall(rb_const_get(rb_cObject, rb_intern(p_className)),rb_intern("new"), 1, args);
-  
-}  
+  return rb_funcall(rb_const_get(rb_cObject, rb_intern(p_className)),rb_intern("new"), 1, args); 
+}
 /*****************************************************************************************************************
 
 Wrapping MSG module and its Class ( Task,Host) & Methods ( Process's method...ect)
 To Ruby 
 
- the part after "Init_" is the name of the C extension specified in extconf.rb , not the name of C source file
+the part after "Init_" is the name of the C extension specified in extconf.rb , not the name of C source file
  
 *****************************************************************************************************************/
 void Init_msg()
@@ -221,7 +224,7 @@ void Init_msg()
    //Classes       
    rb_task = rb_define_class_under(rb_msg,"Task",rb_cObject);
    rb_host = rb_define_class_under(rb_msg,"Host",rb_cObject);
-     
+    
    //Task Methods    
    rb_define_module_function(rb_task,"new",task_new,3);
    rb_define_module_function(rb_task,"compSize",task_comp,1);
@@ -234,8 +237,10 @@ void Init_msg()
    rb_define_module_function(rb_task,"source",task_source,1);
    rb_define_module_function(rb_task,"listen",task_listen,2);
    rb_define_module_function(rb_task,"listenFromHost",task_listen_host,3);
-    
-   //Host Methods
+   rb_define_module_function(rb_task,"put",task_put,2);
+   rb_define_module_function(rb_task,"get",task_get,0);
+   
+   //Host Methods  
    rb_define_module_function(rb_host,"getByName",host_get_by_name,1);
    rb_define_module_function(rb_host,"name",host_name,1);
    rb_define_module_function(rb_host,"speed",host_speed,1);

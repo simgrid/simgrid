@@ -9,6 +9,11 @@
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 
+typedef enum {
+  PORT_22 = 0,
+  MAX_CHANNEL
+} channel_t;
+
 // Free Method
 static void task_free(m_task_t tk);
 
@@ -31,7 +36,7 @@ static void task_send(VALUE Class,VALUE task,VALUE mailbox);
 static VALUE task_receive(VALUE Class,VALUE mailbox);
 
 // Recieve Task 2 <<  Not Appreciated 
-static VALUE task_receive2(VALUE Class,VALUE task,VALUE mailbox);
+static void task_receive2(VALUE Class,VALUE task,VALUE mailbox);
 
 // Get Sender
 static VALUE task_sender(VALUE Class,VALUE task);
@@ -45,4 +50,9 @@ static VALUE task_listen(VALUE Class,VALUE task,VALUE alias);
 //Listen from Host
 static VALUE task_listen_host(VALUE Class,VALUE task,VALUE alias,VALUE host);
 
+// put
+static void task_put(VALUE Class,VALUE task,VALUE host);
+
+//get
+static VALUE task_get(VALUE Class);
 #endif

@@ -4,6 +4,8 @@
 #include "msg/msg.h"
 #include <ruby.h>
 
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
+                             "Messages specific for this msg example");
 
 // #include "msg/private.h"
 // #include "simix/private.h"
@@ -34,7 +36,7 @@ static void msg_deployApplication(VALUE Class,VALUE deploymntFile);
 static void msg_info(VALUE Class,VALUE msg);
 
 //get Clock  
-static VALUE msg_get_clock(VALUE Class);
+static void msg_get_clock(VALUE Class);
 
 //pajeOutput
 static void msg_paje_output(VALUE Class,VALUE pajeFile);

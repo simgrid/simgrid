@@ -11,13 +11,13 @@
 require 'msg'
 require 'Semaphore'
 include MSG
-$DEBUG = false  # This is a Global Variable Useful for Debugging
+$DEBUG = true  # This is a Global Variable Useful for Debugging
 
 class RbProcess < Thread 
   @@nextProcessId = 0
 # Attributes
   attr_accessor :bind, :id, :proprieties, :name,
-      :pargs, :schedBegin, :schedEnd
+      :pargs, :schedBegin, :schedEnd, :mutex, :cv
   
 # Initialize : USED in ApplicationHandler to Initialize it
   def initialize(*args)
@@ -106,6 +106,8 @@ class RbProcess < Thread
   # Init_var Called By Initialize  
   def init_var()  
     @proprieties = Hash.new()
+    @mutex = Mutex.new
+    @cv = ConditionVariable.new
     # Process Synchronization Tools
     @schedBegin = Semaphore.new(0)
     @schedEnd = Semaphore.new(0)    
@@ -117,15 +119,13 @@ class RbProcess < Thread
     # The Main Code of The Process to be Executed ...
   end
      
-  
   # Start : To keep the Process Alive and waitin' via semaphore
   def start()
-    
-    @schedBegin.acquire()
+    @schedBegin.acquire(@mutex,@cv)
     #execute The Main Code of The Process ( Example Master ; Slave ...)     
     msg_main(@pargs)
     processExit(self) #Exite the Native Process
-    @schedEnd.release()
+    @schedEnd.release(@mutex,@cv)
   end
     
 #   NetxId
@@ -177,14 +177,17 @@ class RbProcess < Thread
   end
     
   def unschedule() 
-#     Thread.pass
-    @schedEnd.release()
-    @schedBegin.acquire()
+    
+    @schedEnd.release(@mutex,@cv)
+#     info("@schedEnd.release(@mutex,@cv)")
+    @schedBegin.acquire(@mutex,@cv)
+#     info("@schedBegin.acquire(@mutex,@cv)")
+     
   end
   
   def schedule()
-    @schedBegin.release()
-    @schedEnd.release()
+    @schedBegin.release(@mutex,@cv)
+    @schedEnd.acquire(@mutex,@cv)
   end
   
    #C Simualateur Process Equivalent  Management

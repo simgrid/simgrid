@@ -13,7 +13,6 @@
 
 #define DEBUG
 // Init Ruby
-
 static void initRuby()
 {
   
@@ -82,7 +81,6 @@ static VALUE process_isAlive(VALUE ruby_process)
 }
 
 // Kill Process
-
 static void process_kill(VALUE ruby_process)
 {
   
@@ -92,7 +90,6 @@ static void process_kill(VALUE ruby_process)
 }
 
 // join Process
-
 static void process_join( VALUE ruby_process )
 {
   
@@ -102,7 +99,6 @@ static void process_join( VALUE ruby_process )
 }
 
 // unschedule Process
-
 static void process_unschedule( VALUE ruby_process )
 {
  
@@ -112,7 +108,6 @@ static void process_unschedule( VALUE ruby_process )
 }
 
 // schedule Process
-
 static void process_schedule( VALUE ruby_process )
 {
    

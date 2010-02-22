@@ -5,16 +5,16 @@ require 'Slave'
 
 # include MSG
 
-# raise "Bad Number Of Arguments" if ARGV.length != 2 
-
-# info("Bye")
+raise "Bad Number Of Arguments" if ARGV.length != 2 
 
 MSG.init(ARGV)
+# Thread.list.each {|t| p t}
 raise "Bad Number Of Arguments" if (ARGV.length < 2)
-#  p  Host.number()
 MSG.createEnvironment(ARGV[0])
-#  p  Host.number()
+# Thread.list.each {|t| p t}
 MSG.deployApplication(ARGV[1])
-# p  Host.number()
- MSG.run()
+# Thread.list.each {|t| p t}
+MSG.run()
+# Thread.list.each {|t| p t}
+MSG.getClock()
 # exit()
