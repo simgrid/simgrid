@@ -182,7 +182,52 @@ void nary_tree_barrier(MPI_Comm comm, int arity) {
  * Openmpi calls this routine when the message size sent to each rank < 2000 bytes and size < 12
  **/
 int smpi_coll_tuned_alltoall_bruck(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm) {
-  DEBUG0("coll:tuned:alltoall_intra_bruck ** NOT IMPLEMENTED YET**");
+  int system_tag = 777;
+  int i, rank, size, err, count;
+  MPI_Aint lb, sendextent, recvextent;
+  MPI_Request* requests;
+
+  // FIXME: check implementation
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
+  DEBUG1("<%d> algorithm alltoall_bruck() called.", rank);
+  err = smpi_datatype_extent(sendtype, &lb, &sendextent);
+  err = smpi_datatype_extent(recvtype, &lb, &recvextent);
+  /* Local copy from self */
+  err = smpi_datatype_copy(&((char*)sendbuf)[rank * sendextent], sendcount, sendtype, &((char*)recvbuf)[rank * recvextent], recvcount, recvtype);
+  if(err == MPI_SUCCESS && size > 1) {
+    /* Initiate all send/recv to/from others. */
+    requests = xbt_new(MPI_Request, 2 * (size - 1));
+    count = 0;
+    /* Create all receives that will be posted first */
+    for(i = 0; i < size; ++i) {
+      if(i == rank) {
+        DEBUG3("<%d> skip request creation [src = %d, recvcount = %d]", rank, i, recvcount);
+        continue;
+      }
+      requests[count] = smpi_mpi_irecv(&((char*)recvbuf)[i * recvextent], recvcount, recvtype, i, system_tag, comm);
+      count++;
+    }
+    /* Now create all sends  */
+    for(i = 0; i < size; ++i) {
+      if(i == rank) {
+        DEBUG3("<%d> skip request creation [dst = %d, sendcount = %d]", rank, i, sendcount);
+        continue;
+      }
+      requests[count] = smpi_mpi_isend(&((char*)sendbuf)[i * sendextent], sendcount, sendtype, i, system_tag, comm);
+      count++;
+    }
+    /* Wait for them all.  If there's an error, note that we don't
+     * care what the error was -- just that there *was* an error.  The
+     * PML will finish all requests, even if one or more of them fail.
+     * i.e., by the end of this call, all the requests are free-able.
+     * So free them anyway -- even if there was an error, and return
+     * the error after we free everything.
+     */
+    DEBUG2("<%d> wait for %d requests", rank, count);
+    smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
+    xbt_free(requests);
+  }
   return MPI_SUCCESS;
 }
 
