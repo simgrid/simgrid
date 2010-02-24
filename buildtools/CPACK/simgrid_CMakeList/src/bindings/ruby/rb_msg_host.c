@@ -33,9 +33,9 @@ static VALUE host_name(VALUE class,VALUE host)
 {
   
   // Wrap Ruby Value to m_host_t struct
-  m_host_t ht;
+  m_host_t *ht;
   Data_Get_Struct(host, m_host_t, ht);
-  return rb_str_new2(MSG_host_get_name(ht));
+  return rb_str_new2(MSG_host_get_name(*ht));
    
 }
 
@@ -50,9 +50,9 @@ static VALUE host_number(VALUE class)
 // Host Speed ( Double )
 static VALUE host_speed(VALUE class,VALUE host)
 {
-  m_host_t ht ;
+  m_host_t *ht ;
   Data_Get_Struct(host,m_host_t,ht);
-  return MSG_get_host_speed(ht);
+  return MSG_get_host_speed(*ht);
   
 }
 
@@ -73,15 +73,15 @@ static VALUE host_get_data(VALUE class,VALUE host)
 static VALUE host_is_avail(VALUE class,VALUE host)
 {
  
-  m_host_t ht;
+  m_host_t *ht;
   Data_Get_Struct(host,m_host_t,ht);
-  if (!ht)
+  if (!*ht)
   {
     rb_raise(rb_eRuntimeError,"Host not Bound");
     return Qnil;
   }
   
-  if(MSG_host_is_avail(ht))
+  if(MSG_host_is_avail(*ht))
     return Qtrue;
   
   return Qfalse;

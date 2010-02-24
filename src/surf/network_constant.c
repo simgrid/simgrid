@@ -20,11 +20,11 @@ typedef struct surf_action_network_Constant {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static random_data_t random_latency = NULL;
-static int host_number = 0;
+static int host_number_int = 0;
 
 static void netcste_count_hosts(void)
 {
-  host_number++;
+  host_number_int++;
 }
 
 static void netcste_define_callbacks(const char *file)
