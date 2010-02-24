@@ -1,18 +1,27 @@
 ### Make Libs
 
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFLEXml.txt)
+set(MSG_SRC_bis
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_process.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_host.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg.c
+)
 
 if(supernovae)
 	include(${PROJECT_DIRECTORY}/CPACK/src/CMakeSupernovae.txt)
 else(supernovae)
-	add_library(simgrid SHARED ${simgrid_sources})
+	add_library(simgrid STATIC ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
 	add_library(smpi STATIC ${SMPI_SRC})
+	add_library(msg STATIC ${MSG_SRC_bis})
 endif(supernovae)
 
 set(GRAS_DEP "pthread")
 set(SIMGRID_DEP "")
-set(SMPI_DEP "")
+set(SMPI_DEP "simgrid")
+set(MSG_DEP "pthread -lrt -ldl -lcrypt -lm -lc")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	add_definitions("-D_XOPEN_SOURCE")
@@ -43,10 +52,10 @@ endif(HAVE_GTNETS)
 #set(CMAKE_C_FLAGS "-fprofile-arcs -ftest-coverage")
 
 #add_definitions (-fprofile-arcs -ftest-coverage)
-target_link_libraries(simgrid 	${SIMGRID_DEP} ${SIMGRID_DEP_GTNETS}-fprofile-arcs)
-target_link_libraries(gras 	${GRAS_DEP} -fprofile-arcs)
+target_link_libraries(simgrid 	${SIMGRID_DEP} ${SIMGRID_DEP_GTNETS} ruby1.8 msg -fprofile-arcs)
+target_link_libraries(gras 	${GRAS_DEP} msg -fprofile-arcs)
 target_link_libraries(smpi 	${SMPI_DEP} -fprofile-arcs)
-
+target_link_libraries(msg 	${MSG_DEP} -fprofile-arcs)
 ### Make EXEs
 
 #tools
