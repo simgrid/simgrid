@@ -1,14 +1,5 @@
 ### Make Libs
 
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFLEXml.txt)
-set(MSG_SRC_bis
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_process.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_host.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg.c
-)
-
 if(supernovae)
 	include(${PROJECT_DIRECTORY}/CPACK/src/CMakeSupernovae.txt)
 else(supernovae)

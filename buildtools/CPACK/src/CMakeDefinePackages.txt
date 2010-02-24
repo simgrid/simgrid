@@ -70,6 +70,15 @@ ${PROJECT_DIRECTORY}/CPACK/src/CTestConfig.cmake
 ${PROJECT_DIRECTORY}/CPACK/src/test_gras_config.h.in
 )
 
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFLEXml.txt)
+set(MSG_SRC_bis
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_process.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_host.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg.c
+)
+
 set(EXTRA_DIST 
 	${PROJECT_DIRECTORY}/src/portable.h
 	${PROJECT_DIRECTORY}/src/xbt/mallocator_private.h
