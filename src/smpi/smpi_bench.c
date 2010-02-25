@@ -12,14 +12,13 @@ void smpi_execute(double duration)
   smx_cond_t cond;
   e_surf_action_state_t state;
 
-
   if(duration > 0.001) {
     host = SIMIX_host_self();
     mutex = SIMIX_mutex_init();
     cond = SIMIX_cond_init();
     DEBUG1("Sleep for %f to handle real computation time", duration);
     duration *= xbt_cfg_get_double(_surf_cfg_set, "reference_speed");
-    action = SIMIX_action_sleep(host, duration);
+    action = SIMIX_action_execute(host, "computation", duration);
     SIMIX_mutex_lock(mutex);
     SIMIX_register_action_to_condition(action, cond);
     for (state = SIMIX_action_get_state(action);
