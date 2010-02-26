@@ -1,7 +1,7 @@
 set(warnCFLAGS "")
 set(optCFLAGS "")
 
-set(CMAKE_C_FLAGS -g3)
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS}-g3)
 
 if(CMAKE_C_COMPILER MATCHES "/usr/bin/gcc")
 

@@ -3,15 +3,15 @@
 if(supernovae)
 	include(${PROJECT_DIRECTORY}/CPACK/src/CMakeSupernovae.txt)
 else(supernovae)
+	add_library(msg STATIC ${MSG_SRC_bis})
 	add_library(simgrid STATIC ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
 	add_library(smpi STATIC ${SMPI_SRC})
-	add_library(msg STATIC ${MSG_SRC_bis})
 endif(supernovae)
 
 set(GRAS_DEP "pthread")
-set(SIMGRID_DEP "")
-set(SMPI_DEP "simgrid")
+set(SIMGRID_DEP "ruby1.8")
+set(SMPI_DEP "")
 set(MSG_DEP "pthread -lrt -ldl -lcrypt -lm -lc")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -21,21 +21,20 @@ endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 if(pthread)
 	if(with_context MATCHES pthread)
-		SET(SIMGRID_DEP ${SIMGRID_DEP}pthread)
-		SET(ESPACE " ")
+		SET(SIMGRID_DEP "${SIMGRID_DEP} -lpthread")
 	endif(with_context MATCHES pthread)
 	
 	if(with_context MATCHES windows)
-		SET(GRAS_DEP "")
+		SET(GRAS_DEP "msg")
 	endif(with_context MATCHES windows)
 endif(pthread)
 
 if(HAVE_LUA)
-	SET(SIMGRID_DEP "${SIMGRID_DEP}${ESPACE}-ldl -llua5.1")
+	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -llua5.1")
 endif(HAVE_LUA)
 
 if(HAVE_GTNETS)
-	SET(SIMGRID_DEP_GTNETS "gtnets ")
+	SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
 endif(HAVE_GTNETS)
 
 ### Add definitions for compile
@@ -43,9 +42,9 @@ endif(HAVE_GTNETS)
 #set(CMAKE_C_FLAGS "-fprofile-arcs -ftest-coverage")
 
 #add_definitions (-fprofile-arcs -ftest-coverage)
-target_link_libraries(simgrid 	${SIMGRID_DEP} ${SIMGRID_DEP_GTNETS} ruby1.8 msg -fprofile-arcs)
-target_link_libraries(gras 	${GRAS_DEP} msg -fprofile-arcs)
-target_link_libraries(smpi 	${SMPI_DEP} -fprofile-arcs)
+target_link_libraries(simgrid 	msg ${SIMGRID_DEP} -fprofile-arcs)
+target_link_libraries(gras 	msg ${GRAS_DEP} -fprofile-arcs)
+target_link_libraries(smpi 	simgrid ${SMPI_DEP} -fprofile-arcs)
 target_link_libraries(msg 	${MSG_DEP} -fprofile-arcs)
 ### Make EXEs
 
