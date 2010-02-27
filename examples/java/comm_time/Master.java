@@ -25,7 +25,7 @@ public class Master extends simgrid.msg.Process {
       Msg.info("Hello! Got "+  slavesCount + " slaves and "+tasksCount+" tasks to process");
       
       for (int i = 0; i < tasksCount; i++) {
-	 MyTask task = new MyTask("Task_" + i, taskComputeSize, taskCommunicateSize);
+	 Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize);
 	 if (i%1000==0)
 	   Msg.info("Sending \"" + task.getName()+ "\" to \"slave_" + i % slavesCount + "\"");
 	 task.send("slave_"+(i%slavesCount));

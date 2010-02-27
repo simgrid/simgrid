@@ -1,4 +1,4 @@
-# Copyright (c) 2004-2007. The SimGrid team. All right reserved.
+# Copyright (c) 2004-2010. The SimGrid team. All right reserved.
 
 # This file is part of the SimGrid project. This is free software:
 # You can redistribute and/or modify it under the terms of the
@@ -8,8 +8,7 @@
 EXTRA_DIST=comm_time_deployment.xml comm_time_platform.xml
 
 # Declare sources:
-JAVA_SRC=Master.java Slave.java CommTimeTest.java \
-         MyTask.java FinalizeTask.java
+JAVA_SRC=Master.java Slave.java CommTimeTest.java FinalizeTask.java
 JAVA_TESTS=CommTimeTest.class
 TESTS=$(JAVA_TESTS)
 

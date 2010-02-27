@@ -21,14 +21,12 @@ public class Slave extends simgrid.msg.Process {
       Msg.info("Receiving on 'slave_"+num+"'");
       
       while(true) { 
-	 Task t = Task.receive("slave_"+num);	
+	 Task task = Task.receive("slave_"+num);	
 	 
-	 if (t instanceof FinalizeTask) {
+	 if (task instanceof FinalizeTask) {
 	    break;
 	 }
-	 MyTask task = (MyTask)t;
 	 task.execute();
-//	 Msg.info("\"" + task.getName() + "\" done ");
        }
        
       Msg.info("Received Finalize. I'm done. See you!");
