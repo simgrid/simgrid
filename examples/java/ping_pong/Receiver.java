@@ -24,7 +24,7 @@ public class Receiver extends simgrid.msg.Process {
     
       Msg.info("try to get a task");
         
-      PingPongTask task = (PingPongTask)Task.get(0);
+      PingPongTask task = (PingPongTask)Task.receive(getHost().getName());
       double timeGot = Msg.getClock();
       double timeSent = task.getTime();
             
