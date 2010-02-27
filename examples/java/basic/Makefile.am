@@ -9,7 +9,7 @@ EXTRA_DIST=basic_deployment.xml basic_platform.xml
 
 # Declare sources:
 JAVA_SRC=Master.java Forwarder.java Slave.java BasicTest.java \
-         BasicTask.java FinalizeTask.java
+         FinalizeTask.java
 JAVA_TESTS=BasicTest.class
 TESTS=$(JAVA_TESTS)
 

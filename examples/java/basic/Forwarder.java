@@ -26,9 +26,9 @@ public class Forwarder extends simgrid.msg.Process {
       int slavesCount = lastOutput - firstOutput + 1;
       Msg.info("Receiving on 'slave_"+input+"'");
       while(true) {
-	 Task t = Task.receive("slave_"+input);	
+	 Task task = Task.receive("slave_"+input);	
 	 
-	 if (t instanceof FinalizeTask) {
+	 if (task instanceof FinalizeTask) {
 	    Msg.info("Got a finalize task. Let's forward that we're done.");
 	    
 	    for (int cpt = firstOutput; cpt<=lastOutput; cpt++) {
@@ -37,7 +37,6 @@ public class Forwarder extends simgrid.msg.Process {
 	    }
 	    break;
 	 }
-	 BasicTask task = (BasicTask)t;
 	 int dest = firstOutput + (taskCount % slavesCount);
 	 
 	 Msg.info("Sending \"" + task.getName() + "\" to \"slave_" + dest + "\"");
