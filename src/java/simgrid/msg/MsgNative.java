@@ -342,7 +342,6 @@ final class MsgNative {
 	 * @param task            The java task object to bind with the native task to create.
 	 *
 	 * @exception             JniException if something goes wrong with JNI
-	 *                        NullPointerException if the specified name is null.
 	 *                        IllegalArgumentException if compute duration <0 or message size <0
 	 *
 	 * @see                    Task.create()
@@ -350,7 +349,7 @@ final class MsgNative {
 	final static native void taskCreate(Task task, String name,
 			double computeDuration,
 			double messageSize)
-	throws JniException, NullPointerException, IllegalArgumentException;
+	throws JniException, IllegalArgumentException;
 
 	/**
 	 * The natively implemented method to get the sender of a task.
