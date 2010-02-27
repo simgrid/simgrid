@@ -26,7 +26,9 @@ public class Task {
 
 
 	/* Default constructor (disabled) */
-	protected Task() {}
+	public Task() throws JniException {
+		MsgNative.taskCreate(this, null, 0, 0);
+	}
 	/* *              * *
 	 * * Constructors * *
 	 * *              * */
