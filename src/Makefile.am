@@ -372,7 +372,7 @@ jar_DATA =  simgrid.jar
 
 simgrid.jar: $(JMSG_JAVA_SRC) $(srcdir)/surf/simgrid.dtd
 	[ -e .classes ] || mkdir .classes
-	$(JAVAC) -d .classes $(foreach file,$(JMSG_JAVA_SRC),$(srcdir)/$(file))
+	$(JAVAC) -d .classes -source 6 $(foreach file,$(JMSG_JAVA_SRC),$(srcdir)/$(file))
 	[ -e .classes/surf ] || mkdir .classes/surf
 	cp $(srcdir)/surf/simgrid.dtd .classes/surf
 	$(JAR) cvf simgrid.jar -C .classes .
