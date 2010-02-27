@@ -268,18 +268,6 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Return the number of MSG tasks currently running on
- * the host of the current running process.
- */
-static int MSG_get_msgload(void)
-{
-  xbt_die("not implemented yet");
-  return 0;
-}
-
-
-
-/** \ingroup msg_gos_functions
  * \brief Listen on \a channel and waits for receiving a task from \a host.
  *
  * It takes three parameters.
