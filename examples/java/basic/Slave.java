@@ -12,18 +12,22 @@ import simgrid.msg.*;
 
 public class Slave extends simgrid.msg.Process {
    public void main(String[] args) throws JniException, NativeException {
-      Msg.info("Hello !");
+      if (args.length < 1) {
+	 Msg.info("Slave needs 1 argument (its number)");
+	 System.exit(1);
+      }
+
+      int num = Integer.valueOf(args[0]).intValue();
+      Msg.info("Receiving on 'slave_"+num+"'");
       
       while(true) { 
-	 Task t = Task.get(0);	
+	 Task t = Task.receive("slave_"+num);	
 	 
 	 if (t instanceof FinalizeTask) {
 	    break;
 	 }
 	 BasicTask task = (BasicTask)t;
-	 Msg.info("Received \"" + task.getName() + "\" ");
-	 	 
-	 Msg.info("Processing \"" + task.getName() +  "\" ");	 
+	 Msg.info("Received \"" + task.getName() +  "\". Processing it.");	 
 	 task.execute();
 	 Msg.info("\"" + task.getName() + "\" done ");
        }

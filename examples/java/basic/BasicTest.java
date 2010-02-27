@@ -29,9 +29,6 @@ public class BasicTest {
 	  System.exit(1);
        }
 		
-        /* specify a paje output file. */
-        Msg.pajeOutput("basic.trace");
-		
 	/* construct the platform and deploy the application */
 	Msg.createEnvironment(args[0]);
 	Msg.deployApplication(args[1]);

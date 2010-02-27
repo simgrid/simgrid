@@ -2,32 +2,48 @@
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
   <process host="Jacquelin" function="Master">
-     <argument value="5"/>
-     <argument value="50000"/>
-     <argument value="10"/>
-     <argument value="iRMX"/>
-     <argument value="Casavant"/>
-     <argument value="Bousquet"/>
-     <argument value="Soucy"/>
-     <argument value="Jackson"/>
+     <argument value="5"/>     <!-- Amount of tasks to dispatch -->
+     <argument value="50000"/> <!-- Computation size of each task -->
+     <argument value="10"/>    <!-- Communication size of each one -->
+     <argument value="7"/>     <!-- Amount of slaves waiting for orders -->
   </process>
+  
   <process host="Jackson" function="Forwarder">
-     <argument value="Kuenning"/>
-     <argument value="Browne"/> 
-     <argument value="Stephen"/>
- </process>
+     <argument value="0"/>  <!-- Input mailbox -->
+     <argument value="7"/>  <!-- First output mailbox -->
+     <argument value="8"/>  <!-- Last output mailbox -->
+  </process>
   <process host="Casavant" function="Forwarder">
-     <argument value="Robert"/>
-     <argument value="Sirois"/> 
-     <argument value="Monique"/>
- </process>
-  <process host="iRMX" function="Slave"/>
-  <process host="Bousquet" function="Slave"/>
-  <process host="Soucy" function="Slave"/>
-  <process host="Kuenning" function="Slave"/>
-  <process host="Browne" function="Slave"/>
-  <process host="Stephen" function="Slave"/>
-  <process host="Robert" function="Slave"/>
-  <process host="Sirois" function="Slave"/>
-  <process host="Monique" function="Slave"/>
+     <argument value="1"/>  <!-- Input mailbox -->
+     <argument value="9"/>  <!-- First output mailbox -->
+     <argument value="10"/> <!-- Last output mailbox -->
+  </process>
+  
+  <process host="iRMX" function="Slave">
+     <argument value="2"/>  <!-- Input mailbox -->
+  </process>
+  <process host="Bousquet" function="Slave">
+     <argument value="3"/>  <!-- Input mailbox -->
+  </process>  
+  <process host="Soucy" function="Slave">
+     <argument value="4"/>  <!-- Input mailbox -->
+  </process>  
+  <process host="Kuenning" function="Slave">
+     <argument value="5"/>  <!-- Input mailbox -->
+  </process>  
+  <process host="Browne" function="Slave">
+     <argument value="6"/>  <!-- Input mailbox -->
+  </process>  
+  <process host="Stephen" function="Slave">
+     <argument value="7"/>  <!-- Input mailbox -->
+  </process>  
+  <process host="Robert" function="Slave">
+     <argument value="8"/>  <!-- Input mailbox -->
+  </process>  
+  <process host="Sirois" function="Slave">
+     <argument value="9"/>  <!-- Input mailbox -->
+  </process>  
+  <process host="Monique" function="Slave">
+     <argument value="10"/>  <!-- Input mailbox -->
+  </process>  
 </platform>
