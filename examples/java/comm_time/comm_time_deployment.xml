@@ -2,10 +2,10 @@
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
   <process host="Jacquelin" function="Master">
-     <argument value="50000"/>     <!-- Amount of tasks to dispatch -->
+     <argument value="5000"/>  <!-- Amount of tasks to dispatch -->
      <argument value="50000"/> <!-- Computation size of each task -->
      <argument value="10"/>    <!-- Communication size of each one -->
-     <argument value="21"/>     <!-- Amount of slaves waiting for orders -->
+     <argument value="21"/>    <!-- Amount of slaves waiting for orders -->
   </process>
   
   <process host="iRMX" function="Slave">
