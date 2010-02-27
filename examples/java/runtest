@@ -11,5 +11,5 @@ t=`basename $1 .class`
 
 echo "(LD_LIBRARY_PATH=$LD_LIBRARY_PATH)"
 echo "(CLASSPATH=$CLASSPATH)"
-echo java $options $t
+echo java $options $t *platform.xml *deployment.xml
 java $options $t *platform.xml *deployment.xml
