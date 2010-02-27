@@ -518,7 +518,7 @@ Java_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls, jobject jtask,
                                       jdouble jmessageSize)
 {
   m_task_t task;                /* the native task to create                            */
-  const char *name;             /* the name of the task                                 */
+  const char *name=NULL;        /* the name of the task                                 */
 
   if (jcomputeDuration < 0) {
     jxbt_throw_illegal(env,
@@ -534,20 +534,19 @@ Java_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls, jobject jtask,
     return;
   }
 
-  if (!jname) {
-    jxbt_throw_null(env, xbt_strdup("Task name cannot be null"));
-    return;
+  if (jname) {
+    /* get the C string from the java string */
+    name = (*env)->GetStringUTFChars(env, jname, 0);
   }
 
-  /* get the C string from the java string */
-  name = (*env)->GetStringUTFChars(env, jname, 0);
 
   /* create the task */
   task =
     MSG_task_create(name, (double) jcomputeDuration, (double) jmessageSize,
                     NULL);
 
-  (*env)->ReleaseStringUTFChars(env, jname, name);
+  if (jname)
+    (*env)->ReleaseStringUTFChars(env, jname, name);
 
   /* bind & store the task */
   jtask_bind(jtask, task, env);
