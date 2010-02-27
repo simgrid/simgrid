@@ -30,12 +30,10 @@ final class MsgNative {
 	 * @param process The java process object to bind with the MSG native process.
 	 * @param host    A valid (binded) host where create the process.
 	 *
-	 * @exception  simgrid.msg.JniException if JNI stuff goes wrong.
-	 *
 	 * @see  Process constructors.
 	 */
 	final static native
-	void processCreate(Process process, Host host) throws JniException;
+	void processCreate(Process process, Host host);
 
 	/**
 	 * The natively implemented method to kill all the process of the simulation.
@@ -53,12 +51,11 @@ final class MsgNative {
 	 *
 	 * @param process        The valid (binded with a native process) java process to suspend.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *                       NativeException if the SimGrid native code failed.
+	 * @exception            NativeException if the SimGrid native code failed.
 	 *
 	 * @see                 Process.pause()
 	 */
-	final static native void processSuspend(Process process) throws JniException, NativeException;
+	final static native void processSuspend(Process process) throws NativeException;
 
 	/**
 	 * The natively implemented method to kill a MSG process.
@@ -67,21 +64,18 @@ final class MsgNative {
 	 *
 	 * @see                 Process.kill()
 	 */
-	final static native void processKill(Process process)
-	throws JniException;
+	final static native void processKill(Process process);
 
 	/**
 	 * The natively implemented method to resume a suspended MSG process.
 	 *
 	 * @param process        The valid (binded with a native process) java process to resume.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *                       NativeException if the SimGrid native code failed.
+	 * @exception            NativeException if the SimGrid native code failed.
 	 *
 	 * @see                 Process.restart()
 	 */
-	final static native void processResume(Process process)
-	throws JniException, NativeException;
+	final static native void processResume(Process process) throws NativeException;
 
 	/**
 	 * The natively implemented method to test if MSG process is suspended.
@@ -91,12 +85,9 @@ final class MsgNative {
 	 * @return                If the process is suspended the method retuns true. Otherwise the
 	 *                        method returns false.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *
 	 * @see                 Process.isSuspended()
 	 */
-	final static native boolean processIsSuspended(Process process) throws
-	JniException;
+	final static native boolean processIsSuspended(Process process);
 
 	/**
 	 * The natively implemented method to get the host of a MSG process.
@@ -105,13 +96,11 @@ final class MsgNative {
 	 *
 	 * @return                The method returns the host where the process is running.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *                       NativeException if the SimGrid native code failed.
+	 * @exception            NativeException if the SimGrid native code failed.
 	 *
 	 * @see                 Process.getHost()
 	 */
-	final static native Host processGetHost(Process process)
-	throws JniException, NativeException;
+	final static native Host processGetHost(Process process) throws NativeException;
 
 	/**
 	 * The natively implemented method to get a MSG process from his PID.
@@ -137,8 +126,7 @@ final class MsgNative {
 	 *
 	 * @see                 Process.getPID()
 	 */
-	final static native int processGetPID(Process process) throws
-	NativeException;
+	final static native int processGetPID(Process process) throws NativeException;
 
 	/**
 	 * The natively implemented method to get the PPID of a MSG process.
@@ -151,8 +139,7 @@ final class MsgNative {
 	 *
 	 * @see                 Process.getPPID()
 	 */
-	final static native int processGetPPID(Process process) throws
-	NativeException;
+	final static native int processGetPPID(Process process) throws NativeException;
 
 	/**
 	 * The natively implemented method to get the current running process.
@@ -166,37 +153,17 @@ final class MsgNative {
 	final static native Process processSelf() throws NativeException;
 
 	/**
-	 * The natively implemented method to get the current running process PID.
-	 *
-	 * @return                The PID of the current process.
-	 *
-	 * @see                Process.currentProcessPID()
-	 */
-	final static native int processSelfPID();
-
-	/**
-	 * The natively implemented method to get the current running process PPID.
-	 *
-	 * @return                The PPID of the current process.
-	 *
-	 * @see                Process.currentProcessPPID()
-	 */
-	final static native int processSelfPPID();
-
-	/**
 	 * The natively implemented method to migrate a process from his currnet host to a new host.
 	 *
 	 * @param process        The (valid) process to migrate.
 	 * @param host            A (valid) host where move the process.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *                       NativeException if the SimGrid native code failed.
+	 * @exception            NativeException if the SimGrid native code failed.
 	 *
 	 * @see                Process.migrate()
 	 * @see                Host.getByName()
 	 */
-	final static native void processChangeHost(Process process, Host host)
-	throws JniException, NativeException;
+	final static native void processChangeHost(Process process, Host host) throws NativeException;
 
 	/**
 	 * The natively implemented native to request the current process to sleep 
@@ -208,17 +175,14 @@ final class MsgNative {
 	 *
 	 * @see                 Process.waitFor()
 	 */
-	final static native void processWaitFor(double seconds) throws
-	NativeException;
+	final static native void processWaitFor(double seconds) throws NativeException;
 
 	/**
 	 * The natively implemented native method to exit a process.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *
 	 * @see                Process.exit()
 	 */
-	final static native void processExit(Process process) throws JniException;
+	final static native void processExit(Process process);
 
 
 	/******************************************************************
@@ -232,14 +196,12 @@ final class MsgNative {
 	 *
 	 * @return                The host having the specified name.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *                       HostNotFoundException if there is no such host
+	 * @exception            HostNotFoundException if there is no such host
 	 *                       NativeException if the SimGrid native code failed.
 	 *
 	 * @see                Host.getByName()
 	 */
-	final static native Host hostGetByName(String name)
-	throws JniException, HostNotFoundException, NativeException;
+	final static native Host hostGetByName(String name) throws HostNotFoundException, NativeException;
 
 	/**
 	 * The natively implemented method to get the name of an MSG host.
@@ -248,11 +210,9 @@ final class MsgNative {
 	 *
 	 * @return                The name of the specified host.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *
 	 * @see                Host.getName()
 	 */
-	final static native String hostGetName(Host host) throws JniException;
+	final static native String hostGetName(Host host);
 
 	/**
 	 * The natively implemented method to get the number of hosts of the simulation.
@@ -268,11 +228,9 @@ final class MsgNative {
 	 *
 	 * @return                The host of the current running process.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *
 	 * @see                Host.currentHost()
 	 */
-	final static native Host hostSelf() throws JniException;
+	final static native Host hostSelf();
 
 	/**
 	 * The natively implemented method to get the speed of a MSG host.
@@ -281,12 +239,10 @@ final class MsgNative {
 	 *
 	 * @return                The speed of the specified host.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *
 	 * @see                Host.getSpeed()
 	 */
 
-	final static native double hostGetSpeed(Host host) throws JniException;
+	final static native double hostGetSpeed(Host host);
 
 	/**
 	 * The natively implemented native method to test if an host is avail.
@@ -296,21 +252,17 @@ final class MsgNative {
 	 * @return                If the host is avail the method returns true. 
 	 *                        Otherwise the method returns false.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *
 	 * @see                Host.isAvail()
 	 */
-	final static native boolean hostIsAvail(Host host) throws JniException;
+	final static native boolean hostIsAvail(Host host);
 
 	/**
 	 * The natively implemented native method to get all the hosts of the simulation.
 	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *
 	 * @return                A array which contains all the hosts of simulation.
 	 */
 
-	final static native Host[] allHosts() throws JniException;
+	final static native Host[] allHosts();
 
 	/**
 	 * The natively implemented native method to get the number of running tasks on a host.
@@ -318,11 +270,8 @@ final class MsgNative {
 	 * @param                The host concerned by the operation.
 	 *
 	 * @return                The number of running tasks.
-	 *
-	 * @exception            JniException if something goes wrong with JNI
-	 *
 	 */
-	final static native int hostGetLoad(Host host) throws JniException;
+	final static native int hostGetLoad(Host host);
 
 	/******************************************************************
 	 * The natively implemented methods connected to the MSG task     *
@@ -341,15 +290,14 @@ final class MsgNative {
 	 *                        methods. This value has to be >= 0.
 	 * @param task            The java task object to bind with the native task to create.
 	 *
-	 * @exception             JniException if something goes wrong with JNI
-	 *                        IllegalArgumentException if compute duration <0 or message size <0
+	 * @exception             IllegalArgumentException if compute duration <0 or message size <0
 	 *
 	 * @see                    Task.create()
 	 */
 	final static native void taskCreate(Task task, String name,
 			double computeDuration,
 			double messageSize)
-	throws JniException, IllegalArgumentException;
+	throws IllegalArgumentException;
 
 	/**
 	 * The natively implemented method to get the sender of a task.
@@ -358,12 +306,9 @@ final class MsgNative {
 	 *
 	 * @return                The sender of the task.
 	 *
-	 * @exception                InvalidTaskException is the specified task is not valid. A task
-	 *                        is invalid if it is not binded with a native task.
-	 *
 	 * @see                    Task.getSender()
 	 */
-	final static native Process taskGetSender(Task task) throws JniException;
+	final static native Process taskGetSender(Task task);
 
 	/**
 	 * The natively implementd method to get the source of a task.
@@ -372,13 +317,11 @@ final class MsgNative {
 	 *
 	 * @return                The source of the task.
 	 *
-	 * @exception                InvalidTaskException is the specified task is not valid. A task
-	 *                        is invalid if it is not binded with a native task.
+	 * @exception            NativeException if the SimGrid native code failed.
 	 *
 	 * @see                    Task.getSource()
 	 */
-	final static native Host taskGetSource(Task task) throws JniException,
-	NativeException;
+	final static native Host taskGetSource(Task task) throws NativeException;
 
 	/**
 	 * The natively implemented method to get the name of the task.
@@ -387,26 +330,20 @@ final class MsgNative {
 	 *
 	 * @return                 The name of the specified task.
 	 *
-	 * @exception                InvalidTaskException is the specified task is not valid. A task
-	 *                        is invalid if it is not binded with a native task.
-	 *
 	 * @see                    Task.getName()
 	 */
-	final static native String taskGetName(Task task) throws JniException;
+	final static native String taskGetName(Task task);
 
 	/**
 	 * The natively implemented method to cancel a task.
 	 *
 	 * @param task            The task to cancel.
 	 *
-	 * @exception                InvalidTaskException if the specified task is not valid. A task
-	 *                        is invalid if it is not binded with a native task.
-	 *                        MsgException if the cancelation failed.
+	 * @exception             NativeException if the cancellation failed.
 	 *
 	 * @see                    Task.cancel().
 	 */
-	final static native void taskCancel(Task task) throws JniException,
-	NativeException;
+	final static native void taskCancel(Task task) throws NativeException;
 
 	/**
 	 * The natively implemented method to create a MSG parallel task.
@@ -423,7 +360,7 @@ final class MsgNative {
 			Host[]hosts,
 			double[]computeDurations,
 			double[]messageSizes)
-	throws JniException, NullPointerException, IllegalArgumentException;
+	throws NullPointerException, IllegalArgumentException;
 
 	/**
 	 * The natively implemented method to get the computing amount of the task.
@@ -432,14 +369,9 @@ final class MsgNative {
 	 *
 	 * @return                The computing amount of the specified task.
 	 *
-	 * @exception                InvalidTaskException if the specified task is not valid. A task
-	 *                        is invalid if it is not binded with a native task.
-	 *                        MsgException if the cancelation failed.
-	 *
 	 * @see                    Task.getComputeDuration()
 	 */
-	final static native double taskGetComputeDuration(Task task) throws
-	JniException;
+	final static native double taskGetComputeDuration(Task task);
 
 	/**
 	 * The natively implemented method to get the remaining computation
@@ -448,14 +380,9 @@ final class MsgNative {
 	 *
 	 * @return                The remaining computation of the specified task.
 	 *
-	 * @exception                InvalidTaskException if the specified task is not valid. A task
-	 *                        is invalid if it is not binded with a native task.
-	 *                        MsgException if the cancelation failed.
-	 *
 	 * @see                    Task.getRemainingDuration()
 	 */
-	final static native double taskGetRemainingDuration(Task task) throws
-	JniException;
+	final static native double taskGetRemainingDuration(Task task);
 
 	/**
 	 * The natively implemented method to set the priority of a task.
@@ -464,43 +391,31 @@ final class MsgNative {
 	 *
 	 * @param priority        The new priority of the specified task.
 	 *
-	 * @exception                InvalidTaskException if the specified task is not valid. A task
-	 *                        is invalid if it is not binded with a native task.
-	 *                        MsgException if the cancelation failed.
-	 *
 	 * @see                    Task.setPriority()
 	 */
-	final static native void taskSetPriority(Task task,
-			double priority) throws
-			JniException;
+	final static native void taskSetPriority(Task task, double priority);
 
 	/**
 	 * The natively implemented method to destroy a MSG task.
 	 *
 	 * @param                    The task to destroy.
 	 *
-	 * @exception                InvalidTaskException is the specified task is not valid. A task
-	 *                        is invalid if it is not binded with a native task.
-	 *                        MsgException if the destruction failed.
+	 * @exception             NativeException on error in the C world
 	 *
 	 * @see                    Task.destroy()
 	 */
-	final static native void taskDestroy(Task task) throws JniException,
-	NativeException;
+	final static native void taskDestroy(Task task) throws NativeException;
 
 	/**
 	 * The natively implemented method to execute a MSG task.
 	 *
 	 * @param task            The task to execute.
 	 *
-	 * @exception                InvalidTaskException is the specified task is not valid. A task
-	 *                        is invalid if it is not binded with a native task.
-	 *                        MsgException if the destruction failed.
+	 * @exception             NativeException on error in the C world
 	 *
 	 * @see                    Task.execute()
 	 */
-	final static native void taskExecute(Task task) throws JniException,
-	NativeException;
+	final static native void taskExecute(Task task) throws NativeException;
 
 
 
@@ -509,22 +424,11 @@ final class MsgNative {
 	 **************************************************************** */
 
 
-	final static native void taskSend(String alias, Task task, double timeout) 
-	throws JniException, NativeException;
-
-
-	final static native Task taskReceive(String alias, double timeout, Host host) 
-	throws JniException, NativeException;
-
-	final static native int taskListenFrom(String alias) 
-	throws JniException, NativeException;
-
-
-	final static native boolean taskListen(String alias) 
-	throws JniException;
-
-	final static native int taskListenFromHost(String alias, Host host) 
-	throws JniException;
+	final static native void taskSend(String alias, Task task, double timeout) throws NativeException;
+	final static native Task taskReceive(String alias, double timeout, Host host) throws NativeException;
+	final static native int taskListenFrom(String alias) throws NativeException;
+	final static native boolean taskListen(String alias);
+	final static native int taskListenFromHost(String alias, Host host);
 
 	/* ***************************************************************
 	 * Task sending methods                                          *
@@ -538,11 +442,8 @@ final class MsgNative {
 	 * @param task            The task to put.
 	 * @param max_rate        The bounded transmition rate.
 	 *
-	 * @exception                InvalidTaskException if the task is not valid.
-	 *                        InvalidHostException if the host is not valid.
-	 *                        MsgException if the operation failed.
+	 * @exception             NativeException on error in the C world
 	 */ 
-	final static native void taskSendBounded(String alias, Task task, double maxrate) 
-	throws JniException, NativeException;
+	final static native void taskSendBounded(String alias, Task task, double maxrate) throws NativeException;
 
 }

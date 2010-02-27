@@ -86,7 +86,7 @@ public abstract class Process extends Thread {
 	 */
 	protected Process() {
 		super();
-		this.id = 0;
+		this.id = nextProcessId++;
 		this.name = null;
 		this.bind = 0;
 		this.args = new Vector<String>();
@@ -104,14 +104,10 @@ public abstract class Process extends Thread {
 	 * @param name			The name of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
-	 *                      NullPointerException if the provided name is null
-	 *                      JniException on JNI madness
 	 *                      NativeException
 	 *
 	 */
-	public Process(String hostname, String name)
-	throws NullPointerException, HostNotFoundException, JniException,
-	NativeException {
+	public Process(String hostname, String name) throws HostNotFoundException, NativeException {
 		this(Host.getByName(hostname), name, null);
 	}
 	/**
@@ -123,13 +119,10 @@ public abstract class Process extends Thread {
 	 * @param args			The arguments of the main function of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
-	 *                              NullPointerException if the provided name is null
-	 *                              JniException on JNI madness
+	 *                      NativeException
 	 *
 	 */ 
-	public Process(String hostname, String name, String args[])
-	throws NullPointerException, HostNotFoundException, JniException,
-	NativeException {
+	public Process(String hostname, String name, String args[]) throws HostNotFoundException, NativeException {
 		this(Host.getByName(hostname), name, args);
 	}
 	/**
@@ -139,12 +132,8 @@ public abstract class Process extends Thread {
 	 * @param host			The host of the process to create.
 	 * @param name			The name of the process.
 	 *
-	 * @exception			NullPointerException if the provided name is null
-	 *                              JniException on JNI madness
-	 *
 	 */
-	public Process(Host host, String name) throws NullPointerException,
-	JniException {
+	public Process(Host host, String name) {
 		this(host, name, null);
 	}
 	/**
@@ -155,29 +144,18 @@ public abstract class Process extends Thread {
 	 * @param name			The name of the process.
 	 * @param args			The arguments of main method of the process.
 	 *
-	 * @exception		    NullPointerException if the provided name is null
-	 *                              JniException on JNI madness
-	 *
 	 */
-	public Process(Host host, String name,
-			String[]args) throws NullPointerException, JniException {
+	public Process(Host host, String name, String[]args) {
 		/* This is the constructor called by all others */
-
+		this();
+		
 		if (name == null)
 			throw new NullPointerException("Process name cannot be NULL");
-
-		this.properties = null;
+		this.name = name;
 
 		this.args = new Vector<String>();
-
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
-
-		this.name = name;
-		this.id = nextProcessId++;
-
-		schedBegin = new Sem(0);
-		schedEnd = new Sem(0);
 
 		MsgNative.processCreate(this, host);
 	}
@@ -203,56 +181,52 @@ public abstract class Process extends Thread {
 	 *
 	 * @param arg			The argument to add.
 	 */
+	@Deprecated
 	protected void addArg(String arg) {
 		args.add(arg);
 	}
 
 	/**
-	 * This method suspends the process by suspending the task on which it was
+	 * Suspends the process by suspending the task on which it was
 	 * waiting for the completion.
 	 *
-	 * @exception			JniException on JNI madness
-	 *                              NativeException on error in the native SimGrid code
+	 * @exception			NativeException on error in the native SimGrid code
 	 */
-	public void pause() throws JniException, NativeException {
+	public void pause() throws NativeException {
 		MsgNative.processSuspend(this);
 	}
 	/**
-	 * This method resumes a suspended process by resuming the task on which it was
+	 * Resumes a suspended process by resuming the task on which it was
 	 * waiting for the completion.
 	 *
-	 * @exception			JniException on JNI madness
-	 *                              NativeException on error in the native SimGrid code
+	 * @exception			NativeException on error in the native SimGrid code
 	 *
 	 */ 
-	public void restart() throws JniException, NativeException {
+	public void restart() throws NativeException {
 		MsgNative.processResume(this);
 	}
 	/**
-	 * This method tests if a process is suspended.
+	 * Tests if a process is suspended.
 	 *
 	 * @return				The method returns true if the process is suspended.
 	 *						Otherwise the method returns false.
-	 *
-	 * @exception			JniException on JNI madness
 	 */ 
-	public boolean isSuspended() throws JniException {
+	public boolean isSuspended() {
 		return MsgNative.processIsSuspended(this);
 	}
 	/**
-	 * This method returns the host of a process.
+	 * Returns the host of a process.
 	 *
 	 * @return				The host instance of the process.
 	 *
-	 * @exception			JniException on JNI madness
-	 *                              NativeException on error in the native SimGrid code
+	 * @exception			NativeException on error in the native SimGrid code
 	 *
 	 */ 
-	public Host getHost() throws JniException, NativeException {
+	public Host getHost() throws NativeException {
 		return MsgNative.processGetHost(this);
 	}
 	/**
-	 * This static method get a process from a PID.
+	 * This static method gets a process from a PID.
 	 *
 	 * @param PID			The process identifier of the process to get.
 	 *
@@ -268,10 +242,9 @@ public abstract class Process extends Thread {
 	 *
 	 * @return				The PID of the process.
 	 *
-	 * @exception			JniException on JNI madness
-	 *                              NativeException on error in the native SimGrid code
+	 * @exception			NativeException on error in the native SimGrid code
 	 */ 
-	public int getPID() throws JniException, NativeException {
+	public int getPID() throws NativeException {
 		return MsgNative.processGetPID(this);
 	}
 	/**
@@ -290,43 +263,22 @@ public abstract class Process extends Thread {
 	 * @return				The current process.
 	 *
 	 * @exception			NativeException on error in the native SimGrid code
-	 *
-	 *
 	 */ 
 	public static Process currentProcess() throws NativeException {
 		return MsgNative.processSelf();
 	}
 	/**
-	 * This static method returns the PID of the currently running process.
-	 *
-	 * @return				The PID of the current process.		
-	 */ 
-	public static int currentProcessPID() {
-		return MsgNative.processSelfPID();
-	}
-
-	/**
-	 * This static method returns the PID of the parent of the currently running process.
-	 *
-	 * @return				The PID of the parent of current process.		
-	 */
-	public static int currentProcessPPID() {
-		return MsgNative.processSelfPPID();
-	}
-
-	/**
-	 * This function migrates a process to another host.
+	 * Migrates a process to another host.
 	 *
 	 * @param host			The host where to migrate the process.
 	 *
-	 * @exception			JniException on JNI madness
-	 *                              NativeException on error in the native SimGrid code
+	 * @exception			NativeException on error in the native SimGrid code
 	 */
-	public void migrate(Host host) throws JniException, NativeException {
+	public void migrate(Host host) throws NativeException {
 		MsgNative.processChangeHost(this, host);
 	}
 	/**
-	 * This method makes the current process sleep until time seconds have elapsed.
+	 * Makes the current process sleep until time seconds have elapsed.
 	 *
 	 * @param seconds		The time the current process must sleep.
 	 *
@@ -382,7 +334,7 @@ public abstract class Process extends Thread {
 	/**
 	 * The main function of the process (to implement).
 	 */
-	public abstract void main(String[]args) throws JniException, NativeException;
+	public abstract void main(String[]args) throws NativeException;
 
 
 	public void unschedule() {
@@ -402,32 +354,32 @@ public abstract class Process extends Thread {
 	}
 
 	/** Send the given task in the mailbox associated with the specified alias  (waiting at most given time) */
-	public void taskSend(String mailbox, Task task, double timeout) throws NativeException, JniException {
+	public void taskSend(String mailbox, Task task, double timeout) throws NativeException {
 		MsgNative.taskSend(mailbox, task, timeout);
 	}
 
 	/** Send the given task in the mailbox associated with the specified alias*/
-	public void taskSend(String mailbox, Task task) throws NativeException, JniException {
+	public void taskSend(String mailbox, Task task) throws NativeException {
 		MsgNative.taskSend(mailbox, task, -1);
 	}
 
 	/** Receive a task on mailbox associated with the specified mailbox */
-	public Task taskReceive(String mailbox) throws NativeException, JniException {
+	public Task taskReceive(String mailbox) throws NativeException {
 		return MsgNative.taskReceive(mailbox, -1.0, null);
 	}
 
 	/** Receive a task on mailbox associated with the specified alias (waiting at most given time) */
-	public Task taskReceive(String mailbox, double timeout) throws NativeException, JniException {
+	public Task taskReceive(String mailbox, double timeout) throws NativeException {
 		return MsgNative.taskReceive(mailbox, timeout, null);
 	}
 
 	/** Receive a task on mailbox associated with the specified alias from given sender */
-	public Task taskReceive(String mailbox, double timeout, Host host) throws NativeException, JniException {
+	public Task taskReceive(String mailbox, double timeout, Host host) throws NativeException {
 		return MsgNative.taskReceive(mailbox, timeout, host);
 	}
 
 	/** Receive a task on mailbox associated with the specified alias from given sender*/
-	public Task taskReceive(String mailbox, Host host) throws NativeException, JniException {
+	public Task taskReceive(String mailbox, Host host) throws NativeException {
 		return MsgNative.taskReceive(mailbox, -1.0, host);
 	}
 }

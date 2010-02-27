@@ -69,10 +69,12 @@ public class Host {
 	 * @param name		The name of the host to get.
 	 *
 	 * @exception		HostNotFoundException if the name of the host is not valid.
-	 *					MsgException if the native version of this method failed.
+	 *					NativeException if the native version of this method failed.
 	 */ 
 	public static Host getByName(String name) 
-	throws HostNotFoundException, NativeException, JniException {
+	throws HostNotFoundException, NativeException {
+		if (name==null)
+			throw new NullPointerException("No host can have a null name");
 		return MsgNative.hostGetByName(name);
 	}
 
@@ -82,7 +84,7 @@ public class Host {
 	 * @return			The count of the installed hosts.
 	 *
 	 */ 
-	public static int getCount() throws NativeException, JniException {
+	public static int getCount() throws NativeException {
 		return MsgNative.hostGetCount();
 	}
 
@@ -90,10 +92,8 @@ public class Host {
 	 * This static method return an instance to the host of the current process.
 	 *
 	 * @return			The host on which the current process is executed.
-	 *
-	 * @exception		MsgException if the native version of this method failed.
 	 */ 
-	public static Host currentHost() throws JniException {
+	public static Host currentHost() {
 		return MsgNative.hostSelf();
 	}
 
@@ -102,9 +102,9 @@ public class Host {
 	 *
 	 * @return			An array containing all the hosts installed.
 	 *
-	 * @exception		MsgException if the native version of this method failed.
+	 * @exception		NativeException if the native version of this method failed.
 	 */ 
-	public static Host[] all() throws JniException, NativeException {
+	public static Host[] all() throws NativeException {
 		return MsgNative.allHosts();
 	}
 
@@ -113,28 +113,28 @@ public class Host {
 	 *
 	 * @return			The name of the host.
 	 *
-	 * @exception		InvalidHostException if the host is not valid.
+	 * @exception		NativeException FIXME: check when
 	 */ 
-	public String getName() throws NativeException, JniException {
+	public String getName() throws NativeException {
 		return MsgNative.hostGetName(this);
 	}
 
 	/**
-	 * This method sets the data of the host.
+	 * Sets the data of the host.
 	 *
 	 */ 
 	public void setData(Object data) {
 		this.data = data;
 	} 
 	/**
-	 * This method gets the data of the host.
+	 * Gets the data of the host.
 	 */ 
 	public Object getData() {
 		return this.data;
 	}
 
 	/**
-	 * This function tests if a host has data.
+	 * Checks whether a host has data.
 	 */ 
 	public boolean hasData() {
 		return null != this.data;
@@ -145,11 +145,8 @@ public class Host {
 	 * The external load is not taken in account.
 	 *
 	 * @return			The number of tasks currently running on a host.
-	 *
-	 * @exception		InvalidHostException if the host is invalid.
-	 *
 	 */ 
-	public int getLoad() throws JniException {
+	public int getLoad() {
 		return MsgNative.hostGetLoad(this);
 	}
 
@@ -159,54 +156,13 @@ public class Host {
 	 *
 	 * @return			The speed of the processor of the host in flops.
 	 *
-	 * @exception		InvalidHostException if the host is not valid.
-	 *
 	 */ 
-	public double getSpeed() throws JniException {
+	public double getSpeed() {
 		return MsgNative.hostGetSpeed(this);
 	}
 
-	/**
-	 * This method tests if a host is avail.
-	 * 
-	 * @exception		JniException if the host is not valid.
-	 */ 
-	public boolean isAvail() throws JniException {
+	/** This method tests if a host is avail. */
+	public boolean isAvail() {
 		return MsgNative.hostIsAvail(this);
 	}
-
-	/** Send the given task to mailbox identified by the default alias */ 
-	public void send(Task task) throws JniException, NativeException  {
-		String alias = this.getName() + ":" + Process.currentProcess().msgName();	
-		MsgNative.taskSend(alias, task, -1);
-	} 
-
-	/** Send the given task to the mailbox associated with the specified alias */ 
-
-	public void send(String alias, Task task) throws JniException, NativeException {
-		MsgNative.taskSend(alias, task, -1);
-	}
-
-	/** Send the given task in the mailbox associated with the alias of the current host (waiting at most \a timeout seconds) */
-	public void send(Task task, double timeout) throws JniException, NativeException {
-		String alias = this.getName() + ":" + Process.currentProcess().msgName();
-		MsgNative.taskSend(alias, task, timeout);
-	}
-
-	/** Send the given task to mailbox associated with the specified alias (waiting at most \a timeout seconds) */
-	public void send(String alias, Task task, double timeout) throws JniException, NativeException {
-		MsgNative.taskSend(alias, task, timeout);
-	}
-
-	/** Send the given task to the mailbox associated with the default alias (capping the emision rate to \a maxrate) */ 
-	public void sendBounded(Task task, double maxrate) throws JniException, NativeException {
-		String alias = this.getName() + ":" + Process.currentProcess().msgName();
-
-		MsgNative.taskSendBounded(alias, task, maxrate);
-	}  
-
-	/** Send the given task to the mailbox associated with the specified alias (capping the emision rate to \a maxrate) */
-	public void sendBounded(String alias, Task task, double maxrate) throws JniException, NativeException {
-		MsgNative.taskSendBounded(alias, task, maxrate);
-	} 
 } 

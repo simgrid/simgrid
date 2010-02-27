@@ -25,8 +25,8 @@ public class Task {
 	public long bind = 0;
 
 
-	/* Default constructor (disabled) */
-	public Task() throws JniException {
+	/** Default constructor (all fields to 0 or null) */
+	public Task() {
 		MsgNative.taskCreate(this, null, 0, 0);
 	}
 	/* *              * *
@@ -45,10 +45,8 @@ public class Task {
 	 * @param messageSize		A value of amount of data (in bytes) needed to transfert this task.
 	 *				If 0, then it cannot be transfered with the get() and put() methods.
 	 *				This value has to be >= 0.
-	 *
-	 * @exception			JniException if the binding mechanism fails.
 	 */ 
-	public Task(String name, double computeDuration, double messageSize) throws JniException {
+	public Task(String name, double computeDuration, double messageSize) {
 		MsgNative.taskCreate(this, name, computeDuration, messageSize);
 	}
 	/**
@@ -59,44 +57,31 @@ public class Task {
 	 * @param hosts		The list of hosts implied by the parallel task.
 	 * @param computeDurations	The amount of operations to be performed by each host of \a hosts.
 	 * @param messageSizes	A matrix describing the amount of data to exchange between hosts.
-	 * 
-	 * @exception		JniException if the binding mecanism fails.
 	 */ 
-	public Task(String name, Host[]hosts, double[]computeDurations, double[]messageSizes) throws JniException {
+	public Task(String name, Host[]hosts, double[]computeDurations, double[]messageSizes) {
 		MsgNative.parallelTaskCreate(this, name, hosts, computeDurations, messageSizes);
 	}
 	/* *                   * *
 	 * * Getters / Setters * *
 	 * *                   * */
-	/** gets the name of a task. 
-	 * @exception			JniException if the binding mechanism fails.
-	 */ 
-	public String getName() throws JniException {
+	/** Gets the name of a task */ 
+	public String getName() {
 		return MsgNative.taskGetName(this);
 	}
-	/** gets the sender of the task.
-	 * @exception			JniException if the binding mechanism fails.
-	 *
-	 */ 
-	Process getSender() throws JniException {
+	/** Gets the sender of the task */ 
+	Process getSender() {
 		return MsgNative.taskGetSender(this);
 	}
-	/** Gets the source of the task.
-	 * @exception			JniException if the binding mechanism fails.
-	 */ 
-	public Host getSource() throws JniException, NativeException {
+	/** Gets the source of the task */ 
+	public Host getSource() throws NativeException {
 		return MsgNative.taskGetSource(this);
 	}
-	/** gets the computing amount of the task.
-	 * @exception			JniException if the binding mechanism fails.
-	 */ 
-	public double getComputeDuration() throws JniException {
+	/** Gets the computing amount of the task */ 
+	public double getComputeDuration() {
 		return MsgNative.taskGetComputeDuration(this);
 	}
-	/** gets the remaining computation of the task.
-	 * @exception			JniException if the binding mechanism fails.
-	 */ 
-	public double getRemainingDuration() throws JniException {
+	/** Gets the remaining computation of the task */ 
+	public double getRemainingDuration() {
 		return MsgNative.taskGetRemainingDuration(this);
 	}
 	/**
@@ -106,10 +91,8 @@ public class Task {
 	 * the other ones.
 	 *
 	 * @param priority	The new priority of the task.
-	 *
-	 * @exception	JniException is the specified task is not valid (ie, not binded to a native task)
 	 */ 
-	public void setPriority(double priority) throws JniException {
+	public void setPriority(double priority) {
 		MsgNative.taskSetPriority(this, priority);
 	}
 	/* *                       * *
@@ -121,132 +104,118 @@ public class Task {
 	 * * Computation-related * *
 	 * *                     * */
 	/**
-	 * This method execute a task on the location on which the
-	 * process is running.
+	 * Executes a task on the location on which the process is running.
 	 *
-	 * @exception JniException if the binding mechanism fails.
 	 * @exception NativeException if the execution failed.
 	 */ 
-	public void execute() throws JniException, NativeException {
+	public void execute() throws NativeException {
 		MsgNative.taskExecute(this);
 	}
 	/**
-	 * This method cancels a task.
+	 * Cancels a task.
 	 *
-	 * @exception JniException if the binding mechanism fails.
 	 * @exception NativeException if the cancellation failed.
 	 */ 
-	public void cancel() throws JniException, NativeException {
+	public void cancel() throws NativeException {
 		MsgNative.taskCancel(this);
 	}
 	/** Deletes a task.
 	 *
-	 * @exception			JniException if the binding mechanism fails
-	 *						NativeException if the destruction failed.
+	 * @exception			NativeException if the destruction failed.
 	 */ 
-	protected void finalize() throws JniException, NativeException {
+	protected void finalize() throws NativeException {
 		if (this.bind != 0)
 			MsgNative.taskDestroy(this);
 	}
 
 	/**
-	 * Send the task on the mailbox identified by the specified name 
+	 * Sends the task on the mailbox identified by the specified name 
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */
-	public void send(String mailbox) throws JniException,NativeException {
+	public void send(String mailbox) throws NativeException {
 		MsgNative.taskSend(mailbox, this, -1);
 	} 
 
 	/**
-	 * Send the task on the mailbox identified by the specified name (wait at most \a timeout seconds)
+	 * Sends the task on the mailbox identified by the specified name (wait at most \a timeout seconds)
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */
-	public void send(String mailbox, double timeout) throws JniException,NativeException {
+	public void send(String mailbox, double timeout) throws NativeException {
 		MsgNative.taskSend(mailbox, this, timeout);
 	} 
 
 	/**
-	 * Send the task on the mailbox identified by the specified alias  (capping the sending rate to \a maxrate) 
+	 * Sends the task on the mailbox identified by the specified alias  (capping the sending rate to \a maxrate) 
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */
-	public void sendBounded(String alias, double maxrate) throws JniException,NativeException {
+	public void sendBounded(String alias, double maxrate) throws NativeException {
 		MsgNative.taskSendBounded(alias, this, maxrate);
 	} 
 
 	/**
 	 * Retrieves next task from the mailbox identified by the specified name
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */
 
-	public static Task receive(String mailbox) throws JniException, NativeException {
+	public static Task receive(String mailbox) throws NativeException {
 		return MsgNative.taskReceive(mailbox, -1.0, null);
 	}
 
 	/**
 	 * Retrieves next task on the mailbox identified by the specified name (wait at most \a timeout seconds)
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */
-	public static Task receive(String mailbox, double timeout) throws JniException, NativeException {
+	public static Task receive(String mailbox, double timeout) throws  NativeException {
 		return MsgNative.taskReceive(mailbox, timeout, null);
 	}
 
 	/**
 	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias 
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */
 
-	public static Task receive(String mailbox, Host host) throws JniException, NativeException {
+	public static Task receive(String mailbox, Host host) throws NativeException {
 		return MsgNative.taskReceive(mailbox, -1.0, host);
 	}
 
 	/**
 	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias (wait at most \a timeout seconds)
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */
-	public static Task receive(String mailbox, double timeout, Host host) throws JniException, NativeException {
+	public static Task receive(String mailbox, double timeout, Host host) throws NativeException {
 		return MsgNative.taskReceive(mailbox, timeout, host);
 	}
 
 	/**
-	 * Test whether there is a pending communication on the mailbox identified by the specified alias, and who sent it
+	 * Tests whether there is a pending communication on the mailbox identified by the specified alias, and who sent it
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */ 
-	public static int listenFrom(String mailbox) throws JniException, NativeException  {
+	public static int listenFrom(String mailbox) throws NativeException  {
 		return MsgNative.taskListenFrom(mailbox);
 	}
 	/**
 	 * Listen whether there is a waiting task on the mailbox identified by the specified alias
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */ 
-	public static boolean listen(String mailbox) throws JniException, NativeException  {
+	public static boolean listen(String mailbox) throws NativeException  {
 		return MsgNative.taskListen(mailbox);
 	}
 
 	/**
 	 * Counts the number of tasks waiting to be received on the \a mailbox identified by the specified alia and sended by the specified \a host.
 	 *
-	 * @exception  JniException if the binding mechanism fails.
 	 * @exception  NativeException if the retrieval fails.
 	 */ 
-	public static int listenFromHost(String alias, Host host) throws JniException, NativeException  {
+	public static int listenFromHost(String alias, Host host) throws NativeException  {
 		return MsgNative.taskListenFromHost(alias, host);
 	}
 }

@@ -85,16 +85,14 @@ public final class Msg {
 	 * @param platformFile    The XML file which contains the description of the environment of the simulation
 	 *
 	 */
-	public final static native void createEnvironment(String platformFile)
-	throws NativeException;
+	public final static native void createEnvironment(String platformFile) throws NativeException;
 
 	/**
 	 * The method to deploy the simulation.
 	 *
 	 * @param platformFile    The XML file which contains the description of the application to deploy.
 	 */
-	public final static native void deployApplication(String deploymentFile)
-	throws NativeException;
+	public final static native void deployApplication(String deploymentFile) throws NativeException;
 
 	/** Example launcher. You can use it or provide your own launcher, as you wish */
 	static public void main(String[]args) throws MsgException {

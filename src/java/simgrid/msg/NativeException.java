@@ -17,13 +17,6 @@ package simgrid.msg;
 public class NativeException extends MsgException {
 	private static final long serialVersionUID = 1L;
 
-	/*
-	 * Constructs an <code>NativeException</code> without a 
-	 * detail message. 
-	 *
-  		public NativeException() {
-    		super();
-  		}*/
 	/**
 	 * Constructs an <code>NativeException</code> with a detail message. 
 	 *

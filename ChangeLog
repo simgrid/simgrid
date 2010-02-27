@@ -9,7 +9,10 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     Use send/receive instead.
   * Cleanup the examples and add a README per directory
   * Remove example autoDestination (that's the only way to go now)
-  * Remove example explicitDestination (was a plain copy of basic)
+  * Remove example explicitDestination (was a plain copy of basic)  
+  * Make JniException a runtime exception, so that there is no need to
+    declare the fact that you may encounter such a beast. I guess that
+    nobody will ever want to survive such error.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

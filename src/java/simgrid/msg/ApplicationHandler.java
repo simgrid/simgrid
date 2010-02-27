@@ -109,10 +109,6 @@ public final class ApplicationHandler {
 				 process.properties = this.properties;
 				 this.properties = new Hashtable();
 
-			 } catch(JniException e) {
-				 System.out.println(e.toString());
-				 e.printStackTrace();
-
 			 } catch(NativeException e) {
 				 System.out.println(e.toString());
 				 e.printStackTrace();
@@ -127,15 +123,12 @@ public final class ApplicationHandler {
 				 e.printStackTrace();
 
 			 } catch(InstantiationException e) {
-				 System.out.println("instantiation exception");
+				 System.out.println("Unable to create the process. I got an instantiation exception");
 				 e.printStackTrace();
 			 } catch(IllegalAccessException e) {
-				 System.out.println("illegal access exception");
+				 System.out.println("Unable to create the process. I got an illegal access exception");
 				 e.printStackTrace();
-			 } catch(IllegalArgumentException e) {
-				 System.out.println("illegal argument exception");
-				 e.printStackTrace();
-			 }
+			 } 
 
 		 }
 	}

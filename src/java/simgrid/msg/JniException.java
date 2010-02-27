@@ -12,6 +12,7 @@ package simgrid.msg;
 
 /**
  * This exception is raised when there is a problem within the bindings (in JNI). 
+ * That's a RuntimeException: I guess nobody wants to survive a JNI error in SimGrid
  */
 public class JniException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

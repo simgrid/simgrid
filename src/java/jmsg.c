@@ -311,20 +311,6 @@ Java_simgrid_msg_MsgNative_processSelf(JNIEnv * env, jclass cls)
   return jprocess;
 }
 
-
-JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_processSelfPID(JNIEnv * env, jclass cls)
-{
-  return (jint) MSG_process_self_PID();
-}
-
-
-JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_processSelfPPID(JNIEnv * env, jclass cls)
-{
-  return (jint) MSG_process_self_PPID();
-}
-
 JNIEXPORT void JNICALL
 Java_simgrid_msg_MsgNative_processChangeHost(JNIEnv * env, jclass cls,
                                              jobject jhost)
