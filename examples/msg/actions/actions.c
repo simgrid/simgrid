@@ -451,9 +451,11 @@ int main(int argc, char *argv[])
   
   /* Check the given arguments */
   MSG_global_init(&argc, argv);
-  if (argc < 4) {
-    printf("Usage: %s platform_file deployment_file action_files\n", argv[0]);
-    printf("example: %s msg_platform.xml msg_deployment.xml actions\n",
+  if (argc < 3) {
+    printf("Usage: %s platform_file deployment_file [action_files]\n", argv[0]);
+    printf("example: %s msg_platform.xml msg_deployment.xml actions # if all actions are in the same file\n",
+           argv[0]);
+    printf("example: %s msg_platform.xml msg_deployment.xml # if actions are in separate files, specified in deployment\n",
            argv[0]);
     exit(1);
   }
@@ -480,7 +482,7 @@ int main(int argc, char *argv[])
 
 
   /* Actually do the simulation using MSG_action_trace_run */
-  res = MSG_action_trace_run(argv[3]);
+  res = MSG_action_trace_run(argv[3]); // it's ok to pass a NULL argument here
 
   INFO1("Simulation time %g", MSG_get_clock());
   MSG_clean();

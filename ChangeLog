@@ -1,9 +1,5 @@
 SimGrid (3.3.5-svn) unstable; urgency=low
 
- SimDag:
-  * Kill the useless "rate" argument of SD_task_get_execution_time()
-    Everyone used to provide -1 as a value, it was not used, and the
-    semantic of a possible use wasn't even clear.
  Java Bindings: Various Cleanups
   * Remove put/get: no need to export deprecated interface in Java
     Use send/receive instead.
@@ -13,7 +9,16 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Make JniException a runtime exception, so that there is no need to
     declare the fact that you may encounter such a beast. I guess that
     nobody will ever want to survive such error.
-
+ SimDag:
+  * Kill the useless "rate" argument of SD_task_get_execution_time()
+    Everyone used to provide -1 as a value, it was not used, and the
+    semantic of a possible use wasn't even clear.
+ MSG: 
+  * In trace replay, allow to have one trace file per process.
+    Give the specific trace file as argument of each process, 
+      and call MSG_action_trace_run(NULL)
+    You can still have one merged file for each processes.
+      
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 
