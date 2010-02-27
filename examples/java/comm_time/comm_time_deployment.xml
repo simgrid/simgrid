@@ -2,48 +2,54 @@
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
   <process host="Jacquelin" function="Master">
-     <argument value="50000"/>
-     <argument value="50000"/>
-     <argument value="10"/>
-     <argument value="iRMX"/>
-     <argument value="Bousquet"/>
-     <argument value="Soucy"/>
-     <argument value="Casavant"/>
-     <argument value="Jackson"/>
-     <argument value="Geoff"/>
-     <argument value="Disney"/>
-     <argument value="McGee"/>
-     <argument value="Gatien"/>
-     <argument value="Laroche"/>
-     <argument value="Tanguay"/>
-     <argument value="Morin"/>
-     <argument value="Ethernet"/>
-     <argument value="Bellemarre"/>
-     <argument value="Harry"/>
-     <argument value="Olivier"/>
-     <argument value="Boucherville"/>
-     <argument value="Pointe_Claire"/>
-     <argument value="Kansas"/>
-     <argument value="King"/>
+     <argument value="50000"/>     <!-- Amount of tasks to dispatch -->
+     <argument value="50000"/> <!-- Computation size of each task -->
+     <argument value="10"/>    <!-- Communication size of each one -->
+     <argument value="21"/>     <!-- Amount of slaves waiting for orders -->
   </process>
-  <process host="iRMX" function="Slave"/>
-  <process host="Bousquet" function="Slave"/>
-  <process host="Soucy" function="Slave"/>
-  <process host="Casavant" function="Slave"/>
-  <process host="Jackson" function="Slave"/>
-  <process host="Geoff" function="Slave"/>
-  <process host="Disney" function="Slave"/>
-  <process host="McGee" function="Slave"/>
-  <process host="Gatien" function="Slave"/>
-  <process host="Laroche" function="Slave"/>
-  <process host="Tanguay" function="Slave"/>
-  <process host="Morin" function="Slave"/>
-  <process host="Ethernet" function="Slave"/>
-  <process host="Bellemarre" function="Slave"/>
-  <process host="Harry" function="Slave"/>
-  <process host="Olivier" function="Slave"/>
-  <process host="Boucherville" function="Slave"/>
-  <process host="Pointe_Claire" function="Slave"/>
-  <process host="Kansas" function="Slave"/>
-  <process host="King" function="Slave"/>
+  
+  <process host="iRMX" function="Slave">
+     <argument value="0"/>  <!-- Input mailbox -->
+  </process>
+  
+  <process host="Bousquet" function="Slave">
+     <argument value="1"/></process>
+  <process host="Soucy" function="Slave">
+     <argument value="2"/></process>
+  <process host="Casavant" function="Slave">
+     <argument value="3"/></process>
+  <process host="Jackson" function="Slave">
+     <argument value="4"/></process>
+  <process host="Geoff" function="Slave">
+     <argument value="5"/></process>
+  <process host="Disney" function="Slave">
+     <argument value="6"/></process>
+  <process host="McGee" function="Slave">
+     <argument value="7"/></process>
+  <process host="Gatien" function="Slave">
+     <argument value="8"/></process>
+  <process host="Laroche" function="Slave">
+     <argument value="9"/></process>
+  <process host="Tanguay" function="Slave">
+     <argument value="10"/></process>
+  <process host="Morin" function="Slave">
+     <argument value="11"/></process>
+  <process host="Ethernet" function="Slave">
+     <argument value="12"/></process>
+  <process host="Bellemarre" function="Slave">
+     <argument value="13"/></process>
+  <process host="Harry" function="Slave">
+     <argument value="14"/></process>
+  <process host="Olivier" function="Slave">
+     <argument value="15"/></process>
+  <process host="Boucherville" function="Slave">
+     <argument value="16"/></process>
+  <process host="Pointe_Claire" function="Slave">
+     <argument value="17"/></process>
+  <process host="Kansas" function="Slave">
+     <argument value="18"/></process>
+  <process host="King" function="Slave">
+     <argument value="19"/></process>
+  <process host="Lapointe" function="Slave">
+     <argument value="20"/></process>
 </platform>

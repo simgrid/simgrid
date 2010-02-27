@@ -1,8 +1,7 @@
 /*
- * $Id$
+ * Master of a basic master/slave example in Java
  *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier         
- * All rights reserved. 
+ * Copyright 2006,2007,2010 The SimGrid Team. All rights reserved. 
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. 
@@ -11,50 +10,34 @@
 import simgrid.msg.*;
 
 public class Master extends simgrid.msg.Process {
-   
    public void main(String[] args) throws JniException, NativeException {
+      if (args.length < 4) {
+	 Msg.info("Master needs 4 arguments");
+	 System.exit(1);
+      }
       
-      Msg.info("Hello i'm the master");
-      
-      int numberoftasks = Integer.valueOf(args[0]).intValue();
+      int tasksCount = Integer.valueOf(args[0]).intValue();		
       double taskComputeSize = Double.valueOf(args[1]).doubleValue();		
       double taskCommunicateSize = Double.valueOf(args[2]).doubleValue();
-		
-      int slavecount = args.length - 3;
-      Host[] slaves = new Host[slavecount] ;
-	
-      for (int i = 3; i < args.length; i++) {
-	 try {
-	    slaves[i-3] = Host.getByName(args[i]);
-	 } catch(HostNotFoundException e) {
-	    Msg.info(e.toString());
-	    Msg.info("Unknown host " +  args[i] +". Stopping Now! " );
-	    System.exit(1);
-	 }
-      }
-  		
-      Msg.info("Got " + slavecount + " slave(s):");		
-      for (int i = 0; i < slavecount; i++)
-	Msg.info("\t " + slaves[i].getName());
       
-      Msg.info("Got "+numberoftasks+" task(s) to process.");
+      int slavesCount = Integer.valueOf(args[3]).intValue();
       
-      for (int i = 0; i < numberoftasks; i++) {			
-	 CommTimeTask task = new CommTimeTask("Task_" + i ,taskComputeSize,taskCommunicateSize);
-	 task.setTime(Msg.getClock());
-	 slaves[i % slavecount].put(0,task);
-	 
-//	 Msg.info("Send completed for the task " + task.getName() + " on the host " + slaves[i % slavecount].getName() +  " [" + (i % slavecount) + "]");
+      Msg.info("Hello! Got "+  slavesCount + " slaves and "+tasksCount+" tasks to process");
+      
+      for (int i = 0; i < tasksCount; i++) {
+	 MyTask task = new MyTask("Task_" + i, taskComputeSize, taskCommunicateSize);
+	 if (i%1000==0)
+	   Msg.info("Sending \"" + task.getName()+ "\" to \"slave_" + i % slavesCount + "\"");
+	 task.send("slave_"+(i%slavesCount));
       }
-		
+      
       Msg.info("All tasks have been dispatched. Let's tell everybody the computation is over.");
-		
-      for (int i = 0; i < slavecount; i++) { 
-			
-	 Msg.info("Finalize host " + slaves[i].getName() +  " [" + i + "]");
-	 slaves[i].put(0, new FinalizeTask());
+      
+      for (int i = 0; i < slavesCount; i++) {
+	 FinalizeTask task = new FinalizeTask();
+	 task.send("slave_"+(i%slavesCount));
       }
       
-      Msg.info("All finalize messages have been dispatched. Goodbye now!");
-   }
+      Msg.info("Goodbye now!");
+    }
 }

@@ -11,30 +11,26 @@
 import simgrid.msg.*;
 
 public class Slave extends simgrid.msg.Process {
-   
    public void main(String[] args) throws JniException, NativeException {
+      if (args.length < 1) {
+	 Msg.info("Slave needs 1 argument (its number)");
+	 System.exit(1);
+      }
+
+      int num = Integer.valueOf(args[0]).intValue();
+      Msg.info("Receiving on 'slave_"+num+"'");
       
-      Msg.info("Hello i'm a slave");
-      
-      while(true) {
-	 double time1 = Msg.getClock();       
-	 Task t = Task.get(0);	
- 
+      while(true) { 
+	 Task t = Task.receive("slave_"+num);	
+	 
 	 if (t instanceof FinalizeTask) {
 	    break;
 	 }
-	 CommTimeTask task = (CommTimeTask)t;
-	     
-	 if(time1 < task.getTime())
-	   time1 = task.getTime();
-	 
-/*	 double time2 = Msg.getClock();
-	 Msg.info("Processing \"" + task.getName() + "\" " + getHost().getName() + 
-		  " (Communication time : " +  (time2 - time1) + ")");
-*/	     
+	 MyTask task = (MyTask)t;
 	 task.execute();
-      }
+//	 Msg.info("\"" + task.getName() + "\" done ");
+       }
        
       Msg.info("Received Finalize. I'm done. See you!");
-   }
+    }
 }

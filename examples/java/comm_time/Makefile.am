@@ -9,7 +9,7 @@ EXTRA_DIST=comm_time_deployment.xml comm_time_platform.xml
 
 # Declare sources:
 JAVA_SRC=Master.java Slave.java CommTimeTest.java \
-         CommTimeTask.java FinalizeTask.java
+         MyTask.java FinalizeTask.java
 JAVA_TESTS=CommTimeTest.class
 TESTS=$(JAVA_TESTS)
 
