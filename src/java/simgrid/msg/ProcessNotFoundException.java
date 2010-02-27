@@ -1,7 +1,7 @@
 /*
- * $Id$
+ * This exception is raised when looking for a non-existing process.
  *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * Copyright 2006,2007,2010 The SimGrid Team           
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -12,23 +12,24 @@
 package simgrid.msg;
 
 /**
-  * This exception is raised when looking for a non-existing process.
-  */
+ * This exception is raised when looking for a non-existing process.
+ */
 public class ProcessNotFoundException extends MsgException {
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  /*
-   * Constructs an <code>ProcessNotFoundException</code> without a 
-   * detail message. 
-   */
-  public ProcessNotFoundException() {
-    super();
-  }
-  /*
-   * Constructs an <code>ProcessNotFoundException</code> with a detail message. 
-   *
-   * @param   s   the detail message.
-   */ public ProcessNotFoundException(String s) {
-    super(s);
-  }
+	/**
+	 * Constructs an <code>ProcessNotFoundException</code> without a 
+	 * detail message. 
+	 */
+	public ProcessNotFoundException() {
+		super();
+	}
+	/**
+	 * Constructs an <code>ProcessNotFoundException</code> with a detail message. 
+	 *
+	 * @param   s   the detail message.
+	 */
+	public ProcessNotFoundException(String s) {
+		super(s);
+	}
 }

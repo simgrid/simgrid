@@ -1,7 +1,7 @@
 /*
- * $Id$
+ * This exception is raised when there is an error within the C world of SimGrid.
  *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * Copyright 2006,2007,2010 The SimGrid team
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -11,23 +11,25 @@
 package simgrid.msg;
 
 /**
- * This exception is raised when there is an error within the SimGrid message. Refer to the string message for more info on what went wrong.
+ * This exception is raised when there is an error within the C world of SimGrid. 
+ * Refer to the string message for more info on what went wrong.
  */
 public class NativeException extends MsgException {
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  /*
-   * Constructs an <code>NativeException</code> without a 
-   * detail message. 
-   */
-  public NativeException() {
-    super();
-  }
-  /*
-   * Constructs an <code>NativeException</code> with a detail message. 
-   *
-   * @param   s   the detail message.
-   */ public NativeException(String s) {
-    super(s);
-  }
+	/*
+	 * Constructs an <code>NativeException</code> without a 
+	 * detail message. 
+	 *
+  		public NativeException() {
+    		super();
+  		}*/
+	/**
+	 * Constructs an <code>NativeException</code> with a detail message. 
+	 *
+	 * @param   s   the detail message.
+	 */
+	public NativeException(String s) {
+		super(s);
+	}
 }

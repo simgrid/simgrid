@@ -17,7 +17,6 @@
 #include "jmsg_process.h"
 #include "jmsg_host.h"
 #include "jmsg_task.h"
-#include "jmsg_channel.h"
 #include "jmsg_application_handler.h"
 #include "jxbt_utilities.h"
 
@@ -790,118 +789,9 @@ Java_simgrid_msg_MsgNative_taskExecute(JNIEnv * env, jclass cls,
 }
 
 /***************************************************************************************
- * The Task reception functions                                                        *
+ * Unsortable functions                                                        *
  ***************************************************************************************/
 
-JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_taskGet(JNIEnv * env, jclass cls,
-                                   jint chan_id, jdouble jtimeout,
-                                   jobject jhost)
-{
-  m_task_t task = NULL;
-  m_host_t host = NULL;
-
-  if (jhost) {
-    host = jhost_get_native(env, jhost);
-    if (!host) {
-      jxbt_throw_notbound(env, "host", jhost);
-      return NULL;
-    }
-  }
-
-  if (MSG_OK !=
-      MSG_task_get_ext(&task, (int) chan_id, (double) jtimeout, host)) {
-    jxbt_throw_native(env, xbt_strdup("MSG_task_get_ext() failed"));
-    return NULL;
-  }
-
-  return (jobject) task->data;
-}
-
-
-JNIEXPORT jboolean JNICALL
-Java_simgrid_msg_MsgNative_taskProbe(JNIEnv * env, jclass cls, jint chan_id)
-{
-  return (jboolean) MSG_task_Iprobe(chan_id);
-}
-
-JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_taskGetCommunicatingProcess(JNIEnv * env,
-                                                       jclass cls,
-                                                       jint chan_id)
-{
-  int pid = MSG_task_probe_from(chan_id);
-  if (pid >= 0)
-    return Java_simgrid_msg_MsgNative_processFromPID(env, cls, (jint) pid);
-
-  return NULL;
-}
-
-JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_taskProbeHost(JNIEnv * env, jclass cls,
-                                         jobject jhost, jint chan_id)
-{
-  m_host_t host = jhost_get_native(env, jhost);
-
-  if (!host) {
-    jxbt_throw_notbound(env, "host", jhost);
-    return -1;
-  }
-
-  return (jint) MSG_task_probe_from_host(chan_id, host);
-}
-
-
-/***************************************************************************************
- * The Task reception functions                                                        *
- ***************************************************************************************/
-
-
-JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_hostPut(JNIEnv * env, jclass cls,
-                                   jobject jhost, jint chan_id, jobject jtask,
-                                   jdouble jtimeout)
-{
-  m_task_t task = jtask_to_native_task(jtask, env);
-  m_host_t host = jhost_get_native(env, jhost);
-
-  if (!host) {
-    jxbt_throw_notbound(env, "host", jhost);
-    return;
-  }
-  if (!task) {
-    jxbt_throw_notbound(env, "task", jtask);
-    return;
-  }
-
-  if (MSG_OK !=
-      MSG_task_put_with_timeout(task, host, (int) chan_id, (double) jtimeout))
-    jxbt_throw_native(env, xbt_strdup("MSG_task_put_with_timeout() failed"));
-}
-
-
-
-JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_hostPutBounded(JNIEnv * env, jclass cls,
-                                          jobject jhost, jint chan_id,
-                                          jobject jtask, jdouble jmaxRate)
-{
-  m_task_t task = jtask_to_native_task(jtask, env);
-  m_host_t host = jhost_get_native(env, jhost);
-
-  if (!host) {
-    jxbt_throw_notbound(env, "host", jhost);
-    return;
-  }
-  if (!task) {
-    jxbt_throw_notbound(env, "task", jtask);
-    return;
-  }
-
-  if (MSG_OK !=
-      MSG_task_put_bounded(task, host, (int) chan_id, (double) jmaxRate))
-    jxbt_throw_native(env, xbt_strdup("MSG_task_put_bounded() failed"));
-}
 
 JNIEXPORT jint JNICALL
 Java_simgrid_msg_Msg_getErrCode(JNIEnv * env, jclass cls)
@@ -917,9 +807,7 @@ Java_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
 
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
-{
-
+Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs) {
   char **argv = NULL;
   int index;
   int argc = 0;
@@ -930,23 +818,17 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
     argc = (int) (*env)->GetArrayLength(env, jargs);
 
   argc++;
-
   argv = xbt_new0(char *, argc);
-
   argv[0] = strdup("java");
 
   for (index = 0; index < argc - 1; index++) {
     jval = (jstring) (*env)->GetObjectArrayElement(env, jargs, index);
-
     tmp = (*env)->GetStringUTFChars(env, jval, 0);
-
     argv[index + 1] = strdup(tmp);
-
     (*env)->ReleaseStringUTFChars(env, jval, tmp);
   }
 
   MSG_global_init(&argc, argv);
-  MSG_set_channel_number(10);   /* FIXME: this should not be fixed statically */
   SIMIX_context_select_factory("java");
 
   for (index = 0; index < argc; index++)
@@ -955,12 +837,10 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   free(argv);
 
   (*env)->GetJavaVM(env, &__java_vm);
-
 }
 
 JNIEXPORT void JNICALL
-  JNICALL Java_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
-{
+  JNICALL Java_simgrid_msg_Msg_run(JNIEnv * env, jclass cls) {
   xbt_fifo_item_t item = NULL;
   m_host_t host = NULL;
   jobject jhost;
@@ -1021,17 +901,6 @@ Java_simgrid_msg_MsgNative_processExit(JNIEnv * env, jclass cls,
 
   SIMIX_context_stop(SIMIX_process_self()->context);
 }
-
-JNIEXPORT void JNICALL
-Java_simgrid_msg_Msg_pajeOutput(JNIEnv * env, jclass cls, jstring jpajeFile)
-{
-  const char *pajeFile = (*env)->GetStringUTFChars(env, jpajeFile, 0);
-
-  MSG_paje_output(pajeFile);
-
-  (*env)->ReleaseStringUTFChars(env, jpajeFile, pajeFile);
-}
-
 
 JNIEXPORT void JNICALL
 Java_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring js)

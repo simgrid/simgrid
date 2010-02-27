@@ -4,6 +4,12 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Kill the useless "rate" argument of SD_task_get_execution_time()
     Everyone used to provide -1 as a value, it was not used, and the
     semantic of a possible use wasn't even clear.
+ Java Bindings: Various Cleanups
+  * Remove put/get: no need to export deprecated interface in Java
+    Use send/receive instead.
+  * Cleanup the examples and add a README per directory
+  * Remove example autoDestination (that's the only way to go now)
+  * Remove example explicitDestination (was a plain copy of basic)
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

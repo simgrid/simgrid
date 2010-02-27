@@ -272,62 +272,13 @@ JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_taskDestroy
 JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_taskExecute
   (JNIEnv *, jclass, jobject);
 
-/*
- * Class		simgrid_msg_Msg
- * Method		taskGetWithTimeout
- * Signature	(I;D;Lsimgrid/msg/Host;)Lsimgrid/msg/Task;
- */
-JNIEXPORT jobject JNICALL Java_simgrid_msg_MsgNative_taskGet
-  (JNIEnv *, jclass, jint, jdouble, jobject);
-
 JNIEXPORT jobject JNICALL
   Java_simgrid_msg_MsgNative_taskReceive
   (JNIEnv *, jclass, jstring, jdouble, jobject);
 
-/*
- * Class		simgrid_msg_Msg
- * Method		taskHasPendingCommunication
- * Signature	(I)Z
- */
-JNIEXPORT jboolean JNICALL Java_simgrid_msg_MsgNative_taskProbe
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		taskGetCommunicatingProcess
- * Signature	(I)Lsimgrid/msg/Process;
- */
-JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_taskGetCommunicatingProcess(JNIEnv *, jclass,
-                                                       jint);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		taskGetHostWaitingTasks
- * Signature	(Lsimgrid/msg/Host;I)I
- */
-JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_taskProbeHost
-  (JNIEnv *, jclass, jobject, jint);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		hostPutWith
- * Signature	(Lsimgrid/msg/Host;I;Lsimgrid/msg/Task;D)V
- */
-JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_hostPut
-  (JNIEnv *, jclass, jobject, jint, jobject, jdouble);
-
 JNIEXPORT void JNICALL
   Java_simgrid_msg_MsgNative_taskSend
   (JNIEnv *, jclass, jstring, jobject, jdouble);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		hostPutBounded
- * Signature	(Lsimgrid/msg/Host;I;Lsimgrid/msg/Task;D)V
- */
-JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_hostPutBounded
-  (JNIEnv *, jclass, jobject, jint, jobject, jdouble);
 
 /*
  * Class		simgrid_msg_Msg
@@ -364,9 +315,6 @@ JNIEXPORT jint JNICALL Java_simgrid_msg_MsgNative_processKillAll
  */
 JNIEXPORT void JNICALL Java_simgrid_msg_MsgNative_processExit
   (JNIEnv *, jclass, jobject);
-
-JNIEXPORT void JNICALL
-Java_simgrid_msg_Msg_pajeOutput(JNIEnv * env, jclass cls, jstring jpajeFile);
 
 JNIEXPORT void JNICALL Java_simgrid_msg_Msg_info(JNIEnv *, jclass, jstring);
 

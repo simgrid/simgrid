@@ -1,13 +1,12 @@
 /*
+ * These are the upcalls used by the FleXML parser for application files
  *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * Copyright 2006,2007,2010 The SimGrid team.           
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
  * it and/or modify it under the terms of the license 
  * (GNU LGPL) which comes with this package.
- *
- * These are the upcalls used by the FleXML parser for application files
  */
 
 package simgrid.msg;
@@ -15,19 +14,6 @@ package simgrid.msg;
 import java.util.Vector;
 import java.util.Hashtable;
 
-/**
- * The handler used to parse the deployment file which contains 
- * the description of the application (simulation).
- *
- * @author  Abdelmalek Cherier
- * @author  Martin Quinson
- * @version 1.00, 07/05/01
- * @see Host
- * @see Process
- * @see Simulation
- * @since SimGrid 3.3
- * @since JDK1.5011 
- */
 public final class ApplicationHandler {
 
 	/* 
@@ -114,7 +100,7 @@ public final class ApplicationHandler {
 				 Host host = Host.getByName(this.hostName);
 
 				 MsgNative.processCreate(process, host);
-				 Vector args = processFactory.args;
+				 Vector<String> args = processFactory.args;
 				 int size = args.size();
 
 				 for (int index = 0; index < size; index++)

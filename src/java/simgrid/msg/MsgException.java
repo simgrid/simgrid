@@ -1,7 +1,7 @@
 /*
- * java.com.simgrid.msg.MsgException.java	1.00 07/05/01
+ * This exception is an abstract class grouping all MSG-related exceptions
  *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * Copyright 2006,2007,2010 The SimGrid Team           
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -25,14 +25,14 @@ import java.lang.Exception;
 public abstract class MsgException extends Exception {
   private static final long serialVersionUID = 1L;
 
-  /*
+  /**
    * Constructs an <code>MsgException</code> without a 
    * detail message. 
    */
   public MsgException() {
     super();
   }
-  /*
+  /**
    * Constructs an <code>MsgException</code> with a detail message. 
    *
    * @param   s   the detail message.

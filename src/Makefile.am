@@ -240,7 +240,6 @@ JMSG_C_SRC = \
   simix/smx_context_java.c \
   java/jxbt_utilities.c     java/jxbt_utilities.h      \
   java/jmsg.c               java/jmsg.h                \
-  java/jmsg_channel.c       java/jmsg_channel.h        \
   java/jmsg_host.c          java/jmsg_host.h           \
   java/jmsg_process.c       java/jmsg_process.h        \
   java/jmsg_task.c          java/jmsg_task.h           \

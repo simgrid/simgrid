@@ -1,7 +1,7 @@
 /*
- * $Id$
+ * This exception is raised when there is a problem within the bindings (in JNI). 
  *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier           
+ * Copyright 2006,2007,2010 The SimGrid Team            
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -14,20 +14,21 @@ package simgrid.msg;
  * This exception is raised when there is a problem within the bindings (in JNI). 
  */
 public class JniException extends MsgException {
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 
-  /*
-   * Constructs an <code>JniException</code> without a 
-   * detail message. 
-   */
-  public JniException() {
-    super();
-  }
-  /*
-   * Constructs an <code>JniException</code> with a detail message. 
-   *
-   * @param   s   the detail message.
-   */ public JniException(String s) {
-    super(s);
-}}
+	/**
+	 * Constructs an <code>JniException</code> without a 
+	 * detail message. 
+	 */
+	public JniException() {
+		super();
+	}
+	/**
+	 * Constructs an <code>JniException</code> with a detail message. 
+	 *
+	 * @param   s   the detail message.
+	 */ public JniException(String s) {
+		 super(s);
+	 }
+}
