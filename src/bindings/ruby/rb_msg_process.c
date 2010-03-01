@@ -130,7 +130,7 @@ void rb_process_create(VALUE class,VALUE ruby_process,VALUE host) {
   rb_process_bind(ruby_process,process);
   name = RSTRING(rbName)->ptr;
   process->name = xbt_strdup(name);
-  Data_Get_Struct(host,m_host_t,process->simdata->m_host);
+  Data_Get_Struct(host,s_m_host_t,process->simdata->m_host);
 
   if(!(process->simdata->m_host)) // Not Binded
   {

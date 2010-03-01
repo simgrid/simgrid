@@ -102,5 +102,19 @@ void  rb_host_set_data(VALUE Class,VALUE host,VALUE data);
 VALUE rb_host_get_data(VALUE Class,VALUE host);
 VALUE rb_host_is_avail(VALUE Class,VALUE host);
 
+/* Functions related to tasks */
+void rb_task_free(m_task_t tk);
+// New Method  >>> Data NULL
+VALUE rb_task_new(VALUE Class, VALUE name,VALUE comp_size,VALUE comm_size);
+VALUE rb_task_comp(VALUE Class,VALUE task); // Get Computation Size
+VALUE rb_task_name(VALUE Class,VALUE task);
+VALUE rb_task_execute(VALUE Class,VALUE task);
+void  rb_task_send(VALUE Class,VALUE task,VALUE mailbox);
+VALUE rb_task_receive(VALUE Class,VALUE mailbox);// Receive : return a task
+void  rb_task_receive2(VALUE Class,VALUE task,VALUE mailbox);// Receive Task 2 <<  Not Appreciated
+VALUE rb_task_sender(VALUE Class,VALUE task);
+VALUE rb_task_source(VALUE Class,VALUE task);
+VALUE rb_task_listen(VALUE Class,VALUE task,VALUE alias); //Listen From Alias (=mailbox)
+VALUE rb_task_listen_host(VALUE Class,VALUE task,VALUE alias,VALUE host); //Listen from Host
 
 #endif /* RB_SG_BINDINGS */

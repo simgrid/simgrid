@@ -384,7 +384,10 @@ else
   EXTRA_DIST += $(LUA_SRC)
 endif
 
-RUBY_SRC= simix/smx_context_ruby.c bindings/ruby/rb_msg_process.c
+RUBY_SRC= simix/smx_context_ruby.c \
+   bindings/ruby/rb_msg_process.c  \
+   bindings/ruby/rb_msg_host.c     \
+   bindings/ruby/rb_msg_task.c
 if HAVE_RUBY
   simgrid_sources += $(RUBY_SRC)
 else

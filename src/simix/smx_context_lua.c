@@ -25,7 +25,7 @@
 // FIXME: better location for that
 extern void MSG_register(lua_State *L);
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smx_lua);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(lua);
 
 typedef struct s_smx_ctx_sysv {
   SMX_CTX_BASE_T;
