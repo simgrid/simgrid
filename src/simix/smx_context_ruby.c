@@ -6,23 +6,14 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#include <ruby.h>
+
 #include "private.h"
 #include "xbt/function_types.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-#include "context_sysv_config.h"
-#include "bindings/ruby/rb_msg_process.c"
 
-
-typedef struct s_smx_ctx_ruby
-
-{
-  SMX_CTX_BASE_T;
-  VALUE process;   // The  Ruby Process Instance 
-  //...
-}s_smx_ctx_ruby_t,*smx_ctx_ruby_t;
+#include "bindings/ruby_bindings.h"
   
 static smx_context_t
 smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
@@ -153,13 +144,13 @@ static void smx_ctx_ruby_stop(smx_context_t context)
    if( ctx_ruby->process )
    {
     //if the Ruby Process still Alive ,let's Schedule it
-    if ( process_isAlive( ctx_ruby->process ) )
+    if ( rb_process_isAlive( ctx_ruby->process ) )
     {
      current = (smx_ctx_ruby_t)simix_global->current_process->context;
-     process_schedule(current->process); 
+     rb_process_schedule(current->process);
      process = ctx_ruby->process;     
      // interupt/kill The Ruby Process
-     process_kill(process);
+     rb_process_kill(process);
     }
    }    
   }else {
@@ -180,7 +171,7 @@ if (context)
 {
 smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) context;
   if (ctx_ruby->process)
-    process_unschedule( ctx_ruby->process ) ;
+    rb_process_unschedule( ctx_ruby->process ) ;
 #ifdef MY_DEBUG
   printf("smx_ctx_ruby_unschedule...Done\n");
 #endif
@@ -195,7 +186,7 @@ static void smx_ctx_ruby_resume(smx_context_t old_context,smx_context_t new_cont
 {
   
  smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) new_context;
- process_schedule(ctx_ruby->process);
+ rb_process_schedule(ctx_ruby->process);
  
   #ifdef MY_DEBUG
     printf("smx_ctx_ruby_schedule...Done\n");

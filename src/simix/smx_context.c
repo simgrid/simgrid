@@ -10,22 +10,13 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "private.h"
-#include <lua5.1/lauxlib.h>
 
+#ifdef HAVE_LUA
+#include <lua5.1/lauxlib.h>
+#endif
 
 #ifdef HAVE_RUBY
-/* Damn Ruby. They load their full config.h, which breaks since we also load ours.
- * So, we undef the offending defines
- */
-#undef PACKAGE_VERSION
-#undef PACKAGE_NAME
-#undef PACKAGE_TARNAME
-#undef PACKAGE_STRING
-#undef PACKAGE_BUGREPORT
-#undef _GNU_SOURCE
-#include <ruby.h>
  void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory);
-#include "smx_context_ruby.c"
 #endif 
  
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mecanism");

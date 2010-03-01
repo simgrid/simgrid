@@ -383,6 +383,13 @@ if HAVE_LUA
 else
   EXTRA_DIST += $(LUA_SRC)
 endif
+
+RUBY_SRC= simix/smx_context_ruby.c bindings/ruby/rb_msg_process.c
+if HAVE_RUBY
+  simgrid_sources += $(RUBY_SRC)
+else
+  EXTRA_DIST += $(RUBY_SRC)
+endif
 ##
 ## Compile the libs
 CLEANFILES=supernovae_sg.c supernovae_gras.c supernovae_smpi.c

@@ -466,10 +466,12 @@ else
     #undef PACKAGE_STRING
     #undef PACKAGE_BUGREPORT
     #include <ruby.h>
-  ], use_ruby=yes,use_ruby=no)
+  ], use_ruby=yes,use_ruby="no (Package ruby1.8-dev missing)")
   AC_MSG_RESULT($use_ruby)
   if test "x$use_ruby" = "xyes" ; then
      AC_DEFINE(HAVE_RUBY,1, [defines whether Ruby bindings must be compiled or not])
+  else
+     AC_MSG_RESULT(Please install the ruby1.8-dev package (on debian and similar) to get ruby bindings)
   fi
 fi
 AC_MSG_RESULT(decide whether to compile ruby bindings... $use_ruby)
