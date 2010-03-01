@@ -34,7 +34,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   /* general information */
   task->data = data;            /* user data */
   task->name = xbt_strdup(name);
-  task->kind = 0;
+  task->kind = SD_TASK_NOT_TYPED;
   task->state_hookup.prev = NULL;
   task->state_hookup.next = NULL;
   task->state_set = sd_global->not_scheduled_task_set;
@@ -749,7 +749,8 @@ void SD_task_unschedule(SD_task_t task)
            "Task %s: the state must be SD_SCHEDULED, SD_READY, SD_RUNNING or SD_FAILED",
            SD_task_get_name(task));
 
-  if (__SD_task_is_scheduled_or_ready(task))    /* if the task is scheduled or ready */
+  if (__SD_task_is_scheduled_or_ready(task) /* if the task is scheduled or ready */
+      && task->kind == SD_TASK_NOT_TYPED) /* Don't free scheduling data for typed tasks */
     __SD_task_destroy_scheduling_data(task);
 
   if (__SD_task_is_running(task))       /* the task should become SD_FAILED */
