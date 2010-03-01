@@ -150,7 +150,7 @@ static void smx_ctx_ruby_stop(smx_context_t context)
      rb_process_schedule(current->process);
      process = ctx_ruby->process;     
      // interupt/kill The Ruby Process
-     rb_process_kill(process);
+     rb_process_kill_up(process);
     }
    }    
   }else {

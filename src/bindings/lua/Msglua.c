@@ -11,6 +11,7 @@
 #include "xbt/asserts.h"
 
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 
 
 /*
@@ -21,9 +22,6 @@
 =============================================
  */
 
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smx_lua,simix,
-    "Messages specific for this lua example");
 
 
 #define TASK "Msg.Task"

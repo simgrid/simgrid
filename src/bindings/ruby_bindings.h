@@ -19,8 +19,7 @@
 #include "msg/msg.h"
 #include "msg/datatypes.h"
 
-//#include "msg/private.h"
-//#include "msg/mailbox.h"
+#include "msg/mailbox.h" /* MAX_ALIAS_NAME (FIXME: kill it)*/
 #include "surf/surfxml_parse.h"
 #include "simix/simix.h"
 #include "simix/private.h"
@@ -66,7 +65,7 @@ VALUE rb_process_getID(VALUE ruby_process);
 VALUE rb_process_getBind(VALUE ruby_class);
 void  rb_process_setBind(VALUE ruby_class,long bind);
 VALUE rb_process_isAlive(VALUE ruby_process);
-void  rb_process_kill(VALUE ruby_process);
+void  rb_process_kill_up(VALUE ruby_process);
 void  rb_process_join( VALUE ruby_process );
 void  rb_process_unschedule( VALUE ruby_process );
 void  rb_process_schedule( VALUE ruby_process );
@@ -82,29 +81,26 @@ void  rb_process_schedule( VALUE ruby_process );
 
 //friend Method // Not belong to the Class but Called within !!
 m_process_t rb_process_to_native(VALUE ruby_process);
-
 // Binding Process >> Friend Method
-void rb_processBind(VALUE ruby_class,m_process_t process);
+void rb_process_bind(VALUE ruby_class,m_process_t process);
+void rb_process_create(VALUE Class,VALUE rb_process,VALUE host);
+void rb_process_suspend(VALUE Class,VALUE ruby_process);
+void rb_process_resume(VALUE Class,VALUE ruby_process);
+// Returns Boolean ( Qtrue / Qfalse )
+VALUE rb_process_isSuspended(VALUE Class,VALUE ruby_process);
+void rb_process_kill_down(VALUE Class,VALUE ruby_process);
+VALUE rb_process_getHost(VALUE Class,VALUE ruby_process);
+void rb_process_exit(VALUE Class,VALUE ruby_process);
 
-// CreateProcess Method
-void rb_processCreate(VALUE Class,VALUE rb_process,VALUE host);
+/* Functions related to hosts */
+void  rb_host_free(m_host_t ht);
+VALUE rb_host_get_by_name(VALUE Class, VALUE name);
+VALUE rb_host_name(VALUE Class,VALUE host);
+VALUE rb_host_number(VALUE Class);
+VALUE rb_host_speed(VALUE Class,VALUE host);
+void  rb_host_set_data(VALUE Class,VALUE host,VALUE data);
+VALUE rb_host_get_data(VALUE Class,VALUE host);
+VALUE rb_host_is_avail(VALUE Class,VALUE host);
 
-// ProcessSuspend
-void rb_processSuspend(VALUE Class,VALUE ruby_process);
-
-// ProcessResume
-void rb_processResume(VALUE Class,VALUE ruby_process);
-
-//ProcessIsSuspend return Boolean ( Qtrue / Qfalse )
-VALUE rb_processIsSuspend(VALUE Class,VALUE ruby_process);
-
-//Processkill
-void rb_processKill(VALUE Class,VALUE ruby_process);
-
-//ProcessGetHost
-VALUE rb_processGetHost(VALUE Class,VALUE ruby_process);
-
-//ProcessExit
-void rb_processExit(VALUE Class,VALUE ruby_process);
 
 #endif /* RB_SG_BINDINGS */
