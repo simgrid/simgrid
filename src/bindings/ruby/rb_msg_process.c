@@ -1,8 +1,5 @@
 /*
- * $Id$
- *
- * Copyright 2010 Martin Quinson, Mehdi Fekari           
- * All right reserved. 
+ * Copyright 2010, The SimGrid Team. All right reserved.
  *
  * This program is free software; you can redistribute 
  * it and/or modify it under the terms of the license 
@@ -187,11 +184,6 @@ static void processCreate(VALUE class,VALUE ruby_process,VALUE host)
    return;
  }
  process->simdata->PID = msg_global->PID++; //  msg_global ??
- /*DEBUG 
- ("fil in process %s/%s (pid=%d) %p (sd=%p, host=%p, host->sd=%p) ",
-  process->name ,process->simdata->m_host->name,process->simdata->PID,
-  process,process->simdata, process->simdata->m_host,
-  process->simdata->m_host->simdata);*/
   
  #ifdef DEBUG
  printf("fill in process %s/%s (pid=%d) %p (sd%=%p , host=%p, host->sd=%p)\n",
@@ -206,7 +198,6 @@ static void processCreate(VALUE class,VALUE ruby_process,VALUE host)
 		       process->simdata->m_host->simdata->smx_host->name,
 		       0,NULL,NULL);
 
- //DEBUG ( "context created (s_process=%p)",process->simdata->s_process);
  #ifdef DEBUG
  printf("context created (s_process=%p)\n",process->simdata->s_process);
  #endif

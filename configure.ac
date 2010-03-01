@@ -449,6 +449,33 @@ fi
 AC_MSG_RESULT(decide whether to compile lua bindings... $use_lua)
 AM_CONDITIONAL(HAVE_LUA,test "x$use_lua" = "xyes")
 
+SG_CONFIGURE_PART(Checking Ruby bindings...)
+# Ruby cruft
+AC_ARG_ENABLE(ruby,
+	      AS_HELP_STRING([--disable-ruby], [To not compile the Ruby bindings even if the tools are found]),
+	      disable_ruby=$enableval,disable_ruby=yes)
+if test "x$disable_ruby" != "xyes" ; then
+   use_ruby="disabled by user"
+else
+  CPPFLAGS="-I/usr/lib/ruby/1.8/i486-linux/ $CPPFLAGS"
+  AC_MSG_CHECKING(checking ruby.h usability and presence)
+  AC_COMPILE_IFELSE([
+    #undef PACKAGE_NAME
+    #undef PACKAGE_TARNAME
+    #undef PACKAGE_VERSION
+    #undef PACKAGE_STRING
+    #undef PACKAGE_BUGREPORT
+    #include <ruby.h>
+  ], use_ruby=yes,use_ruby=no)
+  AC_MSG_RESULT($use_ruby)
+  if test "x$use_ruby" = "xyes" ; then
+     AC_DEFINE(HAVE_RUBY,1, [defines whether Ruby bindings must be compiled or not])
+  fi
+fi
+AC_MSG_RESULT(decide whether to compile ruby bindings... $use_ruby)
+AM_CONDITIONAL(HAVE_RUBY,test "x$use_ruby" = "xyes")
+
+
 #####################
 ## Check for programs
 ##
@@ -649,6 +676,7 @@ Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (
 	Context backend: ${with_context}
 	Compile Java:    ${use_java}
 	Compile Lua:     ${use_lua}
+	Compile Ruby:    ${use_ruby}
 	
 	Maintainer mode: ${USE_MAINTAINER_MODE}
 	Supernovae mode: ${supernovae}

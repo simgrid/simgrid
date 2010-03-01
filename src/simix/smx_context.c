@@ -11,14 +11,21 @@
 #include "xbt/swag.h"
 #include "private.h"
 #include <lua5.1/lauxlib.h>
-#include <ruby.h>
-#include "smx_context_ruby.c"
 
-#define HAVE_RUBY /* HACK HACK */
-// #define DEBUG 
 
 #ifdef HAVE_RUBY
- extern void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory);
+/* Damn Ruby. They load their full config.h, which breaks since we also load ours.
+ * So, we undef the offending defines
+ */
+#undef PACKAGE_VERSION
+#undef PACKAGE_NAME
+#undef PACKAGE_TARNAME
+#undef PACKAGE_STRING
+#undef PACKAGE_BUGREPORT
+#undef _GNU_SOURCE
+#include <ruby.h>
+ void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory);
+#include "smx_context_ruby.c"
 #endif 
  
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mecanism");

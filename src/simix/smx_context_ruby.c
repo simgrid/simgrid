@@ -1,8 +1,8 @@
 /* $Id$ */
 
-/* context_Ruby - implementation of context switching with lua coroutines */
+/* context_Ruby - implementation of context switching with ruby coroutines */
 
-/* Copyright (c) 2004-2008 the SimGrid team. All right reserved */
+/* Copyright (c) 2010, the SimGrid team. All right reserved */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,9 +14,6 @@
 #include "xbt/asserts.h"
 #include "context_sysv_config.h"
 #include "bindings/ruby/rb_msg_process.c"
-// #include "bindings/ruby/rb_msg.c"
-
-// #define MY_DEBUG
 
 
 typedef struct s_smx_ctx_ruby
