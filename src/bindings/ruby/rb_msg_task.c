@@ -1,10 +1,11 @@
-/*
- * Copyright 2010. The SimGrid Team. All right reserved.
- *
- * This program is free software; you can redistribute 
- * it and/or modify it under the terms of the license 
- *(GNU LGPL) which comes with this package. 
- */
+/* Task-related bindings to ruby  */
+
+/* Copyright 2010. The SimGrid Team. All right reserved. */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+
 #include "bindings/ruby_bindings.h"
 
 // Free Method
@@ -33,7 +34,7 @@ VALUE rb_task_comp(VALUE class,VALUE task) {
 
 //Get Name
 VALUE rb_task_name(VALUE class,VALUE task) {
-  
+
   // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, s_m_task_t, tk);
@@ -42,7 +43,7 @@ VALUE rb_task_name(VALUE class,VALUE task) {
 
 // Execute Task
 VALUE rb_task_execute(VALUE class,VALUE task) {
-  
+
   // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, s_m_task_t, tk);
@@ -51,13 +52,13 @@ VALUE rb_task_execute(VALUE class,VALUE task) {
 
 // Sending Task
 void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
-  
+
   // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, s_m_task_t, tk);
   int res = MSG_task_send(tk,RSTRING(mailbox)->ptr);
   if(res != MSG_OK)
-   rb_raise(rb_eRuntimeError,"MSG_task_send failed");
+    rb_raise(rb_eRuntimeError,"MSG_task_send failed");
 }
 
 // Receiving Task (returns a Task)
@@ -88,7 +89,7 @@ VALUE rb_task_sender(VALUE class,VALUE task) {
 VALUE rb_task_source(VALUE class,VALUE task) {
   m_task_t tk;
   Data_Get_Struct(task,s_m_task_t,tk);
-  
+
   m_host_t host = MSG_task_get_source(tk);
   if(!host->data) {
     rb_raise(rb_eRuntimeError,"MSG_task_get_source() failed");
@@ -100,37 +101,35 @@ VALUE rb_task_source(VALUE class,VALUE task) {
 
 // Return Boolean
 VALUE rb_task_listen(VALUE class,VALUE task,VALUE alias) {
- m_task_t tk;
- const char *p_alias;
- int rv;
- 
- Data_Get_Struct(task,s_m_task_t,tk);
- p_alias = RSTRING(alias)->ptr;
- 
- rv = MSG_task_listen(p_alias);
- 
- if(rv) return Qtrue;
- 
- return Qfalse;
+  m_task_t tk;
+  const char *p_alias;
+  int rv;
+
+  Data_Get_Struct(task,s_m_task_t,tk);
+  p_alias = RSTRING(alias)->ptr;
+
+  rv = MSG_task_listen(p_alias);
+
+  if(rv) return Qtrue;
+
+  return Qfalse;
 }
 
 // return Boolean
 VALUE rb_task_listen_host(VALUE class,VALUE task,VALUE alias,VALUE host) {
-  
- m_task_t tk;
- m_host_t ht;
- const char *p_alias;
- int rv;
- 
- Data_Get_Struct(task,s_m_task_t,tk);
- Data_Get_Struct(host,s_m_host_t,ht);
- p_alias = RSTRING(alias)->ptr;
- 
- rv = MSG_task_listen_from_host(p_alias,ht);
- 
- if (rv)
-   return Qtrue;
- return Qfalse;
+
+  m_task_t tk;
+  m_host_t ht;
+  const char *p_alias;
+  int rv;
+
+  Data_Get_Struct(task,s_m_task_t,tk);
+  Data_Get_Struct(host,s_m_host_t,ht);
+  p_alias = RSTRING(alias)->ptr;
+
+  rv = MSG_task_listen_from_host(p_alias,ht);
+
+  if (rv)
+    return Qtrue;
+  return Qfalse;
 }
-
-
