@@ -3,7 +3,31 @@ if(MAINTAINER_MODE)
 	find_path(FIG2DEV_PATH	NAMES fig2dev	PATHS NO_DEFAULT_PATHS)
 	find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
 	find_path(BIBTOOL_PATH	NAMES bibtool	PATHS NO_DEFAULT_PATHS)
-	find_path(BIBTEX2HTML_PATH	NAMES bibtex2html	PATHS NO_DEFAULT_PATHS)
+
+	if(NOT EXISTS "${PROJECT_DIRECTORY}/bibtex2html-1.02/src/bibtex2html")
+		write_file("${PROJECT_DIRECTORY}/CPACK/bibtex2html_install.sh"
+		"#! /bin/sh
+		wget ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz
+		rm -rf bibtex2html-1.02
+		tar -xvf bibtex2html-1.02.tar.gz
+		rm bibtex2html-1.02.tar.gz
+		cd bibtex2html-1.02/src
+		make
+		./bibtex2html"
+		)
+		exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/CPACK/bibtex2html_install.sh"  OUTPUT_VARIABLE OKITOKI)
+		exec_program("${PROJECT_DIRECTORY}/CPACK/bibtex2html_install.sh"  OUTPUT_VARIABLE OKITOKI)
+
+		if(EXISTS "${PROJECT_DIRECTORY}/bibtex2html-1.02/src/bibtex2html")
+		set(BIBTEX2HTML_PATH ${PROJECT_DIRECTORY}/bibtex2html-1.02/src)
+		else(EXISTS "${PROJECT_DIRECTORY}/bibtex2html-1.02/src/bibtex2html")
+		set(BIBTEX2HTML_PATH NOT_FOUND)
+		endif(EXISTS "${PROJECT_DIRECTORY}/bibtex2html-1.02/src/bibtex2html")
+
+	else(NOT EXISTS "${PROJECT_DIRECTORY}/bibtex2html-1.02/src/bibtex2html")
+		set(BIBTEX2HTML_PATH ${PROJECT_DIRECTORY}/bibtex2html-1.02/src)
+	endif(NOT EXISTS "${PROJECT_DIRECTORY}/bibtex2html-1.02/src/bibtex2html")
+
 	find_path(ICONV_PATH	NAMES iconv	PATHS NO_DEFAULT_PATHS)
 	find_path(MAKE_PATH	NAMES make	PATHS NO_DEFAULT_PATHS)
 
@@ -32,23 +56,9 @@ if(MAINTAINER_MODE)
 	${PROJECT_DIRECTORY}/doc/webcruft/poster_thumbnail.png
 	)
 
-	SET(PRINT false)
+	SET(PRINT true)
 
 	if(PRINT)
-		message("DOCSSOURCES:")
-		foreach(file ${DOCSSOURCES})
-			message("${file}")
-		endforeach(file ${DOCSSOURCES})
-
-		message("\nFIGS:")
-		foreach(file ${FIGS})
-			message("${file}")
-		endforeach(file ${FIGS})
-
-		message("\nPNGS:")
-		foreach(file ${PNGS})
-			message("${file}")
-		endforeach(file ${PNGS})
 
 	message("${DOXYGEN_PATH}/doxygen")
 	message("${FIG2DEV_PATH}/fig2dev")
@@ -71,7 +81,7 @@ if(MAINTAINER_MODE)
 
 
 		exec_program("touch ${PROJECT_DIRECTORY}/doc/index-API.doc ${PROJECT_DIRECTORY}/doc/.FAQ.doc.toc ${PROJECT_DIRECTORY}/doc/.index.doc.toc ${PROJECT_DIRECTORY}/doc/.contrib.doc.toc ${PROJECT_DIRECTORY}/doc/.history.doc.toc" OUTPUT_VARIABLE OKITOKI)
-		exec_program("test -e html || mkdir html" OUTPUT_VARIABLE OKITOKI)
+		exec_program("test -e ${PROJECT_DIRECTORY}/doc/html || mkdir ${PROJECT_DIRECTORY}/doc/html" OUTPUT_VARIABLE OKITOKI)
 
 		foreach(file ${PNGS})
 			exec_program("cp ${file} ${PROJECT_DIRECTORY}/doc/html/" OUTPUT_VARIABLE OKITOKI)
@@ -85,11 +95,11 @@ if(MAINTAINER_MODE)
 		set(srcdir ".")
 		configure_file(${PROJECT_DIRECTORY}/doc/Doxyfile.in ${PROJECT_DIRECTORY}/doc/Doxyfile @ONLY)
 	# First pass
-		exec_program("${DOXYGEN_PATH}/doxygen Doxyfile >/dev/null" OUTPUT_VARIABLE OKITOKI)
+		exec_program("${DOXYGEN_PATH}/doxygen ${PROJECT_DIRECTORY}/doc/Doxyfile >/dev/null" OUTPUT_VARIABLE OKITOKI)
 		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc" OUTPUT_VARIABLE OKITOKI)
 		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/toc_create.pl ${PROJECT_DIRECTORY}/FAQ.doc ${PROJECT_DIRECTORY}/doc/index.doc ${PROJECT_DIRECTORY}/doc/contrib.doc ${PROJECT_DIRECTORY}/doc/gtut-introduction.doc ${PROJECT_DIRECTORY}/doc/history.doc" OUTPUT_VARIABLE OKITOKI)
 	# Second pass
-		exec_program("${DOXYGEN_PATH}/doxygen Doxyfile >/dev/null" OUTPUT_VARIABLE OKITOKI)
+		exec_program("${DOXYGEN_PATH}/doxygen ${PROJECT_DIRECTORY}/doc/Doxyfile >/dev/null" OUTPUT_VARIABLE OKITOKI)
 	# Post-processing
 		exec_program("rm -f ${PROJECT_DIRECTORY}/doc/html/dir*" OUTPUT_VARIABLE OKITOKI)
 		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/index_php.pl ${PROJECT_DIRECTORY}/doc/index.php.in ${PROJECT_DIRECTORY}/doc/html/index.html ${PROJECT_DIRECTORY}/doc/index.php" OUTPUT_VARIABLE OKITOKI)
@@ -127,7 +137,8 @@ if(MAINTAINER_MODE)
 		string(REPLACE "\n" ";" LISTE_QUATRE ${LISTE_QUATRE})
 		foreach(file ${LISTE_QUATRE})
 			string(REPLACE ".bib" "_bib.latin1.html" file_tmp "${file}")
-			exec_program("${BIBTEX2HTML_PATH}/bibtex2html -single -i -q ${file} | ${PROJECT_DIRECTORY}/tools/doxygen/bibtex2html_postprocessor.pl > ${file_tmp}\n" OUTPUT_VARIABLE OKITOKI)
+			exec_program("${BIBTEX2HTML_PATH}/bibtex2html -single-output -nv -force -sort year -copy-icons ${file} | ${PROJECT_DIRECTORY}/tools/doxygen/bibtex2html_postprocessor.pl > ${file_tmp}" OUTPUT_VARIABLE OKITOKI)
+			#message("file ${file}\nfile_tmp ${file_tmp}")
 		endforeach(file ${LISTE_QUATRE})
 
 
@@ -137,6 +148,7 @@ if(MAINTAINER_MODE)
 		foreach(file ${LISTE_CINQ})
 			string(REPLACE "_bib.latin1.html" "_bib.html" file_tmp "${file}")
 			exec_program("${ICONV_PATH}/iconv --from-code latin1 --to-code utf8 ${file} --output ${file-tmp}" OUTPUT_VARIABLE OKITOKI)
+			#message("file ${file}\nfile_tmp ${file_tmp}")
 		endforeach(file ${LISTE_CINQ})
 	endif(BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
 
@@ -157,9 +169,8 @@ if(MAINTAINER_MODE)
 	../tools/doxygen/xbt_log_extract_hierarchy.pl 	>> $pwd/logcategories.doc
 	echo "@}*/"                                     >> $pwd/logcategories.doc"
 	)
-	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/doc/logcategories.sh")
-	exec_program("${PROJECT_DIRECTORY}/doc/logcategories.sh")
-
+	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/doc/logcategories.sh" OUTPUT_VARIABLE OKITOKI)
+	exec_program("${PROJECT_DIRECTORY}/doc/logcategories.sh" OUTPUT_VARIABLE OKITOKI)
 
 endif(MAINTAINER_MODE)
 

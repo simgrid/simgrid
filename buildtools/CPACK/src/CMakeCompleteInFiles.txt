@@ -2,19 +2,28 @@ include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
+
+find_program(SET_MAKE NAMES make)
+find_program(CAT_EXE NAMES cat)
+
 set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
 SET(HAVE_RUBY_H 0)
-SET(RUBY_PATH "non")
-find_program(FIND_EXE NAMES find)
-exec_program("${FIND_EXE} /usr/lib -name ruby.h" OUTPUT_VARIABLE RUBY_PATH)
-string(REPLACE "/ruby.h" "/" RUBY_PATH ${RUBY_PATH})
-#message("RUBY_PATH ${RUBY_PATH}")
 
-if(NOT disable_ruby AND RUBY_PATH)
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${RUBY_PATH} -I${PROJECT_DIRECTORY}/src/bindings/ruby -I${PROJECT_DIRECTORY}/src/simix -fPIC ")
-	SET(HAVE_RUBY_H 1)
-endif(NOT disable_ruby AND RUBY_PATH)
+if(NOT disable_ruby)
+	include(FindRuby)
+	set(OKITOKI no)
+	foreach(path ${RUBY_INCLUDE_PATH})
+		if(NOT OKITOKI)
+			set(RUBY_INCLUDE_PATH ${path})
+			set(OKITOKI yes)
+		endif(NOT OKITOKI)
+	endforeach(path ${RUBY_INCLUDE_PATH})
+	if(RUBY_INCLUDE_PATH)
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${RUBY_INCLUDE_PATH} -I${PROJECT_DIRECTORY}/src/bindings/ruby -I${PROJECT_DIRECTORY}/src/simix -fPIC ")
+		SET(HAVE_RUBY_H 1)
+	endif(RUBY_INCLUDE_PATH)
+endif(NOT disable_ruby)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT JAVA
@@ -338,7 +347,7 @@ if(HAVE_MAKECONTEXT)
 		${PROJECT_DIRECTORY}/CPACK/prog_test/prog_stacksetup.c
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
-	find_program(CAT_EXE NAMES cat)
+	
 
 	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_addr")
 	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_size")
@@ -376,7 +385,7 @@ endif(stack MATCHES "up")
 #AM_SANITY_CHECK -auto
 
 #AC_PROG_MAKE_SET
-find_program(SET_MAKE NAMES make)
+
 
 #AC_PRINTF_NULL
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
@@ -603,7 +612,6 @@ find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS	)
 if(ADDR2LINE)
 set(ADDR2LINE "${ADDR2LINE}/addr2line")
 endif(ADDR2LINE)
-find_program(ADDR2LINE NAMES addr2line)
 
 ### check for include files and fct
 CHECK_INCLUDE_FILE(dlfcn.h HAVE_DLFCN_H)
