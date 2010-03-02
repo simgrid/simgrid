@@ -18,6 +18,7 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     Give the specific trace file as argument of each process, 
       and call MSG_action_trace_run(NULL)
     You can still have one merged file for each processes.
+  * Kill the MSG_paje_output() function. It's a noop since 2 years.
       
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

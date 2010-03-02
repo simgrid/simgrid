@@ -285,7 +285,6 @@ MSG_error_t test_all(void)
 
   /*  Simulation setting */
   MSG_set_channel_number(MAX_CHANNEL);
-  MSG_paje_output("msg_test.trace");
   surf_parse = surf_parse_bypass_platform;
   MSG_create_environment(NULL);
 

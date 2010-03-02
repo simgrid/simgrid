@@ -81,14 +81,6 @@ void MSG_global_init(int *argc, char **argv)
   return;
 }
 
-/** \ingroup msg_easier_life
- * \brief Traces MSG events in the Paje format.
- */
-
-void MSG_paje_output(const char *filename)
-{
-}
-
 /** \defgroup m_channel_management    Understanding channels
  *  \brief This section briefly describes the channel notion of MSG
  *  (#m_channel_t).
