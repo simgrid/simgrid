@@ -156,8 +156,8 @@ typedef struct s_smx_comm {
 
   /* Data to be transfered */
   void *src_buff;
-  size_t src_buff_size;
   void *dst_buff;
+  size_t src_buff_size;
   size_t *dst_buff_size;
   void *data;             /* User data associated to communication */
 } s_smx_comm_t;

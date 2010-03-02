@@ -51,7 +51,7 @@ typedef struct s_smx_ctx_ruby {
 }s_smx_ctx_ruby_t,*smx_ctx_ruby_t;
 void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory);
 
-
+void Init_simgrid_ruby(void); /* Load the bindings */
 void initRuby(void); // Mandatory to call Ruby methods from C
 
 /* *********************************************** *
@@ -116,5 +116,13 @@ VALUE rb_task_sender(VALUE Class,VALUE task);
 VALUE rb_task_source(VALUE Class,VALUE task);
 VALUE rb_task_listen(VALUE Class,VALUE task,VALUE alias); //Listen From Alias (=mailbox)
 VALUE rb_task_listen_host(VALUE Class,VALUE task,VALUE alias,VALUE host); //Listen from Host
+
+/* Upcalls for the application handler */
+void rb_application_handler_on_start_document(void);
+void rb_application_handler_on_end_document(void);
+void rb_application_handler_on_begin_process(void);
+void rb_application_handler_on_process_arg(void);
+void rb_application_handler_on_property(void);
+void rb_application_handler_on_end_process(void);
 
 #endif /* RB_SG_BINDINGS */

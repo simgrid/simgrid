@@ -8,6 +8,8 @@
 
 #include "bindings/ruby_bindings.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);
+
 // Free Method
 void rb_task_free(m_task_t tk) {
   MSG_task_destroy(tk);
@@ -56,25 +58,21 @@ void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
   // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, s_m_task_t, tk);
+  xbt_backtrace_display_current();
   int res = MSG_task_send(tk,RSTRING(mailbox)->ptr);
   if(res != MSG_OK)
     rb_raise(rb_eRuntimeError,"MSG_task_send failed");
 }
 
 // Receiving Task (returns a Task)
-VALUE rb_task_receive(VALUE class,VALUE mailbox) {
+VALUE rb_task_receive(VALUE class, VALUE mailbox) {
   // Task
   m_task_t task = NULL;
+  INFO1("Receiving a task on mailbox %s",RSTRING(mailbox)->ptr);
+  xbt_backtrace_display_current();
   MSG_task_receive(&task,RSTRING(mailbox)->ptr);
+  INFO2("XXXXXXXXReceived a task %p %s",task,task->name);
   return Data_Wrap_Struct(class, 0, rb_task_free, task);
-}
-
-// Recieve Task 2
-// Not Appreciated 
-void rb_task_receive2(VALUE class,VALUE task,VALUE mailbox) {
-  m_task_t tk;
-  Data_Get_Struct(task, s_m_task_t, tk);
-  MSG_task_receive(&tk,RSTRING(mailbox)->ptr);
 }
 
 // It Return a Native Process ( m_process_t )

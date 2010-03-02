@@ -327,24 +327,23 @@ void SIMIX_network_copy_data(smx_comm_t comm)
   if(!comm->src_buff || !comm->dst_buff)
     return;
   
-  size_t src_buff_size = comm->src_buff_size;
-  size_t dst_buff_size = *comm->dst_buff_size;
-  
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
-  dst_buff_size = MIN(dst_buff_size, src_buff_size);
+  size_t buff_size = comm->src_buff_size;
+  if (comm->dst_buff_size)
+    buff_size = MIN(buff_size,*(comm->dst_buff_size));
   
   /* Update the receiver's buffer size to the copied amount */
   if (comm->dst_buff_size)
-    *comm->dst_buff_size = dst_buff_size;
+    *comm->dst_buff_size = buff_size;
 
-  if(dst_buff_size == 0)
+  if(buff_size == 0)
     return;
 
-  memcpy(comm->dst_buff, comm->src_buff, dst_buff_size);
-
-  DEBUG4("Copying comm %p data from %s -> %s (%zu bytes)", 
+  DEBUG4("Copying comm %p data from %s -> %s (%zu bytes)",
          comm, comm->src_proc->smx_host->name, comm->dst_proc->smx_host->name,
-         dst_buff_size);
+         buff_size);
+
+  memcpy(comm->dst_buff, comm->src_buff, buff_size);
 }
 
 /**

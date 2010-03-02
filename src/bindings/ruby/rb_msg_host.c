@@ -18,7 +18,7 @@ VALUE rb_host_get_by_name(VALUE class, VALUE name) {
   const char * h_name = RSTRING(name)->ptr;
   m_host_t host = MSG_get_host_by_name(h_name);
   if(!host)
-    rb_raise(rb_eRuntimeError,"MSG_get_host_by_name() failed");
+    rb_raise(rb_eRuntimeError,bprintf("No host called '%s' found",h_name));
 
   return Data_Wrap_Struct(class,0,rb_host_free,host);
 }

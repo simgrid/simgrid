@@ -327,7 +327,13 @@ endif
 ### Declare the library content
 ###
 
-lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la
+if HAVE_RUBY
+  libruby=simgrid_ruby.la
+else
+  libruby=
+endif
+
+lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la $(libruby)
 
 gras_sources=$(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 simgrid_sources=$(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) \
@@ -346,6 +352,12 @@ libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_
 libsmpi_la_LIBADD = libsimgrid.la
 libsmpi_la_SOURCES = $(SMPI_SRC)
 libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+
+if HAVE_RUBY
+simgrid_ruby_la_LIBADD = libsimgrid.la
+simgrid_ruby_la_SOURCES = bindings/ruby/simgrid_ruby.c
+simgrid_ruby_la_LDFLAGS = $(VERSION_INFO) @LD_DYNAMIC_FLAGS@ -lm -module
+endif
 
 # Windows users (at least, MSVC ones) need a def file.
 if IS_WINDOWS
@@ -387,7 +399,8 @@ endif
 RUBY_SRC= simix/smx_context_ruby.c \
    bindings/ruby/rb_msg_process.c  \
    bindings/ruby/rb_msg_host.c     \
-   bindings/ruby/rb_msg_task.c
+   bindings/ruby/rb_msg_task.c     \
+   bindings/ruby/rb_application_handler.c
 if HAVE_RUBY
   simgrid_sources += $(RUBY_SRC)
 else

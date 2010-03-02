@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ruby,bindings,"Ruby Bindings");
 void initRuby(void) {
   ruby_init();
   ruby_init_loadpath();
-  rb_require("RubyProcess.rb");
+//  KILLME  rb_require("RubyProcess.rb");
 }
 
 

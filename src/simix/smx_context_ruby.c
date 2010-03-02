@@ -13,6 +13,8 @@
 
 #include "bindings/ruby_bindings.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);
+
 static smx_context_t
 smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
     void_f_pvoid_t cleanup_func,void *cleanup_arg);

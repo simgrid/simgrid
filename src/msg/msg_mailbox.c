@@ -109,11 +109,11 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
                          double timeout)
 {
   xbt_ex_t e;
-  size_t task_size = sizeof(void*);
   MSG_error_t ret = MSG_OK;
   smx_comm_t comm;
   CHECK_HOST();
 
+  memset(&comm,0,sizeof(comm));
   /* Kept for compatibility with older implementation */
   xbt_assert1(!MSG_mailbox_get_cond(mailbox),
               "A process is already blocked on this channel %s", 
@@ -132,7 +132,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
 
   /* Try to receive it by calling SIMIX network layer */
   TRY{
-    SIMIX_network_recv(mailbox->rdv, timeout, task, &task_size, &comm);
+    SIMIX_network_recv(mailbox->rdv, timeout, task, NULL, &comm);
     (*task)->simdata->refcount--;
   }
   CATCH(e){
