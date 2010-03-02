@@ -25,7 +25,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-//#include "rb_msg_host.h"
 
 /* Damn Ruby. They load their full config.h, which breaks since we also load ours.
  * So, we undef the offending defines

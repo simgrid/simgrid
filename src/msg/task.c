@@ -73,6 +73,8 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->comp_amount = NULL;
   simdata->comm_amount = NULL;
 
+  CINFO2(root,"Created task %p: %s",task,name);
+
   return task;
 }
 

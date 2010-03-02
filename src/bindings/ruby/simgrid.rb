@@ -48,8 +48,8 @@ class MsgProcess < Thread
   @@nextProcessId = 0
 
 # Attributes
-  attr_reader :bind, :id, :pargs    # Read only
-  attr_accessor :name, :properties  # R/W
+  attr_reader :bind, :id            # Read only
+  attr_accessor :name, :properties, :pargs  # R/W
   
 # Initialize : Used from ApplicationHandler to fill it in
   def initialize(*args)
@@ -239,10 +239,7 @@ class ApplicationHandler
 
   def onEndProcess()
     process = rubyNewInstance(@function) 
-    size = @args.size
-    for i in 0..size-1
-      process.pargs.push(@args[i]) 
-    end
+    process.pargs = @args
     process.name = @function
     host = Host.getByName(@hostName)
     processCreate(process,host)

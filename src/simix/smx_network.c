@@ -339,8 +339,10 @@ void SIMIX_network_copy_data(smx_comm_t comm)
   if(buff_size == 0)
     return;
 
-  DEBUG4("Copying comm %p data from %s -> %s (%zu bytes)",
-         comm, comm->src_proc->smx_host->name, comm->dst_proc->smx_host->name,
+  INFO6("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
+         comm,
+         comm->src_proc->smx_host->name, comm->src_buff,
+         comm->dst_proc->smx_host->name, comm->dst_buff,
          buff_size);
 
   memcpy(comm->dst_buff, comm->src_buff, buff_size);

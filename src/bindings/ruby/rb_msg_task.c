@@ -17,7 +17,6 @@ void rb_task_free(m_task_t tk) {
 
 // New Method
 VALUE rb_task_new(VALUE class, VALUE name,VALUE comp_size,VALUE comm_size) {
-  //char * t_name = RSTRING(name)->ptr;
   m_task_t task = MSG_task_create(RSTRING(name)->ptr,NUM2INT(comp_size),NUM2INT(comm_size),NULL);
   // Wrap m_task_t to a Ruby Value
   return Data_Wrap_Struct(class, 0, rb_task_free, task);
@@ -58,6 +57,7 @@ void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
   // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, s_m_task_t, tk);
+  INFO1("Sending task %p",tk);
   int res = MSG_task_send(tk,RSTRING(mailbox)->ptr);
   if(res != MSG_OK)
     rb_raise(rb_eRuntimeError,"MSG_task_send failed");
