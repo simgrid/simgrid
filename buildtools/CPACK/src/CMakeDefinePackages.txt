@@ -171,8 +171,8 @@ set(JMSG_C_SRC
 	${PROJECT_DIRECTORY}/src/java/jxbt_utilities.h
 	${PROJECT_DIRECTORY}/src/java/jmsg.c 
 	${PROJECT_DIRECTORY}/src/java/jmsg.h
-	${PROJECT_DIRECTORY}/src/java/jmsg_channel.c
-	${PROJECT_DIRECTORY}/src/java/jmsg_channel.h
+	#${PROJECT_DIRECTORY}/src/java/jmsg_channel.c
+	#${PROJECT_DIRECTORY}/src/java/jmsg_channel.h
 	${PROJECT_DIRECTORY}/src/java/jmsg_host.c
 	${PROJECT_DIRECTORY}/src/java/jmsg_host.h
 	${PROJECT_DIRECTORY}/src/java/jmsg_process.c

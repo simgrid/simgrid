@@ -3,7 +3,6 @@
 if(supernovae)
 	include(${PROJECT_DIRECTORY}/CPACK/src/CMakeSupernovae.txt)
 else(supernovae)	
-	add_library(msg STATIC ${RUBY_SRC})
 	add_library(simgrid STATIC ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
 	add_library(smpi STATIC ${SMPI_SRC})
@@ -12,7 +11,6 @@ endif(supernovae)
 set(GRAS_DEP "pthread")
 set(SIMGRID_DEP "ruby1.8")
 set(SMPI_DEP "")
-set(MSG_DEP "pthread -lrt -ldl -lcrypt -lm -lc")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	add_definitions("-D_XOPEN_SOURCE")
@@ -45,7 +43,6 @@ endif(HAVE_GTNETS)
 target_link_libraries(simgrid 	${SIMGRID_DEP} -fprofile-arcs)
 target_link_libraries(gras 	${GRAS_DEP} -fprofile-arcs)
 target_link_libraries(smpi 	simgrid ${SMPI_DEP} -fprofile-arcs)
-target_link_libraries(msg 	${MSG_DEP} -fprofile-arcs)
 ### Make EXEs
 
 #tools
