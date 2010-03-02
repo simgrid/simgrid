@@ -5,7 +5,7 @@ include MSG
 # Class Master
 #################################################
 
-class Master < RbProcess  
+class Master < MsgProcess  
   def initialize2()
     super()
   end
@@ -30,12 +30,12 @@ class Master < RbProcess
    for i in 0..numberOfTask-1
   
      
-     task = RbTask.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize );
+     task = Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize );
      s_alias = "slave>>" + (i%slaveCount).to_s
-     info("Master Sending "+ RbTask.name(task) + " to " + s_alias + " with Comput Size " + RbTask.compSize(task).to_s)
-     RbTask.send(task,s_alias)
-     info("Master Done Sending " +RbTask.name(task) + " to " + s_alias)
-#       sameTask = RbTask.receive(s_alias)
+     info("Master Sending "+ Task.name(task) + " to " + s_alias + " with Comput Size " + Task.compSize(task).to_s)
+     Task.send(task,s_alias)
+     info("Master Done Sending " +Task.name(task) + " to " + s_alias)
+#       sameTask = Task.receive(s_alias)
 #      puts "Master Receiving its Own Task"
    end
   
@@ -44,7 +44,7 @@ class Master < RbProcess
    for i in 0..slaveCount-1
      s_alias = "slave " + i.to_s
      info ("Master Sending Finalize to " + s_alias)
-     RbTask.send(RbTask.new("finalize",0,0),s_alias)
+     Task.send(Task.new("finalize",0,0),s_alias)
    end
    info("Master : Everything's Done")
   end    
@@ -53,7 +53,7 @@ end
 #################################################
 # Class Slave
 #################################################
-class Slave < RbProcess
+class Slave < MsgProcess
   
   def initialize()
     super()
@@ -67,15 +67,15 @@ class Slave < RbProcess
     while true
         
        info("Ready to Receive Task")
-       task = RbTask.receive(s_mailbox)
-       task_name = RbTask.name(task)
+       task = Task.receive(s_mailbox)
+       task_name = Task.name(task)
        info ("Task Received : " + task.name)
       if (task_name == "finalize")
 	info("Slave" + s_mailbox + "got finalize msg")
 	break
       end
-      info("Slave " + s_mailbox + " ...Processing" + RbTask.name(task))
-       RbTask.execute(task)
+      info("Slave " + s_mailbox + " ...Processing" + Task.name(task))
+       Task.execute(task)
     end
     info("Slave " + s_mailbox +  "I'm Done , See You !!")
     end

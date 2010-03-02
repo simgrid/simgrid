@@ -11,74 +11,54 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ruby,bindings,"Ruby Bindings");
 
-// Init Ruby
-void initRuby(void) {
-  ruby_init();
-  ruby_init_loadpath();
-//  KILLME  rb_require("RubyProcess.rb");
-}
-
-
 /*
  * Functions for Ruby Process Management (Up Calls)
  */
 
-
 // get Ruby Process Name
 VALUE rb_process_getName(VALUE ruby_process) {
-  initRuby();
-  // instance = rb_funcall3(rb_const_get(rb_cObject, rb_intern("RbProcess")),  rb_intern("new"), 0, 0);
   return rb_funcall(ruby_process,rb_intern("getName"),0);
-
 }
 
 // Get  Process ID
 VALUE rb_process_getID(VALUE ruby_process) {
-  initRuby();
   return rb_funcall(ruby_process,rb_intern("getID"),0);
 }
 
 // Get Bind
 VALUE rb_process_getBind(VALUE ruby_process) {
-  initRuby();
   return rb_funcall(ruby_process,rb_intern("getBind"),0);
 }
 
 
 // Set Bind
 void rb_process_setBind(VALUE ruby_process,long bind) {
-  initRuby();
   VALUE r_bind = LONG2FIX(bind);
   rb_funcall(ruby_process,rb_intern("setBind"),1,r_bind);
 }
 
 // isAlive
 VALUE rb_process_isAlive(VALUE ruby_process) {
-  initRuby();
   return rb_funcall(ruby_process,rb_intern("alive?"),0);
 }
 
 // Kill Process
 void rb_process_kill_up(VALUE ruby_process) {
-  initRuby();  
   rb_funcall(ruby_process,rb_intern("kill"),0);
 }
 
 // join Process
 void rb_process_join( VALUE ruby_process ) {
-  initRuby();
   rb_funcall(ruby_process,rb_intern("join"),0);
 }
 
 // unschedule Process
 void rb_process_unschedule( VALUE ruby_process ) {
-  initRuby();
   rb_funcall(ruby_process,rb_intern("unschedule"),0);
 }
 
 // schedule Process
 void rb_process_schedule( VALUE ruby_process ) {
-  initRuby();
   rb_funcall(ruby_process,rb_intern("schedule"),0);
 }
 
@@ -142,19 +122,23 @@ void rb_process_create(VALUE class,VALUE ruby_process,VALUE host) {
   }
   process->simdata->PID = msg_global->PID++; //  msg_global ??
 
-  DEBUG7("fill in process %s/%s (pid=%d) %p (sd=%p , host=%p, host->sd=%p)\n",
+  DEBUG7("fill in process %s/%s (pid=%d) %p (sd=%p , host=%p, host->sd=%p)",
       process->name , process->simdata->m_host->name,process->simdata->PID,
       process,process->simdata, process->simdata->m_host,
       process->simdata->m_host->simdata);
 
+  /* FIXME: that's mainly for debugging. We could only allocate this if XBT_LOG_ISENABLED(ruby,debug) is true since I guess this leaks */
+  char **argv=xbt_new(char*,2);
+  argv[0] = bprintf("%s@%s",process->name,process->simdata->m_host->simdata->smx_host->name);
+  argv[1] = NULL;
   process->simdata->s_process =
       SIMIX_process_create(process->name,
           (xbt_main_func_t)ruby_process,
           (void *) process,
           process->simdata->m_host->simdata->smx_host->name,
-          0,NULL,NULL);
+          1,argv,NULL);
 
- DEBUG1("context created (s_process=%p)\n",process->simdata->s_process);
+ DEBUG1("context created (s_process=%p)",process->simdata->s_process);
 
   if (SIMIX_process_self()) { // SomeOne Created Me !!
     process->simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);

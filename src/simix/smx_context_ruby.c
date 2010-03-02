@@ -42,7 +42,6 @@ void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory) {
   (*factory)->name = "smx_ruby_context_factory";
   ruby_init();
   ruby_init_loadpath();
-  DEBUG0("SIMIX_ctx_ruby_factory_init...Done");
 }
 
 static int smx_ctx_ruby_factory_finalize(smx_context_factory_t *factory) {
@@ -57,14 +56,16 @@ smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
 
   smx_ctx_ruby_t context = xbt_new0(s_smx_ctx_ruby_t,1);
 
-  /*if the user provided a function for the process , then use it 
-  Otherwise it's the context for maestro */
+  /* if the user provided a function for the process , then use it
+     Otherwise it's the context for maestro */
   if (code) {
     context->cleanup_func = cleanup_func;
     context->cleanup_arg = cleanup_arg;
     context->process = (VALUE)code;
+    context->argc=argc;
+    context->argv=argv;
 
-    DEBUG0("smx_ctx_ruby_create_context...Done");
+    DEBUG1("smx_ctx_ruby_create_context(%s)...Done",argv[0]);
   }
   return (smx_context_t) context;
 }
@@ -88,19 +89,20 @@ static void smx_ctx_ruby_free(smx_context_t context) {
   free(context);
   context = NULL; 
   }*/
+  DEBUG1("smx_ctx_ruby_free_context(%s)",context->argv[0]);
   free (context);
   context = NULL;
-  DEBUG0("smx_ctx_ruby_free_context...Done");
 }
 
 static void smx_ctx_ruby_start(smx_context_t context) {
-  /* Already Done .. Since a Ruby Process is launched within initialization
- We Start it Within the Initializer ... We Use the Semaphore To Keep 
- The Thread Alive Waitin' For Mutex Signal to Execute The Main*/
-
+  DEBUG1("smx_ctx_ruby_start(%s) (nothing to do)",context->argv[0]);
+  /* Already Done .. Since a Ruby process is launched within initialization
+     We Start it Within the Initializer ... We Use the Semaphore To Keep
+     the thread alive waiting for mutex signal to execute the main*/
 }
 
 static void smx_ctx_ruby_stop(smx_context_t context) {
+  DEBUG1("smx_ctx_ruby_stop(%s)",context->argv[0]);
 
   VALUE process = Qnil;
   smx_ctx_ruby_t ctx_ruby,current;
@@ -126,24 +128,26 @@ static void smx_ctx_ruby_stop(smx_context_t context) {
     process = ctx_ruby->process;
     ctx_ruby->process = Qnil;
   }
-  DEBUG0("smx_ctx_ruby_stop...Done\n");
+  DEBUG1("smx_ctx_ruby_stop(%s)...Done",context->argv[0]);
 }
 
 static void smx_ctx_ruby_suspend(smx_context_t context) {
 
-  if (context) {
+    DEBUG1("smx_ctx_ruby_suspend(%s)",context->argv[0]);
     smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) context;
     if (ctx_ruby->process)
       rb_process_unschedule(ctx_ruby->process);
-    DEBUG0("smx_ctx_ruby_unschedule...Done");
-  } else
-    rb_raise(rb_eRuntimeError,"smx_ctx_ruby_suspend failed");
 }
 
 static void smx_ctx_ruby_resume(smx_context_t old_context,smx_context_t new_context) {
+  DEBUG2("smx_ctx_ruby_resume(%s,%s)",
+      (old_context->argc?old_context->argv[0]:"maestro"),
+      (new_context->argc?new_context->argv[0]:"maestro"));
+
   smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) new_context;
   rb_process_schedule(ctx_ruby->process);
 
-  DEBUG0("smx_ctx_ruby_schedule...Done");
+//  DEBUG1("smx_ctx_ruby_schedule(%s)...Done",
+//      (new_context->argc?new_context->argv[0]:"maestro"));
 }
 

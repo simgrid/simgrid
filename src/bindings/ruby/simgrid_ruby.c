@@ -26,9 +26,8 @@ static void msg_init(VALUE Class,VALUE args)
   VALUE *ptr ;
   // Testing The Args Type
   type =  TYPE(args);
-  if (type != T_ARRAY )
-  {
-    rb_raise(rb_eRuntimeError,"Argh!!! Bad Arguments to msg_init");
+  if (type != T_ARRAY ) {
+    rb_raise(rb_eRuntimeError,"Bad arguments to msg_init (expecting an array)");
     return;
   }
   ptr= RARRAY(args)->ptr;
@@ -37,8 +36,7 @@ static void msg_init(VALUE Class,VALUE args)
   argc++;
   argv = xbt_new0(char *, argc);
   argv[0] = strdup("ruby");
-  for (i=0;i<argc-1;i++)
-  {
+  for (i=0;i<argc-1;i++) {
     VALUE value = ptr[i];
     type = TYPE(value);
     //  if (type == T_STRING)
@@ -47,16 +45,11 @@ static void msg_init(VALUE Class,VALUE args)
   }
   // Calling C Msg_Init Method
   MSG_global_init(&argc,argv);
-  MSG_set_channel_number(10); // Okey !! Okey !! This Must Be Fixed Dynamiclly , But Later ;)
-  SIMIX_context_select_factory("ruby");
 
-  // Free Stuffs
+  // Cleanups
   for (i=0;i<argc;i++)
     free(argv[i]) ;
-
   free (argv);
-  DEBUG0("Msg Init...Done");
-  return;
 }
 //Init Msg_Run From Ruby
 static void msg_run(VALUE class) {
@@ -131,6 +124,10 @@ static void msg_info(VALUE class,VALUE msg) {
   const char *s = RSTRING(msg)->ptr;
   INFO1("%s",s);
 }
+static void msg_debug(VALUE class,VALUE msg) {
+  const char *s = RSTRING(msg)->ptr;
+  DEBUG1("%s",s);
+}
 
 // Get Clock
 static void msg_get_clock(VALUE class) {
@@ -159,9 +156,12 @@ static VALUE msg_new_ruby_instance_with_args(VALUE class,VALUE className,VALUE a
 }
 
 
+extern const char*xbt_ctx_factory_to_use; /*Hack: let msg load directly the right factory */
 
 typedef VALUE(*rb_meth)(ANYARGS);
 void Init_simgrid_ruby() {
+  xbt_ctx_factory_to_use = "ruby";
+
   // Modules
   rb_msg = rb_define_module("MSG");
   //Associated Environment Methods!
@@ -170,6 +170,7 @@ void Init_simgrid_ruby() {
   rb_define_method(rb_msg,"createEnvironment",(rb_meth)msg_createEnvironment,1);
   rb_define_method(rb_msg,"deployApplication",(rb_meth)msg_deployApplication,1);
   rb_define_method(rb_msg,"info",(rb_meth)msg_info,1);
+  rb_define_method(rb_msg,"debug",(rb_meth)msg_debug,1);
   rb_define_method(rb_msg,"getClock",(rb_meth)msg_get_clock,0);
   rb_define_method(rb_msg,"rubyNewInstance",(rb_meth)msg_new_ruby_instance,1);
   rb_define_method(rb_msg,"rubyNewInstanceArgs",(rb_meth)msg_new_ruby_instance_with_args,2);

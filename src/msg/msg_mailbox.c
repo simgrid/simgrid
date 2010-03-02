@@ -111,9 +111,14 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
   xbt_ex_t e;
   MSG_error_t ret = MSG_OK;
   smx_comm_t comm;
+
+  /* We no longer support getting a task from a specific host */
+  if (host) THROW_UNIMPLEMENTED;
+
   CHECK_HOST();
 
   memset(&comm,0,sizeof(comm));
+
   /* Kept for compatibility with older implementation */
   xbt_assert1(!MSG_mailbox_get_cond(mailbox),
               "A process is already blocked on this channel %s", 
@@ -123,16 +128,12 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
   xbt_assert0(task, "Null pointer for the task storage");
 
   if (*task)
-    CRITICAL0
-      ("MSG_task_get() was asked to write in a non empty task struct.");
-
-  /* We no longer support getting a task from a specific host */
-  if(host)
-    THROW_UNIMPLEMENTED;
+    CRITICAL0("MSG_task_get() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
   TRY{
     SIMIX_network_recv(mailbox->rdv, timeout, task, NULL, &comm);
+    //INFO2("Got task %s from %s",(*task)->name,mailbox->alias);
     (*task)->simdata->refcount--;
   }
   CATCH(e){
