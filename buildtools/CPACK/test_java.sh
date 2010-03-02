@@ -1,11 +1,16 @@
 #! /bin/sh
-export LD_LIBRARY_PATH="../src/.libs:$LD_LIBRARY_PATH"
-export CLASSPATH=".:../src/simgrid.jar:$CLASSPATH"
-cd $1
-if [ ! -e $2.class ] ; then
-  rm classnoinst.stamp
-  make classnoinst.stamp
-fi
+echo "\n\n"
 pwd
-echo LD_LIBRARY_PATH="../../../src/.libs:$LD_LIBRARY_PATH" java -cp ".:../../../src/simgrid.jar:$CLASSPATH" $options $2 *platform.xml *deployment.xml
-LD_LIBRARY_PATH="../../../src/.libs:$LD_LIBRARY_PATH" java -cp ".:../../../src/simgrid.jar:$CLASSPATH"  $options $2 *platform.xml *deployment.xml
+export LD_LIBRARY_PATH="`pwd`/src/.libs"
+export CLASSPATH="`pwd`/src/simgrid.jar"
+cd $1
+export CLASSPATH="$CLASSPATH:`pwd`"
+pwd
+
+echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
+echo "CLASSPATH = $CLASSPATH"
+
+echo "\n\n"
+echo "java $2 *platform.xml *deployment.xml"
+echo "\n\n"
+java $2 *platform.xml *deployment.xml
