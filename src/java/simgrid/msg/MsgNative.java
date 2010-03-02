@@ -11,6 +11,8 @@
 
 package simgrid.msg;
 
+/* FIXME: split into internal classes of Msg, Task, Host etc. */
+
 /**
  *  Contains all the native methods related to Process, Host and Task.
  */

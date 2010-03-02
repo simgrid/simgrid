@@ -986,6 +986,11 @@ Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
+  /* FIXME throw the right exception corresponding to HostFailureException, TransferFailureException, TimeoutFailureException
+   * Note: these exceptions must be created beforehand
+   *       then, you want to create some functions like jxbt_throw_notbound()
+   *       then, you must declare in the MsgNative stuff that these native functions can throw these exceptions
+   */
   if (MSG_OK != rv)
     jxbt_throw_native(env, xbt_strdup("MSG_task_send_with_timeout() failed"));
 

@@ -11,6 +11,8 @@
 
 package simgrid.msg;
 
+/* FIXME: Kill the process factory: that's just a storage of informations, AppHandler can do the work itself */
+
 import java.util.Vector;
 import java.util.Hashtable;
 

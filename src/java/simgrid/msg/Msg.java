@@ -25,6 +25,7 @@ public final class Msg {
 		}
 	}
 
+	/* FIXME: kill these C crufts */
 	/** Returns the last error code of the simulation */
 	public final static native int getErrCode();
 

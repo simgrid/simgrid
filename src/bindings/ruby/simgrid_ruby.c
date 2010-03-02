@@ -129,7 +129,7 @@ static void msg_debug(VALUE class,VALUE msg) {
   DEBUG1("%s",s);
 }
 
-// Get Clock
+// Get Clock FIXME: return the double instead of displaying it
 static void msg_get_clock(VALUE class) {
 
   printf("Simulation time %f\n",MSG_get_clock());
@@ -165,18 +165,18 @@ void Init_simgrid_ruby() {
   // Modules
   rb_msg = rb_define_module("MSG");
   //Associated Environment Methods!
-  rb_define_method(rb_msg,"init",(rb_meth)msg_init,1);
-  rb_define_method(rb_msg,"run",(rb_meth)msg_run,0);
-  rb_define_method(rb_msg,"createEnvironment",(rb_meth)msg_createEnvironment,1);
-  rb_define_method(rb_msg,"deployApplication",(rb_meth)msg_deployApplication,1);
-  rb_define_method(rb_msg,"info",(rb_meth)msg_info,1);
-  rb_define_method(rb_msg,"debug",(rb_meth)msg_debug,1);
-  rb_define_method(rb_msg,"getClock",(rb_meth)msg_get_clock,0);
-  rb_define_method(rb_msg,"rubyNewInstance",(rb_meth)msg_new_ruby_instance,1);
-  rb_define_method(rb_msg,"rubyNewInstanceArgs",(rb_meth)msg_new_ruby_instance_with_args,2);
+  rb_define_module_function(rb_msg,"init",(rb_meth)msg_init,1);
+  rb_define_module_function(rb_msg,"run",(rb_meth)msg_run,0);
+  rb_define_module_function(rb_msg,"createEnvironment",(rb_meth)msg_createEnvironment,1);
+  rb_define_module_function(rb_msg,"deployApplication",(rb_meth)msg_deployApplication,1);
+  rb_define_module_function(rb_msg,"info",(rb_meth)msg_info,1);
+  rb_define_module_function(rb_msg,"debug",(rb_meth)msg_debug,1);
+  rb_define_module_function(rb_msg,"getClock",(rb_meth)msg_get_clock,0);
+  rb_define_module_function(rb_msg,"rubyNewInstance",(rb_meth)msg_new_ruby_instance,1);
+  rb_define_module_function(rb_msg,"rubyNewInstanceArgs",(rb_meth)msg_new_ruby_instance_with_args,2);
 
   // Associated Process Methods
-  rb_define_method(rb_msg,"processCreate",(rb_meth)rb_process_create,2);
+  rb_define_module_function(rb_msg,"processCreate",(rb_meth)rb_process_create,2);
   rb_define_method(rb_msg,"processSuspend",(rb_meth)rb_process_suspend,1);
   rb_define_method(rb_msg,"processResume",(rb_meth)rb_process_resume,1);
   rb_define_method(rb_msg,"processIsSuspend",(rb_meth)rb_process_isSuspended,1);
@@ -188,7 +188,7 @@ void Init_simgrid_ruby() {
   rb_task = rb_define_class_under(rb_msg,"Task",rb_cObject);
   rb_host = rb_define_class_under(rb_msg,"Host",rb_cObject);
 
-  //Task Methods
+  //Task Methods FIXME: Convert to methods
   rb_define_module_function(rb_task,"new",(rb_meth)rb_task_new,3);
   rb_define_module_function(rb_task,"compSize",(rb_meth)rb_task_comp,1);
   rb_define_module_function(rb_task,"name",(rb_meth)rb_task_name,1);

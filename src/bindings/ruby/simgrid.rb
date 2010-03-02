@@ -1,8 +1,7 @@
 require 'simgrid_ruby'
-include MSG
 require 'thread'
 
-$DEBUG = false  # This is a Global Variable Useful for Debugging
+$DEBUG = false  # This is a Global Variable Useful for MSG::debugging
 
 ###########################################################################
 # Class Semaphore 
@@ -15,6 +14,7 @@ class Semaphore
   end
 
   def acquire
+    MSG::debug("Acquire "+self.to_s)
     Thread.critical = true
     if (@counter -= 1) < 0
       @waiting_list.push(Thread.current)
@@ -26,11 +26,15 @@ class Semaphore
   end
 
   def release
+    MSG::debug("Release "+self.to_s)
     Thread.critical = true
     begin
       if (@counter += 1) <= 0
-  t = @waiting_list.shift
-  t.wakeup if t
+        t = @waiting_list.shift
+        t.wakeup if t
+        MSG::debug("Wakeup "+t.to_s)
+      else 
+        MSG::debug("Nobody to wakeup")
       end
     rescue ThreadError
       retry
@@ -44,7 +48,7 @@ end
 ########################################################################
 # Class Process 
 ########################################################################
-class MsgProcess < Thread 
+class MSG::Process < Thread 
   @@nextProcessId = 0
 
 # Attributes
@@ -53,6 +57,7 @@ class MsgProcess < Thread
   
 # Initialize : Used from ApplicationHandler to fill it in
   def initialize(*args)
+    # FIXME: use only one variante (the one with 3 args) and kill the others
     @schedBegin = Semaphore.new(0)
     @schedEnd = Semaphore.new(0)    
     @properties = Hash.new()
@@ -67,13 +72,13 @@ class MsgProcess < Thread
         @name = ""
         @pargs = Array.new()
         start()
-        debug "Initializer without any argument"
+        MSG::debug "Initializer without any argument"
       }
        
     # 2 arguments: (HostName,Name) Or (Host , Name)
     elsif argc == 2   
       super(){
-        debug "Initilize with 2 args"
+        MSG::debug "Initilize with 2 args"
         type = args[0].type()
         if ( type.to_s == "String")
           host = Host.getByName(args[0])
@@ -98,7 +103,7 @@ class MsgProcess < Thread
     # 3 arguments: (hostName,Name,args[]) or (Host,Name,args[])
     elsif argc == 3  
       super(){
-      	debug "Initilize with 3 args"
+      	MSG::debug "Initilize with 3 args"
         type = args[0].type()
         if ( type.to_s == "String")
           host = Host.getByName(args[0])
@@ -134,42 +139,37 @@ class MsgProcess < Thread
   def start()
     @schedBegin.acquire
     # execute the main code of the process     
-    debug("Begin execution")
+    MSG::debug("Begin execution")
     main(@pargs)
     processExit(self) # Exit the Native Process
     @schedEnd.release
   end
     
-  def processList()
+  def processList() (KILLME?)
     Thread.list.each {|t| p t}
   end
   
-  #Get Own ID
+  #Get Own ID (KILLME?)
   def getID()
     return @id
   end
   
-  #Get a Process ID
+  #Get a Process ID (KILLME?)
   def processID(process)
     return process.id
   end
   
-  #Get Own Name
+  #Get Own Name (KILLME?)
   def getName()
     return @name
   end
   
-  #Get a Process Name
-  def processName(process)
-    return process.name
-  end
-  
-  #Get Bind
+  #Get Bind (KILLME?)
   def getBind()
     return @bind
   end
   
-  #Get Binds
+  #Get Binds (KILLME?)
   def setBind(bind)
     @bind = bind
   end
@@ -226,7 +226,7 @@ class ApplicationHandler
     @hostName = hostName
     @function = function
       
-    debug("onBeginProcess("+hostName+","+function+")")
+    MSG::debug("onBeginProcess("+hostName+","+function+")")
   end
 
   def onProperty(id,value)
@@ -238,11 +238,14 @@ class ApplicationHandler
   end
 
   def onEndProcess()
-    process = rubyNewInstance(@function) 
+    # must be in C, called from a callback to the FlexML parser 
+    # newInstance must take args and hostname as argument to initialize everything, *and* bind it to C element
+    # Allows to mark all attributes of process (but properties) to read-only
+    process = MSG::rubyNewInstance(@function) 
     process.pargs = @args
     process.name = @function
-    host = Host.getByName(@hostName)
-    processCreate(process,host)
+    host = MSG::Host.getByName(@hostName)
+    MSG::processCreate(process,host)
     process.properties = @properties
   end
 end

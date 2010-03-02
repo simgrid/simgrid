@@ -2,18 +2,19 @@
 # make -C ../.. && valgrind ruby MasterSlave.rb --log=ruby.thres:debug 2>&1 | less
 
 require 'simgrid'
+
 include MSG
 
 #################################################
 # Class Master
 #################################################
 
-class Master < MsgProcess  
+class Master < MSG::Process  
   # main : that function that will be executed when Running Simulation
   def main(args) # args is an array containing arguments for function master
    size = args.size
    for i in 0..size-1
-     info("args["+String(i)+"]="+args[i])
+     MSG::info("args["+String(i)+"]="+args[i])
    end
   
    raise "Master needs 3 arguments" if size < 3 
@@ -24,46 +25,46 @@ class Master < MsgProcess
    
    # Creates and sends the tasks
    for i in 0..numberOfTask-1
-     task = Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
+     task = MSG::Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
      mailbox = "slave " + (i%slaveCount).to_s
-     info("Master Sending "+ Task.name(task) + " to " + mailbox + " with Comput Size " + 
-          Task.compSize(task).to_s)
+     MSG::info("Master Sending "+ MSG::Task.name(task) + " to " + mailbox + " with Comput Size " + 
+          MSG::Task.compSize(task).to_s)
 #          task.compSize.to_s) # FIXME: This version creates a deadlock. Interesting
-     Task.send(task,mailbox)
-     info("Master Done Sending " +Task.name(task) + " to " + mailbox)
+     MSG::Task.send(task,mailbox)
+     MSG::info("Master Done Sending " +MSG::Task.name(task) + " to " + mailbox)
    end
   
-   # Sending Finalize Tasks
-   info ("Master: All tasks have been dispatched. Let's tell everybody the computation is over.")
+   # Sending Finalize MSG::Tasks
+   MSG::info("Master: All tasks have been dispatched. Let's tell everybody the computation is over.")
    for i in 0..slaveCount-1
      mailbox = "slave " + i.to_s
-     info ("Master Sending Finalize to " + mailbox)
-     Task.send(Task.new("finalize",0,0),mailbox)
+     MSG::info("Master Sending Finalize to " + mailbox)
+     MSG::Task.send(Task.new("finalize",0,0),mailbox)
    end
-   info("Master : Everything's Done")
+   MSG::info("Master : Everything's Done")
   end    
 end
 
 #################################################
 # Class Slave
 #################################################
-class Slave < MsgProcess
+class Slave < MSG::Process
   def main(args)
     mailbox = "slave " + args[0]
 
     while true
        info("Ready to Receive Task")
-       task = Task.receive(mailbox)
-       task_name = Task.name(task)
-       info ("Task Received : " + task.name)
+       task = MSG::Task.receive(mailbox)
+       task_name = MSG::Task.name(task)
+       MSG::info("Task Received : " + task.name)
        if (task_name == "finalize")
- 	       info("Slave" + s_mailbox + "got finalize msg")
+ 	       MSG::info("Slave" + s_mailbox + "got finalize msg")
 	       break
        end
-       info("Slave " + s_mailbox + " ...Processing" + Task.name(task))
-       Task.execute(task)
+       MSG::info("Slave " + s_mailbox + " ...Processing" + MSG::Task.name(task))
+       MSG::Task.execute(task)
     end
-    info("Slave " + s_mailbox +  "I'm Done , See You !!")
+    MSG::info("Slave " + s_mailbox +  "I'm Done , See You !!")
   end    
 end
 
@@ -82,6 +83,6 @@ else
 end
 
 # Thread.list.each {|t| p t}
-MSG.run()
-MSG.getClock()
+MSG.run
+MSG.getClock #FIXME: write "puts MSG.getClock" instead
 # exit()
