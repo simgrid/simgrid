@@ -67,14 +67,13 @@ class MsgProcess < Thread
         @name = ""
         @pargs = Array.new()
         start()
-        if $DEBUG
-        	puts "Init Default Initializer...Nothing to do...Bye"
-        end  
+        debug "Initializer without any argument"
       }
        
     # 2 arguments: (HostName,Name) Or (Host , Name)
     elsif argc == 2   
       super(){
+        debug "Initilize with 2 args"
         type = args[0].type()
         if ( type.to_s == "String")
           host = Host.getByName(args[0])
@@ -94,14 +93,12 @@ class MsgProcess < Thread
         @pargs = Array.new()    # No Args[] Passed in Arguments
         start()
         createProcess(self,host)
-	      if $DEBUG
-	        puts "Initilize with 2 args"
-        end
       }
        
     # 3 arguments: (hostName,Name,args[]) or (Host,Name,args[])
     elsif argc == 3  
       super(){
+      	debug "Initilize with 3 args"
         type = args[0].type()
         if ( type.to_s == "String")
           host = Host.getByName(args[0])
@@ -121,19 +118,16 @@ class MsgProcess < Thread
         @pargs = args[3]
         createProcess(self,host)  
         
-      if $DEBUG
-      	puts "Initilize with 3 args"
-      end      
 	   }
   else 
-    raise "Bad number of argument: Expecting either 1, 2 or 3, but got "+argc
+    raise "Bad number of argument: Expecting either 1, 2 or 3, but got "+argc.to_s
   end
     end
   
   # main
-  def msg_main(args) 
+  def main(args) 
     # To be overriden by childs
-    raise("You must define a msg_main() function in your process, containing the code of this process")
+    raise("You must define a main() function in your process, containing the code of this process")
   end
      
   # Start : To keep the process alive and waiting via semaphore
@@ -141,7 +135,7 @@ class MsgProcess < Thread
     @schedBegin.acquire
     # execute the main code of the process     
     debug("Begin execution")
-    msg_main(@pargs)
+    main(@pargs)
     processExit(self) # Exit the Native Process
     @schedEnd.release
   end

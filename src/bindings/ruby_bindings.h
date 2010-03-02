@@ -19,7 +19,6 @@
 #include "msg/msg.h"
 #include "msg/datatypes.h"
 
-#include "msg/mailbox.h" /* MAX_ALIAS_NAME (FIXME: kill it)*/
 #include "surf/surfxml_parse.h"
 #include "simix/simix.h"
 #include "simix/private.h"
