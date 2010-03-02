@@ -2,8 +2,8 @@
 
 if(supernovae)
 	include(${PROJECT_DIRECTORY}/CPACK/src/CMakeSupernovae.txt)
-else(supernovae)
-	add_library(msg STATIC ${MSG_SRC_bis})
+else(supernovae)	
+	add_library(msg STATIC ${RUBY_SRC})
 	add_library(simgrid STATIC ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
 	add_library(smpi STATIC ${SMPI_SRC})
@@ -42,8 +42,8 @@ endif(HAVE_GTNETS)
 #set(CMAKE_C_FLAGS "-fprofile-arcs -ftest-coverage")
 
 #add_definitions (-fprofile-arcs -ftest-coverage)
-target_link_libraries(simgrid 	msg ${SIMGRID_DEP} -fprofile-arcs)
-target_link_libraries(gras 	msg ${GRAS_DEP} -fprofile-arcs)
+target_link_libraries(simgrid 	${SIMGRID_DEP} -fprofile-arcs)
+target_link_libraries(gras 	${GRAS_DEP} -fprofile-arcs)
 target_link_libraries(smpi 	simgrid ${SMPI_DEP} -fprofile-arcs)
 target_link_libraries(msg 	${MSG_DEP} -fprofile-arcs)
 ### Make EXEs

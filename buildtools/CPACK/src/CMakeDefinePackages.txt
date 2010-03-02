@@ -71,13 +71,6 @@ ${PROJECT_DIRECTORY}/CPACK/src/test_gras_config.h.in
 )
 
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFLEXml.txt)
-set(MSG_SRC_bis
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_process.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_host.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg.c
-)
 
 set(EXTRA_DIST 
 	${PROJECT_DIRECTORY}/src/portable.h
@@ -369,6 +362,13 @@ set(LUA_SRC
 	${PROJECT_DIRECTORY}/src/bindings/lua/Msglua.c
 )
 
+set(RUBY_SRC
+${PROJECT_DIRECTORY}/src/simix/smx_context_ruby.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_process.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_host.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
+${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
+)
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS
 if(${CONTEXT_THREADS})
@@ -456,3 +456,15 @@ else(${HAVE_JAVA})
 		${MSG_SRC}
 	)
 endif(${HAVE_JAVA})
+
+if(${HAVE_RUBY_H})
+	set(simgrid_sources
+		${simgrid_sources}
+		${RUBY_SRC}
+	)
+else(${HAVE_RUBY_H})
+	set(EXTRA_DIST
+		${EXTRA_DIST}
+		${RUBY_SRC}
+	)
+endif(${HAVE_RUBY_H})
