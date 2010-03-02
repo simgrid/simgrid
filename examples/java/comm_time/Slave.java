@@ -1,8 +1,5 @@
 /*
- * $Id$
- *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier         
- * All rights reserved. 
+ * Copyright 2006,2007,2010. The SimGrid Team. All rights reserved. 
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. 
@@ -11,7 +8,7 @@
 import simgrid.msg.*;
 
 public class Slave extends simgrid.msg.Process {
-   public void main(String[] args) throws JniException, NativeException {
+   public void main(String[] args) throws NativeException {
       if (args.length < 1) {
 	 Msg.info("Slave needs 1 argument (its number)");
 	 System.exit(1);

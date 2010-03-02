@@ -11,7 +11,7 @@ import simgrid.msg.*;
 
 public class DreamMaster extends simgrid.msg.Process {
     
-   public void main(String[] args) throws JniException, NativeException {
+   public void main(String[] args) throws NativeException {
       Msg.info("Hello !");
       Msg.info("Let's create a lazy guy.");
        

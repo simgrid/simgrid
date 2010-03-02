@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright 2006,2007,2010. The SimGrid Team. All rights reserved. 
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -14,14 +12,13 @@ public class LazyGuy extends simgrid.msg.Process {
       super();
     }
    
-   public LazyGuy(Host host,String name) 
-     throws NullPointerException, HostNotFoundException, JniException, NativeException
+   public LazyGuy(Host host,String name) throws HostNotFoundException, NativeException
      {
 	super(host,name,null);
      }
 	
 	 
-   public void main(String[] args) throws JniException, NativeException {
+   public void main(String[] args) throws NativeException {
       Msg.info("Hello !");
       
       Msg.info("Nobody's watching me ? Let's go to sleep.");

@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright 2006,2007,2010 The SimGrid Team. All right reserved. 
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -17,7 +15,7 @@ public class CommTimeTest {
     * which also contains such a launcher
     */
    
-    public static void main(String[] args) throws JniException, NativeException {
+    public static void main(String[] args) throws NativeException {
     	
 	/* initialize the MSG simulation. Must be done before anything else (even logging). */
 	Msg.init(args);

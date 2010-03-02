@@ -10,7 +10,7 @@
 import simgrid.msg.*;
 
 public class Master extends simgrid.msg.Process {
-   public void main(String[] args) throws JniException, NativeException {
+   public void main(String[] args) throws NativeException {
       if (args.length < 4) {
 	 Msg.info("Master needs 4 arguments");
 	 System.exit(1);

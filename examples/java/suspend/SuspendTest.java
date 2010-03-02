@@ -13,7 +13,7 @@ import simgrid.msg.*;
 
 public class SuspendTest {
     
-    public static void main(String[] args) throws JniException, NativeException {
+    public static void main(String[] args) throws NativeException {
     	
 	/* initialize the MSG simulation. Must be done before anything else (even logging). */
 	Msg.init(args);

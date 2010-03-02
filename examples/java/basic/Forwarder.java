@@ -1,8 +1,5 @@
 /*
- * $Id$
- *
- * Copyright 2006,2007,2010 The SimGrid Team
- * All rights reserved. 
+ * Copyright 2006,2007,2010. The SimGrid Team. All rights reserved. 
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. 
@@ -12,7 +9,7 @@ import simgrid.msg.*;
 
 public class Forwarder extends simgrid.msg.Process {
     
-   public void main(String[] args) throws JniException, NativeException {
+   public void main(String[] args) throws NativeException {
       if (args.length < 3) {	 
 	 Msg.info("Forwarder needs 3 arguments (input mailbox, first output mailbox, last one)");
 	 Msg.info("Got "+args.length+" instead");

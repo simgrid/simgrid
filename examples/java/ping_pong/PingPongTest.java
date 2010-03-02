@@ -17,7 +17,7 @@ public class PingPongTest  {
     * which also contains such a launcher
     */
     
-    public static void main(String[] args) throws JniException, NativeException {
+    public static void main(String[] args) throws NativeException {
     	
 	/* initialize the MSG simulation. Must be done before anything else (even logging). */
 	Msg.init(args);
