@@ -9,7 +9,9 @@ else(supernovae)
 endif(supernovae)
 
 set(GRAS_DEP "pthread")
-set(SIMGRID_DEP "ruby1.8")
+if(HAVE_RUBY_H)
+	set(SIMGRID_DEP "ruby1.8")
+endif(HAVE_RUBY_H)
 set(SMPI_DEP "")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
