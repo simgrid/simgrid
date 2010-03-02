@@ -9,11 +9,6 @@ include MSG
 #################################################
 
 class Master < MsgProcess  
-  def initialize2()
-    super()
-  end
- 
-  
   # msg_main : that function that will be executed when Running Simulation
   def msg_main(args) # args is an array containing arguments for function master
     info("Hello From Master")
@@ -57,11 +52,6 @@ end
 # Class Slave
 #################################################
 class Slave < MsgProcess
-  
-  def initialize()
-    super()
-  end
-  
  # msg_main : that function that will be executed when Running Simulation
   def msg_main(args)
     info("Hello From Slave")

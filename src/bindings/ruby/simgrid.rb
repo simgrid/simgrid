@@ -216,90 +216,43 @@ class MsgProcess < Thread
 # The Rest of Methods !!! To be Continued ...
 end
 
-########################################################################
-# Class ProcessFactory
-########################################################################
-
-class ProcessFactory 
-
-#     Attributes
-   attr_accessor :args, :properties, :hostName, :function
-#    Initialize
-    def initialize()
-    
-    @args = Array.new
-    @properties = Hash.new
-    @hostName = nil
-    @function = nil
-    
-    end
-    
-#     setProcessIdentity
-    def setProcessIdentity(hostName,function)
-      @hostName = hostName
-      @function = function
-      
-      if !args.empty?
-	       args.clear
-      end
-      
-      if !properties.empty?
-	properties.clear   
-      end
-    
-    end
-
-    def registerProcessArg(arg)
-      @args.push(arg)
-    end
-
-#     CreateProcess
-    def createProcess()
-      process = rubyNewInstance(@function) 
-      size = @args.size
-      for i in 0..size-1
-      	process.pargs.push(@args[i]) 
-      end
-      process.name = @function
-      host = Host.getByName(@hostName)
-      processCreate(process,host)
-      process.properties = @properties
-      @properties = Hash.new
-      
-    end
-    
-#     SetProperty
-    def setProperty(id,value)
-      @properties[id] = value
-    end
-end
-
 #########################################################################
 # Class ApplicationHandler
 #########################################################################
 class ApplicationHandler
-  @processFactory  
-  
   def initialize()
-    @processFactory = ProcessFactory.new
+    @hostName = nil
+    @function = nil
   end
   
   def onBeginProcess(hostName,function)
-    @processFactory.setProcessIdentity(hostName,function)
+    @args = Array.new
+    @properties = Hash.new
+    
+    @hostName = hostName
+    @function = function
+      
     debug("onBeginProcess("+hostName+","+function+")")
   end
 
   def onProperty(id,value)
-    @processFactory.setProperty(id,value)
+    @properties[id] = value
   end
   
   def onProcessArg(arg)
-    @processFactory.registerProcessArg(arg)
+    @args.push(arg)
   end
 
   def onEndProcess()
-   @processFactory.createProcess()
-   debug("onEndProcess")
+    process = rubyNewInstance(@function) 
+    size = @args.size
+    for i in 0..size-1
+      process.pargs.push(@args[i]) 
+    end
+    process.name = @function
+    host = Host.getByName(@hostName)
+    processCreate(process,host)
+    process.properties = @properties
   end
 end
  
