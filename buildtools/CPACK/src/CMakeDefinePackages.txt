@@ -194,7 +194,6 @@ set(JMSG_JAVA_SRC
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Host.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Task.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/MsgNative.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/DTDResolver.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/ApplicationHandler.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Sem.java
 )
@@ -369,6 +368,7 @@ ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_host.c
 ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
 ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
 )
+
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS
 if(${CONTEXT_THREADS})

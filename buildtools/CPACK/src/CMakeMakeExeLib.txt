@@ -8,11 +8,12 @@ else(supernovae)
 	add_library(smpi STATIC ${SMPI_SRC})
 endif(supernovae)
 
+add_library(simgrid_ruby STATIC ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid_ruby.c)
+
 set(GRAS_DEP "pthread")
-if(HAVE_RUBY_H)
-	set(SIMGRID_DEP "ruby1.8")
-endif(HAVE_RUBY_H)
+set(SIMGRID_DEP "ruby1.8")
 set(SMPI_DEP "")
+set(RUBY_DEP "-lm -module")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	add_definitions("-D_XOPEN_SOURCE")
@@ -37,24 +38,25 @@ if(HAVE_GTNETS)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
 endif(HAVE_GTNETS)
 
-### Add definitions for compile
-#set(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage")
-#set(CMAKE_C_FLAGS "-fprofile-arcs -ftest-coverage")
+if(NOT HAVE_RUBY_H)
+string(REPLACE "ruby1.8 " "" SIMGRID_DEP ${SIMGRID_DEP})
+endif(NOT HAVE_RUBY_H)
 
-#add_definitions (-fprofile-arcs -ftest-coverage)
 target_link_libraries(simgrid 	${SIMGRID_DEP} -fprofile-arcs)
 target_link_libraries(gras 	${GRAS_DEP} -fprofile-arcs)
 target_link_libraries(smpi 	simgrid ${SMPI_DEP} -fprofile-arcs)
+target_link_libraries(simgrid_ruby 	simgrid ${RUBY_DEP} -fprofile-arcs)
+
 ### Make EXEs
 
 #tools
-#tools/tesh
-add_subdirectory(${PROJECT_DIRECTORY}/tools/tesh)
-
 #tools/gras
 add_subdirectory(${PROJECT_DIRECTORY}/tools/gras)
 
 if(NOT init)
+	#tools/tesh
+	add_subdirectory(${PROJECT_DIRECTORY}/tools/tesh)
+
 	#testsuite/xbt
 	add_subdirectory(${PROJECT_DIRECTORY}/testsuite/xbt)
 
@@ -117,6 +119,7 @@ if(NOT init)
 	if(HAVE_JAVA)
 		message("Make : src/simgrid.jar with : ${JAVA_COMPILE}")
 		exec_program("rm -rf ${PROJECT_DIRECTORY}/src/.classes" OUTPUT_VARIABLE "SIM_JAR_OK")
+		exec_program("rm ${PROJECT_DIRECTORY}/src/simgrid.jar" OUTPUT_VARIABLE "SIM_JAR_OK")
 		exec_program("mkdir ${PROJECT_DIRECTORY}/src/.classes" OUTPUT_VARIABLE "SIM_JAR_OK")
 		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/src/.classes -cp ${PROJECT_DIRECTORY}/src/.classes ${PROJECT_DIRECTORY}/src/java/simgrid/msg/*.java" OUTPUT_VARIABLE "SIM_JAR_OK")
 		exec_program("mkdir ${PROJECT_DIRECTORY}/src/.classes/surf" OUTPUT_VARIABLE "SIM_JAR_OK")
@@ -125,13 +128,13 @@ if(NOT init)
 
 		message("Make examples/java with : ${JAVA_COMPILE}")
 		exec_program("rm ${PROJECT_DIRECTORY}/examples/java/basic/*.class" OUTPUT_VARIABLE "SIM_JAR_OK")
-		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/.classes ${PROJECT_DIRECTORY}/examples/java/basic/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
+		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
 		exec_program("rm ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.class" OUTPUT_VARIABLE "SIM_JAR_OK")
-		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/.classes ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
+		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
 		exec_program("rm ${PROJECT_DIRECTORY}/examples/java/comm_time/*.class" OUTPUT_VARIABLE "SIM_JAR_OK")
-		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/.classes ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
+		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
 		exec_program("rm ${PROJECT_DIRECTORY}/examples/java/suspend/*.class" OUTPUT_VARIABLE "SIM_JAR_OK")
-		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/.classes ${PROJECT_DIRECTORY}/examples/java/suspend/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
+		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
 
 	endif(HAVE_JAVA)
 

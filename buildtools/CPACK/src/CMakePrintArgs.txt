@@ -27,7 +27,7 @@ message("	Supernovae mode:	${supernovae}")
 message("")
 message("	Simgrid dependencies: 	${SIMGRID_DEP}")
 message("	Gras dependencies: 	${GRAS_DEP}")
-message("	Msg dependencies: 	${MSG_DEP}")
+message("	Ruby dependencies: 	${RUBY_DEP}")
 message("	Smpi dependencies: 	${SMPI_DEP}\n\n")
 
 
