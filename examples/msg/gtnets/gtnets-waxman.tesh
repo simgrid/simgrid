@@ -1,48 +1,5 @@
 #! ./tesh
 
-p Testing onelink communication pattern with LV08 model
-
-$ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:LV08
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'LV08'
-> [S1:master:(1) 108.799652] [msg_test/INFO] Send completed (to C1). Transfer time: 108.799652	 Agregate bandwidth: 9191.205854
-> [S1:master:(1) 108.799652] [msg_test/INFO] Completed peer: C1 time: 108.799652
-> [C1:slave:(2) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 9191.205854 ;  message from S1 to C1  with remaining : 0.000000
-
-p Testing onelink communication pattern with GTNets model
-
-$ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:GTNets
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'GTNets'
-> [S1:master:(1) 106.291000] [msg_test/INFO] Send completed (to C1). Transfer time: 106.291000	 Agregate bandwidth: 9408.134273
-> [S1:master:(1) 106.291000] [msg_test/INFO] Completed peer: C1 time: 106.291000
-> [C1:slave:(2) 106.291000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 9408.134273 ;  message from S1 to C1  with remaining : 0.000000
-
-p Testing dogbone communication pattern with LV08 model
-
-$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:LV08
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'LV08'
-> [S1:master:(1) 0.342000] [msg_test/INFO] Send completed (to C1). Transfer time: 0.342000	 Agregate bandwidth: 29239.766082
-> [S1:master:(1) 0.342000] [msg_test/INFO] Completed peer: C1 time: 0.342000
-> [C1:slave:(3) 0.342000] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 29239.766082 ;  message from S1 to C1  with remaining : 0.000000
-> [C1:slave:(3) 0.342000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 29239.766082 ;  message from S2 to C2  with remaining : 0.000000
-
-p Testing dogbone communication pattern with GTNets model
-
-$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:GTNets
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'GTNets'
-> [S1:master:(1) 0.300171] [msg_test/INFO] Send completed (to C1). Transfer time: 0.300171	 Agregate bandwidth: 33314.335278
-> [S1:master:(1) 0.300171] [msg_test/INFO] Completed peer: C1 time: 0.300171
-> [C1:slave:(3) 0.300171] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 33314.335278 ;  message from S1 to C1  with remaining : 0.000000
-> [C1:slave:(3) 0.300171] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 33314.335278 ;  message from S2 to C2  with remaining : 0.000000
-
-
 p Testing waxman radom communication pattern with GTNets model, 200 nodes, 200 flows
 
 $ gtnets/gtnets gtnets/waxman-p.xml gtnets/waxman-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:GTNets

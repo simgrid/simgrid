@@ -1,0 +1,13 @@
+#! ./tesh
+
+p Testing dogbone communication pattern with GTNets model
+
+$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:GTNets
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'GTNets'
+> [S1:master:(1) 0.300171] [msg_test/INFO] Send completed (to C1). Transfer time: 0.300171	 Agregate bandwidth: 33314.335278
+> [S1:master:(1) 0.300171] [msg_test/INFO] Completed peer: C1 time: 0.300171
+> [C1:slave:(3) 0.300171] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 33314.335278 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(3) 0.300171] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 33314.335278 ;  message from S2 to C2  with remaining : 0.000000
+

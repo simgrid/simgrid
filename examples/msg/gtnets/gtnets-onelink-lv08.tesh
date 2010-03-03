@@ -1,0 +1,11 @@
+#! ./tesh
+
+p Testing onelink communication pattern with LV08 model
+
+$ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01  --cfg=network_model:LV08 2>&1 | grep --color=auto -v root/INFO | grep -v simix_network/INFO
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'LV08'
+> [S1:master:(1) 108.799652] [msg_test/INFO] Send completed (to C1). Transfer time: 108.799652	 Agregate bandwidth: 9191.205854
+> [S1:master:(1) 108.799652] [msg_test/INFO] Completed peer: C1 time: 108.799652
+> [C1:slave:(2) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 9191.205854 ;  message from S1 to C1  with remaining : 0.000000
