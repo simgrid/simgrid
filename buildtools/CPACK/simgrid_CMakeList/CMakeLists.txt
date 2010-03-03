@@ -53,4 +53,7 @@ include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDistrib.txt)
 ### Print ARGS
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakePrintArgs.txt)
 
+### Make Docs
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDocs.txt)
+
 INCLUDE(Dart)

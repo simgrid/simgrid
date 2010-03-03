@@ -142,7 +142,6 @@ ADD_TEST(msg-priority	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECT
 ADD_TEST(msg-properties	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg properties/msg_prop.tesh)
 ADD_TEST(msg-trace	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg trace/trace.tesh)
 ADD_TEST(msg-masterslave_cpu_ti	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti.tesh)
-ADD_TEST(msg-gtnets	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets.tesh)
 
 IF(${ARCH_32_BITS})
   ADD_TEST(gras-ping-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/ping test_sg_32)
@@ -186,7 +185,6 @@ ADD_TEST(simdag-test_simdag2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT
 ADD_TEST(simdag-test_prop	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag properties/test_prop.tesh)
 ADD_TEST(simdag-metaxml_test	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag metaxml/metaxml_test.tesh)
 
-#############################################################################################################################################################
 if(HAVE_JAVA)
 # java examples
 ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest)
@@ -198,13 +196,13 @@ endif(HAVE_JAVA)
 ADD_TEST(smpi-bcast 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi bcast.tesh)
 ADD_TEST(smpi-reduce 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi reduce.tesh)
 
-#############################################################################################################################################################
+if(HAVE_GTNETS)
+ADD_TEST(msg-gtnets	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets.tesh)
+endif(HAVE_GTNETS)
+
 ###
 ### Declare that we know that some tests are broken
 ###
-
-# we should install gtnets on the bots, maybe
-set_tests_properties(msg-gtnets PROPERTIES WILL_FAIL true)
 
 # Amok is broken in RL since before v3.3 (should fix it one day)
 set_tests_properties(amok-bandwidth-rl PROPERTIES WILL_FAIL true)
@@ -221,25 +219,5 @@ set_tests_properties(tesh-simdag-flatifier PROPERTIES WILL_FAIL true)
 # These are broken, but should have their timings updated, that's all
 IF(${ARCH_32_BITS})
   set_tests_properties(amok-bandwidth-sg-32 PROPERTIES WILL_FAIL true)  
-  set_tests_properties(amok-saturate-sg-32 PROPERTIES WILL_FAIL true)
-ELSE(${ARCH_32_BITS})
-  #set_tests_properties(amok-bandwidth-sg-64 PROPERTIES WILL_FAIL true)  
+  set_tests_properties(amok-saturate-sg-32 PROPERTIES WILL_FAIL true) 
 ENDIF(${ARCH_32_BITS})
-
-# Don't mark this one since we should fix it before 3.3.4 gets released
-#  set_tests_properties(smpi-reduce PROPERTIES WILL_FAIL true)
-
-#SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 50)
-#SET(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 50)
-#SET(CTEST_CUSTOM_TESTS_IGNORE ) 
-#SET(CTEST_CUSTOM_MEMCHECK_IGNORE
-#${CTEST_CUSTOM_MEMCHECK_IGNORE}
-#tesh-log-large
-#tesh-log-parallel
-#)
-
-
-
-
-
-
