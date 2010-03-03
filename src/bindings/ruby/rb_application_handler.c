@@ -6,17 +6,15 @@
  */
 #include "bindings/ruby_bindings.h"
 #include "surf/surfxml_parse.h"
-#include "msg/private.h" /* s_simdata_process_t */
+#include "msg/private.h" /* s_simdata_process_t FIXME: don't mess with MSG internals that way */
 
-// XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ruby,bindings,"Ruby Bindings");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);
 
 // Used to instanciate the Process
-
 static  VALUE args;
 static  VALUE prop;
 static  VALUE function_name;
 static  VALUE host_name; 
-
 
 
 static VALUE rb_process_instance(VALUE fct_name,VALUE arguments,VALUE properties) {
@@ -26,6 +24,7 @@ static VALUE rb_process_instance(VALUE fct_name,VALUE arguments,VALUE properties
   return rb_funcall(rb_const_get(rb_cObject, rb_intern(p_className)),rb_intern("new"),3,fct_name,arguments,properties);
 }
 
+// FIXME: don't mess with MSG internals here, use MSG_process_create_with_arguments()
 static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE properties,VALUE ht_name) {
   
   VALUE ruby_process = rb_process_instance(fct_name,arguments,properties);
@@ -57,17 +56,11 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
   }
   process->simdata->PID = msg_global->PID++; //  msg_global ??
 
-/*
   DEBUG7("fill in process %s/%s (pid=%d) %p (sd=%p , host=%p, host->sd=%p)",
       process->name , process->simdata->m_host->name,process->simdata->PID,
       process,process->simdata, process->simdata->m_host,
       process->simdata->m_host->simdata);
-*/
 
-printf("fill in process %s/%s (pid=%d) %p (sd=%p , host=%p, host->sd=%p)\n",
-      process->name , process->simdata->m_host->name,process->simdata->PID,
-      process,process->simdata, process->simdata->m_host,
-      process->simdata->m_host->simdata);
 
   /* FIXME: that's mainly for debugging. We could only allocate this if XBT_LOG_ISENABLED(ruby,debug) is true since I guess this leaks */
   char **argv=xbt_new(char*,2);
@@ -80,8 +73,7 @@ printf("fill in process %s/%s (pid=%d) %p (sd=%p , host=%p, host->sd=%p)\n",
           process->simdata->m_host->simdata->smx_host->name,
           1,argv,NULL);
 
- // DEBUG1("context created (s_process=%p)",process->simdata->s_process);
- printf("context created (s_process=%p)\n",process->simdata->s_process);
+  DEBUG1("context created (s_process=%p)",process->simdata->s_process);
 
   if (SIMIX_process_self()) { // SomeOne Created Me !!
     process->simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
@@ -103,6 +95,7 @@ void rb_application_handler_on_start_document(void) {
 }
 
 void rb_application_handler_on_end_document(void) {
+  // FIXME: probably leaking
   //application_handler_class = Qnil;
   args = Qnil;
   prop = Qnil;
@@ -113,7 +106,7 @@ void rb_application_handler_on_end_document(void) {
 
 void rb_application_handler_on_begin_process(void) {
   
-  host_name = rb_str_new2(A_surfxml_process_host);;
+  host_name = rb_str_new2(A_surfxml_process_host);
   function_name = rb_str_new2(A_surfxml_process_function);
   
 }
@@ -125,6 +118,7 @@ void rb_application_handler_on_process_arg(void) {
 }
 
 void rb_application_handler_on_property(void) {
+  // FIXME: properties are never added to the ruby process
   VALUE id = rb_str_new2(A_surfxml_prop_id);
   VALUE val =  rb_str_new2(A_surfxml_prop_value);
   int i_id = NUM2INT (id);

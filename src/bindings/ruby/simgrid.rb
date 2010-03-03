@@ -1,3 +1,5 @@
+# FIXME: add license like in C files
+
 require 'simgrid_ruby'
 require 'thread'
 
@@ -52,8 +54,8 @@ class MSG::Process < Thread
   @@nextProcessId = 0
 
 # Attributes
-  attr_reader :bind, :id ,:name           # Read only
-  attr_accessor :properties, :pargs  # R/W
+  attr_reader :bind, :id, :name, :pargs # Read only
+  attr_accessor :properties             # R/W 
   
 
     def initialize(*args)
@@ -63,9 +65,8 @@ class MSG::Process < Thread
      
     @schedBegin = Semaphore.new(0)
     @schedEnd = Semaphore.new(0)    
-    #@properties = Hash.new()
-    @id = @@nextProcessId
-    @@nextProcessId += 1
+    #@properties = Hash.new() FIXME: get this from the C (yep that makes 4 args to this function)
+    @id = @@nextProcessId++
     @name = args[0]
     @pargs = args[1]
     @properties = args[2]
@@ -95,12 +96,12 @@ class MSG::Process < Thread
     
 
   
-  #Get Bind ( Used > Native to Ruby)
+  # Get Bind
   def getBind()
     return @bind
   end
   
-  #Get Binds (Used > Ruby to Native)
+  # Set Binds
   def setBind(bind)
     @bind = bind
   end
@@ -115,30 +116,23 @@ class MSG::Process < Thread
     @schedEnd.acquire
   end
   
-   #C Simualator Process Equivalent  Management
-  # After Binding Ruby Process to C Process
-  
-#   pause
   def pause()
     processSuspend(self)
   end
   
-#   restart
   def restart()
     processResume(self)
   end
   
-#   isSuspended
   def isSuspended()
     processIsSuspended(self)
   end
   
-#   getHost
   def getHost()
     processGetHost(self)
   end
   
-# The Rest of Methods !!! To be Continued ...
+# The Rest of Methods !!! To be Continued ... FIXME: what's missing?
 end
 
 #########################
