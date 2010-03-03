@@ -28,7 +28,8 @@ message("")
 message("	Simgrid dependencies: 	${SIMGRID_DEP}")
 message("	Gras dependencies: 	${GRAS_DEP}")
 message("	Ruby dependencies: 	${RUBY_DEP}")
-message("	Smpi dependencies: 	${SMPI_DEP}\n\n")
-
-
+message("	Smpi dependencies: 	${SMPI_DEP}")
+message("")
+message("	Distrib_mode: 		${distrib}")
+message("	INSTALL_PREFIX: 	${CMAKE_INSTALL_PREFIX}")
 

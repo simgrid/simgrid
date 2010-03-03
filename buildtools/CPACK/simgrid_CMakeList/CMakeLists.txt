@@ -37,6 +37,8 @@ include(${PROJECT_DIRECTORY}/CPACK/src/CMakeCompleteInFiles.txt)
 ### Define source packages for Libs 
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDefinePackages.txt)
 
+include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFLEXml.txt)
+
 ### Setup gcc flags
 include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFlags.txt)
 

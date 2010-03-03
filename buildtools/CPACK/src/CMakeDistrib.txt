@@ -1,116 +1,48 @@
 cmake_minimum_required(VERSION 2.6)
 
-### Make the distrib
-
-install(TARGETS simgrid	DESTINATION "lib/")
-install(TARGETS gras	DESTINATION "lib/")
-
-install(
-DIRECTORY "${PROJECT_DIRECTORY}/include/" 
-DESTINATION "include/" 
-PATTERN ".svn" EXCLUDE 
-PATTERN ".git" EXCLUDE 
-PATTERN "*~" EXCLUDE
-)
-install(
-DIRECTORY "${PROJECT_DIRECTORY}/src/" 
-DESTINATION "src/"
-PATTERN ".svn" EXCLUDE 
-PATTERN ".git" EXCLUDE 
-PATTERN ".gitignore" EXCLUDE
-PATTERN "*~" EXCLUDE
-)
-install(
-DIRECTORY "${PROJECT_DIRECTORY}/CPACK/" 
-DESTINATION "CPACK/" 
-PATTERN "*~" EXCLUDE
-)
-
-install(
-DIRECTORY
-${PROJECT_DIRECTORY}/testsuite
-${PROJECT_DIRECTORY}/teshsuite
-${PROJECT_DIRECTORY}/tools
-${PROJECT_DIRECTORY}/examples
-DESTINATION "./" 
-PATTERN "*~" EXCLUDE
-PATTERN "*.am" EXCLUDE
-PATTERN "*.ac" EXCLUDE
-PATTERN "*~" EXCLUDE
-PATTERN ".svn" EXCLUDE 
-PATTERN ".git" EXCLUDE 
-PATTERN ".gitignore" EXCLUDE
-)
-
-#./
-install(FILES ${PROJECT_DIRECTORY}/CMakeLists.txt DESTINATION simgrid_CMakeList)
-
-#testsuite/xbt
-install(FILES ${PROJECT_DIRECTORY}/testsuite/xbt/CMakeLists.txt DESTINATION simgrid_CMakeList/testsuite/xbt)
-
-#testsuite/surf
-install(FILES ${PROJECT_DIRECTORY}/testsuite/surf/CMakeLists.txt DESTINATION simgrid_CMakeList/testsuite/surf)
-
-#testsuite/simdag
-install(FILES ${PROJECT_DIRECTORY}/testsuite/simdag/CMakeLists.txt DESTINATION simgrid_CMakeList/testsuite/simdag)
-
-#tools
-#tools/tesh
-install(FILES ${PROJECT_DIRECTORY}/tools/tesh/CMakeLists.txt DESTINATION simgrid_CMakeList/tools/tesh)
-
-#tools/gras
-install(FILES ${PROJECT_DIRECTORY}/tools/gras/CMakeLists.txt DESTINATION simgrid_CMakeList/tools/gras)
-
-#teshsuite
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/xbt/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/xbt)
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/gras/datadesc)
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/gras/msg_handle)
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/simdag/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/simdag)
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/simdag/network/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/simdag/network)
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/simdag/network/p2p)
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/simdag/network/mxn/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/simdag/network/mxn)
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/simdag/partask/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/simdag/partask)
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/simdag/platforms)
-install(FILES ${PROJECT_DIRECTORY}/teshsuite/msg/CMakeLists.txt DESTINATION simgrid_CMakeList/teshsuite/msg)
-
-#examples
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/ping/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/ping)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/rpc/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/rpc)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/spawn/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/spawn)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/timer/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/timer)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/chrono/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/chrono)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/mutual_exclusion/simple_token)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/mmrpc/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/mmrpc)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/all2all/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/all2all)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/pmm/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/pmm)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/synchro/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/synchro)
-install(FILES ${PROJECT_DIRECTORY}/examples/gras/properties/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/gras/properties)
-
-install(FILES ${PROJECT_DIRECTORY}/examples/msg/properties/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/properties)
-install(FILES ${PROJECT_DIRECTORY}/examples/msg/actions/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/actions)
-install(FILES ${PROJECT_DIRECTORY}/examples/msg/migration/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/migration)
-install(FILES ${PROJECT_DIRECTORY}/examples/msg/sendrecv/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/sendrecv)
-install(FILES ${PROJECT_DIRECTORY}/examples/msg/suspend/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/suspend)
-install(FILES ${PROJECT_DIRECTORY}/examples/msg/parallel_task/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/parallel_task)
-install(FILES ${PROJECT_DIRECTORY}/examples/msg/priority/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/priority)
-install(FILES ${PROJECT_DIRECTORY}/examples/msg/masterslave/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/masterslave)
-install(FILES ${PROJECT_DIRECTORY}/examples/msg/trace/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/trace)
-if(HAVE_GTNETS)
-	install(FILES ${PROJECT_DIRECTORY}/examples/msg/gtnets/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/msg/gtnets)
-endif(HAVE_GTNETS)
-
-install(FILES ${PROJECT_DIRECTORY}/examples/amok/bandwidth/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/amok/bandwidth)
-install(FILES ${PROJECT_DIRECTORY}/examples/amok/saturate/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/amok/saturate)
-install(FILES ${PROJECT_DIRECTORY}/examples/simdag/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/simdag)
-install(FILES ${PROJECT_DIRECTORY}/examples/simdag/dax/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/simdag/dax)
-install(FILES ${PROJECT_DIRECTORY}/examples/simdag/metaxml/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/simdag/metaxml)
-install(FILES ${PROJECT_DIRECTORY}/examples/simdag/properties/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/simdag/properties)
-
-install(FILES ${PROJECT_DIRECTORY}/examples/smpi/CMakeLists.txt DESTINATION simgrid_CMakeList/examples/smpi)
+set(prefix "/home/navarrop/Bureau/test_install/")
+set(CPACK_SET_DESTDIR on)
+set(simgrid_version "3.3.5")
 
 set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}_rev_${SVN_VERSION}")
+set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}_rev_${SVN_VERSION}")
 set(CPACK_GENERATOR "TBZ2") #;TGZ;TZ;ZIP
+	
+if(distrib)
+	
+	set(CMAKE_INSTALL_PREFIX .)
+
+	###copy doc
+	install(DIRECTORY "${PROJECT_DIRECTORY}/doc/"
+	DESTINATION "doc/"
+	)
+
+elseif(distrib)
+
+	set(CMAKE_INSTALL_PREFIX ${prefix})
+
+	###install libs
+	install(DIRECTORY "${PROJECT_DIRECTORY}/src/.libs/"
+	DESTINATION "lib/"
+	)
+
+	###install include
+	install(
+	DIRECTORY "${PROJECT_DIRECTORY}/include/" 
+	DESTINATION "include/" 
+	PATTERN ".svn" EXCLUDE 
+	PATTERN ".git" EXCLUDE 
+	PATTERN "*~" EXCLUDE
+	)
+
+	###install doc
+	install(
+	DIRECTORY "${PROJECT_DIRECTORY}/doc/html/" 
+	DESTINATION "doc/simgrid/html" 
+	)	
+
+endif(distrib)
+
 include(CPack)
