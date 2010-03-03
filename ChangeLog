@@ -13,6 +13,9 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Kill the useless "rate" argument of SD_task_get_execution_time()
     Everyone used to provide -1 as a value, it was not used, and the
     semantic of a possible use wasn't even clear.
+  * SD_SCHED_NO_COST: Constant to use as cost in SD_task_schedule()
+    either as comm costs or compute costs to mean that there is no
+    such thing for that specific task. 
  MSG: 
   * In trace replay, allow to have one trace file per process.
     Give the specific trace file as argument of each process, 

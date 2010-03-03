@@ -145,6 +145,18 @@ XBT_PUBLIC(SD_task_t) SD_task_create_comm_e2e(const char*name,void *data,double 
 XBT_PUBLIC(void) SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list);
 XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
+/** @brief A constant to use in SD_task_schedule to mean that there is no cost.
+ *
+ *  For example, create a pure computation task (no comm) like this:
+ *
+ *  SD_task_schedule(task, my_workstation_nb,
+ *                   my_workstation_list,
+ *                   my_computation_amount,
+ *                   SD_TASK_SCHED_NO_COST,
+ *                   my_rate);
+ */
+#define SD_SCHED_NO_COST NULL
+
 /** @} */
 
 

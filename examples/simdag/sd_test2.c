@@ -31,7 +31,6 @@ int main(int argc, char **argv)
   SD_task_t InterRedist;
   SD_task_t taskFinal;
   SD_task_t ParComp_wcomm2;
-  const double no_cost[] = { 1.0, 1.0 };
   SD_workstation_t PtoPcomm1_hosts[2];
   SD_workstation_t PtoPcomm2_hosts[2];
   double PtoPcomm1_table[] = { 0, 12500000, 0, 0 };     /* 100Mb */
@@ -171,10 +170,10 @@ int main(int argc, char **argv)
 
 
   /* scheduling the tasks */
-  SD_task_schedule(taskInit, 1, hosts, no_cost, no_cost, -1.0);
-  SD_task_schedule(PtoPComm1, 2, PtoPcomm1_hosts, no_cost, PtoPcomm1_table,
+  SD_task_schedule(taskInit, 1, hosts, SD_SCHED_NO_COST, SD_SCHED_NO_COST, -1.0);
+  SD_task_schedule(PtoPComm1, 2, PtoPcomm1_hosts, SD_SCHED_NO_COST, PtoPcomm1_table,
                    -1.0);
-  SD_task_schedule(PtoPComm2, 2, PtoPcomm2_hosts, no_cost, PtoPcomm2_table,
+  SD_task_schedule(PtoPComm2, 2, PtoPcomm2_hosts, SD_SCHED_NO_COST, PtoPcomm2_table,
                    -1.0);
   SD_task_schedule(ParComp_wocomm, 5, ParComp_wocomm_hosts,
                    ParComp_wocomm_cost, ParComp_wocomm_table, -1.0);
@@ -186,7 +185,7 @@ int main(int argc, char **argv)
                    InterRedist_table, -1.0);
   SD_task_schedule(ParComp_wcomm2, 5, ParComp_wcomm2_hosts,
                    ParComp_wcomm2_cost, ParComp_wcomm2_table, -1.0);
-  SD_task_schedule(taskFinal, 1, &(hosts[9]), &final_cost, no_cost, -1.0);
+  SD_task_schedule(taskFinal, 1, &(hosts[9]), &final_cost, SD_SCHED_NO_COST, -1.0);
 
   /* let's launch the simulation! */
   changed_tasks = SD_simulate(-1.0);
