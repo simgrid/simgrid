@@ -78,7 +78,7 @@ if (ARGV.length == 2)
 	MSG.deployApplication(ARGV[1])
 else 
 	MSG.createEnvironment("platform.xml")
-	MSG.deployApplication("deploy.xml")
+	MSG.deployApplication("deploy2.xml")
   #Thread.list.each {|t| p t}
 end
 

@@ -16,7 +16,6 @@ VALUE rb_msg;
 VALUE rb_task;
 VALUE rb_host;
 
-
 //Init Msg  From Ruby
 static void msg_init(VALUE Class,VALUE args)
 {
@@ -99,7 +98,6 @@ static void msg_deployApplication(VALUE class,VALUE deploymentFile ) {
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_process_cb_list,
       rb_application_handler_on_begin_process);
-
   surfxml_add_callback(ETag_surfxml_argument_cb_list,
       rb_application_handler_on_process_arg);
 
@@ -114,6 +112,7 @@ static void msg_deployApplication(VALUE class,VALUE deploymentFile ) {
   if(surf_parse())
     rb_raise(rb_eRuntimeError,"surf_parse() failed");
   surf_parse_close();
+  
   rb_application_handler_on_end_document();
 
   DEBUG1("Deploy Application(%s)...Done",dep_file);
@@ -176,7 +175,6 @@ void Init_simgrid_ruby() {
   rb_define_module_function(rb_msg,"rubyNewInstanceArgs",(rb_meth)msg_new_ruby_instance_with_args,2);
 
   // Associated Process Methods
-  rb_define_module_function(rb_msg,"processCreate",(rb_meth)rb_process_create,2);
   rb_define_method(rb_msg,"processSuspend",(rb_meth)rb_process_suspend,1);
   rb_define_method(rb_msg,"processResume",(rb_meth)rb_process_resume,1);
   rb_define_method(rb_msg,"processIsSuspend",(rb_meth)rb_process_isSuspended,1);
