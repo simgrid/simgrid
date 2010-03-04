@@ -52,6 +52,9 @@ end
 class Slave < MSG::Process
   def main(args)
     mailbox = "slave " + args[0]
+    for i in 0..args.size-1
+      MSG::debug("args["+String(i)+"]="+args[i])
+    end
 
     while true
        info("Ready to Receive Task")
