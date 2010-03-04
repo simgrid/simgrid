@@ -73,8 +73,7 @@ static inline void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm)
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
  *  \return The communication request if found, NULL otherwise.
  */
-smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type)
-{
+smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type) {
   smx_comm_t comm = (smx_comm_t)xbt_fifo_get_item_content(
                                   xbt_fifo_get_first_item(rdv->comm_fifo));
 
@@ -86,7 +85,6 @@ smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type)
     return comm;
   }
 
-  /* no relevant request found. Return NULL */
   DEBUG0("Communication request not found");
   return NULL;
 }
@@ -352,8 +350,11 @@ void SIMIX_network_copy_data(smx_comm_t comm)
       comm->dst_proc->smx_host->name, comm->dst_buff,
       buff_size);
 #endif
-
-  memcpy(comm->dst_buff, comm->src_buff, buff_size);
+  if (buff_size == sizeof(void*)) {
+    *(void**)(comm->dst_buff) = *(void**)(comm->src_buff);
+  } else {
+    memcpy(comm->dst_buff, comm->src_buff, buff_size);
+  }
 }
 
 /**
