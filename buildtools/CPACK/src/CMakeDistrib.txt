@@ -31,6 +31,7 @@ set(to_svg
 	${add_src_files}
 	${include_files}
 	${xml_files}
+	${tesh_files}
 	${PROJECT_DIRECTORY}/./CMakeLists.txt
 	${PROJECT_DIRECTORY}/./AUTHORS
 	${PROJECT_DIRECTORY}/./ChangeLog
@@ -40,6 +41,7 @@ set(to_svg
 	${PROJECT_DIRECTORY}/./README
 	${PROJECT_DIRECTORY}/./README.IEEE
 	${PROJECT_DIRECTORY}/./TODO
+	${PROJECT_DIRECTORY}/src/context_sysv_config.h.in
 	)
 	
 	foreach(file ${to_svg})
