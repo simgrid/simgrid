@@ -30,15 +30,17 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
   m_process_t process; // Native Process to Create
   const char * name ; // Name of C Native Processs
 
+
   if(!fct_name)
     rb_raise(rb_eRuntimeError,"Internal error: Process name cannot be NULL");
+  name = RSTRING(fct_name)->ptr;
+  DEBUG1("Create native process %s",name);
 
   // Allocate the data for the simulation
   process = xbt_new0(s_m_process_t,1);
   process->simdata = xbt_new0(s_simdata_process_t,1);
   // Bind The Ruby Process instance to The Native Process
   rb_process_bind(ruby_process,process);
-  name = RSTRING(fct_name)->ptr;
   process->name = xbt_strdup(name);
   // Host
   m_host_t host = MSG_get_host_by_name(RSTRING(ht_name)->ptr);

@@ -138,6 +138,7 @@ static VALUE msg_get_clock(VALUE class) {
 // Ruby intropspection : Instanciate a ruby Class From its Name
 // Used by ProcessFactory::createProcess
 
+// FIXME: KILLME?
 static VALUE msg_new_ruby_instance(VALUE class,VALUE className) {
   ruby_init();
   ruby_init_loadpath();
@@ -146,7 +147,7 @@ static VALUE msg_new_ruby_instance(VALUE class,VALUE className) {
   return rb_funcall3(rb_const_get(rb_cObject, rb_intern(p_className)),rb_intern("new"),0, 0);
 }
 
-//This Time With Args
+//This Time With Args FIXME: KILLME
 static VALUE msg_new_ruby_instance_with_args(VALUE class,VALUE className,VALUE args) {
   ruby_init();
   ruby_init_loadpath();
