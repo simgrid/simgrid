@@ -16,7 +16,6 @@ static  VALUE prop;
 static  VALUE function_name;
 static  VALUE host_name; 
 
-
 static VALUE rb_process_instance(VALUE fct_name,VALUE arguments,VALUE properties) {
   ruby_init();
   ruby_init_loadpath();
@@ -37,7 +36,6 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
   // Allocate the data for the simulation
   process = xbt_new0(s_m_process_t,1);
   process->simdata = xbt_new0(s_simdata_process_t,1);
-  // Do we Really Need to Create Ruby Process Instance , >> process is already a Ruby Process !! So..Keep on ;)
   // Bind The Ruby Process instance to The Native Process
   rb_process_bind(ruby_process,process);
   name = RSTRING(fct_name)->ptr;
@@ -46,8 +44,6 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
   m_host_t host = MSG_get_host_by_name(RSTRING(ht_name)->ptr);
   process->simdata->m_host = host;
   
-  //Data_Get_Struct(host,s_m_host_t,process->simdata->m_host);
-
   if(!(process->simdata->m_host)) { // Not Binded
     free(process->simdata);
     free(process->data);
@@ -60,7 +56,6 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
       process->name , process->simdata->m_host->name,process->simdata->PID,
       process,process->simdata, process->simdata->m_host,
       process->simdata->m_host->simdata);
-
 
   /* FIXME: that's mainly for debugging. We could only allocate this if XBT_LOG_ISENABLED(ruby,debug) is true since I guess this leaks */
   char **argv=xbt_new(char*,2);
@@ -84,8 +79,6 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
   // let's Add the Process to the list of the Simulation's Processes
   xbt_fifo_unshift(msg_global->process_list,process);
 }
-
-
 
 
 void rb_application_handler_on_start_document(void) {

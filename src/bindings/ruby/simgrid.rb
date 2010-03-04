@@ -8,6 +8,40 @@ $DEBUG = false  # This is a Global Variable Useful for MSG::debugging
 ###########################################################################
 # Class Semaphore 
 ###########################################################################
+class MySemaphore
+   Thread.abort_on_exception = true
+    attr_accessor :permits
+
+   
+  def initialize (permits = 0)
+       @permits = permits
+  end
+  
+  def acquire(mutex,cv)
+
+    raise "Interrupted Thread " if (!Thread.current.alive?)
+    mutex.synchronize {
+    while @permits <= 0
+       
+       cv.wait(mutex)
+       
+    end
+    @permits = @permits - 1
+    cv.signal
+    }
+    
+  end
+    
+  def release(mutex,cv)
+    mutex.synchronize{
+      @permits += 1
+      cv.signal
+      }
+  end  
+end
+#######################################
+# Another Semaphore
+#######################################
 
 class Semaphore
   def initialize(initvalue = 0)
@@ -61,13 +95,16 @@ class MSG::Process < Thread
 	
      raise "Bad Number Of arguments to create a Ruby Process (name,args,prop) " if args.size < 3
      
+#     @cv = ConditionVariable.new
+#     @mutex = Mutex.new
     @schedBegin = Semaphore.new(0)
     @schedEnd = Semaphore.new(0)    
-    #@properties = Hash.new() FIXME: get this from the C (yep that makes 4 args to this function)
-    @id = @@nextProcessId++
+    @id = @@nextProcessId
+    @@nextProcessId +=1
     @name = args[0]
     @pargs = args[1]
     @properties = args[2]
+      
     start()
       }
     end
@@ -80,12 +117,12 @@ class MSG::Process < Thread
      
   # Start : To keep the process alive and waiting via semaphore
   def start()
-    @schedBegin.acquire
+    @schedBegin.acquire()
     # execute the main code of the process     
     MSG::debug("Begin execution")
     main(@pargs)
 #     processExit(self) # Exit the Native Process
-    @schedEnd.release
+    @schedEnd.release()
   end
     
 
@@ -101,13 +138,13 @@ class MSG::Process < Thread
   end
     
   def unschedule()
-    @schedEnd.release
-    @schedBegin.acquire
+    @schedEnd.release()
+    @schedBegin.acquire()
   end
   
   def schedule()
-    @schedBegin.release
-    @schedEnd.acquire
+    @schedBegin.release()
+    @schedEnd.acquire()
   end
   
   def pause()
@@ -147,11 +184,12 @@ class MSG::Task < MSG::RbTask
   end
   
   def send(mailbox)
-    super(mailbox)
+    super(self,mailbox)
   end
   
+#   FIXME : this methode should be associated to the class !! it reurn a task
   def receive(mailbox)
-    super(mailbox)
+    super(self,mailbox)
   end
   
   def source
