@@ -12,11 +12,61 @@ set(CPACK_GENERATOR "TBZ2") #;TGZ;TZ;ZIP
 	
 if(distrib)
 	
+set(to_svg	
+	${XBT_RL_SRC}
+	${EXTRA_DIST}
+	${SMPI_SRC}
+	${JMSG_C_SRC}
+	${JMSG_JAVA_SRC}
+	${GRAS_RL_SRC}
+	${XBT_SRC}
+	${GTNETS_SRC}
+	${SURF_SRC}
+	${SIMIX_SRC}
+	${MSG_SRC}
+	${SIMDAG_SRC}
+	${GRAS_COMMON_SRC}
+	${GRAS_SG_SRC}
+	${AMOK_SRC}
+	${LUA_SRC}
+	${RUBY_SRC}
+	${add_src_files}
+	${include_files}
+	${xml_files}
+	${PROJECT_DIRECTORY}/./CMakeLists.txt
+	${PROJECT_DIRECTORY}/./AUTHORS
+	${PROJECT_DIRECTORY}/./ChangeLog
+	${PROJECT_DIRECTORY}/./COPYING
+	${PROJECT_DIRECTORY}/./missing
+	${PROJECT_DIRECTORY}/./NEWS
+	${PROJECT_DIRECTORY}/./README
+	${PROJECT_DIRECTORY}/./README.IEEE
+	${PROJECT_DIRECTORY}/./TODO
+	)
+	
+	foreach(file ${to_svg})
+		get_filename_component(file_location ${file} PATH)
+		string(REPLACE "${PROJECT_DIRECTORY}/" "/" file_location ${file_location})
+		#message("install: ${file}\nDESTINATION: ${file_location}")
+		install(FILES ${file} DESTINATION "${file_location}")
+	endforeach(file ${EXTRA_DIST})
+
 	set(CMAKE_INSTALL_PREFIX .)
 
 	###copy doc
 	install(DIRECTORY "${PROJECT_DIRECTORY}/doc/"
 	DESTINATION "doc/"
+	PATTERN ".svn" EXCLUDE 
+	PATTERN ".git" EXCLUDE 
+	PATTERN "*~" EXCLUDE
+	)
+
+	###buildtools 
+	install(DIRECTORY "${PROJECT_DIRECTORY}/buildtools/CPACK/"
+	DESTINATION "buildtools/CPACK/"
+	PATTERN ".svn" EXCLUDE 
+	PATTERN ".git" EXCLUDE 
+	PATTERN "*~" EXCLUDE
 	)
 
 elseif(distrib)

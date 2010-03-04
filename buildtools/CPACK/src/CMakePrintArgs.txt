@@ -31,5 +31,7 @@ message("	Ruby dependencies: 	${RUBY_DEP}")
 message("	Smpi dependencies: 	${SMPI_DEP}")
 message("")
 message("	Distrib_mode: 		${distrib}")
+if(NOT distrib)
 message("	INSTALL_PREFIX: 	${CMAKE_INSTALL_PREFIX}")
-
+endif(NOT distrib)
+message("")
