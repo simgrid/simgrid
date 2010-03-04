@@ -89,13 +89,13 @@ class MSG::Process < Thread
   end
     
 
-  
+  # FIXME: useless, there is an attribute for bind (or the attribute is useless)
   # Get Bind
   def getBind()
     return @bind
   end
   
-  # Set Binds
+  # Set Binds FIXME: same
   def setBind(bind)
     @bind = bind
   end
