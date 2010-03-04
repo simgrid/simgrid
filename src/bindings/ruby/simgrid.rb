@@ -50,7 +50,7 @@ class Semaphore
   end
 
   def acquire
-    MSG::debug("Acquire "+self.to_s)
+    MSG::debug(Thread.current.to_s+" acquires "+self.to_s)
     Thread.critical = true
     if (@counter -= 1) < 0
       @waiting_list.push(Thread.current)
@@ -62,7 +62,7 @@ class Semaphore
   end
 
   def release
-    MSG::debug("Release "+self.to_s)
+    MSG::debug(Thread.current.to_s+" releases "+self.to_s)
     Thread.critical = true
     begin
       if (@counter += 1) <= 0
