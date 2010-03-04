@@ -85,17 +85,11 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
 
 void rb_application_handler_on_start_document(void) {
   
-   args = rb_ary_new();  // Max lenght = 16 ?!
-   prop = rb_ary_new();
 }
 
 void rb_application_handler_on_end_document(void) {
-  // FIXME: probably leaking
-  //application_handler_class = Qnil;
-  args = Qnil;
-  prop = Qnil;
-  function_name = Qnil;
-  host_name = Qnil;
+
+  //application_handler_class = Qnil; FIXME: probably leaking
   
 }
 
@@ -103,7 +97,10 @@ void rb_application_handler_on_begin_process(void) {
   
   host_name = rb_str_new2(A_surfxml_process_host);
   function_name = rb_str_new2(A_surfxml_process_function);
-  
+
+  args = rb_ary_new();  // Max lenght = 16 ?!
+  prop = rb_ary_new();
+
 }
 
 void rb_application_handler_on_process_arg(void) {
@@ -113,7 +110,6 @@ void rb_application_handler_on_process_arg(void) {
 }
 
 void rb_application_handler_on_property(void) {
-  // FIXME: properties are never added to the ruby process
   VALUE id = rb_str_new2(A_surfxml_prop_id);
   VALUE val =  rb_str_new2(A_surfxml_prop_value);
   int i_id = NUM2INT (id);
