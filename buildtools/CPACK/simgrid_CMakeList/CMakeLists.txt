@@ -29,33 +29,33 @@ set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 add_definitions (${INCLUDES} -fprofile-arcs -ftest-coverage)
 
 ### Setup Options
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeOption.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeOption.txt)
 
 ### Make the *.h files with *.h.in files
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeCompleteInFiles.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeCompleteInFiles.txt)
 
 ### Define source packages for Libs 
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDefinePackages.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeDefinePackages.txt)
 
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFLEXml.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeFLEXml.txt)
 
 ### Setup gcc flags
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeFlags.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeFlags.txt)
 
 ### Make Libs and Exes
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeMakeExeLib.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeMakeExeLib.txt)
 
 ### Make tests
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeTest.txt)
-include(${PROJECT_DIRECTORY}/CPACK/src/CTestConfig.cmake)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeTest.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CTestConfig.cmake)
 
 ### Setup the distrib
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDistrib.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeDistrib.txt)
 
 ### Print ARGS
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakePrintArgs.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakePrintArgs.txt)
 
 ### Make Docs
-include(${PROJECT_DIRECTORY}/CPACK/src/CMakeDocs.txt)
+include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeDocs.txt)
 
 INCLUDE(Dart)

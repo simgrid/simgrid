@@ -187,10 +187,10 @@ ADD_TEST(simdag-metaxml_test	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT
 
 if(HAVE_JAVA)
 # java examples
-ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest)
-ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest)
-ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest)
-ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest)
+ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest)
+ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest)
+ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest)
+ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest)
 endif(HAVE_JAVA)
 # smpi examples
 ADD_TEST(smpi-bcast 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi bcast.tesh)

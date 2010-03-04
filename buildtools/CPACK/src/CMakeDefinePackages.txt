@@ -403,10 +403,6 @@ file(GLOB_RECURSE add_src_files
 "${PROJECT_DIRECTORY}/teshsuite/*.cxx"
 "${PROJECT_DIRECTORY}/testsuite/*.cxx"
 "${PROJECT_DIRECTORY}/tools/*.cxx"
-"${PROJECT_DIRECTORY}/examples/*.h"
-"${PROJECT_DIRECTORY}/teshsuite/*.h"
-"${PROJECT_DIRECTORY}/testsuite/*.h"
-"${PROJECT_DIRECTORY}/tools/*.h"
 "${PROJECT_DIRECTORY}/examples/*CMakeLists.txt"
 "${PROJECT_DIRECTORY}/teshsuite/*CMakeLists.txt"
 "${PROJECT_DIRECTORY}/testsuite/*CMakeLists.txt"
@@ -429,8 +425,3 @@ file(GLOB_RECURSE xml_files
 "${PROJECT_DIRECTORY}/tools/*.xml"
 )
 #message("\n\nxml:\n${xml_files}")
-
-file(GLOB_RECURSE tesh_files
-"${PROJECT_DIRECTORY}*.tesh"
-)
-#message("\n\nxml:\n${tesh_files}")

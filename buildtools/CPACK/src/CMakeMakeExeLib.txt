@@ -1,7 +1,7 @@
 ### Make Libs
 
 if(supernovae)
-	include(${PROJECT_DIRECTORY}/CPACK/src/CMakeSupernovae.txt)
+	include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeSupernovae.txt)
 else(supernovae)	
 	add_library(simgrid SHARED ${simgrid_sources})
 	add_library(simgrid_static STATIC ${simgrid_sources})

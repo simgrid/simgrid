@@ -5,7 +5,7 @@ if(MAINTAINER_MODE)
 	find_path(BIBTOOL_PATH	NAMES bibtool	PATHS NO_DEFAULT_PATHS)
 
 	if(NOT EXISTS "${PROJECT_DIRECTORY}/bibtex2html-1.02/src/bibtex2html")
-		write_file("${PROJECT_DIRECTORY}/CPACK/bibtex2html_install.sh"
+		write_file("${PROJECT_DIRECTORY}/buildtools/CPACK/bibtex2html_install.sh"
 		"#! /bin/sh
 		wget ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz
 		rm -rf bibtex2html-1.02
@@ -14,8 +14,8 @@ if(MAINTAINER_MODE)
 		cd bibtex2html-1.02/src
 		make"
 		)
-		exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/CPACK/bibtex2html_install.sh")
-		exec_program("${PROJECT_DIRECTORY}/CPACK/bibtex2html_install.sh" OUTPUT_VARIABLE OKITOKI)
+		exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/CPACK/bibtex2html_install.sh")
+		exec_program("${PROJECT_DIRECTORY}/buildtools/CPACK/bibtex2html_install.sh" OUTPUT_VARIABLE OKITOKI)
 
 		if(EXISTS "${PROJECT_DIRECTORY}/bibtex2html-1.02/src/bibtex2html")
 		set(BIBTEX2HTML_PATH ${PROJECT_DIRECTORY}/bibtex2html-1.02/src)
