@@ -27,11 +27,11 @@ class Master < MSG::Process
    for i in 0..numberOfTask-1
      task = MSG::Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
      mailbox = "slave " + (i%slaveCount).to_s
-     MSG::info("Master Sending "+ MSG::Task.name(task) + " to " + mailbox + " with Comput Size " + 
-          MSG::Task.compSize(task).to_s)
+     MSG::info("Master Sending "+ task.name + " to " + mailbox + " with Comput Size " + 
+          task.compSize.to_s)
 #          task.compSize.to_s) # FIXME: This version creates a deadlock. Interesting
-     MSG::Task.send(task,mailbox)
-     MSG::info("Master Done Sending " +MSG::Task.name(task) + " to " + mailbox)
+     task.send(mailbox)
+     MSG::info("Master Done Sending " + task.name + " to " + mailbox)
    end
   
    # Sending Finalize MSG::Tasks
@@ -39,7 +39,8 @@ class Master < MSG::Process
    for i in 0..slaveCount-1
      mailbox = "slave " + i.to_s
      MSG::info("Master Sending Finalize to " + mailbox)
-     MSG::Task.send(Task.new("finalize",0,0),mailbox)
+     finalize_task = Task.new("finalize",0,0)
+     finalize_task.send(mailbox)
    end
    MSG::info("Master : Everything's Done")
   end    
@@ -55,14 +56,13 @@ class Slave < MSG::Process
     while true
        info("Ready to Receive Task")
        task = MSG::Task.receive(mailbox)
-       task_name = MSG::Task.name(task)
        MSG::info("Task Received : " + task.name)
        if (task_name == "finalize")
  	       MSG::info("Slave" + s_mailbox + "got finalize msg")
 	       break
        end
-       MSG::info("Slave " + s_mailbox + " ...Processing" + MSG::Task.name(task))
-       MSG::Task.execute(task)
+       MSG::info("Slave " + s_mailbox + " ...Processing" + task.name)
+       task.execute
     end
     MSG::info("Slave " + s_mailbox +  "I'm Done , See You !!")
   end    
@@ -84,5 +84,5 @@ end
 
 # Thread.list.each {|t| p t}
 MSG.run
-MSG.getClock #FIXME: write "puts MSG.getClock" instead
+puts "Simulation time : " + MSG.getClock .to_s
 # exit()

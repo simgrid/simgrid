@@ -54,14 +54,12 @@ class MSG::Process < Thread
   @@nextProcessId = 0
 
 # Attributes
-  attr_reader :bind, :id, :name, :pargs # Read only
-  attr_accessor :properties             # R/W 
+  attr_reader :bind, :id, :name, :pargs ,:properties# Read only
   
-
     def initialize(*args)
       super(){
 	
-     raise "Bad Number Of arguments to create a a Ruby Process (name,args,prop) " if args.size < 3
+     raise "Bad Number Of arguments to create a Ruby Process (name,args,prop) " if args.size < 3
      
     @schedBegin = Semaphore.new(0)
     @schedEnd = Semaphore.new(0)    
@@ -70,13 +68,9 @@ class MSG::Process < Thread
     @name = args[0]
     @pargs = args[1]
     @properties = args[2]
-    
-     start()
-      
+    start()
       }
-      
     end
-    
     
   # main
   def main(args) 
@@ -90,7 +84,7 @@ class MSG::Process < Thread
     # execute the main code of the process     
     MSG::debug("Begin execution")
     main(@pargs)
-    processExit(self) # Exit the Native Process
+#     processExit(self) # Exit the Native Process
     @schedEnd.release
   end
     
@@ -133,6 +127,88 @@ class MSG::Process < Thread
   end
   
 # The Rest of Methods !!! To be Continued ... FIXME: what's missing?
+end
+
+############################################
+# Task Extend from the native Class RbTask
+############################################
+class MSG::Task < MSG::RbTask
+
+  def initialize(*args)
+     super()
+  end
+  
+  def name
+     super(self)
+  end
+  
+  def compSize
+     super(self)
+  end
+  
+  def send(mailbox)
+    super(mailbox)
+  end
+  
+  def receive(mailbox)
+    super(mailbox)
+  end
+  
+  def source
+    super(self)
+  end
+  
+  def sender
+    super(self)
+  end
+  
+  def listen(t_alias)
+    super(t_alias)
+  end
+  
+  def execute
+    super(self)
+  end
+    
+  def listenFromHost(t_alias,host)
+    super(t_alias,host)
+  end
+    
+end  
+
+############################################
+# Host Extend from the native Class RbHost
+############################################
+class MSG::Host < MSG::RbHost
+
+  def getByName(name)
+    super(name)
+  end
+  
+  def name
+    super(self)
+  end
+  
+  def speed
+    super(self)
+  end
+  
+  def getData
+    super(self)
+  end
+  
+  def setData(data)
+    super(self,data)
+  end
+  
+  def isAvail
+    super(self)
+  end
+  
+  def number
+    super()
+  end
+  
 end
 
 #########################

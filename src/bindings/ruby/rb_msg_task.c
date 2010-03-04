@@ -37,7 +37,7 @@ VALUE rb_task_comp(VALUE class,VALUE task) {
 VALUE rb_task_name(VALUE class,VALUE task) {
 
   // Wrap Ruby Value to m_task_t struct
-  m_task_t tk;
+  m_task_t tk; 
   Data_Get_Struct(task, s_m_task_t, tk);
   return rb_str_new2(MSG_task_get_name(tk));
 }

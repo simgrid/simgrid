@@ -128,10 +128,10 @@ static void msg_debug(VALUE class,VALUE msg) {
   DEBUG1("%s",s);
 }
 
-// Get Clock FIXME: return the double instead of displaying it
-static void msg_get_clock(VALUE class) {
+// Get Clock FIXME: return the double instead of float
+static VALUE msg_get_clock(VALUE class) {
 
-  printf("Simulation time %f\n",MSG_get_clock());
+  return rb_float_new(MSG_get_clock());
 
 }
 
@@ -183,8 +183,8 @@ void Init_simgrid_ruby() {
   rb_define_method(rb_msg,"processExit",(rb_meth)rb_process_exit,1);
 
   //Classes
-  rb_task = rb_define_class_under(rb_msg,"Task",rb_cObject);
-  rb_host = rb_define_class_under(rb_msg,"Host",rb_cObject);
+  rb_task = rb_define_class_under(rb_msg,"RbTask",rb_cObject);
+  rb_host = rb_define_class_under(rb_msg,"RbHost",rb_cObject);
 
   //Task Methods FIXME: Convert to methods
   rb_define_module_function(rb_task,"new",(rb_meth)rb_task_new,3);
