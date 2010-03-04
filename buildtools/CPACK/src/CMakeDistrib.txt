@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(prefix "/home/navarrop/Bureau/test_install/")
-set(CPACK_SET_DESTDIR on)
 set(simgrid_version "3.3.5")
 
 set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
@@ -9,9 +7,9 @@ set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}_rev_${SVN_VERSION}")
 set(CPACK_GENERATOR "TBZ2") #;TGZ;TZ;ZIP
-	
+
 if(distrib)
-	
+
 set(to_svg	
 	${XBT_RL_SRC}
 	${EXTRA_DIST}
@@ -51,8 +49,6 @@ set(to_svg
 		install(FILES ${file} DESTINATION "${file_location}")
 	endforeach(file ${EXTRA_DIST})
 
-	set(CMAKE_INSTALL_PREFIX .)
-
 	###copy doc
 	install(DIRECTORY "${PROJECT_DIRECTORY}/doc/"
 	DESTINATION "doc/"
@@ -68,11 +64,13 @@ set(to_svg
 	PATTERN ".git" EXCLUDE 
 	PATTERN "*~" EXCLUDE
 	)
+	set(CPACK_SET_DESTDIR on)
+	set(CMAKE_INSTALL_PREFIX .)
 
-elseif(distrib)
+endif(distrib)
 
-	set(CMAKE_INSTALL_PREFIX ${prefix})
-
+if(NOT distrib)
+	
 	###install libs
 	install(DIRECTORY "${PROJECT_DIRECTORY}/src/.libs/"
 	DESTINATION "lib/"
@@ -92,7 +90,9 @@ elseif(distrib)
 	DIRECTORY "${PROJECT_DIRECTORY}/doc/html/" 
 	DESTINATION "doc/simgrid/html" 
 	)	
+	set(CPACK_SET_DESTDIR on)
+	set(CMAKE_INSTALL_PREFIX ${prefix})
 
-endif(distrib)
+endif(NOT distrib)
 
 include(CPack)
