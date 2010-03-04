@@ -67,7 +67,7 @@ void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
 VALUE rb_task_receive(VALUE class, VALUE mailbox) {
   // Task
   m_task_t task = NULL;
-  INFO1("Receiving a task on mailbox '%s'",RSTRING(mailbox)->ptr);
+  INFO2("Receiving a task on mailbox '%s', store it into %p",RSTRING(mailbox)->ptr,&task);
   MSG_task_receive(&task,RSTRING(mailbox)->ptr);
   INFO2("XXXXXXXXReceived a task %p %s",task,task->name);
   return Data_Wrap_Struct(class, 0, rb_task_free, task);

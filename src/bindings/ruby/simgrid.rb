@@ -3,8 +3,6 @@
 require 'simgrid_ruby'
 require 'thread'
 
-$DEBUG = false  # This is a Global Variable Useful for MSG::debugging
-
 ###########################################################################
 # Class Semaphore 
 ###########################################################################
@@ -50,11 +48,13 @@ class Semaphore
   end
 
   def acquire
-    MSG::debug(Thread.current.to_s+" acquires "+self.to_s)
     Thread.critical = true
     if (@counter -= 1) < 0
+      MSG::debug(Thread.current.to_s+" acquires "+self.to_s+". That's blocking.")
       @waiting_list.push(Thread.current)
       Thread.stop
+    else
+      MSG::debug(Thread.current.to_s+" acquires "+self.to_s+". It was free.")      
     end
     self
   ensure
@@ -62,15 +62,14 @@ class Semaphore
   end
 
   def release
-    MSG::debug(Thread.current.to_s+" releases "+self.to_s)
     Thread.critical = true
     begin
       if (@counter += 1) <= 0
         t = @waiting_list.shift
         t.wakeup if t
-        MSG::debug("Wakeup "+t.to_s)
+        MSG::debug(Thread.current.to_s+" releases "+self.to_s+". Wakeup "+t.to_s)
       else 
-        MSG::debug("Nobody to wakeup")
+        MSG::debug(Thread.current.to_s+" releases "+self.to_s+". Nobody to wakeup")
       end
     rescue ThreadError
       retry
@@ -93,7 +92,7 @@ class MSG::Process < Thread
     def initialize(*args)
       super(){
 	
-     raise "Bad Number Of arguments to create a Ruby Process (name,args,prop) " if args.size < 3
+     raise "Bad number of arguments to create a Ruby process. Expected (name,args,prop) " if args.size < 3
      
 #     @cv = ConditionVariable.new
 #     @mutex = Mutex.new
@@ -109,17 +108,14 @@ class MSG::Process < Thread
       }
     end
     
-  # main
   def main(args) 
     # To be overriden by childs
     raise("You must define a main() function in your process, containing the code of this process")
   end
      
-  # Start : To keep the process alive and waiting via semaphore
   def start()
     @schedBegin.acquire()
-    # execute the main code of the process     
-    MSG::debug("Begin execution")
+    MSG::debug("Let's execute the main() of the Ruby process")
     main(@pargs)
 #     processExit(self) # Exit the Native Process
     @schedEnd.release()
@@ -187,7 +183,8 @@ class MSG::Task < MSG::RbTask
     super(self,mailbox)
   end
   
-#   FIXME : this methode should be associated to the class !! it reurn a task
+#   FIXME : this method should be associated to the class !! it return a task
+# FIXME: simply killing this adapter method should do the trick 
   def receive(mailbox)
     super(self,mailbox)
   end
@@ -211,7 +208,6 @@ class MSG::Task < MSG::RbTask
   def listenFromHost(t_alias,host)
     super(t_alias,host)
   end
-    
 end  
 
 ############################################
@@ -246,7 +242,6 @@ class MSG::Host < MSG::RbHost
   def number
     super()
   end
-  
 end
 
 #########################
