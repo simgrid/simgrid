@@ -412,6 +412,11 @@ file(GLOB_RECURSE add_src_files
 
 file(GLOB_RECURSE include_files
 "${PROJECT_DIRECTORY}/include/*.h"
+"${PROJECT_DIRECTORY}/teshsuite/*.h"
+"${PROJECT_DIRECTORY}/testsuite/*.h"
+"${PROJECT_DIRECTORY}/tools/*.h"
+"${PROJECT_DIRECTORY}/examples/*.h"
+"${PROJECT_DIRECTORY}/src/*.h.in"
 "${PROJECT_DIRECTORY}/include/*.h.in"
 )
 #message("\n\ninclude:\n${include_files}")
