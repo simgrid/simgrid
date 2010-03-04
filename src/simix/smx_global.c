@@ -135,6 +135,24 @@ void SIMIX_display_process_status(void)
         free(who);
         who = who2;
       }
+    } else if (process->sem) {
+      who2 =
+        bprintf
+        ("%s Blocked on semaphore %p; Waiting for the following actions:",
+         who,
+         (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
+         process->sem : (void *) 0xdead);
+      free(who);
+      who = who2;
+      xbt_fifo_foreach(process->sem->actions, item, act, smx_action_t) {
+        who2 =
+          bprintf("%s '%s'(%p)", who, act->name,
+                  (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose))
+                  ? act : (void *) 0xdead);
+        free(who);
+        who = who2;
+      }
+
     } else {
       who2 =
         bprintf
