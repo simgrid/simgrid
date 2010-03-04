@@ -1,0 +1,17 @@
+<!-- Example file of how to use trace replay, with actions split in
+     separate files, one per process.
+     Launch it like this: 
+     
+  ./actions ../small_platform.xml actions_deployment_split.xml 
+-->
+
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <process host="Tremblay" function="toto">
+    <argument value="actions_toto.txt"/>
+  </process>
+  <process host="Jupiter" function="tutu">
+    <argument value="actions_tutu.txt"/>
+  </process>
+</platform>

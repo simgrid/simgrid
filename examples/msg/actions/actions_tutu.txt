@@ -1,0 +1,4 @@
+# sample action file (with only the actions for tutu, 
+#                     to be launched by deployment file)
+tutu send toto 1e10
+tutu sleep 12
