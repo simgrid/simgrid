@@ -9,6 +9,9 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Make JniException a runtime exception, so that there is no need to
     declare the fact that you may encounter such a beast. I guess that
     nobody will ever want to survive such error.
+ Ruby Bindings: create it
+  * That's new and great, you should try it out. 
+    Kinda the same functionalities than Java bindings
  SimDag:
   * Kill the useless "rate" argument of SD_task_get_execution_time()
     Everyone used to provide -1 as a value, it was not used, and the
