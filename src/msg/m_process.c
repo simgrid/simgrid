@@ -36,10 +36,14 @@ void __MSG_process_cleanup(void *arg)
   m_process_t proc = ((smx_process_t) arg)->data;
   xbt_fifo_remove(msg_global->process_list, proc);
   SIMIX_process_cleanup(arg);
-  free(proc->name);
-  proc->name = NULL;
-  free(proc->simdata);
-  proc->simdata = NULL;
+  if (proc->name) {
+    free(proc->name);
+    proc->name = NULL;
+  }
+  if (proc->simdata) {
+    free(proc->simdata);
+    proc->simdata = NULL;
+  }
   free(proc);
 
   return;

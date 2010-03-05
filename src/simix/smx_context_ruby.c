@@ -89,9 +89,11 @@ static void smx_ctx_ruby_free(smx_context_t context) {
   free(context);
   context = NULL; 
   }*/
-  DEBUG1("smx_ctx_ruby_free_context(%s)",context->argv[0]);
-  free (context);
-  context = NULL;
+  if (context) {
+    DEBUG1("smx_ctx_ruby_free_context(%p)",context);
+    free (context);
+    context = NULL;
+  }
 }
 
 static void smx_ctx_ruby_start(smx_context_t context) {
@@ -102,7 +104,7 @@ static void smx_ctx_ruby_start(smx_context_t context) {
 }
 
 static void smx_ctx_ruby_stop(smx_context_t context) {
-  DEBUG1("smx_ctx_ruby_stop(%s)",context->argv[0]);
+  DEBUG0("smx_ctx_ruby_stop()");
 
   VALUE process = Qnil;
   smx_ctx_ruby_t ctx_ruby,current;
@@ -128,7 +130,6 @@ static void smx_ctx_ruby_stop(smx_context_t context) {
     process = ctx_ruby->process;
     ctx_ruby->process = Qnil;
   }
-  DEBUG1("smx_ctx_ruby_stop(%s)...Done",context->argv[0]);
 }
 
 static void smx_ctx_ruby_suspend(smx_context_t context) {

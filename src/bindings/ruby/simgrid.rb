@@ -117,8 +117,9 @@ class MSG::Process < Thread
     @schedBegin.acquire()
     MSG::debug("Let's execute the main() of the Ruby process")
     main(@pargs)
-#     processExit(self) # Exit the Native Process
     @schedEnd.release()
+    MSG::debug("Released my schedEnd, bailing out")
+    processExit(self) # Exit the Native Process
   end
     
 
