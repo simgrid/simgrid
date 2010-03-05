@@ -315,6 +315,24 @@ XBT_INLINE double SIMIX_communication_get_remains(smx_comm_t comm)
   return SIMIX_action_get_remains(comm->act);
 }  
 
+/******************************************************************************/
+/*                    SIMIX_network_copy_data callbacks                       */
+/******************************************************************************/
+static void (*SIMIX_network_copy_data_callback)(smx_comm_t, size_t) = &SIMIX_network_copy_pointer_callback;
+
+void SIMIX_network_set_copy_data_callback(void (*callback)(smx_comm_t, size_t)) {
+  SIMIX_network_copy_data_callback = callback;
+}
+
+void SIMIX_network_copy_pointer_callback(smx_comm_t comm, size_t buff_size) {
+  xbt_assert1((buff_size == sizeof(void*)), "Cannot copy %d bytes: must be sizeof(void*)",buff_size);
+  *(void**)(comm->dst_buff) = comm->src_buff;
+}
+
+void SIMIX_network_copy_buffer_callback(smx_comm_t comm, size_t buff_size) {
+  memcpy(comm->dst_buff, comm->src_buff, buff_size);
+}
+
 /**
  *  \brief Copy the communication data from the sender's buffer to the receiver's one
  *  \param comm The communication
@@ -336,28 +354,14 @@ void SIMIX_network_copy_data(smx_comm_t comm)
 
   if(buff_size == 0)
     return;
-
-#ifdef HAVE_RUBY /* FIXME: KILLME */
-  INFO6("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
-      comm,
-      comm->src_proc->smx_host->name, comm->src_buff,
-      comm->dst_proc->smx_host->name, comm->dst_buff,
-      buff_size);
-#else
   DEBUG6("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
       comm,
       comm->src_proc->smx_host->name, comm->src_buff,
       comm->dst_proc->smx_host->name, comm->dst_buff,
       buff_size);
-#endif
-
-  xbt_assert1((buff_size == sizeof(void*)), "Cannot copy %d bytes: must be sizeof(void*)",buff_size);
-  //FIXME: cleanup
-//  if  {
-    *(void**)(comm->dst_buff) = (comm->src_buff);
-/*  } else {
-    memcpy(comm->dst_buff, comm->src_buff, buff_size);
-  }*/
+  if(SIMIX_network_copy_data_callback) {
+    SIMIX_network_copy_data_callback(comm, buff_size);
+  }
 }
 
 /**

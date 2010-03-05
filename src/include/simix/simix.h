@@ -211,6 +211,9 @@ XBT_PUBLIC(double) SIMIX_communication_get_remains(smx_comm_t comm);
 XBT_PUBLIC(void *) SIMIX_communication_get_data(smx_comm_t comm);
 
 /*****Networking*****/
+XBT_PUBLIC(void) SIMIX_network_set_copy_data_callback(void (*callback)(smx_comm_t, size_t));
+XBT_PUBLIC(void) SIMIX_network_copy_pointer_callback(smx_comm_t comm, size_t buff_size);
+XBT_PUBLIC(void) SIMIX_network_copy_buffer_callback(smx_comm_t comm, size_t buff_size);
 XBT_PUBLIC(void) SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
                                     double timeout, void *src_buff,
                                     size_t src_buff_size, smx_comm_t *comm, void *data);

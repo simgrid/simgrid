@@ -105,6 +105,7 @@ void smpi_global_init(void) {
   int i;
   MPI_Group group;
 
+  SIMIX_network_set_copy_data_callback(&SIMIX_network_copy_buffer_callback);
   process_count = SIMIX_process_count();
   process_data = xbt_new(smpi_process_data_t, process_count);
   for(i = 0; i < process_count; i++) {
