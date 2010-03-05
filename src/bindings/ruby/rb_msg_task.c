@@ -65,11 +65,16 @@ void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
 
 // Receiving Task (returns a Task)
 VALUE rb_task_receive(VALUE class, VALUE mailbox) {
-  // Task
-  m_task_t task = NULL;
+  // We must put the location where we copy the task
+  // pointer to on the heap, because the stack may move
+  // during the context switches (damn ruby internals)
+  m_task_t *ptask = malloc(sizeof(m_task_t));
+  m_task_t task;
+  *ptask = NULL;
   INFO2("Receiving a task on mailbox '%s', store it into %p",RSTRING(mailbox)->ptr,&task);
-  MSG_task_receive(&task,RSTRING(mailbox)->ptr);
-  INFO2("XXXXXXXXReceived a task %p %s",task,task->name);
+  MSG_task_receive(ptask,RSTRING(mailbox)->ptr);
+  task = *ptask;
+  free(ptask);
   return Data_Wrap_Struct(class, 0, rb_task_free, task);
 }
 
