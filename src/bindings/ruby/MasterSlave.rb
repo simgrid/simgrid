@@ -60,14 +60,14 @@ class Slave < MSG::Process
        info("Ready to Receive Task")
        task = MSG::Task.receive(mailbox)
        MSG::info("Task Received : " + task.name)
-       if (task_name == "finalize")
- 	       MSG::info("Slave" + s_mailbox + "got finalize msg")
+       if (task.name == "finalize")
+ 	       MSG::info("Slave " + mailbox + " got finalize msg")
 	       break
        end
-       MSG::info("Slave " + s_mailbox + " ...Processing" + task.name)
+       MSG::info("Slave " + mailbox + " ...Processing" + task.name)
        task.execute
     end
-    MSG::info("Slave " + s_mailbox +  "I'm Done , See You !!")
+    MSG::info("Slave " + mailbox +  "I'm Done , See You !!")
   end    
 end
 
