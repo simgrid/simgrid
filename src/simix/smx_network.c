@@ -359,9 +359,7 @@ void SIMIX_network_copy_data(smx_comm_t comm)
       comm->src_proc->smx_host->name, comm->src_buff,
       comm->dst_proc->smx_host->name, comm->dst_buff,
       buff_size);
-  if(SIMIX_network_copy_data_callback) {
-    SIMIX_network_copy_data_callback(comm, buff_size);
-  }
+  (*SIMIX_network_copy_data_callback)(comm, buff_size);
 }
 
 /**
