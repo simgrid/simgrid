@@ -350,11 +350,14 @@ void SIMIX_network_copy_data(smx_comm_t comm)
       comm->dst_proc->smx_host->name, comm->dst_buff,
       buff_size);
 #endif
-  if (buff_size == sizeof(void*)) {
-    *(void**)(comm->dst_buff) = *(void**)(comm->src_buff);
-  } else {
+
+  xbt_assert1((buff_size == sizeof(void*)), "Cannot copy %d bytes: must be sizeof(void*)",buff_size);
+  //FIXME: cleanup
+//  if  {
+    *(void**)(comm->dst_buff) = (comm->src_buff);
+/*  } else {
     memcpy(comm->dst_buff, comm->src_buff, buff_size);
-  }
+  }*/
 }
 
 /**

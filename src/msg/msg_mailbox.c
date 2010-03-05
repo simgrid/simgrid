@@ -187,7 +187,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
       SIMIX_cond_signal(mailbox->cond);
 
     SIMIX_network_send(mailbox->rdv, t_simdata->message_size, t_simdata->rate,
-                       timeout, &task, sizeof(void*), &t_simdata->comm, task);
+                       timeout, task, sizeof(void*), &t_simdata->comm, task);
   }
 
   CATCH(e){
