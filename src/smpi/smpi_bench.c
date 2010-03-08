@@ -4,8 +4,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
                                 "Logging specific to SMPI (benchmarking)");
 
-void smpi_execute(double duration)
-{
+static void smpi_execute(double duration) {
   smx_host_t host;
   smx_action_t action;
   smx_mutex_t mutex;
@@ -21,9 +20,9 @@ void smpi_execute(double duration)
     action = SIMIX_action_execute(host, "computation", duration);
     SIMIX_mutex_lock(mutex);
     SIMIX_register_action_to_condition(action, cond);
-    for (state = SIMIX_action_get_state(action);
-         state == SURF_ACTION_READY ||
-         state == SURF_ACTION_RUNNING; state = SIMIX_action_get_state(action)) {
+    for(state = SIMIX_action_get_state(action);
+        state == SURF_ACTION_READY ||
+        state == SURF_ACTION_RUNNING; state = SIMIX_action_get_state(action)) {
       SIMIX_cond_wait(cond, mutex);
     }
     SIMIX_unregister_action_to_condition(action, cond);
@@ -34,17 +33,21 @@ void smpi_execute(double duration)
   }
 }
 
-void smpi_bench_begin()
-{
+void smpi_bench_begin(const char* mpi_call) {
+  double simulated = smpi_process_simulated_elapsed();
+
+  if(mpi_call && xbt_cfg_get_int(_surf_cfg_set, "SMPE")) {
+    INFO2("SMPE: %s in %fs", mpi_call, simulated);
+  }
   xbt_os_timer_start(smpi_process_timer());
 }
 
-void smpi_bench_end()
-{
+void smpi_bench_end() {
   xbt_os_timer_t timer = smpi_process_timer();
 
   xbt_os_timer_stop(timer);
   smpi_execute(xbt_os_timer_elapsed(timer));
+  smpi_process_simulated_reset();
 }
 
 /*

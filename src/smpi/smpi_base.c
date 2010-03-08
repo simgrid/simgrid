@@ -22,12 +22,12 @@ void smpi_process_init(int* argc, char*** argv) {
   index = atoi((*argv)[1]);
   data = smpi_process_remote_data(index);
   SIMIX_process_set_data(proc, data);
-  DEBUG2("<%d> New process in the game: %p", index, proc);
   if (*argc > 2) {
     memmove(&(*argv)[1], &(*argv)[2], sizeof(char *) * (*argc - 2));
     (*argv)[(*argc) - 1] = NULL;
   }
   (*argc)--;
+  DEBUG2("<%d> New process in the game: %p", index, proc);
 }
 
 void smpi_process_destroy(void) {

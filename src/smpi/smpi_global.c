@@ -13,6 +13,7 @@ typedef struct s_smpi_process_data {
   xbt_fifo_t pending_sent;
   xbt_fifo_t pending_recv;
   xbt_os_timer_t timer;
+  double simulated;
 } s_smpi_process_data_t;
 
 static smpi_process_data_t* process_data = NULL;
@@ -42,6 +43,18 @@ xbt_os_timer_t smpi_process_timer(void) {
   smpi_process_data_t data = smpi_process_data();
 
   return data->timer;
+}
+
+void smpi_process_simulated_reset(void) {
+  smpi_process_data_t data = smpi_process_data();
+
+  data->simulated = SIMIX_get_clock();
+}
+
+double smpi_process_simulated_elapsed(void) {
+  smpi_process_data_t data = smpi_process_data();
+
+  return SIMIX_get_clock() - data->simulated;
 }
 
 void smpi_process_post_send(MPI_Comm comm, MPI_Request request) {
@@ -102,6 +115,7 @@ void smpi_process_post_recv(MPI_Request request) {
 }
 
 void smpi_global_init(void) {
+  double clock = SIMIX_get_clock();
   int i;
   MPI_Group group;
 
@@ -114,6 +128,7 @@ void smpi_global_init(void) {
     process_data[i]->pending_sent = xbt_fifo_new();
     process_data[i]->pending_recv = xbt_fifo_new();
     process_data[i]->timer = xbt_os_timer_new();
+    process_data[i]->simulated = clock;
   }
   group = smpi_group_new(process_count);
   MPI_COMM_WORLD = smpi_comm_new(group);
@@ -151,6 +166,11 @@ int main(int argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, "display_timing",
                    "Boolean indicating whether we should display the timing after simulation.",
                    xbt_cfgelm_int, &default_display_timing, 1, 1, NULL, NULL);
+
+  int default_display_smpe = 0;
+  xbt_cfg_register(&_surf_cfg_set, "SMPE",
+                   "Boolean indicating whether we should display simulated time spent in MPI calls.",
+                   xbt_cfgelm_int, &default_display_smpe, 1, 1, NULL, NULL);
 
   SIMIX_global_init(&argc, argv);
 
