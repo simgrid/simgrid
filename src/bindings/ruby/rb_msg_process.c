@@ -30,7 +30,6 @@ VALUE rb_process_getBind(VALUE ruby_process) {
   return rb_funcall(ruby_process,rb_intern("getBind"),0);
 }
 
-
 // Set Bind
 void rb_process_setBind(VALUE ruby_process,long bind) {
   VALUE r_bind = LONG2FIX(bind);
@@ -62,13 +61,12 @@ void rb_process_schedule( VALUE ruby_process ) {
   rb_funcall(ruby_process,rb_intern("schedule"),0);
 }
 
-/***************************************************
 
+/***************************************************
 Function for Native Process ( Bound ) Management
 
 Methods Belong to MSG Module
-
- ****************************************************/
+****************************************************/
 
 // Process To Native
 m_process_t rb_process_to_native(VALUE ruby_process) {
@@ -122,7 +120,6 @@ VALUE rb_process_isSuspended(VALUE class,VALUE ruby_process) {
     rb_raise (rb_eRuntimeError,"Process not Bound...while testing if suspended");
     return Qfalse;
   }
-
   if(MSG_process_is_suspended(process))
     return Qtrue;
   return Qfalse;

@@ -52,7 +52,8 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
     free(process);
     rb_raise(rb_eRuntimeError,"Host not bound while creating native process");
   }
-  process->simdata->PID = msg_global->PID++; //  msg_global ??
+
+  process->simdata->PID = msg_global->PID++; 
 
   DEBUG7("fill in process %s/%s (pid=%d) %p (sd=%p , host=%p, host->sd=%p)",
       process->name , process->simdata->m_host->name,process->simdata->PID,
@@ -85,12 +86,18 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
 
 void rb_application_handler_on_start_document(void) {
   
+
+   args = rb_ary_new();  // Max lenght = 16 !!
+   prop = rb_ary_new();
+
 }
 
 void rb_application_handler_on_end_document(void) {
 
-  //application_handler_class = Qnil; FIXME: probably leaking
-  
+  args = Qnil;
+  prop = Qnil;
+  function_name = Qnil;
+  host_name = Qnil;  
 }
 
 void rb_application_handler_on_begin_process(void) {
@@ -110,6 +117,7 @@ void rb_application_handler_on_process_arg(void) {
 }
 
 void rb_application_handler_on_property(void) {
+
   VALUE id = rb_str_new2(A_surfxml_prop_id);
   VALUE val =  rb_str_new2(A_surfxml_prop_value);
   int i_id = NUM2INT (id);
@@ -117,11 +125,8 @@ void rb_application_handler_on_property(void) {
 
 }
 
-
 void rb_application_handler_on_end_process(void) {
 
   rb_process_create_with_args(function_name,args,prop,host_name);
     
 }
-
-

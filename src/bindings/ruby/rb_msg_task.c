@@ -12,7 +12,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);
 
 // Free Method
 void rb_task_free(m_task_t tk) {
-  MSG_task_destroy(tk);
+  //MSG_task_destroy(tk); ( This cause a bug !! is it really necessary ?!! not really sure !! )
 }
 
 // New Method

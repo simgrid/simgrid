@@ -11,6 +11,7 @@ include MSG
 
 class Master < MSG::Process  
   # main : that function that will be executed when Running Simulation
+
   def main(args) # args is an array containing arguments for function master
    size = args.size
    for i in 0..size-1
@@ -43,6 +44,7 @@ class Master < MSG::Process
      finalize_task.send(mailbox)
    end
    MSG::info("Master : Everything's Done")
+   Thread.list.each {|t| p t}
   end    
 end
 
@@ -50,6 +52,7 @@ end
 # Class Slave
 #################################################
 class Slave < MSG::Process
+
   def main(args)
     mailbox = "slave " + args[0]
     for i in 0..args.size-1
@@ -66,11 +69,11 @@ class Slave < MSG::Process
        end
        MSG::info("Slave " + mailbox + " ...Processing" + task.name)
        task.execute
+       MSG::info("task "+ task.name + " Executed !!")
     end
     MSG::info("Slave " + mailbox +  "I'm Done , See You !!")
   end    
 end
-
 
 #################################################
 # main chunck
@@ -85,7 +88,8 @@ else
   #Thread.list.each {|t| p t}
 end
 
-# Thread.list.each {|t| p t}
 MSG.run
+Thread.list.each {|t| p t}
 puts "Simulation time : " + MSG.getClock .to_s
+
 # exit()

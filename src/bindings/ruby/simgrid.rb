@@ -1,16 +1,20 @@
-# FIXME: add license like in C files
-
+#  Task-related bindings to ruby  */
+# 
+#  Copyright 2010. The SimGrid Team. All right reserved. */
+# 
+# This program is free software; you can redistribute it and/or modify it
+#  under the terms of the license (GNU LGPL) which comes with this package. */
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 require 'simgrid_ruby'
 require 'thread'
 
-###########################################################################
+##########################################################
 # Class Semaphore 
-###########################################################################
+##########################################################
 class MySemaphore
    Thread.abort_on_exception = true
     attr_accessor :permits
 
-   
   def initialize (permits = 0)
        @permits = permits
   end
@@ -87,17 +91,17 @@ class MSG::Process < Thread
   @@nextProcessId = 0
 
 # Attributes
-  attr_reader :bind, :id, :name, :pargs ,:properties# Read only
+  attr_reader :name, :pargs ,:properties, :cv, :mutex	# Read only
   
     def initialize(*args)
       super(){
 	
      raise "Bad number of arguments to create a Ruby process. Expected (name,args,prop) " if args.size < 3
      
-#     @cv = ConditionVariable.new
-#     @mutex = Mutex.new
-    @schedBegin = Semaphore.new(0)
-    @schedEnd = Semaphore.new(0)    
+    @cv = ConditionVariable.new
+    @mutex = Mutex.new
+    @schedBegin = MySemaphore.new(0)
+    @schedEnd = MySemaphore.new(0)    
     @id = @@nextProcessId
     @@nextProcessId +=1
     @name = args[0]
@@ -114,34 +118,37 @@ class MSG::Process < Thread
   end
      
   def start()
-    @schedBegin.acquire()
+     @schedBegin.acquire(@mutex,@cv)
+
     MSG::debug("Let's execute the main() of the Ruby process")
     main(@pargs)
+<<<<<<< .mine
+#     processExit(self) # FIXME : Fix the simix_context_ruby_stop to stop context process before quitting
+    @schedEnd.release(@mutex,@cv)
+    
+=======
     @schedEnd.release()
+>>>>>>> .r7205
     MSG::debug("Released my schedEnd, bailing out")
     processExit(self) # Exit the Native Process
   end
     
-
-  # FIXME: useless, there is an attribute for bind (or the attribute is useless)
-  # Get Bind
   def getBind()
     return @bind
   end
-  
-  # Set Binds FIXME: same
+   
   def setBind(bind)
     @bind = bind
   end
     
   def unschedule()
-    @schedEnd.release()
-    @schedBegin.acquire()
+    @schedEnd.release(@mutex,@cv)
+    @schedBegin.acquire(@mutex,@cv)
   end
   
-  def schedule()
-    @schedBegin.release()
-    @schedEnd.acquire()
+  def schedule()   
+    @schedBegin.release(@mutex,@cv)
+    @schedEnd.acquire(@mutex,@cv)
   end
   
   def pause()
@@ -184,12 +191,7 @@ class MSG::Task < MSG::RbTask
     super(self,mailbox)
   end
   
-#   FIXME : this method should be associated to the class !! it return a task
-# FIXME: simply killing this adapter method should do the trick 
-  def receive(mailbox)
-    super(self,mailbox)
-  end
-  
+
   def source
     super(self)
   end
@@ -211,9 +213,9 @@ class MSG::Task < MSG::RbTask
   end
 end  
 
-############################################
+####################################################
 # Host Extend from the native Class RbHost
-############################################
+####################################################
 class MSG::Host < MSG::RbHost
 
   def getByName(name)

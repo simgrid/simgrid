@@ -65,16 +65,17 @@ static void msg_run(VALUE class) {
   DEBUG0
   ("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
   /* Cleanup Ruby hosts */
-  DEBUG0("Clean Ruby World");
+  DEBUG0("Clean Ruby World (TODO) ");
   hosts = MSG_get_host_table();
   host_count = MSG_get_host_number();
   for (cpt=0;cpt<host_count;cpt++) {
-    rbHost = (VALUE)((hosts[cpt])->data);// ??!!
+    rbHost = (VALUE)((hosts[cpt])->data);
   }
-
-  if (MSG_OK != MSG_clean()){
+  
+  //FIXME  Before Cleanin' up , we should stop process running to avoir a ThreadError
+ /* if (MSG_OK != MSG_clean()){
     rb_raise(rb_eRuntimeError,"MSG_clean() failed");
-  }
+  }*/
   return;
 }
 
@@ -128,31 +129,11 @@ static void msg_debug(VALUE class,VALUE msg) {
   DEBUG1("%s",s);
 }
 
-// Get Clock FIXME: return the double instead of float
+// get Clock
 static VALUE msg_get_clock(VALUE class) {
 
   return rb_float_new(MSG_get_clock());
 
-}
-
-// Ruby intropspection : Instanciate a ruby Class From its Name
-// Used by ProcessFactory::createProcess
-
-// FIXME: KILLME?
-static VALUE msg_new_ruby_instance(VALUE class,VALUE className) {
-  ruby_init();
-  ruby_init_loadpath();
-  char * p_className = RSTRING(className)->ptr;
-
-  return rb_funcall3(rb_const_get(rb_cObject, rb_intern(p_className)),rb_intern("new"),0, 0);
-}
-
-//This Time With Args FIXME: KILLME
-static VALUE msg_new_ruby_instance_with_args(VALUE class,VALUE className,VALUE args) {
-  ruby_init();
-  ruby_init_loadpath();
-  char * p_className = RSTRING(className)->ptr;
-  return rb_funcall(rb_const_get(rb_cObject, rb_intern(p_className)),rb_intern("new"), 1, args);
 }
 
 
@@ -164,7 +145,7 @@ void Init_simgrid_ruby() {
 
   // Modules
   rb_msg = rb_define_module("MSG");
-  //Associated Environment Methods!
+  //Associated Environment Methods
   rb_define_module_function(rb_msg,"init",(rb_meth)msg_init,1);
   rb_define_module_function(rb_msg,"run",(rb_meth)msg_run,0);
   rb_define_module_function(rb_msg,"createEnvironment",(rb_meth)msg_createEnvironment,1);
@@ -172,14 +153,13 @@ void Init_simgrid_ruby() {
   rb_define_module_function(rb_msg,"info",(rb_meth)msg_info,1);
   rb_define_module_function(rb_msg,"debug",(rb_meth)msg_debug,1);
   rb_define_module_function(rb_msg,"getClock",(rb_meth)msg_get_clock,0);
-  rb_define_module_function(rb_msg,"rubyNewInstance",(rb_meth)msg_new_ruby_instance,1);
-  rb_define_module_function(rb_msg,"rubyNewInstanceArgs",(rb_meth)msg_new_ruby_instance_with_args,2);
 
-  // Associated Process Methods
+  //Associated Process Methods
   rb_define_method(rb_msg,"processSuspend",(rb_meth)rb_process_suspend,1);
   rb_define_method(rb_msg,"processResume",(rb_meth)rb_process_resume,1);
   rb_define_method(rb_msg,"processIsSuspend",(rb_meth)rb_process_isSuspended,1);
   rb_define_method(rb_msg,"processKill",(rb_meth)rb_process_kill_up,1);
+  rb_define_method(rb_msg,"processKillDown",(rb_meth)rb_process_kill_down,1);
   rb_define_method(rb_msg,"processGetHost",(rb_meth)rb_process_getHost,1);
   rb_define_method(rb_msg,"processExit",(rb_meth)rb_process_exit,1);
 
@@ -187,7 +167,7 @@ void Init_simgrid_ruby() {
   rb_task = rb_define_class_under(rb_msg,"RbTask",rb_cObject);
   rb_host = rb_define_class_under(rb_msg,"RbHost",rb_cObject);
 
-  //Task Methods FIXME: Convert to methods
+  //Task Methods 
   rb_define_module_function(rb_task,"new",(rb_meth)rb_task_new,3);
   rb_define_module_function(rb_task,"compSize",(rb_meth)rb_task_comp,1);
   rb_define_module_function(rb_task,"name",(rb_meth)rb_task_name,1);
