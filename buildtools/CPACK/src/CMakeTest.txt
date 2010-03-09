@@ -1,3 +1,7 @@
+### Be sure we can execut some launch file
+exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh" OUTPUT_VARIABLE "OKITOKI")
+exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE "OKITOKI")
+
 ### For code coverage
 ### Set some variables
 SET(UPDATE_TYPE "svn")
@@ -227,6 +231,3 @@ IF(${ARCH_32_BITS})
   set_tests_properties(amok-bandwidth-sg-32 PROPERTIES WILL_FAIL true)  
   set_tests_properties(amok-saturate-sg-32 PROPERTIES WILL_FAIL true) 
 ENDIF(${ARCH_32_BITS})
-
-### Be sure we can execut some launch file
-exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/src/smpi/smpirun")
