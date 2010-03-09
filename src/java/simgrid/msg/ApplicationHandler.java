@@ -11,45 +11,30 @@
 
 package simgrid.msg;
 
-/* FIXME: Kill the process factory: that's just a storage of informations, AppHandler can do the work itself */
-
 import java.util.Vector;
 import java.util.Hashtable;
 
 public final class ApplicationHandler {
 
-	/* 
-	 * This class is used to create the processes described in the deployment file.
-	 */
-	static class ProcessFactory {
+
 		/**
 		 * The vector which contains the arguments of the main function 
 		 * of the process object.
 		 */
-		public Vector<String> args;
+		public  static Vector<String> args;
 
-		public Hashtable<String,String> properties;
+		public  static Hashtable<String,String> properties;
 
 		/**
 		 * The name of the host of the process.
 		 */
-		private String hostName;
+		private  static String hostName;
 
 		/**
 		 * The function of the process.
 		 */
-		private String function;
-
-
-		/**
-		 * Default constructor.
-		 */
-		public ProcessFactory() {
-			this.args = new Vector<String>();
-			this.properties = new Hashtable<String,String>();
-			this.hostName = null;
-			this.function = null;
-		}
+		private  static String function;
+		
 		/**
 		 * This method is called by the start element handler.
 		 * It sets the host and the function of the process to create,
@@ -60,9 +45,9 @@ public final class ApplicationHandler {
 		 * @function			The function of the process to create.
 		 *
 		 */
-		public void setProcessIdentity(String hostName, String function) {
-			this.hostName = hostName;
-			this.function = function;
+		public  static void setProcessIdentity(String hostName_, String function_) {
+			hostName = hostName_;    
+			function = function_;
 
 			if (!args.isEmpty())
 				args.clear();
@@ -77,39 +62,39 @@ public final class ApplicationHandler {
 		 *
 		 * @arg					The argument to add.
 		 *
-		 */ public void registerProcessArg(String arg) {
+		 */ public  static void registerProcessArg(String arg) {
 			 args.add(arg);
 		 }
 
-		 public void setProperty(String id, String value)
+		 public  static void setProperty(String id, String value)
 		 {
 			 properties.put(id,value);	
 		 }
 
-		 public String getHostName()
+		 public  static String getHostName()
 		 {
 			 return hostName;
 		 }
 
 		 @SuppressWarnings("unchecked")
-		 public void createProcess() {
+		 public  static void createProcess() {
 			 try {
-				 Class<simgrid.msg.Process> cls = (Class<Process>) Class.forName(this.function);
+				 Class<simgrid.msg.Process> cls = (Class<Process>) Class.forName(function);
 
 				 simgrid.msg.Process process = cls.newInstance();
-				 process.name = this.function;
+				 process.name = function;
 				 process.id = simgrid.msg.Process.nextProcessId++;
-				 Host host = Host.getByName(this.hostName);
+				 Host host = Host.getByName(hostName);
 
 				 MsgNative.processCreate(process, host);
-				 Vector<String> args = processFactory.args;
-				 int size = args.size();
+				 Vector<String> args_ = args;
+				 int size = args_.size();
 
 				 for (int index = 0; index < size; index++)
-					 process.args.add(args.get(index));
+					 process.args.add(args_.get(index));
 
-				 process.properties = this.properties;
-				 this.properties = new Hashtable();
+				 process.properties = properties;
+				 properties = new Hashtable();
 
 			 } catch(NativeException e) {
 				 System.out.println(e.toString());
@@ -120,7 +105,7 @@ public final class ApplicationHandler {
 				 e.printStackTrace();
 
 			 } catch(ClassNotFoundException e) {
-				 System.out.println(this.function +
+				 System.out.println(function +
 				 " class not found\n The attribut function of the element process  of your deployment file\n must correspond to the name of a Msg Proces class)");
 				 e.printStackTrace();
 
@@ -133,33 +118,29 @@ public final class ApplicationHandler {
 			 } 
 
 		 }
+	
+
+	public  static void onStartDocument() {
+			args = new Vector<String>();
+			properties = new Hashtable<String,String>();
+			hostName = null;
+			function = null;
 	}
 
-	/* 
-	 * the ProcessFactory object used to create the processes.
-	 */
-	public static ProcessFactory processFactory;
-
-	/**
-	 * instanciates the process factory 
-	 */
-	public static void onStartDocument() {
-		processFactory = new ProcessFactory();
+	public  static void onBeginProcess(String hostName, String function) {
+		setProcessIdentity(hostName, function);
+		
+	}
+	public  static void onProperty(String id, String value) {
+		setProperty(id, value);
 	}
 
-	public static void onBeginProcess(String hostName, String function) {
-		processFactory.setProcessIdentity(hostName, function);
-	}
-	public static void onProperty(String id, String value) {
-		processFactory.setProperty(id, value);
+	public  static void onProcessArg(String arg) {
+		registerProcessArg(arg);
 	}
 
-	public static void onProcessArg(String arg) {
-		processFactory.registerProcessArg(arg);
-	}
-
-	public static void onEndProcess() {
-		processFactory.createProcess();
+	public  static void onEndProcess() {
+		createProcess();
 	}        
 
 	public static void onEndDocument() {
