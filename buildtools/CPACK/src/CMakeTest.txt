@@ -225,9 +225,3 @@ set_tests_properties(tesh-gras-dd-r_big32_2 PROPERTIES WILL_FAIL true)
 # Expected to fail until the parser gets better (v3.3.5?)
 set_tests_properties(simdag-metaxml_test PROPERTIES WILL_FAIL true)   
 set_tests_properties(tesh-simdag-flatifier PROPERTIES WILL_FAIL true)
-
-# These are broken, but should have their timings updated, that's all
-IF(${ARCH_32_BITS})
-  set_tests_properties(amok-bandwidth-sg-32 PROPERTIES WILL_FAIL true)  
-  set_tests_properties(amok-saturate-sg-32 PROPERTIES WILL_FAIL true) 
-ENDIF(${ARCH_32_BITS})
