@@ -423,7 +423,7 @@ else
      use_java="yes"
      AC_DEFINE(HAVE_JAVA,1, [defines whether Java bindings must be compiled or not])
   else   
-     use_java="no"
+     use_java="no (you may want to install the java-gcj-compat-dev package)"
   fi
 fi
 AC_MSG_RESULT(decide whether to compile java bindings... $use_java)
