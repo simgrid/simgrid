@@ -227,3 +227,6 @@ IF(${ARCH_32_BITS})
   set_tests_properties(amok-bandwidth-sg-32 PROPERTIES WILL_FAIL true)  
   set_tests_properties(amok-saturate-sg-32 PROPERTIES WILL_FAIL true) 
 ENDIF(${ARCH_32_BITS})
+
+### Be sure we can execut some launch file
+exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/src/smpi/smpirun")

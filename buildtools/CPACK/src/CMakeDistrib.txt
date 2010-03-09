@@ -27,6 +27,8 @@ set(to_svg
 	${add_src_files}
 	${include_files}
 	${xml_files}
+	${tesh_files}
+	${txt_files}
 	${PROJECT_DIRECTORY}/./CMakeLists.txt
 	${PROJECT_DIRECTORY}/./AUTHORS
 	${PROJECT_DIRECTORY}/./ChangeLog
@@ -47,7 +49,7 @@ endforeach(file ${EXTRA_DIST})
 
 ###copy doc
 install(DIRECTORY "${PROJECT_DIRECTORY}/doc/"
-DESTINATION "doc/"
+DESTINATION "/doc/"
 PATTERN ".svn" EXCLUDE 
 PATTERN ".git" EXCLUDE 
 PATTERN "*~" EXCLUDE
@@ -55,7 +57,7 @@ PATTERN "*~" EXCLUDE
 
 ###buildtools 
 install(DIRECTORY "${PROJECT_DIRECTORY}/buildtools/CPACK/"
-DESTINATION "buildtools/CPACK/"
+DESTINATION "/buildtools/CPACK/"
 PATTERN ".svn" EXCLUDE 
 PATTERN ".git" EXCLUDE 
 PATTERN "*~" EXCLUDE
