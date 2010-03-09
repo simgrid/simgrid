@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
+set_source_files_properties(_pmm_simulator.c _pmm_slave.c _pmm_master.c
+PROPERTIES GENERATED true)
+
 set(EXECUTABLE_OUTPUT_PATH "./")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 

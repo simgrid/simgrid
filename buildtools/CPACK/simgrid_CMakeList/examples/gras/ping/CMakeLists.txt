@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
+set_source_files_properties(_ping_simulator.c _ping_client.c _ping_server.c
+PROPERTIES GENERATED true)
+
 set(EXECUTABLE_OUTPUT_PATH "./")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 

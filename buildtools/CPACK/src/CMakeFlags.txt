@@ -3,6 +3,11 @@ set(optCFLAGS "")
 
 set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS}-g3)
 
+if(supernovae)
+	set(enable_compile_warnings true)
+	set(enable_compile_optimizations true)
+endif(supernovae)
+
 if(CMAKE_C_COMPILER MATCHES "/usr/bin/gcc")
 
 	if(enable_compile_warnings)

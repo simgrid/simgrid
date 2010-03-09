@@ -121,7 +121,7 @@ if(NOT init)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/properties)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
 
-	if(HAVE_JAVA)
+	if(HAVE_JAVA AND NOT init)
 		message("Make : src/simgrid.jar with : ${JAVA_COMPILE}")
 		exec_program("rm -rf ${PROJECT_DIRECTORY}/src/.classes" OUTPUT_VARIABLE "SIM_JAR_OK")
 		exec_program("rm ${PROJECT_DIRECTORY}/src/simgrid.jar" OUTPUT_VARIABLE "SIM_JAR_OK")
@@ -141,6 +141,6 @@ if(NOT init)
 		exec_program("rm ${PROJECT_DIRECTORY}/examples/java/suspend/*.class" OUTPUT_VARIABLE "SIM_JAR_OK")
 		exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
 
-	endif(HAVE_JAVA)
+	endif(HAVE_JAVA AND NOT init)
 
 endif(NOT init)

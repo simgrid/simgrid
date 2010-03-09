@@ -1,4 +1,4 @@
-if(MAINTAINER_MODE)
+if(enable_maintainer_mode)
 
 	find_path(FIG2DEV_PATH	NAMES fig2dev	PATHS NO_DEFAULT_PATHS)
 	find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
@@ -156,33 +156,18 @@ if(MAINTAINER_MODE)
 
 	endif(DOXYGEN_PATH AND FIG2DEV_PATH)
 
-	write_file("${PROJECT_DIRECTORY}/doc/logcategories.sh"
-	"#! /bin/sh	
-	pwd=`pwd`
-	rm -f $pwd/logcategories.doc
-	set -e
-	echo "/* Generated file, do not edit */"        > $pwd/logcategories.doc
-	echo "/** \addtogroup XBT_log_cats"             >> $pwd/logcategories.doc
-	echo "    @{"                                   >> $pwd/logcategories.doc
-	cd ${PROJECT_DIRECTORY}/src
-	../tools/doxygen/xbt_log_extract_hierarchy.pl 	>> $pwd/logcategories.doc
-	echo "@}*/"                                     >> $pwd/logcategories.doc"
-	)
+	file(WRITE ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\#! /bin/sh")	
+	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\npwd=`pwd`")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\nrm -f $pwd/logcategories.doc")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\nset -e")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\necho \"/* Generated file, do not edit */\"     > $pwd/logcategories.doc")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\necho \"/** \\addtogroup XBT_log_cats\"          >> $pwd/logcategories.doc")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\necho \"    @{\"                                >> $pwd/logcategories.doc")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\ncd ${PROJECT_DIRECTORY}/src")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\n${PROJECT_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl 	>> $pwd/logcategories.doc")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\necho \"@}*/\"                                 >> $pwd/logcategories.doc")
+
 	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/doc/logcategories.sh"  "${PROJECT_DIRECTORY}/doc/")
 	exec_program("${PROJECT_DIRECTORY}/doc/logcategories.sh"  "${PROJECT_DIRECTORY}/doc/")
 
-endif(MAINTAINER_MODE)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+endif(enable_maintainer_mode)

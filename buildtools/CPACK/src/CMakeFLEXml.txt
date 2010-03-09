@@ -1,4 +1,4 @@
-if(MAINTAINER_MODE)
+if(enable_maintainer_mode)
 
 find_program(FLEX_EXE NAMES flex)
 find_program(FLEXML_EXE NAMES flexml)
@@ -39,5 +39,5 @@ ENDIF(FLEXML_EXE)
 		message(FATAL_ERROR "Install flex and flexml before use maintainer mode")
 	endif(HAVE_FLEXML AND HAVE_FLEX)
 
-endif(MAINTAINER_MODE)
+endif(enable_maintainer_mode)
 

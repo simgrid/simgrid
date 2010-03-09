@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
+set_source_files_properties(_mmrpc_simulator.c _mmrpc_client.c _mmrpc_server.c
+PROPERTIES GENERATED true)
+
 set(EXECUTABLE_OUTPUT_PATH "./")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 

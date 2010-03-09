@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(simgrid_version "3.3.5")
 
 set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
@@ -7,8 +5,6 @@ set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}_rev_${SVN_VERSION}")
 set(CPACK_GENERATOR "TBZ2") #;TGZ;TZ;ZIP
-
-if(distrib)
 
 set(to_svg	
 	${XBT_RL_SRC}
@@ -40,59 +36,52 @@ set(to_svg
 	${PROJECT_DIRECTORY}/./README
 	${PROJECT_DIRECTORY}/./README.IEEE
 	${PROJECT_DIRECTORY}/./TODO
-	)
+)
 	
-	foreach(file ${to_svg})
-		get_filename_component(file_location ${file} PATH)
-		string(REPLACE "${PROJECT_DIRECTORY}/" "/" file_location ${file_location})
-		#message("install: ${file}\nDESTINATION: ${file_location}")
-		install(FILES ${file} DESTINATION "${file_location}")
-	endforeach(file ${EXTRA_DIST})
+foreach(file ${to_svg})
+	get_filename_component(file_location ${file} PATH)
+	string(REPLACE "${PROJECT_DIRECTORY}/" "/" file_location ${file_location})
+	#message("install: ${file}\nDESTINATION: ${file_location}")
+	install(FILES ${file} DESTINATION "${file_location}")
+endforeach(file ${EXTRA_DIST})
 
-	###copy doc
-	install(DIRECTORY "${PROJECT_DIRECTORY}/doc/"
-	DESTINATION "doc/"
-	PATTERN ".svn" EXCLUDE 
-	PATTERN ".git" EXCLUDE 
-	PATTERN "*~" EXCLUDE
-	)
+###copy doc
+install(DIRECTORY "${PROJECT_DIRECTORY}/doc/"
+DESTINATION "doc/"
+PATTERN ".svn" EXCLUDE 
+PATTERN ".git" EXCLUDE 
+PATTERN "*~" EXCLUDE
+)
 
-	###buildtools 
-	install(DIRECTORY "${PROJECT_DIRECTORY}/buildtools/CPACK/"
-	DESTINATION "buildtools/CPACK/"
-	PATTERN ".svn" EXCLUDE 
-	PATTERN ".git" EXCLUDE 
-	PATTERN "*~" EXCLUDE
-	)
-	set(CPACK_SET_DESTDIR on)
-	set(CMAKE_INSTALL_PREFIX .)
+###buildtools 
+install(DIRECTORY "${PROJECT_DIRECTORY}/buildtools/CPACK/"
+DESTINATION "buildtools/CPACK/"
+PATTERN ".svn" EXCLUDE 
+PATTERN ".git" EXCLUDE 
+PATTERN "*~" EXCLUDE
+)
 
-endif(distrib)
+set(CPACK_SET_DESTDIR on)
+set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 
-if(NOT distrib)
-	
-	###install libs
-	install(DIRECTORY "${PROJECT_DIRECTORY}/src/.libs/"
-	DESTINATION "lib/"
-	)
+add_custom_target(install-simgrid
+COMMAND mkdir -p ${prefix}
+COMMAND mkdir -p ${prefix}/lib
+COMMAND mkdir -p ${prefix}/include
+COMMAND mkdir -p ${prefix}/doc
+COMMAND mkdir -p ${prefix}/doc/simgrid
+COMMAND mkdir -p ${prefix}/doc/simgrid/html
+COMMAND cp -rf ${PROJECT_DIRECTORY}/src/.libs/* ${prefix}/lib/
+COMMAND echo "install lib ok"
+COMMAND cp -rf ${PROJECT_DIRECTORY}/include/ ${prefix}
+COMMAND echo "install include ok"
+COMMAND cp -rf ${PROJECT_DIRECTORY}/doc/html/ ${prefix}/doc/simgrid
+COMMAND echo "install doc ok"
+)
 
-	###install include
-	install(
-	DIRECTORY "${PROJECT_DIRECTORY}/include/" 
-	DESTINATION "include/" 
-	PATTERN ".svn" EXCLUDE 
-	PATTERN ".git" EXCLUDE 
-	PATTERN "*~" EXCLUDE
-	)
-
-	###install doc
-	install(
-	DIRECTORY "${PROJECT_DIRECTORY}/doc/html/" 
-	DESTINATION "doc/simgrid/html" 
-	)	
-	set(CPACK_SET_DESTDIR on)
-	set(CMAKE_INSTALL_PREFIX ${prefix})
-
-endif(NOT distrib)
+add_custom_target(uninstall
+COMMAND echo "uninstall simgrid"
+COMMAND echo "TODO"
+)
 
 include(CPack)
