@@ -325,7 +325,7 @@ void SIMIX_network_set_copy_data_callback(void (*callback)(smx_comm_t, size_t)) 
 }
 
 void SIMIX_network_copy_pointer_callback(smx_comm_t comm, size_t buff_size) {
-  xbt_assert1((buff_size == sizeof(void*)), "Cannot copy %d bytes: must be sizeof(void*)",buff_size);
+  xbt_assert1((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)",buff_size);
   *(void**)(comm->dst_buff) = comm->src_buff;
 }
 
