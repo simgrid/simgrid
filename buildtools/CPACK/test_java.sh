@@ -1,8 +1,8 @@
 #! /bin/sh
 echo "\n\n"
 pwd
-export LD_LIBRARY_PATH="`pwd`/src/.libs"
-export CLASSPATH="`pwd`/src/simgrid.jar"
+export LD_LIBRARY_PATH="`pwd`/src/.libs:$LD_LIBRARY_PATH"
+export CLASSPATH="`pwd`/src/simgrid.jar:$CLASSPATH"
 cd $1
 export CLASSPATH="$CLASSPATH:`pwd`"
 pwd
