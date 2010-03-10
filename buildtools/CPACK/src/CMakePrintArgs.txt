@@ -35,7 +35,7 @@ message("")
 
 if(HAVE_GTNETS)
 message("INFO -->> Take care to have export LD_LIBRARY_PATH before run make command for make examples with gtnets")
-message("copy and paste : LD_LIBRARY_PATH=${gtnets_path}/lib:$LD_LIBRARY_PATH")
+message("copy and paste : export LD_LIBRARY_PATH=${gtnets_path}/lib/:$LD_LIBRARY_PATH")
 
 message("")
 message("")
