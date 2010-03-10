@@ -5,7 +5,6 @@ set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 set(flags "-Dmain=smpi_simulated_main")
 set(INCLUDES_bis "-I${PROJECT_DIRECTORY}/include/smpi")
 
-set(CMAKE_C_FLAGS "")
 add_definitions (${INCLUDES_bis} ${flags})
 
 add_executable(alltoall2 alltoall2.c )
