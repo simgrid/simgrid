@@ -702,7 +702,6 @@ void rank( global_data* gd, int iteration )
                   1,
                   MPI_INT,
                   MPI_COMM_WORLD );
-    MPI_Wtime();
 
 /*  Determine the receive array displacements for the buckets */    
     gd->recv_displ[0] = 0;
@@ -710,7 +709,6 @@ void rank( global_data* gd, int iteration )
         gd->recv_displ[i] = gd->recv_displ[i-1] + gd->recv_count[i-1];
 
 
-    MPI_Wtime();
 /*  Now send the keys to respective processors  */    
     MPI_Alltoallv( gd->key_buff1,
                    gd->send_count,
