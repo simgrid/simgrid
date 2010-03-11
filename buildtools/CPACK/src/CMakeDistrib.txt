@@ -56,8 +56,8 @@ PATTERN "*~" EXCLUDE
 )
 
 ###buildtools 
-install(DIRECTORY "${PROJECT_DIRECTORY}/buildtools/CPACK/"
-DESTINATION "/buildtools/CPACK/"
+install(DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/"
+DESTINATION "/buildtools/Cmake/"
 PATTERN ".svn" EXCLUDE 
 PATTERN ".git" EXCLUDE 
 PATTERN "*~" EXCLUDE

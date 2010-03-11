@@ -51,7 +51,7 @@ else(disable_gtnets)
 	SET(BUILDNAME "GTNETS" CACHE TYPE INTERNAL FORCE)
 	set(GTNETS_LDFLAGS "-L${gtnets_path}/lib")
 	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include/gtnets")
-	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
+	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
 	if(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 0)
 		message("GTnetS doesn't works : set -Ddisable_gtnets=on")
@@ -78,7 +78,7 @@ if(pthread MATCHES "yes")
 	### HAVE_SEM_INIT
   	CHECK_LIBRARY_EXISTS(pthread sem_init NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
   	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
 	    	else(HAVE_SEM_INIT_run)
@@ -90,7 +90,7 @@ if(pthread MATCHES "yes")
 	### HAVE_SEM_TIMEDWAIT
 	CHECK_LIBRARY_EXISTS(pthread sem_timedwait NO_DEFAULT_PATHS HAVE_SEM_TIMEDWAIT_LIB)
 	if(HAVE_SEM_TIMEDWAIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_SEM_TIMEDWAIT_run)
 			set(HAVE_SEM_TIMEDWAIT 0)
 		else(HAVE_SEM_TIMEDWAIT_run)
@@ -102,7 +102,7 @@ if(pthread MATCHES "yes")
 	### HAVE_MUTEX_TIMEDLOCK
 	CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock NO_DEFAULT_PATHS HAVE_MUTEX_TIMEDLOCK_LIB)
 	if(HAVE_MUTEX_TIMEDLOCK_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_MUTEX_TIMEDLOCK_run)
 			set(HAVE_MUTEX_TIMEDLOCK 0)
 		else(HAVE_MUTEX_TIMEDLOCK_run)
@@ -120,7 +120,7 @@ endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_AC_CHECK_MCSC.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
 	COMPILE_DEFINITIONS "${mcsc_flags}"
 	)
 file(READ "${PROJECT_DIRECTORY}/conftestval" mcsc)
@@ -236,7 +236,7 @@ TEST_BIG_ENDIAN(BIGENDIAN)
 # Check architecture signature begin
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_GRAS_ARCH.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_GRAS_ARCH.c
 	RUN_OUTPUT_VARIABLE var1
 	)
 if(BIGENDIAN)
@@ -311,7 +311,7 @@ endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:")
 # Check architecture signature end
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_GRAS_CHECK_STRUCT_COMPACTION.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_GRAS_CHECK_STRUCT_COMPACTION.c
 	RUN_OUTPUT_VARIABLE var2
 	)
 separate_arguments(var2)
@@ -323,7 +323,7 @@ endforeach(var_tmp ${var2})
 # Check for [SIZEOF_MAX]
 try_run(RUN_SM_VAR COMPILE_SM_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_max_size.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_max_size.c
 	RUN_OUTPUT_VARIABLE var3
 	)
 SET(SIZEOF_MAX ${var3})
@@ -345,7 +345,7 @@ if(HAVE_MAKECONTEXT)
 
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_stacksetup.c
+		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_stacksetup.c
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
 	
@@ -365,7 +365,7 @@ endif(HAVE_MAKECONTEXT)
 
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_stackgrowth.c
+		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_stackgrowth.c
 		)
 file(READ "${PROJECT_DIRECTORY}/conftestval" stack)
 if(stack MATCHES "down")
@@ -391,7 +391,7 @@ endif(stack MATCHES "up")
 #AC_PRINTF_NULL
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_printf_null.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_printf_null.c
 	)
 
 if(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
@@ -414,7 +414,7 @@ set(diff_va "va_copy((d),(s))"
 )
 
 foreach(fct ${diff_va})
-	write_file("${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_va_copy.c" "#include <stdlib.h>
+	write_file("${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_va_copy.c" "#include <stdlib.h>
 	#include <stdarg.h>
 	#include <string.h>
 	#define DO_VA_COPY(d,s) ${fct}
@@ -445,7 +445,7 @@ foreach(fct ${diff_va})
 	)
 	try_run(RUN_VA_NULL_VAR COMPILE_VA_NULL_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_va_copy.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_va_copy.c
 	)
 	if(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")
 	else(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")	
@@ -551,7 +551,7 @@ CHECK_FUNCTION_EXISTS(signal HAVE_SIGNAL)
 ### Try execut getline command
 try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_getline.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_getline.c
 	OUTPUT_VARIABLE GETLINE_OUTPUT
 	)
 
@@ -568,7 +568,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 	try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_snprintf.c
+		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_snprintf.c
 		)
 	if(CMAKE_CROSSCOMPILING)
 		#message("SNPRINTF_FUNC CROSSCOMPILING")
@@ -577,7 +577,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 	try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/CPACK/prog_test/prog_vsnprintf.c
+		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_vsnprintf.c
 		)
 	if(CMAKE_CROSSCOMPILING)
 		#message("VSNPRINTF_FUNC CROSSCOMPILING")
@@ -627,8 +627,8 @@ CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
 configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${PROJECT_DIRECTORY}/src/context_sysv_config.h)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${PROJECT_DIRECTORY}/buildtools/CPACK/src/gras_config.h.in" "${PROJECT_DIRECTORY}/buildtools/CPACK/src/tmp_gras_config.h.in" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/buildtools/CPACK/src/tmp_gras_config.h.in" "${PROJECT_DIRECTORY}/src/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/gras_config.h.in" "${PROJECT_DIRECTORY}/buildtools/Cmake/src/tmp_gras_config.h.in" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/tmp_gras_config.h.in" "${PROJECT_DIRECTORY}/src/gras_config.h" @ONLY IMMEDIATE)
 configure_file(${PROJECT_DIRECTORY}/include/simgrid_config.h.in ${PROJECT_DIRECTORY}/include/simgrid_config.h)
 
 if(NOT prefix)
@@ -639,8 +639,8 @@ set(top_srcdir ${PROJECT_DIRECTORY})
 set(includedir ${prefix}/include)
 set(top_builddir ${PROJECT_DIRECTORY})
 set(libdir ${exec_prefix}/lib)
-configure_file(${PROJECT_DIRECTORY}/buildtools/CPACK/src/smpicc.in ${PROJECT_DIRECTORY}/src/smpi/smpicc @ONLY)
-configure_file(${PROJECT_DIRECTORY}/buildtools/CPACK/src/smpirun.in ${PROJECT_DIRECTORY}/src/smpi/smpirun @ONLY)
+configure_file(${PROJECT_DIRECTORY}/buildtools/Cmake/src/smpicc.in ${PROJECT_DIRECTORY}/src/smpi/smpicc @ONLY)
+configure_file(${PROJECT_DIRECTORY}/buildtools/Cmake/src/smpirun.in ${PROJECT_DIRECTORY}/src/smpi/smpirun @ONLY)
 
 
 #message("__END_GRAS_&_SIMGRID____\n")

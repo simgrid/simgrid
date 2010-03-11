@@ -1,5 +1,5 @@
 ### Be sure we can execut some launch file
-exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh" OUTPUT_VARIABLE "OKITOKI")
+exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh" OUTPUT_VARIABLE "OKITOKI")
 exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE "OKITOKI")
 
 ### For code coverage
@@ -191,10 +191,10 @@ ADD_TEST(simdag-metaxml_test	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT
 
 if(HAVE_JAVA)
 # java examples
-ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest)
-ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest)
-ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest)
-ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/buildtools/CPACK/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest)
+ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest)
+ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest)
+ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest)
+ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest)
 endif(HAVE_JAVA)
 # smpi examples
 ADD_TEST(smpi-bcast 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi bcast.tesh)

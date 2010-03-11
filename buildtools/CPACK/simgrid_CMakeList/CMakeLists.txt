@@ -14,7 +14,7 @@ find_path(GCOV_PATH NAMES gcov PATHS NO_DEFAULT_PATHS)
 find_path(VALGRIND_PATH	NAMES valgrind	PATHS NO_DEFAULT_PATHS)
 
 ### AUTO DETECT THE PROJECT_DIRECTORY
-exec_program("${PWD_EXE}" ARGS "| ${SED_EXE} 's/\\/CPACK//g'" OUTPUT_VARIABLE PROJECT_DIRECTORY)
+exec_program("${PWD_EXE}" ARGS "| ${SED_EXE} 's/\\/Cmake//g'" OUTPUT_VARIABLE PROJECT_DIRECTORY)
 
 ### SET THE PROJECT_DIRECTORY
 #SET(PROJECT_DIRECTORY "/home/navarrop/Bureau/simgrid-trunk")
@@ -29,33 +29,33 @@ set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 add_definitions (${INCLUDES} -fprofile-arcs -ftest-coverage)
 
 ### Setup Options
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeOption.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeOption.txt)
 
 ### Make the *.h files with *.h.in files
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeCompleteInFiles.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeCompleteInFiles.txt)
 
 ### Define source packages for Libs 
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeDefinePackages.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDefinePackages.txt)
 
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeFLEXml.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeFLEXml.txt)
 
 ### Setup gcc flags
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeFlags.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeFlags.txt)
 
 ### Make Libs and Exes
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeMakeExeLib.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeMakeExeLib.txt)
 
 ### Make tests
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeTest.txt)
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CTestConfig.cmake)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeTest.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CTestConfig.cmake)
 
 ### Setup the distrib
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeDistrib.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDistrib.txt)
 
 ### Print ARGS
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakePrintArgs.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakePrintArgs.txt)
 
 ### Make Docs
-include(${PROJECT_DIRECTORY}/buildtools/CPACK/src/CMakeDocs.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDocs.txt)
 
 INCLUDE(Dart)
