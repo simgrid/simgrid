@@ -26,10 +26,6 @@
  *  <em>message size</em> and some <em>private data</em>.
  */
 
-#ifdef HAVE_RUBY /* FIXME: KILLME */
-XBT_LOG_EXTERNAL_CATEGORY(ruby);
-#endif
-
 /********************************* Task **************************************/
 /** \ingroup m_task_management
  * \brief Creates a new #m_task_t.
@@ -76,10 +72,6 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->host_list = NULL;
   simdata->comp_amount = NULL;
   simdata->comm_amount = NULL;
-
-#ifdef HAVE_RUBY /* FIXME: KILLME */
-  CINFO2(ruby,"Created task %p: %s",task,name);
-#endif
 
   return task;
 }
