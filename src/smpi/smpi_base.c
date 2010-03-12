@@ -20,6 +20,7 @@ void smpi_process_init(int* argc, char*** argv) {
 
   proc = SIMIX_process_self();
   index = atoi((*argv)[1]);
+  free((*argv)[1]);
   data = smpi_process_remote_data(index);
   SIMIX_process_set_data(proc, data);
   if (*argc > 2) {
