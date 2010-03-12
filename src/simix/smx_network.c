@@ -517,6 +517,7 @@ unsigned int SIMIX_network_waitany(xbt_dynar_t comms) {
     SIMIX_communication_destroy(comm_finished);
     THROW0(network_error, 0, "Link failure");
   }
+  SIMIX_communication_destroy(comm_finished);
 
   return found_comm;
 }

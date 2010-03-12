@@ -102,7 +102,7 @@ static void tree_bcast(void* buf, int count, MPI_Datatype datatype, int root, MP
     smpi_mpi_recv(buf, count, datatype, tree->parent, system_tag + rank, comm, MPI_STATUS_IGNORE);
   }
   requests = xbt_new(MPI_Request, tree->numChildren);
-  DEBUG2("<%d> creates %d requests (1 per child)\n", rank, tree->numChildren);
+  DEBUG2("<%d> creates %d requests (1 per child)", rank, tree->numChildren);
   /* iniates sends to ranks lower in the tree */
   for(i = 0; i < tree->numChildren; i++) {
     if(tree->child[i] == -1) {
@@ -133,7 +133,7 @@ static void tree_antibcast(void* buf, int count, MPI_Datatype datatype, int root
   }
   //every one receives as many messages as it has children
   requests = xbt_new(MPI_Request, tree->numChildren);
-  DEBUG2("<%d> creates %d requests (1 per child)\n", rank, tree->numChildren);
+  DEBUG2("<%d> creates %d requests (1 per child)", rank, tree->numChildren);
   for(i = 0; i < tree->numChildren; i++) {
     if(tree->child[i] == -1) {
       requests[i] = MPI_REQUEST_NULL;
