@@ -185,7 +185,7 @@ void surf_config_init(int *argc, char **argv)
                      NULL);
 
     xbt_cfg_register(&_surf_cfg_set, "TCP_gamma",
-                     "Size of the biggest TCP window", xbt_cfgelm_double,
+                     "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; middle value=default value => you probably want default send value)", xbt_cfgelm_double,
                      NULL, 1, 1, _surf_cfg_cb__tcp_gamma, NULL);
     xbt_cfg_set_double(_surf_cfg_set, "TCP_gamma", 20000.0);
 
