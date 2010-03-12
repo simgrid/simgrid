@@ -71,14 +71,15 @@ static void msg_run(VALUE class) {
   for (cpt=0;cpt<host_count;cpt++) {
     rbHost = (VALUE)((hosts[cpt])->data);
   }
-  
-  //FIXME  Before Cleanin' up , we should stop process running to avoir a ThreadError
- /* if (MSG_OK != MSG_clean()){
-    rb_raise(rb_eRuntimeError,"MSG_clean() failed");
-  }*/
   return;
 }
 
+static void msg_clean(VALUE class)
+{
+   if (MSG_OK != MSG_clean())
+    rb_raise(rb_eRuntimeError,"MSG_clean() failed");
+  
+}
 static void msg_createEnvironment(VALUE class,VALUE plateformFile) {
 
   int type = TYPE(plateformFile);
@@ -153,6 +154,7 @@ void Init_simgrid_ruby() {
   rb_define_module_function(rb_msg,"info",(rb_meth)msg_info,1);
   rb_define_module_function(rb_msg,"debug",(rb_meth)msg_debug,1);
   rb_define_module_function(rb_msg,"getClock",(rb_meth)msg_get_clock,0);
+  rb_define_module_function(rb_msg,"exit",(rb_meth)msg_clean,0);
 
   //Associated Process Methods
   rb_define_method(rb_msg,"processSuspend",(rb_meth)rb_process_suspend,1);

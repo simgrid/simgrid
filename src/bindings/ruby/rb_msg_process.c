@@ -61,7 +61,6 @@ void rb_process_schedule( VALUE ruby_process ) {
   rb_funcall(ruby_process,rb_intern("schedule"),0);
 }
 
-
 /***************************************************
 Function for Native Process ( Bound ) Management
 

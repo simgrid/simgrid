@@ -8,41 +8,8 @@
 require 'simgrid_ruby'
 require 'thread'
 
-##########################################################
-# Class Semaphore 
-##########################################################
-class MySemaphore
-   Thread.abort_on_exception = true
-    attr_accessor :permits
-
-  def initialize (permits = 0)
-       @permits = permits
-  end
-  
-  def acquire(mutex,cv)
-
-    raise "Interrupted Thread " if (!Thread.current.alive?)
-    mutex.synchronize {
-    while @permits <= 0
-       
-       cv.wait(mutex)
-       
-    end
-    @permits = @permits - 1
-    cv.signal
-    }
-    
-  end
-    
-  def release(mutex,cv)
-    mutex.synchronize{
-      @permits += 1
-      cv.signal
-      }
-  end  
-end
 #######################################
-# Another Semaphore
+#  Semaphore
 #######################################
 
 class Semaphore
@@ -91,17 +58,15 @@ class MSG::Process < Thread
   @@nextProcessId = 0
 
 # Attributes
-  attr_reader :name, :pargs ,:properties, :cv, :mutex	# Read only
+  attr_reader :name, :pargs ,:properties	# Read only
   
     def initialize(*args)
       super(){
 	
      raise "Bad number of arguments to create a Ruby process. Expected (name,args,prop) " if args.size < 3
      
-    @cv = ConditionVariable.new
-    @mutex = Mutex.new
-    @schedBegin = MySemaphore.new(0)
-    @schedEnd = MySemaphore.new(0)    
+    @schedBegin = Semaphore.new(0)
+    @schedEnd = Semaphore.new(0)    
     @id = @@nextProcessId
     @@nextProcessId +=1
     @name = args[0]
@@ -118,19 +83,13 @@ class MSG::Process < Thread
   end
      
   def start()
-     @schedBegin.acquire(@mutex,@cv)
-
+     @schedBegin.acquire
     MSG::debug("Let's execute the main() of the Ruby process")
     main(@pargs)
-<<<<<<< .mine
-#     processExit(self) # FIXME : Fix the simix_context_ruby_stop to stop context process before quitting
-    @schedEnd.release(@mutex,@cv)
-    
-=======
-    @schedEnd.release()
->>>>>>> .r7205
+    @schedEnd.release
     MSG::debug("Released my schedEnd, bailing out")
     processExit(self) # Exit the Native Process
+    
   end
     
   def getBind()
@@ -142,13 +101,13 @@ class MSG::Process < Thread
   end
     
   def unschedule()
-    @schedEnd.release(@mutex,@cv)
-    @schedBegin.acquire(@mutex,@cv)
+    @schedEnd.release
+    @schedBegin.acquire
   end
   
   def schedule()   
-    @schedBegin.release(@mutex,@cv)
-    @schedEnd.acquire(@mutex,@cv)
+    @schedBegin.release
+    @schedEnd.acquire
   end
   
   def pause()
@@ -166,10 +125,9 @@ class MSG::Process < Thread
   def getHost()
     processGetHost(self)
   end
-  
+
 # The Rest of Methods !!! To be Continued ... FIXME: what's missing?
 end
-
 ############################################
 # Task Extend from the native Class RbTask
 ############################################
@@ -191,7 +149,6 @@ class MSG::Task < MSG::RbTask
     super(self,mailbox)
   end
   
-
   def source
     super(self)
   end
@@ -212,12 +169,10 @@ class MSG::Task < MSG::RbTask
     super(t_alias,host)
   end
 end  
-
 ####################################################
 # Host Extend from the native Class RbHost
 ####################################################
 class MSG::Host < MSG::RbHost
-
   def getByName(name)
     super(name)
   end
@@ -246,7 +201,6 @@ class MSG::Host < MSG::RbHost
     super()
   end
 end
-
 #########################
 # Main chunck 
 #########################

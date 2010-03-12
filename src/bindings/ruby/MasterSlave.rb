@@ -25,15 +25,14 @@ class Master < MSG::Process
    slaveCount = Integer(args[3]) 
    
    # Creates and sends the tasks
-   for i in 0..numberOfTask-1
+    for i in 0..numberOfTask-1
      task = MSG::Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
-     mailbox = "slave " + (i%slaveCount).to_s
-     MSG::info("Master Sending "+ task.name + " to " + mailbox + " with Comput Size " + 
-          task.compSize.to_s)
-#          task.compSize.to_s) # FIXME: This version creates a deadlock. Interesting
-     task.send(mailbox)
-     MSG::info("Master Done Sending " + task.name + " to " + mailbox)
-   end
+      mailbox = "slave " + (i%slaveCount).to_s
+      MSG::info("Master Sending "+ task.name + " to " + mailbox + " with Comput Size " + 
+           task.compSize.to_s)
+      task.send(mailbox)
+      MSG::info("Master Done Sending " + task.name + " to " + mailbox)
+    end
   
    # Sending Finalize MSG::Tasks
    MSG::info("Master: All tasks have been dispatched. Let's tell everybody the computation is over.")
@@ -44,7 +43,6 @@ class Master < MSG::Process
      finalize_task.send(mailbox)
    end
    MSG::info("Master : Everything's Done")
-   Thread.list.each {|t| p t}
   end    
 end
 
@@ -85,11 +83,9 @@ if (ARGV.length == 2)
 else 
 	MSG.createEnvironment("platform.xml")
 	MSG.deployApplication("deploy.xml")
-  #Thread.list.each {|t| p t}
+
 end
 
 MSG.run
-Thread.list.each {|t| p t}
 puts "Simulation time : " + MSG.getClock .to_s
-
-# exit()
+MSG.exit
