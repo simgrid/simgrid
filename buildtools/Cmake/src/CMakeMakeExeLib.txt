@@ -10,9 +10,15 @@ else(supernovae)
 endif(supernovae)
 
 set(GRAS_DEP "pthread")
-set(SIMGRID_DEP "ruby1.8")
+set(SIMGRID_DEP "")
 set(SMPI_DEP "")
 
+if(HAVE_RUBY_H)
+	set(SIMGRID_DEP "ruby1.8")
+	add_library(simgrid_ruby STATIC ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid_ruby.c)
+	set(RUBY_DEP "-lm -module")
+	target_link_libraries(simgrid_ruby 	simgrid ${RUBY_DEP} -fprofile-arcs)
+endif(HAVE_RUBY_H)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	add_definitions("-D_XOPEN_SOURCE")
@@ -33,19 +39,9 @@ if(HAVE_LUA)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -llua5.1")
 endif(HAVE_LUA)
 
-if(HAVE_RUBY_H)
-add_library(simgrid_ruby STATIC ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid_ruby.c)
-set(RUBY_DEP "-lm -module")
-target_link_libraries(simgrid_ruby 	simgrid ${RUBY_DEP} -fprofile-arcs)
-endif(HAVE_RUBY_H)
-
 if(HAVE_GTNETS)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
 endif(HAVE_GTNETS)
-
-if(NOT HAVE_RUBY_H)
-string(REPLACE "ruby1.8 " "" SIMGRID_DEP ${SIMGRID_DEP})
-endif(NOT HAVE_RUBY_H)
 
 target_link_libraries(simgrid 	${SIMGRID_DEP} -fprofile-arcs)
 target_link_libraries(simgrid_static	${SIMGRID_DEP} -fprofile-arcs)
