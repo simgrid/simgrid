@@ -96,13 +96,16 @@ if(enable_maintainer_mode)
 	# First pass
 		exec_program("${DOXYGEN_PATH}/doxygen ${PROJECT_DIRECTORY}/doc/Doxyfile" "${PROJECT_DIRECTORY}/doc/")
 
-		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc"  "${PROJECT_DIRECTORY}/doc/")
-		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/toc_create.pl ${PROJECT_DIRECTORY}/FAQ.doc ${PROJECT_DIRECTORY}/doc/index.doc ${PROJECT_DIRECTORY}/doc/contrib.doc ${PROJECT_DIRECTORY}/doc/gtut-introduction.doc ${PROJECT_DIRECTORY}/doc/history.doc" "${PROJECT_DIRECTORY}/doc/")
+		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/index_create.pl" "${PROJECT_DIRECTORY}/doc/"
+		ARGS simgrid.tag index-API.doc)
+		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/toc_create.pl" "${PROJECT_DIRECTORY}/doc/"
+		ARGS FAQ.doc index.doc contrib.doc gtut-introduction.doc history.doc)
 	# Second pass
 		exec_program("${DOXYGEN_PATH}/doxygen ${PROJECT_DIRECTORY}/doc/Doxyfile" "${PROJECT_DIRECTORY}/doc/")
 	# Post-processing
 		exec_program("rm -f ${PROJECT_DIRECTORY}/doc/html/dir*"  "${PROJECT_DIRECTORY}/doc/")
-		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/index_php.pl ${PROJECT_DIRECTORY}/doc/index.php.in ${PROJECT_DIRECTORY}/doc/html/index.html ${PROJECT_DIRECTORY}/doc/index.php"  "${PROJECT_DIRECTORY}/doc/")
+		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/index_php.pl""${PROJECT_DIRECTORY}/doc/"
+		ARGS index.php.in html/index.html index.php)
 		exec_program("${PROJECT_DIRECTORY}/tools/doxygen/doxygen_postprocesser.pl"  "${PROJECT_DIRECTORY}/doc/")
 
 	#html/gras.html:
@@ -168,6 +171,35 @@ if(enable_maintainer_mode)
 	file(APPEND ${PROJECT_DIRECTORY}/doc/logcategories.sh 	"\necho \"@}*/\"                                 >> $pwd/logcategories.doc")
 
 	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/doc/logcategories.sh"  "${PROJECT_DIRECTORY}/doc/")
-	exec_program("${PROJECT_DIRECTORY}/doc/logcategories.sh"  "${PROJECT_DIRECTORY}/doc/")
+	exec_program("${PROJECT_DIRECTORY}/doc/logcategories.sh" "${PROJECT_DIRECTORY}/doc/"
+	ARGS ${DOCSSOURCES})
+
+	
+	file(WRITE ${PROJECT_DIRECTORY}/doc/realtoc.sh 	"\#! /bin/sh")	
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n\necho \"Check individual TOCs\"")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\nfor n in gtut-tour-*.doc ; do")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n  sed -n '/Table of Contents/,/hr/p' $n|grep ref > tmp.curtoc;")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n  grep -E '\\\\s?u?b?section' $n | grep -v _toc | sed -e 's/\\\\section //' -e 's/\\\\subsection /subsection/' -e 's/ .*//' | sed -e 's/^/ - \\\\ref /' -e 's/- \\\\ref subsection/   - \\\\ref /' > tmp.realtoc;")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n  if ! diff -q tmp.curtoc tmp.realtoc >/dev/null; then")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n    echo \"Wrong toc for $n. Should be ;\"")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n    cat tmp.realtoc;")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n  fi ;")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\ndone")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n\nrm tmp.realtoc tmp.curtoc")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\necho \"Check main TOC\"")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\nfor n in gtut-tour-*doc; do")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n  grep @page $n | sed -e 's/@page //' -e 's/ .*//' -e 's/^/ - \\\\ref /' >>tmp.realtoc;")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n  sed -n -e '/Table of Contents/,/hr/p' $n|sed -e 's/^/   /'| grep -v toc|grep -v '<hr>'|grep [^[:blank:]] >>tmp.realtoc;")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\ndone")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\ngrep ' *- \\\\ref' gtut-tour.doc > tmp.curtoc")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\nif ! diff -b -u tmp.curtoc tmp.realtoc ; then")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n  echo \"Wrong toc for gtut-tour.doc Right one is in tmp.realtoc\";")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\nelse")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\n  rm tmp.realtoc;")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\nfi ;")
+	file(APPEND ${PROJECT_DIRECTORY}/doc/realtoc.sh "\nrm tmp.curtoc")
+
+	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/doc/realtoc.sh"  "${PROJECT_DIRECTORY}/doc/")
+	exec_program("${PROJECT_DIRECTORY}/doc/realtoc.sh" "${PROJECT_DIRECTORY}/doc/")
 
 endif(enable_maintainer_mode)
