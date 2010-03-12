@@ -66,8 +66,11 @@ void lmm_system_free(lmm_system_t sys)
   lmm_variable_t var = NULL;
   lmm_constraint_t cnst = NULL;
 
-  while ((var = extract_variable(sys)))
+  while ((var = extract_variable(sys))) {
+    WARN2("Variable %p (%d) still in LMM system when freing it: this may be a bug",
+        var,var->id_int);
     lmm_var_free(sys, var);
+  }
 
   while ((cnst = extract_constraint(sys)))
     lmm_cnst_free(sys, cnst);
