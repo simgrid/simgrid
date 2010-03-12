@@ -60,6 +60,11 @@ static void dax_task_free(void*task){
   SD_task_destroy(t);
 }
 
+/** @brief loads a DAX file describing a DAG
+ * 
+ * See https://confluence.pegasus.isi.edu/display/pegasus/WorkflowGenerator
+ * for more details.
+ */
 xbt_dynar_t SD_daxload(const char*filename) {
   FILE* in_file = fopen(filename,"r");
   xbt_assert1(in_file, "Unable to open \"%s\"\n", filename);
