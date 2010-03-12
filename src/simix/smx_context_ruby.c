@@ -70,26 +70,29 @@ smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
   return (smx_context_t) context;
 }
 
+// FIXME 
 static void smx_ctx_ruby_free(smx_context_t context) {
-  /* VALUE process;
-  if (context)
+ // DEBUG1("smx_ctx_ruby_free(%s)",context->argv[0]);
+  
+  //VALUE process;
+  /*if (context)
   {
    smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) context;
-
+   rb_process_isProcess(ctx_ruby->process);
    if (ctx_ruby->process){
      // if the Ruby Process is Alive , Join it   
-   // if ( process_isAlive(ctx_ruby->process))
+    if ( rb_process_isAlive(ctx_ruby->process))
     {
       process = ctx_ruby->process;
       ctx_ruby->process = Qnil;
-      process_join(process);
+      rb_process_join(process);
     } 
-
   }
   free(context);
   context = NULL; 
-  }*/
-  if (context) {
+  } */
+ 
+ if (context) {
     DEBUG1("smx_ctx_ruby_free_context(%p)",context);
     free (context);
     context = NULL;
@@ -105,7 +108,6 @@ static void smx_ctx_ruby_start(smx_context_t context) {
 
 static void smx_ctx_ruby_stop(smx_context_t context) {
   DEBUG0("smx_ctx_ruby_stop()");
-
   VALUE process = Qnil;
   smx_ctx_ruby_t ctx_ruby,current;
 
@@ -113,13 +115,14 @@ static void smx_ctx_ruby_stop(smx_context_t context) {
     (*(context->cleanup_func)) (context->cleanup_arg);
 
   ctx_ruby = (smx_ctx_ruby_t) context;
-
-  // Well , Let's Do The Same as JNI Stoppin' Process
+  
   if ( simix_global->current_process->iwannadie ) {
     if( ctx_ruby->process ) {
+      
       //if the Ruby Process still Alive ,let's Schedule it
       if ( rb_process_isAlive( ctx_ruby->process ) ) {
-        current = (smx_ctx_ruby_t)simix_global->current_process->context;
+
+        current = (smx_ctx_ruby_t)simix_global->current_process->context;	
         rb_process_schedule(current->process);
         process = ctx_ruby->process;
         // interupt/kill The Ruby Process
@@ -127,8 +130,10 @@ static void smx_ctx_ruby_stop(smx_context_t context) {
       }
     }
   } else {
-    process = ctx_ruby->process;
-    ctx_ruby->process = Qnil;
+
+    if (ctx_ruby->process) 
+     ctx_ruby->process = Qnil;
+
   }
 }
 
@@ -148,7 +153,4 @@ static void smx_ctx_ruby_resume(smx_context_t old_context,smx_context_t new_cont
   smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) new_context;
   rb_process_schedule(ctx_ruby->process);
 
-//  DEBUG1("smx_ctx_ruby_schedule(%s)...Done",
-//      (new_context->argc?new_context->argv[0]:"maestro"));
 }
-
