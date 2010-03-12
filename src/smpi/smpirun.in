@@ -64,7 +64,7 @@ while true; do
    ;;
    
    "--cfg="*|"--log="*|"--network_model="*)
-     SIMOPTS="$SIMOPTS $1"
+     SIMOPTS="$SIMOPTS '$1'"
      shift 1
    ;;
     *)
