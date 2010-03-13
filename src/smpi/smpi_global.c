@@ -75,6 +75,7 @@ void smpi_process_post_send(MPI_Comm comm, MPI_Request request) {
       /* Materialize the *_ANY_* fields from corresponding irecv request */
       req->src = request->src;
       req->tag = request->tag;
+      req->data = request->data;
       request->rdv = req->rdv;
       return;
     } else {
@@ -103,6 +104,7 @@ void smpi_process_post_recv(MPI_Request request) {
       /* Materialize the *_ANY_* fields from the irecv request */
       request->src = req->src;
       request->tag = req->tag;
+      request->data = req->data;
       request->rdv = req->rdv;
       return;
     } else {

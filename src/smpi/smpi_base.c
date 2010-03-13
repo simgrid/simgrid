@@ -48,8 +48,9 @@ MPI_Request smpi_mpi_isend(void* buf, int count, MPI_Datatype datatype, int dst,
   request->tag = tag;
   request->size = smpi_datatype_size(datatype) * count;
   request->complete = 0;
+  request->data = request;
   smpi_process_post_send(comm, request);
-  request->pair = SIMIX_network_isend(request->rdv, request->size, -1.0, buf, request->size, request);
+  request->pair = SIMIX_network_isend(request->rdv, request->size, -1.0, buf, request->size, NULL);
   return request;
 }
 
@@ -63,6 +64,7 @@ MPI_Request smpi_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int src,
   request->tag = tag;
   request->size = smpi_datatype_size(datatype) * count;
   request->complete = 0;
+  request->data = MPI_REQUEST_NULL;
   smpi_process_post_recv(request);
   request->pair = SIMIX_network_irecv(request->rdv, buf, &request->size);
   return request;
@@ -96,7 +98,7 @@ void smpi_mpi_sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int 
 }
 
 static void finish_wait(MPI_Request* request, MPI_Status* status) {
-  MPI_Request data = (MPI_Request)SIMIX_communication_get_data((*request)->pair);
+  MPI_Request data = (*request)->data;
 
   xbt_assert0(data != MPI_REQUEST_NULL, "Erroneous situation");
   if(status != MPI_STATUS_IGNORE) {
@@ -126,7 +128,7 @@ static void finish_wait(MPI_Request* request, MPI_Status* status) {
 }
 
 int smpi_mpi_test(MPI_Request* request, MPI_Status* status) {
-  MPI_Request data = (MPI_Request)SIMIX_communication_get_data((*request)->pair);
+  MPI_Request data = (*request)->data;
   int flag = data && data->complete == 1;
 
   if(flag) {
@@ -144,7 +146,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int* index, MPI_Status* 
   flag = 0;
   for(i = 0; i < count; i++) {
     if(requests[i] != MPI_REQUEST_NULL) {
-      data = (MPI_Request)SIMIX_communication_get_data(requests[i]->pair);
+      data = requests[i]->data;
       if(data != MPI_REQUEST_NULL && data->complete == 1) {
         SIMIX_communication_destroy(requests[i]->pair);
         finish_wait(&requests[i], status);
@@ -158,7 +160,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int* index, MPI_Status* 
 }
 
 void smpi_mpi_wait(MPI_Request* request, MPI_Status* status) {
-  MPI_Request data = (MPI_Request)SIMIX_communication_get_data((*request)->pair);
+  MPI_Request data = (*request)->data;
 
   DEBUG6("wait for request %p (%p: %p) [src = %d, dst = %d, tag = %d]",
          *request, (*request)->pair, data, (*request)->src, (*request)->dst, (*request)->tag);
@@ -182,7 +184,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status* status) {
     // First check for already completed requests
     for(i = 0; i < count; i++) {
       if(requests[i] != MPI_REQUEST_NULL) {
-        data = (MPI_Request)SIMIX_communication_get_data(requests[i]->pair);
+        data = requests[i]->data;
         if(data != MPI_REQUEST_NULL && data->complete == 1) {
           index = i;
           SIMIX_communication_destroy(requests[index]->pair); // always succeeds (but cleans the simix layer)
@@ -245,7 +247,7 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int* indices, MPI_Sta
   count = 0;
   for(i = 0; i < incount; i++) {
     if(requests[i] != MPI_REQUEST_NULL) {
-      data = (MPI_Request)SIMIX_communication_get_data(requests[i]->pair);
+      data = requests[i]->data;
       if(data != MPI_REQUEST_NULL && data->complete == 1) {
         SIMIX_communication_destroy(requests[i]->pair);
         finish_wait(&requests[i], status != MPI_STATUS_IGNORE ? &status[i] : MPI_STATUS_IGNORE);

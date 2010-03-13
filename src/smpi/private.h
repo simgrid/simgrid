@@ -18,6 +18,7 @@ typedef struct s_smpi_mpi_request {
   smx_rdv_t rdv;
   smx_comm_t pair;
   int complete;
+  MPI_Request data;
 } s_smpi_mpi_request_t;
 
 void smpi_process_init(int* argc, char*** argv);
