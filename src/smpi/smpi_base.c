@@ -130,6 +130,7 @@ int smpi_mpi_test(MPI_Request* request, MPI_Status* status) {
   int flag = data && data->complete == 1;
 
   if(flag) {
+    SIMIX_communication_destroy((*request)->pair);
     finish_wait(request, status);
   }
   return flag;
@@ -145,6 +146,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int* index, MPI_Status* 
     if(requests[i] != MPI_REQUEST_NULL) {
       data = (MPI_Request)SIMIX_communication_get_data(requests[i]->pair);
       if(data != MPI_REQUEST_NULL && data->complete == 1) {
+        SIMIX_communication_destroy(requests[i]->pair);
         finish_wait(&requests[i], status);
         *index = i;
         flag = 1;
