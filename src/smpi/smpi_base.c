@@ -163,6 +163,8 @@ void smpi_mpi_wait(MPI_Request* request, MPI_Status* status) {
   // data is null if receiver waits before sender enters the rdv
   if(data == MPI_REQUEST_NULL || data->complete == 0) {
     SIMIX_network_wait((*request)->pair, -1.0);
+  } else {
+    SIMIX_communication_destroy((*request)->pair);
   }
   finish_wait(request, status);
 }
@@ -181,6 +183,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status* status) {
         data = (MPI_Request)SIMIX_communication_get_data(requests[i]->pair);
         if(data != MPI_REQUEST_NULL && data->complete == 1) {
           index = i;
+          SIMIX_communication_destroy(requests[index]->pair); // always succeeds (but cleans the simix layer)
           break;
         }
       }
