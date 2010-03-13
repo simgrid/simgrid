@@ -122,6 +122,7 @@ static void finish_wait(MPI_Request* request, MPI_Status* status) {
       // receiver cleans everything
       xbt_free(data);
     }
+    SIMIX_rdv_destroy((*request)->rdv);
     xbt_free(*request);
   }
   *request = MPI_REQUEST_NULL;
