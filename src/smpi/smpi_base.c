@@ -243,10 +243,11 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int* indices, MPI_Sta
   int i, count;
 
   count = 0;
-  for(i = 0; i < count; i++) {
+  for(i = 0; i < incount; i++) {
     if(requests[i] != MPI_REQUEST_NULL) {
       data = (MPI_Request)SIMIX_communication_get_data(requests[i]->pair);
       if(data != MPI_REQUEST_NULL && data->complete == 1) {
+        SIMIX_communication_destroy(requests[i]->pair);
         finish_wait(&requests[i], status != MPI_STATUS_IGNORE ? &status[i] : MPI_STATUS_IGNORE);
         indices[count] = i;
         count++;
