@@ -64,7 +64,10 @@ while true; do
    ;;
    
    "--cfg="*|"--log="*)
-     SIMOPTS="$SIMOPTS '$1'"
+     for OPT in ${1#*=}
+     do
+       SIMOPTS="$SIMOPTS ${1%%=*}=$OPT"
+     done 
      shift 1
    ;;
     *)
