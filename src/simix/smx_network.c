@@ -294,6 +294,7 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
     SIMIX_communication_destroy(comm);
     THROW0(network_error, 0, "Link failure");
   }
+  SIMIX_communication_destroy(comm);
 }
 
 /**
@@ -473,8 +474,6 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
 XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout) {
   /* Wait for communication completion */
   SIMIX_communication_wait_for_completion(comm, timeout);
-
-  SIMIX_communication_destroy(comm);
 }
 
 /** @Returns whether the (asynchronous) communication is done yet or not */
