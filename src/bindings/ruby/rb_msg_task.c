@@ -54,13 +54,23 @@ VALUE rb_task_execute(VALUE class,VALUE task) {
 // Sending Task
 void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
 
+  MSG_error_t rv;
   // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, s_m_task_t, tk);
   INFO1("Sending task %p",tk);
-  int res = MSG_task_send(tk,RSTRING(mailbox)->ptr);
-  if(res != MSG_OK)
-    rb_raise(rb_eRuntimeError,"MSG_task_send failed");
+  rv = MSG_task_send(tk,RSTRING(mailbox)->ptr);
+  if(rv != MSG_OK)
+  {
+    if (rv == MSG_TRANSFER_FAILURE )
+      rb_raise(rb_eRuntimeError,"Transfer failure while Sending");
+    else if ( rv == MSG_HOST_FAILURE )
+      rb_raise(rb_eRuntimeError,"Host failure while Sending");
+    else if ( rv == MSG_TIMEOUT_FAILURE )
+      rb_raise(rb_eRuntimeError,"Timeout failure while Sending");
+    else 
+      rb_raise(rb_eRuntimeError,"MSG_task_send failed");
+  }
 }
 
 // Receiving Task (returns a Task)
