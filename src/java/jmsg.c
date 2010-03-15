@@ -20,13 +20,9 @@
 #include "jmsg_application_handler.h"
 #include "jxbt_utilities.h"
 
-
 #include "jmsg.h"
-
 #include "msg/mailbox.h"
-
 #include "surf/surfxml_parse.h"
-
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -986,14 +982,24 @@ Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  /* FIXME throw the right exception corresponding to HostFailureException, TransferFailureException, TimeoutFailureException
+  /*  throw the right exception corresponding to HostFailureException, TransferFailureException, TimeoutFailureException
    * Note: these exceptions must be created beforehand
    *       then, you want to create some functions like jxbt_throw_notbound()
    *       then, you must declare in the MsgNative stuff that these native functions can throw these exceptions
    */
   if (MSG_OK != rv)
-    jxbt_throw_native(env, xbt_strdup("MSG_task_send_with_timeout() failed"));
-
+  {
+    
+      if ( rv == MSG_TRANSFER_FAILURE )
+	jxbt_throw_transfer_failure(env,MSG_task_get_name(task),alias);
+	
+      else if ( rv == MSG_HOST_FAILURE )
+	jxbt_throw_host_failure(env,MSG_task_get_name(task),alias);
+	
+      else 
+	jxbt_throw_native(env, xbt_strdup("MSG_task_send_with_timeout() failed"));
+  
+  } 
 }
 
 JNIEXPORT void JNICALL
@@ -1074,7 +1080,6 @@ JNIEXPORT jint JNICALL
 Java_simgrid_msg_MsgNative_taskListenFromHost(JNIEnv * env, jclass cls,
                                               jstring jalias, jobject jhost)
 {
-
   int rv;
   const char *alias;
 
@@ -1084,7 +1089,6 @@ Java_simgrid_msg_MsgNative_taskListenFromHost(JNIEnv * env, jclass cls,
     jxbt_throw_notbound(env, "host", jhost);
     return -1;
   }
-
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
 
   rv = MSG_task_listen_from_host(alias, host);

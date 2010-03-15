@@ -75,5 +75,9 @@ void jxbt_throw_illegal(JNIEnv * env, char *msg);
 void jxbt_throw_host_not_found(JNIEnv * env, const char *invalid_name);
 /** Thrown when looking for an host from name does not lead to anything */
 void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name);
+/** Thrown when a transfer failure accure while Sending task */
+void jxbt_throw_transfer_failure(JNIEnv * env,const char *task_name,const char *alias);
+/** Thrown when a host failure accures while Sending task*/
+void jxbt_throw_host_failure(JNIEnv *env,const char *task_name,const char *alias);
 
 #endif /* ! JXBT_UTILITY_H */

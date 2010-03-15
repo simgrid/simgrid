@@ -6,7 +6,6 @@
  *
  * Upcalls to the Java functions used as callback to the FleXML application file parser.
  */
-
 #include "jmsg_application_handler.h"
 
 #include "jmsg.h"

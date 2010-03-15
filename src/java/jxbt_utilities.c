@@ -102,7 +102,6 @@ jmethodID jxbt_get_static_smethod(JNIEnv * env, const char *classname,
 {
 
   jclass cls;
-
   jmethodID id;
   cls = jxbt_get_class(env, classname);
 
@@ -129,7 +128,6 @@ jmethodID jxbt_get_smethod(JNIEnv * env, const char *classname,
 {
 
   jclass cls;
-
   jmethodID id;
   cls = jxbt_get_class(env, classname);
 
@@ -246,7 +244,6 @@ void jxbt_throw_null(JNIEnv * env, char *msg)
   jxbt_throw_by_name(env, "java/lang/NullPointerException", msg);
 }
 
-
 /* Errors on user side */
 void jxbt_throw_illegal(JNIEnv * env, char *msg)
 {
@@ -265,4 +262,24 @@ void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name)
   jxbt_throw_by_name(env,
                      "simgrid/msg/ProcessNotFoundException",
                      bprintf("No such process: %s", invalid_name));
+}
+
+// tranfert failure
+void jxbt_throw_transfer_failure(JNIEnv *env,const char *task_name,const char *alias)
+{
+  
+  jxbt_throw_by_name(env,
+		     "simgrid/msg/TransferFailureException",
+		     bprintf("There has been a problem during your task transfer (task :%s / alias :%s)",task_name,alias));
+  
+}
+
+// host failure Exception
+void jxbt_throw_host_failure(JNIEnv *env,const char *task_name,const char *alias)
+{
+  
+ jxbt_throw_by_name(env,
+		    "simgrid/msg/HostFailureException",
+		    bprintf("Host Failure while sending (task :%s / alias %s) : The host on which you are running has just been rebooted",task_name,alias));
+  
 }

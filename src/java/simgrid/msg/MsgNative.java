@@ -426,7 +426,7 @@ final class MsgNative {
 	 **************************************************************** */
 
 
-	final static native void taskSend(String alias, Task task, double timeout) throws NativeException;
+	final static native void taskSend(String alias, Task task, double timeout) throws TransferFailureException,HostFailureException,NativeException;
 	final static native Task taskReceive(String alias, double timeout, Host host) throws NativeException;
 	final static native int taskListenFrom(String alias) throws NativeException;
 	final static native boolean taskListen(String alias);

@@ -36,7 +36,8 @@ public abstract class MsgException extends Exception {
    * Constructs an <code>MsgException</code> with a detail message. 
    *
    * @param   s   the detail message.
-   */ public MsgException(String s) {
+   */ 
+  public MsgException(String s) {
     super(s);
   }
 }

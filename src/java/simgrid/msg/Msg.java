@@ -35,7 +35,7 @@ public final class Msg {
 	/** Something must be not perfectly clean (but I may be paranoid freak...) */
 	public static final int WARNING = 1;
 
-	/** There has been a problem during you task transfer.
+	/** There has been a problem during your task transfer.
 	 *  Either the network is  down or the remote host has been shutdown */
 	public static final int TRANSFERT_FAILURE = 2;
 
@@ -49,7 +49,6 @@ public final class Msg {
 
 	/** You've done something wrong. You'd better look at it... */
 	public static final int FATAL_ERROR = 5;
-
 
 	/** Retrieve the simulation time */
 	public final static native double getClock();
@@ -108,7 +107,6 @@ public final class Msg {
 		/* Load the platform and deploy the application */
 		Msg.createEnvironment(args[0]);
 		Msg.deployApplication(args[1]);
-
 		/* Execute the simulation */
 		Msg.run();
 	}
