@@ -50,7 +50,6 @@ static jobject native_to_java_process(m_process_t process)
           (process->simdata->s_process->context))->jprocess;
 }
 
-
 /*
  * The MSG process connected functions implementation.                                 
  */
@@ -170,7 +169,7 @@ Java_simgrid_msg_MsgNative_processResume(JNIEnv * env, jclass cls,
   m_process_t process = jprocess_to_native_process(jprocess, env);
 
   if (!process) {
-    jxbt_throw_notbound(env, "process", jprocess);
+    jxbt_throw_notbound(env,"process", jprocess);
     return;
   }
 
@@ -996,7 +995,9 @@ Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
       else if ( rv == MSG_HOST_FAILURE )
 	jxbt_throw_host_failure(env,MSG_task_get_name(task),alias);
 	
-      else 
+      else if ( rv == MSG_TIMEOUT_FAILURE )
+	 jxbt_throw_time_out_failure(env,MSG_task_get_name(task),alias);
+      else
 	jxbt_throw_native(env, xbt_strdup("MSG_task_send_with_timeout() failed"));
   
   } 
