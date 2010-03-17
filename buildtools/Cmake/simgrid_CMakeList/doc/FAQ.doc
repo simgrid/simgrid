@@ -677,7 +677,7 @@ make
 make install-simgrid
 \endverbatim
 
-\subsection faq_screenshot Screenshot and examples
+\subsection faq_screenshot Screenshot
 
 1 Screenshot.
 
@@ -729,8 +729,6 @@ Configuration of package `simgrid' (revision 7209M) on arch (=4):
 \endverbatim
 Here all options are checked and printed. If it doesn't match with your configuration 
 it is probably due to a wrong configuration.
-
-2 Examples.
 
 \subsection faq_cmakehowto How to modified sources files for developers
 
@@ -789,7 +787,104 @@ add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:
 
 \subsection faq_cmakeExplain Explaination of sources files for cmake
 
-List of sources for cmake.
+\li CMakeLists.txt
+\li CMakeCompleteInFiles.txt
+\li CMakeDocs.txt
+\li CMakeMakeExeLib.txt
+\li CMakePrintArgs.txt
+\li CMakeDefinePackages.txt
+\li CMakeFlags.txt
+\li CMakeSupernovae.txt
+\li CMakeDistrib.txt
+\li CMakeFLEXml.txt
+\li CMakeOption.txt
+\li CMakeTest.txt
+\li CTestConfig.cmake
+\li CTestTestfile.cmake
+
+Here is a list of files involved into cmake build (relative to project directory path) :
+\verbatim
+
+Cmake sources:
+	./buildtools/Cmake/src/CMakeCompleteInFiles.txt
+	./buildtools/Cmake/src/CMakeDocs.txt
+	./buildtools/Cmake/src/CMakeMakeExeLib.txt
+	./buildtools/Cmake/src/CMakePrintArgs.txt
+	./buildtools/Cmake/src/CMakeDefinePackages.txt
+	./buildtools/Cmake/src/CMakeFlags.txt
+	./buildtools/Cmake/src/CMakeSupernovae.txt
+	./buildtools/Cmake/src/CMakeDistrib.txt
+	./buildtools/Cmake/src/CMakeFLEXml.txt
+	./buildtools/Cmake/src/CMakeOption.txt
+	./buildtools/Cmake/src/CMakeTest.txt
+	./buildtools/Cmake/src/CTestConfig.cmake
+	./buildtools/Cmake/src/CTestTestfile.cmake
+
+Test files for define properties :
+	./buildtools/Cmake/prog_test/prog_GRAS_ARCH.c
+	./buildtools/Cmake/prog_test/prog_max_size.c
+	./buildtools/Cmake/prog_test/prog_sem_init.c
+	./buildtools/Cmake/prog_test/prog_stackgrowth.c
+	./buildtools/Cmake/prog_test/prog_vsnprintf.c
+	./buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
+	./buildtools/Cmake/prog_test/prog_GRAS_CHECK_STRUCT_COMPACTION.c
+	./buildtools/Cmake/prog_test/prog_mutex_timedlock.c
+	./buildtools/Cmake/prog_test/prog_sem_timedwait.c
+	./buildtools/Cmake/prog_test/prog_stacksetup.c
+	./buildtools/Cmake/prog_test/prog_getline.c
+	./buildtools/Cmake/prog_test/prog_gtnets.cpp
+	./buildtools/Cmake/prog_test/prog_printf_null.c
+	./buildtools/Cmake/prog_test/prog_snprintf.c
+	./buildtools/Cmake/prog_test/prog_va_copy.c
+
+CMakeLists for each binaries or examples:
+	./CMakeLists.txt
+	./teshsuite/gras/empty_main/CMakeLists.txt
+	./teshsuite/gras/small_sleep/CMakeLists.txt
+	./teshsuite/gras/datadesc/CMakeLists.txt
+	./teshsuite/gras/msg_handle/CMakeLists.txt
+	./teshsuite/simdag/CMakeLists.txt
+	./teshsuite/simdag/partask/CMakeLists.txt
+	./teshsuite/simdag/platforms/CMakeLists.txt
+	./teshsuite/simdag/network/CMakeLists.txt
+	./teshsuite/simdag/network/mxn/CMakeLists.txt
+	./teshsuite/simdag/network/p2p/CMakeLists.txt
+	./teshsuite/xbt/CMakeLists.txt
+	./teshsuite/msg/CMakeLists.txt
+	./tools/gras/CMakeLists.txt
+	./tools/tesh/CMakeLists.txt
+	./testsuite/simdag/CMakeLists.txt
+	./testsuite/xbt/CMakeLists.txt
+	./testsuite/surf/CMakeLists.txt
+	./examples/gras/properties/CMakeLists.txt
+	./examples/gras/ping/CMakeLists.txt
+	./examples/gras/pmm/CMakeLists.txt
+	./examples/gras/mmrpc/CMakeLists.txt
+	./examples/gras/synchro/CMakeLists.txt
+	./examples/gras/timer/CMakeLists.txt
+	./examples/gras/mutual_exclusion/simple_token/CMakeLists.txt
+	./examples/gras/spawn/CMakeLists.txt
+	./examples/gras/chrono/CMakeLists.txt
+	./examples/gras/rpc/CMakeLists.txt
+	./examples/gras/all2all/CMakeLists.txt
+	./examples/simdag/properties/CMakeLists.txt
+	./examples/simdag/CMakeLists.txt
+	./examples/simdag/metaxml/CMakeLists.txt
+	./examples/simdag/dax/CMakeLists.txt
+	./examples/smpi/CMakeLists.txt
+	./examples/amok/bandwidth/CMakeLists.txt
+	./examples/amok/saturate/CMakeLists.txt
+	./examples/msg/priority/CMakeLists.txt
+	./examples/msg/properties/CMakeLists.txt
+	./examples/msg/migration/CMakeLists.txt
+	./examples/msg/gtnets/CMakeLists.txt
+	./examples/msg/parallel_task/CMakeLists.txt
+	./examples/msg/trace/CMakeLists.txt
+	./examples/msg/suspend/CMakeLists.txt
+	./examples/msg/masterslave/CMakeLists.txt
+	./examples/msg/actions/CMakeLists.txt
+	./examples/msg/sendrecv/CMakeLists.txt
+\endverbatim
 
 \section faq_howto Feature related questions
 
