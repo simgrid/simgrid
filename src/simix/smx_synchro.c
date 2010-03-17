@@ -404,6 +404,7 @@ void SIMIX_sem_release_forever(smx_sem_t sem) {
     xbt_swag_remove(proc, sem->sleeping);
     xbt_swag_insert(proc, simix_global->process_to_run);
   }
+  sem->capacity == SMX_SEM_NOLIMIT;
 }
 
 /**
