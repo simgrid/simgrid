@@ -289,7 +289,7 @@ void jxbt_throw_time_out_failure(JNIEnv *env,const char *task_name,const char *a
 {
   
   jxbt_throw_by_name(env,
-		    "simgrid/msg/TimeoutFailureException",
+		    "simgrid/msg/TimeoutException",
 		    bprintf("Timeout Failure while sending(task :%s / alias %s ):nothing good happened before the timer you provided elapsed ",task_name,alias));
   
 }
