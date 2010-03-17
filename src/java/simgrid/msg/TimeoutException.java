@@ -14,11 +14,11 @@ package simgrid.msg;
 /**
  * This exception is raised when time's out while sending tasks.
  */
-public class TimeoutFailureException extends MsgException {
+public class TimeoutException extends MsgException {
 	private static final long serialVersionUID = 1L;
 
 	/** Constructs an <code>TimeoutFailureException</code> without a detail message. */ 
-	public TimeoutFailureException() {
+	public TimeoutException() {
 		super();
 	}
 	/**
@@ -26,7 +26,7 @@ public class TimeoutFailureException extends MsgException {
 	 *
 	 * @param   s   the detail message.
 	 */
-	public TimeoutFailureException(String s) {
+	public TimeoutException(String s) {
 		super(s);
 	}
 }
