@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
+#include "simix/simix.h"        /* semaphores for the barrier */
 #include "xbt.h"                /* calloc, printf */
 #include "simgrid_config.h"     /* getline */
 
@@ -34,7 +35,7 @@ static double parse_double(const char *string) {
 
 
 /* My actions */
-static void send(xbt_dynar_t action)
+static void action_send(xbt_dynar_t action)
 {
   char *name = NULL;
   char to[250];
@@ -94,7 +95,7 @@ static void Isend(xbt_dynar_t action)
 }
 
 
-static void recv(xbt_dynar_t action)
+static void action_recv(xbt_dynar_t action)
 {
   char *name = NULL;
     char mailbox_name[250];
@@ -161,7 +162,7 @@ static void Irecv(xbt_dynar_t action)
 }
 
 
-static void wait_action(xbt_dynar_t action)
+static void action_wait(xbt_dynar_t action)
 {
   char *name = NULL;
   char task_name[80];
@@ -345,7 +346,7 @@ static void bcast (xbt_dynar_t action)
 }
 
 
-static void sleep(xbt_dynar_t action)
+static void action_sleep(xbt_dynar_t action)
 {
   char *name = NULL;
   char *duration = xbt_dynar_get_as(action, 2, char *);
@@ -511,16 +512,16 @@ int main(int argc, char *argv[])
 
   /*   Action registration */
   MSG_action_register("comm_size", comm_size);
-  MSG_action_register("send", send);
+  MSG_action_register("send", action_send);
   MSG_action_register("Isend", Isend);
-  MSG_action_register("recv", recv);
+  MSG_action_register("recv", action_recv);
   MSG_action_register("Irecv", Irecv);
-  MSG_action_register("wait", wait_action);
+  MSG_action_register("wait", action_wait);
   MSG_action_register("barrier", barrier);
   MSG_action_register("bcast", bcast);
   MSG_action_register("reduce", reduce);
   MSG_action_register("allReduce", allReduce);
-  MSG_action_register("sleep", sleep);
+  MSG_action_register("sleep", action_sleep);
   MSG_action_register("compute", compute);
 
 

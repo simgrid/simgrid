@@ -113,6 +113,7 @@ properties_msg_prop_LDADD   = $(top_builddir)/src/libsimgrid.la
 # actions example
 actions_actions_SOURCES = actions/actions.c
 actions_actions_LDADD   = $(top_builddir)/src/libsimgrid.la
+actions_actions_CFLAGS   = -I$(top_builddir)/src/include
 
 # migration example
 migration_migration_SOURCES = migration/migration.c
