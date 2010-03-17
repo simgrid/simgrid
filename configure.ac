@@ -443,7 +443,7 @@ else
      AC_DEFINE(HAVE_LUA,1, [defines whether Lua bindings must be compiled or not])
      SIMGRID_DEP="${SIMGRID_DEP} -ldl -llua5.1"
   else   
-     use_lua="no"
+     use_lua="no (you may want to install the liblua5.1-0-dev package)"
   fi
 fi
 AC_MSG_RESULT(decide whether to compile lua bindings... $use_lua)
