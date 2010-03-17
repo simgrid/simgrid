@@ -1,5 +1,7 @@
 SimGrid (3.3.5-svn) unstable; urgency=low
 
+ The "C spoken, se habla Java, Ruby 話せます, fala-se Lua" release.
+
  Java Bindings: Various Cleanups
   * Remove put/get: no need to export deprecated interface in Java
     Use send/receive instead.
