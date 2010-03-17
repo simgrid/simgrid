@@ -248,6 +248,9 @@ JMSG_C_SRC = \
 JMSG_JAVA_SRC = \
   java/simgrid/msg/MsgException.java                 \
   java/simgrid/msg/JniException.java                 \
+  java/simgrid/msg/TransferFailureException.java     \
+  java/simgrid/msg/HostFailureException.java         \
+  java/simgrid/msg/TimeoutException.java             \
   java/simgrid/msg/NativeException.java              \
   java/simgrid/msg/HostNotFoundException.java        \
   java/simgrid/msg/ProcessNotFoundException.java     \
