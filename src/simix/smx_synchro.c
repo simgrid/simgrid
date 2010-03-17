@@ -433,6 +433,14 @@ XBT_INLINE int SIMIX_sem_would_block(smx_sem_t sem) {
   return (sem->capacity>0);
 }
 
+/** @brief Returns the current capacity of the semaphore
+ *
+ * If it's negative, that's the amount of processes locked on the semaphore
+ */
+int SIMIX_sem_get_capacity(smx_sem_t sem){
+  return sem->capacity;
+}
+
 /**
  * \brief Waits on a semaphore
  *
@@ -455,6 +463,7 @@ void SIMIX_sem_acquire(smx_sem_t sem) {
     return;
   }
 
+  sem->capacity--;
   /* Always create an action null in case there is a host failure */
   act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
   SIMIX_action_set_name(act_sleep,bprintf("Locked in semaphore %p", sem));
@@ -465,6 +474,7 @@ void SIMIX_sem_acquire(smx_sem_t sem) {
   SIMIX_unregister_action_to_semaphore(act_sleep, sem);
   SIMIX_action_destroy(act_sleep);
   DEBUG1("End of Wait on semaphore %p", sem);
+  sem->capacity++;
 }
 /**
  * \brief Tries to acquire a semaphore before a timeout
@@ -486,6 +496,7 @@ void SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration) {
   }
 
   if (max_duration >= 0) {
+    sem->capacity--;
     act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
     SIMIX_action_set_name(act_sleep,bprintf("Timed wait semaphore %p (max_duration:%f)", sem,max_duration));
     SIMIX_register_action_to_semaphore(act_sleep, sem);
@@ -499,6 +510,7 @@ void SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration) {
     } else {
       SIMIX_action_destroy(act_sleep);
     }
+    sem->capacity++;
 
   } else
     SIMIX_sem_acquire(sem);
