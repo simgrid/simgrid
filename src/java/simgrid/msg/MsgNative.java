@@ -18,14 +18,12 @@ package simgrid.msg;
  */
 final class MsgNative {
 
-
 	final static native
 	void selectContextFactory(String name) throws NativeException;
 
 	/******************************************************************
 	 * The natively implemented methods connected to the MSG Process  *
 	 ******************************************************************/
-
 	/**
 	 * The natively implemented method to create an MSG process.
 	 *
@@ -418,8 +416,6 @@ final class MsgNative {
 	 * @see                    Task.execute()
 	 */
 	final static native void taskExecute(Task task) throws NativeException;
-
-
 
 	/* ****************************************************************
 	 * Communication methods thru mailboxes                           *
