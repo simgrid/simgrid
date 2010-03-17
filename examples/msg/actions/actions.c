@@ -181,6 +181,8 @@ static void wait_action(xbt_dynar_t action)
     free(name);
 }
 
+/* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
+smx_sem_t barrier_semaphore=NULL;
 static void barrier (xbt_dynar_t action)
 {
   char *name = NULL;
@@ -188,9 +190,19 @@ static void barrier (xbt_dynar_t action)
   if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
     name = xbt_str_join(action, " ");
 
-  DEBUG1("barrier: %s", name);
+  DEBUG1("Entering barrier: %s", name);
+  if (barrier_semaphore == NULL)  // first arriving on the barrier
+    barrier_semaphore = SIMIX_sem_init(0);
 
-  THROW_UNIMPLEMENTED;
+  if (SIMIX_sem_get_capacity(barrier_semaphore)==-communicator_size +1) { // last arriving
+    SIMIX_sem_release_forever(barrier_semaphore);
+    SIMIX_sem_destroy(barrier_semaphore);
+    barrier_semaphore = NULL;
+  } else { // not last
+    SIMIX_sem_acquire(barrier_semaphore);
+  }
+
+  DEBUG1("Exiting barrier: %s", name);
 
   if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
     free(name);
