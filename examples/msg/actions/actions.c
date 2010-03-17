@@ -11,7 +11,7 @@
 #include "xbt.h"                /* calloc, printf */
 #include "simgrid_config.h"     /* getline */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
+XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
                  "Messages specific for this msg example");
 int communicator_size=0;
 
@@ -36,17 +36,23 @@ static double parse_double(const char *string) {
 /* My actions */
 static void send(xbt_dynar_t action)
 {
-  char *name = xbt_str_join(action, " ");
+  char *name = NULL;
   char to[250];
   char *size = xbt_dynar_get_as(action, 3, char *);
   double clock = MSG_get_clock();
   sprintf (to,"%s_%s", MSG_process_get_name(MSG_process_self()),
 	   xbt_dynar_get_as(action, 2, char *));
   //  char *to =  xbt_dynar_get_as(action, 2, char *);
+
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    name = xbt_str_join(action, " ");
+
   DEBUG2("Entering Send: %s (size: %lg)", name, parse_double(size));
   MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
   DEBUG2("%s %f", name, MSG_get_clock()-clock);
-  free(name);
+
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    free(name);
 }
 
 
@@ -90,7 +96,7 @@ static void Isend(xbt_dynar_t action)
 
 static void recv(xbt_dynar_t action)
 {
-  char *name = xbt_str_join(action, " ");
+  char *name = NULL;
     char mailbox_name[250];
   m_task_t task = NULL;
   double clock = MSG_get_clock();
@@ -98,12 +104,18 @@ static void recv(xbt_dynar_t action)
   //char *from=xbt_dynar_get_as(action,2,char*);
   sprintf (mailbox_name,"%s_%s", xbt_dynar_get_as(action, 2, char *),
 	   MSG_process_get_name(MSG_process_self()));
+
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    name = xbt_str_join(action, " ");
+
   DEBUG1("Receiving: %s", name);
   MSG_task_receive(&task, mailbox_name);
   //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
   DEBUG2("%s %f", name, MSG_get_clock()-clock);
   MSG_task_destroy(task);
-  free(name);
+
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    free(name);
 }
 
 static int spawned_recv(int argc, char *argv[])
@@ -123,7 +135,7 @@ static int spawned_recv(int argc, char *argv[])
 
 static void Irecv(xbt_dynar_t action)
 {
-  char *name = xbt_str_join(action, " ");
+  char *name;
   m_process_t comm_helper;
   char mailbox_name[250];
   char **myargv;
@@ -133,7 +145,7 @@ static void Irecv(xbt_dynar_t action)
 
   sprintf (mailbox_name,"%s_%s", xbt_dynar_get_as(action, 2, char *),
 	   MSG_process_get_name(MSG_process_self()));
-  sprintf(name,"%s_wait",MSG_process_get_name(MSG_process_self()));
+  name = bprintf("%s_wait",MSG_process_get_name(MSG_process_self()));
   myargv = (char**) calloc (2, sizeof (char*));
   
   myargv[0] = xbt_strdup(mailbox_name);
@@ -143,7 +155,7 @@ static void Irecv(xbt_dynar_t action)
 						  1, myargv);
 
   DEBUG2("%s %f",  xbt_str_join(action, " "), 
-	MSG_get_clock()-clock);
+      MSG_get_clock()-clock);
  
   free(name);
 }
@@ -151,27 +163,37 @@ static void Irecv(xbt_dynar_t action)
 
 static void wait_action(xbt_dynar_t action)
 {
-  char *name = xbt_str_join(action, " ");
+  char *name = NULL;
   char task_name[80];
   m_task_t task = NULL;
   double clock = MSG_get_clock();
   
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    name = xbt_str_join(action, " ");
+
   DEBUG1("Entering %s", name);
   sprintf(task_name,"%s_wait",MSG_process_get_name(MSG_process_self()));
   DEBUG1("wait: %s", task_name);
   MSG_task_receive(&task,task_name);
   MSG_task_destroy(task);
   DEBUG2("%s %f", name,	MSG_get_clock()-clock);
-  free(name);
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    free(name);
 }
 
 static void barrier (xbt_dynar_t action)
 {
-  char *name = xbt_str_join(action, " ");
-  DEBUG1("barrier: %s", name);
-  
+  char *name = NULL;
 
-  free(name);
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    name = xbt_str_join(action, " ");
+
+  DEBUG1("barrier: %s", name);
+
+  THROW_UNIMPLEMENTED;
+
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    free(name);
 
 }
 
@@ -313,13 +335,19 @@ static void bcast (xbt_dynar_t action)
 
 static void sleep(xbt_dynar_t action)
 {
-  char *name = xbt_str_join(action, " ");
+  char *name = NULL;
   char *duration = xbt_dynar_get_as(action, 2, char *);
   double clock = MSG_get_clock();
+
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    name = xbt_str_join(action, " ");
+
   DEBUG1("Entering %s", name);
   MSG_process_sleep(parse_double(duration));
   DEBUG2("%s %f ", name, MSG_get_clock()-clock);
-  free(name);
+
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    free(name);
 }
 
 static void allReduce(xbt_dynar_t action)
@@ -432,16 +460,19 @@ static void comm_size(xbt_dynar_t action)
 
 static void compute(xbt_dynar_t action)
 {
-  char *name = xbt_str_join(action, " ");
+  char *name=NULL;
   char *amout = xbt_dynar_get_as(action, 2, char *);
   m_task_t task = MSG_task_create(name, parse_double(amout), 0, NULL);
   double clock = MSG_get_clock();
 
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    name = xbt_str_join(action, " ");
   DEBUG1("Entering %s", name);
   MSG_task_execute(task);
   MSG_task_destroy(task);
   DEBUG2("%s %f", name, MSG_get_clock()-clock);
-  free(name);
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_debug))
+    free(name);
 }
 
 /** Main function */
