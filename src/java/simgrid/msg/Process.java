@@ -334,7 +334,7 @@ public abstract class Process extends Thread {
 	/**
 	 * The main function of the process (to implement).
 	 */
-	public abstract void main(String[]args) throws NativeException;
+	public abstract void main(String[]args) throws MsgException;
 
 
 	public void unschedule() {
@@ -353,13 +353,19 @@ public abstract class Process extends Thread {
 		}
 	}
 
-	/** Send the given task in the mailbox associated with the specified alias  (waiting at most given time) */
-	public void taskSend(String mailbox, Task task, double timeout) throws NativeException {
+	/** Send the given task in the mailbox associated with the specified alias  (waiting at most given time) 
+	 * @throws TimeoutException 
+	 * @throws HostFailureException 
+	 * @throws TransferFailureException */
+	public void taskSend(String mailbox, Task task, double timeout) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSend(mailbox, task, timeout);
 	}
 
-	/** Send the given task in the mailbox associated with the specified alias*/
-	public void taskSend(String mailbox, Task task) throws NativeException {
+	/** Send the given task in the mailbox associated with the specified alias
+	 * @throws TimeoutException 
+	 * @throws HostFailureException 
+	 * @throws TransferFailureException */
+	public void taskSend(String mailbox, Task task) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSend(mailbox, task, -1);
 	}
 

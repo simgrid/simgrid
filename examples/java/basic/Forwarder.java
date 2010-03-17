@@ -9,7 +9,7 @@ import simgrid.msg.*;
 
 public class Forwarder extends simgrid.msg.Process {
     
-   public void main(String[] args) throws NativeException {
+   public void main(String[] args) throws MsgException {
       if (args.length < 3) {	 
 	 Msg.info("Forwarder needs 3 arguments (input mailbox, first output mailbox, last one)");
 	 Msg.info("Got "+args.length+" instead");

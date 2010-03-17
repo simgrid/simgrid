@@ -132,8 +132,11 @@ public class Task {
 	 * Sends the task on the mailbox identified by the specified name 
 	 *
 	 * @exception  NativeException if the retrieval fails.
+	 * @throws TimeoutException 
+	 * @throws HostFailureException 
+	 * @throws TransferFailureException 
 	 */
-	public void send(String mailbox) throws NativeException {
+	public void send(String mailbox) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSend(mailbox, this, -1);
 	} 
 
@@ -141,8 +144,11 @@ public class Task {
 	 * Sends the task on the mailbox identified by the specified name (wait at most \a timeout seconds)
 	 *
 	 * @exception  NativeException if the retrieval fails.
+	 * @throws TimeoutException 
+	 * @throws HostFailureException 
+	 * @throws TransferFailureException 
 	 */
-	public void send(String mailbox, double timeout) throws NativeException {
+	public void send(String mailbox, double timeout) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSend(mailbox, this, timeout);
 	} 
 
