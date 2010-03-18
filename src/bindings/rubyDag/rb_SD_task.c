@@ -52,8 +52,8 @@ static void rb_SD_task_schedule(VALUE class,VALUE task,VALUE workstation_nb,VALU
   ptr_comm = RARRAY(communication_amount)->ptr;
   
   wrk_list = xbt_new0(SD_workstation_t,wrk_nb);
-  comp_amount = xbt_new0(double,wrk_nb);//malloc(sizeof(double)*wrk_nb); //xbt_new0(double,wrk_nb);
-  comm_amount = xbt_new0(double,wrk_nb);//malloc(sizeof(double)*wrk_nb); //xbt_new0(double,wrk_nb);
+  comp_amount = xbt_new0(double,wrk_nb);
+  comm_amount = xbt_new0(double,wrk_nb);
   
   // wrk_nb == comp_nb == comm_nb ???
   for (i=0;i<wrk_nb;i++)
@@ -68,13 +68,11 @@ static void rb_SD_task_schedule(VALUE class,VALUE task,VALUE workstation_nb,VALU
   for (i=0;i<comm_nb;i++)
     comm_amount[i] = NUM2DBL(ptr_comm[i]);*/
   
-  
   SD_task_schedule(tk,wrk_nb,wrk_list,comp_amount,comm_amount,rt);
   
   xbt_free(wrk_list);
-  // FIXME, used later if wanna calculate start & fininsh time for a task
-  free(comp_amount);
-  free(comm_amount);
+  xbt_free(comp_amount);
+  xbt_free(comm_amount);
   
 
 }
