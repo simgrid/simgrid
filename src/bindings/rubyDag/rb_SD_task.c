@@ -72,7 +72,6 @@ static void rb_SD_task_schedule(VALUE class,VALUE task,VALUE workstation_nb,VALU
   SD_task_schedule(tk,wrk_nb,wrk_list,comp_amount,comm_amount,rt);
   
   xbt_free(wrk_list);
-  printf("CoOoOoL\n");
   // FIXME, used later if wanna calculate start & fininsh time for a task
   free(comp_amount);
   free(comm_amount);
