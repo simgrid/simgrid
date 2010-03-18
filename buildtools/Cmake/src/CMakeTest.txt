@@ -212,8 +212,6 @@ endif(HAVE_GTNETS)
 ### Declare that we know that some tests are broken
 ###
 
-set_tests_properties(simdag-test_simdag2 PROPERTIES WILL_FAIL true)
-
 # Amok is broken in RL since before v3.3 (should fix it one day)
 set_tests_properties(amok-bandwidth-rl PROPERTIES WILL_FAIL true)
 set_tests_properties(amok-saturate-rl PROPERTIES WILL_FAIL true)

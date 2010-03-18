@@ -370,29 +370,29 @@ tutorial in general, and the \ref GRAS_tut_tour_setup in particular.
 
 \subsection faq_intro Some generalitty
 
-1 What is Cmake?
+\subsubsection faq_intro1 What is Cmake?
 
 CMake is a family of tools designed to build, test and package software. CMake is used to control the software compilation process using simple platform and compiler independent configuration files. CMake generates native makefiles and workspaces that can be used in the compiler environment of your choice. For more information see official web site <a href="http://www.cmake.org/">here</a>.
 
-2 Why cmake?
+\subsubsection faq_intro2 Why cmake?
 
 CMake permits to developers to compil projects on different plateform. Then many tools are embedded like ctest for making test, a link to cdash for vizualise results but also test coverage and bug reports. 
 
-3 What cmake need?
+\subsubsection faq_intro3 What cmake need?
 
 CMake needs some prerequists like :
   \li make
-  \li a c, c++ and java compiler regards to developers
+  \li c, c++ and java compiler regards to developers
   \li ccmake for graphical used of CMake
-  \li cmake <a href="http://www.cmake.org/cmake/resources/software.html">download</a>
+  \li cmake <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
 
-4 Cmake vs Autotools...
+\subsubsection faq_intro4 Cmake vs Autotools...
 
 
 
 \subsection faq_cmakeoption Cmake options
 
-1 Liste of options
+\subsubsection faq_cmakeoption1 Liste of options
 
 \verbatim
 "cmake -D[name]=[value] ... ./"
@@ -413,7 +413,7 @@ CMake needs some prerequists like :
 		with_context				auto/ucontext/pthread/window
 \endverbatim
 
-2 Options explaination
+\subsubsection faq_cmakeoption2 Options explaination
 
   \li disable_gtnets : set to true implie that user doesn't want to use gtnets.
 
@@ -450,7 +450,7 @@ CMake needs some prerequists like :
 
   \li with context : specify which context the user wants to use.
 
-3 Initialisation
+\subsubsection faq_cmakeoption3 Initialisation
 
 Those options are initialized the first time you launch \"cmake ./\" whithout specified option.
 
@@ -466,28 +466,28 @@ disable_gtnets  		off
 disable_ruby  			on
 \endverbatim
 
-4 Option's cache and how to reset?
+\subsubsection faq_cmakeoption4 Option's cache and how to reset?
 
 When options have been set they are keep into a cache file named \"CMakeCache.txt\". So if you want 
 reset values you just delete this file located to the project directory.
 
 \subsection faq_cmakecompilation Cmake compilation
 
-1 With command line.
+\subsubsection faq_cmakecompilation1 With command line.
 
 \verbatim
 cmake -D[name]=[value] ... ./
 make
 \endverbatim
 
-2 With ccmake tool.
+\subsubsection faq_cmakecompilation2 With ccmake tool.
 
 \verbatim
 "ccmake ./"
 \endverbatim
 Then follow instructions.
 
-3 Resume of command line
+\subsubsection faq_cmakecompilation3 Resume of command line
 
  \li CMake
 \verbatim
@@ -516,7 +516,7 @@ ctest -D Nightly(Test|Coverage|MemCheck|Submit)
 ctest -D NightlyMemoryCheck
 \endverbatim
 
-4 Examples for different mode.
+\subsubsection faq_cmakecompilation4 Examples for different mode.
 
 \li Mode maintainer
 
@@ -661,7 +661,7 @@ copy and paste : export LD_LIBRARY_PATH=/home/navarrop/Bureau/usr/lib/:$LD_LIBRA
 
 \subsection faq_cmakeinstall How to install with cmake?
 
-1 From svn. 
+\subsubsection faq_cmakeinstall1 From svn. 
 
 \verbatim
 cmake -Denable_maintainer_mode=on -Dprefix=/home/navarrop/Bureau/install_simgrid ./
@@ -669,7 +669,7 @@ make
 make install-simgrid
 \endverbatim
 
-2 From a distrib
+\subsubsection faq_cmakeinstall2 From a distrib
 
 \verbatim
 cmake -Dprefix=/home/navarrop/Bureau/install_simgrid ./
@@ -678,8 +678,6 @@ make install-simgrid
 \endverbatim
 
 \subsection faq_screenshot Screenshot
-
-1 Screenshot.
 
 \verbatim
 navarrop@caraja:~$ cd Bureau/simgrid-trunk/
@@ -732,7 +730,7 @@ it is probably due to a wrong configuration.
 
 \subsection faq_cmakehowto How to modified sources files for developers
 
-1 Add an executable or examples.
+\subsubsection faq_cmakehowto1 Add an executable or examples.
 
 If you want make an executable you have to create a CMakeList.txt to the src directory. 
 You must specified where to create the executable, source list, dependencies and the name of the binary.
@@ -755,7 +753,7 @@ this line :
 add_subdirectory(${PROJECT_DIRECTORY}/<path_where_is_CMakeList.txt>)
 \endverbatim
 
-2 Delete/add sources to lib.
+\subsubsection faq_cmakehowto2 Delete/add sources to lib.
 
 If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/src/CMakeDefinePackages.txt
 
@@ -776,7 +774,7 @@ set(JMSG_JAVA_SRC
 )
 \endverbatim
 
-3 Add test
+\subsubsection faq_cmakehowto3 Add test
 
 If you want modified, add or delete tests you have to edit <project/directory>/buildtools/Cmake/src/CMakeTest.txt 
 with this function : ADD_TEST(<name> <bin> <ARGS>)
@@ -788,19 +786,59 @@ add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:
 \subsection faq_cmakeExplain Explaination of sources files for cmake
 
 \li CMakeLists.txt
+
+Those files are the "main parts". One located at the project directory call all the cmake sources files. The others
+are little projects called by the first for make examples.
+
 \li CMakeCompleteInFiles.txt
+
+Complete all .in files and define Variables for h files
+
 \li CMakeDocs.txt
+
+This file make the html documentation.
+
 \li CMakeMakeExeLib.txt
+
+Here are callled all "CMakeLists.txt" for make executables and libraries.
+
 \li CMakePrintArgs.txt
+
+This file is called at the end of the build for summarize environment variables.
+
 \li CMakeDefinePackages.txt
+
+Here is defined sources packages for compiling libs.
+
 \li CMakeFlags.txt
+
+Defined flags which are used for compiling sources.
+
 \li CMakeSupernovae.txt
+
+Here are made files for the supernovae mode.
+
 \li CMakeDistrib.txt
+
+Here is defined packages for install simgrid and make a distribution.
+
 \li CMakeFLEXml.txt
+
+Part for generated sources from flex and flexml.
+
 \li CMakeOption.txt
+
+Here are defined options and initialized values.
+
 \li CMakeTest.txt
+
+All tests are listed.
+
 \li CTestConfig.cmake
-\li CTestTestfile.cmake
+
+Properties which link tests with dashboard.
+
+\subsection faq_cmakeList List of files added for cmake
 
 Here is a list of files involved into cmake build (relative to project directory path) :
 \verbatim
@@ -818,7 +856,6 @@ Cmake sources:
 	./buildtools/Cmake/src/CMakeOption.txt
 	./buildtools/Cmake/src/CMakeTest.txt
 	./buildtools/Cmake/src/CTestConfig.cmake
-	./buildtools/Cmake/src/CTestTestfile.cmake
 
 Test files for define properties :
 	./buildtools/Cmake/prog_test/prog_GRAS_ARCH.c
