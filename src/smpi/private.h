@@ -29,8 +29,6 @@ smpi_process_data_t smpi_process_remote_data(int index);
 int smpi_process_count(void);
 int smpi_process_index(void);
 xbt_os_timer_t smpi_process_timer(void);
-void smpi_process_simulated_reset(void);
-double smpi_process_simulated_elapsed(void);
 void smpi_process_post_send(MPI_Comm comm, MPI_Request request);
 void smpi_process_post_recv(MPI_Request request);
 
@@ -94,7 +92,7 @@ int smpi_coll_tuned_alltoall_pairwise(void* sendbuf, int sendcount, MPI_Datatype
 int smpi_coll_basic_alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int *recvcounts, int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm);
 
 // utilities
-void smpi_bench_begin(const char* mpi_call);
-void smpi_bench_end(void);
+void smpi_bench_begin(MPI_Comm comm, const char* mpi_call);
+void smpi_bench_end(MPI_Comm comm, const char* mpi_call);
 
 #endif
