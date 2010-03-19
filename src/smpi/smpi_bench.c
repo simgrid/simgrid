@@ -35,7 +35,7 @@ static void smpi_execute(double duration) {
 void smpi_bench_begin(int rank, const char* mpi_call) {
   double now = SIMIX_get_clock();
 
-  if(mpi_call && rank > 0 && xbt_cfg_get_int(_surf_cfg_set, "SMPE")) {
+  if(mpi_call && rank >= 0 && xbt_cfg_get_int(_surf_cfg_set, "SMPE")) {
     INFO3("SMPE: ts=%f rank=%d type=end et=%s", now, rank, mpi_call);
   }
   xbt_os_timer_start(smpi_process_timer());
@@ -47,7 +47,7 @@ void smpi_bench_end(int rank, const char* mpi_call) {
 
   xbt_os_timer_stop(timer);
   smpi_execute(xbt_os_timer_elapsed(timer));
-  if(mpi_call && rank > 0 && xbt_cfg_get_int(_surf_cfg_set, "SMPE")) {
+  if(mpi_call && rank >= 0 && xbt_cfg_get_int(_surf_cfg_set, "SMPE")) {
     INFO3("SMPE: ts=%f rank=%d type=begin et=%s", now, rank, mpi_call);
   }
 }
