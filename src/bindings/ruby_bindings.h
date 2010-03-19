@@ -37,8 +37,6 @@
 #undef _GNU_SOURCE
 #include <ruby.h>
 
-
-
 /* ********************* *
  * Context related stuff *
  * ********************* */
@@ -67,7 +65,6 @@ void  rb_process_kill_up(VALUE ruby_process);
 void  rb_process_join( VALUE ruby_process );
 void  rb_process_unschedule( VALUE ruby_process );
 void  rb_process_schedule( VALUE ruby_process );
-
 
 /* ********************************************** *
  * Function for Native Process (Bound) Management *
@@ -99,11 +96,14 @@ VALUE rb_host_speed(VALUE Class,VALUE host);
 void  rb_host_set_data(VALUE Class,VALUE host,VALUE data);
 VALUE rb_host_get_data(VALUE Class,VALUE host);
 VALUE rb_host_is_avail(VALUE Class,VALUE host);
+VALUE rb_host_process(VALUE Class,VALUE process);
 
 /* Functions related to tasks */
 void rb_task_free(m_task_t tk);
 // New Method  >>> Data NULL
 VALUE rb_task_new(VALUE Class, VALUE name,VALUE comp_size,VALUE comm_size);
+void  rb_task_set_data(VALUE Class,VALUE task,VALUE data); // Data as a String
+VALUE rb_task_get_data(VALUE Class,VALUE task);
 VALUE rb_task_comp(VALUE Class,VALUE task); // Get Computation Size
 VALUE rb_task_name(VALUE Class,VALUE task);
 VALUE rb_task_execute(VALUE Class,VALUE task);
@@ -114,6 +114,8 @@ VALUE rb_task_sender(VALUE Class,VALUE task);
 VALUE rb_task_source(VALUE Class,VALUE task);
 VALUE rb_task_listen(VALUE Class,VALUE task,VALUE alias); //Listen From Alias (=mailbox)
 VALUE rb_task_listen_host(VALUE Class,VALUE task,VALUE alias,VALUE host); //Listen from Host
+void rb_task_set_priority(VALUE Class,VALUE task,VALUE priority); // Set Priority
+void rb_task_cancel(VALUE Class,VALUE task); // Cancel
 
 /* Upcalls for the application handler */
 void rb_application_handler_on_start_document(void);
