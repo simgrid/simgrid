@@ -10,7 +10,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);
 
-// Used to instanciate the Process
+// Used to instanciate the Process 
 static  VALUE args;
 static  VALUE prop;
 static  VALUE function_name;

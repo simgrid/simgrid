@@ -140,20 +140,24 @@ void rb_process_kill_down(VALUE class,VALUE ruby_process) {
 VALUE rb_process_getHost(VALUE class,VALUE ruby_process) {
   m_process_t process = rb_process_to_native(ruby_process);
   m_host_t host;
+  
 
   if (!process) {
     rb_raise(rb_eRuntimeError,"Process Not Bound...while getting Host");
     return Qnil; // NULL
   }
-
+  
   host = MSG_process_get_host(process);
-
+  
+  return Data_Wrap_Struct(class, 0, rb_host_free, host);
+  /*if(host->data) printf("Ok\n"); 
+ 
   if(!host->data) {
     rb_raise (rb_eRuntimeError,"MSG_process_get_host() failed");
     return Qnil;
   }
-
-  return Data_Wrap_Struct(class, 0, rb_host_free, host);
+  printf("Houuuuuuuuuuuuuuna3!!\n");
+  return Data_Wrap_Struct(class, 0, rb_host_free, host);*/
 }
 
 void rb_process_exit(VALUE class,VALUE ruby_process) {

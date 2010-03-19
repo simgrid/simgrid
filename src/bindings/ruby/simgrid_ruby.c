@@ -65,7 +65,7 @@ static void msg_run(VALUE class) {
   DEBUG0
   ("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
   /* Cleanup Ruby hosts */
-  DEBUG0("Clean Ruby World (TODO) ");
+  DEBUG0("Clean Ruby World  ");
   hosts = MSG_get_host_table();
   host_count = MSG_get_host_number();
   for (cpt=0;cpt<host_count;cpt++) {
@@ -132,7 +132,6 @@ static void msg_debug(VALUE class,VALUE msg) {
 
 // get Clock
 static VALUE msg_get_clock(VALUE class) {
-
   return rb_float_new(MSG_get_clock());
 
 }
@@ -171,6 +170,8 @@ void Init_simgrid_ruby() {
 
   //Task Methods 
   rb_define_module_function(rb_task,"new",(rb_meth)rb_task_new,3);
+  rb_define_module_function(rb_task,"setData",(rb_meth)rb_task_set_data,2);
+  rb_define_module_function(rb_task,"data",(rb_meth)rb_task_get_data,1);
   rb_define_module_function(rb_task,"compSize",(rb_meth)rb_task_comp,1);
   rb_define_module_function(rb_task,"name",(rb_meth)rb_task_name,1);
   rb_define_module_function(rb_task,"execute",(rb_meth)rb_task_execute,1);
@@ -180,6 +181,8 @@ void Init_simgrid_ruby() {
   rb_define_module_function(rb_task,"source",(rb_meth)rb_task_source,1);
   rb_define_module_function(rb_task,"listen",(rb_meth)rb_task_listen,2);
   rb_define_module_function(rb_task,"listenFromHost",(rb_meth)rb_task_listen_host,3);
+  rb_define_module_function(rb_task,"setPriority",(rb_meth)rb_task_set_priority,2);
+  rb_define_module_function(rb_task,"cancel",(rb_meth)rb_task_cancel,1);
 
   //Host Methods
   rb_define_module_function(rb_host,"getByName",(rb_meth)rb_host_get_by_name,1);
@@ -189,4 +192,5 @@ void Init_simgrid_ruby() {
   rb_define_module_function(rb_host,"setData",(rb_meth)rb_host_set_data,2);
   rb_define_module_function(rb_host,"getData",(rb_meth)rb_host_get_data,1);
   rb_define_module_function(rb_host,"isAvail",(rb_meth)rb_host_is_avail,1);
+  rb_define_module_function(rb_host,"getHostProcess",(rb_meth)rb_host_process,1);
 }

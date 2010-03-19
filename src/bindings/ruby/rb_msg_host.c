@@ -70,3 +70,23 @@ VALUE rb_host_is_avail(VALUE class,VALUE host) {
 
   return Qfalse;
 }
+
+// getHost from process
+VALUE rb_host_process(VALUE class,VALUE ruby_process)
+{
+  
+ m_process_t process = rb_process_to_native(ruby_process);
+  m_host_t host;
+  
+
+  if (!process) {
+    rb_raise(rb_eRuntimeError,"Process Not Bound...while getting Host");
+    return Qnil; // NULL
+  }
+  
+  host = MSG_process_get_host(process);
+  
+  return Data_Wrap_Struct(class, 0, rb_host_free, host); 
+  
+  
+}

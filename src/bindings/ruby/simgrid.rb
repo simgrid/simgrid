@@ -72,7 +72,6 @@ class MSG::Process < Thread
     @name = args[0]
     @pargs = args[1]
     @properties = args[2]
-      
     start()
       }
     end
@@ -134,7 +133,15 @@ end
 class MSG::Task < MSG::RbTask
 
   def initialize(*args)
-     super()
+     super()    
+  end
+  
+  def setData(value)
+    super(self,value)
+  end
+  
+  def data()
+    super(self)
   end
   
   def name
@@ -168,6 +175,15 @@ class MSG::Task < MSG::RbTask
   def listenFromHost(t_alias,host)
     super(t_alias,host)
   end
+  
+  def setPriority(priority)
+    super(self,priority)
+  end
+  
+  def cancel()
+    super(self)
+  end
+  
 end  
 ####################################################
 # Host Extend from the native Class RbHost
@@ -200,6 +216,11 @@ class MSG::Host < MSG::RbHost
   def number
     super()
   end
+  
+  def getHostProcess(process)
+    super(process)
+  end
+    
 end
 #########################
 # Main chunck 

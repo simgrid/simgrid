@@ -23,6 +23,26 @@ VALUE rb_task_new(VALUE class, VALUE name,VALUE comp_size,VALUE comm_size) {
 
 }
 
+// set Data : For the Moment , we will consider Data as asimple String ( char * )
+void rb_task_set_data(VALUE class,VALUE task,VALUE data)
+{
+ const char *str_data = RSTRING(data)->ptr;
+ m_task_t tk;
+ Data_Get_Struct(task, s_m_task_t, tk);
+ tk->data = (void*)str_data;
+ 
+}
+
+// get Data
+VALUE rb_task_get_data(VALUE class,VALUE task)
+{
+  m_task_t tk;
+  Data_Get_Struct(task, s_m_task_t, tk);
+  return rb_str_new2(tk->data);
+  
+}
+
+
 //Get Computation Size
 VALUE rb_task_comp(VALUE class,VALUE task) {
   double size;
@@ -144,3 +164,25 @@ VALUE rb_task_listen_host(VALUE class,VALUE task,VALUE alias,VALUE host) {
     return Qtrue;
   return Qfalse;
 }
+
+
+// Set Priority
+void rb_task_set_priority(VALUE class,VALUE task,VALUE priority)
+{
+  
+  m_task_t tk;
+  double prt = NUM2DBL(priority);
+  Data_Get_Struct(task,s_m_task_t,tk);
+  MSG_task_set_priority(tk,prt);
+  
+}
+
+// Cancel
+void rb_task_cancel(VALUE class,VALUE task)
+{
+ m_task_t tk;
+ Data_Get_Struct(task,s_m_task_t,tk);
+ MSG_task_cancel(tk);
+  
+}
+
