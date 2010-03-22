@@ -32,6 +32,11 @@ dnl We do build a proper DLL when using win32
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
+SIMGRID_DEP=""
+SMPI_DEP=""
+GRAS_DEP=""
+
+
 ###############
 ## SVN version check
 ##
@@ -71,7 +76,7 @@ AC_CHECK_FUNCS([gettimeofday usleep \
                 sysconf\
                 readv\
 		popen\
-		signal])
+		signal])	   
   
 dnl GNU systems before POSIX2008 need the _GNU_SOURCE definition to find getline (and simgrid does pass this)             
 AC_MSG_CHECKING(a usable getline)
@@ -91,7 +96,14 @@ AC_LINK_IFELSE([
     AC_DEFINE(SIMGRID_NEED_GETLINE, 1, enable the getline replacement)
     AC_MSG_RESULT(not found (activating internal implementation))
   ])
-              
+
+dnl AC_MSG_CHECKING(POSIX timer functions)
+AC_CHECK_LIB(rt, [clock_gettime], [
+    AC_DEFINE(HAVE_POSIX_GETTIME, 1, POSIX timer functions were found)
+    SIMGRID_DEP="$SIMGRID_DEP -lrt"
+    GRAS_DEP="$GRAS_DEP -lrt"
+  ])
+
 # check for a working snprintf (or use xbt/snprintf.c, which comes from http://www.ijs.si/software/snprintf/)
 AC_FUNC_SNPRINTF
 # check for asprintf function familly (or request the replacements from xbt/snprintf.c)
@@ -273,19 +285,15 @@ fi
 
 SG_CONFIGURE_PART(Checking extra libraries dependencies...)
 
-SIMGRID_DEP=""
-SMPI_DEP=""
-GRAS_DEP=""
-
 if test xpthread=xyes ; then 
   # if the pthreads are usable
   if test "x$with_context" = "xpthread" ; then
     # if we use them to implement the xbt_context
-    SIMGRID_DEP="-lpthread"
+    SIMGRID_DEP="$SIMGRID_DEP -lpthread"
   fi
   # we need them in any case for the gras lib (which is multithreaded), but on windows (of course)
   if test "x$with_context" != "xwindows" ; then
-    GRAS_DEP="-lpthread"
+    GRAS_DEP="$GRAS_DEP -lpthread"
   fi
 fi
 AC_SEARCH_LIBS([connect],[socket],[],[],[]) # need -lsocket on solaris

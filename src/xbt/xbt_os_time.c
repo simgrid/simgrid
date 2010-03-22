@@ -85,35 +85,37 @@ void xbt_os_sleep(double sec)
 
 
 struct s_xbt_os_timer {
-#ifdef HAVE_GETTIMEOFDAY
+#ifdef HAVE_POSIX_GETTIME
+  struct timespec start, stop;
+#elif defined(HAVE_GETTIMEOFDAY)
   struct timeval start, stop;
 #else
   unsigned long int start, stop;
 #endif
 };
 
-xbt_os_timer_t xbt_os_timer_new(void)
-{
+xbt_os_timer_t xbt_os_timer_new(void) {
   return xbt_new0(struct s_xbt_os_timer, 1);
 }
 
-void xbt_os_timer_free(xbt_os_timer_t timer)
-{
+void xbt_os_timer_free(xbt_os_timer_t timer) {
   free(timer);
 }
 
-void xbt_os_timer_start(xbt_os_timer_t timer)
-{
-#ifdef HAVE_GETTIMEOFDAY
+void xbt_os_timer_start(xbt_os_timer_t timer) {
+#ifdef HAVE_POSIX_GETTIME
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY)
   gettimeofday(&(timer->start), NULL);
 #else
   timer->start = (unsigned long int) (time(NULL));
 #endif
 }
 
-void xbt_os_timer_stop(xbt_os_timer_t timer)
-{
-#ifdef HAVE_GETTIMEOFDAY
+void xbt_os_timer_stop(xbt_os_timer_t timer) {
+#ifdef HAVE_POSIX_GETTIME
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&(timer->stop));
+#elif defined(HAVE_GETTIMEOFDAY)
   gettimeofday(&(timer->stop), NULL);
 #else
   timer->stop = (unsigned long int) (time(NULL));
@@ -122,7 +124,11 @@ void xbt_os_timer_stop(xbt_os_timer_t timer)
 
 double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 {
-#ifdef HAVE_GETTIMEOFDAY
+#ifdef HAVE_POSIX_GETTIME
+  return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) +
+      ((((double) timer->stop.tv_nsec) -
+        ((double) timer->start.tv_nsec)) / 1e-9);
+#elif defined(HAVE_GETTIMEOFDAY)
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) +
     ((((double) timer->stop.tv_usec) -
       ((double) timer->start.tv_usec)) / 1000000.0);
