@@ -157,6 +157,8 @@ XBT_PUBLIC(int) MPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MP
 
 XBT_PUBLIC(int) MPI_Comm_rank(MPI_Comm comm, int* rank);
 XBT_PUBLIC(int) MPI_Comm_size(MPI_Comm comm, int* size);
+XBT_PUBLIC(int) MPI_Get_processor_name(char *name, int *resultlen);
+	   
 XBT_PUBLIC(int) MPI_Comm_group(MPI_Comm comm, MPI_Group* group);
 XBT_PUBLIC(int) MPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int* result);
 XBT_PUBLIC(int) MPI_Comm_dup(MPI_Comm comm, MPI_Comm* newcomm);

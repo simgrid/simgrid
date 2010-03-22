@@ -1067,3 +1067,16 @@ int MPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype s
   smpi_bench_begin(rank, "Alltoallv");
   return retval;
 }
+
+
+int MPI_Get_processor_name( char *name, int *resultlen ) {
+  int retval = MPI_SUCCESS;
+  smpi_bench_end(-1, NULL);
+  strcpy( name , SIMIX_host_get_name(SIMIX_host_self()));
+  name[MPI_MAX_PROCESSOR_NAME-1]='\0';
+  *resultlen= strlen(name) > MPI_MAX_PROCESSOR_NAME ? MPI_MAX_PROCESSOR_NAME : strlen(name);
+
+  smpi_bench_begin(-1, NULL);
+  return retval;
+}
+
