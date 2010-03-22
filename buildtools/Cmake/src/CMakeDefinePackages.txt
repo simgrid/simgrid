@@ -282,7 +282,8 @@ set(AMOK_SRC
 
 set(LUA_SRC
 	${PROJECT_DIRECTORY}/src/simix/smx_context_lua.c
-	${PROJECT_DIRECTORY}/src/bindings/lua/Msglua.c
+	#${PROJECT_DIRECTORY}/src/bindings/lua/Msglua.c
+	${PROJECT_DIRECTORY}/src/bindings/lua/simgrid_lua.c
 )
 
 set(RUBY_SRC
