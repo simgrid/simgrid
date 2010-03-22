@@ -89,9 +89,10 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
   check_overflow;
 
   /* Display the proc info if available */
-  if (strlen(xbt_procname())) {
+  const char *procname=xbt_procname();
+  if (strlen(procname)) {
     p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%s:(%d) ",
-                  gras_os_myname(), xbt_procname(), (*xbt_getpid) ());
+                  gras_os_myname(), procname, (*xbt_getpid) ());
     check_overflow;
   }
 

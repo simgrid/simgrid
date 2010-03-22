@@ -179,7 +179,7 @@ const char *xbt_procname(void)
     As a hack we check for maestro by looking to the assigned host, if it is
     NULL then we are sure is maestro
   */
-  if (process != NULL && SIMIX_host_self())
+  if (process != NULL && SIMIX_process_get_host(process))
     return SIMIX_process_get_name(process);
 
   return "";
