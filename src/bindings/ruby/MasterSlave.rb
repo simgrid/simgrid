@@ -10,7 +10,7 @@ include MSG
 #################################################
 
 class Master < MSG::Process  
-  # main : that function that will be executed when Running Simulation
+  # main : that function that will be executed when running simulation
 
   def main(args) # args is an array containing arguments for function master
    size = args.size
@@ -28,17 +28,17 @@ class Master < MSG::Process
     for i in 0..numberOfTask-1
      task = MSG::Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
       mailbox = "slave " + (i%slaveCount).to_s
-      MSG::info("Master Sending "+ task.name + " to " + mailbox + " with Comput Size " + 
+      MSG::debug("Master Sending "+ task.name + " to " + mailbox + " with Comput Size " + 
            task.compSize.to_s)
       task.send(mailbox)
-      MSG::info("Master Done Sending " + task.name + " to " + mailbox)
+      MSG::debug("Master Done Sending " + task.name + " to " + mailbox)
     end
   
    # Sending Finalize MSG::Tasks
+   #MSG::info("Master: All "+numberOfTask+" tasks have been dispatched. Let's tell everybody the computation is over.")
    MSG::info("Master: All tasks have been dispatched. Let's tell everybody the computation is over.")
    for i in 0..slaveCount-1
      mailbox = "slave " + i.to_s
-     MSG::info("Master Sending Finalize to " + mailbox)
      finalize_task = Task.new("finalize",0,0)
      finalize_task.send(mailbox)
    end
@@ -58,18 +58,14 @@ class Slave < MSG::Process
     end
 
     while true
-       info("Ready to Receive Task")
        task = MSG::Task.receive(mailbox)
-       MSG::info("Task Received : " + task.name)
        if (task.name == "finalize")
- 	       MSG::info("Slave " + mailbox + " got finalize msg")
 	       break
        end
-       MSG::info("Slave " + mailbox + " ...Processing" + task.name)
        task.execute
-       MSG::info("task "+ task.name + " Executed !!")
+       MSG::debug("Slave '" + mailbox + "' done executing task "+ task.name + ".")
     end
-    MSG::info("Slave " + mailbox +  "I'm Done , See You !!")
+    MSG::info("I'm done, see you")
   end    
 end
 

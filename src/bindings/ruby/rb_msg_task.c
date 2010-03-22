@@ -78,7 +78,7 @@ void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
   // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, s_m_task_t, tk);
-  INFO1("Sending task %p",tk);
+  DEBUG1("Sending task %p",tk);
   rv = MSG_task_send(tk,RSTRING(mailbox)->ptr);
   if(rv != MSG_OK)
   {
@@ -101,7 +101,7 @@ VALUE rb_task_receive(VALUE class, VALUE mailbox) {
   m_task_t *ptask = malloc(sizeof(m_task_t));
   m_task_t task;
   *ptask = NULL;
-  INFO2("Receiving a task on mailbox '%s', store it into %p",RSTRING(mailbox)->ptr,&task);
+  DEBUG2("Receiving a task on mailbox '%s', store it into %p",RSTRING(mailbox)->ptr,&task);
   MSG_task_receive(ptask,RSTRING(mailbox)->ptr);
   task = *ptask;
   free(ptask);
