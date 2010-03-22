@@ -79,7 +79,6 @@ if (ARGV.length == 2)
 else 
 	MSG.createEnvironment("platform.xml")
 	MSG.deployApplication("deploy.xml")
-
 end
 
 MSG.run

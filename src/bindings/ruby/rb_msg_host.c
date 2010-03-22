@@ -45,17 +45,6 @@ VALUE rb_host_speed(VALUE class,VALUE host) {
   return MSG_get_host_speed(ht);
 }
 
-// Host Set Data
-void rb_host_set_data(VALUE class,VALUE host,VALUE data) {
-  THROW_UNIMPLEMENTED;
-}
-
-// Host Get Data
-VALUE rb_host_get_data(VALUE class,VALUE host) {
-  THROW_UNIMPLEMENTED;
-  return Qnil;
-}
-
 // Host is Avail
 VALUE rb_host_is_avail(VALUE class,VALUE host) {
   m_host_t ht;

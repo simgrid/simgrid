@@ -133,7 +133,7 @@ end
 class MSG::Task < MSG::RbTask
 
   def initialize(*args)
-     super()    
+    super()
   end
   
   def setData(value)
@@ -145,7 +145,7 @@ class MSG::Task < MSG::RbTask
   end
   
   def name
-     super(self)
+      super(self)
   end
   
   def compSize
@@ -189,6 +189,21 @@ end
 # Host Extend from the native Class RbHost
 ####################################################
 class MSG::Host < MSG::RbHost
+  
+  attr_reader :data
+  def initialize(*ars)
+    @data = 1
+    p "Host Initializer"
+  end
+  
+  def data()
+    return @data
+  end
+  
+  def setData(value)
+    @data = value
+  end
+  
   def getByName(name)
     super(name)
   end
@@ -205,9 +220,6 @@ class MSG::Host < MSG::RbHost
     super(self)
   end
   
-  def setData(data)
-    super(self,data)
-  end
   
   def isAvail
     super(self)

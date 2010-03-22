@@ -136,7 +136,6 @@ static VALUE msg_get_clock(VALUE class) {
 
 }
 
-
 extern const char*xbt_ctx_factory_to_use; /*Hack: let msg load directly the right factory */
 
 typedef VALUE(*rb_meth)(ANYARGS);
@@ -189,8 +188,6 @@ void Init_simgrid_ruby() {
   rb_define_module_function(rb_host,"name",(rb_meth)rb_host_name,1);
   rb_define_module_function(rb_host,"speed",(rb_meth)rb_host_speed,1);
   rb_define_module_function(rb_host,"number",(rb_meth)rb_host_number,0);
-  rb_define_module_function(rb_host,"setData",(rb_meth)rb_host_set_data,2);
-  rb_define_module_function(rb_host,"getData",(rb_meth)rb_host_get_data,1);
   rb_define_module_function(rb_host,"isAvail",(rb_meth)rb_host_is_avail,1);
   rb_define_module_function(rb_host,"getHostProcess",(rb_meth)rb_host_process,1);
 }
