@@ -218,7 +218,7 @@ XBT_INLINE smx_host_t SIMIX_host_get_by_name(const char *name)
  */
 XBT_INLINE xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters");
+  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.get_properties(host->host);
 }
@@ -233,7 +233,7 @@ XBT_INLINE xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
  */
 XBT_INLINE int SIMIX_host_get_state(smx_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters");
+  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return (surf_workstation_model->extension.workstation.
           get_state(host->host));
