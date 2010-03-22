@@ -220,7 +220,7 @@ const char *MSG_host_get_property_value(m_host_t host, const char *name)
  */
 xbt_dict_t MSG_host_get_properties(m_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters");
+  xbt_assert0((host != NULL), "Invalid parameters (host is NULL)");
 
   return (SIMIX_host_get_properties(host->simdata->smx_host));
 }
@@ -233,6 +233,6 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
  */
 int MSG_host_is_avail(m_host_t h)
 {
-  xbt_assert0((h != NULL), "Invalid parameters");
+  xbt_assert0((h != NULL), "Invalid parameters (host is NULL)");
   return (SIMIX_host_get_state(h->simdata->smx_host));
 }
