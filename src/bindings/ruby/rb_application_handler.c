@@ -24,7 +24,8 @@ static VALUE rb_process_instance(VALUE fct_name,VALUE arguments,VALUE properties
 }
 
 // FIXME: don't mess with MSG internals here, use MSG_process_create_with_arguments()
-static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE properties,VALUE ht_name) {
+static void rb_process_create_with_args(VALUE fct_name, VALUE arguments,
+                                        VALUE properties, VALUE ht_name) {
   
   VALUE ruby_process = rb_process_instance(fct_name,arguments,properties);
   m_process_t process; // Native Process to Create
@@ -87,7 +88,7 @@ static void rb_process_create_with_args(VALUE fct_name,VALUE arguments,VALUE pro
 void rb_application_handler_on_start_document(void) {
   
 
-   args = rb_ary_new();  // Max lenght = 16 !!
+   args = rb_ary_new();  // Max length = 16 !!
    prop = rb_ary_new();
 
 }
@@ -105,7 +106,7 @@ void rb_application_handler_on_begin_process(void) {
   host_name = rb_str_new2(A_surfxml_process_host);
   function_name = rb_str_new2(A_surfxml_process_function);
 
-  args = rb_ary_new();  // Max lenght = 16 ?!
+  args = rb_ary_new();  // Max length = 16 ?!
   prop = rb_ary_new();
 
 }
