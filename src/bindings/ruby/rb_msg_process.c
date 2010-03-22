@@ -51,6 +51,7 @@ void rb_process_join( VALUE ruby_process ) {
   rb_funcall(ruby_process,rb_intern("join"),0);
 }
 
+// FIXME: all this calls must be manually inlined I guess
 // unschedule Process
 void rb_process_unschedule( VALUE ruby_process ) {
   rb_funcall(ruby_process,rb_intern("unschedule"),0);
