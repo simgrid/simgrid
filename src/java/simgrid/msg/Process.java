@@ -222,7 +222,7 @@ public abstract class Process extends Thread {
 	 * @exception			NativeException on error in the native SimGrid code
 	 *
 	 */ 
-	public Host getHost() throws NativeException {
+	public Host getHost() {
 		return MsgNative.processGetHost(this);
 	}
 	/**

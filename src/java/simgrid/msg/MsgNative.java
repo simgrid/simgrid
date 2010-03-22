@@ -51,11 +51,9 @@ final class MsgNative {
 	 *
 	 * @param process        The valid (binded with a native process) java process to suspend.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
-	 *
 	 * @see                 Process.pause()
 	 */
-	final static native void processSuspend(Process process) throws NativeException;
+	final static native void processSuspend(Process process);
 
 	/**
 	 * The natively implemented method to kill a MSG process.
@@ -96,11 +94,11 @@ final class MsgNative {
 	 *
 	 * @return                The method returns the host where the process is running.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
+	 * @exception            HostNotFoundException if the SimGrid native code failed (initialization error?).
 	 *
 	 * @see                 Process.getHost()
 	 */
-	final static native Host processGetHost(Process process) throws NativeException;
+	final static native Host processGetHost(Process process);
 
 	/**
 	 * The natively implemented method to get a MSG process from his PID.
@@ -122,11 +120,9 @@ final class MsgNative {
 	 *
 	 * @return                The PID of the specified process.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
-	 *
 	 * @see                 Process.getPID()
 	 */
-	final static native int processGetPID(Process process) throws NativeException;
+	final static native int processGetPID(Process process);
 
 	/**
 	 * The natively implemented method to get the PPID of a MSG process.
@@ -135,22 +131,18 @@ final class MsgNative {
 	 *
 	 * @return                The PPID of the specified process.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
-	 *
 	 * @see                 Process.getPPID()
 	 */
-	final static native int processGetPPID(Process process) throws NativeException;
+	final static native int processGetPPID(Process process);
 
 	/**
 	 * The natively implemented method to get the current running process.
 	 *
 	 * @return             The current process.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
-
 	 * @see                Process.currentProcess()
 	 */
-	final static native Process processSelf() throws NativeException;
+	final static native Process processSelf();
 
 	/**
 	 * The natively implemented method to migrate a process from his currnet host to a new host.

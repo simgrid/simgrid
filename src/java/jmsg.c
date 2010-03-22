@@ -230,7 +230,7 @@ Java_simgrid_msg_MsgNative_processGetHost(JNIEnv * env, jclass cls,
   host = MSG_process_get_host(process);
 
   if (!host->data) {
-    jxbt_throw_native(env, xbt_strdup("MSG_process_get_host() failed"));
+    jxbt_throw_jni(env, "MSG_process_get_host() failed");
     return NULL;
   }
 
@@ -981,26 +981,8 @@ Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  /*  throw the right exception corresponding to HostFailureException, TransferFailureException, TimeoutFailureException
-   * Note: these exceptions must be created beforehand
-   *       then, you want to create some functions like jxbt_throw_notbound()
-   *       then, you must declare in the MsgNative stuff that these native functions can throw these exceptions
-   */
-  if (MSG_OK != rv)
-  {
-    
-      if ( rv == MSG_TRANSFER_FAILURE )
-	jxbt_throw_transfer_failure(env,MSG_task_get_name(task),alias);
-	
-      else if ( rv == MSG_HOST_FAILURE )
-	jxbt_throw_host_failure(env,MSG_task_get_name(task),alias);
-	
-      else if ( rv == MSG_TIMEOUT_FAILURE )
-	 jxbt_throw_time_out_failure(env,MSG_task_get_name(task),alias);
-      else
-	jxbt_throw_native(env, xbt_strdup("MSG_task_send_with_timeout() failed"));
-  
-  } 
+  jxbt_check_res("MSG_task_send_with_timeout()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT_FAILURE,
+    bprintf("while sending task %s to mailbox %s", MSG_task_get_name(task),alias));
 }
 
 JNIEXPORT void JNICALL

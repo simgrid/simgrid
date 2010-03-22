@@ -14,7 +14,6 @@
 #define JXBT_UTILITY_H
 
 #include <jni.h>
-#include "jxbt_utilities.h"
 
 /* *********** */
 /* JNI GETTERS */
@@ -57,6 +56,16 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
 /* EXCEPTION RAISING */
 /* ***************** */
 
+#define jxbt_check_res(fun, res, allowed_exceptions, detail) do {\
+    if (res != MSG_OK && res | allowed_exceptions) { \
+      xbt_die(bprintf("%s failed with error code %d, which is not an allowed exception. Please fix me.",fun,res)); \
+    } else if (res == MSG_HOST_FAILURE) { \
+      jxbt_throw_host_failure(env, detail); \
+    } else if (res == MSG_TRANSFER_FAILURE) { \
+      jxbt_throw_transfer_failure(env,detail); \
+    } else if (res == MSG_TIMEOUT_FAILURE) { \
+      jxbt_throw_time_out_failure(env,detail); \
+   } } while (0)
 
 /** Thrown on internal error of this layer, or on problem with JNI */
 void jxbt_throw_jni(JNIEnv * env, const char *msg);
@@ -76,10 +85,10 @@ void jxbt_throw_host_not_found(JNIEnv * env, const char *invalid_name);
 /** Thrown when looking for an host from name does not lead to anything */
 void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name);
 /** Thrown when a transfer failure accure while Sending task */
-void jxbt_throw_transfer_failure(JNIEnv * env,const char *task_name,const char *alias);
+void jxbt_throw_transfer_failure(JNIEnv * env,char *detail);
 /** Thrown when a host failure accures while Sending task*/
-void jxbt_throw_host_failure(JNIEnv *env,const char *task_name,const char *alias);
+void jxbt_throw_host_failure(JNIEnv *env,char *details);
 /** Thrown when a time out accures While Sending task */
-void jxbt_throw_time_out_failure(JNIEnv *env,const char *task_name,const char *alias);
+void jxbt_throw_time_out_failure(JNIEnv *env,char *details);
 
 #endif /* ! JXBT_UTILITY_H */

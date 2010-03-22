@@ -265,31 +265,28 @@ void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name)
 }
 
 // tranfert failure
-void jxbt_throw_transfer_failure(JNIEnv *env,const char *task_name,const char *alias)
-{
+void jxbt_throw_transfer_failure(JNIEnv *env,char *details) {
   
   jxbt_throw_by_name(env,
 		     "simgrid/msg/TransferFailureException",
-		     bprintf("There has been a problem during your task transfer (task :%s / alias :%s)",task_name,alias));
+		     details);
   
 }
 
 // host failure Exception
-void jxbt_throw_host_failure(JNIEnv *env,const char *task_name,const char *alias)
-{
+void jxbt_throw_host_failure(JNIEnv *env,char *details) {
   
  jxbt_throw_by_name(env,
 		    "simgrid/msg/HostFailureException",
-		    bprintf("Host Failure while sending (task :%s / alias %s) : The host on which you are running has just been rebooted",task_name,alias));
+		    bprintf("Host Failure %s",details));
   
 }
 
 // time out failure Exception
-void jxbt_throw_time_out_failure(JNIEnv *env,const char *task_name,const char *alias)
-{
+void jxbt_throw_time_out_failure(JNIEnv *env,char *details) {
   
   jxbt_throw_by_name(env,
 		    "simgrid/msg/TimeoutException",
-		    bprintf("Timeout Failure while sending(task :%s / alias %s ):nothing good happened before the timer you provided elapsed ",task_name,alias));
+		    details);
   
 }
