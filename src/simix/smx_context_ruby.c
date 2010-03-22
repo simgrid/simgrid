@@ -72,28 +72,17 @@ smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
 
 // FIXME 
 static void smx_ctx_ruby_free(smx_context_t context) {
- // DEBUG1("smx_ctx_ruby_free(%s)",context->argv[0]);
-  
-  //VALUE process;
-  /*if (context)
-  {
-   smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) context;
-   rb_process_isProcess(ctx_ruby->process);
-   if (ctx_ruby->process){
-     // if the Ruby Process is Alive , Join it   
-    if ( rb_process_isAlive(ctx_ruby->process))
-    {
-      process = ctx_ruby->process;
-      ctx_ruby->process = Qnil;
-      rb_process_join(process);
-    } 
-  }
-  free(context);
-  context = NULL; 
-  } */
- 
+  int i;
  if (context) {
     DEBUG1("smx_ctx_ruby_free_context(%p)",context);
+    /* free argv */
+    if (context->argv) {
+      for (i = 0; i < context->argc; i++)
+        if (context->argv[i])
+          free(context->argv[i]);
+
+      free(context->argv);
+    }
     free (context);
     context = NULL;
   }
