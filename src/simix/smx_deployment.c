@@ -73,8 +73,7 @@ static void parse_process_finalize(void)
       surf_timer_model->extension.timer.set(start_time, (void *)
                                             &SIMIX_process_create, arg);
 
-  }
-  if ((start_time < 0) || (start_time == SIMIX_get_clock())) {
+  } else { // start_time <= SIMIX_get_clock()
     DEBUG2("Starting Process %s(%s) right now", parse_argv[0], parse_host);
 
     if (simix_global->create_process_function)
@@ -89,8 +88,8 @@ static void parse_process_finalize(void)
                                      current_property_set);
     /* verify if process has been created */
     if (!process) {
-    	xbt_free(parse_host);
-    	return;
+      xbt_free(parse_host);
+      return;
     }
     if (kill_time > SIMIX_get_clock()) {
     	if (simix_global->kill_process_function)

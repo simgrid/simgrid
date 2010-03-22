@@ -370,14 +370,14 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
           xbt_free(args);
           continue;
         }
+
         if (args->kill_time > SIMIX_get_clock()) {
           surf_timer_model->extension.timer.set(args->kill_time, (void *)
                                                 &SIMIX_process_kill,
                                                 (void *) process);
         }
         xbt_free(args);
-      }
-      if (fun == simix_global->create_process_function) {
+      } else if (fun == simix_global->create_process_function) {
         smx_process_arg_t args = arg;
         DEBUG2("Launching %s on %s", args->name, args->hostname);
         process =
@@ -403,15 +403,15 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
                                                   (void *) process);
         }
         xbt_free(args);
-      }
-      if (fun == SIMIX_process_kill) {
+      } else if (fun == SIMIX_process_kill) {
         process = arg;
         DEBUG2("Killing %s on %s", process->name, process->smx_host->name);
         SIMIX_process_kill(process);
-      }
-      if (fun == simix_global->kill_process_function) {
+      } else if (fun == simix_global->kill_process_function) {
         process = arg;
         (*simix_global->kill_process_function) (process);
+      } else {
+        THROW_IMPOSSIBLE;
       }
     }
 
