@@ -150,7 +150,7 @@ static void smx_ctx_sysv_stop(smx_context_t pcontext)
 
 static void smx_ctx_sysv_wrapper()
 {
-  /*FIXME: I would like to avoid accesing simix_global to get the current
+  /*FIXME: I would like to avoid accessing simix_global to get the current
     context by passing it as an argument of the wrapper function. The problem
     is that this function is called from smx_ctx_sysv_start, and uses
     makecontext for calling it, and the stupid posix specification states that
