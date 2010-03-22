@@ -321,6 +321,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
   if (xbt_swag_size(simix_global->process_to_run) && (elapsed_time > 0)) {
     DEBUG0("**************************************************");
   }
+  DEBUG1("%d processes in the to_run list",xbt_swag_size(simix_global->process_to_run));
 
   while ((process = xbt_swag_extract(simix_global->process_to_run))) {
     DEBUG2("Scheduling %s on %s", process->name, process->smx_host->name);

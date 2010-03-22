@@ -330,13 +330,7 @@ endif
 ### Declare the library content
 ###
 
-if HAVE_RUBY
-  libruby=simgrid_ruby.la
-else
-  libruby=
-endif
-
-lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la $(libruby)
+lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la 
 
 gras_sources=$(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 simgrid_sources=$(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) \
@@ -357,6 +351,7 @@ libsmpi_la_SOURCES = $(SMPI_SRC)
 libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 
 if HAVE_RUBY
+lib_LTLIBRARIES += simgrid_ruby.la
 simgrid_ruby_la_LIBADD = libsimgrid.la
 simgrid_ruby_la_SOURCES = bindings/ruby/simgrid_ruby.c
 simgrid_ruby_la_LDFLAGS = $(VERSION_INFO) @LD_DYNAMIC_FLAGS@ -lm -module
@@ -392,7 +387,7 @@ else
 EXTRA_DIST+=$(JMSG_C_SRC) $(JMSG_JAVA_SRC) $(MSG_SRC)
 endif
 
-LUA_SRC= simix/smx_context_lua.c bindings/lua/Msglua.c
+LUA_SRC= simix/smx_context_lua.c bindings/lua/simgrid_lua.c #bindings/lua/Msglua.c 
 if HAVE_LUA
   simgrid_sources += $(LUA_SRC)
 else

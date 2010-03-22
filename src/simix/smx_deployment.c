@@ -86,7 +86,7 @@ static void parse_process_finalize(void)
     else
       process = SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,       /*the props */
                                      current_property_set);
-    /* verify if process has been created */
+    /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process) {
       xbt_free(parse_host);
       return;
