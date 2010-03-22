@@ -29,8 +29,7 @@ int master(int argc, char *argv[])
 
   int i;
 
-  printf("Got %ld slaves and %ld tasks to process\n", slaves_count,number_of_tasks);
-//  INFO2("Got %ld slaves and %ld tasks to process", slaves_count,number_of_tasks);
+  INFO2("Got %ld slaves and %ld tasks to process", slaves_count,number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
@@ -40,13 +39,10 @@ int master(int argc, char *argv[])
     sprintf(mailbox,"slave-%ld",i % slaves_count);
     sprintf(sprintf_buffer, "Task_%d", i);
     task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
-    if (number_of_tasks<10000 || i%10000 == 0) {	  
-      printf("Sending \"%s\" (of %ld) to mailbox \"%s\"\n", task->name, number_of_tasks, mailbox);
-      fflush(stdout);
-    }
+    if (number_of_tasks<10000 || i%10000 == 0) 
+      INFO3("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name, number_of_tasks, mailbox);
      
     MSG_task_send(task, mailbox);
-   // INFO0("Sent");
   }
   
    INFO0("All tasks have been dispatched. Let's tell everybody the computation is over."); 
