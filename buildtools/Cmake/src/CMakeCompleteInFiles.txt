@@ -201,13 +201,12 @@ endif(NOT with_context_ok)
 #message("CONTEXT_THREADS ${CONTEXT_THREADS}")
 #message("CONTEXT_UCONTEXT ${CONTEXT_UCONTEXT}")
 set(HAVE_LUA 0)
+
 if(NOT disable_lua)
-	if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-		CHECK_INCLUDE_FILE(lualib.h HAVE_LUA5_1_LUALIB_H)
-	elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-		CHECK_INCLUDE_FILE(lua5.1/lualib.h HAVE_LUA5_1_LUALIB_H)
-	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-	#message("HAVE_LUA5_1_LUALIB_H ${HAVE_LUA5_1_LUALIB_H}")
+	find_path(HAVE_LUA5_1_LUALIB_H
+	NAMES lualib.h 
+	PATHS "/sw/include/" "/usr/include/lua5.1/"
+	)
 	if(HAVE_LUA5_1_LUALIB_H)
 		set(HAVE_LUA 1)
 	endif(HAVE_LUA5_1_LUALIB_H)
