@@ -21,15 +21,10 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv,
 static int smx_ctx_java_factory_finalize(smx_context_factory_t * factory);
 
 static void smx_ctx_java_free(smx_context_t context);
-
 static void smx_ctx_java_start(smx_context_t context);
-
 static void smx_ctx_java_stop(smx_context_t context);
-
 static void smx_ctx_java_suspend(smx_context_t context);
-
-static void
-  smx_ctx_java_resume(smx_context_t old_context, smx_context_t new_context);
+static void smx_ctx_java_resume(smx_context_t new_context);
 
 void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 {
@@ -150,8 +145,9 @@ static void smx_ctx_java_suspend(smx_context_t context)
   jprocess_unschedule(context);
 }
 
+// FIXME: inline those functions
 static void 
-smx_ctx_java_resume(smx_context_t old_context, smx_context_t new_context)
+smx_ctx_java_resume(smx_context_t new_context)
 {
   jprocess_schedule(new_context);
 }

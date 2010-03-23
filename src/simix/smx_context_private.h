@@ -68,7 +68,6 @@ typedef void (*smx_pfn_context_stop_t) (int);
 
 /* interface of the context factories */
 typedef struct s_smx_context_factory {
-  smx_pfn_context_factory_create_maestro_context_t create_maestro_context;
   smx_pfn_context_factory_create_context_t create_context;
   smx_pfn_context_factory_finalize_t finalize;
   smx_pfn_context_free_t free;

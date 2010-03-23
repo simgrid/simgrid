@@ -23,8 +23,7 @@ static int smx_ctx_ruby_factory_finalize(smx_context_factory_t *factory);
 static void smx_ctx_ruby_free(smx_context_t context);
 static void smx_ctx_ruby_stop(smx_context_t context);
 static void smx_ctx_ruby_suspend(smx_context_t context);
-static void 
-smx_ctx_ruby_resume(smx_context_t old_context,smx_context_t new_context);
+static void smx_ctx_ruby_resume(smx_context_t new_context);
 static void smx_ctx_ruby_wrapper(void); 
 
 
@@ -125,9 +124,8 @@ static void smx_ctx_ruby_suspend(smx_context_t context) {
       rb_process_unschedule(ctx_ruby->process);
 }
 
-static void smx_ctx_ruby_resume(smx_context_t old_context,smx_context_t new_context) {
-  DEBUG2("smx_ctx_ruby_resume(%s,%s)",
-      (old_context->argc?old_context->argv[0]:"maestro"),
+static void smx_ctx_ruby_resume(smx_context_t new_context) {
+  DEBUG1("smx_ctx_ruby_resume(%s)",
       (new_context->argc?new_context->argv[0]:"maestro"));
 
   smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) new_context;

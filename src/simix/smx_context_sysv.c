@@ -25,7 +25,6 @@ typedef struct s_smx_ctx_sysv {
   SMX_CTX_BASE_T;
   ucontext_t uc;                /* the thread that execute the code */
   char stack[STACK_SIZE];       /* the thread stack size */
-  struct s_smx_ctx_sysv *prev;           /* the previous process */
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id;       /* the valgrind stack id */
 #endif                          
@@ -38,13 +37,9 @@ smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv,
 static int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory);
 
 static void smx_ctx_sysv_free(smx_context_t context);
-
 static void smx_ctx_sysv_stop(smx_context_t context);
-
 static void smx_ctx_sysv_suspend(smx_context_t context);
-
-static void 
-smx_ctx_sysv_resume(smx_context_t old_context, smx_context_t new_context);
+static void smx_ctx_sysv_resume(smx_context_t new_context);
 
 static void smx_ctx_sysv_wrapper(void);
 
@@ -159,28 +154,21 @@ static void smx_ctx_sysv_wrapper()
   smx_ctx_sysv_stop((smx_context_t)context);
 }
 
-static void smx_ctx_sysv_suspend(smx_context_t context)
-{
+static void smx_ctx_sysv_suspend(smx_context_t context) {
   int rv;
+  ucontext_t maestro_ctx = ((smx_ctx_sysv_t)simix_global->maestro_process->context)->uc;
 
-  smx_ctx_sysv_t prev_context = ((smx_ctx_sysv_t) context)->prev;
-
-  ((smx_ctx_sysv_t) context)->prev = NULL;
-
-  rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &prev_context->uc);
+  rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &maestro_ctx);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
 
 static void 
-smx_ctx_sysv_resume(smx_context_t old_context, smx_context_t new_context)
-{
+smx_ctx_sysv_resume(smx_context_t new_context) {
   int rv;
+  smx_ctx_sysv_t maestro = (smx_ctx_sysv_t)simix_global->maestro_process->context;
 
-  ((smx_ctx_sysv_t) new_context)->prev = (smx_ctx_sysv_t)old_context;
-
-  rv = swapcontext(&((smx_ctx_sysv_t)old_context)->uc,
-      &((smx_ctx_sysv_t)new_context)->uc);
+  rv = swapcontext(&(maestro->uc), &((smx_ctx_sysv_t)new_context)->uc);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }

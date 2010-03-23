@@ -58,7 +58,7 @@ extern SIMIX_Global_t simix_global;
     @ingroup m_datatypes_management_details @{ */
      typedef struct s_smx_process {
        s_xbt_swag_hookup_t process_hookup;
-       s_xbt_swag_hookup_t synchro_hookup;
+       s_xbt_swag_hookup_t synchro_hookup; /* process_to_run or mutex->sleeping and co */
        s_xbt_swag_hookup_t host_proc_hookup;
        s_xbt_swag_hookup_t destroy_hookup;
 
@@ -264,8 +264,7 @@ typedef void (*smx_pfn_context_stop_t) (smx_context_t);
 typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
 
 /* function used to resume the current context */
-typedef void (*smx_pfn_context_resume_t) (smx_context_t old_context, 
-                                          smx_context_t new_context);
+typedef void (*smx_pfn_context_resume_t) (smx_context_t new_context);
 
 /* interface of the context factories */
 typedef struct s_smx_context_factory {
@@ -358,10 +357,9 @@ static inline void SIMIX_context_stop(smx_context_t context) {
  \param old_context the actual context from which is resuming
  \param new_context the context to resume
  */
-static inline void SIMIX_context_resume(smx_context_t old_context,
-                                        smx_context_t new_context)
+static inline void SIMIX_context_resume(smx_context_t new_context)
 {
-  (*(simix_global->context_factory->resume)) (old_context, new_context);
+  (*(simix_global->context_factory->resume)) (new_context);
 }
 
 /**

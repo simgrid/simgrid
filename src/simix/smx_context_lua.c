@@ -48,12 +48,11 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
     void_f_pvoid_t cleanup_func, void* cleanup_arg);
 
 static int smx_ctx_lua_factory_finalize(smx_context_factory_t *factory);
+
 static void smx_ctx_lua_free(smx_context_t context);
 static void smx_ctx_lua_stop(smx_context_t context);
 static void smx_ctx_lua_suspend(smx_context_t context);
-
-static void 
-smx_ctx_lua_resume(smx_context_t old_context, smx_context_t new_context);
+static void smx_ctx_lua_resume(smx_context_t new_context);
 
 static void smx_ctx_sysv_wrapper(void);
 
@@ -175,7 +174,7 @@ static void smx_ctx_lua_suspend(smx_context_t pcontext) {
 }
 
 static void 
-smx_ctx_lua_resume(smx_context_t old_context, smx_context_t new_context) {
+smx_ctx_lua_resume(smx_context_t new_context) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)new_context;
   DEBUG1("Resuming %s",context->argv[0]);
   int ret = lua_resume(context->state,context->nargs);

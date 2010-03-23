@@ -32,9 +32,7 @@ static int smx_ctx_thread_factory_finalize(smx_context_factory_t * factory);
 static void smx_ctx_thread_free(smx_context_t context);
 static void smx_ctx_thread_stop(smx_context_t context);
 static void smx_ctx_thread_suspend(smx_context_t context);
-
-static void 
-  smx_ctx_thread_resume(smx_context_t old_context, smx_context_t new_context);
+static void smx_ctx_thread_resume(smx_context_t new_context);
 
 static void *smx_ctx_thread_wrapper(void *param);
 
@@ -45,7 +43,6 @@ void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
   (*factory)->create_context = smx_ctx_thread_factory_create_context;
   (*factory)->finalize = smx_ctx_thread_factory_finalize;
   (*factory)->free = smx_ctx_thread_free;
-  (*factory)->start = smx_ctx_thread_start;
   (*factory)->stop = smx_ctx_thread_stop;
   (*factory)->suspend = smx_ctx_thread_suspend;
   (*factory)->resume = smx_ctx_thread_resume;
@@ -81,7 +78,7 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** arg
     /* NOTE: The first argument to xbt_os_thread_create used to be the process *
      * name, but now the name is stored at SIMIX level, so we pass a null      */
     context->thread =
-      xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, ctx_thread);
+      xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, context);
 
     /* wait the starting of the newly created process */
     xbt_os_sem_acquire(context->end);
@@ -149,15 +146,12 @@ static void *smx_ctx_thread_wrapper(void *param)
   return NULL;
 }
 
-static void smx_ctx_thread_suspend(smx_context_t context)
-{
+static void smx_ctx_thread_suspend(smx_context_t context) {
   xbt_os_sem_release(((smx_ctx_thread_t) context)->end);
   xbt_os_sem_acquire(((smx_ctx_thread_t) context)->begin);
 }
 
-static void smx_ctx_thread_resume(smx_context_t not_used, 
-                                  smx_context_t new_context)
-{
+static void smx_ctx_thread_resume(smx_context_t new_context) {
   xbt_os_sem_release(((smx_ctx_thread_t) new_context)->begin);
   xbt_os_sem_acquire(((smx_ctx_thread_t) new_context)->end);
 }
