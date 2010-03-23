@@ -37,6 +37,15 @@ typedef struct s_smpi_mpi_datatype {
   };                                          \
   MPI_Datatype name = &mpi_##name;
 
+
+//The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
+typedef struct { float       value; int index;} float_int;
+typedef struct { long        value; int index;} long_int ; 
+typedef struct { double      value; int index;} double_int;
+typedef struct { short       value; int index;} short_int;
+typedef struct { int         value; int index;} int_int;
+typedef struct { long double value; int index;} long_double_int; 
+
 // Predefined data types
 CREATE_MPI_DATATYPE(MPI_CHAR,                  char);
 CREATE_MPI_DATATYPE(MPI_SHORT,                 short);
@@ -67,6 +76,9 @@ CREATE_MPI_DATATYPE(MPI_C_DOUBLE_COMPLEX,      double _Complex);
 CREATE_MPI_DATATYPE(MPI_C_LONG_DOUBLE_COMPLEX, long double _Complex);
 CREATE_MPI_DATATYPE(MPI_AINT,                  MPI_Aint);
 CREATE_MPI_DATATYPE(MPI_OFFSET,                MPI_Offset);
+
+CREATE_MPI_DATATYPE(MPI_FLOAT_INT,                float_int);
+
 
 size_t smpi_datatype_size(MPI_Datatype datatype) {
   return datatype->size;
@@ -129,6 +141,8 @@ typedef struct s_smpi_mpi_op {
 #define BAND_OP(a, b) (b) &= (a)
 #define BOR_OP(a, b)  (b) |= (a)
 #define BXOR_OP(a, b) (b) ^= (a)
+#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : (a)
+#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : (b)
 //TODO : MINLOC & MAXLOC
 
 #define APPLY_FUNC(a, b, length, type, func) \
@@ -349,20 +363,55 @@ static void bxor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   }
 }
 
+static void minloc_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
+  if(*datatype == MPI_FLOAT_INT) {
+    APPLY_FUNC(a, b, length, float_int, MINLOC_OP);
+  } else if(*datatype == MPI_LONG_INT) {
+    APPLY_FUNC(a, b, length, long_int, MINLOC_OP);
+  } else if(*datatype == MPI_DOUBLE_INT) {
+    APPLY_FUNC(a, b, length, double_int, MINLOC_OP);
+  } else if(*datatype == MPI_SHORT_INT) {
+    APPLY_FUNC(a, b, length, short_int, MINLOC_OP);
+  } else if(*datatype == MPI_2INT) {
+    APPLY_FUNC(a, b, length, int_int, MINLOC_OP);
+  } else if(*datatype == MPI_LONG_DOUBLE_INT) {
+    APPLY_FUNC(a, b, length, long_double_int, MINLOC_OP);
+  }
+}
+
+static void maxloc_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
+  if(*datatype == MPI_FLOAT_INT) {
+    APPLY_FUNC(a, b, length, float_int, MAXLOC_OP);
+  } else if(*datatype == MPI_LONG_INT) {
+    APPLY_FUNC(a, b, length, long_int, MAXLOC_OP);
+  } else if(*datatype == MPI_DOUBLE_INT) {
+    APPLY_FUNC(a, b, length, double_int, MAXLOC_OP);
+  } else if(*datatype == MPI_SHORT_INT) {
+    APPLY_FUNC(a, b, length, short_int, MAXLOC_OP);
+  } else if(*datatype == MPI_2INT) {
+    APPLY_FUNC(a, b, length, int_int, MAXLOC_OP);
+  } else if(*datatype == MPI_LONG_DOUBLE_INT) {
+    APPLY_FUNC(a, b, length, long_double_int, MAXLOC_OP);
+  }
+}
+
+
 #define CREATE_MPI_OP(name, func)                             \
   static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */ }; \
   MPI_Op name = &mpi_##name;
 
-CREATE_MPI_OP(MPI_MAX,  max_func);
-CREATE_MPI_OP(MPI_MIN,  min_func);
-CREATE_MPI_OP(MPI_SUM,  sum_func);
-CREATE_MPI_OP(MPI_PROD, prod_func);
-CREATE_MPI_OP(MPI_LAND, land_func);
-CREATE_MPI_OP(MPI_LOR,  lor_func);
-CREATE_MPI_OP(MPI_LXOR, lxor_func);
-CREATE_MPI_OP(MPI_BAND, band_func);
-CREATE_MPI_OP(MPI_BOR,  bor_func);
-CREATE_MPI_OP(MPI_BXOR, bxor_func);
+CREATE_MPI_OP(MPI_MAX,     max_func);
+CREATE_MPI_OP(MPI_MIN,     min_func);
+CREATE_MPI_OP(MPI_SUM,     sum_func);
+CREATE_MPI_OP(MPI_PROD,    prod_func);
+CREATE_MPI_OP(MPI_LAND,    land_func);
+CREATE_MPI_OP(MPI_LOR,     lor_func);
+CREATE_MPI_OP(MPI_LXOR,    lxor_func);
+CREATE_MPI_OP(MPI_BAND,    band_func);
+CREATE_MPI_OP(MPI_BOR,     bor_func);
+CREATE_MPI_OP(MPI_BXOR,    bxor_func);
+CREATE_MPI_OP(MPI_MAXLOC,  maxloc_func);
+CREATE_MPI_OP(MPI_MINLOC,  minloc_func);
 
 MPI_Op smpi_op_new(MPI_User_function* function, int commute) {
   MPI_Op op;

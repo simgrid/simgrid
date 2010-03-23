@@ -105,6 +105,8 @@ static void finish_wait(MPI_Request* request, MPI_Status* status) {
     status->MPI_SOURCE = (*request)->src;
     status->MPI_TAG = (*request)->tag;
     status->MPI_ERROR = MPI_SUCCESS;
+    status->_count = (*request)->size; // size in bytes
+    status->_cancelled = 0;            // FIXME: cancellation of requests not handled yet 
   }
   DEBUG3("finishing wait for %p [data = %p, complete = %d]", *request, data, data->complete);
   // data == *request if sender is first to finish its wait
@@ -159,6 +161,15 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int* index, MPI_Status* 
   }
   return flag;
 }
+
+
+void smpi_mpi_get_count(MPI_Status *status, MPI_Datatype datatype, int *count) {
+ int size = smpi_datatype_size(datatype);
+	  *count = (int)(status->_count / size);
+	  if ( (int)((*count) * size) != status->_count )
+		    *count = MPI_UNDEFINED;
+}
+
 
 void smpi_mpi_wait(MPI_Request* request, MPI_Status* status) {
   MPI_Request data = (*request)->data;
