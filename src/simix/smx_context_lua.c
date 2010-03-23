@@ -69,7 +69,7 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
     void_f_pvoid_t cleanup_func, void* cleanup_arg) {
 
   smx_ctx_lua_t context = (smx_ctx_lua_t)smx_ctx_sysv_create_context_sized
-      (sizeof(smx_ctx_lua_t), code,argc,argv,cleanup_func,cleanup_arg);
+      (sizeof(s_smx_ctx_lua_t), code,argc,argv,cleanup_func,cleanup_arg);
 
 
   /* If the user provided a function for the process then use it
