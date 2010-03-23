@@ -91,7 +91,9 @@ EXTRA_DIST= \
       smpi/smpi_mpi_dt_private.h \
 	smpi/README \
 	\
-	mk_supernovae.sh
+	mk_supernovae.sh \
+	\
+	bindings/ruby_bindings.h 
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |
