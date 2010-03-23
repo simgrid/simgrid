@@ -213,19 +213,16 @@ void SIMIX_context_mod_exit(void);
 /* the following function pointers types describe the interface that all context
    concepts must implement */
 
-/* each context type must contain this macro at its begining -- OOP in C :/ */
-#define SMX_CTX_BASE_T \
-  s_xbt_swag_hookup_t hookup; \
-  xbt_main_func_t code; \
-  int argc; \
-  char **argv; \
-  void_f_pvoid_t cleanup_func; \
-  void *cleanup_arg; \
-
-/* all other context types derive from this structure */
+/* each context type derive from this structure, so they must contain this structure
+ * at their begining -- OOP in C :/ */
 typedef struct s_smx_context {
-  SMX_CTX_BASE_T;
-} s_smx_context_t;
+  s_xbt_swag_hookup_t hookup;
+  xbt_main_func_t code;
+  int argc;
+  char **argv;
+  void_f_pvoid_t cleanup_func;
+  void *cleanup_arg;
+} s_smx_ctx_base_t;
 
 /* *********************** */
 /* factory type definition */

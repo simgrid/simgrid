@@ -22,7 +22,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 typedef struct s_smx_ctx_sysv {
-  SMX_CTX_BASE_T;
+  s_smx_ctx_base_t super;       /* Fields of super implementation */
   ucontext_t uc;                /* the thread that execute the code */
   char stack[STACK_SIZE];       /* the thread stack size */
 #ifdef HAVE_VALGRIND_VALGRIND_H
@@ -72,7 +72,7 @@ smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv,
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if(code){
-    context->code = code;
+    context->super.code = code;
 
     xbt_assert2(getcontext(&(context->uc)) == 0,
         "Error in context saving: %d (%s)", errno, strerror(errno));
@@ -92,10 +92,10 @@ smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv,
             context->uc.uc_stack.ss_size);
 #endif /* HAVE_VALGRIND_VALGRIND_H */
 
-    context->argc = argc;
-    context->argv = argv;
-    context->cleanup_func = cleanup_func;
-    context->cleanup_arg = cleanup_arg;
+    context->super.argc = argc;
+    context->super.argv = argv;
+    context->super.cleanup_func = cleanup_func;
+    context->super.cleanup_arg = cleanup_arg;
 
     makecontext(&((smx_ctx_sysv_t)context)->uc, smx_ctx_sysv_wrapper, 0);
   }
@@ -114,12 +114,12 @@ static void smx_ctx_sysv_free(smx_context_t pcontext)
 #endif /* HAVE_VALGRIND_VALGRIND_H */
 
     /* free argv */
-    if (context->argv) {
-      for (i = 0; i < context->argc; i++)
-        if (context->argv[i])
-          free(context->argv[i]);
+    if (context->super.argv) {
+      for (i = 0; i < context->super.argc; i++)
+        if (context->super.argv[i])
+          free(context->super.argv[i]);
 
-      free(context->argv);
+      free(context->super.argv);
     }
 
     /* destroy the context */
@@ -131,8 +131,8 @@ static void smx_ctx_sysv_stop(smx_context_t pcontext)
 {
   smx_ctx_sysv_t context = (smx_ctx_sysv_t)pcontext;
 
-  if (context->cleanup_func)
-    (*context->cleanup_func) (context->cleanup_arg);
+  if (context->super.cleanup_func)
+    (*context->super.cleanup_func) (context->super.cleanup_arg);
 
   smx_ctx_sysv_suspend(pcontext);
 }
@@ -149,7 +149,7 @@ static void smx_ctx_sysv_wrapper()
   smx_ctx_sysv_t context = 
       (smx_ctx_sysv_t)simix_global->current_process->context;
 
-  (context->code) (context->argc, context->argv);
+  (context->super.code) (context->super.argc, context->super.argv);
 
   smx_ctx_sysv_stop((smx_context_t)context);
 }

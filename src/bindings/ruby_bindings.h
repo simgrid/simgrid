@@ -41,7 +41,7 @@
  * Context related stuff *
  * ********************* */
 typedef struct s_smx_ctx_ruby {
-  SMX_CTX_BASE_T;
+  s_smx_ctx_base_t super;  /* Fields of super implementation */
   VALUE process;   // The  Ruby Process Instance
   //...
 }s_smx_ctx_ruby_t,*smx_ctx_ruby_t;

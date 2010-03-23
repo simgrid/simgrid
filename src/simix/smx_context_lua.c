@@ -24,7 +24,8 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(lua);
 
 typedef struct s_smx_ctx_sysv {
-  SMX_CTX_BASE_T;
+  s_smx_ctx_base_t super;  /* Fields of super implementation */
+
 #ifdef KILLME
   /* Ucontext info */
   ucontext_t uc;                /* the thread that execute the code */
@@ -93,12 +94,12 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if (code){
-    context->code = code;
+    context->super.code = code;
 
-    context->argc = argc;
-    context->argv = argv;
-    context->cleanup_func = cleanup_func;
-    context->cleanup_arg = cleanup_arg;
+    context->super.argc = argc;
+    context->super.argv = argv;
+    context->super.cleanup_func = cleanup_func;
+    context->super.cleanup_arg = cleanup_arg;
     INFO1("Created context for function %s",argv[0]);
 
     /* start the coroutine in charge of running that code */
@@ -106,17 +107,17 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
     context->ref = luaL_ref(lua_state, LUA_REGISTRYINDEX); // protect the thread from being garbage collected
 
     /* Start the co-routine */
-    lua_getglobal(context->state,context->argv[0]);
+    lua_getglobal(context->state,context->super.argv[0]);
     xbt_assert1(lua_isfunction(context->state,-1),
-        "The lua function %s does not seem to exist",context->argv[0]);
+        "The lua function %s does not seem to exist",context->super.argv[0]);
 
     // push arguments onto the stack
     int i;
-    for(i=1;i<context->argc;i++)
-      lua_pushstring(context->state,context->argv[i]);
+    for(i=1;i<context->super.argc;i++)
+      lua_pushstring(context->state,context->super.argv[i]);
 
     // Call the function (in resume)
-    context->nargs = context->argc-1;
+    context->nargs = context->super.argc-1;
 
   } else {
     INFO0("Created context for maestro");
@@ -134,12 +135,12 @@ static void smx_ctx_lua_free(smx_context_t pcontext)
     DEBUG1("smx_ctx_lua_free_context(%p)",context);
 
     /* free argv */
-    if (context->argv) {
-      for (i = 0; i < context->argc; i++)
-        if (context->argv[i])
-          free(context->argv[i]);
+    if (context->super.argv) {
+      for (i = 0; i < context->super.argc; i++)
+        if (context->super.argv[i])
+          free(context->super.argv[i]);
 
-      free(context->argv);
+      free(context->super.argv);
     }
 
     /* let the lua garbage collector reclaim the thread used for the coroutine */
@@ -153,16 +154,16 @@ static void smx_ctx_lua_free(smx_context_t pcontext)
 static void smx_ctx_lua_stop(smx_context_t pcontext) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
 
-  INFO1("Stopping '%s' (nothing to do)",context->argv[0]);
-  if (context->cleanup_func)
-    (*context->cleanup_func) (context->cleanup_arg);
+  INFO1("Stopping '%s' (nothing to do)",context->super.argv[0]);
+  if (context->super.cleanup_func)
+    (*context->super.cleanup_func) (context->super.cleanup_arg);
 
 //  smx_ctx_lua_suspend(pcontext);
 }
 
 static void smx_ctx_lua_suspend(smx_context_t pcontext) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
-  DEBUG1("Suspending '%s' (calling lua_yield)",context->argv[0]);
+  DEBUG1("Suspending '%s' (calling lua_yield)",context->super.argv[0]);
   //lua_yield(context->state,0);
 
   lua_getglobal(context->state,"doyield");
@@ -176,10 +177,10 @@ static void smx_ctx_lua_suspend(smx_context_t pcontext) {
 static void 
 smx_ctx_lua_resume(smx_context_t new_context) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)new_context;
-  DEBUG1("Resuming %s",context->argv[0]);
+  DEBUG1("Resuming %s",context->super.argv[0]);
   int ret = lua_resume(context->state,context->nargs);
-  INFO3("Function %s yielded back with value %d %s",context->argv[0],ret,(ret==LUA_YIELD?"(ie, LUA_YIELD)":""));
+  INFO3("Function %s yielded back with value %d %s",context->super.argv[0],ret,(ret==LUA_YIELD?"(ie, LUA_YIELD)":""));
   if (lua_isstring(context->state,-1))
-    INFO2("Result of %s seem to be '%s'",context->argv[0],luaL_checkstring(context->state,-1));
+    INFO2("Result of %s seem to be '%s'",context->super.argv[0],luaL_checkstring(context->state,-1));
   context->nargs=0;
 }

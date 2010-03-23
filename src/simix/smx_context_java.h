@@ -10,11 +10,11 @@
 
 SG_BEGIN_DECL()
 
-     typedef struct s_smx_ctx_java {
-       SMX_CTX_BASE_T;
-       jobject jprocess;        /* the java process instance binded with the msg process structure                                                      */
-       JNIEnv *jenv;            /* jni interface pointer associated to this thread                                                                                      */
-     } s_smx_ctx_java_t, *smx_ctx_java_t;
+typedef struct s_smx_ctx_java {
+  s_smx_ctx_base_t super;  /* Fields of super implementation */
+  jobject jprocess;        /* the java process instance binded with the msg process structure                                                      */
+  JNIEnv *jenv;            /* jni interface pointer associated to this thread                                                                                      */
+} s_smx_ctx_java_t, *smx_ctx_java_t;
 
 SG_END_DECL()
 #endif /* !_XBT_CONTEXT_JAVA_H */

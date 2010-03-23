@@ -56,11 +56,11 @@ smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
   /* if the user provided a function for the process , then use it
      Otherwise it's the context for maestro */
   if (code) {
-    context->cleanup_func = cleanup_func;
-    context->cleanup_arg = cleanup_arg;
+    context->super.cleanup_func = cleanup_func;
+    context->super.cleanup_arg = cleanup_arg;
     context->process = (VALUE)code;
-    context->argc=argc;
-    context->argv=argv;
+    context->super.argc=argc;
+    context->super.argv=argv;
 
     DEBUG1("smx_ctx_ruby_create_context(%s)...Done",argv[0]);
   }

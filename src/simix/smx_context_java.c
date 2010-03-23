@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* context_java - implementation of context switching for java threads */
 
 /* Copyright (c) 2007-2008 the SimGrid team. All right reserved */
@@ -12,7 +10,7 @@
 #include "private.h"
 #include "smx_context_java.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg, "MSG for Java(TM)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
 
 static smx_context_t
 smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
@@ -57,8 +55,8 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv,
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if(code){
-    context->cleanup_func = cleanup_func;
-    context->cleanup_arg = cleanup_arg;
+    context->super.cleanup_func = cleanup_func;
+    context->super.cleanup_arg = cleanup_arg;
     context->jprocess = (jobject) code;
     context->jenv = get_current_thread_env();
     jprocess_start(((smx_ctx_java_t) context)->jprocess,
