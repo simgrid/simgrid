@@ -8,27 +8,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_context_private.h"
-#include "context_sysv_config.h"        /* loads context system definitions */
-#include "portable.h"
-#include <ucontext.h>           /* context relative declarations */
-
-/* lower this if you want to reduce the memory consumption  */
-#define STACK_SIZE 128*1024
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
 #endif /* HAVE_VALGRIND_VALGRIND_H */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
-
-typedef struct s_smx_ctx_sysv {
-  s_smx_ctx_base_t super;       /* Fields of super implementation */
-  ucontext_t uc;                /* the thread that execute the code */
-  char stack[STACK_SIZE];       /* the thread stack size */
-#ifdef HAVE_VALGRIND_VALGRIND_H
-  unsigned int valgrind_stack_id;       /* the valgrind stack id */
-#endif                          
-} s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
 
 static smx_context_t 
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char** argv,
@@ -67,10 +52,10 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code, int argc, c
     context->uc.uc_link = NULL;
 
     context->uc.uc_stack.ss_sp =
-        pth_skaddr_makecontext(context->stack, STACK_SIZE);
+        pth_skaddr_makecontext(context->stack, CONTEXT_STACK_SIZE);
 
     context->uc.uc_stack.ss_size =
-        pth_sksize_makecontext(context->stack, STACK_SIZE);
+        pth_sksize_makecontext(context->stack, CONTEXT_STACK_SIZE);
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
     context->valgrind_stack_id =

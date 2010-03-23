@@ -1,8 +1,6 @@
-/* $Id$ */
-
 /* context_lua - implementation of context switching with lua coroutines */
 
-/* Copyright (c) 2004-2008 the SimGrid team. All right reserved */
+/* Copyright (c) 2010 the SimGrid team. All right reserved */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,24 +12,10 @@
 /* lower this if you want to reduce the memory consumption  */
 //#define STACK_SIZE 128*1024
 
-//#ifdef HAVE_VALGRIND_VALGRIND_H
-//#  include <valgrind/valgrind.h>
-//#endif /* HAVE_VALGRIND_VALGRIND_H */
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(lua);
 
-typedef struct s_smx_ctx_sysv {
-  s_smx_ctx_base_t super;  /* Fields of super implementation */
-
-#ifdef KILLME
-  /* Ucontext info */
-  ucontext_t uc;                /* the thread that execute the code */
-  char stack[STACK_SIZE];       /* the thread stack size */
-  struct s_smx_ctx_sysv *prev;           /* the previous process */
-#ifdef HAVE_VALGRIND_VALGRIND_H
-  unsigned int valgrind_stack_id;       /* the valgrind stack id */
-#endif
-#endif /* KILLME */
+typedef struct s_smx_ctx_lua {
+  s_smx_ctx_sysv_t super;  /* Fields of super implementation */
 
   /* lua state info */
   lua_State *state;
@@ -84,17 +68,13 @@ static smx_context_t
 smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv, 
     void_f_pvoid_t cleanup_func, void* cleanup_arg) {
 
-  smx_ctx_lua_t context = xbt_new0(s_smx_ctx_lua_t, 1);
+  smx_ctx_lua_t context = (smx_ctx_lua_t)smx_ctx_sysv_create_context_sized
+      (sizeof(smx_ctx_lua_t), code,argc,argv,cleanup_func,cleanup_arg);
+
 
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if (code){
-    context->super.code = code;
-
-    context->super.argc = argc;
-    context->super.argv = argv;
-    context->super.cleanup_func = cleanup_func;
-    context->super.cleanup_arg = cleanup_arg;
     INFO1("Created context for function %s",argv[0]);
 
     /* start the coroutine in charge of running that code */
@@ -102,17 +82,17 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
     context->ref = luaL_ref(lua_state, LUA_REGISTRYINDEX); // protect the thread from being garbage collected
 
     /* Start the co-routine */
-    lua_getglobal(context->state,context->super.argv[0]);
+    lua_getglobal(context->state,context->super.super.argv[0]);
     xbt_assert1(lua_isfunction(context->state,-1),
-        "The lua function %s does not seem to exist",context->super.argv[0]);
+        "The lua function %s does not seem to exist",context->super.super.argv[0]);
 
     // push arguments onto the stack
     int i;
-    for(i=1;i<context->super.argc;i++)
-      lua_pushstring(context->state,context->super.argv[i]);
+    for(i=1;i<context->super.super.argc;i++)
+      lua_pushstring(context->state,context->super.super.argv[i]);
 
     // Call the function (in resume)
-    context->nargs = context->super.argc-1;
+    context->nargs = context->super.super.argc-1;
 
   } else {
     INFO0("Created context for maestro");
@@ -136,16 +116,16 @@ static void smx_ctx_lua_free(smx_context_t context) {
 static void smx_ctx_lua_stop(smx_context_t pcontext) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
 
-  INFO1("Stopping '%s' (nothing to do)",context->super.argv[0]);
-  if (context->super.cleanup_func)
-    (*context->super.cleanup_func) (context->super.cleanup_arg);
+  INFO1("Stopping '%s' (nothing to do)",context->super.super.argv[0]);
+  if (context->super.super.cleanup_func)
+    (*context->super.super.cleanup_func) (context->super.super.cleanup_arg);
 
 //  smx_ctx_lua_suspend(pcontext);
 }
 
 static void smx_ctx_lua_suspend(smx_context_t pcontext) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
-  DEBUG1("Suspending '%s' (calling lua_yield)",context->super.argv[0]);
+  DEBUG1("Suspending '%s' (calling lua_yield)",context->super.super.argv[0]);
   //lua_yield(context->state,0);
 
   lua_getglobal(context->state,"doyield");
@@ -159,10 +139,10 @@ static void smx_ctx_lua_suspend(smx_context_t pcontext) {
 static void 
 smx_ctx_lua_resume(smx_context_t new_context) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)new_context;
-  DEBUG1("Resuming %s",context->super.argv[0]);
+  DEBUG1("Resuming %s",context->super.super.argv[0]);
   int ret = lua_resume(context->state,context->nargs);
-  INFO3("Function %s yielded back with value %d %s",context->super.argv[0],ret,(ret==LUA_YIELD?"(ie, LUA_YIELD)":""));
+  INFO3("Function %s yielded back with value %d %s",context->super.super.argv[0],ret,(ret==LUA_YIELD?"(ie, LUA_YIELD)":""));
   if (lua_isstring(context->state,-1))
-    INFO2("Result of %s seem to be '%s'",context->super.argv[0],luaL_checkstring(context->state,-1));
+    INFO2("Result of %s seem to be '%s'",context->super.super.argv[0],luaL_checkstring(context->state,-1));
   context->nargs=0;
 }
