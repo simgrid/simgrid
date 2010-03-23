@@ -96,10 +96,6 @@ public final class ApplicationHandler {
 				 process.properties = properties;
 				 properties = new Hashtable();
 
-			 } catch(NativeException e) {
-				 System.out.println(e.toString());
-				 e.printStackTrace();
-
 			 } catch(HostNotFoundException e) {
 				 System.out.println(e.toString());
 				 e.printStackTrace();

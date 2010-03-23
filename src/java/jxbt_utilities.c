@@ -290,3 +290,13 @@ void jxbt_throw_time_out_failure(JNIEnv *env,char *details) {
 		    details);
   
 }
+
+// task Cancelled exception
+void jxbt_throw_task_cancelled(JNIEnv *env,char *details)
+{
+ 
+  jxbt_throw_by_name(env,
+		     "simgrid/msg/TaskCancelledException",
+		     details);
+  
+}

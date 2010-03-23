@@ -69,11 +69,10 @@ final class MsgNative {
 	 *
 	 * @param process        The valid (binded with a native process) java process to resume.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
 	 *
 	 * @see                 Process.restart()
 	 */
-	final static native void processResume(Process process) throws NativeException;
+	final static native void processResume(Process process);
 
 	/**
 	 * The natively implemented method to test if MSG process is suspended.
@@ -150,12 +149,11 @@ final class MsgNative {
 	 * @param process        The (valid) process to migrate.
 	 * @param host            A (valid) host where move the process.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
 	 *
 	 * @see                Process.migrate()
 	 * @see                Host.getByName()
 	 */
-	final static native void processChangeHost(Process process, Host host) throws NativeException;
+	final static native void processChangeHost(Process process, Host host) ;
 
 	/**
 	 * The natively implemented native to request the current process to sleep 
@@ -163,11 +161,11 @@ final class MsgNative {
 	 *
 	 * @param seconds        The time the current process must sleep.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
+	 * @exception            HostFailureException if the SimGrid native code failed.
 	 *
 	 * @see                 Process.waitFor()
 	 */
-	final static native void processWaitFor(double seconds) throws NativeException;
+	final static native void processWaitFor(double seconds) throws HostFailureException;
 
 	/**
 	 * The natively implemented native method to exit a process.
@@ -189,11 +187,11 @@ final class MsgNative {
 	 * @return                The host having the specified name.
 	 *
 	 * @exception            HostNotFoundException if there is no such host
-	 *                       NativeException if the SimGrid native code failed.
+	 *                       
 	 *
 	 * @see                Host.getByName()
 	 */
-	final static native Host hostGetByName(String name) throws HostNotFoundException, NativeException;
+	final static native Host hostGetByName(String name) throws HostNotFoundException;
 
 	/**
 	 * The natively implemented method to get the name of an MSG host.
@@ -309,11 +307,10 @@ final class MsgNative {
 	 *
 	 * @return                The source of the task.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
 	 *
 	 * @see                    Task.getSource()
 	 */
-	final static native Host taskGetSource(Task task) throws NativeException;
+	final static native Host taskGetSource(Task task);
 
 	/**
 	 * The natively implemented method to get the name of the task.
@@ -331,11 +328,10 @@ final class MsgNative {
 	 *
 	 * @param task            The task to cancel.
 	 *
-	 * @exception             NativeException if the cancellation failed.
 	 *
 	 * @see                    Task.cancel().
 	 */
-	final static native void taskCancel(Task task) throws NativeException;
+	final static native void taskCancel(Task task);
 
 	/**
 	 * The natively implemented method to create a MSG parallel task.
@@ -392,30 +388,29 @@ final class MsgNative {
 	 *
 	 * @param                    The task to destroy.
 	 *
-	 * @exception             NativeException on error in the C world
 	 *
 	 * @see                    Task.destroy()
 	 */
-	final static native void taskDestroy(Task task) throws NativeException;
+	final static native void taskDestroy(Task task) ;
 
 	/**
 	 * The natively implemented method to execute a MSG task.
 	 *
 	 * @param task            The task to execute.
 	 *
-	 * @exception             NativeException on error in the C world
+	 * @exception             HostFailureException,TaskCancelledException on error in the C world
 	 *
 	 * @see                    Task.execute()
 	 */
-	final static native void taskExecute(Task task) throws NativeException;
+	final static native void taskExecute(Task task) throws HostFailureException,TaskCancelledException;
 
 	/* ****************************************************************
 	 * Communication methods thru mailboxes                           *
 	 **************************************************************** */
 
-	final static native void taskSend(String alias, Task task, double timeout) throws NativeException,TransferFailureException,HostFailureException,TimeoutException;
-	final static native Task taskReceive(String alias, double timeout, Host host) throws NativeException;
-	final static native int taskListenFrom(String alias) throws NativeException;
+	final static native void taskSend(String alias, Task task, double timeout) throws TransferFailureException,HostFailureException,TimeoutException;
+	final static native Task taskReceive(String alias, double timeout, Host host) throws TransferFailureException,HostFailureException,TimeoutException;
+	final static native int taskListenFrom(String alias);
 	final static native boolean taskListen(String alias);
 	final static native int taskListenFromHost(String alias, Host host);
 
@@ -433,6 +428,6 @@ final class MsgNative {
 	 *
 	 * @exception             NativeException on error in the C world
 	 */ 
-	final static native void taskSendBounded(String alias, Task task, double maxrate) throws NativeException;
+	final static native void taskSendBounded(String alias, Task task, double maxrate) throws TransferFailureException,HostFailureException,TimeoutException;
 
 }

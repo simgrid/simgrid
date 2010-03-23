@@ -73,7 +73,7 @@ public class Task {
 		return MsgNative.taskGetSender(this);
 	}
 	/** Gets the source of the task */ 
-	public Host getSource() throws NativeException {
+	public Host getSource()  {
 		return MsgNative.taskGetSource(this);
 	}
 	/** Gets the computing amount of the task */ 
@@ -106,9 +106,9 @@ public class Task {
 	/**
 	 * Executes a task on the location on which the process is running.
 	 *
-	 * @exception NativeException if the execution failed.
+	 * @exception HostFailureException,TaskCancelledException 
 	 */ 
-	public void execute() throws NativeException {
+	public void execute() throws HostFailureException,TaskCancelledException {
 		MsgNative.taskExecute(this);
 	}
 	/**
@@ -116,7 +116,7 @@ public class Task {
 	 *
 	 * @exception NativeException if the cancellation failed.
 	 */ 
-	public void cancel() throws NativeException {
+	public void cancel()  {
 		MsgNative.taskCancel(this);
 	}
 	/** Deletes a task.
@@ -131,12 +131,11 @@ public class Task {
 	/**
 	 * Sends the task on the mailbox identified by the specified name 
 	 *
-	 * @exception  NativeException if the retrieval fails.
 	 * @throws TimeoutException 
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public void send(String mailbox) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
+	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSend(mailbox, this, -1);
 	} 
 
@@ -155,73 +154,70 @@ public class Task {
 	/**
 	 * Sends the task on the mailbox identified by the specified alias  (capping the sending rate to \a maxrate) 
 	 *
-	 * @exception  NativeException if the retrieval fails.
+	 * @exception  TransferFailureException, HostFailureException, TimeoutException.
 	 */
-	public void sendBounded(String alias, double maxrate) throws NativeException {
+	public void sendBounded(String alias, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSendBounded(alias, this, maxrate);
 	} 
 
 	/**
 	 * Retrieves next task from the mailbox identified by the specified name
 	 *
-	 * @exception  NativeException if the retrieval fails.
+	 * @exception  TransferFailureException, HostFailureException, TimeoutException if the retrieval fails.
 	 */
 
-	public static Task receive(String mailbox) throws NativeException {
+	public static Task receive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, -1.0, null);
 	}
 
 	/**
 	 * Retrieves next task on the mailbox identified by the specified name (wait at most \a timeout seconds)
 	 *
-	 * @exception  NativeException if the retrieval fails.
+	 * @exception  TransferFailureException, HostFailureException, TimeoutException if the retrieval fails.
 	 */
-	public static Task receive(String mailbox, double timeout) throws  NativeException {
+	public static Task receive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, timeout, null);
 	}
 
 	/**
 	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias 
 	 *
-	 * @exception  NativeException if the retrieval fails.
+	 * @exception  TransferFailureException, HostFailureException, TimeoutException if the retrieval fails.
 	 */
 
-	public static Task receive(String mailbox, Host host) throws NativeException {
+	public static Task receive(String mailbox, Host host) throws TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, -1.0, host);
 	}
 
 	/**
 	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias (wait at most \a timeout seconds)
 	 *
-	 * @exception  NativeException if the retrieval fails.
+	 * @exception  TransferFailureException, HostFailureException, TimeoutException if the retrieval fails.
 	 */
-	public static Task receive(String mailbox, double timeout, Host host) throws NativeException {
+	public static Task receive(String mailbox, double timeout, Host host) throws TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, timeout, host);
 	}
 
 	/**
 	 * Tests whether there is a pending communication on the mailbox identified by the specified alias, and who sent it
 	 *
-	 * @exception  NativeException if the retrieval fails.
 	 */ 
-	public static int listenFrom(String mailbox) throws NativeException  {
+	public static int listenFrom(String mailbox)  {
 		return MsgNative.taskListenFrom(mailbox);
 	}
 	/**
 	 * Listen whether there is a waiting task on the mailbox identified by the specified alias
 	 *
-	 * @exception  NativeException if the retrieval fails.
 	 */ 
-	public static boolean listen(String mailbox) throws NativeException  {
+	public static boolean listen(String mailbox)   {
 		return MsgNative.taskListen(mailbox);
 	}
 
 	/**
 	 * Counts the number of tasks waiting to be received on the \a mailbox identified by the specified alia and sended by the specified \a host.
 	 *
-	 * @exception  NativeException if the retrieval fails.
 	 */ 
-	public static int listenFromHost(String alias, Host host) throws NativeException  {
+	public static int listenFromHost(String alias, Host host)   {
 		return MsgNative.taskListenFromHost(alias, host);
 	}
 }

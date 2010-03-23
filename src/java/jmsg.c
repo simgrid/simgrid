@@ -158,8 +158,11 @@ Java_simgrid_msg_MsgNative_processSuspend(JNIEnv * env, jclass cls,
   }
 
   /* try to suspend the process */
-  if (MSG_OK != MSG_process_suspend(process))
-    jxbt_throw_native(env, xbt_strdup("MSG_process_suspend() failed"));
+  MSG_error_t rv = MSG_process_suspend(process);
+  
+  jxbt_check_res("MSG_process_suspend()",rv,MSG_OK,
+    bprintf("unexpected error , please report this bug"));
+  
 }
 
 JNIEXPORT void JNICALL
@@ -174,8 +177,10 @@ Java_simgrid_msg_MsgNative_processResume(JNIEnv * env, jclass cls,
   }
 
   /* try to resume the process */
-  if (MSG_OK != MSG_process_resume(process))
-    jxbt_throw_native(env, xbt_strdup("MSG_process_resume() failed"));
+    MSG_error_t rv = MSG_process_resume(process);
+    
+    jxbt_check_res("MSG_process_resume()",rv,MSG_OK,
+    bprintf("unexpected error , please report this bug"));
 }
 
 JNIEXPORT jboolean JNICALL
@@ -326,10 +331,11 @@ JNIEXPORT void JNICALL
 Java_simgrid_msg_MsgNative_processWaitFor(JNIEnv * env, jclass cls,
                                           jdouble seconds)
 {
-  if (MSG_OK != MSG_process_sleep((double) seconds))
-    jxbt_throw_native(env,
-                      bprintf("MSG_process_change_host(%f) failed",
-                              (double) seconds));
+    MSG_error_t rv= MSG_process_sleep((double) seconds);
+    
+    jxbt_check_res("MSG_process_sleep()",rv, MSG_HOST_FAILURE,
+    bprintf("while process was waiting for %f seconds",(double)seconds));
+    
 }
 
 
@@ -656,7 +662,7 @@ Java_simgrid_msg_MsgNative_taskGetSource(JNIEnv * env, jclass cls,
   host = MSG_task_get_source(task);
 
   if (!host->data) {
-    jxbt_throw_native(env, xbt_strdup("MSG_task_get_source() failed"));
+    jxbt_throw_jni(env, "MSG_task_get_source() failed");
     return NULL;
   }
 
@@ -688,8 +694,10 @@ Java_simgrid_msg_MsgNative_taskCancel(JNIEnv * env, jclass cls, jobject jtask)
     return;
   }
 
-  if (MSG_OK != MSG_task_cancel(ptask))
-    jxbt_throw_native(env, xbt_strdup("MSG_task_cancel() failed"));
+  MSG_error_t rv = MSG_task_cancel(ptask);
+  
+    jxbt_check_res("MSG_task_cancel()",rv,MSG_OK,
+    bprintf("unexpected error , please report this bug"));
 }
 
 JNIEXPORT jdouble JNICALL
@@ -745,9 +753,12 @@ Java_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
     return;
   }
   jtask = (jobject) task->data;
+    
+  MSG_error_t rv = MSG_task_destroy(task);
+    
+  jxbt_check_res("MSG_task_destroy()",rv,MSG_OK,
+    bprintf("unexpected error , please report this bug"));
 
-  if (MSG_OK != MSG_task_destroy(task))
-    jxbt_throw_native(env, xbt_strdup("MSG_task_destroy() failed"));
 
   /* delete the global reference to the java task object */
   jtask_delete_global_ref(jtask, env);
@@ -764,8 +775,10 @@ Java_simgrid_msg_MsgNative_taskExecute(JNIEnv * env, jclass cls,
     return;
   }
 
-  if (MSG_OK != MSG_task_execute(task))
-    jxbt_throw_native(env, xbt_strdup("MSG_task_execute() failed"));
+  MSG_error_t rv = MSG_task_execute(task);
+  
+    jxbt_check_res("MSG_task_execute()",rv,MSG_HOST_FAILURE|MSG_TASK_CANCELLED,
+    bprintf("while executing task %s", MSG_task_get_name(task)));
 }
 
 /***************************************************************************************
@@ -1005,8 +1018,9 @@ Java_simgrid_msg_MsgNative_taskSendBounded(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  if (MSG_OK != rv)
-    jxbt_throw_native(env, xbt_strdup("MSG_task_send_bounded() failed"));
+  jxbt_check_res("MSG_task_send_bounded()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT_FAILURE,
+    bprintf("while sending task %s to mailbox %s with max rate %f", MSG_task_get_name(task),alias,(double)jmaxRate));
+    
 }
 
 JNIEXPORT jobject JNICALL
@@ -1034,10 +1048,8 @@ Java_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  if (MSG_OK != rv) {
-    jxbt_throw_native(env, xbt_strdup("MSG_task_receive_ext() failed"));
-    return NULL;
-  }
+  jxbt_check_res("MSG_task_receive_ext()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT_FAILURE,
+    bprintf("while receiving from mailbox %s",alias));
 
   return (jobject) task->data;
 }

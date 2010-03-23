@@ -104,10 +104,10 @@ public abstract class Process extends Thread {
 	 * @param name			The name of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
-	 *                      NativeException
+	 *                      
 	 *
 	 */
-	public Process(String hostname, String name) throws HostNotFoundException, NativeException {
+	public Process(String hostname, String name) throws HostNotFoundException {
 		this(Host.getByName(hostname), name, null);
 	}
 	/**
@@ -190,19 +190,17 @@ public abstract class Process extends Thread {
 	 * Suspends the process by suspending the task on which it was
 	 * waiting for the completion.
 	 *
-	 * @exception			NativeException on error in the native SimGrid code
 	 */
-	public void pause() throws NativeException {
+	public void pause() {
 		MsgNative.processSuspend(this);
 	}
 	/**
 	 * Resumes a suspended process by resuming the task on which it was
 	 * waiting for the completion.
 	 *
-	 * @exception			NativeException on error in the native SimGrid code
 	 *
 	 */ 
-	public void restart() throws NativeException {
+	public void restart()  {
 		MsgNative.processResume(this);
 	}
 	/**
@@ -242,9 +240,8 @@ public abstract class Process extends Thread {
 	 *
 	 * @return				The PID of the process.
 	 *
-	 * @exception			NativeException on error in the native SimGrid code
 	 */ 
-	public int getPID() throws NativeException {
+	public int getPID()  {
 		return MsgNative.processGetPID(this);
 	}
 	/**
@@ -252,9 +249,8 @@ public abstract class Process extends Thread {
 	 *
 	 * @return				The PID of the parent of the process.
 	 *
-	 * @exception			NativeException on error in the native SimGrid code
 	 */ 
-	public int getPPID() throws NativeException {
+	public int getPPID()  {
 		return MsgNative.processGetPPID(this);
 	}
 	/**
@@ -262,9 +258,8 @@ public abstract class Process extends Thread {
 	 *
 	 * @return				The current process.
 	 *
-	 * @exception			NativeException on error in the native SimGrid code
 	 */ 
-	public static Process currentProcess() throws NativeException {
+	public static Process currentProcess()  {
 		return MsgNative.processSelf();
 	}
 	/**
@@ -272,9 +267,8 @@ public abstract class Process extends Thread {
 	 *
 	 * @param host			The host where to migrate the process.
 	 *
-	 * @exception			NativeException on error in the native SimGrid code
 	 */
-	public void migrate(Host host) throws NativeException {
+	public void migrate(Host host)  {
 		MsgNative.processChangeHost(this, host);
 	}
 	/**
@@ -282,9 +276,9 @@ public abstract class Process extends Thread {
 	 *
 	 * @param seconds		The time the current process must sleep.
 	 *
-	 * @exception			NativeException on error in the native SimGrid code
+	 * @exception			HostFailureException on error in the native SimGrid code
 	 */ 
-	public static void waitFor(double seconds) throws NativeException {
+	public static void waitFor(double seconds) throws HostFailureException {
 		MsgNative.processWaitFor(seconds);
 	} 
 	public void showArgs() {
@@ -357,7 +351,7 @@ public abstract class Process extends Thread {
 	 * @throws TimeoutException 
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
-	public void taskSend(String mailbox, Task task, double timeout) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
+	public void taskSend(String mailbox, Task task, double timeout) throws TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSend(mailbox, task, timeout);
 	}
 
@@ -365,27 +359,27 @@ public abstract class Process extends Thread {
 	 * @throws TimeoutException 
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
-	public void taskSend(String mailbox, Task task) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
+	public void taskSend(String mailbox, Task task) throws  TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSend(mailbox, task, -1);
 	}
 
 	/** Receive a task on mailbox associated with the specified mailbox */
-	public Task taskReceive(String mailbox) throws NativeException {
+	public Task taskReceive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, -1.0, null);
 	}
 
 	/** Receive a task on mailbox associated with the specified alias (waiting at most given time) */
-	public Task taskReceive(String mailbox, double timeout) throws NativeException {
+	public Task taskReceive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, timeout, null);
 	}
 
 	/** Receive a task on mailbox associated with the specified alias from given sender */
-	public Task taskReceive(String mailbox, double timeout, Host host) throws NativeException {
+	public Task taskReceive(String mailbox, double timeout, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, timeout, host);
 	}
 
 	/** Receive a task on mailbox associated with the specified alias from given sender*/
-	public Task taskReceive(String mailbox, Host host) throws NativeException {
+	public Task taskReceive(String mailbox, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, -1.0, host);
 	}
 }

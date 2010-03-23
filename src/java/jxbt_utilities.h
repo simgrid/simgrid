@@ -65,6 +65,8 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
       jxbt_throw_transfer_failure(env,detail); \
     } else if (res == MSG_TIMEOUT_FAILURE) { \
       jxbt_throw_time_out_failure(env,detail); \
+    } else if (res == MSG_TASK_CANCELLED){ \
+      jxbt_throw_task_cancelled(env,detail); \
    } } while (0)
 
 /** Thrown on internal error of this layer, or on problem with JNI */
@@ -90,5 +92,7 @@ void jxbt_throw_transfer_failure(JNIEnv * env,char *detail);
 void jxbt_throw_host_failure(JNIEnv *env,char *details);
 /** Thrown when a time out accures While Sending task */
 void jxbt_throw_time_out_failure(JNIEnv *env,char *details);
+/**Thrown when a task is canceled */
+void jxbt_throw_task_cancelled(JNIEnv *env,char *details);
 
 #endif /* ! JXBT_UTILITY_H */

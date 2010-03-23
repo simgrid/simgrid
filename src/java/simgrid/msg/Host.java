@@ -72,7 +72,7 @@ public class Host {
 	 *					NativeException if the native version of this method failed.
 	 */ 
 	public static Host getByName(String name) 
-	throws HostNotFoundException, NativeException {
+	throws HostNotFoundException {
 		if (name==null)
 			throw new NullPointerException("No host can have a null name");
 		return MsgNative.hostGetByName(name);
@@ -84,7 +84,7 @@ public class Host {
 	 * @return			The count of the installed hosts.
 	 *
 	 */ 
-	public static int getCount() throws NativeException {
+	public static int getCount() {
 		return MsgNative.hostGetCount();
 	}
 
@@ -102,9 +102,8 @@ public class Host {
 	 *
 	 * @return			An array containing all the hosts installed.
 	 *
-	 * @exception		NativeException if the native version of this method failed.
 	 */ 
-	public static Host[] all() throws NativeException {
+	public static Host[] all()  {
 		return MsgNative.allHosts();
 	}
 
@@ -113,9 +112,8 @@ public class Host {
 	 *
 	 * @return			The name of the host.
 	 *
-	 * @exception		NativeException FIXME: check when
 	 */ 
-	public String getName() throws NativeException {
+	public String getName()  {
 		return MsgNative.hostGetName(this);
 	}
 
