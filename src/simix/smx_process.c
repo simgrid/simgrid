@@ -163,13 +163,28 @@ void SIMIX_process_kill(smx_process_t process)
       SIMIX_unregister_action_to_condition(process->waiting_action, process->cond);
       SIMIX_action_destroy(process->waiting_action);
     }
+
+    if (process->sem) {
+      xbt_swag_remove(process, process->sem->sleeping);
+
+      if (process->waiting_action) {
+        SIMIX_unregister_action_to_semaphore(process->waiting_action, process->sem);
+        SIMIX_action_destroy(process->waiting_action);
+      }
+    }
+
     SIMIX_context_stop(process->context);
+
   } else {
-    DEBUG2("%p here! killing %p", simix_global->current_process, process);
-    SIMIX_process_schedule(process);
-    /* Cleanup if we were waiting for something */
-    if (process->mutex)
+    DEBUG4("%s(%p) here! killing %s(%p) %s",
+        simix_global->current_process->name,simix_global->current_process,
+        process->name,process);
+
+    /* Cleanup if it were waiting for something */
+    if (process->mutex) {
       xbt_swag_remove(process, process->mutex->sleeping);
+      process->mutex = NULL;
+    }
 
     if (process->cond) {
       xbt_swag_remove(process, process->cond->sleeping);
@@ -178,6 +193,7 @@ void SIMIX_process_kill(smx_process_t process)
         SIMIX_unregister_action_to_condition(process->waiting_action, process->cond);
         SIMIX_action_destroy(process->waiting_action);
       }
+      process->cond = NULL;
     }
 
     if (process->sem) {
@@ -187,7 +203,13 @@ void SIMIX_process_kill(smx_process_t process)
       	SIMIX_unregister_action_to_semaphore(process->waiting_action, process->sem);
       	SIMIX_action_destroy(process->waiting_action);
       }
+      process->sem = NULL;
     }
+
+    /* make sure that the process gets awake soon enough, now that we've set its iwannadie to 1 */
+    process->blocked = 0;
+    process->suspended = 0;
+    xbt_swag_insert(process, simix_global->process_to_run);
   }
 }
 
@@ -425,7 +447,10 @@ void SIMIX_process_yield(void)
                simix_global->maestro_process),
               "You are not supposed to run this function in maestro context!");
 
+
+  /* Go into sleep and return control to maestro */
   SIMIX_context_suspend(simix_global->current_process->context);
+  /* Ok, maestro returned control to us */
 
   if (simix_global->current_process->iwannadie)
     SIMIX_context_stop(simix_global->current_process->context);
@@ -433,20 +458,19 @@ void SIMIX_process_yield(void)
 
 void SIMIX_process_schedule(smx_process_t new_process)
 {
+  xbt_assert0(simix_global->current_process == simix_global->maestro_process,
+      "This function can only be called from maestro context");
   DEBUG1("Scheduling context: '%s'", new_process->name);
-
-  /* save the current process */
-  smx_process_t old_process = simix_global->current_process;
 
   /* update the current process */
   simix_global->current_process = new_process;
 
   /* schedule the context */
-  SIMIX_context_resume(old_process->context, new_process->context);
+  SIMIX_context_resume(simix_global->maestro_process->context,new_process->context);
   DEBUG1("Resumed from scheduling context: '%s'", new_process->name);
 
   /* restore the current process to the previously saved process */
-  simix_global->current_process = old_process;
+  simix_global->current_process = simix_global->maestro_process;
 }
 
 /* callback: context fetching */
