@@ -71,7 +71,6 @@ typedef struct s_smx_context_factory {
   smx_pfn_context_factory_create_context_t create_context;
   smx_pfn_context_factory_finalize_t finalize;
   smx_pfn_context_free_t free;
-  smx_pfn_context_kill_t kill;
   smx_pfn_context_schedule_t schedule;
   smx_pfn_context_yield_t yield;
   smx_pfn_context_stop_t stop;

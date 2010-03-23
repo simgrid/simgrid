@@ -212,7 +212,8 @@ SIMIX_SRC= \
   simix/smx_context.c \
   simix/smx_action.c \
   simix/smx_synchro.c \
-  simix/smx_network.c
+  simix/smx_network.c \
+  simix/smx_context_base.c
   
 if CONTEXT_THREADS
   SURF_SRC += xbt/xbt_os_thread.c simix/smx_context_thread.c

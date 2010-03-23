@@ -223,6 +223,17 @@ typedef struct s_smx_context {
   void_f_pvoid_t cleanup_func;
   void *cleanup_arg;
 } s_smx_ctx_base_t;
+/* methods of this class */
+void smx_ctx_base_factory_init(smx_context_factory_t * factory);
+int smx_ctx_base_factory_finalize(smx_context_factory_t * factory);
+
+smx_context_t
+smx_ctx_base_factory_create_context_sized(size_t size,
+    xbt_main_func_t code, int argc, char** argv,
+    void_f_pvoid_t cleanup_func, void* cleanup_arg);
+void smx_ctx_base_free(smx_context_t context);
+void smx_ctx_base_stop(smx_context_t context);
+
 
 /* *********************** */
 /* factory type definition */

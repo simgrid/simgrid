@@ -18,7 +18,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 typedef struct s_smx_ctx_thread {
-  SMX_CTX_BASE_T;
+  s_smx_ctx_base_t super;       /* Fields of super implementation */
   xbt_os_thread_t thread;       /* a plain dumb thread (portable to posix or windows) */
   xbt_os_sem_t begin;           /* this semaphore is used to schedule/yield the process  */
   xbt_os_sem_t end;             /* this semaphore is used to schedule/unschedule the process   */
@@ -28,7 +28,6 @@ static smx_context_t
 smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
                                       void_f_pvoid_t cleanup_func, void* cleanup_arg);
 
-static int smx_ctx_thread_factory_finalize(smx_context_factory_t * factory);
 static void smx_ctx_thread_free(smx_context_t context);
 static void smx_ctx_thread_stop(smx_context_t context);
 static void smx_ctx_thread_suspend(smx_context_t context);
@@ -36,12 +35,12 @@ static void smx_ctx_thread_resume(smx_context_t new_context);
 
 static void *smx_ctx_thread_wrapper(void *param);
 
-void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
-{
-  *factory = xbt_new0(s_smx_context_factory_t, 1);
+void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory) {
+
+  smx_ctx_base_factory_init(factory);
 
   (*factory)->create_context = smx_ctx_thread_factory_create_context;
-  (*factory)->finalize = smx_ctx_thread_factory_finalize;
+  /* Do not overload that method (*factory)->finalize */
   (*factory)->free = smx_ctx_thread_free;
   (*factory)->stop = smx_ctx_thread_stop;
   (*factory)->suspend = smx_ctx_thread_suspend;
@@ -49,27 +48,16 @@ void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
   (*factory)->name = "ctx_thread_factory";
 }
 
-static int smx_ctx_thread_factory_finalize(smx_context_factory_t * factory)
-{
-  free(*factory);
-  *factory = NULL;
-  return 0;
-}
-
 static smx_context_t 
 smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
                                       void_f_pvoid_t cleanup_func, void* cleanup_arg)
 {
-  smx_ctx_thread_t context = xbt_new0(s_smx_ctx_thread_t, 1);
+  smx_ctx_thread_t context = (smx_ctx_thread_t)smx_ctx_base_factory_create_context_sized
+      (sizeof(s_smx_ctx_thread_t), code,argc,argv,cleanup_func,cleanup_arg);
 
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if(code){
-    context->code = code;
-    context->argc = argc;
-    context->argv = argv;
-    context->cleanup_func = cleanup_func;
-    context->cleanup_arg = cleanup_arg;
     context->begin = xbt_os_sem_init(0);
     context->end = xbt_os_sem_init(0);
 
@@ -102,17 +90,7 @@ static void smx_ctx_thread_free(smx_context_t pcontext)
     xbt_os_sem_destroy(context->end);
   }
   
-  /* free argv */
-  if (context->argv) {
-    for (i = 0; i < context->argc; i++)
-      if (context->argv[i])
-        free(context->argv[i]);
-
-    free(context->argv);
-  }
-    
-  /* finally destroy the context */
-  free(context);
+  smx_ctx_base_free(pcontext);
 }
 
 static void smx_ctx_thread_stop(smx_context_t pcontext)
@@ -121,8 +99,7 @@ static void smx_ctx_thread_stop(smx_context_t pcontext)
   smx_ctx_thread_t context = (smx_ctx_thread_t)pcontext;
   
   /* please no debug here: our procdata was already free'd */
-  if (context->cleanup_func)
-    (*context->cleanup_func) (context->cleanup_arg);
+  smx_ctx_base_stop(pcontext);
 
   /* signal to the maestro that it has finished */
   xbt_os_sem_release(((smx_ctx_thread_t) context)->end);
@@ -140,7 +117,7 @@ static void *smx_ctx_thread_wrapper(void *param)
   xbt_os_sem_release(context->end);
   xbt_os_sem_acquire(context->begin);
 
-  (context->code) (context->argc, context->argv);
+  (context->super.code) (context->super.argc, context->super.argv);
 
   smx_ctx_thread_stop((smx_context_t)context);
   return NULL;

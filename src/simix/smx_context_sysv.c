@@ -34,8 +34,6 @@ static smx_context_t
 smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
     void_f_pvoid_t cleanup_func, void* cleanup_arg);
 
-static int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory);
-
 static void smx_ctx_sysv_free(smx_context_t context);
 static void smx_ctx_sysv_stop(smx_context_t context);
 static void smx_ctx_sysv_suspend(smx_context_t context);
@@ -43,12 +41,12 @@ static void smx_ctx_sysv_resume(smx_context_t new_context);
 
 static void smx_ctx_sysv_wrapper(void);
 
-void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
-{
-  *factory = xbt_new0(s_smx_context_factory_t, 1);
+void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory) {
+
+  smx_ctx_base_factory_init(factory);
 
   (*factory)->create_context = smx_ctx_sysv_factory_create_context;
-  (*factory)->finalize = smx_ctx_sysv_factory_finalize;
+  /* Do not overload that method (*factory)->finalize */
   (*factory)->free = smx_ctx_sysv_free;
   (*factory)->stop = smx_ctx_sysv_stop;
   (*factory)->suspend = smx_ctx_sysv_suspend;
@@ -56,23 +54,16 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
   (*factory)->name = "smx_sysv_context_factory";
 }
 
-static int smx_ctx_sysv_factory_finalize(smx_context_factory_t * factory)
-{
-  free(*factory);
-  *factory = NULL;
-  return 0;
-}
-
 static smx_context_t 
 smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
     void_f_pvoid_t cleanup_func, void* cleanup_arg)
 {
-  smx_ctx_sysv_t context = xbt_new0(s_smx_ctx_sysv_t, 1);
+  smx_ctx_sysv_t context = (smx_ctx_sysv_t)smx_ctx_base_factory_create_context_sized
+      (sizeof(s_smx_ctx_sysv_t), code,argc,argv,cleanup_func,cleanup_arg);
 
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if(code){
-    context->super.code = code;
 
     xbt_assert2(getcontext(&(context->uc)) == 0,
         "Error in context saving: %d (%s)", errno, strerror(errno));
@@ -92,49 +83,28 @@ smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv,
             context->uc.uc_stack.ss_size);
 #endif /* HAVE_VALGRIND_VALGRIND_H */
 
-    context->super.argc = argc;
-    context->super.argv = argv;
-    context->super.cleanup_func = cleanup_func;
-    context->super.cleanup_arg = cleanup_arg;
-
     makecontext(&((smx_ctx_sysv_t)context)->uc, smx_ctx_sysv_wrapper, 0);
   }
 
   return (smx_context_t)context;
 }
 
-static void smx_ctx_sysv_free(smx_context_t pcontext)
-{
-  int i;
-  smx_ctx_sysv_t context = (smx_ctx_sysv_t)pcontext;   
+static void smx_ctx_sysv_free(smx_context_t context) {
+
   if (context){
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
     VALGRIND_STACK_DEREGISTER(((smx_ctx_sysv_t) context)->valgrind_stack_id);
 #endif /* HAVE_VALGRIND_VALGRIND_H */
 
-    /* free argv */
-    if (context->super.argv) {
-      for (i = 0; i < context->super.argc; i++)
-        if (context->super.argv[i])
-          free(context->super.argv[i]);
-
-      free(context->super.argv);
-    }
-
-    /* destroy the context */
-    free(context);
   }
+  smx_ctx_base_free(context);
 }
 
-static void smx_ctx_sysv_stop(smx_context_t pcontext)
-{
-  smx_ctx_sysv_t context = (smx_ctx_sysv_t)pcontext;
+static void smx_ctx_sysv_stop(smx_context_t context) {
+  smx_ctx_base_stop(context);
 
-  if (context->super.cleanup_func)
-    (*context->super.cleanup_func) (context->super.cleanup_arg);
-
-  smx_ctx_sysv_suspend(pcontext);
+  smx_ctx_sysv_suspend(context);
 }
 
 static void smx_ctx_sysv_wrapper()
@@ -155,20 +125,18 @@ static void smx_ctx_sysv_wrapper()
 }
 
 static void smx_ctx_sysv_suspend(smx_context_t context) {
-  int rv;
   ucontext_t maestro_ctx = ((smx_ctx_sysv_t)simix_global->maestro_process->context)->uc;
 
-  rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &maestro_ctx);
+  int rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &maestro_ctx);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
 
 static void 
 smx_ctx_sysv_resume(smx_context_t new_context) {
-  int rv;
   smx_ctx_sysv_t maestro = (smx_ctx_sysv_t)simix_global->maestro_process->context;
 
-  rv = swapcontext(&(maestro->uc), &((smx_ctx_sysv_t)new_context)->uc);
+  int rv = swapcontext(&(maestro->uc), &((smx_ctx_sysv_t)new_context)->uc);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }

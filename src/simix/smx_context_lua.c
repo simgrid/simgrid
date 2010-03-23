@@ -64,7 +64,7 @@ void SIMIX_ctx_lua_factory_set_state(void* state) {
 }
 void SIMIX_ctx_lua_factory_init(smx_context_factory_t *factory) {
 
-  *factory = xbt_new0(s_smx_context_factory_t, 1);
+  smx_ctx_base_factory_init(factory);
 
   (*factory)->create_context = smx_ctx_lua_create_context;
   (*factory)->finalize = smx_ctx_lua_factory_finalize;
@@ -80,9 +80,7 @@ void SIMIX_ctx_lua_factory_init(smx_context_factory_t *factory) {
 static int smx_ctx_lua_factory_finalize(smx_context_factory_t * factory) {
   lua_close(lua_state);
 
-  free(*factory);
-  *factory = NULL;
-  return 0;
+  return smx_ctx_base_factory_finalize(factory);
 }
 
 static smx_context_t 
@@ -126,29 +124,16 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
   return (smx_context_t)context;
 }
 
-static void smx_ctx_lua_free(smx_context_t pcontext)
-{
-  int i;
-  smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
+static void smx_ctx_lua_free(smx_context_t context) {
 
   if (context){
     DEBUG1("smx_ctx_lua_free_context(%p)",context);
 
-    /* free argv */
-    if (context->super.argv) {
-      for (i = 0; i < context->super.argc; i++)
-        if (context->super.argv[i])
-          free(context->super.argv[i]);
-
-      free(context->super.argv);
-    }
-
     /* let the lua garbage collector reclaim the thread used for the coroutine */
-    luaL_unref(lua_state,LUA_REGISTRYINDEX,context->ref );
-
-    free(context);
-    context = NULL;
+    luaL_unref(lua_state,LUA_REGISTRYINDEX,((smx_ctx_lua_t)context)->ref );
   }
+
+  smx_ctx_base_free(context);
 }
 
 static void smx_ctx_lua_stop(smx_context_t pcontext) {

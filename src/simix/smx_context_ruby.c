@@ -19,7 +19,6 @@ static smx_context_t
 smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
     void_f_pvoid_t cleanup_func,void *cleanup_arg);
 
-static int smx_ctx_ruby_factory_finalize(smx_context_factory_t *factory);
 static void smx_ctx_ruby_free(smx_context_t context);
 static void smx_ctx_ruby_stop(smx_context_t context);
 static void smx_ctx_ruby_suspend(smx_context_t context);
@@ -28,10 +27,10 @@ static void smx_ctx_ruby_wrapper(void);
 
 
 void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory) {
-  *factory = xbt_new0(s_smx_context_factory_t,1);
+  smx_ctx_base_factory_init(factory);
 
   (*factory)->create_context = smx_ctx_ruby_create_context;
-  (*factory)->finalize = smx_ctx_ruby_factory_finalize;
+  /* Do not overload that method (*factory)->finalize */
   (*factory)->free = smx_ctx_ruby_free;
   (*factory)->stop = smx_ctx_ruby_stop;
   (*factory)->suspend = smx_ctx_ruby_suspend;
@@ -41,48 +40,28 @@ void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory) {
   ruby_init_loadpath();
 }
 
-static int smx_ctx_ruby_factory_finalize(smx_context_factory_t *factory) {
-  free(*factory);
-  *factory = NULL;
-  return 0;
-}
-
 static smx_context_t 
 smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
     void_f_pvoid_t cleanup_func,void* cleanup_arg) {
 
-  smx_ctx_ruby_t context = xbt_new0(s_smx_ctx_ruby_t,1);
+  smx_ctx_ruby_t context = (smx_ctx_ruby_t)smx_ctx_base_factory_create_context_sized
+      (sizeof(s_smx_ctx_ruby_t), code,argc,argv,cleanup_func,cleanup_arg);
 
   /* if the user provided a function for the process , then use it
      Otherwise it's the context for maestro */
   if (code) {
-    context->super.cleanup_func = cleanup_func;
-    context->super.cleanup_arg = cleanup_arg;
     context->process = (VALUE)code;
-    context->super.argc=argc;
-    context->super.argv=argv;
 
     DEBUG1("smx_ctx_ruby_create_context(%s)...Done",argv[0]);
   }
   return (smx_context_t) context;
 }
 
-// FIXME 
 static void smx_ctx_ruby_free(smx_context_t context) {
-  int i;
- if (context) {
+ if (context)
     DEBUG1("smx_ctx_ruby_free_context(%p)",context);
-    /* free argv */
-    if (context->argv) {
-      for (i = 0; i < context->argc; i++)
-        if (context->argv[i])
-          free(context->argv[i]);
 
-      free(context->argv);
-    }
-    free (context);
-    context = NULL;
-  }
+ smx_ctx_base_free(context);
 }
 
 static void smx_ctx_ruby_stop(smx_context_t context) {
