@@ -125,9 +125,9 @@ set(JMSG_JAVA_SRC
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/ProcessNotFoundException.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Sem.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Task.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/TaskCancelledException.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/TimeoutException.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/TransferFailureException.java	
-
 )
 
 set(GRAS_RL_SRC
