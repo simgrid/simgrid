@@ -55,7 +55,7 @@ static void stackDump (lua_State *L) {
     }
     p+=sprintf(p,"  ");  /* put a separator */
   }
-  INFO1("%s",buff);
+  DEBUG1("%s",buff);
 }
 
 /** @brief ensures that a userdata on the stack is a task and returns the pointer inside the userdata */
@@ -92,7 +92,7 @@ static int Task_new(lua_State* L) {
   int msg_size = luaL_checkint(L,3);
   // FIXME: data shouldn't be NULL I guess
   pushTask(L,MSG_task_create(name,comp_size,msg_size,NULL));
-  INFO0("Created task");
+  DEBUG0("Created task");
   return 1;
 }
 
@@ -124,21 +124,18 @@ static int Task_destroy(lua_State *L) {
 static int Task_send(lua_State *L)  {
   m_task_t tk = checkTask(L,1);
   const char *mailbox = luaL_checkstring(L,2);
-  stackDump(L);fflush(stdout);fflush(stderr);
   int res = MSG_task_send(tk,mailbox);
   res++;//FIXME: check it instead of avoiding the warning
-  stackDump(L);
   return 0;
 }
 static int Task_recv(lua_State *L)  {
   m_task_t tk = NULL;
-  //stackDump(L);
   const char *mailbox = luaL_checkstring(L,1);
   int res = MSG_task_receive(&tk,mailbox);
+  MSG_task_ref(tk);
   res++;//FIXME: check it instead of avoiding the warning
-  INFO1("Task Name : >>>%s",MSG_task_get_name(tk));
+  DEBUG1("Task Name : >>>%s",MSG_task_get_name(tk));
   pushTask(L,tk);
-  //  stackDump(L);
   return 1;
 }
 
@@ -174,20 +171,55 @@ static const luaL_reg Task_meta[] = {
 /*
  * Environment related
  */
+extern lua_State *simgrid_lua_state;
+
+static int run_lua_code(int argc,char **argv) {
+  DEBUG1("Run lua code %s",argv[0]);
+//  fprintf(stderr,"Run lua code %s\n", (argv ? argv[0] : "(null)"));
+  lua_State *L = lua_newthread(simgrid_lua_state);
+  int ref = luaL_ref(simgrid_lua_state, LUA_REGISTRYINDEX); // protect the thread from being garbage collected
+  int res = 1;
+
+  /* Start the co-routine */
+  lua_getglobal(L,argv[0]);
+  xbt_assert1(lua_isfunction(L,-1),
+      "The lua function %s does not seem to exist",argv[0]);
+
+  // push arguments onto the stack
+  int i;
+  for(i=1;i<argc;i++)
+    lua_pushstring(L,argv[i]);
+
+  // Call the function (in resume)
+  xbt_assert2(lua_pcall(L, argc-1, 1, 0) == 0,
+    "error running function `%s': %s",argv[0], lua_tostring(L, -1));
+
+  /* retrieve result */
+  if (lua_isnumber(L, -1)) {
+    res = lua_tonumber(L, -1);
+    lua_pop(L, 1);  /* pop returned value */
+  }
+
+  // cleanups
+  luaL_unref(simgrid_lua_state,LUA_REGISTRYINDEX,ref );
+  fprintf(stderr,"Execution of lua code %s is over\n", (argv ? argv[0] : "(null)"));
+  return res;
+}
 static int launch_application(lua_State *L) {
   const char * file = luaL_checkstring(L,1);
+  MSG_function_register_default(run_lua_code);
   MSG_launch_application(file);
   return 0;
 }
 #include "simix/simix.h" //FIXME: KILLME when debugging on simix internals become useless
 static int create_environment(lua_State *L) {
   const char *file = luaL_checkstring(L,1);
-  INFO1("Loading environment file %s",file);
+  DEBUG1("Loading environment file %s",file);
   MSG_create_environment(file);
   smx_host_t *hosts = SIMIX_host_get_table();
   int i;
   for (i=0;i<SIMIX_host_get_number();i++) {
-    INFO1("We have an host %s", SIMIX_host_get_name(hosts[i]));
+    DEBUG1("We have an host %s", SIMIX_host_get_name(hosts[i]));
   }
 
   return 0;
@@ -227,14 +259,13 @@ static const luaL_Reg simgrid_funcs[] = {
 /*                       module management functions                                 */
 /* ********************************************************************************* */
 
-void SIMIX_ctx_lua_factory_set_state(void *state);/* Hack: pass the L to our factory */
 extern const char*xbt_ctx_factory_to_use; /*Hack: let msg load directly the right factory */
 
 #define LUA_MAX_ARGS_COUNT 10 /* maximum amount of arguments we can get from lua on command line */
 
 int luaopen_simgrid(lua_State* L); // Fuck gcc: we don't need that prototype
 int luaopen_simgrid(lua_State* L) {
-  xbt_ctx_factory_to_use = "lua";
+  //xbt_ctx_factory_to_use = "lua";
 
   char **argv=malloc(sizeof(char*)*LUA_MAX_ARGS_COUNT);
   int argc=1;
@@ -256,14 +287,14 @@ int luaopen_simgrid(lua_State* L) {
            __FILE__,LUA_MAX_ARGS_COUNT-1);
       argv[argc-1] = (char*)luaL_checkstring(L,-1);
       lua_pop(L,1);
-      INFO1("Got command line argument %s from lua",argv[argc-1]);
+      DEBUG1("Got command line argument %s from lua",argv[argc-1]);
     }
   }
   argv[argc--]=NULL;
 
   /* Initialize the MSG core */
   MSG_global_init(&argc,argv);
-  INFO1("Still %d arguments on command line",argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
+  DEBUG1("Still %d arguments on command line",argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
 
   /* register the core C functions to lua */
   luaL_register(L, "simgrid", simgrid_funcs);
@@ -280,7 +311,7 @@ int luaopen_simgrid(lua_State* L) {
   lua_pop(L,1);   //drop metatable
 
   /* Keep the context mechanism informed of our lua world today */
-  SIMIX_ctx_lua_factory_set_state(L);
+  simgrid_lua_state = L;
 
   return 1;
 }

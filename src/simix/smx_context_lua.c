@@ -5,25 +5,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_context_private.h"
 #include <lua5.1/lauxlib.h>
 #include <lua5.1/lualib.h>
 
-/* lower this if you want to reduce the memory consumption  */
-//#define STACK_SIZE 128*1024
+/* lua can run with ultra tiny stacks since the user code lives in lua stacks, not the main one */
+//#define CONTEXT_STACK_SIZE 4*1024
+#include "smx_context_sysv_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(lua);
 
-typedef struct s_smx_ctx_lua {
-  s_smx_ctx_sysv_t super;  /* Fields of super implementation */
-
-  /* lua state info */
-  lua_State *state;
-  int ref; /* to prevent the lua GC from collecting my threads, I ref them explicitely */
-  int nargs; /* argument to lua_resume. First time: argc-1, afterward: 0 */
-} s_smx_ctx_lua_t, *smx_ctx_lua_t;
-
-static lua_State *lua_state;
+lua_State *simgrid_lua_state;
 
 static smx_context_t 
 smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv, 
@@ -36,113 +27,57 @@ static void smx_ctx_lua_stop(smx_context_t context);
 static void smx_ctx_lua_suspend(smx_context_t context);
 static void smx_ctx_lua_resume(smx_context_t new_context);
 
-static void smx_ctx_sysv_wrapper(void);
 
-/* Actually, the parameter is a lua_State*, but it got anonymized because that function
- * is defined in a global header where lua may not be defined */
-void SIMIX_ctx_lua_factory_set_state(void* state) {
-  lua_state = state;
-}
 void SIMIX_ctx_lua_factory_init(smx_context_factory_t *factory) {
 
   smx_ctx_base_factory_init(factory);
 
   (*factory)->create_context = smx_ctx_lua_create_context;
-  (*factory)->finalize = smx_ctx_lua_factory_finalize;
-  (*factory)->free = smx_ctx_lua_free;
-  (*factory)->stop = smx_ctx_lua_stop;
-  (*factory)->suspend = smx_ctx_lua_suspend;
-  (*factory)->resume = smx_ctx_lua_resume;
+  /* don't override (*factory)->finalize */;
+  (*factory)->free = smx_ctx_sysv_free;
+  (*factory)->stop = smx_ctx_sysv_stop;
+  (*factory)->suspend = smx_ctx_sysv_suspend;
+  (*factory)->resume = smx_ctx_sysv_resume;
   (*factory)->name = "smx_lua_context_factory";
 
   INFO0("Lua Factory created");
-}
-
-static int smx_ctx_lua_factory_finalize(smx_context_factory_t * factory) {
-  lua_close(lua_state);
-
-  return smx_ctx_base_factory_finalize(factory);
 }
 
 static smx_context_t 
 smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv, 
     void_f_pvoid_t cleanup_func, void* cleanup_arg) {
 
-  smx_ctx_lua_t context = (smx_ctx_lua_t)smx_ctx_sysv_create_context_sized
-      (sizeof(s_smx_ctx_lua_t), code,argc,argv,cleanup_func,cleanup_arg);
-
-
-  /* If the user provided a function for the process then use it
-     otherwise is the context for maestro */
-  if (code){
-    INFO1("Created context for function %s",argv[0]);
-
-    /* start the coroutine in charge of running that code */
-    context->state = lua_newthread(lua_state);
-    context->ref = luaL_ref(lua_state, LUA_REGISTRYINDEX); // protect the thread from being garbage collected
-
-    /* Start the co-routine */
-    lua_getglobal(context->state,context->super.super.argv[0]);
-    xbt_assert1(lua_isfunction(context->state,-1),
-        "The lua function %s does not seem to exist",context->super.super.argv[0]);
-
-    // push arguments onto the stack
-    int i;
-    for(i=1;i<context->super.super.argc;i++)
-      lua_pushstring(context->state,context->super.super.argv[i]);
-
-    // Call the function (in resume)
-    context->nargs = context->super.super.argc-1;
-
-  } else {
-    INFO0("Created context for maestro");
-  }
-
-  return (smx_context_t)context;
+  return smx_ctx_sysv_create_context_sized(sizeof(s_smx_ctx_sysv_t),
+      code,argc,argv,cleanup_func,cleanup_arg);
 }
-
+#if KILLME
 static void smx_ctx_lua_free(smx_context_t context) {
 
   if (context){
     DEBUG1("smx_ctx_lua_free_context(%p)",context);
 
-    /* let the lua garbage collector reclaim the thread used for the coroutine */
-    luaL_unref(lua_state,LUA_REGISTRYINDEX,((smx_ctx_lua_t)context)->ref );
   }
 
-  smx_ctx_base_free(context);
+  smx_ctx_sysv_free(context);
 }
 
 static void smx_ctx_lua_stop(smx_context_t pcontext) {
-  smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
-
-  INFO1("Stopping '%s' (nothing to do)",context->super.super.argv[0]);
-  if (context->super.super.cleanup_func)
-    (*context->super.super.cleanup_func) (context->super.super.cleanup_arg);
-
-//  smx_ctx_lua_suspend(pcontext);
+  DEBUG1("Stopping '%s' (nothing to do)",pcontext->argv[0]);
+  smx_ctx_sysv_stop(pcontext);
 }
 
 static void smx_ctx_lua_suspend(smx_context_t pcontext) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
-  DEBUG1("Suspending '%s' (calling lua_yield)",context->super.super.argv[0]);
-  //lua_yield(context->state,0);
+  DEBUG1("Suspending '%s' (using sysv facilities)",context->super.super.argv[0]);
+  smx_ctx_sysv_suspend(pcontext);
 
-  lua_getglobal(context->state,"doyield");
-  xbt_assert0(lua_isfunction(context->state,-1),
-      "Cannot find the coroutine.yield function...");
-  INFO0("Call coroutine.yield");
-  lua_call(context->state,0,0);
-  INFO0("Back from call to coroutine.yield");
+  DEBUG0("Back from call yielding");
 }
 
 static void 
 smx_ctx_lua_resume(smx_context_t new_context) {
   smx_ctx_lua_t context = (smx_ctx_lua_t)new_context;
   DEBUG1("Resuming %s",context->super.super.argv[0]);
-  int ret = lua_resume(context->state,context->nargs);
-  INFO3("Function %s yielded back with value %d %s",context->super.super.argv[0],ret,(ret==LUA_YIELD?"(ie, LUA_YIELD)":""));
-  if (lua_isstring(context->state,-1))
-    INFO2("Result of %s seem to be '%s'",context->super.super.argv[0],luaL_checkstring(context->state,-1));
-  context->nargs=0;
+  smx_ctx_sysv_resume(new_context);
 }
+#endif
