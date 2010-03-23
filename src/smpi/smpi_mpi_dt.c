@@ -77,7 +77,12 @@ CREATE_MPI_DATATYPE(MPI_C_LONG_DOUBLE_COMPLEX, long double _Complex);
 CREATE_MPI_DATATYPE(MPI_AINT,                  MPI_Aint);
 CREATE_MPI_DATATYPE(MPI_OFFSET,                MPI_Offset);
 
-CREATE_MPI_DATATYPE(MPI_FLOAT_INT,                float_int);
+CREATE_MPI_DATATYPE(MPI_FLOAT_INT,             float_int);
+CREATE_MPI_DATATYPE(MPI_LONG_INT,              long_int);
+CREATE_MPI_DATATYPE(MPI_DOUBLE_INT,            double_int);
+CREATE_MPI_DATATYPE(MPI_SHORT_INT,             short_int);
+CREATE_MPI_DATATYPE(MPI_2INT,                  int_int);
+CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE_INT,       long_double_int);
 
 
 size_t smpi_datatype_size(MPI_Datatype datatype) {
