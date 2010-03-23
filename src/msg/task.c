@@ -76,6 +76,11 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   return task;
 }
 
+/** prevent the task from being destroyed too quickly (but also prevent it from being sent). Mainly useful in bindings */
+void MSG_task_ref(m_task_t t) {
+  t->simdata->refcount++;
+}
+
 /** \ingroup m_task_management
  * \brief Return the user data of a #m_task_t.
  *
