@@ -11,8 +11,8 @@
 
 package simgrid.msg;
 
-import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Vector;
 
 public final class ApplicationHandler {
 

@@ -11,8 +11,9 @@
 
 package simgrid.msg;
 
-import java.lang.Thread;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * A process may be defined as a code, with some private data, executing 

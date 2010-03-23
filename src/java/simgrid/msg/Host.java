@@ -10,7 +10,6 @@
  *
  */  
 package simgrid.msg;
-import java.lang.String;
 
 /**
  * A host object represents a location (any possible place) where a process may run. 

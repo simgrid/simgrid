@@ -9,7 +9,6 @@
  *(GNU LGPL) which comes with this package. 
  */
 package simgrid.msg;
-import java.lang.Exception;
 
 /**
  * This exception is an abstract class grouping all MSG-related exceptions
