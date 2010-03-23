@@ -219,6 +219,7 @@ set(SIMIX_SRC
 	${PROJECT_DIRECTORY}/src/simix/smx_action.c
 	${PROJECT_DIRECTORY}/src/simix/smx_synchro.c
 	${PROJECT_DIRECTORY}/src/simix/smx_network.c
+	${PROJECT_DIRECTORY}/src/simix/smx_context_base.c
 )
 
 set(MSG_SRC
