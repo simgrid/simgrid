@@ -1,7 +1,7 @@
 
 p Check that the dynamic version of the log simple layout works
-$ $SG_EXENV_TEST xbt/log_large_test
-> [0.000000] [test/INFO] This is a very large message:
+$ $SG_EXENV_TEST xbt/log_large_test --log=root.fmt:%m%n
+> This is a very large message:
 > 0
 > 1.........1.........2.........3.........4.........5.........6.........7.........8.........9.........0
 > 2.........1.........2.........3.........4.........5.........6.........7.........8.........9.........0
@@ -113,7 +113,7 @@ $ $SG_EXENV_TEST xbt/log_large_test
 > 9.........1.........2.........3.........4.........5.........6.........7.........8.........9.........0
 > 0.........1.........2.........3.........4.........5.........6.........7.........8.........9.........0
 > 
-> [0.000000] [test/INFO] Done (strlen>10210)
+> Done (strlen>10210)
 
 p Check that the dynamic version of the log formated layout works
 $ $SG_EXENV_TEST xbt/log_large_test --log=root.fmt:%m%n 
