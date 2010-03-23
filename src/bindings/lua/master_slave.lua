@@ -12,7 +12,9 @@ comp_size = arg[2];
 comm_size = arg[3];
 slave_count = arg[4]
 
-
+if (#arg ~= 4) then
+    error("Argc should be 4");
+end
 simgrid.info("Argc="..(#arg).." (should be 4)")
 
 -- Dispatch the tasks
@@ -41,16 +43,16 @@ end
 -- Slave Function ---------------------------------------------------------
 function Slave(...)
 
-my_mailbox="slave "..arg[1]
+local my_mailbox="slave "..arg[1]
 simgrid.info("Hello from lua, I'm a poor slave with mbox: "..my_mailbox)
 
 
 while true do
 --  tk = simgrid.Task.new("",0,0); --??
 --  simgrid.Task.recv2(tk,my_mailbox);
-  tk = simgrid.Task.recv(my_mailbox);
+  local tk = simgrid.Task.recv(my_mailbox);
   
-  tk_name = simgrid.Task.name(tk)
+  local tk_name = simgrid.Task.name(tk)
 
   if (tk_name == "finalize") then
     simgrid.info("Slave '" ..my_mailbox.."' got finalize msg");
