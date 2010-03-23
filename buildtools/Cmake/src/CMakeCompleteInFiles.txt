@@ -37,9 +37,6 @@ else(disable_java)
 	endif(JAVA_INCLUDE_PATH)	
 	if(JAVA_RUNTIME AND JAVA_COMPILE AND JAVA_INCLUDE_PATH)
 		SET(HAVE_JAVA 1)
-		if(CMAKE_SYSTEM_NAME MATCHES "Darwin") #JAVA doesn't work yet on Mac
-			SET(HAVE_JAVA 0)
-		endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	else(JAVA_RUNTIME AND JAVA_COMPILE AND JAVA_INCLUDE_PATH) 
 		SET(HAVE_JAVA 0)
 	endif(JAVA_RUNTIME AND JAVA_COMPILE AND JAVA_INCLUDE_PATH)
@@ -207,11 +204,16 @@ if(NOT disable_lua)
 	NAMES lualib.h 
 	PATHS "/sw/include/" "/usr/include/lua5.1/"
 	)
-	if(HAVE_LUA5_1_LUALIB_H)
+	find_path(HAVE_LUA5_1_LAUXLIB_H
+	NAMES lauxlib.h
+	PATHS "/sw/include/" "/usr/include/lua5.1/"
+	)
+	if(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
 		set(HAVE_LUA 1)
-	endif(HAVE_LUA5_1_LUALIB_H)
+	endif(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
 endif(NOT disable_lua)
 #message("HAVE_LUA ${HAVE_LUA}")
+#message("${HAVE_LUA5_1_LUALIB_H} AND ${HAVE_LUA5_1_LAUXLIB_H}")
 
 #message("______END_CONTEXT______")
 

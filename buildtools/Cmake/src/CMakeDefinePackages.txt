@@ -112,18 +112,22 @@ set(JMSG_C_SRC
 )
 
 set(JMSG_JAVA_SRC
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/MsgException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/JniException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/NativeException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/HostNotFoundException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/ProcessNotFoundException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Msg.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Process.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Host.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Task.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/MsgNative.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/ApplicationHandler.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Host.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/HostFailureException.java	
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/HostNotFoundException.java	
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/JniException.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Msg.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/MsgException.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/MsgNative.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/NativeException.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Process.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/ProcessNotFoundException.java
 	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Sem.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Task.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/TimeoutException.java
+	${PROJECT_DIRECTORY}/src/java/simgrid/msg/TransferFailureException.java	
+
 )
 
 set(GRAS_RL_SRC
