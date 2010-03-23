@@ -635,7 +635,7 @@ CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
 configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${PROJECT_DIRECTORY}/src/context_sysv_config.h)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/gras_config.h.in" "${PROJECT_DIRECTORY}/buildtools/Cmake/src/tmp_gras_config.h.in" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/c_gras_config.h.in" "${PROJECT_DIRECTORY}/buildtools/Cmake/src/tmp_gras_config.h.in" @ONLY IMMEDIATE)
 configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/tmp_gras_config.h.in" "${PROJECT_DIRECTORY}/src/gras_config.h" @ONLY IMMEDIATE)
 configure_file(${PROJECT_DIRECTORY}/include/simgrid_config.h.in ${PROJECT_DIRECTORY}/include/simgrid_config.h)
 
