@@ -29,13 +29,8 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** arg
                                       void_f_pvoid_t cleanup_func, void* cleanup_arg);
 
 static int smx_ctx_thread_factory_finalize(smx_context_factory_t * factory);
-
 static void smx_ctx_thread_free(smx_context_t context);
-
-static void smx_ctx_thread_start(smx_context_t context);
-
 static void smx_ctx_thread_stop(smx_context_t context);
-
 static void smx_ctx_thread_suspend(smx_context_t context);
 
 static void 
@@ -80,6 +75,16 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** arg
     context->cleanup_arg = cleanup_arg;
     context->begin = xbt_os_sem_init(0);
     context->end = xbt_os_sem_init(0);
+
+
+    /* create and start the process */
+    /* NOTE: The first argument to xbt_os_thread_create used to be the process *
+     * name, but now the name is stored at SIMIX level, so we pass a null      */
+    context->thread =
+      xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, ctx_thread);
+
+    /* wait the starting of the newly created process */
+    xbt_os_sem_acquire(context->end);
   }
     
   return (smx_context_t)context;
@@ -111,20 +116,6 @@ static void smx_ctx_thread_free(smx_context_t pcontext)
     
   /* finally destroy the context */
   free(context);
-}
-
-static void smx_ctx_thread_start(smx_context_t context)
-{
-  smx_ctx_thread_t ctx_thread = (smx_ctx_thread_t)context;
-
-  /* create and start the process */
-  /* NOTE: The first argument to xbt_os_thread_create used to be the process *
-   * name, but now the name is stored at SIMIX level, so we pass a null      */
-  ctx_thread->thread =
-    xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, ctx_thread);
-
-  /* wait the starting of the newly created process */
-  xbt_os_sem_acquire(ctx_thread->end);
 }
 
 static void smx_ctx_thread_stop(smx_context_t pcontext)

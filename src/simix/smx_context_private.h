@@ -75,7 +75,6 @@ typedef struct s_smx_context_factory {
   smx_pfn_context_kill_t kill;
   smx_pfn_context_schedule_t schedule;
   smx_pfn_context_yield_t yield;
-  smx_pfn_context_start_t start;
   smx_pfn_context_stop_t stop;
   const char *name;
 } s_smx_context_factory_t;

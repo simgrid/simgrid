@@ -49,7 +49,6 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
 
 static int smx_ctx_lua_factory_finalize(smx_context_factory_t *factory);
 static void smx_ctx_lua_free(smx_context_t context);
-static void smx_ctx_lua_start(smx_context_t context);
 static void smx_ctx_lua_stop(smx_context_t context);
 static void smx_ctx_lua_suspend(smx_context_t context);
 
@@ -70,7 +69,6 @@ void SIMIX_ctx_lua_factory_init(smx_context_factory_t *factory) {
   (*factory)->create_context = smx_ctx_lua_create_context;
   (*factory)->finalize = smx_ctx_lua_factory_finalize;
   (*factory)->free = smx_ctx_lua_free;
-  (*factory)->start = smx_ctx_lua_start;
   (*factory)->stop = smx_ctx_lua_stop;
   (*factory)->suspend = smx_ctx_lua_suspend;
   (*factory)->resume = smx_ctx_lua_resume;
@@ -107,8 +105,20 @@ smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv,
     /* start the coroutine in charge of running that code */
     context->state = lua_newthread(lua_state);
     context->ref = luaL_ref(lua_state, LUA_REGISTRYINDEX); // protect the thread from being garbage collected
-    /* the actual co-routine starting is done in smx_ctx_lua_start */
-    context->nargs = argc-1;
+
+    /* Start the co-routine */
+    lua_getglobal(context->state,context->argv[0]);
+    xbt_assert1(lua_isfunction(context->state,-1),
+        "The lua function %s does not seem to exist",context->argv[0]);
+
+    // push arguments onto the stack
+    int i;
+    for(i=1;i<context->argc;i++)
+      lua_pushstring(context->state,context->argv[i]);
+
+    // Call the function (in resume)
+    context->nargs = context->argc-1;
+
   } else {
     INFO0("Created context for maestro");
   }
@@ -139,24 +149,6 @@ static void smx_ctx_lua_free(smx_context_t pcontext)
     free(context);
     context = NULL;
   }
-}
-
-static void smx_ctx_lua_start(smx_context_t pcontext) {
-  smx_ctx_lua_t context = (smx_ctx_lua_t)pcontext;
-
-  DEBUG1("Starting '%s'",context->argv[0]);
-
-  lua_getglobal(context->state,context->argv[0]);
-  xbt_assert1(lua_isfunction(context->state,-1),
-      "The lua function %s does not seem to exist",context->argv[0]);
-
-  // push arguments onto the stack
-  int i;
-  for(i=1;i<context->argc;i++)
-    lua_pushstring(context->state,context->argv[i]);
-
-  // Call the function
-  context->nargs = context->argc-1;
 }
 
 static void smx_ctx_lua_stop(smx_context_t pcontext) {

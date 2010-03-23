@@ -39,8 +39,6 @@ static int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory);
 
 static void smx_ctx_sysv_free(smx_context_t context);
 
-static void smx_ctx_sysv_start(smx_context_t context);
-
 static void smx_ctx_sysv_stop(smx_context_t context);
 
 static void smx_ctx_sysv_suspend(smx_context_t context);
@@ -57,7 +55,6 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
   (*factory)->create_context = smx_ctx_sysv_factory_create_context;
   (*factory)->finalize = smx_ctx_sysv_factory_finalize;
   (*factory)->free = smx_ctx_sysv_free;
-  (*factory)->start = smx_ctx_sysv_start;
   (*factory)->stop = smx_ctx_sysv_stop;
   (*factory)->suspend = smx_ctx_sysv_suspend;
   (*factory)->resume = smx_ctx_sysv_resume;
@@ -104,6 +101,8 @@ smx_ctx_sysv_factory_create_context(xbt_main_func_t code, int argc, char** argv,
     context->argv = argv;
     context->cleanup_func = cleanup_func;
     context->cleanup_arg = cleanup_arg;
+
+    makecontext(&((smx_ctx_sysv_t)context)->uc, smx_ctx_sysv_wrapper, 0);
   }
 
   return (smx_context_t)context;
@@ -131,11 +130,6 @@ static void smx_ctx_sysv_free(smx_context_t pcontext)
     /* destroy the context */
     free(context);
   }
-}
-
-static void smx_ctx_sysv_start(smx_context_t context)
-{  
-  makecontext(&((smx_ctx_sysv_t)context)->uc, smx_ctx_sysv_wrapper, 0);
 }
 
 static void smx_ctx_sysv_stop(smx_context_t pcontext)

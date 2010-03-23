@@ -129,7 +129,6 @@ smx_process_t SIMIX_process_create(const char *name,
   xbt_swag_insert(process, host->process_list);
 
   DEBUG1("Start context '%s'", process->name);
-  SIMIX_context_start(process->context);
 
   /* Now insert it in the global process list and in the process to run list */
   xbt_swag_insert(process, simix_global->process_list);

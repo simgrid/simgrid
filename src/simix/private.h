@@ -272,7 +272,6 @@ typedef struct s_smx_context_factory {
   smx_pfn_context_factory_create_context_t create_context;
   smx_pfn_context_factory_finalize_t finalize;
   smx_pfn_context_free_t free;
-  smx_pfn_context_start_t start;
   smx_pfn_context_stop_t stop;
   smx_pfn_context_suspend_t suspend;
   smx_pfn_context_resume_t resume;
@@ -331,8 +330,8 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
 static inline smx_context_t SIMIX_context_new(xbt_main_func_t code, int argc,
                                               char** argv,
                                               void_f_pvoid_t cleanup_func,
-                                              void* cleanup_arg)
-{
+                                              void* cleanup_arg) {
+
   return (*(simix_global->context_factory->create_context))
            (code, argc, argv, cleanup_func, cleanup_arg);
 }
@@ -342,27 +341,15 @@ static inline smx_context_t SIMIX_context_new(xbt_main_func_t code, int argc,
  * \param context the context to destroy
  * Argument must be stopped first -- runs in maestro context
  */
-static inline void SIMIX_context_free(smx_context_t context)
-{
+static inline void SIMIX_context_free(smx_context_t context) {
   (*(simix_global->context_factory->free)) (context);
-}
-
-/**
- * \brief prepares aa context to be run
- * \param context the context to start
- * It will however run effectively only when calling #SIMIX_process_schedule
- */
-static inline void SIMIX_context_start(smx_context_t context)
-{
-  (*(simix_global->context_factory->start)) (context);
 }
 
 /**
  * \brief stops the execution of a context
  * \param context to stop
  */
-static inline void SIMIX_context_stop(smx_context_t context)
-{
+static inline void SIMIX_context_stop(smx_context_t context) {
   (*(simix_global->context_factory->stop)) (context);
 }
 

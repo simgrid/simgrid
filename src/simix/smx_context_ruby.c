@@ -21,7 +21,6 @@ smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
 
 static int smx_ctx_ruby_factory_finalize(smx_context_factory_t *factory);
 static void smx_ctx_ruby_free(smx_context_t context);
-static void smx_ctx_ruby_start(smx_context_t context);
 static void smx_ctx_ruby_stop(smx_context_t context);
 static void smx_ctx_ruby_suspend(smx_context_t context);
 static void 
@@ -35,7 +34,6 @@ void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory) {
   (*factory)->create_context = smx_ctx_ruby_create_context;
   (*factory)->finalize = smx_ctx_ruby_factory_finalize;
   (*factory)->free = smx_ctx_ruby_free;
-  (*factory)->start = smx_ctx_ruby_start;
   (*factory)->stop = smx_ctx_ruby_stop;
   (*factory)->suspend = smx_ctx_ruby_suspend;
   (*factory)->resume = smx_ctx_ruby_resume;
@@ -86,13 +84,6 @@ static void smx_ctx_ruby_free(smx_context_t context) {
     free (context);
     context = NULL;
   }
-}
-
-static void smx_ctx_ruby_start(smx_context_t context) {
-  DEBUG1("smx_ctx_ruby_start(%s) (nothing to do)",context->argv[0]);
-  /* Already Done .. Since a Ruby process is launched within initialization
-     We Start it Within the Initializer ... We Use the Semaphore To Keep
-     the thread alive waiting for mutex signal to execute the main*/
 }
 
 static void smx_ctx_ruby_stop(smx_context_t context) {

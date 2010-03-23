@@ -39,7 +39,6 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
   (*factory)->create_context = smx_ctx_java_factory_create_context;
   (*factory)->finalize = smx_ctx_java_factory_finalize;
   (*factory)->free = smx_ctx_java_free;
-  (*factory)->start = smx_ctx_java_start;
   (*factory)->stop = smx_ctx_java_stop;
   (*factory)->suspend = smx_ctx_java_suspend;
   (*factory)->resume = smx_ctx_java_resume;
@@ -67,6 +66,8 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv,
     context->cleanup_arg = cleanup_arg;
     context->jprocess = (jobject) code;
     context->jenv = get_current_thread_env();
+    jprocess_start(((smx_ctx_java_t) context)->jprocess,
+                   get_current_thread_env());
   }
     
   return (smx_context_t) context;
@@ -91,12 +92,6 @@ static void smx_ctx_java_free(smx_context_t context)
     context = NULL;
   }
 } 
-
-static void smx_ctx_java_start(smx_context_t context)
-{
-  jprocess_start(((smx_ctx_java_t) context)->jprocess,
-                 get_current_thread_env());
-}
 
 static void smx_ctx_java_stop(smx_context_t context)
 {
