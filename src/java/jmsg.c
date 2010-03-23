@@ -994,7 +994,7 @@ Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  jxbt_check_res("MSG_task_send_with_timeout()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT_FAILURE,
+  jxbt_check_res("MSG_task_send_with_timeout()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT,
     bprintf("while sending task %s to mailbox %s", MSG_task_get_name(task),alias));
 }
 
@@ -1018,7 +1018,7 @@ Java_simgrid_msg_MsgNative_taskSendBounded(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  jxbt_check_res("MSG_task_send_bounded()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT_FAILURE,
+  jxbt_check_res("MSG_task_send_bounded()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT,
     bprintf("while sending task %s to mailbox %s with max rate %f", MSG_task_get_name(task),alias,(double)jmaxRate));
     
 }
@@ -1048,7 +1048,7 @@ Java_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  jxbt_check_res("MSG_task_receive_ext()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT_FAILURE,
+  jxbt_check_res("MSG_task_receive_ext()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT,
     bprintf("while receiving from mailbox %s",alias));
 
   return (jobject) task->data;

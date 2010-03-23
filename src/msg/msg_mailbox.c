@@ -145,7 +145,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
         ret = MSG_TRANSFER_FAILURE;
         break;
       case timeout_error:
-        ret = MSG_TIMEOUT_FAILURE;
+        ret = MSG_TIMEOUT;
         break;      
       default:
         xbt_die(bprintf("Unhandled SIMIX network exception: %s",e.msg));
@@ -199,7 +199,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
         ret = MSG_TRANSFER_FAILURE;
         break;
       case timeout_error:
-        ret = MSG_TIMEOUT_FAILURE;
+        ret = MSG_TIMEOUT;
         break;
       default:
         xbt_die(bprintf("Unhandled SIMIX network exception: %s",e.msg));

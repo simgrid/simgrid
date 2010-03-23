@@ -86,7 +86,7 @@ void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
       rb_raise(rb_eRuntimeError,"Transfer failure while Sending");
     else if ( rv == MSG_HOST_FAILURE )
       rb_raise(rb_eRuntimeError,"Host failure while Sending");
-    else if ( rv == MSG_TIMEOUT_FAILURE )
+    else if ( rv == MSG_TIMEOUT )
       rb_raise(rb_eRuntimeError,"Timeout failure while Sending");
     else 
       rb_raise(rb_eRuntimeError,"MSG_task_send failed");

@@ -117,7 +117,7 @@ SG_BEGIN_DECL()
 */ /* Keep these code as binary values: java bindings manipulate | of these values */
      typedef enum {
        MSG_OK = 0,            /**< @brief Everything is right. Keep on going this way ! */
-       MSG_TIMEOUT_FAILURE=1, /**< @brief nothing good happened before the timer you provided elapsed */
+       MSG_TIMEOUT=1,         /**< @brief nothing good happened before the timer you provided elapsed */
        MSG_TRANSFER_FAILURE=2,/**< @brief There has been a problem during you task
       transfer. Either the network is down or the remote host has been
       shutdown. */

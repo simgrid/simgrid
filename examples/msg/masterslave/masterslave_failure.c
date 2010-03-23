@@ -86,7 +86,7 @@ int master(int argc, char *argv[])
         ("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!",
          slaves[i % slaves_count]->name);
       MSG_task_destroy(task);
-    } else if (a == MSG_TIMEOUT_FAILURE) {
+    } else if (a == MSG_TIMEOUT) {
       INFO1
         ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
          slaves[i % slaves_count]->name);
@@ -112,7 +112,7 @@ int master(int argc, char *argv[])
       INFO1("Mmh. Can't reach '%s'! Nevermind. Let's keep going!",
             slaves[i]->name);
       MSG_task_destroy(task);
-    } else if (a == MSG_TIMEOUT_FAILURE) {
+    } else if (a == MSG_TIMEOUT) {
       INFO1
         ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
          slaves[i % slaves_count]->name);
