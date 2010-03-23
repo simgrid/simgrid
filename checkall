@@ -11,10 +11,6 @@ my @skip;
 
 my $dir;
 
-if (-e "CMakeLists.txt") { # launched from dart
-    chdir "..";
-}
-
 open LOG,(">checkall.log") || die "Cannot open log file: $!";
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
