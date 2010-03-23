@@ -25,6 +25,9 @@ src/supernovae_*.c
 src/simgrid_units_main.c
 src/gras_config.h.in
 
+cmake_install.cmake
+CMakeFiles
+
 tools/graspe_master
 examples/java/*/classnoinst.stamp
 ###
