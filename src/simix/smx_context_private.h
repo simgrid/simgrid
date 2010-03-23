@@ -43,29 +43,15 @@ smx_ctx_base_factory_create_context_sized(size_t size,
 void smx_ctx_base_free(smx_context_t context);
 void smx_ctx_base_stop(smx_context_t context);
 
-
-/* *********************** */
-/* factory type definition */
-/* *********************** */
-
-
-
-/* Selects a context factory associated with the name specified by the parameter name.
- * If successful the function returns 0. Otherwise the function returns the error code.
- */
-int SIMIX_context_select_factory(const char *name);
-
-/* Initializes a context factory from the name specified by the parameter name.
- * If the factory cannot be found, an exception is raised.
- */
-void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory, const char *name);
-
-/* All factories init */
-void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory);
-
-void SIMIX_ctx_sysv_factory_init(smx_context_factory_t * factory);
-
-void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
+/* Functions of sysv context mecanism: lua inherites them */
+smx_context_t
+smx_ctx_sysv_create_context_sized(size_t size,
+    xbt_main_func_t code, int argc, char** argv,
+    void_f_pvoid_t cleanup_func, void* cleanup_arg);
+void smx_ctx_sysv_free(smx_context_t context);
+void smx_ctx_sysv_stop(smx_context_t context);
+void smx_ctx_sysv_suspend(smx_context_t context);
+void smx_ctx_sysv_resume(smx_context_t new_context);
 
 SG_END_DECL()
 #endif /* !_XBT_CONTEXT_PRIVATE_H */
