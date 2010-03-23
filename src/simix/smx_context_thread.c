@@ -77,7 +77,6 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc, char** arg
 
 static void smx_ctx_thread_free(smx_context_t pcontext)
 {
-  int i;
   smx_ctx_thread_t context = (smx_ctx_thread_t)pcontext;
 
   /* check if this is the context of maestro (it doesn't has a real thread) */  
