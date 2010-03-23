@@ -55,6 +55,8 @@ typedef struct {
   int MPI_SOURCE;
   int MPI_TAG;
   int MPI_ERROR;
+  int _count;
+  int _cancelled;
 } MPI_Status;
 
 #define MPI_STATUS_IGNORE NULL
@@ -93,6 +95,15 @@ extern MPI_Datatype MPI_C_LONG_DOUBLE_COMPLEX;
 extern MPI_Datatype MPI_AINT;
 extern MPI_Datatype MPI_OFFSET;
 
+//The following are datatypes for the MPI functions MPI_MAXLOC  and MPI_MINLOC.
+extern MPI_Datatype MPI_FLOAT_INT;
+extern MPI_Datatype MPI_LONG_INT;
+extern MPI_Datatype MPI_DOUBLE_INT;
+extern MPI_Datatype MPI_SHORT_INT;
+extern MPI_Datatype MPI_2INT;
+extern MPI_Datatype MPI_LONG_DOUBLE_INT;
+
+
 typedef void MPI_User_function(void* invec, void* inoutvec, int* len, MPI_Datatype* datatype);
 struct s_smpi_mpi_op;
 typedef struct s_smpi_mpi_op* MPI_Op;
@@ -100,6 +111,8 @@ typedef struct s_smpi_mpi_op* MPI_Op;
 #define MPI_OP_NULL NULL
 extern MPI_Op MPI_MAX;
 extern MPI_Op MPI_MIN;
+extern MPI_Op MPI_MAXLOC;
+extern MPI_Op MPI_MINLOC;
 extern MPI_Op MPI_SUM;
 extern MPI_Op MPI_PROD;
 extern MPI_Op MPI_LAND;
@@ -113,6 +126,7 @@ struct s_smpi_mpi_group;
 typedef struct s_smpi_mpi_group* MPI_Group;
 
 #define MPI_GROUP_NULL NULL
+
 extern MPI_Group MPI_GROUP_EMPTY;
 
 struct s_smpi_mpi_communicator;
@@ -172,6 +186,8 @@ XBT_PUBLIC(int) MPI_Send(void* buf, int count, MPI_Datatype datatype, int dst, i
 XBT_PUBLIC(int) MPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
 XBT_PUBLIC(int) MPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, int sendtag, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
 
+
+XBT_PUBLIC(int) MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count);
 XBT_PUBLIC(int) MPI_Test(MPI_Request* request, int* flag, MPI_Status* status);
 XBT_PUBLIC(int) MPI_Testany(int count, MPI_Request requests[], int* index, int* flag, MPI_Status* status);
 XBT_PUBLIC(int) MPI_Wait(MPI_Request* request, MPI_Status* status);

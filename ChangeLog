@@ -31,6 +31,9 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     anywere in source.
  SIMIX:
   * add a SIMIX_sem_get_capacity() function
+ SMPI:
+  * Implement MPI_Get_count, MPI_MAXLOC, MPI_MINLOC
+ 
       
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
