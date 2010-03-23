@@ -5,12 +5,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
 #include "xbt/function_types.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 
+#include "smx_context_private.h"
 #include "bindings/ruby_bindings.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);

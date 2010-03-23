@@ -203,75 +203,16 @@ void __SIMIX_action_display_conditions(smx_action_t action);
 
 /******************************** Context *************************************/
 
-void SIMIX_context_mod_init(void);
+/* The following function pointer types describe the interface that any context
+   factory should implement */
 
-void SIMIX_context_mod_exit(void);
-
-/* *********************** */
-/* Context type definition */
-/* *********************** */
-/* the following function pointers types describe the interface that all context
-   concepts must implement */
-
-/* each context type derive from this structure, so they must contain this structure
- * at their begining -- OOP in C :/ */
-typedef struct s_smx_context {
-  s_xbt_swag_hookup_t hookup;
-  xbt_main_func_t code;
-  int argc;
-  char **argv;
-  void_f_pvoid_t cleanup_func;
-  void *cleanup_arg;
-} s_smx_ctx_base_t;
-/* methods of this class */
-void smx_ctx_base_factory_init(smx_context_factory_t * factory);
-int smx_ctx_base_factory_finalize(smx_context_factory_t * factory);
-
-smx_context_t
-smx_ctx_base_factory_create_context_sized(size_t size,
-    xbt_main_func_t code, int argc, char** argv,
-    void_f_pvoid_t cleanup_func, void* cleanup_arg);
-void smx_ctx_base_free(smx_context_t context);
-void smx_ctx_base_stop(smx_context_t context);
-
-
-/* *********************** */
-/* factory type definition */
-/* *********************** */
-
-/* Each context implementation define its own context factory
- * A context factory is responsable of the creation and manipulation of the 
- * execution context of all the simulated processes (and maestro) using the
- * selected implementation.
- *
- * For example, the context switch based on java thread use the
- * java implementation of the context and the java factory to build and control
- * the contexts depending on this implementation.
-
- * The following function pointer types describe the interface that any context 
- * factory should implement.
- */
-
-/* function used to create a new context */
-typedef smx_context_t (*smx_pfn_context_factory_create_context_t) 
+typedef smx_context_t (*smx_pfn_context_factory_create_context_t)
                       (xbt_main_func_t, int, char**, void_f_pvoid_t, void*);
-
-/* this function finalize the specified context factory */
 typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
-
-/* function used to destroy the specified context */
 typedef void (*smx_pfn_context_free_t) (smx_context_t);
-
-/* function used to start the specified context */
 typedef void (*smx_pfn_context_start_t) (smx_context_t);
-
-/* function used to stop the current context */
 typedef void (*smx_pfn_context_stop_t) (smx_context_t);
-
-/* function used to suspend the current context */
 typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
-
-/* function used to resume the current context */
 typedef void (*smx_pfn_context_resume_t) (smx_context_t new_context);
 
 /* interface of the context factories */
@@ -284,6 +225,11 @@ typedef struct s_smx_context_factory {
   smx_pfn_context_resume_t resume;
   const char *name;
 } s_smx_context_factory_t;
+
+
+void SIMIX_context_mod_init(void);
+
+void SIMIX_context_mod_exit(void);
 
 /* Selects a context factory associated with the name specified by the parameter name.
  * If successful the function returns 0. Otherwise the function returns the error code.

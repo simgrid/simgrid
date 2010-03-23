@@ -4,7 +4,7 @@
 #include "portable.h"
 #include "xbt/misc.h"
 
-#include "private.h"
+#include "smx_context_private.h"
 #include "java/jmsg.h"
 #include "java/jmsg_process.h"
 

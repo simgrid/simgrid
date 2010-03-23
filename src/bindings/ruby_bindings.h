@@ -26,6 +26,8 @@
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 
+#include "simix/smx_context_private.h"
+
 /* Damn Ruby. They load their full config.h, which breaks since we also load ours.
  * So, we undef the offending defines
  */

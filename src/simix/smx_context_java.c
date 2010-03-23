@@ -7,7 +7,6 @@
 
 
 #include "xbt/function_types.h"
-#include "private.h"
 #include "smx_context_java.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");

@@ -9,9 +9,8 @@
 #ifndef _XBT_CONTEXT_PRIVATE_H
 #define _XBT_CONTEXT_PRIVATE_H
 
-/*#include "xbt/sysdep.h"*/
-#include "simix/private.h"
 #include "xbt/swag.h"
+#include "simix/private.h"
 
 SG_BEGIN_DECL()
 
@@ -20,62 +19,36 @@ SG_BEGIN_DECL()
 /* *********************** */
 /* the following function pointers types describe the interface that all context
    concepts must implement */
+/* the following function pointers types describe the interface that all context
+   concepts must implement */
 
-/* each context type must contain this macro at its begining -- OOP in C :/ */
-#define SMX_CTX_BASE_T \
-  s_xbt_swag_hookup_t hookup; \
-  ex_ctx_t *exception; \
-  xbt_main_func_t code; \
-
-/* all other context types derive from this structure */
+/* each context type derive from this structure, so they must contain this structure
+ * at their begining -- OOP in C :/ */
 typedef struct s_smx_context {
-  SMX_CTX_BASE_T;
-} s_smx_context_t;
+  s_xbt_swag_hookup_t hookup;
+  xbt_main_func_t code;
+  int argc;
+  char **argv;
+  void_f_pvoid_t cleanup_func;
+  void *cleanup_arg;
+} s_smx_ctx_base_t;
+/* methods of this class */
+void smx_ctx_base_factory_init(smx_context_factory_t * factory);
+int smx_ctx_base_factory_finalize(smx_context_factory_t * factory);
+
+smx_context_t
+smx_ctx_base_factory_create_context_sized(size_t size,
+    xbt_main_func_t code, int argc, char** argv,
+    void_f_pvoid_t cleanup_func, void* cleanup_arg);
+void smx_ctx_base_free(smx_context_t context);
+void smx_ctx_base_stop(smx_context_t context);
+
 
 /* *********************** */
 /* factory type definition */
 /* *********************** */
 
-/* The following function pointer types describe the interface that any context 
-   factory should implement */
 
-/* function used to create a new context */
-typedef int (*smx_pfn_context_factory_create_context_t) (smx_process_t *, xbt_main_func_t);
-
-/* function used to create the context for the maestro process */
-typedef int (*smx_pfn_context_factory_create_maestro_context_t) (smx_process_t*);
-
-/* this function finalize the specified context factory */
-typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
-
-/* function used to destroy the specified context */
-typedef void (*smx_pfn_context_free_t) (smx_process_t);
-
-/* function used to kill the specified context */
-typedef void (*smx_pfn_context_kill_t) (smx_process_t);
-
-/* function used to resume the specified context */
-typedef void (*smx_pfn_context_schedule_t) (smx_process_t);
-
-/* function used to yield the specified context */
-typedef void (*smx_pfn_context_yield_t) (void);
-
-/* function used to start the specified context */
-typedef void (*smx_pfn_context_start_t) (smx_process_t);
-
-/* function used to stop the current context */
-typedef void (*smx_pfn_context_stop_t) (int);
-
-/* interface of the context factories */
-typedef struct s_smx_context_factory {
-  smx_pfn_context_factory_create_context_t create_context;
-  smx_pfn_context_factory_finalize_t finalize;
-  smx_pfn_context_free_t free;
-  smx_pfn_context_schedule_t schedule;
-  smx_pfn_context_yield_t yield;
-  smx_pfn_context_stop_t stop;
-  const char *name;
-} s_smx_context_factory_t;
 
 /* Selects a context factory associated with the name specified by the parameter name.
  * If successful the function returns 0. Otherwise the function returns the error code.
@@ -96,3 +69,5 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
 
 SG_END_DECL()
 #endif /* !_XBT_CONTEXT_PRIVATE_H */
+
+

@@ -7,7 +7,7 @@
 
 
 #include "xbt/function_types.h"
-#include "private.h"
+#include "smx_context_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
 
