@@ -15,7 +15,7 @@ public class Receiver extends simgrid.msg.Process {
    final double commSizeLat = 1;
    final double commSizeBw = 100000000;
     
-   public void main(String[] args) throws NativeException {
+   public void main(String[] args) throws MsgException {
         
       Msg.info("hello!");
       double communicationTime=0;

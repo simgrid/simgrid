@@ -283,17 +283,11 @@ public abstract class Process extends Thread {
 		MsgNative.processWaitFor(seconds);
 	} 
 	public void showArgs() {
-		try {
-			Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
-					this.args.size());
-			for (int i = 0; i < this.args.size(); i++)
-				Msg.info("[" + this.msgName() + "/" + this.getHost().getName() +
-						"] args[" + i + "]=" + (String) (this.args.get(i)));
-		} catch(MsgException e) {
-			Msg.info("Damn JNI stuff");
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
+				this.args.size());
+		for (int i = 0; i < this.args.size(); i++)
+			Msg.info("[" + this.msgName() + "/" + this.getHost().getName() +
+					"] args[" + i + "]=" + (String) (this.args.get(i)));
 	}
 	/**
 	 * This method runs the process. Il calls the method function that you must overwrite.

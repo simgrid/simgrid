@@ -8,7 +8,7 @@
 import simgrid.msg.*;
 
 public class Slave extends simgrid.msg.Process {
-   public void main(String[] args) throws NativeException {
+   public void main(String[] args) throws MsgException {
       if (args.length < 1) {
 	 Msg.info("Slave needs 1 argument (its number)");
 	 System.exit(1);

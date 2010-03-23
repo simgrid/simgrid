@@ -257,6 +257,7 @@ JMSG_JAVA_SRC = \
   java/simgrid/msg/NativeException.java              \
   java/simgrid/msg/HostNotFoundException.java        \
   java/simgrid/msg/ProcessNotFoundException.java     \
+  java/simgrid/msg/TaskCancelledException.java       \
   \
   java/simgrid/msg/Msg.java                          \
   java/simgrid/msg/Process.java                      \
