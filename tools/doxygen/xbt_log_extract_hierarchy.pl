@@ -87,7 +87,7 @@ sub parse_file {
         my ($name,$anc,$desc) = cleanup_ctn($1);
 	    
         # build the tree, checking for name conflict
-        die "ERROR: Category name conflict: $name used several times\n"
+        die "ERROR: Category name conflict: $name used several times (in $ancestor{$name} and $anc, last time in $filename)\n"
 	   if defined ($ancestor{$name}) && $ancestor{$name} ne $anc &&
               defined ($desc{$name}) && $desc{$name} ne $desc;
        $ancestor{$name}=$anc;

@@ -176,7 +176,7 @@ void SIMIX_process_kill(smx_process_t process)
     SIMIX_context_stop(process->context);
 
   } else {
-    DEBUG4("%s(%p) here! killing %s(%p) %s",
+    DEBUG4("%s(%p) here! killing %s(%p)",
         simix_global->current_process->name,simix_global->current_process,
         process->name,process);
 
@@ -466,7 +466,7 @@ void SIMIX_process_schedule(smx_process_t new_process)
   simix_global->current_process = new_process;
 
   /* schedule the context */
-  SIMIX_context_resume(simix_global->maestro_process->context,new_process->context);
+  SIMIX_context_resume(new_process->context);
   DEBUG1("Resumed from scheduling context: '%s'", new_process->name);
 
   /* restore the current process to the previously saved process */
