@@ -114,27 +114,17 @@ SG_BEGIN_DECL()
 /** @brief Error handling 
     @ingroup m_datatypes_management 
     @{
-*/
+*/ /* Keep these code as binary values: java bindings manipulate | of these values */
      typedef enum {
-       MSG_OK = 0,
-               /**< @brief Everything is right. Keep on going this way ! */
-       MSG_WARNING,
-               /**< @brief Mmmh! Something must be not perfectly clean. But I
-      may be a paranoid freak... ! */
+       MSG_OK = 0,            /**< @brief Everything is right. Keep on going this way ! */
        MSG_TIMEOUT_FAILURE=1, /**< @brief nothing good happened before the timer you provided elapsed */
-       MSG_TRANSFER_FAILURE=2,
-                        /**< @brief There has been a problem during you task
+       MSG_TRANSFER_FAILURE=2,/**< @brief There has been a problem during you task
       transfer. Either the network is down or the remote host has been
       shutdown. */
-       MSG_HOST_FAILURE=4,
-                    /**< @brief System shutdown. The host on which you are
+       MSG_HOST_FAILURE=4,    /**< @brief System shutdown. The host on which you are
       running has just been rebooted. Free your datastructures and
       return now !*/
-       MSG_TASK_CANCELLED=8,
-                      /**< @brief Cancelled task. This task has been cancelled 
-			by somebody!*/
-       MSG_FATAL
-            /**< @brief You've done something wrong. You'd better look at it... */
+       MSG_TASK_CANCELLED=8,  /**< @brief Canceled task. This task has been canceled by somebody!*/
      } MSG_error_t;
 /** @} */
 

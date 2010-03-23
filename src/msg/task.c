@@ -178,8 +178,7 @@ MSG_error_t MSG_task_cancel(m_task_t task)
     SIMIX_communication_cancel(task->simdata->comm);
     return MSG_OK;
   }
-
-  return MSG_FATAL;
+  THROW_IMPOSSIBLE;
 }
 
 /** \ingroup m_task_management
