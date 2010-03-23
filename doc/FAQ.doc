@@ -492,7 +492,8 @@ Then follow instructions.
  \li CMake
 \verbatim
 cmake ./		configure the project
-make			build all tagets
+make			build all targets
+make VERBOSE=1		build all targets and print build command lines
 make test		test all targets and summarize
 make package		make the distrib
 make install-simgrid 	install the project (doc/ lib/ include/)

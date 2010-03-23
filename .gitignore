@@ -30,6 +30,8 @@ src/supernovae_*.c
 src/simgrid_units_main.c
 src/gras_config.h.in
 
+testgraph.dot
+testgraph.xml
 buildtools/Cmake/src/tmp_gras_config.h.in
 conftestval
 cmake_install.cmake
