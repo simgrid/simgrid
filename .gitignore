@@ -5,11 +5,16 @@ TAGS
 *.loT
 *.[oa]
 *.class
+*.cmake
 .libs
 .deps
 .dirstamp
 stamp*
 .emacs.desktop
+CMakeFiles
+CMakeCache.txt
+DartConfiguration.tcl
+Testing/
 Makefile
 test_rl
 test_sg
@@ -47,13 +52,6 @@ ltmain.sh
 
 autom4te.cache/*
 doc/Doxyfile
-buildtools/Cmake/Testing/
-buildtools/Cmake/CMakeFiles/
-buildtools/Cmake/CMakeCache.txt
-buildtools/Cmake/CTestTestfile.cmake
-buildtools/Cmake/cmake_install.cmake
-buildtools/Cmake/CTestCustom.ctest
-buildtools/Cmake/DartConfiguration.tcl
 include/simgrid_config.h
 examples/amok/bandwidth/bandwidth_maestro
 examples/amok/bandwidth/bandwidth_sensor
@@ -98,6 +96,9 @@ examples/msg/priority/priority
 examples/msg/properties/msg_prop
 examples/msg/sendrecv/sendrecv
 examples/msg/suspend/suspend
+examples/msg/trace/test_trace_integration
+examples/simdag/ex_sd_test
+examples/simdag/ex_sd_test2
 examples/simdag/metaxml/sd_meta
 examples/simdag/properties/sd_prop
 examples/simdag/sd_test
@@ -117,7 +118,11 @@ examples/smpi/split
 examples/smpi/allreduce
 examples/smpi/pingpong
 examples/smpi/scatter
+examples/smpi/alltoall2
+examples/smpi/alltoall_basic
+examples/smpi/alltoallv
 examples/smpi/sendrecv
+examples/smpi/smpi_sendrecv
 simgrid-*-svn/*
 src/.classes/*
 src/context_sysv_config.h
