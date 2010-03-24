@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 SET(PROJECT_NAME "Simgrid_doc")
+
 find_program(PWD_EXE NAMES pwd)
 find_path(FIG2DEV_PATH	NAMES fig2dev	PATHS NO_DEFAULT_PATHS)
 find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
