@@ -88,8 +88,12 @@ COMMAND echo "TODO"
 
 add_custom_target(html
 COMMAND echo "Make the html doc"
-COMMAND cmake ./buildtools/Cmake/src/doc
-COMMAND echo "TODO"
+COMMAND cmake ./
+COMMAND rm -rf ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeFiles
+COMMAND rm ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeCache.txt
+COMMAND rm ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/cmake_install.cmake
+COMMAND rm ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/Makefile
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc"
 )
 
 include(CPack)
