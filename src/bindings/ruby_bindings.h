@@ -17,7 +17,6 @@
  */
 
 #include "msg/msg.h"
-#include "msg/private.h"
 #include "msg/datatypes.h"
 
 #include "surf/surfxml_parse.h"
