@@ -912,8 +912,8 @@ Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
   jstring jname;
   m_host_t host;
 
-  int count = xbt_fifo_size(msg_global->host);
-  m_host_t *table = (m_host_t *) xbt_fifo_to_array(msg_global->host);
+  int count = MSG_get_host_number();
+  m_host_t *table = MSG_get_host_table();
 
   jclass cls = jxbt_get_class(env, "simgrid/msg/Host");
 
