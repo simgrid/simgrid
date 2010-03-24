@@ -82,22 +82,16 @@ VALUE rb_host_process(VALUE class,VALUE ruby_process)
 // get all hosts
 VALUE rb_host_get_all_hosts(VALUE class)
 {
- int index;
- VALUE hosts_table;
- VALUE rbHost;
- m_host_t host;
+	int nb,index;
+	m_host_t *hosts;
+	VALUE rb_hosts;
+	nb = MSG_get_host_number();
+	hosts  = MSG_get_host_table();
+    rb_hosts = rb_ary_new2(nb);
 
- int count = xbt_fifo_size(msg_global->host);
- m_host_t *table = (m_host_t *)xbt_fifo_to_array(msg_global->host);
- hosts_table = rb_ary_new2(count);
+    for(index=0 ; index<nb; index++)
+    	rb_ary_push(rb_hosts,Data_Wrap_Struct(class, 0, rb_host_free, hosts[index]));
 
- for (index=0;index<count;index++)
- {
-	 rbHost = Qnil;
-	 host = table[index];
-	 rbHost = Data_Wrap_Struct(class, 0, rb_host_free, host);
-	 rb_ary_push(hosts_table,rbHost);
- }
-
- return hosts_table;
+    return rb_hosts;
 }
+
