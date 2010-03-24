@@ -106,8 +106,6 @@ VALUE rb_host_get_all_hosts(VALUE Class);
 void rb_task_free(m_task_t tk);
 // New Method  >>> Data NULL
 VALUE rb_task_new(VALUE Class, VALUE name,VALUE comp_size,VALUE comm_size);
-void  rb_task_set_data(VALUE Class,VALUE task,VALUE data); // Data as a String
-VALUE rb_task_get_data(VALUE Class,VALUE task);
 VALUE rb_task_comp(VALUE Class,VALUE task); // Get Computation Size
 VALUE rb_task_name(VALUE Class,VALUE task);
 VALUE rb_task_execute(VALUE Class,VALUE task);

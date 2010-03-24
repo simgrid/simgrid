@@ -169,8 +169,6 @@ void Init_simgrid_ruby() {
 
   //Task Methods 
   rb_define_module_function(rb_task,"new",(rb_meth)rb_task_new,3);
-  rb_define_module_function(rb_task,"setData",(rb_meth)rb_task_set_data,2);
-  rb_define_module_function(rb_task,"data",(rb_meth)rb_task_get_data,1);
   rb_define_module_function(rb_task,"compSize",(rb_meth)rb_task_comp,1);
   rb_define_module_function(rb_task,"name",(rb_meth)rb_task_name,1);
   rb_define_module_function(rb_task,"execute",(rb_meth)rb_task_execute,1);

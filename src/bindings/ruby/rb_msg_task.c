@@ -23,26 +23,6 @@ VALUE rb_task_new(VALUE class, VALUE name,VALUE comp_size,VALUE comm_size) {
 
 }
 
-// set Data : For the Moment , we will consider Data as asimple String ( char * )
-void rb_task_set_data(VALUE class,VALUE task,VALUE data)
-{
- const char *str_data = RSTRING(data)->ptr;
- m_task_t tk;
- Data_Get_Struct(task, s_m_task_t, tk);
- tk->data = (void*)str_data;
- 
-}
-
-// get Data
-VALUE rb_task_get_data(VALUE class,VALUE task)
-{
-  m_task_t tk;
-  Data_Get_Struct(task, s_m_task_t, tk);
-  return rb_str_new2(tk->data);
-  
-}
-
-
 //Get Computation Size
 VALUE rb_task_comp(VALUE class,VALUE task) {
   double size;
@@ -78,6 +58,7 @@ void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
   // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, s_m_task_t, tk);
+  MSG_task_set_data(tk,(void*)task);
   DEBUG1("Sending task %p",tk);
   rv = MSG_task_send(tk,RSTRING(mailbox)->ptr);
   if(rv != MSG_OK)
@@ -105,7 +86,7 @@ VALUE rb_task_receive(VALUE class, VALUE mailbox) {
   MSG_task_receive(ptask,RSTRING(mailbox)->ptr);
   task = *ptask;
   free(ptask);
-  return Data_Wrap_Struct(class, 0, rb_task_free, task);
+  return (VALUE)MSG_task_get_data(task);
 }
 
 // It Return a Native Process ( m_process_t )
