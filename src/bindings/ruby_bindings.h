@@ -17,6 +17,7 @@
  */
 
 #include "msg/msg.h"
+#include "msg/private.h"
 #include "msg/datatypes.h"
 
 #include "surf/surfxml_parse.h"
@@ -99,6 +100,7 @@ void  rb_host_set_data(VALUE Class,VALUE host,VALUE data);
 VALUE rb_host_get_data(VALUE Class,VALUE host);
 VALUE rb_host_is_avail(VALUE Class,VALUE host);
 VALUE rb_host_process(VALUE Class,VALUE process);
+VALUE rb_host_get_all_hosts(VALUE Class);
 
 /* Functions related to tasks */
 void rb_task_free(m_task_t tk);

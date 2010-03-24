@@ -190,4 +190,5 @@ void Init_simgrid_ruby() {
   rb_define_module_function(rb_host,"number",(rb_meth)rb_host_number,0);
   rb_define_module_function(rb_host,"isAvail",(rb_meth)rb_host_is_avail,1);
   rb_define_module_function(rb_host,"getHostProcess",(rb_meth)rb_host_process,1);
+  rb_define_module_function(rb_host,"all",(rb_meth)rb_host_get_all_hosts,0);
 }
