@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <lua5.1/lauxlib.h>
-#include <lua5.1/lualib.h>
+#include <lauxlib.h>
+#include <lualib.h>
 
 /* lua can run with ultra tiny stacks since the user code lives in lua stacks, not the main one */
 //#define CONTEXT_STACK_SIZE 4*1024

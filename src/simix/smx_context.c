@@ -12,7 +12,7 @@
 #include "private.h"
 
 #ifdef HAVE_LUA
-#include <lua5.1/lauxlib.h>
+#include <lauxlib.h>
 #endif
 
 #ifdef HAVE_RUBY
