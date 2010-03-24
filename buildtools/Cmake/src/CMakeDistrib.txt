@@ -86,4 +86,10 @@ COMMAND echo "uninstall simgrid"
 COMMAND echo "TODO"
 )
 
+add_custom_target(html
+COMMAND echo "Make the html doc"
+COMMAND cmake ./buildtools/Cmake/src/doc
+COMMAND echo "TODO"
+)
+
 include(CPack)
