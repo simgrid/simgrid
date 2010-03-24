@@ -132,7 +132,7 @@ static int Task_recv(lua_State *L)  {
   m_task_t tk = NULL;
   const char *mailbox = luaL_checkstring(L,1);
   int res = MSG_task_receive(&tk,mailbox);
-  MSG_task_ref(tk);
+  MSG_task_ref(tk); //FIXME: kill it once a ctask cannot be in more than one luatask anymore
   res++;//FIXME: check it instead of avoiding the warning
   DEBUG1("Task Name : >>>%s",MSG_task_get_name(tk));
   pushTask(L,tk);
@@ -202,7 +202,7 @@ static int run_lua_code(int argc,char **argv) {
 
   // cleanups
   luaL_unref(simgrid_lua_state,LUA_REGISTRYINDEX,ref );
-  fprintf(stderr,"Execution of lua code %s is over\n", (argv ? argv[0] : "(null)"));
+  DEBUG1("Execution of lua code %s is over", (argv ? argv[0] : "(null)"));
   return res;
 }
 static int launch_application(lua_State *L) {
