@@ -56,6 +56,8 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDistrib.txt)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakePrintArgs.txt)
 
 ### Make Docs
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDocs.txt)
+if(enable_maintainer_mode)
+	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDocs.txt)
+endif(enable_maintainer_mode)
 
 INCLUDE(Dart)

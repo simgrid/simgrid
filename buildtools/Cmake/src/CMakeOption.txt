@@ -17,6 +17,8 @@ option(enable_compile_optimizations "" off)
 option(enable_maintainer_mode "Permit to make flex and flexml files." off)
 option(supernovae "Supernovae mode." off)
 
+mark_as_advanced(HAVE_LUA5_1_LAUXLIB_H)                        
+mark_as_advanced(HAVE_LUA5_1_LUALIB_H)
 mark_as_advanced(CLEAR gtnets_path)
 mark_as_advanced(BUILDNAME)
 mark_as_advanced(ADDR2LINE)
