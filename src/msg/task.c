@@ -84,7 +84,7 @@ void MSG_task_ref(m_task_t t) {
 /** \ingroup m_task_management
  * \brief Return the user data of a #m_task_t.
  *
- * This functions checks whether \a task is a valid pointer or not and return
+ * This function checks whether \a task is a valid pointer or not and return
    the user data associated to \a task if it is possible.
  */
 void *MSG_task_get_data(m_task_t task)
@@ -92,6 +92,19 @@ void *MSG_task_get_data(m_task_t task)
   xbt_assert0((task != NULL), "Invalid parameter");
 
   return (task->data);
+}
+
+/** \ingroup m_task_management
+ * \brief Sets the user data of a #m_task_t.
+ *
+ * This function allows to associate a new pointer to
+   the user data associated of \a task.
+ */
+void MSG_task_set_data(m_task_t task,void *data)
+{
+  xbt_assert0((task != NULL), "Invalid parameter");
+
+  task->data = data;
 }
 
 /** \ingroup m_task_management

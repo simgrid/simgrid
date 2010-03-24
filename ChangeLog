@@ -31,6 +31,7 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Kill the MSG_paje_output() function. It's a noop since 2 years.
   * Kill MSG_WARNING and MSG_FATAL return codes: they were not used
     anywere in source.
+  * Add a MSG_task_set_data() function
  SIMIX:
   * add a SIMIX_sem_get_capacity() function
  SMPI:

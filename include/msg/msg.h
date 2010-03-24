@@ -107,6 +107,7 @@ XBT_PUBLIC(m_task_t) MSG_parallel_task_create(const char *name, int host_nb,
                                               double *communication_amount,
                                               void *data);
 XBT_PUBLIC(void *) MSG_task_get_data(m_task_t task);
+XBT_PUBLIC(void) MSG_task_set_data(m_task_t task,void*data);
 XBT_PUBLIC(m_process_t) MSG_task_get_sender(m_task_t task);
 XBT_PUBLIC(m_host_t) MSG_task_get_source(m_task_t task);
 XBT_PUBLIC(const char *) MSG_task_get_name(m_task_t task);
