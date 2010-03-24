@@ -63,7 +63,7 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
       jxbt_throw_host_failure(env, detail); \
     } else if (res == MSG_TRANSFER_FAILURE) { \
       jxbt_throw_transfer_failure(env,detail); \
-    } else if (res == MSG_TIMEOUT_FAILURE) { \
+    } else if (res == MSG_TIMEOUT) { \
       jxbt_throw_time_out_failure(env,detail); \
     } else if (res == MSG_TASK_CANCELLED){ \
       jxbt_throw_task_cancelled(env,detail); \
