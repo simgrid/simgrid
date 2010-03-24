@@ -497,7 +497,8 @@ make VERBOSE=1		build all targets and print build command lines
 make test		test all targets and summarize
 make package		make the distrib
 make install-simgrid 	install the project (doc/ lib/ include/)
-make clean"		clean all targets
+make clean		clean all targets
+make html		Create simgrid documentation
 \endverbatim
 
 When the project have been succesfully compiling and build you can make tests.
