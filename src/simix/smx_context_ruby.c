@@ -19,7 +19,6 @@ static smx_context_t
 smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
     void_f_pvoid_t cleanup_func,void *cleanup_arg);
 
-static void smx_ctx_ruby_free(smx_context_t context);
 static void smx_ctx_ruby_stop(smx_context_t context);
 static void smx_ctx_ruby_suspend(smx_context_t context);
 static void smx_ctx_ruby_resume(smx_context_t new_context);
@@ -31,7 +30,7 @@ void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory) {
 
   (*factory)->create_context = smx_ctx_ruby_create_context;
   /* Do not overload that method (*factory)->finalize */
-  (*factory)->free = smx_ctx_ruby_free;
+  /* Do not overload that method (*factory)->free */
   (*factory)->stop = smx_ctx_ruby_stop;
   (*factory)->suspend = smx_ctx_ruby_suspend;
   (*factory)->resume = smx_ctx_ruby_resume;
@@ -57,20 +56,12 @@ smx_ctx_ruby_create_context(xbt_main_func_t code,int argc,char** argv,
   return (smx_context_t) context;
 }
 
-static void smx_ctx_ruby_free(smx_context_t context) {
- if (context)
-    DEBUG1("smx_ctx_ruby_free_context(%p)",context);
-
- smx_ctx_base_free(context);
-}
-
 static void smx_ctx_ruby_stop(smx_context_t context) {
   DEBUG0("smx_ctx_ruby_stop()");
   VALUE process = Qnil;
   smx_ctx_ruby_t ctx_ruby,current;
 
-  if ( context->cleanup_func)
-    (*(context->cleanup_func)) (context->cleanup_arg);
+  smx_ctx_base_stop(context);
 
   ctx_ruby = (smx_ctx_ruby_t) context;
   
