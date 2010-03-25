@@ -23,6 +23,7 @@ SG_BEGIN_DECL()
 
 #define SMPI_RAND_SEED 5
 #define MPI_ANY_SOURCE -1
+#define MPI_PROC_NULL -2
 #define MPI_ANY_TAG -1
 #define MPI_UNDEFINED -1
 
@@ -44,6 +45,8 @@ SG_BEGIN_DECL()
 #define MPI_SIMILAR   1
 #define MPI_UNEQUAL   2
 #define MPI_CONGRUENT 3
+
+#define MPI_WTIME_IS_GLOBAL 1
 
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
@@ -149,8 +152,12 @@ XBT_PUBLIC(int) MPI_Is_thread_main(int* flag);
 XBT_PUBLIC(int) MPI_Abort(MPI_Comm comm, int errorcode);
 XBT_PUBLIC(double) MPI_Wtime(void);
 
+XBT_PUBLIC(int) MPI_Address(void *location, MPI_Aint *address);
+
+XBT_PUBLIC(int) MPI_Type_free(MPI_Datatype* datatype);
 XBT_PUBLIC(int) MPI_Type_size(MPI_Datatype datatype, size_t* size);
 XBT_PUBLIC(int) MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint* extent);
+XBT_PUBLIC(int) MPI_Type_extent(MPI_Datatype datatype, MPI_Aint* extent);
 XBT_PUBLIC(int) MPI_Type_lb(MPI_Datatype datatype, MPI_Aint* disp);
 XBT_PUBLIC(int) MPI_Type_ub(MPI_Datatype datatype, MPI_Aint* disp);
 
@@ -206,6 +213,7 @@ XBT_PUBLIC(int) MPI_Scatter(void* sendbuf, int sendcount, MPI_Datatype sendtype,
 XBT_PUBLIC(int) MPI_Scatterv(void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
 XBT_PUBLIC(int) MPI_Reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
 XBT_PUBLIC(int) MPI_Allreduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+XBT_PUBLIC(int) MPI_Scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 XBT_PUBLIC(int) MPI_Reduce_scatter(void* sendbuf, void* recvbuf, int* recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 XBT_PUBLIC(int) MPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
 XBT_PUBLIC(int) MPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int *recvcounts, int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm);

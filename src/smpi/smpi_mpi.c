@@ -73,6 +73,33 @@ double MPI_Wtime(void) {
   return time;
 }
 
+int MPI_Address(void *location, MPI_Aint *address) {
+  int retval;
+
+  smpi_bench_end(-1, NULL);
+  if(!address) {
+    retval = MPI_ERR_ARG;
+  } else {
+    *address = (MPI_Aint)location;
+  }
+  smpi_bench_begin(-1, NULL);
+  return retval;
+}
+
+int MPI_Type_free(MPI_Datatype* datatype) {
+  int retval;
+
+  smpi_bench_end(-1, NULL);
+  if(!datatype) {
+    retval = MPI_ERR_ARG;
+  } else {
+    // FIXME: always fail for now
+    retval = MPI_ERR_TYPE;
+  }
+  smpi_bench_begin(-1, NULL);
+  return retval;
+}
+
 int MPI_Type_size(MPI_Datatype datatype, size_t* size) {
   int retval;
 
@@ -99,6 +126,22 @@ int MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint* extent) {
     retval = MPI_ERR_ARG;
   } else {
     retval = smpi_datatype_extent(datatype, lb, extent);
+  }
+  smpi_bench_begin(-1, NULL);
+  return retval;
+}
+
+int MPI_Type_extent(MPI_Datatype datatype, MPI_Aint* extent) {
+  int retval;
+  MPI_Aint dummy;
+
+  smpi_bench_end(-1, NULL);
+  if(datatype == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if(extent == NULL) {
+    retval = MPI_ERR_ARG;
+  } else {
+    retval = smpi_datatype_extent(datatype, &dummy, extent);
   }
   smpi_bench_begin(-1, NULL);
   return retval;
@@ -1014,6 +1057,25 @@ int MPI_Allreduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin(rank, "Allreduce");
+  return retval;
+}
+
+int MPI_Scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm) {
+  int retval;
+  int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
+
+  smpi_bench_end(rank, "Scan");
+  if(comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else if(datatype == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if(op == MPI_OP_NULL) {
+    retval = MPI_ERR_OP;
+  } else {
+    smpi_mpi_scan(sendbuf, recvbuf, count, datatype, op, comm);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin(rank, "Scan");
   return retval;
 }
 

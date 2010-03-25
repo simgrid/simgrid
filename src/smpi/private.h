@@ -83,6 +83,7 @@ void smpi_mpi_scatter(void* sendbuf, int sendcount, MPI_Datatype sendtype, void*
 void smpi_mpi_scatterv(void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
 void smpi_mpi_reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
 void smpi_mpi_allreduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+void smpi_mpi_scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 
 void nary_tree_bcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, int arity);
 void nary_tree_barrier(MPI_Comm comm, int arity);
