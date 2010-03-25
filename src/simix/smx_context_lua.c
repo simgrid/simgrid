@@ -8,13 +8,22 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+#include "smx_context_private.h"
+
+/* We don't use that factory at all for now. This may change at some point,
+ * to reduce the amount of memory per user thread in sysv
+ */
+
+lua_State *simgrid_lua_state;
+void SIMIX_ctx_lua_factory_init(smx_context_factory_t *factory) {
+}
+
+#ifdef KILLME
 /* lua can run with ultra tiny stacks since the user code lives in lua stacks, not the main one */
 //#define CONTEXT_STACK_SIZE 4*1024
-#include "smx_context_sysv_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(lua);
 
-lua_State *simgrid_lua_state;
 
 static smx_context_t 
 smx_ctx_lua_create_context(xbt_main_func_t code, int argc, char** argv, 
@@ -80,4 +89,6 @@ smx_ctx_lua_resume(smx_context_t new_context) {
   DEBUG1("Resuming %s",context->super.super.argv[0]);
   smx_ctx_sysv_resume(new_context);
 }
+#endif
+
 #endif
