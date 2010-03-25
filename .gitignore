@@ -20,6 +20,7 @@ test_rl
 test_sg
 _*.c
 *~
+*.swp
 *_simulator
 config.log
 config.status
