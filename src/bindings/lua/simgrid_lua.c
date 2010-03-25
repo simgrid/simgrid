@@ -85,13 +85,12 @@ static m_task_t *pushTask (lua_State *L,m_task_t tk,int flag) {
   }
 
   //*pi=tk;
-  printf("push lua task with Name : %s \n",MSG_task_get_name(*pi));
+  DEBUG1("push lua task with Name : %s \n",MSG_task_get_name(*pi));
   luaL_getmetatable(L,TASK_MODULE_NAME);
   lua_setmetatable(L,-2);
   return pi;
 
 }
-
 
 /* ********************************************************************************* */
 /*                           wrapper functions                                       */
@@ -140,17 +139,49 @@ static int Task_destroy(lua_State *L) {
 static int Task_send(lua_State *L)  {
   m_task_t tk = checkTask(L,1);
   const char *mailbox = luaL_checkstring(L,2);
-  int res = MSG_task_send(tk,mailbox);
-  res++;//FIXME: check it instead of avoiding the warning
+  MSG_error_t res = MSG_task_send(tk,mailbox);
+  if(res != MSG_OK)
+    {
+  	  switch(res){
+  	  case MSG_TIMEOUT :
+  		  ERROR0("MSG_task_send failed : Timeout");
+  		  break;
+  	  case MSG_TRANSFER_FAILURE :
+  		  ERROR0("MSG_task_send failed : Transfer Failure");
+  		  break;
+  	  case MSG_HOST_FAILURE :
+  		  ERROR0("MSG_task_send failed : Host Failure ");
+  		  break;
+  	  default :
+  		  ERROR0("MSG_task_send failed : Unexpected error , please report this bug");
+  		  break;
+  		  }
+    }
   return 0;
 }
 static int Task_recv(lua_State *L)  {
   m_task_t tk = NULL;
   const char *mailbox = luaL_checkstring(L,1);
-  int res = MSG_task_receive(&tk,mailbox);
-  if (MSG_task_has_data(tk)) printf("Receive The Task with Name : %s \n",MSG_task_get_name(tk));
+  MSG_error_t res = MSG_task_receive(&tk,mailbox);
+  if (MSG_task_has_data(tk)) DEBUG1("Receive The Task with Name : %s \n",MSG_task_get_name(tk));
   MSG_task_ref(tk); //FIXME: kill it once a ctask cannot be in more than one luatask anymore
-  res++;//FIXME: check it instead of avoiding the warning
+  if(res != MSG_OK)
+  {
+	  switch(res){
+	  case MSG_TIMEOUT :
+		  ERROR0("MSG_task_receive failed : Timeout");
+		  break;
+	  case MSG_TRANSFER_FAILURE :
+		  ERROR0("MSG_task_receive failed : Transfer Failure");
+		  break;
+	  case MSG_HOST_FAILURE :
+		  ERROR0("MSG_task_receive failed : Host Failure ");
+		  break;
+	  default :
+		  ERROR0("MSG_task_receive failed : Unexpected error , please report this bug");
+		  break;
+		  }
+  }
   DEBUG1("Task Name : >>>%s",MSG_task_get_name(tk));
   //lua_pushlightuserdata(L,MSG_task_get_data(tk));
   pushTask(L,tk,1);
