@@ -15,6 +15,7 @@ option(disable_ruby "This variable set ruby use." off)
 option(enable_compile_warnings "" off)
 option(enable_compile_optimizations "" off)
 option(enable_maintainer_mode "Permit to make flex and flexml files." off)
+option(enable_coverage "Enable coverage." off)
 option(supernovae "Supernovae mode." off)
 
 mark_as_advanced(LUA_LIB_PATH_1)                                                                                                                      

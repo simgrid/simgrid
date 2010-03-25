@@ -27,6 +27,9 @@ set(INCLUDES "-I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include 
 set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
 add_definitions (${INCLUDES})
+if(enable_coverage)
+add_definitions (-fprofile-arcs -ftest-coverage)
+endif(enable_coverage)
 
 ### Setup Options
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeOption.txt)
