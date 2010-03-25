@@ -36,6 +36,8 @@ buildtools/Cmake/src/tmp_gras_config.h.in
 conftestval
 cmake_install.cmake
 CMakeFiles
+install_manifest.txt
+_CPack_Packages/
 
 bibtex2html-1.02/
 doc/all_bib.html

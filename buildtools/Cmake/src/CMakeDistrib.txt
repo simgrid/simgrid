@@ -3,7 +3,7 @@ set(simgrid_version "3.3.5")
 set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}_rev_${SVN_VERSION}")
+set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}_rev_${SVN_VERSION}${GIT_VERSION}")
 set(CPACK_GENERATOR "TBZ2") #;TGZ;TZ;ZIP
 
 set(to_svg	
@@ -38,6 +38,11 @@ set(to_svg
 	${PROJECT_DIRECTORY}/./README
 	${PROJECT_DIRECTORY}/./README.IEEE
 	${PROJECT_DIRECTORY}/./TODO
+	${PROJECT_DIRECTORY}/./src/smpi/smpicc.in
+	${PROJECT_DIRECTORY}/./src/smpi/smpirun.in
+	${PROJECT_DIRECTORY}/./src/bindings/ruby/simgrid_ruby.c
+	${PROJECT_DIRECTORY}/./src/bindings/ruby_bindings.h
+	${PROJECT_DIRECTORY}/./src/simix/smx_context_sysv_private.h
 )
 	
 foreach(file ${to_svg})
