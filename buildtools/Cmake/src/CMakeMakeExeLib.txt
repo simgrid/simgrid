@@ -52,8 +52,8 @@ target_link_libraries(simgrid_static	${SIMGRID_DEP} -fprofile-arcs)
 target_link_libraries(gras 	${GRAS_DEP} -fprofile-arcs)
 target_link_libraries(smpi 	simgrid ${SMPI_DEP} -fprofile-arcs)
 
-SET_TARGET_PROPERTIES(simgrid_static PROPERTIES OUTPUT_NAME "simgrid")
-SET_TARGET_PROPERTIES(simgrid_static PROPERTIES PREFIX "lib")
+#SET_TARGET_PROPERTIES(simgrid_static PROPERTIES OUTPUT_NAME "simgrid")
+#SET_TARGET_PROPERTIES(simgrid_static PROPERTIES PREFIX "lib")
 
 
 ### Make EXEs
