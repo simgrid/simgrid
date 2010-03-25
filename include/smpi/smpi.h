@@ -134,6 +134,7 @@ typedef struct s_smpi_mpi_communicator* MPI_Comm;
 
 #define MPI_COMM_NULL NULL
 extern MPI_Comm MPI_COMM_WORLD;
+#define MPI_COMM_SELF smpi_process_comm_self()
 
 struct s_smpi_mpi_request;
 typedef struct s_smpi_mpi_request* MPI_Request;
@@ -216,6 +217,7 @@ XBT_PUBLIC(int) MPI_Comm_split(MPI_Comm comm, int color, int key,
 */
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char** argv);
+XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 /*
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int);
 XBT_PUBLIC(void) smpi_exit(int);

@@ -13,6 +13,7 @@ typedef struct s_smpi_process_data {
   xbt_fifo_t pending_sent;
   xbt_fifo_t pending_recv;
   xbt_os_timer_t timer;
+  MPI_Comm comm_self;
 } s_smpi_process_data_t;
 
 static smpi_process_data_t* process_data = NULL;
@@ -42,6 +43,12 @@ xbt_os_timer_t smpi_process_timer(void) {
   smpi_process_data_t data = smpi_process_data();
 
   return data->timer;
+}
+
+MPI_Comm smpi_process_comm_self(void) {
+  smpi_process_data_t data = smpi_process_data();
+
+  return data->comm_self;
 }
 
 void smpi_process_post_send(MPI_Comm comm, MPI_Request request) {
@@ -116,6 +123,9 @@ void smpi_global_init(void) {
     process_data[i]->pending_sent = xbt_fifo_new();
     process_data[i]->pending_recv = xbt_fifo_new();
     process_data[i]->timer = xbt_os_timer_new();
+    group = smpi_group_new(1);
+    process_data[i]->comm_self = smpi_comm_new(group);
+    smpi_group_set_mapping(group, i, 0);
   }
   group = smpi_group_new(process_count);
   MPI_COMM_WORLD = smpi_comm_new(group);
@@ -131,6 +141,7 @@ void smpi_global_destroy(void) {
   smpi_comm_destroy(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for(i = 0; i < count; i++) {
+    smpi_comm_destroy(process_data[i]->comm_self);
     xbt_os_timer_free(process_data[i]->timer);
     xbt_fifo_free(process_data[i]->pending_recv);
     xbt_fifo_free(process_data[i]->pending_sent);
