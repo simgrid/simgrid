@@ -186,7 +186,7 @@ int main(int argc, char **argv)
   SIMIX_init();
 
   while (SIMIX_solve(NULL, NULL) != -1.0);
-  
+
   if (xbt_cfg_get_int(_surf_cfg_set, "display_timing"))
     INFO1("simulation time %g", SIMIX_get_clock());
 

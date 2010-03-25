@@ -106,7 +106,7 @@ static void finish_wait(MPI_Request* request, MPI_Status* status) {
     status->MPI_TAG = (*request)->tag;
     status->MPI_ERROR = MPI_SUCCESS;
     status->_count = (*request)->size; // size in bytes
-    status->_cancelled = 0;            // FIXME: cancellation of requests not handled yet 
+    status->_cancelled = 0;            // FIXME: cancellation of requests not handled yet
   }
   DEBUG3("finishing wait for %p [data = %p, complete = %d]", *request, data, data->complete);
   // data == *request if sender is first to finish its wait
@@ -459,7 +459,7 @@ void smpi_mpi_reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datat
   int rank, size, src, index, datasize;
   MPI_Request* requests;
   void** tmpbufs;
- 
+
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   if(rank != root) {
@@ -468,7 +468,7 @@ void smpi_mpi_reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datat
   } else {
     datasize = smpi_datatype_size(datatype);
     // Local copy from root
-    memcpy(recvbuf, sendbuf, count * datasize * sizeof(char)); 
+    memcpy(recvbuf, sendbuf, count * datasize * sizeof(char));
     // Receive buffers from senders
     //TODO: make a MPI_barrier here ?
     requests = xbt_new(MPI_Request, size - 1);
@@ -508,12 +508,12 @@ FIXME: buggy implementation
   int rank, size, other, index, datasize;
   MPI_Request* requests;
   void** tmpbufs;
- 
+
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   datasize = smpi_datatype_size(datatype);
   // Local copy from self
-  memcpy(recvbuf, sendbuf, count * datasize * sizeof(char)); 
+  memcpy(recvbuf, sendbuf, count * datasize * sizeof(char));
   // Send/Recv buffers to/from others;
   //TODO: make a MPI_barrier here ?
   requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -552,12 +552,12 @@ void smpi_mpi_scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatyp
   int total;
   MPI_Request* requests;
   void** tmpbufs;
- 
+
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   datasize = smpi_datatype_size(datatype);
   // Local copy from self
-  memcpy(recvbuf, sendbuf, count * datasize * sizeof(char)); 
+  memcpy(recvbuf, sendbuf, count * datasize * sizeof(char));
   // Send/Recv buffers to/from others;
   total = rank + (size - (rank + 1));
   requests = xbt_new(MPI_Request, total);

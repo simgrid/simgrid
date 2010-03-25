@@ -778,10 +778,10 @@ int MPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, i
 int MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count) {
   int retval;
 /*
- * Returns the number of entries received. (Again, we count entries, each of type datatype, not bytes.) 
+ * Returns the number of entries received. (Again, we count entries, each of type datatype, not bytes.)
  * The datatype argument should match the argument provided by the receive call that set the status variable.
- * If the size of the datatype is zero, this routine will return a count of zero. 
- * If the amount of data in status is not an exact multiple of the size of datatype 
+ * If the size of the datatype is zero, this routine will return a count of zero.
+ * If the amount of data in status is not an exact multiple of the size of datatype
  * (so that count would not be integral), a count of MPI_UNDEFINED is returned instead.
  *
  */
@@ -1148,7 +1148,7 @@ int MPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype s
   } else if(sendcounts == NULL || senddisps == NULL || recvcounts == NULL || recvdisps == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    retval = smpi_coll_basic_alltoallv(sendbuf, sendcounts, senddisps, sendtype, recvbuf, recvcounts, recvdisps, recvtype, comm); 
+    retval = smpi_coll_basic_alltoallv(sendbuf, sendcounts, senddisps, sendtype, recvbuf, recvcounts, recvdisps, recvtype, comm);
   }
   smpi_bench_begin(rank, "Alltoallv");
   return retval;

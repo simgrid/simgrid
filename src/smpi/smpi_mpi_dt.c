@@ -1,7 +1,7 @@
 /* $Id$tag */
 
 /* smpi_mpi_dt.c -- MPI primitives to handle datatypes                        */
- 
+
 /* Note: a very incomplete implementation                                     */
 
 /* Copyright (c) 2009 Stephane Genaud.                                        */
@@ -40,11 +40,11 @@ typedef struct s_smpi_mpi_datatype {
 
 //The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
 typedef struct { float       value; int index;} float_int;
-typedef struct { long        value; int index;} long_int ; 
+typedef struct { long        value; int index;} long_int ;
 typedef struct { double      value; int index;} double_int;
 typedef struct { short       value; int index;} short_int;
 typedef struct { int         value; int index;} int_int;
-typedef struct { long double value; int index;} long_double_int; 
+typedef struct { long double value; int index;} long_double_int;
 
 // Predefined data types
 CREATE_MPI_DATATYPE(MPI_CHAR,                  char);
@@ -122,8 +122,8 @@ int smpi_datatype_copy(void* sendbuf, int sendcount, MPI_Datatype sendtype, void
    memcpy(recvbuf, sendbuf, smpi_datatype_size(sendtype) * count);
    retval = sendcount > recvcount ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
  } else {
-   /* FIXME:  cases 
-    * - If receive packed. 
+   /* FIXME:  cases
+    * - If receive packed.
     * - If send packed
     * to be treated once we have the MPI_Pack things ...
     **/
@@ -181,7 +181,7 @@ static void max_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
     APPLY_FUNC(a, b, length, long double, MAX_OP);
   }
 }
- 
+
 static void min_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, MIN_OP);
@@ -203,7 +203,7 @@ static void min_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
     APPLY_FUNC(a, b, length, long double, MIN_OP);
   }
 }
- 
+
 static void sum_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, SUM_OP);
@@ -231,7 +231,7 @@ static void sum_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
     APPLY_FUNC(a, b, length, long double _Complex, SUM_OP);
   }
 }
- 
+
 static void prod_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, PROD_OP);
@@ -259,7 +259,7 @@ static void prod_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
     APPLY_FUNC(a, b, length, long double _Complex, PROD_OP);
   }
 }
- 
+
 static void land_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, LAND_OP);
@@ -277,7 +277,7 @@ static void land_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
     APPLY_FUNC(a, b, length, _Bool, LAND_OP);
   }
 }
- 
+
 static void lor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, LOR_OP);
@@ -295,7 +295,7 @@ static void lor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
     APPLY_FUNC(a, b, length, _Bool, LOR_OP);
   }
 }
- 
+
 static void lxor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, LXOR_OP);
@@ -313,7 +313,7 @@ static void lxor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
     APPLY_FUNC(a, b, length, _Bool, LXOR_OP);
   }
 }
- 
+
 static void band_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, BAND_OP);
@@ -331,7 +331,7 @@ static void band_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
     APPLY_FUNC(a, b, length, uint8_t, BAND_OP);
   }
 }
- 
+
 static void bor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, BOR_OP);
@@ -349,7 +349,7 @@ static void bor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
     APPLY_FUNC(a, b, length, uint8_t, BOR_OP);
   }
 }
- 
+
 static void bxor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
   if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, BXOR_OP);

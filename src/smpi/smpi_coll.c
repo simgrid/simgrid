@@ -38,7 +38,7 @@ static proc_tree_t alloc_tree(int arity) {
 
   tree = xbt_new(struct s_proc_tree, 1);
   tree->PROCTREE_A = arity;
-  tree->isRoot = 0; 
+  tree->isRoot = 0;
   tree->numChildren = 0;
   tree->child = xbt_new(int, arity);
   for(i = 0; i < arity; i++) {
@@ -144,13 +144,13 @@ static void tree_antibcast(void* buf, int count, MPI_Datatype datatype, int root
   }
   smpi_mpi_waitall(tree->numChildren, requests, MPI_STATUS_IGNORE);
   xbt_free(requests);
-} 
+}
 
 /**
- * bcast with a binary, ternary, or whatever tree .. 
+ * bcast with a binary, ternary, or whatever tree ..
  **/
 void nary_tree_bcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, int arity) {
-  proc_tree_t tree = alloc_tree(arity); 
+  proc_tree_t tree = alloc_tree(arity);
   int rank, size;
 
   rank = smpi_comm_rank(comm);
@@ -161,10 +161,10 @@ void nary_tree_bcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_
 }
 
 /**
- * barrier with a binary, ternary, or whatever tree .. 
+ * barrier with a binary, ternary, or whatever tree ..
  **/
 void nary_tree_barrier(MPI_Comm comm, int arity) {
-  proc_tree_t tree = alloc_tree( arity ); 
+  proc_tree_t tree = alloc_tree( arity );
   int rank, size;
   char dummy='$';
 
@@ -177,7 +177,7 @@ void nary_tree_barrier(MPI_Comm comm, int arity) {
 }
 
 /**
- * Alltoall Bruck 
+ * Alltoall Bruck
  *
  * Openmpi calls this routine when the message size sent to each rank < 2000 bytes and size < 12
  **/
@@ -259,7 +259,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
       requests[count] = smpi_mpi_irecv(&((char*)recvbuf)[i * recvinc], recvcount, recvtype, i, system_tag, comm);
       count++;
     }
-    /* Now post all sends in reverse order 
+    /* Now post all sends in reverse order
      *   - We would like to minimize the search time through message queue
      *     when messages actually arrive in the order in which they were posted.
      * TODO: check the previous assertion
@@ -287,9 +287,9 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
  *
  * this algorithm performs size steps (1<=s<=size) and
  * at each step s, a process p sends iand receive to.from a unique distinct remote process
- * size=5 : s=1:  4->0->1, 0->1->2, 1->2->3, ... 
+ * size=5 : s=1:  4->0->1, 0->1->2, 1->2->3, ...
  *          s=2:  3->0->2, 4->1->3, 0->2->4, 1->3->0 , 2->4->1
- *          .... 
+ *          ....
  * Openmpi calls this routine when the message size sent to each rank is greater than 3000 bytes
  **/
 int smpi_coll_tuned_alltoall_pairwise(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm) {

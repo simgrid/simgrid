@@ -1,5 +1,5 @@
 /**
- * $Id: $tag 
+ * $Id: $tag
  *
  * smpi_mpi_dt_private.h -- functions of smpi_mpi_dt.c that are exported to other SMPI modules.
  *
@@ -19,7 +19,7 @@
 #define DT_FLAG_UNAVAILABLE   0x0400  /**< datatypes unavailable on the build (OS or compiler dependant) */
 #define DT_FLAG_VECTOR        0x0800  /**< valid only for loops. The loop contain only one element
                                        **< without extent. It correspond to the vector type. */
-/* 
+/*
  * We should make the difference here between the predefined contiguous and non contiguous
  * datatypes. The DT_FLAG_BASIC is held by all predefined contiguous datatypes.
  */

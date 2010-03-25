@@ -43,7 +43,7 @@ while true; do
       fi
 	shift 2
     ;;
-   
+
    "-map")
 	MAPOPT="true"
       shift 1
@@ -54,7 +54,7 @@ while true; do
       shift 1
    ;;
 
-   "-help" | "--help" | "-h") 
+   "-help" | "--help" | "-h")
       echo "usage:"
       echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
       echo "or (deprecated usage):"
@@ -62,12 +62,12 @@ while true; do
       echo
       exit
    ;;
-   
+
    "--cfg="*|"--log="*)
      for OPT in ${1#*=}
      do
        SIMOPTS="$SIMOPTS ${1%%=*}=$OPT"
-     done 
+     done
      shift 1
    ;;
     *)
@@ -85,7 +85,7 @@ shift
 
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
-if [ -z "${PLATFORM}" ]; then  
+if [ -z "${PLATFORM}" ]; then
 	PLATFORMTMP="$(mktemp tmpXXXXXX)"
 
 	cat > ${PLATFORMTMP} <<PLATFORMHEAD
@@ -158,14 +158,14 @@ fi
 
 ##---- generate <process> tags------------------------------
 
-for i in ${SEQ} 
+for i in ${SEQ}
 do
   if [ -n "${HOSTFILE}" ]; then
 	j=$(( $i % ${NUMHOSTS} ))
-  fi 
+  fi
   ##---- optional display of ranks to process mapping
   if [ -n "${MAPOPT}" ]; then
-	echo "[rank $i] -> ${hostnames[$j]}"  
+	echo "[rank $i] -> ${hostnames[$j]}"
   fi
 
   if [ -z "${hostnames[$j]}" ]; then
@@ -193,7 +193,7 @@ ${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 
 if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
-	rm ${PLATFORMTMP} 
+	rm ${PLATFORMTMP}
    fi
    rm ${APPLICATIONTMP}
 fi
