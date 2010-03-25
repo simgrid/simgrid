@@ -675,11 +675,7 @@ set(libdir ${exec_prefix}/lib)
 configure_file(${PROJECT_DIRECTORY}/src/smpi/smpicc.in  ${PROJECT_DIRECTORY}/src/smpi/smpicc @ONLY)
 configure_file(${PROJECT_DIRECTORY}/src/smpi/smpirun.in ${PROJECT_DIRECTORY}/src/smpi/smpirun @ONLY)
 
-=======
-configure_file(${PROJECT_DIRECTORY}/src/smpicc.in ${PROJECT_DIRECTORY}/src/smpi/smpicc @ONLY)
-configure_file(${PROJECT_DIRECTORY}/src/smpirun.in ${PROJECT_DIRECTORY}/src/smpi/smpirun @ONLY)
 exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpicc" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE OKITOKI)
->>>>>>> Compile smpi examples with smpicc. Fix lualib location problem with Fedora.:buildtools/Cmake/src/CMakeCompleteInFiles.txt
 
 #message("__END_GRAS_&_SIMGRID____\n")
