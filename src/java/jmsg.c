@@ -255,7 +255,7 @@ Java_simgrid_msg_MsgNative_processFromPID(JNIEnv * env, jclass cls, jint PID)
   }
 
   if (!native_to_java_process(process)) {
-    jxbt_throw_native(env, xbt_strdup("SIMIX_process_get_jprocess() failed"));
+    jxbt_throw_jni(env, "SIMIX_process_get_jprocess() failed");
     return NULL;
   }
 
@@ -299,14 +299,14 @@ Java_simgrid_msg_MsgNative_processSelf(JNIEnv * env, jclass cls)
   jobject jprocess;
 
   if (!process) {
-    jxbt_throw_native(env, xbt_strdup("MSG_process_self() failed"));
+    jxbt_throw_jni(env, xbt_strdup("MSG_process_self() failed"));
     return NULL;
   }
 
   jprocess = native_to_java_process(process);
 
   if (!jprocess)
-    jxbt_throw_native(env, xbt_strdup("SIMIX_process_get_jprocess() failed"));
+    jxbt_throw_jni(env, xbt_strdup("SIMIX_process_get_jprocess() failed"));
 
   return jprocess;
 }
@@ -323,8 +323,11 @@ Java_simgrid_msg_MsgNative_processChangeHost(JNIEnv * env, jclass cls,
   }
 
   /* try to change the host of the process */
-  if (MSG_OK != MSG_process_change_host(host))
-    jxbt_throw_native(env, xbt_strdup("MSG_process_change_host() failed"));
+  MSG_error_t rv = MSG_process_change_host(host);
+
+  jxbt_check_res("MSG_process_change_host()",rv,MSG_OK,
+      bprintf("unexpected error , please report this bug"));
+
 }
 
 JNIEXPORT void JNICALL
@@ -834,31 +837,36 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs) {
 
 JNIEXPORT void JNICALL
   JNICALL Java_simgrid_msg_Msg_run(JNIEnv * env, jclass cls) {
-  xbt_fifo_item_t item = NULL;
-  m_host_t host = NULL;
+  MSG_error_t rv;
+  int index;//xbt_fifo_item_t item = NULL;
+  m_host_t *hosts;
   jobject jhost;
 
   /* Run everything */
-  if (MSG_OK != MSG_main()) {
-    jxbt_throw_native(env, xbt_strdup("MSG_main() failed"));
-  }
+  rv= MSG_main();
+    jxbt_check_res("MSG_main()",rv,MSG_OK,
+     bprintf("unexpected error : MSG_main() failed .. please report this bug "));
+
   DEBUG0
     ("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
 
   DEBUG0("Clean java world");
   /* Cleanup java hosts */
-  xbt_fifo_foreach(msg_global->host, item, host, m_host_t) {
-    jhost = (jobject) host->data;
+  hosts = MSG_get_host_table();
+  for (index=0;index<MSG_get_host_number()-1;index++)
+  {
+    jhost = (jobject)hosts[index]->data;
+    if(jhost)
+    	jhost_unref(env,jhost);
 
-    if (jhost)
-      jhost_unref(env, jhost);
   }
 
   DEBUG0("Clean native world");
   /* cleanup native stuff */
-  if (MSG_OK != MSG_clean()){
-    jxbt_throw_native(env, xbt_strdup("MSG_main() failed"));
-  }
+  rv = MSG_OK != MSG_clean();
+  jxbt_check_res("MSG_clean()",rv,MSG_OK,
+       bprintf("unexpected error : MSG_clean() failed .. please report this bug "));
+
 }
 
 JNIEXPORT jint JNICALL
@@ -968,7 +976,7 @@ Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv * env, jclass class,
   if (errmsg) {
     char *thrown = bprintf("xbt_select_context_factory() failed: %s", errmsg);
     free(errmsg);
-    jxbt_throw_native(env, thrown);
+    jxbt_throw_jni(env, thrown);
   }
 }
 
@@ -1135,7 +1143,7 @@ Java_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
   japplication_handler_on_start_document();
 
   if (surf_parse())
-    jxbt_throw_native(env, xbt_strdup("surf_parse() failed"));
+    jxbt_throw_jni(env,"surf_parse() failed");
 
   surf_parse_close();
 

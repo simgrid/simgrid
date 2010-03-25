@@ -106,11 +106,9 @@ final class MsgNative {
 	 *
 	 * @return                The process with the specified PID.
 	 *
-	 * @exception            NativeException if the SimGrid native code failed.
-	 *
 	 * @see                 Process.getFromPID()
 	 */
-	final static native Process processFromPID(int PID) throws NativeException;
+	final static native Process processFromPID(int PID) ;
 
 	/**
 	 * The natively implemented method to get the PID of a MSG process.
