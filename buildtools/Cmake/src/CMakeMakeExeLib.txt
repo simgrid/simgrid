@@ -35,7 +35,7 @@ if(pthread)
 endif(pthread)
 
 if(HAVE_LUA)
-	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -llua5.1")
+	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${liblua}")
 endif(HAVE_LUA)
 
 if(HAVE_GTNETS)

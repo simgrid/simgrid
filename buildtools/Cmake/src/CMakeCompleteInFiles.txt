@@ -208,11 +208,33 @@ if(NOT disable_lua)
 	NAMES lauxlib.h
 	PATHS "/sw/include/" "/usr/include/lua5.1/"
 	)
+	find_library(LUA_LIB_PATH_1
+	NAMES lua5.1
+	PATHS /usr
+	)
+	find_library(LUA_LIB_PATH_2
+	NAMES lua-5.1
+	PATHS /usr
+	)
+
 	if(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
 		set(HAVE_LUA 1)
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${HAVE_LUA5_1_LUALIB_H} -I${HAVE_LUA5_1_LAUXLIB_H}")
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${HAVE_LUA5_1_LUALIB_H} -I${HAVE_LUA5_1_LAUXLIB_H}")
 	endif(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
+
+	if(LUA_LIB_PATH_1)
+		set(liblua lua5.1)
+	endif(LUA_LIB_PATH_1)
+
+	if(LUA_LIB_PATH_2)
+		set(liblua lua-5.1)
+	endif(LUA_LIB_PATH_2)
+
+	if(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2)
+		set(HAVE_LUA 0)
+	endif(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2)
+
 endif(NOT disable_lua)
 #message("HAVE_LUA ${HAVE_LUA}")
 #message("${HAVE_LUA5_1_LUALIB_H} AND ${HAVE_LUA5_1_LAUXLIB_H}")
@@ -649,8 +671,15 @@ set(top_srcdir ${PROJECT_DIRECTORY})
 set(includedir ${prefix}/include)
 set(top_builddir ${PROJECT_DIRECTORY})
 set(libdir ${exec_prefix}/lib)
+<<<<<<< HEAD:buildtools/Cmake/src/CMakeCompleteInFiles.txt
 configure_file(${PROJECT_DIRECTORY}/src/smpi/smpicc.in  ${PROJECT_DIRECTORY}/src/smpi/smpicc @ONLY)
 configure_file(${PROJECT_DIRECTORY}/src/smpi/smpirun.in ${PROJECT_DIRECTORY}/src/smpi/smpirun @ONLY)
 
+=======
+configure_file(${PROJECT_DIRECTORY}/src/smpicc.in ${PROJECT_DIRECTORY}/src/smpi/smpicc @ONLY)
+configure_file(${PROJECT_DIRECTORY}/src/smpirun.in ${PROJECT_DIRECTORY}/src/smpi/smpirun @ONLY)
+exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpicc" OUTPUT_VARIABLE OKITOKI)
+exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE OKITOKI)
+>>>>>>> Compile smpi examples with smpicc. Fix lualib location problem with Fedora.:buildtools/Cmake/src/CMakeCompleteInFiles.txt
 
 #message("__END_GRAS_&_SIMGRID____\n")
