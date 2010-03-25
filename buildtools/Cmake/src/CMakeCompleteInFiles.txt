@@ -671,7 +671,7 @@ set(top_srcdir ${PROJECT_DIRECTORY})
 set(includedir ${prefix}/include)
 set(top_builddir ${PROJECT_DIRECTORY})
 set(libdir ${exec_prefix}/lib)
-<<<<<<< HEAD:buildtools/Cmake/src/CMakeCompleteInFiles.txt
+
 configure_file(${PROJECT_DIRECTORY}/src/smpi/smpicc.in  ${PROJECT_DIRECTORY}/src/smpi/smpicc @ONLY)
 configure_file(${PROJECT_DIRECTORY}/src/smpi/smpirun.in ${PROJECT_DIRECTORY}/src/smpi/smpirun @ONLY)
 
