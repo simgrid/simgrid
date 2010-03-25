@@ -64,17 +64,28 @@ static m_task_t checkTask (lua_State *L,int index) {
   luaL_checktype(L,index,LUA_TUSERDATA);
   pi = (m_task_t*)luaL_checkudata(L,index,TASK_MODULE_NAME);
   if(pi == NULL)
-    luaL_typerror(L,index,TASK_MODULE_NAME);
+	 luaL_typerror(L,index,TASK_MODULE_NAME);
   tk = *pi;
   if(!tk)
-    luaL_error(L,"null Task");
+	 luaL_error(L,"null Task");
   return  tk;
 }
 
 /** @brief leaves a new userdata on top of the stack, sets its metatable, and sets the Task pointer inside the userdata */
-static m_task_t *pushTask (lua_State *L,m_task_t tk) {
-  m_task_t *pi = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
-  *pi=tk;
+static m_task_t *pushTask (lua_State *L,m_task_t tk,int flag) {
+
+  m_task_t *pi = NULL;
+  if ( flag == 0)
+  pi = (m_task_t*)MSG_task_get_data(tk);//(m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
+  else if ( flag == 1)
+  {
+	  pi = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
+	  *pi=tk;
+
+  }
+
+  //*pi=tk;
+  printf("push lua task with Name : %s \n",MSG_task_get_name(*pi));
   luaL_getmetatable(L,TASK_MODULE_NAME);
   lua_setmetatable(L,-2);
   return pi;
@@ -91,8 +102,13 @@ static int Task_new(lua_State* L) {
   int comp_size = luaL_checkint(L,2);
   int msg_size = luaL_checkint(L,3);
   // FIXME: data shouldn't be NULL I guess
-  pushTask(L,MSG_task_create(name,comp_size,msg_size,NULL));
-  DEBUG0("Created task");
+  //pushTask(L,MSG_task_create(name,comp_size,msg_size,NULL));
+  m_task_t msg_task = MSG_task_create(name,comp_size,msg_size,NULL);
+  m_task_t *lua_task = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
+  *lua_task = msg_task;
+  MSG_task_set_data(msg_task,lua_task);
+  pushTask(L,msg_task,0);
+  INFO0("Created task");
   return 1;
 }
 
@@ -132,10 +148,12 @@ static int Task_recv(lua_State *L)  {
   m_task_t tk = NULL;
   const char *mailbox = luaL_checkstring(L,1);
   int res = MSG_task_receive(&tk,mailbox);
+  if (MSG_task_has_data(tk)) printf("Receive The Task with Name : %s \n",MSG_task_get_name(tk));
   MSG_task_ref(tk); //FIXME: kill it once a ctask cannot be in more than one luatask anymore
   res++;//FIXME: check it instead of avoiding the warning
   DEBUG1("Task Name : >>>%s",MSG_task_get_name(tk));
-  pushTask(L,tk);
+  //lua_pushlightuserdata(L,MSG_task_get_data(tk));
+  pushTask(L,tk,1);
   return 1;
 }
 
