@@ -14,9 +14,9 @@ int main(int argc, char *argv[])
 
   int size, rank;
   int N, n, i, j, k, current_iteration, successful_iterations = 0;
-  double *matrix, *vector, *vcalc, *vcheck;
+  double *matrix = NULL, *vector = NULL, *vcalc, *vcheck;
   MPI_Status status;
-  struct timeval *start_time, *stop_time;
+  struct timeval *start_time = NULL, *stop_time = NULL;
   long parallel_usecs, parallel_usecs_total =
     0, sequential_usecs, sequential_usecs_total = 0;
 

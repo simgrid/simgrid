@@ -16,8 +16,8 @@ int main(int argc, char *argv[])
 
   int size, rank;
   int N;
-  struct timeval *start_time, *stop_time;
-  double seconds;
+  struct timeval *start_time = NULL, *stop_time = NULL;
+  double seconds = 0;
   int i, j;
   char *buffer;
   int check;
