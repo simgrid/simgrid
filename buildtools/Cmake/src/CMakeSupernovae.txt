@@ -55,7 +55,7 @@ endforeach(file ${gras_sources})
 #message("smpi : \n${temp_src_smpi}")
 
 exec_program("rm ${PROJECT_DIRECTORY}/src/supernovae_sg.c ${PROJECT_DIRECTORY}/src/supernovae_gras.c ${PROJECT_DIRECTORY}/src/supernovae_smpi.c"OUTPUT_VARIABLE "SUPER_OK")
-
+exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/mk_supernovae.sh" OUTPUT_VARIABLE "SUPER_OK")
 exec_program("${PROJECT_DIRECTORY}/src/mk_supernovae.sh ${PROJECT_DIRECTORY}/src/supernovae_sg.c   ${temp_src_simgrid}" OUTPUT_VARIABLE "SUPER_OK")
 exec_program("${PROJECT_DIRECTORY}/src/mk_supernovae.sh ${PROJECT_DIRECTORY}/src/supernovae_gras.c ${temp_src_gras}"	OUTPUT_VARIABLE "SUPER_OK")
 exec_program("${PROJECT_DIRECTORY}/src/mk_supernovae.sh ${PROJECT_DIRECTORY}/src/supernovae_smpi.c ${temp_src_smpi}"	OUTPUT_VARIABLE "SUPER_OK")
