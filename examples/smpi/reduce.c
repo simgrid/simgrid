@@ -24,7 +24,7 @@
  * ENHANCEMENTS, OR MODIFICATIONS.
  * ***************************************************************************
  **/
-int ibm_test(int rank, int size)
+static int ibm_test(int rank, int size)
 {
   int success = 1;
 #define MAXLEN  10000

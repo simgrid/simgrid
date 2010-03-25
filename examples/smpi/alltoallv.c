@@ -50,7 +50,7 @@
 */
 
 
-void print_buffer_int(void *buf, int len, char *msg, int rank)
+static void print_buffer_int(void *buf, int len, char *msg, int rank)
 {
   int tmp, *v;
   printf("**<%d> %s (#%d): ", rank, msg,len);

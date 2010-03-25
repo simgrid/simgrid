@@ -1,7 +1,7 @@
 #include "mpi.h"
 #include <stdio.h>
 
-int test(int myid, int numprocs) {
+static int test(int myid, int numprocs) {
 // The tags should match on the sender and receiver side.
 // The distinction between sendtag and recvtag is mainly
 // useful to make some other Recv or Send calls match the sendrecv. 
@@ -13,7 +13,6 @@ int test(int myid, int numprocs) {
     int left, right;
     int buffer[BUFLEN], buffer2[BUFLEN];
     int i;
-    MPI_Request request;
     MPI_Status status;
 
     for (i=0;i<BUFLEN;i++) {

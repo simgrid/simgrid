@@ -15,7 +15,7 @@ int main( int argc, char *argv[] )
     int i;
     int *sb;
     int *rb;
-    int status, gstatus;
+    int status;
 
     MPI_Init(&argc,&argv);
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
@@ -45,8 +45,8 @@ int main( int argc, char *argv[] )
 
 
     if (rank == 0) {
-        if (gstatus != 0) {
-            printf("all_to_all returned %d\n",gstatus);fflush(stdout);
+        if (status != 0) {
+            printf("all_to_all returned %d\n",status);fflush(stdout);
         }
     }
     free(sb);

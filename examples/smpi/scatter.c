@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <mpi.h>
 
-int ibm_test(int rank, int size)  {
+static int ibm_test(int rank, int size)  {
 
 #define MAXLEN  10000
 
@@ -62,7 +62,7 @@ int ibm_test(int rank, int size)  {
 /**
  * small test: the root sends a single distinct double to other processes
  **/
-int small_test( int rank, int size ) {
+static int small_test( int rank, int size ) {
         int success=1;
         int retval;
         int sendcount=1; // one double to each process

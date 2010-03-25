@@ -15,10 +15,10 @@ int main(int argc, char *argv[])
 {
 
   int size, rank;
-  int N, I;
+  int N;
   struct timeval *start_time, *stop_time;
   double seconds;
-  int i, j, k;
+  int i, j;
   char *buffer;
   int check;
 

@@ -29,7 +29,7 @@ static int ibm_test(int rank, int size)
 	  int success = 1;
 #define MAXLEN  10000
 
-	  int root, i, j, k;
+	  int root = 0, i, j, k;
 	  int out[MAXLEN];
 	  int in[MAXLEN];
 

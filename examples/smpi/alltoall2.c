@@ -79,4 +79,5 @@ int main( int argc, char *argv[] )
    MPI_Barrier(MPI_COMM_WORLD);
    if(myself==0)  printf("TEST COMPLETE\n");
    MPI_Finalize();
+   return EXIT_SUCCESS;
 }

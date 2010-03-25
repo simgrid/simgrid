@@ -3,8 +3,9 @@
 
 int main(int argc, char *argv[])
 {
-  int worldrank, localrank;
-  MPI_Comm localcomm;
+  int worldrank;
+//  int localrank;
+//  MPI_Comm localcomm;
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &worldrank);
   printf("MPI_Comm_split is not implemented\n");

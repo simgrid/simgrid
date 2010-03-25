@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <mpi.h>
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	  const int tag1 = 42, tag2= 43;           /* Message tag */
 	  int rank; 

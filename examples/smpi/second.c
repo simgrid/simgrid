@@ -12,9 +12,10 @@
 /* your hostfile, do 'mpirun -machinefile hostfile -np 4 first    */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <mpi.h>
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   const int tag = 42;           /* Message tag */
   int id, ntasks, source_id, dest_id, err, i;
