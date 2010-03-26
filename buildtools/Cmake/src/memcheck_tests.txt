@@ -1,15 +1,369 @@
+
 # teshsuite/xbt directory
-ADD_TEST(memcheck-tesh-log-large 	${PROJECT_DIRECTORY}/teshsuite/xbt/log_large_test)
-ADD_TEST(memcheck-tesh-log-parallel 	${PROJECT_DIRECTORY}/teshsuite/xbt/parallel_log_crashtest)
+ADD_TEST(memcheck-tesh-log-large-0 ${PROJECT_DIRECTORY}/teshsuite/$SG_EXENV_TEST xbt/log_large_test --log=root.fmt:%m%n)
+ADD_TEST(memcheck-tesh-log-large-1 ${PROJECT_DIRECTORY}/teshsuite/$SG_EXENV_TEST xbt/log_large_test --log=root.fmt:%m%n )
+ADD_TEST(memcheck-tesh-log-parallel-0 ${PROJECT_DIRECTORY}/teshsuite/xbt/parallel_log_crashtest --log=root.fmt:%m%n )
+
 # teshsuite/gras/datadesc directory
-ADD_TEST(memcheck-tesh-gras-dd-copy 	${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --copy)
-ADD_TEST(memcheck-tesh-gras-dd-write 	${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --write)
-ADD_TEST(memcheck-tesh-gras-dd-read	${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read)
+ADD_TEST(memcheck-tesh-gras-dd-mem-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --copy --log=root.fmt:%m%n)
+ADD_TEST(memcheck-tesh-gras-dd-rw-0 ${PROJECT_DIRECTORY}/teshsuite/rm -f datadesc_usage.out)
+ADD_TEST(memcheck-tesh-gras-dd-rw-1 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --write --log=root.fmt:%m%n)
+ADD_TEST(memcheck-tesh-gras-dd-rw-2 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read --log=root.fmt:%m%n)
+ADD_TEST(memcheck-tesh-gras-dd-r_little32_4-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ${PROJECT_DIRECTORY}/src/gras/datadesc/datadesc.little32_4 --log=root.fmt:%m%n)
+ADD_TEST(memcheck-tesh-gras-dd-r_little64-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ${PROJECT_DIRECTORY}/src/gras/datadesc/datadesc.little64 --log=root.fmt:%m%n)
+ADD_TEST(memcheck-tesh-gras-dd-r_big32_8_4-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ${PROJECT_DIRECTORY}/src/gras/datadesc/datadesc.big32_8_4 --log=root.fmt:%m%n)
+ADD_TEST(memcheck-tesh-gras-dd-r_big32_8-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ${PROJECT_DIRECTORY}/src/gras/datadesc/datadesc.big32_8 --log=root.fmt:%m%n)
+ADD_TEST(memcheck-tesh-gras-dd-r_big32_2-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ${PROJECT_DIRECTORY}/src/gras/datadesc/datadesc.big32_2 --log=root.fmt:%m%n)
+
+IF(${ARCH_32_BITS})
+ADD_TEST(memcheck-tesh-gras-msg_handle-sg-32-0 ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/msg_handle_simulator ${PROJECT_DIRECTORY}/src/../examples/msg/small_platform.xml ${PROJECT_DIRECTORY}/src/gras/msg_handle/msg_handle.xml)
+ELSE(${ARCH_32_BITS})
+ADD_TEST(memcheck-tesh-gras-msg_handle-sg-64-0 ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/msg_handle_simulator ${PROJECT_DIRECTORY}/src/../examples/msg/small_platform.xml ${PROJECT_DIRECTORY}/src/gras/msg_handle/msg_handle.xml)
+ENDIF(${ARCH_32_BITS})
+
+ADD_TEST(memcheck-tesh-gras-empty_main-sg-0 ${PROJECT_DIRECTORY}/teshsuite/./gras/empty_main/empty_main_simulator ${PROJECT_DIRECTORY}/src/../examples/msg/small_platform.xml ${PROJECT_DIRECTORY}/src/gras/empty_main/empty_main.xml)
+
+IF(${ARCH_32_BITS})
+ADD_TEST(memcheck-tesh-gras-small_sleep-sg-32-0 ${PROJECT_DIRECTORY}/teshsuite/./gras/small_sleep/small_sleep_simulator ${PROJECT_DIRECTORY}/src/../examples/msg/small_platform.xml ${PROJECT_DIRECTORY}/src/gras/small_sleep/small_sleep.xml)
+ELSE(${ARCH_32_BITS})
+ADD_TEST(memcheck-tesh-gras-small_sleep-sg-64-0 ${PROJECT_DIRECTORY}/teshsuite/./gras/small_sleep/small_sleep_simulator ${PROJECT_DIRECTORY}/src/../examples/msg/small_platform.xml ${PROJECT_DIRECTORY}/src/gras/small_sleep/small_sleep.xml)
+ENDIF(${ARCH_32_BITS})
+
+ADD_TEST(memcheck-tesh-simdag-reinit_costs-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/test_reinit_costs ${PROJECT_DIRECTORY}/src/simdag/network/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-parser-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_cluster_foreach.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_cluster_one_host_random.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-2 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_cluster_one_host.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-3 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_cluster_properties_foreach.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-4 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_cluster.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-5 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_host_availability.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-6 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_host_properties.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-7 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_host_state_file.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-8 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_host_state_off.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-9 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_host_state_on.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-10 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_host_trace_inside.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-11 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_host.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-12 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_link_availability.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-13 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_link_fatpipe.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-14 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_link_shared.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-15 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms one_link_state_file.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-16 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms three_hosts_non_symmetric_route.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-17 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms two_clusters_symmetric.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-18 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms two_clusters.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-19 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms two_hosts_multi_hop.xml)
+ADD_TEST(memcheck-tesh-simdag-parser-20 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms two_hosts_one_link.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-0 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_cluster.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-1 ${PROJECT_DIRECTORY}/teshsuite/false)
+ADD_TEST(memcheck-tesh-simdag-flatifier-2 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_cluster_foreach.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-3 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_cluster_one_host_random.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-4 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_cluster_one_host.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-5 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_cluster_properties_foreach.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-6 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_cluster_properties_override.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-7 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_host_availability.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-8 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_host_properties.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-9 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_host_state_file.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-10 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_host_state_off.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-11 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_host_state_on.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-12 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_host_trace_file.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-13 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_host_trace_inside.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-14 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_host.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-15 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_link_availability.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-16 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_link_fatpipe.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-17 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_link_shared.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-18 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ one_link_state_file.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-19 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ route_override.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-20 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ three_hosts_non_symmetric_route.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-21 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ two_clusters_symmetric.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-22 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ two_clusters.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-23 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ two_hosts_multi_hop.xml)
+ADD_TEST(memcheck-tesh-simdag-flatifier-24 ${PROJECT_DIRECTORY}/teshsuite/./simdag/platforms/flatifier --cfg=path:${PROJECT_DIRECTORY}/src/simdag/platforms/ two_hosts_one_link.xml)
+ADD_TEST(memcheck-tesh-simdag-basic0-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/basic0 ${PROJECT_DIRECTORY}/src/simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src)
+ADD_TEST(memcheck-tesh-simdag-basic1-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/basic1 ${PROJECT_DIRECTORY}/src/simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src)
+ADD_TEST(memcheck-tesh-simdag-basic2-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/basic2 ${PROJECT_DIRECTORY}/src/simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src)
+ADD_TEST(memcheck-tesh-simdag-basic3-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/basic3 ${PROJECT_DIRECTORY}/src/simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src)
+ADD_TEST(memcheck-tesh-simdag-basic4-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/basic4 ${PROJECT_DIRECTORY}/src/simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src)
+ADD_TEST(memcheck-tesh-simdag-basic5-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/basic5 ${PROJECT_DIRECTORY}/src/simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src)
+ADD_TEST(memcheck-tesh-simdag-basic6-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/basic6 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src)
+ADD_TEST(memcheck-tesh-simdag-p2p-1-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency1 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-p2p-1-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency1 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-p2p-1-2 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency1 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-p2p-2-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency2 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-p2p-2-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency2 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-p2p-2-2 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency2 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-p2p-3-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency3 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-p2p-3-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency3 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-p2p-3-2 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency3 ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-p2p-3-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency_bound ${PROJECT_DIRECTORY}/src/simdag/network/p2p/platform_2p_1bb.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-mxn-1-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_all2all ${PROJECT_DIRECTORY}/src/simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-mxn-2-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_independent_comm ${PROJECT_DIRECTORY}/src/simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-mxn-3-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_scatter ${PROJECT_DIRECTORY}/src/simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-par-1-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/partask/test_comp_only_seq ${PROJECT_DIRECTORY}/src/simdag/partask/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-par-2-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/partask/test_comp_only_par ${PROJECT_DIRECTORY}/src/simdag/partask/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+ADD_TEST(memcheck-tesh-simdag-par-2-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/partask/test_comp_only_par ${PROJECT_DIRECTORY}/src/simdag/partask/platform_2p_1sl_hetero.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning)
+
+# GRAS examples
+ADD_TEST(memcheck-gras-spawn-rl-0 ${PROJECT_DIRECTORY}/examples/gras/spawn/./spawn_father 4002 5 --log=root.fmt=%m%n)
+ADD_TEST(memcheck-gras-timer-rl-0 ${PROJECT_DIRECTORY}/examples/gras/timer/./timer_client --log=root.fmt:%m%n)
+ADD_TEST(memcheck-gras-chrono-rl-0 ${PROJECT_DIRECTORY}/examples/gras/chrono/./chrono_multiplier --log=root.fmt:%m%n)
+ADD_TEST(memcheck-gras-mmrpc-rl-0 ${PROJECT_DIRECTORY}/examples/gras/mmrpc/./mmrpc_client 127.0.0.1 4002 --log=root.fmt:%m%n )
+ADD_TEST(memcheck-gras-all2all-rl-0 ${PROJECT_DIRECTORY}/examples/gras/all2all/./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n)
+ADD_TEST(memcheck-gras-all2all-rl-1 ${PROJECT_DIRECTORY}/examples/gras/all2all/./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n)
+ADD_TEST(memcheck-gras-all2all-rl-2 ${PROJECT_DIRECTORY}/examples/gras/all2all/./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n)
+ADD_TEST(memcheck-gras-all2all-rl-3 ${PROJECT_DIRECTORY}/examples/gras/all2all/./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n)
+ADD_TEST(memcheck-gras-all2all-rl-4 ${PROJECT_DIRECTORY}/examples/gras/all2all/./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n)
+ADD_TEST(memcheck-gras-synchro-rl-0 ${PROJECT_DIRECTORY}/examples/gras/synchro/./synchro_philosopher 4 --log=root.fmt=%m%n)
+ADD_TEST(memcheck-gras-properties-rl-0 ${PROJECT_DIRECTORY}/examples/gras/properties/./properties_alice --log=root.fmt=%P:%t%e%m%n)
+ADD_TEST(memcheck-gras-properties-rl-1 ${PROJECT_DIRECTORY}/examples/gras/properties/./properties_bob --log=root.fmt=%P:%t%e%m%n)
+
+# MSG examples
+ADD_TEST(memcheck-msg-sendrecv_CLM03-0 ${PROJECT_DIRECTORY}/examples/msg/sendrecv/sendrecv ${PROJECT_DIRECTORY}/src/sendrecv/platform_sendrecv.xml ${PROJECT_DIRECTORY}/src/sendrecv/deployment_sendrecv.xml --cfg=workstation_model:CLM03 --cfg=cpu_model:Cas01 --cfg=network_model:CM02)
+ADD_TEST(memcheck-msg-sendrecv_Vegas-0 ${PROJECT_DIRECTORY}/examples/msg/sendrecv/sendrecv ${PROJECT_DIRECTORY}/src/sendrecv/platform_sendrecv.xml ${PROJECT_DIRECTORY}/src/sendrecv/deployment_sendrecv.xml "--cfg=workstation_model:compound cpu_model:Cas01 network_model:Vegas")
+ADD_TEST(memcheck-msg-sendrecv_Reno-0 ${PROJECT_DIRECTORY}/examples/msg/sendrecv/sendrecv ${PROJECT_DIRECTORY}/src/sendrecv/platform_sendrecv.xml ${PROJECT_DIRECTORY}/src/sendrecv/deployment_sendrecv.xml "--cfg=workstation_model:compound cpu_model:Cas01 network_model:Reno" --log=surf_lagrange.thres=critical)
+ADD_TEST(memcheck-msg-suspend-0 ${PROJECT_DIRECTORY}/examples/msg/suspend/suspend ${PROJECT_DIRECTORY}/src/msg_platform.xml ${PROJECT_DIRECTORY}/src/suspend/deployment_suspend.xml )
+ADD_TEST(memcheck-msg-masterslave-0 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_forwarder ${PROJECT_DIRECTORY}/src/small_platform.xml ${PROJECT_DIRECTORY}/src/masterslave/deployment_masterslave.xml)
+ADD_TEST(memcheck-msg-masterslave-forwarder-0 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_forwarder ${PROJECT_DIRECTORY}/src/msg_platform.xml ${PROJECT_DIRECTORY}/src/masterslave/deployment_masterslave_forwarder.xml )
+ADD_TEST(memcheck-msg-masterslave-failure-0 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ${PROJECT_DIRECTORY}/src/small_platform_with_failures.xml ${PROJECT_DIRECTORY}/src/masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src)
+ADD_TEST(memcheck-msg-masterslave-bypass-0 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_bypass --log=no_loc )
+ADD_TEST(memcheck-msg-migration-0 ${PROJECT_DIRECTORY}/examples/msg/migration/migration ${PROJECT_DIRECTORY}/src/msg_platform.xml ${PROJECT_DIRECTORY}/src/migration/migration.deploy )
+ADD_TEST(memcheck-msg-ptask-0 ${PROJECT_DIRECTORY}/examples/msg/parallel_task/parallel_task ${PROJECT_DIRECTORY}/src/small_platform.xml)
+ADD_TEST(memcheck-msg-ptask-1 ${PROJECT_DIRECTORY}/examples/msg/parallel_task/test_ptask ${PROJECT_DIRECTORY}/src/parallel_task/test_ptask_platform.xml ${PROJECT_DIRECTORY}/src/parallel_task/test_ptask_deployment.xml)
+ADD_TEST(memcheck-msg-priority-0 ${PROJECT_DIRECTORY}/examples/msg/priority/priority ${PROJECT_DIRECTORY}/src/small_platform.xml  ${PROJECT_DIRECTORY}/src/priority/deployment_priority.xml)
+ADD_TEST(memcheck-msg-properties-0 ${PROJECT_DIRECTORY}/examples/msg/properties/msg_prop ${PROJECT_DIRECTORY}/src/../platforms/prop.xml ${PROJECT_DIRECTORY}/src/properties/deployment_properties.xml )
+ADD_TEST(memcheck-msg-trace-0 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test1.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-1 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test2.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-2 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test3.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-3 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test4.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-4 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test5.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-5 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test6.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-6 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test7.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-7 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test8.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-8 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test9.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-9 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test10.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-trace-10 ${PROJECT_DIRECTORY}/examples/msg/trace/test_trace_integration ${PROJECT_DIRECTORY}/src/trace/test11.xml --cfg=workstation_model:compound --cfg=network_model:CM02 --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-masterslave_cpu_ti-0 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_forwarder ${PROJECT_DIRECTORY}/src/small_platform.xml ${PROJECT_DIRECTORY}/src/masterslave/deployment_masterslave.xml --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-masterslave_cpu_ti-1 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_forwarder ${PROJECT_DIRECTORY}/src/msg_platform.xml ${PROJECT_DIRECTORY}/src/masterslave/deployment_masterslave_forwarder.xml --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-masterslave_cpu_ti-2 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ${PROJECT_DIRECTORY}/src/small_platform_with_failures.xml ${PROJECT_DIRECTORY}/src/masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src --cfg=cpu_model:CpuTI)
+ADD_TEST(memcheck-msg-masterslave_cpu_ti-3 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_bypass --log=no_loc --cfg=cpu_model:CpuTI)
+
+IF(${ARCH_32_BITS})
+ADD_TEST(memcheck-gras-ping-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/ping/./ping_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/ping.xml)
+ADD_TEST(memcheck-gras-rpc-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/rpc/./rpc_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/rpc.xml --log=root.fmt:"'[%h:%P:(%i)] [%c/%p] %m%n'")
+ADD_TEST(memcheck-gras-spawn-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/spawn/./spawn_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/spawn.xml)
+ADD_TEST(memcheck-gras-timer-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/timer/./timer_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/timer.xml)
+ADD_TEST(memcheck-gras-chrono-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/chrono/./chrono_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/chrono.xml)
+ADD_TEST(memcheck-gras-simple_token-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/./simple_token_simulator ${PROJECT_DIRECTORY}/src/../../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/simple_token.xml )
+ADD_TEST(memcheck-gras-mmrpc-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/mmrpc/./mmrpc_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/mmrpc.xml)
+ADD_TEST(memcheck-gras-all2all-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/all2all/./all2all_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/all2all.xml)
+ADD_TEST(memcheck-gras-pmm-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/pmm/./pmm_simulator ${PROJECT_DIRECTORY}/src/../../msg/msg_platform.xml ${PROJECT_DIRECTORY}/src/pmm.xml)
+ADD_TEST(memcheck-gras-synchro-sg-32-0 ${PROJECT_DIRECTORY}/examples/gras/synchro/./synchro_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/synchro.xml)
+ELSE(${ARCH_32_BITS})
+ADD_TEST(memcheck-gras-ping-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/ping/./ping_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/ping.xml)
+ADD_TEST(memcheck-gras-rpc-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/rpc/./rpc_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/rpc.xml --log=root.fmt:"'[%h:%P:(%i)] [%c/%p] %m%n'")
+ADD_TEST(memcheck-gras-spawn-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/spawn/./spawn_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/spawn.xml)
+ADD_TEST(memcheck-gras-timer-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/timer/./timer_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/timer.xml)
+ADD_TEST(memcheck-gras-chrono-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/chrono/./chrono_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/chrono.xml)
+ADD_TEST(memcheck-gras-simple_token-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/./simple_token_simulator ${PROJECT_DIRECTORY}/src/../../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/simple_token.xml )
+ADD_TEST(memcheck-gras-mmrpc-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/mmrpc/./mmrpc_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/mmrpc.xml)
+ADD_TEST(memcheck-gras-all2all-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/all2all/./all2all_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/all2all.xml)
+ADD_TEST(memcheck-gras-pmm-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/pmm/./pmm_simulator ${PROJECT_DIRECTORY}/src/../../msg/msg_platform.xml ${PROJECT_DIRECTORY}/src/pmm.xml)
+ADD_TEST(memcheck-gras-synchro-sg-64-0 ${PROJECT_DIRECTORY}/examples/gras/synchro/./synchro_simulator ${PROJECT_DIRECTORY}/src/../../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/synchro.xml)
+ENDIF(${ARCH_32_BITS})
+ADD_TEST(memcheck-gras-properties-sg-0 ${PROJECT_DIRECTORY}/examples/gras/properties/./properties_simulator ${PROJECT_DIRECTORY}/src/../../platforms/prop.xml ${PROJECT_DIRECTORY}/src/properties.xml)
+
+# amok examples
+IF(${ARCH_32_BITS})
+ADD_TEST(memcheck-amok-bandwidth-sg-32-0 ${PROJECT_DIRECTORY}/examples/amok/bandwidth/bandwidth_simulator${EXEEXT} ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/bandwidth/bandwidth.xml)
+ADD_TEST(memcheck-amok-saturate-sg-32-0 ${PROJECT_DIRECTORY}/examples/amok/saturate/saturate_simulator${EXEEXT} ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/saturate/saturate.xml)
+ELSE(${ARCH_32_BITS})
+ADD_TEST(memcheck-amok-bandwidth-sg-64-0 ${PROJECT_DIRECTORY}/examples/amok/bandwidth/bandwidth_simulator${EXEEXT} ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/bandwidth/bandwidth.xml)
+ADD_TEST(memcheck-amok-saturate-sg-64-0 ${PROJECT_DIRECTORY}/examples/amok/saturate/saturate_simulator${EXEEXT} ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml ${PROJECT_DIRECTORY}/src/saturate/saturate.xml)
+ENDIF(${ARCH_32_BITS})
+
+# simdag examples
+ADD_TEST(memcheck-simdag-test_simdag-0 ${PROJECT_DIRECTORY}/examples/simdag/./sd_test ${PROJECT_DIRECTORY}/src/../msg/msg_platform.xml)
+ADD_TEST(memcheck-simdag-test_simdag2-0 ${PROJECT_DIRECTORY}/examples/simdag/./sd_test2 ${PROJECT_DIRECTORY}/src/2clusters.xml)
+ADD_TEST(memcheck-simdag-test_prop-0 ${PROJECT_DIRECTORY}/examples/simdag/properties/sd_prop ${PROJECT_DIRECTORY}/src/../platforms/prop.xml)
+ADD_TEST(memcheck-simdag-metaxml_test-0 ${PROJECT_DIRECTORY}/examples/simdag/metaxml/sd_meta ${PROJECT_DIRECTORY}/src/../platforms/metaxml.xml)
+
+# smpi examples
+ADD_TEST(memcheck-smpi-bcast-0 ${PROJECT_DIRECTORY}/examples/smpi/../../src/smpi/smpirun -map -hostfile ${PROJECT_DIRECTORY}/src/hostfile -platform ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml -np 3 ./bcast -q)
+ADD_TEST(memcheck-smpi-bcast-1 ${PROJECT_DIRECTORY}/examples/smpi/../../src/smpi/smpirun -map -hostfile ${PROJECT_DIRECTORY}/src/hostfile -platform ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml -np 6 ./bcast -q)
+ADD_TEST(memcheck-smpi-bcast-2 ${PROJECT_DIRECTORY}/examples/smpi/../../src/smpi/smpirun -map -hostfile ${PROJECT_DIRECTORY}/src/hostfile -platform ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml -np 12 ./bcast -q)
+ADD_TEST(memcheck-smpi-reduce-0 ${PROJECT_DIRECTORY}/examples/smpi/../../src/smpi/smpirun -map -hostfile ${PROJECT_DIRECTORY}/src/hostfile -platform ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml -np 3 ./reduce -q)
+ADD_TEST(memcheck-smpi-reduce-1 ${PROJECT_DIRECTORY}/examples/smpi/../../src/smpi/smpirun -map -hostfile ${PROJECT_DIRECTORY}/src/hostfile -platform ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml -np 6 ./reduce -q)
+ADD_TEST(memcheck-smpi-reduce-2 ${PROJECT_DIRECTORY}/examples/smpi/../../src/smpi/smpirun -map -hostfile ${PROJECT_DIRECTORY}/src/hostfile -platform ${PROJECT_DIRECTORY}/src/../msg/small_platform.xml -np 12 ./reduce -q )
+if(HAVE_GTNETS)
+ADD_TEST(memcheck-msg-gtnets1-0 ${PROJECT_DIRECTORY}/examples/msg/gtnets/gtnets gtnets/waxman-p.xml gtnets/waxman-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:GTNets)
+ADD_TEST(memcheck-msg-gtnets2-0 ${PROJECT_DIRECTORY}/examples/msg/gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:GTNets)
+ADD_TEST(memcheck-msg-gtnets3-0 ${PROJECT_DIRECTORY}/examples/msg/gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:GTNets)
+ADD_TEST(memcheck-msg-gtnets4-0 ${PROJECT_DIRECTORY}/examples/msg/gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:LV08)
+ADD_TEST(memcheck-msg-gtnets5-0 ${PROJECT_DIRECTORY}/examples/msg/gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01  --cfg=network_model:LV08 2>&1 | grep --color=auto -v root/INFO | grep -v simix_network/INFO)
+endif(HAVE_GTNETS)
 
 set(MEMCHECK_LIST
-memcheck-tesh-log-large
-memcheck-tesh-log-parallel
-memcheck-tesh-gras-dd-copy
-memcheck-tesh-gras-dd-write
-memcheck-tesh-gras-dd-read
-)
+memcheck-tesh-log-large-0
+memcheck-tesh-log-large-1
+memcheck-tesh-log-parallel-0
+memcheck-tesh-gras-dd-mem-0
+memcheck-tesh-gras-dd-rw-0
+memcheck-tesh-gras-dd-rw-1
+memcheck-tesh-gras-dd-rw-2
+memcheck-tesh-gras-dd-r_little32_4-0
+memcheck-tesh-gras-dd-r_little64-0
+memcheck-tesh-gras-dd-r_big32_8_4-0
+memcheck-tesh-gras-dd-r_big32_8-0
+memcheck-tesh-gras-dd-r_big32_2-0
+memcheck-tesh-gras-msg_handle-sg-32-0
+memcheck-tesh-gras-msg_handle-sg-64-0
+memcheck-tesh-gras-empty_main-sg-0
+memcheck-tesh-gras-small_sleep-sg-32-0
+memcheck-tesh-gras-small_sleep-sg-64-0
+memcheck-tesh-simdag-reinit_costs-0
+memcheck-tesh-simdag-parser-0
+memcheck-tesh-simdag-parser-1
+memcheck-tesh-simdag-parser-2
+memcheck-tesh-simdag-parser-3
+memcheck-tesh-simdag-parser-4
+memcheck-tesh-simdag-parser-5
+memcheck-tesh-simdag-parser-6
+memcheck-tesh-simdag-parser-7
+memcheck-tesh-simdag-parser-8
+memcheck-tesh-simdag-parser-9
+memcheck-tesh-simdag-parser-10
+memcheck-tesh-simdag-parser-11
+memcheck-tesh-simdag-parser-12
+memcheck-tesh-simdag-parser-13
+memcheck-tesh-simdag-parser-14
+memcheck-tesh-simdag-parser-15
+memcheck-tesh-simdag-parser-16
+memcheck-tesh-simdag-parser-17
+memcheck-tesh-simdag-parser-18
+memcheck-tesh-simdag-parser-19
+memcheck-tesh-simdag-parser-20
+memcheck-tesh-simdag-flatifier-0
+memcheck-tesh-simdag-flatifier-1
+memcheck-tesh-simdag-flatifier-2
+memcheck-tesh-simdag-flatifier-3
+memcheck-tesh-simdag-flatifier-4
+memcheck-tesh-simdag-flatifier-5
+memcheck-tesh-simdag-flatifier-6
+memcheck-tesh-simdag-flatifier-7
+memcheck-tesh-simdag-flatifier-8
+memcheck-tesh-simdag-flatifier-9
+memcheck-tesh-simdag-flatifier-10
+memcheck-tesh-simdag-flatifier-11
+memcheck-tesh-simdag-flatifier-12
+memcheck-tesh-simdag-flatifier-13
+memcheck-tesh-simdag-flatifier-14
+memcheck-tesh-simdag-flatifier-15
+memcheck-tesh-simdag-flatifier-16
+memcheck-tesh-simdag-flatifier-17
+memcheck-tesh-simdag-flatifier-18
+memcheck-tesh-simdag-flatifier-19
+memcheck-tesh-simdag-flatifier-20
+memcheck-tesh-simdag-flatifier-21
+memcheck-tesh-simdag-flatifier-22
+memcheck-tesh-simdag-flatifier-23
+memcheck-tesh-simdag-flatifier-24
+memcheck-tesh-simdag-basic0-0
+memcheck-tesh-simdag-basic1-0
+memcheck-tesh-simdag-basic2-0
+memcheck-tesh-simdag-basic3-0
+memcheck-tesh-simdag-basic4-0
+memcheck-tesh-simdag-basic5-0
+memcheck-tesh-simdag-basic6-0
+memcheck-tesh-simdag-p2p-1-0
+memcheck-tesh-simdag-p2p-1-1
+memcheck-tesh-simdag-p2p-1-2
+memcheck-tesh-simdag-p2p-2-0
+memcheck-tesh-simdag-p2p-2-1
+memcheck-tesh-simdag-p2p-2-2
+memcheck-tesh-simdag-p2p-3-0
+memcheck-tesh-simdag-p2p-3-1
+memcheck-tesh-simdag-p2p-3-2
+memcheck-tesh-simdag-p2p-3-0
+memcheck-tesh-simdag-mxn-1-0
+memcheck-tesh-simdag-mxn-2-0
+memcheck-tesh-simdag-mxn-3-0
+memcheck-tesh-simdag-par-1-0
+memcheck-tesh-simdag-par-2-0
+memcheck-tesh-simdag-par-2-1
+memcheck-gras-spawn-rl-0
+memcheck-gras-timer-rl-0
+memcheck-gras-chrono-rl-0
+memcheck-gras-mmrpc-rl-0
+memcheck-gras-all2all-rl-0
+memcheck-gras-all2all-rl-1
+memcheck-gras-all2all-rl-2
+memcheck-gras-all2all-rl-3
+memcheck-gras-all2all-rl-4
+memcheck-gras-synchro-rl-0
+memcheck-gras-properties-rl-0
+memcheck-gras-properties-rl-1
+memcheck-msg-sendrecv_CLM03-0
+memcheck-msg-sendrecv_Vegas-0
+memcheck-msg-sendrecv_Reno-0
+memcheck-msg-suspend-0
+memcheck-msg-masterslave-0
+memcheck-msg-masterslave-forwarder-0
+memcheck-msg-masterslave-failure-0
+memcheck-msg-masterslave-bypass-0
+memcheck-msg-migration-0
+memcheck-msg-ptask-0
+memcheck-msg-ptask-1
+memcheck-msg-priority-0
+memcheck-msg-properties-0
+memcheck-msg-trace-0
+memcheck-msg-trace-1
+memcheck-msg-trace-2
+memcheck-msg-trace-3
+memcheck-msg-trace-4
+memcheck-msg-trace-5
+memcheck-msg-trace-6
+memcheck-msg-trace-7
+memcheck-msg-trace-8
+memcheck-msg-trace-9
+memcheck-msg-trace-10
+memcheck-msg-masterslave_cpu_ti-0
+memcheck-msg-masterslave_cpu_ti-1
+memcheck-msg-masterslave_cpu_ti-2
+memcheck-msg-masterslave_cpu_ti-3
+memcheck-gras-ping-sg-32-0
+memcheck-gras-rpc-sg-32-0
+memcheck-gras-spawn-sg-32-0
+memcheck-gras-timer-sg-32-0
+memcheck-gras-chrono-sg-32-0
+memcheck-gras-simple_token-sg-32-0
+memcheck-gras-mmrpc-sg-32-0
+memcheck-gras-all2all-sg-32-0
+memcheck-gras-pmm-sg-32-0
+memcheck-gras-synchro-sg-32-0
+memcheck-gras-ping-sg-64-0
+memcheck-gras-rpc-sg-64-0
+memcheck-gras-spawn-sg-64-0
+memcheck-gras-timer-sg-64-0
+memcheck-gras-chrono-sg-64-0
+memcheck-gras-simple_token-sg-64-0
+memcheck-gras-mmrpc-sg-64-0
+memcheck-gras-all2all-sg-64-0
+memcheck-gras-pmm-sg-64-0
+memcheck-gras-synchro-sg-64-0
+memcheck-gras-properties-sg-0
+memcheck-amok-bandwidth-sg-32-0
+memcheck-amok-saturate-sg-32-0
+memcheck-amok-bandwidth-sg-64-0
+memcheck-amok-saturate-sg-64-0
+memcheck-simdag-test_simdag-0
+memcheck-simdag-test_simdag2-0
+memcheck-simdag-test_prop-0
+memcheck-simdag-metaxml_test-0
+memcheck-smpi-bcast-0
+memcheck-smpi-bcast-1
+memcheck-smpi-bcast-2
+memcheck-smpi-reduce-0
+memcheck-smpi-reduce-1
+memcheck-smpi-reduce-2
+memcheck-msg-gtnets1-0
+memcheck-msg-gtnets2-0
+memcheck-msg-gtnets3-0
+memcheck-msg-gtnets4-0
+memcheck-msg-gtnets5-0)

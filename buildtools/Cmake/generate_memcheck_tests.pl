@@ -40,7 +40,13 @@ while(defined($line=<MAKETEST>)) {
 			my($command)=$1;
 			$command =~ s/\${srcdir:=.}/\${PROJECT_DIRECTORY}\/src/g;
 			$command =~ s/\${EXEEXT:=}//g;
-			print "ADD_TEST(memcheck-$name_test-$count /bin/sh -c 'cd $path && $command')\n";
+			$command =~ s/\$SG_TEST_EXENV //g;
+			$command =~ s/\$SG_TEST_ENV //g;
+			$command =~ s/\$EXEEXT//g;
+			$command =~ s/\${srcdir}/\${PROJECT_DIRECTORY}\/src/g;
+			$command =~ s/ \$ARGS//g;
+			$command =~ s/ \$@ //g;
+			print "ADD_TEST(memcheck-$name_test-$count $path\/$command)\n";
 			push @test_list, "memcheck-$name_test-$count";
 			$count++;
 		    }

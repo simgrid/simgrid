@@ -29,7 +29,6 @@ ENDIF(SIZEOF_LONG EQUAL 4)
 INCLUDE(CTest)
 ENABLE_TESTING()
 
-# BEGIN TESH TESTS
 ADD_TEST(tesh-self-basic 		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" basic.tesh)
 ADD_TEST(tesh-self-cd			${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" cd.tesh)
 ADD_TEST(tesh-self-IO-broken-pipe	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" IO-broken-pipe.tesh)
@@ -46,6 +45,8 @@ ADD_TEST(tesh-self-catch-wrong-output	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd 
 ADD_TEST(tesh-self-bg-basic		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" bg-basic.tesh)
 ADD_TEST(tesh-self-bg-set-signal	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" bg-set-signal.tesh)
 ADD_TEST(tesh-self-background		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" background.tesh)
+
+# BEGIN TESH TESTS
 
 # teshsuite/xbt directory
 ADD_TEST(tesh-log-large		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite xbt/log_large_test.tesh)
