@@ -31,24 +31,32 @@ while(defined($line=<MAKETEST>)) {
 		$path=~ s/\"//g;
 		my($complete_tesh_file)=$path."/".$tesh_file;
 		my($count)=0;
+		my($count_first)=0;
+		my($count_second)=0;
 		$complete_tesh_file =~ s/\${PROJECT_DIRECTORY}/$proj_dir/g;
-		open TESH_FILE, $complete_tesh_file or die "Unable to open $complete_tesh_file. $!\n";
+		open TESH_FILE, $complete_tesh_file or die "Unable to open $complete_tesh_file $!\n";
 		my($l);
 		while(defined($l=<TESH_FILE>)) {
 		    chomp $l;
 		    if($l =~ /^\$ (.*)$/) {
-			my($command)=$1;
-			$command =~ s/\${srcdir:=.}/\${PROJECT_DIRECTORY}\/src/g;
+			my($command) = $1;
+			$command =~ s/\${srcdir:=.}/./g;
 			$command =~ s/\${EXEEXT:=}//g;
 			$command =~ s/\$SG_TEST_EXENV //g;
 			$command =~ s/\$SG_TEST_ENV //g;
+			$command =~ s/\$SG_EXENV_TEST //g; 
 			$command =~ s/\$EXEEXT//g;
 			$command =~ s/\${srcdir}/\${PROJECT_DIRECTORY}\/src/g;
 			$command =~ s/ \$ARGS//g;
 			$command =~ s/ \$@ //g;
-			print "ADD_TEST(memcheck-$name_test-$count $path\/$command)\n";
+			$path =~ s/\${PROJECT_DIRECTORY}/~\/Developments\/simgrid/g;
+			#$command =~ s/\${PROJECT_DIRECTORY}/~\/Developments\/simgrid/g;	
+			print "ADD_TEST(memcheck-$name_test-$count \/bin\/sh -c \"cd $path\/ \&\& $command\")\n";
 			push @test_list, "memcheck-$name_test-$count";
 			$count++;
+		    }
+		    if($l =~ /^\& (.*)$/) {
+			last;
 		    }
 		}
 		close(TESH_FILE);

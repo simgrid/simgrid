@@ -48,7 +48,7 @@ ADD_TEST(tesh-self-background		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJ
 
 # BEGIN TESH TESTS
 
-# teshsuite/xbt directory
+# teshsuite/xbt
 ADD_TEST(tesh-log-large		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite xbt/log_large_test.tesh)
 ADD_TEST(tesh-log-parallel	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite xbt/parallel_log_crashtest.tesh)
 
@@ -98,11 +98,11 @@ ADD_TEST(tesh-simdag-par-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_D
 ADD_TEST(tesh-simdag-par-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/partask/test_comp_only_par.tesh)
 
 # GRAS examples
-ADD_TEST(gras-ping-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/ping test_rl)
-ADD_TEST(gras-rpc-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/rpc test_rl)
-ADD_TEST(gras-spawn-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/spawn test_rl)
-ADD_TEST(gras-timer-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/timer test_rl)
-ADD_TEST(gras-chrono-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/chrono test_rl)
+ADD_TEST(gras-ping-rl		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/ping test_rl)
+ADD_TEST(gras-rpc-rl		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/rpc test_rl)
+ADD_TEST(gras-spawn-rl		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/spawn test_rl)
+ADD_TEST(gras-timer-rl		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/timer test_rl)
+ADD_TEST(gras-chrono-rl		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/chrono test_rl)
 ADD_TEST(gras-simple_token-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token test_rl)
 ADD_TEST(gras-mmrpc-rl		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/mmrpc test_rl)
 ADD_TEST(gras-all2all-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/all2all test_rl)
@@ -114,16 +114,16 @@ ADD_TEST(gras-properties-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_
 ADD_TEST(msg-sendrecv_CLM03	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg sendrecv/sendrecv_CLM03.tesh)
 ADD_TEST(msg-sendrecv_Vegas	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg sendrecv/sendrecv_Vegas.tesh)
 ADD_TEST(msg-sendrecv_Reno	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg sendrecv/sendrecv_Reno.tesh)
-ADD_TEST(msg-suspend	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg suspend/suspend.tesh)
+ADD_TEST(msg-suspend		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg suspend/suspend.tesh)
 ADD_TEST(msg-masterslave	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave.tesh)
 ADD_TEST(msg-masterslave-forwarder	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_forwarder.tesh)
 ADD_TEST(msg-masterslave-failure	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_failure.tesh)
 ADD_TEST(msg-masterslave-bypass	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_bypass.tesh)
-ADD_TEST(msg-migration	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg migration/migration.tesh)
-ADD_TEST(msg-ptask	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg parallel_task/parallel_task.tesh)
-ADD_TEST(msg-priority	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg priority/priority.tesh)
-ADD_TEST(msg-properties	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg properties/msg_prop.tesh)
-ADD_TEST(msg-trace	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg trace/trace.tesh)
+ADD_TEST(msg-migration		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg migration/migration.tesh)
+ADD_TEST(msg-ptask		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg parallel_task/parallel_task.tesh)
+ADD_TEST(msg-priority		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg priority/priority.tesh)
+ADD_TEST(msg-properties		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg properties/msg_prop.tesh)
+ADD_TEST(msg-trace		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg trace/trace.tesh)
 ADD_TEST(msg-masterslave_cpu_ti	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti.tesh)
 
 IF(${ARCH_32_BITS})
