@@ -45,8 +45,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 
   simdata = task->simdata;
 
-  xbt_assert1((!simdata->compute),
-              //&& (task->simdata->refcount == 1), FIXME: since lua bindings play with this refcount to make sure that tasks don't get gc() twice, this field cannot be used here as is anymore
+  xbt_assert1((!simdata->compute) && (task->simdata->refcount == 1),
               "This task is executed somewhere else. Go fix your code! %d", task->simdata->refcount);
 
   DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);

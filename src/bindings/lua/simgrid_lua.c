@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 /*                            helper functions                                       */
 /* ********************************************************************************* */
 
-static void stackDump (lua_State *L) {
+static void stackDump (const char *msg, lua_State *L) {
   char buff[2048];
   char *p=buff;
   int i;
@@ -55,7 +55,7 @@ static void stackDump (lua_State *L) {
     }
     p+=sprintf(p,"  ");  /* put a separator */
   }
-  DEBUG1("%s",buff);
+  INFO2("%s%s",msg,buff);
 }
 
 /** @brief ensures that a userdata on the stack is a task and returns the pointer inside the userdata */
@@ -72,19 +72,12 @@ static m_task_t checkTask (lua_State *L,int index) {
 }
 
 /** @brief leaves a new userdata on top of the stack, sets its metatable, and sets the Task pointer inside the userdata */
-static m_task_t *pushTask (lua_State *L,m_task_t tk,int flag) {
+static m_task_t *pushTask (lua_State *L,m_task_t tk) {
 
   m_task_t *pi = NULL;
-  if ( flag == 0)
-  pi = (m_task_t*)MSG_task_get_data(tk);//(m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
-  else if ( flag == 1)
-  {
-	  pi = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
-	  *pi=tk;
+  pi = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
+  *pi=tk;
 
-  }
-
-  //*pi=tk;
   DEBUG1("push lua task with Name : %s \n",MSG_task_get_name(*pi));
   luaL_getmetatable(L,TASK_MODULE_NAME);
   lua_setmetatable(L,-2);
@@ -100,13 +93,11 @@ static int Task_new(lua_State* L) {
   const char *name=luaL_checkstring(L,1);
   int comp_size = luaL_checkint(L,2);
   int msg_size = luaL_checkint(L,3);
-  // FIXME: data shouldn't be NULL I guess
-  //pushTask(L,MSG_task_create(name,comp_size,msg_size,NULL));
   m_task_t msg_task = MSG_task_create(name,comp_size,msg_size,NULL);
   m_task_t *lua_task = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
   *lua_task = msg_task;
   MSG_task_set_data(msg_task,lua_task);
-  pushTask(L,msg_task,0);
+  pushTask(L,msg_task);
   INFO0("Created task");
   return 1;
 }
@@ -139,23 +130,25 @@ static int Task_destroy(lua_State *L) {
 static int Task_send(lua_State *L)  {
   m_task_t tk = checkTask(L,1);
   const char *mailbox = luaL_checkstring(L,2);
+  lua_pop(L,1); // remove the string so that the task is on top of it
+  MSG_task_set_data(tk,L); // Copy my stack into the task, so that the receiver can copy the lua task directly
   MSG_error_t res = MSG_task_send(tk,mailbox);
-  if(res != MSG_OK)
-    {
-  	  switch(res){
-  	  case MSG_TIMEOUT :
-  		  ERROR0("MSG_task_send failed : Timeout");
-  		  break;
-  	  case MSG_TRANSFER_FAILURE :
-  		  ERROR0("MSG_task_send failed : Transfer Failure");
-  		  break;
-  	  case MSG_HOST_FAILURE :
-  		  ERROR0("MSG_task_send failed : Host Failure ");
-  		  break;
-  	  default :
-  		  ERROR0("MSG_task_send failed : Unexpected error , please report this bug");
-  		  break;
-  		  }
+  while (MSG_task_has_data(tk)) // Don't mess up with my stack: the receiver didn't copy the data yet
+    MSG_process_sleep(0); // yield
+
+  if (res != MSG_OK) switch(res) {
+    case MSG_TIMEOUT :
+      ERROR0("MSG_task_send failed : Timeout");
+      break;
+    case MSG_TRANSFER_FAILURE :
+      ERROR0("MSG_task_send failed : Transfer Failure");
+      break;
+    case MSG_HOST_FAILURE :
+      ERROR0("MSG_task_send failed : Host Failure ");
+      break;
+    default :
+      ERROR0("MSG_task_send failed : Unexpected error , please report this bug");
+      break;
     }
   return 0;
 }
@@ -163,11 +156,12 @@ static int Task_recv(lua_State *L)  {
   m_task_t tk = NULL;
   const char *mailbox = luaL_checkstring(L,1);
   MSG_error_t res = MSG_task_receive(&tk,mailbox);
-  if (MSG_task_has_data(tk)) DEBUG1("Receive The Task with Name : %s \n",MSG_task_get_name(tk));
-  MSG_task_ref(tk); //FIXME: kill it once a ctask cannot be in more than one luatask anymore
-  if(res != MSG_OK)
-  {
-	  switch(res){
+
+  lua_State *sender_stack = MSG_task_get_data(tk);
+  lua_xmove(sender_stack,L,1); // copy the data directly from sender's stack
+  MSG_task_set_data(tk,NULL);
+
+  if(res != MSG_OK) switch(res){
 	  case MSG_TIMEOUT :
 		  ERROR0("MSG_task_receive failed : Timeout");
 		  break;
@@ -181,10 +175,7 @@ static int Task_recv(lua_State *L)  {
 		  ERROR0("MSG_task_receive failed : Unexpected error , please report this bug");
 		  break;
 		  }
-  }
-  DEBUG1("Task Name : >>>%s",MSG_task_get_name(tk));
-  //lua_pushlightuserdata(L,MSG_task_get_data(tk));
-  pushTask(L,tk,1);
+
   return 1;
 }
 
