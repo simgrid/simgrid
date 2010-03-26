@@ -28,7 +28,7 @@ set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
 add_definitions (${INCLUDES})
 if(enable_coverage)
-add_definitions (-fprofile-arcs -ftest-coverage)
+	add_definitions (-fprofile-arcs -ftest-coverage)
 endif(enable_coverage)
 
 ### Setup Options
@@ -50,6 +50,9 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeMakeExeLib.txt)
 
 ### Make tests
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeTest.txt)
+if(enable_memcheck)
+	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/memcheck_tests.txt)
+endif(enable_memcheck)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CTestConfig.cmake)
 
 ### Setup the distrib

@@ -29,7 +29,7 @@ ENDIF(SIZEOF_LONG EQUAL 4)
 INCLUDE(CTest)
 ENABLE_TESTING()
 
-# TESH autotests
+# BEGIN TESH TESTS
 ADD_TEST(tesh-self-basic 		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" basic.tesh)
 ADD_TEST(tesh-self-cd			${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" cd.tesh)
 ADD_TEST(tesh-self-IO-broken-pipe	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" IO-broken-pipe.tesh)
@@ -47,36 +47,17 @@ ADD_TEST(tesh-self-bg-basic		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJEC
 ADD_TEST(tesh-self-bg-set-signal	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" bg-set-signal.tesh)
 ADD_TEST(tesh-self-background		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" background.tesh)
 
-# testsuite directory
-add_test(test-xbt-log		${PROJECT_DIRECTORY}/testsuite/xbt/log_usage)
-add_test(test-xbt-graphxml	${PROJECT_DIRECTORY}/testsuite/xbt/graphxml_usage ${PROJECT_DIRECTORY}/testsuite/xbt/graph.xml)
-add_test(test-xbt-heap		${PROJECT_DIRECTORY}/testsuite/xbt/heap_bench)
-
-add_test(test-surf-lmm		${PROJECT_DIRECTORY}/testsuite/surf/lmm_usage)
-add_test(test-surf-maxmin	${PROJECT_DIRECTORY}/testsuite/surf/maxmin_bench)
-add_test(test-surf-usage	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
-add_test(test-surf_usage2	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage2  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
-add_test(test-surf-trace	${PROJECT_DIRECTORY}/testsuite/surf/trace_usage --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/)
-
-add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag small_platform_variable.xml)
-add_test(test-simdag-2 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/small_platform.xml)
-add_test(test-simdag-3 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml)
-
 # teshsuite/xbt directory
-
 ADD_TEST(tesh-log-large		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite xbt/log_large_test.tesh)
 ADD_TEST(tesh-log-parallel	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite xbt/parallel_log_crashtest.tesh)
 
 # teshsuite/gras/datadesc directory
 ADD_TEST(tesh-gras-dd-mem	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_mem.tesh)
 ADD_TEST(tesh-gras-dd-rw 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_rw.tesh)
-
 ADD_TEST(tesh-gras-dd-r_little32_4	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_little32_4.tesh)
 ADD_TEST(tesh-gras-dd-r_little64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_little64.tesh)
 ADD_TEST(tesh-gras-dd-r_big32_8_4	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_big32_8_4.tesh)
-
 ADD_TEST(tesh-gras-dd-r_big32_8		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_big32_8.tesh)
-
 ADD_TEST(tesh-gras-dd-r_big32_2		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/datadesc/datadesc_r_big32_2.tesh)
 
 IF(${ARCH_32_BITS})
@@ -94,30 +75,26 @@ ELSE(${ARCH_32_BITS})
   ADD_TEST(tesh-gras-small_sleep-sg-64	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite gras/small_sleep/test_sg_64)
 ENDIF(${ARCH_32_BITS})
 
-ADD_TEST(tesh-msg-get_sender	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "msg/get_sender.tesh")
-				    
-ADD_TEST(tesh-simdag-reinit_costs	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/test_reinit_costs.tesh")
-ADD_TEST(tesh-simdag-parser		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/platforms/basic_parsing_test.tesh")
-ADD_TEST(tesh-simdag-flatifier		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/platforms/flatifier.tesh")
-
-ADD_TEST(tesh-simdag-basic0	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic0.tesh")
-ADD_TEST(tesh-simdag-basic1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic1.tesh")
-ADD_TEST(tesh-simdag-basic2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic2.tesh")
-ADD_TEST(tesh-simdag-basic3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic3.tesh")
-ADD_TEST(tesh-simdag-basic4	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic4.tesh")
-ADD_TEST(tesh-simdag-basic5	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic5.tesh")
-ADD_TEST(tesh-simdag-basic6	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/basic6.tesh")
-ADD_TEST(tesh-simdag-p2p-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/p2p/test_latency1.tesh")
-ADD_TEST(tesh-simdag-p2p-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/p2p/test_latency2.tesh")
-ADD_TEST(tesh-simdag-p2p-3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/p2p/test_latency3.tesh")
-ADD_TEST(tesh-simdag-p2p-3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/p2p/test_latency_bound.tesh")
-
-ADD_TEST(tesh-simdag-mxn-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/mxn/test_intra_all2all.tesh")
-ADD_TEST(tesh-simdag-mxn-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/mxn/test_intra_independent_comm.tesh")
-ADD_TEST(tesh-simdag-mxn-3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/network/mxn/test_intra_scatter.tesh")
-
-ADD_TEST(tesh-simdag-par-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/partask/test_comp_only_seq.tesh")
-ADD_TEST(tesh-simdag-par-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite "simdag/partask/test_comp_only_par.tesh")
+ADD_TEST(tesh-msg-get_sender	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite msg/get_sender.tesh)				    
+ADD_TEST(tesh-simdag-reinit_costs	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/test_reinit_costs.tesh)
+ADD_TEST(tesh-simdag-parser		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/platforms/basic_parsing_test.tesh)
+ADD_TEST(tesh-simdag-flatifier		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/platforms/flatifier.tesh)
+ADD_TEST(tesh-simdag-basic0	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic0.tesh)
+ADD_TEST(tesh-simdag-basic1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic1.tesh)
+ADD_TEST(tesh-simdag-basic2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic2.tesh)
+ADD_TEST(tesh-simdag-basic3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic3.tesh)
+ADD_TEST(tesh-simdag-basic4	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic4.tesh)
+ADD_TEST(tesh-simdag-basic5	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic5.tesh)
+ADD_TEST(tesh-simdag-basic6	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic6.tesh)
+ADD_TEST(tesh-simdag-p2p-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency1.tesh)
+ADD_TEST(tesh-simdag-p2p-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency2.tesh)
+ADD_TEST(tesh-simdag-p2p-3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency3.tesh)
+ADD_TEST(tesh-simdag-p2p-3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency_bound.tesh)
+ADD_TEST(tesh-simdag-mxn-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/mxn/test_intra_all2all.tesh)
+ADD_TEST(tesh-simdag-mxn-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/mxn/test_intra_independent_comm.tesh)
+ADD_TEST(tesh-simdag-mxn-3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/mxn/test_intra_scatter.tesh)
+ADD_TEST(tesh-simdag-par-1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/partask/test_comp_only_seq.tesh)
+ADD_TEST(tesh-simdag-par-2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/partask/test_comp_only_par.tesh)
 
 # GRAS examples
 ADD_TEST(gras-ping-rl	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/ping test_rl)
@@ -190,17 +167,9 @@ ADD_TEST(simdag-test_simdag2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT
 ADD_TEST(simdag-test_prop	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag properties/test_prop.tesh)
 ADD_TEST(simdag-metaxml_test	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag metaxml/metaxml_test.tesh)
 
-if(HAVE_JAVA)
-# java examples
-ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest)
-ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest)
-ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest)
-ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest)
-endif(HAVE_JAVA)
 # smpi examples
 ADD_TEST(smpi-bcast 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi bcast.tesh)
 ADD_TEST(smpi-reduce 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi reduce.tesh)
-
 if(HAVE_GTNETS)
 ADD_TEST(msg-gtnets1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-waxman.tesh)
 ADD_TEST(msg-gtnets2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-gtnets.tesh)
@@ -208,6 +177,31 @@ ADD_TEST(msg-gtnets3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTO
 ADD_TEST(msg-gtnets4	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-lv08.tesh)
 ADD_TEST(msg-gtnets5	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-onelink-lv08.tesh)
 endif(HAVE_GTNETS)
+
+# END TESH TESTS
+
+# testsuite directory
+add_test(test-xbt-log		${PROJECT_DIRECTORY}/testsuite/xbt/log_usage)
+add_test(test-xbt-graphxml	${PROJECT_DIRECTORY}/testsuite/xbt/graphxml_usage ${PROJECT_DIRECTORY}/testsuite/xbt/graph.xml)
+add_test(test-xbt-heap		${PROJECT_DIRECTORY}/testsuite/xbt/heap_bench)
+
+add_test(test-surf-lmm		${PROJECT_DIRECTORY}/testsuite/surf/lmm_usage)
+add_test(test-surf-maxmin	${PROJECT_DIRECTORY}/testsuite/surf/maxmin_bench)
+add_test(test-surf-usage	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf_usage2	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage2  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf-trace	${PROJECT_DIRECTORY}/testsuite/surf/trace_usage --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/)
+
+add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag small_platform_variable.xml)
+add_test(test-simdag-2 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/small_platform.xml)
+add_test(test-simdag-3 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml)
+
+if(HAVE_JAVA)
+# java examples
+ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest)
+ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest)
+ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest)
+ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest)
+endif(HAVE_JAVA)
 
 ###
 ### Declare that we know that some tests are broken

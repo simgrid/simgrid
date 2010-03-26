@@ -1,0 +1,15 @@
+# teshsuite/xbt directory
+ADD_TEST(memcheck-tesh-log-large 	${PROJECT_DIRECTORY}/teshsuite/xbt/log_large_test)
+ADD_TEST(memcheck-tesh-log-parallel 	${PROJECT_DIRECTORY}/teshsuite/xbt/parallel_log_crashtest)
+# teshsuite/gras/datadesc directory
+ADD_TEST(memcheck-tesh-gras-dd-copy 	${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --copy)
+ADD_TEST(memcheck-tesh-gras-dd-write 	${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --write)
+ADD_TEST(memcheck-tesh-gras-dd-read	${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read)
+
+set(MEMCHECK_LIST
+memcheck-tesh-log-large
+memcheck-tesh-log-parallel
+memcheck-tesh-gras-dd-copy
+memcheck-tesh-gras-dd-write
+memcheck-tesh-gras-dd-read
+)
