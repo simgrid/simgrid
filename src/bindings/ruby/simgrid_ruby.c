@@ -180,6 +180,9 @@ void Init_simgrid_ruby() {
   rb_define_module_function(rb_task,"listenFromHost",(rb_meth)rb_task_listen_host,3);
   rb_define_module_function(rb_task,"setPriority",(rb_meth)rb_task_set_priority,2);
   rb_define_module_function(rb_task,"cancel",(rb_meth)rb_task_cancel,1);
+  rb_define_module_function(rb_task,"hasData",(rb_meth)rb_task_has_data,1);
+  rb_define_module_function(rb_task,"setData",(rb_meth)rb_task_set_data,2);
+  rb_define_module_function(rb_task,"data",(rb_meth)rb_task_get_data,1);
 
   //Host Methods
   rb_define_module_function(rb_host,"getByName",(rb_meth)rb_host_get_by_name,1);

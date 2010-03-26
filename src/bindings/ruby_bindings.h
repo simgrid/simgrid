@@ -102,8 +102,13 @@ VALUE rb_host_process(VALUE Class,VALUE process);
 VALUE rb_host_get_all_hosts(VALUE Class);
 
 /* Functions related to tasks */
+
+typedef struct ruby_data {
+  void *ruby_task;  // Pointer to send the ruby_task
+  void *user_data;   // Pointer on the user data
+}s_ruby_data_t,*rb_data_t;
+
 void rb_task_free(m_task_t tk);
-// New Method  >>> Data NULL
 VALUE rb_task_new(VALUE Class, VALUE name,VALUE comp_size,VALUE comm_size);
 VALUE rb_task_comp(VALUE Class,VALUE task); // Get Computation Size
 VALUE rb_task_name(VALUE Class,VALUE task);
@@ -117,6 +122,9 @@ VALUE rb_task_listen(VALUE Class,VALUE task,VALUE alias); //Listen From Alias (=
 VALUE rb_task_listen_host(VALUE Class,VALUE task,VALUE alias,VALUE host); //Listen from Host
 void rb_task_set_priority(VALUE Class,VALUE task,VALUE priority); // Set Priority
 void rb_task_cancel(VALUE Class,VALUE task); // Cancel
+VALUE rb_task_has_data(VALUE Class,VALUE task); // check if the task contains a data
+VALUE rb_task_get_data(VALUE Class,VALUE task); // get data
+void rb_task_set_data(VALUE Class,VALUE task,VALUE data); // set data
 
 /* Upcalls for the application handler */
 void rb_application_handler_on_start_document(void);

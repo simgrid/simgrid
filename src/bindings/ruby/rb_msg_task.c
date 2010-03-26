@@ -18,9 +18,12 @@ void rb_task_free(m_task_t tk) {
 // New Method
 VALUE rb_task_new(VALUE class, VALUE name,VALUE comp_size,VALUE comm_size) {
   m_task_t task = MSG_task_create(RSTRING(name)->ptr,NUM2INT(comp_size),NUM2INT(comm_size),NULL);
+  rb_data_t data = malloc(sizeof(s_ruby_data_t));
+  data->ruby_task = NULL;
+  data->user_data = NULL;
+  MSG_task_set_data(task,(void*)data);
   // Wrap m_task_t to a Ruby Value
   return Data_Wrap_Struct(class, 0, rb_task_free, task);
-
 }
 
 //Get Computation Size
@@ -55,10 +58,13 @@ VALUE rb_task_execute(VALUE class,VALUE task) {
 void rb_task_send(VALUE class,VALUE task,VALUE mailbox) {
 
   MSG_error_t rv;
+  rb_data_t data;
   // Wrap Ruby Value to m_task_t struct
   m_task_t tk;
   Data_Get_Struct(task, s_m_task_t, tk);
-  MSG_task_set_data(tk,(void*)task);
+  data = MSG_task_get_data(tk);
+  data->ruby_task =(void*)task;
+  MSG_task_set_data(tk,(void*)data);
   DEBUG1("Sending task %p",tk);
   rv = MSG_task_send(tk,RSTRING(mailbox)->ptr);
   if(rv != MSG_OK)
@@ -82,11 +88,14 @@ VALUE rb_task_receive(VALUE class, VALUE mailbox) {
   m_task_t *ptask = malloc(sizeof(m_task_t));
   m_task_t task;
   *ptask = NULL;
+  rb_data_t data =NULL;
   DEBUG2("Receiving a task on mailbox '%s', store it into %p",RSTRING(mailbox)->ptr,&task);
   MSG_task_receive(ptask,RSTRING(mailbox)->ptr);
   task = *ptask;
   free(ptask);
-  return (VALUE)MSG_task_get_data(task);
+  data = MSG_task_get_data(task);
+  if(data==NULL) printf("Empty task while receving");
+  return (VALUE)data->ruby_task;
 }
 
 // It Return a Native Process ( m_process_t )
@@ -138,9 +147,7 @@ VALUE rb_task_listen_host(VALUE class,VALUE task,VALUE alias,VALUE host) {
   Data_Get_Struct(task,s_m_task_t,tk);
   Data_Get_Struct(host,s_m_host_t,ht);
   p_alias = RSTRING(alias)->ptr;
-
   rv = MSG_task_listen_from_host(p_alias,ht);
-
   if (rv)
     return Qtrue;
   return Qfalse;
@@ -164,6 +171,38 @@ void rb_task_cancel(VALUE class,VALUE task)
  m_task_t tk;
  Data_Get_Struct(task,s_m_task_t,tk);
  MSG_task_cancel(tk);
-  
+
+}
+
+void rb_task_set_data(VALUE class,VALUE task,VALUE data)
+{
+ m_task_t tk;
+ rb_data_t rb_data;
+ Data_Get_Struct(task,s_m_task_t,tk);
+ rb_data = MSG_task_get_data(tk);
+ rb_data->user_data = (void*)data;
+ MSG_task_set_data(tk,(void*)rb_data);
+
+}
+
+VALUE rb_task_get_data(VALUE class,VALUE task)
+{
+ m_task_t tk;
+ Data_Get_Struct(task,s_m_task_t,tk);
+ rb_data_t rb_data = MSG_task_get_data(tk);
+ if(!rb_data->user_data)
+	 ERROR1("the task %s contain no user data",MSG_task_get_name(tk));
+
+ return (VALUE)rb_data->user_data;
+}
+
+VALUE rb_task_has_data(VALUE class,VALUE task)
+{
+ m_task_t tk;
+ Data_Get_Struct(task,s_m_task_t,tk);
+ rb_data_t rb_data = MSG_task_get_data(tk);
+ if(!rb_data->user_data)
+	 return Qfalse;
+ return Qtrue;
 }
 

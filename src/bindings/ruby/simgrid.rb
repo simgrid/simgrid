@@ -133,7 +133,7 @@ end
 class MSG::Task < MSG::RbTask
 
   def initialize(*args)
-    super()
+   super() #no effect
   end
   
   def setData(value)
@@ -184,6 +184,10 @@ class MSG::Task < MSG::RbTask
     super(self)
   end
   
+  def hasData()
+    super(self)
+  end
+   
 end  
 ####################################################
 # Host Extend from the native Class RbHost
