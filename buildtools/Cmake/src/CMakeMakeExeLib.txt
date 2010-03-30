@@ -153,7 +153,7 @@ file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "mkdir ${PROJECT_DIRECTORY
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "cp ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd ${PROJECT_DIRECTORY}/src/.classes/surf/simgrid.dtd\n")
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_ARCHIVE} cvf ./src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes -silent . &>/dev/null\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_ARCHIVE} cvf ./src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes . &>/dev/null\n")
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "echo \"[ 50%] Building JAR object src/simgrid.jar\"\n")
