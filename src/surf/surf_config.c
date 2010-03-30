@@ -1,6 +1,4 @@
-/* 	$Id$	 */
-
-/* Copyright (c) 2009 The SimGrid team. All rights reserved.                */
+/* Copyright (c) 2009-2010 The SimGrid team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -97,22 +95,30 @@ static void _surf_cfg_cb__network_model(const char *name, int pos)
   find_model_description(surf_network_model_description, val);
 }
 
-/* callback of the tcp gamma variable */
-static void _surf_cfg_cb__tcp_gamma(const char *name, int pos)
-{
+
+/* callbacks of the network models values */
+static void _surf_cfg_cb__tcp_gamma(const char *name, int pos) {
   sg_tcp_gamma = xbt_cfg_get_double(_surf_cfg_set, name);
 }
+static void _surf_cfg_cb__latency_factor(const char *name, int pos) {
+  sg_latency_factor = xbt_cfg_get_double(_surf_cfg_set, name);
+}
+static void _surf_cfg_cb__bandwidth_factor(const char *name, int pos) {
+  sg_bandwidth_factor = xbt_cfg_get_double(_surf_cfg_set, name);
+}
+static void _surf_cfg_cb__weight_S(const char *name, int pos) {
+  sg_weight_S_parameter = xbt_cfg_get_double(_surf_cfg_set, name);
+}
+static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name, int pos) {
+	sg_maxmin_selective_update = xbt_cfg_get_int(_surf_cfg_set, name);
+}
 
-static void _surf_cfg_cb__surf_path(const char *name, int pos)
-{
+/* callback of the inclusion path */
+static void _surf_cfg_cb__surf_path(const char *name, int pos) {
   char *path = xbt_cfg_get_string_at(_surf_cfg_set, name, pos);
   xbt_dynar_push(surf_path, &path);
 }
 
-static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name, int pos)
-{
-	sg_maxmin_selective_update = xbt_cfg_get_int(_surf_cfg_set, name);
-}
 
 #ifdef HAVE_GTNETS
 static void _surf_cfg_cb__gtnets_jitter(const char *name, int pos){
@@ -133,6 +139,7 @@ void surf_config_init(int *argc, char **argv)
 
     char *description = xbt_malloc(1024), *p = description;
     char *default_value;
+    double double_default_value;
 	int default_value_int;
     int i;
 
@@ -181,14 +188,28 @@ void surf_config_init(int *argc, char **argv)
     default_value = xbt_strdup("Full");
     xbt_cfg_register(&_surf_cfg_set, "routing",
                      "Model to use to store the routing information",
-                     xbt_cfgelm_string, &default_value, 1, 1, NULL,
-                     NULL);
+                     xbt_cfgelm_string, &default_value, 1, 1, NULL, NULL);
 
     xbt_cfg_register(&_surf_cfg_set, "TCP_gamma",
-                     "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; middle value=default value => you probably want default send value)", xbt_cfgelm_double,
-                     NULL, 1, 1, _surf_cfg_cb__tcp_gamma, NULL);
+                     "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; middle value=default value => you probably want default send value)",
+                     xbt_cfgelm_double, NULL, 1, 1, _surf_cfg_cb__tcp_gamma, NULL);
     xbt_cfg_set_double(_surf_cfg_set, "TCP_gamma", 20000.0);
 
+    /* The parameters of network models */
+    double_default_value = 1.0;
+    xbt_cfg_register(&_surf_cfg_set, "network/latency_factor",
+                     "Correction factor to apply to the provided latency (default value set by network model)",
+                     xbt_cfgelm_double, &double_default_value, 1, 1, _surf_cfg_cb__latency_factor, NULL);
+    double_default_value = 1.0;
+    xbt_cfg_register(&_surf_cfg_set, "network/bandwidth_factor",
+                     "Correction factor to apply to the provided bandwidth (default value set by network model)",
+                     xbt_cfgelm_double, &double_default_value, 1, 1, _surf_cfg_cb__bandwidth_factor, NULL);
+    double_default_value = 0.0;
+    xbt_cfg_register(&_surf_cfg_set, "network/weight_S",
+                     "Correction factor to apply to the weight of competing streams(default value set by network model)",
+                     xbt_cfgelm_double, &double_default_value, 1, 1, _surf_cfg_cb__weight_S, NULL);
+
+    /* Inclusion path */
     xbt_cfg_register(&_surf_cfg_set, "path",
                      "Lookup path for inclusions in platform and deployment XML files",
                      xbt_cfgelm_string, NULL, 0, 0, _surf_cfg_cb__surf_path,

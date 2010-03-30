@@ -16,9 +16,9 @@ surf_model_t surf_network_model = NULL;
 static lmm_system_t network_maxmin_system = NULL;
 static void (*network_solve) (lmm_system_t) = NULL;
 
-double latency_factor = 1.0;    /* default value */
-double bandwidth_factor = 1.0;  /* default value */
-double weight_S_parameter = 0.0;        /* default value */
+double sg_latency_factor = 1.0;    /* default value; can be set by model or from command line */
+double sg_bandwidth_factor = 1.0;  /* default value; can be set by model or from command line */
+double sg_weight_S_parameter = 0.0;/* default value; can be set by model or from command line */
 
 double sg_tcp_gamma = 0.0;
 
@@ -38,7 +38,7 @@ static link_CM02_t net_link_new(char *name,
     surf_resource_lmm_new(sizeof(s_link_CM02_t),
                           surf_network_model, name, properties,
                           network_maxmin_system,
-                          bandwidth_factor * bw_initial,
+                          sg_bandwidth_factor * bw_initial,
                           history,
                           state_initial, state_trace,
                           bw_initial, bw_trace);
@@ -279,7 +279,7 @@ static void net_update_resource_state(void *id,
 
   if (event_type == nw_link->lmm_resource.power.event) {
     double delta =
-      weight_S_parameter / value - weight_S_parameter /
+      sg_weight_S_parameter / value - sg_weight_S_parameter /
       (nw_link->lmm_resource.power.peak * nw_link->lmm_resource.power.scale);
     lmm_variable_t var = NULL;
     lmm_element_t elem = NULL;
@@ -288,10 +288,10 @@ static void net_update_resource_state(void *id,
     nw_link->lmm_resource.power.peak = value;
     lmm_update_constraint_bound(network_maxmin_system,
                                 nw_link->lmm_resource.constraint,
-                                bandwidth_factor *
+                                sg_bandwidth_factor *
                                 (nw_link->lmm_resource.power.peak *
                                  nw_link->lmm_resource.power.scale));
-    if (weight_S_parameter > 0) {
+    if (sg_weight_S_parameter > 0) {
       while ((var = lmm_get_var_from_cnst
               (network_maxmin_system, nw_link->lmm_resource.constraint,
                &elem))) {
@@ -402,13 +402,13 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
     action->latency += link->lat_current;
     action->weight +=
       link->lat_current +
-      weight_S_parameter /
+      sg_weight_S_parameter /
       (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
   }
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
   action->lat_current = action->latency;
-  action->latency *= latency_factor;
+  action->latency *= sg_latency_factor;
 
   /* LARGE PLATFORMS HACK:
      lmm_variable_new(..., total_route_size) */
@@ -558,9 +558,9 @@ void surf_network_model_init_LegrandVelho(const char *filename)
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
-  latency_factor = 10.4;
-  bandwidth_factor = 0.92;
-  weight_S_parameter = 8775;
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/latency_factor",10.4);
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/bandwidth_factor", 0.92);
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/weight_S", 8775);
 
   update_model_description(surf_network_model_description,
                            "LV08", surf_network_model);
@@ -602,9 +602,9 @@ void surf_network_model_init_Reno(const char *filename)
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
   network_solve = lagrange_solve;
 
-  latency_factor = 10.4;
-  bandwidth_factor = 0.92;
-  weight_S_parameter = 8775;
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/latency_factor", 10.4);
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/bandwidth_factor", 0.92);
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/weight_S", 8775);
 
   update_model_description(surf_network_model_description,
                            "Reno", surf_network_model);
@@ -623,9 +623,9 @@ void surf_network_model_init_Reno2(const char *filename)
                                     func_reno2_fpi);
   network_solve = lagrange_solve;
 
-  latency_factor = 10.4;
-  bandwidth_factor = 0.92;
-  weight_S_parameter = 8775;
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/latency_factor", 10.4);
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/bandwidth_factor", 0.92);
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/weight_S_parameter", 8775);
 
   update_model_description(surf_network_model_description,
                            "Reno2", surf_network_model);
@@ -643,9 +643,9 @@ void surf_network_model_init_Vegas(const char *filename)
                                     func_vegas_fpi);
   network_solve = lagrange_solve;
 
-  latency_factor = 10.4;
-  bandwidth_factor = 0.92;
-  weight_S_parameter = 8775;
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/latency_factor", 10.4);
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/bandwidth_factor", 0.92);
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/weight_S", 8775);
 
   update_model_description(surf_network_model_description,
                            "Vegas", surf_network_model);

@@ -16,12 +16,18 @@
 #include "surf/random_mgr.h"
 
 #define NO_MAX_DURATION -1.0
+
+/* user-visible parameters */
 extern double sg_tcp_gamma;
+extern double sg_latency_factor;
+extern double sg_bandwidth_factor;
+extern double sg_weight_S_parameter;
 extern int sg_maxmin_selective_update;
 #ifdef HAVE_GTNETS
   extern double sg_gtnets_jitter;
   extern int sg_gtnets_jitter_seed;
 #endif
+
 
 extern const char *surf_action_state_names[6];
 
