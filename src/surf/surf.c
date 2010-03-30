@@ -112,31 +112,30 @@ xbt_dynar_t surf_path = NULL;
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
-  {"Constant", NULL, surf_network_model_init_Constant},
-  {"CM02", NULL, surf_network_model_init_CM02},
-  {"LV08", NULL, surf_network_model_init_LegrandVelho},
+  {"Constant", "Simplistic network model where all communication take a constant time (one second)", NULL, surf_network_model_init_Constant},
+  {"CM02", "Realistic network model with lmm_solve and no correction factors", NULL, surf_network_model_init_CM02},
+  {"LV08", "Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775" , NULL, surf_network_model_init_LegrandVelho},
 #ifdef HAVE_GTNETS
-  {"GTNets", NULL, surf_network_model_init_GTNETS},
+  {"GTNets", "Network Pseudo-model using the GTNets simulator instead of an analytic model", NULL, surf_network_model_init_GTNETS},
 #endif
-  {"Reno", NULL, surf_network_model_init_Reno},
-  {"Reno2", NULL, surf_network_model_init_Reno2},
-  {"Vegas", NULL, surf_network_model_init_Vegas},
-  {NULL, NULL, NULL}            /* this array must be NULL terminated */
+  {"Reno", "Model using lagrange_solve instead of lmm_solve (experts only)", NULL, surf_network_model_init_Reno},
+  {"Reno2", "Model using lagrange_solve instead of lmm_solve (experts only)", NULL, surf_network_model_init_Reno2},
+  {"Vegas", "Model using lagrange_solve instead of lmm_solve (experts only)", NULL, surf_network_model_init_Vegas},
+  {NULL, NULL, NULL, NULL}            /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01_fullupdate", NULL, surf_cpu_model_init_Cas01},
-  {"Cas01", NULL, surf_cpu_model_init_Cas01_im},
-  {"CpuTI", NULL, surf_cpu_model_init_ti},
-  {NULL, NULL, NULL}            /* this array must be NULL terminated */
+  {"Cas01_fullupdate", "CPU classical model time=size/power", NULL, surf_cpu_model_init_Cas01},
+  {"Cas01", "Variation of Cas01_fullupdate with partial invalidation optimization of lmm system. Should produce the same values, only faster", NULL, surf_cpu_model_init_Cas01_im},
+  {"CpuTI", "Variation of Cas01 with also trace integration. Should produce the same values, only faster if you use availability traces", NULL, surf_cpu_model_init_ti},
+  {NULL, NULL, NULL, NULL}            /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_workstation_model_description[] = {
-  {"CLM03", NULL, surf_workstation_model_init_CLM03, create_workstations},
-  {"compound", NULL, surf_workstation_model_init_compound,
-   create_workstations},
-  {"ptask_L07", NULL, surf_workstation_model_init_ptask_L07, NULL},
-  {NULL, NULL, NULL}            /* this array must be NULL terminated */
+  {"CLM03", "Default workstation model, using LV08 and CM02 as network and CPU", NULL, surf_workstation_model_init_CLM03, create_workstations},
+  {"compound", "Workstation model allowing you to use other network and CPU models", NULL, surf_workstation_model_init_compound, create_workstations},
+  {"ptask_L07", "Workstation model with better parallel task modeling", NULL, surf_workstation_model_init_ptask_L07, NULL},
+  {NULL, NULL, NULL, NULL}            /* this array must be NULL terminated */
 };
 
 void update_model_description(s_surf_model_description_t * table,
@@ -144,6 +143,15 @@ void update_model_description(s_surf_model_description_t * table,
 {
   int i = find_model_description(table, name);
   table[i].model = model;
+}
+
+/** Displays the long description of all registered models, and quit */
+void model_help(const char* category, s_surf_model_description_t * table) {
+  int i;
+  printf("Long description of the %s models accepted by this simulator:\n",category);
+  for (i = 0; table[i].name; i++)
+    printf("  %s: %s\n", table[i].name, table[i].description);
+  exit(0);
 }
 
 int find_model_description(s_surf_model_description_t * table,

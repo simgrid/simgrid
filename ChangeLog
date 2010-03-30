@@ -43,6 +43,8 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     o network/bandwidth_factor: correction to bandwith
     o network/latency_factor: correction to latency
     o netwotk/weight_S: correction to the weight of competing streams
+  * Add a long description to the models, that users can see with such
+    argument on the command line: --cfg=cpu/model:help
  SMPI:
   * Implement MPI_Get_count, MPI_MAXLOC, MPI_MINLOC
  XBT:

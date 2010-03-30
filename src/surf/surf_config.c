@@ -32,8 +32,7 @@ static void surf_config_cmd_line(int *argc, char **argv)
       remove_it = 1;
     } else if (!strncmp(argv[i], "--cfg-help", strlen("--cfg-help") + 1) ||
                !strncmp(argv[i], "--help", strlen("--help") + 1)) {
-      printf
-        ("Description of the configuration accepted by this simulator:\n");
+      printf("Description of the configuration accepted by this simulator:\n");
       xbt_cfg_help(_surf_cfg_set);
       remove_it = 1;
       exit(0);
@@ -64,8 +63,11 @@ static void _surf_cfg_cb__workstation_model(const char *name, int pos)
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
-  /* New Module missing */
 
+  if (!strcmp(val,"help"))
+    model_help("workstation",surf_workstation_model_description);
+
+  /* Make sure that the model exists */
   find_model_description(surf_workstation_model_description, val);
 }
 
@@ -78,6 +80,10 @@ static void _surf_cfg_cb__cpu_model(const char *name, int pos)
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
+
+  if (!strcmp(val,"help"))
+    model_help("CPU",surf_cpu_model_description);
+
   /* New Module missing */
   find_model_description(surf_cpu_model_description, val);
 }
@@ -91,6 +97,10 @@ static void _surf_cfg_cb__network_model(const char *name, int pos)
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
+
+  if (!strcmp(val,"help"))
+    model_help("network",surf_network_model_description);
+
   /* New Module missing */
   find_model_description(surf_network_model_description, val);
 }
@@ -150,6 +160,7 @@ void surf_config_init(int *argc, char **argv)
       p +=
         sprintf(p, "%s%s", (i == 0 ? "" : ", "),
                 surf_cpu_model_description[i].name);
+    sprintf(p,".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("Cas01");
     xbt_cfg_register(&_surf_cfg_set,
                      "cpu/model", description, xbt_cfgelm_string,
@@ -163,6 +174,7 @@ void surf_config_init(int *argc, char **argv)
       p +=
         sprintf(p, "%s%s", (i == 0 ? "" : ", "),
                 surf_network_model_description[i].name);
+    sprintf(p,".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("LV08");
     xbt_cfg_register(&_surf_cfg_set,
                      "network/model", description, xbt_cfgelm_string,
@@ -177,6 +189,7 @@ void surf_config_init(int *argc, char **argv)
       p +=
         sprintf(p, "%s%s", (i == 0 ? "" : ", "),
                 surf_workstation_model_description[i].name);
+    sprintf(p,".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("CLM03");
     xbt_cfg_register(&_surf_cfg_set,
                      "workstation/model", description, xbt_cfgelm_string,
@@ -244,6 +257,8 @@ void surf_config_init(int *argc, char **argv)
 
 
     surf_config_cmd_line(argc, argv);
+  } else {
+    WARN0("Call to surf_config_init() after initialization ignored");
   }
 }
 
