@@ -13,7 +13,6 @@ set(libruby "ruby1.8")
 if(NOT disable_ruby)
 	include(FindRuby)
 	set(OKITOKI no)
-	#message("RUBY_INCLUDE_PATH : ${RUBY_INCLUDE_PATH}")
 	foreach(path ${RUBY_INCLUDE_PATH})
 		if(NOT OKITOKI)
 			set(RUBY_INCLUDE_PATH ${path})
@@ -46,9 +45,6 @@ if(disable_java)
 else(disable_java)
 	include(FindJava)
 	include(FindJNI)
-	message("JNI.H : 	${JAVA_INCLUDE_PATH}")
-	message("JNI_MD.H : 	${JAVA_INCLUDE_PATH2}")
-	message("JAVAC : 	${JAVA_COMPILE}")
 	if(JAVA_INCLUDE_PATH)
 		set(HAVE_JNI_H 1)
 	endif(JAVA_INCLUDE_PATH)	
@@ -62,7 +58,6 @@ else(disable_java)
 		SET(HAVE_JAVA 0)
 	endif(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
 endif(disable_java)
-#message("HAVE_JAVA ${HAVE_JAVA}")
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT GTNETS
@@ -82,7 +77,6 @@ else(disable_gtnets)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
 	endif(COMPILE_GTNETS_VAR)
 endif(disable_gtnets)
-#message("HAVE_GTNETS ${HAVE_GTNETS}")
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
@@ -105,7 +99,6 @@ if(pthread MATCHES "yes")
 	    	else(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 1)
 		endif(HAVE_SEM_INIT_run)
-		#message("HAVE_SEM_INIT ${HAVE_SEM_INIT}")
   	endif(HAVE_SEM_INIT_LIB)
 
 	### HAVE_SEM_TIMEDWAIT
@@ -117,7 +110,6 @@ if(pthread MATCHES "yes")
 		else(HAVE_SEM_TIMEDWAIT_run)
 			set(HAVE_SEM_TIMEDWAIT 1)
 		endif(HAVE_SEM_TIMEDWAIT_run)
-		#message("HAVE_SEM_TIMEDWAIT ${HAVE_SEM_TIMEDWAIT}")
 	endif(HAVE_SEM_TIMEDWAIT_LIB)
 
 	### HAVE_MUTEX_TIMEDLOCK
@@ -129,7 +121,6 @@ if(pthread MATCHES "yes")
 		else(HAVE_MUTEX_TIMEDLOCK_run)
 			set(HAVE_MUTEX_TIMEDLOCK 1)
 		endif(HAVE_MUTEX_TIMEDLOCK_run)
-		#message("HAVE_MUTEX_TIMEDLOCK ${HAVE_MUTEX_TIMEDLOCK}")
 	endif(HAVE_MUTEX_TIMEDLOCK_LIB)
 endif(pthread MATCHES "yes")
 
@@ -215,9 +206,6 @@ if(NOT with_context_ok)
 	message(FATAL_ERROR "-Dwith-context must be either ucontext or pthread")
 endif(NOT with_context_ok)
 
-
-#message("CONTEXT_THREADS ${CONTEXT_THREADS}")
-#message("CONTEXT_UCONTEXT ${CONTEXT_UCONTEXT}")
 set(HAVE_LUA 0)
 
 if(NOT disable_lua)
@@ -251,7 +239,6 @@ if(NOT disable_lua)
 			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_LUA5_1_LAUXLIB_H} ")
 			#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-I${HAVE_LUA5_1_LAUXLIB_H} ")
 		endif(NOT HAVE_LUA5_1_LUALIB_H STREQUAL HAVE_LUA5_1_LAUXLIB_H)
-
 	endif(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
 
 	if(LUA_LIB_PATH_1)
@@ -271,30 +258,20 @@ if(NOT disable_lua)
 	endif(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
 
 endif(NOT disable_lua)
-#message("HAVE_LUA ${HAVE_LUA}")
-#message("${HAVE_LUA5_1_LUALIB_H} AND ${HAVE_LUA5_1_LAUXLIB_H}")
-
-#message("______END_CONTEXT______")
 
 ###############
 ## SVN version check
 ##
-#message("\n__________SVN__________")
 if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
-	#exec_program("svn up ${PROJECT_DIRECTORY}")
 	find_file(SVN ".svn" ${PROJECT_DIRECTORY})
 	exec_program("svnversion ${PROJECT_DIRECTORY}" OUTPUT_VARIABLE "SVN_VERSION")
-	#message("SVN_VERSION ${SVN_VERSION}")
 endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
 
 if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 	find_file(GIT ".git" ${PROJECT_DIRECTORY})
 	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log --oneline -1 | sed 's| .*||'" OUTPUT_VARIABLE "GIT_VERSION")
-	#message("GIT_VERSION ${GIT_VERSION}")
 endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
-#message("________END_SVN________\n")
 
-#message("\n_____GRAS_&_SIMGRID____")
 ###################################
 ## SimGrid and GRAS specific checks
 ##
@@ -313,66 +290,63 @@ else(BIGENDIAN)
 set(val_big "l${var1}")
 set(GRAS_BIGENDIAN 0)
 endif(BIGENDIAN)
-#message("GRAS_BIGENDIAN ${GRAS_BIGENDIAN}")
-#message("${val_big}")
 
 if(val_big MATCHES "l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1:")
-	#message("gras_arch=0; gras_size=32; gras_arch_name=little32_1;")
+	#gras_arch=0; gras_size=32; gras_arch_name=little32_1;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 0)
 endif(val_big MATCHES "l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1:")
 if(val_big MATCHES "l_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:")
-	#message("gras_arch=1; gras_size=32; gras_arch_name=little32_2;")
+	#gras_arch=1; gras_size=32; gras_arch_name=little32_2;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 1)
 endif(val_big MATCHES "l_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:")
 if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:") 
-	#message("gras_arch=2; gras_size=32; gras_arch_name=little32_4;")
+	#gras_arch=2; gras_size=32; gras_arch_name=little32_4;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 2)
 endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
 if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:") 
-	#message("gras_arch=3; gras_size=32; gras_arch_name=little32_8;")
+	#gras_arch=3; gras_size=32; gras_arch_name=little32_8;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 3)
 endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:") 
 if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
-	#message("gras_arch=4; gras_size=64; gras_arch_name=little64;")
+	#gras_arch=4; gras_size=64; gras_arch_name=little64;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 4)
 endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:") 
-	#message("gras_arch=5; gras_size=32; gras_arch_name=big32;")
+	#gras_arch=5; gras_size=32; gras_arch_name=big32;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 5)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:") 
-	#message("gras_arch=6; gras_size=32; gras_arch_name=big32_8_4;")
+	#gras_arch=6; gras_size=32; gras_arch_name=big32_8_4;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 6)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:") 
-	#message("gras_arch=7; gras_size=32; gras_arch_name=big32_4;")
+	#gras_arch=7; gras_size=32; gras_arch_name=big32_4;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 7)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
-	#message("gras_arch=8; gras_size=32; gras_arch_name=big32_2;")
+	#gras_arch=8; gras_size=32; gras_arch_name=big32_2;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 8)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
-	#message("gras_arch=9; gras_size=64; gras_arch_name=big64;")
+	#gras_arch=9; gras_size=64; gras_arch_name=big64;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 9)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
-	#message("gras_arch=10;gras_size=64; gras_arch_name=big64_8_4;")
+	#gras_arch=10;gras_size=64; gras_arch_name=big64_8_4;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 10)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
-	#message("GRAS_ARCH_32_BITS ${GRAS_ARCH_32_BITS}")
 
 
 # Check architecture signature end
@@ -384,7 +358,6 @@ try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 separate_arguments(var2)
 foreach(var_tmp ${var2})
 	set(${var_tmp} 1)
-	#message("${var_tmp} ${${var_tmp}}")
 endforeach(var_tmp ${var2})
 
 # Check for [SIZEOF_MAX]
@@ -394,20 +367,15 @@ try_run(RUN_SM_VAR COMPILE_SM_VAR
 	RUN_OUTPUT_VARIABLE var3
 	)
 SET(SIZEOF_MAX ${var3})
-#message("SIZEOF_MAX ${SIZEOF_MAX}")
-
 
 #--------------------------------------------------------------------------------------------------
 
-
 CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
-#message("HAVE_MAKECONTEXT ${HAVE_MAKECONTEXT}")
 set(makecontext_CPPFLAGS_2 "")
 if(HAVE_MAKECONTEXT)
 	set(makecontext_CPPFLAGS "-DTEST_makecontext")
 	if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 		set(makecontext_CPPFLAGS_2 "-DOSX")
-		#message("SYSTEM OSX")
 	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
@@ -419,8 +387,6 @@ if(HAVE_MAKECONTEXT)
 
 	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_addr")
 	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_size")
-	message("${makecontext_addr}")
-	message("${makecontext_size}")
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
 	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
 
@@ -441,8 +407,6 @@ endif(stack MATCHES "down")
 if(stack MATCHES "up")
 	set(PTH_STACKGROWTH "1")
 endif(stack MATCHES "up")
-#message("PTH_STACKGROWTH ${PTH_STACKGROWTH}")
-
 
 ###############
 ## System checks
@@ -466,7 +430,6 @@ SET(PRINTF_NULL_WORKING "0")
 else(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
 SET(PRINTF_NULL_WORKING "1")
 endif(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
-#message("PRINTF_NULL_WORKING ${PRINTF_NULL_WORKING}")
 
 #AC_CHECK_VA_COPY
 
@@ -521,7 +484,6 @@ foreach(fct ${diff_va})
 
 		if(${fctbis} STREQUAL "va_copy((d),(s))")
 			set(HAVE_VA_COPY 1)
-			#message("HAVE_VA_COPY ${HAVE_VA_COPY}")
 			set(ac_cv_va_copy "C99")
 			set(__VA_COPY_USE_C99 "va_copy((d),(s))")	
 		endif(${fctbis} STREQUAL "va_copy((d),(s))")
@@ -563,9 +525,7 @@ foreach(fct ${diff_va})
 				
 		if(NOT STATUS_OK)
 		set(__VA_COPY_USE "__VA_COPY_USE_${ac_cv_va_copy}")
-		#message("__VA_COPY_USE VA_COPY_USE_${ac_cv_va_copy}")
 		endif(NOT STATUS_OK)
-		#message("__VA_COPY_USE_${ac_cv_va_copy} ${fctbis}")
 		set(STATUS_OK "1")
 
 	endif(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")
@@ -574,45 +534,24 @@ endforeach(fct ${diff_va})
 # Checks for header files.
 
 CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
-#message("STDC_HEADERS ${STDC_HEADERS}")
 CHECK_INCLUDE_FILES("time.h;sys/time.h" TIME_WITH_SYS_TIME)
-#message("TIME_WITH_SYS_TIME ${TIME_WITH_SYS_TIME}")
-
 CHECK_INCLUDE_FILE(sys/socket.h HAVE_SYS_SOCKET_H)
-#message("HAVE_SOCKET_H ${HAVE_SOCKET_H}")
 CHECK_INCLUDE_FILE(sys/stat.h HAVE_SYS_STAT_H)
-#message("HAVE_STAT_H ${HAVE_STAT_H}")
 CHECK_INCLUDE_FILE(windows.h HAVE_WINDOWS_H)
-#message("HAVE_WINDOWS_H ${HAVE_WINDOWS_H}")
 CHECK_INCLUDE_FILE(winsock.h HAVE_WINSOCK_H)
-#message("HAVE_WINSOCK_H ${HAVE_WINSOCK_H}")
 CHECK_INCLUDE_FILE(winsock2.h HAVE_WINSOCK2_H)
-#message("HAVE_WINSOCK2_H ${HAVE_WINSOCK2_H}")
 CHECK_INCLUDE_FILE(sys/time.h HAVE_SYS_TIME_H)
-#message("HAVE_TIME_H ${HAVE_TIME_H}")
 CHECK_INCLUDE_FILE(errno.h HAVE_ERRNO_H)
-#message("HAVE_ERRNO_H ${HAVE_ERRNO_H}")
 CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
-#message("HAVE_UNISTD_H ${HAVE_UNISTD_H}")
 CHECK_INCLUDE_FILE(execinfo.h HAVE_EXECINFO_H)
-#message("HAVE_EXECINFO_H ${HAVE_EXECINFO_H}")
 CHECK_INCLUDE_FILE(signal.h HAVE_SIGNAL_H)
-#message("HAVE_SIGNAL_H ${HAVE_SIGNAL_H}")
-
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
-#message("HAVE_GETTIMEOFDAY ${HAVE_GETTIMEOFDAY}")
 CHECK_FUNCTION_EXISTS(usleep HAVE_USLEEP)
-#message("HAVE_USLEEP ${HAVE_USLEEP}")
 CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
-#message("HAVE_GETDTABLESIZE ${HAVE_GETDTABLESIZE}")
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
-#message("HAVE_SYSCONF ${HAVE_SYSCONF}")
 CHECK_FUNCTION_EXISTS(readv HAVE_READV)
-#message("HAVE_READV ${HAVE_READV}")
 CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
-#message("HAVE_POPEN ${HAVE_POPEN}")
 CHECK_FUNCTION_EXISTS(signal HAVE_SIGNAL)
-#message("HAVE_SIGNAL ${HAVE_SIGNAL}")
 
 #--------------------------------------------------------------------------------------------------
 ### Try execut getline command
@@ -638,7 +577,6 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_snprintf.c
 		)
 	if(CMAKE_CROSSCOMPILING)
-		#message("SNPRINTF_FUNC CROSSCOMPILING")
 		set(RUN_SNPRINTF_FUNC "cross") 
 	endif(CMAKE_CROSSCOMPILING)
 
@@ -647,7 +585,6 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_vsnprintf.c
 		)
 	if(CMAKE_CROSSCOMPILING)
-		#message("VSNPRINTF_FUNC CROSSCOMPILING")
 		set(RUN_VSNPRINTF_FUNC "cross")
 	endif(CMAKE_CROSSCOMPILING)
 	set(PREFER_PORTABLE_SNPRINTF 0)
@@ -657,7 +594,6 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 	if(RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
 		set(PREFER_PORTABLE_SNPRINTF 1)
 	endif(RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
-	#message("PREFER_PORTABLE_SNPRINTF ${PREFER_PORTABLE_SNPRINTF}")
 endif(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 ### check for asprintf function familly
@@ -712,5 +648,3 @@ configure_file(${PROJECT_DIRECTORY}/src/smpi/smpirun.in ${PROJECT_DIRECTORY}/src
 
 exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpicc" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE OKITOKI)
-
-#message("__END_GRAS_&_SIMGRID____\n")

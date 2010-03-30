@@ -171,6 +171,7 @@ ADD_TEST(simdag-metaxml_test	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT
 # smpi examples
 ADD_TEST(smpi-bcast 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi bcast.tesh)
 ADD_TEST(smpi-reduce 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi reduce.tesh)
+
 if(HAVE_GTNETS)
 ADD_TEST(msg-gtnets1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-waxman.tesh)
 ADD_TEST(msg-gtnets2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-gtnets.tesh)
@@ -219,9 +220,3 @@ set_tests_properties(tesh-gras-dd-r_big32_2 PROPERTIES WILL_FAIL true)
 # Expected to fail until the parser gets better (v3.3.5?)
 set_tests_properties(simdag-metaxml_test PROPERTIES WILL_FAIL true)   
 set_tests_properties(tesh-simdag-flatifier PROPERTIES WILL_FAIL true)
-
-# Due to LD_LIBRARY_PATH not set for lgtnets
-if(HAVE_GTNETS)
-set_tests_properties(smpi-bcast PROPERTIES WILL_FAIL true)   
-set_tests_properties(smpi-reduce PROPERTIES WILL_FAIL true)
-endif(HAVE_GTNETS)
