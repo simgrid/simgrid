@@ -3,7 +3,7 @@ set(simgrid_version "3.3.5")
 set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}_rev_${SVN_VERSION}${GIT_VERSION}")
+set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}~${SVN_VERSION}${GIT_DATE}")
 set(CPACK_GENERATOR "TBZ2") #;TGZ;TZ;ZIP
 
 set(to_svg	
