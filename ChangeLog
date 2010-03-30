@@ -34,6 +34,11 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Add a MSG_task_set_data() function
  SIMIX:
   * add a SIMIX_sem_get_capacity() function
+ SURF:
+  * Rename configuration variables to start a hierarchy:
+    o cpu_model -> cpu/model
+    o network_model -> network/model
+    o workstation_model -> workstation/model
  SMPI:
   * Implement MPI_Get_count, MPI_MAXLOC, MPI_MINLOC
  XBT:

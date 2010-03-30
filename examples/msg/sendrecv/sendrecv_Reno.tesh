@@ -3,10 +3,10 @@
 p Testing the surf network Reno fairness model using lagrangian approach
 
 
-$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml "--cfg=workstation_model:compound cpu_model:Cas01 network_model:Reno" --log=surf_lagrange.thres=critical
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'compound'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'Reno'
+$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Reno" --log=surf_lagrange.thres=critical
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Reno'
 > [0.000000] [msg_test/INFO] test_all
 > [Inmos:sender:(1) 0.000000] [msg_test/INFO] sender
 > [Inmos:sender:(1) 0.000000] [msg_test/INFO] host = Bellevue

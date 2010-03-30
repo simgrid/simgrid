@@ -167,14 +167,14 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  /* Options for the workstation_model:
+  /* Options for the workstation/model:
 
      KCCFLN05              => for maxmin
      KCCFLN05_proportional => for proportional (Vegas)
      KCCFLN05_Vegas        => for TCP Vegas
      KCCFLN05_Reno         => for TCP Reno
    */
-  //MSG_config("workstation_model", argv[3]);
+  //MSG_config("workstation/model", argv[3]);
 
   res = test_all(argv[1], argv[2]);
 

@@ -57,7 +57,7 @@ int _surf_init_status = 0;      /* 0: beginning of time;
                                    1: pre-inited (cfg_set created);
                                    2: inited (running) */
 
-/* callback of the workstation_model variable */
+/* callback of the workstation/model variable */
 static void _surf_cfg_cb__workstation_model(const char *name, int pos)
 {
   char *val;
@@ -71,7 +71,7 @@ static void _surf_cfg_cb__workstation_model(const char *name, int pos)
   find_model_description(surf_workstation_model_description, val);
 }
 
-/* callback of the cpu_model variable */
+/* callback of the cpu/model variable */
 static void _surf_cfg_cb__cpu_model(const char *name, int pos)
 {
   char *val;
@@ -145,7 +145,7 @@ void surf_config_init(int *argc, char **argv)
                 surf_cpu_model_description[i].name);
     default_value = xbt_strdup("Cas01");
     xbt_cfg_register(&_surf_cfg_set,
-                     "cpu_model", description, xbt_cfgelm_string,
+                     "cpu/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__cpu_model, NULL);
 
     sprintf(description,
@@ -158,7 +158,7 @@ void surf_config_init(int *argc, char **argv)
                 surf_network_model_description[i].name);
     default_value = xbt_strdup("LV08");
     xbt_cfg_register(&_surf_cfg_set,
-                     "network_model", description, xbt_cfgelm_string,
+                     "network/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__network_model,
                      NULL);
 
@@ -172,7 +172,7 @@ void surf_config_init(int *argc, char **argv)
                 surf_workstation_model_description[i].name);
     default_value = xbt_strdup("CLM03");
     xbt_cfg_register(&_surf_cfg_set,
-                     "workstation_model", description, xbt_cfgelm_string,
+                     "workstation/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__workstation_model,
                      NULL);
 
@@ -243,15 +243,15 @@ void surf_config_models_setup(const char *platform_file)
   surf_timer_model_init(platform_file);
 
   workstation_model_name =
-    xbt_cfg_get_string(_surf_cfg_set, "workstation_model");
-  char *network_model_name = xbt_cfg_get_string(_surf_cfg_set, "network_model");
-  char *cpu_model_name = xbt_cfg_get_string(_surf_cfg_set, "cpu_model");
+    xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
+  char *network_model_name = xbt_cfg_get_string(_surf_cfg_set, "network/model");
+  char *cpu_model_name = xbt_cfg_get_string(_surf_cfg_set, "cpu/model");
 
   if ((strcmp(network_model_name,"LV08") || strcmp(cpu_model_name,"Cas01"))
       && !strcmp(workstation_model_name, "CLM03")){
     const char *val = "compound";
     INFO0("Switching workstation model to compound since you changed the network and/or cpu model(s)");
-    xbt_cfg_set_string(_surf_cfg_set,"workstation_model",val);
+    xbt_cfg_set_string(_surf_cfg_set,"workstation/model",val);
     workstation_model_name = (char*)"compound";
   }
 
@@ -288,7 +288,7 @@ void surf_config_models_setup(const char *platform_file)
 void surf_config_models_create_elms(void)
 {
   char *workstation_model_name =
-    xbt_cfg_get_string(_surf_cfg_set, "workstation_model");
+    xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
   int workstation_id =
     find_model_description(surf_workstation_model_description,
                            workstation_model_name);

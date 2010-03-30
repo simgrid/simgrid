@@ -2,8 +2,8 @@
 
 p Testing the surf network maxmin fairness model
 
-$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation_model:CLM03
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'CLM03'
+$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'CLM03'
 > [0.000000] [msg_test/INFO] test_all
 > [Inmos:sender:(1) 0.000000] [msg_test/INFO] sender
 > [Inmos:sender:(1) 0.000000] [msg_test/INFO] host = Bellevue

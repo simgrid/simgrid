@@ -2,10 +2,10 @@
 
 p Testing the surf network maxmin fairness model
 
-$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation_model:CLM03 --cfg=cpu_model:Cas01 --cfg=network_model:CM02
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation_model' to 'CLM03'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu_model' to 'Cas01'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network_model' to 'CM02'
+$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03 --cfg=cpu/model:Cas01 --cfg=network/model:CM02
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'CLM03'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
 > [0.000000] [msg_test/INFO] test_all
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [Inmos:sender:(1) 0.000000] [msg_test/INFO] sender

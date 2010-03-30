@@ -72,7 +72,7 @@ void SD_init(int *argc, char **argv)
   sd_global->task_number = 0;
 
   surf_init(argc, argv);
-  xbt_cfg_set_string(_surf_cfg_set, "workstation_model", "ptask_L07");
+  xbt_cfg_set_string(_surf_cfg_set, "workstation/model", "ptask_L07");
 }
 
 /**

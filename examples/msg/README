@@ -24,7 +24,7 @@ OLD NAME: ping_pong.c
     make sendrecv/sendrecv
 
     - Execute:
-    sendrecv/sendrecv <platformfile.xml> <deploymentfile.xml> --cfg=workstation_model:<networkmodel>
+    sendrecv/sendrecv <platformfile.xml> <deploymentfile.xml> --cfg=workstation/model:<networkmodel>
     where networkmodel can be one of the following:
         1) CLM03                 - Simple fairness model
         2) KFCCNL05              - Maxmin fairness

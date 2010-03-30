@@ -15,7 +15,7 @@
 /** \brief set a configuration variable
  *
  * Currently existing configuation variable:
- *   - workstation_model (string): Model of workstation to use.
+ *   - workstation/model (string): Model of workstation to use.
  *     Possible values (defaults to "KCCFLN05"):
  *     - "CLM03": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + support for parallel tasks
  *     - "KCCFLN05": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file.
@@ -25,7 +25,7 @@
  *     - "KCCFLN05_Reno": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file. Uses the fairness adapted to the TCP Reno flow control.
  *
  * Example:
- * MSG_config("workstation_model","KCCFLN05");
+ * MSG_config("workstation/model","KCCFLN05");
  */
 void MSG_config(const char *name, ...)
 {

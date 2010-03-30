@@ -63,7 +63,7 @@ MSG_error_t test_all(const char *platform_file)
 {
   MSG_error_t res = MSG_OK;
 
-  MSG_config("workstation_model", "ptask_L07");
+  MSG_config("workstation/model", "ptask_L07");
   MSG_set_channel_number(1);
   MSG_create_environment(platform_file);
 

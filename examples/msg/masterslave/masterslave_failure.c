@@ -182,7 +182,7 @@ MSG_error_t test_all(const char *platform_file, const char *application_file)
 {
   MSG_error_t res = MSG_OK;
 
-  /* MSG_config("workstation_model","KCCFLN05"); */
+  /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */
     MSG_set_channel_number(MAX_CHANNEL);
     MSG_create_environment(platform_file);
