@@ -45,6 +45,7 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     o netwotk/weight_S: correction to the weight of competing streams
   * Add a long description to the models, that users can see with such
     argument on the command line: --cfg=cpu/model:help
+  * --help-models display the long description of all known models
  SMPI:
   * Implement MPI_Get_count, MPI_MAXLOC, MPI_MINLOC
  XBT:

@@ -151,7 +151,6 @@ void model_help(const char* category, s_surf_model_description_t * table) {
   printf("Long description of the %s models accepted by this simulator:\n",category);
   for (i = 0; table[i].name; i++)
     printf("  %s: %s\n", table[i].name, table[i].description);
-  exit(0);
 }
 
 int find_model_description(s_surf_model_description_t * table,
