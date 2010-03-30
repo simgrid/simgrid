@@ -63,7 +63,7 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakePrintArgs.txt)
 
 ### Make Docs
 if(enable_maintainer_mode)
-	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDocs.txt)
+	#include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDocs.txt)
 endif(enable_maintainer_mode)
 
 INCLUDE(Dart)

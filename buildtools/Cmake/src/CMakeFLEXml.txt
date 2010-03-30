@@ -1,5 +1,7 @@
 if(enable_maintainer_mode)
-
+message("")
+message("________________________________________________________________________________")
+message("________________________________________________________________________________ FLEXMl")
 find_program(FLEX_EXE NAMES flex)
 find_program(FLEXML_EXE NAMES flexml)
 
@@ -15,29 +17,31 @@ ENDIF(FLEXML_EXE)
 
 		file(REMOVE "${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c ${PROJECT_DIRECTORY}/src/xbt/graphxml.c ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c ${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h ${PROJECT_DIRECTORY}/include/xbt/graphxml.h ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h")
 
-		exec_program("${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l -L ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd" OUTPUT_VARIABLE "FLEX_OK")
-		exec_program("${FLEXML_EXE} --root-tags platform -P surfxml --sysid=simgrid.dtd -H ${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h -L ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd" OUTPUT_VARIABLE "FLEX_OK")
+		exec_program("${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l -L ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd" "${PROJECT_DIRECTORY}/src/")
+		exec_program("${FLEXML_EXE} --root-tags platform -P surfxml --sysid=simgrid.dtd -H ${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h -L ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd" "${PROJECT_DIRECTORY}/src/")
 
-		exec_program("${FLEXML_EXE} -b 1000000 -P graphxml --sysid=graphxml.dtd -S ${PROJECT_DIRECTORY}/src/xbt/graphxml.l -L ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd" OUTPUT_VARIABLE "FLEX_OK")
-		exec_program("${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H ${PROJECT_DIRECTORY}/include/xbt/graphxml.h -L ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd" OUTPUT_VARIABLE "FLEX_OK")
+		exec_program("${FLEXML_EXE} -b 1000000 -P graphxml --sysid=graphxml.dtd -S ${PROJECT_DIRECTORY}/src/xbt/graphxml.l -L ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd" "${PROJECT_DIRECTORY}/src/")
+		exec_program("${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H ${PROJECT_DIRECTORY}/include/xbt/graphxml.h -L ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd" "${PROJECT_DIRECTORY}/src/")
 
-		exec_program("${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l -L ${PROJECT_DIRECTORY}/src/simdag/dax.dtd" OUTPUT_VARIABLE "FLEX_OK")
-		exec_program("${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h -L ${PROJECT_DIRECTORY}/src/simdag/dax.dtd" OUTPUT_VARIABLE "FLEX_OK")
+		exec_program("${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l -L ${PROJECT_DIRECTORY}/src/simdag/dax.dtd" "${PROJECT_DIRECTORY}/src/")
+		exec_program("${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h -L ${PROJECT_DIRECTORY}/src/simdag/dax.dtd" "${PROJECT_DIRECTORY}/src/")
 
 		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c -Psurf_parse_ --noline ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l"
-		OUTPUT_VARIABLE "FLEX_OK")		
+		"${PROJECT_DIRECTORY}/src/")		
 		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/xbt/graphxml.c -Pxbt_graph_parse_ --noline ${PROJECT_DIRECTORY}/src/xbt/graphxml.l"
-		OUTPUT_VARIABLE "FLEX_OK")
+		"${PROJECT_DIRECTORY}/src/")
 		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c -Pdax_ --noline ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l"
-		OUTPUT_VARIABLE "FLEX_OK")
+		"${PROJECT_DIRECTORY}/src/")
 
-		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline ${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.l"	OUTPUT_VARIABLE "FLEX_OK")
+		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline ${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.l"	"${PROJECT_DIRECTORY}/src/")
 	
 	elseif(HAVE_FLEXML AND HAVE_FLEX)
 		message("HAVE_FLEX ${HAVE_FLEX}")
 		message("HAVE_FLEXML ${HAVE_FLEXML}")
 		message(FATAL_ERROR "Install flex and flexml before use maintainer mode")
 	endif(HAVE_FLEXML AND HAVE_FLEX)
-
+message("")
+message("________________________________________________________________________________")
+message("________________________________________________________________________________ FLEXML END")
 endif(enable_maintainer_mode)
 
