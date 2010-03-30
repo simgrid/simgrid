@@ -30,6 +30,7 @@ src/*_unit.c
 src/supernovae_*.c
 src/simgrid_units_main.c
 src/gras_config.h.in
+make_simgrid_java.sh
 
 testgraph.dot
 testgraph.xml

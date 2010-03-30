@@ -101,4 +101,21 @@ COMMAND rm ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/Makefile
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc"
 )
 
+add_custom_target(dist
+COMMAND make package
+COMMAND rm -rf ${PROJECT_DIRECTORY}/_CPack_Packages
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
+add_custom_target(distcheck
+COMMAND make package
+COMMAND rm -rf ${PROJECT_DIRECTORY}/_CPack_Packages
+COMMAND tar xvf ${CPACK_PACKAGE_FILE_NAME}.tar.bz2
+COMMAND cd ${CPACK_PACKAGE_FILE_NAME}
+COMMAND cd ${CPACK_PACKAGE_FILE_NAME} && cmake -Ddisable_java=on .
+COMMAND cd ${CPACK_PACKAGE_FILE_NAME} && make
+COMMAND cd ${CPACK_PACKAGE_FILE_NAME} && make test
+COMMAND rm -rf ${CPACK_PACKAGE_FILE_NAME}
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
+
 include(CPack)

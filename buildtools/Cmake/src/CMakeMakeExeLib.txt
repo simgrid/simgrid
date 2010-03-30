@@ -125,25 +125,55 @@ add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/properties)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
 
 if(HAVE_JAVA)
-	exec_program("rm -rf ${PROJECT_DIRECTORY}/src/.classes" OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("rm ${PROJECT_DIRECTORY}/src/simgrid.jar" OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("mkdir ${PROJECT_DIRECTORY}/src/.classes" OUTPUT_VARIABLE "SIM_JAR_OK")
+
+	add_custom_command(TARGET simgrid
+	POST_BUILD
+	COMMAND echo "[  0%] Building JAR object src/simgrid.jar"
+	COMMAND /bin/sh ${PROJECT_DIRECTORY}/make_simgrid_java.sh
+	COMMAND echo "[100%] Building JAR object src/simgrid.jar"
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+	)
+
 	foreach(file ${JMSG_JAVA_SRC})
 		set(java_src_to_compile "${java_src_to_compile} ${file}")	
 	endforeach(file ${JMSG_JAVA_SRC})
 
-	exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/src/.classes -cp ${PROJECT_DIRECTORY}/src/.classes ${java_src_to_compile}" OUTPUT_VARIABLE "SIM_COMPILE_OK")	
-	exec_program("mkdir ${PROJECT_DIRECTORY}/src/.classes/surf" OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("cp ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd ${PROJECT_DIRECTORY}/src/.classes/surf/simgrid.dtd" OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("${JAVA_ARCHIVE}" ARGS "cvf ./src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes ." OUTPUT_VARIABLE "SIM_JAR_OK")
+file(WRITE	${PROJECT_DIRECTORY}/make_simgrid_java.sh 
+"\#! /bin/sh\n\n")
 
-	exec_program("rm ${PROJECT_DIRECTORY}/examples/java/basic/*.class" OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("rm ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.class" OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("rm ${PROJECT_DIRECTORY}/examples/java/comm_time/*.class" OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("rm ${PROJECT_DIRECTORY}/examples/java/suspend/*.class" OUTPUT_VARIABLE "SIM_JAR_OK")
-	exec_program("${JAVA_COMPILE}" ARGS "-d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java"  OUTPUT_VARIABLE "SIM_JAR_OK")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -rf ${PROJECT_DIRECTORY}/src/.classes\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm ${PROJECT_DIRECTORY}/src/simgrid.jar\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "mkdir ${PROJECT_DIRECTORY}/src/.classes\n")
+
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/src/.classes -cp ${PROJECT_DIRECTORY}/src/.classes ${java_src_to_compile}\n")
+
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "mkdir ${PROJECT_DIRECTORY}/src/.classes/surf\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "cp ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd ${PROJECT_DIRECTORY}/src/.classes/surf/simgrid.dtd\n")
+
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_ARCHIVE} cvf ./src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes -silent . &>/dev/null\n")
+
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "echo \"[ 50%] Building JAR object src/simgrid.jar\"\n")
+
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm ${PROJECT_DIRECTORY}/examples/java/basic/*.class\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java\n")
+
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.class\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java\n")
+
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "rm ${PROJECT_DIRECTORY}/examples/java/comm_time/*.class\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java\n")
+
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm ${PROJECT_DIRECTORY}/examples/java/suspend/*.class\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java\n")
 
 endif(HAVE_JAVA)
+
+
