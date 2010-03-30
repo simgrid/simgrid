@@ -10,7 +10,7 @@ else(supernovae)
 endif(supernovae)
 
 set(GRAS_DEP "pthread")
-set(SIMGRID_DEP "ruby1.8")
+set(SIMGRID_DEP ${libruby})
 set(SMPI_DEP "")
 
 if(HAVE_RUBY_H)
@@ -43,8 +43,8 @@ if(HAVE_GTNETS)
 endif(HAVE_GTNETS)
 
 if(NOT HAVE_RUBY_H)
-	string(REPLACE "ruby1.8 -l" "" SIMGRID_DEP ${SIMGRID_DEP})
-	string(REPLACE "ruby1.8" "" SIMGRID_DEP ${SIMGRID_DEP})
+	string(REPLACE "${libruby} -l" "" SIMGRID_DEP ${SIMGRID_DEP})
+	string(REPLACE "${libruby}" "" SIMGRID_DEP ${SIMGRID_DEP})
 endif(NOT HAVE_RUBY_H)
 
 target_link_libraries(simgrid 	${SIMGRID_DEP} -fprofile-arcs)
