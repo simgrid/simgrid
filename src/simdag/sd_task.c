@@ -644,25 +644,27 @@ double SD_task_get_execution_time(SD_task_t task,
   double time, max_time = 0.0;
   int i, j;
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL && workstation_nb > 0 && workstation_list != NULL
-              && computation_amount != NULL
-              && communication_amount != NULL, "Invalid parameter");
+  xbt_assert0(task != NULL && workstation_nb > 0 && workstation_list != NULL,
+              "Invalid parameter");
 
   /* the task execution time is the maximum execution time of the parallel tasks */
 
   for (i = 0; i < workstation_nb; i++) {
-    time =
-      SD_workstation_get_computation_time(workstation_list[i],
-                                          computation_amount[i]);
+    time = 0.0;
+    if (computation_amount != NULL)
+      time =
+          SD_workstation_get_computation_time(workstation_list[i],
+              computation_amount[i]);
 
-    for (j = 0; j < workstation_nb; j++) {
-      time +=
-        SD_route_get_communication_time(workstation_list[i],
-                                        workstation_list[j],
-                                        communication_amount[i *
-                                                             workstation_nb +
-                                                             j]);
-    }
+    if (communication_amount != NULL)
+      for (j = 0; j < workstation_nb; j++) {
+        time +=
+            SD_route_get_communication_time(workstation_list[i],
+                workstation_list[j],
+                communication_amount[i *
+                                     workstation_nb +
+                                     j]);
+      }
 
     if (time > max_time) {
       max_time = time;
