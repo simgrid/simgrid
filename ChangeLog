@@ -36,6 +36,9 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * add a SIMIX_sem_get_capacity() function
  SMPI:
   * Implement MPI_Get_count, MPI_MAXLOC, MPI_MINLOC
+ XBT:
+  * config: add the ability to set a default value after registration
+    Does not override any previously set value (e.g. from cmd line)
  
       
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>

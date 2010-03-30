@@ -110,6 +110,16 @@ XBT_PUBLIC(void) xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name,
                                   const char *peer, int port);
 
 /*
+  Set the default value of the cell \a name in \a cfg with the provided value.
+  If it was already set to something (possibly from the command line), do nothing.
+ */
+XBT_PUBLIC(void) xbt_cfg_setdefault_int(xbt_cfg_t cfg, const char *name, int val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_double(xbt_cfg_t cfg, const char *name, double val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_string(xbt_cfg_t cfg, const char *name, const char* val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_peer(xbt_cfg_t cfg, const char *name, const char* host, int port);
+
+
+/*
  Remove the provided value from the cell @name in @cfg.
  */
 XBT_PUBLIC(void) xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val);

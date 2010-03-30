@@ -34,6 +34,7 @@ typedef struct {
   /* Allowed type of the variable */
   e_xbt_cfgelm_type_t type;
   int min, max;
+  int isdefault:1;
 
   /* Callbacks */
   xbt_cfg_cb_t cb_set;
@@ -230,6 +231,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
   res->max = max;
   res->cb_set = cb_set;
   res->cb_rm = cb_rm;
+  res->isdefault = 1;
 
   switch (type) {
   case xbt_cfgelm_int:
@@ -345,8 +347,12 @@ void xbt_cfg_help(xbt_cfg_t cfg)
   xbt_dict_foreach((xbt_dict_t) cfg, cursor, name, variable) {
     printf("   %s: %s\n", name, variable->desc);
     printf("       Type: %s; ", xbt_cfgelm_type_name[variable->type]);
-    if (variable->min != 1 || variable->max != 1)
-      printf("Arrity: min:%d to max:%d; ", variable->min, variable->max);
+    if (variable->min != 1 || variable->max != 1) {
+      if (variable->min == 0 && variable->max == 0)
+        printf("Arity: no bound; ");
+      else
+        printf("Arity: min:%d to max:%d; ", variable->min, variable->max);
+    }
     printf("Current value: ");
     size = xbt_dynar_length(variable->content);
 
@@ -635,7 +641,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
       if (e.category == not_found_error) {
         xbt_ex_free(e);
         THROW1(not_found_error, 0,
-               "No registrated variable corresponding to '%s'.", name);
+               "No registered variable corresponding to '%s'.", name);
       }
       RETHROW;
     }
@@ -706,6 +712,60 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
 
 }
 
+/** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
+ *
+ * This is useful to change the default value of a variable while allowing
+ * users to override it with command line arguments
+ */
+void xbt_cfg_setdefault_int(xbt_cfg_t cfg, const char *name, int val) {
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
+
+  if (variable->isdefault)
+    xbt_cfg_set_int(cfg, name,val);
+  else
+    DEBUG2("Do not override configuration variable '%s' with value '%d' because it was already set.",name,val);
+}
+/** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
+ *
+ * This is useful to change the default value of a variable while allowing
+ * users to override it with command line arguments
+ */
+void xbt_cfg_setdefault_double(xbt_cfg_t cfg, const char *name, double val) {
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
+
+  if (variable->isdefault)
+    xbt_cfg_set_double(cfg, name, val);
+  else
+    DEBUG2("Do not override configuration variable '%s' with value '%lf' because it was already set.",name,val);
+}
+/** @brief Set a string value to \a name within \a cfg if it wasn't changed yet
+ *
+ * This is useful to change the default value of a variable while allowing
+ * users to override it with command line arguments
+ */
+void xbt_cfg_setdefault_string(xbt_cfg_t cfg, const char *name, const char* val) {
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
+
+  if (variable->isdefault)
+    xbt_cfg_set_string(cfg, name,val);
+  else
+    DEBUG2("Do not override configuration variable '%s' with value '%s' because it was already set.",name,val);
+}
+/** @brief Set a peer value to \a name within \a cfg if it wasn't changed yet
+ *
+ * This is useful to change the default value of a variable while allowing
+ * users to override it with command line arguments
+ */
+void xbt_cfg_setdefault_peer(xbt_cfg_t cfg, const char *name, const char* host, int port) {
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
+
+  if (variable->isdefault)
+    xbt_cfg_set_peer(cfg, name, host, port);
+  else
+    DEBUG3("Do not override configuration variable '%s' with value '%s:%d' because it was already set.",
+        name,host,port);
+}
+
 /** @brief Set or add an integer value to \a name within \a cfg
  *
  * \arg cfg the config set
@@ -737,6 +797,7 @@ void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
 
   if (variable->cb_set)
     (*variable->cb_set) (name, xbt_dynar_length(variable->content) - 1);
+  variable->isdefault = 0;
 }
 
 /** @brief Set or add a double value to \a name within \a cfg
@@ -769,6 +830,7 @@ void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
 
   if (variable->cb_set)
     (*variable->cb_set) (name, xbt_dynar_length(variable->content) - 1);
+  variable->isdefault = 0;
 }
 
 /** @brief Set or add a string value to \a name within \a cfg
@@ -812,6 +874,7 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
 
   if (variable->cb_set)
     (*variable->cb_set) (name, xbt_dynar_length(variable->content) - 1);
+  variable->isdefault = 0;
 }
 
 /** @brief Set or add an peer value to \a name within \a cfg
@@ -850,6 +913,7 @@ xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name, const char *peer, int port)
 
   if (variable->cb_set)
     (*variable->cb_set) (name, xbt_dynar_length(variable->content) - 1);
+  variable->isdefault = 0;
 }
 
 /* ---- [ Removing ] ---- */
