@@ -75,6 +75,9 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #cmakedefine HAVE_GETTIMEOFDAY @HAVE_GETTIMEOFDAY@
 
+/* Define to 1 if you have the `clock_gettime' function. */
+#cmakedefine HAVE_POSIX_GETTIME @HAVE_POSIX_GETTIME@
+
 /* Indicates that we have GTNETS support */
 #cmakedefine HAVE_GTNETS @HAVE_GTNETS@
 

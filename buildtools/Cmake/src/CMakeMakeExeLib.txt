@@ -42,6 +42,11 @@ if(HAVE_GTNETS)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
 endif(HAVE_GTNETS)
 
+if(HAVE_POSIX_GETTIME)
+	SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
+	SET(GRAS_DEP "${GRAS_DEP} -lrt")
+endif(HAVE_POSIX_GETTIME)
+
 if(NOT HAVE_RUBY_H)
 	string(REPLACE "${libruby} -l" "" SIMGRID_DEP ${SIMGRID_DEP})
 	string(REPLACE "${libruby}" "" SIMGRID_DEP ${SIMGRID_DEP})

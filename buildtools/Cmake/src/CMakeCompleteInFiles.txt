@@ -6,6 +6,52 @@ include(CheckLibraryExists)
 find_program(SET_MAKE NAMES make)
 find_program(CAT_EXE NAMES cat)
 
+# Checks for header libraries functions.
+
+CHECK_LIBRARY_EXISTS(pthread 	pthread_create 		NO_DEFAULT_PATHS pthread)
+CHECK_LIBRARY_EXISTS(pthread 	sem_init 		NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
+CHECK_LIBRARY_EXISTS(pthread 	sem_timedwait 		NO_DEFAULT_PATHS HAVE_SEM_TIMEDWAIT_LIB)
+CHECK_LIBRARY_EXISTS(pthread 	pthread_mutex_timedlock NO_DEFAULT_PATHS HAVE_MUTEX_TIMEDLOCK_LIB)
+CHECK_LIBRARY_EXISTS(rt 	clock_gettime 		NO_DEFAULT_PATHS HAVE_POSIX_GETTIME)
+
+CHECK_INCLUDE_FILES("time.h;sys/time.h" TIME_WITH_SYS_TIME)
+CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
+CHECK_INCLUDE_FILE(pthread.h HAVE_PTHREAD_H)
+CHECK_INCLUDE_FILE(windows.h HAVE_WINDOWS_H)
+CHECK_INCLUDE_FILE(valgrind/valgrind.h HAVE_VALGRIND_VALGRIND_H)
+CHECK_INCLUDE_FILE(socket.h HAVE_SOCKET_H)
+CHECK_INCLUDE_FILE(sys/socket.h HAVE_SYS_SOCKET_H)
+CHECK_INCLUDE_FILE(stat.h HAVE_STAT_H)
+CHECK_INCLUDE_FILE(sys/stat.h HAVE_SYS_STAT_H)
+CHECK_INCLUDE_FILE(windows.h HAVE_WINDOWS_H)
+CHECK_INCLUDE_FILE(winsock.h HAVE_WINSOCK_H)
+CHECK_INCLUDE_FILE(winsock2.h HAVE_WINSOCK2_H)
+CHECK_INCLUDE_FILE(errno.h HAVE_ERRNO_H)
+CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
+CHECK_INCLUDE_FILE(execinfo.h HAVE_EXECINFO_H)
+CHECK_INCLUDE_FILE(signal.h HAVE_SIGNAL_H)
+CHECK_INCLUDE_FILE(sys/time.h HAVE_SYS_TIME_H)
+CHECK_INCLUDE_FILE(time.h HAVE_TIME_H)
+CHECK_INCLUDE_FILE(dlfcn.h HAVE_DLFCN_H)
+CHECK_INCLUDE_FILE(inttypes.h HAVE_INTTYPES_H)
+CHECK_INCLUDE_FILE(memory.h HAVE_MEMORY_H)
+CHECK_INCLUDE_FILE(stdlib.h HAVE_STDLIB_H)
+CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
+CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
+
+CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
+CHECK_FUNCTION_EXISTS(usleep HAVE_USLEEP)
+CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
+CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
+CHECK_FUNCTION_EXISTS(readv HAVE_READV)
+CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
+CHECK_FUNCTION_EXISTS(signal HAVE_SIGNAL)
+CHECK_FUNCTION_EXISTS(snprintf HAVE_SNPRINTF)
+CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF)
+CHECK_FUNCTION_EXISTS(asprintf HAVE_ASPRINTF)
+CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
+CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
+
 set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
 SET(HAVE_RUBY_H 0)
@@ -81,8 +127,6 @@ endif(disable_gtnets)
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
 
-CHECK_INCLUDE_FILE(pthread.h HAVE_PTHREAD_H)
-CHECK_LIBRARY_EXISTS(pthread pthread_create NO_DEFAULT_PATHS pthread)
 if(pthread)
 set(pthread "yes")
 elseif(pthread)
@@ -91,7 +135,7 @@ endif(pthread)
 
 if(pthread MATCHES "yes")
 	### HAVE_SEM_INIT
-  	CHECK_LIBRARY_EXISTS(pthread sem_init NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
+  	
   	if(HAVE_SEM_INIT_LIB)
 		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
@@ -102,7 +146,7 @@ if(pthread MATCHES "yes")
   	endif(HAVE_SEM_INIT_LIB)
 
 	### HAVE_SEM_TIMEDWAIT
-	CHECK_LIBRARY_EXISTS(pthread sem_timedwait NO_DEFAULT_PATHS HAVE_SEM_TIMEDWAIT_LIB)
+
 	if(HAVE_SEM_TIMEDWAIT_LIB)
 		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_SEM_TIMEDWAIT_run)
@@ -113,7 +157,7 @@ if(pthread MATCHES "yes")
 	endif(HAVE_SEM_TIMEDWAIT_LIB)
 
 	### HAVE_MUTEX_TIMEDLOCK
-	CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock NO_DEFAULT_PATHS HAVE_MUTEX_TIMEDLOCK_LIB)
+
 	if(HAVE_MUTEX_TIMEDLOCK_LIB)
 		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_MUTEX_TIMEDLOCK_run)
@@ -141,7 +185,7 @@ if(mcsc MATCHES "yes")
 elseif(mcsc MATCHES "yes")
 	set(mcsc "no")
 endif(mcsc MATCHES "yes")
-CHECK_INCLUDE_FILE(windows.h HAVE_WINDOWS_H)
+
 if(mcsc MATCHES "no" AND pthread MATCHES "no")
 	if(HAVE_WINDOWS_H)
 		set(windows_context "yes")
@@ -178,7 +222,6 @@ if(with_context MATCHES "ucontext")
 	set(with_context_ok 1)
 	if(mcsc MATCHES "yes")
 		set(CONTEXT_UCONTEXT 1)
-		CHECK_INCLUDE_FILE(valgrind/valgrind.h HAVE_VALGRIND_VALGRIND_H)
 	else(mcsc MATCHES "yes")
 		if(windows_context MATCHES "yes")
 			set(with_context "windows")
@@ -375,7 +418,6 @@ SET(SIZEOF_MAX ${var3})
 
 #--------------------------------------------------------------------------------------------------
 
-CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 set(makecontext_CPPFLAGS_2 "")
 if(HAVE_MAKECONTEXT)
 	set(makecontext_CPPFLAGS "-DTEST_makecontext")
@@ -536,28 +578,6 @@ foreach(fct ${diff_va})
 	endif(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")
 endforeach(fct ${diff_va})
 
-# Checks for header files.
-
-CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
-CHECK_INCLUDE_FILES("time.h;sys/time.h" TIME_WITH_SYS_TIME)
-CHECK_INCLUDE_FILE(sys/socket.h HAVE_SYS_SOCKET_H)
-CHECK_INCLUDE_FILE(sys/stat.h HAVE_SYS_STAT_H)
-CHECK_INCLUDE_FILE(windows.h HAVE_WINDOWS_H)
-CHECK_INCLUDE_FILE(winsock.h HAVE_WINSOCK_H)
-CHECK_INCLUDE_FILE(winsock2.h HAVE_WINSOCK2_H)
-CHECK_INCLUDE_FILE(sys/time.h HAVE_SYS_TIME_H)
-CHECK_INCLUDE_FILE(errno.h HAVE_ERRNO_H)
-CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
-CHECK_INCLUDE_FILE(execinfo.h HAVE_EXECINFO_H)
-CHECK_INCLUDE_FILE(signal.h HAVE_SIGNAL_H)
-CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
-CHECK_FUNCTION_EXISTS(usleep HAVE_USLEEP)
-CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
-CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
-CHECK_FUNCTION_EXISTS(readv HAVE_READV)
-CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
-CHECK_FUNCTION_EXISTS(signal HAVE_SIGNAL)
-
 #--------------------------------------------------------------------------------------------------
 ### Try execut getline command
 try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
@@ -573,8 +593,6 @@ SET(need_getline "")
 endif(NOT COMPILE_RESULT_VAR)
 
 ### check for a working snprintf
-CHECK_FUNCTION_EXISTS(snprintf HAVE_SNPRINTF)
-CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF)
 if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 	try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
@@ -602,13 +620,12 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 endif(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 ### check for asprintf function familly
-CHECK_FUNCTION_EXISTS(asprintf HAVE_ASPRINTF)
 if(HAVE_ASPRINTF)
 	SET(need_asprintf "")
 else(HAVE_ASPRINTF)
 	SET(need_asprintf "#define SIMGRID_NEED_ASPRINTF 1")
 endif(HAVE_ASPRINTF)
-CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
+
 if(HAVE_VASPRINTF)
 	SET(need_vasprintf "")
 else(HAVE_VASPRINTF)
@@ -621,14 +638,6 @@ find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS	)
 if(ADDR2LINE)
 set(ADDR2LINE "${ADDR2LINE}/addr2line")
 endif(ADDR2LINE)
-
-### check for include files and fct
-CHECK_INCLUDE_FILE(dlfcn.h HAVE_DLFCN_H)
-CHECK_INCLUDE_FILE(inttypes.h HAVE_INTTYPES_H)
-CHECK_INCLUDE_FILE(memory.h HAVE_MEMORY_H)
-CHECK_INCLUDE_FILE(stdlib.h HAVE_STDLIB_H)
-CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
-CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
 
 ### File to create
 
