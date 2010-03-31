@@ -4,6 +4,16 @@ message("_______________________________________________________________________
 message("________________________________________________________________________________ FLEXMl")
 find_program(FLEX_EXE NAMES flex)
 find_program(FLEXML_EXE NAMES flexml)
+find_program(LEX_EXE NAMES lex)
+find_program(SED_EXE NAMES sed)
+
+message("  FLEX : 	${FLEX_EXE}")
+message("FLEXML : 	${FLEXML_EXE}")
+message("   LEX : 	${LEX_EXE}")
+message("   SED : 	${SED_EXE}")
+
+set(top_srcdir "${PROJECT_DIRECTORY}")
+set(srcdir "${PROJECT_DIRECTORY}/src")
 
 IF(FLEX_EXE)
 	set(HAVE_FLEX 1)
@@ -13,33 +23,79 @@ IF(FLEXML_EXE)
 	set(HAVE_FLEXML 1)
 ENDIF(FLEXML_EXE)
 
-	if(HAVE_FLEXML AND HAVE_FLEX)
+IF(LEX_EXE)
+	set(HAVE_LEX 1)
+ENDIF(LEX_EXE)
 
-		file(REMOVE "${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c ${PROJECT_DIRECTORY}/src/xbt/graphxml.c ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c ${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h ${PROJECT_DIRECTORY}/include/xbt/graphxml.h ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h")
+exec_program("${LEX_EXE} -o gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline gras/DataDesc/ddt_parse.yy.l" "${PROJECT_DIRECTORY}/src/")
 
-		exec_program("${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l -L ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd" "${PROJECT_DIRECTORY}/src/")
-		exec_program("${FLEXML_EXE} --root-tags platform -P surfxml --sysid=simgrid.dtd -H ${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h -L ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd" "${PROJECT_DIRECTORY}/src/")
+#surf/simgrid_dtd.c: surf/simgrid_dtd.l
+exec_program("mkdir -p `dirname surf/simgrid_dtd.c`" "${PROJECT_DIRECTORY}/src/")
+exec_program("${LEX_EXE} -o surf/simgrid_dtd.c -Psurf_parse_ --noline surf/simgrid_dtd.l" "${PROJECT_DIRECTORY}/src/")
+set(CHAINE "'s/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i surf/simgrid_dtd.c")	
+exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}/src/")
 
-		exec_program("${FLEXML_EXE} -b 1000000 -P graphxml --sysid=graphxml.dtd -S ${PROJECT_DIRECTORY}/src/xbt/graphxml.l -L ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd" "${PROJECT_DIRECTORY}/src/")
-		exec_program("${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H ${PROJECT_DIRECTORY}/include/xbt/graphxml.h -L ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd" "${PROJECT_DIRECTORY}/src/")
+#xbt/graphxml.c: xbt/graphxml.l
+exec_program("mkdir -p `dirname xbt/graphxml.c`" "${PROJECT_DIRECTORY}/src/")
+exec_program("${LEX_EXE} -o xbt/graphxml.c -Pxbt_graph_parse_ --noline xbt/graphxml.l" "${PROJECT_DIRECTORY}/src/")
+set(CHAINE "'s/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i xbt/graphxml.c")			
+exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}/src/")
 
-		exec_program("${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l -L ${PROJECT_DIRECTORY}/src/simdag/dax.dtd" "${PROJECT_DIRECTORY}/src/")
-		exec_program("${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h -L ${PROJECT_DIRECTORY}/src/simdag/dax.dtd" "${PROJECT_DIRECTORY}/src/")
+#simdag/dax_dtd.c: simdag/dax_dtd.l
+exec_program("mkdir -p `dirname simdag/dax_dtd.c`" "${PROJECT_DIRECTORY}/src/")
+exec_program("${LEX_EXE} -o simdag/dax_dtd.c -Pdax_ --noline simdag/dax_dtd.l" "${PROJECT_DIRECTORY}/src/")
+set(CHAINE "'s/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i simdag/dax_dtd.c")	
+exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}/src/")
 
-		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c -Psurf_parse_ --noline ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l"
-		"${PROJECT_DIRECTORY}/src/")		
-		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/xbt/graphxml.c -Pxbt_graph_parse_ --noline ${PROJECT_DIRECTORY}/src/xbt/graphxml.l"
-		"${PROJECT_DIRECTORY}/src/")
-		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c -Pdax_ --noline ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l"
-		"${PROJECT_DIRECTORY}/src/")
+if(HAVE_FLEXML AND HAVE_FLEX)
 
-		exec_program("${FLEX_EXE} -o ${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline ${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.l"	"${PROJECT_DIRECTORY}/src/")
-	
-	elseif(HAVE_FLEXML AND HAVE_FLEX)
-		message("HAVE_FLEX ${HAVE_FLEX}")
-		message("HAVE_FLEXML ${HAVE_FLEXML}")
-		message(FATAL_ERROR "Install flex and flexml before use maintainer mode")
-	endif(HAVE_FLEXML AND HAVE_FLEX)
+#surf/simgrid_dtd.l: $(srcdir)/surf/simgrid.dtd
+exec_program("mkdir -p surf")
+exec_program("${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S surf/simgrid_dtd.l -L ${srcdir}/surf/simgrid.dtd"  "${PROJECT_DIRECTORY}/src/")
+
+#$(top_srcdir)/include/surf/simgrid_dtd.h: $(srcdir)/surf/simgrid.dtd
+file(REMOVE "${top_srcdir}/include/surf/simgrid.h") 
+exec_program("${FLEXML_EXE} --root-tags platform -P surfxml --sysid=simgrid.dtd -H ${top_srcdir}/include/surf/simgrid_dtd.h -L ${srcdir}/surf/simgrid.dtd" "${PROJECT_DIRECTORY}/src/")
+
+if(EXISTS ${top_srcdir}/include/surf/simgrid.h)
+	#mv ${top_srcdir}/include/surf/simgrid.h ${top_srcdir}/include/surf/simgrid_dtd.h 
+endif(EXISTS ${top_srcdir}/include/surf/simgrid.h)
+set(CHAINE "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
+exec_program("${SED_EXE} ${CHAINE} -i ${top_srcdir}/include/surf/simgrid_dtd.h" "${PROJECT_DIRECTORY}/src/")
+set(CHAINE "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")	
+exec_program("${SED_EXE} ${CHAINE} -i ${top_srcdir}/include/surf/simgrid_dtd.h" "${PROJECT_DIRECTORY}/src/")
+
+#xbt/graphxml.l: $(srcdir)/xbt/graphxml.dtd
+exec_program("${FLEXML_EXE} -b 1000000 -P graphxml --sysid=graphxml.dtd -S xbt/graphxml.l -L ${srcdir}/xbt/graphxml.dtd" "${PROJECT_DIRECTORY}/src/")
+
+#$(top_srcdir)/include/xbt/graphxml.h: $(srcdir)/xbt/graphxml.dtd
+exec_program("${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H ${top_srcdir}/include/xbt/graphxml.h -L ${srcdir}/xbt/graphxml.dtd" "${PROJECT_DIRECTORY}/src/")
+set(CHAINE "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
+exec_program("${SED_EXE} ${CHAINE} -i ${top_srcdir}/include/xbt/graphxml.h" "${PROJECT_DIRECTORY}/src/")
+set(CHAINE "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
+exec_program("${SED_EXE} ${CHAINE} -i ${top_srcdir}/include/xbt/graphxml.h" "${PROJECT_DIRECTORY}/src/")
+
+#simdag/dax_dtd.l: simdag/dax.dtd
+exec_program("${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S simdag/dax_dtd.l -L simdag/dax.dtd" "${PROJECT_DIRECTORY}/src/")
+set(CHAINE "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
+exec_program("${SED_EXE} -i ${CHAINE} simdag/dax_dtd.l" "${PROJECT_DIRECTORY}/src/") # DOCTYPE not mandatory
+
+#simdag/dax_dtd.h: simdag/dax.dtd
+exec_program("${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H simdag/dax_dtd.h -L simdag/dax.dtd" "${PROJECT_DIRECTORY}/src/")
+set(CHAINE "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
+exec_program("${SED_EXE} ${CHAINE} -i simdag/dax_dtd.h" "${PROJECT_DIRECTORY}/src/")
+set(CHAINE "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")	
+exec_program("${SED_EXE} ${CHAINE} -i simdag/dax_dtd.h" "${PROJECT_DIRECTORY}/src/")
+
+
+elseif(HAVE_FLEXML AND HAVE_FLEX)
+	message("HAVE_FLEX ${HAVE_FLEX}")
+	message("HAVE_FLEXML ${HAVE_FLEXML}")
+	message(FATAL_ERROR "Install flex and flexml before use maintainer mode")
+endif(HAVE_FLEXML AND HAVE_FLEX)
+
+#include $(top_srcdir)/acmacro/dist-files.mk
+
 message("")
 message("________________________________________________________________________________")
 message("________________________________________________________________________________ FLEXML END")
