@@ -2,10 +2,10 @@
 # This suite builds and uses a program raising a segfault, ie a program dying
 # of SIGSEV. tesh must detect this condition and report the issue.
 
-$ rm -rf temp_testdir
-$ mkdir temp_testdir
+$ rm -rf temp_testdir-catch-signal
+$ mkdir temp_testdir-catch-signal
 
-$ cd temp_testdir
+$ cd temp_testdir-catch-signal
 < #include <stdlib.h>
 < int main(void) {
 <   char *A=NULL;
@@ -25,4 +25,4 @@ $ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
 > ||
 
 $ cd ..
-$ rm -rf temp_testdir
+$ rm -rf temp_testdir-catch-signal

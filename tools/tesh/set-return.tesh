@@ -2,10 +2,10 @@
 # This suite builds and uses a program returning 1.
 # tesh is instructed of this return code and must not whine.
 
-$ rm -rf temp_testdir
-$ mkdir temp_testdir
+$ rm -rf temp_testdir-set-return
+$ mkdir temp_testdir-set-return
 
-$ cd temp_testdir
+$ cd temp_testdir-set-return
 < #include <stdlib.h>
 < int main(void) {
 <   exit(1);
@@ -17,4 +17,4 @@ $ gcc -o return1 return1.c
 ! expect return 1
 $ ./return1
 $ cd ..
-$ rm -rf temp_testdir
+$ rm -rf temp_testdir-set-return

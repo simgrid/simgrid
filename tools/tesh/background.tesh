@@ -1,7 +1,7 @@
 
-$ rm -rf temp_testdir
-$ mkdir temp_testdir
-$ cd temp_testdir
+$ rm -rf temp_testdir_background
+$ mkdir temp_testdir_background
+$ cd temp_testdir_background
 
 < #include <unistd.h>
 < #include <stdlib.h>
@@ -46,5 +46,5 @@ $ mkfile tmp_fich
 
 $ sleep 2
 $ cd ..
-$ rm -rf temp_testdir
+$ rm -rf temp_testdir_background
 

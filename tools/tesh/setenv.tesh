@@ -2,10 +2,10 @@
 # This suite builds and uses a program returning 1.
 # tesh is instructed of this return code and must not whine.
 
-$ rm -rf temp_testdir
-$ mkdir temp_testdir
+$ rm -rf temp_testdir-setenv
+$ mkdir temp_testdir-setenv
 
-$ cd temp_testdir
+$ cd temp_testdir-setenv
 
 < #include <string.h>
 < #include <stdio.h>
@@ -28,4 +28,4 @@ $ ./getenv
 > tesh_test_toto=blah
 
 $ cd ..
-$ rm -rf temp_testdir
+$ rm -rf temp_testdir-setenv

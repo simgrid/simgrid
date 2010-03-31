@@ -2,10 +2,10 @@
 # This suite builds and uses a program raising a segfault, ie a program dying
 # of SIGSEV. tesh must detect this condition and report the issue.
 
-$ rm -rf temp_testdir
-$ mkdir temp_testdir
+$ rm -rf temp_testdir-set-signal
+$ mkdir temp_testdir-set-signal
 
-$ cd temp_testdir
+$ cd temp_testdir-set-signal
 < #include <stdlib.h>
 < int main(void) {
 <   char *A=NULL;
@@ -17,4 +17,4 @@ $ gcc -o segfault segfault.c
 ! expect signal SIGSEGV
 $ ./segfault
 $ cd ..
-$ rm -rf temp_testdir
+$ rm -rf temp_testdir-set-signal

@@ -2,11 +2,11 @@
 
 # This example uses the cd command
 
-$ rm -rf testdir_temp
-$ mkdir testdir_temp
-$ cd testdir_temp
+$ rm -rf testdir_temp-cd
+$ mkdir testdir_temp-cd
+$ cd testdir_temp-cd
 
-# Check that there is nothing in the current dir (which must be testdir_temp)
+# Check that there is nothing in the current dir (which must be testdir_temp-cd)
 $ ls
 
 # Check that tesh detects properly cd to non-existing directories
@@ -17,9 +17,9 @@ $ ls
 > Test suite `(stdin)': NOK (system error)
 $ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
 
-# The next command checks that there is a testdir_temp in the upper directory, 
+# The next command checks that there is a testdir_temp-cd in the upper directory, 
 # ie that mkdir and cd both worked.
-$ test -e ../testdir_temp
+$ test -e ../testdir_temp-cd
 
 $ cd ..
-$ rmdir testdir_temp
+$ rmdir testdir_temp-cd
