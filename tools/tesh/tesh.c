@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
 
   /* Get args */
   for (i = 1; i < argc; i++) {
-    if (!strncmp(argv[i], "--cd", strlen("--cd") + 1)) {
+    if (!strcmp(argv[i], "--cd")) {
       if (i == argc - 1) {
         ERROR0("--cd argument requires an argument");
         exit(1);
@@ -212,8 +212,9 @@ int main(int argc, char *argv[])
         exit(1);
       }
       INFO1("Change directory to %s", argv[i + 1]);
-      memmove(argv + i, argv + i + 2, argc - i - 1);
+      memmove(argv + i, argv + i + 2, (argc - i - 1)*sizeof(char*));
       argc -= 2;
+      i -= 2;
     }
   }
 
