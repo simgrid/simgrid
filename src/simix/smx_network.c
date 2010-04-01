@@ -8,6 +8,10 @@
 
 #include "private.h"
 #include "xbt/log.h"
+#include "xbt/dict.h"
+
+/* Pimple to get an histogram of message sizes in the simulation */
+xbt_dict_t msg_sizes = NULL;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "Logging specific to SIMIX (network)");
@@ -364,6 +368,30 @@ void SIMIX_network_copy_data(smx_comm_t comm)
       comm->dst_proc->smx_host->name, comm->dst_buff,
       buff_size);
   (*SIMIX_network_copy_data_callback)(comm, buff_size);
+
+  /* pimple to display the message sizes */
+  {
+    if (msg_sizes == NULL)
+      msg_sizes = xbt_dict_new();
+    uintptr_t casted_size = buff_size;
+    uintptr_t amount = xbt_dicti_get(msg_sizes, casted_size);
+    amount++;
+
+    xbt_dicti_set(msg_sizes,casted_size, amount);
+  }
+}
+#include "xbt.h"
+/* pimple to display the message sizes */
+void SIMIX_message_sizes_output(const char *filename) {
+  FILE * out = fopen(filename,"w");
+  INFO1("Output message sizes to %s",filename);
+  xbt_assert1(out,"Cannot open file %s",filename);
+  uintptr_t key,data;
+  xbt_dict_cursor_t cursor;
+  xbt_dict_foreach(msg_sizes,cursor,key,data) {
+    fprintf(out,"%d %d\n",key,data);
+  }
+  fclose(out);
 }
 
 /**

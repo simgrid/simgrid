@@ -31,4 +31,7 @@
 #include <xbt/config.h>
 #include <xbt/cunit.h>
 
+/* pimple to display the message sizes */
+XBT_PUBLIC(void) SIMIX_message_sizes_output(const char *filename);
+
 #endif /* xbt_H */

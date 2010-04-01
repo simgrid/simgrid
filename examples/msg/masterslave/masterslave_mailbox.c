@@ -54,7 +54,7 @@ int master(int argc, char *argv[])
    } 
   
 //  INFO0("Goodbye now!");
-  exit(0);
+  return 0;
 } /* end_of_master */
 
 /** Receiver function  */
@@ -125,6 +125,7 @@ int main(int argc, char *argv[])
      exit(1);
   }
   res = test_all(argv[1],argv[2]);
+   SIMIX_message_sizes_output("toto.txt");
   MSG_clean();
 
   if(res==MSG_OK)
