@@ -13,6 +13,7 @@
 
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/dynar.h"          /* void_f_pvoid_t */
+#include <stdint.h> /* uintptr_t */
 
 SG_BEGIN_DECL();
 
@@ -88,6 +89,11 @@ XBT_PUBLIC(void *) xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key,
                                             int key_len);
 XBT_PUBLIC(void) xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
                                      int key_len);
+
+
+XBT_PUBLIC(void) xbt_dicti_set(xbt_dict_t dict, uintptr_t key, uintptr_t data);
+XBT_PUBLIC(uintptr_t) xbt_dicti_get(xbt_dict_t dict, uintptr_t key);
+XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
 
 
 /** @} */

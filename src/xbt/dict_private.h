@@ -23,6 +23,7 @@ typedef struct xbt_dictelm_ *xbt_dictelm_t;
 #define MAX_FILL_PERCENT 80
 
 typedef struct xbt_dictelm_ {
+  int dictielem:1;
   char *key;
   int key_len;
   unsigned int hash_code;
@@ -51,6 +52,7 @@ extern void dict_elm_mallocator_reset_f(void *elem);
 xbt_dictelm_t xbt_dictelm_new(const char *key, int key_len,
                               unsigned int hash_code, void *content,
                               void_f_pvoid_t free_f);
+xbt_dictelm_t xbt_dictielm_new(uintptr_t key, unsigned int hash_code, uintptr_t content);
 void xbt_dictelm_free(xbt_dictelm_t element);
 void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element);
 

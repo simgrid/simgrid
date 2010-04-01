@@ -1,8 +1,6 @@
-/* $Id$ */
+/* dict - a generic dictionary, variation over hash table                   */
 
-/* dict - a generic dictionary, variation over the B-tree concept          */
-
-/* Copyright (c) 2003,2004 Martin Quinson. All rights reserved.             */
+/* Copyright (c) 2003-2010 Martin Quinson. All rights reserved.             */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -341,6 +339,7 @@ XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
  */
 void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
 {
+
   unsigned int hash_code = xbt_dict_hash_ext(key, key_len);
   xbt_dictelm_t current;
 
@@ -476,6 +475,8 @@ XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_le
   dict->count--;
 }
 
+
+
 /**
  * \brief Remove data from the dict (null-terminated key)
  *
@@ -488,6 +489,119 @@ XBT_INLINE void xbt_dict_remove(xbt_dict_t dict, const char *key)
 {
   xbt_dict_remove_ext(dict, key, strlen(key));
 }
+
+/**
+ * \brief Add data to the dict (arbitrary key)
+ * \param dict the container
+ * \param key the key to set the new data
+ * \param key_len the size of the \a key
+ * \param data the data to add in the dict
+ * \param free_ctn function to call with (\a key as argument) when
+ *        \a key is removed from the dictionary
+ *
+ * Set the \a data in the structure under the \a key, which can be any kind
+ * of data, as long as its length is provided in \a key_len.
+ */
+XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
+                              uintptr_t key, uintptr_t data) {
+
+  unsigned int hash_code = xbt_dict_hash_ext((void*)&key, sizeof(uintptr_t));
+
+  xbt_dictelm_t current, previous = NULL;
+  xbt_assert(dict);
+
+  DEBUG5("ADD %d->%d; hash = %d, size = %d, & = %d", key, data, hash_code,
+         dict->table_size, hash_code & dict->table_size);
+  current = dict->table[hash_code & dict->table_size];
+  while (current != NULL &&
+         (hash_code != current->hash_code || sizeof(uintptr_t) != current->key_len
+          || (((uintptr_t)key) != ((uintptr_t)current->key)) )) {
+    current = current->next;
+  }
+
+  if (current == NULL) {
+    /* this key doesn't exist yet */
+    current = xbt_dictielm_new(key, hash_code, data);
+    dict->count++;
+    if (previous == NULL) {
+      dict->table[hash_code & dict->table_size] = current;
+      dict->fill++;
+      if ((dict->fill * 100) / (dict->table_size + 1) > MAX_FILL_PERCENT)
+        xbt_dict_rehash(dict);
+    } else {
+      previous->next = current;
+    }
+  } else {
+
+    /* there is already an element with the same key: overwrite it */
+    if (current->content != NULL && current->free_f != NULL) {
+      current->free_f(current->content);
+    }
+    current->content = (void*)data;
+    current->free_f = NULL;
+  }
+}
+
+/**
+ * \brief Retrieve data from the dict (key considered as a uintptr_t)
+ *
+ * \param dict the dealer of data
+ * \param key the key to find data
+ * \return the data that we are looking for (or 0 if not found)
+ *
+ * Mixing uintptr_t keys with regular keys in the same dict is discouraged
+ */
+XBT_INLINE uintptr_t xbt_dicti_get(xbt_dict_t dict, uintptr_t key) {
+
+  unsigned int hash_code = xbt_dict_hash_ext(((void*)&key), sizeof(uintptr_t));
+  xbt_dictelm_t current;
+
+  xbt_assert(dict);
+
+  current = dict->table[hash_code & dict->table_size];
+  while (current != NULL &&
+         (hash_code != current->hash_code || sizeof(uintptr_t) != current->key_len
+          || (((uintptr_t)key) != ((uintptr_t)current->key)) )) {
+    current = current->next;
+  }
+
+  if (current == NULL)
+    return 0;
+
+  return (uintptr_t)(current->content);
+}
+
+/** Remove a uintptr_t key from the dict */
+XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key) {
+
+  unsigned int hash_code = xbt_dict_hash_ext(((void*)&key), sizeof(uintptr_t));
+  xbt_dictelm_t current, previous = NULL;
+
+
+  current = dict->table[hash_code & dict->table_size];
+  while (current != NULL &&
+         (hash_code != current->hash_code || sizeof(uintptr_t) != current->key_len
+          || (((uintptr_t)key) != ((uintptr_t)current->key)) )) {
+    previous = current;         /* save the previous node */
+    current = current->next;
+  }
+
+  if (current == NULL)
+    THROW1(not_found_error, 0, "key %d not found", key);
+
+  if (previous != NULL) {
+    previous->next = current->next;
+  } else {
+    dict->table[hash_code & dict->table_size] = current->next;
+  }
+
+  if (!dict->table[hash_code & dict->table_size])
+    dict->fill--;
+
+  xbt_dictelm_free(current);
+  dict->count--;
+}
+
 
 /**
  * \brief Remove all data from the dict
@@ -1032,6 +1146,45 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
     xbt_test_assert0(found,
                      "the key 'null', associated to NULL is not found");
   }
+  xbt_dict_free(&head);
+}
+
+static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
+  xbt_test_log2("Add %d under %d", data, key);
+
+  xbt_dicti_set(head, key, data);
+  if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
+    xbt_dict_dump(head, (void (*)(void *)) &printf);
+    fflush(stdout);
+  }
+  uintptr_t stored_data = xbt_dicti_get(head, key);
+  xbt_test_assert3(stored_data==data,
+      "Retrieved data (%d) is not what I just stored (%d) under key %d",stored_data,data,key);
+}
+
+XBT_TEST_UNIT("dicti", test_dict_scalar, "Scalar data and key management")
+{
+  xbt_test_add0("Fill in the dictionnary");
+
+  head = xbt_dict_new();
+  debuged_addi(head, 12, 12);
+  debuged_addi(head, 13, 13);
+  debuged_addi(head, 14, 14);
+  debuged_addi(head, 15, 15);
+  /* Change values */
+  debuged_addi(head, 12, 15);
+  debuged_addi(head, 15, 2000);
+  debuged_addi(head, 15, 3000);
+  /* 0 as key */
+  debuged_addi(head, 0, 1000);
+  debuged_addi(head, 0, 2000);
+  debuged_addi(head, 0, 3000);
+  /* 0 as value */
+  debuged_addi(head, 12, 0);
+  debuged_addi(head, 13, 0);
+  debuged_addi(head, 12, 0);
+  debuged_addi(head, 0, 0);
+
   xbt_dict_free(&head);
 }
 

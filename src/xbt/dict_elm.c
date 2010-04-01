@@ -31,6 +31,7 @@ xbt_dictelm_t xbt_dictelm_new(const char *key,
 {
   xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
 
+  element->dictielem = 0; /* please free the key on free */
   element->key = xbt_new(char, key_len + 1);
   memcpy((void *)element->key, (void *)key, key_len);
   element->key[key_len] = '\0';
@@ -45,10 +46,27 @@ xbt_dictelm_t xbt_dictelm_new(const char *key,
   return element;
 }
 
+xbt_dictelm_t xbt_dictielm_new(uintptr_t key, unsigned int hash_code, uintptr_t content) {
+  xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
+
+  element->key = (void*)key;
+
+  element->dictielem = 1; /* please DONT free the key on free */
+  element->key_len = sizeof(uintptr_t);
+  element->hash_code = hash_code;
+
+  element->content = (void*)content;
+  element->free_f = NULL;
+  element->next = NULL;
+
+  return element;
+}
+
 void xbt_dictelm_free(xbt_dictelm_t element)
 {
   if (element != NULL) {
-    xbt_free(element->key);
+    if (!element->dictielem)
+      xbt_free(element->key);
 
     if (element->free_f != NULL && element->content != NULL) {
       element->free_f(element->content);

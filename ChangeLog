@@ -51,7 +51,14 @@ SimGrid (3.3.5-svn) unstable; urgency=low
  XBT:
   * config: add the ability to set a default value after registration
     Does not override any previously set value (e.g. from cmd line)
- 
+  * dict: allow to have integer key and data.
+    When so, you need to use the following functions
+     void xbt_dicti_set(xbt_dict_t dict, uintptr_t key, uintptr_t data);
+     uintptr_t xbt_dicti_get(xbt_dict_t dict, uintptr_t key);
+     void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
+    In contrary to regular dicts, the key is not malloced before copy.
+    Mixing scalar and regular elements in the same dict is not tested 
+      (but may work).
       
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
