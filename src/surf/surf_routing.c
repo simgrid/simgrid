@@ -87,6 +87,9 @@ static void routing_full_parse_Shost(void) {
   DEBUG2("Seen host %s (#%d)",A_surfxml_host_id,used_routing->host_count);
   *val = used_routing->host_count++;
   xbt_dict_set(used_routing->host_id,A_surfxml_host_id,val,xbt_free);
+#ifdef HAVE_TRACING
+  TRACE_surf_define_host_id (A_surfxml_host_id, *val);
+#endif
 }
 
 static void routing_full_parse_Srouter(void) {
@@ -95,6 +98,10 @@ static void routing_full_parse_Srouter(void) {
   		HOST2ROUTER(used_routing->router_count));
   *val = HOST2ROUTER(used_routing->router_count++);
   xbt_dict_set(used_routing->host_id,A_surfxml_router_id,val,xbt_free);
+#ifdef HAVE_TRACING
+  TRACE_surf_define_host_id (A_surfxml_host_id, *val);
+  TRACE_surf_cpu_new (A_surfxml_host_id, 0);
+#endif
 }
 
 static int src_id = -1;
@@ -310,6 +317,9 @@ static void routing_full_parse_end(void) {
       new_link->link_ptr = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
       DEBUG3("Adding onelink route from (#%d) to (#%d), link_name %s",src_id, dst_id, link_name);
       xbt_dict_set(onelink_routes, link_name, (void *)new_link, onelink_route_elem_free);
+#ifdef HAVE_TRACING
+      TRACE_surf_routing_full_parse_end (link_name, src_id, dst_id);
+#endif
     }
 
     if(ISROUTER(src_id) || ISROUTER(dst_id)) {

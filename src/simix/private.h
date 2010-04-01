@@ -17,6 +17,8 @@
 #include "xbt/config.h"
 #include "xbt/function_types.h"
 #include "xbt/ex_interface.h"
+#include "instr/private.h"
+#include "instr/config.h"
 
 /******************************** Datatypes ***********************************/
 
@@ -183,6 +185,10 @@ typedef struct s_smx_action {
   int refcount;            /**< @brief reference counter */
   surf_action_t surf_action;    /* SURF modeling of computation  */
   smx_host_t source;
+#ifdef HAVE_TRACING
+  long long int counter;   /* simix action unique identifier for instrumentation */
+  char *category;      /* simix action category for instrumentation */
+#endif
 } s_smx_action_t;
 
 /************************** Configuration support *****************************/

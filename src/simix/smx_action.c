@@ -50,7 +50,7 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
   /* initialize them */
   act->name = xbt_strdup(name);
   act->source = sender;
-
+  act->category = NULL;
 
   act->surf_action =
     surf_workstation_model->extension.workstation.communicate(sender->host,
@@ -90,6 +90,7 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
   /* initialize them */
   act->source = host;
   act->name = xbt_strdup(name);
+  act->category = NULL;
 
   /* set communication */
   act->surf_action =
@@ -98,6 +99,9 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
   surf_workstation_model->action_data_set(act->surf_action, act);
 
   DEBUG1("Create execute action %p", act);
+#ifdef HAVE_TRACING
+  TRACE_smx_action_execute (act);
+#endif
   return act;
 }
 
@@ -131,6 +135,7 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
   /* initialize them */
   act->source = host;
   act->name = xbt_strdup(name);
+  act->category = NULL;
 
   act->surf_action =
     surf_workstation_model->extension.workstation.sleep(host->host, duration);
@@ -205,7 +210,9 @@ int SIMIX_action_destroy(smx_action_t action)
 
   if (action->surf_action)
     action->surf_action->model_type->action_unref(action->surf_action);
-
+#ifdef HAVE_TRACING
+  TRACE_smx_action_destroy (action);
+#endif
   xbt_free(action);
   return 1;
 }
@@ -350,6 +357,7 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
 
   /* initialize them */
   act->name = xbt_strdup(name);
+  act->category = NULL;
 
   /* set action */
 

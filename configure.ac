@@ -379,6 +379,18 @@ fi
 SG_COMPILE_FLAGS
 
 ##
+## Support for tracing instrumentation
+##
+AC_CONFIG_HEADERS([include/instr/config.h])
+AC_ARG_ENABLE(tracing,
+              AS_HELP_STRING([--enable-tracing],[Activate the instrumentation so SimGrid can be traced to be visualized]),
+	      [tracing=$enableval],
+	      [tracing=no])
+if test x$tracing = xyes ; then
+     AC_DEFINE([HAVE_TRACING],[1], [defines whether instrumentation must be compiled or not])
+fi
+
+##
 ## Support for the supernovae compilation mode
 ##
 AC_ARG_ENABLE(supernovae,

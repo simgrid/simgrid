@@ -56,6 +56,9 @@ static link_CM02_t net_link_new(char *name,
 
   xbt_dict_set(surf_network_model->resource_set, name, nw_link,
                surf_resource_free);
+#ifdef HAVE_TRACING
+  TRACE_surf_net_link_new (name, bw_initial, lat_initial);
+#endif
 
   return nw_link;
 }
@@ -234,6 +237,20 @@ static void net_update_actions_state(double now, double delta)
    */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
+
+#ifdef HAVE_TRACING
+    TRACE_surf_update_action_state (action, action->generic_action.data,
+        lmm_variable_getvalue(action->variable), "BandwidthUsed", now-delta, delta);
+
+    xbt_dynar_t route = used_routing->get_route(action->src, action->dst);
+    link_CM02_t link;
+    unsigned int i;
+    xbt_dynar_foreach(route, i, link) {
+      TRACE_surf_update_action_state_net_resource (link->lmm_resource.generic_resource.name,
+          action->generic_action.data, lmm_variable_getvalue(action->variable), now-delta, delta);
+    }
+#endif
+
     deltap = delta;
     if (action->latency > 0) {
       if (action->latency > deltap) {
@@ -291,6 +308,9 @@ static void net_update_resource_state(void *id,
                                 sg_bandwidth_factor *
                                 (nw_link->lmm_resource.power.peak *
                                  nw_link->lmm_resource.power.scale));
+#ifdef HAVE_TRACING
+    TRACE_surf_link_set_bandwidth (date, nw_link->lmm_resource.generic_resource.name, sg_bandwidth_factor * (nw_link->lmm_resource.power.peak * nw_link->lmm_resource.power.scale));
+#endif
     if (sg_weight_S_parameter > 0) {
       while ((var = lmm_get_var_from_cnst
               (network_maxmin_system, nw_link->lmm_resource.constraint,
@@ -445,6 +465,10 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
   }
   /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
+
+  /* saving the src and dst of this communication */
+  action->src = src;
+  action->dst = dst;
 
   XBT_OUT;
 

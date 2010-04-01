@@ -291,6 +291,17 @@ set(LUA_SRC
 	${PROJECT_DIRECTORY}/src/bindings/lua/simgrid_lua.c
 )
 
+set(TRACING_SRC
+	${PROJECT_DIRECTORY}/src/instr/interface.c
+	${PROJECT_DIRECTORY}/src/instr/general.c
+	${PROJECT_DIRECTORY}/src/instr/paje.c
+	${PROJECT_DIRECTORY}/src/instr/msg_task_instr.c
+	${PROJECT_DIRECTORY}/src/instr/msg_process_instr.c
+	${PROJECT_DIRECTORY}/src/instr/smx_instr.c
+	${PROJECT_DIRECTORY}/src/instr/surf_instr.c
+	${PROJECT_DIRECTORY}/src/instr/variables_instr.c
+)
+
 set(RUBY_SRC
 ${PROJECT_DIRECTORY}/src/simix/smx_context_ruby.c
 ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_process.c
@@ -348,6 +359,7 @@ set(simgrid_sources
 	${GTNETS_USED}
 	${SIMIX_SRC}
 	${MSG_SRC}
+	${TRACING_SRC}
 	${SIMDAG_SRC}
 	${GRAS_COMMON_SRC}
 	${GRAS_SG_SRC}

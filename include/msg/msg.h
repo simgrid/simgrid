@@ -209,5 +209,7 @@ XBT_PUBLIC(void) MSG_action_unregister(const char *action_name);
 
 #endif
 
+#include "instr/instr.h"
+
 SG_END_DECL()
 #endif

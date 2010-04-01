@@ -322,8 +322,8 @@ Time_t GTSim::get_time_to_next_flow_completion(){
   pipe(pfds);
   
   t1 = 0;
-
-  if ( (soon_pid=fork()) != 0){
+  fflush (NULL);
+  if( (soon_pid=fork()) != 0){
     read(pfds[0], &t1, sizeof(Time_t));
     waitpid(soon_pid, &status, 0);      
   }else{

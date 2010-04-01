@@ -8,6 +8,7 @@
 #ifndef MSG_DATATYPE_H
 #define MSG_DATATYPE_H
 #include "xbt/misc.h"
+#include "instr/config.h"
 
 SG_BEGIN_DECL()
 
@@ -45,6 +46,10 @@ SG_BEGIN_DECL()
        char *name;              /**< @brief task name if any */
        simdata_task_t simdata;  /**< @brief simulator data */
        void *data;              /**< @brief user data */
+#ifdef HAVE_TRACING
+       long long int counter;   /* task unique identifier for instrumentation */
+       char *category;      /* task category for instrumentation */
+#endif
      } s_m_task_t;
 /** @brief Task datatype  
     @ingroup m_datatypes_management 
@@ -74,6 +79,7 @@ SG_BEGIN_DECL()
        simdata_process_t simdata;
                                 /**< @brief simulator data */
        void *data;              /**< @brief user data */
+       char *category;      /* process category for instrumentation */
      } s_m_process_t;
 /** @} */
 /** @brief Agent datatype  

@@ -208,6 +208,9 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
     comm->act = SIMIX_action_communicate(comm->src_proc->smx_host, 
                                          comm->dst_proc->smx_host, NULL, 
                                          comm->task_size, comm->rate);
+#ifdef HAVE_TRACING
+    TRACE_smx_action_communicate (comm->act, comm->src_proc);
+#endif
 
     /* If any of the process is suspend, create the action but stop its execution,
        it will be restarted when the sender process resume */

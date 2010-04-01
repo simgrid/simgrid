@@ -48,6 +48,7 @@ XBT_PUBLIC(char *) xbt_str_varsubst(char *str, xbt_dict_t patterns);
 XBT_PUBLIC(void) xbt_str_strip_spaces(char *);
 XBT_PUBLIC(char *) xbt_str_diff(char *a, char *b);
 
+XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
 
 XBT_PUBLIC(char*)xbt_str_from_file(FILE *file);
 

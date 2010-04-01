@@ -1,0 +1,2 @@
+/* defines whether instrumentation must be compiled or not */
+#undef HAVE_TRACING

@@ -53,11 +53,14 @@ int master(int argc, char *argv[])
   sprintf(id_alias, "%d", id);
   slavenames[id] = slavename;
 
+  TRACE_category (slavename);
+
   masternames[id] = MSG_host_get_name(MSG_host_self());
 
   {                             /*  Task creation.  */
     char sprintf_buffer[64] = "Task_0";
     todo = MSG_task_create(sprintf_buffer, 0, task_comm_size, NULL);
+    TRACE_msg_set_task_category(todo,slavename);
     //keep track of running tasks
     gl_task_array[id] = todo;
     gl_data_size[id] = task_comm_size;
@@ -123,7 +126,7 @@ int slave(int argc, char *argv[])
            slavenames[id], remaining);
       }
     }
-    exit(0);
+    //exit(0);
   }
 
   for (id = 0; id < NTASKS; id++) {
@@ -163,6 +166,8 @@ int main(int argc, char *argv[])
   MSG_error_t res = MSG_OK;
   bool_printed = 0;
 
+  TRACE_start ("z_gtnets.trace");
+
   MSG_global_init(&argc, argv);
   if (argc < 3) {
     printf("Usage: %s platform_file deployment_file\n", argv[0]);
@@ -171,6 +176,8 @@ int main(int argc, char *argv[])
   res = test_all(argv[1], argv[2]);
 
   MSG_clean();
+
+  TRACE_end ();
 
   if (res == MSG_OK)
     return 0;

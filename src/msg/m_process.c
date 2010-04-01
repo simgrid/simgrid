@@ -34,6 +34,9 @@ void __MSG_process_cleanup(void *arg)
 {
   /* arg is a pointer to a simix process, we can get the msg process with the field data */
   m_process_t proc = ((smx_process_t) arg)->data;
+#ifdef HAVE_TRACING
+  TRACE_msg_process_end (proc);
+#endif
   xbt_fifo_remove(msg_global->process_list, proc);
   SIMIX_process_cleanup(arg);
   if (proc->name) {
@@ -185,6 +188,9 @@ m_process_t MSG_process_create_with_environment(const char *name,
 
 void _MSG_process_kill_from_SIMIX(void *p)
 {
+#ifdef HAVE_TRACING
+  TRACE_msg_process_kill ((m_process_t) p);
+#endif
   MSG_process_kill((m_process_t) p);
 }
 
@@ -196,6 +202,10 @@ void _MSG_process_kill_from_SIMIX(void *p)
 void MSG_process_kill(m_process_t process)
 {
   simdata_process_t p_simdata = process->simdata;
+
+#ifdef HAVE_TRACING
+  TRACE_msg_process_kill (process);
+#endif
 
   DEBUG3("Killing %s(%d) on %s",
          process->name, p_simdata->PID, p_simdata->m_host->name);
@@ -227,6 +237,9 @@ MSG_error_t MSG_process_change_host(m_host_t host)
   m_process_t process = MSG_process_self();
   m_host_t now = process->simdata->m_host;
   process->simdata->m_host = host;
+#ifdef HAVE_TRACING
+  TRACE_msg_process_change_host (process, now, host);
+#endif
   SIMIX_process_change_host(process->simdata->s_process, now->name,
                             host->name);
   return MSG_OK;
@@ -417,6 +430,10 @@ MSG_error_t MSG_process_suspend(m_process_t process)
                && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
+#ifdef HAVE_TRACING
+  TRACE_msg_process_suspend (process);
+#endif
+
   SIMIX_process_suspend(process->simdata->s_process);
   MSG_RETURN(MSG_OK);
 }
@@ -433,6 +450,10 @@ MSG_error_t MSG_process_resume(m_process_t process)
   xbt_assert0(((process != NULL)
                && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
+
+#ifdef HAVE_TRACING
+  TRACE_msg_process_resume (process);
+#endif
 
   SIMIX_process_resume(process->simdata->s_process);
   MSG_RETURN(MSG_OK);

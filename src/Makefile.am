@@ -214,7 +214,17 @@ SIMIX_SRC= \
   simix/smx_synchro.c \
   simix/smx_network.c \
   simix/smx_context_base.c
-  
+
+TRACING_SRC=\
+  instr/interface.c \
+  instr/general.c \
+  instr/paje.c \
+  instr/msg_task_instr.c \
+  instr/msg_process_instr.c \
+  instr/smx_instr.c \
+  instr/surf_instr.c \
+  instr/variables_instr.c
+
 if CONTEXT_THREADS
   SURF_SRC += xbt/xbt_os_thread.c simix/smx_context_thread.c
   EXTRA_DIST += simix/smx_context_sysv.c
@@ -339,7 +349,8 @@ lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la
 gras_sources=$(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 simgrid_sources=$(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) \
                 $(SIMIX_SRC) $(MSG_SRC) $(SIMDAG_SRC) \
-		$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
+		$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC) \
+		$(TRACING_SRC)
 
 
 libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
@@ -388,7 +399,7 @@ simgrid.jar: $(JMSG_JAVA_SRC)
 	[ -e .classes/surf ] || mkdir .classes/surf
 	$(JAR) cvf simgrid.jar -C .classes .
 else
-EXTRA_DIST+=$(JMSG_C_SRC) $(JMSG_JAVA_SRC) $(MSG_SRC)
+EXTRA_DIST+=$(JMSG_C_SRC) $(JMSG_JAVA_SRC) $(MSG_SRC) $(TRACING_SRC)
 endif
 
 LUA_SRC= simix/smx_context_lua.c bindings/lua/simgrid_lua.c #bindings/lua/Msglua.c 

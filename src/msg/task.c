@@ -72,6 +72,9 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->host_list = NULL;
   simdata->comp_amount = NULL;
   simdata->comm_amount = NULL;
+#ifdef HAVE_TRACING
+  TRACE_msg_task_create (task);
+#endif
 
   return task;
 }
@@ -156,6 +159,9 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   task->simdata->refcount--;
   if (task->simdata->refcount > 0)
     return MSG_OK;
+#ifdef HAVE_TRACING
+  TRACE_msg_task_destroy (task);
+#endif
 
   if (task->name)
     free(task->name);

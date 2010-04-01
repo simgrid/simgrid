@@ -83,6 +83,10 @@ if(NOT disable_ruby)
 	endif(RUBY_INCLUDE_PATH)
 endif(NOT disable_ruby)
 
+if(tracing)
+	SET(HAVE_TRACING 1)
+endif(tracing)
+
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT JAVA
 if(disable_java)

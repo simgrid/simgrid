@@ -1,0 +1,124 @@
+             =======
+instrumented SimGrid
+             =======
+
+In order to trace the simulators created with the SimGrid toolkit and based on
+the MSG interface, you have to enable the instrumentation mechanisms with this
+option to the configure command (in addition to other options you may be already
+using):
+
+$ ./configure --enable-tracing
+
+By doing that, you will have access to a set of tracing functions that are
+described below. You can keep the calls for these functions in your code even if
+SimGrid was compiled without this configuration option.
+
+Mandatory functions:
+=========
+
+int TRACE_start(const char *filename);
+
+	This is the first function to be called. It receives a single argument
+	as parameter that contains the name of the file that will hold the trace
+	in the end of the simulation. It returns 1 if everything was properly
+	initialized, 0 otherwise. All trace functions called before TRACE_start
+	do nothing. By default, the instrumentation will trace the platform
+	behavior (host and link utilization).
+
+int TRACE_end (void);
+
+	This is the last function to be called. It closes the trace file and
+	disable the tracing of the simulation. All trace functions called after
+	TRACE_end do nothing.
+
+void TRACE_category (const char *category);
+
+	This function should be used to define a user category. The category can
+	be used to differentiate the tasks that are created during the
+	simulation (for example, tasks from server1, server2, ...). All resource
+	utilization (host power and link bandwidth) will be classified according
+	to the task category. Tasks that do not belong to a category are not
+	traced.
+
+void TRACE_msg_set_task_category (m_task_t task, const char *category);
+
+	This function should be called after the creation of a task, to define
+	the category of that task. Only tasks with a category are traced when
+	TRACE_TASK is used as mask.
+
+
+Optional functions (that can be used if necessary):
+========
+
+void TRACE_set_mask (int mask);
+
+	This function can be used to control what is traced during the
+	simulation. The user has four masks that can be used:
+		- TRACE_PLATFORM - trace resource (host,link) utilization
+		- TRACE_PROCESS - trace process behavior (suspend, execute)
+		- TRACE_TASK - trace task behavior (created, execute, comm)
+		- NO_TRACE - can be used to disable the traces for a moment
+	The platform mask must be present in order to trace processes or tasks.
+
+void TRACE_start_with_mask (const char *filename, int mask);
+
+	This function can be used to start the tracing with a different mask
+	and replaces the use of TRACE_start. The initial mask defined with this
+	function cannot be "extended" later with the TRACE_set_mask function.
+	This means that if TRACE_start_with_mask is called with the mask 
+	(TRACE_PLATFORM|TRACE_TASK), the user cannot set the mask later to
+	(TRACE_PLATFORM|TRACE_PROCESS), for instance. The best combinations of
+	mask for tracing the current instrumentation are:
+		- (TRACE_PLATFORM|TRACE_TASK) or
+			Tasks are grouped by hosts.
+		- (TRACE_PLATFORM|TRACE_PROCESS) or
+			Processes are grouped by hosts.
+		- (TRACE_PLATFORM|TRACE_PROCESS|TRACE_TASK)
+			Processes are grouped by hosts, tasks by processes.
+	Only tasks and processes belonging to a category are traced.
+
+void TRACE_host_variable_declare (const char *variable);
+
+	Declare a user variable that will be associated to the host. 
+
+void TRACE_host_variable_set (const char *variable, double value);
+void TRACE_host_variable_add (const char *variable, double value);
+void TRACE_host_variable_sub (const char *variable, double value);
+
+	Set the value of a given user variable. It is important to remind that
+	the value of this variable is always associated to the host. The host
+	that will be used when these functions are called is the one returned by
+	the function MSG_host_self().
+
+void TRACE_define_type (const char *type,
+				const char *parent_type,
+				int final);
+
+	This function allows the definition of a type hierarchy that can be used
+	to create different categories. This root of the type hierarchy is
+	defined as "0", so the first level of type must be child of the type
+	"0". The boolean parameter final (1 or 0) indicates if the categories
+	of a given type will be used to mark MSG tasks or not. This is used to
+	differentiate types that are defined only to group other types.
+
+void TRACE_create_category (const char *category,
+					const char *type,
+					const char *parent_category);
+
+	This functions allows the creation of categories and a hierarchy of
+	categories. Each category created with this function (first parameter)
+	must belong to a given type previously defined with the
+	TRACE_define_type. It has to be also a child of a previously created
+	category, which is indicated by the parent_category. The user can
+	created categories that are child of "0" if the type of this newly
+	created category is also child of the type "0" (as defined by
+	TRACE_define_type).
+
+void TRACE_msg_set_process_category (m_process_t process, const char *category);
+
+	This function can be used to define the category of a process. The same
+	categories declared for tasks can be used here. After setting the
+	category of a process and enabling the mask TRACE_PROCESS, the
+	instrumentation will trace the process behavior, such as the states for
+	execution, suspend, and so on. Only processes with categories are traced
+	when TRACE_PROCESS is enabled.

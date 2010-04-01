@@ -238,7 +238,8 @@ typedef enum {
   network_error,  /**< error while sending/receiving data */
   timeout_error,  /**< not quick enough, dude */
   thread_error,    /**< error while [un]locking */
-  host_error                            /**< host failed */
+  host_error,                            /**< host failed */
+  tracing_error   /**< error during the simulation tracing */
 } xbt_errcat_t;
 
 XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);

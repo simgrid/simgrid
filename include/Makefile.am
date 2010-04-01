@@ -51,7 +51,10 @@ nobase_include_HEADERS = \
 	gras/messages.h gras/timer.h \
 	\
 	amok/peermanagement.h \
-	amok/bandwidth.h
+	amok/bandwidth.h \
+	\
+	instr/instr.h \
+	instr/config.h
 
 surf/simgrid_dtd.h:
 	$(MAKE) -C ../src ../include/surf/simgrid_dtd.h

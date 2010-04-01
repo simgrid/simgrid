@@ -116,6 +116,10 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
   if (host) THROW_UNIMPLEMENTED;
 
   CHECK_HOST();
+#ifdef HAVE_TRACING
+  TRACE_msg_task_get_start ();
+  double start_time = MSG_get_clock();
+#endif
 
   memset(&comm,0,sizeof(comm));
 
@@ -152,7 +156,14 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
     }
     xbt_ex_free(e);        
   }
-  
+
+  if (ret != MSG_HOST_FAILURE &&
+      ret != MSG_TRANSFER_FAILURE &&
+      ret != MSG_TIMEOUT){
+#ifdef HAVE_TRACING
+    TRACE_msg_task_get_end (start_time, *task);
+#endif
+  }
   MSG_RETURN(ret);        
 }
 
@@ -166,6 +177,11 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   m_process_t process = MSG_process_self();
   
   CHECK_HOST();
+
+#ifdef HAVE_TRACING
+  int call_end = TRACE_msg_task_put_start (task); //must be after CHECK_HOST()
+#endif
+
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
@@ -211,6 +227,8 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   }
 
   process->simdata->waiting_task = NULL;
-   
+#ifdef HAVE_TRACING
+  if (call_end) TRACE_msg_task_put_end ();
+#endif
   MSG_RETURN(ret);        
 }

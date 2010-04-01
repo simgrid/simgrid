@@ -53,6 +53,10 @@ static cpu_Cas01_im_t cpu_im_new(char *name, double power_peak,
                               tmgr_trace_t state_trace,
                               xbt_dict_t cpu_properties)
 {
+#ifdef HAVE_TRACING
+  TRACE_surf_cpu_new (name, power_scale * power_peak);
+#endif
+
   cpu_Cas01_im_t cpu = xbt_new0(s_cpu_Cas01_im_t, 1);
   s_surf_action_cpu_Cas01_im_t action;
   xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
@@ -221,6 +225,12 @@ static void cpu_im_update_remains(cpu_Cas01_im_t cpu, double now)
                     lmm_variable_getvalue(GENERIC_LMM_ACTION
                                           (action).variable) * (now -
                                                                 cpu->last_update));
+#ifdef HAVE_TRACING
+      TRACE_surf_update_action_state (action, action->generic_lmm_action.generic_action.data,
+          lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable), "PowerUsed", cpu->last_update, now-cpu->last_update);
+      TRACE_surf_update_action_state_cpu_resource (cpu->generic_resource.name,
+                action->generic_lmm_action.generic_action.data, lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable), cpu->last_update, now-cpu->last_update);
+#endif
       DEBUG2("Update action(%p) remains %lf", action,
              GENERIC_ACTION(action).remains);
     }
@@ -299,6 +309,12 @@ static void cpu_im_update_actions_state(double now, double delta)
     DEBUG1("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();
     /* set the remains to 0 due to precision problems when updating the remaining amount */
+#ifdef HAVE_TRACING
+    TRACE_surf_update_action_state (action, action->generic_lmm_action.generic_action.data,
+        lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable), "PowerUsed", ((cpu_Cas01_im_t)(action->cpu))->last_update, now - ((cpu_Cas01_im_t)(action->cpu))->last_update);
+    TRACE_surf_update_action_state_cpu_resource (((cpu_Cas01_im_t)(action->cpu))->generic_resource.name,
+              action->generic_lmm_action.generic_action.data, lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable), ((cpu_Cas01_im_t)(action->cpu))->last_update, now-((cpu_Cas01_im_t)(action->cpu))->last_update);
+#endif
     GENERIC_ACTION(action).remains = 0;
     cpu_im_cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     cpu_im_update_remains(action->cpu, surf_get_clock());
@@ -316,6 +332,9 @@ static void cpu_im_update_resource_state(void *id,
     cpu->power_scale = value;
     lmm_update_constraint_bound(cpu_im_maxmin_system, cpu->constraint,
                                 cpu->power_scale * cpu->power_peak);
+#ifdef HAVE_TRACING
+    TRACE_surf_cpu_set_power (date, cpu->generic_resource.name, cpu->power_scale * cpu->power_peak);
+#endif
     xbt_swag_insert(cpu, cpu_im_modified_cpu);
     if (tmgr_trace_event_free(event_type))
       cpu->power_event = NULL;

@@ -42,6 +42,9 @@ MSG_error_t MSG_task_execute(m_task_t task)
   m_process_t self = MSG_process_self();
   e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
   CHECK_HOST();
+#ifdef HAVE_TRACING
+  TRACE_msg_task_execute_start (task);
+#endif
 
   simdata = task->simdata;
 
@@ -76,18 +79,27 @@ MSG_error_t MSG_task_execute(m_task_t task)
     simdata->computation_amount = 0.0;
     simdata->comm = NULL;
     simdata->compute = NULL;
+#ifdef HAVE_TRACING
+    TRACE_msg_task_execute_end (task);
+#endif
     MSG_RETURN(MSG_OK);
   } else if (SIMIX_host_get_state(SIMIX_host_self()) == 0) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     SIMIX_action_destroy(task->simdata->compute);
     simdata->comm = NULL;
     simdata->compute = NULL;
+#ifdef HAVE_TRACING
+    TRACE_msg_task_execute_end (task);
+#endif
     MSG_RETURN(MSG_HOST_FAILURE);
   } else {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     SIMIX_action_destroy(task->simdata->compute);
     simdata->comm = NULL;
     simdata->compute = NULL;
+#ifdef HAVE_TRACING
+    TRACE_msg_task_execute_end (task);
+#endif
     MSG_RETURN(MSG_TASK_CANCELLED);
   }
 }
@@ -228,6 +240,10 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   smx_mutex_t mutex;
   smx_cond_t cond;
 
+#ifdef HAVE_TRACING
+  TRACE_msg_process_sleep_in (MSG_process_self());
+#endif
+
   /* create action to sleep */
   act_sleep =
     SIMIX_action_sleep(SIMIX_process_get_host(proc->simdata->s_process),
@@ -256,14 +272,23 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   if (SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
     if (SIMIX_host_get_state(SIMIX_host_self()) == SURF_RESOURCE_OFF) {
       SIMIX_action_destroy(act_sleep);
+#ifdef HAVE_TRACING
+      TRACE_msg_process_sleep_out (MSG_process_self());
+#endif
       MSG_RETURN(MSG_HOST_FAILURE);
     }
   } else {
     SIMIX_action_destroy(act_sleep);
+#ifdef HAVE_TRACING
+    TRACE_msg_process_sleep_out (MSG_process_self());
+#endif
     MSG_RETURN(MSG_HOST_FAILURE);
   }
 
   SIMIX_action_destroy(act_sleep);
+#ifdef HAVE_TRACING
+  TRACE_msg_process_sleep_out (MSG_process_self());
+#endif
   MSG_RETURN(MSG_OK);
 }
 

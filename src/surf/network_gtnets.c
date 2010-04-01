@@ -38,7 +38,9 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   gtnets_link->bw_current = bw;
   gtnets_link->lat_current = lat;
   gtnets_link->id = link_count;
-
+#ifdef HAVE_TRACING
+  TRACE_surf_net_link_new (name, bw, lat);
+#endif
   xbt_dict_set(surf_network_model->resource_set, name, gtnets_link,
                surf_resource_free);
 }
@@ -231,6 +233,27 @@ static void update_actions_state(double now, double delta)
       DEBUG2("Action (%p) remains old value: %f", action,
              action->generic_action.remains);
       double remain = gtnets_get_flow_rx(action);
+
+#ifdef HAVE_TRACING
+      // tracing surf action
+      TRACE_surf_update_action_state (action, action->generic_action.data,
+    		  (action->generic_action.remains-remain)/delta, "BandwidthUsed", now-delta, delta);
+
+      // tracing resource utilization
+      int src = TRACE_surf_gtnets_get_src (action);
+      int dst = TRACE_surf_gtnets_get_dst (action);
+      if (src != -1 && dst != -1){
+        xbt_dynar_t route = used_routing->get_route(src, dst);
+        network_link_GTNETS_t link;
+        unsigned int i;
+        xbt_dynar_foreach(route, i, link) {
+
+          TRACE_surf_update_action_state_net_resource (link->generic_resource.name,
+            action->generic_action.data, (action->generic_action.remains-remain)/delta, now-delta, delta);
+        }
+      }
+#endif
+
       DEBUG1("Remain value returned by GTNetS : %f", remain);
       //need to trust this remain value
       if (remain == 0) {
@@ -246,6 +269,9 @@ static void update_actions_state(double now, double delta)
       action = (surf_action_network_GTNETS_t) (metadata[i]);
 
       action->generic_action.finish = now + time_to_next_flow_completion;
+#ifdef HAVE_TRACING
+      TRACE_surf_gtnets_destroy (action);
+#endif
       action_state_set((surf_action_t) action, SURF_ACTION_DONE);
       DEBUG1("----> Action (%p) just terminated", action);
     }
@@ -287,6 +313,9 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,
     xbt_assert2(0, "Not route between host %s and host %s", src_name,
                 dst_name);
   }
+#ifdef HAVE_TRACING
+  TRACE_surf_gtnets_communicate (action, src, dst);
+#endif
 
   return (surf_action_t) action;
 }

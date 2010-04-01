@@ -18,6 +18,7 @@
 #include "xbt/swag.h"
 #include "xbt/dict.h"
 #include "xbt/config.h"
+#include "instr/private.h"
 
 SG_BEGIN_DECL()
 

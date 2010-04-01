@@ -62,6 +62,9 @@ static cpu_Cas01_t cpu_new(char *name, double power_peak,
 
   xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu,
                surf_resource_free);
+#ifdef HAVE_TRACING
+  TRACE_surf_cpu_new (name, cpu->power_scale * cpu->power_peak);
+#endif
 
   return cpu;
 }
@@ -190,6 +193,14 @@ static void cpu_update_actions_state(double now, double delta)
   xbt_swag_t running_actions = surf_cpu_model->states.running_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
+#ifdef HAVE_TRACING
+    TRACE_surf_update_action_state (action, action->generic_action.data,
+        lmm_variable_getvalue(action->variable), "PowerUsed", now-delta, delta);
+    cpu_Cas01_t x = lmm_constraint_id(lmm_get_cnst_from_var (cpu_maxmin_system, action->variable, 0));
+
+    TRACE_surf_update_action_state_cpu_resource (x->generic_resource.name,
+              action->generic_action.data, lmm_variable_getvalue(action->variable), now-delta, delta);
+#endif
     double_update(&(action->generic_action.remains),
                   lmm_variable_getvalue(action->variable) * delta);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
@@ -218,6 +229,9 @@ static void cpu_update_resource_state(void *id,
     cpu->power_scale = value;
     lmm_update_constraint_bound(cpu_maxmin_system, cpu->constraint,
                                 cpu->power_scale * cpu->power_peak);
+#ifdef HAVE_TRACING
+    TRACE_surf_cpu_set_power (date, cpu->generic_resource.name, cpu->power_scale * cpu->power_peak);
+#endif
     if (tmgr_trace_event_free(event_type))
       cpu->power_event = NULL;
   } else if (event_type == cpu->state_event) {
