@@ -300,6 +300,7 @@ set(TRACING_SRC
 	${PROJECT_DIRECTORY}/src/instr/smx_instr.c
 	${PROJECT_DIRECTORY}/src/instr/surf_instr.c
 	${PROJECT_DIRECTORY}/src/instr/variables_instr.c
+	${PROJECT_DIRECTORY}/src/instr/private.h
 )
 
 set(RUBY_SRC
