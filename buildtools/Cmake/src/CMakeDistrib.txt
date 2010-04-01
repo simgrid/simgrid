@@ -17,6 +17,7 @@ set(to_svg
 	${GTNETS_SRC}
 	${SURF_SRC}
 	${SIMIX_SRC}
+	${TRACING_SRC}
 	${MSG_SRC}
 	${SIMDAG_SRC}
 	${GRAS_COMMON_SRC}
