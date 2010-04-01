@@ -373,7 +373,7 @@ void SIMIX_network_copy_data(smx_comm_t comm)
   {
     if (msg_sizes == NULL)
       msg_sizes = xbt_dict_new();
-    uintptr_t casted_size = buff_size;
+    uintptr_t casted_size = comm->task_size;
     uintptr_t amount = xbt_dicti_get(msg_sizes, casted_size);
     amount++;
 
