@@ -310,6 +310,34 @@ ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
 ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
 )
 
+set(TEST_CFILES
+${PROJECT_DIRECTORY}/src/xbt/cunit.c
+${PROJECT_DIRECTORY}/src/xbt/ex.c
+${PROJECT_DIRECTORY}/src/xbt/dynar.c
+${PROJECT_DIRECTORY}/src/xbt/dict.c
+${PROJECT_DIRECTORY}/src/xbt/set.c
+${PROJECT_DIRECTORY}/src/xbt/swag.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_str.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_strbuff.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_sha.c
+${PROJECT_DIRECTORY}/src/xbt/config.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_synchro.c
+)
+
+set(TEST_UNITS
+cunit_unit.c
+ex_unit.c
+dynar_unit.c
+dict_unit.c
+set_unit.c
+swag_unit.c
+xbt_str_unit.c
+xbt_strbuff_unit.c
+xbt_sha_unit.c
+config_unit.c
+xbt_synchro_unit.c
+)
+
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS
 if(${CONTEXT_THREADS})
