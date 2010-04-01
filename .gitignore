@@ -35,6 +35,7 @@ make_simgrid_java.sh
 testgraph.dot
 testgraph.xml
 buildtools/Cmake/src/tmp_gras_config.h.in
+buildtools/Cmake/src/tmp_tracing_config.h.in
 conftestval
 cmake_install.cmake
 CMakeFiles
@@ -85,6 +86,7 @@ ltmain.sh
 autom4te.cache/*
 doc/Doxyfile
 include/simgrid_config.h
+include/instr/tracing_config.h
 examples/amok/bandwidth/bandwidth_maestro
 examples/amok/bandwidth/bandwidth_sensor
 examples/amok/saturate/saturate_maestro

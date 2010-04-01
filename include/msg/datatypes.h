@@ -8,7 +8,7 @@
 #ifndef MSG_DATATYPE_H
 #define MSG_DATATYPE_H
 #include "xbt/misc.h"
-#include "instr/config.h"
+#include "instr/tracing_config.h" // for HAVE_TRACING
 
 SG_BEGIN_DECL()
 

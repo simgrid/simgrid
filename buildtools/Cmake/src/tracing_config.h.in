@@ -1,0 +1,19 @@
+/*
+ * tracing_config.h
+ *
+ *  Created on: Apri 1, 2010
+ *      Author: Lucas Schnorr
+ *     License: This program is free software; you can redistribute
+ *              it and/or modify it under the terms of the license
+ *              (GNU LGPL) which comes with this package.
+ *
+ *     Copyright (c) 2009 The SimGrid team.
+ */
+
+#ifndef __TRACING_CONFIG_H
+#define __TRACING_CONFIG_H
+
+/* Tracing SimGrid */
+#cmakedefine HAVE_TRACING @HAVE_TRACING@
+
+#endif

@@ -11,7 +11,6 @@
  */
 
 #include "instr/private.h"
-#include "instr/config.h"
 
 #ifdef HAVE_TRACING
 

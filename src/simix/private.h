@@ -18,7 +18,6 @@
 #include "xbt/function_types.h"
 #include "xbt/ex_interface.h"
 #include "instr/private.h"
-#include "instr/config.h"
 
 /******************************** Datatypes ***********************************/
 

@@ -11,7 +11,6 @@
  */
 
 #include "instr/private.h"
-#include "instr/config.h"
 #include "surf/surf_private.h"
 #include "surf/network_private.h"
 
