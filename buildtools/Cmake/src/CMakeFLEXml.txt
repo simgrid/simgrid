@@ -93,5 +93,34 @@ endif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 message("")
 message("________________________________________________________________________________")
 message("________________________________________________________________________________ FLEXML END")
+
+message("")
+message("________________________________________________________________________________")
+message("________________________________________________________________________________ SG_UNIT_EXTRACTOR")
+
+exec_program("rm -f simgrid_units_main.c *_unit.c ${PROJECT_DIRECTORY}/src/simgrid_units_main.c ${PROJECT_DIRECTORY}/src/*_unit.c" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE OKITOKI)
+
+#clean-units:
+foreach(file ${TEST_UNITS})
+	exec_program("echo ${file}|sed -e 's|.c$$|.Po|' -e 's|[^/]*/||' -e 's|^|.deps/|'" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE dep)
+        exec_program("echo \"Removing dependency tracker of ${file} (${dep} ${PROJECT_DIRECTORY}/src/${dep})\"" OUTPUT_VARIABLE OKITOKI)
+	message("${OKITOKI}")
+	exec_program("rm -vf ${dep} ${PROJECT_DIRECTORY}/src/${dep}" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE OKITOKI)
+	exec_program("touch ${dep}" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE OKITOKI)
+endforeach(file ${TEST_UNITS})
+
+#@builddir@/simgrid_units_main.c: $(TEST_UNITS)
+exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${PROJECT_DIRECTORY}/src/xbt/cunit.c" "${PROJECT_DIRECTORY}/src/")
+
+#$(TEST_UNITS): $(TEST_CFILES)
+foreach(file ${TEST_CFILES})
+	set(TEST_CFILES_SRC "${TEST_CFILES_SRC} ${file}")
+endforeach(file ${TEST_CFILES})
+exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${TEST_CFILES_SRC}" "${PROJECT_DIRECTORY}/src/")
+
+message("")
+message("________________________________________________________________________________")
+message("________________________________________________________________________________ SG_UNIT_EXTRACTOR END")
+
 endif(enable_maintainer_mode)
 
