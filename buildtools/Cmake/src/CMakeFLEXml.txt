@@ -100,6 +100,13 @@ message("_______________________________________________________________________
 
 exec_program("rm -f simgrid_units_main.c *_unit.c ${PROJECT_DIRECTORY}/src/simgrid_units_main.c ${PROJECT_DIRECTORY}/src/*_unit.c" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE OKITOKI)
 
+#$(TEST_UNITS): $(TEST_CFILES)
+string(REPLACE ";" " " TEST_CFILES "${TEST_CFILES}")
+exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${TEST_CFILES}" "${PROJECT_DIRECTORY}/src/")
+
+#@builddir@/simgrid_units_main.c: $(TEST_UNITS)
+exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${PROJECT_DIRECTORY}/src/xbt/cunit.c" "${PROJECT_DIRECTORY}/src/")
+
 #clean-units:
 foreach(file ${TEST_UNITS})
 	exec_program("echo ${file}|sed -e 's|.c$$|.Po|' -e 's|[^/]*/||' -e 's|^|.deps/|'" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE dep)
@@ -108,15 +115,6 @@ foreach(file ${TEST_UNITS})
 	exec_program("rm -vf ${dep} ${PROJECT_DIRECTORY}/src/${dep}" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE OKITOKI)
 	exec_program("touch ${dep}" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE OKITOKI)
 endforeach(file ${TEST_UNITS})
-
-#@builddir@/simgrid_units_main.c: $(TEST_UNITS)
-exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${PROJECT_DIRECTORY}/src/xbt/cunit.c" "${PROJECT_DIRECTORY}/src/")
-
-#$(TEST_UNITS): $(TEST_CFILES)
-foreach(file ${TEST_CFILES})
-	set(TEST_CFILES_SRC "${TEST_CFILES_SRC} ${file}")
-endforeach(file ${TEST_CFILES})
-exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${TEST_CFILES_SRC}" "${PROJECT_DIRECTORY}/src/")
 
 message("")
 message("________________________________________________________________________________")
