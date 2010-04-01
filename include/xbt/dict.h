@@ -138,7 +138,7 @@ XBT_PUBLIC(int) xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
       @hideinitializer */
 #  define xbt_dict_foreach(dict,cursor,key,data)                       \
     for (cursor=NULL, xbt_dict_cursor_first((dict),&(cursor)) ;        \
-         xbt_dict_cursor_get_or_free(&(cursor),&(key),(void**)(&data));\
+         xbt_dict_cursor_get_or_free(&(cursor),(char**)&(key),(void**)(&data));\
          xbt_dict_cursor_step(cursor) )
 
 /** @} */
