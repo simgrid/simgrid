@@ -1150,7 +1150,7 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
 }
 
 static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
-  xbt_test_log2("Add %ld under %ld", data, key);
+  xbt_test_log2("Add %zu under %zu", data, key);
 
   xbt_dicti_set(head, key, data);
   if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
@@ -1159,7 +1159,7 @@ static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
   }
   uintptr_t stored_data = xbt_dicti_get(head, key);
   xbt_test_assert3(stored_data==data,
-      "Retrieved data (%ld) is not what I just stored (%ld) under key %ld",stored_data,data,key);
+      "Retrieved data (%zu) is not what I just stored (%zu) under key %zu",stored_data,data,key);
 }
 
 XBT_TEST_UNIT("dicti", test_dict_scalar, "Scalar data and key management")
