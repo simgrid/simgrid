@@ -510,7 +510,7 @@ XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
 
-  DEBUG5("ADD %ld->%ld; hash = %d, size = %d, & = %d", key, data, hash_code,
+  DEBUG5("ADD %zu->%zu; hash = %d, size = %d, & = %d", key, data, hash_code,
          dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
@@ -587,7 +587,7 @@ XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key) {
   }
 
   if (current == NULL)
-    THROW1(not_found_error, 0, "key %ld not found", key);
+    THROW1(not_found_error, 0, "key %zu not found", key);
 
   if (previous != NULL) {
     previous->next = current->next;

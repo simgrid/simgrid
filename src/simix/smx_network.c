@@ -389,7 +389,7 @@ void SIMIX_message_sizes_output(const char *filename) {
   uintptr_t key,data;
   xbt_dict_cursor_t cursor;
   xbt_dict_foreach(msg_sizes,cursor,key,data) {
-    fprintf(out,"%ld %ld\n",key,data);
+    fprintf(out,"%ld %ld\n",(long unsigned)key,(long unsigned)data);
   }
   fclose(out);
 }
