@@ -5,28 +5,37 @@ set(BIBTEX2HTML_PATH ${BIBTEX2HTML})
 else(BIBTEX2HTML)
 find_path(BIBTEX2HTML_PATH	NAMES bibtex2html	PATHS NO_DEFAULT_PATHS)
 endif(BIBTEX2HTML)
-message("BIBTEX2HTML_PATH ${BIBTEX2HTML_PATH}")
-message("BIBTEX2HTML ${BIBTEX2HTML}")
 
 if(BIBTEX2HTML_PATH)
 	exec_program("${BIBTEX2HTML_PATH}/bibtex2html -version" OUTPUT_VARIABLE SORTIE_BIBTEX2HTML_VERSION)
 	STRING(REPLACE "[-bibtex]" "" SORTIE_BIBTEX2HTML_VERSION_2 ${SORTIE_BIBTEX2HTML_VERSION})
 	if(${SORTIE_BIBTEX2HTML_VERSION_2} STREQUAL ${SORTIE_BIBTEX2HTML_VERSION}) # mauvaise version
-		message("need to set bibtex2html path")
+		message("\nERROR --> NEED to set bibtex2html path with \"ccmake ./\" or with \"cmake -DBIBTEX2HTML=<path_to> ./\"")
+		message("\nTake care having install the good bibtex2html \n\t(download it : ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz)")
+		message("\n")
 	else(${SORTIE_BIBTEX2HTML_VERSION_2} STREQUAL ${SORTIE_BIBTEX2HTML_VERSION})# bonne version
 		SET(MAKE_DOC true)
+		find_path(FIG2DEV_PATH	NAMES fig2dev	PATHS NO_DEFAULT_PATHS)
+		find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
+		find_path(BIBTOOL_PATH	NAMES bibtool	PATHS NO_DEFAULT_PATHS)
+		find_path(ICONV_PATH	NAMES iconv	PATHS NO_DEFAULT_PATHS)
+
+		if(FIG2DEV_PATH AND DOXYGEN_PATH AND BIBTOOL_PATH AND ICONV_PATH)
+	
+		elseif(FIG2DEV_PATH AND DOXYGEN_PATH AND BIBTOOL_PATH AND ICONV_PATH)
+			message("ERROR MAKING DOC")
+			message("\tFIG2DEV_PATH : ${FIG2DEV_PATH}")
+			message("\tDOXYGEN_PATH : ${DOXYGEN_PATH}")
+			message("\tBIBTOOL_PATH : ${BIBTOOL_PATH}")
+			message("\tICONV_PATH   : ${ICONV_PATH}")
+		endif(FIG2DEV_PATH AND DOXYGEN_PATH AND BIBTOOL_PATH AND ICONV_PATH)
+
 	endif(${SORTIE_BIBTEX2HTML_VERSION_2} STREQUAL ${SORTIE_BIBTEX2HTML_VERSION})
 else(BIBTEX2HTML_PATH)
 	SET(MAKE_DOC false)
 endif(BIBTEX2HTML_PATH)
 
 if(MAKE_DOC)
-
-	find_path(FIG2DEV_PATH	NAMES fig2dev	PATHS NO_DEFAULT_PATHS)
-	find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
-	find_path(BIBTOOL_PATH	NAMES bibtool	PATHS NO_DEFAULT_PATHS)
-	find_path(ICONV_PATH	NAMES iconv	PATHS NO_DEFAULT_PATHS)
-	find_path(MAKE_PATH	NAMES make	PATHS NO_DEFAULT_PATHS)
 
 	exec_program("rm -rf ${PROJECT_DIRECTORY}/doc/html"  "${PROJECT_DIRECTORY}/doc/")
 	exec_program("mkdir -p ${PROJECT_DIRECTORY}/doc/html"  "${PROJECT_DIRECTORY}/doc/")
@@ -199,8 +208,4 @@ if(MAKE_DOC)
 
 	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/doc/realtoc.sh"  "${PROJECT_DIRECTORY}/doc/")
 	exec_program("${PROJECT_DIRECTORY}/doc/realtoc.sh" "${PROJECT_DIRECTORY}/doc/")
-
-else(MAKE_DOC)
-	message("Need to install the good bibtex2html download at :")
-	message("ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz")
 endif(MAKE_DOC)
