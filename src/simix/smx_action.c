@@ -50,7 +50,9 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
   /* initialize them */
   act->name = xbt_strdup(name);
   act->source = sender;
+#ifdef HAVE_TRACING
   act->category = NULL;
+#endif
 
   act->surf_action =
     surf_workstation_model->extension.workstation.communicate(sender->host,
@@ -90,7 +92,9 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
   /* initialize them */
   act->source = host;
   act->name = xbt_strdup(name);
+#ifdef HAVE_TRACING
   act->category = NULL;
+#endif
 
   /* set communication */
   act->surf_action =
@@ -135,7 +139,9 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
   /* initialize them */
   act->source = host;
   act->name = xbt_strdup(name);
+#ifdef HAVE_TRACING
   act->category = NULL;
+#endif
 
   act->surf_action =
     surf_workstation_model->extension.workstation.sleep(host->host, duration);
@@ -357,7 +363,9 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
 
   /* initialize them */
   act->name = xbt_strdup(name);
+#ifdef HAVE_TRACING
   act->category = NULL;
+#endif
 
   /* set action */
 
