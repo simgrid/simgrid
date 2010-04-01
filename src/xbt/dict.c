@@ -510,7 +510,7 @@ XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
 
-  DEBUG5("ADD %d->%d; hash = %d, size = %d, & = %d", key, data, hash_code,
+  DEBUG5("ADD %ld->%ld; hash = %d, size = %d, & = %d", key, data, hash_code,
          dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
@@ -587,7 +587,7 @@ XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key) {
   }
 
   if (current == NULL)
-    THROW1(not_found_error, 0, "key %d not found", key);
+    THROW1(not_found_error, 0, "key %ld not found", key);
 
   if (previous != NULL) {
     previous->next = current->next;
@@ -1150,7 +1150,7 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
 }
 
 static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
-  xbt_test_log2("Add %d under %d", data, key);
+  xbt_test_log2("Add %ld under %ld", data, key);
 
   xbt_dicti_set(head, key, data);
   if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
@@ -1159,7 +1159,7 @@ static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
   }
   uintptr_t stored_data = xbt_dicti_get(head, key);
   xbt_test_assert3(stored_data==data,
-      "Retrieved data (%d) is not what I just stored (%d) under key %d",stored_data,data,key);
+      "Retrieved data (%ld) is not what I just stored (%ld) under key %ld",stored_data,data,key);
 }
 
 XBT_TEST_UNIT("dicti", test_dict_scalar, "Scalar data and key management")
