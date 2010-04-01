@@ -93,7 +93,8 @@ COMMAND echo "TODO"
 
 add_custom_target(html
 COMMAND echo "Make the html doc"
-COMMAND cmake ./
+COMMAND echo "cmake -DBIBTEX2HTML=${BIBTEX2HTML} ./"
+COMMAND cmake -DBIBTEX2HTML=${BIBTEX2HTML} ./
 COMMAND rm -rf ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeFiles
 COMMAND rm ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeCache.txt
 COMMAND rm ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/cmake_install.cmake
