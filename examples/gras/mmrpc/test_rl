@@ -1,11 +1,11 @@
-& $SG_TEST_EXENV ./mmrpc_server$EXEEXT 4002 --log=root.fmt:%m%n 
-> Launch server (port=4002)
+& $SG_TEST_EXENV ./mmrpc_server$EXEEXT 4502 --log=root.fmt:%m%n 
+> Launch server (port=4502)
 > Exiting GRAS
 
-$ $SG_TEST_EXENV ./mmrpc_client$EXEEXT 127.0.0.1 4002 --log=root.fmt:%m%n 
-> Launch client (server on 127.0.0.1:4002)
-> Connected to 127.0.0.1:4002.
-> >>>>>>>> Connected to server which is on 127.0.0.1:4002 <<<<<<<<
-> >>>>>>>> Request sent to 127.0.0.1:4002 <<<<<<<<
-> >>>>>>>> Got answer from 127.0.0.1:4002 (values are right) <<<<<<<<
+$ $SG_TEST_EXENV ./mmrpc_client$EXEEXT 127.0.0.1 4502 --log=root.fmt:%m%n 
+> Launch client (server on 127.0.0.1:4502)
+> Connected to 127.0.0.1:4502.
+> >>>>>>>> Connected to server which is on 127.0.0.1:4502 <<<<<<<<
+> >>>>>>>> Request sent to 127.0.0.1:4502 <<<<<<<<
+> >>>>>>>> Got answer from 127.0.0.1:4502 (values are right) <<<<<<<<
 > Exiting GRAS

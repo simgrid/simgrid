@@ -1,28 +1,28 @@
-& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4000 127.0.0.1 4010 --create-token --log=root.fmt:%m%n $@ 
-> Launch node listening on 4000 (successor on 127.0.0.1:4010)
-> Create the token (with value 0) and send it to 127.0.0.1:4010
+& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4100 127.0.0.1 4110 --create-token --log=root.fmt:%m%n $@ 
+> Launch node listening on 4100 (successor on 127.0.0.1:4110)
+> Create the token (with value 0) and send it to 127.0.0.1:4110
 > Begin a new loop. Still to do: 2
 > Begin a new loop. Still to do: 1
 > Begin a new loop. Still to do: 0
 > Shut down the token-ring. There was 17 hops.
 > Exiting GRAS
 
-& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4010 127.0.0.1 4020 --log=root.fmt:%m%n $@ 
-> Launch node listening on 4010 (successor on 127.0.0.1:4020)
+& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4110 127.0.0.1 4120 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4110 (successor on 127.0.0.1:4120)
 > Exiting GRAS
 
-& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4020 127.0.0.1 4030 --log=root.fmt:%m%n $@ 
-> Launch node listening on 4020 (successor on 127.0.0.1:4030)
+& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4120 127.0.0.1 4130 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4120 (successor on 127.0.0.1:4130)
 > Exiting GRAS
 
-& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4030 127.0.0.1 4040 --log=root.fmt:%m%n $@ 
-> Launch node listening on 4030 (successor on 127.0.0.1:4040)
+& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4130 127.0.0.1 4141 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4130 (successor on 127.0.0.1:4141)
 > Exiting GRAS
 
-& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4040 127.0.0.1 4050 --log=root.fmt:%m%n $@ 
-> Launch node listening on 4040 (successor on 127.0.0.1:4050)
+& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4141 127.0.0.1 4150 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4141 (successor on 127.0.0.1:4150)
 > Exiting GRAS
 
-& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4050 127.0.0.1 4000 --log=root.fmt:%m%n $@ 
-> Launch node listening on 4050 (successor on 127.0.0.1:4000)
+& $SG_TEST_EXENV ./simple_token_node$EXEEXT 4150 127.0.0.1 4100 --log=root.fmt:%m%n $@ 
+> Launch node listening on 4150 (successor on 127.0.0.1:4100)
 > Exiting GRAS

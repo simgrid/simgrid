@@ -1,6 +1,6 @@
-& $SG_TEST_EXENV ./rpc_server$EXEEXT 4002 --log=root.fmt:%m%n $@
-> Launch server (port=4002)
-> Listening on port 4002
+& $SG_TEST_EXENV ./rpc_server$EXEEXT 4202 --log=root.fmt:%m%n $@
+> Launch server (port=4202)
+> Listening on port 4202
 > Got message PING(1234) from 127.0.0.1:0
 > Answered with PONG(4321)
 > Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
@@ -9,17 +9,17 @@
 > Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
 > Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
 > Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:0
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4003
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
+> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
 > Asked to die by 127.0.0.1:0
 > Done.
 > Exiting GRAS
 
-& $SG_TEST_EXENV ./rpc_forwarder$EXEEXT 4003 127.0.0.1 4002 --log=root.fmt:%m%n $@
-> Launch forwarder (port=4003)
+& $SG_TEST_EXENV ./rpc_forwarder$EXEEXT 4203 127.0.0.1 4202 --log=root.fmt:%m%n $@
+> Launch forwarder (port=4203)
 > Forward a request
 > Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:0
 > Forward a request
@@ -34,11 +34,11 @@
 > Done.
 > Exiting GRAS
 
-& $SG_TEST_EXENV ./rpc_client$EXEEXT 127.0.0.1 4002 127.0.0.1 4003 --log=root.fmt:%m%n $@
-> Launch client (server on 127.0.0.1:4002)
-> Connected to 127.0.0.1:4002.
-> Connected to server which is on 127.0.0.1:4002
-> The answer to PING(1234) on 127.0.0.1:4002 is PONG(4321)
+& $SG_TEST_EXENV ./rpc_client$EXEEXT 127.0.0.1 4202 127.0.0.1 4203 --log=root.fmt:%m%n $@
+> Launch client (server on 127.0.0.1:4202)
+> Connected to 127.0.0.1:4202.
+> Connected to server which is on 127.0.0.1:4202
+> The answer to PING(1234) on 127.0.0.1:4202 is PONG(4321)
 > Call the exception raising RPC
 > Got the expected exception when calling the exception raising RPC
 > Called the exception raising RPC
@@ -57,7 +57,7 @@
 > Got the expected exception when calling the exception raising RPC
 > Call the exception raising RPC on the forwarder (i=4)
 > Got the expected exception when calling the exception raising RPC
-> Ask 127.0.0.1:4003 to die
-> Ask 127.0.0.1:4002 to die
+> Ask 127.0.0.1:4203 to die
+> Ask 127.0.0.1:4202 to die
 > Done.
 > Exiting GRAS

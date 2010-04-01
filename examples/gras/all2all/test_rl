@@ -1,7 +1,7 @@
 # The receivers, waiting for 5 messages
 ! timeout 20
-& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4000 5 --log=root.fmt:%m%n
-> Listening on port 4000 (expecting 5 messages)
+& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4400 5 --log=root.fmt:%m%n
+> Listening on port 4400 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)
 > Got Data from 127.0.0.1:0 (still 3 to go)
 > Got Data from 127.0.0.1:0 (still 2 to go)
@@ -10,8 +10,8 @@
 > Exiting GRAS
 
 ! timeout 20
-& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4001 5 --log=root.fmt:%m%n
-> Listening on port 4001 (expecting 5 messages)
+& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4401 5 --log=root.fmt:%m%n
+> Listening on port 4401 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)
 > Got Data from 127.0.0.1:0 (still 3 to go)
 > Got Data from 127.0.0.1:0 (still 2 to go)
@@ -20,8 +20,8 @@
 > Exiting GRAS
 
 ! timeout 20
-& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4002 5 --log=root.fmt:%m%n
-> Listening on port 4002 (expecting 5 messages)
+& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4402 5 --log=root.fmt:%m%n
+> Listening on port 4402 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)
 > Got Data from 127.0.0.1:0 (still 3 to go)
 > Got Data from 127.0.0.1:0 (still 2 to go)
@@ -30,8 +30,8 @@
 > Exiting GRAS
 
 ! timeout 20
-& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4003 5 --log=root.fmt:%m%n
-> Listening on port 4003 (expecting 5 messages)
+& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4403 5 --log=root.fmt:%m%n
+> Listening on port 4403 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)
 > Got Data from 127.0.0.1:0 (still 3 to go)
 > Got Data from 127.0.0.1:0 (still 2 to go)
@@ -40,8 +40,8 @@
 > Exiting GRAS
 
 ! timeout 20
-& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4004 5 --log=root.fmt:%m%n
-> Listening on port 4004 (expecting 5 messages)
+& $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4404 5 --log=root.fmt:%m%n
+> Listening on port 4404 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)
 > Got Data from 127.0.0.1:0 (still 3 to go)
 > Got Data from 127.0.0.1:0 (still 2 to go)
@@ -50,7 +50,7 @@
 > Exiting GRAS
 
 # Five time a sender
-$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4400 127.0.0.1:4401 127.0.0.1:4402 127.0.0.1:4403 127.0.0.1:4404 512 --log=root.fmt:%m%n
 > Launch current node
 >   Sent Data
 >   Sent Data
@@ -59,7 +59,7 @@ $ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1
 >   Sent Data
 > Exiting GRAS
 
-$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4400 127.0.0.1:4401 127.0.0.1:4402 127.0.0.1:4403 127.0.0.1:4404 512 --log=root.fmt:%m%n
 > Launch current node
 >   Sent Data
 >   Sent Data
@@ -68,7 +68,7 @@ $ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1
 >   Sent Data
 > Exiting GRAS
 
-$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4400 127.0.0.1:4401 127.0.0.1:4402 127.0.0.1:4403 127.0.0.1:4404 512 --log=root.fmt:%m%n
 > Launch current node
 >   Sent Data
 >   Sent Data
@@ -77,7 +77,7 @@ $ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1
 >   Sent Data
 > Exiting GRAS
 
-$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4400 127.0.0.1:4401 127.0.0.1:4402 127.0.0.1:4403 127.0.0.1:4404 512 --log=root.fmt:%m%n
 > Launch current node
 >   Sent Data
 >   Sent Data
@@ -86,7 +86,7 @@ $ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1
 >   Sent Data
 > Exiting GRAS
 
-$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+$ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4400 127.0.0.1:4401 127.0.0.1:4402 127.0.0.1:4403 127.0.0.1:4404 512 --log=root.fmt:%m%n
 > Launch current node
 >   Sent Data
 >   Sent Data
