@@ -339,6 +339,39 @@ config_unit.c
 xbt_synchro_unit.c
 )
 
+#Here must have all files which permit to generate source files
+set(SRC_TO_LOOK
+${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
+${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
+${PROJECT_DIRECTORY}/src/simdag/dax.dtd
+${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l
+${PROJECT_DIRECTORY}/src/xbt/graphxml.l
+${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l
+${PROJECT_DIRECTORY}/src/simgrid_units_main.c
+${PROJECT_DIRECTORY}/examples/gras/ping/ping.xml
+${PROJECT_DIRECTORY}/examples/gras/rpc/rpc.xml
+${PROJECT_DIRECTORY}/examples/gras/spawn/spawn.xml
+${PROJECT_DIRECTORY}/examples/gras/timer/timer.xml
+${PROJECT_DIRECTORY}/examples/gras/chrono/chrono.xml
+${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/simple_token.xml
+${PROJECT_DIRECTORY}/examples/gras/mmrpc/mmrpc.xml
+${PROJECT_DIRECTORY}/examples/gras/all2all/all2all.xml
+${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.xml
+${PROJECT_DIRECTORY}/examples/gras/synchro/synchro.xml
+${PROJECT_DIRECTORY}/examples/gras/properties/properties.xml
+${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/msg_handle.xml
+${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/empty_main.xml
+${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/small_sleep.xml
+${PROJECT_DIRECTORY}/examples/amok/bandwidth/bandwidth.xml
+${PROJECT_DIRECTORY}/examples/amok/saturate/saturate.xml
+${TEST_CFILES}
+${PROJECT_DIRECTORY}/src/context_sysv_config.h.in
+${PROJECT_DIRECTORY}/buildtools/Cmake/src/c_gras_config.h.in
+${PROJECT_DIRECTORY}/include/simgrid_config.h.in
+${PROJECT_DIRECTORY}/src/smpi/smpicc.in
+${PROJECT_DIRECTORY}/src/smpi/smpirun.in
+)
+
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS
 if(${CONTEXT_THREADS})
