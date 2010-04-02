@@ -192,6 +192,8 @@ int main(int argc, char **argv)
 
   smpi_global_destroy();
 
+  SIMIX_message_sizes_output("toto.txt");
+
   SIMIX_clean();
   return 0;
 }
