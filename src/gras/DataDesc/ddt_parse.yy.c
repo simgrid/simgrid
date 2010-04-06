@@ -69,7 +69,7 @@ typedef uint32_t flex_uint32_t;
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
 typedef int flex_int32_t;
-typedef unsigned char flex_uint8_t;
+typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
 
@@ -111,15 +111,15 @@ typedef unsigned int flex_uint32_t;
 /* The "const" storage-class-modifier is valid. */
 #define YY_USE_CONST
 
-#else /* ! __cplusplus */
+#else	/* ! __cplusplus */
 
 /* C99 requires __STDC__ to be defined as 1. */
 #if defined (__STDC__)
 
 #define YY_USE_CONST
 
-#endif /* defined (__STDC__) */
-#endif /* ! __cplusplus */
+#endif	/* defined (__STDC__) */
+#endif	/* ! __cplusplus */
 
 #ifdef YY_USE_CONST
 #define yyconst const
@@ -160,7 +160,15 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -180,8 +188,8 @@ extern FILE *gras_ddt_parse_in, *gras_ddt_parse_out;
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
 
-#define YY_LESS_LINENO(n)
-
+    #define YY_LESS_LINENO(n)
+    
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
 	do \
@@ -205,72 +213,73 @@ typedef size_t yy_size_t;
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
-struct yy_buffer_state {
-  FILE *yy_input_file;
+struct yy_buffer_state
+	{
+	FILE *yy_input_file;
 
-  char *yy_ch_buf;              /* input buffer */
-  char *yy_buf_pos;             /* current position in input buffer */
+	char *yy_ch_buf;		/* input buffer */
+	char *yy_buf_pos;		/* current position in input buffer */
 
-  /* Size of input buffer in bytes, not including room for EOB
-   * characters.
-   */
-  yy_size_t yy_buf_size;
+	/* Size of input buffer in bytes, not including room for EOB
+	 * characters.
+	 */
+	yy_size_t yy_buf_size;
 
-  /* Number of characters read into yy_ch_buf, not including EOB
-   * characters.
-   */
-  int yy_n_chars;
+	/* Number of characters read into yy_ch_buf, not including EOB
+	 * characters.
+	 */
+	int yy_n_chars;
 
-  /* Whether we "own" the buffer - i.e., we know we created it,
-   * and can realloc() it to grow it, and should free() it to
-   * delete it.
-   */
-  int yy_is_our_buffer;
+	/* Whether we "own" the buffer - i.e., we know we created it,
+	 * and can realloc() it to grow it, and should free() it to
+	 * delete it.
+	 */
+	int yy_is_our_buffer;
 
-  /* Whether this is an "interactive" input source; if so, and
-   * if we're using stdio for input, then we want to use getc()
-   * instead of fread(), to make sure we stop fetching input after
-   * each newline.
-   */
-  int yy_is_interactive;
+	/* Whether this is an "interactive" input source; if so, and
+	 * if we're using stdio for input, then we want to use getc()
+	 * instead of fread(), to make sure we stop fetching input after
+	 * each newline.
+	 */
+	int yy_is_interactive;
 
-  /* Whether we're considered to be at the beginning of a line.
-   * If so, '^' rules will be active on the next match, otherwise
-   * not.
-   */
-  int yy_at_bol;
+	/* Whether we're considered to be at the beginning of a line.
+	 * If so, '^' rules will be active on the next match, otherwise
+	 * not.
+	 */
+	int yy_at_bol;
 
-  int yy_bs_lineno;   /**< The line count. */
-  int yy_bs_column;   /**< The column count. */
+    int yy_bs_lineno; /**< The line count. */
+    int yy_bs_column; /**< The column count. */
+    
+	/* Whether to try to fill the input buffer when we reach the
+	 * end of it.
+	 */
+	int yy_fill_buffer;
 
-  /* Whether to try to fill the input buffer when we reach the
-   * end of it.
-   */
-  int yy_fill_buffer;
-
-  int yy_buffer_status;
+	int yy_buffer_status;
 
 #define YY_BUFFER_NEW 0
 #define YY_BUFFER_NORMAL 1
-  /* When an EOF's been seen but there's still some text to process
-   * then we mark the buffer as YY_EOF_PENDING, to indicate that we
-   * shouldn't try reading from the input source any more.  We might
-   * still have a bunch of tokens to match, though, because of
-   * possible backing-up.
-   *
-   * When we actually see the EOF, we change the status to "new"
-   * (via gras_ddt_parse_restart()), so that the user can continue scanning by
-   * just pointing gras_ddt_parse_in at a new input file.
-   */
+	/* When an EOF's been seen but there's still some text to process
+	 * then we mark the buffer as YY_EOF_PENDING, to indicate that we
+	 * shouldn't try reading from the input source any more.  We might
+	 * still have a bunch of tokens to match, though, because of
+	 * possible backing-up.
+	 *
+	 * When we actually see the EOF, we change the status to "new"
+	 * (via gras_ddt_parse_restart()), so that the user can continue scanning by
+	 * just pointing gras_ddt_parse_in at a new input file.
+	 */
 #define YY_BUFFER_EOF_PENDING 2
 
-};
+	};
 #endif /* !YY_STRUCT_YY_BUFFER_STATE */
 
 /* Stack of input buffers. */
 static size_t yy_buffer_stack_top = 0; /**< index of top of stack. */
 static size_t yy_buffer_stack_max = 0; /**< capacity of stack. */
-static YY_BUFFER_STATE *yy_buffer_stack = 0;  /**< Stack as an array. */
+static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
 
 /* We provide macros for accessing buffer states in case in the
  * future we want to put the buffer states in a more general
@@ -289,40 +298,40 @@ static YY_BUFFER_STATE *yy_buffer_stack = 0;  /**< Stack as an array. */
 
 /* yy_hold_char holds the character lost when gras_ddt_parse_text is formed. */
 static char yy_hold_char;
-static int yy_n_chars;          /* number of characters read into yy_ch_buf */
+static int yy_n_chars;		/* number of characters read into yy_ch_buf */
 int gras_ddt_parse_leng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
-static int yy_init = 0;         /* whether we need to initialize */
-static int yy_start = 0;        /* start state number */
+static int yy_init = 0;		/* whether we need to initialize */
+static int yy_start = 0;	/* start state number */
 
 /* Flag which is used to allow gras_ddt_parse_wrap()'s to do buffer switches
  * instead of setting up a fresh gras_ddt_parse_in.  A bit of a hack ...
  */
 static int yy_did_buffer_switch_on_eof;
 
-void gras_ddt_parse_restart(FILE * input_file);
-void gras_ddt_parse__switch_to_buffer(YY_BUFFER_STATE new_buffer);
-YY_BUFFER_STATE gras_ddt_parse__create_buffer(FILE * file, int size);
-void gras_ddt_parse__delete_buffer(YY_BUFFER_STATE b);
-void gras_ddt_parse__flush_buffer(YY_BUFFER_STATE b);
-void gras_ddt_parse_push_buffer_state(YY_BUFFER_STATE new_buffer);
-void gras_ddt_parse_pop_buffer_state(void);
+void gras_ddt_parse_restart (FILE *input_file  );
+void gras_ddt_parse__switch_to_buffer (YY_BUFFER_STATE new_buffer  );
+YY_BUFFER_STATE gras_ddt_parse__create_buffer (FILE *file,int size  );
+void gras_ddt_parse__delete_buffer (YY_BUFFER_STATE b  );
+void gras_ddt_parse__flush_buffer (YY_BUFFER_STATE b  );
+void gras_ddt_parse_push_buffer_state (YY_BUFFER_STATE new_buffer  );
+void gras_ddt_parse_pop_buffer_state (void );
 
-static void gras_ddt_parse_ensure_buffer_stack(void);
-static void gras_ddt_parse__load_buffer_state(void);
-static void gras_ddt_parse__init_buffer(YY_BUFFER_STATE b, FILE * file);
+static void gras_ddt_parse_ensure_buffer_stack (void );
+static void gras_ddt_parse__load_buffer_state (void );
+static void gras_ddt_parse__init_buffer (YY_BUFFER_STATE b,FILE *file  );
 
 #define YY_FLUSH_BUFFER gras_ddt_parse__flush_buffer(YY_CURRENT_BUFFER )
 
-YY_BUFFER_STATE gras_ddt_parse__scan_buffer(char *base, yy_size_t size);
-YY_BUFFER_STATE gras_ddt_parse__scan_string(yyconst char *yy_str);
-YY_BUFFER_STATE gras_ddt_parse__scan_bytes(yyconst char *bytes, int len);
+YY_BUFFER_STATE gras_ddt_parse__scan_buffer (char *base,yy_size_t size  );
+YY_BUFFER_STATE gras_ddt_parse__scan_string (yyconst char *yy_str  );
+YY_BUFFER_STATE gras_ddt_parse__scan_bytes (yyconst char *bytes,int len  );
 
-void *gras_ddt_parse_alloc(yy_size_t);
-void *gras_ddt_parse_realloc(void *, yy_size_t);
-void gras_ddt_parse_free(void *);
+void *gras_ddt_parse_alloc (yy_size_t  );
+void *gras_ddt_parse_realloc (void *,yy_size_t  );
+void gras_ddt_parse_free (void *  );
 
 #define yy_new_buffer gras_ddt_parse__create_buffer
 
@@ -366,10 +375,10 @@ int gras_ddt_parse_lineno = 1;
 extern char *gras_ddt_parse_text;
 #define yytext_ptr gras_ddt_parse_text
 
-static yy_state_type yy_get_previous_state(void);
-static yy_state_type yy_try_NUL_trans(yy_state_type current_state);
-static int yy_get_next_buffer(void);
-static void yy_fatal_error(yyconst char msg[]);
+static yy_state_type yy_get_previous_state (void );
+static yy_state_type yy_try_NUL_trans (yy_state_type current_state  );
+static int yy_get_next_buffer (void );
+static void yy_fatal_error (yyconst char msg[]  );
 
 /* Done after the current pattern has been matched and before the
  * corresponding action - sets up gras_ddt_parse_text.
@@ -385,104 +394,112 @@ static void yy_fatal_error(yyconst char msg[]);
 #define YY_END_OF_BUFFER 27
 /* This struct is not used in this scanner,
    but its presence is necessary. */
-struct yy_trans_info {
-  flex_int32_t yy_verify;
-  flex_int32_t yy_nxt;
-};
-static yyconst flex_int16_t yy_accept[61] = { 0,
-  14, 14, 7, 7, 10, 10, 0, 0, 27, 25,
-  24, 19, 20, 21, 23, 14, 25, 22, 17, 18,
-  15, 16, 7, 7, 6, 7, 7, 10, 12, 11,
-  26, 26, 14, 0, 1, 7, 7, 7, 5, 7,
-  10, 11, 11, 13, 0, 0, 2, 1, 4, 0,
-  3, 0, 2, 0, 3, 0, 0, 8, 9, 0
-};
+struct yy_trans_info
+	{
+	flex_int32_t yy_verify;
+	flex_int32_t yy_nxt;
+	};
+static yyconst flex_int16_t yy_accept[61] =
+    {   0,
+       14,   14,    7,    7,   10,   10,    0,    0,   27,   25,
+       24,   19,   20,   21,   23,   14,   25,   22,   17,   18,
+       15,   16,    7,    7,    6,    7,    7,   10,   12,   11,
+       26,   26,   14,    0,    1,    7,    7,    7,    5,    7,
+       10,   11,   11,   13,    0,    0,    2,    1,    4,    0,
+        3,    0,    2,    0,    3,    0,    0,    8,    9,    0
+    } ;
 
-static yyconst flex_int32_t yy_ec[256] = { 0,
-  1, 1, 1, 1, 1, 1, 1, 1, 2, 3,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 2, 1, 1, 1, 1, 1, 1, 1, 4,
-  5, 6, 1, 7, 8, 8, 9, 10, 10, 10,
-  10, 10, 10, 10, 10, 10, 10, 1, 11, 1,
-  1, 1, 1, 1, 8, 8, 8, 8, 8, 8,
-  8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-  8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-  12, 1, 13, 14, 8, 1, 8, 8, 8, 8,
+static yyconst flex_int32_t yy_ec[256] =
+    {   0,
+        1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    2,    1,    1,    1,    1,    1,    1,    1,    4,
+        5,    6,    1,    7,    8,    8,    9,   10,   10,   10,
+       10,   10,   10,   10,   10,   10,   10,    1,   11,    1,
+        1,    1,    1,    1,    8,    8,    8,    8,    8,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+       12,    1,   13,   14,    8,    1,    8,    8,    8,    8,
 
-  8, 8, 15, 8, 8, 8, 8, 8, 8, 8,
-  8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-  8, 8, 16, 1, 17, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        8,    8,   15,    8,    8,    8,    8,    8,    8,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+        8,    8,   16,    1,   17,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1
-};
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1
+    } ;
 
-static yyconst flex_int32_t yy_meta[18] = { 0,
-  1, 1, 2, 1, 1, 3, 1, 4, 1, 4,
-  1, 1, 1, 1, 4, 1, 1
-};
+static yyconst flex_int32_t yy_meta[18] =
+    {   0,
+        1,    1,    2,    1,    1,    3,    1,    4,    1,    4,
+        1,    1,    1,    1,    4,    1,    1
+    } ;
 
-static yyconst flex_int16_t yy_base[69] = { 0,
-  0, 0, 16, 30, 17, 18, 78, 77, 85, 88,
-  88, 88, 88, 88, 88, 0, 19, 88, 88, 88,
-  88, 88, 0, 24, 88, 75, 77, 0, 88, 21,
-  88, 76, 0, 22, 0, 0, 27, 75, 0, 71,
-  0, 29, 34, 88, 29, 65, 76, 0, 0, 63,
-  74, 60, 72, 56, 65, 51, 50, 88, 88, 88,
-  45, 49, 53, 55, 57, 61, 65, 69
-};
+static yyconst flex_int16_t yy_base[69] =
+    {   0,
+        0,    0,   16,   30,   17,   18,   78,   77,   85,   88,
+       88,   88,   88,   88,   88,    0,   19,   88,   88,   88,
+       88,   88,    0,   24,   88,   75,   77,    0,   88,   21,
+       88,   76,    0,   22,    0,    0,   27,   75,    0,   71,
+        0,   29,   34,   88,   29,   65,   76,    0,    0,   63,
+       74,   60,   72,   56,   65,   51,   50,   88,   88,   88,
+       45,   49,   53,   55,   57,   61,   65,   69
+    } ;
 
-static yyconst flex_int16_t yy_def[69] = { 0,
-  60, 1, 61, 61, 62, 62, 63, 63, 60, 60,
-  60, 60, 60, 60, 60, 64, 60, 60, 60, 60,
-  60, 60, 65, 65, 60, 65, 65, 66, 60, 67,
-  60, 60, 64, 60, 68, 65, 65, 65, 65, 65,
-  66, 67, 67, 60, 60, 60, 60, 68, 65, 60,
-  60, 60, 60, 60, 60, 60, 60, 60, 60, 0,
-  60, 60, 60, 60, 60, 60, 60, 60
-};
+static yyconst flex_int16_t yy_def[69] =
+    {   0,
+       60,    1,   61,   61,   62,   62,   63,   63,   60,   60,
+       60,   60,   60,   60,   60,   64,   60,   60,   60,   60,
+       60,   60,   65,   65,   60,   65,   65,   66,   60,   67,
+       60,   60,   64,   60,   68,   65,   65,   65,   65,   65,
+       66,   67,   67,   60,   60,   60,   60,   68,   65,   60,
+       60,   60,   60,   60,   60,   60,   60,   60,   60,    0,
+       60,   60,   60,   60,   60,   60,   60,   60
+    } ;
 
-static yyconst flex_int16_t yy_nxt[106] = { 0,
-  10, 10, 11, 12, 13, 14, 15, 16, 17, 16,
-  18, 19, 20, 10, 16, 21, 22, 24, 25, 29,
-  29, 26, 30, 30, 34, 37, 43, 35, 37, 44,
-  27, 24, 25, 46, 60, 26, 47, 60, 38, 43,
-  50, 38, 44, 51, 27, 23, 23, 23, 23, 28,
-  28, 28, 28, 31, 31, 31, 31, 36, 33, 36,
-  36, 41, 59, 58, 41, 42, 55, 42, 42, 48,
-  57, 48, 48, 53, 56, 55, 54, 53, 52, 49,
-  40, 45, 40, 39, 60, 32, 32, 9, 60, 60,
-  60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+static yyconst flex_int16_t yy_nxt[106] =
+    {   0,
+       10,   10,   11,   12,   13,   14,   15,   16,   17,   16,
+       18,   19,   20,   10,   16,   21,   22,   24,   25,   29,
+       29,   26,   30,   30,   34,   37,   43,   35,   37,   44,
+       27,   24,   25,   46,   60,   26,   47,   60,   38,   43,
+       50,   38,   44,   51,   27,   23,   23,   23,   23,   28,
+       28,   28,   28,   31,   31,   31,   31,   36,   33,   36,
+       36,   41,   59,   58,   41,   42,   55,   42,   42,   48,
+       57,   48,   48,   53,   56,   55,   54,   53,   52,   49,
+       40,   45,   40,   39,   60,   32,   32,    9,   60,   60,
+       60,   60,   60,   60,   60,   60,   60,   60,   60,   60,
 
-  60, 60, 60, 60, 60
-};
+       60,   60,   60,   60,   60
+    } ;
 
-static yyconst flex_int16_t yy_chk[106] = { 0,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 3, 3, 5,
-  6, 3, 5, 6, 17, 24, 30, 17, 37, 30,
-  3, 4, 4, 34, 42, 4, 34, 42, 24, 43,
-  45, 37, 43, 45, 4, 61, 61, 61, 61, 62,
-  62, 62, 62, 63, 63, 63, 63, 65, 64, 65,
-  65, 66, 57, 56, 66, 67, 55, 67, 67, 68,
-  54, 68, 68, 53, 52, 51, 50, 47, 46, 40,
-  38, 32, 27, 26, 9, 8, 7, 60, 60, 60,
-  60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+static yyconst flex_int16_t yy_chk[106] =
+    {   0,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    3,    3,    5,
+        6,    3,    5,    6,   17,   24,   30,   17,   37,   30,
+        3,    4,    4,   34,   42,    4,   34,   42,   24,   43,
+       45,   37,   43,   45,    4,   61,   61,   61,   61,   62,
+       62,   62,   62,   63,   63,   63,   63,   65,   64,   65,
+       65,   66,   57,   56,   66,   67,   55,   67,   67,   68,
+       54,   68,   68,   53,   52,   51,   50,   47,   46,   40,
+       38,   32,   27,   26,    9,    8,    7,   60,   60,   60,
+       60,   60,   60,   60,   60,   60,   60,   60,   60,   60,
 
-  60, 60, 60, 60, 60
-};
+       60,   60,   60,   60,   60
+    } ;
 
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
@@ -506,16 +523,15 @@ char *gras_ddt_parse_text;
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/DataDesc/ddt_parse.yy.h"
 #include <string.h>
-YY_BUFFER_STATE gras_ddt_input_buffer;
-FILE *gras_ddt_file_to_parse;
+  YY_BUFFER_STATE gras_ddt_input_buffer;
+  FILE *gras_ddt_file_to_parse;
 
-int gras_ddt_parse_line_pos = 1;
-int gras_ddt_parse_col_pos = 0;
-int gras_ddt_parse_char_pos = 0;
-int gras_ddt_parse_tok_num = 0;
-const char *definition;
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_lexer, gras_ddt_parse,
-                                "The crude internals of the lexer used for type parsing");
+  int gras_ddt_parse_line_pos = 1;
+  int gras_ddt_parse_col_pos = 0;
+  int gras_ddt_parse_char_pos = 0;
+  int gras_ddt_parse_tok_num = 0;
+  const char *definition;
+  XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_lexer,gras_ddt_parse,"The crude internals of the lexer used for type parsing");
 #define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,gras_ddt_parse_text)
 
 #define INITIAL 0
@@ -535,36 +551,36 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_lexer, gras_ddt_parse,
 #define YY_EXTRA_TYPE void *
 #endif
 
-static int yy_init_globals(void);
+static int yy_init_globals (void );
 
 /* Accessor methods to globals.
    These are made visible to non-reentrant scanners for convenience. */
 
-int gras_ddt_parse_lex_destroy(void);
+int gras_ddt_parse_lex_destroy (void );
 
-int gras_ddt_parse_get_debug(void);
+int gras_ddt_parse_get_debug (void );
 
-void gras_ddt_parse_set_debug(int debug_flag);
+void gras_ddt_parse_set_debug (int debug_flag  );
 
-YY_EXTRA_TYPE gras_ddt_parse_get_extra(void);
+YY_EXTRA_TYPE gras_ddt_parse_get_extra (void );
 
-void gras_ddt_parse_set_extra(YY_EXTRA_TYPE user_defined);
+void gras_ddt_parse_set_extra (YY_EXTRA_TYPE user_defined  );
 
-FILE *gras_ddt_parse_get_in(void);
+FILE *gras_ddt_parse_get_in (void );
 
-void gras_ddt_parse_set_in(FILE * in_str);
+void gras_ddt_parse_set_in  (FILE * in_str  );
 
-FILE *gras_ddt_parse_get_out(void);
+FILE *gras_ddt_parse_get_out (void );
 
-void gras_ddt_parse_set_out(FILE * out_str);
+void gras_ddt_parse_set_out  (FILE * out_str  );
 
-int gras_ddt_parse_get_leng(void);
+int gras_ddt_parse_get_leng (void );
 
-char *gras_ddt_parse_get_text(void);
+char *gras_ddt_parse_get_text (void );
 
-int gras_ddt_parse_get_lineno(void);
+int gras_ddt_parse_get_lineno (void );
 
-void gras_ddt_parse_set_lineno(int line_number);
+void gras_ddt_parse_set_lineno (int line_number  );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -572,35 +588,40 @@ void gras_ddt_parse_set_lineno(int line_number);
 
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus
-extern "C" int gras_ddt_parse_wrap(void);
+extern "C" int gras_ddt_parse_wrap (void );
 #else
-extern int gras_ddt_parse_wrap(void);
+extern int gras_ddt_parse_wrap (void );
 #endif
 #endif
 
-static void yyunput(int c, char *buf_ptr);
-
+    static void yyunput (int c,char *buf_ptr  );
+    
 #ifndef yytext_ptr
-static void yy_flex_strncpy(char *, yyconst char *, int);
+static void yy_flex_strncpy (char *,yyconst char *,int );
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen(yyconst char *);
+static int yy_flex_strlen (yyconst char * );
 #endif
 
 #ifndef YY_NO_INPUT
 
 #ifdef __cplusplus
-static int yyinput(void);
+static int yyinput (void );
 #else
-static int input(void);
+static int input (void );
 #endif
 
 #endif
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -673,7 +694,7 @@ static int input(void);
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int gras_ddt_parse_lex(void);
+extern int gras_ddt_parse_lex (void);
 
 #define YY_DECL int gras_ddt_parse_lex (void)
 #endif /* !YY_DECL */
@@ -695,326 +716,440 @@ extern int gras_ddt_parse_lex(void);
 
 /** The main scanner function which does all the work.
  */
-YY_DECL {
-  register yy_state_type yy_current_state;
-  register char *yy_cp, *yy_bp;
-  register int yy_act;
+YY_DECL
+{
+	register yy_state_type yy_current_state;
+	register char *yy_cp, *yy_bp;
+	register int yy_act;
+    
+   int comment_caller=0;
+   int annotate_caller=0;
 
-  int comment_caller = 0;
-  int annotate_caller = 0;
-
-  if (!(yy_init)) {
-    (yy_init) = 1;
+	if ( !(yy_init) )
+		{
+		(yy_init) = 1;
 
 #ifdef YY_USER_INIT
-    YY_USER_INIT;
+		YY_USER_INIT;
 #endif
 
-    if (!(yy_start))
-      (yy_start) = 1;           /* first start state */
+		if ( ! (yy_start) )
+			(yy_start) = 1;	/* first start state */
 
-    if (!gras_ddt_parse_in)
-      gras_ddt_parse_in = stdin;
+		if ( ! gras_ddt_parse_in )
+			gras_ddt_parse_in = stdin;
 
-    if (!gras_ddt_parse_out)
-      gras_ddt_parse_out = stdout;
+		if ( ! gras_ddt_parse_out )
+			gras_ddt_parse_out = stdout;
 
-    if (!YY_CURRENT_BUFFER) {
-      gras_ddt_parse_ensure_buffer_stack();
-      YY_CURRENT_BUFFER_LVALUE =
-        gras_ddt_parse__create_buffer(gras_ddt_parse_in, YY_BUF_SIZE);
-    }
+		if ( ! YY_CURRENT_BUFFER ) {
+			gras_ddt_parse_ensure_buffer_stack ();
+			YY_CURRENT_BUFFER_LVALUE =
+				gras_ddt_parse__create_buffer(gras_ddt_parse_in,YY_BUF_SIZE );
+		}
 
-    gras_ddt_parse__load_buffer_state();
-  }
+		gras_ddt_parse__load_buffer_state( );
+		}
 
-  while (1) {                   /* loops until end-of-file is reached */
-    yy_cp = (yy_c_buf_p);
+	while ( 1 )		/* loops until end-of-file is reached */
+		{
+		yy_cp = (yy_c_buf_p);
 
-    /* Support of gras_ddt_parse_text. */
-    *yy_cp = (yy_hold_char);
+		/* Support of gras_ddt_parse_text. */
+		*yy_cp = (yy_hold_char);
 
-    /* yy_bp points to the position in yy_ch_buf of the start of
-     * the current run.
-     */
-    yy_bp = yy_cp;
+		/* yy_bp points to the position in yy_ch_buf of the start of
+		 * the current run.
+		 */
+		yy_bp = yy_cp;
 
-    yy_current_state = (yy_start);
-  yy_match:
-    do {
-      register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
-      if (yy_accept[yy_current_state]) {
-        (yy_last_accepting_state) = yy_current_state;
-        (yy_last_accepting_cpos) = yy_cp;
-      }
-      while (yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state) {
-        yy_current_state = (int) yy_def[yy_current_state];
-        if (yy_current_state >= 61)
-          yy_c = yy_meta[(unsigned int) yy_c];
-      }
-      yy_current_state =
-        yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-      ++yy_cp;
-    }
-    while (yy_base[yy_current_state] != 88);
+		yy_current_state = (yy_start);
+yy_match:
+		do
+			{
+			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			if ( yy_accept[yy_current_state] )
+				{
+				(yy_last_accepting_state) = yy_current_state;
+				(yy_last_accepting_cpos) = yy_cp;
+				}
+			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
+				{
+				yy_current_state = (int) yy_def[yy_current_state];
+				if ( yy_current_state >= 61 )
+					yy_c = yy_meta[(unsigned int) yy_c];
+				}
+			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+			++yy_cp;
+			}
+		while ( yy_base[yy_current_state] != 88 );
 
-  yy_find_action:
-    yy_act = yy_accept[yy_current_state];
-    if (yy_act == 0) {          /* have to back up */
-      yy_cp = (yy_last_accepting_cpos);
-      yy_current_state = (yy_last_accepting_state);
-      yy_act = yy_accept[yy_current_state];
-    }
+yy_find_action:
+		yy_act = yy_accept[yy_current_state];
+		if ( yy_act == 0 )
+			{ /* have to back up */
+			yy_cp = (yy_last_accepting_cpos);
+			yy_current_state = (yy_last_accepting_state);
+			yy_act = yy_accept[yy_current_state];
+			}
 
-    YY_DO_BEFORE_ACTION;
+		YY_DO_BEFORE_ACTION;
 
-  do_action:                   /* This label is used only to access EOF actions. */
+do_action:	/* This label is used only to access EOF actions. */
 
-    switch (yy_act) {           /* beginning of action switch */
-    case 0:                    /* must back up */
-      /* undo the effects of YY_DO_BEFORE_ACTION */
-      *yy_cp = (yy_hold_char);
-      yy_cp = (yy_last_accepting_cpos);
-      yy_current_state = (yy_last_accepting_state);
-      goto yy_find_action;
+		switch ( yy_act )
+	{ /* beginning of action switch */
+			case 0: /* must back up */
+			/* undo the effects of YY_DO_BEFORE_ACTION */
+			*yy_cp = (yy_hold_char);
+			yy_cp = (yy_last_accepting_cpos);
+			yy_current_state = (yy_last_accepting_state);
+			goto yy_find_action;
 
-    case 1:
-    YY_RULE_SETUP YY_BREAK case 2:
-      YY_RULE_SETUP {
-  /****************** ANNOTATION ************************/
-        DEBUG0("Begin annotation");
-        annotate_caller = INITIAL;
-        gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text);
-        gras_ddt_parse_col_pos += strlen(gras_ddt_parse_text);
-        BEGIN(annotate);
-      }
-      YY_BREAK case 3:YY_RULE_SETUP {   /* trim annotation */
-        DEBUG0("Begin annotation");
-        annotate_caller = foo;
-        gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text);
-        gras_ddt_parse_col_pos += strlen(gras_ddt_parse_text);
-        BEGIN(annotate);
-      } YY_BREAK case 4:YY_RULE_SETUP {
-        DEBUG0("End annotation");
-        gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text);
-        gras_ddt_parse_col_pos += strlen(gras_ddt_parse_text);
-        BEGIN(annotate_caller);
-      } YY_BREAK case 5:YY_RULE_SETUP {
-        PARSE_ERROR0("``/*g'' construct closed by a regular ``*/''");
-      } YY_BREAK case 6:
+case 1:
+YY_RULE_SETUP
+
+	YY_BREAK
+case 2:
+YY_RULE_SETUP
+{ /****************** ANNOTATION ************************/
+  DEBUG0("Begin annotation");
+  annotate_caller = INITIAL;
+  gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
+  gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
+  BEGIN(annotate);
+}
+	YY_BREAK
+case 3:
+YY_RULE_SETUP
+{ /* trim annotation */
+  DEBUG0("Begin annotation");
+  annotate_caller = foo;
+  gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
+  gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
+  BEGIN(annotate);
+}
+	YY_BREAK
+case 4:
+YY_RULE_SETUP
+{
+  DEBUG0("End annotation");
+  gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
+  gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
+  BEGIN(annotate_caller);
+}
+	YY_BREAK
+case 5:
+YY_RULE_SETUP
+{
+  PARSE_ERROR0("``/*g'' construct closed by a regular ``*/''");
+}
+	YY_BREAK
+case 6:
 /* rule 6 can match eol */
-        YY_RULE_SETUP {
-        PARSE_ERROR0("Type annotation cannot spread over several lines");
-      } YY_BREAK case 7:YY_RULE_SETUP { /* eat the rest */
-        gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text);
-        gras_ddt_parse_col_pos += strlen(gras_ddt_parse_text);
-        return GRAS_DDT_PARSE_TOKEN_ANNOTATE;
-      } YY_BREAK case 8:YY_RULE_SETUP {
-  /****************** COMMENTS ************************/
-        /* constructs like : */
-        /*g [string] g */
-        /* are not comments but size annotations */
-        comment_caller = INITIAL;
-        BEGIN(comment);
-      } YY_BREAK case 9:YY_RULE_SETUP {
-        comment_caller = foo;
-        BEGIN(comment);
-      } YY_BREAK case 10:YY_RULE_SETUP {        /* eat anything that's not a '*' */
-      } YY_BREAK case 11:YY_RULE_SETUP {        /* eat up '*'s not followed by '/'s */
-      } YY_BREAK case 12:
+YY_RULE_SETUP
+{
+  PARSE_ERROR0("Type annotation cannot spread over several lines");
+}
+	YY_BREAK
+case 7:
+YY_RULE_SETUP
+{ /* eat the rest */
+  gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
+  gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
+  return GRAS_DDT_PARSE_TOKEN_ANNOTATE;
+}
+	YY_BREAK
+case 8:
+YY_RULE_SETUP
+{ /****************** COMMENTS ************************/
+  /* constructs like : */
+    /*g [string] g*/ 
+  /* are not comments but size annotations */
+  comment_caller = INITIAL;
+  BEGIN(comment);
+}
+	YY_BREAK
+case 9:
+YY_RULE_SETUP
+{
+  comment_caller = foo;
+  BEGIN(comment);
+}
+	YY_BREAK
+case 10:
+YY_RULE_SETUP
+{ /* eat anything that's not a '*' */
+}
+	YY_BREAK
+case 11:
+YY_RULE_SETUP
+{ /* eat up '*'s not followed by '/'s */
+}
+	YY_BREAK
+case 12:
 /* rule 12 can match eol */
-        YY_RULE_SETUP {
-        ++gras_ddt_parse_line_pos;
-        gras_ddt_parse_col_pos = 0;
-        gras_ddt_parse_char_pos++;
-      } YY_BREAK case 13:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text);
-        gras_ddt_parse_col_pos += strlen(gras_ddt_parse_text);
-        BEGIN(comment_caller);
-      } YY_BREAK case 14:YY_RULE_SETUP {
-   /****************** STATEMENTS ************************/
-        gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text);
-        gras_ddt_parse_col_pos += strlen(gras_ddt_parse_text);
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_WORD);
-      } YY_BREAK case 15:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_LA);
-      } YY_BREAK case 16:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_RA);
-      } YY_BREAK case 17:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_LB);
-      } YY_BREAK case 18:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_RB);
-      } YY_BREAK case 19:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_LP);
-      } YY_BREAK case 20:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_RP);
-      } YY_BREAK case 21:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_STAR);
-      } YY_BREAK case 22:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_SEMI_COLON);
-      } YY_BREAK case 23:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-        return (GRAS_DDT_PARSE_TOKEN_COLON);
-      } YY_BREAK case 24:
+YY_RULE_SETUP
+{
+  ++gras_ddt_parse_line_pos;
+  gras_ddt_parse_col_pos=0;
+  gras_ddt_parse_char_pos++;
+}
+	YY_BREAK
+case 13:
+YY_RULE_SETUP
+{
+  gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
+  gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
+  BEGIN(comment_caller);
+}
+	YY_BREAK
+case 14:
+YY_RULE_SETUP
+{  /****************** STATEMENTS ************************/
+  gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text);
+  gras_ddt_parse_col_pos += strlen(gras_ddt_parse_text);
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_WORD);
+}
+	YY_BREAK
+case 15:
+YY_RULE_SETUP
+{ 
+  gras_ddt_parse_char_pos++; 
+  gras_ddt_parse_col_pos++; 
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_LA);
+}
+	YY_BREAK
+case 16:
+YY_RULE_SETUP
+{
+  gras_ddt_parse_char_pos++;
+  gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_RA);
+}
+	YY_BREAK
+case 17:
+YY_RULE_SETUP
+{ 
+  gras_ddt_parse_char_pos++; 
+  gras_ddt_parse_col_pos++; 
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_LB);
+}
+	YY_BREAK
+case 18:
+YY_RULE_SETUP
+{
+  gras_ddt_parse_char_pos++;
+  gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_RB);
+}
+	YY_BREAK
+case 19:
+YY_RULE_SETUP
+{ 
+  gras_ddt_parse_char_pos++; 
+  gras_ddt_parse_col_pos++; 
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_LP);
+}
+	YY_BREAK
+case 20:
+YY_RULE_SETUP
+{
+  gras_ddt_parse_char_pos++;
+  gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_RP);
+}
+	YY_BREAK
+case 21:
+YY_RULE_SETUP
+{
+  gras_ddt_parse_char_pos++;
+  gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_STAR);
+}
+	YY_BREAK
+case 22:
+YY_RULE_SETUP
+{
+  gras_ddt_parse_char_pos++;
+  gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_SEMI_COLON);
+}
+	YY_BREAK
+case 23:
+YY_RULE_SETUP
+{ 
+  gras_ddt_parse_char_pos++;
+  gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_COLON);
+}
+	YY_BREAK
+case 24:
 /* rule 24 can match eol */
-        YY_RULE_SETUP {
-        gras_ddt_parse_line_pos++;
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos = 0;
-        SHOW_WHERE;
-      } YY_BREAK case 25:YY_RULE_SETUP {
-        gras_ddt_parse_char_pos++;
-        gras_ddt_parse_col_pos++;
-        SHOW_WHERE;
-      } YY_BREAK case 26:YY_RULE_SETUP ECHO;
-      YY_BREAK case YY_STATE_EOF(INITIAL):case YY_STATE_EOF(annotate):case
-        YY_STATE_EOF(comment):case YY_STATE_EOF(foo):yyterminate();
+YY_RULE_SETUP
+{
+ gras_ddt_parse_line_pos++; 
+ gras_ddt_parse_char_pos++;
+ gras_ddt_parse_col_pos=0;
+  SHOW_WHERE;
+}
+	YY_BREAK
+case 25:
+YY_RULE_SETUP
+{ 
+  gras_ddt_parse_char_pos++;
+  gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
+}
+	YY_BREAK
+case 26:
+YY_RULE_SETUP
+ECHO;
+	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+case YY_STATE_EOF(annotate):
+case YY_STATE_EOF(comment):
+case YY_STATE_EOF(foo):
+	yyterminate();
 
-    case YY_END_OF_BUFFER:
-      {
-        /* Amount of text matched not including the EOB char. */
-        int yy_amount_of_matched_text = (int) (yy_cp - (yytext_ptr)) - 1;
+	case YY_END_OF_BUFFER:
+		{
+		/* Amount of text matched not including the EOB char. */
+		int yy_amount_of_matched_text = (int) (yy_cp - (yytext_ptr)) - 1;
 
-        /* Undo the effects of YY_DO_BEFORE_ACTION. */
-        *yy_cp = (yy_hold_char);
-        YY_RESTORE_YY_MORE_OFFSET
-          if (YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW) {
-          /* We're scanning a new file or input source.  It's
-           * possible that this happened because the user
-           * just pointed gras_ddt_parse_in at a new source and called
-           * gras_ddt_parse_lex().  If so, then we have to assure
-           * consistency between YY_CURRENT_BUFFER and our
-           * globals.  Here is the right place to do so, because
-           * this is the first action (other than possibly a
-           * back-up) that will match for the new input source.
-           */
-          (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-          YY_CURRENT_BUFFER_LVALUE->yy_input_file = gras_ddt_parse_in;
-          YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
-        }
+		/* Undo the effects of YY_DO_BEFORE_ACTION. */
+		*yy_cp = (yy_hold_char);
+		YY_RESTORE_YY_MORE_OFFSET
 
-        /* Note that here we test for yy_c_buf_p "<=" to the position
-         * of the first EOB in the buffer, since yy_c_buf_p will
-         * already have been incremented past the NUL character
-         * (since all states make transitions on EOB to the
-         * end-of-buffer state).  Contrast this with the test
-         * in input().
-         */
-        if ((yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)]) {       /* This was really a NUL. */
-          yy_state_type yy_next_state;
+		if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW )
+			{
+			/* We're scanning a new file or input source.  It's
+			 * possible that this happened because the user
+			 * just pointed gras_ddt_parse_in at a new source and called
+			 * gras_ddt_parse_lex().  If so, then we have to assure
+			 * consistency between YY_CURRENT_BUFFER and our
+			 * globals.  Here is the right place to do so, because
+			 * this is the first action (other than possibly a
+			 * back-up) that will match for the new input source.
+			 */
+			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+			YY_CURRENT_BUFFER_LVALUE->yy_input_file = gras_ddt_parse_in;
+			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
+			}
 
-          (yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
+		/* Note that here we test for yy_c_buf_p "<=" to the position
+		 * of the first EOB in the buffer, since yy_c_buf_p will
+		 * already have been incremented past the NUL character
+		 * (since all states make transitions on EOB to the
+		 * end-of-buffer state).  Contrast this with the test
+		 * in input().
+		 */
+		if ( (yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
+			{ /* This was really a NUL. */
+			yy_state_type yy_next_state;
 
-          yy_current_state = yy_get_previous_state();
+			(yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
 
-          /* Okay, we're now positioned to make the NUL
-           * transition.  We couldn't have
-           * yy_get_previous_state() go ahead and do it
-           * for us because it doesn't know how to deal
-           * with the possibility of jamming (and we don't
-           * want to build jamming into it because then it
-           * will run more slowly).
-           */
+			yy_current_state = yy_get_previous_state(  );
 
-          yy_next_state = yy_try_NUL_trans(yy_current_state);
+			/* Okay, we're now positioned to make the NUL
+			 * transition.  We couldn't have
+			 * yy_get_previous_state() go ahead and do it
+			 * for us because it doesn't know how to deal
+			 * with the possibility of jamming (and we don't
+			 * want to build jamming into it because then it
+			 * will run more slowly).
+			 */
 
-          yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+			yy_next_state = yy_try_NUL_trans( yy_current_state );
 
-          if (yy_next_state) {
-            /* Consume the NUL. */
-            yy_cp = ++(yy_c_buf_p);
-            yy_current_state = yy_next_state;
-            goto yy_match;
-          }
+			yy_bp = (yytext_ptr) + YY_MORE_ADJ;
 
-          else {
-            yy_cp = (yy_c_buf_p);
-            goto yy_find_action;
-          }
-        }
+			if ( yy_next_state )
+				{
+				/* Consume the NUL. */
+				yy_cp = ++(yy_c_buf_p);
+				yy_current_state = yy_next_state;
+				goto yy_match;
+				}
 
-        else
-          switch (yy_get_next_buffer()) {
-          case EOB_ACT_END_OF_FILE:
-            {
-              (yy_did_buffer_switch_on_eof) = 0;
+			else
+				{
+				yy_cp = (yy_c_buf_p);
+				goto yy_find_action;
+				}
+			}
 
-              if (gras_ddt_parse_wrap()) {
-                /* Note: because we've taken care in
-                 * yy_get_next_buffer() to have set up
-                 * gras_ddt_parse_text, we can now set up
-                 * yy_c_buf_p so that if some total
-                 * hoser (like flex itself) wants to
-                 * call the scanner after we return the
-                 * YY_NULL, it'll still work - another
-                 * YY_NULL will get returned.
-                 */
-                (yy_c_buf_p) = (yytext_ptr) + YY_MORE_ADJ;
+		else switch ( yy_get_next_buffer(  ) )
+			{
+			case EOB_ACT_END_OF_FILE:
+				{
+				(yy_did_buffer_switch_on_eof) = 0;
 
-                yy_act = YY_STATE_EOF(YY_START);
-                goto do_action;
-              }
+				if ( gras_ddt_parse_wrap( ) )
+					{
+					/* Note: because we've taken care in
+					 * yy_get_next_buffer() to have set up
+					 * gras_ddt_parse_text, we can now set up
+					 * yy_c_buf_p so that if some total
+					 * hoser (like flex itself) wants to
+					 * call the scanner after we return the
+					 * YY_NULL, it'll still work - another
+					 * YY_NULL will get returned.
+					 */
+					(yy_c_buf_p) = (yytext_ptr) + YY_MORE_ADJ;
 
-              else {
-                if (!(yy_did_buffer_switch_on_eof))
-                  YY_NEW_FILE;
-              }
-              break;
-            }
+					yy_act = YY_STATE_EOF(YY_START);
+					goto do_action;
+					}
 
-          case EOB_ACT_CONTINUE_SCAN:
-            (yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
+				else
+					{
+					if ( ! (yy_did_buffer_switch_on_eof) )
+						YY_NEW_FILE;
+					}
+				break;
+				}
 
-            yy_current_state = yy_get_previous_state();
+			case EOB_ACT_CONTINUE_SCAN:
+				(yy_c_buf_p) =
+					(yytext_ptr) + yy_amount_of_matched_text;
 
-            yy_cp = (yy_c_buf_p);
-            yy_bp = (yytext_ptr) + YY_MORE_ADJ;
-            goto yy_match;
+				yy_current_state = yy_get_previous_state(  );
 
-          case EOB_ACT_LAST_MATCH:
-            (yy_c_buf_p) = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
+				yy_cp = (yy_c_buf_p);
+				yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+				goto yy_match;
 
-            yy_current_state = yy_get_previous_state();
+			case EOB_ACT_LAST_MATCH:
+				(yy_c_buf_p) =
+				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
 
-            yy_cp = (yy_c_buf_p);
-            yy_bp = (yytext_ptr) + YY_MORE_ADJ;
-            goto yy_find_action;
-          }
-        break;
-      }
+				yy_current_state = yy_get_previous_state(  );
 
-    default:
-      YY_FATAL_ERROR("fatal flex scanner internal error--no action found");
-    }                           /* end of action switch */
-  }                             /* end of scanning one token */
-}                               /* end of gras_ddt_parse_lex */
+				yy_cp = (yy_c_buf_p);
+				yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+				goto yy_find_action;
+			}
+		break;
+		}
+
+	default:
+		YY_FATAL_ERROR(
+			"fatal flex scanner internal error--no action found" );
+	} /* end of action switch */
+		} /* end of scanning one token */
+} /* end of gras_ddt_parse_lex */
 
 /* yy_get_next_buffer - try to read in a new buffer
  *
@@ -1023,154 +1158,165 @@ YY_DECL {
  *	EOB_ACT_CONTINUE_SCAN - continue scanning from current position
  *	EOB_ACT_END_OF_FILE - end of file
  */
-static int yy_get_next_buffer(void)
+static int yy_get_next_buffer (void)
 {
-  register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
-  register char *source = (yytext_ptr);
-  register int number_to_move, i;
-  int ret_val;
+    	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+	register char *source = (yytext_ptr);
+	register int number_to_move, i;
+	int ret_val;
 
-  if ((yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1])
-    YY_FATAL_ERROR("fatal flex scanner internal error--end of buffer missed");
+	if ( (yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] )
+		YY_FATAL_ERROR(
+		"fatal flex scanner internal error--end of buffer missed" );
 
-  if (YY_CURRENT_BUFFER_LVALUE->yy_fill_buffer == 0) {  /* Don't try to fill the buffer, so this is an EOF. */
-    if ((yy_c_buf_p) - (yytext_ptr) - YY_MORE_ADJ == 1) {
-      /* We matched a single character, the EOB, so
-       * treat this as a final EOF.
-       */
-      return EOB_ACT_END_OF_FILE;
-    }
+	if ( YY_CURRENT_BUFFER_LVALUE->yy_fill_buffer == 0 )
+		{ /* Don't try to fill the buffer, so this is an EOF. */
+		if ( (yy_c_buf_p) - (yytext_ptr) - YY_MORE_ADJ == 1 )
+			{
+			/* We matched a single character, the EOB, so
+			 * treat this as a final EOF.
+			 */
+			return EOB_ACT_END_OF_FILE;
+			}
 
-    else {
-      /* We matched some text prior to the EOB, first
-       * process it.
-       */
-      return EOB_ACT_LAST_MATCH;
-    }
-  }
+		else
+			{
+			/* We matched some text prior to the EOB, first
+			 * process it.
+			 */
+			return EOB_ACT_LAST_MATCH;
+			}
+		}
 
-  /* Try to read more data. */
+	/* Try to read more data. */
 
-  /* First move last chars to start of buffer. */
-  number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr)) - 1;
+	/* First move last chars to start of buffer. */
+	number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr)) - 1;
 
-  for (i = 0; i < number_to_move; ++i)
-    *(dest++) = *(source++);
+	for ( i = 0; i < number_to_move; ++i )
+		*(dest++) = *(source++);
 
-  if (YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_EOF_PENDING)
-    /* don't do the read, it's not guaranteed to return an EOF,
-     * just force an EOF
-     */
-    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars) = 0;
+	if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_EOF_PENDING )
+		/* don't do the read, it's not guaranteed to return an EOF,
+		 * just force an EOF
+		 */
+		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars) = 0;
 
-  else {
-    int num_to_read =
-      YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
+	else
+		{
+			int num_to_read =
+			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
-    while (num_to_read <= 0) {  /* Not enough room in the buffer - grow it. */
+		while ( num_to_read <= 0 )
+			{ /* Not enough room in the buffer - grow it. */
 
-      /* just a shorter name for the current buffer */
-      YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
+			/* just a shorter name for the current buffer */
+			YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
 
-      int yy_c_buf_p_offset = (int) ((yy_c_buf_p) - b->yy_ch_buf);
+			int yy_c_buf_p_offset =
+				(int) ((yy_c_buf_p) - b->yy_ch_buf);
 
-      if (b->yy_is_our_buffer) {
-        int new_size = b->yy_buf_size * 2;
+			if ( b->yy_is_our_buffer )
+				{
+				int new_size = b->yy_buf_size * 2;
 
-        if (new_size <= 0)
-          b->yy_buf_size += b->yy_buf_size / 8;
-        else
-          b->yy_buf_size *= 2;
+				if ( new_size <= 0 )
+					b->yy_buf_size += b->yy_buf_size / 8;
+				else
+					b->yy_buf_size *= 2;
 
-        b->yy_ch_buf = (char *)
-          /* Include room in for 2 EOB chars. */
-          gras_ddt_parse_realloc((void *) b->yy_ch_buf, b->yy_buf_size + 2);
-      } else
-        /* Can't grow it, we don't own it. */
-        b->yy_ch_buf = 0;
+				b->yy_ch_buf = (char *)
+					/* Include room in for 2 EOB chars. */
+					gras_ddt_parse_realloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
+				}
+			else
+				/* Can't grow it, we don't own it. */
+				b->yy_ch_buf = 0;
 
-      if (!b->yy_ch_buf)
-        YY_FATAL_ERROR("fatal error - scanner input buffer overflow");
+			if ( ! b->yy_ch_buf )
+				YY_FATAL_ERROR(
+				"fatal error - scanner input buffer overflow" );
 
-      (yy_c_buf_p) = &b->yy_ch_buf[yy_c_buf_p_offset];
+			(yy_c_buf_p) = &b->yy_ch_buf[yy_c_buf_p_offset];
 
-      num_to_read = YY_CURRENT_BUFFER_LVALUE->yy_buf_size -
-        number_to_move - 1;
+			num_to_read = YY_CURRENT_BUFFER_LVALUE->yy_buf_size -
+						number_to_move - 1;
 
-    }
+			}
 
-    if (num_to_read > YY_READ_BUF_SIZE)
-      num_to_read = YY_READ_BUF_SIZE;
+		if ( num_to_read > YY_READ_BUF_SIZE )
+			num_to_read = YY_READ_BUF_SIZE;
 
-    /* Read in more data. */
-    YY_INPUT((&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-             (yy_n_chars), (size_t) num_to_read);
+		/* Read in more data. */
+		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
+			(yy_n_chars), (size_t) num_to_read );
 
-    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-  }
+		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
+		}
 
-  if ((yy_n_chars) == 0) {
-    if (number_to_move == YY_MORE_ADJ) {
-      ret_val = EOB_ACT_END_OF_FILE;
-      gras_ddt_parse_restart(gras_ddt_parse_in);
-    }
+	if ( (yy_n_chars) == 0 )
+		{
+		if ( number_to_move == YY_MORE_ADJ )
+			{
+			ret_val = EOB_ACT_END_OF_FILE;
+			gras_ddt_parse_restart(gras_ddt_parse_in  );
+			}
 
-    else {
-      ret_val = EOB_ACT_LAST_MATCH;
-      YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_EOF_PENDING;
-    }
-  }
+		else
+			{
+			ret_val = EOB_ACT_LAST_MATCH;
+			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status =
+				YY_BUFFER_EOF_PENDING;
+			}
+		}
 
-  else
-    ret_val = EOB_ACT_CONTINUE_SCAN;
+	else
+		ret_val = EOB_ACT_CONTINUE_SCAN;
 
-  if ((yy_size_t) ((yy_n_chars) + number_to_move) >
-      YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
-    /* Extend the array by 50%, plus the number we really need. */
-    yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
-    YY_CURRENT_BUFFER_LVALUE->yy_ch_buf =
-      (char *) gras_ddt_parse_realloc((void *)
-                                      YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,
-                                      new_size);
-    if (!YY_CURRENT_BUFFER_LVALUE->yy_ch_buf)
-      YY_FATAL_ERROR("out of dynamic memory in yy_get_next_buffer()");
-  }
+	if ((yy_size_t) ((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
+		/* Extend the array by 50%, plus the number we really need. */
+		yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
+		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) gras_ddt_parse_realloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
+		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
+			YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
+	}
 
-  (yy_n_chars) += number_to_move;
-  YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] = YY_END_OF_BUFFER_CHAR;
-  YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] =
-    YY_END_OF_BUFFER_CHAR;
+	(yy_n_chars) += number_to_move;
+	YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] = YY_END_OF_BUFFER_CHAR;
+	YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] = YY_END_OF_BUFFER_CHAR;
 
-  (yytext_ptr) = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[0];
+	(yytext_ptr) = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[0];
 
-  return ret_val;
+	return ret_val;
 }
 
 /* yy_get_previous_state - get the state just before the EOB char was reached */
 
-static yy_state_type yy_get_previous_state(void)
+    static yy_state_type yy_get_previous_state (void)
 {
-  register yy_state_type yy_current_state;
-  register char *yy_cp;
+	register yy_state_type yy_current_state;
+	register char *yy_cp;
+    
+	yy_current_state = (yy_start);
 
-  yy_current_state = (yy_start);
+	for ( yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp )
+		{
+		register YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
+		if ( yy_accept[yy_current_state] )
+			{
+			(yy_last_accepting_state) = yy_current_state;
+			(yy_last_accepting_cpos) = yy_cp;
+			}
+		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
+			{
+			yy_current_state = (int) yy_def[yy_current_state];
+			if ( yy_current_state >= 61 )
+				yy_c = yy_meta[(unsigned int) yy_c];
+			}
+		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+		}
 
-  for (yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp) {
-    register YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
-    if (yy_accept[yy_current_state]) {
-      (yy_last_accepting_state) = yy_current_state;
-      (yy_last_accepting_cpos) = yy_cp;
-    }
-    while (yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state) {
-      yy_current_state = (int) yy_def[yy_current_state];
-      if (yy_current_state >= 61)
-        yy_c = yy_meta[(unsigned int) yy_c];
-    }
-    yy_current_state =
-      yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-  }
-
-  return yy_current_state;
+	return yy_current_state;
 }
 
 /* yy_try_NUL_trans - try to make a transition on the NUL character
@@ -1178,190 +1324,199 @@ static yy_state_type yy_get_previous_state(void)
  * synopsis
  *	next_state = yy_try_NUL_trans( current_state );
  */
-static yy_state_type yy_try_NUL_trans(yy_state_type yy_current_state)
+    static yy_state_type yy_try_NUL_trans  (yy_state_type yy_current_state )
 {
-  register int yy_is_jam;
-  register char *yy_cp = (yy_c_buf_p);
+	register int yy_is_jam;
+    	register char *yy_cp = (yy_c_buf_p);
 
-  register YY_CHAR yy_c = 1;
-  if (yy_accept[yy_current_state]) {
-    (yy_last_accepting_state) = yy_current_state;
-    (yy_last_accepting_cpos) = yy_cp;
-  }
-  while (yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state) {
-    yy_current_state = (int) yy_def[yy_current_state];
-    if (yy_current_state >= 61)
-      yy_c = yy_meta[(unsigned int) yy_c];
-  }
-  yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-  yy_is_jam = (yy_current_state == 60);
+	register YY_CHAR yy_c = 1;
+	if ( yy_accept[yy_current_state] )
+		{
+		(yy_last_accepting_state) = yy_current_state;
+		(yy_last_accepting_cpos) = yy_cp;
+		}
+	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
+		{
+		yy_current_state = (int) yy_def[yy_current_state];
+		if ( yy_current_state >= 61 )
+			yy_c = yy_meta[(unsigned int) yy_c];
+		}
+	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+	yy_is_jam = (yy_current_state == 60);
 
-  return yy_is_jam ? 0 : yy_current_state;
+	return yy_is_jam ? 0 : yy_current_state;
 }
 
-static void yyunput(int c, register char *yy_bp)
+    static void yyunput (int c, register char * yy_bp )
 {
-  register char *yy_cp;
+	register char *yy_cp;
+    
+    yy_cp = (yy_c_buf_p);
 
-  yy_cp = (yy_c_buf_p);
+	/* undo effects of setting up gras_ddt_parse_text */
+	*yy_cp = (yy_hold_char);
 
-  /* undo effects of setting up gras_ddt_parse_text */
-  *yy_cp = (yy_hold_char);
+	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
+		{ /* need to shift things up to make room */
+		/* +2 for EOB chars. */
+		register int number_to_move = (yy_n_chars) + 2;
+		register char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
+					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
+		register char *source =
+				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
 
-  if (yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2) {        /* need to shift things up to make room */
-    /* +2 for EOB chars. */
-    register int number_to_move = (yy_n_chars) + 2;
-    register char *dest =
-      &YY_CURRENT_BUFFER_LVALUE->
-      yy_ch_buf[YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
-    register char *source =
-      &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
+		while ( source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
+			*--dest = *--source;
 
-    while (source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf)
-      *--dest = *--source;
+		yy_cp += (int) (dest - source);
+		yy_bp += (int) (dest - source);
+		YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
+			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
 
-    yy_cp += (int) (dest - source);
-    yy_bp += (int) (dest - source);
-    YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
-      (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
+		if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
+			YY_FATAL_ERROR( "flex scanner push-back overflow" );
+		}
 
-    if (yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2)
-      YY_FATAL_ERROR("flex scanner push-back overflow");
-  }
+	*--yy_cp = (char) c;
 
-  *--yy_cp = (char) c;
-
-  (yytext_ptr) = yy_bp;
-  (yy_hold_char) = *yy_cp;
-  (yy_c_buf_p) = yy_cp;
+	(yytext_ptr) = yy_bp;
+	(yy_hold_char) = *yy_cp;
+	(yy_c_buf_p) = yy_cp;
 }
 
 #ifndef YY_NO_INPUT
 #ifdef __cplusplus
-static int yyinput(void)
+    static int yyinput (void)
 #else
-static int input(void)
+    static int input  (void)
 #endif
+
 {
-  int c;
+	int c;
+    
+	*(yy_c_buf_p) = (yy_hold_char);
 
-  *(yy_c_buf_p) = (yy_hold_char);
+	if ( *(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR )
+		{
+		/* yy_c_buf_p now points to the character we want to return.
+		 * If this occurs *before* the EOB characters, then it's a
+		 * valid NUL; if not, then we've hit the end of the buffer.
+		 */
+		if ( (yy_c_buf_p) < &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
+			/* This was really a NUL. */
+			*(yy_c_buf_p) = '\0';
 
-  if (*(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR) {
-    /* yy_c_buf_p now points to the character we want to return.
-     * If this occurs *before* the EOB characters, then it's a
-     * valid NUL; if not, then we've hit the end of the buffer.
-     */
-    if ((yy_c_buf_p) < &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)])
-      /* This was really a NUL. */
-      *(yy_c_buf_p) = '\0';
+		else
+			{ /* need more input */
+			int offset = (yy_c_buf_p) - (yytext_ptr);
+			++(yy_c_buf_p);
 
-    else {                      /* need more input */
-      int offset = (yy_c_buf_p) - (yytext_ptr);
-      ++(yy_c_buf_p);
+			switch ( yy_get_next_buffer(  ) )
+				{
+				case EOB_ACT_LAST_MATCH:
+					/* This happens because yy_g_n_b()
+					 * sees that we've accumulated a
+					 * token and flags that we need to
+					 * try matching the token before
+					 * proceeding.  But for input(),
+					 * there's no matching to consider.
+					 * So convert the EOB_ACT_LAST_MATCH
+					 * to EOB_ACT_END_OF_FILE.
+					 */
 
-      switch (yy_get_next_buffer()) {
-      case EOB_ACT_LAST_MATCH:
-        /* This happens because yy_g_n_b()
-         * sees that we've accumulated a
-         * token and flags that we need to
-         * try matching the token before
-         * proceeding.  But for input(),
-         * there's no matching to consider.
-         * So convert the EOB_ACT_LAST_MATCH
-         * to EOB_ACT_END_OF_FILE.
-         */
+					/* Reset buffer status. */
+					gras_ddt_parse_restart(gras_ddt_parse_in );
 
-        /* Reset buffer status. */
-        gras_ddt_parse_restart(gras_ddt_parse_in);
+					/*FALLTHROUGH*/
 
-       /*FALLTHROUGH*/ case EOB_ACT_END_OF_FILE:
-        {
-          if (gras_ddt_parse_wrap())
-            return EOF;
+				case EOB_ACT_END_OF_FILE:
+					{
+					if ( gras_ddt_parse_wrap( ) )
+						return EOF;
 
-          if (!(yy_did_buffer_switch_on_eof))
-            YY_NEW_FILE;
+					if ( ! (yy_did_buffer_switch_on_eof) )
+						YY_NEW_FILE;
 #ifdef __cplusplus
-          return yyinput();
+					return yyinput();
 #else
-          return input();
+					return input();
 #endif
-        }
+					}
 
-      case EOB_ACT_CONTINUE_SCAN:
-        (yy_c_buf_p) = (yytext_ptr) + offset;
-        break;
-      }
-    }
-  }
+				case EOB_ACT_CONTINUE_SCAN:
+					(yy_c_buf_p) = (yytext_ptr) + offset;
+					break;
+				}
+			}
+		}
 
-  c = *(unsigned char *) (yy_c_buf_p);  /* cast for 8-bit char's */
-  *(yy_c_buf_p) = '\0';         /* preserve gras_ddt_parse_text */
-  (yy_hold_char) = *++(yy_c_buf_p);
+	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
+	*(yy_c_buf_p) = '\0';	/* preserve gras_ddt_parse_text */
+	(yy_hold_char) = *++(yy_c_buf_p);
 
-  return c;
+	return c;
 }
-#endif /* ifndef YY_NO_INPUT */
+#endif	/* ifndef YY_NO_INPUT */
 
 /** Immediately switch to a different input stream.
  * @param input_file A readable stream.
  * 
  * @note This function does not reset the start condition to @c INITIAL .
  */
-void gras_ddt_parse_restart(FILE * input_file)
+    void gras_ddt_parse_restart  (FILE * input_file )
 {
+    
+	if ( ! YY_CURRENT_BUFFER ){
+        gras_ddt_parse_ensure_buffer_stack ();
+		YY_CURRENT_BUFFER_LVALUE =
+            gras_ddt_parse__create_buffer(gras_ddt_parse_in,YY_BUF_SIZE );
+	}
 
-  if (!YY_CURRENT_BUFFER) {
-    gras_ddt_parse_ensure_buffer_stack();
-    YY_CURRENT_BUFFER_LVALUE =
-      gras_ddt_parse__create_buffer(gras_ddt_parse_in, YY_BUF_SIZE);
-  }
-
-  gras_ddt_parse__init_buffer(YY_CURRENT_BUFFER, input_file);
-  gras_ddt_parse__load_buffer_state();
+	gras_ddt_parse__init_buffer(YY_CURRENT_BUFFER,input_file );
+	gras_ddt_parse__load_buffer_state( );
 }
 
 /** Switch to a different input buffer.
  * @param new_buffer The new input buffer.
  * 
  */
-void gras_ddt_parse__switch_to_buffer(YY_BUFFER_STATE new_buffer)
+    void gras_ddt_parse__switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
+    
+	/* TODO. We should be able to replace this entire function body
+	 * with
+	 *		gras_ddt_parse_pop_buffer_state();
+	 *		gras_ddt_parse_push_buffer_state(new_buffer);
+     */
+	gras_ddt_parse_ensure_buffer_stack ();
+	if ( YY_CURRENT_BUFFER == new_buffer )
+		return;
 
-  /* TODO. We should be able to replace this entire function body
-   * with
-   *              gras_ddt_parse_pop_buffer_state();
-   *              gras_ddt_parse_push_buffer_state(new_buffer);
-   */
-  gras_ddt_parse_ensure_buffer_stack();
-  if (YY_CURRENT_BUFFER == new_buffer)
-    return;
+	if ( YY_CURRENT_BUFFER )
+		{
+		/* Flush out information for old buffer. */
+		*(yy_c_buf_p) = (yy_hold_char);
+		YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
+		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
+		}
 
-  if (YY_CURRENT_BUFFER) {
-    /* Flush out information for old buffer. */
-    *(yy_c_buf_p) = (yy_hold_char);
-    YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
-    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-  }
+	YY_CURRENT_BUFFER_LVALUE = new_buffer;
+	gras_ddt_parse__load_buffer_state( );
 
-  YY_CURRENT_BUFFER_LVALUE = new_buffer;
-  gras_ddt_parse__load_buffer_state();
-
-  /* We don't actually know whether we did this switch during
-   * EOF (gras_ddt_parse_wrap()) processing, but the only time this flag
-   * is looked at is after gras_ddt_parse_wrap() is called, so it's safe
-   * to go ahead and always set it.
-   */
-  (yy_did_buffer_switch_on_eof) = 1;
+	/* We don't actually know whether we did this switch during
+	 * EOF (gras_ddt_parse_wrap()) processing, but the only time this flag
+	 * is looked at is after gras_ddt_parse_wrap() is called, so it's safe
+	 * to go ahead and always set it.
+	 */
+	(yy_did_buffer_switch_on_eof) = 1;
 }
 
-static void gras_ddt_parse__load_buffer_state(void)
+static void gras_ddt_parse__load_buffer_state  (void)
 {
-  (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-  (yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
-  gras_ddt_parse_in = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
-  (yy_hold_char) = *(yy_c_buf_p);
+    	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+	(yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
+	gras_ddt_parse_in = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
+	(yy_hold_char) = *(yy_c_buf_p);
 }
 
 /** Allocate and initialize an input buffer state.
@@ -1370,107 +1525,106 @@ static void gras_ddt_parse__load_buffer_state(void)
  * 
  * @return the allocated buffer state.
  */
-YY_BUFFER_STATE gras_ddt_parse__create_buffer(FILE * file, int size)
+    YY_BUFFER_STATE gras_ddt_parse__create_buffer  (FILE * file, int  size )
 {
-  YY_BUFFER_STATE b;
+	YY_BUFFER_STATE b;
+    
+	b = (YY_BUFFER_STATE) gras_ddt_parse_alloc(sizeof( struct yy_buffer_state )  );
+	if ( ! b )
+		YY_FATAL_ERROR( "out of dynamic memory in gras_ddt_parse__create_buffer()" );
 
-  b = (YY_BUFFER_STATE) gras_ddt_parse_alloc(sizeof(struct yy_buffer_state));
-  if (!b)
-    YY_FATAL_ERROR
-      ("out of dynamic memory in gras_ddt_parse__create_buffer()");
+	b->yy_buf_size = size;
 
-  b->yy_buf_size = size;
+	/* yy_ch_buf has to be 2 characters longer than the size given because
+	 * we need to put in 2 end-of-buffer characters.
+	 */
+	b->yy_ch_buf = (char *) gras_ddt_parse_alloc(b->yy_buf_size + 2  );
+	if ( ! b->yy_ch_buf )
+		YY_FATAL_ERROR( "out of dynamic memory in gras_ddt_parse__create_buffer()" );
 
-  /* yy_ch_buf has to be 2 characters longer than the size given because
-   * we need to put in 2 end-of-buffer characters.
-   */
-  b->yy_ch_buf = (char *) gras_ddt_parse_alloc(b->yy_buf_size + 2);
-  if (!b->yy_ch_buf)
-    YY_FATAL_ERROR
-      ("out of dynamic memory in gras_ddt_parse__create_buffer()");
+	b->yy_is_our_buffer = 1;
 
-  b->yy_is_our_buffer = 1;
+	gras_ddt_parse__init_buffer(b,file );
 
-  gras_ddt_parse__init_buffer(b, file);
-
-  return b;
+	return b;
 }
 
 /** Destroy the buffer.
  * @param b a buffer created with gras_ddt_parse__create_buffer()
  * 
  */
-void gras_ddt_parse__delete_buffer(YY_BUFFER_STATE b)
+    void gras_ddt_parse__delete_buffer (YY_BUFFER_STATE  b )
 {
+    
+	if ( ! b )
+		return;
 
-  if (!b)
-    return;
+	if ( b == YY_CURRENT_BUFFER ) /* Not sure if we should pop here. */
+		YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
 
-  if (b == YY_CURRENT_BUFFER)   /* Not sure if we should pop here. */
-    YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
+	if ( b->yy_is_our_buffer )
+		gras_ddt_parse_free((void *) b->yy_ch_buf  );
 
-  if (b->yy_is_our_buffer)
-    gras_ddt_parse_free((void *) b->yy_ch_buf);
-
-  gras_ddt_parse_free((void *) b);
+	gras_ddt_parse_free((void *) b  );
 }
 
-#if !defined(__cplusplus) && !defined(WIN32)
-extern int isatty(int);
+#ifndef __cplusplus
+extern int isatty (int );
 #endif /* __cplusplus */
-
+    
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
  * such as during a gras_ddt_parse_restart() or at EOF.
  */
-static void gras_ddt_parse__init_buffer(YY_BUFFER_STATE b, FILE * file)
+    static void gras_ddt_parse__init_buffer  (YY_BUFFER_STATE  b, FILE * file )
+
 {
-  int oerrno = errno;
+	int oerrno = errno;
+    
+	gras_ddt_parse__flush_buffer(b );
 
-  gras_ddt_parse__flush_buffer(b);
+	b->yy_input_file = file;
+	b->yy_fill_buffer = 1;
 
-  b->yy_input_file = file;
-  b->yy_fill_buffer = 1;
+    /* If b is the current buffer, then gras_ddt_parse__init_buffer was _probably_
+     * called from gras_ddt_parse_restart() or through yy_get_next_buffer.
+     * In that case, we don't want to reset the lineno or column.
+     */
+    if (b != YY_CURRENT_BUFFER){
+        b->yy_bs_lineno = 1;
+        b->yy_bs_column = 0;
+    }
 
-  /* If b is the current buffer, then gras_ddt_parse__init_buffer was _probably_
-   * called from gras_ddt_parse_restart() or through yy_get_next_buffer.
-   * In that case, we don't want to reset the lineno or column.
-   */
-  if (b != YY_CURRENT_BUFFER) {
-    b->yy_bs_lineno = 1;
-    b->yy_bs_column = 0;
-  }
-
-  b->yy_is_interactive = file ? (isatty(fileno(file)) > 0) : 0;
-
-  errno = oerrno;
+        b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
+    
+	errno = oerrno;
 }
 
 /** Discard all buffered characters. On the next scan, YY_INPUT will be called.
  * @param b the buffer state to be flushed, usually @c YY_CURRENT_BUFFER.
  * 
  */
-void gras_ddt_parse__flush_buffer(YY_BUFFER_STATE b)
+    void gras_ddt_parse__flush_buffer (YY_BUFFER_STATE  b )
 {
-  if (!b)
-    return;
+    	if ( ! b )
+		return;
 
-  b->yy_n_chars = 0;
+	b->yy_n_chars = 0;
 
-  /* We always need two end-of-buffer characters.  The first causes
-   * a transition to the end-of-buffer state.  The second causes
-   * a jam in that state.
-   */
-  b->yy_ch_buf[0] = YY_END_OF_BUFFER_CHAR;
-  b->yy_ch_buf[1] = YY_END_OF_BUFFER_CHAR;
+	/* We always need two end-of-buffer characters.  The first causes
+	 * a transition to the end-of-buffer state.  The second causes
+	 * a jam in that state.
+	 */
+	b->yy_ch_buf[0] = YY_END_OF_BUFFER_CHAR;
+	b->yy_ch_buf[1] = YY_END_OF_BUFFER_CHAR;
 
-  b->yy_buf_pos = &b->yy_ch_buf[0];
+	b->yy_buf_pos = &b->yy_ch_buf[0];
 
-  b->yy_at_bol = 1;
-  b->yy_buffer_status = YY_BUFFER_NEW;
+	b->yy_at_bol = 1;
+	b->yy_buffer_status = YY_BUFFER_NEW;
 
-  if (b == YY_CURRENT_BUFFER)
-    gras_ddt_parse__load_buffer_state();
+	if ( b == YY_CURRENT_BUFFER )
+		gras_ddt_parse__load_buffer_state( );
 }
 
 /** Pushes the new state onto the stack. The new state becomes
@@ -1479,98 +1633,96 @@ void gras_ddt_parse__flush_buffer(YY_BUFFER_STATE b)
  *  @param new_buffer The new state.
  *  
  */
-void gras_ddt_parse_push_buffer_state(YY_BUFFER_STATE new_buffer)
+void gras_ddt_parse_push_buffer_state (YY_BUFFER_STATE new_buffer )
 {
-  if (new_buffer == NULL)
-    return;
+    	if (new_buffer == NULL)
+		return;
 
-  gras_ddt_parse_ensure_buffer_stack();
+	gras_ddt_parse_ensure_buffer_stack();
 
-  /* This block is copied from gras_ddt_parse__switch_to_buffer. */
-  if (YY_CURRENT_BUFFER) {
-    /* Flush out information for old buffer. */
-    *(yy_c_buf_p) = (yy_hold_char);
-    YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
-    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-  }
+	/* This block is copied from gras_ddt_parse__switch_to_buffer. */
+	if ( YY_CURRENT_BUFFER )
+		{
+		/* Flush out information for old buffer. */
+		*(yy_c_buf_p) = (yy_hold_char);
+		YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
+		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
+		}
 
-  /* Only push if top exists. Otherwise, replace top. */
-  if (YY_CURRENT_BUFFER)
-    (yy_buffer_stack_top)++;
-  YY_CURRENT_BUFFER_LVALUE = new_buffer;
+	/* Only push if top exists. Otherwise, replace top. */
+	if (YY_CURRENT_BUFFER)
+		(yy_buffer_stack_top)++;
+	YY_CURRENT_BUFFER_LVALUE = new_buffer;
 
-  /* copied from gras_ddt_parse__switch_to_buffer. */
-  gras_ddt_parse__load_buffer_state();
-  (yy_did_buffer_switch_on_eof) = 1;
+	/* copied from gras_ddt_parse__switch_to_buffer. */
+	gras_ddt_parse__load_buffer_state( );
+	(yy_did_buffer_switch_on_eof) = 1;
 }
 
 /** Removes and deletes the top of the stack, if present.
  *  The next element becomes the new top.
  *  
  */
-void gras_ddt_parse_pop_buffer_state(void)
+void gras_ddt_parse_pop_buffer_state (void)
 {
-  if (!YY_CURRENT_BUFFER)
-    return;
+    	if (!YY_CURRENT_BUFFER)
+		return;
 
-  gras_ddt_parse__delete_buffer(YY_CURRENT_BUFFER);
-  YY_CURRENT_BUFFER_LVALUE = NULL;
-  if ((yy_buffer_stack_top) > 0)
-    --(yy_buffer_stack_top);
+	gras_ddt_parse__delete_buffer(YY_CURRENT_BUFFER );
+	YY_CURRENT_BUFFER_LVALUE = NULL;
+	if ((yy_buffer_stack_top) > 0)
+		--(yy_buffer_stack_top);
 
-  if (YY_CURRENT_BUFFER) {
-    gras_ddt_parse__load_buffer_state();
-    (yy_did_buffer_switch_on_eof) = 1;
-  }
+	if (YY_CURRENT_BUFFER) {
+		gras_ddt_parse__load_buffer_state( );
+		(yy_did_buffer_switch_on_eof) = 1;
+	}
 }
 
 /* Allocates the stack if it does not exist.
  *  Guarantees space for at least one push.
  */
-static void gras_ddt_parse_ensure_buffer_stack(void)
+static void gras_ddt_parse_ensure_buffer_stack (void)
 {
-  int num_to_alloc;
+	int num_to_alloc;
+    
+	if (!(yy_buffer_stack)) {
 
-  if (!(yy_buffer_stack)) {
+		/* First allocation is just for 2 elements, since we don't know if this
+		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
+		 * immediate realloc on the next call.
+         */
+		num_to_alloc = 1;
+		(yy_buffer_stack) = (struct yy_buffer_state**)gras_ddt_parse_alloc
+								(num_to_alloc * sizeof(struct yy_buffer_state*)
+								);
+		if ( ! (yy_buffer_stack) )
+			YY_FATAL_ERROR( "out of dynamic memory in gras_ddt_parse_ensure_buffer_stack()" );
+								  
+		memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
+				
+		(yy_buffer_stack_max) = num_to_alloc;
+		(yy_buffer_stack_top) = 0;
+		return;
+	}
 
-    /* First allocation is just for 2 elements, since we don't know if this
-     * scanner will even need a stack. We use 2 instead of 1 to avoid an
-     * immediate realloc on the next call.
-     */
-    num_to_alloc = 1;
-    (yy_buffer_stack) = (struct yy_buffer_state **) gras_ddt_parse_alloc
-      (num_to_alloc * sizeof(struct yy_buffer_state *)
-      );
-    if (!(yy_buffer_stack))
-      YY_FATAL_ERROR
-        ("out of dynamic memory in gras_ddt_parse_ensure_buffer_stack()");
+	if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1){
 
-    memset((yy_buffer_stack), 0,
-           num_to_alloc * sizeof(struct yy_buffer_state *));
+		/* Increase the buffer to prepare for a possible push. */
+		int grow_size = 8 /* arbitrary grow size */;
 
-    (yy_buffer_stack_max) = num_to_alloc;
-    (yy_buffer_stack_top) = 0;
-    return;
-  }
+		num_to_alloc = (yy_buffer_stack_max) + grow_size;
+		(yy_buffer_stack) = (struct yy_buffer_state**)gras_ddt_parse_realloc
+								((yy_buffer_stack),
+								num_to_alloc * sizeof(struct yy_buffer_state*)
+								);
+		if ( ! (yy_buffer_stack) )
+			YY_FATAL_ERROR( "out of dynamic memory in gras_ddt_parse_ensure_buffer_stack()" );
 
-  if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1) {
-
-    /* Increase the buffer to prepare for a possible push. */
-    int grow_size = 8 /* arbitrary grow size */ ;
-
-    num_to_alloc = (yy_buffer_stack_max) + grow_size;
-    (yy_buffer_stack) = (struct yy_buffer_state **) gras_ddt_parse_realloc
-      ((yy_buffer_stack), num_to_alloc * sizeof(struct yy_buffer_state *)
-      );
-    if (!(yy_buffer_stack))
-      YY_FATAL_ERROR
-        ("out of dynamic memory in gras_ddt_parse_ensure_buffer_stack()");
-
-    /* zero only the new slots. */
-    memset((yy_buffer_stack) + (yy_buffer_stack_max), 0,
-           grow_size * sizeof(struct yy_buffer_state *));
-    (yy_buffer_stack_max) = num_to_alloc;
-  }
+		/* zero only the new slots.*/
+		memset((yy_buffer_stack) + (yy_buffer_stack_max), 0, grow_size * sizeof(struct yy_buffer_state*));
+		(yy_buffer_stack_max) = num_to_alloc;
+	}
 }
 
 /** Setup the input buffer state to scan directly from a user-specified character buffer.
@@ -1579,33 +1731,33 @@ static void gras_ddt_parse_ensure_buffer_stack(void)
  * 
  * @return the newly allocated buffer state object. 
  */
-YY_BUFFER_STATE gras_ddt_parse__scan_buffer(char *base, yy_size_t size)
+YY_BUFFER_STATE gras_ddt_parse__scan_buffer  (char * base, yy_size_t  size )
 {
-  YY_BUFFER_STATE b;
+	YY_BUFFER_STATE b;
+    
+	if ( size < 2 ||
+	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
+	     base[size-1] != YY_END_OF_BUFFER_CHAR )
+		/* They forgot to leave room for the EOB's. */
+		return 0;
 
-  if (size < 2 ||
-      base[size - 2] != YY_END_OF_BUFFER_CHAR ||
-      base[size - 1] != YY_END_OF_BUFFER_CHAR)
-    /* They forgot to leave room for the EOB's. */
-    return 0;
+	b = (YY_BUFFER_STATE) gras_ddt_parse_alloc(sizeof( struct yy_buffer_state )  );
+	if ( ! b )
+		YY_FATAL_ERROR( "out of dynamic memory in gras_ddt_parse__scan_buffer()" );
 
-  b = (YY_BUFFER_STATE) gras_ddt_parse_alloc(sizeof(struct yy_buffer_state));
-  if (!b)
-    YY_FATAL_ERROR("out of dynamic memory in gras_ddt_parse__scan_buffer()");
+	b->yy_buf_size = size - 2;	/* "- 2" to take care of EOB's */
+	b->yy_buf_pos = b->yy_ch_buf = base;
+	b->yy_is_our_buffer = 0;
+	b->yy_input_file = 0;
+	b->yy_n_chars = b->yy_buf_size;
+	b->yy_is_interactive = 0;
+	b->yy_at_bol = 1;
+	b->yy_fill_buffer = 0;
+	b->yy_buffer_status = YY_BUFFER_NEW;
 
-  b->yy_buf_size = size - 2;    /* "- 2" to take care of EOB's */
-  b->yy_buf_pos = b->yy_ch_buf = base;
-  b->yy_is_our_buffer = 0;
-  b->yy_input_file = 0;
-  b->yy_n_chars = b->yy_buf_size;
-  b->yy_is_interactive = 0;
-  b->yy_at_bol = 1;
-  b->yy_fill_buffer = 0;
-  b->yy_buffer_status = YY_BUFFER_NEW;
+	gras_ddt_parse__switch_to_buffer(b  );
 
-  gras_ddt_parse__switch_to_buffer(b);
-
-  return b;
+	return b;
 }
 
 /** Setup the input buffer state to scan a string. The next call to gras_ddt_parse_lex() will
@@ -1616,58 +1768,57 @@ YY_BUFFER_STATE gras_ddt_parse__scan_buffer(char *base, yy_size_t size)
  * @note If you want to scan bytes that may contain NUL values, then use
  *       gras_ddt_parse__scan_bytes() instead.
  */
-YY_BUFFER_STATE gras_ddt_parse__scan_string(yyconst char *yystr)
+YY_BUFFER_STATE gras_ddt_parse__scan_string (yyconst char * yystr )
 {
-
-  return gras_ddt_parse__scan_bytes(yystr, strlen(yystr));
+    
+	return gras_ddt_parse__scan_bytes(yystr,strlen(yystr) );
 }
 
 /** Setup the input buffer state to scan the given bytes. The next call to gras_ddt_parse_lex() will
  * scan from a @e copy of @a bytes.
- * @param bytes the byte buffer to scan
- * @param len the number of bytes in the buffer pointed to by @a bytes.
+ * @param yybytes the byte buffer to scan
+ * @param _yybytes_len the number of bytes in the buffer pointed to by @a bytes.
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE gras_ddt_parse__scan_bytes(yyconst char *yybytes,
-                                           int _yybytes_len)
+YY_BUFFER_STATE gras_ddt_parse__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 {
-  YY_BUFFER_STATE b;
-  char *buf;
-  yy_size_t n;
-  int i;
+	YY_BUFFER_STATE b;
+	char *buf;
+	yy_size_t n;
+	int i;
+    
+	/* Get memory for full buffer, including space for trailing EOB's. */
+	n = _yybytes_len + 2;
+	buf = (char *) gras_ddt_parse_alloc(n  );
+	if ( ! buf )
+		YY_FATAL_ERROR( "out of dynamic memory in gras_ddt_parse__scan_bytes()" );
 
-  /* Get memory for full buffer, including space for trailing EOB's. */
-  n = _yybytes_len + 2;
-  buf = (char *) gras_ddt_parse_alloc(n);
-  if (!buf)
-    YY_FATAL_ERROR("out of dynamic memory in gras_ddt_parse__scan_bytes()");
+	for ( i = 0; i < _yybytes_len; ++i )
+		buf[i] = yybytes[i];
 
-  for (i = 0; i < _yybytes_len; ++i)
-    buf[i] = yybytes[i];
+	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
 
-  buf[_yybytes_len] = buf[_yybytes_len + 1] = YY_END_OF_BUFFER_CHAR;
+	b = gras_ddt_parse__scan_buffer(buf,n );
+	if ( ! b )
+		YY_FATAL_ERROR( "bad buffer in gras_ddt_parse__scan_bytes()" );
 
-  b = gras_ddt_parse__scan_buffer(buf, n);
-  if (!b)
-    YY_FATAL_ERROR("bad buffer in gras_ddt_parse__scan_bytes()");
+	/* It's okay to grow etc. this buffer, and we should throw it
+	 * away when we're done.
+	 */
+	b->yy_is_our_buffer = 1;
 
-  /* It's okay to grow etc. this buffer, and we should throw it
-   * away when we're done.
-   */
-  b->yy_is_our_buffer = 1;
-
-  return b;
+	return b;
 }
 
 #ifndef YY_EXIT_FAILURE
 #define YY_EXIT_FAILURE 2
 #endif
 
-static void yy_fatal_error(yyconst char *msg)
+static void yy_fatal_error (yyconst char* msg )
 {
-  (void) fprintf(stderr, "%s\n", msg);
-  exit(YY_EXIT_FAILURE);
+    	(void) fprintf( stderr, "%s\n", msg );
+	exit( YY_EXIT_FAILURE );
 }
 
 /* Redefine yyless() so it works in section 3 code. */
@@ -1692,53 +1843,53 @@ static void yy_fatal_error(yyconst char *msg)
 /** Get the current line number.
  * 
  */
-int gras_ddt_parse_get_lineno(void)
+int gras_ddt_parse_get_lineno  (void)
 {
-
-  return gras_ddt_parse_lineno;
+        
+    return gras_ddt_parse_lineno;
 }
 
 /** Get the input stream.
  * 
  */
-FILE *gras_ddt_parse_get_in(void)
+FILE *gras_ddt_parse_get_in  (void)
 {
-  return gras_ddt_parse_in;
+        return gras_ddt_parse_in;
 }
 
 /** Get the output stream.
  * 
  */
-FILE *gras_ddt_parse_get_out(void)
+FILE *gras_ddt_parse_get_out  (void)
 {
-  return gras_ddt_parse_out;
+        return gras_ddt_parse_out;
 }
 
 /** Get the length of the current token.
  * 
  */
-int gras_ddt_parse_get_leng(void)
+int gras_ddt_parse_get_leng  (void)
 {
-  return gras_ddt_parse_leng;
+        return gras_ddt_parse_leng;
 }
 
 /** Get the current token.
  * 
  */
 
-char *gras_ddt_parse_get_text(void)
+char *gras_ddt_parse_get_text  (void)
 {
-  return gras_ddt_parse_text;
+        return gras_ddt_parse_text;
 }
 
 /** Set the current line number.
  * @param line_number
  * 
  */
-void gras_ddt_parse_set_lineno(int line_number)
+void gras_ddt_parse_set_lineno (int  line_number )
 {
-
-  gras_ddt_parse_lineno = line_number;
+    
+    gras_ddt_parse_lineno = line_number;
 }
 
 /** Set the input stream. This does not discard the current
@@ -1747,74 +1898,74 @@ void gras_ddt_parse_set_lineno(int line_number)
  * 
  * @see gras_ddt_parse__switch_to_buffer
  */
-void gras_ddt_parse_set_in(FILE * in_str)
+void gras_ddt_parse_set_in (FILE *  in_str )
 {
-  gras_ddt_parse_in = in_str;
+        gras_ddt_parse_in = in_str ;
 }
 
-void gras_ddt_parse_set_out(FILE * out_str)
+void gras_ddt_parse_set_out (FILE *  out_str )
 {
-  gras_ddt_parse_out = out_str;
+        gras_ddt_parse_out = out_str ;
 }
 
-int gras_ddt_parse_get_debug(void)
+int gras_ddt_parse_get_debug  (void)
 {
-  return gras_ddt_parse__flex_debug;
+        return gras_ddt_parse__flex_debug;
 }
 
-void gras_ddt_parse_set_debug(int bdebug)
+void gras_ddt_parse_set_debug (int  bdebug )
 {
-  gras_ddt_parse__flex_debug = bdebug;
+        gras_ddt_parse__flex_debug = bdebug ;
 }
 
-static int yy_init_globals(void)
+static int yy_init_globals (void)
 {
-  /* Initialization is the same as for the non-reentrant scanner.
-   * This function is called from gras_ddt_parse_lex_destroy(), so don't allocate here.
-   */
+        /* Initialization is the same as for the non-reentrant scanner.
+     * This function is called from gras_ddt_parse_lex_destroy(), so don't allocate here.
+     */
 
-  (yy_buffer_stack) = 0;
-  (yy_buffer_stack_top) = 0;
-  (yy_buffer_stack_max) = 0;
-  (yy_c_buf_p) = (char *) 0;
-  (yy_init) = 0;
-  (yy_start) = 0;
+    (yy_buffer_stack) = 0;
+    (yy_buffer_stack_top) = 0;
+    (yy_buffer_stack_max) = 0;
+    (yy_c_buf_p) = (char *) 0;
+    (yy_init) = 0;
+    (yy_start) = 0;
 
 /* Defined in main.c */
 #ifdef YY_STDINIT
-  gras_ddt_parse_in = stdin;
-  gras_ddt_parse_out = stdout;
+    gras_ddt_parse_in = stdin;
+    gras_ddt_parse_out = stdout;
 #else
-  gras_ddt_parse_in = (FILE *) 0;
-  gras_ddt_parse_out = (FILE *) 0;
+    gras_ddt_parse_in = (FILE *) 0;
+    gras_ddt_parse_out = (FILE *) 0;
 #endif
 
-  /* For future reference: Set errno on error, since we are called by
-   * gras_ddt_parse_lex_init()
-   */
-  return 0;
+    /* For future reference: Set errno on error, since we are called by
+     * gras_ddt_parse_lex_init()
+     */
+    return 0;
 }
 
 /* gras_ddt_parse_lex_destroy is for both reentrant and non-reentrant scanners. */
-int gras_ddt_parse_lex_destroy(void)
+int gras_ddt_parse_lex_destroy  (void)
 {
+    
+    /* Pop the buffer stack, destroying each element. */
+	while(YY_CURRENT_BUFFER){
+		gras_ddt_parse__delete_buffer(YY_CURRENT_BUFFER  );
+		YY_CURRENT_BUFFER_LVALUE = NULL;
+		gras_ddt_parse_pop_buffer_state();
+	}
 
-  /* Pop the buffer stack, destroying each element. */
-  while (YY_CURRENT_BUFFER) {
-    gras_ddt_parse__delete_buffer(YY_CURRENT_BUFFER);
-    YY_CURRENT_BUFFER_LVALUE = NULL;
-    gras_ddt_parse_pop_buffer_state();
-  }
+	/* Destroy the stack itself. */
+	gras_ddt_parse_free((yy_buffer_stack) );
+	(yy_buffer_stack) = NULL;
 
-  /* Destroy the stack itself. */
-  gras_ddt_parse_free((yy_buffer_stack));
-  (yy_buffer_stack) = NULL;
+    /* Reset the globals. This is important in a non-reentrant scanner so the next time
+     * gras_ddt_parse_lex() is called, initialization will occur. */
+    yy_init_globals( );
 
-  /* Reset the globals. This is important in a non-reentrant scanner so the next time
-   * gras_ddt_parse_lex() is called, initialization will occur. */
-  yy_init_globals();
-
-  return 0;
+    return 0;
 }
 
 /*
@@ -1822,97 +1973,75 @@ int gras_ddt_parse_lex_destroy(void)
  */
 
 #ifndef yytext_ptr
-static void yy_flex_strncpy(char *s1, yyconst char *s2, int n)
+static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 {
-  register int i;
-  for (i = 0; i < n; ++i)
-    s1[i] = s2[i];
+	register int i;
+	for ( i = 0; i < n; ++i )
+		s1[i] = s2[i];
 }
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen(yyconst char *s)
+static int yy_flex_strlen (yyconst char * s )
 {
-  register int n;
-  for (n = 0; s[n]; ++n);
+	register int n;
+	for ( n = 0; s[n]; ++n )
+		;
 
-  return n;
+	return n;
 }
 #endif
 
-void *gras_ddt_parse_alloc(yy_size_t size)
+void *gras_ddt_parse_alloc (yy_size_t  size )
 {
-  return (void *) malloc(size);
+	return (void *) malloc( size );
 }
 
-void *gras_ddt_parse_realloc(void *ptr, yy_size_t size)
+void *gras_ddt_parse_realloc  (void * ptr, yy_size_t  size )
 {
-  /* The cast to (char *) in the following accommodates both
-   * implementations that use char* generic pointers, and those
-   * that use void* generic pointers.  It works with the latter
-   * because both ANSI C and C++ allow castless assignment from
-   * any pointer type to void*, and deal with argument conversions
-   * as though doing an assignment.
-   */
-  return (void *) realloc((char *) ptr, size);
+	/* The cast to (char *) in the following accommodates both
+	 * implementations that use char* generic pointers, and those
+	 * that use void* generic pointers.  It works with the latter
+	 * because both ANSI C and C++ allow castless assignment from
+	 * any pointer type to void*, and deal with argument conversions
+	 * as though doing an assignment.
+	 */
+	return (void *) realloc( (char *) ptr, size );
 }
 
-void gras_ddt_parse_free(void *ptr)
+void gras_ddt_parse_free (void * ptr )
 {
-  free((char *) ptr);           /* see gras_ddt_parse_realloc() for (char *) cast */
+	free( (char *) ptr );	/* see gras_ddt_parse_realloc() for (char *) cast */
 }
 
 #define YYTABLES_NAME "yytables"
 
 /* {space}+                { return(TOKEN_SPACE);} */
 
-void gras_ddt_parse_dump(void)
-{
-  switch (gras_ddt_parse_tok_num) {
-  case GRAS_DDT_PARSE_TOKEN_LA:{
-      printf("TOKEN_LA ");
-      break;
-    }
-  case GRAS_DDT_PARSE_TOKEN_RA:{
-      printf("TOKEN_RA ");
-      break;
-    }
-  case GRAS_DDT_PARSE_TOKEN_WORD:{
-      printf("TOKEN_WORD ");
-      break;
-    }
-    /*  case GRAS_DDT_PARSE_TOKEN_SPACE   : {printf("TOKEN_SPACE ");break;} */
-    /*  case GRAS_DDT_PARSE_TOKEN_COMMENT : {printf("TOKEN_COMMENT ");break;} */
-  case GRAS_DDT_PARSE_TOKEN_NEWLINE:{
-      printf("TOKEN_NEWLINE\n");
-      return;
-    }
-  case GRAS_DDT_PARSE_TOKEN_EMPTY:{
-      printf("TOKEN_EMPTY\n");
-      return;
-    }
-  default:{
-      printf("Unknown token %d\n", gras_ddt_parse_tok_num);
-      return;
-    }
+void gras_ddt_parse_dump(void) {
+  switch(gras_ddt_parse_tok_num) {
+  case GRAS_DDT_PARSE_TOKEN_LA      : {printf("TOKEN_LA ");break;}
+  case GRAS_DDT_PARSE_TOKEN_RA      : {printf("TOKEN_RA ");break;}
+  case GRAS_DDT_PARSE_TOKEN_WORD    : {printf("TOKEN_WORD ");break;}
+    /*  case GRAS_DDT_PARSE_TOKEN_SPACE   : {printf("TOKEN_SPACE ");break;}*/
+    /*  case GRAS_DDT_PARSE_TOKEN_COMMENT : {printf("TOKEN_COMMENT ");break;}*/
+  case GRAS_DDT_PARSE_TOKEN_NEWLINE : {printf("TOKEN_NEWLINE\n");return;}
+  case GRAS_DDT_PARSE_TOKEN_EMPTY : {printf("TOKEN_EMPTY\n");return;}
+  default             : {printf("Unknown token %d\n", gras_ddt_parse_tok_num);return;}
   }
-  printf("-->%s<-- [line %d, pos %d]\n", gras_ddt_parse_text,
-         gras_ddt_parse_line_pos, gras_ddt_parse_char_pos);
+  printf("-->%s<-- [line %d, pos %d]\n",gras_ddt_parse_text,gras_ddt_parse_line_pos,gras_ddt_parse_char_pos);
   return;
 }
 
-int gras_ddt_parse_lex_n_dump(void)
-{
+int gras_ddt_parse_lex_n_dump(void) {
   gras_ddt_parse_tok_num = gras_ddt_parse_lex();
-  /*  gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text); */
-  return (gras_ddt_parse_tok_num);
+  /*  gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text);*/
+  return(gras_ddt_parse_tok_num);
 }
 
-void gras_ddt_parse_pointer_init(const char *file)
-{
-  gras_ddt_file_to_parse = fopen(file, "r");
-  gras_ddt_input_buffer =
-    gras_ddt_parse__create_buffer(gras_ddt_file_to_parse, 10);
+void  gras_ddt_parse_pointer_init(const char *file) {
+  gras_ddt_file_to_parse = fopen(file,"r");
+  gras_ddt_input_buffer = gras_ddt_parse__create_buffer(gras_ddt_file_to_parse,10 );
   gras_ddt_parse__switch_to_buffer(gras_ddt_input_buffer);
 
   gras_ddt_parse_line_pos = 1;
@@ -1921,8 +2050,7 @@ void gras_ddt_parse_pointer_init(const char *file)
   gras_ddt_parse_tok_num = 0;
 }
 
-void gras_ddt_parse_pointer_close(void)
-{
+void  gras_ddt_parse_pointer_close(void) {
   gras_ddt_parse__delete_buffer(gras_ddt_input_buffer);
   fclose(gras_ddt_file_to_parse);
 
@@ -1931,9 +2059,8 @@ void gras_ddt_parse_pointer_close(void)
   gras_ddt_parse_tok_num = 0;
 }
 
-void gras_ddt_parse_pointer_string_init(const char *string_to_parse)
-{
-  gras_ddt_input_buffer = gras_ddt_parse__scan_string(string_to_parse);
+void  gras_ddt_parse_pointer_string_init(const char *string_to_parse) {
+  gras_ddt_input_buffer = gras_ddt_parse__scan_string (string_to_parse);
   definition = string_to_parse;
   gras_ddt_parse__switch_to_buffer(gras_ddt_input_buffer);
 
@@ -1942,8 +2069,7 @@ void gras_ddt_parse_pointer_string_init(const char *string_to_parse)
   gras_ddt_parse_tok_num = 0;
 }
 
-void gras_ddt_parse_pointer_string_close(void)
-{
+void  gras_ddt_parse_pointer_string_close(void) {
   gras_ddt_parse__delete_buffer(gras_ddt_input_buffer);
 
   gras_ddt_parse_line_pos = 1;
@@ -1951,9 +2077,10 @@ void gras_ddt_parse_pointer_string_close(void)
   gras_ddt_parse_tok_num = 0;
 
   if (0)
-    yyunput('\0', NULL);        /* fake a use of this function to calm gcc down */
+    yyunput('\0',NULL); /* fake a use of this function to calm gcc down */
 }
 
 /* Local variables:*/
 /* mode: c */
 /* End: */
+

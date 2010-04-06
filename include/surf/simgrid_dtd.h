@@ -1,5 +1,5 @@
-/* XML processor/application API for surf/simgrid.dtd.
- * Generated 2009/11/04 12:57:47.
+/* XML processor/application API for /home/mquinson/Code/simgrid/src/surf/simgrid.dtd.
+ * Generated 2010/04/06 12:44:26.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

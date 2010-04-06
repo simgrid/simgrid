@@ -1053,13 +1053,13 @@ int xbt_graph_parse__flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *xbt_graph_parse_text;
-/* Validating XML processor for xbt/graphxml.dtd.
- * Generated 2007/12/19 15:09:56.
+/* Validating XML processor for /home/mquinson/Code/simgrid/src/xbt/graphxml.dtd.
+ * Generated 2010/04/06 12:44:26.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.63 2007/10/11 14:46:08 mquinson Exp).
+ * (Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1104,7 +1104,7 @@ char *xbt_graph_parse_text;
 const char rcs_graphxml_flexml_skeleton[] =
  "$" "Id: skel,v 1.40 2007/10/11 09:57:24 mquinson Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.63 2007/10/11 14:46:08 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp $";
 
 /* ANSI headers. */
 #include <stdlib.h> /* for realloc() -- needed here when using flex 2.5.4 */
