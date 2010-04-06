@@ -542,6 +542,7 @@ file(GLOB_RECURSE add_src_files
 "${PROJECT_DIRECTORY}/teshsuite/*CMakeLists.txt"
 "${PROJECT_DIRECTORY}/testsuite/*CMakeLists.txt"
 "${PROJECT_DIRECTORY}/tools/*CMakeLists.txt"
+"${PROJECT_DIRECTORY}/src/*CMakeLists.txt"
 "${PROJECT_DIRECTORY}/examples/*.java"
 )
 #message("\n\nadd_src_files:\n${add_src_files}")

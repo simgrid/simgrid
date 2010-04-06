@@ -30,6 +30,7 @@ set(to_svg
 	${xml_files}
 	${tesh_files}
 	${txt_files}
+	${TEST_CFILES}
 	${PROJECT_DIRECTORY}/./CMakeLists.txt
 	${PROJECT_DIRECTORY}/./AUTHORS
 	${PROJECT_DIRECTORY}/./ChangeLog
@@ -46,14 +47,18 @@ set(to_svg
 	${PROJECT_DIRECTORY}/./src/bindings/ruby/simgrid_ruby.c
 	${PROJECT_DIRECTORY}/./src/bindings/ruby_bindings.h
 	${PROJECT_DIRECTORY}/./src/simix/smx_context_sysv_private.h
+	${PROJECT_DIRECTORY}/./src/simgrid_units_main.c
 )
 	
 foreach(file ${to_svg})
 	get_filename_component(file_location ${file} PATH)
 	string(REPLACE "${PROJECT_DIRECTORY}/" "/" file_location ${file_location})
-	#message("install: ${file}\nDESTINATION: ${file_location}")
 	install(FILES ${file} DESTINATION "${file_location}")
 endforeach(file ${EXTRA_DIST})
+
+foreach(file ${TEST_UNITS})
+	install(FILES src/${file} DESTINATION "/src/")
+endforeach(file ${TEST_UNITS})
 
 ###copy doc
 install(DIRECTORY "${PROJECT_DIRECTORY}/doc/"
