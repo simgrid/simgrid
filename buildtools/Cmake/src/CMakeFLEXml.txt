@@ -100,6 +100,7 @@ message("_______________________________________________________________________
 message("________________________________________________________________________________ SG_UNIT_EXTRACTOR")
 
 if(PERL_EXE)
+	message("   PERL : 	${PERL_EXE}\n")
 	exec_program("rm -f simgrid_units_main.c *_unit.c ${PROJECT_DIRECTORY}/src/simgrid_units_main.c ${PROJECT_DIRECTORY}/src/*_unit.c" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE OKITOKI)
 
 	#$(TEST_UNITS): $(TEST_CFILES)
@@ -118,7 +119,6 @@ if(PERL_EXE)
 		exec_program("touch ${dep}" "${PROJECT_DIRECTORY}/src/" OUTPUT_VARIABLE OKITOKI)
 	endforeach(file ${TEST_UNITS})
 else(PERL_EXE)
-	message("   PERL : 	${PERL_EXE}")
 	message(FATAL_ERROR "Install perl before use maintainer mode")
 endif(PERL_EXE)
 message("")

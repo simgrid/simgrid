@@ -78,6 +78,8 @@ set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 
 string(REPLACE ";" "\t" install_HEADERS "${install_HEADERS}")
 string(REPLACE ";" "\t" install_libs "${install_libs}")
+string(REPLACE "${PROJECT_DIRECTORY}/src/.libs" "${prefix}/lib" uninstall_libs "${install_libs}")
+string(REPLACE "./" "${prefix}/" uninstall_HEADERS "${install_HEADERS}")
 
 add_custom_target(install-simgrid
 COMMAND mkdir -p ${prefix}
@@ -92,12 +94,20 @@ COMMAND cp -rf ${PROJECT_DIRECTORY}/doc/html/ ${prefix}/doc/simgrid
 COMMAND echo "install doc ok"
 COMMAND cp --parent ${install_HEADERS} ${prefix}
 COMMAND echo "install include ok"
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}/./"
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 )
 
 add_custom_target(uninstall
 COMMAND echo "uninstall simgrid"
-COMMAND echo "TODO"
+COMMAND rm -rf ${prefix}/doc/simgrid
+COMMAND echo "uninstall doc ok"
+COMMAND rm ${uninstall_libs}
+COMMAND rm -R ${prefix}/include/amok ${prefix}/include/gras ${prefix}/include/instr ${prefix}/include/msg 
+COMMAND rm -R ${prefix}/include/simdag ${prefix}/include/smpi ${prefix}/include/surf ${prefix}/include/xbt
+COMMAND echo "uninstall lib ok"
+COMMAND rm ${uninstall_HEADERS}
+COMMAND echo "uninstal include ok"
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 )
 
 add_custom_target(html
