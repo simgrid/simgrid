@@ -25,10 +25,15 @@ static void stackDump (const char *msg, lua_State *L) {
   char *p=buff;
   int i;
   int top = lua_gettop(L);
-  void *ptr;
+//  void *ptr;
   fflush(stdout);
   p+=sprintf(p,"STACK(top=%d): ",top);
+/*  lua_getglobal(L,"vardump");
+  xbt_assert0(lua_isfunction(L,-1), "Vardump not found");
+*/
+
   for (i = 1; i <= top; i++) {  /* repeat for each level */
+
     int t = lua_type(L, i);
     switch (t) {
 
@@ -44,12 +49,17 @@ static void stackDump (const char *msg, lua_State *L) {
       p+=sprintf(p,"%g", lua_tonumber(L, i));
       break;
 
+    case LUA_TTABLE:
+      p+=sprintf(p, "Table");
+      break;
+
     default:  /* other values */
-      if ((ptr = luaL_checkudata(L,i,TASK_MODULE_NAME))) {
+      p+=sprintf(p, "???");
+/*      if ((ptr = luaL_checkudata(L,i,TASK_MODULE_NAME))) {
         p+=sprintf(p,"task");
       } else {
         p+=printf(p,"%s", lua_typename(L, t));
-      }
+      }*/
       break;
 
     }
@@ -61,13 +71,15 @@ static void stackDump (const char *msg, lua_State *L) {
 /** @brief ensures that a userdata on the stack is a task and returns the pointer inside the userdata */
 static m_task_t checkTask (lua_State *L,int index) {
   m_task_t *pi,tk;
-  luaL_checktype(L,index,LUA_TUSERDATA);
-  pi = (m_task_t*)luaL_checkudata(L,index,TASK_MODULE_NAME);
+  luaL_checktype(L,index,LUA_TTABLE);
+  lua_getfield(L,index,"__simgrid_task");
+  pi = (m_task_t*)luaL_checkudata(L,-1,TASK_MODULE_NAME);
   if(pi == NULL)
 	 luaL_typerror(L,index,TASK_MODULE_NAME);
   tk = *pi;
   if(!tk)
 	 luaL_error(L,"null Task");
+  lua_pop(L,1);
   return  tk;
 }
 
@@ -93,17 +105,28 @@ static int Task_new(lua_State* L) {
   const char *name=luaL_checkstring(L,1);
   int comp_size = luaL_checkint(L,2);
   int msg_size = luaL_checkint(L,3);
+  INFO0("Creating task");
+
   m_task_t msg_task = MSG_task_create(name,comp_size,msg_size,NULL);
+
+  lua_newtable (L); /* create a table, put the userdata on top of it */
+
   m_task_t *lua_task = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
   *lua_task = msg_task;
-  MSG_task_set_data(msg_task,lua_task);
-  pushTask(L,msg_task);
-  INFO0("Created task");
+
+  luaL_getmetatable(L,TASK_MODULE_NAME);
+  lua_setmetatable(L,-2);
+
+  lua_setfield (L, -2, "__simgrid_task"); /* put the userdata as field of the table */
+  /* remove the args from the stack */
+  lua_remove(L,1);
+  lua_remove(L,1);
+  lua_remove(L,1);
   return 1;
 }
 
 static int Task_get_name(lua_State *L) {
-  m_task_t tk = checkTask(L,1);
+  m_task_t tk = checkTask(L,-1);
   lua_pushstring(L,MSG_task_get_name(tk));
   return 1;
 }
@@ -122,14 +145,15 @@ static int Task_execute(lua_State *L){
 }
 
 static int Task_destroy(lua_State *L) {
-  m_task_t tk = checkTask(L,1);
+  m_task_t tk = checkTask(L,-1);
   int res = MSG_task_destroy(tk);
   lua_pushnumber(L,res);
   return 1;
 }
 static int Task_send(lua_State *L)  {
-  m_task_t tk = checkTask(L,1);
-  const char *mailbox = luaL_checkstring(L,2);
+  stackDump("send ",L);
+  m_task_t tk = checkTask(L,-2);
+  const char *mailbox = luaL_checkstring(L,-1);
   lua_pop(L,1); // remove the string so that the task is on top of it
   MSG_task_set_data(tk,L); // Copy my stack into the task, so that the receiver can copy the lua task directly
   MSG_error_t res = MSG_task_send(tk,mailbox);
@@ -154,7 +178,7 @@ static int Task_send(lua_State *L)  {
 }
 static int Task_recv(lua_State *L)  {
   m_task_t tk = NULL;
-  const char *mailbox = luaL_checkstring(L,1);
+  const char *mailbox = luaL_checkstring(L,-1);
   MSG_error_t res = MSG_task_receive(&tk,mailbox);
 
   lua_State *sender_stack = MSG_task_get_data(tk);
