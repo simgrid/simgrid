@@ -307,18 +307,72 @@ ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
 ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
 )
 
-set(TEST_CFILES
-${PROJECT_DIRECTORY}/src/xbt/cunit.c
-${PROJECT_DIRECTORY}/src/xbt/ex.c
-${PROJECT_DIRECTORY}/src/xbt/dynar.c
-${PROJECT_DIRECTORY}/src/xbt/dict.c
-${PROJECT_DIRECTORY}/src/xbt/set.c
-${PROJECT_DIRECTORY}/src/xbt/swag.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_str.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_strbuff.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_sha.c
-${PROJECT_DIRECTORY}/src/xbt/config.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_synchro.c
+set(install_libs
+${PROJECT_DIRECTORY}/src/.libs/libsimgrid.*
+${PROJECT_DIRECTORY}/src/.libs/libsimgrid_static.*
+${PROJECT_DIRECTORY}/src/.libs/libgras.*
+${PROJECT_DIRECTORY}/src/.libs/libsmpi.*
+)
+if(HAVE_RUBY_H)
+	set(install_libs
+	${install_libs}
+	${PROJECT_DIRECTORY}/src/.libs/libsimgrid_ruby.*
+	)
+endif(HAVE_RUBY_H)
+
+set(install_HEADERS
+./include/gras.h 
+./include/xbt.h
+./include/simgrid_config.h
+./include/xbt/misc.h
+./include/xbt/sysdep.h
+./include/xbt/virtu.h
+./include/xbt/str.h
+./include/xbt/strbuff.h
+./include/xbt/hash.h
+./include/xbt/function_types.h
+./include/xbt/asserts.h 
+./include/xbt/ex.h
+./include/xbt/log.h
+./include/xbt/module.h
+./include/xbt/mallocator.h
+./include/xbt/dynar.h
+./include/xbt/dict.h
+./include/xbt/set.h
+./include/xbt/heap.h
+./include/xbt/graph.h
+./include/xbt/fifo.h
+./include/xbt/swag.h
+./include/xbt/matrix.h
+./include/xbt/peer.h
+./include/xbt/config.h
+./include/xbt/cunit.h
+./include/xbt/graphxml_parse.h
+./include/xbt/graphxml.h
+./include/xbt/time.h
+./include/xbt/synchro.h
+./include/xbt/synchro_core.h
+./include/xbt/queue.h
+./include/msg/msg.h
+./include/msg/datatypes.h
+./include/simdag/simdag.h
+./include/simdag/datatypes.h
+./include/smpi/smpi.h
+./include/smpi/mpi.h
+./include/surf/surfxml_parse.h
+./include/surf/simgrid_dtd.h
+./include/gras/datadesc.h
+./include/gras/transport.h
+./include/gras/virtu.h
+./include/gras/emul.h
+./include/gras/process.h
+./include/gras/module.h
+./include/gras/messages.h
+./include/gras/timer.h
+./include/amok/peermanagement.h
+./include/amok/bandwidth.h
+./include/instr/instr.h
+./include/instr/tracing_config.h
 )
 
 set(TEST_UNITS
@@ -335,14 +389,25 @@ config_unit.c
 xbt_synchro_unit.c
 )
 
+set(TEST_CFILES
+${PROJECT_DIRECTORY}/src/xbt/cunit.c
+${PROJECT_DIRECTORY}/src/xbt/ex.c
+${PROJECT_DIRECTORY}/src/xbt/dynar.c
+${PROJECT_DIRECTORY}/src/xbt/dict.c
+${PROJECT_DIRECTORY}/src/xbt/set.c
+${PROJECT_DIRECTORY}/src/xbt/swag.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_str.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_strbuff.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_sha.c
+${PROJECT_DIRECTORY}/src/xbt/config.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_synchro.c
+)
+
 #Here must have all files which permit to generate source files
 set(SRC_TO_LOOK
 ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
 ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
 ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
-${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l
-${PROJECT_DIRECTORY}/src/xbt/graphxml.l
-${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l
 ${PROJECT_DIRECTORY}/src/simgrid_units_main.c
 ${PROJECT_DIRECTORY}/examples/gras/ping/ping.xml
 ${PROJECT_DIRECTORY}/examples/gras/rpc/rpc.xml
@@ -361,11 +426,6 @@ ${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/small_sleep.xml
 ${PROJECT_DIRECTORY}/examples/amok/bandwidth/bandwidth.xml
 ${PROJECT_DIRECTORY}/examples/amok/saturate/saturate.xml
 ${TEST_CFILES}
-${PROJECT_DIRECTORY}/src/context_sysv_config.h.in
-${PROJECT_DIRECTORY}/buildtools/Cmake/src/c_gras_config.h.in
-${PROJECT_DIRECTORY}/include/simgrid_config.h.in
-${PROJECT_DIRECTORY}/src/smpi/smpicc.in
-${PROJECT_DIRECTORY}/src/smpi/smpirun.in
 )
 
 ### depend of some variables setted upper

@@ -76,6 +76,9 @@ PATTERN "*~" EXCLUDE
 set(CPACK_SET_DESTDIR on)
 set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 
+string(REPLACE ";" "\t" install_HEADERS "${install_HEADERS}")
+string(REPLACE ";" "\t" install_libs "${install_libs}")
+
 add_custom_target(install-simgrid
 COMMAND mkdir -p ${prefix}
 COMMAND mkdir -p ${prefix}/lib
@@ -83,12 +86,13 @@ COMMAND mkdir -p ${prefix}/include
 COMMAND mkdir -p ${prefix}/doc
 COMMAND mkdir -p ${prefix}/doc/simgrid
 COMMAND mkdir -p ${prefix}/doc/simgrid/html
-COMMAND cp -rf ${PROJECT_DIRECTORY}/src/.libs/* ${prefix}/lib/
+COMMAND cp ${install_libs} ${prefix}/lib
 COMMAND echo "install lib ok"
-COMMAND cp -rf ${PROJECT_DIRECTORY}/include/ ${prefix}
-COMMAND echo "install include ok"
 COMMAND cp -rf ${PROJECT_DIRECTORY}/doc/html/ ${prefix}/doc/simgrid
 COMMAND echo "install doc ok"
+COMMAND cp --parent ${install_HEADERS} ${prefix}
+COMMAND echo "install include ok"
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/./"
 )
 
 add_custom_target(uninstall
