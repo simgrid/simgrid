@@ -4,8 +4,9 @@ set_source_files_properties(${PROJECT_DIRECTORY}/src/simgrid_units_main.c
 PROPERTIES GENERATED true)
 
 foreach(file ${TEST_UNITS})
-	set_source_files_properties(${PROJECT_DIRECTORY}/src/${file}
+	set_source_files_properties(${file}
 PROPERTIES GENERATED true)
+	message("Generated file :  ${file}")
 endforeach(file ${TEST_UNITS})
 
 

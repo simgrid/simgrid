@@ -84,8 +84,6 @@ set(SMPI_SRC
 	${PROJECT_DIRECTORY}/src/smpi/smpi_bench.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_global.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_mpi.c
-	#${PROJECT_DIRECTORY}/src/smpi/smpi_sender.c
-	#${PROJECT_DIRECTORY}/src/smpi/smpi_receiver.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_comm.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_group.c
 	${PROJECT_DIRECTORY}/src/smpi/smpi_util.c
@@ -99,8 +97,6 @@ set(JMSG_C_SRC
 	${PROJECT_DIRECTORY}/src/java/jxbt_utilities.h
 	${PROJECT_DIRECTORY}/src/java/jmsg.c 
 	${PROJECT_DIRECTORY}/src/java/jmsg.h
-	#${PROJECT_DIRECTORY}/src/java/jmsg_channel.c
-	#${PROJECT_DIRECTORY}/src/java/jmsg_channel.h
 	${PROJECT_DIRECTORY}/src/java/jmsg_host.c
 	${PROJECT_DIRECTORY}/src/java/jmsg_host.h
 	${PROJECT_DIRECTORY}/src/java/jmsg_process.c

@@ -40,7 +40,9 @@ set(to_svg
 	${PROJECT_DIRECTORY}/./README.IEEE
 	${PROJECT_DIRECTORY}/./TODO
 	${PROJECT_DIRECTORY}/./src/smpi/smpicc.in
+	${PROJECT_DIRECTORY}/./src/smpi/smpicc
 	${PROJECT_DIRECTORY}/./src/smpi/smpirun.in
+	${PROJECT_DIRECTORY}/./src/smpi/smpirun
 	${PROJECT_DIRECTORY}/./src/bindings/ruby/simgrid_ruby.c
 	${PROJECT_DIRECTORY}/./src/bindings/ruby_bindings.h
 	${PROJECT_DIRECTORY}/./src/simix/smx_context_sysv_private.h
@@ -58,6 +60,7 @@ install(DIRECTORY "${PROJECT_DIRECTORY}/doc/"
 DESTINATION "/doc/"
 PATTERN ".svn" EXCLUDE 
 PATTERN ".git" EXCLUDE 
+PATTERN "*.o" EXCLUDE
 PATTERN "*~" EXCLUDE
 )
 
@@ -65,7 +68,8 @@ PATTERN "*~" EXCLUDE
 install(DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/"
 DESTINATION "/buildtools/Cmake/"
 PATTERN ".svn" EXCLUDE 
-PATTERN ".git" EXCLUDE 
+PATTERN ".git" EXCLUDE
+PATTERN "*.o" EXCLUDE
 PATTERN "*~" EXCLUDE
 )
 
