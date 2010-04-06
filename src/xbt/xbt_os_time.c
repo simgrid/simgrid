@@ -127,7 +127,7 @@ double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 #ifdef HAVE_POSIX_GETTIME
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) +
       ((((double) timer->stop.tv_nsec) -
-        ((double) timer->start.tv_nsec)) / 1e-9);
+        ((double) timer->start.tv_nsec)) / 1e9);
 #elif defined(HAVE_GETTIMEOFDAY)
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) +
     ((((double) timer->stop.tv_usec) -
