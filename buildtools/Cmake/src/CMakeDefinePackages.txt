@@ -640,4 +640,59 @@ file(GLOB_RECURSE txt_files
 "${PROJECT_DIRECTORY}/examples/java/comm_time/CommTimeTest"
 "${PROJECT_DIRECTORY}/examples/java/suspend/SuspendTest"
 )
+
+set(to_svg	
+	${XBT_RL_SRC}
+	${EXTRA_DIST}
+	${SMPI_SRC}
+	${JMSG_C_SRC}
+	${JMSG_JAVA_SRC}
+	${GRAS_RL_SRC}
+	${XBT_SRC}
+	${GTNETS_SRC}
+	${SURF_SRC}
+	${SIMIX_SRC}
+	${TRACING_SRC}
+	${MSG_SRC}
+	${SIMDAG_SRC}
+	${GRAS_COMMON_SRC}
+	${GRAS_SG_SRC}
+	${AMOK_SRC}
+	${LUA_SRC}
+	${RUBY_SRC}
+	${add_src_files}
+	${include_files}
+	${xml_files}
+	${tesh_files}
+	${txt_files}
+	${TEST_CFILES}
+	${PROJECT_DIRECTORY}/./CMakeLists.txt
+	${PROJECT_DIRECTORY}/./AUTHORS
+	${PROJECT_DIRECTORY}/./ChangeLog
+	${PROJECT_DIRECTORY}/./COPYING
+	${PROJECT_DIRECTORY}/./missing
+	${PROJECT_DIRECTORY}/./NEWS
+	${PROJECT_DIRECTORY}/./README
+	${PROJECT_DIRECTORY}/./README.IEEE
+	${PROJECT_DIRECTORY}/./TODO
+	${PROJECT_DIRECTORY}/./src/smpi/smpicc.in
+	${PROJECT_DIRECTORY}/./src/smpi/smpirun.in
+	${PROJECT_DIRECTORY}/./src/bindings/ruby/simgrid_ruby.c
+	${PROJECT_DIRECTORY}/./src/bindings/ruby_bindings.h
+	${PROJECT_DIRECTORY}/./src/simix/smx_context_sysv_private.h
+	${PROJECT_DIRECTORY}/./src/simgrid_units_main.c
+)
+set(script_to_install
+	${PROJECT_DIRECTORY}/./src/smpi/smpicc
+	${PROJECT_DIRECTORY}/./src/smpi/smpirun
+	${PROJECT_DIRECTORY}/./tools/sg_unit_extractor.pl
+	${PROJECT_DIRECTORY}/./tools/doxygen/index_create.pl
+	${PROJECT_DIRECTORY}/./tools/doxygen/toc_create.pl
+	${PROJECT_DIRECTORY}/./tools/doxygen/index_php.pl
+	${PROJECT_DIRECTORY}/./tools/doxygen/doxygen_postprocesser.pl
+	${PROJECT_DIRECTORY}/./tools/doxygen/bibtex2html_table_count.pl
+	${PROJECT_DIRECTORY}/./tools/doxygen/bibtex2html_postprocessor.pl
+	${PROJECT_DIRECTORY}/./tools/doxygen/xbt_log_extract_hierarchy.pl
+)
+
 #message("\n\ntesh:\n${txt_files}")

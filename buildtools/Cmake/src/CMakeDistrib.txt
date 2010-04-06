@@ -5,51 +5,13 @@ set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}~${SVN_VERSION}${GIT_DATE}")
 set(CPACK_GENERATOR "TBZ2") #;TGZ;TZ;ZIP
-
-set(to_svg	
-	${XBT_RL_SRC}
-	${EXTRA_DIST}
-	${SMPI_SRC}
-	${JMSG_C_SRC}
-	${JMSG_JAVA_SRC}
-	${GRAS_RL_SRC}
-	${XBT_SRC}
-	${GTNETS_SRC}
-	${SURF_SRC}
-	${SIMIX_SRC}
-	${TRACING_SRC}
-	${MSG_SRC}
-	${SIMDAG_SRC}
-	${GRAS_COMMON_SRC}
-	${GRAS_SG_SRC}
-	${AMOK_SRC}
-	${LUA_SRC}
-	${RUBY_SRC}
-	${add_src_files}
-	${include_files}
-	${xml_files}
-	${tesh_files}
-	${txt_files}
-	${TEST_CFILES}
-	${PROJECT_DIRECTORY}/./CMakeLists.txt
-	${PROJECT_DIRECTORY}/./AUTHORS
-	${PROJECT_DIRECTORY}/./ChangeLog
-	${PROJECT_DIRECTORY}/./COPYING
-	${PROJECT_DIRECTORY}/./missing
-	${PROJECT_DIRECTORY}/./NEWS
-	${PROJECT_DIRECTORY}/./README
-	${PROJECT_DIRECTORY}/./README.IEEE
-	${PROJECT_DIRECTORY}/./TODO
-	${PROJECT_DIRECTORY}/./src/smpi/smpicc.in
-	${PROJECT_DIRECTORY}/./src/smpi/smpicc
-	${PROJECT_DIRECTORY}/./src/smpi/smpirun.in
-	${PROJECT_DIRECTORY}/./src/smpi/smpirun
-	${PROJECT_DIRECTORY}/./src/bindings/ruby/simgrid_ruby.c
-	${PROJECT_DIRECTORY}/./src/bindings/ruby_bindings.h
-	${PROJECT_DIRECTORY}/./src/simix/smx_context_sysv_private.h
-	${PROJECT_DIRECTORY}/./src/simgrid_units_main.c
-)
 	
+foreach(file ${script_to_install})
+	get_filename_component(file_location ${file} PATH)
+	string(REPLACE "${PROJECT_DIRECTORY}/" "/" file_location ${file_location})
+	install(FILES ${file} DESTINATION "${file_location}")
+endforeach(file ${EXTRA_DIST})
+
 foreach(file ${to_svg})
 	get_filename_component(file_location ${file} PATH)
 	string(REPLACE "${PROJECT_DIRECTORY}/" "/" file_location ${file_location})

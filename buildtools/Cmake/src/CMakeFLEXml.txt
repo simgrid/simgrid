@@ -24,6 +24,10 @@ ENDIF(FLEXML_EXE)
 
 if(HAVE_FLEXML AND HAVE_FLEX AND SED_EXE)
 
+foreach(file ${script_to_install})
+	exec_program("chmod a=rwx ${file}" OUTPUT_VARIABLE "OKITOKI")
+endforeach(file ${script_to_install})
+
 #surf/simgrid_dtd.l: $(srcdir)/surf/simgrid.dtd
 exec_program("mkdir -p surf")
 exec_program("${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S surf/simgrid_dtd.l -L ${srcdir}/surf/simgrid.dtd"  "${PROJECT_DIRECTORY}/src/")
