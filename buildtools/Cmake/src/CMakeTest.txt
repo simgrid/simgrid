@@ -173,11 +173,11 @@ ADD_TEST(smpi-bcast 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTO
 ADD_TEST(smpi-reduce 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi reduce.tesh)
 
 if(HAVE_GTNETS)
-ADD_TEST(msg-gtnets1	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-waxman.tesh)
-ADD_TEST(msg-gtnets2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-gtnets.tesh)
-ADD_TEST(msg-gtnets3	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-onelink-gtnets.tesh)
-ADD_TEST(msg-gtnets4	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-lv08.tesh)
-ADD_TEST(msg-gtnets5	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-onelink-lv08.tesh)
+ADD_TEST(msg-gtnets-waxman	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-waxman.tesh)
+ADD_TEST(msg-gtnets-dogbone	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-gtnets.tesh)
+ADD_TEST(msg-gtnets-onelink	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-onelink-gtnets.tesh)
+ADD_TEST(msg-gtnets-dogbone-lv08	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-lv08.tesh)
+ADD_TEST(msg-gtnets-onelink-lv08	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-onelink-lv08.tesh)
 endif(HAVE_GTNETS)
 
 # END TESH TESTS
