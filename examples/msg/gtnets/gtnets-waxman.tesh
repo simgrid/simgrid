@@ -2,6 +2,7 @@
 
 p Testing waxman radom communication pattern with GTNets model, 200 nodes, 200 flows
 
+! timeout 10
 $ gtnets/gtnets gtnets/waxman-p.xml gtnets/waxman-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
