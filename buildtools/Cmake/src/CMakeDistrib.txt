@@ -102,12 +102,12 @@ COMMAND echo "uninstall simgrid"
 COMMAND rm -rf ${prefix}/doc/simgrid
 COMMAND echo "uninstall doc ok"
 COMMAND rm ${uninstall_libs}
-COMMAND rm -R ${prefix}/include/amok ${prefix}/include/gras ${prefix}/include/instr ${prefix}/include/msg 
-COMMAND rm -R ${prefix}/include/simdag ${prefix}/include/smpi ${prefix}/include/surf ${prefix}/include/xbt
 COMMAND echo "uninstall lib ok"
 COMMAND rm ${uninstall_HEADERS}
 COMMAND echo "uninstal include ok"
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
+COMMAND rm -R ${prefix}/include/amok ${prefix}/include/gras ${prefix}/include/instr ${prefix}/include/msg 
+COMMAND rm -R ${prefix}/include/simdag ${prefix}/include/smpi ${prefix}/include/surf ${prefix}/include/xbt
+WORKING_DIRECTORY "${prefix}"
 )
 
 add_custom_target(html
