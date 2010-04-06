@@ -40,7 +40,7 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeCompleteInFiles.txt)
 ### Define source packages for Libs 
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDefinePackages.txt)
 
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeFLEXml.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeMaintainerMode.txt)
 
 ### Setup gcc flags
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeFlags.txt)
