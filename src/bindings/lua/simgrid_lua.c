@@ -15,6 +15,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 
 #define TASK_MODULE_NAME "simgrid.Task"
+#define HOST_MODULE_NAME "simgrid.Host"
 
 /* ********************************************************************************* */
 /*                            helper functions                                       */
@@ -84,7 +85,7 @@ static m_task_t checkTask (lua_State *L,int index) {
 }
 
 /** @brief leaves a new userdata on top of the stack, sets its metatable, and sets the Task pointer inside the userdata */
-static m_task_t *pushTask (lua_State *L,m_task_t tk) {
+/*static m_task_t *pushTask (lua_State *L,m_task_t tk) {
 
   m_task_t *pi = NULL;
   pi = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
@@ -95,28 +96,27 @@ static m_task_t *pushTask (lua_State *L,m_task_t tk) {
   lua_setmetatable(L,-2);
   return pi;
 
-}
+}*/
 
 /* ********************************************************************************* */
 /*                           wrapper functions                                       */
 /* ********************************************************************************* */
+
+/**
+ *  Task
+ */
 
 static int Task_new(lua_State* L) {
   const char *name=luaL_checkstring(L,1);
   int comp_size = luaL_checkint(L,2);
   int msg_size = luaL_checkint(L,3);
   INFO0("Creating task");
-
   m_task_t msg_task = MSG_task_create(name,comp_size,msg_size,NULL);
-
   lua_newtable (L); /* create a table, put the userdata on top of it */
-
   m_task_t *lua_task = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
   *lua_task = msg_task;
-
   luaL_getmetatable(L,TASK_MODULE_NAME);
   lua_setmetatable(L,-2);
-
   lua_setfield (L, -2, "__simgrid_task"); /* put the userdata as field of the table */
   /* remove the args from the stack */
   lua_remove(L,1);
@@ -132,13 +132,13 @@ static int Task_get_name(lua_State *L) {
 }
 
 static int Task_computation_duration(lua_State *L){
-  m_task_t tk = checkTask(L,1);
+  m_task_t tk = checkTask(L,-1);
   lua_pushnumber(L,MSG_task_get_compute_duration (tk));
   return 1;
 }
 
 static int Task_execute(lua_State *L){
-  m_task_t tk = checkTask(L,1);
+  m_task_t tk = checkTask(L,-1);
   int res = MSG_task_execute(tk);
   lua_pushnumber(L,res);
   return 1;
@@ -214,9 +214,8 @@ static const luaL_reg Task_methods[] = {
     {0,0}
 };
 static int Task_gc(lua_State *L) {
-  m_task_t tk=checkTask(L,1);
+  m_task_t tk=checkTask(L,-1);
   if (tk) MSG_task_destroy(tk);
-  //printf("GoodBye Task(%p)\n",lua_touserdata(L,1));
   return 0;
 }
 
@@ -225,10 +224,101 @@ static int Task_tostring(lua_State *L) {
   return 1;
 }
 
-
 static const luaL_reg Task_meta[] = {
     {"__gc",  Task_gc},
     {"__tostring",  Task_tostring},
+    {0,0}
+};
+
+/**
+ * Host
+ */
+static m_host_t checkHost (lua_State *L,int index) {
+  m_host_t *pi,ht;
+  luaL_checktype(L,index,LUA_TTABLE);
+  lua_getfield(L,index,"__simgrid_host");
+  pi = (m_host_t*)luaL_checkudata(L,-1,HOST_MODULE_NAME);
+  if(pi == NULL)
+	 luaL_typerror(L,index,HOST_MODULE_NAME);
+  ht = *pi;
+  if(!ht)
+	 luaL_error(L,"null Host");
+  lua_pop(L,1);
+  return  ht;
+}
+
+
+static int Host_get_by_name(lua_State *L)
+{
+	const char *name=luaL_checkstring(L,1);
+	DEBUG0("Getting Host from name...");
+	m_host_t msg_host = MSG_get_host_by_name(name);
+	if (!msg_host)
+		{
+		//ERROR1("MSG_get_host_by_name(%s) failled",name);
+		luaL_error(L,"null Host : MSG_get_host_by_name failled");
+		//return -1;
+		}
+    lua_newtable (L); /* create a table, put the userdata on top of it */
+	m_host_t *lua_host = (m_host_t*)lua_newuserdata(L,sizeof(m_host_t));
+	*lua_host = msg_host;
+	luaL_getmetatable(L,HOST_MODULE_NAME);
+	lua_setmetatable(L,-2);
+	lua_setfield (L, -2, "__simgrid_host"); /* put the userdata as field of the table */
+	/* remove the args from the stack */
+	lua_remove(L,1);
+	return 1;
+}
+
+
+static int Host_get_name(lua_State *L) {
+  m_host_t ht = checkHost(L,-1);
+  lua_pushstring(L,MSG_host_get_name(ht));
+  return 1;
+}
+
+static int Host_number(lua_State *L) {
+  lua_pushnumber(L,MSG_get_host_number());
+  return 1;
+}
+
+static int Host_table(lua_State *L)
+{
+	// FIXME
+	int nb = MSG_get_host_number();
+    m_host_t *msg_hosts = MSG_get_host_table();
+    m_host_t *lua_hosts = (m_host_t*)lua_newuserdata(L,sizeof(m_host_t)*nb);
+    *lua_hosts = msg_hosts;
+
+    lua_newtable (L);
+    // TODO : fill the table <ith hosts
+    return 1;
+}
+
+static const luaL_reg Host_methods[] = {
+    {"getByName",   Host_get_by_name},
+    {"name",  		Host_get_name},
+    {"number",    	Host_number},
+    {"list",    	Host_table},
+    {0,0}
+};
+
+static int Host_gc(lua_State *L)
+{
+  m_host_t ht = checkHost(L,-1);
+  if (ht) ht = NULL;
+  return 0;
+}
+
+static int Host_tostring(lua_State *L)
+{
+  lua_pushfstring(L,"Host :%p",lua_touserdata(L,1));
+  return 1;
+}
+
+static const luaL_reg Host_meta[] = {
+    {"__gc",  Host_gc},
+    {"__tostring",  Host_tostring},
     {0,0}
 };
 
@@ -362,7 +452,7 @@ int luaopen_simgrid(lua_State* L) {
 
   /* register the core C functions to lua */
   luaL_register(L, "simgrid", simgrid_funcs);
-  /* register the tasks to lua */
+  /* register the task methods to lua */
   luaL_openlib(L,TASK_MODULE_NAME,Task_methods,0); //create methods table,add it to the globals
   luaL_newmetatable(L,TASK_MODULE_NAME); //create metatable for Task,add it to the Lua registry
   luaL_openlib(L,0,Task_meta,0);// fill metatable
@@ -373,6 +463,18 @@ int luaopen_simgrid(lua_State* L) {
   lua_pushvalue(L,-3);  //dup methods table
   lua_rawset(L,-3); //hide metatable:metatable.__metatable = methods
   lua_pop(L,1);   //drop metatable
+
+  /* register the hosts methods to lua*/
+  luaL_openlib(L,HOST_MODULE_NAME,Host_methods,0);
+  luaL_newmetatable(L,HOST_MODULE_NAME);
+  luaL_openlib(L,0,Host_meta,0);
+  lua_pushliteral(L,"__index");
+  lua_pushvalue(L,-3);
+  lua_rawset(L,-3);
+  lua_pushliteral(L,"__metatable");
+  lua_pushvalue(L,-3);
+  lua_rawset(L,-3);
+  lua_pop(L,1);
 
   /* Keep the context mechanism informed of our lua world today */
   simgrid_lua_state = L;
