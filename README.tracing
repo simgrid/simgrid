@@ -1,3 +1,10 @@
+==========================================================
+ATTENTION
+This file is no longer updated (kept for a while for historical reasons).
+Check the FAQ on the SimGrid website for updated information about the
+tracing of simulations.
+==========================================================
+
              =======
 instrumented SimGrid
              =======
