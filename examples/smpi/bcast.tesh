@@ -8,6 +8,7 @@ $ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
+> [0.000000] [simix_network/INFO] Output message sizes to toto.txt
 > node 0 has value 17 before broadcast
 > node 1 has value 3 before broadcast
 > node 2 has value 3 before broadcast
@@ -27,6 +28,7 @@ $ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir
 > [rank 3] -> Ginette
 > [rank 4] -> Bourassa
 > [rank 5] -> Tremblay
+> [0.000000] [simix_network/INFO] Output message sizes to toto.txt
 > node 0 has value 17 before broadcast
 > node 1 has value 3 before broadcast
 > node 2 has value 3 before broadcast
@@ -57,6 +59,7 @@ $ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir
 > [rank 9] -> Bourassa
 > [rank 10] -> Tremblay
 > [rank 11] -> Jupiter
+> [0.000000] [simix_network/INFO] Output message sizes to toto.txt
 > node 0 has value 17 before broadcast
 > node 1 has value 3 before broadcast
 > node 2 has value 3 before broadcast
