@@ -282,24 +282,11 @@ static int Host_number(lua_State *L) {
   return 1;
 }
 
-static int Host_table(lua_State *L)
-{
-	// FIXME
-	int nb = MSG_get_host_number();
-    m_host_t *msg_hosts = MSG_get_host_table();
-    m_host_t *lua_hosts = (m_host_t*)lua_newuserdata(L,sizeof(m_host_t)*nb);
-    *lua_hosts = msg_hosts;
-
-    lua_newtable (L);
-    // TODO : fill the table <ith hosts
-    return 1;
-}
 
 static const luaL_reg Host_methods[] = {
     {"getByName",   Host_get_by_name},
     {"name",  		Host_get_name},
     {"number",    	Host_number},
-    {"list",    	Host_table},
     {0,0}
 };
 
