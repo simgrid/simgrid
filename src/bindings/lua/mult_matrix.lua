@@ -23,18 +23,12 @@ function Sender(...)
 	simgrid.info("Sending "..simgrid.Task.name(task).." to "..simgrid.Host.name(receiver));
 	simgrid.Task.send(task,rec_alias);
 	simgrid.info("Done Sending "..simgrid.Task.name(task));
-
-	-- receiving the results
-
-	r_mailbox= "Sender"
-	task = simgrid.Task.recv(r_mailbox);
-	mm = res_task['matrix_res']
+	mm = task['matrix_res']
 	simgrid.info("Receiving the Multiplication result of my two matrix :");
 	mprint(size,size,mm);
 
 end
 ------------------------------------------------------
-
 function Receiver(...)
 	
 	simgrid.info("Hello From Receiver")
@@ -47,9 +41,8 @@ function Receiver(...)
 	mm = mmult(task['size'],task['size'],task['matrix_1'],task['matrix_2']);
 	--mprint(task['size'],task['size'],mm)
 	task['matrix_res'] = mm;
-	simgrid.info("Calcul is done ... Sending the Result");
-	simgrid.Task.send(task,"Sender");
-	simgrid.info("Everything's Done ... see you!!");
+	simgrid.info("Calcul is done ... Bye");
+
 
 end
 -----------------------------------------------------
