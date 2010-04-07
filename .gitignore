@@ -41,7 +41,7 @@ _CPack_Packages/
 bibtex2html-1.02/
 
 examples/smpi/toto.txt
-
+src/gras_config.h.in
 tools/graspe_master
 examples/java/*/classnoinst.stamp
 ###
