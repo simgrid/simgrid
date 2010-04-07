@@ -552,11 +552,11 @@ unsigned int SIMIX_sem_acquire_any(xbt_dynar_t sems) {
     xbt_swag_insert(self, sem->sleeping);
   }
   SIMIX_process_yield();
+  self->sem = NULL;
   while (self->suspended)
     SIMIX_process_yield();
 
   /* one of the semaphore unsuspended us -- great, let's search which one (and get out of the others) */
-  self->sem = NULL;
   xbt_dynar_foreach(sems,counter,sem) {
     if (xbt_swag_belongs(self,sem->sleeping))
       xbt_swag_remove(self,sem->sleeping);

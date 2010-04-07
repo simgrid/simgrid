@@ -315,8 +315,8 @@ void SIMIX_process_suspend(smx_process_t process)
 
   if (process != SIMIX_process_self()) {
 
-    if (process->mutex) {
-      /* process blocked on a mutex, only set suspend=1 */
+    if (process->mutex || process->sem) {
+      /* process blocked on a mutex or sem, only set suspend=1 */
       process->suspended = 1;
     } else if (process->cond) {
       /* process blocked cond, suspend all actions */
@@ -369,8 +369,8 @@ void SIMIX_process_resume(smx_process_t process)
   if (process == SIMIX_process_self())
     return;
 
-  if (process->mutex) {
-    DEBUG0("Resume process blocked on a mutex");
+  if (process->mutex || process->sem) {
+    DEBUG0("Resume process blocked on a mutex or semaphore");
     process->suspended = 0;     /* It'll wake up by itself when mutex releases */
     return;
   } else if (process->cond) {
