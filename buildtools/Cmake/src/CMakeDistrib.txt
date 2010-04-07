@@ -45,16 +45,20 @@ set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 
 string(REPLACE ";" "\t" install_HEADERS "${install_HEADERS}")
 string(REPLACE ";" "\t" install_libs "${install_libs}")
+string(REPLACE "${PROJECT_DIRECTORY}/src/smpi" "${prefix}/bin" uninstall_bins "${install_bins}")
 string(REPLACE "${PROJECT_DIRECTORY}/src/.libs" "${prefix}/lib" uninstall_libs "${install_libs}")
 string(REPLACE "./" "${prefix}/" uninstall_HEADERS "${install_HEADERS}")
 
 add_custom_target(install-simgrid
 COMMAND mkdir -p ${prefix}
+COMMAND mkdir -p ${prefix}/bin
 COMMAND mkdir -p ${prefix}/lib
 COMMAND mkdir -p ${prefix}/include
 COMMAND mkdir -p ${prefix}/doc
 COMMAND mkdir -p ${prefix}/doc/simgrid
 COMMAND mkdir -p ${prefix}/doc/simgrid/html
+COMMAND cp ${install_bins} ${prefix}/bin
+COMMAND echo "install bin ok"
 COMMAND cp ${install_libs} ${prefix}/lib
 COMMAND echo "install lib ok"
 COMMAND cp -rf ${PROJECT_DIRECTORY}/doc/html/ ${prefix}/doc/simgrid
@@ -70,6 +74,8 @@ COMMAND rm -rf ${prefix}/doc/simgrid
 COMMAND echo "uninstall doc ok"
 COMMAND rm ${uninstall_libs}
 COMMAND echo "uninstall lib ok"
+COMMAND rm ${uninstall_bins}
+COMMAND echo "uninstall bin ok"
 COMMAND rm ${uninstall_HEADERS}
 COMMAND echo "uninstal include ok"
 COMMAND rm -R ${prefix}/include/amok ${prefix}/include/gras ${prefix}/include/instr ${prefix}/include/msg 

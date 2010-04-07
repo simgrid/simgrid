@@ -307,6 +307,11 @@ ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
 ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
 )
 
+set(install_bins
+${PROJECT_DIRECTORY}/src/smpi/smpicc
+${PROJECT_DIRECTORY}/src/smpi/smpirun
+)
+
 set(install_libs
 ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.*
 ${PROJECT_DIRECTORY}/src/.libs/libsimgrid_static.*
