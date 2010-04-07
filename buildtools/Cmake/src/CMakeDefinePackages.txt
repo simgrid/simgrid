@@ -313,12 +313,12 @@ ${PROJECT_DIRECTORY}/src/.libs/libsimgrid_static.*
 ${PROJECT_DIRECTORY}/src/.libs/libgras.*
 ${PROJECT_DIRECTORY}/src/.libs/libsmpi.*
 )
-if(HAVE_RUBY_H)
+if(HAVE_RUBY)
 	set(install_libs
 	${install_libs}
 	${PROJECT_DIRECTORY}/src/.libs/libsimgrid_ruby.*
 	)
-endif(HAVE_RUBY_H)
+endif(HAVE_RUBY)
 
 set(install_HEADERS
 ./include/gras.h 
@@ -517,17 +517,17 @@ else(${HAVE_JAVA})
 	)
 endif(${HAVE_JAVA})
 
-if(${HAVE_RUBY_H})
+if(${HAVE_RUBY})
 	set(simgrid_sources
 		${simgrid_sources}
 		${RUBY_SRC}
 	)
-else(${HAVE_RUBY_H})
+else(${HAVE_RUBY})
 	set(EXTRA_DIST
 		${EXTRA_DIST}
 		${RUBY_SRC}
 	)
-endif(${HAVE_RUBY_H})
+endif(${HAVE_RUBY})
 
 file(GLOB_RECURSE add_src_files
 "${PROJECT_DIRECTORY}/examples/*.c"

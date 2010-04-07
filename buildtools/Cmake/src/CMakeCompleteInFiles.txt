@@ -53,7 +53,7 @@ CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 
 set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
-SET(HAVE_RUBY_H 0)
+SET(HAVE_RUBY 0)
 set(libruby "ruby1.8")
 if(NOT disable_ruby)
 	include(FindRuby)
@@ -79,7 +79,7 @@ if(NOT disable_ruby)
 		
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${RUBY_INCLUDE_PATH} -fPIC ")
 		ADD_DEFINITIONS("-I${PROJECT_DIRECTORY}/src/bindings/ruby -I${PROJECT_DIRECTORY}/src/simix")
-		SET(HAVE_RUBY_H 1)
+		SET(HAVE_RUBY 1)
 	endif(RUBY_INCLUDE_PATH)
 endif(NOT disable_ruby)
 
