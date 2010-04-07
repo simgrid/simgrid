@@ -34,6 +34,8 @@ int trace_mask;
  */
 int TRACE_start_with_mask(const char *filename, int mask) {
   if (IS_TRACING) { /* what? trace is already active... ignore.. */
+	THROW0 (tracing_error, TRACE_ERROR_START,
+	        "TRACE_start called, but tracing is already active");
     return 0;
   }
 
