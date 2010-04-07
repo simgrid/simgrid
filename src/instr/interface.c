@@ -37,6 +37,12 @@ int TRACE_start_with_mask(const char *filename, int mask) {
     return 0;
   }
 
+  /* checking if the mask is good (only TRACE_PLATFORM for now) */
+  if (mask != TRACE_PLATFORM){
+    THROW0 (tracing_error, TRACE_ERROR_MASK,
+            "Only TRACE_PLATFORM mask is accepted for now");
+  }
+
   FILE *file = fopen(filename, "w");
   if (!file) {
     THROW1 (tracing_error, TRACE_ERROR_FILE_OPEN,
@@ -46,7 +52,7 @@ int TRACE_start_with_mask(const char *filename, int mask) {
   }
   TRACE_paje_create_header();
 
-  /* default trace is to trace only the platform */
+  /* setting the mask */
   trace_mask = mask;
 
   //check if options are correct
@@ -171,7 +177,11 @@ void TRACE_create_category (const char *category,
 
 void TRACE_set_mask (int mask)
 {
-  trace_mask = mask;
+  if (mask != TRACE_PLATFORM){
+     return;
+  }else{
+     trace_mask = mask;
+  }
 }
 
 #endif /* HAVE_TRACING */
