@@ -1676,6 +1676,133 @@ Possible models for the network are currently "Constant", "CM02",
 probably be added in the future and many of the previous ones are
 experimental and are likely to disappear without notice...
 
+\subsection faq_tracing Tracing Simulations for Visualization
+
+The trace visualization is widely used to observe and understand the behavior
+of parallel applications and distributed algorithms. Usually, this is done in a
+two-step fashion: the user instruments the application and the traces are
+analyzed after the end of the execution. The visualization itself can highlights
+unexpected behaviors, bottlenecks and sometimes can be used to correct
+distributed algorithms. The SimGrid team is currently instrumenting the library
+in order to let users trace their simulations and analyze them. This part of the
+user manual explains how the tracing-related features can be enabled and used
+during the development of simulators using the SimGrid library.
+
+\subsubsection faq_tracing_howitworks How it works
+
+For now, the SimGrid library is instrumented so users can trace the <b>platform
+utilization</b> using the MSG interface. This means that the tracing will
+register how much power is used for each host and how much bandwidth is used for
+each link of the platform. The idea with this type of tracing is to observe the
+overall view of resources utilization in the first place, especially the
+identification of bottlenecks, load-balancing among hosts, and so on.
+
+The idea of the instrumentation is to classify the MSG tasks by category,
+and trace
+the platform utilization (hosts and links) for each of the categories. For that,
+the tracing interface enables the declaration of categories and a function to
+mark a task with a previously declared category. <em>The tasks that are not
+classified according to a category are not traced</em>.
+
+\subsubsection faq_tracing_enabling Enabling using CMake
+
+With the sources of SimGrid, it is possible to enable the tracing 
+using the parameter <b>-Dtracing=on</b> when the cmake is executed.
+The section \ref faq_tracing_functions describes all the functions available
+when this Cmake options is activated. These functions will have no effect
+if SimGrid is configured without this option (they are wiped-out by the
+C-preprocessor).
+
+\verbatim
+$ cmake -Dtracing=on .
+$ make
+\endverbatim
+
+\subsubsection faq_tracing_functions Tracing Functions
+
+\subsubsubsection Mandatory Functions
+
+\li <b>\c TRACE_start (const char *filename)</b>: This is the first function to
+be called. It receives a single argument as parameter that contains the name of
+the file that will hold the trace in the end of the simulation. It returns 0 if
+everything was properly initialized, 1 otherwise. All trace functions called
+before TRACE_start do nothing.
+
+\li <b>\c TRACE_category (const char *category)</b>: This function should be used
+to define a user category. The category can be used to differentiate the tasks
+that are created during the simulation (for example, tasks from server1,
+server2, or request tasks, computation tasks, communication tasks).
+All resource utilization (host power and link bandwidth) will be
+classified according to the task category. Tasks that do not belong to a
+category are not traced.
+
+\li <b>\c TRACE_msg_set_task_category (m_task_t task, const char *category)</b>:
+This function should be called after the creation of a task, to define the
+category of that task. The first parameter \c task must contain a task that was
+created with the function \c MSG_task_create. The second parameter
+\c category must contain a category that was previously defined by the function
+\c TRACE_category.
+
+\li <b>\c TRACE_end ()</b>: This is the last function to be called. It closes
+the trace file and stops the tracing of the simulation. All tracing will be
+completely disabled after the calling this function. Although we recommend
+the use of this function somewhere in the end of program, it can be used
+anywhere in the code. This function returns 0 if everything is ok, 1 otherwise.
+
+\subsubsubsection Optional Functions
+
+\li <b>\c TRACE_host_variable_declare (const char *variable)</b>:
+Declare a user variable that will be associated to hosts. A variable can
+be used to trace user variables such as the number of tasks in a server,
+the number of clients in an application, and so on.
+
+\li <b>\c TRACE_host_variable_[set|add|sub] (const char *variable, double
+value)</b>:
+Set the value of a given user variable. It is important to remind that
+the value of this variable is always associated to the host. The host
+that will be used when these functions are called is the one returned by
+the function \c MSG_host_self().
+
+\subsubsection faq_tracing_functions Example
+
+A simplified example using the tracing mandatory functions.
+
+\verbatim
+int main (int argc, char **argv)
+{
+  TRACE_start ("traced_simulation.trace");
+  TRACE_category ("request");
+  TRACE_category ("computation");
+  TRACE_category ("finalize");
+  
+  MSG_global_init (&argc, &argv);
+
+  //(... after deployment ...)
+
+  m_task_t req1 = MSG_task_create("1st_request_task", 10, 10, NULL);
+  m_task_t req2 = MSG_task_create("2nd_request_task", 10, 10, NULL);
+  m_task_t req3 = MSG_task_create("3rd_request_task", 10, 10, NULL);
+  m_task_t req4 = MSG_task_create("4th_request_task", 10, 10, NULL);
+  TRACE_msg_set_task_category (req1, "request");
+  TRACE_msg_set_task_category (req2, "request");
+  TRACE_msg_set_task_category (req3, "request");
+  TRACE_msg_set_task_category (req4, "request");
+
+  m_task_t comp = MSG_task_create ("comp_task", 100, 100, NULL);
+  TRACE_msg_set_task_category (comp, "computation");
+
+  m_task_t finalize = MSG_task_create ("finalize", 0, 0, NULL);
+  TRACE_msg_set_task_category (finalize, "finalize");
+
+  //(...)
+
+  MSG_clean();
+ 
+  TRACE_end();
+  return 0;
+}
+\endverbatim
+
 \section faq_troubleshooting Troubleshooting
 
 \subsection faq_trouble_lib_compil SimGrid compilation and installation problems
