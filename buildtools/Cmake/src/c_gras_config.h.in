@@ -1,5 +1,5 @@
-//This document is maded by user
-//With Cmake it creates gras_config.h in <projectdirectory>/src
+// <root>/buildtools/Cmake/src/c_gras_config.h.in is user-written.
+// With Cmake it creates <root>/src/gras_config.h
 
 /* Define if building universal (internal helper macro) */
 #cmakedefine AC_APPLE_UNIVERSAL_BUILD @AC_APPLE_UNIVERSAL_BUILD@
@@ -89,6 +89,9 @@
 
 /* Define to 1 if you have the <jni.h> header file. */
 #cmakedefine HAVE_JNI_H @HAVE_JNI_H@
+
+/* defines whether Ruby bindings must be compiled or not */
+#cmakedefine HAVE_RUBY @HAVE_RUBY@
 
 /* defines whether Lua bindings must be compiled or not */
 #cmakedefine HAVE_LUA @HAVE_LUA@
