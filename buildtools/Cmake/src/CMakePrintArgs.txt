@@ -1,7 +1,7 @@
 exec_program("echo `${CMAKE_C_COMPILER} --version | grep -E [0-9].[0-9].[0-9]$`" OUTPUT_VARIABLE "COMPILER_C_VERSION")
 exec_program("echo `${CMAKE_CXX_COMPILER} --version | grep -E [0-9].[0-9].[0-9]$`" OUTPUT_VARIABLE "COMPILER_CXX_VERSION")
 
-if(print_message)
+if(enable_print_message)
 	message("")
 	message("________________________________________________________________________________")
 	message("________________________________________________________________________________ DEBUG")
@@ -75,7 +75,7 @@ if(print_message)
 	message("________________________________________________________________________________")
 	message("________________________________________________________________________________ DEBUG END")
 	message("")
-endif(print_message)
+endif(enable_print_message)
 
 message("\nConfiguration of package `simgrid' (revision ${SVN_VERSION}${GIT_VERSION}) on arch (=${GRAS_THISARCH}):")
 message("	     BUILDNAME : 	${BUILDNAME}")

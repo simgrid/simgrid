@@ -1,13 +1,13 @@
 ### Make Libs
 
-if(supernovae)
+if(enable_supernovae)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeSupernovae.txt)
-else(supernovae)	
+else(enable_supernovae)	
 	add_library(simgrid SHARED ${simgrid_sources})
 	add_library(simgrid_static STATIC ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
 	add_library(smpi STATIC ${SMPI_SRC})
-endif(supernovae)
+endif(enable_supernovae)
 
 set(GRAS_DEP "pthread")
 set(SIMGRID_DEP ${libruby})
