@@ -155,6 +155,23 @@ WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 
 add_custom_target(java-clean
 COMMAND rm -f src/simgrid.jar
+COMMAND rm -rf src/.classes
+COMMAND rm -f examples/java/basic/BasicTest.class
+COMMAND rm -f examples/java/basic/FinalizeTask.class
+COMMAND rm -f examples/java/basic/Forwarder.class
+COMMAND rm -f examples/java/basic/Master.class
+COMMAND rm -f examples/java/basic/Slave.class
+COMMAND rm -f examples/java/comm_time/CommTimeTest.class
+COMMAND rm -f examples/java/comm_time/FinalizeTask.class
+COMMAND rm -f examples/java/comm_time/Master.class
+COMMAND rm -f examples/java/comm_time/Slave.class
+COMMAND rm -f examples/java/ping_pong/PingPongTask.class
+COMMAND rm -f examples/java/ping_pong/PingPongTest.class
+COMMAND rm -f examples/java/ping_pong/Receiver.class
+COMMAND rm -f examples/java/ping_pong/Sender.class
+COMMAND rm -f examples/java/suspend/DreamMaster.class
+COMMAND rm -f examples/java/suspend/LazyGuy.class
+COMMAND rm -f examples/java/suspend/SuspendTest.class
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 
