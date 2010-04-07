@@ -468,7 +468,7 @@ src/gras/DataDesc/ddt_parse.yy.c
 /src/supernovae_smpi.c
 \endverbatim
 
-  \li enable_tracing : TODO by lucas
+  \li enable_tracing : To enable the generation of simulation traces for visualization
 
   \li enable_coverage : When set to true this option enable code coverage by setting -fprofile-arcs -ftest-coverage flags.
 

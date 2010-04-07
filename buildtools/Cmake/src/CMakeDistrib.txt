@@ -104,4 +104,66 @@ COMMAND rm -rf ${PROJECT_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 
+add_custom_target(maintainer-clean
+COMMAND rm -f src/config_unit.c
+COMMAND rm -f src/cunit_unit.c
+COMMAND rm -f src/dict_unit.c
+COMMAND rm -f src/dynar_unit.c
+COMMAND rm -f src/ex_unit.c
+COMMAND rm -f src/set_unit.c
+COMMAND rm -f src/simgrid_units_main.c
+COMMAND rm -f src/swag_unit.c
+COMMAND rm -f src/xbt_sha_unit.c
+COMMAND rm -f src/xbt_str_unit.c
+COMMAND rm -f src/xbt_strbuff_unit.c
+COMMAND rm -f src/xbt_synchro_unit.c
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
+
+add_custom_target(supernovae-clean
+COMMAND rm -f src/supernovae_gras.c
+COMMAND rm -f src/supernovae_sg.c
+COMMAND rm -f src/supernovae_smpi.c
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
+
+add_custom_target(doc-clean
+COMMAND rm -f doc/all_bib.html
+COMMAND rm -f doc/all_bib.latin1.html
+COMMAND rm -f doc/all_bib.latin1.html.tmp
+COMMAND rm -f doc/logcategories.sh
+COMMAND rm -f doc/publis_core.bib
+COMMAND rm -f doc/publis_core_bib.html
+COMMAND rm -f doc/publis_core_bib.latin1.html
+COMMAND rm -f doc/publis_core_bib.latin1.html.tmp
+COMMAND rm -f doc/publis_count.html
+COMMAND rm -f doc/publis_extern.bib
+COMMAND rm -f doc/publis_extern_bib.html
+COMMAND rm -f doc/publis_extern_bib.latin1.html
+COMMAND rm -f doc/publis_extern_bib.latin1.html.tmp
+COMMAND rm -f doc/publis_intra.bib
+COMMAND rm -f doc/publis_intra_bib.html
+COMMAND rm -f doc/publis_intra_bib.latin1.html
+COMMAND rm -f doc/publis_intra_bib.latin1.html.tmp
+COMMAND rm -f doc/tmp.realtoc
+COMMAND rm -f doc/using_bib.html
+COMMAND rm -f doc/using_bib.latin1.html
+COMMAND rm -f doc/using_bib.latin1.html.tmp
+COMMAND rm -f doc/realtoc.sh
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
+
+add_custom_target(java-clean
+COMMAND rm -f src/simgrid.jar
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
+
+add_custom_target(all-clean
+COMMAND make clean
+COMMAND make java-clean
+COMMAND make doc-clean
+COMMAND make supernovae-clean
+COMMAND make maintainer-clean
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
 include(CPack)

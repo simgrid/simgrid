@@ -408,7 +408,6 @@ set(SRC_TO_LOOK
 ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
 ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
 ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
-${PROJECT_DIRECTORY}/src/simgrid_units_main.c
 ${PROJECT_DIRECTORY}/examples/gras/ping/ping.xml
 ${PROJECT_DIRECTORY}/examples/gras/rpc/rpc.xml
 ${PROJECT_DIRECTORY}/examples/gras/spawn/spawn.xml

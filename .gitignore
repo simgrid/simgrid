@@ -26,16 +26,12 @@ config.log
 config.status
 Makefile.in
 
-src/*_unit.c
-src/supernovae_*.c
-src/simgrid_units_main.c
-src/gras_config.h.in
+buildtools/Cmake/src/tmp_gras_config.h.in
+buildtools/Cmake/src/tmp_tracing_config.h.in
 make_simgrid_java.sh
 
 testgraph.dot
 testgraph.xml
-buildtools/Cmake/src/tmp_gras_config.h.in
-buildtools/Cmake/src/tmp_tracing_config.h.in
 conftestval
 cmake_install.cmake
 CMakeFiles
@@ -43,28 +39,8 @@ install_manifest.txt
 _CPack_Packages/
 
 bibtex2html-1.02/
-doc/all_bib.html
-doc/all_bib.latin1.html
-doc/all_bib.latin1.html.tmp
-doc/logcategories.sh
-doc/publis_core.bib
-doc/publis_core_bib.html
-doc/publis_core_bib.latin1.html
-doc/publis_core_bib.latin1.html.tmp
-doc/publis_count.html
-doc/publis_extern.bib
-doc/publis_extern_bib.html
-doc/publis_extern_bib.latin1.html
-doc/publis_extern_bib.latin1.html.tmp
-doc/publis_intra.bib
-doc/publis_intra_bib.html
-doc/publis_intra_bib.latin1.html
-doc/publis_intra_bib.latin1.html.tmp
-doc/realtoc.sh
-doc/tmp.realtoc
-doc/using_bib.html
-doc/using_bib.latin1.html
-doc/using_bib.latin1.html.tmp
+
+examples/smpi/toto.txt
 
 tools/graspe_master
 examples/java/*/classnoinst.stamp
@@ -158,10 +134,8 @@ examples/smpi/alltoallv
 examples/smpi/sendrecv
 examples/smpi/smpi_sendrecv
 simgrid-*-svn/*
-src/.classes/*
 src/context_sysv_config.h
 src/gras_config.h
-src/simgrid.jar
 src/smpi/smpicc
 src/smpi/smpirun
 src/testall
