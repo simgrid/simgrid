@@ -33,6 +33,7 @@
 #define TRACE_ERROR_CATEGORY_ALREADY_DEFINED 301
 #define TRACE_ERROR_MASK 400
 #define TRACE_ERROR_FILE_OPEN 401
+#define TRACE_ERROR_START 500
 
 XBT_PUBLIC(int) TRACE_start_with_mask (const char *filename, int mask);
 XBT_PUBLIC(int) TRACE_end (void);

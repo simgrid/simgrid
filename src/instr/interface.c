@@ -30,7 +30,7 @@ int trace_mask;
  *
  * \param name of the file that will contain the traces
  * \param mask to take into account during trace
- * \return 1 if everything is ok, 0 otherwise
+ * \return 0 if everything is ok
  */
 int TRACE_start_with_mask(const char *filename, int mask) {
   if (IS_TRACING) { /* what? trace is already active... ignore.. */
@@ -47,7 +47,7 @@ int TRACE_start_with_mask(const char *filename, int mask) {
 
   FILE *file = fopen(filename, "w");
   if (!file) {
-    THROW1 (tracing_error, TRACE_ERROR_FILE_OPEN,
+    THROW1 (tracing_error, TRACE_ERROR_START,
     		"Tracefile %s could not be opened for writing.", filename);
   } else {
     TRACE_paje_start (file);
@@ -100,15 +100,15 @@ int TRACE_start_with_mask(const char *filename, int mask) {
   __TRACE_surf_init();
   __TRACE_msg_process_init ();
 
-  return 1;
+  return 0;
 }
 
 int TRACE_end() {
-  if (!IS_TRACING) return 0;
+  if (!IS_TRACING) return 1;
   __TRACE_surf_finalize();
   FILE *file = TRACE_paje_end();
   fclose (file);
-  return 1;
+  return 0;
 }
 
 void TRACE_category (const char *category)
