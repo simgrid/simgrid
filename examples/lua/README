@@ -1,0 +1,45 @@
+
+Examples containing in this directory
+
+===============================================================================
+* master_slave.lua           
+===============================================================================
+    - Description:
+    Simple master slave application
+
+    - Platform Files:
+    ../msg/small_platform.xml
+	
+    - Deployment Files:
+    ../ruby/deploy.xml
+
+    - Execute: 
+    (WARNING: the current directory must be examples/lua/)
+    lua master_slave.lua
+
+===============================================================================
+* mult_matrix.lua
+===============================================================================
+
+
+    - Description:
+    Simple example to demonstrate how 2 process could exchage data via a shared Task
+    in this example :
+	*Process Sender : Send two matrix with a fixed size to the 'Receiver' process
+	*Process Receiver : Receive the Matrix, make multiplication and put the result
+			    into the shared task that the Sender could read it .   
+    
+    - Platform Files:
+    ../ruby/quicksort_platform.xml    
+	
+    - Deployment Files:
+    ../ruby/quicksort_deployment.xml
+
+    - Execute: 
+    (WARNING: the current directory must be examples/lua/)
+    lua mult_matrix.lua
+	    
+================================================================================
+================================================================================
+
+
