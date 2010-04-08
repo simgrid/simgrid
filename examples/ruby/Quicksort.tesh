@@ -1,0 +1,12 @@
+#QuickSort Ruby Example
+$ ruby Quicksort.rb
+> [Inmos:Sender:(1) 0.000000] [ruby/INFO] Hello Bellevue !!, Please !! I need you to help me to sort my table , Here it is :
+> [1, -2, 45, 67, 87, 76, 89, 56, 78, 3, -4, 99]
+> [Bellevue:Receiver:(2) 0.000000] [ruby/INFO] Receiving Table from Inmos
+> [Bellevue:Receiver:(2) 0.030276] [ruby/INFO] Sort Done ... Sending Back the new table
+> [Inmos:Sender:(1) 0.060552] [ruby/INFO] Greate !! Thx !!
+> [Inmos:Sender:(1) 0.060552] [ruby/INFO] Here is my table after a quicksort :)
+> [-4, -2, 1, 3, 45, 56, 67, 76, 78, 87, 89, 99]
+> [Inmos:Sender:(1) 0.060552] [ruby/INFO] Bye Now :)
+> [Bellevue:Receiver:(2) 0.060552] [ruby/INFO] Bye lazy Boy!!
+> Simulation time : 0.0605519589327544

@@ -1,0 +1,58 @@
+
+Examples containing in this directory
+
+===============================================================================
+* MasterSlave.rb           
+===============================================================================
+    - Description:
+    Simple master slave application
+
+    - Platform Files:
+    platform.xml
+	
+    - Deployment Files:
+    deploy.xml
+
+    - Execute: 
+    (WARNING: the current directory must be examples/ruby/)
+    ruby MasterSlave.rb
+
+===============================================================================
+* PingPong.rb
+===============================================================================
+    - Description:
+    This is a stupid ping/pong example. The processes exchange a simple
+    task and time them
+    NB : in this example we inherit MSG::Task to make our PingPongTask with 
+	 our own methods 
+    
+    - Platform Files:
+    ping_pong_platform.xml    
+	
+    - Deployment Files:
+    ping_pong_deployment.xml
+
+    - Execute: 
+    (WARNING: the current directory must be examples/ruby/)
+    ruby PingPong.rb
+	    
+================================================================================
+* Quicksort.rb
+================================================================================
+    - Description:
+    simple example to show how to exchange data between two process (ruby)
+    in this example :
+	*Process Sender : send a task with a table , receive and print the result
+	*Process Receiver : receiving and sorting the 'Sender' table   
+    NB: in the example we use the methods MSG::Task.join(data) and MSG::Task.data() to exchange data
+
+    - Platform Files:
+    quicksort_platform.xml    
+	
+    - Deployment Files:
+    quicksort_deployment.xml
+
+    - Execute: 
+    (WARNING: the current directory must be examples/ruby/)
+    ruby Quicksort.rb
+	

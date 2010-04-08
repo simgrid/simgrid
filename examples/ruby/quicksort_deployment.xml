@@ -1,0 +1,14 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <process host="Inmos" function="Sender">
+      <argument value ="Bellevue"/>
+      <argument value="5000000"/>
+      <argument value="100000"/>
+      <argument value="Receiver"/> <!--will be used as a mailbox alias-->
+  </process>
+  <process host="Bellevue" function="Receiver">
+  	  <argument value="Inmos"/>
+ 	  <argument value="Sender"/> <!--will be used as a mailbox alias-->
+  </process>
+</platform>

@@ -1,0 +1,13 @@
+#PingPong Example
+$ ruby PingPong.rb
+> [Inmos:Sender:(1) 0.000000] [ruby/INFO] Hello from Sender
+> [Inmos:Sender:(1) 0.000000] [ruby/INFO] Host count :1
+> [Inmos:Sender:(1) 0.000000] [ruby/INFO] sender time :0.0
+> [Inmos:Sender:(1) 0.000000] [ruby/INFO] task created :PingTask
+> [Bellevue:Receiver:(2) 0.000000] [ruby/INFO] Hello from Receiver
+> [Inmos:Sender:(1) 0.015501] [ruby/INFO] Bye!!
+> [Bellevue:Receiver:(2) 0.015501] [ruby/INFO] Got at time: 0.0155013008533275
+> [Bellevue:Receiver:(2) 0.015501] [ruby/INFO] Was sent at time 0.0
+> [Bellevue:Receiver:(2) 0.015501] [ruby/INFO] Communication Time: 0.0155013008533275
+> [Bellevue:Receiver:(2) 0.015501] [ruby/INFO] --- bw 6451071490.46357 ----
+> [Bellevue:Receiver:(2) 0.015501] [ruby/INFO] Bye!!
