@@ -220,7 +220,7 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
        it will be restarted when the sender process resume */
     if(SIMIX_process_is_suspended(comm->src_proc) || 
        SIMIX_process_is_suspended(comm->dst_proc)) {
-      SIMIX_action_set_priority(comm->act, 0);
+      SIMIX_action_suspend(comm->act);
     }
     
     /* Add the communication as user data of the action */

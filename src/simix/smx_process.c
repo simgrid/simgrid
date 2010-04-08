@@ -315,7 +315,7 @@ void SIMIX_process_suspend(smx_process_t process)
 
   if (process != SIMIX_process_self()) {
 
-    if (process->mutex || process->sem) {
+    if (process->mutex) {
       /* process blocked on a mutex or sem, only set suspend=1 */
       process->suspended = 1;
     } else if (process->cond) {
@@ -329,7 +329,17 @@ void SIMIX_process_suspend(smx_process_t process)
       process->suspended = 1;
       c = process->cond;
       xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-        surf_workstation_model->suspend(act->surf_action);
+        SIMIX_action_suspend(act);
+      }
+    } else if (process->sem) {
+      smx_cond_t s;
+      xbt_fifo_item_t i;
+      smx_action_t act;
+
+      process->suspended = 1;
+      s = process->sem;
+      xbt_fifo_foreach(s->actions, i, act, smx_action_t) {
+        SIMIX_action_suspend(act);
       }
     } else {
       process->suspended = 1;
@@ -344,7 +354,7 @@ void SIMIX_process_suspend(smx_process_t process)
     cond = SIMIX_cond_init();
     dummy = SIMIX_action_execute(SIMIX_process_get_host(process), name, 0);
     SIMIX_process_self()->waiting_action = dummy;
-    surf_workstation_model->suspend(dummy->surf_action);
+    SIMIX_action_suspend(dummy);
     SIMIX_register_action_to_condition(dummy, cond);
     __SIMIX_cond_wait(cond);
     SIMIX_process_self()->waiting_action = NULL;
@@ -369,7 +379,7 @@ void SIMIX_process_resume(smx_process_t process)
   if (process == SIMIX_process_self())
     return;
 
-  if (process->mutex || process->sem) {
+  if (process->mutex) {
     DEBUG0("Resume process blocked on a mutex or semaphore");
     process->suspended = 0;     /* It'll wake up by itself when mutex releases */
     return;
@@ -382,9 +392,21 @@ void SIMIX_process_resume(smx_process_t process)
     process->suspended = 0;
     c = process->cond;
     xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-      surf_workstation_model->resume(act->surf_action);
+      SIMIX_action_resume(act);
     }
     SIMIX_cond_signal(c);
+    return;
+  } else if (process->sem) {
+    /* temporaries variables */
+    smx_sem_t s;
+    xbt_fifo_item_t i;
+    smx_action_t act;
+    DEBUG0("Resume process blocked on a semaphore");
+    process->suspended = 0;
+    s = process->sem;
+    xbt_fifo_foreach(s->actions, i, act, smx_action_t) {
+      SIMIX_action_resume(act);
+    }
     return;
   } else {
     process->suspended = 0;
