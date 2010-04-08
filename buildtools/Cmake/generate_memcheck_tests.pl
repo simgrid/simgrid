@@ -51,8 +51,8 @@ while(defined($line=<MAKETEST>)) {
 			$command =~ s/ \$@ //g;
 			$path =~ s/\${PROJECT_DIRECTORY}/~\/Developments\/simgrid/g;
 			#$command =~ s/\${PROJECT_DIRECTORY}/~\/Developments\/simgrid/g;	
-			print "ADD_TEST(memcheck-$name_test-$count \/bin\/sh -c \"cd $path\/ \&\& $command\")\n";
-			push @test_list, "memcheck-$name_test-$count";
+			print "ADD_TEST(memcheck-$name_test-$count $command --cd $path\/)\n";
+			#push @test_list, "memcheck-$name_test-$count";
 			$count++;
 		    }
 		    if($l =~ /^\& (.*)$/) {
@@ -70,6 +70,6 @@ while(defined($line=<MAKETEST>)) {
 }
 close(MAKETEST);
 
-print "set(MEMCHECK_LIST\n";
-print (join("\n", @test_list));
-print ")\n";
+#print "set(MEMCHECK_LIST\n";
+#print (join("\n", @test_list));
+#print ")\n";

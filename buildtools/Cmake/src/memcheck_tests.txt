@@ -1,358 +1,196 @@
 
 # teshsuite/xbt
-ADD_TEST(memcheck-tesh-log-large-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && xbt/log_large_test --log=root.fmt:%m%n")
-ADD_TEST(memcheck-tesh-log-large-1 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && xbt/log_large_test --log=root.fmt:%m%n ")
-ADD_TEST(memcheck-tesh-log-parallel-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && xbt/parallel_log_crashtest --log=root.fmt:%m%n ")
+ADD_TEST(memcheck-tesh-log-large-0 xbt/log_large_test --log=root.fmt:%m%n --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-log-large-1 xbt/log_large_test --log=root.fmt:%m%n  --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-log-parallel-0 xbt/parallel_log_crashtest --log=root.fmt:%m%n  --cd ~/Developments/simgrid/teshsuite/)
 
 # teshsuite/gras/datadesc directory
-ADD_TEST(memcheck-tesh-gras-dd-mem-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/datadesc/datadesc_usage --copy --log=root.fmt:%m%n")
-ADD_TEST(memcheck-tesh-gras-dd-rw-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && rm -f datadesc_usage.out")
-ADD_TEST(memcheck-tesh-gras-dd-rw-1 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/datadesc/datadesc_usage --write --log=root.fmt:%m%n")
-ADD_TEST(memcheck-tesh-gras-dd-rw-2 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/datadesc/datadesc_usage --read --log=root.fmt:%m%n")
-ADD_TEST(memcheck-tesh-gras-dd-r_little32_4-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.little32_4 --log=root.fmt:%m%n")
-ADD_TEST(memcheck-tesh-gras-dd-r_little64-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.little64 --log=root.fmt:%m%n")
-ADD_TEST(memcheck-tesh-gras-dd-r_big32_8_4-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.big32_8_4 --log=root.fmt:%m%n")
-ADD_TEST(memcheck-tesh-gras-dd-r_big32_8-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.big32_8 --log=root.fmt:%m%n")
-ADD_TEST(memcheck-tesh-gras-dd-r_big32_2-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.big32_2 --log=root.fmt:%m%n")
+ADD_TEST(memcheck-tesh-gras-dd-mem-0 gras/datadesc/datadesc_usage --copy --log=root.fmt:%m%n --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-gras-dd-rw-0 rm -f datadesc_usage.out --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-gras-dd-rw-1 gras/datadesc/datadesc_usage --write --log=root.fmt:%m%n --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-gras-dd-rw-2 gras/datadesc/datadesc_usage --read --log=root.fmt:%m%n --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-gras-dd-r_little32_4-0 gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.little32_4 --log=root.fmt:%m%n --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-gras-dd-r_little64-0 gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.little64 --log=root.fmt:%m%n --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-gras-dd-r_big32_8_4-0 gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.big32_8_4 --log=root.fmt:%m%n --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-gras-dd-r_big32_8-0 gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.big32_8 --log=root.fmt:%m%n --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-gras-dd-r_big32_2-0 gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.big32_2 --log=root.fmt:%m%n --cd ~/Developments/simgrid/teshsuite/)
 
 IF(${ARCH_32_BITS})
-ADD_TEST(memcheck-tesh-gras-msg_handle-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/msg_handle/msg_handle_simulator ./../examples/msg/small_platform.xml ./gras/msg_handle/msg_handle.xml")
+ADD_TEST(memcheck-tesh-gras-msg_handle-sg-32-0 gras/msg_handle/msg_handle_simulator ./../examples/msg/small_platform.xml ./gras/msg_handle/msg_handle.xml --cd ~/Developments/simgrid/teshsuite/)
 ELSE(${ARCH_32_BITS})
-ADD_TEST(memcheck-tesh-gras-msg_handle-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && gras/msg_handle/msg_handle_simulator ./../examples/msg/small_platform.xml ./gras/msg_handle/msg_handle.xml")
+ADD_TEST(memcheck-tesh-gras-msg_handle-sg-64-0 gras/msg_handle/msg_handle_simulator ./../examples/msg/small_platform.xml ./gras/msg_handle/msg_handle.xml --cd ~/Developments/simgrid/teshsuite/)
 ENDIF(${ARCH_32_BITS})
 
-ADD_TEST(memcheck-tesh-gras-empty_main-sg-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./gras/empty_main/empty_main_simulator ./../examples/msg/small_platform.xml ./gras/empty_main/empty_main.xml")
+ADD_TEST(memcheck-tesh-gras-empty_main-sg-0 ./gras/empty_main/empty_main_simulator ./../examples/msg/small_platform.xml ./gras/empty_main/empty_main.xml --cd ~/Developments/simgrid/teshsuite/)
 
 IF(${ARCH_32_BITS})
-ADD_TEST(memcheck-tesh-gras-small_sleep-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./gras/small_sleep/small_sleep_simulator ./../examples/msg/small_platform.xml ./gras/small_sleep/small_sleep.xml")
+ADD_TEST(memcheck-tesh-gras-small_sleep-sg-32-0 ./gras/small_sleep/small_sleep_simulator ./../examples/msg/small_platform.xml ./gras/small_sleep/small_sleep.xml --cd ~/Developments/simgrid/teshsuite/)
 ELSE(${ARCH_32_BITS})
-ADD_TEST(memcheck-tesh-gras-small_sleep-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./gras/small_sleep/small_sleep_simulator ./../examples/msg/small_platform.xml ./gras/small_sleep/small_sleep.xml")
+ADD_TEST(memcheck-tesh-gras-small_sleep-sg-64-0 ./gras/small_sleep/small_sleep_simulator ./../examples/msg/small_platform.xml ./gras/small_sleep/small_sleep.xml --cd ~/Developments/simgrid/teshsuite/)
 ENDIF(${ARCH_32_BITS})
 
-ADD_TEST(memcheck-tesh-simdag-reinit_costs-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/test_reinit_costs ./simdag/network/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-parser-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster_foreach.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-1 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster_one_host_random.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-2 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster_one_host.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-3 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster_properties_foreach.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-4 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-5 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_availability.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-6 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_properties.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-7 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_state_file.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-8 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_state_off.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-9 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_state_on.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-10 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_trace_inside.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-11 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-12 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_link_availability.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-13 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_link_fatpipe.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-14 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_link_shared.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-15 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_link_state_file.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-16 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms three_hosts_non_symmetric_route.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-17 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms two_clusters_symmetric.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-18 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms two_clusters.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-19 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms two_hosts_multi_hop.xml")
-ADD_TEST(memcheck-tesh-simdag-parser-20 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms two_hosts_one_link.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-1 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && false")
-ADD_TEST(memcheck-tesh-simdag-flatifier-2 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_foreach.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-3 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_one_host_random.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-4 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_one_host.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-5 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_properties_foreach.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-6 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_properties_override.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-7 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_availability.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-8 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_properties.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-9 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_state_file.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-10 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_state_off.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-11 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_state_on.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-12 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_trace_file.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-13 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_trace_inside.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-14 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-15 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_link_availability.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-16 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_link_fatpipe.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-17 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_link_shared.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-18 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_link_state_file.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-19 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ route_override.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-20 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ three_hosts_non_symmetric_route.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-21 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ two_clusters_symmetric.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-22 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ two_clusters.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-23 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ two_hosts_multi_hop.xml")
-ADD_TEST(memcheck-tesh-simdag-flatifier-24 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ two_hosts_one_link.xml")
-ADD_TEST(memcheck-tesh-simdag-basic0-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/basic0 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src")
-ADD_TEST(memcheck-tesh-simdag-basic1-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/basic1 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src")
-ADD_TEST(memcheck-tesh-simdag-basic2-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/basic2 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src")
-ADD_TEST(memcheck-tesh-simdag-basic3-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/basic3 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src")
-ADD_TEST(memcheck-tesh-simdag-basic4-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/basic4 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src")
-ADD_TEST(memcheck-tesh-simdag-basic5-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/basic5 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src")
-ADD_TEST(memcheck-tesh-simdag-basic6-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/basic6 ./simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src")
-ADD_TEST(memcheck-tesh-simdag-p2p-1-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency1 ./simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-p2p-1-1 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency1 ./simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-p2p-1-2 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency1 ./simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-p2p-2-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency2 ./simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-p2p-2-1 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency2 ./simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-p2p-2-2 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency2 ./simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-p2p-3-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency3 ./simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-p2p-3-1 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency3 ./simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-p2p-3-2 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency3 ./simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-p2p-3-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/p2p/test_latency_bound ./simdag/network/p2p/platform_2p_1bb.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-mxn-1-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/mxn/test_intra_all2all ./simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-mxn-2-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/mxn/test_intra_independent_comm ./simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-mxn-3-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/network/mxn/test_intra_scatter ./simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-par-1-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/partask/test_comp_only_seq ./simdag/partask/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-par-2-0 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/partask/test_comp_only_par ./simdag/partask/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
-ADD_TEST(memcheck-tesh-simdag-par-2-1 /bin/sh -c "cd ~/Developments/simgrid/teshsuite/ && simdag/partask/test_comp_only_par ./simdag/partask/platform_2p_1sl_hetero.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning")
+ADD_TEST(memcheck-tesh-simdag-reinit_costs-0 simdag/network/test_reinit_costs ./simdag/network/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-0 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster_foreach.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-1 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster_one_host_random.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-2 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster_one_host.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-3 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster_properties_foreach.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-4 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_cluster.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-5 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_availability.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-6 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_properties.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-7 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_state_file.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-8 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_state_off.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-9 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_state_on.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-10 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host_trace_inside.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-11 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_host.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-12 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_link_availability.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-13 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_link_fatpipe.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-14 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_link_shared.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-15 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms one_link_state_file.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-16 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms three_hosts_non_symmetric_route.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-17 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms two_clusters_symmetric.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-18 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms two_clusters.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-19 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms two_hosts_multi_hop.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-parser-20 simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:./simdag/platforms two_hosts_one_link.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-0 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-1 false --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-2 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_foreach.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-3 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_one_host_random.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-4 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_one_host.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-5 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_properties_foreach.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-6 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_cluster_properties_override.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-7 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_availability.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-8 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_properties.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-9 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_state_file.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-10 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_state_off.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-11 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_state_on.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-12 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_trace_file.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-13 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host_trace_inside.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-14 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_host.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-15 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_link_availability.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-16 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_link_fatpipe.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-17 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_link_shared.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-18 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ one_link_state_file.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-19 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ route_override.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-20 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ three_hosts_non_symmetric_route.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-21 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ two_clusters_symmetric.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-22 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ two_clusters.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-23 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ two_hosts_multi_hop.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-flatifier-24 ./simdag/platforms/flatifier --cfg=path:./simdag/platforms/ two_hosts_one_link.xml --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-basic0-0 simdag/basic0 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-basic1-0 simdag/basic1 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-basic2-0 simdag/basic2 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-basic3-0 simdag/basic3 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-basic4-0 simdag/basic4 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-basic5-0 simdag/basic5 ./simdag/basic_platform.xml --surf-path=${PROJECT_DIRECTORY}/src --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-basic6-0 simdag/basic6 ./simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-1-0 simdag/network/p2p/test_latency1 ./simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-1-1 simdag/network/p2p/test_latency1 ./simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-1-2 simdag/network/p2p/test_latency1 ./simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-2-0 simdag/network/p2p/test_latency2 ./simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-2-1 simdag/network/p2p/test_latency2 ./simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-2-2 simdag/network/p2p/test_latency2 ./simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-3-0 simdag/network/p2p/test_latency3 ./simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-3-1 simdag/network/p2p/test_latency3 ./simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-3-2 simdag/network/p2p/test_latency3 ./simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-3-0 simdag/network/p2p/test_latency_bound ./simdag/network/p2p/platform_2p_1bb.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-mxn-1-0 simdag/network/mxn/test_intra_all2all ./simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-mxn-2-0 simdag/network/mxn/test_intra_independent_comm ./simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-mxn-3-0 simdag/network/mxn/test_intra_scatter ./simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-par-1-0 simdag/partask/test_comp_only_seq ./simdag/partask/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-par-2-0 simdag/partask/test_comp_only_par ./simdag/partask/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-par-2-1 simdag/partask/test_comp_only_par ./simdag/partask/platform_2p_1sl_hetero.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ~/Developments/simgrid/teshsuite/)
 
 # GRAS examples
-ADD_TEST(memcheck-gras-spawn-rl-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/spawn/ && ./spawn_father 4002 5 --log=root.fmt=%m%n")
-ADD_TEST(memcheck-gras-timer-rl-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/timer/ && ./timer_client --log=root.fmt:%m%n")
-ADD_TEST(memcheck-gras-chrono-rl-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/chrono/ && ./chrono_multiplier --log=root.fmt:%m%n")
-ADD_TEST(memcheck-gras-synchro-rl-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/synchro/ && ./synchro_philosopher 4 --log=root.fmt=%m%n")
-ADD_TEST(memcheck-gras-properties-rl-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/properties/ && ./properties_alice --log=root.fmt=%P:%t%e%m%n")
-ADD_TEST(memcheck-gras-properties-rl-1 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/properties/ && ./properties_bob --log=root.fmt=%P:%t%e%m%n")
+ADD_TEST(memcheck-gras-spawn-rl-0 ./spawn_father 4602 5 --log=root.fmt=%m%n --cd ~/Developments/simgrid/examples/gras/spawn/)
+ADD_TEST(memcheck-gras-timer-rl-0 ./timer_client --log=root.fmt:%m%n --cd ~/Developments/simgrid/examples/gras/timer/)
+ADD_TEST(memcheck-gras-chrono-rl-0 ./chrono_multiplier --log=root.fmt:%m%n --cd ~/Developments/simgrid/examples/gras/chrono/)
+ADD_TEST(memcheck-gras-synchro-rl-0 ./synchro_philosopher 4 --log=root.fmt=%m%n --cd ~/Developments/simgrid/examples/gras/synchro/)
+ADD_TEST(memcheck-gras-properties-rl-0 ./properties_alice --log=root.fmt=%P:%t%e%m%n --cd ~/Developments/simgrid/examples/gras/properties/)
+ADD_TEST(memcheck-gras-properties-rl-1 ./properties_bob --log=root.fmt=%P:%t%e%m%n --cd ~/Developments/simgrid/examples/gras/properties/)
 
 # MSG examples
-ADD_TEST(memcheck-msg-sendrecv_CLM03-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && sendrecv/sendrecv ./sendrecv/platform_sendrecv.xml ./sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03 --cfg=cpu/model:Cas01 --cfg=network/model:CM02")
-ADD_TEST(memcheck-msg-sendrecv_Vegas-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && sendrecv/sendrecv ./sendrecv/platform_sendrecv.xml ./sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Vegas"")
-ADD_TEST(memcheck-msg-sendrecv_Reno-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && sendrecv/sendrecv ./sendrecv/platform_sendrecv.xml ./sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Reno" --log=surf_lagrange.thres=critical")
-ADD_TEST(memcheck-msg-suspend-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && suspend/suspend ./msg_platform.xml ./suspend/deployment_suspend.xml ")
-ADD_TEST(memcheck-msg-masterslave-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && masterslave/masterslave_forwarder ./small_platform.xml ./masterslave/deployment_masterslave.xml")
-ADD_TEST(memcheck-msg-masterslave-forwarder-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && masterslave/masterslave_forwarder ./msg_platform.xml ./masterslave/deployment_masterslave_forwarder.xml ")
-ADD_TEST(memcheck-msg-masterslave-failure-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ./small_platform_with_failures.xml ./masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src")
-ADD_TEST(memcheck-msg-masterslave-bypass-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && masterslave/masterslave_bypass --log=no_loc ")
-ADD_TEST(memcheck-msg-migration-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && migration/migration ./msg_platform.xml ./migration/migration.deploy ")
-ADD_TEST(memcheck-msg-ptask-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && parallel_task/parallel_task ./small_platform.xml")
-ADD_TEST(memcheck-msg-ptask-1 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && parallel_task/test_ptask ./parallel_task/test_ptask_platform.xml ./parallel_task/test_ptask_deployment.xml")
-ADD_TEST(memcheck-msg-priority-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && priority/priority ./small_platform.xml  ./priority/deployment_priority.xml")
-ADD_TEST(memcheck-msg-properties-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && properties/msg_prop ./../platforms/prop.xml ./properties/deployment_properties.xml ")
-ADD_TEST(memcheck-msg-trace-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test1.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-1 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-2 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test3.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-3 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test4.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-4 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test5.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-5 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test6.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-6 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test7.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-7 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test8.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-8 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test9.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-9 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test10.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-trace-10 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && trace/test_trace_integration ./trace/test11.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-masterslave_cpu_ti-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && masterslave/masterslave_forwarder ./small_platform.xml ./masterslave/deployment_masterslave.xml --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-masterslave_cpu_ti-1 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && masterslave/masterslave_forwarder ./msg_platform.xml ./masterslave/deployment_masterslave_forwarder.xml --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-masterslave_cpu_ti-2 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ./small_platform_with_failures.xml ./masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src --cfg=cpu/model:CpuTI")
-ADD_TEST(memcheck-msg-masterslave_cpu_ti-3 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && masterslave/masterslave_bypass --log=no_loc --cfg=cpu/model:CpuTI")
+ADD_TEST(memcheck-msg-sendrecv_CLM03-0 sendrecv/sendrecv ./sendrecv/platform_sendrecv.xml ./sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03 --cfg=cpu/model:Cas01 --cfg=network/model:CM02 --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-sendrecv_Vegas-0 sendrecv/sendrecv ./sendrecv/platform_sendrecv.xml ./sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Vegas" --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-sendrecv_Reno-0 sendrecv/sendrecv ./sendrecv/platform_sendrecv.xml ./sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Reno" --log=surf_lagrange.thres=critical --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-suspend-0 suspend/suspend ./msg_platform.xml ./suspend/deployment_suspend.xml  --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave-0 masterslave/masterslave_forwarder ./small_platform.xml ./masterslave/deployment_masterslave.xml --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave-forwarder-0 masterslave/masterslave_forwarder ./msg_platform.xml ./masterslave/deployment_masterslave_forwarder.xml  --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave-failure-0 masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ./small_platform_with_failures.xml ./masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave-bypass-0 masterslave/masterslave_bypass --log=no_loc  --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-migration-0 migration/migration ./msg_platform.xml ./migration/migration.deploy  --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-ptask-0 parallel_task/parallel_task ./small_platform.xml --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-ptask-1 parallel_task/test_ptask ./parallel_task/test_ptask_platform.xml ./parallel_task/test_ptask_deployment.xml --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-priority-0 priority/priority ./small_platform.xml  ./priority/deployment_priority.xml --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-properties-0 properties/msg_prop ./../platforms/prop.xml ./properties/deployment_properties.xml  --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-0 trace/test_trace_integration ./trace/test1.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-1 trace/test_trace_integration ./trace/test2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-2 trace/test_trace_integration ./trace/test3.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-3 trace/test_trace_integration ./trace/test4.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-4 trace/test_trace_integration ./trace/test5.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-5 trace/test_trace_integration ./trace/test6.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-6 trace/test_trace_integration ./trace/test7.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-7 trace/test_trace_integration ./trace/test8.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-8 trace/test_trace_integration ./trace/test9.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-9 trace/test_trace_integration ./trace/test10.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-trace-10 trace/test_trace_integration ./trace/test11.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave_cpu_ti-0 masterslave/masterslave_forwarder ./small_platform.xml ./masterslave/deployment_masterslave.xml --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave_cpu_ti-1 masterslave/masterslave_forwarder ./msg_platform.xml ./masterslave/deployment_masterslave_forwarder.xml --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave_cpu_ti-2 masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ./small_platform_with_failures.xml ./masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave_cpu_ti-3 masterslave/masterslave_bypass --log=no_loc --cfg=cpu/model:CpuTI --cd ~/Developments/simgrid/examples/msg/)
 
 IF(${ARCH_32_BITS})
-ADD_TEST(memcheck-gras-ping-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/ping/ && ./ping_simulator ./../../msg/small_platform.xml ./ping.xml")
-ADD_TEST(memcheck-gras-rpc-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/rpc/ && ./rpc_simulator ./../../msg/small_platform.xml ./rpc.xml --log=root.fmt:"'[%h:%P:(%i)] [%c/%p] %m%n'"")
-ADD_TEST(memcheck-gras-spawn-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/spawn/ && ./spawn_simulator ./../../msg/small_platform.xml ./spawn.xml")
-ADD_TEST(memcheck-gras-timer-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/timer/ && ./timer_simulator ./../../msg/small_platform.xml ./timer.xml")
-ADD_TEST(memcheck-gras-chrono-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/chrono/ && ./chrono_simulator ./../../msg/small_platform.xml ./chrono.xml")
-ADD_TEST(memcheck-gras-simple_token-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/mutual_exclusion/simple_token/ && ./simple_token_simulator ./../../../msg/small_platform.xml ./simple_token.xml ")
-ADD_TEST(memcheck-gras-mmrpc-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/mmrpc/ && ./mmrpc_simulator ./../../msg/small_platform.xml ./mmrpc.xml")
-ADD_TEST(memcheck-gras-all2all-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/all2all/ && ./all2all_simulator ./../../msg/small_platform.xml ./all2all.xml")
-ADD_TEST(memcheck-gras-pmm-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/pmm/ && ./pmm_simulator ./../../msg/msg_platform.xml ./pmm.xml")
-ADD_TEST(memcheck-gras-synchro-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/synchro/ && ./synchro_simulator ./../../msg/small_platform.xml ./synchro.xml")
+ADD_TEST(memcheck-gras-ping-sg-32-0 ./ping_simulator ./../../msg/small_platform.xml ./ping.xml --cd ~/Developments/simgrid/examples/gras/ping/)
+ADD_TEST(memcheck-gras-rpc-sg-32-0 ./rpc_simulator ./../../msg/small_platform.xml ./rpc.xml --log=root.fmt:"'[%h:%P:(%i)] [%c/%p] %m%n'" --cd ~/Developments/simgrid/examples/gras/rpc/)
+ADD_TEST(memcheck-gras-spawn-sg-32-0 ./spawn_simulator ./../../msg/small_platform.xml ./spawn.xml --cd ~/Developments/simgrid/examples/gras/spawn/)
+ADD_TEST(memcheck-gras-timer-sg-32-0 ./timer_simulator ./../../msg/small_platform.xml ./timer.xml --cd ~/Developments/simgrid/examples/gras/timer/)
+ADD_TEST(memcheck-gras-chrono-sg-32-0 ./chrono_simulator ./../../msg/small_platform.xml ./chrono.xml --cd ~/Developments/simgrid/examples/gras/chrono/)
+ADD_TEST(memcheck-gras-simple_token-sg-32-0 ./simple_token_simulator ./../../../msg/small_platform.xml ./simple_token.xml  --cd ~/Developments/simgrid/examples/gras/mutual_exclusion/simple_token/)
+ADD_TEST(memcheck-gras-mmrpc-sg-32-0 ./mmrpc_simulator ./../../msg/small_platform.xml ./mmrpc.xml --cd ~/Developments/simgrid/examples/gras/mmrpc/)
+ADD_TEST(memcheck-gras-all2all-sg-32-0 ./all2all_simulator ./../../msg/small_platform.xml ./all2all.xml --cd ~/Developments/simgrid/examples/gras/all2all/)
+ADD_TEST(memcheck-gras-pmm-sg-32-0 ./pmm_simulator ./../../msg/msg_platform.xml ./pmm.xml --cd ~/Developments/simgrid/examples/gras/pmm/)
+ADD_TEST(memcheck-gras-synchro-sg-32-0 ./synchro_simulator ./../../msg/small_platform.xml ./synchro.xml --cd ~/Developments/simgrid/examples/gras/synchro/)
 ELSE(${ARCH_32_BITS})
-ADD_TEST(memcheck-gras-ping-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/ping/ && ./ping_simulator ./../../msg/small_platform.xml ./ping.xml")
-ADD_TEST(memcheck-gras-rpc-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/rpc/ && ./rpc_simulator ./../../msg/small_platform.xml ./rpc.xml --log=root.fmt:"'[%h:%P:(%i)] [%c/%p] %m%n'"")
-ADD_TEST(memcheck-gras-spawn-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/spawn/ && ./spawn_simulator ./../../msg/small_platform.xml ./spawn.xml")
-ADD_TEST(memcheck-gras-timer-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/timer/ && ./timer_simulator ./../../msg/small_platform.xml ./timer.xml")
-ADD_TEST(memcheck-gras-chrono-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/chrono/ && ./chrono_simulator ./../../msg/small_platform.xml ./chrono.xml")
-ADD_TEST(memcheck-gras-simple_token-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/mutual_exclusion/simple_token/ && ./simple_token_simulator ./../../../msg/small_platform.xml ./simple_token.xml ")
-ADD_TEST(memcheck-gras-mmrpc-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/mmrpc/ && ./mmrpc_simulator ./../../msg/small_platform.xml ./mmrpc.xml")
-ADD_TEST(memcheck-gras-all2all-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/all2all/ && ./all2all_simulator ./../../msg/small_platform.xml ./all2all.xml")
-ADD_TEST(memcheck-gras-pmm-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/pmm/ && ./pmm_simulator ./../../msg/msg_platform.xml ./pmm.xml")
-ADD_TEST(memcheck-gras-synchro-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/synchro/ && ./synchro_simulator ./../../msg/small_platform.xml ./synchro.xml")
+ADD_TEST(memcheck-gras-ping-sg-64-0 ./ping_simulator ./../../msg/small_platform.xml ./ping.xml --cd ~/Developments/simgrid/examples/gras/ping/)
+ADD_TEST(memcheck-gras-rpc-sg-64-0 ./rpc_simulator ./../../msg/small_platform.xml ./rpc.xml --log=root.fmt:"'[%h:%P:(%i)] [%c/%p] %m%n'" --cd ~/Developments/simgrid/examples/gras/rpc/)
+ADD_TEST(memcheck-gras-spawn-sg-64-0 ./spawn_simulator ./../../msg/small_platform.xml ./spawn.xml --cd ~/Developments/simgrid/examples/gras/spawn/)
+ADD_TEST(memcheck-gras-timer-sg-64-0 ./timer_simulator ./../../msg/small_platform.xml ./timer.xml --cd ~/Developments/simgrid/examples/gras/timer/)
+ADD_TEST(memcheck-gras-chrono-sg-64-0 ./chrono_simulator ./../../msg/small_platform.xml ./chrono.xml --cd ~/Developments/simgrid/examples/gras/chrono/)
+ADD_TEST(memcheck-gras-simple_token-sg-64-0 ./simple_token_simulator ./../../../msg/small_platform.xml ./simple_token.xml  --cd ~/Developments/simgrid/examples/gras/mutual_exclusion/simple_token/)
+ADD_TEST(memcheck-gras-mmrpc-sg-64-0 ./mmrpc_simulator ./../../msg/small_platform.xml ./mmrpc.xml --cd ~/Developments/simgrid/examples/gras/mmrpc/)
+ADD_TEST(memcheck-gras-all2all-sg-64-0 ./all2all_simulator ./../../msg/small_platform.xml ./all2all.xml --cd ~/Developments/simgrid/examples/gras/all2all/)
+ADD_TEST(memcheck-gras-pmm-sg-64-0 ./pmm_simulator ./../../msg/msg_platform.xml ./pmm.xml --cd ~/Developments/simgrid/examples/gras/pmm/)
+ADD_TEST(memcheck-gras-synchro-sg-64-0 ./synchro_simulator ./../../msg/small_platform.xml ./synchro.xml --cd ~/Developments/simgrid/examples/gras/synchro/)
 ENDIF(${ARCH_32_BITS})
-ADD_TEST(memcheck-gras-properties-sg-0 /bin/sh -c "cd ~/Developments/simgrid/examples/gras/properties/ && ./properties_simulator ./../../platforms/prop.xml ./properties.xml")
+ADD_TEST(memcheck-gras-properties-sg-0 ./properties_simulator ./../../platforms/prop.xml ./properties.xml --cd ~/Developments/simgrid/examples/gras/properties/)
 
 # amok examples
 IF(${ARCH_32_BITS})
-ADD_TEST(memcheck-amok-bandwidth-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/amok/ && bandwidth/bandwidth_simulator${EXEEXT} ./../msg/small_platform.xml ./bandwidth/bandwidth.xml")
-ADD_TEST(memcheck-amok-saturate-sg-32-0 /bin/sh -c "cd ~/Developments/simgrid/examples/amok/ && saturate/saturate_simulator${EXEEXT} ./../msg/small_platform.xml ./saturate/saturate.xml")
+ADD_TEST(memcheck-amok-bandwidth-sg-32-0 bandwidth/bandwidth_simulator${EXEEXT} ./../msg/small_platform.xml ./bandwidth/bandwidth.xml --cd ~/Developments/simgrid/examples/amok/)
+ADD_TEST(memcheck-amok-saturate-sg-32-0 saturate/saturate_simulator${EXEEXT} ./../msg/small_platform.xml ./saturate/saturate.xml --cd ~/Developments/simgrid/examples/amok/)
 ELSE(${ARCH_32_BITS})
-ADD_TEST(memcheck-amok-bandwidth-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/amok/ && bandwidth/bandwidth_simulator${EXEEXT} ./../msg/small_platform.xml ./bandwidth/bandwidth.xml")
-ADD_TEST(memcheck-amok-saturate-sg-64-0 /bin/sh -c "cd ~/Developments/simgrid/examples/amok/ && saturate/saturate_simulator${EXEEXT} ./../msg/small_platform.xml ./saturate/saturate.xml")
+ADD_TEST(memcheck-amok-bandwidth-sg-64-0 bandwidth/bandwidth_simulator${EXEEXT} ./../msg/small_platform.xml ./bandwidth/bandwidth.xml --cd ~/Developments/simgrid/examples/amok/)
+ADD_TEST(memcheck-amok-saturate-sg-64-0 saturate/saturate_simulator${EXEEXT} ./../msg/small_platform.xml ./saturate/saturate.xml --cd ~/Developments/simgrid/examples/amok/)
 ENDIF(${ARCH_32_BITS})
 
 # simdag examples
-ADD_TEST(memcheck-simdag-test_simdag-0 /bin/sh -c "cd ~/Developments/simgrid/examples/simdag/ && ./sd_test ./../msg/msg_platform.xml")
-ADD_TEST(memcheck-simdag-test_simdag2-0 /bin/sh -c "cd ~/Developments/simgrid/examples/simdag/ && ./sd_test2 ./2clusters.xml")
-ADD_TEST(memcheck-simdag-test_prop-0 /bin/sh -c "cd ~/Developments/simgrid/examples/simdag/ && properties/sd_prop ./../platforms/prop.xml")
-ADD_TEST(memcheck-simdag-metaxml_test-0 /bin/sh -c "cd ~/Developments/simgrid/examples/simdag/ && metaxml/sd_meta ./../platforms/metaxml.xml")
+ADD_TEST(memcheck-simdag-test_simdag-0 ./sd_test ./../msg/msg_platform.xml --cd ~/Developments/simgrid/examples/simdag/)
+ADD_TEST(memcheck-simdag-test_simdag2-0 ./sd_test2 ./2clusters.xml --cd ~/Developments/simgrid/examples/simdag/)
+ADD_TEST(memcheck-simdag-test_prop-0 properties/sd_prop ./../platforms/prop.xml --cd ~/Developments/simgrid/examples/simdag/)
+ADD_TEST(memcheck-simdag-metaxml_test-0 metaxml/sd_meta ./../platforms/metaxml.xml --cd ~/Developments/simgrid/examples/simdag/)
 
 # smpi examples
-ADD_TEST(memcheck-smpi-bcast-0 /bin/sh -c "cd ~/Developments/simgrid/examples/smpi/ && ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 3 ./bcast -q")
-ADD_TEST(memcheck-smpi-bcast-1 /bin/sh -c "cd ~/Developments/simgrid/examples/smpi/ && ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 6 ./bcast -q")
-ADD_TEST(memcheck-smpi-bcast-2 /bin/sh -c "cd ~/Developments/simgrid/examples/smpi/ && ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 12 ./bcast -q")
-ADD_TEST(memcheck-smpi-reduce-0 /bin/sh -c "cd ~/Developments/simgrid/examples/smpi/ && ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 3 ./reduce -q")
-ADD_TEST(memcheck-smpi-reduce-1 /bin/sh -c "cd ~/Developments/simgrid/examples/smpi/ && ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 6 ./reduce -q")
-ADD_TEST(memcheck-smpi-reduce-2 /bin/sh -c "cd ~/Developments/simgrid/examples/smpi/ && ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 12 ./reduce -q ")
+ADD_TEST(memcheck-smpi-bcast-0 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 3 ./bcast -q --cd ~/Developments/simgrid/examples/smpi/)
+ADD_TEST(memcheck-smpi-bcast-1 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 6 ./bcast -q --cd ~/Developments/simgrid/examples/smpi/)
+ADD_TEST(memcheck-smpi-bcast-2 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 12 ./bcast -q --cd ~/Developments/simgrid/examples/smpi/)
+ADD_TEST(memcheck-smpi-reduce-0 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 3 ./reduce -q --cd ~/Developments/simgrid/examples/smpi/)
+ADD_TEST(memcheck-smpi-reduce-1 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 6 ./reduce -q --cd ~/Developments/simgrid/examples/smpi/)
+ADD_TEST(memcheck-smpi-reduce-2 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 12 ./reduce -q  --cd ~/Developments/simgrid/examples/smpi/)
 
 if(HAVE_GTNETS)
-ADD_TEST(memcheck-msg-gtnets1-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && gtnets/gtnets gtnets/waxman-p.xml gtnets/waxman-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets")
-ADD_TEST(memcheck-msg-gtnets2-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets")
-ADD_TEST(memcheck-msg-gtnets3-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets")
-ADD_TEST(memcheck-msg-gtnets4-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:LV08")
-ADD_TEST(memcheck-msg-gtnets5-0 /bin/sh -c "cd ~/Developments/simgrid/examples/msg/ && gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01  --cfg=network/model:LV08 2>&1 | grep --color=auto -v root/INFO | grep -v simix_network/INFO")
+ADD_TEST(memcheck-msg-gtnets-waxman-0 gtnets/gtnets gtnets/waxman-p.xml gtnets/waxman-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-gtnets-dogbone-0 gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-gtnets-onelink-0 gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-gtnets-dogbone-lv08-0 gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:LV08 --cd ~/Developments/simgrid/examples/msg/)
+ADD_TEST(memcheck-msg-gtnets-onelink-lv08-0 gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01  --cfg=network/model:LV08 2>&1 | grep --color=auto -v root/INFO | grep -v simix_network/INFO --cd ~/Developments/simgrid/examples/msg/)
 endif(HAVE_GTNETS)
 
-set(MEMCHECK_LIST
-memcheck-tesh-log-large-0
-memcheck-tesh-log-large-1
-memcheck-tesh-log-parallel-0
-memcheck-tesh-gras-dd-mem-0
-memcheck-tesh-gras-dd-rw-0
-memcheck-tesh-gras-dd-rw-1
-memcheck-tesh-gras-dd-rw-2
-memcheck-tesh-gras-dd-r_little32_4-0
-memcheck-tesh-gras-dd-r_little64-0
-memcheck-tesh-gras-dd-r_big32_8_4-0
-memcheck-tesh-gras-dd-r_big32_8-0
-memcheck-tesh-gras-dd-r_big32_2-0
-memcheck-tesh-gras-msg_handle-sg-32-0
-memcheck-tesh-gras-msg_handle-sg-64-0
-memcheck-tesh-gras-empty_main-sg-0
-memcheck-tesh-gras-small_sleep-sg-32-0
-memcheck-tesh-gras-small_sleep-sg-64-0
-memcheck-tesh-simdag-reinit_costs-0
-memcheck-tesh-simdag-parser-0
-memcheck-tesh-simdag-parser-1
-memcheck-tesh-simdag-parser-2
-memcheck-tesh-simdag-parser-3
-memcheck-tesh-simdag-parser-4
-memcheck-tesh-simdag-parser-5
-memcheck-tesh-simdag-parser-6
-memcheck-tesh-simdag-parser-7
-memcheck-tesh-simdag-parser-8
-memcheck-tesh-simdag-parser-9
-memcheck-tesh-simdag-parser-10
-memcheck-tesh-simdag-parser-11
-memcheck-tesh-simdag-parser-12
-memcheck-tesh-simdag-parser-13
-memcheck-tesh-simdag-parser-14
-memcheck-tesh-simdag-parser-15
-memcheck-tesh-simdag-parser-16
-memcheck-tesh-simdag-parser-17
-memcheck-tesh-simdag-parser-18
-memcheck-tesh-simdag-parser-19
-memcheck-tesh-simdag-parser-20
-memcheck-tesh-simdag-flatifier-0
-memcheck-tesh-simdag-flatifier-1
-memcheck-tesh-simdag-flatifier-2
-memcheck-tesh-simdag-flatifier-3
-memcheck-tesh-simdag-flatifier-4
-memcheck-tesh-simdag-flatifier-5
-memcheck-tesh-simdag-flatifier-6
-memcheck-tesh-simdag-flatifier-7
-memcheck-tesh-simdag-flatifier-8
-memcheck-tesh-simdag-flatifier-9
-memcheck-tesh-simdag-flatifier-10
-memcheck-tesh-simdag-flatifier-11
-memcheck-tesh-simdag-flatifier-12
-memcheck-tesh-simdag-flatifier-13
-memcheck-tesh-simdag-flatifier-14
-memcheck-tesh-simdag-flatifier-15
-memcheck-tesh-simdag-flatifier-16
-memcheck-tesh-simdag-flatifier-17
-memcheck-tesh-simdag-flatifier-18
-memcheck-tesh-simdag-flatifier-19
-memcheck-tesh-simdag-flatifier-20
-memcheck-tesh-simdag-flatifier-21
-memcheck-tesh-simdag-flatifier-22
-memcheck-tesh-simdag-flatifier-23
-memcheck-tesh-simdag-flatifier-24
-memcheck-tesh-simdag-basic0-0
-memcheck-tesh-simdag-basic1-0
-memcheck-tesh-simdag-basic2-0
-memcheck-tesh-simdag-basic3-0
-memcheck-tesh-simdag-basic4-0
-memcheck-tesh-simdag-basic5-0
-memcheck-tesh-simdag-basic6-0
-memcheck-tesh-simdag-p2p-1-0
-memcheck-tesh-simdag-p2p-1-1
-memcheck-tesh-simdag-p2p-1-2
-memcheck-tesh-simdag-p2p-2-0
-memcheck-tesh-simdag-p2p-2-1
-memcheck-tesh-simdag-p2p-2-2
-memcheck-tesh-simdag-p2p-3-0
-memcheck-tesh-simdag-p2p-3-1
-memcheck-tesh-simdag-p2p-3-2
-memcheck-tesh-simdag-p2p-3-0
-memcheck-tesh-simdag-mxn-1-0
-memcheck-tesh-simdag-mxn-2-0
-memcheck-tesh-simdag-mxn-3-0
-memcheck-tesh-simdag-par-1-0
-memcheck-tesh-simdag-par-2-0
-memcheck-tesh-simdag-par-2-1
-memcheck-gras-spawn-rl-0
-memcheck-gras-timer-rl-0
-memcheck-gras-chrono-rl-0
-memcheck-gras-synchro-rl-0
-memcheck-gras-properties-rl-0
-memcheck-gras-properties-rl-1
-memcheck-msg-sendrecv_CLM03-0
-memcheck-msg-sendrecv_Vegas-0
-memcheck-msg-sendrecv_Reno-0
-memcheck-msg-suspend-0
-memcheck-msg-masterslave-0
-memcheck-msg-masterslave-forwarder-0
-memcheck-msg-masterslave-failure-0
-memcheck-msg-masterslave-bypass-0
-memcheck-msg-migration-0
-memcheck-msg-ptask-0
-memcheck-msg-ptask-1
-memcheck-msg-priority-0
-memcheck-msg-properties-0
-memcheck-msg-trace-0
-memcheck-msg-trace-1
-memcheck-msg-trace-2
-memcheck-msg-trace-3
-memcheck-msg-trace-4
-memcheck-msg-trace-5
-memcheck-msg-trace-6
-memcheck-msg-trace-7
-memcheck-msg-trace-8
-memcheck-msg-trace-9
-memcheck-msg-trace-10
-memcheck-msg-masterslave_cpu_ti-0
-memcheck-msg-masterslave_cpu_ti-1
-memcheck-msg-masterslave_cpu_ti-2
-memcheck-msg-masterslave_cpu_ti-3
-memcheck-gras-ping-sg-32-0
-memcheck-gras-rpc-sg-32-0
-memcheck-gras-spawn-sg-32-0
-memcheck-gras-timer-sg-32-0
-memcheck-gras-chrono-sg-32-0
-memcheck-gras-simple_token-sg-32-0
-memcheck-gras-mmrpc-sg-32-0
-memcheck-gras-all2all-sg-32-0
-memcheck-gras-pmm-sg-32-0
-memcheck-gras-synchro-sg-32-0
-memcheck-gras-ping-sg-64-0
-memcheck-gras-rpc-sg-64-0
-memcheck-gras-spawn-sg-64-0
-memcheck-gras-timer-sg-64-0
-memcheck-gras-chrono-sg-64-0
-memcheck-gras-simple_token-sg-64-0
-memcheck-gras-mmrpc-sg-64-0
-memcheck-gras-all2all-sg-64-0
-memcheck-gras-pmm-sg-64-0
-memcheck-gras-synchro-sg-64-0
-memcheck-gras-properties-sg-0
-memcheck-amok-bandwidth-sg-32-0
-memcheck-amok-saturate-sg-32-0
-memcheck-amok-bandwidth-sg-64-0
-memcheck-amok-saturate-sg-64-0
-memcheck-simdag-test_simdag-0
-memcheck-simdag-test_simdag2-0
-memcheck-simdag-test_prop-0
-memcheck-simdag-metaxml_test-0
-memcheck-smpi-bcast-0
-memcheck-smpi-bcast-1
-memcheck-smpi-bcast-2
-memcheck-smpi-reduce-0
-memcheck-smpi-reduce-1
-memcheck-smpi-reduce-2
-memcheck-msg-gtnets1-0
-memcheck-msg-gtnets2-0
-memcheck-msg-gtnets3-0
-memcheck-msg-gtnets4-0
-memcheck-msg-gtnets5-0)

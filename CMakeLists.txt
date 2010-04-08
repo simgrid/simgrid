@@ -52,9 +52,6 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeMakeExeLib.txt)
 
 ### Make tests
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeTest.txt)
-if(enable_memcheck)
-	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/memcheck_tests.txt)
-endif(enable_memcheck)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CTestConfig.cmake)
 
 ### Setup the distrib

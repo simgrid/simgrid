@@ -12,9 +12,12 @@ SET(DROP_LOCATION "/submit.php?project=${PROJECT_NAME}")
 SET(DROP_SITE_CDASH TRUE)
 SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResults.cgi")
 SET(COVERAGE_COMMAND "${GCOV_PATH}/gcov")
-SET(VALGRIND_COMMAND "${VALGRIND_PATH}/valgrind")
-SET(MEMORYCHECK_COMMAND "${VALGRIND_PATH}/valgrind")
-set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no")
+#SET(VALGRIND_COMMAND "${VALGRIND_PATH}/valgrind")
+#SET(MEMORYCHECK_COMMAND "${VALGRIND_PATH}/valgrind")
+#set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no")
+set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no --valgrind ${VALGRIND_PATH}")
+SET(VALGRIND_COMMAND "${PROJECT_DIRECTORY}/buildtools/Cmake/my_valgrind.pl")
+SET(MEMORYCHECK_COMMAND "${PROJECT_DIRECTORY}/buildtools/Cmake/my_valgrind.pl")
 #If you use the --read-var-info option Memcheck will run more slowly but may give a more detailed description of any illegal address.
 
 ### Check 32bits or 64bits
@@ -29,6 +32,7 @@ ENDIF(SIZEOF_LONG EQUAL 4)
 INCLUDE(CTest)
 ENABLE_TESTING()
 
+if(NOT enable_memcheck)
 ADD_TEST(tesh-self-basic 		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" basic.tesh)
 ADD_TEST(tesh-self-cd			${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" cd.tesh)
 ADD_TEST(tesh-self-IO-broken-pipe	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd "${PROJECT_DIRECTORY}/tools/tesh" IO-broken-pipe.tesh)
@@ -182,21 +186,6 @@ endif(HAVE_GTNETS)
 
 # END TESH TESTS
 
-# testsuite directory
-add_test(test-xbt-log		${PROJECT_DIRECTORY}/testsuite/xbt/log_usage)
-add_test(test-xbt-graphxml	${PROJECT_DIRECTORY}/testsuite/xbt/graphxml_usage ${PROJECT_DIRECTORY}/testsuite/xbt/graph.xml)
-add_test(test-xbt-heap		${PROJECT_DIRECTORY}/testsuite/xbt/heap_bench)
-
-add_test(test-surf-lmm		${PROJECT_DIRECTORY}/testsuite/surf/lmm_usage)
-add_test(test-surf-maxmin	${PROJECT_DIRECTORY}/testsuite/surf/maxmin_bench)
-add_test(test-surf-usage	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
-add_test(test-surf_usage2	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage2  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
-add_test(test-surf-trace	${PROJECT_DIRECTORY}/testsuite/surf/trace_usage --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/)
-
-add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag small_platform_variable.xml)
-add_test(test-simdag-2 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/small_platform.xml)
-add_test(test-simdag-3 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml)
-
 if(HAVE_JAVA)
 # java examples
 ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest)
@@ -220,3 +209,23 @@ set_tests_properties(tesh-gras-dd-r_big32_2 PROPERTIES WILL_FAIL true)
 # Expected to fail until the parser gets better (v3.3.5?)
 set_tests_properties(simdag-metaxml_test PROPERTIES WILL_FAIL true)   
 set_tests_properties(tesh-simdag-flatifier PROPERTIES WILL_FAIL true)
+endif(NOT enable_memcheck)
+
+# testsuite directory
+add_test(test-xbt-log		${PROJECT_DIRECTORY}/testsuite/xbt/log_usage)
+add_test(test-xbt-graphxml	${PROJECT_DIRECTORY}/testsuite/xbt/graphxml_usage ${PROJECT_DIRECTORY}/testsuite/xbt/graph.xml)
+add_test(test-xbt-heap		${PROJECT_DIRECTORY}/testsuite/xbt/heap_bench)
+
+add_test(test-surf-lmm		${PROJECT_DIRECTORY}/testsuite/surf/lmm_usage)
+add_test(test-surf-maxmin	${PROJECT_DIRECTORY}/testsuite/surf/maxmin_bench)
+add_test(test-surf-usage	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf_usage2	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage2  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf-trace	${PROJECT_DIRECTORY}/testsuite/surf/trace_usage --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/)
+
+add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag small_platform_variable.xml)
+add_test(test-simdag-2 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/small_platform.xml)
+add_test(test-simdag-3 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml)
+
+if(enable_memcheck)
+	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/memcheck_tests.txt)
+endif(enable_memcheck)
