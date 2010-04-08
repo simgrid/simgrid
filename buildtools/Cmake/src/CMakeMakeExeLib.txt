@@ -152,7 +152,7 @@ file(WRITE	${PROJECT_DIRECTORY}/make_simgrid_java.sh
 "\#! /bin/sh\n\n")
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -rf ${PROJECT_DIRECTORY}/src/.classes\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm ${PROJECT_DIRECTORY}/src/simgrid.jar\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -f ${PROJECT_DIRECTORY}/src/simgrid.jar\n")
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "mkdir ${PROJECT_DIRECTORY}/src/.classes\n")
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
@@ -169,19 +169,19 @@ file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "echo \"[ 50%] Building JAR object src/simgrid.jar\"\n")
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm ${PROJECT_DIRECTORY}/examples/java/basic/*.class\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -f ${PROJECT_DIRECTORY}/examples/java/basic/*.class\n")
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java\n")
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.class\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -f ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.class\n")
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java\n")
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "rm ${PROJECT_DIRECTORY}/examples/java/comm_time/*.class\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "rm -f ${PROJECT_DIRECTORY}/examples/java/comm_time/*.class\n")
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java\n")
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm ${PROJECT_DIRECTORY}/examples/java/suspend/*.class\n")
+file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -f ${PROJECT_DIRECTORY}/examples/java/suspend/*.class\n")
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java\n")
 
 endif(HAVE_JAVA)
