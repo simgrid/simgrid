@@ -1768,7 +1768,7 @@ the value of this variable is always associated to the host. The host
 that will be used when these functions are called is the one returned by
 the function \c MSG_host_self().
 
-\subsubsection faq_tracing_functions Example
+\subsubsection faq_tracing_example Example of Instrumentation
 
 A simplified example using the tracing mandatory functions.
 
