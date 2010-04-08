@@ -184,6 +184,15 @@ ADD_TEST(msg-gtnets-dogbone-lv08	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PRO
 ADD_TEST(msg-gtnets-onelink-lv08	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-onelink-lv08.tesh)
 endif(HAVE_GTNETS)
 
+# Lua examples
+ADD_TEST(lua-masterslave	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/lua master_slave.tesh)
+ADD_TEST(lua-mult_matrix	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/lua mult_matrix.tesh)
+
+# Ruby examples
+ADD_TEST(ruby-masterslave	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/ruby MasterSlave.tesh)
+ADD_TEST(ruby-ping_pong		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/ruby PingPong.tesh)
+ADD_TEST(ruby-quicksort		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/ruby Quicksort.tesh)
+
 # END TESH TESTS
 
 if(HAVE_JAVA)
