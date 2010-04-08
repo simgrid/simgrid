@@ -185,6 +185,36 @@ XBT_INLINE void SIMIX_action_set_priority(smx_action_t action, double priority)
 }
 
 /**
+ * 	\brief Resumes the execution of an action.
+ *
+ *  This functions restarts the execution of an action. It just calls the right SURF function.
+ *  \param action The SIMIX action
+ *  \param priority The new priority
+ */
+XBT_INLINE void SIMIX_action_resume(smx_action_t action)
+{
+  xbt_assert0((action != NULL), "Invalid parameter");
+
+  surf_workstation_model->resume(action->surf_action);
+  return;
+}
+
+/**
+ *  \brief Suspends the execution of an action.
+ *
+ *  This functions suspends the execution of an action. It just calls the right SURF function.
+ *  \param action The SIMIX action
+ *  \param priority The new priority
+ */
+XBT_INLINE void SIMIX_action_suspend(smx_action_t action)
+{
+  xbt_assert0((action != NULL), "Invalid parameter");
+
+  surf_workstation_model->suspend(action->surf_action);
+  return;
+}
+
+/**
  * 	\brief Destroys an action
  *
  *	Destroys an action, freing its memory. This function cannot be called if there are a conditional waiting for it.
