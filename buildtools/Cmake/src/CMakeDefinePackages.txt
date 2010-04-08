@@ -525,11 +525,13 @@ if(${HAVE_RUBY})
 	set(simgrid_sources
 		${simgrid_sources}
 		${RUBY_SRC}
+		${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid_ruby.c
 	)
 else(${HAVE_RUBY})
 	set(EXTRA_DIST
 		${EXTRA_DIST}
 		${RUBY_SRC}
+		${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid_ruby.c
 	)
 endif(${HAVE_RUBY})
 

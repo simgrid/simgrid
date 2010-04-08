@@ -14,10 +14,8 @@ set(SIMGRID_DEP ${libruby})
 set(SMPI_DEP "")
 
 if(HAVE_RUBY)
-	add_library(simgrid_ruby SHARED ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid_ruby.c)
-	set(RUBY_DEP "-lm -module")
-	target_link_libraries(simgrid_ruby 	simgrid ${RUBY_DEP} -fprofile-arcs)
-	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid_ruby.so ${PROJECT_DIRECTORY}/examples/ruby/simgrid_ruby.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
+	set(SIMGRID_DEP "${SIMGRID_DEP} -lm -module")
+	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/examples/ruby/simgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
 endif(HAVE_RUBY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
