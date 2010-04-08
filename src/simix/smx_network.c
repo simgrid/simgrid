@@ -384,7 +384,6 @@ void SIMIX_network_copy_data(smx_comm_t comm)
 /* pimple to display the message sizes */
 void SIMIX_message_sizes_output(const char *filename) {
   FILE * out = fopen(filename,"w");
-  INFO1("Output message sizes to %s",filename);
   xbt_assert1(out,"Cannot open file %s",filename);
   uintptr_t key,data;
   xbt_dict_cursor_t cursor;
