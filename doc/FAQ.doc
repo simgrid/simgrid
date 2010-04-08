@@ -1808,6 +1808,91 @@ int main (int argc, char **argv)
 }
 \endverbatim
 
+\subsubsection faq_tracing_analyzing Analyzing the SimGrid Traces
+
+The SimGrid library, during an instrumented simulation, creates a trace file in
+the Paje file format that contains the platform utilization for the simulation
+that was executed. The visualization analysis of this file is performed with the
+visualization tool <a href="http://triva.gforge.inria.fr">Triva</a>, with
+special configurations tunned to SimGrid needs. This part of the documentation
+explains how to configure and use Triva to analyse a SimGrid trace file.
+
+- <b>Installing Triva</b>: the tool is available in the INRIAGforge, 
+at <a href="http://triva.gforge.inria.fr">http://triva.gforge.inria.fr</a>.
+Use the following command to get the sources, and then check the file
+<i>INSTALL.simplified</i>. This file contains instructions to install
+the tool's dependencies in a Ubuntu/Debian Linux.
+\verbatim
+$ svn checkout svn://scm.gforge.inria.fr/svn/triva
+$ cd triva
+$ cat INSTALL.simplified
+\endverbatim
+
+- <b>Executing Triva</b>: a binary called <i>Triva</i> is available after the
+  installation (you can execute it passing <em>--help</em> to check its
+options). If the triva binary is not available after following the
+installation instructions, you may want to execute the following command to
+initialize the GNUstep environment variables (note that the location of the
+<i>GNUstep.sh</i> file may vary depending on your GNUstep installation - the
+command is known to work in Ubuntu and Debian Linux):
+\verbatim
+$ source /usr/share/GNUstep/Makefiles/GNUstep.sh
+\endverbatim
+You should be able to see this output after the installation of triva:
+\verbatim
+$ ./Triva.app/Triva --help
+Usage: Triva [OPTION...] TRACEFILE
+Trace Analysis through Visualization
+
+ You need to use one of the following options:
+  -g, --graph                Graph Analysis
+  -t, --treemap              Treemap Analysis
+
+ Other auxiliary options to check the trace file:
+  -c, --check                Check the integrity of trace file
+  -h, --hierarchy            Export the trace type hierarchy
+
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+\endverbatim
+Triva expects that the user choose one of the available options 
+(currently <em>--graph</em> or <em>--treemap</em> for a visualization analysis)
+and the trace file from the simulation.
+
+- <b>Understanding Triva - time-slice</b>: the analysis of a trace file using
+  the tool always takes into account the concept of the <em>time-slice</em>.
+This concept means that what is being visualized in the screen is always
+calculated considering a specific time frame, with its beggining and end
+timestamp. The time-slice is configured by the user and can be changed
+dynamically through the window called <em>Time Interval</em> that is opened
+whenever a trace file is being analyzed. The next figure depicts the time-slice
+configuration window.
+In the top of the window, in the space named <i>Trace Time</i>,
+the two fields show the beggining of the trace (which usually starts in 0) and
+the end (that depends on the time simulated by SimGrid). The middle of the
+window, in the square named <i>Time Slice Configuration</i>, contains the
+aspects related to the time-slice, including its <i>start</i> and its
+<i>size</i>. The gray rectangle in the bottom of this part indicates the 
+<i>current time-slice</i> that is considered for the drawings. If the checkbox 
+<i>Update Drawings on Sliders Change</i> is not selected, the button
+<i>Apply</i> must be clicked in order to inform triva that the
+new time-slice must be considered. The bottom part of the window, in the space
+indicated by the square <i>Time Slice Animation</i> can be used to advance
+the time-frame automatically. The user configures the amount of time that the
+time-frame will forward and how frequent this update will happen. Once this is
+configured, the user clicks the <i>Play</i> button in order to see the dynamic
+changes on the drawings.
+<center>
+\htmlonly
+<a href="triva-time_interval.png" border=0><img src="triva-time_interval.png" width="50%" border=0></a>
+\endhtmlonly
+</center>
+<b>Remarks:</b> when the trace has too many hosts or links, the computation to
+take into account a new time-slice can be expensive. When this happens, the
+<i>Frequency</i> parameter, but also updates caused by change on configurations
+when the checkbox <i>Update Drawings on Sliders
+Change</i> is selected will not be followed.
+
 \section faq_troubleshooting Troubleshooting
 
 \subsection faq_trouble_lib_compil SimGrid compilation and installation problems
