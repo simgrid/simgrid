@@ -34,6 +34,9 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Add a MSG_task_set_data() function
  SIMIX:
   * add a SIMIX_sem_get_capacity() function
+  * add SIMIX_action_suspend() and SIMIX_action_resume() functions
+  * Bugfix: Handle correctly the resume/suspend of processes when they
+      are blocked on semaphores.
  SURF:
   * Rename configuration variables to start a hierarchy:
     o cpu_model -> cpu/model
