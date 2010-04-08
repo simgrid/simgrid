@@ -1,5 +1,5 @@
 #QuickSort Ruby Example
-$ ruby Quicksort.rb
+$ ruby -I ../../src/bindings/ruby Quicksort.rb
 > [Inmos:Sender:(1) 0.000000] [ruby/INFO] Hello Bellevue !!, Please !! I need you to help me to sort my table , Here it is :
 > [1, -2, 45, 67, 87, 76, 89, 56, 78, 3, -4, 99]
 > [Bellevue:Receiver:(2) 0.000000] [ruby/INFO] Receiving Table from Inmos

@@ -1,5 +1,3 @@
-# Debug it with this command:
-# make -C ../.. && valgrind ruby MasterSlave.rb --log=ruby.thres:debug 2>&1 | less
 require 'simgrid'
 include MSG
 #################################################
@@ -24,7 +22,7 @@ class Master < MSG::Process
    
    # Creates and sends the tasks
     for i in 0..numberOfTask-1
-     task = RTask.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
+     task = Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
      mailbox = "slave " + (i%slaveCount).to_s
      MSG::info("Master Sending "+ task.name + " to " + mailbox + " with Comput Size " + 
            task.compSize.to_s)
@@ -37,7 +35,7 @@ class Master < MSG::Process
    MSG::info("Master: All tasks have been dispatched. Let's tell everybody the computation is over.")
    for i in 0..slaveCount-1
      mailbox = "slave " + i.to_s
-     finalize_task = RTask.new("finalize",0,0)
+     finalize_task = Task.new("finalize",0,0)
      finalize_task.send(mailbox)
    end
    MSG::info("Master : Everything's Done")

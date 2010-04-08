@@ -36,10 +36,10 @@ class Sender < MSG::Process
    recv_mailbox = self.class
    res_task = MSG::Task.receive(recv_mailbox.to_s)
    result = res_task.data
-   MSG::info("Greate !! Thx Dude , you're my Best Friend !!")
+   MSG::info("Greate !! Thx !!")
    MSG::info("Here is my table after a quicksort :)")
    p result
-   MSG::info("Bye !! I finished My HomeWork !! Time to Sleep :)")
+   MSG::info("Bye Now :)")
    end
 
 end
@@ -55,14 +55,14 @@ class Receiver < MSG::Process
     lazy_friend = MSG::Host.getByName(args[0]).name
     send_mailbox = args[1]
     recv_mailbox = self.class
-    MSG::info("Oh Not Again !! Grrr")
+    MSG::info("Receiving Table from "+lazy_friend)
     task = MSG::Task.receive(recv_mailbox.to_s)
     table = task.data
     quicksort(table,0,table.size-1)
     task.join(table)
-    MSG::info("Ok "+lazy_friend+ "I did it, next time try to do it yourself:)")
+    MSG::info("Sort Done ... Sending Back the new table")
     task.send(send_mailbox)
-    MSG::info("Bye lazy Friend !!")
+    MSG::info("Bye lazy Boy!!")
     
   end    
   
@@ -87,7 +87,6 @@ def partition(list, p, r)
     return i + 1
 end
   
- 
 end
 
 #################################################

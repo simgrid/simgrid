@@ -15,7 +15,7 @@ Examples containing in this directory
 
     - Execute: 
     (WARNING: the current directory must be examples/ruby/)
-    ruby MasterSlave.rb
+    ruby -I ../../src/bindings/ruby MasterSlave.rb
 
 ===============================================================================
 * PingPong.rb
@@ -34,7 +34,7 @@ Examples containing in this directory
 
     - Execute: 
     (WARNING: the current directory must be examples/ruby/)
-    ruby PingPong.rb
+    ruby -I ../../src/bindings/ruby PingPong.rb
 	    
 ================================================================================
 * Quicksort.rb
@@ -54,5 +54,5 @@ Examples containing in this directory
 
     - Execute: 
     (WARNING: the current directory must be examples/ruby/)
-    ruby Quicksort.rb
+    ruby -I ../../src/bindings/ruby Quicksort.rb
 	
