@@ -62,7 +62,18 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     In contrary to regular dicts, the key is not malloced before copy.
     Mixing scalar and regular elements in the same dict is not tested 
       (but may work).
-      
+ Tracing for Visualization:
+  * SimGrid is now instrumented in order to generate a trace file for
+    visualization analysis: to use it, need to compile SimGrid with the
+    "tracing" option enabled, and instrument the program using SimGrid with
+    TRACE_start, TRACE_category, TRACE_msg_set_task_category and TRACE_end
+    (among other functions).
+  * The instrumentation only traces the platform utilization for now
+  * Documentation to use the tracing functions and how to analyze the
+    traces with the Triva tool is written.
+  * More information about: SimGrid FAQ (in the section Tracing Simulations
+    for Visualization)
+    
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 
