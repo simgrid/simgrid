@@ -1,5 +1,5 @@
 # MasterSlave Ruby Example
-$ ruby -I ../../src/bindings/ruby MasterSlave.rb
+$ ruby -I../../src/bindings/ruby MasterSlave.rb
 > [Tremblay:Master:(1) 0.000000] [ruby/INFO] args[0]=20
 > [Tremblay:Master:(1) 0.000000] [ruby/INFO] args[1]=50000000
 > [Tremblay:Master:(1) 0.000000] [ruby/INFO] args[2]=1000000
