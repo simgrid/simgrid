@@ -1893,6 +1893,199 @@ take into account a new time-slice can be expensive. When this happens, the
 when the checkbox <i>Update Drawings on Sliders
 Change</i> is selected will not be followed.
 
+- <b>Understanding Triva - graph</b>: this part of the documention explains how
+  to analyze the traces using the graph view of Triva, when the user executes
+the tool passing <em>--graph</em> as parameter. Triva opens three windows when
+this parameter is used: the <i>Time Interval</i> window (previously described),
+the <i>Graph Representation</i> window, and the <em>Graph Configuration</em>
+window. The Graph Representation is the window where drawings take place.
+Initially, it is completely white waiting for a proper graph configuration input
+by the user. We start the description of this type of analysis by describing the
+<i>Graph Configuration</i> window (depicted below). By using a particular
+configuration, triva
+can be used to customize the graph drawing according to
+the SimGrid trace that was created with user-specific categories. Before delving
+into the details of this customization, let us first explain the major parts of
+the graph configuration window. The buttons located in the top-right corner can
+be used to delete, copy and create a new configuration. The checkbox in the
+top-middle part of the window indicates if the configuration typed in the
+textfield is syntactically correct (we are using the non-XML 
+<a href="http://en.wikipedia.org/wiki/Property_list">Property List Format</a> to
+describe the configuration). The pop-up button located on the top-left corner 
+indicates the selected configuration (the user can have multiple graph
+configurations). The bottom-left text field contains the name of the current
+configuration (updates on this field must be followed by typing enter on the
+keyboard to take into account the name change). The bottom-right <em>Apply</em>
+button activates the current configuration, resulting on an update on the graph
+drawings.
+<center>
+\htmlonly
+<a href="triva-graph_configuration.png" border=0><img src="triva-graph_configuration.png" width="50%" border=0></a>
+\endhtmlonly
+</center>
+<b>Basic SimGrid Configuration</b>: The figure shows in the big textfield the
+basic configuration that should be used during the analysis of a SimGrid trace
+file. The basic logic of the configuration is as follows:
+\verbatim
+{
+  node = (HOST);
+  edge = (LINK);
+\endverbatim
+The nodes of the graph will be created based on the <i>node</i> parameter, which
+in this case is the different <em>"HOST"</em>s of the platform 
+used to simulate. The <i>edge</i> parameter indicates that the edges of the
+graph will be created based on the <em>"LINK"</em>s of the platform. After the
+definition of these two parameters, the configuration must detail how
+<em>HOST</em>s and <em>LINK</em>s should be drawn. For that, the configuration
+must have an entry for each of the types used. For <em>HOST</em>, as basic
+configuration, we have:
+\verbatim
+  HOST = {
+    size = power;
+    scale = global;
+  };
+\endverbatim
+The parameter <em>size</em> indicates which variable from the trace file will be
+used to define the size of the node HOST in the visualization. If the simulation
+was executed with availability traces, the size of the nodes will be changed
+according to these traces. The parameter <em>scale</em> indicates if the value
+of the variable is <em>global</em> or <em>local</em>. If it is global, the value
+will be relative to the power of all other hosts, if it is local, the value will
+be relative locally.
+For <em>LINK</em> we have:
+\verbatim
+  LINK = {
+    src = SrcHost;
+    dst = DstHost;
+    
+    size = bandwidth;
+    scale = global;
+  };
+\endverbatim
+For the types specified in the <em>edge</em> parameter (such as <em>LINK</em>),
+the configuration must contain two additional parameters: <em>src</em> and
+<em>dst</em> that are used to properly identify which nodes this edge is
+connecting. The values <em>SrcHost</em> and <em>DstHost</em> are always present
+in the SimGrid trace file and should not be changed in the configuration. The
+parameter <em>size</em> for the LINK, in this case, is configured as the
+variable <em>bandwidth</em>, with a <em>global</em> scale. The scale meaning
+here is exactly the same used for nodes. The last parameter is the GraphViz
+algorithm used to calculate the position of the nodes in the graph
+representation.
+\verbatim
+  graphviz-algorithm = neato;
+}
+\endverbatim
+<b>Customizing the Graph Representation</b>: triva is capable to handle
+a customized graph representation based on the variables present in the trace
+file. In the case of SimGrid, every time a category is created for tasks, two
+variables in the trace file are defined: one to indicate node utilization (how
+much power was used by that task category), and another to indicate link
+utilization (how much bandwidth was used by that category). For instance, if the
+user declares a category named <i>request</i>, there will be variables named
+<b>p</b><i>request</i> and a <b>b</b><i>request</i> (<b>p</b> for power and
+<b>b</b> for bandwidth). It is important to notice that the variable
+<i>prequest</i> in this case is only available for HOST, and
+<i>brequest</i> is only available for LINK. <b>Example</b>: suppose there are
+two categories for tasks: request and compute. To create a customized graph
+representation with a proportional separation of host and link utilization, use
+as configuration for HOST and LINK this:
+\verbatim
+  HOST = {
+    size = power;
+    scale = global;
+  
+    sep_host = {
+      type = separation;
+      size = power;
+      values = (prequest, pcomputation);
+    };
+  };
+
+  LINK = {
+    src = SrcHost;
+    dst = DstHost;
+    size = bandwidth;
+    scale = global;
+
+    sep_link = {
+      type = separation;
+      size = bandwidth;
+      values = (brequest, bcomputation);
+    };
+  };
+\endverbatim
+Where <i>sep_host</i> contains a composition of type <i>separation</i> where
+its max size is the <i>power</i> of the host and the variables <i>prequest</i>
+and <i>pcomputation</i> are drawn proportionally to the size of the HOST. And
+<i>sep_link</i> is also a separation where max is defined as the
+<i>bandwidth</i> of the link, and the variables <i>brequest</i> and
+<i>bcomputation</i> are drawn proportionally within a LINK.
+<i>This configuration enables the analysis of resource utilization by MSG tasks,
+and the identification of load-balancing issues, network bottlenecks, for
+instance.</i> \n
+<b>Other compositions</b>: besides <i>separation</i>, it is possible to use
+other types of compositions, such as gradients, and colors, like this:
+\verbatim
+    gra_host = {
+      type = gradient;
+      scale = global;
+      values = (numberOfTasks);
+    };
+    color_host = {
+      type = color;
+      values = (is_server);
+    };
+\endverbatim
+Where <i>gra_host</i> creates a gradient within a node of the graph, using a
+global scale and using as value a variable called <i>numberOfTasks</i>, that
+could be declared by the user using the optional tracing functions of SimGrid.
+If scale is global, the max and min value for the gradient will be equal to the
+max and min numberOfTasks among all hosts, and if scale is local, the max and
+min value based on the value of numberOfTasks locally in each host.
+And <i>color_host</i> composition draws a square based on a positive value of
+the variable <i>is_server</i>, that could also be defined by the user using the
+SimGrid tracing functions. \n
+<b>The Graph Visualization</b>: The next figure shows a graph visualization of a
+given time-slice of the masterslave_forwarder example (present in the SimGrid
+sources). The red color indicates tasks from the <i>compute</i> category. This
+visualization was generated with the following configuration:
+\verbatim
+{
+  node = (HOST);
+  edge = (LINK);
+
+  HOST = {
+    size = power;
+    scale = global;
+  
+    sep_host = {
+      type = separation;
+      size = power;
+      values = (pcompute, pfinalize);
+    };
+  };
+  LINK = {
+    src = SrcHost;
+    dst = DstHost;
+    size = bandwidth;
+    scale = global;
+
+    sep_link = {
+      type = separation;
+      size = bandwidth;
+      values = (bcompute, bfinalize);
+    };
+  };
+  graphviz-algorithm = neato;
+}
+\endverbatim
+<center>
+\htmlonly
+<a href="triva-graph_visualization.png" border=0><img src="triva-graph_visualization.png" width="50%" border=0></a>
+\endhtmlonly
+</center>
+
 \section faq_troubleshooting Troubleshooting
 
 \subsection faq_trouble_lib_compil SimGrid compilation and installation problems

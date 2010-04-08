@@ -95,6 +95,8 @@ if(MAKE_DOC)
 
 		exec_program("cp ${PROJECT_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg ${PROJECT_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg ${PROJECT_DIRECTORY}/doc/html/"  "${PROJECT_DIRECTORY}/doc/")
 		exec_program("cp ${PROJECT_DIRECTORY}/doc/triva-time_interval.png ${PROJECT_DIRECTORY}/doc/html/"  "${PROJECT_DIRECTORY}/doc/")
+		exec_program("cp ${PROJECT_DIRECTORY}/doc/triva-graph_configuration.png ${PROJECT_DIRECTORY}/doc/html/"  "${PROJECT_DIRECTORY}/doc/")
+		exec_program("cp ${PROJECT_DIRECTORY}/doc/triva-graph_visualization.png ${PROJECT_DIRECTORY}/doc/html/"  "${PROJECT_DIRECTORY}/doc/")
 		exec_program("cp ${PROJECT_DIRECTORY}/doc/simgrid.css ${PROJECT_DIRECTORY}/doc/html/"  "${PROJECT_DIRECTORY}/doc/") 
 
 		set(top_srcdir "..")
