@@ -60,6 +60,8 @@ if(enable_memcheck)
 	SET(BUILDNAME "MEMCHECK" CACHE TYPE INTERNAL FORCE)
 endif(enable_memcheck)
 
+SET(BUILDNAME "rev(${SVN_VERSION}${GIT_VERSION})-${BUILDNAME}")
+
 SET(SITE "${osname}_${DISTRIB2}_${cpu}")
 SET(CTEST_SITE "${osname}_${DISTRIB2}_${cpu}")
 SET(CTEST_PROJECT_NAME "${PROJECT_NAME}")
