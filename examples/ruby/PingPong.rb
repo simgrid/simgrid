@@ -1,4 +1,4 @@
-require 'simgrid'
+require 'simgrid.so'
 
 include MSG
 

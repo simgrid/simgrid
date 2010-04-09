@@ -25,6 +25,13 @@ _*.c
 config.log
 config.status
 Makefile.in
+*_unit.c
+src/simgrid.jar
+src/simgrid_units_main.c
+src/bindings/ruby/simgrid.so
+examples/ruby/simgrid.so
+examples/lua/simgrid.so
+examples/msg/zmsg_test.trace
 
 buildtools/Cmake/src/tmp_gras_config.h.in
 buildtools/Cmake/src/tmp_tracing_config.h.in

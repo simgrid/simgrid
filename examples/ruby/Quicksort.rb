@@ -1,7 +1,7 @@
 # Debug it with this command:
 # make -C ../.. && valgrind ruby MasterSlave.rb --log=ruby.thres:debug 2>&1 | less
 
-require 'simgrid'
+require 'simgrid.so'
 
 include MSG
 
