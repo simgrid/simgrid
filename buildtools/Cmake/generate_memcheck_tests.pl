@@ -48,9 +48,7 @@ while(defined($line=<MAKETEST>)) {
 			$command =~ s/\$EXEEXT//g;
 			$command =~ s/\${srcdir}/\${PROJECT_DIRECTORY}\/src/g;
 			$command =~ s/ \$ARGS//g;
-			$command =~ s/ \$@ //g;
-			$path =~ s/\${PROJECT_DIRECTORY}/~\/Developments\/simgrid/g;
-			#$command =~ s/\${PROJECT_DIRECTORY}/~\/Developments\/simgrid/g;	
+			$command =~ s/ \$@ //g;	
 			print "ADD_TEST(memcheck-$name_test-$count $command --cd $path\/)\n";
 			#push @test_list, "memcheck-$name_test-$count";
 			$count++;
