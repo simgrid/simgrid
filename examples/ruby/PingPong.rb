@@ -1,4 +1,4 @@
-require 'libsimgrid.so'
+require 'simgrid'
 
 include MSG
 
@@ -7,7 +7,7 @@ include MSG
 #####################
 
 class PingPongTask < MSG::Task
-  
+
   # The initialize method has no effect 
   @time 
   def setTime(t)

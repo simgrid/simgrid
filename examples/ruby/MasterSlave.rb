@@ -1,4 +1,4 @@
-require 'libsimgrid.so'
+require 'simgrid'
 include MSG
 #################################################
 # Class Master

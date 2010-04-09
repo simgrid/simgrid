@@ -15,7 +15,7 @@ set(SMPI_DEP "")
 
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -lm -module")
-	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/examples/ruby/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
+	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
 endif(HAVE_RUBY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -35,7 +35,7 @@ endif(pthread)
 
 if(HAVE_LUA)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${liblua}")
-	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
+	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/lua/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
 endif(HAVE_LUA)
 
 if(HAVE_GTNETS)
