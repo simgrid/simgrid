@@ -62,6 +62,7 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     In contrary to regular dicts, the key is not malloced before copy.
     Mixing scalar and regular elements in the same dict is not tested 
       (but may work).
+  * Allow to use xbt_dynar_shrink() to expend the dynar instead
  Tracing for Visualization:
   * SimGrid is now instrumented in order to generate a trace file for
     visualization analysis: to use it, need to compile SimGrid with the

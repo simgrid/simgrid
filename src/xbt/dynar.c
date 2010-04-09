@@ -290,7 +290,7 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
  * Set \a empty_slots_wanted to zero to reduce the dynar internal array as much
  * as possible.
  * Note that if \a empty_slots_wanted is greater than the array size, the internal
- * array is not expanded and nothing is done.
+ * array is expanded instead of shriked.
  */
 void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
 {
@@ -299,7 +299,7 @@ void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
   _dynar_lock(dynar);
 
   size_wanted = dynar->used + empty_slots_wanted;
-  if (size_wanted < dynar->size) {
+  if (size_wanted != dynar->size) {
     dynar->size = size_wanted;
     dynar->data = xbt_realloc(dynar->data, sizeof(void *) * dynar->size);
   }
