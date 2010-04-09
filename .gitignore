@@ -34,6 +34,7 @@ examples/lua/simgrid.so
 examples/msg/zmsg_test.trace
 
 *_unit.c
+src/supernovae_*.c
 
 buildtools/Cmake/src/tmp_gras_config.h.in
 buildtools/Cmake/src/tmp_tracing_config.h.in
