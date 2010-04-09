@@ -9,12 +9,12 @@ else(enable_supernovae)
 	add_library(smpi STATIC ${SMPI_SRC})
 endif(enable_supernovae)
 
-set(GRAS_DEP "pthread")
-set(SIMGRID_DEP ${libruby})
+set(GRAS_DEP "-lm -lpthread")
+set(SIMGRID_DEP "-lm")
 set(SMPI_DEP "")
 
 if(HAVE_RUBY)
-	set(SIMGRID_DEP "${SIMGRID_DEP} -lm -module")
+	set(SIMGRID_DEP "${SIMGRID_DEP} -l${libruby} -module")
 	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
 endif(HAVE_RUBY)
 
@@ -46,11 +46,6 @@ if(HAVE_POSIX_GETTIME)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
 	SET(GRAS_DEP "${GRAS_DEP} -lrt")
 endif(HAVE_POSIX_GETTIME)
-
-if(NOT HAVE_RUBY)
-	string(REPLACE "${libruby} -l" "" SIMGRID_DEP ${SIMGRID_DEP})
-	string(REPLACE "${libruby}" "" SIMGRID_DEP ${SIMGRID_DEP})
-endif(NOT HAVE_RUBY)
 
 target_link_libraries(simgrid 	${SIMGRID_DEP} -fprofile-arcs)
 target_link_libraries(simgrid_static	${SIMGRID_DEP} -fprofile-arcs)
