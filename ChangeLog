@@ -1,8 +1,19 @@
-SimGrid (3.3.5-svn) unstable; urgency=low
+SimGrid (3.4-svn) unstable; urgency=low
 
- The "C spoken, se habla Java, Ruby 話せます, fala-se Lua" release.
+ The "Easter in Cargese" release. Also known as (major changes):
+ 
+  * the "se habla Java, Ruby 話せます, fala-se Lua (and deaf-friendly)"
+    ~> bindings were greatly improved
+    ~> new tracing infrastructure for better visualization introduced
+    
+  * the "Welcome to configury modernity" release.
+    ~> we switched from autotools to cmake, and improved our cdash
+
+
+ A more detailled list of changes follow (full detail in svn log).
 
  Java Bindings: Various Cleanups
+  * (install java-gcj-compat-dev on debian-like to use them)
   * Remove put/get: no need to export deprecated interface in Java
     Use send/receive instead.
   * Cleanup the examples and add a README per directory
@@ -16,6 +27,7 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Cleanup the exceptions that may get thrown by each function
   * Other internal cleanups in Java bindings. Performance still bad :/
  Ruby and Lua Bindings: create them
+  * (install ruby1.8-dev/liblua5.1-0-dev on debian-like to use them)
   * That's new and great, you should try them out. 
     Same functionalities than Java bindings, only even less polished
  SimDag:
@@ -28,10 +40,8 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Fix SD_task_unschedule() on typed tasks
   * Fix SD_task_get_execution_time() to return seconds, not flop*sec
  MSG: 
-  * In trace replay, allow to have one trace file per process.
-    Give the specific trace file as argument of each process, 
-      and call MSG_action_trace_run(NULL)
-    You can still have one merged file for each processes.
+  * Add an example masterslave_mailbox.c using send/receive and not
+    the deprecated put/get interface.
   * Kill the MSG_paje_output() function. It's a noop since 2 years.
   * Kill MSG_WARNING and MSG_FATAL return codes: they were not used
     anywere in source.
@@ -40,6 +50,9 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * About trace replay (see examples/msg/actions):
     - implement barrier
     - Allow to work with splitted trace files for each process
+      Give the specific trace file as argument of each process, 
+        and call MSG_action_trace_run(NULL)
+      You can still have one merged file for all processes.
     - Fix implementation of collective operations
  SMPI:
   * This is the first release of SimGrid where SMPI is not considered
@@ -65,6 +78,7 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     - smpicc passes -O2 by default (just like openmpi one)
  SIMIX:
   * add SIMIX_action_suspend() and SIMIX_action_resume() functions
+  * Bug fixes about timeouts during communications
   * add SIMIX_message_sizes_output() as a pimple to write to file the
     amount of messages per size. Use gnuplot to get histogram. 
     Pimple because that's the only user-visible function of simix,
@@ -116,7 +130,16 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     traces with the Triva tool is written.
   * More information about: SimGrid FAQ (in the section Tracing Simulations
     for Visualization)
-    
+ Build system:
+  * We moved to cmake as default build system. Autotools support will
+    be dropped soon. Check the FAQ for more info about how to use it.
+  * Greatly improved our cdash/ctest interactions
+    Check http://cdash.inria.fr/CDash/index.php?project=Simgrid
+  * Added memory checking tests with valgrind; lot of memleak fixing.
+    This may be the first release of simgrid with so few memory issues
+  * Added code coverage tests. 
+    Our coverage is still improvable, but at least we see it on cdash.
+   
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 
