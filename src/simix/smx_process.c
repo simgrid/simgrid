@@ -332,7 +332,7 @@ void SIMIX_process_suspend(smx_process_t process)
         SIMIX_action_suspend(act);
       }
     } else if (process->sem) {
-      smx_cond_t s;
+      smx_sem_t s;
       xbt_fifo_item_t i;
       smx_action_t act;
 
