@@ -143,8 +143,7 @@ fi
 ##  hostfile has less than i lines.
 ##----------------------------------------------------------
 
-HAVE_SEQ="`which seq`"
-HAVE_JOT="`which jot`"
+HAVE_SEQ="`which seq 2>/dev/null`"
 
 if [ -n "${HAVE_SEQ}" ]; then
 	SEQ=`${HAVE_SEQ} 0 $((${NUMPROCS}-1))`
