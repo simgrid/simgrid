@@ -35,7 +35,7 @@ endif(pthread)
 
 if(HAVE_LUA)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${liblua}")
-	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/lua/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
+	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
 endif(HAVE_LUA)
 
 if(HAVE_GTNETS)
