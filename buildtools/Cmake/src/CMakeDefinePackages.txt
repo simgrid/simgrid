@@ -283,7 +283,6 @@ set(AMOK_SRC
 
 set(LUA_SRC
 	${PROJECT_DIRECTORY}/src/simix/smx_context_lua.c
-	#${PROJECT_DIRECTORY}/src/bindings/lua/Msglua.c
 	${PROJECT_DIRECTORY}/src/bindings/lua/simgrid_lua.c
 )
 
@@ -687,6 +686,28 @@ set(to_svg
 	${PROJECT_DIRECTORY}/./src/bindings/ruby_bindings.h
 	${PROJECT_DIRECTORY}/./src/simix/smx_context_sysv_private.h
 	${PROJECT_DIRECTORY}/./src/simgrid_units_main.c
+	${PROJECT_DIRECTORY}/./src/bindings/lua/master_slave.lua
+	${PROJECT_DIRECTORY}/./src/bindings/lua/mult_matrix.lua
+	${PROJECT_DIRECTORY}/./examples/lua/master_slave.lua
+	${PROJECT_DIRECTORY}/./examples/lua/mult_matrix.lua
+	${PROJECT_DIRECTORY}/./examples/lua/README
+	${PROJECT_DIRECTORY}/./src/bindings/ruby/MasterSlave.rb
+	${PROJECT_DIRECTORY}/./src/bindings/ruby/MasterSlaveData.rb
+	${PROJECT_DIRECTORY}/./src/bindings/ruby/PingPong.rb
+	${PROJECT_DIRECTORY}/./src/bindings/ruby/Quicksort.rb
+	${PROJECT_DIRECTORY}/./src/bindings/ruby/simgrid.rb
+	${PROJECT_DIRECTORY}/./examples/ruby/README
+	${PROJECT_DIRECTORY}/./examples/ruby/MasterSlave.rb
+	${PROJECT_DIRECTORY}/./examples/ruby/PingPong.rb
+	${PROJECT_DIRECTORY}/./examples/ruby/Quicksort.rb
+	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/example.rb
+	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/extconfig.rb
+	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_SD_task.c
+	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_SD_task.h
+	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_SD_workstation.c
+	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_SD_workstation.h
+	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_simdag.c
+	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/simdag.rb
 )
 set(script_to_install
 	${PROJECT_DIRECTORY}/./src/smpi/smpicc

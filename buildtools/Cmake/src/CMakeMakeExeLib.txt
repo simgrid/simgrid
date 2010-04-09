@@ -135,18 +135,14 @@ add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/properties)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
 
 if(HAVE_JAVA)
-
-	add_custom_command(TARGET simgrid
-	POST_BUILD
-	COMMAND echo "[  0%] Building JAR object src/simgrid.jar"
-	COMMAND /bin/sh ${PROJECT_DIRECTORY}/make_simgrid_java.sh
-	COMMAND echo "[100%] Building JAR object src/simgrid.jar"
-	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
-	)
-
 	foreach(file ${JMSG_JAVA_SRC})
 		set(java_src_to_compile "${java_src_to_compile} ${file}")	
 	endforeach(file ${JMSG_JAVA_SRC})
+
+	add_custom_target(simgrid.jar	ALL
+	COMMAND /bin/sh ${PROJECT_DIRECTORY}/make_simgrid_java.sh
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+	)
 
 file(WRITE	${PROJECT_DIRECTORY}/make_simgrid_java.sh 
 "\#! /bin/sh\n\n")
@@ -164,9 +160,6 @@ file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "cp ${PROJECT_DIRECTORY}/s
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_ARCHIVE} cvf ./src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes . &>/dev/null\n")
-
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "echo \"[ 50%] Building JAR object src/simgrid.jar\"\n")
 
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
 file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -f ${PROJECT_DIRECTORY}/examples/java/basic/*.class\n")
