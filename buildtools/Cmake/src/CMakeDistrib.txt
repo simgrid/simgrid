@@ -1,4 +1,4 @@
-set(simgrid_version "3.3.5")
+set(simgrid_version "3.4")
 
 set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
