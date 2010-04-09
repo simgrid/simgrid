@@ -26,12 +26,9 @@ static void stackDump (const char *msg, lua_State *L) {
   char *p=buff;
   int i;
   int top = lua_gettop(L);
-//  void *ptr;
+
   fflush(stdout);
   p+=sprintf(p,"STACK(top=%d): ",top);
-/*  lua_getglobal(L,"vardump");
-  xbt_assert0(lua_isfunction(L,-1), "Vardump not found");
-*/
 
   for (i = 1; i <= top; i++) {  /* repeat for each level */
 
@@ -85,17 +82,15 @@ static m_task_t checkTask (lua_State *L,int index) {
 }
 
 /** @brief leaves a new userdata on top of the stack, sets its metatable, and sets the Task pointer inside the userdata */
+// NOT USED
 /*static m_task_t *pushTask (lua_State *L,m_task_t tk) {
-
   m_task_t *pi = NULL;
   pi = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
   *pi=tk;
-
   DEBUG1("push lua task with Name : %s \n",MSG_task_get_name(*pi));
   luaL_getmetatable(L,TASK_MODULE_NAME);
   lua_setmetatable(L,-2);
   return pi;
-
 }*/
 
 /* ********************************************************************************* */
@@ -151,7 +146,7 @@ static int Task_destroy(lua_State *L) {
   return 1;
 }
 static int Task_send(lua_State *L)  {
-  stackDump("send ",L);
+  //stackDump("send ",L);
   m_task_t tk = checkTask(L,-2);
   const char *mailbox = luaL_checkstring(L,-1);
   lua_pop(L,1); // remove the string so that the task is on top of it
@@ -176,6 +171,7 @@ static int Task_send(lua_State *L)  {
     }
   return 0;
 }
+
 static int Task_recv(lua_State *L)  {
   m_task_t tk = NULL;
   const char *mailbox = luaL_checkstring(L,-1);
@@ -255,9 +251,7 @@ static int Host_get_by_name(lua_State *L)
 	m_host_t msg_host = MSG_get_host_by_name(name);
 	if (!msg_host)
 		{
-		//ERROR1("MSG_get_host_by_name(%s) failled",name);
 		luaL_error(L,"null Host : MSG_get_host_by_name failled");
-		//return -1;
 		}
     lua_newtable (L); /* create a table, put the userdata on top of it */
 	m_host_t *lua_host = (m_host_t*)lua_newuserdata(L,sizeof(m_host_t));
@@ -316,7 +310,6 @@ extern lua_State *simgrid_lua_state;
 
 static int run_lua_code(int argc,char **argv) {
   DEBUG1("Run lua code %s",argv[0]);
-//  fprintf(stderr,"Run lua code %s\n", (argv ? argv[0] : "(null)"));
   lua_State *L = lua_newthread(simgrid_lua_state);
   int ref = luaL_ref(simgrid_lua_state, LUA_REGISTRYINDEX); // protect the thread from being garbage collected
   int res = 1;
