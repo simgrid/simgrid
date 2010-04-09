@@ -279,16 +279,3 @@ void MSG_task_set_priority(m_task_t task, double priority)
 }
 
 
-/** \ingroup m_task_management
- * \brief Sets the user data of a #m_task_t.
- *
- * This function allows to test if a task contains a not_null data
- * return 1 (if true)
- */
-int MSG_task_has_data(m_task_t task)
-{
-
- return (task->data != NULL);
-
-}
-

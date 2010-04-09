@@ -152,7 +152,7 @@ static int Task_send(lua_State *L)  {
   lua_pop(L,1); // remove the string so that the task is on top of it
   MSG_task_set_data(tk,L); // Copy my stack into the task, so that the receiver can copy the lua task directly
   MSG_error_t res = MSG_task_send(tk,mailbox);
-  while (MSG_task_has_data(tk)) // Don't mess up with my stack: the receiver didn't copy the data yet
+  while (MSG_task_get_data(tk)!=NULL) // Don't mess up with my stack: the receiver didn't copy the data yet
     MSG_process_sleep(0); // yield
 
   if (res != MSG_OK) switch(res) {
