@@ -13,6 +13,8 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     nobody will ever want to survive such error.
   * Create specific errors for each MSG case of failure:
     host failure, transfer failure, timeout, task cancelled
+  * Cleanup the exceptions that may get thrown by each function
+  * Other internal cleanups in Java bindings. Performance still bad :/
  Ruby and Lua Bindings: create them
   * That's new and great, you should try them out. 
     Same functionalities than Java bindings, only even less polished
@@ -23,6 +25,7 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * SD_SCHED_NO_COST: Constant to use as cost in SD_task_schedule()
     either as comm costs or compute costs to mean that there is no
     such thing for that specific task. 
+  * Fix SD_task_unschedule() on typed tasks
  MSG: 
   * In trace replay, allow to have one trace file per process.
     Give the specific trace file as argument of each process, 
@@ -31,12 +34,24 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Kill the MSG_paje_output() function. It's a noop since 2 years.
   * Kill MSG_WARNING and MSG_FATAL return codes: they were not used
     anywere in source.
+  * Rename MSG_TIMEOUT_FAILURE into MSG_TIMEOUT for sake of logic
   * Add a MSG_task_set_data() function
+  * About trace replay (see examples/msg/actions):
+    - implement barrier
+    - Allow to work with splitted trace files for each process
  SIMIX:
-  * add a SIMIX_sem_get_capacity() function
   * add SIMIX_action_suspend() and SIMIX_action_resume() functions
-  * Bugfix: Handle correctly the resume/suspend of processes when they
-      are blocked on semaphores.
+  * About semaphores:
+     - Add a SIMIX_sem_get_capacity() function
+     - Fix interactions with processe resume/suspende
+     - release_forever was stupidly broken
+     - Make SIMIX_sem_block_onto() user-visible
+  * Refactoring context stuff:
+    - Use pseudo-OOP for better modularity
+    - reimplement SIMIX_process_kill() without process_schedule() so
+      that the latter can take as invariant that it is called from
+      maestro.
+    - Merge context_start into context_new for sake of simplicity
  SURF:
   * Rename configuration variables to start a hierarchy:
     o cpu_model -> cpu/model
