@@ -171,9 +171,11 @@ _xbt_dynar_remove_at(xbt_dynar_t const dynar,
   }
 
   nb_shift = dynar->used - 1 - idx;
-  offset = nb_shift * dynar->elmsize;
 
-  memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + 1), offset);
+  if (nb_shift) {
+    offset = nb_shift * dynar->elmsize;
+    memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + 1), offset);
+  }
 
   dynar->used--;
 }
