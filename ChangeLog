@@ -40,6 +40,8 @@ SimGrid (3.4-svn) unstable; urgency=low
   * Add a SD_task_set_name() function
   * Fix SD_task_unschedule() on typed tasks
   * Fix SD_task_get_execution_time() to return seconds, not flop*sec
+  * In DAX loader, accept useless 'level' attributes to <job> since
+    LIGO DAGs have them (seem to be to ease graphical representation).
  MSG: 
   * Add an example masterslave_mailbox.c using send/receive and not
     the deprecated put/get interface.

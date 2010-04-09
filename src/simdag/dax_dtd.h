@@ -1,5 +1,5 @@
 /* XML processor/application API for simdag/dax.dtd.
- * Generated 2010/04/06 12:44:26.
+ * Generated 2010/04/09 23:31:36.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -92,6 +92,8 @@ typedef int AT_dax__adag_childCount;
 typedef enum { AU_dax__uses_link, A_dax__uses_link_input,A_dax__uses_link_output } AT_dax__uses_link;
 typedef int AT_dax__job_runtime;
 #define AU_dax__job_runtime NULL
+typedef int AT_dax__job_level;
+#define AU_dax__job_level NULL
 typedef int AT_dax__job_namespace;
 #define AU_dax__job_namespace NULL
 typedef int AT_dax__job_name;
@@ -144,6 +146,8 @@ XBT_PUBLIC_DATA(AT_dax__uses_link ) AX_dax__uses_link;
 #define A_dax__uses_link AX_dax__uses_link
 XBT_PUBLIC_DATA(AT_dax__job_runtime ) AX_dax__job_runtime;
 #define A_dax__job_runtime (dax__bufferstack + AX_dax__job_runtime)
+XBT_PUBLIC_DATA(AT_dax__job_level ) AX_dax__job_level;
+#define A_dax__job_level (dax__bufferstack + AX_dax__job_level)
 XBT_PUBLIC_DATA(AT_dax__job_namespace ) AX_dax__job_namespace;
 #define A_dax__job_namespace (dax__bufferstack + AX_dax__job_namespace)
 XBT_PUBLIC_DATA(AT_dax__job_name ) AX_dax__job_name;

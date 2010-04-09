@@ -17,6 +17,7 @@
 <!ATTLIST job name CDATA #REQUIRED>
 <!ATTLIST job version CDATA "0.0">
 <!ATTLIST job runtime CDATA #REQUIRED>
+<!ATTLIST job level CDATA ""> <!-- ignored -->
 
 <!ELEMENT uses EMPTY>
 <!ATTLIST uses file CDATA #REQUIRED>

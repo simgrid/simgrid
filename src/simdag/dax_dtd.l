@@ -1,5 +1,5 @@
 /* Validating XML processor for simdag/dax.dtd.
- * Generated 2010/04/06 12:44:26.
+ * Generated 2010/04/09 23:31:36.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -120,6 +120,8 @@ AT_dax__uses_link AX_dax__uses_link;
 #define A_dax__uses_link AX_dax__uses_link
 AT_dax__job_runtime AX_dax__job_runtime;
 #define A_dax__job_runtime (dax__bufferstack + AX_dax__job_runtime)
+AT_dax__job_level AX_dax__job_level;
+#define A_dax__job_level (dax__bufferstack + AX_dax__job_level)
 AT_dax__job_namespace AX_dax__job_namespace;
 #define A_dax__job_namespace (dax__bufferstack + AX_dax__job_namespace)
 AT_dax__job_name AX_dax__job_name;
@@ -494,6 +496,7 @@ const char* *dax__statenames=NULL;
   AX_dax__job_name = 0;
   AX_dax__job_version = 157;
   AX_dax__job_runtime = 0;
+  AX_dax__job_level = 0;
   ENTER(AL_dax__job); pushbuffer(0);
   }
 
@@ -512,6 +515,9 @@ const char* *dax__statenames=NULL;
 
  "runtime"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_dax__job_runtime);
  "runtime"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_dax__job_runtime);
+
+ "level"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_dax__job_level);
+ "level"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_dax__job_level);
 
  ">" {
   if (!AX_dax__job_id) FAIL("Required attribute `id' not set for `job' element.");
@@ -546,6 +552,9 @@ const char* *dax__statenames=NULL;
  .       FAIL("Unexpected character `%c': `</job>' expected.",yytext[0]);
  <<EOF>> FAIL("Premature EOF: `</job>' expected.");
 }
+
+ /* <!-- ignored -->
+  * <!-- ignored -->  */
 
 <S_dax__child_1,S_dax__adag_3,S_dax__child_2,S_dax__adag_5,E_dax__job,E_dax__adag,S_dax__child,S_dax__adag_4,ROOT_dax__uses,S_dax__adag,S_dax__adag_2,E_dax__child,S_dax__adag_1>"<uses"{s} FAIL("Starting tag <uses> is not allowed here.");
 
