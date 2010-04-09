@@ -63,12 +63,9 @@ target_link_libraries(smpi 	simgrid ${SMPI_DEP} -fprofile-arcs)
 
 ### Make EXEs
 
-if(enable_maintainer_mode)
-#src
+#src/testall
 add_subdirectory(${PROJECT_DIRECTORY}/src)
-endif(enable_maintainer_mode)
 
-#tools
 #tools/gras
 add_subdirectory(${PROJECT_DIRECTORY}/tools/gras)
 

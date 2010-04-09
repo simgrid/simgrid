@@ -686,6 +686,7 @@ set(to_svg
 	${PROJECT_DIRECTORY}/./src/bindings/ruby_bindings.h
 	${PROJECT_DIRECTORY}/./src/simix/smx_context_sysv_private.h
 	${PROJECT_DIRECTORY}/./src/simgrid_units_main.c
+	${TEST_UNITS}
 	${PROJECT_DIRECTORY}/./src/bindings/lua/master_slave.lua
 	${PROJECT_DIRECTORY}/./src/bindings/lua/mult_matrix.lua
 	${PROJECT_DIRECTORY}/./examples/lua/master_slave.lua
