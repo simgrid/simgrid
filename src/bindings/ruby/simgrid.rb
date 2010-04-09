@@ -5,11 +5,11 @@
 # This program is free software; you can redistribute it and/or modify it
 #  under the terms of the license (GNU LGPL) which comes with this package. */
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-require 'simgrid'
+require 'simgrid_ruby'
 require 'thread'
 
 #######################################
-#  Semaphore
+#  Semaphore 
 #######################################
 
 class Semaphore
@@ -82,7 +82,7 @@ class MSG::Process < Thread
   end
      
   def start()
-     @schedBegin.acquire
+    @schedBegin.acquire
     MSG::debug("Let's execute the main() of the Ruby process")
     main(@pargs)
     @schedEnd.release
@@ -125,18 +125,17 @@ class MSG::Process < Thread
     processGetHost(self)
   end
 
-# The Rest of Methods !!! To be Continued ... FIXME: what's missing?
 end
 ############################################
 # Task Extend from the native Class RbTask
 ############################################
 class MSG::Task < MSG::RbTask
-
+  
   def initialize(*args)
-   super() #no effect
+    #Nothing todo   
   end
   
-  def setData(value)
+  def join(value) 
     super(self,value)
   end
   
@@ -145,15 +144,19 @@ class MSG::Task < MSG::RbTask
   end
   
   def name
-      super(self)
+   super(self)
   end
   
   def compSize
-     super(self)
+    super(self)
   end
   
   def send(mailbox)
-    super(self,mailbox)
+   super(self,mailbox)
+  end
+  
+  def receive(mailbox)
+    super(self)
   end
   
   def source
@@ -165,7 +168,7 @@ class MSG::Task < MSG::RbTask
   end
   
   def listen(t_alias)
-    super(t_alias)
+    super(self)
   end
   
   def execute
@@ -173,22 +176,23 @@ class MSG::Task < MSG::RbTask
   end
     
   def listenFromHost(t_alias,host)
-    super(t_alias,host)
+    super(self)
   end
   
   def setPriority(priority)
     super(self,priority)
   end
   
-  def cancel()
+  def cancel
     super(self)
   end
   
-  def hasData()
+  def hasData
     super(self)
   end
    
 end  
+
 ####################################################
 # Host Extend from the native Class RbHost
 ####################################################
@@ -223,7 +227,6 @@ class MSG::Host < MSG::RbHost
   def getData
     super(self)
   end
-  
   
   def isAvail
     super(self)
