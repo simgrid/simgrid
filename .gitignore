@@ -33,6 +33,8 @@ examples/ruby/simgrid.so
 examples/lua/simgrid.so
 examples/msg/zmsg_test.trace
 
+*_unit.c
+
 buildtools/Cmake/src/tmp_gras_config.h.in
 buildtools/Cmake/src/tmp_tracing_config.h.in
 make_simgrid_java.sh
