@@ -60,9 +60,10 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDistrib.txt)
 ### Print ARGS
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakePrintArgs.txt)
 
-### Make Docs
-if(enable_maintainer_mode)
-	#include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDocs.txt)
-endif(enable_maintainer_mode)
+set_property(GLOBAL PROPERTY LABELS "${SVN_VERSION}${GIT_VERSION}")
+set_property(GLOBAL PROPERTY PROJECT_LABEL "${SVN_VERSION}${GIT_VERSION}")
+set(PROJECT_LABEL "${SVN_VERSION}${GIT_VERSION}")
 
 INCLUDE(Dart)
+
+

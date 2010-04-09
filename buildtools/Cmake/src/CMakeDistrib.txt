@@ -6,10 +6,6 @@ set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}~${SVN_VERSION}${GIT_DATE}")
 set(CPACK_GENERATOR "TBZ2") #;TGZ;TZ;ZIP
 
-set_property(GLOBAL
-PROPERTY Label "${SVN_VERSION}${GIT_VERSION}"
-)
-
 foreach(file ${script_to_install})
 	get_filename_component(file_location ${file} PATH)
 	string(REPLACE "${PROJECT_DIRECTORY}/" "/" file_location ${file_location})
@@ -62,6 +58,7 @@ COMMAND mkdir -p ${prefix}/doc
 COMMAND mkdir -p ${prefix}/doc/simgrid
 COMMAND mkdir -p ${prefix}/doc/simgrid/html
 COMMAND cp ${install_bins} ${prefix}/bin
+COMMAND mv ${prefix}/bin/colorize.pl ${prefix}/bin/simgrid_colorizer.pl
 COMMAND echo "install bin ok"
 COMMAND cp ${install_libs} ${prefix}/lib
 COMMAND echo "install lib ok"
