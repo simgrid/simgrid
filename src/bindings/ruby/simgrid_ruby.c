@@ -139,7 +139,7 @@ static VALUE msg_get_clock(VALUE class) {
 extern const char*xbt_ctx_factory_to_use; /*Hack: let msg load directly the right factory */
 
 typedef VALUE(*rb_meth)(ANYARGS);
-void Init_simgrid_ruby() {
+void Init_libsimgrid() {
   xbt_ctx_factory_to_use = "ruby";
 
   // Modules

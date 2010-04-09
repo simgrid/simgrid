@@ -49,7 +49,7 @@ typedef struct s_smx_ctx_ruby {
 }s_smx_ctx_ruby_t,*smx_ctx_ruby_t;
 void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory);
 
-void Init_simgrid_ruby(void); /* Load the bindings */
+void Init_libsimgrid(void); /* Load the bindings */
 void initRuby(void); // Mandatory to call Ruby methods from C
 
 /* *********************************************** *

@@ -15,8 +15,7 @@ set(SMPI_DEP "")
 
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -lm -module")
-	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.* ${PROJECT_DIRECTORY}/examples/ruby/simgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
-	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.* ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
+	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/examples/ruby/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
 endif(HAVE_RUBY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
