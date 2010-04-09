@@ -317,12 +317,6 @@ ${PROJECT_DIRECTORY}/src/.libs/libsimgrid_static.*
 ${PROJECT_DIRECTORY}/src/.libs/libgras.*
 ${PROJECT_DIRECTORY}/src/.libs/libsmpi.*
 )
-if(HAVE_RUBY)
-	set(install_libs
-	${install_libs}
-	${PROJECT_DIRECTORY}/src/.libs/libsimgrid_ruby.*
-	)
-endif(HAVE_RUBY)
 
 set(install_HEADERS
 ./include/gras.h 

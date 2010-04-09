@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 SET(CMAKE_LANGUAGE "Cxx")
 SET(PROJECT_NAME "Simgrid")
-set_property(GLOBAL PROPERTY Label "${SVN_VERSION}${GIT_VERSION}")
 
 ### Find programs and paths
 find_program(SH_EXE NAMES sh)
