@@ -24,8 +24,9 @@ SimGrid (3.3.5-svn) unstable; urgency=low
     semantic of a possible use wasn't even clear.
   * SD_SCHED_NO_COST: Constant to use as cost in SD_task_schedule()
     either as comm costs or compute costs to mean that there is no
-    such thing for that specific task. 
+    such thing for that specific task.
   * Fix SD_task_unschedule() on typed tasks
+  * Fix SD_task_get_execution_time() to return seconds, not flop*sec
  MSG: 
   * In trace replay, allow to have one trace file per process.
     Give the specific trace file as argument of each process, 
@@ -39,12 +40,40 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * About trace replay (see examples/msg/actions):
     - implement barrier
     - Allow to work with splitted trace files for each process
+    - Fix implementation of collective operations
+ SMPI:
+  * This is the first release of SimGrid where SMPI is not considered
+    beta anymore (even if some corners should still be improved)
+  * Port over the new SIMIX_network submodule (internal refactoring)
+  * Basic support to log events as with SMPE (use --cfg=SMPE:1)
+  * Implement more missing elements of the standard:
+    - MPI_COMM_SELF 
+    - MPI_MAXLOC MPI_MINLOC + all associated datatype MPI_DOUBLE_INT,
+      MPI_FLOAT_INT, etc.
+    - MPI_Address() MPI_Get_count() MPI_Type_free() MPI_Type_extent()
+      MPI_Scan() MPI_Get_processor_name()
+    - Added implementation of missing case for Alltoall (warning: it's
+      *not* the bruck variant from OpenMPI; based on Alltoallv instead)
+    - SMPI_MPI_Gather() SMPI_MPI_Gatherv() SMPI_MPI_Scatterv()
+      SMPI_MPI_Reduce_scatter() SMPI_MPI_Allgather()
+      SMPI_MPI_Allgatherv() 
+  * Bug fixes include:
+    - MPI_Waitsome() was broken
+    - Allow relative includes in smpicc
+    - Command line cfg argument 'reference_speed' was ignored...
+    - Some functions did not properly lead to auto-benching of user code
+    - smpicc passes -O2 by default (just like openmpi one)
  SIMIX:
   * add SIMIX_action_suspend() and SIMIX_action_resume() functions
+  * add SIMIX_message_sizes_output() as a pimple to write to file the
+    amount of messages per size. Use gnuplot to get histogram. 
+    Pimple because that's the only user-visible function of simix,
+     defined directly in xbt.h (irk, sorry)
   * About semaphores:
      - Add a SIMIX_sem_get_capacity() function
      - Fix interactions with processe resume/suspende
-     - release_forever was stupidly broken
+     - release_forever() was stupidly broken
+     - Fix SIMIX_display_process_status() for processes in a semaphore
      - Make SIMIX_sem_block_onto() user-visible
   * Refactoring context stuff:
     - Use pseudo-OOP for better modularity
@@ -64,8 +93,6 @@ SimGrid (3.3.5-svn) unstable; urgency=low
   * Add a long description to the models, that users can see with such
     argument on the command line: --cfg=cpu/model:help
   * --help-models display the long description of all known models
- SMPI:
-  * Implement MPI_Get_count, MPI_MAXLOC, MPI_MINLOC
  XBT:
   * config: add the ability to set a default value after registration
     Does not override any previously set value (e.g. from cmd line)
