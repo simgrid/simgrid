@@ -113,6 +113,7 @@ XBT_PUBLIC(void *) SD_task_get_data(SD_task_t task);
 XBT_PUBLIC(void) SD_task_set_data(SD_task_t task, void *data);
 XBT_PUBLIC(e_SD_task_state_t) SD_task_get_state(SD_task_t task);
 XBT_PUBLIC(const char *) SD_task_get_name(SD_task_t task);
+XBT_PUBLIC(void) SD_task_set_name(SD_task_t task, const char *name);
 XBT_PUBLIC(void) SD_task_watch(SD_task_t task, e_SD_task_state_t state);
 XBT_PUBLIC(void) SD_task_unwatch(SD_task_t task, e_SD_task_state_t state);
 XBT_PUBLIC(double) SD_task_get_amount(SD_task_t task);

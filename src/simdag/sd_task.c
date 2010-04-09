@@ -168,6 +168,12 @@ const char *SD_task_get_name(SD_task_t task)
   return task->name;
 }
 
+/** @brief Allows to change the name of a task */
+void SD_task_set_name(SD_task_t task, const char *name) {
+  xbt_free(task->name);
+  task->name = xbt_strdup(name);
+}
+
 /** @brief Returns the dynar of the parents of a task
  *
  * \param task a task

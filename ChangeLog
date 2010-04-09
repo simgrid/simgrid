@@ -37,6 +37,7 @@ SimGrid (3.4-svn) unstable; urgency=low
   * SD_SCHED_NO_COST: Constant to use as cost in SD_task_schedule()
     either as comm costs or compute costs to mean that there is no
     such thing for that specific task.
+  * Add a SD_task_set_name() function
   * Fix SD_task_unschedule() on typed tasks
   * Fix SD_task_get_execution_time() to return seconds, not flop*sec
  MSG: 
