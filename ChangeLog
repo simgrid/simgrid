@@ -46,6 +46,7 @@ SimGrid (3.4-svn) unstable; urgency=low
   * Kill MSG_WARNING and MSG_FATAL return codes: they were not used
     anywere in source.
   * Rename MSG_TIMEOUT_FAILURE into MSG_TIMEOUT for sake of logic
+    (declare MSG_USE_DEPRECATED to still have the old name)
   * Add a MSG_task_set_data() function
   * About trace replay (see examples/msg/actions):
     - implement barrier

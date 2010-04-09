@@ -202,6 +202,8 @@ XBT_PUBLIC(void) MSG_action_unregister(const char *action_name);
 
 
 #ifdef MSG_USE_DEPRECATED
+/* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
+#define MSG_TIMEOUT_FAILURE MSG_TIMEOUT
 #define MSG_mailbox_put_with_time_out(mailbox, task, timeout) \
         MSG_mailbox_put_with_timeout(mailbox, task, timeout)
 
