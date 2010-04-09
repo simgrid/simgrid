@@ -486,5 +486,6 @@ int main(int argc, char **argv)
   INFO0("***** Test 3 (Lagrange - Reno)");
   test3(LAGRANGE_RENO);
 
+  xbt_exit();
   return 0;
 }
