@@ -343,8 +343,6 @@ static void finalize(void)
   xbt_dict_free(&surf_network_model->resource_set);
 
   surf_model_exit(surf_network_model);
-
-  free(surf_network_model);
   surf_network_model = NULL;
 
   gtnets_finalize();
