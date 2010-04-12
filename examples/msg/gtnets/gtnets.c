@@ -126,17 +126,9 @@ int slave(int argc, char *argv[])
            slavenames[id], remaining);
       }
     }
-    //exit(0);
-  }
+  }  
 
-  for (id = 0; id < NTASKS; id++) {
-    if (gl_task_array[id] == task) {
-      MSG_task_destroy(task);
-      gl_task_array[id] = NULL;
-      return 0;
-    }
-  }
-
+  MSG_task_destroy(task);
   return 0;
 }                               /* end_of_slave */
 
