@@ -64,7 +64,7 @@ COMMAND mkdir -p ${prefix}/doc
 COMMAND mkdir -p ${prefix}/doc/simgrid
 COMMAND mkdir -p ${prefix}/doc/simgrid/html
 COMMAND cp ${install_bins} ${prefix}/bin
-COMMAND mv ${prefix}/bin/colorize.pl ${prefix}/bin/simgrid_colorizer.pl
+COMMAND cp ${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl ${prefix}/bin/simgrid_colorizer.pl
 COMMAND echo "install bin ok"
 COMMAND cp ${install_libs} ${prefix}/lib
 COMMAND echo "install lib ok"
@@ -75,16 +75,27 @@ COMMAND echo "install doc ok"
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 )
 
+if(HAVE_JAVA)
+	add_custom_command(TARGET install-simgrid
+	COMMAND echo "install binding java"
+	COMMAND mkdir --parent ${prefix}/share/
+	COMMAND cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${prefix}/share/simgrid.jar
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
+	)
+endif(HAVE_JAVA)
+
 if(HAVE_LUA)
-	add_custom_target(install-lua
-	COMMAND mkdir --parent ${prefix}/lua/5.1/
-	COMMAND ln -sf ${prefix}/lib/libsimgrid.so ${prefix}/lua/5.1/simgrid.so
+	add_custom_command(TARGET install-simgrid
+	COMMAND echo "install binding lua"
+	COMMAND mkdir --parent ${prefix}/lib/lua/5.1/
+	COMMAND ln -sf ${prefix}/lib/libsimgrid.so ${prefix}/lib/lua/5.1/simgrid.so
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
 endif(HAVE_LUA)
 
 if(HAVE_RUBY)
-	add_custom_target(install-ruby
+	add_custom_command(TARGET install-simgrid
+	COMMAND echo "install binding ruby"
 	COMMAND mkdir --parent ${prefix}/lib/site_ruby${install_link_ruby}/
 	COMMAND ln -sf ${prefix}/lib/libsimgrid.so ${prefix}/lib/site_ruby${install_link_ruby}/libsimgrid.so
 	COMMAND cp ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid.rb ${prefix}/lib/site_ruby${install_link_ruby}/simgrid.rb
@@ -99,9 +110,15 @@ COMMAND echo "uninstall doc ok"
 COMMAND rm ${uninstall_libs}
 COMMAND echo "uninstall lib ok"
 COMMAND rm ${uninstall_bins}
+COMMAND rm ${prefix}/bin/simgrid_colorizer.pl
 COMMAND echo "uninstall bin ok"
 COMMAND rm ${uninstall_HEADERS}
 COMMAND echo "uninstal include ok"
+COMMAND rm ${prefix}/share/simgrid.jar
+COMMAND rm ${prefix}/lib/lua/5.1/simgrid.so
+COMMAND rm ${prefix}/lib/site_ruby${install_link_ruby}/libsimgrid.so
+COMMAND rm ${prefix}/lib/site_ruby${install_link_ruby}/simgrid.rb
+COMMAND echo "uninstal bindings"
 COMMAND rm -R ${prefix}/include/amok ${prefix}/include/gras ${prefix}/include/instr ${prefix}/include/msg 
 COMMAND rm -R ${prefix}/include/simdag ${prefix}/include/smpi ${prefix}/include/surf ${prefix}/include/xbt
 WORKING_DIRECTORY "${prefix}"

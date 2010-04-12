@@ -311,15 +311,7 @@ ${PROJECT_DIRECTORY}/src/smpi/smpicc
 ${PROJECT_DIRECTORY}/src/smpi/smpirun
 ${PROJECT_DIRECTORY}/tools/gras/gras_stub_generator
 ${PROJECT_DIRECTORY}/tools/tesh/tesh
-${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl
 )
-
-if(HAVE_JAVA)
-	set(install_bins
-	${install_bins}
-	${PROJECT_DIRECTORY}/src/simgrid.jar
-	)
-endif(HAVE_JAVA)
 
 set(install_libs
 ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.*
