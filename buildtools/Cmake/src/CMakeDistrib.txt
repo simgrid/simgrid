@@ -45,7 +45,11 @@ set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 
 string(REPLACE ";" "\t" install_HEADERS "${install_HEADERS}")
 string(REPLACE ";" "\t" install_libs "${install_libs}")
-string(REPLACE "${PROJECT_DIRECTORY}/src/smpi" "${prefix}/bin" uninstall_bins "${install_bins}")
+set(uninstall_bins "${install_bins}")
+string(REPLACE "${PROJECT_DIRECTORY}/src/smpi" "${prefix}/bin" uninstall_bins "${uninstall_bins}")
+string(REPLACE "${PROJECT_DIRECTORY}/tools/gras" "${prefix}/bin" uninstall_bins "${uninstall_bins}")
+string(REPLACE "${PROJECT_DIRECTORY}/tools/tesh" "${prefix}/bin" uninstall_bins "${uninstall_bins}")
+string(REPLACE "${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl" "${prefix}/bin/simgrid_colorizer.pl" uninstall_bins "${uninstall_bins}")
 string(REPLACE "${PROJECT_DIRECTORY}/src/.libs" "${prefix}/lib" uninstall_libs "${install_libs}")
 string(REPLACE "./" "${prefix}/" uninstall_HEADERS "${install_HEADERS}")
 
