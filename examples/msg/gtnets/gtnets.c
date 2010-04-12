@@ -73,13 +73,15 @@ int master(int argc, char *argv[])
   /* time measurement */
   start_time = MSG_get_clock();
   MSG_task_send(todo, id_alias);
-
   end_time = MSG_get_clock();
-  INFO3("Send completed (to %s). Transfer time: %f\t Agregate bandwidth: %f",
-        slave->name, (end_time - start_time),
-        task_comm_size / (end_time - start_time));
-  INFO2("Completed peer: %s time: %f", slave->name, (end_time - start_time));
 
+
+  if (!bool_printed) {
+    INFO3("Send completed (to %s). Transfer time: %f\t Agregate bandwidth: %f",
+	  slave->name, (end_time - start_time),
+	  task_comm_size / (end_time - start_time));
+    INFO2("Completed peer: %s time: %f", slave->name, (end_time - start_time));
+  }
   return 0;
 }                               /* end_of_master */
 
