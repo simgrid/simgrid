@@ -126,8 +126,20 @@ MSG_error_t test_all(const char *platform_file,
 int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
+  int is_tracing = 0;
+  int i;
 
-  TRACE_start ("zmsg_test.trace");
+  for (i = 0; i < argc; i++){
+    if (!strcmp (argv[i], "--trace")){
+      is_tracing = 1;
+    }
+  }
+
+  if (is_tracing){
+    //if TRACE_start is not called, all other tracing
+    //functions will be disabled
+    TRACE_start ("simulation.trace");
+  }
   TRACE_host_variable_declare ("is_slave");
   TRACE_host_variable_declare ("is_master");
   TRACE_host_variable_declare ("task_creation");
@@ -145,7 +157,9 @@ int main(int argc, char *argv[])
    SIMIX_message_sizes_output("toto.txt");
   MSG_clean();
 
-  TRACE_end();
+  if (is_tracing){
+    TRACE_end();
+  }
 
   if(res==MSG_OK)
     return 0;
