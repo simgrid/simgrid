@@ -66,10 +66,6 @@ simgrid.info("Slave '" ..my_mailbox.."': I'm Done . See You !!");
 end -- function ----------------------------------------------------------
 --]]
 
-function doyield() 
-    coroutine.yield()
-end
-
 require "simgrid"
 simgrid.platform("../msg/small_platform.xml")
 simgrid.application("../ruby/deploy.xml")
