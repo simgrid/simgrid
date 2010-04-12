@@ -16,7 +16,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 /** The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static int emigrant(int argc, char *argv[])
 {
-  TRACE_msg_set_process_category (MSG_process_self(), "emigrant");
   m_task_t task;
   INFO0
     ("I'll look for a new job on another machine where the grass is greener.");
@@ -49,9 +48,6 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
-  TRACE_start_with_mask ("zmsg_test.trace", TRACE_PLATFORM|TRACE_PROCESS);
-  TRACE_category ("emigrant");
-
   /* Argument checking */
   MSG_global_init(&argc, argv);
   if (argc < 3) {
@@ -73,8 +69,6 @@ int main(int argc, char *argv[])
   INFO1("Simulation time %g", MSG_get_clock());
   if (res == MSG_OK)
     res = MSG_clean();
-
-  TRACE_end ();
 
   if (res == MSG_OK)
     return 0;
