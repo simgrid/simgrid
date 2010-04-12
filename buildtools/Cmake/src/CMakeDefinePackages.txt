@@ -314,6 +314,13 @@ ${PROJECT_DIRECTORY}/tools/tesh/tesh
 ${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl
 )
 
+if(HAVE_JAVA)
+	set(install_bins
+	${install_bins}
+	${PROJECT_DIRECTORY}/src/simgrid.jar
+	)
+endif(HAVE_JAVA)
+
 set(install_libs
 ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.*
 ${PROJECT_DIRECTORY}/src/.libs/libsimgrid_static.*
