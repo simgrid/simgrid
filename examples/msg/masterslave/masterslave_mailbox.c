@@ -27,6 +27,8 @@ int master(int argc, char *argv[])
   double task_comm_size = atof(argv[3]);
   long slaves_count = atol(argv[4]);
 
+  TRACE_host_variable_set ("is_master", 1);
+
   int i;
 
   INFO2("Got %ld slaves and %ld tasks to process", slaves_count,number_of_tasks);
@@ -39,6 +41,8 @@ int master(int argc, char *argv[])
     sprintf(mailbox,"slave-%ld",i % slaves_count);
     sprintf(sprintf_buffer, "Task_%d", i);
     task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
+    TRACE_host_variable_set ("task_creation", i);
+    TRACE_msg_set_task_category (task, "compute");
     if (number_of_tasks<10000 || i%10000 == 0) 
       INFO3("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name, number_of_tasks, mailbox);
      
@@ -50,7 +54,9 @@ int master(int argc, char *argv[])
      char mailbox[80]; 
     
      sprintf(mailbox,"slave-%ld",i % slaves_count); 
-     MSG_task_send(MSG_task_create("finalize", 0, 0, 0), mailbox); 
+     m_task_t finalize = MSG_task_create ("finalize", 0, 0, 0);
+     TRACE_msg_set_task_category(finalize, "finalize");
+     MSG_task_send(finalize, mailbox);
    } 
   
 //  INFO0("Goodbye now!");
@@ -64,6 +70,8 @@ int slave(int argc, char *argv[])
   int res;
   int id = -1;
   char mailbox[80];
+
+  TRACE_host_variable_set ("is_slave", 1);
 
   xbt_assert1(sscanf(argv[1],"%d", &id),
 	 "Invalid argument %s\n",argv[1]);
@@ -81,6 +89,7 @@ int slave(int argc, char *argv[])
     }
      
 //    INFO1("Processing \"%s\"", MSG_task_get_name(task));
+    TRACE_host_variable_add ("task_computation", MSG_task_get_compute_duration(task));
     MSG_task_execute(task);
 //    INFO1("\"%s\" done", MSG_task_get_name(task));
     MSG_task_destroy(task);
@@ -118,6 +127,14 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
+  TRACE_start ("zmsg_test.trace");
+  TRACE_host_variable_declare ("is_slave");
+  TRACE_host_variable_declare ("is_master");
+  TRACE_host_variable_declare ("task_creation");
+  TRACE_host_variable_declare ("task_computation");
+  TRACE_category ("compute");
+  TRACE_category ("finalize");
+
   MSG_global_init(&argc,argv);
   if (argc < 3) {
      printf ("Usage: %s platform_file deployment_file\n",argv[0]);
@@ -127,6 +144,8 @@ int main(int argc, char *argv[])
   res = test_all(argv[1],argv[2]);
    SIMIX_message_sizes_output("toto.txt");
   MSG_clean();
+
+  TRACE_end();
 
   if(res==MSG_OK)
     return 0;
