@@ -2,7 +2,7 @@
 
 p Testing a simple master/slave example application
 
-$ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/masterslave/deployment_masterslave.xml
+$ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_platform_with_routers.xml ${srcdir:=.}/masterslave/deployment_masterslave.xml --trace
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slaves and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" to "Jupiter"
 > [Tremblay:master:(1) 0.165962] [msg_test/INFO] Sent
