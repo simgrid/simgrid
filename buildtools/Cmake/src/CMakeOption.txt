@@ -1,5 +1,5 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see after)
-### ex: cmake -Ddisable_java=ON -Ddisable_gtnets=ON ./
+### ex: cmake -Denable_java=ON -Denable_gtnets=ON ./
 
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib")
@@ -10,10 +10,10 @@ if(NOT with_context)
 	set(with_context "auto" CACHE TYPE INTERNAL FORCE)
 endif(NOT with_context)
 
-option(disable_gtnets "This variable set the gtnets context." off)
-option(disable_java "This variable set the java context." off)
-option(disable_lua "This variable set lua use." off)
-option(disable_ruby "This variable set ruby use." off)
+option(enable_gtnets "This variable set the gtnets context." on)
+option(enable_java "This variable set the java context." off)
+option(enable_lua "This variable set lua use." on)
+option(enable_ruby "This variable set ruby use." on)
 
 option(enable_compile_optimizations "" off)
 option(enable_compile_warnings "" off)

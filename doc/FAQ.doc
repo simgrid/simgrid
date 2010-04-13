@@ -397,11 +397,10 @@ TODO
 \verbatim
 "cmake -D[name]=[value] ... ./"
  
-[name] 		disable_gtnets			[value] ON/OFF or TRUE/FALSE or 1/0
-		disable_java				ON/OFF or TRUE/FALSE or 1/0
-		disable_lua				ON/OFF or TRUE/FALSE or 1/0
-		disable_ruby				ON/OFF or TRUE/FALSE or 1/0
-
+[name] 		enable_gtnets			[value] ON/OFF or TRUE/FALSE or 1/0
+		enable_java				ON/OFF or TRUE/FALSE or 1/0
+		enable_lua				ON/OFF or TRUE/FALSE or 1/0
+		enable_ruby				ON/OFF or TRUE/FALSE or 1/0
 		enable_compile_optimizations		ON/OFF or TRUE/FALSE or 1/0
 		enable_compile_warnings			ON/OFF or TRUE/FALSE or 1/0
 		enable_maintainer_mode			ON/OFF or TRUE/FALSE or 1/0
@@ -419,13 +418,13 @@ TODO
                                                                                                                                                           
 \subsubsection faq_cmakeoption2 Options explaination
 
-  \li disable_gtnets : set to true implie that user doesn't want to use gtnets.
+  \li enable_gtnets : set to true implie that user wants to use gtnets.
 
-  \li disable_java : set to true implie that user doesn't want to add java langage into simgrid compilation.
+  \li enable_java : set to true implie that user wants to add java langage into simgrid compilation.
 
-  \li disable_lua : set to true implie that user doesn't want to add lua langage into simgrid compilation.
+  \li enable_lua : set to true implie that user wants to add lua langage into simgrid compilation.
 
-  \li disable_ruby : set to true implie that user doesn't want to add ruby langage into simgrid compilation.
+  \li enable_ruby : set to true implie that user wants to add ruby langage into simgrid compilation.
 
   \li enable_compile_optimizations : add flags "-O3 -finline-functions -funroll-loops -fno-strict-aliasing"
 
@@ -489,11 +488,10 @@ src/gras/DataDesc/ddt_parse.yy.c
 Those options are initialized the first time you launch \"cmake ./\" whithout specified option.
 
 \verbatim
-disable_gtnets			off
-disable_java			off
-disable_lua			off
-disable_ruby			off
-
+enable_gtnets			on
+enable_lua			on
+enable_ruby			on
+enable_java			off
 enable_compile_optimizations	off
 enable_compile_warnings		off
 enable_maintainer_mode		off

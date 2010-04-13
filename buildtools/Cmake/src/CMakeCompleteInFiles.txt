@@ -55,7 +55,7 @@ set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
 SET(HAVE_RUBY 0)
 set(libruby "ruby1.8")
-if(NOT disable_ruby)
+if(enable_ruby)
 	include(FindRuby)
 	set(OKITOKI no)
 	foreach(path ${RUBY_INCLUDE_PATH})
@@ -81,7 +81,7 @@ if(NOT disable_ruby)
 		ADD_DEFINITIONS("-I${PROJECT_DIRECTORY}/src/bindings/ruby -I${PROJECT_DIRECTORY}/src/simix")
 		SET(HAVE_RUBY 1)
 	endif(RUBY_INCLUDE_PATH)
-endif(NOT disable_ruby)
+endif(enable_ruby)
 
 if(enable_tracing)
 	SET(HAVE_TRACING 1)
@@ -89,9 +89,9 @@ endif(enable_tracing)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT JAVA
-if(disable_java)
+if(NOT enable_java)
   	SET(HAVE_JAVA 0)
-else(disable_java)
+else(NOT enable_java)
 	include(FindJava)
 	include(FindJNI)
 	if(JAVA_INCLUDE_PATH)
@@ -106,25 +106,24 @@ else(disable_java)
 	else(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2) 
 		SET(HAVE_JAVA 0)
 	endif(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
-endif(disable_java)
+endif(NOT enable_java)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT GTNETS
-if(disable_gtnets)
+if(NOT enable_gtnets)
 	SET(HAVE_GTNETS 0)
-else(disable_gtnets)
+else(NOT enable_gtnets)
 	set(GTNETS_LDFLAGS "-L${gtnets_path}/lib")
 	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include/gtnets")
 	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
 	if(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 0)
-		message("GTnetS doesn't works : set -Ddisable_gtnets=on")
 	else(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 1)
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
 	endif(COMPILE_GTNETS_VAR)
-endif(disable_gtnets)
+endif(NOT enable_gtnets)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
@@ -253,7 +252,7 @@ endif(NOT with_context_ok)
 
 set(HAVE_LUA 0)
 
-if(NOT disable_lua)
+if(enable_lua)
 	find_path(HAVE_LUA5_1_LUALIB_H
 	NAMES lualib.h 
 	PATHS "/sw/include/" "/usr/include/lua5.1/"
@@ -305,7 +304,7 @@ if(NOT disable_lua)
 		set(HAVE_LUA 0)
 	endif(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
 
-endif(NOT disable_lua)
+endif(enable_lua)
 
 ###############
 ## SVN version check
