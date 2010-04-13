@@ -183,6 +183,9 @@ MSG_error_t MSG_clean(void)
   m_host_t h = NULL;
   m_process_t p = NULL;
 
+#ifdef HAVE_TRACING
+  TRACE_msg_clean ();
+#endif
 
   while ((p = xbt_fifo_pop(msg_global->process_list))) {
     MSG_process_kill(p);

@@ -105,7 +105,6 @@ int TRACE_start_with_mask(const char *filename, int mask) {
 
 int TRACE_end() {
   if (!IS_TRACING) return 1;
-  __TRACE_surf_finalize();
   FILE *file = TRACE_paje_end();
   fclose (file);
   return 0;

@@ -117,6 +117,8 @@ void TRACE_surf_link_set_latency (double date, char *resource, double latency);
 void TRACE_surf_routing_full_parse_end (char *link_name, int src, int dst);
 void TRACE_surf_missing_link (void);
 void TRACE_surf_define_host_id (const char *name, int host_id);
+void TRACE_msg_clean (void);
+
 //for tracing gtnets
 void TRACE_surf_gtnets_communicate (void *action, int src, int dst);
 int TRACE_surf_gtnets_get_src (void *action);

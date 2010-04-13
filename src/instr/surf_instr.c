@@ -22,6 +22,7 @@ static xbt_dict_t hosts_id;
 static xbt_dict_t created_links;
 static xbt_dict_t link_bandwidth;
 static xbt_dict_t link_latency;
+static xbt_dict_t host_containers;
 //static xbt_dict_t platform_variable_last_value; /* to control the amount of add/sub variables events*/
 //static xbt_dict_t platform_variable_last_time; /* to control the amount of add/sub variables events*/
 
@@ -43,6 +44,7 @@ void __TRACE_surf_init (void)
   link_bandwidth = xbt_dict_new();
   link_latency = xbt_dict_new();
   platform_variables = xbt_dict_new();
+  host_containers = xbt_dict_new();
 
   //platform_variable_last_value = xbt_dict_new();
   //platform_variable_last_time = xbt_dict_new();
@@ -299,7 +301,10 @@ void TRACE_surf_net_link_new (char *name, double bw, double lat)
 void TRACE_surf_cpu_new (char *name, double power)
 {
   if (!IS_TRACING) return;
-  if (IS_TRACING_PLATFORM) pajeCreateContainer (SIMIX_get_clock(), name, "HOST", "platform", name);
+  if (IS_TRACING_PLATFORM){
+	pajeCreateContainer (SIMIX_get_clock(), name, "HOST", "platform", name);
+	xbt_dict_set (host_containers, xbt_strdup(name), xbt_strdup("1"), xbt_free);
+  }
   __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "power", name, power);
 }
 
@@ -412,6 +417,20 @@ void TRACE_surf_missing_link (void)
 		 "the platform you are using contains "
 		 "routes with more than one link.");
   THROW0(tracing_error, TRACE_ERROR_COMPLEX_ROUTES, "Tracing failed");
+}
+
+void TRACE_msg_clean (void)
+{
+  __TRACE_surf_finalize();
+
+  xbt_dict_cursor_t cursor = NULL;
+  unsigned int cursor_ar = 0;
+  char *key, *value;
+
+  /* get all host from host_containers */
+  xbt_dict_foreach(host_containers, cursor, key, value) {
+    if (IS_TRACING_PLATFORM) pajeDestroyContainer (MSG_get_clock(), "HOST", key);
+  }
 }
 
 #endif
