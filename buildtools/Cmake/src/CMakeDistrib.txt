@@ -75,6 +75,21 @@ COMMAND echo "install doc ok"
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 )
 
+add_custom_target(uninstall
+COMMAND rm -rf ${prefix}/doc/simgrid
+COMMAND echo "uninstall doc ok"
+COMMAND rm ${uninstall_libs}
+COMMAND echo "uninstall lib ok"
+COMMAND rm ${uninstall_bins}
+COMMAND rm ${prefix}/bin/simgrid_colorizer.pl
+COMMAND echo "uninstall bin ok"
+COMMAND rm ${uninstall_HEADERS}
+COMMAND echo "uninstal include ok"
+COMMAND rm -R ${prefix}/include/amok ${prefix}/include/gras ${prefix}/include/instr ${prefix}/include/msg 
+COMMAND rm -R ${prefix}/include/simdag ${prefix}/include/smpi ${prefix}/include/surf ${prefix}/include/xbt
+WORKING_DIRECTORY "${prefix}"
+)
+
 if(HAVE_JAVA)
 	add_custom_command(TARGET install-simgrid
 	COMMAND echo "install binding java"
@@ -82,6 +97,11 @@ if(HAVE_JAVA)
 	COMMAND cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${prefix}/share/simgrid.jar
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
+	add_custom_command(TARGET uninstall
+	COMMAND rm ${prefix}/share/simgrid.jar
+	COMMAND echo "uninstall binding java"
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
+	)	
 endif(HAVE_JAVA)
 
 if(HAVE_LUA)
@@ -89,6 +109,11 @@ if(HAVE_LUA)
 	COMMAND echo "install binding lua"
 	COMMAND mkdir --parent ${prefix}/lib/lua/5.1/
 	COMMAND ln -sf ${prefix}/lib/libsimgrid.so ${prefix}/lib/lua/5.1/simgrid.so
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
+	)
+	add_custom_command(TARGET uninstall
+	COMMAND echo "uninstall binding lua"
+	COMMAND rm ${prefix}/lib/lua/5.1/simgrid.so	
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
 endif(HAVE_LUA)
@@ -101,28 +126,13 @@ if(HAVE_RUBY)
 	COMMAND cp ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid.rb ${prefix}/lib/site_ruby${install_link_ruby}/simgrid.rb
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
+	add_custom_command(TARGET uninstall
+	COMMAND echo "uninstall binding ruby"
+	COMMAND rm ${prefix}/lib/site_ruby${install_link_ruby}/libsimgrid.so
+	COMMAND rm ${prefix}/lib/site_ruby${install_link_ruby}/simgrid.rb
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
+	)
 endif(HAVE_RUBY)
-
-add_custom_target(uninstall
-COMMAND echo "uninstall simgrid"
-COMMAND rm -rf ${prefix}/doc/simgrid
-COMMAND echo "uninstall doc ok"
-COMMAND rm ${uninstall_libs}
-COMMAND echo "uninstall lib ok"
-COMMAND rm ${uninstall_bins}
-COMMAND rm ${prefix}/bin/simgrid_colorizer.pl
-COMMAND echo "uninstall bin ok"
-COMMAND rm ${uninstall_HEADERS}
-COMMAND echo "uninstal include ok"
-COMMAND rm ${prefix}/share/simgrid.jar
-COMMAND rm ${prefix}/lib/lua/5.1/simgrid.so
-COMMAND rm ${prefix}/lib/site_ruby${install_link_ruby}/libsimgrid.so
-COMMAND rm ${prefix}/lib/site_ruby${install_link_ruby}/simgrid.rb
-COMMAND echo "uninstal bindings"
-COMMAND rm -R ${prefix}/include/amok ${prefix}/include/gras ${prefix}/include/instr ${prefix}/include/msg 
-COMMAND rm -R ${prefix}/include/simdag ${prefix}/include/smpi ${prefix}/include/surf ${prefix}/include/xbt
-WORKING_DIRECTORY "${prefix}"
-)
 
 add_custom_target(html
 COMMAND echo "Make the html doc"

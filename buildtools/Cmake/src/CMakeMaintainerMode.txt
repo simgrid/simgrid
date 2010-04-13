@@ -121,6 +121,7 @@ message("")
 message("________________________________________________________________________________")
 message("________________________________________________________________________________ SG_UNIT_EXTRACTOR END")
 
+#Those lines permit to remake a cmake configure if "sources to look" have been changed
 foreach(file ${SRC_TO_LOOK})
 	configure_file(${file} ${file} COPYONLY)
 endforeach(file ${SRC_TO_LOOK})

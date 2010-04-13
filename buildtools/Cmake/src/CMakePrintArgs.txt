@@ -106,7 +106,6 @@ message("	Simgrid dependencies: 	${SIMGRID_DEP}")
 message("	Gras dependencies   : 	${GRAS_DEP}")
 message("	Smpi dependencies   : 	${SMPI_DEP}")
 message("")
-message("	USER_PREFIX   : 	${prefix}")
 message("	INSTALL_PREFIX: 	${CMAKE_INSTALL_PREFIX}")
 message("")
 
