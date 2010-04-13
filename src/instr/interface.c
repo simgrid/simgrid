@@ -161,7 +161,7 @@ void TRACE_create_category (const char *category,
   }
   //check if category is created
   if (xbt_dict_get_or_null (created_categories, category)){
-	 THROW1 (tracing_error, TRACE_ERROR_CATEGORY_ALREADY_DEFINED, "Category %s is already created", type);
+	 THROW1 (tracing_error, TRACE_ERROR_CATEGORY_ALREADY_DEFINED, "Category %s is already created", category);
   }
 
   pajeCreateContainer(MSG_get_clock(), category, type, parent_category, category);
