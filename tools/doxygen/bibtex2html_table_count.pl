@@ -12,11 +12,11 @@ while($line = <STDIN>) {
 	}
 	next;
     }
-    if($line =~ /^\s*year\s*=\s*/) {
+    if($line =~ /^\s*year\s*=\s*/i) {
 	$year = $line;
 	$year =~ s/\D*//g;
     }
-    if($line =~ /^\s*category\s*=\s*/) {
+    if($line =~ /^\s*category\s*=\s*/i) {
 	$cat = $line;
 	$cat =~ s/^.*=//;
 	$cat =~ s/\s*//g;
@@ -64,5 +64,25 @@ foreach $cat (keys %count) {
     print "<td>$sum</td>\n";
     print "</tr>\n";
 }
+
+
+
+print "<tr><td>Total </td>";
+
+$ssum=0;
+foreach $year ($year_min..$year_max) {
+    $sum = 0;
+    foreach $cat (keys %count) {
+	if(defined($count{$cat}{$year})) {
+	    $sum+=$count{$cat}{$year};
+	}
+    } 
+    $ssum+=$sum;
+    print "<td>$sum</td> ";
+}
+print "<td>$ssum</td> ";
+print "</tr>\n";
+
+
 print "</table>\n";
 
