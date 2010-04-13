@@ -163,7 +163,6 @@ int TRACE_create_category (const char *category,
   }
   //check if category is created
   if (xbt_dict_get_or_null (created_categories, category)){
-	 INFO1 ("Category %s is already created", category);
      return 1;
   }
 
