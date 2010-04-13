@@ -131,7 +131,7 @@ if(HAVE_JAVA)
 		set(java_src_to_compile "${java_src_to_compile} ${file}")	
 	endforeach(file ${JMSG_JAVA_SRC})
 
-	add_custom_target(simgrid.jar	ALL
+	add_custom_command(TARGET simgrid
 	COMMAND /bin/sh ${PROJECT_DIRECTORY}/make_simgrid_java.sh
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 	)
