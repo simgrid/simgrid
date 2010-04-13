@@ -110,15 +110,15 @@ int TRACE_end() {
   return 0;
 }
 
-void TRACE_category (const char *category)
+int TRACE_category (const char *category)
 {
-  if (!IS_TRACING) return;
+  if (!IS_TRACING) return 1;
   static int first_time = 1;
   if (first_time){
 	  TRACE_define_type ("user_type", "0", 1);
 	  first_time = 0;
   }
-  TRACE_create_category (category, "user_type", "0");
+  return TRACE_create_category (category, "user_type", "0");
 }
 
 void TRACE_define_type (const char *type,
@@ -146,7 +146,7 @@ void TRACE_define_type (const char *type,
   xbt_dict_set (defined_types, type, xbt_strdup("1"), xbt_free);
 }
 
-void TRACE_create_category (const char *category,
+int TRACE_create_category (const char *category,
 		const char *type, const char *parent_category)
 {
   if (!IS_TRACING) return;
@@ -154,14 +154,17 @@ void TRACE_create_category (const char *category,
   //check if type is defined
   if (!xbt_dict_get_or_null (defined_types, type)) {
 	 THROW1 (tracing_error, TRACE_ERROR_TYPE_NOT_DEFINED, "Type %s is not defined", type);
+	 return 1;
   }
   //check if parent_category exists
   if (strcmp(parent_category, "0") && !xbt_dict_get_or_null (created_categories, parent_category)){
      THROW1 (tracing_error, TRACE_ERROR_CATEGORY_NOT_DEFINED, "Category (used as parent) %s is not created", parent_category);
+     return 1;
   }
   //check if category is created
   if (xbt_dict_get_or_null (created_categories, category)){
-	 THROW1 (tracing_error, TRACE_ERROR_CATEGORY_ALREADY_DEFINED, "Category %s is already created", category);
+	 INFO1 ("Category %s is already created", category);
+     return 1;
   }
 
   pajeCreateContainer(MSG_get_clock(), category, type, parent_category, category);
@@ -174,6 +177,7 @@ void TRACE_create_category (const char *category,
   if (IS_TRACING_PLATFORM) pajeDefineVariableType (state, "HOST", state);
 
   xbt_dict_set (created_categories, category, xbt_strdup("1"), xbt_free);
+  return 0;
 }
 
 void TRACE_set_mask (int mask)
