@@ -72,29 +72,7 @@ filter (e.g. with bash):
 ./msg_test small_platform.xml small_deployment.xml 2>&1 | ../../tools/MSG_visualization/colorize.pl
 \endverbatim
 
-We also have a more graphical output. Have a look at MSG_paje_output(). It 
-generates an input to <a href="http://www-id.imag.fr/Logiciels/paje/">Paje</a>.
-<center>
-\htmlonly
- <a href="Paje_MSG_screenshot.jpg"><img src="Paje_MSG_screenshot_thn.jpg"></a>
-\endhtmlonly
-</center>
-
-Visualization with Paje can be seen as a kind of postmortem
-analysis. However, as soon as you start playing with big simulations,
-you'll realize that processing such output is kind of tricky. There is
-so much generic information that it is hard to find the information
-you are looking for.
-
-As a matter of fact, logging really depends on simulations (e.g. what
-kind of events is important...). That is why we do not propose a big
-dump of your whole simulation (it would slow everything down) but give
-you neat tools to structure you logs. Have a look at \ref XBT_log. In
-fact, rather than a post-mortem analysis, you may want to do it on the
-fly. The process you are running can do whatever you want. Have you
-thought about adding a global structure where you directly compute the
-information that are really important rather than writing everything
-down and then processing huge files?
+We also have a more graphical output. Have a look at section \ref faq_tracing.
 
 \subsection faq_C Argh! Do I really have to code in C?
 
