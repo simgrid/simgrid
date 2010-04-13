@@ -10,12 +10,12 @@ static void smpi_execute(double duration) {
   smx_cond_t cond;
   e_surf_action_state_t state;
 
-  if(duration > 0.001) {
+  if(duration >= xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold")) {
     host = SIMIX_host_self();
     mutex = SIMIX_mutex_init();
     cond = SIMIX_cond_init();
     DEBUG1("Sleep for %f to handle real computation time", duration);
-    duration *= xbt_cfg_get_double(_surf_cfg_set, "reference_speed");
+    duration *= xbt_cfg_get_double(_surf_cfg_set, "smpi/running_power");
     action = SIMIX_action_execute(host, "computation", duration);
     SIMIX_mutex_lock(mutex);
     SIMIX_register_action_to_condition(action, cond);
@@ -33,7 +33,7 @@ static void smpi_execute(double duration) {
 }
 
 void smpi_bench_begin(int rank, const char* mpi_call) {
-  if(mpi_call && rank >= 0 && xbt_cfg_get_int(_surf_cfg_set, "SMPE")) {
+  if(mpi_call && rank >= 0 && xbt_cfg_get_int(_surf_cfg_set, "smpi/log_events")) {
     INFO3("SMPE: ts=%f rank=%d type=end et=%s", SIMIX_get_clock(), rank, mpi_call);
   }
   xbt_os_timer_start(smpi_process_timer());
@@ -44,7 +44,7 @@ void smpi_bench_end(int rank, const char* mpi_call) {
 
   xbt_os_timer_stop(timer);
   smpi_execute(xbt_os_timer_elapsed(timer));
-  if(mpi_call && rank >= 0 && xbt_cfg_get_int(_surf_cfg_set, "SMPE")) {
+  if(mpi_call && rank >= 0 && xbt_cfg_get_int(_surf_cfg_set, "smpi/log_events")) {
     INFO3("SMPE: ts=%f rank=%d type=begin et=%s", SIMIX_get_clock(), rank, mpi_call);
   }
 }

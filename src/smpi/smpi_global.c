@@ -156,19 +156,24 @@ int main(int argc, char **argv)
   srand(SMPI_RAND_SEED);
 
   double default_reference_speed = 20000.0;
-  xbt_cfg_register(&_surf_cfg_set, "reference_speed",
+  xbt_cfg_register(&_surf_cfg_set, "smpi/running_power",
                    "Power of the host running the simulation (in flop/s). Used to bench the operations.",
                    xbt_cfgelm_double, &default_reference_speed, 1, 1, NULL, NULL);
 
   int default_display_timing = 0;
-  xbt_cfg_register(&_surf_cfg_set, "display_timing",
+  xbt_cfg_register(&_surf_cfg_set, "smpi/display_timing",
                    "Boolean indicating whether we should display the timing after simulation.",
                    xbt_cfgelm_int, &default_display_timing, 1, 1, NULL, NULL);
 
   int default_display_smpe = 0;
-  xbt_cfg_register(&_surf_cfg_set, "SMPE",
+  xbt_cfg_register(&_surf_cfg_set, "smpi/log_events",
                    "Boolean indicating whether we should display simulated time spent in MPI calls.",
                    xbt_cfgelm_int, &default_display_smpe, 1, 1, NULL, NULL);
+
+  double default_threshold = 1e-6;
+  xbt_cfg_register(&_surf_cfg_set, "smpi/cpu_threshold",
+                   "Minimal computation time (in seconds) not discarded.",
+                   xbt_cfgelm_double, &default_threshold, 1, 1, NULL, NULL);
 
   SIMIX_global_init(&argc, argv);
 
@@ -187,7 +192,7 @@ int main(int argc, char **argv)
 
   while (SIMIX_solve(NULL, NULL) != -1.0);
 
-  if (xbt_cfg_get_int(_surf_cfg_set, "display_timing"))
+  if (xbt_cfg_get_int(_surf_cfg_set, "smpi/display_timing"))
     INFO1("simulation time %g", SIMIX_get_clock());
 
   smpi_global_destroy();
