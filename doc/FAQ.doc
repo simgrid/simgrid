@@ -1649,13 +1649,34 @@ Other models have been proposed and implemented since then (see for example
 <a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>)
 and can be activated at runtime. For example:
 \verbatim
-./mycode platform.xml deployment.xml --cfg=workstation_model:compound --cfg=network_model:LV08 -cfg=cpu_model:Cas01
+./mycode platform.xml deployment.xml --cfg=workstation/model:compound --cfg=network/model:LV08 -cfg=cpu/model:Cas01
 \endverbatim
 
 Possible models for the network are currently "Constant", "CM02",
 "LegrandVelho", "GTNets", Reno", "Reno2", "Vegas". Others will
 probably be added in the future and many of the previous ones are
-experimental and are likely to disappear without notice...
+experimental and are likely to disappear without notice... To know the
+list of the currently  implemented models, you should use the
+--help-models command line option.
+
+\verbatim
+./masterslave_forwarder ../small_platform.xml deployment_masterslave.xml  --help-models
+Long description of the workstation models accepted by this simulator:
+  CLM03: Default workstation model, using LV08 and CM02 as network and CPU
+  compound: Workstation model allowing you to use other network and CPU models
+  ptask_L07: Workstation model with better parallel task modeling
+Long description of the CPU models accepted by this simulator:
+  Cas01_fullupdate: CPU classical model time=size/power
+  Cas01: Variation of Cas01_fullupdate with partial invalidation optimization of lmm system. Should produce the same values, only faster
+  CpuTI: Variation of Cas01 with also trace integration. Should produce the same values, only faster if you use availability traces
+Long description of the network models accepted by this simulator:
+  Constant: Simplistic network model where all communication take a constant time (one second)
+  CM02: Realistic network model with lmm_solve and no correction factors
+  LV08: Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775
+  Reno: Model using lagrange_solve instead of lmm_solve (experts only)
+  Reno2: Model using lagrange_solve instead of lmm_solve (experts only)
+  Vegas: Model using lagrange_solve instead of lmm_solve (experts only)
+\endverbatim
 
 \subsection faq_tracing Tracing Simulations for Visualization
 
