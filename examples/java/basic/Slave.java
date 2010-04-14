@@ -8,7 +8,7 @@
 import simgrid.msg.*;
 
 public class Slave extends simgrid.msg.Process {
-   public void main(String[] args) throws MsgException {
+   public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
       if (args.length < 1) {
 	 Msg.info("Slave needs 1 argument (its number)");
 	 System.exit(1);
@@ -23,8 +23,12 @@ public class Slave extends simgrid.msg.Process {
 	 if (task instanceof FinalizeTask) {
 	    break;
 	 }
-	 Msg.info("Received \"" + task.getName() +  "\". Processing it.");	 
+	 Msg.info("Received \"" + task.getName() +  "\". Processing it.");
+	 try {
 	 task.execute();
+	 } catch (TaskCancelledException e) {
+		 
+	 }
 	 Msg.info("\"" + task.getName() + "\" done ");
        }
        
