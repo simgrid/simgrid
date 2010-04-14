@@ -100,6 +100,7 @@ SimGrid (3.4-svn) unstable; urgency=low
       maestro.
     - Merge context_start into context_new for sake of simplicity
  SURF:
+  * Add a Vivaldi network model, coded live during SUD'10 ;)
   * Rename configuration variables to start a hierarchy:
     o cpu_model -> cpu/model
     o network_model -> network/model

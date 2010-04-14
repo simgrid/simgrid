@@ -112,7 +112,8 @@ xbt_dynar_t surf_path = NULL;
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
-  {"Constant", "Simplistic network model where all communication take a constant time (one second)", NULL, surf_network_model_init_Constant},
+    {"Constant", "Simplistic network model where all communication take a constant time (one second)", NULL, surf_network_model_init_Constant},
+    {"Vivaldi", "Scalable network model using the Vivaldi coordinate ideas", NULL, surf_network_model_init_Vivaldi},
   {"CM02", "Realistic network model with lmm_solve and no correction factors", NULL, surf_network_model_init_CM02},
   {"LV08", "Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775" , NULL, surf_network_model_init_LegrandVelho},
 #ifdef HAVE_GTNETS

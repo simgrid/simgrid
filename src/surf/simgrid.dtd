@@ -45,6 +45,7 @@
 <!ATTLIST host interference_recv CDATA "1.0">
 <!ATTLIST host interference_send_recv CDATA "1.0">
 <!ATTLIST host max_outgoing_rate CDATA "-1.0">
+<!ATTLIST host vivaldi  CDATA "0 0 0">
 
 <!ELEMENT prop EMPTY>
 <!ATTLIST prop id CDATA #REQUIRED>

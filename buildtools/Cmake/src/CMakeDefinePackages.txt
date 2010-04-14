@@ -196,6 +196,7 @@ set(SURF_SRC
 	${PROJECT_DIRECTORY}/src/surf/surfxml_parse.c
 	${PROJECT_DIRECTORY}/src/surf/cpu.c
 	${PROJECT_DIRECTORY}/src/surf/network.c
+	${PROJECT_DIRECTORY}/src/surf/network_vivaldi.c
 	${PROJECT_DIRECTORY}/src/surf/network_constant.c
 	${PROJECT_DIRECTORY}/src/surf/workstation.c
 	${PROJECT_DIRECTORY}/src/surf/surf_model_timer.c

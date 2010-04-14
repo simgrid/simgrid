@@ -367,6 +367,8 @@ XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(const char *filename);
  */
 XBT_PUBLIC(void) surf_network_model_init_Constant(const char *filename);
 
+XBT_PUBLIC(void) surf_network_model_init_Vivaldi(const char *filename);
+
 /** \brief Initializes the platform with the network model CM02
  *  \ingroup SURF_models
  *  \param filename XML platform file name
