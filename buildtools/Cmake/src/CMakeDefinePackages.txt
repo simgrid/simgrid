@@ -727,6 +727,8 @@ set(script_to_install
 	${PROJECT_DIRECTORY}/./tools/doxygen/bibtex2html_table_count.pl
 	${PROJECT_DIRECTORY}/./tools/doxygen/bibtex2html_postprocessor.pl
 	${PROJECT_DIRECTORY}/./tools/doxygen/xbt_log_extract_hierarchy.pl
+	${PROJECT_DIRECTORY}/./tools/MSG_visualization/colorize.pl
+	${PROJECT_DIRECTORY}/./tools/MSG_visualization/trace2fig.pl
 )
 
 #message("\n\ntesh:\n${txt_files}")
