@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/msg/tracing/")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 
-add_executable(ms "ms.c")
-add_executable(categories "categories.c")
+add_executable(ms ${PROJECT_DIRECTORY}/examples/msg/tracing/ms.c)
+add_executable(categories ${PROJECT_DIRECTORY}/examples/msg/tracing/categories.c)
 
 ### Add definitions for compile
 target_link_libraries(ms simgrid m -fprofile-arcs)
