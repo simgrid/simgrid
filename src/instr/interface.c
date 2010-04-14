@@ -15,7 +15,7 @@
 
 #ifdef HAVE_TRACING
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(tracing,"Tracing Surf");
+XBT_LOG_NEW_DEFAULT_CATEGORY(tracing,"Tracing Interface");
 
 extern xbt_dict_t created_containers; /* declared in general.c */
 static xbt_dict_t defined_types;
@@ -23,7 +23,18 @@ static xbt_dict_t created_categories;
 
 int trace_mask;
 
-/**
+/** \ingroup tracing
+ * \brief Simple initialization of tracing.
+ *
+ * \param filename of the file that will contain the traces
+ * \return 0 if everything is ok
+ */
+int TRACE_start (const char *filename)
+{
+  return TRACE_start_with_mask (filename, TRACE_PLATFORM);
+}
+
+/** \ingroup tracing
  * \brief Initialization of tracing.
  *
  * Function to be called at first when tracing a simulation

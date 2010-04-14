@@ -36,6 +36,7 @@
 #define TRACE_ERROR_START 500
 
 XBT_PUBLIC(int) TRACE_start_with_mask (const char *filename, int mask);
+XBT_PUBLIC(int) TRACE_start (const char *filename);
 XBT_PUBLIC(int) TRACE_end (void);
 XBT_PUBLIC(int) TRACE_category (const char *category);
 XBT_PUBLIC(void) TRACE_define_type (const char *type, const char *parent_type, int final);
@@ -45,8 +46,6 @@ XBT_PUBLIC(void) TRACE_msg_set_process_category (m_process_t process, const char
 XBT_PUBLIC(void) TRACE_set_mask (int mask);
 XBT_PUBLIC(void) __TRACE_host_variable (double time, const char *variable, double value, const char *what);
 XBT_PUBLIC(void) __TRACE_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what);
-
-#define TRACE_start(filename) TRACE_start_with_mask(filename,TRACE_PLATFORM)
 
 #define TRACE_host_variable_declare(var) \
 	__TRACE_host_variable(0,var,0,"declare");
