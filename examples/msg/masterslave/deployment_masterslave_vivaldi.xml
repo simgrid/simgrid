@@ -1,0 +1,131 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+
+
+  <!-- The master process (with some arguments) --> 
+  <process host="100030591" function="master">
+       <argument value="20"/>       <!-- Number of tasks -->
+       <argument value="50000000"/>  <!-- Computation size of tasks -->
+       <argument value="1000000"/>   <!-- Communication size of tasks -->
+       <argument value="39"/>         <!-- Number of slaves -->
+    </process>
+    <!-- The slave processes (with mailbox to listen on as argument) -->
+    <process host="100036570" function="slave">
+      <argument value="0"/>
+    </process>
+    <process host="100041334" function="slave">
+      <argument value="1"/>
+    </process>
+    <process host="100055671" function="slave">
+      <argument value="2"/>
+    </process>
+    <process host="100066658" function="slave">
+      <argument value="3"/>
+    </process>
+    <process host="100090691" function="slave">
+      <argument value="4"/>
+    </process>
+    <process host="100094952" function="slave">
+      <argument value="5"/>
+    </process>
+    <process host="100117943" function="slave">
+      <argument value="6"/>
+    </process>
+    <process host="100126290" function="slave">
+      <argument value="7"/>
+    </process>
+    <process host="100144483" function="slave">
+      <argument value="8"/>
+    </process>
+    <process host="100152889" function="slave">
+      <argument value="9"/>
+    </process>
+    <process host="100178474" function="slave">
+      <argument value="10"/>
+    </process>
+    <process host="100180261" function="slave">
+      <argument value="11"/>
+    </process>
+    <process host="100185883" function="slave">
+      <argument value="12"/>
+    </process>
+    <process host="100186365" function="slave">
+      <argument value="13"/>
+    </process>
+    <process host="100200866" function="slave">
+      <argument value="14"/>
+    </process>
+    <process host="100207885" function="slave">
+      <argument value="15"/>
+    </process>
+    <process host="100224447" function="slave">
+      <argument value="16"/>
+    </process>
+    <process host="100238799" function="slave">
+      <argument value="17"/>
+    </process>
+    <process host="100273297" function="slave">
+      <argument value="18"/>
+    </process>
+    <process host="100280711" function="slave">
+      <argument value="19"/>
+    </process>
+    <process host="100284574" function="slave">
+      <argument value="20"/>
+    </process>
+    <process host="100292843" function="slave">
+      <argument value="21"/>
+    </process>
+    <process host="100309685" function="slave">
+      <argument value="22"/>
+    </process>
+    <process host="100315281" function="slave">
+      <argument value="23"/>
+    </process>
+    <process host="100317715" function="slave">
+      <argument value="24"/>
+    </process>
+    <process host="100324694" function="slave">
+      <argument value="25"/>
+    </process>
+    <process host="100326641" function="slave">
+      <argument value="26"/>
+    </process>
+    <process host="100331484" function="slave">
+      <argument value="27"/>
+    </process>
+    <process host="100347816" function="slave">
+      <argument value="28"/>
+    </process>
+    <process host="100354536" function="slave">
+      <argument value="29"/>
+    </process>
+    <process host="100355017" function="slave">
+      <argument value="30"/>
+    </process>
+    <process host="100359203" function="slave">
+      <argument value="31"/>
+    </process>
+    <process host="100379397" function="slave">
+      <argument value="32"/>
+    </process>
+    <process host="100404046" function="slave">
+      <argument value="33"/>
+    </process>
+    <process host="100413314" function="slave">
+      <argument value="34"/>
+    </process>
+    <process host="100416828" function="slave">
+      <argument value="35"/>
+    </process>
+    <process host="100422926" function="slave">
+      <argument value="36"/>
+    </process>
+    <process host="100427449" function="slave">
+      <argument value="37"/>
+    </process>
+    <process host="100429957" function="slave">
+      <argument value="38"/>
+    </process>
+  </platform>
