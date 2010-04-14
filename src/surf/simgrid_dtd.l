@@ -1,5 +1,5 @@
 /* Validating XML processor for /home/mquinson/Code/simgrid/src/surf/simgrid.dtd.
- * Generated 2010/04/06 12:44:25.
+ * Generated 2010/04/14 12:16:24.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -154,6 +154,8 @@ AT_surfxml_platform_xmlns_c_link AX_surfxml_platform_xmlns_c_link;
 #define A_surfxml_platform_xmlns_c_link (surfxml_bufferstack + AX_surfxml_platform_xmlns_c_link)
 AT_surfxml_link_bandwidth_file AX_surfxml_link_bandwidth_file;
 #define A_surfxml_link_bandwidth_file (surfxml_bufferstack + AX_surfxml_link_bandwidth_file)
+AT_surfxml_host_vivaldi AX_surfxml_host_vivaldi;
+#define A_surfxml_host_vivaldi (surfxml_bufferstack + AX_surfxml_host_vivaldi)
 AT_surfxml_random_id AX_surfxml_random_id;
 #define A_surfxml_random_id (surfxml_bufferstack + AX_surfxml_random_id)
 AT_surfxml_set_radical AX_surfxml_set_radical;
@@ -437,6 +439,7 @@ const char* *surfxml_statenames=NULL;
   surfxml_bufferliteral('\0', &bnext, "1.0");
   surfxml_bufferliteral('\0', &bnext, "1.0");
   surfxml_bufferliteral('\0', &bnext, "-1.0");
+  surfxml_bufferliteral('\0', &bnext, "0 0 0");
   surfxml_bufferliteral('\0', &bnext, "0.0");
   surfxml_bufferliteral('\0', &bnext, "0.0");
   surfxml_bufferliteral('\0', &bnext, "0.0");
@@ -939,6 +942,7 @@ const char* *surfxml_statenames=NULL;
   AX_surfxml_host_interference_recv = 77;
   AX_surfxml_host_interference_send_recv = 81;
   AX_surfxml_host_max_outgoing_rate = 85;
+  AX_surfxml_host_vivaldi = 90;
   ENTER(AL_surfxml_host); pushbuffer(0);
   }
 
@@ -974,6 +978,9 @@ const char* *surfxml_statenames=NULL;
 
  "max_outgoing_rate"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_host_max_outgoing_rate);
  "max_outgoing_rate"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_host_max_outgoing_rate);
+
+ "vivaldi"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_host_vivaldi);
+ "vivaldi"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_host_vivaldi);
 
  ">" {
   if (!AX_surfxml_host_id) FAIL("Required attribute `id' not set for `host' element.");
@@ -1198,7 +1205,7 @@ const char* *surfxml_statenames=NULL;
   AX_surfxml_link_id = 0;
   AX_surfxml_link_bandwidth = 0;
   AX_surfxml_link_bandwidth_file = 0;
-  AX_surfxml_link_latency = 90;
+  AX_surfxml_link_latency = 96;
   AX_surfxml_link_latency_file = 0;
   AX_surfxml_link_state = A_surfxml_link_state_ON;
   AX_surfxml_link_state_file = 0;
@@ -1328,10 +1335,10 @@ const char* *surfxml_statenames=NULL;
 <S_surfxml_platform_5,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_platform_3,S_surfxml_platform_4>"<route"{s} {
   AX_surfxml_route_src = 0;
   AX_surfxml_route_dst = 0;
-  AX_surfxml_route_impact_on_src = 94;
-  AX_surfxml_route_impact_on_dst = 98;
-  AX_surfxml_route_impact_on_src_with_other_recv = 102;
-  AX_surfxml_route_impact_on_dst_with_other_send = 106;
+  AX_surfxml_route_impact_on_src = 100;
+  AX_surfxml_route_impact_on_dst = 104;
+  AX_surfxml_route_impact_on_src_with_other_recv = 108;
+  AX_surfxml_route_impact_on_dst_with_other_send = 112;
   AX_surfxml_route_action = A_surfxml_route_action_POSTPEND;
   ENTER(AL_surfxml_route); pushbuffer(0);
   }
@@ -1442,8 +1449,8 @@ const char* *surfxml_statenames=NULL;
 <S_surfxml_platform_5,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_platform_3,S_surfxml_platform_4>"<process"{s} {
   AX_surfxml_process_host = 0;
   AX_surfxml_process_function = 0;
-  AX_surfxml_process_start_time = 110;
-  AX_surfxml_process_kill_time = 115;
+  AX_surfxml_process_start_time = 116;
+  AX_surfxml_process_kill_time = 121;
   ENTER(AL_surfxml_process); pushbuffer(0);
   }
 

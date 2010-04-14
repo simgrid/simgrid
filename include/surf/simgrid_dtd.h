@@ -1,5 +1,5 @@
 /* XML processor/application API for /home/mquinson/Code/simgrid/src/surf/simgrid.dtd.
- * Generated 2010/04/06 12:44:26.
+ * Generated 2010/04/14 12:16:24.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -148,6 +148,8 @@ typedef int AT_surfxml_platform_xmlns_c_link;
 #define AU_surfxml_platform_xmlns_c_link NULL
 typedef int AT_surfxml_link_bandwidth_file;
 #define AU_surfxml_link_bandwidth_file NULL
+typedef int AT_surfxml_host_vivaldi;
+#define AU_surfxml_host_vivaldi NULL
 typedef int AT_surfxml_random_id;
 #define AU_surfxml_random_id NULL
 typedef int AT_surfxml_set_radical;
@@ -286,6 +288,8 @@ XBT_PUBLIC_DATA(AT_surfxml_platform_xmlns_c_link ) AX_surfxml_platform_xmlns_c_l
 #define A_surfxml_platform_xmlns_c_link (surfxml_bufferstack + AX_surfxml_platform_xmlns_c_link)
 XBT_PUBLIC_DATA(AT_surfxml_link_bandwidth_file ) AX_surfxml_link_bandwidth_file;
 #define A_surfxml_link_bandwidth_file (surfxml_bufferstack + AX_surfxml_link_bandwidth_file)
+XBT_PUBLIC_DATA(AT_surfxml_host_vivaldi ) AX_surfxml_host_vivaldi;
+#define A_surfxml_host_vivaldi (surfxml_bufferstack + AX_surfxml_host_vivaldi)
 XBT_PUBLIC_DATA(AT_surfxml_random_id ) AX_surfxml_random_id;
 #define A_surfxml_random_id (surfxml_bufferstack + AX_surfxml_random_id)
 XBT_PUBLIC_DATA(AT_surfxml_set_radical ) AX_surfxml_set_radical;
