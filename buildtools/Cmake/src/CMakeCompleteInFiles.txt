@@ -180,12 +180,13 @@ try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
 	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
 	COMPILE_DEFINITIONS "${mcsc_flags}"
 	)
-file(READ "${PROJECT_DIRECTORY}/conftestval" mcsc)
-if(mcsc MATCHES "yes")
+file(READ "${Project_BINARY_DIR}/conftestval" mcsc)
+STRING(REPLACE "\n" "" mcsc ${mcsc})
+if(mcsc)
 	set(mcsc "yes")
-elseif(mcsc MATCHES "yes")
+elseif(mcsc)
 	set(mcsc "no")
-endif(mcsc MATCHES "yes")
+endif(mcsc)
 
 if(mcsc MATCHES "no" AND pthread)
 	if(HAVE_WINDOWS_H)
@@ -221,9 +222,9 @@ endif(with_context MATCHES "auto")
 
 if(with_context MATCHES "ucontext")
 	set(with_context_ok 1)
-	if(mcsc MATCHES "yes")
+	if(mcsc)
 		set(CONTEXT_UCONTEXT 1)
-	else(mcsc MATCHES "yes")
+	else(mcsc)
 		if(windows_context MATCHES "yes")
 			set(with_context "windows")
 			message("with_context ucontext change to windows")
@@ -231,7 +232,7 @@ if(with_context MATCHES "ucontext")
 			set(with_context "pthread")
 			message("with_context ucontext change to pthread")
 		endif(windows_context MATCHES "yes")
-	endif(mcsc MATCHES "yes")
+	endif(mcsc)
 endif(with_context MATCHES "ucontext")
 
 if(with_context MATCHES "pthread")
@@ -435,9 +436,12 @@ if(HAVE_MAKECONTEXT)
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
 	
-
-	exec_program("${SED_EXE}" ARGS "-e 's;,.*$;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_addr")
-	exec_program("${SED_EXE}" ARGS "-e 's;^.*,;;' ${PROJECT_DIRECTORY}/conftestval" OUTPUT_VARIABLE "makecontext_size")
+	file(READ ${Project_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
+	string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
+	string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
+	string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
+	string(REPLACE "," "" makecontext_addr "${MAKECONTEXT_ADDR}")
+	string(REPLACE "," "" makecontext_size "${MAKECONTEXT_SIZE}")	
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
 	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
 
@@ -451,7 +455,7 @@ endif(HAVE_MAKECONTEXT)
 		${PROJECT_DIRECTORY}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_stackgrowth.c
 		)
-file(READ "${PROJECT_DIRECTORY}/conftestval" stack)
+file(READ "${Project_BINARY_DIR}/conftestval" stack)
 if(stack MATCHES "down")
 	set(PTH_STACKGROWTH "-1")
 endif(stack MATCHES "down")
