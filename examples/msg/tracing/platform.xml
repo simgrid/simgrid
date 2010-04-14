@@ -1,0 +1,105 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <host id="Tremblay" power="98095000"/>
+  <host id="Jupiter" power="76296000"/>
+  <host id="Fafard" power="76296000"/>
+  <host id="Ginette" power="48492000"/>
+  <host id="Bourassa" power="48492000"/>
+  <router id="R.4-3"/>
+  <router id="R.3-2-5"/>
+  <router id="R.2-0"/>
+  <router id="R.1-0"/>
+  <router id="R.1-8-6"/>
+  <router id="R.6-7"/>
+  <link id="6"  bandwidth="41279125" latency="5.9904e-05"/>
+  <link id="11" bandwidth="252750" latency="0.00570455"/>
+  <link id="3"  bandwidth="34285622" latency="0.000514433"/>
+  <link id="7"  bandwidth="11618875" latency="0.00018998"/>
+  <link id="9"  bandwidth="7209750" latency="0.001461517"/>
+  <link id="12" bandwidth="1792625" latency="0.007877863"/>
+  <link id="2"  bandwidth="22222222" latency="0.000136931"/>
+  <link id="8"  bandwidth="8158000" latency="0.000270544"/>
+  <link id="1"  bandwidth="34285625" latency="0.000514433"/>
+  <link id="4"  bandwidth="10099625" latency="0.00047978"/>
+  <link id="0"  bandwidth="41279125" latency="5.9904e-05"/>
+  <link id="10" bandwidth="4679750" latency="0.000848712"/>
+  <link id="5"  bandwidth="27946250" latency="0.000278066"/>
+  <link id="loopback" bandwidth="498000000" latency="0.000015" sharing_policy="FATPIPE"/>
+  <route src="Tremblay" dst="Tremblay"><link:ctn id="loopback"/></route>
+  <route src="Jupiter" dst="Jupiter"><link:ctn id="loopback"/></route>
+  <route src="Fafard" dst="Fafard"><link:ctn id="loopback"/></route>
+  <route src="Ginette" dst="Ginette"><link:ctn id="loopback"/></route>
+  <route src="Bourassa" dst="Bourassa"><link:ctn id="loopback"/></route>
+
+  <route src="Tremblay" dst="R.4-3"><link:ctn id="4"/></route>
+  <route src="R.3-2-5" dst="Ginette"><link:ctn id="5"/></route>
+  <route src="R.4-3" dst="R.3-2-5"><link:ctn id="3"/></route>
+  <route src="R.3-2-5" dst="R.2-0"><link:ctn id="2"/></route>
+  <route src="R.2-0" dst="R.1-0"><link:ctn id="0"/></route>
+  <route src="Fafard" dst="R.1-8-6"><link:ctn id="8"/></route>
+  <route src="R.1-0" dst="R.1-8-6"><link:ctn id="1"/></route>
+  <route src="R.1-8-6" dst="R.6-7"><link:ctn id="6"/></route>
+  <route src="R.6-7" dst="Bourassa"><link:ctn id="7"/></route>
+
+  <route src="Tremblay" dst="Jupiter">
+    <link:ctn id="9"/>
+  </route>
+  <route src="Tremblay" dst="Fafard">
+    <link:ctn id="4"/><link:ctn id="3"/><link:ctn id="2"/><link:ctn id="0"/><link:ctn id="1"/><link:ctn id="8"/>
+  </route>
+  <route src="Tremblay" dst="Ginette">
+    <link:ctn id="4"/><link:ctn id="3"/><link:ctn id="5"/>
+  </route>
+  <route src="Tremblay" dst="Bourassa">
+    <link:ctn id="4"/><link:ctn id="3"/><link:ctn id="2"/><link:ctn id="0"/><link:ctn id="1"/><link:ctn id="6"/><link:ctn id="7"/>
+  </route>
+  <route src="Jupiter" dst="Tremblay">
+    <link:ctn id="9"/>
+  </route>
+  <route src="Jupiter" dst="Fafard">
+    <link:ctn id="9"/><link:ctn id="4"/><link:ctn id="3"/><link:ctn id="2"/><link:ctn id="0"/><link:ctn id="1"/><link:ctn id="8"/>
+  </route>
+  <route src="Jupiter" dst="Ginette">
+    <link:ctn id="9"/><link:ctn id="4"/><link:ctn id="3"/><link:ctn id="5"/>
+  </route>
+  <route src="Jupiter" dst="Bourassa">
+    <link:ctn id="9"/><link:ctn id="4"/><link:ctn id="3"/><link:ctn id="2"/><link:ctn id="0"/><link:ctn id="1"/><link:ctn id="6"/><link:ctn id="7"/>
+  </route>
+  <route src="Fafard" dst="Tremblay">
+    <link:ctn id="8"/><link:ctn id="1"/><link:ctn id="0"/><link:ctn id="2"/><link:ctn id="3"/><link:ctn id="4"/>
+  </route>
+  <route src="Fafard" dst="Jupiter">
+    <link:ctn id="8"/><link:ctn id="1"/><link:ctn id="0"/><link:ctn id="2"/><link:ctn id="3"/><link:ctn id="4"/><link:ctn id="9"/>
+  </route>
+  <route src="Fafard" dst="Ginette">
+    <link:ctn id="8"/><link:ctn id="1"/><link:ctn id="0"/><link:ctn id="2"/><link:ctn id="5"/>
+  </route>
+  <route src="Fafard" dst="Bourassa">
+    <link:ctn id="8"/><link:ctn id="6"/><link:ctn id="7"/>
+  </route>
+  <route src="Ginette" dst="Tremblay">
+    <link:ctn id="5"/><link:ctn id="3"/><link:ctn id="4"/>
+  </route>
+  <route src="Ginette" dst="Jupiter">
+    <link:ctn id="5"/><link:ctn id="3"/><link:ctn id="4"/><link:ctn id="9"/>
+  </route>
+  <route src="Ginette" dst="Fafard">
+    <link:ctn id="5"/><link:ctn id="2"/><link:ctn id="0"/><link:ctn id="1"/><link:ctn id="8"/>
+  </route>
+  <route src="Ginette" dst="Bourassa">
+    <link:ctn id="5"/><link:ctn id="2"/><link:ctn id="0"/><link:ctn id="1"/><link:ctn id="6"/><link:ctn id="7"/>
+  </route>
+  <route src="Bourassa" dst="Tremblay">
+    <link:ctn id="7"/><link:ctn id="6"/><link:ctn id="1"/><link:ctn id="0"/><link:ctn id="2"/><link:ctn id="3"/><link:ctn id="4"/>
+  </route>
+  <route src="Bourassa" dst="Jupiter">
+    <link:ctn id="7"/><link:ctn id="6"/><link:ctn id="1"/><link:ctn id="0"/><link:ctn id="2"/><link:ctn id="3"/><link:ctn id="4"/><link:ctn id="9"/>
+  </route>
+  <route src="Bourassa" dst="Fafard">
+    <link:ctn id="7"/><link:ctn id="6"/><link:ctn id="8"/>
+  </route>
+  <route src="Bourassa" dst="Ginette">
+    <link:ctn id="7"/><link:ctn id="6"/><link:ctn id="1"/><link:ctn id="0"/><link:ctn id="2"/><link:ctn id="5"/>
+  </route>
+</platform>

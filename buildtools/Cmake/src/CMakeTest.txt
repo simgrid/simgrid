@@ -131,6 +131,11 @@ ADD_TEST(msg-properties		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIR
 ADD_TEST(msg-trace		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg trace/trace.tesh)
 ADD_TEST(msg-masterslave_cpu_ti	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti.tesh)
 
+IF(HAVE_TRACING)
+  ADD_TEST(tracing-ms ${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg tracing/ms.tesh)
+ENDIF(HAVE_TRACING)
+
+
 IF(${ARCH_32_BITS})
   ADD_TEST(gras-ping-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/ping test_sg_32)
   ADD_TEST(gras-rpc-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/rpc test_sg_32)
