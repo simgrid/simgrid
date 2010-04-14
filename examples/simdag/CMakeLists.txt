@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/simdag/")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 
 add_executable(ex_sd_test sd_test.c)
@@ -13,12 +13,12 @@ target_link_libraries(ex_sd_test2 simgrid pthread m -fprofile-arcs)
 add_custom_command(TARGET ex_sd_test
 POST_BUILD
 COMMAND "cp" 
-ARGS ./ex_sd_test ./sd_test
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/simdag"
+ARGS ${PROJECT_DIRECTORY}/examples/simdag/ex_sd_test ${PROJECT_DIRECTORY}/examples/simdag/sd_test
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/simdag/"
 )
 add_custom_command(TARGET ex_sd_test2
 POST_BUILD
 COMMAND "cp" 
-ARGS ./ex_sd_test2 ./sd_test2
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/simdag"
+ARGS ${PROJECT_DIRECTORY}/examples/simdag/ex_sd_test2 ${PROJECT_DIRECTORY}/examples/simdag/sd_test2
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/simdag/"
 )

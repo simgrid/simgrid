@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 
-set_source_files_properties(_msg_handle_simulator.c _msg_handle_client.c _msg_handle_server.c
+set_source_files_properties(${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/_msg_handle_simulator.c ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/_msg_handle_client.c ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/_msg_handle_server.c
 PROPERTIES GENERATED true)
 
 set(EXECUTABLE_OUTPUT_PATH "./")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 
-add_executable(msg_handle_simulator msg_handle.c _msg_handle_simulator.c)
-add_executable(msg_handle_client msg_handle.c _msg_handle_client.c)
-add_executable(msg_handle_server msg_handle.c _msg_handle_server.c)
+add_executable(msg_handle_simulator ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/msg_handle.c ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/_msg_handle_simulator.c)
+add_executable(msg_handle_client ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/msg_handle.c ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/_msg_handle_client.c)
+add_executable(msg_handle_server ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/msg_handle.c ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/_msg_handle_server.c)
 
 ### Add definitions for compile
 target_link_libraries(msg_handle_simulator simgrid m pthread -fprofile-arcs)

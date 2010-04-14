@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 2.6)
 
-set_source_files_properties(_empty_main_function.c _empty_main_simulator.c
+set_source_files_properties(${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/_empty_main_function.c ${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/_empty_main_simulator.c
 PROPERTIES GENERATED true)
 
 set(EXECUTABLE_OUTPUT_PATH "./")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 
-add_executable(empty_main_function 	empty_main.c _empty_main_function.c)
-add_executable(empty_main_simulator 	empty_main.c _empty_main_simulator.c)
+add_executable(empty_main_function 	${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/empty_main.c ${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/_empty_main_function.c)
+add_executable(empty_main_simulator 	${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/empty_main.c ${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/_empty_main_simulator.c)
 
 ### Add definitions for compile
 target_link_libraries(empty_main_simulator simgrid m pthread -fprofile-arcs)

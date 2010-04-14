@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 
-set_source_files_properties(_pmm_simulator.c _pmm_slave.c _pmm_master.c
+set_source_files_properties(${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_simulator.c ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_slave.c ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_master.c
 PROPERTIES GENERATED true)
 
 set(EXECUTABLE_OUTPUT_PATH "./")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 
-add_executable(pmm_simulator _pmm_simulator.c pmm.c)
-add_executable(pmm_slave _pmm_slave.c pmm.c)
-add_executable(pmm_master _pmm_master.c pmm.c)
+add_executable(pmm_simulator ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_simulator.c ${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.c)
+add_executable(pmm_slave ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_slave.c ${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.c)
+add_executable(pmm_master ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_master.c ${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.c)
 
 ### Add definitions for compile
 target_link_libraries(pmm_simulator simgrid pthread m -fprofile-arcs)

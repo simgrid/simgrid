@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 
-set_source_files_properties(_bandwidth_simulator.c _bandwidth_maestro.c _bandwidth_sensor.c
+set_source_files_properties(${PROJECT_DIRECTORY}/examples/amok/bandwidth/_bandwidth_simulator.c ${PROJECT_DIRECTORY}/examples/amok/bandwidth/_bandwidth_maestro.c ${PROJECT_DIRECTORY}/examples/amok/bandwidth/_bandwidth_sensor.c
 PROPERTIES GENERATED true)
 
 set(EXECUTABLE_OUTPUT_PATH "./")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
 
-add_executable(bandwidth_simulator _bandwidth_simulator.c bandwidth.c)
-add_executable(bandwidth_maestro _bandwidth_maestro.c bandwidth.c)
-add_executable(bandwidth_sensor _bandwidth_sensor.c bandwidth.c)
+add_executable(bandwidth_simulator ${PROJECT_DIRECTORY}/examples/amok/bandwidth/_bandwidth_simulator.c ${PROJECT_DIRECTORY}/examples/amok/bandwidth/bandwidth.c)
+add_executable(bandwidth_maestro ${PROJECT_DIRECTORY}/examples/amok/bandwidth/_bandwidth_maestro.c ${PROJECT_DIRECTORY}/examples/amok/bandwidth/bandwidth.c)
+add_executable(bandwidth_sensor ${PROJECT_DIRECTORY}/examples/amok/bandwidth/_bandwidth_sensor.c ${PROJECT_DIRECTORY}/examples/amok/bandwidth/bandwidth.c)
 
 ### Add definitions for compile
 target_link_libraries(bandwidth_simulator simgrid pthread m -fprofile-arcs)

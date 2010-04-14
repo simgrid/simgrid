@@ -1,5 +1,5 @@
-/* XML processor/application API for /home/mquinson/Code/simgrid/src/xbt/graphxml.dtd.
- * Generated 2010/04/06 12:44:26.
+/* XML processor/application API for /home/navarrop/Developments/simgrid/src/xbt/graphxml.dtd.
+ * Generated 2010/04/14 18:52:06.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
