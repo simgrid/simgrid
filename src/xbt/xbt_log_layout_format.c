@@ -186,8 +186,6 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
   char *p, *q;
   int precision = -1;
 
-  if (format_begin_of_time < 0)
-    format_begin_of_time = gras_os_time();
 
   p = ev->buffer;
   q = l->data;
@@ -498,5 +496,9 @@ xbt_log_layout_t xbt_log_layout_format_new(char *arg)
   res->do_layout = xbt_log_layout_format_doit;
   res->free_ = xbt_log_layout_format_free;
   res->data = xbt_strdup((char *) arg);
+
+  if (format_begin_of_time < 0)
+    format_begin_of_time = gras_os_time();
+  
   return res;
 }

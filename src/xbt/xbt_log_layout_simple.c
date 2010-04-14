@@ -1,4 +1,4 @@
-/* $Id: xbt_log_layout_simple.c 6309 2009-05-26 15:29:22Z mquinson $ */
+/* $Id$ */
 
 /* layout_simple - a dumb log layout                                        */
 
@@ -81,9 +81,6 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
               "Priority %d is greater than the biggest allowed value",
               ev->priority);
 
-  if (simple_begin_of_time < 0)
-    simple_begin_of_time = gras_os_time();
-
   p = ev->buffer;
   p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "[");
   check_overflow;
@@ -126,5 +123,9 @@ xbt_log_layout_t xbt_log_layout_simple_new(char *arg)
 {
   xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
   res->do_layout = xbt_log_layout_simple_doit;
+
+  if (simple_begin_of_time < 0)
+    simple_begin_of_time = gras_os_time();
+
   return res;
 }
