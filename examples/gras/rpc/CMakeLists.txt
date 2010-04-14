@@ -3,8 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 set_source_files_properties(${PROJECT_DIRECTORY}/examples/gras/rpc/_rpc_simulator.c ${PROJECT_DIRECTORY}/examples/gras/rpc/_rpc_client.c ${PROJECT_DIRECTORY}/examples/gras/rpc/_rpc_forwarder.c ${PROJECT_DIRECTORY}/examples/gras/rpc/_rpc_server.c
 PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/gras/rpc/")
 
 add_executable(rpc_simulator ${PROJECT_DIRECTORY}/examples/gras/rpc/_rpc_simulator.c ${PROJECT_DIRECTORY}/examples/gras/rpc/rpc.c)
 add_executable(rpc_client ${PROJECT_DIRECTORY}/examples/gras/rpc/_rpc_client.c ${PROJECT_DIRECTORY}/examples/gras/rpc/rpc.c)

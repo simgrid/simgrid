@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/tools/gras/")
 
 add_executable(gras_stub_generator stub_generator.c unix_stub_generator.c windows_stub_generator.c)
 

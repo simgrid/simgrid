@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/testsuite/simdag/")
 
 add_executable(sd_test sd_test.c)
 

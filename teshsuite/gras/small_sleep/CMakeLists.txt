@@ -3,8 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 set_source_files_properties(${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/_small_sleep_function.c ${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/_small_sleep_simulator.c
 PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/")
 
 add_executable(small_sleep_function 	${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/small_sleep.c ${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/_small_sleep_function.c)
 add_executable(small_sleep_simulator 	${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/small_sleep.c ${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/_small_sleep_simulator.c)

@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/testsuite/surf/")
 
 add_executable(lmm_usage "lmm_usage.c")
 add_executable(maxmin_bench "maxmin_bench.c")

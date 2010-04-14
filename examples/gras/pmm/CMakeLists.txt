@@ -3,8 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 set_source_files_properties(${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_simulator.c ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_slave.c ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_master.c
 PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/gras/pmm/")
 
 add_executable(pmm_simulator ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_simulator.c ${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.c)
 add_executable(pmm_slave ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_slave.c ${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.c)

@@ -3,8 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 set_source_files_properties(${PROJECT_DIRECTORY}/examples/amok/saturate/_saturate_simulator.c ${PROJECT_DIRECTORY}/examples/amok/saturate/_saturate_maestro.c ${PROJECT_DIRECTORY}/examples/amok/saturate/_saturate_sensor.c
 PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/amok/saturate/")
 
 add_executable(saturate_simulator ${PROJECT_DIRECTORY}/examples/amok/saturate/_saturate_simulator.c ${PROJECT_DIRECTORY}/examples/amok/saturate/saturate.c)
 add_executable(saturate_maestro ${PROJECT_DIRECTORY}/examples/amok/saturate/_saturate_maestro.c ${PROJECT_DIRECTORY}/examples/amok/saturate/saturate.c)

@@ -3,8 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 set_source_files_properties(${PROJECT_DIRECTORY}/examples/gras/properties/_properties_simulator.c ${PROJECT_DIRECTORY}/examples/gras/properties/_properties_alice.c ${PROJECT_DIRECTORY}/examples/gras/properties/_properties_bob.c
 PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/gras/properties/")
 
 add_executable(properties_simulator ${PROJECT_DIRECTORY}/examples/gras/properties/_properties_simulator.c ${PROJECT_DIRECTORY}/examples/gras/properties/properties.c)
 add_executable(properties_alice ${PROJECT_DIRECTORY}/examples/gras/properties/_properties_alice.c    ${PROJECT_DIRECTORY}/examples/gras/properties/properties.c)
