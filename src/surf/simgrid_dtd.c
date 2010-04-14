@@ -2817,8 +2817,8 @@ int surf_parse__flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *surf_parse_text;
-/* Validating XML processor for /home/mquinson/Code/simgrid/src/surf/simgrid.dtd.
- * Generated 2010/04/14 12:16:24.
+/* Validating XML processor for /home/navarrop/Developments/simgrid/src/surf/simgrid.dtd.
+ * Generated 2010/04/15 01:19:41.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

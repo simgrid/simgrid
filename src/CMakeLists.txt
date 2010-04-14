@@ -13,8 +13,6 @@ endforeach(file ${TEST_UNITS})
 set_source_files_properties(${USE_TEST_UNITS}
 PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-
 add_executable(testall ${USE_TEST_UNITS})
 
 ### Add definitions for compile
