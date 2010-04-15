@@ -1,12 +1,12 @@
 $ $SG_TEST_EXENV ./simple_token_simulator$EXEEXT ${srcdir:=.}/../../../msg/small_platform.xml ${srcdir:=.}/simple_token.xml 
-> [Tremblay:node:(1) 0.000000] [SimpleToken/INFO] Create the token (with value 0) and send it to Fafard:4000
-> [Tremblay:node:(1) 0.117961] [SimpleToken/INFO] Begin a new loop. Still to do: 2
-> [Tremblay:node:(1) 0.235922] [SimpleToken/INFO] Begin a new loop. Still to do: 1
-> [Tremblay:node:(1) 0.353882] [SimpleToken/INFO] Begin a new loop. Still to do: 0
-> [Tremblay:node:(1) 0.353882] [SimpleToken/INFO] Shut down the token-ring. There was 14 hops.
-> [Fafard:node:(2) 1.292225] [gras/INFO] Exiting GRAS
-> [Jupiter:node:(3) 1.320657] [gras/INFO] Exiting GRAS
-> [Ginette:node:(4) 1.333546] [gras/INFO] Exiting GRAS
-> [Bourassa:node:(5) 1.353882] [gras/INFO] Exiting GRAS
-> [Tremblay:node:(1) 1.353882] [gras/INFO] Exiting GRAS
+> [Tremblay:node:(1) 1.000312] [SimpleToken/INFO] Create the token (with value 0) and send it to Fafard:4000
+> [Tremblay:node:(1) 1.118273] [SimpleToken/INFO] Begin a new loop. Still to do: 2
+> [Tremblay:node:(1) 1.236234] [SimpleToken/INFO] Begin a new loop. Still to do: 1
+> [Tremblay:node:(1) 1.354194] [SimpleToken/INFO] Begin a new loop. Still to do: 0
+> [Tremblay:node:(1) 1.354194] [SimpleToken/INFO] Shut down the token-ring. There was 14 hops.
+> [Fafard:node:(2) 2.292537] [gras/INFO] Exiting GRAS
+> [Jupiter:node:(3) 2.320969] [gras/INFO] Exiting GRAS
+> [Ginette:node:(4) 2.333858] [gras/INFO] Exiting GRAS
+> [Bourassa:node:(5) 2.354194] [gras/INFO] Exiting GRAS
+> [Tremblay:node:(1) 2.354194] [gras/INFO] Exiting GRAS
 

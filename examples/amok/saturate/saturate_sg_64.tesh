@@ -1,17 +1,17 @@
 $ $SG_TEST_EXENV saturate/saturate_simulator${EXEEXT} ${srcdir:=.}/../msg/small_platform.xml ${srcdir:=.}/saturate/saturate.xml
-> [Tremblay:sensor:(1) 0.000000] [saturate/INFO] Sensor starting (on port 3000)
-> [Ginette:sensor:(4) 0.000000] [saturate/INFO] Sensor starting (on port 3000)
-> [Fafard:sensor:(3) 0.000000] [saturate/INFO] Sensor starting (on port 3000)
-> [Jupiter:sensor:(2) 0.000000] [saturate/INFO] Sensor starting (on port 3000)
-> [Jupiter:sensor:(2) 5.035692] [gras/INFO] Exiting GRAS
-> [Bourassa:maestro:(5) 5.041260] [saturate/INFO] Start saturation between Tremblay:3000 and Ginette:3000
-> [Fafard:sensor:(3) 5.041260] [gras/INFO] Exiting GRAS
-> [Bourassa:maestro:(5) 5.082092] [saturate/INFO] Have a rest
-> [Bourassa:maestro:(5) 6.082092] [saturate/INFO] Stop the saturation
-> [Tremblay:sensor:(1) 7.200021] [amok_bw_sat/INFO] Saturation(Tremblay:3000->Ginette:3000) started
-> [Tremblay:sensor:(1) 13.188834] [amok_bw_sat/INFO] Saturation from Tremblay:3000 to Ginette:3000 stopped by Bourassa:4000
-> [Bourassa:maestro:(5) 13.209174] [saturate/INFO] Saturation took 5.99sec, achieving 1280588.867148b/s
-> [Tremblay:sensor:(1) 13.229666] [gras/INFO] Exiting GRAS
-> [Bourassa:maestro:(5) 13.242710] [gras/INFO] Exiting GRAS
-> [Ginette:sensor:(4) 73.188834] [amok_bw_sat/INFO] Saturation comming from Tremblay:3000 stopped on Ginette:3000
-> [Ginette:sensor:(4) 73.188834] [gras/INFO] Exiting GRAS
+> [Tremblay:sensor:(1) 0.000156] [saturate/INFO] Sensor starting (on port 3000)
+> [Ginette:sensor:(4) 0.000156] [saturate/INFO] Sensor starting (on port 3000)
+> [Fafard:sensor:(3) 0.000156] [saturate/INFO] Sensor starting (on port 3000)
+> [Jupiter:sensor:(2) 0.000156] [saturate/INFO] Sensor starting (on port 3000)
+> [Jupiter:sensor:(2) 5.035848] [gras/INFO] Exiting GRAS
+> [Bourassa:maestro:(5) 5.041416] [saturate/INFO] Start saturation between Tremblay:3000 and Ginette:3000
+> [Fafard:sensor:(3) 5.041416] [gras/INFO] Exiting GRAS
+> [Bourassa:maestro:(5) 5.082248] [saturate/INFO] Have a rest
+> [Bourassa:maestro:(5) 6.082248] [saturate/INFO] Stop the saturation
+> [Tremblay:sensor:(1) 7.200177] [amok_bw_sat/INFO] Saturation(Tremblay:3000->Ginette:3000) started
+> [Tremblay:sensor:(1) 13.188990] [amok_bw_sat/INFO] Saturation from Tremblay:3000 to Ginette:3000 stopped by Bourassa:4000
+> [Bourassa:maestro:(5) 13.209330] [saturate/INFO] Saturation took 5.99sec, achieving 1280588.867148b/s
+> [Tremblay:sensor:(1) 13.229822] [gras/INFO] Exiting GRAS
+> [Bourassa:maestro:(5) 13.242866] [gras/INFO] Exiting GRAS
+> [Ginette:sensor:(4) 73.188990] [amok_bw_sat/INFO] Saturation comming from Tremblay:3000 stopped on Ginette:3000
+> [Ginette:sensor:(4) 73.188990] [gras/INFO] Exiting GRAS
