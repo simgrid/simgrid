@@ -1,3 +1,12 @@
+Most of the SimGrid software was written internally by the team. This
+software is distributed under the GNU lesser general public license
+version 2.1, which follows.
+
+Some perticular files distributed with the project have other
+licenses. More specifically, these files are listed at the end of this
+file (below the LGPL text), along with their license.
+
+=======================================================================
 
                   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 2.1, February 1999
@@ -507,4 +516,70 @@ if necessary.  Here is a sample; alter the names:
 
 That's all there is to it!
 
+==========================================================================
+
+The file src/xbt/snprintf.c contains this license text:
+
+/*
+ * snprintf.c - a portable implementation of snprintf
+ *
+ * AUTHOR
+ *   Mark Martinec <mark.martinec@ijs.si>, April 1999.
+ *
+ *   Copyright 1999, Mark Martinec. All rights reserved.
+ *
+ * TERMS AND CONDITIONS
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the "Frontier Artistic License" which comes
+ *   with this Kit.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty
+ *   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *   See the Frontier Artistic License for more details.
+ *
+ *   You should have received a copy of the Frontier Artistic License
+ *   with this Kit in the file named LICENSE.txt .
+ *   If not, I'll be glad to provide one.
+ *
+ */
+ 
+=========================================================================
+
+The exception handling mecanism (mainly living in src/xbt/ex.c and
+include/xbt/ex.h) was adapted from code from Ralf S. Engelschall and
+others in the OSSP project. The OSSP version has the following license:
+
+**  OSSP ex - Exception Handling
+**  Copyright (c) 2002-2007 Ralf S. Engelschall <rse@engelschall.com>
+**  Copyright (c) 2002-2007 The OSSP Project <http://www.ossp.org/>
+**
+**  This file is part of OSSP ex, an exception handling library
+**  which can be found at http://www.ossp.org/pkg/lib/ex/.
+**
+**  Permission to use, copy, modify, and distribute this software for
+**  any purpose with or without fee is hereby granted, provided that
+**  the above copyright notice and this permission notice appear in all
+**  copies.
+**
+**  THIS SOFTWARE IS PROVIDED `AS IS'' AND ANY EXPRESSED OR IMPLIED
+**  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+**  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+**  IN NO EVENT SHALL THE AUTHORS AND COPYRIGHT HOLDERS AND THEIR
+**  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+**  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+**  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+**  USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+**  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+**  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+**  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+**  SUCH DAMAGE.
+
+
+=========================================================================
+
+The sha implementation (src/xbt/xbt_sha.c:) was borowed and adapted
+from the iksemel one (http://code.google.com/p/iksemel/). Both the
+original and the current version of this code is distributed under the
+LGPL v2.1 license.
 
