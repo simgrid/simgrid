@@ -17,7 +17,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(tracing,"Tracing Interface");
 
-extern xbt_dict_t created_containers; /* declared in general.c */
 static xbt_dict_t defined_types;
 static xbt_dict_t created_categories;
 
@@ -104,7 +103,6 @@ int TRACE_start_with_mask(const char *filename, int mask) {
 
   if (IS_TRACING_PLATFORM) pajeCreateContainer(MSG_get_clock(), "platform", "PLATFORM", "0", "simgrid-platform");
 
-  created_containers = xbt_dict_new();
   defined_types = xbt_dict_new();
   created_categories = xbt_dict_new();
   __TRACE_msg_init();

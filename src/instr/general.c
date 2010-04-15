@@ -15,8 +15,6 @@
 
 #ifdef HAVE_TRACING
 
-xbt_dict_t created_containers = NULL;
-
 char *TRACE_paje_msg_container (m_task_t task, char *host, char *output, int len)
 {
   if (output){
