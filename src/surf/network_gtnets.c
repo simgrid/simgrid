@@ -244,7 +244,7 @@ static void update_actions_state(double now, double delta)
         unsigned int i;
         xbt_dynar_foreach(route, i, link) {
 
-          TRACE_surf_update_action_state_net_resource (link->generic_resource.name,
+        	TRACE_surf_link_set_utilization (link->generic_resource.name,
             action->generic_action.data, (action->generic_action.remains-remain)/delta, now-delta, delta);
         }
       }

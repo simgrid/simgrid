@@ -196,7 +196,7 @@ static void cpu_update_actions_state(double now, double delta)
 #ifdef HAVE_TRACING
     cpu_Cas01_t x = lmm_constraint_id(lmm_get_cnst_from_var (cpu_maxmin_system, action->variable, 0));
 
-    TRACE_surf_update_action_state_cpu_resource (x->generic_resource.name,
+    TRACE_surf_host_set_utilization (x->generic_resource.name,
               action->generic_action.data, lmm_variable_getvalue(action->variable), now-delta, delta);
 #endif
     double_update(&(action->generic_action.remains),

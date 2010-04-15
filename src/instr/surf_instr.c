@@ -234,7 +234,7 @@ void __TRACE_surf_set_resource_variable (double date, const char *variable, cons
   xbt_dict_set (resource_variables, xbt_strdup(key), xbt_strdup(aux), xbt_free);
 }
 
-void TRACE_surf_update_action_state_net_resource (const char *name, smx_action_t smx_action, double value, double now, double delta)
+void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta)
 {
   if (!IS_TRACING || !IS_TRACED(smx_action)) return;
 
@@ -256,7 +256,7 @@ void TRACE_surf_update_action_state_net_resource (const char *name, smx_action_t
   return;
 }
 
-void TRACE_surf_update_action_state_cpu_resource (const char *name, smx_action_t smx_action, double value, double now, double delta)
+void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta)
 {
   if (!IS_TRACING || !IS_TRACED(smx_action)) return;
 
