@@ -14,6 +14,7 @@ XBT_LOG_EXTERNAL_CATEGORY(smpi_sender);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_util);
 
 #define EAGER_LIMIT 65536
+#define RDV_TAG     (-10)
 
 void smpi_process_init(int* argc, char*** argv) {
   int index;
@@ -42,11 +43,15 @@ void smpi_process_destroy(void) {
 /* MPI Low level calls */
 MPI_Request smpi_mpi_isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm) {
   MPI_Request request;
+  MPI_Request rdv[2];
   size_t size = smpi_datatype_size(datatype) * count;
 
   if (size > EAGER_LIMIT) {
 	/* Warning: this (zero-length synchronous) call will come back here with size == 0 */
-	smpi_mpi_send (NULL, 0, MPI_BYTE, dst, tag, comm);
+   DEBUG1("RDV send to %d", dst);
+	rdv[0] = smpi_mpi_isend(NULL, 0, MPI_BYTE, dst, RDV_TAG, comm);
+	rdv[1] = smpi_mpi_irecv(NULL, 0, MPI_BYTE, dst, RDV_TAG, comm);
+   smpi_mpi_waitall(2, rdv, MPI_STATUS_IGNORE);
   }
   request = xbt_new(s_smpi_mpi_request_t, 1);
   request->comm = comm;
@@ -63,11 +68,15 @@ MPI_Request smpi_mpi_isend(void* buf, int count, MPI_Datatype datatype, int dst,
 
 MPI_Request smpi_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm) {
   MPI_Request request;
+  MPI_Request rdv[2];
   size_t size = smpi_datatype_size(datatype) * count;
 
   if (size > EAGER_LIMIT) {
 	/* Warning: this (zero-length synchronous) call will come back here with size == 0 */
-	smpi_mpi_recv (NULL, 0, MPI_BYTE, src, tag, comm, MPI_STATUS_IGNORE);
+   DEBUG1("RDV recv from %d", src);
+	rdv[0] = smpi_mpi_irecv(NULL, 0, MPI_BYTE, src, RDV_TAG, comm);
+	rdv[1] = smpi_mpi_isend(NULL, 0, MPI_BYTE, src, RDV_TAG, comm);
+   smpi_mpi_waitall(2, rdv, MPI_STATUS_IGNORE);
   }
   request = xbt_new(s_smpi_mpi_request_t, 1);
   request->comm = comm;
