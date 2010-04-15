@@ -13,6 +13,8 @@ XBT_LOG_EXTERNAL_CATEGORY(smpi_receiver);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_sender);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_util);
 
+#define EAGER_LIMIT 65536
+
 void smpi_process_init(int* argc, char*** argv) {
   int index;
   smpi_process_data_t data;
@@ -40,13 +42,18 @@ void smpi_process_destroy(void) {
 /* MPI Low level calls */
 MPI_Request smpi_mpi_isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm) {
   MPI_Request request;
+  size_t size = smpi_datatype_size(datatype) * count;
 
+  if (size > EAGER_LIMIT) {
+	/* Warning: this (zero-length synchronous) call will come back here with size == 0 */
+	smpi_mpi_send (NULL, 0, MPI_BYTE, dst, tag, comm);
+  }
   request = xbt_new(s_smpi_mpi_request_t, 1);
   request->comm = comm;
   request->src = smpi_comm_rank(comm);
   request->dst = dst;
   request->tag = tag;
-  request->size = smpi_datatype_size(datatype) * count;
+  request->size = size;
   request->complete = 0;
   request->data = request;
   smpi_process_post_send(comm, request);
@@ -56,13 +63,18 @@ MPI_Request smpi_mpi_isend(void* buf, int count, MPI_Datatype datatype, int dst,
 
 MPI_Request smpi_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm) {
   MPI_Request request;
+  size_t size = smpi_datatype_size(datatype) * count;
 
+  if (size > EAGER_LIMIT) {
+	/* Warning: this (zero-length synchronous) call will come back here with size == 0 */
+	smpi_mpi_recv (NULL, 0, MPI_BYTE, src, tag, comm, MPI_STATUS_IGNORE);
+  }
   request = xbt_new(s_smpi_mpi_request_t, 1);
   request->comm = comm;
   request->src = src;
   request->dst = smpi_comm_rank(comm);
   request->tag = tag;
-  request->size = smpi_datatype_size(datatype) * count;
+  request->size = size;
   request->complete = 0;
   request->data = MPI_REQUEST_NULL;
   smpi_process_post_recv(request);
@@ -77,10 +89,10 @@ void smpi_mpi_recv(void* buf, int count, MPI_Datatype datatype, int src, int tag
   smpi_mpi_wait(&request, status);
 }
 
-void smpi_mpi_send(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm) {
+void smpi_mpi_send(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm) {
   MPI_Request request;
 
-  request = smpi_mpi_isend(buf, count, datatype, src, tag, comm);
+  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 }
 

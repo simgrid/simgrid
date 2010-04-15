@@ -347,12 +347,19 @@ void SIMIX_network_copy_buffer_callback(smx_comm_t comm, size_t buff_size) {
  */
 void SIMIX_network_copy_data(smx_comm_t comm)
 {
+  size_t buff_size = comm->src_buff_size;
+
+  DEBUG6("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
+      comm,
+      comm->src_proc->smx_host->name, comm->src_buff,
+      comm->dst_proc->smx_host->name, comm->dst_buff,
+      buff_size);
+
   /* If there is no data to be copy then return */
   if(!comm->src_buff || !comm->dst_buff)
     return;
   
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
-  size_t buff_size = comm->src_buff_size;
   if (comm->dst_buff_size)
     buff_size = MIN(buff_size,*(comm->dst_buff_size));
   
@@ -362,11 +369,6 @@ void SIMIX_network_copy_data(smx_comm_t comm)
 
   if(buff_size == 0)
     return;
-  DEBUG6("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
-      comm,
-      comm->src_proc->smx_host->name, comm->src_buff,
-      comm->dst_proc->smx_host->name, comm->dst_buff,
-      buff_size);
   (*SIMIX_network_copy_data_callback)(comm, buff_size);
 
   /* pimple to display the message sizes */
