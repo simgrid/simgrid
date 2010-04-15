@@ -1,11 +1,21 @@
-                    _               _____  _____  ____  
-__   _____ _ __ ___(_) ___  _ __   |___ / |___ / | ___| 
-\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \ |___ \ 
- \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) | ___) |
-  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____(_)____/ 
-                                                        
+                    _               _____ _  _   
+__   _____ _ __ ___(_) ___  _ __   |___ /| || |  
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \| || |_ 
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) |__   _|
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_) |_|  
 
 (not released yet)
+
+
+The "Easter in Cargese" release. Also known as (major changes):
+ 
+ * the "se habla Java, Ruby 話せます, fala-se Lua (and deaf-friendly)"
+   ~> bindings were greatly improved
+   ~> new tracing infrastructure for better visualization introduced
+    
+ * the "Welcome to configury modernity" release.
+   ~> we switched from autotools to cmake, and improved our cdash
+   
                     _               _____  _____ _  _   
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ /| || |  
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| || |_ 
