@@ -58,6 +58,7 @@ SimGrid (3.4-svn) unstable; urgency=low
         and call MSG_action_trace_run(NULL)
       You can still have one merged file for all processes.
     - Fix implementation of collective operations
+  * Allow task_execute() on 0-sized tasks (closes #10063)
  SMPI:
   * This is the first release of SimGrid where SMPI is not considered
     beta anymore (even if some corners should still be improved)
