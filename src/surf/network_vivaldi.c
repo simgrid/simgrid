@@ -216,6 +216,10 @@ static void netviva_parse_host(void) {
   coord->y = atof(xbt_dynar_get_as(ctn, 1, char*));
   coord->h = atof(xbt_dynar_get_as(ctn, 2, char*));
 
+#ifdef HAVE_TRACING
+  TRACE_surf_vivaldi_parse_host (A_surfxml_host_id, coord->x, coord->y, coord->h);
+#endif
+
   xbt_dynar_free(&ctn);
   xbt_dict_set(coords, A_surfxml_host_id,coord,NULL);
 }
@@ -264,6 +268,12 @@ void surf_network_model_init_Vivaldi(const char *filename)
 
   update_model_description(surf_network_model_description,
                            "Vivaldi", surf_network_model);
+
+#ifdef HAVE_TRACING
+  __TRACE_host_variable(0,"vivaldi_x",0,"declare");
+  __TRACE_host_variable(0,"vivaldi_y",0,"declare");
+  __TRACE_host_variable(0,"vivaldi_h",0,"declare");
+#endif
 
   xbt_cfg_set_string(_surf_cfg_set, "routing", "none");
   routing_model_create(sizeof(double), NULL);

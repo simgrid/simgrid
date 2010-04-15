@@ -433,4 +433,17 @@ void TRACE_msg_clean (void)
   }
 }
 
+void TRACE_surf_vivaldi_parse_host (char *host, double x, double y, double h)
+{
+  if (!IS_TRACING || !IS_TRACING_PLATFORM) return;
+
+  char valuestr[100];
+  snprintf (valuestr, 100, "%g", x);
+  pajeSetVariable (0, "vivaldi_x", host, valuestr);
+  snprintf (valuestr, 100, "%g", y);
+  pajeSetVariable (0, "vivaldi_y", host, valuestr);
+  snprintf (valuestr, 100, "%g", h);
+  pajeSetVariable (0, "vivaldi_h", host, valuestr);
+}
+
 #endif
