@@ -1,3 +1,5 @@
+message("\tBIBTEX2HTML  : ${BIBTEX2HTML}")
+
 if(BIBTEX2HTML)
 set(BIBTEX2HTML_PATH ${BIBTEX2HTML})
 else(BIBTEX2HTML)
@@ -13,17 +15,18 @@ message("\tFIG2DEV_PATH : ${FIG2DEV_PATH}")
 message("\tDOXYGEN_PATH : ${DOXYGEN_PATH}")
 message("\tBIBTOOL_PATH : ${BIBTOOL_PATH}")
 message("\tICONV_PATH   : ${ICONV_PATH}")
+message("\tBIBTEX2HTML_PATH   : ${BIBTEX2HTML_PATH}")
+
+exec_program("${BIBTEX2HTML_PATH}/bibtex2html -version" OUTPUT_VARIABLE SORTIE_BIBTEX2HTML_VERSION)
+STRING(REPLACE "[-bibtex]" "" SORTIE_BIBTEX2HTML_VERSION_2 ${SORTIE_BIBTEX2HTML_VERSION})
 
 if(BIBTEX2HTML_PATH)
-	exec_program("${BIBTEX2HTML_PATH}/bibtex2html -version" OUTPUT_VARIABLE SORTIE_BIBTEX2HTML_VERSION)
-	STRING(REPLACE "[-bibtex]" "" SORTIE_BIBTEX2HTML_VERSION_2 ${SORTIE_BIBTEX2HTML_VERSION})
 	if(${SORTIE_BIBTEX2HTML_VERSION_2} STREQUAL ${SORTIE_BIBTEX2HTML_VERSION}) # mauvaise version
 		message("\nERROR --> NEED to set bibtex2html path with \"ccmake ./\" or with \"cmake -DBIBTEX2HTML=<path_to> ./\"")
 		message("\nTake care having install the good bibtex2html \n\t(download it : ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz)")
-		message("\n")
+		message(FATAL_ERROR "\n")
 	endif(${SORTIE_BIBTEX2HTML_VERSION_2} STREQUAL ${SORTIE_BIBTEX2HTML_VERSION})
 endif(BIBTEX2HTML_PATH)
-message("\tBIBTEX2HTML_PATH   : ${BIBTEX2HTML_PATH}")
 
 exec_program("rm -rf ${PROJECT_DIRECTORY}/doc/html"  "${PROJECT_DIRECTORY}/doc/")
 exec_program("mkdir -p ${PROJECT_DIRECTORY}/doc/html"  "${PROJECT_DIRECTORY}/doc/")
