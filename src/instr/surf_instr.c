@@ -415,7 +415,6 @@ void TRACE_msg_clean (void)
   __TRACE_surf_finalize();
 
   xbt_dict_cursor_t cursor = NULL;
-  unsigned int cursor_ar = 0;
   char *key, *value;
 
   /* get all host from host_containers */

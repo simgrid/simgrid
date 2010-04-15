@@ -158,7 +158,7 @@ void TRACE_define_type (const char *type,
 int TRACE_create_category (const char *category,
 		const char *type, const char *parent_category)
 {
-  if (!IS_TRACING) return;
+  if (!IS_TRACING) return 1;
 
   //check if type is defined
   if (!xbt_dict_get_or_null (defined_types, type)) {
