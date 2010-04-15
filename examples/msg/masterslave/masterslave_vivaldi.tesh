@@ -1,0 +1,71 @@
+#! ./tesh
+
+p Testing a simple master/slave example application
+
+$ $SG_TEST_EXENV ./masterslave/masterslave_mailbox --cfg=network/model:Vivaldi ../platforms/vivaldi.xml ./masterslave/deployment_masterslave_vivaldi.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vivaldi'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [0.000000] [surf_network/INFO] Blih
+> [0.000000] [surf_route/INFO] Null routing
+> [100030591:master:(1) 0.000000] [msg_test/INFO] Got 39 slaves and 20 tasks to process
+> [100030591:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"
+> [100030591:master:(1) 46.298715] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "slave-1"
+> [100030591:master:(1) 103.601749] [msg_test/INFO] Sending "Task_2" (of 20) to mailbox "slave-2"
+> [100030591:master:(1) 126.922043] [msg_test/INFO] Sending "Task_3" (of 20) to mailbox "slave-3"
+> [100030591:master:(1) 167.281845] [msg_test/INFO] Sending "Task_4" (of 20) to mailbox "slave-4"
+> [100030591:master:(1) 174.709847] [msg_test/INFO] Sending "Task_5" (of 20) to mailbox "slave-5"
+> [100030591:master:(1) 307.173455] [msg_test/INFO] Sending "Task_6" (of 20) to mailbox "slave-6"
+> [100030591:master:(1) 370.794449] [msg_test/INFO] Sending "Task_7" (of 20) to mailbox "slave-7"
+> [100030591:master:(1) 413.207033] [msg_test/INFO] Sending "Task_8" (of 20) to mailbox "slave-8"
+> [100030591:master:(1) 452.276743] [msg_test/INFO] Sending "Task_9" (of 20) to mailbox "slave-9"
+> [100030591:master:(1) 487.205195] [msg_test/INFO] Sending "Task_10" (of 20) to mailbox "slave-10"
+> [100030591:master:(1) 503.334725] [msg_test/INFO] Sending "Task_11" (of 20) to mailbox "slave-11"
+> [100030591:master:(1) 524.048071] [msg_test/INFO] Sending "Task_12" (of 20) to mailbox "slave-12"
+> [100030591:master:(1) 564.235298] [msg_test/INFO] Sending "Task_13" (of 20) to mailbox "slave-13"
+> [100030591:master:(1) 781.637823] [msg_test/INFO] Sending "Task_14" (of 20) to mailbox "slave-14"
+> [100030591:master:(1) 849.066410] [msg_test/INFO] Sending "Task_15" (of 20) to mailbox "slave-15"
+> [100030591:master:(1) 875.286809] [msg_test/INFO] Sending "Task_16" (of 20) to mailbox "slave-16"
+> [100030591:master:(1) 925.618026] [msg_test/INFO] Sending "Task_17" (of 20) to mailbox "slave-17"
+> [100030591:master:(1) 955.459779] [msg_test/INFO] Sending "Task_18" (of 20) to mailbox "slave-18"
+> [100030591:master:(1) 1125.325477] [msg_test/INFO] Sending "Task_19" (of 20) to mailbox "slave-19"
+> [100030591:master:(1) 1162.951807] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [100036570:slave:(2) 1162.973547] [msg_test/INFO] I'm done. See you!
+> [100041334:slave:(3) 1220.276580] [msg_test/INFO] I'm done. See you!
+> [100055671:slave:(4) 1243.596875] [msg_test/INFO] I'm done. See you!
+> [100066658:slave:(5) 1283.956677] [msg_test/INFO] I'm done. See you!
+> [100090691:slave:(6) 1291.384678] [msg_test/INFO] I'm done. See you!
+> [100094952:slave:(7) 1423.848286] [msg_test/INFO] I'm done. See you!
+> [100117943:slave:(8) 1487.469281] [msg_test/INFO] I'm done. See you!
+> [100126290:slave:(9) 1529.881864] [msg_test/INFO] I'm done. See you!
+> [100144483:slave:(10) 1568.951575] [msg_test/INFO] I'm done. See you!
+> [100152889:slave:(11) 1603.880026] [msg_test/INFO] I'm done. See you!
+> [100178474:slave:(12) 1620.009556] [msg_test/INFO] I'm done. See you!
+> [100180261:slave:(13) 1640.722903] [msg_test/INFO] I'm done. See you!
+> [100185883:slave:(14) 1680.910130] [msg_test/INFO] I'm done. See you!
+> [100186365:slave:(15) 1898.312654] [msg_test/INFO] I'm done. See you!
+> [100200866:slave:(16) 1965.741241] [msg_test/INFO] I'm done. See you!
+> [100207885:slave:(17) 1991.961641] [msg_test/INFO] I'm done. See you!
+> [100224447:slave:(18) 2042.292857] [msg_test/INFO] I'm done. See you!
+> [100238799:slave:(19) 2072.134610] [msg_test/INFO] I'm done. See you!
+> [100273297:slave:(20) 2242.000308] [msg_test/INFO] I'm done. See you!
+> [100280711:slave:(21) 2279.626639] [msg_test/INFO] I'm done. See you!
+> [100284574:slave:(22) 2498.188051] [msg_test/INFO] I'm done. See you!
+> [100292843:slave:(23) 2583.831534] [msg_test/INFO] I'm done. See you!
+> [100309685:slave:(24) 2622.545655] [msg_test/INFO] I'm done. See you!
+> [100315281:slave:(25) 2673.840377] [msg_test/INFO] I'm done. See you!
+> [100317715:slave:(26) 2711.638506] [msg_test/INFO] I'm done. See you!
+> [100324694:slave:(27) 2797.178222] [msg_test/INFO] I'm done. See you!
+> [100326641:slave:(28) 2849.195200] [msg_test/INFO] I'm done. See you!
+> [100331484:slave:(29) 2887.510316] [msg_test/INFO] I'm done. See you!
+> [100347816:slave:(30) 3018.806394] [msg_test/INFO] I'm done. See you!
+> [100354536:slave:(31) 3056.674686] [msg_test/INFO] I'm done. See you!
+> [100355017:slave:(32) 3119.606511] [msg_test/INFO] I'm done. See you!
+> [100359203:slave:(33) 3137.814842] [msg_test/INFO] I'm done. See you!
+> [100379397:slave:(34) 3399.393230] [msg_test/INFO] I'm done. See you!
+> [100404046:slave:(35) 3413.993230] [msg_test/INFO] I'm done. See you!
+> [100413314:slave:(36) 3496.854152] [msg_test/INFO] I'm done. See you!
+> [100416828:slave:(37) 3512.443399] [msg_test/INFO] I'm done. See you!
+> [100422926:slave:(38) 3605.230874] [msg_test/INFO] I'm done. See you!
+> [100427449:slave:(39) 3804.154315] [msg_test/INFO] I'm done. See you!
+> [100429957:slave:(40) 3832.797656] [msg_test/INFO] I'm done. See you!
+> [3832.797656] [msg_test/INFO] Simulation time 3832.8
