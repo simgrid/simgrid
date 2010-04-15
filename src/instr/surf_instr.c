@@ -23,8 +23,6 @@ static xbt_dict_t created_links;
 static xbt_dict_t link_bandwidth;
 static xbt_dict_t link_latency;
 static xbt_dict_t host_containers;
-//static xbt_dict_t platform_variable_last_value; /* to control the amount of add/sub variables events*/
-//static xbt_dict_t platform_variable_last_time; /* to control the amount of add/sub variables events*/
 
 static xbt_dict_t last_platform_variables; /* to control the amount of add/sub variables events:
    dict with key {RESOURCE_NAME}#Time or {RESOURCE_NAME}#Value of dict with variables types == string */
@@ -45,14 +43,8 @@ void __TRACE_surf_init (void)
   link_latency = xbt_dict_new();
   platform_variables = xbt_dict_new();
   host_containers = xbt_dict_new();
-
-  //platform_variable_last_value = xbt_dict_new();
-  //platform_variable_last_time = xbt_dict_new();
-
   last_platform_variables =  xbt_dict_new();
-
   resource_variables = xbt_dict_new ();
-
   gtnets_src = xbt_dict_new ();
   gtnets_dst = xbt_dict_new ();
 }
