@@ -93,7 +93,7 @@ echo $which_lua
 if [ x$which_lua = x ] ; then
   echo "Try to install lua"
   if [ -e /usr/bin/apt-get ] ; then
-    sudo apt-get -y install liblua5.1-0-dev 
+    sudo apt-get -y install liblua5.1 
   fi
   if [ -e /usr/bin/yum ] ; then
     sudo yum -y install lua-devel
@@ -113,13 +113,13 @@ echo $which_ruby
 if [ x$which_ruby = x ] ; then
   echo "Try to install ruby"
   if [ -e /usr/bin/apt-get ] ; then
-    sudo apt-get -y install ruby1.8-dev ruby1.8
+    sudo apt-get -y install ruby1.8-dev ruby
   fi
   if [ -e /usr/bin/yum ] ; then
-    sudo yum -y install ruby-devel
+    sudo yum -y install ruby-devel ruby
   fi
   if [ x$arch = xDarwin ] ; then
-    sudo fink -y install ruby18-dev
+    sudo fink -y install ruby18-dev ruby
   fi
 fi
 

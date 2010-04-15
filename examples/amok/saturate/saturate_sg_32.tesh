@@ -8,10 +8,11 @@ $ $SG_TEST_EXENV saturate/saturate_simulator${EXEEXT} ${srcdir:=.}/../msg/small_
 > [Fafard:sensor:(3) 5.041416] [gras/INFO] Exiting GRAS
 > [Bourassa:maestro:(5) 5.082248] [saturate/INFO] Have a rest
 > [Bourassa:maestro:(5) 6.082248] [saturate/INFO] Stop the saturation
-> [Tremblay:sensor:(1) 7.200177] [amok_bw_sat/INFO] Saturation(Tremblay:3000->Ginette:3000) started
-> [Tremblay:sensor:(1) 13.188990] [amok_bw_sat/INFO] Saturation from Tremblay:3000 to Ginette:3000 stopped by Bourassa:4000
-> [Bourassa:maestro:(5) 13.209330] [saturate/INFO] Saturation took 5.99sec, achieving 1280588.867148b/s
-> [Tremblay:sensor:(1) 13.229822] [gras/INFO] Exiting GRAS
-> [Bourassa:maestro:(5) 13.242866] [gras/INFO] Exiting GRAS
-> [Ginette:sensor:(4) 73.188990] [amok_bw_sat/INFO] Saturation comming from Tremblay:3000 stopped on Ginette:3000
-> [Ginette:sensor:(4) 73.188990] [gras/INFO] Exiting GRAS
+> [Tremblay:sensor:(1) 7.200171] [amok_bw_sat/INFO] Saturation(Tremblay:3000->Ginette:3000) started
+> [Tremblay:sensor:(1) 13.188984] [amok_bw_sat/INFO] Saturation from Tremblay:3000 to Ginette:3000 stopped by Bourassa:4000
+> [Bourassa:maestro:(5) 13.209324] [saturate/INFO] Saturation took 5.99sec, achieving 1280588.867148b/s
+> [Tremblay:sensor:(1) 13.229816] [gras/INFO] Exiting GRAS
+> [Bourassa:maestro:(5) 13.242860] [gras/INFO] Exiting GRAS
+> [Ginette:sensor:(4) 73.188984] [amok_bw_sat/INFO] Saturation comming from Tremblay:3000 stopped on Ginette:3000
+> [Ginette:sensor:(4) 73.188984] [gras/INFO] Exiting GRAS
+

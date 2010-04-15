@@ -15,29 +15,29 @@ $ $SG_TEST_EXENV ./pmm_simulator$EXEEXT ${srcdir:=.}/../../msg/msg_platform.xml 
 > [Jacquelin:master:(1) 10.946081] [pmm/INFO] Got only 7 pals. Wait 2 more seconds
 > [Jacquelin:master:(1) 12.946081] [pmm/INFO] Good. Got 9 pals
 > [Jacquelin:master:(1) 12.947485] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX begin Multiplication
-> [Laroche:slave:(10) 15.396161] [pmm/INFO] Receive my pos (0,0) and assignment
-> [iRMX:slave:(7) 16.396673] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Laroche:3000. Queue it for later gras_msg_wait() use.
-> [Gatien:slave:(9) 16.421579] [pmm/INFO] Receive my pos (0,1) and assignment
-> [McGee:slave:(8) 17.136330] [pmm/INFO] Receive my pos (0,2) and assignment
-> [Disney:slave:(6) 17.505539] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Gatien:3000. Queue it for later gras_msg_wait() use.
-> [Geoff:slave:(5) 17.844938] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from McGee:3000. Queue it for later gras_msg_wait() use.
-> [Boivin:slave:(2) 17.928966] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from McGee:3000. Queue it for later gras_msg_wait() use.
-> [TeX:slave:(4) 17.959724] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Laroche:3000. Queue it for later gras_msg_wait() use.
-> [Jean_Yves:slave:(3) 19.252782] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Gatien:3000. Queue it for later gras_msg_wait() use.
-> [iRMX:slave:(7) 19.845472] [pmm/INFO] Receive my pos (1,0) and assignment
-> [Disney:slave:(6) 21.312656] [pmm/INFO] Receive my pos (1,1) and assignment
-> [Geoff:slave:(5) 21.317208] [pmm/INFO] Receive my pos (1,2) and assignment
-> [TeX:slave:(4) 22.775609] [pmm/INFO] Receive my pos (2,0) and assignment
-> [Jean_Yves:slave:(3) 23.519896] [pmm/INFO] Receive my pos (2,1) and assignment
-> [Boivin:slave:(2) 24.363790] [pmm/INFO] Receive my pos (2,2) and assignment
-> [Jacquelin:master:(1) 43.582752] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations
-> [Laroche:slave:(10) 45.022312] [gras/INFO] Exiting GRAS
-> [Gatien:slave:(9) 46.041233] [gras/INFO] Exiting GRAS
-> [McGee:slave:(8) 46.751525] [gras/INFO] Exiting GRAS
-> [iRMX:slave:(7) 49.184735] [gras/INFO] Exiting GRAS
-> [Disney:slave:(6) 50.642600] [gras/INFO] Exiting GRAS
-> [Geoff:slave:(5) 50.647025] [gras/INFO] Exiting GRAS
-> [TeX:slave:(4) 52.096135] [gras/INFO] Exiting GRAS
-> [Jean_Yves:slave:(3) 52.835793] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 53.674409] [gras/INFO] Exiting GRAS
-> [Boivin:slave:(2) 53.674409] [gras/INFO] Exiting GRAS
+> [Laroche:slave:(10) 15.395940] [pmm/INFO] Receive my pos (0,0) and assignment
+> [iRMX:slave:(7) 16.396375] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Laroche:3000. Queue it for later gras_msg_wait() use.
+> [Gatien:slave:(9) 16.421200] [pmm/INFO] Receive my pos (0,1) and assignment
+> [McGee:slave:(8) 17.135842] [pmm/INFO] Receive my pos (0,2) and assignment
+> [Disney:slave:(6) 17.505078] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Gatien:3000. Queue it for later gras_msg_wait() use.
+> [Geoff:slave:(5) 17.844396] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from McGee:3000. Queue it for later gras_msg_wait() use.
+> [Boivin:slave:(2) 17.928418] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from McGee:3000. Queue it for later gras_msg_wait() use.
+> [TeX:slave:(4) 17.959306] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Laroche:3000. Queue it for later gras_msg_wait() use.
+> [Jean_Yves:slave:(3) 19.252187] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Gatien:3000. Queue it for later gras_msg_wait() use.
+> [iRMX:slave:(7) 19.844800] [pmm/INFO] Receive my pos (1,0) and assignment
+> [Disney:slave:(6) 21.311759] [pmm/INFO] Receive my pos (1,1) and assignment
+> [Geoff:slave:(5) 21.316304] [pmm/INFO] Receive my pos (1,2) and assignment
+> [TeX:slave:(4) 22.774482] [pmm/INFO] Receive my pos (2,0) and assignment
+> [Jean_Yves:slave:(3) 23.518655] [pmm/INFO] Receive my pos (2,1) and assignment
+> [Boivin:slave:(2) 24.362421] [pmm/INFO] Receive my pos (2,2) and assignment
+> [Jacquelin:master:(1) 43.580067] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations
+> [Laroche:slave:(10) 45.019627] [gras/INFO] Exiting GRAS
+> [Gatien:slave:(9) 46.038549] [gras/INFO] Exiting GRAS
+> [McGee:slave:(8) 46.748840] [gras/INFO] Exiting GRAS
+> [iRMX:slave:(7) 49.182051] [gras/INFO] Exiting GRAS
+> [Disney:slave:(6) 50.639915] [gras/INFO] Exiting GRAS
+> [Geoff:slave:(5) 50.644340] [gras/INFO] Exiting GRAS
+> [TeX:slave:(4) 52.093451] [gras/INFO] Exiting GRAS
+> [Jean_Yves:slave:(3) 52.833109] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 53.671725] [gras/INFO] Exiting GRAS
+> [Boivin:slave:(2) 53.671725] [gras/INFO] Exiting GRAS
