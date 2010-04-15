@@ -194,8 +194,6 @@ static void cpu_update_actions_state(double now, double delta)
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
 #ifdef HAVE_TRACING
-    TRACE_surf_update_action_state (action, action->generic_action.data,
-        lmm_variable_getvalue(action->variable), "PowerUsed", now-delta, delta);
     cpu_Cas01_t x = lmm_constraint_id(lmm_get_cnst_from_var (cpu_maxmin_system, action->variable, 0));
 
     TRACE_surf_update_action_state_cpu_resource (x->generic_resource.name,

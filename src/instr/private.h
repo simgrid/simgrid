@@ -106,7 +106,6 @@ void __TRACE_surf_finalize (void);
 void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, const char *resource);
 void __TRACE_surf_update_action_state_resource (double now, double delta, const char *type, const char *name, double value);
 void __TRACE_surf_set_resource_variable (double date, const char *variable, const char *resource, double value);
-void TRACE_surf_update_action_state (void *surf_action, smx_action_t smx_action, double value, const char *stateValue, double now, double delta);
 void TRACE_surf_update_action_state_net_resource (const char *name, smx_action_t smx_action, double value, double now, double delta);
 void TRACE_surf_update_action_state_cpu_resource (const char *name, smx_action_t smx_action, double value, double now, double delta);
 void TRACE_surf_link_declaration (char *name, double bw, double lat);

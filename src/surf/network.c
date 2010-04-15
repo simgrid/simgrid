@@ -239,9 +239,6 @@ static void net_update_actions_state(double now, double delta)
   xbt_swag_foreach_safe(action, next_action, running_actions) {
 
 #ifdef HAVE_TRACING
-    TRACE_surf_update_action_state (action, action->generic_action.data,
-        lmm_variable_getvalue(action->variable), "BandwidthUsed", now-delta, delta);
-
     xbt_dynar_t route = used_routing->get_route(action->src, action->dst);
     link_CM02_t link;
     unsigned int i;

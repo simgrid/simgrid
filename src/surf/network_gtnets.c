@@ -235,10 +235,6 @@ static void update_actions_state(double now, double delta)
       double remain = gtnets_get_flow_rx(action);
 
 #ifdef HAVE_TRACING
-      // tracing surf action
-      TRACE_surf_update_action_state (action, action->generic_action.data,
-    		  (action->generic_action.remains-remain)/delta, "BandwidthUsed", now-delta, delta);
-
       // tracing resource utilization
       int src = TRACE_surf_gtnets_get_src (action);
       int dst = TRACE_surf_gtnets_get_dst (action);
