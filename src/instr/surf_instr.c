@@ -108,10 +108,9 @@ void __TRACE_surf_finalize (void)
       char *variable = xbt_dict_get (last_platform_variables, variablekey);
       pajeSubVariable (atof(time), variable, resource, value);
 
-      //TODO: should remove, but it is causing sigabort
-      //xbt_dict_remove (last_platform_variables, timekey);
-      //xbt_dict_remove (last_platform_variables, valuekey);
-      //xbt_dict_remove (last_platform_variables, variablekey);
+      xbt_dict_remove (last_platform_variables, timekey);
+      xbt_dict_remove (last_platform_variables, valuekey);
+      xbt_dict_remove (last_platform_variables, variablekey);
     }
   }
 }
