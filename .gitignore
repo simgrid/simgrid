@@ -218,4 +218,7 @@ testsuite/xbt/log_usage
 tools/gras/gras_stub_generator
 tools/graspe-slave
 tools/tesh/tesh
+examples/msg/tracing/categories
+examples/msg/tracing/ms
+
 
