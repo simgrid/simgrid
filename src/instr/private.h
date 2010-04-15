@@ -109,9 +109,9 @@ void __TRACE_surf_set_resource_variable (double date, const char *variable, cons
 void TRACE_surf_update_action_state (void *surf_action, smx_action_t smx_action, double value, const char *stateValue, double now, double delta);
 void TRACE_surf_update_action_state_net_resource (const char *name, smx_action_t smx_action, double value, double now, double delta);
 void TRACE_surf_update_action_state_cpu_resource (const char *name, smx_action_t smx_action, double value, double now, double delta);
-void TRACE_surf_net_link_new (char *name, double bw, double lat);
-void TRACE_surf_cpu_new (char *name, double power);
-void TRACE_surf_cpu_set_power (double date, char *resource, double power);
+void TRACE_surf_link_declaration (char *name, double bw, double lat);
+void TRACE_surf_host_declaration (char *name, double power);
+void TRACE_surf_host_set_power (double date, char *resource, double power);
 void TRACE_surf_link_set_bandwidth (double date, char *resource, double bandwidth);
 void TRACE_surf_link_set_latency (double date, char *resource, double latency);
 void TRACE_surf_routing_full_parse_end (char *link_name, int src, int dst);

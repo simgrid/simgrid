@@ -39,7 +39,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   gtnets_link->lat_current = lat;
   gtnets_link->id = link_count;
 #ifdef HAVE_TRACING
-  TRACE_surf_net_link_new (name, bw, lat);
+  TRACE_surf_link_declaration (name, bw, lat);
 #endif
   xbt_dict_set(surf_network_model->resource_set, name, gtnets_link,
                surf_resource_free);

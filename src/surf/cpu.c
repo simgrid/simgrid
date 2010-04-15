@@ -63,7 +63,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_peak,
   xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu,
                surf_resource_free);
 #ifdef HAVE_TRACING
-  TRACE_surf_cpu_new (name, cpu->power_scale * cpu->power_peak);
+  TRACE_surf_host_declaration (name, cpu->power_scale * cpu->power_peak);
 #endif
 
   return cpu;
@@ -230,7 +230,7 @@ static void cpu_update_resource_state(void *id,
     lmm_update_constraint_bound(cpu_maxmin_system, cpu->constraint,
                                 cpu->power_scale * cpu->power_peak);
 #ifdef HAVE_TRACING
-    TRACE_surf_cpu_set_power (date, cpu->generic_resource.name, cpu->power_scale * cpu->power_peak);
+    TRACE_surf_host_set_power (date, cpu->generic_resource.name, cpu->power_scale * cpu->power_peak);
 #endif
     if (tmgr_trace_event_free(event_type))
       cpu->power_event = NULL;

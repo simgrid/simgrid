@@ -100,7 +100,7 @@ static void routing_full_parse_Srouter(void) {
   xbt_dict_set(used_routing->host_id,A_surfxml_router_id,val,xbt_free);
 #ifdef HAVE_TRACING
   TRACE_surf_define_host_id (A_surfxml_host_id, *val);
-  TRACE_surf_cpu_new (A_surfxml_host_id, 0);
+  TRACE_surf_host_declaration (A_surfxml_host_id, 0);
 #endif
 }
 

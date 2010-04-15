@@ -275,7 +275,7 @@ void TRACE_surf_update_action_state_cpu_resource (const char *name, smx_action_t
   return;
 }
 
-void TRACE_surf_net_link_new (char *name, double bw, double lat)
+void TRACE_surf_link_declaration (char *name, double bw, double lat)
 {
   if (!IS_TRACING) return;
   //if (IS_TRACING_PLATFORM) pajeCreateContainerWithBandwidthLatency (SIMIX_get_clock(), name, "LINK", "platform", name, bw, lat);
@@ -289,7 +289,7 @@ void TRACE_surf_net_link_new (char *name, double bw, double lat)
   xbt_dict_set (link_latency, xbt_strdup(name), lat_ptr, xbt_free);
 }
 
-void TRACE_surf_cpu_new (char *name, double power)
+void TRACE_surf_host_declaration (char *name, double power)
 {
   if (!IS_TRACING) return;
   if (IS_TRACING_PLATFORM){
@@ -328,7 +328,7 @@ void TRACE_surf_routing_full_parse_end (char *link_name, int src, int dst)
   }
 }
 
-void TRACE_surf_cpu_set_power (double date, char *resource, double power)
+void TRACE_surf_host_set_power (double date, char *resource, double power)
 {
   __TRACE_surf_set_resource_variable (date, "power", resource, power);
 }
