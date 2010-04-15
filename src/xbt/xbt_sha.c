@@ -2,10 +2,14 @@
 /* xbt_sha.c - SHA1 hash function */
 
 /* Initial version part of iksemel (XML parser for Jabber)
- *   Copyright (C) 2000-2003 Gurer Ozen <madcat@e-kolay.net>. All right reserved. */
+ *   Copyright (C) 2000-2003 Gurer Ozen <madcat@e-kolay.net>. All right reserved.
+ *   Distributed under LGPL v2.1, February 1999.
+ */
 
 /* Adapted to fit into SimGrid by Martin Quinson.
-     Copyright (c) 2008 Martin Quinson. All rights reserved. */
+ *   Copyright (c) 2008 Martin Quinson. All rights reserved.
+ *   Distributed under LGPL v2.1, February 1999.
+ */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
