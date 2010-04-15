@@ -147,18 +147,18 @@ WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc"
 
 add_custom_target(dist
 COMMAND make package
-COMMAND rm -rf ${PROJECT_DIRECTORY}/_CPack_Packages
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+COMMAND rm -rf _CPack_Packages
+#WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 add_custom_target(distcheck
 COMMAND make package
-COMMAND rm -rf ${PROJECT_DIRECTORY}/_CPack_Packages
+COMMAND rm -rf _CPack_Packages
 COMMAND tar xvf ${CPACK_PACKAGE_FILE_NAME}.tar.bz2
-COMMAND cd ${PROJECT_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME} && cmake .
-COMMAND cd ${PROJECT_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME} && make
-COMMAND cd ${PROJECT_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME} && make test
-COMMAND rm -rf ${PROJECT_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+COMMAND cd ${CPACK_PACKAGE_FILE_NAME} && cmake .
+COMMAND cd ${CPACK_PACKAGE_FILE_NAME} && make
+COMMAND cd ${CPACK_PACKAGE_FILE_NAME} && make test
+COMMAND rm -rf ${CPACK_PACKAGE_FILE_NAME}
+#WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 
 add_custom_target(maintainer-clean
@@ -238,6 +238,5 @@ COMMAND make java-clean
 COMMAND make doc-clean
 COMMAND make supernovae-clean
 COMMAND make maintainer-clean
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 include(CPack)
