@@ -75,6 +75,16 @@ COMMAND echo "install doc ok"
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 )
 
+string(REPLACE ";" " " ex_to_svg "${ex_to_svg}")
+#string(REPLACE "${PROJECT_DIRECTORY}/examples/" "." ex_to_svg "${ex_to_svg}")
+
+add_custom_command(TARGET install-simgrid
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/doc/simgrid/examples
+COMMAND echo "cp --parents -f ${ex_to_svg} $ENV{DESTDIR}${prefix}/doc/simgrid/"
+COMMAND cp --parents -f ${ex_to_svg} $ENV{DESTDIR}${prefix}/doc/simgrid/examples
+COMMAND echo "install examples ok"
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
 add_custom_target(uninstall
 COMMAND rm -rf ${prefix}/doc/simgrid
 COMMAND echo "uninstall doc ok"

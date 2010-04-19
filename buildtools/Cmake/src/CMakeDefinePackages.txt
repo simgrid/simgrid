@@ -547,6 +547,18 @@ file(GLOB_RECURSE add_src_files
 "${PROJECT_DIRECTORY}/src/*CMakeLists.txt"
 "${PROJECT_DIRECTORY}/examples/*.java"
 )
+
+file(GLOB_RECURSE ex_to_svg
+"${PROJECT_DIRECTORY}/examples/*.c"
+"${PROJECT_DIRECTORY}/examples/*.h"
+"${PROJECT_DIRECTORY}/examples/*.cxx"
+"${PROJECT_DIRECTORY}/examples/*.hpp"
+"${PROJECT_DIRECTORY}/examples/*.c"
+"${PROJECT_DIRECTORY}/examples/*.rb"
+"${PROJECT_DIRECTORY}/examples/*.lua"
+"${PROJECT_DIRECTORY}/examples/*.java"
+"${PROJECT_DIRECTORY}/examples/*.xml"
+)
 #message("\n\nadd_src_files:\n${add_src_files}")
 
 file(GLOB_RECURSE include_files
@@ -555,6 +567,7 @@ file(GLOB_RECURSE include_files
 "${PROJECT_DIRECTORY}/testsuite/*.h"
 "${PROJECT_DIRECTORY}/tools/*.h"
 "${PROJECT_DIRECTORY}/examples/*.h"
+"${PROJECT_DIRECTORY}/examples/*.hpp"
 "${PROJECT_DIRECTORY}/src/*.h.in"
 "${PROJECT_DIRECTORY}/include/*.h.in"
 )
