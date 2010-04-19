@@ -63,4 +63,4 @@ exec_program("${PROJECT_DIRECTORY}/src/mk_supernovae.sh ${PROJECT_DIRECTORY}/src
 add_library(simgrid 	SHARED 	${PROJECT_DIRECTORY}/src/supernovae_sg.c ${simgrid_fragile_sources})
 add_library(simgrid_static STATIC ${PROJECT_DIRECTORY}/src/supernovae_sg.c ${simgrid_fragile_sources})
 add_library(gras 	SHARED 	${PROJECT_DIRECTORY}/src/supernovae_gras.c ${gras_fragile_sources})
-add_library(smpi 	STATIC 	${PROJECT_DIRECTORY}/src/supernovae_smpi.c)
+add_library(smpi 	SHARED 	${PROJECT_DIRECTORY}/src/supernovae_smpi.c)

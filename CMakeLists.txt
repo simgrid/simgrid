@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 SET(CMAKE_LANGUAGE "Cxx")
 SET(PROJECT_NAME "Simgrid")
+set(simgrid_version "3.4")
+
+set(USE_RPATH false)
 
 ### Find programs and paths
 find_program(SH_EXE NAMES sh)

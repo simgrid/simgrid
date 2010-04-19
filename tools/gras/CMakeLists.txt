@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/tools/gras/")
 
-add_executable(gras_stub_generator stub_generator.c unix_stub_generator.c windows_stub_generator.c)
+add_executable(gras_stub_generator ${PROJECT_DIRECTORY}/tools/gras/stub_generator.c ${PROJECT_DIRECTORY}/tools/gras/unix_stub_generator.c ${PROJECT_DIRECTORY}/tools/gras/windows_stub_generator.c)
 
 ### Add definitions for compile
 target_link_libraries(gras_stub_generator simgrid pthread m -fprofile-arcs)
