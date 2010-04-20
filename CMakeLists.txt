@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
 SET(CMAKE_LANGUAGE "Cxx")
-PROJECT(Simgrid)
 SET(PROJECT_NAME "Simgrid")
 SET(PROJECT_LABEL "Simgrid")
 set(simgrid_version "3.4")
