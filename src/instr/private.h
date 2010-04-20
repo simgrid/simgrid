@@ -86,7 +86,7 @@ void TRACE_msg_task_put_end (void);
 
 /* declaration of instrumentation functions from msg_process_instr.c */
 void __TRACE_msg_process_init (void);
-void __TRACE_msg_process_location (m_process_t process);
+int __TRACE_msg_process_location (m_process_t process);
 void TRACE_msg_process_change_host (m_process_t process, m_host_t old_host, m_host_t new_host);
 void TRACE_msg_process_kill (m_process_t process);
 void TRACE_msg_process_suspend (m_process_t process);

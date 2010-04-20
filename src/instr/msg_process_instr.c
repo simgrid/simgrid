@@ -21,7 +21,8 @@ void __TRACE_msg_process_init (void)
   process_containers = xbt_dict_new();
 }
 
-void __TRACE_msg_process_location (m_process_t process)
+//return 1 if presence must be updated
+int __TRACE_msg_process_location (m_process_t process)
 {
   char name[200], alias[200];
   m_host_t host = MSG_process_get_host (process);
@@ -31,8 +32,11 @@ void __TRACE_msg_process_location (m_process_t process)
   //check if process_alias container is already created
   if (!xbt_dict_get_or_null (process_containers, alias)){
     if (IS_TRACING_PROCESSES) pajeCreateContainer (MSG_get_clock(), alias, "PROCESS", MSG_host_get_name(host), name);
-    if (IS_TRACING_PROCESSES) pajePushState (MSG_get_clock(), "presence", alias, "1");
+    if (IS_TRACING_PROCESSES) pajePushState (MSG_get_clock(), "presence", alias, "presence");
     xbt_dict_set (process_containers, xbt_strdup(alias), xbt_strdup("1"), xbt_free);
+    return 0;
+  }else{
+    return 1;
   }
 }
 
@@ -68,9 +72,10 @@ void TRACE_msg_process_change_host (m_process_t process, m_host_t old_host, m_ho
   TRACE_process_alias_container (process, old_host, alias, 200);
   if (IS_TRACING_PROCESSES) pajePopState (MSG_get_clock(), "presence", alias);
 
-  __TRACE_msg_process_location (process);
-  TRACE_process_alias_container (process, new_host, alias, 200);
-  if (IS_TRACING_PROCESSES) pajePushState (MSG_get_clock(), "presence", alias, "1");
+  if (__TRACE_msg_process_location (process)) {
+     TRACE_process_alias_container (process, new_host, alias, 200);
+     if (IS_TRACING_PROCESSES) pajePushState (MSG_get_clock(), "presence", alias, "presence");
+  }
 }
 
 void TRACE_msg_process_kill (m_process_t process)
