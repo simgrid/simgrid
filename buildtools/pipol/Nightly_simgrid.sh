@@ -150,12 +150,3 @@ if [ $SYSTEM = Linux ] ; then
 		make clean
 	fi
 fi
-
-#Make the memcheck
-cmake -Denable_memcheck=on ./
-ctest -D NightlyStart
-ctest -D NightlyConfigure
-ctest -D NightlyBuild
-ctest -D NightlyCoverage
-ctest -D NightlyMemCheck
-ctest -D NightlySubmit

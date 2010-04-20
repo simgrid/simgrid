@@ -1,3 +1,4 @@
+if(enable_memcheck)
 
 # teshsuite/xbt
 ADD_TEST(memcheck-tesh-log-large-0 xbt/log_large_test --log=root.fmt:%m%n --cd ${PROJECT_DIRECTORY}/teshsuite/)
@@ -113,10 +114,12 @@ ADD_TEST(memcheck-msg-sendrecv_CLM03-0 sendrecv/sendrecv ./sendrecv/platform_sen
 ADD_TEST(memcheck-msg-sendrecv_Vegas-0 sendrecv/sendrecv ./sendrecv/platform_sendrecv.xml ./sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Vegas" --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-sendrecv_Reno-0 sendrecv/sendrecv ./sendrecv/platform_sendrecv.xml ./sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Reno" --log=surf_lagrange.thres=critical --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-suspend-0 suspend/suspend ./msg_platform.xml ./suspend/deployment_suspend.xml  --cd ${PROJECT_DIRECTORY}/examples/msg/)
-ADD_TEST(memcheck-msg-masterslave-0 masterslave/masterslave_forwarder ./small_platform.xml ./masterslave/deployment_masterslave.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave-0 masterslave/masterslave_forwarder ./small_platform_with_routers.xml ./masterslave/deployment_masterslave.xml --trace --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave-forwarder-0 masterslave/masterslave_forwarder ./msg_platform.xml ./masterslave/deployment_masterslave_forwarder.xml  --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave-failure-0 masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ./small_platform_with_failures.xml ./masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave-bypass-0 masterslave/masterslave_bypass --log=no_loc  --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave-mailbox-0 masterslave/masterslave_mailbox ./small_platform_with_routers.xml ./masterslave/deployment_masterslave_mailbox.xml --trace --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave-vivaldi-0 ./masterslave/masterslave_mailbox --cfg=network/model:Vivaldi ../platforms/vivaldi.xml ./masterslave/deployment_masterslave_vivaldi.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-migration-0 migration/migration ./msg_platform.xml ./migration/migration.deploy  --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-ptask-0 parallel_task/parallel_task ./small_platform.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-ptask-1 parallel_task/test_ptask ./parallel_task/test_ptask_platform.xml ./parallel_task/test_ptask_deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
@@ -137,6 +140,14 @@ ADD_TEST(memcheck-msg-masterslave_cpu_ti-0 masterslave/masterslave_forwarder ./s
 ADD_TEST(memcheck-msg-masterslave_cpu_ti-1 masterslave/masterslave_forwarder ./msg_platform.xml ./masterslave/deployment_masterslave_forwarder.xml --cfg=cpu/model:CpuTI --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave_cpu_ti-2 masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ./small_platform_with_failures.xml ./masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src --cfg=cpu/model:CpuTI --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave_cpu_ti-3 masterslave/masterslave_bypass --log=no_loc --cfg=cpu/model:CpuTI --cd ${PROJECT_DIRECTORY}/examples/msg/)
+
+IF(HAVE_TRACING)
+ADD_TEST(memcheck-tracing-ms-0 tracing/ms ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-ms-1 cat ./tracing/../simulation.trace --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-categories-0 tracing/categories ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-categories-1 cat ./tracing/../categories.trace --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ENDIF(HAVE_TRACING)
+
 
 IF(${ARCH_32_BITS})
 ADD_TEST(memcheck-gras-ping-sg-32-0 ./ping_simulator ./../../msg/small_platform.xml ./ping.xml --cd ${PROJECT_DIRECTORY}/examples/gras/ping/)
@@ -195,11 +206,15 @@ ADD_TEST(memcheck-msg-gtnets-onelink-lv08-0 gtnets/gtnets gtnets/onelink-p.xml g
 endif(HAVE_GTNETS)
 
 # Lua examples
+if(HAVE_LUA)
 ADD_TEST(memcheck-lua-masterslave-0 lua master_slave.lua --cd ${PROJECT_DIRECTORY}/examples/lua/)
-ADD_TEST(memcheck-lua-mult_matrix-0 lua master_slave.lua --cd ${PROJECT_DIRECTORY}/examples/lua/)
+ADD_TEST(memcheck-lua-mult_matrix-0 lua mult_matrix.lua --cd ${PROJECT_DIRECTORY}/examples/lua/)
+endif(HAVE_LUA)
 
 # Ruby examples
+if(HAVE_RUBY)
 ADD_TEST(memcheck-ruby-masterslave-0 ruby -I../../src/bindings/ruby MasterSlave.rb --cd ${PROJECT_DIRECTORY}/examples/ruby/)
 ADD_TEST(memcheck-ruby-ping_pong-0 ruby -I ../../src/bindings/ruby PingPong.rb --cd ${PROJECT_DIRECTORY}/examples/ruby/)
 ADD_TEST(memcheck-ruby-quicksort-0 ruby -I ../../src/bindings/ruby Quicksort.rb --cd ${PROJECT_DIRECTORY}/examples/ruby/)
-
+endif(HAVE_RUBY)
+endif(enable_memcheck)

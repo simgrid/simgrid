@@ -130,11 +130,3 @@ if [ $SYSTEM = Linux ] ; then
 		make clean
 	fi
 fi
-#Make the memcheck
-cmake -Denable_memcheck=on ./
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalCoverage
-ctest -D ExperimentalMemCheck
-ctest -D ExperimentalSubmit

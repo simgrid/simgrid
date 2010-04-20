@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 SET(CMAKE_LANGUAGE "Cxx")
+PROJECT(Simgrid)
 SET(PROJECT_NAME "Simgrid")
+SET(PROJECT_LABEL "Simgrid")
 set(simgrid_version "3.4")
-
 set(USE_RPATH false)
 
 ### Find programs and paths
@@ -15,10 +16,6 @@ find_program(CAT NAMES cat)
 find_path(GCC_PATH NAMES gcc PATHS NO_DEFAULT_PATHS)
 find_path(GCOV_PATH NAMES gcov PATHS NO_DEFAULT_PATHS)
 find_path(VALGRIND_PATH	NAMES valgrind	PATHS NO_DEFAULT_PATHS)
-
-### AUTO DETECT THE PROJECT_DIRECTORY
-message("Project_BINARY_DIR   : ${Project_BINARY_DIR}")
-message("CMAKE_HOME_DIRECTORY : ${CMAKE_HOME_DIRECTORY}")
 
 ### SET THE PROJECT_DIRECTORY
 SET(PROJECT_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
@@ -64,10 +61,16 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDistrib.txt)
 ### Print ARGS
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakePrintArgs.txt)
 
-set_property(GLOBAL PROPERTY LABELS "${SVN_VERSION}${GIT_VERSION}")
-set_property(GLOBAL PROPERTY PROJECT_LABEL "${SVN_VERSION}${GIT_VERSION}")
-set(PROJECT_LABEL "${SVN_VERSION}${GIT_VERSION}")
-
 INCLUDE(Dart)
 
-
+exec_program("ctest -N" OUTPUT_VARIABLE LIST_OF_TEST)
+string(REPLACE "\n" ";" LIST_OF_TEST ${LIST_OF_TEST})
+foreach(test ${LIST_OF_TEST})
+	string(REGEX REPLACE "^.*Test.*project.*" " " test ${test})
+	string(REGEX REPLACE "^.*Total.*Tests:.*" " " test ${test})
+	string(REGEX REPLACE "^.*Test.*\\:+" " " test ${test})
+	string(STRIP ${test} test)
+	if(test)
+		set_tests_properties(${test} PROPERTIES LABELS "rev${SVN_VERSION}")
+	endif(test)
+endforeach(test ${LIST_OF_TEST})
