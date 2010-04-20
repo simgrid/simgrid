@@ -217,7 +217,7 @@ static void netviva_parse_host(void) {
   coord->h = atof(xbt_dynar_get_as(ctn, 2, char*));
 
 #ifdef HAVE_TRACING
-  TRACE_surf_vivaldi_parse_host (A_surfxml_host_id, coord->x, coord->y, coord->h);
+  TRACE_surf_host_vivaldi_parse (A_surfxml_host_id, coord->x, coord->y, coord->h);
 #endif
 
   xbt_dynar_free(&ctn);

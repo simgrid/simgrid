@@ -246,7 +246,7 @@ void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action,
   if (value == 0) return;
 
   if (!xbt_dict_get_or_null (created_links, name)){
-    TRACE_surf_missing_link ();
+    TRACE_surf_link_missing ();
     return;
   }
 
@@ -294,7 +294,7 @@ void TRACE_surf_host_declaration (char *name, double power)
   __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "power", name, power);
 }
 
-void TRACE_surf_routing_full_parse_end (char *link_name, int src, int dst)
+void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst)
 {
   if (!IS_TRACING) return;
   char srcidstr[100], dstidstr[100];
@@ -338,7 +338,7 @@ void TRACE_surf_link_set_latency (double date, char *resource, double latency)
   __TRACE_surf_set_resource_variable (date, "latency", resource, latency);
 }
 
-void TRACE_surf_define_host_id (const char *name, int host_id)
+void TRACE_surf_host_define_id (const char *name, int host_id)
 {
   if (!IS_TRACING) return;
   char strid[100];
@@ -397,7 +397,7 @@ void TRACE_surf_gtnets_destroy (void *action)
   xbt_dict_remove (gtnets_dst, key);
 }
 
-void TRACE_surf_missing_link (void)
+void TRACE_surf_link_missing (void)
 {
   CRITICAL0("The trace cannot be done because "
 		 "the platform you are using contains "
@@ -418,7 +418,7 @@ void TRACE_msg_clean (void)
   }
 }
 
-void TRACE_surf_vivaldi_parse_host (char *host, double x, double y, double h)
+void TRACE_surf_host_vivaldi_parse (char *host, double x, double y, double h)
 {
   if (!IS_TRACING || !IS_TRACING_PLATFORM) return;
 

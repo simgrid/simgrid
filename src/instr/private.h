@@ -109,15 +109,15 @@ void __TRACE_surf_set_resource_variable (double date, const char *variable, cons
 void TRACE_surf_host_declaration (char *name, double power);
 void TRACE_surf_host_set_power (double date, char *resource, double power);
 void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
+void TRACE_surf_host_define_id (const char *name, int host_id);
+void TRACE_surf_host_vivaldi_parse (char *host, double x, double y, double h);
 void TRACE_surf_link_declaration (char *name, double bw, double lat);
 void TRACE_surf_link_set_bandwidth (double date, char *resource, double bandwidth);
 void TRACE_surf_link_set_latency (double date, char *resource, double latency);
 void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
-void TRACE_surf_routing_full_parse_end (char *link_name, int src, int dst);
-void TRACE_surf_missing_link (void);
-void TRACE_surf_define_host_id (const char *name, int host_id);
+void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst);
+void TRACE_surf_link_missing (void);
 void TRACE_msg_clean (void);
-void TRACE_surf_vivaldi_parse_host (char *host, double x, double y, double h);
 
 //for tracing gtnets
 void TRACE_surf_gtnets_communicate (void *action, int src, int dst);
