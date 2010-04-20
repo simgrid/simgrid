@@ -53,7 +53,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 
   DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
 
-  if (simdata->comp_amount == 0) {
+  if (simdata->computation_amount == 0) {
 #ifdef HAVE_TRACING
     TRACE_msg_task_execute_end (task);
 #endif
