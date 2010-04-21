@@ -135,6 +135,7 @@ ADD_TEST(msg-masterslave_cpu_ti	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJ
 IF(HAVE_TRACING)
   ADD_TEST(tracing-ms ${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg tracing/ms.tesh)
   ADD_TEST(tracing-categories ${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg tracing/categories.tesh)
+  ADD_TEST(tracing-tasks ${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg tracing/tasks.tesh)
   ADD_TEST(tracing-process-migration ${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg tracing/procmig.tesh)
 ENDIF(HAVE_TRACING)
 

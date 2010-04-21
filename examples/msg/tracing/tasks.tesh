@@ -1,0 +1,47 @@
+#! ./tesh
+
+p Tracing tasks
+
+$ $SG_TEST_EXENV tracing/tasks$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] master 20 50000000.000000 1000000.000000 5
+> [Tremblay:slave:(2) 0.002339] [msg_test/INFO] Executing task 50000000.000000
+> [Jupiter:slave:(3) 0.168300] [msg_test/INFO] Executing task 50000000.000000
+> [Fafard:slave:(4) 0.386454] [msg_test/INFO] Executing task 50000000.000000
+> [Tremblay:slave:(2) 0.512049] [msg_test/INFO] End of execution
+> [Ginette:slave:(5) 0.526913] [msg_test/INFO] Executing task 50000000.000000
+> [Bourassa:slave:(6) 0.742786] [msg_test/INFO] Executing task 50000000.000000
+> [Tremblay:slave:(2) 0.745124] [msg_test/INFO] Executing task 50000000.000000
+> [Jupiter:slave:(3) 0.823643] [msg_test/INFO] End of execution
+> [Jupiter:slave:(3) 0.989605] [msg_test/INFO] Executing task 50000000.000000
+> [Fafard:slave:(4) 1.041796] [msg_test/INFO] End of execution
+> [Tremblay:slave:(2) 1.254834] [msg_test/INFO] End of execution
+> [Fafard:slave:(4) 1.259949] [msg_test/INFO] Executing task 50000000.000000
+> [Tremblay:slave:(2) 1.262288] [msg_test/INFO] Executing task 50000000.000000
+> [Ginette:slave:(5) 1.558011] [msg_test/INFO] End of execution
+> [Jupiter:slave:(3) 1.644947] [msg_test/INFO] End of execution
+> [Ginette:slave:(5) 1.698471] [msg_test/INFO] Executing task 50000000.000000
+> [Tremblay:slave:(2) 1.771998] [msg_test/INFO] End of execution
+> [Bourassa:slave:(6) 1.773883] [msg_test/INFO] End of execution
+> [Jupiter:slave:(3) 1.864433] [msg_test/INFO] Executing task 50000000.000000
+> [Tremblay:slave:(2) 1.866771] [msg_test/INFO] Executing task 50000000.000000
+> [Fafard:slave:(4) 1.915291] [msg_test/INFO] End of execution
+> [Bourassa:slave:(6) 2.082643] [msg_test/INFO] Executing task 50000000.000000
+> [Fafard:slave:(4) 2.300797] [msg_test/INFO] Executing task 50000000.000000
+> [Tremblay:slave:(2) 2.376481] [msg_test/INFO] End of execution
+> [Tremblay:slave:(2) 2.378820] [msg_test/INFO] Executing task 50000000.000000
+> [Jupiter:slave:(3) 2.519775] [msg_test/INFO] End of execution
+> [Jupiter:slave:(3) 2.685737] [msg_test/INFO] Executing task 50000000.000000
+> [Ginette:slave:(5) 2.729569] [msg_test/INFO] End of execution
+> [Ginette:slave:(5) 2.870028] [msg_test/INFO] Executing task 50000000.000000
+> [Tremblay:slave:(2) 2.888530] [msg_test/INFO] End of execution
+> [Tremblay:slave:(2) 2.890868] [msg_test/INFO] Executing task 50000000.000000
+> [Fafard:slave:(4) 2.956139] [msg_test/INFO] End of execution
+> [Bourassa:slave:(6) 3.113741] [msg_test/INFO] End of execution
+> [Fafard:slave:(4) 3.174292] [msg_test/INFO] Executing task 50000000.000000
+> [Jupiter:slave:(3) 3.341079] [msg_test/INFO] End of execution
+> [Bourassa:slave:(6) 3.390164] [msg_test/INFO] Executing task 50000000.000000
+> [Tremblay:slave:(2) 3.400578] [msg_test/INFO] End of execution
+> [Fafard:slave:(4) 3.829634] [msg_test/INFO] End of execution
+> [Ginette:slave:(5) 3.901126] [msg_test/INFO] End of execution
+> [Bourassa:slave:(6) 4.421262] [msg_test/INFO] End of execution
+> [4.441598] [msg_test/INFO] Simulation time 4.4416
