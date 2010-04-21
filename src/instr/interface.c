@@ -49,10 +49,12 @@ int TRACE_start_with_mask(const char *filename, int mask) {
     return 0;
   }
 
-  /* checking if the mask is good (only TRACE_PLATFORM for now) */
-  if (mask != TRACE_PLATFORM){
+  /* checking mask */
+  if (mask != TRACE_PLATFORM &&
+      mask != TRACE_TASK &&
+      mask != TRACE_PROCESS){
     THROW0 (tracing_error, TRACE_ERROR_MASK,
-            "Only TRACE_PLATFORM mask is accepted for now");
+          "unknown tracing mask");
   }
 
   FILE *file = fopen(filename, "w");
