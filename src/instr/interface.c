@@ -89,6 +89,7 @@ int TRACE_start_with_mask(const char *filename, int mask) {
   if (IS_TRACING_TASKS){
     //tasks grouped by host
     pajeDefineContainerType("TASK", "HOST", "TASK");
+    pajeDefineStateType("category", "TASK", "category");
     pajeDefineStateType("presence", "TASK", "presence");
   }
 

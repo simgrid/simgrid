@@ -60,6 +60,7 @@ void __TRACE_task_location (m_task_t task)
   //check if task container is already created
   if (!xbt_dict_get_or_null (task_containers, alias)){
     pajeCreateContainer (MSG_get_clock(), alias, "TASK", container, name);
+    pajeSetState (MSG_get_clock(), "category", alias, task->category);
     xbt_dict_set (task_containers, xbt_strdup(alias), xbt_strdup("1"), xbt_free);
   }
 }
