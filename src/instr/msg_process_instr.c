@@ -33,6 +33,7 @@ int __TRACE_msg_process_location (m_process_t process)
   if (!xbt_dict_get_or_null (process_containers, alias)){
     if (IS_TRACING_PROCESSES) pajeCreateContainer (MSG_get_clock(), alias, "PROCESS", MSG_host_get_name(host), name);
     if (IS_TRACING_PROCESSES) pajePushState (MSG_get_clock(), "presence", alias, "presence");
+    if (IS_TRACING_PROCESSES) pajeSetState (MSG_get_clock(), "category", alias, process->category);
     xbt_dict_set (process_containers, xbt_strdup(alias), xbt_strdup("1"), xbt_free);
     return 0;
   }else{

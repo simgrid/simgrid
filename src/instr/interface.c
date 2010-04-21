@@ -83,6 +83,7 @@ int TRACE_start_with_mask(const char *filename, int mask) {
   if (IS_TRACING_PROCESSES){
     //processes grouped by host
     pajeDefineContainerType("PROCESS", "HOST", "PROCESS");
+    pajeDefineStateType("category", "PROCESS", "category");
     pajeDefineStateType("presence", "PROCESS", "presence");
   }
 
