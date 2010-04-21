@@ -775,30 +775,6 @@ int MPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, i
   return retval;
 }
 
-int MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count) {
-  int retval;
-/*
- * Returns the number of entries received. (Again, we count entries, each of type datatype, not bytes.)
- * The datatype argument should match the argument provided by the receive call that set the status variable.
- * If the size of the datatype is zero, this routine will return a count of zero.
- * If the amount of data in status is not an exact multiple of the size of datatype
- * (so that count would not be integral), a count of MPI_UNDEFINED is returned instead.
- *
- */
-  smpi_bench_end(-1, NULL); //FIXME
-
-  if( 0==smpi_datatype_size(datatype)) {
-          // also check that the type is 'committed' when we have MPI_Type_commit (s.g. 23/03/21010)
-	    retval = MPI_ERR_TYPE;
-  } else {
-	    smpi_mpi_get_count(status, datatype, count);
-	    retval = MPI_SUCCESS;
-  }
-  smpi_bench_begin(-1, NULL);
-  return retval;
-}
-
-
 int MPI_Test(MPI_Request* request, int* flag, MPI_Status* status) {
   int retval;
   int rank = request && (*request)->comm != MPI_COMM_NULL

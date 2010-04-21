@@ -57,8 +57,8 @@ void smpi_process_post_send(MPI_Comm comm, MPI_Request request) {
   xbt_fifo_item_t item;
   MPI_Request req;
 
-  DEBUG4("isend for request %p [src = %d, dst = %d, tag = %d]",
-         request, request->src, request->dst, request->tag);
+  DEBUG5("isend for request %p [src = %d, dst = %d, tag = %d, size = %zu]",
+         request, request->src, request->dst, request->tag, request->size);
   xbt_fifo_foreach(data->pending_recv, item, req, MPI_Request) {
     if(req->comm == request->comm
        && (req->src == MPI_ANY_SOURCE || req->src == request->src)
@@ -69,8 +69,9 @@ void smpi_process_post_send(MPI_Comm comm, MPI_Request request) {
       /* Materialize the *_ANY_* fields from corresponding irecv request */
       req->src = request->src;
       req->tag = request->tag;
-      req->data = request->data;
+      req->match = request;
       request->rdv = req->rdv;
+      request->match = req;
       return;
     } else {
       DEBUG4("not matching request %p [src = %d, dst = %d, tag = %d]",
@@ -86,8 +87,8 @@ void smpi_process_post_recv(MPI_Request request) {
   xbt_fifo_item_t item;
   MPI_Request req;
 
-  DEBUG4("irecv for request %p [src = %d, dst = %d, tag = %d]",
-         request, request->src, request->dst, request->tag);
+  DEBUG5("irecv for request %p [src = %d, dst = %d, tag = %d, size = %zu]",
+         request, request->src, request->dst, request->tag, request->size);
   xbt_fifo_foreach(data->pending_sent, item, req, MPI_Request) {
     if(req->comm == request->comm
        && (request->src == MPI_ANY_SOURCE || req->src == request->src)
@@ -96,10 +97,11 @@ void smpi_process_post_recv(MPI_Request request) {
              req, req->src, req->dst, req->tag);
       xbt_fifo_remove_item(data->pending_sent, item);
       /* Materialize the *_ANY_* fields from the irecv request */
+      req->match = request;
       request->src = req->src;
       request->tag = req->tag;
-      request->data = req->data;
       request->rdv = req->rdv;
+      request->match = req;
       return;
     } else {
       DEBUG4("not matching request %p [src = %d, dst = %d, tag = %d]",

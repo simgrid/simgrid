@@ -18,7 +18,7 @@ typedef struct s_smpi_mpi_request {
   smx_rdv_t rdv;
   smx_comm_t pair;
   int complete;
-  MPI_Request data;
+  MPI_Request match;
 } s_smpi_mpi_request_t;
 
 void smpi_process_init(int* argc, char*** argv);
@@ -68,7 +68,6 @@ void smpi_mpi_send(void* buf, int count, MPI_Datatype datatype, int dst, int tag
 void smpi_mpi_sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
 int smpi_mpi_test(MPI_Request* request, MPI_Status* status);
 int smpi_mpi_testany(int count, MPI_Request requests[], int* index, MPI_Status* status);
-void smpi_mpi_get_count(MPI_Status *status, MPI_Datatype datatype, int *count);
 void smpi_mpi_wait(MPI_Request* request, MPI_Status* status);
 int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status* status);
 void smpi_mpi_waitall(int count, MPI_Request requests[],  MPI_Status status[]);
