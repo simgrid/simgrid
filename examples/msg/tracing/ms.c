@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
   MSG_error_t res = MSG_OK;
 
   //starting the simulation tracing
-  TRACE_start ("simulation.trace");
+  TRACE_start ("ms.trace");
 
   //declaring user variables
   TRACE_host_variable_declare ("is_slave");

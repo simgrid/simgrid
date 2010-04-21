@@ -5,7 +5,7 @@ p Tracing master/slave application
 $ $SG_TEST_EXENV tracing/ms$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 > [4.441598] [msg_test/INFO] Simulation time 4.4416
 
-$ $SG_TEST_EXENV cat$EXEEXT ${srcdir:=.}/tracing/../simulation.trace
+$ $SG_TEST_EXENV cat$EXEEXT ${srcdir:=.}/tracing/../ms.trace
 > %EventDef PajeDefineContainerType 0 
 > %       Alias string 
 > %       ContainerType string 
