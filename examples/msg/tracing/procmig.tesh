@@ -1,0 +1,12 @@
+#! ./tesh
+
+p Tracing processes
+
+$ $SG_TEST_EXENV tracing/procmig$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
+> [Fafard:emigrant:(1) 0.000000] [msg_test/INFO] Setting process category
+> [Fafard:emigrant:(1) 2.000000] [msg_test/INFO] Migrating to Tremblay
+> [Tremblay:emigrant:(1) 4.000000] [msg_test/INFO] Migrating to Jupiter
+> [Jupiter:emigrant:(1) 6.000000] [msg_test/INFO] Migrating to Fafard
+> [Fafard:emigrant:(1) 8.000000] [msg_test/INFO] Migrating to Ginette
+> [Ginette:emigrant:(1) 10.000000] [msg_test/INFO] Migrating to Bourassa
+> [12.000000] [msg_test/INFO] Simulation time 12
