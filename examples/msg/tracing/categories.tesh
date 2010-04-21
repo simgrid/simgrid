@@ -185,8 +185,8 @@ $ $SG_TEST_EXENV cat$EXEEXT ${srcdir:=.}/tracing/../categories.trace
 > %EndEventDef 
 > 0 PLATFORM 0 platform
 > 0 HOST PLATFORM HOST
-> 25 power HOST power
 > 0 LINK PLATFORM LINK
+> 25 power HOST power
 > 25 bandwidth LINK bandwidth
 > 25 latency LINK latency
 > 5 0.000000000000000 platform PLATFORM 0 simgrid-platform
