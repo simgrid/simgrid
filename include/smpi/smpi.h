@@ -58,8 +58,6 @@ typedef struct {
   int MPI_SOURCE;
   int MPI_TAG;
   int MPI_ERROR;
-  int _count;
-  int _cancelled;
 } MPI_Status;
 
 #define MPI_STATUS_IGNORE NULL
@@ -187,6 +185,11 @@ XBT_PUBLIC(int) MPI_Comm_dup(MPI_Comm comm, MPI_Comm* newcomm);
 XBT_PUBLIC(int) MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm* newcomm);
 XBT_PUBLIC(int) MPI_Comm_free(MPI_Comm* comm);
 
+XBT_PUBLIC(int) MPI_Send_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request);
+XBT_PUBLIC(int) MPI_Recv_init(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request* request);
+XBT_PUBLIC(int) MPI_Start(MPI_Request* request);
+XBT_PUBLIC(int) MPI_Startall(int count, MPI_Request* requests);
+XBT_PUBLIC(int) MPI_Request_free(MPI_Request* request);
 XBT_PUBLIC(int) MPI_Irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request* request);
 XBT_PUBLIC(int) MPI_Isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request);
 XBT_PUBLIC(int) MPI_Recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status* status);
@@ -195,7 +198,6 @@ XBT_PUBLIC(int) MPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype
 XBT_PUBLIC(int) MPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, int sendtag, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
 
 
-XBT_PUBLIC(int) MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count);
 XBT_PUBLIC(int) MPI_Test(MPI_Request* request, int* flag, MPI_Status* status);
 XBT_PUBLIC(int) MPI_Testany(int count, MPI_Request requests[], int* index, int* flag, MPI_Status* status);
 XBT_PUBLIC(int) MPI_Wait(MPI_Request* request, MPI_Status* status);

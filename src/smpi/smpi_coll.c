@@ -109,9 +109,10 @@ static void tree_bcast(void* buf, int count, MPI_Datatype datatype, int root, MP
       requests[i] = MPI_REQUEST_NULL;
     } else {
       DEBUG3("<%d> send to <%d>, tag=%d", rank, tree->child[i], system_tag + tree->child[i]);
-      requests[i] = smpi_mpi_isend(buf, count, datatype, tree->child[i], system_tag + tree->child[i], comm);
+      requests[i] = smpi_isend_init(buf, count, datatype, tree->child[i], system_tag + tree->child[i], comm);
     }
   }
+  smpi_mpi_startall(tree->numChildren, requests);
   smpi_mpi_waitall(tree->numChildren, requests, MPI_STATUS_IGNORE);
   xbt_free(requests);
 }
@@ -139,9 +140,10 @@ static void tree_antibcast(void* buf, int count, MPI_Datatype datatype, int root
       requests[i] = MPI_REQUEST_NULL;
     } else {
       DEBUG3("<%d> recv from <%d>, tag=%d", rank, tree->child[i], system_tag + tree->child[i]);
-      requests[i] = smpi_mpi_irecv(buf, count, datatype, tree->child[i], system_tag + tree->child[i], comm);
+      requests[i] = smpi_irecv_init(buf, count, datatype, tree->child[i], system_tag + tree->child[i], comm);
     }
   }
+  smpi_mpi_startall(tree->numChildren, requests);
   smpi_mpi_waitall(tree->numChildren, requests, MPI_STATUS_IGNORE);
   xbt_free(requests);
 }
@@ -205,7 +207,7 @@ int smpi_coll_tuned_alltoall_bruck(void* sendbuf, int sendcount, MPI_Datatype se
         DEBUG3("<%d> skip request creation [src = %d, recvcount = %d]", rank, i, recvcount);
         continue;
       }
-      requests[count] = smpi_mpi_irecv(&((char*)recvbuf)[i * recvextent], recvcount, recvtype, i, system_tag, comm);
+      requests[count] = smpi_irecv_init(&((char*)recvbuf)[i * recvextent], recvcount, recvtype, i, system_tag, comm);
       count++;
     }
     /* Now create all sends  */
@@ -214,16 +216,11 @@ int smpi_coll_tuned_alltoall_bruck(void* sendbuf, int sendcount, MPI_Datatype se
         DEBUG3("<%d> skip request creation [dst = %d, sendcount = %d]", rank, i, sendcount);
         continue;
       }
-      requests[count] = smpi_mpi_isend(&((char*)sendbuf)[i * sendextent], sendcount, sendtype, i, system_tag, comm);
+      requests[count] = smpi_isend_init(&((char*)sendbuf)[i * sendextent], sendcount, sendtype, i, system_tag, comm);
       count++;
     }
-    /* Wait for them all.  If there's an error, note that we don't
-     * care what the error was -- just that there *was* an error.  The
-     * PML will finish all requests, even if one or more of them fail.
-     * i.e., by the end of this call, all the requests are free-able.
-     * So free them anyway -- even if there was an error, and return
-     * the error after we free everything.
-     */
+    /* Wait for them all.*/
+    smpi_mpi_startall(count, requests);
     DEBUG2("<%d> wait for %d requests", rank, count);
     smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
     xbt_free(requests);
@@ -256,7 +253,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
     /* Post all receives first -- a simple optimization */
     count = 0;
     for(i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
-      requests[count] = smpi_mpi_irecv(&((char*)recvbuf)[i * recvinc], recvcount, recvtype, i, system_tag, comm);
+      requests[count] = smpi_irecv_init(&((char*)recvbuf)[i * recvinc], recvcount, recvtype, i, system_tag, comm);
       count++;
     }
     /* Now post all sends in reverse order
@@ -265,16 +262,11 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Data
      * TODO: check the previous assertion
      */
     for(i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size ) {
-      requests[count] = smpi_mpi_isend(&((char*)sendbuf)[i * sendinc], sendcount, sendtype, i, system_tag, comm);
+      requests[count] = smpi_isend_init(&((char*)sendbuf)[i * sendinc], sendcount, sendtype, i, system_tag, comm);
       count++;
     }
-    /* Wait for them all.  If there's an error, note that we don't
-     * care what the error was -- just that there *was* an error.  The
-     * PML will finish all requests, even if one or more of them fail.
-     * i.e., by the end of this call, all the requests are free-able.
-     * So free them anyway -- even if there was an error, and return
-     * the error after we free everything.
-     */
+    /* Wait for them all.*/
+    smpi_mpi_startall(count, requests);
     DEBUG2("<%d> wait for %d requests", rank, count);
     smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
     xbt_free(requests);
@@ -336,7 +328,7 @@ int smpi_coll_basic_alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MP
         DEBUG3("<%d> skip request creation [src = %d, recvcounts[src] = %d]", rank, i, recvcounts[i]);
         continue;
       }
-      requests[count] = smpi_mpi_irecv(&((char*)recvbuf)[recvdisps[i] * recvextent], recvcounts[i], recvtype, i, system_tag, comm);
+      requests[count] = smpi_irecv_init(&((char*)recvbuf)[recvdisps[i] * recvextent], recvcounts[i], recvtype, i, system_tag, comm);
       count++;
     }
     /* Now create all sends  */
@@ -345,16 +337,11 @@ int smpi_coll_basic_alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MP
         DEBUG3("<%d> skip request creation [dst = %d, sendcounts[dst] = %d]", rank, i, sendcounts[i]);
         continue;
       }
-      requests[count] = smpi_mpi_isend(&((char*)sendbuf)[senddisps[i] * sendextent], sendcounts[i], sendtype, i, system_tag, comm);
+      requests[count] = smpi_isend_init(&((char*)sendbuf)[senddisps[i] * sendextent], sendcounts[i], sendtype, i, system_tag, comm);
       count++;
     }
-    /* Wait for them all.  If there's an error, note that we don't
-     * care what the error was -- just that there *was* an error.  The
-     * PML will finish all requests, even if one or more of them fail.
-     * i.e., by the end of this call, all the requests are free-able.
-     * So free them anyway -- even if there was an error, and return
-     * the error after we free everything.
-     */
+    /* Wait for them all.*/
+    smpi_mpi_startall(count, requests);
     DEBUG2("<%d> wait for %d requests", rank, count);
     smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
     xbt_free(requests);

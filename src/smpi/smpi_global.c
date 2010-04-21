@@ -51,20 +51,27 @@ MPI_Comm smpi_process_comm_self(void) {
   return data->comm_self;
 }
 
+void print_request(const char* message, MPI_Request request) {
+  char* req = bprintf("[buf = %p, size = %zu, src = %d, dst = %d, tag= %d, complete = %d, flags = %u]",
+                      request->buf, request->size, request->src, request->dst, request->tag, request->complete, request->flags);
+
+  DEBUG5("%s  (request %p with rdv %p and match %p) %s",
+         message, request, request->rdv, request->match, req);
+  free(req);
+}
+
 void smpi_process_post_send(MPI_Comm comm, MPI_Request request) {
   int index = smpi_group_index(smpi_comm_group(comm), request->dst);
   smpi_process_data_t data = smpi_process_remote_data(index);
   xbt_fifo_item_t item;
   MPI_Request req;
 
-  DEBUG5("isend for request %p [src = %d, dst = %d, tag = %d, size = %zu]",
-         request, request->src, request->dst, request->tag, request->size);
+  print_request("Isend", request);
   xbt_fifo_foreach(data->pending_recv, item, req, MPI_Request) {
     if(req->comm == request->comm
        && (req->src == MPI_ANY_SOURCE || req->src == request->src)
        && (req->tag == MPI_ANY_TAG || req->tag == request->tag)){
-      DEBUG4("find matching request %p [src = %d, dst = %d, tag = %d]",
-             req, req->src, req->dst, req->tag);
+      print_request("Match found", req);
       xbt_fifo_remove_item(data->pending_recv, item);
       /* Materialize the *_ANY_* fields from corresponding irecv request */
       req->src = request->src;
@@ -73,9 +80,6 @@ void smpi_process_post_send(MPI_Comm comm, MPI_Request request) {
       request->rdv = req->rdv;
       request->match = req;
       return;
-    } else {
-      DEBUG4("not matching request %p [src = %d, dst = %d, tag = %d]",
-             req, req->src, req->dst, req->tag);
     }
   }
   request->rdv = SIMIX_rdv_create(NULL);
@@ -87,14 +91,12 @@ void smpi_process_post_recv(MPI_Request request) {
   xbt_fifo_item_t item;
   MPI_Request req;
 
-  DEBUG5("irecv for request %p [src = %d, dst = %d, tag = %d, size = %zu]",
-         request, request->src, request->dst, request->tag, request->size);
+  print_request("Irecv", request);
   xbt_fifo_foreach(data->pending_sent, item, req, MPI_Request) {
     if(req->comm == request->comm
        && (request->src == MPI_ANY_SOURCE || req->src == request->src)
        && (request->tag == MPI_ANY_TAG || req->tag == request->tag)){
-      DEBUG4("find matching request %p [src = %d, dst = %d, tag = %d]",
-             req, req->src, req->dst, req->tag);
+      print_request("Match found", req);
       xbt_fifo_remove_item(data->pending_sent, item);
       /* Materialize the *_ANY_* fields from the irecv request */
       req->match = request;
@@ -103,9 +105,6 @@ void smpi_process_post_recv(MPI_Request request) {
       request->rdv = req->rdv;
       request->match = req;
       return;
-    } else {
-      DEBUG4("not matching request %p [src = %d, dst = %d, tag = %d]",
-             req, req->src, req->dst, req->tag);
     }
   }
   request->rdv = SIMIX_rdv_create(NULL);

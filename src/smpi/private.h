@@ -9,16 +9,24 @@
 struct s_smpi_process_data;
 typedef struct s_smpi_process_data* smpi_process_data_t;
 
+#define PERSISTENT     0x0
+#define NON_PERSISTENT 0x1
+#define SEND           0x0
+#define RECV           0x2
+
 typedef struct s_smpi_mpi_request {
-  MPI_Comm comm;
+  void* buf;
+  size_t size;
   int src;
   int dst;
   int tag;
-  size_t size;
+  MPI_Comm comm;
   smx_rdv_t rdv;
   smx_comm_t pair;
   int complete;
   MPI_Request match;
+  unsigned flags;
+  MPI_Request ack;
 } s_smpi_mpi_request_t;
 
 void smpi_process_init(int* argc, char*** argv);
@@ -29,6 +37,7 @@ smpi_process_data_t smpi_process_remote_data(int index);
 int smpi_process_count(void);
 int smpi_process_index(void);
 xbt_os_timer_t smpi_process_timer(void);
+void print_request(const char* message, MPI_Request request);
 void smpi_process_post_send(MPI_Comm comm, MPI_Request request);
 void smpi_process_post_recv(MPI_Request request);
 
@@ -61,7 +70,14 @@ MPI_Group smpi_comm_group(MPI_Comm comm);
 int smpi_comm_size(MPI_Comm comm);
 int smpi_comm_rank(MPI_Comm comm);
 
+MPI_Request smpi_mpi_send_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+MPI_Request smpi_mpi_recv_init(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
+void smpi_mpi_start(MPI_Request request);
+void smpi_mpi_startall(int count, MPI_Request* requests);
+void smpi_mpi_request_free(MPI_Request* request);
+MPI_Request smpi_isend_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+MPI_Request smpi_irecv_init(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
 void smpi_mpi_recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status* status);
 void smpi_mpi_send(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);

@@ -681,6 +681,88 @@ int MPI_Comm_free(MPI_Comm* comm) {
   return retval;
 }
 
+int MPI_Send_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request) {
+  int retval;
+  int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
+
+  smpi_bench_end(rank, "Send_init");
+  if(request == NULL) {
+    retval = MPI_ERR_ARG;
+  } else if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else {
+    *request = smpi_mpi_send_init(buf, count, datatype, dst, tag, comm);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin(rank, "Send_init");
+  return retval;
+}
+
+int MPI_Recv_init(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request* request) {
+  int retval;
+  int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
+
+  smpi_bench_end(rank, "Recv_init");
+  if(request == NULL) {
+    retval = MPI_ERR_ARG;
+  } else if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else {
+    *request = smpi_mpi_recv_init(buf, count, datatype, src, tag, comm);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin(rank, "Recv_init");
+  return retval;
+}
+
+int MPI_Start(MPI_Request* request) {
+  int retval;
+  MPI_Comm comm = (*request)->comm;
+  int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
+
+  smpi_bench_end(rank, "Start");
+  if(request == NULL) {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_mpi_start(*request);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin(rank, "Start");
+  return retval;
+}
+
+int MPI_Startall(int count, MPI_Request* requests) {
+  int retval;
+  MPI_Comm comm = count > 0 && requests ? requests[0]->comm : MPI_COMM_NULL;
+  int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
+
+  smpi_bench_end(rank, "Startall");
+  if(requests == NULL) {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_mpi_startall(count, requests);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin(rank, "Startall");
+  return retval;
+}
+
+int MPI_Request_free(MPI_Request* request) {
+  int retval;
+  MPI_Comm comm = (*request)->comm;
+  int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
+
+  smpi_bench_end(rank, "Request_free");
+  if(request == NULL) {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_mpi_request_free(request);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin(rank, "Request_free");
+  return retval;
+}
+
 int MPI_Irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request* request) {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
