@@ -14,11 +14,13 @@
 
 #ifdef HAVE_TRACING
 
+static xbt_dict_t task_containers = NULL;
 static xbt_dict_t current_task_category = NULL;
 
 void __TRACE_msg_init (void)
 {
   current_task_category = xbt_dict_new();
+  task_containers = xbt_dict_new();
 }
 
 void __TRACE_current_category_set (m_task_t task)
@@ -44,22 +46,46 @@ char *__TRACE_current_category_get (smx_process_t proc)
 
 void __TRACE_task_location (m_task_t task)
 {
+  if (!IS_TRACING_TASKS) return;
   char container[200];
   m_process_t process = MSG_process_self();
   m_host_t host = MSG_process_get_host (process);
-  if (IS_TRACING_PROCESSES){
-	//container is a process
-	TRACE_process_alias_container (process, host, container, 200);
-	__TRACE_msg_process_location (process);
-  }else{
-	//container is a host
-	TRACE_host_container (host, container, 200);
-  }
+
+  //tasks are grouped by host
+  TRACE_host_container (host, container, 200);
 
   char name[200], alias[200];
   TRACE_task_container (task, name, 200);
   TRACE_task_alias_container (task, process, host, alias, 200);
-  if (IS_TRACING_TASKS) pajeCreateContainer (MSG_get_clock(), alias, "TASK", container, name);
+  //check if task container is already created
+  if (!xbt_dict_get_or_null (task_containers, alias)){
+    pajeCreateContainer (MSG_get_clock(), alias, "TASK", container, name);
+    xbt_dict_set (task_containers, xbt_strdup(alias), xbt_strdup("1"), xbt_free);
+  }
+}
+
+void __TRACE_task_location_present (m_task_t task)
+{
+  if (!IS_TRACING_TASKS) return;
+  //updating presence state of this task location
+  m_process_t process = MSG_process_self();
+  m_host_t host = MSG_process_get_host (process);
+
+  char alias[200];
+  TRACE_task_alias_container (task, process, host, alias, 200);
+  pajePushState (MSG_get_clock(), "presence", alias, "presence");
+}
+
+void __TRACE_task_location_not_present (m_task_t task)
+{
+  if (!IS_TRACING_TASKS) return;
+  //updating presence state of this task location
+  m_process_t process = MSG_process_self();
+  m_host_t host = MSG_process_get_host (process);
+
+  char alias[200];
+  TRACE_task_alias_container (task, process, host, alias, 200);
+  pajePopState (MSG_get_clock(), "presence", alias);
 }
 
 /*
@@ -73,14 +99,15 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
   task->category = xbt_new (char, strlen (category)+1);
   strncpy(task->category, category, strlen(category)+1);
 
-  char name[200];//, alias[200], process_alias[200];
+  //tracing task location based on host
+  __TRACE_task_location (task);
+  __TRACE_task_location_present (task);
+
+  char name[200];
   TRACE_task_container (task, name, 200);
   //create container of type "task" to indicate behavior
   if (IS_TRACING_TASKS) pajeCreateContainer (MSG_get_clock(), name, "task", category, name);
   if (IS_TRACING_TASKS) pajePushState (MSG_get_clock(), "task-state", name, "created");
-
-  //tracing task location based on process/host
-  __TRACE_task_location (task);
 }
 
 /* MSG_task_create related function*/
@@ -123,6 +150,9 @@ void TRACE_msg_task_destroy (m_task_t task)
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajeDestroyContainer (MSG_get_clock(), "task", name);
 
+  //finish the location of this task
+  __TRACE_task_location_not_present (task);
+
   //free category
   xbt_free (task->category);
   return;
@@ -142,8 +172,8 @@ void TRACE_msg_task_get_end (double start_time, m_task_t task)
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
 
-  //tracing task location based on process/host
   __TRACE_task_location (task);
+  __TRACE_task_location_present (task);
 }
 
 /* MSG_task_put related functions */
@@ -156,6 +186,10 @@ int TRACE_msg_task_put_start (m_task_t task)
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
   if (IS_TRACING_TASKS) pajePushState (MSG_get_clock(), "task-state", name, "communicate");
 
+  //trace task location grouped by host
+  __TRACE_task_location_not_present (task);
+
+  //set current category
   __TRACE_current_category_set (task);
   return 1;
 }

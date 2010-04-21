@@ -67,42 +67,33 @@ int TRACE_start_with_mask(const char *filename, int mask) {
   /* setting the mask */
   trace_mask = mask;
 
-  //check if options are correct
-  if (IS_TRACING_TASKS){
-	if (!IS_TRACING_PROCESSES){
-	  TRACE_end();
-      THROW0 (tracing_error, TRACE_ERROR_MASK,
-              "TRACE_PROCESS must be enabled if TRACE_TASK is used");
-	}
+  /* define paje hierarchy for tracing */
+  pajeDefineContainerType("PLATFORM", "0", "platform");
+  pajeDefineContainerType("HOST", "PLATFORM", "HOST");
+  pajeDefineContainerType("LINK", "PLATFORM", "LINK");
+
+  if (IS_TRACING_PLATFORM){
+    pajeDefineVariableType ("power", "HOST", "power");
+    pajeDefineVariableType ("bandwidth", "LINK", "bandwidth");
+    pajeDefineVariableType ("latency", "LINK", "latency");
   }
-
-  if (IS_TRACING_PROCESSES|IS_TRACING_TASKS){
-	if (!IS_TRACING_PLATFORM){
-	  TRACE_end();
-      THROW0 (tracing_error, TRACE_ERROR_MASK,
-	          "TRACE_PLATFORM must be enabled if TRACE_PROCESS or TRACE_TASK is used");
-	}
-  }
-
-  //defining platform hierarchy
-  if (IS_TRACING_PLATFORM) pajeDefineContainerType("PLATFORM", "0", "platform");
-  if (IS_TRACING_PLATFORM) pajeDefineContainerType("HOST", "PLATFORM", "HOST");
-  if (IS_TRACING_PLATFORM) pajeDefineVariableType ("power", "HOST", "power");
-  if (IS_TRACING_PLATFORM) pajeDefineContainerType("LINK", "PLATFORM", "LINK");
-  if (IS_TRACING_PLATFORM) pajeDefineVariableType ("bandwidth", "LINK", "bandwidth");
-  if (IS_TRACING_PLATFORM) pajeDefineVariableType ("latency", "LINK", "latency");
-
-  if (IS_TRACING_PROCESSES) pajeDefineContainerType("PROCESS", "HOST", "PROCESS");
-  if (IS_TRACING_PROCESSES) pajeDefineStateType("presence", "PROCESS", "presence");
 
   if (IS_TRACING_PROCESSES){
-	if (IS_TRACING_TASKS) pajeDefineContainerType("TASK", "PROCESS", "TASK");
-  }else{
-	if (IS_TRACING_TASKS) pajeDefineContainerType("TASK", "HOST", "TASK");
+    //processes grouped by host
+    pajeDefineContainerType("PROCESS", "HOST", "PROCESS");
+    pajeDefineStateType("presence", "PROCESS", "presence");
   }
 
-  if (IS_TRACING_PLATFORM) pajeCreateContainer(MSG_get_clock(), "platform", "PLATFORM", "0", "simgrid-platform");
+  if (IS_TRACING_TASKS){
+    //tasks grouped by host
+    pajeDefineContainerType("TASK", "HOST", "TASK");
+    pajeDefineStateType("presence", "TASK", "presence");
+  }
 
+  /* creating the platform */
+  pajeCreateContainer(MSG_get_clock(), "platform", "PLATFORM", "0", "simgrid-platform");
+
+  /* other trace initialization */
   defined_types = xbt_dict_new();
   created_categories = xbt_dict_new();
   __TRACE_msg_init();

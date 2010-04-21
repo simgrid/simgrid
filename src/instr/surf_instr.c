@@ -287,11 +287,11 @@ void TRACE_surf_link_declaration (char *name, double bw, double lat)
 void TRACE_surf_host_declaration (char *name, double power)
 {
   if (!IS_TRACING) return;
+  pajeCreateContainer (SIMIX_get_clock(), name, "HOST", "platform", name);
+  xbt_dict_set (host_containers, xbt_strdup(name), xbt_strdup("1"), xbt_free);
   if (IS_TRACING_PLATFORM){
-	pajeCreateContainer (SIMIX_get_clock(), name, "HOST", "platform", name);
-	xbt_dict_set (host_containers, xbt_strdup(name), xbt_strdup("1"), xbt_free);
+    __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "power", name, power);
   }
-  __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "power", name, power);
 }
 
 void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst)
@@ -316,9 +316,9 @@ void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst)
     //if (IS_TRACING_PLATFORM) pajeEndLink (SIMIX_get_clock()+0.1, "edge", "platform", "route", dstname, key);
     double *bw = xbt_dict_get (link_bandwidth, link_name);
     double *lat = xbt_dict_get (link_latency, link_name);
-    if (IS_TRACING_PLATFORM) pajeCreateContainerWithBandwidthLatencySrcDst (SIMIX_get_clock(), link_name, "LINK", "platform", link_name, *bw, *lat, srcname, dstname);
-    __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "bandwidth", link_name, *bw);
-    __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "latency", link_name, *lat);
+    pajeCreateContainerWithBandwidthLatencySrcDst (SIMIX_get_clock(), link_name, "LINK", "platform", link_name, *bw, *lat, srcname, dstname);
+    if (IS_TRACING_PLATFORM) __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "bandwidth", link_name, *bw);
+    if (IS_TRACING_PLATFORM) __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "latency", link_name, *lat);
     xbt_dict_set (created_links, xbt_strdup(link_name), xbt_strdup ("1"), xbt_free);
   }
 }
@@ -414,7 +414,7 @@ void TRACE_msg_clean (void)
 
   /* get all host from host_containers */
   xbt_dict_foreach(host_containers, cursor, key, value) {
-    if (IS_TRACING_PLATFORM) pajeDestroyContainer (MSG_get_clock(), "HOST", key);
+    pajeDestroyContainer (MSG_get_clock(), "HOST", key);
   }
 }
 

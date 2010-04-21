@@ -75,6 +75,8 @@ void __TRACE_current_category_set (m_task_t task);
 void __TRACE_current_category_unset (void);
 char *__TRACE_current_category_get (smx_process_t proc);
 void __TRACE_task_location (m_task_t task);
+void __TRACE_task_location_present (m_task_t task);
+void __TRACE_task_location_not_present (m_task_t task);
 void TRACE_msg_task_create (m_task_t task);
 void TRACE_msg_task_execute_start (m_task_t task);
 void TRACE_msg_task_execute_end (m_task_t task);
