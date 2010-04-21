@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
+exec_program("rm ${Project_BINARY_DIR}/CTestTestfile.cmake" OUTPUT_VARIABLE rmok)
 SET(CMAKE_LANGUAGE "Cxx")
 SET(PROJECT_NAME "Simgrid")
 SET(PROJECT_LABEL "Simgrid")
@@ -74,6 +75,5 @@ foreach(test ${LIST_OF_TEST})
 		string(REGEX REPLACE "^.*Test.*\\:+" " " test ${test}) #for ctest version 2.8
 		string(STRIP ${test} test)
 		set_tests_properties(${test} PROPERTIES LABELS "rev${SVN_VERSION}")
-		message("${test}")
 	endif(test_ok_1 OR test_ok_2)
 endforeach(test ${LIST_OF_TEST})

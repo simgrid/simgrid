@@ -6,21 +6,6 @@ if [ -e /usr/bin/yum ] ; then
 	sudo yum -y update
 fi
 
-which_cmake=`which cmake`	#cmake necessary
-echo $which_cmake
-if [ x$which_cmake = x ] ; then
-  echo "Try to install cmake"
-  if [ -e /usr/bin/apt-get ] ; then
-    sudo apt-get -y install cmake
-  fi
-  if [ -e /usr/bin/yum ] ; then
-    sudo yum -y install cmake
-  fi
-  if [ x$arch = xDarwin ] ; then
-    sudo fink -y install cmake
-  fi
-fi
-
 which_svn=`which svn`	#svn necessary
 echo $which_svn
 if [ x$which_svn = x ] ; then
@@ -137,4 +122,46 @@ if [ x$which_unzip = x ] ; then
   if [ x$arch = xDarwin ] ; then
     sudo fink -y install unzip
   fi
+fi
+
+which_cmake=`which cmake`	#cmake necessary
+echo $which_cmake
+if [ x$which_cmake = x ] ; then
+  echo "Try to install cmake"
+  if [ -e /usr/bin/apt-get ] ; then
+    sudo apt-get -y remove cmake
+    sudo apt-get -y install cmake
+  fi
+  if [ -e /usr/bin/yum ] ; then
+    sudo yum -y install cmake
+  fi
+  if [ x$arch = xDarwin ] ; then
+    sudo fink -y install cmake
+  fi
+fi
+
+which_cmake_version=`cmake --version`
+which_cpack_version=`cpack --version`
+which_ctest_version=`ctest --version`
+echo "current version of cmake : $which_cmake_version"
+echo "current version of cpack : $which_cpack_version"
+echo "current version of ctest : $which_ctest_version"
+if [ "x$which_cmake_version" != "xcmake version 2.8.1" ] ; then
+	which_cmake=`which cmake`
+	which_cpack=`which cpack`
+	which_ctest=`which ctest`
+	cp -rf ../../cmake-2.8.1/ ./
+	cd ./cmake-2.8.1/
+	cmake .	> /dev/null
+	make -j > /dev/null 2>&1
+	sudo ln -sf `pwd`/bin/cmake $which_cmake
+	sudo ln -sf `pwd`/bin/cpack $which_cpack
+	sudo ln -sf `pwd`/bin/ctest $which_ctest
+	which_cmake_version=`cmake --version`
+	which_cpack_version=`cpack --version`
+	which_ctest_version=`ctest --version`
+	echo "new version of cmake : $which_cmake_version"
+	echo "new version of cpack : $which_cpack_version"
+	echo "new version of ctest : $which_ctest_version"
+	cd ..
 fi

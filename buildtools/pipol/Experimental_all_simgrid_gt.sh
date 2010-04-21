@@ -2,8 +2,6 @@
 
 SYSTEM=`uname`
 
-sh /home/mescal/navarro/liste_install.sh
-
 if [ -e ./pipol ] ; then
 	rm -rf ./pipol/$PIPOL_HOST
 	mkdir ./pipol/$PIPOL_HOST
@@ -12,8 +10,9 @@ else
 	rm -rf ./pipol/$PIPOL_HOST
 	mkdir ./pipol/$PIPOL_HOST
 fi
-
 cd ./pipol/$PIPOL_HOST
+
+sh /home/mescal/navarro/liste_install.sh
 
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-trunk --quiet
 cd simgrid-trunk
