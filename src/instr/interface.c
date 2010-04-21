@@ -50,9 +50,9 @@ int TRACE_start_with_mask(const char *filename, int mask) {
   }
 
   /* checking mask */
-  if (mask != TRACE_PLATFORM &&
-      mask != TRACE_TASK &&
-      mask != TRACE_PROCESS){
+  if (!(mask&TRACE_PLATFORM ||
+      mask&TRACE_TASK ||
+      mask&TRACE_PROCESS)){
     THROW0 (tracing_error, TRACE_ERROR_MASK,
           "unknown tracing mask");
   }
