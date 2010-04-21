@@ -84,16 +84,16 @@ if [ x$which_java = x ] ; then
 fi
 
 if [ x$arch = xDarwin ] ; then
-    which_lua=`find /sw/include -name lualib.h`	#lualib.h optional
+    which_lua=`which lua`	#lua
 else
-    which_lua=`find /usr/include/ -name lualib.h`	#lualib.h optional
+    which_lua=`which lua`	#lua
 fi
 
 echo $which_lua
 if [ x$which_lua = x ] ; then
   echo "Try to install lua"
   if [ -e /usr/bin/apt-get ] ; then
-    sudo apt-get -y install liblua5.1 
+    sudo apt-get -y install lua5.1 liblua5.1-dev
   fi
   if [ -e /usr/bin/yum ] ; then
     sudo yum -y install lua-devel
@@ -104,9 +104,9 @@ if [ x$which_lua = x ] ; then
 fi
 
 if [ x$arch = xDarwin ] ; then
-    which_ruby=`find /sw/lib/ruby/ -name ruby.h`	#lualib.h optional
+    which_ruby=`which ruby`	#lua
 else
-    which_ruby=`find /usr/lib/ruby/ -name ruby.h`	#ruby.h optional
+    which_ruby=`which ruby`	#lua
 fi
 
 echo $which_ruby
