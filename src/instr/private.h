@@ -53,6 +53,7 @@ void pajePushStateWithBandwidthUsed (double time, const char *entityType, const 
 void pajePopState (double time, const char *entityType, const char *container);
 void pajeStartLink (double time, const char *entityType, const char *container, const char *value, const char *sourceContainer, const char *key);
 void pajeStartLinkWithBandwidthLatency (double time, const char *entityType, const char *container, const char *value, const char *sourceContainer, const char *key, double bw, double lat);
+void pajeStartLinkWithVolume (double time, const char *entityType, const char *container, const char *value, const char *sourceContainer, const char *key, double volume);
 void pajeEndLink (double time, const char *entityType, const char *container, const char *value, const char *destContainer, const char *key);
 void pajeDefineVariableType(const char *alias, const char *containerType, const char *name);
 void pajeSetVariable (double time, const char *entityType, const char *container, const char *value);

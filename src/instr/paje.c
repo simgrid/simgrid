@@ -43,6 +43,7 @@ static int pajeSetVariableId = 22;
 static int pajeAddVariableId = 23;
 static int pajeSubVariableId = 24;
 static int pajeDefineVariableTypeId = 25;
+static int pajeStartLinkWithVolumeId = 26;
 
 #define TRACE_LINE_SIZE 1000
 
@@ -241,7 +242,16 @@ void TRACE_paje_create_header(void) {
 %%       Alias string \n\
 %%       ContainerType string \n\
 %%       Name string \n\
-%%EndEventDef \n",
+%%EndEventDef \n\
+%%EventDef PajeStartLink %d \n\
+%%       Time date \n\
+%%       EntityType string \n\
+%%       Container string \n\
+%%       Value string \n\
+%%       SourceContainer string \n\
+%%       Key string \n\
+%%       Volume string \n\
+%%EndEventDef\n",
       pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId,
       pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId,
       pajeDestroyContainerId, pajeSetStateId, pajeSetStateWithHostId,
@@ -254,7 +264,8 @@ void TRACE_paje_create_header(void) {
       pajeSetVariableId,
       pajeAddVariableId,
       pajeSubVariableId,
-      pajeDefineVariableTypeId);
+      pajeDefineVariableTypeId,
+      pajeStartLinkWithVolumeId);
 }
 
 /* internal to this file */
@@ -410,6 +421,14 @@ void pajeStartLinkWithBandwidthLatency (double time, const char *entityType, con
   char line[TRACE_LINE_SIZE];
   __pajeStartLink (line, TRACE_LINE_SIZE, pajeStartLinkWithBandwidthLatencyId, time, entityType, container, value, sourceContainer, key);
   fprintf (tracing_file, "%s %f %f\n", line, bw, lat);
+}
+
+void pajeStartLinkWithVolume (double time, const char *entityType, const char *container, const char *value,
+    const char *sourceContainer, const char *key, double volume)
+{
+  char line[TRACE_LINE_SIZE];
+  __pajeStartLink (line, TRACE_LINE_SIZE, pajeStartLinkWithVolumeId, time, entityType, container, value, sourceContainer, key);
+  fprintf (tracing_file, "%s %f\n", line, volume);
 }
 
 void pajeEndLink (double time, const char *entityType, const char *container, const char *value,
