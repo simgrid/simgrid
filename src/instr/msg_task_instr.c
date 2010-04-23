@@ -173,6 +173,8 @@ void TRACE_msg_task_get_end (double start_time, m_task_t task)
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
 
+  __TRACE_msg_volume_finish (task);
+
   __TRACE_task_location (task);
   __TRACE_task_location_present (task);
 }
@@ -186,6 +188,8 @@ int TRACE_msg_task_put_start (m_task_t task)
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
   if (IS_TRACING_TASKS) pajePushState (MSG_get_clock(), "task-state", name, "communicate");
+
+  __TRACE_msg_volume_start (task);
 
   //trace task location grouped by host
   __TRACE_task_location_not_present (task);

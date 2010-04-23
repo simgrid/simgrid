@@ -52,7 +52,8 @@ int TRACE_start_with_mask(const char *filename, int mask) {
   /* checking mask */
   if (!(mask&TRACE_PLATFORM ||
       mask&TRACE_TASK ||
-      mask&TRACE_PROCESS)){
+      mask&TRACE_PROCESS ||
+      mask&TRACE_VOLUME)){
     THROW0 (tracing_error, TRACE_ERROR_MASK,
           "unknown tracing mask");
   }
@@ -80,11 +81,18 @@ int TRACE_start_with_mask(const char *filename, int mask) {
     pajeDefineVariableType ("latency", "LINK", "latency");
   }
 
-  if (IS_TRACING_PROCESSES){
+  if (IS_TRACING_PROCESSES || IS_TRACING_VOLUME){
     //processes grouped by host
     pajeDefineContainerType("PROCESS", "HOST", "PROCESS");
+  }
+
+  if (IS_TRACING_PROCESSES){
     pajeDefineStateType("category", "PROCESS", "category");
     pajeDefineStateType("presence", "PROCESS", "presence");
+  }
+
+  if (IS_TRACING_VOLUME){
+    pajeDefineLinkType ("volume", "0", "PROCESS", "PROCESS", "volume");
   }
 
   if (IS_TRACING_TASKS){

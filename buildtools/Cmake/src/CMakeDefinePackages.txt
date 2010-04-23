@@ -293,6 +293,7 @@ set(TRACING_SRC
 	${PROJECT_DIRECTORY}/src/instr/paje.c
 	${PROJECT_DIRECTORY}/src/instr/msg_task_instr.c
 	${PROJECT_DIRECTORY}/src/instr/msg_process_instr.c
+	${PROJECT_DIRECTORY}/src/instr/msg_volume.c
 	${PROJECT_DIRECTORY}/src/instr/smx_instr.c
 	${PROJECT_DIRECTORY}/src/instr/surf_instr.c
 	${PROJECT_DIRECTORY}/src/instr/variables_instr.c

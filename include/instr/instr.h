@@ -21,6 +21,7 @@
 #define TRACE_PLATFORM  1
 #define TRACE_PROCESS   2
 #define TRACE_TASK      4
+#define TRACE_VOLUME    8
 
 #include "xbt.h"
 #include "msg/msg.h"

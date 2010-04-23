@@ -25,6 +25,7 @@ extern int trace_mask; /* declared in interface.c */
 #define IS_TRACING_TASKS      ((TRACE_TASK)&trace_mask)
 #define IS_TRACING_PLATFORM   ((TRACE_PLATFORM)&trace_mask)
 #define IS_TRACING_PROCESSES  ((TRACE_PROCESS)&trace_mask)
+#define IS_TRACING_VOLUME     ((TRACE_VOLUME)&trace_mask)
 
 #include "instr/instr.h"
 #include "msg/msg.h"
@@ -98,6 +99,10 @@ void TRACE_msg_process_resume (m_process_t process);
 void TRACE_msg_process_sleep_in (m_process_t process); //called from msg/gos.c
 void TRACE_msg_process_sleep_out (m_process_t process);
 void TRACE_msg_process_end (m_process_t process);
+
+/* declaration of instrumentation functions from msg_volume.c */
+void __TRACE_msg_volume_start (m_task_t task);
+void __TRACE_msg_volume_finish (m_task_t task);
 
 /* from smx.c */
 void TRACE_smx_action_execute (smx_action_t act);

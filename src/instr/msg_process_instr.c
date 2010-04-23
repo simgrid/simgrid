@@ -23,7 +23,7 @@ void __TRACE_msg_process_init (void)
 
 void __TRACE_msg_process_location (m_process_t process)
 {
-  if (!IS_TRACING_PROCESSES) return;
+  if (!(IS_TRACING_PROCESSES || IS_TRACING_VOLUME)) return;
 
   char name[200], alias[200];
   m_host_t host = MSG_process_get_host (process);
@@ -33,7 +33,7 @@ void __TRACE_msg_process_location (m_process_t process)
   //check if process_alias container is already created
   if (!xbt_dict_get_or_null (process_containers, alias)){
     pajeCreateContainer (MSG_get_clock(), alias, "PROCESS", MSG_host_get_name(host), name);
-    pajeSetState (MSG_get_clock(), "category", alias, process->category);
+    if (IS_TRACING_PROCESSES) pajeSetState (MSG_get_clock(), "category", alias, process->category);
     xbt_dict_set (process_containers, xbt_strdup(alias), xbt_strdup("1"), xbt_free);
   }
 }
@@ -76,7 +76,7 @@ void TRACE_msg_set_process_category (m_process_t process, const char *category)
  */
 void TRACE_msg_process_change_host (m_process_t process, m_host_t old_host, m_host_t new_host)
 {
-  if (!IS_TRACING_PROCESSES || !IS_TRACED(process)) return;
+  if (!(IS_TRACING_PROCESSES || IS_TRACING_VOLUME) || !IS_TRACED(process)) return;
 
   //disabling presence in old_host (__TRACE_msg_process_not_present)
   char alias[200];
