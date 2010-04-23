@@ -1,0 +1,6 @@
+#! ./tesh
+
+p Tracing communications among processes of a master/slave application
+
+$ $SG_TEST_EXENV tracing/volume$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+> [206.703278] [msg_test/INFO] Simulation time 206.703
