@@ -583,3 +583,67 @@ from the iksemel one (http://code.google.com/p/iksemel/). Both the
 original and the current version of this code is distributed under the
 LGPL v2.1 license.
 
+=========================================================================
+
+Some examples for SMPI were borowed from an IBM test suite. 
+Their copyright is the following:
+/**
+ * MESSAGE PASSING INTERFACE TEST CASE SUITE
+ *
+ * Copyright IBM Corp. 1995
+ * 
+ * IBM Corp. hereby grants a non-exclusive license to use, copy, modify, and
+ *distribute this software for any purpose and without fee provided that the
+ *above copyright notice and the following paragraphs appear in all copies.
+
+ * IBM Corp. makes no representation that the test cases comprising this
+ * suite are correct or are an accurate representation of any standard.
+
+ * In no event shall IBM be liable to any party for direct, indirect, special
+ * incidental, or consequential damage arising out of the use of this software
+ * even if IBM Corp. has been advised of the possibility of such damage.
+
+ * IBM CORP. SPECIFICALLY DISCLAIMS ANY WARRANTIES INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS AND IBM
+ * CORP. HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
+ * ENHANCEMENTS, OR MODIFICATIONS.
+ * ***************************************************************************
+ **/
+ 
+List of files:
+ examples/smpi/scatter.c
+ examples/smpi/reduce.c
+ examples/smpi/allreduce.c
+ examples/smpi/alltoall2.c
+ 
+========================================================================= 
+
+Some other examples for SMPI were borowed from an Argonne test suite. 
+Their copyright is the following (FIXME):
+/*
+ *  (C) 2001 by Argonne National Laboratory.
+ *      See COPYRIGHT in top-level directory.
+ */
+List of files:
+ examples/smpi/alltoallv.c   
+
+========================================================================= 
+Finally, some SMPI examples have unclear licence:
+ examples/smpi/first.c
+ examples/smpi/second.c
+========================================================================= 
+ 
+
+The directory examples/smpi/NAS contains a tweaked version of the
+NAS Parallel Benchmark Team. The original software were retrieved from
+here: http://www.nas.nasa.gov/Software/NPB
+
+According to [1], this code is probably distributed under the NASA
+Open Source Agreement (NOSA) version 1.3. Its text can be found at [2].
+[1] http://www.nas.nasa.gov/Resources/Software/Open-Source/opensource.html
+[2] http://www.opensource.org/licenses/nasa1.3.php
+
+The changes over the original version are minor, and can be
+distributed under the LGPL license (v2.1) or NOSA (v1.3 or higher)
+licences, at your option.
