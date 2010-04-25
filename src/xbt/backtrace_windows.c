@@ -1,8 +1,8 @@
 /* backtrace_windows - backtrace displaying on windows platform             */
 /* This file is included by ex.c on need (windows x86)                      */
 
-/*  Copyright (c) 2007 The SimGrid team                                     */
-/*  All rights reserved.                                                    */
+/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

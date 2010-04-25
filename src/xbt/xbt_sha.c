@@ -5,10 +5,9 @@
  *   Distributed under LGPL v2.1, February 1999.
  */
 
-/* Adapted to fit into SimGrid by Martin Quinson.
- *   Copyright (c) 2008 Martin Quinson. All rights reserved.
- *   Distributed under LGPL v2.1, February 1999.
- */
+/* Later adapted to fit into SimGrid. Distributed under LGPL v2.1, Feb 1999.*/
+/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

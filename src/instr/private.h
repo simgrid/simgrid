@@ -1,14 +1,8 @@
-/*
- * private.h
- *
- *  Created on: Nov 23, 2009
- *      Author: Lucas Schnorr
- *     License: This program is free software; you can redistribute
- *              it and/or modify it under the terms of the license
- *              (GNU LGPL) which comes with this package.
- *
- *     Copyright (c) 2009 The SimGrid team.
- */
+/* Copyright (c) 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef INSTR_PRIVATE_H_
 #define INSTR_PRIVATE_H_

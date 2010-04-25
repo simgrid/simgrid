@@ -1,14 +1,10 @@
-/*
- * $Id$
- *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier All right reserved. 
- *
- * This program is free software; you can redistribute it and/or modify it 
- * under the terms of the license (GNU LGPL) which comes with this package.
- *
- * This contains the declarations of the functions in relation with the java
- * task instance.
- */
+/* Functions related to the java task instances.                            */
+
+/* Copyright (c) 2007, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef MSG_JTASK_H
 #define MSG_JTASK_H

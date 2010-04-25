@@ -1,6 +1,10 @@
-/*////////////////////////////////////////////////////*/
-// Peer-To-Peer CAN simulator 050406 by Dytto ESIAL //
-//////////////////////////////////////////////////////
+/* Broken Peer-To-Peer CAN simulator                                        */
+
+/* Copyright (c) 2006, 2007. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
 #include "xbt/sysdep.h"

@@ -1,3 +1,9 @@
+/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include <stdio.h>
 #include "msg/msg.h"            /* Yeah! If you want to use msg, you
                                    need to include msg/msg.h */

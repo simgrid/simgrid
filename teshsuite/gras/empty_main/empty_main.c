@@ -3,8 +3,8 @@
 /* empty_main.c -- check what happens when the processes do nothing         */
 /* Thanks to Loris Marshal for reporting a problem in that case             */
 
-/* Copyright (c) 2007 Martin Quinson.                                       */
-/* All rights reserved.                                                     */
+/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

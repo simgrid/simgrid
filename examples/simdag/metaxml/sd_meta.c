@@ -1,6 +1,13 @@
-/*
-   See examples/platforms/metaxml.xml and examples/platforms/metaxml_platform.xml files for examples on how to use the cluster, foreach, set, route:multi, trace and trace:connect tags
+/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/* See examples/platforms/metaxml.xml and examples/platforms/metaxml_platform.xml 
+   for examples on how to use the cluster, foreach, set, route:multi, trace and trace:connect tags
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "simdag/simdag.h"

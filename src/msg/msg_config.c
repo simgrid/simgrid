@@ -1,6 +1,5 @@
-/* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
-/* Copyright (c) 2007 Bruno Donassolo.                                      */
-/* All rights reserved.                                                     */
+/* Copyright (c) 2005, 2006, 2007, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

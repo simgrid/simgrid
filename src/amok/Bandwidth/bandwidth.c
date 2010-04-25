@@ -1,8 +1,7 @@
 /* amok_bandwidth - Bandwidth tests facilities                              */
 
-/* Copyright (c) 2003-6 Martin Quinson.                                     */
-/* Copyright (c) 2006   Ahmed Harbaoui.                                     */
-/* All rights reserved.                                                     */
+/* Copyright (c) 2004, 2005, 2006, 2007, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

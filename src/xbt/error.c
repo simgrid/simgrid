@@ -1,10 +1,10 @@
 /* error - Error handling functions                                         */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2001,2002,2003,2004 the OURAGAN project.                   */
+/* Copyright (c) 2004, 2005, 2006, 2008, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
 

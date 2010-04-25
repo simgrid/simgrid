@@ -1,7 +1,7 @@
 /* str.h - XBT string related functions.                                    */
 
-/* Copyright (c) 2004-7, Martin Quinson, Arnaud Legrand and  Cherier Malek. */
-/* All rights reserved.                                                     */
+/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

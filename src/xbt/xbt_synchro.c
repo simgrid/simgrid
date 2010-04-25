@@ -1,7 +1,8 @@
 /* xbt_synchro -- advanced multithreaded features                           */
 /* Working on top of real threads in RL and of simulated processes in SG    */
 
-/* Copyright 2009 Da SimGrid Team. All right reserved.                      */
+/* Copyright (c) 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

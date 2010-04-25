@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* DataDesc/ddt_parse -- automatic parsing of data structures */
 
 /* Copyright (c) 2004 Arnaud Legrand, Martin Quinson. All rights reserved.  */

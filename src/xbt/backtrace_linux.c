@@ -1,10 +1,8 @@
-/* $Id: ex.c 5173 2008-01-07 22:10:52Z mquinson $ */
-
 /* backtrace_linux - backtrace displaying on linux platform                 */
 /* This file is included by ex.c on need (have execinfo.h, popen & addrline)*/
 
-/*  Copyright (c) 2007 The SimGrid team                                     */
-/*  All rights reserved.                                                    */
+/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
