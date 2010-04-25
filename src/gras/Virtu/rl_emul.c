@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* rl_emul - Emulation support (real life)                                  */
 
 /* Copyright (c) 2003-5 Arnaud Legrand, Martin Quinson. All rights reserved.*/

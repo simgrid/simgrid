@@ -1,4 +1,3 @@
-/* $Id$ */
 /* module - module handling, along with module dependencies and local state */
 
 /* Copyright (C) 2006 Martin Quinson. All rights reserved.                  */

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* backtrace_windows - backtrace displaying on windows platform             */
 /* This file is included by ex.c on need (windows x86)                      */
 

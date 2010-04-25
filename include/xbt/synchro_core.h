@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt/synchro.h -- Synchronization tools                                   */
 /* Usable in simulator, (or in real life when mixing with GRAS)             */
 

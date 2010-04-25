@@ -1,4 +1,3 @@
-/* $Id$ */
 /* pmm - parallel matrix multiplication "double diffusion"                  */
 
 /* Copyright (c) 2006-2008 The SimGrid team. All rights reserved.           */

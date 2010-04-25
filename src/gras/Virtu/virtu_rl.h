@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* virtu_rl - specific GRAS implementation for real life                    */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

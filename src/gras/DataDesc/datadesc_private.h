@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* datadesc - describing the data to exchange                               */
 
 /* module's private interface masked even to other parts of GRAS.           */

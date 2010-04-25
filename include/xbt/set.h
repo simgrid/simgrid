@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt/set.h -- api to a generic dictionary                                 */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */

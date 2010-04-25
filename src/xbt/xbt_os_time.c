@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt_os_time.c -- portable interface to time-related functions            */
 
 /* Copyright (c) 2004-2008 The SimGrid team. All rights reserved.           */

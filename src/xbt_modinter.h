@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt_modinter - How to init/exit the XBT modules                          */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

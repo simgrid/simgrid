@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* messaging - Function related to messaging code specific to SG            */
 
 /* Copyright (c) 2003-2005 Martin Quinson. All rights reserved.             */

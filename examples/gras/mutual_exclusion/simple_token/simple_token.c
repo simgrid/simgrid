@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* stoken - simple/static token ring                                        */
 
 /* Copyright (c) 2005 Alexandre Colucci.                                    */

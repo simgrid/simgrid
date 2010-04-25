@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* bandwidth - bandwidth test demo of GRAS features                         */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

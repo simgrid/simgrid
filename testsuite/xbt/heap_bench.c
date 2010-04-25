@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* A few tests for the xbt_heap module                                      */
 
 /* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */

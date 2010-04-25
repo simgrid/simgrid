@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* timer - delayed and repetitive tasks                                     */
 /* module's public interface exported to end user.                          */
 

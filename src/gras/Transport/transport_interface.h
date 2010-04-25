@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* transport - low level communication (send/receive bunches of bytes)      */
 
 /* module's public interface exported within GRAS, but not to end user.     */

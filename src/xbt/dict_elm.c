@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* dict - a generic dictionary, variation over the B-tree concept           */
 
 /* Copyright (c) 2003-2009 The SimGrid team. All rights reserved.           */

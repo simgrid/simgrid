@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* rl_stubs.c -- empty body of functions used in SG, but harmful in RL       */
 
 /* Copyright (c) 2007 Martin Quinson.                                       */

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* function_type.h - classical types for pointer to function                */
 
 /* Copyright (c) 2004-2006 Martin Quinson.                                  */

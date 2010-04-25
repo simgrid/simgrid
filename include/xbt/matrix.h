@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt_matrix_t management functions                                        */
 
 /* Copyright (c) 2006 Martin Quinson. All rights reserved.                  */

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* TESH (Test Shell) -- mini shell specialized in running test units        */
 
 /* Copyright (c) 2007-2008, Da SimGrid team.                                */

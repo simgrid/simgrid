@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* ddt_parse.h -- automatic parsing of data structures                      */
 
 /* Copyright (c) 2003 Arnaud Legrand.                                       */

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* log_large_test -- log a very large string to test the dynamic variants   */
 
 /* Copyright (c) 2007 Martin Quinson. All rights reserved.                  */

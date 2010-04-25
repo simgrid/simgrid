@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* gras/process.h - Manipulating data related to an host.                   */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

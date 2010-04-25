@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* transport - low level communication (send/receive bunches of bytes)      */
 
 /* module's private interface masked even to other parts of GRAS.           */

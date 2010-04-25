@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* messaging - high level communication (send/receive messages)             */
 /* module's public interface exported to end user.                          */
 

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* virtu - virtualization layer for XBT to choose between GRAS and MSG implementation */
 
 /* Copyright (c) 2007 Martin Quinson. All rights reserved.                  */

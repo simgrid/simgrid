@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* str.h - XBT string related functions.                                    */
 
 /* Copyright (c) 2004-7, Martin Quinson, Arnaud Legrand and  Cherier Malek. */

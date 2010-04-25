@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* peer.h - peer (remote processes) management functions                    */
 
 /* Copyright (c) 2006 Arnaud Legrand.                                       */

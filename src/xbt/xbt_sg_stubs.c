@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt_sg_stubs -- empty functions sometimes used in SG (never in RL)       */
 
 /* This is always part of SG, never of RL. Content:                         */

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* datadesc: test of data description (using file transport).               */
 
 /* Copyright (c) 2004-2007 Martin Quinson. All rights reserved.             */

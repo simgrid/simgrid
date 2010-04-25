@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* amok modinter - interface to AMOK modules initialization and such        */
 
 /* Copyright (c) 2006 Martin Quinson. All rights reserved.                  */

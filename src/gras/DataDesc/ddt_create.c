@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* ddt_new - creation/deletion of datatypes structs (private to this module)*/
 
 /* Copyright (c) 2003-2009 The SimGrid Team. All rights reserved.           */

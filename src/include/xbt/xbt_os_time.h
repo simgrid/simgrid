@@ -1,4 +1,3 @@
-/* $Id$ */
 /*  xbt/xbt_portability.h -- all system dependency                          */
 /* Private portability layer                                                */
 

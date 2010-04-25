@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* config - Dictionary where the type of each cell is provided.            */
 
 /* This is useful to build named structs, like option or property sets.     */

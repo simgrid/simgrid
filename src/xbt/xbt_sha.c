@@ -1,4 +1,3 @@
-/* $Id$ */
 /* xbt_sha.c - SHA1 hash function */
 
 /* Initial version part of iksemel (XML parser for Jabber)

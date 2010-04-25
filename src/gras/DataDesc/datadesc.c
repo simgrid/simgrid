@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* datadesc - data description in order to send/recv it in GRAS             */
 
 /* Copyright (c) 2003 Olivier Aumage.                                       */

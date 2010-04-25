@@ -1,4 +1,3 @@
-/* $Id$ */
 /*  xbt/sysdep.h -- all system dependency                                   */
 /*  no system header should be loaded out of this file so that we have only */
 /*  one file to check when porting to another OS                            */

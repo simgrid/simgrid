@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* log - a generic logging facility in the spirit of log4j                  */
 
 /* Copyright (c) 2003-2007 Martin Quinson. All rights reserved.             */

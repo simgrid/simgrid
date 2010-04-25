@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* messaging - high level communication (send/receive messages)             */
 
 /* module's private interface masked even to other parts of GRAS.           */

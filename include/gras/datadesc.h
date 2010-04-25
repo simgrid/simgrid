@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* gras/datadesc.h - Describing the data you want to exchange               */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

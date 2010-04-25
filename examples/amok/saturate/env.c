@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* saturate - link saturation demo of AMOK features                         */
 
 /* Copyright (c) 2003-6 Martin Quinson. All rights reserved.                */

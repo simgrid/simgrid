@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* error - Error handling functions                                         */
 
 /* Authors: Martin Quinson                                                  */

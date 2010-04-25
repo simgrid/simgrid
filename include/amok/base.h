@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* amok_base - things needed in amok, but too small to constitute a module  */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

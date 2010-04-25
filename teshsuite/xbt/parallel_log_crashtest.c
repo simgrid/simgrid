@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* synchro_crashtest -- tries to crash the logging mecanism by doing // logs*/
 
 /* Copyright (c) 2007 Martin Quinson. All rights reserved.                  */

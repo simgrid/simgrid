@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt_os_thread -- portability layer over the pthread API                  */
 /* Used in RL to get win/lin portability, and in SG when CONTEXT_THREAD     */
 /* in SG, when using CONTEXT_UCONTEXT, xbt_os_thread_stub is used instead   */

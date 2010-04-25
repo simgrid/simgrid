@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* process_sg - GRAS process handling on simulator                          */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

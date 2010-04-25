@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt.h - Public interface to the xbt (gras's toolbox)                     */
 
 /* Copyright (c) 2004 Martin Quinson.                                       */

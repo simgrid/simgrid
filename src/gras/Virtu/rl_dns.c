@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* rl_dns - name resolution (real life)                                     */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

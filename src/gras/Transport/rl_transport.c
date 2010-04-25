@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* rl_transport - RL specific functions for transport                       */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */

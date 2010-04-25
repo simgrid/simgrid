@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* gras.c -- generic functions not fitting anywhere else                    */
 
 /* Copyright (c) 2003, 2004 Martin Quinson.                                 */

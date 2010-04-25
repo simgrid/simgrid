@@ -1,5 +1,3 @@
-/* $Id$                     */
-
 /* gras/emul.h - public interface to emulation support                      */
 /*                (specific parts for SG or RL)                             */
 

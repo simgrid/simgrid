@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* ex -- exception handling                                                 */
 /* This file is to loaded in any location defining exception handlers       */
 /* (such as context.c) or in gras transport layer, to exchange them.        */

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* signal -- what TESH needs to know about signals                          */
 
 /* Copyright (c) 2007 Martin Quinson.                                       */

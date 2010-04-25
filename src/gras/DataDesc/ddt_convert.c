@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* ddt_remote - Stuff needed to get datadescs about remote hosts            */
 
 /* Copyright (c) 2003 Olivier Aumage.                                       */

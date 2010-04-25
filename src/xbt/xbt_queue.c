@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* A (synchronized) message queue.                                          */
 /* Popping an empty queue is blocking, as well as pushing a full one        */
 

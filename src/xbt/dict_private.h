@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* dict_elm - elements of generic dictionnaries                             */
 /* This file is not to be loaded from anywhere but dict.c                   */
 

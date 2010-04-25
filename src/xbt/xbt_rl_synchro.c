@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt_synchro -- Synchronization virtualized depending on whether we are   */
 /*                in simulation or real life (act on simulated processes)   */
 

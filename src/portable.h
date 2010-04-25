@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* portable -- header loading to write portable code                         */
 /* loads much more stuff than sysdep.h since the latter is in public interface*/
 

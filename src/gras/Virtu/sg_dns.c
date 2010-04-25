@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* sg_dns - name resolution (simulator)                                     */
 
 /* Copyright (c) 2005 Martin Quinson. All rights reserved.                  */

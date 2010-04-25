@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* process - GRAS process handling (common code for RL and SG)              */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

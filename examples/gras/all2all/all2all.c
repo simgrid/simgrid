@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* ALL2ALL - all2all of GRAS features                                       */
 
 /* Copyright (c) 2006 Ahmed Harbaoui. All rights reserved.                  */

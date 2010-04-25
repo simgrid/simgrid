@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* run_context -- stuff in which TESH runs a command                        */
 
 /* Copyright (c) 2007 Martin Quinson.                                       */

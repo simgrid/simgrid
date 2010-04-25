@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* sg_transport - SG specific functions for transport                       */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */

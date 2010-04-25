@@ -1,5 +1,3 @@
-/*     $Id$      */
-
 /* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
 /* Copyright (c) 2007 Bruno Donassolo.                                      */
 /* All rights reserved.                                                     */

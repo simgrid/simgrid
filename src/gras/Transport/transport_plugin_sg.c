@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* file trp (transport) - send/receive a bunch of bytes in SG realm         */
 
 /* Note that this is only used to debug other parts of GRAS since message   */

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* philosopher - classical dinning philosopher as a demo xbt syncro stuff   */
 
 /* Copyright (c) 2007 Martin Quinson. All rights reserved.                  */

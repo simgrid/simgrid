@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* amok_bandwidth - Bandwidth test facilities                               */
 
 /* Copyright (c) 2003-2005 Martin Quinson. All rights reserved.             */

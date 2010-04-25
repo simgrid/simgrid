@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* transport - low level communication                                      */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */

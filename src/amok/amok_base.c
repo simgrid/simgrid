@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* base - several addons to do specific stuff not in GRAS itself            */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

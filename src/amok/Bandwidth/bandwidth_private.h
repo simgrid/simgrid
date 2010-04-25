@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* bandwidth - network bandwidth tests facilities                           */
 
 /* module's private interface masked even to other parts of AMOK.           */

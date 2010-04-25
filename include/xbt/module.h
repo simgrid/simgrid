@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* module - modularize the code                                             */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */

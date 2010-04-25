@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* cunit - A little C Unit facility                                         */
 
 /* Copyright (c) 2005 Martin Quinson. All rights reserved.                  */

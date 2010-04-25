@@ -1,4 +1,3 @@
-/* $Id$ */
 /*  xbt/asserts.h -- assertion mechanism                                     */
 
 /* Copyright (c) 2004,2005 Martin Quinson. All rights reserved.             */

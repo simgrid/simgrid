@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* timer: repetitive and delayed actions                                    */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* dict_cursor - iterators over dictionnaries                               */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

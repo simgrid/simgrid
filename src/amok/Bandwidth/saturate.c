@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* amok_saturate - Link saturating facilities (for ALNeM's BW testing)      */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

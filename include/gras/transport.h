@@ -1,6 +1,4 @@
 
-/* $Id$ */
-
 /* transport - low level communication (send/receive bunches of bytes)      */
 /* module's public interface exported to end user.                          */
 

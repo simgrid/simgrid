@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* amok peer management - servers main loop and remote peer stopping        */
 
 /* Copyright (c) 2006 Martin Quinson. All rights reserved.                  */

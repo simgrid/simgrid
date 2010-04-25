@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* GridRPC - Fake Grid RPC thingy doing matrix multiplications (as expected)*/
 
 /* Copyright (c) 2005 Martin Quinson. All rights reserved.                  */

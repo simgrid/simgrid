@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* ping - ping/pong demo of GRAS features                                   */
 
 /* Copyright (c) 2003, 2004, 2005 Martin Quinson. All rights reserved.      */

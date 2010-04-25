@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* File transport - send/receive a bunch of bytes from a file               */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */

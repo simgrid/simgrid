@@ -1,5 +1,3 @@
-/* $Id$                    */
-
 /* gras/virtu.h - public interface to virtualization (cross-OS portability) */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

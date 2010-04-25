@@ -1,5 +1,3 @@
-/*      $Id$      */
-
 /* A few basic tests for the graphxml library                               */
 
 /* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand. All rights reserved.*/

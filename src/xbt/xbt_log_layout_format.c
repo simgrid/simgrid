@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* layout_simple - a dumb log layout                                        */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

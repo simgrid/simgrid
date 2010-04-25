@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* gras message types and callback registering and retrieving               */
 
 /* Copyright (c) 2003, 2004, 2005, 2006, 2007 Martin Quinson.               */

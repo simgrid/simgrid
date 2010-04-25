@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* ALNeM builder. Take an interference matrix as argument,                  */
 /*  and reconstruct the corresponding graph itself                          */
 

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* rpc - demo of the RPC features in GRAS                                   */
 
 /* Copyright (c) 2006 Martin Quinson. All rights reserved.                  */

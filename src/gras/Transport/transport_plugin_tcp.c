@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* buf trp (transport) - buffered transport using the TCP one               */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */

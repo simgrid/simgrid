@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* config - Dictionnary where the type of each variable is provided.            */
 
 /* This is useful to build named structs, like option or property sets.     */

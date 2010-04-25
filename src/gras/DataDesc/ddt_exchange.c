@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* ddt_exchange - send/recv data described                                  */
 
 /* Copyright (c) 2003-2009 The SimGrid Team.  All rights reserved.          */

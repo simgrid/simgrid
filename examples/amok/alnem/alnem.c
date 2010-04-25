@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* ALNeM itself                                                             */
 
 /* Copyright (c) 2003 Martin Quinson. All rights reserved.                  */

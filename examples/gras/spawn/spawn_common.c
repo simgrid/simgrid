@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* spawn - demo of the gras_agent_spawn function                            */
 
 /* Copyright (c) 2007 Martin Quinson. All rights reserved.                  */

@@ -515,7 +515,6 @@ int gras_ddt_parse__flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *gras_ddt_parse_text;
-/* $Id$ */
 /* DataDesc/ddt_parse -- automatic parsing of data structures */
 /* Copyright (c) 2004 Arnaud Legrand, Martin Quinson. All rights reserved.  */
 /* This program is free software; you can redistribute it and/or modify it

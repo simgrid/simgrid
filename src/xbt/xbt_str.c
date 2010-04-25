@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt_str.c - various helping functions to deal with strings               */
 
 /* Copyright (C) 2005-2008 The SimGrid Team.                                */

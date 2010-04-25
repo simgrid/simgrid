@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* cbps - persistant states for callbacks                                   */
 
 /* Copyright (c) 2003 Olivier Aumage.                                       */

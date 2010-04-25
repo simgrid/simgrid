@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* a generic DYNamic ARray implementation.                                  */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

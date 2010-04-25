@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* set - data container consisting in dict+dynar                            */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */

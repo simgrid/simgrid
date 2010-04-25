@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* virtu[alization] - speciafic parts for each OS and for SG                */
 
 /* module's private interface.                                              */

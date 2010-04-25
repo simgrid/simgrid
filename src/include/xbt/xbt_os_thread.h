@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* xbt/xbt_thread.h -- Thread portability layer                             */
 
 /* Copyright (c) 2007 Martin Quinson. All rights reserved.                  */

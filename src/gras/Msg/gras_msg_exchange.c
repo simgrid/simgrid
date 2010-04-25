@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* gras message exchanges                                                   */
 
 /* Copyright (c) 2003-2009. The SimGrid Team. All rights reserved.          */

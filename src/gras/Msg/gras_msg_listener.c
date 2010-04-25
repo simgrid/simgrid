@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* Thread in charge of listening the network and queuing incoming messages  */
 
 /* Copyright (c) 2007 Martin Quinson. All rights reserved.                  */

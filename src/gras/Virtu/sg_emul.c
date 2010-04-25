@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* sg_emul - Emulation support (simulation)                                 */
 
 /* Copyright (c) 2003-5 Arnaud Legrand, Martin Quinson. All rights reserved.*/

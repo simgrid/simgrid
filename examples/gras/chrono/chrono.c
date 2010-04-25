@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* chrono - demo of GRAS benchmarking features                              */
 
 /* Copyright (c) 2005 Martin Quinson, Arnaud Legrand. All rights reserved.  */

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* dict_multi - dictionnaries of dictionnaries of ... of data               */
 
 /* Copyright (c) 2003-2005 Martin Quinson. All rights reserved.             */

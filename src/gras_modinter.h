@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* gras_modinter.h - How to init/exit the GRAS modules                      */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

@@ -1,6 +1,4 @@
 
-/* $Id$                   */
-
 /* log_usage - A test of normal usage of the log facilities                     */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.                */

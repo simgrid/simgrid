@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* gras.h - Public interface to the GRAS                                    */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */

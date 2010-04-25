@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* context_thread - implementation of context switching with native threads */
 
 /* Copyright (c) 2004-2008 the SimGrid team. All right reserved */

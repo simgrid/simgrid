@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* file_appender - a dumb log appender which simply prints to stdout        */
 
 /* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */
