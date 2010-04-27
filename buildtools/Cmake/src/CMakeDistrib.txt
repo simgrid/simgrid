@@ -160,6 +160,12 @@ COMMAND make package
 COMMAND rm -rf _CPack_Packages
 #WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
+
+add_custom_target(check
+COMMAND make test
+#WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
+
 add_custom_target(distcheck
 COMMAND make package
 COMMAND rm -rf _CPack_Packages
