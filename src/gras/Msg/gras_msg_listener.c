@@ -58,8 +58,12 @@ static void listener_function(void *p)
         int sock;
         xbt_queue_shift_timed(me->socks_to_close, &sock, 0);
         if (tcp_close(sock) < 0) {
+#ifdef _WIN32
+          WARN2("error while closing tcp socket %d: %d (%s)\n", sock, sock_errno);
+#else
           WARN3("error while closing tcp socket %d: %d (%s)\n",
                 sock, sock_errno, sock_errstr(sock_errno));
+#endif
         }
       }
     }

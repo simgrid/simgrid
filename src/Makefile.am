@@ -190,7 +190,7 @@ SURF_SRC= \
   surf/random_mgr.c                                                          \
   surf/surf.c                                                                \
   surf/surfxml_parse.c                                                       \
-  surf/cpu.c   surf/network.c surf/network_constant.c surf/workstation.c     \
+  surf/cpu.c   surf/network.c surf/network_constant.c surf/network_vivaldi.c surf/workstation.c     \
   surf/surf_model_timer.c                                                    \
   surf/workstation_ptask_L07.c                                               \
   surf/cpu_ti.c                                               \
@@ -372,10 +372,10 @@ simgrid_ruby_la_SOURCES = bindings/ruby/simgrid_ruby.c
 simgrid_ruby_la_LDFLAGS = $(VERSION_INFO) @LD_DYNAMIC_FLAGS@ -lm -module
 endif
 
-# Windows users (at least, MSVC ones) need a def file.
+# Windows users (at least, MSVC ones) need a def file. (and JNI dont like @ cruft added to symbols)
 if IS_WINDOWS
 libgras_la_LDFLAGS    += -Wl,--output-def,libgras.def
-libsimgrid_la_LDFLAGS += -Wl,--output-def,libsimgrid.def
+libsimgrid_la_LDFLAGS += -Wl,--output-def,libsimgrid.def -Wl,--kill-at
 libsmpi_la_LDFLAGS    += -Wl,--output-def,libsmpi.def
 endif
 

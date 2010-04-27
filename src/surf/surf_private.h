@@ -114,7 +114,7 @@ XBT_PUBLIC(void) routing_model_create(size_t size_of_link,void *loopback);
 /*
  * Resource protected methods
  */
-XBT_PUBLIC(xbt_dict_t) surf_resource_properties(const void *resource);
+xbt_dict_t surf_resource_properties(const void *resource);
 
 XBT_PUBLIC(void) surfxml_bufferstack_push(int new);
 XBT_PUBLIC(void) surfxml_bufferstack_pop(int new);
