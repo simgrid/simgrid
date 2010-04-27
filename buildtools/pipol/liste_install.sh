@@ -150,7 +150,7 @@ if [ "x$which_cmake_version" != "xcmake version 2.8.1" ] ; then
 	which_cmake=`which cmake`
 	which_cpack=`which cpack`
 	which_ctest=`which ctest`
-	cp -rf ../../cmake-2.8.1/ ./
+	cp -rf ~/cmake-2.8.1/ ./
 	cd ./cmake-2.8.1/
 	cmake .	> /dev/null
 	make -j > /dev/null 2>&1
