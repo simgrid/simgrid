@@ -1,7 +1,7 @@
 set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_FILE_NAME "simgrid-${simgrid_version}~${SVN_VERSION}")
+set(CPACK_PACKAGE_FILE_NAME "simgrid-${release_version}~${SVN_VERSION}")
 set(CPACK_GENERATOR "TBZ2") #;TGZ;TZ;ZIP
 
 foreach(file ${script_to_install})

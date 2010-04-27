@@ -3,8 +3,11 @@ exec_program("rm ${Project_BINARY_DIR}/CTestTestfile.cmake" OUTPUT_VARIABLE rmok
 SET(CMAKE_LANGUAGE "Cxx")
 SET(PROJECT_NAME "Simgrid")
 SET(PROJECT_LABEL "Simgrid")
-set(simgrid_version "3.4")
-set(USE_RPATH false)
+
+set(release_version "3.4")
+set(libsimgrid_version "${release_version}")
+set(libgras_version "${release_version}")
+set(libsmpi_version "${release_version}")
 
 ### Find programs and paths
 find_program(SH_EXE NAMES sh)

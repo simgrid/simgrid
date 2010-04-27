@@ -9,7 +9,9 @@ else(enable_supernovae)
 	add_library(smpi SHARED ${SMPI_SRC})
 endif(enable_supernovae)
 
-set_target_properties(simgrid gras smpi PROPERTIES VERSION ${simgrid_version})
+set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
+set_target_properties(gras PROPERTIES VERSION ${libgras_version})
+set_target_properties(smpi PROPERTIES VERSION ${libsmpi_version})
 
 set(GRAS_DEP "-lm -lpthread")
 set(SIMGRID_DEP "-lm")
