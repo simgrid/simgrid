@@ -54,6 +54,11 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeFlags.txt)
 ### Make Libs and Exes
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeMakeExeLib.txt)
 
+### Make Simgrid.jar and Java examples
+if(HAVE_JAVA)
+	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeJarAndClass.txt)
+endif(HAVE_JAVA)
+
 ### Make tests
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeTest.txt)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CTestConfig.cmake)

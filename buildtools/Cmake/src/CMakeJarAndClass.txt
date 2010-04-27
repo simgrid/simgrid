@@ -1,0 +1,63 @@
+	foreach(file ${JMSG_JAVA_SRC})
+		set(java_src_to_compile "${java_src_to_compile}${file}\t")	
+	endforeach(file ${JMSG_JAVA_SRC})
+	string(REPLACE ".java" ".class" java_output "${JMSG_JAVA_SRC}")  
+	
+	# build .jar file from .class files
+	ADD_CUSTOM_TARGET(simgrid.jar
+	COMMAND rm -rf ${PROJECT_DIRECTORY}/src/.classes
+	COMMAND mkdir -p ${PROJECT_DIRECTORY}/src/.classes
+	COMMAND mkdir -p ${PROJECT_DIRECTORY}/src/.classes/surf
+	COMMAND cp ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd ${PROJECT_DIRECTORY}/src/.classes/surf/simgrid.dtd
+	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/src/.classes -cp ${PROJECT_DIRECTORY}/src/.classes ${java_src_to_compile}
+	)
+	
+	ADD_CUSTOM_COMMAND(
+	TARGET simgrid
+	POST_BUILD
+	COMMAND make simgrid.jar
+	)
+	
+	ADD_CUSTOM_COMMAND(
+	TARGET simgrid.jar
+	POST_BUILD 
+	COMMAND ${CMAKE_COMMAND}
+	ARGS -E chdir ${PROJECT_DIRECTORY}
+	${JAVA_ARCHIVE} -cvf ${PROJECT_DIRECTORY}/src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes .
+	)
+	
+	ADD_CUSTOM_COMMAND(
+	TARGET simgrid.jar
+	POST_BUILD 
+	COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/basic/*.class
+	COMMAND ${JAVA_COMPILE}
+	ARGS -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
+	${PROJECT_DIRECTORY}/examples/java/basic/*.java
+	)
+	
+	ADD_CUSTOM_COMMAND(
+	TARGET simgrid.jar
+	POST_BUILD
+	COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.class
+	COMMAND ${JAVA_COMPILE}
+	ARGS -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
+	${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
+	)
+	
+	ADD_CUSTOM_COMMAND(
+	TARGET simgrid.jar
+	POST_BUILD 
+	COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/comm_time/*.class
+	COMMAND ${JAVA_COMPILE}
+	ARGS -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
+	${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
+	)
+	
+	ADD_CUSTOM_COMMAND(
+	TARGET simgrid.jar
+	POST_BUILD 
+	COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/suspend/*.class
+	COMMAND ${JAVA_COMPILE}
+	ARGS -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
+	${PROJECT_DIRECTORY}/examples/java/suspend/*.java
+	)
