@@ -133,46 +133,69 @@ add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
 
 if(HAVE_JAVA)
 	foreach(file ${JMSG_JAVA_SRC})
-		set(java_src_to_compile "${java_src_to_compile} ${file}")	
+		set(java_src_to_compile "${java_src_to_compile}${file} ")	
 	endforeach(file ${JMSG_JAVA_SRC})
+	
+	string(REPLACE ".java" ".class" java_output "${JMSG_JAVA_SRC}")
+	
+#	message("\n\njava_src:\n${JMSG_JAVA_SRC}")
+#	message("\n\njava_src_to_compile:\n${java_src_to_compile}")
+#	message("\n\njava_output:\n${java_output}")	
 
-	add_custom_command(TARGET simgrid
-	COMMAND /bin/sh ${PROJECT_DIRECTORY}/make_simgrid_java.sh
-	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
-	)
+file(REMOVE_RECURSE ${PROJECT_DIRECTORY}/src/.classes)
+file(REMOVE ${PROJECT_DIRECTORY}/src/simgrid.jar)
+file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/src/.classes)
+file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/src/.classes/surf)
+configure_file(${PROJECT_DIRECTORY}/src/surf/simgrid.dtd ${PROJECT_DIRECTORY}/src/.classes/surf/simgrid.dtd COPYONLY)  
 
-file(WRITE	${PROJECT_DIRECTORY}/make_simgrid_java.sh 
-"\#! /bin/sh\n\n")
+# build .jar file from .class files
+ADD_CUSTOM_TARGET(simgrid.jar ALL
+COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/src/.classes -cp ${PROJECT_DIRECTORY}/src/.classes ${PROJECT_DIRECTORY}/src/java/simgrid/msg/*.java
+)
 
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -rf ${PROJECT_DIRECTORY}/src/.classes\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -f ${PROJECT_DIRECTORY}/src/simgrid.jar\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "mkdir ${PROJECT_DIRECTORY}/src/.classes\n")
+ADD_CUSTOM_COMMAND(
+TARGET simgrid.jar
+POST_BUILD 
+COMMAND ${CMAKE_COMMAND}
+ARGS -E chdir ${PROJECT_DIRECTORY}
+${JAVA_ARCHIVE} -cvf ${PROJECT_DIRECTORY}/src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes .
+)
 
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/src/.classes -cp ${PROJECT_DIRECTORY}/src/.classes ${java_src_to_compile}\n")
+ADD_CUSTOM_COMMAND(
+TARGET simgrid.jar
+POST_BUILD 
+COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/basic/*.class
+COMMAND ${JAVA_COMPILE}
+ARGS -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
+${PROJECT_DIRECTORY}/examples/java/basic/*.java
+)
 
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "mkdir ${PROJECT_DIRECTORY}/src/.classes/surf\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "cp ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd ${PROJECT_DIRECTORY}/src/.classes/surf/simgrid.dtd\n")
+ADD_CUSTOM_COMMAND(
+TARGET simgrid.jar
+POST_BUILD
+COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.class
+COMMAND ${JAVA_COMPILE}
+ARGS -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
+${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
+)
 
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_ARCHIVE} cvf ./src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes . &>/dev/null\n")
+ADD_CUSTOM_COMMAND(
+TARGET simgrid.jar
+POST_BUILD 
+COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/comm_time/*.class
+COMMAND ${JAVA_COMPILE}
+ARGS -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
+${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
+)
 
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -f ${PROJECT_DIRECTORY}/examples/java/basic/*.class\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java\n")
-
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -f ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.class\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java\n")
-
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh  "rm -f ${PROJECT_DIRECTORY}/examples/java/comm_time/*.class\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java\n")
-
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "rm -f ${PROJECT_DIRECTORY}/examples/java/suspend/*.class\n")
-file(APPEND	${PROJECT_DIRECTORY}/make_simgrid_java.sh "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java\n")
+ADD_CUSTOM_COMMAND(
+TARGET simgrid.jar
+POST_BUILD 
+COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/suspend/*.class
+COMMAND ${JAVA_COMPILE}
+ARGS -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
+${PROJECT_DIRECTORY}/examples/java/suspend/*.java
+)
 
 endif(HAVE_JAVA)
 
