@@ -8,12 +8,6 @@ $ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
-> node 1 has value 3 before broadcast
-> node 2 has value 3 before broadcast
-> node 0 has value 17 before broadcast
-> node 1 has value 17 after broadcast
-> node 2 has value 17 after broadcast
-> node 0 has value 17 after broadcast
 
 
 
@@ -27,18 +21,6 @@ $ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir
 > [rank 3] -> Ginette
 > [rank 4] -> Bourassa
 > [rank 5] -> Tremblay
-> node 1 has value 3 before broadcast
-> node 2 has value 3 before broadcast
-> node 3 has value 3 before broadcast
-> node 4 has value 3 before broadcast
-> node 5 has value 3 before broadcast
-> node 0 has value 17 before broadcast
-> node 3 has value 17 after broadcast
-> node 4 has value 17 after broadcast
-> node 2 has value 17 after broadcast
-> node 0 has value 17 after broadcast
-> node 5 has value 17 after broadcast
-> node 1 has value 17 after broadcast
 
 
 # Another test
@@ -57,27 +39,3 @@ $ ../../src/smpi/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir
 > [rank 9] -> Bourassa
 > [rank 10] -> Tremblay
 > [rank 11] -> Jupiter
-> node 1 has value 3 before broadcast
-> node 2 has value 3 before broadcast
-> node 3 has value 3 before broadcast
-> node 4 has value 3 before broadcast
-> node 5 has value 3 before broadcast
-> node 6 has value 3 before broadcast
-> node 7 has value 3 before broadcast
-> node 8 has value 3 before broadcast
-> node 9 has value 3 before broadcast
-> node 10 has value 3 before broadcast
-> node 11 has value 3 before broadcast
-> node 0 has value 17 before broadcast
-> node 3 has value 17 after broadcast
-> node 6 has value 17 after broadcast
-> node 4 has value 17 after broadcast
-> node 0 has value 17 after broadcast
-> node 9 has value 17 after broadcast
-> node 5 has value 17 after broadcast
-> node 10 has value 17 after broadcast
-> node 8 has value 17 after broadcast
-> node 7 has value 17 after broadcast
-> node 1 has value 17 after broadcast
-> node 11 has value 17 after broadcast
-> node 2 has value 17 after broadcast

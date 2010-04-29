@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 
   value = rank + 1;             /* easy to verify that sum= (size*(size+1))/2; */
 
-  printf("[%d] has value %d\n", rank, value);
+  //printf("[%d] has value %d\n", rank, value);
   MPI_Reduce(&value, &sum, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
   MPI_Reduce(&value, &sum_mirror, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
 

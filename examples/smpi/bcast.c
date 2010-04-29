@@ -26,9 +26,10 @@ int main(int argc, char **argv)
   if (0 == rank) {
     value = 17;
   }
-  printf("node %d has value %d before broadcast\n", rank, value);
   MPI_Bcast(&value, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  printf("node %d has value %d after broadcast\n", rank, value);
+  if (value != 17) {
+     printf("node %d has value %d after broadcast\n", rank, value);
+  }
 
   MPI_Barrier(MPI_COMM_WORLD);
   if (0 == rank && !quiet)
