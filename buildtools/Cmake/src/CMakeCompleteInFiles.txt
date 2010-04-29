@@ -76,6 +76,11 @@ if(enable_ruby)
 	else(RUBY_LIBRARY)
 		SET(HAVE_RUBY 0)
 	endif(RUBY_LIBRARY)
+	
+	if(NOT RUBY_EXECUTABLE)
+		message("Take care : you don't have ruby executable so you can compile and build examples but can't execute them!!!") 
+	endif(NOT RUBY_EXECUTABLE)
+	
 endif(enable_ruby)
 
 if(enable_tracing)
@@ -249,62 +254,75 @@ endif(NOT with_context_ok)
 set(HAVE_LUA 0)
 
 if(enable_lua)
-	find_path(HAVE_LUA5_1_LUALIB_H
-	NAMES lualib.h 
-	PATHS "/sw/include/" "/usr/include/lua5.1/"
-	)
-	find_path(HAVE_LUA5_1_LAUXLIB_H
-	NAMES lauxlib.h
-	PATHS "/sw/include/" "/usr/include/lua5.1/"
-	)
-	find_library(LUA_LIB_PATH_1
-	NAMES lua5.1
-	PATHS /usr
-	)
-	find_library(LUA_LIB_PATH_2
-	NAMES lua-5.1
-	PATHS /usr
-	)
-	find_library(LUA_LIB_PATH_3
-	NAMES lua.5.1.1
-	PATHS /sw
-	)
+	exec_program("lua -v" OUTPUT_VARIABLE LUA_VERSION)
+	string(REGEX MATCH "[0-9].[0-9].[0-9]" LUA_VERSION "${LUA_VERSION}")
+	string(REGEX MATCH "^[0-9]" LUA_MAJOR_VERSION "${LUA_VERSION}")
+	string(REPLACE "${LUA_MAJOR_VERSION}." "" LUA_VERSION "${LUA_VERSION}")
+	string(REGEX MATCH "^[0-9]" LUA_MINOR_VERSION "${LUA_VERSION}")
+	string(REPLACE "${LUA_MINOR_VERSION}." "" LUA_PATCH_VERSION "${LUA_VERSION}")
 
-	if(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
-		set(HAVE_LUA 1)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_LUA5_1_LUALIB_H} ")
-
-		if(NOT HAVE_LUA5_1_LUALIB_H STREQUAL HAVE_LUA5_1_LAUXLIB_H)
-			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_LUA5_1_LAUXLIB_H} ")
-			#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-I${HAVE_LUA5_1_LAUXLIB_H} ")
-		endif(NOT HAVE_LUA5_1_LUALIB_H STREQUAL HAVE_LUA5_1_LAUXLIB_H)
-	endif(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
-
-	if(LUA_LIB_PATH_1)
-		set(liblua lua5.1)
-		set(lua_lib_path_to_use ${LUA_LIB_PATH_1})
-	endif(LUA_LIB_PATH_1)
-
-	if(LUA_LIB_PATH_2)
-		set(liblua lua-5.1)
-		set(lua_lib_path_to_use ${LUA_LIB_PATH_2})
-	endif(LUA_LIB_PATH_2)
-
-	if(LUA_LIB_PATH_3)
-		set(liblua lua.5.1.1)
-		set(lua_lib_path_to_use ${LUA_LIB_PATH_3})
-	endif(LUA_LIB_PATH_3)
-
-	if(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
-		set(HAVE_LUA 0)
-	else(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
-		string(REGEX REPLACE "liblua.*" "" lua_lib_path_to_use ${lua_lib_path_to_use})
-		string(REGEX MATCH "-L${lua_lib_path_to_use}" operation "${CMAKE_EXE_LINKER_FLAGS}")
-		if(NOT operation)
-			SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${lua_lib_path_to_use} ")
-		endif(NOT operation)
-	endif(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
-
+	if(LUA_MAJOR_VERSION MATCHES "5" AND LUA_MINOR_VERSION MATCHES "1")
+	
+		find_path(HAVE_LUA5_1_LUALIB_H
+		NAMES lualib.h 
+		PATHS "/sw/include/" "/usr/include/lua${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}/"
+		)
+		find_path(HAVE_LUA5_1_LAUXLIB_H
+		NAMES lauxlib.h
+		PATHS "/sw/include/" "/usr/include/lua${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}/"
+		)
+		find_library(LUA_LIB_PATH_1
+		NAMES lua${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}
+		PATHS /usr
+		)
+		find_library(LUA_LIB_PATH_2
+		NAMES lua-${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}
+		PATHS /usr
+		)
+		find_library(LUA_LIB_PATH_3
+		NAMES lua.${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}.${LUA_PATCH_VERSION}
+		PATHS /sw
+		)
+	
+		if(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
+			set(HAVE_LUA 1)
+			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_LUA5_1_LUALIB_H} ")
+	
+			if(NOT HAVE_LUA5_1_LUALIB_H STREQUAL HAVE_LUA5_1_LAUXLIB_H)
+				SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_LUA5_1_LAUXLIB_H} ")
+				#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-I${HAVE_LUA5_1_LAUXLIB_H} ")
+			endif(NOT HAVE_LUA5_1_LUALIB_H STREQUAL HAVE_LUA5_1_LAUXLIB_H)
+		endif(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
+	
+		if(LUA_LIB_PATH_1)
+			set(liblua lua${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION})
+			set(lua_lib_path_to_use ${LUA_LIB_PATH_1})
+		endif(LUA_LIB_PATH_1)
+	
+		if(LUA_LIB_PATH_2)
+			set(liblua lua-${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION})
+			set(lua_lib_path_to_use ${LUA_LIB_PATH_2})
+		endif(LUA_LIB_PATH_2)
+	
+		if(LUA_LIB_PATH_3)
+			set(liblua lua.${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}.${LUA_PATCH_VERSION})
+			set(lua_lib_path_to_use ${LUA_LIB_PATH_3})
+		endif(LUA_LIB_PATH_3)
+	
+		if(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
+			set(HAVE_LUA 0)
+		else(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
+			string(REGEX REPLACE "liblua.*" "" lua_lib_path_to_use ${lua_lib_path_to_use})
+			string(REGEX MATCH "-L${lua_lib_path_to_use}" operation "${CMAKE_EXE_LINKER_FLAGS}")
+			if(NOT operation)
+				SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}-L${lua_lib_path_to_use} ")
+			endif(NOT operation)
+		endif(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
+		
+	else(LUA_MAJOR_VERSION MATCHES "5" AND LUA_MINOR_VERSION MATCHES "1")
+		message("Lua binding need version 5.1.x actually version ${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}.x")
+	endif(LUA_MAJOR_VERSION MATCHES "5" AND LUA_MINOR_VERSION MATCHES "1")
+	
 endif(enable_lua)
 
 ###############
