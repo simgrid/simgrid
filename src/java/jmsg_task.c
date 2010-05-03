@@ -10,16 +10,6 @@
 #include "jmsg_task.h"
 #include "jxbt_utilities.h"
 
-jobject jtask_new_global_ref(jobject jtask, JNIEnv * env)
-{
-  return (*env)->NewGlobalRef(env, jtask);
-}
-
-void jtask_delete_global_ref(jobject jtask, JNIEnv * env)
-{
-  (*env)->DeleteGlobalRef(env, jtask);
-}
-
 void jtask_bind(jobject jtask, m_task_t task, JNIEnv * env)
 {
   jfieldID id = jxbt_get_sfield(env, "simgrid/msg/Task", "bind", "J");

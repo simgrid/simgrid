@@ -537,13 +537,7 @@ Java_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls, jobject jtask,
 
   /* bind & store the task */
   jtask_bind(jtask, task, env);
-
-  /* allocate a new global reference to the java task instance */
-  task->data = (void *) jtask_new_global_ref(jtask, env);
-
-  if (!task->data)
-    jxbt_throw_jni(env, "global ref allocation failed");
-
+  task->data = jtask;
 }
 
 JNIEXPORT void JNICALL
@@ -758,10 +752,6 @@ Java_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
     
   jxbt_check_res("MSG_task_destroy()",rv,MSG_OK,
     bprintf("unexpected error , please report this bug"));
-
-
-  /* delete the global reference to the java task object */
-  jtask_delete_global_ref(jtask, env);
 }
 
 JNIEXPORT void JNICALL
@@ -995,6 +985,8 @@ Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
     return;
   }
 
+  /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
+  task->data = (void *) (*env)->NewGlobalRef(env, jtask);
   rv = MSG_task_send_with_timeout(task, alias, (double) jtimeout);
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
@@ -1019,6 +1011,8 @@ Java_simgrid_msg_MsgNative_taskSendBounded(JNIEnv * env, jclass cls,
 
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
 
+  /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
+  task->data = (void *) (*env)->NewGlobalRef(env, jtask);
   rv = MSG_task_send_bounded(task, alias, (double) jmaxRate);
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
@@ -1036,6 +1030,7 @@ Java_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
   MSG_error_t rv;
   m_task_t task = NULL;
   m_host_t host = NULL;
+  jobject jtask_global, jtask_local;
   const char *alias;
 
   if (jhost) {
@@ -1050,13 +1045,19 @@ Java_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
 
   rv = MSG_task_receive_ext(&task, alias, (double) jtimeout, host);
+  jtask_global = task->data;
+
+  /* Convert the global ref into a local ref so that the JVM can free the stuff */
+  jtask_local = (*env)->NewLocalRef(env, jtask_global);
+  (*env)->DeleteGlobalRef(env, jtask_global);
+  task->data = NULL;
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
   jxbt_check_res("MSG_task_receive_ext()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT,
     bprintf("while receiving from mailbox %s",alias));
 
-  return (jobject) task->data;
+  return (jobject) jtask_local;
 }
 
 JNIEXPORT jboolean JNICALL
