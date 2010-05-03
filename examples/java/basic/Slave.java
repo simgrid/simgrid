@@ -5,33 +5,38 @@
  * under the terms of the license (GNU LGPL) which comes with this package. 
  */
 
-import simgrid.msg.*;
+import simgrid.msg.HostFailureException;
+import simgrid.msg.Msg;
+import simgrid.msg.Task;
+import simgrid.msg.TaskCancelledException;
+import simgrid.msg.TimeoutException;
+import simgrid.msg.TransferFailureException;
 
 public class Slave extends simgrid.msg.Process {
-   public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
-      if (args.length < 1) {
-	 Msg.info("Slave needs 1 argument (its number)");
-	 System.exit(1);
-      }
+	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
+		if (args.length < 1) {
+			Msg.info("Slave needs 1 argument (its number)");
+			System.exit(1);
+		}
 
-      int num = Integer.valueOf(args[0]).intValue();
-      Msg.info("Receiving on 'slave_"+num+"'");
-      
-      while(true) { 
-	 Task task = Task.receive("slave_"+num);	
-	 
-	 if (task instanceof FinalizeTask) {
-	    break;
-	 }
-	 Msg.info("Received \"" + task.getName() +  "\". Processing it.");
-	 try {
-	 task.execute();
-	 } catch (TaskCancelledException e) {
-		 
-	 }
-	 Msg.info("\"" + task.getName() + "\" done ");
-       }
-       
-      Msg.info("Received Finalize. I'm done. See you!");
-    }
+		int num = Integer.valueOf(args[0]).intValue();
+		//Msg.info("Receiving on 'slave_"+num+"'");
+
+		while(true) {  
+			Task task = Task.receive("slave_"+num);	
+
+			if (task instanceof FinalizeTask) {
+				break;
+			}
+			Msg.info("Received \"" + task.getName() +  "\". Processing it.");
+			try {
+				task.execute();
+			} catch (TaskCancelledException e) {
+
+			}
+		//	Msg.info("\"" + task.getName() + "\" done ");
+		}
+
+		//Msg.info("Received Finalize. I'm done. See you!");
+	}
 }
