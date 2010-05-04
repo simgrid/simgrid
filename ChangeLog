@@ -1,5 +1,8 @@
 SimGrid (3.4.1-svn) unstable; urgency=low
 
+ Java Bindings
+ * Fix a bug preventing the tasks from begin garbage collected.
+
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.4) stable; urgency=low
