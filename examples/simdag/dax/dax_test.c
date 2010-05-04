@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
       fprintf(out,"[%f] %s send %s %f # %s\n",SD_task_get_start_time(task),
           SD_workstation_get_name(wsl[0]),SD_workstation_get_name(wsl[1]),
           SD_task_get_amount(task), SD_task_get_name(task));
-      fprintf(out,"[%f] %s recv %s %f # %s\n",SD_task_get_start_time(task),
+      fprintf(out,"[%f] %s recv %s %f # %s\n",SD_task_get_finish_time(task),
           SD_workstation_get_name(wsl[1]),SD_workstation_get_name(wsl[0]),
           SD_task_get_amount(task), SD_task_get_name(task));
       break;
