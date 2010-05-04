@@ -1,3 +1,7 @@
+SimGrid (3.4.2) unstable; urgency=low
+
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
+
 SimGrid (3.4.1) stable; urgency=low
 
  The "Polishing easter eggs is probably a good idea" release.
