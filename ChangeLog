@@ -1,4 +1,4 @@
-SimGrid (3.4.1-svn) unstable; urgency=low
+SimGrid (3.4.1) stable; urgency=low
 
  The "Polishing easter eggs is probably a good idea" release.
  This is a bug fixes release only.
@@ -21,7 +21,7 @@ SimGrid (3.4.1-svn) unstable; urgency=low
    Probably useful for the (Mac) users experiencing a build error here
  * Improve the detection of lua5.1 and ruby1.8
 
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Tus, 04 May 2010 28 16:11:16 +0100
 
 SimGrid (3.4) stable; urgency=low
 
