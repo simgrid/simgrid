@@ -253,8 +253,12 @@ COMMAND make clean
 COMMAND make java-clean
 COMMAND make doc-clean
 COMMAND make supernovae-clean
-COMMAND make maintainer-clean
 )
+if(enable_maintainer_mode)
+	add_custom_command(TARGET all-clean
+	COMMAND make maintainer-clean
+	)
+endif(enable_maintainer_mode)
 
 add_custom_target(sync-gforge
 COMMAND chmod g+rw -R doc/

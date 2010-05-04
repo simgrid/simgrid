@@ -1,63 +1,53 @@
-	foreach(file ${JMSG_JAVA_SRC})
-		set(java_src_to_compile "${java_src_to_compile}${file}\t")	
-	endforeach(file ${JMSG_JAVA_SRC})
-	string(REPLACE ".java" ".class" java_output "${JMSG_JAVA_SRC}")  
+	set(JMSG_JAVA_SRC_CLASS ${JMSG_JAVA_SRC})
+	string(REPLACE "${PROJECT_DIRECTORY}/src/java/simgrid/msg" "${PROJECT_DIRECTORY}/src/.classes/simgrid/msg" JMSG_JAVA_SRC_CLASS ${JMSG_JAVA_SRC_CLASS})
+	string(REPLACE ".java" ".class;" JMSG_JAVA_SRC_CLASS ${JMSG_JAVA_SRC_CLASS})
+	set(java_src_to_compile "")	
 	
-	# build .jar file from .class files
-	ADD_CUSTOM_TARGET(simgrid.jar
-	COMMAND rm -rf ${PROJECT_DIRECTORY}/src/.classes
-	COMMAND mkdir -p ${PROJECT_DIRECTORY}/src/.classes
-	COMMAND mkdir -p ${PROJECT_DIRECTORY}/src/.classes/surf
-	COMMAND cp ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd ${PROJECT_DIRECTORY}/src/.classes/surf/simgrid.dtd
-	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/src/.classes -cp ${PROJECT_DIRECTORY}/src/.classes ${java_src_to_compile}
+	file(MAKE_DIRECTORY "${PROJECT_DIRECTORY}/src/.classes")
+	file(MAKE_DIRECTORY "${PROJECT_DIRECTORY}/src/.classes/surf")
+	configure_file("${PROJECT_DIRECTORY}/src/surf/simgrid.dtd" "${PROJECT_DIRECTORY}/src/.classes/surf/simgrid.dtd" COPY_ONLY)
+	
+	set(CMAKE_JAVA_COMPILER "${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/src/.classes -cp ${PROJECT_DIRECTORY}/src/.classes")
+	SET(CMAKE_JAVA_LINK_EXECUTABLE "${JAVA_ARCHIVE} -cvf ${PROJECT_DIRECTORY}/src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes .")
+		
+	foreach(file ${JMSG_JAVA_SRC_CLASS})
+		if(NOT EXISTS ${file})
+			string(REPLACE "${PROJECT_DIRECTORY}/src/.classes/simgrid/msg" "${PROJECT_DIRECTORY}/src/java/simgrid/msg" file ${file})
+			string(REPLACE ".class" ".java" file ${file})
+			set(java_src_to_compile "${java_src_to_compile}${file}\t")
+		endif(NOT EXISTS ${file})
+	endforeach(file ${JMSG_JAVA_SRC_CLASS})
+	
+	add_executable(simgrid.jar ${JMSG_JAVA_SRC})
+	set_target_properties(simgrid.jar PROPERTIES LANGUAGE JAVA)
+	set_target_properties(simgrid.jar PROPERTIES LINKER_LANGUAGE JAVA)
+
+	if(java_src_to_compile)	
+		ADD_CUSTOM_COMMAND(TARGET simgrid.jar
+		PRE_BUILD
+		COMMAND ${JAVA_COMPILE}
+		ARGS -d ${PROJECT_DIRECTORY}/src/.classes -cp ${PROJECT_DIRECTORY}/src/.classes ${java_src_to_compile}
+		)
+	endif(java_src_to_compile)
+	
+
+	ADD_CUSTOM_TARGET(java_basic ALL
+	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java
 	)
 	
-	ADD_CUSTOM_COMMAND(
-	TARGET simgrid
-	POST_BUILD
-	COMMAND make simgrid.jar
+	ADD_CUSTOM_TARGET(java_ping_pong ALL
+	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
 	)
 	
-	ADD_CUSTOM_COMMAND(
-	TARGET simgrid.jar
-	POST_BUILD 
-	COMMAND ${CMAKE_COMMAND}
-	ARGS -E chdir ${PROJECT_DIRECTORY}
-	${JAVA_ARCHIVE} -cvf ${PROJECT_DIRECTORY}/src/simgrid.jar -C ${PROJECT_DIRECTORY}/src/.classes .
+	ADD_CUSTOM_TARGET(java_comm_time ALL
+	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
 	)
 	
-	ADD_CUSTOM_COMMAND(
-	TARGET simgrid.jar
-	POST_BUILD 
-	COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/basic/*.class
-	COMMAND ${JAVA_COMPILE}
-	ARGS -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
-	${PROJECT_DIRECTORY}/examples/java/basic/*.java
+	ADD_CUSTOM_TARGET(java_suspend ALL
+	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java
 	)
 	
-	ADD_CUSTOM_COMMAND(
-	TARGET simgrid.jar
-	POST_BUILD
-	COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.class
-	COMMAND ${JAVA_COMPILE}
-	ARGS -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
-	${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
-	)
-	
-	ADD_CUSTOM_COMMAND(
-	TARGET simgrid.jar
-	POST_BUILD 
-	COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/comm_time/*.class
-	COMMAND ${JAVA_COMPILE}
-	ARGS -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
-	${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
-	)
-	
-	ADD_CUSTOM_COMMAND(
-	TARGET simgrid.jar
-	POST_BUILD 
-	COMMAND rm -f ${PROJECT_DIRECTORY}/examples/java/suspend/*.class
-	COMMAND ${JAVA_COMPILE}
-	ARGS -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar
-	${PROJECT_DIRECTORY}/examples/java/suspend/*.java
-	)
+	add_dependencies(java_basic simgrid.jar)
+	add_dependencies(java_ping_pong simgrid.jar)
+	add_dependencies(java_comm_time simgrid.jar)
+	add_dependencies(java_suspend simgrid.jar)
