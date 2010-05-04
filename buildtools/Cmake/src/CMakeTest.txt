@@ -1,8 +1,9 @@
 ### Be sure we can execut some launch file
 exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh" OUTPUT_VARIABLE "OKITOKI")
-exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpicc" OUTPUT_VARIABLE "OKITOKI")
-exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE "OKITOKI")
-
+if(enable_smpi)
+	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpicc" OUTPUT_VARIABLE "OKITOKI")
+	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE "OKITOKI")
+endif(enable_smpi)
 ### For code coverage
 ### Set some variables
 SET(UPDATE_TYPE "svn")
@@ -183,9 +184,11 @@ ADD_TEST(simdag-test_simdag2	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT
 ADD_TEST(simdag-test_prop	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag properties/test_prop.tesh)
 ADD_TEST(simdag-metaxml_test	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag metaxml/metaxml_test.tesh)
 
+if(enable_smpi)
 # smpi examples
 ADD_TEST(smpi-bcast 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi bcast.tesh)
 ADD_TEST(smpi-reduce 	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi reduce.tesh)
+endif(enable_smpi)
 
 if(HAVE_GTNETS)
 ADD_TEST(msg-gtnets-waxman	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-waxman.tesh)
