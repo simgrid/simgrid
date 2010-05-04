@@ -381,6 +381,7 @@ TODO
 		enable_ruby				ON/OFF or TRUE/FALSE or 1/0
 		enable_compile_optimizations		ON/OFF or TRUE/FALSE or 1/0
 		enable_compile_warnings			ON/OFF or TRUE/FALSE or 1/0
+		enable_smpi				ON/OFF or TRUE/FALSE or 1/0
 		enable_maintainer_mode			ON/OFF or TRUE/FALSE or 1/0
 		enable_supernovae			ON/OFF or TRUE/FALSE or 1/0
 		enable_tracing 				ON/OFF or TRUE/FALSE or 1/0
@@ -407,6 +408,8 @@ TODO
   \li enable_compile_optimizations : add flags "-O3 -finline-functions -funroll-loops -fno-strict-aliasing"
 
   \li enable_compile_warnings : add flags "-Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror"
+
+  \li enable_smpi : Set to true if you want to use smpi lib. Actually on simgrid v3.4.1 Mac doesn't support lib smpi.
 
   \li enable_maintainer_mode : set to true it remakes some files.
 \verbatim
@@ -472,6 +475,7 @@ enable_ruby			on
 enable_java			off
 enable_compile_optimizations	off
 enable_compile_warnings		off
+enable_smpi			on
 enable_maintainer_mode		off
 enable_supernovae		off
 enable_tracing			off
@@ -513,6 +517,7 @@ Then follow instructions.
 cmake ./		configure the project
 make			build all targets
 make VERBOSE=1		build all targets and print build command lines
+make check		execute command make test
 make test		test all targets and summarize
 make dist		make the distrib
 make distcheck		check the dist (make + make dist + make test) 
@@ -552,142 +557,144 @@ If you want to test before make a commit you can simply make "ctest -D Experimen
 \li Mode maintainer
 
 cmake -Denable_maintainer_mode=on ./
-\verbatim GTnetS doesn't works : set -Ddisable_gtnets=on
+\verbatim 
+-- lookign for config.h
 with_context auto change to ucontext
-(skaddr)
-(sksize)
-Make : src/simgrid.jar with : /usr/bin/javac
-Make examples/java with : /usr/bin/javac
+GIT_DATE 	: 2010-05-04~09-59-15
+GIT_VERSION 	: 53ec816
+GIT_SVN_VERSION : 7669
 
-Configuration of package `simgrid' (revision 7228M) on arch (=4):
-	BUILDNAME : 		UCONTEXT
-	     SITE : 		Linux_Ubuntu 9.10_x86_64
+Configuration of package `simgrid' (revision 7669) on arch (=4):
+	     BUILDNAME : 	UCONTEXT
+	     SITE      : 	Linux_2.6.31-21-generic_x86_64
+	     Release   :	simgrid-3.4~rev7669
 
-	Compiler: c++ : 	/usr/bin/c++
-	       version:		c++ (Ubuntu 4.4.1-4ubuntu9) 4.4.1
-		  c   :		/usr/bin/gcc
-	       version:		gcc (Ubuntu 4.4.1-4ubuntu9) 4.4.1
+	 Compiler: c++ : 	/usr/bin/c++
+	        version:	c++ (Ubuntu 4.4.1-4ubuntu9) 4.4.1
+	 Compiler: c   :	/usr/bin/gcc
+	        version:	gcc (Ubuntu 4.4.1-4ubuntu9) 4.4.1
 
-	CFlags:			-g3
-	CPPFlags:		
-	LDFlags:		
+	       CFlags  :	-I/usr/lib/ruby/1.8/x86_64-linux -I/usr/include/lua5.1 -g3
+	       CPPFlags:	
+	       LDFlags :	-L/usr/lib/
 
 	Context backend:	ucontext
-	Compile Gtnets: 	0
-		  path:		
-	Compile Java:   	1
-	Compile Lua:    	1
-	Compile Ruby:    	0
+	Compile Gtnets : 	0
+	Gtnets path    :	
+	Compile Java   :   	0
+	Compile Lua    :    	1
+	Compile Ruby   :    	1
 
-	Maintainer mode:	on
-	Supernovae mode:	off
+	Compile Smpi   :    	ON
+	Maintainer mode:	ON
+	Supernovae mode:	OFF
+	Tracing mode   :	OFF
 
-	Simgrid dependencies: 	dl -llua5.1
-	Gras dependencies: 	pthread
-	Ruby dependencies: 	
-	Smpi dependencies: 	
+	Simgrid dependencies: 	-lm -lruby1.8 -module -ldl -llua5.1 -lrt
+	Gras dependencies   : 	-lm -lpthread -lrt
+	Smpi dependencies   : 	
 
-	USER_PREFIX: 		/usr/local
 	INSTALL_PREFIX: 	/usr/local
 
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/navarrop/Bureau/simgrid-trunk
+-- Build files have been written to: /home/navarrop/Developments/simgrid
 \endverbatim
 
 \li Mode supernovae
 
 cmake -Dsupernovae=on ./
-\verbatim GTnetS doesn't works : set -Ddisable_gtnets=on
+\verbatim 
+-- lookign for config.h
 with_context auto change to ucontext
-(skaddr)
-(sksize)
-Make : src/simgrid.jar with : /usr/bin/javac
-Make examples/java with : /usr/bin/javac
+GIT_DATE 	: 2010-05-04~09-59-15
+GIT_VERSION 	: 53ec816
+GIT_SVN_VERSION : 7669
 
-Configuration of package `simgrid' (revision 7228M) on arch (=4):
-	BUILDNAME : 		SUPERNOVAE
-	     SITE : 		Linux_Ubuntu 9.10_x86_64
+Configuration of package `simgrid' (revision 7669) on arch (=4):
+	     BUILDNAME : 	SUPERNOVAE
+	     SITE      : 	Linux_2.6.31-21-generic_x86_64
+	     Release   :	simgrid-3.4~rev7669
 
-	Compiler: c++ : 	/usr/bin/c++
-	       version:		c++ (Ubuntu 4.4.1-4ubuntu9) 4.4.1
-		  c   :		/usr/bin/gcc
-	       version:		gcc (Ubuntu 4.4.1-4ubuntu9) 4.4.1
+	 Compiler: c++ : 	/usr/bin/c++
+	        version:	c++ (Ubuntu 4.4.1-4ubuntu9) 4.4.1
+	 Compiler: c   :	/usr/bin/gcc
+	        version:	gcc (Ubuntu 4.4.1-4ubuntu9) 4.4.1
 
-	CFlags:			-O3 -finline-functions -funroll-loops -fno-strict-aliasing -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror -g3
-	CPPFlags:		
-	LDFlags:		
+	       CFlags  :	-O3 -finline-functions -funroll-loops -fno-strict-aliasing -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror -I/usr/lib/ruby/1.8/x86_64-linux -I/usr/include/lua5.1 -g3
+	       CPPFlags:	
+	       LDFlags :	-L/usr/lib/
 
 	Context backend:	ucontext
-	Compile Gtnets: 	0
-		  path:		
-	Compile Java:   	1
-	Compile Lua:    	1
-	Compile Ruby:    	0
+	Compile Gtnets : 	0
+	Gtnets path    :	
+	Compile Java   :   	0
+	Compile Lua    :    	1
+	Compile Ruby   :    	1
 
-	Maintainer mode:	off
-	Supernovae mode:	on
+	Compile Smpi   :    	ON
+	Maintainer mode:	OFF
+	Supernovae mode:	OFF
+	Tracing mode   :	OFF
 
-	Simgrid dependencies: 	dl -llua5.1
-	Gras dependencies: 	pthread
-	Ruby dependencies: 	
-	Smpi dependencies: 	
+	Simgrid dependencies: 	-lm -lruby1.8 -module -ldl -llua5.1 -lrt
+	Gras dependencies   : 	-lm -lpthread -lrt
+	Smpi dependencies   : 	
 
-	USER_PREFIX: 		/usr/local
 	INSTALL_PREFIX: 	/usr/local
 
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/navarrop/Bureau/simgrid-trunk
+-- Build files have been written to: /home/navarrop/Developments/simgrid
+
 \endverbatim
 
 \li Mode GTnetS
 
 cmake -Dgtnets_path=/home/navarrop/Bureau/usr/ ./
-\verbatim with_context auto change to ucontext
-(skaddr)
-(sksize)
-Make : src/simgrid.jar with : /usr/bin/javac
-Make examples/java with : /usr/bin/javac
+\verbatim 
+-- lookign for config.h
+with_context auto change to ucontext
+GIT_DATE 	: 2010-05-04~09-59-15
+GIT_VERSION 	: 53ec816
+GIT_SVN_VERSION : 7669
 
-Configuration of package `simgrid' (revision 7228M) on arch (=4):
-	BUILDNAME : 		GTNETS
-	     SITE : 		Linux_Ubuntu 9.10_x86_64
+Configuration of package `simgrid' (revision 7669) on arch (=4):
+	     BUILDNAME : 	GTNETS
+	     SITE      : 	Linux_2.6.31-21-generic_x86_64
+	     Release   :	simgrid-3.4~rev7669
 
-	Compiler: c++ : 	/usr/bin/c++
-	       version:		c++ (Ubuntu 4.4.1-4ubuntu9) 4.4.1
-		  c   :		/usr/bin/gcc
-	       version:		gcc (Ubuntu 4.4.1-4ubuntu9) 4.4.1
+	 Compiler: c++ : 	/usr/bin/c++
+	        version:	c++ (Ubuntu 4.4.1-4ubuntu9) 4.4.1
+	 Compiler: c   :	/usr/bin/gcc
+	        version:	gcc (Ubuntu 4.4.1-4ubuntu9) 4.4.1
 
-	CFlags:			 -L/home/navarrop/Bureau/usr/lib -I/home/navarrop/Bureau/usr/include/gtnets -g3
-	CPPFlags:		 -L/home/navarrop/Bureau/usr/lib -I/home/navarrop/Bureau/usr/include/gtnets 
-	LDFlags:		
+	       CFlags  :	-O3 -finline-functions -funroll-loops -fno-strict-aliasing -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror -I/usr/lib/ruby/1.8/x86_64-linux -L/usr/lib -I/usr/include/gtnets -I/usr/include/lua5.1 -g3
+	       CPPFlags:	-L/usr/lib -I/usr/include/gtnets 
+	       LDFlags :	-L/usr/lib/
 
 	Context backend:	ucontext
-	Compile Gtnets: 	1
-		  path:		/home/navarrop/Bureau/usr
-	Compile Java:   	1
-	Compile Lua:    	1
-	Compile Ruby:    	0
+	Compile Gtnets : 	1
+	Gtnets path    :	/usr
+	Compile Java   :   	0
+	Compile Lua    :    	1
+	Compile Ruby   :    	1
 
-	Maintainer mode:	off
-	Supernovae mode:	off
+	Compile Smpi   :    	ON
+	Maintainer mode:	OFF
+	Supernovae mode:	OFF
+	Tracing mode   :	OFF
 
-	Simgrid dependencies: 	dl -llua5.1 -lgtnets
-	Gras dependencies: 	pthread
-	Ruby dependencies: 	
-	Smpi dependencies: 	
+	Simgrid dependencies: 	-lm -lruby1.8 -module -ldl -llua5.1 -lgtnets -lrt
+	Gras dependencies   : 	-lm -lpthread -lrt
+	Smpi dependencies   : 	
 
-	USER_PREFIX: 		/usr/local
 	INSTALL_PREFIX: 	/usr/local
-
-INFO -->> Take care to have export LD_LIBRARY_PATH before run make command for make examples with gtnets
-copy and paste : export LD_LIBRARY_PATH=/home/navarrop/Bureau/usr/lib/:$LD_LIBRARY_PATH
-
 
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/navarrop/Bureau/simgrid-trunk
+-- Build files have been written to: /home/navarrop/Developments/simgrid
+
 \endverbatim
 
 \subsection faq_cmakeinstall How to install with cmake?
@@ -707,57 +714,6 @@ cmake -Dprefix=/home/navarrop/Bureau/install_simgrid ./
 make
 make install-simgrid
 \endverbatim
-
-\subsection faq_screenshot Screenshot
-
-\verbatim
-navarrop@caraja:~$ cd Bureau/simgrid-trunk/
-navarrop@caraja:~/Bureau/simgrid-trunk$ cmake ./
-
-GTnetS doesn't works : set -Ddisable_gtnets=on                  <-|some warnings are printed 
-with_context auto change to ucontext				<-|
-(skaddr)							<--info (needed)
-(sksize)							<--info (needed)
-Make : src/simgrid.jar with : /usr/bin/javac			<--info (if java)
-Make examples/java with : /usr/bin/javac			<--info (if java)
-
-Configuration of package `simgrid' (revision 7209M) on arch (=4):
-	BUILDNAME : 		UCONTEXT				<-- name of the compilation regarding to cdash
-	     SITE : 		Linux_Ubuntu 9.10_x86_64		<-- distribution of the local machine regarding to cdash
-
-	Compiler: c++ : 	/usr/bin/c++
-	       version:		c++ (Ubuntu 4.4.1-4ubuntu9) 4.4.1
-		  c   :		/usr/bin/gcc
-	       version:		gcc (Ubuntu 4.4.1-4ubuntu9) 4.4.1
-
-	CFlags:			-g3
-	CPPFlags:		
-	LDFlags:		
-
-	Context backend:	ucontext
-	Compile Gtnets: 	0
-		  path:		
-	Compile Java:   	1
-	Compile Lua:    	1
-	Compile Ruby:    	0
-
-	Maintainer mode:	OFF
-	Supernovae mode:	OFF
-
-	Simgrid dependencies: 	-ldl -llua5.1
-	Gras dependencies: 	pthread
-	Ruby dependencies: 	
-	Smpi dependencies: 	
-
-	USER_PREFIX: 		/usr/local
-	INSTALL_PREFIX: 	/usr/local
-
--- Configuring done
--- Generating done
--- Build files have been written to: /home/navarrop/Bureau/simgrid-trunk
-\endverbatim
-Here all options are checked and printed. If it doesn't match with your configuration 
-it is probably due to a wrong configuration.
 
 \subsection faq_cmakehowto How to modified sources files for developers
 
