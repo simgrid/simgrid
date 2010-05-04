@@ -1,5 +1,9 @@
 SimGrid (3.4.1-svn) unstable; urgency=low
 
+ The "Polishing easter eggs is probably a good idea" release.
+ This is a bug fixes release only.
+ 
+
  Java Bindings
  * Fix a bug preventing the tasks from begin garbage collected.
 
@@ -13,8 +17,9 @@ SimGrid (3.4.1-svn) unstable; urgency=low
  * Obey the control-flow dependencies of DAX files
 
  Cmake
- * Add option "enable_smpi" for fix mac problem with smpi
- * Add verification of lua5.1 and ruby1.8
+ * Add option "enable_smpi" allowing to not compile SMPI. 
+   Probably useful for the (Mac) users experiencing a build error here
+ * Improve the detection of lua5.1 and ruby1.8
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
