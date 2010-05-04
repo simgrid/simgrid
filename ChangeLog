@@ -1,5 +1,8 @@
 SimGrid (3.4.1-svn) unstable; urgency=low
 
+ SimDag
+ * Warn the user about loop dependencies in data flow of DAX files
+
  Java Bindings
  * Fix a bug preventing the tasks from begin garbage collected.
 

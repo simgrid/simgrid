@@ -84,7 +84,7 @@ xbt_dynar_t SD_daxload(const char*filename) {
   fclose(in_file);
 
   /* And now, post-process the files.
-   * We want a file task per pair of computation tasks exchanging the file. Dupplicate on need
+   * We want a file task per pair of computation tasks exchanging the file. Duplicate on need
    * Files not produced in the system are said to be produced by root task (top of DAG).
    * Files not consumed in the system are said to be consumed by end task (bottom of DAG).
    */
@@ -111,6 +111,10 @@ xbt_dynar_t SD_daxload(const char*filename) {
     } else {
       xbt_dynar_foreach(file->tasks_before,cpt1,depbefore) {
         xbt_dynar_foreach(file->tasks_after,cpt2,depafter) {
+          if (depbefore->src == depafter->dst) {
+            WARN2("File %s is produced and consumed by task %s. This loop dependency will prevent the execution of the task.",
+                file->name,depbefore->src->name);
+          }
           SD_task_t newfile = SD_task_create_comm_e2e(file->name,NULL,file->amount);
           SD_task_dependency_add(NULL,NULL,depbefore->src,newfile);
           SD_task_dependency_add(NULL,NULL,newfile,depafter->dst);
