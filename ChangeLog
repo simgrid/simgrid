@@ -1,11 +1,16 @@
 SimGrid (3.4.1-svn) unstable; urgency=low
 
+ Java Bindings
+ * Fix a bug preventing the tasks from begin garbage collected.
+
+ MSG
+ * Fix a bug occuring when a host involved in a communication fails.
+   This was not detected properly by the other peer involved in the
+   communication. Now, it's reported as a network error.
+
  SimDag
  * Warn the user about loop dependencies in data flow of DAX files
  * Obey the control-flow dependencies of DAX files
-
- Java Bindings
- * Fix a bug preventing the tasks from begin garbage collected.
 
  Cmake
  * Add option "enable_smpi" for fix mac problem with smpi

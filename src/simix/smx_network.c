@@ -237,9 +237,9 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
  *  \param timeout The max amount of time to wait for the communication to finish
  *
  *  Throws:
- *   - host_error if peer failed
- *   - timeout_error if communication reached the timeout specified
- *   - network_error if network failed or peer issued a timeout
+ *   - host_error if local peer failed
+ *   - timeout_error if communication reached the timeout specified (either because of local peer or remote peer)
+ *   - network_error if network failed or remote peer failed
  */
 static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout)
 {
@@ -290,7 +290,7 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
   SIMIX_sem_release_forever(comm->sem);
   
   /* Check for errors other than timeouts (they are catched above) */
-  if(!SIMIX_host_get_state(SIMIX_host_self())){
+  if (!SIMIX_host_get_state(SIMIX_host_self())){
     if(comm->rdv)
       SIMIX_rdv_remove(comm->rdv, comm);
     SIMIX_communication_destroy(comm);
@@ -298,6 +298,16 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
   } else if (SIMIX_action_get_state(comm->act) == SURF_ACTION_FAILED){
     SIMIX_communication_destroy(comm);
     THROW0(network_error, 0, "Link failure");
+  } else if (!SIMIX_host_get_state(SIMIX_process_get_host(comm->dst_proc)) ||
+      !SIMIX_host_get_state(SIMIX_process_get_host(comm->src_proc))) {
+    /* We test both src&dst because we dunno who we are today, and we already tested myself above.
+     *    So, at the end, we test the remote peer only
+     * Moreover, we have to test it because if the remote peer fails, the action comm->act is not done nor failed.
+     *    In that case, we got awaken by the little endless actions created in the SIMIX_sem_acquire(comm->sem)
+     *    at the beginning of this function. */
+    SIMIX_communication_destroy(comm);
+    THROW0(network_error, 0, "Remote peer failed");
+
   }
   SIMIX_communication_destroy(comm);
 }
