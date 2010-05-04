@@ -3,7 +3,7 @@ exec_program("rm ${Project_BINARY_DIR}/CTestTestfile.cmake" OUTPUT_VARIABLE rmok
 SET(CMAKE_LANGUAGE "Cxx")
 SET(PROJECT_NAME "Simgrid")
 SET(PROJECT_LABEL "Simgrid")
-
+set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(release_version "3.4")
 set(libsimgrid_version "${release_version}")
 set(libgras_version "${release_version}")
