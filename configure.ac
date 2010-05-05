@@ -457,13 +457,13 @@ AC_ARG_ENABLE(lua,
 if test "x$disable_lua" != "xyes" ; then
    use_lua="disabled by user"
 else
-  AC_CHECK_HEADERS(lua5.1/lualib.h)
-  if test "x$ac_cv_header_lua5_1_lualib_h" = "xyes" ; then
+  AC_CHECK_HEADERS(lualib.h)
+  if test "x$ac_cv_header_lualib_h" = "xyes" ; then
      use_lua="yes"
      AC_DEFINE(HAVE_LUA,1, [defines whether Lua bindings must be compiled or not])
      SIMGRID_DEP="${SIMGRID_DEP} -ldl -llua5.1"
   else   
-     use_lua="no (you may want to install the liblua5.1-0-dev package)"
+     use_lua="no (you may want to install the liblua5.1-0-dev package, or pass CFLAGS=/usr/include/lua5.1)"
   fi
 fi
 AC_MSG_RESULT(decide whether to compile lua bindings... $use_lua)
