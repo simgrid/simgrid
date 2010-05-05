@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <process host="HostA" function="server">
+    <argument value="0"/>
+  </process>
+  <process host="HostB" function="client">
+    <argument value="1"/>
+  </process>  
+  <process host="HostC" function="client">
+    <argument value="2"/>
+  </process>
+  <process host="HostD" function="client">
+    <argument value="3"/>
+  </process>
+</platform>

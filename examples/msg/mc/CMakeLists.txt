@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 2.6)
+
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/msg/actions/")
+
+add_executable(centralized centralized_mutex.c)
+add_executable(bugged1     bugged1.c)
+add_executable(bugged2     bugged2.c)
+
+target_link_libraries(centralized simgrid m -fprofile-arcs)
+target_link_libraries(bugged1     simgrid m -fprofile-arcs)
+target_link_libraries(bugged2     simgrid m -fprofile-arcs)

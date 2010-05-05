@@ -1,0 +1,39 @@
+<?xml version='1.0'?>
+
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+
+<platform version="2">
+
+  <process host="Tremblay" function="coordinator" />
+
+  <process host="Fafard" function="client" />
+
+  <process host="Boivin" function="client" />
+
+  <process host="TeX" function="client" />
+
+  <process host="Geoff" function="client" />
+  
+  <process host="Disney" function="client" />
+    
+<!--  <process host="iRMX" function="client" />
+      
+  <process host="McGee" function="client" />
+
+  <process host="Gatien" function="client" />
+    
+  <process host="Laroche" function="client" />
+      
+  <process host="Tanguay" function="client" />
+
+  <process host="Morin" function="client" />
+
+  <process host="Ethernet" function="client" />
+
+  <process host="Bellemarre" function="client" />
+
+  <process host="Kuenning" function="client" />
+  
+  <process host="Gaston" function="client" /> -->
+
+</platform>

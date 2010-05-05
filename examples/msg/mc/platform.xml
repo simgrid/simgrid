@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <host id="HostA" power="137333000"/>
+  <host id="HostB" power="98095000"/>
+  <host id="HostC" power="98095000"/>
+  <host id="HostD" power="98095000"/>
+  <link id="1" bandwidth="3430125" latency="0.000536941"/>
+  <link id="2" bandwidth="3430125" latency="0.000536941"/>
+  <link id="3" bandwidth="3430125" latency="0.000536941"/>
+  <route src="HostA" dst="HostB"><link:ctn id="1"/></route>
+  <route src="HostB" dst="HostA"><link:ctn id="1"/></route>
+  <route src="HostA" dst="HostC"><link:ctn id="2"/></route>
+  <route src="HostC" dst="HostA"><link:ctn id="2"/></route>
+  <route src="HostA" dst="HostD"><link:ctn id="3"/></route>
+  <route src="HostD" dst="HostA"><link:ctn id="3"/></route>
+</platform>
+

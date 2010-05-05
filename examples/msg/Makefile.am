@@ -99,7 +99,10 @@ noinst_PROGRAMS = sendrecv/sendrecv \
                   priority/priority \
                   properties/msg_prop \
                   actions/actions \
-                  trace/test_trace_integration
+                  trace/test_trace_integration \
+		  mc/centralized \
+		  mc/bugged1 \
+		  mc/bugged2
 
 if HAVE_GTNETS
   noinst_PROGRAMS += gtnets/gtnets
@@ -157,6 +160,19 @@ masterslave_masterslave_bypass_LDADD   = $(top_builddir)/src/libsimgrid.la
 # bypass the surf xml parser
 trace_test_trace_integration_SOURCES = trace/test_trace_integration.c
 trace_test_trace_integration_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# Model-checking examples
+mc_centralized_SOURCES = mc/centralized_mutex.c
+mc_centralized_LDADD = $(top_builddir)/src/libsimgrid.la
+
+# bugged example 1
+mc_bugged1_SOURCES = mc/bugged1.c
+mc_bugged1_LDADD = $(top_builddir)/src/libsimgrid.la
+
+# bugged example 2
+mc_bugged2_SOURCES = mc/bugged2.c
+mc_bugged2_LDADD = $(top_builddir)/src/libsimgrid.la
+
 
 # verify if the GTNETS feature is working
 if HAVE_GTNETS
