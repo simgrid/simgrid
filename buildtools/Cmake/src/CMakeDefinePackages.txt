@@ -319,8 +319,14 @@ set(install_libs
 ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.*
 ${PROJECT_DIRECTORY}/src/.libs/libsimgrid_static.*
 ${PROJECT_DIRECTORY}/src/.libs/libgras.*
-${PROJECT_DIRECTORY}/src/.libs/libsmpi.*
 )
+
+if(enable_smpi)
+	set(install_libs
+	${install_libs}
+	${PROJECT_DIRECTORY}/src/.libs/libsmpi.*
+	)
+endif(enable_smpi)
 
 set(install_HEADERS
 ./include/gras.h 
@@ -560,7 +566,21 @@ file(GLOB_RECURSE ex_to_svg
 "${PROJECT_DIRECTORY}/examples/*.java"
 "${PROJECT_DIRECTORY}/examples/*.xml"
 )
-#message("\n\nadd_src_files:\n${add_src_files}")
+string(REPLACE "${PROJECT_DIRECTORY}/" "" ex_to_svg "${ex_to_svg}")
+foreach(file ${ex_to_svg})
+	string(REGEX REPLACE "/[^/]*$" "" file "${file}")
+	set(new_ex_to_svg "${new_ex_to_svg}${file};")
+endforeach(file ${ex_to_svg})
+
+set(directory_to_create "")
+
+foreach(file ${new_ex_to_svg})
+	string(REGEX MATCH "${file};" OPERATION "${directory_to_create}")
+	if(NOT OPERATION)
+		set(directory_to_create "${directory_to_create}${file};")
+	endif(NOT OPERATION)
+endforeach(file ${new_ex_to_svg})
+
 
 file(GLOB_RECURSE include_files
 "${PROJECT_DIRECTORY}/include/*.h"

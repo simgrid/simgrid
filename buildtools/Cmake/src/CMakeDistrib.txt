@@ -41,13 +41,12 @@ PATTERN "*~" EXCLUDE
 set(CPACK_SET_DESTDIR on)
 set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 
-string(REPLACE ";" "\t" install_HEADERS "${install_HEADERS}")
 string(REPLACE ";" "\t" install_libs "${install_libs}")
 set(uninstall_bins "${install_bins}")
 string(REPLACE "${PROJECT_DIRECTORY}/src/smpi" "${prefix}/bin" uninstall_bins "${uninstall_bins}")
 string(REPLACE "${PROJECT_DIRECTORY}/tools/gras" "${prefix}/bin" uninstall_bins "${uninstall_bins}")
 string(REPLACE "${PROJECT_DIRECTORY}/tools/tesh" "${prefix}/bin" uninstall_bins "${uninstall_bins}")
-string(REPLACE "${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl" "${prefix}/bin/simgrid_colorizer.pl" uninstall_bins "${uninstall_bins}")
+string(REPLACE "${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl" "${prefix}/bin/simgrid-colorizer" uninstall_bins "${uninstall_bins}")
 string(REPLACE "${PROJECT_DIRECTORY}/src/.libs" "${prefix}/lib" uninstall_libs "${install_libs}")
 string(REPLACE "./" "${prefix}/" uninstall_HEADERS "${install_HEADERS}")
 
@@ -61,27 +60,31 @@ COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/doc
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/doc/simgrid
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/doc/simgrid/html
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/xbt
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/msg
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/simdag
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/smpi
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/surf
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/gras
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/amok
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/instr
 COMMAND cp ${install_bins} $ENV{DESTDIR}${prefix}/bin
-COMMAND cp ${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl $ENV{DESTDIR}${prefix}/bin/simgrid_colorizer.pl
+COMMAND cp ${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl $ENV{DESTDIR}${prefix}/bin/simgrid-colorizer
 COMMAND echo "install bin           OK"
 COMMAND cp ${install_libs} $ENV{DESTDIR}${prefix}/lib
 COMMAND echo "install lib           OK"
-COMMAND cp --parents ${install_HEADERS} $ENV{DESTDIR}${prefix}
-COMMAND echo "install include       OK"
-COMMAND cp -rf ${PROJECT_DIRECTORY}/doc/html/ $ENV{DESTDIR}${prefix}/doc/simgrid
-COMMAND echo "install doc/html      OK"
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 )
 
-foreach(file ${ex_to_svg})
-	string(REPLACE "${PROJECT_DIRECTORY}" "." file "${file}")
+foreach(file ${install_HEADERS})
 	add_custom_command(TARGET install-simgrid
-		COMMAND cp --parents -f ${file} $ENV{DESTDIR}${prefix}/doc/simgrid/
+		COMMAND cp ${file} $ENV{DESTDIR}${prefix}/${file}
 		WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 	)
-endforeach(file ${ex_to_svg})
+endforeach(file ${install_HEADERS})
 add_custom_command(TARGET install-simgrid
-	COMMAND echo "install doc/examples  OK"
+	COMMAND echo "install include       OK"
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 
@@ -129,7 +132,7 @@ if(HAVE_LUA)
 endif(HAVE_LUA)
 
 if(HAVE_RUBY)
-	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_INCLUDE_PATH}")
+	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
 	add_custom_command(TARGET install-simgrid
 	COMMAND mkdir -p "$ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/"
 	COMMAND ln -sf ${prefix}/lib/libsimgrid.so $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/libsimgrid.so
@@ -144,6 +147,29 @@ if(HAVE_RUBY)
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
 endif(HAVE_RUBY)
+
+foreach(file ${directory_to_create})
+	string(REPLACE "${PROJECT_DIRECTORY}" "." file "${file}")
+	add_custom_command(TARGET install-simgrid
+		COMMAND mkdir -p $ENV{DESTDIR}${prefix}/doc/simgrid/${file}
+		WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+	)
+endforeach(file ${directory_to_create})
+
+foreach(file ${ex_to_svg})
+	string(REPLACE "${PROJECT_DIRECTORY}" "." file "${file}")
+	add_custom_command(TARGET install-simgrid
+		COMMAND cp ${file} $ENV{DESTDIR}${prefix}/doc/simgrid/${file}
+		WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+	)
+endforeach(file ${ex_to_svg})
+
+add_custom_command(TARGET install-simgrid
+	COMMAND echo "install doc/examples  OK"
+	COMMAND cp ${PROJECT_DIRECTORY}/doc/html/* $ENV{DESTDIR}${prefix}/doc/simgrid/html/
+	COMMAND echo "install doc/html      OK"
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
 
 add_custom_target(html
 COMMAND echo "Make the html doc"
