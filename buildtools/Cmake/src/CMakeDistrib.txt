@@ -51,7 +51,7 @@ string(REPLACE "${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl" "${pre
 string(REPLACE "${PROJECT_DIRECTORY}/src/.libs" "${prefix}/lib" uninstall_libs "${install_libs}")
 string(REPLACE "./" "${prefix}/" uninstall_HEADERS "${install_HEADERS}")
 
-string(REGEX REPLACE "^.*ruby/" "" install_link_ruby ${RUBY_INCLUDE_PATH})
+
 
 add_custom_target(install-simgrid
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}
@@ -129,6 +129,7 @@ if(HAVE_LUA)
 endif(HAVE_LUA)
 
 if(HAVE_RUBY)
+	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_INCLUDE_PATH}")
 	add_custom_command(TARGET install-simgrid
 	COMMAND mkdir -p "$ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/"
 	COMMAND ln -sf ${prefix}/lib/libsimgrid.so $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/libsimgrid.so
