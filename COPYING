@@ -619,6 +619,15 @@ List of files:
  
 ========================================================================= 
 
+The xbt/mmalloc module was adapted from the mmalloc module of gdb.
+Both the simgrid version and the original version is distributed under
+the LGPL v2.1
+
+This affects the files in directory src/xbt/mmalloc and
+include/xbt/mmalloc.h
+
+========================================================================= 
+
 Some other examples for SMPI were borowed from an Argonne test suite. 
 Their copyright is the following (FIXME):
 /*

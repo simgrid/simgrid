@@ -2,25 +2,13 @@
    Copyright 1990, 1991, 1992 Free Software Foundation
 
    Written May 1989 by Mike Haertel.
-   Heavily modified Mar 1992 by Fred Fish.  (fnf@cygnus.com)
+   Heavily modified Mar 1992 by Fred Fish.  (fnf@cygnus.com) */
 
-The GNU C Library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public License as
-published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.
+/* Copyright (c) 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
 
-The GNU C Library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
-
-You should have received a copy of the GNU Library General Public
-License along with the GNU C Library; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.
-
-   The author may be reached (Email) at the address mike@ai.mit.edu,
-   or (US mail) as Mike Haertel c/o Free Software Foundation. */
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mmprivate.h"
 
