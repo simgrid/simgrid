@@ -17,6 +17,24 @@ set(EXTRA_DIST
 	${PROJECT_DIRECTORY}/src/xbt/backtrace_windows.c
 	${PROJECT_DIRECTORY}/src/xbt/backtrace_dummy.c
 	${PROJECT_DIRECTORY}/src/xbt/setset_private.h
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/ansidecl.h
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/keys.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmalloc.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmalloc.h
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mm.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmprivate.h
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mrealloc.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/attach.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mcalloc.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmcheck.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmstats.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mvalloc.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/detach.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mfree.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmap-sup.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmemalign.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmtrace.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/sbrk-sup.c  
 	${PROJECT_DIRECTORY}/src/surf/maxmin_private.h
 	${PROJECT_DIRECTORY}/src/surf/trace_mgr_private.h
 	${PROJECT_DIRECTORY}/src/surf/surf_private.h
@@ -175,6 +193,7 @@ set(XBT_SRC
 	${PROJECT_DIRECTORY}/src/xbt/cunit.c
 	${PROJECT_DIRECTORY}/src/xbt/graphxml_parse.c
 	${PROJECT_DIRECTORY}/src/xbt/setset.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mm.c
 )
 
 set(GTNETS_SRC 
