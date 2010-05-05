@@ -67,6 +67,7 @@ XBT_PUBLIC(int) xbt_fifo_remove_all(xbt_fifo_t, void *);
 XBT_PUBLIC(void) xbt_fifo_remove_item(xbt_fifo_t, xbt_fifo_item_t);
 
 XBT_INLINE XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_first_item(xbt_fifo_t l);
+XBT_INLINE XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_last_item(xbt_fifo_t l);
 XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_next_item(xbt_fifo_item_t i);
 XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_prev_item(xbt_fifo_item_t i);
 

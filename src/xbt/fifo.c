@@ -455,6 +455,15 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
   return l->head;
 }
 
+/**
+ * \param l a list
+ * \return the tail of \a l.
+ */
+XBT_INLINE xbt_fifo_item_t xbt_fifo_get_last_item(xbt_fifo_t l)
+{
+  return l->tail;
+}
+
 /** \deprecated Use #xbt_fifo_get_first_item instead.
  */
 XBT_INLINE xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
