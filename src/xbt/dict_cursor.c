@@ -186,3 +186,24 @@ XBT_INLINE void *xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor)
 
   return cursor->current->content;
 }
+
+/**
+ * @brief Set current data
+ * @param cursor the cursor
+ * @param data the new data
+ * @param free_ctn the function to free the new data
+ */
+XBT_INLINE void xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor,
+                                         void *data, void_f_pvoid_t free_ctn)
+{
+  __cursor_not_null(cursor);
+  if(cursor->current->free_f)
+    cursor->current->free_f(cursor->current->content);
+  
+  cursor->current->content = data;
+  cursor->current->free_f = free_ctn;
+  return;
+}
+
+
+

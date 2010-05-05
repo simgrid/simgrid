@@ -127,6 +127,8 @@ XBT_INLINE XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor);
 
 XBT_PUBLIC(char *) xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(void *) xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor);
+XBT_PUBLIC(void) xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor,
+                                          void *data, void_f_pvoid_t free_ctn);
 
 XBT_PUBLIC(void) xbt_dict_cursor_first(const xbt_dict_t dict,
                                        xbt_dict_cursor_t * cursor);

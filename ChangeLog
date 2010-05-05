@@ -1,4 +1,7 @@
-SimGrid (3.4.2) unstable; urgency=low
+SimGrid (3.5) unstable; urgency=low
+
+ XBT
+ * New function: xbt_dict_cursor_set_data()
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 
