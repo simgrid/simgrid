@@ -1,0 +1,9 @@
+This file lists the issues to solve to achieve a the full integration of the MC branch:
+- Model-checker entry point: 
+  Up to now, the main function of each user API has to be modified to call MC_modelcheck instead of SIMIX_solve. 
+  It would be nice to have a command line option like --model-check to determine the right behaviour.
+
+- Memory managment routines:
+  Because mc_memory.c redefines malloc, calloc, realloc and free, now even the simulator is going to use
+  the mmalloc library. This is no good because it is far slower than GNU's malloc, so some black magic should be
+  used to link against one library or the other depending on the mode choosed by the user.  

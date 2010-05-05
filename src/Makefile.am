@@ -345,6 +345,12 @@ AMOK_SRC= \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
   amok/PeerManagement/peermanagement.c
 
+MC_SRC= \
+  mc/mc_memory.c       mc/mc_checkpoint.c \
+  mc/memory_map.c      mc/mc_global.c \
+  mc/mc_dfs.c          mc/mc_dpor.c \
+  mc/mc_transition.c
+
 ##############################
 # Deal with optional modules #
 ##############################
@@ -364,7 +370,7 @@ lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la
 
 gras_sources=$(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 simgrid_sources=$(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) \
-                $(SIMIX_SRC) $(MSG_SRC) $(SIMDAG_SRC) \
+                $(SIMIX_SRC) $(MC_SRC) $(MSG_SRC) $(SIMDAG_SRC) \
 		$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC) \
 		$(TRACING_SRC)
 

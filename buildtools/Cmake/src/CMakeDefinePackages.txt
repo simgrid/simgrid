@@ -327,6 +327,16 @@ ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
 ${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
 )
 
+set(MC_SRC
+	${PROJECT_DIRECTORY}/src/mc/mc_memory.c
+	${PROJECT_DIRECTORY}/src/mc/mc_checkpoint.c
+	${PROJECT_DIRECTORY}/src/mc/memory_map.c
+	${PROJECT_DIRECTORY}/src/mc/mc_global.c
+	${PROJECT_DIRECTORY}/src/mc/mc_dfs.c
+	${PROJECT_DIRECTORY}/src/mc/mc_dpor.c
+	${PROJECT_DIRECTORY}/src/mc/mc_transition.c
+)
+
 set(install_bins
 ${PROJECT_DIRECTORY}/src/smpi/smpicc
 ${PROJECT_DIRECTORY}/src/smpi/smpirun
@@ -510,6 +520,7 @@ set(simgrid_sources
 	${GRAS_COMMON_SRC}
 	${GRAS_SG_SRC}
 	${AMOK_SRC}
+	${MC_SRC}
 )
 
 ### Gras Lib sources
