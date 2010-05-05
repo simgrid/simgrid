@@ -176,7 +176,7 @@ XBT_SRC=\
 #### mmalloc cruft -- to be integrated into cmake
 
 EXTRA_DIST+= \
-  xbt/mmalloc/ansidecl.h  xbt/mmalloc/keys.c      xbt/mmalloc/mmalloc.c  \
+  xbt/mmalloc/keys.c      xbt/mmalloc/mmalloc.c  \
   xbt/mmalloc/mm.c        xbt/mmalloc/mmprivate.h xbt/mmalloc/mrealloc.c \
   xbt/mmalloc/attach.c    xbt/mmalloc/mcalloc.c   xbt/mmalloc/mmalloc.h  \
   xbt/mmalloc/mmcheck.c   xbt/mmalloc/mmstats.c   xbt/mmalloc/mvalloc.c  \

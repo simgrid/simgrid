@@ -28,18 +28,16 @@ Boston, MA 02111-1307, USA.
 
 /* Prototypes for local functions */
 
-static int initialize PARAMS ((struct mdesc *));
-static PTR morecore PARAMS ((struct mdesc *, size_t));
-static PTR align PARAMS ((struct mdesc *, size_t));
+static int initialize (struct mdesc *mdp);
+static void* morecore (struct mdesc *mdp, size_t size);
+static void* align (struct mdesc *mdp, size_t size);
 
 /* Aligned allocation.  */
 
-static PTR
-align (mdp, size)
-  struct mdesc *mdp;
-  size_t size;
+static void*
+align (struct mdesc *mdp, size_t size)
 {
-  PTR result;
+  void* result;
   unsigned long int adj;
 
   result = mdp -> morecore (mdp, size);
@@ -56,8 +54,7 @@ align (mdp, size)
 /* Set everything up and remember that we have.  */
 
 static int
-initialize (mdp)
-  struct mdesc *mdp;
+initialize (struct mdesc *mdp)
 {
   mdp -> heapsize = HEAP / BLOCKSIZE;
   mdp -> heapinfo = (malloc_info *) 
@@ -66,11 +63,11 @@ initialize (mdp)
     {
       return (0);
     }
-  memset ((PTR)mdp -> heapinfo, 0, mdp -> heapsize * sizeof (malloc_info));
+  memset ((void*)mdp -> heapinfo, 0, mdp -> heapsize * sizeof (malloc_info));
   mdp -> heapinfo[0].free.size = 0;
   mdp -> heapinfo[0].free.next = mdp -> heapinfo[0].free.prev = 0;
   mdp -> heapindex = 0;
-  mdp -> heapbase = (PTR) mdp -> heapinfo;
+  mdp -> heapbase = (void*) mdp -> heapinfo;
   mdp -> flags |= MMALLOC_INITIALIZED;
   return (1);
 }
@@ -78,12 +75,10 @@ initialize (mdp)
 /* Get neatly aligned memory, initializing or
    growing the heap info table as necessary. */
 
-static PTR
-morecore (mdp, size)
-  struct mdesc *mdp;
-  size_t size;
+static void*
+morecore (struct mdesc *mdp, size_t size)
 {
-  PTR result;
+  void* result;
   malloc_info *newinfo, *oldinfo;
   size_t newsize;
 
@@ -107,15 +102,15 @@ morecore (mdp, size)
 	  mdp -> morecore (mdp, -size);
 	  return (NULL);
 	}
-      memset ((PTR) newinfo, 0, newsize * sizeof (malloc_info));
-      memcpy ((PTR) newinfo, (PTR) mdp -> heapinfo,
+      memset ((void*) newinfo, 0, newsize * sizeof (malloc_info));
+      memcpy ((void*) newinfo, (void*) mdp -> heapinfo,
 	      mdp -> heapsize * sizeof (malloc_info));
       oldinfo = mdp -> heapinfo;
       newinfo[BLOCK (oldinfo)].busy.type = 0;
       newinfo[BLOCK (oldinfo)].busy.info.size
 	= BLOCKIFY (mdp -> heapsize * sizeof (malloc_info));
       mdp -> heapinfo = newinfo;
-      __mmalloc_free (mdp, (PTR)oldinfo);
+      __mmalloc_free (mdp, (void*)oldinfo);
       mdp -> heapsize = newsize;
     }
 
@@ -125,13 +120,13 @@ morecore (mdp, size)
 
 /* Allocate memory from the heap.  */
 
-PTR
+void*
 mmalloc (md, size)
-  PTR md;
+  void* md;
   size_t size;
 {
   struct mdesc *mdp;
-  PTR result;
+  void* result;
   size_t block, blocks, lastblocks, start;
   register size_t i;
   struct list *next;
@@ -182,7 +177,7 @@ mmalloc (md, size)
 	  /* There are free fragments of this size.
 	     Pop a fragment out of the fragment list and return it.
 	     Update the block's nfree and first counters. */
-	  result = (PTR) next;
+	  result = (void*) next;
 	  next -> prev -> next = next -> next;
 	  if (next -> next != NULL)
 	    {
@@ -326,11 +321,10 @@ mmalloc (md, size)
    the application contains any "hidden" calls to malloc/realloc/free (such
    as inside a system library). */
 
-PTR
-malloc (size)
-  size_t size;
+void*
+malloc (size_t size)
 {
-  PTR result;
-  result = mmalloc ((PTR) NULL, size);
+  void* result;
+  result = mmalloc (NULL, size);
   return (result);
 }

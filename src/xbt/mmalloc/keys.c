@@ -34,10 +34,7 @@ Boston, MA 02111-1307, USA.  */
 #include "mmprivate.h"
 
 int
-mmalloc_setkey (md, keynum, key)
-  PTR md;     
-  int keynum;
-  PTR key;
+mmalloc_setkey (void *md, int keynum, void *key)
 {
   struct mdesc *mdp = (struct mdesc *) md;
   int result = 0;
@@ -50,13 +47,11 @@ mmalloc_setkey (md, keynum, key)
   return (result);
 }
 
-PTR
-mmalloc_getkey (md, keynum)
-  PTR md;     
-  int keynum;
+void*
+mmalloc_getkey (void *md, int keynum)
 {
   struct mdesc *mdp = (struct mdesc *) md;
-  PTR keyval = NULL;
+  void* keyval = NULL;
 
   if ((mdp != NULL) && (keynum >= 0) && (keynum < MMALLOC_KEYS))
     {

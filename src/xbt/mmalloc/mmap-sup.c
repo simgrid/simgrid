@@ -42,10 +42,10 @@ Boston, MA 02111-1307, USA.  */
 
 static size_t pagesize;
 #if NEED_DECLARATION_GETPAGESIZE
-extern int getpagesize PARAMS ((void));
+extern int getpagesize (void);
 #endif
 
-#define PAGE_ALIGN(addr) (PTR) (((long)(addr) + pagesize - 1) & \
+#define PAGE_ALIGN(addr) (void*) (((long)(addr) + pagesize - 1) & \
 				    ~(pagesize - 1))
 
 /* Return MAP_PRIVATE if MDP represents /dev/zero.  Otherwise, return
@@ -70,16 +70,14 @@ extern int getpagesize PARAMS ((void));
     amount to either add to or subtract from the existing region.  Works
     like sbrk(), but using mmap(). */
 
-PTR
-__mmalloc_mmap_morecore (mdp, size)
-  struct mdesc *mdp;
-  int size;
+void*
+__mmalloc_mmap_morecore (struct mdesc *mdp, int size)
 {
-  PTR result = NULL;
+  void* result = NULL;
   off_t foffset;	/* File offset at which new mapping will start */
   size_t mapbytes;	/* Number of bytes to map */
-  PTR moveto;	/* Address where we wish to move "break value" to */
-  PTR mapto;	/* Address we actually mapped to */
+  void* moveto;	/* Address where we wish to move "break value" to */
+  void* mapto;	/* Address we actually mapped to */
   char buf = 0;		/* Single byte to write to extend mapped file */
 
   if (pagesize == 0)
@@ -96,12 +94,12 @@ __mmalloc_mmap_morecore (mdp, size)
 	     us to try to deallocate back past the base of the mmap'd region
 	     then do nothing, and return NULL.  Otherwise, deallocate the
 	     memory and return the old break value. */
-    if (mdp -> breakval + size >= mdp -> base)
+    if (((char*)mdp -> breakval) + size >= (char*)mdp -> base)
 	  {
-	    result = (PTR) mdp -> breakval;
-	    mdp -> breakval += size;
+	    result = (void*) mdp -> breakval;
+	    mdp -> breakval = (char*) mdp->breakval + size;
 	    moveto = PAGE_ALIGN (mdp -> breakval);
-	    munmap (moveto, (size_t) (mdp -> top - moveto) - 1);
+	    munmap (moveto, (size_t) (((char*)mdp -> top) - ((char*)moveto)) - 1);
 	    mdp -> top = moveto;
 	  }
   }
@@ -113,16 +111,16 @@ __mmalloc_mmap_morecore (mdp, size)
 	  {
 	    result = NULL;
 	  }
-    else if (mdp -> breakval + size > mdp -> top)
+    else if ((char*)mdp -> breakval + size > (char*)mdp -> top)
 	  {
 	  /* The request would move us past the end of the currently
 	     mapped memory, so map in enough more memory to satisfy
 	     the request.  This means we also have to grow the mapped-to
 	     file by an appropriate amount, since mmap cannot be used
 	     to extend a file. */
-	    moveto = PAGE_ALIGN (mdp -> breakval + size);
-	    mapbytes = moveto - mdp -> top;
-	    foffset = mdp -> top - mdp -> base;
+	    moveto = PAGE_ALIGN ((char*)mdp -> breakval + size);
+	    mapbytes = (char*)moveto - (char*)mdp -> top;
+	    foffset = (char*)mdp -> top - (char*)mdp -> base;
 
       if( mdp -> fd > 0){
      	  /* FIXME:  Test results of lseek() and write() */
@@ -136,46 +134,44 @@ __mmalloc_mmap_morecore (mdp, size)
         MAP_PRIVATE_OR_SHARED(mdp) | MAP_IS_ANONYMOUS(mdp) | MAP_FIXED,
         MAP_ANON_OR_FD(mdp), foffset);
 
-      if (mapto != (PTR) -1){
+      if (mapto != (void*) -1){
 	    
         if(mdp -> top == 0)
           mdp -> base = mdp -> breakval = mapto;
         
-        mdp -> top = PAGE_ALIGN (mdp -> breakval + size);
-        result = (PTR) mdp -> breakval;
-        mdp -> breakval += size;
+        mdp -> top = PAGE_ALIGN ((char*)mdp -> breakval + size);
+        result = (void*) mdp -> breakval;
+        mdp -> breakval = (char*)mdp->breakval + size;
       }
 	  }
     else
 	  {
-	    result = (PTR) mdp -> breakval;
-	    mdp -> breakval += size;
+	    result = (void*) mdp -> breakval;
+	    mdp -> breakval = (char*)mdp->breakval + size;
 	  }
   }
   return (result);
 }
 
-PTR
-__mmalloc_remap_core (mdp)
-  struct mdesc *mdp;
+void*
+__mmalloc_remap_core (struct mdesc *mdp)
 {
-  PTR base;
+  void* base;
 
   /* FIXME:  Quick hack, needs error checking and other attention. */
 
-  base = mmap (mdp -> base, mdp -> top - mdp -> base,
+  base = mmap (mdp -> base, (char*)mdp -> top - (char*)mdp -> base,
 	       PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE_OR_SHARED (mdp) | MAP_FIXED,
 	       mdp -> fd, 0);
-  return ((PTR) base);
+  return ((void*) base);
 }
 
-PTR
-mmalloc_findbase (size)
-  int size;
+void*
+mmalloc_findbase (int size)
 {
   int fd;
   int flags;
-  PTR base = NULL;
+  void* base = NULL;
 
 #ifdef MAP_ANONYMOUS
   flags = MAP_PRIVATE | MAP_ANONYMOUS;
@@ -189,11 +185,11 @@ mmalloc_findbase (size)
   fd = open ("/dev/zero", O_RDWR);
   if (fd != -1)
     {
-      return ((PTR) NULL);
+      return ((void*) NULL);
     }
 #endif
   base = mmap (0, size, PROT_READ | PROT_WRITE, flags, fd, 0);
-  if (base != (PTR) -1)
+  if (base != (void*) -1)
     {
       munmap (base, (size_t) size);
     }
@@ -207,16 +203,12 @@ mmalloc_findbase (size)
 	 to signal an error return, and besides, it is useful to
 	 catch NULL pointers if it is unmapped.  Instead start
 	 at the next page boundary. */
-      base = (PTR) getpagesize ();
+      base = (void*) getpagesize ();
     }
-  else if (base == (PTR) -1)
+  else if (base == (void*) -1)
     {
       base = NULL;
     }
-  return ((PTR) base);
+  return ((void*) base);
 }
-
-#else	/* defined(HAVE_MMAP) */
-/* Prevent "empty translation unit" warnings from the idiots at X3J11. */
-//static char ansi_c_idiots = 69;
 #endif	/* defined(HAVE_MMAP) */

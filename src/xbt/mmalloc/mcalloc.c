@@ -24,13 +24,10 @@ Boston, MA 02111-1307, USA.  */
 /* Allocate an array of NMEMB elements each SIZE bytes long.
    The entire array is initialized to zeros.  */
 
-PTR
-mcalloc (md, nmemb, size)
-  PTR md;
-  register size_t nmemb;
-  register size_t size;
+void *
+mcalloc (void *md, register size_t nmemb, register size_t size)
 {
-  register PTR result;
+  register void* result;
 
   if ((result = mmalloc (md, nmemb * size)) != NULL)
     {
@@ -45,10 +42,8 @@ mcalloc (md, nmemb, size)
    the application contains any "hidden" calls to malloc/realloc/free (such
    as inside a system library). */
 
-PTR
-calloc (nmemb, size)
-  size_t nmemb;
-  size_t size;
+void*
+calloc (size_t nmemb, size_t size)
 {
-  return (mcalloc ((PTR) NULL, nmemb, size));
+  return (mcalloc ((void*) NULL, nmemb, size));
 }

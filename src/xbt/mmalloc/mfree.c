@@ -28,9 +28,7 @@ Boston, MA 02111-1307, USA.
    Like `mfree' but don't call a mfree_hook if there is one.  */
 
 void
-__mmalloc_free (mdp, ptr)
-  struct mdesc *mdp;
-  PTR ptr;
+__mmalloc_free (struct mdesc *mdp, void *ptr)
 {
   int type;
   size_t block;//, blocks; unused variable?
@@ -162,7 +160,7 @@ __mmalloc_free (mdp, ptr)
 	  mdp -> heapstats.chunks_free -= BLOCKSIZE >> type;
 	  mdp -> heapstats.bytes_free -= BLOCKSIZE;
 
-	  mfree ((PTR) mdp, (PTR) ADDRESS(block));
+	  mfree ((void*) mdp, (void*) ADDRESS(block));
 	}
       else if (mdp -> heapinfo[block].busy.info.frag.nfree != 0)
 	{
@@ -203,9 +201,7 @@ __mmalloc_free (mdp, ptr)
 /* Return memory to the heap.  */
 
 void
-mfree (md, ptr)
-  PTR md;
-  PTR ptr;
+mfree (void *md, void *ptr)
 {
   struct mdesc *mdp;
   register struct alignlist *l;
@@ -245,7 +241,7 @@ void free(void* ptr);
    as inside a system library). */
 
 void
-free (PTR ptr)
+free (void* ptr)
 {
-  mfree ((PTR) NULL, ptr);
+  mfree ((void*) NULL, ptr);
 }

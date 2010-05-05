@@ -87,7 +87,7 @@ Boston, MA 02111-1307, USA.
 
 #define BLOCK(A) (((char*) (A) - (char*) mdp -> heapbase) / BLOCKSIZE + 1)
 
-#define ADDRESS(B) ((PTR) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
+#define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 
 /* Data structure giving per-block information.  */
 
@@ -125,8 +125,8 @@ typedef union
 struct alignlist
   {
     struct alignlist *next;
-    PTR aligned;		/* The address that mmemaligned returned.  */
-    PTR exact;			/* The address that malloc returned.  */
+    void* aligned;		/* The address that mmemaligned returned.  */
+    void* exact;			/* The address that malloc returned.  */
   };
 
 /* Doubly linked lists of free fragments.  */
@@ -191,7 +191,7 @@ struct mdesc
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
 
-  PTR (*morecore) PARAMS ((struct mdesc *, int));
+  void* (*morecore) (struct mdesc *mdp, int size);
      
   /* Pointer to the function that causes an abort when the memory checking
      features are activated.  By default this is set to abort(), but can
@@ -200,28 +200,28 @@ struct mdesc
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
 
-  void (*abortfunc) PARAMS ((void));
+  void (*abortfunc) (void);
 
   /* Debugging hook for free.
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
 
-  void (*mfree_hook) PARAMS ((PTR, PTR));
+  void (*mfree_hook) (void* mdp, void* ptr);
 
   /* Debugging hook for `malloc'.
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
 
-  PTR (*mmalloc_hook) PARAMS ((PTR, size_t));
+  void* (*mmalloc_hook) (void* mdp, size_t size);
 
   /* Debugging hook for realloc.
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
 
-  PTR (*mrealloc_hook) PARAMS ((PTR, PTR, size_t));
+  void* (*mrealloc_hook) (void* mdp, void* ptr, size_t size);
 
   /* Number of info entries.  */
 
@@ -229,7 +229,7 @@ struct mdesc
 
   /* Pointer to first block of the heap (base of the first block).  */
 
-  PTR heapbase;
+  void* heapbase;
 
   /* Current search index for the heap table.  */
   /* Search index in the info table.  */
@@ -263,17 +263,17 @@ struct mdesc
      is the location where the bookkeeping data for mmap and for malloc
      begins. */
 
-  PTR base;
+  void* base;
 
   /* The current location in the memory region for this malloc heap which
      represents the end of memory in use. */
 
-  PTR breakval;
+  void* breakval;
 
   /* The end of the current memory region for this malloc heap.  This is
      the first location past the end of mapped memory. */
 
-  PTR top;
+  void* top;
 
   /* Open file descriptor for the file to which this malloc heap is mapped.
      This will always be a valid file descriptor, since /dev/zero is used
@@ -285,7 +285,7 @@ struct mdesc
   /* An array of keys to data within the mapped region, for use by the
      application.  */
 
-  PTR keys[MMALLOC_KEYS];
+  void* keys[MMALLOC_KEYS];
 
 };
 
@@ -298,13 +298,7 @@ struct mdesc
 
 /* Internal version of `mfree' used in `morecore'. */
 
-extern void __mmalloc_free PARAMS ((struct mdesc *, PTR));
-
-/* Hooks for debugging versions.  */
-
-extern void (*__mfree_hook) PARAMS ((PTR, PTR));
-extern PTR (*__mmalloc_hook) PARAMS ((PTR, size_t));
-extern PTR (*__mrealloc_hook) PARAMS ((PTR, PTR, size_t));
+extern void __mmalloc_free (struct mdesc *mdp, void* ptr);
 
 /* A default malloc descriptor for the single sbrk() managed region. */
 
@@ -313,20 +307,20 @@ extern struct mdesc *__mmalloc_default_mdp;
 /* Initialize the first use of the default malloc descriptor, which uses
    an sbrk() region. */
 
-extern struct mdesc *__mmalloc_sbrk_init PARAMS ((void));
+extern struct mdesc *__mmalloc_sbrk_init (void);
 
 /* Grow or shrink a contiguous mapped region using mmap().
    Works much like sbrk() */
 
 #if defined(HAVE_MMAP)
 
-extern PTR __mmalloc_mmap_morecore PARAMS ((struct mdesc *, int));
+extern void* __mmalloc_mmap_morecore (struct mdesc *mdp, int size);
 
 #endif
 
 /* Remap a mmalloc region that was previously mapped. */
 
-extern PTR __mmalloc_remap_core PARAMS ((struct mdesc *));
+extern void* __mmalloc_remap_core (struct mdesc *mdp);
 
 /* Macro to convert from a user supplied malloc descriptor to pointer to the
    internal malloc descriptor.  If the user supplied descriptor is NULL, then

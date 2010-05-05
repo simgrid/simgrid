@@ -31,14 +31,11 @@ Boston, MA 02111-1307, USA.
    new region.  This module has incestuous knowledge of the
    internals of both mfree and mmalloc. */
 
-PTR
-mrealloc (md, ptr, size)
-  PTR md;
-  PTR ptr;
-  size_t size;
+void*
+mrealloc (void *md, void *ptr, size_t size)
 {
   struct mdesc *mdp;
-  PTR result;
+  void* result;
   int type;
   size_t block, blocks, oldlimit;
 
@@ -154,13 +151,11 @@ void *realloc (void *ptr, size_t size);
    the application contains any "hidden" calls to malloc/realloc/free (such
    as inside a system library). */
 
-PTR
-realloc (ptr, size)
-  PTR ptr;
-  size_t size;
+void *
+realloc (void *ptr, size_t size)
 {
-  PTR result;
+  void* result;
 
-  result = mrealloc ((PTR) NULL, ptr, size);
+  result = mrealloc (NULL, ptr, size);
   return (result);
 }

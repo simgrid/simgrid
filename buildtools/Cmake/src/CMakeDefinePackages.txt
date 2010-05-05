@@ -17,7 +17,6 @@ set(EXTRA_DIST
 	${PROJECT_DIRECTORY}/src/xbt/backtrace_windows.c
 	${PROJECT_DIRECTORY}/src/xbt/backtrace_dummy.c
 	${PROJECT_DIRECTORY}/src/xbt/setset_private.h
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/ansidecl.h
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/keys.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmalloc.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmalloc.h

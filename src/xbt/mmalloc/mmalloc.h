@@ -7,56 +7,56 @@
 #  include <sys/types.h>   /* for size_t */
 #  include <stdio.h>       /* for NULL */
 #endif
+//#include "./include/ansidecl.h"
 
-#include "./include/ansidecl.h"
- 
 /* Allocate SIZE bytes of memory.  */
 
-extern PTR mmalloc PARAMS ((PTR, size_t));
+extern void* mmalloc(void* md, size_t size);
 
-/* Re-allocate the previously allocated block in PTR, making the new block
+/* Re-allocate the previously allocated block in void*, making the new block
    SIZE bytes long.  */
 
-extern PTR mrealloc PARAMS ((PTR, PTR, size_t));
+extern void* mrealloc(void* md, void* ptr, size_t size);
 
 /* Allocate NMEMB elements of SIZE bytes each, all initialized to 0.  */
 
-extern PTR mcalloc PARAMS ((PTR, size_t, size_t));
+extern void* mcalloc (void* md, size_t nmemb, size_t size);
 
 /* Free a block allocated by `mmalloc', `mrealloc' or `mcalloc'.  */
 
-extern void mfree PARAMS ((PTR, PTR));
+extern void mfree (void* md, void* ptr);
 
 /* Allocate SIZE bytes allocated to ALIGNMENT bytes.  */
 
-extern PTR mmemalign PARAMS ((PTR, size_t, size_t));
+extern void* mmemalign (void* md, size_t alignment, size_t size);
 
 /* Allocate SIZE bytes on a page boundary.  */
 
-extern PTR mvalloc PARAMS ((PTR, size_t));
+extern void* mvalloc (void* md, size_t size);
 
 /* Activate a standard collection of debugging hooks.  */
 
-extern int mmcheck PARAMS ((PTR, void (*) (void)));
+extern int mmcheck (void* md, void (*func) (void));
 
-extern int mmcheckf PARAMS ((PTR, void (*) (void), int));
+extern int mmcheckf (void* md, void (*func) (void), int force);
 
 /* Pick up the current statistics. (see FIXME elsewhere) */
 
-extern struct mstats mmstats PARAMS ((PTR));
+extern struct mstats mmstats (void* md);
 
-extern PTR mmalloc_attach PARAMS ((int, PTR));
+extern void* mmalloc_attach (int fd, void* baseaddr);
 
-extern PTR mmalloc_detach PARAMS ((PTR));
+extern void* mmalloc_detach (void* md);
 
-extern int mmalloc_setkey PARAMS ((PTR, int, PTR));
+extern int mmalloc_setkey (void* md, int keynum, void* key);
 
-extern PTR mmalloc_getkey PARAMS ((PTR, int));
+extern void* mmalloc_getkey (void* md, int keynum);
 
-extern int mmalloc_errno PARAMS ((PTR));
+// FIXME: this function is not implemented anymore?
+//extern int mmalloc_errno (void* md);
 
-extern int mmtrace PARAMS ((void));
+extern int mmtrace(void);
 
-extern PTR mmalloc_findbase PARAMS ((int));
+extern void* mmalloc_findbase(int size);
 
 #endif  /* MMALLOC_H */

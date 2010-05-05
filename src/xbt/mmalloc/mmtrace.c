@@ -25,10 +25,10 @@ Boston, MA 02111-1307, USA.  */
 #include <stdio.h>
 #include "mmprivate.h"
 
-static void tr_break PARAMS ((void));
-static void tr_freehook PARAMS ((PTR, PTR));
-static PTR tr_mallochook PARAMS ((PTR, size_t));
-static PTR tr_reallochook PARAMS ((PTR, PTR, size_t));
+static void tr_break (void);
+static void tr_freehook (void*md, void*ptr);
+static void* tr_mallochook (void* md, size_t size);
+static void* tr_reallochook (void* md, void* ptr, size_t size);
 
 #ifndef	__GNU_LIBRARY__
 extern char *getenv ();
@@ -42,13 +42,13 @@ static char mallbuf[BUFSIZ];	/* Buffer for the output.  */
 #endif
 
 /* Address to breakpoint on accesses to... */
-static PTR mallwatch;
+static void* mallwatch;
 
 /* Old hook values.  */
 
-static void (*old_mfree_hook) PARAMS ((PTR, PTR));
-static PTR (*old_mmalloc_hook) PARAMS ((PTR, size_t));
-static PTR (*old_mrealloc_hook) PARAMS ((PTR, PTR, size_t));
+static void (*old_mfree_hook) (void* md, void* ptr);
+static void* (*old_mmalloc_hook) (void* md, size_t size);
+static void* (*old_mrealloc_hook) (void* md, void* ptr, size_t size);
 
 /* This function is called when the block being alloc'd, realloc'd, or
    freed has an address matching the variable "mallwatch".  In a debugger,
@@ -56,14 +56,12 @@ static PTR (*old_mrealloc_hook) PARAMS ((PTR, PTR, size_t));
    tr_break.  */
 
 static void
-tr_break ()
+tr_break (void)
 {
 }
 
 static void
-tr_freehook (md, ptr)
-  PTR md;
-  PTR ptr;
+tr_freehook (void *md, void *ptr)
 {
   struct mdesc *mdp;
 
@@ -77,17 +75,15 @@ tr_freehook (md, ptr)
   mdp -> mfree_hook = tr_freehook;
 }
 
-static PTR
-tr_mallochook (md, size)
-  PTR md;
-  size_t size;
+static void*
+tr_mallochook (void* md, size_t size)
 {
-  PTR hdr;
+  void* hdr;
   struct mdesc *mdp;
 
   mdp = MD_TO_MDP (md);
   mdp -> mmalloc_hook = old_mmalloc_hook;
-  hdr = (PTR) mmalloc (md, size);
+  hdr = (void*) mmalloc (md, size);
   mdp -> mmalloc_hook = tr_mallochook;
 
   /* We could be printing a NULL here; that's OK.  */
@@ -99,13 +95,10 @@ tr_mallochook (md, size)
   return (hdr);
 }
 
-static PTR
-tr_reallochook (md, ptr, size)
-  PTR md;
-  PTR ptr;
-  size_t size;
+static void*
+tr_reallochook (void *md, void *ptr, size_t size)
 {
-  PTR hdr;
+  void* hdr;
   struct mdesc *mdp;
 
   mdp = MD_TO_MDP (md);
@@ -116,7 +109,7 @@ tr_reallochook (md, ptr, size)
   mdp -> mfree_hook = old_mfree_hook;
   mdp -> mmalloc_hook = old_mmalloc_hook;
   mdp -> mrealloc_hook = old_mrealloc_hook;
-  hdr = (PTR) mrealloc (md, ptr, size);
+  hdr = (void*) mrealloc (md, ptr, size);
   mdp -> mfree_hook = tr_freehook;
   mdp -> mmalloc_hook = tr_mallochook;
   mdp -> mrealloc_hook = tr_reallochook;
@@ -139,7 +132,7 @@ tr_reallochook (md, ptr, size)
    don't forget to set a breakpoint on tr_break!  */
 
 int
-mmtrace ()
+mmtrace (void)
 {
 #if 0	/* FIXME!  This is disabled for now until we figure out how to
 	   maintain a stack of hooks per heap, since we might have other

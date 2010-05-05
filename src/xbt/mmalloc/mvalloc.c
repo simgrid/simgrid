@@ -29,10 +29,8 @@ static size_t cache_pagesize;
 extern int getpagesize PARAMS ((void));
 #endif
 
-PTR
-mvalloc (md, size)
-  PTR md;
-  size_t size;
+void*
+mvalloc (void *md, size_t size)
 {
   if (cache_pagesize == 0)
     {
@@ -43,10 +41,8 @@ mvalloc (md, size)
 }
 
 /* Useless prototype to make gcc happy */
-PTR valloc (size_t size);
+void* valloc (size_t size);
 
-PTR
-valloc (size_t size)
-{
-  return mvalloc ((PTR) NULL, size);
+void* valloc (size_t size) {
+  return mvalloc (NULL, size);
 }

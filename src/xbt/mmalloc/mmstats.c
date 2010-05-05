@@ -29,8 +29,7 @@ Boston, MA 02111-1307, USA.
    outside the library. */
 
 struct mstats
-mmstats (md)
-  PTR md;
+mmstats (void *md)
 {
   struct mstats result;
   struct mdesc *mdp;

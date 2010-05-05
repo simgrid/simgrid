@@ -38,7 +38,7 @@ Boston, MA 02111-1307, USA.  */
 
 /* Forward declarations/prototypes for local functions */
 
-static struct mdesc *reuse PARAMS ((int));
+static struct mdesc *reuse (int fd);
 
 /* Initialize access to a mmalloc managed region.
 
@@ -70,14 +70,12 @@ static struct mdesc *reuse PARAMS ((int));
 
    On failure returns NULL. */
 
-PTR
-mmalloc_attach (fd, baseaddr)
-  int fd;
-  PTR baseaddr;
+void *
+mmalloc_attach (int fd, void *baseaddr)
 {
   struct mdesc mtemp;
   struct mdesc *mdp;
-  PTR mbase;
+  void* mbase;
   struct stat sbuf;
 
   /* First check to see if FD is a valid file descriptor, and if so, see
@@ -93,7 +91,7 @@ mmalloc_attach (fd, baseaddr)
 	  return (NULL);
 
     else if (sbuf.st_size > 0)
-	  return ((PTR) reuse (fd));
+	  return ((void*) reuse (fd));
   }
 
   /* If the user provided NULL BASEADDR then fail */
@@ -151,7 +149,7 @@ mmalloc_attach (fd, baseaddr)
 //    mdp = NULL;
   }
   
-  return ((PTR) mbase);
+  return ((void*) mbase);
 }
 
 /* Given an valid file descriptor on an open file, test to see if that file
@@ -178,8 +176,7 @@ mmalloc_attach (fd, baseaddr)
    unsuccessful for some reason. */
 
 static struct mdesc *
-reuse (fd)
-  int fd;
+reuse (int fd)
 {
   struct mdesc mtemp;
   struct mdesc *mdp = NULL;
@@ -203,7 +200,7 @@ reuse (fd)
 	mdp -> morecore = __mmalloc_mmap_morecore;
 	if (mdp -> mfree_hook != NULL)
 	{
-	  mmcheckf ((PTR) mdp, (void (*) PARAMS ((void))) NULL, 1);
+	  mmcheckf ((void*) mdp, (void (*) (void)) NULL, 1);
 	}
   }
   return (mdp);
@@ -216,10 +213,8 @@ reuse (fd)
    always fails. */
 
 /* ARGSUSED */
-PTR
-mmalloc_attach (fd, baseaddr)
-  int fd;
-  PTR baseaddr;
+void*
+mmalloc_attach (int fd, void* baseaddr)
 {
    return (NULL);
 }

@@ -28,7 +28,7 @@ Boston, MA 02111-1307, USA.
    can specify an alternate function to be called instead (and probably will
    want to). */
 
-extern void abort PARAMS ((void));
+extern void abort (void);
 
 /* Arbitrary magical numbers.  */
 
@@ -51,18 +51,16 @@ struct hdr
     unsigned long int magic;	/* Magic number to check header integrity.  */
   };
 
-static void checkhdr PARAMS ((struct mdesc *, CONST struct hdr *));
-static void mfree_check PARAMS ((PTR, PTR));
-static PTR mmalloc_check PARAMS ((PTR, size_t));
-static PTR mrealloc_check PARAMS ((PTR, PTR, size_t));
+static void checkhdr (struct mdesc *mdp, const struct hdr *hdr);
+static void mfree_check (void* md, void* ptr);
+static void* mmalloc_check (void* md, size_t size);
+static void* mrealloc_check (void* md, void* ptr, size_t size);
 
 /* Check the magicword and magicbyte, and if either is corrupted then
    call the emergency abort function specified for the heap in use. */
 
 static void
-checkhdr (mdp, hdr)
-  struct mdesc *mdp;
-  CONST struct hdr *hdr;
+checkhdr (struct mdesc *mdp, const struct hdr *hdr)
 {
   if (hdr -> magic != MAGICWORD ||
       ((char *) &hdr[1])[hdr -> size] != MAGICBYTE)
@@ -72,9 +70,7 @@ checkhdr (mdp, hdr)
 }
 
 static void
-mfree_check (md, ptr)
-  PTR md;
-  PTR ptr;
+mfree_check (void *md, void *ptr)
 {
   struct hdr *hdr = ((struct hdr *) ptr) - 1;
   struct mdesc *mdp;
@@ -83,14 +79,12 @@ mfree_check (md, ptr)
   checkhdr (mdp, hdr);
   hdr -> magic = MAGICWORDFREE;
   mdp -> mfree_hook = NULL;
-  mfree (md, (PTR)hdr);
+  mfree (md, (void*)hdr);
   mdp -> mfree_hook = mfree_check;
 }
 
-static PTR
-mmalloc_check (md, size)
-  PTR md;
-  size_t size;
+static void*
+mmalloc_check (void *md, size_t size)
 {
   struct hdr *hdr;
   struct mdesc *mdp;
@@ -108,14 +102,11 @@ mmalloc_check (md, size)
       hdr++;
       *((char *) hdr + size) = MAGICBYTE;
     }
-  return ((PTR) hdr);
+  return ((void*) hdr);
 }
 
-static PTR
-mrealloc_check (md, ptr, size)
-  PTR md;
-  PTR ptr;
-  size_t size;
+static void*
+mrealloc_check (void* md, void* ptr, size_t size)
 {
   struct hdr *hdr = ((struct hdr *) ptr) - 1;
   struct mdesc *mdp;
@@ -127,7 +118,7 @@ mrealloc_check (md, ptr, size)
   mdp -> mmalloc_hook = NULL;
   mdp -> mrealloc_hook = NULL;
   nbytes = sizeof (struct hdr) + size + 1;
-  hdr = (struct hdr *) mrealloc (md, (PTR) hdr, nbytes);
+  hdr = (struct hdr *) mrealloc (md, (void*) hdr, nbytes);
   mdp -> mfree_hook = mfree_check;
   mdp -> mmalloc_hook = mmalloc_check;
   mdp -> mrealloc_hook = mrealloc_check;
@@ -137,7 +128,7 @@ mrealloc_check (md, ptr, size)
       hdr++;
       *((char *) hdr + size) = MAGICBYTE;
     }
-  return ((PTR) hdr);
+  return ((void*) hdr);
 }
 
 /* Turn on default checking for mmalloc/mrealloc/mfree, for the heap specified
@@ -171,10 +162,7 @@ mrealloc_check (md, ptr, size)
    Returns non-zero if checking is successfully enabled, zero otherwise. */
 
 int
-mmcheckf (md, func, force)
-  PTR md;
-  void (*func) PARAMS ((void));
-  int force;
+mmcheckf (void *md, void (*func)(void), int force)
 {
   struct mdesc *mdp;
   int rtnval;
@@ -212,9 +200,7 @@ mmcheckf (md, func, force)
    still callers to the original mmcheck function. */
 
 int
-mmcheck (md, func)
-  PTR md;
-  void (*func) PARAMS ((void));
+mmcheck (void *md, void (*func) (void))
 {
   int rtnval;
 

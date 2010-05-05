@@ -18,13 +18,10 @@ Boston, MA 02111-1307, USA.  */
 
 #include "mmprivate.h"
 
-PTR
-mmemalign (md, alignment, size)
-  PTR md;
-  size_t alignment;
-  size_t size;
+void *
+mmemalign (void *md, size_t alignment, size_t size)
 {
-  PTR result;
+  void* result;
   unsigned long int adj;
   struct alignlist *l;
   struct mdesc *mdp;
