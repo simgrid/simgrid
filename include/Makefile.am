@@ -32,6 +32,8 @@ nobase_include_HEADERS = \
 	xbt/time.h \
 	xbt/synchro.h  xbt/synchro_core.h\
 	xbt/queue.h \
+	xbt/setset.h \
+	xbt/mmalloc.h \
 	\
 	msg/msg.h \
 	msg/datatypes.h \

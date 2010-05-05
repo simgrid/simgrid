@@ -19,7 +19,6 @@ set(EXTRA_DIST
 	${PROJECT_DIRECTORY}/src/xbt/setset_private.h
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/keys.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmalloc.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmalloc.h
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mm.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmprivate.h
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mrealloc.c
@@ -382,6 +381,7 @@ set(install_HEADERS
 ./include/xbt/synchro_core.h
 ./include/xbt/queue.h
 ./include/xbt/setset.h
+./include/mmalloc.h
 ./include/msg/msg.h
 ./include/msg/datatypes.h
 ./include/simdag/simdag.h

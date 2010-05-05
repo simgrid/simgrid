@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.
 #ifndef __MMPRIVATE_H
 #define __MMPRIVATE_H 1
 
-#include "mmalloc.h"
+#include "xbt/mmalloc.h"
 
 #ifdef HAVE_LIMITS_H
 #  include <limits.h>
