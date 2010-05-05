@@ -63,7 +63,7 @@ Boston, MA 02111-1307, USA.
    sign of the result is machine dependent for negative values, so force
    it to be treated as an unsigned int. */
 
-#define ADDR2UINT(addr)	((unsigned int) ((PTR) (addr) - (PTR) NULL))
+#define ADDR2UINT(addr)	((unsigned int) ((char*) (addr) - (char*) NULL))
 #define RESIDUAL(addr,bsize) ((unsigned int) (ADDR2UINT (addr) % (bsize)))
 
 /* Determine the amount of memory spanned by the initial heap table
@@ -85,9 +85,9 @@ Boston, MA 02111-1307, USA.
 
 /* Address to block number and vice versa.  */
 
-#define BLOCK(A) (((PTR) (A) - mdp -> heapbase) / BLOCKSIZE + 1)
+#define BLOCK(A) (((char*) (A) - (char*) mdp -> heapbase) / BLOCKSIZE + 1)
 
-#define ADDRESS(B) ((PTR) (((B) - 1) * BLOCKSIZE + mdp -> heapbase))
+#define ADDRESS(B) ((PTR) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 
 /* Data structure giving per-block information.  */
 

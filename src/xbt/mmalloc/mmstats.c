@@ -37,7 +37,7 @@ mmstats (md)
 
   mdp = MD_TO_MDP (md);
   result.bytes_total =
-      (PTR) mdp -> top - (void *)mdp;
+      (char*) mdp -> top - (char*)mdp;
   result.chunks_used = mdp -> heapstats.chunks_used;
   result.bytes_used = mdp -> heapstats.bytes_used;
   result.chunks_free = mdp -> heapstats.chunks_free;

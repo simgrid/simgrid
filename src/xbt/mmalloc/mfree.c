@@ -33,7 +33,7 @@ __mmalloc_free (mdp, ptr)
   PTR ptr;
 {
   int type;
-  size_t block, blocks;
+  size_t block;//, blocks; unused variable?
   register size_t i;
   struct list *prev, *next;
 
@@ -135,8 +135,8 @@ __mmalloc_free (mdp, ptr)
 
       /* Get the address of the first free fragment in this block.  */
       prev = (struct list *)
-	((PTR) ADDRESS(block) +
-	 (mdp -> heapinfo[block].busy.info.frag.first << type));
+	((char*) ADDRESS(block) +
+	 ( mdp -> heapinfo[block].busy.info.frag.first << type));
 
       if (mdp -> heapinfo[block].busy.info.frag.nfree ==
 	  (BLOCKSIZE >> type) - 1)
@@ -233,6 +233,11 @@ mfree (md, ptr)
     }
 }
 
+
+/* Useless prototype to make gcc happy */
+void free(void* ptr);
+
+
 /* When using this package, provide a version of malloc/realloc/free built
    on top of it, so that if we use the default sbrk() region we will not
    collide with another malloc package trying to do the same thing, if
@@ -240,8 +245,7 @@ mfree (md, ptr)
    as inside a system library). */
 
 void
-free (ptr)
-  PTR ptr;
+free (PTR ptr)
 {
   mfree ((PTR) NULL, ptr);
 }

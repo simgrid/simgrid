@@ -20,6 +20,7 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
+#include <unistd.h>   /* close */
 #include <sys/types.h>
 #include "mmprivate.h"
 
@@ -51,7 +52,7 @@ mmalloc_detach (md)
       /* Now unmap all the pages associated with this region by asking for a
 	 negative increment equal to the current size of the region. */
       
-      if ((mtemp.morecore (&mtemp, mtemp.base - mtemp.breakval)) == NULL)
+      if ((mtemp.morecore (&mtemp, (char*)mtemp.base - (char*)mtemp.breakval)) == NULL)
 	{
 	  /* Deallocating failed.  Update the original malloc descriptor
 	     with any changes */

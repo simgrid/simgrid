@@ -218,5 +218,5 @@ mmalloc_findbase (size)
 
 #else	/* defined(HAVE_MMAP) */
 /* Prevent "empty translation unit" warnings from the idiots at X3J11. */
-static char ansi_c_idiots = 69;
+//static char ansi_c_idiots = 69;
 #endif	/* defined(HAVE_MMAP) */

@@ -53,8 +53,8 @@ sbrk_morecore (mdp, size)
     }
   else
     {
-      mdp -> breakval += size;
-      mdp -> top += size;
+      mdp -> breakval = (char*)mdp -> breakval + size;
+      mdp -> top      = (char*)mdp -> top + size;
     }
   return (result);
 }

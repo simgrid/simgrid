@@ -17,6 +17,7 @@ not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "mmprivate.h"
+#include <unistd.h>
 
 /* Cache the pagesize for the current host machine.  Note that if the host
    does not readily provide a getpagesize() function, we need to emulate it
@@ -41,10 +42,11 @@ mvalloc (md, size)
   return (mmemalign (md, cache_pagesize, size));
 }
 
+/* Useless prototype to make gcc happy */
+PTR valloc (size_t size);
 
 PTR
-valloc (size)
-  size_t size;
+valloc (size_t size)
 {
   return mvalloc ((PTR) NULL, size);
 }

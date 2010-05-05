@@ -55,7 +55,7 @@ mmemalign (md, alignment, size)
 	      mdp -> aligned_blocks = l;
 	    }
 	  l -> exact = result;
-	  result = l -> aligned = (PTR) result + alignment - adj;
+	  result = l -> aligned = (char*) result + alignment - adj;
 	}
     }
   return (result);

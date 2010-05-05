@@ -48,7 +48,7 @@ align (mdp, size)
     {
       adj = BLOCKSIZE - adj;
       mdp -> morecore (mdp, adj);
-      result = (PTR) result + adj;
+      result = (char*) result + adj;
     }
   return (result);
 }
@@ -94,10 +94,10 @@ morecore (mdp, size)
     }
 
   /* Check if we need to grow the info table.  */
-  if ((size_t) BLOCK ((PTR) result + size) > mdp -> heapsize)
+  if ((size_t) BLOCK ((char*) result + size) > mdp -> heapsize)
     {
       newsize = mdp -> heapsize;
-      while ((size_t) BLOCK ((PTR) result + size) > newsize)
+      while ((size_t) BLOCK ((char*) result + size) > newsize)
 	{
 	  newsize *= 2;
 	}
@@ -119,7 +119,7 @@ morecore (mdp, size)
       mdp -> heapsize = newsize;
     }
 
-  mdp -> heaplimit = BLOCK ((PTR) result + size);
+  mdp -> heaplimit = BLOCK ((char*) result + size);
   return (result);
 }
 
@@ -214,7 +214,7 @@ mmalloc (md, size)
 	  /* Link all fragments but the first into the free list.  */
 	  for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i)
 	    {
-	      next = (struct list *) ((PTR) result + (i << log));
+	      next = (struct list *) ((char*) result + (i << log));
 	      next -> next = mdp -> fraghead[log].next;
 	      next -> prev = &mdp -> fraghead[log];
 	      next -> prev -> next = next;
