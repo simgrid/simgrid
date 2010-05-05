@@ -170,7 +170,22 @@ XBT_SRC=\
   xbt/config.c                                                               \
   xbt/cunit.c                                                                \
   xbt/graphxml_parse.c                                                       \
-  xbt/setset.c
+  xbt/setset.c                                                               \
+  xbt/mmalloc/mm.c
+
+#### mmalloc cruft -- to be integrated into cmake
+
+EXTRA_DIST+= \
+  xbt/mmalloc/ansidecl.h  xbt/mmalloc/keys.c      xbt/mmalloc/mmalloc.c  \
+  xbt/mmalloc/mm.c        xbt/mmalloc/mmprivate.h xbt/mmalloc/mrealloc.c \
+  xbt/mmalloc/attach.c    xbt/mmalloc/mcalloc.c   xbt/mmalloc/mmalloc.h  \
+  xbt/mmalloc/mmcheck.c   xbt/mmalloc/mmstats.c   xbt/mmalloc/mvalloc.c  \
+  xbt/mmalloc/detach.c    xbt/mmalloc/mfree.c     xbt/mmalloc/mmap-sup.c \
+  xbt/mmalloc/mmemalign.c xbt/mmalloc/mmtrace.c   xbt/mmalloc/sbrk-sup.c
+
+# info_TEXINFOS= xbt/mmalloc/mmalloc.texi
+
+### End of mmalloc cruft
 
 XBT_RL_SRC = \
   xbt/xbt_rl_synchro.c		\

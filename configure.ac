@@ -20,6 +20,14 @@ AC_LANG([C])
 AC_PROG_CXX
 AM_PROG_GCJ
 
+dnl ########### Addition for mmalloc (to be integrated into Cmake tools)
+AC_FUNC_MMAP
+AC_CHECK_HEADERS(limits.h stddef.h unistd.h)
+
+BFD_NEED_DECLARATION(sbrk)
+BFD_NEED_DECLARATION(getpagesize)
+dnl ########### end of addition for mmalloc
+
 AM_INIT_AUTOMAKE([gnu -Wno-portability])
 AC_CONFIG_MACRO_DIR(acmacro) 
 ACLOCAL="$ACLOCAL -I acmacro"
