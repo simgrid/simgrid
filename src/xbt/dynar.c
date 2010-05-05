@@ -300,7 +300,7 @@ void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
   size_wanted = dynar->used + empty_slots_wanted;
   if (size_wanted != dynar->size) {
     dynar->size = size_wanted;
-    dynar->data = xbt_realloc(dynar->data, sizeof(void *) * dynar->size);
+    dynar->data = xbt_realloc(dynar->data, dynar->elmsize * dynar->size);
   }
   _dynar_unlock(dynar);
 }

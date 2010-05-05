@@ -3,6 +3,7 @@ SimGrid (3.5) unstable; urgency=low
  XBT
  * New function: xbt_dict_cursor_set_data()
  * New function: xbt_fifo_get_last_item()
+ * Bug fix in xbt_dynar_shrink(): use the right element size
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 
