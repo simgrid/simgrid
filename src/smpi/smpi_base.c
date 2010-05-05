@@ -193,6 +193,9 @@ static void finish_wait(MPI_Request* request, MPI_Status* status) {
   }
   if(((*request)->flags & NON_PERSISTENT) == NON_PERSISTENT) {
     smpi_mpi_request_free(request);
+  } else {
+    (*request)->rdv = NULL;
+    (*request)->pair = NULL;
   }
 }
 
