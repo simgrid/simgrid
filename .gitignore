@@ -44,19 +44,23 @@ depcomp
 missing
 texinfo.tex
 
-*_unit.c
 src/simgrid.jar
-src/simgrid_units_main.c
 src/bindings/ruby/simgrid.so
 examples/ruby/simgrid.so
 examples/lua/simgrid.so
 src/bindings/ruby/libsimgrid.so
+
 examples/msg/zmsg_test.trace
 examples/msg/categories.trace
 examples/msg/masterslave/toto.txt
 examples/msg/simulation.trace
 examples/msg/toto.txt
 examples/msg/z_gtnets.trace
+examples/msg/tracing/procmig
+examples/msg/tracing/tasks
+examples/msg/tracing/volume
+
+src/simgrid_units_main.c
 *_unit.c
 src/supernovae_*.c
 
