@@ -169,7 +169,8 @@ XBT_SRC=\
   \
   xbt/config.c                                                               \
   xbt/cunit.c                                                                \
-  xbt/graphxml_parse.c
+  xbt/graphxml_parse.c                                                       \
+  xbt/setset.c
 
 XBT_RL_SRC = \
   xbt/xbt_rl_synchro.c		\
