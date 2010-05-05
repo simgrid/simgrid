@@ -23,7 +23,7 @@ set(SIMGRID_DEP "-lm")
 set(SMPI_DEP "")
 
 if(HAVE_RUBY)
-	set(SIMGRID_DEP "${SIMGRID_DEP} -l${LIB_RUBY_VERSION} -module")
+	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME} -module")
 	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
 endif(HAVE_RUBY)
 
