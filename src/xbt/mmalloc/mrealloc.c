@@ -137,13 +137,12 @@ void *realloc (void *ptr, size_t size);
    on top of it, so that if we use the default sbrk() region we will not
    collide with another malloc package trying to do the same thing, if
    the application contains any "hidden" calls to malloc/realloc/free (such
-   as inside a system library). */
+   as inside a system library).
+   FIXME: disabled for now */
 
-void *
-realloc (void *ptr, size_t size)
-{
-  void* result;
+//void * realloc (void *ptr, size_t size) {
+//  void* result;
 
-  result = mrealloc (NULL, ptr, size);
-  return (result);
-}
+//  result = mrealloc (NULL, ptr, size);
+//  return (result);
+//}

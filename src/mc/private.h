@@ -16,7 +16,7 @@
 #include "xbt/setset.h"
 #include "xbt/config.h"
 #include "xbt/function_types.h"
-#include "mmalloc.h"
+#include "xbt/mmalloc.h"
 #include "../simix/private.h"
 
 /****************************** Snapshots ***********************************/

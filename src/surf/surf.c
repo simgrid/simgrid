@@ -102,7 +102,7 @@ int __surf_is_absolute_file_path(const char *file_path)
 #endif
 }
 
-static double NOW = 0;
+double NOW = 0;
 
 xbt_dynar_t model_list = NULL;
 tmgr_history_t history = NULL;

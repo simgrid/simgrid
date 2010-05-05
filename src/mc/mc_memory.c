@@ -16,9 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
 				"Logging specific to MC (memory)");
 
 /* Pointers to each of the heap regions to use */
-void *std_heap;
-void *raw_heap;
-void *actual_heap;
+void *std_heap=NULL;
+void *raw_heap=NULL;
+void *actual_heap=NULL;
 
 /* Pointers to the begining and end of the .data and .bss segment of libsimgrid */
 /* They are initialized once at memory_init */
@@ -58,7 +58,7 @@ void MC_memory_init()
       tmp = xbt_strdup(maps->regions[i].pathname);
       libname = basename(tmp);
  
-      if( strncmp("libsimgrid.so.2.0.0", libname, 18) == 0 && maps->regions[i].perms & MAP_WRITE){
+      if( strncmp("libsimgrid.so.2.0.0", libname, 18) == 0 && maps->regions[i].perms & MAP_WRITE){ //FIXME: do not hardcode
         libsimgrid_data_addr_start = maps->regions[i].start_addr;
         libsimgrid_data_size = (size_t)((char *)maps->regions[i+1].end_addr - (char *)maps->regions[i].start_addr);
         xbt_free(tmp);
@@ -110,7 +110,7 @@ void *realloc(void *p, size_t s)
     if (p)
       ret = mrealloc(actual_heap, p,s);
     else
-      ret = malloc(s);
+      ret = malloc(s); /* FIXME: shouldn't this be mmalloc? */
   } else {
     if (p) {
       free(p);
@@ -124,7 +124,7 @@ void *realloc(void *p, size_t s)
 void free(void *p)
 {
   DEBUG1("%p was freed",p);
-  xbt_assert(actual_heap != NULL);
+//  xbt_assert(actual_heap != NULL); FIXME: I had to comment this
   return mfree(actual_heap, p);
 }
 

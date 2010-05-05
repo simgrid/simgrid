@@ -31,10 +31,9 @@ mcalloc (void *md, register size_t nmemb, register size_t size)
    on top of it, so that if we use the default sbrk() region we will not
    collide with another malloc package trying to do the same thing, if
    the application contains any "hidden" calls to malloc/realloc/free (such
-   as inside a system library). */
+   as inside a system library).
+   FIXME: disabled for now */
 
-void*
-calloc (size_t nmemb, size_t size)
-{
-  return (mcalloc ((void*) NULL, nmemb, size));
-}
+//void* calloc (size_t nmemb, size_t size) {
+//  return (mcalloc ((void*) NULL, nmemb, size));
+//}
