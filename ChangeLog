@@ -6,6 +6,10 @@ SimGrid (3.5) unstable; urgency=low
  * New function: xbt_dict_cursor_set_data()
  * New function: xbt_fifo_get_last_item()
  * Bug fix in xbt_dynar_shrink(): use the right element size
+ * Use library init/fini functions for our initialization.
+   - you can use logs and other feature as soon as you want in your
+     code (even before the xbt_init / MSG_init)
+   - xbt_exit is now a no-op.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 

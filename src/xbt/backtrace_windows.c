@@ -68,8 +68,8 @@ static HINSTANCE hlp_dbg_instance = NULL;
 static HANDLE process_handle = NULL;
 
 
-/* Module creation/destruction: nothing to do on linux */
-void xbt_backtrace_init(void)
+/* Module creation/destruction: initialize our tables */
+void xbt_backtrace_preinit(void)
 {
   process_handle = GetCurrentProcess();
 
@@ -130,7 +130,7 @@ void xbt_backtrace_init(void)
   }
 }
 
-void xbt_backtrace_exit(void)
+void xbt_backtrace_postexit(void)
 {
   if (!hlp_dbg_instance)
     return;

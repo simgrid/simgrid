@@ -27,11 +27,11 @@
  */
 
 /* Mod_init/exit mecanism */
-void xbt_os_thread_mod_init(void)
+void xbt_os_thread_mod_preinit(void)
 {
 }
 
-void xbt_os_thread_mod_exit(void)
+void xbt_os_thread_mod_postexit(void)
 {
 }
 

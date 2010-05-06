@@ -72,7 +72,7 @@ static void _os_thread_ex_terminate(xbt_ex_t * e)
   /* FIXME: there should be a configuration variable to choose to kill everyone or only this one */
 }
 
-void xbt_os_thread_mod_init(void)
+void xbt_os_thread_mod_preinit(void)
 {
   int errcode;
 
@@ -101,8 +101,7 @@ void xbt_os_thread_mod_init(void)
 
 }
 
-void xbt_os_thread_mod_exit(void)
-{
+void xbt_os_thread_mod_postexit(void) {
   /* FIXME: don't try to free our key on shutdown.
      Valgrind detects no leak if we don't, and whine if we try to */
   //   int errcode;
@@ -600,12 +599,12 @@ typedef struct xbt_os_thread_ {
 /* key to the TLS containing the xbt_os_thread_t structure */
 static unsigned long xbt_self_thread_key;
 
-void xbt_os_thread_mod_init(void)
+void xbt_os_thread_mod_preinit(void)
 {
   xbt_self_thread_key = TlsAlloc();
 }
 
-void xbt_os_thread_mod_exit(void)
+void xbt_os_thread_mod_postexit(void)
 {
 
   if (!TlsFree(xbt_self_thread_key))

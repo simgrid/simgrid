@@ -6,6 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/misc.h"
 #include "time.h"               /* to seed the random generator */
 
 #include "xbt/sysdep.h"
@@ -45,13 +46,40 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_queue);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_set);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_sync_os);
 
-/** @brief Initialize the xbt mechanisms. */
-void xbt_init(int *argc, char **argv)
-{
-  xbt_initialized++;
 
-  if (xbt_initialized != 1)
-    return;
+/* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
+ * This is crude and rather compiler-specific, unfortunately.
+ */
+static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR;
+static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR;
+#ifdef _XBT_NEED_INIT_PRAGMA
+#pragma init (xbt_preinit)
+#pragma fini (xbt_postexit)
+#endif
+
+#ifdef WIN32
+#include <windows.h>
+
+/* Dummy prototype to make gcc happy */
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved);
+
+
+/* see also http://msdn.microsoft.com/en-us/library/ms682583%28VS.85%29.aspx */
+/* and http://www.microsoft.com/whdc/driver/kernel/DLL_bestprac.mspx */
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+  if (fdwReason == DLL_PROCESS_ATTACH) {
+    xbt_preinit();
+  } else if (fdwReason == DLL_PROCESS_DETACH) {
+    xbt_postexit();
+  }
+  return 1;
+}
+
+
+#endif
+
+static void xbt_preinit(void) {
+  xbt_log_preinit();
 
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(graphxml_parse, xbt);
@@ -77,34 +105,45 @@ void xbt_init(int *argc, char **argv)
   XBT_LOG_CONNECT(xbt_set, xbt);
   XBT_LOG_CONNECT(xbt_sync_os, xbt);
 
+  xbt_fifo_preinit();
+
+  xbt_backtrace_preinit();
+  xbt_os_thread_mod_preinit();
+}
+
+static void xbt_postexit(void) {
+  xbt_os_thread_mod_postexit();
+  xbt_backtrace_postexit();
+
+  xbt_fifo_postexit();
+  xbt_dict_postexit();
+
+  xbt_log_postexit();
+
+  free(xbt_binary_name);
+}
+
+/** @brief Initialize the xbt mechanisms. */
+void xbt_init(int *argc, char **argv)
+{
+  xbt_assert0(xbt_initialized == 0, "xbt_init must be called only once");
+  xbt_initialized++;
+
   xbt_binary_name = xbt_strdup(argv[0]);
   srand((unsigned int) time(NULL));
   VERB0("Initialize XBT");
 
-  xbt_backtrace_init();
   xbt_log_init(argc, argv);
-  xbt_os_thread_mod_init();
 }
 
 /** @brief Finalize the xbt mechanisms. */
-void xbt_exit()
-{
-  xbt_initialized--;
-  if (xbt_initialized == 0) {
-    xbt_fifo_exit();
-    xbt_dict_exit();
-    xbt_os_thread_mod_exit();
-    xbt_log_exit();
-    xbt_backtrace_exit();
-    free(xbt_binary_name);
-  }
+void xbt_exit() {
 }
 
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like free, but you can be sure that it is a function  */
-XBT_PUBLIC(void) xbt_free_f(void *p)
-{
+XBT_PUBLIC(void) xbt_free_f(void *p) {
   free(p);
 }
 

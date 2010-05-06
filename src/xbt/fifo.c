@@ -26,14 +26,9 @@ xbt_fifo_t xbt_fifo_new(void)
   xbt_fifo_t fifo;
   fifo = xbt_new0(struct xbt_fifo, 1);
 
-  if (item_mallocator == NULL) {
-    item_mallocator = xbt_mallocator_new(256,
-                                         fifo_item_mallocator_new_f,
-                                         fifo_item_mallocator_free_f,
-                                         fifo_item_mallocator_reset_f);
-  }
   return fifo;
 }
+
 
 /** Destructor
  * \param l poor victim
@@ -510,12 +505,17 @@ xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
   return xbt_fifo_get_prev_item(i);
 }
 
-/**
- * Destroy the fifo item mallocator.
- * This is an internal XBT function called by xbt_exit().
+/* Module init/exit handling the fifo item mallocator
+ * These are internal XBT functions called by xbt_preinit/postexit().
  */
-void xbt_fifo_exit(void)
-{
+void xbt_fifo_preinit(void) {
+  item_mallocator = xbt_mallocator_new(256,
+                                       fifo_item_mallocator_new_f,
+                                       fifo_item_mallocator_free_f,
+                                       fifo_item_mallocator_reset_f);
+}
+
+void xbt_fifo_postexit(void) {
   if (item_mallocator != NULL) {
     xbt_mallocator_free(item_mallocator);
     item_mallocator = NULL;

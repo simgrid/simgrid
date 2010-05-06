@@ -75,7 +75,6 @@ void MSG_global_init(int *argc, char **argv)
     SIMIX_function_register_process_cleanup(__MSG_process_cleanup);
     SIMIX_function_register_process_kill(_MSG_process_kill_from_SIMIX);
   }
-  return;
 }
 
 /** \defgroup m_channel_management    Understanding channels

@@ -12,11 +12,11 @@
 #include "xbt_modinter.h"
 
 /* Module creation/destruction */
-void xbt_backtrace_init(void)
+void xbt_backtrace_preinit(void)
 {
 }
 
-void xbt_backtrace_exit(void)
+void xbt_backtrace_postexit(void)
 {
 }
 

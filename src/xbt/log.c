@@ -468,7 +468,6 @@ welcome here, too.
 
 xbt_log_appender_t xbt_log_default_appender = NULL;     /* set in log_init */
 xbt_log_layout_t xbt_log_default_layout = NULL; /* set in log_init */
-int _log_usable = 0;
 
 typedef struct {
   char *catname;
@@ -523,22 +522,22 @@ XBT_LOG_NEW_CATEGORY(bindings, "All bindings categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log, xbt,
                                 "Loggings from the logging mechanism itself");
 
-/** @brief Get all logging settings from the command line
- *
- * xbt_log_control_set() is called on each string we got from cmd line
- */
-void xbt_log_init(int *argc, char **argv)
-{
-  int i, j;
-  char *opt;
-
-  /* create the default appender and install it in the root category,
-     which were already created (damnit. Too slow little beetle) */
+/* create the default appender and install it in the root category,
+   which were already created (damnit. Too slow little beetle) */
+void xbt_log_preinit(void) {
   xbt_log_default_appender = xbt_log_appender_file_new(NULL);
   xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
   _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
   _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
-  _log_usable = 1;
+}
+
+/** @brief Get all logging settings from the command line
+ *
+ * xbt_log_control_set() is called on each string we got from cmd line
+ */
+void xbt_log_init(int *argc, char **argv) {
+  int i, j;
+  char *opt;
 
   //    _XBT_LOGV(log).threshold = xbt_log_priority_debug; /* uncomment to set the LOG category to debug directly */
 
@@ -592,26 +591,17 @@ static void log_cat_exit(xbt_log_category_t cat)
     log_cat_exit(child);
 }
 
-void xbt_log_exit(void)
+void xbt_log_postexit(void)
 {
   VERB0("Exiting log");
   xbt_dynar_free(&xbt_log_settings);
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
-  _log_usable = 0;
 }
 
 void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
 {
 
   xbt_log_category_t cat = ev->cat;
-  if (!_log_usable) {
-    /* Make sure that the layouts have been malloced */
-    xbt_log_default_appender = xbt_log_appender_file_new(NULL);
-    xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
-    _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
-    _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
-    _log_usable = 1;
-  }
 
   va_start(ev->ap, fmt);
   va_start(ev->ap_copy, fmt);

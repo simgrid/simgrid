@@ -92,7 +92,7 @@ SG_BEGIN_DECL()
 /* The root of the category hierarchy. */
 #define XBT_LOG_ROOT_CAT   root
 
-/* In stric ansi C, we are not allowed to initialize a variable with 
+/* In strict ansi C, we are not allowed to initialize a variable with
  * a non-constant value. But the whole tree of categories is
  * connected by setting the address of the parent category as a field
  * of the child one.

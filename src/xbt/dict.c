@@ -751,7 +751,7 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
  * Destroy the dict mallocators.
  * This is an internal XBT function called by xbt_exit().
  */
-void xbt_dict_exit(void)
+void xbt_dict_postexit(void)
 {
   if (dict_mallocator != NULL) {
     xbt_mallocator_free(dict_mallocator);

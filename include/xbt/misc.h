@@ -10,7 +10,7 @@
 #define XBT_MISC_H
 
 /* Attributes are only in recent versions of GCC */
-#if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
+#if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4))
 # define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
 	   __attribute__((__format__ (__printf__, format_idx, arg_idx)))
 # define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
@@ -19,6 +19,9 @@
 		   __attribute__((__format_arg__ (arg_idx)))
 # define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
 # define _XBT_GNUC_UNUSED  __attribute__((unused))
+# define _XBT_GNUC_CONSTRUCTOR __attribute__((__constructor__))
+# define _XBT_GNUC_DESTRUCTOR __attribute__((__destructor__))
+# undef _XBT_NEED_INIT_PRAGMA
 
 #else /* !__GNUC__ */
 # define _XBT_GNUC_PRINTF( format_idx, arg_idx )
@@ -26,6 +29,9 @@
 # define _XBT_GNUC_FORMAT( arg_idx )
 # define _XBT_GNUC_NORETURN
 # define _XBT_GNUC_UNUSED
+# define _XBT_GNUC_CONSTRUCTOR
+# define _XBT_GNUC_DESTRUCTOR
+# define  _XBT_NEED_INIT_PRAGMA 1
 
 #endif /* !__GNUC__ */
 

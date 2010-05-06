@@ -11,15 +11,18 @@
 #include "xbt/misc.h"
 
 /* Modules definitions */
-void xbt_backtrace_init(void);
-void xbt_backtrace_exit(void);
+void xbt_backtrace_preinit(void);
+void xbt_backtrace_postexit(void);
 
+void xbt_log_preinit(void);
 void xbt_log_init(int *argc, char **argv);
-void xbt_log_exit(void);
-void xbt_fifo_exit(void);
-void xbt_dict_exit(void);
+void xbt_log_postexit(void);
 
-void xbt_os_thread_mod_init(void);
-void xbt_os_thread_mod_exit(void);
+void xbt_fifo_preinit(void);
+void xbt_fifo_postexit(void);
+void xbt_dict_postexit(void);
+
+void xbt_os_thread_mod_preinit(void);
+void xbt_os_thread_mod_postexit(void);
 
 #endif /* XBT_MODINTER_H */
