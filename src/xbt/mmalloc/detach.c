@@ -37,6 +37,7 @@ mmalloc_detach (void *md)
     {
 
       mtemp = *(struct mdesc *) md;
+      xbt_os_mutex_destroy(((struct mdesc*)md)->mutex);
       
       /* Now unmap all the pages associated with this region by asking for a
 	 negative increment equal to the current size of the region. */

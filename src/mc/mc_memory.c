@@ -17,7 +17,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
 /* Pointers to each of the heap regions to use */
 void *std_heap=NULL; /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
 void *raw_heap=NULL; /* memory persistent over the MC rollbacks. Only MC stuff should go there */
-void *actual_heap=NULL; /* The heap we are currently using. Either std_heap or raw_heap. Controlled by macros MC_SET_RAW_MEM/MC_UNSET_RAW_MEM */
 
 /* Pointers to the beginning and end of the .data and .bss segment of libsimgrid */
 /* They are initialized once at memory_init */
@@ -82,58 +81,12 @@ void MC_memory_init()
 }
 
 /* Finish the memory subsystem */
-void MC_memory_exit()
-{
-  mmalloc_detach(std_heap);
-  mmalloc_detach(raw_heap);
-  actual_heap = NULL;
+#include "xbt_modinter.h"
+void MC_memory_exit(void) {
+  if (raw_heap)
+    mmalloc_detach(raw_heap);
 }
 
-void *malloc(size_t n) {
-  void *ret = mmalloc(actual_heap, n);
-   
-  DEBUG2("%zu bytes were allocated at %p",n, ret);
-  return ret;
-}
-
-void *calloc(size_t nmemb, size_t size)
-{
-  size_t total_size = nmemb * size;
-
-  void *ret = mmalloc(actual_heap, total_size);
-   
-/* Fill the allocated memory with zeroes to mimic calloc behaviour */
-  memset(ret,'\0', total_size);
-
-  DEBUG2("%zu bytes were mallocated and zeroed at %p",total_size, ret);
-  return ret;
-}
-  
-void *realloc(void *p, size_t s)
-{
-  void *ret = NULL;
-	
-  if (s) {
-    if (p)
-      ret = mrealloc(actual_heap, p,s);
-    else
-      ret = malloc(s); /* FIXME: shouldn't this be mmalloc? */
-  } else {
-    if (p) {
-      free(p);
-    }
-  }
-
-  DEBUG2("%zu bytes were reallocated at %p",s,ret);
-  return ret;
-}
-
-void free(void *p)
-{
-  DEBUG1("%p was freed",p);
-//  xbt_assert(actual_heap != NULL); FIXME: I had to comment this
-  return mfree(actual_heap, p);
-}
 
 /* FIXME: Horrible hack! because the mmalloc library doesn't provide yet of */
 /* an API to query about the status of a heap, we simply call mmstats and */

@@ -49,19 +49,3 @@ sbrk_morecore (mdp, size)
   return (result);
 }
 
-#define HEAP_OFFSET   20480000    /* Safety gap from the heap's break address */
-
-void *mmalloc_get_default_md(void) {
-  return __mmalloc_default_mdp;
-}
-
-/* Initialize the default malloc descriptor. */
-#include "xbt_modinter.h"
-void mmalloc_preinit(void) {
-  __mmalloc_default_mdp = mmalloc_attach(-1, (char *)sbrk(0) + HEAP_OFFSET);
-  xbt_assert(__mmalloc_default_mdp != NULL);
-}
-void mmalloc_postexit(void) {
-  /* Do not detach the default mdp or ldl won't be able to free the memory it allocated since we're in memory */
-  //  mmalloc_detach(__mmalloc_default_mdp);
-}

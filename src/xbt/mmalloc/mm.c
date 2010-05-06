@@ -29,3 +29,4 @@
 #include "detach.c"
 #include "keys.c"
 #include "sbrk-sup.c"
+#include "mm_legacy.c"

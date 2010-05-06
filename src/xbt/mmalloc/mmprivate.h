@@ -13,6 +13,7 @@
 #ifndef __MMPRIVATE_H
 #define __MMPRIVATE_H 1
 
+#include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
 
 #ifdef HAVE_LIMITS_H
@@ -76,8 +77,12 @@
 
 #define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 
-/* Data structure giving per-block information.  */
+/* Thread-safety (if the mutex is already created)*/
+#define LOCK(mdp) if (mdp->mutex) xbt_os_mutex_acquire(mdp->mutex)
+#define UNLOCK(mdp) if (mdp->mutex) xbt_os_mutex_release(mdp->mutex)
+const char *xbt_thread_self_name(void);
 
+/* Data structure giving per-block information.  */
 typedef union
   {
     /* Heap information for a busy block.  */
@@ -144,28 +149,23 @@ struct mstats
    managing, and thus also becomes the file header for the mapped file,
    if such a file exists. */
 
-struct mdesc
-{
+struct mdesc {
+  xbt_os_mutex_t mutex;
   /* The "magic number" for an mmalloc file. */
-
   char magic[MMALLOC_MAGIC_SIZE];
 
   /* The size in bytes of this structure, used as a sanity check when reusing
      a previously created mapped file. */
-
   unsigned int headersize;
 
   /* The version number of the mmalloc package that created this file. */
-
   unsigned char version;
 
   /* Some flag bits to keep track of various internal things. */
-
   unsigned int flags;
 
   /* If a system call made by the mmalloc package fails, the errno is
      preserved for future examination. */
-
   int saved_errno;
 
   /* Pointer to the function that is used to get more core, or return core
@@ -177,7 +177,6 @@ struct mdesc
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
-
   void* (*morecore) (struct mdesc *mdp, int size);
      
   /* Pointer to the function that causes an abort when the memory checking
@@ -186,45 +185,37 @@ struct mdesc
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
-
   void (*abortfunc) (void);
 
   /* Debugging hook for free.
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
-
   void (*mfree_hook) (void* mdp, void* ptr);
 
   /* Debugging hook for `malloc'.
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
-
   void* (*mmalloc_hook) (void* mdp, size_t size);
 
   /* Debugging hook for realloc.
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
-
   void* (*mrealloc_hook) (void* mdp, void* ptr, size_t size);
 
   /* Number of info entries.  */
-
   size_t heapsize;
 
   /* Pointer to first block of the heap (base of the first block).  */
-
   void* heapbase;
 
   /* Current search index for the heap table.  */
   /* Search index in the info table.  */
-
   size_t heapindex;
 
   /* Limit of valid info table indices.  */
-
   size_t heaplimit;
 
   /* Block information table.
@@ -314,7 +305,7 @@ extern void* __mmalloc_remap_core (struct mdesc *mdp);
 
 #define MD_TO_MDP(md) \
   ((md) == NULL \
-   ? __mmalloc_default_mdp \
+   ? __mmalloc_default_mdp  \
    : (struct mdesc *) (md))
 
 #endif  /* __MMPRIVATE_H */

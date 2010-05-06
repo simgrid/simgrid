@@ -353,7 +353,8 @@ static void *thread_reader(void *r)
   /* let this thread wait for the child so that the main thread can detect the timeout without blocking on the wait */
   got_pid = waitpid(rctx->pid, &rctx->status, 0);
   if (got_pid != rctx->pid) {
-    perror(bprintf("Cannot wait for the child %s", rctx->cmd));
+    perror(bprintf("(%s) Cannot wait for the child %s (got pid %d where pid %d were expected;rctx=%p;status=%d)",
+		   xbt_thread_self_name(), rctx->cmd, (int)got_pid, (int)rctx->pid,rctx,rctx->status));
     ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
     rctx_armageddon(rctx, 4);
     return NULL;

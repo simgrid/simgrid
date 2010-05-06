@@ -32,11 +32,13 @@ mmalloc_setkey (void *md, int keynum, void *key)
   struct mdesc *mdp = (struct mdesc *) md;
   int result = 0;
 
+  LOCK(mdp);
   if ((mdp != NULL) && (keynum >= 0) && (keynum < MMALLOC_KEYS))
     {
       mdp -> keys [keynum] = key;
       result++;
     }
+  UNLOCK(mdp);
   return (result);
 }
 

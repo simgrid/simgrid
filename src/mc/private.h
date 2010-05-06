@@ -108,14 +108,13 @@ void MC_print_statistics(mc_stats_t);
 /* Normally the system should operate in std, for switching to raw mode */
 /* you must wrap the code between MC_SET_RAW_MODE and MC_UNSET_RAW_MODE */
 
-extern void *actual_heap;
 extern void *std_heap;
 extern void *raw_heap;
 extern void *libsimgrid_data_addr_start;
 extern size_t libsimgrid_data_size;
 
-#define MC_SET_RAW_MEM    actual_heap = raw_heap
-#define MC_UNSET_RAW_MEM    actual_heap = std_heap
+#define MC_SET_RAW_MEM    mmalloc_set_current_heap(raw_heap)
+#define MC_UNSET_RAW_MEM    mmalloc_set_current_heap(std_heap)
 
 /******************************* MEMORY MAPPINGS ***************************/
 /* These functions and data structures implements a binary interface for   */

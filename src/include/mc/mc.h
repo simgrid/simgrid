@@ -29,7 +29,8 @@ XBT_PUBLIC(void) MC_transition_set_comm(mc_transition_t, smx_comm_t);
 
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init(void);   /* Initialize the memory subsystem */
-XBT_PUBLIC(void) MC_memory_exit(void);   /* Finish the memory subsystem */
+XBT_PUBLIC(void) MC_memory_exit(void);
+
 
 
 SG_END_DECL()

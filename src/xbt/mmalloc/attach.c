@@ -68,9 +68,7 @@ static struct mdesc *reuse (int fd);
 
    On failure returns NULL. */
 
-void *
-mmalloc_attach (int fd, void *baseaddr)
-{
+void * mmalloc_attach (int fd, void *baseaddr) {
   struct mdesc mtemp;
   struct mdesc *mdp;
   void* mbase;
@@ -86,10 +84,10 @@ mmalloc_attach (int fd, void *baseaddr)
   if (fd >= 0)
   {
     if (fstat (fd, &sbuf) < 0)
-	  return (NULL);
+      return (NULL);
 
     else if (sbuf.st_size > 0)
-	  return ((void*) reuse (fd));
+      return ((void*) reuse (fd));
   }
 
   /* If the user provided NULL BASEADDR then fail */
@@ -119,18 +117,6 @@ mmalloc_attach (int fd, void *baseaddr)
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */
 
-/*  if (mdp -> fd < 0)*/
-/*  {*/
-/*    if ((mdp -> fd = open ("/dev/zero", O_RDWR)) < 0)*/
-/*	{*/
-/*	  return (NULL);*/
-/*	}*/
-/*    else*/
-/*	{*/
-/*	  mdp -> flags |= MMALLOC_DEVZERO;*/
-/*	}*/
-/*  }*/
-
   /* Now try to map in the first page, copy the malloc descriptor structure
      there, and arrange to return a pointer to this new copy.  If the mapping
      fails, then close the file descriptor if it was opened by us, and arrange
@@ -139,14 +125,21 @@ mmalloc_attach (int fd, void *baseaddr)
   if ((mbase = mdp -> morecore (mdp, sizeof (mtemp))) != NULL)
   {
     memcpy (mbase, mdp, sizeof (mtemp));
-//    mdp = (struct mdesc *) mbase;
+    //    mdp = (struct mdesc *) mbase;
   }
   else
   {
     abort();
-//    mdp = NULL;
+    //    mdp = NULL;
   }
-  
+
+  { /* create the mutex within that heap */
+    void*old_heap=mmalloc_get_current_heap();
+    mmalloc_set_current_heap(mbase);
+    mdp->mutex =xbt_os_mutex_init();
+    mmalloc_set_current_heap(old_heap);
+  }
+
   return ((void*) mbase);
 }
 
@@ -194,13 +187,22 @@ reuse (int fd)
   if (__mmalloc_remap_core (&mtemp) == mtemp.base)
   {
     mdp = (struct mdesc *) mtemp.base;
-	mdp -> fd = fd;
-	mdp -> morecore = __mmalloc_mmap_morecore;
-	if (mdp -> mfree_hook != NULL)
-	{
-	  mmcheckf ((void*) mdp, (void (*) (void)) NULL, 1);
-	}
+    mdp -> fd = fd;
+    mdp -> morecore = __mmalloc_mmap_morecore;
+    mdp->mutex =xbt_os_mutex_init();
+    if (mdp -> mfree_hook != NULL)
+    {
+      mmcheckf ((void*) mdp, (void (*) (void)) NULL, 1);
+    }
   }
+
+  { /* create the mutex within that heap */
+    void*old_heap=mmalloc_get_current_heap();
+    mmalloc_set_current_heap(mdp);
+    mdp->mutex =xbt_os_mutex_init();
+    mmalloc_set_current_heap(old_heap);
+  }
+
   return (mdp);
 }
 
