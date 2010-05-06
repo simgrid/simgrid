@@ -249,6 +249,5 @@ int main(int argc, char *argv[])
   }
 
   rctx_exit();
-  xbt_exit();
   return 0;
 }

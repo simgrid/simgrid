@@ -157,7 +157,6 @@ void gras_exit(void)
     gras_emul_exit();
     gras_moddata_exit();
   }
-  xbt_exit();
 }
 
 const char *hexa_str(unsigned char *data, int size, int downside)

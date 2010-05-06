@@ -43,6 +43,5 @@ int main(int argc, char *argv[])
   INFO1("Done (strlen>%d)", (int) (10 * strlen(tmp)));
   free(tmp);
 
-  xbt_exit();
   return 0;
 }

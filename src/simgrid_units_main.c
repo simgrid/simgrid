@@ -204,7 +204,6 @@ int main(int argc, char *argv[]) {
       
   res = xbt_test_run(selection);
   xbt_test_exit();
-  xbt_exit();
   return res;
 }
 /*******************************/

@@ -631,7 +631,6 @@ finalize(void)
 		free(err_line);
 	
 	/* exit from the xbt framework */
-	xbt_exit();
 
 	finalized = 1;
 	

@@ -43,6 +43,5 @@ int main(int argc, char **argv)
   dolog(" test.thres:verbose root.thres:error ");
   dolog(" test.thres:critical ");
 
-  xbt_exit();
   return 0;
 }

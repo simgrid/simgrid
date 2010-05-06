@@ -67,8 +67,6 @@ main(int argc, char* argv[])
 	
 	INFO1("sem_basic terminated with exit code %d (success)",EXIT_SUCCESS);
 
-	xbt_exit();
-	
 	return EXIT_SUCCESS;
 		
 }

@@ -127,7 +127,6 @@ main(int argc, char* argv[])
 	if(!sched)
 	{
 		INFO1("sched_new() failed : errno %d",errno);
-		xbt_exit();
 		exit(EXIT_FAILURE);
 	}
 	
@@ -149,7 +148,6 @@ main(int argc, char* argv[])
 	{
 		sched_free(&sched);
 		INFO1("sched_init() failed : errno %d\n",errno);
-		xbt_exit();
 		exit(EXIT_FAILURE);
 	}
 	
@@ -158,7 +156,6 @@ main(int argc, char* argv[])
 	{
 		sched_free(&sched);
 		INFO1("sched_init() failed : errno %d",errno);
-		xbt_exit();
 		exit(EXIT_FAILURE);
 	}
 	
@@ -167,7 +164,6 @@ main(int argc, char* argv[])
 	{
 		sched_free(&sched);
 		INFO1("sched_init() failed : errno %d",errno);
-		xbt_exit();
 		exit(EXIT_FAILURE);
 	}
 	
@@ -176,8 +172,6 @@ main(int argc, char* argv[])
 	
 	INFO1("sem_sched terminated with exit code %d (success)",EXIT_SUCCESS);
 
-	xbt_exit();
-	
 	return EXIT_SUCCESS;
 		
 }

@@ -9,7 +9,7 @@ SimGrid (3.5) unstable; urgency=low
  * Use library init/fini functions for our initialization.
    - you can use logs and other feature as soon as you want in your
      code (even before the xbt_init / MSG_init)
-   - xbt_exit is now a no-op.
+   - xbt_exit is now a no-op and produce a warning when used.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 

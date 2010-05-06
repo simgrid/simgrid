@@ -138,6 +138,7 @@ void xbt_init(int *argc, char **argv)
 
 /** @brief Finalize the xbt mechanisms. */
 void xbt_exit() {
+  WARN0("This function is deprecated, you shouldn't use it");
 }
 
 

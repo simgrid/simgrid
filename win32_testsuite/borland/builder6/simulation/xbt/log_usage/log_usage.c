@@ -24,7 +24,6 @@ int main(int argc, char **argv)
 	CDEBUG2(top, "val=%d%s", 3, "!");
 	CRITICAL6("false alarm%s%s%s%s%s%s", "","","","","","!");
 	
-	xbt_exit();
 	return 0;
 }
 
