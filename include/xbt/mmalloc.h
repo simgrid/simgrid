@@ -55,6 +55,9 @@ extern void* mmalloc_getkey (void* md, int keynum);
 // FIXME: this function is not implemented anymore?
 //extern int mmalloc_errno (void* md);
 
+/* return the heap used when NULL is passed as first argument to any mm* function */
+extern void *mmalloc_get_default_md(void);
+
 extern int mmtrace(void);
 
 extern void* mmalloc_findbase(int size);

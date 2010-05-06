@@ -12,6 +12,7 @@
 
 #include <string.h>	/* Prototypes for memcpy, memmove, memset, etc */
 
+#include "xbt.h"
 #include "mmprivate.h"
 
 static void* sbrk_morecore (struct mdesc *mdp, int size);
@@ -48,43 +49,19 @@ sbrk_morecore (mdp, size)
   return (result);
 }
 
-/* Initialize the default malloc descriptor if this is the first time
-   a request has been made to use the default sbrk'd region.
+#define HEAP_OFFSET   20480000    /* Safety gap from the heap's break address */
 
-   Since no alignment guarantees are made about the initial value returned
-   by sbrk, test the initial value and (if necessary) sbrk enough additional
-   memory to start off with alignment to BLOCKSIZE.  We actually only need
-   it aligned to an alignment suitable for any object, so this is overkill.
-   But at most it wastes just part of one BLOCKSIZE chunk of memory and
-   minimizes portability problems by avoiding us having to figure out
-   what the actual minimal alignment is.  The rest of the malloc code
-   avoids this as well, by always aligning to the minimum of the requested
-   size rounded up to a power of two, or to BLOCKSIZE.
-
-   Note that we are going to use some memory starting at this initial sbrk
-   address for the sbrk region malloc descriptor, which is a struct, so the
-   base address must be suitably aligned. */
-
-struct mdesc *
-__mmalloc_sbrk_init (void)
-{
-  void* base;
-  unsigned int adj;
-
-  base = sbrk (0);
-  adj = RESIDUAL (base, BLOCKSIZE);
-  if (adj != 0)
-    {
-      sbrk (BLOCKSIZE - adj);
-      base = sbrk (0);
-    }
-  __mmalloc_default_mdp = (struct mdesc *) sbrk (sizeof (struct mdesc));
-  memset ((char *) __mmalloc_default_mdp, 0, sizeof (struct mdesc));
-  __mmalloc_default_mdp -> morecore = sbrk_morecore;
-  __mmalloc_default_mdp -> base = base;
-  __mmalloc_default_mdp -> breakval = __mmalloc_default_mdp -> top = sbrk (0);
-  __mmalloc_default_mdp -> fd = -1;
-  return (__mmalloc_default_mdp);
+void *mmalloc_get_default_md(void) {
+  return __mmalloc_default_mdp;
 }
 
-
+/* Initialize the default malloc descriptor. */
+#include "xbt_modinter.h"
+void mmalloc_preinit(void) {
+  __mmalloc_default_mdp = mmalloc_attach(-1, (char *)sbrk(0) + HEAP_OFFSET);
+  xbt_assert(__mmalloc_default_mdp != NULL);
+}
+void mmalloc_postexit(void) {
+  /* Do not detach the default mdp or ldl won't be able to free the memory it allocated since we're in memory */
+  //  mmalloc_detach(__mmalloc_default_mdp);
+}

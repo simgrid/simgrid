@@ -109,9 +109,7 @@ morecore (struct mdesc *mdp, size_t size)
 /* Allocate memory from the heap.  */
 
 void*
-mmalloc (md, size)
-  void* md;
-  size_t size;
+mmalloc (void *md, size_t size)
 {
   struct mdesc *mdp;
   void* result;

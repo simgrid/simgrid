@@ -19,8 +19,7 @@ memory_map_t get_memory_map(void)
 /* to be returned. */
   fp = fopen("/proc/self/maps","r");  
 
-  if(!fp)
-    xbt_abort();
+  xbt_assert0(fp,"Cannot open /proc/self/maps to investigate the memory map of the process. Please report this bug.");
     
   ret = xbt_new0(s_memory_map_t,1);
   

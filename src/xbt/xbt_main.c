@@ -79,6 +79,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 #endif
 
 static void xbt_preinit(void) {
+  mmalloc_preinit();
   xbt_log_preinit();
 
   /* Connect our log channels: that must be done manually under windows */
@@ -121,6 +122,7 @@ static void xbt_postexit(void) {
   xbt_log_postexit();
 
   free(xbt_binary_name);
+  mmalloc_postexit();
 }
 
 /** @brief Initialize the xbt mechanisms. */

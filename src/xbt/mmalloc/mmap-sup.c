@@ -9,8 +9,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#if defined(HAVE_MMAP)
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>	/* Prototypes for lseek */
 #endif
@@ -200,4 +198,3 @@ mmalloc_findbase (int size)
     }
   return ((void*) base);
 }
-#endif	/* defined(HAVE_MMAP) */

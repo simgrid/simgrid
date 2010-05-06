@@ -9,18 +9,17 @@
 
 extern char *basename (__const char *__filename);
 
-#define HEAP_OFFSET   20480000    /* Safety gap from the heap's break adress */
 #define STD_HEAP_SIZE   20480000  /* Maximum size of the system's heap */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
 				"Logging specific to MC (memory)");
 
 /* Pointers to each of the heap regions to use */
-void *std_heap=NULL;
-void *raw_heap=NULL;
-void *actual_heap=NULL;
+void *std_heap=NULL; /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
+void *raw_heap=NULL; /* memory persistent over the MC rollbacks. Only MC stuff should go there */
+void *actual_heap=NULL; /* The heap we are currently using. Either std_heap or raw_heap. Controlled by macros MC_SET_RAW_MEM/MC_UNSET_RAW_MEM */
 
-/* Pointers to the begining and end of the .data and .bss segment of libsimgrid */
+/* Pointers to the beginning and end of the .data and .bss segment of libsimgrid */
 /* They are initialized once at memory_init */
 void *libsimgrid_data_addr_start = NULL;
 size_t libsimgrid_data_size = 0;
@@ -30,20 +29,18 @@ size_t libsimgrid_data_size = 0;
 void MC_memory_init()
 {
 /* Create the first region HEAP_OFFSET bytes after the heap break address */
-  std_heap = mmalloc_attach(-1, (char *)sbrk(0) + HEAP_OFFSET);
+  std_heap = mmalloc_get_default_md();
   xbt_assert(std_heap != NULL);
 
-/* Create the sencond region a page after the first one ends */  
-/* FIXME: do not hardcode the page size to 4096 */
-  raw_heap = mmalloc_attach(-1, (char *)(std_heap) + STD_HEAP_SIZE + 4096);
+/* Create the second region a page after the first one ends */
+  raw_heap = mmalloc_attach(-1, (char *)(std_heap) + STD_HEAP_SIZE + getpagesize());
   xbt_assert(raw_heap != NULL);
 
   MC_SET_RAW_MEM;
 
 /* Get the start address and size of libsimgrid's data segment */
-/* CAVEAT: Here we are assuming several things, first that get_memory_map() */
-/* returns an array with the maps sorted from lower addresses to higher */
-/* ones. Second, that libsimgrid's data takes ONLY ONE page. */
+/* CAVEAT: Here we are assuming that get_memory_map() */
+/* returns an array with the maps sorted from lower addresses to higher ones.  */
   int i;
   char *libname, *tmp;
 
@@ -58,9 +55,19 @@ void MC_memory_init()
       tmp = xbt_strdup(maps->regions[i].pathname);
       libname = basename(tmp);
  
-      if( strncmp("libsimgrid.so.2.0.0", libname, 18) == 0 && maps->regions[i].perms & MAP_WRITE){ //FIXME: do not hardcode
+#if 0
+      if (maps->regions[i].perms & MAP_WRITE &&
+          maps->regions[i].pathname[0] != '\0' &&  /* do not take anonymous segments: what are they? */
+          strcmp("[heap]",maps->regions[i].pathname) && /* do not take standard heap: mmalloc saves it already */
+          strcmp("[stack]",maps->regions[i].pathname) /* this is maestro's stack. No need to save it */
+          ) {
+        /* FIXME: we should save the data of more segments, in a list of block to save */
+      }
+#endif
+      /* for now, we only save the data of libsimgrid (FIXME) */
+      if( strncmp("libsimgrid.so.", libname, 14) == 0 && maps->regions[i].perms & MAP_WRITE){
         libsimgrid_data_addr_start = maps->regions[i].start_addr;
-        libsimgrid_data_size = (size_t)((char *)maps->regions[i+1].end_addr - (char *)maps->regions[i].start_addr);
+        libsimgrid_data_size = (size_t)((char *)maps->regions[i+1].start_addr - (char *)maps->regions[i].start_addr);
         xbt_free(tmp);
         break;
       }        
@@ -82,8 +89,7 @@ void MC_memory_exit()
   actual_heap = NULL;
 }
 
-void *malloc(size_t n)
-{
+void *malloc(size_t n) {
   void *ret = mmalloc(actual_heap, n);
    
   DEBUG2("%zu bytes were allocated at %p",n, ret);
@@ -93,6 +99,7 @@ void *malloc(size_t n)
 void *calloc(size_t nmemb, size_t size)
 {
   size_t total_size = nmemb * size;
+
   void *ret = mmalloc(actual_heap, total_size);
    
 /* Fill the allocated memory with zeroes to mimic calloc behaviour */

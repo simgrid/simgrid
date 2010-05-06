@@ -294,16 +294,13 @@ extern struct mdesc *__mmalloc_default_mdp;
 /* Initialize the first use of the default malloc descriptor, which uses
    an sbrk() region. */
 
-extern struct mdesc *__mmalloc_sbrk_init (void);
+extern struct mdesc *__mmalloc_create_default_mdp (void);
 
 /* Grow or shrink a contiguous mapped region using mmap().
-   Works much like sbrk() */
-
-#if defined(HAVE_MMAP)
+   Works much like sbrk(), only faster */
 
 extern void* __mmalloc_mmap_morecore (struct mdesc *mdp, int size);
 
-#endif
 
 /* Remap a mmalloc region that was previously mapped. */
 
@@ -317,9 +314,7 @@ extern void* __mmalloc_remap_core (struct mdesc *mdp);
 
 #define MD_TO_MDP(md) \
   ((md) == NULL \
-   ? (__mmalloc_default_mdp == NULL \
-      ? __mmalloc_sbrk_init () \
-      : __mmalloc_default_mdp) \
+   ? __mmalloc_default_mdp \
    : (struct mdesc *) (md))
 
 #endif  /* __MMPRIVATE_H */

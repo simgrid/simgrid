@@ -34,8 +34,6 @@ Boston, MA 02111-1307, USA.  */
 #endif
 
 
-#if defined(HAVE_MMAP)
-
 /* Forward declarations/prototypes for local functions */
 
 static struct mdesc *reuse (int fd);
@@ -205,19 +203,4 @@ reuse (int fd)
   }
   return (mdp);
 }
-
-#else	/* !defined (HAVE_MMAP) */
-
-/* For systems without mmap, the library still supplies an entry point
-   to link to, but trying to initialize access to an mmap'd managed region
-   always fails. */
-
-/* ARGSUSED */
-void*
-mmalloc_attach (int fd, void* baseaddr)
-{
-   return (NULL);
-}
-
-#endif	/* defined (HAVE_MMAP) */
 
