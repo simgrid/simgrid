@@ -396,6 +396,7 @@ set(install_HEADERS
 ./include/xbt/synchro_core.h
 ./include/xbt/queue.h
 ./include/xbt/setset.h
+./include/xbt/mmalloc.h
 ./include/mc/modelchecker.h
 ./include/msg/msg.h
 ./include/msg/datatypes.h
