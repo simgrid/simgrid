@@ -29,7 +29,7 @@ int compare_double(const void *a, const void *b);
 
 void test_heap_validity(int size);
 void test_heap_mean_operation(int size);
-void test_reset_heap(xbt_heap_t heap, int size);
+void test_reset_heap(xbt_heap_t *heap, int size);
 
 
 int compare_double(const void *a, const void *b)
@@ -91,7 +91,7 @@ void test_heap_mean_operation(int size)
   for (j = 0; j < MAX_TEST; j++) {
 
     if (!(j % size) && j)
-      test_reset_heap(heap, size);
+      test_reset_heap(&heap, size);
 
     val = xbt_heap_maxkey(heap);
     xbt_heap_pop(heap);
@@ -104,14 +104,14 @@ void test_heap_mean_operation(int size)
   xbt_heap_free(heap);
 }
 
-void test_reset_heap(xbt_heap_t heap, int size)
+void test_reset_heap(xbt_heap_t *heap, int size)
 {
   int i;
-  xbt_heap_free(heap);
-  heap = xbt_heap_new(size, NULL);
+  xbt_heap_free(*heap);
+  *heap = xbt_heap_new(size, NULL);
 
   for (i = 0; i < size; i++) {
-    xbt_heap_push(heap, NULL, (10.0 * rand() / (RAND_MAX + 1.0)));
+    xbt_heap_push(*heap, NULL, (10.0 * rand() / (RAND_MAX + 1.0)));
   }
 
 }
