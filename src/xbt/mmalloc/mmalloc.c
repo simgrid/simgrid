@@ -112,12 +112,15 @@ void* mmalloc (void *md, size_t size) {
   struct list *next;
   register size_t log;
 
+  /* Work even if the user was stupid enough to ask a 0-byte block, ie return a valid block that can be realloced or freed
+   * glibc malloc does not use this trick but return a constant pointer, but my hack is quicker to implement ;)
+   */
   if (size == 0)
-    return (NULL);
+    size=1;
 
   mdp = MD_TO_MDP (md);
   LOCK(mdp);
-  printf("(%s) Mallocing %d bytes on %p (default: %p)...",xbt_thread_self_name(),size,mdp,__mmalloc_default_mdp);fflush(stdout);
+//  printf("(%s) Mallocing %d bytes on %p (default: %p)...",xbt_thread_self_name(),size,mdp,__mmalloc_default_mdp);fflush(stdout);
 
 
   if (mdp -> mmalloc_hook != NULL) {
@@ -181,9 +184,9 @@ void* mmalloc (void *md, size_t size) {
       /* No free fragments of the desired size, so get a new block
 	     and break it into fragments, returning the first.  */
       UNLOCK(mdp);
-      printf("(%s) No free fragment...",xbt_thread_self_name());
+      //printf("(%s) No free fragment...",xbt_thread_self_name());
       result = mmalloc (md, BLOCKSIZE);
-      printf("(%s) Fragment: %p...",xbt_thread_self_name(),result);
+      //printf("(%s) Fragment: %p...",xbt_thread_self_name(),result);
       LOCK(mdp);
       if (result == NULL)
       {
@@ -298,7 +301,7 @@ void* mmalloc (void *md, size_t size) {
     mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
     mdp -> heapstats.bytes_free -= blocks * BLOCKSIZE;
   }
-  printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
+  //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
   UNLOCK(mdp);
   return (result);
 }
