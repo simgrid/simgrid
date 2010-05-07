@@ -38,7 +38,7 @@ extern int getpagesize (void);
 /* Return MAP_PRIVATE if MDP represents /dev/zero.  Otherwise, return
    MAP_SHARED.  */
 
-#define MAP_PRIVATE_OR_SHARED(MDP) ((MDP -> flags & MMALLOC_DEVZERO) \
+#define MAP_PRIVATE_OR_SHARED(MDP) (( MDP -> flags & MMALLOC_ANONYMOUS) \
                                     ? MAP_PRIVATE \
                                     : MAP_SHARED)
 
