@@ -61,7 +61,7 @@ static MPI_Request build_request(void* buf, int count, MPI_Datatype datatype, in
   request->complete = 0;
   request->match = MPI_REQUEST_NULL;
   request->flags = flags;
-  if(request->size <= EAGER_LIMIT) {
+  if(request->size < EAGER_LIMIT) {
     request->ack = MPI_REQUEST_NULL;
   } else {
     request->ack = xbt_new(s_smpi_mpi_request_t, 1);
@@ -96,7 +96,7 @@ MPI_Request smpi_mpi_recv_init(void* buf, int count, MPI_Datatype datatype, int 
 
 void smpi_mpi_start(MPI_Request request) {
   xbt_assert0(request->complete == 0, "Cannot start a non-finished communication");
-  if(request->size > EAGER_LIMIT) {
+  if(request->size >= EAGER_LIMIT) {
     print_request("RDV ack", request->ack);
     smpi_mpi_wait(&request->ack, MPI_STATUS_IGNORE);
   }
