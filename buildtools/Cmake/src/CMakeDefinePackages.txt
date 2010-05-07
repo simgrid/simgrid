@@ -17,22 +17,24 @@ set(EXTRA_DIST
 	${PROJECT_DIRECTORY}/src/xbt/backtrace_windows.c
 	${PROJECT_DIRECTORY}/src/xbt/backtrace_dummy.c
 	${PROJECT_DIRECTORY}/src/xbt/setset_private.h
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/keys.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmalloc.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mm.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmprivate.h
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mrealloc.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/attach.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/detach.c	
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/keys.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mcalloc.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmcheck.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmstats.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mvalloc.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/detach.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mfree.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mm_legacy.c		
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mm.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmalloc.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmap-sup.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmcheck.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmemalign.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmprivate.h
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmstats.c
 	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmtrace.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/sbrk-sup.c  
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mrealloc.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mvalloc.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/sbrk-sup.c
+	${PROJECT_DIRECTORY}/src/xbt/mmalloc/test/mmalloc_test.c
 	${PROJECT_DIRECTORY}/src/surf/maxmin_private.h
 	${PROJECT_DIRECTORY}/src/surf/trace_mgr_private.h
 	${PROJECT_DIRECTORY}/src/surf/surf_private.h
@@ -57,6 +59,11 @@ set(EXTRA_DIST
 	${PROJECT_DIRECTORY}/src/include/xbt/wine_dbghelp.h
 	${PROJECT_DIRECTORY}/src/include/xbt/xbt_os_time.h
 	${PROJECT_DIRECTORY}/src/include/xbt/xbt_os_thread.h
+	${PROJECT_DIRECTORY}/src/include/mc/datatypes.h
+	${PROJECT_DIRECTORY}/src/include/mc/mc.h
+	${PROJECT_DIRECTORY}/src/include/simix/simix.h
+	${PROJECT_DIRECTORY}/src/include/simix/datatypes.h
+	${PROJECT_DIRECTORY}/src/include/simix/context.h
 	${PROJECT_DIRECTORY}/src/msg/private.h
 	${PROJECT_DIRECTORY}/src/msg/mailbox.h
 	${PROJECT_DIRECTORY}/src/simdag/private.h
@@ -73,9 +80,6 @@ set(EXTRA_DIST
 	${PROJECT_DIRECTORY}/src/gras/Transport/transport_interface.h
 	${PROJECT_DIRECTORY}/src/amok/Bandwidth/bandwidth_private.h
 	${PROJECT_DIRECTORY}/src/amok/amok_modinter.h
-	${PROJECT_DIRECTORY}/src/include/simix/simix.h
-	${PROJECT_DIRECTORY}/src/include/simix/datatypes.h
-	${PROJECT_DIRECTORY}/src/include/simix/context.h
 	${PROJECT_DIRECTORY}/src/simix/private.h
 	${PROJECT_DIRECTORY}/src/simix/smx_context_private.h
 	${PROJECT_DIRECTORY}/src/simix/smx_context_java.h
@@ -335,6 +339,7 @@ set(MC_SRC
 	${PROJECT_DIRECTORY}/src/mc/mc_dfs.c
 	${PROJECT_DIRECTORY}/src/mc/mc_dpor.c
 	${PROJECT_DIRECTORY}/src/mc/mc_transition.c
+	${PROJECT_DIRECTORY}/src/mc/private.h
 )
 
 set(install_bins
@@ -391,7 +396,7 @@ set(install_HEADERS
 ./include/xbt/synchro_core.h
 ./include/xbt/queue.h
 ./include/xbt/setset.h
-./include/mmalloc.h
+./include/mc/modelchecker.h
 ./include/msg/msg.h
 ./include/msg/datatypes.h
 ./include/simdag/simdag.h
@@ -728,12 +733,14 @@ set(to_svg
 	${AMOK_SRC}
 	${LUA_SRC}
 	${RUBY_SRC}
+	${MC_SRC}
 	${add_src_files}
 	${include_files}
 	${xml_files}
 	${tesh_files}
 	${txt_files}
 	${TEST_CFILES}
+	${EXTRA_DIST} 
 	${PROJECT_DIRECTORY}/./CMakeLists.txt
 	${PROJECT_DIRECTORY}/./AUTHORS
 	${PROJECT_DIRECTORY}/./ChangeLog

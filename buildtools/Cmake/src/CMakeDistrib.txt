@@ -62,6 +62,7 @@ COMMAND mkdir -p $ENV{DESTDIR}${prefix}/doc/simgrid
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/doc/simgrid/html
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/xbt
+COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/mc
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/msg
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/simdag
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/smpi

@@ -67,6 +67,7 @@ if(enable_print_message)
 	message("HAVE_VSNPRINTF			${HAVE_VSNPRINTF}")
 	message("HAVE_ASPRINTF			${HAVE_ASPRINTF}")
 	message("HAVE_VASPRINTF			${HAVE_VASPRINTF}")
+	message("HAVE_MMAP			${HAVE_MMAP}")
 
 	message("")
 	message("RUBY_EXE :			${RUBY_EXECUTABLE}")

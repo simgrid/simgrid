@@ -69,6 +69,9 @@
 /* Define to 1 if you have the <execinfo.h> header file. */
 #cmakedefine HAVE_EXECINFO_H @HAVE_EXECINFO_H@
 
+/* Define to 1 if you have the `mmap' function. */
+#cmakedefine HAVE_MMAP @HAVE_MMAP@
+
 /* Define to 1 if you have the `getdtablesize' function. */
 #cmakedefine HAVE_GETDTABLESIZE @HAVE_GETDTABLESIZE@
 
