@@ -6,6 +6,7 @@
 
 #include "private.h"
 #include "xbt/log.h"
+#include "mc/mc.h"
 #include "xbt/dict.h"
 
 /* Pimple to get an histogram of message sizes in the simulation */
@@ -83,7 +84,7 @@ smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type) {
     DEBUG0("Communication request found!");
     xbt_fifo_shift(rdv->comm_fifo);
     SIMIX_communication_use(comm);
-    comm->rdv = NULL;    
+    comm->rdv = NULL;
     return comm;
   }
 
@@ -200,7 +201,7 @@ static inline void SIMIX_communication_use(smx_comm_t comm)
 
 /**
  *  \brief Start the simulation of a communication request
- *  \param comm The   comm->rdv = NULL;communication request
+ *  \param comm The communication request
  */
 static inline void SIMIX_communication_start(smx_comm_t comm)
 {
@@ -467,7 +468,14 @@ smx_comm_t SIMIX_network_isend(smx_rdv_t rdv, double task_size, double rate,
     void *src_buff, size_t src_buff_size, void *data)
 {
   smx_comm_t comm;
+  mc_transition_t trans=NULL;
 
+  if (_surf_do_model_check) {
+    /* Let's intercept the communication and control it from the model-checker */
+    trans = MC_create_transition(mc_isend, SIMIX_process_self(), rdv, NULL);
+    SIMIX_process_yield();
+  }
+  
   /* Look for communication request matching our needs.
      If it is not found then create it and push it into the rendez-vous point */
   comm = SIMIX_rdv_get_request(rdv, comm_recv);
@@ -485,13 +493,24 @@ smx_comm_t SIMIX_network_isend(smx_rdv_t rdv, double task_size, double rate,
   comm->src_buff_size = src_buff_size;
   comm->data = data;
 
+  /* Associate the simix communication to the mc transition */
+  if (_surf_do_model_check)
+    MC_transition_set_comm(trans, comm);
+  
   SIMIX_communication_start(comm);
   return comm;
 }
 
 smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size) {
   smx_comm_t comm;
-
+  mc_transition_t trans=NULL;
+  
+  if (_surf_do_model_check) {
+    /* Let's intercept the communication and control it from the model-checker */
+    trans = MC_create_transition(mc_irecv, SIMIX_process_self(), rdv, NULL);
+    SIMIX_process_yield();
+  }
+  
   /* Look for communication request matching our needs.
      If it is not found then create it and push it into the rendez-vous point */
   comm = SIMIX_rdv_get_request(rdv, comm_send);
@@ -506,18 +525,32 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
   comm->dst_buff = dst_buff;
   comm->dst_buff_size = dst_buff_size;
 
+  /* Associate the simix communication to the mc transition */
+  if (_surf_do_model_check)
+    MC_transition_set_comm(trans, comm);
+ 
   SIMIX_communication_start(comm);
   return comm;
 }
 
 /** @brief blocks until the communication terminates or the timeout occurs */
 XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout) {
+  if (_surf_do_model_check) {
+    /* Let's intercept the communication and control it from the model-checker */
+    MC_create_transition(mc_wait, SIMIX_process_self(), comm->rdv, comm);
+    SIMIX_process_yield();
+  }
   /* Wait for communication completion */
   SIMIX_communication_wait_for_completion(comm, timeout);
 }
 
 /** @Returns whether the (asynchronous) communication is done yet or not */
 XBT_INLINE int SIMIX_network_test(smx_comm_t comm) {
+  if (_surf_do_model_check) {
+    /* Let's intercept the communication and control it from the model-checker */
+    MC_create_transition(mc_test, SIMIX_process_self(), comm->rdv, comm);
+    SIMIX_process_yield();
+  }
   return comm->sem?SIMIX_sem_would_block(comm->sem):0;
 }
 
@@ -530,6 +563,12 @@ unsigned int SIMIX_network_waitany(xbt_dynar_t comms) {
   unsigned int cursor, found_comm=-1;
   smx_comm_t comm,comm_finished=NULL;
 
+  if (_surf_do_model_check) {
+    /* Let's intercept the communication and control it from the model-checker */
+    MC_create_transition(mc_waitany, SIMIX_process_self(), NULL, NULL);
+    SIMIX_process_yield();
+  }
+  
   xbt_dynar_foreach(comms,cursor,comm){
     xbt_dynar_push(sems,&(comm->sem));
   }

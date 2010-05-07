@@ -8,6 +8,7 @@
 
 #include "surf_private.h"
 #include "xbt/module.h"
+#include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
@@ -252,6 +253,10 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 
 void surf_init(int *argc, char **argv)
 {
+
+  if (_surf_do_model_check)
+    MC_memory_init();
+  
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);

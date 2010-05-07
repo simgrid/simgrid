@@ -31,6 +31,10 @@ XBT_PUBLIC(void) MC_transition_set_comm(mc_transition_t, smx_comm_t);
 XBT_PUBLIC(void) MC_memory_init(void);   /* Initialize the memory subsystem */
 XBT_PUBLIC(void) MC_memory_exit(void);
 
+/*
+ * Boolean indicating whether we want to activate the model-checker
+ */
+extern int _surf_do_model_check;
 
 
 SG_END_DECL()

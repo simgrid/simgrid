@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg/private.h"
+#include "mc/mc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/virtu.h"
@@ -139,7 +140,10 @@ MSG_error_t MSG_main(void)
   fflush(stderr);
   SIMIX_init();
 
-  while (SIMIX_solve(NULL, NULL) != -1.0);
+  if (_surf_do_model_check)
+    MC_modelcheck(1);
+  else
+    while (SIMIX_solve(NULL, NULL) != -1.0);
   
   return MSG_OK;
 }

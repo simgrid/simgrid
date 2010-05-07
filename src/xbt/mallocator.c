@@ -12,6 +12,7 @@
 #include "mallocator_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
+extern int _surf_do_model_check; /* kill mallocators when this is true */
 
 /**
  * \brief Constructor
@@ -43,12 +44,21 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   xbt_assert0(new_f != NULL && free_f != NULL
               && reset_f != NULL, "invalid parameter");
 
+  /* Let's force 0 size mallocator! (Dirty hack, blame Martin :) )*/
+
+  /* mallocators and memory mess introduced by model-checking do not mix well together:
+   *   The mallocator will give standard memory when we are using raw memory (so these blocks are killed on restore)
+   *   and the contrary (so these blocks will leak accross restores)
+   */
+  if (_surf_do_model_check)
+    size = 0;
+  
   m = xbt_new0(s_xbt_mallocator_t, 1);
   VERB1("Create mallocator %p", m);
   if (XBT_LOG_ISENABLED(xbt_mallocator, xbt_log_priority_verbose))
     xbt_backtrace_display_current();
 
-  m->objects = xbt_new0(void *, size);
+  m->objects = xbt_new0(void *, _surf_do_model_check?1:size);
   m->max_size = size;
   m->current_size = 0;
   m->new_f = new_f;

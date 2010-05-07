@@ -141,6 +141,12 @@ static void _surf_cfg_cb__surf_path(const char *name, int pos) {
   xbt_dynar_push(surf_path, &path);
 }
 
+/* callback to decide if we want to use the model-checking */
+int _surf_do_model_check = 0; /* this variable is used accros the lib */
+
+static void _surf_cfg_cb_model_check(const char *name, int pos) {
+  _surf_do_model_check = 1;
+}
 
 #ifdef HAVE_GTNETS
 static void _surf_cfg_cb__gtnets_jitter(const char *name, int pos){
@@ -244,6 +250,12 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_register(&_surf_cfg_set, "maxmin_selective_update",
                      "Update the constraint set propagating recursively to others constraints",
                      xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb__surf_maxmin_selective_update, NULL);
+
+    /* do model-check */
+    default_value_int = 0;
+    xbt_cfg_register(&_surf_cfg_set, "model-check",
+                     "Activate the model-checking of the \"simulated\" system (EXPERIMENTAL -- msg only for now)",
+                     xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb_model_check, NULL);
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",

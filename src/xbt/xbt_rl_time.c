@@ -25,3 +25,8 @@ void xbt_sleep(double sec)
 {
   xbt_os_sleep(sec);
 }
+
+/* This horribly badly placed. I just need to get that symbol with that value into libgras so that the mallocators are happy.
+ * EPR will save us all. One day.
+ */
+int _surf_do_model_check = 0;
