@@ -35,10 +35,10 @@ void* mrealloc (void *md, void *ptr, size_t size) {
 
   mdp = MD_TO_MDP (md);
 
-  printf("(%s)realloc %p to %d...",xbt_thread_self_name(),ptr,(int)size);
-  if ((char*)ptr < (char*)mdp->heapbase || BLOCK(ptr) > mdp->heapsize ) {
+  //printf("(%s)realloc %p to %d...",xbt_thread_self_name(),ptr,(int)size);
 
-    printf("FIXME. Ouch, this pointer is not mine. I will malloc it instead of reallocing it.\n");
+  if ((char*)ptr < (char*)mdp->heapbase || BLOCK(ptr) > mdp->heapsize ) {
+    printf("FIXME. Ouch, this pointer is not mine. I will malloc it instead of reallocing it. (please report this bug)\n");
     result = mmalloc(md,size);
     abort();
     return result;
@@ -61,7 +61,7 @@ void* mrealloc (void *md, void *ptr, size_t size) {
     if (size <= BLOCKSIZE / 2)
     {
       UNLOCK(mdp);
-      printf("(%s) alloc large block...",xbt_thread_self_name());
+      //printf("(%s) alloc large block...",xbt_thread_self_name());
       result = mmalloc (md, size);
       if (result != NULL)
       {
@@ -78,7 +78,7 @@ void* mrealloc (void *md, void *ptr, size_t size) {
     if (blocks < mdp -> heapinfo[block].busy.info.size)
     {
       /* The new size is smaller; return excess memory to the free list. */
-      printf("(%s) return excess memory...",xbt_thread_self_name());
+      //printf("(%s) return excess memory...",xbt_thread_self_name());
       mdp -> heapinfo[block + blocks].busy.type = 0;
       mdp -> heapinfo[block + blocks].busy.info.size
       = mdp -> heapinfo[block].busy.info.size - blocks;
@@ -119,12 +119,12 @@ void* mrealloc (void *md, void *ptr, size_t size) {
 	 to base two of the fragment size.  */
     if (size > (size_t) (1 << (type - 1)) && size <= (size_t) (1 << type)) {
       /* The new size is the same kind of fragment.  */
-      printf("(%s) new size is same kind of fragment...",xbt_thread_self_name());
+      //printf("(%s) new size is same kind of fragment...",xbt_thread_self_name());
       result = ptr;
     } else {
       /* The new size is different; allocate a new space,
 	     and copy the lesser of the new size and the old. */
-      printf("(%s) new size is different...",xbt_thread_self_name());
+      //printf("(%s) new size is different...",xbt_thread_self_name());
 
       UNLOCK(mdp);
       result = mmalloc (md, size);
@@ -136,6 +136,6 @@ void* mrealloc (void *md, void *ptr, size_t size) {
     }
     break;
   }
-  printf("(%s) Done reallocing: %p\n",xbt_thread_self_name(),result);fflush(stdout);
+  //printf("(%s) Done reallocing: %p\n",xbt_thread_self_name(),result);fflush(stdout);
   return (result);
 }

@@ -19,7 +19,7 @@ void
 __mmalloc_free (struct mdesc *mdp, void *ptr)
 {
   int type;
-  size_t block;//, blocks; unused variable?
+  size_t block;
   register size_t i;
   struct list *prev, *next;
 
