@@ -80,7 +80,7 @@ int main(int argc, char*argv[]) {
   MSG_create_environment("../msg_platform.xml");
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
-  MSG_launch_application("deploy.xml");
+  MSG_launch_application("deploy_mutex.xml");
   MSG_main();
   return 0;
 }

@@ -141,7 +141,6 @@ IF(HAVE_TRACING)
   ADD_TEST(tracing-process-migration ${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg tracing/procmig.tesh)
 ENDIF(HAVE_TRACING)
 
-
 IF(${ARCH_32_BITS})
   ADD_TEST(gras-ping-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/ping test_sg_32)
   ADD_TEST(gras-rpc-sg-32	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/rpc test_sg_32)
@@ -210,7 +209,12 @@ ADD_TEST(ruby-masterslave	${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DI
 ADD_TEST(ruby-ping_pong		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/ruby PingPong.tesh)
 ADD_TEST(ruby-quicksort		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/ruby Quicksort.tesh)
 endif(HAVE_RUBY)
+
 # END TESH TESTS
+
+ADD_TEST(mc-bugged1			${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/mc bugged1.tesh)
+ADD_TEST(mc-bugged2			${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/mc bugged2.tesh)
+ADD_TEST(mc-centralized		${PROJECT_DIRECTORY}/tools/tesh/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/mc centralized.tesh)
 
 if(HAVE_JAVA)
 # java examples

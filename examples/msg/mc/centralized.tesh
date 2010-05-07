@@ -1,0 +1,49 @@
+#! ./tesh
+
+$ ./centralized
+> [Fafard:client:(2) 0.000000] [centralized/INFO] Ask the request
+> [Boivin:client:(3) 0.000000] [centralized/INFO] Ask the request
+> [TeX:client:(4) 0.000000] [centralized/INFO] Ask the request
+> [Geoff:client:(5) 0.000000] [centralized/INFO] Ask the request
+> [Disney:client:(6) 0.000000] [centralized/INFO] Ask the request
+> [Tremblay:coordinator:(1) 1.455805] [centralized/INFO] CS idle. Grant immediatly
+> [Fafard:client:(2) 2.911610] [centralized/INFO] got the answer. Sleep a bit and release it
+> [Tremblay:coordinator:(1) 3.612177] [centralized/INFO] CS already used. Queue the request
+> [Tremblay:coordinator:(1) 4.929109] [centralized/INFO] CS already used. Queue the request
+> [Tremblay:coordinator:(1) 6.078341] [centralized/INFO] CS already used. Queue the request
+> [Tremblay:coordinator:(1) 7.404111] [centralized/INFO] CS already used. Queue the request
+> [Tremblay:coordinator:(1) 8.859915] [centralized/INFO] CS release. Grant to queued requests (queue size: 4)
+> [Disney:client:(6) 10.185685] [centralized/INFO] got the answer. Sleep a bit and release it
+> [Fafard:client:(2) 10.859915] [centralized/INFO] Ask the request
+> [Tremblay:coordinator:(1) 12.315720] [centralized/INFO] CS already used. Queue the request
+> [Tremblay:coordinator:(1) 13.641490] [centralized/INFO] CS release. Grant to queued requests (queue size: 4)
+> [Fafard:client:(2) 15.097295] [centralized/INFO] got the answer. Sleep a bit and release it
+> [Tremblay:coordinator:(1) 17.553100] [centralized/INFO] CS release. Grant to queued requests (queue size: 3)
+> [Geoff:client:(5) 18.702332] [centralized/INFO] got the answer. Sleep a bit and release it
+> [Fafard:client:(2) 19.553100] [centralized/INFO] Got all the CS I wanted, quit now
+> [Disney:client:(6) 19.641490] [centralized/INFO] Ask the request
+> [Tremblay:coordinator:(1) 20.967260] [centralized/INFO] CS already used. Queue the request
+> [Tremblay:coordinator:(1) 22.116492] [centralized/INFO] CS release. Grant to queued requests (queue size: 3)
+> [Disney:client:(6) 23.442262] [centralized/INFO] got the answer. Sleep a bit and release it
+> [Tremblay:coordinator:(1) 25.768032] [centralized/INFO] CS release. Grant to queued requests (queue size: 2)
+> [TeX:client:(4) 27.084964] [centralized/INFO] got the answer. Sleep a bit and release it
+> [Geoff:client:(5) 27.116492] [centralized/INFO] Ask the request
+> [Tremblay:coordinator:(1) 28.265724] [centralized/INFO] CS already used. Queue the request
+> [Tremblay:coordinator:(1) 29.582656] [centralized/INFO] CS release. Grant to queued requests (queue size: 2)
+> [Geoff:client:(5) 30.731888] [centralized/INFO] got the answer. Sleep a bit and release it
+> [Disney:client:(6) 31.768032] [centralized/INFO] Got all the CS I wanted, quit now
+> [Tremblay:coordinator:(1) 32.881120] [centralized/INFO] CS release. Grant to queued requests (queue size: 1)
+> [Boivin:client:(3) 33.581687] [centralized/INFO] got the answer. Sleep a bit and release it
+> [TeX:client:(4) 33.582656] [centralized/INFO] Ask the request
+> [Tremblay:coordinator:(1) 34.899588] [centralized/INFO] CS already used. Queue the request
+> [Tremblay:coordinator:(1) 35.600155] [centralized/INFO] CS release. Grant to queued requests (queue size: 1)
+> [TeX:client:(4) 36.917087] [centralized/INFO] got the answer. Sleep a bit and release it
+> [Geoff:client:(5) 37.881120] [centralized/INFO] Got all the CS I wanted, quit now
+> [Boivin:client:(3) 38.600155] [centralized/INFO] Ask the request
+> [Tremblay:coordinator:(1) 39.234019] [centralized/INFO] CS release. resource now idle
+> [Tremblay:coordinator:(1) 39.934586] [centralized/INFO] CS idle. Grant immediatly
+> [Boivin:client:(3) 40.635153] [centralized/INFO] got the answer. Sleep a bit and release it
+> [Tremblay:coordinator:(1) 42.335720] [centralized/INFO] CS release. resource now idle
+> [Tremblay:coordinator:(1) 42.335720] [centralized/INFO] Received all releases, quit now
+> [TeX:client:(4) 43.234019] [centralized/INFO] Got all the CS I wanted, quit now
+> [Boivin:client:(3) 45.335720] [centralized/INFO] Got all the CS I wanted, quit now

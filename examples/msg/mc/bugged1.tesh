@@ -1,0 +1,7 @@
+#! ./tesh
+
+$ ./bugged1
+> [HostB:client:(2) 0.008753] [example/INFO] Sent!
+> [HostC:client:(3) 0.017506] [example/INFO] Sent!
+> [HostD:client:(4) 0.026259] [example/INFO] Sent!
+> [HostA:server:(1) 0.026259] [example/INFO] OK

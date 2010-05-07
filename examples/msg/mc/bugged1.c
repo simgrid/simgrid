@@ -44,7 +44,7 @@ int main(int argc,char*argv[]) {
 
  MSG_function_register("client", client);
 
- MSG_launch_application("deploy.xml");
+ MSG_launch_application("deploy_bugged1.xml");
 
  MSG_main();
 
