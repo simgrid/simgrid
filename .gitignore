@@ -153,6 +153,9 @@ examples/msg/properties/msg_prop
 examples/msg/sendrecv/sendrecv
 examples/msg/suspend/suspend
 examples/msg/trace/test_trace_integration
+examples/msg/mc/centralized
+examples/msg/mc/bugged2
+examples/msg/mc/bugged1
 examples/simdag/ex_sd_test
 examples/simdag/ex_sd_test2
 examples/simdag/metaxml/sd_meta
