@@ -17,6 +17,7 @@ void mmalloc_set_current_heap(void *new_heap) {
   __mmalloc_current_heap=new_heap;
 }
 
+#define MMALLOC_WANT_OVERIDE_LEGACY /* comment this when stuff goes horribly bad around memory allocation */
 #ifdef MMALLOC_WANT_OVERIDE_LEGACY
 void *malloc(size_t n) {
   void *ret = mmalloc(__mmalloc_current_heap, n);
