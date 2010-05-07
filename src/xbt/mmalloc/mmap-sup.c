@@ -9,6 +9,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef MAP_ANONYMOUS
+	#define MAP_ANONYMOUS MAP_ANON
+#endif
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>	/* Prototypes for lseek */
 #endif
