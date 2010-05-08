@@ -20,6 +20,7 @@ void xbt_log_postexit(void);
 
 void xbt_fifo_preinit(void);
 void xbt_fifo_postexit(void);
+void xbt_dict_preinit(void);
 void xbt_dict_postexit(void);
 
 void xbt_os_thread_mod_preinit(void);

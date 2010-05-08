@@ -107,6 +107,7 @@ static void xbt_preinit(void) {
   XBT_LOG_CONNECT(xbt_sync_os, xbt);
 
   xbt_fifo_preinit();
+  xbt_dict_preinit();
 
   xbt_backtrace_preinit();
   xbt_os_thread_mod_preinit();

@@ -142,10 +142,14 @@ static void _surf_cfg_cb__surf_path(const char *name, int pos) {
 }
 
 /* callback to decide if we want to use the model-checking */
+#include "xbt_modinter.h"
 int _surf_do_model_check = 0; /* this variable is used accros the lib */
 
 static void _surf_cfg_cb_model_check(const char *name, int pos) {
   _surf_do_model_check = 1;
+  /* Tell modules using mallocators that they shouldn't. MC don't like them */
+  xbt_fifo_preinit();
+  xbt_dict_preinit();
 }
 
 #ifdef HAVE_GTNETS

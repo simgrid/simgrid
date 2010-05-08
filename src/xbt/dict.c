@@ -40,18 +40,6 @@ xbt_dict_t xbt_dict_new(void)
 {
   xbt_dict_t dict;
 
-  if (dict_mallocator == NULL) {
-    /* first run */
-    dict_mallocator = xbt_mallocator_new(256,
-                                         dict_mallocator_new_f,
-                                         dict_mallocator_free_f,
-                                         dict_mallocator_reset_f);
-    dict_elm_mallocator = xbt_mallocator_new(256,
-                                             dict_elm_mallocator_new_f,
-                                             dict_elm_mallocator_free_f,
-                                             dict_elm_mallocator_reset_f);
-  }
-
   dict = xbt_mallocator_get(dict_mallocator);
   dict->table_size = 127;
   dict->table = xbt_new0(xbt_dictelm_t, dict->table_size + 1);
@@ -748,8 +736,30 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
 }
 
 /**
+ * Create the dict mallocators.
+ * This is an internal XBT function called during the lib initialization.
+ * It can be used several times to recreate the mallocator, for example when you switch to MC mode
+ */
+void xbt_dict_preinit(void) {
+  if (dict_mallocator != NULL) {
+    /* Already created. I guess we want to switch to MC mode, so kill the previously created mallocator */
+    xbt_mallocator_free(dict_mallocator);
+    xbt_mallocator_free(dict_elm_mallocator);
+  }
+
+  dict_mallocator = xbt_mallocator_new(256,
+      dict_mallocator_new_f,
+      dict_mallocator_free_f,
+      dict_mallocator_reset_f);
+  dict_elm_mallocator = xbt_mallocator_new(256,
+      dict_elm_mallocator_new_f,
+      dict_elm_mallocator_free_f,
+      dict_elm_mallocator_reset_f);
+}
+
+/**
  * Destroy the dict mallocators.
- * This is an internal XBT function called by xbt_exit().
+ * This is an internal XBT function during the lib initialization
  */
 void xbt_dict_postexit(void)
 {
