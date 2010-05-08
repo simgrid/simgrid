@@ -252,11 +252,7 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 #endif
 
 void surf_init(int *argc, char **argv)
-{
-
-  if (_surf_do_model_check)
-    MC_memory_init();
-  
+{ 
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);
@@ -282,6 +278,9 @@ void surf_init(int *argc, char **argv)
     history = tmgr_history_new();
 
   surf_config_init(argc, argv);
+
+  if (_surf_do_model_check)
+    MC_memory_init();
 }
 
 #ifdef WIN32
