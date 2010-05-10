@@ -924,7 +924,8 @@ int __SD_task_try_to_run(SD_task_t task)
 
 
   for (i = 0; i < task->workstation_nb; i++) {
-    can_start = !__SD_workstation_is_busy(task->workstation_list[i]);
+    can_start = can_start && 
+      !__SD_workstation_is_busy(task->workstation_list[i]);
   }
 
   DEBUG2("Task '%s' can start: %d", SD_task_get_name(task), can_start);
