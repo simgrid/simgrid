@@ -362,7 +362,7 @@ void SIMIX_network_copy_data(smx_comm_t comm)
   size_t buff_size = comm->src_buff_size;
 
   /* If there is no data to be copy then return */
-  if(!comm->src_buff || !comm->dst_buff)
+  if(!comm->src_buff || !comm->dst_buff || comm->copied == 1)
     return;
 
   DEBUG6("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
@@ -383,10 +383,9 @@ void SIMIX_network_copy_data(smx_comm_t comm)
     return;
   (*SIMIX_network_copy_data_callback)(comm, buff_size);
 
-  /* Set the buffers to null so we copy data only once */
+  /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends)*/
-  comm->src_buff = NULL;
-  comm->dst_buff = NULL;
+  comm->copied = 1;
   
   /* pimple to display the message sizes */
   {
