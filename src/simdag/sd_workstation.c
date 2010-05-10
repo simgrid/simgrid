@@ -498,3 +498,18 @@ void __SD_workstation_destroy(void *workstation)
   }
   xbt_free(w);
 }
+
+/** 
+ * \brief Returns the kind of the task currently running on a workstation
+ * Only call this with sequential access mode set
+ * \param workstation a workstation */
+SD_task_t SD_workstation_get_current_task(SD_workstation_t workstation)
+{
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert0(workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS, 
+	      "Access mode must be set to SD_WORKSTATION_SEQUENTIAL_ACCESS"
+	      " to use this function");
+  
+  return (workstation->current_task);
+}
