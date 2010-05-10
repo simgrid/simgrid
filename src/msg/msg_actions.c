@@ -58,9 +58,9 @@ static int MSG_action_runner(int argc, char *argv[]) {
       xbt_dynar_free(&evt);
     }
   } else { // Should have got my trace file in argument
-    xbt_assert0(argc>=2,
-          "No simulation-wide trace file provided to MSG_action_trace_run(), "
-          "and no process-wide trace file provided in deployment file. Aborting."
+    xbt_assert1(argc>=2,
+          "No '%s' agent function provided, no simulation-wide trace file provided to MSG_action_trace_run(), "
+          "and no process-wide trace file provided in deployment file. Aborting.",argv[0]
     );
 
     char *line = NULL;
