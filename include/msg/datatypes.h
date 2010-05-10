@@ -65,6 +65,7 @@ SG_BEGIN_DECL()
 */
 #define MSG_TASK_UNINITIALIZED NULL
 
+     typedef struct s_smx_comm *msg_comm_t;
 /** @} */
 
 

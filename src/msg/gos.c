@@ -404,6 +404,93 @@ MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
                                   timeout);
 }
 
+msg_comm_t MSG_task_isend(m_task_t task, const char *alias) {
+  simdata_task_t t_simdata = NULL;
+  m_process_t process = MSG_process_self();
+  msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
+
+  CHECK_HOST();
+
+  /* FIXME: these functions are not tracable */
+
+  /* Prepare the task to send */
+  t_simdata = task->simdata;
+  t_simdata->sender = process;
+  t_simdata->source = MSG_host_self();
+
+  xbt_assert0(t_simdata->refcount == 1,
+              "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
+
+  t_simdata->refcount++;
+  msg_global->sent_msg++;
+
+  process->simdata->waiting_task = task;
+
+  /* Send it by calling SIMIX network layer */
+
+  /* Kept for semantical compatibility with older implementation */
+  if(mailbox->cond)
+    SIMIX_cond_signal(mailbox->cond);
+
+  return SIMIX_network_isend(mailbox->rdv, t_simdata->message_size, t_simdata->rate,
+      task, sizeof(void*), &t_simdata->comm);
+}
+
+msg_comm_t MSG_task_irecv(m_task_t * task, const char *alias) {
+  smx_comm_t comm;
+  smx_rdv_t rdv = MSG_mailbox_get_by_alias(alias)->rdv;
+  msg_mailbox_t mailbox=MSG_mailbox_get_by_alias(alias);
+  size_t size = sizeof(void*);
+
+  CHECK_HOST();
+
+  /* FIXME: these functions are not tracable */
+
+  memset(&comm,0,sizeof(comm));
+
+  /* Kept for compatibility with older implementation */
+  xbt_assert1(!MSG_mailbox_get_cond(mailbox),
+              "A process is already blocked on this channel %s",
+              MSG_mailbox_get_alias(mailbox));
+
+  /* Sanity check */
+  xbt_assert0(task, "Null pointer for the task storage");
+
+  if (*task)
+    CRITICAL0("MSG_task_get() was asked to write in a non empty task struct.");
+
+  /* Try to receive it by calling SIMIX network layer */
+  return SIMIX_network_irecv(rdv, task, &size);
+}
+int MSG_comm_test(msg_comm_t comm) {
+  return SIMIX_network_test(comm);
+}
+MSG_error_t MSG_comm_wait(msg_comm_t comm,double timeout) {
+  xbt_ex_t e;
+  MSG_error_t res = MSG_OK;
+  TRY {
+    SIMIX_network_wait(comm,timeout);
+    //  (*task)->simdata->refcount--;
+
+    /* FIXME: these functions are not tracable */
+  }  CATCH(e){
+      switch(e.category){
+        case host_error:
+          res = MSG_HOST_FAILURE;
+          break;
+        case network_error:
+          res = MSG_TRANSFER_FAILURE;
+          break;
+        case timeout_error:
+          res = MSG_TIMEOUT;
+          break;
+        default:
+          xbt_die(bprintf("Unhandled SIMIX network exception: %s",e.msg));
+      }
+      xbt_ex_free(e);
+    }
+  return res;
+}
 
 /** \ingroup msg_gos_functions
  * \brief Put a task on a channel of an host and waits for the end of the
