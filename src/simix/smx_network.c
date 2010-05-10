@@ -569,33 +569,17 @@ unsigned int SIMIX_network_waitany(xbt_dynar_t comms) {
     SIMIX_process_yield();
   }
   
-  xbt_dynar_foreach(comms,cursor,comm){
+  xbt_dynar_foreach(comms,cursor,comm)
     xbt_dynar_push(sems,&(comm->sem));
-  }
 
   DEBUG1("Waiting for the completion of communication set %p", comms);
 
   found_comm = SIMIX_sem_acquire_any(sems);
+  xbt_dynar_free_container(&sems);
   xbt_assert0(found_comm!=-1,"Cannot find which communication finished");
   xbt_dynar_get_cpy(comms,found_comm,&comm_finished);
 
-  DEBUG1("Communication %p complete! Let's check for errors", comm_finished);
-
-  /* Make sure that everyone sleeping on that semaphore is awake,
-   * and that nobody will ever block on it */
-  SIMIX_sem_release_forever(comm_finished->sem);
-
-  /* Check for errors */
-  if(!SIMIX_host_get_state(SIMIX_host_self())){
-    if(comm_finished->rdv)
-      SIMIX_rdv_remove(comm_finished->rdv, comm_finished);
-    SIMIX_communication_destroy(comm_finished);
-    THROW0(host_error, 0, "Host failed");
-  } else if (SIMIX_action_get_state(comm_finished->act) == SURF_ACTION_FAILED){
-    SIMIX_communication_destroy(comm_finished);
-    THROW0(network_error, 0, "Link failure");
-  }
-  SIMIX_communication_destroy(comm_finished);
-
+  /* Check for errors and cleanup the comm */
+  SIMIX_communication_wait_for_completion(comm_finished,-1);
   return found_comm;
 }
