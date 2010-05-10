@@ -310,6 +310,9 @@ static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, doub
     THROW0(network_error, 0, "Remote peer failed");
 
   }
+  /* Copy network data */
+  SIMIX_network_copy_data(comm);  
+
   SIMIX_communication_destroy(comm);
 }
 
@@ -358,16 +361,16 @@ void SIMIX_network_copy_data(smx_comm_t comm)
 {
   size_t buff_size = comm->src_buff_size;
 
+  /* If there is no data to be copy then return */
+  if(!comm->src_buff || !comm->dst_buff)
+    return;
+
   DEBUG6("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
       comm,
       comm->src_proc->smx_host->name, comm->src_buff,
       comm->dst_proc->smx_host->name, comm->dst_buff,
       buff_size);
 
-  /* If there is no data to be copy then return */
-  if(!comm->src_buff || !comm->dst_buff)
-    return;
-  
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (comm->dst_buff_size)
     buff_size = MIN(buff_size,*(comm->dst_buff_size));
@@ -380,6 +383,11 @@ void SIMIX_network_copy_data(smx_comm_t comm)
     return;
   (*SIMIX_network_copy_data_callback)(comm, buff_size);
 
+  /* Set the buffers to null so we copy data only once */
+  /* (this function might be called from both communication ends)*/
+  comm->src_buff = NULL;
+  comm->dst_buff = NULL;
+  
   /* pimple to display the message sizes */
   {
     if (msg_sizes == NULL)
@@ -551,7 +559,14 @@ XBT_INLINE int SIMIX_network_test(smx_comm_t comm) {
     MC_create_transition(mc_test, SIMIX_process_self(), comm->rdv, comm);
     SIMIX_process_yield();
   }
-  return comm->sem?SIMIX_sem_would_block(comm->sem):0;
+
+  /* Copy data if the communication is done */
+  if(comm->sem && !SIMIX_sem_would_block(comm->sem)){
+    /* Copy network data */
+    SIMIX_network_copy_data(comm);
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /** @brief wait for the completion of any communication of a set
