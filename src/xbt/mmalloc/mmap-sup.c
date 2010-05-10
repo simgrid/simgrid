@@ -194,7 +194,7 @@ mmalloc_findbase (int size)
 	 to signal an error return, and besides, it is useful to
 	 catch NULL pointers if it is unmapped.  Instead start
 	 at the next page boundary. */
-      base = (void*) getpagesize ();
+      base = (void*)(long) getpagesize ();
     }
   else if (base == (void*) -1)
     {
