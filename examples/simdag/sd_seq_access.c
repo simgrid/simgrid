@@ -21,8 +21,6 @@ int main(int argc, char **argv)
   int kind;
   SD_task_t task, taskA, taskB, taskC;
   SD_task_t *changed_tasks;
-  xbt_ex_t ex;
-  const int workstation_number = 2;
   SD_workstation_t workstation_list[2];
   double computation_amount[2];
   double communication_amount[4] = { 0 };
