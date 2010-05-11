@@ -11,6 +11,7 @@ mc_snapshot_t initial_snapshot = NULL;
 xbt_fifo_t mc_stack = NULL;
 xbt_setset_t mc_setset = NULL;
 mc_stats_t mc_stats = NULL;
+mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 
 /**
@@ -70,6 +71,16 @@ void MC_modelcheck(int method){
   }
 }
 
+int MC_random(int min, int max)
+{
+  MC_random_create(min,max);
+  SIMIX_process_yield();
+
+  if(!mc_replay_mode)
+    return mc_current_state->executed_transition->current_value;
+  else
+    return mc_current_state->executed_transition->current_value - 1;
+}
 
 /**
  * \brief Re-executes from the initial state all the transitions indicated by
@@ -79,7 +90,6 @@ void MC_modelcheck(int method){
 void MC_replay(xbt_fifo_t stack)
 {
   xbt_fifo_item_t item;
-  mc_state_t state;
   mc_transition_t trans;
 
   DEBUG0("**** Begin Replay ****");
@@ -96,8 +106,8 @@ void MC_replay(xbt_fifo_t stack)
       item != xbt_fifo_get_first_item(stack);
       item = xbt_fifo_get_prev_item(item)){
 
-    state = (mc_state_t) xbt_fifo_get_item_content(item);
-    trans = state->executed_transition;
+    mc_current_state = (mc_state_t) xbt_fifo_get_item_content(item);
+    trans = mc_current_state->executed_transition;
 
     /* Update statistics */
     mc_stats->visited_states++;

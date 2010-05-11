@@ -22,6 +22,7 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(void) MC_init(int);
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_modelcheck(int);
+XBT_PUBLIC(int) MC_random(int,int);
 
 /******************************* Transitions **********************************/
 XBT_PUBLIC(mc_transition_t) MC_create_transition(mc_trans_type_t, smx_process_t, smx_rdv_t, smx_comm_t);

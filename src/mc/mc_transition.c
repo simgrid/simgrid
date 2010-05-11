@@ -51,6 +51,36 @@ mc_transition_t MC_create_transition(mc_trans_type_t type, smx_process_t p, smx_
   return NULL;
 }
 
+void MC_random_create(int min, int max)
+{
+  smx_process_t p;
+  mc_state_t current_state = NULL;
+  char *type_str = NULL;
+  
+  if(!mc_replay_mode){
+    p = SIMIX_process_self();
+    
+    MC_SET_RAW_MEM;
+    mc_transition_t trans = xbt_new0(s_mc_transition_t, 1);
+    
+    trans->name = bprintf("[%s][%s] mc_random(%d,%d) (%p)", p->smx_host->name, p->name, min, max, trans);
+    xbt_free(type_str);
+
+    trans->refcount = 1;    
+    trans->type = mc_random ;
+    trans->process = p;
+    trans->min = min;
+    trans->max = max;
+    trans->current_value = min;
+    
+    /* Push it onto the enabled transitions set of the current state */
+    current_state = (mc_state_t) 
+      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    xbt_setset_set_insert(current_state->transitions, trans);
+    MC_UNSET_RAW_MEM;
+  }
+}
+
 /** 
  * \brief Associate a communication to a transition
  * \param trans The transition

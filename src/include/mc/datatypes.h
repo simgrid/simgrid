@@ -20,7 +20,8 @@ typedef enum {
   mc_irecv,
   mc_test,
   mc_wait,
-  mc_waitany
+  mc_waitany,
+  mc_random
 } mc_trans_type_t;
 
 typedef struct s_mc_transition *mc_transition_t;

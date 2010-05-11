@@ -71,8 +71,14 @@ typedef struct s_mc_transition{
   smx_process_t process;
   smx_rdv_t rdv;
   smx_comm_t comm;          /* reference to the simix network communication */
+  
+  /* Used only for random transitions */
+  int min;                  /* min random value */ 
+  int max;                  /* max random value */
+  int current_value;        /* current value */
 } s_mc_transition_t;
 
+void MC_random_create(int,int);
 void MC_transition_delete(mc_transition_t);
 int MC_transition_depend(mc_transition_t, mc_transition_t);
 
@@ -87,6 +93,7 @@ typedef struct mc_state{
 
 extern xbt_fifo_t mc_stack;
 extern xbt_setset_t mc_setset;
+extern mc_state_t mc_current_state;
 
 mc_state_t MC_state_new(void);
 void MC_state_delete(mc_state_t);

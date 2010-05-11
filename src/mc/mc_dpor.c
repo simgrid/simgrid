@@ -58,7 +58,6 @@ void MC_dpor_init()
 void MC_dpor(void)
 {
   mc_transition_t trans = NULL;  
-  mc_state_t current_state = NULL;
   mc_state_t next_state = NULL;
   xbt_setset_cursor_t cursor = NULL;
   
@@ -70,17 +69,17 @@ void MC_dpor(void)
        some actions on the models. (ex. all the processes do a sleep(0) in a round). */
 
     /* Get current state */
-    current_state = (mc_state_t) xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    mc_current_state = (mc_state_t) xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
    
     /* If there are transitions to execute and the maximun depth has not been reached 
        then perform one step of the exploration algorithm */
-    if(xbt_setset_set_size(current_state->interleave) > 0 && xbt_fifo_size(mc_stack) < MAX_DEPTH){
+    if(xbt_setset_set_size(mc_current_state->interleave) > 0 && xbt_fifo_size(mc_stack) < MAX_DEPTH){
 
       DEBUG4("Exploration detph=%d (state=%p)(%d interleave) (%d enabled)", xbt_fifo_size(mc_stack),
-        current_state, xbt_setset_set_size(current_state->interleave),
-        xbt_setset_set_size(current_state->enabled_transitions));
+        mc_current_state, xbt_setset_set_size(mc_current_state->interleave),
+        xbt_setset_set_size(mc_current_state->enabled_transitions));
 
-      xbt_setset_foreach(current_state->enabled_transitions, cursor, trans){
+      xbt_setset_foreach(mc_current_state->enabled_transitions, cursor, trans){
         DEBUG1("\t %s", trans->name);
       }
       
@@ -92,16 +91,19 @@ void MC_dpor(void)
          state, and create the data structures for the new expanded state in the
          exploration stack. */
       MC_SET_RAW_MEM;
-      trans = xbt_setset_set_extract(current_state->interleave);
+      trans = xbt_setset_set_choose(mc_current_state->interleave);
+      if(!trans->type == mc_random){
+        xbt_setset_set_remove(mc_current_state->interleave, trans);
+        /* Add the transition in the done set of the current state */
+        xbt_setset_set_insert(mc_current_state->done, trans);
+        trans->refcount++;
+      }
+      
       next_state = MC_state_new();
       xbt_fifo_unshift(mc_stack, next_state);
       
-      /* Add the transition in the done set of the current state */
-      xbt_setset_set_insert(current_state->done, trans);
-      trans->refcount++;
-      
       /* Set it as the executed transition of the current state */
-      current_state->executed_transition = trans;
+      mc_current_state->executed_transition = trans;
       MC_UNSET_RAW_MEM;
 
       /* Execute the selected transition by scheduling it's associated process.
@@ -111,6 +113,14 @@ void MC_dpor(void)
       SIMIX_process_schedule(trans->process);
       MC_execute_surf_actions();        /* Do surf's related black magic */
       MC_schedule_enabled_processes();
+
+      if(trans->type == mc_random && trans->current_value < trans->max ){
+        trans->current_value++;
+      }else{
+        trans->current_value = trans->min;
+        xbt_setset_set_remove(mc_current_state->interleave, trans);
+        xbt_setset_set_insert(mc_current_state->done, trans);
+      }
       
       /* Calculate the enabled transitions set of the next state:
           -add the transition sets of the current state and the next state 
@@ -118,7 +128,7 @@ void MC_dpor(void)
           -remove all the transitions that are disabled (mc_wait only)
           -use the resulting set as the enabled transitions of the next state */
       MC_SET_RAW_MEM;
-      xbt_setset_add(next_state->transitions, current_state->transitions);
+      xbt_setset_add(next_state->transitions, mc_current_state->transitions);
       xbt_setset_set_remove(next_state->transitions, trans);
       xbt_setset_add(next_state->enabled_transitions, next_state->transitions);
       xbt_setset_foreach(next_state->enabled_transitions, cursor, trans){
@@ -152,7 +162,7 @@ void MC_dpor(void)
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
       xbt_fifo_shift(mc_stack);
-      MC_state_delete(current_state);
+      MC_state_delete(mc_current_state);
       
       /* Traverse the stack backwards until a state with a non empty interleave
          set is found, deleting all the states that have it empty in the way.
@@ -160,8 +170,8 @@ void MC_dpor(void)
          (from it's predecesor state), depends on any other previous transition 
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous transition. */
-      while((current_state = xbt_fifo_shift(mc_stack)) != NULL){
-        q = current_state->executed_transition;
+      while((mc_current_state = xbt_fifo_shift(mc_stack)) != NULL){
+        q = mc_current_state->executed_transition;
         xbt_fifo_foreach(mc_stack, item, state, mc_state_t){
           if(MC_transition_depend(q, state->executed_transition)){
             DEBUG3("Dependence found at state %p (%p,%p)", state, state->executed_transition, q);
@@ -176,15 +186,15 @@ void MC_dpor(void)
               break;
           }
         }
-        if(xbt_setset_set_size(current_state->interleave) > 0){
+        if(xbt_setset_set_size(mc_current_state->interleave) > 0){
           /* We found a back-tracking point, let's loop */
-          xbt_fifo_unshift(mc_stack, current_state);
+          xbt_fifo_unshift(mc_stack, mc_current_state);
           DEBUG1("Back-tracking to depth %d", xbt_fifo_size(mc_stack));
           MC_replay(mc_stack);
           MC_UNSET_RAW_MEM;
           break;
         }else{
-          MC_state_delete(current_state);
+          MC_state_delete(mc_current_state);
         }        
       }
     }
