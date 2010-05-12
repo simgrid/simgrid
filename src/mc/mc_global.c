@@ -209,7 +209,8 @@ void MC_state_delete(mc_state_t state)
   xbt_setset_foreach(state->created_transitions, cursor, trans){
     MC_transition_delete(trans);
   }
-  
+
+  xbt_setset_destroy_set(state->created_transitions);
   xbt_setset_destroy_set(state->transitions);
   xbt_setset_destroy_set(state->enabled_transitions);
   xbt_setset_destroy_set(state->interleave);
