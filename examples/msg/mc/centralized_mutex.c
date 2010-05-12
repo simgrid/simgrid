@@ -47,7 +47,7 @@ int coordinator(int argc, char*argv[]) {
 	todo--;
       }
     }
-    //MSG_task_destoy(task);
+    MSG_task_destroy(task);
   }
   INFO0("Received all releases, quit now");
   return 0;
@@ -65,7 +65,7 @@ int client(int argc, char *argv[]) {
     // wait the answer
     m_task_t grant = NULL;
     MSG_task_receive(&grant,my_mailbox);
-    //MSG_task_destoy(grant);
+    MSG_task_destroy(grant);
     INFO0("got the answer. Sleep a bit and release it");
     MSG_process_sleep(1);
     MSG_task_send(MSG_task_create("release",0,1000,NULL),"coordinator");    
