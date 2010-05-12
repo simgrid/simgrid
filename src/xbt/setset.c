@@ -30,9 +30,9 @@ xbt_setset_t xbt_setset_new(unsigned int size)
 void xbt_setset_destroy(xbt_setset_t setset)
 {
   xbt_dynar_free(&setset->elm_array);
+  /* FIXME: we should free all the sets in the fifo setset->sets */
   xbt_fifo_free(setset->sets);
   xbt_free(setset);
-  /* FIXME: check if we should trash the stored objects */
 }
 
 /* Add an element to the setset, this will assign to it an index */
@@ -44,7 +44,7 @@ xbt_setset_elm_entry_t _xbt_setset_elm_add(xbt_setset_t setset, void *obj)
   xbt_setset_elm_entry_t first_elm = 
     (xbt_setset_elm_entry_t)xbt_dynar_get_ptr(setset->elm_array, 0);
   
-  /* Before create a new elm entry check if there is one in the free elm list.*/
+  /* Before create a new elm entry check if there is one in the free elm list. */
   /* If there is not free elm entries, then create a new one  */
   if(first_elm->free.next != 0){
     e->ID = first_elm->free.next;
@@ -65,13 +65,14 @@ void _xbt_setset_elm_remove(xbt_setset_t setset, unsigned long idx)
 {
   xbt_setset_elm_entry_t e_entry = xbt_dynar_get_ptr(setset->elm_array, idx);
   xbt_setset_elm_entry_t first_free = NULL;
-  
+
   /* Decrease the refcount and proceed only if it is 0 */
   if(--e_entry->info.refcount > 0)
     return;
 
   /* Erase object ID */
-  e_entry->info.obj->ID = 0;
+  /* FIXME: do not assume that the object still exists, it might be deallocated */
+  /*e_entry->info.obj->ID = 0;*/
   
   /* Link the elm entry to the list of free ones */
   first_free = xbt_dynar_get_ptr(setset->elm_array, 0);

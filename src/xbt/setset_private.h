@@ -12,7 +12,7 @@ typedef struct s_xbt_setset_elm {
 typedef union u_xbt_setset_elm_entry {
   /* Information when the entry is being used */
   struct {
-    unsigned int refcount;
+    unsigned int refcount;    
     xbt_setset_elm_t obj;
   } info;
   /* Information when the entry is free */
