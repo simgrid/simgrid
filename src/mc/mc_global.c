@@ -134,16 +134,12 @@ void MC_replay(xbt_fifo_t stack)
 void MC_dump_stack(xbt_fifo_t stack)
 {
   mc_state_t state;
-  mc_transition_t trans;
 
+  MC_show_stack(stack);
+  
   MC_SET_RAW_MEM;
-  while( (state = (mc_state_t)xbt_fifo_pop(stack)) != NULL ){
-    trans = state->executed_transition;
-    if(trans)
-      INFO1("%s", trans->name);
-    
+  while( (state = (mc_state_t)xbt_fifo_pop(stack)) != NULL )
     MC_state_delete(state);
-  }
   MC_UNSET_RAW_MEM;
 }
 
@@ -153,9 +149,8 @@ void MC_show_stack(xbt_fifo_t stack)
   mc_transition_t trans;
   xbt_fifo_item_t item;
 
-  INFO0("===========================");
   for(item=xbt_fifo_get_last_item(stack);
-     (item?(state=(mc_state_t)(xbt_fifo_get_item_content(item))):(NULL));             \
+     (item?(state=(mc_state_t)(xbt_fifo_get_item_content(item))):(NULL));
       item=xbt_fifo_get_prev_item(item)){
     trans = state->executed_transition;
     if(trans){      
@@ -163,7 +158,6 @@ void MC_show_stack(xbt_fifo_t stack)
     }
   }
 }
-
 
 /**
  * \brief Schedules all the process that are ready to run
@@ -192,6 +186,7 @@ mc_state_t MC_state_new(void)
   mc_state_t state = NULL; 
   
   state = xbt_new0(s_mc_state_t, 1);
+  state->created_transitions = xbt_setset_new_set(mc_setset);
   state->transitions = xbt_setset_new_set(mc_setset);
   state->enabled_transitions = xbt_setset_new_set(mc_setset);
   state->interleave = xbt_setset_new_set(mc_setset);
@@ -208,8 +203,13 @@ mc_state_t MC_state_new(void)
  */
 void MC_state_delete(mc_state_t state)
 {
-  /*if(state->executed_transition)
-    MC_transition_delete(state->executed_transition);*/
+  xbt_setset_cursor_t cursor;
+  mc_transition_t trans;  
+  
+  xbt_setset_foreach(state->created_transitions, cursor, trans){
+    MC_transition_delete(trans);
+  }
+  
   xbt_setset_destroy_set(state->transitions);
   xbt_setset_destroy_set(state->enabled_transitions);
   xbt_setset_destroy_set(state->interleave);

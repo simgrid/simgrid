@@ -44,8 +44,6 @@ void MC_dpor_init()
     xbt_setset_set_insert(initial_state->interleave, trans);
   MC_UNSET_RAW_MEM;
 
-  trans->refcount++;
-
   /* Update Statistics */
   mc_stats->state_size += xbt_setset_set_size(initial_state->enabled_transitions);
 }
@@ -96,7 +94,6 @@ void MC_dpor(void)
         xbt_setset_set_remove(mc_current_state->interleave, trans);
         /* Add the transition in the done set of the current state */
         xbt_setset_set_insert(mc_current_state->done, trans);
-        trans->refcount++;
       }
       
       next_state = MC_state_new();

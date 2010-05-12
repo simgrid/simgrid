@@ -14,7 +14,6 @@ mc_transition_t MC_create_transition(mc_trans_type_t type, smx_process_t p, smx_
   if(!mc_replay_mode){
     MC_SET_RAW_MEM;
     mc_transition_t trans = xbt_new0(s_mc_transition_t, 1);
-    trans->refcount = 1;
 
     /* Generate a string for the "type" */
     switch(type){
@@ -42,8 +41,10 @@ mc_transition_t MC_create_transition(mc_trans_type_t type, smx_process_t p, smx_
     trans->rdv = rdv;
     trans->comm = comm;
     /* Push it onto the enabled transitions set of the current state */
-    current_state = (mc_state_t) 
+
+   current_state = (mc_state_t) 
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    xbt_setset_set_insert(current_state->created_transitions, trans);
     xbt_setset_set_insert(current_state->transitions, trans);
     MC_UNSET_RAW_MEM;
     return trans;
@@ -66,7 +67,6 @@ void MC_random_create(int min, int max)
     trans->name = bprintf("[%s][%s] mc_random(%d,%d) (%p)", p->smx_host->name, p->name, min, max, trans);
     xbt_free(type_str);
 
-    trans->refcount = 1;    
     trans->type = mc_random ;
     trans->process = p;
     trans->min = min;
@@ -76,6 +76,7 @@ void MC_random_create(int min, int max)
     /* Push it onto the enabled transitions set of the current state */
     current_state = (mc_state_t) 
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    xbt_setset_set_insert(current_state->created_transitions, trans);
     xbt_setset_set_insert(current_state->transitions, trans);
     MC_UNSET_RAW_MEM;
   }
@@ -99,11 +100,8 @@ void MC_transition_set_comm(mc_transition_t trans, smx_comm_t comm)
  */
 void MC_transition_delete(mc_transition_t trans)
 {
-  /* Only delete it if there are no references, otherwise decrement refcount */  
-  if(--trans->refcount == 0){
-    xbt_free(trans->name);
-    xbt_free(trans);
-  }
+  xbt_free(trans->name);
+  xbt_free(trans);
 }
 
 /**

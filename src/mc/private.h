@@ -66,7 +66,6 @@ void MC_dpor(void);
 typedef struct s_mc_transition{
   XBT_SETSET_HEADERS;
   char* name;
-  unsigned int refcount;
   mc_trans_type_t type;
   smx_process_t process;
   smx_rdv_t rdv;
@@ -84,11 +83,12 @@ int MC_transition_depend(mc_transition_t, mc_transition_t);
 
 /******************************** States **************************************/
 typedef struct mc_state{
-  xbt_setset_set_t transitions;
-  xbt_setset_set_t enabled_transitions;
-  xbt_setset_set_t interleave;
-  xbt_setset_set_t done;
-  mc_transition_t executed_transition;
+  xbt_setset_set_t created_transitions;   /* created in this state */
+  xbt_setset_set_t transitions;           /* created in this state + inherited */
+  xbt_setset_set_t enabled_transitions;   /* they can be executed by the mc */
+  xbt_setset_set_t interleave;            /* the ones to be executed by the mc */
+  xbt_setset_set_t done;                  /* already executed transitions */
+  mc_transition_t executed_transition;    /* last executed transition */
 } s_mc_state_t, *mc_state_t;
 
 extern xbt_fifo_t mc_stack;
