@@ -20,6 +20,7 @@ SG_BEGIN_DECL()
 
 /********************************* Global *************************************/
 XBT_PUBLIC(void) MC_init(int);
+XBT_PUBLIC(void) MC_exit(int);
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_modelcheck(int);
 XBT_PUBLIC(int) MC_random(int,int);

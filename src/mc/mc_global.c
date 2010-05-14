@@ -55,7 +55,8 @@ void MC_init(int method)
   MC_UNSET_RAW_MEM;
 }
 
-void MC_modelcheck(int method){
+void MC_modelcheck(int method)
+{
 
   MC_init(method);
 
@@ -69,6 +70,35 @@ void MC_modelcheck(int method){
     default:
       break;
   }
+
+  MC_exit(method);
+}
+
+void MC_exit(int method)
+{
+  mc_state_t state;
+  
+  switch(method){
+    case 0:
+      //MC_dfs_exit();
+      break;
+    case 1:
+      //MC_dpor_exit();
+      break;
+    default:
+      break;
+  }
+   
+  /* Destroy MC data structures (in RAW memory) */
+  MC_SET_RAW_MEM;
+  xbt_free(mc_stats);
+
+  while( (state = (mc_state_t)xbt_fifo_pop(mc_stack)) != NULL )
+    MC_state_delete(state);
+  
+  xbt_fifo_free(mc_stack);
+  xbt_setset_destroy(mc_setset);
+  MC_UNSET_RAW_MEM;
 }
 
 int MC_random(int min, int max)

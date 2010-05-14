@@ -61,6 +61,10 @@ void MC_dfs_init(void);
 void MC_dpor_init(void);
 void MC_dfs(void);
 void MC_dpor(void);
+void MC_dfs_exit(void);
+void MC_dpor_exit(void);
+
+
 
 /******************************* Transitions **********************************/
 typedef struct s_mc_transition{
