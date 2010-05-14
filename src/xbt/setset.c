@@ -29,8 +29,12 @@ xbt_setset_t xbt_setset_new(unsigned int size)
  */
 void xbt_setset_destroy(xbt_setset_t setset)
 {
+  xbt_fifo_item_t item;
+  xbt_setset_set_t set;
   xbt_dynar_free(&setset->elm_array);
-  /* FIXME: we should free all the sets in the fifo setset->sets */
+  xbt_fifo_foreach(setset->sets, item, set, xbt_setset_set_t){
+    xbt_setset_destroy_set(set);
+  }
   xbt_fifo_free(setset->sets);
   xbt_free(setset);
 }
