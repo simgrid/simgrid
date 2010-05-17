@@ -2073,6 +2073,18 @@ $ defaults write Triva 'bcompute Color' '1 0 0'
 \endverbatim
 Where the three numbers in each line are the RGB color with values from 0 to 1.
 
+\subsection faq_modelchecking Model-Checking
+\subsubsection faq_modelchecking_howto How to use it
+To enable the experimental SimGrid model-checking support the program should
+be executed with the command line argument 
+\verbatim
+--cfg=model-check:1 
+\endverbatim
+Properties are expressed as assertions using the function
+\verbatim
+void MC_assert(int prop);
+\endverbatim
+
 \section faq_troubleshooting Troubleshooting
 
 \subsection faq_trouble_lib_compil SimGrid compilation and installation problems
