@@ -149,7 +149,20 @@ void MC_dpor(void)
     /* The interleave set is empty or the maximum depth is reached, let's back-track */
     }else{
       DEBUG0("There are no more transitions to interleave.");
-      
+
+  
+      /* Check for deadlocks */
+      xbt_setset_substract(mc_current_state->transitions, mc_current_state->done);
+      if(xbt_setset_set_size(mc_current_state->transitions) > 0){
+        INFO0("**************************");
+        INFO0("*** DEAD-LOCK DETECTED ***");
+        INFO0("**************************");
+        INFO0("Counter-example execution trace:");
+        MC_dump_stack(mc_stack);
+        MC_print_statistics(mc_stats);
+        xbt_abort();
+      }
+              
       mc_transition_t q = NULL;
       xbt_fifo_item_t item = NULL;
       mc_state_t state = NULL;
