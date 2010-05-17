@@ -3,9 +3,6 @@ include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
 
-find_program(SET_MAKE NAMES make)
-find_program(CAT_EXE NAMES cat)
-
 # Checks for header libraries functions.
 
 CHECK_LIBRARY_EXISTS(pthread 	pthread_create 		NO_DEFAULT_PATHS pthread)
@@ -54,208 +51,14 @@ CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 
 set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
-
-if(enable_ruby)
-	include(FindRuby)
-	if(RUBY_LIBRARY)
-		if(RUBY_VERSION_MAJOR MATCHES "1" AND RUBY_VERSION_MINOR MATCHES "8")
-			set(LIB_RUBY_VERSION "${RUBY_VERSION_MAJOR}.${RUBY_VERSION_MINOR}.${RUBY_VERSION_PATCH}")
-			string(REGEX MATCH "ruby.*[0-9]" RUBY_LIBRARY_NAME ${RUBY_LIBRARY})
-			if(NOT RUBY_LIBRARY_NAME)
-				set(RUBY_LIBRARY_NAME ruby)
-			endif(NOT RUBY_LIBRARY_NAME)
-			string(REGEX REPLACE "libruby.*$" "" RUBY_LIBRARY ${RUBY_LIBRARY})
-			SET(CMAKE_EXE_LINKER_FLAGS "-L${RUBY_LIBRARY}")
-			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${RUBY_CONFIG_INCLUDE_DIR} ") #path to config.h
-			string(COMPARE EQUAL "${RUBY_INCLUDE_DIR}" "${RUBY_CONFIG_INCLUDE_DIR}" operation)
-			if(NOT operation)
-				SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${RUBY_INCLUDE_DIR} ") #path to ruby.h
-			endif(NOT operation)
-			ADD_DEFINITIONS("-I${PROJECT_DIRECTORY}/src/bindings/ruby -I${PROJECT_DIRECTORY}/src/simix")
-			SET(HAVE_RUBY 1)
-		else(RUBY_VERSION_MAJOR MATCHES "1" AND RUBY_VERSION_MINOR MATCHES "8")
-			message("Ruby binding need version 1.8.x actually version ${RUBY_VERSION_MAJOR}.${RUBY_VERSION_MINOR}.x")
-			SET(HAVE_RUBY 0)
-		endif(RUBY_VERSION_MAJOR MATCHES "1" AND RUBY_VERSION_MINOR MATCHES "8")
-	else(RUBY_LIBRARY)
-		SET(HAVE_RUBY 0)
-	endif(RUBY_LIBRARY)
-	
-	if(NOT RUBY_EXECUTABLE)
-		message("Take care : you don't have ruby executable so you can compile and build examples but can't execute them!!!") 
-	endif(NOT RUBY_EXECUTABLE)
-	
-endif(enable_ruby)
+SET(HAVE_RUBY 0)
+set(HAVE_LUA 0)
+SET(HAVE_JAVA 0)
+SET(HAVE_TRACING 0)
 
 if(enable_tracing)
 	SET(HAVE_TRACING 1)
 endif(enable_tracing)
-
-#--------------------------------------------------------------------------------------------------
-### Initialize of CONTEXT JAVA
-if(NOT enable_java)
-  	SET(HAVE_JAVA 0)
-else(NOT enable_java)
-	include(FindJava)
-	include(FindJNI)
-	if(JAVA_INCLUDE_PATH)
-		set(HAVE_JNI_H 1)
-	endif(JAVA_INCLUDE_PATH)	
-	if(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
-		SET(HAVE_JAVA 1)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${JAVA_INCLUDE_PATH} ")
-		if(NOT JAVA_INCLUDE_PATH STREQUAL JAVA_INCLUDE_PATH2)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${JAVA_INCLUDE_PATH2} ")			
-		endif(NOT JAVA_INCLUDE_PATH STREQUAL JAVA_INCLUDE_PATH2)
-	else(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2) 
-		SET(HAVE_JAVA 0)
-	endif(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
-endif(NOT enable_java)
-
-#--------------------------------------------------------------------------------------------------
-### Initialize of CONTEXT GTNETS
-if(NOT enable_gtnets)
-	SET(HAVE_GTNETS 0)
-else(NOT enable_gtnets)
-	set(GTNETS_LDFLAGS "-L${gtnets_path}/lib")
-	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include/gtnets")
-	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
-	if(COMPILE_GTNETS_VAR)
-		SET(HAVE_GTNETS 0)
-	else(COMPILE_GTNETS_VAR)
-		SET(HAVE_GTNETS 1)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
-	endif(COMPILE_GTNETS_VAR)
-endif(NOT enable_gtnets)
-
-#--------------------------------------------------------------------------------------------------
-### Initialize of CONTEXT THREADS
-
-if(pthread)
-set(pthread 1)
-elseif(pthread)
-set(pthread 0)
-endif(pthread)
-
-if(pthread)
-	### HAVE_SEM_INIT
-  	
-  	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
-	    	if(HAVE_SEM_INIT_run)
-			set(HAVE_SEM_INIT 0)
-	    	else(HAVE_SEM_INIT_run)
-			set(HAVE_SEM_INIT 1)
-		endif(HAVE_SEM_INIT_run)
-  	endif(HAVE_SEM_INIT_LIB)
-
-	### HAVE_SEM_TIMEDWAIT
-
-	if(HAVE_SEM_TIMEDWAIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
-		if(HAVE_SEM_TIMEDWAIT_run)
-			set(HAVE_SEM_TIMEDWAIT 0)
-		else(HAVE_SEM_TIMEDWAIT_run)
-			set(HAVE_SEM_TIMEDWAIT 1)
-		endif(HAVE_SEM_TIMEDWAIT_run)
-	endif(HAVE_SEM_TIMEDWAIT_LIB)
-
-	### HAVE_MUTEX_TIMEDLOCK
-
-	if(HAVE_MUTEX_TIMEDLOCK_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
-		if(HAVE_MUTEX_TIMEDLOCK_run)
-			set(HAVE_MUTEX_TIMEDLOCK 0)
-		else(HAVE_MUTEX_TIMEDLOCK_run)
-			set(HAVE_MUTEX_TIMEDLOCK 1)
-		endif(HAVE_MUTEX_TIMEDLOCK_run)
-	endif(HAVE_MUTEX_TIMEDLOCK_LIB)
-endif(pthread)
-
-# AC_CHECK_MCSC(mcsc=yes, mcsc=no) 
-set(mcsc_flags "")
-if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-	set(mcsc_flags "-D_XOPEN_SOURCE")
-endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-
-try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
-	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
-	COMPILE_DEFINITIONS "${mcsc_flags}"
-	)
-file(READ "${Project_BINARY_DIR}/conftestval" mcsc)
-STRING(REPLACE "\n" "" mcsc ${mcsc})
-if(mcsc)
-	set(mcsc "yes")
-elseif(mcsc)
-	set(mcsc "no")
-endif(mcsc)
-
-if(mcsc MATCHES "no" AND pthread)
-	if(HAVE_WINDOWS_H)
-		set(windows_context "yes")
-		set(IS_WINDOWS 1)
-	elseif(HAVE_WINDOWS_H)
-		message(FATAL_ERROR "no appropriate backend found")
-	endif(HAVE_WINDOWS_H)
-endif(mcsc MATCHES "no" AND pthread)
-
-if(with_context MATCHES "ucontext" AND mcsc MATCHES "no")
-	message(FATAL_ERROR "-Dwith-context=ucontext specified but ucontext unusable.")
-endif(with_context MATCHES "ucontext" AND mcsc MATCHES "no")
-
-set(with_context_ok 0)
-if(with_context MATCHES "windows")
-	set(with_context_ok 1)
-	if(NOT HAVE_WINDOWS_H)
-		message(FATAL_ERROR "no appropriate backend found windows")
-	endif(NOT HAVE_WINDOWS_H)
-endif(with_context MATCHES "windows")
-
-if(with_context MATCHES "pthreads")
-	set(with_context_ok 1)
-	set(with_context "pthread")
-endif(with_context MATCHES "pthreads")
-
-if(with_context MATCHES "auto")
-	set(with_context_ok 1)
-	set(with_context "ucontext")
-	message("with_context auto change to ucontext")
-endif(with_context MATCHES "auto")
-
-if(with_context MATCHES "ucontext")
-	set(with_context_ok 1)
-	if(mcsc)
-		set(CONTEXT_UCONTEXT 1)
-	else(mcsc)
-		if(windows_context MATCHES "yes")
-			set(with_context "windows")
-			message("with_context ucontext change to windows")
-		else(windows_context MATCHES "yes")
-			set(with_context "pthread")
-			message("with_context ucontext change to pthread")
-		endif(windows_context MATCHES "yes")
-	endif(mcsc)
-endif(with_context MATCHES "ucontext")
-
-if(with_context MATCHES "pthread")
-	set(with_context_ok 1)
-	if(NOT pthread)
-		message(FATAL_ERROR "Cannot find pthreads (try -Dwith_context=ucontext if you haven't already tried).")
-	endif(NOT pthread)
-	SET(CONTEXT_THREADS 1)
-endif(with_context MATCHES "pthread")
-
-if(with_context MATCHES "ucontext")
-	SET(CONTEXT_THREADS 0)
-endif(with_context MATCHES "ucontext")
-
-if(NOT with_context_ok)
-	message(FATAL_ERROR "-Dwith-context must be either ucontext or pthread")
-endif(NOT with_context_ok)
-
-set(HAVE_LUA 0)
 
 if(enable_lua)
 	exec_program("lua -v" OUTPUT_VARIABLE LUA_VERSION)
@@ -328,6 +131,201 @@ if(enable_lua)
 	endif(LUA_MAJOR_VERSION MATCHES "5" AND LUA_MINOR_VERSION MATCHES "1")
 	
 endif(enable_lua)
+
+if(enable_ruby)
+	include(FindRuby)
+	if(RUBY_LIBRARY)
+		if(RUBY_VERSION_MAJOR MATCHES "1" AND RUBY_VERSION_MINOR MATCHES "8")
+			set(LIB_RUBY_VERSION "${RUBY_VERSION_MAJOR}.${RUBY_VERSION_MINOR}.${RUBY_VERSION_PATCH}")
+			string(REGEX MATCH "ruby.*[0-9]" RUBY_LIBRARY_NAME ${RUBY_LIBRARY})
+			if(NOT RUBY_LIBRARY_NAME)
+				set(RUBY_LIBRARY_NAME ruby)
+			endif(NOT RUBY_LIBRARY_NAME)
+			string(REGEX REPLACE "libruby.*$" "" RUBY_LIBRARY ${RUBY_LIBRARY})
+			SET(CMAKE_EXE_LINKER_FLAGS "-L${RUBY_LIBRARY}")
+			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${RUBY_CONFIG_INCLUDE_DIR} ") #path to config.h
+			string(COMPARE EQUAL "${RUBY_INCLUDE_DIR}" "${RUBY_CONFIG_INCLUDE_DIR}" operation)
+			if(NOT operation)
+				SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${RUBY_INCLUDE_DIR} ") #path to ruby.h
+			endif(NOT operation)
+			ADD_DEFINITIONS("-I${PROJECT_DIRECTORY}/src/bindings/ruby -I${PROJECT_DIRECTORY}/src/simix")
+			SET(HAVE_RUBY 1)
+		else(RUBY_VERSION_MAJOR MATCHES "1" AND RUBY_VERSION_MINOR MATCHES "8")
+			message("Ruby binding need version 1.8.x actually version ${RUBY_VERSION_MAJOR}.${RUBY_VERSION_MINOR}.x")
+			SET(HAVE_RUBY 0)
+		endif(RUBY_VERSION_MAJOR MATCHES "1" AND RUBY_VERSION_MINOR MATCHES "8")
+	else(RUBY_LIBRARY)
+		SET(HAVE_RUBY 0)
+	endif(RUBY_LIBRARY)
+	
+	if(NOT RUBY_EXECUTABLE)
+		message("Take care : you don't have ruby executable so you can compile and build examples but can't execute them!!!") 
+	endif(NOT RUBY_EXECUTABLE)
+	
+endif(enable_ruby)
+
+#--------------------------------------------------------------------------------------------------
+### Initialize of CONTEXT JAVA
+
+if(enable_java)
+	include(FindJava)
+	include(FindJNI)
+	if(JAVA_INCLUDE_PATH)
+		set(HAVE_JNI_H 1)
+	endif(JAVA_INCLUDE_PATH)	
+	if(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
+		SET(HAVE_JAVA 1)
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${JAVA_INCLUDE_PATH} ")
+		if(NOT JAVA_INCLUDE_PATH STREQUAL JAVA_INCLUDE_PATH2)
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${JAVA_INCLUDE_PATH2} ")			
+		endif(NOT JAVA_INCLUDE_PATH STREQUAL JAVA_INCLUDE_PATH2)
+	else(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2) 
+		SET(HAVE_JAVA 0)
+	endif(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
+endif(enable_java)
+
+#--------------------------------------------------------------------------------------------------
+### Initialize of CONTEXT GTNETS
+if(NOT enable_gtnets)
+	SET(HAVE_GTNETS 0)
+else(NOT enable_gtnets)
+	set(GTNETS_LDFLAGS "-L${gtnets_path}/lib")
+	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include/gtnets")
+	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
+	if(COMPILE_GTNETS_VAR)
+		SET(HAVE_GTNETS 0)
+	else(COMPILE_GTNETS_VAR)
+		SET(HAVE_GTNETS 1)
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
+	endif(COMPILE_GTNETS_VAR)
+endif(NOT enable_gtnets)
+
+#--------------------------------------------------------------------------------------------------
+### Initialize of CONTEXT THREADS
+
+if(pthread)
+	set(pthread 1)
+elseif(pthread)
+	set(pthread 0)
+endif(pthread)
+
+if(pthread)
+	### HAVE_SEM_INIT
+  	
+  	if(HAVE_SEM_INIT_LIB)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
+	    	if(HAVE_SEM_INIT_run)
+			set(HAVE_SEM_INIT 0)
+	    	else(HAVE_SEM_INIT_run)
+			set(HAVE_SEM_INIT 1)
+		endif(HAVE_SEM_INIT_run)
+  	endif(HAVE_SEM_INIT_LIB)
+
+	### HAVE_SEM_TIMEDWAIT
+
+	if(HAVE_SEM_TIMEDWAIT_LIB)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		if(HAVE_SEM_TIMEDWAIT_run)
+			set(HAVE_SEM_TIMEDWAIT 0)
+		else(HAVE_SEM_TIMEDWAIT_run)
+			set(HAVE_SEM_TIMEDWAIT 1)
+		endif(HAVE_SEM_TIMEDWAIT_run)
+	endif(HAVE_SEM_TIMEDWAIT_LIB)
+
+	### HAVE_MUTEX_TIMEDLOCK
+
+	if(HAVE_MUTEX_TIMEDLOCK_LIB)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		if(HAVE_MUTEX_TIMEDLOCK_run)
+			set(HAVE_MUTEX_TIMEDLOCK 0)
+		else(HAVE_MUTEX_TIMEDLOCK_run)
+			set(HAVE_MUTEX_TIMEDLOCK 1)
+		endif(HAVE_MUTEX_TIMEDLOCK_run)
+	endif(HAVE_MUTEX_TIMEDLOCK_LIB)
+endif(pthread)
+
+# AC_CHECK_MCSC(mcsc=yes, mcsc=no) 
+set(mcsc_flags "")
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+	set(mcsc_flags "-D_XOPEN_SOURCE")
+endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
+try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
+	${PROJECT_DIRECTORY}
+	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
+	COMPILE_DEFINITIONS "${mcsc_flags}"
+	)
+file(READ "${Simgrid_BINARY_DIR}/conftestval" mcsc)
+STRING(REPLACE "\n" "" mcsc ${mcsc})
+if(mcsc)
+	set(mcsc "yes")
+elseif(mcsc)
+	set(mcsc "no")
+endif(mcsc)
+
+if(mcsc MATCHES "no" AND pthread)
+	if(HAVE_WINDOWS_H)
+		set(windows_context "yes")
+		set(IS_WINDOWS 1)
+	elseif(HAVE_WINDOWS_H)
+		message(FATAL_ERROR "no appropriate backend found")
+	endif(HAVE_WINDOWS_H)
+endif(mcsc MATCHES "no" AND pthread)
+
+if(with_context MATCHES "ucontext" AND mcsc MATCHES "no")
+	message(FATAL_ERROR "-Dwith-context=ucontext specified but ucontext unusable.")
+endif(with_context MATCHES "ucontext" AND mcsc MATCHES "no")
+
+set(with_context_ok 0)
+if(with_context MATCHES "windows")
+	set(with_context_ok 1)
+	if(NOT HAVE_WINDOWS_H)
+		message(FATAL_ERROR "no appropriate backend found windows")
+	endif(NOT HAVE_WINDOWS_H)
+endif(with_context MATCHES "windows")
+
+if(with_context MATCHES "pthreads")
+	set(with_context_ok 1)
+	set(with_context "pthread")
+endif(with_context MATCHES "pthreads")
+
+if(with_context MATCHES "auto")
+	set(with_context_ok 1)
+	set(with_context "ucontext")
+	message("with_context auto change to ucontext")
+endif(with_context MATCHES "auto")
+
+if(with_context MATCHES "ucontext")
+	set(with_context_ok 1)
+	if(mcsc)
+		set(CONTEXT_UCONTEXT 1)
+	else(mcsc)
+		if(windows_context MATCHES "yes")
+			set(with_context "windows")
+			message("with_context ucontext change to windows")
+		else(windows_context MATCHES "yes")
+			set(with_context "pthread")
+			message("with_context ucontext change to pthread")
+		endif(windows_context MATCHES "yes")
+	endif(mcsc)
+endif(with_context MATCHES "ucontext")
+
+if(with_context MATCHES "pthread")
+	set(with_context_ok 1)
+	if(NOT pthread)
+		message(FATAL_ERROR "Cannot find pthreads (try -Dwith_context=ucontext if you haven't already tried).")
+	endif(NOT pthread)
+	SET(CONTEXT_THREADS 1)
+endif(with_context MATCHES "pthread")
+
+if(with_context MATCHES "ucontext")
+	SET(CONTEXT_THREADS 0)
+endif(with_context MATCHES "ucontext")
+
+if(NOT with_context_ok)
+	message(FATAL_ERROR "-Dwith-context must be either ucontext or pthread")
+endif(NOT with_context_ok)
 
 ###############
 ## SVN version check
@@ -470,7 +468,7 @@ if(HAVE_MAKECONTEXT)
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
 	
-	file(READ ${Project_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
+	file(READ ${Simgrid_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
 	string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
@@ -489,7 +487,7 @@ endif(HAVE_MAKECONTEXT)
 		${PROJECT_DIRECTORY}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_stackgrowth.c
 		)
-file(READ "${Project_BINARY_DIR}/conftestval" stack)
+file(READ "${Simgrid_BINARY_DIR}/conftestval" stack)
 if(stack MATCHES "down")
 	set(PTH_STACKGROWTH "-1")
 endif(stack MATCHES "down")

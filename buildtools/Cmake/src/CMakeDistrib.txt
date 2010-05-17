@@ -167,6 +167,13 @@ endforeach(file ${ex_to_svg})
 
 add_custom_command(TARGET install-simgrid
 	COMMAND echo "install doc/examples  OK"
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+)
+if(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
+	file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/doc/html/)
+endif(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
+
+add_custom_command(TARGET install-simgrid
 	COMMAND cp ${PROJECT_DIRECTORY}/doc/html/* $ENV{DESTDIR}${prefix}/doc/simgrid/html/
 	COMMAND echo "install doc/html      OK"
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
