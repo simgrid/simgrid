@@ -112,27 +112,30 @@ void MC_transition_delete(mc_transition_t trans)
  */
 int MC_transition_depend(mc_transition_t t1, mc_transition_t t2)
 {
-  /* The semantics of SIMIX network operations implies that ONLY transitions 
-     of the same type, in the same rendez-vous point, and from different processes
-     are dependant, except wait transitions that are always independent */
   if(t1->process == t2->process) 
     return FALSE;
 
-  if(t1->type == mc_isend && t2->type == mc_isend && t1->rdv == t2->rdv)
-    return TRUE;
+  if(t1->type != t2->type)
+    return FALSE;
+  
+  if(t1->type == mc_isend && t2->type == mc_isend && t1->rdv != t2->rdv)
+    return FALSE;
 
-  if(t1->type == mc_irecv && t2->type == mc_irecv && t1->rdv == t2->rdv)
-    return TRUE;
+  if(t1->type == mc_irecv && t2->type == mc_irecv && t1->rdv != t2->rdv)
+    return FALSE;
 
+  if(t1->type == mc_wait && t2->type == mc_wait && t1->comm == t2->comm)
+    return FALSE;
+  
   if(t1->type == mc_wait && t2->type == mc_wait 
      && t1->comm->src_buff != NULL
      && t1->comm->dst_buff != NULL
      && t2->comm->src_buff != NULL
      && t2->comm->dst_buff != NULL
-     && (   t1->comm->dst_buff == t2->comm->src_buff
-         || t1->comm->dst_buff == t2->comm->dst_buff
-         || t2->comm->dst_buff == t1->comm->src_buff))
-    return TRUE;
+     && t1->comm->dst_buff != t2->comm->src_buff
+     && t1->comm->dst_buff != t2->comm->dst_buff
+     && t2->comm->dst_buff != t1->comm->src_buff)
+    return FALSE;
   
-  return FALSE;
+  return TRUE;
 }
