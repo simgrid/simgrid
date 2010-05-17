@@ -275,7 +275,7 @@ void MC_execute_surf_actions(void)
         DEBUG5("Resource [%s] (%d): Executing RUNNING action \"%s\" (%p) MaxDuration %lf", 
           model->name, xbt_swag_size(model->states.running_action_set),
           smx_action->name, smx_action, action->max_duration);
-
+        
         if(smx_action)
           SIMIX_action_signal_all(smx_action);
       }

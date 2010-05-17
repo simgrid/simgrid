@@ -1,3 +1,8 @@
+/******************** Non-deterministic message ordering  *********************/
+/* Server assumes a fixed order in the reception of messages from its clients */
+/* which is incorrect because the message ordering is non-deterministic       */
+/******************************************************************************/
+
 #include <msg/msg.h>
 #include <mc/modelchecker.h>
 #define N 3

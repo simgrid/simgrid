@@ -1,14 +1,12 @@
-/* Centralized Mutual Exclusion Algorithm 
- *
- * This constitutes the answer to the exercice 2 of the practical 
- * lab on implementing mutual exclusion algorithms with SimGrid.
- * 
- * YOU SHOULD TRY IMPLEMENTING IT YOURSELF BEFORE READING THE SOLUTION.
- */
+/***************** Centralized Mutual Exclusion Algorithm *********************/
+/* This example implements a centralized mutual exclusion algorithm.          */
+/* There is no bug on it, it is just provided to test the state space         */
+/* reduction of DPOR.                                                         */
+/******************************************************************************/
 
 #include "msg/msg.h"
 
-#define AMOUNT_OF_CLIENTS 5
+#define AMOUNT_OF_CLIENTS 4
 #define CS_PER_PROCESS 2
 XBT_LOG_NEW_DEFAULT_CATEGORY(centralized, "my log messages");
 
