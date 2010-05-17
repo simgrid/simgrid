@@ -1,5 +1,3 @@
-#SET(CMAKE_VERBOSE_MAKEFILE 1)
-
 set(JAVA_FILES ${JMSG_JAVA_SRC})
 set(JAVA_CLASSES ${JAVA_FILES})
 string(REPLACE "${PROJECT_DIRECTORY}/src/java/simgrid/msg" "${CMAKE_CURRENT_BINARY_DIR}/classes/simgrid/msg"

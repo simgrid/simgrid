@@ -781,16 +781,16 @@ set(to_svg
 set(script_to_install
 	${PROJECT_DIRECTORY}/./src/smpi/smpicc
 	${PROJECT_DIRECTORY}/./src/smpi/smpirun
-	${PROJECT_DIRECTORY}/./tools/sg_unit_extractor.pl
-	${PROJECT_DIRECTORY}/./tools/doxygen/index_create.pl
-	${PROJECT_DIRECTORY}/./tools/doxygen/toc_create.pl
-	${PROJECT_DIRECTORY}/./tools/doxygen/index_php.pl
-	${PROJECT_DIRECTORY}/./tools/doxygen/doxygen_postprocesser.pl
-	${PROJECT_DIRECTORY}/./tools/doxygen/bibtex2html_table_count.pl
-	${PROJECT_DIRECTORY}/./tools/doxygen/bibtex2html_postprocessor.pl
-	${PROJECT_DIRECTORY}/./tools/doxygen/xbt_log_extract_hierarchy.pl
 	${PROJECT_DIRECTORY}/./tools/MSG_visualization/colorize.pl
-	${PROJECT_DIRECTORY}/./tools/MSG_visualization/trace2fig.pl
 )
+#	${PROJECT_DIRECTORY}/./tools/sg_unit_extractor.pl
+#	${PROJECT_DIRECTORY}/./tools/doxygen/index_create.pl
+#	${PROJECT_DIRECTORY}/./tools/doxygen/toc_create.pl
+#	${PROJECT_DIRECTORY}/./tools/doxygen/index_php.pl
+#	${PROJECT_DIRECTORY}/./tools/doxygen/doxygen_postprocesser.pl
+#	${PROJECT_DIRECTORY}/./tools/doxygen/bibtex2html_table_count.pl
+#	${PROJECT_DIRECTORY}/./tools/doxygen/bibtex2html_postprocessor.pl
+#	${PROJECT_DIRECTORY}/./tools/doxygen/xbt_log_extract_hierarchy.pl
+#	${PROJECT_DIRECTORY}/./tools/MSG_visualization/trace2fig.pl
 
 #message("\n\ntesh:\n${txt_files}")
