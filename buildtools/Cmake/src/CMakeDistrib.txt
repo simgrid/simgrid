@@ -3,43 +3,36 @@ set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_FILE_NAME "simgrid-${release_version}")
 set(CPACK_GENERATOR "TBZ2;TGZ") #;TGZ;TZ;ZIP
-
-foreach(file ${script_to_install})
-	get_filename_component(file_location ${file} PATH)
-	string(REPLACE "${PROJECT_DIRECTORY}/" "/" file_location ${file_location})
-	install(FILES ${file} DESTINATION "${file_location}")
-endforeach(file ${EXTRA_DIST})
-
-foreach(file ${to_svg})
-	get_filename_component(file_location ${file} PATH)
-	string(REPLACE "${PROJECT_DIRECTORY}/" "/" file_location ${file_location})
-	install(FILES ${file} DESTINATION "${file_location}")
-endforeach(file ${EXTRA_DIST})
-
-foreach(file ${TEST_UNITS})
-	install(FILES src/${file} DESTINATION "/src/")
-endforeach(file ${TEST_UNITS})
-
-###copy doc
-install(DIRECTORY "${PROJECT_DIRECTORY}/doc/"
-DESTINATION "/doc/"
-PATTERN ".svn" EXCLUDE 
-PATTERN ".git" EXCLUDE 
-PATTERN "*.o" EXCLUDE
-PATTERN "*~" EXCLUDE
-)
-
-###buildtools 
-install(DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/"
-DESTINATION "/buildtools/Cmake/"
-PATTERN ".svn" EXCLUDE 
-PATTERN ".git" EXCLUDE
-PATTERN "*.o" EXCLUDE
-PATTERN "*~" EXCLUDE
-)
-
 set(CPACK_SET_DESTDIR on)
 set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
+
+foreach(file ${script_to_install} ${to_svg})
+	get_filename_component(file_location ${file} PATH)
+	string(REPLACE "${PROJECT_DIRECTORY}/" "" file_location ${file_location})
+	install(FILES ${file} DESTINATION "${file_location}")
+endforeach(file ${EXTRA_DIST})
+
+###copy doc
+install(DIRECTORY "${PROJECT_DIRECTORY}/doc/html/"
+  DESTINATION "$ENV{DESTDIR}${prefix}/doc/html/"
+  PATTERN ".svn" EXCLUDE 
+  PATTERN ".git" EXCLUDE 
+  PATTERN "*.o" EXCLUDE
+  PATTERN "*~" EXCLUDE
+)
+
+### scripts
+set(install_bins
+ ${PROJECT_DIRECTORY}/src/smpi/smpicc
+ ${PROJECT_DIRECTORY}/src/smpi/smpirun
+ ${PROJECT_DIRECTORY}/tools/gras/gras_stub_generator
+ ${PROJECT_DIRECTORY}/tools/tesh/tesh
+)
+
+# FIXME: the following does not work because these binaries are not known as targets
+#install(TARGETS smpicc smpirun gras_stub_generator tesh 
+#        RUNTIME DESTINATION $ENV{DESTDIR}${prefix}/bin)
+	
 
 string(REPLACE ";" "\t" install_libs "${install_libs}")
 set(uninstall_bins "${install_bins}")
