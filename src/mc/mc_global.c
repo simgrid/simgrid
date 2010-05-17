@@ -276,11 +276,6 @@ void MC_execute_surf_actions(void)
           model->name, xbt_swag_size(model->states.running_action_set),
           smx_action->name, smx_action, action->max_duration);
 
-        /* Copy the transfered data of the completed network actions */              
-        /* FIXME: be carefull it might not be an action of the network model */
-        if(smx_action && smx_action->data != NULL)
-          SIMIX_network_copy_data((smx_comm_t)smx_action->data);
-
         if(smx_action)
           SIMIX_action_signal_all(smx_action);
       }
