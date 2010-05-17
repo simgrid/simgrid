@@ -349,19 +349,6 @@ ${PROJECT_DIRECTORY}/tools/gras/gras_stub_generator
 ${PROJECT_DIRECTORY}/tools/tesh/tesh
 )
 
-set(install_libs
-${PROJECT_DIRECTORY}/src/.libs/libsimgrid.*
-${PROJECT_DIRECTORY}/src/.libs/libsimgrid_static.*
-${PROJECT_DIRECTORY}/src/.libs/libgras.*
-)
-
-if(enable_smpi)
-	set(install_libs
-	${install_libs}
-	${PROJECT_DIRECTORY}/src/.libs/libsmpi.*
-	)
-endif(enable_smpi)
-
 set(install_HEADERS
 ./include/gras.h 
 ./include/xbt.h

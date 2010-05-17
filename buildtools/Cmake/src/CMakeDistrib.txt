@@ -52,6 +52,8 @@ string(REPLACE "./" "${prefix}/" uninstall_HEADERS "${install_HEADERS}")
 
 
 
+#SET(CMAKE_VERBOSE_MAKEFILE 1)
+
 add_custom_target(install-simgrid
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}/bin
@@ -73,7 +75,19 @@ COMMAND mkdir -p $ENV{DESTDIR}${prefix}/include/instr
 COMMAND cp ${install_bins} $ENV{DESTDIR}${prefix}/bin
 COMMAND cp ${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl $ENV{DESTDIR}${prefix}/bin/simgrid-colorizer
 COMMAND echo "install bin           OK"
-COMMAND cp ${install_libs} $ENV{DESTDIR}${prefix}/lib
+
+  COMMAND cp ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so.${release_version} $ENV{DESTDIR}${prefix}/lib
+  COMMAND ln -sf $ENV{DESTDIR}${prefix}/lib/libsimgrid.so.${release_version} $ENV{DESTDIR}${prefix}/lib/libsimgrid.so
+
+  COMMAND cp ${PROJECT_DIRECTORY}/src/.libs/libsimgrid_static.a $ENV{DESTDIR}${prefix}/lib/libsimgrid.a
+
+  COMMAND cp ${PROJECT_DIRECTORY}/src/.libs/libgras.so.${release_version} $ENV{DESTDIR}${prefix}/lib
+  COMMAND ln -sf $ENV{DESTDIR}${prefix}/lib/libgras.so.${release_version} $ENV{DESTDIR}${prefix}/lib/libgras.so
+
+  # FIXME: this should be copied only if enable_smpi is true
+  COMMAND cp ${PROJECT_DIRECTORY}/src/.libs/libsmpi.so.${release_version} $ENV{DESTDIR}${prefix}/lib || true
+  COMMAND ln -sf $ENV{DESTDIR}${prefix}/lib/libsmpi.so.${release_version} $ENV{DESTDIR}${prefix}/lib/libsmpi.so
+
 COMMAND echo "install lib           OK"
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 )
