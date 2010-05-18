@@ -60,6 +60,10 @@ if(enable_tracing)
 	SET(HAVE_TRACING 1)
 endif(enable_tracing)
 
+if(enable_model-checking)
+	SET(MMALLOC_WANT_OVERIDE_LEGACY 1)
+endif(enable_model-checking)
+
 if(enable_lua)
 	exec_program("lua -v" OUTPUT_VARIABLE LUA_VERSION)
 	string(REGEX MATCH "[0-9].[0-9].[0-9]" LUA_VERSION "${LUA_VERSION}")

@@ -24,7 +24,11 @@ option(enable_tracing "Tracing MSG (for now) simulations for visualization." off
 option(enable_coverage "Enable coverage." off)
 option(enable_memcheck "Enable memcheck." off)
 option(enable_print_message "Enable print message during config." off)
+option(enable_model-checking "" off)
 
+mark_as_advanced(enable_coverage)
+mark_as_advanced(enable_memcheck)
+mark_as_advanced(enable_print_message)
 mark_as_advanced(BIBTEX2HTML_PATH)
 mark_as_advanced(LUA_LIB_PATH_1)                                                                                                                      
 mark_as_advanced(LUA_LIB_PATH_2)
