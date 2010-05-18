@@ -1,7 +1,0 @@
-#!/bin/bash
-
-if [ -e @prefix@/doc/simgrid/html/index.html ]; then 
-	echo "install doc/html      OK"
-else
-	echo "install doc/html      IGNORED"
-fi
