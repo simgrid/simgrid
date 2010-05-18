@@ -11,7 +11,11 @@ SimGrid (3.5) unstable; urgency=low
      code (even before the xbt_init / MSG_init)
    - xbt_exit is now a no-op and produce a warning when used.
 
- Build chain:
+ Build chain: bug fixes and further polishing
+ * Fix the 'make install' target. 
+   No need to use 'make install-simgrid' anymore
+ * Introduce a 'make dist' target compiling a *source* archive
+   'make package' compiles a binary archive (not well tested)
  * Compile java files only on need
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
