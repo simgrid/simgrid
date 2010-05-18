@@ -11,6 +11,9 @@ SimGrid (3.5) unstable; urgency=low
      code (even before the xbt_init / MSG_init)
    - xbt_exit is now a no-op and produce a warning when used.
 
+ Build chain:
+ * Compile java files only on need
+
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 
 SimGrid (3.4.1) stable; urgency=low
