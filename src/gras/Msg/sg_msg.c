@@ -16,32 +16,61 @@
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 #include "gras/Transport/transport_private.h"   /* sock->data */
 
-XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
-XBT_LOG_DEFAULT_CATEGORY(gras_msg);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_msg);
 
 typedef void *gras_trp_bufdata_;
+
+gras_msg_t gras_msg_recv_any(void) {
+  gras_trp_procdata_t trp_proc =
+      (gras_trp_procdata_t) gras_libdata_by_name("gras_trp");
+  gras_msg_t msg;
+  /* Build a dynar of all communications I could get something from */
+  xbt_dynar_t comms = xbt_dynar_new(sizeof(smx_comm_t),NULL);
+  unsigned int cursor;
+  gras_socket_t sock;
+  gras_trp_sg_sock_data_t *sock_data;
+  xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
+    sock_data = (gras_trp_sg_sock_data_t *) sock->data;
+    if (sock_data->comm_recv) {
+      INFO2("Copy %p of size %d",sock_data->comm_recv,sizeof(smx_comm_t));
+      xbt_dynar_push(comms,&(sock_data->comm_recv));
+    }
+  }
+  VERB1("Wait on %ld 'sockets'",xbt_dynar_length(comms));
+  /* Wait for the end of any of these communications */
+  int got = SIMIX_network_waitany(comms);
+  smx_comm_t comm;
+
+  /* retrieve the message sent in that communication */
+  xbt_dynar_get_cpy(comms,got,&(comm));
+  msg=SIMIX_communication_get_data(comm);
+  VERB1("Got something. Communication %p's over",comm);
+
+  /* Reinstall a waiting communication on that rdv */
+  /* Get the sock again */
+  xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
+    sock_data = (gras_trp_sg_sock_data_t *) sock->data;
+    if (sock_data->comm_recv && sock_data->comm_recv == comm)
+      break;
+  }
+  sock_data = (gras_trp_sg_sock_data_t *) sock->data;
+  sock_data->comm_recv = SIMIX_network_irecv(
+      sock_data->im_server?sock_data->rdv_server:sock_data->rdv_client,
+      NULL,0);
+  SIMIX_communication_destroy(comm);
+
+  return msg;
+}
+
 
 void gras_msg_send_ext(gras_socket_t sock,
                        e_gras_msg_kind_t kind,
                        unsigned long int ID,
                        gras_msgtype_t msgtype, void *payload)
 {
-
-  smx_action_t act;             /* simix action */
-  gras_trp_sg_sock_data_t *sock_data;
-  gras_hostdata_t *hd;
-  gras_trp_procdata_t trp_remote_proc;
-  gras_msg_procdata_t msg_remote_proc;
-  gras_msg_t msg;               /* message to send */
   int whole_payload_size = 0;   /* msg->payload_size is used to memcpy the payload.
                                    This is used to report the load onto the simulator. It also counts the size of pointed stuff */
-
-  sock_data = (gras_trp_sg_sock_data_t *) sock->data;
-
-  hd = (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
-
-  xbt_assert1(!gras_socket_is_meas(sock),
-              "Asked to send a message on the measurement socket %p", sock);
+  gras_msg_t msg;               /* message to send */
 
   /*initialize gras message */
   msg = xbt_new(s_gras_msg_t, 1);
@@ -50,7 +79,7 @@ void gras_msg_send_ext(gras_socket_t sock,
   msg->type = msgtype;
   msg->ID = ID;
   if (kind == e_gras_msg_kind_rpcerror) {
-    /* error on remote host, carfull, payload is an exception */
+    /* error on remote host, careful, payload is an exception */
     msg->payl_size = gras_datadesc_size(gras_datadesc_by_name("ex_t"));
     msg->payl = xbt_malloc(msg->payl_size);
     whole_payload_size = gras_datadesc_memcpy(gras_datadesc_by_name("ex_t"),
@@ -72,6 +101,24 @@ void gras_msg_send_ext(gras_socket_t sock,
       whole_payload_size = gras_datadesc_memcpy(msgtype->ctn_type,
                                                 payload, msg->payl);
   }
+  gras_trp_sg_sock_data_t *sock_data = (gras_trp_sg_sock_data_t *) sock->data;
+  smx_comm_t comm;
+  SIMIX_network_send(sock_data->im_server ? sock_data->rdv_client : sock_data->rdv_client,
+      whole_payload_size,-1,-1,&msg,sizeof(void*),&comm,msg);
+
+#ifdef KILLME
+  smx_action_t act;             /* simix action */
+  gras_hostdata_t *hd;
+  gras_trp_procdata_t trp_remote_proc;
+  gras_msg_procdata_t msg_remote_proc;
+
+  sock_data = (gras_trp_sg_sock_data_t *) sock->data;
+
+  hd = (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
+
+  xbt_assert1(!gras_socket_is_meas(sock),
+              "Asked to send a message on the measurement socket %p", sock);
+
 
   /* put the selectable socket on the queue */
   trp_remote_proc = (gras_trp_procdata_t)
@@ -106,27 +153,33 @@ void gras_msg_send_ext(gras_socket_t sock,
   /* cleanup structures */
   SIMIX_action_destroy(act);
   SIMIX_mutex_unlock(sock_data->mutex);
-
+#endif
   VERB0("Message sent");
 
 }
 
+#ifdef KILLMETOO
 /*
  * receive the next message on the given socket.
  */
 void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
 {
 
-  gras_trp_sg_sock_data_t *sock_data;
-  gras_trp_sg_sock_data_t *remote_sock_data;
-  gras_hostdata_t *remote_hd;
+  gras_trp_sg_sock_data_t *sock_data =
+       (gras_trp_sg_sock_data_t *) sock->data;
   gras_msg_t msg_got;
-  gras_msg_procdata_t msg_procdata =
-    (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");
+  size_t size_got = sizeof(void*);
 
   xbt_assert1(!gras_socket_is_meas(sock),
               "Asked to receive a message on the measurement socket %p",
               sock);
+
+  SIMIX_network_recv(sock_data->rdv,-1,&msg_got,&size_got,NULL);
+#ifdef KILLME
+  gras_trp_sg_sock_data_t *remote_sock_data;
+  gras_hostdata_t *remote_hd;
+  gras_msg_procdata_t msg_procdata =
+    (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");
 
   xbt_assert0(msg, "msg is an out parameter of gras_msg_recv...");
 
@@ -156,7 +209,8 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
   memcpy(msg, msg_got, sizeof(s_gras_msg_t));
   xbt_free(msg_got);
   SIMIX_mutex_unlock(remote_sock_data->mutex);
-
+#endif
   VERB3("Received a message type '%s' kind '%s' ID %lu",        // from %s",
         msg->type->name, e_gras_msg_kind_names[msg->kind], msg->ID);
 }
+#endif

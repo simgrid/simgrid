@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg_read, gras_msg,
 #include "gras/Transport/transport_interface.h" /* gras_select */
 
 typedef struct s_gras_msg_listener_ {
-  xbt_queue_t incomming_messages;
+  xbt_queue_t incomming_messages; /* messages received from the wire and still to be used by master */
   xbt_queue_t socks_to_close;   /* let the listener close the sockets, since it may be selecting on them. Darwin don't like this trick */
   gras_socket_t wakeup_sock_listener_side;
   gras_socket_t wakeup_sock_master_side;
@@ -28,27 +28,26 @@ typedef struct s_gras_msg_listener_ {
 static void listener_function(void *p)
 {
   gras_msg_listener_t me = (gras_msg_listener_t) p;
-  s_gras_msg_t msg;
+  gras_msg_t msg;
   xbt_ex_t e;
   gras_msgtype_t msg_wakeup_listener_t =
     gras_msgtype_by_name("_wakeup_listener");
   DEBUG0("I'm the listener");
   while (1) {
-    DEBUG0("Selecting");
-    msg.expe = gras_trp_select(-1);
-    DEBUG0("Select returned something");
-    gras_msg_recv(msg.expe, &msg);
-    if (msg.type != msg_wakeup_listener_t)
-      xbt_queue_push(me->incomming_messages, &msg);
+    msg = gras_msg_recv_any();
+    if (msg->type != msg_wakeup_listener_t)
+      xbt_queue_push(me->incomming_messages, msg);
     else {
-      char got = *(char *) msg.payl;
+      char got = *(char *) msg->payl;
       if (got == '1') {
         VERB0("Asked to get awake");
-        free(msg.payl);
+        free(msg->payl);
+        free(msg);
       } else {
         VERB0("Asked to die");
-        //        gras_socket_close(me->wakeup_sock_listener_side);
-        free(msg.payl);
+        //gras_socket_close(me->wakeup_sock_listener_side);
+        free(msg->payl);
+        free(msg);
         return;
       }
     }

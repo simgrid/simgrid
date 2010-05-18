@@ -15,6 +15,16 @@
 XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
 XBT_LOG_DEFAULT_CATEGORY(gras_msg);
 
+void gras_msg_recv(gras_socket_t sock, gras_msg_t msg);
+
+gras_msg_t gras_msg_recv_any(void) {
+  gras_msg_t msg = xbt_new0(s_gras_msg_t,1);
+  msg->expe = gras_trp_select(-1);
+  DEBUG0("Select returned something");
+  gras_msg_recv(msg->expe, msg);
+  return msg;
+}
+
 void gras_msg_send_ext(gras_socket_t sock,
                        e_gras_msg_kind_t kind,
                        unsigned long int ID,

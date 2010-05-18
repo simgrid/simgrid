@@ -17,8 +17,9 @@
 typedef struct {
   int port;                     /* list of ports used by a server socket */
   int meas;                     /* (boolean) the channel is for measurements or for messages */
-  smx_process_t process;
-  gras_socket_t socket;
+  smx_process_t process; /* process listening */
+  smx_rdv_t rdv; /* rendez-vous point to the listener */
+//  gras_socket_t socket; FIXME KILLME
 } gras_sg_portrec_t;
 
 /* Data for each host */
@@ -36,9 +37,10 @@ typedef struct {
 
   smx_host_t to_host;           /* Who's on other side */
 
-  smx_cond_t cond;
-  smx_mutex_t mutex;
-  gras_socket_t to_socket;
+  smx_rdv_t rdv_server; /* The rendez-vous point to use */
+  smx_rdv_t rdv_client; /* The rendez-vous point to use */
+  int im_server:1;
+  smx_comm_t comm_recv; /* The comm of irecv on receiving sockets */
 } gras_trp_sg_sock_data_t;
 
 

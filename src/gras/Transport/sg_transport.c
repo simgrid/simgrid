@@ -12,9 +12,11 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_trp);
 
-/* check transport_private.h for an explanation of this variable; this just need to be defined to NULL in SG */
+/* check transport_private.h for an explanation of this variable;
+ * this just need to be defined to NULL in SG */
 gras_socket_t _gras_lastly_selected_socket = NULL;
 
+#ifdef KILLME
 /**	
  * gras_trp_select:
  *
@@ -123,7 +125,7 @@ gras_socket_t gras_trp_select(double timeout)
 
   return res;
 }
-
+#endif
 
 /* dummy implementations of the functions used in RL mode */
 
