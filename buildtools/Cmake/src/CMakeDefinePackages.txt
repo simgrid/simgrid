@@ -574,7 +574,7 @@ file(GLOB_RECURSE add_src_files
 "examples/*.java"
 )
 
-file(GLOB_RECURSE ex_to_svg
+file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.c"
 "examples/*.h"
 "examples/*.cxx"
@@ -585,20 +585,20 @@ file(GLOB_RECURSE ex_to_svg
 "examples/*.java"
 "examples/*.xml"
 )
-string(REPLACE "" "" ex_to_svg "${ex_to_svg}")
-foreach(file ${ex_to_svg})
+string(REPLACE "" "" examples_to_install_in_doc "${examples_to_install_in_doc}")
+foreach(file ${examples_to_install_in_doc})
 	string(REGEX REPLACE "/[^/]*$" "" file "${file}")
-	set(new_ex_to_svg "${new_ex_to_svg}${file};")
-endforeach(file ${ex_to_svg})
+	set(new_examples_to_install_in_doc "${new_examples_to_install_in_doc}${file};")
+endforeach(file ${examples_to_install_in_doc})
 
 set(directory_to_create "")
 
-foreach(file ${new_ex_to_svg})
+foreach(file ${new_examples_to_install_in_doc})
 	string(REGEX MATCH "${file};" OPERATION "${directory_to_create}")
 	if(NOT OPERATION)
 		set(directory_to_create "${directory_to_create}${file};")
 	endif(NOT OPERATION)
-endforeach(file ${new_ex_to_svg})
+endforeach(file ${new_examples_to_install_in_doc})
 
 
 file(GLOB_RECURSE include_files
@@ -699,7 +699,7 @@ file(GLOB_RECURSE txt_files
 
 
 # This is the complete lise of what will be added to the source archive
-set(to_svg	
+set(source_to_pack	
 	${XBT_RL_SRC}
 	${EXTRA_DIST}
 	${SMPI_SRC}
@@ -762,10 +762,7 @@ set(to_svg
 	buildtools/Cmake/prog_test/prog_vsnprintf.c
 	# FIXME: these are badly named and placed
 	buildtools/Cmake/src/c_gras_config.h.in
-	buildtools/Cmake/src/tmp_gras_config.h.in
 	buildtools/Cmake/src/tracing_config.h.in
-	buildtools/Cmake/src/tmp_tracing_config.h.in
-	
 	
 	AUTHORS
 	ChangeLog

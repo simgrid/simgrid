@@ -1,16 +1,3 @@
-set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
-set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
-
-set(CPACK_PACKAGE_FILE_NAME "simgrid-${release_version}")
-set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 1)
-set(CPACK_GENERATOR "") #;TGZ;TZ;ZIP
-
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-src")
-set(CPACK_SOURCE_GENERATOR "TGZ")
-set(CPACK_SOURCE_FILES "${to_svg}")
-
-set(CPACK_SET_DESTDIR on)
 set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 
 #########################################
@@ -59,12 +46,12 @@ foreach(file ${install_HEADERS})
 endforeach(file ${install_HEADERS})
 
 # example files
-foreach(file ${ex_to_svg})
+foreach(file ${examples_to_install_in_doc})
   string(REPLACE "${PROJECT_DIRECTORY}/examples/" "" file ${file})
   get_filename_component(location ${file} PATH)
   install(FILES "examples/${file}"
           DESTINATION $ENV{DESTDIR}${prefix}/doc/simgrid/examples/${location})
-endforeach(file ${ex_to_svg})
+endforeach(file ${examples_to_install_in_doc})
 
 # bindings cruft
 if(HAVE_JAVA)
@@ -152,6 +139,11 @@ WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc"
 ##   containing only the files that I explicitely state      ###
 ##   (instead of any cruft laying on my disk as CPack does)  ###
 ################################################################
+
+##########################################
+### Fill in the "make dist-dir" target ###
+##########################################
+
 add_custom_target(dist-dir
   COMMAND test -e simgrid-${release_version}/ && chmod -R a+w simgrid-${release_version}/ || true
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
@@ -159,7 +151,7 @@ add_custom_target(dist-dir
 )
 
 set(dirs_in_tarball "")
-foreach(file ${to_svg} ${txt_files})
+foreach(file ${source_to_pack} ${txt_files})
   # This damn prefix is still set somewhere (seems to be in subdirs)
   string(REPLACE "${PROJECT_DIRECTORY}/" "" file ${file})
   
@@ -179,7 +171,11 @@ foreach(file ${to_svg} ${txt_files})
      TARGET dist-dir
      COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_DIRECTORY}/${file} simgrid-${release_version}/${file_location}/
    )
-endforeach(file ${to_svg})
+endforeach(file ${source_to_pack})
+
+######################################
+### Fill in the "make dist" target ###
+######################################
 
 add_custom_target(dist
   COMMAND ${CMAKE_COMMAND} -E tar cf simgrid-${release_version}.tar simgrid-${release_version}/
@@ -187,6 +183,10 @@ add_custom_target(dist
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
 )
 add_dependencies(dist dist-dir)
+
+###########################################
+### Fill in the "make distcheck" target ###
+###########################################
 
 # Allow to test the "make dist"
 add_custom_target(distcheck

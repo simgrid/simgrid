@@ -59,6 +59,10 @@ examples/msg/z_gtnets.trace
 examples/msg/tracing/procmig
 examples/msg/tracing/tasks
 examples/msg/tracing/volume
+examples/msg/mc/bugged3
+examples/msg/mc/random_test
+examples/simdag/ex_sd_seq_access
+examples/simdag/sd_seq_access
 
 src/simgrid_units_main.c
 *_unit.c
@@ -187,6 +191,7 @@ src/context_sysv_config.h
 src/gras_config.h
 src/smpi/smpicc
 src/smpi/smpirun
+src/bindings/lua/libsimgrid.so
 src/testall
 src/ucontext_stack.h
 teshsuite/datadesc_usage.out
@@ -238,4 +243,5 @@ tools/tesh/tesh
 examples/msg/tracing/categories
 examples/msg/tracing/ms
 
-
+.cproject
+.project
