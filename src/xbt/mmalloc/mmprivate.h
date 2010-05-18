@@ -13,6 +13,7 @@
 #ifndef __MMPRIVATE_H
 #define __MMPRIVATE_H 1
 
+#include "portable.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
 
