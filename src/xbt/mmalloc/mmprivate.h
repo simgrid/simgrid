@@ -16,7 +16,6 @@
 #include "portable.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
-#include "portable.h"
 
 #ifdef HAVE_LIMITS_H
 #  include <limits.h>
