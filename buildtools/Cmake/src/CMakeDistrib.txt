@@ -1,14 +1,22 @@
 set(CMAKE_PROJECT_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
+
 set(CPACK_PACKAGE_FILE_NAME "simgrid-${release_version}")
-set(CPACK_GENERATOR "TBZ2;TGZ") #;TGZ;TZ;ZIP
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 1)
+set(CPACK_GENERATOR "") #;TGZ;TZ;ZIP
+
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-src")
+set(CPACK_SOURCE_GENERATOR "TGZ")
+set(CPACK_SOURCE_FILES "${to_svg}")
+
 set(CPACK_SET_DESTDIR on)
 set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 
-foreach(file ${script_to_install} ${to_svg})
+foreach(file ${script_to_install})
 	get_filename_component(file_location ${file} PATH)
-	string(REPLACE "${PROJECT_DIRECTORY}/" "" file_location ${file_location})
+#	message(${file_location})
+#	string(REPLACE "${PROJECT_DIRECTORY}/" "" file_location ${file_location})
 	install(FILES ${file} DESTINATION "${file_location}")
 endforeach(file ${EXTRA_DIST})
 
@@ -44,8 +52,6 @@ string(REPLACE "${PROJECT_DIRECTORY}/src/.libs" "${prefix}/lib" uninstall_libs "
 string(REPLACE "./" "${prefix}/" uninstall_HEADERS "${install_HEADERS}")
 
 
-
-#SET(CMAKE_VERBOSE_MAKEFILE 1)
 
 add_custom_target(install-simgrid
 COMMAND mkdir -p $ENV{DESTDIR}${prefix}
@@ -194,25 +200,79 @@ COMMAND rm -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/Makefile
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc"
 )
 
-add_custom_target(dist
-COMMAND make package
-COMMAND rm -rf _CPack_Packages
-#WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+SET(CMAKE_VERBOSE_MAKEFILE 1)
+
+
+################################################################
+## Build a sain "make dist" target to build a source package ###
+##   containing only the files that I explicitely state      ###
+##   (instead of any cruft laying on my disk as CPack does)  ###
+################################################################
+add_custom_target(dist-dir
+  COMMAND test -e simgrid-${release_version}/ && chmod -R a+w simgrid-${release_version}/ || true
+  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}
 )
+
+
+set(dirs_in_tarball "")
+foreach(file ${to_svg} ${txt_files})
+  # This damn prefix is still set somewhere (seems to be in subdirs)
+  string(REPLACE "${PROJECT_DIRECTORY}/" "" file ${file})
+  
+  # Create the directory on need
+  get_filename_component(file_location ${file} PATH)
+  string(REGEX MATCH ";${file_location};" OPERATION "${dirs_in_tarball}")
+  if(NOT OPERATION)
+       set(dirs_in_tarball "${dirs_in_tarball};${file_location};")
+       add_custom_command(
+         TARGET dist-dir
+         COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/${file_location}/
+       )       
+   endif(NOT OPERATION)
+   
+   # Actually copy the file
+   add_custom_command(
+     TARGET dist-dir
+     COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_DIRECTORY}/${file} simgrid-${release_version}/${file_location}/
+   )
+endforeach(file ${to_svg})
+
+add_custom_target(dist
+  COMMAND ${CMAKE_COMMAND} -E tar cf simgrid-${release_version}.tar simgrid-${release_version}/
+  COMMAND gzip -9v simgrid-${release_version}.tar
+  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
+)
+add_dependencies(dist dist-dir)
+
+# Allow to test the "make dist"
+add_custom_target(distcheck
+  COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/_build
+  COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/_inst
+  
+  # This stupid cmake creates a directory in source, killing the purpose of the chmod
+  # (tricking around)
+  COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/CMakeFiles 
+#  COMMAND chmod -R a-w simgrid-${release_version}/ # FIXME: we should pass without commenting that line
+  COMMAND chmod -R a+w simgrid-${release_version}/_build
+  COMMAND chmod -R a+w simgrid-${release_version}/_inst
+  COMMAND chmod -R a+w simgrid-${release_version}/CMakeFiles
+  
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ${CMAKE_COMMAND} build ..  -Dprefix=../_inst
+#  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make dist-dir
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make -j5 || ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make test -j5
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make clean
+#  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
+)
+add_dependencies(distcheck dist-dir)
+
+########################################
+### End of "make dist" related stuff ### 
+########################################
 
 add_custom_target(check
 COMMAND make test
-#WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
-)
-
-add_custom_target(distcheck
-COMMAND make package
-COMMAND rm -rf _CPack_Packages
-COMMAND tar xvf ${CPACK_PACKAGE_FILE_NAME}.tar.bz2
-COMMAND cd ${CPACK_PACKAGE_FILE_NAME} && cmake .
-COMMAND cd ${CPACK_PACKAGE_FILE_NAME} && make
-COMMAND cd ${CPACK_PACKAGE_FILE_NAME} && make test
-COMMAND rm -rf ${CPACK_PACKAGE_FILE_NAME}
 #WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 

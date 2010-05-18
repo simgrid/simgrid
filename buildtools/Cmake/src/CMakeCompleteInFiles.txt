@@ -256,8 +256,8 @@ try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
 	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
 	COMPILE_DEFINITIONS "${mcsc_flags}"
 	)
-file(READ "${Simgrid_BINARY_DIR}/conftestval" mcsc)
-STRING(REPLACE "\n" "" mcsc ${mcsc})
+file(READ "${CMAKE_BINARY_DIR}/conftestval" mcsc)
+STRING(REPLACE "\n" "" mcsc "${mcsc}")
 if(mcsc)
 	set(mcsc "yes")
 elseif(mcsc)
@@ -468,7 +468,7 @@ if(HAVE_MAKECONTEXT)
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
 	
-	file(READ ${Simgrid_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
+	file(READ ${CMAKE_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
 	string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
@@ -487,7 +487,7 @@ endif(HAVE_MAKECONTEXT)
 		${PROJECT_DIRECTORY}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_stackgrowth.c
 		)
-file(READ "${Simgrid_BINARY_DIR}/conftestval" stack)
+file(READ "${CMAKE_BINARY_DIR}/conftestval" stack)
 if(stack MATCHES "down")
 	set(PTH_STACKGROWTH "-1")
 endif(stack MATCHES "down")
@@ -681,14 +681,18 @@ endif(ADDR2LINE)
 
 ### File to create
 
-configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${PROJECT_DIRECTORY}/src/context_sysv_config.h)
+configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/c_gras_config.h.in" "${PROJECT_DIRECTORY}/buildtools/Cmake/src/tmp_gras_config.h.in" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/tmp_gras_config.h.in" "${PROJECT_DIRECTORY}/src/gras_config.h" @ONLY IMMEDIATE)
-configure_file(${PROJECT_DIRECTORY}/include/simgrid_config.h.in ${PROJECT_DIRECTORY}/include/simgrid_config.h)
-configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/tracing_config.h.in" "${PROJECT_DIRECTORY}/buildtools/Cmake/src/tmp_tracing_config.h.in" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/tmp_tracing_config.h.in" "${PROJECT_DIRECTORY}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/c_gras_config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/tmp_gras_config.h.in" @ONLY IMMEDIATE)
+configure_file("${CMAKE_CURRENT_BINARY_DIR}/tmp_gras_config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
+file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/tmp_gras_config.h.in)
+
+configure_file(${PROJECT_DIRECTORY}/include/simgrid_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_config.h)
+
+configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/src/tracing_config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/tmp_tracing_config.h.in" @ONLY IMMEDIATE)
+configure_file("${CMAKE_CURRENT_BINARY_DIR}/tmp_tracing_config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
+file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/tmp_tracing_config.h.in)
 
 if(NOT prefix)
 	set(prefix /usr/local)
@@ -702,8 +706,8 @@ set(includedir ${prefix}/include)
 set(top_builddir ${PROJECT_DIRECTORY})
 set(libdir ${exec_prefix}/lib)
 
-configure_file(${PROJECT_DIRECTORY}/src/smpi/smpicc.in  ${PROJECT_DIRECTORY}/src/smpi/smpicc @ONLY)
-configure_file(${PROJECT_DIRECTORY}/src/smpi/smpirun.in ${PROJECT_DIRECTORY}/src/smpi/smpirun @ONLY)
+configure_file(${PROJECT_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc @ONLY)
+configure_file(${PROJECT_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun @ONLY)
 
-exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpicc" OUTPUT_VARIABLE OKITOKI)
-exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE OKITOKI)
+exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
+exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE OKITOKI)

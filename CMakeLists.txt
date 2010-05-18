@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 exec_program("rm ${Project_BINARY_DIR}/CTestTestfile.cmake" OUTPUT_VARIABLE rmok)
-project(Simgrid CXX C)
+project(simgrid CXX C)
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(release_version "3.5")
 set(libsimgrid_version "${release_version}")
@@ -16,10 +16,10 @@ find_path(VALGRIND_PATH	NAMES valgrind	PATHS NO_DEFAULT_PATHS)
 SET(PROJECT_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
 
 ### Set some variables for Cmake
-SET(PROJECT_SOURCE_DIRECTORY "${PROJECT_DIRECTORY}/src")
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/bin")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/src/.libs")
-set(INCLUDES "-I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src")
+#SET(PROJECT_SOURCE_DIRECTORY "${PROJECT_DIRECTORY}/src") #this one is evil since it speaks to CPack instead
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+set(INCLUDES "-I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src -I${CMAKE_CURRENT_BINARY_DIR}/src/")
 set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
 if(EXISTS /usr/include/)

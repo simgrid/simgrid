@@ -1,345 +1,345 @@
 ### define source packages
 
 set(EXTRA_DIST 
-	${PROJECT_DIRECTORY}/src/portable.h
-	${PROJECT_DIRECTORY}/src/xbt/mallocator_private.h
-	${PROJECT_DIRECTORY}/src/xbt/dict_private.h
-	${PROJECT_DIRECTORY}/src/xbt/heap_private.h
-	${PROJECT_DIRECTORY}/src/xbt/fifo_private.h
-	${PROJECT_DIRECTORY}/src/xbt/graph_private.h
-	${PROJECT_DIRECTORY}/src/xbt/graphxml_parse.c
-	${PROJECT_DIRECTORY}/src/xbt/graphxml.l
-	${PROJECT_DIRECTORY}/src/xbt/graphxml.c
-	${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
-	${PROJECT_DIRECTORY}/src/xbt/log_private.h
-	${PROJECT_DIRECTORY}/src/xbt/ex_interface.h
-	${PROJECT_DIRECTORY}/src/xbt/backtrace_linux.c
-	${PROJECT_DIRECTORY}/src/xbt/backtrace_windows.c
-	${PROJECT_DIRECTORY}/src/xbt/backtrace_dummy.c
-	${PROJECT_DIRECTORY}/src/xbt/setset_private.h
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/attach.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/detach.c	
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/keys.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mcalloc.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mfree.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mm_legacy.c		
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mm.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmalloc.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmap-sup.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmcheck.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmemalign.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmprivate.h
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmstats.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mmtrace.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mrealloc.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mvalloc.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/sbrk-sup.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/test/mmalloc_test.c
-	${PROJECT_DIRECTORY}/src/surf/maxmin_private.h
-	${PROJECT_DIRECTORY}/src/surf/trace_mgr_private.h
-	${PROJECT_DIRECTORY}/src/surf/surf_private.h
-	${PROJECT_DIRECTORY}/src/surf/surfxml_parse.c
-	${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l
-	${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c
-	${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
-	${PROJECT_DIRECTORY}/src/surf/network_private.h
-	${PROJECT_DIRECTORY}/src/surf/network_gtnets_private.h
-	${PROJECT_DIRECTORY}/src/surf/gtnets/gtnets_interface.h
-	${PROJECT_DIRECTORY}/src/surf/gtnets/gtnets_simulator.h
-	${PROJECT_DIRECTORY}/src/surf/gtnets/gtnets_topology.h
-	${PROJECT_DIRECTORY}/src/surf/cpu_ti_private.h
-	${PROJECT_DIRECTORY}/src/include/surf/surf_resource.h
-	${PROJECT_DIRECTORY}/src/include/surf/datatypes.h
-	${PROJECT_DIRECTORY}/src/include/surf/maxmin.h
-	${PROJECT_DIRECTORY}/src/include/surf/trace_mgr.h
-	${PROJECT_DIRECTORY}/src/include/surf/surf.h
-	${PROJECT_DIRECTORY}/src/include/surf/surfxml_parse_private.h
-	${PROJECT_DIRECTORY}/src/include/surf/random_mgr.h
-	${PROJECT_DIRECTORY}/src/include/surf/surf_resource_lmm.h
-	${PROJECT_DIRECTORY}/src/include/xbt/wine_dbghelp.h
-	${PROJECT_DIRECTORY}/src/include/xbt/xbt_os_time.h
-	${PROJECT_DIRECTORY}/src/include/xbt/xbt_os_thread.h
-	${PROJECT_DIRECTORY}/src/include/mc/datatypes.h
-	${PROJECT_DIRECTORY}/src/include/mc/mc.h
-	${PROJECT_DIRECTORY}/src/include/simix/simix.h
-	${PROJECT_DIRECTORY}/src/include/simix/datatypes.h
-	${PROJECT_DIRECTORY}/src/include/simix/context.h
-	${PROJECT_DIRECTORY}/src/msg/private.h
-	${PROJECT_DIRECTORY}/src/msg/mailbox.h
-	${PROJECT_DIRECTORY}/src/simdag/private.h
-	${PROJECT_DIRECTORY}/src/simdag/dax.dtd
-	${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l
-	${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h
-	${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.l
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.h
-	${PROJECT_DIRECTORY}/src/gras/Virtu/virtu_rl.h
-	${PROJECT_DIRECTORY}/src/gras/Virtu/virtu_sg.h
-	${PROJECT_DIRECTORY}/src/gras/Virtu/virtu_interface.h
-	${PROJECT_DIRECTORY}/src/gras/Virtu/virtu_private.h
-	${PROJECT_DIRECTORY}/src/gras/Transport/transport_interface.h
-	${PROJECT_DIRECTORY}/src/amok/Bandwidth/bandwidth_private.h
-	${PROJECT_DIRECTORY}/src/amok/amok_modinter.h
-	${PROJECT_DIRECTORY}/src/simix/private.h
-	${PROJECT_DIRECTORY}/src/simix/smx_context_private.h
-	${PROJECT_DIRECTORY}/src/simix/smx_context_java.h
-	${PROJECT_DIRECTORY}/src/smpi/private.h
-	${PROJECT_DIRECTORY}/src/smpi/smpi_coll_private.h
-	${PROJECT_DIRECTORY}/src/smpi/smpi_mpi_dt_private.h
-	${PROJECT_DIRECTORY}/src/smpi/README
-	${PROJECT_DIRECTORY}/src/mk_supernovae.sh
+	src/portable.h
+	src/xbt/mallocator_private.h
+	src/xbt/dict_private.h
+	src/xbt/heap_private.h
+	src/xbt/fifo_private.h
+	src/xbt/graph_private.h
+	src/xbt/graphxml_parse.c
+	src/xbt/graphxml.l
+	src/xbt/graphxml.c
+	src/xbt/graphxml.dtd
+	src/xbt/log_private.h
+	src/xbt/ex_interface.h
+	src/xbt/backtrace_linux.c
+	src/xbt/backtrace_windows.c
+	src/xbt/backtrace_dummy.c
+	src/xbt/setset_private.h
+	src/xbt/mmalloc/attach.c
+	src/xbt/mmalloc/detach.c	
+	src/xbt/mmalloc/keys.c
+	src/xbt/mmalloc/mcalloc.c
+	src/xbt/mmalloc/mfree.c
+	src/xbt/mmalloc/mm_legacy.c		
+	src/xbt/mmalloc/mm.c
+	src/xbt/mmalloc/mmalloc.c
+	src/xbt/mmalloc/mmap-sup.c
+	src/xbt/mmalloc/mmcheck.c
+	src/xbt/mmalloc/mmemalign.c
+	src/xbt/mmalloc/mmprivate.h
+	src/xbt/mmalloc/mmstats.c
+	src/xbt/mmalloc/mmtrace.c
+	src/xbt/mmalloc/mrealloc.c
+	src/xbt/mmalloc/mvalloc.c
+	src/xbt/mmalloc/sbrk-sup.c
+	src/xbt/mmalloc/test/mmalloc_test.c
+	src/surf/maxmin_private.h
+	src/surf/trace_mgr_private.h
+	src/surf/surf_private.h
+	src/surf/surfxml_parse.c
+	src/surf/simgrid_dtd.l
+	src/surf/simgrid_dtd.c
+	src/surf/simgrid.dtd
+	src/surf/network_private.h
+	src/surf/network_gtnets_private.h
+	src/surf/gtnets/gtnets_interface.h
+	src/surf/gtnets/gtnets_simulator.h
+	src/surf/gtnets/gtnets_topology.h
+	src/surf/cpu_ti_private.h
+	src/include/surf/surf_resource.h
+	src/include/surf/datatypes.h
+	src/include/surf/maxmin.h
+	src/include/surf/trace_mgr.h
+	src/include/surf/surf.h
+	src/include/surf/surfxml_parse_private.h
+	src/include/surf/random_mgr.h
+	src/include/surf/surf_resource_lmm.h
+	src/include/xbt/wine_dbghelp.h
+	src/include/xbt/xbt_os_time.h
+	src/include/xbt/xbt_os_thread.h
+	src/include/mc/datatypes.h
+	src/include/mc/mc.h
+	src/include/simix/simix.h
+	src/include/simix/datatypes.h
+	src/include/simix/context.h
+	src/msg/private.h
+	src/msg/mailbox.h
+	src/simdag/private.h
+	src/simdag/dax.dtd
+	src/simdag/dax_dtd.l
+	src/simdag/dax_dtd.h
+	src/simdag/dax_dtd.c
+	src/gras/DataDesc/ddt_parse.yy.l
+	src/gras/DataDesc/ddt_parse.yy.h
+	src/gras/Virtu/virtu_rl.h
+	src/gras/Virtu/virtu_sg.h
+	src/gras/Virtu/virtu_interface.h
+	src/gras/Virtu/virtu_private.h
+	src/gras/Transport/transport_interface.h
+	src/amok/Bandwidth/bandwidth_private.h
+	src/amok/amok_modinter.h
+	src/simix/private.h
+	src/simix/smx_context_private.h
+	src/simix/smx_context_java.h
+	src/smpi/private.h
+	src/smpi/smpi_coll_private.h
+	src/smpi/smpi_mpi_dt_private.h
+	src/smpi/README
+	src/mk_supernovae.sh
 )
 
 set(XBT_RL_SRC 
-	${PROJECT_DIRECTORY}/src/xbt/xbt_rl_synchro.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_rl_time.c
+	src/xbt/xbt_rl_synchro.c
+	src/xbt/xbt_rl_time.c
 )
 
 set(XBT_SG_SRC 
-	${PROJECT_DIRECTORY}/src/xbt/xbt_sg_synchro.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_sg_time.c
+	src/xbt/xbt_sg_synchro.c
+	src/xbt/xbt_sg_time.c
 )     
 
 set(SMPI_SRC
-	${PROJECT_DIRECTORY}/src/smpi/smpi_base.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_bench.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_global.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_mpi.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_comm.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_group.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_util.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_coll.c
-	${PROJECT_DIRECTORY}/src/smpi/smpi_mpi_dt.c
+	src/smpi/smpi_base.c
+	src/smpi/smpi_bench.c
+	src/smpi/smpi_global.c
+	src/smpi/smpi_mpi.c
+	src/smpi/smpi_comm.c
+	src/smpi/smpi_group.c
+	src/smpi/smpi_util.c
+	src/smpi/smpi_coll.c
+	src/smpi/smpi_mpi_dt.c
 )
 
 set(JMSG_C_SRC
-	${PROJECT_DIRECTORY}/src/simix/smx_context_java.c
-	${PROJECT_DIRECTORY}/src/java/jxbt_utilities.c
-	${PROJECT_DIRECTORY}/src/java/jxbt_utilities.h
-	${PROJECT_DIRECTORY}/src/java/jmsg.c 
-	${PROJECT_DIRECTORY}/src/java/jmsg.h
-	${PROJECT_DIRECTORY}/src/java/jmsg_host.c
-	${PROJECT_DIRECTORY}/src/java/jmsg_host.h
-	${PROJECT_DIRECTORY}/src/java/jmsg_process.c
-	${PROJECT_DIRECTORY}/src/java/jmsg_process.h
-	${PROJECT_DIRECTORY}/src/java/jmsg_task.c
-	${PROJECT_DIRECTORY}/src/java/jmsg_task.h
-	${PROJECT_DIRECTORY}/src/java/jmsg_application_handler.c
-	${PROJECT_DIRECTORY}/src/java/jmsg_application_handler.h
+	src/simix/smx_context_java.c
+	src/java/jxbt_utilities.c
+	src/java/jxbt_utilities.h
+	src/java/jmsg.c 
+	src/java/jmsg.h
+	src/java/jmsg_host.c
+	src/java/jmsg_host.h
+	src/java/jmsg_process.c
+	src/java/jmsg_process.h
+	src/java/jmsg_task.c
+	src/java/jmsg_task.h
+	src/java/jmsg_application_handler.c
+	src/java/jmsg_application_handler.h
 )
 
 set(JMSG_JAVA_SRC
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/ApplicationHandler.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Host.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/HostFailureException.java	
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/HostNotFoundException.java	
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/JniException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Msg.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/MsgException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/MsgNative.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/NativeException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Process.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/ProcessNotFoundException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Sem.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/Task.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/TaskCancelledException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/TimeoutException.java
-	${PROJECT_DIRECTORY}/src/java/simgrid/msg/TransferFailureException.java	
+	src/java/simgrid/msg/ApplicationHandler.java
+	src/java/simgrid/msg/Host.java
+	src/java/simgrid/msg/HostFailureException.java	
+	src/java/simgrid/msg/HostNotFoundException.java	
+	src/java/simgrid/msg/JniException.java
+	src/java/simgrid/msg/Msg.java
+	src/java/simgrid/msg/MsgException.java
+	src/java/simgrid/msg/MsgNative.java
+	src/java/simgrid/msg/NativeException.java
+	src/java/simgrid/msg/Process.java
+	src/java/simgrid/msg/ProcessNotFoundException.java
+	src/java/simgrid/msg/Sem.java
+	src/java/simgrid/msg/Task.java
+	src/java/simgrid/msg/TaskCancelledException.java
+	src/java/simgrid/msg/TimeoutException.java
+	src/java/simgrid/msg/TransferFailureException.java	
 )
 
 set(GRAS_RL_SRC
-	${PROJECT_DIRECTORY}/src/gras/rl_stubs.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_os_thread.c
-	${PROJECT_DIRECTORY}/src/gras/Transport/rl_transport.c
-	${PROJECT_DIRECTORY}/src/gras/Transport/transport_plugin_file.c
-	${PROJECT_DIRECTORY}/src/gras/Transport/transport_plugin_tcp.c
-	${PROJECT_DIRECTORY}/src/gras/Virtu/rl_emul.c
-	${PROJECT_DIRECTORY}/src/gras/Virtu/rl_process.c
-	${PROJECT_DIRECTORY}/src/gras/Virtu/rl_dns.c
-	${PROJECT_DIRECTORY}/src/gras/Msg/rl_msg.c
+	src/gras/rl_stubs.c
+	src/xbt/xbt_os_thread.c
+	src/gras/Transport/rl_transport.c
+	src/gras/Transport/transport_plugin_file.c
+	src/gras/Transport/transport_plugin_tcp.c
+	src/gras/Virtu/rl_emul.c
+	src/gras/Virtu/rl_process.c
+	src/gras/Virtu/rl_dns.c
+	src/gras/Msg/rl_msg.c
 	${XBT_RL_SRC}
 )
 
 set(XBT_SRC 
-	${PROJECT_DIRECTORY}/src/xbt/snprintf.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_str.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_strbuff.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_sha.c
-	${PROJECT_DIRECTORY}/src/xbt/ex.c
-	${PROJECT_DIRECTORY}/src/xbt_modinter.h
-	${PROJECT_DIRECTORY}/src/gras_modinter.h
-	${PROJECT_DIRECTORY}/src/xbt/xbt_virtu.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_os_time.c
-	${PROJECT_DIRECTORY}/src/xbt/asserts.c
-	${PROJECT_DIRECTORY}/src/xbt/log.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_log_appender_file.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_log_layout_simple.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_log_layout_format.c
-	${PROJECT_DIRECTORY}/src/xbt/mallocator.c
-	${PROJECT_DIRECTORY}/src/xbt/dynar.c
-	${PROJECT_DIRECTORY}/src/xbt/dict.c
-	${PROJECT_DIRECTORY}/src/xbt/dict_elm.c
-	${PROJECT_DIRECTORY}/src/xbt/dict_cursor.c
-	${PROJECT_DIRECTORY}/src/xbt/dict_multi.c
-	${PROJECT_DIRECTORY}/src/xbt/heap.c
-	${PROJECT_DIRECTORY}/src/xbt/fifo.c
-	${PROJECT_DIRECTORY}/src/xbt/swag.c
-	${PROJECT_DIRECTORY}/src/xbt/graph.c
-	${PROJECT_DIRECTORY}/src/xbt/set.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_matrix.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_queue.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_synchro.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_peer.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_main.c
-	${PROJECT_DIRECTORY}/src/xbt/config.c
-	${PROJECT_DIRECTORY}/src/xbt/cunit.c
-	${PROJECT_DIRECTORY}/src/xbt/graphxml_parse.c
-	${PROJECT_DIRECTORY}/src/xbt/setset.c
-	${PROJECT_DIRECTORY}/src/xbt/mmalloc/mm.c
+	src/xbt/snprintf.c
+	src/xbt/xbt_str.c
+	src/xbt/xbt_strbuff.c
+	src/xbt/xbt_sha.c
+	src/xbt/ex.c
+	src/xbt_modinter.h
+	src/gras_modinter.h
+	src/xbt/xbt_virtu.c
+	src/xbt/xbt_os_time.c
+	src/xbt/asserts.c
+	src/xbt/log.c
+	src/xbt/xbt_log_appender_file.c
+	src/xbt/xbt_log_layout_simple.c
+	src/xbt/xbt_log_layout_format.c
+	src/xbt/mallocator.c
+	src/xbt/dynar.c
+	src/xbt/dict.c
+	src/xbt/dict_elm.c
+	src/xbt/dict_cursor.c
+	src/xbt/dict_multi.c
+	src/xbt/heap.c
+	src/xbt/fifo.c
+	src/xbt/swag.c
+	src/xbt/graph.c
+	src/xbt/set.c
+	src/xbt/xbt_matrix.c
+	src/xbt/xbt_queue.c
+	src/xbt/xbt_synchro.c
+	src/xbt/xbt_peer.c
+	src/xbt/xbt_main.c
+	src/xbt/config.c
+	src/xbt/cunit.c
+	src/xbt/graphxml_parse.c
+	src/xbt/setset.c
+	src/xbt/mmalloc/mm.c
 )
 
 set(GTNETS_SRC 
-	${PROJECT_DIRECTORY}/src/surf/gtnets/gtnets_simulator.cc
-	${PROJECT_DIRECTORY}/src/surf/gtnets/gtnets_topology.cc
-	${PROJECT_DIRECTORY}/src/surf/gtnets/gtnets_interface.cc
-	${PROJECT_DIRECTORY}/src/surf/network_gtnets.c
+	src/surf/gtnets/gtnets_simulator.cc
+	src/surf/gtnets/gtnets_topology.cc
+	src/surf/gtnets/gtnets_interface.cc
+	src/surf/network_gtnets.c
 )
 
 set(SURF_SRC 
-	${PROJECT_DIRECTORY}/src/surf/surf_model.c
-	${PROJECT_DIRECTORY}/src/surf/surf_action.c
-	${PROJECT_DIRECTORY}/src/surf/surf_routing.c
-	${PROJECT_DIRECTORY}/src/surf/surf_config.c
-	${PROJECT_DIRECTORY}/src/surf/maxmin.c
-	${PROJECT_DIRECTORY}/src/surf/fair_bottleneck.c
-	${PROJECT_DIRECTORY}/src/surf/lagrange.c
-	${PROJECT_DIRECTORY}/src/surf/trace_mgr.c
-	${PROJECT_DIRECTORY}/src/surf/random_mgr.c
-	${PROJECT_DIRECTORY}/src/surf/surf.c
-	${PROJECT_DIRECTORY}/src/surf/surfxml_parse.c
-	${PROJECT_DIRECTORY}/src/surf/cpu.c
-	${PROJECT_DIRECTORY}/src/surf/network.c
-	${PROJECT_DIRECTORY}/src/surf/network_vivaldi.c
-	${PROJECT_DIRECTORY}/src/surf/network_constant.c
-	${PROJECT_DIRECTORY}/src/surf/workstation.c
-	${PROJECT_DIRECTORY}/src/surf/surf_model_timer.c
-	${PROJECT_DIRECTORY}/src/surf/workstation_ptask_L07.c
-	${PROJECT_DIRECTORY}/src/surf/cpu_ti.c
-	${PROJECT_DIRECTORY}/src/surf/cpu_im.c
-	${PROJECT_DIRECTORY}/src/xbt/xbt_sg_stubs.c
+	src/surf/surf_model.c
+	src/surf/surf_action.c
+	src/surf/surf_routing.c
+	src/surf/surf_config.c
+	src/surf/maxmin.c
+	src/surf/fair_bottleneck.c
+	src/surf/lagrange.c
+	src/surf/trace_mgr.c
+	src/surf/random_mgr.c
+	src/surf/surf.c
+	src/surf/surfxml_parse.c
+	src/surf/cpu.c
+	src/surf/network.c
+	src/surf/network_vivaldi.c
+	src/surf/network_constant.c
+	src/surf/workstation.c
+	src/surf/surf_model_timer.c
+	src/surf/workstation_ptask_L07.c
+	src/surf/cpu_ti.c
+	src/surf/cpu_im.c
+	src/xbt/xbt_sg_stubs.c
 )
 
 set(SIMIX_SRC 
-	${PROJECT_DIRECTORY}/src/simix/smx_global.c
-	${PROJECT_DIRECTORY}/src/simix/smx_deployment.c
-	${PROJECT_DIRECTORY}/src/simix/smx_environment.c
-	${PROJECT_DIRECTORY}/src/simix/smx_host.c
-	${PROJECT_DIRECTORY}/src/simix/smx_process.c
-	${PROJECT_DIRECTORY}/src/simix/smx_context.c
-	${PROJECT_DIRECTORY}/src/simix/smx_action.c
-	${PROJECT_DIRECTORY}/src/simix/smx_synchro.c
-	${PROJECT_DIRECTORY}/src/simix/smx_network.c
-	${PROJECT_DIRECTORY}/src/simix/smx_context_base.c
+	src/simix/smx_global.c
+	src/simix/smx_deployment.c
+	src/simix/smx_environment.c
+	src/simix/smx_host.c
+	src/simix/smx_process.c
+	src/simix/smx_context.c
+	src/simix/smx_action.c
+	src/simix/smx_synchro.c
+	src/simix/smx_network.c
+	src/simix/smx_context_base.c
 )
 
 set(MSG_SRC
-	${PROJECT_DIRECTORY}/src/msg/msg_config.c
-	${PROJECT_DIRECTORY}/src/msg/task.c
-	${PROJECT_DIRECTORY}/src/msg/host.c
-	${PROJECT_DIRECTORY}/src/msg/m_process.c
-	${PROJECT_DIRECTORY}/src/msg/gos.c
-	${PROJECT_DIRECTORY}/src/msg/global.c
-	${PROJECT_DIRECTORY}/src/msg/environment.c
-	${PROJECT_DIRECTORY}/src/msg/deployment.c
-	${PROJECT_DIRECTORY}/src/msg/msg_mailbox.c
-	${PROJECT_DIRECTORY}/src/msg/msg_actions.c
+	src/msg/msg_config.c
+	src/msg/task.c
+	src/msg/host.c
+	src/msg/m_process.c
+	src/msg/gos.c
+	src/msg/global.c
+	src/msg/environment.c
+	src/msg/deployment.c
+	src/msg/msg_mailbox.c
+	src/msg/msg_actions.c
 )
 
 set(SIMDAG_SRC
-	${PROJECT_DIRECTORY}/src/simdag/sd_global.c
-	${PROJECT_DIRECTORY}/src/simdag/sd_link.c
-	${PROJECT_DIRECTORY}/src/simdag/sd_task.c
-	${PROJECT_DIRECTORY}/src/simdag/sd_workstation.c
-	${PROJECT_DIRECTORY}/src/simdag/sd_daxloader.c
+	src/simdag/sd_global.c
+	src/simdag/sd_link.c
+	src/simdag/sd_task.c
+	src/simdag/sd_workstation.c
+	src/simdag/sd_daxloader.c
 )
 
 set(GRAS_COMMON_SRC
-	${PROJECT_DIRECTORY}/src/gras/gras.c
-	${PROJECT_DIRECTORY}/src/gras/Transport/transport.c
-	${PROJECT_DIRECTORY}/src/gras/Transport/transport_private.h
-	${PROJECT_DIRECTORY}/src/gras/Msg/gras_msg_mod.c
-	${PROJECT_DIRECTORY}/src/gras/Msg/gras_msg_types.c
-	${PROJECT_DIRECTORY}/src/gras/Msg/gras_msg_exchange.c
-	${PROJECT_DIRECTORY}/src/gras/Msg/gras_msg_listener.c
-	${PROJECT_DIRECTORY}/src/gras/Msg/rpc.c 
-	${PROJECT_DIRECTORY}/src/gras/Msg/timer.c
-	${PROJECT_DIRECTORY}/src/gras/Msg/msg_interface.h
-	${PROJECT_DIRECTORY}/src/gras/Msg/msg_private.h
-	${PROJECT_DIRECTORY}/src/gras/Virtu/process.c
-	${PROJECT_DIRECTORY}/src/gras/Virtu/gras_module.c
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_create.c
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_convert.c
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_exchange.c
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/cbps.c
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/datadesc.c
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/datadesc_interface.h
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/datadesc_private.h
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.c
-	${PROJECT_DIRECTORY}/src/gras/DataDesc/ddt_parse.yy.c
+	src/gras/gras.c
+	src/gras/Transport/transport.c
+	src/gras/Transport/transport_private.h
+	src/gras/Msg/gras_msg_mod.c
+	src/gras/Msg/gras_msg_types.c
+	src/gras/Msg/gras_msg_exchange.c
+	src/gras/Msg/gras_msg_listener.c
+	src/gras/Msg/rpc.c 
+	src/gras/Msg/timer.c
+	src/gras/Msg/msg_interface.h
+	src/gras/Msg/msg_private.h
+	src/gras/Virtu/process.c
+	src/gras/Virtu/gras_module.c
+	src/gras/DataDesc/ddt_create.c
+	src/gras/DataDesc/ddt_convert.c
+	src/gras/DataDesc/ddt_exchange.c
+	src/gras/DataDesc/cbps.c
+	src/gras/DataDesc/datadesc.c
+	src/gras/DataDesc/datadesc_interface.h
+	src/gras/DataDesc/datadesc_private.h
+	src/gras/DataDesc/ddt_parse.c
+	src/gras/DataDesc/ddt_parse.yy.c
 )
 
 set(GRAS_SG_SRC
-	${PROJECT_DIRECTORY}/src/gras/Transport/sg_transport.c
-	${PROJECT_DIRECTORY}/src/gras/Transport/transport_plugin_sg.c
-	${PROJECT_DIRECTORY}/src/gras/Virtu/sg_emul.c
-	${PROJECT_DIRECTORY}/src/gras/Virtu/sg_process.c
-	${PROJECT_DIRECTORY}/src/gras/Virtu/sg_dns.c
-	${PROJECT_DIRECTORY}/src/gras/Msg/sg_msg.c
+	src/gras/Transport/sg_transport.c
+	src/gras/Transport/transport_plugin_sg.c
+	src/gras/Virtu/sg_emul.c
+	src/gras/Virtu/sg_process.c
+	src/gras/Virtu/sg_dns.c
+	src/gras/Msg/sg_msg.c
 	${XBT_SG_SRC}
 )
 
 set(AMOK_SRC
-	${PROJECT_DIRECTORY}/src/amok/amok_base.c
-	${PROJECT_DIRECTORY}/src/amok/Bandwidth/bandwidth.c
-	${PROJECT_DIRECTORY}/src/amok/Bandwidth/saturate.c
-	${PROJECT_DIRECTORY}/src/amok/PeerManagement/peermanagement.c
+	src/amok/amok_base.c
+	src/amok/Bandwidth/bandwidth.c
+	src/amok/Bandwidth/saturate.c
+	src/amok/PeerManagement/peermanagement.c
 )
 
 set(LUA_SRC
-	${PROJECT_DIRECTORY}/src/simix/smx_context_lua.c
-	${PROJECT_DIRECTORY}/src/bindings/lua/simgrid_lua.c
+	src/simix/smx_context_lua.c
+	src/bindings/lua/simgrid_lua.c
 )
 
 set(TRACING_SRC
-	${PROJECT_DIRECTORY}/src/instr/interface.c
-	${PROJECT_DIRECTORY}/src/instr/general.c
-	${PROJECT_DIRECTORY}/src/instr/paje.c
-	${PROJECT_DIRECTORY}/src/instr/msg_task_instr.c
-	${PROJECT_DIRECTORY}/src/instr/msg_process_instr.c
-	${PROJECT_DIRECTORY}/src/instr/msg_volume.c
-	${PROJECT_DIRECTORY}/src/instr/smx_instr.c
-	${PROJECT_DIRECTORY}/src/instr/surf_instr.c
-	${PROJECT_DIRECTORY}/src/instr/variables_instr.c
-	${PROJECT_DIRECTORY}/src/instr/private.h
+	src/instr/interface.c
+	src/instr/general.c
+	src/instr/paje.c
+	src/instr/msg_task_instr.c
+	src/instr/msg_process_instr.c
+	src/instr/msg_volume.c
+	src/instr/smx_instr.c
+	src/instr/surf_instr.c
+	src/instr/variables_instr.c
+	src/instr/private.h
 )
 
 set(RUBY_SRC
-${PROJECT_DIRECTORY}/src/simix/smx_context_ruby.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_process.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_host.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_msg_task.c
-${PROJECT_DIRECTORY}/src/bindings/ruby/rb_application_handler.c
+src/simix/smx_context_ruby.c
+src/bindings/ruby/rb_msg_process.c
+src/bindings/ruby/rb_msg_host.c
+src/bindings/ruby/rb_msg_task.c
+src/bindings/ruby/rb_application_handler.c
 )
 
 set(MC_SRC
-	${PROJECT_DIRECTORY}/src/mc/mc_memory.c
-	${PROJECT_DIRECTORY}/src/mc/mc_checkpoint.c
-	${PROJECT_DIRECTORY}/src/mc/memory_map.c
-	${PROJECT_DIRECTORY}/src/mc/mc_global.c
-	${PROJECT_DIRECTORY}/src/mc/mc_dfs.c
-	${PROJECT_DIRECTORY}/src/mc/mc_dpor.c
-	${PROJECT_DIRECTORY}/src/mc/mc_transition.c
-	${PROJECT_DIRECTORY}/src/mc/private.h
+	src/mc/mc_memory.c
+	src/mc/mc_checkpoint.c
+	src/mc/memory_map.c
+	src/mc/mc_global.c
+	src/mc/mc_dfs.c
+	src/mc/mc_dpor.c
+	src/mc/mc_transition.c
+	src/mc/private.h
 )
 
 
@@ -416,40 +416,40 @@ xbt_synchro_unit.c
 )
 
 set(TEST_CFILES
-${PROJECT_DIRECTORY}/src/xbt/cunit.c
-${PROJECT_DIRECTORY}/src/xbt/ex.c
-${PROJECT_DIRECTORY}/src/xbt/dynar.c
-${PROJECT_DIRECTORY}/src/xbt/dict.c
-${PROJECT_DIRECTORY}/src/xbt/set.c
-${PROJECT_DIRECTORY}/src/xbt/swag.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_str.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_strbuff.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_sha.c
-${PROJECT_DIRECTORY}/src/xbt/config.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_synchro.c
+src/xbt/cunit.c
+src/xbt/ex.c
+src/xbt/dynar.c
+src/xbt/dict.c
+src/xbt/set.c
+src/xbt/swag.c
+src/xbt/xbt_str.c
+src/xbt/xbt_strbuff.c
+src/xbt/xbt_sha.c
+src/xbt/config.c
+src/xbt/xbt_synchro.c
 )
 
 #Here must have all files which permit to generate source files
 set(SRC_TO_LOOK
-${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
-${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
-${PROJECT_DIRECTORY}/src/simdag/dax.dtd
-${PROJECT_DIRECTORY}/examples/gras/ping/ping.xml
-${PROJECT_DIRECTORY}/examples/gras/rpc/rpc.xml
-${PROJECT_DIRECTORY}/examples/gras/spawn/spawn.xml
-${PROJECT_DIRECTORY}/examples/gras/timer/timer.xml
-${PROJECT_DIRECTORY}/examples/gras/chrono/chrono.xml
-${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/simple_token.xml
-${PROJECT_DIRECTORY}/examples/gras/mmrpc/mmrpc.xml
-${PROJECT_DIRECTORY}/examples/gras/all2all/all2all.xml
-${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.xml
-${PROJECT_DIRECTORY}/examples/gras/synchro/synchro.xml
-${PROJECT_DIRECTORY}/examples/gras/properties/properties.xml
-${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/msg_handle.xml
-${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/empty_main.xml
-${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/small_sleep.xml
-${PROJECT_DIRECTORY}/examples/amok/bandwidth/bandwidth.xml
-${PROJECT_DIRECTORY}/examples/amok/saturate/saturate.xml
+src/surf/simgrid.dtd
+src/xbt/graphxml.dtd
+src/simdag/dax.dtd
+examples/gras/ping/ping.xml
+examples/gras/rpc/rpc.xml
+examples/gras/spawn/spawn.xml
+examples/gras/timer/timer.xml
+examples/gras/chrono/chrono.xml
+examples/gras/mutual_exclusion/simple_token/simple_token.xml
+examples/gras/mmrpc/mmrpc.xml
+examples/gras/all2all/all2all.xml
+examples/gras/pmm/pmm.xml
+examples/gras/synchro/synchro.xml
+examples/gras/properties/properties.xml
+teshsuite/gras/msg_handle/msg_handle.xml
+teshsuite/gras/empty_main/empty_main.xml
+teshsuite/gras/small_sleep/small_sleep.xml
+examples/amok/bandwidth/bandwidth.xml
+examples/amok/saturate/saturate.xml
 ${TEST_CFILES}
 )
 
@@ -458,22 +458,22 @@ ${TEST_CFILES}
 if(${CONTEXT_THREADS})
 	set(SURF_SRC
 		${SURF_SRC}
-		${PROJECT_DIRECTORY}/src/xbt/xbt_os_thread.c
-		${PROJECT_DIRECTORY}/src/simix/smx_context_thread.c
+		src/xbt/xbt_os_thread.c
+		src/simix/smx_context_thread.c
 	)
 	set(EXTRA_DIST
 		${EXTRA_DIST}
-		${PROJECT_DIRECTORY}/src/simix/smx_context_sysv.c
+		src/simix/smx_context_sysv.c
 	)
 else(${CONTEXT_THREADS})
 	set(SURF_SRC
 		${SURF_SRC}
-		${PROJECT_DIRECTORY}/src/simix/smx_context_sysv.c
+		src/simix/smx_context_sysv.c
 	)
 	set(EXTRA_DIST
 		${EXTRA_DIST}
-		${PROJECT_DIRECTORY}/src/xbt/xbt_os_thread.c
-		${PROJECT_DIRECTORY}/src/simix/smx_context_thread.c
+		src/xbt/xbt_os_thread.c
+		src/simix/smx_context_thread.c
 	)
 endif(${CONTEXT_THREADS})
 
@@ -547,45 +547,45 @@ if(${HAVE_RUBY})
 	set(simgrid_sources
 		${simgrid_sources}
 		${RUBY_SRC}
-		${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid_ruby.c
+		src/bindings/ruby/simgrid_ruby.c
 	)
 else(${HAVE_RUBY})
 	set(EXTRA_DIST
 		${EXTRA_DIST}
 		${RUBY_SRC}
-		${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid_ruby.c
+		src/bindings/ruby/simgrid_ruby.c
 	)
 endif(${HAVE_RUBY})
 
 file(GLOB_RECURSE add_src_files
-"${PROJECT_DIRECTORY}/examples/*.c"
-"${PROJECT_DIRECTORY}/teshsuite/*.c"
-"${PROJECT_DIRECTORY}/testsuite/*.c"
-"${PROJECT_DIRECTORY}/tools/*.c"
-"${PROJECT_DIRECTORY}/examples/*.cxx"
-"${PROJECT_DIRECTORY}/teshsuite/*.cxx"
-"${PROJECT_DIRECTORY}/testsuite/*.cxx"
-"${PROJECT_DIRECTORY}/tools/*.cxx"
-"${PROJECT_DIRECTORY}/examples/*CMakeLists.txt"
-"${PROJECT_DIRECTORY}/teshsuite/*CMakeLists.txt"
-"${PROJECT_DIRECTORY}/testsuite/*CMakeLists.txt"
-"${PROJECT_DIRECTORY}/tools/*CMakeLists.txt"
-"${PROJECT_DIRECTORY}/src/*CMakeLists.txt"
-"${PROJECT_DIRECTORY}/examples/*.java"
+"examples/*.c"
+"teshsuite/*.c"
+"testsuite/*.c"
+"tools/*.c"
+"examples/*.cxx"
+"teshsuite/*.cxx"
+"testsuite/*.cxx"
+"tools/*.cxx"
+"examples/*CMakeLists.txt"
+"teshsuite/*CMakeLists.txt"
+"testsuite/*CMakeLists.txt"
+"tools/*CMakeLists.txt"
+"src/*CMakeLists.txt"
+"examples/*.java"
 )
 
 file(GLOB_RECURSE ex_to_svg
-"${PROJECT_DIRECTORY}/examples/*.c"
-"${PROJECT_DIRECTORY}/examples/*.h"
-"${PROJECT_DIRECTORY}/examples/*.cxx"
-"${PROJECT_DIRECTORY}/examples/*.hpp"
-"${PROJECT_DIRECTORY}/examples/*.c"
-"${PROJECT_DIRECTORY}/examples/*.rb"
-"${PROJECT_DIRECTORY}/examples/*.lua"
-"${PROJECT_DIRECTORY}/examples/*.java"
-"${PROJECT_DIRECTORY}/examples/*.xml"
+"examples/*.c"
+"examples/*.h"
+"examples/*.cxx"
+"examples/*.hpp"
+"examples/*.c"
+"examples/*.rb"
+"examples/*.lua"
+"examples/*.java"
+"examples/*.xml"
 )
-string(REPLACE "${PROJECT_DIRECTORY}/" "" ex_to_svg "${ex_to_svg}")
+string(REPLACE "" "" ex_to_svg "${ex_to_svg}")
 foreach(file ${ex_to_svg})
 	string(REGEX REPLACE "/[^/]*$" "" file "${file}")
 	set(new_ex_to_svg "${new_ex_to_svg}${file};")
@@ -602,100 +602,103 @@ endforeach(file ${new_ex_to_svg})
 
 
 file(GLOB_RECURSE include_files
-"${PROJECT_DIRECTORY}/include/*.h"
-"${PROJECT_DIRECTORY}/teshsuite/*.h"
-"${PROJECT_DIRECTORY}/testsuite/*.h"
-"${PROJECT_DIRECTORY}/tools/*.h"
-"${PROJECT_DIRECTORY}/examples/*.h"
-"${PROJECT_DIRECTORY}/examples/*.hpp"
-"${PROJECT_DIRECTORY}/src/*.h.in"
-"${PROJECT_DIRECTORY}/include/*.h.in"
+"include/*.h"
+"teshsuite/*.h"
+"testsuite/*.h"
+"tools/*.h"
+"examples/*.h"
+"examples/*.hpp"
+"src/*.h.in"
+"include/*.h.in"
 )
 #message("\n\ninclude:\n${include_files}")
 
 file(GLOB_RECURSE xml_files
-"${PROJECT_DIRECTORY}/examples/*.xml"
-"${PROJECT_DIRECTORY}/include/*.xml"
-"${PROJECT_DIRECTORY}/src/*.xml"
-"${PROJECT_DIRECTORY}/teshsuite/*.xml"
-"${PROJECT_DIRECTORY}/testsuite/*.xml"
-"${PROJECT_DIRECTORY}/tools/*.xml"
+"examples/*.xml"
+"include/*.xml"
+"src/*.xml"
+"teshsuite/*.xml"
+"testsuite/*.xml"
+"tools/*.xml"
 )
 #message("\n\nxml:\n${xml_files}")
 
 file(GLOB_RECURSE tesh_files
-"${PROJECT_DIRECTORY}/examples/*.tesh"
-"${PROJECT_DIRECTORY}/include/*.tesh"
-"${PROJECT_DIRECTORY}/src/*.tesh"
-"${PROJECT_DIRECTORY}/teshsuite/*.tesh"
-"${PROJECT_DIRECTORY}/testsuite/*.tesh"
-"${PROJECT_DIRECTORY}/tools/*.tesh"
+"examples/*.tesh"
+"include/*.tesh"
+"src/*.tesh"
+"teshsuite/*.tesh"
+"testsuite/*.tesh"
+"tools/*.tesh"
 )
 #message("\n\ntesh:\n${tesh_files}")
 
 file(GLOB_RECURSE txt_files
-"${PROJECT_DIRECTORY}/testsuite/surf/trace*.txt"
-"${PROJECT_DIRECTORY}/testsuite/simdag/availability_tremblay.txt"
-"${PROJECT_DIRECTORY}/examples/smpi/hostfile"
-"${PROJECT_DIRECTORY}/examples/msg/*.trace"
-"${PROJECT_DIRECTORY}/examples/msg/migration/migration.deploy"
-"${PROJECT_DIRECTORY}/examples/java/runtest"
-"${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc.little32_4"
-"${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc.little64"
-"${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc.big32_8"
-"${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc.big32_8_4"
-"${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc.big32_2"
-"${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/mk_datadesc_structs.pl"
-"${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/test_rl"
-"${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/test_sg_32"
-"${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/test_sg_64"
-"${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/test_rl"
-"${PROJECT_DIRECTORY}/teshsuite/gras/empty_main/test_sg"
-"${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/test_sg_32"
-"${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/test_sg_64"
-"${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/bob.fail"
-"${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/bob.trace"
-"${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/link1.bw"
-"${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/link1.fail"
-"${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/link1.lat"
-"${PROJECT_DIRECTORY}/examples/gras/ping/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/rpc/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/spawn/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/timer/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/chrono/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/mmrpc/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/all2all/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/pmm/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/synchro/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/properties/test_rl"
-"${PROJECT_DIRECTORY}/examples/gras/ping/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/rpc/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/spawn/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/timer/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/chrono/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/mmrpc/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/all2all/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/pmm/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/synchro/test_sg_32"
-"${PROJECT_DIRECTORY}/examples/gras/ping/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/rpc/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/spawn/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/timer/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/chrono/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/mmrpc/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/all2all/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/pmm/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/synchro/test_sg_64"
-"${PROJECT_DIRECTORY}/examples/gras/properties/test_sg"
-"${PROJECT_DIRECTORY}/examples/java/basic/BasicTest"
-"${PROJECT_DIRECTORY}/examples/java/ping_pong/PingPongTest"
-"${PROJECT_DIRECTORY}/examples/java/comm_time/CommTimeTest"
-"${PROJECT_DIRECTORY}/examples/java/suspend/SuspendTest"
+"testsuite/surf/trace*.txt"
+"testsuite/simdag/availability_tremblay.txt"
+"examples/smpi/hostfile"
+"examples/msg/*.trace"
+"examples/msg/migration/migration.deploy"
+"examples/java/runtest"
+"teshsuite/gras/datadesc/datadesc.little32_4"
+"teshsuite/gras/datadesc/datadesc.little64"
+"teshsuite/gras/datadesc/datadesc.big32_8"
+"teshsuite/gras/datadesc/datadesc.big32_8_4"
+"teshsuite/gras/datadesc/datadesc.big32_2"
+"teshsuite/gras/datadesc/mk_datadesc_structs.pl"
+"teshsuite/gras/msg_handle/test_rl"
+"teshsuite/gras/msg_handle/test_sg_32"
+"teshsuite/gras/msg_handle/test_sg_64"
+"teshsuite/gras/empty_main/test_rl"
+"teshsuite/gras/empty_main/test_sg"
+"teshsuite/gras/small_sleep/test_sg_32"
+"teshsuite/gras/small_sleep/test_sg_64"
+"teshsuite/simdag/platforms/bob.fail"
+"teshsuite/simdag/platforms/bob.trace"
+"teshsuite/simdag/platforms/link1.bw"
+"teshsuite/simdag/platforms/link1.fail"
+"teshsuite/simdag/platforms/link1.lat"
+"examples/gras/ping/test_rl"
+"examples/gras/rpc/test_rl"
+"examples/gras/spawn/test_rl"
+"examples/gras/timer/test_rl"
+"examples/gras/chrono/test_rl"
+"examples/gras/mutual_exclusion/simple_token/test_rl"
+"examples/gras/mmrpc/test_rl"
+"examples/gras/all2all/test_rl"
+"examples/gras/pmm/test_rl"
+"examples/gras/synchro/test_rl"
+"examples/gras/properties/test_rl"
+"examples/gras/ping/test_sg_32"
+"examples/gras/rpc/test_sg_32"
+"examples/gras/spawn/test_sg_32"
+"examples/gras/timer/test_sg_32"
+"examples/gras/chrono/test_sg_32"
+"examples/gras/mutual_exclusion/simple_token/test_sg_32"
+"examples/gras/mmrpc/test_sg_32"
+"examples/gras/all2all/test_sg_32"
+"examples/gras/pmm/test_sg_32"
+"examples/gras/synchro/test_sg_32"
+"examples/gras/ping/test_sg_64"
+"examples/gras/rpc/test_sg_64"
+"examples/gras/spawn/test_sg_64"
+"examples/gras/timer/test_sg_64"
+"examples/gras/chrono/test_sg_64"
+"examples/gras/mutual_exclusion/simple_token/test_sg_64"
+"examples/gras/mmrpc/test_sg_64"
+"examples/gras/all2all/test_sg_64"
+"examples/gras/pmm/test_sg_64"
+"examples/gras/synchro/test_sg_64"
+"examples/gras/properties/test_sg"
+"examples/java/basic/BasicTest"
+"examples/java/ping_pong/PingPongTest"
+"examples/java/comm_time/CommTimeTest"
+"examples/java/suspend/SuspendTest"
 )
 
+
+
+# This is the complete lise of what will be added to the source archive
 set(to_svg	
 	${XBT_RL_SRC}
 	${EXTRA_DIST}
@@ -722,69 +725,109 @@ set(to_svg
 	${tesh_files}
 	${txt_files}
 	${TEST_CFILES}
-	${EXTRA_DIST} 
-	${PROJECT_DIRECTORY}/./CMakeLists.txt
-	${PROJECT_DIRECTORY}/./AUTHORS
-	${PROJECT_DIRECTORY}/./ChangeLog
-	${PROJECT_DIRECTORY}/./COPYING
-	${PROJECT_DIRECTORY}/./missing
-	${PROJECT_DIRECTORY}/./NEWS
-	${PROJECT_DIRECTORY}/./README
-	${PROJECT_DIRECTORY}/./README.IEEE
-	${PROJECT_DIRECTORY}/./TODO
-	${PROJECT_DIRECTORY}/./src/smpi/smpicc.in
-	${PROJECT_DIRECTORY}/./src/smpi/smpirun.in
-	${PROJECT_DIRECTORY}/./src/bindings/ruby/simgrid_ruby.c
-	${PROJECT_DIRECTORY}/./src/bindings/ruby_bindings.h
-	${PROJECT_DIRECTORY}/./src/simix/smx_context_sysv_private.h
-	${PROJECT_DIRECTORY}/./src/simgrid_units_main.c
-	${PROJECT_DIRECTORY}/./src/cunit_unit.c
-	${PROJECT_DIRECTORY}/./src/ex_unit.c
-	${PROJECT_DIRECTORY}/./src/dynar_unit.c
-	${PROJECT_DIRECTORY}/./src/dict_unit.c
-	${PROJECT_DIRECTORY}/./src/set_unit.c
-	${PROJECT_DIRECTORY}/./src/swag_unit.c
-	${PROJECT_DIRECTORY}/./src/xbt_str_unit.c
-	${PROJECT_DIRECTORY}/./src/xbt_strbuff_unit.c
-	${PROJECT_DIRECTORY}/./src/xbt_sha_unit.c
-	${PROJECT_DIRECTORY}/./src/config_unit.c
-	${PROJECT_DIRECTORY}/./src/xbt_synchro_unit.c
-	${PROJECT_DIRECTORY}/./src/bindings/lua/master_slave.lua
-	${PROJECT_DIRECTORY}/./src/bindings/lua/mult_matrix.lua
-	${PROJECT_DIRECTORY}/./examples/lua/master_slave.lua
-	${PROJECT_DIRECTORY}/./examples/lua/mult_matrix.lua
-	${PROJECT_DIRECTORY}/./examples/lua/README
-	${PROJECT_DIRECTORY}/./src/bindings/ruby/MasterSlave.rb
-	${PROJECT_DIRECTORY}/./src/bindings/ruby/MasterSlaveData.rb
-	${PROJECT_DIRECTORY}/./src/bindings/ruby/PingPong.rb
-	${PROJECT_DIRECTORY}/./src/bindings/ruby/Quicksort.rb
-	${PROJECT_DIRECTORY}/./src/bindings/ruby/simgrid.rb
-	${PROJECT_DIRECTORY}/./examples/ruby/README
-	${PROJECT_DIRECTORY}/./examples/ruby/MasterSlave.rb
-	${PROJECT_DIRECTORY}/./examples/ruby/PingPong.rb
-	${PROJECT_DIRECTORY}/./examples/ruby/Quicksort.rb
-	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/example.rb
-	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/extconfig.rb
-	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_SD_task.c
-	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_SD_task.h
-	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_SD_workstation.c
-	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_SD_workstation.h
-	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/rb_simdag.c
-	${PROJECT_DIRECTORY}/./src/bindings/rubyDag/simdag.rb
+	${EXTRA_DIST}
+	
+	CMakeLists.txt
+	buildtools/Cmake/src/CTestConfig.cmake
+	buildtools/Cmake/src/CTestTestfile.cmake
+	# FIXME: these should be renamed to .cmake, I guess
+	buildtools/Cmake/src/CMakeCompleteInFiles.txt
+	buildtools/Cmake/src/CMakeDefinePackages.txt
+	buildtools/Cmake/src/CMakeDistrib.txt
+	buildtools/Cmake/src/CMakeDocs.txt
+	buildtools/Cmake/src/CMakeFlags.txt
+	buildtools/Cmake/src/CMakeJarAndClass.txt
+	buildtools/Cmake/src/CMakeMaintainerMode.txt
+	buildtools/Cmake/src/CMakeMakeExeLib.txt
+	buildtools/Cmake/src/CMakeOption.txt
+	buildtools/Cmake/src/CMakePrintArgs.txt
+	buildtools/Cmake/src/CMakeSupernovae.txt
+	buildtools/Cmake/src/CMakeTest.txt
+	buildtools/Cmake/src/memcheck_tests.txt
+	# FIXME: these should live in src/ and the content of src in root of Cmake/ maybe
+	buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
+	buildtools/Cmake/prog_test/prog_getline.c
+	buildtools/Cmake/prog_test/prog_GRAS_ARCH.c
+	buildtools/Cmake/prog_test/prog_GRAS_CHECK_STRUCT_COMPACTION.c
+	buildtools/Cmake/prog_test/prog_gtnets.cpp
+	buildtools/Cmake/prog_test/prog_max_size.c
+	buildtools/Cmake/prog_test/prog_mutex_timedlock.c
+	buildtools/Cmake/prog_test/prog_printf_null.c
+	buildtools/Cmake/prog_test/prog_sem_init.c
+	buildtools/Cmake/prog_test/prog_sem_timedwait.c
+	buildtools/Cmake/prog_test/prog_snprintf.c
+	buildtools/Cmake/prog_test/prog_stackgrowth.c
+	buildtools/Cmake/prog_test/prog_stacksetup.c
+	buildtools/Cmake/prog_test/prog_va_copy.c
+	buildtools/Cmake/prog_test/prog_vsnprintf.c
+	# FIXME: these are badly named and placed
+	buildtools/Cmake/src/c_gras_config.h.in
+	buildtools/Cmake/src/tmp_gras_config.h.in
+	buildtools/Cmake/src/tracing_config.h.in
+	buildtools/Cmake/src/tmp_tracing_config.h.in
+	
+	
+	AUTHORS
+	ChangeLog
+	COPYING
+	missing
+	NEWS
+	README
+	README.IEEE
+	TODO
+	src/smpi/smpicc.in
+	src/smpi/smpirun.in
+	src/bindings/ruby/simgrid_ruby.c
+	src/bindings/ruby_bindings.h
+	src/simix/smx_context_sysv_private.h
+	src/simgrid_units_main.c
+	src/cunit_unit.c
+	src/ex_unit.c
+	src/dynar_unit.c
+	src/dict_unit.c
+	src/set_unit.c
+	src/swag_unit.c
+	src/xbt_str_unit.c
+	src/xbt_strbuff_unit.c
+	src/xbt_sha_unit.c
+	src/config_unit.c
+	src/xbt_synchro_unit.c
+	src/bindings/lua/master_slave.lua
+	src/bindings/lua/mult_matrix.lua
+	examples/lua/master_slave.lua
+	examples/lua/mult_matrix.lua
+	examples/lua/README
+	src/bindings/ruby/MasterSlave.rb
+	src/bindings/ruby/MasterSlaveData.rb
+	src/bindings/ruby/PingPong.rb
+	src/bindings/ruby/Quicksort.rb
+	src/bindings/ruby/simgrid.rb
+	examples/ruby/README
+	examples/ruby/MasterSlave.rb
+	examples/ruby/PingPong.rb
+	examples/ruby/Quicksort.rb
+	src/bindings/rubyDag/example.rb
+	src/bindings/rubyDag/extconfig.rb
+	src/bindings/rubyDag/rb_SD_task.c
+	src/bindings/rubyDag/rb_SD_task.h
+	src/bindings/rubyDag/rb_SD_workstation.c
+	src/bindings/rubyDag/rb_SD_workstation.h
+	src/bindings/rubyDag/rb_simdag.c
+	src/bindings/rubyDag/simdag.rb
 )
 set(script_to_install
-	${PROJECT_DIRECTORY}/src/smpi/smpicc
-	${PROJECT_DIRECTORY}/src/smpi/smpirun
-	${PROJECT_DIRECTORY}/tools/MSG_visualization/colorize.pl
+	src/smpi/smpicc
+	src/smpi/smpirun
+	tools/MSG_visualization/colorize.pl
 )
-#	${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl
-#	${PROJECT_DIRECTORY}/tools/doxygen/index_create.pl
-#	${PROJECT_DIRECTORY}/tools/doxygen/toc_create.pl
-#	${PROJECT_DIRECTORY}/tools/doxygen/index_php.pl
-#	${PROJECT_DIRECTORY}/tools/doxygen/doxygen_postprocesser.pl
-#	${PROJECT_DIRECTORY}/tools/doxygen/bibtex2html_table_count.pl
-#	${PROJECT_DIRECTORY}/tools/doxygen/bibtex2html_postprocessor.pl
-#	${PROJECT_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl
-#	${PROJECT_DIRECTORY}/tools/MSG_visualization/trace2fig.pl
+#	tools/sg_unit_extractor.pl
+#	tools/doxygen/index_create.pl
+#	tools/doxygen/toc_create.pl
+#	tools/doxygen/index_php.pl
+#	tools/doxygen/doxygen_postprocesser.pl
+#	tools/doxygen/bibtex2html_table_count.pl
+#	tools/doxygen/bibtex2html_postprocessor.pl
+#	tools/doxygen/xbt_log_extract_hierarchy.pl
+#	tools/MSG_visualization/trace2fig.pl
 
 #message("\n\ntesh:\n${txt_files}")

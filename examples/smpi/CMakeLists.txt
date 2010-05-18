@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(CMAKE_C_COMPILER "${PROJECT_DIRECTORY}/src/smpi/smpicc")
+set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
 
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/smpi/")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/examples/smpi/")
 set(flags "-Dmain=smpi_simulated_main")
 set(INCLUDES_bis "-I${PROJECT_DIRECTORY}/include/smpi")
 
@@ -45,8 +45,7 @@ target_link_libraries(mvmul m simgrid smpi -fprofile-arcs)
 target_link_libraries(smpi_sendrecv m simgrid smpi -fprofile-arcs)
 
 add_custom_command(TARGET smpi_sendrecv
-POST_BUILD
-COMMAND "cp" 
-ARGS ./smpi_sendrecv ./sendrecv
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/smpi"
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy ./smpi_sendrecv ./sendrecv
+  WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/smpi"
 )
