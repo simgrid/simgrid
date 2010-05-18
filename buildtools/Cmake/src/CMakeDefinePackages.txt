@@ -815,11 +815,11 @@ set(to_svg
 	src/bindings/rubyDag/rb_simdag.c
 	src/bindings/rubyDag/simdag.rb
 )
-set(script_to_install
-	src/smpi/smpicc
-	src/smpi/smpirun
-	tools/MSG_visualization/colorize.pl
-)
+#set(script_to_install
+#	src/smpi/smpicc
+#	src/smpi/smpirun
+#	tools/MSG_visualization/colorize.pl
+#)
 #	tools/sg_unit_extractor.pl
 #	tools/doxygen/index_create.pl
 #	tools/doxygen/toc_create.pl

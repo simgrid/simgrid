@@ -64,10 +64,6 @@ if(enable_smpi)
 endif(enable_smpi)
 
 
-#SET_TARGET_PROPERTIES(simgrid_static PROPERTIES OUTPUT_NAME "simgrid")
-#SET_TARGET_PROPERTIES(simgrid_static PROPERTIES PREFIX "lib")
-
-
 ### Make EXEs
 
 #src/testall
@@ -142,6 +138,7 @@ if(enable_smpi)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
 endif(enable_smpi)
 
+# FIXME: should be killed once integrated properly in examples' CMakeList.txt
 set(targets_depended_of_gras_stub_generator
 ping_client
 ping_server

@@ -13,34 +13,91 @@ set(CPACK_SOURCE_FILES "${to_svg}")
 set(CPACK_SET_DESTDIR on)
 set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 
-foreach(file ${script_to_install})
-	get_filename_component(file_location ${file} PATH)
-#	message(${file_location})
-#	string(REPLACE "${PROJECT_DIRECTORY}/" "" file_location ${file_location})
-	install(FILES ${file} DESTINATION "${file_location}")
-endforeach(file ${EXTRA_DIST})
+#########################################
+### Fill in the "make install" target ###
+#########################################
+	  
+				  
 
-###copy doc
+# doc
 install(DIRECTORY "${PROJECT_DIRECTORY}/doc/html/"
-  DESTINATION "$ENV{DESTDIR}${prefix}/doc/html/"
+  DESTINATION "$ENV{DESTDIR}${prefix}/doc/simgrid/html/"
   PATTERN ".svn" EXCLUDE 
   PATTERN ".git" EXCLUDE 
   PATTERN "*.o" EXCLUDE
   PATTERN "*~" EXCLUDE
 )
 
+# binaries
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
+                 ${CMAKE_BINARY_DIR}/bin/smpirun
+                 ${CMAKE_BINARY_DIR}/bin/tesh
+	DESTINATION $ENV{DESTDIR}${prefix}/bin/)
+	
+install(PROGRAMS tools/MSG_visualization/colorize.pl
+        DESTINATION $ENV{DESTDIR}${prefix}/bin/
+	RENAME simgrid-colorizer)
+
+# libraries
+install(TARGETS simgrid gras 
+        LIBRARY DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+	
+install(FILES ${CMAKE_BINARY_DIR}/lib/libsimgrid_static.a 
+        RENAME libsimgrid.a
+        DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+	
+if(enable_smpi)	
+  install(TARGETS smpi
+          LIBRARY DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+endif(enable_smpi)	
+
+# include files
+foreach(file ${install_HEADERS})
+  get_filename_component(location ${file} PATH)
+  install(FILES ${file}
+          DESTINATION $ENV{DESTDIR}${prefix}/${location})
+endforeach(file ${install_HEADERS})
+
+# example files
+foreach(file ${ex_to_svg})
+  string(REPLACE "${PROJECT_DIRECTORY}/examples/" "" file ${file})
+  get_filename_component(location ${file} PATH)
+  install(FILES "examples/${file}"
+          DESTINATION $ENV{DESTDIR}${prefix}/doc/simgrid/examples/${location})
+endforeach(file ${ex_to_svg})
+
+# bindings cruft
+if(HAVE_JAVA)
+  install(FILES ${CMAKE_BINARY_DIR}/simgrid.jar
+          DESTINATION $ENV{DESTDIR}${prefix}/share/)
+endif(HAVE_JAVA)
+
+if(HAVE_LUA)
+  add_custom_target(absolute_liblink ALL
+    COMMAND ln -sf $ENV{DESTDIR}${prefix}/lib/libsimgrid.so ${CMAKE_BINARY_DIR}/libsimgrid.so)
+  install(FILES ${CMAKE_BINARY_DIR}/libsimgrid.so
+          DESTINATION $ENV{DESTDIR}${prefix}/lib/lua/5.1
+	  RENAME simgrid.so)
+endif(HAVE_LUA)
+
+if(HAVE_RUBY)
+  string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
+  install(FILES ${CMAKE_BINARY_DIR}/libsimgrid.so
+                ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid.rb
+          DESTINATION $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/)
+endif(HAVE_RUBY)
+
+
+########################################################
+### Fill in the BROKEN "make install-simgrid" target ###
+########################################################
 ### scripts
 set(install_bins
- ${PROJECT_DIRECTORY}/src/smpi/smpicc
- ${PROJECT_DIRECTORY}/src/smpi/smpirun
- ${PROJECT_DIRECTORY}/tools/gras/gras_stub_generator
- ${PROJECT_DIRECTORY}/tools/tesh/tesh
+ ${CMAKE_BINARY_DIR}/bin/smpicc
+ ${CMAKE_BINARY_DIR}/bin/smpirun
+ ${CMAKE_BINARY_DIR}/bin/gras_stub_generator
+ ${CMAKE_BINARY_DIR}/bin/tesh
 )
-
-# FIXME: the following does not work because these binaries are not known as targets
-#install(TARGETS smpicc smpirun gras_stub_generator tesh 
-#        RUNTIME DESTINATION $ENV{DESTDIR}${prefix}/bin)
-	
 
 string(REPLACE ";" "\t" install_libs "${install_libs}")
 set(uninstall_bins "${install_bins}")
@@ -200,8 +257,9 @@ COMMAND rm -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/Makefile
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc"
 )
 
-SET(CMAKE_VERBOSE_MAKEFILE 1)
 
+
+#SET(CMAKE_VERBOSE_MAKEFILE 1)
 
 ################################################################
 ## Build a sain "make dist" target to build a source package ###
