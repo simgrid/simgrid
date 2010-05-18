@@ -1,13 +1,26 @@
 cmake_minimum_required(VERSION 2.6)
 
-set_source_files_properties(${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_simulator.c ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_slave.c ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_master.c
-PROPERTIES GENERATED true)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_pmm_simulator.c 
+							${CMAKE_CURRENT_BINARY_DIR}/_pmm_slave.c 
+							${CMAKE_CURRENT_BINARY_DIR}/_pmm_master.c
+							PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/gras/pmm/")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
-add_executable(pmm_simulator ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_simulator.c ${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.c)
-add_executable(pmm_slave ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_slave.c ${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.c)
-add_executable(pmm_master ${PROJECT_DIRECTORY}/examples/gras/pmm/_pmm_master.c ${PROJECT_DIRECTORY}/examples/gras/pmm/pmm.c)
+add_executable(pmm_simulator 	${CMAKE_CURRENT_BINARY_DIR}/_pmm_simulator.c 
+								${CMAKE_CURRENT_SOURCE_DIR}/pmm.c)
+add_executable(pmm_slave 	${CMAKE_CURRENT_BINARY_DIR}/_pmm_slave.c 
+							${CMAKE_CURRENT_SOURCE_DIR}/pmm.c)
+add_executable(pmm_master 	${CMAKE_CURRENT_BINARY_DIR}/_pmm_master.c 
+							${CMAKE_CURRENT_SOURCE_DIR}/pmm.c)
+
+add_custom_command(
+  					OUTPUT 	${CMAKE_CURRENT_BINARY_DIR}/_pmm_simulator.c 
+							${CMAKE_CURRENT_BINARY_DIR}/_pmm_slave.c 
+							${CMAKE_CURRENT_BINARY_DIR}/_pmm_master.c
+  					DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/pmm.xml
+  					COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator pmm ${CMAKE_CURRENT_SOURCE_DIR}/pmm.xml
+					)
 
 ### Add definitions for compile
 target_link_libraries(pmm_simulator simgrid pthread m -fprofile-arcs)

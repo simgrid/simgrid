@@ -1,13 +1,23 @@
 cmake_minimum_required(VERSION 2.6)
 
-set_source_files_properties(${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/_small_sleep_function.c ${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/_small_sleep_simulator.c
-PROPERTIES GENERATED true)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_function.c
+							${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_simulator.c
+							PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
-add_executable(small_sleep_function 	${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/small_sleep.c ${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/_small_sleep_function.c)
-add_executable(small_sleep_simulator 	${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/small_sleep.c ${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep/_small_sleep_simulator.c)
+add_executable(small_sleep_function 	${CMAKE_CURRENT_SOURCE_DIR}/small_sleep.c
+										${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_function.c)
+add_executable(small_sleep_simulator 	${CMAKE_CURRENT_SOURCE_DIR}/small_sleep.c
+										${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_simulator.c)
 
+add_custom_command(
+  					OUTPUT 	${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_function.c
+							${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_simulator.c
+  					DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/small_sleep.xml
+  					COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator small_sleep ${CMAKE_CURRENT_SOURCE_DIR}/small_sleep.xml
+					)
+					
 ### Add definitions for compile
 target_link_libraries(small_sleep_simulator simgrid m pthread -fprofile-arcs)
 target_link_libraries(small_sleep_function gras m pthread -fprofile-arcs)
