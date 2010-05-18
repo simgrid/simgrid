@@ -240,9 +240,11 @@ add_custom_command(TARGET install-simgrid
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 
+configure_file(${PROJECT_DIRECTORY}/buildtools/Cmake/src/install_doc.sh.in ${PROJECT_DIRECTORY}/buildtools/Cmake/src/install_doc.sh @ONLY)
+
 add_custom_command(TARGET install-simgrid
 	COMMAND cp ${PROJECT_DIRECTORY}/doc/html/* $ENV{DESTDIR}${prefix}/doc/simgrid/html/ || true
-	COMMAND echo "install doc/html      OK"
+	COMMAND sh ${PROJECT_DIRECTORY}/buildtools/Cmake/src/install_doc.sh
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 
