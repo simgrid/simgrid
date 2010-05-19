@@ -16,10 +16,6 @@ if(WIN32)
     message("RC_COMPILER		$ENV{RC}")
     message("INCLUDE			$ENV{INCLUDE}")
     message("LIB				$ENV{LIB}")
-    
-    if(NOT EXISTS "$ENV{CC}.exe" OR NOT EXISTS "$ENV{CXX}.exe" OR OR NOT EXISTS "$ENV{RC}.exe" OR NOT EXISTS "$ENV{INCLUDE}" OR OR NOT EXISTS "$ENV{LIB}")
-    	message(FATAL_ERROR "Need to set correctely CC, CXX, RC, INCLUDE and LIB environment variables.")
-    endif(NOT EXISTS "$ENV{CC}.exe" OR NOT EXISTS "$ENV{CXX}.exe" OR OR NOT EXISTS "$ENV{RC}.exe" OR NOT EXISTS "$ENV{INCLUDE}" OR OR NOT EXISTS "$ENV{LIB}")
 endif(WIN32)
 
 ### Find programs and paths

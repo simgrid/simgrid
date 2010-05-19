@@ -27,7 +27,7 @@ install(PROGRAMS tools/MSG_visualization/colorize.pl
 
 # libraries
 install(TARGETS simgrid gras 
-        LIBRARY DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+        DESTINATION $ENV{DESTDIR}${prefix}/lib/)
 	
 install(FILES ${CMAKE_BINARY_DIR}/lib/libsimgrid_static.a 
         RENAME libsimgrid.a
@@ -35,7 +35,7 @@ install(FILES ${CMAKE_BINARY_DIR}/lib/libsimgrid_static.a
 	
 if(enable_smpi)	
   install(TARGETS smpi
-          LIBRARY DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+          DESTINATION $ENV{DESTDIR}${prefix}/lib/)
 endif(enable_smpi)	
 
 # include files
