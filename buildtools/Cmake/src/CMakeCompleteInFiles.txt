@@ -260,13 +260,18 @@ try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
 	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
 	COMPILE_DEFINITIONS "${mcsc_flags}"
 	)
-file(READ "${CMAKE_BINARY_DIR}/conftestval" mcsc)
-STRING(REPLACE "\n" "" mcsc "${mcsc}")
-if(mcsc)
-	set(mcsc "yes")
-elseif(mcsc)
+	
+if(EXISTS "${simgrid_BINARY_DIR}/conftestval")
+	file(READ "${simgrid_BINARY_DIR}/conftestval" mcsc)
+	STRING(REPLACE "\n" "" mcsc "${mcsc}")
+	if(mcsc)
+		set(mcsc "yes")
+	elseif(mcsc)
+		set(mcsc "no")
+	endif(mcsc)
+else(EXISTS "${simgrid_BINARY_DIR}/conftestval")
 	set(mcsc "no")
-endif(mcsc)
+endif(EXISTS "${simgrid_BINARY_DIR}/conftestval")
 
 if(mcsc MATCHES "no" AND pthread)
 	if(HAVE_WINDOWS_H)
@@ -342,7 +347,8 @@ endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
 
 if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 	find_file(GIT ".git" ${PROJECT_DIRECTORY})
-	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log --oneline -1 | sed 's| .*||'" OUTPUT_VARIABLE "GIT_VERSION")
+	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
+	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
 	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
 	exec_program("git svn info" ${PROJECT_DIRECTORY} OUTPUT_VARIABLE "GIT_SVN_VERSION")
 	string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
@@ -472,7 +478,7 @@ if(HAVE_MAKECONTEXT)
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
 	
-	file(READ ${CMAKE_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
+	file(READ ${simgrid_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
 	string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
@@ -491,7 +497,7 @@ endif(HAVE_MAKECONTEXT)
 		${PROJECT_DIRECTORY}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_stackgrowth.c
 		)
-file(READ "${CMAKE_BINARY_DIR}/conftestval" stack)
+file(READ "${simgrid_BINARY_DIR}/conftestval" stack)
 if(stack MATCHES "down")
 	set(PTH_STACKGROWTH "-1")
 endif(stack MATCHES "down")
