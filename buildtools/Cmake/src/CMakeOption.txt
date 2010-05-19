@@ -26,6 +26,12 @@ option(enable_memcheck "Enable memcheck." off)
 option(enable_print_message "Enable print message during config." off)
 option(enable_model-checking "" off)
 
+if(WIN32) #actually not enable with windows
+	message("Mode supernovae and maintainer disable with Windows.")
+	set(enable_supernovae false CACHE TYPE INTERNAL FORCE)
+	set(enable_maintainer_mode false CACHE TYPE INTERNAL FORCE)
+endif(WIN32)
+
 mark_as_advanced(enable_coverage)
 mark_as_advanced(enable_memcheck)
 mark_as_advanced(enable_print_message)

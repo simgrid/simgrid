@@ -61,7 +61,7 @@ endif(HAVE_JAVA)
 
 if(HAVE_LUA)
   add_custom_target(absolute_liblink ALL
-    COMMAND ln -sf $ENV{DESTDIR}${prefix}/lib/libsimgrid.so ${CMAKE_BINARY_DIR}/libsimgrid.so)
+    COMMAND ${CMAKE_COMMAND} -E create_symlink $ENV{DESTDIR}${prefix}/lib/libsimgrid.so ${CMAKE_BINARY_DIR}/libsimgrid.so)
   install(FILES ${CMAKE_BINARY_DIR}/libsimgrid.so
           DESTINATION $ENV{DESTDIR}${prefix}/lib/lua/5.1
 	  RENAME simgrid.so)
@@ -79,32 +79,38 @@ endif(HAVE_RUBY)
 ###########################################
 
 add_custom_target(uninstall
-COMMAND rm -rf ${prefix}/doc/simgrid
-COMMAND echo "uninstall doc ok"
-COMMAND rm -f ${uninstall_libs}
-COMMAND echo "uninstall lib ok"
-COMMAND rm -f ${uninstall_bins}
-COMMAND rm -f ${prefix}/bin/simgrid_colorizer.pl
-COMMAND echo "uninstall bin ok"
-COMMAND rm -f ${uninstall_HEADERS}
-COMMAND echo "uninstal include ok"
-COMMAND rm -Rf ${prefix}/include/amok ${prefix}/include/gras ${prefix}/include/instr ${prefix}/include/msg 
-COMMAND rm -Rf ${prefix}/include/simdag ${prefix}/include/smpi ${prefix}/include/surf ${prefix}/include/xbt
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/doc/simgrid
+COMMAND ${CMAKE_COMMAND} -E	echo "uninstall doc ok"
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${uninstall_libs}
+COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${uninstall_bins}
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/simgrid_colorizer.pl
+COMMAND ${CMAKE_COMMAND} -E	echo "uninstall bin ok"
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${uninstall_HEADERS}
+COMMAND ${CMAKE_COMMAND} -E	echo "uninstal include ok"
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/amok
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/gras
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/instr
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/msg 
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/simdag
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/smpi
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/surf
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/xbt
 WORKING_DIRECTORY "${prefix}"
 )
 
 if(HAVE_JAVA)
 	add_custom_command(TARGET uninstall
-	COMMAND rm -f ${prefix}/share/simgrid.jar
-	COMMAND echo "uninstall binding java"
+	COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/share/simgrid.jar
+	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding java"
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)	
 endif(HAVE_JAVA)
 
 if(HAVE_LUA)
 	add_custom_command(TARGET uninstall
-	COMMAND echo "uninstall binding lua"
-	COMMAND rm -f ${prefix}/lib/lua/5.1/simgrid.so	
+	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding lua"
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/lua/5.1/simgrid.so	
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
 endif(HAVE_LUA)
@@ -112,9 +118,9 @@ endif(HAVE_LUA)
 if(HAVE_RUBY)
 	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
 	add_custom_command(TARGET uninstall
-	COMMAND echo "uninstall binding ruby"
-	COMMAND rm -f ${prefix}/lib/ruby/${install_link_ruby}/libsimgrid.so
-	COMMAND rm -f ${prefix}/lib/ruby/${install_link_ruby}/simgrid.rb
+	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding ruby"
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/ruby/${install_link_ruby}/libsimgrid.so
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/ruby/${install_link_ruby}/simgrid.rb
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
 endif(HAVE_RUBY)
@@ -124,13 +130,13 @@ endif(HAVE_RUBY)
 ######################################
 
 add_custom_target(html
-COMMAND echo "Make the html doc"
-COMMAND echo "cmake -DBIBTEX2HTML=${BIBTEX2HTML} ./"
-COMMAND cmake -DBIBTEX2HTML=${BIBTEX2HTML} ./
-COMMAND rm -rf ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeFiles
-COMMAND rm -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeCache.txt
-COMMAND rm -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/cmake_install.cmake
-COMMAND rm -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/Makefile
+COMMAND ${CMAKE_COMMAND} -E echo "Make the html doc"
+COMMAND ${CMAKE_COMMAND} -E echo "cmake -DBIBTEX2HTML=${BIBTEX2HTML} ./"
+COMMAND ${CMAKE_COMMAND} -DBIBTEX2HTML=${BIBTEX2HTML} ./
+COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeFiles
+COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeCache.txt
+COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/cmake_install.cmake
+COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/Makefile
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc"
 )
 
@@ -224,73 +230,73 @@ COMMAND make test
 #######################################
 
 add_custom_target(maintainer-clean
-COMMAND rm -f src/config_unit.c
-COMMAND rm -f src/cunit_unit.c
-COMMAND rm -f src/dict_unit.c
-COMMAND rm -f src/dynar_unit.c
-COMMAND rm -f src/ex_unit.c
-COMMAND rm -f src/set_unit.c
-COMMAND rm -f src/simgrid_units_main.c
-COMMAND rm -f src/swag_unit.c
-COMMAND rm -f src/xbt_sha_unit.c
-COMMAND rm -f src/xbt_str_unit.c
-COMMAND rm -f src/xbt_strbuff_unit.c
-COMMAND rm -f src/xbt_synchro_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/config_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/cunit_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/dict_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/dynar_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/ex_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/set_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/simgrid_units_main.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/swag_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_sha_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_str_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_strbuff_unit.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 
 add_custom_target(supernovae-clean
-COMMAND rm -f src/supernovae_gras.c
-COMMAND rm -f src/supernovae_sg.c
-COMMAND rm -f src/supernovae_smpi.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_gras.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_sg.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_smpi.c
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 
 add_custom_target(doc-clean
-COMMAND rm -f doc/all_bib.html
-COMMAND rm -f doc/all_bib.latin1.html
-COMMAND rm -f doc/all_bib.latin1.html.tmp
-COMMAND rm -f doc/logcategories.sh
-COMMAND rm -f doc/publis_core.bib
-COMMAND rm -f doc/publis_core_bib.html
-COMMAND rm -f doc/publis_core_bib.latin1.html
-COMMAND rm -f doc/publis_core_bib.latin1.html.tmp
-COMMAND rm -f doc/publis_count.html
-COMMAND rm -f doc/publis_extern.bib
-COMMAND rm -f doc/publis_extern_bib.html
-COMMAND rm -f doc/publis_extern_bib.latin1.html
-COMMAND rm -f doc/publis_extern_bib.latin1.html.tmp
-COMMAND rm -f doc/publis_intra.bib
-COMMAND rm -f doc/publis_intra_bib.html
-COMMAND rm -f doc/publis_intra_bib.latin1.html
-COMMAND rm -f doc/publis_intra_bib.latin1.html.tmp
-COMMAND rm -f doc/tmp.realtoc
-COMMAND rm -f doc/using_bib.html
-COMMAND rm -f doc/using_bib.latin1.html
-COMMAND rm -f doc/using_bib.latin1.html.tmp
-COMMAND rm -f doc/realtoc.sh
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/all_bib.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/all_bib.latin1.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/all_bib.latin1.html.tmp
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/logcategories.sh
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_core.bib
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_core_bib.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_core_bib.latin1.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_core_bib.latin1.html.tmp
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_count.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_extern.bib
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_extern_bib.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_extern_bib.latin1.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_extern_bib.latin1.html.tmp
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_intra.bib
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_intra_bib.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_intra_bib.latin1.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_intra_bib.latin1.html.tmp
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/tmp.realtoc
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/using_bib.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/using_bib.latin1.html
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/using_bib.latin1.html.tmp
+COMMAND ${CMAKE_COMMAND} -E remove -f doc/realtoc.sh
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 
 add_custom_target(java-clean
-COMMAND rm -f src/simgrid.jar
-COMMAND rm -rf src/.classes
-COMMAND rm -f examples/java/basic/BasicTest.class
-COMMAND rm -f examples/java/basic/FinalizeTask.class
-COMMAND rm -f examples/java/basic/Forwarder.class
-COMMAND rm -f examples/java/basic/Master.class
-COMMAND rm -f examples/java/basic/Slave.class
-COMMAND rm -f examples/java/comm_time/CommTimeTest.class
-COMMAND rm -f examples/java/comm_time/FinalizeTask.class
-COMMAND rm -f examples/java/comm_time/Master.class
-COMMAND rm -f examples/java/comm_time/Slave.class
-COMMAND rm -f examples/java/ping_pong/PingPongTask.class
-COMMAND rm -f examples/java/ping_pong/PingPongTest.class
-COMMAND rm -f examples/java/ping_pong/Receiver.class
-COMMAND rm -f examples/java/ping_pong/Sender.class
-COMMAND rm -f examples/java/suspend/DreamMaster.class
-COMMAND rm -f examples/java/suspend/LazyGuy.class
-COMMAND rm -f examples/java/suspend/SuspendTest.class
+COMMAND ${CMAKE_COMMAND} -E remove -f src/simgrid.jar
+COMMAND ${CMAKE_COMMAND} -E remove_directory src/.classes
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/BasicTest.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/FinalizeTask.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/Forwarder.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/Master.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/Slave.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/comm_time/CommTimeTest.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/comm_time/FinalizeTask.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/comm_time/Master.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/comm_time/Slave.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/ping_pong/PingPongTask.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/ping_pong/PingPongTest.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/ping_pong/Receiver.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/ping_pong/Sender.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/suspend/DreamMaster.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/suspend/LazyGuy.class
+COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/suspend/SuspendTest.class
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
 

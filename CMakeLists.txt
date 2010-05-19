@@ -1,14 +1,28 @@
 cmake_minimum_required(VERSION 2.6)
-exec_program("rm ${Project_BINARY_DIR}/CTestTestfile.cmake" OUTPUT_VARIABLE rmok)
 project(simgrid CXX C)
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
+set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
+set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(release_version "3.5")
 set(libsimgrid_version "${release_version}")
 set(libgras_version "${release_version}")
 set(libsmpi_version "${release_version}")
+exec_program("${CMAKE_COMMAND} -E remove -f ${simgrid_BINARY_DIR}/CTestTestfile.cmake" OUTPUT_VARIABLE rmok)
+
+if(WIN32)
+    message("C_COMPILER			$ENV{CC}")
+    message("CXX_COMPILER		$ENV{CXX}")
+    message("MAKE_PROGRAM		${CMAKE_MAKE_PROGRAM}")
+    message("RC_COMPILER		$ENV{RC}")
+    message("INCLUDE			$ENV{INCLUDE}")
+    message("LIB				$ENV{LIB}")
+    
+    if(NOT $ENV{CC} OR NOT $ENV{CXX} OR NOT $ENV{INCLUDE} OR NOT $ENV{RC} OR NOT $ENV{LIB})
+    	message(FATAL_ERROR "Need to set CC, CXX, RC, INCLUDE and LIB to environment variables.")
+    endif(NOT $ENV{CC} OR NOT $ENV{CXX} OR NOT $ENV{INCLUDE} OR NOT $ENV{RC} OR NOT $ENV{LIB})
+endif(WIN32)
 
 ### Find programs and paths
-find_program(SED_EXE NAMES sed)
 find_path(GCOV_PATH NAMES gcov PATHS NO_DEFAULT_PATHS)
 find_path(VALGRIND_PATH	NAMES valgrind	PATHS NO_DEFAULT_PATHS)
 
@@ -24,6 +38,10 @@ set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 if(EXISTS /usr/include/)
 	set(INCLUDES "${INCLUDES} -I/usr/include/")
 endif(EXISTS /usr/include/)
+
+if(WIN32)
+	set(INCLUDES "${INCLUDES} -I$ENV{INCLUDE}")
+endif(WIN32)
 
 if(enable_coverage)
 	add_definitions (${INCLUDES} -fprofile-arcs -ftest-coverage)

@@ -1,4 +1,4 @@
-if(enable_maintainer_mode)
+if(enable_maintainer_mode AND NOT WIN32)
 message("")
 message("________________________________________________________________________________")
 message("________________________________________________________________________________ FLEXMl")
@@ -126,5 +126,5 @@ message("_______________________________________________________________________
 foreach(file ${SRC_TO_LOOK})
 	configure_file(${file} ${file} COPYONLY)
 endforeach(file ${SRC_TO_LOOK})
-endif(enable_maintainer_mode)
 
+endif(enable_maintainer_mode AND NOT WIN32)

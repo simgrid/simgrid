@@ -1,15 +1,15 @@
 ### Make Libs
 
-if(enable_supernovae)
+if(enable_supernovae AND NOT WIN32)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeSupernovae.txt)
-else(enable_supernovae)	
+else(enable_supernovae AND NOT WIN32)	
 	add_library(simgrid SHARED ${simgrid_sources})
 	add_library(simgrid_static STATIC ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
 	if(enable_smpi)
 		add_library(smpi SHARED ${SMPI_SRC})
 	endif(enable_smpi)
-endif(enable_supernovae)
+endif(enable_supernovae AND NOT WIN32)
 
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 set_target_properties(gras PROPERTIES VERSION ${libgras_version})
@@ -22,9 +22,13 @@ set(GRAS_DEP "-lm -lpthread")
 set(SIMGRID_DEP "-lm")
 set(SMPI_DEP "")
 
+if(WIN32)
+	set(GRAS_DEP "-lm")
+endif(WIN32)
+
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME} -module")
-	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
+	exec_program("${CMAKE_COMMAND} -E create_symlink ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
 endif(HAVE_RUBY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -44,7 +48,7 @@ endif(pthread)
 
 if(HAVE_LUA)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${liblua}")
-	exec_program("ln -sf ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
+	exec_program("${CMAKE_COMMAND} -E create_symlink ${PROJECT_DIRECTORY}/src/.libs/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
 endif(HAVE_LUA)
 
 if(HAVE_GTNETS)
