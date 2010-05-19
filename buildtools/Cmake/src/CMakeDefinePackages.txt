@@ -585,7 +585,7 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.java"
 "examples/*.xml"
 )
-string(REPLACE "" "" examples_to_install_in_doc "${examples_to_install_in_doc}")
+
 foreach(file ${examples_to_install_in_doc})
 	string(REGEX REPLACE "/[^/]*$" "" file "${file}")
 	set(new_examples_to_install_in_doc "${new_examples_to_install_in_doc}${file};")
