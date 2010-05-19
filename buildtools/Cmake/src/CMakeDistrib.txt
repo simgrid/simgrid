@@ -209,8 +209,8 @@ add_custom_target(distcheck
   
   COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ${CMAKE_COMMAND} build ..  -Dprefix=../_inst
 #  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make dist-dir
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make -j5 || ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make test -j5
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make 
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ctest -j5 --output-on-failure
   COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make clean
 #  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
 )

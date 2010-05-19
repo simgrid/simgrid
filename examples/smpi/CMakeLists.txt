@@ -47,5 +47,5 @@ target_link_libraries(smpi_sendrecv m simgrid smpi -fprofile-arcs)
 add_custom_command(TARGET smpi_sendrecv
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy ./smpi_sendrecv ./sendrecv
-  WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/smpi"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
