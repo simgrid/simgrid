@@ -570,15 +570,12 @@ foreach(fct ${diff_va})
 	    exit(0);
 	}"
 	)
-	try_run(RUN_VA_NULL_VAR COMPILE_VA_NULL_VAR
+	try_compile(COMPILE_VA_NULL_VAR
 	${PROJECT_DIRECTORY}
 	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_va_copy.c
 	)
-	if(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")
-	else(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")	
-
+	if(COMPILE_VA_NULL_VAR)
 		string(REGEX REPLACE "\;" "" fctbis ${fct})
-
 		if(${fctbis} STREQUAL "va_copy((d),(s))")
 			set(HAVE_VA_COPY 1)
 			set(ac_cv_va_copy "C99")
@@ -624,8 +621,9 @@ foreach(fct ${diff_va})
 		set(__VA_COPY_USE "__VA_COPY_USE_${ac_cv_va_copy}")
 		endif(NOT STATUS_OK)
 		set(STATUS_OK "1")
-
-	endif(RUN_VA_NULL_VAR MATCHES "FAILED_TO_RUN")
+		
+	endif(COMPILE_VA_NULL_VAR)
+	
 endforeach(fct ${diff_va})
 
 #--------------------------------------------------------------------------------------------------
