@@ -15,15 +15,6 @@
 SG_BEGIN_DECL()
 
 /******************************* Transitions **********************************/
-typedef enum {
-  mc_isend,
-  mc_irecv,
-  mc_test,
-  mc_wait,
-  mc_waitany,
-  mc_random
-} mc_trans_type_t;
-
 typedef struct s_mc_transition *mc_transition_t;
 
 SG_END_DECL()

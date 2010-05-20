@@ -475,13 +475,15 @@ smx_comm_t SIMIX_network_isend(smx_rdv_t rdv, double task_size, double rate,
     void *src_buff, size_t src_buff_size, void *data)
 {
   smx_comm_t comm;
-  mc_transition_t trans=NULL;
 
-  if (_surf_do_model_check) {
-    /* Let's intercept the communication and control it from the model-checker */
-    trans = MC_create_transition(mc_isend, SIMIX_process_self(), rdv, NULL);
-    SIMIX_process_yield();
-  }
+  /* If running in model-checking mode then intercept the communication action. 
+   * There can be two situations, this is a replay (back-track process) so no
+   * transition needs to be created, or we are expanding a new state and in 
+   * consecuence a transition needs to be created and added to the set of
+   * transitions associated to the current state.
+   */
+  if (_surf_do_model_check)
+    MC_trans_intercept_isend(rdv);
   
   /* Look for communication request matching our needs.
      If it is not found then create it and push it into the rendez-vous point */
@@ -499,27 +501,27 @@ smx_comm_t SIMIX_network_isend(smx_rdv_t rdv, double task_size, double rate,
   comm->src_buff = src_buff;
   comm->src_buff_size = src_buff_size;
   comm->data = data;
-
-  /* Associate the simix communication to the mc transition */
-  if (_surf_do_model_check)
-    MC_transition_set_comm(trans, comm);
   
   SIMIX_communication_start(comm);
   return comm;
 }
 
-smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size) {
+smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size)
+{
   smx_comm_t comm;
-  mc_transition_t trans=NULL;
-  
-  if (_surf_do_model_check) {
-    /* Let's intercept the communication and control it from the model-checker */
-    trans = MC_create_transition(mc_irecv, SIMIX_process_self(), rdv, NULL);
-    SIMIX_process_yield();
-  }
+
+  /* If running in model-checking mode then intercept the communication action. 
+   * There can be two situations, this is a replay (back-track process) so no
+   * transition needs to be created, or we are expanding a new state and in 
+   * consecuence a transition needs to be created and added to the set of
+   * transitions associated to the current state.
+   */
+  if (_surf_do_model_check)
+    MC_trans_intercept_irecv(rdv);
   
   /* Look for communication request matching our needs.
-     If it is not found then create it and push it into the rendez-vous point */
+   * If it is not found then create it and push it into the rendez-vous point
+   */
   comm = SIMIX_rdv_get_request(rdv, comm_send);
 
   if(!comm){
@@ -531,33 +533,38 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
   comm->dst_proc = SIMIX_process_self();
   comm->dst_buff = dst_buff;
   comm->dst_buff_size = dst_buff_size;
-
-  /* Associate the simix communication to the mc transition */
-  if (_surf_do_model_check)
-    MC_transition_set_comm(trans, comm);
  
   SIMIX_communication_start(comm);
   return comm;
 }
 
 /** @brief blocks until the communication terminates or the timeout occurs */
-XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout) {
-  if (_surf_do_model_check) {
-    /* Let's intercept the communication and control it from the model-checker */
-    MC_create_transition(mc_wait, SIMIX_process_self(), comm->rdv, comm);
-    SIMIX_process_yield();
-  }
+XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout)
+{
+  /* If running in model-checking mode then intercept the communication action. 
+   * There can be two situations, this is a replay (back-track process) so no
+   * transition needs to be created, or we are expanding a new state and in 
+   * consecuence a transition needs to be created and added to the set of
+   * transitions associated to the current state.
+   */
+  if (_surf_do_model_check)
+    MC_trans_intercept_wait(comm);
+  
   /* Wait for communication completion */
   SIMIX_communication_wait_for_completion(comm, timeout);
 }
 
 /** @Returns whether the (asynchronous) communication is done yet or not */
-XBT_INLINE int SIMIX_network_test(smx_comm_t comm) {
-  if (_surf_do_model_check) {
-    /* Let's intercept the communication and control it from the model-checker */
-    MC_create_transition(mc_test, SIMIX_process_self(), comm->rdv, comm);
-    SIMIX_process_yield();
-  }
+XBT_INLINE int SIMIX_network_test(smx_comm_t comm)
+{
+  /* If running in model-checking mode then intercept the communication action. 
+   * There can be two situations, this is a replay (back-track process) so no
+   * transition needs to be created, or we are expanding a new state and in 
+   * consecuence a transition needs to be created and added to the set of
+   * transitions associated to the current state.
+   */
+  if (_surf_do_model_check)
+    MC_trans_intercept_test(comm);
 
   /* Copy data if the communication is done */
   if(comm->sem && !SIMIX_sem_would_block(comm->sem)){
@@ -572,17 +579,21 @@ XBT_INLINE int SIMIX_network_test(smx_comm_t comm) {
  *
  *  @Returns the rank in the dynar of communication which finished; destroy it after identifying which one it is
  */
-unsigned int SIMIX_network_waitany(xbt_dynar_t comms) {
+unsigned int SIMIX_network_waitany(xbt_dynar_t comms)
+{
   xbt_dynar_t sems = xbt_dynar_new(sizeof(smx_sem_t),NULL);
   unsigned int cursor, found_comm=-1;
   smx_comm_t comm,comm_finished=NULL;
 
-  if (_surf_do_model_check) {
-    /* Let's intercept the communication and control it from the model-checker */
-    MC_create_transition(mc_waitany, SIMIX_process_self(), NULL, NULL);
-    SIMIX_process_yield();
-  }
-  
+  /* If running in model-checking mode then intercept the communication action. 
+   * There can be two situations, this is a replay (back-track process) so no
+   * transition needs to be created, or we are expanding a new state and in 
+   * consecuence a transition needs to be created and added to the set of
+   * transitions associated to the current state.
+   */
+  if (_surf_do_model_check)
+    MC_trans_intercept_waitany(comms);
+    
   xbt_dynar_foreach(comms,cursor,comm)
     xbt_dynar_push(sems,&(comm->sem));
 

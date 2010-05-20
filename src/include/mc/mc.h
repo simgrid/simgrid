@@ -26,8 +26,12 @@ XBT_PUBLIC(void) MC_modelcheck(int);
 XBT_PUBLIC(int) MC_random(int,int);
 
 /******************************* Transitions **********************************/
-XBT_PUBLIC(mc_transition_t) MC_create_transition(mc_trans_type_t, smx_process_t, smx_rdv_t, smx_comm_t);
-XBT_PUBLIC(void) MC_transition_set_comm(mc_transition_t, smx_comm_t);
+XBT_PUBLIC(void) MC_trans_intercept_isend(smx_rdv_t);
+XBT_PUBLIC(void) MC_trans_intercept_irecv(smx_rdv_t);
+XBT_PUBLIC(void) MC_trans_intercept_wait(smx_comm_t);
+XBT_PUBLIC(void) MC_trans_intercept_test(smx_comm_t);
+XBT_PUBLIC(void) MC_trans_intercept_waitany(xbt_dynar_t);
+XBT_PUBLIC(void) MC_trans_intercept_random(int,int);
 
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init(void);   /* Initialize the memory subsystem */

@@ -67,23 +67,59 @@ void MC_dpor_exit(void);
 
 
 /******************************* Transitions **********************************/
+typedef enum {
+  mc_isend,
+  mc_irecv,
+  mc_test,
+  mc_wait,
+  mc_waitany,
+  mc_random
+} mc_trans_type_t;
+
 typedef struct s_mc_transition{
   XBT_SETSET_HEADERS;
   char* name;
-  mc_trans_type_t type;
   smx_process_t process;
-  smx_rdv_t rdv;
-  smx_comm_t comm;          /* reference to the simix network communication */
-  
-  /* Used only for random transitions */
-  int min;                  /* min random value */ 
-  int max;                  /* max random value */
-  int current_value;        /* current value */
+  mc_trans_type_t type;
+
+  union {
+    struct {
+      smx_rdv_t rdv;  
+    } isend;
+
+    struct {
+      smx_rdv_t rdv;  
+    } irecv;
+
+    struct {
+      smx_comm_t comm;
+    } wait;
+
+    struct {
+      smx_comm_t comm;
+    } test;
+
+    struct {
+      xbt_dynar_t comms;
+    } waitany;
+
+    struct {
+      int min;
+      int max;
+      int current_value;
+    } random;
+  };
 } s_mc_transition_t;
 
-void MC_random_create(int,int);
+mc_transition_t MC_trans_isend_new(smx_rdv_t);
+mc_transition_t MC_trans_irecv_new(smx_rdv_t);
+mc_transition_t MC_trans_wait_new(smx_comm_t);
+mc_transition_t MC_trans_test_new(smx_comm_t);
+mc_transition_t MC_trans_waitany_new(xbt_dynar_t);
+mc_transition_t MC_trans_random_new(int, int);
 void MC_transition_delete(mc_transition_t);
 int MC_transition_depend(mc_transition_t, mc_transition_t);
+void MC_trans_compute_enabled(xbt_setset_set_t, xbt_setset_set_t);
 
 /******************************** States **************************************/
 typedef struct mc_state{

@@ -26,7 +26,7 @@ void MC_dfs_init()
   xbt_setset_add(initial_state->enabled_transitions, initial_state->transitions);
   xbt_setset_foreach(initial_state->enabled_transitions, cursor, trans){
     if(trans->type == mc_wait
-       && (trans->comm->src_proc == NULL || trans->comm->dst_proc == NULL)){
+       && (trans->wait.comm->src_proc == NULL || trans->wait.comm->dst_proc == NULL)){
       xbt_setset_set_remove(initial_state->enabled_transitions, trans);
     }
   }
@@ -107,7 +107,7 @@ void MC_dfs(void)
       xbt_setset_add(next_state->enabled_transitions, next_state->transitions);
       xbt_setset_foreach(next_state->enabled_transitions, cursor, trans){
         if(trans->type == mc_wait
-           && (trans->comm->src_proc == NULL || trans->comm->dst_proc == NULL)){
+           && (trans->wait.comm->src_proc == NULL || trans->wait.comm->dst_proc == NULL)){
           xbt_setset_set_remove(next_state->enabled_transitions, trans);
         }
       }

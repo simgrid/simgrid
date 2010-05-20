@@ -16,7 +16,6 @@ void MC_dpor_init()
 {
   mc_state_t initial_state = NULL;
   mc_transition_t trans = NULL;
-  xbt_setset_cursor_t cursor = NULL;
   
   /* Create the initial state and push it into the exploration stack */
   MC_SET_RAW_MEM;
@@ -30,13 +29,8 @@ void MC_dpor_init()
   MC_schedule_enabled_processes();
 
   MC_SET_RAW_MEM;
-  xbt_setset_add(initial_state->enabled_transitions, initial_state->transitions);
-  xbt_setset_foreach(initial_state->enabled_transitions, cursor, trans){
-    if(trans->type == mc_wait
-       && (trans->comm->src_proc == NULL || trans->comm->dst_proc == NULL)){
-      xbt_setset_set_remove(initial_state->enabled_transitions, trans);
-    }
-  }
+  MC_trans_compute_enabled(initial_state->enabled_transitions,
+                           initial_state->transitions);
 
   /* Fill the interleave set of the initial state with an enabled process */
   trans = xbt_setset_set_choose(initial_state->enabled_transitions);  
@@ -111,29 +105,19 @@ void MC_dpor(void)
       MC_execute_surf_actions();        /* Do surf's related black magic */
       MC_schedule_enabled_processes();
 
-      if(trans->type == mc_random && trans->current_value < trans->max ){
-        trans->current_value++;
+      if(trans->type == mc_random && trans->random.current_value < trans->random.max){
+        trans->random.current_value++;
       }else{
-        trans->current_value = trans->min;
+        trans->random.current_value = trans->random.min;
         xbt_setset_set_remove(mc_current_state->interleave, trans);
         xbt_setset_set_insert(mc_current_state->done, trans);
       }
       
-      /* Calculate the enabled transitions set of the next state:
-          -add the transition sets of the current state and the next state 
-          -remove the executed transition from that set
-          -remove all the transitions that are disabled (mc_wait only)
-          -use the resulting set as the enabled transitions of the next state */
+      /* Calculate the enabled transitions set of the next state */
       MC_SET_RAW_MEM;
       xbt_setset_add(next_state->transitions, mc_current_state->transitions);
       xbt_setset_set_remove(next_state->transitions, trans);
-      xbt_setset_add(next_state->enabled_transitions, next_state->transitions);
-      xbt_setset_foreach(next_state->enabled_transitions, cursor, trans){
-        if(trans->type == mc_wait
-           && (trans->comm->src_proc == NULL || trans->comm->dst_proc == NULL)){
-          xbt_setset_set_remove(next_state->enabled_transitions, trans);
-        }
-      }
+      MC_trans_compute_enabled(next_state->enabled_transitions, next_state->transitions);
 
       /* Choose one transition to interleave from the enabled transition set */      
       trans = xbt_setset_set_choose(next_state->enabled_transitions);
