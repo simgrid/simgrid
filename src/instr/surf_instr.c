@@ -75,15 +75,16 @@ void __TRACE_surf_finalize (void)
     xbt_dict_cursor_t cursor = NULL;
     unsigned int cursor_ar = 0;
     char *key, *value, *res;
-    char resource[200];
+    char *resource;
 
     /* get all resources from last_platform_variables */
-    xbt_dynar_t resources = xbt_dynar_new(sizeof(char)*200, xbt_free);
+    xbt_dynar_t resources = xbt_dynar_new(sizeof(char*), xbt_free);
     xbt_dict_foreach(last_platform_variables, cursor, key, value) {
       res = strsplit (key, 0, VARIABLE_SEPARATOR);
       char *aux = strsplit (key, 1, VARIABLE_SEPARATOR);
       if (strcmp (aux, "Time") == 0){ //only need to add one of three
-        xbt_dynar_push (resources, xbt_strdup(res));
+        char *var_cpy = xbt_strdup (res);
+        xbt_dynar_push (resources, &var_cpy);
       }
       free (aux);
       free (res);
@@ -113,14 +114,15 @@ void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, 
 {
   /* check if we have to set it to 0 */
   if (!xbt_dict_get_or_null (platform_variables, resource)){
-    xbt_dynar_t array = xbt_dynar_new(100*sizeof(char), xbt_free);
-    xbt_dynar_push (array, xbt_strdup(variable));
+    xbt_dynar_t array = xbt_dynar_new(sizeof(char*), xbt_free);
+    char *var_cpy = xbt_strdup(variable);
+    xbt_dynar_push (array, &var_cpy);
     if (IS_TRACING_PLATFORM) pajeSetVariable (now, variable, resource, "0");
     xbt_dict_set (platform_variables, resource, array, xbt_dynar_free_voidp);
   }else{
     xbt_dynar_t array = xbt_dict_get (platform_variables, resource);
     unsigned int i;
-    char cat[100];
+    char* cat;
     int flag = 0;
     xbt_dynar_foreach (array, i, cat) {
       if (strcmp(variable, cat)==0){
@@ -128,7 +130,8 @@ void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, 
       }
     }
     if (flag==0){
-      xbt_dynar_push (array, strdup(variable));
+      char *var_cpy = xbt_strdup(variable);
+      xbt_dynar_push (array, &var_cpy);
       if (IS_TRACING_PLATFORM) pajeSetVariable (now, variable, resource, "0");
     }
   }
@@ -171,9 +174,12 @@ void __TRACE_surf_update_action_state_resource (double now, double delta, const 
   if (lastvariable == NULL){
     __TRACE_surf_check_variable_set_to_zero (now, variable, resource);
     pajeAddVariable (now, variable, resource, valuestr);
-    xbt_dict_set (last_platform_variables, xbt_strdup (timekey), xbt_strdup (nowdeltastr), xbt_free);
-    xbt_dict_set (last_platform_variables, xbt_strdup (valuekey), xbt_strdup (valuestr), xbt_free);
-    xbt_dict_set (last_platform_variables, xbt_strdup (variablekey), xbt_strdup (variable), xbt_free);
+    char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
+    char *valuestr_cpy = xbt_strdup (valuestr);
+    char *variable_cpy = xbt_strdup (variable);
+    xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
+    xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
+    xbt_dict_set (last_platform_variables, variablekey, variable_cpy, xbt_free);
   }else{
     char *lasttime = xbt_dict_get_or_null (last_platform_variables, timekey);
     char *lastvalue = xbt_dict_get_or_null (last_platform_variables, valuekey);
@@ -184,28 +190,36 @@ void __TRACE_surf_update_action_state_resource (double now, double delta, const 
       if (atof(lasttime) == now){ /* lastime == now */
         /* check if lastvalue equals valuestr */
         if (atof(lastvalue) == value){ /* lastvalue == value (good, just advance time) */
-          xbt_dict_set (last_platform_variables, xbt_strdup(timekey), xbt_strdup(nowdeltastr), xbt_free);
+          char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
+          xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
         }else{ /* value has changed */
           /* value has changed, subtract previous value, add new one */
           pajeSubVariable (atof(lasttime), variable, resource, lastvalue);
           pajeAddVariable (atof(nowstr), variable, resource, valuestr);
-          xbt_dict_set (last_platform_variables, xbt_strdup(timekey), xbt_strdup(nowdeltastr), xbt_free);
-          xbt_dict_set (last_platform_variables, xbt_strdup(valuekey), xbt_strdup(valuestr), xbt_free);
+          char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
+          char *valuestr_cpy = xbt_strdup (valuestr);
+          xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
+          xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
         }
       }else{ /* lasttime != now */
         /* the last time is different from new starting time, subtract to lasttime and add from nowstr */
         pajeSubVariable (atof(lasttime), variable, resource, lastvalue);
         pajeAddVariable (atof(nowstr), variable, resource, valuestr);
-        xbt_dict_set (last_platform_variables, xbt_strdup(timekey), xbt_strdup(nowdeltastr), xbt_free);
-        xbt_dict_set (last_platform_variables, xbt_strdup(valuekey), xbt_strdup(valuestr), xbt_free);
+        char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
+        char *valuestr_cpy = xbt_strdup (valuestr);
+        xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
+        xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
       }
     }else{ /* variable has changed */
       pajeSubVariable (atof(lasttime), lastvariable, resource, lastvalue);
       __TRACE_surf_check_variable_set_to_zero (now, variable, resource);
       pajeAddVariable (now, variable, resource, valuestr);
-      xbt_dict_set (last_platform_variables, xbt_strdup (timekey), xbt_strdup (nowdeltastr), xbt_free);
-      xbt_dict_set (last_platform_variables, xbt_strdup (valuekey), xbt_strdup (valuestr), xbt_free);
-      xbt_dict_set (last_platform_variables, xbt_strdup (variablekey), xbt_strdup (variable), xbt_free);
+      char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
+      char *valuestr_cpy = xbt_strdup (valuestr);
+      char *variable_cpy = xbt_strdup (variable);
+      xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
+      xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
+      xbt_dict_set (last_platform_variables, variablekey, variable_cpy, xbt_free);
     }
   }
   return;
@@ -274,15 +288,15 @@ void TRACE_surf_link_declaration (char *name, double bw, double lat)
   lat_ptr = xbt_new (double, 1);
   *bw_ptr = bw;
   *lat_ptr = lat;
-  xbt_dict_set (link_bandwidth, xbt_strdup(name), bw_ptr, xbt_free);
-  xbt_dict_set (link_latency, xbt_strdup(name), lat_ptr, xbt_free);
+  xbt_dict_set (link_bandwidth, name, bw_ptr, xbt_free);
+  xbt_dict_set (link_latency, name, lat_ptr, xbt_free);
 }
 
 void TRACE_surf_host_declaration (char *name, double power)
 {
   if (!IS_TRACING) return;
   pajeCreateContainer (SIMIX_get_clock(), name, "HOST", "platform", name);
-  xbt_dict_set (host_containers, xbt_strdup(name), xbt_strdup("1"), xbt_free);
+  xbt_dict_set (host_containers, name, xbt_strdup("1"), xbt_free);
   if (IS_TRACING_PLATFORM){
     __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "power", name, power);
   }
@@ -313,7 +327,7 @@ void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst)
     pajeCreateContainerWithBandwidthLatencySrcDst (SIMIX_get_clock(), link_name, "LINK", "platform", link_name, *bw, *lat, srcname, dstname);
     if (IS_TRACING_PLATFORM) __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "bandwidth", link_name, *bw);
     if (IS_TRACING_PLATFORM) __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "latency", link_name, *lat);
-    xbt_dict_set (created_links, xbt_strdup(link_name), xbt_strdup ("1"), xbt_free);
+    xbt_dict_set (created_links, link_name, xbt_strdup ("1"), xbt_free);
   }
 }
 
@@ -337,8 +351,8 @@ void TRACE_surf_host_define_id (const char *name, int host_id)
   if (!IS_TRACING) return;
   char strid[100];
   snprintf (strid, 100, "%d", host_id);
-  xbt_dict_set (hosts_id, strdup(name), strdup(strid), free);
-  xbt_dict_set (hosts_id, strdup(strid), strdup(name), free);
+  xbt_dict_set (hosts_id, name, strdup(strid), free);
+  xbt_dict_set (hosts_id, strid, strdup(name), free);
 }
 
 /* to trace gtnets */
@@ -349,9 +363,9 @@ void TRACE_surf_gtnets_communicate (void *action, int src, int dst)
   snprintf (key, 100, "%p", action);
 
   snprintf (aux, 100, "%d", src);
-  xbt_dict_set (gtnets_src, xbt_strdup(key), xbt_strdup(aux), xbt_free);
+  xbt_dict_set (gtnets_src, key, xbt_strdup(aux), xbt_free);
   snprintf (aux, 100, "%d", dst);
-  xbt_dict_set (gtnets_dst, xbt_strdup(key), xbt_strdup(aux), xbt_free);
+  xbt_dict_set (gtnets_dst, key, xbt_strdup(aux), xbt_free);
 }
 
 int TRACE_surf_gtnets_get_src (void *action)

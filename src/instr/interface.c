@@ -149,7 +149,8 @@ void TRACE_define_type (const char *type,
     if (IS_TRACING_TASKS) pajeDefineContainerType ("task", type, "task");
     if (IS_TRACING_TASKS) pajeDefineStateType ("task-state", "task", "task-state");
   }
-  xbt_dict_set (defined_types, type, xbt_strdup("1"), xbt_free);
+  char *val_one = xbt_strdup ("1");
+  xbt_dict_set (defined_types, type, &val_one, xbt_free);
 }
 
 int TRACE_create_category (const char *category,
@@ -181,7 +182,8 @@ int TRACE_create_category (const char *category,
   snprintf (state, 100, "p%s", category);
   if (IS_TRACING_PLATFORM) pajeDefineVariableType (state, "HOST", state);
 
-  xbt_dict_set (created_categories, category, xbt_strdup("1"), xbt_free);
+  char *val_one = xbt_strdup ("1");
+  xbt_dict_set (created_categories, category, &val_one, xbt_free);
   return 0;
 }
 

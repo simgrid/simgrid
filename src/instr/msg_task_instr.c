@@ -21,7 +21,8 @@ void __TRACE_current_category_set (m_task_t task)
 {
   char processid[100];
   snprintf (processid, 100, "%p", SIMIX_process_self());
-  xbt_dict_set (current_task_category, processid, xbt_strdup (task->category), xbt_free);
+  char *var_cpy = xbt_strdup (task->category);
+  xbt_dict_set (current_task_category, processid, var_cpy, xbt_free);
 }
 
 void __TRACE_current_category_unset ()
@@ -55,7 +56,8 @@ void __TRACE_task_location (m_task_t task)
   if (!xbt_dict_get_or_null (task_containers, alias)){
     pajeCreateContainer (MSG_get_clock(), alias, "TASK", container, name);
     pajeSetState (MSG_get_clock(), "category", alias, task->category);
-    xbt_dict_set (task_containers, xbt_strdup(alias), xbt_strdup("1"), xbt_free);
+    char *val_one = xbt_strdup ("1");
+    xbt_dict_set (task_containers, alias, val_one, xbt_free);
   }
 }
 
