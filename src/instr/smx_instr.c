@@ -29,8 +29,7 @@ void TRACE_smx_action_communicate (smx_action_t act, smx_process_t proc)
   act->counter = counter++;
   char *category = __TRACE_current_category_get (proc);
   if (category){
-	act->category = xbt_new (char, strlen (category)+1);
-	strncpy (act->category, category, strlen(category)+1);
+    act->category = xbt_strdup (category);
   }
 }
 

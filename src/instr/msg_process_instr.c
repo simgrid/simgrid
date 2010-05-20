@@ -51,8 +51,7 @@ void TRACE_msg_set_process_category (m_process_t process, const char *category)
   if (!IS_TRACING) return;
 
   //set process category
-  process->category = xbt_new (char, strlen (category)+1);
-  strncpy (process->category, category, strlen(category)+1);
+  process->category = xbt_strdup(category);
 
   //create container of type "PROCESS" to indicate location
   __TRACE_msg_process_location (process);
