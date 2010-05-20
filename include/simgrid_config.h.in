@@ -54,6 +54,7 @@ XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt,   /*args */
  * See asprintf()
  */
 #if defined(SIMGRID_NEED_VASPRINTF)||defined(DOXYGEN)
+#include <stdarg.h>
 XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
 /** @brief print to allocated string
