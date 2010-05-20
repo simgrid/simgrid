@@ -32,7 +32,7 @@ gras_msg_t gras_msg_recv_any(void) {
   xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
     sock_data = (gras_trp_sg_sock_data_t *) sock->data;
     if (sock_data->comm_recv) {
-      INFO2("Copy %p of size %d",sock_data->comm_recv,sizeof(smx_comm_t));
+      INFO2("Copy %p of size %lu",sock_data->comm_recv,sizeof(smx_comm_t));
       xbt_dynar_push(comms,&(sock_data->comm_recv));
     }
   }
