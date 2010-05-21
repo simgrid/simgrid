@@ -63,6 +63,7 @@ if(HAVE_LUA)
 	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/lua/5.1")
 	add_custom_target(lua_simgrid ALL
   		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.so ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.so
+  		DEPENDS simgrid
 		)
 	install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.so
 		DESTINATION $ENV{DESTDIR}${prefix}/lib/lua/5.1
@@ -74,6 +75,7 @@ if(HAVE_RUBY)
 	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}")
 	add_custom_target(ruby_simgrid ALL
 	COMMAND ${CMAKE_COMMAND} -E create_symlink ../../../libsimgrid.so ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.so
+	DEPENDS simgrid
 	)
 	install(FILES ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.so
 		DESTINATION $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/

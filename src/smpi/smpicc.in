@@ -8,6 +8,7 @@ CFLAGS="-O2 -Dmain=smpi_simulated_main"
 
 #FIXME: probably only want the last two pairs after 'make install'
 INCLUDEARGS="-I@top_srcdir@/include -I@top_srcdir@/include/smpi -I@includedir@ -I@includedir@/smpi"
+CMAKE_LINKARGS="-L@CMAKE_LINKARGS@"
 LINKARGS="-L@top_builddir@/src/.libs -L@libdir@ -lsimgrid -lsmpi "
 
 CMDLINE=""
@@ -28,7 +29,7 @@ while [ -n "$1" ]; do
   fi
 done
 
-CMDLINE="${CC} ${INCLUDEARGS} ${CFLAGS} ${CMDLINE} ${LINKARGS}"
+CMDLINE="${CC} ${INCLUDEARGS} ${CFLAGS} ${CMDLINE} ${CMAKE_LINKARGS} ${LINKARGS}"
 
 #echo "${CMDLINE}"
 ${CMDLINE}
