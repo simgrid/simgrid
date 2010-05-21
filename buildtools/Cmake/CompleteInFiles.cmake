@@ -195,7 +195,7 @@ if(NOT enable_gtnets)
 else(NOT enable_gtnets)
 	set(GTNETS_LDFLAGS "-L${gtnets_path}/lib")
 	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include/gtnets")
-	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
+	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
 	if(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 0)
 	else(COMPILE_GTNETS_VAR)
@@ -218,7 +218,7 @@ if(pthread)
 	### HAVE_SEM_INIT
   	
   	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
 	    	else(HAVE_SEM_INIT_run)
@@ -229,7 +229,7 @@ if(pthread)
 	### HAVE_SEM_TIMEDWAIT
 
 	if(HAVE_SEM_TIMEDWAIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_SEM_TIMEDWAIT_run)
 			set(HAVE_SEM_TIMEDWAIT 0)
 		else(HAVE_SEM_TIMEDWAIT_run)
@@ -240,7 +240,7 @@ if(pthread)
 	### HAVE_MUTEX_TIMEDLOCK
 
 	if(HAVE_MUTEX_TIMEDLOCK_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_MUTEX_TIMEDLOCK_run)
 			set(HAVE_MUTEX_TIMEDLOCK 0)
 		else(HAVE_MUTEX_TIMEDLOCK_run)
@@ -257,7 +257,7 @@ endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
 	COMPILE_DEFINITIONS "${mcsc_flags}"
 	)
 	
@@ -375,7 +375,7 @@ TEST_BIG_ENDIAN(BIGENDIAN)
 # Check architecture signature begin
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_GRAS_ARCH.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
 	RUN_OUTPUT_VARIABLE var1
 	)
 if(BIGENDIAN)
@@ -447,7 +447,7 @@ endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:")
 # Check architecture signature end
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_GRAS_CHECK_STRUCT_COMPACTION.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
 	RUN_OUTPUT_VARIABLE var2
 	)
 separate_arguments(var2)
@@ -458,7 +458,7 @@ endforeach(var_tmp ${var2})
 # Check for [SIZEOF_MAX]
 try_run(RUN_SM_VAR COMPILE_SM_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_max_size.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_max_size.c
 	RUN_OUTPUT_VARIABLE var3
 	)
 SET(SIZEOF_MAX ${var3})
@@ -474,7 +474,7 @@ if(HAVE_MAKECONTEXT)
 
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_stacksetup.c
+		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
 	
@@ -495,7 +495,7 @@ endif(HAVE_MAKECONTEXT)
 
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_stackgrowth.c
+		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stackgrowth.c
 		)
 file(READ "${simgrid_BINARY_DIR}/conftestval" stack)
 if(stack MATCHES "down")
@@ -519,7 +519,7 @@ endif(stack MATCHES "up")
 #AC_PRINTF_NULL
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_printf_null.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
 	)
 
 if(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
@@ -541,7 +541,7 @@ set(diff_va "va_copy((d),(s))"
 )
 
 foreach(fct ${diff_va})
-	write_file("${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_va_copy.c" "#include <stdlib.h>
+	write_file("${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" "#include <stdlib.h>
 	#include <stdarg.h>
 	#include <string.h>
 	#define DO_VA_COPY(d,s) ${fct}
@@ -572,7 +572,7 @@ foreach(fct ${diff_va})
 	)
 	try_compile(COMPILE_VA_NULL_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_va_copy.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c
 	)
 	if(COMPILE_VA_NULL_VAR)
 		string(REGEX REPLACE "\;" "" fctbis ${fct})
@@ -630,7 +630,7 @@ endforeach(fct ${diff_va})
 ### Try execut getline command
 try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
 	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_getline.c
+	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_getline.c
 	OUTPUT_VARIABLE GETLINE_OUTPUT
 	)
 
@@ -645,7 +645,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 	try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_snprintf.c
+		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_snprintf.c
 		)
 	if(CMAKE_CROSSCOMPILING)
 		set(RUN_SNPRINTF_FUNC "cross") 
@@ -653,7 +653,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 	try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
 		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/prog_test/prog_vsnprintf.c
+		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_vsnprintf.c
 		)
 	if(CMAKE_CROSSCOMPILING)
 		set(RUN_VSNPRINTF_FUNC "cross")
