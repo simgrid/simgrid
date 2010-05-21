@@ -689,14 +689,14 @@ endif(ADDR2LINE)
 
 ### File to create
 
-configure_file(${PROJECT_DIRECTORY}/src/context_sysv_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h)
+configure_file("${PROJECT_DIRECTORY}/src/context_sysv_config.h.in" 			"${PROJECT_DIRECTORY}/include/context_sysv_config.h" @ONLY IMMEDIATE)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/gras_config.h.in" "${PROJECT_DIRECTORY}/include/gras_config.h" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/include/gras_config.h" "${PROJECT_DIRECTORY}/include/gras_config.h" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/include/simgrid_config.h.in" "${PROJECT_DIRECTORY}/include/simgrid_config.h" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/tracing_config.h.in" "${PROJECT_DIRECTORY}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/include/instr/tracing_config.h" "${PROJECT_DIRECTORY}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/gras_config.h.in" 	"${PROJECT_DIRECTORY}/include/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/include/gras_config.h" 				"${PROJECT_DIRECTORY}/include/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/include/simgrid_config.h.in" 			"${PROJECT_DIRECTORY}/include/simgrid_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/tracing_config.h.in" 	"${PROJECT_DIRECTORY}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/include/instr/tracing_config.h" 		"${PROJECT_DIRECTORY}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
 
 if(NOT prefix)
 	set(prefix /usr/local)
