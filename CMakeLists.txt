@@ -50,36 +50,36 @@ else(enable_coverage)
 endif(enable_coverage)
 
 ### Setup Options
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeOption.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/Option.cmake)
 
 ### Make the *.h files with *.h.in files
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeCompleteInFiles.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/CompleteInFiles.cmake)
 
 ### Define source packages for Libs 
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDefinePackages.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/DefinePackages.cmake)
 
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeMaintainerMode.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
 
 ### Setup gcc flags
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeFlags.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/Flags.cmake)
 
 ### Make Libs and Exes
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeMakeExeLib.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLib.cmake)
 
 ### Make Simgrid.jar and Java examples
 if(HAVE_JAVA)
-	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeJarAndClass.txt)
+	include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
 endif(HAVE_JAVA)
 
 ### Make tests
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeTest.txt)
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CTestConfig.cmake)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
 
 ### Setup the distrib
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDistrib.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
 
 ### Print ARGS
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakePrintArgs.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
 
 INCLUDE(Dart)
 

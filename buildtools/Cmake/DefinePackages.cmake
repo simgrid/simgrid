@@ -728,41 +728,39 @@ set(source_to_pack
 	${EXTRA_DIST}
 	
 	CMakeLists.txt
-	buildtools/Cmake/src/CTestConfig.cmake
-	buildtools/Cmake/src/CTestTestfile.cmake
-	# FIXME: these should be renamed to .cmake, I guess
-	buildtools/Cmake/src/CMakeCompleteInFiles.txt
-	buildtools/Cmake/src/CMakeDefinePackages.txt
-	buildtools/Cmake/src/CMakeDistrib.txt
-	buildtools/Cmake/src/CMakeDocs.txt
-	buildtools/Cmake/src/CMakeFlags.txt
-	buildtools/Cmake/src/CMakeJarAndClass.txt
-	buildtools/Cmake/src/CMakeMaintainerMode.txt
-	buildtools/Cmake/src/CMakeMakeExeLib.txt
-	buildtools/Cmake/src/CMakeOption.txt
-	buildtools/Cmake/src/CMakePrintArgs.txt
-	buildtools/Cmake/src/CMakeSupernovae.txt
-	buildtools/Cmake/src/CMakeTest.txt
-	buildtools/Cmake/src/memcheck_tests.txt
+	buildtools/Cmake/CTestConfig.cmake
+	buildtools/Cmake/CompleteInFiles.cmake
+	buildtools/Cmake/DefinePackages.cmake
+	buildtools/Cmake/Distrib.cmake
+	buildtools/Cmake/GenerateDoc.cmake
+	buildtools/Cmake/Flags.cmake
+	buildtools/Cmake/MakeJava.cmake
+	buildtools/Cmake/MaintainerMode.cmake
+	buildtools/Cmake/MakeExeLib.cmake
+	buildtools/Cmake/Option.cmake
+	buildtools/Cmake/PrintArgs.cmake
+	buildtools/Cmake/Supernovae.cmake
+	buildtools/Cmake/AddTests.cmake
+	buildtools/Cmake/memcheck_tests.cmake
 	# FIXME: these should live in src/ and the content of src in root of Cmake/ maybe
-	buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
-	buildtools/Cmake/prog_test/prog_getline.c
-	buildtools/Cmake/prog_test/prog_GRAS_ARCH.c
-	buildtools/Cmake/prog_test/prog_GRAS_CHECK_STRUCT_COMPACTION.c
-	buildtools/Cmake/prog_test/prog_gtnets.cpp
-	buildtools/Cmake/prog_test/prog_max_size.c
-	buildtools/Cmake/prog_test/prog_mutex_timedlock.c
-	buildtools/Cmake/prog_test/prog_printf_null.c
-	buildtools/Cmake/prog_test/prog_sem_init.c
-	buildtools/Cmake/prog_test/prog_sem_timedwait.c
-	buildtools/Cmake/prog_test/prog_snprintf.c
-	buildtools/Cmake/prog_test/prog_stackgrowth.c
-	buildtools/Cmake/prog_test/prog_stacksetup.c
-	buildtools/Cmake/prog_test/prog_va_copy.c
-	buildtools/Cmake/prog_test/prog_vsnprintf.c
+	buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
+	buildtools/Cmake/test_prog/prog_getline.c
+	buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
+	buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
+	buildtools/Cmake/test_prog/prog_gtnets.cpp
+	buildtools/Cmake/test_prog/prog_max_size.c
+	buildtools/Cmake/test_prog/prog_mutex_timedlock.c
+	buildtools/Cmake/test_prog/prog_printf_null.c
+	buildtools/Cmake/test_prog/prog_sem_init.c
+	buildtools/Cmake/test_prog/prog_sem_timedwait.c
+	buildtools/Cmake/test_prog/prog_snprintf.c
+	buildtools/Cmake/test_prog/prog_stackgrowth.c
+	buildtools/Cmake/test_prog/prog_stacksetup.c
+	buildtools/Cmake/test_prog/prog_va_copy.c
+	buildtools/Cmake/test_prog/prog_vsnprintf.c
 	# FIXME: these are badly named and placed
-	buildtools/Cmake/src/c_gras_config.h.in
-	buildtools/Cmake/src/tracing_config.h.in
+	buildtools/Cmake/gras_config.h.in
+	buildtools/Cmake/tracing_config.h.in
 	
 	AUTHORS
 	ChangeLog

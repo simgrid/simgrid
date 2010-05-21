@@ -5,6 +5,6 @@ set(BIBTEX2HTML ${BIBTEX2HTML} CACHE TYPE INTERNAL FORCE)
 
 ### SET THE PROJECT_DIRECTORY
 SET(PROJECT_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
-string(REPLACE "/buildtools/Cmake/src/doc" "" PROJECT_DIRECTORY "${PROJECT_DIRECTORY}")
+string(REPLACE "/buildtools/Cmake/doc" "" PROJECT_DIRECTORY "${PROJECT_DIRECTORY}")
 
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeDocs.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)

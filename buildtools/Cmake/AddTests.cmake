@@ -262,4 +262,4 @@ add_test(test-simdag-3 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:
 
 add_test(testall		${CMAKE_BUILD_DIR}/src/testall)
 
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/memcheck_tests.txt)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake)

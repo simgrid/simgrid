@@ -1,10 +1,10 @@
 #!/usr/bin/perl -w
 use strict;
 
-# input file = CMakeTest.txt
+# input file = AddTest.txt
 
 if($#ARGV!=1) {
-    die "Usage: generate_memcheck_tests.pl <project_directory> <CMakeTests.txt>\n";
+    die "Usage: generate_memcheck_tests.pl <project_directory> AddTests.cmake\n";
 }
 
 my($proj_dir)=$ARGV[0];
