@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <lauxlib.h>
 #include <lualib.h>
-
 #include "msg/msg.h"
 #include "xbt.h"
 
@@ -17,6 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 
 #define TASK_MODULE_NAME "simgrid.Task"
 #define HOST_MODULE_NAME "simgrid.Host"
+// Surf ( bypass XML )
+#define LINK_MODULE_NAME "simgrid.Link"
+#define ROUTE_MODULE_NAME "simgrid.Route"
 
 /* ********************************************************************************* */
 /*                            helper functions                                       */
@@ -32,7 +34,6 @@ static void stackDump (const char *msg, lua_State *L) {
   p+=sprintf(p,"STACK(top=%d): ",top);
 
   for (i = 1; i <= top; i++) {  /* repeat for each level */
-
     int t = lua_type(L, i);
     switch (t) {
 
@@ -146,6 +147,7 @@ static int Task_destroy(lua_State *L) {
   lua_pushnumber(L,res);
   return 1;
 }
+
 static int Task_send(lua_State *L)  {
   //stackDump("send ",L);
   m_task_t tk = checkTask(L,-2);
@@ -244,7 +246,6 @@ static m_host_t checkHost (lua_State *L,int index) {
   return  ht;
 }
 
-
 static int Host_get_by_name(lua_State *L)
 {
 	const char *name=luaL_checkstring(L,1);
@@ -277,11 +278,327 @@ static int Host_number(lua_State *L) {
   return 1;
 }
 
+static int Host_at(lua_State *L)
+{
+	int index = luaL_checkinteger(L,1);
+	m_host_t host = MSG_get_host_table()[index-1]; // lua indexing start by 1 (lua[1] <=> C[0])
+	lua_newtable (L); /* create a table, put the userdata on top of it */
+	m_host_t *lua_host = (m_host_t*)lua_newuserdata(L,sizeof(m_host_t));
+	*lua_host = host;
+	luaL_getmetatable(L,HOST_MODULE_NAME);
+	lua_setmetatable(L,-2);
+	lua_setfield (L, -2, "__simgrid_host"); /* put the userdata as field of the table */
+	return 1;
 
+}
+
+/*****************************************************************************************
+							     * BYPASS XML SURF Methods *
+								 ***************************
+								 ***************************
+******************************************************************************************/
+#include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
+typedef struct t_host_attr
+{
+	//platform attribute
+	const char* id;
+	double power;
+	//deployment attribute
+	const char* function;
+	int args_nb;
+	const char ** args_list;
+}host_attr,*p_host_attr;
+
+typedef struct t_link_attr
+{
+	const char* id;
+	double bandwidth;
+	double latency;
+}link_attr,*p_link_attr;
+
+typedef struct t_route_attr
+{
+	const char *src_id;
+	const char *dest_id;
+	int links_nb;
+	const char **links_id;
+
+}route_attr,*p_route_attr;
+
+
+static int host_index = 0;
+static int link_index = 0;
+static int route_index = 0;
+
+static int max_host_number = 0;
+static int max_link_number = 0;
+static int max_route_number = 0;
+
+static p_host_attr* host_list;
+static p_link_attr* link_list;
+static p_route_attr* route_list;
+
+static int Host_set_number(lua_State *L)
+{
+	max_host_number = luaL_checkint(L,1);
+	host_list = malloc(sizeof(host_attr)*max_host_number);
+	return 0;
+}
+
+static int Link_set_number(lua_State *L)
+{
+	max_link_number = luaL_checkint(L,1);
+	link_list = malloc(sizeof(link_attr)*max_link_number);
+	return 0;
+}
+
+static int Route_set_number(lua_State *L)
+{
+	max_route_number = luaL_checkint(L,1);
+	route_list = malloc(sizeof(route_attr)*max_link_number);
+	return 0;
+}
+
+static int Host_new(lua_State *L) //(id,power)
+{
+	p_host_attr host = malloc(sizeof(host_attr));
+	host->id = luaL_checkstring(L,1);
+	host->power = luaL_checknumber(L,2);
+	if(host_index >= max_host_number)
+		ERROR1("max host number:%d reached !!!",max_host_number);
+	host_list[host_index] = host;
+	host_list[host_index]->function = NULL;
+	host_index++;
+	return 0;
+}
+
+static int Link_new(lua_State *L) // (id,bandwidth,latency)
+{
+
+	p_link_attr link = malloc(sizeof(link_attr));
+	link->id = luaL_checkstring(L,1);
+	link->bandwidth = luaL_checknumber(L,2);
+	link->latency = luaL_checknumber(L,3);
+	if(link_index >= max_link_number)
+		ERROR1("max link number: %d reached !!!",max_link_number);
+	link_list[link_index] = link;
+	link_index++;
+	return 0;
+}
+
+static int Route_new(lua_State *L) // (src_id,dest_id,links_number,link_table)
+{
+	int i=0;
+	p_route_attr route = malloc(sizeof(route_attr));
+	route->src_id = luaL_checkstring(L,1);
+	route->dest_id = luaL_checkstring(L,2);
+	route->links_nb = luaL_checkint(L,3);
+	route->links_id = malloc(sizeof(char*)*route->links_nb);
+	lua_pushnil(L);
+	while (lua_next(L,4) != 0) {
+		if(i >= route->links_nb)
+			ERROR1("Number of links should be less than %d",route->links_nb+1);
+		route->links_id[i] = lua_tostring(L, -1);
+	    DEBUG2("index = %f , Link_id = %s \n",lua_tonumber(L, -2),lua_tostring(L, -1));
+	    i++;
+	    lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
+	//add route to platform's route list
+	if(route_index >= max_route_number)
+			ERROR1("max route number: %d reached !!!",max_route_number);
+	route_list[route_index] = route;
+	route_index++;
+	return 0;
+}
+
+static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
+{
+	// look for the index of host in host_list
+	const char *host_id = luaL_checkstring(L,1);
+	int i;
+	for(i=0;i< host_index;i++)
+	{
+		if(host_list[i]->id == host_id)
+		{
+			host_list[i]->function = luaL_checkstring(L,2);
+			host_list[i]->args_nb = luaL_checkint(L,3);
+			host_list[i]->args_list = malloc(sizeof(char*)*host_list[i]->args_nb);
+			// fill the args list
+			lua_pushnil(L);
+			int j = 0;
+			while (lua_next(L,4) != 0) {
+					if(j >= host_list[i]->args_nb)
+						ERROR1("Number of args should be less than %d",host_list[i]->args_nb+1);
+					host_list[i]->args_list[j] = lua_tostring(L, -1);
+				    DEBUG2("index = %f , Arg_id = %s \n",lua_tonumber(L, -2),lua_tostring(L, -1));
+				    j++;
+				    lua_pop(L, 1);
+				}
+			lua_pop(L, 1);
+			return 0;
+		}
+	}
+	ERROR1("Host : %s Not Fount !!",host_id);
+	return 1;
+}
+
+
+
+/*
+ * surf parse bypass platform
+ */
+static int surf_parse_bypass_platform()
+{
+	static int AX_ptr = 0;
+	static int surfxml_bufferstack_size = 2048;
+	  /* FIXME allocating memory for the buffer, I think 2kB should be enough */
+	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
+	  /* <platform> */
+	SURFXML_BUFFER_SET(platform_version, "2");
+	SURFXML_START_TAG(platform);
+	char buffer[22];
+	int i;
+
+	// Add Host
+	for(i=0;i<host_index;i++)
+	{
+		SURFXML_BUFFER_SET(host_id,host_list[i]->id);
+		sprintf(buffer, "%f", host_list[i]->power);
+		SURFXML_BUFFER_SET(host_power,buffer);
+		SURFXML_BUFFER_SET(host_availability, "1.0");
+		SURFXML_BUFFER_SET(host_availability_file, "");
+		A_surfxml_host_state = A_surfxml_host_state_ON;
+		SURFXML_BUFFER_SET(host_state_file, "");
+		SURFXML_BUFFER_SET(host_interference_send, "1.0");
+		SURFXML_BUFFER_SET(host_interference_recv, "1.0");
+		SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
+		SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
+		SURFXML_START_TAG(host);
+		SURFXML_END_TAG(host);
+	}
+
+	//add Host
+	for (i = 0;i<link_index;i++)
+	{
+		SURFXML_BUFFER_SET(link_id,link_list[i]->id);
+		sprintf(buffer,"%f",link_list[i]->bandwidth);
+		SURFXML_BUFFER_SET(link_bandwidth,buffer);
+		SURFXML_BUFFER_SET(link_bandwidth_file, "");
+		sprintf(buffer,"%f",link_list[i]->latency);
+		SURFXML_BUFFER_SET(link_latency,buffer);
+		SURFXML_BUFFER_SET(link_latency_file, "");
+		A_surfxml_link_state = A_surfxml_link_state_ON;
+		SURFXML_BUFFER_SET(link_state_file, "");
+		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+		SURFXML_START_TAG(link);
+		SURFXML_END_TAG(link);
+	}
+
+	// add route
+
+	for (i = 0;i<route_index;i++)
+	{
+		SURFXML_BUFFER_SET(route_src,route_list[i]->src_id);
+		SURFXML_BUFFER_SET(route_dst,route_list[i]->dest_id);
+		SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
+		SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
+		SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
+		SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
+		SURFXML_START_TAG(route);
+		int j;
+
+		for(j=0; j < route_list[i]->links_nb;j++)
+		{
+			SURFXML_BUFFER_SET(link_c_ctn_id,route_list[i]->links_id[j]);
+			SURFXML_START_TAG(link_c_ctn);
+			SURFXML_END_TAG(link_c_ctn);
+		}
+
+		SURFXML_END_TAG(route);
+	}
+	/* </platform> */
+
+	SURFXML_END_TAG(platform);
+	free(surfxml_bufferstack);
+	return 0; // must return 0 ?!!
+
+}
+
+/*
+ * surf parse bypass application
+ */
+static int surf_parse_bypass_application()
+{
+	  int i;
+	  static int AX_ptr;
+	  static int surfxml_bufferstack_size = 2048;
+	  /* FIXME ( should be manual )allocating memory to the buffer, I think 2MB should be enough */
+	  surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
+	  /* <platform> */
+
+	  SURFXML_BUFFER_SET(platform_version, "2");
+
+	  SURFXML_START_TAG(platform);
+
+	  for(i=0 ; i< host_index ;i++)
+	  {
+		  if(host_list[i]->function)
+		  {
+			  SURFXML_BUFFER_SET(process_host, host_list[i]->id);
+			  SURFXML_BUFFER_SET(process_function, host_list[i]->function);
+			  SURFXML_BUFFER_SET(process_start_time, "-1.0");
+			  SURFXML_BUFFER_SET(process_kill_time, "-1.0");
+			  SURFXML_START_TAG(process);
+
+			  //args
+			  int j;
+			  for(j=0 ;j<host_list[i]->args_nb;j++)
+			  {
+				  SURFXML_BUFFER_SET(argument_value, host_list[i]->args_list[j]);
+				  SURFXML_START_TAG(argument);
+				  SURFXML_END_TAG(argument);
+			  }
+			  SURFXML_END_TAG(process);
+		  }
+
+	  }
+	  /* </platform> */
+	  SURFXML_END_TAG(platform);
+	  free(surfxml_bufferstack);
+	  return 0;
+}
+
+// Free Allocated Memory
+static void clean_attr()
+{
+	// free hosts
+    int i;
+    for(i = 0;i<host_index;i++)
+        free(host_list[i]->args_list);
+
+	free(host_list);
+    free(link_list);
+
+    for(i=0;i<route_index;i++)
+		free(route_list[i]->links_id);
+
+    free(route_list);
+}
+//***********Register Methods *******************************************//
+/*
+ * Host Methods
+ */
 static const luaL_reg Host_methods[] = {
     {"getByName",   Host_get_by_name},
     {"name",  		Host_get_name},
     {"number",    	Host_number},
+    {"at",			Host_at},
+    // Bypass XML Methods
+    {"new",			Host_new},
+    {"setNumber",	Host_set_number},
+    {"setFunction",	Host_set_function},
     {0,0}
 };
 
@@ -305,8 +622,25 @@ static const luaL_reg Host_meta[] = {
 };
 
 /*
+ * Link Methods
+ */
+static const luaL_reg Link_methods[] = {
+    {"new",Link_new},
+    {"setNumber", Link_set_number },
+    {0,0}
+};
+/*
+ * Route Methods
+ */
+static const luaL_reg Route_methods[] ={
+   {"new",Route_new},
+   {"setNumber",Route_set_number}
+};
+
+/*
  * Environment related
  */
+
 extern lua_State *simgrid_lua_state;
 
 static int run_lua_code(int argc,char **argv) {
@@ -359,6 +693,7 @@ static int create_environment(lua_State *L) {
 
   return 0;
 }
+
 static int debug(lua_State *L) {
   const char *str = luaL_checkstring(L,1);
   DEBUG1("%s",str);
@@ -374,9 +709,30 @@ static int run(lua_State *L) {
   return 0;
 }
 static int clean(lua_State *L) {
+  clean_attr(); // in case of using "bypass xml" methods
   MSG_clean();
   return 0;
 }
+
+/*
+ * Bypass XML Pareser
+ */
+static int register_platform(lua_State *L)
+{
+	/* Tell Simgrid we dont wanna use its parser*/
+	surf_parse = surf_parse_bypass_platform;
+	MSG_create_environment(NULL);
+	return 0;
+}
+
+static int register_application(lua_State *L)
+{
+	 MSG_function_register_default(run_lua_code);
+	 surf_parse = surf_parse_bypass_application;
+	 MSG_launch_application(NULL);
+	 return 0;
+}
+
 static const luaL_Reg simgrid_funcs[] = {
     { "create_environment", create_environment},
     { "launch_application", launch_application},
@@ -387,6 +743,9 @@ static const luaL_Reg simgrid_funcs[] = {
     /* short names */
     { "platform", create_environment},
     { "application", launch_application},
+    /* methods to bypass XML parser*/
+    { "register_platform",register_platform},
+    { "register_application",register_application},
     { NULL, NULL }
 };
 
@@ -457,8 +816,17 @@ int luaopen_simgrid(lua_State* L) {
   lua_rawset(L,-3);
   lua_pop(L,1);
 
+  /* register the links methods to lua*/
+  luaL_openlib(L,LINK_MODULE_NAME,Link_methods,0);
+  luaL_newmetatable(L,LINK_MODULE_NAME);
+  lua_pop(L,1);
+
+  /*register the routes methods to lua*/
+  luaL_openlib(L,ROUTE_MODULE_NAME,Route_methods,0);
+  luaL_newmetatable(L,LINK_MODULE_NAME);
+  lua_pop(L,1);
+
   /* Keep the context mechanism informed of our lua world today */
   simgrid_lua_state = L;
-
   return 1;
 }
