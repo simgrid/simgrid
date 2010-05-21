@@ -476,12 +476,7 @@ smx_comm_t SIMIX_network_isend(smx_rdv_t rdv, double task_size, double rate,
 {
   smx_comm_t comm;
 
-  /* If running in model-checking mode then intercept the communication action. 
-   * There can be two situations, this is a replay (back-track process) so no
-   * transition needs to be created, or we are expanding a new state and in 
-   * consecuence a transition needs to be created and added to the set of
-   * transitions associated to the current state.
-   */
+  /*If running in model-checking mode then intercept the communication action*/
   if (_surf_do_model_check)
     MC_trans_intercept_isend(rdv);
   
@@ -510,12 +505,7 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
 {
   smx_comm_t comm;
 
-  /* If running in model-checking mode then intercept the communication action. 
-   * There can be two situations, this is a replay (back-track process) so no
-   * transition needs to be created, or we are expanding a new state and in 
-   * consecuence a transition needs to be created and added to the set of
-   * transitions associated to the current state.
-   */
+  /*If running in model-checking mode then intercept the communication action*/
   if (_surf_do_model_check)
     MC_trans_intercept_irecv(rdv);
   
@@ -541,12 +531,7 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
 /** @brief blocks until the communication terminates or the timeout occurs */
 XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout)
 {
-  /* If running in model-checking mode then intercept the communication action. 
-   * There can be two situations, this is a replay (back-track process) so no
-   * transition needs to be created, or we are expanding a new state and in 
-   * consecuence a transition needs to be created and added to the set of
-   * transitions associated to the current state.
-   */
+  /*If running in model-checking mode then intercept the communication action*/
   if (_surf_do_model_check)
     MC_trans_intercept_wait(comm);
   
@@ -557,12 +542,7 @@ XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout)
 /** @Returns whether the (asynchronous) communication is done yet or not */
 XBT_INLINE int SIMIX_network_test(smx_comm_t comm)
 {
-  /* If running in model-checking mode then intercept the communication action. 
-   * There can be two situations, this is a replay (back-track process) so no
-   * transition needs to be created, or we are expanding a new state and in 
-   * consecuence a transition needs to be created and added to the set of
-   * transitions associated to the current state.
-   */
+  /*If running in model-checking mode then intercept the communication action*/
   if (_surf_do_model_check)
     MC_trans_intercept_test(comm);
 
@@ -585,12 +565,7 @@ unsigned int SIMIX_network_waitany(xbt_dynar_t comms)
   unsigned int cursor, found_comm=-1;
   smx_comm_t comm,comm_finished=NULL;
 
-  /* If running in model-checking mode then intercept the communication action. 
-   * There can be two situations, this is a replay (back-track process) so no
-   * transition needs to be created, or we are expanding a new state and in 
-   * consecuence a transition needs to be created and added to the set of
-   * transitions associated to the current state.
-   */
+  /*If running in model-checking mode then intercept the communication action*/
   if (_surf_do_model_check)
     MC_trans_intercept_waitany(comms);
     

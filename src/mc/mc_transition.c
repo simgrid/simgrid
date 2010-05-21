@@ -80,6 +80,16 @@ mc_transition_t MC_trans_random_new(int min, int max)
   return trans;
 }
 
+/**
+ * \brief Deletes a transition
+ * \param trans The transition to be deleted
+ */
+void MC_transition_delete(mc_transition_t trans)
+{
+  xbt_free(trans->name);
+  xbt_free(trans);
+}
+
 /************************** Interception Functions ****************************/
 /* These functions intercept all the actions relevant to the model-checking
  * process, the only difference between them is the type of transition they
@@ -212,28 +222,38 @@ void MC_trans_intercept_random(int min, int max)
   SIMIX_process_yield();
 }
 
-/**
- * \brief Deletes a transition
- * \param trans The transition to be deleted
- */
-void MC_transition_delete(mc_transition_t trans)
-{
-  xbt_free(trans->name);
-  xbt_free(trans);
-}
-
 /* Compute the subset of enabled transitions of the transition set */
 void MC_trans_compute_enabled(xbt_setset_set_t enabled, xbt_setset_set_t transitions)
 {
+  unsigned int index = 0;
+  smx_comm_t comm = NULL;
   mc_transition_t trans = NULL;
   xbt_setset_cursor_t cursor = NULL;
-  /* Add all the transitions to the enabled set and then remove the disabled ones */
-  xbt_setset_add(enabled, transitions); 
   xbt_setset_foreach(transitions, cursor, trans){
-    if(trans->type == mc_wait
-       && (trans->wait.comm->src_proc == NULL || trans->wait.comm->dst_proc == NULL)){
-      xbt_setset_set_remove(enabled, trans);
-    }
+    switch(trans->type){
+      /* Wait transitions are enabled only if the communication has both a
+         sender and receiver */
+      case mc_wait:
+        if(trans->wait.comm->src_proc && trans->wait.comm->dst_proc)
+          xbt_setset_set_insert(enabled, trans);
+        break;
+
+      /* WaitAny transitions are enabled if any of it's communications has both
+         a sender and a receiver */
+      case mc_waitany:
+        xbt_dynar_foreach(trans->waitany.comms, index, comm){
+          if(comm->src_proc && comm->dst_proc){
+            xbt_setset_set_insert(enabled, trans);
+            break;
+          }
+        }
+        break;
+
+      /* The rest of the transitions cannot be disabled */
+      default:
+        xbt_setset_set_insert(enabled, trans);
+        break;
+    } 
   }
 }
 
