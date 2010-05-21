@@ -68,8 +68,8 @@ src/simgrid_units_main.c
 *_unit.c
 src/supernovae_*.c
 
-buildtools/Cmake/src/tmp_gras_config.h.in
-buildtools/Cmake/src/tmp_tracing_config.h.in
+buildtools/Cmake/tmp_gras_config.h.in
+buildtools/Cmake/tmp_tracing_config.h.in
 make_simgrid_java.sh
 
 testgraph.dot

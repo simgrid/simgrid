@@ -1,4 +1,4 @@
-// <root>/buildtools/Cmake/src/c_gras_config.h.in is user-written.
+// <root>/buildtools/Cmake/gras_config.h.in is user-written.
 // With Cmake it creates <root>/src/gras_config.h
 
 /* Set to true if enable_model-checking is true */

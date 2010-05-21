@@ -344,9 +344,6 @@ set(MC_SRC
 
 
 set(install_HEADERS
-include/gras.h 
-include/xbt.h
-include/simgrid_config.h
 include/xbt/misc.h
 include/xbt/sysdep.h
 include/xbt/virtu.h
@@ -399,6 +396,9 @@ include/amok/peermanagement.h
 include/amok/bandwidth.h
 include/instr/instr.h
 include/instr/tracing_config.h
+include/simgrid_config.h
+include/gras.h 
+include/xbt.h
 )
 
 set(TEST_UNITS
@@ -726,7 +726,6 @@ set(source_to_pack
 	${txt_files}
 	${TEST_CFILES}
 	${EXTRA_DIST}
-	
 	CMakeLists.txt
 	buildtools/Cmake/CTestConfig.cmake
 	buildtools/Cmake/CompleteInFiles.cmake
@@ -742,7 +741,6 @@ set(source_to_pack
 	buildtools/Cmake/Supernovae.cmake
 	buildtools/Cmake/AddTests.cmake
 	buildtools/Cmake/memcheck_tests.cmake
-	# FIXME: these should live in src/ and the content of src in root of Cmake/ maybe
 	buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
 	buildtools/Cmake/test_prog/prog_getline.c
 	buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
@@ -758,10 +756,8 @@ set(source_to_pack
 	buildtools/Cmake/test_prog/prog_stacksetup.c
 	buildtools/Cmake/test_prog/prog_va_copy.c
 	buildtools/Cmake/test_prog/prog_vsnprintf.c
-	# FIXME: these are badly named and placed
 	buildtools/Cmake/gras_config.h.in
 	buildtools/Cmake/tracing_config.h.in
-	
 	AUTHORS
 	ChangeLog
 	COPYING
@@ -810,19 +806,3 @@ set(source_to_pack
 	src/bindings/rubyDag/rb_simdag.c
 	src/bindings/rubyDag/simdag.rb
 )
-#set(script_to_install
-#	src/smpi/smpicc
-#	src/smpi/smpirun
-#	tools/MSG_visualization/colorize.pl
-#)
-#	tools/sg_unit_extractor.pl
-#	tools/doxygen/index_create.pl
-#	tools/doxygen/toc_create.pl
-#	tools/doxygen/index_php.pl
-#	tools/doxygen/doxygen_postprocesser.pl
-#	tools/doxygen/bibtex2html_table_count.pl
-#	tools/doxygen/bibtex2html_postprocessor.pl
-#	tools/doxygen/xbt_log_extract_hierarchy.pl
-#	tools/MSG_visualization/trace2fig.pl
-
-#message("\n\ntesh:\n${txt_files}")

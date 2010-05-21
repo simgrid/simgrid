@@ -1,7 +1,7 @@
 ### Make Libs
 
 if(enable_supernovae AND NOT WIN32)
-	include(${PROJECT_DIRECTORY}/buildtools/Cmake/src/CMakeSupernovae.txt)
+	include(${PROJECT_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
 else(enable_supernovae AND NOT WIN32)	
 	add_library(simgrid SHARED ${simgrid_sources})
 	add_library(simgrid_static STATIC ${simgrid_sources})

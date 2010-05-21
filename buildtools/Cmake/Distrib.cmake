@@ -5,7 +5,9 @@ set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
 #########################################
 	  
 # doc
-if(EXISTS ${PROJECT_DIRECTORY}/doc/html/)
+if(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
+	file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/doc/html/)
+endif(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
 	install(DIRECTORY "${PROJECT_DIRECTORY}/doc/html/"
 	  DESTINATION "$ENV{DESTDIR}${prefix}/doc/simgrid/html/"
 	  PATTERN ".svn" EXCLUDE 
@@ -13,8 +15,6 @@ if(EXISTS ${PROJECT_DIRECTORY}/doc/html/)
 	  PATTERN "*.o" EXCLUDE
 	  PATTERN "*~" EXCLUDE
 	)
-endif(EXISTS ${PROJECT_DIRECTORY}/doc/html/)
-
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
                  ${CMAKE_BINARY_DIR}/bin/smpirun
@@ -60,18 +60,27 @@ if(HAVE_JAVA)
 endif(HAVE_JAVA)
 
 if(HAVE_LUA)
-  add_custom_target(absolute_liblink ALL
-    COMMAND ${CMAKE_COMMAND} -E create_symlink $ENV{DESTDIR}${prefix}/lib/libsimgrid.so ${CMAKE_BINARY_DIR}/libsimgrid.so)
-  install(FILES ${CMAKE_BINARY_DIR}/libsimgrid.so
-          DESTINATION $ENV{DESTDIR}${prefix}/lib/lua/5.1
-	  RENAME simgrid.so)
+	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/lua/5.1")
+	add_custom_target(lua_simgrid ALL
+  		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.so ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.so
+		)
+	install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.so
+		DESTINATION $ENV{DESTDIR}${prefix}/lib/lua/5.1
+		)
 endif(HAVE_LUA)
 
 if(HAVE_RUBY)
-  string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
-  install(FILES ${CMAKE_BINARY_DIR}/libsimgrid.so
-                ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid.rb
-          DESTINATION $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/)
+	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
+	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}")
+	add_custom_target(ruby_simgrid ALL
+	COMMAND ${CMAKE_COMMAND} -E create_symlink ../../../libsimgrid.so ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.so
+	)
+	install(FILES ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.so
+		DESTINATION $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/
+	)
+	install(FILES ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid.rb
+		DESTINATION $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/)
+
 endif(HAVE_RUBY)
 
 ###########################################
@@ -81,13 +90,15 @@ endif(HAVE_RUBY)
 add_custom_target(uninstall
 COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/doc/simgrid
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall doc ok"
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${uninstall_libs}
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/lib/libgras*
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/lib/libsimgrid*
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/lib/libsmpi*
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${uninstall_bins}
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/simgrid_colorizer.pl
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpicc
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpirun
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/tesh
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/simgrid-colorizer
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall bin ok"
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${uninstall_HEADERS}
-COMMAND ${CMAKE_COMMAND} -E	echo "uninstal include ok"
 COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/amok
 COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/gras
 COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/instr
@@ -96,20 +107,25 @@ COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/simdag
 COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/smpi
 COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/surf
 COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/xbt
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/mc
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/include/simgrid_config.h
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/include/gras.h 
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/include/xbt.h
+COMMAND ${CMAKE_COMMAND} -E	echo "uninstal include ok"
 WORKING_DIRECTORY "${prefix}"
 )
 
 if(HAVE_JAVA)
 	add_custom_command(TARGET uninstall
 	COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/share/simgrid.jar
-	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding java"
+	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding java ok"
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)	
 endif(HAVE_JAVA)
 
 if(HAVE_LUA)
 	add_custom_command(TARGET uninstall
-	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding lua"
+	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding lua ok"
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/lua/5.1/simgrid.so	
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
@@ -118,7 +134,7 @@ endif(HAVE_LUA)
 if(HAVE_RUBY)
 	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
 	add_custom_command(TARGET uninstall
-	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding ruby"
+	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding ruby ok"
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/ruby/${install_link_ruby}/libsimgrid.so
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/ruby/${install_link_ruby}/simgrid.rb
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
@@ -133,11 +149,11 @@ add_custom_target(html
 COMMAND ${CMAKE_COMMAND} -E echo "Make the html doc"
 COMMAND ${CMAKE_COMMAND} -E echo "cmake -DBIBTEX2HTML=${BIBTEX2HTML} ./"
 COMMAND ${CMAKE_COMMAND} -DBIBTEX2HTML=${BIBTEX2HTML} ./
-COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeFiles
-COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/CMakeCache.txt
-COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/cmake_install.cmake
-COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc/Makefile
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/src/doc"
+COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/CMakeFiles
+COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/CMakeCache.txt
+COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/cmake_install.cmake
+COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/Makefile
+WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/doc"
 )
 
 ################################################################

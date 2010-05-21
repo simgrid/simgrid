@@ -734,7 +734,7 @@ add_executable(get_sender get_sender.c)					#add_executable(<name_of_target> <sr
 target_link_libraries(get_sender simgrid m pthread -fprofile-arcs) 	#target_link_libraries(<name_of_targe> <dependencies>)
 \endverbatim
 
-Then you have to modified <project/directory>/buildtools/Cmake/src/CMakeMakeExeLib.txt and add 
+Then you have to modified <project/directory>/buildtools/Cmake/CMakeMakeExeLib.txt and add 
 this line :
 \verbatim
 add_subdirectory(${PROJECT_DIRECTORY}/<path_where_is_CMakeList.txt>)
@@ -742,7 +742,7 @@ add_subdirectory(${PROJECT_DIRECTORY}/<path_where_is_CMakeList.txt>)
 
 \subsubsection faq_cmakehowto2 Delete/add sources to lib.
 
-If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/src/CMakeDefinePackages.txt
+If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/CMakeDefinePackages.txt
 
 \verbatim
 set(JMSG_JAVA_SRC
@@ -763,7 +763,7 @@ set(JMSG_JAVA_SRC
 
 \subsubsection faq_cmakehowto3 Add test
 
-If you want modified, add or delete tests you have to edit <project/directory>/buildtools/Cmake/src/CMakeTest.txt 
+If you want modified, add or delete tests you have to edit <project/directory>/buildtools/Cmake/CMakeTest.txt 
 with this function : ADD_TEST(<name> <bin> <ARGS>)
 
 \verbatim
@@ -832,18 +832,18 @@ Here is a list of files involved into cmake build (relative to project directory
 
 Cmake sources:
 	./doc/CMakeLists.txt
-	./buildtools/Cmake/src/CMakeCompleteInFiles.txt
-	./buildtools/Cmake/src/CMakeDocs.txt
-	./buildtools/Cmake/src/CMakeMakeExeLib.txt
-	./buildtools/Cmake/src/CMakePrintArgs.txt
-	./buildtools/Cmake/src/CMakeDefinePackages.txt
-	./buildtools/Cmake/src/CMakeFlags.txt
-	./buildtools/Cmake/src/CMakeSupernovae.txt
-	./buildtools/Cmake/src/CMakeDistrib.txt
-	./buildtools/Cmake/src/CMakeMaintainerMode.txt
-	./buildtools/Cmake/src/CMakeOption.txt
-	./buildtools/Cmake/src/CMakeTest.txt
-	./buildtools/Cmake/src/CTestConfig.cmake
+	./buildtools/Cmake/CMakeCompleteInFiles.txt
+	./buildtools/Cmake/CMakeDocs.txt
+	./buildtools/Cmake/CMakeMakeExeLib.txt
+	./buildtools/Cmake/CMakePrintArgs.txt
+	./buildtools/Cmake/CMakeDefinePackages.txt
+	./buildtools/Cmake/CMakeFlags.txt
+	./buildtools/Cmake/CMakeSupernovae.txt
+	./buildtools/Cmake/CMakeDistrib.txt
+	./buildtools/Cmake/CMakeMaintainerMode.txt
+	./buildtools/Cmake/CMakeOption.txt
+	./buildtools/Cmake/CMakeTest.txt
+	./buildtools/Cmake/CTestConfig.cmake
 
 Test files for define properties :
 	./buildtools/Cmake/prog_test/prog_GRAS_ARCH.c
