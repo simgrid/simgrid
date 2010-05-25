@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 my($arg)="";
-my($val_path)="/usr/bin"; #By default
 my($count)=0;
 
 while($count!=$#ARGV+1)
@@ -25,6 +24,6 @@ while($count!=$#ARGV+1)
 
 #print "COMMAND : $bin $option $cd $path\n";
 #print "cd $path\n";
-#print "$val_path\/valgrind --trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no $bin $option\n";
-print "$val_path\/valgrind $arg\n\n";
-system "$val_path\/valgrind $arg";
+#print "valgrind --trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no $bin $option\n";
+print "valgrind $arg\n\n";
+system "valgrind $arg";
