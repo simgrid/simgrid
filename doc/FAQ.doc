@@ -364,10 +364,25 @@ CMake needs some prerequists like :
   \li ccmake for graphical used of CMake
   \li cmake <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
 
-\subsubsection faq_intro4 Cmake vs Autotools...
-
-TODO
-
+For windows only : 
+  \li Dev-C++ <a href="http://sourceforge.net/projects/dev-cpp/">(download page)</a>
+  \li Visual C++ 2010 Express <a href="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">(download page)</a>
+  \li cmake <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
+  \li Set CC, CXX, INCLUDE, LIB and RC to environment variables.
+\verbatim
+for example 
+	CC	C:\Dev-Cpp\bin\gcc
+	CXX	C:\Dev-Cpp\bin\c++
+	INCLUDE C:\Dev-Cpp\include
+	LIB 	C:\Dev-Cpp\lib
+	RC	C:\Program Files\Microsoft SDKs\Windows\v7.OA\bin\RC
+\endverbatim
+  \li nmake (embedded with Visual C++)
+  \li Add to environment variable "Path" the path where to find nmake executable.
+\verbatim
+for example
+	Path	......;C\Microsoft\Visual Studio10\VC\bin
+\endverbatim  
 \subsection faq_cmakeoption Cmake options
 
 \subsubsection faq_cmakeoption1 Liste of options
@@ -387,7 +402,7 @@ TODO
 		enable_tracing 				ON/OFF or TRUE/FALSE or 1/0
 		enable_coverage 			ON/OFF or TRUE/FALSE or 1/0
 		enable_memcheck 			ON/OFF or TRUE/FALSE or 1/0 
-		enable_print_message			ON/OFF or TRUE/FALSE or 1/0
+		enable_model-checking			ON/OFF or TRUE/FALSE or 1/0
 
 		gtnets_path				<path_to_gtnets_directory>
 		prefix					<path_to_install_directory>
@@ -454,7 +469,7 @@ src/gras/DataDesc/ddt_parse.yy.c
 
   \li enable_memcheck : When set to true this option enable tests for memcheck.
 
-  \li enable_print_message : This option when enable permits to see variables from gras_config.h
+  \li enable_model-checking : Enable the model checking when set to true.
 
   \li gtnets_path : Path to gtnets install directory (ex /usr)
 
@@ -481,7 +496,7 @@ enable_supernovae		off
 enable_tracing			off
 enable_coverage 		off
 enable_memcheck 		off
-enable_print_message		off
+enable_model-checking		off
 
 gtnets_path			null
 prefix				null
@@ -510,18 +525,41 @@ make
 \endverbatim
 Then follow instructions.
 
+\subsubsection faq_cmakecompilation2bis Build out of source.
+
+As cmake generate many files used for compilation, we recommand to make a build directory.
+For examples you can make those command :
+
+\verbatim
+"navarrop@caraja:~/Developments$ cd simgrid/"
+"navarrop@caraja:~/Developments/simgrid$ mkdir build_directory"
+"navarrop@caraja:~/Developments/simgrid$ cd build_directory/"
+"navarrop@caraja:~/Developments/simgrid/build_directory$ cmake ../"
+"navarrop@caraja:~/Developments/simgrid/build_directory$ make"
+\endverbatim
+
+Or complety out of sources :
+
+\verbatim
+"navarrop@caraja:~/Developments$ mkdir build_dir"
+"navarrop@caraja:~/Developments$ cd build_dir/"
+"navarrop@caraja:~/Developments/build_dir$ cmake ../simgrid/"
+"navarrop@caraja:~/Developments/build_dir$ make"
+\endverbatim
+
+Those two kind of compilation permit to delete files created by compilation easier.
+
 \subsubsection faq_cmakecompilation3 Resume of command line
 
  \li CMake
 \verbatim
-cmake ./		configure the project
+cmake <path>		configure the project
 make			build all targets
 make VERBOSE=1		build all targets and print build command lines
-make check		execute command make test
-make test		test all targets and summarize
+make check		test all targets and summarize
 make dist		make the distrib
-make distcheck		check the dist (make + make dist + make test) 
-make install-simgrid 	install the project (doc/ lib/ include/)
+make distcheck		check the dist (make + make dist + make check) 
+make install 		install the project (doc/ lib/ include/)
 make uninstall		uninstall the project (doc/ lib/ include/)
 make clean		clean all targets
 make java-clean		clean files created by java option
@@ -704,7 +742,7 @@ Configuration of package `simgrid' (revision 7669) on arch (=4):
 \verbatim
 cmake -Denable_maintainer_mode=on -Dprefix=/home/navarrop/Bureau/install_simgrid ./
 make 
-make install-simgrid
+make install
 \endverbatim
 
 \subsubsection faq_cmakeinstall2 From a distrib
@@ -712,7 +750,7 @@ make install-simgrid
 \verbatim
 cmake -Dprefix=/home/navarrop/Bureau/install_simgrid ./
 make
-make install-simgrid
+make install
 \endverbatim
 
 \subsection faq_cmakehowto How to modified sources files for developers
@@ -832,36 +870,20 @@ Here is a list of files involved into cmake build (relative to project directory
 
 Cmake sources:
 	./doc/CMakeLists.txt
-	./buildtools/Cmake/CMakeCompleteInFiles.txt
-	./buildtools/Cmake/CMakeDocs.txt
-	./buildtools/Cmake/CMakeMakeExeLib.txt
-	./buildtools/Cmake/CMakePrintArgs.txt
-	./buildtools/Cmake/CMakeDefinePackages.txt
-	./buildtools/Cmake/CMakeFlags.txt
-	./buildtools/Cmake/CMakeSupernovae.txt
-	./buildtools/Cmake/CMakeDistrib.txt
-	./buildtools/Cmake/CMakeMaintainerMode.txt
-	./buildtools/Cmake/CMakeOption.txt
-	./buildtools/Cmake/CMakeTest.txt
+	./buildtools/Cmake/AddTests.cmake
+	./buildtools/Cmake/CompleteInFiles.cmake
 	./buildtools/Cmake/CTestConfig.cmake
-
-Test files for define properties :
-	./buildtools/Cmake/prog_test/prog_GRAS_ARCH.c
-	./buildtools/Cmake/prog_test/prog_max_size.c
-	./buildtools/Cmake/prog_test/prog_sem_init.c
-	./buildtools/Cmake/prog_test/prog_stackgrowth.c
-	./buildtools/Cmake/prog_test/prog_vsnprintf.c
-	./buildtools/Cmake/prog_test/prog_AC_CHECK_MCSC.c
-	./buildtools/Cmake/prog_test/prog_GRAS_CHECK_STRUCT_COMPACTION.c
-	./buildtools/Cmake/prog_test/prog_mutex_timedlock.c
-	./buildtools/Cmake/prog_test/prog_sem_timedwait.c
-	./buildtools/Cmake/prog_test/prog_stacksetup.c
-	./buildtools/Cmake/prog_test/prog_getline.c
-	./buildtools/Cmake/prog_test/prog_gtnets.cpp
-	./buildtools/Cmake/prog_test/prog_printf_null.c
-	./buildtools/Cmake/prog_test/prog_snprintf.c
-	./buildtools/Cmake/prog_test/prog_va_copy.c
-
+	./buildtools/Cmake/DefinePackages.cmake
+	./buildtools/Cmake/Distrib.cmake
+	./buildtools/Cmake/Flags.cmake
+	./buildtools/Cmake/GenerateDocs.cmake
+	./buildtools/Cmake/MaintainerMode.cmake
+	./buildtools/Cmake/MakeExeLib.cmake
+	./buildtools/Cmake/MakeJava.cmake
+	./buildtools/Cmake/Option.cmake
+	./buildtools/Cmake/PrintArgs.cmake
+	./buildtools/Cmake/Supernovae.cmake
+	
 CMakeLists for each binaries or examples:
 	./CMakeLists.txt
 	./src/CMakeLists.txt
