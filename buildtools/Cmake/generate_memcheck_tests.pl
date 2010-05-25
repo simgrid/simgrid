@@ -26,20 +26,25 @@ while(defined($line=<MAKETEST>)) {
 	last;
     }
     if($dump) {
-	if($line =~ /ADD_TEST/) {
-	    if($line =~ /ADD_TEST\(([\S]+)\s+.*\/tools\/tesh\/tesh\s*--cd\s*(\S+)\s+(.*)\)$/) {
+	if($line =~ /ADD_TEST/) 
+	{
+	    if($line =~ /ADD_TEST\(([\S]+)\s+.*\$\{CMAKE_BINARY_DIR\}\/bin\/tesh\s*--cd\s*(\S+)\s+(.*)\)$/) 
+	    {
 		my($name_test,$path,$tesh_file)=($1,$2,$3);
 		$path=~ s/\"//g;
 		my($complete_tesh_file)=$path."/".$tesh_file;
 		my($count)=0;
 		my($count_first)=0;
 		my($count_second)=0;
-		$complete_tesh_file =~ s/\${PROJECT_DIRECTORY}/$proj_dir/g;
+		$complete_tesh_file =~ s/\$\{CMAKE_BINARY_DIR\}/$proj_dir/g;
+		$complete_tesh_file =~ s/\$\{PROJECT_DIRECTORY\}/$proj_dir/g;
 		open TESH_FILE, $complete_tesh_file or die "Unable to open $complete_tesh_file $!\n";
 		my($l);
-		while(defined($l=<TESH_FILE>)) {
+		while(defined($l=<TESH_FILE>))
+		{
 		    chomp $l;
-		    if($l =~ /^\$ (.*)$/) {
+		    if($l =~ /^\$ (.*)$/) 
+		    {
 			my($command) = $1;
 			$command =~ s/\${srcdir:=.}/./g;
 			$command =~ s/\${EXEEXT:=}//g;
@@ -47,22 +52,29 @@ while(defined($line=<MAKETEST>)) {
 			$command =~ s/\$SG_TEST_ENV //g;
 			$command =~ s/\$SG_EXENV_TEST //g; 
 			$command =~ s/\$EXEEXT//g;
+			$command =~ s/\${EXEEXT}//g;
 			$command =~ s/\${srcdir}/\${PROJECT_DIRECTORY}\/src/g;
 			$command =~ s/ \$ARGS//g;
 			$command =~ s/ \$@ //g;	
+			$command =~ s/..\/..\/bin\/smpirun/\${CMAKE_BINARY_DIR\}\/bin\/smpirun/g;
 			print "ADD_TEST(memcheck-$name_test-$count $command --cd $path\/)\n";
 			#push @test_list, "memcheck-$name_test-$count";
 			$count++;
 		    }
-		    if($l =~ /^\& (.*)$/) {
+		    if($l =~ /^\& (.*)$/) 
+		    {
 			last;
 		    }
 		}
 		close(TESH_FILE);
-	    } else {
+	    } 
+	    else 
+	    {
 		next;
 	    }
-	} else {
+	} 
+	else 
+	{
 	    print $line."\n";
 	}
     }   

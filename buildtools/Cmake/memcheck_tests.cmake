@@ -143,11 +143,13 @@ ADD_TEST(memcheck-msg-masterslave_cpu_ti-3 masterslave/masterslave_bypass --log=
 
 IF(HAVE_TRACING)
 ADD_TEST(memcheck-tracing-ms-0 tracing/ms ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
-ADD_TEST(memcheck-tracing-ms-1 cat ./tracing/../simulation.trace --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-ms-1 cat ./tracing/../ms.trace --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-categories-0 tracing/categories ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-categories-1 cat ./tracing/../categories.trace --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-volume-0 tracing/volume ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-tasks-0 tracing/tasks ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-process-migration-0 tracing/procmig ./tracing/platform.xml ./tracing/procmig-deploy.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ENDIF(HAVE_TRACING)
-
 
 IF(${ARCH_32_BITS})
 ADD_TEST(memcheck-gras-ping-sg-32-0 ./ping_simulator ./../../msg/small_platform.xml ./ping.xml --cd ${PROJECT_DIRECTORY}/examples/gras/ping/)
@@ -176,11 +178,11 @@ ADD_TEST(memcheck-gras-properties-sg-0 ./properties_simulator ./../../platforms/
 
 # amok examples
 IF(${ARCH_32_BITS})
-ADD_TEST(memcheck-amok-bandwidth-sg-32-0 bandwidth/bandwidth_simulator${EXEEXT} ./../msg/small_platform.xml ./bandwidth/bandwidth.xml --cd ${PROJECT_DIRECTORY}/examples/amok/)
-ADD_TEST(memcheck-amok-saturate-sg-32-0 saturate/saturate_simulator${EXEEXT} ./../msg/small_platform.xml ./saturate/saturate.xml --cd ${PROJECT_DIRECTORY}/examples/amok/)
+ADD_TEST(memcheck-amok-bandwidth-sg-32-0 bandwidth/bandwidth_simulator ./../msg/small_platform.xml ./bandwidth/bandwidth.xml --cd ${PROJECT_DIRECTORY}/examples/amok/)
+ADD_TEST(memcheck-amok-saturate-sg-32-0 saturate/saturate_simulator ./../msg/small_platform.xml ./saturate/saturate.xml --cd ${PROJECT_DIRECTORY}/examples/amok/)
 ELSE(${ARCH_32_BITS})
-ADD_TEST(memcheck-amok-bandwidth-sg-64-0 bandwidth/bandwidth_simulator${EXEEXT} ./../msg/small_platform.xml ./bandwidth/bandwidth.xml --cd ${PROJECT_DIRECTORY}/examples/amok/)
-ADD_TEST(memcheck-amok-saturate-sg-64-0 saturate/saturate_simulator${EXEEXT} ./../msg/small_platform.xml ./saturate/saturate.xml --cd ${PROJECT_DIRECTORY}/examples/amok/)
+ADD_TEST(memcheck-amok-bandwidth-sg-64-0 bandwidth/bandwidth_simulator ./../msg/small_platform.xml ./bandwidth/bandwidth.xml --cd ${PROJECT_DIRECTORY}/examples/amok/)
+ADD_TEST(memcheck-amok-saturate-sg-64-0 saturate/saturate_simulator ./../msg/small_platform.xml ./saturate/saturate.xml --cd ${PROJECT_DIRECTORY}/examples/amok/)
 ENDIF(${ARCH_32_BITS})
 
 # simdag examples
@@ -189,13 +191,15 @@ ADD_TEST(memcheck-simdag-test_simdag2-0 ./sd_test2 ./2clusters.xml --cd ${PROJEC
 ADD_TEST(memcheck-simdag-test_prop-0 properties/sd_prop ./../platforms/prop.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
 ADD_TEST(memcheck-simdag-metaxml_test-0 metaxml/sd_meta ./../platforms/metaxml.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
 
+if(enable_smpi)
 # smpi examples
-ADD_TEST(memcheck-smpi-bcast-0 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 3 ./bcast -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
-ADD_TEST(memcheck-smpi-bcast-1 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 6 ./bcast -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
-ADD_TEST(memcheck-smpi-bcast-2 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 12 ./bcast -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
-ADD_TEST(memcheck-smpi-reduce-0 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 3 ./reduce -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
-ADD_TEST(memcheck-smpi-reduce-1 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 6 ./reduce -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
-ADD_TEST(memcheck-smpi-reduce-2 ../../src/smpi/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 12 ./reduce -q  --cd ${PROJECT_DIRECTORY}/examples/smpi/)
+ADD_TEST(memcheck-smpi-bcast-0 ${CMAKE_BINARY_DIR}/bin/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 3 ./bcast -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
+ADD_TEST(memcheck-smpi-bcast-1 ${CMAKE_BINARY_DIR}/bin/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 6 ./bcast -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
+ADD_TEST(memcheck-smpi-bcast-2 ${CMAKE_BINARY_DIR}/bin/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 12 ./bcast -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
+ADD_TEST(memcheck-smpi-reduce-0 ${CMAKE_BINARY_DIR}/bin/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 3 ./reduce -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
+ADD_TEST(memcheck-smpi-reduce-1 ${CMAKE_BINARY_DIR}/bin/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 6 ./reduce -q --cd ${PROJECT_DIRECTORY}/examples/smpi/)
+ADD_TEST(memcheck-smpi-reduce-2 ${CMAKE_BINARY_DIR}/bin/smpirun -map -hostfile ./hostfile -platform ./../msg/small_platform.xml -np 12 ./reduce -q  --cd ${PROJECT_DIRECTORY}/examples/smpi/)
+endif(enable_smpi)
 
 if(HAVE_GTNETS)
 ADD_TEST(memcheck-msg-gtnets-waxman-0 gtnets/gtnets gtnets/waxman-p.xml gtnets/waxman-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets --cd ${PROJECT_DIRECTORY}/examples/msg/)
@@ -217,4 +221,5 @@ ADD_TEST(memcheck-ruby-masterslave-0 ruby -I../../src/bindings/ruby MasterSlave.
 ADD_TEST(memcheck-ruby-ping_pong-0 ruby -I ../../src/bindings/ruby PingPong.rb --cd ${PROJECT_DIRECTORY}/examples/ruby/)
 ADD_TEST(memcheck-ruby-quicksort-0 ruby -I ../../src/bindings/ruby Quicksort.rb --cd ${PROJECT_DIRECTORY}/examples/ruby/)
 endif(HAVE_RUBY)
+
 endif(enable_memcheck)
