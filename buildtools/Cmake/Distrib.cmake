@@ -238,10 +238,15 @@ add_dependencies(distcheck dist-dir)
 ### Fill in the "make check" target ###
 #######################################
 
-add_custom_target(check
-COMMAND make test
-#WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
-)
+if(enable_memcheck)
+	add_custom_target(check
+	COMMAND ctest -D ExperimentalMemCheck
+	)
+else(enable_memcheck)
+	add_custom_target(check
+	COMMAND make test
+	)
+endif(enable_memcheck)
 
 #######################################
 ### Fill in the "make all-clean" target ###

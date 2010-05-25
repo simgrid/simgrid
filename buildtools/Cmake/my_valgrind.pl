@@ -11,11 +11,6 @@ while($count!=$#ARGV+1)
 		chdir ($ARGV[$count+1]);
 		$count++;
 	}
-	elsif($ARGV[$count] eq "--valgrind") {
-		print "valgrind_path $ARGV[$count+1]\n";
-		$val_path = $ARGV[$count+1];
-		$count++;
-	}
 	else{
 		$arg="$arg $ARGV[$count]";
 	}
