@@ -4,6 +4,22 @@ if(enable_smpi)
 	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpicc" OUTPUT_VARIABLE "OKITOKI")
 	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE "OKITOKI")
 endif(enable_smpi)
+
+if(enable_memcheck)
+	exec_program("valgrind --version " OUTPUT_VARIABLE "VALGRIND_VERSION")
+	if(VALGRIND_VERSION)
+		string(REGEX MATCH "[0-9].[0-9].[0-9]" NEW_VALGRIND_VERSION "${VALGRIND_VERSION}")
+		if(NEW_VALGRIND_VERSION)
+		else(NEW_VALGRIND_VERSION)
+			set(enable_memcheck false)
+			message("Command valgrind not found --> enable_memcheck autoset to false.")
+		endif(NEW_VALGRIND_VERSION)
+	else(VALGRIND_VERSION)
+		set(enable_memcheck false)
+		message("Command valgrind not found --> enable_memcheck autoset to false.")
+	endif(VALGRIND_VERSION)
+endif(enable_memcheck)
+
 ### For code coverage
 ### Set some variables
 SET(UPDATE_TYPE "svn")
