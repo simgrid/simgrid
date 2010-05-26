@@ -15,7 +15,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
 void MC_dpor_init()
 {
   mc_state_t initial_state = NULL;
-  mc_transition_t trans = NULL;
+  mc_transition_t trans, trans_tmp = NULL;
+  xbt_setset_cursor_t cursor = NULL;
   
   /* Create the initial state and push it into the exploration stack */
   MC_SET_RAW_MEM;
@@ -34,8 +35,13 @@ void MC_dpor_init()
 
   /* Fill the interleave set of the initial state with an enabled process */
   trans = xbt_setset_set_choose(initial_state->enabled_transitions);  
-  if(trans)
-    xbt_setset_set_insert(initial_state->interleave, trans);
+  if(trans){
+    DEBUG1("Choosing process %s for next interleave", trans->process->name);
+    xbt_setset_foreach(initial_state->enabled_transitions, cursor, trans_tmp){
+      if(trans_tmp->process == trans->process)
+        xbt_setset_set_insert(initial_state->interleave, trans_tmp);    
+    }
+  }
   MC_UNSET_RAW_MEM;
 
   /* Update Statistics */
@@ -70,10 +76,6 @@ void MC_dpor(void)
       DEBUG4("Exploration detph=%d (state=%p)(%d interleave) (%d enabled)", xbt_fifo_size(mc_stack),
         mc_current_state, xbt_setset_set_size(mc_current_state->interleave),
         xbt_setset_set_size(mc_current_state->enabled_transitions));
-
-      xbt_setset_foreach(mc_current_state->enabled_transitions, cursor, trans){
-        DEBUG1("\t %s", trans->name);
-      }
       
       /* Update statistics */
       mc_stats->visited_states++;
@@ -83,12 +85,10 @@ void MC_dpor(void)
          state, and create the data structures for the new expanded state in the
          exploration stack. */
       MC_SET_RAW_MEM;
-      trans = xbt_setset_set_choose(mc_current_state->interleave);
-      if(trans->type != mc_random){
-        xbt_setset_set_remove(mc_current_state->interleave, trans);
-        /* Add the transition in the done set of the current state */
-        xbt_setset_set_insert(mc_current_state->done, trans);
-      }
+      trans = xbt_setset_set_extract(mc_current_state->interleave);
+
+      /* Add the transition in the done set of the current state */
+      xbt_setset_set_insert(mc_current_state->done, trans);
       
       next_state = MC_state_new();
       xbt_fifo_unshift(mc_stack, next_state);
@@ -104,22 +104,12 @@ void MC_dpor(void)
       SIMIX_process_schedule(trans->process);
       MC_execute_surf_actions();        /* Do surf's related black magic */
       MC_schedule_enabled_processes();
-
-      if(trans->type == mc_random && trans->random.current_value < trans->random.max){
-        trans->random.current_value++;
-      }else{
-        //trans->random.current_value = trans->random.min;
-        xbt_setset_set_remove(mc_current_state->interleave, trans);
-        xbt_setset_set_insert(mc_current_state->done, trans);
-      }
       
       /* Calculate the enabled transitions set of the next state */
       MC_SET_RAW_MEM;
 
       xbt_setset_foreach(mc_current_state->transitions, cursor, trans_tmp){
-        DEBUG1("Checking transition %s", trans_tmp->name);
         if(trans_tmp->process != trans->process){
-          DEBUG2("Inherit transition %p (%lu)", trans_tmp, trans_tmp->ID);
           xbt_setset_set_insert(next_state->transitions, trans_tmp);
         }
       }
@@ -129,7 +119,7 @@ void MC_dpor(void)
       /* Choose one transition to interleave from the enabled transition set */      
       trans = xbt_setset_set_choose(next_state->enabled_transitions);
       if(trans){
-        DEBUG1("Choosing transition %p", trans);
+        DEBUG1("Choosing process %s for next interleave", trans->process->name);
         xbt_setset_foreach(next_state->enabled_transitions, cursor, trans_tmp){
           if(trans_tmp->process == trans->process)
             xbt_setset_set_insert(next_state->interleave, trans_tmp);    

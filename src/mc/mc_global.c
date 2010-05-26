@@ -103,13 +103,8 @@ void MC_exit(int method)
 
 int MC_random(int min, int max)
 {
-  MC_trans_random_new(min,max);
-  SIMIX_process_yield();
-
-  if(!mc_replay_mode)
-    return mc_current_state->executed_transition->random.current_value;
-  else
-    return mc_current_state->executed_transition->random.current_value - 1;
+  MC_trans_intercept_random(min, max);
+  return mc_current_state->executed_transition->random.value;
 }
 
 /**

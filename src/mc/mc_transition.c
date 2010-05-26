@@ -69,17 +69,16 @@ mc_transition_t MC_trans_waitany_new(xbt_dynar_t comms)
 }
 
 /* Creates a new Random transition */
-mc_transition_t MC_trans_random_new(int min, int max)
+mc_transition_t MC_trans_random_new(int value)
 {
   mc_transition_t trans = xbt_new0(s_mc_transition_t, 1);
 
   trans->type = mc_random;
   trans->process = SIMIX_process_self();
-  trans->random.min = min;
-  trans->random.max = max;
-  trans->random.current_value = min;
-  trans->name = bprintf("[%s][%s] Random (%p)", trans->process->smx_host->name, 
-                        trans->process->name, trans);
+  trans->random.value = value;
+  trans->name = bprintf("[%s][%s] Random %d (%p)", trans->process->smx_host->name, 
+                        trans->process->name, value, trans);
+
   return trans;
 }
 
@@ -211,15 +210,18 @@ void MC_trans_intercept_waitany(xbt_dynar_t comms)
  */
 void MC_trans_intercept_random(int min, int max)
 {
+  int i;
   mc_transition_t trans=NULL;
   mc_state_t current_state = NULL;
   if(!mc_replay_mode){
     MC_SET_RAW_MEM;
-    trans = MC_trans_random_new(min, max);
-    current_state = (mc_state_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
-    xbt_setset_set_insert(current_state->created_transitions, trans);
-    xbt_setset_set_insert(current_state->transitions, trans);
+    current_state = (mc_state_t)
+        xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    for(i=min; i <= max; i++){    
+      trans = MC_trans_random_new(i);
+      xbt_setset_set_insert(current_state->created_transitions, trans);
+      xbt_setset_set_insert(current_state->transitions, trans);
+    }
     MC_UNSET_RAW_MEM;
   }
   SIMIX_process_yield();
@@ -276,6 +278,9 @@ int MC_transition_depend(mc_transition_t t1, mc_transition_t t2)
     return FALSE;
 
   if(t1->type != t2->type)
+    return FALSE;
+
+  if(t1->type == mc_random || t2->type == mc_random)
     return FALSE;
   
   if(t1->type == mc_isend && t2->type == mc_isend && t1->isend.rdv != t2->isend.rdv)

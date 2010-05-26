@@ -104,9 +104,7 @@ typedef struct s_mc_transition{
     } waitany;
 
     struct {
-      int min;
-      int max;
-      int current_value;
+      int value;
     } random;
   };
 } s_mc_transition_t;
@@ -116,7 +114,7 @@ mc_transition_t MC_trans_irecv_new(smx_rdv_t);
 mc_transition_t MC_trans_wait_new(smx_comm_t);
 mc_transition_t MC_trans_test_new(smx_comm_t);
 mc_transition_t MC_trans_waitany_new(xbt_dynar_t);
-mc_transition_t MC_trans_random_new(int, int);
+mc_transition_t MC_trans_random_new(int);
 void MC_transition_delete(mc_transition_t);
 int MC_transition_depend(mc_transition_t, mc_transition_t);
 void MC_trans_compute_enabled(xbt_setset_set_t, xbt_setset_set_t);
