@@ -49,7 +49,7 @@ void MC_dpor_init()
  */
 void MC_dpor(void)
 {
-  mc_transition_t trans = NULL;  
+  mc_transition_t trans, trans_tmp = NULL;  
   mc_state_t next_state = NULL;
   xbt_setset_cursor_t cursor = NULL;
   
@@ -84,7 +84,7 @@ void MC_dpor(void)
          exploration stack. */
       MC_SET_RAW_MEM;
       trans = xbt_setset_set_choose(mc_current_state->interleave);
-      if(!trans->type == mc_random){
+      if(trans->type != mc_random){
         xbt_setset_set_remove(mc_current_state->interleave, trans);
         /* Add the transition in the done set of the current state */
         xbt_setset_set_insert(mc_current_state->done, trans);
@@ -108,21 +108,33 @@ void MC_dpor(void)
       if(trans->type == mc_random && trans->random.current_value < trans->random.max){
         trans->random.current_value++;
       }else{
-        trans->random.current_value = trans->random.min;
+        //trans->random.current_value = trans->random.min;
         xbt_setset_set_remove(mc_current_state->interleave, trans);
         xbt_setset_set_insert(mc_current_state->done, trans);
       }
       
       /* Calculate the enabled transitions set of the next state */
       MC_SET_RAW_MEM;
-      xbt_setset_add(next_state->transitions, mc_current_state->transitions);
-      xbt_setset_set_remove(next_state->transitions, trans);
-      MC_trans_compute_enabled(next_state->enabled_transitions, next_state->transitions);
 
+      xbt_setset_foreach(mc_current_state->transitions, cursor, trans_tmp){
+        DEBUG1("Checking transition %s", trans_tmp->name);
+        if(trans_tmp->process != trans->process){
+          DEBUG2("Inherit transition %p (%lu)", trans_tmp, trans_tmp->ID);
+          xbt_setset_set_insert(next_state->transitions, trans_tmp);
+        }
+      }
+      
+      MC_trans_compute_enabled(next_state->enabled_transitions, next_state->transitions);
+      
       /* Choose one transition to interleave from the enabled transition set */      
       trans = xbt_setset_set_choose(next_state->enabled_transitions);
-      if(trans)
-        xbt_setset_set_insert(next_state->interleave, trans);
+      if(trans){
+        DEBUG1("Choosing transition %p", trans);
+        xbt_setset_foreach(next_state->enabled_transitions, cursor, trans_tmp){
+          if(trans_tmp->process == trans->process)
+            xbt_setset_set_insert(next_state->interleave, trans_tmp);    
+        }
+      }
       MC_UNSET_RAW_MEM;
 
       /* Update Statistics */
@@ -141,8 +153,14 @@ void MC_dpor(void)
         INFO0("**************************");
         INFO0("*** DEAD-LOCK DETECTED ***");
         INFO0("**************************");
+        INFO0("Locked transitions:");
+        xbt_setset_foreach(mc_current_state->transitions, cursor, trans){
+          INFO1("%s", trans->name);
+        }
+
         INFO0("Counter-example execution trace:");
         MC_dump_stack(mc_stack);
+        
         MC_print_statistics(mc_stats);
         xbt_abort();
       }
@@ -168,11 +186,17 @@ void MC_dpor(void)
         q = mc_current_state->executed_transition;
         xbt_fifo_foreach(mc_stack, item, state, mc_state_t){
           if(MC_transition_depend(q, state->executed_transition)){
-            DEBUG3("Dependence found at state %p (%p,%p)", state, state->executed_transition, q);
+            DEBUG3("Dependence found at state %p (%p,%p)", state, state->executed_transition, q); 
             xbt_setset_foreach(state->enabled_transitions, cursor, trans){
               if((trans->process == q->process) && !xbt_setset_set_belongs(state->done, trans)){
                 DEBUG2("Unexplored interleaving found at state %p (%p)", state, trans);
-                xbt_setset_set_insert(state->interleave, trans);
+
+                xbt_setset_foreach(state->enabled_transitions, cursor, trans){
+                  if(trans->process == q->process)
+                    xbt_setset_set_insert(state->interleave, trans);    
+                }
+                /* FIXME: hack to make it work*/
+                trans = q;
                 break;
               }
             }
