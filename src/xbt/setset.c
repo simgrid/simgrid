@@ -346,7 +346,7 @@ void xbt_setset_cursor_first(xbt_setset_set_t set, xbt_setset_cursor_t *cursor)
   for(i=0; i < set->size; i++){
     if(set->bitmap[i] != 0){
       for(k=0; k < BITS_INT; k++){
-        if(_is_bit_set(k,set->bitmap[i])){
+        if(_is_bit_set(k, set->bitmap[i])){
           (*cursor)->idx = i * BITS_INT + k;
           return; 
         }
@@ -371,17 +371,13 @@ int xbt_setset_cursor_get_data(xbt_setset_cursor_t cursor, void **data)
 /* Advance a cursor to the next element */
 void xbt_setset_cursor_next(xbt_setset_cursor_t cursor)
 {
- int i,k;
   cursor->idx++;
-  /* Traverse the set and point the cursor to the first element */
-  for(i = cursor->idx / BITS_INT; i < cursor->set->size; i++){
-    if(cursor->set->bitmap[i] != 0){
-      for(k = cursor->idx % BITS_INT; k < BITS_INT; k++){
-        if(_is_bit_set(k,cursor->set->bitmap[i])){
-          cursor->idx = i * BITS_INT + k;
-          return; 
-        }
-      }
+  while(cursor->idx < cursor->set->size * BITS_INT)
+  {
+    if(_is_bit_set(cursor->idx % BITS_INT, cursor->set->bitmap[cursor->idx / BITS_INT])){
+      return;
+    }else{
+      cursor->idx += cursor->set->bitmap[cursor->idx / BITS_INT] ? 1 : BITS_INT;
     }
   }
   cursor->idx = 0; 
@@ -404,11 +400,3 @@ void _unset_bit(unsigned int bit, unsigned int *bitmap)
 {
   bitmap[bit / BITS_INT] &= ~(0x1 << (bit % BITS_INT));
 }
-
-
-
-
-
-
-
-
