@@ -1,5 +1,8 @@
 #include "private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans, mc,
+				"Logging specific to MC transitions");
+
 /* Creates a new iSend transition */
 mc_transition_t MC_trans_isend_new(smx_rdv_t rdv)
 {
@@ -234,8 +237,10 @@ void MC_trans_compute_enabled(xbt_setset_set_t enabled, xbt_setset_set_t transit
       /* Wait transitions are enabled only if the communication has both a
          sender and receiver */
       case mc_wait:
-        if(trans->wait.comm->src_proc && trans->wait.comm->dst_proc)
+        if(trans->wait.comm->src_proc && trans->wait.comm->dst_proc){
           xbt_setset_set_insert(enabled, trans);
+          DEBUG1("Transition %p is enabled for next state", trans);
+        }
         break;
 
       /* WaitAny transitions are enabled if any of it's communications has both
@@ -244,6 +249,7 @@ void MC_trans_compute_enabled(xbt_setset_set_t enabled, xbt_setset_set_t transit
         xbt_dynar_foreach(trans->waitany.comms, index, comm){
           if(comm->src_proc && comm->dst_proc){
             xbt_setset_set_insert(enabled, trans);
+            DEBUG1("Transition %p is enabled for next state", trans);
             break;
           }
         }
@@ -252,6 +258,7 @@ void MC_trans_compute_enabled(xbt_setset_set_t enabled, xbt_setset_set_t transit
       /* The rest of the transitions cannot be disabled */
       default:
         xbt_setset_set_insert(enabled, trans);
+        DEBUG1("Transition %p is enabled for next state", trans);
         break;
     } 
   }
