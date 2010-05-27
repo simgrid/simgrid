@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 #include "setset_private.h"
 #include "xbt/sysdep.h"
 
@@ -336,21 +337,16 @@ void xbt_setset_intersect(xbt_setset_set_t set1, xbt_setset_set_t set2)
   return;
 }
 
-/* Get the cursor to point to the first element of a set */
 void xbt_setset_cursor_first(xbt_setset_set_t set, xbt_setset_cursor_t *cursor)
 {
+  int i;
   (*cursor) = xbt_new0(s_xbt_setset_cursor_t, 1);
   (*cursor)->set = set;
-  int i,k;
-  /* Traverse the set and point the cursor to the first element */
-  for(i=0; i < set->size; i++){
+ 
+  for(i = 0; i < set->size; i++){
     if(set->bitmap[i] != 0){
-      for(k=0; k < BITS_INT; k++){
-        if(_is_bit_set(k, set->bitmap[i])){
-          (*cursor)->idx = i * BITS_INT + k;
-          return; 
-        }
-      }
+      (*cursor)->idx = i * BITS_INT + ffs(set->bitmap[i]) - 1;
+      break; 
     }
   }
 }
@@ -371,13 +367,23 @@ int xbt_setset_cursor_get_data(xbt_setset_cursor_t cursor, void **data)
 /* Advance a cursor to the next element */
 void xbt_setset_cursor_next(xbt_setset_cursor_t cursor)
 {
+  unsigned int mask;
+  unsigned int data;
   cursor->idx++;
   while(cursor->idx < cursor->set->size * BITS_INT)
   {
-    if(_is_bit_set(cursor->idx % BITS_INT, cursor->set->bitmap[cursor->idx / BITS_INT])){
-      return;
+    if((data = cursor->set->bitmap[cursor->idx / BITS_INT])){
+      mask = 1 << cursor->idx % BITS_INT;
+      while(mask){
+        if(data & mask){
+          return;
+        }else{
+          cursor->idx++;
+          mask <<= 1;
+        }
+      }
     }else{
-      cursor->idx += cursor->set->bitmap[cursor->idx / BITS_INT] ? 1 : BITS_INT;
+      cursor->idx += BITS_INT;
     }
   }
   cursor->idx = 0; 
