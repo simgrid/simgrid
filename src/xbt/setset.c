@@ -40,8 +40,8 @@ void xbt_setset_destroy(xbt_setset_t setset)
   xbt_free(setset);
 }
 
-/* Add an element to the setset, this will assign to it an index */
-xbt_setset_elm_entry_t _xbt_setset_elm_add(xbt_setset_t setset, void *obj)
+/* Add an object to the setset, this will calculate its ID */
+void xbt_setset_elm_add(xbt_setset_t setset, void *obj)
 {
   xbt_setset_elm_entry_t new_entry = NULL;
   xbt_setset_elm_t e = (xbt_setset_elm_t)obj;
@@ -59,30 +59,22 @@ xbt_setset_elm_entry_t _xbt_setset_elm_add(xbt_setset_t setset, void *obj)
     new_entry = (xbt_setset_elm_entry_t)xbt_dynar_push_ptr(setset->elm_array);
     e->ID = xbt_dynar_length(setset->elm_array) - 1;    
   }
-  /* Initialize the new element data structure and add it to the hash */
-  new_entry->info.refcount = 0;
+
   new_entry->info.obj = e;
-  return new_entry;
+  return;
 }
 
-/* Remove from the setset the object stored at idx */
-void _xbt_setset_elm_remove(xbt_setset_t setset, unsigned long idx)
+/* Remove an object from the setset */
+void xbt_setset_elm_remove(xbt_setset_t setset, void *obj)
 {
-  xbt_setset_elm_entry_t e_entry = xbt_dynar_get_ptr(setset->elm_array, idx);
+  xbt_setset_elm_t e = (xbt_setset_elm_t)obj;
+  xbt_setset_elm_entry_t e_entry = xbt_dynar_get_ptr(setset->elm_array, e->ID);
   xbt_setset_elm_entry_t first_free = NULL;
 
-  /* Decrease the refcount and proceed only if it is 0 */
-  if(--e_entry->info.refcount > 0)
-    return;
-
-  /* Erase object ID */
-  /* FIXME: do not assume that the object still exists, it might be deallocated */
-  /*e_entry->info.obj->ID = 0;*/
-  
   /* Link the elm entry to the list of free ones */
   first_free = xbt_dynar_get_ptr(setset->elm_array, 0);
   e_entry->free.next = first_free->free.next;
-  first_free->free.next = idx;
+  first_free->free.next = e->ID;
 }
 
 /* Get the object associated to a given index */
@@ -91,13 +83,6 @@ void *_xbt_setset_idx_to_obj(xbt_setset_t setset, unsigned long idx)
 {
   xbt_setset_elm_entry_t e_entry = xbt_dynar_get_ptr(setset->elm_array, idx);
   return e_entry->info.obj;
-}
-
-/* Increase the refcount of an element */
-void _xbt_setset_elm_use(xbt_setset_t setset, unsigned long idx)
-{
-  xbt_setset_elm_entry_t e_entry = xbt_dynar_get_ptr(setset->elm_array, idx);
-  e_entry->info.refcount++;  
 }
 
 /**
@@ -109,7 +94,6 @@ xbt_setset_set_t xbt_setset_new_set(xbt_setset_t setset)
 {
   xbt_setset_set_t newset = xbt_new0(s_xbt_setset_set_t, 1);
   newset->setset = setset;
-  newset->elmcount = 0;
   newset->size = xbt_dynar_length(setset->elm_array) / BITS_INT + 1;
   newset->bitmap = xbt_new0(unsigned int, newset->size);
   xbt_fifo_unshift(setset->sets, newset);
@@ -122,7 +106,6 @@ xbt_setset_set_t xbt_setset_new_set(xbt_setset_t setset)
  */
 void xbt_setset_destroy_set(xbt_setset_set_t set)
 {
-  xbt_setset_set_reset(set);
   xbt_free(set->bitmap);
   xbt_fifo_remove(set->setset->sets, set);
   xbt_free(set);
@@ -140,7 +123,7 @@ void xbt_setset_set_insert(xbt_setset_set_t set, void* obj)
   xbt_setset_elm_t e = (xbt_setset_elm_t)obj;
 
   if(e->ID == 0)
-    _xbt_setset_elm_add(set->setset, e);
+    xbt_setset_elm_add(set->setset, e);
   
   /* Check if we need to expand the bitmap */
   if(set->size * BITS_INT - 1 < e->ID){
@@ -148,13 +131,9 @@ void xbt_setset_set_insert(xbt_setset_set_t set, void* obj)
     memset(&set->bitmap[set->size], 0, ((e->ID / BITS_INT + 1) - set->size) * sizeof(int));
     set->size = (e->ID / BITS_INT + 1);
   }
-  
-  if(!_is_bit_set(e->ID % BITS_INT, set->bitmap[e->ID / BITS_INT])){
-    set->elmcount++;
-    _xbt_setset_elm_use(set->setset, e->ID);
-    _set_bit(e->ID, set->bitmap);
-  }
 
+  _set_bit(e->ID, set->bitmap);
+  
   return;
 }
 
@@ -166,17 +145,11 @@ void xbt_setset_set_insert(xbt_setset_set_t set, void* obj)
 void xbt_setset_set_remove(xbt_setset_set_t set, void* obj)
 {
   xbt_setset_elm_t e = (xbt_setset_elm_t)obj;
-  if(e->ID != 0){
-    /* If the index of the object is between the bitmap then unset it, otherwise
-       do not do anything, because we already know it is not in the set */
-    if(set->size * BITS_INT >= e->ID){
-      if(_is_bit_set(e->ID % BITS_INT, set->bitmap[e->ID / BITS_INT])){
-        set->elmcount--;
-        _unset_bit(e->ID, set->bitmap);
-        _xbt_setset_elm_remove(set->setset, e->ID);
-      }
-    }
-  }
+  /* If the index of the object is between the bitmap then unset it, otherwise
+     do not do anything, because we already know it is not in the set */
+  if(e->ID != 0 && e->ID <= set->size * BITS_INT)
+    _unset_bit(e->ID, set->bitmap);
+
   return;
 }
 
@@ -186,18 +159,7 @@ void xbt_setset_set_remove(xbt_setset_set_t set, void* obj)
  */
 void xbt_setset_set_reset(xbt_setset_set_t set)
 {
-  int i,k;
-  /* Traverse the set and remove every element */
-  for(i=0; i < set->size; i++){
-    if(set->bitmap[i] != 0){
-      for(k=0; k < BITS_INT; k++){
-        if(_is_bit_set(k,set->bitmap[i])){
-          _xbt_setset_elm_remove(set->setset, i * BITS_INT + k);
-        }
-      }
-    }
-  }
-  set->elmcount = 0;
+  memset(set->bitmap, 0, set->size * sizeof(int));
 }
 
 /**
@@ -207,17 +169,12 @@ void xbt_setset_set_reset(xbt_setset_set_t set)
  */
 void *xbt_setset_set_choose(xbt_setset_set_t set)
 {
-  int i,k;
+  int i;
   /* Traverse the set and return the first element */
-  for(i=0; i < set->size; i++){
-    if(set->bitmap[i] != 0){
-      for(k=0; k < BITS_INT; k++){
-        if(_is_bit_set(k,set->bitmap[i])){
-          return _xbt_setset_idx_to_obj(set->setset, i * BITS_INT + k);
-        }
-      }
-    }
-  }
+  for(i = 0; i < set->size; i++)
+    if(set->bitmap[i] != 0)
+      return _xbt_setset_idx_to_obj(set->setset, 
+                                    i * BITS_INT + ffs(set->bitmap[i]) - 1);
   return NULL;
 }
 
@@ -253,7 +210,12 @@ int xbt_setset_set_belongs(xbt_setset_set_t set, void* obj)
 
 int xbt_setset_set_size(xbt_setset_set_t set)
 {
-  return set->elmcount;
+  int i, count = 0;
+  
+  for(i=0; i < set->size; i++)
+    count += bitcount(set->bitmap[i]);
+    
+  return count;
 }
 
 
@@ -265,25 +227,18 @@ int xbt_setset_set_size(xbt_setset_set_t set)
  */
 void xbt_setset_add(xbt_setset_set_t set1, xbt_setset_set_t set2)
 {
+  int i;
+
+  /* Increase the size of set1 if necessary */
   if(set1->size < set2->size){
     xbt_realloc(set1->bitmap, set2->size * sizeof(unsigned int));
     set1->size = set2->size;
   }
 
-  int i,k;
-  /* Traverse the second set and add every element that is not member of the
-     first set to it */
-  for(i=0; i < set2->size; i++){
-    if(set2->bitmap[i] != 0){
-      for(k=0; k < BITS_INT; k++){
-        if(_is_bit_set(k,set2->bitmap[i]) && !_is_bit_set(k, set1->bitmap[i])){
-          set1->elmcount++;
-          _xbt_setset_elm_use(set1->setset, i * BITS_INT + k);
-          _set_bit(i * BITS_INT + k, set1->bitmap);
-        }
-      }
-    }
-  }
+  for(i=0; i < set1->size; i++)
+    if(set2->bitmap[i] != 0)
+      set1->bitmap[i] |= set2->bitmap[i];
+
   return;
 }
 
@@ -295,20 +250,12 @@ void xbt_setset_add(xbt_setset_set_t set1, xbt_setset_set_t set2)
  */
 void xbt_setset_substract(xbt_setset_set_t set1, xbt_setset_set_t set2)
 {
-  int i,k;
-  /* Traverse the second set and remove every element that is member of it to
-     the first set */
-  for(i=0; i < min(set1->size,set2->size); i++){
-    if(set2->bitmap[i] != 0){
-      for(k=0; k < BITS_INT; k++){
-        if(_is_bit_set(k,set2->bitmap[i]) && _is_bit_set(k, set1->bitmap[i])){
-          set1->elmcount--;
-          _xbt_setset_elm_remove(set1->setset, i * BITS_INT + k);
-          _unset_bit(i * BITS_INT + k, set1->bitmap);
-        }
-      }
-    }
-  }
+  int i;
+
+  for(i=0; i < MIN(set1->size, set2->size); i++)
+    if(set2->bitmap[i] != 0)
+      set1->bitmap[i] ^= set2->bitmap[i];
+
   return;
 }
 
@@ -320,23 +267,16 @@ void xbt_setset_substract(xbt_setset_set_t set1, xbt_setset_set_t set2)
  */
 void xbt_setset_intersect(xbt_setset_set_t set1, xbt_setset_set_t set2)
 {
-  int i,k;
-  /* Traverse the first set and remove every element that is not member of the second set */
-  for(i=0; i < set1->size; i++){
-    if(set1->bitmap[i] != 0){
-      for(k=0; k < BITS_INT; k++){
-        if(_is_bit_set(k, set1->bitmap[i]) && 
-            (i >= set2->size || !_is_bit_set(k,set2->bitmap[i]))){
-          set1->elmcount--;
-          _xbt_setset_elm_remove(set1->setset, i * BITS_INT + k);
-          _unset_bit(i * BITS_INT + k, set1->bitmap);
-        }
-      }
-    }
-  }
+  int i;
+
+  for(i=0; i < MIN(set1->size, set2->size); i++)
+    if(set1->bitmap[i] && set2->bitmap[i])
+      set1->bitmap[i] &= set2->bitmap[i];
+
   return;
 }
 
+/* Get a cursor pointing to the first element of the set */
 void xbt_setset_cursor_first(xbt_setset_set_t set, xbt_setset_cursor_t *cursor)
 {
   int i;
@@ -370,11 +310,10 @@ void xbt_setset_cursor_next(xbt_setset_cursor_t cursor)
   unsigned int mask;
   unsigned int data;
   cursor->idx++;
-  while(cursor->idx < cursor->set->size * BITS_INT)
-  {
+  while(cursor->idx < cursor->set->size * BITS_INT){
     if((data = cursor->set->bitmap[cursor->idx / BITS_INT])){
       mask = 1 << cursor->idx % BITS_INT;
-      while(mask){
+      while(mask){    /* FIXME: mask will never be 0! */
         if(data & mask){
           return;
         }else{
@@ -405,4 +344,16 @@ void _set_bit(unsigned int bit, unsigned int *bitmap)
 void _unset_bit(unsigned int bit, unsigned int *bitmap)
 {
   bitmap[bit / BITS_INT] &= ~(0x1 << (bit % BITS_INT));
+}
+
+/**
+ * Bitcount function 
+ * taken from http://graphics.stanford.edu/~seander/bithacks.html 
+ * Note: it assumes 4 byte integers
+ */
+int bitcount(int v)
+{
+  v = v - ((v >> 1) & 0x55555555);                        // reuse input as temporary
+  v = (v & 0x33333333) + ((v >> 2) & 0x33333333);         // temp
+  return (((v + (v >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24;  // count
 }

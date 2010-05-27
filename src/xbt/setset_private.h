@@ -12,7 +12,6 @@ typedef struct s_xbt_setset_elm {
 typedef union u_xbt_setset_elm_entry {
   /* Information when the entry is being used */
   struct {
-    unsigned int refcount;    
     xbt_setset_elm_t obj;
   } info;
   /* Information when the entry is free */
@@ -23,7 +22,6 @@ typedef union u_xbt_setset_elm_entry {
 
 typedef struct s_xbt_setset_set {
   xbt_setset_t setset;         /* setset that contains this set */
-  unsigned int elmcount;       /* number of elements */
   unsigned int size;           /* in integers */
   unsigned int *bitmap;        /* the bit array */
 } s_xbt_setset_set_t;
@@ -40,14 +38,7 @@ typedef struct s_xbt_setset_cursor {
 
 /* Some internal functions */
 
-/* Add an object to the setset, this will calculate its index */
-xbt_setset_elm_entry_t _xbt_setset_elm_add(xbt_setset_t setset, void *obj);
-
-/* Remove from the setset the object stored at idx */
-void _xbt_setset_elm_remove(xbt_setset_t setset, unsigned long idx);
-
-/* Increase the refcount of an element */
-void _xbt_setset_elm_use(xbt_setset_t setset, unsigned long idx);
+int bitcount(int);
 
 /* Get the object associated to a given index */
 void *_xbt_setset_idx_to_obj(xbt_setset_t setset, unsigned long idx);

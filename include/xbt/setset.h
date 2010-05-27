@@ -17,6 +17,12 @@ xbt_setset_t xbt_setset_new(unsigned int size);
 /* Destructor */
 void xbt_setset_destroy(xbt_setset_t setset);
 
+/* Add an object to the setset, this will calculate its ID */
+void xbt_setset_elm_add(xbt_setset_t setset, void *obj);
+
+/* Remove an object from the setset */
+void xbt_setset_elm_remove(xbt_setset_t setset, void * obj);
+
 /* Create a new set in the setset */
 xbt_setset_set_t xbt_setset_new_set(xbt_setset_t setset);
 
