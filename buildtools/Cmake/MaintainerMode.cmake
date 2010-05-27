@@ -96,13 +96,16 @@ message("_______________________________________________________________________
 message("________________________________________________________________________________ SG_UNIT_EXTRACTOR")
 
 if(PERL_EXE)
+
 	message("   PERL : 	${PERL_EXE}\n")
-	exec_program("${CMAKE_COMMAND} -E  remove -f ${PROJECT_DIRECTORY}/src/simgrid_units_main.c")
+	exec_program("${CMAKE_COMMAND} -E  remove ${PROJECT_DIRECTORY}/src/simgrid_units_main.c")
+	exec_program("${CMAKE_COMMAND} -E  remove src/simgrid_units_main.c")
 		
 	foreach(file ${TEST_UNITS})
 		exec_program("${CMAKE_COMMAND} -E remove ${PROJECT_DIRECTORY}/src/${file}")
+		exec_program("${CMAKE_COMMAND} -E remove src/${file}")
 	endforeach(file ${TEST_UNITS})
-
+	
 	#$(TEST_UNITS): $(TEST_CFILES)
 	string(REPLACE ";" " " USE_TEST_CFILES "${TEST_CFILES}")
 	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl")
