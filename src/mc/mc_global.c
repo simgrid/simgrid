@@ -232,6 +232,7 @@ void MC_state_delete(mc_state_t state)
   mc_transition_t trans;  
   
   xbt_setset_foreach(state->created_transitions, cursor, trans){
+    xbt_setset_elm_remove(mc_setset, trans);
     MC_transition_delete(trans);
   }
 
