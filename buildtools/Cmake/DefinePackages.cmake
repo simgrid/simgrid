@@ -455,7 +455,6 @@ teshsuite/gras/empty_main/empty_main.xml
 teshsuite/gras/small_sleep/small_sleep.xml
 examples/amok/bandwidth/bandwidth.xml
 examples/amok/saturate/saturate.xml
-${TEST_CFILES}
 )
 
 ### depend of some variables setted upper
