@@ -108,11 +108,12 @@ if(PERL_EXE)
 	
 	#$(TEST_UNITS): $(TEST_CFILES)
 	string(REPLACE ";" " " USE_TEST_CFILES "${TEST_CFILES}")
+	
 	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl")
-	exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${USE_TEST_CFILES}")
+	exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${USE_TEST_CFILES}" "${PROJECT_DIRECTORY}/src")
 
 	#@builddir@/simgrid_units_main.c: $(TEST_UNITS)
-	exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl src/xbt/cunit.c")
+	exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${PROJECT_DIRECTORY}/src/xbt/cunit.c" "${PROJECT_DIRECTORY}/src")
 
 else(PERL_EXE)
 	message(FATAL_ERROR "Install perl before use maintainer mode")

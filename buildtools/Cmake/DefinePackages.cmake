@@ -407,31 +407,31 @@ include/xbt.h
 )
 
 set(TEST_UNITS
-cunit_unit.c
-ex_unit.c
-dynar_unit.c
-dict_unit.c
-set_unit.c
-swag_unit.c
-xbt_str_unit.c
-xbt_strbuff_unit.c
-xbt_sha_unit.c
-config_unit.c
-xbt_synchro_unit.c
+${PROJECT_DIRECTORY}/src/cunit_unit.c
+${PROJECT_DIRECTORY}/src/ex_unit.c
+${PROJECT_DIRECTORY}/src/dynar_unit.c
+${PROJECT_DIRECTORY}/src/dict_unit.c
+${PROJECT_DIRECTORY}/src/set_unit.c
+${PROJECT_DIRECTORY}/src/swag_unit.c
+${PROJECT_DIRECTORY}/src/xbt_str_unit.c
+${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
+${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
+${PROJECT_DIRECTORY}/src/config_unit.c
+${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
 )
 
 set(TEST_CFILES
-src/xbt/cunit.c
-src/xbt/ex.c
-src/xbt/dynar.c
-src/xbt/dict.c
-src/xbt/set.c
-src/xbt/swag.c
-src/xbt/xbt_str.c
-src/xbt/xbt_strbuff.c
-src/xbt/xbt_sha.c
-src/xbt/config.c
-src/xbt/xbt_synchro.c
+${PROJECT_DIRECTORY}/src/xbt/cunit.c
+${PROJECT_DIRECTORY}/src/xbt/ex.c
+${PROJECT_DIRECTORY}/src/xbt/dynar.c
+${PROJECT_DIRECTORY}/src/xbt/dict.c
+${PROJECT_DIRECTORY}/src/xbt/set.c
+${PROJECT_DIRECTORY}/src/xbt/swag.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_str.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_strbuff.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_sha.c
+${PROJECT_DIRECTORY}/src/xbt/config.c
+${PROJECT_DIRECTORY}/src/xbt/xbt_synchro.c
 )
 
 #Here must have all files which permit to generate source files
