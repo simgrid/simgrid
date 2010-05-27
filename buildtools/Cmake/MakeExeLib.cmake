@@ -125,7 +125,11 @@ add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/priority)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/masterslave)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/trace)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/tracing)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/mc)
+
+if(HAVE_MC)
+	add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/mc)
+endif(HAVE_MC)
+
 if(HAVE_GTNETS)
 	add_definitions("-lgtnets -L${gtnets_path}/lib -I${gtnets_path}/include/gtnets")
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/gtnets)

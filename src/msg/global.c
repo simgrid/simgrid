@@ -140,9 +140,11 @@ MSG_error_t MSG_main(void)
   fflush(stderr);
   SIMIX_init();
 
+#ifdef HAVE_MC
   if (_surf_do_model_check)
     MC_modelcheck(1);
   else
+#endif
     while (SIMIX_solve(NULL, NULL) != -1.0);
   
   return MSG_OK;

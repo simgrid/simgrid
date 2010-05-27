@@ -227,9 +227,11 @@ endif(HAVE_RUBY)
 
 # END TESH TESTS
 
+if(HAVE_MC)
 ADD_TEST(mc-bugged1			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/mc bugged1.tesh)
 ADD_TEST(mc-bugged2			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/mc bugged2.tesh)
 ADD_TEST(mc-centralized		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/mc centralized.tesh)
+endif(HAVE_MC)
 
 if(HAVE_JAVA)
 # java examples

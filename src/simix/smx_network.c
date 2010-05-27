@@ -477,9 +477,10 @@ smx_comm_t SIMIX_network_isend(smx_rdv_t rdv, double task_size, double rate,
   smx_comm_t comm;
 
   /*If running in model-checking mode then intercept the communication action*/
-  if (_surf_do_model_check)
-    MC_trans_intercept_isend(rdv);
-  
+	#ifdef HAVE_MC
+	  if (_surf_do_model_check)
+		MC_trans_intercept_isend(rdv);
+	#endif
   /* Look for communication request matching our needs.
      If it is not found then create it and push it into the rendez-vous point */
   comm = SIMIX_rdv_get_request(rdv, comm_recv);
@@ -506,9 +507,10 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
   smx_comm_t comm;
 
   /*If running in model-checking mode then intercept the communication action*/
+#ifdef HAVE_MC
   if (_surf_do_model_check)
     MC_trans_intercept_irecv(rdv);
-  
+#endif
   /* Look for communication request matching our needs.
    * If it is not found then create it and push it into the rendez-vous point
    */
@@ -532,9 +534,10 @@ smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_s
 XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout)
 {
   /*If running in model-checking mode then intercept the communication action*/
+#ifdef HAVE_MC
   if (_surf_do_model_check)
     MC_trans_intercept_wait(comm);
-  
+#endif
   /* Wait for communication completion */
   SIMIX_communication_wait_for_completion(comm, timeout);
 }
@@ -543,8 +546,10 @@ XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout)
 XBT_INLINE int SIMIX_network_test(smx_comm_t comm)
 {
   /*If running in model-checking mode then intercept the communication action*/
+#ifdef HAVE_MC
   if (_surf_do_model_check)
     MC_trans_intercept_test(comm);
+#endif
 
   /* Copy data if the communication is done */
   if(comm->sem && !SIMIX_sem_would_block(comm->sem)){
@@ -566,9 +571,10 @@ unsigned int SIMIX_network_waitany(xbt_dynar_t comms)
   smx_comm_t comm,comm_finished=NULL;
 
   /*If running in model-checking mode then intercept the communication action*/
+#ifdef HAVE_MC
   if (_surf_do_model_check)
     MC_trans_intercept_waitany(comms);
-    
+#endif
   xbt_dynar_foreach(comms,cursor,comm)
     xbt_dynar_push(sems,&(comm->sem));
 

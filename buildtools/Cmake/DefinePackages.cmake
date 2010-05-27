@@ -195,8 +195,14 @@ set(XBT_SRC
 	src/xbt/cunit.c
 	src/xbt/graphxml_parse.c
 	src/xbt/setset.c
-	src/xbt/mmalloc/mm.c
 )
+
+if(HAVE_MMAP)
+	set(XBT_SRC
+	${XBT_SRC}
+	src/xbt/mmalloc/mm.c	
+	)
+endif(HAVE_MMAP)
 
 set(GTNETS_SRC 
 	src/surf/gtnets/gtnets_simulator.cc
@@ -341,7 +347,6 @@ set(MC_SRC
 	src/mc/mc_transition.c
 	src/mc/private.h
 )
-
 
 set(install_HEADERS
 include/xbt/misc.h
@@ -507,8 +512,14 @@ set(simgrid_sources
 	${GRAS_COMMON_SRC}
 	${GRAS_SG_SRC}
 	${AMOK_SRC}
-	${MC_SRC}
 )
+
+if(enable_model-checking AND HAVE_MMAP)
+	set(simgrid_sources
+		${simgrid_source}
+		${MC_SRC}
+		)
+endif(enable_model-checking AND HAVE_MMAP)
 
 ### Gras Lib sources
 set(gras_sources

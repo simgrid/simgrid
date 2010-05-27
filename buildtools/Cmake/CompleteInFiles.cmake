@@ -60,9 +60,10 @@ if(enable_tracing)
 	SET(HAVE_TRACING 1)
 endif(enable_tracing)
 
-if(enable_model-checking)
+if(enable_model-checking AND HAVE_MMAP)
+	SET(HAVE_MC 1)
 	SET(MMALLOC_WANT_OVERIDE_LEGACY 1)
-endif(enable_model-checking)
+endif(enable_model-checking AND HAVE_MMAP)
 
 if(enable_lua)
 	exec_program("lua -v" OUTPUT_VARIABLE LUA_VERSION)
