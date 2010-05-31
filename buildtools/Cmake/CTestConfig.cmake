@@ -2,7 +2,9 @@
 # http://www.cmake.org/Wiki/CMake_Testing_With_CTest#Customizing_CTest
 
 SET(BUILDNAME "none" CACHE TYPE INTERNAL FORCE)
-
+if(enable_memcheck)
+	set(CTEST_TIMEOUT "300") #TIMEOUT FOR EACH TEST
+endif(enable_memcheck)
 if(with_context MATCHES ucontext AND NOT supernovae)
 	SET(BUILDNAME "UCONTEXT" CACHE TYPE INTERNAL FORCE)
 endif(with_context MATCHES ucontext AND NOT supernovae)

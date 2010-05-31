@@ -161,11 +161,13 @@ if [ $SYSTEM = Linux ] ; then
 	fi
 fi
 
-#Make the memcheck mode
-cmake -Denable_gtnets=off ./
-ctest -D NightlyStart
-ctest -D NightlyConfigure
-ctest -D NightlyBuild
-ctest -D NightlyMemCheck
-ctest -D NightlySubmit
-make clean
+if( $PIPOL_IMAGE = i386-linux-ubuntu-karmic.dd.gz )
+	#Make the memcheck mode
+	cmake -Denable_gtnets=off ./
+	ctest -D NightlyStart
+	ctest -D NightlyConfigure
+	ctest -D NightlyBuild
+	ctest -D NightlyMemCheck
+	ctest -D NightlySubmit
+	make clean
+fi
