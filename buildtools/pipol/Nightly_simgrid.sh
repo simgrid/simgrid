@@ -68,8 +68,18 @@ ctest -D NightlyCoverage
 ctest -D NightlySubmit
 make clean
 
+#Make the model-checking mode
+cmake -Denable_model-checking=on ./
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlyCoverage
+ctest -D NightlySubmit
+make clean
+
 #Make the full flags mode
-cmake -Denable_tracing=off -Denable_compile_warnings=on -Denable_compile_optimizations=on -Ddisable_lua=on -Ddisable_java=on -Ddisable_ruby=on ./
+cmake -Denable_model-checking=off -Denable_tracing=off -Denable_compile_warnings=on -Denable_compile_optimizations=on -Denable_lua=off -Denable_java=off -Denable_ruby=off ./
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
@@ -137,7 +147,7 @@ if [ $SYSTEM = Linux ] ; then
 	cd $home_dir
 	rm -rf $absolute_path/GTNetS
 	cd simgrid-trunk
-
+	
 	if [ -e $userhome/usr/lib/libgtsim-opt.so ] ; then
 		#Make gtnets
 		cmake -Dsupernovae=off -Denable_compile_warnings=off -Denable_compile_optimizations=off -Dgtnets_path=$absolute_path/usr ./
@@ -150,3 +160,12 @@ if [ $SYSTEM = Linux ] ; then
 		make clean
 	fi
 fi
+
+#Make the memcheck mode
+cmake -Denable_gtnets=off ./
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyMemCheck
+ctest -D NightlySubmit
+make clean

@@ -18,7 +18,7 @@ if(enable_memcheck)
 		endif(NEW_VALGRIND_VERSION)
 	else(VALGRIND_VERSION AND PERL_EXECUTABLE)
 		set(enable_memcheck false)
-		message("Command valgrind or perl not found --> enable_memcheck autoset to false.")
+		message(FATAL_ERROR "Command valgrind or perl not found --> enable_memcheck autoset to false.")
 	endif(VALGRIND_VERSION AND PERL_EXECUTABLE)
 endif(enable_memcheck)
 

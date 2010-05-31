@@ -47,8 +47,18 @@ ctest -D ExperimentalCoverage
 ctest -D ExperimentalSubmit
 make clean
 
+#Make the model-checking mode
+cmake -Denable_model-checking=on ./
+ctest -D ExperimentalStart
+ctest -D ExperimentalConfigure
+ctest -D ExperimentalBuild
+ctest -D ExperimentalTest
+ctest -D ExperimentalCoverage
+ctest -D ExperimentalSubmit
+make clean
+
 #Make the full flags mode
-cmake -Denable_tracing=off -Denable_compile_warnings=on -Denable_compile_optimizations=on -Ddisable_lua=on -Ddisable_java=on -Ddisable_ruby=on ./
+cmake -Denable_model-checking=off -Denable_tracing=off -Denable_compile_warnings=on -Denable_compile_optimizations=on -Denable_lua=off -Denable_java=off -Denable_ruby=off ./
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild
@@ -129,3 +139,12 @@ if [ $SYSTEM = Linux ] ; then
 		make clean
 	fi
 fi
+
+#Make the memcheck mode
+cmake -Denable_gtnets=off ./
+ctest -D ExperimentalStart
+ctest -D ExperimentalConfigure
+ctest -D ExperimentalBuild
+ctest -D ExperimentalMemCheck
+ctest -D ExperimentalSubmit
+make clean
