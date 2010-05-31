@@ -2,6 +2,8 @@
 
 #PRE-PIPOL /home/mescal/navarro/pre-simgrid.sh
 
+#PIPOL esn i386_mac-mac-osx-server-leopard.dd.gz none 02:00  --user --quiet
+
 #PIPOL esn i386-linux-ubuntu-intrepid.dd.gz none 02:00 --user --quiet
 
 #PIPOL esn i386-linux-ubuntu-jaunty.dd.gz none 02:00 --user --quiet

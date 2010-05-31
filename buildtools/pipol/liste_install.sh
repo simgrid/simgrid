@@ -84,7 +84,7 @@ if [ x$which_lua = x ] ; then
     sudo yum -y install lua-devel
   fi
   if [ x$arch = xDarwin ] ; then
-    sudo fink -y install lua51-dev
+    sudo fink -y install lua51-dev lua51
   fi
 fi
 

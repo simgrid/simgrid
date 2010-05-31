@@ -7,7 +7,6 @@ set(release_version "3.5")
 set(libsimgrid_version "${release_version}")
 set(libgras_version "${release_version}")
 set(libsmpi_version "${release_version}")
-exec_program("${CMAKE_COMMAND} -E remove -f ${simgrid_BINARY_DIR}/CTestTestfile.cmake" OUTPUT_VARIABLE rmok)
 
 if(WIN32)
 	message("	Be sure all those variables are correctely set.")
@@ -82,18 +81,3 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
 
 INCLUDE(Dart)
-
-exec_program("ctest -N" OUTPUT_VARIABLE LIST_OF_TEST)
-string(REPLACE "\n" ";" LIST_OF_TEST ${LIST_OF_TEST})
-foreach(test ${LIST_OF_TEST})
-	string(REGEX REPLACE "^.*Test.*project.*" " " test ${test})
-	string(REGEX REPLACE "^.*Total.*Tests:.*" " " test ${test})
-	string(REGEX MATCH "^.*Testing.*" test_ok_1 ${test}) #for ctest version 2.6 (xxx/xxx Testing)
-	string(REGEX MATCH "^.*Test.*\\:+" test_ok_2 ${test}) #for ctest version 2.8 (Test #xxx)
-	if(test_ok_1 OR test_ok_2)
-		string(REGEX REPLACE "^.*Testing" " " test ${test}) #for ctest version 2.6
-		string(REGEX REPLACE "^.*Test.*\\:+" " " test ${test}) #for ctest version 2.8
-		string(STRIP ${test} test)
-		set_tests_properties(${test} PROPERTIES LABELS "rev${SVN_VERSION}")
-	endif(test_ok_1 OR test_ok_2)
-endforeach(test ${LIST_OF_TEST})
