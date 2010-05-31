@@ -513,12 +513,12 @@ set(simgrid_sources
 	${AMOK_SRC}
 )
 
-if(enable_model-checking AND HAVE_MMAP)
+if(HAVE_MC)
 	set(simgrid_sources
-		${simgrid_source}
+		${simgrid_sources}
 		${MC_SRC}
 		)
-endif(enable_model-checking AND HAVE_MMAP)
+endif(HAVE_MC)
 
 ### Gras Lib sources
 set(gras_sources

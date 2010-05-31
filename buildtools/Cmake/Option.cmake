@@ -3,7 +3,13 @@
 
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib")
-set(prefix ${prefix} CACHE PATH "Path where to install project")
+
+if(NOT prefix)
+	set(prefix "/usr/local/simgrid/" CACHE PATH "Path where to install project")
+else(NOT prefix)
+	set(prefix ${prefix} CACHE PATH "Path where to install project")
+endif(NOT prefix)
+
 set(with_context ${with_context} CACHE TYPE INTERNAL FORCE)
 
 if(NOT with_context)

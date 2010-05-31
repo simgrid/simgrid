@@ -63,6 +63,9 @@ endif(enable_tracing)
 if(enable_model-checking AND HAVE_MMAP)
 	SET(HAVE_MC 1)
 	SET(MMALLOC_WANT_OVERIDE_LEGACY 1)
+else(enable_model-checking AND HAVE_MMAP)
+	SET(HAVE_MC 0)
+	SET(MMALLOC_WANT_OVERIDE_LEGACY 0)
 endif(enable_model-checking AND HAVE_MMAP)
 
 if(enable_lua)
@@ -698,10 +701,6 @@ configure_file("${PROJECT_DIRECTORY}/src/gras_config.h" 				"${PROJECT_DIRECTORY
 configure_file("${PROJECT_DIRECTORY}/include/simgrid_config.h.in" 			"${PROJECT_DIRECTORY}/include/simgrid_config.h" @ONLY IMMEDIATE)
 configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/tracing_config.h.in" 	"${PROJECT_DIRECTORY}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
 configure_file("${PROJECT_DIRECTORY}/include/instr/tracing_config.h" 		"${PROJECT_DIRECTORY}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
-
-if(NOT prefix)
-	set(prefix /usr/local)
-endif(NOT prefix)
 
 set(top_srcdir "${PROJECT_DIRECTORY}")
 set(srcdir "${PROJECT_DIRECTORY}/src")

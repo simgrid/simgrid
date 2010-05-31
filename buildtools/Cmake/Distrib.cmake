@@ -1,4 +1,4 @@
-set(CMAKE_INSTALL_PREFIX ${prefix} CACHE TYPE INTERNAL FORCE)
+set(CMAKE_INSTALL_PREFIX "${prefix}" CACHE TYPE INTERNAL FORCE)
 
 #########################################
 ### Fill in the "make install" target ###
