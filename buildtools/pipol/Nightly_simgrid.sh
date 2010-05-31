@@ -2,24 +2,24 @@
 
 #PRE-PIPOL /home/mescal/navarro/pre-simgrid.sh
 
-#PIPOL esn i386_mac-mac-osx-server-leopard.dd.gz none 02:00  --user --quiet
+#PIPOL esn i386_mac-mac-osx-server-leopard.dd.gz none 02:00  --user --silent
 
-#PIPOL esn i386-linux-ubuntu-intrepid.dd.gz none 02:00 --user --quiet
+#PIPOL esn i386-linux-ubuntu-intrepid.dd.gz none 02:00 --user --silent
 
-#PIPOL esn i386-linux-ubuntu-jaunty.dd.gz none 02:00 --user --quiet
+#PIPOL esn i386-linux-ubuntu-jaunty.dd.gz none 02:00 --user --silent
 
-#PIPOL esn i386-linux-ubuntu-karmic.dd.gz none 02:00 --user --quiet
-#PIPOL esn amd64-linux-ubuntu-karmic.dd.gz none 02:00 --user --quiet
+#PIPOL esn i386-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
 
-#PIPOL esn i386-linux-debian-lenny.dd.gz none 02:00 --user --quiet
-#PIPOL esn amd64-linux-debian-lenny.dd.gz none 02:00 --user --quiet
+#PIPOL esn i386-linux-debian-lenny.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-linux-debian-lenny.dd.gz none 02:00 --user --silent
 
-#PIPOL esn i386-linux-debian-testing.dd none 02:00 --user --quiet
+#PIPOL esn i386-linux-debian-testing.dd none 02:00 --user --silent
 
-#PIPOL esn i386-linux-fedora-core11.dd.gz none 02:00 --user --quiet
+#PIPOL esn i386-linux-fedora-core11.dd.gz none 02:00 --user --silent
 
-#PIPOL esn i386-linux-fedora-core12.dd.gz none 02:00 --user --quiet
-#PIPOL esn amd64-linux-fedora-core12.dd.gz none 02:00 --user --quiet
+#PIPOL esn i386-linux-fedora-core12.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-linux-fedora-core12.dd.gz none 02:00 --user --silent
 
 SYSTEM=`uname`
 
