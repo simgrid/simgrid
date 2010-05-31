@@ -16,7 +16,11 @@ if(NOT with_context)
 	set(with_context "auto" CACHE TYPE INTERNAL FORCE)
 endif(NOT with_context)
 
-option(enable_smpi "This variable set smpi lib." on)
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+	option(enable_smpi "This variable set smpi lib." off) #for the moment it doesn't compil with MacOS
+else(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+	option(enable_smpi "This variable set smpi lib." on)
+endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 option(enable_gtnets "This variable set the gtnets context." on)
 option(enable_java "This variable set the java context." off)
 option(enable_lua "This variable set lua use." on)
