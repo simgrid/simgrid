@@ -19,6 +19,8 @@ if(WIN32)
     message("		-- CMAKE_BUILD_TOOL			${CMAKE_BUILD_TOOL}")
     message("		-- LINKER				${CMAKE_LINKER}")
     message("		-- CMAKE_GENERATOR			${CMAKE_GENERATOR}\n\n")
+    set(__STRICT_ANSI__ 1)
+    set(_MSC_VER 1)
 endif(WIN32)
 
 ### Find programs and paths

@@ -1,6 +1,10 @@
 // <root>/buildtools/Cmake/gras_config.h.in is user-written.
 // With Cmake it creates <root>/src/gras_config.h
 
+/* Set somes variables for Windows compilation */
+#cmakedefine __STRICT_ANSI__ @__STRICT_ANSI__@
+#cmakedefine _MSC_VER @_MSC_VER@
+
 /* Set to true if enable_model-checking is true */
 #cmakedefine MMALLOC_WANT_OVERIDE_LEGACY @MMALLOC_WANT_OVERIDE_LEGACY@
 #cmakedefine HAVE_MC @HAVE_MC@
