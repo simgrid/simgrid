@@ -39,22 +39,20 @@ svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-trunk -
 cd simgrid-trunk
 
 #Make the ucontext mode
-cmake -Dwith_context=ucontext -Denable_coverage=on ./
+cmake -Dwith_context=ucontext ./
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
 ctest -D NightlyTest
-ctest -D NightlyCoverage
 ctest -D NightlySubmit
 make clean
 
 #Make the pthread mode
-cmake -Dwith_context=pthread ./
+cmake -Dwith_context=pthread  ./
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
 ctest -D NightlyTest
-ctest -D NightlyCoverage
 ctest -D NightlySubmit
 make clean
 
@@ -64,12 +62,11 @@ ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
 ctest -D NightlyTest
-ctest -D NightlyCoverage
 ctest -D NightlySubmit
 make clean
 
 #Make the model-checking mode
-cmake -Denable_model-checking=on ./
+cmake -Denable_model-checking=on -Denable_coverage=on ./
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
@@ -79,12 +76,11 @@ ctest -D NightlySubmit
 make clean
 
 #Make the full flags mode
-cmake -Denable_model-checking=off -Denable_tracing=off -Denable_compile_warnings=on -Denable_compile_optimizations=on -Denable_lua=off -Denable_java=off -Denable_ruby=off ./
+cmake -Denable_model-checking=off -Denable_coverage=off -Denable_tracing=off -Denable_compile_warnings=on -Denable_compile_optimizations=on -Denable_lua=off -Denable_java=off -Denable_ruby=off ./
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
 ctest -D NightlyTest
-ctest -D NightlyCoverage
 ctest -D NightlySubmit
 make clean
 
@@ -94,7 +90,6 @@ ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
 ctest -D NightlyTest
-ctest -D NightlyCoverage
 ctest -D NightlySubmit
 make clean
 
@@ -155,7 +150,6 @@ if [ $SYSTEM = Linux ] ; then
 		ctest -D NightlyConfigure
 		ctest -D NightlyBuild
 		ctest -D NightlyTest
-		ctest -D NightlyCoverage
 		ctest -D NightlySubmit
 		make clean
 	fi
@@ -163,7 +157,7 @@ fi
 
 if( $PIPOL_IMAGE = i386-linux-ubuntu-karmic.dd.gz )
 	#Make the memcheck mode
-	cmake -Denable_gtnets=off ./
+	cmake -Denable_gtnets=off -Denable_memcheck=on ./
 	ctest -D NightlyStart
 	ctest -D NightlyConfigure
 	ctest -D NightlyBuild
