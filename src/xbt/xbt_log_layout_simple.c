@@ -62,10 +62,10 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
 /* only used after the format using: we suppose that the buffer is big enough to display our data */
 #undef check_overflow
 #define check_overflow \
-  if (p-ev->buffer > XBT_LOG_BUFF_SIZE) { /* buffer overflow */ \
+  do {if (p-ev->buffer > XBT_LOG_BUFF_SIZE) { \
   xbt_log_layout_simple_dynamic(l,ev,fmt,app); \
-  return; \
-  }
+  return ; \
+  } } while(0)
 
 static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
                                        xbt_log_event_t ev,
@@ -73,6 +73,7 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
                                        xbt_log_appender_t app)
 {
   char *p;
+  const char *procname=xbt_procname();
 
   xbt_assert0(ev->priority >= 0,
               "Negative logging priority naturally forbidden");
@@ -85,7 +86,7 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
   check_overflow;
 
   /* Display the proc info if available */
-  const char *procname=xbt_procname();
+
   if (strlen(procname)) {
     p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%s:(%d) ",
                   gras_os_myname(), procname, (*xbt_getpid) ());

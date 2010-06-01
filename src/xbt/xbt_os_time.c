@@ -12,7 +12,6 @@
 #include "portable.h"
 #include <math.h>               /* floor */
 
-
 #ifdef WIN32
 #include <sys/timeb.h>
 #endif

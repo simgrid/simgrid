@@ -45,9 +45,10 @@ void xbt_setset_elm_add(xbt_setset_t setset, void *obj)
 {
   xbt_setset_elm_entry_t new_entry = NULL;
   xbt_setset_elm_t e = (xbt_setset_elm_t)obj;
+  xbt_setset_elm_entry_t first_elm = NULL;
+
   xbt_assert0(e->ID == 0, "Adding element with non NULL ID");
-  xbt_setset_elm_entry_t first_elm = 
-    (xbt_setset_elm_entry_t)xbt_dynar_get_ptr(setset->elm_array, 0);
+  first_elm = (xbt_setset_elm_entry_t)xbt_dynar_get_ptr(setset->elm_array, 0);
   
   /* Before create a new elm entry check if there is one in the free elm list. */
   /* If there is not free elm entries, then create a new one  */
