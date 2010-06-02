@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
-SET(PROJECT_NAME "Simgrid_doc")
+project(Simgrid_doc NONE)
+
 ### AUTO DETECT THE PROJECT_DIRECTORY
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE TYPE INTERNAL FORCE)
 
