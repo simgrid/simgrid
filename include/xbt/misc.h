@@ -1,11 +1,10 @@
 /* xbt.h - Public interface to the xbt (gras's toolbox)                     */
+
 /* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-#include "gras_config.h"
 
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
@@ -143,7 +142,7 @@
 
 /* Link against the DLL */
 #elif (defined(_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
-#  define XBT_PUBLIC(type)            	type
+#  define XBT_PUBLIC(type)            	__declspec(dllimport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  	type
 #  define XBT_IMPORT_NO_EXPORT(type)  	__declspec(dllimport) type
 #  define XBT_PUBLIC_DATA(type)		__declspec(dllimport) type
