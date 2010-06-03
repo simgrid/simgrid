@@ -23,12 +23,12 @@ typedef struct s_netviva_coords {
 xbt_dict_t coords; /* Host name -> coordinates */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
-static random_data_t random_latency = NULL;
-static int host_number_int = 0;
+static random_data_t random_latency_viva = NULL;
+static int host_number_int_viva = 0;
 
 static void netviva_count_hosts(void)
 {
-  host_number_int++;
+  host_number_int_viva++;
 }
 
 static void netviva_define_callbacks(const char *file)
@@ -140,7 +140,7 @@ static surf_action_t netviva_communicate(const char *src_name, const char *dst_n
 
   action->suspended = 0;
 
-  action->latency = sqrt((c1->x-c2->x)*(c1->x-c2->x) + (c1->y-c2->y)*(c1->y-c2->y)) + fabs(c1->h)+ fabs(c2->h) ;          //random_generate(random_latency);
+  action->latency = sqrt((c1->x-c2->x)*(c1->x-c2->x) + (c1->y-c2->y)*(c1->y-c2->y)) + fabs(c1->h)+ fabs(c2->h) ;          //random_generate(random_latency_viva);
   action->lat_init = action->latency;
 
   if (action->latency <= 0.0) {
@@ -168,7 +168,7 @@ static double netviva_get_link_latency(const void *link)
   DIE_IMPOSSIBLE;
 }
 
-static int link_shared(const void *link)
+static int netviva_link_shared(const void *link)
 {
   DIE_IMPOSSIBLE;
 }
@@ -198,12 +198,6 @@ static void netviva_finalize(void)
 {
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
-}
-
-
-static void net_define_callbacks(const char *file)
-{
-  /* Figuring out the network links */
 }
 
 static void netviva_parse_host(void) {
@@ -255,10 +249,10 @@ void surf_network_model_init_Vivaldi(const char *filename)
   surf_network_model->extension.network.get_link_bandwidth =
     netviva_get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = netviva_get_link_latency;
-  surf_network_model->extension.network.link_shared = link_shared;
+  surf_network_model->extension.network.link_shared = netviva_link_shared;
 
-  if (!random_latency)
-    random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
+  if (!random_latency_viva)
+    random_latency_viva = random_new(RAND, 100, 0.0, 1.0, .125, .034);
   netviva_define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
 

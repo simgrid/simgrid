@@ -155,7 +155,7 @@ message("")
 message("	INSTALL_PREFIX: 	${CMAKE_INSTALL_PREFIX}")
 message("")
 
-exec_program("${CMAKE_COMMAND} -E make_directory ${simgrid_BINARY_DIR}/Testing/Notes/")
+exec_program("${CMAKE_COMMAND} -E make_directory ${simgrid_BINARY_DIR}/Testing/Notes/" OUTPUT_VARIABLE OKIDOKI)
 file(WRITE ${simgrid_BINARY_DIR}/Testing/Notes/Build  "SVN version : ${SVN_VERSION}\n")
 file(APPEND ${simgrid_BINARY_DIR}/Testing/Notes/Build "Release     : simgrid-${release_version}\n")
  

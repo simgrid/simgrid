@@ -194,9 +194,9 @@ endif(enable_java)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT GTNETS
-if(NOT enable_gtnets)
+if(NOT enable_gtnets OR enable_supernovae)
 	SET(HAVE_GTNETS 0)
-else(NOT enable_gtnets)
+else(NOT enable_gtnets OR enable_supernovae)
 	set(GTNETS_LDFLAGS "-L${gtnets_path}/lib")
 	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include/gtnets")
 	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
@@ -207,7 +207,7 @@ else(NOT enable_gtnets)
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
 	endif(COMPILE_GTNETS_VAR)
-endif(NOT enable_gtnets)
+endif(NOT enable_gtnets OR enable_supernovae)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS

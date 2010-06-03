@@ -64,6 +64,7 @@ extern int getpagesize (void);
 void*
 __mmalloc_mmap_morecore (struct mdesc *mdp, int size)
 {
+  ssize_t test = 0;
   void* result = NULL;
   off_t foffset;	/* File offset at which new mapping will start */
   size_t mapbytes;	/* Number of bytes to map */
@@ -116,7 +117,7 @@ __mmalloc_mmap_morecore (struct mdesc *mdp, int size)
       if( mdp -> fd > 0){
      	  /* FIXME:  Test results of lseek() and write() */
         lseek (mdp -> fd, foffset + mapbytes - 1, SEEK_SET);
-	      write (mdp -> fd, &buf, 1);
+        test = write (mdp -> fd, &buf, 1);
       }
 	    
 	    /* Let's call mmap. Note that it is possible that mdp->top
