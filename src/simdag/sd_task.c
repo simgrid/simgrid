@@ -679,7 +679,7 @@ double SD_task_get_execution_time(SD_task_t task,
   }
   return max_time;
 }
-static inline void SD_task_do_schedule(SD_task_t task) {
+static XBT_INLINE void SD_task_do_schedule(SD_task_t task) {
   SD_CHECK_INIT_DONE();
 
    if (!__SD_task_is_not_scheduled(task))
@@ -713,9 +713,10 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
                       const double *computation_amount,
                       const double *communication_amount, double rate)
 {
-  xbt_assert0(workstation_count > 0, "workstation_nb must be positive");
-
   int communication_nb;
+  task->workstation_nb = 0;
+  task->rate = 0;
+  xbt_assert0(workstation_count > 0, "workstation_nb must be positive");
 
   task->workstation_nb = workstation_count;
   task->rate = rate;
@@ -1204,7 +1205,7 @@ void SD_task_destroy(SD_task_t task)
 }
 
 
-static inline SD_task_t SD_task_create_sized(const char*name,void*data,double amount,int ws_count) {
+static XBT_INLINE SD_task_t SD_task_create_sized(const char*name,void*data,double amount,int ws_count) {
   SD_task_t task = SD_task_create(name,data,amount);
   task->communication_amount = xbt_new0(double,ws_count*ws_count);
   task->computation_amount = xbt_new0(double,ws_count);
@@ -1266,6 +1267,8 @@ SD_task_t SD_task_create_comp_seq(const char*name, void *data, double amount) {
  */
 void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
   int i;
+  SD_dependency_t dep;
+  unsigned int cpt;
   xbt_assert1(task->kind != 0,"Task %s is not typed. Cannot automatically schedule it.",SD_task_get_name(task));
   switch(task->kind) {
   case SD_TASK_COMM_E2E:
@@ -1291,8 +1294,7 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
     VERB3("Schedule computation task %s on %s. It costs %.f flops",
         SD_task_get_name(task),SD_workstation_get_name(task->workstation_list[0]),
         task->computation_amount[0]);
-    SD_dependency_t dep;
-    unsigned int cpt;
+
     xbt_dynar_foreach(task->tasks_before,cpt,dep) {
       SD_task_t before = dep->src;
       if (before->kind == SD_TASK_COMM_E2E) {
