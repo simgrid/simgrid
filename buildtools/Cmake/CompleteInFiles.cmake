@@ -350,11 +350,12 @@ if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
 endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
 
 if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
-	find_file(GIT ".git" ${PROJECT_DIRECTORY})
+
 	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
-	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
 	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
 	exec_program("git svn info" ${PROJECT_DIRECTORY} OUTPUT_VARIABLE "GIT_SVN_VERSION")
+	
+	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
 	string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
 	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})

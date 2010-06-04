@@ -1,7 +1,9 @@
 set(warnCFLAGS "")
 set(optCFLAGS "")
 
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS}-g3)
+if(NOT WIN32)
+	set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS}-g3)
+endif(NOT WIN32)
 
 if(enable_supernovae)
 	set(warnCFLAGS "-Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")

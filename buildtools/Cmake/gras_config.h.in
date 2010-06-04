@@ -2,8 +2,15 @@
 // With Cmake it creates <root>/src/gras_config.h
 
 /* Set somes variables for Windows compilation */
-#cmakedefine __STRICT_ANSI__ @__STRICT_ANSI__@
-#cmakedefine _MSC_VER @_MSC_VER@
+#ifndef __STRICT_ANSI__
+	#cmakedefine __STRICT_ANSI__ @__STRICT_ANSI__@
+#endif
+#ifndef _MSC_VER
+	#cmakedefine _MSC_VER @_MSC_VER@
+#endif
+#ifndef _WIN32
+	#cmakedefine _WIN32 @_WIN32@
+#endif
 
 /* Set to true if enable_model-checking is true */
 #cmakedefine MMALLOC_WANT_OVERIDE_LEGACY @MMALLOC_WANT_OVERIDE_LEGACY@
