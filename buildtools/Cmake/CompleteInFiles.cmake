@@ -484,6 +484,7 @@ if(HAVE_MAKECONTEXT)
 		)
 	
 	file(READ ${simgrid_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
+	message("MAKECONTEXT_ADDR_SIZE : ${MAKECONTEXT_ADDR_SIZE}")
 	string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
@@ -623,7 +624,7 @@ foreach(fct ${diff_va})
 		endif(${fctbis} STREQUAL "memcpy((void *)(d), (void *)(s)), sizeof(*(s))")
 				
 		if(NOT STATUS_OK)
-		set(__VA_COPY_USE "__VA_COPY_USE_${ac_cv_va_copy}")
+		set(__VA_COPY_USE "__VA_COPY_USE_${ac_cv_va_copy}(d, s)")
 		endif(NOT STATUS_OK)
 		set(STATUS_OK "1")
 		

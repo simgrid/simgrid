@@ -11,6 +11,13 @@
 #ifndef _WIN32
 	#cmakedefine _WIN32 @_WIN32@
 #endif
+#ifndef WIN32
+	#cmakedefine WIN32 @WIN32@
+#endif
+#ifdef _WIN32
+	#define DLL_EXPORT
+	#define __VISUALC__
+#endif
 
 /* Set to true if enable_model-checking is true */
 #cmakedefine MMALLOC_WANT_OVERIDE_LEGACY @MMALLOC_WANT_OVERIDE_LEGACY@
@@ -26,13 +33,13 @@
 #cmakedefine ADDR2LINE "@ADDR2LINE@"
 
 /* Predefined possible va_copy() implementation (id: ASP) */
-#cmakedefine __VA_COPY_USE_ASP @__VA_COPY_USE_ASP@
+#cmakedefine __VA_COPY_USE_ASP(d, s) @__VA_COPY_USE_ASP@
 
 /* Predefined possible va_copy() implementation (id: ASS) */
-#cmakedefine __VA_COPY_USE_ASS @__VA_COPY_USE_ASS@
+#cmakedefine __VA_COPY_USE_ASS(d, s) @__VA_COPY_USE_ASS@
 
 /* Predefined possible va_copy() implementation (id: C99) */
-#cmakedefine __VA_COPY_USE_C99 @__VA_COPY_USE_C99@
+#cmakedefine __VA_COPY_USE_C99(d, s) @__VA_COPY_USE_C99@
 
 /* Define if xbt contexts are based on our threads implementation or not */
 #cmakedefine CONTEXT_THREADS @CONTEXT_THREADS@
@@ -41,19 +48,19 @@
 #cmakedefine CONTEXT_UCONTEXT @CONTEXT_UCONTEXT@
 
 /* Predefined possible va_copy() implementation (id: CPP) */
-#cmakedefine __VA_COPY_USE_CPP @__VA_COPY_USE_CPP@
+#cmakedefine __VA_COPY_USE_CPP(d, s) @__VA_COPY_USE_CPP@
 
 /* Predefined possible va_copy() implementation (id: CPS) */
-#cmakedefine __VA_COPY_USE_CPS @__VA_COPY_USE_CPS@
+#cmakedefine __VA_COPY_USE_CPS(d, s) @__VA_COPY_USE_CPS@
 
 /* Predefined possible va_copy() implementation (id: GCB) */
-#cmakedefine __VA_COPY_USE_GCB @__VA_COPY_USE_GCB@
+#cmakedefine __VA_COPY_USE_GCB(d, s) @__VA_COPY_USE_GCB@
 
 /* Predefined possible va_copy() implementation (id: GCH) */
-#cmakedefine __VA_COPY_USE_GCH @__VA_COPY_USE_GCH@
+#cmakedefine __VA_COPY_USE_GCH(d, s) @__VA_COPY_USE_GCH@
 
 /* Predefined possible va_copy() implementation (id: GCM) */
-#cmakedefine __VA_COPY_USE_GCM @__VA_COPY_USE_GCM@
+#cmakedefine __VA_COPY_USE_GCM(d, s) @__VA_COPY_USE_GCM@
 
 /* Defined if arrays in struct can straddle struct alignment boundaries. This
    is like than the structure compaction above, but this time, the argument to
@@ -276,14 +283,14 @@
    `char[]'. */
 #cmakedefine YYTEXT_POINTER 
 
-/* Optional va_copy() implementation activation */
-#ifndef HAVE_VA_COPY
-#define va_copy(d, s) __VA_COPY_USE
+ #ifndef __VISUALC__
+	/* Optional va_copy() implementation activation */
+	#ifndef HAVE_VA_COPY
+	#define va_copy(d, s) __VA_COPY_USE(d, s)
+	#endif
+	/* Define to id of used va_copy() implementation */
+	#cmakedefine __VA_COPY_USE(d, s) @__VA_COPY_USE@
 #endif
-
-
-/* Define to id of used va_copy() implementation */
-#cmakedefine __VA_COPY_USE @__VA_COPY_USE@
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #cmakedefine const @const@
