@@ -54,7 +54,7 @@ void SIMIX_rdv_destroy(smx_rdv_t rdv)
  *  \param rdv The rendez-vous point
  *  \param comm The communication request
  */
-static inline void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm)
+static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm)
 {
   xbt_fifo_push(rdv->comm_fifo, comm);
   comm->rdv = rdv;
@@ -65,7 +65,7 @@ static inline void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm)
  *  \param rdv The rendez-vous point
  *  \param comm The communication request
  */
-static inline void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm)
+static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm)
 {
   xbt_fifo_remove(rdv->comm_fifo, comm);
   comm->rdv = NULL;
@@ -194,7 +194,7 @@ void SIMIX_communication_destroy(smx_comm_t comm)
  *  maybe is in use by others.
  *  \
  */
-static inline void SIMIX_communication_use(smx_comm_t comm)
+static XBT_INLINE void SIMIX_communication_use(smx_comm_t comm)
 {
   comm->refcount++;
 }
@@ -203,7 +203,7 @@ static inline void SIMIX_communication_use(smx_comm_t comm)
  *  \brief Start the simulation of a communication request
  *  \param comm The communication request
  */
-static inline void SIMIX_communication_start(smx_comm_t comm)
+static XBT_INLINE void SIMIX_communication_start(smx_comm_t comm)
 {
   /* If both the sender and the receiver are already there, start the communication */
   if(comm->src_proc && comm->dst_proc){
@@ -242,7 +242,7 @@ static inline void SIMIX_communication_start(smx_comm_t comm)
  *   - timeout_error if communication reached the timeout specified (either because of local peer or remote peer)
  *   - network_error if network failed or remote peer failed
  */
-static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout)
+static XBT_INLINE void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout)
 {
   smx_action_t act_sleep = NULL;
   int src_timeout = 0;
@@ -360,7 +360,8 @@ void SIMIX_network_copy_buffer_callback(smx_comm_t comm, size_t buff_size) {
 void SIMIX_network_copy_data(smx_comm_t comm)
 {
   size_t buff_size = comm->src_buff_size;
-
+  uintptr_t casted_size = 0;
+  uintptr_t amount = 0;
   /* If there is no data to be copy then return */
   if(!comm->src_buff || !comm->dst_buff || comm->copied == 1)
     return;
@@ -391,8 +392,8 @@ void SIMIX_network_copy_data(smx_comm_t comm)
   {
     if (msg_sizes == NULL)
       msg_sizes = xbt_dict_new();
-    uintptr_t casted_size = comm->task_size;
-    uintptr_t amount = xbt_dicti_get(msg_sizes, casted_size);
+    casted_size = comm->task_size;
+    amount = xbt_dicti_get(msg_sizes, casted_size);
     amount++;
 
     xbt_dicti_set(msg_sizes,casted_size, amount);
@@ -401,10 +402,13 @@ void SIMIX_network_copy_data(smx_comm_t comm)
 #include "xbt.h"
 /* pimple to display the message sizes */
 void SIMIX_message_sizes_output(const char *filename) {
-  FILE * out = fopen(filename,"w");
-  xbt_assert1(out,"Cannot open file %s",filename);
-  uintptr_t key,data;
+  uintptr_t key = 0;
+  uintptr_t data = 0;
   xbt_dict_cursor_t cursor;
+  FILE * out = NULL;
+  out = fopen(filename,"w");
+  xbt_assert1(out,"Cannot open file %s",filename);
+
   xbt_dict_foreach(msg_sizes,cursor,key,data) {
     fprintf(out,"%zu %zu\n",key,data);
   }

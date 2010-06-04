@@ -165,10 +165,10 @@ typedef struct s_smx_comm {
 
 void SIMIX_network_copy_data(smx_comm_t comm);
 smx_comm_t SIMIX_communication_new(smx_comm_type_t type);
-static inline void SIMIX_communication_use(smx_comm_t comm);
-static inline void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout);
-static inline void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm);
-static inline void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm);
+static XBT_INLINE void SIMIX_communication_use(smx_comm_t comm);
+static XBT_INLINE void SIMIX_communication_wait_for_completion(smx_comm_t comm, double timeout);
+static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm);
+static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm);
 
 /********************************* Action *************************************/
 
@@ -284,7 +284,7 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
  * \param cleanup_func the function to call when the context stops
  * \param cleanup_arg the argument of the cleanup_func function
  */
-static inline smx_context_t SIMIX_context_new(xbt_main_func_t code, int argc,
+static XBT_INLINE smx_context_t SIMIX_context_new(xbt_main_func_t code, int argc,
                                               char** argv,
                                               void_f_pvoid_t cleanup_func,
                                               void* cleanup_arg) {
@@ -298,7 +298,7 @@ static inline smx_context_t SIMIX_context_new(xbt_main_func_t code, int argc,
  * \param context the context to destroy
  * Argument must be stopped first -- runs in maestro context
  */
-static inline void SIMIX_context_free(smx_context_t context) {
+static XBT_INLINE void SIMIX_context_free(smx_context_t context) {
   (*(simix_global->context_factory->free)) (context);
 }
 
@@ -306,7 +306,7 @@ static inline void SIMIX_context_free(smx_context_t context) {
  * \brief stops the execution of a context
  * \param context to stop
  */
-static inline void SIMIX_context_stop(smx_context_t context) {
+static XBT_INLINE void SIMIX_context_stop(smx_context_t context) {
   (*(simix_global->context_factory->stop)) (context);
 }
 
@@ -315,7 +315,7 @@ static inline void SIMIX_context_stop(smx_context_t context) {
  \param old_context the actual context from which is resuming
  \param new_context the context to resume
  */
-static inline void SIMIX_context_resume(smx_context_t new_context)
+static XBT_INLINE void SIMIX_context_resume(smx_context_t new_context)
 {
   (*(simix_global->context_factory->resume)) (new_context);
 }
@@ -325,7 +325,7 @@ static inline void SIMIX_context_resume(smx_context_t new_context)
         scheduled it
  \param context the context to be suspended (it must be the running one)
  */
-static inline void SIMIX_context_suspend(smx_context_t context)
+static XBT_INLINE void SIMIX_context_suspend(smx_context_t context)
 {
   (*(simix_global->context_factory->suspend)) (context);
 }
