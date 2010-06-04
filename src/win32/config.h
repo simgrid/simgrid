@@ -43,17 +43,19 @@ typedef int socklen_t;
 	#define tcp_close( s )	closesocket( s )
 #endif
 
-#ifndef EWOULDBLOCK
-	#define EWOULDBLOCK WSAEWOULDBLOCK
+#ifndef _XBT_VISUALC_COMPILER
+	#ifndef EWOULDBLOCK
+		#define EWOULDBLOCK WSAEWOULDBLOCK
+	#endif
+	#ifndef EINPROGRESS
+		#define EINPROGRESS WSAEINPROGRESS
+	#endif
+	#ifndef ETIMEDOUT
+		#define ETIMEDOUT   WSAETIMEDOUT
+	#endif
 #endif
 
-#ifndef EINPROGRESS
-	#define EINPROGRESS WSAEINPROGRESS
-#endif
 
-#ifndef ETIMEDOUT
-	#define ETIMEDOUT   WSAETIMEDOUT
-#endif
 
 #ifdef sock_errno
 	#undef  sock_errno
