@@ -6,6 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "gras_config.h"
+
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
 
@@ -55,8 +57,12 @@
 #    else
 #        define XBT_INLINE
 #    endif
-# else
-#    define XBT_INLINE  inline
+#else
+#	 if defined (__VISUALC__)
+#		define XBT_INLINE __inline
+#	 else
+#    	define XBT_INLINE  inline
+#	 endif
 #endif
 
 /* improvable on gcc (by evaluating arguments only once), but wouldn't be portable */
@@ -138,7 +144,6 @@
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
-
 
 /* Link against the DLL */
 #elif (defined(_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
