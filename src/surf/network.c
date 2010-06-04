@@ -381,6 +381,9 @@ static void net_update_resource_state(void *id,
 static surf_action_t net_communicate(const char *src_name, const char *dst_name,
                                  int src, int dst, double size, double rate)
 {
+  unsigned int i;
+  link_CM02_t link;
+  int failed = 0;
   surf_action_network_CM02_t action = NULL;
   /* LARGE PLATFORMS HACK:
      Add a link_CM02_t *link and a int link_nb to network_card_CM02_t. It will represent local links for this node
@@ -388,7 +391,6 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
   xbt_dynar_t route = used_routing->get_route(src, dst);
   /* LARGE PLATFORMS HACK:
      total_route_size = route_size + src->link_nb + dst->nb */
-  unsigned int i;
 
   XBT_IN4("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
@@ -397,8 +399,6 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
               "You're trying to send data from %s to %s but there is no connection between these two hosts.",
               src_name, dst_name);
 
-  link_CM02_t link;
-  int failed = 0;
   xbt_dynar_foreach(route, i, link) {
     if (link->lmm_resource.state_current == SURF_RESOURCE_OFF) {
       failed = 1;

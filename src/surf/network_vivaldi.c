@@ -128,15 +128,12 @@ static void netviva_update_resource_state(void *id,
 static surf_action_t netviva_communicate(const char *src_name, const char *dst_name,
                                  int src, int dst, double size, double rate)
 {
+  surf_action_network_Vivaldi_t action = NULL;
   netviva_coords_t c1,c2;
   c1 = xbt_dict_get(coords,src_name);
   c2 = xbt_dict_get(coords,dst_name);
 
-  surf_action_network_Vivaldi_t action = NULL;
-
-  action =
-    surf_action_new(sizeof(s_surf_action_network_Vivaldi_t), size,
-                    surf_network_model, 0);
+  action = surf_action_new(sizeof(s_surf_action_network_Vivaldi_t), size,surf_network_model, 0);
 
   action->suspended = 0;
 

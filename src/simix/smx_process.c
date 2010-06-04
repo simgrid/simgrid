@@ -421,9 +421,11 @@ void SIMIX_process_resume(smx_process_t process)
 void SIMIX_process_change_host(smx_process_t process, char *source,
                                char *dest)
 {
+  smx_host_t h1 = NULL;
+  smx_host_t h2 = NULL;
   xbt_assert0((process != NULL), "Invalid parameters");
-  smx_host_t h1 = SIMIX_host_get_by_name(source);
-  smx_host_t h2 = SIMIX_host_get_by_name(dest);
+  h1 = SIMIX_host_get_by_name(source);
+  h2 = SIMIX_host_get_by_name(dest);
   process->smx_host = h2;
   xbt_swag_remove(process, h1->process_list);
   xbt_swag_insert(process, h2->process_list);

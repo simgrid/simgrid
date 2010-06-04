@@ -164,16 +164,15 @@ static void _surf_cfg_cb__gtnets_jitter_seed(const char *name, int pos){
 /* create the config set, register what should be and parse the command line*/
 void surf_config_init(int *argc, char **argv)
 {
-
-  /* Create the configuration support */
-  if (_surf_init_status == 0) { /* Only create stuff if not already inited */
-    _surf_init_status = 1;
-
     char *description = xbt_malloc(1024), *p = description;
     char *default_value;
     double double_default_value;
 	int default_value_int;
     int i;
+
+  /* Create the configuration support */
+  if (_surf_init_status == 0) { /* Only create stuff if not already inited */
+    _surf_init_status = 1;
 
     sprintf(description, "The model to use for the CPU. Possible values: ");
     p = description;
@@ -303,13 +302,14 @@ void surf_config_models_setup(const char *platform_file)
 {
   char *workstation_model_name;
   int workstation_id = -1;
-
+  char *network_model_name = NULL;
+  char *cpu_model_name = NULL;
   surf_timer_model_init(platform_file);
 
   workstation_model_name =
     xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
-  char *network_model_name = xbt_cfg_get_string(_surf_cfg_set, "network/model");
-  char *cpu_model_name = xbt_cfg_get_string(_surf_cfg_set, "cpu/model");
+  network_model_name = xbt_cfg_get_string(_surf_cfg_set, "network/model");
+  cpu_model_name = xbt_cfg_get_string(_surf_cfg_set, "cpu/model");
 
   if ((strcmp(network_model_name,"LV08") || strcmp(cpu_model_name,"Cas01"))
       && !strcmp(workstation_model_name, "CLM03")){

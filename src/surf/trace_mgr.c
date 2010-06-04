@@ -100,6 +100,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
 
 tmgr_trace_t tmgr_trace_new(const char *filename)
 {
+	char *tstr = NULL;
   FILE *f = NULL;
   tmgr_trace_t trace = NULL;
 
@@ -118,7 +119,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   xbt_assert2(f!=NULL, "Cannot open file '%s' (path=%s)", filename,
        xbt_str_join(surf_path,":"));
 
-  char *tstr = xbt_str_from_file(f);
+  tstr = xbt_str_from_file(f);
   fclose(f);
   trace = tmgr_trace_new_from_string(filename, tstr, 0.);
   xbt_free(tstr);

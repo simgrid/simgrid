@@ -73,7 +73,7 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
                                        xbt_log_appender_t app)
 {
   char *p;
-
+  const char *procname=NULL;
   xbt_assert0(ev->priority >= 0,
               "Negative logging priority naturally forbidden");
   xbt_assert1(ev->priority < sizeof(xbt_log_priority_names),
@@ -85,7 +85,7 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
   check_overflow;
 
   /* Display the proc info if available */
-  const char *procname=xbt_procname();
+  procname=xbt_procname();
   if (strlen(procname)) {
     p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%s:(%d) ",
                   gras_os_myname(), procname, (*xbt_getpid) ());

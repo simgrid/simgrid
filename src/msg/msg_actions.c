@@ -49,6 +49,12 @@ void MSG_action_unregister(const char *action_name)
 
 static int MSG_action_runner(int argc, char *argv[]) {
   xbt_dynar_t evt=NULL;
+  char *line = NULL;
+  size_t line_len = 0;
+  FILE *fp = NULL;
+  char *comment = NULL;
+  char *evtname = NULL;
+  ssize_t read;
   if (action_fp) { // A unique trace file
 
     while ((evt = action_get_action(argv[0]))) {
@@ -63,16 +69,13 @@ static int MSG_action_runner(int argc, char *argv[]) {
           "and no process-wide trace file provided in deployment file. Aborting.",argv[0]
     );
 
-    char *line = NULL;
-    size_t line_len = 0;
-    FILE *fp = fopen(argv[1], "r");
+    fp = fopen(argv[1], "r");
     xbt_assert2(fp != NULL, "Cannot open %s: %s", argv[1], strerror(errno));
 
-    ssize_t read;
     // Read lines and execute them until I reach the end of file
     while ((read = getline(&line, &line_len, fp)) != -1) {
       // cleanup and split the string I just read
-      char *comment = strchr(line, '#');
+      comment = strchr(line, '#');
       if (comment != NULL)
         *comment = '\0';
       xbt_str_trim(line, NULL);
@@ -80,7 +83,7 @@ static int MSG_action_runner(int argc, char *argv[]) {
         continue;
       evt = xbt_str_split_quoted(line);
 
-      char *evtname = xbt_dynar_get_as(evt, 0, char *);
+      evtname = xbt_dynar_get_as(evt, 0, char *);
       if (!strcmp(argv[0],evtname)) {
         msg_action_fun function =
             xbt_dict_get(action_funs, xbt_dynar_get_as(evt, 1, char *));
@@ -111,7 +114,7 @@ void _MSG_action_exit() {
 static xbt_dynar_t action_get_action(char *name) {
   ssize_t read;
   xbt_dynar_t evt=NULL;
-
+  char *evtname = NULL;
 
   xbt_dynar_t myqueue = xbt_dict_get_or_null(action_queues,name);
   if (myqueue==NULL || xbt_dynar_length(myqueue)==0) { // nothing stored for me. Read the file further
@@ -133,7 +136,7 @@ static xbt_dynar_t action_get_action(char *name) {
       evt = xbt_str_split_quoted(action_line);
 
       // if it's for me, I'm done
-      char *evtname = xbt_dynar_get_as(evt, 0, char *);
+      evtname = xbt_dynar_get_as(evt, 0, char *);
       if (!strcmp(name,evtname)) {
         return evt;
       } else {
@@ -173,6 +176,9 @@ static xbt_dynar_t action_get_action(char *name) {
 MSG_error_t MSG_action_trace_run(char *path)
 {
   MSG_error_t res;
+	char *name;
+	xbt_dynar_t todo;
+	xbt_dict_cursor_t cursor;
 
   if (path) {
     action_fp = fopen(path, "r");
@@ -182,9 +188,7 @@ MSG_error_t MSG_action_trace_run(char *path)
 
   if (xbt_dict_size(action_queues)) {
     WARN0("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
-    xbt_dict_cursor_t cursor;
-    char *name;
-    xbt_dynar_t todo;
+
 
     xbt_dict_foreach(action_queues,cursor,name,todo) {
       WARN2("Still %lu actions for %s",xbt_dynar_length(todo),name);

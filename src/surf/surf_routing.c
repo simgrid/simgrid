@@ -172,7 +172,9 @@ static void routing_full_parse_Scluster(void)
   char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
   char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
   char *backbone_name;
-
+  unsigned int it1,it2;
+  char *name1,*name2;
+  xbt_dynar_t names = NULL;
   surfxml_bufferstack_push(1);
 
   /* Make set a set to parse the prefix/suffix/radical into a neat list of names */
@@ -186,10 +188,8 @@ static void routing_full_parse_Scluster(void)
   SURFXML_START_TAG(set);
   SURFXML_END_TAG(set);
 
-  xbt_dynar_t names = xbt_dict_get(set_list,cluster_id);
+  names = xbt_dict_get(set_list,cluster_id);
 
-  unsigned int it1,it2;
-  char *name1,*name2;
   xbt_dynar_foreach(names,it1,name1) {
     /* create the host */
     routing_full_parse_change_cpu_data(name1, cluster_power, "1.0", "", "");
@@ -496,8 +496,10 @@ static void routing_floyd_parse_end(void) {
   xbt_dynar_t links, keys;
 
   unsigned int i,j;
-
+  unsigned int a,b,c;
   int host_count = routing->generic_routing.host_count;
+  char * link_name = NULL;
+  void * link = NULL;
 
   /* Create Cost, Predecessor and Link tables */
   cost_table = xbt_new0(double, host_count * host_count); //link cost from host to host
@@ -527,8 +529,9 @@ static void routing_floyd_parse_end(void) {
         src_id,dst_id,routing->generic_routing.host_count,xbt_dynar_length(links));
     xbt_assert3(xbt_dynar_length(links) == 1, "%ld links in route between host %d and %d, should be 1", xbt_dynar_length(links), src_id, dst_id);
     
-    char * link_name = xbt_dynar_getfirst_as(links, char*);
-    void * link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+    link_name = xbt_dynar_getfirst_as(links, char*);
+    link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+
     if (link)
       link_list = link;
     else
@@ -553,7 +556,7 @@ static void routing_floyd_parse_end(void) {
 
 
   //Calculate path costs 
-  unsigned int a,b,c;
+
   for(c=0;c<host_count;c++) {
     for(a=0;a<host_count;a++) {
       for(b=0;b<host_count;b++) {
@@ -698,14 +701,17 @@ static void graph_node_map_elem_free(void *e) {
  * Utility functions
 */
 static xbt_node_t route_graph_new_node(int id, int graph_id) {
+  xbt_node_t node = NULL;
+  graph_node_data_t data = NULL;
+  graph_node_map_element_t elm = NULL;
   routing_dijkstra_t routing = (routing_dijkstra_t) used_routing;
 
-  graph_node_data_t data = xbt_new0(struct graph_node_data, sizeof(struct graph_node_data));
+  data = xbt_new0(struct graph_node_data, sizeof(struct graph_node_data));
   data->id = id;
   data->graph_id = graph_id;
-  xbt_node_t node = xbt_graph_new_node(routing->route_graph, data);
+  node = xbt_graph_new_node(routing->route_graph, data);
 
-  graph_node_map_element_t elm = xbt_new0(struct graph_node_map_element, sizeof(struct graph_node_map_element));
+  elm = xbt_new0(struct graph_node_map_element, sizeof(struct graph_node_map_element));
   elm->node = node;
   xbt_dict_set_ext(routing->graph_node_map, (char*)(&id), sizeof(int), (xbt_set_elm_t)elm, &graph_node_map_elem_free);
 
@@ -789,7 +795,11 @@ static void routing_dijkstra_parse_end(void) {
   char *key, *data, *end;
   const char *sep = "#";
   xbt_dynar_t links, keys;
-
+  char* link_name = NULL;
+  void* link = NULL;
+  xbt_node_t node = NULL;
+  unsigned int cursor2;
+  xbt_dynar_t nodes = NULL;
   /* Create the topology graph */
   routing->route_graph = xbt_graph_new_graph(1, NULL);
   routing->graph_node_map = xbt_dict_new();
@@ -813,8 +823,8 @@ static void routing_dijkstra_parse_end(void) {
 
     xbt_assert3(xbt_dynar_length(links) == 1, "%ld links in route between host %d and %d, should be 1", xbt_dynar_length(links), src_id, dst_id);
 
-    char* link_name = xbt_dynar_getfirst_as(links, char*);
-    void* link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+    link_name = xbt_dynar_getfirst_as(links, char*);
+    link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
     if (link)
       route_new_dijkstra(src_id,dst_id,link);
     else
@@ -826,10 +836,8 @@ static void routing_dijkstra_parse_end(void) {
   add_loopback_dijkstra();
 
   /* initialize graph indexes in nodes after graph has been built */
-  xbt_dynar_t nodes = xbt_graph_get_nodes(routing->route_graph);
+  nodes = xbt_graph_get_nodes(routing->route_graph);
 
-  xbt_node_t node = NULL;
-  unsigned int cursor2;
   xbt_dynar_foreach(nodes, cursor2, node) {
     graph_node_data_t data = xbt_graph_node_get_data(node);
     data->graph_id = cursor2;
@@ -844,17 +852,22 @@ static xbt_dynar_t routing_dijkstra_get_route(int src_id,int dst_id) {
 
   routing_dijkstra_t routing = (routing_dijkstra_t) used_routing;
   int * pred_arr = NULL;
-  
+  int src_node_id = 0;
+  int dst_node_id = 0;
+  int * nodeid = NULL;
+  int v;
+  int size = 0;
+  void * link = NULL;
+  route_cache_element_t elm = NULL;
   xbt_dynar_t nodes = xbt_graph_get_nodes(routing->route_graph);
 
   /*Use the graph_node id mapping set to quickly find the nodes */
   graph_node_map_element_t src_elm = graph_node_map_search(src_id);
   graph_node_map_element_t dst_elm = graph_node_map_search(dst_id);
   xbt_assert2(src_elm != NULL && dst_elm != NULL, "src %d or dst %d does not exist", src_id, dst_id);
-  int src_node_id = ((graph_node_data_t)xbt_graph_node_get_data(src_elm->node))->graph_id;
-  int dst_node_id = ((graph_node_data_t)xbt_graph_node_get_data(dst_elm->node))->graph_id;
+  src_node_id = ((graph_node_data_t)xbt_graph_node_get_data(src_elm->node))->graph_id;
+  dst_node_id = ((graph_node_data_t)xbt_graph_node_get_data(dst_elm->node))->graph_id;
 
-  route_cache_element_t elm = NULL;
   if(routing->cached) {
     /*check if there is a cached predecessor list avail */
     elm = (route_cache_element_t)xbt_dict_get_or_null_ext(routing->route_cache, (char*)(&src_id), sizeof(int));
@@ -883,7 +896,7 @@ static xbt_dynar_t routing_dijkstra_get_route(int src_id,int dst_id) {
       pred_arr[i] = 0;
 
       //initialize priority queue
-      int * nodeid = xbt_new0(int, 1);
+      nodeid = xbt_new0(int, 1);
       *nodeid = i;
       xbt_heap_push(pqueue, nodeid, cost_arr[i]);
 
@@ -906,7 +919,7 @@ static xbt_dynar_t routing_dijkstra_get_route(int src_id,int dst_id) {
         if(cost_v_u + cost_arr[*v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = *v_id;
           cost_arr[u_id] = cost_v_u + cost_arr[*v_id];
-          int * nodeid = xbt_new0(int, 1);
+          nodeid = xbt_new0(int, 1);
           *nodeid = u_id;
           xbt_heap_push(pqueue, nodeid, cost_arr[u_id]);
         }
@@ -924,8 +937,6 @@ static xbt_dynar_t routing_dijkstra_get_route(int src_id,int dst_id) {
   //compose route path with links
   xbt_dynar_reset(routing->last_route);
 
-  int v;
-  int size = 0;
   for(v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
     xbt_node_t node_v = xbt_dynar_get_as(nodes, v, xbt_node_t);
@@ -933,7 +944,7 @@ static xbt_dynar_t routing_dijkstra_get_route(int src_id,int dst_id) {
 
     xbt_assert2(edge != NULL, "no route between host %d and %d", src_id, dst_id);
 
-    void * link = xbt_graph_edge_get_data(edge);
+    link = xbt_graph_edge_get_data(edge);
     xbt_dynar_unshift(routing->last_route, &link);
     size++;
   }

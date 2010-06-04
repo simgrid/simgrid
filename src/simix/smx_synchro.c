@@ -349,11 +349,10 @@ smx_sem_t SIMIX_sem_init(int capacity) {
 }
 /** @brief Destroys a semaphore */
 void SIMIX_sem_destroy(smx_sem_t sem) {
+  smx_action_t action = NULL;
   DEBUG1("Destroy semaphore %p", sem);
   if (sem == NULL)
     return;
-
-  smx_action_t action = NULL;
 
   xbt_assert0(xbt_swag_size(sem->sleeping) == 0,
       "Cannot destroy semaphore since someone is still using it");
