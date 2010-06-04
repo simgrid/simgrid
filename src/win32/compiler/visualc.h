@@ -331,29 +331,44 @@ the double. For now, GRAS requires the structures to be compacted. */
 #endif
 
 /* This macro is not defined in borland stdarg.h include file, adds it. */
-#define va_copy(dest,src)   ((dest)=(src))  
+#ifndef va_copy(dest,src)
+	#define va_copy(dest,src)   ((dest)=(src))
+#endif
 
+#ifndef __VA_COPY_USE_ASP(d, s)
 /* Predefined possible va_copy() implementation (id: ASP) */
-#define __VA_COPY_USE_ASP(d, s) do { *(d) = *(s); } while (0)
+	#define __VA_COPY_USE_ASP(d, s) do { *(d) = *(s); } while (0)
+#endif
 
+#ifndef __VA_COPY_USE_ASS(d, s)
 /* Predefined possible va_copy() implementation (id: ASS) */
-#define __VA_COPY_USE_ASS(d, s) do { (d) = (s); } while (0)
+	#define __VA_COPY_USE_ASS(d, s) do { (d) = (s); } while (0)
+#endif
 
+#ifndef __VA_COPY_USE_C99(d, s)
 /* Predefined possible va_copy() implementation (id: C99) */
-#define __VA_COPY_USE_C99(d, s) va_copy((d), (s))
+	#define __VA_COPY_USE_C99(d, s) va_copy((d), (s))
+#endif
 
+#ifndef __VA_COPY_USE_CPP(d, s)
 /* Predefined possible va_copy() implementation (id: CPP) */
-#define __VA_COPY_USE_CPP(d, s) memcpy((void *)(d), (void *)(s)), sizeof(*(s))
+	#define __VA_COPY_USE_CPP(d, s) memcpy((void *)(d), (void *)(s)), sizeof(*(s))
+#endif
 
+#ifndef __VA_COPY_USE_CPS(d, s)
 /* Predefined possible va_copy() implementation (id: CPS) */
-#define __VA_COPY_USE_CPS(d, s) memcpy((void *)&(d), (void *)&(s)), sizeof((s))
+	#define __VA_COPY_USE_CPS(d, s) memcpy((void *)&(d), (void *)&(s)), sizeof((s))
+#endif
 
+#ifndef __VA_COPY_USE_GCB(d, s)
 /* Predefined possible va_copy() implementation (id: GCB) */
-#define __VA_COPY_USE_GCB(d, s) __builtin_va_copy((d), (s))
+	#define __VA_COPY_USE_GCB(d, s) __builtin_va_copy((d), (s))
+#endif
 
+#ifndef __VA_COPY_USE_GCH(d, s)
 /* Predefined possible va_copy() implementation (id: GCH) */
-#define __VA_COPY_USE_GCH(d, s) __va_copy((d), (s))
-
+	#define __VA_COPY_USE_GCH(d, s) __va_copy((d), (s))
+#endif
 /* Predefined possible va_copy() implementation (id: GCM) */
 #define __VA_COPY_USE_GCM(d, s) VA_COPY((d), (s))
 
@@ -374,7 +389,9 @@ the double. For now, GRAS requires the structures to be compacted. */
 #endif
 
 /* Define to id of used va_copy() implementation */
-#define __VA_COPY_USE __VA_COPY_USE_C99
+#ifndef __VA_COPY_USE
+	#define __VA_COPY_USE __VA_COPY_USE_C99
+#endif
 
 #ifndef _XBT_CALL
 	#if defined(_XBT_DESIGNATED_DLL)
