@@ -233,7 +233,44 @@ static XBT_INLINE void SIMIX_communication_start(smx_comm_t comm)
 }
 
 /**
- *  \brief Waits for communication completion and performs error checking
+ * \brief Performs error checking and cleanup
+ * \param comm The communication
+ */
+static XBT_INLINE void SIMIX_communication_cleanup(smx_comm_t comm)
+{
+  DEBUG1("Checking errors and cleaning communication %p", comm);
+
+  /* Make sure that everyone sleeping on that semaphore is awake, and that nobody will ever block on it */
+  SIMIX_sem_release_forever(comm->sem);
+  
+  /* Check for errors other than timeouts */
+  if (!SIMIX_host_get_state(SIMIX_host_self())){
+    if(comm->rdv)
+      SIMIX_rdv_remove(comm->rdv, comm);
+    SIMIX_communication_destroy(comm);
+    THROW0(host_error, 0, "Host failed");
+  } else if (SIMIX_action_get_state(comm->act) == SURF_ACTION_FAILED){
+    SIMIX_communication_destroy(comm);
+    THROW0(network_error, 0, "Link failure");
+  } else if (!SIMIX_host_get_state(SIMIX_process_get_host(comm->dst_proc)) ||
+      !SIMIX_host_get_state(SIMIX_process_get_host(comm->src_proc))) {
+    /* We test both src&dst because we dunno who we are today, and we already tested myself above.
+     *    So, at the end, we test the remote peer only
+     * Moreover, we have to test it because if the remote peer fails, the action comm->act is not done nor failed.
+     *    In that case, we got awaken by the little endless actions created in the SIMIX_sem_acquire(comm->sem)
+     *    at the beginning of this function. */
+    SIMIX_communication_destroy(comm);
+    THROW0(network_error, 0, "Remote peer failed");
+
+  }
+  /* Copy network data */
+  SIMIX_network_copy_data(comm);  
+
+  SIMIX_communication_destroy(comm);
+}
+
+/**
+ *  \brief Waits for communication completion
  *  \param comm The communication
  *  \param timeout The max amount of time to wait for the communication to finish
  *
@@ -285,35 +322,8 @@ static XBT_INLINE void SIMIX_communication_wait_for_completion(smx_comm_t comm, 
     THROW1(timeout_error, 0, "Communication timeouted because of %s",src_timeout?"the source":"the destination");
   }
 
-  DEBUG1("Communication %p complete! Let's check for errors", comm);
-
-  /* Make sure that everyone sleeping on that semaphore is awake, and that nobody will ever block on it */
-  SIMIX_sem_release_forever(comm->sem);
-  
-  /* Check for errors other than timeouts (they are catched above) */
-  if (!SIMIX_host_get_state(SIMIX_host_self())){
-    if(comm->rdv)
-      SIMIX_rdv_remove(comm->rdv, comm);
-    SIMIX_communication_destroy(comm);
-    THROW0(host_error, 0, "Host failed");
-  } else if (SIMIX_action_get_state(comm->act) == SURF_ACTION_FAILED){
-    SIMIX_communication_destroy(comm);
-    THROW0(network_error, 0, "Link failure");
-  } else if (!SIMIX_host_get_state(SIMIX_process_get_host(comm->dst_proc)) ||
-      !SIMIX_host_get_state(SIMIX_process_get_host(comm->src_proc))) {
-    /* We test both src&dst because we dunno who we are today, and we already tested myself above.
-     *    So, at the end, we test the remote peer only
-     * Moreover, we have to test it because if the remote peer fails, the action comm->act is not done nor failed.
-     *    In that case, we got awaken by the little endless actions created in the SIMIX_sem_acquire(comm->sem)
-     *    at the beginning of this function. */
-    SIMIX_communication_destroy(comm);
-    THROW0(network_error, 0, "Remote peer failed");
-
-  }
-  /* Copy network data */
-  SIMIX_network_copy_data(comm);  
-
-  SIMIX_communication_destroy(comm);
+  DEBUG1("Communication %p complete!", comm);
+  SIMIX_communication_cleanup(comm);
 }
 
 /**
@@ -590,6 +600,6 @@ unsigned int SIMIX_network_waitany(xbt_dynar_t comms)
   xbt_dynar_get_cpy(comms,found_comm,&comm_finished);
 
   /* Check for errors and cleanup the comm */
-  SIMIX_communication_wait_for_completion(comm_finished,-1);
+  SIMIX_communication_cleanup(comm_finished);
   return found_comm;
 }
