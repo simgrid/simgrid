@@ -30,9 +30,9 @@ int main(int argc, char **argv)
   const SD_link_t *route;
   int route_size;
   SD_task_t taskA;
-  SD_task_t taskB;
-  SD_task_t taskC;
-  SD_task_t taskD;
+  SD_task_t taskB, checkB;
+  SD_task_t taskC, checkC;
+  SD_task_t taskD, checkD;
   xbt_ex_t ex;
 
   /* initialisation of SD */
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
       0, communication_amount12,
       communication_amount21, 0
     };
-    SD_task_t *changed_tasks;
+    xbt_dynar_t changed_tasks;
     double rate = -1.0;
 
     /* estimated time */
@@ -164,12 +164,16 @@ int main(int argc, char **argv)
                      computation_amount, communication_amount, rate);
 
     changed_tasks = SD_simulate(-1.0);
-    xbt_assert0(changed_tasks[0] == taskD &&
-                changed_tasks[1] == taskC &&
-                changed_tasks[2] == taskB &&
-                changed_tasks[3] == NULL, "Unexpected simulation results");
 
-    xbt_free(changed_tasks);
+    xbt_dynar_get_cpy(changed_tasks, 0, &checkD);
+    xbt_dynar_get_cpy(changed_tasks, 1, &checkC);
+    xbt_dynar_get_cpy(changed_tasks, 2, &checkB);
+ 
+    xbt_assert0(checkD == taskD &&
+                checkC == taskC &&
+                checkB == taskB, "Unexpected simulation results");
+
+    xbt_dynar_free_container(&changed_tasks);
   }
   DEBUG0("Destroying tasks...");
 

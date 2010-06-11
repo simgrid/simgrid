@@ -20,7 +20,7 @@ int main(int argc, char **argv)
   const SD_workstation_t *workstations;
   int kind;
   SD_task_t task, taskA, taskB, taskC;
-  SD_task_t *changed_tasks;
+  xbt_dynar_t changed_tasks;
   SD_workstation_t workstation_list[2];
   double computation_amount[2];
   double communication_amount[4] = { 0 };
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
                    &(computation_amount[1]), SD_SCHED_NO_COST, rate);
 
   /* let's launch the simulation! */
-  while(*(changed_tasks = SD_simulate(-1.0))){
+  while(xbt_dynar_length(changed_tasks = SD_simulate(-1.0))>0){
     for(i=0;i<2; i++){
       task = SD_workstation_get_current_task(workstations[i]);
       if (task)
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 	ERROR0("Shouldn't be here");
       }
     }
-    xbt_free(changed_tasks);
+    xbt_dynar_free_container(&changed_tasks);
   }
 
   DEBUG0("Destroying tasks...");

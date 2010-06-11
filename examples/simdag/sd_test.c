@@ -26,8 +26,8 @@ int main(int argc, char **argv)
   double communication_amount21;
   const SD_link_t *route;
   int route_size;
-  SD_task_t task, taskA, taskB, taskC, taskD;
-  SD_task_t *changed_tasks;
+  SD_task_t task, taskA, taskB, taskC, taskD, checkB, checkD;
+  xbt_dynar_t changed_tasks;
   xbt_ex_t ex;
   const int workstation_number = 2;
   SD_workstation_t workstation_list[2];
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   double rate = -1.0;
   SD_workstation_t w1, w2;
 
-  /* initialisation of SD */
+  /* initialization of SD */
   SD_init(&argc, argv);
 
   /*  xbt_log_control_set("sd.thres=debug"); */
@@ -176,18 +176,20 @@ int main(int argc, char **argv)
                    computation_amount, communication_amount, rate);
 
   changed_tasks = SD_simulate(-1.0);
-  for (i = 0; changed_tasks[i] != NULL; i++) {
-    INFO3("Task '%s' start time: %f, finish time: %f",
-          SD_task_get_name(changed_tasks[i]),
-          SD_task_get_start_time(changed_tasks[i]),
-          SD_task_get_finish_time(changed_tasks[i]));
+  xbt_dynar_foreach(changed_tasks, i, task){
+		  INFO3("Task '%s' start time: %f, finish time: %f",
+          SD_task_get_name(task),
+          SD_task_get_start_time(task),
+          SD_task_get_finish_time(task));
   }
 
-  xbt_assert0(changed_tasks[0] == taskD &&
-              changed_tasks[1] == taskB &&
-              changed_tasks[2] == NULL, "Unexpected simulation results");
+  xbt_dynar_get_cpy(changed_tasks, 0, &checkD);
+  xbt_dynar_get_cpy(changed_tasks, 1, &checkB);
 
-  xbt_free(changed_tasks);
+  xbt_assert0(checkD == taskD &&
+              checkB == taskB, "Unexpected simulation results");
+
+  xbt_dynar_free_container(&changed_tasks);
 
   DEBUG0("Destroying tasks...");
 
