@@ -195,6 +195,7 @@ ENDIF(${ARCH_32_BITS})
 # simdag examples
 ADD_TEST(simdag-test_simdag	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag test_simdag.tesh)
 ADD_TEST(simdag-test_simdag2	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag test_simdag2.tesh)
+ADD_TEST(simdag-test_simdag_seq_access	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag test_simdag_seq_access.tesh)
 ADD_TEST(simdag-test_prop	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag properties/test_prop.tesh)
 ADD_TEST(simdag-metaxml_test	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag metaxml/metaxml_test.tesh)
 

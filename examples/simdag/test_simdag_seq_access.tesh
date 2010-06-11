@@ -1,0 +1,15 @@
+#! ./tesh
+
+p Simple test of simdag
+
+$ $SG_TEST_EXENV ./sd_seq_access ${srcdir:=.}/2clusters.xml
+> [0.000000] [sd_seq_access/INFO] Access mode of C2-05 is sequential
+> [0.000000] [sd_seq_access/INFO] Access mode of C2-06 is sequential
+> [0.000000] [sd_seq_access/INFO] Task A is currently running on C2-05 (SD_TASK_COMP_SEQ)
+> [0.000000] [sd_seq_access/INFO] There is no task running on C2-06
+> [0.400000] [sd_seq_access/INFO] Task B is currently running on C2-05 (SD_TASK_COMM_E2E)
+> [0.400000] [sd_seq_access/INFO] Task B is currently running on C2-06 (SD_TASK_COMM_E2E)
+> [30.400300] [sd_seq_access/INFO] Task C is currently running on C2-05 (SD_TASK_COMP_SEQ)
+> [30.400300] [sd_seq_access/INFO] There is no task running on C2-06
+> [30.800300] [sd_seq_access/INFO] There is no task running on C2-05
+> [30.800300] [sd_seq_access/INFO] There is no task running on C2-06
