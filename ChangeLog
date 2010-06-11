@@ -1,5 +1,17 @@
 SimGrid (3.5) unstable; urgency=low
 
+ SimDag
+ 
+ * Change the way a task is considered as ready. Instead of removing 
+   dependencies when a task is done, a counter is decreased. This way,
+   it is always possible to reach ancestors thanks to the 
+   SD_taks_get_parents function (even after the end of the simulation.)	   
+ * Change the level of some logs in sd_global from INFO to VERB. The
+   corresponding tests are now less verbose
+ * Change the return type of SD_Simulate from (SD_task_t*) into
+   xbt_dynar_t. This function was in handling a dynar internally and
+   converted it into a NULL terminated array for historical reasons.
+ 
  XBT
  * New data container: setset (set of sets of elements)
  * New module: mmalloc (mapped malloc)
@@ -37,13 +49,7 @@ SimGrid (3.4.1) stable; urgency=low
  SimDag
  * Warn the user about loop dependencies in data flow of DAX files
  * Obey the control-flow dependencies of DAX files
- * Change the way a task is considered as ready. Instead of removing 
-   dependencies when a task is done, a counter is decreased. This way,
-   it is always possible to reach ancestors thanks to the 
-   SD_taks_get_parents function (even after the end of the simulation.)	   
- * Change the level of some logs in sd_global from INFO to VERB. The
-   corresponding tests are now less verbose
-  
+
  Cmake
  * Add option "enable_smpi" allowing to not compile SMPI. 
    Probably useful for the (Mac) users experiencing a build error here
