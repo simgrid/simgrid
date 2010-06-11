@@ -37,7 +37,13 @@ SimGrid (3.4.1) stable; urgency=low
  SimDag
  * Warn the user about loop dependencies in data flow of DAX files
  * Obey the control-flow dependencies of DAX files
-
+ * Change the way a task is considered as ready. Instead of removing 
+   dependencies when a task is done, a counter is decreased. This way,
+   it is always possible to reach ancestors thanks to the 
+   SD_taks_get_parents function (even after the end of the simulation.)	   
+ * Change the level of some logs in sd_global from INFO to VERB. The
+   corresponding tests are now less verbose
+  
  Cmake
  * Add option "enable_smpi" allowing to not compile SMPI. 
    Probably useful for the (Mac) users experiencing a build error here
