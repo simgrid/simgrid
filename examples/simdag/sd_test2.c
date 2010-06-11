@@ -196,6 +196,8 @@ int main(int argc, char **argv)
   /* let's launch the simulation! */
   changed_tasks = SD_simulate(-1.0);
 
+  INFO1("Simulation time: %f", SD_get_clock());
+
   free(changed_tasks);
 
   free(ParComp_wocomm_table);

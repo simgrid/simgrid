@@ -3,23 +3,4 @@
 p Simple test of simdag
 
 $ $SG_TEST_EXENV ./sd_test2 ${srcdir:=.}/2clusters.xml
-> [0.000000] [sd_kernel/INFO] Starting simulation...
-> [0.000000] [sd_kernel/INFO] Executing task 'Initial'
-> [0.000000] [sd_kernel/INFO] Task 'Initial' done
-> [0.000000] [sd_kernel/INFO] Executing task 'PtoP Comm 1'
-> [0.000000] [sd_kernel/INFO] Executing task 'PtoP Comm 2'
-> [0.037800] [sd_kernel/INFO] Task 'PtoP Comm 2' done
-> [0.375300] [sd_kernel/INFO] Task 'PtoP Comm 1' done
-> [0.375300] [sd_kernel/INFO] Executing task 'Par Comp without comm'
-> [1.375300] [sd_kernel/INFO] Task 'Par Comp without comm' done
-> [1.375300] [sd_kernel/INFO] Executing task 'intra redist'
-> [1.395600] [sd_kernel/INFO] Task 'intra redist' done
-> [1.395600] [sd_kernel/INFO] Executing task 'Par Comp with comm 1'
-> [2.395900] [sd_kernel/INFO] Task 'Par Comp with comm 1' done
-> [2.395900] [sd_kernel/INFO] Executing task 'inter redist'
-> [8.771500] [sd_kernel/INFO] Task 'inter redist' done
-> [8.771500] [sd_kernel/INFO] Executing task 'Par Comp with comm 2'
-> [8.811800] [sd_kernel/INFO] Task 'Par Comp with comm 2' done
-> [8.811800] [sd_kernel/INFO] Executing task 'Final'
-> [9.811800] [sd_kernel/INFO] Task 'Final' done
-> [9.811800] [sd_kernel/INFO] Simulation finished
+> [9.811800] [sd_test/INFO] Simulation time: 9.811800
