@@ -9,6 +9,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "simdag/simdag.h"
+#include "xbt/log.h"
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic6, sd, "SimDag test basic6");
 
 int main(int argc, char **argv)
 {
@@ -28,6 +31,8 @@ int main(int argc, char **argv)
                    -1.0);
 
   SD_simulate(-1.0);
+
+  INFO1("Simulation time: %f", SD_get_clock());
 
   SD_exit();
   return 0;

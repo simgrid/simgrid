@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "simdag/simdag.h"
+#include "xbt/log.h"
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic5, sd, "SimDag test basic5");
 
 int main(int argc, char **argv)
 {
@@ -23,7 +26,7 @@ int main(int argc, char **argv)
   double amount[] = { 0., 100000., 0., 0. };
   double comput[] = { 10000000. };
 
-  /* initialisation of SD */
+  /* initialization of SD */
   SD_init(&argc, argv);
 
   /* creation of the environment */
@@ -46,6 +49,8 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, taskInit, taskB);
 
   SD_simulate(-1.0);
+
+  INFO1("Simulation time: %f", SD_get_clock());
 
   SD_exit();
   return 0;

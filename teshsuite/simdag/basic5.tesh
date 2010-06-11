@@ -1,9 +1,2 @@
 $ simdag/basic5 ${srcdir:=.}/simdag/basic_platform.xml --surf-path=${srcdir}
-> [0.000000] [sd_kernel/INFO] Starting simulation...
-> [0.000000] [sd_kernel/INFO] Executing task 'Task Init'
-> [0.000000] [sd_kernel/INFO] Task 'Task Init' done
-> [0.000000] [sd_kernel/INFO] Executing task 'Task A'
-> [0.000000] [sd_kernel/INFO] Executing task 'Task B'
-> [0.001100] [sd_kernel/INFO] Task 'Task A' done
-> [0.002500] [sd_kernel/INFO] Task 'Task B' done
-> [0.002500] [sd_kernel/INFO] Simulation finished
+> [0.002500] [basic5/INFO] Simulation time: 0.002500

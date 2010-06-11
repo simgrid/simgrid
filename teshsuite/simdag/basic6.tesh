@@ -1,7 +1,3 @@
 $ simdag/basic6 ${srcdir:=.}/simdag/network/p2p/platform_2p_1sl.xml --surf-path=${srcdir}
-> [0.000000] [sd_kernel/INFO] Starting simulation...
-> [0.000000] [sd_kernel/INFO] Executing task 'Task A'
-> [0.000000] [sd_kernel/INFO] Executing task 'Task B'
-> [2.000000] [sd_kernel/INFO] Task 'Task A' done
-> [2.000000] [sd_kernel/INFO] Task 'Task B' done
-> [2.000000] [sd_kernel/INFO] Simulation finished
+> [2.000000] [basic6/INFO] Simulation time: 2.000000
+
