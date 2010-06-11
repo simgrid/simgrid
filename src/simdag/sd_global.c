@@ -184,14 +184,13 @@ void SD_create_environment(const char *platform_file)
  * \return a NULL-terminated array of \ref SD_task_t whose state has changed.
  * \see SD_task_schedule(), SD_task_watch()
  */
-SD_task_t *SD_simulate(double how_long)
+xbt_dynar_t SD_simulate(double how_long)
 {
   double total_time = 0.0;      /* we stop the simulation when total_time >= how_long */
   double elapsed_time = 0.0;
   SD_task_t task, task_safe, dst;
   SD_dependency_t dependency;
   surf_action_t action;
-  SD_task_t *res = NULL;
   xbt_dynar_t changed_tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
   unsigned int iter, depcnt;
   static int first_time = 1;
@@ -290,19 +289,12 @@ SD_task_t *SD_simulate(double how_long)
     }
   }
 
-  res = xbt_new0(SD_task_t, (xbt_dynar_length(changed_tasks) + 1));
-
-  xbt_dynar_foreach(changed_tasks, iter, task) {
-    res[iter] = task;
-  }
-  xbt_dynar_free(&changed_tasks);
-
   VERB0("Simulation finished");
   DEBUG3("elapsed_time = %f, total_time = %f, watch_point_reached = %d",
          elapsed_time, total_time, sd_global->watch_point_reached);
   DEBUG1("current time = %f", surf_get_clock());
 
-  return res;
+  return changed_tasks;
 }
 
 /**
