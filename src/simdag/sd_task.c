@@ -52,7 +52,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   /* dependencies */
   task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
   task->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
-
+  task->unsatisfied_dependencies=0;
   /* scheduling parameters */
   task->workstation_nb = 0;
   task->workstation_list = NULL;
@@ -150,7 +150,7 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   task->state = new_state;
 
   if (task->watch_points & new_state) {
-    INFO1("Watch point reached with task '%s'!", SD_task_get_name(task));
+    VERB1("Watch point reached with task '%s'!", SD_task_get_name(task));
     sd_global->watch_point_reached = 1;
     SD_task_unwatch(task, new_state);   /* remove the watch point */
   }
@@ -314,6 +314,7 @@ void SD_task_dump(SD_task_t task)
     }
   }
   INFO1("  - amount: %.0f",SD_task_get_amount(task));
+  INFO1("  - Dependencies to satisfy: %d", task->unsatisfied_dependencies);
   if (xbt_dynar_length(task->tasks_before)) {
     INFO0("  - pre-dependencies:");
     xbt_dynar_foreach(task->tasks_before,counter,dependency) {
@@ -426,6 +427,8 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   xbt_dynar_push(src->tasks_after, &dependency);
   xbt_dynar_push(dst->tasks_before, &dependency);
 
+  dst->unsatisfied_dependencies++;
+
   /* if the task was ready, then dst->tasks_before is not empty anymore,
      so we must go back to state SD_SCHEDULED */
   if (__SD_task_is_ready(dst)) {
@@ -516,6 +519,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
     if (dependency->src == src) {
       xbt_dynar_remove_at(dynar, i, NULL);
       __SD_task_dependency_destroy(dependency);
+      dst->unsatisfied_dependencies--;
       found = 1;
     }
   }
@@ -526,7 +530,8 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
               SD_task_get_name(src), SD_task_get_name(dst));
 
   /* if the task was scheduled and dst->tasks_before is empty now, we can make it ready */
-  if (xbt_dynar_length(dst->tasks_before) == 0 && __SD_task_is_scheduled(dst))
+
+   if (dst->unsatisfied_dependencies == 0 && __SD_task_is_scheduled(dst))
     __SD_task_set_state(dst, SD_READY);
 
   /*  __SD_print_dependencies(src);
@@ -687,7 +692,7 @@ static XBT_INLINE void SD_task_do_schedule(SD_task_t task) {
             SD_task_get_name(task));
 
  /* update the task state */
-  if (xbt_dynar_length(task->tasks_before) == 0)
+  if (task->unsatisfied_dependencies == 0)
     __SD_task_set_state(task, SD_READY);
   else
     __SD_task_set_state(task, SD_SCHEDULED);

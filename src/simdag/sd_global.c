@@ -193,12 +193,12 @@ SD_task_t *SD_simulate(double how_long)
   surf_action_t action;
   SD_task_t *res = NULL;
   xbt_dynar_t changed_tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
-  unsigned int iter;
+  unsigned int iter, depcnt;
   static int first_time = 1;
 
   SD_CHECK_INIT_DONE();
 
-  INFO0("Starting simulation...");
+  VERB0("Starting simulation...");
 
   if (first_time) {
     surf_presolve();            /* Takes traces into account */
@@ -213,7 +213,7 @@ SD_task_t *SD_simulate(double how_long)
 
   /* explore the ready tasks */
   xbt_swag_foreach_safe(task, task_safe, sd_global->ready_task_set) {
-    INFO1("Executing task '%s'", SD_task_get_name(task));
+    VERB1("Executing task '%s'", SD_task_get_name(task));
     if (__SD_task_try_to_run(task) && !xbt_dynar_member(changed_tasks, &task))
       xbt_dynar_push(changed_tasks, &task);
   }
@@ -242,7 +242,7 @@ SD_task_t *SD_simulate(double how_long)
         task = action->data;
         task->start_time = surf_workstation_model->action_get_start_time(task->surf_action);
         task->finish_time = surf_get_clock();
-        INFO1("Task '%s' done", SD_task_get_name(task));
+        VERB1("Task '%s' done", SD_task_get_name(task));
         DEBUG0("Calling __SD_task_just_done");
         __SD_task_just_done(task);
         DEBUG1("__SD_task_just_done called on task '%s'",
@@ -253,14 +253,17 @@ SD_task_t *SD_simulate(double how_long)
           xbt_dynar_push(changed_tasks, &task);
 
         /* remove the dependencies after this task */
-        while (xbt_dynar_length(task->tasks_after) > 0) {
-          xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
-          dst = dependency->dst;
-          SD_task_dependency_remove(task, dst);
+        xbt_dynar_foreach(task->tasks_after, depcnt, dependency){
+			dst = dependency->dst;
+          if (dst->unsatisfied_dependencies>0)
+        	  dst->unsatisfied_dependencies--;
+
+          if (!(dst->unsatisfied_dependencies) && __SD_task_is_scheduled(dst))
+        	  __SD_task_set_state(dst, SD_READY);
 
           /* is dst ready now? */
           if (__SD_task_is_ready(dst) && !sd_global->watch_point_reached) {
-            INFO1("Executing task '%s'", SD_task_get_name(dst));
+            VERB1("Executing task '%s'", SD_task_get_name(dst));
             if (__SD_task_try_to_run(dst) &&
                 !xbt_dynar_member(changed_tasks, &task))
               xbt_dynar_push(changed_tasks, &task);
@@ -273,7 +276,7 @@ SD_task_t *SD_simulate(double how_long)
         task = action->data;
         task->start_time = surf_workstation_model->action_get_start_time(task->surf_action);
         task->finish_time = surf_get_clock();
-        INFO1("Task '%s' failed", SD_task_get_name(task));
+        VERB1("Task '%s' failed", SD_task_get_name(task));
         __SD_task_set_state(task, SD_FAILED);
         surf_workstation_model->action_unref(action);
         task->surf_action = NULL;
@@ -294,7 +297,7 @@ SD_task_t *SD_simulate(double how_long)
   }
   xbt_dynar_free(&changed_tasks);
 
-  INFO0("Simulation finished");
+  VERB0("Simulation finished");
   DEBUG3("elapsed_time = %f, total_time = %f, watch_point_reached = %d",
          elapsed_time, total_time, sd_global->watch_point_reached);
   DEBUG1("current time = %f", surf_get_clock());
