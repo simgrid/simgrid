@@ -26,10 +26,10 @@ gras_msg_t gras_msg_recv_any(void) {
   gras_msg_t msg;
   /* Build a dynar of all communications I could get something from */
   xbt_dynar_t comms = xbt_dynar_new(sizeof(smx_comm_t),NULL);
-  unsigned int cursor;
+  unsigned int cursor = 0;
   int got = 0;
-  smx_comm_t comm;
-  gras_socket_t sock;
+  smx_comm_t comm = NULL;
+  gras_socket_t sock = NULL;
   gras_trp_sg_sock_data_t *sock_data;
   xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
     sock_data = (gras_trp_sg_sock_data_t *) sock->data;
