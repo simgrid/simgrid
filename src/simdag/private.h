@@ -36,6 +36,7 @@ typedef struct SD_global {
 
   /* task state sets */
   xbt_swag_t not_scheduled_task_set;
+  xbt_swag_t ready_task_set;
   xbt_swag_t scheduled_task_set;
   xbt_swag_t runnable_task_set;
   xbt_swag_t in_fifo_task_set;
@@ -133,6 +134,12 @@ static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
 static XBT_INLINE int __SD_task_is_not_scheduled(SD_task_t task)
 {
   return task->state_set == sd_global->not_scheduled_task_set;
+}
+
+/* Returns whether the state of the given task is SD_SCHEDULED. */
+static XBT_INLINE int __SD_task_is_ready(SD_task_t task)
+{
+  return task->state_set == sd_global->ready_task_set;
 }
 
 /* Returns whether the state of the given task is SD_SCHEDULED. */

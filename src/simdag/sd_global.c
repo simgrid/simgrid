@@ -58,8 +58,10 @@ void SD_init(int *argc, char **argv)
 
   sd_global->not_scheduled_task_set =
     xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->scheduled_task_set =
+  sd_global->ready_task_set =
     xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->scheduled_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->runnable_task_set =
     xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->in_fifo_task_set =
@@ -96,6 +98,7 @@ void SD_application_reinit(void)
   if (SD_INITIALISED()) {
     DEBUG0("Recreating the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);
+    xbt_swag_free(sd_global->ready_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
     xbt_swag_free(sd_global->runnable_task_set);
     xbt_swag_free(sd_global->in_fifo_task_set);
@@ -104,6 +107,8 @@ void SD_application_reinit(void)
     xbt_swag_free(sd_global->failed_task_set);
 
     sd_global->not_scheduled_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+    sd_global->ready_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
     sd_global->scheduled_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
@@ -257,8 +262,12 @@ xbt_dynar_t SD_simulate(double how_long)
           if (dst->unsatisfied_dependencies>0)
         	  dst->unsatisfied_dependencies--;
 
-          if (!(dst->unsatisfied_dependencies) && __SD_task_is_scheduled(dst))
-        	  __SD_task_set_state(dst, SD_RUNNABLE);
+          if (!(dst->unsatisfied_dependencies)){
+        	  if (__SD_task_is_scheduled(dst))
+        		  __SD_task_set_state(dst, SD_RUNNABLE);
+        	  else
+        		  __SD_task_set_state(dst, SD_READY);
+          }
 
           /* is dst runnable now? */
           if (__SD_task_is_runnable(dst) && !sd_global->watch_point_reached) {
@@ -336,6 +345,7 @@ void SD_exit(void)
 
     DEBUG0("Destroying the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);
+    xbt_swag_free(sd_global->ready_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
     xbt_swag_free(sd_global->runnable_task_set);
     xbt_swag_free(sd_global->in_fifo_task_set);

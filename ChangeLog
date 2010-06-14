@@ -12,10 +12,12 @@ SimGrid (3.5) unstable; urgency=low
    xbt_dynar_t. This function was in handling a dynar internally and
    converted it into a NULL terminated array for historical reasons.
  * Rename the SD_READY (all dependencies are satisfied and task is
-   scheduled) state in SD_RUNNABLE. This prevents a confusion with
-   the notion of "ready" used in DAG scheduling (all dependencies are
-   satisfied) 
- 
+   scheduled) state in SD_RUNNABLE and define a new SD_READY (all
+   dependencies are satisfied) state. 
+   This prevents a confusion between the notion of "ready to schedule"
+   (SD_READY) used in DAG scheduling and that of "ready to be
+   simulated" (SD_RUNNABLE) used by the simulation kernel.
+   
  XBT
  * New data container: setset (set of sets of elements)
  * New module: mmalloc (mapped malloc)
