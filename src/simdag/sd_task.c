@@ -694,7 +694,7 @@ double SD_task_get_execution_time(SD_task_t task,
 static XBT_INLINE void SD_task_do_schedule(SD_task_t task) {
   SD_CHECK_INIT_DONE();
 
-   if (!__SD_task_is_not_scheduled(task))
+   if (!__SD_task_is_not_scheduled(task) && !__SD_task_is_ready(task) )
      THROW1(arg_error, 0, "Task '%s' has already been scheduled",
             SD_task_get_name(task));
 
@@ -1315,7 +1315,7 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
       SD_task_t before = dep->src;
       if (before->kind == SD_TASK_COMM_E2E) {
         before->workstation_list[1] = task->workstation_list[0];
-        if (before->workstation_list[0] && __SD_task_is_not_scheduled(before)) {
+        if (before->workstation_list[0] && __SD_task_is_ready(before)) {
           SD_task_do_schedule(before);
           VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
               SD_task_get_name(before),
@@ -1328,7 +1328,8 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
       SD_task_t after = dep->dst;
       if (after->kind == SD_TASK_COMM_E2E) {
         after->workstation_list[0] = task->workstation_list[0];
-        if (after->workstation_list[1] && __SD_task_is_not_scheduled(after)) {
+        if (after->workstation_list[1] && (__SD_task_is_not_scheduled(after) ||
+        		__SD_task_is_ready(after))) {
           SD_task_do_schedule(after);
           VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
               SD_task_get_name(after),
