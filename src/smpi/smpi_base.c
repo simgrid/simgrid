@@ -19,9 +19,6 @@ XBT_LOG_EXTERNAL_CATEGORY(smpi_receiver);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_sender);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_util);
 
-#define EAGER_LIMIT 65536
-#define RDV_TAG     (-10)
-
 void smpi_process_init(int* argc, char*** argv) {
   int index;
   smpi_process_data_t data;
@@ -61,23 +58,6 @@ static MPI_Request build_request(void* buf, int count, MPI_Datatype datatype, in
   request->complete = 0;
   request->match = MPI_REQUEST_NULL;
   request->flags = flags;
-  if(request->size < EAGER_LIMIT) {
-    request->ack = MPI_REQUEST_NULL;
-  } else {
-    request->ack = xbt_new(s_smpi_mpi_request_t, 1);
-    request->ack->buf = NULL;
-    request->ack->size = 0;
-    request->ack->src = dst;
-    request->ack->dst = src;
-    request->ack->tag = RDV_TAG;
-    request->ack->comm = comm;
-    request->ack->rdv = NULL;
-    request->ack->pair = NULL;
-    request->ack->complete = 0;
-    request->ack->match = MPI_REQUEST_NULL;
-    request->ack->flags = NON_PERSISTENT | ((request->flags & RECV) == RECV ? SEND : RECV);
-    smpi_mpi_start(request->ack);
-  }
   return request;
 }
 
@@ -96,10 +76,6 @@ MPI_Request smpi_mpi_recv_init(void* buf, int count, MPI_Datatype datatype, int 
 
 void smpi_mpi_start(MPI_Request request) {
   xbt_assert0(request->complete == 0, "Cannot start a non-finished communication");
-  if(request->size >= EAGER_LIMIT) {
-    print_request("RDV ack", request->ack);
-    smpi_mpi_wait(&request->ack, MPI_STATUS_IGNORE);
-  }
   if((request->flags & RECV) == RECV) {
     smpi_process_post_recv(request);
     print_request("New recv", request);

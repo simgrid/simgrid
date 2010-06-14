@@ -116,6 +116,7 @@ s_surf_model_description_t surf_network_model_description[] = {
     {"Vivaldi", "Scalable network model using the Vivaldi coordinate ideas", NULL, surf_network_model_init_Vivaldi},
   {"CM02", "Realistic network model with lmm_solve and no correction factors", NULL, surf_network_model_init_CM02},
   {"LV08", "Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775" , NULL, surf_network_model_init_LegrandVelho},
+  {"SMPI", "Realistic network model with lmm_solve and correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB)", NULL, surf_network_model_init_SMPI},
 #ifdef HAVE_GTNETS
   {"GTNets", "Network Pseudo-model using the GTNets simulator instead of an analytic model", NULL, surf_network_model_init_GTNETS},
 #endif

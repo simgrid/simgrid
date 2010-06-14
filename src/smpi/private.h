@@ -32,7 +32,6 @@ typedef struct s_smpi_mpi_request {
   int complete;
   MPI_Request match;
   unsigned flags;
-  MPI_Request ack;
 } s_smpi_mpi_request_t;
 
 void smpi_process_init(int* argc, char*** argv);

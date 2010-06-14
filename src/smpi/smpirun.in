@@ -13,6 +13,8 @@ NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
 NUMPROCS="${DEFAULT_NUMPROCS}"
 POWER="${DEFAULT_POWER}"
 
+SIMOPTS="--cfg=network/model:SMPI --cfg=TCP_gamma:4194304"
+
 while true; do
   case "$1" in
    "-np" | "-n")

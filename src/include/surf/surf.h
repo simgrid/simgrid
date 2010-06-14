@@ -340,6 +340,18 @@ XBT_PUBLIC(void) create_workstations(void);
  */
 XBT_PUBLIC_DATA(surf_model_t) surf_network_model;
 
+/** \brief Same as network model 'LagrangeVelho', only with different correction factors.
+ *  \ingroup SURF_models
+ *  \param filename XML platform file name
+ *
+ * This model is proposed by Pierre-Nicolas Clauss and Martin Quinson and Stéphane Génaud
+ * based on the model 'LV08' and different correction factors depending on the communication
+ * size (< 1KiB, < 64KiB, >= 64KiB).
+ *
+ *  \see surf_workstation_model_init_SMPI()
+ */
+XBT_PUBLIC(void) surf_network_model_init_SMPI(const char *filename);
+
 /** \brief Initializes the platform with the network model 'LagrangeVelho'
  *  \ingroup SURF_models
  *  \param filename XML platform file name

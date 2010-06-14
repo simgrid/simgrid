@@ -22,6 +22,70 @@ double sg_weight_S_parameter = 0.0;/* default value; can be set by model or from
 double sg_tcp_gamma = 0.0;
 
 
+/******************************************************************************/
+/*                           Factors callbacks                                */
+/******************************************************************************/ 
+static double constant_latency_factor(double size)
+{
+  return sg_latency_factor;
+}
+
+static double constant_bandwidth_factor(double size)
+{
+  return sg_bandwidth_factor;
+}
+
+static double constant_bandwidth_constraint(double rate, double bound, double size)
+{
+  return rate;
+}
+
+/**********************/
+/*   SMPI callbacks   */
+/**********************/
+static double smpi_latency_factor(double size)
+{
+  /* 1 B <= size <= 1 KiB */
+  if (size <= 1024.0) {
+    return 1.0056;
+  }
+
+  /* 2 KiB <= size <= 32 KiB */
+  if (size <= 32768.0) {
+    return 1.8805;
+  }
+
+  /* 64 KiB <= size <= 4 MiB */
+  return 22.7111;
+}
+
+static double smpi_bandwidth_factor(double size)
+{
+  /* 1 B <= size <= 1 KiB */
+  if (size <= 1024.0) {
+    return 0.2758;
+  }
+
+  /* 2 KiB <= size <= 32 KiB */
+  if (size <= 32768.0) {
+    return 0.5477;
+  }
+
+  /* 64 KiB <= size <= 4 MiB */
+  return 0.9359;
+}
+
+static double smpi_bandwidth_constraint(double rate, double bound, double size)
+{
+  return rate < 0 ? bound : min(bound, rate * smpi_bandwidth_factor(size));
+}
+
+
+static double (*latency_factor_callback)(double) = &constant_latency_factor;
+static double (*bandwidth_factor_callback)(double) = &constant_bandwidth_factor;
+static double (*bandwidth_constraint_callback)(double, double, double) = &constant_bandwidth_constraint;
+
+
 static link_CM02_t net_link_new(char *name,
                             double bw_initial,
                             tmgr_trace_t bw_trace,
@@ -385,6 +449,7 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
   link_CM02_t link;
   int failed = 0;
   surf_action_network_CM02_t action = NULL;
+  double bandwidth_bound;
   /* LARGE PLATFORMS HACK:
      Add a link_CM02_t *link and a int link_nb to network_card_CM02_t. It will represent local links for this node
      Use the cluster_id for ->id */
@@ -414,17 +479,23 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
 
   action->latency = 0.0;
   action->weight = 0.0;
+  bandwidth_bound = -1.0;
   xbt_dynar_foreach(route, i, link) {
     action->latency += link->lat_current;
     action->weight +=
       link->lat_current +
       sg_weight_S_parameter /
       (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
+    if(bandwidth_bound < 0.0)
+      bandwidth_bound = (*bandwidth_factor_callback)(size) * (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
+    else
+      bandwidth_bound = min(bandwidth_bound, (*bandwidth_factor_callback)(size) * (link->lmm_resource.power.peak * link->lmm_resource.power.scale));
   }
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
   action->lat_current = action->latency;
-  action->latency *= sg_latency_factor;
+  action->latency *= (*latency_factor_callback)(size);
+  action->rate = (*bandwidth_constraint_callback)(action->rate, bandwidth_bound, size);
 
   /* LARGE PLATFORMS HACK:
      lmm_variable_new(..., total_route_size) */
@@ -563,6 +634,28 @@ static void surf_network_model_init_internal(void)
                                 498000000, NULL, 0.000015, NULL,
                                 SURF_RESOURCE_ON, NULL, SURF_LINK_FATPIPE,
                                 NULL));
+}
+
+/************************************************************************/
+/* New model based on LV08 and experimental results of MPI ping-pongs   */
+/************************************************************************/
+void surf_network_model_init_SMPI(const char *filename)
+{
+
+  if (surf_network_model)
+    return;
+  surf_network_model_init_internal();
+  latency_factor_callback = &smpi_latency_factor;
+  bandwidth_factor_callback = &smpi_bandwidth_factor;
+  bandwidth_constraint_callback = &smpi_bandwidth_constraint;
+  net_define_callbacks(filename);
+  xbt_dynar_push(model_list, &surf_network_model);
+  network_solve = lmm_solve;
+
+  xbt_cfg_setdefault_double(_surf_cfg_set,"network/weight_S", 8775);
+
+  update_model_description(surf_network_model_description,
+                           "SMPI", surf_network_model);
 }
 
 /************************************************************************/
