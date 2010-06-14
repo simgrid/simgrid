@@ -326,56 +326,61 @@ the double. For now, GRAS requires the structures to be compacted. */
 	#undef ADDR2LINE
 #endif
 
-#if !defined(HAVE_VA_COPY)
-	#define HAVE_VA_COPY 1
-#endif
 
-/* This macro is not defined in borland stdarg.h include file, adds it. */
-#ifndef va_copy(dest,src)
-	#define va_copy(dest,src)   ((dest)=(src))
-#endif
+#ifndef __VISUALC__
 
-#ifndef __VA_COPY_USE_ASP(d, s)
-/* Predefined possible va_copy() implementation (id: ASP) */
-	#define __VA_COPY_USE_ASP(d, s) do { *(d) = *(s); } while (0)
-#endif
+	#if !defined(HAVE_VA_COPY)
+		#define HAVE_VA_COPY 1
+	#endif
 
-#ifndef __VA_COPY_USE_ASS(d, s)
-/* Predefined possible va_copy() implementation (id: ASS) */
-	#define __VA_COPY_USE_ASS(d, s) do { (d) = (s); } while (0)
-#endif
+	/* This macro is not defined in borland stdarg.h include file, adds it. */
+	#ifndef va_copy(dest,src)
+		#define va_copy(dest,src)   ((dest)=(src))
+	#endif
 
-#ifndef __VA_COPY_USE_C99(d, s)
-/* Predefined possible va_copy() implementation (id: C99) */
-	#define __VA_COPY_USE_C99(d, s) va_copy((d), (s))
-#endif
+	#ifndef __VA_COPY_USE_ASP(d, s)
+	/* Predefined possible va_copy() implementation (id: ASP) */
+		#define __VA_COPY_USE_ASP(d, s) do { *(d) = *(s); } while (0)
+	#endif
 
-#ifndef __VA_COPY_USE_CPP(d, s)
-/* Predefined possible va_copy() implementation (id: CPP) */
-	#define __VA_COPY_USE_CPP(d, s) memcpy((void *)(d), (void *)(s)), sizeof(*(s))
-#endif
+	#ifndef __VA_COPY_USE_ASS(d, s)
+	/* Predefined possible va_copy() implementation (id: ASS) */
+		#define __VA_COPY_USE_ASS(d, s) do { (d) = (s); } while (0)
+	#endif
 
-#ifndef __VA_COPY_USE_CPS(d, s)
-/* Predefined possible va_copy() implementation (id: CPS) */
-	#define __VA_COPY_USE_CPS(d, s) memcpy((void *)&(d), (void *)&(s)), sizeof((s))
-#endif
+	#ifndef __VA_COPY_USE_C99(d, s)
+	/* Predefined possible va_copy() implementation (id: C99) */
+		#define __VA_COPY_USE_C99(d, s) va_copy((d), (s))
+	#endif
 
-#ifndef __VA_COPY_USE_GCB(d, s)
-/* Predefined possible va_copy() implementation (id: GCB) */
-	#define __VA_COPY_USE_GCB(d, s) __builtin_va_copy((d), (s))
-#endif
+	#ifndef __VA_COPY_USE_CPP(d, s)
+	/* Predefined possible va_copy() implementation (id: CPP) */
+		#define __VA_COPY_USE_CPP(d, s) memcpy((void *)(d), (void *)(s)), sizeof(*(s))
+	#endif
 
-#ifndef __VA_COPY_USE_GCH(d, s)
-/* Predefined possible va_copy() implementation (id: GCH) */
-	#define __VA_COPY_USE_GCH(d, s) __va_copy((d), (s))
-#endif
-/* Predefined possible va_copy() implementation (id: GCM) */
-#define __VA_COPY_USE_GCM(d, s) VA_COPY((d), (s))
+	#ifndef __VA_COPY_USE_CPS(d, s)
+	/* Predefined possible va_copy() implementation (id: CPS) */
+		#define __VA_COPY_USE_CPS(d, s) memcpy((void *)&(d), (void *)&(s)), sizeof((s))
+	#endif
+
+	#ifndef __VA_COPY_USE_GCB(d, s)
+	/* Predefined possible va_copy() implementation (id: GCB) */
+		#define __VA_COPY_USE_GCB(d, s) __builtin_va_copy((d), (s))
+	#endif
+
+	#ifndef __VA_COPY_USE_GCH(d, s)
+	/* Predefined possible va_copy() implementation (id: GCH) */
+		#define __VA_COPY_USE_GCH(d, s) __va_copy((d), (s))
+	#endif
+	/* Predefined possible va_copy() implementation (id: GCM) */
+	#define __VA_COPY_USE_GCM(d, s) VA_COPY((d), (s))
 
 
-/* Optional va_copy() implementation activation */
-#ifndef HAVE_VA_COPY
-#define va_copy(d, s) __VA_COPY_USE(d, s)
+	/* Optional va_copy() implementation activation */
+	#ifndef HAVE_VA_COPY
+	#define va_copy(d, s) __VA_COPY_USE(d, s)
+	#endif
+
 #endif
 
 /* xbt contexts are based on our threads implementation */
