@@ -8,6 +8,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"           /* XBT_PUBLIC */
+#ifdef _WIN32
+	#define DLL_EXPORT
+#endif
 
 #ifndef SIMGRID_PUBLIC_CONFIG_H
 #define SIMGRID_PUBLIC_CONFIG_H
