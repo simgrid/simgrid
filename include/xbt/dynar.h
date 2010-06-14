@@ -97,6 +97,8 @@ XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx,
 
 XBT_PUBLIC(int) xbt_dynar_search(xbt_dynar_t const dynar, void *elem);
 XBT_PUBLIC(int) xbt_dynar_member(xbt_dynar_t const dynar, void *elem);
+XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar, int_f_pvoid_pvoid_t compar_fn);
+
 /** @} */
 /** @defgroup XBT_dynar_perl Perl-like use of dynars
  *  @ingroup XBT_dynar

@@ -685,6 +685,22 @@ XBT_INLINE void xbt_dynar_cursor_unlock(xbt_dynar_t dynar)
   _dynar_unlock(dynar);
 }
 
+/** @brief Sorts a dynar according to the function <tt>compar_fn</tt>
+ *
+ * \param compar_fn comparison function of type (int (compar_fn*) (void*) (void*)).
+ *
+ * Remark: if the elements stored in the dynar are structures, the compar_fn
+ * function has to retrieve the field to sort first.
+ */
+XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar, int_f_pvoid_pvoid_t compar_fn){
+
+	_dynar_lock(dynar);
+
+	qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
+
+	_dynar_unlock(dynar);
+}
+
 #ifdef SIMGRID_TEST
 
 #define NB_ELEM 5000
