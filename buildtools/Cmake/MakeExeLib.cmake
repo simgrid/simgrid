@@ -23,7 +23,8 @@ set(SIMGRID_DEP "-lm")
 set(SMPI_DEP "")
 
 if(WIN32)
-	set(GRAS_DEP "-lm")
+	set(GRAS_DEP "")
+	set(SIMGRID_DEP "")
 endif(WIN32)
 
 if(HAVE_RUBY)
@@ -60,11 +61,11 @@ if(HAVE_POSIX_GETTIME)
 	SET(GRAS_DEP "${GRAS_DEP} -lrt")
 endif(HAVE_POSIX_GETTIME)
 
-target_link_libraries(simgrid 	${SIMGRID_DEP} -fprofile-arcs)
-target_link_libraries(simgrid_static	${SIMGRID_DEP} -fprofile-arcs)
-target_link_libraries(gras 	${GRAS_DEP} -fprofile-arcs)
+target_link_libraries(simgrid 	${SIMGRID_DEP})
+target_link_libraries(simgrid_static	${SIMGRID_DEP})
+target_link_libraries(gras 	${GRAS_DEP})
 if(enable_smpi)
-	target_link_libraries(smpi 	simgrid ${SMPI_DEP} -fprofile-arcs)
+	target_link_libraries(smpi 	simgrid ${SMPI_DEP})
 endif(enable_smpi)
 
 
