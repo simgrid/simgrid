@@ -4,6 +4,23 @@
 #include "setset_private.h"
 #include "xbt/sysdep.h"
 
+/*The function ffs doesn't exist for windows*/
+#ifdef WIN32
+	int XBT_INLINE ffs(int x)
+	{
+		int r;
+		__asm{
+			mov ecx, [x]
+			bsf eax, ecx
+			jnz ffs1
+			mov eax, -1
+			ffs1:
+			mov[r],eax
+		}
+		return(r);
+	}
+#endif
+
 /**
  *  \brief Create a new setset data structure
  *  \param size The initial size of the setset (in number of elements)
