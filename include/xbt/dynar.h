@@ -10,7 +10,6 @@
 #define _XBT_DYNAR_H
 
 #include <string.h> /* memcpy */
-#include <stdlib.h> /* __compar_fn_t */
 
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"
@@ -99,7 +98,7 @@ XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx,
 
 XBT_PUBLIC(int) xbt_dynar_search(xbt_dynar_t const dynar, void *elem);
 XBT_PUBLIC(int) xbt_dynar_member(xbt_dynar_t const dynar, void *elem);
-XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar, __compar_fn_t);
+XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar, int_f_cpvoid_cpvoid_t compar_fn);
 
 /** @} */
 /** @defgroup XBT_dynar_perl Perl-like use of dynars

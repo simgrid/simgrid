@@ -692,7 +692,7 @@ XBT_INLINE void xbt_dynar_cursor_unlock(xbt_dynar_t dynar)
  * Remark: if the elements stored in the dynar are structures, the compar_fn
  * function has to retrieve the field to sort first.
  */
-XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar, __compar_fn_t compar_fn){
+XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn){
 
 	_dynar_lock(dynar);
 

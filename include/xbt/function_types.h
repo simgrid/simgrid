@@ -23,6 +23,7 @@ typedef void (*void_f_int_pvoid_t) (int,void *);
      typedef int (*int_f_void_t) (void);
 
      typedef int (*int_f_pvoid_pvoid_t) (void *, void *);
+     typedef int (*int_f_cpvoid_cpvoid_t) (const void *, const void *);
 
      typedef int (*xbt_main_func_t) (int argc, char *argv[]);
 
