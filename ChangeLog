@@ -11,6 +11,10 @@ SimGrid (3.5) unstable; urgency=low
  * Change the return type of SD_Simulate from (SD_task_t*) into
    xbt_dynar_t. This function was in handling a dynar internally and
    converted it into a NULL terminated array for historical reasons.
+ * Rename the SD_READY (all dependencies are satisfied and task is
+   scheduled) state in SD_RUNNABLE. This prevents a confusion with
+   the notion of "ready" used in DAG scheduling (all dependencies are
+   satisfied) 
  
  XBT
  * New data container: setset (set of sets of elements)

@@ -37,7 +37,7 @@ typedef struct SD_global {
   /* task state sets */
   xbt_swag_t not_scheduled_task_set;
   xbt_swag_t scheduled_task_set;
-  xbt_swag_t ready_task_set;
+  xbt_swag_t runnable_task_set;
   xbt_swag_t in_fifo_task_set;
   xbt_swag_t running_task_set;
   xbt_swag_t done_task_set;
@@ -122,11 +122,11 @@ void __SD_task_just_done(SD_task_t task);
 
 /* Functions to test if the task is in a given state. */
 
-/* Returns whether the given task is scheduled or ready. */
-static XBT_INLINE int __SD_task_is_scheduled_or_ready(SD_task_t task)
+/* Returns whether the given task is scheduled or runnable. */
+static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
 {
   return task->state_set == sd_global->scheduled_task_set ||
-    task->state_set == sd_global->ready_task_set;
+    task->state_set == sd_global->runnable_task_set;
 }
 
 /* Returns whether the state of the given task is SD_NOT_SCHEDULED. */
@@ -142,9 +142,9 @@ static XBT_INLINE int __SD_task_is_scheduled(SD_task_t task)
 }
 
 /* Returns whether the state of the given task is SD_READY. */
-static XBT_INLINE int __SD_task_is_ready(SD_task_t task)
+static XBT_INLINE int __SD_task_is_runnable(SD_task_t task)
 {
-  return task->state_set == sd_global->ready_task_set;
+  return task->state_set == sd_global->runnable_task_set;
 }
 
 /* Returns whether the state of the given task is SD_IN_FIFO. */
@@ -154,9 +154,9 @@ static XBT_INLINE int __SD_task_is_in_fifo(SD_task_t task)
 }
 
 /* Returns whether the state of the given task is SD_READY or SD_IN_FIFO. */
-static XBT_INLINE int __SD_task_is_ready_or_in_fifo(SD_task_t task)
+static XBT_INLINE int __SD_task_is_runnable_or_in_fifo(SD_task_t task)
 {
-  return task->state_set == sd_global->ready_task_set ||
+  return task->state_set == sd_global->runnable_task_set ||
     task->state_set == sd_global->in_fifo_task_set;
 }
 

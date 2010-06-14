@@ -66,12 +66,12 @@ typedef struct SD_task *SD_task_t;
 typedef enum {
   SD_NOT_SCHEDULED = 0,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
   SD_SCHEDULED = 0x0001,     /**< @brief A task becomes SD_SCHEDULED when you call function
-				SD_task_schedule. SD_simulate will execute it when it becomes SD_READY. */
-  SD_READY = 0x0002,         /**< @brief A scheduled task becomes ready is SD_simulate as soon as its dependencies are satisfied. */
-  SD_IN_FIFO = 0x0004,       /**< @brief A ready task can have to wait in a workstation fifo if the workstation is sequential */
-  SD_RUNNING = 0x0008,       /**< @brief An SD_READY or SD_IN_FIFO becomes SD_RUNNING when it is launched. */
-  SD_DONE = 0x0010,          /**< @brief The task is successfuly finished. */
-  SD_FAILED = 0x0020         /**< @brief A problem occured during the execution of the task. */
+				SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
+  SD_RUNNABLE = 0x0002,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
+  SD_IN_FIFO = 0x0004,       /**< @brief A runnable task can have to wait in a workstation fifo if the workstation is sequential */
+  SD_RUNNING = 0x0008,       /**< @brief An SD_RUNNABLE or SD_IN_FIFO becomes SD_RUNNING when it is launched. */
+  SD_DONE = 0x0010,          /**< @brief The task is successfully finished. */
+  SD_FAILED = 0x0020         /**< @brief A problem occurred during the execution of the task. */
 } e_SD_task_state_t;
 
 /** @brief Task kinds

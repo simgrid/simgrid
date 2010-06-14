@@ -101,7 +101,7 @@ void SD_task_set_data(SD_task_t task, void *data)
  *
  * \param task a task
  * \return the current \ref e_SD_task_state_t "state" of this task:
- * #SD_NOT_SCHEDULED, #SD_SCHEDULED, #SD_READY, #SD_RUNNING, #SD_DONE or #SD_FAILED
+ * #SD_NOT_SCHEDULED, #SD_SCHEDULED, #SD_RUNNABLE, #SD_RUNNING, #SD_DONE or #SD_FAILED
  * \see e_SD_task_state_t
  */
 e_SD_task_state_t SD_task_get_state(SD_task_t task)
@@ -123,8 +123,8 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   case SD_SCHEDULED:
     task->state_set = sd_global->scheduled_task_set;
     break;
-  case SD_READY:
-    task->state_set = sd_global->ready_task_set;
+  case SD_RUNNABLE:
+    task->state_set = sd_global->runnable_task_set;
     break;
   case SD_IN_FIFO:
     task->state_set = sd_global->in_fifo_task_set;
@@ -293,7 +293,7 @@ void SD_task_dump(SD_task_t task)
   statename=bprintf("%s %s %s %s %s %s %s",
       (task->state&SD_NOT_SCHEDULED?"not scheduled":""),
       (task->state&SD_SCHEDULED?"scheduled":""),
-      (task->state&SD_READY?"ready":"not ready"),
+      (task->state&SD_RUNNABLE?"runnable":"not runnable"),
       (task->state&SD_IN_FIFO?"in fifo":""),
       (task->state&SD_RUNNING?"running":""),
       (task->state&SD_DONE?"done":""),
@@ -362,7 +362,7 @@ static void __SD_task_dependency_destroy(void *dependency)
  * \brief Adds a dependency between two tasks
  *
  * \a dst will depend on \a src, ie \a dst will not start before \a src is finished.
- * Their \ref e_SD_task_state_t "state" must be #SD_NOT_SCHEDULED, #SD_SCHEDULED or #SD_READY.
+ * Their \ref e_SD_task_state_t "state" must be #SD_NOT_SCHEDULED, #SD_SCHEDULED or #SD_RUNNABLE.
  *
  * \param name the name of the new dependency (can be \c NULL)
  * \param data the user data you want to associate with this dependency (can be \c NULL)
@@ -391,15 +391,15 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
            SD_task_get_name(src));
 
   if (!__SD_task_is_not_scheduled(src)
-      && !__SD_task_is_scheduled_or_ready(src))
+      && !__SD_task_is_scheduled_or_runnable(src))
     THROW1(arg_error, 0,
-           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULED or SD_READY",
+           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULED or SD_RUNNABLE",
            SD_task_get_name(src));
 
   if (!__SD_task_is_not_scheduled(dst)
-      && !__SD_task_is_scheduled_or_ready(dst))
+      && !__SD_task_is_scheduled_or_runnable(dst))
     THROW1(arg_error, 0,
-           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULED or SD_READY",
+           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULED or SD_RUNNABLE",
            SD_task_get_name(dst));
 
   DEBUG2("SD_task_dependency_add: src = %s, dst = %s", SD_task_get_name(src),
@@ -429,10 +429,10 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
 
   dst->unsatisfied_dependencies++;
 
-  /* if the task was ready, then dst->tasks_before is not empty anymore,
+  /* if the task was runnable, then dst->tasks_before is not empty anymore,
      so we must go back to state SD_SCHEDULED */
-  if (__SD_task_is_ready(dst)) {
-    DEBUG1("SD_task_dependency_add: %s was ready and becomes scheduled!",
+  if (__SD_task_is_runnable(dst)) {
+    DEBUG1("SD_task_dependency_add: %s was runnable and becomes scheduled!",
            SD_task_get_name(dst));
     __SD_task_set_state(dst, SD_SCHEDULED);
   }
@@ -529,10 +529,10 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
               SD_task_get_name(dst), SD_task_get_name(src),
               SD_task_get_name(src), SD_task_get_name(dst));
 
-  /* if the task was scheduled and dst->tasks_before is empty now, we can make it ready */
+  /* if the task was scheduled and dst->tasks_before is empty now, we can make it runnable */
 
    if (dst->unsatisfied_dependencies == 0 && __SD_task_is_scheduled(dst))
-    __SD_task_set_state(dst, SD_READY);
+    __SD_task_set_state(dst, SD_RUNNABLE);
 
   /*  __SD_print_dependencies(src);
      __SD_print_dependencies(dst); */
@@ -576,9 +576,9 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
 static void __SD_print_watch_points(SD_task_t task)
 {
   static const int state_masks[] =
-    { SD_SCHEDULED, SD_RUNNING, SD_READY, SD_DONE, SD_FAILED };
+    { SD_SCHEDULED, SD_RUNNING, SD_RUNNABLE, SD_DONE, SD_FAILED };
   static const char *state_names[] =
-    { "scheduled", "running", "ready", "done", "failed" };
+    { "scheduled", "running", "runnable", "done", "failed" };
   int i;
 
   INFO2("Task '%s' watch points (%x): ", SD_task_get_name(task),
@@ -693,7 +693,7 @@ static XBT_INLINE void SD_task_do_schedule(SD_task_t task) {
 
  /* update the task state */
   if (task->unsatisfied_dependencies == 0)
-    __SD_task_set_state(task, SD_READY);
+    __SD_task_set_state(task, SD_RUNNABLE);
   else
     __SD_task_set_state(task, SD_SCHEDULED);
 }
@@ -752,7 +752,7 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
 /**
  * \brief Unschedules a task
  *
- * The task state must be #SD_SCHEDULED, #SD_READY, #SD_RUNNING or #SD_FAILED.
+ * The task state must be #SD_SCHEDULED, #SD_RUNNABLE, #SD_RUNNING or #SD_FAILED.
  * If you call this function, the task state becomes #SD_NOT_SCHEDULED.
  * Call SD_task_schedule() to schedule it again.
  *
@@ -765,14 +765,14 @@ void SD_task_unschedule(SD_task_t task)
   xbt_assert0(task != NULL, "Invalid parameter");
 
   if (task->state_set != sd_global->scheduled_task_set &&
-      task->state_set != sd_global->ready_task_set &&
+      task->state_set != sd_global->runnable_task_set &&
       task->state_set != sd_global->running_task_set &&
       task->state_set != sd_global->failed_task_set)
     THROW1(arg_error, 0,
-           "Task %s: the state must be SD_SCHEDULED, SD_READY, SD_RUNNING or SD_FAILED",
+           "Task %s: the state must be SD_SCHEDULED, SD_RUNNABLE, SD_RUNNING or SD_FAILED",
            SD_task_get_name(task));
 
-  if (__SD_task_is_scheduled_or_ready(task) /* if the task is scheduled or ready */
+  if (__SD_task_is_scheduled_or_runnable(task) /* if the task is scheduled or runnable */
       && task->kind == SD_TASK_NOT_TYPED) /* Don't free scheduling data for typed tasks */
     __SD_task_destroy_scheduling_data(task);
 
@@ -784,14 +784,14 @@ void SD_task_unschedule(SD_task_t task)
   task->start_time = -1.0;
 }
 
-/* Destroys the data memorised by SD_task_schedule. Task state must be SD_SCHEDULED or SD_READY.
+/* Destroys the data memorised by SD_task_schedule. Task state must be SD_SCHEDULED or SD_RUNNABLE.
  */
 static void __SD_task_destroy_scheduling_data(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  if (!__SD_task_is_scheduled_or_ready(task) && !__SD_task_is_in_fifo(task))
+  if (!__SD_task_is_scheduled_or_runnable(task) && !__SD_task_is_in_fifo(task))
     THROW1(arg_error, 0,
-           "Task '%s' must be SD_SCHEDULED, SD_READY or SD_IN_FIFO",
+           "Task '%s' must be SD_SCHEDULED, SD_RUNNABLE or SD_IN_FIFO",
            SD_task_get_name(task));
 
   xbt_free(task->computation_amount);
@@ -811,8 +811,8 @@ void __SD_task_really_run(SD_task_t task)
 
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert2(__SD_task_is_ready_or_in_fifo(task),
-              "Task '%s' is not ready or in a fifo! Task state: %d",
+  xbt_assert2(__SD_task_is_runnable_or_in_fifo(task),
+              "Task '%s' is not runnable or in a fifo! Task state: %d",
               SD_task_get_name(task), SD_task_get_state(task));
   xbt_assert1(task->workstation_list != NULL,
               "Task '%s': workstation_list is NULL!", SD_task_get_name(task));
@@ -909,7 +909,7 @@ void __SD_task_really_run(SD_task_t task)
 
 }
 
-/* Tries to run a task. This function is called by SD_simulate() when a scheduled task becomes SD_READY
+/* Tries to run a task. This function is called by SD_simulate() when a scheduled task becomes SD_RUNNABLE
  * (ie when its dependencies are satisfied).
  * If one of the workstations where the task is scheduled on is busy (in sequential mode),
  * the task doesn't start.
@@ -924,8 +924,8 @@ int __SD_task_try_to_run(SD_task_t task)
 
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert2(__SD_task_is_ready(task),
-              "Task '%s' is not ready! Task state: %d",
+  xbt_assert2(__SD_task_is_runnable(task),
+              "Task '%s' is not runnable! Task state: %d",
               SD_task_get_name(task), SD_task_get_state(task));
 
 
@@ -1180,8 +1180,8 @@ void SD_task_destroy(SD_task_t task)
   DEBUG1("Destroying task %s...", SD_task_get_name(task));
 
   __SD_task_remove_dependencies(task);
-  /* if the task was scheduled or ready we have to free the scheduling parameters */
-  if (__SD_task_is_scheduled_or_ready(task))
+  /* if the task was scheduled or runnable we have to free the scheduling parameters */
+  if (__SD_task_is_scheduled_or_runnable(task))
     __SD_task_destroy_scheduling_data(task);
   xbt_swag_remove(task,task->state_set);
 
@@ -1294,7 +1294,7 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
         task->communication_amount[2]);
 
   }
-  /* Iterate over all childs and parent being COMM_E2E to say where I am located (and start them if ready) */
+  /* Iterate over all childs and parent being COMM_E2E to say where I am located (and start them if runnable) */
   if (task->kind == SD_TASK_COMP_SEQ) {
     VERB3("Schedule computation task %s on %s. It costs %.f flops",
         SD_task_get_name(task),SD_workstation_get_name(task->workstation_list[0]),

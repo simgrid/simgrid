@@ -60,7 +60,7 @@ void SD_init(int *argc, char **argv)
     xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->scheduled_task_set =
     xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->ready_task_set =
+  sd_global->runnable_task_set =
     xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->in_fifo_task_set =
     xbt_swag_new(xbt_swag_offset(task, state_hookup));
@@ -97,7 +97,7 @@ void SD_application_reinit(void)
     DEBUG0("Recreating the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
-    xbt_swag_free(sd_global->ready_task_set);
+    xbt_swag_free(sd_global->runnable_task_set);
     xbt_swag_free(sd_global->in_fifo_task_set);
     xbt_swag_free(sd_global->running_task_set);
     xbt_swag_free(sd_global->done_task_set);
@@ -107,7 +107,7 @@ void SD_application_reinit(void)
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
     sd_global->scheduled_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->ready_task_set =
+    sd_global->runnable_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
     sd_global->in_fifo_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
@@ -175,7 +175,7 @@ void SD_create_environment(const char *platform_file)
 /**
  * \brief Launches the simulation.
  *
- * The function will execute the \ref SD_READY ready tasks.
+ * The function will execute the \ref SD_RUNNABLE runnable tasks.
  * The simulation will be stopped when its time reaches \a how_long,
  * when a watch point is reached, or when no more task can be executed.
  * Then you can call SD_simulate() again.
@@ -210,8 +210,8 @@ xbt_dynar_t SD_simulate(double how_long)
   }
   sd_global->watch_point_reached = 0;
 
-  /* explore the ready tasks */
-  xbt_swag_foreach_safe(task, task_safe, sd_global->ready_task_set) {
+  /* explore the runnable tasks */
+  xbt_swag_foreach_safe(task, task_safe, sd_global->runnable_task_set) {
     VERB1("Executing task '%s'", SD_task_get_name(task));
     if (__SD_task_try_to_run(task) && !xbt_dynar_member(changed_tasks, &task))
       xbt_dynar_push(changed_tasks, &task);
@@ -258,10 +258,10 @@ xbt_dynar_t SD_simulate(double how_long)
         	  dst->unsatisfied_dependencies--;
 
           if (!(dst->unsatisfied_dependencies) && __SD_task_is_scheduled(dst))
-        	  __SD_task_set_state(dst, SD_READY);
+        	  __SD_task_set_state(dst, SD_RUNNABLE);
 
-          /* is dst ready now? */
-          if (__SD_task_is_ready(dst) && !sd_global->watch_point_reached) {
+          /* is dst runnable now? */
+          if (__SD_task_is_runnable(dst) && !sd_global->watch_point_reached) {
             VERB1("Executing task '%s'", SD_task_get_name(dst));
             if (__SD_task_try_to_run(dst) &&
                 !xbt_dynar_member(changed_tasks, &task))
@@ -337,7 +337,7 @@ void SD_exit(void)
     DEBUG0("Destroying the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
-    xbt_swag_free(sd_global->ready_task_set);
+    xbt_swag_free(sd_global->runnable_task_set);
     xbt_swag_free(sd_global->in_fifo_task_set);
     xbt_swag_free(sd_global->running_task_set);
     xbt_swag_free(sd_global->done_task_set);
