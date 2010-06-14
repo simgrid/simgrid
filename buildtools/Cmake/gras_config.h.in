@@ -283,14 +283,12 @@
    `char[]'. */
 #cmakedefine YYTEXT_POINTER 
 
- #ifndef __VISUALC__
-	/* Optional va_copy() implementation activation */
-	#ifndef HAVE_VA_COPY
-	#define va_copy(d, s) __VA_COPY_USE(d, s)
-	#endif
-	/* Define to id of used va_copy() implementation */
-	#cmakedefine __VA_COPY_USE(d, s) @__VA_COPY_USE@
+/* Optional va_copy() implementation activation */
+#ifndef HAVE_VA_COPY
+#define va_copy(d, s) __VA_COPY_USE(d, s)
 #endif
+/* Define to id of used va_copy() implementation */
+#cmakedefine __VA_COPY_USE(d, s) @__VA_COPY_USE@
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #cmakedefine const @const@
