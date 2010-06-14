@@ -23,8 +23,8 @@ set(SIMGRID_DEP "-lm")
 set(SMPI_DEP "")
 
 if(WIN32)
-	set(GRAS_DEP "")
-	set(SIMGRID_DEP "")
+	set(GRAS_DEP "wsock32")
+	set(SIMGRID_DEP "wsock32")
 endif(WIN32)
 
 if(HAVE_RUBY)
