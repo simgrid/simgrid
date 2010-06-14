@@ -68,6 +68,9 @@ static void dax_task_free(void*task){
  * for more details.
  */
 xbt_dynar_t SD_daxload(const char*filename) {
+  xbt_dict_cursor_t cursor;
+  SD_task_t file;
+  char *name;
   FILE* in_file = fopen(filename,"r");
   xbt_assert1(in_file, "Unable to open \"%s\"\n", filename);
   input_buffer = dax__create_buffer(in_file, 10);
@@ -91,11 +94,10 @@ xbt_dynar_t SD_daxload(const char*filename) {
    * Files not produced in the system are said to be produced by root task (top of DAG).
    * Files not consumed in the system are said to be consumed by end task (bottom of DAG).
    */
-  xbt_dict_cursor_t cursor;
-  SD_task_t file;
-  char *name;
+
   xbt_dict_foreach(files,cursor,name,file) {
     unsigned int cpt1,cpt2;
+    SD_task_t newfile = NULL;
     SD_dependency_t depbefore,depafter;
     if (xbt_dynar_length(file->tasks_before) == 0) {
       xbt_dynar_foreach(file->tasks_after,cpt2,depafter) {
@@ -118,7 +120,7 @@ xbt_dynar_t SD_daxload(const char*filename) {
             WARN2("File %s is produced and consumed by task %s. This loop dependency will prevent the execution of the task.",
                 file->name,depbefore->src->name);
           }
-          SD_task_t newfile = SD_task_create_comm_e2e(file->name,NULL,file->amount);
+          newfile = SD_task_create_comm_e2e(file->name,NULL,file->amount);
           SD_task_dependency_add(NULL,NULL,depbefore->src,newfile);
           SD_task_dependency_add(NULL,NULL,newfile,depafter->dst);
           xbt_dynar_push(result,&newfile);

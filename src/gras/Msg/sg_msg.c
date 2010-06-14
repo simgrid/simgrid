@@ -27,6 +27,8 @@ gras_msg_t gras_msg_recv_any(void) {
   /* Build a dynar of all communications I could get something from */
   xbt_dynar_t comms = xbt_dynar_new(sizeof(smx_comm_t),NULL);
   unsigned int cursor;
+  int got = 0;
+  smx_comm_t comm;
   gras_socket_t sock;
   gras_trp_sg_sock_data_t *sock_data;
   xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
@@ -38,8 +40,7 @@ gras_msg_t gras_msg_recv_any(void) {
   }
   VERB1("Wait on %ld 'sockets'",xbt_dynar_length(comms));
   /* Wait for the end of any of these communications */
-  int got = SIMIX_network_waitany(comms);
-  smx_comm_t comm;
+  got = SIMIX_network_waitany(comms);
 
   /* retrieve the message sent in that communication */
   xbt_dynar_get_cpy(comms,got,&(comm));
@@ -71,7 +72,8 @@ void gras_msg_send_ext(gras_socket_t sock,
   int whole_payload_size = 0;   /* msg->payload_size is used to memcpy the payload.
                                    This is used to report the load onto the simulator. It also counts the size of pointed stuff */
   gras_msg_t msg;               /* message to send */
-
+  smx_comm_t comm;
+  gras_trp_sg_sock_data_t *sock_data = NULL;
   /*initialize gras message */
   msg = xbt_new(s_gras_msg_t, 1);
   msg->expe = sock;
@@ -101,8 +103,8 @@ void gras_msg_send_ext(gras_socket_t sock,
       whole_payload_size = gras_datadesc_memcpy(msgtype->ctn_type,
                                                 payload, msg->payl);
   }
-  gras_trp_sg_sock_data_t *sock_data = (gras_trp_sg_sock_data_t *) sock->data;
-  smx_comm_t comm;
+  sock_data = (gras_trp_sg_sock_data_t *) sock->data;
+
   SIMIX_network_send(sock_data->im_server ? sock_data->rdv_client : sock_data->rdv_client,
       whole_payload_size,-1,-1,&msg,sizeof(void*),&comm,msg);
 
