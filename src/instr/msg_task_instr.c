@@ -20,8 +20,9 @@ void __TRACE_msg_init (void)
 void __TRACE_current_category_set (m_task_t task)
 {
   char processid[100];
+  char *var_cpy = NULL;
   snprintf (processid, 100, "%p", SIMIX_process_self());
-  char *var_cpy = xbt_strdup (task->category);
+  var_cpy = xbt_strdup (task->category);
   xbt_dict_set (current_task_category, processid, var_cpy, xbt_free);
 }
 
@@ -41,46 +42,52 @@ char *__TRACE_current_category_get (smx_process_t proc)
 
 void __TRACE_task_location (m_task_t task)
 {
+	char container[200];
+	char name[200], alias[200];
+	char *val_one = NULL;
+	m_process_t process = NULL;
+	m_host_t host = NULL;
   if (!IS_TRACING_TASKS) return;
-  char container[200];
-  m_process_t process = MSG_process_self();
-  m_host_t host = MSG_process_get_host (process);
+  process = MSG_process_self();
+  host = MSG_process_get_host (process);
 
   //tasks are grouped by host
   TRACE_host_container (host, container, 200);
-
-  char name[200], alias[200];
   TRACE_task_container (task, name, 200);
   TRACE_task_alias_container (task, process, host, alias, 200);
   //check if task container is already created
   if (!xbt_dict_get_or_null (task_containers, alias)){
     pajeCreateContainer (MSG_get_clock(), alias, "TASK", container, name);
     pajeSetState (MSG_get_clock(), "category", alias, task->category);
-    char *val_one = xbt_strdup ("1");
+    val_one = xbt_strdup ("1");
     xbt_dict_set (task_containers, alias, val_one, xbt_free);
   }
 }
 
 void __TRACE_task_location_present (m_task_t task)
 {
+	char alias[200];
+	m_process_t process = NULL;
+	m_host_t host = NULL;
   if (!IS_TRACING_TASKS) return;
   //updating presence state of this task location
-  m_process_t process = MSG_process_self();
-  m_host_t host = MSG_process_get_host (process);
+  process = MSG_process_self();
+  host = MSG_process_get_host (process);
 
-  char alias[200];
   TRACE_task_alias_container (task, process, host, alias, 200);
   pajePushState (MSG_get_clock(), "presence", alias, "presence");
 }
 
 void __TRACE_task_location_not_present (m_task_t task)
 {
+	char alias[200];
+	m_process_t process = NULL;
+	m_host_t host = NULL;
   if (!IS_TRACING_TASKS) return;
   //updating presence state of this task location
-  m_process_t process = MSG_process_self();
-  m_host_t host = MSG_process_get_host (process);
+  process = MSG_process_self();
+  host = MSG_process_get_host (process);
 
-  char alias[200];
   TRACE_task_alias_container (task, process, host, alias, 200);
   pajePopState (MSG_get_clock(), "presence", alias);
 }
@@ -90,6 +97,7 @@ void __TRACE_task_location_not_present (m_task_t task)
  */
 void TRACE_msg_set_task_category(m_task_t task, const char *category)
 {
+	char name[200];
   if (!IS_TRACING) return;
 
   //set task category
@@ -100,7 +108,6 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
   __TRACE_task_location (task);
   __TRACE_task_location_present (task);
 
-  char name[200];
   TRACE_task_container (task, name, 200);
   //create container of type "task" to indicate behavior
   if (IS_TRACING_TASKS) pajeCreateContainer (MSG_get_clock(), name, "task", category, name);
@@ -118,9 +125,9 @@ void TRACE_msg_task_create (m_task_t task)
 /* MSG_task_execute related functions */
 void TRACE_msg_task_execute_start (m_task_t task)
 {
+	char name[200];
   if (!IS_TRACING || !IS_TRACED(task)) return;
 
-  char name[200];
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePushState (MSG_get_clock(), "task-state", name, "execute");
 
@@ -129,9 +136,9 @@ void TRACE_msg_task_execute_start (m_task_t task)
 
 void TRACE_msg_task_execute_end (m_task_t task)
 {
+	char name[200];
   if (!IS_TRACING || !IS_TRACED(task)) return;
 
-  char name[200];
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
 
@@ -141,9 +148,9 @@ void TRACE_msg_task_execute_end (m_task_t task)
 /* MSG_task_destroy related functions */
 void TRACE_msg_task_destroy (m_task_t task)
 {
+	char name[200];
   if (!IS_TRACING || !IS_TRACED(task)) return;
 
-  char name[200];
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajeDestroyContainer (MSG_get_clock(), "task", name);
 
@@ -163,9 +170,9 @@ void TRACE_msg_task_get_start (void)
 
 void TRACE_msg_task_get_end (double start_time, m_task_t task)
 {
+	char name[200];
   if (!IS_TRACING || !IS_TRACED(task)) return;
 
-  char name[200];
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
 
@@ -178,9 +185,9 @@ void TRACE_msg_task_get_end (double start_time, m_task_t task)
 /* MSG_task_put related functions */
 int TRACE_msg_task_put_start (m_task_t task)
 {
+	char name[200];
   if (!IS_TRACING || !IS_TRACED(task)) return 0;
 
-  char name[200];
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
   if (IS_TRACING_TASKS) pajePushState (MSG_get_clock(), "task-state", name, "communicate");

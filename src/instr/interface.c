@@ -37,6 +37,7 @@ int TRACE_start (const char *filename)
  * \return 0 if everything is ok
  */
 int TRACE_start_with_mask(const char *filename, int mask) {
+	FILE *file = NULL;
   if (IS_TRACING) { /* what? trace is already active... ignore.. */
 	THROW0 (tracing_error, TRACE_ERROR_START,
 	        "TRACE_start called, but tracing is already active");
@@ -52,7 +53,7 @@ int TRACE_start_with_mask(const char *filename, int mask) {
           "unknown tracing mask");
   }
 
-  FILE *file = fopen(filename, "w");
+  file = fopen(filename, "w");
   if (!file) {
     THROW1 (tracing_error, TRACE_ERROR_START,
     		"Tracefile %s could not be opened for writing.", filename);
@@ -110,16 +111,18 @@ int TRACE_start_with_mask(const char *filename, int mask) {
 }
 
 int TRACE_end() {
+	FILE *file = NULL;
   if (!IS_TRACING) return 1;
-  FILE *file = TRACE_paje_end();
+  file = TRACE_paje_end();
   fclose (file);
   return 0;
 }
 
 int TRACE_category (const char *category)
 {
-  if (!IS_TRACING) return 1;
   static int first_time = 1;
+  if (!IS_TRACING) return 1;
+
   if (first_time){
 	  TRACE_define_type ("user_type", "0", 1);
 	  first_time = 0;
@@ -129,6 +132,7 @@ int TRACE_category (const char *category)
 
 void TRACE_define_type (const char *type,
 		const char *parent_type, int final) {
+	char *val_one = NULL;
   if (!IS_TRACING) return;
 
   //check if type is already defined
@@ -149,13 +153,15 @@ void TRACE_define_type (const char *type,
     if (IS_TRACING_TASKS) pajeDefineContainerType ("task", type, "task");
     if (IS_TRACING_TASKS) pajeDefineStateType ("task-state", "task", "task-state");
   }
-  char *val_one = xbt_strdup ("1");
+  val_one = xbt_strdup ("1");
   xbt_dict_set (defined_types, type, &val_one, xbt_free);
 }
 
 int TRACE_create_category (const char *category,
 		const char *type, const char *parent_category)
 {
+  char state[100];
+  char *val_one = NULL;
   if (!IS_TRACING) return 1;
 
   //check if type is defined
@@ -176,13 +182,13 @@ int TRACE_create_category (const char *category,
   pajeCreateContainer(MSG_get_clock(), category, type, parent_category, category);
 
   /* for registering application categories on top of platform */
-  char state[100];
+
   snprintf (state, 100, "b%s", category);
   if (IS_TRACING_PLATFORM) pajeDefineVariableType (state, "LINK", state);
   snprintf (state, 100, "p%s", category);
   if (IS_TRACING_PLATFORM) pajeDefineVariableType (state, "HOST", state);
 
-  char *val_one = xbt_strdup ("1");
+  val_one = xbt_strdup ("1");
   xbt_dict_set (created_categories, category, &val_one, xbt_free);
   return 0;
 }

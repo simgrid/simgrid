@@ -45,6 +45,7 @@ void __TRACE_surf_init (void)
 
 static char *strsplit (char *input, int field, char del) //caller should free the returned string
 {
+	char *ret = NULL;
   int length = strlen(input), i;
   int s = 0, e = length+1;
   int current_field = 0;
@@ -60,7 +61,7 @@ static char *strsplit (char *input, int field, char del) //caller should free th
      }
   }
   //copy string from s to e (with length equal to e-s) and return
-  char *ret = malloc ((e-s+2)*sizeof(char));
+  ret = malloc ((e-s+2)*sizeof(char));
   strncpy (ret, input+s, e-s+1);
   ret[e-s+1] = '\0';
   return ret;
@@ -68,22 +69,24 @@ static char *strsplit (char *input, int field, char del) //caller should free th
 
 void __TRACE_surf_finalize (void)
 {
+	xbt_dict_cursor_t cursor = NULL;
+	unsigned int cursor_ar = 0;
+    char *key, *value, *res;
+    char *resource;
+    char *aux = NULL;
+    char *var_cpy = NULL;
+    xbt_dynar_t resources = NULL;
   if (!IS_TRACING_PLATFORM) return;
   if (!xbt_dict_length(last_platform_variables)){
     return;
   }else{
-    xbt_dict_cursor_t cursor = NULL;
-    unsigned int cursor_ar = 0;
-    char *key, *value, *res;
-    char *resource;
-
     /* get all resources from last_platform_variables */
-    xbt_dynar_t resources = xbt_dynar_new(sizeof(char*), xbt_free);
+    resources = xbt_dynar_new(sizeof(char*), xbt_free);
     xbt_dict_foreach(last_platform_variables, cursor, key, value) {
       res = strsplit (key, 0, VARIABLE_SEPARATOR);
-      char *aux = strsplit (key, 1, VARIABLE_SEPARATOR);
+      aux = strsplit (key, 1, VARIABLE_SEPARATOR);
       if (strcmp (aux, "Time") == 0){ //only need to add one of three
-        char *var_cpy = xbt_strdup (res);
+        var_cpy = xbt_strdup (res);
         xbt_dynar_push (resources, &var_cpy);
       }
       free (aux);
@@ -93,14 +96,17 @@ void __TRACE_surf_finalize (void)
     /* iterate through resources array */
     xbt_dynar_foreach (resources, cursor_ar, resource) {
       char timekey[100], valuekey[100], variablekey[100];
+      char *time = NULL;
+      char *value = NULL;
+      char *variable = NULL;
       snprintf (timekey, 100, "%s%cTime", resource, VARIABLE_SEPARATOR);
       snprintf (valuekey, 100, "%s%cValue", resource, VARIABLE_SEPARATOR);
       snprintf (variablekey, 100, "%s%cVariable", resource, VARIABLE_SEPARATOR);
 
-      char *time = xbt_dict_get_or_null (last_platform_variables, timekey);
+      time = xbt_dict_get_or_null (last_platform_variables, timekey);
       if (!time) continue;
-      char *value = xbt_dict_get (last_platform_variables, valuekey);
-      char *variable = xbt_dict_get (last_platform_variables, variablekey);
+      value = xbt_dict_get (last_platform_variables, valuekey);
+      variable = xbt_dict_get (last_platform_variables, variablekey);
       pajeSubVariable (atof(time), variable, resource, value);
 
       xbt_dict_remove (last_platform_variables, timekey);
@@ -140,9 +146,18 @@ void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, 
 
 void __TRACE_surf_update_action_state_resource (double now, double delta, const char *variable, const char *resource, double value)
 {
+	char valuestr[100];
+	char nowstr[100], nowdeltastr[100];
+	char timekey[100], valuekey[100], variablekey[100];
+	char *lastvariable = NULL;
+	char *lasttime = NULL;
+    char *lastvalue = NULL;
+    char *nowdeltastr_cpy = NULL;
+    char *valuestr_cpy = NULL;
+    char *variable_cpy = NULL;
+
   if (!IS_TRACING_PLATFORM) return;
 
-  char valuestr[100];
   snprintf (valuestr, 100, "%f", value);
 
   /*
@@ -161,28 +176,26 @@ void __TRACE_surf_update_action_state_resource (double now, double delta, const 
    * variables. It should be re-checked before put in production.
    */
 
-  char nowstr[100], nowdeltastr[100];
   snprintf (nowstr, 100, "%.15f", now);
   snprintf (nowdeltastr, 100, "%.15f", now+delta);
 
-  char timekey[100], valuekey[100], variablekey[100];
   snprintf (timekey, 100, "%s%cTime", resource, VARIABLE_SEPARATOR);
   snprintf (valuekey, 100, "%s%cValue", resource, VARIABLE_SEPARATOR);
   snprintf (variablekey, 100, "%s%cVariable", resource, VARIABLE_SEPARATOR);
 
-  char *lastvariable = xbt_dict_get_or_null (last_platform_variables, variablekey);
+  lastvariable = xbt_dict_get_or_null (last_platform_variables, variablekey);
   if (lastvariable == NULL){
     __TRACE_surf_check_variable_set_to_zero (now, variable, resource);
     pajeAddVariable (now, variable, resource, valuestr);
-    char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
-    char *valuestr_cpy = xbt_strdup (valuestr);
-    char *variable_cpy = xbt_strdup (variable);
+    nowdeltastr_cpy = xbt_strdup (nowdeltastr);
+    valuestr_cpy = xbt_strdup (valuestr);
+    variable_cpy = xbt_strdup (variable);
     xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
     xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
     xbt_dict_set (last_platform_variables, variablekey, variable_cpy, xbt_free);
   }else{
-    char *lasttime = xbt_dict_get_or_null (last_platform_variables, timekey);
-    char *lastvalue = xbt_dict_get_or_null (last_platform_variables, valuekey);
+    lasttime = xbt_dict_get_or_null (last_platform_variables, timekey);
+    lastvalue = xbt_dict_get_or_null (last_platform_variables, valuekey);
 
     /* check if it is the same variable */
     if (strcmp(lastvariable, variable) == 0){ /* same variable */
@@ -196,8 +209,8 @@ void __TRACE_surf_update_action_state_resource (double now, double delta, const 
           /* value has changed, subtract previous value, add new one */
           pajeSubVariable (atof(lasttime), variable, resource, lastvalue);
           pajeAddVariable (atof(nowstr), variable, resource, valuestr);
-          char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
-          char *valuestr_cpy = xbt_strdup (valuestr);
+          nowdeltastr_cpy = xbt_strdup (nowdeltastr);
+          valuestr_cpy = xbt_strdup (valuestr);
           xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
           xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
         }
@@ -205,8 +218,8 @@ void __TRACE_surf_update_action_state_resource (double now, double delta, const 
         /* the last time is different from new starting time, subtract to lasttime and add from nowstr */
         pajeSubVariable (atof(lasttime), variable, resource, lastvalue);
         pajeAddVariable (atof(nowstr), variable, resource, valuestr);
-        char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
-        char *valuestr_cpy = xbt_strdup (valuestr);
+        nowdeltastr_cpy = xbt_strdup (nowdeltastr);
+        valuestr_cpy = xbt_strdup (valuestr);
         xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
         xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
       }
@@ -214,9 +227,9 @@ void __TRACE_surf_update_action_state_resource (double now, double delta, const 
       pajeSubVariable (atof(lasttime), lastvariable, resource, lastvalue);
       __TRACE_surf_check_variable_set_to_zero (now, variable, resource);
       pajeAddVariable (now, variable, resource, valuestr);
-      char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
-      char *valuestr_cpy = xbt_strdup (valuestr);
-      char *variable_cpy = xbt_strdup (variable);
+      nowdeltastr_cpy = xbt_strdup (nowdeltastr);
+      valuestr_cpy = xbt_strdup (valuestr);
+      variable_cpy = xbt_strdup (variable);
       xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
       xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
       xbt_dict_set (last_platform_variables, variablekey, variable_cpy, xbt_free);
@@ -227,12 +240,13 @@ void __TRACE_surf_update_action_state_resource (double now, double delta, const 
 
 void __TRACE_surf_set_resource_variable (double date, const char *variable, const char *resource, double value)
 {
+	char aux[100], key[100];
+	char *last_value = NULL;
   if (!IS_TRACING) return;
-  char aux[100], key[100];
   snprintf (aux, 100, "%f", value);
   snprintf (key, 100, "%s%c%s", resource, VARIABLE_SEPARATOR, variable);
 
-  char *last_value = xbt_dict_get_or_null(resource_variables, key);
+  last_value = xbt_dict_get_or_null(resource_variables, key);
   if (last_value){
     if (atof(last_value) == value){
       return;
@@ -244,6 +258,7 @@ void __TRACE_surf_set_resource_variable (double date, const char *variable, cons
 
 void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta)
 {
+	char type[100];
   if (!IS_TRACING || !IS_TRACED(smx_action)) return;
 
   if (strcmp (name, "__loopback__")==0 ||
@@ -258,7 +273,6 @@ void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action,
     return;
   }
 
-  char type[100];
   snprintf (type, 100, "b%s", smx_action->category);
   __TRACE_surf_update_action_state_resource (now, delta, type, name, value);
   return;
@@ -266,13 +280,13 @@ void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action,
 
 void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta)
 {
+	char type[100];
   if (!IS_TRACING || !IS_TRACED(smx_action)) return;
 
   if (value==0){
     return;
   }
 
-  char type[100];
   snprintf (type, 100, "p%s", smx_action->category);
   __TRACE_surf_update_action_state_resource (now, delta, type, name, value);
   return;
@@ -280,10 +294,10 @@ void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action,
 
 void TRACE_surf_link_declaration (char *name, double bw, double lat)
 {
+	double *bw_ptr, *lat_ptr;
   if (!IS_TRACING) return;
   //if (IS_TRACING_PLATFORM) pajeCreateContainerWithBandwidthLatency (SIMIX_get_clock(), name, "LINK", "platform", name, bw, lat);
   //save bw and lat information for this link
-  double *bw_ptr, *lat_ptr;
   bw_ptr = xbt_new (double, 1);
   lat_ptr = xbt_new (double, 1);
   *bw_ptr = bw;
@@ -304,14 +318,17 @@ void TRACE_surf_host_declaration (char *name, double power)
 
 void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst)
 {
+	char srcidstr[100], dstidstr[100];
+	char key[100];
+	char *srcname = NULL;
+	char *dstname = NULL;
+    double *bw = 0;
+    double *lat = 0;
   if (!IS_TRACING) return;
-  char srcidstr[100], dstidstr[100];
   snprintf (srcidstr, 100, "%d", src);
   snprintf (dstidstr, 100, "%d", dst);
-  char *srcname = xbt_dict_get (hosts_id, srcidstr);
-  char *dstname = xbt_dict_get (hosts_id, dstidstr);
-
-  char key[100];
+  srcname = xbt_dict_get (hosts_id, srcidstr);
+  dstname = xbt_dict_get (hosts_id, dstidstr);
   snprintf (key, 100, "l%d-%d", src, dst);
 
   if (strcmp (link_name, "__loopback__")==0 ||
@@ -322,8 +339,8 @@ void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst)
   if (!xbt_dict_get_or_null (created_links, link_name)){
     //if (IS_TRACING_PLATFORM) pajeStartLink (SIMIX_get_clock(), "edge", "platform", "route", srcname, key);
     //if (IS_TRACING_PLATFORM) pajeEndLink (SIMIX_get_clock()+0.1, "edge", "platform", "route", dstname, key);
-    double *bw = xbt_dict_get (link_bandwidth, link_name);
-    double *lat = xbt_dict_get (link_latency, link_name);
+    bw = xbt_dict_get (link_bandwidth, link_name);
+    lat = xbt_dict_get (link_latency, link_name);
     pajeCreateContainerWithBandwidthLatencySrcDst (SIMIX_get_clock(), link_name, "LINK", "platform", link_name, *bw, *lat, srcname, dstname);
     if (IS_TRACING_PLATFORM) __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "bandwidth", link_name, *bw);
     if (IS_TRACING_PLATFORM) __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "latency", link_name, *lat);
@@ -348,8 +365,8 @@ void TRACE_surf_link_set_latency (double date, char *resource, double latency)
 
 void TRACE_surf_host_define_id (const char *name, int host_id)
 {
+	char strid[100];
   if (!IS_TRACING) return;
-  char strid[100];
   snprintf (strid, 100, "%d", host_id);
   xbt_dict_set (hosts_id, name, strdup(strid), free);
   xbt_dict_set (hosts_id, strid, strdup(name), free);
@@ -358,8 +375,8 @@ void TRACE_surf_host_define_id (const char *name, int host_id)
 /* to trace gtnets */
 void TRACE_surf_gtnets_communicate (void *action, int src, int dst)
 {
+	char key[100], aux[100];
   if (!IS_TRACING) return;
-  char key[100], aux[100];
   snprintf (key, 100, "%p", action);
 
   snprintf (aux, 100, "%d", src);
@@ -370,11 +387,12 @@ void TRACE_surf_gtnets_communicate (void *action, int src, int dst)
 
 int TRACE_surf_gtnets_get_src (void *action)
 {
+	char key[100];
+	char *aux = NULL;
   if (!IS_TRACING) return -1;
-  char key[100];
   snprintf (key, 100, "%p", action);
 
-  char *aux = xbt_dict_get_or_null (gtnets_src, key);
+  aux = xbt_dict_get_or_null (gtnets_src, key);
   if (aux){
 	return atoi(aux);
   }else{
@@ -384,11 +402,12 @@ int TRACE_surf_gtnets_get_src (void *action)
 
 int TRACE_surf_gtnets_get_dst (void *action)
 {
+	char key[100];
+	char *aux = NULL;
   if (!IS_TRACING) return -1;
-  char key[100];
   snprintf (key, 100, "%p", action);
 
-  char *aux = xbt_dict_get_or_null (gtnets_dst, key);
+  aux = xbt_dict_get_or_null (gtnets_dst, key);
   if (aux){
 	return atoi(aux);
   }else{
@@ -398,8 +417,8 @@ int TRACE_surf_gtnets_get_dst (void *action)
 
 void TRACE_surf_gtnets_destroy (void *action)
 {
-  if (!IS_TRACING) return;
   char key[100];
+  if (!IS_TRACING) return;
   snprintf (key, 100, "%p", action);
   xbt_dict_remove (gtnets_src, key);
   xbt_dict_remove (gtnets_dst, key);
@@ -415,10 +434,9 @@ void TRACE_surf_link_missing (void)
 
 void TRACE_msg_clean (void)
 {
-  __TRACE_surf_finalize();
-
-  xbt_dict_cursor_t cursor = NULL;
   char *key, *value;
+  xbt_dict_cursor_t cursor = NULL;
+  __TRACE_surf_finalize();
 
   /* get all host from host_containers */
   xbt_dict_foreach(host_containers, cursor, key, value) {
@@ -428,9 +446,9 @@ void TRACE_msg_clean (void)
 
 void TRACE_surf_host_vivaldi_parse (char *host, double x, double y, double h)
 {
+	char valuestr[100];
   if (!IS_TRACING || !IS_TRACING_PLATFORM) return;
 
-  char valuestr[100];
   snprintf (valuestr, 100, "%g", x);
   pajeSetVariable (0, "vivaldi_x", host, valuestr);
   snprintf (valuestr, 100, "%g", y);

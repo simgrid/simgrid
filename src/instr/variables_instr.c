@@ -14,9 +14,14 @@ extern routing_t used_routing;
 
 void __TRACE_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what)
 {
+	char valuestr[100];
+	int src_id, dst_id;
+	xbt_dynar_t route = NULL;
+	unsigned int i;
+    void *link_ptr;
+    char *link = NULL;
   if (!IS_TRACING || !IS_TRACING_PLATFORM) return;
 
-  char valuestr[100];
   snprintf (valuestr, 100, "%g", value);
 
   if (strcmp (what, "declare") == 0){
@@ -26,15 +31,12 @@ void __TRACE_link_variable (double time, const char *src, const char *dst, const
 
   if (!used_routing) return;
 
-  int src_id, dst_id;
   src_id = *(int*)xbt_dict_get(used_routing->host_id,src);
   dst_id = *(int*)xbt_dict_get(used_routing->host_id,dst);
-  xbt_dynar_t route = used_routing->get_route(src_id, dst_id);
+  route = used_routing->get_route(src_id, dst_id);
 
-  unsigned int i;
-  void *link_ptr;
   xbt_dynar_foreach(route, i, link_ptr) {
-	char *link = (*(link_CM02_t)link_ptr).lmm_resource.generic_resource.name;
+	link = (*(link_CM02_t)link_ptr).lmm_resource.generic_resource.name;
 
 	if (strcmp (what, "set") == 0){
 	  pajeSetVariable (time, variable, link, valuestr);
@@ -48,9 +50,9 @@ void __TRACE_link_variable (double time, const char *src, const char *dst, const
 
 void __TRACE_host_variable (double time, const char *variable, double value, const char *what)
 {
+	char valuestr[100];
   if (!IS_TRACING || !IS_TRACING_PLATFORM) return;
 
-  char valuestr[100];
   snprintf (valuestr, 100, "%g", value);
 
   if (strcmp (what, "declare") == 0){

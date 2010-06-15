@@ -52,12 +52,14 @@ static cpu_Cas01_im_t cpu_im_new(char *name, double power_peak,
                               tmgr_trace_t state_trace,
                               xbt_dict_t cpu_properties)
 {
-#ifdef HAVE_TRACING
-  TRACE_surf_host_declaration (name, power_scale * power_peak);
-#endif
-
-  cpu_Cas01_im_t cpu = xbt_new0(s_cpu_Cas01_im_t, 1);
+  cpu_Cas01_im_t cpu = NULL;
   s_surf_action_cpu_Cas01_im_t action;
+  cpu = xbt_new0(s_cpu_Cas01_im_t, 1);
+
+  #ifdef HAVE_TRACING
+  TRACE_surf_host_declaration (name, power_scale * power_peak);
+  #endif
+
   xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
               "Host '%s' declared several times in the platform file", name);
   cpu->generic_resource.model = surf_cpu_model;
