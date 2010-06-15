@@ -39,22 +39,34 @@ my $top;
 my $current;
 my $entry;
 
-$current->{'label'}="ROOT";
-push @{$top->{'down'}},$current;
-print "Push $current as child of $top\n" if $debug{'parse'};
+# $current->{'label'}="ROOT";
+# push @{$top->{'down'}},$current;
+# print "Push $current '".($current->{'label'})."' as child of $top '".($top->{'label'})."'\n" if $debug{'parse'};
+# $current=$top;
+$top->{'label'}="ROOT";
+print "Create ROOT $top\n" if $debug{'parse'};
 $current=$top;
 
 
+# Read the whole data to postprocess it a bit
+my $in;
 while (<IN>) {
+    $in .= $_;
+}
+$in =~ s/<ul>/\n<ul>\n/sg;
+foreach $_ (split(/\n/,$in)) {
+    next unless length($_);
+    next if ($_ =~ m|^</li>$|);
+    print "  Seen '$_'\n" if $debug{'parse'};
   if (/<ul>/) {
-    print "DOWN: $current -> " if $debug{'parse'};
+    print "DOWN: $current '$current->{'label'}' -> " if $debug{'parse'};
     $current = $current->{'down'}[scalar @{$current->{'down'}} - 1];
-    print "$current\n" if $debug{'parse'};
+    print "$current '$current->{'label'}'\n" if $debug{'parse'};
     next;
   }
   if (/<\/ul>/) {
     $current = $current->{'up'};
-    print "UP\n" if $debug{'parse'};
+    print "UP to $current '$current->{'label'}'\n" if $debug{'parse'};
     next;
   }
   if (/<p>/) {
@@ -68,7 +80,7 @@ while (<IN>) {
   $entry->{'label'} = $2;
   $entry->{'up'} = $current;
   push @{$current->{'down'}},$entry;
-  print "Push $1 $2 as child of $current\n" if $debug{'parse'};
+  print "Push file:$1 label:'$2' as child of $current '$current->{'label'}'\n" if $debug{'parse'};
   push @allfiles,"html/$1";
 }
 close IN;
@@ -237,10 +249,14 @@ sub handle_page {
       print TO "$_";
       last if (m|</div>|);
     }
+      
+    print TO "\n<!-- POST-PROCESSED TABS -->\n";
     foreach (@tabs) {
 #      print "TAB: $_";
       print TO "$_";
     }
+    print TO "\n<!-- END OF POST-PROCESSED TABS -->\n";
+      
     if ($current->{'file'} =~ m/^class/) {
 	while (<FROM>) {
 	    last if (m|</div>|);
@@ -248,6 +264,13 @@ sub handle_page {
       print TO "$_";	
     }
     while (<FROM>) {
+      if (m/POST-PROCESSED TABS/) {
+	  while (<FROM>) {
+	      last if (m/END OF POST-PROCESSED TABS/);
+	  }
+	  next;
+      }
+
       if (m/The documentation for/) {
 	  while (<FROM>) {
 	      last if (m/<p>/);
