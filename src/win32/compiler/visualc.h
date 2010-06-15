@@ -381,6 +381,10 @@ the double. For now, GRAS requires the structures to be compacted. */
 	#define va_copy(d, s) __VA_COPY_USE(d, s)
 	#endif
 
+	/* Define to id of used va_copy() implementation */
+	#ifndef __VA_COPY_USE
+		#define __VA_COPY_USE __VA_COPY_USE_C99
+	#endif
 #endif
 
 /* xbt contexts are based on our threads implementation */
@@ -388,15 +392,12 @@ the double. For now, GRAS requires the structures to be compacted. */
 #define CONTEXT_THREADS 1
 #endif
 
+
 /* xbt contexts are not based on ucontext */
 #ifdef CONTEXT_UCONTEXT
 #undef CONTEXT_UCONTEXT
 #endif
 
-/* Define to id of used va_copy() implementation */
-#ifndef __VA_COPY_USE
-	#define __VA_COPY_USE __VA_COPY_USE_C99
-#endif
 
 #ifndef _XBT_CALL
 	#if defined(_XBT_DESIGNATED_DLL)

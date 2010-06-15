@@ -44,6 +44,9 @@
 /* Define if xbt contexts are based on our threads implementation or not */
 #cmakedefine CONTEXT_THREADS @CONTEXT_THREADS@
 
+/* Define to 1 if you have the <ucontext.h> header file. */
+#cmakedefine HAVE_UCONTEXT_H @HAVE_UCONTEXT_H@
+
 /* Define if xbt contexts are based on ucontext or not */
 #cmakedefine CONTEXT_UCONTEXT @CONTEXT_UCONTEXT@
 

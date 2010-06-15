@@ -34,6 +34,7 @@ CHECK_INCLUDE_FILE(memory.h HAVE_MEMORY_H)
 CHECK_INCLUDE_FILE(stdlib.h HAVE_STDLIB_H)
 CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
 CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
+CHECK_INCLUDE_FILE(ucontext.h HAVE_UCONTEXT_H)
 
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(usleep HAVE_USLEEP)
@@ -48,6 +49,11 @@ CHECK_FUNCTION_EXISTS(asprintf HAVE_ASPRINTF)
 CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
+
+if(WIN32)
+    set(HAVE_UCONTEXT_H 1)
+    set(HAVE_MAKECONTEXT 1)
+endif(WIN32)
 
 set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
@@ -360,8 +366,6 @@ if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
-	message("GIT_DATE 	: ${GIT_DATE}")
-	message("GIT_VERSION 	: ${GIT_VERSION}")
 	foreach(line ${GIT_SVN_VERSION})
 		string(REGEX MATCH "^Revision:.*" line_good ${line})
 		if(line_good)
@@ -369,7 +373,6 @@ if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 			set(SVN_VERSION ${line_good})
 		endif(line_good)
 	endforeach(line ${GIT_SVN_VERSION})
-	message("GIT_SVN_VERSION : ${SVN_VERSION}")
 endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 
 ###################################
@@ -471,20 +474,22 @@ SET(SIZEOF_MAX ${var3})
 #--------------------------------------------------------------------------------------------------
 
 set(makecontext_CPPFLAGS_2 "")
-if(HAVE_MAKECONTEXT)
+if(HAVE_MAKECONTEXT OR WIN32)
 	set(makecontext_CPPFLAGS "-DTEST_makecontext")
 	if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 		set(makecontext_CPPFLAGS_2 "-DOSX")
 	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+	
+	if(WIN32)
+	    set(makecontext_CPPFLAGS_2 "-DWIN32 ${INCLUDES}")
+	endif(WIN32)
 
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
-	
 	file(READ ${simgrid_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
-	message("MAKECONTEXT_ADDR_SIZE : ${MAKECONTEXT_ADDR_SIZE}")
 	string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
@@ -493,7 +498,7 @@ if(HAVE_MAKECONTEXT)
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
 	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
 
-endif(HAVE_MAKECONTEXT)
+endif(HAVE_MAKECONTEXT OR WIN32)
 
 #--------------------------------------------------------------------------------------------------
 

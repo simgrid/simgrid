@@ -7,6 +7,12 @@
 #if defined OSX
 #define _XOPEN_SOURCE
 #endif
+
+#ifdef WIN32
+	#include "ucontext.h"
+	#include "ucontext.c"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

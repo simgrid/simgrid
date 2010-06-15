@@ -6,11 +6,18 @@
  /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
+
+
 #include "smx_context_sysv_private.h"
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
 #endif /* HAVE_VALGRIND_VALGRIND_H */
+
+#ifdef WIN32
+	#include "ucontext.h"
+	#include "ucontext.c"
+#endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
