@@ -58,7 +58,7 @@ void SD_init(int *argc, char **argv)
 
   sd_global->not_scheduled_task_set =
     xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->ready_task_set =
+  sd_global->schedulable_task_set =
     xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->scheduled_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
@@ -98,7 +98,7 @@ void SD_application_reinit(void)
   if (SD_INITIALISED()) {
     DEBUG0("Recreating the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);
-    xbt_swag_free(sd_global->ready_task_set);
+    xbt_swag_free(sd_global->schedulable_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
     xbt_swag_free(sd_global->runnable_task_set);
     xbt_swag_free(sd_global->in_fifo_task_set);
@@ -108,7 +108,7 @@ void SD_application_reinit(void)
 
     sd_global->not_scheduled_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->ready_task_set =
+    sd_global->schedulable_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
     sd_global->scheduled_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
@@ -266,7 +266,7 @@ xbt_dynar_t SD_simulate(double how_long)
         	  if (__SD_task_is_scheduled(dst))
         		  __SD_task_set_state(dst, SD_RUNNABLE);
         	  else
-        		  __SD_task_set_state(dst, SD_READY);
+        		  __SD_task_set_state(dst, SD_SCHEDULABLE);
           }
 
           /* is dst runnable now? */
@@ -345,7 +345,7 @@ void SD_exit(void)
 
     DEBUG0("Destroying the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);
-    xbt_swag_free(sd_global->ready_task_set);
+    xbt_swag_free(sd_global->schedulable_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
     xbt_swag_free(sd_global->runnable_task_set);
     xbt_swag_free(sd_global->in_fifo_task_set);

@@ -81,8 +81,8 @@ xbt_dynar_t SD_daxload(const char*filename) {
   files=xbt_dict_new();
   jobs=xbt_dict_new();
   root_task = SD_task_create_comp_seq("root",NULL,0);
-  /* by design the root task is always READY */
-  __SD_task_set_state(root_task, SD_READY);
+  /* by design the root task is always SCHEDULABLE */
+  __SD_task_set_state(root_task, SD_SCHEDULABLE);
 
   xbt_dynar_push(result,&root_task);
   end_task = SD_task_create_comp_seq("end",NULL,0);

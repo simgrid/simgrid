@@ -120,8 +120,8 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   case SD_NOT_SCHEDULED:
     task->state_set = sd_global->not_scheduled_task_set;
     break;
-  case SD_READY:
-    task->state_set = sd_global->ready_task_set;
+  case SD_SCHEDULABLE:
+    task->state_set = sd_global->schedulable_task_set;
     break;
   case SD_SCHEDULED:
     task->state_set = sd_global->scheduled_task_set;
@@ -295,7 +295,7 @@ void SD_task_dump(SD_task_t task)
   INFO1("Displaying task %s",SD_task_get_name(task));
   statename=bprintf("%s %s %s %s %s %s %s",
       (task->state&SD_NOT_SCHEDULED?"not scheduled":""),
-      (task->state&SD_READY?"ready":""),
+      (task->state&SD_SCHEDULABLE?"schedulable":""),
       (task->state&SD_SCHEDULED?"scheduled":""),
       (task->state&SD_RUNNABLE?"runnable":"not runnable"),
       (task->state&SD_IN_FIFO?"in fifo":""),
@@ -394,16 +394,16 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
            "Cannot add a dependency between task '%s' and itself",
            SD_task_get_name(src));
 
-  if (!__SD_task_is_not_scheduled(src) && !__SD_task_is_ready(src)
+  if (!__SD_task_is_not_scheduled(src) && !__SD_task_is_schedulable(src)
       && !__SD_task_is_scheduled_or_runnable(src))
     THROW1(arg_error, 0,
-           "Task '%s' must be SD_NOT_SCHEDULED, SD_READY, SD_SCHEDULED or SD_RUNNABLE",
+           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED or SD_RUNNABLE",
            SD_task_get_name(src));
 
-  if (!__SD_task_is_not_scheduled(dst) && !__SD_task_is_ready(dst)
+  if (!__SD_task_is_not_scheduled(dst) && !__SD_task_is_schedulable(dst)
       && !__SD_task_is_scheduled_or_runnable(dst))
     THROW1(arg_error, 0,
-           "Task '%s' must be SD_NOT_SCHEDULED, SD_READY, SD_SCHEDULED or SD_RUNNABLE",
+           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED or SD_RUNNABLE",
            SD_task_get_name(dst));
 
   DEBUG2("SD_task_dependency_add: src = %s, dst = %s", SD_task_get_name(src),
@@ -539,7 +539,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 	   if (__SD_task_is_scheduled(dst))
 		   __SD_task_set_state(dst, SD_RUNNABLE);
 	   else
-		   __SD_task_set_state(dst, SD_READY);
+		   __SD_task_set_state(dst, SD_SCHEDULABLE);
    }
   /*  __SD_print_dependencies(src);
      __SD_print_dependencies(dst); */
@@ -583,9 +583,9 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
 static void __SD_print_watch_points(SD_task_t task)
 {
   static const int state_masks[] =
-    { SD_READY, SD_SCHEDULED, SD_RUNNING, SD_RUNNABLE, SD_DONE, SD_FAILED };
+    { SD_SCHEDULABLE, SD_SCHEDULED, SD_RUNNING, SD_RUNNABLE, SD_DONE, SD_FAILED };
   static const char *state_names[] =
-    { "ready", "scheduled", "running", "runnable", "done", "failed" };
+    { "schedulable", "scheduled", "running", "runnable", "done", "failed" };
   int i;
 
   INFO2("Task '%s' watch points (%x): ", SD_task_get_name(task),
@@ -694,7 +694,7 @@ double SD_task_get_execution_time(SD_task_t task,
 static XBT_INLINE void SD_task_do_schedule(SD_task_t task) {
   SD_CHECK_INIT_DONE();
 
-   if (!__SD_task_is_not_scheduled(task) && !__SD_task_is_ready(task) )
+   if (!__SD_task_is_not_scheduled(task) && !__SD_task_is_schedulable(task) )
      THROW1(arg_error, 0, "Task '%s' has already been scheduled",
             SD_task_get_name(task));
 
@@ -787,7 +787,7 @@ void SD_task_unschedule(SD_task_t task)
     surf_workstation_model->action_cancel(task->surf_action);
   else {
 	  if (task->unsatisfied_dependencies == 0)
-		  __SD_task_set_state(task, SD_READY);
+		  __SD_task_set_state(task, SD_SCHEDULABLE);
 	  else
 		  __SD_task_set_state(task, SD_NOT_SCHEDULED);
   }
@@ -1315,7 +1315,7 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
       SD_task_t before = dep->src;
       if (before->kind == SD_TASK_COMM_E2E) {
         before->workstation_list[1] = task->workstation_list[0];
-        if (before->workstation_list[0] && __SD_task_is_ready(before)) {
+        if (before->workstation_list[0] && __SD_task_is_schedulable(before)) {
           SD_task_do_schedule(before);
           VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
               SD_task_get_name(before),
@@ -1329,7 +1329,7 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
       if (after->kind == SD_TASK_COMM_E2E) {
         after->workstation_list[0] = task->workstation_list[0];
         if (after->workstation_list[1] && (__SD_task_is_not_scheduled(after) ||
-        		__SD_task_is_ready(after))) {
+        		__SD_task_is_schedulable(after))) {
           SD_task_do_schedule(after);
           VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
               SD_task_get_name(after),
