@@ -293,7 +293,7 @@ void SD_task_dump(SD_task_t task)
   char *statename;
 
   INFO1("Displaying task %s",SD_task_get_name(task));
-  statename=bprintf("%s %s %s %s %s %s %s",
+  statename=bprintf("%s %s %s %s %s %s %s %s",
       (task->state&SD_NOT_SCHEDULED?"not scheduled":""),
       (task->state&SD_SCHEDULABLE?"schedulable":""),
       (task->state&SD_SCHEDULED?"scheduled":""),
