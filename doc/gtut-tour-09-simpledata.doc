@@ -3,9 +3,9 @@
 
 \section GRAS_tut_tour_simpledata_toc Table of Contents
  - \ref GRAS_tut_tour_simpledata_intro
-    - \ref GRAS_tut_tour_simpledata_intro_conv
-    - \ref GRAS_tut_tour_simpledata_intro_gras
-    - \ref GRAS_tut_tour_simpledata_use
+   - \ref GRAS_tut_tour_simpledata_intro_conv
+   - \ref GRAS_tut_tour_simpledata_intro_gras
+   - \ref GRAS_tut_tour_simpledata_use
  - \ref GRAS_tut_tour_simpledata_example
  - \ref GRAS_tut_tour_simpledata_recap
    

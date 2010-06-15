@@ -103,7 +103,7 @@ And the output now looks better:
 
 \section GRAS_tut_tour_logs_config The user side: configuring logs at run time
 
-\section GRAS_tut_tour_logs_config_prio Choosing what gets displayed
+\subsection GRAS_tut_tour_logs_config_prio Choosing what gets displayed
 
 Once we changed our program to use proper logging, it is naturally possible
 to choose at run time what we want to see. For example, if we want more
@@ -115,7 +115,7 @@ Note that a VERBOSE line appears on client side:
 On the contrary, if we want to reduce the amount of logging, we may want to
 do pass <tt>--log=test.thres:error</tt>: 
 
-\section GRAS_tut_tour_logs_config_layout Choosing how things get displayed
+\subsection GRAS_tut_tour_logs_config_layout Choosing how things get displayed
 
 As with SimGrid 3.3, it is also possible to change how each and every
 message get displayed from the command line without even recompiling

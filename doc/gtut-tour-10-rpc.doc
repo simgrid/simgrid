@@ -3,11 +3,11 @@
 
 \section GRAS_tut_tour_rpc_toc Table of Contents
  - \ref GRAS_tut_tour_rpc_intro
-  - \ref GRAS_tut_tour_rpc_use
-      - \ref GRAS_tut_tour_rpc_use_declare
-      - \ref GRAS_tut_tour_rpc_use_i2a_cb
-      - \ref GRAS_tut_tour_rpc_use_a2i_cb
-      - \ref GRAS_tut_tour_rpc_use_rest
+ - \ref GRAS_tut_tour_rpc_use
+   - \ref GRAS_tut_tour_rpc_use_declare
+   - \ref GRAS_tut_tour_rpc_use_i2a_cb
+   - \ref GRAS_tut_tour_rpc_use_a2i_cb
+   - \ref GRAS_tut_tour_rpc_use_rest
  - \ref GRAS_tut_tour_rpc_recap
    
 <hr>
