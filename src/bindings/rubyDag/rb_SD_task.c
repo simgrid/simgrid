@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
+//#include "ruby_simdag.h"
 #include "rb_SD_task.h"
 
 // Free Method
@@ -160,16 +161,17 @@ static VALUE rb_SD_task_finish_time(VALUE class,VALUE task)
 static VALUE rb_SD_simulate(VALUE class,VALUE how_long)
 {
   int i;
+  SD_task_t  task ; 
   double hl = NUM2DBL(how_long);
-  SD_task_t * tasks = SD_simulate(hl); 
+  xbt_dynar_t simulated_tasks = SD_simulate(hl) ;
+  
   VALUE rb_tasks = rb_ary_new();
-  for (i = 0; tasks[i] != NULL; i++)
-    {
-      VALUE tk = Qnil;
-      tk = Data_Wrap_Struct(class, 0, SD_task_free, tasks[i]);
-      rb_ary_push(rb_tasks,tk);
-      
-    }
+  xbt_dynar_foreach(simulated_tasks, i, task){
+    VALUE tk = Qnil;
+    tk = Data_Wrap_Struct(class, 0, SD_task_free, task);
+    rb_ary_push(rb_tasks,tk);
+  }
+  
   return  rb_tasks;
  
 }

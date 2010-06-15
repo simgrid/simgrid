@@ -40,8 +40,8 @@ sitelibdir = $(sitedir)/$(ruby_version)
 CC = gcc
 LIBRUBY = $(LIBRUBY_SO)
 LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
-LIBRUBYARG_SHARED = -l$(RUBY_SO_NAME) -I . ../../.libs/libsimgrid.a -I /usr/include/lua5.1/ -ldl -llua5.1
-LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static 
+LIBRUBYARG_SHARED = -l$(RUBY_SO_NAME) -I . ../../../lib/libsimgrid_static.a
+LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static
 
 RUBY_EXTCONF_H = 
 CFLAGS   =  -fPIC -fno-strict-aliasing -g -g -O2  -fPIC $(cflags) 

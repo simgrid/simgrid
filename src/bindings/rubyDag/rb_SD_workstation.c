@@ -4,7 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
+//#include "ruby_simdag.h"
 #include "rb_SD_workstation.h"
+
 
 static void SD_workstation_free(SD_workstation_t wrk)
 {

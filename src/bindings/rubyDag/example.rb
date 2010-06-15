@@ -47,15 +47,18 @@ class Example
     
     rate = -1
     
+    
 #     Scheduling
     
-    DAG::Task.schedule(taskA,workstation_number,workstation_list,computation_amount,communication_amount,rate)
+    DAG::Task.schedule(taskA,workstation_number,workstation_list,computation_amount,communication_amount,rate) 
     DAG::Task.schedule(taskB,workstation_number,workstation_list,computation_amount,communication_amount,rate)
     DAG::Task.schedule(taskC,workstation_number,workstation_list,computation_amount,communication_amount,rate)
     DAG::Task.schedule(taskD,workstation_number,workstation_list,computation_amount,communication_amount,rate)
-   
+  
+	
     changed_tasks = Array.new()
     changed_tasks = DAG::Task.simulate(-1.0)
+
 
     for i in 0..changed_tasks.size-1
       puts "Task "+ changed_tasks[i].name + " Started at " + changed_tasks[i].startTime.to_s + " has been done at "+ changed_tasks[i].finishTime.to_s

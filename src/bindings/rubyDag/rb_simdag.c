@@ -15,6 +15,7 @@
  *(GNU LGPL) which comes with this package. 
  */ 
 
+//FIXME #include "ruby_simdag.h"
 #include "rb_SD_task.c"
 #include "rb_SD_workstation.c"
 #include <simdag/simdag.h>
