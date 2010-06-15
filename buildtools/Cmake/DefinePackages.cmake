@@ -459,7 +459,7 @@ examples/amok/saturate/saturate.xml
 
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS
-if(${CONTEXT_THREADS})
+if(${CONTEXT_THREADS} OR WIN32)
 	set(SURF_SRC
 		${SURF_SRC}
 		src/xbt/xbt_os_thread.c
@@ -469,7 +469,7 @@ if(${CONTEXT_THREADS})
 		${EXTRA_DIST}
 		src/simix/smx_context_sysv.c
 	)
-else(${CONTEXT_THREADS})
+else(${CONTEXT_THREADS} OR WIN32)
 	set(SURF_SRC
 		${SURF_SRC}
 		src/simix/smx_context_sysv.c
@@ -479,7 +479,7 @@ else(${CONTEXT_THREADS})
 		src/xbt/xbt_os_thread.c
 		src/simix/smx_context_thread.c
 	)
-endif(${CONTEXT_THREADS})
+endif(${CONTEXT_THREADS} OR WIN32)
 
 # -->HAVE_GTNETS
 if(HAVE_GTNETS)
