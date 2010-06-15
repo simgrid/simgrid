@@ -74,6 +74,9 @@ if(HAVE_JAVA)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
 endif(HAVE_JAVA)
 
+### Build the doc
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
+
 ### Make tests
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
