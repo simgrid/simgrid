@@ -29,7 +29,15 @@ endif(WIN32)
 
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME} -module")
-	exec_program("${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
+	exec_program("${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so" 
+	            "${PROJECT_DIRECTORY}"  
+		    OUTPUT_VARIABLE IGNORED)
+	
+	# Make sure this extra link will get cleaned
+        get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
+        set_directory_properties(
+           PROPERTIES
+           ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so")
 endif(HAVE_RUBY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -49,7 +57,15 @@ endif(pthread)
 
 if(HAVE_LUA)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${liblua}")
-	exec_program("${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so" "${PROJECT_DIRECTORY}"  OUTPUT_VARIABLE LIEN_OK)
+	exec_program("${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so" 
+                     "${PROJECT_DIRECTORY}"
+                     OUTPUT_VARIABLE IGNORED)
+		     
+	# Make sure this extra link will get cleaned
+        get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
+        set_directory_properties(
+           PROPERTIES
+           ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${PROJECT_DIRECTORY}/examples/lua/simgrid.so")
 endif(HAVE_LUA)
 
 if(HAVE_GTNETS)
