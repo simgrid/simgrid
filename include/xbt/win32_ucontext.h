@@ -38,7 +38,7 @@ typedef struct __ucontext {
 	unsigned long int	uc_flags;
 	struct __ucontext	*uc_link;
 	stack_t				uc_stack;
-	mcontext_t			uc_mcontext; 
+	mcontext_t			uc_mcontext;
 	__sigset_t			uc_sigmask;
 } ucontext_t;
 

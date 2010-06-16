@@ -6,7 +6,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <win32_ucontext.h>
+#else
 #include <ucontext.h>
+#endif
 
 void child(void);
 

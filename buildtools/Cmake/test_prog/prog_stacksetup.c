@@ -9,8 +9,8 @@
 #endif
 
 #ifdef WIN32
-	#include "ucontext.h"
-	#include "ucontext.c"
+	#include "win32_ucontext.h"
+	#include "win32_ucontext.c"
 #endif
 
 #include <stdio.h>
