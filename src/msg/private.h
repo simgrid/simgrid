@@ -48,8 +48,8 @@ SG_BEGIN_DECL()
        double priority;
        double rate;
        int refcount;
+       int host_nb; /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
-       int host_nb;
        smx_host_t *host_list;
        double *comp_amount;
        double *comm_amount;

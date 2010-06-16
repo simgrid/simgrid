@@ -54,6 +54,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   task->data = data;
 
   /* Simulator Data */
+  simdata->host_nb = 0;
   simdata->computation_amount = compute_duration;
   simdata->message_size = message_size;
   simdata->rate = -1.0;
