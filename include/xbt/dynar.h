@@ -71,6 +71,7 @@ XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
 XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
 
 XBT_INLINE XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t dynar);
+XBT_INLINE XBT_PUBLIC (int) xbt_dynar_is_empty(const xbt_dynar_t dynar);
 XBT_PUBLIC(void) xbt_dynar_reset(xbt_dynar_t const dynar);
 XBT_PUBLIC(void) xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
 

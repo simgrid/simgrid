@@ -335,6 +335,16 @@ XBT_INLINE unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
   return (dynar ? (unsigned long) dynar->used : (unsigned long) 0);
 }
 
+/**@brief check if a dynar is empty
+ *
+ *\param dynar the dynat we want to check
+ */
+
+XBT_INLINE int xbt_dynar_is_empty(const xbt_dynar_t dynar)
+{
+	return (xbt_dynar_length(dynar) == 0);
+}
+
 /** @brief Retrieve a copy of the Nth element of a dynar.
  *
  * \param dynar information dealer
