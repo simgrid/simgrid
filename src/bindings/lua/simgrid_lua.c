@@ -334,60 +334,73 @@ static int max_host_number = 0;
 static int max_link_number = 0;
 static int max_route_number = 0;
 
-static p_host_attr* host_list;
-static p_link_attr* link_list;
-static p_route_attr* route_list;
+
+//using xbt_dynar_t :
+static xbt_dynar_t host_list_d ;
+static xbt_dynar_t link_list_d ;
+static xbt_dynar_t route_list_d ;
+
 
 static int Host_set_number(lua_State *L)
 {
 	max_host_number = luaL_checkint(L,1);
-	host_list = malloc(sizeof(host_attr)*max_host_number);
+//	host_list = malloc(sizeof(host_attr)*max_host_number);
+	//host_list_d = xbt_dynar_new(sizeof(p_host_attr), &xbt_free_ref);
+
 	return 0;
 }
 
 static int Link_set_number(lua_State *L)
 {
 	max_link_number = luaL_checkint(L,1);
-	link_list = malloc(sizeof(link_attr)*max_link_number);
+	//link_list = malloc(sizeof(link_attr)*max_link_number);
+	//link_list_d = xbt_dynar_new(sizeof(p_link_attr),&xbt_free_ref);
 	return 0;
 }
 
 static int Route_set_number(lua_State *L)
 {
 	max_route_number = luaL_checkint(L,1);
-	route_list = malloc(sizeof(route_attr)*max_link_number);
+	//route_list = malloc(sizeof(route_attr)*max_link_number);
+	//route_list_d = xbt_dynar_new(sizeof(p_route_attr),&xbt_free_ref);
 	return 0;
 }
 
 static int Host_new(lua_State *L) //(id,power)
 {
+	// if it's the first time ,instanciate the dynar
+	if(xbt_dynar_is_empty(host_list_d))
+		host_list_d = xbt_dynar_new(sizeof(p_host_attr), &xbt_free_ref);
+
+
 	p_host_attr host = malloc(sizeof(host_attr));
 	host->id = luaL_checkstring(L,1);
 	host->power = luaL_checknumber(L,2);
-	if(host_index >= max_host_number)
-		ERROR1("max host number:%d reached !!!",max_host_number);
-	host_list[host_index] = host;
-	host_list[host_index]->function = NULL;
+	host->function = NULL;
+	xbt_dynar_push(host_list_d, &host);
 	host_index++;
 	return 0;
 }
 
 static int Link_new(lua_State *L) // (id,bandwidth,latency)
 {
+	if(xbt_dynar_is_empty(link_list_d))
+		link_list_d = xbt_dynar_new(sizeof(p_link_attr), &xbt_free_ref);
 
 	p_link_attr link = malloc(sizeof(link_attr));
 	link->id = luaL_checkstring(L,1);
 	link->bandwidth = luaL_checknumber(L,2);
 	link->latency = luaL_checknumber(L,3);
-	if(link_index >= max_link_number)
-		ERROR1("max link number: %d reached !!!",max_link_number);
-	link_list[link_index] = link;
+	xbt_dynar_push(link_list_d,&link);
 	link_index++;
 	return 0;
 }
 
 static int Route_new(lua_State *L) // (src_id,dest_id,links_number,link_table)
 {
+	if(xbt_dynar_is_empty(route_list_d))
+		route_list_d = xbt_dynar_new(sizeof(p_route_attr), &xbt_free_ref);
+
 	int i=0;
 	p_route_attr route = malloc(sizeof(route_attr));
 	route->src_id = luaL_checkstring(L,1);
@@ -406,9 +419,7 @@ static int Route_new(lua_State *L) // (src_id,dest_id,links_number,link_table)
 	lua_pop(L, 1);
 
 	//add route to platform's route list
-	if(route_index >= max_route_number)
-			ERROR1("max route number: %d reached !!!",max_route_number);
-	route_list[route_index] = route;
+	xbt_dynar_push(route_list_d,&route);
 	route_index++;
 	return 0;
 }
@@ -418,20 +429,22 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 	// look for the index of host in host_list
 	const char *host_id = luaL_checkstring(L,1);
 	int i;
-	for(i=0;i< host_index;i++)
+	p_host_attr p_host;
+
+	xbt_dynar_foreach(host_list_d,i,p_host)
 	{
-		if(host_list[i]->id == host_id)
+		if(p_host->id == host_id)
 		{
-			host_list[i]->function = luaL_checkstring(L,2);
-			host_list[i]->args_nb = luaL_checkint(L,3);
-			host_list[i]->args_list = malloc(sizeof(char*)*host_list[i]->args_nb);
+			p_host->function = luaL_checkstring(L,2);
+			p_host->args_nb = luaL_checkint(L,3);
+			p_host->args_list = malloc(sizeof(char*)*p_host->args_nb);
 			// fill the args list
 			lua_pushnil(L);
 			int j = 0;
 			while (lua_next(L,4) != 0) {
-					if(j >= host_list[i]->args_nb)
-						ERROR1("Number of args should be less than %d",host_list[i]->args_nb+1);
-					host_list[i]->args_list[j] = lua_tostring(L, -1);
+					if(j >= p_host->args_nb)
+						ERROR1("Number of args should be less than %d",p_host->args_nb+1);
+					p_host->args_list[j] = lua_tostring(L, -1);
 				    DEBUG2("index = %f , Arg_id = %s \n",lua_tonumber(L, -2),lua_tostring(L, -1));
 				    j++;
 				    lua_pop(L, 1);
@@ -451,21 +464,33 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
  */
 static int surf_parse_bypass_platform()
 {
+	char buffer[22];
+	int i;
+
+	p_host_attr p_host;
+	p_link_attr p_link;
+	p_route_attr p_route;
+
+	xbt_dynar_t dynaroun = xbt_dynar_new(sizeof(int), NULL);
+
 	static int AX_ptr = 0;
 	static int surfxml_bufferstack_size = 2048;
+
 	  /* FIXME allocating memory for the buffer, I think 2kB should be enough */
 	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 	  /* <platform> */
 	SURFXML_BUFFER_SET(platform_version, "2");
 	SURFXML_START_TAG(platform);
-	char buffer[22];
-	int i;
 
-	// Add Host
-	for(i=0;i<host_index;i++)
+
+	// Add Hosts
+	//for(i=0;i<host_index;i++)
+	xbt_dynar_foreach(host_list_d,i,p_host)
 	{
-		SURFXML_BUFFER_SET(host_id,host_list[i]->id);
-		sprintf(buffer, "%f", host_list[i]->power);
+		//SURFXML_BUFFER_SET(host_id,host_list[i]->id);
+		SURFXML_BUFFER_SET(host_id,p_host->id);
+		//sprintf(buffer, "%f", host_list[i]->power);
+		sprintf(buffer,"%f",p_host->power);
 		SURFXML_BUFFER_SET(host_power,buffer);
 		SURFXML_BUFFER_SET(host_availability, "1.0");
 		SURFXML_BUFFER_SET(host_availability_file, "");
@@ -479,14 +504,18 @@ static int surf_parse_bypass_platform()
 		SURFXML_END_TAG(host);
 	}
 
-	//add Host
-	for (i = 0;i<link_index;i++)
+	//add Links
+	//for (i = 0;i<link_index;i++)
+	xbt_dynar_foreach(link_list_d,i,p_link)
 	{
-		SURFXML_BUFFER_SET(link_id,link_list[i]->id);
-		sprintf(buffer,"%f",link_list[i]->bandwidth);
+		//SURFXML_BUFFER_SET(link_id,link_list[i]->id);
+		SURFXML_BUFFER_SET(link_id,p_link->id);
+		//sprintf(buffer,"%f",link_list[i]->bandwidth);
+		sprintf(buffer,"%f",p_link->bandwidth);
 		SURFXML_BUFFER_SET(link_bandwidth,buffer);
 		SURFXML_BUFFER_SET(link_bandwidth_file, "");
-		sprintf(buffer,"%f",link_list[i]->latency);
+		//sprintf(buffer,"%f",link_list[i]->latency);
+		sprintf(buffer,"%f",p_link->latency);
 		SURFXML_BUFFER_SET(link_latency,buffer);
 		SURFXML_BUFFER_SET(link_latency_file, "");
 		A_surfxml_link_state = A_surfxml_link_state_ON;
@@ -498,10 +527,13 @@ static int surf_parse_bypass_platform()
 
 	// add route
 
-	for (i = 0;i<route_index;i++)
+	//for (i = 0;i<route_index;i++)
+	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
-		SURFXML_BUFFER_SET(route_src,route_list[i]->src_id);
-		SURFXML_BUFFER_SET(route_dst,route_list[i]->dest_id);
+		//SURFXML_BUFFER_SET(route_src,route_list[i]->src_id);
+		SURFXML_BUFFER_SET(route_src,p_route->src_id);
+		//SURFXML_BUFFER_SET(route_dst,route_list[i]->dest_id);
+		SURFXML_BUFFER_SET(route_dst,p_route->dest_id);
 		SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
 		SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
 		SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
@@ -509,9 +541,11 @@ static int surf_parse_bypass_platform()
 		SURFXML_START_TAG(route);
 		int j;
 
-		for(j=0; j < route_list[i]->links_nb;j++)
+		//for(j=0; j < route_list[i]->links_nb;j++)
+		for(j=0;j< p_route->links_nb;j++)
 		{
-			SURFXML_BUFFER_SET(link_c_ctn_id,route_list[i]->links_id[j]);
+			//SURFXML_BUFFER_SET(link_c_ctn_id,route_list[i]->links_id[j]);
+			SURFXML_BUFFER_SET(link_c_ctn_id,p_route->links_id[j]);
 			SURFXML_START_TAG(link_c_ctn);
 			SURFXML_END_TAG(link_c_ctn);
 		}
@@ -531,7 +565,11 @@ static int surf_parse_bypass_platform()
  */
 static int surf_parse_bypass_application()
 {
+
 	  int i;
+
+	  p_host_attr p_host;
+
 	  static int AX_ptr;
 	  static int surfxml_bufferstack_size = 2048;
 	  /* FIXME ( should be manual )allocating memory to the buffer, I think 2MB should be enough */
@@ -542,21 +580,22 @@ static int surf_parse_bypass_application()
 
 	  SURFXML_START_TAG(platform);
 
-	  for(i=0 ; i< host_index ;i++)
+	  //for(i=0 ; i< host_index ;i++)
+	  xbt_dynar_foreach(host_list_d,i,p_host)
 	  {
-		  if(host_list[i]->function)
+		  if(p_host->function)
 		  {
-			  SURFXML_BUFFER_SET(process_host, host_list[i]->id);
-			  SURFXML_BUFFER_SET(process_function, host_list[i]->function);
+			  SURFXML_BUFFER_SET(process_host, p_host->id);
+			  SURFXML_BUFFER_SET(process_function, p_host->function);
 			  SURFXML_BUFFER_SET(process_start_time, "-1.0");
 			  SURFXML_BUFFER_SET(process_kill_time, "-1.0");
 			  SURFXML_START_TAG(process);
 
 			  //args
 			  int j;
-			  for(j=0 ;j<host_list[i]->args_nb;j++)
+			  for(j=0 ;j<p_host->args_nb;j++)
 			  {
-				  SURFXML_BUFFER_SET(argument_value, host_list[i]->args_list[j]);
+				  SURFXML_BUFFER_SET(argument_value,p_host->args_list[j]);
 				  SURFXML_START_TAG(argument);
 				  SURFXML_END_TAG(argument);
 			  }
@@ -573,18 +612,7 @@ static int surf_parse_bypass_application()
 // Free Allocated Memory
 static void clean_attr()
 {
-	// free hosts
-    int i;
-    for(i = 0;i<host_index;i++)
-        free(host_list[i]->args_list);
-
-	free(host_list);
-    free(link_list);
-
-    for(i=0;i<route_index;i++)
-		free(route_list[i]->links_id);
-
-    free(route_list);
+//nothing to do
 }
 //***********Register Methods *******************************************//
 /*
