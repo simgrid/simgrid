@@ -28,6 +28,8 @@ ADD_CUSTOM_COMMAND(
   COMMENT "Compiling java sources of core library..."
 )
 
+ADD_CUSTOM_TARGET(simgrid_java ALL
+                  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar)
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar
@@ -38,21 +40,21 @@ ADD_CUSTOM_COMMAND(
 )
 
 ADD_CUSTOM_TARGET(java_basic ALL
-  COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java
+  COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java
 )
 	
 ADD_CUSTOM_TARGET(java_ping_pong ALL
-  COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
+  COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
 )
 	
 ADD_CUSTOM_TARGET(java_comm_time ALL
-  COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
+  COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
 )
 	
 ADD_CUSTOM_TARGET(java_suspend ALL
-  COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${PROJECT_DIRECTORY}/src/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java
+  COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java
 )
