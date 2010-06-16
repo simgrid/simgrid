@@ -75,7 +75,9 @@ if(HAVE_JAVA)
 endif(HAVE_JAVA)
 
 ### Build the doc
+if(NOT WIN32)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
+endif(NOT WIN32)
 
 ### Make tests
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
