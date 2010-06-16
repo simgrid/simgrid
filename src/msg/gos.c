@@ -39,11 +39,15 @@ MSG_error_t MSG_task_execute(m_task_t task)
   m_process_t self = MSG_process_self();
   e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
   CHECK_HOST();
+
+  simdata = task->simdata;
+
+  xbt_assert0(simdata->host_nb==0, "This is a parallel task. Go to hell.");
+
 #ifdef HAVE_TRACING
   TRACE_msg_task_execute_start (task);
 #endif
 
-  simdata = task->simdata;
 
   xbt_assert1((!simdata->compute) && (task->simdata->refcount == 1),
               "This task is executed somewhere else. Go fix your code! %d", task->simdata->refcount);
