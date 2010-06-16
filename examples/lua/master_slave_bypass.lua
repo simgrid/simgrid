@@ -65,8 +65,6 @@ end -- function ----------------------------------------------------------
 
 require "simgrid"
   
-  --first we save the host number ( since we'll first save them into a C table )
-  simgrid.Host.setNumber(5);
   --simgrid.Host.new(host_id,power)
   simgrid.Host.new("Tremblay",98095000);
   simgrid.Host.new("Jupiter",76296000);
@@ -74,15 +72,12 @@ require "simgrid"
   simgrid.Host.new("Ginette",48492000);
   simgrid.Host.new("Bourassa",48492000);
 
-    -- set Number of links
-  simgrid.Link.setNumber(12);
     -- create Links
   for i=0,11 do
     simgrid.Link.new(i,252750+ i*768,0.000270544+i*0.087);    -- let's create link !! with crazy values ;)
   end
 
-  -- set number of route ( 5 hosts >> 5*5 = 25 )
-  simgrid.Route.setNumber(20);
+
 
   -- simgrid.Route.new(src_id,des_id,links_nb,links_list)
   simgrid.Route.new("Tremblay","Jupiter",1,{"1"});
@@ -111,7 +106,10 @@ require "simgrid"
    simgrid.Route.new("Bourassa","Ginette",6,{"0","1","2","5","6","7"});
   
    --Save Platform
+   simgrid.info("start registering platform");
    simgrid.register_platform();
+   simgrid.info("platform registered");
+
   
   --Set Application
 
