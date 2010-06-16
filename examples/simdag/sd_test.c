@@ -16,6 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
 int main(int argc, char **argv)
 {
   int i;
+  unsigned int ctr;
   const char *platform_file;
   const SD_workstation_t *workstations;
   const char *name1;
@@ -176,7 +177,7 @@ int main(int argc, char **argv)
                    computation_amount, communication_amount, rate);
 
   changed_tasks = SD_simulate(-1.0);
-  xbt_dynar_foreach(changed_tasks, i, task){
+  xbt_dynar_foreach(changed_tasks, ctr, task){
 		  INFO3("Task '%s' start time: %f, finish time: %f",
           SD_task_get_name(task),
           SD_task_get_start_time(task),

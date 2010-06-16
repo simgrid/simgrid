@@ -25,7 +25,7 @@ static int nameCompareHosts(const void *n1, const void *n2)
 int main(int argc, char **argv)
 {
   int i, j;
-  SD_task_t *changed_tasks;
+  xbt_dynar_t changed_tasks;
   int n_hosts;
   const SD_workstation_t *hosts;
   SD_task_t taskInit;
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
 
   INFO1("Simulation time: %f", SD_get_clock());
 
-  free(changed_tasks);
+  xbt_dynar_free_container(&changed_tasks);
 
   free(ParComp_wocomm_table);
   free(IntraRedist_cost);
