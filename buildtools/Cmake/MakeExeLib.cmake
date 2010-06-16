@@ -1,4 +1,10 @@
 ### Make Libs
+foreach(file ${simgrid_sources})
+    set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "/D DLL_EXPORT")
+endforeach(file ${simgrid_sources})
+foreach(file ${gras_sources})
+    set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "/D DLL_EXPORT")
+endforeach(file ${gras_sources})
 
 if(enable_supernovae AND NOT WIN32)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
@@ -17,14 +23,13 @@ if(enable_smpi)
 	set_target_properties(smpi PROPERTIES VERSION ${libsmpi_version})
 endif(enable_smpi)
 
-
-set(GRAS_DEP "-lm -lpthread")
-set(SIMGRID_DEP "-lm")
-set(SMPI_DEP "")
-
 if(WIN32)
 	set(GRAS_DEP "wsock32")
 	set(SIMGRID_DEP "wsock32")
+else(WIN32)
+    set(GRAS_DEP "-lm -lpthread")
+    set(SIMGRID_DEP "-lm")
+    set(SMPI_DEP "")
 endif(WIN32)
 
 if(HAVE_RUBY)

@@ -15,7 +15,6 @@
 	#cmakedefine WIN32 @WIN32@
 #endif
 #ifdef _WIN32
-	#define DLL_EXPORT
 	#define __VISUALC__
 #endif
 
