@@ -92,7 +92,7 @@ sub process_one($) {
     print OUT "#include <stdio.h>\n";
     print OUT "#include \"xbt.h\"\n";
     print OUT $GENERATED;
-    print OUT "# $beginline \"$infile\" \n";
+    print OUT "#line $beginline \"$infile\" \n";
     print OUT "$unit_source";
     print OUT $GENERATED;
     close OUT || die "$progname: Cannot close output file '$outfile': $!\n";
