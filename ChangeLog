@@ -17,12 +17,15 @@ SimGrid (3.5) unstable; urgency=low
    This prevents a confusion between the notion of "ready to schedule"
    (SD_SCHEDULABLE) used in DAG scheduling and that of "ready to be
    simulated" (SD_RUNNABLE) used by the simulation kernel.
+ * Add an example that scheduling a DAX on an heterogeneous platform
+   using a Min-Min strategy
    
  XBT
  * New data container: setset (set of sets of elements)
  * New module: mmalloc (mapped malloc)
  * New function: xbt_dict_cursor_set_data()
  * New function: xbt_dynar_sort()
+ * New function: xbt_dynar_is_empty()
  * New function: xbt_fifo_get_last_item()
  * Bug fix in xbt_dynar_shrink(): use the right element size
  * Use library init/fini functions for our initialization.
