@@ -421,17 +421,17 @@ ${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
 )
 
 set(TEST_CFILES
-${PROJECT_DIRECTORY}/src/xbt/cunit.c
-${PROJECT_DIRECTORY}/src/xbt/ex.c
-${PROJECT_DIRECTORY}/src/xbt/dynar.c
-${PROJECT_DIRECTORY}/src/xbt/dict.c
-${PROJECT_DIRECTORY}/src/xbt/set.c
-${PROJECT_DIRECTORY}/src/xbt/swag.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_str.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_strbuff.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_sha.c
-${PROJECT_DIRECTORY}/src/xbt/config.c
-${PROJECT_DIRECTORY}/src/xbt/xbt_synchro.c
+xbt/cunit.c
+xbt/ex.c
+xbt/dynar.c
+xbt/dict.c
+xbt/set.c
+xbt/swag.c
+xbt/xbt_str.c
+xbt/xbt_strbuff.c
+xbt/xbt_sha.c
+xbt/config.c
+xbt/xbt_synchro.c
 )
 
 #Here must have all files which permit to generate source files
