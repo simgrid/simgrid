@@ -46,11 +46,7 @@ if(WIN32)
     set(_WIN32 1)
 endif(WIN32)
 
-if(enable_coverage)
-	add_definitions (${INCLUDES} -fprofile-arcs -ftest-coverage)
-else(enable_coverage)
-	add_definitions (${INCLUDES})
-endif(enable_coverage)
+add_definitions (${INCLUDES})
 
 ### Setup Options
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/Option.cmake)

@@ -156,7 +156,7 @@ if(enable_ruby)
 				set(RUBY_LIBRARY_NAME ruby)
 			endif(NOT RUBY_LIBRARY_NAME)
 			string(REGEX REPLACE "libruby.*$" "" RUBY_LIBRARY ${RUBY_LIBRARY})
-			SET(CMAKE_EXE_LINKER_FLAGS "-L${RUBY_LIBRARY}")
+			SET(CMAKE_EXE_LINKER_FLAGS "-L${RUBY_LIBRARY} ")
 			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${RUBY_CONFIG_INCLUDE_DIR} ") #path to config.h
 			string(COMPARE EQUAL "${RUBY_INCLUDE_DIR}" "${RUBY_CONFIG_INCLUDE_DIR}" operation)
 			if(NOT operation)
