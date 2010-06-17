@@ -61,7 +61,7 @@ endif(HAVE_JAVA)
 
 if(HAVE_LUA)
 	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/lua/5.1")
-	add_custom_target(lua_simgrid ALL
+	add_custom_target(simgrid_lua ALL
   		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.so ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.so
   		DEPENDS simgrid
 		)
