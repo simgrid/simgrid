@@ -261,12 +261,29 @@ xbt_dynar_t SD_simulate(double how_long)
 			dst = dependency->dst;
           if (dst->unsatisfied_dependencies>0)
         	  dst->unsatisfied_dependencies--;
+          if (dst->is_not_ready>0)
+        	  dst->is_not_ready--;
 
           if (!(dst->unsatisfied_dependencies)){
         	  if (__SD_task_is_scheduled(dst))
         		  __SD_task_set_state(dst, SD_RUNNABLE);
         	  else
         		  __SD_task_set_state(dst, SD_SCHEDULABLE);
+          }
+
+          if (SD_task_get_kind(dst) == SD_TASK_COMM_E2E){
+        	  SD_dependency_t comm_dep;
+        	  SD_task_t comm_dst;
+        	  xbt_dynar_get_cpy(dst->tasks_after, 0, &comm_dep);
+        	  comm_dst = comm_dep->dst;
+        	  if (__SD_task_is_not_scheduled(comm_dst) &&
+        		  comm_dst->is_not_ready>0){
+        		  comm_dst->is_not_ready--;
+
+       			  if (!(comm_dst->is_not_ready)){
+       				  __SD_task_set_state(comm_dst, SD_SCHEDULABLE);
+       			  }
+       		  }
           }
 
           /* is dst runnable now? */

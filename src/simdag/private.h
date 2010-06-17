@@ -89,6 +89,7 @@ typedef struct SD_task {
   xbt_dynar_t tasks_before;
   xbt_dynar_t tasks_after;
   unsigned int unsatisfied_dependencies;
+  unsigned int is_not_ready;
 
   /* scheduling parameters (only exist in state SD_SCHEDULED) */
   int workstation_nb;
@@ -128,6 +129,13 @@ static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
 {
   return task->state_set == sd_global->scheduled_task_set ||
     task->state_set == sd_global->runnable_task_set;
+}
+
+/* Returns whether the given task is scheduled or runnable. */
+static XBT_INLINE int __SD_task_is_schedulable_or_done(SD_task_t task)
+{
+  return task->state_set == sd_global->schedulable_task_set ||
+    task->state_set == sd_global->done_task_set;
 }
 
 /* Returns whether the state of the given task is SD_NOT_SCHEDULED. */

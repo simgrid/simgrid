@@ -53,6 +53,8 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
   task->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
   task->unsatisfied_dependencies=0;
+  task->is_not_ready=0;
+
   /* scheduling parameters */
   task->workstation_nb = 0;
   task->workstation_list = NULL;
@@ -432,6 +434,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   xbt_dynar_push(dst->tasks_before, &dependency);
 
   dst->unsatisfied_dependencies++;
+  dst->is_not_ready++;
 
   /* if the task was runnable, then dst->tasks_before is not empty anymore,
      so we must go back to state SD_SCHEDULED */
@@ -524,6 +527,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
       xbt_dynar_remove_at(dynar, i, NULL);
       __SD_task_dependency_destroy(dependency);
       dst->unsatisfied_dependencies--;
+      dst->is_not_ready--;
       found = 1;
     }
   }
@@ -541,6 +545,10 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 	   else
 		   __SD_task_set_state(dst, SD_SCHEDULABLE);
    }
+
+   if (dst->is_not_ready == 0)
+	   __SD_task_set_state(dst, SD_SCHEDULABLE);
+
   /*  __SD_print_dependencies(src);
      __SD_print_dependencies(dst); */
 }
@@ -795,7 +803,7 @@ void SD_task_unschedule(SD_task_t task)
   task->start_time = -1.0;
 }
 
-/* Destroys the data memorised by SD_task_schedule. Task state must be SD_SCHEDULED or SD_RUNNABLE.
+/* Destroys the data memorized by SD_task_schedule. Task state must be SD_SCHEDULED or SD_RUNNABLE.
  */
 static void __SD_task_destroy_scheduling_data(SD_task_t task)
 {
@@ -1315,7 +1323,9 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
       SD_task_t before = dep->src;
       if (before->kind == SD_TASK_COMM_E2E) {
         before->workstation_list[1] = task->workstation_list[0];
-        if (before->workstation_list[0] && __SD_task_is_schedulable(before)) {
+
+        if (before->workstation_list[0] &&
+        		(__SD_task_is_schedulable(before) || __SD_task_is_not_scheduled(before))) {
           SD_task_do_schedule(before);
           VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
               SD_task_get_name(before),
@@ -1328,15 +1338,15 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
       SD_task_t after = dep->dst;
       if (after->kind == SD_TASK_COMM_E2E) {
         after->workstation_list[0] = task->workstation_list[0];
-        if (after->workstation_list[1] && (__SD_task_is_not_scheduled(after) ||
-        		__SD_task_is_schedulable(after))) {
-          SD_task_do_schedule(after);
-          VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
-              SD_task_get_name(after),
-              SD_workstation_get_name(after->workstation_list[0]),SD_workstation_get_name(after->workstation_list[1]),
-              after->communication_amount[2]);
-
-        }
+//        if (after->workstation_list[1] && (__SD_task_is_not_scheduled(after) ||
+//        		__SD_task_is_schedulable(after))) {
+//          SD_task_do_schedule(after);
+//          VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
+//              SD_task_get_name(after),
+//              SD_workstation_get_name(after->workstation_list[0]),SD_workstation_get_name(after->workstation_list[1]),
+//              after->communication_amount[2]);
+//
+//        }
       }
     }
   }
