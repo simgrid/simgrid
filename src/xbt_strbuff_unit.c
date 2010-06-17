@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 293 "/home/navarrop/Developments/simgrid/src/xbt/xbt_strbuff.c" 
+#line 293 "xbt/xbt_strbuff.c" 
 #include "xbt/strbuff.h"
 
 /* buffstr have 512 chars by default. Adding 1000 chars like this will force a resize, allowing us to test that b->used and b->size are consistent */

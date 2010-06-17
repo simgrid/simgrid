@@ -1,5 +1,5 @@
-/* XML processor/application API for simdag/dax.dtd.
- * Generated 2010/04/09 23:31:36.
+/* XML processor/application API for src/simdag/dax.dtd.
+ * Generated 2010/06/17 19:11:52.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

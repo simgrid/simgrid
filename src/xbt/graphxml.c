@@ -1,5 +1,5 @@
 
-#line 3 "xbt/graphxml.c"
+#line 3 "src/xbt/graphxml.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -1053,8 +1053,8 @@ int xbt_graph_parse__flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *xbt_graph_parse_text;
-/* Validating XML processor for /home/mquinson/Code/simgrid/src/xbt/graphxml.dtd.
- * Generated 2010/04/06 12:44:26.
+/* Validating XML processor for src/xbt/graphxml.dtd.
+ * Generated 2010/06/17 19:11:52.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

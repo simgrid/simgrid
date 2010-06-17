@@ -1,5 +1,5 @@
 
-#line 3 "surf/simgrid_dtd.c"
+#line 3 "src/surf/simgrid_dtd.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -2817,8 +2817,8 @@ int surf_parse__flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *surf_parse_text;
-/* Validating XML processor for /home/navarrop/Developments/simgrid/src/surf/simgrid.dtd.
- * Generated 2010/04/15 01:19:41.
+/* Validating XML processor for src/surf/simgrid.dtd.
+ * Generated 2010/06/17 19:11:51.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

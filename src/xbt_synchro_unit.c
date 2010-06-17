@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 58 "/home/navarrop/Developments/simgrid/src/xbt/xbt_synchro.c" 
+#line 59 "xbt/xbt_synchro.c" 
 #define NB_ELEM 50
 #include "xbt/synchro.h"
 

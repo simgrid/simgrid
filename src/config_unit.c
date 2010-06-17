@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 1296 "/home/navarrop/Developments/simgrid/src/xbt/config.c" 
+#line 1295 "xbt/config.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 

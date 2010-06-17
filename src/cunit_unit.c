@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 824 "/home/navarrop/Developments/simgrid/src/xbt/cunit.c" 
+#line 823 "xbt/cunit.c" 
 
 
 XBT_TEST_UNIT("expect", test_expected_failure, "expected failures")

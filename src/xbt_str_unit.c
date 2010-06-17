@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 426 "/home/navarrop/Developments/simgrid/src/xbt/xbt_str.c" 
+#line 423 "xbt/xbt_str.c" 
 #include "xbt/str.h"
 
 #define mytest(name, input, expected) \

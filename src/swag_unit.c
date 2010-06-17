@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 220 "/home/navarrop/Developments/simgrid/src/xbt/swag.c" 
+#line 219 "xbt/swag.c" 
 
 
 typedef struct {

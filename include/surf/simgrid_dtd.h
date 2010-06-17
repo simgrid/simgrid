@@ -1,5 +1,5 @@
-/* XML processor/application API for /home/navarrop/Developments/simgrid/src/surf/simgrid.dtd.
- * Generated 2010/04/15 01:26:44.
+/* XML processor/application API for src/surf/simgrid.dtd.
+ * Generated 2010/06/17 19:11:51.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
