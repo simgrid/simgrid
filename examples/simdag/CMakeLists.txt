@@ -7,9 +7,9 @@ add_executable(ex_sd_test2 sd_test2.c)
 add_executable(ex_sd_seq_access sd_seq_access.c)
 
 ### Add definitions for compile
-target_link_libraries(ex_sd_test simgrid pthread m -fprofile-arcs)
-target_link_libraries(ex_sd_test2 simgrid pthread m -fprofile-arcs)
-target_link_libraries(ex_sd_seq_access simgrid pthread m -fprofile-arcs)
+target_link_libraries(ex_sd_test simgrid pthread m )
+target_link_libraries(ex_sd_test2 simgrid pthread m )
+target_link_libraries(ex_sd_seq_access simgrid pthread m )
 
 add_custom_command(TARGET ex_sd_test
 	POST_BUILD

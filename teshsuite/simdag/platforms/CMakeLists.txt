@@ -6,5 +6,5 @@ add_executable(basic_parsing_test basic_parsing_test.c)
 add_executable(flatifier flatifier.c)
 
 ### Add definitions for compile
-target_link_libraries(basic_parsing_test simgrid m pthread -fprofile-arcs)
-target_link_libraries(flatifier simgrid m pthread -fprofile-arcs)
+target_link_libraries(basic_parsing_test simgrid m pthread )
+target_link_libraries(flatifier simgrid m pthread )

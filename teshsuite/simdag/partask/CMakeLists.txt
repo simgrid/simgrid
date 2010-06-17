@@ -6,5 +6,5 @@ add_executable(test_comp_only_seq test_comp_only_seq.c)
 add_executable(test_comp_only_par test_comp_only_par.c)
 
 ### Add definitions for compile
-target_link_libraries(test_comp_only_seq simgrid m pthread -fprofile-arcs)
-target_link_libraries(test_comp_only_par simgrid m pthread -fprofile-arcs)
+target_link_libraries(test_comp_only_seq simgrid m pthread )
+target_link_libraries(test_comp_only_par simgrid m pthread )

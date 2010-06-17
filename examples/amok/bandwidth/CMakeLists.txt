@@ -23,6 +23,6 @@ add_custom_command(
 					)
 					
 ### Add definitions for compile
-target_link_libraries(bandwidth_simulator simgrid pthread m -fprofile-arcs)
-target_link_libraries(bandwidth_maestro gras pthread m -fprofile-arcs)
-target_link_libraries(bandwidth_sensor gras pthread m -fprofile-arcs)
+target_link_libraries(bandwidth_simulator simgrid pthread m )
+target_link_libraries(bandwidth_maestro gras pthread m )
+target_link_libraries(bandwidth_sensor gras pthread m )

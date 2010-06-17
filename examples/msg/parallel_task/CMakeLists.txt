@@ -6,5 +6,5 @@ add_executable(parallel_task parallel_task.c)
 add_executable(test_ptask test_ptask.c)
 
 ### Add definitions for compile
-target_link_libraries(parallel_task simgrid m -fprofile-arcs)
-target_link_libraries(test_ptask simgrid m -fprofile-arcs)
+target_link_libraries(parallel_task simgrid m )
+target_link_libraries(test_ptask simgrid m )

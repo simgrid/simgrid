@@ -23,7 +23,7 @@ add_custom_command(
 )
 
 ### Add definitions for compile
-target_link_libraries(rpc_simulator simgrid pthread m -fprofile-arcs)
-target_link_libraries(rpc_client gras pthread m -fprofile-arcs)
-target_link_libraries(rpc_forwarder gras pthread m -fprofile-arcs)
-target_link_libraries(rpc_server gras pthread m -fprofile-arcs)
+target_link_libraries(rpc_simulator simgrid pthread m )
+target_link_libraries(rpc_client gras pthread m )
+target_link_libraries(rpc_forwarder gras pthread m )
+target_link_libraries(rpc_server gras pthread m )

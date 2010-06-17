@@ -9,8 +9,8 @@ add_executable(surf_usage2 "surf_usage2.c")
 add_executable(trace_usage "trace_usage.c")
 
 ### Add definitions for compile
-target_link_libraries(lmm_usage simgrid m -fprofile-arcs) 
-target_link_libraries(maxmin_bench simgrid m -fprofile-arcs) 
-target_link_libraries(surf_usage simgrid m -fprofile-arcs) 
-target_link_libraries(surf_usage2 simgrid m -fprofile-arcs) 
-target_link_libraries(trace_usage simgrid m -fprofile-arcs) 
+target_link_libraries(lmm_usage simgrid m ) 
+target_link_libraries(maxmin_bench simgrid m ) 
+target_link_libraries(surf_usage simgrid m ) 
+target_link_libraries(surf_usage2 simgrid m ) 
+target_link_libraries(trace_usage simgrid m ) 

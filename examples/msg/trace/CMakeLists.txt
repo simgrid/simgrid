@@ -5,4 +5,4 @@ set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/msg/trace/")
 add_executable(test_trace_integration test_trace_integration.c)
 
 ### Add definitions for compile
-target_link_libraries(test_trace_integration simgrid m -fprofile-arcs)
+target_link_libraries(test_trace_integration simgrid m )

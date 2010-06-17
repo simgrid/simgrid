@@ -28,9 +28,9 @@ add_custom_command(
 					)
 					
 ### Add definitions for compile
-target_link_libraries(spawn_simulator simgrid pthread m -fprofile-arcs)
-target_link_libraries(spawn_child gras pthread m -fprofile-arcs)
-target_link_libraries(spawn_father gras pthread m -fprofile-arcs)
+target_link_libraries(spawn_simulator simgrid pthread m )
+target_link_libraries(spawn_child gras pthread m )
+target_link_libraries(spawn_father gras pthread m )
 
 
 

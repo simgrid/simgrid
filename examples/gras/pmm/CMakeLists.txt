@@ -23,6 +23,6 @@ add_custom_command(
 					)
 
 ### Add definitions for compile
-target_link_libraries(pmm_simulator simgrid pthread m -fprofile-arcs)
-target_link_libraries(pmm_slave gras pthread m -fprofile-arcs)
-target_link_libraries(pmm_master gras pthread m -fprofile-arcs)
+target_link_libraries(pmm_simulator simgrid pthread m )
+target_link_libraries(pmm_slave gras pthread m )
+target_link_libraries(pmm_master gras pthread m )

@@ -23,6 +23,6 @@ add_custom_command(
 					)
 
 ### Add definitions for compile
-target_link_libraries(msg_handle_simulator simgrid m pthread -fprofile-arcs)
-target_link_libraries(msg_handle_client gras m pthread -fprofile-arcs)
-target_link_libraries(msg_handle_server gras m pthread -fprofile-arcs)
+target_link_libraries(msg_handle_simulator simgrid m pthread )
+target_link_libraries(msg_handle_client gras m pthread )
+target_link_libraries(msg_handle_server gras m pthread )

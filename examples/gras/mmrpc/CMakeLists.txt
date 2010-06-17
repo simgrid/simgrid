@@ -27,6 +27,6 @@ add_custom_command(
 					)
 					
 ### Add definitions for compile
-target_link_libraries(mmrpc_simulator simgrid pthread m -fprofile-arcs)
-target_link_libraries(mmrpc_client gras pthread m -fprofile-arcs)
-target_link_libraries(mmrpc_server gras pthread m -fprofile-arcs)
+target_link_libraries(mmrpc_simulator simgrid pthread m )
+target_link_libraries(mmrpc_client gras pthread m )
+target_link_libraries(mmrpc_server gras pthread m )

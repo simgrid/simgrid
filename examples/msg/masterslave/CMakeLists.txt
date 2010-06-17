@@ -8,7 +8,7 @@ add_executable(masterslave_mailbox "masterslave_mailbox.c")
 add_executable(masterslave_bypass "masterslave_bypass.c")
 
 ### Add definitions for compile
-target_link_libraries(masterslave_forwarder simgrid m -fprofile-arcs)
-target_link_libraries(masterslave_failure simgrid m -fprofile-arcs)
-target_link_libraries(masterslave_mailbox simgrid m -fprofile-arcs)
-target_link_libraries(masterslave_bypass simgrid m -fprofile-arcs)
+target_link_libraries(masterslave_forwarder simgrid m )
+target_link_libraries(masterslave_failure simgrid m )
+target_link_libraries(masterslave_mailbox simgrid m )
+target_link_libraries(masterslave_bypass simgrid m )

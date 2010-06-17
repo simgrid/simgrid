@@ -7,6 +7,6 @@ add_executable(graphxml_usage "graphxml_usage.c")
 add_executable(heap_bench "heap_bench.c")
 
 ### Add definitions for compile
-target_link_libraries(log_usage gras m -fprofile-arcs)
-target_link_libraries(graphxml_usage simgrid m -fprofile-arcs)
-target_link_libraries(heap_bench gras m -fprofile-arcs)
+target_link_libraries(log_usage gras m )
+target_link_libraries(graphxml_usage simgrid m )
+target_link_libraries(heap_bench gras m )

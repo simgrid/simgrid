@@ -19,5 +19,5 @@ add_custom_command(
 					)
 					
 ### Add definitions for compile
-target_link_libraries(small_sleep_simulator simgrid m pthread -fprofile-arcs)
-target_link_libraries(small_sleep_function gras m pthread -fprofile-arcs)
+target_link_libraries(small_sleep_simulator simgrid m pthread)
+target_link_libraries(small_sleep_function gras m pthread)

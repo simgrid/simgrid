@@ -5,4 +5,4 @@ set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/simdag/properties/")
 add_executable(sd_prop sd_prop.c)
 
 ### Add definitions for compile
-target_link_libraries(sd_prop simgrid pthread m -fprofile-arcs)
+target_link_libraries(sd_prop simgrid pthread m )

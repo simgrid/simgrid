@@ -5,4 +5,4 @@ set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/msg/suspend/")
 add_executable(suspend suspend.c)
 
 ### Add definitions for compile
-target_link_libraries(suspend simgrid m -fprofile-arcs)
+target_link_libraries(suspend simgrid m )

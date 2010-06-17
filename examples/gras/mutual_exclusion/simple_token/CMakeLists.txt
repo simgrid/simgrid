@@ -19,6 +19,6 @@ add_custom_command(
 					)
 
 ### Add definitions for compile
-target_link_libraries(simple_token_simulator simgrid pthread m -fprofile-arcs)
-target_link_libraries(simple_token_node gras pthread m -fprofile-arcs)
+target_link_libraries(simple_token_simulator simgrid pthread m )
+target_link_libraries(simple_token_node gras pthread m )
 

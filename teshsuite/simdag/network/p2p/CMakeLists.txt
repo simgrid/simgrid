@@ -8,7 +8,7 @@ add_executable(test_latency3 test_latency3.c)
 add_executable(test_latency_bound test_latency_bound.c)
 
 ### Add definitions for compile
-target_link_libraries(test_latency1 simgrid m pthread -fprofile-arcs)
-target_link_libraries(test_latency2 simgrid m pthread -fprofile-arcs)
-target_link_libraries(test_latency3 simgrid m pthread -fprofile-arcs)
-target_link_libraries(test_latency_bound simgrid m pthread -fprofile-arcs)
+target_link_libraries(test_latency1 simgrid m pthread )
+target_link_libraries(test_latency2 simgrid m pthread )
+target_link_libraries(test_latency3 simgrid m pthread )
+target_link_libraries(test_latency_bound simgrid m pthread )
