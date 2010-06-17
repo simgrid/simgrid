@@ -1,0 +1,34 @@
+#! ./tesh
+
+p Simple test of simdag
+
+$ $SG_TEST_EXENV ./minmin_test --log=sd_daxparse.thresh:critical ${srcdir:=.}/simulacrum_7_hosts.xml ${srcdir:=.}/Montage_25.xml
+> [0.000000] [test/INFO] Schedule ID00002@mProjectPP on Host 27
+> [0.000105] [test/INFO] Schedule ID00000@mProjectPP on Host 26
+> [0.000120] [test/INFO] Schedule ID00003@mProjectPP on Host 30
+> [0.000325] [test/INFO] Schedule ID00004@mProjectPP on Host 27
+> [0.000433] [test/INFO] Schedule ID00001@mProjectPP on Host 32
+> [29.084966] [test/INFO] Schedule ID00010@mDiffFit on Host 27
+> [29.085068] [test/INFO] Schedule ID00008@mDiffFit on Host 26
+> [29.989490] [test/INFO] Schedule ID00013@mDiffFit on Host 30
+> [32.620710] [test/INFO] Schedule ID00009@mDiffFit on Host 27
+> [32.620812] [test/INFO] Schedule ID00011@mDiffFit on Host 26
+> [32.620828] [test/INFO] Schedule ID00005@mDiffFit on Host 32
+> [32.621045] [test/INFO] Schedule ID00006@mDiffFit on Host 31
+> [32.621152] [test/INFO] Schedule ID00012@mDiffFit on Host 28
+> [32.621464] [test/INFO] Schedule ID00007@mDiffFit on Host 27
+> [64.163129] [test/INFO] Schedule ID00014@mConcatFit on Host 27
+> [64.951788] [test/INFO] Schedule ID00015@mBgModel on Host 27
+> [66.494017] [test/INFO] Schedule ID00016@mBackground on Host 27
+> [66.494032] [test/INFO] Schedule ID00017@mBackground on Host 26
+> [66.494139] [test/INFO] Schedule ID00020@mBackground on Host 30
+> [66.494239] [test/INFO] Schedule ID00018@mBackground on Host 27
+> [66.494254] [test/INFO] Schedule ID00019@mBackground on Host 32
+> [92.287996] [test/INFO] Schedule ID00021@mImgTbl on Host 27
+> [93.864472] [test/INFO] Schedule ID00022@mAdd on Host 27
+> [97.155158] [test/INFO] Schedule ID00023@mShrink on Host 27
+> [101.440531] [test/INFO] Schedule ID00024@mJPEG on Host 27
+> [101.932984] [test/INFO] Schedule end on Host 27
+> [101.933410] [test/INFO] Simulation Time: 101.933410
+> [101.933410] [test/INFO] ------------------- Produce the trace file---------------------------
+> [101.933410] [test/INFO] Producing the trace of the run into ./Montage_25.jed

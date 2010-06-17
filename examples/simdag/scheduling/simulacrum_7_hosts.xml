@@ -1,0 +1,223 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <host id="Host 26" power="3.300140519709234E9" />
+  <host id="Host 27" power="3.867398877553016E9" />
+  <host id="Host 28" power="1.6522665718098645E9" />
+  <host id="Host 29" power="1.0759376792481766E9" />
+  <host id="Host 30" power="2.4818410475340424E9" />
+  <host id="Host 31" power="1.773869555571436E9" />
+  <host id="Host 32" power="1.7843609176927505E9" />
+
+  <link id="l152" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l153" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l154" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l155" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l156" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l157" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l159" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l160" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l161" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l162" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l163" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l164" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l165" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l166" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l167" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l168" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l169" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l170" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l171" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l172" bandwidth="1.25E8" latency="1.0E-4" />
+  <link id="l173" bandwidth="1.25E8" latency="1.0E-4" />
+
+  <route src="Host 26" dst="Host 27">
+    <link:ctn id="l155"/>
+  </route>
+
+  <route src="Host 26" dst="Host 28">
+    <link:ctn id="l155"/>
+    <link:ctn id="l154"/>
+    <link:ctn id="l156"/>
+  </route>
+
+  <route src="Host 26" dst="Host 29">
+    <link:ctn id="l152"/>
+    <link:ctn id="l157"/>
+  </route>
+
+  <route src="Host 26" dst="Host 30">
+    <link:ctn id="l152"/>
+    <link:ctn id="l161"/>
+  </route>
+
+  <route src="Host 26" dst="Host 31">
+    <link:ctn id="l166"/>
+  </route>
+
+  <route src="Host 26" dst="Host 32">
+    <link:ctn id="l152"/>
+    <link:ctn id="l169"/>
+  </route>
+
+  <route src="Host 27" dst="Host 26">
+    <link:ctn id="l155"/>
+  </route>
+
+  <route src="Host 27" dst="Host 28">
+    <link:ctn id="l154"/>
+    <link:ctn id="l156"/>
+  </route>
+
+  <route src="Host 27" dst="Host 29">
+    <link:ctn id="l159"/>
+  </route>
+
+  <route src="Host 27" dst="Host 30">
+    <link:ctn id="l162"/>
+  </route>
+
+  <route src="Host 27" dst="Host 31">
+    <link:ctn id="l167"/>
+  </route>
+
+  <route src="Host 27" dst="Host 32">
+    <link:ctn id="l154"/>
+    <link:ctn id="l170"/>
+  </route>
+
+  <route src="Host 28" dst="Host 26">
+    <link:ctn id="l156"/>
+    <link:ctn id="l154"/>
+    <link:ctn id="l155"/>
+  </route>
+
+  <route src="Host 28" dst="Host 27">
+    <link:ctn id="l156"/>
+    <link:ctn id="l154"/>
+  </route>
+
+  <route src="Host 28" dst="Host 29">
+    <link:ctn id="l160"/>
+  </route>
+
+  <route src="Host 28" dst="Host 30">
+    <link:ctn id="l163"/>
+  </route>
+
+  <route src="Host 28" dst="Host 31">
+    <link:ctn id="l163"/>
+    <link:ctn id="l168"/>
+  </route>
+
+  <route src="Host 28" dst="Host 32">
+    <link:ctn id="l156"/>
+    <link:ctn id="l170"/>
+  </route>
+
+  <route src="Host 29" dst="Host 26">
+    <link:ctn id="l157"/>
+    <link:ctn id="l152"/>
+  </route>
+
+  <route src="Host 29" dst="Host 27">
+    <link:ctn id="l159"/>
+  </route>
+
+  <route src="Host 29" dst="Host 28">
+    <link:ctn id="l160"/>
+  </route>
+
+  <route src="Host 29" dst="Host 30">
+    <link:ctn id="l164"/>
+  </route>
+
+  <route src="Host 29" dst="Host 31">
+    <link:ctn id="l159"/>
+    <link:ctn id="l167"/>
+  </route>
+
+  <route src="Host 29" dst="Host 32">
+    <link:ctn id="l171"/>
+  </route>
+
+  <route src="Host 30" dst="Host 26">
+    <link:ctn id="l161"/>
+    <link:ctn id="l152"/>
+  </route>
+
+  <route src="Host 30" dst="Host 27">
+    <link:ctn id="l162"/>
+  </route>
+
+  <route src="Host 30" dst="Host 28">
+    <link:ctn id="l163"/>
+  </route>
+
+  <route src="Host 30" dst="Host 29">
+    <link:ctn id="l164"/>
+  </route>
+
+  <route src="Host 30" dst="Host 31">
+    <link:ctn id="l168"/>
+  </route>
+
+  <route src="Host 30" dst="Host 32">
+    <link:ctn id="l172"/>
+  </route>
+
+  <route src="Host 31" dst="Host 26">
+    <link:ctn id="l166"/>
+  </route>
+
+  <route src="Host 31" dst="Host 27">
+    <link:ctn id="l167"/>
+  </route>
+
+  <route src="Host 31" dst="Host 28">
+    <link:ctn id="l168"/>
+    <link:ctn id="l163"/>
+  </route>
+
+  <route src="Host 31" dst="Host 29">
+    <link:ctn id="l167"/>
+    <link:ctn id="l159"/>
+  </route>
+
+  <route src="Host 31" dst="Host 30">
+    <link:ctn id="l168"/>
+  </route>
+
+  <route src="Host 31" dst="Host 32">
+    <link:ctn id="l173"/>
+  </route>
+
+  <route src="Host 32" dst="Host 26">
+    <link:ctn id="l169"/>
+    <link:ctn id="l152"/>
+  </route>
+
+  <route src="Host 32" dst="Host 27">
+    <link:ctn id="l170"/>
+    <link:ctn id="l154"/>
+  </route>
+
+  <route src="Host 32" dst="Host 28">
+    <link:ctn id="l170"/>
+    <link:ctn id="l156"/>
+  </route>
+
+  <route src="Host 32" dst="Host 29">
+    <link:ctn id="l171"/>
+  </route>
+
+  <route src="Host 32" dst="Host 30">
+    <link:ctn id="l172"/>
+  </route>
+
+  <route src="Host 32" dst="Host 31">
+    <link:ctn id="l173"/>
+  </route>
+
+</platform>
+
