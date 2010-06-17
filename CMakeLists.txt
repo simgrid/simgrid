@@ -30,17 +30,17 @@ if(WIN32)
 	foreach(include_dir ${INCLUDES_MORE})
 		set(INCLUDES "${INCLUDES} -I\"${include_dir}\"")
 	endforeach(include_dir ${INCLUDES_MORE})
-	message("	Be sure all those variables are correctely set.")
-    message("		-- C_COMPILER			$ENV{CC}")
-    message("		-- CXX_COMPILER			$ENV{CXX}")    
-    message("		-- RC_COMPILER			$ENV{RC}")
-    message("		-- INCLUDE			$ENV{INCLUDE}")
-    message("		-- LIB				$ENV{LIB}")
-    message("		-- MAKE_PROGRAM			${CMAKE_MAKE_PROGRAM}")
-    message("		-- CMAKE_BUILD_TOOL		${CMAKE_BUILD_TOOL}")
-    message("		-- LINKER			${CMAKE_LINKER}")
-    message("		-- CMAKE_GENERATOR		${CMAKE_GENERATOR}")
-    message("		-- INCLUDES			${INCLUDES}\n\n")
+	message("Be sure all those variables are correctely set.")
+    message("	-- C_COMPILER			$ENV{CC}")
+    message("	-- CXX_COMPILER			$ENV{CXX}")    
+    message("	-- RC_COMPILER			$ENV{RC}")
+    message("	-- INCLUDE			$ENV{INCLUDE}")
+    message("	-- LIB				$ENV{LIB}")
+    message("	-- MAKE_PROGRAM			${CMAKE_MAKE_PROGRAM}")
+    message("	-- CMAKE_BUILD_TOOL		${CMAKE_BUILD_TOOL}")
+    message("	-- LINKER			${CMAKE_LINKER}")
+    message("	-- CMAKE_GENERATOR		${CMAKE_GENERATOR}")
+    message("	-- INCLUDES			${INCLUDES}\n\n")
     set(__STRICT_ANSI__ 1)
     set(_MSC_VER 1)
     set(_WIN32 1)
@@ -61,6 +61,7 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/CompleteInFiles.cmake)
 ### Define source packages for Libs 
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/DefinePackages.cmake)
 
+### Build some Maintainer files
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
 
 ### Setup gcc flags
@@ -69,15 +70,24 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/Flags.cmake)
 ### Make Libs and Exes
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLib.cmake)
 
+### Build the doc
+if(enable_doc)
+	ADD_CUSTOM_COMMAND(
+	  OUTPUT ${PROJECT_DIRECTORY}/doc/html/index.html
+	  DEPENDS 	${PROJECT_DIRECTORY}/doc/FAQ.doc 
+	  			${PROJECT_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake 
+	  			${PROJECT_DIRECTORY}/buildtools/Cmake/doc/CMakeLists.txt
+	  COMMAND ${CMAKE_MAKE_PROGRAM} html
+	  COMMENT "Generating the simgrid documentation..."
+	)
+	ADD_CUSTOM_TARGET(simgrid_documentation ALL
+	                  DEPENDS ${PROJECT_DIRECTORY}/doc/html/index.html)
+endif(enable_doc)
+
 ### Make Simgrid.jar and Java examples
 if(HAVE_JAVA)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
 endif(HAVE_JAVA)
-
-### Build the doc
-if(NOT WIN32)
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
-endif(NOT WIN32)
 
 ### Make tests
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTests.cmake)

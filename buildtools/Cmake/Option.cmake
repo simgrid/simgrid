@@ -25,7 +25,7 @@ option(enable_gtnets "This variable set the gtnets context." on)
 option(enable_java "This variable set the java context." off)
 option(enable_lua "This variable set lua use." on)
 option(enable_ruby "This variable set ruby use." on)
-
+option(enable_doc "Setting true this variable enable making the simgrid documentation." off)
 option(enable_compile_optimizations "" off)
 option(enable_compile_warnings "" off)
 option(enable_maintainer_mode "Permit to make flex and flexml files." off)
