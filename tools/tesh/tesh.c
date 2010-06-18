@@ -85,21 +85,23 @@ static void handle_line(const char *filepos, char *line)
 static void handle_suite(const char *filename, FILE * IN)
 {
   size_t len;
+  int blankline = 1;
+  int linelen = 0;
   char *line = NULL;
   int line_num = 0;
   char file_pos[256];
-
-  xbt_strbuff_t buff = xbt_strbuff_new();
+  int to_be_continued = 0;
   int buffbegin = 0;
+  xbt_strbuff_t buff = NULL;
 
+  buff = xbt_strbuff_new();
   rctx = rctx_new();
 
   while (getline(&line, &len, IN) != -1) {
     line_num++;
 
     /* Count the line length while checking wheather it's blank */
-    int blankline = 1;
-    int linelen = 0;
+
     while (line[linelen] != '\0') {
       if (line[linelen] != ' ' && line[linelen] != '\t'
           && line[linelen] != '\n')
@@ -121,7 +123,6 @@ static void handle_suite(const char *filename, FILE * IN)
     }
 
     /* Deal with \ at the end of the line, and call handle_line on result */
-    int to_be_continued = 0;
     if (linelen > 1 && line[linelen - 2] == '\\') {
       if (linelen > 2 && line[linelen - 3] == '\\') {
         /* Damn. Escaped \ */
@@ -169,11 +170,13 @@ static void parse_environ()
 {
   char *p;
   int i;
+  char *eq = NULL;
+  char *key = NULL;
   env = xbt_dict_new();
   for (i = 0; environ[i]; i++) {
     p = environ[i];
-    char *eq = strchr(p, '=');
-    char *key = bprintf("%.*s", (int) (eq - p), p);
+    eq = strchr(p, '=');
+    key = bprintf("%.*s", (int) (eq - p), p);
     xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
     free(key);
   }
@@ -181,9 +184,9 @@ static void parse_environ()
 
 int main(int argc, char *argv[])
 {
-
-  FILE *IN;
+  FILE *IN = NULL;
   int i;
+  char *suitename = NULL;
 
   /* Ignore pipe issues.
      They will show up when we try to send data to dead buddies,
@@ -225,7 +228,7 @@ int main(int argc, char *argv[])
 
   } else {
     for (i = 1; i < argc; i++) {
-      char *suitename = xbt_strdup(argv[i]);
+      suitename = xbt_strdup(argv[i]);
       if (!strcmp("./", suitename))
         memmove(suitename, suitename + 2, strlen(suitename + 2));
 
