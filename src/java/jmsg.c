@@ -537,7 +537,7 @@ Java_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls, jobject jtask,
 
   /* bind & store the task */
   jtask_bind(jtask, task, env);
-  task->data = jtask;
+  MSG_task_set_data(task,jtask);
 }
 
 JNIEXPORT void JNICALL
@@ -618,9 +618,9 @@ Java_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv * env, jclass cls,
   /* associate the java task object and the native task */
   jtask_bind(jtask, task, env);
 
-  task->data = (void *) jtask;
+  MSG_task_set_data(task,(void*) jtask);
 
-  if (!task->data)
+  if (!MSG_task_get_data(task))
     jxbt_throw_jni(env, "global ref allocation failed");
 }
 
@@ -675,7 +675,7 @@ Java_simgrid_msg_MsgNative_taskGetName(JNIEnv * env, jclass cls,
     return NULL;
   }
 
-  return (*env)->NewStringUTF(env, task->name);
+  return (*env)->NewStringUTF(env, MSG_task_get_name(task));
 }
 
 JNIEXPORT void JNICALL
@@ -746,7 +746,7 @@ Java_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
     jxbt_throw_notbound(env, "task", task);
     return;
   }
-  jtask = (jobject) task->data;
+  jtask = (jobject) MSG_task_get_data(task);
     
   MSG_error_t rv = MSG_task_destroy(task);
     
@@ -986,7 +986,7 @@ Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
   }
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
-  task->data = (void *) (*env)->NewGlobalRef(env, jtask);
+  MSG_task_set_data(task,(void *) (*env)->NewGlobalRef(env, jtask));
   rv = MSG_task_send_with_timeout(task, alias, (double) jtimeout);
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
@@ -1012,7 +1012,7 @@ Java_simgrid_msg_MsgNative_taskSendBounded(JNIEnv * env, jclass cls,
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
-  task->data = (void *) (*env)->NewGlobalRef(env, jtask);
+  MSG_task_set_data(task,(void *) (*env)->NewGlobalRef(env, jtask));
   rv = MSG_task_send_bounded(task, alias, (double) jmaxRate);
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
@@ -1045,12 +1045,12 @@ Java_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
 
   rv = MSG_task_receive_ext(&task, alias, (double) jtimeout, host);
-  jtask_global = task->data;
+  jtask_global = MSG_task_get_data(task);
 
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
   jtask_local = (*env)->NewLocalRef(env, jtask_global);
   (*env)->DeleteGlobalRef(env, jtask_global);
-  task->data = NULL;
+  MSG_task_set_data(task,NULL);
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
