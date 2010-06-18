@@ -104,27 +104,6 @@
 	#undef HAVE_UNISTD_H	
 #endif
 
-/* 
- * The compiler has the <windows.h> header file. 
- * Process the case of afx.h
-*/
-#if !defined(HAVE_WINDOWS_H)
-	#define HAVE_WINDOWS_H		1
-#endif
-
-/* The compiler has the <winsock2.h> header file. */
-#if !defined(HAVE_WINSOCK2_H)
-	#define HAVE_WINSOCK2_H
-#endif
-
-/*  
- * The compiler has the <winsock.h> header file.
- * Trouble if winsock2.h exists ?  
- */
-#if !defined(HAVE_WINSOCK_H)
-	#define HAVE_WINSOCK_H 	1
-#endif
-
 /* The compiler has the <signal.h> header file */
 #if !defined(HAVE_SIGNAL_H)
 	#define HAVE_SIGNAL_H	1
