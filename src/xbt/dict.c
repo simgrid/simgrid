@@ -811,7 +811,8 @@ static void dict_mallocator_reset_f(void *dict)
 #include "portable.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
-XBT_LOG_DEFAULT_CATEGORY(xbt_dict);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
+                                "Dictionaries provide the same functionalities than hash tables");
 
 XBT_TEST_SUITE("dict", "Dict data container");
 
@@ -1161,6 +1162,7 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
 }
 
 static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
+	uintptr_t stored_data = 0;
   xbt_test_log2("Add %zu under %zu", data, key);
 
   xbt_dicti_set(head, key, data);
@@ -1168,7 +1170,7 @@ static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
     xbt_dict_dump(head, (void (*)(void *)) &printf);
     fflush(stdout);
   }
-  uintptr_t stored_data = xbt_dicti_get(head, key);
+  stored_data = xbt_dicti_get(head, key);
   xbt_test_assert3(stored_data==data,
       "Retrieved data (%zu) is not what I just stored (%zu) under key %zu",stored_data,data,key);
 }

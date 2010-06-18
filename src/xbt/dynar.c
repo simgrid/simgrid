@@ -717,7 +717,7 @@ XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_f
 
 XBT_TEST_SUITE("dynar", "Dynar data container");
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
-XBT_LOG_DEFAULT_CATEGORY(xbt_dyn);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn, xbt, "Dynamic arrays");
 
 XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 {

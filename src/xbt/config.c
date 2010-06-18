@@ -1294,7 +1294,7 @@ xbt_cfg_get_peer_at(xbt_cfg_t cfg, const char *name, int pos,
 #include "xbt.h"
 #include "xbt/ex.h"
 
-XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
 XBT_TEST_SUITE("config", "Configuration support");
 
