@@ -231,13 +231,13 @@ Java_simgrid_msg_MsgNative_processGetHost(JNIEnv * env, jclass cls,
 
   host = MSG_process_get_host(process);
 
-  if (!host->data) {
+  if (!MSG_host_get_data(host)) {
     jxbt_throw_jni(env, "MSG_process_get_host() failed");
     return NULL;
   }
 
   /* return the global reference to the java host instance */
-  return (jobject) host->data;
+  return (jobject) MSG_host_get_data(host);
 
 }
 
@@ -364,7 +364,7 @@ Java_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
     return NULL;
   }
 
-  if (!host->data) {            /* native host not associated yet with java host */
+  if (!MSG_host_get_data(host)) {            /* native host not associated yet with java host */
 
     /* instanciate a new java host */
     jhost = jhost_new_instance(env);
@@ -388,11 +388,11 @@ Java_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
     /* the native host data field is set with the global reference to the 
      * java host returned by this function 
      */
-    host->data = (void *) jhost;
+    MSG_host_get_data(host,(void *) jhost);
   }
 
   /* return the global reference to the java host instance */
-  return (jobject) host->data;
+  return (jobject) MSG_host_get_data(host);
 }
 
 JNIEXPORT jstring JNICALL
@@ -406,7 +406,7 @@ Java_simgrid_msg_MsgNative_hostGetName(JNIEnv * env, jclass cls,
     return NULL;
   }
 
-  return (*env)->NewStringUTF(env, host->name);
+  return (*env)->NewStringUTF(env, MSG_host_get_name(host));
 }
 
 JNIEXPORT jint JNICALL
@@ -422,7 +422,7 @@ Java_simgrid_msg_MsgNative_hostSelf(JNIEnv * env, jclass cls)
 
   m_host_t host = MSG_host_self();
 
-  if (!host->data) {
+  if (!MSG_host_get_data(host)) {
     /* the native host not yet associated with the java host instance */
 
     /* instanciate a new java host instance */
@@ -443,9 +443,9 @@ Java_simgrid_msg_MsgNative_hostSelf(JNIEnv * env, jclass cls)
 
     /* Bind & store it */
     jhost_bind(jhost, host, env);
-    host->data = (void *) jhost;
+    MSG_host_set_data(host,(void *) jhost);
   } else {
-    jhost = (jobject) host->data;
+    jhost = (jobject) MSG_host_get_data(host);
   }
 
   return jhost;
@@ -655,12 +655,12 @@ Java_simgrid_msg_MsgNative_taskGetSource(JNIEnv * env, jclass cls,
 
   host = MSG_task_get_source(task);
 
-  if (!host->data) {
+  if (!MSG_host_get_data(host)) {
     jxbt_throw_jni(env, "MSG_task_get_source() failed");
     return NULL;
   }
 
-  return (jobject) host->data;
+  return (jobject) MSG_host_get_data(host);
 }
 
 
@@ -925,10 +925,10 @@ Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
 
   for (index = 0; index < count; index++) {
     host = table[index];
-    jhost = (jobject) (host->data);
+    jhost = (jobject) (MSG_host_get_data(host));
 
     if (!jhost) {
-      jname = (*env)->NewStringUTF(env, host->name);
+      jname = (*env)->NewStringUTF(env, MSG_host_get_name(host));
 
       jhost = Java_simgrid_msg_MsgNative_hostGetByName(env, cls_arg, jname);
       /* FIXME: leak of jname ? */
