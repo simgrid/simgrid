@@ -93,7 +93,7 @@ struct xbt_mutex_ {
   /* KEEP IT IN SYNC WITH OS IMPLEMENTATION (both win and lin) */
 #ifdef HAVE_PTHREAD_H
   pthread_mutex_t m;
-#elif defined(WIN32)
+#elif defined(_XBT_WIN32)
   CRITICAL_SECTION lock;
 #endif
 };
@@ -129,7 +129,7 @@ void xbt_mutex_destroy(xbt_mutex_t mutex)
   xbt_os_mutex_destroy((xbt_os_mutex_t) mutex);
 }
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 enum {                          /* KEEP IT IN SYNC WITH OS IMPLEM */
   SIGNAL = 0,
   BROADCAST = 1,
@@ -142,7 +142,7 @@ typedef struct xbt_cond_ {
   /* KEEP IT IN SYNC WITH OS IMPLEMENTATION (both win and lin) */
 #ifdef HAVE_PTHREAD_H
   pthread_cond_t c;
-#elif defined(WIN32)
+#elif defined(_XBT_WIN32)
   HANDLE events[MAX_EVENTS];
 
   unsigned int waiters_count;   /* the number of waiters                        */

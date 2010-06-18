@@ -25,7 +25,7 @@
 #include <stdarg.h>
 
 
-#ifdef _WIN32
+#ifdef _XBT_WIN32
 /* stupid stubs so that it compiles on windows */
 void generate_sim(char *project)
 {

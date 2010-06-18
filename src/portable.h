@@ -13,9 +13,9 @@
 #include "simgrid_config.h"
 #include "xbt/misc.h"
 /* 
- * win32 or win64 (__WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).	
+ * win32 or win64 (__XBT_WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).
 */
-#ifdef _WIN32
+#ifdef _XBT_WIN32
 # include "win32/config.h"
 # include <windows.h>
 #else

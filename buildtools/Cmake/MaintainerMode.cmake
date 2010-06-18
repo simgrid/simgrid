@@ -63,19 +63,19 @@ exec_program("${FLEX_EXE} -o src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ 
 #surf/simgrid_dtd.c: surf/simgrid_dtd.l
 exec_program("${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/surf")
 exec_program("${FLEX_EXE} -o src/surf/simgrid_dtd.c -Psurf_parse_ --noline src/surf/simgrid_dtd.l" "${PROJECT_DIRECTORY}/")
-set(CHAINE "'s/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i src/surf/simgrid_dtd.c")	
+set(CHAINE "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i src/surf/simgrid_dtd.c")	
 exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}")
 
 #xbt/graphxml.c: xbt/graphxml.l
 exec_program("${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/xbt")
 exec_program("${FLEX_EXE} -o src/xbt/graphxml.c -Pxbt_graph_parse_ --noline src/xbt/graphxml.l" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i src/xbt/graphxml.c")			
+set(CHAINE "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i src/xbt/graphxml.c")			
 exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}")
 
 #simdag/dax_dtd.c: simdag/dax_dtd.l
 exec_program("${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/simdag")
 exec_program("${FLEX_EXE} -o src/simdag/dax_dtd.c -Pdax_ --noline src/simdag/dax_dtd.l" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i src/simdag/dax_dtd.c")	
+set(CHAINE "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i src/simdag/dax_dtd.c")	
 exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}")
 
 elseif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)

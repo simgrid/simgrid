@@ -57,7 +57,7 @@ static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR;
 #pragma fini (xbt_postexit)
 #endif
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 #include <windows.h>
 
 /* Dummy prototype to make gcc happy */

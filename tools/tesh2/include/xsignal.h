@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 
 /* terminal line hangup							*/ 
 #ifndef SIGHUP
@@ -179,10 +179,10 @@ is_an_unhandled_exception(DWORD exit_code);
  */
 #define WTERMSIG(__status)		(__status)
 
-#endif /* WIN32 */
+#endif /* _XBT_WIN32 */
 
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 const char* 
 signal_name(DWORD got, const char* expected);
 #else

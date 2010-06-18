@@ -18,7 +18,7 @@
 #include <reader.h>
 #include <timer.h>
 
-#ifndef WIN32
+#ifndef _XBT_WIN32
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -150,7 +150,7 @@ command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex)
 	command->root->cmd_nb++;
 	xbt_os_mutex_release(mutex);
 
-	#ifndef WIN32
+	#ifndef _XBT_WIN32
 	command->killed = 0;
 	command->execlp_errno = 0;
 	#endif
@@ -209,7 +209,7 @@ command_start(void* p)
 
 	/* execute the command of the test */
 
-	#ifndef WIN32
+	#ifndef _XBT_WIN32
 	command_exec(command, command->context->command_line);
 	#else
 	/* play the translated command line on Windows */
@@ -257,7 +257,7 @@ command_start(void* p)
 	return NULL;
 }
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 
 #ifndef BUFSIZE
 #define BUFSIZE	4096
@@ -666,7 +666,7 @@ command_exec(command_t command, const char* command_line)
 }
 #endif
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 void
 command_wait(command_t command)
 {
@@ -809,7 +809,7 @@ command_check(command_t command)
 	while(!command->reader->done)
 		xbt_os_thread_yield();
 
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	CloseHandle(command->stdout_fd);
 	#else
 	close(command->stdout_fd);
@@ -889,7 +889,7 @@ command_check(command_t command)
 	}
 }
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 void
 command_kill(command_t command)
 {
@@ -954,7 +954,7 @@ command_summarize(command_t command)
 	if(cs_successeded != command->status)
 	{
 
-		#ifndef WIN32
+		#ifndef _XBT_WIN32
 		if(command->killed)
 			printf("          <killed command>\n");
 		#endif
@@ -1177,7 +1177,7 @@ command_free(command_t* ptr)
 {
 	/* close the stdin and the stdout pipe handles */
 
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	if((*ptr)->stdin_fd != INDEFINITE_FD)
 		CloseHandle((*ptr)->stdin_fd);
 

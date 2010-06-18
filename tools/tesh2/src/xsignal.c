@@ -10,7 +10,7 @@
 
 #include <xsignal.h>
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 int
 is_an_unhandled_exception(DWORD exit_code);
 
@@ -85,7 +85,7 @@ static const s_signal_entry_t signals[] = {
 	{"SIG UNKNOWN"  ,-1}
 };
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 const char* signal_name(DWORD got, const char* expected) 
 #else
 const char* signal_name(unsigned int got, char *expected) 
@@ -93,7 +93,7 @@ const char* signal_name(unsigned int got, char *expected)
 {
 	int i;
 	
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 
 	for (i=0; i < MAX_EXECPTION; i++)
 		if (exceptions[i].value == got)
@@ -124,7 +124,7 @@ sig_exists(const char* sig_name)
 }
 
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 int
 is_an_unhandled_exception(DWORD exit_code)
 {

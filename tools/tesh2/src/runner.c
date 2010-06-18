@@ -24,7 +24,7 @@
 #include <readline.h>
 #include <explode.h>
 
-#ifndef WIN32
+#ifndef _XBT_WIN32
 #include <sys/resource.h>
 #endif
 
@@ -36,7 +36,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
-#if (!defined(__BUILTIN) && defined(__CHKCMD) && !defined(WIN32))
+#if (!defined(__BUILTIN) && defined(__CHKCMD) && !defined(_XBT_WIN32))
 static const char* builtin[] =
 {
 	"alias",
@@ -92,12 +92,16 @@ static const char* builtin[] =
 /* under darwin, the environment gets added to the process at startup time. So, it's not defined at library link time, forcing us to extra tricks */
 # include <crt_externs.h>
 # define environ (*_NSGetEnviron())
-# elif !defined(WIN32)
- /* the environment, as specified by the opengroup, used to initialize the process properties */
- extern char **environ;
+# else
+	#ifdef _XBT_WIN32
+	 /* the environment, as specified by the opengroup, used to initialize the process properties */
+		# define environ **wenviron;
+	#else
+		extern char **environ;
+	#endif
 # endif
 
-#ifndef WIN32
+#ifndef _XBT_WIN32
 extern char**
 environ;
 #endif
@@ -121,7 +125,7 @@ runner_start_routine(void* p);
 /*static void
 check_syntax(void);*/
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 
 static HANDLE 
 timer_handle = NULL;
@@ -206,7 +210,7 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 	const char* cstr;
 	variable_t variable;
 	
-	#if (defined(__CHKCMD) && defined(__BUILTIN) && !defined(WIN32))
+	#if (defined(__CHKCMD) && defined(__BUILTIN) && !defined(_XBT_WIN32))
 	FILE* s;
 	int n = 0;
 	size_t len;
@@ -277,7 +281,7 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 			variable->env = 1;
 			xbt_dynar_push(runner->variables, &variable);
 			
-			#ifndef WIN32
+			#ifndef _XBT_WIN32
 			if(!strcmp("PATH", buffer))
 			#else
 			if(!strcmp("Path", buffer) || !strcmp("PATH", buffer))
@@ -288,7 +292,7 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 				
 				/* get the list of paths */
 				
-				#ifdef WIN32
+				#ifdef _XBT_WIN32
 				runner->path = explode(';', val);
 				#else
 				runner->path = explode(':', val);
@@ -301,7 +305,7 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 			    	
     				len = strlen(p);
 			    	
-					#ifndef WIN32
+					#ifndef _XBT_WIN32
     				for(j = len - 1; p[j] == '/' || p[j] == ' '; j--)
 					#else
 					for(j = len - 1; p[j] == '\\' || p[j] == ' '; j--)
@@ -321,7 +325,7 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 		
 		sprintf(buffer,"%d",getpid());
 		
-		#ifndef WIN32
+		#ifndef _XBT_WIN32
 		setenv("TESH_PPID", buffer, 0);
 		setenv("TESH_DIR", tesh_dir, 0);
 		#else
@@ -378,7 +382,7 @@ runner_init(/*int check_syntax_flag, */int timeout, fstreams_t fstreams)
 		check_syntax();
 	*/
 	
-	#if (!defined(WIN32) && defined(__CHKCMD))
+	#if (!defined(_XBT_WIN32) && defined(__CHKCMD))
 	#if defined(__BUILTIN)
 	
 	if(!is_tesh_root)
@@ -506,7 +510,7 @@ runner_destroy(void)
 	if(runner->variables)
 		xbt_dynar_free(&runner->variables);
 	
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	CloseHandle(timer_handle);
 	#endif
 
@@ -600,7 +604,7 @@ runner_summarize(void)
 	
 	if(!dry_run_flag)
 	{
-		#ifndef WIN32
+		#ifndef _XBT_WIN32
 		struct rusage r_usage;
 		#else
 		FILETIME start_time;
@@ -654,7 +658,7 @@ runner_summarize(void)
 	 	
 		printf(")\n\n");
 		
-		#ifndef WIN32
+		#ifndef _XBT_WIN32
 		if(!getrusage(RUSAGE_SELF, &r_usage))
 		{
 		

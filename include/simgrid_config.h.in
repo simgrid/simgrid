@@ -8,7 +8,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"           /* XBT_PUBLIC */
-#ifndef DLL_EXPORT
+
+#ifdef _XBT_DLL_EXPORT
+	#define DLL_EXPORT
+#else
 	#define DLL_IMPORT
 #endif
 

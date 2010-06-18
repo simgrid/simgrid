@@ -14,7 +14,7 @@
 #  include <valgrind/valgrind.h>
 #endif /* HAVE_VALGRIND_VALGRIND_H */
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 	#include "ucontext.h"
 	#include "ucontext.c"
 #endif

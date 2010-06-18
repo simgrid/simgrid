@@ -23,7 +23,7 @@ XBT_EXPORT_NO_IMPORT(char const *) _gras_procname = NULL;
 	# include <crt_externs.h>
 	# define environ (*_NSGetEnviron())
 # else
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 		 /* the environment, as specified by the opengroup, used to initialize the process properties */
 		 extern char **wenviron;
 	#else
@@ -74,7 +74,7 @@ const char *xbt_procname(void)
 
 int gras_os_getpid(void)
 {
-#ifdef _WIN32
+#ifdef _XBT_WIN32
   return (long int) GetCurrentProcessId();
 #else
   return (long int) getpid();

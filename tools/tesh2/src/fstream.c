@@ -25,11 +25,11 @@
 #include <is_cmd.h>
 #include <getpath.h>
 
-#ifndef WIN32
+#ifndef _XBT_WIN32
 #include <xsignal.h>
 #endif
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 static int
 is_w32_cmd(char* cmd, char** path)
 {
@@ -181,7 +181,7 @@ fstream_open(fstream_t fstream)
 		return 0;
 	}
 	
-	#ifndef WIN32
+	#ifndef _XBT_WIN32
 	sprintf(path,"%s/%s",fstream->directory, fstream->name);
 	#else
 	sprintf(path,"%s\\%s",fstream->directory, fstream->name);
@@ -329,14 +329,14 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 				
 			if(context->command_line)
 			{
-				#ifdef WIN32
+				#ifdef _XBT_WIN32
 				if(!context->is_not_found)
 				{
 				#endif
 				if(fstream_launch_command(fstream, context, mutex) < 0)
 						break;
 
-				#ifdef WIN32
+				#ifdef _XBT_WIN32
 				}
 				#endif
 			}
@@ -384,7 +384,7 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 	/* Check that last command of the file ran well */
 	if(context->command_line)
 	{
-		#ifdef WIN32
+		#ifdef _XBT_WIN32
 		if(!context->is_not_found)
 		{
 		#endif
@@ -392,7 +392,7 @@ fstream_parse(fstream_t fstream, xbt_os_mutex_t mutex)
 		if(fstream_launch_command(fstream, context, mutex) < 0)
 			return -1;
 
-		#ifdef WIN32
+		#ifdef _XBT_WIN32
 		}
 		#endif
 	}
@@ -1282,7 +1282,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 		context->line = /*strdup(filepos)*/ filepos;
 		context->pos = strdup(filepos);
 		
-		#ifdef WIN32
+		#ifdef _XBT_WIN32
 		{
 
 		/* translate the command line */
@@ -1484,7 +1484,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			
 			xbt_str_trim(context->signal," \n");
 
-			#ifdef WIN32
+			#ifdef _XBT_WIN32
 			if(!strstr("SIGSEGVSIGTRAPSIGBUSSIGFPESIGILL", context->signal))
 			{
 				ERROR2("[%s] Signal `%s' not supported by this platform", filepos, context->signal);
@@ -1685,7 +1685,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 			{
 				if(exists)
 				{
-					#ifndef WIN32
+					#ifndef _XBT_WIN32
 					unsetenv(name);
 					#else
 					SetEnvironmentVariable(name, NULL);
@@ -1816,7 +1816,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 						free(variable->val);
 						variable->val = strdup(val);
 
-						#ifdef WIN32
+						#ifdef _XBT_WIN32
 						SetEnvironmentVariable(variable->name, variable->val);
 						#else
 						setenv(variable->name, variable->val, 1);
@@ -1853,7 +1853,7 @@ fstream_process_token(fstream_t fstream, context_t context, xbt_os_mutex_t mutex
 						
 						xbt_dynar_push(unit->runner->variables, &variable);
 						
-						#ifdef WIN32
+						#ifdef _XBT_WIN32
 						SetEnvironmentVariable(variable->name, variable->val);
 						#else
 						setenv(variable->name, variable->val, 0);

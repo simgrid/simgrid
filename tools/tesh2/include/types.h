@@ -39,7 +39,7 @@ extern "C" {
  * file descriptor and pid types for portability.
  */
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 	
 	#ifndef __FD_T_DEFINED
 		typedef HANDLE fd_t;
@@ -316,7 +316,7 @@ typedef struct s_context
 	output_handling_t output_handling;
 	int async;							/* if 1, the command is asynchronous									*/
 	
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	char* t_command_line;				/* translate the command line on Windows								*/
 	unsigned is_not_found:1;
 	#endif
@@ -345,7 +345,7 @@ typedef struct s_command
 	fd_t stdout_fd;						/* the stdout fd of the command											*/
 	fd_t stdin_fd;						/* the stdin fd of the command											*/
 	int exit_code;						/* the exit code of the command											*/
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	unsigned long stat_val;
 	#else
 	int stat_val;
@@ -353,7 +353,7 @@ typedef struct s_command
 	char* signal;						/* the signal raised by the command if any								*/
 	xbt_os_mutex_t mutex;
 	
-	#ifndef WIN32
+	#ifndef _XBT_WIN32
 	int killed;							/* if 1, the command was killed											*/
 	int execlp_errno;
 	#endif

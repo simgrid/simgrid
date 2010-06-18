@@ -8,7 +8,7 @@
 #define _XOPEN_SOURCE
 #endif
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 	#include "win32_ucontext.h"
 	#include "win32_ucontext.c"
 #endif

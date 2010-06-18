@@ -5,7 +5,7 @@
 #include "xbt/sysdep.h"
 
 /*The function ffs doesn't exist for windows*/
-#ifdef WIN32
+#ifdef _XBT_WIN32
 	int XBT_INLINE ffs(int x)
 	{
 		int r;

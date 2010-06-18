@@ -81,7 +81,7 @@
  * Function calling convention (not used for now) 
  */
 
-#ifdef _WIN32
+#ifdef _XBT_WIN32
 #  ifndef _XBT_CALL
 #    define _XBT_CALL __cdecl
 #   endif
@@ -146,7 +146,7 @@
 #  define XBT_PUBLIC_DATA(type)       extern type
 
 /* Link against the DLL */
-#elif (defined(_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
+#elif (defined(_XBT_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
 #  define XBT_PUBLIC(type)            	__declspec(dllimport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  	type
 #  define XBT_IMPORT_NO_EXPORT(type)  	__declspec(dllimport) type

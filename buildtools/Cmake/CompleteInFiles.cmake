@@ -481,7 +481,7 @@ if(HAVE_MAKECONTEXT OR WIN32)
 	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	
 	if(WIN32)
-	    set(makecontext_CPPFLAGS_2 "-DWIN32 ${INCLUDES}")
+	    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 ${INCLUDES}")
 	endif(WIN32)
 
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR

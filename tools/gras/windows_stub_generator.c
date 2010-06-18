@@ -29,7 +29,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(stubgen);
 
-#ifdef _WIN32
+#ifdef _XBT_WIN32
 
 char *__gras_path = NULL;
 
@@ -568,7 +568,7 @@ void borland_project_create_main_file(const char *name)
   FILE *stream = fopen(name, "w+");
 
   fprintf(stream,
-          "Ce fichier est uniquement utilisé par le gestionnaire de projets et doit être traité comme le fichier projet\n\n\nmain\n");
+          "Ce fichier est uniquement utilisï¿½ par le gestionnaire de projets et doit ï¿½tre traitï¿½ comme le fichier projet\n\n\nmain\n");
 
   fclose(stream);
 }
@@ -966,12 +966,12 @@ void generate_dsp_project(dsp_t project, int is_rl, const char *name)
   fprintf(project->stream, "# PROP Intermediate_Dir \"Release\"\n");
   fprintf(project->stream, "# PROP Target_Dir \"\"\n");
   /* TODO : the include directory */
-  /*fprintf(project->stream,"# ADD BASE CPP /nologo /W3 /GX /O2 /I \"./%s\" /D \"WIN32\" /D \"NDEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /c\n",__gras_path); */
+  /*fprintf(project->stream,"# ADD BASE CPP /nologo /W3 /GX /O2 /I \"./%s\" /D \"_XBT_WIN32\" /D \"WIN32\" /D \"NDEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /c\n",__gras_path); */
   fprintf(project->stream,
-          "# ADD BASE CPP /nologo /W3 /GX /O2 /I \"%s\" /D \"WIN32\" /D \"NDEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /c\n",
+          "# ADD BASE CPP /nologo /W3 /GX /O2 /I \"%s\" /D \"_XBT_WIN32\" /D \"WIN32\" /D \"NDEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /c\n",
           __gras_path);
   fprintf(project->stream,
-          "# ADD CPP /nologo /W3 /GX /O2 /D \"WIN32\" /D \"NDEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /c\n");
+          "# ADD CPP /nologo /W3 /GX /O2 /D \"_XBT_WIN32\" /D \"WIN32\" /D \"NDEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /c\n");
   fprintf(project->stream, "# ADD BASE RSC /l 0x40c /d \"NDEBUG\"\n");
   fprintf(project->stream, "# ADD RSC /l 0x40c /d \"NDEBUG\n");
   fprintf(project->stream, "BSC32=bscmake.exe\n");
@@ -1003,12 +1003,12 @@ void generate_dsp_project(dsp_t project, int is_rl, const char *name)
   fprintf(project->stream, "# PROP Ignore_Export_Lib 0\n");
   fprintf(project->stream, "# PROP Target_Dir \"\"\n");
   /* TODO : the include directory */
-  /*fprintf(project->stream,"# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od  /I \"./%s\" /D \"WIN32\" /D \"_DEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /GZ  /c\n",__gras_path); */
+  /*fprintf(project->stream,"# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od  /I \"./%s\" /D \"_XBT_WIN32\" /D \"WIN32\" /D \"_DEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /GZ  /c\n",__gras_path); */
   fprintf(project->stream,
-          "# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od  /I \"%s\" /D \"WIN32\" /D \"_DEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /GZ  /c\n",
+          "# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od  /I \"%s\" /D \"_XBT_WIN32\" /D \"WIN32\" /D \"_DEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /GZ  /c\n",
           __gras_path);
   fprintf(project->stream,
-          "# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D \"WIN32\" /D \"_DEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /GZ  /c\n");
+          "# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D \"_XBT_WIN32\" /D \"WIN32\" /D \"_DEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /GZ  /c\n");
   fprintf(project->stream, "# ADD BASE RSC /l 0x40c /d \"_DEBUG\"\n");
   fprintf(project->stream, "# ADD RSC /l 0x40c /d \"_DEBUG\"\n");
   fprintf(project->stream, "BSC32=bscmake.exe\n");

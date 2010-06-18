@@ -351,7 +351,7 @@ entry_t err[] =
 
 #include <stdio.h>
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 static char *
 w32error_to_string(DWORD errcode) 
 {
@@ -391,7 +391,7 @@ error_to_string(int errcode, int kind)
 		if(err[i].code == errcode && err[i].kind == kind)
 			return err[i].string;
 
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 
 	/* assume it's a W32 error */
 	return w32error_to_string((DWORD)errcode);

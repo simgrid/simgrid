@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef WIN32
+#ifndef _XBT_WIN32
 #include <unistd.h>
 #endif
 

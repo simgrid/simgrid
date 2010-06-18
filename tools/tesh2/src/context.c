@@ -35,7 +35,7 @@ context_new(void)
 	context->output_handling = oh_check;
 	context->async = 0;
 
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	context->t_command_line = NULL;
 	context->is_not_found = 0;
 	#endif
@@ -61,7 +61,7 @@ context_free(context_t* ptr)
 	if((*ptr)->signal)
 		free((*ptr)->signal);
 
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	if((*ptr)->t_command_line)
 		free((*ptr)->t_command_line);
 	#endif
@@ -83,7 +83,7 @@ context_reset(context_t context)
 		context->command_line = NULL;
 	}
 
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	if(context->t_command_line)
 	{
 		free(context->t_command_line);
@@ -134,7 +134,7 @@ context_dup(context_t context)
 	dup->command_line = strdup(context->command_line);
 
 	
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	dup->t_command_line = strdup(context->t_command_line);
 	dup->is_not_found = context->is_not_found;
 	#endif
@@ -186,7 +186,7 @@ context_clear(context_t context)
 		context->command_line = NULL;
 	}
 
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	if(context->t_command_line)
 	{
 		free(context->t_command_line);

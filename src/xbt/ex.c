@@ -58,7 +58,7 @@
 # define HAVE_BACKTRACE 1       /* Hello linux box */
 #endif
 
-#if defined(WIN32) && defined(_M_IX86) && !defined(__GNUC__)
+#if defined(_XBT_WIN32) && defined(_M_IX86) && !defined(__GNUC__)
 # define HAVE_BACKTRACE 1       /* Hello x86 windows box */
 #endif
 
@@ -122,7 +122,7 @@ void xbt_backtrace_display_current(void)
 
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
 # include "backtrace_linux.c"
-#elif (defined(WIN32) && defined (_M_IX86)) && !defined(__GNUC__)
+#elif (defined(_XBT_WIN32) && defined (_M_IX86)) && !defined(__GNUC__)
 # include "backtrace_windows.c"
 #else
 # include "backtrace_dummy.c"

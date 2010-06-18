@@ -27,7 +27,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen, gras, "Stub generator");
 
 
-#ifdef _WIN32
+#ifdef _XBT_WIN32
 #include <windows.h>
 #endif
 
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
   generate_sim(project_name);
   generate_rl(project_name);
   generate_makefile_local(project_name, deployment_file);
-#ifdef _WIN32
+#ifdef _XBT_WIN32
   generate_borland_simulation_project(project_name);
   generate_borland_real_life_project(project_name);
   generate_simulation_dsp_file(project_name);

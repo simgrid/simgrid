@@ -241,7 +241,7 @@ XBT_PUBLIC(void) xbt_log_control_set(const char *cs);
 /*
  * Do NOT access any members of this structure directly. FIXME: move to private?
  */
-#ifdef WIN32
+#ifdef _XBT_WIN32
 #define XBT_LOG_BUFF_SIZE  16384        /* Size of the static string in which we build the log string */
 #else
 #define XBT_LOG_BUFF_SIZE 2048  /* Size of the static string in which we build the log string */
@@ -266,7 +266,7 @@ XBT_PUBLIC(void) xbt_log_control_set(const char *cs);
        int lineNum;
        va_list ap;
        va_list ap_copy;         /* need a copy to launch dynamic layouts when the static ones overflowed */
-#ifdef WIN32
+#ifdef _XBT_WIN32
        char *buffer;
 #else
        char buffer[XBT_LOG_BUFF_SIZE];
@@ -389,7 +389,7 @@ XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
  * code. 
  * Setting the LogEvent's valist member is done inside _log_logEvent.
  */
-#ifdef WIN32
+#ifdef _XBT_WIN32
 #define _XBT_LOG_PRE(catv, priority) do {			 \
      if (_XBT_LOG_ISENABLEDV(catv, priority)) {                  \
          s_xbt_log_event_t _log_ev =                             \

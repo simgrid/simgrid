@@ -14,7 +14,7 @@
 
 
 /* 
- * win32 or win64 (__WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).	
+ * win32 or win64 (__XBT_WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).
 */ 
 
 /* If the platform is not resolved _XBT_PLATFORM_ID is set to zero. */
@@ -69,8 +69,8 @@
 #endif
 
 #if defined(_XBT_WIN32_PLATFORM) || defined(_XBT_WIN64_PLATFORM) || defined(_XBT_WIN16_PLATFORM) || defined(_XBT_WINCE_PLATFORM)
-#ifndef _WIN32
-	#define _WIN32
+#ifndef _XBT_WIN32
+	#define _XBT_WIN32
 #endif
 #endif
 

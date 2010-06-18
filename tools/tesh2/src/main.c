@@ -45,7 +45,7 @@ typedef struct s_optentry
 /* logs */
 XBT_LOG_NEW_DEFAULT_CATEGORY(tesh,"TEst SHell utility");
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 /* Windows specific : the previous process error mode			*/
 static UINT 
 prev_error_mode = 0;
@@ -301,7 +301,7 @@ finalized = 0;
 static int 
 sig_int = 0;
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 static void 
 sig_int_handler(int signum)
 {
@@ -428,7 +428,7 @@ main(int argc, char* argv[])
 	/* then, finalize tesh (release all the allocated memory and exits) */
 	finalize();
 	
-	#ifndef WIN32
+	#ifndef _XBT_WIN32
 	return exit_code;
 	#endif
 	
@@ -449,7 +449,7 @@ init(void)
 	char* buffer;
 	char* suffix = strdup(".tesh");
 	
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	/* Windows specific : don't display the general-protection-fault message box and
 	 * the the critical-error-handler message box (instead the system send the error
 	 * to the calling process : tesh)
@@ -607,7 +607,7 @@ finalize(void)
 		xbt_os_sem_destroy(units_sem);
 	
 	/* Windows specific (restore the previouse error mode */
-	#ifdef WIN32
+	#ifdef _XBT_WIN32
 	SetErrorMode(prev_error_mode);
 	#endif
 
@@ -761,7 +761,7 @@ process_command_line(int argc, char** argv)
 			/* get to the last / (if any) to get the short name of the file */
 			delimiter = strrchr(optarg,'/');
 			
-			#ifdef WIN32
+			#ifdef _XBT_WIN32
 			if(!delimiter)
 				delimiter = strrchr(optarg,'\\');
 			#endif
@@ -979,7 +979,7 @@ process_command_line(int argc, char** argv)
 							
 							delimiter = strrchr(optarg,'/');
 
-							#ifdef WIN32
+							#ifdef _XBT_WIN32
 							if(!delimiter)
 								delimiter = strrchr(optarg,'\\');
 							#endif
@@ -1064,7 +1064,7 @@ process_command_line(int argc, char** argv)
 			
 							delimiter = strrchr(optarg,'/');
 
-							#ifdef WIN32
+							#ifdef _XBT_WIN32
 							if(!delimiter)
 								delimiter = strrchr(optarg,'\\');
 							#endif
@@ -1149,7 +1149,7 @@ print_usage(void)
 
 	if(!screen_cleaned)
 	{
-		#ifdef WIN32
+		#ifdef _XBT_WIN32
 		system("cls");
 		#else
 		system("clear");
@@ -1170,7 +1170,7 @@ print_version(void)
 {
 	if(!screen_cleaned)
 	{
-		#ifdef WIN32
+		#ifdef _XBT_WIN32
 		system("cls");
 		#else
 		system("clear");

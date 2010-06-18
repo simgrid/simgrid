@@ -1,10 +1,10 @@
 ### Make Libs
 if(WIN32)
   foreach(file ${simgrid_sources})
-    set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "/D DLL_EXPORT")
+    set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_EXPORT")
   endforeach(file ${simgrid_sources})
   foreach(file ${gras_sources})
-    set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "/D DLL_EXPORT")
+    set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_EXPORT")
   endforeach(file ${gras_sources})
 endif(WIN32)
 

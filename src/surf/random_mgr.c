@@ -7,7 +7,7 @@
 #include "surf/random_mgr.h"
 #include "xbt/sysdep.h"
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 
 static unsigned int _seed = 2147483647;
 

@@ -10,7 +10,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef WIN32
+#ifndef _XBT_WIN32
 #include <pwd.h>
 #else
 #endif
@@ -22,7 +22,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 #define PATH_MAX 255
 #endif
 
-#ifndef WIN32
+#ifndef _XBT_WIN32
 int
 getpath(const char* file, char** path)
 {

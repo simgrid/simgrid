@@ -61,7 +61,7 @@ const char rcs_dax__flexml[] =
 #include <stdarg.h>
 #include <ctype.h>
      
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
+#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
 # ifndef __STRICT_ANSI__
 #  include <io.h>
 #  include <process.h>

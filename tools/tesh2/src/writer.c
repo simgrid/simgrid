@@ -62,7 +62,7 @@ writer_write(writer_t writer)
 	writer->thread = xbt_os_thread_create("", writer_start_routine, writer);
 }
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 static void*
 writer_start_routine(void* p)
 {

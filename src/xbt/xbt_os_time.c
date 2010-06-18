@@ -13,7 +13,7 @@
 #include <math.h>               /* floor */
 
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 #include <sys/timeb.h>
 #endif
 
@@ -22,7 +22,7 @@ double xbt_os_time(void)
 #ifdef HAVE_GETTIMEOFDAY
   struct timeval tv;
   gettimeofday(&tv, NULL);
-#elif defined(WIN32)
+#elif defined(_XBT_WIN32)
   struct timeval tv;
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
   struct _timeb tm;
@@ -59,7 +59,7 @@ void xbt_os_sleep(double sec)
   sleep(sec);
   (void) usleep((sec - floor(sec)) * 1000000);
 
-#elif WIN32
+#elif _XBT_WIN32
   Sleep((floor(sec) * 1000) + ((sec - floor(sec)) * 1000));
 
 #else /* don't have usleep. Use select to sleep less than one second */

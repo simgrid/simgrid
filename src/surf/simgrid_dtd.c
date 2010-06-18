@@ -2878,7 +2878,7 @@ const char rcs_surfxml_flexml[] =
 #include <stdarg.h>
 #include <ctype.h>
      
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
+#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
 # ifndef __STRICT_ANSI__
 #  include <io.h>
 #  include <process.h>
@@ -3256,7 +3256,7 @@ const char* *surfxml_statenames=NULL;
  * down here because we want the user's section 1 to have been scanned first.
  * The user has a chance to override it with an option.
  */
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
+#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
 #  ifndef __STRICT_ANSI__
 #    include <io.h>
 #    include <process.h>

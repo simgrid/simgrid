@@ -2,7 +2,7 @@
 #define __DEF_H
 
 #if (defined(__BUILTIN) && !defined(__CHKCMD) && !defined(WARN_DEF_MISMATCH))
-#ifdef WIN32
+#ifdef _XBT_WIN32
 #pragma message(Macro definition mismatch : __BUILTIN defined but __CHKCMD not defined)
 #else
 #warning "Macro definition mismatch : __BUILTIN defined but __CHKCMD not defined"
@@ -11,7 +11,7 @@
 #endif
 
 /* must be defined first */
-#ifdef WIN32
+#ifdef _XBT_WIN32
 
 	#define _WIN32_WINNT	0x0400
 	
@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 	
 	#define strdup			_strdup
 	#define chdir			_chdir

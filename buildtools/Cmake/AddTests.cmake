@@ -36,15 +36,6 @@ SET(VALGRIND_COMMAND "${PROJECT_DIRECTORY}/buildtools/Cmake/my_valgrind.pl")
 SET(MEMORYCHECK_COMMAND "${PROJECT_DIRECTORY}/buildtools/Cmake/my_valgrind.pl")
 #If you use the --read-var-info option Memcheck will run more slowly but may give a more detailed description of any illegal address.
 
-### Check 32bits or 64bits
-INCLUDE (CheckTypeSize)
-CHECK_TYPE_SIZE("long" SIZEOF_LONG)
-IF(SIZEOF_LONG EQUAL 4)
-  SET(ARCH_32_BITS 1)
-ELSE(SIZEOF_LONG EQUAL 4)
-  SET(ARCH_32_BITS 0)
-ENDIF(SIZEOF_LONG EQUAL 4)
-
 INCLUDE(CTest)
 ENABLE_TESTING()
 

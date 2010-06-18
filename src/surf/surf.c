@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 #define MAX_DRIVE 26
 #endif
 
-#ifdef _WIN32
+#ifdef _XBT_WIN32
 #include <windows.h>
 static const char *disk_drives_letter_table[MAX_DRIVE] = {
   "A:\\",
@@ -49,7 +49,7 @@ static const char *disk_drives_letter_table[MAX_DRIVE] = {
   "Y:\\",
   "Z:\\"
 };
-#endif /* #ifdef _WIN32 */
+#endif /* #ifdef _XBT_WIN32 */
 
 /*
  * Returns the initial path. On Windows the initial path is
@@ -61,7 +61,7 @@ static const char *disk_drives_letter_table[MAX_DRIVE] = {
 const char *__surf_get_initial_path(void)
 {
 
-#ifdef _WIN32
+#ifdef _XBT_WIN32
   unsigned i;
   char current_directory[MAX_PATH + 1] = { 0 };
   unsigned int len = GetCurrentDirectory(MAX_PATH + 1, current_directory);
@@ -89,7 +89,7 @@ const char *__surf_get_initial_path(void)
  */
 int __surf_is_absolute_file_path(const char *file_path)
 {
-#ifdef _WIN32
+#ifdef _XBT_WIN32
   WIN32_FIND_DATA wfd = { 0 };
   HANDLE hFile = FindFirstFile(file_path, &wfd);
 
@@ -285,7 +285,7 @@ void surf_init(int *argc, char **argv)
 #endif
 }
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 # define FILE_DELIM "\\"
 #else
 # define FILE_DELIM "/"         /* FIXME: move to better location */

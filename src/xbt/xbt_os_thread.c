@@ -576,7 +576,7 @@ void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
 
 /* ********************************* WINDOWS IMPLEMENTATION ************************************ */
 
-#elif defined(WIN32)
+#elif defined(_XBT_WIN32)
 
 #include <math.h>
 

@@ -37,7 +37,7 @@ void SIMIX_context_mod_init(void)
 #ifdef CONTEXT_THREADS
     /* context switch based os thread */
     SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
-#elif !defined(WIN32)
+#elif !defined(_XBT_WIN32)
     /* context switch based ucontext */
     SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
 #else
@@ -124,7 +124,7 @@ void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
 #endif /* CONTEXT_THREADS */
    
     else if (!strcmp(name, "sysv"))
-  #if !defined(WIN32) && !defined(CONTEXT_THREADS)
+  #if !defined(_XBT_WIN32) && !defined(CONTEXT_THREADS)
       SIMIX_ctx_sysv_factory_init(factory);
   #else
       THROW0(not_found_error, 0, "Factory 'sysv' does not exist: no System V thread support under Windows");

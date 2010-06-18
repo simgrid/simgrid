@@ -2,21 +2,26 @@
 // With Cmake it creates <root>/src/gras_config.h
 
 /* Set somes variables for Windows compilation */
+
+#ifdef _XBT_DLL_EXPORT
+	#define DLL_EXPORT
+#else
+	#define DLL_IMPORT
+#endif
+
 #ifndef __STRICT_ANSI__
 	#cmakedefine __STRICT_ANSI__ @__STRICT_ANSI__@
 #endif
 #ifndef _MSC_VER
 	#cmakedefine _MSC_VER @_MSC_VER@
 #endif
-#ifndef _WIN32
-	#cmakedefine _WIN32 @_WIN32@
-#endif
-#ifndef WIN32
-	#cmakedefine WIN32 @WIN32@
-#endif
-#ifdef _WIN32
-	#define __VISUALC__
-#endif
+#cmakedefine _XBT_WIN32 @_XBT_WIN32@	//this variable is set if it is a windows platform
+#cmakedefine _WIN32 @_WIN32@			//this variable is set if it is a 32 bits windows platform
+#cmakedefine _WIN64 @_WIN64@			//this variable is set if it is a 64 bits  windows platform
+#cmakedefine __VISUALC__ @__VISUALC__@
+#cmakedefine __BORLANDC__ @__BORLANDC__@
+#cmakedefine _XBT_VISUALC_COMPILER @_XBT_VISUALC_COMPILER@
+#cmakedefine _XBT_BORLANDC_COMPILER @_XBT_BORLANDC_COMPILER@
 
 /* Set to true if enable_model-checking is true */
 #cmakedefine MMALLOC_WANT_OVERIDE_LEGACY @MMALLOC_WANT_OVERIDE_LEGACY@

@@ -24,6 +24,15 @@ if(EXISTS /usr/include/)
 	set(INCLUDES "${INCLUDES} -I/usr/include/")
 endif(EXISTS /usr/include/)
 
+### Check 32bits or 64bits
+INCLUDE (CheckTypeSize)
+CHECK_TYPE_SIZE("long" SIZEOF_LONG)
+IF(SIZEOF_LONG EQUAL 4)
+  SET(ARCH_32_BITS 1)
+ELSE(SIZEOF_LONG EQUAL 4)
+  SET(ARCH_32_BITS 0)
+ENDIF(SIZEOF_LONG EQUAL 4)
+
 if(WIN32)
 	set(INCLUDES_MORE $ENV{INCLUDE})
 	string(REPLACE "\\" "/" INCLUDES_MORE "${INCLUDES_MORE}")
@@ -43,7 +52,20 @@ if(WIN32)
     message("	-- INCLUDES			${INCLUDES}\n\n")
     set(__STRICT_ANSI__ 1)
     set(_MSC_VER 1)
-    set(_WIN32 1)
+    set(_XBT_WIN32 1)
+    if(BORLAND)			### BORLAND COMPILER
+	    set(__BORLANDC__ 1)
+	    set(_XBT_BORLANDC_COMPILER 1)
+    endif(BORLAND)
+    if(MSVC_VERSION)	### MicroSoftVisualC COMPILER
+	    set(__VISUALC__ 1)
+	    set(_XBT_VISUALC_COMPILER 1)
+    endif(MSVC_VERSION)  
+    if(ARCH_32_BITS)	### Arch 32bits
+    	set(_WIN32 1)
+    else(ARCH_32_BITS)	### Arch 64bits
+    	set(_WIN64 1)
+    endif(ARCH_32_BITS)
 endif(WIN32)
 
 add_definitions (${INCLUDES})

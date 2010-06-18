@@ -62,7 +62,7 @@ reader_read(reader_t reader)
 	reader->thread = xbt_os_thread_create("", reader_start_routine, reader);
 }
 
-#ifdef WIN32
+#ifdef _XBT_WIN32
 static void*
 reader_start_routine(void* p)
 {
