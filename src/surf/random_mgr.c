@@ -6,6 +6,7 @@
 
 #include "surf/random_mgr.h"
 #include "xbt/sysdep.h"
+#include "simgrid_config.h" /*_XBT_WIN32*/
 
 #ifdef _XBT_WIN32
 

@@ -3,6 +3,7 @@
 #include <string.h>
 #include "setset_private.h"
 #include "xbt/sysdep.h"
+#include "simgrid_config.h" /*_XBT_WIN32*/
 
 /*The function ffs doesn't exist for windows*/
 #ifdef _XBT_WIN32

@@ -12,6 +12,7 @@
 #include <stdio.h>     /* to have FILE */
 #include "xbt/misc.h"
 #include "xbt/graphxml.h"
+#include "simgrid_config.h"
 
 /* Entry-point of the graphxml parser. */
 extern int_f_void_t xbt_graph_parse;
