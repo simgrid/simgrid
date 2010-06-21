@@ -12,7 +12,11 @@
 #ifdef _XBT_DLL_EXPORT
 	#define DLL_EXPORT
 #else
-	#define DLL_IMPORT
+	#ifdef _XBT_DLL_STATIC
+		#define DLL_STATIC
+	#else
+		#define DLL_IMPORT
+	#endif
 #endif
 
 #cmakedefine _XBT_WIN32 @_XBT_WIN32@	//this variable is set if it is a windows platform
