@@ -42,6 +42,30 @@
       \ref MSG_JAVA.
 */
 
+
+/**
+
+\defgroup MSG_LUA      lMSG
+    \ingroup MSG_API
+    \brief Lua bindings to MSG (\ref MSG_API)
+
+    \htmlonly <!-- 
+      DOXYGEN_NAVBAR_LABEL="LUA bindings" 
+    --> \endhtmlonly 
+	  
+      MSG was the first distributed programming environment provided within
+      SimGrid. While almost realistic, it remains quite simple (simplistic?).
+      This describes the Lua bindings to this interface.
+
+      \section lMSG_who Who should use this (and who shouldn't)
+      
+      You should use MSG if you want to study some heuristics for a
+      given problem you don't really want to implement. If you want to
+      use the Lua script language, your are in the right
+      section. To use the C interface, please refer to \ref MSG_C.
+
+*/
+
 /** @addtogroup MSG_C
 
   \section MSG_funct Offered functionnalities
@@ -58,6 +82,18 @@
  
    - \ref MSG_ex_master_slave
 */
+
+/** @addtogroup MSG_LUA
+
+  \section MSG_Lua_funct  Lua offered functionnalities in MSG
+   - \ref host_management
+   - \ref tasks_management
+   - \ref environment_management
+  \section Lua_examples Examples of lua MSG
+ 
+   - \ref MSG_ex_master_slave_lua
+*/
+
 
 /** @defgroup m_datatypes_management MSG Data Types 
     @ingroup MSG_C
@@ -140,7 +176,7 @@
    \subsection MSG_ext_ms_forwarder Forwarder code
    
       This function has to be assigned to a #m_process_t that has to behave as a forwarder.
-      Just like the master fuction (described in \ref MSG_ext_ms_master), it should not be called directly.
+      Just like the master function (described in \ref MSG_ext_ms_master), it should not be called directly.
 
       C style arguments (argc/argv) are interpreted as a list of host
       that will accept those tasks.
@@ -181,4 +217,61 @@
    
    \include msg/small_platform.xml
    
+*/
+
+/** \page MSG_ex_master_slave_lua Master/slave Lua application
+    
+    Simulation of a master-slave application using lua bindings
+       - \ref MSG_ext_ms_code_lua
+       - \ref MSG_ext_ms_master_lua
+       - \ref MSG_ext_ms_slave_lua
+       - \ref MSG_ext_ms_core_lua
+
+     - \ref MSG_ext_ms_helping
+       - \ref MSG_ext_ms_application 
+       - \ref MSG_ext_ms_platform
+       
+       
+      \dontinclude lua/master_slave.lua
+      
+      \section MSG_ext_ms_code_lua Code of the application
+      
+      \subsection MSG_ext_ms_master_lua Master code
+      
+            as described ine the C native master/Slave exmaple , this function has to be assigned to a m_process_t that will behave as the master.
+ 
+      Lua style arguments (...) in for the master are interpreted as:
+       - the number of tasks to distribute
+       - the computation size of each task
+       - the size of the files associated to each task
+       - a list of host that will accept those tasks.
+
+      Tasks are dumbly sent in a round-robin style.
+      
+      \until end_of_master
+      
+      
+      \subsection MSG_ext_ms_slave_lua Slave code
+    
+      This function has to be assigned to a #m_process_t that has to behave as a slave.
+      This function keeps waiting for tasks and executes them as it receives them.
+      
+      \until end_of_slave
+         \subsection MSG_ext_ms_core_lua Simulation core
+
+      in this section the core of the simulation which start by including the simgrid lib for bindings
+      : <i>require "simgrid" </i>
+      
+         -# Simulation settings : <i>simgrid.platform</i> creates a realistic 
+            environment 
+         -# Application deployment : create the agents on the right locations with  
+            <i>simgrid.application</i>
+         -# The simulation is run with <i>simgrid.run</i>
+	 
+      Its arguments are:
+	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.( first command line argument)
+	- <i>application_file</i>: the name of a file containing a valid surfxml application description ( second commande line argument )
+	
+      \until simgrid.clean()
+      
 */
