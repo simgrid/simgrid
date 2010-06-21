@@ -1,38 +1,26 @@
 ### Make Libs
-if(WIN32)
-  foreach(file ${simgrid_sources})
-    set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_EXPORT")
-  endforeach(file ${simgrid_sources})
-  foreach(file ${gras_sources})
-    set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_EXPORT")
-  endforeach(file ${gras_sources})
-endif(WIN32)
 
-if(enable_supernovae AND NOT WIN32)
+if(enable_supernovae)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
-else(enable_supernovae AND NOT WIN32)	
+else(enable_supernovae)	
 	add_library(simgrid SHARED ${simgrid_sources})
 	add_library(simgrid_static STATIC ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
 	if(enable_smpi)
 		add_library(smpi SHARED ${SMPI_SRC})
 	endif(enable_smpi)
-endif(enable_supernovae AND NOT WIN32)
+endif(enable_supernovae)
 
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 set_target_properties(gras PROPERTIES VERSION ${libgras_version})
+
 if(enable_smpi)
 	set_target_properties(smpi PROPERTIES VERSION ${libsmpi_version})
 endif(enable_smpi)
 
-if(WIN32)
-	set(GRAS_DEP "wsock32")
-	set(SIMGRID_DEP "wsock32")
-else(WIN32)
-    set(GRAS_DEP "-lm -lpthread")
-    set(SIMGRID_DEP "-lm")
-    set(SMPI_DEP "")
-endif(WIN32)
+set(GRAS_DEP "-lm -lpthread")
+set(SIMGRID_DEP "-lm")
+set(SMPI_DEP "")
 
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME} -module")
@@ -50,7 +38,6 @@ endif(HAVE_RUBY)
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	add_definitions("-D_XOPEN_SOURCE")
 endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-
 
 if(pthread)
 	if(with_context MATCHES pthread)
@@ -87,10 +74,10 @@ endif(HAVE_POSIX_GETTIME)
 target_link_libraries(simgrid 	${SIMGRID_DEP})
 target_link_libraries(simgrid_static	${SIMGRID_DEP})
 target_link_libraries(gras 	${GRAS_DEP})
+
 if(enable_smpi)
 	target_link_libraries(smpi 	simgrid ${SMPI_DEP})
 endif(enable_smpi)
-
 
 ### Make EXEs
 
