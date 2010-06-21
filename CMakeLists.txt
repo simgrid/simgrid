@@ -86,7 +86,11 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/Flags.cmake)
 
 ### Make Libs and Exes
+if(WIN32)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLibWin.cmake)
+else(WIN32)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLib.cmake)
+endif(WIN32)
 
 ### Build the doc
 if(enable_doc)
