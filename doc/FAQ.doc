@@ -2287,6 +2287,164 @@ Yes , Here too you have to resgiter your application before running the simulati
 
 the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
+\subsection faq_binding_ruby Ruby Binding
+
+\subsubsection faq_binding_ruby_about What is Ruby ?
+Ruby is a dynamic, reflective, general purpose object-oriented programming language that combines syntax inspired by Perl with Smalltalk-like features.
+Ruby supports multiple programming paradigms, including functional, object oriented, imperative and reflective. It also has a dynamic type system and automatic memory management;
+it is therefore similar in varying respects to Python, Perl, Lisp, Dylan, Pike, and CLU.(see official web site <a href="http://ruby-lang.org">here</a>)
+
+\subsubsection faq_binding_ruby_simgrid Use Ruby in Simgrid
+Since v3.4 , the use of ruby in simgrid is available for the MSG Module .
+you can find almost all MSG functionalities in Ruby code , that allows you to set up your environment , manage tasks between hosts and run the simulation.
+
+\subsubsection faq_binding_ruby_example Master/Slave Ruby Application
+for each process method(master and slave in this example), you have to associate a ruby class , that should inherit from <i>MSG::Process</i> ruby class,
+  with a 'main' function that describe the behaviour of the process during the simulation.
+\li required stuff
+\verbatim
+require 'simgrid'
+include MSG
+\endverbatim
+
+\li Master code
+\verbatim
+#################################################
+# Class Master
+#################################################
+class Master < MSG::Process  
+  # main : that function that will be executed when running simulation
+
+  def main(args) # args is an array containing arguments for function master
+   size = args.size
+   for i in 0..size-1
+     MSG::info("args["+String(i)+"]="+args[i])
+   end
+  
+   raise "Master needs 3 arguments" if size < 3 
+   numberOfTask = Integer(args[0]) 
+   taskComputeSize = Float(args[1])
+   taskCommunicationSize = Float(args[2])
+   slaveCount = Integer(args[3]) 
+   
+   # Creates and sends the tasks
+    for i in 0..numberOfTask-1
+     task = Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
+     mailbox = "slave " + (i%slaveCount).to_s
+     MSG::info("Master Sending "+ task.name + " to " + mailbox + " with Comput Size " + 
+           task.compSize.to_s)
+     task.send(mailbox)
+     MSG::info("Master Done Sending " + task.name + " to " + mailbox)
+    end
+  
+   # Sending Finalize MSG::Tasks
+   MSG::info("Master: All tasks have been dispatched. Let's tell everybody the computation is over.")
+   for i in 0..slaveCount-1
+     mailbox = "slave " + i.to_s
+     finalize_task = Task.new("finalize",0,0)
+     finalize_task.send(mailbox)
+   end
+   MSG::info("Master : Everything's Done")
+  end    
+end
+\endverbatim
+the class MSG::Task contains methods that allows the management of the native MSG tasks.
+in master ruby code we used : 
+  - <i>MSG::Task.new(task_name,compute_size,communication_size)</i> : to instanciate a new task.
+  - <i>MSG::Task.send(mailbox)</i> : to send the task via a mailbox alias.
+  - <i>MSG::Task.name</i> : to get the task's name.
+
+\li Slave code
+\verbatim
+#################################################
+# Class Slave
+#################################################
+class Slave < MSG::Process
+
+  def main(args)
+    mailbox = "slave " + args[0]
+    for i in 0..args.size-1
+      MSG::debug("args["+String(i)+"]="+args[i])
+    end
+
+    while true
+       task = Task.receive(mailbox)
+       if (task.name == "finalize")
+	       break
+       end
+       task.execute
+       MSG::debug("Slave '" + mailbox + "' done executing task "+ task.name + ".")
+    end
+    MSG::info("I'm done, see you")
+  end
+end
+\endverbatim
+to receive a task , we use the method <i>MSG::Task.receive(mailbox)</i> that return a MSG:Task object (received task).
+
+\li Main chunk
+\verbatim
+if (ARGV.length == 2) 
+	MSG.createEnvironment(ARGV[0])
+	MSG.deployApplication(ARGV[1])
+else 
+	MSG.createEnvironment("platform.xml")
+	MSG.deployApplication("deploy.xml")
+end
+MSG.run
+puts "Simulation time : " + MSG.getClock .to_s
+MSG.exit
+\endverbatim
+- <i>MSG.createEnvironment(platform_file)</i> : set up the environment
+- <i>MSG.deployApplication(deployment_file)</i> : load the deployment file description.
+- <i>MSG.run</i> : run the simulation
+
+\subsubsection faq_binding_ruby_data Exchanging data 
+ruby bindings provides two ways to exchange data between ruby processes.
+\li MSG::Task.join & MSG::Task.data \br
+
+  the MSG::Task class contains 2 methods that allows a data exchange between 2 process.
+  
+  -<i>MSG::Task.join</i> : makes possible to join any kind of ruby data within a task.
+  \verbatim
+   ...
+   myTable = Array.new
+   myTable <<1<<-2<<45<<67<<87<<76<<89<<56<<78<<3<<-4<<99
+   # Creates and send Task With the Table inside
+   task = MSG::Task.new("quicksort_task",taskComputeSize, taskCommunicationSize);
+   task.join(myTable);
+   ...
+   task.send(mailbox);
+   \endverbatim
+   -<i>MSG::Task.data</i> : to access to the data contained into the task.
+   \verbatim
+   ...
+   task = MSG::Task.receive(recv_mailbox.to_s)
+   table = task.data
+   quicksort(table,0,table.size-1)
+   ...
+   \endverbatim
+you can find a complet example illustrating the use of those methods  in file /example/ruby/Quicksort.rb
+
+\li inheritence 
+ 
+ another 'object-oriented' way to do it , is to make your own 'task' class that inherit from  MSG::Task ,
+ and contains data you want to deal with , the only 'tricky' thing is that "the initializer" method has no effect ! 
+ 
+ the use of some getter/setter methods would be the simple way to manage your data  :) 
+ \verbatim
+class PingPongTask < MSG::Task
+  # The initialize method has no effect 
+  @time 
+  def setTime(t)
+    @time = t
+  end
+  def getTime()
+    return @time
+  end
+end
+ \endverbatim
+ you can find an example of use in file example/ruby/PingPong.rb
+
 \section faq_troubleshooting Troubleshooting
 
 \subsection faq_trouble_lib_compil SimGrid compilation and installation problems
