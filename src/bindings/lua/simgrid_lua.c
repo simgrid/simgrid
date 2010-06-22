@@ -83,43 +83,50 @@ static m_task_t checkTask (lua_State *L,int index) {
   return  tk;
 }
 
-/** @brief leaves a new userdata on top of the stack, sets its metatable, and sets the Task pointer inside the userdata */
-// NOT USED
-/*static m_task_t *pushTask (lua_State *L,m_task_t tk) {
-  m_task_t *pi = NULL;
-  pi = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
-  *pi=tk;
-  DEBUG1("push lua task with Name : %s \n",MSG_task_get_name(*pi));
-  luaL_getmetatable(L,TASK_MODULE_NAME);
-  lua_setmetatable(L,-2);
-  return pi;
-}*/
-
 /* ********************************************************************************* */
 /*                           wrapper functions                                       */
 /* ********************************************************************************* */
 
 /**
- *  Task
+ * A task is either something to compute somewhere, or something to exchange between two hosts (or both).
+ * It is defined by a computing amount and a message size.
+ *
  */
 
+/* *              * *
+ * * Constructors * *
+ * *              * */
+/**
+ * Construct an new task with the specified processing amount and amount
+ * of data needed.
+ *
+ * @param name	Task's name
+ *
+ * @param computeDuration 	A value of the processing amount (in flop) needed to process the task.
+ *				If 0, then it cannot be executed with the execute() method.
+ *				This value has to be >= 0.
+ *
+ * @param messageSize		A value of amount of data (in bytes) needed to transfert this task.
+ *				If 0, then it cannot be transfered with the get() and put() methods.
+ *				This value has to be >= 0.
+ */
 static int Task_new(lua_State* L) {
-  const char *name=luaL_checkstring(L,1);
-  int comp_size = luaL_checkint(L,2);
-  int msg_size = luaL_checkint(L,3);
-  INFO0("Creating task");
-  m_task_t msg_task = MSG_task_create(name,comp_size,msg_size,NULL);
-  lua_newtable (L); /* create a table, put the userdata on top of it */
-  m_task_t *lua_task = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
-  *lua_task = msg_task;
-  luaL_getmetatable(L,TASK_MODULE_NAME);
-  lua_setmetatable(L,-2);
-  lua_setfield (L, -2, "__simgrid_task"); /* put the userdata as field of the table */
-  /* remove the args from the stack */
-  lua_remove(L,1);
-  lua_remove(L,1);
-  lua_remove(L,1);
-  return 1;
+	  const char *name=luaL_checkstring(L,1);
+	  int comp_size = luaL_checkint(L,2);
+	  int msg_size = luaL_checkint(L,3);
+	  INFO0("Creating task");
+	  m_task_t msg_task = MSG_task_create(name,comp_size,msg_size,NULL);
+	  lua_newtable (L); /* create a table, put the userdata on top of it */
+	  m_task_t *lua_task = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
+	  *lua_task = msg_task;
+	  luaL_getmetatable(L,TASK_MODULE_NAME);
+	  lua_setmetatable(L,-2);
+	  lua_setfield (L, -2, "__simgrid_task"); /* put the userdata as field of the table */
+	  /* remove the args from the stack */
+	  lua_remove(L,1);
+	  lua_remove(L,1);
+	  lua_remove(L,1);
+	  return 1;
 }
 
 static int Task_get_name(lua_State *L) {
@@ -330,41 +337,11 @@ static int host_index = 0;
 static int link_index = 0;
 static int route_index = 0;
 
-static int max_host_number = 0;
-static int max_link_number = 0;
-static int max_route_number = 0;
-
-
 //using xbt_dynar_t :
 static xbt_dynar_t host_list_d ;
 static xbt_dynar_t link_list_d ;
 static xbt_dynar_t route_list_d ;
 
-
-static int Host_set_number(lua_State *L)
-{
-	max_host_number = luaL_checkint(L,1);
-//	host_list = malloc(sizeof(host_attr)*max_host_number);
-	//host_list_d = xbt_dynar_new(sizeof(p_host_attr), &xbt_free_ref);
-
-	return 0;
-}
-
-static int Link_set_number(lua_State *L)
-{
-	max_link_number = luaL_checkint(L,1);
-	//link_list = malloc(sizeof(link_attr)*max_link_number);
-	//link_list_d = xbt_dynar_new(sizeof(p_link_attr),&xbt_free_ref);
-	return 0;
-}
-
-static int Route_set_number(lua_State *L)
-{
-	max_route_number = luaL_checkint(L,1);
-	//route_list = malloc(sizeof(route_attr)*max_link_number);
-	//route_list_d = xbt_dynar_new(sizeof(p_route_attr),&xbt_free_ref);
-	return 0;
-}
 
 static int Host_new(lua_State *L) //(id,power)
 {
@@ -609,11 +586,6 @@ static int surf_parse_bypass_application()
 	  return 0;
 }
 
-// Free Allocated Memory
-static void clean_attr()
-{
-//nothing to do
-}
 //***********Register Methods *******************************************//
 /*
  * Host Methods
@@ -625,7 +597,6 @@ static const luaL_reg Host_methods[] = {
     {"at",			Host_at},
     // Bypass XML Methods
     {"new",			Host_new},
-    {"setNumber",	Host_set_number},
     {"setFunction",	Host_set_function},
     {0,0}
 };
@@ -654,7 +625,6 @@ static const luaL_reg Host_meta[] = {
  */
 static const luaL_reg Link_methods[] = {
     {"new",Link_new},
-    {"setNumber", Link_set_number },
     {0,0}
 };
 /*
@@ -662,7 +632,6 @@ static const luaL_reg Link_methods[] = {
  */
 static const luaL_reg Route_methods[] ={
    {"new",Route_new},
-   {"setNumber",Route_set_number}
 };
 
 /*
@@ -737,7 +706,6 @@ static int run(lua_State *L) {
   return 0;
 }
 static int clean(lua_State *L) {
-  clean_attr(); // in case of using "bypass xml" methods
   MSG_clean();
   return 0;
 }
