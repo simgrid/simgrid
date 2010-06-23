@@ -85,12 +85,12 @@ static void handle_line(const char *filepos, char *line)
 static void handle_suite(const char *filename, FILE * IN)
 {
   size_t len;
-  int blankline = 1;
-  int linelen = 0;
+  int blankline;
+  int linelen;
   char *line = NULL;
   int line_num = 0;
   char file_pos[256];
-  int to_be_continued = 0;
+  int to_be_continued;
   int buffbegin = 0;
   xbt_strbuff_t buff = NULL;
 
@@ -101,6 +101,8 @@ static void handle_suite(const char *filename, FILE * IN)
     line_num++;
 
     /* Count the line length while checking wheather it's blank */
+    blankline = 1;
+    linelen = 0;
 
     while (line[linelen] != '\0') {
       if (line[linelen] != ' ' && line[linelen] != '\t'
@@ -123,6 +125,7 @@ static void handle_suite(const char *filename, FILE * IN)
     }
 
     /* Deal with \ at the end of the line, and call handle_line on result */
+    to_be_continued = 0;
     if (linelen > 1 && line[linelen - 2] == '\\') {
       if (linelen > 2 && line[linelen - 3] == '\\') {
         /* Damn. Escaped \ */
