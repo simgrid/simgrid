@@ -1,8 +1,8 @@
 ### Be sure we can execut some launch file
 exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh" OUTPUT_VARIABLE "OKITOKI")
 if(enable_smpi)
-	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpicc" OUTPUT_VARIABLE "OKITOKI")
-	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/src/smpi/smpirun" OUTPUT_VARIABLE "OKITOKI")
+	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE "OKITOKI")
+	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE "OKITOKI")
 endif(enable_smpi)
 
 if(enable_memcheck)
@@ -228,10 +228,10 @@ endif(HAVE_MC)
 
 if(HAVE_JAVA)
 # java examples
-ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest ${PROJECT_DIRECTORY})
-ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest ${PROJECT_DIRECTORY})
-ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest ${PROJECT_DIRECTORY})
-ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest ${PROJECT_DIRECTORY})
+ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest ${CMAKE_BINARY_DIR})
+ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest ${CMAKE_BINARY_DIR})
+ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest ${CMAKE_BINARY_DIR})
+ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest ${CMAKE_BINARY_DIR})
 endif(HAVE_JAVA)
 
 ###
