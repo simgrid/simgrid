@@ -28,6 +28,9 @@
 #ifndef SIMGRID_PUBLIC_CONFIG_H
 #define SIMGRID_PUBLIC_CONFIG_H
 
+/* Define to 1 if you have the `mmap' function. */
+#cmakedefine HAVE_MMAP @HAVE_MMAP@
+
 /* Get the config */
 #undef SIMGRID_NEED_GETLINE
 #undef SIMGRID_NEED_ASPRINTF
