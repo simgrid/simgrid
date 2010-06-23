@@ -388,7 +388,7 @@ Java_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
     /* the native host data field is set with the global reference to the 
      * java host returned by this function 
      */
-    MSG_host_get_data(host,(void *) jhost);
+    MSG_host_set_data(host,(void *) jhost);
   }
 
   /* return the global reference to the java host instance */
