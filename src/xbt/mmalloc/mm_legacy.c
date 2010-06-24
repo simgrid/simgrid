@@ -10,6 +10,8 @@
 
 static void *__mmalloc_current_heap=NULL; /* The heap we are currently using. */
 
+#include "xbt_modinter.h"
+
 void* mmalloc_get_current_heap(void) {
   return __mmalloc_current_heap;
 }
@@ -19,6 +21,9 @@ void mmalloc_set_current_heap(void *new_heap) {
 
 #ifdef MMALLOC_WANT_OVERIDE_LEGACY
 void *malloc(size_t n) {
+#ifdef HAVE_MMAP
+  if (!__mmalloc_current_heap) mmalloc_preinit();
+#endif
   void *ret = mmalloc(__mmalloc_current_heap, n);
 
   return ret;
@@ -26,7 +31,9 @@ void *malloc(size_t n) {
 
 void *calloc(size_t nmemb, size_t size) {
   size_t total_size = nmemb * size;
-
+#ifdef HAVE_MMAP
+  if (!__mmalloc_current_heap) mmalloc_preinit();
+#endif
   void *ret = mmalloc(__mmalloc_current_heap, total_size);
 
   /* Fill the allocated memory with zeroes to mimic calloc behaviour */
@@ -37,15 +44,17 @@ void *calloc(size_t nmemb, size_t size) {
 
 void *realloc(void *p, size_t s) {
   void *ret = NULL;
-
+#ifdef HAVE_MMAP
+  if (!__mmalloc_current_heap) mmalloc_preinit();
+#endif
   if (s) {
-    if (p)
-      ret = mrealloc(__mmalloc_current_heap, p,s);
-    else
-      ret = mmalloc(__mmalloc_current_heap,s);
+	if (p)
+	  ret = mrealloc(__mmalloc_current_heap, p,s);
+	else
+	  ret = mmalloc(__mmalloc_current_heap,s);
   } else {
-    if (p)
-      mfree(__mmalloc_current_heap,p);
+	if (p)
+	  mfree(__mmalloc_current_heap,p);
   }
 
   return ret;
@@ -66,9 +75,8 @@ void *mmalloc_get_default_md(void) {
 }
 
 /* Initialize the default malloc descriptor. */
-#include "xbt_modinter.h"
 void mmalloc_preinit(void) {
-  __mmalloc_default_mdp = mmalloc_attach(-1, (char *)sbrk(0) + HEAP_OFFSET);
+  if(!__mmalloc_default_mdp) __mmalloc_default_mdp = mmalloc_attach(-1, (char *)sbrk(0) + HEAP_OFFSET);
   xbt_assert(__mmalloc_default_mdp != NULL);
 }
 void mmalloc_postexit(void) {
