@@ -311,7 +311,11 @@ void surf_config_models_setup(const char *platform_file)
   network_model_name = xbt_cfg_get_string(_surf_cfg_set, "network/model");
   cpu_model_name = xbt_cfg_get_string(_surf_cfg_set, "cpu/model");
 
-  if ((strcmp(network_model_name,"LV08") || strcmp(network_model_name,"SMPI") || strcmp(cpu_model_name,"Cas01"))
+  /* Check whether we use a net/cpu model differing from the default ones, in which case
+   * we should switch to the "compound" workstation model to correctly dispatch stuff to
+   * the right net/cpu models.
+   */
+  if ((strcmp(network_model_name,"LV08") || strcmp(cpu_model_name,"Cas01"))
       && !strcmp(workstation_model_name, "CLM03")){
     const char *val = "compound";
     INFO0("Switching workstation model to compound since you changed the network and/or cpu model(s)");
