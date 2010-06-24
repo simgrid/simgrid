@@ -283,8 +283,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
 
     /* Mask the bottom of the stack */
     if (!strncmp("main", line_func, strlen("main")) ||
-        !strncmp("xbt_thread_context_wrapper", line_func,
-                 strlen("xbt_thread_context_wrapper"))) {
+        !strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper"))||
+        !strncmp("smx_ctx_sysv_wrapper",line_func,strlen("smx_ctx_sysv_wrapper"))) {
       int j;
 
       for (j = i + 1; j < e->used; j++)
