@@ -405,7 +405,7 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 {
 	// look for the index of host in host_list
 	const char *host_id = luaL_checkstring(L,1);
-	int i;
+	unsigned int i;
 	p_host_attr p_host;
 
 	xbt_dynar_foreach(host_list_d,i,p_host)
@@ -442,13 +442,11 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 static int surf_parse_bypass_platform()
 {
 	char buffer[22];
-	int i;
+	unsigned int i;
 
 	p_host_attr p_host;
 	p_link_attr p_link;
 	p_route_attr p_route;
-
-	xbt_dynar_t dynaroun = xbt_dynar_new(sizeof(int), NULL);
 
 	static int AX_ptr = 0;
 	static int surfxml_bufferstack_size = 2048;
@@ -543,7 +541,7 @@ static int surf_parse_bypass_platform()
 static int surf_parse_bypass_application()
 {
 
-	  int i;
+	  unsigned int i;
 
 	  p_host_attr p_host;
 
