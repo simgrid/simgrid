@@ -428,7 +428,7 @@ void SIMIX_sem_block_onto(smx_sem_t sem) {
 
 /** @brief Returns true if acquiring this semaphore would block */
 XBT_INLINE int SIMIX_sem_would_block(smx_sem_t sem) {
-  return (sem->capacity>0);
+  return (sem->capacity<=0);
 }
 
 /** @brief Returns the current capacity of the semaphore
@@ -452,11 +452,14 @@ void SIMIX_sem_acquire(smx_sem_t sem) {
 
   DEBUG1("Wait semaphore %p", sem);
 
-  if (sem->capacity == SMX_SEM_NOLIMIT)
+  if (sem->capacity == SMX_SEM_NOLIMIT) {
+    DEBUG1("semaphore %p wide open", sem);
     return; /* don't even decrease it if wide open */
+  }
 
   /* If capacity sufficient, decrease it */
   if (sem->capacity>0) {
+    DEBUG1("semaphore %p has enough capacity", sem);
     sem->capacity--;
     return;
   }
@@ -529,12 +532,14 @@ unsigned int SIMIX_sem_acquire_any(xbt_dynar_t sems) {
 
   xbt_assert0(xbt_dynar_length(sems),
       "I refuse to commit sucide by locking on an **empty** set of semaphores!!");
-  DEBUG1("Wait on semaphore set %p", sems);
+  DEBUG2("Wait on semaphore set %p (containing %ld semaphores)", sems,xbt_dynar_length(sems));
 
   xbt_dynar_foreach(sems,counter,sem) {
-    if (!SIMIX_sem_would_block(sem))
+    if (!SIMIX_sem_would_block(sem)) {
+      DEBUG1("Semaphore %p wouldn't block; get it without waiting",sem);
       SIMIX_sem_acquire(sem);
-    return counter;
+      return counter;
+    }
   }
 
   /* Always create an action null in case there is a host failure */
