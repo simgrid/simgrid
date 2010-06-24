@@ -159,6 +159,7 @@ smx_comm_t SIMIX_communication_new(smx_comm_type_t type)
  */
 void SIMIX_communication_destroy(smx_comm_t comm)
 {
+  VERB2("Destroy communication %p; refcount initially %d",comm,comm->refcount);
   comm->refcount--;
   if(comm->refcount > 0)
     return;
@@ -599,7 +600,11 @@ unsigned int SIMIX_network_waitany(xbt_dynar_t comms)
   xbt_assert0(found_comm!=-1,"Cannot find which communication finished");
   xbt_dynar_get_cpy(comms,found_comm,&comm_finished);
 
-  /* Check for errors and cleanup the comm */
-  SIMIX_communication_cleanup(comm_finished);
+  DEBUG2("Communication %p of communication set %p finished", comm_finished, comms);
+
+  /* let the regular code deal with the communication end (errors checking and cleanup).
+   * A bit of useless work will be done, but that's good for source factorization */
+  SIMIX_sem_release_forever(comm_finished->sem);
+  SIMIX_communication_wait_for_completion(comm_finished, -1);
   return found_comm;
 }
