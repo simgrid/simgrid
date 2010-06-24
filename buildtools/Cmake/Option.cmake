@@ -42,6 +42,11 @@ if(WIN32) #actually not enable with windows
 	set(enable_maintainer_mode false CACHE TYPE INTERNAL FORCE)
 endif(WIN32)
 
+if(enable_supernovae AND enable_model-checking)
+	set(enable_model-checking false CACHE TYPE INTERNAL FORCE)
+	message("\n\nWith supernovae mode the model checking must be disable.!!!\n\n")
+endif(enable_supernovae AND enable_model-checking)
+
 mark_as_advanced(enable_coverage)
 mark_as_advanced(enable_memcheck)
 mark_as_advanced(enable_print_message)
