@@ -14,9 +14,7 @@
 #include "portable.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
-                                "Dictionaries provide the same functionalities than hash tables");
-
+XBT_LOG_DEFAULT_CATEGORY(xbt_dict);
 
 static void print_str(void *str)
 {

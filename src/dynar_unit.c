@@ -13,7 +13,7 @@
 #define NB_ELEM 5000
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn, xbt, "Dynamic arrays");
+XBT_LOG_DEFAULT_CATEGORY(xbt_dyn);
 
 XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 {
