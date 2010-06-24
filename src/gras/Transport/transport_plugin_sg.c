@@ -24,9 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_sg, gras_trp,
  ***/
 
 /* retrieve the port record associated to a numerical port on an host */
-static void find_port(gras_hostdata_t * hd, int port,
-                      gras_sg_portrec_t * hpd);
-
+static gras_sg_portrec_t find_port(gras_hostdata_t * hd, int port);
 
 void gras_trp_sg_socket_client(gras_trp_plugin_t self,
                                /* OUT */ gras_socket_t sock);
@@ -54,7 +52,7 @@ typedef struct {
 /***
  *** Code
  ***/
-static void find_port(gras_hostdata_t * hd, int port, gras_sg_portrec_t * hpd)
+static gras_sg_portrec_t find_port(gras_hostdata_t * hd, int port)
 {
   unsigned int cpt;
   gras_sg_portrec_t pr;
@@ -62,12 +60,10 @@ static void find_port(gras_hostdata_t * hd, int port, gras_sg_portrec_t * hpd)
   xbt_assert0(hd, "Please run gras_process_init on each process");
 
   xbt_dynar_foreach(hd->ports, cpt, pr) {
-    if (pr.port == port) {
-      memcpy(hpd, &pr, sizeof(gras_sg_portrec_t));
-      return;
-    }
+    if (pr->port == port)
+      return pr;
   }
-  THROW1(mismatch_error, 0, "Unable to find any portrec for port #%d", port);
+  return NULL;
 }
 
 
@@ -90,13 +86,11 @@ void gras_trp_sg_setup(gras_trp_plugin_t plug)
 }
 
 void gras_trp_sg_socket_client(gras_trp_plugin_t self,
-                               /* OUT */ gras_socket_t sock)
-{
-  xbt_ex_t e;
+                               /* OUT */ gras_socket_t sock) {
 
   smx_host_t peer;
   gras_hostdata_t *hd;
-  gras_trp_sg_sock_data_t *data;
+  gras_trp_sg_sock_data_t data;
   gras_sg_portrec_t pr;
 
   /* make sure this socket will reach someone */
@@ -108,41 +102,38 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
     THROW1(mismatch_error, 0,
            "can't connect to %s: no process on this host", sock->peer_name);
 
-  TRY {
-    find_port(hd, sock->peer_port, &pr);
-  }
-  CATCH(e) {
-    if (e.category == mismatch_error) {
-      xbt_ex_free(e);
-      THROW2(mismatch_error, 0,
-             "can't connect to %s:%d, no process listen on this port",
-             sock->peer_name, sock->peer_port);
-    }
-    RETHROW;
+  pr = find_port(hd, sock->peer_port);
+
+  if (pr == NULL) {
+    THROW2(mismatch_error, 0,
+        "can't connect to %s:%d, no process listen on this port",
+        sock->peer_name, sock->peer_port);
   }
 
-  if (pr.meas && !sock->meas) {
+  /* Ensure that the listener is expecting the kind of stuff we want to send */
+  if (pr->meas && !sock->meas) {
     THROW2(mismatch_error, 0,
            "can't connect to %s:%d in regular mode, the process listen "
            "in measurement mode on this port", sock->peer_name,
            sock->peer_port);
   }
-  if (!pr.meas && sock->meas) {
+  if (!pr->meas && sock->meas) {
     THROW2(mismatch_error, 0,
            "can't connect to %s:%d in measurement mode, the process listen "
            "in regular mode on this port", sock->peer_name, sock->peer_port);
   }
-  /* create the socket */
-  data = xbt_new(gras_trp_sg_sock_data_t, 1);
-  data->from_process = SIMIX_process_self();
-  data->to_process = pr.process;
-  data->to_host = peer;
 
-  /* initialize mutex and condition of the socket */
-  data->rdv_server = pr.rdv;
+  /* create simulation data of the socket */
+  data = xbt_new(s_gras_trp_sg_sock_data_t, 1);
+  data->client = SIMIX_process_self();
+  data->server = pr->server;
+
+  /* initialize synchronization stuff on the socket */
+  data->rdv_server = pr->rdv;
   data->rdv_client = SIMIX_rdv_create(NULL);
-  data->im_server = 0;
+  data->comm_recv = SIMIX_network_irecv(data->rdv_client,NULL,0);
 
+  /* connect that simulation data to the socket */
   sock->data = data;
   sock->incoming = 1;
 
@@ -157,54 +148,45 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock)
   gras_hostdata_t *hd =
     (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
   gras_sg_portrec_t pr;
-  gras_trp_sg_sock_data_t *data;
-  volatile int found;
-
-  const char *host = SIMIX_host_get_name(SIMIX_host_self());
-
-  xbt_ex_t e;
+  gras_trp_sg_sock_data_t data;
 
   xbt_assert0(hd, "Please run gras_process_init on each process");
 
-  sock->accepting = 0;          /* no such nuisance in SG */
-  found = 0;
-  TRY {
-    find_port(hd, sock->port, &pr);
-    found = 1;
-  } CATCH(e) {
-    if (e.category == mismatch_error)
-      xbt_ex_free(e);
-    else
-      RETHROW;
-  }
+  sock->accepting = 1;
 
-  if (found)
+  /* Check whether a server is already listening on that port or not */
+  pr = find_port(hd, sock->port);
+
+  if (pr)
     THROW2(mismatch_error, 0,
            "can't listen on address %s:%d: port already in use.",
-           host, sock->port);
+           SIMIX_host_get_name(SIMIX_host_self()), sock->port);
 
-  pr.port = sock->port;
-  pr.meas = sock->meas;
-  pr.process = SIMIX_process_self();
-  pr.rdv = SIMIX_rdv_create(NULL);
+  /* This port is free, let's take it */
+  pr = xbt_new(s_gras_sg_portrec_t,1);
+  pr->port = sock->port;
+  pr->meas = sock->meas;
+  pr->server = SIMIX_process_self();
+  pr->rdv = SIMIX_rdv_create(NULL);
   xbt_dynar_push(hd->ports, &pr);
 
   /* Create the socket */
-  data = xbt_new(gras_trp_sg_sock_data_t, 1);
-  data->from_process = SIMIX_process_self();
-  data->to_process = NULL;
-  data->to_host = SIMIX_host_self();
-  data->rdv_server = pr.rdv;
+  data = xbt_new(s_gras_trp_sg_sock_data_t, 1);
+  data->server = SIMIX_process_self();
+  data->client = NULL;
+  data->rdv_server = pr->rdv;
   data->rdv_client = NULL;
-  data->im_server = 0;
-  data->comm_recv = SIMIX_network_irecv(pr.rdv,NULL,0);
-  INFO1("Comm %p",data->comm_recv);
+  data->comm_recv = SIMIX_network_irecv(pr->rdv,NULL,0);
 
   sock->data = data;
 
-  VERB6("'%s' (%d) ears on %s:%d%s (%p)",
+  VERB10("'%s' (%d) ears on %s:%d%s (%p; data:%p); Here rdv: %p; Remote rdv: %p; Comm %p",
         SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
-        host, sock->port, sock->meas ? " (mode meas)" : "", sock);
+        SIMIX_host_get_name(SIMIX_host_self()), sock->port,
+        sock->meas ? " (mode meas)" : "", sock,data,
+        (data->server==SIMIX_process_self())?data->rdv_server:data->rdv_client,
+        (data->server==SIMIX_process_self())?data->rdv_client:data->rdv_server,
+        data->comm_recv);
 
 }
 
@@ -231,7 +213,7 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
     /* server mode socket. Unregister it from 'OS' tables */
     xbt_dynar_foreach(hd->ports, cpt, pr) {
       DEBUG2("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
-      if (pr.port == sock->port) {
+      if (pr->port == sock->port) {
         xbt_dynar_cursor_rm(hd->ports, &cpt);
         XBT_OUT;
         return;
@@ -268,16 +250,21 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   gras_msg_t msg;               /* message to send */
 #endif
 
-  gras_trp_sg_sock_data_t *sock_data = (gras_trp_sg_sock_data_t *) sock->data;
+  gras_trp_sg_sock_data_t sock_data = (gras_trp_sg_sock_data_t) sock->data;
   xbt_assert0(sock->meas,
               "SG chunk exchange shouldn't be used on non-measurement sockets");
 
 
   /* creates simix action and waits its ends, waits in the sender host
      condition */
-  DEBUG4("send chunk from %s to  %s:%d (size=%ld)",
-         SIMIX_host_get_name(SIMIX_host_self()),
-         SIMIX_host_get_name(sock_data->to_host), sock->peer_port, size);
+  if (XBT_LOG_ISENABLED(gras_trp_sg,xbt_log_priority_debug)) {
+    smx_process_t remote_dude = (sock_data->server==SIMIX_process_self())?(sock_data->client):(sock_data->server);
+    smx_host_t remote_host = SIMIX_process_get_host(remote_dude);
+    DEBUG4("send chunk from %s to  %s:%d (size=%ld)",
+        SIMIX_host_get_name(SIMIX_host_self()),
+        SIMIX_host_get_name(remote_host),
+        sock->peer_port, size);
+  }
   //SIMIX_network_send(sock_data->rdv,size,1,-1,NULL,0,NULL,NULL);
   THROW_UNIMPLEMENTED;
 }

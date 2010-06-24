@@ -33,11 +33,19 @@ static void listener_function(void *p)
   gras_msgtype_t msg_wakeup_listener_t =
     gras_msgtype_by_name("_wakeup_listener");
   DEBUG0("I'm the listener");
+
+  /* get a free socket for the receiving part of the listener */
+  me->wakeup_sock_listener_side = gras_socket_server_range(5000, 6000, -1, 0);
+
+
+  /* Main loop */
   while (1) {
     msg = gras_msg_recv_any();
-    if (msg->type != msg_wakeup_listener_t)
+    if (msg->type != msg_wakeup_listener_t) {
+      VERB1("Got a '%s' message. Queue it for handling by main thread",
+          gras_msgtype_get_name(msg->type));
       xbt_queue_push(me->incomming_messages, msg);
-    else {
+    } else {
       char got = *(char *) msg->payl;
       if (got == '1') {
         VERB0("Asked to get awake");
@@ -58,7 +66,7 @@ static void listener_function(void *p)
         xbt_queue_shift_timed(me->socks_to_close, &sock, 0);
         if (tcp_close(sock) < 0) {
 #ifdef _XBT_WIN32
-          WARN2("error while closing tcp socket %d: %d (%s)\n", sock, sock_errno);
+          WARN2("error while closing tcp socket %d: %d\n", sock, sock_errno);
 #else
           WARN3("error while closing tcp socket %d: %d (%s)\n",
                 sock, sock_errno, sock_errstr(sock_errno));
@@ -74,33 +82,26 @@ static void listener_function(void *p)
   }
 }
 
-gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_exchange)
+gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_received)
 {
   gras_msg_listener_t arg = xbt_new0(s_gras_msg_listener_t, 1);
-  int my_port;
 
-  DEBUG0("Launch listener");
-  arg->incomming_messages = msg_exchange;
+  VERB0("Launch listener");
+  arg->incomming_messages = msg_received;
   arg->socks_to_close = xbt_queue_new(0, sizeof(int));
 
-  /* get a free socket for the receiving part of the listener, taking care that it does not get saved as "myport" number */
-  my_port =
-    ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport;
-  arg->wakeup_sock_listener_side =
-    gras_socket_server_range(5000, 6000, -1, 0);
-  ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport =
-    my_port;
-  /* Connect the other part of the socket */
-  arg->wakeup_sock_master_side =
-    gras_socket_client(gras_os_myname(),
-                       gras_socket_my_port(arg->wakeup_sock_listener_side));
 
   /* declare the message used to awake the listener from the master */
   gras_msgtype_declare("_wakeup_listener", gras_datadesc_by_name("char"));
 
   /* actually start the thread */
   arg->listener = xbt_thread_create("listener", listener_function, arg,1/*joinable*/);
-  gras_os_sleep(0);             /* TODO: useless? give the listener a chance to initialize even if the main is empty and we cancel it right afterward */
+  gras_os_sleep(0);             /* give the listener a chance to initialize before we connect to its socket */
+
+  /* Connect the other part of the socket */
+  arg->wakeup_sock_master_side =
+    gras_socket_client(gras_os_myname(),
+                       gras_socket_my_port(arg->wakeup_sock_listener_side));
   return arg;
 }
 

@@ -30,13 +30,54 @@ gras_msg_t gras_msg_recv_any(void) {
   int got = 0;
   smx_comm_t comm = NULL;
   gras_socket_t sock = NULL;
-  gras_trp_sg_sock_data_t *sock_data;
+  gras_trp_sg_sock_data_t sock_data;
   xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
-    sock_data = (gras_trp_sg_sock_data_t *) sock->data;
-    if (sock_data->comm_recv) {
-      INFO2("Copy %p of size %lu",sock_data->comm_recv,(unsigned long int)sizeof(smx_comm_t));
-      xbt_dynar_push(comms,&(sock_data->comm_recv));
-    }
+    sock_data = (gras_trp_sg_sock_data_t) sock->data;
+
+
+    DEBUG5("Consider socket %p (data:%p; Here rdv: %p; Remote rdv: %p; Comm %p) to get a message",
+          sock,sock_data,
+          (sock_data->server==SIMIX_process_self())?sock_data->rdv_server:sock_data->rdv_client,
+          (sock_data->server==SIMIX_process_self())?sock_data->rdv_client:sock_data->rdv_server,
+              sock_data->comm_recv);
+
+
+    /* The following assert fails in some valid conditions, we need to
+     * change the code downward looking for the socket again.
+     *
+     * For now it relies on the facts (A) that sockets and comms are aligned
+     *                                (B) every sockets has a posted irecv in comms
+     *
+     * This is not trivial because we need that alignment to hold after the waitany(), so
+     * after other processes get scheduled.
+     *
+     * I cannot think of conditions where they get desynchronized (A violated) as long as
+     *    1) only the listener calls that function
+     *    2) Nobody but the listener removes sockets from that set (in main listener loop)
+     *    3) New sockets are added at the end, and signified ASAP to the listener (by awaking him)
+     * The throw bellow ensures that B is never violated without failing out loudly.
+     *
+     * We cannot search by comparing the comm object pointer that object got
+     *    freed by the waiting process (down in smx_network, in
+     *    comm_wait_for_completion or comm_cleanup). So, actually, we could
+     *    use that pointer since that's a dangling pointer, but no one changes it.
+     * I still feel unconfortable with using dangling pointers, even if that would
+     *    let the code work even if A and/or B are violated, provided that
+     *    (C) the new irecv is never posted before we return from waitany to that function.
+     *
+     * Another approach, robust to B violation would be to retraverse the socks dynar with
+     *    an iterator, incremented only when the socket has a comm. And we've the right socket
+     *    when that iterator is equal to "got", the result of waitany. Not needed if B holds.
+     */
+    xbt_assert1(sock_data->comm_recv,
+        "Comm_recv of socket %p is empty; please report that nasty bug",sock);
+    /* End of paranoia */
+
+    VERB3("Copy comm_recv %p rdv:%p (other rdv:%p)",
+        sock_data->comm_recv,
+        (sock_data->server==SIMIX_process_self())?sock_data->rdv_server:sock_data->rdv_client,
+        (sock_data->server==SIMIX_process_self())?sock_data->rdv_client:sock_data->rdv_server);
+    xbt_dynar_push(comms,&(sock_data->comm_recv));
   }
   VERB1("Wait on %ld 'sockets'",xbt_dynar_length(comms));
   /* Wait for the end of any of these communications */
@@ -48,17 +89,22 @@ gras_msg_t gras_msg_recv_any(void) {
   VERB1("Got something. Communication %p's over",comm);
 
   /* Reinstall a waiting communication on that rdv */
-  /* Get the sock again */
-  xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
-    sock_data = (gras_trp_sg_sock_data_t *) sock->data;
+  /* Get the sock again
+   * For that, we use the fact that */
+  sock=xbt_dynar_get_as(trp_proc->sockets,got,gras_socket_t);
+/*  xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
+    sock_data = (gras_trp_sg_sock_data_t) sock->data;
     if (sock_data->comm_recv && sock_data->comm_recv == comm)
       break;
   }
-  sock_data = (gras_trp_sg_sock_data_t *) sock->data;
+  */
+  sock_data = (gras_trp_sg_sock_data_t) sock->data;
   sock_data->comm_recv = SIMIX_network_irecv(
-      sock_data->im_server?sock_data->rdv_server:sock_data->rdv_client,
+      sock_data->rdv_server!=NULL?
+      //(sock_data->server==SIMIX_process_self())?
+                                                sock_data->rdv_server
+                                               :sock_data->rdv_client,
       NULL,0);
-  SIMIX_communication_destroy(comm);
 
   return msg;
 }
@@ -73,13 +119,20 @@ void gras_msg_send_ext(gras_socket_t sock,
                                    This is used to report the load onto the simulator. It also counts the size of pointed stuff */
   gras_msg_t msg;               /* message to send */
   smx_comm_t comm;
-  gras_trp_sg_sock_data_t *sock_data = NULL;
+  gras_trp_sg_sock_data_t sock_data = (gras_trp_sg_sock_data_t) sock->data;
+
+  smx_rdv_t target_rdv = (sock_data->server==SIMIX_process_self())?sock_data->rdv_client
+                                                                  :sock_data->rdv_server;
+
   /*initialize gras message */
   msg = xbt_new(s_gras_msg_t, 1);
   msg->expe = sock;
   msg->kind = kind;
   msg->type = msgtype;
   msg->ID = ID;
+
+  VERB2("Send msg %s to rdv %p", msgtype->name,target_rdv);
+
   if (kind == e_gras_msg_kind_rpcerror) {
     /* error on remote host, careful, payload is an exception */
     msg->payl_size = gras_datadesc_size(gras_datadesc_by_name("ex_t"));
@@ -103,116 +156,10 @@ void gras_msg_send_ext(gras_socket_t sock,
       whole_payload_size = gras_datadesc_memcpy(msgtype->ctn_type,
                                                 payload, msg->payl);
   }
-  sock_data = (gras_trp_sg_sock_data_t *) sock->data;
 
-  SIMIX_network_send(sock_data->im_server ? sock_data->rdv_client : sock_data->rdv_client,
-      whole_payload_size,-1,-1,&msg,sizeof(void*),&comm,msg);
+  SIMIX_network_send(target_rdv, whole_payload_size,-1,-1,&msg,sizeof(void*),&comm,msg);
 
-#ifdef KILLME
-  smx_action_t act;             /* simix action */
-  gras_hostdata_t *hd;
-  gras_trp_procdata_t trp_remote_proc;
-  gras_msg_procdata_t msg_remote_proc;
-
-  sock_data = (gras_trp_sg_sock_data_t *) sock->data;
-
-  hd = (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
-
-  xbt_assert1(!gras_socket_is_meas(sock),
-              "Asked to send a message on the measurement socket %p", sock);
-
-
-  /* put the selectable socket on the queue */
-  trp_remote_proc = (gras_trp_procdata_t)
-    gras_libdata_by_name_from_remote("gras_trp", sock_data->to_process);
-
-  xbt_queue_push(trp_remote_proc->msg_selectable_sockets, &sock);
-
-  /* put message on msg_queue */
-  msg_remote_proc = (gras_msg_procdata_t)
-    gras_libdata_by_name_from_remote("gras_msg", sock_data->to_process);
-  xbt_fifo_push(msg_remote_proc->msg_to_receive_queue, msg);
-
-  /* wait for the receiver */
-  SIMIX_cond_wait(sock_data->cond, sock_data->mutex);
-
-  /* creates simix action and waits its ends, waits in the sender host
-     condition */
-  act = SIMIX_action_communicate(SIMIX_host_self(),
-                                 sock_data->to_host, msgtype->name,
-                                 (double) whole_payload_size, -1);
-  SIMIX_register_action_to_condition(act, sock_data->cond);
-
-  VERB5("Sending to %s(%s) a message type '%s' kind '%s' ID %lu",
-        SIMIX_host_get_name(sock_data->to_host),
-        SIMIX_process_get_name(sock_data->to_process),
-        msg->type->name, e_gras_msg_kind_names[msg->kind], msg->ID);
-
-  SIMIX_cond_wait(sock_data->cond, sock_data->mutex);
-  SIMIX_unregister_action_to_condition(act, sock_data->cond);
-  /* error treatmeant (FIXME) */
-
-  /* cleanup structures */
-  SIMIX_action_destroy(act);
-  SIMIX_mutex_unlock(sock_data->mutex);
-#endif
   VERB0("Message sent");
 
 }
 
-#ifdef KILLMETOO
-/*
- * receive the next message on the given socket.
- */
-void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
-{
-
-  gras_trp_sg_sock_data_t *sock_data =
-       (gras_trp_sg_sock_data_t *) sock->data;
-  gras_msg_t msg_got;
-  size_t size_got = sizeof(void*);
-
-  xbt_assert1(!gras_socket_is_meas(sock),
-              "Asked to receive a message on the measurement socket %p",
-              sock);
-
-  SIMIX_network_recv(sock_data->rdv,-1,&msg_got,&size_got,NULL);
-#ifdef KILLME
-  gras_trp_sg_sock_data_t *remote_sock_data;
-  gras_hostdata_t *remote_hd;
-  gras_msg_procdata_t msg_procdata =
-    (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");
-
-  xbt_assert0(msg, "msg is an out parameter of gras_msg_recv...");
-
-  sock_data = (gras_trp_sg_sock_data_t *) sock->data;
-  remote_sock_data =
-    ((gras_trp_sg_sock_data_t *) sock->data)->to_socket->data;
-  DEBUG3("Remote host %s, Remote Port: %d Local port %d",
-         SIMIX_host_get_name(sock_data->to_host), sock->peer_port,
-         sock->port);
-  remote_hd = (gras_hostdata_t *) SIMIX_host_get_data(sock_data->to_host);
-
-  if (xbt_fifo_size(msg_procdata->msg_to_receive_queue) == 0) {
-    THROW_IMPOSSIBLE;
-  }
-  DEBUG1("Size msg_to_receive buffer: %d",
-         xbt_fifo_size(msg_procdata->msg_to_receive_queue));
-  msg_got = xbt_fifo_shift(msg_procdata->msg_to_receive_queue);
-
-  SIMIX_mutex_lock(remote_sock_data->mutex);
-  /* ok, I'm here, you can continuate the communication */
-  SIMIX_cond_signal(remote_sock_data->cond);
-
-  /* wait for communication end */
-  SIMIX_cond_wait(remote_sock_data->cond, remote_sock_data->mutex);
-
-  msg_got->expe = msg->expe;
-  memcpy(msg, msg_got, sizeof(s_gras_msg_t));
-  xbt_free(msg_got);
-  SIMIX_mutex_unlock(remote_sock_data->mutex);
-#endif
-  VERB3("Received a message type '%s' kind '%s' ID %lu",        // from %s",
-        msg->type->name, e_gras_msg_kind_names[msg->kind], msg->ID);
-}
-#endif

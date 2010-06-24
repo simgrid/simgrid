@@ -3,6 +3,80 @@ There is a plugin mechanism in here, and the selection is automatic
 If you open a socket in SG realm, you'll get a SG socket.
 If you open a socket in RL realm, you'll get a TCP socket.
 
-To get a file socket, you'll have to build it manually.
-To get a pipe socket, use gras_fork, or whatever name I'll give it when I
-  implement this.
+To get a file socket, you'll have to build it manually using
+gras_socket_client_from_file() to read from it, or
+gras_socket_server_from_file() to write to it.
+
+There is no way (yet?) to build a pipe socket, so threads have to
+discuss using network sockets, or xbt_queue_t structures.
+
+IMPLEMENTATION NOTES ABOUT THE SG SIDE
+
+This area is quite messy. The thing is that I strived too much to keep
+the existing interface, which is lousely inspirated from BSD sockets.
+
+Vocabulary: 
+  Server is the one who created the master socket. 
+  Client is the one connecting to that from a remote host. 
+  Their roles keep the same for the whole connexion duration. 
+  Sender and Receiver denote the roles during one message exchange.
+  If the server answers to the client, it becomes the sender while the
+  client becomes the receiver. 
+  All this seems trivial, but confusion is easy and dangerous.
+
+
+The connexion story goes that way. When we create a master socket, we
+look whether the given port is free on that host or not. For that, we
+traverse the gras_hostdata_t->ports dynar, which contains
+gras_sg_portrec_t records. If it's free, we create a socket with a
+gras_trp_sg_sock_data_t structure. Here is that struct:
+
+typedef struct { 
+  smx_process_t server; 
+  smx_process_t client;
+    
+  smx_rdv_t rdv_server; /* The rendez-vous point to use */
+  smx_rdv_t rdv_client; /* The rendez-vous point to use */
+  smx_comm_t comm_recv; /* The comm of irecv on receiver side */
+} s_gras_trp_sg_sock_data_t,*gras_trp_sg_sock_data_t;
+
+In GRAS, there is a listener process, in charge of pumping everything
+comming from the network and post that to the main user thread. That
+to overlap (incomming) communications and computations.
+In SG, this is done by ensuring that a receive is posted on every
+opened socket, and having the listener doing a smx_sem_waitany() to
+find the first ending one (in RL, a select+ddt_recv does the same).
+
+Another extra complexity is due to the fact that when the user
+receives a message, it gets a socket being a mean to contact the
+sender of that message. In RL, that's easy since sockets are
+full-duplex. In SG, I have to either create a new socket for each
+message (slow and leak-prone), or maintain a set of opened sockets on
+receiver side and check if the one I need is there or create it. The
+approach used currently is to give to the receiver a pointer to the
+structure created on the sender side directly.
+
+At the end of the day, everything is as if there were master socket
+and working sockets, just like in BSD. There is no explicit accept.
+Master sockets get created by gras_socket_server() and friends. You
+can recognize them by the fact that the rdv_client field is always
+NULL. Such sockets are not really used to exchange data, but more to
+establish connexions. For actual exchanges, you need a working socket
+created by gras_socket_client() and friends. So, they are created on
+client side, but the master side will see it as message expeditor when
+getting a message.
+
+When sending, you can see if the current process is the server by
+checking if data_sock->server == SMX_process_self(). If wrong, that
+means that we are the client process today.
+
+When receiving this won't work because SMX_process_self() is the
+listener associated to the user thread. So, when receiving, you can
+see if you are on the server side or by checking if rdv_client==NULL.
+If not that means that we are on the client side today.
+
+That's messy, and should probably be reworked a bit, but I feel like
+the main issue is the interface used. It's too close and too differnt
+from BSD at the same time. One day, I hope to find the time to redo
+everything with an interface similar to the one of the 0MQ project for
+example.

@@ -16,11 +16,10 @@
 
 typedef struct {
   int port;                     /* list of ports used by a server socket */
-  int meas;                     /* (boolean) the channel is for measurements or for messages */
-  smx_process_t process; /* process listening */
-  smx_rdv_t rdv; /* rendez-vous point to the listener */
-//  gras_socket_t socket; FIXME KILLME
-} gras_sg_portrec_t;
+  int meas:1;                   /* (boolean) the channel is for measurements or for messages */
+  smx_process_t server;
+  smx_rdv_t rdv;
+} s_gras_sg_portrec_t, *gras_sg_portrec_t;
 
 /* Data for each host */
 typedef struct {
@@ -32,16 +31,13 @@ typedef struct {
 
 /* data for each socket (FIXME: find a better location for that)*/
 typedef struct {
-  smx_process_t from_process;
-  smx_process_t to_process;
-
-  smx_host_t to_host;           /* Who's on other side */
+  smx_process_t server;
+  smx_process_t client;
 
   smx_rdv_t rdv_server; /* The rendez-vous point to use */
   smx_rdv_t rdv_client; /* The rendez-vous point to use */
-  int im_server:1;
-  smx_comm_t comm_recv; /* The comm of irecv on receiving sockets */
-} gras_trp_sg_sock_data_t;
+  smx_comm_t comm_recv; /* The comm of irecv on receiver side */
+} s_gras_trp_sg_sock_data_t,*gras_trp_sg_sock_data_t;
 
 
 void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p);
