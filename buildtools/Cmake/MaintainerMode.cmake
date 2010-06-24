@@ -105,7 +105,8 @@ if(PERL_EXE)
 	endforeach(file ${TEST_UNITS})
 	
 	#$(TEST_UNITS): $(TEST_CFILES)
-	string(REPLACE ";" " " USE_TEST_CFILES "${TEST_CFILES}")	
+	string(REPLACE "src/" "" USE_TEST_CFILES "${TEST_CFILES}")
+	string(REPLACE ";" " " USE_TEST_CFILES "${USE_TEST_CFILES}")	
 	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl")
 	exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${USE_TEST_CFILES}" "${PROJECT_DIRECTORY}/src")
 
