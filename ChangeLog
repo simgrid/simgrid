@@ -33,6 +33,9 @@ SimGrid (3.5) unstable; urgency=low
      code (even before the xbt_init / MSG_init)
    - xbt_exit is now a no-op and produce a warning when used.
 
+ GRAS:
+ * New function: gras_msgtype_get_name()
+
  Build chain: bug fixes and further polishing
  * Fix the 'make install' target. 
    No need to use 'make install-simgrid' anymore

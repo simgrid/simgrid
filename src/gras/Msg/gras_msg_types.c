@@ -213,6 +213,13 @@ gras_msgtype_t gras_msgtype_by_id(int id)
   return (gras_msgtype_t) xbt_set_get_by_id(_gras_msgtype_set, id);
 }
 
+/* ******************************************************************** */
+/*                         GETTERS                                      */
+/* ******************************************************************** */
+
+XBT_INLINE const char* gras_msgtype_get_name(gras_msgtype_t type) {
+  return type->name;
+}
 
 
 /* ******************************************************************** */

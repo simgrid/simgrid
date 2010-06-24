@@ -70,6 +70,7 @@ XBT_PUBLIC(gras_msgtype_t) gras_msgtype_by_name_or_null(const char *name);
 XBT_PUBLIC(gras_msgtype_t) gras_msgtype_by_namev(const char *name,
                                                  short int version);
 XBT_PUBLIC(gras_msgtype_t) gras_msgtype_by_id(int id);
+XBT_PUBLIC(const char*) gras_msgtype_get_name(gras_msgtype_t type);
 
 XBT_PUBLIC(void) gras_msgtype_dumpall(void);
 
