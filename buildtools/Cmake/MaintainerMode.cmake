@@ -104,8 +104,6 @@ else(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 endif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 
 if(PERL_EXE)
-	string(REPLACE "src/" "" USE_TEST_CFILES "${TEST_CFILES}")
-	string(REPLACE ";" " " USE_TEST_CFILES "${USE_TEST_CFILES}")
 	
 	ADD_CUSTOM_COMMAND(
   	OUTPUT	${PROJECT_DIRECTORY}/src/cunit_unit.c
@@ -169,43 +167,23 @@ if(PERL_EXE)
 	COMMENT "Generating *_units files for testall..."
 	)
 	
+	add_custom_target(units_files
+						DEPENDS ${PROJECT_DIRECTORY}/src/cunit_unit.c
+								${PROJECT_DIRECTORY}/src/ex_unit.c
+								${PROJECT_DIRECTORY}/src/dynar_unit.c
+								${PROJECT_DIRECTORY}/src/dict_unit.c
+								${PROJECT_DIRECTORY}/src/set_unit.c
+								${PROJECT_DIRECTORY}/src/swag_unit.c
+								${PROJECT_DIRECTORY}/src/xbt_str_unit.c
+								${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
+								${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
+								${PROJECT_DIRECTORY}/src/config_unit.c
+								${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
+						)
+	
 else(PERL_EXE)
 	message(FATAL_ERROR "Install perl before use maintainer mode")
 endif(PERL_EXE)
-
-if(PERL_EXE)
-	set(DEPENDS_FILES 
-			${DEPENDS_FILES}
-			${PROJECT_DIRECTORY}/src/cunit_unit.c
-			${PROJECT_DIRECTORY}/src/ex_unit.c
-			${PROJECT_DIRECTORY}/src/dynar_unit.c
-			${PROJECT_DIRECTORY}/src/dict_unit.c
-			${PROJECT_DIRECTORY}/src/set_unit.c
-			${PROJECT_DIRECTORY}/src/swag_unit.c
-			${PROJECT_DIRECTORY}/src/xbt_str_unit.c
-			${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
-			${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
-			${PROJECT_DIRECTORY}/src/config_unit.c
-			${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c	
-		)
-endif(PERL_EXE)
-if(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
-	set(DEPENDS_FILES 
-			${DEPENDS_FILES}
-			${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h
-  			${PROJECT_DIRECTORY}/include/xbt/graphxml.h
-  			${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h
-  			${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c
-  			${PROJECT_DIRECTORY}/src/xbt/graphxml.c
-  			${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c
-		)
-endif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
-
-if(DEPENDS_FILES)
-add_custom_target(_maintainer_files ALL
-					DEPENDS ${DEPENDS_FILES}
-					)
-endif(DEPENDS_FILES)
 
 endif(enable_maintainer_mode AND NOT WIN32)
 

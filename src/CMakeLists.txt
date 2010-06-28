@@ -13,3 +13,5 @@ add_executable(testall ${USE_TEST_UNITS})
 
 ### Add definitions for compile
 target_link_libraries(testall gras m)
+
+add_dependencies(testall units_files)
