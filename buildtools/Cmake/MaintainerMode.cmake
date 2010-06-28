@@ -96,6 +96,15 @@ ADD_CUSTOM_COMMAND(
 	COMMENT "Generating files in maintainer mode..."
 )
 
+	add_custom_target(maintainer_files
+						DEPENDS ${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h
+					  			${PROJECT_DIRECTORY}/include/xbt/graphxml.h
+					  			${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h
+					  			${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c
+					  			${PROJECT_DIRECTORY}/src/xbt/graphxml.c
+					  			${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c
+						)
+
 else(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 	message("  FLEX : 	${FLEX_EXE}")
 	message("FLEXML : 	${FLEXML_EXE}")
