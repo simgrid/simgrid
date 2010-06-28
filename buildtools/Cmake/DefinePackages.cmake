@@ -434,29 +434,6 @@ src/xbt/config.c
 src/xbt/xbt_synchro.c
 )
 
-#Here must have all files which permit to generate source files
-set(SRC_TO_LOOK
-src/surf/simgrid.dtd
-src/xbt/graphxml.dtd
-src/simdag/dax.dtd
-examples/gras/ping/ping.xml
-examples/gras/rpc/rpc.xml
-examples/gras/spawn/spawn.xml
-examples/gras/timer/timer.xml
-examples/gras/chrono/chrono.xml
-examples/gras/mutual_exclusion/simple_token/simple_token.xml
-examples/gras/mmrpc/mmrpc.xml
-examples/gras/all2all/all2all.xml
-examples/gras/pmm/pmm.xml
-examples/gras/synchro/synchro.xml
-examples/gras/properties/properties.xml
-teshsuite/gras/msg_handle/msg_handle.xml
-teshsuite/gras/empty_main/empty_main.xml
-teshsuite/gras/small_sleep/small_sleep.xml
-examples/amok/bandwidth/bandwidth.xml
-examples/amok/saturate/saturate.xml
-)
-
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS
 if(${CONTEXT_THREADS} OR WIN32)
