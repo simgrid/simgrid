@@ -1,18 +1,8 @@
 if(enable_maintainer_mode AND NOT WIN32)
-message("")
-message("________________________________________________________________________________")
-message("________________________________________________________________________________ FLEXMl")
 find_program(FLEX_EXE NAMES flex)
 find_program(FLEXML_EXE NAMES flexml)
 find_program(SED_EXE NAMES sed)
 find_program(PERL_EXE NAMES perl)
-
-message("  FLEX : 	${FLEX_EXE}")
-message("FLEXML : 	${FLEXML_EXE}")
-message("   SED : 	${SED_EXE}\n")
-
-set(top_srcdir "${PROJECT_DIRECTORY}")
-set(srcdir "${PROJECT_DIRECTORY}/src")
 
 IF(FLEX_EXE)
 	set(HAVE_FLEX 1)
@@ -23,113 +13,199 @@ IF(FLEXML_EXE)
 ENDIF(FLEXML_EXE)
 
 if(HAVE_FLEXML AND HAVE_FLEX AND SED_EXE)
+set(chaine1  "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
+set(chaine2  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
+set(chaine3  "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
+set(chaine4  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
+set(chaine5  "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
+set(chaine6  "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
+set(chaine7  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
+set(chaine8  "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g'")
+set(chaine9  "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
+set(chaine10 "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g'")
+set(chaine11 "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
+set(chaine12 "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g'")
+set(chaine13 "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
 
-#${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l: ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
-exec_program("${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/surf")
-exec_program("${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S src/surf/simgrid_dtd.l -L src/surf/simgrid.dtd"  "${PROJECT_DIRECTORY}")
+ADD_CUSTOM_COMMAND(
+  	OUTPUT 	${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h
+  			${PROJECT_DIRECTORY}/include/xbt/graphxml.h
+  			${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h
+  			${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c
+  			${PROJECT_DIRECTORY}/src/xbt/graphxml.c
+  			${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c
+  			
+  	DEPENDS	${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
+  			${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
+  			${PROJECT_DIRECTORY}/src/simdag/dax.dtd
+		  			
+	#${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.l: ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
+	COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=simgrid.dtd -S src/surf/simgrid_dtd.l -L src/surf/simgrid.dtd
+	COMMAND ${CMAKE_COMMAND} -E echo "src/surf/simgrid_dtd.l"
+	#${PROJECT_DIRECTORY}/src/xbt/graphxml.l: ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
+	COMMAND ${FLEXML_EXE} -b 1000000 -P graphxml --sysid=graphxml.dtd -S src/xbt/graphxml.l -L src/xbt/graphxml.dtd
+	COMMAND ${CMAKE_COMMAND} -E echo "src/xbt/graphxml.l"
+	#${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l: ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
+	COMMAND ${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l -L ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
+	COMMAND ${SED_EXE} ${chaine5} -i src/simdag/dax_dtd.l
+	COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.l"
+	
+	#${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h: ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/include/surf/simgrid.h
+	COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=simgrid.dtd -H include/surf/simgrid_dtd.h -L src/surf/simgrid.dtd
+	COMMAND ${SED_EXE} ${chaine1} -i include/surf/simgrid_dtd.h
+	COMMAND ${SED_EXE} ${chaine2} -i include/surf/simgrid_dtd.h	
+	COMMAND ${CMAKE_COMMAND} -E echo "include/surf/simgrid_dtd.h"
+	#${PROJECT_DIRECTORY}/include/xbt/graphxml.h: ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/include/xbt/graphxml.h
+	COMMAND ${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H include/xbt/graphxml.h -L src/xbt/graphxml.dtd
+	COMMAND ${SED_EXE} ${chaine3} -i include/xbt/graphxml.h	
+	COMMAND ${SED_EXE} ${chaine4} -i include/xbt/graphxml.h
+	COMMAND ${CMAKE_COMMAND} -E echo "include/xbt/graphxml.h"
+	#${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h: ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h
+	COMMAND ${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H src/simdag/dax_dtd.h -L src/simdag/dax.dtd
+	COMMAND ${SED_EXE} ${chaine6} -i src/simdag/dax_dtd.h	
+	COMMAND ${SED_EXE} ${chaine7} -i src/simdag/dax_dtd.h
+	COMMAND ${FLEX_EXE} -o src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline src/gras/DataDesc/ddt_parse.yy.l
+	COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.h"
+	
+	#surf/simgrid_dtd.c: surf/simgrid_dtd.l
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c
+	COMMAND ${SED_EXE} ${chaine8} -i src/surf/simgrid_dtd.l
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/surf
+	COMMAND ${FLEX_EXE} -o src/surf/simgrid_dtd.c -Psurf_parse_ --noline src/surf/simgrid_dtd.l
+	COMMAND ${SED_EXE} ${chaine9} -i src/surf/simgrid_dtd.c
+	COMMAND ${CMAKE_COMMAND} -E echo "surf/simgrid_dtd.c"
+	#xbt/graphxml.c: xbt/graphxml.l
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/xbt/graphxml.c
+	COMMAND ${SED_EXE} ${chaine10} -i src/xbt/graphxml.l	
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/xbt
+	COMMAND ${FLEX_EXE} -o src/xbt/graphxml.c -Pxbt_graph_parse_ --noline src/xbt/graphxml.l
+	COMMAND ${SED_EXE} ${chaine11} -i src/xbt/graphxml.c
+	COMMAND ${CMAKE_COMMAND} -E echo "xbt/graphxml.c"
+	#simdag/dax_dtd.c: simdag/dax_dtd.l
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c
+	COMMAND ${SED_EXE} ${chaine12} -i src/simdag/dax_dtd.l
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/simdag
+	COMMAND ${FLEX_EXE} -o src/simdag/dax_dtd.c -Pdax_ --noline src/simdag/dax_dtd.l
+	COMMAND ${SED_EXE} ${chaine13} -i src/simdag/dax_dtd.c
+	COMMAND ${CMAKE_COMMAND} -E echo "simdag/dax_dtd.c"
+	
+	WORKING_DIRECTORY ${PROJECT_DIRECTORY}
+	COMMENT "Generating files in maintainer mode..."
+)
 
-#$(PROJECT_DIRECTORY)/include/surf/simgrid_dtd.h: ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
-file(REMOVE "${PROJECT_DIRECTORY}/include/surf/simgrid.h") 
-exec_program("${FLEXML_EXE} --root-tags platform -P surfxml --sysid=simgrid.dtd -H include/surf/simgrid_dtd.h -L src/surf/simgrid.dtd" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
-exec_program("${SED_EXE} ${CHAINE} -i include/surf/simgrid_dtd.h" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")	
-exec_program("${SED_EXE} ${CHAINE} -i include/surf/simgrid_dtd.h" "${PROJECT_DIRECTORY}")
-
-#${PROJECT_DIRECTORY}/src/xbt/graphxml.l: ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
-exec_program("${FLEXML_EXE} -b 1000000 -P graphxml --sysid=graphxml.dtd -S src/xbt/graphxml.l -L src/xbt/graphxml.dtd" "${PROJECT_DIRECTORY}")
-
-#$(PROJECT_DIRECTORY)/include/xbt/graphxml.h: ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
-exec_program("${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H include/xbt/graphxml.h -L src/xbt/graphxml.dtd" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
-exec_program("${SED_EXE} ${CHAINE} -i include/xbt/graphxml.h" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
-exec_program("${SED_EXE} ${CHAINE} -i include/xbt/graphxml.h" "${PROJECT_DIRECTORY}")
-
-#${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l: ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
-exec_program("${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l -L ${PROJECT_DIRECTORY}/src/simdag/dax.dtd" "${PROJECT_DIRECTORY}/src/")
-set(CHAINE "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
-exec_program("${SED_EXE} -i ${CHAINE} src/simdag/dax_dtd.l" "${PROJECT_DIRECTORY}") # DOCTYPE not mandatory
-
-#${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h: ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
-exec_program("${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H src/simdag/dax_dtd.h -L src/simdag/dax.dtd" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
-exec_program("${SED_EXE} ${CHAINE} -i src/simdag/dax_dtd.h" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")	
-exec_program("${SED_EXE} ${CHAINE} -i src/simdag/dax_dtd.h" "${PROJECT_DIRECTORY}")
-
-exec_program("${FLEX_EXE} -o src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline src/gras/DataDesc/ddt_parse.yy.l" "${PROJECT_DIRECTORY}")
-
-#surf/simgrid_dtd.c: surf/simgrid_dtd.l
-set(CHAINE "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g' -i src/surf/simgrid_dtd.l")	
-exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}")
-exec_program("${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/surf")
-exec_program("${FLEX_EXE} -o src/surf/simgrid_dtd.c -Psurf_parse_ --noline src/surf/simgrid_dtd.l" "${PROJECT_DIRECTORY}/")
-set(CHAINE "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i src/surf/simgrid_dtd.c")	
-exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}")
-
-#xbt/graphxml.c: xbt/graphxml.l
-set(CHAINE "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g' -i src/xbt/graphxml.l")	
-exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}")
-exec_program("${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/xbt")
-exec_program("${FLEX_EXE} -o src/xbt/graphxml.c -Pxbt_graph_parse_ --noline src/xbt/graphxml.l" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i src/xbt/graphxml.c")			
-exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}")
-
-#simdag/dax_dtd.c: simdag/dax_dtd.l
-set(CHAINE "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g' -i src/simdag/dax_dtd.l")	
-exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}")
-exec_program("${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/simdag")
-exec_program("${FLEX_EXE} -o src/simdag/dax_dtd.c -Pdax_ --noline src/simdag/dax_dtd.l" "${PROJECT_DIRECTORY}")
-set(CHAINE "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g' -i src/simdag/dax_dtd.c")	
-exec_program("${SED_EXE} ${CHAINE}" "${PROJECT_DIRECTORY}")
-
-elseif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
+else(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 	message("  FLEX : 	${FLEX_EXE}")
 	message("FLEXML : 	${FLEXML_EXE}")
 	message("   SED : 	${SED_EXE}")
 	message(FATAL_ERROR "Install flex or flexml or sed before use maintainer mode")
 endif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 
-#include $(PROJECT_DIRECTORY)/acmacro/dist-files.mk
-
-message("")
-message("________________________________________________________________________________")
-message("________________________________________________________________________________ FLEXML END")
-
-message("")
-message("________________________________________________________________________________")
-message("________________________________________________________________________________ SG_UNIT_EXTRACTOR")
-
 if(PERL_EXE)
-
-	message("   PERL : 	${PERL_EXE}\n")
-	exec_program("${CMAKE_COMMAND} -E remove ${PROJECT_DIRECTORY}/src/simgrid_units_main.c")
-		
-	foreach(file ${TEST_UNITS})
-		exec_program("${CMAKE_COMMAND} -E remove ${file}")
-	endforeach(file ${TEST_UNITS})
+	string(REPLACE "src/" "" USE_TEST_CFILES "${TEST_CFILES}")
+	string(REPLACE ";" " " USE_TEST_CFILES "${USE_TEST_CFILES}")
+	
+	ADD_CUSTOM_COMMAND(
+  	OUTPUT	${PROJECT_DIRECTORY}/src/cunit_unit.c
+			${PROJECT_DIRECTORY}/src/ex_unit.c
+			${PROJECT_DIRECTORY}/src/dynar_unit.c
+			${PROJECT_DIRECTORY}/src/dict_unit.c
+			${PROJECT_DIRECTORY}/src/set_unit.c
+			${PROJECT_DIRECTORY}/src/swag_unit.c
+			${PROJECT_DIRECTORY}/src/xbt_str_unit.c
+			${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
+			${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
+			${PROJECT_DIRECTORY}/src/config_unit.c
+			${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
+			
+  	DEPENDS	${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl
+  			${PROJECT_DIRECTORY}/src/xbt/cunit.c
+			${PROJECT_DIRECTORY}/src/xbt/ex.c
+			${PROJECT_DIRECTORY}/src/xbt/dynar.c
+			${PROJECT_DIRECTORY}/src/xbt/dict.c
+			${PROJECT_DIRECTORY}/src/xbt/set.c
+			${PROJECT_DIRECTORY}/src/xbt/swag.c
+			${PROJECT_DIRECTORY}/src/xbt/xbt_str.c
+			${PROJECT_DIRECTORY}/src/xbt/xbt_strbuff.c
+			${PROJECT_DIRECTORY}/src/xbt/xbt_sha.c
+			${PROJECT_DIRECTORY}/src/xbt/config.c
+			${PROJECT_DIRECTORY}/src/xbt/xbt_synchro.c
+  	
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/simgrid_units_main.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/cunit_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/ex_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/dynar_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/dict_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/set_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/swag_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/xbt_str_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/config_unit.c
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
+	
+	COMMAND chmod a=rwx ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl
 	
 	#$(TEST_UNITS): $(TEST_CFILES)
-	string(REPLACE "src/" "" USE_TEST_CFILES "${TEST_CFILES}")
-	string(REPLACE ";" " " USE_TEST_CFILES "${USE_TEST_CFILES}")	
-	exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl")
-	exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${USE_TEST_CFILES}" "${PROJECT_DIRECTORY}/src")
-
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/cunit.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/ex.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/dynar.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/dict.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/set.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/swag.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/xbt_str.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/xbt_strbuff.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/xbt_sha.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/config.c
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/xbt_synchro.c
+	
 	#@builddir@/simgrid_units_main.c: $(TEST_UNITS)
-	exec_program("${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/cunit.c" "${PROJECT_DIRECTORY}/src")
-
+	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/cunit.c
+	
+	WORKING_DIRECTORY ${PROJECT_DIRECTORY}/src
+	
+	COMMENT "Generating *_units files for testall..."
+	)
+	
 else(PERL_EXE)
 	message(FATAL_ERROR "Install perl before use maintainer mode")
 endif(PERL_EXE)
-message("")
-message("________________________________________________________________________________")
-message("________________________________________________________________________________ SG_UNIT_EXTRACTOR END")
 
-#Those lines permit to remake a cmake configure if "sources to look" have been changed
+if(PERL_EXE)
+	set(DEPENDS_FILES 
+			${DEPENDS_FILES}
+			${PROJECT_DIRECTORY}/src/cunit_unit.c
+			${PROJECT_DIRECTORY}/src/ex_unit.c
+			${PROJECT_DIRECTORY}/src/dynar_unit.c
+			${PROJECT_DIRECTORY}/src/dict_unit.c
+			${PROJECT_DIRECTORY}/src/set_unit.c
+			${PROJECT_DIRECTORY}/src/swag_unit.c
+			${PROJECT_DIRECTORY}/src/xbt_str_unit.c
+			${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
+			${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
+			${PROJECT_DIRECTORY}/src/config_unit.c
+			${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c	
+		)
+endif(PERL_EXE)
+if(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
+	set(DEPENDS_FILES 
+			${DEPENDS_FILES}
+			${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h
+  			${PROJECT_DIRECTORY}/include/xbt/graphxml.h
+  			${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h
+  			${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c
+  			${PROJECT_DIRECTORY}/src/xbt/graphxml.c
+  			${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c
+		)
+endif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 
-foreach(file ${SRC_TO_LOOK})
-	configure_file(${PROJECT_DIRECTORY}/${file} ${PROJECT_DIRECTORY}/${file} COPYONLY)
-endforeach(file ${SRC_TO_LOOK})
+if(DEPENDS_FILES)
+add_custom_target(_maintainer_files ALL
+					DEPENDS ${DEPENDS_FILES}
+					)
+endif(DEPENDS_FILES)
 
 endif(enable_maintainer_mode AND NOT WIN32)
+
