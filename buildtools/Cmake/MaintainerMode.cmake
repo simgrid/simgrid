@@ -47,49 +47,49 @@ ADD_CUSTOM_COMMAND(
 	COMMAND ${CMAKE_COMMAND} -E echo "src/xbt/graphxml.l"
 	#${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l: ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
 	COMMAND ${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.l -L ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
-	COMMAND ${SED_EXE} ${string5} -i src/simdag/dax_dtd.l
+	COMMAND ${SED_EXE} -i'' ${string5} src/simdag/dax_dtd.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.l"
 	
 	#${PROJECT_DIRECTORY}/include/surf/simgrid_dtd.h: ${PROJECT_DIRECTORY}/src/surf/simgrid.dtd
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/include/surf/simgrid.h
 	COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=simgrid.dtd -H include/surf/simgrid_dtd.h -L src/surf/simgrid.dtd
-	COMMAND ${SED_EXE} ${string1} -i include/surf/simgrid_dtd.h
-	COMMAND ${SED_EXE} ${string2} -i include/surf/simgrid_dtd.h	
+	COMMAND ${SED_EXE} -i'' ${string1} include/surf/simgrid_dtd.h
+	COMMAND ${SED_EXE} -i'' ${string2} include/surf/simgrid_dtd.h	
 	COMMAND ${CMAKE_COMMAND} -E echo "include/surf/simgrid_dtd.h"
 	#${PROJECT_DIRECTORY}/include/xbt/graphxml.h: ${PROJECT_DIRECTORY}/src/xbt/graphxml.dtd
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/include/xbt/graphxml.h
 	COMMAND ${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H include/xbt/graphxml.h -L src/xbt/graphxml.dtd
-	COMMAND ${SED_EXE} ${string3} -i include/xbt/graphxml.h	
-	COMMAND ${SED_EXE} ${string4} -i include/xbt/graphxml.h
+	COMMAND ${SED_EXE} -i'' ${string3} include/xbt/graphxml.h	
+	COMMAND ${SED_EXE} -i'' ${string4} include/xbt/graphxml.h
 	COMMAND ${CMAKE_COMMAND} -E echo "include/xbt/graphxml.h"
 	#${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h: ${PROJECT_DIRECTORY}/src/simdag/dax.dtd
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.h
 	COMMAND ${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H src/simdag/dax_dtd.h -L src/simdag/dax.dtd
-	COMMAND ${SED_EXE} ${string6} -i src/simdag/dax_dtd.h	
-	COMMAND ${SED_EXE} ${string7} -i src/simdag/dax_dtd.h
+	COMMAND ${SED_EXE} -i'' ${string6} src/simdag/dax_dtd.h	
+	COMMAND ${SED_EXE} -i'' ${string7} src/simdag/dax_dtd.h
 	COMMAND ${FLEX_EXE} -o src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline src/gras/DataDesc/ddt_parse.yy.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.h"
 	
 	#surf/simgrid_dtd.c: surf/simgrid_dtd.l
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/surf/simgrid_dtd.c
-	COMMAND ${SED_EXE} ${string8} -i src/surf/simgrid_dtd.l
+	COMMAND ${SED_EXE} -i'' ${string8} src/surf/simgrid_dtd.l
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/surf
 	COMMAND ${FLEX_EXE} -o src/surf/simgrid_dtd.c -Psurf_parse_ --noline src/surf/simgrid_dtd.l
-	COMMAND ${SED_EXE} ${string9} -i src/surf/simgrid_dtd.c
+	COMMAND ${SED_EXE} -i'' ${string9} src/surf/simgrid_dtd.c
 	COMMAND ${CMAKE_COMMAND} -E echo "surf/simgrid_dtd.c"
 	#xbt/graphxml.c: xbt/graphxml.l
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/xbt/graphxml.c
-	COMMAND ${SED_EXE} ${string10} -i src/xbt/graphxml.l	
+	COMMAND ${SED_EXE} -i'' ${string10} src/xbt/graphxml.l	
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/xbt
 	COMMAND ${FLEX_EXE} -o src/xbt/graphxml.c -Pxbt_graph_parse_ --noline src/xbt/graphxml.l
-	COMMAND ${SED_EXE} ${string11} -i src/xbt/graphxml.c
+	COMMAND ${SED_EXE} -i'' ${string11} src/xbt/graphxml.c
 	COMMAND ${CMAKE_COMMAND} -E echo "xbt/graphxml.c"
 	#simdag/dax_dtd.c: simdag/dax_dtd.l
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/simdag/dax_dtd.c
-	COMMAND ${SED_EXE} ${string12} -i src/simdag/dax_dtd.l
+	COMMAND ${SED_EXE} -i'' ${string12} src/simdag/dax_dtd.l
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_DIRECTORY}/src/simdag
 	COMMAND ${FLEX_EXE} -o src/simdag/dax_dtd.c -Pdax_ --noline src/simdag/dax_dtd.l
-	COMMAND ${SED_EXE} ${string13} -i src/simdag/dax_dtd.c
+	COMMAND ${SED_EXE} -i'' ${string13} src/simdag/dax_dtd.c
 	COMMAND ${CMAKE_COMMAND} -E echo "simdag/dax_dtd.c"
 	
 	WORKING_DIRECTORY ${PROJECT_DIRECTORY}
