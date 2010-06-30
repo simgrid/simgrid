@@ -207,8 +207,9 @@ endif(HAVE_GTNETS)
 
 # Lua examples
 if(HAVE_LUA)
-ADD_TEST(lua-masterslave	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua master_slave.tesh)
-ADD_TEST(lua-mult_matrix	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua mult_matrix.tesh)
+ADD_TEST(lua-masterslave		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua master_slave.tesh)
+ADD_TEST(lua-mult_matrix		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua mult_matrix.tesh)
+ADD_TEST(lua-masterslave_bypass ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua master_slave_bypass.tesh)
 endif(HAVE_LUA)
 
 # Ruby examples
