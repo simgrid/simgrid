@@ -1338,15 +1338,16 @@ void SD_task_schedulev(SD_task_t task, int count, const SD_workstation_t*list) {
       SD_task_t after = dep->dst;
       if (after->kind == SD_TASK_COMM_E2E) {
         after->workstation_list[0] = task->workstation_list[0];
-//        if (after->workstation_list[1] && (__SD_task_is_not_scheduled(after) ||
-//        		__SD_task_is_schedulable(after))) {
-//          SD_task_do_schedule(after);
-//          VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
-//              SD_task_get_name(after),
-//              SD_workstation_get_name(after->workstation_list[0]),SD_workstation_get_name(after->workstation_list[1]),
-//              after->communication_amount[2]);
-//
-//        }
+				//J-N : Why did you comment on these line (this comment add a bug I think)?
+        if (after->workstation_list[1] && (__SD_task_is_not_scheduled(after) ||
+        		__SD_task_is_schedulable(after))) {
+          SD_task_do_schedule(after);
+          VERB4("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
+              SD_task_get_name(after),
+              SD_workstation_get_name(after->workstation_list[0]),SD_workstation_get_name(after->workstation_list[1]),
+              after->communication_amount[2]);
+
+        }
       }
     }
   }
