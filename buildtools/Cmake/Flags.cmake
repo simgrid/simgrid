@@ -2,7 +2,7 @@ set(warnCFLAGS "")
 set(optCFLAGS "")
 
 if(NOT WIN32)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-g3")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-g3 ${custom_flags}")
 endif(NOT WIN32)
 
 if(enable_supernovae)

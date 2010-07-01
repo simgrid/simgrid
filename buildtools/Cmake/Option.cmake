@@ -3,6 +3,7 @@
 
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib")
+set(custom_flags ${custom_flags} CACHE FORCE "Customers flags add to cmake_c_flag")
 
 if(NOT prefix)
 	set(prefix "/usr/local/simgrid/" CACHE PATH "Path where to install project")
