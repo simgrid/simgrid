@@ -2,6 +2,9 @@ include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
+if(APPLE)
+set( CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES} /opt/local/include")
+endif(APPLE)
 
 # Checks for header libraries functions.
 
@@ -35,7 +38,7 @@ CHECK_INCLUDE_FILE(stdlib.h HAVE_STDLIB_H)
 CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
 CHECK_INCLUDE_FILE(string.h HAVE_STRING_H)
 CHECK_INCLUDE_FILE(ucontext.h HAVE_UCONTEXT_H)
-
+CHECK_INCLUDE_FILE(graphviz/cgraph.h HAVE_CGRAPH_H)
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(usleep HAVE_USLEEP)
 CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)

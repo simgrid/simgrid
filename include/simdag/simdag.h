@@ -7,6 +7,7 @@
 #ifndef SIMDAG_SIMDAG_H
 #define SIMDAG_SIMDAG_H
 
+#include <stdio.h>
 #include "simdag/datatypes.h"
 #include "xbt/misc.h"
 #include "xbt/dynar.h"
@@ -200,6 +201,8 @@ XBT_PUBLIC(xbt_dynar_t) SD_simulate(double how_long);
 XBT_PUBLIC(double) SD_get_clock(void);
 XBT_PUBLIC(void) SD_exit(void);
 XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char*filename);
+XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char*filename);
+XBT_PUBLIC(xbt_dynar_t) SD_dotload_FILE(FILE* in_file);
 
 /** @} */
 

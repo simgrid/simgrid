@@ -58,6 +58,10 @@ if(HAVE_LUA)
 	                  DEPENDS ${PROJECT_DIRECTORY}/examples/lua/simgrid.so)       
 endif(HAVE_LUA)
 
+if(HAVE_CGRAPH_H)
+	SET(SIMGRID_DEP "${SIMGRID_DEP} -lcgraph")
+endif(HAVE_CGRAPH_H)
+
 if(HAVE_GTNETS)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
 endif(HAVE_GTNETS)
@@ -151,6 +155,7 @@ add_subdirectory(${PROJECT_DIRECTORY}/examples/amok/saturate)
 
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/dax)
+add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/dot)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/metaxml)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/properties)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/scheduling)

@@ -474,7 +474,7 @@ MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout) {
   TRY {
     SIMIX_network_wait(comm,timeout);
 
-    if(!(comm->src_proc == SIMIX_process_self()))
+		if(!(comm->src_proc == SIMIX_process_self()))
     {
     	m_task_t  task;
     	task = (m_task_t) SIMIX_communication_get_src_buf(comm);
