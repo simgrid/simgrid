@@ -48,7 +48,6 @@ MSG_error_t MSG_task_execute(m_task_t task)
   TRACE_msg_task_execute_start (task);
 #endif
 
-
   xbt_assert1((!simdata->compute) && (task->simdata->refcount == 1),
               "This task is executed somewhere else. Go fix your code! %d", task->simdata->refcount);
 
@@ -427,7 +426,6 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias) {
 
   t_simdata->refcount++;
   msg_global->sent_msg++;
-
   process->simdata->waiting_task = task;
 
   /* Send it by calling SIMIX network layer */
@@ -469,12 +467,19 @@ msg_comm_t MSG_task_irecv(m_task_t * task, const char *alias) {
 int MSG_comm_test(msg_comm_t comm) {
   return SIMIX_network_test(comm);
 }
-MSG_error_t MSG_comm_wait(msg_comm_t comm,double timeout) {
+
+MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout) {
   xbt_ex_t e;
   MSG_error_t res = MSG_OK;
   TRY {
     SIMIX_network_wait(comm,timeout);
-    //  (*task)->simdata->refcount--;
+
+    if(!(comm->src_proc == SIMIX_process_self()))
+    {
+    	m_task_t  task;
+    	task = (m_task_t) SIMIX_communication_get_src_buf(comm);
+    	task->simdata->refcount--;
+    }
 
     /* FIXME: these functions are not tracable */
   }  CATCH(e){
