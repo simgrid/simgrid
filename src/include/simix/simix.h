@@ -214,8 +214,8 @@ XBT_PUBLIC(void *) SIMIX_communication_get_data(smx_comm_t comm);
 
 XBT_PUBLIC(void *) SIMIX_communication_get_src_buf(smx_comm_t comm);
 XBT_PUBLIC(void *) SIMIX_communication_get_dst_buf(smx_comm_t comm);
-XBT_PUBLIC(void *) SIMIX_communication_get_src_buf_size(smx_comm_t comm);
-XBT_PUBLIC(void *) SIMIX_communication_get_dst_buf_size(smx_comm_t comm);
+XBT_PUBLIC(size_t) SIMIX_communication_get_src_buf_size(smx_comm_t comm);
+XBT_PUBLIC(size_t *) SIMIX_communication_get_dst_buf_size(smx_comm_t comm);
 
 /*****Networking*****/
 XBT_PUBLIC(void) SIMIX_network_set_copy_data_callback(void (*callback)(smx_comm_t, size_t));

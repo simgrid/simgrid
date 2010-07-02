@@ -444,11 +444,11 @@ XBT_PUBLIC(void *) SIMIX_communication_get_dst_buf(smx_comm_t comm)
 {
   return comm->dst_buff;
 }
-XBT_PUBLIC(void *) SIMIX_communication_get_src_buf_size(smx_comm_t comm)
+XBT_PUBLIC(size_t) SIMIX_communication_get_src_buf_size(smx_comm_t comm)
 {
   return comm->src_buff_size;
 }
-XBT_PUBLIC(void *) SIMIX_communication_get_dst_buf_size(smx_comm_t comm)
+XBT_PUBLIC(size_t *) SIMIX_communication_get_dst_buf_size(smx_comm_t comm)
 {
   return comm->dst_buff_size;
 }
