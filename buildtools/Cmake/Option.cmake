@@ -1,6 +1,12 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see after)
 ### ex: cmake -Denable_java=ON -Denable_gtnets=ON ./
 
+if(APPLE AND NOT CGRPAH_PATH)
+	set(CGRPAH_PATH "/opt/local/include/graphviz" CACHE PATH "Path to cgraph.h")
+else(APPLE AND NOT CGRPAH_PATH)
+	set(CGRPAH_PATH "/usr/include/graphviz" CACHE PATH "Path to cgraph.h")
+endif(APPLE AND NOT CGRPAH_PATH)
+
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib")
 set(custom_flags ${custom_flags} CACHE FORCE "Customers flags add to cmake_c_flag")
@@ -50,7 +56,7 @@ endif(enable_supernovae AND enable_model-checking)
 
 mark_as_advanced(enable_coverage)
 mark_as_advanced(enable_memcheck)
-mark_as_advanced(enable_print_message)
+#mark_as_advanced(enable_print_message)
 mark_as_advanced(BIBTEX2HTML_PATH)
 mark_as_advanced(LUA_LIB_PATH_1)                                                                                                                      
 mark_as_advanced(LUA_LIB_PATH_2)
