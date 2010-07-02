@@ -297,7 +297,9 @@ XBT_INLINE xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
  */
 XBT_INLINE smx_process_t SIMIX_process_self(void)
 {
-  return simix_global ? simix_global->current_process : NULL;
+ if(simix_global)
+	 return simix_global->current_process;
+ return NULL;
 }
 
 /**
