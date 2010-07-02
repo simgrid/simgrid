@@ -29,7 +29,7 @@ ADD_CUSTOM_COMMAND(
 )
 
 ADD_CUSTOM_TARGET(simgrid_java ALL
-                  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar)
+                  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar simgrid)
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar

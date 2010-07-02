@@ -30,7 +30,7 @@ if(HAVE_RUBY)
 	  COMMENT "Generating libsimgrid.so link for binding ruby..."
 	)
 	ADD_CUSTOM_TARGET(link_simgrid_ruby ALL
-	                  DEPENDS ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so)       
+	                  DEPENDS simgrid ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so)
 endif(HAVE_RUBY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -55,7 +55,7 @@ if(HAVE_LUA)
 	  COMMENT "Generating libsimgrid.so link for binding lua..."
 	)
 	ADD_CUSTOM_TARGET(link_simgrid_lua ALL
-	                  DEPENDS ${PROJECT_DIRECTORY}/examples/lua/simgrid.so)       
+	                  DEPENDS simgrid ${PROJECT_DIRECTORY}/examples/lua/simgrid.so)
 endif(HAVE_LUA)
 
 if(HAVE_CGRAPH_H)
