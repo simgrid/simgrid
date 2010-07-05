@@ -140,6 +140,7 @@ add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/priority)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/masterslave)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/trace)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/tracing)
+add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/irc_isend)
 
 if(HAVE_MC)
 	add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/mc)

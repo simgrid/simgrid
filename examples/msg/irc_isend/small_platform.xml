@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <!-- ljlkj -->
+  <host id="Tremblay" power="98095000"/>
+  <host id="Ruby" power="98095000"/>
+  <host id="Perl" power="98095000"/>
+  <host id="Java" power="98095000"/>
+  <link id="1" bandwidth="498000000" latency="0.00015" sharing_policy="FATPIPE"/>
+  <link id="2" bandwidth="498000000" latency="0.00015" sharing_policy="FATPIPE"/>
+  <link id="3" bandwidth="498000000" latency="0.00015" sharing_policy="FATPIPE"/>
+  <route src="Tremblay" dst="Ruby"><link:ctn id="1"/></route>
+  <route src="Ruby" dst="Tremblay"><link:ctn id="1"/></route>
+  <route src="Tremblay" dst="Perl"><link:ctn id="2"/></route>
+  <route src="Perl" dst="Tremblay"><link:ctn id="2"/></route>
+  <route src="Tremblay" dst="Java"><link:ctn id="3"/></route>
+  <route src="Java" dst="Tremblay"><link:ctn id="3"/></route>
+</platform>

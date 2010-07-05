@@ -172,6 +172,9 @@ ELSE(${ARCH_32_BITS})
 ENDIF(${ARCH_32_BITS})
 ADD_TEST(gras-properties-sg	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/properties test_sg)
 
+# isend ireceive
+add_test(irc_isend_peer ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/irc_isend peer.tesh)
+
 # amok examples
 ADD_TEST(amok-bandwidth-rl	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/amok bandwidth/bandwidth_rl.tesh)
 ADD_TEST(amok-saturate-rl	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/amok saturate/saturate_rl.tesh)
