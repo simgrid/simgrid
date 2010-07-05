@@ -282,9 +282,12 @@ int MC_transition_depend(mc_transition_t t1, mc_transition_t t2)
   if(t1->process == t2->process) 
     return FALSE;
 
-  if(t1->type != t2->type)
+  if(t1->type == mc_isend && t2->type == mc_irecv)
     return FALSE;
 
+  if(t1->type == mc_irecv && t2->type == mc_isend)
+    return FALSE;
+  
   if(t1->type == mc_random || t2->type == mc_random)
     return FALSE;
   
@@ -306,6 +309,6 @@ int MC_transition_depend(mc_transition_t t1, mc_transition_t t2)
      && t1->wait.comm->dst_buff != t2->wait.comm->dst_buff
      && t2->wait.comm->dst_buff != t1->wait.comm->src_buff)
     return FALSE;
-  
+
   return TRUE;
 }
