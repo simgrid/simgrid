@@ -69,6 +69,10 @@ examples/msg/mc/random_test
 examples/simdag/ex_sd_seq_access
 examples/simdag/sd_seq_access
 
+examples/msg/irc_isend/peer
+examples/msg/irc_isend/toto.txt
+examples/simdag/dot/dot_test
+
 src/simgrid_units_main.c
 *_unit.c
 src/supernovae_*.c

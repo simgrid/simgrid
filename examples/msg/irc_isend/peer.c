@@ -93,7 +93,6 @@ int receiver(int argc, char *argv[])
   int id = -1;
   char mailbox[80];
   msg_comm_t res_irecv;
-  int result=0;
   double sleep_start_time = atof(argv[2]);
   INFO1("sleep_start_time : %f ",sleep_start_time);
 
