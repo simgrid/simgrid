@@ -3,7 +3,7 @@ include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
 
-set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES} ${CGRPAH_PATH}")
+set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES} ${CGRAPH_PATH}")
 
 # Checks for header libraries functions.
 
@@ -205,7 +205,7 @@ endif(enable_java)
 ### Initialize of cgraph
 
 if(HAVE_CGRAPH_H)
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${CGRPAH_PATH} ")
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${CGRAPH_PATH} ")
 endif(HAVE_CGRAPH_H)
 
 #--------------------------------------------------------------------------------------------------

@@ -1,11 +1,11 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see after)
 ### ex: cmake -Denable_java=ON -Denable_gtnets=ON ./
 
-if(APPLE AND NOT CGRPAH_PATH)
-	set(CGRPAH_PATH "/opt/local/include/graphviz" CACHE PATH "Path to cgraph.h")
-else(APPLE AND NOT CGRPAH_PATH)
-	set(CGRPAH_PATH "/usr/include/graphviz" CACHE PATH "Path to cgraph.h")
-endif(APPLE AND NOT CGRPAH_PATH)
+if(APPLE AND NOT CGRAPH_PATH)
+	set(CGRAPH_PATH "/opt/local/include/graphviz" CACHE PATH "Path to cgraph.h")
+else(APPLE AND NOT CGRAPH_PATH)
+	set(CGRAPH_PATH "/usr/include/graphviz" CACHE PATH "Path to cgraph.h")
+endif(APPLE AND NOT CGRAPH_PATH)
 
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib")
