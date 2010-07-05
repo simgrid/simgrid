@@ -446,7 +446,7 @@ XBT_PUBLIC(void *) SIMIX_communication_get_dst_buf(smx_comm_t comm)
 }
 XBT_PUBLIC(size_t) SIMIX_communication_get_src_buf_size(smx_comm_t comm)
 {
-  return comm->src_buff_size;
+  return (void *)comm->src_buff_size;
 }
 XBT_PUBLIC(size_t *) SIMIX_communication_get_dst_buf_size(smx_comm_t comm)
 {
@@ -496,7 +496,7 @@ XBT_INLINE void SIMIX_network_send(smx_rdv_t rdv, double task_size, double rate,
 XBT_INLINE void SIMIX_network_recv(smx_rdv_t rdv, double timeout, void *dst_buff,
                         size_t *dst_buff_size, smx_comm_t *comm_ref)
 {
-  *comm_ref = SIMIX_network_irecv(rdv,dst_buff,dst_buff_size);
+  *comm_ref = (smx_comm_t) SIMIX_network_irecv(rdv,dst_buff,dst_buff_size);
   SIMIX_network_wait(*comm_ref,timeout);
 }
 
