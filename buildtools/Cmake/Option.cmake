@@ -4,7 +4,15 @@
 if(APPLE AND NOT CGRAPH_PATH)
 	set(CGRAPH_PATH "/opt/local/include/graphviz" CACHE PATH "Path to cgraph.h")
 else(APPLE AND NOT CGRAPH_PATH)
-	set(CGRAPH_PATH "/usr/include/graphviz" CACHE PATH "Path to cgraph.h")
+
+	if(EXISTS "/usr/include/graphviz")
+		set(include_graphviz "/usr/include/graphviz")
+	endif(EXISTS "/usr/include/graphviz")
+	if(EXISTS "/usr/local/include/graphviz")
+		set(include_graphviz "/usr/local/include/graphviz")
+	endif(EXISTS "/usr/local/include/graphviz")
+	
+	set(CGRAPH_PATH ${include_graphviz} CACHE PATH "Path to cgraph.h")
 endif(APPLE AND NOT CGRAPH_PATH)
 
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")

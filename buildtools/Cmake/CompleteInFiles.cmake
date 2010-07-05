@@ -2,8 +2,14 @@ include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
+include(TestBigEndian)
 
-set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES} ${CGRAPH_PATH}")
+TEST_BIG_ENDIAN(BIGENDIAN)
+
+set(CMAKE_REQUIRED_INCLUDES
+			${CGRAPH_PATH}
+			${CMAKE_REQUIRED_INCLUDES}
+			)
 
 # Checks for header libraries functions.
 
@@ -388,8 +394,7 @@ endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 ###################################
 ## SimGrid and GRAS specific checks
 ##
-include(TestBigEndian)
-TEST_BIG_ENDIAN(BIGENDIAN)
+
 # Check architecture signature begin
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${PROJECT_DIRECTORY}
