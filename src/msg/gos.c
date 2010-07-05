@@ -470,6 +470,10 @@ int MSG_comm_test(msg_comm_t comm) {
 	return SIMIX_network_test(comm);
 }
 
+void MSG_comm_destroy(msg_comm_t comm) {
+	SIMIX_communication_destroy(comm);
+}
+
 MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout) {
 	xbt_ex_t e;
 	MSG_error_t res = MSG_OK;
