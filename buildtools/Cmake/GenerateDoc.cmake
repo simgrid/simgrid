@@ -53,8 +53,6 @@ ${PROJECT_DIRECTORY}/doc/fig/amok_bw_sat.fig
 ${PROJECT_DIRECTORY}/doc/fig/gras_comm.fig
 )
 
-string(REPLACE ".fig" ".png\n" LISTE_TROIS ${FIGS})
-
 set(PNGS 
 ${PROJECT_DIRECTORY}/doc/webcruft/simgrid_logo.png
 ${PROJECT_DIRECTORY}/doc/webcruft/simgrid_logo_small.png
