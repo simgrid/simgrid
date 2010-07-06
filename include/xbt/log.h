@@ -92,10 +92,12 @@ SG_BEGIN_DECL()
 /* The root of the category hierarchy. */
 #define XBT_LOG_ROOT_CAT   root
 
-/* In strict ansi C, we are not allowed to initialize a variable with
- * a non-constant value. But the whole tree of categories is
- * connected by setting the address of the parent category as a field
- * of the child one.
+/* The whole tree of categories is connected by setting the address of
+ * the parent category as a field of the child one.
+ *
+ * In strict ansi C, we are allowed to initialize a variable with "a
+ * pointer to an lvalue designating an object of static storage
+ * duration" [ISO/IEC 9899:1999, Section 6.6].
  * 
  * Unfortunately, Visual C builder does not target any standard
  * compliance, and C99 is not an exception to this unfortunate rule.
@@ -110,7 +112,7 @@ SG_BEGIN_DECL()
  * you don't want to see your child category become a child of root
  * directly.
  */
-#if defined(__STRICT_ANSI__) || defined(_MSC_VER)
+#if defined(_MSC_VER)
 # define _XBT_LOG_PARENT_INITIALIZER(parent) NULL
 # define XBT_LOG_CONNECT(parent_cat,child)       _XBT_LOGV(child).parent = &_XBT_LOGV(parent_cat)
 #else
