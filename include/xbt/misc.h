@@ -40,7 +40,7 @@
 #if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
 # define _XBT_FUNCTION __FUNCTION__
 #elif (defined(__STDC__) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
-# define _XBT_FUNC__ __func__   /* ISO-C99 compliant */
+# define _XBT_FUNCTION __func__   /* ISO-C99 compliant */
 #else
 # define _XBT_FUNCTION "function"
 #endif
