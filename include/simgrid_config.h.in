@@ -27,6 +27,7 @@
 
 #ifndef SIMGRID_PUBLIC_CONFIG_H
 #define SIMGRID_PUBLIC_CONFIG_H
+SG_BEGIN_DECL()
 
 /* Define to 1 if you have the `mmap' function. */
 #cmakedefine HAVE_MMAP @HAVE_MMAP@
@@ -83,4 +84,5 @@ XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
 XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /** @} */
 
+SG_END_DECL()
 #endif /* SIMGRID_PUBLIC_CONFIG_H */
