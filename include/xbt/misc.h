@@ -18,7 +18,7 @@
 # define _XBT_GNUC_FORMAT( arg_idx )                \
 		   __attribute__((__format_arg__ (arg_idx)))
 # define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
-# define _XBT_GNUC_UNUSED  __attribute__((unused))
+# define _XBT_GNUC_UNUSED  __attribute__((__unused__))
 # define _XBT_GNUC_CONSTRUCTOR __attribute__((__constructor__))
 # define _XBT_GNUC_DESTRUCTOR __attribute__((__destructor__))
 # undef _XBT_NEED_INIT_PRAGMA
