@@ -626,80 +626,54 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
 #endif
 }
 
+/* NOTE:
+ *
+ * The standard logging macros use _XBT_LOG_ISENABLED, which calls
+ * _xbt_log_cat_init().  Thus, if we want to avoid an infinite
+ * recursion, we can not use the standard logging macros in
+ * _xbt_log_cat_init(), and in all functions called from it.
+ *
+ * To circumvent the problem, we define the macro_xbt_log_init() as
+ * (0) for the length of the affected functions, and we do not forget
+ * to undefine it at the end!
+ */
+
 static void _xbt_log_cat_apply_set(xbt_log_category_t category,
                                    xbt_log_setting_t setting)
 {
-
-  s_xbt_log_event_t _log_ev;
+#define _xbt_log_cat_init(a, b) (0)
 
   if (setting->thresh != xbt_log_priority_uninitialized) {
     xbt_log_threshold_set(category, setting->thresh);
 
-    if (category->threshold <= xbt_log_priority_debug) {
-      _log_ev.cat = category;
-      _log_ev.priority = xbt_log_priority_debug;
-      _log_ev.fileName = __FILE__;
-      _log_ev.functionName = _XBT_FUNCTION;
-      _log_ev.lineNum = __LINE__;
-
-      _xbt_log_event_log(&_log_ev,
-                         "Apply settings for category '%s': set threshold to %s (=%d)",
-                         category->name,
-                         xbt_log_priority_names[category->threshold],
-                         category->threshold);
-    }
+    DEBUG3("Apply settings for category '%s': set threshold to %s (=%d)",
+           category->name, xbt_log_priority_names[category->threshold],
+           category->threshold);
   }
 
   if (setting->fmt) {
     xbt_log_layout_set(category, xbt_log_layout_format_new(setting->fmt));
 
-    if (category->threshold <= xbt_log_priority_debug) {
-      _log_ev.cat = category;
-      _log_ev.priority = xbt_log_priority_debug;
-      _log_ev.fileName = __FILE__;
-      _log_ev.functionName = _XBT_FUNCTION;
-      _log_ev.lineNum = __LINE__;
-
-      _xbt_log_event_log(&_log_ev,
-                         "Apply settings for category '%s': set format to %s",
-                         category->name, setting->fmt);
-    }
+    DEBUG2("Apply settings for category '%s': set format to %s",
+           category->name, setting->fmt);
   }
 
   if (setting->additivity != -1) {
     xbt_log_additivity_set(category, setting->additivity);
 
-    if (category->threshold <= xbt_log_priority_debug) {
-      _log_ev.cat = category;
-      _log_ev.priority = xbt_log_priority_debug;
-      _log_ev.fileName = __FILE__;
-      _log_ev.functionName = _XBT_FUNCTION;
-      _log_ev.lineNum = __LINE__;
-
-      _xbt_log_event_log(&_log_ev,
-                         "Apply settings for category '%s': set additivity to %s",
-                         category->name,
-                         (setting->additivity ? "on" : "off"));
-    }
+    DEBUG2("Apply settings for category '%s': set additivity to %s",
+           category->name, (setting->additivity ? "on" : "off"));
   }
   if (setting->appender) {
     xbt_log_appender_set(category, setting->appender);
     if (!category->layout)
       xbt_log_layout_set(category, xbt_log_layout_simple_new(NULL));
     category->additivity = 0;
-    if (category->threshold <= xbt_log_priority_debug) {
-      _log_ev.cat = category;
-      _log_ev.priority = xbt_log_priority_debug;
-      _log_ev.fileName = __FILE__;
-      _log_ev.functionName = _XBT_FUNCTION;
-      _log_ev.lineNum = __LINE__;
-
-      _xbt_log_event_log(&_log_ev,
-                         "Set %p as appender of category '%s'",
-                         setting->appender, category->name);
-    }
+    DEBUG2("Set %p as appender of category '%s'",
+           setting->appender, category->name);
   }
 
+#undef _xbt_log_cat_init
 }
 
 /*
@@ -710,26 +684,16 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category,
 int _xbt_log_cat_init(xbt_log_category_t category,
                       e_xbt_log_priority_t priority)
 {
+#define _xbt_log_cat_init(a, b) (0)
+
   unsigned int cursor;
   xbt_log_setting_t setting = NULL;
   int found = 0;
-  s_xbt_log_event_t _log_ev;
 
-  if (_XBT_LOGV(log).threshold <= xbt_log_priority_debug
-      && _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
-    _log_ev.cat = &_XBT_LOGV(log);
-    _log_ev.priority = xbt_log_priority_debug;
-    _log_ev.fileName = __FILE__;
-    _log_ev.functionName = _XBT_FUNCTION;
-    _log_ev.lineNum = __LINE__;
-    _xbt_log_event_log(&_log_ev,
-                       "Initializing category '%s' (firstChild=%s, nextSibling=%s)",
-                       category->name,
-                       (category->firstChild ? category->
-                        firstChild->name : "none"),
-                       (category->nextSibling ? category->
-                        nextSibling->name : "none"));
-  }
+  DEBUG3("Initializing category '%s' (firstChild=%s, nextSibling=%s)",
+         category->name,
+         (category->firstChild ? category->firstChild->name : "none"),
+         (category->nextSibling ? category->nextSibling->name : "none"));
 
   if (category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)) {
     category->threshold = xbt_log_priority_info;
@@ -741,21 +705,14 @@ int _xbt_log_cat_init(xbt_log_category_t category,
     if (!category->parent)
       category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
 
-    if (_XBT_LOGV(log).threshold <= xbt_log_priority_debug
-        && _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
-      _log_ev.lineNum = __LINE__;
-      _xbt_log_event_log(&_log_ev, "Set %s (%s) as father of %s ",
-                         category->parent->name,
-                         (category->parent->threshold ==
-                          xbt_log_priority_uninitialized ? "uninited" :
-                          xbt_log_priority_names[category->
-                                                 parent->threshold]),
-                         category->name);
-    }
+    DEBUG3("Set %s (%s) as father of %s ",
+           category->parent->name,
+           (category->parent->threshold == xbt_log_priority_uninitialized ?
+            "uninited" : xbt_log_priority_names[category->parent->threshold]),
+           category->name);
     xbt_log_parent_set(category, category->parent);
 
-    if (_XBT_LOGV(log).threshold < xbt_log_priority_info
-        && _XBT_LOGV(log).threshold != xbt_log_priority_uninitialized) {
+    if (XBT_LOG_ISENABLED(log, xbt_log_priority_debug)) {
       char *buf, *res = NULL;
       xbt_log_category_t cpp = category->parent->firstChild;
       while (cpp) {
@@ -769,12 +726,10 @@ int _xbt_log_cat_init(xbt_log_category_t category,
         cpp = cpp->nextSibling;
       }
 
-      _log_ev.lineNum = __LINE__;
-      _xbt_log_event_log(&_log_ev,
-                         "Childs of %s: %s; nextSibling: %s",
-                         category->parent->name, res,
-                         (category->parent->nextSibling ? category->
-                          parent->nextSibling->name : "none"));
+      DEBUG3("Childs of %s: %s; nextSibling: %s",
+             category->parent->name, res,
+             (category->parent->nextSibling ?
+              category->parent->nextSibling->name : "none"));
 
       free(res);
     }
@@ -803,22 +758,14 @@ int _xbt_log_cat_init(xbt_log_category_t category,
     }
   }
 
-  if (!found && category->threshold <= xbt_log_priority_verbose) {
-
-    _log_ev.cat = &_XBT_LOGV(log);
-    _log_ev.priority = xbt_log_priority_verbose;
-    _log_ev.fileName = __FILE__;
-    _log_ev.functionName = _XBT_FUNCTION;
-    _log_ev.lineNum = __LINE__;
-
-    _xbt_log_event_log(&_log_ev,
-                       "Category '%s': inherited threshold = %s (=%d)",
-                       category->name,
-                       xbt_log_priority_names[category->threshold],
-                       category->threshold);
-  }
+  if (!found)
+    DEBUG3("Category '%s': inherited threshold = %s (=%d)",
+           category->name, xbt_log_priority_names[category->threshold],
+           category->threshold);
 
   return priority >= category->threshold;
+
+#undef _xbt_log_cat_init
 }
 
 void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
