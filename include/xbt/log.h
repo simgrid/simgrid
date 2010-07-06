@@ -391,20 +391,27 @@ XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
  * Setting the LogEvent's valist member is done inside _log_logEvent.
  */
 #ifdef _XBT_WIN32
-#define _XBT_LOG_PRE(catv, priority) do {			 \
-     if (_XBT_LOG_ISENABLEDV(catv, priority)) {                  \
-         s_xbt_log_event_t _log_ev =                             \
-             {NULL,priority,__FILE__,_XBT_FUNCTION,__LINE__}; \
-                _log_ev.cat = &(catv);                           \
-				_log_ev.buffer = (char*) calloc(XBT_LOG_BUFF_SIZE + 1, sizeof(char)); \
-              _xbt_log_event_log(&_log_ev
+#define _XBT_LOG_PRE(catv, prio) do {                            \
+     if (_XBT_LOG_ISENABLEDV(catv, prio)) {                      \
+       s_xbt_log_event_t _log_ev;                                \
+       _log_ev.cat = &(catv);                                    \
+       _log_ev.priority = (prio);                                \
+       _log_ev.fileName = __FILE__;                              \
+       _log_ev.functionName = _XBT_FUNCTION;                     \
+       _log_ev.lineNum = __LINE__;                               \
+       _log_ev.buffer = (char*) calloc(XBT_LOG_BUFF_SIZE + 1, sizeof(char)); \
+       _xbt_log_event_log(&_log_ev
 #else
-#define _XBT_LOG_PRE(catv, priority) do {			 \
-     if (_XBT_LOG_ISENABLEDV(catv, priority)) {                  \
-         s_xbt_log_event_t _log_ev =                             \
-             {NULL,priority,__FILE__,_XBT_FUNCTION,__LINE__}; \
-                _log_ev.cat = &(catv);                           \
-              _xbt_log_event_log(&_log_ev 			 \
+#define _XBT_LOG_PRE(catv, prio) do {                            \
+     if (_XBT_LOG_ISENABLEDV(catv, prio)) {                      \
+       s_xbt_log_event_t _log_ev;                                \
+       _log_ev.cat = &(catv);                                    \
+       _log_ev.priority = (prio);                                \
+       _log_ev.fileName = __FILE__;                              \
+       _log_ev.functionName = _XBT_FUNCTION;                     \
+       _log_ev.lineNum = __LINE__;                               \
+       memset(_log_ev.buffer, 0, XBT_LOG_BUFF_SIZE);             \
+       _xbt_log_event_log(&_log_ev
 
 #endif
 
