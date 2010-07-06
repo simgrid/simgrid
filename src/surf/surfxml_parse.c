@@ -437,13 +437,14 @@ void surf_parse_open(const char *file)
     }
     return;
   }
+  surf_file_to_parse = surf_fopen(file, "r");
+  xbt_assert1((surf_file_to_parse), "Unable to open \"%s\"\n", file);
+
   if (!surf_input_buffer_stack)
     surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), NULL);
   if (!surf_file_to_parse_stack)
     surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
 
-  surf_file_to_parse = surf_fopen(file, "r");
-  xbt_assert1((surf_file_to_parse), "Unable to open \"%s\"\n", file);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, 10);
   surf_parse__switch_to_buffer(surf_input_buffer);
   surf_parse_lineno = 1;
@@ -608,11 +609,15 @@ static void free_data(void)
 
 void parse_platform_file(const char *file)
 {
+  int parse_status;
   surf_parse_open(file);
   init_data();
-  xbt_assert1((!(*surf_parse) ()), "Parse error in %s", file);
+  parse_status = surf_parse();
   free_data();
   surf_parse_close();
+  if (parse_status)
+    xbt_dict_free(&random_data_list);
+  xbt_assert1(!parse_status, "Parse error in %s", file);
 }
 
 /* Functions to bypass route tag. Used by the route:multi tag */

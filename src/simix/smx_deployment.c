@@ -119,6 +119,7 @@ static void parse_process_finalize(void)
  */
 void SIMIX_launch_application(const char *file)
 {
+  int parse_status;
   xbt_assert0(simix_global,
               "SIMIX_global_init has to be called before SIMIX_launch_application.");
   surf_parse_reset_parser();
@@ -128,8 +129,9 @@ void SIMIX_launch_application(const char *file)
   surfxml_add_callback(ETag_surfxml_process_cb_list, parse_process_finalize);
 
   surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
+  parse_status = surf_parse();
   surf_parse_close();
+  xbt_assert1(!parse_status, "Parse error in %s", file);
 }
 
 /**
