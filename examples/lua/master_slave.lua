@@ -42,6 +42,8 @@ end
   simgrid.info("Master: Everything's done.");
 end
 
+-- end_of_master
+
 -- Slave Function ---------------------------------------------------------
 function Slave(...)
 
@@ -63,8 +65,11 @@ end -- while
 
 simgrid.info("Slave '" ..my_mailbox.."': I'm Done . See You !!");
 
-end -- function ----------------------------------------------------------
---]]
+end 
+
+-- end_of_slave
+
+-- Simulation Code ----------------------------------------------------------
 
 require "simgrid"
 if (#arg == 2) then
