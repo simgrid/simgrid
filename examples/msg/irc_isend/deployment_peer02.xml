@@ -14,5 +14,6 @@
   <process host="Ruby" function="receiver">
     <argument value="0"/>
     <argument value="5"/>         <!-- Sleep_start_time -->
+    <argument value="0.1"/>      <!-- Time for test -->
   </process>
 </platform>

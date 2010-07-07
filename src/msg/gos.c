@@ -470,7 +470,14 @@ int MSG_comm_test(msg_comm_t comm) {
 	return SIMIX_network_test(comm);
 }
 
+/* After received TRUE to MSG_comm_test() function we have to destroy the communication */
 void MSG_comm_destroy(msg_comm_t comm) {
+	if(!(comm->src_proc == SIMIX_process_self()))
+	{
+		m_task_t  task;
+		task = (m_task_t) SIMIX_communication_get_src_buf(comm);
+		task->simdata->refcount--;
+	}
 	SIMIX_communication_destroy(comm);
 }
 

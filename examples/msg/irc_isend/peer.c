@@ -94,7 +94,8 @@ int receiver(int argc, char *argv[])
   char mailbox[80];
   msg_comm_t res_irecv;
   double sleep_start_time = atof(argv[2]);
-  INFO1("sleep_start_time : %f ",sleep_start_time);
+  double sleep_test_time = atof(argv[3]);
+  INFO2("sleep_start_time : %f , sleep_test_time : %f",sleep_start_time,sleep_test_time);
 
   xbt_assert1(sscanf(argv[1],"%d", &id),
 	 "Invalid argument %s\n",argv[1]);
@@ -105,9 +106,20 @@ int receiver(int argc, char *argv[])
   while(1) {
 	res_irecv = MSG_task_irecv(&(task), mailbox);
 	INFO0("Wait to receive a task");
-	res = MSG_comm_wait(res_irecv,-1);
 
-    xbt_assert0(res == MSG_OK, "MSG_task_get failed");
+    if(sleep_test_time == 0)
+    {
+    	res = MSG_comm_wait(res_irecv,-1);
+    	xbt_assert0(res == MSG_OK, "MSG_task_get failed");
+    }
+    else
+    {
+		while(MSG_comm_test(res_irecv) == 0){
+			MSG_process_sleep (sleep_test_time);
+		};
+		MSG_comm_destroy(res_irecv);
+    }
+
 	INFO1("Received \"%s\"", MSG_task_get_name(task));
 	if (!strcmp(MSG_task_get_name(task),"finalize")) {
 	  MSG_task_destroy(task);
