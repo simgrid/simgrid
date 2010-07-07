@@ -92,6 +92,7 @@
   \section Lua_examples Examples of lua MSG
  
    - \ref MSG_ex_master_slave_lua
+   - \ref MSG_ex_master_slave_lua_bypass
 */
 
 
@@ -272,6 +273,58 @@
 	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.( first command line argument)
 	- <i>application_file</i>: the name of a file containing a valid surfxml application description ( second commande line argument )
 	
+      \until simgrid.clean()
+      
+*/
+
+/** \page MSG_ex_master_slave_lua_bypass Master/slave Bypass Lua application
+    
+    Simulation of a master-slave application using lua bindings, Bypassing the XML parser
+       - \ref MSG_ext_ms_code_lua
+       - \ref MSG_ext_ms_master_lua
+       - \ref MSG_ext_ms_slave_lua
+       - \ref MSG_ext_ms_core_lua
+       
+       
+      \dontinclude lua/master_slave_bypass.lua
+      
+      \section MSG_ext_ms_code_lua Code of the application
+      
+      \subsection MSG_ext_ms_master_lua Master code
+      
+            as described ine the C native master/Slave exmaple , this function has to be assigned to a m_process_t that will behave as the master.
+ 
+      Lua style arguments (...) in for the master are interpreted as:
+       - the number of tasks to distribute
+       - the computation size of each task
+       - the size of the files associated to each task
+       - a list of host that will accept those tasks.
+
+      Tasks are dumbly sent in a round-robin style.
+      
+      \until end_of_master
+      
+      
+      \subsection MSG_ext_ms_slave_lua Slave code
+    
+      This function has to be assigned to a #m_process_t that has to behave as a slave.
+      This function keeps waiting for tasks and executes them as it receives them.
+      
+      \until end_of_slave
+         \subsection MSG_ext_ms_core_lua Simulation core
+
+      in this section the core of the simulation which start by including the simgrid lib for bindings, then create the resources we need to set up our environment bypassing the XML parser.
+      : <i>require "simgrid" </i>
+      
+	 -# Hosts : <i>simgrid.Host.new</i> instanciate a new host with an id, and power.
+	 -# Links : <i>simgrid.Link.new</i> instanictae a new link that will require an id, bandwith and latency values.
+	 -# Route : <i>simgrid.Route.new</i> define a route between two hosts specifying the links to use.
+         -# Simulation settings : <i>simgrid.register_platform();</i> register own platform without using the XML SURF parser.
+
+	 we can also bypass the XML deployment file, and associate functions for each of defined hosts.
+	- <i>simgrid.Host.setFunction</i>: associate a function to a host, specifying arguments if needed.
+	- <i>simgrid.register_application()</i>: saving the deployment settings before running the simualtion.
+
       \until simgrid.clean()
       
 */
