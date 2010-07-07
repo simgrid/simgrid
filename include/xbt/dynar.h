@@ -66,12 +66,12 @@ XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new(const unsigned long elm_size,
                                       void_f_pvoid_t const free_f);
 XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new_sync(const unsigned long elm_size,
                                            void_f_pvoid_t const free_f);
-XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
+XBT_INLINE XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
 XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
 XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
 
-XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t dynar);
-XBT_PUBLIC (int) xbt_dynar_is_empty(const xbt_dynar_t dynar);
+XBT_INLINE XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t dynar);
+XBT_INLINE XBT_PUBLIC (int) xbt_dynar_is_empty(const xbt_dynar_t dynar);
 XBT_PUBLIC(void) xbt_dynar_reset(xbt_dynar_t const dynar);
 XBT_PUBLIC(void) xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
 
@@ -108,8 +108,8 @@ XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar, int_f_cpvoid_cpvoid_t c
  *  @{
  */
 
-XBT_PUBLIC(void) xbt_dynar_push(xbt_dynar_t const dynar, const void *src);
-XBT_PUBLIC(void) xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst);
+XBT_INLINE XBT_PUBLIC(void) xbt_dynar_push(xbt_dynar_t const dynar, const void *src);
+XBT_INLINE XBT_PUBLIC(void) xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst);
 XBT_PUBLIC(void) xbt_dynar_unshift(xbt_dynar_t const dynar, const void *src);
 XBT_PUBLIC(void) xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst);
 XBT_PUBLIC(void) xbt_dynar_map(const xbt_dynar_t dynar,
@@ -124,7 +124,7 @@ XBT_PUBLIC(void) xbt_dynar_map(const xbt_dynar_t dynar,
  *  @{
  */
 
-XBT_PUBLIC(void *) xbt_dynar_get_ptr(const xbt_dynar_t dynar,
+XBT_INLINE XBT_PUBLIC(void *) xbt_dynar_get_ptr(const xbt_dynar_t dynar,
                                      const unsigned long idx);
 XBT_PUBLIC(void *) xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
                                            const int idx);
@@ -185,7 +185,7 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
  *  @{
  */
 
-XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
+XBT_INLINE XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
                                      unsigned int *const cursor);
 XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
 

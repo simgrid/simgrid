@@ -52,10 +52,10 @@ XBT_PUBLIC(int) xbt_fifo_is_in(xbt_fifo_t, void *);
  *  @{
  */
 
-XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_new_item(void);
+XBT_INLINE XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_new_item(void);
 XBT_PUBLIC(void) xbt_fifo_set_item_content(xbt_fifo_item_t, void *);
 XBT_PUBLIC(void *) xbt_fifo_get_item_content(xbt_fifo_item_t);
-XBT_PUBLIC(void) xbt_fifo_free_item(xbt_fifo_item_t);
+XBT_INLINE XBT_PUBLIC(void) xbt_fifo_free_item(xbt_fifo_item_t);
 
 XBT_PUBLIC(void) xbt_fifo_push_item(xbt_fifo_t, xbt_fifo_item_t);
 XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_pop_item(xbt_fifo_t);
@@ -66,8 +66,8 @@ XBT_PUBLIC(int) xbt_fifo_remove(xbt_fifo_t, void *);
 XBT_PUBLIC(int) xbt_fifo_remove_all(xbt_fifo_t, void *);
 XBT_PUBLIC(void) xbt_fifo_remove_item(xbt_fifo_t, xbt_fifo_item_t);
 
-XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_first_item(xbt_fifo_t l);
-XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_last_item(xbt_fifo_t l);
+XBT_INLINE XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_first_item(xbt_fifo_t l);
+XBT_INLINE XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_last_item(xbt_fifo_t l);
 XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_next_item(xbt_fifo_item_t i);
 XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_prev_item(xbt_fifo_item_t i);
 
