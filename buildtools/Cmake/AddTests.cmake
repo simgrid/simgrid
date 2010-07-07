@@ -138,6 +138,7 @@ ADD_TEST(msg-priority		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/ex
 ADD_TEST(msg-properties		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg properties/msg_prop.tesh)
 ADD_TEST(msg-trace		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg trace/trace.tesh)
 ADD_TEST(msg-masterslave_cpu_ti	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti.tesh)
+ADD_TEST(msg_icomms ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/icomms peer.tesh)
 
 IF(HAVE_TRACING)
   ADD_TEST(tracing-ms ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg tracing/ms.tesh)
@@ -171,9 +172,6 @@ ELSE(${ARCH_32_BITS})
   ADD_TEST(gras-synchro-sg-64	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/synchro test_sg_64)
 ENDIF(${ARCH_32_BITS})
 ADD_TEST(gras-properties-sg	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/gras/properties test_sg)
-
-# isend ireceive
-add_test(irc_isend_peer ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/irc_isend peer.tesh)
 
 # amok examples
 ADD_TEST(amok-bandwidth-rl	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/amok bandwidth/bandwidth_rl.tesh)
