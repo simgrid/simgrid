@@ -2083,89 +2083,49 @@ void MC_assert(int prop);
 Most of Simgrid modules require a  good level in C programming ,
  since simgrid is used to be as standard C library .
  Sometime ( for some reason or another ) developers prefer using some kind of « easy scripts »
- (something like … lua ? Ruby ? ...?)  or a language easier to code with ( Java ? ) for their works ,
+ (something like … lua ? Ruby ? ...?) or a language easier to code with ( Java ? ) for their works,
  which avoid dealing with C errors , and sometime an important  gain of time (coding-time?) .
-Besides Java Binding , Lua  and Ruby bindings are available now( since version 3.4 of Simgrid )
-for MSG Module , and we are currenlty working on bindings for other modules .
+Besides Java Binding, Lua  and Ruby bindings are available now( since version 3.4 of Simgrid )
+for MSG Module, and we are currenlty working on bindings for other modules .
 
 
 \subsubsection faq_binding_lua_about What is lua ?
 Lua (Moon for portuguese !) is a lightweight, reflective, imperative and functional programming language,
  designed as a scripting language with extensible semantics as a primary goal.(see official web site <a href="http://www.lua.org">here</a>)
 \subsubsection faq_binding_lua_why Why lua ?
-Lua is a fast,portable and powerful script language , quite simple to use for developpers .
+Lua is a fast,portable and powerful script language, quite simple to use for developpers .
 it combines procedural features with powerful data description facilities,
  by using a simple, yet powerful, mechanism of tables.
 Lua has a relatively simple C API compared to other scripting languages,
 and accordingly it provides a robust, easy to use it.
 \subsubsection faq_binding_lua_simgrid How to use lua in Simgrid ?
-Actually , the use of lua in Simgrid is quite simple , you have just to follow the same steps as coding with C in Simgird ,
- but this time , code with Lua ;) :
+Actually , the use of lua in Simgrid is quite simple, you have just to follow the same steps as coding with C in Simgird,
+ but this time, code with Lua ;) :
   - Coding functions coresponding to each process
   - loading the platforme/deployment XML file that describe the environment of simulation
   - and … Running the Simulation !!!
   
+\dontinclude lua/master_slave.lua
 \subsubsection faq_binding_lua_example_master_slave Master/Slave Example
+
  \li Master Code
-\verbatim
-function Master(...)
-  nb_task = arg[1];
-  comp_size = arg[2];
-  comm_size = arg[3];
-  slave_count = arg[4]
-  -- Dispatch the tasks
-  for i=1,nb_task do
-    tk = simgrid.Task.new("Task "..i,comp_size,comm_size);
-    alias = "slave "..(i%slave_count);
-    simgrid.info("Master sending ’" .. simgrid.Task.name(tk) .."’ To ’" .. alias .."’");
-    simgrid.Task.send(tk,alias);
-    simgrid.info("Master done sending ’".. simgrid.Task.name(tk) .."’ To ’" .. alias .."’");
-  end
-  -- Sending Finalize Message To Others
-  for i=0,slave_count-1 do
-    alias = "slave "..i;
-    simgrid.info("Master: sending finalize to "..alias);
-    finalize = simgrid.Task.new("finalize",comp_size,comm_size);
-    simgrid.Task.send(finalize,alias)
-  end
-end
-\endverbatim
-we mainly  use   simgrid.Task.new(task_name,computation_size,communication_size) to create our MSG Task , 
-	 then simgrid.Task.send(task,alias) to send it .
+ \until end_of_master
+we mainly  use   simgrid.Task.new(task_name,computation_size,communication_size) to create our MSG Task, 
+	 then simgrid.Task.send(task,alias) to send it.
 we  use also simgrid.Task.name(task), to get the task's name . 
 
 \li Slave Code
-\verbatim
-function Slave(...)
-  local my_mailbox="slave "..arg[1]
-  while true do
-    local tk = simgrid.Task.recv(my_mailbox);
-    if (simgrid.Task.name(tk) == "finalize") then
-      simgrid.info("Slave ’" ..my_mailbox.."’ got finalize msg");
-      break
-    end
-    simgrid.Task.execute(tk)
-  end
-  simgrid.info("Slave ’" ..my_mailbox.."’: I’m Done . See You !!");
-end
-\endverbatim
-Here , we could see how we use  simgrid.Task.recv(alias) to receive a task with a specific alias ,
+\until end_of_slave
+Here, we could see how we use  simgrid.Task.recv(alias) to receive a task with a specific alias,
 this function return directly the task recevied .
 
 \li Set Environmenet and run application
-\verbatim
-require "simgrid"
-simgrid.platform("my_platform.xml")
-simgrid.application("my_deployment.xml")
-simgrid.run()
-simgrid.info("Simulation’s over.See you.")
-simgrid.clean()
-\endverbatim
+\until simgrid.clean()
 
 \subsubsection faq_binding_lua_example_data Exchanging Data
-You can also exchange data between Process using lua .for that , you have to deal with  lua task as a table ,
-since lua is based itself on a mechanism of tables ,
-so  you can exchange any kind of data ( tables, matrix , strings … ) between process via tasks.
+You can also exchange data between Process using lua. for that, you have to deal with  lua task as a table,
+since lua is based itself on a mechanism of tables,
+so  you can exchange any kind of data ( tables, matrix, strings … ) between process via tasks.
 
 \li Sender process
 \verbatim 
@@ -2176,8 +2136,8 @@ so  you can exchange any kind of data ( tables, matrix , strings … ) between p
   …
   simgrid.Task.send(task,alias)
 \endverbatim
-	After creating task , we associate to it  various kind of data with a specific key , ( string in this case)
-	to distinguish between data variables . Via this key the receiver could access easily to  datas .
+	After creating task, we associate to it  various kind of data with a specific key,( string in this case)
+	to distinguish between data variables. Via this key the receiver could access easily to  datas.
 
 
 \li Receiver processe
@@ -2188,16 +2148,16 @@ so  you can exchange any kind of data ( tables, matrix , strings … ) between p
   sender_message = task['message']
   ...
 \endverbatim
-  	Note that in lua , both sender and receiver share the same lua task ! 
-	So that the receiver could joint data directly on the received task without sending it back .
+  	Note that in lua, both sender and receiver share the same lua task! 
+	So that the receiver could joint data directly on the received task without sending it back.
 	You can find  a complet example ( matrix multiplication case ) in the file example/lua/mult_matrix.lua 
 
 
 \subsubsection faq_binding_lua_example_bypass Bypass XML
-	maybe you wonder if there is a way to bypass the XML files ,
-	 and describe your platform directly from the code , with lua bindings it's Possible !! how ?
+	maybe you wonder if there is a way to bypass the XML files,
+	 and describe your platform directly from the code, with lua bindings it's Possible !! how ?
 	We provide some additional (tricky?) functions in lua that allows you to set up your own platform without using the XML files
-     ( this can be useful for large platforms , so a simple for loop will avoid you to deal with an annoying XML File ;) )
+     ( this can be useful for large platforms, so a simple for loop will avoid you to deal with an annoying XML File ;) )
      
 
 \li set Hosts
@@ -2232,13 +2192,13 @@ so  you can exchange any kind of data ( tables, matrix , strings … ) between p
    simgrid.Route.new("Jupiter","Bourassa",8,{"0","1","2","3","4","6","7","9"});
    ...
 \endverbatim
-  for each host you have to specify which route to choose to access to the rest of hosts connected in the grid .
+  for each host you have to specify which route to choose to access to the rest of hosts connected in the grid.
   
 \li Save platform
 \verbatim
   simgrid.register_platform();
 \endverbatim
-Don't forget to register your platform , that SURF callbacks starts their work ;)
+Don't forget to register your platform, that SURF callbacks starts their work ;)
 
 \li set application
 \verbatim
@@ -2248,30 +2208,27 @@ Don't forget to register your platform , that SURF callbacks starts their work ;
    simgrid.Host.setFunction("Fafard","Slave",1,{"2"});
    simgrid.Host.setFunction("Ginette","Slave",1,{"3"});
 \endverbatim
-  you don't  need to use a deployment XML file , thanks to  simgrid.Host.setFunction(host_id,function,args_number,args_list) 
+  you don't  need to use a deployment XML file, thanks to  simgrid.Host.setFunction(host_id,function,args_number,args_list) 
   you can associate functions for each host with arguments if needed .
 
 \li
 \verbatim
    simgrid.register_application();
 \endverbatim
-Yes , Here too you have to resgiter your application before running the simulation .
+Yes, Here too you have to resgiter your application before running the simulation.
 
 the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
 \subsection faq_binding_ruby Ruby Binding
 
-\subsubsection faq_binding_ruby_about What is Ruby ?
-Ruby is a dynamic, reflective, general purpose object-oriented programming language that combines syntax inspired by Perl with Smalltalk-like features.
-Ruby supports multiple programming paradigms, including functional, object oriented, imperative and reflective. It also has a dynamic type system and automatic memory management;
-it is therefore similar in varying respects to Python, Perl, Lisp, Dylan, Pike, and CLU.(see official web site <a href="http://ruby-lang.org">here</a>)
 
 \subsubsection faq_binding_ruby_simgrid Use Ruby in Simgrid
-Since v3.4 , the use of ruby in simgrid is available for the MSG Module .
-you can find almost all MSG functionalities in Ruby code , that allows you to set up your environment , manage tasks between hosts and run the simulation.
+Since v3.4, the use of <a href="http://ruby-lang.org">ruby</a> in simgrid is available for the MSG Module.
+you can find almost all MSG functionalities in Ruby code, that allows you to set up your environment, manage tasks between hosts and run the simulation.
 
+\dontinclude ruby/MasterSlave.rb
 \subsubsection faq_binding_ruby_example Master/Slave Ruby Application
-for each process method(master and slave in this example), you have to associate a ruby class , that should inherit from <i>MSG::Process</i> ruby class,
+for each process method(master and slave in this example), you have to associate a ruby class, that should inherit from <i>MSG::Process</i> ruby class,
   with a 'main' function that describe the behaviour of the process during the simulation.
 \li required stuff
 \verbatim
@@ -2280,46 +2237,8 @@ include MSG
 \endverbatim
 
 \li Master code
-\verbatim
-#################################################
-# Class Master
-#################################################
-class Master < MSG::Process  
-  # main : that function that will be executed when running simulation
+\until end_of_master
 
-  def main(args) # args is an array containing arguments for function master
-   size = args.size
-   for i in 0..size-1
-     MSG::info("args["+String(i)+"]="+args[i])
-   end
-  
-   raise "Master needs 3 arguments" if size < 3 
-   numberOfTask = Integer(args[0]) 
-   taskComputeSize = Float(args[1])
-   taskCommunicationSize = Float(args[2])
-   slaveCount = Integer(args[3]) 
-   
-   # Creates and sends the tasks
-    for i in 0..numberOfTask-1
-     task = Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
-     mailbox = "slave " + (i%slaveCount).to_s
-     MSG::info("Master Sending "+ task.name + " to " + mailbox + " with Comput Size " + 
-           task.compSize.to_s)
-     task.send(mailbox)
-     MSG::info("Master Done Sending " + task.name + " to " + mailbox)
-    end
-  
-   # Sending Finalize MSG::Tasks
-   MSG::info("Master: All tasks have been dispatched. Let's tell everybody the computation is over.")
-   for i in 0..slaveCount-1
-     mailbox = "slave " + i.to_s
-     finalize_task = Task.new("finalize",0,0)
-     finalize_task.send(mailbox)
-   end
-   MSG::info("Master : Everything's Done")
-  end    
-end
-\endverbatim
 the class MSG::Task contains methods that allows the management of the native MSG tasks.
 in master ruby code we used : 
   - <i>MSG::Task.new(task_name,compute_size,communication_size)</i> : to instanciate a new task.
@@ -2327,45 +2246,12 @@ in master ruby code we used :
   - <i>MSG::Task.name</i> : to get the task's name.
 
 \li Slave code
-\verbatim
-#################################################
-# Class Slave
-#################################################
-class Slave < MSG::Process
-
-  def main(args)
-    mailbox = "slave " + args[0]
-    for i in 0..args.size-1
-      MSG::debug("args["+String(i)+"]="+args[i])
-    end
-
-    while true
-       task = Task.receive(mailbox)
-       if (task.name == "finalize")
-	       break
-       end
-       task.execute
-       MSG::debug("Slave '" + mailbox + "' done executing task "+ task.name + ".")
-    end
-    MSG::info("I'm done, see you")
-  end
-end
-\endverbatim
-to receive a task , we use the method <i>MSG::Task.receive(mailbox)</i> that return a MSG:Task object (received task).
+\until end_of_slave
+to receive a task, we use the method <i>MSG::Task.receive(mailbox)</i> that return a MSG:Task object (received task).
 
 \li Main chunk
-\verbatim
-if (ARGV.length == 2) 
-	MSG.createEnvironment(ARGV[0])
-	MSG.deployApplication(ARGV[1])
-else 
-	MSG.createEnvironment("platform.xml")
-	MSG.deployApplication("deploy.xml")
-end
-MSG.run
-puts "Simulation time : " + MSG.getClock .to_s
-MSG.exit
-\endverbatim
+\until MSG.exit
+
 - <i>MSG.createEnvironment(platform_file)</i> : set up the environment
 - <i>MSG.deployApplication(deployment_file)</i> : load the deployment file description.
 - <i>MSG.run</i> : run the simulation
@@ -2399,10 +2285,10 @@ you can find a complet example illustrating the use of those methods  in file /e
 
 \li inheritence 
  
- another 'object-oriented' way to do it , is to make your own 'task' class that inherit from  MSG::Task ,
- and contains data you want to deal with , the only 'tricky' thing is that "the initializer" method has no effect ! 
+ another 'object-oriented' way to do it, is to make your own 'task' class that inherit from  MSG::Task ,
+ and contains data you want to deal with, the only 'tricky' thing is that "the initializer" method has no effect ! 
  
- the use of some getter/setter methods would be the simple way to manage your data  :) 
+ the use of some getter/setter methods would be the simple way to manage your data :)
  \verbatim
 class PingPongTask < MSG::Task
   # The initialize method has no effect 
