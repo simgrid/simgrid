@@ -1,6 +1,6 @@
-/* simple test trying to load a DAX file.                                   */
+/* simple test trying to load a DOT file.                                   */
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 20010. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -16,15 +16,6 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,
                              "Logging specific to this SimDag example");
 
-static int name_compare_hosts(const void *n1, const void *n2)
-{
-    char name1[80], name2[80];
-    strcpy(name1, SD_workstation_get_name(*((SD_workstation_t *) n1)));
-    strcpy(name2, SD_workstation_get_name(*((SD_workstation_t *) n2)));
-
-    return strcmp(name1, name2);
-}
-
 int main(int argc, char **argv) {
     xbt_dynar_t dot, changed;
     unsigned int cursor;
@@ -36,7 +27,7 @@ int main(int argc, char **argv) {
     /* Check our arguments */
     if (argc < 3) {
         INFO1("Usage: %s platform_file dot_file [trace_file]", argv[0]);
-        INFO1("example: %s ../sd_platform.xml Montage_50.xml Montage_50.mytrace", argv[0]);
+        INFO1("example: %s ../2clusters.xml dag.dot dag.mytrace", argv[0]);
         exit(1);
     }
     char *tracefilename;
@@ -51,7 +42,7 @@ int main(int argc, char **argv) {
     /* creation of the environment */
     SD_create_environment(argv[1]);
 
-    /* load the DAX file */
+    /* load the DOT file */
     dot=SD_dotload(argv[2]);
 
     /* Display all the tasks */
@@ -71,9 +62,6 @@ int main(int argc, char **argv) {
     /* Schedule them all on the first workstation */
     INFO0("------------------- Schedule tasks ---------------------------");
     const SD_workstation_t *ws_list =  SD_workstation_get_list();
-    int totalHosts = SD_workstation_get_number();
-    qsort((void *) ws_list, totalHosts, sizeof(SD_workstation_t),
-          name_compare_hosts);
 
     int count = SD_workstation_get_number();
     xbt_dynar_foreach(dot,cursor,task) {

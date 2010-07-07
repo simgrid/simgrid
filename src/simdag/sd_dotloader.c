@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd,"Parsing DOT files");
 #undef CLEANUP
 #include <graphviz/cgraph.h>
 
-static double parse_double(const char *string) {
+static double dot_parse_double(const char *string) {
     if (string == NULL) return -10;
     int ret = 0;
     double value;
@@ -24,7 +24,7 @@ static double parse_double(const char *string) {
         WARN1("%s is not a double", string);
     return value;
 }
-static int parse_int(const char *string) {
+static int dot_parse_int(const char *string) {
     if (string == NULL) return -10;
     int ret = 0;
     int value;
@@ -54,14 +54,18 @@ static void dot_task_free(void*task){
     SD_task_t t=task;
     SD_task_destroy(t);
 }
-void Start_dot_job(Agnode_t *dag_node) ;
-void input_edge(SD_task_t current_job, Agedge_t *edge) ;
-void output_edge(SD_task_t current_job, Agedge_t *edge) ;
+void dot_add_task(Agnode_t *dag_node) ;
+void dot_add_input_dependencies(SD_task_t current_job, Agedge_t *edge) ;
+void dot_add_output_dependencies(SD_task_t current_job, Agedge_t *edge) ;
 
-/** @brief loads a DAX file describing a DAG
+/** @brief loads a DOT file describing a DAG
  * 
- * See https://confluence.pegasus.isi.edu/display/pegasus/WorkflowGenerator
+ * See http://www.graphviz.org/doc/info/lang.html
  * for more details.
+ * To obtain information about transfers and tasks, two attributes are
+ * required : size on task (execution time in Flop) and size on edge
+ * (the amount of data transfer in bit).
+ * if they aren't here, there choose to be equal to zero.
  */
 xbt_dynar_t SD_dotload(const char*filename){
     FILE* in_file = fopen(filename,"r");
@@ -87,7 +91,7 @@ xbt_dynar_t SD_dotload_FILE(FILE* in_file){
 
     Agnode_t *dag_node   = NULL;
     for (dag_node = agfstnode(dag_dot); dag_node; dag_node = agnxtnode(dag_dot,dag_node)){	
-        Start_dot_job(dag_node);	
+        dot_add_task(dag_node);	
     }
     agclose(dag_dot);
     xbt_dict_free(&jobs);
@@ -140,14 +144,16 @@ xbt_dynar_t SD_dotload_FILE(FILE* in_file){
     /* Free previous copy of the files */
     xbt_dict_free(&files);
 
-    //INFO2("result : %lld, dot : %lld",result,*dot);
     return result;
 }
 
-void Start_dot_job(Agnode_t *dag_node) {
+/* dot_add_task create a sd_task and all transfers required for this
+ * task. The execution time of the task is given by the attribute size.
+ * The unit of size is the Flop.*/
+void dot_add_task(Agnode_t *dag_node) {
     char *name = agnameof(dag_node);
-    double runtime = parse_double(agget(dag_node,(char*)"size"));
-    long performer = (long)parse_int((char *) agget(dag_node,(char*)"performer"));
+    double runtime = dot_parse_double(agget(dag_node,(char*)"size"));
+    long performer = (long)dot_parse_int((char *) agget(dag_node,(char*)"performer"));
     INFO3("See <job id=%s runtime=%s %.0f>",name,agget(dag_node,(char*)"size"),runtime);
     SD_task_t current_job = SD_task_create_comp_seq(name,(void*)performer,runtime);
     xbt_dict_set(jobs,name,current_job,NULL);
@@ -155,7 +161,7 @@ void Start_dot_job(Agnode_t *dag_node) {
     Agedge_t    *e;
     int count = 0;
     for (e = agfstin(dag_dot,dag_node); e; e = agnxtin(dag_dot,e)) {
-        input_edge(current_job,e);
+        dot_add_input_dependencies(current_job,e);
         count++;
     }
     if (count==0){
@@ -177,7 +183,7 @@ void Start_dot_job(Agnode_t *dag_node) {
     }
     count = 0;
     for (e = agfstout(dag_dot,dag_node); e; e = agnxtout(dag_dot,e)) {
-        output_edge(current_job,e);
+        dot_add_output_dependencies(current_job,e);
         count++;
     }
     if (count==0){
@@ -203,14 +209,18 @@ void Start_dot_job(Agnode_t *dag_node) {
     }
 }
 
-void input_edge(SD_task_t current_job, Agedge_t *edge) {
+/* dot_add_output_dependencies create the dependencies between a task
+ * and a transfers. This is given by the edges in the dot file. 
+ * The amount of data transfers is given by the attribute size on the
+ * edge. */
+void dot_add_input_dependencies(SD_task_t current_job, Agedge_t *edge) {
     SD_task_t file;
 
     char name[80];
     sprintf(name ,"%s->%s",agnameof(agtail(edge)) ,agnameof(aghead(edge)));
-    double size = parse_double(agget(edge,(char*)"size"));
-    //int sender = parse_int(agget(edge,(char*)"sender"));
-    //int reciever = parse_int(agget(edge,(char*)"reciever"));
+    double size = dot_parse_double(agget(edge,(char*)"size"));
+    //int sender = dot_parse_int(agget(edge,(char*)"sender"));
+    //int reciever = dot_parse_int(agget(edge,(char*)"reciever"));
 
     file = xbt_dict_get_or_null(files,name);
     if (file==NULL) {
@@ -225,13 +235,17 @@ void input_edge(SD_task_t current_job, Agedge_t *edge) {
     SD_task_dependency_add(NULL,NULL,file,current_job);
 }
 
-void output_edge(SD_task_t current_job, Agedge_t *edge) {
+/* dot_add_output_dependencies create the dependencies between a
+ * transfers and a task. This is given by the edges in the dot file.
+ * The amount of data transfers is given by the attribute size on the
+ * edge. */
+void dot_add_output_dependencies(SD_task_t current_job, Agedge_t *edge) {
     SD_task_t file;
     char name[80];
     sprintf(name ,"%s->%s",agnameof(agtail(edge)) ,agnameof(aghead(edge)));
-    double size = parse_double(agget(edge,(char*)"size"));
-    //int sender = parse_int(agget(edge,(char*)"sender"));
-    //int reciever = parse_int(agget(edge,(char*)"reciever"));
+    double size = dot_parse_double(agget(edge,(char*)"size"));
+    //int sender = dot_parse_int(agget(edge,(char*)"sender"));
+    //int reciever = dot_parse_int(agget(edge,(char*)"reciever"));
 
     //INFO2("See <uses file=%s %s>",A_dot__uses_file,(is_input?"in":"out"));
     file = xbt_dict_get_or_null(files,name);
