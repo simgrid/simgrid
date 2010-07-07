@@ -11,10 +11,6 @@ comp_size = arg[2];
 comm_size = arg[3];
 slave_count = arg[4]
 
-A = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}
-
---print (A[1][3])
-
 if (#arg ~= 4) then
     error("Argc should be 4");
 end
