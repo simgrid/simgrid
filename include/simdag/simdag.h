@@ -146,6 +146,7 @@ XBT_PUBLIC(int) SD_task_get_workstation_count(SD_task_t task);
 XBT_PUBLIC(SD_workstation_t*) SD_task_get_workstation_list(SD_task_t task);
 XBT_PUBLIC(void) SD_task_destroy(SD_task_t task);
 XBT_PUBLIC(void) SD_task_dump(SD_task_t task);
+XBT_PUBLIC(void) SD_task_dotty(SD_task_t task,void* out_FILE);
 
 XBT_PUBLIC(SD_task_t) SD_task_create_comp_seq(const char*name,void *data,double amount);
 XBT_PUBLIC(SD_task_t) SD_task_create_comm_e2e(const char*name,void *data,double amount);
@@ -200,7 +201,6 @@ XBT_PUBLIC(double) SD_get_clock(void);
 XBT_PUBLIC(void) SD_exit(void);
 XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char*filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char*filename);
-XBT_PUBLIC(xbt_dynar_t) SD_dotload_FILE(FILE* in_file);
 
 /** @} */
 

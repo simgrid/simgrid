@@ -14,6 +14,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd,"Parsing DOT files");
 #undef CLEANUP
 #include <graphviz/cgraph.h>
 
+void dot_add_task(Agnode_t *dag_node) ;
+void dot_add_input_dependencies(SD_task_t current_job, Agedge_t *edge) ;
+void dot_add_output_dependencies(SD_task_t current_job, Agedge_t *edge) ;
+xbt_dynar_t SD_dotload_FILE(FILE* in_file);
+
 static double dot_parse_double(const char *string) {
     if (string == NULL) return -10;
     int ret = 0;
@@ -54,9 +59,6 @@ static void dot_task_free(void*task){
     SD_task_t t=task;
     SD_task_destroy(t);
 }
-void dot_add_task(Agnode_t *dag_node) ;
-void dot_add_input_dependencies(SD_task_t current_job, Agedge_t *edge) ;
-void dot_add_output_dependencies(SD_task_t current_job, Agedge_t *edge) ;
 
 /** @brief loads a DOT file describing a DAG
  * 
