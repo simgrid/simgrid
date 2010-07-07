@@ -7,8 +7,6 @@
 #ifndef INSTR_H_
 #define INSTR_H_
 
-#include "instr/tracing_config.h"
-
 #ifdef HAVE_TRACING
 
 #define NO_TRACE		0
