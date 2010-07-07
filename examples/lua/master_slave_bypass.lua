@@ -39,6 +39,8 @@ end
   simgrid.info("Master: Everything's done.");
 end
 
+--end_of_master
+
 -- Slave Function ---------------------------------------------------------
 function Slave(...)
 
@@ -60,7 +62,11 @@ end -- while
 
 simgrid.info("Slave '" ..my_mailbox.."': I'm Done . See You !!");
 
-end -- function ----------------------------------------------------------
+end 
+
+-- end_of_slave
+
+-- Simulation Core ----------------------------------------------------------
 --]]
 
 require "simgrid"
@@ -74,7 +80,7 @@ require "simgrid"
 
     -- create Links
   for i=0,11 do
-    simgrid.Link.new(i,252750+ i*768,0.000270544+i*0.087);    -- let's create link !! with crazy values ;)
+    simgrid.Link.new(i,252750+ i*768,0.000270544+i*0.087);   
   end
 
 
@@ -128,3 +134,5 @@ require "simgrid"
    simgrid.run()
    simgrid.info("Simulation's over.See you.")
    simgrid.clean()
+
+
