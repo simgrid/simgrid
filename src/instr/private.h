@@ -7,7 +7,7 @@
 #ifndef INSTR_PRIVATE_H_
 #define INSTR_PRIVATE_H_
 
-#include "instr/tracing_config.h"
+#include "simgrid_config.h"
 
 #ifdef HAVE_TRACING
 

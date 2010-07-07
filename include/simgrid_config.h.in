@@ -19,9 +19,9 @@
 	#endif
 #endif
 
-#cmakedefine _XBT_WIN32 @_XBT_WIN32@	//this variable is set if it is a windows platform
-#cmakedefine _WIN32 @_WIN32@			//this variable is set if it is a 32 bits windows platform
-#cmakedefine _WIN64 @_WIN64@			//this variable is set if it is a 64 bits  windows platform
+#cmakedefine _XBT_WIN32 @_XBT_WIN32@	/*this variable is set if it is a windows platform*/
+#cmakedefine _WIN32 @_WIN32@			/*this variable is set if it is a 32 bits windows platform*/
+#cmakedefine _WIN64 @_WIN64@			/*this variable is set if it is a 64 bits  windows platform*/
 #cmakedefine __VISUALC__ @__VISUALC__@
 #cmakedefine __BORLANDC__ @__BORLANDC__@
 
@@ -83,6 +83,9 @@ XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
  */
 XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /** @} */
+
+/* Tracing SimGrid */
+#cmakedefine HAVE_TRACING @HAVE_TRACING@
 
 SG_END_DECL()
 #endif /* SIMGRID_PUBLIC_CONFIG_H */

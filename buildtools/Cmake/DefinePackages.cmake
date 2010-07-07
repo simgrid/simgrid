@@ -407,7 +407,6 @@ include/gras/timer.h
 include/amok/peermanagement.h
 include/amok/bandwidth.h
 include/instr/instr.h
-include/instr/tracing_config.h
 include/simgrid_config.h
 include/gras.h 
 include/xbt.h
@@ -751,7 +750,6 @@ set(source_to_pack
 	buildtools/Cmake/test_prog/prog_va_copy.c
 	buildtools/Cmake/test_prog/prog_vsnprintf.c
 	buildtools/Cmake/gras_config.h.in
-	buildtools/Cmake/tracing_config.h.in
 	AUTHORS
 	ChangeLog
 	COPYING
