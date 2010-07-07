@@ -4,7 +4,6 @@ include MSG
 # Class Master
 #################################################
 
-
 class Master < MSG::Process  
   # main : that function that will be executed when running simulation
 
@@ -41,6 +40,9 @@ class Master < MSG::Process
    MSG::info("Master : Everything's Done")
   end    
 end
+
+# end_of_master
+
 #################################################
 # Class Slave
 #################################################
@@ -63,6 +65,9 @@ class Slave < MSG::Process
     MSG::info("I'm done, see you")
   end
 end
+
+# end_of_slave
+
 #################################################
 # main chunck
 #################################################
