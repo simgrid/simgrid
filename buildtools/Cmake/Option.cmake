@@ -1,20 +1,6 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see after)
 ### ex: cmake -Denable_java=ON -Denable_gtnets=ON ./
 
-if(APPLE AND NOT CGRAPH_PATH)
-	set(CGRAPH_PATH "/opt/local/include/graphviz" CACHE PATH "Path to cgraph.h")
-else(APPLE AND NOT CGRAPH_PATH)
-
-	if(EXISTS "/usr/include/graphviz")
-		set(include_graphviz "/usr/include/graphviz")
-	endif(EXISTS "/usr/include/graphviz")
-	if(EXISTS "/usr/local/include/graphviz")
-		set(include_graphviz "/usr/local/include/graphviz")
-	endif(EXISTS "/usr/local/include/graphviz")
-	
-	set(CGRAPH_PATH ${include_graphviz} CACHE PATH "Path to cgraph.h")
-endif(APPLE AND NOT CGRAPH_PATH)
-
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib")
 set(custom_flags ${custom_flags} CACHE FORCE "Customers flags add to cmake_c_flag")

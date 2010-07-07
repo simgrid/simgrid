@@ -6,11 +6,6 @@ include(TestBigEndian)
 
 TEST_BIG_ENDIAN(BIGENDIAN)
 
-set(CMAKE_REQUIRED_INCLUDES
-			${CGRAPH_PATH}
-			${CMAKE_REQUIRED_INCLUDES}
-			)
-
 # Checks for header libraries functions.
 
 CHECK_LIBRARY_EXISTS(pthread 	pthread_create 		NO_DEFAULT_PATHS pthread)
@@ -43,7 +38,6 @@ CHECK_INCLUDE_FILE("stdlib.h" HAVE_STDLIB_H)
 CHECK_INCLUDE_FILE("strings.h" HAVE_STRINGS_H)
 CHECK_INCLUDE_FILE("string.h" HAVE_STRING_H)
 CHECK_INCLUDE_FILE("ucontext.h" HAVE_UCONTEXT_H)
-CHECK_INCLUDE_FILE("graphviz/cgraph.h" HAVE_CGRAPH_H)
 
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(usleep HAVE_USLEEP)
@@ -208,13 +202,6 @@ if(enable_java)
 endif(enable_java)
 
 #--------------------------------------------------------------------------------------------------
-### Initialize of cgraph
-
-if(HAVE_CGRAPH_H)
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${CGRAPH_PATH} ")
-endif(HAVE_CGRAPH_H)
-
-#--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT GTNETS
 if(NOT enable_gtnets OR enable_supernovae)
 	SET(HAVE_GTNETS 0)
@@ -230,6 +217,30 @@ else(NOT enable_gtnets OR enable_supernovae)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
 	endif(COMPILE_GTNETS_VAR)
 endif(NOT enable_gtnets OR enable_supernovae)
+
+#--------------------------------------------------------------------------------------------------
+### Initialize of cgraph
+
+find_library(HAVE_CGRAPH_LIB cgraph)
+find_file(HAVE_CGRAPH_H graphviz/cgraph.h)
+mark_as_advanced(HAVE_CGRAPH_LIB)
+mark_as_advanced(HAVE_CGRAPH_H)
+
+if(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
+	string(REGEX REPLACE "libcgraph.*" "" lib_cgraph ${HAVE_CGRAPH_LIB})
+	string(REPLACE "graphviz/cgraph.h" "" file_cgraph_h ${HAVE_CGRAPH_H})
+	
+	string(REGEX MATCH "-L${lib_cgraph}" operation "${CMAKE_EXE_LINKER_FLAGS}")
+	if(NOT operation)
+		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}-L${lib_cgraph} ")
+	endif(NOT operation)
+	
+	string(REGEX MATCH "-I${file_cgraph_h}" operation "${CMAKE_C_FLAGS}")
+	if(NOT operation)
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${file_cgraph_h} ")
+	endif(NOT operation)
+	
+endif(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
