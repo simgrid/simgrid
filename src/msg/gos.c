@@ -514,6 +514,23 @@ MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout) {
 	return res;
 }
 
+
+/* This function is called by a sender and permit to wait for each communication
+ *
+ * Param:
+ * - msg_comm_t *comm a vector of communication
+ * - int nb_elem is th esize of the comm vector
+ * - timeout for each call of  MSG_comm_wait
+ */
+
+void MSG_comm_waitall(msg_comm_t *comm,int nb_elem, double timeout) {
+	int i=0;
+	for(i=0; i<nb_elem; i++)
+	{
+		MSG_comm_wait(comm[i],timeout);
+	}
+}
+
 /** \ingroup msg_gos_functions
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.

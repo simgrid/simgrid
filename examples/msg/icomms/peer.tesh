@@ -1,60 +1,68 @@
 #! ./tesh
 
-p Testing an ireceive and isend application
 
-$ ./peer small_platform.xml deployment_peer01.xml 
+
+p Test1 MSG_comm_test() with Sleep_sender > Sleep_receiver
+
+$ ./peer small_platform.xml deployment_peer01.xml
 > [Tremblay:sender:(1) 0.000000] [msg_test/INFO] sleep_start_time : 5.000000 , sleep_test_time : 0.100000
-> [Ruby:receiver:(2) 0.000000] [msg_test/INFO] sleep_start_time : 1.000000 
+> [Ruby:receiver:(2) 0.000000] [msg_test/INFO] sleep_start_time : 1.000000 , sleep_test_time : 0.100000
 > [Ruby:receiver:(2) 1.000000] [msg_test/INFO] Wait to receive a task
 > [Tremblay:sender:(1) 5.000000] [msg_test/INFO] Send to receiver-0 Task_0
-> [Ruby:receiver:(2) 5.016560] [msg_test/INFO] Received "Task_0"
-> [Ruby:receiver:(2) 5.016560] [msg_test/INFO] Processing "Task_0"
+> [Ruby:receiver:(2) 5.100000] [msg_test/INFO] Received "Task_0"
+> [Ruby:receiver:(2) 5.100000] [msg_test/INFO] Processing "Task_0"
 > [Tremblay:sender:(1) 5.100000] [msg_test/INFO] Send to receiver-0 Task_1
-> [Ruby:receiver:(2) 5.526270] [msg_test/INFO] "Task_0" done
-> [Ruby:receiver:(2) 5.526270] [msg_test/INFO] Wait to receive a task
-> [Ruby:receiver:(2) 5.542830] [msg_test/INFO] Received "Task_1"
-> [Ruby:receiver:(2) 5.542830] [msg_test/INFO] Processing "Task_1"
-> [Tremblay:sender:(1) 5.600000] [msg_test/INFO] Send to receiver-0 Task_2
-> [Ruby:receiver:(2) 6.052540] [msg_test/INFO] "Task_1" done
-> [Ruby:receiver:(2) 6.052540] [msg_test/INFO] Wait to receive a task
-> [Ruby:receiver:(2) 6.069100] [msg_test/INFO] Received "Task_2"
-> [Ruby:receiver:(2) 6.069100] [msg_test/INFO] Processing "Task_2"
-> [Tremblay:sender:(1) 6.100000] [msg_test/INFO] Send to receiver-0 finalize
-> [Ruby:receiver:(2) 6.578810] [msg_test/INFO] "Task_2" done
-> [Ruby:receiver:(2) 6.578810] [msg_test/INFO] Wait to receive a task
-> [Ruby:receiver:(2) 6.580370] [msg_test/INFO] Received "finalize"
-> [Ruby:receiver:(2) 6.580370] [msg_test/INFO] I'm done. See you!
-> [Tremblay:sender:(1) 6.600000] [msg_test/INFO] Goodbye now!
-> [6.600000] [msg_test/INFO] Simulation time 6.6
+> [Ruby:receiver:(2) 5.609710] [msg_test/INFO] "Task_0" done
+> [Ruby:receiver:(2) 5.609710] [msg_test/INFO] Wait to receive a task
+> [Tremblay:sender:(1) 5.700000] [msg_test/INFO] Send to receiver-0 Task_2
+> [Ruby:receiver:(2) 5.709710] [msg_test/INFO] Received "Task_1"
+> [Ruby:receiver:(2) 5.709710] [msg_test/INFO] Processing "Task_1"
+> [Ruby:receiver:(2) 6.219420] [msg_test/INFO] "Task_1" done
+> [Ruby:receiver:(2) 6.219420] [msg_test/INFO] Wait to receive a task
+> [Tremblay:sender:(1) 6.300000] [msg_test/INFO] Send to receiver-0 finalize
+> [Ruby:receiver:(2) 6.319420] [msg_test/INFO] Received "Task_2"
+> [Ruby:receiver:(2) 6.319420] [msg_test/INFO] Processing "Task_2"
+> [Ruby:receiver:(2) 6.829130] [msg_test/INFO] "Task_2" done
+> [Ruby:receiver:(2) 6.829130] [msg_test/INFO] Wait to receive a task
+> [Tremblay:sender:(1) 6.900000] [msg_test/INFO] Goodbye now!
+> [Ruby:receiver:(2) 6.929130] [msg_test/INFO] Received "finalize"
+> [Ruby:receiver:(2) 6.929130] [msg_test/INFO] I'm done. See you!
+> [6.929130] [msg_test/INFO] Simulation time 6.92913
 
-$ ./peer small_platform.xml deployment_peer02.xml 
+
+p Test2 MSG_comm_test() with Sleep_sender < Sleep_receiver
+
+$ ./peer small_platform.xml deployment_peer02.xml
 > [Tremblay:sender:(1) 0.000000] [msg_test/INFO] sleep_start_time : 1.000000 , sleep_test_time : 0.100000
-> [Ruby:receiver:(2) 0.000000] [msg_test/INFO] sleep_start_time : 5.000000 
+> [Ruby:receiver:(2) 0.000000] [msg_test/INFO] sleep_start_time : 5.000000 , sleep_test_time : 0.100000
 > [Tremblay:sender:(1) 1.000000] [msg_test/INFO] Send to receiver-0 Task_0
 > [Ruby:receiver:(2) 5.000000] [msg_test/INFO] Wait to receive a task
-> [Ruby:receiver:(2) 5.016560] [msg_test/INFO] Received "Task_0"
-> [Ruby:receiver:(2) 5.016560] [msg_test/INFO] Processing "Task_0"
 > [Tremblay:sender:(1) 5.100000] [msg_test/INFO] Send to receiver-0 Task_1
-> [Ruby:receiver:(2) 5.526270] [msg_test/INFO] "Task_0" done
-> [Ruby:receiver:(2) 5.526270] [msg_test/INFO] Wait to receive a task
-> [Ruby:receiver:(2) 5.542830] [msg_test/INFO] Received "Task_1"
-> [Ruby:receiver:(2) 5.542830] [msg_test/INFO] Processing "Task_1"
-> [Tremblay:sender:(1) 5.600000] [msg_test/INFO] Send to receiver-0 Task_2
-> [Ruby:receiver:(2) 6.052540] [msg_test/INFO] "Task_1" done
-> [Ruby:receiver:(2) 6.052540] [msg_test/INFO] Wait to receive a task
-> [Ruby:receiver:(2) 6.069100] [msg_test/INFO] Received "Task_2"
-> [Ruby:receiver:(2) 6.069100] [msg_test/INFO] Processing "Task_2"
-> [Tremblay:sender:(1) 6.100000] [msg_test/INFO] Send to receiver-0 finalize
-> [Ruby:receiver:(2) 6.578810] [msg_test/INFO] "Task_2" done
-> [Ruby:receiver:(2) 6.578810] [msg_test/INFO] Wait to receive a task
-> [Ruby:receiver:(2) 6.580370] [msg_test/INFO] Received "finalize"
-> [Ruby:receiver:(2) 6.580370] [msg_test/INFO] I'm done. See you!
-> [Tremblay:sender:(1) 6.600000] [msg_test/INFO] Goodbye now!
-> [6.600000] [msg_test/INFO] Simulation time 6.6
+> [Ruby:receiver:(2) 5.100000] [msg_test/INFO] Received "Task_0"
+> [Ruby:receiver:(2) 5.100000] [msg_test/INFO] Processing "Task_0"
+> [Ruby:receiver:(2) 5.609710] [msg_test/INFO] "Task_0" done
+> [Ruby:receiver:(2) 5.609710] [msg_test/INFO] Wait to receive a task
+> [Tremblay:sender:(1) 5.700000] [msg_test/INFO] Send to receiver-0 Task_2
+> [Ruby:receiver:(2) 5.709710] [msg_test/INFO] Received "Task_1"
+> [Ruby:receiver:(2) 5.709710] [msg_test/INFO] Processing "Task_1"
+> [Ruby:receiver:(2) 6.219420] [msg_test/INFO] "Task_1" done
+> [Ruby:receiver:(2) 6.219420] [msg_test/INFO] Wait to receive a task
+> [Tremblay:sender:(1) 6.300000] [msg_test/INFO] Send to receiver-0 finalize
+> [Ruby:receiver:(2) 6.319420] [msg_test/INFO] Received "Task_2"
+> [Ruby:receiver:(2) 6.319420] [msg_test/INFO] Processing "Task_2"
+> [Ruby:receiver:(2) 6.829130] [msg_test/INFO] "Task_2" done
+> [Ruby:receiver:(2) 6.829130] [msg_test/INFO] Wait to receive a task
+> [Tremblay:sender:(1) 6.900000] [msg_test/INFO] Goodbye now!
+> [Ruby:receiver:(2) 6.929130] [msg_test/INFO] Received "finalize"
+> [Ruby:receiver:(2) 6.929130] [msg_test/INFO] I'm done. See you!
+> [6.929130] [msg_test/INFO] Simulation time 6.92913
 
-$ ./peer small_platform.xml deployment_peer03.xml 
+
+p Test1 MSG_comm_wait() with Sleep_sender > Sleep_receiver
+
+$ ./peer small_platform.xml deployment_peer03.xml
 > [Tremblay:sender:(1) 0.000000] [msg_test/INFO] sleep_start_time : 5.000000 , sleep_test_time : 0.000000
-> [Ruby:receiver:(2) 0.000000] [msg_test/INFO] sleep_start_time : 1.000000 
+> [Ruby:receiver:(2) 0.000000] [msg_test/INFO] sleep_start_time : 1.000000 , sleep_test_time : 0.000000
 > [Ruby:receiver:(2) 1.000000] [msg_test/INFO] Wait to receive a task
 > [Tremblay:sender:(1) 5.000000] [msg_test/INFO] Send to receiver-0 Task_0
 > [Ruby:receiver:(2) 5.016560] [msg_test/INFO] Received "Task_0"
@@ -77,9 +85,12 @@ $ ./peer small_platform.xml deployment_peer03.xml
 > [Ruby:receiver:(2) 6.580370] [msg_test/INFO] I'm done. See you!
 > [6.580370] [msg_test/INFO] Simulation time 6.58037
 
-$ ./peer small_platform.xml deployment_peer04.xml 
+
+p Test2 MSG_comm_wait() with Sleep_sender < Sleep_receiver
+
+$ ./peer small_platform.xml deployment_peer04.xml
 > [Tremblay:sender:(1) 0.000000] [msg_test/INFO] sleep_start_time : 1.000000 , sleep_test_time : 0.000000
-> [Ruby:receiver:(2) 0.000000] [msg_test/INFO] sleep_start_time : 5.000000 
+> [Ruby:receiver:(2) 0.000000] [msg_test/INFO] sleep_start_time : 5.000000 , sleep_test_time : 0.000000
 > [Tremblay:sender:(1) 1.000000] [msg_test/INFO] Send to receiver-0 Task_0
 > [Ruby:receiver:(2) 5.000000] [msg_test/INFO] Wait to receive a task
 > [Tremblay:sender:(1) 5.016560] [msg_test/INFO] Send to receiver-0 Task_1
@@ -101,3 +112,32 @@ $ ./peer small_platform.xml deployment_peer04.xml
 > [Ruby:receiver:(2) 6.580370] [msg_test/INFO] Received "finalize"
 > [Ruby:receiver:(2) 6.580370] [msg_test/INFO] I'm done. See you!
 > [6.580370] [msg_test/INFO] Simulation time 6.58037
+
+
+p Test1 MSG_comm_waitall() for sender 
+
+$ ./peer2 small_platform.xml deployment_peer.xml
+> [Tremblay:sender:(1) 0.000000] [msg_test/INFO] Send to receiver-0 Task_0
+> [Tremblay:sender:(1) 0.000000] [msg_test/INFO] Send to receiver-0 Task_1
+> [Tremblay:sender:(1) 0.000000] [msg_test/INFO] Send to receiver-0 Task_2
+> [Tremblay:sender:(1) 0.000000] [msg_test/INFO] Send to receiver-0 finalize
+> [Tremblay:sender:(1) 0.000000] [msg_gos/INFO] NB_WAIT_TO_DO : 4
+> [Ruby:receiver:(2) 10.000000] [msg_test/INFO] Wait to receive a task
+> [Ruby:receiver:(2) 10.016560] [msg_test/INFO] Received "Task_0"
+> [Ruby:receiver:(2) 10.016560] [msg_test/INFO] Processing "Task_0"
+> [Ruby:receiver:(2) 10.526270] [msg_test/INFO] "Task_0" done
+> [Ruby:receiver:(2) 10.526270] [msg_test/INFO] Wait to receive a task
+> [Ruby:receiver:(2) 10.542830] [msg_test/INFO] Received "Task_1"
+> [Ruby:receiver:(2) 10.542830] [msg_test/INFO] Processing "Task_1"
+> [Ruby:receiver:(2) 11.052540] [msg_test/INFO] "Task_1" done
+> [Ruby:receiver:(2) 11.052540] [msg_test/INFO] Wait to receive a task
+> [Ruby:receiver:(2) 11.069100] [msg_test/INFO] Received "Task_2"
+> [Ruby:receiver:(2) 11.069100] [msg_test/INFO] Processing "Task_2"
+> [Ruby:receiver:(2) 11.578810] [msg_test/INFO] "Task_2" done
+> [Ruby:receiver:(2) 11.578810] [msg_test/INFO] Wait to receive a task
+> [Tremblay:sender:(1) 11.580370] [msg_test/INFO] Goodbye now!
+> [Ruby:receiver:(2) 11.580370] [msg_test/INFO] Received "finalize"
+> [Ruby:receiver:(2) 11.580370] [msg_test/INFO] I'm done. See you!
+> [11.580370] [msg_test/INFO] Simulation time 11.5804
+
+

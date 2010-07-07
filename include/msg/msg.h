@@ -170,6 +170,7 @@ XBT_PUBLIC(msg_comm_t)   MSG_task_irecv(m_task_t * task, const char *alias);
 XBT_PUBLIC(int)               MSG_comm_test(msg_comm_t comm);
 XBT_PUBLIC(void)              MSG_comm_destroy(msg_comm_t comm);
 XBT_PUBLIC(MSG_error_t) MSG_comm_wait(msg_comm_t comm,double timeout);
+XBT_PUBLIC(void) MSG_comm_waitall(msg_comm_t *comm,int nb_elem, double timeout);
 
 
 XBT_PUBLIC(int) MSG_task_listen(const char *alias);
