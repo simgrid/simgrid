@@ -9,8 +9,7 @@ end
 nb_task = arg[1];
 comp_size = arg[2];
 comm_size = arg[3];
-slave_count = arg[4]
-
+slave_count = arg[4];
 
 if (#arg ~= 4) then
     error("Argc should be 4");
@@ -63,7 +62,6 @@ end -- while
 simgrid.info("Slave '" ..my_mailbox.."': I'm Done . See You !!");
 
 end 
-
 -- end_of_slave
 
 -- Simulation Core ----------------------------------------------------------
@@ -82,57 +80,49 @@ require "simgrid"
   for i=0,11 do
     simgrid.Link.new(i,252750+ i*768,0.000270544+i*0.087);   
   end
-
-
-
   -- simgrid.Route.new(src_id,des_id,links_nb,links_list)
-  simgrid.Route.new("Tremblay","Jupiter",1,{"1"});
-  simgrid.Route.new("Tremblay","Fafard",6,{"0","1","2","3","4","8"});
-  simgrid.Route.new("Tremblay","Ginette",3,{"3","4","5"});
-  simgrid.Route.new("Tremblay","Bourassa",7,{"0","1","3","2","4","6","7"});
+  simgrid.Route.new("Tremblay","Jupiter",{"1"});
+  simgrid.Route.new("Tremblay","Fafard",{"0","1","2","3","4","8"});
+  simgrid.Route.new("Tremblay","Ginette",{"3","4","5"});
+  simgrid.Route.new("Tremblay","Bourassa",{"0","1","3","2","4","6","7"});
 
-   simgrid.Route.new("Jupiter","Tremblay",1,{"1"});
-   simgrid.Route.new("Jupiter","Fafard",7,{"0","1","2","3","4","8","9"});
-   simgrid.Route.new("Jupiter","Ginette",4,{"3","4","5","9"});
-   simgrid.Route.new("Jupiter","Bourassa",8,{"0","1","2","3","4","6","7","9"});
+   simgrid.Route.new("Jupiter","Tremblay",{"1"});
+   simgrid.Route.new("Jupiter","Fafard",{"0","1","2","3","4","8","9"});
+   simgrid.Route.new("Jupiter","Ginette",{"3","4","5","9"});
+   simgrid.Route.new("Jupiter","Bourassa",{"0","1","2","3","4","6","7","9"});
  
-   simgrid.Route.new("Fafard","Tremblay",6,{"0","1","2","3","4","8"});
-   simgrid.Route.new("Fafard","Jupiter",7,{"0","1","2","3","4","8","9"});
-   simgrid.Route.new("Fafard","Ginette",5,{"0","1","2","5","8"});
-   simgrid.Route.new("Fafard","Bourassa",3,{"6","7","8"});
+   simgrid.Route.new("Fafard","Tremblay",{"0","1","2","3","4","8"});
+   simgrid.Route.new("Fafard","Jupiter",{"0","1","2","3","4","8","9"});
+   simgrid.Route.new("Fafard","Ginette",{"0","1","2","5","8"});
+   simgrid.Route.new("Fafard","Bourassa",{"6","7","8"});
   
-   simgrid.Route.new("Ginette","Tremblay",3,{"3","4","5"});
-   simgrid.Route.new("Ginette","Jupiter",4,{"3","4","5","9"});
-   simgrid.Route.new("Ginette","Fafard",5,{"0","1","2","5","8"});
-   simgrid.Route.new("Ginette","Bourassa",6,{"0","1","2","5","6","7"});
+   simgrid.Route.new("Ginette","Tremblay",{"3","4","5"});
+   simgrid.Route.new("Ginette","Jupiter",{"3","4","5","9"});
+   simgrid.Route.new("Ginette","Fafard",{"0","1","2","5","8"});
+   simgrid.Route.new("Ginette","Bourassa",{"0","1","2","5","6","7"});
 
-   simgrid.Route.new("Bourassa","Tremblay",7,{"0","1","3","2","4","6","7"});
-   simgrid.Route.new("Bourassa","Jupiter",8,{"0","1","2","3","4","6","7","9"});
-   simgrid.Route.new("Bourassa","Fafard",3,{"6","7","8"});
-   simgrid.Route.new("Bourassa","Ginette",6,{"0","1","2","5","6","7"});
+   simgrid.Route.new("Bourassa","Tremblay",{"0","1","3","2","4","6","7"});
+   simgrid.Route.new("Bourassa","Jupiter",{"0","1","2","3","4","6","7","9"});
+   simgrid.Route.new("Bourassa","Fafard",{"6","7","8"});
+   simgrid.Route.new("Bourassa","Ginette",{"0","1","2","5","6","7"});
   
    --Save Platform
    simgrid.info("start registering platform");
    simgrid.register_platform();
    simgrid.info("platform registered");
-
   
   --Set Application
-
-  --simgrid.Host.setFunction(host_id,function_name,args_nb,args_list)
-   simgrid.Host.setFunction("Tremblay","Master",4,{"20","550000000","1000000","4"});
-   simgrid.Host.setFunction("Bourassa","Slave",1,{"0"});
-   simgrid.Host.setFunction("Jupiter","Slave",1,{"1"});
-   simgrid.Host.setFunction("Fafard","Slave",1,{"2"});
-   simgrid.Host.setFunction("Ginette","Slave",1,{"3"});
+   simgrid.Host.setFunction("Tremblay","Master",{"20","550000000","1000000","4"});
+   simgrid.Host.setFunction("Bourassa","Slave",{"0"});
+   simgrid.Host.setFunction("Jupiter","Slave",{"1"});
+   simgrid.Host.setFunction("Fafard","Slave",{"2"});
+   simgrid.Host.setFunction("Ginette","Slave",{"3"});
    
   --Save Application 
    simgrid.register_application();
 
--- Run The Application
-
+  --Run The Application
    simgrid.run()
    simgrid.info("Simulation's over.See you.")
    simgrid.clean()
-
 
