@@ -19,6 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 // Surf ( bypass XML )
 #define LINK_MODULE_NAME "simgrid.Link"
 #define ROUTE_MODULE_NAME "simgrid.Route"
+#undef BYPASS_CPU
 
 /* ********************************************************************************* */
 /*                            helper functions                                       */
@@ -82,7 +83,6 @@ static m_task_t checkTask (lua_State *L,int index) {
   lua_pop(L,1);
   return  tk;
 }
-
 /* ********************************************************************************* */
 /*                           wrapper functions                                       */
 /* ********************************************************************************* */
@@ -305,6 +305,7 @@ static int Host_at(lua_State *L)
 								 ***************************
 ******************************************************************************************/
 #include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
+#include "surf/surf_private.h"
 typedef struct t_host_attr
 {
 	//platform attribute
@@ -313,7 +314,8 @@ typedef struct t_host_attr
 	//deployment attribute
 	const char* function;
 	int args_nb;
-	const char ** args_list;
+	//const char ** args_list;
+	xbt_dynar_t args_list;
 }host_attr,*p_host_attr;
 
 typedef struct t_link_attr
@@ -405,6 +407,7 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 {
 	// look for the index of host in host_list
 	const char *host_id = luaL_checkstring(L,1);
+	const char* argument;
 	unsigned int i;
 	p_host_attr p_host;
 
@@ -414,14 +417,17 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 		{
 			p_host->function = luaL_checkstring(L,2);
 			p_host->args_nb = luaL_checkint(L,3);
-			p_host->args_list = malloc(sizeof(char*)*p_host->args_nb);
+			//p_host->args_list = malloc(sizeof(char*)*p_host->args_nb);
+			p_host->args_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 			// fill the args list
 			lua_pushnil(L);
 			int j = 0;
 			while (lua_next(L,4) != 0) {
 					if(j >= p_host->args_nb)
 						ERROR1("Number of args should be less than %d",p_host->args_nb+1);
-					p_host->args_list[j] = lua_tostring(L, -1);
+					//p_host->args_list[j] = lua_tostring(L, -1);
+					argument = lua_tostring(L, -1);
+					xbt_dynar_push(p_host->args_list, &argument);
 				    DEBUG2("index = %f , Arg_id = %s \n",lua_tonumber(L, -2),lua_tostring(L, -1));
 				    j++;
 				    lua_pop(L, 1);
@@ -433,8 +439,6 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 	ERROR1("Host : %s Not Fount !!",host_id);
 	return 1;
 }
-
-
 
 /*
  * surf parse bypass platform
@@ -455,13 +459,19 @@ static int surf_parse_bypass_platform()
 	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 	  /* <platform> */
 	SURFXML_BUFFER_SET(platform_version, "2");
+#ifndef BYPASS_CPU
 	SURFXML_START_TAG(platform);
-
+#endif
 
 	// Add Hosts
-	//for(i=0;i<host_index;i++)
 	xbt_dynar_foreach(host_list_d,i,p_host)
 	{
+
+#ifdef BYPASS_CPU
+		INFO0("Bypass_Cpu");
+		init_host_bypass(p_host->id,p_host->power);
+#else
+
 		//SURFXML_BUFFER_SET(host_id,host_list[i]->id);
 		SURFXML_BUFFER_SET(host_id,p_host->id);
 		//sprintf(buffer, "%f", host_list[i]->power);
@@ -477,12 +487,13 @@ static int surf_parse_bypass_platform()
 		SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
 		SURFXML_START_TAG(host);
 		SURFXML_END_TAG(host);
+#endif
 	}
 
 	//add Links
-	//for (i = 0;i<link_index;i++)
 	xbt_dynar_foreach(link_list_d,i,p_link)
 	{
+#ifndef BYPASS_CPU
 		//SURFXML_BUFFER_SET(link_id,link_list[i]->id);
 		SURFXML_BUFFER_SET(link_id,p_link->id);
 		//sprintf(buffer,"%f",link_list[i]->bandwidth);
@@ -498,13 +509,15 @@ static int surf_parse_bypass_platform()
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
 		SURFXML_START_TAG(link);
 		SURFXML_END_TAG(link);
+#endif
 	}
 
 	// add route
 
-	//for (i = 0;i<route_index;i++)
+	for (i = 0;i<route_index;i++)
 	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
+#ifndef BYPASS_CPU
 		//SURFXML_BUFFER_SET(route_src,route_list[i]->src_id);
 		SURFXML_BUFFER_SET(route_src,p_route->src_id);
 		//SURFXML_BUFFER_SET(route_dst,route_list[i]->dest_id);
@@ -516,7 +529,6 @@ static int surf_parse_bypass_platform()
 		SURFXML_START_TAG(route);
 		int j;
 
-		//for(j=0; j < route_list[i]->links_nb;j++)
 		for(j=0;j< p_route->links_nb;j++)
 		{
 			//SURFXML_BUFFER_SET(link_c_ctn_id,route_list[i]->links_id[j]);
@@ -526,10 +538,13 @@ static int surf_parse_bypass_platform()
 		}
 
 		SURFXML_END_TAG(route);
+#endif
 	}
 	/* </platform> */
-
+#ifndef BYPASS_CPU
 	SURFXML_END_TAG(platform);
+#endif
+
 	free(surfxml_bufferstack);
 	return 0; // must return 0 ?!!
 
@@ -541,9 +556,10 @@ static int surf_parse_bypass_platform()
 static int surf_parse_bypass_application()
 {
 
-	  unsigned int i;
+	  unsigned int i,j;
 
 	  p_host_attr p_host;
+	  char * arg;
 
 	  static int AX_ptr;
 	  static int surfxml_bufferstack_size = 2048;
@@ -568,9 +584,11 @@ static int surf_parse_bypass_application()
 
 			  //args
 			  int j;
-			  for(j=0 ;j<p_host->args_nb;j++)
+			 // for(j=0 ;j<p_host->args_nb;j++)
+			  xbt_dynar_foreach(p_host->args_list,j,arg)
 			  {
-				  SURFXML_BUFFER_SET(argument_value,p_host->args_list[j]);
+				  //SURFXML_BUFFER_SET(argument_value,p_host->args_list[j]);
+				  SURFXML_BUFFER_SET(argument_value,arg);
 				  SURFXML_START_TAG(argument);
 				  SURFXML_END_TAG(argument);
 			  }
