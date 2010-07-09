@@ -152,6 +152,7 @@ static void cpu_im_add_traces_cpu(void)
 
 static void cpu_im_define_callbacks(const char *file)
 {
+
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_im_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &cpu_im_add_traces_cpu);
@@ -435,6 +436,7 @@ static void cpu_im_action_suspend(surf_action_t action)
 
 static void cpu_im_action_resume(surf_action_t action)
 {
+
   XBT_IN1("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_im_maxmin_system,
@@ -594,3 +596,28 @@ void surf_cpu_model_init_Cas01_im(const char *filename)
   cpu_im_define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_cpu_model);
 }
+
+void surf_cpu_im_init_bypass(char* id,double power)
+{
+	/* FIXME
+	 * the hard coded value must be passed as argument of the lua function
+	 * depending on the number of arguments the user pass to function
+	 * we'd affect it to the corresponding value
+	 */
+	double power_peak = 0.0;
+	double power_scale = 0.0;
+	tmgr_trace_t power_trace = NULL;
+	//FIXME : hard coded value
+	e_surf_resource_state_t state_initial = SURF_RESOURCE_ON;
+	tmgr_trace_t state_trace = NULL;
+	power_peak = power;
+	//FIXME : hard coded value !!!
+	surf_parse_get_double(&power_scale, "1.0");
+	power_trace = tmgr_trace_new("");
+
+	//state_trace = tmgr_trace_new(A_surfxml_host_state_file);
+	current_property_set = xbt_dict_new();
+	cpu_im_new(xbt_strdup(id), power_peak, power_scale,
+					       power_trace, state_initial, state_trace, current_property_set);
+
+	}

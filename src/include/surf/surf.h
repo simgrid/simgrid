@@ -627,6 +627,10 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 XBT_PUBLIC(double) get_cpu_power(const char *power);
 
+
+/* used to byPass XML ( interact direclty with cpu and  avoid callback ) */
+XBT_PUBLIC(void) surf_cpu_init_im_bypass(char* name,double power);
+
 #include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"
 
