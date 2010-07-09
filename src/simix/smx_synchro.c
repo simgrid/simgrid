@@ -340,9 +340,8 @@ void SIMIX_cond_display_info(smx_cond_t cond)
 /** @brief Initialize a semaphore */
 smx_sem_t SIMIX_sem_init(int capacity) {
   smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
-  s_smx_process_t p;
 
-  sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
+  sem->sleeping = xbt_fifo_new();
   sem->actions = xbt_fifo_new();
   sem->capacity = capacity;
   return sem;
@@ -354,9 +353,9 @@ void SIMIX_sem_destroy(smx_sem_t sem) {
   if (sem == NULL)
     return;
 
-  xbt_assert0(xbt_swag_size(sem->sleeping) == 0,
+  xbt_assert0(xbt_fifo_size(sem->sleeping) == 0,
       "Cannot destroy semaphore since someone is still using it");
-  xbt_swag_free(sem->sleeping);
+  xbt_fifo_free(sem->sleeping);
 
   DEBUG1("%d actions registered", xbt_fifo_size(sem->actions));
   while((action=xbt_fifo_pop(sem->actions)))
@@ -372,9 +371,10 @@ void SIMIX_sem_destroy(smx_sem_t sem) {
  * If no one was blocked, the semaphore capacity is increased by 1.
  * */
 void SIMIX_sem_release(smx_sem_t sem) {
-	DEBUG1("Sem release semaphore %p", sem);
-  if (xbt_swag_size(sem->sleeping) >= 1) {
-    smx_process_t proc = xbt_swag_extract(sem->sleeping);
+  smx_process_t proc;
+
+  DEBUG1("Sem release semaphore %p", sem);
+  if ((proc = xbt_fifo_shift(sem->sleeping)) != NULL) {
     xbt_swag_insert(proc, simix_global->process_to_run);
   } else if (sem->capacity != SMX_SEM_NOLIMIT) {
     sem->capacity++;
@@ -393,12 +393,10 @@ void SIMIX_sem_release(smx_sem_t sem) {
  * There is no way to reset the semaphore to a more regular state afterward.
  * */
 void SIMIX_sem_release_forever(smx_sem_t sem) {
-  smx_process_t proc = NULL;
-  smx_process_t proc_next = NULL;
+  smx_process_t proc;
 
   DEBUG1("Broadcast semaphore %p", sem);
-  xbt_swag_foreach_safe(proc, proc_next, sem->sleeping) {
-    xbt_swag_remove(proc, sem->sleeping);
+  while ((proc = xbt_fifo_shift(sem->sleeping)) != NULL) {
     xbt_swag_insert(proc, simix_global->process_to_run);
   }
   sem->capacity = SMX_SEM_NOLIMIT;
@@ -419,7 +417,7 @@ void SIMIX_sem_block_onto(smx_sem_t sem) {
 
   /* process status */
   self->sem = sem;
-  xbt_swag_insert(self, sem->sleeping);
+  xbt_fifo_push (sem->sleeping, self);
   SIMIX_process_yield();
   self->sem = NULL;
   while (self->suspended)
@@ -551,7 +549,7 @@ unsigned int SIMIX_sem_acquire_any(xbt_dynar_t sems) {
   /* Get listed as member of all the provided semaphores */
   self->sem = (smx_sem_t)sems; /* FIXME: we pass a pointer to dynar where a pointer to sem is expected...*/
   xbt_dynar_foreach(sems,counter,sem) {
-    xbt_swag_insert(self, sem->sleeping);
+    xbt_fifo_push(sem->sleeping, self);
   }
   SIMIX_process_yield();
   self->sem = NULL;
@@ -560,10 +558,8 @@ unsigned int SIMIX_sem_acquire_any(xbt_dynar_t sems) {
 
   /* one of the semaphore unsuspended us -- great, let's search which one (and get out of the others) */
   xbt_dynar_foreach(sems,counter,sem) {
-    if (xbt_swag_belongs(self,sem->sleeping))
-      xbt_swag_remove(self,sem->sleeping);
-    else {
-      xbt_assert0(result==-1,"More than one semaphore unlocked us. Dunno what to do");
+    if (!xbt_fifo_remove(sem->sleeping, self)) {
+      xbt_assert1(result == -1, "You're trying to wait more than once on semaphore %p, don't you ?", sem);
       result = counter;
     }
   }

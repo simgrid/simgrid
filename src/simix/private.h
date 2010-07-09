@@ -95,36 +95,6 @@ void SIMIX_process_schedule(smx_process_t process);
 ex_ctx_t *SIMIX_process_get_exception(void);
 void SIMIX_process_exception_terminate(xbt_ex_t * e);
 
-/*************************** Mutex and Conditional ****************************/
-
-typedef struct s_smx_mutex {
-
-  /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_mutex */
-  xbt_swag_t sleeping;          /* list of sleeping process */
-  int refcount;
-  /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_mutex */
-
-} s_smx_mutex_t;
-
-typedef struct s_smx_cond {
-
-  /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_cond */
-  xbt_swag_t sleeping;          /* list of sleeping process */
-  smx_mutex_t mutex;
-  xbt_fifo_t actions;           /* list of actions */
-  /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_cond */
-
-} s_smx_cond_t;
-
-typedef struct s_smx_sem {
-  /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_sem */
-  xbt_swag_t sleeping;          /* list of sleeping process */
-  int capacity;
-  xbt_fifo_t actions;           /* list of actions */
-  /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_sem */
-
-} s_smx_sem_t;
-
 /******************************* Networking ***********************************/
 
 /** @brief Rendez-vous point datatype */

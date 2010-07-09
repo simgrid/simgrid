@@ -127,12 +127,7 @@ void xbt_thread_yield(void) {
 
 /****** mutex related functions ******/
 struct s_xbt_mutex_ {
-
-  /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_mutex */
-  xbt_swag_t sleeping;          /* list of sleeping process */
-  int refcount;
-  /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_mutex */
-
+  s_smx_mutex_t mutex;
 };
 
 xbt_mutex_t xbt_mutex_init(void)
@@ -157,13 +152,7 @@ void xbt_mutex_destroy(xbt_mutex_t mutex)
 
 /***** condition related functions *****/
 struct s_xbt_cond_ {
-
-  /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_cond */
-  xbt_swag_t sleeping;          /* list of sleeping process */
-  smx_mutex_t mutex;
-  xbt_fifo_t actions;           /* list of actions */
-  /* KEEP IT IN SYNC WITH src/simix/private.h::struct s_smx_cond */
-
+  s_smx_cond_t cond; 
 };
 
 xbt_cond_t xbt_cond_init(void)

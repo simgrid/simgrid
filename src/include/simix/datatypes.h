@@ -31,9 +31,25 @@ SG_BEGIN_DECL()
 
 
 /* ******************************** Syncro ************************************ */
-     typedef struct s_smx_mutex *smx_mutex_t;
-     typedef struct s_smx_cond *smx_cond_t;
-     typedef struct s_smx_sem *smx_sem_t;
+     typedef struct s_smx_mutex {
+       xbt_swag_t sleeping;          /* list of sleeping process */
+       int refcount;
+     } s_smx_mutex_t;
+     typedef s_smx_mutex_t *smx_mutex_t;
+
+     typedef struct s_smx_cond {
+       xbt_swag_t sleeping;          /* list of sleeping process */
+       smx_mutex_t mutex;
+       xbt_fifo_t actions;           /* list of actions */
+     } s_smx_cond_t;
+     typedef s_smx_cond_t *smx_cond_t;
+
+     typedef struct s_smx_sem {
+       xbt_fifo_t sleeping;          /* list of sleeping process */
+       int capacity;
+       xbt_fifo_t actions;           /* list of actions */
+     } s_smx_sem_t;
+     typedef s_smx_sem_t *smx_sem_t;
 
 /********************************** Action *************************************/
      typedef struct s_smx_action *smx_action_t;

@@ -164,7 +164,7 @@ void SIMIX_process_kill(smx_process_t process)
     }
 
     if (process->sem) {
-      xbt_swag_remove(process, process->sem->sleeping);
+      xbt_fifo_remove(process->sem->sleeping, process);
 
       if (process->waiting_action) {
         SIMIX_unregister_action_to_semaphore(process->waiting_action, process->sem);
@@ -196,7 +196,7 @@ void SIMIX_process_kill(smx_process_t process)
     }
 
     if (process->sem) {
-    	xbt_swag_remove(process, process->sem->sleeping);
+      xbt_fifo_remove(process->sem->sleeping, process);
 
       if (process->waiting_action) {
       	SIMIX_unregister_action_to_semaphore(process->waiting_action, process->sem);
