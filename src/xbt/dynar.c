@@ -530,7 +530,7 @@ xbt_dynar_remove_at(xbt_dynar_t const dynar,
  *
  * Raises not_found_error if not found.
  */
-int xbt_dynar_search(xbt_dynar_t const dynar, void *const elem)
+unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void *const elem)
 {
   unsigned long it;
 
