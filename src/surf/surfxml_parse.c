@@ -269,6 +269,7 @@ void ETag_surfxml_platform(void)
 void STag_surfxml_host(void)
 {
   surfxml_call_cb_functions(STag_surfxml_host_cb_list);
+
 }
 
 void ETag_surfxml_host(void)
@@ -697,6 +698,7 @@ static void parse_sets(void)
 }
 
 static void parse_host_foreach(void){
+
   xbt_dynar_t names = NULL;
   unsigned int cpt = 0;
   char *name;
@@ -1163,4 +1165,11 @@ static void add_randomness(void)
     random_new(random_generator, 0, random_min, random_max, random_mean,
                random_std_deviation);
   xbt_dict_set(random_data_list, random_id, (void *) random, NULL);
+}
+
+
+/* Init Host bypassing XML*/
+void init_host_bypass(char* name,double power)
+{
+	surf_cpu_im_init_bypass(name,power);
 }

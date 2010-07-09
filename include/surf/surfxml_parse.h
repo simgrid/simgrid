@@ -70,6 +70,9 @@ XBT_PUBLIC(int) surf_parse_get_debug(void);
 XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
 XBT_PUBLIC(int) surf_parse_lex_destroy(void);
 
+/* init host and bypass the parser*/
+XBT_PUBLIC(void) init_host_bypass(char* name,double power);
+
 /* What is needed to bypass the parser. */
 XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Set this to your function. */
 
