@@ -110,8 +110,8 @@ XBT_PUBLIC(void) TRACE_mark (const char *mark_type, const char *mark_value);
 #define TRACE_link_variable_set(src,dst,var,value)
 #define TRACE_link_variable_add(src,dst,var,value)
 #define TRACE_link_variable_sub(src,dst,var,value)
-#define TRACE_declare_mark (mark_type)
-#define TRACE_mark (mark_type, mark_value)
+#define TRACE_declare_mark(type)
+#define TRACE_mark(type,value)
 
 #endif /* HAVE_TRACING */
 
