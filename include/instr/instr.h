@@ -39,6 +39,8 @@ XBT_PUBLIC(void) TRACE_msg_set_process_category (m_process_t process, const char
 XBT_PUBLIC(void) TRACE_set_mask (int mask);
 XBT_PUBLIC(void) __TRACE_host_variable (double time, const char *variable, double value, const char *what);
 XBT_PUBLIC(void) __TRACE_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what);
+XBT_PUBLIC(void) TRACE_declare_mark (const char *mark_type);
+XBT_PUBLIC(void) TRACE_mark (const char *mark_type, const char *mark_value);
 
 #define TRACE_host_variable_declare(var) \
 	__TRACE_host_variable(0,var,0,"declare");
@@ -108,6 +110,8 @@ XBT_PUBLIC(void) __TRACE_link_variable (double time, const char *src, const char
 #define TRACE_link_variable_set(src,dst,var,value)
 #define TRACE_link_variable_add(src,dst,var,value)
 #define TRACE_link_variable_sub(src,dst,var,value)
+#define TRACE_declare_mark (mark_type)
+#define TRACE_mark (mark_type, mark_value)
 
 #endif /* HAVE_TRACING */
 

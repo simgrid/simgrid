@@ -202,4 +202,20 @@ void TRACE_set_mask (int mask)
   }
 }
 
+void TRACE_declare_mark (const char *mark_type)
+{
+  if (!IS_TRACING) return;
+  if (!mark_type) return;
+
+  pajeDefineEventType (mark_type, "0", mark_type);
+}
+
+void TRACE_mark (const char *mark_type, const char *mark_value)
+{
+  if (!IS_TRACING) return;
+  if (!mark_type || !mark_value) return;
+
+  pajeNewEvent (MSG_get_clock(), mark_type, "0", mark_value);
+}
+
 #endif /* HAVE_TRACING */
