@@ -34,8 +34,8 @@ static int test(int myid, int numprocs) {
     MPI_Sendrecv(buffer, 10, MPI_INT, left, TAG_SND, buffer2, 10, MPI_INT, right, TAG_RCV, MPI_COMM_WORLD, &status);
  
     for (i=0;i<BUFLEN;i++) {
-		if (buffer2[i]!=((myid+1)%numprocs)) {
-			  fprintf(stderr,"[%d] error: should have values %d, has %d\n",myid,myid-1,buffer[i]);
+		if (buffer2[i]!=right) {
+			  fprintf(stderr,"[%d] error: should have values %d, has %d\n",myid,right,buffer2[i]);
 			  return(0);
 	      }
     }

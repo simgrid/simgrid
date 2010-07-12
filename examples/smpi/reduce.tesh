@@ -8,6 +8,9 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'TCP_gamma' to '4194304'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > ** Scalar Int Test Result:
 > 	[0] sum=6 ... validation ok.
 > 	[0] min=1 ... validation ok.
@@ -27,6 +30,9 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 > [rank 3] -> Ginette
 > [rank 4] -> Bourassa
 > [rank 5] -> Tremblay
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'TCP_gamma' to '4194304'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > ** Scalar Int Test Result:
 > 	[0] sum=21 ... validation ok.
 > 	[0] min=1 ... validation ok.
@@ -56,6 +62,9 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 > [rank 9] -> Bourassa
 > [rank 10] -> Tremblay
 > [rank 11] -> Jupiter
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'TCP_gamma' to '4194304'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > ** Scalar Int Test Result:
 > 	[0] sum=78 ... validation ok.
 > 	[0] min=1 ... validation ok.
