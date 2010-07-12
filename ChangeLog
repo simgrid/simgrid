@@ -19,7 +19,10 @@ SimGrid (3.5) unstable; urgency=low
    simulated" (SD_RUNNABLE) used by the simulation kernel.
  * Add an example that scheduling a DAX on an heterogeneous platform
    using a Min-Min strategy
-   
+ * new function SD_dotload(char*) to load a DAG described in dot
+   format. This loader and the corresponding examples require the
+   installation of the graphviz library.
+ 
  XBT
  * New data container: setset (set of sets of elements)
  * New module: mmalloc (mapped malloc)
