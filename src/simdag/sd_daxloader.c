@@ -40,6 +40,33 @@ static int dax_parse_int(const char *string) {
   return value;
 }
 
+/* Ensure that transfer tasks have unique names even though a file is used
+ * several times */
+
+void uniq_transfer_task_name(SD_task_t task){
+	SD_task_t child, parent;
+	xbt_dynar_t children, parents;
+	char *new_name;
+
+	children = SD_task_get_children(task);
+	parents = SD_task_get_parents(task);
+
+	xbt_dynar_get_cpy(children,0,&child);
+	xbt_dynar_get_cpy(parents,0,&parent);
+
+	new_name = bprintf("%s_%s_%s",
+			SD_task_get_name(parent),
+			SD_task_get_name(task),
+			SD_task_get_name(child));
+
+	SD_task_set_name (task, new_name);
+
+	xbt_dynar_free_container(&children);
+	xbt_dynar_free_container(&parents);
+	free(new_name);
+}
+
+
 static YY_BUFFER_STATE input_buffer;
 
 static xbt_dynar_t result;
@@ -137,6 +164,12 @@ xbt_dynar_t SD_daxload(const char*filename) {
 
   /* Free previous copy of the files */
   xbt_dict_free(&files);
+  unsigned int cpt;
+  xbt_dynar_foreach(result,cpt,file) {
+	if (SD_task_get_kind(file)==SD_TASK_COMM_E2E){
+		uniq_transfer_task_name(file);
+	}
+  }
 
   return result;
 }
