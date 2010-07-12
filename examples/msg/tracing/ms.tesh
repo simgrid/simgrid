@@ -192,6 +192,12 @@ $ $SG_TEST_EXENV cat$EXEEXT ${srcdir:=.}/tracing/../ms.trace
 > %       Key string 
 > %       Volume string 
 > %EndEventDef
+> %EventDef PajeNewEvent 27 
+> %       Time date 
+> %       EntityType string 
+> %       Container string 
+> %       Value string 
+> %EndEventDef
 > 0 PLATFORM 0 platform
 > 0 HOST PLATFORM HOST
 > 0 LINK PLATFORM LINK

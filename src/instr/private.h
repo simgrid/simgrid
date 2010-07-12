@@ -54,6 +54,7 @@ void pajeDefineVariableType(const char *alias, const char *containerType, const 
 void pajeSetVariable (double time, const char *entityType, const char *container, const char *value);
 void pajeAddVariable (double time, const char *entityType, const char *container, const char *value);
 void pajeSubVariable (double time, const char *entityType, const char *container, const char *value);
+void pajeNewEvent (double time, const char *entityType, const char *container, const char *value);
 
 /* from general.c */
 char *TRACE_paje_msg_container (m_task_t task, char *host, char *output, int len);

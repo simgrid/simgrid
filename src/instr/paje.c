@@ -38,6 +38,7 @@ static int pajeAddVariableId = 23;
 static int pajeSubVariableId = 24;
 static int pajeDefineVariableTypeId = 25;
 static int pajeStartLinkWithVolumeId = 26;
+static int pajeNewEventId = 27;
 
 #define TRACE_LINE_SIZE 1000
 
@@ -245,6 +246,12 @@ void TRACE_paje_create_header(void) {
 %%       SourceContainer string \n\
 %%       Key string \n\
 %%       Volume string \n\
+%%EndEventDef\n\
+%%EventDef PajeNewEvent %d \n\
+%%       Time date \n\
+%%       EntityType string \n\
+%%       Container string \n\
+%%       Value string \n\
 %%EndEventDef\n",
       pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId,
       pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId,
@@ -259,7 +266,8 @@ void TRACE_paje_create_header(void) {
       pajeAddVariableId,
       pajeSubVariableId,
       pajeDefineVariableTypeId,
-      pajeStartLinkWithVolumeId);
+      pajeStartLinkWithVolumeId,
+      pajeNewEventId);
 }
 
 /* internal to this file */
@@ -455,6 +463,11 @@ void pajeSubVariable (double time, const char *entityType, const char *container
   char line[TRACE_LINE_SIZE];
   __pajeSetVariable (line, TRACE_LINE_SIZE, pajeSubVariableId, time, entityType, container, value);
   fprintf(tracing_file, "%s\n", line);
+}
+
+void pajeNewEvent (double time, const char *entityType, const char *container, const char *value)
+{
+  fprintf(tracing_file, "%d %.15lf %s %s %s\n", pajeNewEventId, time, entityType, container, value);
 }
 
 #endif
