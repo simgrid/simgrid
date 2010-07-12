@@ -159,29 +159,6 @@ static SD_workstation_t SD_task_get_best_workstation (SD_task_t task){
   return best_workstation;
 }
 
-static void change_name(SD_task_t task){
-  SD_task_t child, parent;
-  xbt_dynar_t children, parents;
-  char *new_name;
-  
-  children = SD_task_get_children(task);
-  parents = SD_task_get_parents(task);
-
-  xbt_dynar_get_cpy(children,0,&child);
-  xbt_dynar_get_cpy(parents,0,&parent);
-  
-  new_name = bprintf("%s_%s_%s",
-		     SD_task_get_name(parent),
-		     SD_task_get_name(task),
-		     SD_task_get_name(child));
-  
-  SD_task_set_name (task, new_name);
-
-  xbt_dynar_free_container(&children);
-  xbt_dynar_free_container(&parents);
-  free(new_name);
-}
-
 static void output_xml(FILE *out, xbt_dynar_t dax){
   unsigned int i,j, k;
   int current_nworkstations;
@@ -254,7 +231,7 @@ int main(int argc, char **argv) {
   xbt_dynar_t dax, changed;
   FILE *out=NULL;
 
-  /* initialisation of SD */
+  /* initialization of SD */
   SD_init(&argc, argv);
 
   /* Check our arguments */
@@ -290,12 +267,7 @@ int main(int argc, char **argv) {
   dax=SD_daxload(argv[2]);
 
   xbt_dynar_foreach(dax,cursor,task) {
-    if (SD_task_get_kind(task)==SD_TASK_COMM_E2E){
-      change_name(task);
       SD_task_watch(task,SD_DONE);
-    } else {
-      SD_task_watch(task,SD_DONE);
-    }
   }
 
   /* Schedule the root first */ 
