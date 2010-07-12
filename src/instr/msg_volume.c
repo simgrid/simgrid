@@ -1,14 +1,8 @@
-/*
- * msg_volume.c
- *
- *  Created on: April 23, 2010
- *      Author: Lucas Schnorr
- *     License: This program is free software; you can redistribute
- *              it and/or modify it under the terms of the license
- *              (GNU LGPL) which comes with this package.
- *
- *     Copyright (c) 2009 The SimGrid team.
- */
+/* Copyright (c) 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/private.h"
 
