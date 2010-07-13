@@ -1167,9 +1167,3 @@ static void add_randomness(void)
   xbt_dict_set(random_data_list, random_id, (void *) random, NULL);
 }
 
-
-/* Init Host bypassing XML*/
-void init_host_bypass(char* name,double power)
-{
-	surf_cpu_im_init_bypass(name,power);
-}
