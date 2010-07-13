@@ -172,6 +172,7 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
        double (*get_link_bandwidth) (const void *link);
        double (*get_link_latency) (const void *link);
        int (*link_shared) (const void *link);
+       void (*init_bypass) (const char *id,double intial_bandwidth,double initial_latency);
      } s_surf_model_extension_network_t;
 
      /** \brief Workstation model extension public
@@ -401,6 +402,11 @@ XBT_PUBLIC(void) surf_network_model_init_Vivaldi(const char *filename);
  *  \see surf_workstation_model_init_CLM03()
  */
 XBT_PUBLIC(void) surf_network_model_init_CM02(const char *filename);
+
+/**
+ * brief initialize the the network model bypassing the XML parser
+ */
+XBT_PUBLIC(void) surf_network_model_init_bypass(const char* id,double initial_bw,double initial_lat);
 
 #ifdef HAVE_GTNETS
 /** \brief Initializes the platform with the network model GTNETS
