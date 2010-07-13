@@ -154,6 +154,7 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
        e_surf_resource_state_t(*get_state) (void *cpu);
        double (*get_speed) (void *cpu, double load);
        double (*get_available_speed) (void *cpu);
+       void (*init_bypass)(const char* id,double power);
      } s_surf_model_extension_cpu_t;
 
      /* Network model */
@@ -323,12 +324,22 @@ XBT_PUBLIC(void) surf_cpu_model_init_ti(const char *filename);
  */
 XBT_PUBLIC(void) surf_cpu_model_init_Cas01_im(const char *filename);
 
+/**brief Initialise the cpu_im model bypassing the parser
+ *
+ */
+XBT_PUBLIC(void) surf_cpu_model_init_bypass_im(const char*id,double power);
+
 /** \brief The list of all available cpu model models
  *  \ingroup SURF_models
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
 
 XBT_PUBLIC(void) create_workstations(void);
+
+/**\brief create new host bypass the parser
+ *
+ */
+
 
 /** \brief The network model
  *  \ingroup SURF_models
@@ -627,9 +638,6 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 XBT_PUBLIC(double) get_cpu_power(const char *power);
 
-
-/* used to byPass XML ( interact direclty with cpu and  avoid callback ) */
-XBT_PUBLIC(void) surf_cpu_init_im_bypass(char* name,double power);
 
 #include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"
