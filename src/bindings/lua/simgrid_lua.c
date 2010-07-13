@@ -449,7 +449,7 @@ static int surf_parse_bypass_platform()
 
 #ifdef BYPASS_CPU
 		INFO0("Bypass_Cpu");
-		init_host_bypass(p_host->id,p_host->power);
+		surf_cpu_model_init_bypass_im(p_host->id,p_host->power);
 #else
 
 		SURFXML_BUFFER_SET(host_id,p_host->id);
