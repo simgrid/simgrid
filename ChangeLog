@@ -1,7 +1,6 @@
 SimGrid (3.5) unstable; urgency=low
 
  SimDag
- 
  * Change the way a task is considered as ready. Instead of removing 
    dependencies when a task is done, a counter is decreased. This way,
    it is always possible to reach ancestors thanks to the 
@@ -23,6 +22,12 @@ SimGrid (3.5) unstable; urgency=low
    format. This loader and the corresponding examples require the
    installation of the graphviz library.
  
+ SIMIX
+ * Change the underlying waiting queue in semaphores so that a process
+   can wait on several of them simultaneously (as in waitany).
+ * Fix the way to handle tokens in semaphores so that all access patterns
+   work: {acquire, acquire_timeout, waitany} / {release, release_forever}.
+
  XBT
  * New data container: setset (set of sets of elements)
  * New module: mmalloc (mapped malloc)
