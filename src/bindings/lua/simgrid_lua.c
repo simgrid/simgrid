@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 // Surf ( bypass XML )
 #define LINK_MODULE_NAME "simgrid.Link"
 #define ROUTE_MODULE_NAME "simgrid.Route"
-#undef BYPASS_CPU
+#undef BYPASS_MODEL
 
 /* ********************************************************************************* */
 /*                            helper functions                                       */
@@ -447,7 +447,7 @@ static int surf_parse_bypass_platform()
 	xbt_dynar_foreach(host_list_d,i,p_host)
 	{
 
-#ifdef BYPASS_CPU
+#ifdef BYPASS_MODEL
 		INFO0("Bypass_Cpu");
 		surf_cpu_model_init_bypass_im(p_host->id,p_host->power);
 #else
@@ -469,9 +469,14 @@ static int surf_parse_bypass_platform()
 	}
 
 	//add Links
+	INFO0("Start Adding Links");
 	xbt_dynar_foreach(link_list_d,i,p_link)
 	{
-#ifndef BYPASS_CPU
+#ifdef BYPASS_MODEL
+
+		INFO0("Bypass_Network");
+		surf_network_model_init_bypass(p_link->id,p_link->bandwidth,p_link->latency);
+#else
 
 		SURFXML_BUFFER_SET(link_id,p_link->id);
 		sprintf(buffer,"%f",p_link->bandwidth);
@@ -489,10 +494,10 @@ static int surf_parse_bypass_platform()
 	}
 
 	// add route
-
+	INFO0("Start Adding routes");
 	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
-#ifndef BYPASS_CPU
+#ifndef BYPASS_MODEL
 
 		SURFXML_BUFFER_SET(route_src,p_route->src_id);
 		SURFXML_BUFFER_SET(route_dst,p_route->dest_id);
@@ -513,7 +518,7 @@ static int surf_parse_bypass_platform()
 #endif
 	}
 	/* </platform> */
-#ifndef BYPASS_CPU
+#ifndef BYPASS_MODEL
 	SURFXML_END_TAG(platform);
 #endif
 
