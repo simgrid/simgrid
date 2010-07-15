@@ -269,17 +269,17 @@ int main() {
        xbt_log_control_set("SA.thresh:3");
 
        / * This request is enabled, because WARNING >= INFO. * /
-       CWARN2(VSS, "Low fuel level.");
+       CWARN0(VSS, "Low fuel level.");
 
        / * This request is disabled, because DEBUG < INFO. * /
-       CDEBUG2(VSS, "Starting search for nearest gas station.");
+       CDEBUG0(VSS, "Starting search for nearest gas station.");
 
        / * The default category SA inherits its priority from VSS. Thus,
           the following request is enabled because INFO >= INFO.  * /
-       INFO1("Located nearest gas station.");
+       INFO0("Located nearest gas station.");
 
        / * This request is disabled, because DEBUG < INFO. * /
-       DEBUG1("Exiting gas station search");
+       DEBUG0("Exiting gas station search");
 }
 \endverbatim
 
