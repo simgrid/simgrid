@@ -504,32 +504,16 @@ static void cpu_im_action_update_index_heap(void *action, int i)
 {
   ((surf_action_cpu_Cas01_im_t) action)->index_heap = i;
 }
-
-static void cpu_im_init_bypass(const char* id,double power)
+static void cpu_im_create_resource(char *name, double power_peak,
+        double power_scale,
+        tmgr_trace_t power_trace,
+        e_surf_resource_state_t state_initial,
+        tmgr_trace_t state_trace,
+        xbt_dict_t cpu_properties)
 {
-	/* FIXME
-	 * the hard coded value must be passed as argument of the lua function
-	 * depending on the number of arguments the user pass to function
-	 * we'd affect it to the corresponding value
-	 */
-	double power_peak = 0.0;
-	double power_scale = 0.0;
-	tmgr_trace_t power_trace = NULL;
-	//FIXME : hard coded value
-	e_surf_resource_state_t state_initial = SURF_RESOURCE_ON;
-	tmgr_trace_t state_trace = NULL;
-	power_peak = power;
-	//FIXME : hard coded value !!!
-	surf_parse_get_double(&power_scale, "1.0");
-	power_trace = tmgr_trace_new("");
-
-	//state_trace = tmgr_trace_new(A_surfxml_host_state_file);
-	current_property_set = xbt_dict_new();
-	cpu_im_new(xbt_strdup(id), power_peak, power_scale,
-					       power_trace, state_initial, state_trace, current_property_set);
-
+	cpu_im_new(name,power_peak,power_scale,power_trace,
+					  state_initial,state_trace,cpu_properties);
 }
-
 
 static void cpu_im_finalize(void)
 {
@@ -589,7 +573,7 @@ static void surf_cpu_im_model_init_internal(void)
   surf_cpu_model->extension.cpu.get_state = cpu_im_get_state;
   surf_cpu_model->extension.cpu.get_speed = cpu_im_get_speed;
   surf_cpu_model->extension.cpu.get_available_speed = cpu_im_get_available_speed;
-  surf_cpu_model->extension.cpu.init_bypass = cpu_im_init_bypass;
+  surf_cpu_model->extension.cpu.create_resource = cpu_im_create_resource;
 
   if (!cpu_im_maxmin_system) {
     sg_maxmin_selective_update = 1;
@@ -622,10 +606,4 @@ void surf_cpu_model_init_Cas01_im(const char *filename)
   surf_cpu_im_model_init_internal();
   cpu_im_define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_cpu_model);
-}
-
-void surf_cpu_model_init_bypass_im(const char* id,double power)
-{
-	return surf_cpu_model->extension.cpu.
-		init_bypass(id,power);
 }

@@ -154,7 +154,12 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
        e_surf_resource_state_t(*get_state) (void *cpu);
        double (*get_speed) (void *cpu, double load);
        double (*get_available_speed) (void *cpu);
-       void (*init_bypass)(const char* id,double power);
+       void (*create_resource)(char *name, double power_peak,
+               double power_scale,
+               tmgr_trace_t power_trace,
+               e_surf_resource_state_t state_initial,
+               tmgr_trace_t state_trace,
+               xbt_dict_t cpu_properties);
      } s_surf_model_extension_cpu_t;
 
      /* Network model */
@@ -172,7 +177,7 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
        double (*get_link_bandwidth) (const void *link);
        double (*get_link_latency) (const void *link);
        int (*link_shared) (const void *link);
-       void (*init_bypass) (const char *id,double intial_bandwidth,double initial_latency);
+       void (*create_resource) (char *name,double bw_initial,double lat_initial);
      } s_surf_model_extension_network_t;
 
      /** \brief Workstation model extension public
@@ -644,6 +649,24 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 XBT_PUBLIC(double) get_cpu_power(const char *power);
 
+/*public interface to create resource bypassing the parser via cpu/network model
+ *
+ * see surfxml_parse.c
+ * */
+XBT_PUBLIC(void) surf_host_create_resource(char *name, double power_peak,
+        double power_scale,
+        tmgr_trace_t power_trace,
+        e_surf_resource_state_t state_initial,
+        tmgr_trace_t state_trace,
+        xbt_dict_t cpu_properties);
+
+/**
+ * create link resource
+ * see network.c
+ * FIXME : shoudl have the same prototype as net_link_new
+ */
+XBT_PUBLIC(void) surf_link_create_resouce(char *name,
+        double bw_initial,double lat_initial);
 
 #include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"

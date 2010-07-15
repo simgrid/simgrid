@@ -1167,3 +1167,23 @@ static void add_randomness(void)
   xbt_dict_set(random_data_list, random_id, (void *) random, NULL);
 }
 
+void surf_host_create_resource(char *name, double power_peak,
+        double power_scale,
+        tmgr_trace_t power_trace,
+        e_surf_resource_state_t state_initial,
+        tmgr_trace_t state_trace,
+        xbt_dict_t cpu_properties)
+{
+	return surf_cpu_model->extension.cpu.
+		create_resource(name,power_peak,power_scale,power_trace,state_initial,state_trace,cpu_properties);
+}
+
+
+void surf_link_create_resouce(char *name,
+        double bw_initial,
+        double lat_initial)
+{
+	return surf_network_model->extension.network.
+	     create_resource(name,bw_initial,lat_initial);
+
+}

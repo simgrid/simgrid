@@ -588,36 +588,36 @@ static void net_action_set_max_duration(surf_action_t action, double duration)
 }
 
 
-static void network_init_bypass(const char *name,double initial_bandwidth,double initial_latency)
+/**
+ * FIXME : this should be done in the binding code !!
+ */
+void network_create_resource(char *name,
+        double initial_bandwidth,double initial_latency)
 {
- /**
-  * FIXME : Only values : name,bandwidth and latency are intercepted,
-  * the others properties for link still hard coded at this level !!
-  */
-	  char *name_link;
-	  double bw_initial;
-	  tmgr_trace_t bw_trace;
-	  double lat_initial;
-	  tmgr_trace_t lat_trace;
-	  e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
-	  e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
-	  tmgr_trace_t state_trace;
+
+	char *name_link;
+	double bw_initial;
+	tmgr_trace_t bw_trace;
+	double lat_initial;
+	tmgr_trace_t lat_trace;
+	e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
+	e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
+	tmgr_trace_t state_trace;
 
 
-	  name_link = (char*)name;
-	  bw_initial = initial_bandwidth;
-	  bw_trace = tmgr_trace_new("");
-	  lat_initial = initial_latency;
-	  lat_trace = tmgr_trace_new("");
-	  // FIXME Hard Coded Values
-	  state_initial_link = SURF_RESOURCE_ON;
-	  policy_initial_link = SURF_LINK_SHARED;
-	  state_trace = tmgr_trace_new("");
+	name_link = (char*)name;
+	bw_initial = initial_bandwidth;
+	bw_trace = tmgr_trace_new("");
+	lat_initial = initial_latency;
+	lat_trace = tmgr_trace_new("");
+	// FIXME Hard Coded Values
+	state_initial_link = SURF_RESOURCE_ON;
+	policy_initial_link = SURF_LINK_SHARED;
+	state_trace = tmgr_trace_new("");
 
-	  net_link_new(name_link, bw_initial, bw_trace,
+	net_link_new(name_link, bw_initial, bw_trace,
 	           lat_initial, lat_trace, state_initial_link, state_trace,
 	           policy_initial_link, xbt_dict_new());
-
 }
 
 static void net_finalize(void)
@@ -658,7 +658,7 @@ static void surf_network_model_init_internal(void)
     net_get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency = net_get_link_latency;
   surf_network_model->extension.network.link_shared = net_link_shared;
-  surf_network_model->extension.network.init_bypass = network_init_bypass;
+  surf_network_model->extension.network.create_resource = network_create_resource;
 
   if (!network_maxmin_system)
     network_maxmin_system = lmm_system_new();
@@ -801,8 +801,3 @@ void surf_network_model_init_Vegas(const char *filename)
 }
 
 
-void surf_network_model_init_bypass(const char *link_id,double initial_bw,double initial_lat)
-{
-	return surf_network_model->extension.network.
-		init_bypass(link_id,initial_bw,initial_lat);
-}
