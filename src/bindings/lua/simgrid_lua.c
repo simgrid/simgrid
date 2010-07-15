@@ -336,6 +336,33 @@ static xbt_dynar_t host_list_d ;
 static xbt_dynar_t link_list_d ;
 static xbt_dynar_t route_list_d ;
 
+
+//create resource
+
+/*FIXME : still have to use a dictionary as argument make it possible to
+consider some arguments as optional and removes the importance of the
+parameter order */
+
+static void create_host(const char* id,double power)
+{
+	double power_peak = 0.0;
+	double power_scale = 0.0;
+	tmgr_trace_t power_trace = NULL;
+	//FIXME : hard coded value
+	e_surf_resource_state_t state_initial = SURF_RESOURCE_ON;
+	tmgr_trace_t state_trace = NULL;
+	power_peak = power;
+	//FIXME : hard coded value !!!
+	surf_parse_get_double(&power_scale, "1.0");
+	power_trace = tmgr_trace_new("");
+
+	//state_trace = tmgr_trace_new(A_surfxml_host_state_file);
+	current_property_set = xbt_dict_new();
+	surf_host_create_resource(xbt_strdup(id), power_peak, power_scale,
+					       power_trace, state_initial, state_trace, current_property_set);
+
+}
+
 static int Host_new(lua_State *L) //(id,power)
 {
 	// if it's the first time ,instanciate the dynar
@@ -449,7 +476,7 @@ static int surf_parse_bypass_platform()
 
 #ifdef BYPASS_MODEL
 		INFO0("Bypass_Cpu");
-		surf_cpu_model_init_bypass_im(p_host->id,p_host->power);
+		create_host(p_host->id,p_host->power);
 #else
 
 		SURFXML_BUFFER_SET(host_id,p_host->id);
@@ -475,7 +502,7 @@ static int surf_parse_bypass_platform()
 #ifdef BYPASS_MODEL
 
 		INFO0("Bypass_Network");
-		surf_network_model_init_bypass(p_link->id,p_link->bandwidth,p_link->latency);
+		surf_link_create_resouce((char*)p_link->id,p_link->bandwidth,p_link->latency);
 #else
 
 		SURFXML_BUFFER_SET(link_id,p_link->id);
