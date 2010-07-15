@@ -67,7 +67,7 @@ typedef struct {
 
 #define ROUTE_FULL(i,j) ((routing_full_t)used_routing)->routing_table[(i)+(j)*(used_routing)->host_count]
 #define HOST2ROUTER(id) ((id)+(2<<29))
-#define ROUTER2HOST(id) ((id)-(2>>29))
+#define ROUTER2HOST(id) ((id)-(2<<29))
 #define ISROUTER(id) ((id)>=(2<<29))
 
 /*
