@@ -70,15 +70,15 @@ end
 require "simgrid"
   
   --simgrid.Host.new(host_id,power)
-  simgrid.Host.new("Tremblay",98095000);
-  simgrid.Host.new("Jupiter",76296000);
-  simgrid.Host.new("Fafard",76296000);
-  simgrid.Host.new("Ginette",48492000);
-  simgrid.Host.new("Bourassa",48492000);
+  simgrid.Host.new{id="Tremblay",power=98095000};
+  simgrid.Host.new{id="Jupiter",power=76296000};
+  simgrid.Host.new{id="Fafard",power=76296000};
+  simgrid.Host.new{id="Ginette",power=48492000};
+  simgrid.Host.new{id="Bourassa",power=48492000};
 
     -- create Links
   for i=0,11 do
-    simgrid.Link.new(i,252750+ i*768,0.000270544+i*0.087);   
+    simgrid.Link.new{id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};   
   end
   -- simgrid.Route.new(src_id,des_id,links_nb,links_list)
   simgrid.Route.new("Tremblay","Jupiter",{"1"});
