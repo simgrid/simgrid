@@ -309,8 +309,14 @@ static int Host_at(lua_State *L)
 typedef struct t_host_attr
 {
 	//platform attribute
+	// Mandatory attributes
 	const char* id;
-	double power;
+	double power_peak;
+	// Optional attributes
+	double power_scale;
+	const char *power_trace;
+	int state_initial;
+	const char *state_trace;
 	//deployment attribute
 	const char* function;
 	xbt_dynar_t args_list;
@@ -343,49 +349,142 @@ static xbt_dynar_t route_list_d ;
 consider some arguments as optional and removes the importance of the
 parameter order */
 
-static void create_host(const char* id,double power)
+static void create_host(const char* id,double power_peak,double power_sc,
+						const char* power_tr,int state_init,
+						const char* state_tr)
 {
-	double power_peak = 0.0;
-	double power_scale = 0.0;
-	tmgr_trace_t power_trace = NULL;
-	//FIXME : hard coded value
-	e_surf_resource_state_t state_initial = SURF_RESOURCE_ON;
-	tmgr_trace_t state_trace = NULL;
-	power_peak = power;
-	//FIXME : hard coded value !!!
-	surf_parse_get_double(&power_scale, "1.0");
-	power_trace = tmgr_trace_new("");
 
-	//state_trace = tmgr_trace_new(A_surfxml_host_state_file);
+	double power_scale = 1.0;
+	tmgr_trace_t power_trace = NULL;
+	e_surf_resource_state_t state_initial;
+	tmgr_trace_t state_trace;
+	if(power_sc) // !=0
+		power_scale = power_sc;
+	if (state_init == 1)
+		state_initial = SURF_RESOURCE_ON;
+	else
+		state_init = SURF_RESOURCE_OFF;
+	if(power_tr)
+		power_trace = tmgr_trace_new(power_tr);
+	else
+		power_trace = tmgr_trace_new("");
+	if(state_tr)
+		state_trace = tmgr_trace_new(state_tr);
+	else
+		state_trace = tmgr_trace_new("");
 	current_property_set = xbt_dict_new();
 	surf_host_create_resource(xbt_strdup(id), power_peak, power_scale,
 					       power_trace, state_initial, state_trace, current_property_set);
 
 }
 
-static int Host_new(lua_State *L) //(id,power)
+static int Host_new(lua_State *L)
 {
-	// if it's the first time ,instanciate the dynar
+
 	if(xbt_dynar_is_empty(host_list_d))
 		host_list_d = xbt_dynar_new(sizeof(p_host_attr), &xbt_free_ref);
 
-	p_host_attr host = malloc(sizeof(host_attr));
-	host->id = luaL_checkstring(L,1);
-	host->power = luaL_checknumber(L,2);
-	host->function = NULL;
-	xbt_dynar_push(host_list_d, &host);
-	return 0;
+	p_host_attr host;
+	const char * id;
+	const char *power_trace;
+	const char *state_trace;
+	double power,power_scale;
+	int state_initial;
+	//get values from the table passed as argument
+    if (lua_istable(L,-1)) {
+
+            // get Id Value
+            lua_pushstring(L,"id");
+            lua_gettable(L, -2 );
+            id = lua_tostring(L,-1);
+            lua_pop(L,1);
+
+            // get power value
+            lua_pushstring(L,"power");
+            lua_gettable(L, -2 );
+            power = lua_tonumber(L,-1);
+            lua_pop(L,1);
+
+            //get power_scale
+            lua_pushstring(L,"power_scale");
+            lua_gettable(L, -2 );
+            power_scale = lua_tonumber(L,-1);
+            lua_pop(L,1);
+
+            //get power_trace
+            lua_pushstring(L,"power_trace");
+            lua_gettable(L, -2 );
+            power_trace = lua_tostring(L,-1);
+            lua_pop(L,1);
+
+            //get state initial
+            lua_pushstring(L,"state_initial");
+            lua_gettable(L, -2 );
+            state_initial = lua_tonumber(L,-1);
+            lua_pop(L,1);
+
+            //get trace state
+            lua_pushstring(L,"state_trace");
+            lua_gettable(L, -2 );
+            state_trace = lua_tostring(L,-1);
+            lua_pop(L,1);
+
+    } else {
+            ERROR0("Bad Arguments to create host, Should be a table with named arguments");
+            return -1;
+    }
+
+	    host = malloc(sizeof(host_attr));
+		host->id = id;
+		host->power_peak = power;
+		host->power_scale = power_scale;
+		host->power_trace = power_trace;
+		host->state_initial = state_initial;
+		host->state_trace = state_trace;
+		host->function = NULL;
+		xbt_dynar_push(host_list_d, &host);
+
+    return 0;
+
 }
+
 
 static int Link_new(lua_State *L) // (id,bandwidth,latency)
 {
 	if(xbt_dynar_is_empty(link_list_d))
 		link_list_d = xbt_dynar_new(sizeof(p_link_attr), &xbt_free_ref);
 
+	const char* id;
+	double bandwidth,latency;
+	//get values from the table passed as argument
+	if (lua_istable(L,-1)) {
+	            // get Id Value
+	            lua_pushstring(L,"id");
+	            lua_gettable(L, -2 );
+	            id = lua_tostring(L,-1);
+	            lua_pop(L,1);
+
+	            // get bandwidth value
+	            lua_pushstring(L,"bandwidth");
+	            lua_gettable(L, -2 );
+	            bandwidth = lua_tonumber(L,-1);
+	            lua_pop(L,1);
+
+	            //get latency value
+	            lua_pushstring(L,"latency");
+	            lua_gettable(L, -2 );
+	            latency = lua_tonumber(L,-1);
+	            lua_pop(L,1);
+
+	    } else {
+	            ERROR0("Bad Arguments to create link, Should be a table with named arguments");
+	            return -1;
+	    }
+
 	p_link_attr link = malloc(sizeof(link_attr));
-	link->id = luaL_checkstring(L,1);
-	link->bandwidth = luaL_checknumber(L,2);
-	link->latency = luaL_checknumber(L,3);
+	link->id = id;
+	link->bandwidth = bandwidth;
+	link->latency = latency;
 	xbt_dynar_push(link_list_d,&link);
 	return 0;
 }
@@ -476,11 +575,12 @@ static int surf_parse_bypass_platform()
 
 #ifdef BYPASS_MODEL
 		INFO0("Bypass_Cpu");
-		create_host(p_host->id,p_host->power);
+		create_host(p_host->id,p_host->power,p_host->power_scale,p_host->power_trace,
+					p_host->state_initial,p_host->state_trace);
 #else
 
 		SURFXML_BUFFER_SET(host_id,p_host->id);
-		sprintf(buffer,"%f",p_host->power);
+		sprintf(buffer,"%f",p_host->power_peak);
 		SURFXML_BUFFER_SET(host_power,buffer);
 		SURFXML_BUFFER_SET(host_availability, "1.0");
 		SURFXML_BUFFER_SET(host_availability_file, "");
@@ -640,6 +740,7 @@ static const luaL_reg Link_methods[] = {
  */
 static const luaL_reg Route_methods[] ={
    {"new",Route_new},
+   {0,0}
 };
 
 /*
