@@ -639,6 +639,9 @@ static int surf_parse_bypass_platform()
 			SURFXML_BUFFER_SET(link_c_ctn_id,link_id);
 			SURFXML_START_TAG(link_c_ctn);
 			SURFXML_END_TAG(link_c_ctn);
+#ifdef BYPASS_MODEL
+			surf_add_route_element(link_id);
+#endif
 		}
 
 		SURFXML_END_TAG(route);

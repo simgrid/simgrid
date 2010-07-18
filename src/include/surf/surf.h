@@ -668,6 +668,15 @@ XBT_PUBLIC(void) surf_host_create_resource(char *name, double power_peak,
 XBT_PUBLIC(void) surf_link_create_resouce(char *name,
         double bw_initial,double lat_initial);
 
+
+/**
+ * add route element (link_ctn) bypassing the parser
+ *
+ * see surfxml_parse.c
+ *
+ */
+XBT_PUBLIC(void) surf_add_route_element(char *link_ctn_id);
+
 #include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"
 

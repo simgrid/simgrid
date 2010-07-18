@@ -464,7 +464,6 @@ void surf_parse_close(void)
   }
 }
 
-
 static int _surf_parse(void)
 {
   return surf_parse_lex();
@@ -879,7 +878,7 @@ void manage_route(xbt_dict_t routing_table, const char *route_name,
       xbt_dynar_free(&links);
       break;
     case A_surfxml_route_action_POSTPEND:      /* add existing links in front; links + route_link_list */
-      xbt_dynar_foreach(route_link_list, cpt, value) {
+    	xbt_dynar_foreach(route_link_list, cpt, value) {
         xbt_dynar_push(links, &value);
       }
       xbt_dynar_free(&route_link_list);
@@ -893,6 +892,7 @@ void manage_route(xbt_dict_t routing_table, const char *route_name,
           route_name,action));
       break;
     }
+
   }
   /* this is the final route; do not add if name is a set; add only if name is in set list */
   if (!isMultiRoute) {
@@ -1186,4 +1186,14 @@ void surf_link_create_resouce(char *name,
 	return surf_network_model->extension.network.
 	     create_resource(name,bw_initial,lat_initial);
 
+}
+
+/**
+ * Route: add route element bypassing the parser :
+ * same job as parse_route_elem
+ */
+
+void surf_add_route_element(char* link_ctn_id)
+{
+	xbt_dynar_push(route_link_list,&link_ctn_id);
 }
