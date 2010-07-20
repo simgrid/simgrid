@@ -110,6 +110,12 @@ struct s_routing {
 };
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link,void *loopback);
 
+/*
+ * generic methods to create resources bypassing the parser
+ * FIXME : better if added to the routing model instead
+ */
+XBT_PUBLIC(void) routing_set_route(char *source_id,char *destination_id,xbt_dynar_t links_id,int action);
+XBT_PUBLIC(void) routing_add_host(char* host_id);
 
 /*
  * Resource protected methods

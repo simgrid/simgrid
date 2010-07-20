@@ -575,8 +575,10 @@ static int surf_parse_bypass_platform()
 
 #ifdef BYPASS_MODEL
 		INFO0("Bypass_Cpu");
-		create_host(p_host->id,p_host->power,p_host->power_scale,p_host->power_trace,
+		create_host(p_host->id,p_host->power_peak,p_host->power_scale,p_host->power_trace,
 					p_host->state_initial,p_host->state_trace);
+		//add to routing model host list
+		surf_route_add_host((char*)p_host->id);
 #else
 
 		SURFXML_BUFFER_SET(host_id,p_host->id);
@@ -624,7 +626,9 @@ static int surf_parse_bypass_platform()
 	INFO0("Start Adding routes");
 	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
-#ifndef BYPASS_MODEL
+#ifdef BYPASS_MODEL
+		surf_route_set_resource((char*)p_route->src_id,(char*)p_route->dest_id,p_route->links_id,0);
+#else
 
 		SURFXML_BUFFER_SET(route_src,p_route->src_id);
 		SURFXML_BUFFER_SET(route_dst,p_route->dest_id);
@@ -639,15 +643,14 @@ static int surf_parse_bypass_platform()
 			SURFXML_BUFFER_SET(link_c_ctn_id,link_id);
 			SURFXML_START_TAG(link_c_ctn);
 			SURFXML_END_TAG(link_c_ctn);
-#ifdef BYPASS_MODEL
-			surf_add_route_element(link_id);
-#endif
+
 		}
 
 		SURFXML_END_TAG(route);
 #endif
 	}
 	/* </platform> */
+	INFO0("Register Platform");
 #ifndef BYPASS_MODEL
 	SURFXML_END_TAG(platform);
 #endif

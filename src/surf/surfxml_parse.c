@@ -1195,5 +1195,24 @@ void surf_link_create_resouce(char *name,
 
 void surf_add_route_element(char* link_ctn_id)
 {
-	xbt_dynar_push(route_link_list,&link_ctn_id);
+	char *val;
+	val = xbt_strdup(link_ctn_id);
+	xbt_dynar_push(route_link_list,&val);
+}
+/**
+ * set route
+ */
+void surf_route_set_resource(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
+{
+	route_link_list = xbt_dynar_new(sizeof(char *), NULL);
+	routing_set_route(source_id,destination_id,links_id,action);
+
+}
+
+/**
+ * add host to routing host list
+ */
+void surf_route_add_host(char *host_id)
+{
+	routing_add_host(host_id);
 }

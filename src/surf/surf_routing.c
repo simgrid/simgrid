@@ -1039,7 +1039,6 @@ static void routing_none_finalize(void) {
 
 static void routing_model_none_create(size_t size_of_link,void *loopback) {
   routing_t routing = xbt_new0(s_routing_t,1);
-  INFO0("Null routing");
   routing->name = "none";
   routing->host_count = 0;
   routing->host_id = xbt_dict_new();
@@ -1051,4 +1050,43 @@ static void routing_model_none_create(size_t size_of_link,void *loopback) {
 
   /* Set it in position */
   used_routing = (routing_t) routing;
+}
+
+/*****************************************************************/
+/******************* BYBASS THE PARSER ***************************/
+
+/*
+ * FIXME : better to add to the routing model instead !!
+ *
+ */
+void routing_set_route(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
+{
+    char * link_id;
+    char * name;
+    unsigned int i;
+    src_id = *(int*)xbt_dict_get(used_routing->host_id,source_id);
+    dst_id = *(int*)xbt_dict_get(used_routing->host_id,destination_id);
+    DEBUG4("Route %s %d -> %s %d",source_id,src_id,destination_id,dst_id);
+	//set Links
+    xbt_dynar_foreach(links_id,i,link_id)
+     {
+    	surf_add_route_element(link_id);
+     }
+    route_action = action;
+	if (src_id != -1 && dst_id != -1) {
+	   name = bprintf("%x#%x", src_id, dst_id);
+	   manage_route(route_table, name, route_action, 0);
+	   free(name);
+	}
+}
+
+void routing_add_host(char* host_id)
+{
+	int *val = xbt_malloc(sizeof(int));
+	DEBUG2("Seen host %s (#%d)",host_id,used_routing->host_count);
+	*val = used_routing->host_count++;
+	xbt_dict_set(used_routing->host_id,host_id,val,xbt_free);
+	#ifdef HAVE_TRACING
+	  TRACE_surf_host_define_id (host_id, *val);
+	#endif
 }
