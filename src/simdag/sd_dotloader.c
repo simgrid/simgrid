@@ -174,21 +174,7 @@ void dot_add_task(Agnode_t *dag_node) {
         count++;
     }
     if (count==0 && current_job != root_task){
-        SD_task_t file;
-        char *name= (char*)"root->many";
-        double size = 0;
-
-        file = xbt_dict_get_or_null(files,name);
-        if (file==NULL) {
-            file = SD_task_create_comm_e2e(name,NULL,size);
-            xbt_dict_set(files,name,file,&dot_task_free);
-        } else {
-            if (SD_task_get_amount(file)!=size) {
-                WARN3("Ignoring file %s size redefinition from %.0f to %.0f",
-                      name,SD_task_get_amount(file),size);
-            }
-        }
-        SD_task_dependency_add(NULL,NULL,file,current_job);
+        SD_task_dependency_add(NULL,NULL,root_task,current_job);
     }
     count = 0;
     for (e = agfstout(dag_dot,dag_node); e; e = agnxtout(dag_dot,e)) {
@@ -196,25 +182,7 @@ void dot_add_task(Agnode_t *dag_node) {
         count++;
     }
     if (count==0 && current_job != end_task){
-        SD_task_t file;
-        char *name = (char*)"many->end";
-        double size = 0;
-
-        //  INFO2("See <uses file=%s %s>",A_dot__uses_file,(is_input?"in":"out"));
-        file = xbt_dict_get_or_null(files,name);
-        if (file==NULL) {
-            file = SD_task_create_comm_e2e(name,NULL,size);
-            xbt_dict_set(files,name,file,&dot_task_free);
-        } else {
-            if (SD_task_get_amount(file)!=size) {
-                WARN3("Ignoring file %s size redefinition from %.0f to %.0f",
-                      name,SD_task_get_amount(file),size);
-            }
-        }
-        SD_task_dependency_add(NULL,NULL,current_job,file);
-        if (xbt_dynar_length(file->tasks_before)>1) {
-            WARN1("File %s created at more than one location...",file->name);
-        }
+        SD_task_dependency_add(NULL,NULL,current_job,end_task);
     }
 }
 
