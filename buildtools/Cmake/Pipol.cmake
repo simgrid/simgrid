@@ -6,6 +6,56 @@
 # ssh/rsync mandatory 
 IF(pipol_user)
 
+	set(CMAKE_OPTIONS "")
+	
+	if(custom_flags)
+		set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dcustom_flags=${custom_flags}")
+	endif(custom_flags)
+	
+	if(with_context)
+		set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dwith_context=${with_context}")
+	endif(with_context)
+	
+	if(enable_smpi)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_smpi=on")
+	endif(enable_smpi)
+	
+	if(enable_java)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_java=on")
+	endif(enable_java)
+	
+	if(enable_lua)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_lua=on")
+	endif(enable_lua)	
+	
+	if(enable_ruby)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_ruby=on")
+	endif(enable_ruby)	
+	
+	if(enable_compile_optimizations)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_compile_optimizations=on")
+	endif(enable_compile_optimizations)
+	
+	if(enable_compile_warnings)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_compile_warnings=on")
+	endif(enable_compile_warnings)	
+	
+	if(enable_tracing)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_tracing=on")
+	endif(enable_tracing)
+	
+	if(enable_coverage)
+	set(CMAKE_OPTIONS "${CMAKE_OPTION}	-Denable_coverage=on")
+	endif(enable_coverage)	
+	
+	if(enable_print_message)	
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_print_message=on")
+	endif(enable_print_message)	
+	
+	if(enable_model-checking)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_model-checking=on")
+	endif(enable_model-checking)
+
 	FIND_PROGRAM(HAVE_SSH ssh)
 	FIND_PROGRAM(HAVE_RSYNC rsync)
 
@@ -47,7 +97,8 @@ IF(pipol_user)
 			        \"sudo chown ${pipol_user} ${CMAKE_HOME_DIRECTORY} \;
 			        cd ${CMAKE_HOME_DIRECTORY} \;
 			        sh ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/liste_install.sh \;
-			        cmake ${CMAKE_HOME_DIRECTORY} \;
+			        cmake -E remove CMakeCache.txt \;
+			        cmake ${CMAKE_HOME_DIRECTORY}${CMAKE_OPTIONS} \;
 			        make clean \;
 			        make \;
 			        make check \"
@@ -60,7 +111,8 @@ IF(pipol_user)
 			        \"sudo chown ${pipol_user} ${CMAKE_HOME_DIRECTORY} \;
 			        cd ${CMAKE_HOME_DIRECTORY} \;
 			        sh ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/liste_install.sh \;
-			        cmake ${CMAKE_HOME_DIRECTORY} \;
+			        cmake -E remove CMakeCache.txt \;
+			        cmake ${CMAKE_HOME_DIRECTORY}${CMAKE_OPTIONS} \;
 			        ctest -D Experimental \"
 			        )
 			        
@@ -75,7 +127,8 @@ IF(pipol_user)
 				        \"sudo chown ${pipol_user} ${CMAKE_HOME_DIRECTORY} \;
 				        cd ${CMAKE_HOME_DIRECTORY} \;
 				        sh ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/liste_install.sh \;
-				        cmake ${CMAKE_HOME_DIRECTORY} \;
+				        cmake -E remove CMakeCache.txt \;
+				        cmake ${CMAKE_HOME_DIRECTORY}${CMAKE_OPTIONS} \;
 				        ctest -D Experimental \"
 	        			 )
 	        		endif(NOT make_test)
