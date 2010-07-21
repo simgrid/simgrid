@@ -114,7 +114,6 @@ static int Task_new(lua_State* L) {
 	  const char *name=luaL_checkstring(L,1);
 	  int comp_size = luaL_checkint(L,2);
 	  int msg_size = luaL_checkint(L,3);
-	  INFO0("Creating task");
 	  m_task_t msg_task = MSG_task_create(name,comp_size,msg_size,NULL);
 	  lua_newtable (L); /* create a table, put the userdata on top of it */
 	  m_task_t *lua_task = (m_task_t*)lua_newuserdata(L,sizeof(m_task_t));
@@ -564,8 +563,8 @@ static int surf_parse_bypass_platform()
 	  /* FIXME allocating memory for the buffer, I think 2kB should be enough */
 	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 	  /* <platform> */
-	SURFXML_BUFFER_SET(platform_version, "2");
 #ifndef BYPASS_CPU
+	SURFXML_BUFFER_SET(platform_version, "2");
 	SURFXML_START_TAG(platform);
 #endif
 
@@ -574,7 +573,6 @@ static int surf_parse_bypass_platform()
 	{
 
 #ifdef BYPASS_MODEL
-		INFO0("Bypass_Cpu");
 		create_host(p_host->id,p_host->power_peak,p_host->power_scale,p_host->power_trace,
 					p_host->state_initial,p_host->state_trace);
 		//add to routing model host list
@@ -598,12 +596,9 @@ static int surf_parse_bypass_platform()
 	}
 
 	//add Links
-	INFO0("Start Adding Links");
 	xbt_dynar_foreach(link_list_d,i,p_link)
 	{
 #ifdef BYPASS_MODEL
-
-		INFO0("Bypass_Network");
 		surf_link_create_resouce((char*)p_link->id,p_link->bandwidth,p_link->latency);
 #else
 
@@ -623,7 +618,6 @@ static int surf_parse_bypass_platform()
 	}
 
 	// add route
-	INFO0("Start Adding routes");
 	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
 #ifdef BYPASS_MODEL
@@ -650,7 +644,6 @@ static int surf_parse_bypass_platform()
 #endif
 	}
 	/* </platform> */
-	INFO0("Register Platform");
 #ifndef BYPASS_MODEL
 	SURFXML_END_TAG(platform);
 #endif
@@ -671,10 +664,18 @@ static int surf_parse_bypass_application()
 	  static int surfxml_bufferstack_size = 2048;
 	  /* FIXME ( should be manual )allocating memory to the buffer, I think 2MB should be enough */
 	  surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
+
+#ifdef BYPASS_MODEL
+	  xbt_dynar_foreach(host_list_d,i,p_host)
+	  	  {
+		  if(p_host->function)
+			  MSG_set_function(p_host->id,p_host->function,p_host->args_list);
+	  	  }
+#else
+
 	  /* <platform> */
 	  SURFXML_BUFFER_SET(platform_version, "2");
 	  SURFXML_START_TAG(platform);
-
 	  xbt_dynar_foreach(host_list_d,i,p_host)
 	  {
 		  if(p_host->function)
@@ -696,6 +697,7 @@ static int surf_parse_bypass_application()
 	  }
 	  /* </platform> */
 	  SURFXML_END_TAG(platform);
+#endif
 	  free(surfxml_bufferstack);
 	  return 0;
 }
