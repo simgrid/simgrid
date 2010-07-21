@@ -201,6 +201,7 @@ XBT_PUBLIC(double) SD_get_clock(void);
 XBT_PUBLIC(void) SD_exit(void);
 XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char*filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char*filename);
+XBT_PUBLIC(void) uniq_transfer_task_name(SD_task_t task);
 
 /** @} */
 

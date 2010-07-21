@@ -30,7 +30,7 @@ XBT_PUBLIC(void) SIMIX_launch_application(const char *file);
 /*
  *  Deployment (Bypass the parser)
  */
-XBT_PUBLIC(void) SIMIX_set_process_function(const char* process_host,const char *process_function,xbt_dynar_t arguments,double process_start_time,double process_kill_time);
+XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,const char *process_function,xbt_dynar_t arguments,double process_start_time,double process_kill_time);
 
 
 XBT_PUBLIC(double) SIMIX_get_clock(void);

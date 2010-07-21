@@ -492,7 +492,6 @@ static int Route_new(lua_State *L) // (src_id,dest_id,links_number,link_table)
 {
 	if(xbt_dynar_is_empty(route_list_d))
 		route_list_d = xbt_dynar_new(sizeof(p_route_attr), &xbt_free_ref);
-    int i;
 	const char * link_id;
 	p_route_attr route = malloc(sizeof(route_attr));
 	route->src_id = luaL_checkstring(L,1);

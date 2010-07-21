@@ -34,6 +34,11 @@ XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
 XBT_PUBLIC(void *) surf_action_new(size_t size, double cost,
                                    surf_model_t model, int failed);
 
+/**
+ * FIXME : this should be done in the binding code !!
+ */
+XBT_PUBLIC(void) network_create_resource(char *name,
+        double initial_bandwidth,double initial_latency);
 
 
 /** \brief Resource model description
