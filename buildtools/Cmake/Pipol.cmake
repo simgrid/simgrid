@@ -44,11 +44,10 @@ IF(pipol_user)
 			        COMMENT "PIPOL Build : ${SYSTEM_PATTERN}"
 			        COMMAND rsync ${pipol_user}@pipol.inria.fr:/usr/local/bin/pipol-sub .
 			        COMMAND ./pipol-sub --pipol-user=${pipol_user} ${SYSTEM_PATTERN} 02:00 --reconnect --group --keep --verbose=1 --export=${CMAKE_HOME_DIRECTORY} --rsynco=-aC  
-			        \"sudo mkdir -p \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
-			        sudo chown ${pipol_user} \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
-			        cd \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
+			        \"sudo chown ${pipol_user} ${CMAKE_HOME_DIRECTORY} \;
+			        cd ${CMAKE_HOME_DIRECTORY} \;
 			        sh ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/liste_install.sh \;
-			        cmake -Denable_print_message=on -Denable_tracing=on -Denable_model-checking=on ${CMAKE_HOME_DIRECTORY} \;
+			        cmake ${CMAKE_HOME_DIRECTORY} \;
 			        make clean \;
 			        make \;
 			        make check \"
@@ -58,11 +57,10 @@ IF(pipol_user)
 			        COMMENT "PIPOL Build : ${SYSTEM_PATTERN}_experimental"
 			        COMMAND rsync ${pipol_user}@pipol.inria.fr:/usr/local/bin/pipol-sub .
 			        COMMAND ./pipol-sub --pipol-user=${pipol_user} ${SYSTEM_PATTERN} 02:00 --reconnect --group --keep --verbose=1 --export=${CMAKE_HOME_DIRECTORY} --rsynco=-aC  
-			        \"sudo mkdir -p \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
-			        sudo chown ${pipol_user} \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
-			        cd \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
+			        \"sudo chown ${pipol_user} ${CMAKE_HOME_DIRECTORY} \;
+			        cd ${CMAKE_HOME_DIRECTORY} \;
 			        sh ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/liste_install.sh \;
-			        cmake -Denable_tracing=on -Denable_model-checking=on ${CMAKE_HOME_DIRECTORY} \;
+			        cmake ${CMAKE_HOME_DIRECTORY} \;
 			        ctest -D Experimental \"
 			        )
 			        
@@ -74,11 +72,10 @@ IF(pipol_user)
 	      				COMMENT "PIPOL Build : ${SYSTEM_PATTERN}"
 				        COMMAND rsync ${pipol_user}@pipol.inria.fr:/usr/local/bin/pipol-sub .
 				        COMMAND ./pipol-sub --pipol-user=${pipol_user} ${SYSTEM_PATTERN} 02:00 --reconnect --group --keep --verbose=1 --export=${CMAKE_HOME_DIRECTORY} --rsynco=-aC  
-				        \"sudo mkdir -p \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
-				        sudo chown ${pipol_user} \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
-				        cd \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
+				        \"sudo chown ${pipol_user} ${CMAKE_HOME_DIRECTORY} \;
+				        cd ${CMAKE_HOME_DIRECTORY} \;
 				        sh ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/liste_install.sh \;
-				        cmake -Denable_tracing=on -Denable_model-checking=on ${CMAKE_HOME_DIRECTORY} \;
+				        cmake ${CMAKE_HOME_DIRECTORY} \;
 				        ctest -D Experimental \"
 	        			 )
 	        		endif(NOT make_test)
