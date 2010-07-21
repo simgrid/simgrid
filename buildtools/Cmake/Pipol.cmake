@@ -57,7 +57,7 @@ IF(pipol_user)
 			        ${SYSTEM_TARGET}_experimental
 			        COMMENT "PIPOL Build : ${SYSTEM_PATTERN}_experimental"
 			        COMMAND rsync ${pipol_user}@pipol.inria.fr:/usr/local/bin/pipol-sub .
-			        COMMAND ./pipol-sub --pipol-user=${pipol_user} ${SYSTEM_PATTERN} 02:00 --verbose=1 --export=${CMAKE_HOME_DIRECTORY} --rsynco=-aC  
+			        COMMAND ./pipol-sub --pipol-user=${pipol_user} ${SYSTEM_PATTERN} 02:00 --reconnect --group --keep --verbose=1 --export=${CMAKE_HOME_DIRECTORY} --rsynco=-aC  
 			        \"sudo mkdir -p \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
 			        sudo chown ${pipol_user} \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
 			        cd \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
@@ -73,7 +73,7 @@ IF(pipol_user)
 	      			  ADD_CUSTOM_COMMAND(TARGET pipol_kvm_deploy
 	      				COMMENT "PIPOL Build : ${SYSTEM_PATTERN}"
 				        COMMAND rsync ${pipol_user}@pipol.inria.fr:/usr/local/bin/pipol-sub .
-				        COMMAND ./pipol-sub --pipol-user=${pipol_user} ${SYSTEM_PATTERN} 02:00 --verbose=1 --export=${CMAKE_HOME_DIRECTORY} --rsynco=-aC  
+				        COMMAND ./pipol-sub --pipol-user=${pipol_user} ${SYSTEM_PATTERN} 02:00 --reconnect --group --keep --verbose=1 --export=${CMAKE_HOME_DIRECTORY} --rsynco=-aC  
 				        \"sudo mkdir -p \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
 				        sudo chown ${pipol_user} \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
 				        cd \\\$$PIPOL_WDIR/${pipol_user}/${PROJECT_NAME} \;
