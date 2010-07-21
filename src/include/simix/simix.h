@@ -27,6 +27,12 @@ XBT_PUBLIC(xbt_main_func_t) SIMIX_get_registered_function(const char *name);
 
 XBT_PUBLIC(void) SIMIX_launch_application(const char *file);
 
+/*
+ *  Deployment (Bypass the parser)
+ */
+XBT_PUBLIC(void) SIMIX_set_process_function(const char* process_host,const char *process_function,xbt_dynar_t arguments,double process_start_time,double process_kill_time);
+
+
 XBT_PUBLIC(double) SIMIX_get_clock(void);
 XBT_PUBLIC(void) SIMIX_init(void);
 XBT_PUBLIC(double) SIMIX_solve(xbt_fifo_t actions_done,

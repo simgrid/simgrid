@@ -175,10 +175,49 @@ void SIMIX_function_register_default(xbt_main_func_t code)
  */
 xbt_main_func_t SIMIX_get_registered_function(const char *name)
 {
-	xbt_main_func_t res = NULL;
+  xbt_main_func_t res = NULL;
   xbt_assert0(simix_global,
               "SIMIX_global_init has to be called before SIMIX_get_registered_function.");
 
   res = xbt_dict_get_or_null(simix_global->registered_functions, name);
   return res ? res : default_function;
+}
+
+
+/**
+ * \brief Bypass the parser, get arguments, and set function to each process
+ */
+
+void SIMIX_process_set_function(const char* process_host,const char *process_function,xbt_dynar_t arguments,double process_start_time,double process_kill_time)
+{
+  unsigned int i;
+  char *arg;
+
+  /* init process */
+  parse_host = xbt_strdup(process_host);
+  xbt_assert1(SIMIX_host_get_by_name(parse_host),
+              "Host '%s' unknown", parse_host);
+  parse_code = SIMIX_get_registered_function(process_function);
+  xbt_assert1(parse_code, "Function '%s' unknown",
+              process_function);
+  parse_argc = 0;
+  parse_argv = NULL;
+  parse_argc++;
+  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
+  start_time = process_start_time;
+  kill_time = process_kill_time;
+  current_property_set = xbt_dict_new();
+
+  /* add arguments */
+  xbt_dynar_foreach(arguments,i,arg)
+  {
+	  parse_argc++;
+	  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
+	  parse_argv[(parse_argc) - 1] = xbt_strdup(arg);
+  }
+
+  /*finalize */
+  parse_process_finalize();
+
 }
