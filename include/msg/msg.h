@@ -26,6 +26,8 @@ XBT_PUBLIC(void) MSG_function_register(const char *name,
 XBT_PUBLIC(void) MSG_function_register_default(xbt_main_func_t code);
 XBT_PUBLIC(xbt_main_func_t) MSG_get_registered_function(const char *name);
 XBT_PUBLIC(void) MSG_launch_application(const char *file);
+/*Bypass the parser */
+XBT_PUBLIC(void) MSG_set_function(const char* host_id,const char *function_name,xbt_dynar_t arguments);
 
 XBT_PUBLIC(double) MSG_get_clock(void);
 XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
