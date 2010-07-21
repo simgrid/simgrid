@@ -118,6 +118,9 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
 ### Setup the distrib
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
 
+### Pipol compilation
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
+
 ### Print ARGS
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
 
