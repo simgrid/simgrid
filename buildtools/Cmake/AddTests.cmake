@@ -272,6 +272,6 @@ add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:
 add_test(test-simdag-2 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/small_platform.xml)
 add_test(test-simdag-3 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml)
 
-add_test(testall		${CMAKE_BUILD_DIR}/src/testall)
+add_test(testall		${PROJECT_DIRECTORY}/src/testall)
 
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake)
