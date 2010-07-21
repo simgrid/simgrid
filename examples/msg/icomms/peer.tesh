@@ -121,7 +121,6 @@ $ ./peer2 small_platform.xml deployment_peer.xml
 > [Tremblay:sender:(1) 0.000000] [msg_test/INFO] Send to receiver-0 Task_1
 > [Tremblay:sender:(1) 0.000000] [msg_test/INFO] Send to receiver-0 Task_2
 > [Tremblay:sender:(1) 0.000000] [msg_test/INFO] Send to receiver-0 finalize
-> [Tremblay:sender:(1) 0.000000] [msg_gos/INFO] NB_WAIT_TO_DO : 4
 > [Ruby:receiver:(2) 10.000000] [msg_test/INFO] Wait to receive a task
 > [Ruby:receiver:(2) 10.016560] [msg_test/INFO] Received "Task_0"
 > [Ruby:receiver:(2) 10.016560] [msg_test/INFO] Processing "Task_0"
