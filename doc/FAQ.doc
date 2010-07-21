@@ -135,25 +135,25 @@ SET --> CC	TO --> C:\MicrosoftVisualStudio10\VC\bin\cl
 \verbatim
 "cmake -D[name]=[value] ... ./"
  
-[name] 		enable_gtnets			[value] ON/OFF or TRUE/FALSE or 1/0
-		enable_java				ON/OFF or TRUE/FALSE or 1/0
-		enable_lua				ON/OFF or TRUE/FALSE or 1/0
-		enable_ruby				ON/OFF or TRUE/FALSE or 1/0
-		enable_compile_optimizations		ON/OFF or TRUE/FALSE or 1/0
-		enable_compile_warnings			ON/OFF or TRUE/FALSE or 1/0
-		enable_smpi				ON/OFF or TRUE/FALSE or 1/0
-		enable_maintainer_mode			ON/OFF or TRUE/FALSE or 1/0
-		enable_supernovae			ON/OFF or TRUE/FALSE or 1/0
-		enable_tracing 				ON/OFF or TRUE/FALSE or 1/0
-		enable_coverage 			ON/OFF or TRUE/FALSE or 1/0
-		enable_memcheck 			ON/OFF or TRUE/FALSE or 1/0 
-		enable_model-checking			ON/OFF or TRUE/FALSE or 1/0
-		enable_doc				ON/OFF or TRUE/FALSE or 1/0
-
-		gtnets_path				<path_to_gtnets_directory>
-		prefix					<path_to_install_directory>
-		BIBTEX2HTML 				<path_to_bibtex2html>
-		with_context				auto/ucontext/pthread/window	 
+[name] 	enable_gtnets		[value] ON/OFF or TRUE/FALSE or 1/0
+	enable_java			ON/OFF or TRUE/FALSE or 1/0
+	enable_lua			ON/OFF or TRUE/FALSE or 1/0
+	enable_ruby			ON/OFF or TRUE/FALSE or 1/0
+	enable_compile_optimizations	ON/OFF or TRUE/FALSE or 1/0
+	enable_compile_warnings		ON/OFF or TRUE/FALSE or 1/0
+	enable_smpi			ON/OFF or TRUE/FALSE or 1/0
+	enable_maintainer_mode		ON/OFF or TRUE/FALSE or 1/0
+	enable_supernovae		ON/OFF or TRUE/FALSE or 1/0
+	enable_tracing 			ON/OFF or TRUE/FALSE or 1/0
+	enable_coverage 		ON/OFF or TRUE/FALSE or 1/0
+	enable_memcheck 		ON/OFF or TRUE/FALSE or 1/0 
+	enable_model-checking		ON/OFF or TRUE/FALSE or 1/0
+	enable_doc			ON/OFF or TRUE/FALSE or 1/0
+	gtnets_path			<path_to_gtnets_directory>
+	prefix				<path_to_install_directory>
+	BIBTEX2HTML 			<path_to_bibtex2html>
+	with_context			auto/ucontext/pthread/window
+	pipol_user			<pipol_username>	 
 \endverbatim
                                                                                                                                                           
 \subsubsection faq_cmakeoption2 Options explaination
@@ -193,6 +193,8 @@ SET --> CC	TO --> C:\MicrosoftVisualStudio10\VC\bin\cl
   \li BIBTEX2HTML : Path where is installed bibtex2html.
 
   \li with context : specify which context the user wants to use.
+  
+  \li pipol_user : specify your pipol username if you want to use the pipol-remote command.
 
 \subsubsection faq_cmakeoption3 Initialisation
 
@@ -218,6 +220,7 @@ gtnets_path			null
 prefix				null
 BIBTEX2HTML 			null
 with_context			auto
+pipol_user			null
 \endverbatim
 
 \subsubsection faq_cmakeoption4 Option's cache and how to reset?
@@ -305,7 +308,7 @@ ctest -D NightlyMemoryCheck
 
 If you want to test before make a commit you can simply make "ctest -D Experimental" and then you can visualize results submitted into Cdash. <a href="http://cdash.inria.fr/CDash/index.php?project=Simgrid">(Go to Cdash site)</a>.
 
-\subsubsection faq_cmakecompilation4 Examples for different mode.
+\subsubsection faq_cmakecompilation5 Examples for different mode.
 
 \li Mode maintainer
 
@@ -521,6 +524,90 @@ with this function : ADD_TEST(<name> <bin> <ARGS>)
 
 \verbatim
 add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag small_platform_variable.xml)
+\endverbatim
+
+\subsection faq_PIPOL Pipol-remote
+
+Now we offer the possibility to test your local sources on pipol platforms before a commit. Of course you have to be user of pipol <a href="https://pipol.inria.fr/users/">(Account request)</a> cause you need to give your pipol_username to cmake. Here is a list of available systems :
+\verbatim
+    amd64_kvm-linux-debian-lenny
+    amd64_kvm-linux-debian-testing
+    amd64_kvm-windows-7
+    amd64-linux-centos-5.dd.gz
+    amd64-linux-debian-etch.dd.gz
+    amd64-linux-debian-lenny.dd.gz
+    amd64-linux-debian-testing.dd.gz
+    amd64-linux-fedora-core10.dd.gz
+    amd64-linux-fedora-core11.dd.gz
+    amd64-linux-fedora-core12.dd.gz
+    amd64-linux-fedora-core13.dd.gz
+    amd64-linux-fedora-core7.dd.gz
+    amd64-linux-fedora-core8.dd.gz
+    amd64-linux-fedora-core9.dd.gz
+    amd64-linux-mandriva-2007_springs_powerpack.dd.gz
+    amd64-linux-mandriva-2009_powerpack.dd.gz
+    amd64-linux-opensuse-11.dd.gz
+    amd64-linux-redhatEL-5.0.dd.gz
+    amd64-linux-suse-LES10.dd.gz
+    amd64-linux-ubuntu-feisty.dd.gz
+    amd64-linux-ubuntu-hardy.dd.gz
+    amd64-linux-ubuntu-intrepid.dd.gz
+    amd64-linux-ubuntu-jaunty.dd.gz
+    amd64-linux-ubuntu-karmic.dd.gz
+    amd64-linux-ubuntu-lucid.dd.gz
+    amd64-unix-freebsd-7.dd.gz
+    amd64-windows-server-2003-64bits.dd.gz
+    amd64-windows-server-2008-64bits.dd.gz
+    i386_kvm-linux-debian-lenny
+    i386_kvm-linux-debian-testing
+    i386_kvm-linux-fedora-core13
+    i386_kvm-windows-xp-pro-sp3
+    i386-linux-centos-5.dd.gz
+    i386-linux-debian-etch.dd.gz
+    i386-linux-debian-lenny.dd.gz
+    i386-linux-debian-testing.dd.gz
+    i386-linux-fedora-core10.dd.gz
+    i386-linux-fedora-core11.dd.gz
+    i386-linux-fedora-core12.dd.gz
+    i386-linux-fedora-core13.dd.gz
+    i386-linux-fedora-core7.dd.gz
+    i386-linux-fedora-core8.dd.gz
+    i386-linux-fedora-core9.dd.gz
+    i386-linux-mandriva-2007_springs_powerpack.dd.gz
+    i386-linux-mandriva-2009_powerpack.dd.gz
+    i386-linux-opensuse-11.dd.gz
+    i386-linux-redhatEL-5.0.dd.gz
+    i386-linux-suse-LES10.dd.gz
+    i386-linux-ubuntu-feisty.dd.gz
+    i386-linux-ubuntu-hardy.dd.gz
+    i386-linux-ubuntu-intrepid.dd.gz
+    i386-linux-ubuntu-jaunty.dd.gz
+    i386-linux-ubuntu-karmic.dd.gz
+    i386-linux-ubuntu-lucid.dd.gz
+    i386_mac-mac-osx-server-leopard.dd.gz
+    i386-unix-freebsd-7.dd.gz
+    i386-unix-opensolaris-10.dd.gz
+    i386-unix-opensolaris-11.dd.gz
+    i386-unix-solaris-10.dd.gz
+    ia64-linux-debian-lenny.dd
+    ia64-linux-fedora-core9.dd
+    ia64-linux-redhatEL-5.0.dd
+    x86_64_mac-mac-osx-server-snow-leopard.dd.gz
+    x86_mac-mac-osx-server-snow-leopard.dd.gz
+\endverbatim
+
+Two kind of uses are possible : 
+\verbatim
+This command copy your source and execute a configure then a build and finish with tests.
+	bob@caraja:~/Developments/simgrid/tmp_build$ make <name_of_image> 
+
+This command copy your source and execute a \"ctest -D Experimental\" and submit the result to cdash.
+	bob@caraja:~/Developments/simgrid/tmp_build$ make <name_of_image>_experimental 
+\endverbatim	
+All commands are resumed with :
+\verbatim
+bob@caraja:~/Developments/simgrid/tmp_build$ make pipol_experimental_list_images
+bob@caraja:~/Developments/simgrid/tmp_build$ make pipol_test_list_images
 \endverbatim
 
 \subsection faq_cmakeExplain Explaination of sources files for cmake
