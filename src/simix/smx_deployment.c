@@ -200,11 +200,12 @@ void SIMIX_process_set_function(const char* process_host,const char *process_fun
   parse_code = SIMIX_get_registered_function(process_function);
   xbt_assert1(parse_code, "Function '%s' unknown",
               process_function);
+
   parse_argc = 0;
   parse_argv = NULL;
   parse_argc++;
   parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
+  parse_argv[(parse_argc) - 1] = xbt_strdup(process_function);
   start_time = process_start_time;
   kill_time = process_kill_time;
   current_property_set = xbt_dict_new();
