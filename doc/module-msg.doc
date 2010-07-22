@@ -81,6 +81,7 @@
   \section MSG_examples Examples of MSG
  
    - \ref MSG_ex_master_slave
+   - \ref MSG_ex_asynchronous_communications
 */
 
 /** @addtogroup MSG_LUA
@@ -116,6 +117,96 @@
         \ingroup MSG_C  */
 /**     \addtogroup msg_simulation
         \ingroup MSG_C  */
+
+/** \page MSG_ex_asynchronous_communications Asynchronous communication applications
+
+    Simulation of asynchronous communications between a sender and a receiver using a realistic platform and
+    an external description of the deployment.
+ 
+    \section MSG_ex_ms_TOC Table of contents:
+     - \ref MSG_ext_icomms_code
+       - \ref MSG_ext_icomms_preliminary
+       - \ref MSG_ext_icomms_Sender
+       - \ref MSG_ext_icomms_Receiver
+       - \ref MSG_ext_icomms_core
+       - \ref MSG_ext_icomms_Main
+     - \ref MSG_ext_icomms_fct
+
+    <hr> 
+    
+    \dontinclude msg/icomms/peer.c
+
+    \section MSG_ext_icomms_code Code of the application
+
+    \subsection MSG_ext_icomms_preliminary Preliminary declarations
+    \skip include
+    \until Sender function
+
+    \subsection MSG_ext_icomms_Sender Sender function
+
+    The sender send to a receiver an asynchronous message with the function "MSG_task_isend()". Cause this function is non-blocking 
+    we have to make "MSG_comm_test()" to know   if the communication is finished for finally destroy it with function "MSG_comm_destroy()".
+    It also available to "make MSG_comm_wait()" which make both of them.  
+
+      C style arguments (argc/argv) are interpreted as:
+       - the number of tasks to distribute
+       - the computation size of each task
+       - the size of the files associated to each task
+       - a list of host that will accept those tasks.
+       - the time to sleep at the beginning of the function
+       - This time defined the process sleep time
+			if time = 0 use of MSG_comm_wait()
+			if time > 0 use of MSG_comm_test()
+
+
+    \until Receiver function
+
+    \subsection MSG_ext_icomms_Receiver Receiver function
+
+    This function executes tasks when it receives them. As the receiving is asynchronous we have to test the communication to know
+    if it is completed or not with "MSG_comm_test()" or wait for the completion "MSG_comm_wait()".
+
+      C style arguments (argc/argv) are interpreted as:
+       - the id to use for received the communication.
+       - the time to sleep at the beginning of the function
+       - This time defined the process sleep time
+			if time = 0 use of MSG_comm_wait()
+			if time > 0 use of MSG_comm_test()
+
+    \until Test function
+
+    \subsection MSG_ext_icomms_core Simulation core
+
+      This function is the core of the simulation and is divided only into 3 parts
+      thanks to MSG_create_environment() and MSG_launch_application().
+         -# Simulation settings : MSG_create_environment() creates a realistic 
+            environment
+         -# Application deployment : create the agents on the right locations with  
+            MSG_launch_application()
+         -# The simulation is run with #MSG_main()
+	 
+      Its arguments are:
+	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
+	- <i>application_file</i>: the name of a file containing a valid surfxml application description
+
+    \until Main function
+
+    \subsection MSG_ext_icomms_Main Main function
+
+    This initializes MSG, runs a simulation, and free all data-structures created by MSG.
+
+    \until end_of_main
+
+    \dontinclude msg/icomms/peer2.c
+
+    \section MSG_ext_icomms_fct Waitall function for sender
+
+    The use of this function permit to send all messages and wait for the completion of all in one time.
+
+    \skipline Sender function
+    \until end_of_sender
+
+*/
 
 /** \page MSG_ex_master_slave Master/slave application
     
