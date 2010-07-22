@@ -6,7 +6,7 @@
 # ssh/rsync mandatory 
 IF(pipol_user)
 
-	set(CMAKE_OPTIONS "")
+	set(CMAKE_OPTIONS "	-Wno-dev")
 	
 	if(custom_flags)
 		set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dcustom_flags=${custom_flags}")
@@ -97,6 +97,7 @@ IF(pipol_user)
 			        \"sudo chown ${pipol_user} ${CMAKE_HOME_DIRECTORY} \;
 			        cd ${CMAKE_HOME_DIRECTORY} \;
 			        sh ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/liste_install.sh \;
+			        perl ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/cmake.pl \;
 			        cmake -E remove CMakeCache.txt \;
 			        cmake ${CMAKE_HOME_DIRECTORY}${CMAKE_OPTIONS} \;
 			        make clean \;

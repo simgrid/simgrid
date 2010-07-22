@@ -9,8 +9,8 @@ set(libgras_version "${release_version}")
 set(libsmpi_version "${release_version}")
 
 ### Find programs and paths
-find_path(GCOV_PATH NAMES gcov PATHS NO_DEFAULT_PATHS)
-find_path(VALGRIND_PATH	NAMES valgrind	PATHS NO_DEFAULT_PATHS)
+FIND_PROGRAM(GCOV_PATH gcov)
+FIND_PROGRAM(VALGRIND_PATH valgrind)
 
 ### SET THE PROJECT_DIRECTORY
 SET(PROJECT_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
