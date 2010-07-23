@@ -118,16 +118,12 @@ static void parse_cpu_im_init(void)
 
 static void cpu_im_add_traces_cpu(void)
 {
-  INFO0("cpu_im_add_traces_cpu");
   xbt_dict_cursor_t cursor = NULL;
   char *trace_name, *elm;
-
   static int called = 0;
-
   if (called)
     return;
   called = 1;
-
 
   /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
