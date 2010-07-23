@@ -659,6 +659,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension.network.get_link_latency = net_get_link_latency;
   surf_network_model->extension.network.link_shared = net_link_shared;
   surf_network_model->extension.network.create_resource = network_create_resource;
+  surf_network_model->extension.network.add_traces = net_add_traces;
 
   if (!network_maxmin_system)
     network_maxmin_system = lmm_system_new();
