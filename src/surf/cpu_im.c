@@ -118,6 +118,7 @@ static void parse_cpu_im_init(void)
 
 static void cpu_im_add_traces_cpu(void)
 {
+  INFO0("cpu_im_add_traces_cpu");
   xbt_dict_cursor_t cursor = NULL;
   char *trace_name, *elm;
 
@@ -325,7 +326,6 @@ static void cpu_im_update_resource_state(void *id,
                                   double value, double date)
 {
   cpu_Cas01_im_t cpu = id;
-
   if (event_type == cpu->power_event) {
     cpu->power_scale = value;
     lmm_update_constraint_bound(cpu_im_maxmin_system, cpu->constraint,
@@ -574,6 +574,7 @@ static void surf_cpu_im_model_init_internal(void)
   surf_cpu_model->extension.cpu.get_speed = cpu_im_get_speed;
   surf_cpu_model->extension.cpu.get_available_speed = cpu_im_get_available_speed;
   surf_cpu_model->extension.cpu.create_resource = cpu_im_create_resource;
+  surf_cpu_model->extension.cpu.add_traces = cpu_im_add_traces_cpu;
 
   if (!cpu_im_maxmin_system) {
     sg_maxmin_selective_update = 1;

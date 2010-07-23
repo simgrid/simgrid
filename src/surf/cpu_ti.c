@@ -795,6 +795,7 @@ static void surf_cpu_ti_model_init_internal(void)
   surf_cpu_model->extension.cpu.get_speed = cpu_ti_get_speed;
   surf_cpu_model->extension.cpu.get_available_speed = cpu_ti_get_available_speed;
   surf_cpu_model->extension.cpu.create_resource = cpu_ti_create_resource;
+  surf_cpu_model->extension.cpu.add_traces = add_traces_cpu_ti;
 
   cpu_ti_action_heap = xbt_heap_new(8, NULL);
   xbt_heap_set_update_callback(cpu_ti_action_heap, cpu_ti_action_update_index_heap);

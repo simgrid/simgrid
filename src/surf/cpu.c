@@ -437,6 +437,7 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->extension.cpu.get_speed = cpu_get_speed;
   surf_cpu_model->extension.cpu.get_available_speed = cpu_get_available_speed;
   surf_cpu_model->extension.cpu.create_resource = cpu_create_resource;
+  surf_cpu_model->extension.cpu.add_traces = add_traces_cpu;
 
   if (!cpu_maxmin_system)
     cpu_maxmin_system = lmm_system_new();

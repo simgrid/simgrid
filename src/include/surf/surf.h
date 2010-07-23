@@ -165,6 +165,7 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
                e_surf_resource_state_t state_initial,
                tmgr_trace_t state_trace,
                xbt_dict_t cpu_properties);
+       void (*add_traces)(void);
      } s_surf_model_extension_cpu_t;
 
      /* Network model */
@@ -183,6 +184,7 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
        double (*get_link_latency) (const void *link);
        int (*link_shared) (const void *link);
        void (*create_resource) (char *name,double bw_initial,double lat_initial);
+       void (*add_traces)(void);
      } s_surf_model_extension_network_t;
 
      /** \brief Workstation model extension public
@@ -693,6 +695,12 @@ XBT_PUBLIC(void) surf_route_set_resource(char* src_id,char *dest_id,xbt_dynar_t 
  *
  */
 XBT_PUBLIC(void) surf_route_add_host(char * host_id);
+
+/**
+ * add traces
+ */
+XBT_PUBLIC(void) surf_add_trace_cpu(void);
+XBT_PUBLIC(void) surf_add_trace_link(void);
 
 #include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"
