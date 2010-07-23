@@ -378,6 +378,17 @@ static double cpu_get_available_speed(void *cpu)
   return ((cpu_Cas01_t) cpu)->power_scale;
 }
 
+static void cpu_create_resource(char *name, double power_peak,
+        double power_scale,
+        tmgr_trace_t power_trace,
+        e_surf_resource_state_t state_initial,
+        tmgr_trace_t state_trace,
+        xbt_dict_t cpu_properties)
+{
+	cpu_new(name,power_peak,power_scale,power_trace,
+					  state_initial,state_trace,cpu_properties);
+}
+
 static void cpu_finalize(void)
 {
   lmm_system_free(cpu_maxmin_system);
@@ -425,6 +436,7 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->extension.cpu.get_state = cpu_get_state;
   surf_cpu_model->extension.cpu.get_speed = cpu_get_speed;
   surf_cpu_model->extension.cpu.get_available_speed = cpu_get_available_speed;
+  surf_cpu_model->extension.cpu.create_resource = cpu_create_resource;
 
   if (!cpu_maxmin_system)
     cpu_maxmin_system = lmm_system_new();

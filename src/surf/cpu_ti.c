@@ -725,6 +725,17 @@ static double cpu_ti_get_available_speed(void *cpu)
   return CPU->power_scale;
 }
 
+static void cpu_ti_create_resource(char *name, double power_peak,
+        double power_scale,
+        tmgr_trace_t power_trace,
+        e_surf_resource_state_t state_initial,
+        tmgr_trace_t state_trace,
+        xbt_dict_t cpu_properties)
+{
+	cpu_ti_new(name,power_peak,power_scale,power_trace,
+					  state_initial,state_trace,cpu_properties);
+}
+
 static void cpu_ti_finalize(void)
 {
   void *cpu;
@@ -783,6 +794,7 @@ static void surf_cpu_ti_model_init_internal(void)
   surf_cpu_model->extension.cpu.get_state = cpu_ti_get_state;
   surf_cpu_model->extension.cpu.get_speed = cpu_ti_get_speed;
   surf_cpu_model->extension.cpu.get_available_speed = cpu_ti_get_available_speed;
+  surf_cpu_model->extension.cpu.create_resource = cpu_ti_create_resource;
 
   cpu_ti_action_heap = xbt_heap_new(8, NULL);
   xbt_heap_set_update_callback(cpu_ti_action_heap, cpu_ti_action_update_index_heap);
