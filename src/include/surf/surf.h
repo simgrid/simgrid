@@ -689,18 +689,19 @@ XBT_PUBLIC(void) surf_add_route_element(char *link_ctn_id);
  * see surf_routing.c
  */
 XBT_PUBLIC(void) surf_route_set_resource(char* src_id,char *dest_id,xbt_dynar_t links_id,int action);
-
+XBT_PUBLIC(void) surf_set_routes(void);
 /**
  * add host to routing model ( xbt_dict )
  *
  */
 XBT_PUBLIC(void) surf_route_add_host(char * host_id);
 
+
 /**
  * add traces
  */
-XBT_PUBLIC(void) surf_add_trace_cpu(void);
-XBT_PUBLIC(void) surf_add_trace_link(void);
+XBT_PUBLIC(void) surf_add_host_traces(void);
+XBT_PUBLIC(void) surf_add_link_traces(void);
 
 #include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"

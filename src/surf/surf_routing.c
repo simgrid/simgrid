@@ -1059,7 +1059,7 @@ static void routing_model_none_create(size_t size_of_link,void *loopback) {
  * FIXME : better to add to the routing model instead !!
  *
  */
-void routing_set_route(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
+void routing_add_route(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
 {
     char * link_id;
     char * name;
@@ -1078,6 +1078,7 @@ void routing_set_route(char *source_id,char *destination_id,xbt_dynar_t links_id
 	   manage_route(route_table, name, route_action, 0);
 	   free(name);
 	}
+
 }
 
 void routing_add_host(char* host_id)
@@ -1089,4 +1090,9 @@ void routing_add_host(char* host_id)
 	#ifdef HAVE_TRACING
 	  TRACE_surf_host_define_id (host_id, *val);
 	#endif
+}
+
+void routing_set_routes()
+{
+	routing_full_parse_end();
 }
