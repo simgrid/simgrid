@@ -112,6 +112,7 @@ IF(pipol_user)
 			        \"sudo chown ${pipol_user} ${CMAKE_HOME_DIRECTORY} \;
 			        cd ${CMAKE_HOME_DIRECTORY} \;
 			        sh ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/liste_install.sh \;
+			        perl ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/cmake.pl \;
 			        cmake -E remove CMakeCache.txt \;
 			        cmake ${CMAKE_HOME_DIRECTORY}${CMAKE_OPTIONS} \;
 			        ctest -D Experimental \"
@@ -128,6 +129,7 @@ IF(pipol_user)
 				        \"sudo chown ${pipol_user} ${CMAKE_HOME_DIRECTORY} \;
 				        cd ${CMAKE_HOME_DIRECTORY} \;
 				        sh ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/liste_install.sh \;
+				        perl ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/cmake.pl \;
 				        cmake -E remove CMakeCache.txt \;
 				        cmake ${CMAKE_HOME_DIRECTORY}${CMAKE_OPTIONS} \;
 				        ctest -D Experimental \"
