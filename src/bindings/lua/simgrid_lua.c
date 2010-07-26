@@ -344,10 +344,6 @@ static xbt_dynar_t route_list_d ;
 
 //create resource
 
-/*FIXME : still have to use a dictionary as argument make it possible to
-consider some arguments as optional and removes the importance of the
-parameter order */
-
 static void create_host(const char* id,double power_peak,double power_sc,
 						const char* power_tr,int state_init,
 						const char* state_tr)
@@ -359,10 +355,10 @@ static void create_host(const char* id,double power_peak,double power_sc,
 	tmgr_trace_t state_trace;
 	if(power_sc) // !=0
 		power_scale = power_sc;
-	if (state_init == 1)
-		state_initial = SURF_RESOURCE_ON;
+	if (state_init == -1)
+		state_initial = SURF_RESOURCE_OFF;
 	else
-		state_init = SURF_RESOURCE_OFF;
+		state_initial = SURF_RESOURCE_ON;
 	if(power_tr)
 		power_trace = tmgr_trace_new(power_tr);
 	else
@@ -446,7 +442,6 @@ static int Host_new(lua_State *L)
     return 0;
 
 }
-
 
 static int Link_new(lua_State *L) // (id,bandwidth,latency)
 {
@@ -548,21 +543,18 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
  */
 static int surf_parse_bypass_platform()
 {
-	char buffer[22];
-	unsigned int i,j;
-	char* link_id;
 
+	unsigned int i;
 	p_host_attr p_host;
 	p_link_attr p_link;
 	p_route_attr p_route;
 
-	static int AX_ptr = 0;
-	static int surfxml_bufferstack_size = 2048;
-
 	  /* FIXME allocating memory for the buffer, I think 2kB should be enough */
 	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 	  /* <platform> */
-#ifndef BYPASS_CPU
+#ifndef BYPASS_MODEL
+	static int AX_ptr = 0;
+	static int surfxml_bufferstack_size = 2048;
 	SURFXML_BUFFER_SET(platform_version, "2");
 	SURFXML_START_TAG(platform);
 #endif
@@ -577,7 +569,7 @@ static int surf_parse_bypass_platform()
 		//add to routing model host list
 		surf_route_add_host((char*)p_host->id);
 #else
-
+		char buffer[22];
 		SURFXML_BUFFER_SET(host_id,p_host->id);
 		sprintf(buffer,"%f",p_host->power_peak);
 		SURFXML_BUFFER_SET(host_power,buffer);
@@ -600,7 +592,7 @@ static int surf_parse_bypass_platform()
 #ifdef BYPASS_MODEL
 		surf_link_create_resouce((char*)p_link->id,p_link->bandwidth,p_link->latency);
 #else
-
+		char buffer[22];
 		SURFXML_BUFFER_SET(link_id,p_link->id);
 		sprintf(buffer,"%f",p_link->bandwidth);
 		SURFXML_BUFFER_SET(link_bandwidth,buffer);
@@ -615,7 +607,6 @@ static int surf_parse_bypass_platform()
 		SURFXML_END_TAG(link);
 #endif
 	}
-
 	// add route
 	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
@@ -631,6 +622,8 @@ static int surf_parse_bypass_platform()
 		SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
 		SURFXML_START_TAG(route);
 
+		unsigned int j;
+		char* link_id;
 		xbt_dynar_foreach(p_route->links_id,j,link_id)
 		{
 			SURFXML_BUFFER_SET(link_c_ctn_id,link_id);
@@ -645,8 +638,11 @@ static int surf_parse_bypass_platform()
 	/* </platform> */
 #ifndef BYPASS_MODEL
 	SURFXML_END_TAG(platform);
+#else
+	surf_add_host_traces();
+	surf_set_routes();
+	surf_add_link_traces();
 #endif
-
 	free(surfxml_bufferstack);
 	return 0; // must return 0 ?!!
 
@@ -656,10 +652,8 @@ static int surf_parse_bypass_platform()
  */
 static int surf_parse_bypass_application()
 {
-	  unsigned int i,j;
+	  unsigned int i;
 	  p_host_attr p_host;
-	  char * arg;
-	  static int AX_ptr;
 	  static int surfxml_bufferstack_size = 2048;
 	  /* FIXME ( should be manual )allocating memory to the buffer, I think 2MB should be enough */
 	  surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
@@ -671,7 +665,9 @@ static int surf_parse_bypass_application()
 			  MSG_set_function(p_host->id,p_host->function,p_host->args_list);
 	  	  }
 #else
-
+	  unsigned int j;
+	  char* arg;
+	  static int AX_ptr;
 	  /* <platform> */
 	  SURFXML_BUFFER_SET(platform_version, "2");
 	  SURFXML_START_TAG(platform);
@@ -827,7 +823,7 @@ static int clean(lua_State *L) {
 }
 
 /*
- * Bypass XML Pareser
+ * Bypass XML Parser
  */
 static int register_platform(lua_State *L)
 {

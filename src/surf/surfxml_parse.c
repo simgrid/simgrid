@@ -1205,7 +1205,7 @@ void surf_add_route_element(char* link_ctn_id)
 void surf_route_set_resource(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
 {
 	route_link_list = xbt_dynar_new(sizeof(char *), NULL);
-	routing_set_route(source_id,destination_id,links_id,action);
+	routing_add_route(source_id,destination_id,links_id,action);
 
 }
 
@@ -1215,4 +1215,26 @@ void surf_route_set_resource(char *source_id,char *destination_id,xbt_dynar_t li
 void surf_route_add_host(char *host_id)
 {
 	routing_add_host(host_id);
+}
+
+/*
+ * Add Traces
+ */
+void surf_add_host_traces(void)
+{
+	return surf_cpu_model->extension.cpu.
+		     add_traces();
+}
+
+void surf_add_link_traces(void)
+{
+	return surf_network_model->extension.network.
+			 add_traces();
+}
+/**
+ * set routes
+ */
+void surf_set_routes(void)
+{
+	routing_set_routes();
 }
