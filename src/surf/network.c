@@ -595,7 +595,7 @@ void network_create_resource(char *name,
         double initial_bandwidth,double initial_latency)
 {
 
-	char *name_link;
+	char* name_link;
 	double bw_initial;
 	tmgr_trace_t bw_trace;
 	double lat_initial;
@@ -604,15 +604,14 @@ void network_create_resource(char *name,
 	e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
 	tmgr_trace_t state_trace;
 
-
-	name_link = (char*)name;
+	name_link = xbt_strdup(name);
 	bw_initial = initial_bandwidth;
 	bw_trace = tmgr_trace_new("");
 	lat_initial = initial_latency;
 	lat_trace = tmgr_trace_new("");
 	// FIXME Hard Coded Values
-	state_initial_link = SURF_RESOURCE_ON;
-	policy_initial_link = SURF_LINK_SHARED;
+	//state_initial_link = SURF_RESOURCE_ON;
+	//policy_initial_link = SURF_LINK_SHARED;
 	state_trace = tmgr_trace_new("");
 
 	net_link_new(name_link, bw_initial, bw_trace,

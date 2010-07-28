@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 // Surf ( bypass XML )
 #define LINK_MODULE_NAME "simgrid.Link"
 #define ROUTE_MODULE_NAME "simgrid.Route"
-#undef BYPASS_MODEL
+#define BYPASS_MODEL
 
 /* ********************************************************************************* */
 /*                            helper functions                                       */
@@ -440,7 +440,6 @@ static int Host_new(lua_State *L)
 		xbt_dynar_push(host_list_d, &host);
 
     return 0;
-
 }
 
 static int Link_new(lua_State *L) // (id,bandwidth,latency)
