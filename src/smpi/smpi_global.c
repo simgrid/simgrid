@@ -8,6 +8,7 @@
 
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
+#include "mc/mc.h"
 
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories");
 
@@ -197,7 +198,12 @@ int main(int argc, char **argv)
   fflush(stderr);
   SIMIX_init();
 
-  while (SIMIX_solve(NULL, NULL) != -1.0);
+#ifdef HAVE_MC
+  if (_surf_do_model_check)
+    MC_modelcheck(1);
+  else
+#endif
+    while (SIMIX_solve(NULL, NULL) != -1.0);
 
   if (xbt_cfg_get_int(_surf_cfg_set, "smpi/display_timing"))
     INFO1("simulation time %g", SIMIX_get_clock());
