@@ -49,6 +49,7 @@ XBT_PUBLIC(const char *) MSG_host_get_property_value(m_host_t host,
                                                      const char *name);
 
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
+XBT_PUBLIC(void) MSG_load_platform_script(const char *script_file);
 
 XBT_PUBLIC(m_host_t) MSG_get_host_by_name(const char *name);
 XBT_PUBLIC(int) MSG_get_host_number(void);
