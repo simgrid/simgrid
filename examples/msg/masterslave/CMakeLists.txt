@@ -6,9 +6,11 @@ add_executable(masterslave_failure "masterslave_failure.c")
 add_executable(masterslave_forwarder "masterslave_forwarder.c")
 add_executable(masterslave_mailbox "masterslave_mailbox.c")
 add_executable(masterslave_bypass "masterslave_bypass.c")
+add_executable(masterslave_console "masterslave_console.c")
 
 ### Add definitions for compile
 target_link_libraries(masterslave_forwarder simgrid m )
 target_link_libraries(masterslave_failure simgrid m )
 target_link_libraries(masterslave_mailbox simgrid m )
 target_link_libraries(masterslave_bypass simgrid m )
+target_link_libraries(masterslave_console simgrid m )
