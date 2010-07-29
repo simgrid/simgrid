@@ -19,12 +19,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 // Surf ( bypass XML )
 #define LINK_MODULE_NAME "simgrid.Link"
 #define ROUTE_MODULE_NAME "simgrid.Route"
-#define BYPASS_MODEL
 
 /* ********************************************************************************* */
 /*                            helper functions                                       */
 /* ********************************************************************************* */
-
 static void stackDump (const char *msg, lua_State *L) {
   char buff[2048];
   char *p=buff;
@@ -542,107 +540,36 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
  */
 static int surf_parse_bypass_platform()
 {
-
 	unsigned int i;
 	p_host_attr p_host;
 	p_link_attr p_link;
 	p_route_attr p_route;
 
-	  /* FIXME allocating memory for the buffer, I think 2kB should be enough */
-	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
-	  /* <platform> */
-#ifndef BYPASS_MODEL
-	static int AX_ptr = 0;
-	static int surfxml_bufferstack_size = 2048;
-	SURFXML_BUFFER_SET(platform_version, "2");
-	SURFXML_START_TAG(platform);
-#endif
-
 	// Add Hosts
 	xbt_dynar_foreach(host_list_d,i,p_host)
 	{
-
-#ifdef BYPASS_MODEL
 		create_host(p_host->id,p_host->power_peak,p_host->power_scale,p_host->power_trace,
 					p_host->state_initial,p_host->state_trace);
 		//add to routing model host list
 		surf_route_add_host((char*)p_host->id);
-#else
-		char buffer[22];
-		SURFXML_BUFFER_SET(host_id,p_host->id);
-		sprintf(buffer,"%f",p_host->power_peak);
-		SURFXML_BUFFER_SET(host_power,buffer);
-		SURFXML_BUFFER_SET(host_availability, "1.0");
-		SURFXML_BUFFER_SET(host_availability_file, "");
-		A_surfxml_host_state = A_surfxml_host_state_ON;
-		SURFXML_BUFFER_SET(host_state_file, "");
-		SURFXML_BUFFER_SET(host_interference_send, "1.0");
-		SURFXML_BUFFER_SET(host_interference_recv, "1.0");
-		SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
-		SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
-		SURFXML_START_TAG(host);
-		SURFXML_END_TAG(host);
-#endif
 	}
 
 	//add Links
 	xbt_dynar_foreach(link_list_d,i,p_link)
 	{
-#ifdef BYPASS_MODEL
 		surf_link_create_resouce((char*)p_link->id,p_link->bandwidth,p_link->latency);
-#else
-		char buffer[22];
-		SURFXML_BUFFER_SET(link_id,p_link->id);
-		sprintf(buffer,"%f",p_link->bandwidth);
-		SURFXML_BUFFER_SET(link_bandwidth,buffer);
-		SURFXML_BUFFER_SET(link_bandwidth_file, "");
-		sprintf(buffer,"%f",p_link->latency);
-		SURFXML_BUFFER_SET(link_latency,buffer);
-		SURFXML_BUFFER_SET(link_latency_file, "");
-		A_surfxml_link_state = A_surfxml_link_state_ON;
-		SURFXML_BUFFER_SET(link_state_file, "");
-		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-		SURFXML_START_TAG(link);
-		SURFXML_END_TAG(link);
-#endif
 	}
 	// add route
 	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
-#ifdef BYPASS_MODEL
 		surf_route_set_resource((char*)p_route->src_id,(char*)p_route->dest_id,p_route->links_id,0);
-#else
-
-		SURFXML_BUFFER_SET(route_src,p_route->src_id);
-		SURFXML_BUFFER_SET(route_dst,p_route->dest_id);
-		SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
-		SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
-		SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
-		SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
-		SURFXML_START_TAG(route);
-
-		unsigned int j;
-		char* link_id;
-		xbt_dynar_foreach(p_route->links_id,j,link_id)
-		{
-			SURFXML_BUFFER_SET(link_c_ctn_id,link_id);
-			SURFXML_START_TAG(link_c_ctn);
-			SURFXML_END_TAG(link_c_ctn);
-
-		}
-
-		SURFXML_END_TAG(route);
-#endif
 	}
 	/* </platform> */
-#ifndef BYPASS_MODEL
-	SURFXML_END_TAG(platform);
-#else
+
 	surf_add_host_traces();
 	surf_set_routes();
 	surf_add_link_traces();
-#endif
-	free(surfxml_bufferstack);
+
 	return 0; // must return 0 ?!!
 
 }
@@ -653,46 +580,11 @@ static int surf_parse_bypass_application()
 {
 	  unsigned int i;
 	  p_host_attr p_host;
-	  static int surfxml_bufferstack_size = 2048;
-	  /* FIXME ( should be manual )allocating memory to the buffer, I think 2MB should be enough */
-	  surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
-
-#ifdef BYPASS_MODEL
 	  xbt_dynar_foreach(host_list_d,i,p_host)
 	  	  {
 		  if(p_host->function)
 			  MSG_set_function(p_host->id,p_host->function,p_host->args_list);
 	  	  }
-#else
-	  unsigned int j;
-	  char* arg;
-	  static int AX_ptr;
-	  /* <platform> */
-	  SURFXML_BUFFER_SET(platform_version, "2");
-	  SURFXML_START_TAG(platform);
-	  xbt_dynar_foreach(host_list_d,i,p_host)
-	  {
-		  if(p_host->function)
-		  {
-			  SURFXML_BUFFER_SET(process_host, p_host->id);
-			  SURFXML_BUFFER_SET(process_function, p_host->function);
-			  SURFXML_BUFFER_SET(process_start_time, "-1.0");
-			  SURFXML_BUFFER_SET(process_kill_time, "-1.0");
-			  SURFXML_START_TAG(process);
-			  //args
-			  xbt_dynar_foreach(p_host->args_list,j,arg)
-			  {
-				  SURFXML_BUFFER_SET(argument_value,arg);
-				  SURFXML_START_TAG(argument);
-				  SURFXML_END_TAG(argument);
-			  }
-			  SURFXML_END_TAG(process);
-		  }
-	  }
-	  /* </platform> */
-	  SURFXML_END_TAG(platform);
-#endif
-	  free(surfxml_bufferstack);
 	  return 0;
 }
 
@@ -776,7 +668,6 @@ static int run_lua_code(int argc,char **argv) {
     res = lua_tonumber(L, -1);
     lua_pop(L, 1);  /* pop returned value */
   }
-
   // cleanups
   luaL_unref(simgrid_lua_state,LUA_REGISTRYINDEX,ref );
   DEBUG1("Execution of lua code %s is over", (argv ? argv[0] : "(null)"));
@@ -863,40 +754,44 @@ static const luaL_Reg simgrid_funcs[] = {
 extern const char*xbt_ctx_factory_to_use; /*Hack: let msg load directly the right factory */
 
 #define LUA_MAX_ARGS_COUNT 10 /* maximum amount of arguments we can get from lua on command line */
-
+#define TEST
 int luaopen_simgrid(lua_State* L); // Fuck gcc: we don't need that prototype
 int luaopen_simgrid(lua_State* L) {
-  //xbt_ctx_factory_to_use = "lua";
 
+  //xbt_ctx_factory_to_use = "lua";
   char **argv=malloc(sizeof(char*)*LUA_MAX_ARGS_COUNT);
   int argc=1;
   argv[0] = (char*)"/usr/bin/lua"; /* Lie on the argv[0] so that the stack dumping facilities find the right binary. FIXME: what if lua is not in that location? */
   /* Get the command line arguments from the lua interpreter */
   lua_getglobal(L,"arg");
-  xbt_assert1(lua_istable(L,-1),"arg parameter is not a table but a %s",lua_typename(L,-1));
-  int done=0;
-  while (!done) {
-    argc++;
-    lua_pushinteger(L,argc-2);
-    lua_gettable(L,-2);
-    if (lua_isnil(L,-1)) {
-      done = 1;
-    } else {
-      xbt_assert1(lua_isstring(L,-1),"argv[%d] got from lua is no string",argc-1);
-      xbt_assert2(argc<LUA_MAX_ARGS_COUNT,
-           "Too many arguments, please increase LUA_MAX_ARGS_COUNT in %s before recompiling SimGrid if you insist on having more than %d args on command line",
-           __FILE__,LUA_MAX_ARGS_COUNT-1);
-      argv[argc-1] = (char*)luaL_checkstring(L,-1);
-      lua_pop(L,1);
-      DEBUG1("Got command line argument %s from lua",argv[argc-1]);
-    }
-  }
-  argv[argc--]=NULL;
+  /* if arg is a null value, it means we use lua only as a script to init platform
+   * else it should be a table and then take arg in consideration
+   */
+  if(lua_istable(L,-1))
+  {
+	  int done=0;
+	  while (!done) {
+		argc++;
+		lua_pushinteger(L,argc-2);
+		lua_gettable(L,-2);
+		if (lua_isnil(L,-1)) {
+		  done = 1;
+		} else {
+		  xbt_assert1(lua_isstring(L,-1),"argv[%d] got from lua is no string",argc-1);
+		  xbt_assert2(argc<LUA_MAX_ARGS_COUNT,
+			   "Too many arguments, please increase LUA_MAX_ARGS_COUNT in %s before recompiling SimGrid if you insist on having more than %d args on command line",
+			   __FILE__,LUA_MAX_ARGS_COUNT-1);
+		  argv[argc-1] = (char*)luaL_checkstring(L,-1);
+		  lua_pop(L,1);
+		  DEBUG1("Got command line argument %s from lua",argv[argc-1]);
+		}
+	  }
+	  argv[argc--]=NULL;
 
-  /* Initialize the MSG core */
-  MSG_global_init(&argc,argv);
-  DEBUG1("Still %d arguments on command line",argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
-
+	  /* Initialize the MSG core */
+	  MSG_global_init(&argc,argv);
+	  DEBUG1("Still %d arguments on command line",argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
+ }
   /* register the core C functions to lua */
   luaL_register(L, "simgrid", simgrid_funcs);
   /* register the task methods to lua */
