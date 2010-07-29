@@ -27,7 +27,11 @@ void MC_dpor_init()
   /* Schedule all the processes to detect the transitions of the initial state */
   DEBUG0("**************************************************"); 
   DEBUG0("Initial state");
-  MC_schedule_enabled_processes();
+
+  while(xbt_swag_size(simix_global->process_to_run)){
+    MC_schedule_enabled_processes();
+    MC_execute_surf_actions();
+  }
 
   MC_SET_RAW_MEM;
   MC_trans_compute_enabled(initial_state->enabled_transitions,
@@ -102,8 +106,12 @@ void MC_dpor(void)
          of the transition */
       DEBUG1("Executing transition %s", trans->name);
       SIMIX_process_schedule(trans->process);
-      MC_execute_surf_actions();        /* Do surf's related black magic */
-      MC_schedule_enabled_processes();
+      MC_execute_surf_actions();
+      
+      while(xbt_swag_size(simix_global->process_to_run)){
+        MC_schedule_enabled_processes();
+        MC_execute_surf_actions();
+      }
       
       /* Calculate the enabled transitions set of the next state */
       MC_SET_RAW_MEM;
