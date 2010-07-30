@@ -1,0 +1,95 @@
+# compile the master_slave_bypass example
+
+$ $SG_TEST_EXENV masterslave_console platform_script.lua --log=surf_parse.thres:critical
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 4 slaves and 20 tasks to process
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"
+> [Tremblay:master:(1) 221.119476] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "slave-1"
+> [Bourassa:slave:(5) 221.119476] [msg_test/INFO] Received "Task_0"
+> [Bourassa:slave:(5) 221.119476] [msg_test/INFO] Processing "Task_0"
+> [Jupiter:slave:(2) 230.754144] [msg_test/INFO] Received "Task_1"
+> [Jupiter:slave:(2) 230.754144] [msg_test/INFO] Processing "Task_1"
+> [Tremblay:master:(1) 230.754144] [msg_test/INFO] Sending "Task_2" (of 20) to mailbox "slave-2"
+> [Bourassa:slave:(5) 232.461553] [msg_test/INFO] "Task_0" done
+> [Jupiter:slave:(2) 237.962910] [msg_test/INFO] "Task_1" done
+> [Fafard:slave:(3) 403.819753] [msg_test/INFO] Received "Task_2"
+> [Fafard:slave:(3) 403.819753] [msg_test/INFO] Processing "Task_2"
+> [Tremblay:master:(1) 403.819753] [msg_test/INFO] Sending "Task_3" (of 20) to mailbox "slave-3"
+> [Fafard:slave:(3) 411.028519] [msg_test/INFO] "Task_2" done
+> [Ginette:slave:(4) 519.166957] [msg_test/INFO] Received "Task_3"
+> [Ginette:slave:(4) 519.166957] [msg_test/INFO] Processing "Task_3"
+> [Tremblay:master:(1) 519.166957] [msg_test/INFO] Sending "Task_4" (of 20) to mailbox "slave-0"
+> [Ginette:slave:(4) 530.509034] [msg_test/INFO] "Task_3" done
+> [Bourassa:slave:(5) 740.286433] [msg_test/INFO] Received "Task_4"
+> [Bourassa:slave:(5) 740.286433] [msg_test/INFO] Processing "Task_4"
+> [Tremblay:master:(1) 740.286433] [msg_test/INFO] Sending "Task_5" (of 20) to mailbox "slave-1"
+> [Jupiter:slave:(2) 749.921101] [msg_test/INFO] Received "Task_5"
+> [Jupiter:slave:(2) 749.921101] [msg_test/INFO] Processing "Task_5"
+> [Tremblay:master:(1) 749.921101] [msg_test/INFO] Sending "Task_6" (of 20) to mailbox "slave-2"
+> [Bourassa:slave:(5) 751.628510] [msg_test/INFO] "Task_4" done
+> [Jupiter:slave:(2) 757.129867] [msg_test/INFO] "Task_5" done
+> [Fafard:slave:(3) 922.986710] [msg_test/INFO] Received "Task_6"
+> [Fafard:slave:(3) 922.986710] [msg_test/INFO] Processing "Task_6"
+> [Tremblay:master:(1) 922.986710] [msg_test/INFO] Sending "Task_7" (of 20) to mailbox "slave-3"
+> [Fafard:slave:(3) 930.195476] [msg_test/INFO] "Task_6" done
+> [Ginette:slave:(4) 1038.333914] [msg_test/INFO] Received "Task_7"
+> [Ginette:slave:(4) 1038.333914] [msg_test/INFO] Processing "Task_7"
+> [Tremblay:master:(1) 1038.333914] [msg_test/INFO] Sending "Task_8" (of 20) to mailbox "slave-0"
+> [Ginette:slave:(4) 1049.675991] [msg_test/INFO] "Task_7" done
+> [Bourassa:slave:(5) 1259.453390] [msg_test/INFO] Received "Task_8"
+> [Bourassa:slave:(5) 1259.453390] [msg_test/INFO] Processing "Task_8"
+> [Tremblay:master:(1) 1259.453390] [msg_test/INFO] Sending "Task_9" (of 20) to mailbox "slave-1"
+> [Jupiter:slave:(2) 1269.088058] [msg_test/INFO] Received "Task_9"
+> [Jupiter:slave:(2) 1269.088058] [msg_test/INFO] Processing "Task_9"
+> [Tremblay:master:(1) 1269.088058] [msg_test/INFO] Sending "Task_10" (of 20) to mailbox "slave-2"
+> [Bourassa:slave:(5) 1270.795467] [msg_test/INFO] "Task_8" done
+> [Jupiter:slave:(2) 1276.296824] [msg_test/INFO] "Task_9" done
+> [Fafard:slave:(3) 1442.153667] [msg_test/INFO] Received "Task_10"
+> [Fafard:slave:(3) 1442.153667] [msg_test/INFO] Processing "Task_10"
+> [Tremblay:master:(1) 1442.153667] [msg_test/INFO] Sending "Task_11" (of 20) to mailbox "slave-3"
+> [Fafard:slave:(3) 1449.362433] [msg_test/INFO] "Task_10" done
+> [Ginette:slave:(4) 1557.500871] [msg_test/INFO] Received "Task_11"
+> [Ginette:slave:(4) 1557.500871] [msg_test/INFO] Processing "Task_11"
+> [Tremblay:master:(1) 1557.500871] [msg_test/INFO] Sending "Task_12" (of 20) to mailbox "slave-0"
+> [Ginette:slave:(4) 1568.842948] [msg_test/INFO] "Task_11" done
+> [Bourassa:slave:(5) 1778.620347] [msg_test/INFO] Received "Task_12"
+> [Bourassa:slave:(5) 1778.620347] [msg_test/INFO] Processing "Task_12"
+> [Tremblay:master:(1) 1778.620347] [msg_test/INFO] Sending "Task_13" (of 20) to mailbox "slave-1"
+> [Jupiter:slave:(2) 1788.255015] [msg_test/INFO] Received "Task_13"
+> [Jupiter:slave:(2) 1788.255015] [msg_test/INFO] Processing "Task_13"
+> [Tremblay:master:(1) 1788.255015] [msg_test/INFO] Sending "Task_14" (of 20) to mailbox "slave-2"
+> [Bourassa:slave:(5) 1789.962424] [msg_test/INFO] "Task_12" done
+> [Jupiter:slave:(2) 1795.463781] [msg_test/INFO] "Task_13" done
+> [Fafard:slave:(3) 1961.320624] [msg_test/INFO] Received "Task_14"
+> [Fafard:slave:(3) 1961.320624] [msg_test/INFO] Processing "Task_14"
+> [Tremblay:master:(1) 1961.320624] [msg_test/INFO] Sending "Task_15" (of 20) to mailbox "slave-3"
+> [Fafard:slave:(3) 1968.529390] [msg_test/INFO] "Task_14" done
+> [Ginette:slave:(4) 2076.667828] [msg_test/INFO] Received "Task_15"
+> [Ginette:slave:(4) 2076.667828] [msg_test/INFO] Processing "Task_15"
+> [Tremblay:master:(1) 2076.667828] [msg_test/INFO] Sending "Task_16" (of 20) to mailbox "slave-0"
+> [Ginette:slave:(4) 2088.009905] [msg_test/INFO] "Task_15" done
+> [Bourassa:slave:(5) 2297.787304] [msg_test/INFO] Received "Task_16"
+> [Bourassa:slave:(5) 2297.787304] [msg_test/INFO] Processing "Task_16"
+> [Tremblay:master:(1) 2297.787304] [msg_test/INFO] Sending "Task_17" (of 20) to mailbox "slave-1"
+> [Jupiter:slave:(2) 2307.421972] [msg_test/INFO] Received "Task_17"
+> [Jupiter:slave:(2) 2307.421972] [msg_test/INFO] Processing "Task_17"
+> [Tremblay:master:(1) 2307.421972] [msg_test/INFO] Sending "Task_18" (of 20) to mailbox "slave-2"
+> [Bourassa:slave:(5) 2309.129381] [msg_test/INFO] "Task_16" done
+> [Jupiter:slave:(2) 2314.630738] [msg_test/INFO] "Task_17" done
+> [Fafard:slave:(3) 2480.487581] [msg_test/INFO] Received "Task_18"
+> [Fafard:slave:(3) 2480.487581] [msg_test/INFO] Processing "Task_18"
+> [Tremblay:master:(1) 2480.487581] [msg_test/INFO] Sending "Task_19" (of 20) to mailbox "slave-3"
+> [Fafard:slave:(3) 2487.696347] [msg_test/INFO] "Task_18" done
+> [Ginette:slave:(4) 2595.834785] [msg_test/INFO] Received "Task_19"
+> [Ginette:slave:(4) 2595.834785] [msg_test/INFO] Processing "Task_19"
+> [Tremblay:master:(1) 2595.834785] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [Ginette:slave:(4) 2607.176862] [msg_test/INFO] "Task_19" done
+> [Bourassa:slave:(5) 2616.664880] [msg_test/INFO] Received "finalize"
+> [Bourassa:slave:(5) 2616.664880] [msg_test/INFO] I'm done. See you!
+> [Jupiter:slave:(2) 2617.572494] [msg_test/INFO] Received "finalize"
+> [Jupiter:slave:(2) 2617.572494] [msg_test/INFO] I'm done. See you!
+> [Fafard:slave:(3) 2633.875776] [msg_test/INFO] Received "finalize"
+> [Fafard:slave:(3) 2633.875776] [msg_test/INFO] I'm done. See you!
+> [Ginette:slave:(4) 2644.741817] [msg_test/INFO] Received "finalize"
+> [Ginette:slave:(4) 2644.741817] [msg_test/INFO] I'm done. See you!
+> [Tremblay:master:(1) 2644.741817] [msg_test/INFO] Goodbye now!
+> [2644.741817] [msg_test/INFO] Simulation time 2644.74
