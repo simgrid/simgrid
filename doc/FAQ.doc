@@ -1638,8 +1638,14 @@ and build/install it from scratch
 
 
  - <b>Enable GTNetS support in SimGrid</b>
+ 
+In order to enable gtnets with simgrid you have to give where gtnets is install (path to <gtnets_path>/lib and <gtnets_path>/include)
 
    \verbatim
+   Since v3.4 (with cmake)
+   cmake . -Dgtnets_path=/<userhome>/usr
+   
+   Until v3.4 (with autotools)
    ./configure --with-gtnets=/<userhome>/usr
    \endverbatim
 
@@ -1648,6 +1654,12 @@ and build/install it from scratch
    runntime with the following options:</b>
 
    \verbatim
+   Since v3.4 (with cmake)
+   cd simgrid
+   make
+   ctest -R gtnets
+   
+   Until v3.4 (with autotools)
    cd simgrid/example/msg/
    make
    make check

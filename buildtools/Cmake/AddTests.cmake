@@ -200,9 +200,9 @@ ADD_TEST(smpi-reduce 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/exa
 endif(enable_smpi)
 
 if(HAVE_GTNETS)
-ADD_TEST(msg-gtnets-waxman	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-waxman.tesh)
-ADD_TEST(msg-gtnets-dogbone	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-gtnets.tesh)
-ADD_TEST(msg-gtnets-onelink	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-onelink-gtnets.tesh)
+ADD_TEST(msg-gtnets-waxman			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-waxman.tesh)
+ADD_TEST(msg-gtnets-dogbone			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-gtnets.tesh)
+ADD_TEST(msg-gtnets-onelink			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-onelink-gtnets.tesh)
 ADD_TEST(msg-gtnets-dogbone-lv08	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-lv08.tesh)
 ADD_TEST(msg-gtnets-onelink-lv08	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-onelink-lv08.tesh)
 endif(HAVE_GTNETS)
