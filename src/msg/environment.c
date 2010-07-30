@@ -92,6 +92,8 @@ void MSG_load_platform_script(const char *script_file) {
          printf("error: %s\n", lua_tostring(L, -1));
          return;
        }
+#else
+    xbt_die("Lua is not available!! to call MSG_load_platform_script, lua should be available...");
 #endif
     return;
 }
