@@ -1,4 +1,4 @@
-# compile the master_slave_bypass example
+#! ./tesh
 
 $ $SG_TEST_EXENV masterslave_console platform_script.lua --log=surf_parse.thres:critical
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 4 slaves and 20 tasks to process
