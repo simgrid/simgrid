@@ -360,8 +360,8 @@ void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst)
   }
 
   if (!xbt_dict_get_or_null (created_links, link_name)){
-    char *bw = xbt_dict_get (link_bandwidth, link_name);
-    char *lat = xbt_dict_get (link_latency, link_name);
+    double *bw = xbt_dict_get (link_bandwidth, link_name);
+    double *lat = xbt_dict_get (link_latency, link_name);
     pajeCreateContainerWithBandwidthLatencySrcDst (SIMIX_get_clock(), link_name, "LINK", "platform", link_name, *bw, *lat, srcname, dstname);
     if (IS_TRACING_PLATFORM) __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "bandwidth", link_name, *bw);
     if (IS_TRACING_PLATFORM) __TRACE_surf_set_resource_variable (SIMIX_get_clock(), "latency", link_name, *lat);
