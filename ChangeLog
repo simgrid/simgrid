@@ -1,5 +1,22 @@
 SimGrid (3.5) unstable; urgency=low
 
+ Msg
+ * New function: MSG_load_platform_script()
+   to make possible using a lua script instead of XML files to set up platforms 
+ * New function: MSG_set_function
+  to associate functions to processes, used when bypassing the parser 
+ Lua Bindings
+ * add layer to set up environment and bypass the XML surf parser
+ * modify the entry point, to take into consideration when lua is used only as a platform generator
+ SURF
+ * add new callbacks to the CPU & netwok models to create resources 
+   no need to pass through the parser callbacks to do so.
+ * add new function to create routes table via the routing model
+ * add generic functions in the public interface 
+   that allows the user to call SURF 'create_resource' methods from a lua script.
+ SIMIX :
+ * New function: SIMIX_process_set_function()
+   called by MSG_set_function
  SimDag
  * Change the way a task is considered as ready. Instead of removing 
    dependencies when a task is done, a counter is decreased. This way,
