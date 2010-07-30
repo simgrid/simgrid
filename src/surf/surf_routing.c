@@ -1087,9 +1087,6 @@ void routing_add_host(char* host_id)
 	DEBUG2("Seen host %s (#%d)",host_id,used_routing->host_count);
 	*val = used_routing->host_count++;
 	xbt_dict_set(used_routing->host_id,host_id,val,xbt_free);
-	#ifdef HAVE_TRACING
-	  TRACE_surf_host_define_id (host_id, *val);
-	#endif
 }
 
 void routing_set_routes()
