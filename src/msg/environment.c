@@ -8,10 +8,12 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-
+#ifdef HAVE_LUA
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+#endif
+//#endif
 /** \defgroup msg_easier_life      Platform and Application management
  *  \brief This section describes functions to manage the platform creation
  *  and the application deployment. You should also have a look at 
@@ -82,7 +84,7 @@ void MSG_create_environment(const char *file)
  */
 
 void MSG_load_platform_script(const char *script_file) {
-
+#ifdef HAVE_LUA
     lua_State *L = lua_open();
     luaL_openlibs(L);
 
@@ -90,6 +92,6 @@ void MSG_load_platform_script(const char *script_file) {
          printf("error: %s\n", lua_tostring(L, -1));
          return;
        }
-
+#endif
     return;
 }
