@@ -7,3 +7,6 @@ target_link_libraries(peer simgrid)
 
 add_executable(peer2 peer2.c)
 target_link_libraries(peer2 simgrid)
+
+add_executable(peer3 peer3.c)
+target_link_libraries(peer3 simgrid)

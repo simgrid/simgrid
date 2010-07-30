@@ -466,6 +466,7 @@ msg_comm_t MSG_task_irecv(m_task_t * task, const char *alias) {
 	/* Try to receive it by calling SIMIX network layer */
 	return SIMIX_network_irecv(rdv, task, &size);
 }
+
 int MSG_comm_test(msg_comm_t comm) {
 	return SIMIX_network_test(comm);
 }
@@ -529,6 +530,15 @@ void MSG_comm_waitall(msg_comm_t *comm,int nb_elem, double timeout) {
 	{
 		MSG_comm_wait(comm[i],timeout);
 	}
+}
+
+int MSG_comm_waitany(xbt_dynar_t comms) {
+	return SIMIX_network_waitany(comms);
+}
+
+m_task_t MSG_comm_get_task(msg_comm_t comm) {
+	xbt_assert0(comm, "Invalid parameters");
+	return (m_task_t) SIMIX_communication_get_src_buf(comm);
 }
 
 /** \ingroup msg_gos_functions

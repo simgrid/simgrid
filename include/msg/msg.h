@@ -115,6 +115,7 @@ XBT_PUBLIC(m_host_t) MSG_task_get_source(m_task_t task);
 XBT_PUBLIC(const char *) MSG_task_get_name(m_task_t task);
 XBT_PUBLIC(MSG_error_t) MSG_task_cancel(m_task_t task);
 XBT_PUBLIC(MSG_error_t) MSG_task_destroy(m_task_t task);
+XBT_PUBLIC(void) MSG_task_refcount_dec(m_task_t task);
 
 XBT_PUBLIC(MSG_error_t) MSG_task_get(m_task_t * task, m_channel_t channel);
 XBT_PUBLIC(MSG_error_t) MSG_task_get_with_timeout(m_task_t * task,
@@ -174,7 +175,8 @@ XBT_PUBLIC(int)               MSG_comm_test(msg_comm_t comm);
 XBT_PUBLIC(void)              MSG_comm_destroy(msg_comm_t comm);
 XBT_PUBLIC(MSG_error_t) MSG_comm_wait(msg_comm_t comm,double timeout);
 XBT_PUBLIC(void) MSG_comm_waitall(msg_comm_t *comm,int nb_elem, double timeout);
-
+XBT_PUBLIC(int) MSG_comm_waitany(xbt_dynar_t comms);
+XBT_PUBLIC(m_task_t) MSG_comm_get_task(msg_comm_t comm);
 
 XBT_PUBLIC(int) MSG_task_listen(const char *alias);
 
