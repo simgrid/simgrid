@@ -405,6 +405,7 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
 MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
 		m_host_t host)
 {
+	DEBUG1("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'",alias);
 	return MSG_mailbox_get_task_ext(MSG_mailbox_get_by_alias(alias), task, host,
 			timeout);
 }
@@ -630,6 +631,7 @@ MSG_task_put_with_timeout(m_task_t task, m_host_t dest, m_channel_t channel,
 
 MSG_error_t MSG_task_send(m_task_t task, const char *alias)
 {
+	DEBUG1("MSG_task_send: Trying to send a message on mailbox '%s'",alias);
 	return MSG_task_send_with_timeout(task, alias, -1);
 }
 
