@@ -37,11 +37,11 @@ int sender(int argc, char *argv[])
   {
     sprintf(mailbox,"receiver-%ld",(i % receivers_count));
     sprintf(sprintf_buffer, "Task_%d", i);
-    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size/pow(10,i), NULL);
+    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
     comm[i] = MSG_task_isend(task, mailbox);
     MSG_task_refcount_dec(task);
     xbt_dynar_push_as(d, msg_comm_t, comm[i]);
-    INFO3("Send to receiver-%ld %s comm_size %f",i % receivers_count,sprintf_buffer,task_comm_size/pow(10,i));
+    INFO3("Send to receiver-%ld %s comm_size %f",i % receivers_count,sprintf_buffer,task_comm_size);
   }
   /* Here we are waiting for the completion of all communications*/
 
@@ -62,7 +62,6 @@ int sender(int argc, char *argv[])
 	  res_irecv = MSG_task_irecv(&(task), mailbox);
 	  xbt_assert0(MSG_comm_wait(res_irecv,-1) == MSG_OK, "MSG_task_get failed");
 	  MSG_task_destroy(task);
-	  MSG_comm_destroy(res_irecv);
   }
 
   INFO0("Goodbye now!");
@@ -112,8 +111,8 @@ int receiver(int argc, char *argv[])
 
   /* Here we tell to sender that all tasks are done*/
   sprintf(mailbox,"finalize");
-  res_irecv = MSG_task_isend(MSG_task_create("end", 0, 0, NULL), mailbox);
-
+  res_irecv = MSG_task_isend(MSG_task_create(NULL, 0, 0, NULL), mailbox);
+  MSG_comm_wait(res_irecv,-1);
   INFO0("I'm done. See you!");
   return 0;
 } /* end_of_receiver */
