@@ -2,7 +2,7 @@ if(enable_maintainer_mode AND NOT WIN32)
 find_program(FLEX_EXE NAMES flex)
 find_program(FLEXML_EXE NAMES flexml)
 find_program(SED_EXE NAMES sed)
-find_program(PERL_EXE NAMES perl)
+include(FindPerl)
 
 IF(FLEX_EXE)
 	set(HAVE_FLEX 1)
@@ -133,7 +133,7 @@ else(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 	message(FATAL_ERROR "Need to install all tools for maintainer mode !!!")
 endif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 
-if(PERL_EXE)
+if(PERL_EXECUTABLE)
 	
 	ADD_CUSTOM_COMMAND(
   	OUTPUT	${PROJECT_DIRECTORY}/src/cunit_unit.c
@@ -211,9 +211,9 @@ if(PERL_EXE)
 								${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
 						)
 	
-else(PERL_EXE)
+else(PERL_EXECUTABLE)
 	message(FATAL_ERROR "Install perl before use maintainer mode")
-endif(PERL_EXE)
+endif(PERL_EXECUTABLE)
 
 endif(enable_maintainer_mode AND NOT WIN32)
 
