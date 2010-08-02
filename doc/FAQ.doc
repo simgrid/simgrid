@@ -1639,7 +1639,7 @@ and build/install it from scratch
 
  - <b>Enable GTNetS support in SimGrid</b>
  
-In order to enable gtnets with simgrid you have to give where gtnets is install (path to <gtnets_path>/lib and <gtnets_path>/include)
+In order to enable gtnets with simgrid you have to give where is gtnets. (path to <gtnets_path>/lib and <gtnets_path>/include)
 
    \verbatim
    Since v3.4 (with cmake)
