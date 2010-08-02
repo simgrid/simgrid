@@ -118,6 +118,7 @@ ADD_TEST(memcheck-msg-masterslave-0 masterslave/masterslave_forwarder ./small_pl
 ADD_TEST(memcheck-msg-masterslave-forwarder-0 masterslave/masterslave_forwarder ./msg_platform.xml ./masterslave/deployment_masterslave_forwarder.xml  --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave-failure-0 masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ./small_platform_with_failures.xml ./masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave-bypass-0 masterslave/masterslave_bypass --log=no_loc  --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-msg-masterslave-console-0 masterslave_console platform_script.lua --log=surf_parse.thres:critical --cd ${PROJECT_DIRECTORY}/examples/msg/masterslave//)
 ADD_TEST(memcheck-msg-masterslave-mailbox-0 masterslave/masterslave_mailbox ./small_platform_with_routers.xml ./masterslave/deployment_masterslave_mailbox.xml --trace --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave-vivaldi-0 ./masterslave/masterslave_mailbox --cfg=network/model:Vivaldi ../platforms/vivaldi.xml ./masterslave/deployment_masterslave_vivaldi.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-migration-0 migration/migration ./msg_platform.xml ./migration/migration.deploy  --cd ${PROJECT_DIRECTORY}/examples/msg/)
@@ -140,6 +141,11 @@ ADD_TEST(memcheck-msg-masterslave_cpu_ti-0 masterslave/masterslave_forwarder ./s
 ADD_TEST(memcheck-msg-masterslave_cpu_ti-1 masterslave/masterslave_forwarder ./msg_platform.xml ./masterslave/deployment_masterslave_forwarder.xml --cfg=cpu/model:CpuTI --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave_cpu_ti-2 masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc ./small_platform_with_failures.xml ./masterslave/deployment_masterslave.xml --cfg=path:${PROJECT_DIRECTORY}/src --cfg=cpu/model:CpuTI --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave_cpu_ti-3 masterslave/masterslave_bypass --log=no_loc --cfg=cpu/model:CpuTI --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-msg_icomms-0 ./peer small_platform.xml deployment_peer01.xml --cd ${PROJECT_DIRECTORY}/examples/msg/icomms/)
+ADD_TEST(memcheck-msg_icomms-1 ./peer small_platform.xml deployment_peer02.xml --cd ${PROJECT_DIRECTORY}/examples/msg/icomms/)
+ADD_TEST(memcheck-msg_icomms-2 ./peer small_platform.xml deployment_peer03.xml --cd ${PROJECT_DIRECTORY}/examples/msg/icomms/)
+ADD_TEST(memcheck-msg_icomms-3 ./peer small_platform.xml deployment_peer04.xml --cd ${PROJECT_DIRECTORY}/examples/msg/icomms/)
+ADD_TEST(memcheck-msg_icomms-4 ./peer2 small_platform.xml deployment_peer.xml --cd ${PROJECT_DIRECTORY}/examples/msg/icomms/)
 
 IF(HAVE_TRACING)
 ADD_TEST(memcheck-tracing-ms-0 tracing/ms ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
@@ -188,8 +194,10 @@ ENDIF(${ARCH_32_BITS})
 # simdag examples
 ADD_TEST(memcheck-simdag-test_simdag-0 ./sd_test ./../msg/msg_platform.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test_simdag2-0 ./sd_test2 ./2clusters.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
+ADD_TEST(memcheck-simdag-test_simdag_seq_access-0 ./sd_seq_access ./2clusters.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test_prop-0 properties/sd_prop ./../platforms/prop.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
 ADD_TEST(memcheck-simdag-metaxml_test-0 metaxml/sd_meta ./../platforms/metaxml.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
+ADD_TEST(memcheck-simdag-minmin_test-0 ./minmin_test --log=sd_daxparse.thresh:critical ./simulacrum_7_hosts.xml ./Montage_25.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/scheduling/)
 
 if(enable_smpi)
 # smpi examples
@@ -213,6 +221,7 @@ endif(HAVE_GTNETS)
 if(HAVE_LUA)
 ADD_TEST(memcheck-lua-masterslave-0 lua master_slave.lua --cd ${PROJECT_DIRECTORY}/examples/lua/)
 ADD_TEST(memcheck-lua-mult_matrix-0 lua mult_matrix.lua --cd ${PROJECT_DIRECTORY}/examples/lua/)
+ADD_TEST(memcheck-lua-masterslave_bypass-0 lua master_slave.lua --log=surf_parse.thres:critical --cd ${PROJECT_DIRECTORY}/examples/lua/)
 endif(HAVE_LUA)
 
 # Ruby examples
