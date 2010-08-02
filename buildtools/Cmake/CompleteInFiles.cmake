@@ -8,6 +8,9 @@ TEST_BIG_ENDIAN(BIGENDIAN)
 
 # Checks for header libraries functions.
 
+find_library(HAVE_CGRAPH_LIB cgraph)
+find_file(HAVE_CGRAPH_H graphviz/cgraph.h)
+
 CHECK_LIBRARY_EXISTS(pthread 	pthread_create 		NO_DEFAULT_PATHS pthread)
 CHECK_LIBRARY_EXISTS(pthread 	sem_init 		NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread 	sem_timedwait 		NO_DEFAULT_PATHS HAVE_SEM_TIMEDWAIT_LIB)
@@ -78,75 +81,25 @@ else(enable_model-checking AND HAVE_MMAP)
 endif(enable_model-checking AND HAVE_MMAP)
 
 if(enable_lua)
-	exec_program("lua -v" OUTPUT_VARIABLE LUA_VERSION)
-	string(REGEX MATCH "[0-9]+[.]+[0-9]+[.]+[0-9]+" LUA_VERSION "${LUA_VERSION}")
-	string(REGEX MATCH "^[0-9]+" LUA_MAJOR_VERSION "${LUA_VERSION}")
-	string(REGEX MATCH "[0-9]+[.]+[0-9]+$" LUA_VERSION "${LUA_VERSION}")
-	string(REGEX MATCH "^[0-9]+" LUA_MINOR_VERSION "${LUA_VERSION}")
-	string(REGEX MATCH "[0-9]+$" LUA_PATCH_VERSION "${LUA_VERSION}")
-
-	if(LUA_MAJOR_VERSION MATCHES "5" AND LUA_MINOR_VERSION MATCHES "1")
-	
-		find_path(HAVE_LUA5_1_LUALIB_H
-		NAMES lualib.h 
-		PATHS "/sw/include/" "/usr/include/lua${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}/"
-		)
-		find_path(HAVE_LUA5_1_LAUXLIB_H
-		NAMES lauxlib.h
-		PATHS "/sw/include/" "/usr/include/lua${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}/"
-		)
-		find_library(LUA_LIB_PATH_1
-		NAMES lua${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}
-		PATHS /usr
-		)
-		find_library(LUA_LIB_PATH_2
-		NAMES lua-${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}
-		PATHS /usr
-		)
-		find_library(LUA_LIB_PATH_3
-		NAMES lua.${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}.${LUA_PATCH_VERSION}
-		PATHS /sw
-		)
-	
-		if(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
-			set(HAVE_LUA 1)
-			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_LUA5_1_LUALIB_H} ")
-	
-			if(NOT HAVE_LUA5_1_LUALIB_H STREQUAL HAVE_LUA5_1_LAUXLIB_H)
-				SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_LUA5_1_LAUXLIB_H} ")
-				#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-I${HAVE_LUA5_1_LAUXLIB_H} ")
-			endif(NOT HAVE_LUA5_1_LUALIB_H STREQUAL HAVE_LUA5_1_LAUXLIB_H)
-		endif(HAVE_LUA5_1_LUALIB_H AND HAVE_LUA5_1_LAUXLIB_H)
-	
-		if(LUA_LIB_PATH_1)
-			set(liblua lua${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION})
-			set(lua_lib_path_to_use ${LUA_LIB_PATH_1})
-		endif(LUA_LIB_PATH_1)
-	
-		if(LUA_LIB_PATH_2)
-			set(liblua lua-${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION})
-			set(lua_lib_path_to_use ${LUA_LIB_PATH_2})
-		endif(LUA_LIB_PATH_2)
-	
-		if(LUA_LIB_PATH_3)
-			set(liblua lua.${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}.${LUA_PATCH_VERSION})
-			set(lua_lib_path_to_use ${LUA_LIB_PATH_3})
-		endif(LUA_LIB_PATH_3)
-	
-		if(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
-			set(HAVE_LUA 0)
-		else(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
-			string(REGEX REPLACE "liblua.*" "" lua_lib_path_to_use ${lua_lib_path_to_use})
-			string(REGEX MATCH "-L${lua_lib_path_to_use}" operation "${CMAKE_EXE_LINKER_FLAGS}")
-			if(NOT operation)
-				SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}-L${lua_lib_path_to_use} ")
-			endif(NOT operation)
-		endif(NOT LUA_LIB_PATH_1 AND NOT LUA_LIB_PATH_2 AND NOT LUA_LIB_PATH_3)
-		
-	else(LUA_MAJOR_VERSION MATCHES "5" AND LUA_MINOR_VERSION MATCHES "1")
-		message("Lua binding need version 5.1.x actually version ${LUA_MAJOR_VERSION}.${LUA_MINOR_VERSION}.x")
-	endif(LUA_MAJOR_VERSION MATCHES "5" AND LUA_MINOR_VERSION MATCHES "1")
-	
+	include(FindLua51)
+	if(LUA51_FOUND)
+		set(HAVE_LUA 1)
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${LUA_INCLUDE_DIR} ")
+		foreach(path_lua ${LUA_LIBRARIES})
+		string(REGEX REPLACE "liblua.*" "" path_lua_to_use ${path_lua})
+		string(REGEX MATCH "-L${path_lua_to_use}" operation "${CMAKE_EXE_LINKER_FLAGS}")
+		string(REGEX MATCH ".*lua.*" operation2 "${path_lua}")
+		if(NOT operation AND operation2)
+			string(REGEX REPLACE "${path_lua_to_use}" "" liblua ${path_lua})
+			string(REPLACE "lib" "" liblua "${liblua}")
+			string(REGEX REPLACE "[.][^.]*$" "" liblua "${liblua}")			
+			SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}-L${path_lua_to_use} ")
+		endif(NOT operation AND operation2)
+		endforeach(path_lua ${LUA_LIBRARIES})
+	else(LUA51_FOUND)
+		message("Lua binding need version 5.1 and cmake version 2.8")
+		message("Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
+	endif(LUA51_FOUND)
 endif(enable_lua)
 
 if(enable_ruby)
@@ -158,7 +111,7 @@ if(enable_ruby)
 			if(NOT RUBY_LIBRARY_NAME)
 				set(RUBY_LIBRARY_NAME ruby)
 			endif(NOT RUBY_LIBRARY_NAME)
-			string(REGEX REPLACE "libruby.*$" "" RUBY_LIBRARY ${RUBY_LIBRARY})
+			string(REGEX REPLACE "/libruby.*$" "" RUBY_LIBRARY ${RUBY_LIBRARY})
 			SET(CMAKE_EXE_LINKER_FLAGS "-L${RUBY_LIBRARY} ")
 			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${RUBY_CONFIG_INCLUDE_DIR} ") #path to config.h
 			string(COMPARE EQUAL "${RUBY_INCLUDE_DIR}" "${RUBY_CONFIG_INCLUDE_DIR}" operation)
@@ -213,16 +166,17 @@ else(NOT enable_gtnets OR enable_supernovae)
 		SET(HAVE_GTNETS 0)
 	else(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 1)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${GTNETS_LDFLAGS} ${GTNETS_CPPFLAGS} ")
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}${GTNETS_CPPFLAGS} ")
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${GTNETS_CPPFLAGS} ")
+		string(REGEX MATCH "${GTNETS_LDFLAGS}" operation "${CMAKE_EXE_LINKER_FLAGS}")
+		if(NOT operation)
+		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}${GTNETS_LDFLAGS} ")
+		endif(NOT operation)
 	endif(COMPILE_GTNETS_VAR)
 endif(NOT enable_gtnets OR enable_supernovae)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of cgraph
-
-find_library(HAVE_CGRAPH_LIB cgraph)
-find_file(HAVE_CGRAPH_H graphviz/cgraph.h)
 mark_as_advanced(HAVE_CGRAPH_LIB)
 mark_as_advanced(HAVE_CGRAPH_H)
 
