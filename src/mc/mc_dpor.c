@@ -166,8 +166,10 @@ void MC_dpor(void)
       mc_transition_t q = NULL;
       xbt_fifo_item_t item = NULL;
       mc_state_t state = NULL;
-      
-      //MC_show_stack(mc_stack);
+
+      /*
+      INFO0("*********************************");
+      MC_show_stack(mc_stack);*/
       
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
@@ -184,10 +186,10 @@ void MC_dpor(void)
         q = mc_current_state->executed_transition;
         xbt_fifo_foreach(mc_stack, item, state, mc_state_t){
           if(MC_transition_depend(q, state->executed_transition)){
-            DEBUG3("Dependence found at state %p (%p,%p)", state, state->executed_transition, q); 
             xbt_setset_foreach(state->enabled_transitions, cursor, trans){
               if((trans->process == q->process) && !xbt_setset_set_belongs(state->done, trans)){
-                DEBUG2("Unexplored interleaving found at state %p (%p)", state, trans);
+                DEBUG3("%s depend with %s at %p", q->name, 
+                       state->executed_transition->name, state);
 
                 xbt_setset_foreach(state->enabled_transitions, cursor, trans){
                   if(trans->process == q->process)

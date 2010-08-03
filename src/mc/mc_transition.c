@@ -11,8 +11,7 @@ mc_transition_t MC_trans_isend_new(smx_rdv_t rdv)
   trans->type = mc_isend;
   trans->process = SIMIX_process_self();
   trans->isend.rdv = rdv;
-  trans->name = bprintf("[%s][%s] iSend (%p)", trans->process->smx_host->name,
-                        trans->process->name, trans); 
+  trans->name = bprintf("[%s]\t iSend (%p)", trans->process->smx_host->name, trans); 
   return trans;
 }
 
@@ -24,8 +23,7 @@ mc_transition_t MC_trans_irecv_new(smx_rdv_t rdv)
   trans->type = mc_irecv;
   trans->process = SIMIX_process_self();
   trans->irecv.rdv = rdv;
-  trans->name = bprintf("[%s][%s] iRecv (%p)", trans->process->smx_host->name, 
-                        trans->process->name, trans);
+  trans->name = bprintf("[%s]\t iRecv (%p)", trans->process->smx_host->name, trans);
   return trans;
 }
 
@@ -37,8 +35,7 @@ mc_transition_t MC_trans_wait_new(smx_comm_t comm)
   trans->type = mc_wait;
   trans->process = SIMIX_process_self();
   trans->wait.comm = comm;
-  trans->name = bprintf("[%s][%s] Wait (%p)", trans->process->smx_host->name,
-                        trans->process->name, trans);
+  trans->name = bprintf("[%s]\t Wait (%p)", trans->process->smx_host->name, trans);
   return trans;
 }
 
@@ -50,8 +47,7 @@ mc_transition_t MC_trans_test_new(smx_comm_t comm)
   trans->type = mc_test;
   trans->process = SIMIX_process_self();
   trans->test.comm = comm;
-  trans->name = bprintf("[%s][%s] Test (%p)", trans->process->smx_host->name,
-                        trans->process->name, trans);      
+  trans->name = bprintf("[%s]\t Test (%p)", trans->process->smx_host->name, trans);      
   return trans;
 }
 
@@ -63,8 +59,7 @@ mc_transition_t MC_trans_waitany_new(xbt_dynar_t comms)
   trans->type = mc_waitany;
   trans->process = SIMIX_process_self();
   trans->waitany.comms = comms;
-  trans->name = bprintf("[%s][%s] WaitAny (%p)", trans->process->smx_host->name,
-                        trans->process->name, trans);
+  trans->name = bprintf("[%s]\t WaitAny (%p)", trans->process->smx_host->name, trans);
   return trans;
 }
 
@@ -76,8 +71,7 @@ mc_transition_t MC_trans_random_new(int value)
   trans->type = mc_random;
   trans->process = SIMIX_process_self();
   trans->random.value = value;
-  trans->name = bprintf("[%s][%s] Random %d (%p)", trans->process->smx_host->name, 
-                        trans->process->name, value, trans);
+  trans->name = bprintf("[%s]\t Random %d (%p)", trans->process->smx_host->name, value, trans);
 
   return trans;
 }
@@ -189,20 +183,15 @@ void MC_trans_intercept_test(smx_comm_t comm)
  */
 void MC_trans_intercept_waitany(xbt_dynar_t comms)
 {
-  unsigned int cursor;
   mc_transition_t trans = NULL;
   mc_state_t current_state = NULL;
-  smx_comm_t comm = NULL;
-  
   if(!mc_replay_mode){
     MC_SET_RAW_MEM;
+    trans = MC_trans_waitany_new(comms);
     current_state = (mc_state_t) 
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
-    xbt_dynar_foreach(comms, cursor, comm){ 
-      trans = MC_trans_wait_new(comm);
-      xbt_setset_set_insert(current_state->created_transitions, trans);
-      xbt_setset_set_insert(current_state->transitions, trans);
-    }
+    xbt_setset_set_insert(current_state->created_transitions, trans);
+    xbt_setset_set_insert(current_state->transitions, trans);
     MC_UNSET_RAW_MEM;
   }
   SIMIX_process_yield();
@@ -253,7 +242,7 @@ void MC_trans_compute_enabled(xbt_setset_set_t enabled, xbt_setset_set_t transit
       /* WaitAny transitions are enabled if any of it's communications has both
          a sender and a receiver */
       case mc_waitany:
-        xbt_dynar_foreach(trans->waitany.comms, index, comm){
+        xbt_dynar_foreach(trans->waitany.comms, index, comm){            
           if(comm->src_proc && comm->dst_proc){
             xbt_setset_set_insert(enabled, trans);
             DEBUG1("Transition %p is enabled for next state", trans);
