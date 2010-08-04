@@ -175,7 +175,7 @@ add_custom_target(dist-dir
 )
 
 set(dirs_in_tarball "")
-foreach(file ${source_to_pack} ${txt_files})
+foreach(file ${source_to_pack})
   # This damn prefix is still set somewhere (seems to be in subdirs)
   string(REPLACE "${PROJECT_DIRECTORY}/" "" file ${file})
   
@@ -239,8 +239,8 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/_build
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/_inst
   COMMAND diff -ruN simgrid-${release_version}.cpy simgrid-${release_version}
-#  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}.cpy 
-#  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
+  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}.cpy 
+  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
 )
 add_dependencies(distcheck dist-dir)
 

@@ -550,23 +550,6 @@ else(${HAVE_RUBY})
 	)
 endif(${HAVE_RUBY})
 
-file(GLOB_RECURSE add_src_files
-"examples/*.c"
-"teshsuite/*.c"
-"testsuite/*.c"
-"tools/*.c"
-"examples/*.cxx"
-"teshsuite/*.cxx"
-"testsuite/*.cxx"
-"tools/*.cxx"
-"examples/*CMakeLists.txt"
-"teshsuite/*CMakeLists.txt"
-"testsuite/*CMakeLists.txt"
-"tools/*CMakeLists.txt"
-"src/*CMakeLists.txt"
-"examples/*.java"
-)
-
 file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.c"
 "examples/*.h"
@@ -593,6 +576,42 @@ foreach(file ${new_examples_to_install_in_doc})
 	endif(NOT OPERATION)
 endforeach(file ${new_examples_to_install_in_doc})
 
+file(GLOB_RECURSE add_src_files
+"teshsuite/*.c"
+"teshsuite/*.cxx"
+"testsuite/*.c"
+"testsuite/*.cxx"
+"tools/*.c"
+"tools/*.cxx"
+"examples/*.c"
+"examples/*.cxx"
+"examples/*.java"
+"examples/*.lua"
+"examples/*.rb"
+"src/bindings/*.lua"
+"src/bindings/*.rb"
+"src/bindings/*.c"
+"src/bindings/*.h"
+"*CMakeLists.txt"
+)
+set(add_src_files
+	${add_src_files}
+	src/smpi/smpicc.in
+	src/smpi/smpirun.in
+	src/simix/smx_context_sysv_private.h
+	src/simgrid_units_main.c
+	src/cunit_unit.c
+	src/ex_unit.c
+	src/dynar_unit.c
+	src/dict_unit.c
+	src/set_unit.c
+	src/swag_unit.c
+	src/xbt_str_unit.c
+	src/xbt_strbuff_unit.c
+	src/xbt_sha_unit.c
+	src/config_unit.c
+	src/xbt_synchro_unit.c
+)
 
 file(GLOB_RECURSE include_files
 "include/*.h"
@@ -604,7 +623,6 @@ file(GLOB_RECURSE include_files
 "src/*.h.in"
 "include/*.h.in"
 )
-#message("\n\ninclude:\n${include_files}")
 
 file(GLOB_RECURSE xml_files
 "examples/*.xml"
@@ -614,7 +632,6 @@ file(GLOB_RECURSE xml_files
 "testsuite/*.xml"
 "tools/*.xml"
 )
-#message("\n\nxml:\n${xml_files}")
 
 file(GLOB_RECURSE tesh_files
 "examples/*.tesh"
@@ -624,7 +641,6 @@ file(GLOB_RECURSE tesh_files
 "testsuite/*.tesh"
 "tools/*.tesh"
 )
-#message("\n\ntesh:\n${tesh_files}")
 
 file(GLOB_RECURSE txt_files
 "testsuite/surf/trace*.txt"
@@ -688,8 +704,29 @@ file(GLOB_RECURSE txt_files
 "examples/java/comm_time/CommTimeTest"
 "examples/java/suspend/SuspendTest"
 )
+set(txt_files
+	${txt_files}
+	AUTHORS
+	ChangeLog
+	COPYING
+	missing
+	NEWS
+	README
+	README.IEEE
+	TODO
+	examples/lua/README
+	examples/ruby/README
+)
 
-
+file(GLOB_RECURSE CMAKE_SOURCE_FILES
+"buildtools/Cmake/test_java.sh"
+"buildtools/Cmake/*.cmake"
+"buildtools/Cmake/*.h.in"
+"buildtools/Cmake/*.pl"
+"buildtools/Cmake/*.sh"
+"buildtools/Cmake/test_prog/*.c"
+"buildtools/Cmake/test_prog/*.cpp"
+)
 
 # This is the complete lise of what will be added to the source archive
 set(source_to_pack	
@@ -719,82 +756,5 @@ set(source_to_pack
 	${txt_files}
 	${TEST_CFILES}
 	${EXTRA_DIST}
-	CMakeLists.txt
-	buildtools/Cmake/CTestConfig.cmake
-	buildtools/Cmake/CompleteInFiles.cmake
-	buildtools/Cmake/DefinePackages.cmake
-	buildtools/Cmake/Distrib.cmake
-	buildtools/Cmake/GenerateDoc.cmake
-	buildtools/Cmake/Flags.cmake
-	buildtools/Cmake/MakeJava.cmake
-	buildtools/Cmake/MaintainerMode.cmake
-	buildtools/Cmake/MakeExeLib.cmake
-	buildtools/Cmake/Option.cmake
-	buildtools/Cmake/PrintArgs.cmake
-	buildtools/Cmake/Supernovae.cmake
-	buildtools/Cmake/AddTests.cmake
-	buildtools/Cmake/memcheck_tests.cmake
-	buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
-	buildtools/Cmake/test_prog/prog_getline.c
-	buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
-	buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
-	buildtools/Cmake/test_prog/prog_gtnets.cpp
-	buildtools/Cmake/test_prog/prog_max_size.c
-	buildtools/Cmake/test_prog/prog_mutex_timedlock.c
-	buildtools/Cmake/test_prog/prog_printf_null.c
-	buildtools/Cmake/test_prog/prog_sem_init.c
-	buildtools/Cmake/test_prog/prog_sem_timedwait.c
-	buildtools/Cmake/test_prog/prog_snprintf.c
-	buildtools/Cmake/test_prog/prog_stackgrowth.c
-	buildtools/Cmake/test_prog/prog_stacksetup.c
-	buildtools/Cmake/test_prog/prog_va_copy.c
-	buildtools/Cmake/test_prog/prog_vsnprintf.c
-	buildtools/Cmake/gras_config.h.in
-	AUTHORS
-	ChangeLog
-	COPYING
-	missing
-	NEWS
-	README
-	README.IEEE
-	TODO
-	src/smpi/smpicc.in
-	src/smpi/smpirun.in
-	src/bindings/ruby/simgrid_ruby.c
-	src/bindings/ruby_bindings.h
-	src/simix/smx_context_sysv_private.h
-	src/simgrid_units_main.c
-	src/cunit_unit.c
-	src/ex_unit.c
-	src/dynar_unit.c
-	src/dict_unit.c
-	src/set_unit.c
-	src/swag_unit.c
-	src/xbt_str_unit.c
-	src/xbt_strbuff_unit.c
-	src/xbt_sha_unit.c
-	src/config_unit.c
-	src/xbt_synchro_unit.c
-	src/bindings/lua/master_slave.lua
-	src/bindings/lua/mult_matrix.lua
-	examples/lua/master_slave.lua
-	examples/lua/mult_matrix.lua
-	examples/lua/README
-	src/bindings/ruby/MasterSlave.rb
-	src/bindings/ruby/MasterSlaveData.rb
-	src/bindings/ruby/PingPong.rb
-	src/bindings/ruby/Quicksort.rb
-	src/bindings/ruby/simgrid.rb
-	examples/ruby/README
-	examples/ruby/MasterSlave.rb
-	examples/ruby/PingPong.rb
-	examples/ruby/Quicksort.rb
-	src/bindings/rubyDag/example.rb
-	src/bindings/rubyDag/extconfig.rb
-	src/bindings/rubyDag/rb_SD_task.c
-	src/bindings/rubyDag/rb_SD_task.h
-	src/bindings/rubyDag/rb_SD_workstation.c
-	src/bindings/rubyDag/rb_SD_workstation.h
-	src/bindings/rubyDag/rb_simdag.c
-	src/bindings/rubyDag/simdag.rb
+	${CMAKE_SOURCE_FILES}
 )
