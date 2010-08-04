@@ -16,6 +16,7 @@
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
 XBT_LOG_DEFAULT_CATEGORY(xbt_dict);
 
+
 static void print_str(void *str)
 {
   printf("%s", (char *) PRINTF_STR(str));

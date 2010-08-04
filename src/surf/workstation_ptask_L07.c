@@ -664,6 +664,17 @@ static void ptask_parse_cpu_init(void)
           state_initial, state_trace, current_property_set);
 }
 
+static void ptask_cpu_create_resource(char *name, double power_peak,
+        double power_scale,
+        tmgr_trace_t power_trace,
+        e_surf_resource_state_t state_initial,
+        tmgr_trace_t state_trace,
+        xbt_dict_t cpu_properties)
+{
+	ptask_cpu_new(xbt_strdup(name),power_peak,power_scale,power_trace,
+					  state_initial,state_trace,cpu_properties);
+}
+
 static link_L07_t ptask_link_new(char *name,
                            double bw_initial,
                            tmgr_trace_t bw_trace,
@@ -748,6 +759,38 @@ static void ptask_parse_link_init(void)
            current_property_set);
 }
 
+/**
+ * FIXME : still improvable
+ */
+void workstation_link_create_resource(char *name,
+        double initial_bandwidth,double initial_latency)
+{
+
+	char* name_link;
+	double bw_initial;
+	tmgr_trace_t bw_trace;
+	double lat_initial;
+	tmgr_trace_t lat_trace;
+	e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
+	e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
+	tmgr_trace_t state_trace;
+
+	name_link = xbt_strdup(name);
+	bw_initial = initial_bandwidth;
+	bw_trace = tmgr_trace_new("");
+	lat_initial = initial_latency;
+	lat_trace = tmgr_trace_new("");
+	// FIXME Hard Coded Values
+	//state_initial_link = SURF_RESOURCE_ON;
+	//policy_initial_link = SURF_LINK_SHARED;
+	state_trace = tmgr_trace_new("");
+
+	ptask_link_new(name_link, bw_initial, bw_trace,
+	           lat_initial, lat_trace, state_initial_link, state_trace,
+	           policy_initial_link, xbt_dict_new());
+}
+
+
 static void ptask_add_traces(void)
 {
   xbt_dict_cursor_t cursor = NULL;
@@ -821,7 +864,6 @@ static void ptask_define_callbacks(const char *file)
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &ptask_add_traces);
 }
 
-
 /**************************************/
 /********* Module  creation ***********/
 /**************************************/
@@ -849,6 +891,7 @@ static void ptask_model_init_internal(void)
     ptask_update_resource_state;
   surf_workstation_model->model_private->finalize = ptask_finalize;
 
+
   surf_workstation_model->extension.workstation.execute = ptask_execute;
   surf_workstation_model->extension.workstation.sleep = ptask_action_sleep;
   surf_workstation_model->extension.workstation.get_state =
@@ -867,7 +910,12 @@ static void ptask_model_init_internal(void)
   surf_workstation_model->extension.workstation.link_shared = ptask_link_shared;
   surf_workstation_model->extension.workstation.get_properties =
     surf_resource_properties;
-
+  //FIXME
+  /*surf_workstation_model->extension.workstation.link_create_resource =
+	workstation_link_create_resource;
+  surf_workstation_model->extension.workstation.cpu_create_resource =
+	ptask_cpu_create_resource;
+  surf_workstation_model->extension.workstation.add_traces = ptask_add_traces;*/
 
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();
@@ -885,6 +933,7 @@ static void ptask_model_init_internal(void)
 /**************************************/
 void surf_workstation_model_init_ptask_L07(const char *filename)
 {
+  INFO0("surf_workstation_model_init_ptask_L07");
   xbt_assert0(!surf_cpu_model, "CPU model type already defined");
   xbt_assert0(!surf_network_model, "network model type already defined");
   surf_network_model = surf_model_init();

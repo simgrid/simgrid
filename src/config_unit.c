@@ -15,6 +15,7 @@
 XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 XBT_LOG_DEFAULT_CATEGORY(xbt_cfg);
 
+
 static xbt_cfg_t make_set()
 {
   xbt_cfg_t set = NULL;

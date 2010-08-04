@@ -10,6 +10,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include "msg/msg.h"
+#include "simdag/simdag.h"
 #include "xbt.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
@@ -340,7 +341,9 @@ static xbt_dynar_t link_list_d ;
 static xbt_dynar_t route_list_d ;
 
 
-//create resource
+/**
+ * create host resource via CPU model [for MSG]
+ */
 
 static void create_host(const char* id,double power_peak,double power_sc,
 						const char* power_tr,int state_init,
@@ -371,6 +374,39 @@ static void create_host(const char* id,double power_peak,double power_sc,
 
 }
 
+/*
+ *create host resource via workstation_ptask_L07 model [for SimDag]
+ */
+static void create_host_wsL07(const char* id,double power_peak,double power_sc,
+						const char* power_tr,int state_init,
+						const char* state_tr)
+{
+	double power_scale = 1.0;
+	tmgr_trace_t power_trace = NULL;
+	e_surf_resource_state_t state_initial;
+	tmgr_trace_t state_trace;
+	if(power_sc) // !=0
+		power_scale = power_sc;
+	if (state_init == -1)
+		state_initial = SURF_RESOURCE_OFF;
+	else
+		state_initial = SURF_RESOURCE_ON;
+	if(power_tr)
+		power_trace = tmgr_trace_new(power_tr);
+	else
+		power_trace = tmgr_trace_new("");
+	if(state_tr)
+		state_trace = tmgr_trace_new(state_tr);
+	else
+		state_trace = tmgr_trace_new("");
+	current_property_set = xbt_dict_new();
+	surf_wsL07_host_create_resource(xbt_strdup(id), power_peak, power_scale,
+					       power_trace, state_initial, state_trace, current_property_set);
+
+}
+/*
+ * add new host to platform hosts list
+ */
 static int Host_new(lua_State *L)
 {
 
@@ -440,6 +476,9 @@ static int Host_new(lua_State *L)
     return 0;
 }
 
+/**
+ * add link to platform links list
+ */
 static int Link_new(lua_State *L) // (id,bandwidth,latency)
 {
 	if(xbt_dynar_is_empty(link_list_d))
@@ -480,6 +519,9 @@ static int Link_new(lua_State *L) // (id,bandwidth,latency)
 	return 0;
 }
 
+/**
+ * add route to platform routes list
+ */
 static int Route_new(lua_State *L) // (src_id,dest_id,links_number,link_table)
 {
 	if(xbt_dynar_is_empty(route_list_d))
@@ -503,6 +545,9 @@ static int Route_new(lua_State *L) // (src_id,dest_id,links_number,link_table)
 	return 0;
 }
 
+/**
+ * set function to process
+ */
 static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 {
 	// look for the index of host in host_list
@@ -537,7 +582,9 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 
 /*
  * surf parse bypass platform
+ * through CPU/network Models
  */
+
 static int surf_parse_bypass_platform()
 {
 	unsigned int i;
@@ -557,7 +604,7 @@ static int surf_parse_bypass_platform()
 	//add Links
 	xbt_dynar_foreach(link_list_d,i,p_link)
 	{
-		surf_link_create_resouce((char*)p_link->id,p_link->bandwidth,p_link->latency);
+		surf_link_create_resource((char*)p_link->id,p_link->bandwidth,p_link->latency);
 	}
 	// add route
 	xbt_dynar_foreach(route_list_d,i,p_route)
@@ -573,8 +620,50 @@ static int surf_parse_bypass_platform()
 	return 0; // must return 0 ?!!
 
 }
+
+/**
+ *
+ * surf parse bypass platform
+ * through workstation_ptask_L07 Model
+ */
+
+
+static int surf_wsL07_parse_bypass_platform()
+{
+	unsigned int i;
+	p_host_attr p_host;
+	p_link_attr p_link;
+	p_route_attr p_route;
+
+	// Add Hosts
+	xbt_dynar_foreach(host_list_d,i,p_host)
+	{
+		create_host_wsL07(p_host->id,p_host->power_peak,p_host->power_scale,p_host->power_trace,
+					p_host->state_initial,p_host->state_trace);
+		//add to routing model host list
+		surf_route_add_host((char*)p_host->id);
+	}
+
+	//add Links
+	xbt_dynar_foreach(link_list_d,i,p_link)
+	{
+		surf_wsL07_link_create_resource((char*)p_link->id,p_link->bandwidth,p_link->latency);
+	}
+	// add route
+	xbt_dynar_foreach(route_list_d,i,p_route)
+	{
+		surf_route_set_resource((char*)p_route->src_id,(char*)p_route->dest_id,p_route->links_id,0);
+	}
+	/* </platform> */
+
+	surf_wsL07_add_traces();
+	surf_set_routes();
+
+	return 0;
+
+}
 /*
- * surf parse bypass application
+ * surf parse bypass application for MSG Module
  */
 static int surf_parse_bypass_application()
 {
@@ -715,7 +804,11 @@ static int clean(lua_State *L) {
 /*
  * Bypass XML Parser
  */
-static int register_platform(lua_State *L)
+
+/*
+ * Register platform for MSG
+ */
+static int msg_register_platform(lua_State *L)
 {
 	/* Tell Simgrid we dont wanna use its parser*/
 	surf_parse = surf_parse_bypass_platform;
@@ -723,7 +816,20 @@ static int register_platform(lua_State *L)
 	return 0;
 }
 
-static int register_application(lua_State *L)
+/*
+ * Register platform for Simdag
+ */
+
+static int sd_register_platform(lua_State *L)
+{
+	surf_parse = surf_wsL07_parse_bypass_platform;
+	SD_create_environment(NULL);
+	return 0;
+}
+/**
+ * Register applicaiton for MSG
+ */
+static int msg_register_application(lua_State *L)
 {
 	 MSG_function_register_default(run_lua_code);
 	 surf_parse = surf_parse_bypass_application;
@@ -742,8 +848,9 @@ static const luaL_Reg simgrid_funcs[] = {
     { "platform", create_environment},
     { "application", launch_application},
     /* methods to bypass XML parser*/
-    { "register_platform",register_platform},
-    { "register_application",register_application},
+    { "msg_register_platform",msg_register_platform},
+    { "sd_register_platform",sd_register_platform},
+    { "msg_register_application",msg_register_application},
     { NULL, NULL }
 };
 

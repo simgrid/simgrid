@@ -8,7 +8,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-
 /** \ingroup msg_easier_life
  * \brief An application deployer.
  *

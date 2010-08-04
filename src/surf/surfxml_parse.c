@@ -709,7 +709,6 @@ static void parse_host_foreach(void){
   const char *surfxml_host_availability_file = A_surfxml_host_availability_file;
   const char *surfxml_host_state_file = A_surfxml_host_state_file;
 
-
   xbt_dict_t cluster_host_props = current_property_set;
 
   names = xbt_dict_get_or_null(set_list, foreach_set_name);
@@ -1167,6 +1166,9 @@ static void add_randomness(void)
   xbt_dict_set(random_data_list, random_id, (void *) random, NULL);
 }
 
+/**
+ * create CPU resource via CPU Model
+ */
 void surf_host_create_resource(char *name, double power_peak,
         double power_scale,
         tmgr_trace_t power_trace,
@@ -1178,8 +1180,24 @@ void surf_host_create_resource(char *name, double power_peak,
 		create_resource(name,power_peak,power_scale,power_trace,state_initial,state_trace,cpu_properties);
 }
 
+/*
+ * create CPU resource via worsktation_ptask_L07 model
+ */
 
-void surf_link_create_resouce(char *name,
+void surf_wsL07_host_create_resource(char *name, double power_peak,
+        double power_scale,
+        tmgr_trace_t power_trace,
+        e_surf_resource_state_t state_initial,
+        tmgr_trace_t state_trace,
+        xbt_dict_t cpu_properties)
+{
+	surf_workstation_model->extension.workstation.
+		cpu_create_resource(name,power_peak,power_scale,power_trace,state_initial,state_trace,cpu_properties);
+}
+/*
+ * create link resource via network Model
+ */
+void surf_link_create_resource(char *name,
         double bw_initial,
         double lat_initial)
 {
@@ -1187,6 +1205,19 @@ void surf_link_create_resouce(char *name,
 	     create_resource(name,bw_initial,lat_initial);
 
 }
+
+/*
+ * create link resource via workstation_ptask_L07 model
+ */
+
+void surf_wsL07_link_create_resource(char *name,
+        double bw_initial,
+        double lat_initial)
+{
+	return surf_workstation_model->extension.workstation.
+	link_create_resource(name,bw_initial,lat_initial);
+}
+
 
 /**
  * Route: add route element bypassing the parser :
@@ -1231,6 +1262,12 @@ void surf_add_link_traces(void)
 	return surf_network_model->extension.network.
 			 add_traces();
 }
+
+void surf_wsL07_add_traces(void)
+{
+	return surf_workstation_model->extension.workstation.
+			add_traces();
+}
 /**
  * set routes
  */
@@ -1238,3 +1275,4 @@ void surf_set_routes(void)
 {
 	routing_set_routes();
 }
+

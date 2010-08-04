@@ -35,11 +35,13 @@ XBT_PUBLIC(void *) surf_action_new(size_t size, double cost,
                                    surf_model_t model, int failed);
 
 /**
- * FIXME : this should be done in the binding code !!
+ * FIXME : still improvaleb [this should be done in the binding code]
  */
 XBT_PUBLIC(void) network_create_resource(char *name,
         double initial_bandwidth,double initial_latency);
 
+XBT_PUBLIC(void) workstation_link_create_resource(char *name,
+        double initial_bandwidth,double initial_latency);
 
 /** \brief Resource model description
  */
@@ -212,7 +214,15 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
        double (*get_link_bandwidth) (const void *link);                                    /**< Return the current bandwidth of a network link */
        double (*get_link_latency) (const void *link);                                      /**< Return the current latency of a network link */
        int (*link_shared) (const void *link);
-         xbt_dict_t(*get_properties) (const void *resource);
+       xbt_dict_t(*get_properties) (const void *resource);
+       void (*link_create_resource) (char *name,double bw_initial,double lat_initial);
+       void (*cpu_create_resource)(char *name, double power_peak,
+                      double power_scale,
+                      tmgr_trace_t power_trace,
+                      e_surf_resource_state_t state_initial,
+                      tmgr_trace_t state_trace,
+                      xbt_dict_t cpu_properties);
+       void (*add_traces) (void);
      } s_surf_model_extension_workstation_t;
 
 /** \brief Model datatype
@@ -247,9 +257,7 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
        xbt_dict_t resource_set;
 
 
-
        surf_model_private_t model_private;
-
 
 
        union extension {
@@ -336,11 +344,6 @@ XBT_PUBLIC(void) surf_cpu_model_init_ti(const char *filename);
  *  \see surf_workstation_model_init_CLM03()
  */
 XBT_PUBLIC(void) surf_cpu_model_init_Cas01_im(const char *filename);
-
-/**brief Initialise the cpu_im model bypassing the parser
- *
- */
-XBT_PUBLIC(void) surf_cpu_model_init_bypass_im(const char*id,double power);
 
 /** \brief The list of all available cpu model models
  *  \ingroup SURF_models
@@ -667,14 +670,27 @@ XBT_PUBLIC(void) surf_host_create_resource(char *name, double power_peak,
         tmgr_trace_t state_trace,
         xbt_dict_t cpu_properties);
 
+/*public interface to create resource bypassing the parser via workstation_ptask_L07 model
+ *
+ * see surfxml_parse.c
+ * */
+XBT_PUBLIC(void) surf_wsL07_host_create_resource(char *name, double power_peak,
+        double power_scale,
+        tmgr_trace_t power_trace,
+        e_surf_resource_state_t state_initial,
+        tmgr_trace_t state_trace,
+        xbt_dict_t cpu_properties);
 /**
  * create link resource
- * see network.c
+ * see surfxml_parse.c
  * FIXME : shoudl have the same prototype as net_link_new
  */
-XBT_PUBLIC(void) surf_link_create_resouce(char *name,
+XBT_PUBLIC(void) surf_link_create_resource(char *name,
         double bw_initial,double lat_initial);
 
+
+XBT_PUBLIC(void) surf_wsL07_link_create_resource(char *name,
+        double bw_initial,double lat_initial);
 /**
  * add route element (link_ctn) bypassing the parser
  *
@@ -686,7 +702,7 @@ XBT_PUBLIC(void) surf_add_route_element(char *link_ctn_id);
 /**
  * set route src_id,dest_id, and create a route resource
  *
- * see surf_routing.c
+ * see surf_routing.c && surfxml_parse.c
  */
 XBT_PUBLIC(void) surf_route_set_resource(char* src_id,char *dest_id,xbt_dynar_t links_id,int action);
 XBT_PUBLIC(void) surf_set_routes(void);
@@ -696,12 +712,13 @@ XBT_PUBLIC(void) surf_set_routes(void);
  */
 XBT_PUBLIC(void) surf_route_add_host(char * host_id);
 
-
 /**
  * add traces
+ * see surfxml_parse.c
  */
 XBT_PUBLIC(void) surf_add_host_traces(void);
 XBT_PUBLIC(void) surf_add_link_traces(void);
+XBT_PUBLIC(void) surf_wsL07_add_traces(void);
 
 #include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"
