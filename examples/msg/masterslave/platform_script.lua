@@ -7,7 +7,7 @@ require "simgrid"
   simgrid.Host.new{id="Bourassa",power=48492000};
 
     -- create Links
-  for i=0,11 do
+  for i=11,0,-1 do
     simgrid.Link.new{id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};   
   end
   -- simgrid.Route.new(src_id,des_id,links_nb,links_list)
