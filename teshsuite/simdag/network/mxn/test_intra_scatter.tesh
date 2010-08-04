@@ -2,5 +2,6 @@
 p scatter test
 
 $ simdag/network/mxn/test_intra_scatter ${srcdir:=.}/simdag/network/mxn/platform_4p_1switch.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > 8
 

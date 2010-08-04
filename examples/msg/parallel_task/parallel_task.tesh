@@ -4,11 +4,13 @@ p Testing a simple master/slave example application
 
 $ $SG_TEST_EXENV parallel_task/parallel_task$EXEEXT ${srcdir:=.}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] type in variable = 2
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [Ginette:test:(1) 0.009378] [msg_test/INFO] Goodbye now!
 > [0.009378] [msg_test/INFO] Simulation time 0.00937836
 
 $ $SG_TEST_EXENV parallel_task/test_ptask$EXEEXT ${srcdir:=.}/parallel_task/test_ptask_platform.xml ${srcdir:=.}/parallel_task/test_ptask_deployment.xml
 > [0.000000] [xbt_cfg/INFO] type in variable = 2
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [Ginette:execute:(1) 1.000300] [msg_test/INFO] execution_time=1.0003 
 > [Ginette:redistribute:(2) 6.000900] [msg_test/INFO] redistribution_time=6.0009 
 > [6.000900] [msg_test/INFO] Simulation time 6.0009

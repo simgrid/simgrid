@@ -1,3 +1,4 @@
 $ simdag/basic6 ${srcdir:=.}/simdag/network/p2p/platform_2p_1sl.xml --surf-path=${srcdir}
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [2.000000] [basic6/INFO] Simulation time: 2.000000
 

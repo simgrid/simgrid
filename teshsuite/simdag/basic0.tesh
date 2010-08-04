@@ -1,2 +1,3 @@
 $ simdag/basic0 ${srcdir:=.}/simdag/basic_platform.xml --surf-path=${srcdir}
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [1.000100] [basic0/INFO] Simulation time: 1.000100

@@ -2,4 +2,5 @@
 p seq task comp only, no comm
 
 $ simdag/partask/test_comp_only_seq ${srcdir:=.}/simdag/partask/platform_2p_1sl.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > 1

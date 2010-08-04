@@ -3,6 +3,7 @@
 p Simple test of simdag with properties
 
 $ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [test/INFO] Property list for workstation host1
 > [0.000000] [test/INFO] 	Property: NewProp has value: newValue
 > [0.000000] [test/INFO] 	Property: SG_TEST_Hdd has value: 180

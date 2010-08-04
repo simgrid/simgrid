@@ -2,4 +2,5 @@
 p latency bounded by large latency link
 
 $ simdag/network/p2p/test_latency_bound ${srcdir:=.}/simdag/network/p2p/platform_2p_1bb.xml --surf-path=${srcdir} --log=sd_kernel.thres=warning
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > 10001.5

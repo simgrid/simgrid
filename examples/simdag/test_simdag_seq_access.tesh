@@ -3,6 +3,7 @@
 p Simple test of simdag
 
 $ $SG_TEST_EXENV ./sd_seq_access ${srcdir:=.}/2clusters.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [sd_seq_access/INFO] Access mode of C2-05 is sequential
 > [0.000000] [sd_seq_access/INFO] Access mode of C2-06 is sequential
 > [0.000000] [sd_seq_access/INFO] Task A is currently running on C2-05 (SD_TASK_COMP_SEQ)

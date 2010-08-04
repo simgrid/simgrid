@@ -3,6 +3,7 @@
 p Simple test of simdag
 
 $ $SG_TEST_EXENV ./sd_test ${srcdir:=.}/../msg/msg_platform.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [sd_test/INFO] Computation time for 2000000.000000 flops on Jacquelin: 0.014563
 > [0.000000] [sd_test/INFO] Computation time for 1000000.000000 flops on Intel: 0.007282
 > [0.000000] [sd_test/INFO] Route between Jacquelin and Intel:

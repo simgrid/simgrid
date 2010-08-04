@@ -3,4 +3,5 @@
 p Simple test of simdag
 
 $ $SG_TEST_EXENV ./sd_test2 ${srcdir:=.}/2clusters.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [9.811800] [sd_test/INFO] Simulation time: 9.811800
