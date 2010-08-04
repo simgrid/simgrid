@@ -7,6 +7,7 @@
      <argument value="50000000"/>  <!-- Computation size of tasks -->
      <argument value="1000000"/>      <!-- Communication size of tasks -->
      <argument value="2"/>         <!-- Number of receivers -->
+     <argument value="0"/>         <!-- Use diff comm size -->     
   </process>
   <!-- The receiver processes -->
   <process host="Ruby" function="receiver">

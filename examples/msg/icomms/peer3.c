@@ -25,6 +25,8 @@ int sender(int argc, char *argv[])
   double task_comp_size = atof(argv[2]);
   double task_comm_size = atof(argv[3]);
   long receivers_count = atol(argv[4]);
+  int diff_com = atol(argv[5]);
+  double coef= 0;
   xbt_dynar_t d = NULL;
   int i;
   m_task_t task = NULL;
@@ -35,13 +37,17 @@ int sender(int argc, char *argv[])
   msg_comm_t res_irecv = NULL;
   for (i = 0; i < (number_of_tasks); i++)
   {
+	task = NULL;
+	if(diff_com == 0) coef = 1;
+	else coef = (i+1);
+
     sprintf(mailbox,"receiver-%ld",(i % receivers_count));
     sprintf(sprintf_buffer, "Task_%d", i);
-    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
+    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size/coef, NULL);
     comm[i] = MSG_task_isend(task, mailbox);
     MSG_task_refcount_dec(task);
     xbt_dynar_push_as(d, msg_comm_t, comm[i]);
-    INFO3("Send to receiver-%ld %s comm_size %f",i % receivers_count,sprintf_buffer,task_comm_size);
+    INFO3("Send to receiver-%ld %s comm_size %f",i % receivers_count,sprintf_buffer,task_comm_size/coef);
   }
   /* Here we are waiting for the completion of all communications*/
 
@@ -60,7 +66,7 @@ int sender(int argc, char *argv[])
 	  task = NULL;
 	  res_irecv = NULL;
 	  res_irecv = MSG_task_irecv(&(task), mailbox);
-	  xbt_assert0(MSG_comm_wait(res_irecv,-1) == MSG_OK, "MSG_task_get failed");
+	  xbt_assert0(MSG_comm_wait(res_irecv,-1) == MSG_OK, "MSG_comm_wait failed");
 	  MSG_task_destroy(task);
   }
 
@@ -81,7 +87,7 @@ int receiver(int argc, char *argv[])
   xbt_assert1(sscanf(argv[1],"%d", &id),
 	 "Invalid argument %s\n",argv[1]);
   sprintf(mailbox,"receiver-%d",id);
-
+  MSG_process_sleep (10);
   msg_comm_t res_irecv = NULL;
   m_task_t task = NULL;
   m_task_t task_com = NULL;
@@ -99,13 +105,15 @@ int receiver(int argc, char *argv[])
   {
 	task_com = NULL;
 	res_irecv = NULL;
+	MSG_error_t err = MSG_OK;
 	int num = MSG_comm_waitany(comms);
 	xbt_dynar_remove_at(comms, num, &res_irecv);
 	task_com = MSG_comm_get_task(res_irecv);
 	INFO1("Processing \"%s\"", MSG_task_get_name(task_com) );
 	MSG_task_execute(task_com);
 	INFO1("\"%s\" done", MSG_task_get_name(task_com));
-	MSG_task_destroy(task_com);
+	err = MSG_task_destroy(task_com);
+	xbt_assert0(err == MSG_OK, "MSG_task_destroy failed");
   }
   xbt_dynar_free(&comms);
 
@@ -116,9 +124,6 @@ int receiver(int argc, char *argv[])
   INFO0("I'm done. See you!");
   return 0;
 } /* end_of_receiver */
-
-
-
 
 /** Test function */
 MSG_error_t test_all(const char *platform_file,
