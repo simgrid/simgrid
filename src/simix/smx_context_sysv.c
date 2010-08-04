@@ -19,7 +19,6 @@
 	#include "win32_ucontext.c"
 #else
 	#include "ucontext.h"
-	#include "ucontext.c"
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
