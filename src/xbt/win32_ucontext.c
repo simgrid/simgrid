@@ -20,7 +20,7 @@
  *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
-#include "ucontext.h"
+#include "win32_ucontext.h"
 
 int getcontext(ucontext_t *ucp)
 {

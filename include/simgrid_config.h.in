@@ -24,6 +24,11 @@
 #cmakedefine _WIN64 @_WIN64@			/*this variable is set if it is a 64 bits  windows platform*/
 #cmakedefine __VISUALC__ @__VISUALC__@
 #cmakedefine __BORLANDC__ @__BORLANDC__@
+#ifdef _XBT_WIN32
+	#ifndef __GNUC__
+		#cmakedefine __GNUC__ @__GNUC__@
+	#endif
+#endif
 
 #ifndef SIMGRID_PUBLIC_CONFIG_H
 #define SIMGRID_PUBLIC_CONFIG_H
@@ -37,8 +42,8 @@ SG_BEGIN_DECL()
 #undef SIMGRID_NEED_ASPRINTF
 #undef SIMGRID_NEED_VASPRINTF
 @need_getline@
-@need_asprintf@
-@need_vasprintf@
+@simgrid_need_asprintf@
+@simgrid_need_vasprintf@
 
 /* Use that config to declare missing elements */
 #ifdef SIMGRID_NEED_GETLINE

@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"
-#include "simgrid_config.h"		/*HAVE_MMAP*/
+#include "simgrid_config.h"		/*HAVE_MMAP _XBT_WIN32*/
 #include "time.h"               /* to seed the random generator */
 
 #include "xbt/sysdep.h"
@@ -53,6 +53,11 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_sync_os);
  */
 static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR;
 static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR;
+
+#ifdef _XBT_WIN32
+ # undef _XBT_NEED_INIT_PRAGMA
+#endif
+
 #ifdef _XBT_NEED_INIT_PRAGMA
 #pragma init (xbt_preinit)
 #pragma fini (xbt_postexit)

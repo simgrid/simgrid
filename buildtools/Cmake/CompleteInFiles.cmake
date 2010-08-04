@@ -246,13 +246,23 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	set(mcsc_flags "-D_XOPEN_SOURCE")
 endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
+if(WIN32)
+    if(__VISUALC__)
+	set(mcsc_flags "/D_XBT_WIN32 /I${PROJECT_DIRECTORY}/include/xbt /I${PROJECT_DIRECTORY}/src/xbt")
+	endif(__VISUALC__)
+	if(__GNUC__)
+		set(mcsc_flags "-D_XBT_WIN32 -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt")
+	endif(__GNUC__)
+endif(WIN32)
+
 try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
 	${PROJECT_DIRECTORY}
 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
 	COMPILE_DEFINITIONS "${mcsc_flags}"
+	OUTPUT_VARIABLE var_compil
 	)
-	
-if(EXISTS "${simgrid_BINARY_DIR}/conftestval")
+
+if(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
 	file(READ "${simgrid_BINARY_DIR}/conftestval" mcsc)
 	STRING(REPLACE "\n" "" mcsc "${mcsc}")
 	if(mcsc)
@@ -260,9 +270,9 @@ if(EXISTS "${simgrid_BINARY_DIR}/conftestval")
 	elseif(mcsc)
 		set(mcsc "no")
 	endif(mcsc)
-else(EXISTS "${simgrid_BINARY_DIR}/conftestval")
+else(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
 	set(mcsc "no")
-endif(EXISTS "${simgrid_BINARY_DIR}/conftestval")
+endif(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
 
 if(mcsc MATCHES "no" AND pthread)
 	if(HAVE_WINDOWS_H)
@@ -460,9 +470,16 @@ if(HAVE_MAKECONTEXT OR WIN32)
 		set(makecontext_CPPFLAGS_2 "-DOSX")
 	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	
-	if(WIN32)
-	    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 ${INCLUDES}")
-	endif(WIN32)
+    if(WIN32)
+        if(__VISUALC__)
+            set(makecontext_CPPFLAGS "/DTEST_makecontext")
+    	    set(makecontext_CPPFLAGS_2 "/D_XBT_WIN32 /I${PROJECT_DIRECTORY}/include/xbt /I${PROJECT_DIRECTORY}/src/xbt")
+    	endif(__VISUALC__)
+    	if(__GNUC__)
+    	    set(makecontext_CPPFLAGS "-DTEST_makecontext")
+    		set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt")
+    	endif(__GNUC__)
+    endif(WIN32)
 
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
@@ -477,7 +494,6 @@ if(HAVE_MAKECONTEXT OR WIN32)
 	string(REPLACE "," "" makecontext_size "${MAKECONTEXT_SIZE}")	
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
 	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
-
 endif(HAVE_MAKECONTEXT OR WIN32)
 
 #--------------------------------------------------------------------------------------------------
@@ -627,8 +643,10 @@ try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
 
 if(NOT COMPILE_RESULT_VAR)
 SET(need_getline "#define SIMGRID_NEED_GETLINE 1")
+SET(SIMGRID_NEED_GETLINE 1)
 else(NOT COMPILE_RESULT_VAR)
 SET(need_getline "")
+SET(SIMGRID_NEED_GETLINE 0)
 endif(NOT COMPILE_RESULT_VAR)
 
 ### check for a working snprintf
@@ -660,15 +678,19 @@ endif(HAVE_SNPRINTF AND HAVE_VSNPRINTF)
 
 ### check for asprintf function familly
 if(HAVE_ASPRINTF)
-	SET(need_asprintf "")
+	SET(simgrid_need_asprintf "")
+	SET(NEED_ASPRINTF 0)
 else(HAVE_ASPRINTF)
-	SET(need_asprintf "#define SIMGRID_NEED_ASPRINTF 1")
+	SET(simgrid_need_asprintf "#define SIMGRID_NEED_ASPRINTF 1")
+	SET(NEED_ASPRINTF 1)
 endif(HAVE_ASPRINTF)
 
 if(HAVE_VASPRINTF)
-	SET(need_vasprintf "")
+	SET(simgrid_need_vasprintf "")
+	SET(NEED_VASPRINTF 0)
 else(HAVE_VASPRINTF)
-	SET(need_vasprintf "#define SIMGRID_NEED_VASPRINTF 1")
+	SET(simgrid_need_vasprintf "#define SIMGRID_NEED_VASPRINTF 1")
+	SET(NEED_VASPRINTF 1)
 endif(HAVE_VASPRINTF)
 
 ### check for addr2line

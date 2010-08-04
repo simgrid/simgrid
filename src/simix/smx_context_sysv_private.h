@@ -23,8 +23,11 @@ SG_BEGIN_DECL()
 #endif /*CONTEXT_STACK_SIZE */
 
 #include "context_sysv_config.h"        /* loads context system definitions */
+#ifdef _XBT_WIN32
+#include <win32_ucontext.h>           /* context relative declarations */
+#else
 #include <ucontext.h>           /* context relative declarations */
-
+#endif
 typedef struct s_smx_ctx_sysv {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
   ucontext_t uc;                /* the thread that execute the code */

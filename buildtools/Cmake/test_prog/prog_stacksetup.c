@@ -21,8 +21,14 @@
 #include <signal.h>
 #include <unistd.h>
 #endif
+
 #if defined(TEST_makecontext)
-#include <ucontext.h>
+#ifdef _XBT_WIN32
+	#include "win32_ucontext.h"
+#else
+	#include <ucontext.h>
+#endif
+
 #endif
 union alltypes {
     long   l;

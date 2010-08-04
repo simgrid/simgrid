@@ -43,6 +43,11 @@ if(WIN32) #actually not enable with windows
 	message("Mode supernovae and maintainer disable with Windows.")
 	set(enable_supernovae false CACHE TYPE INTERNAL FORCE)
 	set(enable_maintainer_mode false CACHE TYPE INTERNAL FORCE)
+	set(enable_java false CACHE TYPE INTERNAL FORCE)
+	set(enable_lua false CACHE TYPE INTERNAL FORCE)
+	set(enable_ruby false CACHE TYPE INTERNAL FORCE)
+	set(enable_smpi false CACHE TYPE INTERNAL FORCE)
+	set(enable_gtnets false CACHE TYPE INTERNAL FORCE)
 endif(WIN32)
 
 if(enable_supernovae AND enable_model-checking)

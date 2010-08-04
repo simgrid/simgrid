@@ -8,12 +8,26 @@ add_library(gras_static STATIC ${gras_sources})
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 set_target_properties(gras PROPERTIES VERSION ${libgras_version})
 
-set_target_properties(gras            PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_EXPORT")
-set_target_properties(gras_static     PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_STATIC"
-                                                 OUTPUT_NAME   "gras")
-set_target_properties(simgrid         PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_EXPORT")
-set_target_properties(simgrid_static  PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_STATIC"
-                                                 OUTPUT_NAME   "simgrid")
+
+if(MSVC)
+    set_target_properties(gras            PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_EXPORT")
+    set_target_properties(gras_static     PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_STATIC"
+                                                     OUTPUT_NAME   "gras")
+    set_target_properties(simgrid         PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_EXPORT")
+    set_target_properties(simgrid_static  PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_STATIC"
+                                                     OUTPUT_NAME   "simgrid")
+else(MSVC)
+    if(CMAKE_COMPILER_IS_GNUCC)
+        set_target_properties(gras            PROPERTIES COMPILE_FLAGS "-D _XBT_DLL_EXPORT")
+        set_target_properties(gras_static     PROPERTIES COMPILE_FLAGS "-D _XBT_DLL_STATIC"
+                                                         OUTPUT_NAME   "gras")
+        set_target_properties(simgrid         PROPERTIES COMPILE_FLAGS "-D _XBT_DLL_EXPORT")
+        set_target_properties(simgrid_static  PROPERTIES COMPILE_FLAGS "-D _XBT_DLL_STATIC"
+                                                         OUTPUT_NAME   "simgrid")
+    else(CMAKE_COMPILER_IS_GNUCC)
+        message(FATAL_ERROR "Compilateur non connu!!!")
+    endif(CMAKE_COMPILER_IS_GNUCC)
+endif(MSVC)
 
 set(GRAS_DEP "wsock32")
 set(SIMGRID_DEP "wsock32")
@@ -28,11 +42,8 @@ target_link_libraries(gras_static 	${GRAS_DEP})
 #src/testall
 add_subdirectory(${PROJECT_DIRECTORY}/src)
 
-#tools/gras
-add_subdirectory(${PROJECT_DIRECTORY}/tools/gras)
-
-#tools/tesh
-add_subdirectory(${PROJECT_DIRECTORY}/tools/tesh)
+#examples
+add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/icomms)
 
 #testsuite/xbt
 add_subdirectory(${PROJECT_DIRECTORY}/testsuite/xbt)
@@ -42,54 +53,3 @@ add_subdirectory(${PROJECT_DIRECTORY}/testsuite/surf)
 
 #testsuite/simdag
 add_subdirectory(${PROJECT_DIRECTORY}/testsuite/simdag)
-
-#teshsuite
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/xbt)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/datadesc)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/empty_main)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/network)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/network/mxn)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/partask)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/platforms)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/msg)
-
-#examples
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/ping)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/rpc)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/spawn)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/timer)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/chrono)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/mmrpc)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/all2all)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/pmm)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/synchro)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/properties)
-
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/properties)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/actions)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/migration)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/sendrecv)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/suspend)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/parallel_task)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/priority)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/masterslave)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/trace)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/tracing)
-
-if(HAVE_MC)
-	add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/mc)
-endif(HAVE_MC)
-
-add_subdirectory(${PROJECT_DIRECTORY}/examples/amok/bandwidth)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/amok/saturate)
-
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/dax)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/metaxml)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/properties)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/scheduling)

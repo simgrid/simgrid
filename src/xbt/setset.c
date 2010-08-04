@@ -7,18 +7,16 @@
 
 /*The function ffs doesn't exist for windows*/
 #ifdef _XBT_WIN32
-	int XBT_INLINE ffs(int x)
-	{
-		int r;
-		__asm{
-			mov ecx, [x]
-			bsf eax, ecx
-			jnz ffs1
-			mov eax, -1
-			ffs1:
-			mov[r],eax
+	int ffs(int bits)
+    {
+		int i;
+		if (bits == 0)
+			return (0);
+		for (i = 1; ; i++, bits >>= 1)
+		{
+			if (bits & 1) break;
 		}
-		return(r);
+		return (i);
 	}
 #endif
 

@@ -49,23 +49,34 @@ if(WIN32)
     message("	-- CMAKE_BUILD_TOOL		${CMAKE_BUILD_TOOL}")
     message("	-- LINKER			${CMAKE_LINKER}")
     message("	-- CMAKE_GENERATOR		${CMAKE_GENERATOR}")
-    message("	-- INCLUDES			${INCLUDES}\n\n")
-    set(__STRICT_ANSI__ 1)
-    set(_MSC_VER 1)
-    set(_XBT_WIN32 1)
+    message("	-- INCLUDES			${INCLUDES}")
+    message("	-- BORLAND			    ${BORLAND}")
+    message("	-- VISUALC			    ${MSVC}")
+    message("	-- GNUC			        ${CMAKE_COMPILER_IS_GNUCC}\n\n")
     if(BORLAND)			### BORLAND COMPILER
 	    set(__BORLANDC__ 1)
 	    set(_XBT_BORLANDC_COMPILER 1)
     endif(BORLAND)
-    if(MSVC_VERSION)	### MicroSoftVisualC COMPILER
+    
+    if(MSVC)	### MicroSoftVisualC COMPILER
 	    set(__VISUALC__ 1)
 	    set(_XBT_VISUALC_COMPILER 1)
-    endif(MSVC_VERSION)  
+	    set(_MSC_VER 1)
+        set(__STRICT_ANSI__ 1)
+        set(_M_IX86 1)
+    endif(MSVC)
+    
+    if(CMAKE_COMPILER_IS_GNUCC)
+        set(__GNUC__ 1)
+    endif(CMAKE_COMPILER_IS_GNUCC)
+    
     if(ARCH_32_BITS)	### Arch 32bits
-    	set(_WIN32 1)
+        set(_WIN32 1)
     else(ARCH_32_BITS)	### Arch 64bits
-    	set(_WIN64 1)
+        set(_WIN64 1)
     endif(ARCH_32_BITS)
+    
+    set(_XBT_WIN32 1)
 endif(WIN32)
 
 add_definitions (${INCLUDES})
@@ -87,9 +98,9 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/Flags.cmake)
 
 ### Make Libs and Exes
 if(WIN32)
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLibWin.cmake)
+    include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLibWin.cmake)
 else(WIN32)
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLib.cmake)
+    include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLib.cmake)
 endif(WIN32)
 
 ### Build the doc

@@ -12,8 +12,10 @@
 
 static unsigned int _seed = 2147483647;
 
+#ifdef __VISUALC__
 typedef unsigned __int64 uint64_t;
 typedef unsigned int uint32_t;
+#endif
 
 struct drand48_data {
   unsigned short int __x[3];    /* Current state.  */

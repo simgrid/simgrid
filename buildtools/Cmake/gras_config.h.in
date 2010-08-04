@@ -19,12 +19,19 @@
 #ifndef _MSC_VER
 	#cmakedefine _MSC_VER @_MSC_VER@
 #endif
+#ifndef _M_IX86
+	#cmakedefine _M_IX86 @_M_IX86@
+#endif
 #cmakedefine _XBT_WIN32 @_XBT_WIN32@	//this variable is set if it is a windows platform
 #cmakedefine _WIN32 @_WIN32@			//this variable is set if it is a 32 bits windows platform
 #cmakedefine _WIN64 @_WIN64@			//this variable is set if it is a 64 bits  windows platform
 #cmakedefine __VISUALC__ @__VISUALC__@
 #cmakedefine __BORLANDC__ @__BORLANDC__@
-
+#ifdef _XBT_WIN32
+	#ifndef __GNUC__
+		#cmakedefine __GNUC__ @__GNUC__@
+	#endif
+#endif
 /* Set to true if enable_model-checking is true */
 #cmakedefine MMALLOC_WANT_OVERIDE_LEGACY @MMALLOC_WANT_OVERIDE_LEGACY@
 #cmakedefine HAVE_MC @HAVE_MC@
