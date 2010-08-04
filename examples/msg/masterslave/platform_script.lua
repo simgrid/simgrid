@@ -7,7 +7,7 @@ require "simgrid"
   simgrid.Host.new{id="Bourassa",power=48492000};
 
     -- create Links
-  for i=11,0,-1 do
+  for i=10,0,-1 do
     simgrid.Link.new{id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};   
   end
   -- simgrid.Route.new(src_id,des_id,links_nb,links_list)
@@ -37,7 +37,7 @@ require "simgrid"
    simgrid.Route.new("Bourassa","Ginette",{"0","1","2","5","6","7"});
   
    --Save Platform
-   simgrid.register_platform();
+   simgrid.msg_register_platform();
 
   --Set Application
    simgrid.Host.setFunction("Tremblay","master",{"20","550000000","1000000","4"});
@@ -47,6 +47,6 @@ require "simgrid"
    simgrid.Host.setFunction("Ginette","slave",{"3"});
    
   --Save Application 
-   simgrid.register_application(); 
+   simgrid.msg_register_application(); 
 
 

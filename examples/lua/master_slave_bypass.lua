@@ -108,7 +108,7 @@ require "simgrid"
   
    --Save Platform
    simgrid.info("start registering platform");
-   simgrid.register_platform();
+   simgrid.msg_register_platform();
    simgrid.info("platform registered");
   
   --Set Application
@@ -119,7 +119,7 @@ require "simgrid"
    simgrid.Host.setFunction("Ginette","Slave",{"3"});
    
   --Save Application 
-   simgrid.register_application();
+   simgrid.msg_register_application();
 
   --Run The Application
    simgrid.run()
