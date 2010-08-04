@@ -5,7 +5,6 @@
 $ lua mult_matrix.lua
 > [Inmos:Sender:(1) 0.000000] [lua/INFO] Hello From Sender
 > [Inmos:Sender:(1) 0.000000] [lua/INFO] Argc=4 (should be 4)
-> [Inmos:Sender:(1) 0.000000] [lua/INFO] Creating task
 > [Inmos:Sender:(1) 0.000000] [lua/INFO] Sending matrix_task to Bellevue
 > [Bellevue:Receiver:(2) 0.000000] [lua/INFO] Hello From Receiver
 > [Bellevue:Receiver:(2) 0.000000] [lua/INFO] Receiving Task from Inmos

@@ -7,7 +7,6 @@ $ lua master_slave.lua --log=surf_parse.thres:critical
 > [Tremblay:Master:(1) 0.000000] [lua/INFO] Got 1000000
 > [Tremblay:Master:(1) 0.000000] [lua/INFO] Got 4
 > [Tremblay:Master:(1) 0.000000] [lua/INFO] Argc=4 (should be 4)
-> [Tremblay:Master:(1) 0.000000] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 0.000000] [lua/INFO] Master sending  'Task 1' To 'slave 1'
 > [Bourassa:Slave:(2) 0.000000] [lua/INFO] Hello from lua, I'm a poor slave with mbox: slave 0
 > [Jupiter:Slave:(3) 0.000000] [lua/INFO] Hello from lua, I'm a poor slave with mbox: slave 1
@@ -15,94 +14,75 @@ $ lua master_slave.lua --log=surf_parse.thres:critical
 > [Ginette:Slave:(5) 0.000000] [lua/INFO] Hello from lua, I'm a poor slave with mbox: slave 3
 > [Jupiter:Slave:(3) 0.165962] [lua/INFO] Slave 'slave 1' processing Task 1
 > [Tremblay:Master:(1) 0.165962] [lua/INFO] Master done sending 'Task 1' To 'slave 1'
-> [Tremblay:Master:(1) 0.165962] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 0.165962] [lua/INFO] Master sending  'Task 2' To 'slave 2'
 > [Fafard:Slave:(4) 0.384115] [lua/INFO] Slave 'slave 2' processing Task 2
 > [Tremblay:Master:(1) 0.384115] [lua/INFO] Master done sending 'Task 2' To 'slave 2'
-> [Tremblay:Master:(1) 0.384115] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 0.384115] [lua/INFO] Master sending  'Task 3' To 'slave 3'
 > [Ginette:Slave:(5) 0.524575] [lua/INFO] Slave 'slave 3' processing Task 3
 > [Tremblay:Master:(1) 0.524575] [lua/INFO] Master done sending 'Task 3' To 'slave 3'
-> [Tremblay:Master:(1) 0.524575] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 0.524575] [lua/INFO] Master sending  'Task 4' To 'slave 0'
 > [Bourassa:Slave:(2) 0.740447] [lua/INFO] Slave 'slave 0' processing Task 4
 > [Tremblay:Master:(1) 0.740447] [lua/INFO] Master done sending 'Task 4' To 'slave 0'
-> [Tremblay:Master:(1) 0.740447] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 0.740447] [lua/INFO] Master sending  'Task 5' To 'slave 1'
 > [Jupiter:Slave:(3) 0.821304] [lua/INFO] Slave 'slave 1': task Task 1 done
 > [Jupiter:Slave:(3) 0.987266] [lua/INFO] Slave 'slave 1' processing Task 5
 > [Tremblay:Master:(1) 0.987266] [lua/INFO] Master done sending 'Task 5' To 'slave 1'
-> [Tremblay:Master:(1) 0.987266] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 0.987266] [lua/INFO] Master sending  'Task 6' To 'slave 2'
 > [Fafard:Slave:(4) 1.039457] [lua/INFO] Slave 'slave 2': task Task 2 done
 > [Fafard:Slave:(4) 1.257610] [lua/INFO] Slave 'slave 2' processing Task 6
 > [Tremblay:Master:(1) 1.257610] [lua/INFO] Master done sending 'Task 6' To 'slave 2'
-> [Tremblay:Master:(1) 1.257610] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 1.257610] [lua/INFO] Master sending  'Task 7' To 'slave 3'
 > [Ginette:Slave:(5) 1.555672] [lua/INFO] Slave 'slave 3': task Task 3 done
 > [Jupiter:Slave:(3) 1.642608] [lua/INFO] Slave 'slave 1': task Task 5 done
 > [Ginette:Slave:(5) 1.696132] [lua/INFO] Slave 'slave 3' processing Task 7
 > [Tremblay:Master:(1) 1.696132] [lua/INFO] Master done sending 'Task 7' To 'slave 3'
-> [Tremblay:Master:(1) 1.696132] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 1.696132] [lua/INFO] Master sending  'Task 8' To 'slave 0'
 > [Bourassa:Slave:(2) 1.771545] [lua/INFO] Slave 'slave 0': task Task 4 done
 > [Fafard:Slave:(4) 1.912953] [lua/INFO] Slave 'slave 2': task Task 6 done
 > [Bourassa:Slave:(2) 1.987417] [lua/INFO] Slave 'slave 0' processing Task 8
 > [Tremblay:Master:(1) 1.987417] [lua/INFO] Master done sending 'Task 8' To 'slave 0'
-> [Tremblay:Master:(1) 1.987417] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 1.987417] [lua/INFO] Master sending  'Task 9' To 'slave 1'
 > [Jupiter:Slave:(3) 2.153379] [lua/INFO] Slave 'slave 1' processing Task 9
 > [Tremblay:Master:(1) 2.153379] [lua/INFO] Master done sending 'Task 9' To 'slave 1'
-> [Tremblay:Master:(1) 2.153379] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 2.153379] [lua/INFO] Master sending  'Task 10' To 'slave 2'
 > [Fafard:Slave:(4) 2.371532] [lua/INFO] Slave 'slave 2' processing Task 10
 > [Tremblay:Master:(1) 2.371532] [lua/INFO] Master done sending 'Task 10' To 'slave 2'
-> [Tremblay:Master:(1) 2.371532] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 2.371532] [lua/INFO] Master sending  'Task 11' To 'slave 3'
 > [Ginette:Slave:(5) 2.727230] [lua/INFO] Slave 'slave 3': task Task 7 done
 > [Jupiter:Slave:(3) 2.808721] [lua/INFO] Slave 'slave 1': task Task 9 done
 > [Ginette:Slave:(5) 2.867690] [lua/INFO] Slave 'slave 3' processing Task 11
 > [Tremblay:Master:(1) 2.867690] [lua/INFO] Master done sending 'Task 11' To 'slave 3'
-> [Tremblay:Master:(1) 2.867690] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 2.867690] [lua/INFO] Master sending  'Task 12' To 'slave 0'
 > [Bourassa:Slave:(2) 3.018515] [lua/INFO] Slave 'slave 0': task Task 8 done
 > [Fafard:Slave:(4) 3.026874] [lua/INFO] Slave 'slave 2': task Task 10 done
 > [Bourassa:Slave:(2) 3.234387] [lua/INFO] Slave 'slave 0' processing Task 12
 > [Tremblay:Master:(1) 3.234387] [lua/INFO] Master done sending 'Task 12' To 'slave 0'
-> [Tremblay:Master:(1) 3.234387] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 3.234387] [lua/INFO] Master sending  'Task 13' To 'slave 1'
 > [Jupiter:Slave:(3) 3.400349] [lua/INFO] Slave 'slave 1' processing Task 13
 > [Tremblay:Master:(1) 3.400349] [lua/INFO] Master done sending 'Task 13' To 'slave 1'
-> [Tremblay:Master:(1) 3.400349] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 3.400349] [lua/INFO] Master sending  'Task 14' To 'slave 2'
 > [Fafard:Slave:(4) 3.618502] [lua/INFO] Slave 'slave 2' processing Task 14
 > [Tremblay:Master:(1) 3.618502] [lua/INFO] Master done sending 'Task 14' To 'slave 2'
-> [Tremblay:Master:(1) 3.618502] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 3.618502] [lua/INFO] Master sending  'Task 15' To 'slave 3'
 > [Ginette:Slave:(5) 3.898788] [lua/INFO] Slave 'slave 3': task Task 11 done
 > [Ginette:Slave:(5) 4.039247] [lua/INFO] Slave 'slave 3' processing Task 15
 > [Tremblay:Master:(1) 4.039247] [lua/INFO] Master done sending 'Task 15' To 'slave 3'
-> [Tremblay:Master:(1) 4.039247] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 4.039247] [lua/INFO] Master sending  'Task 16' To 'slave 0'
 > [Jupiter:Slave:(3) 4.055691] [lua/INFO] Slave 'slave 1': task Task 13 done
 > [Bourassa:Slave:(2) 4.265485] [lua/INFO] Slave 'slave 0': task Task 12 done
 > [Fafard:Slave:(4) 4.273845] [lua/INFO] Slave 'slave 2': task Task 14 done
 > [Bourassa:Slave:(2) 4.481357] [lua/INFO] Slave 'slave 0' processing Task 16
 > [Tremblay:Master:(1) 4.481357] [lua/INFO] Master done sending 'Task 16' To 'slave 0'
-> [Tremblay:Master:(1) 4.481357] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 4.481357] [lua/INFO] Master sending  'Task 17' To 'slave 1'
 > [Jupiter:Slave:(3) 4.647319] [lua/INFO] Slave 'slave 1' processing Task 17
 > [Tremblay:Master:(1) 4.647319] [lua/INFO] Master done sending 'Task 17' To 'slave 1'
-> [Tremblay:Master:(1) 4.647319] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 4.647319] [lua/INFO] Master sending  'Task 18' To 'slave 2'
 > [Fafard:Slave:(4) 4.865472] [lua/INFO] Slave 'slave 2' processing Task 18
 > [Tremblay:Master:(1) 4.865472] [lua/INFO] Master done sending 'Task 18' To 'slave 2'
-> [Tremblay:Master:(1) 4.865472] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 4.865472] [lua/INFO] Master sending  'Task 19' To 'slave 3'
 > [Ginette:Slave:(5) 5.070345] [lua/INFO] Slave 'slave 3': task Task 15 done
 > [Ginette:Slave:(5) 5.210805] [lua/INFO] Slave 'slave 3' processing Task 19
 > [Tremblay:Master:(1) 5.210805] [lua/INFO] Master done sending 'Task 19' To 'slave 3'
-> [Tremblay:Master:(1) 5.210805] [lua/INFO] Creating task
 > [Tremblay:Master:(1) 5.210805] [lua/INFO] Master sending  'Task 20' To 'slave 0'
 > [Jupiter:Slave:(3) 5.302662] [lua/INFO] Slave 'slave 1': task Task 17 done
 > [Bourassa:Slave:(2) 5.512455] [lua/INFO] Slave 'slave 0': task Task 16 done
@@ -111,21 +91,17 @@ $ lua master_slave.lua --log=surf_parse.thres:critical
 > [Tremblay:Master:(1) 5.728328] [lua/INFO] Master done sending 'Task 20' To 'slave 0'
 > [Tremblay:Master:(1) 5.728328] [lua/INFO] Master: All tasks have been dispatched. Let's tell everybody the computation is over.
 > [Tremblay:Master:(1) 5.728328] [lua/INFO] Master: sending finalize to slave 0
-> [Tremblay:Master:(1) 5.728328] [lua/INFO] Creating task
 > [Ginette:Slave:(5) 6.241903] [lua/INFO] Slave 'slave 3': task Task 19 done
 > [Bourassa:Slave:(2) 6.759426] [lua/INFO] Slave 'slave 0': task Task 20 done
 > [Bourassa:Slave:(2) 6.975298] [lua/INFO] Slave 'slave 0' got finalize msg
 > [Bourassa:Slave:(2) 6.975298] [lua/INFO] Slave 'slave 0': I'm Done . See You !!
 > [Tremblay:Master:(1) 6.975298] [lua/INFO] Master: sending finalize to slave 1
-> [Tremblay:Master:(1) 6.975298] [lua/INFO] Creating task
 > [Jupiter:Slave:(3) 7.141260] [lua/INFO] Slave 'slave 1' got finalize msg
 > [Jupiter:Slave:(3) 7.141260] [lua/INFO] Slave 'slave 1': I'm Done . See You !!
 > [Tremblay:Master:(1) 7.141260] [lua/INFO] Master: sending finalize to slave 2
-> [Tremblay:Master:(1) 7.141260] [lua/INFO] Creating task
 > [Fafard:Slave:(4) 7.359413] [lua/INFO] Slave 'slave 2' got finalize msg
 > [Fafard:Slave:(4) 7.359413] [lua/INFO] Slave 'slave 2': I'm Done . See You !!
 > [Tremblay:Master:(1) 7.359413] [lua/INFO] Master: sending finalize to slave 3
-> [Tremblay:Master:(1) 7.359413] [lua/INFO] Creating task
 > [Ginette:Slave:(5) 7.499872] [lua/INFO] Slave 'slave 3' got finalize msg
 > [Ginette:Slave:(5) 7.499872] [lua/INFO] Slave 'slave 3': I'm Done . See You !!
 > [Tremblay:Master:(1) 7.499872] [lua/INFO] Master: Everything's done.
