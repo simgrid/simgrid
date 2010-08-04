@@ -50,9 +50,12 @@ endif(pthread)
 if(HAVE_LUA)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${liblua}")      
     ADD_CUSTOM_COMMAND(
-	  OUTPUT ${PROJECT_DIRECTORY}/examples/lua/simgrid.so ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.so
+	  OUTPUT ${PROJECT_DIRECTORY}/examples/lua/simgrid.so 
+	  OUTPUT ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.so
+	  OUTPUT ${PROJECT_DIRECTORY}/examples/simdag/simgrid.so
 	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so
 	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.so 
+	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/simdag/simgrid.so 
 	  COMMENT "Generating libsimgrid.so link for binding lua..."
 	)
 
