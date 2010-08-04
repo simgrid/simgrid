@@ -6,7 +6,6 @@ $ $SG_TEST_EXENV ./masterslave/masterslave_mailbox --cfg=network/model:Vivaldi .
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vivaldi'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [0.000000] [surf_network/INFO] Blih
-> [0.000000] [surf_route/INFO] Null routing
 > [100030591:master:(1) 0.000000] [msg_test/INFO] Got 39 slaves and 20 tasks to process
 > [100030591:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"
 > [100030591:master:(1) 46.298715] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "slave-1"
