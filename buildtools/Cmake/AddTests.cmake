@@ -198,8 +198,8 @@ ADD_TEST(simdag-minmin_test	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTOR
 
 if(enable_smpi)
 # smpi examples
-ADD_TEST(smpi-bcast 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi bcast.tesh)
-ADD_TEST(smpi-reduce 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/smpi reduce.tesh)
+ADD_TEST(smpi-bcast 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/bcast.tesh)
+ADD_TEST(smpi-reduce 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/reduce.tesh)
 endif(enable_smpi)
 
 if(HAVE_GTNETS)
