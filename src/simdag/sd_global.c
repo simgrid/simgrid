@@ -12,6 +12,11 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/config.h"
+#ifdef HAVE_LUA
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+#endif
 
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd,
@@ -162,7 +167,6 @@ void SD_create_environment(const char *platform_file)
   surf_config_models_setup(platform_file);
 
   parse_platform_file(platform_file);
-
   /* now let's create the SD wrappers for workstations and links */
   xbt_dict_foreach(surf_model_resource_set(surf_workstation_model), cursor,
                    name, surf_workstation) {
@@ -379,4 +383,24 @@ void SD_exit(void)
     WARN0("SD_exit() called, but SimDag is not running");
     /* we cannot use exceptions here because xbt is not running! */
   }
+}
+
+/**
+ * \bried load script file
+ */
+
+void SD_load_environment_script(const char* script_file)
+{
+#ifdef HAVE_LUA
+    lua_State *L = lua_open();
+    luaL_openlibs(L);
+
+    if (luaL_loadfile(L, script_file) || lua_pcall(L, 0, 0, 0)) {
+         printf("error: %s\n", lua_tostring(L, -1));
+         return;
+       }
+#else
+    xbt_die("Lua is not available!! to call SD_load_environment_script, lua should be available...");
+#endif
+    return;
 }
