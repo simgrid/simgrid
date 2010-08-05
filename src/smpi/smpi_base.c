@@ -179,8 +179,7 @@ int smpi_mpi_test(MPI_Request* request, MPI_Status* status) {
   int flag = (*request)->complete;
 
   if(flag) {
-    SIMIX_communication_destroy((*request)->pair);
-    finish_wait(request, status);
+    smpi_mpi_wait(request, status);
   }
   return flag;
 }
@@ -192,8 +191,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int* index, MPI_Status* 
   flag = 0;
   for(i = 0; i < count; i++) {
     if(requests[i] != MPI_REQUEST_NULL && requests[i]->complete) {
-      SIMIX_communication_destroy(requests[i]->pair);
-      finish_wait(&requests[i], status);
+      smpi_mpi_wait(&requests[i], status);
       *index = i;
       flag = 1;
       break;
@@ -204,12 +202,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int* index, MPI_Status* 
 
 void smpi_mpi_wait(MPI_Request* request, MPI_Status* status) {
   print_request("wait", *request);
-  // data is null if receiver waits before sender enters the rdv
-  if((*request)->complete) {
-    SIMIX_communication_destroy((*request)->pair);
-  } else {
-    SIMIX_network_wait((*request)->pair, -1.0);
-  }
+  SIMIX_network_wait((*request)->pair, -1.0);
   finish_wait(request, status);
 }
 
@@ -224,7 +217,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status* status) {
     for(i = 0; i < count; i++) {
       if(requests[i] != MPI_REQUEST_NULL && requests[i]->complete) {
         index = i;
-        SIMIX_communication_destroy(requests[index]->pair); // always succeeds (but cleans the simix layer)
+        smpi_mpi_wait(&requests[index], status);
         break;
       }
     }
@@ -245,12 +238,10 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status* status) {
       if(size > 0) {
         index = SIMIX_network_waitany(comms);
         index = map[index];
+        finish_wait(&requests[index], status);
       }
       xbt_free(map);
       xbt_dynar_free(&comms);
-    }
-    if(index != MPI_UNDEFINED) {
-      finish_wait(&requests[index], status);
     }
   }
   return index;
@@ -282,8 +273,7 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int* indices, MPI_Sta
   count = 0;
   for(i = 0; i < incount; i++) {
     if(requests[i] != MPI_REQUEST_NULL && requests[i]->complete) {
-      SIMIX_communication_destroy(requests[i]->pair);
-      finish_wait(&requests[i], status != MPI_STATUS_IGNORE ? &status[i] : MPI_STATUS_IGNORE);
+      smpi_mpi_wait(&requests[i], status != MPI_STATUS_IGNORE ? &status[i] : MPI_STATUS_IGNORE);
       indices[count] = i;
       count++;
     }
