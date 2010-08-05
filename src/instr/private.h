@@ -134,6 +134,8 @@ void TRACE_smpi_init (int rank);
 void TRACE_smpi_finalize (int rank);
 void TRACE_smpi_start (void);
 void TRACE_smpi_end (void);
+void TRACE_smpi_collective_in (int rank, int root, const char *operation);
+void TRACE_smpi_collective_out (int rank, int root, const char *operation);
 
 /* from instr_config.c */
 int _TRACE_configured (void);

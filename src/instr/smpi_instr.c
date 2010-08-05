@@ -47,5 +47,23 @@ void TRACE_smpi_finalize (int rank)
       _TRACE_smpi_container (rank, str, 100));
 }
 
+void TRACE_smpi_collective_in (int rank, int root, const char *operation)
+{
+  if (!IS_TRACING_SMPI) return;
+
+  char str[100];
+  pajePushState (SIMIX_get_clock(), "MPI_STATE",
+      _TRACE_smpi_container (rank, str, 100), operation);
+}
+
+void TRACE_smpi_collective_out (int rank, int root, const char *operation)
+{
+  if (!IS_TRACING_SMPI) return;
+
+  char str[100];
+  pajePopState (SIMIX_get_clock(), "MPI_STATE",
+      _TRACE_smpi_container (rank, str, 100));
+}
+
 #endif
 

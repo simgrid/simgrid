@@ -77,6 +77,7 @@ int TRACE_start ()
 
   if (IS_TRACING_SMPI){
     pajeDefineContainerType ("MPI_PROCESS", "HOST", "MPI_PROCESS");
+    pajeDefineStateType ("MPI_STATE", "MPI_PROCESS", "MPI_STATE");
   }
 
   /* creating the platform */
