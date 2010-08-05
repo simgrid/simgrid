@@ -48,6 +48,10 @@ XBT_LOG_EXTERNAL_CATEGORY(msg_process);
  */
 void MSG_global_init(int *argc, char **argv)
 {
+#ifdef HAVE_TRACING
+  TRACE_global_init (argc, argv);
+#endif
+
   xbt_getpid = MSG_process_self_PID;
   if (!msg_global) {
     /* Connect our log channels: that must be done manually under windows */

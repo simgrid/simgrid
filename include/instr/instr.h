@@ -9,12 +9,6 @@
 
 #ifdef HAVE_TRACING
 
-#define NO_TRACE		0
-#define TRACE_PLATFORM  1
-#define TRACE_PROCESS   2
-#define TRACE_TASK      4
-#define TRACE_VOLUME    8
-
 #include "xbt.h"
 #include "msg/msg.h"
 
@@ -28,8 +22,7 @@
 #define TRACE_ERROR_FILE_OPEN 401
 #define TRACE_ERROR_START 500
 
-XBT_PUBLIC(int) TRACE_start_with_mask (const char *filename, int mask);
-XBT_PUBLIC(int) TRACE_start (const char *filename);
+XBT_PUBLIC(int) TRACE_start (void);
 XBT_PUBLIC(int) TRACE_end (void);
 XBT_PUBLIC(int) TRACE_category (const char *category);
 XBT_PUBLIC(void) TRACE_define_type (const char *type, const char *parent_type, int final);
@@ -86,8 +79,7 @@ XBT_PUBLIC(void) TRACE_mark (const char *mark_type, const char *mark_value);
 
 #else /* HAVE_TRACING */
 
-#define TRACE_start(filename)
-#define TRACE_start_with_mask(filename,mask)
+#define TRACE_start()
 #define TRACE_end()
 #define TRACE_category(cat)
 #define TRACE_define_type(cat,supercat,final)

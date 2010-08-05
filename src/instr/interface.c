@@ -14,29 +14,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(tracing,"Tracing Interface");
 static xbt_dict_t defined_types;
 static xbt_dict_t created_categories;
 
-int trace_mask;
-
-/** \ingroup tracing
- * \brief Simple initialization of tracing.
- *
- * \param filename of the file that will contain the traces
- * \return 0 if everything is ok
- */
-int TRACE_start (const char *filename)
+int TRACE_start ()
 {
-  return TRACE_start_with_mask (filename, TRACE_PLATFORM);
-}
-
-/** \ingroup tracing
- * \brief Initialization of tracing.
- *
- * Function to be called at first when tracing a simulation
- *
- * \param name of the file that will contain the traces
- * \param mask to take into account during trace
- * \return 0 if everything is ok
- */
-int TRACE_start_with_mask(const char *filename, int mask) {
 	FILE *file = NULL;
   if (IS_TRACING) { /* what? trace is already active... ignore.. */
 	THROW0 (tracing_error, TRACE_ERROR_START,
@@ -44,15 +23,7 @@ int TRACE_start_with_mask(const char *filename, int mask) {
     return 0;
   }
 
-  /* checking mask */
-  if (!(mask&TRACE_PLATFORM ||
-      mask&TRACE_TASK ||
-      mask&TRACE_PROCESS ||
-      mask&TRACE_VOLUME)){
-    THROW0 (tracing_error, TRACE_ERROR_MASK,
-          "unknown tracing mask");
-  }
-
+  char *filename = _TRACE_filename ();
   file = fopen(filename, "w");
   if (!file) {
     THROW1 (tracing_error, TRACE_ERROR_START,
@@ -61,9 +32,6 @@ int TRACE_start_with_mask(const char *filename, int mask) {
     TRACE_paje_start (file);
   }
   TRACE_paje_create_header();
-
-  /* setting the mask */
-  trace_mask = mask;
 
   /* define paje hierarchy for tracing */
   pajeDefineContainerType("PLATFORM", "0", "platform");
@@ -191,15 +159,6 @@ int TRACE_create_category (const char *category,
   val_one = xbt_strdup ("1");
   xbt_dict_set (created_categories, category, &val_one, xbt_free);
   return 0;
-}
-
-void TRACE_set_mask (int mask)
-{
-  if (mask != TRACE_PLATFORM){
-     return;
-  }else{
-     trace_mask = mask;
-  }
 }
 
 void TRACE_declare_mark (const char *mark_type)

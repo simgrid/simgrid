@@ -12,14 +12,14 @@
 #ifdef HAVE_TRACING
 
 extern int tracing_active; /* declared in paje.c */
-extern int trace_mask; /* declared in interface.c */
 
 #define IS_TRACING			  (tracing_active)
 #define IS_TRACED(n)          (n->category)
-#define IS_TRACING_TASKS      ((TRACE_TASK)&trace_mask)
-#define IS_TRACING_PLATFORM   ((TRACE_PLATFORM)&trace_mask)
-#define IS_TRACING_PROCESSES  ((TRACE_PROCESS)&trace_mask)
-#define IS_TRACING_VOLUME     ((TRACE_VOLUME)&trace_mask)
+#define IS_TRACING_TASKS      (_TRACE_msg_task_enabled())
+#define IS_TRACING_PLATFORM   (_TRACE_platform_enabled())
+#define IS_TRACING_PROCESSES  (_TRACE_msg_process_enabled())
+#define IS_TRACING_VOLUME     (_TRACE_msg_volume_enabled())
+#define IS_TRACING_SMPI       (_TRACE_smpi_enabled())
 
 #include "instr/instr.h"
 #include "msg/msg.h"
