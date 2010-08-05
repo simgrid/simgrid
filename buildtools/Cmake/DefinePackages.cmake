@@ -729,6 +729,14 @@ file(GLOB_RECURSE CMAKE_SOURCE_FILES
 "buildtools/Cmake/test_prog/*.cpp"
 )
 
+set(bin_files
+tools/MSG_visualization/colorize.pl
+)
+
+file(GLOB_RECURSE doc_files
+"doc/html/*"
+)
+
 # This is the complete lise of what will be added to the source archive
 set(source_to_pack	
 	${XBT_RL_SRC}
@@ -758,4 +766,6 @@ set(source_to_pack
 	${TEST_CFILES}
 	${EXTRA_DIST}
 	${CMAKE_SOURCE_FILES}
+	${bin_files}
+	${doc_files}
 )
