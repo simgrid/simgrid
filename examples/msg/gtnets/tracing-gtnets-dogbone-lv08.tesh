@@ -1,0 +1,17 @@
+#! ./tesh
+
+p Testing dogbone communication pattern with LV08 model
+
+$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=tracing/filename:dogbone_lv08.trace --cfg=tracing/platform:1 --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:LV08
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'dogbone_lv08.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'LV08'
+> [S1:master:(1) 0.342000] [msg_test/INFO] Send completed (to C1). Transfer time: 0.342000	 Agregate bandwidth: 29239.766082
+> [S1:master:(1) 0.342000] [msg_test/INFO] Completed peer: C1 time: 0.342000
+> [S2:master:(2) 0.342000] [msg_test/INFO] Send completed (to C2). Transfer time: 0.342000	 Agregate bandwidth: 29239.766082
+> [S2:master:(2) 0.342000] [msg_test/INFO] Completed peer: C2 time: 0.342000
+> [C1:slave:(3) 0.342000] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 29239.766082 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(3) 0.342000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 29239.766082 ;  message from S2 to C2  with remaining : 0.000000
+

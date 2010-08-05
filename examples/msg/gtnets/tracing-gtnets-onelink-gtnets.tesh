@@ -1,0 +1,14 @@
+#! ./tesh
+
+p Testing onelink communication pattern with GTNets model
+
+$ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=tracing/filename:onelink_gtnets.trace --cfg=tracing/platform:1 --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'onelink_gtnets.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'GTNets'
+> [S1:master:(1) 106.291000] [msg_test/INFO] Send completed (to C1). Transfer time: 106.291000	 Agregate bandwidth: 9408.134273
+> [S1:master:(1) 106.291000] [msg_test/INFO] Completed peer: C1 time: 106.291000
+> [C1:slave:(2) 106.291000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 9408.134273 ;  message from S1 to C1  with remaining : 0.000000
+

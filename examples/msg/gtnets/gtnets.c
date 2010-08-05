@@ -166,13 +166,14 @@ int main(int argc, char *argv[])
   MSG_error_t res = MSG_OK;
   bool_printed = 0;
 
-  TRACE_start ("z_gtnets.trace");
-
   MSG_global_init(&argc, argv);
   if (argc < 3) {
     printf("Usage: %s platform_file deployment_file\n", argv[0]);
     exit(1);
   }
+
+  TRACE_start ();
+
   res = test_all(argv[1], argv[2]);
 
   MSG_clean();
