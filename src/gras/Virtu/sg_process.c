@@ -12,7 +12,11 @@
 #include "gras/Virtu/virtu_sg.h"
 #include "gras/Msg/msg_interface.h"     /* For some checks at simulation end */
 #include "gras/Transport/transport_interface.h" /* For some checks at simulation end */
-
+#if HAVE_LUA
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+#endif
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu_process);
 
 static long int PID = 1;
@@ -240,6 +244,11 @@ void gras_function_register(const char *name, xbt_main_func_t code)
   SIMIX_function_register(name, code);
 }
 
+void gras_function_register_default(xbt_main_func_t code)
+{
+  SIMIX_function_register_default(code);
+}
+
 void gras_main()
 {
   /* Clean IO before the run */
@@ -255,6 +264,22 @@ void gras_main()
 void gras_launch_application(const char *file)
 {
   SIMIX_launch_application(file);
+}
+
+void gras_load_environment_script(const char* script_file)
+{
+#ifdef HAVE_LUA
+    lua_State *L = lua_open();
+    luaL_openlibs(L);
+
+    if (luaL_loadfile(L, script_file) || lua_pcall(L, 0, 0, 0)) {
+         printf("error: %s\n", lua_tostring(L, -1));
+         return;
+       }
+#else
+    xbt_die("Lua is not available!! to call gras_load_environment_script, lua should be available...");
+#endif
+    return;
 }
 
 void gras_clean()

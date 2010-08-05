@@ -20,7 +20,9 @@ SG_BEGIN_DECL()
      void gras_global_init(int *argc, char **argv);
      void gras_create_environment(const char *file);
      void gras_function_register(const char *name, xbt_main_func_t code);
+     void gras_function_register_default(xbt_main_func_t code);
      void gras_launch_application(const char *file);
+     void gras_load_environment_script(const char *file);
      void gras_clean(void);
      void gras_main(void);
 
