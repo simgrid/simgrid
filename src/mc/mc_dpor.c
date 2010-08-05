@@ -153,7 +153,8 @@ void MC_dpor(void)
         INFO0("**************************");
         INFO0("Locked transitions:");
         xbt_setset_foreach(mc_current_state->transitions, cursor, trans){
-          INFO1("%s", trans->name);
+          INFO3("%s [src=%p, dst=%p]", trans->name, trans->wait.comm->src_proc,
+                trans->wait.comm->dst_proc);
         }
 
         INFO0("Counter-example execution trace:");
