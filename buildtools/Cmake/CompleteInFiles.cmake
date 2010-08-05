@@ -711,6 +711,7 @@ set(includedir ${prefix}/include)
 set(top_builddir ${PROJECT_DIRECTORY})
 set(libdir ${exec_prefix}/lib)
 set(CMAKE_LINKARGS "${CMAKE_CURRENT_BINARY_DIR}/lib")
+set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib:${gtnets_path}/lib:$LD_LIBRARY_PATH")
 
 configure_file(${PROJECT_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc @ONLY)
 configure_file(${PROJECT_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun @ONLY)

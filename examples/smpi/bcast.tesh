@@ -1,7 +1,5 @@
 # use the tested library, not the installed one
 # (since we want to pass it to the child, it has to be redefined before each command)
-! setenv LD_LIBRARY_PATH=../../lib
-
 # Go for the first test
 p Test Broadcast with less processes than hosts
 $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 3 ./bcast -q
