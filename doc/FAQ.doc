@@ -1773,11 +1773,9 @@ $ make
 
 \subsubsubsection Mandatory Functions
 
-\li <b>\c TRACE_start (const char *filename)</b>: This is the first function to
-be called. It receives a single argument as parameter that contains the name of
-the file that will hold the trace in the end of the simulation. It returns 0 if
-everything was properly initialized, 1 otherwise. All trace functions called
-before TRACE_start do nothing.
+\li <b>\c TRACE_start ()</b>: This is the first function to
+be called. It returns 0 if everything was properly initialized, 1 otherwise. 
+All trace functions called before TRACE_start do nothing.
 
 \li <b>\c TRACE_category (const char *category)</b>: This function should be used
 to define a user category. The category can be used to differentiate the tasks
@@ -1814,6 +1812,27 @@ the value of this variable is always associated to the host. The host
 that will be used when these functions are called is the one returned by
 the function \c MSG_host_self().
 
+\subsubsection faq_tracing_options Tracing configuration Options
+
+These are the options accepted by the tracing system of SimGrid:
+
+\li <b>\c tracing/filename</b>: use this to specify the name of the trace file
+that will be created during the simulation. For example, after the binary
+of your simulator, you can pass as parameter this: 
+\verbatim
+--cfg=tracing/filename:mytracefile.trace
+\endverbatim
+in order to trace the behavior of the simulation in a file with the name
+mytracefile.trace.
+
+\li <b>\c tracing/platform</b>: use this to activate the tracing of the
+platform. For example, you can pass as parameter to your simulator:
+\verbatim
+--cfg=tracing/platform:1
+\endverbatim
+to trace the platform utilization by the categories you declared in your
+simulator. By default, this options is set to 0.
+
 \subsubsection faq_tracing_example Example of Instrumentation
 
 A simplified example using the tracing mandatory functions.
@@ -1821,12 +1840,13 @@ A simplified example using the tracing mandatory functions.
 \verbatim
 int main (int argc, char **argv)
 {
-  TRACE_start ("traced_simulation.trace");
+  MSG_global_init (&argc, &argv);
+
+  //note that TRACE_start must be called after MSG_global_init
+  TRACE_start ();
   TRACE_category ("request");
   TRACE_category ("computation");
   TRACE_category ("finalize");
-  
-  MSG_global_init (&argc, &argv);
 
   //(... after deployment ...)
 
