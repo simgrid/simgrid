@@ -157,7 +157,9 @@ typedef struct s_smpi_mpi_op {
   }
 
 static void max_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, MAX_OP);
+  } else if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, MAX_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, MAX_OP);
@@ -179,7 +181,9 @@ static void max_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
 }
 
 static void min_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, MIN_OP);
+  } else if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, MIN_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, MIN_OP);
@@ -201,7 +205,9 @@ static void min_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
 }
 
 static void sum_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, SUM_OP);
+  } else if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, SUM_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, SUM_OP);
@@ -229,7 +235,9 @@ static void sum_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
 }
 
 static void prod_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, PROD_OP);
+  } else if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, PROD_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, PROD_OP);
@@ -257,7 +265,9 @@ static void prod_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
 }
 
 static void land_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, LAND_OP);
+  } else if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, LAND_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, LAND_OP);
@@ -275,7 +285,9 @@ static void land_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
 }
 
 static void lor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, LOR_OP);
+  } else if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, LOR_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, LOR_OP);
@@ -293,7 +305,9 @@ static void lor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
 }
 
 static void lxor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, LXOR_OP);
+  } else if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, LXOR_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, LXOR_OP);
@@ -311,7 +325,9 @@ static void lxor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
 }
 
 static void band_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, BAND_OP);
+  } if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, BAND_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, BAND_OP);
@@ -329,7 +345,9 @@ static void band_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
 }
 
 static void bor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, BOR_OP);
+  } else if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, BOR_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, BOR_OP);
@@ -347,7 +365,9 @@ static void bor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
 }
 
 static void bxor_func(void* a, void* b, int* length, MPI_Datatype* datatype) {
-  if(*datatype == MPI_SHORT) {
+  if(*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, BXOR_OP);
+  } else if(*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, BXOR_OP);
   } else if(*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, BXOR_OP);
