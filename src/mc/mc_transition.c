@@ -183,15 +183,19 @@ void MC_trans_intercept_test(smx_comm_t comm)
  */
 void MC_trans_intercept_waitany(xbt_dynar_t comms)
 {
+  unsigned int index = 0;
+  smx_comm_t comm = NULL;
   mc_transition_t trans = NULL;
   mc_state_t current_state = NULL;
   if(!mc_replay_mode){
     MC_SET_RAW_MEM;
-    trans = MC_trans_waitany_new(comms);
     current_state = (mc_state_t) 
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
-    xbt_setset_set_insert(current_state->created_transitions, trans);
-    xbt_setset_set_insert(current_state->transitions, trans);
+    xbt_dynar_foreach(comms, index, comm){
+      trans = MC_trans_wait_new(comm);
+      xbt_setset_set_insert(current_state->created_transitions, trans);
+      xbt_setset_set_insert(current_state->transitions, trans);
+    }
     MC_UNSET_RAW_MEM;
   }
   SIMIX_process_yield();
@@ -211,7 +215,7 @@ void MC_trans_intercept_random(int min, int max)
     MC_SET_RAW_MEM;
     current_state = (mc_state_t) 
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
-    for(i=min; i <= max; i++){    
+    for(i=min; i <= max; i++){
       trans = MC_trans_random_new(i);
       xbt_setset_set_insert(current_state->created_transitions, trans);
       xbt_setset_set_insert(current_state->transitions, trans);
