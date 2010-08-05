@@ -183,7 +183,15 @@ int main(int argc, char **argv)
                    "Minimal computation time (in seconds) not discarded.",
                    xbt_cfgelm_double, &default_threshold, 1, 1, NULL, NULL);
 
+#ifdef HAVE_TRACING
+  TRACE_global_init (&argc, argv);
+#endif
+
   SIMIX_global_init(&argc, argv);
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_start ();
+#endif
 
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);
@@ -211,6 +219,10 @@ int main(int argc, char **argv)
   smpi_global_destroy();
 
   SIMIX_message_sizes_output("toto.txt");
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_end ();
+#endif
 
   SIMIX_clean();
   return 0;

@@ -16,10 +16,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
 int MPI_Init(int* argc, char*** argv) {
   smpi_process_init(argc, argv);
   smpi_bench_begin(-1, NULL);
+#ifdef HAVE_TRACING
+  TRACE_smpi_init(smpi_process_index());
+#endif
   return MPI_SUCCESS;
 }
 
 int MPI_Finalize(void) {
+#ifdef HAVE_TRACING
+  TRACE_smpi_finalize(smpi_process_index());
+#endif
   smpi_bench_end(-1, NULL);
   smpi_process_destroy();
   return MPI_SUCCESS;

@@ -129,6 +129,12 @@ int TRACE_surf_gtnets_get_src (void *action);
 int TRACE_surf_gtnets_get_dst (void *action);
 void TRACE_surf_gtnets_destroy (void *action);
 
+/* from smpi_instr.c */
+void TRACE_smpi_init (int rank);
+void TRACE_smpi_finalize (int rank);
+void TRACE_smpi_start (void);
+void TRACE_smpi_end (void);
+
 /* from instr_config.c */
 int _TRACE_configured (void);
 int _TRACE_smpi_enabled (void);

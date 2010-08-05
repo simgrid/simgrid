@@ -333,6 +333,7 @@ set(TRACING_SRC
 	src/instr/msg_volume.c
 	src/instr/smx_instr.c
 	src/instr/surf_instr.c
+	src/instr/smpi_instr.c
 	src/instr/variables_instr.c
 	src/instr/private.h
 )
