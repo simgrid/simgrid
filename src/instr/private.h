@@ -130,6 +130,7 @@ int TRACE_surf_gtnets_get_dst (void *action);
 void TRACE_surf_gtnets_destroy (void *action);
 
 /* from instr_config.c */
+int _TRACE_configured (void);
 int _TRACE_smpi_enabled (void);
 int _TRACE_platform_enabled (void);
 int _TRACE_msg_task_enabled (void);

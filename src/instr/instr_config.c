@@ -16,6 +16,13 @@
 #define OPT_TRACING_MSG_VOLUME    "tracing/msg/volume"
 #define OPT_TRACING_FILENAME      "tracing/filename"
 
+static int trace_configured = 0;
+
+int _TRACE_configured (void)
+{
+  return trace_configured;
+}
+
 int _TRACE_smpi_enabled (void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
@@ -89,6 +96,9 @@ void TRACE_global_init(int *argc, char **argv)
                    "Tracing of MSG communication volume (experimental).",
                    xbt_cfgelm_int, &default_tracing_msg_volume, 0, 1,
                    NULL, NULL);
+
+  /* instrumentation can be considered configured now */
+  trace_configured = 1;
 }
 
 #endif

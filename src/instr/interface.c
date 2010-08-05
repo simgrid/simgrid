@@ -16,15 +16,25 @@ static xbt_dict_t created_categories;
 
 int TRACE_start ()
 {
-	FILE *file = NULL;
+  if (!_TRACE_configured()){
+    THROW0 (tracing_error, TRACE_ERROR_START,
+            "TRACE_start should be called after SimGrid initialization functions.");
+    return 0;
+  }
+
   if (IS_TRACING) { /* what? trace is already active... ignore.. */
-	THROW0 (tracing_error, TRACE_ERROR_START,
-	        "TRACE_start called, but tracing is already active");
+    THROW0 (tracing_error, TRACE_ERROR_START,
+	         "TRACE_start called, but tracing is already active.");
     return 0;
   }
 
   char *filename = _TRACE_filename ();
-  file = fopen(filename, "w");
+  if (!filename){
+    THROW0 (tracing_error, TRACE_ERROR_START,
+            "Trace filename is not initialized.");
+    return 0;
+  }
+  FILE *file = fopen(filename, "w");
   if (!file) {
     THROW1 (tracing_error, TRACE_ERROR_START,
     		"Tracefile %s could not be opened for writing.", filename);
