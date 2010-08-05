@@ -36,8 +36,6 @@ int master(int argc, char *argv[])
   double task_comp_size = 0;
   double task_comm_size = 0;
 
-  TRACE_host_variable_set ("is_master", 1);
-
   int i;
 
   xbt_assert1(sscanf(argv[1], "%d", &number_of_tasks),
@@ -56,8 +54,6 @@ int master(int argc, char *argv[])
       sprintf(sprintf_buffer, "Task_%d", i);
       todo[i] =
         MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
-      TRACE_host_variable_set ("task_creation", i);
-      TRACE_msg_set_task_category (todo[i], "compute");
     }
   }
 
@@ -92,7 +88,6 @@ int master(int argc, char *argv[])
     ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++){
     m_task_t finalize=MSG_task_create("finalize", 0, 0, FINALIZE);
-    TRACE_msg_set_task_category(finalize,"finalize");
     MSG_task_put(finalize, slaves[i], PORT_22);
   }
 
@@ -106,7 +101,6 @@ int master(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   m_task_t task = NULL;
-  TRACE_host_variable_set ("is_slave", 1);
   int res;
   while (1) {
     res = MSG_task_get(&(task), PORT_22);
@@ -119,7 +113,6 @@ int slave(int argc, char *argv[])
     }
 
     INFO1("Processing \"%s\"", MSG_task_get_name(task));
-    TRACE_host_variable_add ("task_computation", MSG_task_get_compute_duration(task));
     MSG_task_execute(task);
     INFO1("\"%s\" done", MSG_task_get_name(task));
     MSG_task_destroy(task);
@@ -207,26 +200,7 @@ MSG_error_t test_all(const char *platform_file, const char *application_file)
 int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
-  int is_tracing = 0;
   int i;
-
-  for (i = 0; i < argc; i++){
-    if (!strcmp (argv[i], "--trace")){
-      is_tracing = 1;
-    }
-  }
-
-  if (is_tracing) {
-    //if TRACE_start is not called, all other tracing
-    //functions will be disabled
-    TRACE_start ("simulation.trace");
-  }
-  TRACE_host_variable_declare ("is_slave");
-  TRACE_host_variable_declare ("is_master");
-  TRACE_host_variable_declare ("task_creation");
-  TRACE_host_variable_declare ("task_computation");
-  TRACE_category ("compute");
-  TRACE_category ("finalize");
 
   MSG_global_init(&argc, argv);
   if (argc < 3) {
@@ -236,8 +210,6 @@ int main(int argc, char *argv[])
   }
   res = test_all(argv[1], argv[2]);
   MSG_clean();
-
-  TRACE_end ();
 
   if (res == MSG_OK)
     return 0;
