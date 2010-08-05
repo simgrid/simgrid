@@ -117,7 +117,6 @@ MSG_error_t test_all(const char *platform_file,
 int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
-  int i;
 
   MSG_global_init(&argc,argv);
   if (argc < 3) {
