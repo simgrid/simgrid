@@ -2,7 +2,9 @@
 
 p Tracing multiple categories master/slave application
 
-$ $SG_TEST_EXENV tracing/categories$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV tracing/categories$EXEEXT --cfg=tracing/filename:categories.trace --cfg=tracing/platform:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'categories.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
 > [4.018878] [msg_test/INFO] Simulation time 4.01888
 
 $ $SG_TEST_EXENV cat$EXEEXT ${srcdir:=.}/tracing/../categories.trace

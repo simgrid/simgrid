@@ -2,7 +2,9 @@
 
 p Tracing master/slave application
 
-$ $SG_TEST_EXENV tracing/ms$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV tracing/ms$EXEEXT --cfg=tracing/filename:ms.trace --cfg=tracing/platform:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'ms.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
 > [4.441598] [msg_test/INFO] Simulation time 4.4416
 
 $ $SG_TEST_EXENV cat$EXEEXT ${srcdir:=.}/tracing/../ms.trace

@@ -42,10 +42,6 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
-  //starting the simulation trace
-  TRACE_start_with_mask ("procmig.trace", TRACE_PROCESS);
-  TRACE_category ("emigrant");
-
   /* Argument checking */
   MSG_global_init(&argc, argv);
   if (argc < 3) {
@@ -54,6 +50,10 @@ int main(int argc, char *argv[])
               argv[0]);
     exit(1);
   }
+
+  //starting the simulation trace
+  TRACE_start ();
+  TRACE_category ("emigrant");
 
   /* Simulation setting */
   MSG_create_environment(argv[1]);

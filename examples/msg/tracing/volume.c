@@ -105,11 +105,18 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
+  MSG_global_init(&argc,argv);
+  if (argc < 3) {
+     printf ("Usage: %s platform_file deployment_file\n",argv[0]);
+     printf ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
+     exit(1);
+  }
+
   //starting the simulation tracing with the TRACE_VOLUME mask
   // - the communication volume among processes expects that:
   //     - the processes involved have a category
   //     - the tasks sent have a category
-  TRACE_start_with_mask ("volume.trace", TRACE_VOLUME);
+  TRACE_start ();
 
   //declaring user categories (for tasks)
   TRACE_category ("compute");
@@ -121,12 +128,6 @@ int main(int argc, char *argv[])
   TRACE_category ("master");
   TRACE_category ("slave");
 
-  MSG_global_init(&argc,argv);
-  if (argc < 3) {
-     printf ("Usage: %s platform_file deployment_file\n",argv[0]);
-     printf ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
-     exit(1);
-  }
   res = test_all(argv[1],argv[2]);
   MSG_clean();
 

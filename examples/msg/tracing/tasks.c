@@ -101,19 +101,20 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
-  //starting the simulation tracing
-  TRACE_start_with_mask ("tasks.trace", TRACE_TASK);
-
-  //declaring user categories
-  TRACE_category ("compute");
-  TRACE_category ("finalize");
-
   MSG_global_init(&argc,argv);
   if (argc < 3) {
      printf ("Usage: %s platform_file deployment_file\n",argv[0]);
      printf ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
      exit(1);
   }
+
+  //starting the simulation tracing
+  TRACE_start ();
+
+  //declaring user categories
+  TRACE_category ("compute");
+  TRACE_category ("finalize");
+
   res = test_all(argv[1],argv[2]);
   MSG_clean();
 

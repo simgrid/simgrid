@@ -2,7 +2,9 @@
 
 p Tracing tasks
 
-$ $SG_TEST_EXENV tracing/tasks$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV tracing/tasks$EXEEXT --cfg=tracing/msg/task:1 --cfg=tracing/filename:tasks.trace ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/task' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tasks.trace'
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] master 20 50000000.000000 1000000.000000 5
 > [Tremblay:slave:(2) 0.002339] [msg_test/INFO] Executing task 50000000.000000
 > [Jupiter:slave:(3) 0.168300] [msg_test/INFO] Executing task 50000000.000000

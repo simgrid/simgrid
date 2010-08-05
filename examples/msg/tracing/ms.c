@@ -104,8 +104,15 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
+  MSG_global_init(&argc,argv);
+  if (argc < 3) {
+     printf ("Usage: %s platform_file deployment_file\n",argv[0]);
+     printf ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
+     exit(1);
+  }
+
   //starting the simulation tracing
-  TRACE_start ("ms.trace");
+  TRACE_start ();
 
   //declaring user variables
   TRACE_host_variable_declare ("is_slave");
@@ -117,12 +124,6 @@ int main(int argc, char *argv[])
   TRACE_category ("compute");
   TRACE_category ("finalize");
 
-  MSG_global_init(&argc,argv);
-  if (argc < 3) {
-     printf ("Usage: %s platform_file deployment_file\n",argv[0]);
-     printf ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
-     exit(1);
-  }
   res = test_all(argv[1],argv[2]);
   MSG_clean();
 
