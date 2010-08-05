@@ -129,6 +129,16 @@ int TRACE_surf_gtnets_get_src (void *action);
 int TRACE_surf_gtnets_get_dst (void *action);
 void TRACE_surf_gtnets_destroy (void *action);
 
+/* from instr_config.c */
+int _TRACE_smpi_enabled (void);
+int _TRACE_platform_enabled (void);
+int _TRACE_msg_task_enabled (void);
+int _TRACE_msg_process_enabled (void);
+int _TRACE_msg_volume_enabled (void);
+char *_TRACE_filename (void);
+void TRACE_global_init(int *argc, char **argv);
+
+
 #endif
 
 #endif /* PRIVATE_H_ */
