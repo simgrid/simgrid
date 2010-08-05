@@ -51,21 +51,6 @@ void create_workstations(void)
   }
 }
 
-static void ws_cpu_create_resource(char *name, double power_peak,
-        double power_scale,
-        tmgr_trace_t power_trace,
-        e_surf_resource_state_t state_initial,
-        tmgr_trace_t state_trace,
-        xbt_dict_t cpu_properties)
-{
-	THROW_UNIMPLEMENTED;
-}
-
-static void ws_link_create_resource(char *name,double bw_initial,double lat_initial)
-{
-	THROW_UNIMPLEMENTED;
-}
-
 static int ws_resource_used(void *resource_id)
 {
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
@@ -325,10 +310,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.link_shared = ws_link_shared;
   surf_workstation_model->extension.workstation.get_properties =
     ws_get_properties;
-  surf_workstation_model->extension.workstation.link_create_resource =
-    ws_link_create_resource;
-  surf_workstation_model->extension.workstation.cpu_create_resource =
-	ws_cpu_create_resource;
+
 }
 
 /********************************************************************/
