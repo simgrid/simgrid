@@ -75,6 +75,10 @@ int TRACE_start ()
     pajeDefineStateType("presence", "TASK", "presence");
   }
 
+  if (IS_TRACING_SMPI){
+    pajeDefineContainerType ("MPI_PROCESS", "HOST", "MPI_PROCESS");
+  }
+
   /* creating the platform */
   pajeCreateContainer(MSG_get_clock(), "platform", "PLATFORM", "0", "simgrid-platform");
 

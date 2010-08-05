@@ -8,6 +8,12 @@
 
 #ifdef HAVE_TRACING
 
+static char *_TRACE_smpi_container (int rank, char *container, int n)
+{
+  snprintf (container, n, "rank-%d", rank);
+  return container;
+}
+
 void TRACE_smpi_start (void)
 {
   if (IS_TRACING_SMPI){
@@ -25,15 +31,20 @@ void TRACE_smpi_end (void)
 void TRACE_smpi_init (int rank)
 {
   if (!IS_TRACING_SMPI) return;
-  //double time = SIMIX_get_clock();
-  //smx_host_t host = SIMIX_host_self();
+
+  char str[100];
+  _TRACE_smpi_container (rank, str, 100);
+  pajeCreateContainer (SIMIX_get_clock(), str, "MPI_PROCESS",
+      SIMIX_host_get_name(SIMIX_host_self()), str);
 }
 
 void TRACE_smpi_finalize (int rank)
 {
   if (!IS_TRACING_SMPI) return;
-  //double time = SIMIX_get_clock();
-  //smx_host_t host = SIMIX_host_self();
+
+  char str[100];
+  pajeDestroyContainer (SIMIX_get_clock(), "MPI_PROCESS",
+      _TRACE_smpi_container (rank, str, 100));
 }
 
 #endif
