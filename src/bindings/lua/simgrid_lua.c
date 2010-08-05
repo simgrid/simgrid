@@ -11,6 +11,7 @@
 #include <lualib.h>
 #include "msg/msg.h"
 #include "simdag/simdag.h"
+#include <gras.h>
 #include "xbt.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
@@ -561,17 +562,20 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 		if(p_host->id == host_id)
 		{
 			p_host->function = luaL_checkstring(L,2);
-			p_host->args_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-			// fill the args list
-			lua_pushnil(L);
-			int j = 0;
-			while (lua_next(L,3) != 0) {
-					argument = lua_tostring(L, -1);
-					xbt_dynar_push(p_host->args_list, &argument);
-				    DEBUG2("index = %f , Arg_id = %s \n",lua_tonumber(L, -2),lua_tostring(L, -1));
-				    j++;
-				    lua_pop(L, 1);
-				}
+			if(lua_istable(L,3))
+			{
+				p_host->args_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+				// fill the args list
+				lua_pushnil(L);
+				int j = 0;
+				while (lua_next(L,3) != 0) {
+						argument = lua_tostring(L, -1);
+						xbt_dynar_push(p_host->args_list, &argument);
+						DEBUG2("index = %f , Arg_id = %s \n",lua_tonumber(L, -2),lua_tostring(L, -1));
+						j++;
+						lua_pop(L, 1);
+					}
+			}
 			lua_pop(L, 1);
 			return 0;
 		}
@@ -826,6 +830,17 @@ static int sd_register_platform(lua_State *L)
 	SD_create_environment(NULL);
 	return 0;
 }
+/*
+ * Register platform for gras
+ */
+static int gras_register_platform(lua_State *L)
+{
+	/* Tell Simgrid we dont wanna use its parser*/
+	surf_parse = surf_parse_bypass_platform;
+	gras_create_environment(NULL);
+	return 0;
+}
+
 /**
  * Register applicaiton for MSG
  */
@@ -837,6 +852,16 @@ static int msg_register_application(lua_State *L)
 	 return 0;
 }
 
+/*
+ * Register application for gras
+ */
+static int gras_register_application(lua_State *L)
+{
+	gras_function_register_default(run_lua_code);
+	surf_parse = surf_parse_bypass_application;
+	gras_launch_application(NULL);
+	return 0;
+}
 static const luaL_Reg simgrid_funcs[] = {
     { "create_environment", create_environment},
     { "launch_application", launch_application},
@@ -851,6 +876,8 @@ static const luaL_Reg simgrid_funcs[] = {
     { "msg_register_platform",msg_register_platform},
     { "sd_register_platform",sd_register_platform},
     { "msg_register_application",msg_register_application},
+    { "gras_register_platform",gras_register_platform},
+    { "gras_register_application",gras_register_application},
     { NULL, NULL }
 };
 
