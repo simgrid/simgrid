@@ -777,6 +777,10 @@ int MPI_Irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+#ifdef HAVE_TRACING
+  int src_traced = smpi_group_rank(smpi_comm_group(comm), src);
+  TRACE_smpi_ptp_in (rank, src_traced, rank, __FUNCTION__);
+#endif
   smpi_bench_end(rank, "Irecv");
   if(request == NULL) {
     retval = MPI_ERR_ARG;
@@ -787,6 +791,10 @@ int MPI_Irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin(rank, "Irecv");
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out (rank, src_traced, rank, __FUNCTION__);
+  (*request)->recv = 1;
+#endif
   return retval;
 }
 
@@ -794,6 +802,11 @@ int MPI_Isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+#ifdef HAVE_TRACING
+  int dst_traced = smpi_group_rank(smpi_comm_group(comm), dst);
+  TRACE_smpi_ptp_in (rank, rank, dst_traced, __FUNCTION__);
+  TRACE_smpi_send (rank, rank, dst_traced);
+#endif
   smpi_bench_end(rank, "Isend");
   if(request == NULL) {
     retval = MPI_ERR_ARG;
@@ -804,6 +817,10 @@ int MPI_Isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin(rank, "Isend");
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out (rank, rank, dst_traced, __FUNCTION__);
+  (*request)->send = 1;
+#endif
   return retval;
 }
 
@@ -811,6 +828,10 @@ int MPI_Recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+#ifdef HAVE_TRACING
+  int src_traced = smpi_group_rank(smpi_comm_group(comm), src);
+  TRACE_smpi_ptp_in (rank, src_traced, rank, __FUNCTION__);
+#endif
   smpi_bench_end(rank, "Recv");
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
@@ -819,6 +840,10 @@ int MPI_Recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin(rank, "Recv");
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out (rank, src_traced, rank, __FUNCTION__);
+  TRACE_smpi_recv (rank, src_traced, rank);
+#endif
   return retval;
 }
 
@@ -826,6 +851,11 @@ int MPI_Send(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+#ifdef HAVE_TRACING
+  int dst_traced = smpi_group_rank(smpi_comm_group(comm), dst);
+  TRACE_smpi_ptp_in (rank, rank, dst_traced, __FUNCTION__);
+  TRACE_smpi_send (rank, rank, dst_traced);
+#endif
   smpi_bench_end(rank, "Send");
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
@@ -834,6 +864,9 @@ int MPI_Send(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin(rank, "Send");
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out (rank, rank, dst_traced, __FUNCTION__);
+#endif
   return retval;
 }
 
@@ -841,6 +874,13 @@ int MPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, i
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+#ifdef HAVE_TRACING
+  int dst_traced = smpi_group_rank(smpi_comm_group(comm), dst);
+  int src_traced = smpi_group_rank(smpi_comm_group(comm), src);
+  TRACE_smpi_ptp_in (rank, src_traced, dst_traced, __FUNCTION__);
+  TRACE_smpi_send (rank, rank, dst_traced);
+  TRACE_smpi_send (rank, src_traced, rank);
+#endif
   smpi_bench_end(rank, "Sendrecv");
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
@@ -851,6 +891,11 @@ int MPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, i
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin(rank, "Sendrecv");
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out (rank, src_traced, dst_traced, __FUNCTION__);
+  TRACE_smpi_recv (rank, rank, dst_traced);
+  TRACE_smpi_recv (rank, src_traced, rank);
+#endif
   return retval;
 }
 
@@ -906,6 +951,13 @@ int MPI_Wait(MPI_Request* request, MPI_Status* status) {
              ? smpi_comm_rank((*request)->comm)
              : -1;
 
+#ifdef HAVE_TRACING
+  MPI_Group group = smpi_comm_group((*request)->comm);
+  int src_traced = smpi_group_rank (group , (*request)->src);
+  int dst_traced = smpi_group_rank (group , (*request)->dst);
+  int is_wait_for_receive = (*request)->recv;
+  TRACE_smpi_ptp_in (rank, src_traced, dst_traced, __FUNCTION__);
+#endif
   smpi_bench_end(rank, "Wait");
   if(request == NULL) {
     retval = MPI_ERR_ARG;
@@ -916,12 +968,53 @@ int MPI_Wait(MPI_Request* request, MPI_Status* status) {
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin(rank, "Wait");
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out (rank, src_traced, dst_traced, __FUNCTION__);
+  if (is_wait_for_receive){
+    TRACE_smpi_recv (rank, src_traced, dst_traced);
+  }
+#endif
   return retval;
 }
 
 int MPI_Waitany(int count, MPI_Request requests[], int* index, MPI_Status* status) {
   int retval;
 
+#ifdef HAVE_TRACING
+  //save requests information for tracing
+  int i;
+  xbt_dynar_t srcs = xbt_dynar_new (sizeof(int), xbt_free);
+  xbt_dynar_t dsts = xbt_dynar_new (sizeof(int), xbt_free);
+  xbt_dynar_t recvs = xbt_dynar_new (sizeof(int), xbt_free);
+  for (i = 0; i < count; i++){
+    MPI_Request req = requests[i]; //already received requests are no longer valid
+    if (req){
+      int *asrc = xbt_new(int, 1);
+      int *adst = xbt_new(int, 1);
+      int *arecv = xbt_new(int, 1);
+      *asrc = req->src;
+      *adst = req->dst;
+      *arecv = req->recv;
+      xbt_dynar_insert_at (srcs, i, asrc);
+      xbt_dynar_insert_at (dsts, i, adst);
+      xbt_dynar_insert_at (recvs, i, arecv);
+    }else{
+      int *t = xbt_new(int, 1);
+      xbt_dynar_insert_at (srcs, i, t);
+      xbt_dynar_insert_at (dsts, i, t);
+      xbt_dynar_insert_at (recvs, i, t);
+    }
+  }
+
+  //search for a suitable request to give the rank of current mpi proc
+  MPI_Request req = NULL;
+  for (i = 0; i < count && req == NULL; i++) {
+    req = requests[i];
+  }
+  MPI_Comm comm = (req)->comm;
+  int rank_traced = smpi_comm_rank(comm);
+  TRACE_smpi_ptp_in (rank_traced, -1, -1, __FUNCTION__);
+#endif
   smpi_bench_end(-1, NULL); //FIXME
   if(index == NULL) {
     retval = MPI_ERR_ARG;
@@ -930,13 +1023,72 @@ int MPI_Waitany(int count, MPI_Request requests[], int* index, MPI_Status* statu
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin(-1, NULL);
+#ifdef HAVE_TRACING
+  int src_traced, dst_traced, is_wait_for_receive;
+  xbt_dynar_get_cpy (srcs, *index, &src_traced);
+  xbt_dynar_get_cpy (dsts, *index, &dst_traced);
+  xbt_dynar_get_cpy (recvs, *index, &is_wait_for_receive);
+  if (is_wait_for_receive){
+    TRACE_smpi_recv (rank_traced, src_traced, dst_traced);
+  }
+  TRACE_smpi_ptp_out (rank_traced, src_traced, dst_traced, __FUNCTION__);
+  //clean-up of dynars
+  xbt_free (srcs);
+  xbt_free (dsts);
+  xbt_free (recvs);
+#endif
   return retval;
 }
 
 int MPI_Waitall(int count, MPI_Request requests[],  MPI_Status status[]) {
+
+#ifdef HAVE_TRACING
+  //save information from requests
+  int i;
+  xbt_dynar_t srcs = xbt_dynar_new (sizeof(int), xbt_free);
+  xbt_dynar_t dsts = xbt_dynar_new (sizeof(int), xbt_free);
+  xbt_dynar_t recvs = xbt_dynar_new (sizeof(int), xbt_free);
+  for (i = 0; i < count; i++){
+    MPI_Request req = requests[i]; //all req should be valid in Waitall
+    int *asrc = xbt_new(int, 1);
+    int *adst = xbt_new(int, 1);
+    int *arecv = xbt_new(int, 1);
+    *asrc = req->src;
+    *adst = req->dst;
+    *arecv = req->recv;
+    xbt_dynar_insert_at (srcs, i, asrc);
+    xbt_dynar_insert_at (dsts, i, adst);
+    xbt_dynar_insert_at (recvs, i, arecv);
+  }
+
+//  find my rank inside one of MPI_Comm's of the requests
+  MPI_Request req = NULL;
+  for (i = 0; i < count && req == NULL; i++) {
+    req = requests[i];
+  }
+  MPI_Comm comm = (req)->comm;
+  int rank_traced = smpi_comm_rank(comm);
+  TRACE_smpi_ptp_in (rank_traced, -1, -1, __FUNCTION__);
+#endif
   smpi_bench_end(-1, NULL); //FIXME
   smpi_mpi_waitall(count, requests, status);
   smpi_bench_begin(-1, NULL);
+#ifdef HAVE_TRACING
+  for (i = 0; i < count; i++){
+    int src_traced, dst_traced, is_wait_for_receive;
+    xbt_dynar_get_cpy (srcs, i, &src_traced);
+    xbt_dynar_get_cpy (dsts, i, &dst_traced);
+    xbt_dynar_get_cpy (recvs, i, &is_wait_for_receive);
+    if (is_wait_for_receive){
+      TRACE_smpi_recv (rank_traced, src_traced, dst_traced);
+    }
+  }
+  TRACE_smpi_ptp_out (rank_traced, -1, -1, __FUNCTION__);
+  //clean-up of dynars
+  xbt_free (srcs);
+  xbt_free (dsts);
+  xbt_free (recvs);
+#endif
   return MPI_SUCCESS;
 }
 

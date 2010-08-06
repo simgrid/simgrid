@@ -33,6 +33,10 @@ typedef struct s_smpi_mpi_request {
   int complete;
   MPI_Request match;
   unsigned flags;
+#ifdef HAVE_TRACING
+  int send;
+  int recv;
+#endif
 } s_smpi_mpi_request_t;
 
 void smpi_process_init(int* argc, char*** argv);

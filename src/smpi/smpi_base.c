@@ -58,6 +58,10 @@ static MPI_Request build_request(void* buf, int count, MPI_Datatype datatype, in
   request->complete = 0;
   request->match = MPI_REQUEST_NULL;
   request->flags = flags;
+#ifdef HAVE_TRACING
+  request->send = 0;
+  request->recv = 0;
+#endif
   return request;
 }
 
