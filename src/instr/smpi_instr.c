@@ -103,5 +103,20 @@ void TRACE_smpi_collective_out (int rank, int root, const char *operation)
       _TRACE_smpi_container (rank, str, 100));
 }
 
+void TRACE_smpi_send (int rank, int src, int dst)
+{
+  char key[100], str[100];
+  _TRACE_smpi_put_key (src, dst, key, 100);
+  pajeStartLink (SIMIX_get_clock(), "MPI_LINK", "0", "PTP",
+      _TRACE_smpi_container (src, str, 100), key);
+}
+
+void TRACE_smpi_recv (int rank, int src, int dst)
+{
+  char key[100], str[100];
+  _TRACE_smpi_get_key (src, dst, key, 100);
+  pajeEndLink (SIMIX_get_clock(), "MPI_LINK", "0", "PTP",
+      _TRACE_smpi_container (dst, str, 100), key);
+}
 #endif
 
