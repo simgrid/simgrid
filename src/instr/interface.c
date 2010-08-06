@@ -89,6 +89,7 @@ int TRACE_start ()
   __TRACE_msg_init();
   __TRACE_surf_init();
   __TRACE_msg_process_init ();
+  __TRACE_smpi_init ();
 
   return 0;
 }

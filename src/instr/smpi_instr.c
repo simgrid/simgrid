@@ -8,10 +8,48 @@
 
 #ifdef HAVE_TRACING
 
+static xbt_dict_t keys;
+
 static char *_TRACE_smpi_container (int rank, char *container, int n)
 {
   snprintf (container, n, "rank-%d", rank);
   return container;
+}
+
+static char *_TRACE_smpi_put_key (int src, int dst, char *key, int n)
+{
+  //get the dynar for src#dst
+  char aux[100];
+  snprintf (aux, 100, "%d#%d", src, dst);
+  xbt_dynar_t d = xbt_dict_get_or_null (keys, aux);
+  if (d == NULL){
+    d = xbt_dynar_new (sizeof(char*), xbt_free);
+    xbt_dict_set (keys, aux, d, xbt_free);
+  }
+  //generate the key
+  static long long counter = 0;
+  snprintf (key, n, "%d%d%lld", src, dst, counter++);
+
+  xbt_dynar_insert_at (d, 0, xbt_strdup (key));
+  return key;
+}
+
+static char *_TRACE_smpi_get_key (int src, int dst, char *key, int n)
+{
+  char aux[100];
+  snprintf (aux, 100, "%d#%d", src, dst);
+  xbt_dynar_t d = xbt_dict_get_or_null (keys, aux);
+
+  int length = xbt_dynar_length (d);
+  char stored_key[n];
+  xbt_dynar_remove_at (d, length-1, stored_key);
+  strncpy (key, stored_key, n);
+  return key;
+}
+
+void __TRACE_smpi_init ()
+{
+  keys = xbt_dict_new();
 }
 
 void TRACE_smpi_start (void)
