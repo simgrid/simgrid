@@ -82,6 +82,7 @@
  
    - \ref MSG_ex_master_slave
    - \ref MSG_ex_asynchronous_communications
+   - \ref MSG_ex_master_slave_scrip_lua
 */
 
 /** @addtogroup MSG_LUA
@@ -117,6 +118,7 @@
         \ingroup MSG_C  */
 /**     \addtogroup msg_simulation
         \ingroup MSG_C  */
+
 
 /** \page MSG_ex_asynchronous_communications Asynchronous communication applications
 
@@ -205,6 +207,88 @@
 
     \skipline Sender function
     \until end_of_sender
+
+*/
+
+/** \page MSG_ex_master_slave_scrip_lua Master/slave application using lua console
+	    
+    Simulation of a master-slave application using a realistic platform and
+    an external description of the deployment via a lua script.
+
+    \section MSG_ex_msl_TOC Table of contents:
+	
+     - \ref MSG_ext_msl_code
+       - \ref MSG_ext_msl_preliminary
+       - \ref MSG_ext_msl_master
+       - \ref MSG_ext_msl_slave
+       - \ref MSG_ext_msl_core
+       - \ref MSG_ext_msl_main
+     - \ref MSG_ext_msl_helping
+       - \ref MSG_ext_msl_platform
+
+<hr> 
+    
+    \dontinclude msg/masterslave/masterslave_console.c
+    
+    \section MSG_ext_msl_code Code of the application
+    
+    \subsection MSG_ext_msl_preliminary Preliminary declarations
+    
+    \skip include
+    \until } channel_t;
+    
+    \subsection MSG_ext_msl_master Master code
+    
+      This function has to be assigned to a m_process_t that will behave as the master.
+      It should not be called directly but either given as a parameter to
+      #MSG_process_create() or registered as a public function through 
+      #MSG_function_register() and then automatically assigned to a process through
+      #MSG_load_platform_script(). 
+ 
+      C style arguments (argc/argv) are interpreted as:
+       - the number of tasks to distribute
+       - the computation size of each task
+       - the size of the files associated to each task
+       - number of hosts that will accept those tasks.
+
+      Tasks are dumbly sent in a round-robin style.
+      
+      \until end_of_master
+\subsection MSG_ext_msl_slave Slave code
+    
+      This function has to be assigned to a #m_process_t that has to behave as a slave.
+      Just like the master fuction (described in \ref MSG_ext_ms_master), it should not be called directly.
+
+      This function keeps waiting for tasks and executes them as it receives them.
+      
+      \until end_of_slave
+
+\subsection MSG_ext_msl_core Simulation core
+
+      This function is the core of the simulation and is divided now only into 2 parts
+      thanks to MSG_load_platform_script().
+         -# Simulation settings and application deployment : MSG_load_platform_script() loads and creates a realistic 
+            environment and the agents on the right locations, described in the lua script file (see example below).
+	    Note that the use of this function require a lua installation on your machine. 
+         -# The simulation is run with #MSG_main().
+	 
+      Its arguments are:
+	- <i>platform_script_file</i>: the name of the script file containing a valid  platform and application description, using bound lua methods to bypass the surfxml parser.
+
+      \until end_of_test_all
+
+\subsection MSG_ext_msl_main Main() function
+   
+      This initializes MSG, runs a simulation, and free all data-structures created by MSG.
+      
+      \until end_of_main
+
+   \section MSG_ext_msl_helping Helping files
+
+   \subsection MSG_ext_msl_platform Example of platform script file
+
+   \include msg/masterslave/platform_script.lua
+
 
 */
 
