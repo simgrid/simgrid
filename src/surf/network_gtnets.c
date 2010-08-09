@@ -25,7 +25,6 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   int tmp_idsrc=-1;
   int tmp_iddst=-1;
   char *name_friend;
-  char *name_normal;
 
   if (xbt_dict_get_or_null(surf_network_model->resource_set, name)) {
     return;

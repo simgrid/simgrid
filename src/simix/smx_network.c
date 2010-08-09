@@ -166,7 +166,7 @@ void SIMIX_communication_destroy(smx_comm_t comm)
   if (latency_limited_dict == NULL)
 	  latency_limited_dict = xbt_dict_new();
   DEBUG2("adding key %p with latency limited value %d to the dict", comm, SIMIX_action_is_latency_bounded(comm->act));
-  xbt_dicti_set(latency_limited_dict, comm, SIMIX_action_is_latency_bounded(comm->act));
+  xbt_dicti_set(latency_limited_dict, (uintptr_t)comm, SIMIX_action_is_latency_bounded(comm->act));
 
   comm->refcount--;
   if(comm->refcount > 0)
@@ -368,9 +368,9 @@ XBT_INLINE int SIMIX_communication_is_latency_bounded(smx_comm_t comm)
   uintptr_t data = 0;
   xbt_dict_cursor_t cursor;
   xbt_dict_foreach(latency_limited_dict,cursor,key,data) {
-    DEBUG2("comparing key=%p with comm=%p", key, comm);
-	if(comm == key){
-		DEBUG2("key %p found, return value latency limited value %d", key, data);
+    DEBUG2("comparing key=%p with comm=%p", (void*)key, (void*)comm);
+	if((void*)comm == (void*)key){
+		DEBUG2("key %p found, return value latency limited value %d", (void*)key, (int)data);
 		return (int)data;
 	}
   }
