@@ -1563,6 +1563,29 @@ A number of options can be given at runtime to change the default
 SimGrid behavior. In particular, you can change the default cpu and
 network models...
 
+\subsubsection faq_simgrid_configuration_fullduplex Using Fullduplex
+
+Experimental fullduplex support is now available on the svn branch. In order to fullduple to work your platform must have two links for each pair
+of interconnected hosts, see an example here:
+\verbatim
+	simgrid_svn_sources/exemples/msg/gtnets/fullduplex-p.xml
+\endverbatim
+
+Using fullduplex support ongoing and incoming communication flows are
+treated independently for most models. The exception is the LV08 model which 
+adds 0.05 of usage on the opposite direction for each new created flow. This 
+can be useful to simulate some important TCP phenomena such as ack compression. 
+
+Running a fullduplex example:
+\verbatim
+	cd simgrid_svn_sources/exemples/msg/gtnets
+	./gtnets fullduplex-p.xml fullduplex-d.xml --cfg=fullduplex:1
+\endverbatim
+
+
+
+
+
 \subsubsection faq_simgrid_configuration_gtnets Using GTNetS
 
 It is possible to use a packet-level network simulator
@@ -2851,4 +2874,5 @@ configure.ac. It means that we exported any symbols which need to be.
 Nowadays, functions get automatically exported, so we don't need to load our
 header files with tons of __declspec(dllexport) cruft. We only need to do so
 for data, but there is no public data in SimGrid so we are good.
+
 
