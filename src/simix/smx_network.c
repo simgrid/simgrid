@@ -163,10 +163,13 @@ void SIMIX_communication_destroy(smx_comm_t comm)
   VERB2("Destroy communication %p; refcount initially %d",comm,comm->refcount);
 
   //save is latency limited flag to use afterwards
-  if (latency_limited_dict == NULL)
+  if (latency_limited_dict == NULL) {
 	  latency_limited_dict = xbt_dict_new();
-  DEBUG2("adding key %p with latency limited value %d to the dict", comm, SIMIX_action_is_latency_bounded(comm->act));
-  xbt_dicti_set(latency_limited_dict, (uintptr_t)comm, SIMIX_action_is_latency_bounded(comm->act));
+  }
+  if (comm->act){
+    DEBUG2("adding key %p with latency limited value %d to the dict", comm, SIMIX_action_is_latency_bounded(comm->act));
+    xbt_dicti_set(latency_limited_dict, (uintptr_t)comm, SIMIX_action_is_latency_bounded(comm->act));
+  }
 
   comm->refcount--;
   if(comm->refcount > 0)
