@@ -270,6 +270,11 @@ static void update_actions_state(double now, double delta)
       double sent = gtnets_get_flow_rx(action);
 
 #ifdef HAVE_TRACING
+      double trace_sent = sent;
+      if (trace_sent == 0){
+        //if sent is equals to 0, means that gtnets sent all the bytes
+        trace_sent = action->generic_action.cost;
+      }
       // tracing resource utilization
       int src = TRACE_surf_gtnets_get_src (action);
       int dst = TRACE_surf_gtnets_get_dst (action);
@@ -278,9 +283,8 @@ static void update_actions_state(double now, double delta)
         network_link_GTNETS_t link;
         unsigned int i;
         xbt_dynar_foreach(route, i, link) {
-
         	TRACE_surf_link_set_utilization (link->generic_resource.name,
-            action->generic_action.data, (action->generic_action.remains-remain)/delta, now-delta, delta);
+            action->generic_action.data, trace_sent/delta, now-delta, delta);
         }
       }
 #endif
