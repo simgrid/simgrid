@@ -267,7 +267,7 @@ static void update_actions_state(double now, double delta)
     xbt_swag_foreach(action, running_actions) {
       DEBUG2("Action (%p) remains old value: %f", action,
              action->generic_action.remains);
-      double remain = gtnets_get_flow_rx(action);
+      double sent = gtnets_get_flow_rx(action);
 
 #ifdef HAVE_TRACING
       // tracing resource utilization
@@ -285,12 +285,12 @@ static void update_actions_state(double now, double delta)
       }
 #endif
 
-      DEBUG1("Remain value returned by GTNetS : %f", remain);
+      DEBUG1("Sent value returned by GTNetS : %f", sent);
       //need to trust this remain value
-      if (remain == 0) {
+      if (sent == 0) {
         action->generic_action.remains = 0;
       } else {
-        action->generic_action.remains = action->generic_action.cost - remain;
+        action->generic_action.remains = action->generic_action.cost - sent;
       }
       DEBUG2("Action (%p) remains new value: %f", action,
              action->generic_action.remains);
