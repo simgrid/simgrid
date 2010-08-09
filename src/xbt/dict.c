@@ -637,7 +637,13 @@ void xbt_dict_dump_output_string(void *s)
 {
   fputs(s, stdout);
 }
-
+/**
+ * \brief test if the dict is empty or not
+ */
+XBT_INLINE int xbt_dict_is_empty(xbt_dict_t dict)
+{
+	return (xbt_dict_length(dict) == 0);
+}
 
 /**
  * \brief Outputs the content of the structure (debugging purpose)

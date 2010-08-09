@@ -69,6 +69,7 @@ XBT_PUBLIC(int) xbt_dict_length(xbt_dict_t dict);
 XBT_PUBLIC(void) xbt_dict_dump_output_string(void *s);
 XBT_PUBLIC(void) xbt_dict_dump(xbt_dict_t dict, void (*output) (void *));
 XBT_PUBLIC(void) xbt_dict_dump_sizes(xbt_dict_t dict);
+XBT_PUBLIC(int) xbt_dict_is_empty(xbt_dict_t dict);
 
 
 /** @} */
