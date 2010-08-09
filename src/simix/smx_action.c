@@ -374,6 +374,12 @@ XBT_INLINE double SIMIX_action_get_remains(smx_action_t action)
   return surf_workstation_model->get_remains(action->surf_action);
 }
 
+XBT_INLINE int SIMIX_action_is_latency_bounded(smx_action_t action)
+{
+  xbt_assert0((action != NULL), "Invalid parameter");
+  return surf_workstation_model->get_latency_limited(action->surf_action);
+}
+
 smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
                                            smx_host_t * host_list,
                                            double *computation_amount,

@@ -22,13 +22,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets_interface, surf_network_gtne
 
 
 // initialize the GTNetS interface and environment
-int gtnets_initialize(){
-
+int gtnets_initialize(int wsize){
   DEBUG0("Using logging.");
-
   xbt_assert0(!gtnets_sim, "gtnets already initialized");
 
-  gtnets_sim = new GTSim();
+  if(wsize > 0){
+	INFO1("TCP window maximum size : %d", wsize);
+	gtnets_sim = new GTSim(wsize);
+  }else{
+	gtnets_sim = new GTSim(wsize);
+  }
+
   return 0;
 }
 
@@ -89,7 +93,7 @@ double gtnets_get_time_to_next_flow_completion(){
 }
 
 // run until a flow completes (returns that flow's metadata)
-int gtnets_run_until_next_flow_completion(void ***metadata, int *number_of_flows){
+double gtnets_run_until_next_flow_completion(void ***metadata, int *number_of_flows){
   ofstream file;
   streambuf* sbuf;
   double value;
@@ -109,7 +113,7 @@ int gtnets_run_until_next_flow_completion(void ***metadata, int *number_of_flows
 	  cout.rdbuf(sbuf);
 	  file.close();
   }
-  return value;
+  return (double) value;
 }
 
 // get the total received in bytes using the TCPServer object totRx field

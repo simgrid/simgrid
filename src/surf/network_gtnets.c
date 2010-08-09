@@ -21,12 +21,42 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 {
   static int link_count = -1;
   network_link_GTNETS_t gtnets_link;
+  int tmp_idsrc=-1;
+  int tmp_iddst=-1;
+  char *name_friend;
+  char *name_normal;
 
   if (xbt_dict_get_or_null(surf_network_model->resource_set, name)) {
     return;
   }
 
+  DEBUG1("Scanning link name %s", name);
+  sscanf(name, "%d_%d", &tmp_idsrc, &tmp_iddst);
+  DEBUG2("Link name split into %d and %d", tmp_idsrc, tmp_iddst);
+
+  xbt_assert0( (tmp_idsrc!=-1)&&(tmp_idsrc!=-1), "You need to respect fullduplex convention x_y for xml link id.");
+
+  name_normal = (char *)calloc(strlen(name), sizeof(char));
+  name_friend = (char *)calloc(strlen(name), sizeof(char));
+
+  if(tmp_idsrc < tmp_iddst){
+	  sprintf(name_normal, "%d_%d", tmp_idsrc, tmp_iddst);
+	  sprintf(name_friend, "%d_%d", tmp_iddst, tmp_idsrc);
+  }else{
+	  sprintf(name_normal, "%d_%d", tmp_iddst, tmp_idsrc);
+	  sprintf(name_friend, "%d_%d", tmp_idsrc, tmp_iddst);
+  }
+
+  gtnets_link = xbt_dict_get_or_null(surf_network_model->resource_set, name_normal);
+
+  if (gtnets_link) {
+    DEBUG3("Link already added as friend normal=%s friend=%s (#%d)", name_normal, name_friend, ((network_link_GTNETS_t)gtnets_link)->id );
+    return;
+  }
+
   link_count++;
+
+  DEBUG4("Adding new link, linkid %d, name %s, latency %g, bandwidth %g", link_count, name, lat, bw);
 
   if (gtnets_add_link(link_count, bw, lat)) {
     xbt_assert0(0, "Cannot create GTNetS link");
@@ -42,7 +72,10 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 #ifdef HAVE_TRACING
   TRACE_surf_link_declaration (name, bw, lat);
 #endif
-  xbt_dict_set(surf_network_model->resource_set, name, gtnets_link,
+  xbt_dict_set(surf_network_model->resource_set, name_normal, gtnets_link,
+               surf_resource_free);
+
+  xbt_dict_set(surf_network_model->resource_set, name_friend, gtnets_link,
                surf_resource_free);
 }
 
@@ -122,6 +155,7 @@ static void create_gtnets_topology()
 
   xbt_dict_foreach(onelink_routes, cursor, key, data){
 	s_onelink_t link = (s_onelink_t) data;
+
 	DEBUG3("Link (#%d), src (#%d), dst (#%d)", ((network_link_GTNETS_t)(link->link_ptr))->id , link->src_id, link->dst_id);
     DEBUG0("Calling one link route");
     if(used_routing->is_router(link->src_id)){
@@ -337,11 +371,6 @@ static int action_is_suspended(surf_action_t action)
 
 static void finalize(void)
 {
-  xbt_dict_free(&surf_network_model->resource_set);
-
-  surf_model_exit(surf_network_model);
-  surf_network_model = NULL;
-
   gtnets_finalize();
 }
 
@@ -371,11 +400,15 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension.network.communicate = communicate;
 
   /* Added the initialization for GTNetS interface */
-  if (gtnets_initialize()) {
+  if (gtnets_initialize(sg_tcp_gamma)) {
     xbt_assert0(0, "Impossible to initialize GTNetS interface");
   }
 
   routing_model_create(sizeof(network_link_GTNETS_t), NULL);
+}
+
+static int get_latency_limited(surf_action_t action){
+	return 0;
 }
 
 #ifdef HAVE_GTNETS
@@ -386,6 +419,8 @@ void surf_network_model_init_GTNETS(const char *filename)
   surf_network_model_init_internal();
   define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
+
+  surf_network_model->get_latency_limited = get_latency_limited;
 
   if(sg_gtnets_jitter > 0.0){
 	  gtnets_set_jitter(sg_gtnets_jitter);

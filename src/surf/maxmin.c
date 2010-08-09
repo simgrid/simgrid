@@ -723,6 +723,12 @@ XBT_INLINE lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys,
   return xbt_swag_getNext(cnst, (sys->active_constraint_set).offset);
 }
 
+XBT_INLINE int lmm_is_variable_limited_by_latency(lmm_variable_t var)
+{
+  return (double_equals(var->bound, var->value));
+}
+
+
 /** \brief Update the constraint set propagating recursively to
  *  other constraints so the system should not be entirely computed.
  *

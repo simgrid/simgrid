@@ -11,6 +11,7 @@
 
 /* Pimple to get an histogram of message sizes in the simulation */
 xbt_dict_t msg_sizes = NULL;
+xbt_dict_t latency_limited_dict = NULL;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "Logging specific to SIMIX (network)");
@@ -160,6 +161,13 @@ smx_comm_t SIMIX_communication_new(smx_comm_type_t type)
 void SIMIX_communication_destroy(smx_comm_t comm)
 {
   VERB2("Destroy communication %p; refcount initially %d",comm,comm->refcount);
+
+  //save is latency limited flag to use afterwards
+  if (latency_limited_dict == NULL)
+	  latency_limited_dict = xbt_dict_new();
+  DEBUG2("adding key %p with latency limited value %d to the dict", comm, SIMIX_action_is_latency_bounded(comm->act));
+  xbt_dicti_set(latency_limited_dict, comm, SIMIX_action_is_latency_bounded(comm->act));
+
   comm->refcount--;
   if(comm->refcount > 0)
     return;
@@ -183,6 +191,8 @@ void SIMIX_communication_destroy(smx_comm_t comm)
       SIMIX_action_destroy(comm->dst_timeout);
       comm->dst_timeout = NULL;
     }
+
+
 
   xbt_free(comm);
 }
@@ -248,7 +258,7 @@ static XBT_INLINE void SIMIX_communication_cleanup(smx_comm_t comm)
   if (!SIMIX_host_get_state(SIMIX_host_self())){
     if(comm->rdv)
       SIMIX_rdv_remove(comm->rdv, comm);
-    SIMIX_communication_destroy(comm);
+	  SIMIX_communication_destroy(comm);
     THROW0(host_error, 0, "Host failed");
   } else if (SIMIX_action_get_state(comm->act) == SURF_ACTION_FAILED){
     SIMIX_communication_destroy(comm);
@@ -343,8 +353,31 @@ XBT_INLINE void SIMIX_communication_cancel(smx_comm_t comm)
  */
 XBT_INLINE double SIMIX_communication_get_remains(smx_comm_t comm)
 {
+  DEBUG1("calling SIMIX_action_get_remains(%p)", comm->act);
   return SIMIX_action_get_remains(comm->act);
 }  
+
+/**
+ *  \brief verify if communication is latency bounded
+ *  \param comm The communication
+ */
+XBT_INLINE int SIMIX_communication_is_latency_bounded(smx_comm_t comm)
+{
+  //try to find comm on the list of finished flows
+  uintptr_t key = 0;
+  uintptr_t data = 0;
+  xbt_dict_cursor_t cursor;
+  xbt_dict_foreach(latency_limited_dict,cursor,key,data) {
+    DEBUG2("comparing key=%p with comm=%p", key, comm);
+	if(comm == key){
+		DEBUG2("key %p found, return value latency limited value %d", key, data);
+		return (int)data;
+	}
+  }
+
+  DEBUG1("calling SIMIX_action_is_latency_bounded(%p)", comm->act);
+  return SIMIX_action_is_latency_bounded(comm->act);
+}
 
 /******************************************************************************/
 /*                    SIMIX_network_copy_data callbacks                       */

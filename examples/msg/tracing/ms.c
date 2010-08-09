@@ -28,6 +28,7 @@ int master(int argc, char *argv[])
   //setting the variable "is_master" (previously declared) to value 1
   TRACE_host_variable_set ("is_master", 1);
 
+  TRACE_mark ("msmark", "start_send_tasks");
   int i;
   for (i = 0; i < number_of_tasks; i++) {
     m_task_t task=NULL;
@@ -41,6 +42,7 @@ int master(int argc, char *argv[])
     TRACE_msg_set_task_category (task, "compute");
     MSG_task_send(task, "master_mailbox");
   }
+  TRACE_mark ("msmark", "finish_send_tasks");
   
    for (i = 0; i < slaves_count; i++) { 
      m_task_t finalize = MSG_task_create ("finalize", 0, 0, 0);
@@ -119,6 +121,9 @@ int main(int argc, char *argv[])
   TRACE_host_variable_declare ("is_master");
   TRACE_host_variable_declare ("task_creation");
   TRACE_host_variable_declare ("task_computation");
+
+  //declaring user markers
+  TRACE_declare_mark ("msmark");
 
   //declaring user categories
   TRACE_category ("compute");

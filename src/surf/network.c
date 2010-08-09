@@ -20,6 +20,7 @@ double sg_bandwidth_factor = 1.0;  /* default value; can be set by model or from
 double sg_weight_S_parameter = 0.0;/* default value; can be set by model or from command line */
 
 double sg_tcp_gamma = 0.0;
+int sg_network_fullduplex = 1;
 
 
 /******************************************************************************/
@@ -257,6 +258,11 @@ static void net_action_recycle(surf_action_t action)
   return;
 }
 
+static int net_get_link_latency(surf_action_t action)
+{
+  return action->latency_limited;
+}
+
 static double net_action_get_remains(surf_action_t action)
 {
   return action->remains;
@@ -277,6 +283,11 @@ static double net_share_resources(double now)
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + xbt_swag_offset(s_action, variable)  )))
 
   xbt_swag_foreach(action, running_actions) {
+	if( lmm_is_variable_limited_by_latency(action->variable) ){
+		(action->generic_action).latency_limited = 1;
+	}else{
+		(action->generic_action).latency_limited = 0;
+	}
     if (action->latency > 0) {
       if (min < 0)
         min = action->latency;
@@ -400,11 +411,18 @@ static void net_update_resource_state(void *id,
       if (action->rate < 0)
         lmm_update_variable_bound(network_maxmin_system, action->variable,
                                   sg_tcp_gamma / (2.0 * action->lat_current));
-      else
+      else{
         lmm_update_variable_bound(network_maxmin_system, action->variable,
                                   min(action->rate,
                                       sg_tcp_gamma / (2.0 *
                                                       action->lat_current)));
+
+        if(action->rate < sg_tcp_gamma / (2.0 * action->lat_current) ){
+        	INFO0("Flow is limited BYBANDWIDTH");
+        }else{
+        	INFO1("Flow is limited BYLATENCY, latency of flow is %f",action->lat_current);
+        }
+      }
       if (!(action->suspended))
         lmm_update_variable_weight(network_maxmin_system, action->variable,
                                    action->weight);
@@ -442,6 +460,7 @@ static void net_update_resource_state(void *id,
   return;
 }
 
+
 static surf_action_t net_communicate(const char *src_name, const char *dst_name,
                                  int src, int dst, double size, double rate)
 {
@@ -454,6 +473,13 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
      Add a link_CM02_t *link and a int link_nb to network_card_CM02_t. It will represent local links for this node
      Use the cluster_id for ->id */
   xbt_dynar_t route = used_routing->get_route(src, dst);
+  xbt_dynar_t back_route = NULL;
+  int constraints_per_variable = 0;
+
+  if( sg_network_fullduplex == 1){
+	  back_route = used_routing->get_route(dst, src);
+  }
+
   /* LARGE PLATFORMS HACK:
      total_route_size = route_size + src->link_nb + dst->nb */
 
@@ -473,6 +499,7 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
   action =
     surf_action_new(sizeof(s_surf_action_network_CM02_t), size,
                     surf_network_model, failed);
+  (action->generic_action).latency_limited = 0;
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
@@ -499,14 +526,18 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
 
   /* LARGE PLATFORMS HACK:
      lmm_variable_new(..., total_route_size) */
+  if(back_route != NULL){
+	  constraints_per_variable = xbt_dynar_length(route)+xbt_dynar_length(back_route);
+  }else{
+	  constraints_per_variable = xbt_dynar_length(route);
+  }
+
   if (action->latency > 0)
     action->variable =
-      lmm_variable_new(network_maxmin_system, action, 0.0, -1.0,
-                       xbt_dynar_length(route));
+      lmm_variable_new(network_maxmin_system, action, 0.0, -1.0,constraints_per_variable);
   else
     action->variable =
-      lmm_variable_new(network_maxmin_system, action, 1.0, -1.0,
-                       xbt_dynar_length(route));
+      lmm_variable_new(network_maxmin_system, action, 1.0, -1.0,constraints_per_variable);
 
   if (action->rate < 0) {
     if (action->lat_current > 0)
@@ -530,7 +561,14 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
     lmm_expand(network_maxmin_system, link->lmm_resource.constraint,
                action->variable, 1.0);
   }
-  /* LARGE PLATFORMS HACK:
+
+  if( sg_network_fullduplex == 1){
+	  DEBUG1("Fullduplex active adding backward flow using 5%c", '%');
+	  xbt_dynar_foreach(back_route, i, link) {
+		  lmm_expand(network_maxmin_system, link->lmm_resource.constraint,
+               action->variable, .05);
+	  }
+  }  /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
 
   /* saving the src and dst of this communication */
@@ -546,11 +584,6 @@ static double net_get_link_bandwidth(const void *link)
 {
   surf_resource_lmm_t lmm = (surf_resource_lmm_t) link;
   return lmm->power.peak * lmm->power.scale;
-}
-
-static double net_get_link_latency(const void *link)
-{
-  return ((link_CM02_t) link)->lat_current;
 }
 
 static int net_link_shared(const void *link)
@@ -638,6 +671,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->action_cancel = net_action_cancel;
   surf_network_model->action_recycle = net_action_recycle;
   surf_network_model->get_remains = net_action_get_remains;
+  surf_network_model->get_latency_limited = net_get_link_latency;
 
   surf_network_model->model_private->resource_used = net_resource_used;
   surf_network_model->model_private->share_resources = net_share_resources;
@@ -655,7 +689,6 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension.network.communicate = net_communicate;
   surf_network_model->extension.network.get_link_bandwidth =
     net_get_link_bandwidth;
-  surf_network_model->extension.network.get_link_latency = net_get_link_latency;
   surf_network_model->extension.network.link_shared = net_link_shared;
   surf_network_model->extension.network.create_resource = network_create_resource;
   surf_network_model->extension.network.add_traces = net_add_traces;

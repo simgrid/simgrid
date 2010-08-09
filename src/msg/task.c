@@ -23,6 +23,15 @@
  *  <em>message size</em> and some <em>private data</em>.
  */
 
+#ifdef HAVE_RUBY /* FIXME: KILLME */
+XBT_LOG_EXTERNAL_CATEGORY(ruby);
+#endif
+
+
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg,
+                                "Logging specific to MSG (task)");
+
 /********************************* Task **************************************/
 /** \ingroup m_task_management
  * \brief Creates a new #m_task_t.
@@ -230,8 +239,6 @@ double MSG_task_get_remaining_computation(m_task_t task)
   }
 }
 
-
-
 /** \ingroup m_task_management
  * \brief Returns the total amount received by a task #m_task_t.
  *
@@ -240,8 +247,20 @@ double MSG_task_get_remaining_communication(m_task_t task)
 {
   xbt_assert0((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
-
+  DEBUG1("calling SIMIX_communication_get_remains(%p)", task->simdata->comm);
   return SIMIX_communication_get_remains(task->simdata->comm);
+}
+
+/** \ingroup m_task_management
+ * \brief Return 1 if communication task is limited by latency, 0 otherwise
+ *
+ */
+int MSG_task_is_latency_bounded(m_task_t task)
+{
+	  xbt_assert0((task != NULL)
+	              && (task->simdata != NULL), "Invalid parameter");
+	DEBUG1("calling SIMIX_communication_is_latency_bounded(%p)", task->simdata->comm);
+	return SIMIX_communication_is_latency_bounded(task->simdata->comm);
 }
 
 /** \ingroup m_task_management

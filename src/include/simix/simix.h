@@ -184,6 +184,7 @@ XBT_INLINE XBT_PUBLIC(void) SIMIX_unregister_action_to_semaphore(smx_action_t ac
 
 
 XBT_PUBLIC(double) SIMIX_action_get_remains(smx_action_t action);
+XBT_PUBLIC(int) SIMIX_action_is_latency_bounded(smx_action_t action);
 
 XBT_PUBLIC(e_surf_action_state_t) SIMIX_action_get_state(smx_action_t action);
 
@@ -216,6 +217,7 @@ XBT_PUBLIC(void*) SIMIX_rdv_get_data(smx_rdv_t rdv);
 XBT_INLINE XBT_PUBLIC(void) SIMIX_communication_cancel(smx_comm_t comm);
 XBT_PUBLIC(void) SIMIX_communication_destroy(smx_comm_t comm);
 XBT_PUBLIC(double) SIMIX_communication_get_remains(smx_comm_t comm);
+XBT_PUBLIC(int)    SIMIX_communication_is_latency_bounded(smx_comm_t comm);
 XBT_PUBLIC(void *) SIMIX_communication_get_data(smx_comm_t comm);
 
 XBT_PUBLIC(void *) SIMIX_communication_get_src_buf(smx_comm_t comm);

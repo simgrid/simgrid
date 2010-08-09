@@ -4,10 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "instr/private.h"
-
+#include "simgrid_config.h"
 
 #ifdef HAVE_TRACING
+
+#include "instr/private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(tracing,"Tracing Interface");
 

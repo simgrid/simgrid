@@ -27,6 +27,7 @@ typedef struct surf_action_network_CM02 {
   double weight;
   lmm_variable_t variable;
   double rate;
+  int latency_limited;
   int suspended;
 
   int src;  /* saving source id for tracing */

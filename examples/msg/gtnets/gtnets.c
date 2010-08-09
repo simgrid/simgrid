@@ -56,17 +56,16 @@ int master(int argc, char *argv[])
   /* slave name */
   slavename = argv[2];
   id = atoi(argv[3]);
-  sprintf(id_alias, "%d", id);
+  sprintf(id_alias, "flow_%d", id);
   slavenames[id] = slavename;
-
-  TRACE_category (slavename);
+  TRACE_category (id_alias);
 
   masternames[id] = MSG_host_get_name(MSG_host_self());
 
   {                             /*  Task creation.  */
     char sprintf_buffer[64] = "Task_0";
     todo = MSG_task_create(sprintf_buffer, 0, task_comm_size, NULL);
-    TRACE_msg_set_task_category(todo,slavename);
+    TRACE_msg_set_task_category(todo,id_alias);
     //keep track of running tasks
     gl_task_array[id] = todo;
     gl_data_size[id] = task_comm_size;
@@ -77,6 +76,7 @@ int master(int argc, char *argv[])
   }
 
   /* time measurement */
+  sprintf(id_alias, "%d", id);
   start_time = MSG_get_clock();
   MSG_task_send(todo, id_alias);
   end_time = MSG_get_clock();
@@ -98,6 +98,7 @@ int slave(int argc, char *argv[])
   m_task_t task = NULL;
   int a;
   int id = 0;
+  int limited_latency=0;
   double remaining = 0;
   char id_alias[10];
 
@@ -122,18 +123,29 @@ int slave(int argc, char *argv[])
     for (id = 0; id < NTASKS; id++) {
       if (gl_task_array[id] == NULL) {
       } else if (gl_task_array[id] == task) {
-        INFO5
+    	  limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
+          if(limited_latency){
+        	  INFO1("WARNING FLOW[%d] is limited by latency!!", id);
+          }
+    	  INFO5
           ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
            id, gl_data_size[id] / elapsed_time, masternames[id],
            slavenames[id], 0.0);
       } else {
         remaining = MSG_task_get_remaining_communication(gl_task_array[id]);
+     	limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
+
+        if(limited_latency){
+      	  INFO1("WARNING FLOW[%d] is limited by latency!!", id);
+        }
         INFO5
           ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
            id, (gl_data_size[id] - remaining) / elapsed_time, masternames[id],
            slavenames[id], remaining);
       }
+
     }
+	TRACE_mark ("endmark", "finished");
   }  
 
   MSG_task_destroy(task);

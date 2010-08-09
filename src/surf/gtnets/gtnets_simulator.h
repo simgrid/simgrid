@@ -35,6 +35,7 @@ class GTSim {
 
 public:
   GTSim();
+  GTSim(int WindowSize);
   ~GTSim();
 public:
   int add_link(int id, double bandwidth, double latency);

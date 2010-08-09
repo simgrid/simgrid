@@ -3,7 +3,6 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 #ifndef _SURF_SURF_PRIVATE_H
 #define _SURF_SURF_PRIVATE_H
 
@@ -23,6 +22,7 @@ extern double sg_latency_factor;
 extern double sg_bandwidth_factor;
 extern double sg_weight_S_parameter;
 extern int sg_maxmin_selective_update;
+extern int sg_network_fullduplex;
 #ifdef HAVE_GTNETS
   extern double sg_gtnets_jitter;
   extern int sg_gtnets_jitter_seed;

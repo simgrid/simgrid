@@ -28,6 +28,76 @@ static int meta_flg = 0;
 
 void static tcp_sent_callback(void* action, double completion_time);
 
+
+// Constructor.
+// TODO: check the default values.
+GTSim::GTSim(int WindowSize){
+  int wsize = WindowSize;
+  is_topology_ = 0;
+  nflow_ = 0;
+  jitter_ = 0;
+  jitter_seed_ = 10;
+
+  // EXTRACTED FROM GTNETS SOURCE CODE COMMENTS
+  //  REDQueue::REDQueue(
+  //     DCount_t in_w_q, Count_t in_min_th, Count_t in_max_th,
+  //     Count_t in_limit, DCount_t in_max_p, Count_t in_mean_pktsize) : iface(nil)
+  // Set default values.
+  //Doc:Desc This constructor the critical RED parameters and builds a
+  //Doc:Desc correspoding RED queue
+  //Doc:Arg1 weight of the queue
+  //Doc:Arg2 minimum threshold
+  //Doc:Arg3 maximum threshold
+  //Doc:Arg4 Limit/max size for the queue
+  //Doc:Arg5 maximum value for mark/drop probability
+  //Doc:Arg6 Average packet size
+
+  //Default Parameters
+  //REDQueue *default_red_queue_ = new REDQueue(0.002, 2500, 7500, 30000, 0.10, 500);
+  //Same as above
+  //REDQueue *default_red_queue_ = new REDQueue();
+
+  //See for details of how those values are calucated below
+  //[1] Sally Floyd and Van Jacobson, "Random Early Detection Gateways with Congestion Avoidance",
+  //    IEEE/ACM Transactions on Networking, vol. 1, n. 4, august 1993.
+  //
+  //[2] Kostas Pentikousis, "Active Queue Management", ACM Crossroads, vol. 7, n. 5,
+  //    mid-summer 2001
+  //
+  //[3] Stefann De Cnodder, Omar Ecoumi, Kenny Paulwels, "RED behavior with different packet sizes",
+  //    5th IEEE Symposium on Computers and Communication, (ISCC 2000)
+  //
+  //[4] http://www.opalsoft.net/qos/DS-26.htm
+  //
+  //short explanation:
+  // q_weight = fixed to 0.002 in most literature
+  // min_bytes = max / 3 = 16,666,666
+  // max_bytes = mean_bw * max_tolerable_latency, set to 1e8 * 0.5 = 50,000,000
+  // limit_bytes = 8 * max = 400,000,000
+  // prob = follow most literature 0.02
+  // avgpkt = fixed to the same TCP segment size, 1000 Bytes
+  //
+  // burst = (2*(min+max))/(3*avgpkt) ***DON'T USED BY GTNetS***
+  REDQueue *default_red_queue_ = new REDQueue(0.002, 16666666, 50000000, 400000000, 0.02, 1000);
+
+  Queue::Default(*default_red_queue_);
+  delete default_red_queue_;
+
+  cout << "Set default window size to " << wsize << endl;
+  TCP::DefaultAdvWin(wsize);
+  TCP::DefaultSegSize(1000);
+  TCP::DefaultTxBuffer(128000);
+  TCP::DefaultRxBuffer(128000);
+
+  sim_ = new Simulator();
+  sim_->verbose=false;
+  topo_ = new GTNETS_Topology();
+
+  // Manual routing
+  rm_ = new RoutingManual();
+  Routing::SetRouting(rm_);
+}
+
 // Constructor.
 // TODO: check the default values.
 GTSim::GTSim(){

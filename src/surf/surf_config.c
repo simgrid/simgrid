@@ -152,6 +152,11 @@ static void _surf_cfg_cb_model_check(const char *name, int pos) {
   xbt_dict_preinit();
 }
 
+static void _surf_cfg_cb__surf_network_fullduplex(const char *name, int pos)
+{
+	sg_network_fullduplex = xbt_cfg_get_int(_surf_cfg_set, name);
+}
+
 #ifdef HAVE_GTNETS
 static void _surf_cfg_cb__gtnets_jitter(const char *name, int pos){
 	sg_gtnets_jitter = xbt_cfg_get_double(_surf_cfg_set, name);
@@ -259,6 +264,11 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_register(&_surf_cfg_set, "model-check",
                      "Activate the model-checking of the \"simulated\" system (EXPERIMENTAL -- msg only for now)",
                      xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb_model_check, NULL);
+
+    default_value_int = 0;
+    xbt_cfg_register(&_surf_cfg_set, "fullduplex",
+		     "Update the constraint set propagating recursively to others constraints",
+		     xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb__surf_network_fullduplex, NULL);
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",

@@ -184,6 +184,14 @@ static void ws_action_set_priority(surf_action_t action, double priority)
     DIE_IMPOSSIBLE;
 }
 
+static int ws_get_latency_limited(surf_action_t action)
+{
+  if (action->model_type == surf_network_model)
+    return surf_network_model->get_latency_limited(action);
+  INFO0("You tried to ask if a non network action is limited by latency, aborting...");
+  DIE_IMPOSSIBLE;
+}
+
 static double ws_action_get_remains(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
@@ -291,6 +299,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->set_max_duration = ws_action_set_max_duration;
   surf_workstation_model->set_priority = ws_action_set_priority;
   surf_workstation_model->get_remains = ws_action_get_remains;
+  surf_workstation_model->get_latency_limited = ws_get_latency_limited;
 
   surf_workstation_model->extension.workstation.execute = ws_execute;
   surf_workstation_model->extension.workstation.sleep = ws_action_sleep;
