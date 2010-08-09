@@ -12,7 +12,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(tracing_surf,tracing,"Tracing Surf");
 
 #define VARIABLE_SEPARATOR '#'
 
-static xbt_dict_t hosts_id;
+static xbt_dict_t host_router_id; //name(char*) -> id(char*)
+static xbt_dict_t host_router_name; //id(char*) -> name (char*)
+
 static xbt_dict_t created_links;
 static xbt_dict_t link_bandwidth; //name(char*) -> bandwidth(double)
 static xbt_dict_t link_latency;   //name(char*) -> latency(double)
@@ -31,7 +33,8 @@ static xbt_dict_t gtnets_dst; /* %p (action) -> %s */
 
 void __TRACE_surf_init (void)
 {
-  hosts_id = xbt_dict_new();
+  host_router_id = xbt_dict_new();
+  host_router_name = xbt_dict_new();
   created_links = xbt_dict_new();
   link_bandwidth = xbt_dict_new();
   link_latency = xbt_dict_new();
@@ -336,7 +339,7 @@ void TRACE_surf_host_declaration (char *name, double power)
  * TRACE_surf_link_save_endpoints (link_name, src, dst): this function
  * creates the container of a link identified by link_name. It gets
  * bandwidth and latency information from the dictionaries previously
- * filled. The end points are obtained from the hosts_id dictionary.
+ * filled. The end points are obtained from the host_router_name dictionary.
  *
  * caller: end of parsing
  * main: create LINK containers, set initial bandwidth and latency values
@@ -350,8 +353,8 @@ void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst)
   if (!IS_TRACING) return;
   snprintf (srcidstr, 100, "%d", src);
   snprintf (dstidstr, 100, "%d", dst);
-  char *srcname = xbt_dict_get (hosts_id, srcidstr);
-  char *dstname = xbt_dict_get (hosts_id, dstidstr);
+  char *srcname = xbt_dict_get (host_router_name, srcidstr);
+  char *dstname = xbt_dict_get (host_router_name, dstidstr);
   snprintf (key, 100, "l%d-%d", src, dst);
 
   if (strcmp (link_name, "__loopback__")==0 ||
@@ -380,11 +383,11 @@ void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst)
  */
 void TRACE_surf_host_define_id (const char *name, int host_id)
 {
-  char strid[100];
   if (!IS_TRACING) return;
+  char strid[100];
   snprintf (strid, 100, "%d", host_id);
-  xbt_dict_set (hosts_id, name, strdup(strid), free);
-  xbt_dict_set (hosts_id, strid, strdup(name), free);
+  xbt_dict_set (host_router_id, name, xbt_strdup(strid), xbt_free);
+  xbt_dict_set (host_router_name, strid, xbt_strdup(name), xbt_free);
 }
 
 void TRACE_surf_host_set_power (double date, char *resource, double power)
