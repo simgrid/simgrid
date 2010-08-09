@@ -8,6 +8,7 @@ $ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=tracing/filename
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'GTNets'
+> [0.000000] [surf_network_gtnets_interface/INFO] TCP window maximum size : 20000
 > [S1:master:(1) 106.291000] [msg_test/INFO] Send completed (to C1). Transfer time: 106.291000	 Agregate bandwidth: 9408.134273
 > [S1:master:(1) 106.291000] [msg_test/INFO] Completed peer: C1 time: 106.291000
 > [C1:slave:(2) 106.291000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 9408.134273 ;  message from S1 to C1  with remaining : 0.000000

@@ -6,6 +6,7 @@ $ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation/mode
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'GTNets'
+> [0.000000] [surf_network_gtnets_interface/INFO] TCP window maximum size : 20000
 > [S1:master:(1) 0.300171] [msg_test/INFO] Send completed (to C1). Transfer time: 0.300171	 Agregate bandwidth: 33314.335278
 > [S1:master:(1) 0.300171] [msg_test/INFO] Completed peer: C1 time: 0.300171
 > [C1:slave:(3) 0.300171] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 33314.335278 ;  message from S1 to C1  with remaining : 0.000000

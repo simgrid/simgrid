@@ -7,6 +7,7 @@ $ gtnets/gtnets gtnets/waxman-p.xml gtnets/waxman-d.xml --cfg=workstation/model:
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'GTNets'
+> [0.000000] [surf_network_gtnets_interface/INFO] TCP window maximum size : 20000
 > [Gavrel:master:(245) 0.016724] [msg_test/INFO] Send completed (to Lafontaine). Transfer time: 0.016724	 Agregate bandwidth: 5979535.896806
 > [Gavrel:master:(245) 0.016724] [msg_test/INFO] Completed peer: Lafontaine time: 0.016724
 > [Lafontaine:slave:(246) 0.016724] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 59795.358968 ;  message from Ouellet to Amadeus  with remaining : 99000.000000
