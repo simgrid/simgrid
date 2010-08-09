@@ -83,7 +83,6 @@ GTSim::GTSim(int WindowSize){
   Queue::Default(*default_red_queue_);
   delete default_red_queue_;
 
-  cout << "Set default window size to " << wsize << endl;
   TCP::DefaultAdvWin(wsize);
   TCP::DefaultSegSize(1000);
   TCP::DefaultTxBuffer(128000);
