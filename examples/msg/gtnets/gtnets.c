@@ -185,6 +185,7 @@ int main(int argc, char *argv[])
   }
 
   TRACE_start ();
+  TRACE_declare_mark ("endmark");
 
   res = test_all(argv[1], argv[2]);
 
