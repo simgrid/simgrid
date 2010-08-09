@@ -269,6 +269,7 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_register(&_surf_cfg_set, "fullduplex",
 		     "Update the constraint set propagating recursively to others constraints",
 		     xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb__surf_network_fullduplex, NULL);
+    xbt_cfg_set_int(_surf_cfg_set, "fullduplex", default_value_int);
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",

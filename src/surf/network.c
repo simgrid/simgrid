@@ -20,7 +20,7 @@ double sg_bandwidth_factor = 1.0;  /* default value; can be set by model or from
 double sg_weight_S_parameter = 0.0;/* default value; can be set by model or from command line */
 
 double sg_tcp_gamma = 0.0;
-int sg_network_fullduplex = 1;
+int sg_network_fullduplex = 0;
 
 
 /******************************************************************************/
