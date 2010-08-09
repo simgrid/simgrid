@@ -21,6 +21,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 {
   static int link_count = -1;
   network_link_GTNETS_t gtnets_link;
+  network_link_GTNETS_t gtnets_link_friend;
   int tmp_idsrc=-1;
   int tmp_iddst=-1;
   char *name_friend;
@@ -30,53 +31,38 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
     return;
   }
 
+#ifdef HAVE_TRACING
+  TRACE_surf_link_declaration (name, bw, lat);
+#endif
+
   DEBUG1("Scanning link name %s", name);
   sscanf(name, "%d_%d", &tmp_idsrc, &tmp_iddst);
   DEBUG2("Link name split into %d and %d", tmp_idsrc, tmp_iddst);
 
   xbt_assert0( (tmp_idsrc!=-1)&&(tmp_idsrc!=-1), "You need to respect fullduplex convention x_y for xml link id.");
 
-  name_normal = (char *)calloc(strlen(name), sizeof(char));
   name_friend = (char *)calloc(strlen(name), sizeof(char));
+  sprintf(name_friend, "%d_%d", tmp_iddst, tmp_idsrc);
 
-  if(tmp_idsrc < tmp_iddst){
-	  sprintf(name_normal, "%d_%d", tmp_idsrc, tmp_iddst);
-	  sprintf(name_friend, "%d_%d", tmp_iddst, tmp_idsrc);
-  }else{
-	  sprintf(name_normal, "%d_%d", tmp_iddst, tmp_idsrc);
-	  sprintf(name_friend, "%d_%d", tmp_idsrc, tmp_iddst);
-  }
-
-  gtnets_link = xbt_dict_get_or_null(surf_network_model->resource_set, name_normal);
-
-  if (gtnets_link) {
-    DEBUG3("Link already added as friend normal=%s friend=%s (#%d)", name_normal, name_friend, ((network_link_GTNETS_t)gtnets_link)->id );
-    return;
-  }
-
-  link_count++;
-
-  DEBUG4("Adding new link, linkid %d, name %s, latency %g, bandwidth %g", link_count, name, lat, bw);
-
-  if (gtnets_add_link(link_count, bw, lat)) {
-    xbt_assert0(0, "Cannot create GTNetS link");
-  }
-
-  /* KF: Insert entry in the dictionary */
   gtnets_link = xbt_new0(s_network_link_GTNETS_t, 1);
   gtnets_link->generic_resource.name = name;
   gtnets_link->generic_resource.properties = props;
   gtnets_link->bw_current = bw;
   gtnets_link->lat_current = lat;
-  gtnets_link->id = link_count;
-#ifdef HAVE_TRACING
-  TRACE_surf_link_declaration (name, bw, lat);
-#endif
-  xbt_dict_set(surf_network_model->resource_set, name_normal, gtnets_link,
-               surf_resource_free);
 
-  xbt_dict_set(surf_network_model->resource_set, name_friend, gtnets_link,
-               surf_resource_free);
+  if((gtnets_link_friend=xbt_dict_get_or_null(surf_network_model->resource_set, name_friend))) {
+    gtnets_link->id = gtnets_link_friend->id;
+  } else {
+    link_count++;
+
+    DEBUG4("Adding new link, linkid %d, name %s, latency %g, bandwidth %g", link_count, name, lat, bw);
+    if (gtnets_add_link(link_count, bw, lat)) {
+      xbt_assert0(0, "Cannot create GTNetS link");
+    }
+    gtnets_link->id = link_count;
+  }
+  xbt_dict_set(surf_network_model->resource_set, name, gtnets_link,
+      surf_resource_free);
 }
 
 static void route_new(int src_id, int dst_id, xbt_dynar_t links,int nb_link)
