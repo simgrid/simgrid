@@ -321,6 +321,7 @@ set(AMOK_SRC
 set(LUA_SRC
 	src/simix/smx_context_lua.c
 	src/bindings/lua/simgrid_lua.c
+	src/bindings/lua/lua_stub_generator.c
 )
 
 set(TRACING_SRC

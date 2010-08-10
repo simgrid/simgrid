@@ -13,6 +13,7 @@
 #include "simdag/simdag.h"
 #include <gras.h>
 #include "xbt.h"
+#include "lua_stub_generator.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 
@@ -681,6 +682,77 @@ static int surf_parse_bypass_application()
 	  return 0;
 }
 
+
+/**
+ *  Generate Gras Templates File from lua
+ */
+
+xbt_dict_t process_function_set;
+xbt_dynar_t process_list;
+xbt_dict_t machine_set;
+static s_process_t process;
+
+void s_process_free(void *process)
+{
+  s_process_t *p = (s_process_t *) process;
+  int i;
+  for (i = 0; i < p->argc; i++)
+    free(p->argv[i]);
+  free(p->argv);
+  free(p->host);
+}
+
+static int gras_add_process_function(lua_State *L)
+{
+	const char * arg;
+	const char* process_host = luaL_checkstring(L,1);
+	const char *process_function = luaL_checkstring(L,2);
+
+	if(xbt_dict_is_empty(machine_set) || xbt_dict_is_empty(process_function_set)
+			|| xbt_dynar_is_empty(process_list))
+		{
+		  process_function_set = xbt_dict_new();
+		  process_list = xbt_dynar_new(sizeof(s_process_t), s_process_free);
+		  machine_set = xbt_dict_new();
+		}
+
+	xbt_dict_set(machine_set,process_host, NULL, NULL);
+	xbt_dict_set(process_function_set,process_function, NULL, NULL);
+
+	process.argc = 1;
+	process.argv = xbt_new(char *, 1);
+	process.argv[0] = xbt_strdup(process_function);
+	process.host = strdup(process_host);
+
+	lua_pushnil(L);
+	while (lua_next(L,3) != 0) {
+		arg = lua_tostring(L, -1);
+		process.argc++;
+		process.argv = xbt_realloc(process.argv, (process.argc) * sizeof(char *));
+		process.argv[(process.argc) - 1] = xbt_strdup(arg);
+
+		DEBUG2("index = %f , arg = %s \n",lua_tonumber(L, -2),lua_tostring(L, -1));
+		lua_pop(L, 1);
+		}
+	lua_pop(L, 1);
+	//add to the process list
+	xbt_dynar_push(process_list, &process);
+
+	return 0;
+
+}
+
+
+static int gras_generate(lua_State *L)
+{
+  const char *project_name = luaL_checkstring(L,1);
+  generate_sim(project_name);
+  generate_rl(project_name);
+  generate_makefile_local(project_name);
+
+  return 0;
+}
+
 //***********Register Methods *******************************************//
 /*
  * Host Methods
@@ -835,7 +907,7 @@ static int sd_register_platform(lua_State *L)
  */
 static int gras_register_platform(lua_State *L)
 {
-	/* Tell Simgrid we dont wanna use its parser*/
+	/* Tell Simgrid we dont wanna use surf parser*/
 	surf_parse = surf_parse_bypass_platform;
 	gras_create_environment(NULL);
 	return 0;
@@ -878,6 +950,9 @@ static const luaL_Reg simgrid_funcs[] = {
     { "msg_register_application",msg_register_application},
     { "gras_register_platform",gras_register_platform},
     { "gras_register_application",gras_register_application},
+    /* gras sub generator method*/
+    {"gras_set_process_function",gras_add_process_function},
+    {"gras_generate",gras_generate},
     { NULL, NULL }
 };
 
