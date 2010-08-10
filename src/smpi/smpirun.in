@@ -54,6 +54,11 @@ while true; do
       shift 1
    ;;
 
+   "-trace")
+   	TRACEOPT="$2"
+   	  shift 2
+   ;;
+
    "-keep-temps")
 	KEEP="true"
       shift 1
@@ -61,7 +66,7 @@ while true; do
 
    "-help" | "--help" | "-h")
       echo "usage:"
-      echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+      echo "$0 [-quiet] [-keep-temps] [-trace <tracefile>] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
       echo "or (deprecated usage):"
       echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
       echo
@@ -190,10 +195,18 @@ cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
 APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
 
+##---------------------- SMPI TRACING OPTIONS ---------------------------------
+  if [ -n "${TRACEOPT}" ]; then
+    TRACEOPTIONS="--cfg=tracing/filename:${TRACEOPT} --cfg=tracing/smpi:1"
+  else
+    TRACEOPTIONS=""
+  fi
+##---------------------- end SMPI TRACING OPTIONS ---------------------------------
+
 if [ -n "${KEEP}" ] ; then
-  echo ${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+  echo ${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
 fi
-${EXEC} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
 
 if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
