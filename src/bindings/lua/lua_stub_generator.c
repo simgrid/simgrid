@@ -142,7 +142,6 @@ void generate_sim(const char *project)
           "    fprintf(stderr, \"Usage: lua platform_script.lua [--log=...]\\n\");\n"
           "    exit(1);\n" "  }\n" "\n");
   fprintf(OUT,
-          "  gras_load_platform_script(argv[1]);\n"
           "\n" "  /*  Application deployment */\n");
   xbt_dict_foreach(process_function_set, cursor, key, data) {
     fprintf(OUT, "  gras_function_register(\"%s\", launch_%s);\n", key, key);
