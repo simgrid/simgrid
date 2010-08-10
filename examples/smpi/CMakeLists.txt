@@ -25,6 +25,7 @@ add_executable(reduce reduce.c)
 add_executable(split split.c)
 add_executable(mvmul mvmul.c)
 add_executable(smpi_sendrecv sendrecv.c)
+add_executable(smpi_traced smpi_traced.c)
 
 target_link_libraries(alltoall2 m simgrid smpi )
 target_link_libraries(alltoall_basic m simgrid smpi )
@@ -43,6 +44,7 @@ target_link_libraries(reduce m simgrid smpi )
 target_link_libraries(split m simgrid smpi )
 target_link_libraries(mvmul m simgrid smpi )
 target_link_libraries(smpi_sendrecv m simgrid smpi )
+target_link_libraries(smpi_traced m simgrid smpi )
 
 add_custom_command(TARGET smpi_sendrecv
   POST_BUILD
