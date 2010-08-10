@@ -68,6 +68,36 @@ SimGrid (3.5) unstable; urgency=low
    'make package' compiles a binary archive (not well tested)
  * Compile java files only on need
 
+ Tracing:
+ * Tracing system
+   - tracing API for MSG changes: TRACE_start has no
+     longer parameters, the trace file is supplied through
+     an option passed to simulator. Categories declaration
+     and utilization remain the same. The following options
+     are supported:
+        --cfg=tracing/filename:msg.trace
+        --cfg=tracing/platform:1      (categorized resource use)
+        --cfg=tracing/msg/task:1      (task creation)
+        --cfg=tracing/msg/process:1   (process creation, migration)
+        --cfg=tracing/msg/volume:1    (volume of msg send/recv)
+        --cfg=tracing/smpi:1          (smpi interface tracing)
+   - examples of examples/msg/tracing updated
+    
+ * Tracing the MPI interface implemented by SMPI
+   - Collective operations are traced with states
+   - Point-to-Point operations are traced with states/links
+   - Tracing activated by a parameter "-trace filename" passed
+     to smpirun during execution (considering that simgrid
+     is compiled with tracing enabled)
+   - To run the simulation with gdb, the simulator
+     accepts --cfg=tracing/smpi:1 to trace SMPI
+   - tesh files to check if smpi tracing is ok
+
+ * GTNetS tracing re-worked
+   - adaptation to the tracing system of GTNets to cope
+     with modifications regarding the fullduplex mode
+   - new tesh files to check if gtnets tracing is ok
+
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
 
 SimGrid (3.4.1) stable; urgency=low
