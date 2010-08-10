@@ -199,6 +199,9 @@ if(enable_smpi)
 # smpi examples
 ADD_TEST(smpi-bcast 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/bcast.tesh)
 ADD_TEST(smpi-reduce 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/reduce.tesh)
+if(HAVE_TRACING)
+  ADD_TEST(smpi-tracing-ptp ${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/smpi_traced.tesh)
+endif(HAVE_TRACING)
 endif(enable_smpi)
 
 if(HAVE_GTNETS)
