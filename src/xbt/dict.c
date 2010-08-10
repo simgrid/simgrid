@@ -89,7 +89,7 @@ void xbt_dict_free(xbt_dict_t * dict)
  */
 XBT_INLINE unsigned int xbt_dict_size(xbt_dict_t dict)
 {
-  return dict->count;
+  return (dict ? (unsigned int) dict->count : (unsigned int) 0);
 }
 
 /**
@@ -642,7 +642,7 @@ void xbt_dict_dump_output_string(void *s)
  */
 XBT_INLINE int xbt_dict_is_empty(xbt_dict_t dict)
 {
-	return (xbt_dict_length(dict) == 0);
+	return (xbt_dict_size(dict) == 0);
 }
 
 /**
