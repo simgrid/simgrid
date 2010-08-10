@@ -123,6 +123,8 @@ void TRACE_smpi_ptp_out (int rank, int src, int dst, const char *operation)
 
 void TRACE_smpi_send (int rank, int src, int dst)
 {
+  if (!IS_TRACING_SMPI) return;
+
   char key[100], str[100];
   _TRACE_smpi_put_key (src, dst, key, 100);
   pajeStartLink (SIMIX_get_clock(), "MPI_LINK", "0", "PTP",
@@ -131,6 +133,8 @@ void TRACE_smpi_send (int rank, int src, int dst)
 
 void TRACE_smpi_recv (int rank, int src, int dst)
 {
+  if (!IS_TRACING_SMPI) return;
+
   char key[100], str[100];
   _TRACE_smpi_get_key (src, dst, key, 100);
   pajeEndLink (SIMIX_get_clock(), "MPI_LINK", "0", "PTP",
