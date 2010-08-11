@@ -1,6 +1,6 @@
-/* gras_stub_generator - creates the main() to use a GRAS program           */
+/* lua_stub_generator - creates the main() to use a GRAS program           */
 
-/* Copyright (c) 2005, 2006, 2007, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2010. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -20,11 +20,6 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-
-//XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen, gras, "lua Stub generator");
-
-//to geretae associed files
-//XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(stubgen);
 
 
 #define WARN "/***********\n * DO NOT EDIT! THIS FILE HAS BEEN AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n"
@@ -81,7 +76,7 @@ const char *SIM_PREEMBULE =
 
 const char *SIM_MAIN_POSTEMBULE = "\n"
   "\n"
-  "  gras_load_platform_script(argv[1]);\n"
+  "  gras_load_environment_script(argv[1]);\n"
   "\n"
   "  /*  Run the simulation */\n"
   "  gras_main();\n"
@@ -94,8 +89,6 @@ const char *SIM_MAIN_POSTEMBULE = "\n"
 /***************************************
  * generator functions
  ***************************************/
-
-
 
 void generate_sim(const char *project)
 {
@@ -129,7 +122,6 @@ void generate_sim(const char *project)
   xbt_dict_foreach(process_function_set, cursor, key, data) {
     fprintf(OUT, SIM_LAUNCH_FUNC, key, key);
   }
-  fprintf(OUT, "\n%s\n", warning);
 
   fprintf(OUT, "%s", "/* specific to Borland Compiler */\n"
           "#ifdef __BORLANDDC__\n" "#pragma argsused\n" "#endif\n\n");
@@ -154,6 +146,7 @@ void generate_sim(const char *project)
 /**********************************************/
 /**** Generate the file for the real life *****/
 /**********************************************/
+
 void generate_rl(const char *project)
 {
   xbt_dict_cursor_t cursor = NULL;
@@ -171,7 +164,6 @@ void generate_rl(const char *project)
     OUT = fopen(filename, "w");
     xbt_assert1(OUT, "Unable to open %s for writing", filename);
 
-    fprintf(OUT, "\n%s\n", warning);
     fprintf(OUT, "/* specific to Borland Compiler */\n"
             "#ifdef __BORLANDC__\n"
             "#pragma hdrstop\n"
@@ -194,7 +186,6 @@ void generate_rl(const char *project)
             "  _gras_procname = \"%s\";\n"
             "  errcode=%s(argc,argv);\n"
             " \n" "  return errcode;\n" "}\n", key, key, key);
-    fprintf(OUT, "\n%s\n", warning);
     fclose(OUT);
     free(filename);
   }
@@ -262,9 +253,6 @@ void generate_makefile_am(const char *project)
     fprintf(OUT, " ");
   }
   fprintf(OUT, SIM_SOURCENAME, project);
-  /*fprintf(OUT, ": %s\n", deployment);
-  fprintf(OUT, "\tgras_stub_generator %s %s >/dev/null\n", project,
-          deployment);*/
   fclose(OUT);
 }
 
