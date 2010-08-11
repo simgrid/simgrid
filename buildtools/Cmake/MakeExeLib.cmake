@@ -53,9 +53,11 @@ if(HAVE_LUA)
 	  OUTPUT ${PROJECT_DIRECTORY}/examples/lua/simgrid.so 
 	  OUTPUT ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.so
 	  OUTPUT ${PROJECT_DIRECTORY}/examples/simdag/simgrid.so
+	  OUTPUT ${PROJECT_DIRECTOTY}/examples/gras/console/simgrid.so
 	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so
 	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.so 
 	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/simdag/simgrid.so 
+	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/gras/console/simgrid.so
 	  COMMENT "Generating libsimgrid.so link for binding lua..."
 	)
 
@@ -135,6 +137,7 @@ add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/all2all)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/pmm)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/synchro)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/properties)
+add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/console)
 
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/properties)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/actions)
