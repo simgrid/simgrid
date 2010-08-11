@@ -23,7 +23,6 @@ add_custom_command(
   					OUTPUT 	${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c 
          					${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c 
 	 						${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
-  					DEPENDS lua ${CMAKE_CURRENT_SOURCE_DIR}/ping_generator.lua
   					COMMAND lua ${CMAKE_CURRENT_SOURCE_DIR}/ping_generator.lua
 					)
 ### Add definitions for compile
