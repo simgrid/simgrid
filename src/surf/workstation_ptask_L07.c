@@ -910,12 +910,11 @@ static void ptask_model_init_internal(void)
   surf_workstation_model->extension.workstation.link_shared = ptask_link_shared;
   surf_workstation_model->extension.workstation.get_properties =
     surf_resource_properties;
-  //FIXME
-  /*surf_workstation_model->extension.workstation.link_create_resource =
+  surf_workstation_model->extension.workstation.link_create_resource =
 	workstation_link_create_resource;
   surf_workstation_model->extension.workstation.cpu_create_resource =
 	ptask_cpu_create_resource;
-  surf_workstation_model->extension.workstation.add_traces = ptask_add_traces;*/
+  surf_workstation_model->extension.workstation.add_traces = ptask_add_traces;
 
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new();
