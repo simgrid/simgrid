@@ -51,9 +51,8 @@ void routing_model_create(size_t size_of_links, void* loopback) {
   }
   fprintf(stderr,"Routing model %s not found. Existing models:\n",wanted);
   for (cpt=0;models[cpt].name;cpt++)
-    if (!strcmp(wanted,models[cpt].name))
-      fprintf(stderr,"   %s: %s\n",models[cpt].name,models[cpt].desc);
-  exit(1);
+    fprintf(stderr,"   %s: %s\n",models[cpt].name,models[cpt].desc);
+  xbt_die("Invalid model.");
 }
 
 /* ************************************************************************** */
