@@ -166,6 +166,21 @@ static void net_parse_link_init(void)
 
 }
 
+static void net_create_resource(char *name,
+        double bw_initial,
+        tmgr_trace_t bw_trace,
+        double lat_initial,
+        tmgr_trace_t lat_trace,
+        e_surf_resource_state_t
+        state_initial,
+        tmgr_trace_t state_trace,
+        e_surf_link_sharing_policy_t policy,
+        xbt_dict_t properties)
+{
+    	net_link_new(name, bw_initial, bw_trace,
+	           lat_initial, lat_trace, state_initial, state_trace,
+	           policy, xbt_dict_new());
+}
 static void net_add_traces(void)
 {
   xbt_dict_cursor_t cursor = NULL;
@@ -620,38 +635,6 @@ static void net_action_set_max_duration(surf_action_t action, double duration)
   action->max_duration = duration;
 }
 
-
-/**
- * FIXME : this should be done in the binding code !!
- */
-void network_create_resource(char *name,
-        double initial_bandwidth,double initial_latency)
-{
-
-	char* name_link;
-	double bw_initial;
-	tmgr_trace_t bw_trace;
-	double lat_initial;
-	tmgr_trace_t lat_trace;
-	e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
-	e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
-	tmgr_trace_t state_trace;
-
-	name_link = xbt_strdup(name);
-	bw_initial = initial_bandwidth;
-	bw_trace = tmgr_trace_new("");
-	lat_initial = initial_latency;
-	lat_trace = tmgr_trace_new("");
-	// FIXME Hard Coded Values
-	//state_initial_link = SURF_RESOURCE_ON;
-	//policy_initial_link = SURF_LINK_SHARED;
-	state_trace = tmgr_trace_new("");
-
-	net_link_new(name_link, bw_initial, bw_trace,
-	           lat_initial, lat_trace, state_initial_link, state_trace,
-	           policy_initial_link, xbt_dict_new());
-}
-
 static void net_finalize(void)
 {
   surf_model_exit(surf_network_model);
@@ -690,8 +673,8 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension.network.get_link_bandwidth =
     net_get_link_bandwidth;
   surf_network_model->extension.network.link_shared = net_link_shared;
-  surf_network_model->extension.network.create_resource = network_create_resource;
   surf_network_model->extension.network.add_traces = net_add_traces;
+  surf_network_model->extension.network.create_resource = net_create_resource;
 
   if (!network_maxmin_system)
     network_maxmin_system = lmm_system_new();

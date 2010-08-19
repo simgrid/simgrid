@@ -31,11 +31,6 @@ extern int sg_network_fullduplex;
 
 extern const char *surf_action_state_names[6];
 
-typedef enum {
-  SURF_LINK_SHARED = 1,
-  SURF_LINK_FATPIPE = 0
-} e_surf_link_sharing_policy_t;
-
 typedef struct surf_model_private {
   int (*resource_used) (void *resource_id);
   /* Share the resources to the actions and return in how much time

@@ -22,6 +22,11 @@ SG_BEGIN_DECL()
        SURF_RESOURCE_OFF = 0              /**< Down & broken     */
      } e_surf_resource_state_t;
 
+     typedef enum {
+       SURF_LINK_SHARED = 1,
+       SURF_LINK_FATPIPE = 0
+     } e_surf_link_sharing_policy_t;
+
 /** @Brief Specify that we use that action */
 XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
 /** @brief Creates a new action.
@@ -37,8 +42,6 @@ XBT_PUBLIC(void *) surf_action_new(size_t size, double cost,
 /**
  * FIXME : still improvaleb [this should be done in the binding code]
  */
-XBT_PUBLIC(void) network_create_resource(char *name,
-        double initial_bandwidth,double initial_latency);
 
 XBT_PUBLIC(void) workstation_link_create_resource(char *name,
         double initial_bandwidth,double initial_latency);
@@ -187,8 +190,17 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
        double (*get_link_bandwidth) (const void *link);
        double (*get_link_latency) (const void *link);
        int (*link_shared) (const void *link);
-       void (*create_resource) (char *name,double bw_initial,double lat_initial);
        void (*add_traces)(void);
+       void (*create_resource)(char *name,
+               double bw_initial,
+               tmgr_trace_t bw_trace,
+               double lat_initial,
+               tmgr_trace_t lat_trace,
+               e_surf_resource_state_t
+               state_initial,
+               tmgr_trace_t state_trace,
+               e_surf_link_sharing_policy_t policy,
+               xbt_dict_t properties);
      } s_surf_model_extension_network_t;
 
      /** \brief Workstation model extension public
@@ -219,13 +231,17 @@ XBT_PUBLIC_DATA(routing_t) used_routing;
        xbt_dict_t(*get_properties) (const void *resource);
        void (*link_create_resource) (char *name,double bw_initial,double lat_initial);
        void (*cpu_create_resource)(char *name, double power_peak,
-                      double power_scale,
-                      tmgr_trace_t power_trace,
-                      e_surf_resource_state_t state_initial,
-                      tmgr_trace_t state_trace,
-                      xbt_dict_t cpu_properties);
+           	                       double power_scale,
+           	                       tmgr_trace_t power_trace,
+           	                       e_surf_resource_state_t state_initial,
+           	                       tmgr_trace_t state_trace,
+           	                       xbt_dict_t cpu_properties);
        void (*add_traces) (void);
+
      } s_surf_model_extension_workstation_t;
+
+
+
 
 /** \brief Model datatype
  *  \ingroup SURF_models
@@ -686,10 +702,17 @@ XBT_PUBLIC(void) surf_wsL07_host_create_resource(char *name, double power_peak,
 /**
  * create link resource
  * see surfxml_parse.c
- * FIXME : shoudl have the same prototype as net_link_new
  */
 XBT_PUBLIC(void) surf_link_create_resource(char *name,
-        double bw_initial,double lat_initial);
+        double bw_initial,
+        tmgr_trace_t bw_trace,
+        double lat_initial,
+        tmgr_trace_t lat_trace,
+        e_surf_resource_state_t
+        state_initial,
+        tmgr_trace_t state_trace,
+        e_surf_link_sharing_policy_t policy,
+        xbt_dict_t properties);
 
 
 XBT_PUBLIC(void) surf_wsL07_link_create_resource(char *name,

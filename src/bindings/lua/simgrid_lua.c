@@ -324,9 +324,16 @@ typedef struct t_host_attr
 
 typedef struct t_link_attr
 {
+	//mandatory attributes
 	const char* id;
 	double bandwidth;
 	double latency;
+	// Optional attributes
+	const char* bandwidth_trace;
+	const char* latency_trace;
+	const char*	state_trace;
+	int state_initial;
+	int policy;
 }link_attr,*p_link_attr;
 
 typedef struct t_route_attr
@@ -375,6 +382,44 @@ static void create_host(const char* id,double power_peak,double power_sc,
 					       power_trace, state_initial, state_trace, current_property_set);
 
 }
+
+/**
+ * create link resource via network model
+ */
+static void create_link(const char *name,
+        double bw_initial,const char *trace,double lat_initial,
+        const char* latency_trace,int state_init, const char* state_trace,int policy)
+{
+	tmgr_trace_t bw_trace;
+	tmgr_trace_t lat_trace;
+	e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
+	e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
+	tmgr_trace_t st_trace;
+	if(trace)
+		bw_trace = tmgr_trace_new(trace);
+	else
+		bw_trace = tmgr_trace_new("");
+
+	if(latency_trace)
+		lat_trace = tmgr_trace_new(latency_trace);
+	else
+		lat_trace = tmgr_trace_new("");
+
+	if(state_trace)
+		st_trace = tmgr_trace_new(state_trace);
+	else
+		st_trace = tmgr_trace_new("");
+
+	if(state_init == -1)
+		state_initial_link = SURF_RESOURCE_OFF;
+	if(policy == -1)
+		policy_initial_link = SURF_LINK_FATPIPE;
+
+	surf_link_create_resource(xbt_strdup(name), bw_initial, bw_trace,
+	           lat_initial, lat_trace, state_initial_link, st_trace,
+	           policy_initial_link, xbt_dict_new());
+}
+
 
 /*
  *create host resource via workstation_ptask_L07 model [for SimDag]
@@ -488,6 +533,11 @@ static int Link_new(lua_State *L) // (id,bandwidth,latency)
 
 	const char* id;
 	double bandwidth,latency;
+	const char* bandwidth_trace;
+	const char* latency_trace;
+	const char* state_trace;
+	int state_initial,policy;
+
 	//get values from the table passed as argument
 	if (lua_istable(L,-1)) {
 	            // get Id Value
@@ -508,6 +558,39 @@ static int Link_new(lua_State *L) // (id,bandwidth,latency)
 	            latency = lua_tonumber(L,-1);
 	            lua_pop(L,1);
 
+	            /*Optional Arguments  */
+
+	            //get bandwidth_trace value
+	            lua_pushstring(L,"bandwidth_trace");
+	            lua_gettable(L, -2 );
+	            bandwidth_trace = lua_tostring(L,-1);
+	            lua_pop(L,1);
+
+	            //get latency_trace value
+	            lua_pushstring(L,"latency_trace");
+	            lua_gettable(L, -2 );
+	            latency_trace = lua_tostring(L,-1);
+	            lua_pop(L,1);
+
+	            //get state_trace value
+	            lua_pushstring(L,"state_trace");
+	            lua_gettable(L, -2 );
+	            state_trace = lua_tostring(L,-1);
+	            lua_pop(L,1);
+
+				//get state_initial value
+	            lua_pushstring(L,"state_initial");
+	            lua_gettable(L, -2 );
+	            state_initial = lua_tonumber(L,-1);
+	            lua_pop(L,1);
+
+
+				//get policy value
+	            lua_pushstring(L,"policy");
+	            lua_gettable(L, -2 );
+	            policy = lua_tonumber(L,-1);
+	            lua_pop(L,1);
+
 	    } else {
 	            ERROR0("Bad Arguments to create link, Should be a table with named arguments");
 	            return -1;
@@ -517,6 +600,11 @@ static int Link_new(lua_State *L) // (id,bandwidth,latency)
 	link->id = id;
 	link->bandwidth = bandwidth;
 	link->latency = latency;
+	link->bandwidth_trace = bandwidth_trace;
+	link->latency_trace = latency_trace;
+	link->state_trace = state_trace;
+	link->state_initial= state_initial;
+	link->policy = policy;
 	xbt_dynar_push(link_list_d,&link);
 	return 0;
 }
@@ -609,7 +697,11 @@ static int surf_parse_bypass_platform()
 	//add Links
 	xbt_dynar_foreach(link_list_d,i,p_link)
 	{
-		surf_link_create_resource((char*)p_link->id,p_link->bandwidth,p_link->latency);
+		/*(const char *name,
+        double bw_initial,const char *trace,double lat_initial,
+        const char* latency_trace,int state_init, const char* state_trace,int policy)*/
+		create_link(p_link->id,p_link->bandwidth,p_link->bandwidth_trace,p_link->latency,
+				p_link->latency_trace,p_link->state_initial,p_link->state_trace,p_link->policy);
 	}
 	// add route
 	xbt_dynar_foreach(route_list_d,i,p_route)

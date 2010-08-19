@@ -1199,10 +1199,18 @@ void surf_wsL07_host_create_resource(char *name, double power_peak,
  */
 void surf_link_create_resource(char *name,
         double bw_initial,
-        double lat_initial)
+        tmgr_trace_t bw_trace,
+        double lat_initial,
+        tmgr_trace_t lat_trace,
+        e_surf_resource_state_t
+        state_initial,
+        tmgr_trace_t state_trace,
+        e_surf_link_sharing_policy_t policy,
+        xbt_dict_t properties)
 {
 	return surf_network_model->extension.network.
-	     create_resource(name,bw_initial,lat_initial);
+	     create_resource(name,bw_initial,bw_trace,lat_initial,lat_trace,
+	    		 state_initial,state_trace,policy,properties);
 
 }
 
