@@ -451,6 +451,45 @@ static void create_host_wsL07(const char* id,double power_peak,double power_sc,
 					       power_trace, state_initial, state_trace, current_property_set);
 
 }
+
+/**
+ * create link resource via workstation_ptask_L07 model [for SimDag]
+ */
+
+static void create_link_wsL07(const char *name,
+        double bw_initial,const char *trace,double lat_initial,
+        const char* latency_trace,int state_init, const char* state_trace,int policy)
+{
+	tmgr_trace_t bw_trace;
+	tmgr_trace_t lat_trace;
+	e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
+	e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
+	tmgr_trace_t st_trace;
+	if(trace)
+		bw_trace = tmgr_trace_new(trace);
+	else
+		bw_trace = tmgr_trace_new("");
+
+	if(latency_trace)
+		lat_trace = tmgr_trace_new(latency_trace);
+	else
+		lat_trace = tmgr_trace_new("");
+
+	if(state_trace)
+		st_trace = tmgr_trace_new(state_trace);
+	else
+		st_trace = tmgr_trace_new("");
+
+	if(state_init == -1)
+		state_initial_link = SURF_RESOURCE_OFF;
+	if(policy == -1)
+		policy_initial_link = SURF_LINK_FATPIPE;
+
+	surf_wsL07_link_create_resource(xbt_strdup(name), bw_initial, bw_trace,
+	           lat_initial, lat_trace, state_initial_link, st_trace,
+	           policy_initial_link, xbt_dict_new());
+}
+
 /*
  * add new host to platform hosts list
  */
@@ -697,9 +736,6 @@ static int surf_parse_bypass_platform()
 	//add Links
 	xbt_dynar_foreach(link_list_d,i,p_link)
 	{
-		/*(const char *name,
-        double bw_initial,const char *trace,double lat_initial,
-        const char* latency_trace,int state_init, const char* state_trace,int policy)*/
 		create_link(p_link->id,p_link->bandwidth,p_link->bandwidth_trace,p_link->latency,
 				p_link->latency_trace,p_link->state_initial,p_link->state_trace,p_link->policy);
 	}
@@ -744,7 +780,8 @@ static int surf_wsL07_parse_bypass_platform()
 	//add Links
 	xbt_dynar_foreach(link_list_d,i,p_link)
 	{
-		surf_wsL07_link_create_resource((char*)p_link->id,p_link->bandwidth,p_link->latency);
+		create_link_wsL07(p_link->id,p_link->bandwidth,p_link->bandwidth_trace,p_link->latency,
+						p_link->latency_trace,p_link->state_initial,p_link->state_trace,p_link->policy);
 	}
 	// add route
 	xbt_dynar_foreach(route_list_d,i,p_route)
