@@ -2304,21 +2304,21 @@ so  you can exchange any kind of data ( tables, matrix, strings … ) between pr
 
 \li set Hosts
 \verbatim
-  simgrid.Host.new("Tremblay",98095000);
-  simgrid.Host.new("Jupiter",76296000);
-  simgrid.Host.new("Fafard",76296000);
-  simgrid.Host.new("Ginette",48492000);
-  simgrid.Host.new("Bourassa",48492000);
+  simgrid.Host.new{id="Tremblay",power=98095000};
+  simgrid.Host.new{id="Jupiter",power=76296000};
+  simgrid.Host.new{id="Fafard",power=76296000};
+  simgrid.Host.new{id="Ginette",power=48492000};
+  simgrid.Host.new{id="Bourassa",power=48492000};
 \endverbatim
-  we use simgrid.Host.new(host_id,power) to instanciate our hosts.
+  we use simgrid.Host.new{id=id_host,power=power_host} to instanciate our hosts.
 
 \li set Links
 \verbatim
   for i=0,11 do
-    simgrid.Link.new(i,252750+ i*768,0.000270544+i*0.087);    --  some crazy values ;)
+    simgrid.Link.new{id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};    --  some crazy values ;)
   end
 \endverbatim
-  we used simgrid.Link.new(link_id,bandwidth,latency) with a simple for loop to create all links we need  ( much easier than XML hein ? )
+  we used simgrid.Link.new{id=link_id,bandwidth=bw,latency=lat} with a simple for loop to create all links we need (much easier than XML hein ?)
 
 \li set Routes
 \verbatim
