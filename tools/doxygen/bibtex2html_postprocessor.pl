@@ -6,6 +6,7 @@ while($line = <STDIN>) {
     chomp $line;
     if($line =~ /table width/) {
 	$line = <STDIN>;
+	chomp $line;
 	if($line =~ /height="50"/) {
 	    ## Skip preembule
 	    $write=1;
@@ -25,11 +26,13 @@ while($line = <STDIN>) {
 	    do {
 		$line = <STDIN>;
 		chomp $line;
-	    } while (($line =~ /</));
+	    } while (!($line =~ /table/));
 	    print "<h1>$title</h1>\n";
 	    next;
 	}
     }
+    $line =~ s/<ol>/<ul>/g;
+    $line =~ s/<\/ol>/<\/ul>/g;
 
     if($line =~ /Disclaimer:/ || $line =~ /body>/) {
 	$write=0;
