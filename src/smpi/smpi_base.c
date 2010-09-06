@@ -158,11 +158,16 @@ void smpi_mpi_sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int 
   }
 }
 
+int smpi_mpi_get_count(MPI_Status* status, MPI_Datatype datatype) {
+   return status->count / smpi_datatype_size(datatype);
+}
+
 static void finish_wait(MPI_Request* request, MPI_Status* status) {
   if(status != MPI_STATUS_IGNORE) {
     status->MPI_SOURCE = (*request)->src;
     status->MPI_TAG = (*request)->tag;
     status->MPI_ERROR = MPI_SUCCESS;
+    status->count = SIMIX_communication_get_dst_buf_size((*request)->pair);
   }
   print_request("finishing wait", *request);
   if((*request)->complete == 1) {

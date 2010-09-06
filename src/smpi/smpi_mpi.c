@@ -1465,8 +1465,9 @@ int MPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype s
 }
 
 
-int MPI_Get_processor_name( char *name, int *resultlen ) {
+int MPI_Get_processor_name(char* name, int* resultlen) {
   int retval = MPI_SUCCESS;
+
   smpi_bench_end(-1, NULL);
   strncpy( name , SIMIX_host_get_name(SIMIX_host_self()), MPI_MAX_PROCESSOR_NAME-1);
   *resultlen= strlen(name) > MPI_MAX_PROCESSOR_NAME ? MPI_MAX_PROCESSOR_NAME : strlen(name);
@@ -1475,3 +1476,25 @@ int MPI_Get_processor_name( char *name, int *resultlen ) {
   return retval;
 }
 
+int MPI_Get_count(MPI_Status* status, MPI_Datatype datatype, int* count) {
+  int retval = MPI_SUCCESS;
+  size_t size;
+
+  smpi_bench_end(-1, NULL);
+  if (status == NULL || count == NULL) {
+    retval = MPI_ERR_ARG;
+  } else if (datatype == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else {
+    size = smpi_datatype_size(datatype);
+    if (size == 0) {
+       *count = 0;
+    } else if (status->count % size != 0) {
+       retval = MPI_UNDEFINED;
+    } else {
+       *count = smpi_mpi_get_count(status, datatype);
+    }
+  }
+  smpi_bench_begin(-1, NULL);
+  return retval;
+}
