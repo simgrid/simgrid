@@ -160,7 +160,7 @@ XBT_PUBLIC(double) MPI_Wtime(void);
 XBT_PUBLIC(int) MPI_Address(void *location, MPI_Aint *address);
 
 XBT_PUBLIC(int) MPI_Type_free(MPI_Datatype* datatype);
-XBT_PUBLIC(int) MPI_Type_size(MPI_Datatype datatype, size_t* size);
+XBT_PUBLIC(int) MPI_Type_size(MPI_Datatype datatype, int* size);
 XBT_PUBLIC(int) MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint* extent);
 XBT_PUBLIC(int) MPI_Type_extent(MPI_Datatype datatype, MPI_Aint* extent);
 XBT_PUBLIC(int) MPI_Type_lb(MPI_Datatype datatype, MPI_Aint* disp);

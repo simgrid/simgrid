@@ -110,7 +110,7 @@ int MPI_Type_free(MPI_Datatype* datatype) {
   return retval;
 }
 
-int MPI_Type_size(MPI_Datatype datatype, size_t* size) {
+int MPI_Type_size(MPI_Datatype datatype, int* size) {
   int retval;
 
   smpi_bench_end(-1, NULL);
@@ -119,7 +119,7 @@ int MPI_Type_size(MPI_Datatype datatype, size_t* size) {
   } else if(size == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    *size = smpi_datatype_size(datatype);
+    *size = (int)smpi_datatype_size(datatype);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin(-1, NULL);
