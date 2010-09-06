@@ -24,13 +24,12 @@ set(SMPI_DEP "")
 
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME} -module")
-	ADD_CUSTOM_COMMAND(
-	  OUTPUT ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so
+	ADD_CUSTOM_TARGET(link_simgrid_ruby ALL
+	  DEPENDS simgrid
 	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so
 	  COMMENT "Generating libsimgrid.so link for binding ruby..."
-	)
-	ADD_CUSTOM_TARGET(link_simgrid_ruby ALL
-	                  DEPENDS simgrid ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.so)
+	  )
+	
 endif(HAVE_RUBY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -48,22 +47,17 @@ if(pthread)
 endif(pthread)
 
 if(HAVE_LUA)
-	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${liblua}")      
-    ADD_CUSTOM_COMMAND(
-	  OUTPUT ${PROJECT_DIRECTORY}/examples/lua/simgrid.so 
-	  OUTPUT ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.so
-	  OUTPUT ${PROJECT_DIRECTORY}/examples/simdag/simgrid.so
-	  OUTPUT ${PROJECT_DIRECTOTY}/examples/gras/console/simgrid.so
-	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so
-	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.so 
-	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/simdag/simgrid.so 
-	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/gras/console/simgrid.so
+	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${liblua}")   
+	  
+    ADD_CUSTOM_TARGET(link_simgrid_lua ALL
+      DEPENDS simgrid
+	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so #for test
+	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.so #for test
+	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/simdag/simgrid.so #for test
+	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/gras/console/simgrid.so #for compil
 	  COMMENT "Generating libsimgrid.so link for binding lua..."
 	)
-
-	ADD_CUSTOM_TARGET(link_simgrid_lua ALL
-	                  DEPENDS simgrid ${PROJECT_DIRECTORY}/examples/lua/simgrid.so)
-
+	
 endif(HAVE_LUA)
 
 if(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
