@@ -112,20 +112,15 @@ int smpi_datatype_copy(void* sendbuf, int sendcount, MPI_Datatype sendtype, void
   /* First check if we really have something to do */
   if(recvcount == 0) {
     retval = sendcount == 0 ? MPI_SUCCESS : MPI_ERR_TRUNCATE;
-  } else if(sendtype == recvtype) {
-    /* If same datatypes used, just copy. */
-   count = sendcount < recvcount ? sendcount : recvcount;
-   memcpy(recvbuf, sendbuf, smpi_datatype_size(sendtype) * count);
-   retval = sendcount > recvcount ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
- } else {
-   /* FIXME:  cases
-    * - If receive packed.
-    * - If send packed
-    * to be treated once we have the MPI_Pack things ...
-    **/
-   retval = MPI_SUCCESS;
- }
- return retval;
+  } else {
+     /* FIXME: treat packed cases */
+     sendcount *= smpi_datatype_size(sendtype);
+     recvcount *= smpi_datatype_size(recvtype);
+     count = sendcount < recvcount ? sendcount : recvcount;
+     memcpy(recvbuf, sendbuf, count);
+     retval = sendcount > recvcount ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
+  }
+  return retval;
 }
 
 typedef struct s_smpi_mpi_op {
