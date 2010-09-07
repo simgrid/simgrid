@@ -264,7 +264,11 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_register(&_surf_cfg_set, "model-check",
                      "Activate the model-checking of the \"simulated\" system (EXPERIMENTAL -- msg only for now)",
                      xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb_model_check, NULL);
-    xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int);
+    /*
+     FIXME: this function is not setting model-check to it's default value because
+     internally it calls to variable->cb_set that in this case is the function 
+     _surf_cfg_cb_model_check which sets it's value to 1 (instead of the defalut value 0)
+     xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
 
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "fullduplex",
