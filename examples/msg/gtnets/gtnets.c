@@ -108,6 +108,7 @@ int slave(int argc, char *argv[])
 
   id = atoi(argv[1]);
   sprintf(id_alias, "%d", id);
+  int trace_id = id;
 
   a = MSG_task_receive(&(task), id_alias);
 
@@ -145,8 +146,10 @@ int slave(int argc, char *argv[])
       }
 
     }
-	TRACE_mark ("endmark", "finished");
   }  
+  char mark[100];
+  snprintf (mark, 100, "flow_%d_finished", trace_id);
+  TRACE_mark ("endmark", mark);
 
   MSG_task_destroy(task);
   return 0;
