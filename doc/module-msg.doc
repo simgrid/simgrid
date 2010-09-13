@@ -201,12 +201,28 @@
 
     \dontinclude msg/icomms/peer2.c
 
-    \section MSG_ext_icomms_fct Waitall function for sender
+    \section MSG_ext_icomms_fct_Waitall Waitall function for sender
 
     The use of this function permit to send all messages and wait for the completion of all in one time.
 
     \skipline Sender function
     \until end_of_sender
+
+    \section MSG_ext_icomms_fct_Waitany Waitany function
+
+    The MSG_comm_waitany() function return the place of the first message send or receive from a xbt_dynar_t table.
+
+    \subsection MSG_ext_icomms_fct_Waitany_sender From a sender
+	We can use this function to wait all sended messages.
+    \dontinclude msg/icomms/peer3.c
+    \skipline Sender function
+    \until end_of_sender
+
+    \subsection MSG_ext_icomms_fct_Waitany_receiver From a receiver
+	We can also wait for the receiving of all messages.
+    \dontinclude msg/icomms/peer3.c
+    \skipline Receiver function
+    \until end_of_receiver
 
 */
 

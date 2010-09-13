@@ -410,6 +410,16 @@ MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
 			timeout);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Send a task on a channel.
+ *
+ * This function takes two parameter.
+ * \param task a #m_task_t to send on another location.
+ * \param alias the channel on which the agent should put this
+ task. This value has to be >=0 and < than the maximal number of
+ channels fixed with MSG_set_channel_number().
+ * \return the msg_comm_t communication.
+ */
 msg_comm_t MSG_task_isend(m_task_t task, const char *alias) {
 	simdata_task_t t_simdata = NULL;
 	m_process_t process = MSG_process_self();
@@ -441,6 +451,16 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias) {
 			task, sizeof(void*), &t_simdata->comm);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Listen on a channel for receiving a task from an asynchronous communication.
+ *
+ * It takes two parameters.
+ * \param task a memory location for storing a #m_task_t.
+ * \param alias the channel on which the agent should be
+ listening. This value has to be >=0 and < than the maximal
+ number of channels fixed with MSG_set_channel_number().
+ * \return the msg_comm_t communication.
+ */
 msg_comm_t MSG_task_irecv(m_task_t * task, const char *alias) {
 	smx_comm_t comm;
 	smx_rdv_t rdv = MSG_mailbox_get_by_alias(alias)->rdv;
@@ -467,12 +487,25 @@ msg_comm_t MSG_task_irecv(m_task_t * task, const char *alias) {
 	/* Try to receive it by calling SIMIX network layer */
 	return SIMIX_network_irecv(rdv, task, &size);
 }
-
+/** \ingroup msg_gos_functions
+ * \brief Test the status of a communication.
+ *
+ * It takes one parameter.
+ * \param comm the communication to test.
+ * \return the status of the communication:
+ * 		TRUE : the communication is completed
+ * 		FALSE: the communication is incompleted
+ * If the status is FALSE, don't forget to use MSG_process_sleep() after the test.
+ */
 int MSG_comm_test(msg_comm_t comm) {
 	return SIMIX_network_test(comm);
 }
-
-/* After received TRUE to MSG_comm_test() function we have to destroy the communication */
+/** \ingroup msg_gos_functions
+ * \brief After received TRUE to MSG_comm_test(), the communication must be destroyed.
+ *
+ * It takes one parameter.
+ * \param comm the communication to destroy.
+ */
 void MSG_comm_destroy(msg_comm_t comm) {
 	if(!(comm->src_proc == SIMIX_process_self()))
 	{
@@ -483,6 +516,14 @@ void MSG_comm_destroy(msg_comm_t comm) {
 	SIMIX_communication_destroy(comm);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Wait for the completion of a communication.
+ *
+ * It takes two parameters.
+ * \param comm the communication to wait.
+ * \param timeout Wait until the communication terminates or the timeout occurs
+ * \return MSG_error_t
+ */
 MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout) {
 	xbt_ex_t e;
 	MSG_error_t res = MSG_OK;
@@ -516,15 +557,14 @@ MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout) {
 	return res;
 }
 
-
-/* This function is called by a sender and permit to wait for each communication
- *
- * Param:
- * - msg_comm_t *comm a vector of communication
- * - int nb_elem is th esize of the comm vector
- * - timeout for each call of  MSG_comm_wait
- */
-
+/** \ingroup msg_gos_functions
+* \brief This function is called by a sender and permit to wait for each communication
+*
+* It takes three parameters.
+* \param comm a vector of communication
+* \param nb_elem is the size of the comm vector
+* \param timeout for each call of  MSG_comm_wait
+*/
 void MSG_comm_waitall(msg_comm_t *comm,int nb_elem, double timeout) {
 	int i=0;
 	for(i=0; i<nb_elem; i++)
@@ -532,7 +572,13 @@ void MSG_comm_waitall(msg_comm_t *comm,int nb_elem, double timeout) {
 		MSG_comm_wait(comm[i],timeout);
 	}
 }
-
+/** \ingroup msg_gos_functions
+* \brief This function wait for the first completed communication
+*
+* It takes on parameter.
+* \param comms a vector of communication
+* \return the position of the completed communication from the xbt_dynar_t.
+*/
 int MSG_comm_waitany(xbt_dynar_t comms) {
 	return SIMIX_network_waitany(comms);
 }

@@ -1068,12 +1068,23 @@ you still don't see how to do it, please come back to us...
 
 \subsubsection faq_MIA_asynchronous I want to do asynchronous communications in MSG
 
-Up until now, there is no asynchronous communications in MSG. However,
-you can create as many process as you want so you should be able to do
-whatever you want... I've written a queue module to help implementing
-some asynchronous communications at low cost (creating thousands of
-process only to handle communications may be problematic in term of
-performance at some point). I'll add it in the distribution asap.
+We can now use asynchronous communication in MSG by using function :
+
+	MSG_task_isend()
+	
+	MSG_task_irecv()
+	
+	MSG_comm_test()
+	
+	MSG_comm_wait()
+	
+	MSG_comm_waitall()
+	
+	MSG_comm_waitany()
+	
+	MSG_comm_destroy()
+	
+See page :\ref MSG_ex_asynchronous_communications
 
 \subsubsection faq_MIA_thread_synchronization I need to synchronize my MSG processes
 
