@@ -29,7 +29,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(stubgen);
 
-#ifdef _XBT_WIN32
+#ifdef __BORLANDDC__
 
 char *__gras_path = NULL;
 

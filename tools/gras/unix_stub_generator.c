@@ -24,8 +24,7 @@
 
 #include <stdarg.h>
 
-
-#ifdef _XBT_WIN32
+#ifdef __BORLANDC__
 /* stupid stubs so that it compiles on windows */
 void generate_sim(char *project)
 {
@@ -115,54 +114,54 @@ void generate_sim(char *project)
   char *key = NULL;
   void *data = NULL;
   char *filename = NULL;
-  FILE *OUT = NULL;
+  FILE *FICOUT = NULL;
 
   /* Output file: <projet>_simulator.c */
   filename = xbt_new(char, strlen(project) + strlen(SIM_SOURCENAME));
   sprintf(filename, SIM_SOURCENAME, project);
 
-  OUT = fopen(filename, "w");
+  FICOUT = fopen(filename, "w");
 
-  xbt_assert1(OUT, "Unable to open %s for writing", filename);
+  xbt_assert1(FICOUT, "Unable to open %s for writing", filename);
 
-  fprintf(OUT, "%s\n", warning);
-  fprintf(OUT, "%s", SIM_PREEMBULE);
-
-  xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, "int %s(int argc,char *argv[]);\n", key);
-  }
-
-  fprintf(OUT, "\n");
+  fprintf(FICOUT, "%s\n", warning);
+  fprintf(FICOUT, "%s", SIM_PREEMBULE);
 
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, "int launch_%s(int argc,char *argv[]);\n", key);
+    fprintf(FICOUT, "int %s(int argc,char *argv[]);\n", key);
   }
 
-  fprintf(OUT, "\n%s\n", warning);
+  fprintf(FICOUT, "\n");
 
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, SIM_LAUNCH_FUNC, key, key);
+    fprintf(FICOUT, "int launch_%s(int argc,char *argv[]);\n", key);
   }
-  fprintf(OUT, "\n%s\n", warning);
 
-  fprintf(OUT, "%s", "/* specific to Borland Compiler */\n"
+  fprintf(FICOUT, "\n%s\n", warning);
+
+  xbt_dict_foreach(process_function_set, cursor, key, data) {
+    fprintf(FICOUT, SIM_LAUNCH_FUNC, key, key);
+  }
+  fprintf(FICOUT, "\n%s\n", warning);
+
+  fprintf(FICOUT, "%s", "/* specific to Borland Compiler */\n"
           "#ifdef __BORLANDDC__\n" "#pragma argsused\n" "#endif\n\n");
 
-  fprintf(OUT, "%s", "int main (int argc,char *argv[]) {\n"
+  fprintf(FICOUT, "%s", "int main (int argc,char *argv[]) {\n"
           "\n"
           "  /*  Simulation setup */\n"
           "  gras_global_init(&argc,argv);\n"
           "  if (argc != 3) {\n"
           "    fprintf(stderr, \"Usage: %s platform.xml deployment.xml [--log=...]\\n\",argv[0]);\n"
           "    exit(1);\n" "  }\n" "\n");
-  fprintf(OUT,
+  fprintf(FICOUT,
           "  gras_create_environment(argv[1]);\n"
           "\n" "  /*  Application deployment */\n");
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, "  gras_function_register(\"%s\", launch_%s);\n", key, key);
+    fprintf(FICOUT, "  gras_function_register(\"%s\", launch_%s);\n", key, key);
   }
-  fprintf(OUT, "%s", SIM_MAIN_POSTEMBULE);
-  fclose(OUT);
+  fprintf(FICOUT, "%s", SIM_MAIN_POSTEMBULE);
+  fclose(FICOUT);
   free(filename);
 }
 
@@ -175,7 +174,7 @@ void generate_rl(char *project)
   char *key = NULL;
   void *data = NULL;
   char *filename = NULL;
-  FILE *OUT = NULL;
+  FILE *FICOUT = NULL;
 
   xbt_dict_foreach(process_function_set, cursor, key, data) {
     filename =
@@ -183,11 +182,11 @@ void generate_rl(char *project)
 
     sprintf(filename, RL_SOURCENAME, project, key);
 
-    OUT = fopen(filename, "w");
-    xbt_assert1(OUT, "Unable to open %s for writing", filename);
+    FICOUT = fopen(filename, "w");
+    xbt_assert1(FICOUT, "Unable to open %s for writing", filename);
 
-    fprintf(OUT, "\n%s\n", warning);
-    fprintf(OUT, "/* specific to Borland Compiler */\n"
+    fprintf(FICOUT, "\n%s\n", warning);
+    fprintf(FICOUT, "/* specific to Borland Compiler */\n"
             "#ifdef __BORLANDC__\n"
             "#pragma hdrstop\n"
             "#endif\n\n"
@@ -209,8 +208,8 @@ void generate_rl(char *project)
             "  _gras_procname = \"%s\";\n"
             "  errcode=%s(argc,argv);\n"
             " \n" "  return errcode;\n" "}\n", key, key, key);
-    fprintf(OUT, "\n%s\n", warning);
-    fclose(OUT);
+    fprintf(FICOUT, "\n%s\n", warning);
+    fclose(FICOUT);
     free(filename);
   }
 }
@@ -221,66 +220,66 @@ void generate_makefile_am(char *project, char *deployment)
   char *key = NULL;
   void *data = NULL;
   char *filename = NULL;
-  FILE *OUT = NULL;
+  FILE *FICOUT = NULL;
 
   filename = xbt_new(char, strlen(project) + strlen(MAKEFILE_FILENAME_AM));
   sprintf(filename, MAKEFILE_FILENAME_AM, project);
 
-  OUT = fopen(filename, "w");
-  xbt_assert1(OUT, "Unable to open %s for writing", filename);
+  FICOUT = fopen(filename, "w");
+  xbt_assert1(FICOUT, "Unable to open %s for writing", filename);
 
-  fprintf(OUT, "# AUTOMAKE variable definition\n");
-  fprintf(OUT, "INCLUDES= @CFLAGS_SimGrid@\n\n");
-  fprintf(OUT, "PROGRAMS=");
-  fprintf(OUT, SIM_BINARYNAME, project);
-
-  xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, " ");
-    fprintf(OUT, RL_BINARYNAME, project, key);
-  }
-
-  fprintf(OUT, "\n\n");
-  fprintf(OUT, SIM_SOURCENAME_SOURCES, project);
-  fprintf(OUT, "=\t");
-  fprintf(OUT, SIM_SOURCENAME, project);
-  fprintf(OUT, " %s.c\n", project);
-  fprintf(OUT, SIM_SOURCENAME_LDADD, project);
-  fprintf(OUT, "=\tpath/to/libsimgrid.a\n\n");
+  fprintf(FICOUT, "# AUTOMAKE variable definition\n");
+  fprintf(FICOUT, "INCLUDES= @CFLAGS_SimGrid@\n\n");
+  fprintf(FICOUT, "PROGRAMS=");
+  fprintf(FICOUT, SIM_BINARYNAME, project);
 
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, RL_SOURCENAME_SOURCES, project, key);
-    fprintf(OUT, "=\t");
-    fprintf(OUT, RL_SOURCENAME, project, key);
-    fprintf(OUT, " %s.c\n", project);
-    fprintf(OUT, RL_SOURCENAME_LDADD, project, key);
-    fprintf(OUT, "=\tpath/to/libgras.a\n\n");
+    fprintf(FICOUT, " ");
+    fprintf(FICOUT, RL_BINARYNAME, project, key);
   }
 
-  fprintf(OUT,
+  fprintf(FICOUT, "\n\n");
+  fprintf(FICOUT, SIM_SOURCENAME_SOURCES, project);
+  fprintf(FICOUT, "=\t");
+  fprintf(FICOUT, SIM_SOURCENAME, project);
+  fprintf(FICOUT, " %s.c\n", project);
+  fprintf(FICOUT, SIM_SOURCENAME_LDADD, project);
+  fprintf(FICOUT, "=\tpath/to/libsimgrid.a\n\n");
+
+  xbt_dict_foreach(process_function_set, cursor, key, data) {
+    fprintf(FICOUT, RL_SOURCENAME_SOURCES, project, key);
+    fprintf(FICOUT, "=\t");
+    fprintf(FICOUT, RL_SOURCENAME, project, key);
+    fprintf(FICOUT, " %s.c\n", project);
+    fprintf(FICOUT, RL_SOURCENAME_LDADD, project, key);
+    fprintf(FICOUT, "=\tpath/to/libgras.a\n\n");
+  }
+
+  fprintf(FICOUT,
           "\n# cleanup temps (allowing the user to add extra clean files)\n");
-  fprintf(OUT, "CLEANFILES?= \n");
-  fprintf(OUT, "CLEANFILES+= ");
-  fprintf(OUT, SIM_SOURCENAME, project);
+  fprintf(FICOUT, "CLEANFILES?= \n");
+  fprintf(FICOUT, "CLEANFILES+= ");
+  fprintf(FICOUT, SIM_SOURCENAME, project);
 
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, " ");
-    fprintf(OUT, RL_SOURCENAME, project, key);
+    fprintf(FICOUT, " ");
+    fprintf(FICOUT, RL_SOURCENAME, project, key);
   }
-  fprintf(OUT, "\n");
+  fprintf(FICOUT, "\n");
 
-  fprintf(OUT, "\n# generate temps\n");
-  fprintf(OUT,
+  fprintf(FICOUT, "\n# generate temps\n");
+  fprintf(FICOUT,
           "\n# A rule to generate the source file each time the deployment file changes\n");
 
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, RL_SOURCENAME, project, key);
-    fprintf(OUT, " ");
+    fprintf(FICOUT, RL_SOURCENAME, project, key);
+    fprintf(FICOUT, " ");
   }
-  fprintf(OUT, SIM_SOURCENAME, project);
-  fprintf(OUT, ": %s\n", deployment);
-  fprintf(OUT, "\tgras_stub_generator %s %s >/dev/null\n", project,
+  fprintf(FICOUT, SIM_SOURCENAME, project);
+  fprintf(FICOUT, ": %s\n", deployment);
+  fprintf(FICOUT, "\tgras_stub_generator %s %s >/dev/null\n", project,
           deployment);
-  fclose(OUT);
+  fclose(FICOUT);
 }
 
 void generate_makefile_local(char *project, char *deployment)
@@ -289,25 +288,25 @@ void generate_makefile_local(char *project, char *deployment)
   char *key = NULL;
   void *data = NULL;
   char *filename = NULL;
-  FILE *OUT = NULL;
+  FILE *FICOUT = NULL;
 
   filename = xbt_new(char, strlen(project) + strlen(MAKEFILE_FILENAME_LOCAL));
   sprintf(filename, MAKEFILE_FILENAME_LOCAL, project);
 
-  OUT = fopen(filename, "w");
-  xbt_assert1(OUT, "Unable to open %s for writing", filename);
+  FICOUT = fopen(filename, "w");
+  xbt_assert1(FICOUT, "Unable to open %s for writing", filename);
   free(filename);
 
-  fprintf(OUT,
+  fprintf(FICOUT,
           "\n"
           "####\n"
           "#### THIS FILE WAS GENERATED, DO NOT EDIT BEFORE RENAMING IT\n"
           "####\n\n\n");
 
-  fprintf(OUT, "## Variable declarations\n"
+  fprintf(FICOUT, "## Variable declarations\n"
           "PROJECT_NAME=%s\n" "DISTDIR=gras-$(PROJECT_NAME)\n\n", project);
 
-  fprintf(OUT,
+  fprintf(FICOUT,
           "# Set the GRAS_ROOT environment variable to the path under which you installed SimGrid\n"
           "# Compilation will fail if you don't do so\n"
           "GRAS_ROOT?= $(shell if [ -e /usr/local/lib/libgras.so ] ; then echo /usr/local ; else echo \"\\\"<<<< GRAS_ROOT undefined !!! >>>>\\\"\"; fi)\n\n"
@@ -317,53 +316,53 @@ void generate_makefile_local(char *project, char *deployment)
           "LIBS_SIM = -lm  -L$(GRAS_ROOT)/lib/ -lsimgrid\n"
           "LIBS_RL = -lm  -L$(GRAS_ROOT)/lib/ -lgras\n" "LIBS = \n" "\n");
 
-  fprintf(OUT, "PRECIOUS_C_FILES ?= %s.c\n", project);
+  fprintf(FICOUT, "PRECIOUS_C_FILES ?= %s.c\n", project);
 
-  fprintf(OUT, "GENERATED_C_FILES = ");
-  fprintf(OUT, SIM_SOURCENAME " ", project);
+  fprintf(FICOUT, "GENERATED_C_FILES = ");
+  fprintf(FICOUT, SIM_SOURCENAME " ", project);
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, RL_SOURCENAME " ", project, key);
+    fprintf(FICOUT, RL_SOURCENAME " ", project, key);
   }
-  fprintf(OUT, "\n");
+  fprintf(FICOUT, "\n");
 
-  fprintf(OUT, "OBJ_FILES = $(patsubst %%.c,%%.o,$(PRECIOUS_C_FILES))\n");
+  fprintf(FICOUT, "OBJ_FILES = $(patsubst %%.c,%%.o,$(PRECIOUS_C_FILES))\n");
 
-  fprintf(OUT, "BIN_FILES = ");
+  fprintf(FICOUT, "BIN_FILES = ");
 
-  fprintf(OUT, SIM_BINARYNAME " ", project);
+  fprintf(FICOUT, SIM_BINARYNAME " ", project);
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, RL_BINARYNAME " ", project, key);
+    fprintf(FICOUT, RL_BINARYNAME " ", project, key);
   }
-  fprintf(OUT, "\n");
+  fprintf(FICOUT, "\n");
 
-  fprintf(OUT,
+  fprintf(FICOUT,
           "\n"
           "## By default, build all the binaries\n"
           "all: $(BIN_FILES)\n" "\n");
 
-  fprintf(OUT,
+  fprintf(FICOUT,
           "\n## generate temps: regenerate the source file each time the deployment file changes\n");
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, RL_SOURCENAME, project, key);
-    fprintf(OUT, " ");
+    fprintf(FICOUT, RL_SOURCENAME, project, key);
+    fprintf(FICOUT, " ");
   }
-  fprintf(OUT, SIM_SOURCENAME, project);
-  fprintf(OUT, ": %s\n", deployment);
-  fprintf(OUT, "\tgras_stub_generator %s %s >/dev/null\n", project,
+  fprintf(FICOUT, SIM_SOURCENAME, project);
+  fprintf(FICOUT, ": %s\n", deployment);
+  fprintf(FICOUT, "\tgras_stub_generator %s %s >/dev/null\n", project,
           deployment);
 
-  fprintf(OUT, "\n## Generate the binaries\n");
-  fprintf(OUT, SIM_BINARYNAME ": " SIM_OBJNAME " $(OBJ_FILES)\n", project,
+  fprintf(FICOUT, "\n## Generate the binaries\n");
+  fprintf(FICOUT, SIM_BINARYNAME ": " SIM_OBJNAME " $(OBJ_FILES)\n", project,
           project);
-  fprintf(OUT,
+  fprintf(FICOUT,
           "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_SIM) $(LIBS) $(LDADD) -o $@ \n");
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, RL_BINARYNAME " : " RL_OBJNAME " $(OBJ_FILES)\n", project,
+    fprintf(FICOUT, RL_BINARYNAME " : " RL_OBJNAME " $(OBJ_FILES)\n", project,
             key, project, key);
-    fprintf(OUT,
+    fprintf(FICOUT,
             "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_RL) $(LIBS) $(LDADD) -o $@ \n");
   }
-  fprintf(OUT,
+  fprintf(FICOUT,
           "\n"
           "%%: %%.o\n"
           "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS) $(LDADD) -o $@ \n"
@@ -371,7 +370,7 @@ void generate_makefile_local(char *project, char *deployment)
           "%%.o: %%.c\n"
           "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<\n" "\n");
 
-  fprintf(OUT,
+  fprintf(FICOUT,
           "## Rules for tarballs and cleaning\n"
           "DIST_FILES= $(EXTRA_DIST) $(GENERATED_C_FILES) $(PRECIOUS_C_FILES) "
           MAKEFILE_FILENAME_LOCAL " " /*MAKEFILE_FILENAME_REMOTE */ "\n"
@@ -381,27 +380,27 @@ void generate_makefile_local(char *project, char *deployment)
           "\ttar c $(DISTDIR) | gzip -c9 > $(DISTDIR).tar.gz\n" "\n",
           project /*, project */ );
 
-  fprintf(OUT,
+  fprintf(FICOUT,
           "clean:\n"
           "\trm -f $(CLEANFILES) $(BIN_FILES) $(OBJ_FILES) *~ %s.o "
           SIM_OBJNAME, project, project);
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, " " RL_OBJNAME, project, key);
+    fprintf(FICOUT, " " RL_OBJNAME, project, key);
   }
-  fprintf(OUT,
+  fprintf(FICOUT,
           "\n"
           "\trm -rf $(DISTDIR)\n"
           "\n" ".SUFFIXES:\n" ".PHONY : clean\n" "\n");
   /* 
-     fprintf(OUT, "############ REMOTE COMPILING #########\n");
-     fprintf(OUT, 
+     fprintf(FICOUT, "############ REMOTE COMPILING #########\n");
+     fprintf(FICOUT,
      "MACHINES ?= ");
      xbt_dict_foreach(machine_set,cursor,key,data) {
-     fprintf(OUT, "%s ",key);
+     fprintf(FICOUT, "%s ",key);
      }
-     fprintf(OUT,"\n");
+     fprintf(FICOUT,"\n");
 
-     fprintf(OUT, 
+     fprintf(FICOUT,
      "INSTALL_PATH ?='$$HOME/tmp/src' ### Has to be an absolute path !!! \n"
      "GRAS_ROOT ?='$(INSTALL_PATH)' ### Has to be an absolute path !!! \n"
      "SRCDIR ?= ./\n"
@@ -447,7 +446,7 @@ void generate_makefile_local(char *project, char *deployment)
      "\t   fi;\\\n"
      "\t done;\n",project,project,project);
    */
-  fclose(OUT);
+  fclose(FICOUT);
 }
 
 static void print(void *p)

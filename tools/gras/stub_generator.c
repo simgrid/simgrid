@@ -80,10 +80,13 @@ static void parse_process_finalize(void)
   /*VERB1("Function: %s",process.argv[0]); */
 }
 
+/*FIXME Defined in surfxml_parse.c*/
+#ifndef WIN32
 void surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function)
 {
   xbt_dynar_push(cb_list, &function);
 }
+#endif
 
 
 int main(int argc, char *argv[])
@@ -159,7 +162,7 @@ int main(int argc, char *argv[])
   generate_sim(project_name);
   generate_rl(project_name);
   generate_makefile_local(project_name, deployment_file);
-#ifdef _XBT_WIN32
+#ifdef __BORLANDC__
   generate_borland_simulation_project(project_name);
   generate_borland_real_life_project(project_name);
   generate_simulation_dsp_file(project_name);
