@@ -132,7 +132,8 @@
        - \ref MSG_ext_icomms_Receiver
        - \ref MSG_ext_icomms_core
        - \ref MSG_ext_icomms_Main
-     - \ref MSG_ext_icomms_fct
+     - \ref MSG_ext_icomms_fct_Waitall
+     - \ref MSG_ext_icomms_fct_Waitany
 
     <hr> 
     
