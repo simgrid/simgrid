@@ -70,6 +70,7 @@ if(enable_print_message)
 	message("HAVE_STDLIB_H			${HAVE_STDLIB_H}")
 	message("HAVE_STRINGS_H			${HAVE_STRINGS_H}")
 	message("HAVE_STRING_H			${HAVE_STRING_H}")
+	message("HAVE_STDIO_H           ${HAVE_STDIO_H}")
 
 	message("")
 	message("HAVE_GETTIMEOFDAY 		${HAVE_GETTIMEOFDAY}")

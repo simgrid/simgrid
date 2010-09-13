@@ -17,7 +17,10 @@ SET(PROJECT_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
 
 ### Set some variables for Cmake
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
-set(INCLUDES "-I${PROJECT_DIRECTORY} -I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src -I${CMAKE_CURRENT_BINARY_DIR}/src/")
+set(INCLUDES "-I${PROJECT_DIRECTORY} -I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src -I${CMAKE_CURRENT_BINARY_DIR}/src")
+if(WIN32)
+    set(INCLUDES "${INCLUDES} -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt") #for win32_ucontext.[ch]
+endif(WIN32)
 set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
 if(EXISTS /usr/include/)
@@ -38,9 +41,18 @@ if(WIN32)
 	set(INCLUDES_MORE $ENV{INCLUDE})
 	string(REPLACE "\\" "/" INCLUDES_MORE "${INCLUDES_MORE}")
 	foreach(include_dir ${INCLUDES_MORE})
-		set(INCLUDES "${INCLUDES} -I\"${include_dir}\"")
+	    if(IS_DIRECTORY ${include_dir})
+	        string(REGEX MATCH ".*[ ].*" testoki "${include_dir}")
+	        if(testoki)
+	        	string(REPLACE " " "\\ " include_dir "${include_dir}")
+	            set(INCLUDES "${INCLUDES} -I\"${include_dir}\"")
+	        else(testoki)
+	            set(INCLUDES "${INCLUDES} -I${include_dir}")
+	        endif(testoki)
+	    else(IS_DIRECTORY ${include_dir})
+	        message(FATAL_ERROR "${include_dir} not find")
+	    endif(IS_DIRECTORY ${include_dir})
 	endforeach(include_dir ${INCLUDES_MORE})
-	set(INCLUDES "${INCLUDES} -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt") #for win32_ucontext.[ch]
 
     if(BORLAND)			### BORLAND COMPILER
 	    set(__BORLANDC__ 1)
@@ -76,7 +88,6 @@ if(WIN32)
     message("Be sure all those variables are correctely set.")
     message("	-- C_COMPILER			$ENV{CC}")
     message("	-- CXX_COMPILER			$ENV{CXX}")    
-    message("	-- RC_COMPILER			$ENV{RC}")
     message("	-- INCLUDE			$ENV{INCLUDE}")
     message("	-- LIB				$ENV{LIB}")
     message("	-- MAKE_PROGRAM			${CMAKE_MAKE_PROGRAM}")
@@ -136,8 +147,9 @@ endif(HAVE_JAVA)
 ### Make tests
 if(NOT WIN32)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
 endif(NOT WIN32)
+
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
 
 ### Setup the distrib
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
