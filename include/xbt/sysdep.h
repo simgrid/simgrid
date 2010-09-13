@@ -18,6 +18,8 @@
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
 
+#include "simgrid_config.h"
+
 SG_BEGIN_DECL()
 
 /* They live in asserts.h, but need to be declared before this module.
