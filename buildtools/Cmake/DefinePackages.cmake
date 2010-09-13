@@ -445,7 +445,7 @@ src/xbt/xbt_synchro.c
 
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS
-if(${CONTEXT_THREADS} OR WIN32)
+if(${CONTEXT_THREADS}) #pthread
 	set(SURF_SRC
 		${SURF_SRC}
 		src/xbt/xbt_os_thread.c
@@ -455,17 +455,27 @@ if(${CONTEXT_THREADS} OR WIN32)
 		${EXTRA_DIST}
 		src/simix/smx_context_sysv.c
 	)
-else(${CONTEXT_THREADS} OR WIN32)
+else(${CONTEXT_THREADS}) #ucontext
 	set(SURF_SRC
 		${SURF_SRC}
 		src/simix/smx_context_sysv.c
 	)
-	set(EXTRA_DIST
-		${EXTRA_DIST}
-		src/xbt/xbt_os_thread.c
-		src/simix/smx_context_thread.c
-	)
-endif(${CONTEXT_THREADS} OR WIN32)
+
+	if(WIN32)
+    	set(SURF_SRC
+    		${SURF_SRC}
+    		src/xbt/xbt_os_thread.c
+    		src/simix/smx_context_thread.c)
+    else(WIN32)
+    	set(EXTRA_DIST
+    		${EXTRA_DIST}
+    		src/xbt/xbt_os_thread.c
+    		src/simix/smx_context_thread.c)
+    endif(WIN32)
+endif(${CONTEXT_THREADS})
+
+
+
 
 # -->HAVE_GTNETS
 if(HAVE_GTNETS)

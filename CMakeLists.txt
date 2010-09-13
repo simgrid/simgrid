@@ -34,12 +34,46 @@ ELSE(SIZEOF_LONG EQUAL 4)
 ENDIF(SIZEOF_LONG EQUAL 4)
 
 if(WIN32)
+
 	set(INCLUDES_MORE $ENV{INCLUDE})
 	string(REPLACE "\\" "/" INCLUDES_MORE "${INCLUDES_MORE}")
 	foreach(include_dir ${INCLUDES_MORE})
 		set(INCLUDES "${INCLUDES} -I\"${include_dir}\"")
 	endforeach(include_dir ${INCLUDES_MORE})
-	message("Be sure all those variables are correctely set.")
+	set(INCLUDES "${INCLUDES} -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt") #for win32_ucontext.[ch]
+
+    if(BORLAND)			### BORLAND COMPILER
+	    set(__BORLANDC__ 1)
+	    set(CMAKE_COMPILER_IS_GNUCC 0)
+	    set(MSVC 0)
+	    set(_XBT_BORLANDC_COMPILER 1)
+    endif(BORLAND)
+    
+    if(MSVC)	### MicroSoftVisualC COMPILER
+	    set(__VISUALC__ 1)
+	    set(BORLAND 0)
+	    set(CMAKE_COMPILER_IS_GNUCC 0)
+	    set(_XBT_VISUALC_COMPILER 1)
+	    set(_MSC_VER 1)
+        set(__STRICT_ANSI__ 1)
+        set(_M_IX86 1)
+    endif(MSVC)
+    
+    if(CMAKE_COMPILER_IS_GNUCC)
+        set(__GNUC__ 1)
+        set(MSVC 0)
+	    set(BORLAND 0)
+    endif(CMAKE_COMPILER_IS_GNUCC)
+    
+    if(ARCH_32_BITS)	### Arch 32bits
+        set(_WIN32 1)
+    else(ARCH_32_BITS)	### Arch 64bits
+        set(_WIN64 1)
+    endif(ARCH_32_BITS)
+    
+    set(_XBT_WIN32 1)
+    
+    message("Be sure all those variables are correctely set.")
     message("	-- C_COMPILER			$ENV{CC}")
     message("	-- CXX_COMPILER			$ENV{CXX}")    
     message("	-- RC_COMPILER			$ENV{RC}")
@@ -50,33 +84,10 @@ if(WIN32)
     message("	-- LINKER			${CMAKE_LINKER}")
     message("	-- CMAKE_GENERATOR		${CMAKE_GENERATOR}")
     message("	-- INCLUDES			${INCLUDES}")
-    message("	-- BORLAND			    ${BORLAND}")
-    message("	-- VISUALC			    ${MSVC}")
+    message("	-- BORLAND			${BORLAND}")
+    message("	-- VISUALC			${MSVC}")
     message("	-- GNUC			        ${CMAKE_COMPILER_IS_GNUCC}\n\n")
-    if(BORLAND)			### BORLAND COMPILER
-	    set(__BORLANDC__ 1)
-	    set(_XBT_BORLANDC_COMPILER 1)
-    endif(BORLAND)
     
-    if(MSVC)	### MicroSoftVisualC COMPILER
-	    set(__VISUALC__ 1)
-	    set(_XBT_VISUALC_COMPILER 1)
-	    set(_MSC_VER 1)
-        set(__STRICT_ANSI__ 1)
-        set(_M_IX86 1)
-    endif(MSVC)
-    
-    if(CMAKE_COMPILER_IS_GNUCC)
-        set(__GNUC__ 1)
-    endif(CMAKE_COMPILER_IS_GNUCC)
-    
-    if(ARCH_32_BITS)	### Arch 32bits
-        set(_WIN32 1)
-    else(ARCH_32_BITS)	### Arch 64bits
-        set(_WIN64 1)
-    endif(ARCH_32_BITS)
-    
-    set(_XBT_WIN32 1)
 endif(WIN32)
 
 add_definitions (${INCLUDES})
@@ -123,8 +134,10 @@ if(HAVE_JAVA)
 endif(HAVE_JAVA)
 
 ### Make tests
+if(NOT WIN32)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
+endif(NOT WIN32)
 
 ### Setup the distrib
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/Distrib.cmake)

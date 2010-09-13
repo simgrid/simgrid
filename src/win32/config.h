@@ -17,17 +17,17 @@
 
 
 #if defined(_XBT_BORLAND_COMPILER)
-# include <win32/compiler/borland.h>
-
+	# include <win32/compiler/borland.h>
 #elif defined(__GNUC__)
-  /* data comes from autoconf when using gnuc (cross-compiling?) */
-# include "gras_config.h"
-typedef unsigned int uint32_t;
-
+	/* data comes from autoconf when using gnuc (cross-compiling?) */
+	# include "gras_config.h"
+	#ifndef _XBT_WIN32
+		typedef unsigned int uint32_t;
+	#endif
 #elif defined(_XBT_VISUALC_COMPILER)
-# include <win32/compiler/visualc.h>
+	# include <win32/compiler/visualc.h>
 # else
-# error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
+	# error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
 #endif
 
 typedef int socklen_t;

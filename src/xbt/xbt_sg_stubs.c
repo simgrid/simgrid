@@ -21,6 +21,7 @@
 #include "portable.h"           /* CONTEXT_THREADS */
 
 #ifndef CONTEXT_THREADS
+#ifndef WIN32
 
 /* xbt_threads is loaded in libsimgrid when they are used to implement the xbt_context.
  * The decision (and the loading) is made in xbt/context.c.
@@ -140,4 +141,5 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond)
   xbt_die
     ("No pthread in SG when compiled against the ucontext (xbt_os_cond_destroy)");
 }
+#endif
 #endif

@@ -13,6 +13,10 @@ PROPERTIES GENERATED true)
 add_executable(testall ${USE_TEST_UNITS})
 
 ### Add definitions for compile
-target_link_libraries(testall gras m)
+if(NOT WIN32)
+    target_link_libraries(testall gras m)
+else(NOT WIN32)
+    target_link_libraries(testall gras)
+endif(NOT WIN32)
 
 add_dependencies(testall units_files)

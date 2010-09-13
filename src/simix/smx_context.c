@@ -18,7 +18,7 @@
 #ifdef HAVE_RUBY
  void SIMIX_ctx_ruby_factory_init(smx_context_factory_t *factory);
 #endif 
- 
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mecanism");
 
 const char *xbt_ctx_factory_to_use = NULL;
@@ -37,9 +37,11 @@ void SIMIX_context_mod_init(void)
 #ifdef CONTEXT_THREADS
     /* context switch based os thread */
     SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
-#elif !defined(_XBT_WIN32)
+#elif defined(CONTEXT_UCONTEXT)
     /* context switch based ucontext */
     SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
+#elif defined(_XBT_WIN32)
+    /* context switch based windows */
 #else
     /* context switch is not allowed on Windows */
 #error ERROR [__FILE__, line __LINE__]: no context based implementation specified.
