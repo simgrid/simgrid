@@ -6,7 +6,7 @@ add_executable(gras_stub_generator stub_generator.c unix_stub_generator.c window
 
 ### Add definitions for compile
 if(NOT WIN32)
-    target_link_libraries(gras_stub_generator gras simgrid pthread m)
+    target_link_libraries(gras_stub_generator simgrid pthread m)
 else(NOT WIN32)
-    target_link_libraries(gras_stub_generator simgrid gras)
+    target_link_libraries(gras_stub_generator simgrid)
 endif(NOT WIN32)
