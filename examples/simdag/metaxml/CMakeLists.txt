@@ -5,4 +5,8 @@ set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/simdag/metaxml/")
 add_executable(sd_meta sd_meta.c)
 
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(sd_meta simgrid pthread m )
+else(NOT WIN32)
+target_link_libraries(sd_meta simgrid)
+endif(NOT WIN32)

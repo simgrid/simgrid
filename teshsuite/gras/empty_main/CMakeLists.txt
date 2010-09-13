@@ -19,5 +19,10 @@ add_custom_command(
 					)
 					
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(empty_main_simulator simgrid m pthread)
 target_link_libraries(empty_main_function gras m pthread)
+else(NOT WIN32)
+target_link_libraries(empty_main_simulator simgrid)
+target_link_libraries(empty_main_function gras)
+endif(NOT WIN32)

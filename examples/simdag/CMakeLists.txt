@@ -8,6 +8,7 @@ add_executable(ex_sd_seq_access sd_seq_access.c)
 add_executable(ex_sd_test_console sd_test_console.c)
 
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(ex_sd_test simgrid pthread m )
 target_link_libraries(ex_sd_test2 simgrid pthread m )
 target_link_libraries(ex_sd_seq_access simgrid pthread m )
@@ -32,3 +33,30 @@ get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
 set_directory_properties(
  PROPERTIES
  ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${PROJECT_DIRECTORY}/examples/simdag/sd_test;${PROJECT_DIRECTORY}/examples/simdag/sd_test2;${PROJECT_DIRECTORY}/examples/simdag/sd_seq_access")
+else(NOT WIN32)
+target_link_libraries(ex_sd_test simgrid)
+target_link_libraries(ex_sd_test2 simgrid)
+target_link_libraries(ex_sd_seq_access simgrid)
+
+add_custom_command(TARGET ex_sd_test
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_DIRECTORY}/examples/simdag/ex_sd_test.exe ${PROJECT_DIRECTORY}/examples/simdag/sd_test.exe
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/simdag/"
+)
+add_custom_command(TARGET ex_sd_test2
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_DIRECTORY}/examples/simdag/ex_sd_test2.exe ${PROJECT_DIRECTORY}/examples/simdag/sd_test2.exe
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/simdag/")
+
+add_custom_command(TARGET ex_sd_seq_access
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_DIRECTORY}/examples/simdag/ex_sd_seq_access.exe ${PROJECT_DIRECTORY}/examples/simdag/sd_seq_access.exe
+	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/examples/simdag/")
+
+get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
+set_directory_properties(
+ PROPERTIES
+ ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${PROJECT_DIRECTORY}/examples/simdag/sd_test.exe;${PROJECT_DIRECTORY}/examples/simdag/sd_test2.exe;${PROJECT_DIRECTORY}/examples/simdag/sd_seq_access.exe")
+
+endif(NOT WIN32)
+

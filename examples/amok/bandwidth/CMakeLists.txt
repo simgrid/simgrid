@@ -23,6 +23,12 @@ add_custom_command(
 					)
 					
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(bandwidth_simulator simgrid pthread m )
 target_link_libraries(bandwidth_maestro gras pthread m )
 target_link_libraries(bandwidth_sensor gras pthread m )
+else(NOT WIN32)
+target_link_libraries(bandwidth_simulator simgrid)
+target_link_libraries(bandwidth_maestro gras)
+target_link_libraries(bandwidth_sensor gras)
+endif(NOT WIN32)

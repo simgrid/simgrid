@@ -23,7 +23,15 @@ add_custom_command(
 )
 
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(rpc_simulator simgrid pthread m )
 target_link_libraries(rpc_client gras pthread m )
 target_link_libraries(rpc_forwarder gras pthread m )
 target_link_libraries(rpc_server gras pthread m )
+else(NOT WIN32)
+target_link_libraries(rpc_simulator simgrid)
+target_link_libraries(rpc_client gras)
+target_link_libraries(rpc_forwarder gras)
+target_link_libraries(rpc_server gras)
+endif(NOT WIN32)
+

@@ -28,9 +28,16 @@ add_custom_command(
 					)
 					
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(spawn_simulator simgrid pthread m )
 target_link_libraries(spawn_child gras pthread m )
 target_link_libraries(spawn_father gras pthread m )
+else(NOT WIN32)
+target_link_libraries(spawn_simulator simgrid)
+target_link_libraries(spawn_child gras)
+target_link_libraries(spawn_father gras)
+endif(NOT WIN32)
+
 
 
 

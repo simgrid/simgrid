@@ -23,6 +23,13 @@ add_custom_command(
 					)
 
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(pmm_simulator simgrid pthread m )
 target_link_libraries(pmm_slave gras pthread m )
 target_link_libraries(pmm_master gras pthread m )
+else(NOT WIN32)
+target_link_libraries(pmm_simulator simgrid)
+target_link_libraries(pmm_slave gras)
+target_link_libraries(pmm_master gras)
+endif(NOT WIN32)
+

@@ -5,4 +5,9 @@ set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/")
 add_executable(datadesc_usage datadesc_usage.c datadesc_structs.c)
 
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(datadesc_usage gras m pthread)
+elseif(NOT WIN32)
+target_link_libraries(datadesc_usage gras)
+endif(NOT WIN32)
+

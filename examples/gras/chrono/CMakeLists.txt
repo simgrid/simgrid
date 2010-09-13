@@ -19,5 +19,10 @@ add_custom_command(
 )
 
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(chrono_simulator simgrid pthread m )
 target_link_libraries(chrono_multiplier gras pthread m )
+else(NOT WIN32)
+target_link_libraries(chrono_simulator simgrid)
+target_link_libraries(chrono_multiplier gras)
+endif(NOT WIN32)

@@ -23,6 +23,12 @@ add_custom_command(
 					)
 
 ### Add definitions for compile
+if(NOT WIN32)
 target_link_libraries(msg_handle_simulator simgrid m pthread )
 target_link_libraries(msg_handle_client gras m pthread )
 target_link_libraries(msg_handle_server gras m pthread )
+else(NOT WIN32)
+target_link_libraries(msg_handle_simulator simgrid)
+target_link_libraries(msg_handle_client gras)
+target_link_libraries(msg_handle_server gras)
+endif(NOT WIN32)
