@@ -52,16 +52,6 @@ static void netcste_action_cancel(surf_action_t action)
   return;
 }
 
-static void netcste_action_recycle(surf_action_t action)
-{
-  return;
-}
-
-static double netcste_action_get_remains(surf_action_t action)
-{
-  return action->remains;
-}
-
 static double netcste_share_resources(double now)
 {
   surf_action_network_Constant_t action = NULL;
@@ -183,11 +173,6 @@ static int netcste_action_is_suspended(surf_action_t action)
   return ((surf_action_network_Constant_t) action)->suspended;
 }
 
-static void netcste_action_set_max_duration(surf_action_t action, double duration)
-{
-  action->max_duration = duration;
-}
-
 static void netcste_finalize(void)
 {
   surf_model_exit(surf_network_model);
@@ -207,8 +192,9 @@ void surf_network_model_init_Constant(const char *filename)
   surf_network_model->name = "constant time network";
   surf_network_model->action_unref = netcste_action_unref;
   surf_network_model->action_cancel = netcste_action_cancel;
-  surf_network_model->action_recycle = netcste_action_recycle;
-  surf_network_model->get_remains = netcste_action_get_remains;
+  surf_network_model->action_recycle = net_action_recycle;
+  surf_network_model->get_remains = net_action_get_remains;
+  surf_network_model->get_latency_limited = net_get_link_latency;
 
   surf_network_model->model_private->resource_used = netcste_resource_used;
   surf_network_model->model_private->share_resources = netcste_share_resources;
@@ -221,7 +207,7 @@ void surf_network_model_init_Constant(const char *filename)
   surf_network_model->suspend = netcste_action_suspend;
   surf_network_model->resume = netcste_action_resume;
   surf_network_model->is_suspended = netcste_action_is_suspended;
-  surf_cpu_model->set_max_duration = netcste_action_set_max_duration;
+  surf_cpu_model->set_max_duration = net_action_set_max_duration;
 
   surf_network_model->extension.network.communicate = netcste_communicate;
   surf_network_model->extension.network.get_link_bandwidth =

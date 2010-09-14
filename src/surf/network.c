@@ -263,22 +263,20 @@ static int net_action_unref(surf_action_t action)
 
 static void net_action_cancel(surf_action_t action)
 {
-  surf_network_model->action_state_set((surf_action_t) action,
-                                       SURF_ACTION_FAILED);
-  return;
+  surf_network_model->action_state_set(action, SURF_ACTION_FAILED);
 }
 
-static void net_action_recycle(surf_action_t action)
+void net_action_recycle(surf_action_t action)
 {
   return;
 }
 
-static int net_get_link_latency(surf_action_t action)
+int net_get_link_latency(surf_action_t action)
 {
   return action->latency_limited;
 }
 
-static double net_action_get_remains(surf_action_t action)
+double net_action_get_remains(surf_action_t action)
 {
   return action->remains;
 }
@@ -630,7 +628,7 @@ static int net_action_is_suspended(surf_action_t action)
   return ((surf_action_network_CM02_t) action)->suspended;
 }
 
-static void net_action_set_max_duration(surf_action_t action, double duration)
+void net_action_set_max_duration(surf_action_t action, double duration)
 {
   action->max_duration = duration;
 }

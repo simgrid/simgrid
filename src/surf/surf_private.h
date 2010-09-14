@@ -66,6 +66,11 @@ void surf_config_finalize(void);
 void surf_config(const char *name, va_list pa);
 
 
+void net_action_recycle(surf_action_t action);
+double net_action_get_remains(surf_action_t action);
+int net_get_link_latency(surf_action_t action);
+void net_action_set_max_duration(surf_action_t action, double duration);
+
 /*
  * Returns the initial path. On Windows the initial path is
  * the current directory for the current process in the other
