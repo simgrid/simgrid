@@ -61,6 +61,7 @@ void TRACE_smpi_start (void)
 
 void TRACE_smpi_end (void)
 {
+  TRACE_msg_clean ();
   if (IS_TRACING_SMPI){
     TRACE_end();
   }
