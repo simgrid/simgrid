@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "instr/instr.h"
 
-#define DATATOSENT 100000000
+#define DATATOSENT 100000
 
 int main(int argc, char *argv[])
 {
