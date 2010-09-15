@@ -9,35 +9,10 @@
 #ifdef HAVE_TRACING
 
 static xbt_dict_t task_containers = NULL;
-static xbt_dict_t current_task_category = NULL;
 
 void __TRACE_msg_init (void)
 {
-  current_task_category = xbt_dict_new();
   task_containers = xbt_dict_new();
-}
-
-void __TRACE_current_category_set (m_task_t task)
-{
-  char processid[100];
-  char *var_cpy = NULL;
-  snprintf (processid, 100, "%p", SIMIX_process_self());
-  var_cpy = xbt_strdup (task->category);
-  xbt_dict_set (current_task_category, processid, var_cpy, xbt_free);
-}
-
-void __TRACE_current_category_unset ()
-{
-  char processid[100];
-  snprintf (processid, 100, "%p", SIMIX_process_self());
-  xbt_dict_remove (current_task_category, processid);
-}
-
-char *__TRACE_current_category_get (smx_process_t proc)
-{
-  char processid[100];
-  snprintf (processid, 100, "%p", proc);
-  return xbt_dict_get_or_null (current_task_category, processid);
 }
 
 void __TRACE_task_location (m_task_t task)
@@ -131,7 +106,7 @@ void TRACE_msg_task_execute_start (m_task_t task)
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePushState (MSG_get_clock(), "task-state", name, "execute");
 
-  __TRACE_current_category_set (task);
+  __TRACE_msg_category_set (SIMIX_process_self(), task);
 }
 
 void TRACE_msg_task_execute_end (m_task_t task)
@@ -142,7 +117,7 @@ void TRACE_msg_task_execute_end (m_task_t task)
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
 
-  __TRACE_current_category_unset();
+  __TRACE_category_unset(SIMIX_process_self());
 }
 
 /* MSG_task_destroy related functions */
@@ -198,7 +173,7 @@ int TRACE_msg_task_put_start (m_task_t task)
   __TRACE_task_location_not_present (task);
 
   //set current category
-  __TRACE_current_category_set (task);
+  __TRACE_msg_category_set (SIMIX_process_self(), task);
   return 1;
 }
 
@@ -206,7 +181,7 @@ void TRACE_msg_task_put_end (void)
 {
   if (!IS_TRACING) return;
 
-  __TRACE_current_category_unset ();
+  __TRACE_category_unset (SIMIX_process_self());
 }
 
 #endif

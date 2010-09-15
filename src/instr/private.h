@@ -66,11 +66,15 @@ char *TRACE_process_container (m_process_t process, char *output, int len);
 char *TRACE_process_alias_container (m_process_t process, m_host_t host, char *output, int len);
 char *TRACE_task_alias_container (m_task_t task, m_process_t process, m_host_t host, char *output, int len);
 
+/* from categories.c */
+void __TRACE_category_init (void);
+void __TRACE_category_set (smx_process_t proc, const char *category);
+char *__TRACE_category_get (smx_process_t proc);
+void __TRACE_category_unset (smx_process_t proc);
+void __TRACE_msg_category_set (smx_process_t proc, m_task_t task);
+
 /* declaration of instrumentation functions from msg_task_instr.c */
 void __TRACE_msg_init (void);
-void __TRACE_current_category_set (m_task_t task);
-void __TRACE_current_category_unset (void);
-char *__TRACE_current_category_get (smx_process_t proc);
 void __TRACE_task_location (m_task_t task);
 void __TRACE_task_location_present (m_task_t task);
 void __TRACE_task_location_not_present (m_task_t task);
