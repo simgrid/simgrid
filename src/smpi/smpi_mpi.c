@@ -15,18 +15,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
 
 int MPI_Init(int* argc, char*** argv) {
   smpi_process_init(argc, argv);
-  smpi_bench_begin(-1, NULL);
 #ifdef HAVE_TRACING
   TRACE_smpi_init(smpi_process_index());
 #endif
+  smpi_bench_begin(-1, NULL);
   return MPI_SUCCESS;
 }
 
 int MPI_Finalize(void) {
+  smpi_bench_end(-1, NULL);
 #ifdef HAVE_TRACING
   TRACE_smpi_finalize(smpi_process_index());
 #endif
-  smpi_bench_end(-1, NULL);
   smpi_process_destroy();
   return MPI_SUCCESS;
 }
@@ -777,11 +777,11 @@ int MPI_Irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Irecv");
 #ifdef HAVE_TRACING
   int src_traced = smpi_group_rank(smpi_comm_group(comm), src);
   TRACE_smpi_ptp_in (rank, src_traced, rank, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Irecv");
   if(request == NULL) {
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
@@ -790,11 +790,11 @@ int MPI_Irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     *request = smpi_mpi_irecv(buf, count, datatype, src, tag, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Irecv");
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out (rank, src_traced, rank, __FUNCTION__);
   (*request)->recv = 1;
 #endif
+  smpi_bench_begin(rank, "Irecv");
   return retval;
 }
 
@@ -802,12 +802,12 @@ int MPI_Isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Isend");
 #ifdef HAVE_TRACING
   int dst_traced = smpi_group_rank(smpi_comm_group(comm), dst);
   TRACE_smpi_ptp_in (rank, rank, dst_traced, __FUNCTION__);
   TRACE_smpi_send (rank, rank, dst_traced);
 #endif
-  smpi_bench_end(rank, "Isend");
   if(request == NULL) {
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
@@ -816,11 +816,11 @@ int MPI_Isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     *request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Isend");
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out (rank, rank, dst_traced, __FUNCTION__);
   (*request)->send = 1;
 #endif
+  smpi_bench_begin(rank, "Isend");
   return retval;
 }
 
@@ -828,22 +828,22 @@ int MPI_Recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Recv");
 #ifdef HAVE_TRACING
   int src_traced = smpi_group_rank(smpi_comm_group(comm), src);
   TRACE_smpi_ptp_in (rank, src_traced, rank, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Recv");
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
     smpi_mpi_recv(buf, count, datatype, src, tag, comm, status);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Recv");
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out (rank, src_traced, rank, __FUNCTION__);
   TRACE_smpi_recv (rank, src_traced, rank);
 #endif
+  smpi_bench_begin(rank, "Recv");
   return retval;
 }
 
@@ -851,22 +851,22 @@ int MPI_Send(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Send");
 #ifdef HAVE_TRACING
   int dst_traced = smpi_group_rank(smpi_comm_group(comm), dst);
   TRACE_smpi_ptp_in (rank, rank, dst_traced, __FUNCTION__);
   TRACE_smpi_send (rank, rank, dst_traced);
 #endif
-  smpi_bench_end(rank, "Send");
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
     smpi_mpi_send(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Send");
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out (rank, rank, dst_traced, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Send");
   return retval;
 }
 
@@ -874,6 +874,7 @@ int MPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, i
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Sendrecv");
 #ifdef HAVE_TRACING
   int dst_traced = smpi_group_rank(smpi_comm_group(comm), dst);
   int src_traced = smpi_group_rank(smpi_comm_group(comm), src);
@@ -881,7 +882,6 @@ int MPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, i
   TRACE_smpi_send (rank, rank, dst_traced);
   TRACE_smpi_send (rank, src_traced, rank);
 #endif
-  smpi_bench_end(rank, "Sendrecv");
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
@@ -890,12 +890,12 @@ int MPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, i
     smpi_mpi_sendrecv(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src, recvtag, comm, status);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Sendrecv");
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out (rank, src_traced, dst_traced, __FUNCTION__);
   TRACE_smpi_recv (rank, rank, dst_traced);
   TRACE_smpi_recv (rank, src_traced, rank);
 #endif
+  smpi_bench_begin(rank, "Sendrecv");
   return retval;
 }
 
@@ -951,6 +951,7 @@ int MPI_Wait(MPI_Request* request, MPI_Status* status) {
              ? smpi_comm_rank((*request)->comm)
              : -1;
 
+  smpi_bench_end(rank, "Wait");
 #ifdef HAVE_TRACING
   MPI_Group group = smpi_comm_group((*request)->comm);
   int src_traced = smpi_group_rank (group , (*request)->src);
@@ -958,7 +959,6 @@ int MPI_Wait(MPI_Request* request, MPI_Status* status) {
   int is_wait_for_receive = (*request)->recv;
   TRACE_smpi_ptp_in (rank, src_traced, dst_traced, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Wait");
   if(request == NULL) {
     retval = MPI_ERR_ARG;
   } else if(*request == MPI_REQUEST_NULL) {
@@ -967,19 +967,20 @@ int MPI_Wait(MPI_Request* request, MPI_Status* status) {
     smpi_mpi_wait(request, status);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Wait");
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out (rank, src_traced, dst_traced, __FUNCTION__);
   if (is_wait_for_receive){
     TRACE_smpi_recv (rank, src_traced, dst_traced);
   }
 #endif
+  smpi_bench_begin(rank, "Wait");
   return retval;
 }
 
 int MPI_Waitany(int count, MPI_Request requests[], int* index, MPI_Status* status) {
   int retval;
 
+  smpi_bench_end(-1, NULL); //FIXME
 #ifdef HAVE_TRACING
   //save requests information for tracing
   int i;
@@ -1015,14 +1016,12 @@ int MPI_Waitany(int count, MPI_Request requests[], int* index, MPI_Status* statu
   int rank_traced = smpi_comm_rank(comm);
   TRACE_smpi_ptp_in (rank_traced, -1, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(-1, NULL); //FIXME
   if(index == NULL) {
     retval = MPI_ERR_ARG;
   } else {
     *index = smpi_mpi_waitany(count, requests, status);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(-1, NULL);
 #ifdef HAVE_TRACING
   int src_traced, dst_traced, is_wait_for_receive;
   xbt_dynar_get_cpy (srcs, *index, &src_traced);
@@ -1037,11 +1036,13 @@ int MPI_Waitany(int count, MPI_Request requests[], int* index, MPI_Status* statu
   xbt_free (dsts);
   xbt_free (recvs);
 #endif
+  smpi_bench_begin(-1, NULL);
   return retval;
 }
 
 int MPI_Waitall(int count, MPI_Request requests[],  MPI_Status status[]) {
 
+  smpi_bench_end(-1, NULL); //FIXME
 #ifdef HAVE_TRACING
   //save information from requests
   int i;
@@ -1070,9 +1071,7 @@ int MPI_Waitall(int count, MPI_Request requests[],  MPI_Status status[]) {
   int rank_traced = smpi_comm_rank(comm);
   TRACE_smpi_ptp_in (rank_traced, -1, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(-1, NULL); //FIXME
   smpi_mpi_waitall(count, requests, status);
-  smpi_bench_begin(-1, NULL);
 #ifdef HAVE_TRACING
   for (i = 0; i < count; i++){
     int src_traced, dst_traced, is_wait_for_receive;
@@ -1089,6 +1088,7 @@ int MPI_Waitall(int count, MPI_Request requests[],  MPI_Status status[]) {
   xbt_free (dsts);
   xbt_free (recvs);
 #endif
+  smpi_bench_begin(-1, NULL);
   return MPI_SUCCESS;
 }
 
@@ -1110,21 +1110,21 @@ int MPI_Bcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm co
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Bcast");
 #ifdef HAVE_TRACING
   int root_traced = smpi_group_rank(smpi_comm_group(comm), root);
   TRACE_smpi_collective_in (rank, root_traced, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Bcast");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
     smpi_mpi_bcast(buf, count, datatype, root, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Bcast");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, root_traced, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Bcast");
   return retval;
 }
 
@@ -1132,20 +1132,20 @@ int MPI_Barrier(MPI_Comm comm) {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Barrier");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_in (rank, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Barrier");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
     smpi_mpi_barrier(comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Barrier");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, -1, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Barrier");
   return retval;
 }
 
@@ -1153,11 +1153,11 @@ int MPI_Gather(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbu
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Gather");
 #ifdef HAVE_TRACING
   int root_traced = smpi_group_rank(smpi_comm_group(comm), root);
   TRACE_smpi_collective_in (rank, root_traced, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Gather");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
@@ -1166,10 +1166,10 @@ int MPI_Gather(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbu
     smpi_mpi_gather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Gather");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, root_traced, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Gather");
   return retval;
 }
 
@@ -1177,11 +1177,11 @@ int MPI_Gatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvb
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Gatherv");
 #ifdef HAVE_TRACING
   int root_traced = smpi_group_rank(smpi_comm_group(comm), root);
   TRACE_smpi_collective_in (rank, root_traced, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Gatherv");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
@@ -1192,10 +1192,10 @@ int MPI_Gatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvb
     smpi_mpi_gatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Gatherv");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, root_traced, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Gatherv");
   return retval;
 }
 
@@ -1203,10 +1203,10 @@ int MPI_Allgather(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Allgather");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_in (rank, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Allgather");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
@@ -1215,10 +1215,10 @@ int MPI_Allgather(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
     smpi_mpi_allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Allgather");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, -1, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Allgather");
   return retval;
 }
 
@@ -1226,10 +1226,10 @@ int MPI_Allgatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* re
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Allgatherv");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_in (rank, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Allgatherv");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
@@ -1240,10 +1240,10 @@ int MPI_Allgatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* re
     smpi_mpi_allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Allgatherv");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, -1, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Allgatherv");
   return retval;
 }
 
@@ -1251,11 +1251,11 @@ int MPI_Scatter(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvb
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Scatter");
 #ifdef HAVE_TRACING
   int root_traced = smpi_group_rank(smpi_comm_group(comm), root);
   TRACE_smpi_collective_in (rank, root_traced, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Scatter");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
@@ -1264,10 +1264,10 @@ int MPI_Scatter(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvb
     smpi_mpi_scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Scatter");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, root_traced, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Scatter");
   return retval;
 }
 
@@ -1275,11 +1275,11 @@ int MPI_Scatterv(void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendt
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Scatterv");
 #ifdef HAVE_TRACING
   int root_traced = smpi_group_rank(smpi_comm_group(comm), root);
   TRACE_smpi_collective_in (rank, root_traced, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Scatterv");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
@@ -1290,10 +1290,10 @@ int MPI_Scatterv(void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendt
     smpi_mpi_scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Scatterv");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, root_traced, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Scatterv");
   return retval;
 }
 
@@ -1301,11 +1301,11 @@ int MPI_Reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, M
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Reduce");
 #ifdef HAVE_TRACING
   int root_traced = smpi_group_rank(smpi_comm_group(comm), root);
   TRACE_smpi_collective_in (rank, root_traced, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Reduce");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(datatype == MPI_DATATYPE_NULL || op == MPI_OP_NULL) {
@@ -1314,10 +1314,10 @@ int MPI_Reduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, M
     smpi_mpi_reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Reduce");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, root_traced, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Reduce");
   return retval;
 }
 
@@ -1325,10 +1325,10 @@ int MPI_Allreduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Allreduce");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_in (rank, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Allreduce");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(datatype == MPI_DATATYPE_NULL) {
@@ -1339,10 +1339,10 @@ int MPI_Allreduce(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype
     smpi_mpi_allreduce(sendbuf, recvbuf, count, datatype, op, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Allreduce");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, -1, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Allreduce");
   return retval;
 }
 
@@ -1350,10 +1350,10 @@ int MPI_Scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Scan");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_in (rank, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Scan");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(datatype == MPI_DATATYPE_NULL) {
@@ -1364,10 +1364,10 @@ int MPI_Scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI
     smpi_mpi_scan(sendbuf, recvbuf, count, datatype, op, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Scan");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, -1, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Scan");
   return retval;
 }
 
@@ -1376,10 +1376,10 @@ int MPI_Reduce_scatter(void* sendbuf, void* recvbuf, int* recvcounts, MPI_Dataty
   int* displs;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Reduce_scatter");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_in (rank, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Reduce_scatter");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(datatype == MPI_DATATYPE_NULL) {
@@ -1403,10 +1403,10 @@ int MPI_Reduce_scatter(void* sendbuf, void* recvbuf, int* recvcounts, MPI_Dataty
     xbt_free(displs);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin(rank, "Reduce_scatter");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, -1, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Reduce_scatter");
   return retval;
 }
 
@@ -1414,10 +1414,10 @@ int MPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recv
   int retval, size, sendsize;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Alltoall");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_in (rank, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Alltoall");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
@@ -1433,10 +1433,10 @@ int MPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recv
       retval = smpi_coll_tuned_alltoall_pairwise(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
     }
   }
-  smpi_bench_begin(rank, "Alltoall");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, -1, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Alltoall");
   return retval;
 }
 
@@ -1444,10 +1444,10 @@ int MPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype s
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
 
+  smpi_bench_end(rank, "Alltoallv");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_in (rank, -1, __FUNCTION__);
 #endif
-  smpi_bench_end(rank, "Alltoallv");
   if(comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if(sendtype == MPI_DATATYPE_NULL || recvtype == MPI_DATATYPE_NULL) {
@@ -1457,10 +1457,10 @@ int MPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype s
   } else {
     retval = smpi_coll_basic_alltoallv(sendbuf, sendcounts, senddisps, sendtype, recvbuf, recvcounts, recvdisps, recvtype, comm);
   }
-  smpi_bench_begin(rank, "Alltoallv");
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out (rank, -1, __FUNCTION__);
 #endif
+  smpi_bench_begin(rank, "Alltoallv");
   return retval;
 }
 
