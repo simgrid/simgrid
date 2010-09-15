@@ -7,4 +7,5 @@ $ ../../bin/smpirun -trace smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -pl
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
