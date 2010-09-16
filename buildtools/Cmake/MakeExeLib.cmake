@@ -8,6 +8,7 @@ else(enable_supernovae)
 	add_library(gras SHARED ${gras_sources})
 	if(enable_smpi)
 		add_library(smpi SHARED ${SMPI_SRC})
+		add_library(smpi_static STATIC ${SMPI_SRC})
 	endif(enable_smpi)
 endif(enable_supernovae)
 
@@ -83,6 +84,7 @@ add_dependencies(simgrid_static maintainer_files)
 				
 if(enable_smpi)
 	target_link_libraries(smpi 	simgrid ${SMPI_DEP})
+	target_link_libraries(smpi_static simgrid ${SMPI_DEP})
 endif(enable_smpi)
 
 ### Make EXEs
