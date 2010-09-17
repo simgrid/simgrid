@@ -32,6 +32,10 @@ IS: is
 is: header
 	cd IS; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
 
+IS-trace: is-trace
+is-trace: header
+	cd IS-trace; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
+
 CG: cg
 cg: header
 	cd CG; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
@@ -40,9 +44,17 @@ EP: ep
 ep: header
 	cd EP; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
 
+EP-trace: ep-trace
+ep-trace: header
+	cd EP-trace; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
+
 DT: dt
 dt: header
 	cd DT; $(MAKE) CLASS=$(CLASS)
+
+DT-trace: dt-trace
+dt-trace: header
+	cd DT-trace; $(MAKE) CLASS=$(CLASS)
 
 # Awk script courtesy cmg@cray.com, modified by Haoqiang Jin
 suite:

@@ -1,0 +1,22 @@
+SHELL=/bin/sh
+BENCHMARK=is
+BENCHMARKU=IS
+
+include ../config/make.def
+
+include ../sys/make.common
+
+OBJS = is-trace.o ${COMMON}/c_print_results.o
+
+
+${PROGRAM}: config ${OBJS}
+	${CLINK} ${CLINKFLAGS} -o ${PROGRAM} ${OBJS} ${CMPI_LIB}
+
+.c.o:
+	${CCOMPILE} $<
+
+is-trace.o: is-trace.c npbparams.h
+
+clean:
+	- rm -f *.o *~ mputil*
+	- rm -f is-trace npbparams.h core
