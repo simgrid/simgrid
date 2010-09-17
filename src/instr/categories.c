@@ -35,7 +35,9 @@ void __TRACE_category_unset (smx_process_t proc)
 {
   char processid[100];
   snprintf (processid, 100, "%p", proc);
-  xbt_dict_remove (current_task_category, processid);
+  if (xbt_dict_get_or_null (current_task_category, processid) != NULL){
+    xbt_dict_remove (current_task_category, processid);
+  }
 }
 
 void __TRACE_msg_category_set (smx_process_t proc, m_task_t task)
