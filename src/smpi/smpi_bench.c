@@ -5,9 +5,28 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
+#include "xbt/dict.h"
+#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
                                 "Logging specific to SMPI (benchmarking)");
+
+xbt_dict_t allocs = NULL; /* Allocated on first use */
+
+typedef struct {
+   int count;
+   char data[];
+} shared_data_t;
+
+static void free_shared_data(void* ptr) {
+   free(ptr);
+}
+
+void smpi_bench_destroy(void) {
+   if (allocs) {
+      xbt_dict_free(&allocs);
+   }
+}
 
 static void smpi_execute(double duration) {
   smx_host_t host;
@@ -103,3 +122,41 @@ void smpi_do_once_3()
   *(smpi_global->do_once_duration) = smpi_stop_timer();
 }
 */
+
+void* smpi_shared_malloc(size_t size, const char* file, int line) {
+   char* loc = bprintf("%s:%d", file, line);
+   shared_data_t* data;
+
+   if (!allocs) {
+      allocs = xbt_dict_new();
+   }
+   data = xbt_dict_get_or_null(allocs, loc);
+   if (!data) {
+      data = (shared_data_t*)xbt_malloc0(sizeof(int) + size);
+      data->count = 1;
+      xbt_dict_set(allocs, loc, data, &free_shared_data);
+   } else {
+      data->count++;
+   }
+   free(loc);
+   return data->data;
+}
+
+void smpi_shared_free(void* ptr) {
+   shared_data_t* data = (shared_data_t*)((int*)ptr - 1);
+   char* loc;
+
+   if (!allocs) {
+      WARN0("Cannot free: nothing was allocated");
+      return;
+   }
+   loc = xbt_dict_get_key(allocs, data);
+   if (!loc) {
+      WARN1("Cannot free: %p was not shared-allocated by SMPI", ptr);
+      return;
+   }
+   data->count--;
+   if (data->count <= 0) {
+      xbt_dict_remove(allocs, loc);
+   }
+}

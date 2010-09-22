@@ -146,6 +146,7 @@ void smpi_global_destroy(void) {
   int count = smpi_process_count();
   int i;
 
+  smpi_bench_destroy();
   smpi_comm_destroy(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for(i = 0; i < count; i++) {

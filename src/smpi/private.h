@@ -120,6 +120,7 @@ int smpi_coll_tuned_alltoall_pairwise(void* sendbuf, int sendcount, MPI_Datatype
 int smpi_coll_basic_alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int *recvcounts, int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm);
 
 // utilities
+void smpi_bench_destroy(void);
 void smpi_bench_begin(int rank, const char* mpi_call);
 void smpi_bench_end(int rank, const char* mpi_call);
 

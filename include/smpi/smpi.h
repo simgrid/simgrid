@@ -251,5 +251,11 @@ XBT_PUBLIC(void) smpi_do_once_3(void);
 #define SMPI_DO_ONCE for (smpi_do_once_1(__FILE__, __LINE__); smpi_do_once_2(); smpi_do_once_3())
 */
 
+XBT_PUBLIC(void*) smpi_shared_malloc(size_t size, const char* file, int line);
+#define SMPI_SHARED_MALLOC(size) smpi_shared_malloc(size, __FILE__, __LINE__)
+
+XBT_PUBLIC(void) smpi_shared_free(void* data);
+#define SMPI_SHARED_FREE(data) smpi_shared_free(data)
+
 SG_END_DECL()
 #endif
