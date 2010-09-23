@@ -140,7 +140,7 @@ __ex_mctx_struct} __ex_mctx_t;
  *
  * @section XBT_ex_base BASIC USAGE
  *
- * \em TRY \b TRIED_BLOCK [\em _CLEANUP \b _CLEANUP_BLOCK] \em CATCH (variable) \b CATCH_BLOCK
+ * \em TRY \b TRIED_BLOCK [\em TRY_CLEANUP \b CLEANUP_BLOCK] \em CATCH (variable) \b CATCH_BLOCK
  *
  * This is the primary syntactical construct provided. It is modeled after the
  * ISO-C++ try-catch clause and should sound familiar to most of you.
@@ -363,7 +363,7 @@ XBT_PUBLIC_DATA(ex_term_cb_t) __xbt_ex_terminate;
 /** @brief optional(!) block for cleanup
  *  @hideinitializer
  */
-#define _CLEANUP \
+#define TRY_CLEANUP \
             else { \
             } \
             __xbt_ex_ctx_ptr->ctx_caught = 0; \

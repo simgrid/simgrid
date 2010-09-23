@@ -388,7 +388,7 @@ int gras_datadesc_memcpy(gras_datadesc_type_t type, void *src, void *dst)
 
   TRY {
     size = gras_datadesc_memcpy_rec(state, refs, type, (char *) src, (char *) dst,0, type->cycle);
-  } _CLEANUP {
+  } TRY_CLEANUP {
     xbt_dict_reset(refs);
     gras_cbps_reset(state);
   } CATCH(e) {
@@ -625,7 +625,7 @@ void gras_datadesc_send(gras_socket_t sock,
   TRY {
     gras_datadesc_send_rec(sock, state, refs, type, (char *) src,
                            type->cycle);
-  } _CLEANUP {
+  } TRY_CLEANUP {
     xbt_dict_reset(refs);
     gras_cbps_reset(state);
   } CATCH(e) {
@@ -960,7 +960,7 @@ gras_datadesc_recv(gras_socket_t sock,
   TRY {
     gras_datadesc_recv_rec(sock, state, refs, type,
                            r_arch, NULL, 0, (char *) dst, -1, type->cycle);
-  } _CLEANUP {
+  } TRY_CLEANUP {
     xbt_dict_reset(refs);
     gras_cbps_reset(state);
   } CATCH(e) {
