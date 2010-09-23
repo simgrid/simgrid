@@ -64,7 +64,7 @@ ctest -D ExperimentalSubmit
 make clean
 
 #Make the supernovae mode
-cmake -Dsupernovae=on ./
+cmake -Denable_supernovae=on ./
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild
@@ -124,7 +124,7 @@ if [ $SYSTEM = Linux ] ; then
 	
 	if [ -e $userhome/usr/lib/libgtsim-opt.so ] ; then
 		#Make gtnets
-		cmake -Dsupernovae=off -Denable_compile_warnings=off -Denable_compile_optimizations=off -Dgtnets_path=$absolute_path/usr ./
+		cmake -Denable_supernovae=off -Denable_compile_warnings=off -Denable_compile_optimizations=off -Dgtnets_path=$absolute_path/usr ./
 		ctest -D ExperimentalStart
 		ctest -D ExperimentalConfigure
 		ctest -D ExperimentalBuild

@@ -145,7 +145,7 @@ if [ $SYSTEM = Linux ] ; then
 	
 	if [ -e $userhome/usr/lib/libgtsim-opt.so ] ; then
 		#Make gtnets
-		cmake -Dsupernovae=off -Denable_compile_warnings=off -Denable_compile_optimizations=off -Dgtnets_path=$absolute_path/usr ./
+		cmake -Denable_supernovae=off -Denable_compile_warnings=off -Denable_compile_optimizations=off -Dgtnets_path=$absolute_path/usr ./
 		ctest -D NightlyStart
 		ctest -D NightlyConfigure
 		ctest -D NightlyBuild
