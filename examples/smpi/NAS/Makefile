@@ -56,6 +56,10 @@ DT-trace: dt-trace
 dt-trace: header
 	cd DT-trace; $(MAKE) CLASS=$(CLASS)
 
+DT-folding: dt-folding
+dt-folding: header
+	cd DT-folding; $(MAKE) CLASS=$(CLASS)
+
 # Awk script courtesy cmg@cray.com, modified by Haoqiang Jin
 suite:
 	@ awk -f sys/suite.awk SMAKE=$(MAKE) $(SFILE) | $(SHELL)
