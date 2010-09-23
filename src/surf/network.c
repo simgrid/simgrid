@@ -324,17 +324,6 @@ static void net_update_actions_state(double now, double delta)
    */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
-
-#ifdef HAVE_TRACING
-    xbt_dynar_t route = used_routing->get_route(action->src, action->dst);
-    link_CM02_t link;
-    unsigned int i;
-    xbt_dynar_foreach(route, i, link) {
-    	TRACE_surf_link_set_utilization (link->lmm_resource.generic_resource.name,
-          action->generic_action.data, lmm_variable_getvalue(action->variable), now-delta, delta);
-    }
-#endif
-
     deltap = delta;
     if (action->latency > 0) {
       if (action->latency > deltap) {
@@ -348,6 +337,15 @@ static void net_update_actions_state(double now, double delta)
         lmm_update_variable_weight(network_maxmin_system, action->variable,
                                    action->weight);
     }
+#ifdef HAVE_TRACING
+    xbt_dynar_t route = used_routing->get_route(action->src, action->dst);
+    link_CM02_t link;
+    unsigned int i;
+    xbt_dynar_foreach(route, i, link) {
+      TRACE_surf_link_set_utilization (link->lmm_resource.generic_resource.name,
+          action->generic_action.data, lmm_variable_getvalue(action->variable), now-delta, delta);
+    }
+#endif
     double_update(&(action->generic_action.remains),
                   lmm_variable_getvalue(action->variable) * deltap);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
