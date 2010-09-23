@@ -18,8 +18,8 @@ void TRACE_smx_action_execute (smx_action_t act)
   act->counter = counter++;
   category = __TRACE_category_get (SIMIX_process_self());
   if (category){
-	act->category = xbt_new (char, strlen (category)+1);
-	strncpy (act->category, category, strlen(category)+1);
+    act->category = xbt_new (char, strlen (category)+1);
+    strncpy (act->category, category, strlen(category)+1);
   }
 }
 
