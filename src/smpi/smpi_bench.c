@@ -124,7 +124,7 @@ void smpi_do_once_3()
 */
 
 void* smpi_shared_malloc(size_t size, const char* file, int line) {
-   char* loc = bprintf("%s:%d", file, line);
+   char* loc = bprintf("%s:%d:%zu", file, line, size);
    shared_data_t* data;
 
    if (!allocs) {
