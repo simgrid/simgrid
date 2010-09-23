@@ -184,7 +184,9 @@ void nary_tree_barrier(MPI_Comm comm, int arity) {
 int smpi_coll_tuned_alltoall_bruck(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm) {
   int system_tag = 777;
   int i, rank, size, err, count;
-  MPI_Aint lb, sendextent, recvextent;
+  MPI_Aint lb;
+  MPI_Aint sendextent = 0;
+  MPI_Aint recvextent = 0;
   MPI_Request* requests;
 
   // FIXME: check implementation
@@ -232,7 +234,9 @@ int smpi_coll_tuned_alltoall_bruck(void* sendbuf, int sendcount, MPI_Datatype se
 int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm) {
   int system_tag = 888;
   int i, rank, size, err, count;
-  MPI_Aint lb, sendinc, recvinc;
+  MPI_Aint lb;
+  MPI_Aint sendinc = 0;
+  MPI_Aint recvinc = 0;
   MPI_Request *requests;
 
   /* Initialize. */
@@ -305,7 +309,9 @@ int smpi_coll_tuned_alltoall_pairwise(void* sendbuf, int sendcount, MPI_Datatype
 int smpi_coll_basic_alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int *recvcounts, int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm) {
   int system_tag = 889;
   int i, rank, size, err, count;
-  MPI_Aint lb, sendextent, recvextent;
+  MPI_Aint lb;
+  MPI_Aint sendextent = 0;
+  MPI_Aint recvextent = 0;
   MPI_Request* requests;
 
   /* Initialize. */
