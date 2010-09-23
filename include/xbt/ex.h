@@ -140,7 +140,7 @@ __ex_mctx_struct} __ex_mctx_t;
  *
  * @section XBT_ex_base BASIC USAGE
  *
- * \em TRY \b TRIED_BLOCK [\em CLEANUP \b CLEANUP_BLOCK] \em CATCH (variable) \b CATCH_BLOCK
+ * \em TRY \b TRIED_BLOCK [\em _CLEANUP \b _CLEANUP_BLOCK] \em CATCH (variable) \b CATCH_BLOCK
  *
  * This is the primary syntactical construct provided. It is modeled after the
  * ISO-C++ try-catch clause and should sound familiar to most of you.
@@ -153,7 +153,7 @@ __ex_mctx_struct} __ex_mctx_t;
  *
  * 
  * In absence of exception, the control flow goes into the blocks TRIED_BLOCK
- * and CLEANUP_BLOCK (if present); The CATCH_BLOCK block is then ignored. 
+ * and CLEANUP_BLOCK (if present); The CATCH_BLOCK block is then ignored.
  *
  * When an exception is thrown, the control flow goes through the following
  * blocks: TRIED_BLOCK (up to the statement throwing the exception),
@@ -360,10 +360,10 @@ XBT_PUBLIC_DATA(ex_term_cb_t) __xbt_ex_terminate;
         if (__ex_mctx_save(&__ex_mctx_me)) { \
             if (1)
 
-/** @brief optional(!) block for cleanup 
+/** @brief optional(!) block for cleanup
  *  @hideinitializer
  */
-#define CLEANUP \
+#define _CLEANUP \
             else { \
             } \
             __xbt_ex_ctx_ptr->ctx_caught = 0; \
@@ -422,7 +422,7 @@ XBT_PUBLIC_DATA(ex_term_cb_t) __xbt_ex_terminate;
  *
  * If called from within a TRY/CATCH construct, this exception 
  * is copied into the CATCH relevant variable program control flow 
- * is derouted to the CATCH (after the optional sg_cleanup). 
+ * is derouted to the CATCH (after the optional sg_cleanup).
  *
  * If no TRY/CATCH construct embeeds this call, the program calls
  * abort(3). 

@@ -94,7 +94,7 @@ xbt_multidict_set(xbt_dict_t mdict,
 
   TRY {
     xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
-  } CLEANUP {
+  } _CLEANUP {
     xbt_dynar_free(&lens);
   } CATCH(e) {
     RETHROW;
@@ -229,7 +229,7 @@ void xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys)
 
   TRY {
     xbt_multidict_remove_ext(mdict, keys, lens);
-  } CLEANUP {
+  } _CLEANUP {
     xbt_dynar_free(&lens);
   } CATCH(e) {
     RETHROW;

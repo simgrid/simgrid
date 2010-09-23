@@ -337,7 +337,7 @@ XBT_TEST_UNIT("cleanup", test_cleanup, "cleanup handling")
   TRY {
     v1 = 5678;
     THROW0(1, 2, "blah");
-  } CLEANUP {
+  } _CLEANUP {
     if (v1 != 5678)
       xbt_test_fail1("v1 = %d (!= 5678)", v1);
     c = 1;
@@ -385,7 +385,7 @@ static void bad_example(void)
     cp3 = mallocex(SMALLAMOUNT);
     strcpy(cp1, "foo");
     strcpy(cp2, "bar");
-  } CLEANUP {
+  } _CLEANUP {
     if (cp3 != NULL)
       free(cp3);
     if (cp2 != NULL)
@@ -422,7 +422,7 @@ static void good_example(void)
       cp3 = mallocex(SMALLAMOUNT);
       strcpy(cp1, "foo");
       strcpy(cp2, "bar");
-    } CLEANUP {                 /*04 */
+    } _CLEANUP {                 /*04 */
       printf("cp3=%s", cp3 == NULL /*02 */ ? "" : cp3);
       if (cp3 != NULL)
         free(cp3);
