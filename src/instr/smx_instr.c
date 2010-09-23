@@ -21,6 +21,7 @@ void TRACE_smx_action_execute (smx_action_t act)
     act->category = xbt_new (char, strlen (category)+1);
     strncpy (act->category, category, strlen(category)+1);
   }
+  __TRACE_surf_resource_utilization_start (act);
 }
 
 void TRACE_smx_action_communicate (smx_action_t act, smx_process_t proc)
@@ -33,6 +34,7 @@ void TRACE_smx_action_communicate (smx_action_t act, smx_process_t proc)
   if (category){
     act->category = xbt_strdup (category);
   }
+  __TRACE_surf_resource_utilization_start (act);
 }
 
 void TRACE_smx_action_destroy (smx_action_t act)
@@ -42,6 +44,7 @@ void TRACE_smx_action_destroy (smx_action_t act)
   if (act->category){
     xbt_free (act->category);
   }
+  __TRACE_surf_resource_utilization_end (act);
 }
 
 #endif

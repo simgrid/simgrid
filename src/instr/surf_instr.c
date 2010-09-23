@@ -20,9 +20,6 @@ static xbt_dict_t link_bandwidth; //name(char*) -> bandwidth(double)
 static xbt_dict_t link_latency;   //name(char*) -> latency(double)
 static xbt_dict_t host_containers;
 
-static xbt_dict_t last_platform_variables; /* to control the amount of add/sub variables events:
-   dict with key {RESOURCE_NAME}#Time or {RESOURCE_NAME}#Value of dict with variables types == string */
-
 static xbt_dict_t platform_variables; /* host or link name -> array of categories */
 
 static xbt_dict_t resource_variables; /* (host|link)#variable -> value */
@@ -40,83 +37,15 @@ void __TRACE_surf_init (void)
   link_latency = xbt_dict_new();
   platform_variables = xbt_dict_new();
   host_containers = xbt_dict_new();
-  last_platform_variables =  xbt_dict_new();
   resource_variables = xbt_dict_new ();
   gtnets_src = xbt_dict_new ();
   gtnets_dst = xbt_dict_new ();
-}
-
-static char *strsplit (char *input, int field, char del) //caller should free the returned string
-{
-	char *ret = NULL;
-  int length = strlen(input), i;
-  int s = 0, e = length+1;
-  int current_field = 0;
-  for (i = 0; i < length; i++){
-     if (input[i] == del){
-       if (current_field == field){
-         e = i-1;
-         break;
-       }else{
-         s = i+1;
-         current_field++;
-       }
-     }
-  }
-  //copy string from s to e (with length equal to e-s) and return
-  ret = malloc ((e-s+2)*sizeof(char));
-  strncpy (ret, input+s, e-s+1);
-  ret[e-s+1] = '\0';
-  return ret;
+  __TRACE_surf_resource_utilization_initialize();
 }
 
 void __TRACE_surf_finalize (void)
 {
-	xbt_dict_cursor_t cursor = NULL;
-	unsigned int cursor_ar = 0;
-    char *key, *value, *res;
-    char *resource;
-    char *aux = NULL;
-    char *var_cpy = NULL;
-    xbt_dynar_t resources = NULL;
-  if (!IS_TRACING_PLATFORM) return;
-  if (!xbt_dict_length(last_platform_variables)){
-    return;
-  }else{
-    /* get all resources from last_platform_variables */
-    resources = xbt_dynar_new(sizeof(char*), xbt_free);
-    xbt_dict_foreach(last_platform_variables, cursor, key, value) {
-      res = strsplit (key, 0, VARIABLE_SEPARATOR);
-      aux = strsplit (key, 1, VARIABLE_SEPARATOR);
-      if (strcmp (aux, "Time") == 0){ //only need to add one of three
-        var_cpy = xbt_strdup (res);
-        xbt_dynar_push (resources, &var_cpy);
-      }
-      free (aux);
-      free (res);
-    }
-
-    /* iterate through resources array */
-    xbt_dynar_foreach (resources, cursor_ar, resource) {
-      char timekey[100], valuekey[100], variablekey[100];
-      char *time = NULL;
-      char *value = NULL;
-      char *variable = NULL;
-      snprintf (timekey, 100, "%s%cTime", resource, VARIABLE_SEPARATOR);
-      snprintf (valuekey, 100, "%s%cValue", resource, VARIABLE_SEPARATOR);
-      snprintf (variablekey, 100, "%s%cVariable", resource, VARIABLE_SEPARATOR);
-
-      time = xbt_dict_get_or_null (last_platform_variables, timekey);
-      if (!time) continue;
-      value = xbt_dict_get (last_platform_variables, valuekey);
-      variable = xbt_dict_get (last_platform_variables, variablekey);
-      pajeSubVariable (atof(time), variable, resource, value);
-
-      xbt_dict_remove (last_platform_variables, timekey);
-      xbt_dict_remove (last_platform_variables, valuekey);
-      xbt_dict_remove (last_platform_variables, variablekey);
-    }
-  }
+  __TRACE_surf_resource_utilization_finalize();
 }
 
 void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, const char *resource)
@@ -147,100 +76,6 @@ void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, 
   /* end of check */
 }
 
-void __TRACE_surf_update_action_state_resource (double now, double delta, const char *variable, const char *resource, double value)
-{
-	char valuestr[100];
-	char nowstr[100], nowdeltastr[100];
-	char timekey[100], valuekey[100], variablekey[100];
-	char *lastvariable = NULL;
-	char *lasttime = NULL;
-    char *lastvalue = NULL;
-    char *nowdeltastr_cpy = NULL;
-    char *valuestr_cpy = NULL;
-    char *variable_cpy = NULL;
-
-  if (!IS_TRACING_PLATFORM) return;
-
-  snprintf (valuestr, 100, "%f", value);
-
-  /*
-  //fprintf (stderr, "resource = %s variable = %s (%f -> %f) value = %s\n", resource, variable, now, now+delta, valuestr);
-  if (1){
-    __TRACE_surf_check_variable_set_to_zero (now, variable, resource);
-    if (IS_TRACING_PLATFORM) pajeAddVariable (now, variable, resource, valuestr);
-    if (IS_TRACING_PLATFORM) pajeSubVariable (now+delta, variable, resource, valuestr);
-    return;
-  }
-  */
-
-  /*
-   * The following code replaces the code above with the objective
-   * to decrease the size of file because of unnecessary add/sub on
-   * variables. It should be re-checked before put in production.
-   */
-
-  snprintf (nowstr, 100, "%.15f", now);
-  snprintf (nowdeltastr, 100, "%.15f", now+delta);
-
-  snprintf (timekey, 100, "%s%cTime", resource, VARIABLE_SEPARATOR);
-  snprintf (valuekey, 100, "%s%cValue", resource, VARIABLE_SEPARATOR);
-  snprintf (variablekey, 100, "%s%cVariable", resource, VARIABLE_SEPARATOR);
-
-  lastvariable = xbt_dict_get_or_null (last_platform_variables, variablekey);
-  if (lastvariable == NULL){
-    __TRACE_surf_check_variable_set_to_zero (now, variable, resource);
-    pajeAddVariable (now, variable, resource, valuestr);
-    nowdeltastr_cpy = xbt_strdup (nowdeltastr);
-    valuestr_cpy = xbt_strdup (valuestr);
-    variable_cpy = xbt_strdup (variable);
-    xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
-    xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
-    xbt_dict_set (last_platform_variables, variablekey, variable_cpy, xbt_free);
-  }else{
-    lasttime = xbt_dict_get_or_null (last_platform_variables, timekey);
-    lastvalue = xbt_dict_get_or_null (last_platform_variables, valuekey);
-
-    /* check if it is the same variable */
-    if (strcmp(lastvariable, variable) == 0){ /* same variable */
-      /* check if lasttime equals now */
-      if (atof(lasttime) == now){ /* lastime == now */
-        /* check if lastvalue equals valuestr */
-        if (atof(lastvalue) == value){ /* lastvalue == value (good, just advance time) */
-          char *nowdeltastr_cpy = xbt_strdup (nowdeltastr);
-          xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
-        }else{ /* value has changed */
-          /* value has changed, subtract previous value, add new one */
-          pajeSubVariable (atof(lasttime), variable, resource, lastvalue);
-          pajeAddVariable (atof(nowstr), variable, resource, valuestr);
-          nowdeltastr_cpy = xbt_strdup (nowdeltastr);
-          valuestr_cpy = xbt_strdup (valuestr);
-          xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
-          xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
-        }
-      }else{ /* lasttime != now */
-        /* the last time is different from new starting time, subtract to lasttime and add from nowstr */
-        pajeSubVariable (atof(lasttime), variable, resource, lastvalue);
-        pajeAddVariable (atof(nowstr), variable, resource, valuestr);
-        nowdeltastr_cpy = xbt_strdup (nowdeltastr);
-        valuestr_cpy = xbt_strdup (valuestr);
-        xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
-        xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
-      }
-    }else{ /* variable has changed */
-      pajeSubVariable (atof(lasttime), lastvariable, resource, lastvalue);
-      __TRACE_surf_check_variable_set_to_zero (now, variable, resource);
-      pajeAddVariable (now, variable, resource, valuestr);
-      nowdeltastr_cpy = xbt_strdup (nowdeltastr);
-      valuestr_cpy = xbt_strdup (valuestr);
-      variable_cpy = xbt_strdup (variable);
-      xbt_dict_set (last_platform_variables, timekey, nowdeltastr_cpy, xbt_free);
-      xbt_dict_set (last_platform_variables, valuekey, valuestr_cpy, xbt_free);
-      xbt_dict_set (last_platform_variables, variablekey, variable_cpy, xbt_free);
-    }
-  }
-  return;
-}
-
 void __TRACE_surf_set_resource_variable (double date, const char *variable, const char *resource, double value)
 {
 	char aux[100], key[100];
@@ -257,42 +92,6 @@ void __TRACE_surf_set_resource_variable (double date, const char *variable, cons
   }
   if (IS_TRACING_PLATFORM) pajeSetVariable (date, variable, resource, aux);
   xbt_dict_set (resource_variables, xbt_strdup(key), xbt_strdup(aux), xbt_free);
-}
-
-void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta)
-{
-	char type[100];
-  if (!IS_TRACING || !IS_TRACED(smx_action)) return;
-
-  if (strcmp (name, "__loopback__")==0 ||
-      strcmp (name, "loopback")==0){ //ignore loopback updates
-    return;
-  }
-
-  if (value == 0) return;
-
-  if (!xbt_dict_get_or_null (created_links, name)){
-    TRACE_surf_link_missing ();
-    return;
-  }
-
-  snprintf (type, 100, "b%s", smx_action->category);
-  __TRACE_surf_update_action_state_resource (now, delta, type, name, value);
-  return;
-}
-
-void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta)
-{
-	char type[100];
-  if (!IS_TRACING || !IS_TRACED(smx_action)) return;
-
-  if (value==0){
-    return;
-  }
-
-  snprintf (type, 100, "p%s", smx_action->category);
-  __TRACE_surf_update_action_state_resource (now, delta, type, name, value);
-  return;
 }
 
 /*

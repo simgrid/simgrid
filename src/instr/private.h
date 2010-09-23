@@ -112,17 +112,14 @@ void TRACE_smx_action_destroy (smx_action_t act);
 void __TRACE_surf_init (void);
 void __TRACE_surf_finalize (void);
 void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, const char *resource);
-void __TRACE_surf_update_action_state_resource (double now, double delta, const char *type, const char *name, double value);
 void __TRACE_surf_set_resource_variable (double date, const char *variable, const char *resource, double value);
 void TRACE_surf_host_declaration (char *name, double power);
 void TRACE_surf_host_set_power (double date, char *resource, double power);
-void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
 void TRACE_surf_host_define_id (const char *name, int host_id);
 void TRACE_surf_host_vivaldi_parse (char *host, double x, double y, double h);
 void TRACE_surf_link_declaration (char *name, double bw, double lat);
 void TRACE_surf_link_set_bandwidth (double date, char *resource, double bandwidth);
 void TRACE_surf_link_set_latency (double date, char *resource, double latency);
-void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
 void TRACE_surf_link_save_endpoints (char *link_name, int src, int dst);
 void TRACE_surf_link_missing (void);
 void TRACE_msg_clean (void);
@@ -156,6 +153,14 @@ int _TRACE_msg_volume_enabled (void);
 char *_TRACE_filename (void);
 void TRACE_global_init(int *argc, char **argv);
 
+/* from resource_utilization.c */
+void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
+void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
+void __TRACE_surf_resource_utilization_start (smx_action_t action);
+void __TRACE_surf_resource_utilization_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value);
+void __TRACE_surf_resource_utilization_end (smx_action_t action);
+void __TRACE_surf_resource_utilization_initialize (void);
+void __TRACE_surf_resource_utilization_finalize (void);
 
 #endif
 

@@ -337,6 +337,7 @@ set(TRACING_SRC
 	src/instr/surf_instr.c
 	src/instr/smpi_instr.c
 	src/instr/variables_instr.c
+	src/instr/resource_utilization.c
 	src/instr/private.h
 )
 
