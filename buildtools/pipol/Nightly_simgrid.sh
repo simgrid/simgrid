@@ -85,7 +85,7 @@ ctest -D NightlySubmit
 make clean
 
 #Make the supernovae mode
-cmake -Dsupernovae=on ./
+cmake -Denable_supernovae=on ./
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild

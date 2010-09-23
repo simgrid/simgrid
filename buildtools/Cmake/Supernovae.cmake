@@ -65,4 +65,5 @@ add_library(simgrid_static STATIC ${PROJECT_DIRECTORY}/src/supernovae_sg.c ${sim
 add_library(gras 	SHARED 	${PROJECT_DIRECTORY}/src/supernovae_gras.c ${gras_fragile_sources})
 if(enable_smpi)
 	add_library(smpi 	SHARED 	${PROJECT_DIRECTORY}/src/supernovae_smpi.c)
+	add_library(smpi_static STATIC ${PROJECT_DIRECTORY}/src/supernovae_smpi.c)
 endif(enable_smpi)
