@@ -10,16 +10,12 @@
 
 #define VARIABLE_SEPARATOR '#'
 
-#define METHOD_B
-
-#ifdef METHOD_B
+//B
 static xbt_dict_t last_platform_variables; /* to control the amount of add/sub variables events:
    dict with key {RESOURCE_NAME}#Time or {RESOURCE_NAME}#Value of dict with variables types == string */
-#endif //METHOD_B
 
-#ifdef METHOD_C
+//C
 static xbt_dict_t method_c_dict;
-#endif // METHOD_C
 
 /* auxiliary function for resource utilization tracing */
 static char *strsplit (char *input, int field, char del) //caller should free the returned string
@@ -46,7 +42,24 @@ static char *strsplit (char *input, int field, char del) //caller should free th
   return ret;
 }
 
-#ifdef METHOD_A
+//resource utilization tracing method
+typedef enum {methodA,methodB,methodC} TracingMethod;
+static TracingMethod currentMethod;
+
+static void __TRACE_define_method (char *method)
+{
+  if (!strcmp(method, "a")){
+    currentMethod = methodA;
+  }else if (!strcmp(method, "b")){
+    currentMethod = methodB;
+  }else if (!strcmp(method, "c")){
+    currentMethod = methodC;
+  }else{
+    currentMethod = methodB; //default
+  }
+}
+
+//A
 static void __TRACE_surf_resource_utilization_A (double now, double delta, const char *variable, const char *resource, double value)
 {
   if (!IS_TRACING_PLATFORM) return;
@@ -59,9 +72,8 @@ static void __TRACE_surf_resource_utilization_A (double now, double delta, const
   pajeSubVariable (now+delta, variable, resource, valuestr);
   return;
 }
-#endif //METHOD_A
 
-#ifdef METHOD_B
+//B
 static void __TRACE_surf_resource_utilization_initialize_B ()
 {
   last_platform_variables =  xbt_dict_new();
@@ -197,10 +209,8 @@ static void __TRACE_surf_resource_utilization_finalize_B ()
     }
   }
 }
-#endif //METHOD_B
 
-
-#ifdef METHOD_C
+//C
 static void __TRACE_surf_resource_utilization_start_C (smx_action_t action)
 {
   char key[100];
@@ -310,9 +320,6 @@ static void __TRACE_surf_resource_utilization_finalize_C ()
 {
   xbt_dict_free (&method_c_dict);
 }
-#endif //METHOD_C
-
-
 
 /*
  * TRACE_surf_link_set_utilization: entry point from SimGrid
@@ -364,60 +371,48 @@ void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action,
  */
 void __TRACE_surf_resource_utilization_start (smx_action_t action)
 {
-#ifdef METHOD_C
-  __TRACE_surf_resource_utilization_start_C (action);
-#endif
+  if (currentMethod == methodC){
+    __TRACE_surf_resource_utilization_start_C (action);
+  }
 }
 
 void __TRACE_surf_resource_utilization_end (smx_action_t action)
 {
-#ifdef METHOD_C
-  __TRACE_surf_resource_utilization_end_C (action);
-#endif
+  if (currentMethod == methodC){
+    __TRACE_surf_resource_utilization_end_C (action);
+  }
 }
 
 void __TRACE_surf_resource_utilization_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value)
 {
-#ifdef METHOD_A
-  __TRACE_surf_resource_utilization_A (now, delta, variable, resource, value);
-#else
-  #ifdef METHOD_B
-  __TRACE_surf_resource_utilization_B (now, delta, variable, resource, value);
-  #else
-    #ifdef METHOD_C
+  if (currentMethod == methodA){
+    __TRACE_surf_resource_utilization_A (now, delta, variable, resource, value);
+  }else if (currentMethod == methodB){
+    __TRACE_surf_resource_utilization_B (now, delta, variable, resource, value);
+  }else if (currentMethod == methodC){
     __TRACE_surf_resource_utilization_C (action, now, delta, variable, resource, value);
-    #endif
-  #endif
-#endif
+  }
 }
 
 void __TRACE_surf_resource_utilization_initialize ()
 {
-#ifdef METHOD_A
-#else
-  #ifdef METHOD_B
-  __TRACE_surf_resource_utilization_initialize_B();
-  #else
-    #ifdef METHOD_C
+  __TRACE_define_method (_TRACE_platform_method());
+
+  if (currentMethod == methodA){
+  }else if (currentMethod == methodB){
+    __TRACE_surf_resource_utilization_initialize_B();
+  }else if (currentMethod == methodC){
     __TRACE_surf_resource_utilization_initialize_C();
-    #endif
-  #endif
-#endif
+  }
 }
 
 void __TRACE_surf_resource_utilization_finalize ()
 {
-#ifdef METHOD_A
-#else
-  #ifdef METHOD_B
-  __TRACE_surf_resource_utilization_finalize_B();
-  #else
-    #ifdef METHOD_C
+  if (currentMethod == methodA){
+  }else if (currentMethod == methodB){
+    __TRACE_surf_resource_utilization_finalize_B();
+  }else if (currentMethod == methodC){
     __TRACE_surf_resource_utilization_finalize_C();
-    #endif
-  #endif
-#endif
+  }
 }
-
-
 #endif

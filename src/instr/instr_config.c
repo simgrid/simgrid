@@ -15,6 +15,7 @@
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
 #define OPT_TRACING_MSG_VOLUME    "tracing/msg/volume"
 #define OPT_TRACING_FILENAME      "tracing/filename"
+#define OPT_TRACING_PLATFORM_METHOD "tracing/platform/method"
 
 static int trace_configured = 0;
 
@@ -53,6 +54,11 @@ char *_TRACE_filename (void)
   return xbt_cfg_get_string (_surf_cfg_set, OPT_TRACING_FILENAME);
 }
 
+char *_TRACE_platform_method (void)
+{
+  return xbt_cfg_get_string (_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD);
+}
+
 void TRACE_global_init(int *argc, char **argv)
 {
   /* name of the tracefile */
@@ -74,6 +80,13 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
                    "Tracing of categorized platform (host and link) utilization.",
                    xbt_cfgelm_int, &default_tracing_platform, 0, 1,
+                   NULL, NULL);
+
+  /* platform method */
+  char *default_tracing_platform_method = xbt_strdup ("b");
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD,
+                   "Tracing method used to register categorized resource behavior.",
+                   xbt_cfgelm_string, &default_tracing_platform_method, 1, 1,
                    NULL, NULL);
 
   /* msg task */

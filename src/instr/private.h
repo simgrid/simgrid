@@ -151,6 +151,7 @@ int _TRACE_msg_task_enabled (void);
 int _TRACE_msg_process_enabled (void);
 int _TRACE_msg_volume_enabled (void);
 char *_TRACE_filename (void);
+char *_TRACE_platform_method (void);
 void TRACE_global_init(int *argc, char **argv);
 
 /* from resource_utilization.c */
