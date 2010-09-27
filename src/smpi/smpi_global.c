@@ -20,6 +20,7 @@ typedef struct s_smpi_process_data {
   xbt_fifo_t pending_sent;
   xbt_fifo_t pending_recv;
   xbt_os_timer_t timer;
+  double simulated;
   MPI_Comm comm_self;
 } s_smpi_process_data_t;
 
@@ -50,6 +51,18 @@ xbt_os_timer_t smpi_process_timer(void) {
   smpi_process_data_t data = smpi_process_data();
 
   return data->timer;
+}
+
+void smpi_process_simulated_start(void) {
+  smpi_process_data_t data = smpi_process_data();
+
+   data->simulated = SIMIX_get_clock();
+}
+
+double smpi_process_simulated_elapsed(void) {
+  smpi_process_data_t data = smpi_process_data();
+
+  return SIMIX_get_clock() - data->simulated;
 }
 
 MPI_Comm smpi_process_comm_self(void) {

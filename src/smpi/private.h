@@ -47,6 +47,8 @@ smpi_process_data_t smpi_process_remote_data(int index);
 int smpi_process_count(void);
 int smpi_process_index(void);
 xbt_os_timer_t smpi_process_timer(void);
+void smpi_process_simulated_start(void);
+double smpi_process_simulated_elapsed(void);
 void print_request(const char* message, MPI_Request request);
 void smpi_process_post_send(MPI_Comm comm, MPI_Request request);
 void smpi_process_post_recv(MPI_Request request);

@@ -12,19 +12,26 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
                                 "Logging specific to SMPI (benchmarking)");
 
 xbt_dict_t allocs = NULL; /* Allocated on first use */
+xbt_dict_t samples = NULL; /* Allocated on first use */
 
 typedef struct {
    int count;
    char data[];
 } shared_data_t;
 
-static void free_shared_data(void* ptr) {
-   free(ptr);
-}
+typedef struct {
+   double time;
+   int count;
+   int max;
+   int started;
+} local_data_t;
 
 void smpi_bench_destroy(void) {
    if (allocs) {
       xbt_dict_free(&allocs);
+   }
+   if (samples) {
+      xbt_dict_free(&samples);
    }
 }
 
@@ -74,54 +81,89 @@ void smpi_bench_end(int rank, const char* mpi_call) {
   }
 }
 
-/*
-TODO
-void smpi_do_once_1(const char *file, int line)
-{
-  smpi_do_once_duration_node_t curr, prev;
-
-  smpi_bench_end();
-  SIMIX_mutex_lock(smpi_global->do_once_mutex);
-  prev = NULL;
-  for(curr = smpi_global->do_once_duration_nodes;
-      NULL != curr && (strcmp(curr->file, file) || curr->line != line);
-      curr = curr->next) {
-    prev = curr;
-  }
-  if(NULL == curr) {
-    curr = xbt_new(s_smpi_do_once_duration_node_t, 1);
-    curr->file = xbt_strdup(file);
-    curr->line = line;
-    curr->duration = -1;
-    curr->next = NULL;
-    if(NULL == prev) {
-      smpi_global->do_once_duration_nodes = curr;
-    } else {
-      prev->next = curr;
-    }
-  }
-  smpi_global->do_once_duration = &curr->duration;
+unsigned int smpi_sleep(unsigned int secs) {
+   smpi_execute((double)secs);
 }
 
-int smpi_do_once_2()
-{
-  double duration = *(smpi_global->do_once_duration);
+int smpi_gettimeofday(struct timeval* tv, struct timezone* tz) {
+   double now = SIMIX_get_clock();
 
-  if(0 > duration) {
-    smpi_start_timer();
-    return 1;
-  }
-  SIMIX_mutex_unlock(smpi_global->do_once_mutex);
-  smpi_execute(duration);
-  smpi_bench_begin();
-  return 0;
+   if(tv) {
+      tv->tv_sec = (time_t)now;
+      tv->tv_usec = (suseconds_t)(now * 1e6);
+   }
+   return 0;
 }
 
-void smpi_do_once_3()
-{
-  *(smpi_global->do_once_duration) = smpi_stop_timer();
+static char* sample_location(int global, const char* file, int line) {
+   if(global) {
+      return bprintf("%s:%d", file, line);
+   } else {
+      return bprintf("%s:%d:%d", file, line, smpi_process_index());
+   }
 }
-*/
+
+void smpi_sample_1(int global, const char* file, int line, int max) {
+   char* loc = sample_location(global, file, line);
+   local_data_t* data;
+
+   smpi_bench_end(-1, NULL); /* Take time from previous MPI call into account */
+   if (!samples) {
+      samples = xbt_dict_new();
+   }
+   data = xbt_dict_get_or_null(samples, loc);
+   if (!data) {
+      data = (local_data_t*)xbt_new(local_data_t, 1);
+      data->time = 0.0;
+      data->count = 0;
+      data->max = max;
+      data->started = 0;
+      xbt_dict_set(samples, loc, data, &free);
+   }
+   free(loc);
+}
+
+int smpi_sample_2(int global, const char* file, int line) {
+   char* loc = sample_location(global, file, line);
+   local_data_t* data;
+   double* simu;
+
+   xbt_assert0(samples, "You did something very inconsistent, didn't you?");
+   data = xbt_dict_get_or_null(samples, loc);
+   if (!data) {
+      xbt_assert0(data, "Please, do thing in order");
+   }
+   if (!data->started) {
+      if (data->count < data->max) {
+         data->started = 1;
+         data->count++;
+      } else {
+         DEBUG1("Perform some wait of %f", data->time / (double)data->count);
+         smpi_execute(data->time / (double)data->count);
+      }
+   } else {
+      data->started = 0;
+   }
+   free(loc);
+   smpi_bench_begin(-1, NULL);
+   smpi_process_simulated_start();
+   return data->started;
+}
+
+void smpi_sample_3(int global, const char* file, int line) {
+   char* loc = sample_location(global, file, line);
+   local_data_t* data;
+   double spent;
+
+   xbt_assert0(samples, "You did something very inconsistent, didn't you?");
+   data = xbt_dict_get_or_null(samples, loc);
+   if (!data || !data->started || data->count >= data->max) {
+      xbt_assert0(data, "Please, do thing in order");
+   }
+   smpi_bench_end(-1, NULL);
+   data->time += smpi_process_simulated_elapsed();
+   DEBUG2("Average mean after %d steps is %f", data->count, data->time / (double)data->count);
+}
 
 void* smpi_shared_malloc(size_t size, const char* file, int line) {
    char* loc = bprintf("%s:%d:%zu", file, line, size);
@@ -134,7 +176,7 @@ void* smpi_shared_malloc(size_t size, const char* file, int line) {
    if (!data) {
       data = (shared_data_t*)xbt_malloc0(sizeof(int) + size);
       data->count = 1;
-      xbt_dict_set(allocs, loc, data, &free_shared_data);
+      xbt_dict_set(allocs, loc, data, &free);
    } else {
       data->count++;
    }

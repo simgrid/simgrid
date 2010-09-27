@@ -237,19 +237,22 @@ XBT_PUBLIC(int) MPI_Comm_split(MPI_Comm comm, int color, int key,
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char** argv);
 XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 /*
-XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int);
 XBT_PUBLIC(void) smpi_exit(int);
+*/
+
+XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
 XBT_PUBLIC(int) smpi_gettimeofday(struct timeval* tv, struct timezone* tz);
-*/
+XBT_PUBLIC(void) smpi_sample_1(int global, const char* file, int line, int max);
+XBT_PUBLIC(int) smpi_sample_2(int global, const char* file, int line);
+XBT_PUBLIC(void) smpi_sample_3(int global, const char* file, int line);
 
-/*
-TODO
-XBT_PUBLIC(void) smpi_do_once_1(const char* file, int line);
-XBT_PUBLIC(int) smpi_do_once_2(void);
-XBT_PUBLIC(void) smpi_do_once_3(void);
+#define SMPI_SAMPLE_LOCAL(num) for(smpi_sample_1(0, __FILE__, __LINE__, num); \
+                                   smpi_sample_2(0, __FILE__, __LINE__);      \
+                                   smpi_sample_3(0, __FILE__, __LINE__))
 
-#define SMPI_DO_ONCE for (smpi_do_once_1(__FILE__, __LINE__); smpi_do_once_2(); smpi_do_once_3())
-*/
+#define SMPI_SAMPLE_GLOBAL(num) for(smpi_sample_1(1, __FILE__, __LINE__, num); \
+                                    smpi_sample_2(1, __FILE__, __LINE__);      \
+                                    smpi_sample_3(1, __FILE__, __LINE__))
 
 XBT_PUBLIC(void*) smpi_shared_malloc(size_t size, const char* file, int line);
 #define SMPI_SHARED_MALLOC(size) smpi_shared_malloc(size, __FILE__, __LINE__)
