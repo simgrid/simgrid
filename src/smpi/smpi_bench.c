@@ -83,6 +83,7 @@ void smpi_bench_end(int rank, const char* mpi_call) {
 
 unsigned int smpi_sleep(unsigned int secs) {
    smpi_execute((double)secs);
+   return secs;
 }
 
 int smpi_gettimeofday(struct timeval* tv, struct timezone* tz) {
@@ -126,7 +127,6 @@ void smpi_sample_1(int global, const char* file, int line, int max) {
 int smpi_sample_2(int global, const char* file, int line) {
    char* loc = sample_location(global, file, line);
    local_data_t* data;
-   double* simu;
 
    xbt_assert0(samples, "You did something very inconsistent, didn't you?");
    data = xbt_dict_get_or_null(samples, loc);
@@ -153,7 +153,6 @@ int smpi_sample_2(int global, const char* file, int line) {
 void smpi_sample_3(int global, const char* file, int line) {
    char* loc = sample_location(global, file, line);
    local_data_t* data;
-   double spent;
 
    xbt_assert0(samples, "You did something very inconsistent, didn't you?");
    data = xbt_dict_get_or_null(samples, loc);
