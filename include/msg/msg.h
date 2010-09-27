@@ -113,6 +113,7 @@ XBT_PUBLIC(void) MSG_task_set_data(m_task_t task,void*data);
 XBT_PUBLIC(m_process_t) MSG_task_get_sender(m_task_t task);
 XBT_PUBLIC(m_host_t) MSG_task_get_source(m_task_t task);
 XBT_PUBLIC(const char *) MSG_task_get_name(m_task_t task);
+XBT_PUBLIC(void) MSG_task_set_name(m_task_t task,const char*name);
 XBT_PUBLIC(MSG_error_t) MSG_task_cancel(m_task_t task);
 XBT_PUBLIC(MSG_error_t) MSG_task_destroy(m_task_t task);
 XBT_PUBLIC(void) MSG_task_refcount_dec(m_task_t task);
@@ -153,6 +154,7 @@ XBT_PUBLIC(MSG_error_t) MSG_process_sleep(double nb_sec);
 XBT_PUBLIC(MSG_error_t) MSG_get_errno(void);
 
 XBT_PUBLIC(double) MSG_task_get_compute_duration(m_task_t task);
+XBT_PUBLIC(void) MSG_task_set_compute_duration(m_task_t task,double compute_duration);
 XBT_PUBLIC(double) MSG_task_get_remaining_computation(m_task_t task);
 XBT_PUBLIC(double) MSG_task_get_remaining_communication(m_task_t task);
 XBT_PUBLIC(int)    MSG_task_is_latency_bounded(m_task_t task);

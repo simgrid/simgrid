@@ -145,6 +145,18 @@ const char *MSG_task_get_name(m_task_t task)
   return task->name;
 }
 
+/** \ingroup m_task_management
+ * \brief Return the name of a #m_task_t.
+ *
+ * This functions allows to associate a name to a task
+ */
+void MSG_task_set_name(m_task_t task,const char* name)
+{
+	xbt_assert0(task,"Invalid parameters");
+	task->name = xbt_strdup(name);
+}
+
+
 void MSG_task_refcount_dec(m_task_t task)
 {
   task->simdata->refcount--;
@@ -223,6 +235,17 @@ double MSG_task_get_compute_duration(m_task_t task)
   return task->simdata->computation_amount;
 }
 
+
+/** \ingroup m_task_management
+ * \brief set the computation amount needed to process a task #m_task_t.
+ */
+
+void MSG_task_set_compute_duration(m_task_t task,double computation_amount)
+{
+	xbt_assert0(task,"Invalid parameter");
+	task->simdata->computation_amount = computation_amount;
+
+}
 /** \ingroup m_task_management
  * \brief Returns the remaining computation amount of a task #m_task_t.
  *
