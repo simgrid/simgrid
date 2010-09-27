@@ -12,7 +12,7 @@
 #include "xbt/misc.h"
 #include "surf/datatypes.h"
 
-#define MAXMIN_PRECISION 1e-9
+#define MAXMIN_PRECISION 0.00001
 static XBT_INLINE void double_update(double *variable, double value)
 {
   *variable -= value;
