@@ -21,8 +21,8 @@ int main(int argc, char **argv)
   const SD_workstation_t *workstations;
   SD_workstation_t w1;
   SD_workstation_t w2;
-  const char *name1;
-  const char *name2;
+  const char *name1 = NULL;
+  const char *name2 = NULL;
   const double computation_amount1 = 2000000;
   const double computation_amount2 = 1000000;
   const double communication_amount12 = 2000000;
@@ -52,12 +52,22 @@ int main(int argc, char **argv)
 
   /* test the estimation functions (use small_platform.xml) */
   workstations = SD_workstation_get_list();
+
+
+  for(i=0 ; i < SD_workstation_get_number() ; i++)
+  {
+	  INFO1("name : %s",SD_workstation_get_name(workstations[i]) );
+  }
+
   w1 = workstations[0];
   w2 = workstations[1];
   name1 = SD_workstation_get_name(w1);
   name2 = SD_workstation_get_name(w2);
+
   route = SD_route_get_list(w1, w2);
+
   route_size = SD_route_get_size(w1, w2);
+
   taskA = SD_task_create("Task A", NULL, 10.0);
   taskB = SD_task_create("Task B", NULL, 40.0);
   taskC = SD_task_create("Task C", NULL, 30.0);
