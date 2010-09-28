@@ -76,6 +76,9 @@ XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Se
 /* Set of macros to make the bypassing work easier.
  * See examples/msg/masterslave_bypass.c for an example of use */
 
+extern unsigned int surfxml_buffer_stack_stack_ptr;
+extern unsigned int surfxml_buffer_stack_stack[1024];
+
 #define SURFXML_BUFFER_SET(key,val) do { \
   AX_surfxml_##key=AX_ptr; \
   strcpy(A_surfxml_##key,val); \
@@ -86,15 +89,18 @@ XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Se
   memset(surfxml_bufferstack,0,surfxml_bufferstack_size); } while(0)
 
 #define SURFXML_START_TAG(tag) do{ \
-								surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr] = AX_ptr;\
-								surfxml_buffer_stack_stack_ptr++;\
-								STag_surfxml_##tag(); \
-								}while(0)
+		surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr] = AX_ptr;\
+		DEBUG2("surfxml_buffer_stack_stack[%d]=%d",surfxml_buffer_stack_stack_ptr,surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr]);\
+		surfxml_buffer_stack_stack_ptr++;\
+		STag_surfxml_##tag(); \
+		}while(0)
+
 #define SURFXML_END_TAG(tag)  do{ \
-								AX_ptr = surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr-1];\
-								surfxml_buffer_stack_stack_ptr--;\
-								ETag_surfxml_##tag();\
-								} while(0)
+		surfxml_buffer_stack_stack_ptr--;\
+		AX_ptr = surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr-1];\
+		DEBUG1("AX_ptr=%d",AX_ptr);\
+		ETag_surfxml_##tag();\
+		} while(0)
 
 XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function);
 XBT_PUBLIC(void) surfxml_del_callback(xbt_dynar_t* cb_list, void_f_void_t function);

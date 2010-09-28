@@ -2222,8 +2222,10 @@ static void routing_full_parse_Scluster(void)
 	xbt_dynar_t radical_elements;
 	xbt_dynar_t radical_ends;
 
-	static int surfxml_buffer_stack_stack_ptr = 0;
-	static int surfxml_buffer_stack_stack[1024];
+	static unsigned int surfxml_buffer_stack_stack_ptr = 1;
+	static unsigned int surfxml_buffer_stack_stack[1024];
+
+	surfxml_buffer_stack_stack[0]= 0;
 
 	surfxml_bufferstack_push(1);
 
@@ -2275,6 +2277,7 @@ static void routing_full_parse_Scluster(void)
 
 			  surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
 			  surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
+			  DEBUG2("Create hosts and links from %d to %d",start,end);
 			  for (i = start; i <= end; i++)
 			  {
 				  host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);

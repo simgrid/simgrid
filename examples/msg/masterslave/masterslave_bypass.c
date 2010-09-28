@@ -18,8 +18,6 @@ static int surf_parse_bypass_platform(void)
 {
   static int AX_ptr = 0;
   static int surfxml_bufferstack_size = 2048;
-  static int surfxml_buffer_stack_stack_ptr = 0;
-  static int surfxml_buffer_stack_stack[1024];
 
   /* allocating memory for the buffer, I think 2kB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);

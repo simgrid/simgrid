@@ -31,6 +31,10 @@ int surfxml_bufferstack_size = 2048;
 static char *old_buff = NULL;
 static void surf_parse_error(char *msg);
 
+unsigned int surfxml_buffer_stack_stack_ptr;
+unsigned int surfxml_buffer_stack_stack[1024];
+
+
 void surfxml_bufferstack_push(int new)
 {
   if (!new)
@@ -356,6 +360,10 @@ static void free_data(void)
 void parse_platform_file(const char *file)
 {
   int parse_status;
+
+  surfxml_buffer_stack_stack_ptr = 1;
+  surfxml_buffer_stack_stack[0] = 0;
+
   surf_parse_open(file);
   init_data();
   parse_status = surf_parse();
