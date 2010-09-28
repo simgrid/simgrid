@@ -16,7 +16,7 @@
 SG_BEGIN_DECL()
 
 /* Hook for the different tags. All the functions which pointer to are push into here are run when the tag is encountered */
-  XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_platform_cb_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_platform_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_platform_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_host_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_host_cb_list;
@@ -48,6 +48,11 @@ XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_trace_c_connect_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_trace_c_connect_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_random_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_random_cb_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_AS_cb_list; // added by david
+XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_AS_cb_list; // added by david
+XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_gateway_cb_list; // added by david
+XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_gateway_cb_list; // added by david
+
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);
