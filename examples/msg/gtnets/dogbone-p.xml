@@ -1,65 +1,67 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2"><!--- 
-  dogbone
--->
-
-
-  <host id="S1" power="1000000000"/>
-  <host id="C1" power="1000000000"/>
-  <host id="S2" power="1000000000"/>
-  <host id="C2" power="1000000000"/>
-  <router id="R1"/>
-  <router id="R2"/>
-
-  <link id="1" bandwidth="100000000" latency="0.01"/>
-  <link id="2" bandwidth="100000000" latency="0.01"/>
-  <link id="3" bandwidth="100000000" latency="0.01"/>
-  <link id="4" bandwidth="100000000" latency="0.01"/>
-  <link id="5" bandwidth="100000000" latency="0.01"/>
-
-
-  <route src="S1" dst="C1">
-     <link:ctn id="1"/>
-     <link:ctn id="2"/>
-     <link:ctn id="3"/>
-  </route>
-
-  <route src="S2" dst="C2">
-     <link:ctn id="4"/>
-     <link:ctn id="2"/>
-     <link:ctn id="5"/>
-  </route>
-
-  <route src="S1" dst="C2">
-     <link:ctn id="1"/>
-     <link:ctn id="2"/>
-     <link:ctn id="5"/>
-  </route>
-
-  <route src="S2" dst="C1">
-     <link:ctn id="4"/>
-     <link:ctn id="2"/>
-     <link:ctn id="3"/>
-  </route>
-
-  <route src="S1" dst="R1">
-     <link:ctn id="1"/>
-  </route>
-
-  <route src="R1" dst="R2">
-     <link:ctn id="2"/>
-  </route>
-
-  <route src="R2" dst="C1">
-     <link:ctn id="3"/>
-  </route>
-
-  <route src="S2" dst="R1">
-     <link:ctn id="4"/>
-  </route>
-
-  <route src="R2" dst="C2">
-     <link:ctn id="5"/>
-  </route>
-</platform>
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2"> 
+ <AS  id="AS0"  routing="Full">
+ <!---  dogbone
+ -->
+ 
+ 
+   <host id="S1" power="1000000000"/>
+   <host id="C1" power="1000000000"/>
+   <host id="S2" power="1000000000"/>
+   <host id="C2" power="1000000000"/>
+   <router id="R1"/>
+   <router id="R2"/>
+ 
+   <link id="1" bandwidth="100000000" latency="0.01"/>
+   <link id="2" bandwidth="100000000" latency="0.01"/>
+   <link id="3" bandwidth="100000000" latency="0.01"/>
+   <link id="4" bandwidth="100000000" latency="0.01"/>
+   <link id="5" bandwidth="100000000" latency="0.01"/>
+ 
+ 
+   <route src="S1" dst="C1">
+      <link:ctn id="1"/>
+      <link:ctn id="2"/>
+      <link:ctn id="3"/>
+   </route>
+ 
+   <route src="S2" dst="C2">
+      <link:ctn id="4"/>
+      <link:ctn id="2"/>
+      <link:ctn id="5"/>
+   </route>
+ 
+   <route src="S1" dst="C2">
+      <link:ctn id="1"/>
+      <link:ctn id="2"/>
+      <link:ctn id="5"/>
+   </route>
+ 
+   <route src="S2" dst="C1">
+      <link:ctn id="4"/>
+      <link:ctn id="2"/>
+      <link:ctn id="3"/>
+   </route>
+ 
+   <route src="S1" dst="R1">
+      <link:ctn id="1"/>
+   </route>
+ 
+   <route src="R1" dst="R2">
+      <link:ctn id="2"/>
+   </route>
+ 
+   <route src="R2" dst="C1">
+      <link:ctn id="3"/>
+   </route>
+ 
+   <route src="S2" dst="R1">
+      <link:ctn id="4"/>
+   </route>
+ 
+   <route src="R2" dst="C2">
+      <link:ctn id="5"/>
+   </route>
+ </AS>
+ </platform>

@@ -1,19 +1,20 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2"><!--- 
-   S1  --------- C1
-        link 1
-        100MB, 5ms
--->
-
-
-  <host id="S1" power="1000000000"/>
-  <host id="C1" power="1000000000"/>
-
-  <link id="1" bandwidth="10000" latency="0.01"/>
-
-  <route src="S1" dst="C1">
-     <link:ctn id="1"/>
-  </route>
-
-</platform>
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+ <!---   S1  --------- C1
+         link 1
+         100MB, 5ms
+ -->
+ 
+   <host id="S1" power="1000000000"/>
+   <host id="C1" power="1000000000"/>
+ 
+   <link id="1" bandwidth="10000" latency="0.01"/>
+ 
+   <route src="S1" dst="C1">
+      <link:ctn id="1"/>
+   </route>
+ 
+ </AS>
+ </platform>
