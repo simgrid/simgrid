@@ -132,18 +132,17 @@ static void parse_link_init(void)
 /* Create the gtnets topology based on routing strategy */
 static void create_gtnets_topology()
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char *key, *data;
-
 // COMMENTED BY DAVID
+//  xbt_dict_cursor_t cursor = NULL;
+//  char *key, *data;
 //   xbt_dict_t onelink_routes = used_routing->get_onelink_routes();
 //   xbt_assert0(onelink_routes, "Error onelink_routes was not initialized");
-// 
+//
 //   DEBUG0("Starting topology generation");
-// 
+//
 //   xbt_dict_foreach(onelink_routes, cursor, key, data){
 // 	s_onelink_t link = (s_onelink_t) data;
-// 
+//
 // 	DEBUG3("Link (#%d), src (#%d), dst (#%d)", ((network_link_GTNETS_t)(link->link_ptr))->id , link->src_id, link->dst_id);
 //     DEBUG0("Calling one link route");
 //     if(used_routing->is_router(link->src_id)){
@@ -154,7 +153,7 @@ static void create_gtnets_topology()
 //     }
 //     route_onehop_new(link->src_id, link->dst_id, (network_link_GTNETS_t)(link->link_ptr));
 //   }
-// 
+//
 //   xbt_dict_free(&route_table);
 //   if (XBT_LOG_ISENABLED(surf_network_gtnets, xbt_log_priority_debug)) {
 // 	  gtnets_print_topology();

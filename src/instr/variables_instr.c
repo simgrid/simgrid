@@ -16,7 +16,7 @@ extern routing_global_t global_routing;
 void __TRACE_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what)
 {
 	char valuestr[100];
-	int src_id, dst_id;
+	//int src_id, dst_id;
 	xbt_dynar_t route = NULL;
 	unsigned int i;
     void *link_ptr;
