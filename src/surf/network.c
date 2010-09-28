@@ -324,17 +324,6 @@ static void net_update_actions_state(double now, double delta)
    */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
-#ifdef HAVE_TRACING
-     // COMMENTED BY DAVID
-     xbt_dynar_t route = global_routing->get_route(action->src_name, action->dst_name);
-
-     link_CM02_t link;
-     unsigned int i;
-     xbt_dynar_foreach(route, i, link) {
-     	TRACE_surf_link_set_utilization (link->lmm_resource.generic_resource.name,
-           action->generic_action.data, lmm_variable_getvalue(action->variable), now-delta, delta);
-     }
-#endif
     deltap = delta;
     if (action->latency > 0) {
       if (action->latency > deltap) {
