@@ -66,30 +66,30 @@ routing_component_t current_routing = NULL;
 model_type_t current_routing_model = NULL;
 
 /* Prototypes of each model */
-static void* model_full_create(); /* create structures for full routing model */
-static void  model_full_load();   /* load parse functions for full routing model */
-static void  model_full_unload(); /* unload parse functions for full routing model */
-static void  model_full_end();    /* finalize the creation of full routing model */
+static void* model_full_create(void); /* create structures for full routing model */
+static void  model_full_load(void);   /* load parse functions for full routing model */
+static void  model_full_unload(void); /* unload parse functions for full routing model */
+static void  model_full_end(void);    /* finalize the creation of full routing model */
 
-static void* model_floyd_create(); /* create structures for floyd routing model */
-static void  model_floyd_load();   /* load parse functions for floyd routing model */
-static void  model_floyd_unload(); /* unload parse functions for floyd routing model */
-static void  model_floyd_end();    /* finalize the creation of floyd routing model */
+static void* model_floyd_create(void); /* create structures for floyd routing model */
+static void  model_floyd_load(void);   /* load parse functions for floyd routing model */
+static void  model_floyd_unload(void); /* unload parse functions for floyd routing model */
+static void  model_floyd_end(void);    /* finalize the creation of floyd routing model */
 
-static void* model_dijkstra_create(); /* create structures for dijkstra routing model */
-static void  model_dijkstra_load();   /* load parse functions for dijkstra routing model */
-static void  model_dijkstra_unload(); /* unload parse functions for dijkstra routing model */
-static void  model_dijkstra_end();    /* finalize the creation of dijkstra routing model */
+static void* model_dijkstra_create(void); /* create structures for dijkstra routing model */
+static void  model_dijkstra_load(void);   /* load parse functions for dijkstra routing model */
+static void  model_dijkstra_unload(void); /* unload parse functions for dijkstra routing model */
+static void  model_dijkstra_end(void);    /* finalize the creation of dijkstra routing model */
 
-static void* model_dijkstracache_create(); /* create structures for dijkstracache routing model */
-static void  model_dijkstracache_load();   /* load parse functions for dijkstracache routing model */
-static void  model_dijkstracache_unload(); /* unload parse functions for dijkstracache routing model */
-static void  model_dijkstracache_end();    /* finalize the creation of dijkstracache routing model */
+static void* model_dijkstracache_create(void); /* create structures for dijkstracache routing model */
+static void  model_dijkstracache_load(void);   /* load parse functions for dijkstracache routing model */
+static void  model_dijkstracache_unload(void); /* unload parse functions for dijkstracache routing model */
+static void  model_dijkstracache_end(void);    /* finalize the creation of dijkstracache routing model */
 
-static void* model_none_create(); /* none routing model */
-static void  model_none_load();   /* none routing model */
-static void  model_none_unload(); /* none routing model */
-static void  model_none_end();    /* none routing model */
+static void* model_none_create(void); /* none routing model */
+static void  model_none_load(void);   /* none routing model */
+static void  model_none_unload(void); /* none routing model */
+static void  model_none_end(void);    /* none routing model */
 
 /* Table of routing models */
 /* must be finish with null and carefull if change de order */
@@ -236,7 +236,6 @@ static void _add_parse_AS(routing_component_t rc) {
   xbt_dict_set(global_routing->where_network_elements,rc->name,rc->routing_father,NULL);
   xbt_dict_cursor_t cursor = NULL;
   char *key;
-  int *val;
   routing_component_t elem;
   xbt_dict_foreach(rc->routing_sons, cursor, key, elem) {
     _add_parse_AS(elem);
@@ -267,7 +266,7 @@ static xbt_dynar_t get_route(const char* src,const char* dst) {
   
   routing_component_t src_as, dst_as;
   int index_src, index_dst, index_father_src, index_father_dst;
-  int *src_id, *dst_id;
+  int count_src, count_dst;
   xbt_dynar_t path_src = NULL;
   xbt_dynar_t path_dst = NULL;
   char *current_router_src, *current_router_dst;
@@ -281,7 +280,7 @@ static xbt_dynar_t get_route(const char* src,const char* dst) {
   void* link;
   route_extended_t route_center_links;
   xbt_dynar_t path_src_links, path_dst_links, path_first, path_last;
-  int cpt;
+  unsigned int cpt;
   
   xbt_dynar_reset(global_routing->last_route);
   
@@ -353,8 +352,8 @@ static xbt_dynar_t get_route(const char* src,const char* dst) {
     current_router_dst = route_center_links->src_gateway;  /* first router in the reverse path */
     current_src_father = xbt_dynar_get_ptr(path_src,index_src);
     index_src--;
-    for(index_src;index_src>=0;index_src--) {
-      current_src = xbt_dynar_get_ptr(path_src,index_src);
+    for(count_src=index_src;count_src>=0;count_src--) {
+      current_src = xbt_dynar_get_ptr(path_src,count_src);
       xbt_assert1((*current_src_father)->get_route, "Invalid \"get_route\" for \"%s\"",(*current_src_father)->name);
       tmp_route = (*((*current_src_father)->get_route))(*current_src_father,(*current_src)->name,current_router_dst);
       xbt_assert3(tmp_route, "there is no route between \"%s\" and \"%s\" in \"%s\"",
@@ -373,8 +372,8 @@ static xbt_dynar_t get_route(const char* src,const char* dst) {
     current_router_src = route_center_links->dst_gateway;  /* last router in the reverse path */
     current_dst_father = xbt_dynar_get_ptr(path_dst,index_dst);
     index_dst--;
-    for(index_dst;index_dst>=0;index_dst--) {
-      current_dst = xbt_dynar_get_ptr(path_dst,index_dst);
+    for(count_dst=index_dst;count_dst>=0;count_dst--) {
+      current_dst = xbt_dynar_get_ptr(path_dst,count_dst);
       xbt_assert1((*current_dst_father)->get_route, "Invalid \"get_route\" for \"%s\"",(*current_dst_father)->name);
       tmp_route = (*((*current_dst_father)->get_route))(*current_dst_father,current_router_src,(*current_dst)->name);
       xbt_assert3(tmp_route, "there is no route between \"%s\" and \"%s\" in \"%s\"",
@@ -674,11 +673,11 @@ static void model_full_unload() {
 
 static void  model_full_end() {
 
-  char *key, *end, *link_name, *src_name, *dst_name,  *src_gw_name, *dst_gw_name;
+  char *key, *link_name, *src_name, *dst_name,  *src_gw_name, *dst_gw_name;
   const char* sep = "#";
-  network_element_t src_id, dst_id, src_gw_id, dst_gw_id, ne;
+  network_element_t src_id, dst_id, ne;
   route_extended_t new_e_route;
-  int i, j, cpt;
+  unsigned int i, j, cpt;
   routing_component_t component;
   xbt_dynar_t links;
   xbt_dict_cursor_t cursor = NULL;
@@ -1005,7 +1004,7 @@ static void  model_floyd_end() {
   
   routing_component_floyd_t routing = ((routing_component_floyd_t)current_routing);
   const char *sep = "#";
-  char *key, *key_gw, *end, *link_name, *keyX, *keyY; 
+  char *key, *key_gw, *link_name, *keyX, *keyY; 
   char *src_name, *dst_name, *src_gw_name, *dst_gw_name;
   double * cost_table;
   unsigned int i,j;
@@ -1014,7 +1013,7 @@ static void  model_floyd_end() {
   void *data = NULL;
   void *link = NULL;
   e_surf_network_element_type_t *type_gw;
-  network_element_t ne, ne_gw, new_ne, src_ne, dst_ne, src_gw_ne, dst_gw_ne, neX, neY;
+  network_element_t ne, new_ne, src_ne, dst_ne, src_gw_ne, dst_gw_ne, neX, neY;
   xbt_dict_cursor_t cursor=NULL, cursor_gw=NULL, cursorX=NULL, cursorY=NULL;
   xbt_dynar_t links, keys;
   routing_component_t component;
@@ -1286,6 +1285,7 @@ typedef struct {
 /* Creation routing model functions */
 
 static void* model_dijkstra_create() {
+  return NULL;
 }
 
 static void  model_dijkstra_load() {
@@ -1298,6 +1298,7 @@ static void  model_dijkstra_end() {
 }
 
 static void* model_dijkstracache_create() {
+  return NULL;
 }
 
 static void  model_dijkstracache_load() {
@@ -1344,7 +1345,7 @@ static void  model_none_end() {}
 /* The minimal configuration of a new routing model need the next functions,
  * also you need to set at the start of the file, the new model in the model
  * list. Remember keep the null ending of the list.
-
+ */
 /* Routing model structure */
 typedef struct {
   s_routing_component_t generic_routing;
@@ -1355,11 +1356,11 @@ typedef struct {
 static void NEW_parse_S_host(void) {} /* example*/
 
 /* Business methods */
-static route_extended_t NEW_get_route(routing_component_t rc, const char* src,const char* dst) {} /* mandatory */
+static route_extended_t NEW_get_route(routing_component_t rc, const char* src,const char* dst) {return NULL;} /* mandatory */
 static void NEW_finalize(routing_component_t rc) {} /* mandatory */
 
 /* Creation routing model functions */
-static void* model_NEW_create() {} /* mandatory */
+static void* model_NEW_create() {return NULL;} /* mandatory */
 static void  model_NEW_load() {}   /* mandatory */
 static void  model_NEW_unload() {} /* mandatory */
 static void  model_NEW_end() {}    /* mandatory */
@@ -1476,15 +1477,15 @@ static void DEGUB_exit(void) {
 //   char* names[] = { "142.A","142.B","142.C", "11.A","11.B","11.C","141.A","141.B","143.A","143.B","11.A","11.B","11.C","121.A","121.B","122.A","13.A","13.B"};
 //   int i,j,total = 3+4+8+3;
 
-   char* names[] = { "11.A","11.B","11.C",
-                     "121.A","121.B",
-                     "122.A",
-                     "13.A","13.B",
-                     "141.A","141.B",
-                     "142.A","142.B","142.C",
-                     "143.A","143.B",
-                     "15.A","15.B","15.C"};
-   int i,j,total = 3+2+1+2+2+3+2+3;
+   const char* names[] = { "11.A","11.B","11.C",
+                           "121.A","121.B",
+                           "122.A",
+                           "13.A","13.B",
+                           "141.A","141.B",
+                           "142.A","142.B","142.C",
+                           "143.A","143.B",
+                           "15.A","15.B","15.C"};
+   unsigned int i,j,total = 3+2+1+2+2+3+2+3;
 
   printf("-- print all the example routes --\n");
   xbt_dynar_t links;
@@ -1493,7 +1494,7 @@ static void DEGUB_exit(void) {
     for(j=0;j<total;j++) {
       links = (*(global_routing->get_route))(names[i],names[j]);
       printf("route from %s to %s >>> ",names[i],names[j]);
-      int cpt=0;
+      unsigned int cpt=0;
       xbt_dynar_foreach(links, cpt, link) {
         s_surf_resource_t* generic_resource = link;
         printf(" %s",generic_resource->name);

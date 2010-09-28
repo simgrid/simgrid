@@ -92,9 +92,8 @@ XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Se
 #define SURFXML_START_TAG(tag)  STag_surfxml_##tag()
 #define SURFXML_END_TAG(tag)  do { ETag_surfxml_##tag(); SURFXML_BUFFER_RESET(); } while(0)
 
-XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list,
-                                      void_f_void_t function);
-
+XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function);
+XBT_PUBLIC(void) surfxml_del_callback(xbt_dynar_t* cb_list, void_f_void_t function);
 
 SG_END_DECL()
 #endif
