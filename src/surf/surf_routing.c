@@ -1845,7 +1845,6 @@ static void generic_set_autonomous_system(routing_component_t rc, const char* na
 
 static void generic_set_route(routing_component_t rc, const char* src, const char* dst, route_t route) {
   DEBUG2("Load Route from \"%s\" to \"%s\"",src,dst);
-  printf("Load Route from \"%s\" to \"%s\"\n",src,dst);
   model_type_t modeltype = rc->routing;
   xbt_dict_t _parse_routes;
   xbt_dict_t _to_index;
@@ -2196,6 +2195,7 @@ static void generic_src_dst_check(routing_component_t rc, const char* src, const
 
 static void routing_full_parse_Scluster(void)
 {
+	static int AX_ptr = 0;
 
 	char *cluster_id = A_surfxml_cluster_id;
 	char *cluster_prefix = A_surfxml_cluster_prefix;
@@ -2212,11 +2212,11 @@ static void routing_full_parse_Scluster(void)
 	int start, end, i;
 	xbt_dynar_t radical_elements;
 	xbt_dynar_t radical_ends;
-	static int AX_ptr = 0;
-	static int surfxml_bufferstack_size = 2048;
+
+	surfxml_bufferstack_push(1);
 
 	/* allocating memory for the buffer, I think 2kB should be enough */
-	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
+	// surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
 //	DEBUG4("id='%s' prefix='%s' suffix='%s' radical='%s'",
 //	  cluster_id,cluster_prefix,cluster_suffix,cluster_radical);
@@ -2397,4 +2397,5 @@ static void routing_full_parse_Scluster(void)
 	SURFXML_END_TAG(AS);
 	DEBUG0(" ");
 
+	surfxml_bufferstack_pop(1);
 }
