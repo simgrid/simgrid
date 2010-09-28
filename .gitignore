@@ -22,6 +22,11 @@ _*.c
 *~
 *.swp
 *_simulator
+*_old.xml
+*.log
+*.trace
+*.orig
+*.rej
 
 config.log
 config.status
@@ -50,6 +55,10 @@ src/bindings/ruby/simgrid.so
 examples/ruby/simgrid.so
 examples/lua/simgrid.so
 src/bindings/ruby/libsimgrid.so
+examples/gras/console/simgrid.so
+examples/msg/icomms/cmd.sh
+examples/msg/masterslave/simgrid.so
+examples/simdag/simgrid.so
 
 examples/msg/ms.trace
 examples/msg/procmig.trace
@@ -70,6 +79,16 @@ examples/simdag/ex_sd_seq_access
 examples/simdag/sd_seq_access
 examples/msg/icomms/peer
 examples/msg/icomms/peer2
+
+examples/gras/console/ping_client_console
+examples/gras/console/ping_server_console
+examples/gras/console/ping_simulator_console
+examples/msg/icomms/.kdbgrc.peer3
+examples/msg/icomms/peer3
+examples/msg/icomms/toto.txt
+examples/msg/masterslave/masterslave_console
+examples/simdag/ex_sd_test_console
+examples/simdag/sd_test_console
 
 examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
@@ -258,6 +277,7 @@ examples/msg/tracing/ms
 
 .cproject
 .project
+.settings/
 
 .externalToolBuilders/
 Debug/
