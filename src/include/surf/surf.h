@@ -227,21 +227,21 @@ XBT_PUBLIC_DATA(routing_global_t) global_routing; // ADDED BY DAVID
        int (*link_shared) (const void *link);
        xbt_dict_t(*get_properties) (const void *resource);
        void (*link_create_resource) (char *name,
-									 double bw_initial,
-									 tmgr_trace_t bw_trace,
-									 double lat_initial,
-									 tmgr_trace_t lat_trace,
-									 e_surf_resource_state_t
-									 state_initial,
-									 tmgr_trace_t state_trace,
-									 e_surf_link_sharing_policy_t
-									 policy, xbt_dict_t properties);
+                                     double bw_initial,
+                                     tmgr_trace_t bw_trace,
+                                     double lat_initial,
+                                     tmgr_trace_t lat_trace,
+                                     e_surf_resource_state_t
+                                     state_initial,
+                                     tmgr_trace_t state_trace,
+                                     e_surf_link_sharing_policy_t
+                                     policy, xbt_dict_t properties);
        void (*cpu_create_resource) (char *name, double power_peak,
-           	                        double power_scale,
-           	                        tmgr_trace_t power_trace,
-           	                        e_surf_resource_state_t state_initial,
-           	                        tmgr_trace_t state_trace,
-           	                        xbt_dict_t cpu_properties);
+                                    double power_scale,
+                                    tmgr_trace_t power_trace,
+                                    e_surf_resource_state_t state_initial,
+                                    tmgr_trace_t state_trace,
+                                    xbt_dict_t cpu_properties);
        void (*add_traces) (void);
 
      } s_surf_model_extension_workstation_t;
@@ -663,16 +663,6 @@ XBT_PUBLIC(void) parse_platform_file(const char *file);
 /* Stores the sets */
 XBT_PUBLIC_DATA(xbt_dict_t) set_list;
 
-// XBT_PUBLIC_DATA(void) manage_route(xbt_dict_t route_table,
-//                                    const char *route_name, int action,
-//                                    int isMultiRoute);
-// XBT_PUBLIC_DATA(int) route_action;
-
-/* This is used by all models when creating the routing table while parsing */
-// XBT_PUBLIC_DATA(xbt_dict_t) route_table;
-// XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
-
-
 /* For the trace and trace:connect tag (store their content till the end of the parsing) */
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_host_avail;
@@ -722,15 +712,15 @@ XBT_PUBLIC(void) surf_link_create_resource(char *name,
 
 
 XBT_PUBLIC(void) surf_wsL07_link_create_resource(char *name,
-		  double bw_initial,
-		  tmgr_trace_t bw_trace,
-		  double lat_initial,
-		  tmgr_trace_t lat_trace,
-		  e_surf_resource_state_t
-		  state_initial,
-		  tmgr_trace_t state_trace,
-		  e_surf_link_sharing_policy_t
-		  policy, xbt_dict_t properties);
+        double bw_initial,
+        tmgr_trace_t bw_trace,
+        double lat_initial,
+        tmgr_trace_t lat_trace,
+        e_surf_resource_state_t
+        state_initial,
+        tmgr_trace_t state_trace,
+        e_surf_link_sharing_policy_t
+        policy, xbt_dict_t properties);
 /**
  * add route element (link_ctn) bypassing the parser
  *

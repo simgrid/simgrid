@@ -112,8 +112,8 @@ xbt_dynar_t surf_path = NULL;
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
-    {"Constant", "Simplistic network model where all communication take a constant time (one second)", NULL, surf_network_model_init_Constant},
-    {"Vivaldi", "Scalable network model using the Vivaldi coordinate ideas", NULL, surf_network_model_init_Vivaldi},
+  {"Constant", "Simplistic network model where all communication take a constant time (one second)", NULL, surf_network_model_init_Constant},
+  {"Vivaldi", "Scalable network model using the Vivaldi coordinate ideas", NULL, surf_network_model_init_Vivaldi},
   {"CM02", "Realistic network model with lmm_solve and no correction factors", NULL, surf_network_model_init_CM02},
   {"LV08", "Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775" , NULL, surf_network_model_init_LegrandVelho},
   {"SMPI", "Realistic network model with lmm_solve and correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB)", NULL, surf_network_model_init_SMPI},
@@ -233,7 +233,6 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   return min;
 }
 
-
 XBT_LOG_EXTERNAL_CATEGORY(surf_cpu);
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_EXTERNAL_CATEGORY(surf_lagrange);
@@ -246,7 +245,6 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_timer);
 XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
 XBT_LOG_EXTERNAL_CATEGORY(surf_config);
 XBT_LOG_EXTERNAL_CATEGORY(surf_route);
-
 
 #ifdef HAVE_GTNETS
 XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);

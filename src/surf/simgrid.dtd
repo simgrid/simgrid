@@ -5,9 +5,6 @@
 <!ATTLIST platform xmlns:link CDATA "http://simgrid.gforge.inria.fr/">
 <!ATTLIST platform xmlns:route CDATA "http://simgrid.gforge.inria.fr/">
 
-<!ELEMENT include EMPTY>
-<!ATTLIST include file CDATA #REQUIRED>
-
 <!ELEMENT trace (#PCDATA)>
 <!ATTLIST trace id CDATA #REQUIRED>
 <!ATTLIST trace file CDATA "">

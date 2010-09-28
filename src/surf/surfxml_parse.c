@@ -17,20 +17,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
 #include "simgrid_dtd.c"
 
 /* Initialize the parsing globals */
-int route_action = 0;
 xbt_dict_t traces_set_list = NULL;
-//xbt_dynar_t traces_connect_list = NULL;
 xbt_dict_t trace_connect_list_host_avail = NULL;
 xbt_dict_t trace_connect_list_power = NULL;
 xbt_dict_t trace_connect_list_link_avail = NULL;
 xbt_dict_t trace_connect_list_bandwidth = NULL;
 xbt_dict_t trace_connect_list_latency = NULL;
-
-/* This buffer is used to store the original buffer before substituing it by out own buffer. Use full for the foreach tag */
-static xbt_dynar_t surfxml_bufferstack_stack = NULL;
-int surfxml_bufferstack_size = 2048;
-// static char *old_buff = NULL;
-static void surf_parse_error(char *msg);
 
 /* make sure these symbols are defined as strong ones in this file so that the linked can resolve them */
 xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
@@ -64,20 +56,22 @@ xbt_dynar_t ETag_surfxml_ASroute_cb_list = NULL;
 xbt_dynar_t STag_surfxml_bypassRoute_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_bypassRoute_cb_list = NULL;
 
+/* store the current property set for any tag */
 xbt_dict_t current_property_set = NULL;
-xbt_dict_t random_data_list = NULL; /* dictionary of random generator data */
-
-static xbt_dynar_t surf_input_buffer_stack = NULL;
-static xbt_dynar_t surf_file_to_parse_stack = NULL;
+/* dictionary of random generator data */
+xbt_dict_t random_data_list = NULL;
 
 static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t);
 
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = NULL;
 
+static void surf_parse_error(char *msg);
+
 static void parse_Stag_trace(void);
 static void parse_Etag_trace(void);
 static void parse_Stag_trace_c_connect(void);
+
 static void init_randomness(void);
 static void add_randomness(void);
 
@@ -150,28 +144,7 @@ void surf_parse_reset_parser(void)
   ETag_surfxml_bypassRoute_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 }
 
-void STag_surfxml_include(void)
-{
-  xbt_dynar_push(surf_input_buffer_stack, &surf_input_buffer);
-  xbt_dynar_push(surf_file_to_parse_stack, &surf_file_to_parse);
-
-  surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r");
-  xbt_assert1((surf_file_to_parse), "Unable to open \"%s\"\n", A_surfxml_include_file);
-  surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, 10);
-  surf_parse__switch_to_buffer(surf_input_buffer);
-  printf("STAG\n");
-  fflush(NULL);
-}
-
-void ETag_surfxml_include(void)
-{
-  printf("ETAG\n");
-  fflush(NULL);
-  surf_parse__delete_buffer(surf_input_buffer);
-  fclose(surf_file_to_parse);
-  xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse);
-  xbt_dynar_pop(surf_input_buffer_stack, &surf_input_buffer);
-}
+/* Stag and Etag parse functions */
 
 void STag_surfxml_platform(void)
 {
@@ -201,14 +174,11 @@ void STag_surfxml_platform(void)
 
 }
 
-void ETag_surfxml_platform(void)
-{
-  surfxml_call_cb_functions(ETag_surfxml_platform_cb_list);
-  xbt_dict_free(&random_data_list); // FIXME: DUPLICATE
-}
+#define parse_method(type,name) \
+void type##Tag_surfxml_##name(void) \
+{ surfxml_call_cb_functions(type##Tag_surfxml_##name##_cb_list); }
 
-#define parse_method(type,name) void type##Tag_surfxml_##name(void) { surfxml_call_cb_functions(type##Tag_surfxml_##name##_cb_list); }
-
+                                  parse_method(E,platform);
 parse_method(S,host);             parse_method(E,host);
 parse_method(S,router);           parse_method(E,router);
 parse_method(S,link);             parse_method(E,link);
@@ -239,12 +209,6 @@ void surf_parse_open(const char *file)
   }
   surf_file_to_parse = surf_fopen(file, "r");
   xbt_assert1((surf_file_to_parse), "Unable to open \"%s\"\n", file);
-
-  if (!surf_input_buffer_stack)
-    surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), NULL);
-  if (!surf_file_to_parse_stack)
-    surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
-
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, 10);
   surf_parse__switch_to_buffer(surf_input_buffer);
   surf_parse_lineno = 1;
@@ -252,11 +216,6 @@ void surf_parse_open(const char *file)
 
 void surf_parse_close(void)
 {
-  if (surf_input_buffer_stack)
-    xbt_dynar_free(&surf_input_buffer_stack);
-  if (surf_file_to_parse_stack)
-    xbt_dynar_free(&surf_file_to_parse_stack);
-  
   if (surf_file_to_parse) {
     surf_parse__delete_buffer(surf_input_buffer);
     fclose(surf_file_to_parse);
@@ -327,18 +286,14 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
 
 static void init_data(void)
 {
-  if (!surfxml_bufferstack_stack)
-    surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), NULL);
-
+  random_data_list = xbt_dict_new();
   traces_set_list = xbt_dict_new();
-
   trace_connect_list_host_avail = xbt_dict_new();
   trace_connect_list_power = xbt_dict_new();
   trace_connect_list_link_avail = xbt_dict_new();
   trace_connect_list_bandwidth = xbt_dict_new();
   trace_connect_list_latency = xbt_dict_new();
-
-  random_data_list = xbt_dict_new();
+ 
   surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
   surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
@@ -349,15 +304,13 @@ static void init_data(void)
 
 static void free_data(void)
 {
-  xbt_dynar_free(&surfxml_bufferstack_stack);
-
-  xbt_dict_free(&traces_set_list);
   xbt_dict_free(&trace_connect_list_host_avail);
   xbt_dict_free(&trace_connect_list_power);
   xbt_dict_free(&trace_connect_list_link_avail);
   xbt_dict_free(&trace_connect_list_bandwidth);
   xbt_dict_free(&trace_connect_list_latency);
   xbt_dict_free(&traces_set_list);
+  xbt_dict_free(&random_data_list);
 }
 
 /* Here start parse */
@@ -370,7 +323,6 @@ void parse_platform_file(const char *file)
   parse_status = surf_parse();
   free_data();
   surf_parse_close();
-  if (parse_status) xbt_dict_free(&random_data_list); // FIXME: DUPLICATE
   xbt_assert1(!parse_status, "Parse error in %s", file);
 }
 
@@ -479,8 +431,7 @@ double get_cpu_power(const char *power)
   return power_scale;
 }
 
-double random_min, random_max, random_mean, random_std_deviation,
-  random_generator;
+double random_min, random_max, random_mean, random_std_deviation, random_generator;
 char *random_id;
 
 static void init_randomness(void)
@@ -510,11 +461,11 @@ void surf_host_create_resource(char *name, double power_peak,
         tmgr_trace_t state_trace,
         xbt_dict_t cpu_properties)
 {
-	return surf_cpu_model->extension.cpu.
-		create_resource(name,power_peak,power_scale,power_trace,state_initial,state_trace,cpu_properties);
+    return surf_cpu_model->extension.cpu.
+        create_resource(name,power_peak,power_scale,power_trace,state_initial,state_trace,cpu_properties);
 }
 
-/*
+/**
  * create CPU resource via worsktation_ptask_L07 model
  */
 
@@ -528,7 +479,7 @@ void surf_wsL07_host_create_resource(char *name, double power_peak,
 	surf_workstation_model->extension.workstation.
 		cpu_create_resource(name,power_peak,power_scale,power_trace,state_initial,state_trace,cpu_properties);
 }
-/*
+/**
  * create link resource via network Model
  */
 void surf_link_create_resource(char *name,
@@ -542,33 +493,64 @@ void surf_link_create_resource(char *name,
         e_surf_link_sharing_policy_t policy,
         xbt_dict_t properties)
 {
-	return surf_network_model->extension.network.
-	     create_resource(name,bw_initial,bw_trace,lat_initial,lat_trace,
-	    		 state_initial,state_trace,policy,properties);
-
+    return surf_network_model->extension.network.
+        create_resource(name,bw_initial,bw_trace,lat_initial,lat_trace,
+            state_initial,state_trace,policy,properties);
 }
 
-/*
+/**
  * create link resource via workstation_ptask_L07 model
  */
 
 void surf_wsL07_link_create_resource(char *name,
-		  double bw_initial,
-		  tmgr_trace_t bw_trace,
-		  double lat_initial,
-		  tmgr_trace_t lat_trace,
-		  e_surf_resource_state_t
-		  state_initial,
-		  tmgr_trace_t state_trace,
-		  e_surf_link_sharing_policy_t
-		  policy, xbt_dict_t properties)
+        double bw_initial,
+        tmgr_trace_t bw_trace,
+        double lat_initial,
+        tmgr_trace_t lat_trace,
+        e_surf_resource_state_t
+        state_initial,
+        tmgr_trace_t state_trace,
+        e_surf_link_sharing_policy_t
+        policy, xbt_dict_t properties)
 {
-	return surf_workstation_model->extension.workstation.
-	link_create_resource(name,bw_initial,bw_trace,lat_initial,lat_trace,
+    return surf_workstation_model->extension.workstation.
+    link_create_resource(name,bw_initial,bw_trace,lat_initial,lat_trace,
 						state_initial,state_trace,policy,properties);
 }
 
-/*
+/**
+ * Route: add route element bypassing the parser :
+ * same job as parse_route_elem
+ */
+
+void surf_add_route_element(char* link_ctn_id)
+{
+	xbt_die("\"surf_add_route_element\" not support");
+// 	char *val;
+// 	val = xbt_strdup(link_ctn_id);
+// 	xbt_dynar_push(route_link_list,&val);
+}
+/**
+ * set route
+ */
+void surf_route_set_resource(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
+{
+	xbt_die("\"surf_route_set_resource\" not support");
+	//route_link_list = xbt_dynar_new(sizeof(char *), NULL); // COMMENTED BY DAVID
+	//routing_add_route(source_id,destination_id,links_id,action); // COMMENTED BY DAVID
+
+}
+
+/**
+ * add host to routing host list
+ */
+void surf_route_add_host(char *host_id)
+{
+	xbt_die("\"surf_route_add_host\" not support");
+	//routing_add_host(host_id); // COMMENTED BY DAVID
+}
+
+/**
  * Add Traces
  */
 void surf_add_host_traces(void)
@@ -584,4 +566,13 @@ void surf_add_link_traces(void)
 void surf_wsL07_add_traces(void)
 {
 	return surf_workstation_model->extension.workstation.add_traces();
+}
+
+/**
+ * set routes
+ */
+void surf_set_routes(void)
+{
+	xbt_die("\"surf_set_routes\" not support");
+	//routing_set_routes(); // COMMENTED BY DAVID
 }

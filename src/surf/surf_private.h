@@ -64,12 +64,10 @@ void surf_config_init(int *argc, char **argv);
 void surf_config_finalize(void);
 void surf_config(const char *name, va_list pa);
 
-
 void net_action_recycle(surf_action_t action);
 double net_action_get_remains(surf_action_t action);
 int net_get_link_latency(surf_action_t action);
 void net_action_set_max_duration(surf_action_t action, double duration);
-
 /*
  * Returns the initial path. On Windows the initial path is
  * the current directory for the current process in the other
@@ -93,8 +91,7 @@ typedef struct {
 	void *link_ptr;
 }s_onelink, *s_onelink_t;
 
-
-/*
+/**
  * Routing logic
  */
 
@@ -180,7 +177,7 @@ struct s_routing_global {
 
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link,void *loopback);
 
-/*
+/**
  * Resource protected methods
  */
 xbt_dict_t surf_resource_properties(const void *resource);
@@ -188,6 +185,5 @@ xbt_dict_t surf_resource_properties(const void *resource);
 XBT_PUBLIC(void) surfxml_bufferstack_push(int new);
 XBT_PUBLIC(void) surfxml_bufferstack_pop(int new);
 XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
-
 
 #endif /* _SURF_SURF_PRIVATE_H */
