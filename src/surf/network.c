@@ -255,6 +255,10 @@ static int net_action_unref(surf_action_t action)
     if (((surf_action_network_CM02_t) action)->variable)
       lmm_variable_free(network_maxmin_system,
                         ((surf_action_network_CM02_t) action)->variable);
+#ifdef HAVE_TRACING
+    xbt_free (((surf_action_network_CM02_t)action)->src_name);
+    xbt_free (((surf_action_network_CM02_t)action)->dst_name);
+#endif
     free(action);
     return 1;
   }
@@ -583,7 +587,13 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
   }  /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
 
+#ifdef HAVE_TRACING
+  action->src_name = xbt_new (char, strlen(src_name)+1);
+  strncpy (action->src_name, src_name, strlen(src_name)+1);
 
+  action->dst_name = xbt_new (char, strlen(dst_name)+1);
+  strncpy (action->dst_name, dst_name, strlen(dst_name)+1);
+#endif
 
   XBT_OUT;
 

@@ -29,8 +29,11 @@ typedef struct surf_action_network_CM02 {
   double rate;
   int latency_limited;
   int suspended;
+
+#ifdef HAVE_TRACING
   char* src_name;
   char* dst_name;
+#endif
   
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 
