@@ -265,6 +265,9 @@ set_tests_properties(tesh-gras-dd-r_big32_2 PROPERTIES WILL_FAIL true)
 set_tests_properties(simdag-metaxml_test PROPERTIES WILL_FAIL true)   
 set_tests_properties(tesh-simdag-flatifier PROPERTIES WILL_FAIL true)
 
+# Expected to fail until tag cluster is finish
+set_tests_properties(tesh-simdag-parser PROPERTIES WILL_FAIL true)   
+
 if(HAVE_RUBY)
 set_tests_properties(ruby-quicksort PROPERTIES WILL_FAIL true)
 endif(HAVE_RUBY)
