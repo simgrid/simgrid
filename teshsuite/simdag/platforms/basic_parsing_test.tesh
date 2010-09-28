@@ -1,62 +1,67 @@
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_cluster_foreach.xml
+$ ./basic_parsing_test one_cluster.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 5, link number: 8
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_cluster_one_host_random.xml
+$ ./basic_parsing_test one_host_availability.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 1
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_cluster_one_host.xml
+$ ./basic_parsing_test one_host_properties.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 1
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_cluster_properties_foreach.xml
+$ ./basic_parsing_test one_host_state_file.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 1
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_cluster.xml
+$ ./basic_parsing_test one_host_state_off.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 1
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_host_availability.xml
+$ ./basic_parsing_test one_host_state_on.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 1
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_host_properties.xml
+$ ./basic_parsing_test one_host_trace_file.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 1
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_host_state_file.xml
+$ ./basic_parsing_test one_host_trace_inside.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 1
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_host_state_off.xml
+$ ./basic_parsing_test one_host.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 1
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_host_state_on.xml
+$ ./basic_parsing_test one_link_availability.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 2
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_host_trace_inside.xml
+$ ./basic_parsing_test one_link_fatpipe.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 2
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_host.xml
+$ ./basic_parsing_test one_link_shared.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 2
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_link_availability.xml
+$ ./basic_parsing_test one_link_state_file.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 1, link number: 2
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_link_fatpipe.xml
+$ ./basic_parsing_test three_hosts_non_symmetric_route.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 3, link number: 4
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_link_shared.xml
+$ ./basic_parsing_test two_clusters.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 10, link number: 16
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms one_link_state_file.xml
+$ ./basic_parsing_test two_hosts_multi_hop.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 2, link number: 4
 
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms three_hosts_non_symmetric_route.xml
+$ ./basic_parsing_test two_hosts_one_link.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
-
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms two_clusters_symmetric.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
-
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms two_clusters.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
-
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms two_hosts_multi_hop.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
-
-$ simdag/platforms/basic_parsing_test --log=xbt_cfg.thres:critical --cfg=path:${srcdir:=.}/simdag/platforms two_hosts_one_link.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 2, link number: 2
