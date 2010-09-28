@@ -53,8 +53,7 @@ e_surf_action_state_t surf_action_state_get(surf_action_t action); /* cannot dec
 double surf_action_get_start_time(surf_action_t action); /* cannot declare inline since we use a pointer to it */
 double surf_action_get_finish_time(surf_action_t action); /* cannot declare inline since we use a pointer to it */
 void surf_action_free(surf_action_t * action);
-void surf_action_state_set(surf_action_t action,
-                              e_surf_action_state_t state);
+void surf_action_state_set(surf_action_t action, e_surf_action_state_t state);
 void surf_action_data_set(surf_action_t action, void *data); /* cannot declare inline since we use a pointer to it */
 FILE *surf_fopen(const char *name, const char *mode);
 
@@ -98,6 +97,8 @@ typedef struct {
 /*
  * Routing logic
  */
+
+// FIXME: the next lines cant be comented without fix the code in network.c file.
 struct s_routing {
   const char *name;
   xbt_dict_t host_id; /* char* -> int* */
@@ -108,15 +109,60 @@ struct s_routing {
   int host_count;
   int router_count;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// HERE START THE NEW STRUCTURES
+////////////////////////////////////////////////////////////////////////////////
+
+typedef struct s_model_type s_model_type_t, *model_type_t;
+typedef struct s_route s_route_t, *route_t;
+typedef struct s_route_extended s_route_extended_t, *route_extended_t;
+typedef struct s_routing_component s_routing_component_t, *routing_component_t;
+typedef struct s_routing_global s_routing_global_t, *routing_global_t;
+
+struct s_model_type {
+  const char *name;
+  const char *desc;
+  void* (*create)();
+  void (*load)();
+  void (*unload)();
+  void (*end)();
+};
+
+struct s_route {
+  xbt_dynar_t link_list;
+};
+
+struct s_route_extended {
+  s_route_t generic_route;
+  char* src_gateway;
+  char* dst_gateway;
+};
+
+struct s_routing_component {
+  model_type_t routing;
+  char *name;
+  struct s_routing_component* routing_father;
+  xbt_dict_t routing_sons;
+  route_extended_t (*get_route)(routing_component_t rc, const char* src, const char* dst);
+  void (*finalize)(routing_component_t rc);
+};
+
+struct s_routing_global {
+  routing_component_t root;
+  xbt_dict_t where_network_elements; /* char* -> s_routing_component* */
+  void *loopback;
+  size_t size_of_link;
+  xbt_dynar_t (*get_route)(const char* src, const char* dst);
+  void (*finalize)(void);
+  xbt_dynar_t last_route;
+};
+
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link,void *loopback);
 
-/*
- * generic methods to create resources bypassing the parser
- * FIXME : better if added to the routing model instead
- */
-XBT_PUBLIC(void) routing_add_route(char *source_id,char *destination_id,xbt_dynar_t links_id,int action);
-XBT_PUBLIC(void) routing_add_host(char* host_id);
-XBT_PUBLIC(void) routing_set_routes(void);
+////////////////////////////////////////////////////////////////////////////////
+// HERE END THE NEW STRUCTURES
+////////////////////////////////////////////////////////////////////////////////
 
 /*
  * Resource protected methods
