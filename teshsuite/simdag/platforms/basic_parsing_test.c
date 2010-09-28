@@ -24,7 +24,7 @@ int main(int argc, char **argv)
   /* creation of the environment */
   SD_create_environment(argv[1]);
 
-  printf("\n\nWorkstation number: %d, link number: %d\n\n",
+  printf("Workstation number: %d, link number: %d\n",
          SD_workstation_get_number(), SD_link_get_number());
 
   workstations = SD_workstation_get_list();
@@ -36,12 +36,13 @@ int main(int argc, char **argv)
   printf("Route between %s and %s\n", name1, name2);
   route = SD_route_get_list(w1, w2);
   route_size = SD_route_get_size(w1, w2);
+  printf("Route size %d\n", route_size);
   for (i = 0; i < route_size; i++) {
 	  printf("   Link %s: latency = %f, bandwidth = %f\n",
           SD_link_get_name(route[i]), SD_link_get_current_latency(route[i]),
           SD_link_get_current_bandwidth(route[i]));
   }
-  printf("Route latency = %f, route bandwidth = %fn",
+  printf("Route latency = %f, route bandwidth = %f\n",
         SD_route_get_current_latency(w1, w2),
         SD_route_get_current_bandwidth(w1, w2));
 

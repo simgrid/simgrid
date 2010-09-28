@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
+ <AS  id="AS0"  routing="Full">
 	<host id="100030591" vivaldi="25.5 9.4 1.4" power="1500000000.0" />
 	<host id="100036570" vivaldi="-12.7 -9.9 2.1" power="730000000.0" />
 	<host id="100041334" vivaldi="-15.7 9.9 14.7" power="2800000000.0" />
@@ -41,4 +42,5 @@
 	<host id="100422926" vivaldi="-23.1 -7.6 39.9" power="1600000000.0" />
 	<host id="100427449" vivaldi="135.5 -21.0 83.4" power="1400000000.0" />
 	<host id="100429957" vivaldi="17.5 6.7 18.8" power="830000000.0" />
+	</AS>
 </platform>
