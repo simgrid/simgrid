@@ -14,33 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route,surf,"Routing part of surf");
 
-
-// FIXME: the next two lines cant be comented without fix the code in network.c file.
-// routing_t used_routing = NULL;
-// xbt_dict_t onelink_routes = NULL;
-
-// 
-// /* Prototypes of each model */
-// static void routing_model_full_create(size_t size_of_link,void *loopback);
-// // static void routing_model_floyd_create(size_t size_of_link, void*loopback);
-// // static void routing_model_dijkstra_create(size_t size_of_link, void*loopback);
-// // static void routing_model_dijkstracache_create(size_t size_of_link, void*loopback);
-// //static void routing_model_none_create(size_t size_of_link, void*loopback);
-// 
-// /* Definition of each model */
-// struct model_type {
-//   const char *name;
-//   const char *desc;
-//   void (*fun)(size_t,void*);
-// };
-// 
-// struct model_type models[] =
-// { {"Full", "Full routing data (fast, large memory requirements, fully expressive)", routing_model_full_create },
-// //   {"Floyd", "Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)", routing_model_floyd_create },
-// //   {"Dijkstra", "Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)", routing_model_dijkstra_create },
-// //   {"DijkstraCache", "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)", routing_model_dijkstracache_create },
-// //  {"none", "No routing (usable with Constant network only)", routing_model_none_create },
-//     {NULL,NULL,NULL}};
     
 ////////////////////////////////////////////////////////////////////////////////
 // HERE START THE NEW CODE
@@ -93,14 +66,21 @@ static void  model_none_unload(void); /* none routing model */
 static void  model_none_end(void);    /* none routing model */
 
 /* Table of routing models */
+// typedef enum {
+//   SURF_MODEL_FULL = 0,
+//   SURF_MODEL_FLOYD,
+//   SURF_MODEL_DIJKSTRA,
+//   SURF_MODEL_DIJKSTRACACHE,
+//   SURF_MODEL_NONE
+// } e_surf_model_type_t;
+
+#define SURF_MODEL_FULL           0
+#define SURF_MODEL_FLOYD          1
+#define SURF_MODEL_DIJKSTRA       2
+#define SURF_MODEL_DIJKSTRACACHE  3
+#define SURF_MODEL_NONE           4
+
 /* must be finish with null and carefull if change de order */
-
-#define SURF_MODEL_FULL          0
-#define SURF_MODEL_FLOYD         1
-#define SURF_MODEL_DIJKSTRA      2
-#define SURF_MODEL_DIJKSTRACACHE 3
-#define SURF_MODEL_NONE          4
-
 struct s_model_type routing_models[] =
 { {"Full", "Full routing data (fast, large memory requirements, fully expressive)",
   model_full_create, model_full_load, model_full_unload, model_full_end },  
@@ -114,7 +94,6 @@ struct s_model_type routing_models[] =
   model_none_create, model_none_load, model_none_unload, model_none_end },
   {NULL,NULL,NULL,NULL,NULL,NULL}};
 
-  
 /* global parse functions */
 
 static char* src = NULL;    /* temporary store the source name of a route */
@@ -151,6 +130,9 @@ static void parse_S_router(void) {
   xbt_dict_set(global_routing->where_network_elements,A_surfxml_router_id,(void*)current_routing,NULL); 
 }
 
+/**
+ * \brief Set the endponints for a route
+ */
 static void parse_S_route_new_and_endpoints(void) {
   // FIXME: checked by parser
 //   xbt_assert1(current_routing->hierarchy==SURF_ROUTING_BASE,
@@ -162,6 +144,9 @@ static void parse_S_route_new_and_endpoints(void) {
   link_list = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
 }
 
+/**
+ * \brief Set the endponints and gateways for a ASroute
+ */
 static void parse_S_ASroute_new_and_endpoints(void) {
 // FIXME: checked by parser
 //   xbt_assert1(current_routing->hierarchy==SURF_ROUTING_RECURSIVE,
@@ -175,12 +160,18 @@ static void parse_S_ASroute_new_and_endpoints(void) {
   link_list = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
 }
 
+/**
+ * \brief Set a new link on the actual list of link for a route or ASroute
+ */
 static void parse_E_link_c_ctn_new_elem(void) {
   char *val;
   val = xbt_strdup(A_surfxml_link_c_ctn_id);
   xbt_dynar_push(link_list, &val);
 }
 
+/**
+ * \brief Store de route by calling the set_route function of the current routing component
+ */
 static void parse_E_route_store_route(void) {
 // FIXME: checked by parser
 //   xbt_assert1(current_routing->hierarchy==SURF_ROUTING_BASE,
@@ -194,6 +185,9 @@ static void parse_E_route_store_route(void) {
   dst = NULL;
 }
 
+/**
+ * \brief Store de ASroute by calling the set_ASroute function of the current routing component
+ */
 static void parse_E_ASroute_store_route(void) {
 // FIXME: checked by parser
 //   xbt_assert1(current_routing->hierarchy==SURF_ROUTING_RECURSIVE,
@@ -309,7 +303,7 @@ static void parse_E_AS(void) {
 }
 
 /**
- * \brief Recursive function for add the differents AS to global dict
+ * \brief Recursive function for add the differents AS to global dict of network element
  *
  * This fuction is call by "parse_E_platform_add_parse_AS". It allow to add the 
  * AS or routing components, to the where_network_elements dictionary. In the same
@@ -328,7 +322,7 @@ static void _add_parse_AS(routing_component_t rc) {
 }
 
 /**
- * \brief Add a "AS" to the network element list
+ * \brief Add all "AS" to the global dict of network element
  *
  * Allows find a "AS" in any routing component
  */
@@ -338,7 +332,18 @@ static void parse_E_platform_add_parse_AS(void) {
 
 /* Aux Business methods */
 
+/**
+ * \brief Get the AS father and the first elements of the chain
+ *
+ * \param src the source host name 
+ * \param dst the destination host name
+ * 
+ * Get the common father of the to processing units, and the first different 
+ * father in the chain
+ */
 static xbt_dynar_t elements_father(const char* src,const char* dst) {
+  
+  xbt_assert0(src&&dst,"bad parameters for \"elements_father\" method");
   
   xbt_dynar_t result = xbt_dynar_new(sizeof(char*), NULL); // &xbt_free_ref
   
@@ -354,7 +359,7 @@ static xbt_dynar_t elements_father(const char* src,const char* dst) {
   /* (1) find the as where the src and dst are located */
   src_as = xbt_dict_get_or_null(global_routing->where_network_elements,src);
   dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,dst); 
-  xbt_assert0(src_as != NULL && dst_as  != NULL, "Ask for route \"from\" or \"to\" no found");
+  xbt_assert2(src_as&&dst_as, "Ask for route \"from\"(%s) or \"to\"(%s) no found",src,dst);
   
   /* (2) find the path to the root routing component */
   path_src = xbt_dynar_new(sizeof(routing_component_t), NULL);
@@ -408,6 +413,15 @@ static xbt_dynar_t elements_father(const char* src,const char* dst) {
 
 /* Global Business methods */
 
+/**
+ * \brief Recursive function for get_route
+ *
+ * \param src the source host name 
+ * \param dst the destination host name
+ * 
+ * This fuction is call by "get_route". It allow to walk through the 
+ * routing components tree.
+ */
 static route_extended_t _get_route(const char* src,const char* dst) {
   
   void* link;
@@ -415,7 +429,7 @@ static route_extended_t _get_route(const char* src,const char* dst) {
   
   DEBUG2("Solve route  \"%s\" to \"%s\"",src,dst);
      
-  xbt_assert0(src&&dst,"bad parameters for _get_route method");
+  xbt_assert0(src&&dst,"bad parameters for \"_get_route\" method");
   
   route_extended_t e_route, e_route_cnt, e_route_src, e_route_dst;
   
@@ -447,7 +461,7 @@ static route_extended_t _get_route(const char* src,const char* dst) {
       
       xbt_assert2( (e_route_cnt->src_gateway==NULL) == (e_route_cnt->dst_gateway==NULL) ,
         "bad gateway for route between \"%s\" and \"%s\"",src,dst);
-      
+
       if( src != e_route_cnt->src_gateway ) {
         e_route_src = _get_route(src,e_route_cnt->src_gateway);
         xbt_dynar_foreach(e_route_src->generic_route.link_list, cpt, link) {
@@ -481,7 +495,6 @@ static route_extended_t _get_route(const char* src,const char* dst) {
   
   return e_route; 
 }
-
 
 /**
  * \brief Generic method: find a route between hosts
@@ -597,13 +610,25 @@ void routing_model_create(size_t size_of_links, void* loopback) {
   
   /* DEBUG ONLY */  
   //surfxml_add_callback(ETag_surfxml_platform_cb_list, &DEBUG_exit);
-
 }
+
+/* ************************************************************************** */
+/* ***************** GENERIC PARSE FUNCTIONS (declarations) ***************** */
+
+static void generic_set_processing_units(routing_component_t rc, const char* name);
+static void generic_set_autonomous_system(routing_component_t rc, const char* name);
+static void generic_set_route(routing_component_t rc, const char* src, const char* dst, route_t route);
+static void generic_set_ASroute(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route);
+
+/* ************************************************************************** */
+/* ****************** GENERIC AUX FUNCTIONS (declarations) ****************** */
+
+static route_extended_t generic_new_extended_route(routing_component_t rc, void* data);
 
 /* ************************************************************************** */
 /* *************************** FULL ROUTING ********************************* */
 
-#define TO_ROUTE_FULL(i,j,rc) ((routing_component_full_t)rc)->routing_table[(i)+(j)*xbt_dict_length(((routing_component_full_t)rc)->to_index)]
+#define TO_ROUTE_FULL(i,j) routing->routing_table[(i)+(j)*table_size]
 
 /* Routing model structure */
 
@@ -614,55 +639,12 @@ typedef struct {
   route_extended_t *routing_table;
 } s_routing_component_full_t,*routing_component_full_t;
 
-/* Parse routing model functions */
-
-
 /* Business methods */
-
-static void full_set_processing_units(routing_component_t rc, const char* name) {
-   DEBUG1("Full - Load process unit \"%s\"",name);
-   // TODO: SET or ERROR e_surf_routing_hierarchy_t hierarchical
-   int *id = xbt_new0(int,1); // xbt_malloc(sizeof(int)); ?
-   *id = xbt_dict_length(((routing_component_full_t)current_routing)->to_index);
-   xbt_dict_set(((routing_component_full_t)current_routing)->to_index,name,id,xbt_free);
-}
-
-static void full_set_autonomous_system(routing_component_t rc, const char* name) {
-   DEBUG1("Full - Load Autonomous system \"%s\"",name);
-   // TODO: SET or ERROR e_surf_routing_hierarchy_t hierarchical
-   int *id = xbt_new0(int,1); // xbt_malloc(sizeof(int)); ?
-   *id = xbt_dict_length(((routing_component_full_t)current_routing)->to_index);
-   xbt_dict_set(((routing_component_full_t)current_routing)->to_index,name,id,xbt_free);
-}
-
-static void full_set_route(routing_component_t rc, const char* src, const char* dst, route_t route) {
-   DEBUG2("Full - Load Route from \"%s\" to \"%s\"",src,dst);
-  routing_component_full_t routing = (routing_component_full_t)current_routing;
-  char *route_name;
-  route_name = bprintf("%s#%s",src,dst);
-  xbt_assert2(xbt_dynar_length(link_list)>0, "Invalid count of links, must be greater than zero (%s,%s)",src,dst);   
-  xbt_assert2(!xbt_dict_get_or_null(routing->parse_routes,route_name),
-    "The route between \"%s\" and \"%s\" already exist",src,dst);
-  xbt_dict_set(routing->parse_routes, route_name, route, NULL);
-  free(route_name);
-}
-
-static void full_set_ASroute(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route) {
-   DEBUG4("Full - Load ASroute from \"%s(%s)\" to \"%s(%s)\"",src,e_route->src_gateway,dst,e_route->dst_gateway);
-  routing_component_full_t routing = (routing_component_full_t)current_routing;
-  char *route_name;
-  route_name = bprintf("%s#%s",src,dst);
-  xbt_assert2(xbt_dynar_length(link_list)>0, "Invalid count of links, must be greater than zero (%s,%s)",src,dst);   
-  xbt_assert4(!xbt_dict_get_or_null(routing->parse_routes,route_name),
-    "The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exist",
-    src,e_route->src_gateway,dst,e_route->dst_gateway);
-  xbt_dict_set(routing->parse_routes, route_name, e_route, NULL);
-  free(route_name);
-}
 
 static route_extended_t full_get_route(routing_component_t rc, const char* src,const char* dst) {
 
   routing_component_full_t routing = (routing_component_full_t)rc;
+  int table_size = xbt_dict_length(routing->to_index);
   
   xbt_assert1(src && dst, "Invalid params for \"get_route\" function at AS \"%s\"",rc->name);
    
@@ -672,37 +654,41 @@ static route_extended_t full_get_route(routing_component_t rc, const char* src,c
   src_as = xbt_dict_get_or_null(global_routing->where_network_elements,src);
   dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,dst);
    
-  xbt_assert0(src_as != NULL && dst_as  != NULL, "Ask for route \"from\" or \"to\" no found");
-  xbt_assert0(src_as == dst_as, "The src and dst are in differents AS");
-  xbt_assert0(rc == dst_as, "The routing component of src and dst is not the same as the network elements belong");
+  xbt_assert3(src_as != NULL && dst_as  != NULL, "Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",src,dst,rc->name);
+  xbt_assert4(src_as == dst_as, "The src(%s in %s) and dst(%s in %s) are in differents AS",src,src_as->name,dst,dst_as->name);
+  xbt_assert2(rc == dst_as, "The routing component of src and dst is not the same as the network elements belong (%s==%s)",rc->name,dst_as->name);
 
   src_id = xbt_dict_get(routing->to_index,src);
   dst_id = xbt_dict_get(routing->to_index,dst);
-
-  xbt_assert0(src_id && dst_id, "Ask for route \"from\" or \"to\" no found in the local table"); 
+  xbt_assert2(src_id && dst_id, "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",src,dst); 
   
   void* link;
   unsigned int cpt=0;
-  route_extended_t e_route = TO_ROUTE_FULL(*src_id,*dst_id,routing);
-  route_extended_t new_e_route = xbt_new0(s_route_extended_t,1);
-  new_e_route->src_gateway = e_route->src_gateway;
-  new_e_route->dst_gateway = e_route->dst_gateway;
-  new_e_route->generic_route.link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-  xbt_dynar_foreach(e_route->generic_route.link_list, cpt, link) {
-    xbt_dynar_push(new_e_route->generic_route.link_list,&link);
+  route_extended_t new_e_route;
+  route_extended_t e_route = TO_ROUTE_FULL(*src_id,*dst_id);
+  if(e_route) {
+    new_e_route = xbt_new0(s_route_extended_t,1);
+    new_e_route->src_gateway = e_route->src_gateway;
+    new_e_route->dst_gateway = e_route->dst_gateway;
+    new_e_route->generic_route.link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+    xbt_dynar_foreach(e_route->generic_route.link_list, cpt, link) {
+      xbt_dynar_push(new_e_route->generic_route.link_list,&link);
+    }
+  } else {
+    new_e_route = NULL;
   }
-  return new_e_route;
+    return new_e_route;
 }
 
 static void full_finalize(routing_component_t rc) {
   routing_component_full_t routing = (routing_component_full_t)rc;
+  int table_size = xbt_dict_length(routing->to_index);
   int i,j;
   if (routing) {
-    int table_size = xbt_dict_length(routing->to_index);
     /* Delete routing table */
     for (i=0;i<table_size;i++) {
       for (j=0;j<table_size;j++) {
-        route_extended_t e_route = TO_ROUTE_FULL(i,j,rc);
+        route_extended_t e_route = TO_ROUTE_FULL(i,j);
         if(e_route) {
           xbt_dynar_free(&(e_route->generic_route.link_list));
           if(e_route->src_gateway) xbt_free(e_route->src_gateway);
@@ -723,15 +709,15 @@ static void full_finalize(routing_component_t rc) {
 
 static void* model_full_create() {
   routing_component_full_t new_component =  xbt_new0(s_routing_component_full_t,1);
-  new_component->generic_routing.set_processing_units = full_set_processing_units;
-  new_component->generic_routing.set_autonomous_system = full_set_autonomous_system;
-  new_component->generic_routing.set_route = full_set_route;
-  new_component->generic_routing.set_ASroute = full_set_ASroute;
+  new_component->generic_routing.set_processing_units = generic_set_processing_units;
+  new_component->generic_routing.set_autonomous_system = generic_set_autonomous_system;
+  new_component->generic_routing.set_route = generic_set_route;
+  new_component->generic_routing.set_ASroute = generic_set_ASroute;
   new_component->generic_routing.get_route = full_get_route;
   new_component->generic_routing.finalize = full_finalize;
   new_component->to_index = xbt_dict_new();
   new_component->parse_routes = xbt_dict_new();
-   return new_component;
+  return new_component;
 }
 
 static void model_full_load() {
@@ -743,22 +729,20 @@ static void model_full_unload() {
 }
 
 static void  model_full_end() {
-
-  char *key, *src_name, *dst_name, *link_name;//,  *src_gw_name, *dst_gw_name;
+  
+  char *key, *src_name, *dst_name;
   const char* sep = "#";
   int *src_id, *dst_id;
-  unsigned int i, j, cpt;
-
-  route_extended_t e_route, new_e_route;
+  unsigned int i, j;
   route_t route;
+  route_extended_t e_route;
   void* data;
   
-  xbt_dynar_t links, links_id;
   xbt_dict_cursor_t cursor = NULL;
   xbt_dynar_t keys = NULL;
-
-  routing_component_full_t routing = ((routing_component_full_t)current_routing);
   
+  /* set utils vars */
+  routing_component_full_t routing = ((routing_component_full_t)current_routing);
   int table_size = xbt_dict_length(routing->to_index);
   
   /* Create the routing table */
@@ -769,8 +753,8 @@ static void  model_full_end() {
     
     keys = xbt_str_split_str(key, sep);
 
-    src_name    = xbt_dynar_get_as(keys, 0, char*);
-    dst_name    = xbt_dynar_get_as(keys, 1, char*);
+    src_name = xbt_dynar_get_as(keys, 0, char*);
+    dst_name = xbt_dynar_get_as(keys, 1, char*);
     
     src_id = xbt_dict_get_or_null(routing->to_index, src_name);
     dst_id = xbt_dict_get_or_null(routing->to_index, dst_name);
@@ -778,41 +762,7 @@ static void  model_full_end() {
     if (src_id == NULL || dst_id == NULL )
       THROW2(mismatch_error,0,"Network elements %s or %s not found", src_name, dst_name);
     
-    new_e_route = xbt_new0(s_route_extended_t,1);
-    new_e_route->generic_route.link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-    new_e_route->src_gateway = NULL;
-    new_e_route->dst_gateway = NULL;
-    TO_ROUTE_FULL(*src_id,*dst_id,current_routing) = new_e_route;
-
-    xbt_assert0(routing->generic_routing.hierarchy == SURF_ROUTING_BASE || routing->generic_routing.hierarchy == SURF_ROUTING_RECURSIVE,
-       "the hierarchy type is not defined");
-    
-    if(routing->generic_routing.hierarchy == SURF_ROUTING_BASE ) {
-      
-      route = (route_t)data;
-      links = route->link_list;
-      
-    } else if(routing->generic_routing.hierarchy == SURF_ROUTING_RECURSIVE ) {
-
-      e_route = (route_extended_t)data;
-      // FIXME: HERE CHECK THE GATEWAY!!!!!!!!!
-      links = e_route->generic_route.link_list;
-      /* remeber not erase the gateway names */
-      TO_ROUTE_FULL(*src_id,*dst_id,current_routing)->src_gateway = e_route->src_gateway;
-      TO_ROUTE_FULL(*src_id,*dst_id,current_routing)->dst_gateway = e_route->dst_gateway;
-
-    }
-
-    links_id = TO_ROUTE_FULL(*src_id,*dst_id,current_routing)->generic_route.link_list;
-    
-    xbt_dynar_foreach(links, cpt, link_name) {
-      
-      void* link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
-      if (link)
-        xbt_dynar_push(links_id,&link);
-      else
-        THROW1(mismatch_error,0,"Link %s not found", link_name);
-    }
+    TO_ROUTE_FULL(*src_id,*dst_id) = generic_new_extended_route(current_routing,data);
 
      xbt_dynar_free(&keys);
    }
@@ -829,22 +779,22 @@ static void  model_full_end() {
 
   /* Add the loopback if needed */
   for (i = 0; i < table_size; i++) {
-    e_route = TO_ROUTE_FULL(i, i,current_routing);
+    e_route = TO_ROUTE_FULL(i, i);
     if(!e_route) { // && !xbt_dynar_length(e_route->generic_route.link_list)
       e_route = xbt_new0(s_route_extended_t,1);
       e_route->src_gateway = NULL;
       e_route->dst_gateway = NULL;
       e_route->generic_route.link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
       xbt_dynar_push(e_route->generic_route.link_list,&global_routing->loopback);
-      TO_ROUTE_FULL(i, i,current_routing) = e_route;
+      TO_ROUTE_FULL(i, i) = e_route;
     }
   }
 
   /* Shrink the dynar routes (save unused slots) */
   for (i=0;i<table_size;i++)
     for (j=0;j<table_size;j++)
-      if(TO_ROUTE_FULL(i,j,current_routing))
-	xbt_dynar_shrink(TO_ROUTE_FULL(i,j,current_routing)->generic_route.link_list,0);
+      if(TO_ROUTE_FULL(i,j))
+	xbt_dynar_shrink(TO_ROUTE_FULL(i,j)->generic_route.link_list,0);
 }
 
 /* ************************************************************************** */
@@ -853,52 +803,231 @@ static void  model_full_end() {
 #define TO_FLOYD_COST(i,j) cost_table[(i)+(j)*table_size]
 #define TO_FLOYD_PRED(i,j) (routing->predecessor_table)[(i)+(j)*table_size]
 #define TO_FLOYD_LINK(i,j) (routing->link_table)[(i)+(j)*table_size]
-#define TO_FLOYD_AS(i,j)   (routing->AS_table)[(i)+(j)*AS_table_size]
 
 /* Routing model structure */
 
 typedef struct {
   s_routing_component_t generic_routing;
-  route_extended_t last_route;
   /* vars for calculate the floyd algorith. */
   int *predecessor_table;
-  void** link_table; /* char* -> network_element_t* */
-  xbt_dict_t predecessor_to_index;
-  /* store information to solve any AS route */
-  xbt_dict_t AS_to_index; /* char* -> network_element_t* */
-  route_limits_t AS_table;
+  route_extended_t *link_table; /* char* -> int* */
+  xbt_dict_t to_index;
   /* store data during the parse process */  
   xbt_dict_t parse_routes; 
-  
 } s_routing_component_floyd_t,*routing_component_floyd_t;
 
 /* Business methods */
 
 static route_extended_t floyd_get_route(routing_component_t rc, const char* src,const char* dst) {
+  
+  xbt_assert1(src && dst, "Invalid params for \"get_route\" function at AS \"%s\"",rc->name);
+  
+  /* set utils vars */
+  routing_component_floyd_t routing = (routing_component_floyd_t) rc;
+  int table_size = xbt_dict_length(routing->to_index);
+  
+  route_extended_t new_e_route = xbt_new0(s_route_extended_t,1);
+  new_e_route->generic_route.link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+  new_e_route->src_gateway = NULL;
+  new_e_route->dst_gateway = NULL;
+  
+  int *src_id = xbt_dict_get(routing->to_index,src);
+  int *dst_id = xbt_dict_get(routing->to_index,dst);
+  xbt_assert2(src_id && dst_id, "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",src,dst); 
 
-  return NULL;
-}
-
-static xbt_dict_t floyd_get_network_elements(routing_component_t rc, e_surf_network_element_type_t req_type)
-{
-  return NULL;
+  int first = 1;
+  int pred = *dst_id;
+  int prev_pred = 0;
+  char *gw_src,*gw_dst, *prev_gw_src,*prev_gw_dst, *first_gw;
+  unsigned int cpt;
+  void* link;
+  xbt_dynar_t links;
+  route_extended_t e_route_as_to_as;
+  do {
+    prev_pred = pred;
+    pred = TO_FLOYD_PRED(*src_id, pred);
+    if(pred == -1) // if no pred in route -> no route to host
+      break;      
+    xbt_assert2(TO_FLOYD_LINK(pred,prev_pred),"Invalid link for the route between \"%s\" or \"%s\"", src, dst);
+    
+    prev_gw_src = gw_src;
+    prev_gw_dst = gw_dst;
+    
+    route_extended_t e_route = TO_FLOYD_LINK(pred,prev_pred);
+    gw_src = e_route->src_gateway;
+    gw_dst = e_route->dst_gateway;
+    
+    if(first) first_gw = gw_src;
+    
+    if(rc->hierarchy == SURF_ROUTING_RECURSIVE && !first && strcmp(prev_gw_dst,gw_src)) {
+      
+      routing_component_t src_as = xbt_dict_get_or_null(global_routing->where_network_elements,prev_gw_dst);
+      routing_component_t dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,gw_src);
+      xbt_assert2(src_as==dst_as,"bad routing, differents AS gateways in route \"%s\" to \"%s\"",src,dst);
+      e_route_as_to_as = (*(src_as->get_route))(src_as,prev_gw_dst,gw_src);
+      links = e_route_as_to_as->generic_route.link_list;
+      xbt_dynar_foreach(links, cpt, link) {
+        xbt_dynar_push(new_e_route->generic_route.link_list,&link);
+      }
+    }
+    
+    links = e_route->generic_route.link_list;
+    xbt_dynar_foreach(links, cpt, link) {
+      xbt_dynar_push(new_e_route->generic_route.link_list,&link);
+    }
+    first=0;
+    
+  } while(pred != *src_id);
+  xbt_assert4(pred != -1, "no route from host %d to %d (\"%s\" to \"%s\")", *src_id, *dst_id,src,dst);
+  
+  if(rc->hierarchy == SURF_ROUTING_RECURSIVE) {
+    new_e_route->src_gateway = first_gw;
+    new_e_route->dst_gateway = gw_dst;
+  }
+  
+  return new_e_route;
 }
 
 static void floyd_finalize(routing_component_t rc) {
-
+   routing_component_floyd_t routing = (routing_component_floyd_t)rc;
+  int i,j,table_size;
+  if (routing) {
+    table_size = xbt_dict_length(routing->to_index);
+    /* Delete link_table */
+    for (i=0;i<table_size;i++) {
+      for (j=0;j<table_size;j++) {
+        route_extended_t e_route = TO_FLOYD_LINK(i,j);
+        if(e_route) {
+          xbt_dynar_free(&(e_route->generic_route.link_list));
+          if(e_route->src_gateway) xbt_free(e_route->src_gateway);
+          if(e_route->dst_gateway) xbt_free(e_route->dst_gateway);
+          xbt_free(e_route);
+        }
+      }
+    }
+    xbt_free(routing->link_table);
+    /* Delete index dict */
+    xbt_dict_free(&(routing->to_index));
+    /* Delete dictionary index dict, predecessor and links table */
+    xbt_free(routing->predecessor_table);
+    /* Delete structure */
+    xbt_free(rc);
+  }
 }
 
 static void* model_floyd_create(void) {
-return NULL;
+  routing_component_floyd_t new_component = xbt_new0(s_routing_component_floyd_t,1);
+  new_component->generic_routing.set_processing_units = generic_set_processing_units;
+  new_component->generic_routing.set_autonomous_system = generic_set_autonomous_system;
+  new_component->generic_routing.set_route = generic_set_route;
+  new_component->generic_routing.set_ASroute = generic_set_ASroute;
+  new_component->generic_routing.get_route = floyd_get_route;
+  new_component->generic_routing.finalize = floyd_finalize;
+  new_component->to_index = xbt_dict_new();
+  new_component->parse_routes = xbt_dict_new();
+  return new_component;
 }
 
 static void  model_floyd_load() {
+ /* use "surfxml_add_callback" to add a parse function call */
 }
 
 static void  model_floyd_unload() {
+ /* use "surfxml_del_callback" to remove a parse function call */
 }
 
 static void  model_floyd_end() {
+  
+  routing_component_floyd_t routing = ((routing_component_floyd_t)current_routing);
+  xbt_dict_cursor_t cursor = NULL;
+  double * cost_table;
+  char *key,*data, *src_name, *dst_name;
+  const char *sep = "#";
+  xbt_dynar_t keys;
+  int *src_id, *dst_id;
+  unsigned int i,j,a,b,c;
+
+  /* set the size of inicial table */
+  int table_size = xbt_dict_length(routing->to_index);
+  
+  /* Create Cost, Predecessor and Link tables */
+  cost_table = xbt_new0(double, table_size*table_size); //link cost from host to host
+  routing->predecessor_table = xbt_new0(int, table_size*table_size); //predecessor host numbers
+  routing->link_table = xbt_new0(route_extended_t, table_size*table_size); //actual link between src and dst
+
+  /* Initialize costs and predecessors*/
+  for(i = 0; i<table_size;i++)
+    for(j = 0; j<table_size;j++) {
+        TO_FLOYD_COST(i,j) = DBL_MAX;
+        TO_FLOYD_PRED(i,j) = -1;
+        TO_FLOYD_LINK(i,j) = NULL; // FIXED DAVID
+    }
+
+   /* Put the routes in position */
+  xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
+    
+    keys = xbt_str_split_str(key, sep);
+
+    src_name = xbt_dynar_get_as(keys, 0, char*);
+    dst_name = xbt_dynar_get_as(keys, 1, char*);
+    
+    src_id = xbt_dict_get_or_null(routing->to_index, src_name);
+    dst_id = xbt_dict_get_or_null(routing->to_index, dst_name);
+    
+    if (src_id == NULL || dst_id == NULL )
+      THROW2(mismatch_error,0,"Network elements %s or %s not found", src_name, dst_name);
+
+    TO_FLOYD_LINK(*src_id,*dst_id) = generic_new_extended_route(current_routing,data);
+    TO_FLOYD_PRED(*src_id,*dst_id) = *src_id;
+    
+    //link cost
+    TO_FLOYD_COST(*src_id,*dst_id) = 1; // assume 1 for now
+    
+    xbt_dynar_free(&keys);
+  }
+
+  /* Add the loopback if needed */
+  for (i = 0; i < table_size; i++) {
+    route_extended_t e_route = TO_FLOYD_LINK(i, i);
+    if(!e_route) { // && !xbt_dynar_length(e_route->generic_route.link_list)
+      e_route = xbt_new0(s_route_extended_t,1);
+      e_route->src_gateway = NULL;
+      e_route->dst_gateway = NULL;
+      e_route->generic_route.link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+      xbt_dynar_push(e_route->generic_route.link_list,&global_routing->loopback);
+      TO_FLOYD_LINK(i,i) = e_route;
+      TO_FLOYD_PRED(i,i) = i;
+      TO_FLOYD_COST(i,i) = 1;
+    }
+  }
+
+  //Calculate path costs 
+  for(c=0;c<table_size;c++) {
+    for(a=0;a<table_size;a++) {
+      for(b=0;b<table_size;b++) {
+        if(TO_FLOYD_COST(a,c) < DBL_MAX && TO_FLOYD_COST(c,b) < DBL_MAX) {
+          if(TO_FLOYD_COST(a,b) == DBL_MAX || 
+            (TO_FLOYD_COST(a,c)+TO_FLOYD_COST(c,b) < TO_FLOYD_COST(a,b))) {
+            TO_FLOYD_COST(a,b) = TO_FLOYD_COST(a,c)+TO_FLOYD_COST(c,b);
+            TO_FLOYD_PRED(a,b) = TO_FLOYD_PRED(c,b);
+          }
+        }
+      }
+    }
+  }
+
+   /* delete the parse table */
+  xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
+    route_t route = (route_t)data;
+    xbt_dynar_free(&(route->link_list));
+    xbt_free(data);
+  }
+  
+  /* delete parse dict */
+  xbt_dict_free(&(routing->parse_routes));
+
+  //cleanup
+  free(cost_table);
 }
 
 /* ************************************************************************** */
@@ -965,6 +1094,10 @@ static void none_finalize(routing_component_t rc) {
 /* Creation routing model functions */
 static void* model_none_create() {
   routing_component_none_t new_component =  xbt_new0(s_routing_component_none_t,1);
+  new_component->generic_routing.set_processing_units = NULL;
+  new_component->generic_routing.set_autonomous_system = NULL;
+  new_component->generic_routing.set_route = NULL;
+  new_component->generic_routing.set_ASroute = NULL;
   new_component->generic_routing.get_route = none_get_route;
   new_component->generic_routing.finalize = none_finalize;
   return new_component;
@@ -1000,6 +1133,124 @@ static void  model_NEW_load() {}   /* mandatory */
 static void  model_NEW_unload() {} /* mandatory */
 static void  model_NEW_end() {}    /* mandatory */
 
+/* ************************************************************************** */
+/* ************************* GENERIC PARSE FUNCTIONS ************************ */ 
+
+static void generic_set_processing_units(routing_component_t rc, const char* name) {
+   DEBUG1("Full - Load process unit \"%s\"",name);
+   model_type_t modeltype = rc->routing;
+   int *id = xbt_new0(int,1); // xbt_malloc(sizeof(int)); ?
+   xbt_dict_t index;
+   if(modeltype==&routing_models[SURF_MODEL_FULL])
+     index = ((routing_component_full_t)current_routing)->to_index;
+   else if(modeltype==&routing_models[SURF_MODEL_FLOYD])
+     index = ((routing_component_floyd_t)current_routing)->to_index;   
+   else xbt_die("\"generic_set_processing_units\" not support");
+   *id = xbt_dict_length(index);
+   xbt_dict_set(index,name,id,xbt_free);
+}
+
+static void generic_set_autonomous_system(routing_component_t rc, const char* name) {
+   DEBUG1("Full - Load Autonomous system \"%s\"",name);
+   model_type_t modeltype = rc->routing;
+   int *id = xbt_new0(int,1); // xbt_malloc(sizeof(int)); ?
+   xbt_dict_t index;
+   if(modeltype==&routing_models[SURF_MODEL_FULL])
+     index = ((routing_component_full_t)current_routing)->to_index;
+   else if(modeltype==&routing_models[SURF_MODEL_FLOYD])
+     index = ((routing_component_floyd_t)current_routing)->to_index;
+   else xbt_die("\"generic_set_autonomous_system\" not support");
+   *id = xbt_dict_length(index);
+   xbt_dict_set(index,name,id,xbt_free);
+}
+
+static void generic_set_route(routing_component_t rc, const char* src, const char* dst, route_t route) {
+  DEBUG2("Full - Load Route from \"%s\" to \"%s\"",src,dst);
+  model_type_t modeltype = rc->routing;
+  xbt_dict_t parseroutes;
+  if(modeltype==&routing_models[SURF_MODEL_FULL])
+    parseroutes = ((routing_component_full_t)current_routing)->parse_routes;
+  else if(modeltype==&routing_models[SURF_MODEL_FLOYD])
+    parseroutes = ((routing_component_floyd_t)current_routing)->parse_routes;
+  else xbt_die("\"generic_set_autonomous_system\" not support");
+  char *route_name;
+  route_name = bprintf("%s#%s",src,dst);
+  xbt_assert2(xbt_dynar_length(link_list)>0, "Invalid count of links, must be greater than zero (%s,%s)",src,dst);   
+  xbt_assert2(!xbt_dict_get_or_null(parseroutes,route_name),
+    "The route between \"%s\" and \"%s\" already exist",src,dst);
+  xbt_dict_set(parseroutes, route_name, route, NULL);
+  free(route_name);
+}
+
+static void generic_set_ASroute(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route) {
+  DEBUG4("Full - Load ASroute from \"%s(%s)\" to \"%s(%s)\"",src,e_route->src_gateway,dst,e_route->dst_gateway);
+  model_type_t modeltype = rc->routing;
+  xbt_dict_t parseroutes;
+  if(modeltype==&routing_models[SURF_MODEL_FULL])
+    parseroutes = ((routing_component_full_t)current_routing)->parse_routes;
+  else if(modeltype==&routing_models[SURF_MODEL_FLOYD])
+    parseroutes = ((routing_component_floyd_t)current_routing)->parse_routes;
+  else xbt_die("\"generic_set_autonomous_system\" not support");
+  char *route_name;
+  route_name = bprintf("%s#%s",src,dst);
+  xbt_assert2(xbt_dynar_length(link_list)>0, "Invalid count of links, must be greater than zero (%s,%s)",src,dst);   
+  xbt_assert4(!xbt_dict_get_or_null(parseroutes,route_name),
+    "The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exist",src,e_route->src_gateway,dst,e_route->dst_gateway);
+  xbt_dict_set(parseroutes, route_name, e_route, NULL);
+  free(route_name);
+}
+
+/* ************************************************************************** */
+/* ************************* GENERIC AUX FUNCTIONS ************************** */
+
+static route_extended_t generic_new_extended_route(routing_component_t rc, void* data) {
+  
+  char *link_name;
+  route_extended_t e_route, new_e_route;
+  route_t route;
+  unsigned int cpt;
+  xbt_dynar_t links, links_id;
+  
+  new_e_route = xbt_new0(s_route_extended_t,1);
+  new_e_route->generic_route.link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+  new_e_route->src_gateway = NULL;
+  new_e_route->dst_gateway = NULL;
+
+  xbt_assert0(rc->hierarchy == SURF_ROUTING_BASE || rc->hierarchy == SURF_ROUTING_RECURSIVE,
+      "the hierarchy type is not defined");
+  
+  if(rc->hierarchy == SURF_ROUTING_BASE ) {
+    
+    route = (route_t)data;
+    links = route->link_list;
+    
+  } else if(rc->hierarchy == SURF_ROUTING_RECURSIVE ) {
+
+    e_route = (route_extended_t)data;
+    
+    // FIXME: HERE CHECK THE GATEWAY!!!!!!!!!
+    xbt_assert0(e_route->src_gateway&&e_route->dst_gateway,"bad gateway, is null");
+    
+    links = e_route->generic_route.link_list;
+    
+    /* remeber not erase the gateway names */
+    new_e_route->src_gateway = e_route->src_gateway;
+    new_e_route->dst_gateway = e_route->dst_gateway;
+  }
+  
+  links_id = new_e_route->generic_route.link_list;
+  
+  xbt_dynar_foreach(links, cpt, link_name) {
+    
+    void* link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+    if (link)
+      xbt_dynar_push(links_id,&link);
+    else
+      THROW1(mismatch_error,0,"Link %s not found", link_name);
+  }
+ 
+  return new_e_route;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // HERE FINISH THE NEW CODE
@@ -1015,8 +1266,8 @@ static void print_tree(routing_component_t rc) {
   if( rc->routing == &(routing_models[SURF_MODEL_FULL]) )
   { xbt_dict_foreach(((routing_component_full_t)rc)->to_index, cursor, key, val) { printf("<%s-%d> ",key,*val); } }
   else if( rc->routing == &(routing_models[SURF_MODEL_FLOYD]) )
-  { xbt_dict_foreach(((routing_component_floyd_t)rc)->predecessor_to_index, cursor, key, val) { printf("<%s-%d> ",key,*val); } 
-    xbt_dict_foreach(((routing_component_floyd_t)rc)->AS_to_index, cursor, key, val) { printf("<%s-%d> ",key,*val); } }
+  { xbt_dict_foreach(((routing_component_floyd_t)rc)->to_index, cursor, key, val) { printf("<%s-%d> ",key,*val); } 
+  }
   else
       xbt_assert0(0, "Invalid model for call \"print_tree\"");
   printf("\n");  
@@ -1033,76 +1284,19 @@ static void print_global() {
   xbt_dict_cursor_t cursor = NULL;
   char *key;
   routing_component_t elem;  
-  xbt_dict_foreach(global_routing->where_network_elements, cursor, key, elem) {
-    printf("<%s>\n",key);
-  }
+  xbt_dict_foreach(global_routing->where_network_elements, cursor, key, elem) { printf("<%s>\n",key); }
 }
 
 //...... DEBUG ONLY .... //
 static void print_AS_start(void) { printf("AS!!! %s y se rutea \"%s\"\n",A_surfxml_AS_id,A_surfxml_AS_routing); }
-static void print_AS_end(void) { printf("AS!!! %s\n",A_surfxml_AS_id); }
-static void print_host(void) { printf("host!!! %s\n",A_surfxml_host_id); }
-static void print_link(void) { printf("link!!! %s\n",A_surfxml_link_id); }
-static void print_route(void) { printf("route!!! %s a %s\n",A_surfxml_route_src,A_surfxml_route_dst); }
-static void print_ctn(void) { printf("ctn!!! %s\n",A_surfxml_link_c_ctn_id); }
+static void print_AS_end(void)   { printf("AS!!! %s\n",A_surfxml_AS_id); }
+static void print_host(void)     { printf("host!!! %s\n",A_surfxml_host_id); }
+static void print_link(void)     { printf("link!!! %s\n",A_surfxml_link_id); }
+static void print_route(void)    { printf("route!!! %s a %s\n",A_surfxml_route_src,A_surfxml_route_dst); }
+static void print_ctn(void)      { printf("ctn!!! %s\n",A_surfxml_link_c_ctn_id); }
 
 //...... DEBUG ONLY .... //
 static void DEBUG_exit(void) {
-  
-  
-  
-  printf("-- print all the example routes --\n");
-  
-   const char* names[] = { "11.A","11.B","11.C",
-                           "121.A","121.B",
-                           "122.A",
-                           "13.A","13.B" };
-   unsigned int i,j,total = 3+2+1+2;
-   
-  xbt_dynar_t links;
-  void* link;
-  for(i=0;i<total;i++) {
-    for(j=0;j<total;j++) {
-      links = (*(global_routing->get_route))(names[i],names[j]);
-      printf("route from %s to %s >>> ",names[i],names[j]);
-      if(links) {
-        unsigned int cpt=0;
-        xbt_dynar_foreach(links, cpt, link) {
-          s_surf_resource_t* generic_resource = link;
-          printf(" %s",generic_resource->name);
-        }
-      } else {
-	printf("NULL");
-      }
-      printf("\n");
-    }
-  }
-  
-  printf("-- /////////////////////////////////////--\n");
-  printf("-- /////////////////////////////////////--\n");
-
-
-links = (*(global_routing->get_route))(names[0],names[5]);
-
-if(links) {
-unsigned int cpt=0;
-
-printf("route from %s to %s >>> ",names[0],names[5]);
-  xbt_dynar_foreach(links, cpt, link) {
-    s_surf_resource_t* generic_resource = link;
-    printf(" %s",generic_resource->name);
-  }
-} else {
-  printf("NULL");
-}
-printf("\n");
-  
-  
-  printf("---------- call finalize ---------\n");
-  (*(global_routing->finalize))();
-  printf("----------------------------------\n");
-  
-  exit(0);
   
   printf("-------- print tree elements -----\n");
   print_tree(global_routing->root);
@@ -1125,42 +1319,42 @@ printf("\n");
 //   char* names[] = { "142.A","142.B","142.C" };
 //   int i,j,total = 3;
 
-//   char* names[] = { "142.A","142.B","142.C", "11.A","11.B","11.C","141.A","141.B","143.A","143.B","11.A","11.B","11.C","121.A","121.B","122.A","13.A","13.B"};
+//   const char* names[] = { "142.A","142.B","142.C", "11.A","11.B","11.C","141.A","141.B","143.A","143.B","11.A","11.B","11.C","121.A","121.B","122.A","13.A","13.B"};
 //   int i,j,total = 3+4+8+3;
 
-//    const char* names[] = { "11.A","11.B","11.C",
-//                            "121.A","121.B",
-//                            "122.A",
-//                            "13.A","13.B",
-//                            "141.A","141.B",
-//                            "142.A","142.B","142.C",
-//                            "143.A","143.B",
-//                            "15.A","15.B","15.C"};
-//    unsigned int i,j,total = 3+2+1+2+2+3+2+3;
+   const char* names[] = { "11.A","11.B","11.C",
+                           "121.A","121.B",
+                           "122.A",
+                           "13.A","13.B",
+                           "141.A","141.B",
+                           "142.A","142.B","142.C",
+                           "143.A","143.B",
+                           "15.A","15.B","15.C"};
+   unsigned int i,j,total = 3+2+1+2+2+3+2+3;
 
-//   printf("-- print all the example routes --\n");
-//   xbt_dynar_t links;
-//   void* link;
-//   for(i=0;i<total;i++) {
-//     for(j=0;j<total;j++) {
-//       links = (*(global_routing->get_route))(names[i],names[j]);
-//       printf("route from %s to %s >>> ",names[i],names[j]);
-//       unsigned int cpt=0;
-//       xbt_dynar_foreach(links, cpt, link) {
-//         s_surf_resource_t* generic_resource = link;
-//         printf(" %s",generic_resource->name);
-//       }
-//       printf("\n");
-//     }
-//   }
-//   
-//   printf("----------------------------------\n\n");
-//   
-//   printf("---------- call finalize ---------\n");
-//   (*(global_routing->finalize))();
-//   printf("----------------------------------\n");
-//   
-//   exit(0); 
+  printf("-- print all the example routes --\n");
+  xbt_dynar_t links;
+  void* link;
+  for(i=0;i<total;i++) {
+    for(j=0;j<total;j++) {
+      printf("route from %s to %s >>> ",names[i],names[j]);
+      links = (*(global_routing->get_route))(names[i],names[j]);
+      unsigned int cpt=0;
+      xbt_dynar_foreach(links, cpt, link) {
+        s_surf_resource_t* generic_resource = link;
+        printf(" %s",generic_resource->name);
+      }
+      printf("\n");
+    }
+  }
+  
+  printf("----------------------------------\n\n");
+  
+  printf("---------- call finalize ---------\n");
+  (*(global_routing->finalize))();
+  printf("----------------------------------\n");
+  
+  exit(0); 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
