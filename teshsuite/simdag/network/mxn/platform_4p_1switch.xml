@@ -1,89 +1,91 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-
-
-  <host id="cpu0" power="1"/>
-  <host id="cpu1" power="1"/>
-  <host id="cpu2" power="1"/>
-  <host id="cpu3" power="1"/>
-  
-  <link id="switch" bandwidth="2" latency="1" sharing_policy="FATPIPE"/>
-  <link id="link0" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
-  <link id="link1" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
-  <link id="link2" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
-  <link id="link3" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
-  
-  <route src="cpu0" dst="cpu1">
-    <link:ctn id="link0"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link1"/>
-  </route>
-
-  <route src="cpu0" dst="cpu2">
-    <link:ctn id="link0"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link2"/>
-  </route>
-
-  <route src="cpu0" dst="cpu3">
-    <link:ctn id="link0"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link3"/>
-  </route>
-
-  <route src="cpu1" dst="cpu0">
-    <link:ctn id="link1"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link0"/>
-  </route>
-
-  <route src="cpu1" dst="cpu2">
-    <link:ctn id="link1"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link2"/>
-  </route>
-
-  <route src="cpu1" dst="cpu3">
-    <link:ctn id="link1"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link3"/>
-  </route>
-  
-  <route src="cpu2" dst="cpu0">
-    <link:ctn id="link2"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link0"/>
-  </route>
-
-  <route src="cpu2" dst="cpu1">
-    <link:ctn id="link2"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link1"/>
-  </route>
-
-  <route src="cpu2" dst="cpu3">
-    <link:ctn id="link2"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link3"/>
-  </route>
-
-  <route src="cpu3" dst="cpu0">
-    <link:ctn id="link3"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link0"/>
-  </route>
-
-  <route src="cpu3" dst="cpu1">
-    <link:ctn id="link3"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link1"/>
-  </route>
-
-  <route src="cpu3" dst="cpu2">
-    <link:ctn id="link3"/>
-    <link:ctn id="switch"/>
-    <link:ctn id="link2"/>
-  </route>
-  
-</platform>
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+ 
+ 
+   <host id="cpu0" power="1"/>
+   <host id="cpu1" power="1"/>
+   <host id="cpu2" power="1"/>
+   <host id="cpu3" power="1"/>
+   
+   <link id="switch" bandwidth="2" latency="1" sharing_policy="FATPIPE"/>
+   <link id="link0" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
+   <link id="link1" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
+   <link id="link2" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
+   <link id="link3" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
+   
+   <route src="cpu0" dst="cpu1">
+     <link:ctn id="link0"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link1"/>
+   </route>
+ 
+   <route src="cpu0" dst="cpu2">
+     <link:ctn id="link0"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link2"/>
+   </route>
+ 
+   <route src="cpu0" dst="cpu3">
+     <link:ctn id="link0"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link3"/>
+   </route>
+ 
+   <route src="cpu1" dst="cpu0">
+     <link:ctn id="link1"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link0"/>
+   </route>
+ 
+   <route src="cpu1" dst="cpu2">
+     <link:ctn id="link1"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link2"/>
+   </route>
+ 
+   <route src="cpu1" dst="cpu3">
+     <link:ctn id="link1"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link3"/>
+   </route>
+   
+   <route src="cpu2" dst="cpu0">
+     <link:ctn id="link2"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link0"/>
+   </route>
+ 
+   <route src="cpu2" dst="cpu1">
+     <link:ctn id="link2"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link1"/>
+   </route>
+ 
+   <route src="cpu2" dst="cpu3">
+     <link:ctn id="link2"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link3"/>
+   </route>
+ 
+   <route src="cpu3" dst="cpu0">
+     <link:ctn id="link3"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link0"/>
+   </route>
+ 
+   <route src="cpu3" dst="cpu1">
+     <link:ctn id="link3"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link1"/>
+   </route>
+ 
+   <route src="cpu3" dst="cpu2">
+     <link:ctn id="link3"/>
+     <link:ctn id="switch"/>
+     <link:ctn id="link2"/>
+   </route>
+   
+ </AS>
+ </platform>

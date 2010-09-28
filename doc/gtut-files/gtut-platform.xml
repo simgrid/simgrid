@@ -1,10 +1,12 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-  <host id="Jacquelin" power="137333000"/>
-  <host id="Boivin" power="98095000"/>
-  <link id="1" bandwidth="3430125" latency="0.000536941"/>
-  <route src="Jacquelin" dst="Boivin"><link:ctn id="1"/></route>
-  <route src="Boivin" dst="Jacquelin"><link:ctn id="1"/></route>
-</platform>
-
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+   <host id="Jacquelin" power="137333000"/>
+   <host id="Boivin" power="98095000"/>
+   <link id="1" bandwidth="3430125" latency="0.000536941"/>
+   <route src="Jacquelin" dst="Boivin"><link:ctn id="1"/></route>
+   <route src="Boivin" dst="Jacquelin"><link:ctn id="1"/></route>
+ </AS>
+ </platform>
+ 

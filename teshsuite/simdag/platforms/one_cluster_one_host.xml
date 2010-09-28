@@ -1,15 +1,17 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-  <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
-	   radical="0-4" power="1000000000" bw="125000000" lat="5E-5"
-	   bb_bw="2250000000" bb_lat="5E-4"/>
-
-  <host id="trudy" power="250000000"/>
-
-  <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
-
-  <route:multi src="bob_cluster" dst="trudy" symmetric="YES">
-    <link:ctn id="backbone"/>
-  </route:multi>
-</platform>
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+   <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
+ 	   radical="0-4" power="1000000000" bw="125000000" lat="5E-5"
+ 	   bb_bw="2250000000" bb_lat="5E-4"/>
+ 
+   <host id="trudy" power="250000000"/>
+ 
+   <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
+ 
+   <route:multi src="bob_cluster" dst="trudy" symmetric="YES">
+     <link:ctn id="backbone"/>
+   </route:multi>
+ </AS>
+ </platform>

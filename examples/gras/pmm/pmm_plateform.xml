@@ -1,327 +1,329 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-	<host id="Jacquelin" power="137333000"/>
-	<host id="Boivin" power="98095000"/>
-	<host id="Jean_Yves" power="98095000"/>
-	<host id="TeX" power="68667000"/>
-	<host id="Geoff" power="42917000"/>
-	<host id="Disney" power="114444000"/>
-	<host id="iRMX" power="68667000"/>
-	<host id="McGee" power="42917000"/>
-	<host id="Gatien" power="114444000"/>
-  	<host id="Laroche" power="98095000"/>
-	<link id="127" bandwidth="3430125" latency="0.000536941"/>
-	<link id="32" bandwidth="11618875" latency="0.00018998"/>
-	<link id="90" bandwidth="10314625" latency="0.006932556"/>
-	<link id="118" bandwidth="1467625" latency="0.000869727"/>
-	<link id="71" bandwidth="8427250" latency="0.000156056"/>
-	<link id="102" bandwidth="4817000" latency="0.000117352"/>
-	<link id="18" bandwidth="34285625" latency="0.000514433"/>
-	<link id="125" bandwidth="5574625" latency="0.00022743"/>
-	<link id="16" bandwidth="34285625" latency="0.000514433"/>
-	<link id="44" bandwidth="10314625" latency="0.006932556"/>
-	<link id="55" bandwidth="10314625" latency="0.006932556"/>
-	<link id="84" bandwidth="15376875" latency="0.035083019"/>
-	<link id="27" bandwidth="8015125" latency="0.035076518"/>
-	<link id="190" bandwidth="1230250" latency="0.001502106"/>
-	<link id="161" bandwidth="1469125" latency="0.001114548"/>
-	<link id="95" bandwidth="5758500" latency="0.004760145"/>
-	<link id="57" bandwidth="15376875" latency="0.035083019"/>
-	<link id="20" bandwidth="255228625" latency="0.007413073"/>
-	<link id="163" bandwidth="2583375" latency="0.000410463"/>
-	<link id="109" bandwidth="1858000" latency="0.000820952"/>
-	<link id="151" bandwidth="1564125" latency="0.000788956"/>
-	<link id="89" bandwidth="34285625" latency="0.000514433"/>
-	<link id="175" bandwidth="1376750" latency="0.000449267"/>
-	<link id="148" bandwidth="578625" latency="0.005473705"/>
-	<link id="31" bandwidth="34285625" latency="0.000514433"/>
-	<link id="35" bandwidth="34285625" latency="0.000514433"/>
-	<link id="11" bandwidth="118682500" latency="0.000136931"/>
-	<link id="78" bandwidth="27946250" latency="0.000278066"/>
-	<link id="93" bandwidth="2608000" latency="0.000637001"/>
-	<link id="106" bandwidth="251625" latency="0.004455826"/>
-	<link id="157" bandwidth="274375" latency="0.004669142"/>
-	<link id="65" bandwidth="10314625" latency="0.006932556"/>
-	<link id="29" bandwidth="8158000" latency="0.000270544"/>
-	<link id="138" bandwidth="253125" latency="0.005652577"/>
-	<link id="114" bandwidth="253125" latency="0.005652577"/>
-	<link id="58" bandwidth="21414750" latency="0.295890617"/>
-	<link id="153" bandwidth="4817000" latency="0.000117352"/>
-	<link id="15" bandwidth="132977875" latency="0.000131098"/>
-	<link id="137" bandwidth="4416625" latency="1.9773e-05"/>
-	<link id="81" bandwidth="15376875" latency="0.035083019"/>
-	<link id="60" bandwidth="21414750" latency="0.295890617"/>
-	<link id="101" bandwidth="290125" latency="0.004522355"/>
-	<link id="73" bandwidth="15376875" latency="0.035083019"/>
-	<link id="86" bandwidth="8427250" latency="0.000156056"/>
-	<link id="76" bandwidth="27946250" latency="0.000278066"/>
-	<link id="62" bandwidth="8015125" latency="0.035076518"/>
-	<link id="67" bandwidth="27946250" latency="0.000278066"/>
-	<link id="165" bandwidth="253125" latency="0.005652577"/>
-	<link id="139" bandwidth="1888875" latency="0.001081287"/>
-	<link id="129" bandwidth="1467625" latency="0.000869727"/>
-	<link id="2" bandwidth="132977875" latency="0.000131098"/>
-	<link id="17" bandwidth="118682500" latency="0.000136931"/>
-	<link id="186" bandwidth="4397250" latency="0.000677601"/>
-	<link id="110" bandwidth="5574625" latency="0.00022743"/>
-	<link id="82" bandwidth="15376875" latency="0.035083019"/>
-	<link id="147" bandwidth="2368000" latency="0.009547561"/>
-	<link id="168" bandwidth="1858000" latency="0.000820952"/>
-	<link id="184" bandwidth="303375" latency="0.004062241"/>
-	<link id="135" bandwidth="1376750" latency="0.000449267"/>
-	<link id="14" bandwidth="118682500" latency="0.000136931"/>
-	<link id="112" bandwidth="4133375" latency="0.009693542"/>
-	<link id="69" bandwidth="8427250" latency="0.000156056"/>
-	<link id="191" bandwidth="1467625" latency="0.000869727"/>
-	<link id="172" bandwidth="605000" latency="0.087981858"/>
-	<link id="145" bandwidth="2583375" latency="0.000410463"/>
-	<link id="49" bandwidth="27946250" latency="0.000278066"/>
-	<link id="178" bandwidth="1469125" latency="0.001114548"/>
-	<link id="24" bandwidth="10099625" latency="0.00047978"/>
-	<link id="187" bandwidth="1467625" latency="0.000869727"/>
-	<link id="140" bandwidth="1465500" latency="0.000863872"/>
-	<link id="124" bandwidth="556000" latency="0.003101854"/>
-	<link id="104" bandwidth="4485125" latency="0.000126045"/>
-	<link id="131" bandwidth="317375" latency="0.004583831"/>
-	<link id="181" bandwidth="4485125" latency="0.000126045"/>
-	<link id="121" bandwidth="4817000" latency="0.000117352"/>
-	<link id="79" bandwidth="8427250" latency="0.000156056"/>
-	<link id="154" bandwidth="272375" latency="0.005922616"/>
-	<link id="0" bandwidth="255228625" latency="0.007413073"/>
-	<link id="23" bandwidth="10099625" latency="0.00047978"/>
-	<link id="96" bandwidth="4978250" latency="0.007164412"/>
-	<link id="126" bandwidth="3995500" latency="0.000678645"/>
-	<link id="159" bandwidth="4817000" latency="0.000117352"/>
-	<link id="160" bandwidth="274375" latency="0.004669142"/>
-	<link id="176" bandwidth="3175500" latency="0.000472524"/>
-	<link id="47" bandwidth="10314625" latency="0.006932556"/>
-	<link id="8" bandwidth="34285625" latency="0.000514433"/>
-	<link id="98" bandwidth="556000" latency="0.003101854"/>
-	<link id="37" bandwidth="10314625" latency="0.006932556"/>
-	<link id="117" bandwidth="1515250" latency="0.000844683"/>
-	<link id="43" bandwidth="27946250" latency="0.000278066"/>
-	<link id="5" bandwidth="41279125" latency="5.9904e-05"/>
-	<link id="170" bandwidth="4485125" latency="0.000126045"/>
-	<link id="33" bandwidth="34285625" latency="0.000514433"/>
-	<link id="21" bandwidth="41279125" latency="5.9904e-05"/>
-	<link id="63" bandwidth="15376875" latency="0.035083019"/>
-	<link id="7" bandwidth="34285625" latency="0.000514433"/>
-	<link id="26" bandwidth="21414750" latency="0.295890617"/>
-	<link id="80" bandwidth="15376875" latency="0.035083019"/>
-	<link id="119" bandwidth="317375" latency="0.004583831"/>
-	<link id="180" bandwidth="251625" latency="0.004455826"/>
-	<link id="99" bandwidth="253125" latency="0.005652577"/>
-	<link id="179" bandwidth="5816375" latency="0.000164758"/>
-	<link id="162" bandwidth="556000" latency="0.003101854"/>
-	<link id="72" bandwidth="41279125" latency="5.9904e-05"/>
-	<link id="74" bandwidth="10314625" latency="0.006932556"/>
-	<link id="182" bandwidth="4416625" latency="1.9773e-05"/>
-	<link id="61" bandwidth="8015125" latency="0.035076518"/>
-	<link id="108" bandwidth="990500" latency="0.001742977"/>
-	<link id="115" bandwidth="926625" latency="0.000601375"/>
-	<link id="92" bandwidth="1564125" latency="0.000788956"/>
-	<link id="103" bandwidth="472125" latency="0.005161451"/>
-	<link id="10" bandwidth="34285625" latency="0.000514433"/>
-	<link id="113" bandwidth="1858000" latency="0.000820952"/>
-	<link id="152" bandwidth="7209750" latency="0.001461517"/>
-	<link id="189" bandwidth="251625" latency="0.004455826"/>
-	<link id="142" bandwidth="1627750" latency="0.000278175"/>
-	<link id="91" bandwidth="8427250" latency="0.000156056"/>
-	<link id="167" bandwidth="768750" latency="0.00876244"/>
-	<link id="48" bandwidth="41279125" latency="5.9904e-05"/>
-	<link id="107" bandwidth="1281875" latency="0.006104672"/>
-	<link id="87" bandwidth="8158000" latency="0.000270544"/>
-	<link id="174" bandwidth="290875" latency="0.00447727"/>
-	<link id="77" bandwidth="27946250" latency="0.000278066"/>
-	<link id="133" bandwidth="1469125" latency="0.001114548"/>
-	<link id="149" bandwidth="1049250" latency="0.009647856"/>
-	<link id="123" bandwidth="3430125" latency="0.000536941"/>
-	<link id="50" bandwidth="15376875" latency="0.035083019"/>
-	<link id="39" bandwidth="8015125" latency="0.035076518"/>
-	<link id="64" bandwidth="21414750" latency="0.295890617"/>
-	<link id="97" bandwidth="7534000" latency="0.000125428"/>
-	<link id="12" bandwidth="41279125" latency="5.9904e-05"/>
-	<link id="41" bandwidth="34285625" latency="0.000514433"/>
-	<link id="52" bandwidth="8427250" latency="0.000156056"/>
-	<link id="173" bandwidth="7534000" latency="0.000125428"/>
-	<link id="56" bandwidth="21414750" latency="0.295890617"/>
-	<link id="45" bandwidth="8158000" latency="0.000270544"/>
-	<link id="66" bandwidth="11618875" latency="0.00018998"/>
-	<link id="19" bandwidth="34285625" latency="0.000514433"/>
-	<link id="54" bandwidth="15376875" latency="0.035083019"/>
-	<link id="70" bandwidth="41279125" latency="5.9904e-05"/>
-	<link id="188" bandwidth="3175500" latency="0.000472524"/>
-	<link id="68" bandwidth="41279125" latency="5.9904e-05"/>
-	<link id="166" bandwidth="3995500" latency="0.000678645"/>
-	<link id="1" bandwidth="34285625" latency="0.000514433"/>
-	<link id="136" bandwidth="926625" latency="0.000601375"/>
-	<link id="88" bandwidth="10314625" latency="0.006932556"/>
-	<link id="116" bandwidth="2368000" latency="0.009547561"/>
-	<link id="144" bandwidth="259125" latency="0.004460898"/>
-	<link id="141" bandwidth="472125" latency="0.005161451"/>
-	<link id="30" bandwidth="10099625" latency="0.00047978"/>
-	<link id="100" bandwidth="721625" latency="6.406e-06"/>
-	<link id="25" bandwidth="8015125" latency="0.035076518"/>
-	<link id="128" bandwidth="1469125" latency="0.001114548"/>
-	<link id="28" bandwidth="15376875" latency="0.035083019"/>
-	<link id="120" bandwidth="4461125" latency="0.000106949"/>
-	<link id="156" bandwidth="4485125" latency="0.000126045"/>
-	<link id="134" bandwidth="259125" latency="0.004460898"/>
-	<link id="40" bandwidth="21414750" latency="0.295890617"/>
-	<link id="75" bandwidth="11618875" latency="0.00018998"/>
-	<link id="83" bandwidth="10314625" latency="0.006932556"/>
-	<link id="59" bandwidth="11845375" latency="0.000370788"/>
-	<link id="177" bandwidth="990500" latency="0.001742977"/>
-	<link id="150" bandwidth="4270250" latency="0.000672289"/>
-	<link id="155" bandwidth="1376750" latency="0.000449267"/>
-	<link id="130" bandwidth="4485125" latency="0.000126045"/>
-	<link id="53" bandwidth="11618875" latency="0.00018998"/>
-	<link id="122" bandwidth="1126875" latency="0.00028784"/>
-	<link id="143" bandwidth="7209750" latency="0.001461517"/>
-	<link id="158" bandwidth="3028375" latency="0.000677908"/>
-	<link id="42" bandwidth="34285625" latency="0.000514433"/>
-	<link id="22" bandwidth="11618875" latency="0.00018998"/>
-	<link id="46" bandwidth="8158000" latency="0.000270544"/>
-	<link id="13" bandwidth="255228625" latency="0.007413073"/>
-	<link id="105" bandwidth="117125" latency="0.053930106"/>
-	<link id="6" bandwidth="34285625" latency="0.000514433"/>
-	<link id="85" bandwidth="15376875" latency="0.035083019"/>
-	<link id="185" bandwidth="2348500" latency="0.000259761"/>
-	<link id="36" bandwidth="11618875" latency="0.00018998"/>
-	<link id="3" bandwidth="255228625" latency="0.007413073"/>
-	<link id="183" bandwidth="3995500" latency="0.000678645"/>
-	<link id="94" bandwidth="4485125" latency="0.000126045"/>
-	<link id="146" bandwidth="3371250" latency="0.000666676"/>
-	<link id="51" bandwidth="8427250" latency="0.000156056"/>
-	<link id="9" bandwidth="34285625" latency="0.000514433"/>
-	<link id="111" bandwidth="3275625" latency="0.000658142"/>
-	<link id="38" bandwidth="41279125" latency="5.9904e-05"/>
-	<link id="4" bandwidth="132977875" latency="0.000131098"/>
-	<link id="34" bandwidth="11845375" latency="0.000370788"/>
-	<link id="169" bandwidth="1376750" latency="0.000449267"/>
-	<link id="164" bandwidth="768750" latency="0.00876244"/>
-	<link id="132" bandwidth="2179125" latency="0.000320114"/>
-        <link id="171" bandwidth="3297750" latency="0.000595883"/>
-	
-	<!-- Jacquelin routes-->
-	
-	<route src="Jacquelin" dst="Boivin"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
-	<route src="Jacquelin" dst="Jean_Yves"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
-	<route src="Jacquelin" dst="TeX"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
-	<route src="Jacquelin" dst="Geoff"><link:ctn id="145"/></route>
-	<route src="Jacquelin" dst="Disney"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
-	<route src="Jacquelin" dst="iRMX"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
-	<route src="Jacquelin" dst="McGee"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
-	<route src="Jacquelin" dst="Gatien"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
-  <route src="Jacquelin" dst="Laroche"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
-  
-  <!-- Boivin routes-->
-  
-  <route src="Boivin" dst="Jacquelin"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
-  <route src="Boivin" dst="Jean_Yves"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
-  <route src="Boivin" dst="TeX"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
-  <route src="Boivin" dst="Geoff"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
-  <route src="Boivin" dst="Disney"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
-  <route src="Boivin" dst="iRMX"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
-  <route src="Boivin" dst="McGee"><link:ctn id="47"/><link:ctn id="46"/><link:ctn id="49"/><link:ctn id="38"/><link:ctn id="41"/></route>
-  <route src="Boivin" dst="Gatien"><link:ctn id="47"/><link:ctn id="46"/><link:ctn id="49"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
-  <route src="Boivin" dst="Laroche"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
-  
-  <!-- Jean_Yves routes-->
-  
-  <route src="Jean_Yves" dst="Jacquelin"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="59"/><link:ctn id="145"/></route>
-  <route src="Jean_Yves" dst="Boivin"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
-  <route src="Jean_Yves" dst="TeX"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
-  <route src="Jean_Yves" dst="Geoff"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="59"/></route>
-  <route src="Jean_Yves" dst="Disney"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
-  <route src="Jean_Yves" dst="iRMX"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
-  <route src="Jean_Yves" dst="McGee"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
-  <route src="Jean_Yves" dst="Gatien"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
-  <route src="Jean_Yves" dst="Laroche"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
-  
-  <!-- TeX routes-->
-  
-  <route src="TeX" dst="Jacquelin"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
-  <route src="TeX" dst="Boivin"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
-  <route src="TeX" dst="Jean_Yves"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
-  <route src="TeX" dst="Geoff"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
-  <route src="TeX" dst="Disney"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
-  <route src="TeX" dst="iRMX"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="20"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
-  <route src="TeX" dst="McGee"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
-  <route src="TeX" dst="Gatien"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
-  <route src="TeX" dst="Laroche"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="20"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
-  
-  <!-- Geoff routes-->
-  
-  <route src="Geoff" dst="Jacquelin"><link:ctn id="145"/></route>
-  <route src="Geoff" dst="Boivin"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
-  <route src="Geoff" dst="Jean_Yves"><link:ctn id="59"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
-  <route src="Geoff" dst="TeX"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
-  <route src="Geoff" dst="Disney"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
-  <route src="Geoff" dst="iRMX"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
-  <route src="Geoff" dst="McGee"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
-  <route src="Geoff" dst="Gatien"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
-  <route src="Geoff" dst="Laroche"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
-  
-  <!-- Disney routes-->
-  
-  <route src="Disney" dst="Jacquelin"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
-  <route src="Disney" dst="Boivin"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
-  <route src="Disney" dst="Jean_Yves"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
-  <route src="Disney" dst="TeX"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="35"/><link:ctn id="100"/></route>
-  <route src="Disney" dst="Geoff"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
-  <route src="Disney" dst="iRMX"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="20"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
-  <route src="Disney" dst="McGee"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
-  <route src="Disney" dst="Gatien"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
-  <route src="Disney" dst="Laroche"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="20"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
-  
-  <!-- iRMX routes-->
-  
-  <route src="iRMX" dst="Jacquelin"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
-  <route src="iRMX" dst="Boivin"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
-  <route src="iRMX" dst="Jean_Yves"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
-  <route src="iRMX" dst="TeX"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="20"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
-  <route src="iRMX" dst="Geoff"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
-  <route src="iRMX" dst="Disney"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="20"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
-  <route src="iRMX" dst="McGee"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
-  <route src="iRMX" dst="Gatien"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
-  <route src="iRMX" dst="Laroche"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="91"/></route>
-  
-  <!-- McGee routes-->
-  
-  <route src="McGee" dst="Jacquelin"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
-  <route src="McGee" dst="Boivin"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="49"/><link:ctn id="46"/><link:ctn id="47"/></route>
-  <route src="McGee" dst="Jean_Yves"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
-  <route src="McGee" dst="TeX"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
-  <route src="McGee" dst="Geoff"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
-  <route src="McGee" dst="Disney"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
-  <route src="McGee" dst="iRMX"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
-  <route src="McGee" dst="Gatien"><link:ctn id="41"/><link:ctn id="40"/><link:ctn id="115"/></route>
-  <route src="McGee" dst="Laroche"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
-  
-  <!-- Gatien routes-->
-  
-  <route src="Gatien" dst="Jacquelin"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
-  <route src="Gatien" dst="Boivin"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="49"/><link:ctn id="46"/><link:ctn id="47"/></route>
-  <route src="Gatien" dst="Jean_Yves"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
-  <route src="Gatien" dst="TeX"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
-  <route src="Gatien" dst="Geoff"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
-  <route src="Gatien" dst="Disney"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
-  <route src="Gatien" dst="iRMX"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
-  <route src="Gatien" dst="McGee"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="41"/></route>
-  <route src="Gatien" dst="Laroche"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
-  
-  <!-- Laroche routes-->
-  
-  <route src="Laroche" dst="Jacquelin"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
-  <route src="Laroche" dst="Boivin"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
-  <route src="Laroche" dst="Jean_Yves"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
-  <route src="Laroche" dst="TeX"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="20"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
-  <route src="Laroche" dst="Geoff"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
-  <route src="Laroche" dst="Disney"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="20"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
-  <route src="Laroche" dst="iRMX"><link:ctn id="91"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
-  <route src="Laroche" dst="McGee"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
-  <route src="Laroche" dst="Gatien"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
-</platform>
-  
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+ 	<host id="Jacquelin" power="137333000"/>
+ 	<host id="Boivin" power="98095000"/>
+ 	<host id="Jean_Yves" power="98095000"/>
+ 	<host id="TeX" power="68667000"/>
+ 	<host id="Geoff" power="42917000"/>
+ 	<host id="Disney" power="114444000"/>
+ 	<host id="iRMX" power="68667000"/>
+ 	<host id="McGee" power="42917000"/>
+ 	<host id="Gatien" power="114444000"/>
+   	<host id="Laroche" power="98095000"/>
+ 	<link id="127" bandwidth="3430125" latency="0.000536941"/>
+ 	<link id="32" bandwidth="11618875" latency="0.00018998"/>
+ 	<link id="90" bandwidth="10314625" latency="0.006932556"/>
+ 	<link id="118" bandwidth="1467625" latency="0.000869727"/>
+ 	<link id="71" bandwidth="8427250" latency="0.000156056"/>
+ 	<link id="102" bandwidth="4817000" latency="0.000117352"/>
+ 	<link id="18" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="125" bandwidth="5574625" latency="0.00022743"/>
+ 	<link id="16" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="44" bandwidth="10314625" latency="0.006932556"/>
+ 	<link id="55" bandwidth="10314625" latency="0.006932556"/>
+ 	<link id="84" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="27" bandwidth="8015125" latency="0.035076518"/>
+ 	<link id="190" bandwidth="1230250" latency="0.001502106"/>
+ 	<link id="161" bandwidth="1469125" latency="0.001114548"/>
+ 	<link id="95" bandwidth="5758500" latency="0.004760145"/>
+ 	<link id="57" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="20" bandwidth="255228625" latency="0.007413073"/>
+ 	<link id="163" bandwidth="2583375" latency="0.000410463"/>
+ 	<link id="109" bandwidth="1858000" latency="0.000820952"/>
+ 	<link id="151" bandwidth="1564125" latency="0.000788956"/>
+ 	<link id="89" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="175" bandwidth="1376750" latency="0.000449267"/>
+ 	<link id="148" bandwidth="578625" latency="0.005473705"/>
+ 	<link id="31" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="35" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="11" bandwidth="118682500" latency="0.000136931"/>
+ 	<link id="78" bandwidth="27946250" latency="0.000278066"/>
+ 	<link id="93" bandwidth="2608000" latency="0.000637001"/>
+ 	<link id="106" bandwidth="251625" latency="0.004455826"/>
+ 	<link id="157" bandwidth="274375" latency="0.004669142"/>
+ 	<link id="65" bandwidth="10314625" latency="0.006932556"/>
+ 	<link id="29" bandwidth="8158000" latency="0.000270544"/>
+ 	<link id="138" bandwidth="253125" latency="0.005652577"/>
+ 	<link id="114" bandwidth="253125" latency="0.005652577"/>
+ 	<link id="58" bandwidth="21414750" latency="0.295890617"/>
+ 	<link id="153" bandwidth="4817000" latency="0.000117352"/>
+ 	<link id="15" bandwidth="132977875" latency="0.000131098"/>
+ 	<link id="137" bandwidth="4416625" latency="1.9773e-05"/>
+ 	<link id="81" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="60" bandwidth="21414750" latency="0.295890617"/>
+ 	<link id="101" bandwidth="290125" latency="0.004522355"/>
+ 	<link id="73" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="86" bandwidth="8427250" latency="0.000156056"/>
+ 	<link id="76" bandwidth="27946250" latency="0.000278066"/>
+ 	<link id="62" bandwidth="8015125" latency="0.035076518"/>
+ 	<link id="67" bandwidth="27946250" latency="0.000278066"/>
+ 	<link id="165" bandwidth="253125" latency="0.005652577"/>
+ 	<link id="139" bandwidth="1888875" latency="0.001081287"/>
+ 	<link id="129" bandwidth="1467625" latency="0.000869727"/>
+ 	<link id="2" bandwidth="132977875" latency="0.000131098"/>
+ 	<link id="17" bandwidth="118682500" latency="0.000136931"/>
+ 	<link id="186" bandwidth="4397250" latency="0.000677601"/>
+ 	<link id="110" bandwidth="5574625" latency="0.00022743"/>
+ 	<link id="82" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="147" bandwidth="2368000" latency="0.009547561"/>
+ 	<link id="168" bandwidth="1858000" latency="0.000820952"/>
+ 	<link id="184" bandwidth="303375" latency="0.004062241"/>
+ 	<link id="135" bandwidth="1376750" latency="0.000449267"/>
+ 	<link id="14" bandwidth="118682500" latency="0.000136931"/>
+ 	<link id="112" bandwidth="4133375" latency="0.009693542"/>
+ 	<link id="69" bandwidth="8427250" latency="0.000156056"/>
+ 	<link id="191" bandwidth="1467625" latency="0.000869727"/>
+ 	<link id="172" bandwidth="605000" latency="0.087981858"/>
+ 	<link id="145" bandwidth="2583375" latency="0.000410463"/>
+ 	<link id="49" bandwidth="27946250" latency="0.000278066"/>
+ 	<link id="178" bandwidth="1469125" latency="0.001114548"/>
+ 	<link id="24" bandwidth="10099625" latency="0.00047978"/>
+ 	<link id="187" bandwidth="1467625" latency="0.000869727"/>
+ 	<link id="140" bandwidth="1465500" latency="0.000863872"/>
+ 	<link id="124" bandwidth="556000" latency="0.003101854"/>
+ 	<link id="104" bandwidth="4485125" latency="0.000126045"/>
+ 	<link id="131" bandwidth="317375" latency="0.004583831"/>
+ 	<link id="181" bandwidth="4485125" latency="0.000126045"/>
+ 	<link id="121" bandwidth="4817000" latency="0.000117352"/>
+ 	<link id="79" bandwidth="8427250" latency="0.000156056"/>
+ 	<link id="154" bandwidth="272375" latency="0.005922616"/>
+ 	<link id="0" bandwidth="255228625" latency="0.007413073"/>
+ 	<link id="23" bandwidth="10099625" latency="0.00047978"/>
+ 	<link id="96" bandwidth="4978250" latency="0.007164412"/>
+ 	<link id="126" bandwidth="3995500" latency="0.000678645"/>
+ 	<link id="159" bandwidth="4817000" latency="0.000117352"/>
+ 	<link id="160" bandwidth="274375" latency="0.004669142"/>
+ 	<link id="176" bandwidth="3175500" latency="0.000472524"/>
+ 	<link id="47" bandwidth="10314625" latency="0.006932556"/>
+ 	<link id="8" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="98" bandwidth="556000" latency="0.003101854"/>
+ 	<link id="37" bandwidth="10314625" latency="0.006932556"/>
+ 	<link id="117" bandwidth="1515250" latency="0.000844683"/>
+ 	<link id="43" bandwidth="27946250" latency="0.000278066"/>
+ 	<link id="5" bandwidth="41279125" latency="5.9904e-05"/>
+ 	<link id="170" bandwidth="4485125" latency="0.000126045"/>
+ 	<link id="33" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="21" bandwidth="41279125" latency="5.9904e-05"/>
+ 	<link id="63" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="7" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="26" bandwidth="21414750" latency="0.295890617"/>
+ 	<link id="80" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="119" bandwidth="317375" latency="0.004583831"/>
+ 	<link id="180" bandwidth="251625" latency="0.004455826"/>
+ 	<link id="99" bandwidth="253125" latency="0.005652577"/>
+ 	<link id="179" bandwidth="5816375" latency="0.000164758"/>
+ 	<link id="162" bandwidth="556000" latency="0.003101854"/>
+ 	<link id="72" bandwidth="41279125" latency="5.9904e-05"/>
+ 	<link id="74" bandwidth="10314625" latency="0.006932556"/>
+ 	<link id="182" bandwidth="4416625" latency="1.9773e-05"/>
+ 	<link id="61" bandwidth="8015125" latency="0.035076518"/>
+ 	<link id="108" bandwidth="990500" latency="0.001742977"/>
+ 	<link id="115" bandwidth="926625" latency="0.000601375"/>
+ 	<link id="92" bandwidth="1564125" latency="0.000788956"/>
+ 	<link id="103" bandwidth="472125" latency="0.005161451"/>
+ 	<link id="10" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="113" bandwidth="1858000" latency="0.000820952"/>
+ 	<link id="152" bandwidth="7209750" latency="0.001461517"/>
+ 	<link id="189" bandwidth="251625" latency="0.004455826"/>
+ 	<link id="142" bandwidth="1627750" latency="0.000278175"/>
+ 	<link id="91" bandwidth="8427250" latency="0.000156056"/>
+ 	<link id="167" bandwidth="768750" latency="0.00876244"/>
+ 	<link id="48" bandwidth="41279125" latency="5.9904e-05"/>
+ 	<link id="107" bandwidth="1281875" latency="0.006104672"/>
+ 	<link id="87" bandwidth="8158000" latency="0.000270544"/>
+ 	<link id="174" bandwidth="290875" latency="0.00447727"/>
+ 	<link id="77" bandwidth="27946250" latency="0.000278066"/>
+ 	<link id="133" bandwidth="1469125" latency="0.001114548"/>
+ 	<link id="149" bandwidth="1049250" latency="0.009647856"/>
+ 	<link id="123" bandwidth="3430125" latency="0.000536941"/>
+ 	<link id="50" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="39" bandwidth="8015125" latency="0.035076518"/>
+ 	<link id="64" bandwidth="21414750" latency="0.295890617"/>
+ 	<link id="97" bandwidth="7534000" latency="0.000125428"/>
+ 	<link id="12" bandwidth="41279125" latency="5.9904e-05"/>
+ 	<link id="41" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="52" bandwidth="8427250" latency="0.000156056"/>
+ 	<link id="173" bandwidth="7534000" latency="0.000125428"/>
+ 	<link id="56" bandwidth="21414750" latency="0.295890617"/>
+ 	<link id="45" bandwidth="8158000" latency="0.000270544"/>
+ 	<link id="66" bandwidth="11618875" latency="0.00018998"/>
+ 	<link id="19" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="54" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="70" bandwidth="41279125" latency="5.9904e-05"/>
+ 	<link id="188" bandwidth="3175500" latency="0.000472524"/>
+ 	<link id="68" bandwidth="41279125" latency="5.9904e-05"/>
+ 	<link id="166" bandwidth="3995500" latency="0.000678645"/>
+ 	<link id="1" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="136" bandwidth="926625" latency="0.000601375"/>
+ 	<link id="88" bandwidth="10314625" latency="0.006932556"/>
+ 	<link id="116" bandwidth="2368000" latency="0.009547561"/>
+ 	<link id="144" bandwidth="259125" latency="0.004460898"/>
+ 	<link id="141" bandwidth="472125" latency="0.005161451"/>
+ 	<link id="30" bandwidth="10099625" latency="0.00047978"/>
+ 	<link id="100" bandwidth="721625" latency="6.406e-06"/>
+ 	<link id="25" bandwidth="8015125" latency="0.035076518"/>
+ 	<link id="128" bandwidth="1469125" latency="0.001114548"/>
+ 	<link id="28" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="120" bandwidth="4461125" latency="0.000106949"/>
+ 	<link id="156" bandwidth="4485125" latency="0.000126045"/>
+ 	<link id="134" bandwidth="259125" latency="0.004460898"/>
+ 	<link id="40" bandwidth="21414750" latency="0.295890617"/>
+ 	<link id="75" bandwidth="11618875" latency="0.00018998"/>
+ 	<link id="83" bandwidth="10314625" latency="0.006932556"/>
+ 	<link id="59" bandwidth="11845375" latency="0.000370788"/>
+ 	<link id="177" bandwidth="990500" latency="0.001742977"/>
+ 	<link id="150" bandwidth="4270250" latency="0.000672289"/>
+ 	<link id="155" bandwidth="1376750" latency="0.000449267"/>
+ 	<link id="130" bandwidth="4485125" latency="0.000126045"/>
+ 	<link id="53" bandwidth="11618875" latency="0.00018998"/>
+ 	<link id="122" bandwidth="1126875" latency="0.00028784"/>
+ 	<link id="143" bandwidth="7209750" latency="0.001461517"/>
+ 	<link id="158" bandwidth="3028375" latency="0.000677908"/>
+ 	<link id="42" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="22" bandwidth="11618875" latency="0.00018998"/>
+ 	<link id="46" bandwidth="8158000" latency="0.000270544"/>
+ 	<link id="13" bandwidth="255228625" latency="0.007413073"/>
+ 	<link id="105" bandwidth="117125" latency="0.053930106"/>
+ 	<link id="6" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="85" bandwidth="15376875" latency="0.035083019"/>
+ 	<link id="185" bandwidth="2348500" latency="0.000259761"/>
+ 	<link id="36" bandwidth="11618875" latency="0.00018998"/>
+ 	<link id="3" bandwidth="255228625" latency="0.007413073"/>
+ 	<link id="183" bandwidth="3995500" latency="0.000678645"/>
+ 	<link id="94" bandwidth="4485125" latency="0.000126045"/>
+ 	<link id="146" bandwidth="3371250" latency="0.000666676"/>
+ 	<link id="51" bandwidth="8427250" latency="0.000156056"/>
+ 	<link id="9" bandwidth="34285625" latency="0.000514433"/>
+ 	<link id="111" bandwidth="3275625" latency="0.000658142"/>
+ 	<link id="38" bandwidth="41279125" latency="5.9904e-05"/>
+ 	<link id="4" bandwidth="132977875" latency="0.000131098"/>
+ 	<link id="34" bandwidth="11845375" latency="0.000370788"/>
+ 	<link id="169" bandwidth="1376750" latency="0.000449267"/>
+ 	<link id="164" bandwidth="768750" latency="0.00876244"/>
+ 	<link id="132" bandwidth="2179125" latency="0.000320114"/>
+         <link id="171" bandwidth="3297750" latency="0.000595883"/>
+ 	
+ 	<!-- Jacquelin routes-->
+ 	
+ 	<route src="Jacquelin" dst="Boivin"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
+ 	<route src="Jacquelin" dst="Jean_Yves"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
+ 	<route src="Jacquelin" dst="TeX"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
+ 	<route src="Jacquelin" dst="Geoff"><link:ctn id="145"/></route>
+ 	<route src="Jacquelin" dst="Disney"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
+ 	<route src="Jacquelin" dst="iRMX"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
+ 	<route src="Jacquelin" dst="McGee"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
+ 	<route src="Jacquelin" dst="Gatien"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
+   <route src="Jacquelin" dst="Laroche"><link:ctn id="145"/><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
+   
+   <!-- Boivin routes-->
+   
+   <route src="Boivin" dst="Jacquelin"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
+   <route src="Boivin" dst="Jean_Yves"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
+   <route src="Boivin" dst="TeX"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
+   <route src="Boivin" dst="Geoff"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
+   <route src="Boivin" dst="Disney"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
+   <route src="Boivin" dst="iRMX"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
+   <route src="Boivin" dst="McGee"><link:ctn id="47"/><link:ctn id="46"/><link:ctn id="49"/><link:ctn id="38"/><link:ctn id="41"/></route>
+   <route src="Boivin" dst="Gatien"><link:ctn id="47"/><link:ctn id="46"/><link:ctn id="49"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
+   <route src="Boivin" dst="Laroche"><link:ctn id="47"/><link:ctn id="44"/><link:ctn id="11"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
+   
+   <!-- Jean_Yves routes-->
+   
+   <route src="Jean_Yves" dst="Jacquelin"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="59"/><link:ctn id="145"/></route>
+   <route src="Jean_Yves" dst="Boivin"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
+   <route src="Jean_Yves" dst="TeX"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
+   <route src="Jean_Yves" dst="Geoff"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="59"/></route>
+   <route src="Jean_Yves" dst="Disney"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
+   <route src="Jean_Yves" dst="iRMX"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
+   <route src="Jean_Yves" dst="McGee"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
+   <route src="Jean_Yves" dst="Gatien"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
+   <route src="Jean_Yves" dst="Laroche"><link:ctn id="138"/><link:ctn id="63"/><link:ctn id="58"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
+   
+   <!-- TeX routes-->
+   
+   <route src="TeX" dst="Jacquelin"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
+   <route src="TeX" dst="Boivin"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
+   <route src="TeX" dst="Jean_Yves"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
+   <route src="TeX" dst="Geoff"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
+   <route src="TeX" dst="Disney"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
+   <route src="TeX" dst="iRMX"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="20"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
+   <route src="TeX" dst="McGee"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
+   <route src="TeX" dst="Gatien"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
+   <route src="TeX" dst="Laroche"><link:ctn id="100"/><link:ctn id="35"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="20"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
+   
+   <!-- Geoff routes-->
+   
+   <route src="Geoff" dst="Jacquelin"><link:ctn id="145"/></route>
+   <route src="Geoff" dst="Boivin"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
+   <route src="Geoff" dst="Jean_Yves"><link:ctn id="59"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
+   <route src="Geoff" dst="TeX"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
+   <route src="Geoff" dst="Disney"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
+   <route src="Geoff" dst="iRMX"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
+   <route src="Geoff" dst="McGee"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
+   <route src="Geoff" dst="Gatien"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
+   <route src="Geoff" dst="Laroche"><link:ctn id="59"/><link:ctn id="56"/><link:ctn id="54"/><link:ctn id="17"/><link:ctn id="16"/><link:ctn id="10"/><link:ctn id="6"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
+   
+   <!-- Disney routes-->
+   
+   <route src="Disney" dst="Jacquelin"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
+   <route src="Disney" dst="Boivin"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
+   <route src="Disney" dst="Jean_Yves"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
+   <route src="Disney" dst="TeX"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="35"/><link:ctn id="100"/></route>
+   <route src="Disney" dst="Geoff"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
+   <route src="Disney" dst="iRMX"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="20"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
+   <route src="Disney" dst="McGee"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
+   <route src="Disney" dst="Gatien"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="7"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
+   <route src="Disney" dst="Laroche"><link:ctn id="111"/><link:ctn id="33"/><link:ctn id="32"/><link:ctn id="30"/><link:ctn id="27"/><link:ctn id="28"/><link:ctn id="19"/><link:ctn id="20"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
+   
+   <!-- iRMX routes-->
+   
+   <route src="iRMX" dst="Jacquelin"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
+   <route src="iRMX" dst="Boivin"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
+   <route src="iRMX" dst="Jean_Yves"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
+   <route src="iRMX" dst="TeX"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="20"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
+   <route src="iRMX" dst="Geoff"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
+   <route src="iRMX" dst="Disney"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="20"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
+   <route src="iRMX" dst="McGee"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
+   <route src="iRMX" dst="Gatien"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
+   <route src="iRMX" dst="Laroche"><link:ctn id="172"/><link:ctn id="89"/><link:ctn id="88"/><link:ctn id="87"/><link:ctn id="91"/></route>
+   
+   <!-- McGee routes-->
+   
+   <route src="McGee" dst="Jacquelin"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
+   <route src="McGee" dst="Boivin"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="49"/><link:ctn id="46"/><link:ctn id="47"/></route>
+   <route src="McGee" dst="Jean_Yves"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
+   <route src="McGee" dst="TeX"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
+   <route src="McGee" dst="Geoff"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
+   <route src="McGee" dst="Disney"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
+   <route src="McGee" dst="iRMX"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
+   <route src="McGee" dst="Gatien"><link:ctn id="41"/><link:ctn id="40"/><link:ctn id="115"/></route>
+   <route src="McGee" dst="Laroche"><link:ctn id="41"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
+   
+   <!-- Gatien routes-->
+   
+   <route src="Gatien" dst="Jacquelin"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
+   <route src="Gatien" dst="Boivin"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="49"/><link:ctn id="46"/><link:ctn id="47"/></route>
+   <route src="Gatien" dst="Jean_Yves"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
+   <route src="Gatien" dst="TeX"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
+   <route src="Gatien" dst="Geoff"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
+   <route src="Gatien" dst="Disney"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="7"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
+   <route src="Gatien" dst="iRMX"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
+   <route src="Gatien" dst="McGee"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="41"/></route>
+   <route src="Gatien" dst="Laroche"><link:ctn id="115"/><link:ctn id="40"/><link:ctn id="38"/><link:ctn id="48"/><link:ctn id="8"/><link:ctn id="9"/><link:ctn id="79"/><link:ctn id="78"/><link:ctn id="80"/><link:ctn id="82"/><link:ctn id="91"/></route>
+   
+   <!-- Laroche routes-->
+   
+   <route src="Laroche" dst="Jacquelin"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/><link:ctn id="145"/></route>
+   <route src="Laroche" dst="Boivin"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="44"/><link:ctn id="47"/></route>
+   <route src="Laroche" dst="Jean_Yves"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="58"/><link:ctn id="63"/><link:ctn id="138"/></route>
+   <route src="Laroche" dst="TeX"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="20"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="35"/><link:ctn id="100"/></route>
+   <route src="Laroche" dst="Geoff"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="6"/><link:ctn id="10"/><link:ctn id="16"/><link:ctn id="17"/><link:ctn id="54"/><link:ctn id="56"/><link:ctn id="59"/></route>
+   <route src="Laroche" dst="Disney"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="20"/><link:ctn id="19"/><link:ctn id="28"/><link:ctn id="27"/><link:ctn id="30"/><link:ctn id="32"/><link:ctn id="33"/><link:ctn id="111"/></route>
+   <route src="Laroche" dst="iRMX"><link:ctn id="91"/><link:ctn id="87"/><link:ctn id="88"/><link:ctn id="89"/><link:ctn id="172"/></route>
+   <route src="Laroche" dst="McGee"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="41"/></route>
+   <route src="Laroche" dst="Gatien"><link:ctn id="91"/><link:ctn id="82"/><link:ctn id="80"/><link:ctn id="78"/><link:ctn id="79"/><link:ctn id="9"/><link:ctn id="8"/><link:ctn id="48"/><link:ctn id="38"/><link:ctn id="40"/><link:ctn id="115"/></route>
+ </AS>
+ </platform>
+   

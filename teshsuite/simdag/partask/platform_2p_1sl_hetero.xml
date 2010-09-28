@@ -1,16 +1,18 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-
-	<host id="cpu0" power="1" />
-	<host id="cpu1" power="2" />
-
-	<link id="link0" bandwidth="1" latency=".5"
-		sharing_policy="SHARED" />
-	<route src="cpu0" dst="cpu1">
-		<link:ctn id="link0" />
-	</route>
-	<route src="cpu1" dst="cpu0">
-		<link:ctn id="link0" />
-	</route>
-</platform>
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+ 
+ 	<host id="cpu0" power="1" />
+ 	<host id="cpu1" power="2" />
+ 
+ 	<link id="link0" bandwidth="1" latency=".5"
+ 		sharing_policy="SHARED" />
+ 	<route src="cpu0" dst="cpu1">
+ 		<link:ctn id="link0" />
+ 	</route>
+ 	<route src="cpu1" dst="cpu0">
+ 		<link:ctn id="link0" />
+ 	</route>
+ </AS>
+ </platform>

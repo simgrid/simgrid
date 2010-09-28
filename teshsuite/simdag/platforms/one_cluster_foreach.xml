@@ -1,20 +1,22 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-  <set id="myCluster" prefix="bob" suffix=".hamburger.edu"
-       radical="0,2-4,6"/>
-
-  <foreach set_id="myCluster">
-    <host id="$1" power="1000000000"/>
-    <link id="$1" bandwidth="125000000" latency="5E-5"/>
-  </foreach>
-
-  <link id="bob_backbone" bandwidth="2250000000" latency="5E-4"
-	sharing_policy="FATPIPE"/>
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+   <set id="myCluster" prefix="bob" suffix=".hamburger.edu"
+        radical="0,2-4,6"/>
  
-  <route:multi src="myCluster" dst="myCluster" symmetric="NO">
-    <link:ctn id="$src"/>
-    <link:ctn id="bob_backbone"/>
-    <link:ctn id="$dst"/>
-  </route:multi>
-</platform>
+   <foreach set_id="myCluster">
+     <host id="$1" power="1000000000"/>
+     <link id="$1" bandwidth="125000000" latency="5E-5"/>
+   </foreach>
+ 
+   <link id="bob_backbone" bandwidth="2250000000" latency="5E-4"
+ 	sharing_policy="FATPIPE"/>
+  
+   <route:multi src="myCluster" dst="myCluster" symmetric="NO">
+     <link:ctn id="$src"/>
+     <link:ctn id="bob_backbone"/>
+     <link:ctn id="$dst"/>
+   </route:multi>
+ </AS>
+ </platform>

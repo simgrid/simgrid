@@ -1,21 +1,23 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-  <host id="Jacquelin" power="137333000"/>
-  <host id="Boivin"    power="98095000"/>
-  <host id="Geoff"     power="42917000"/>
-  
-  <link id="1" bandwidth="3430125"  latency="0.000536941"/>
-  <link id="2" bandwidth="11618875" latency="0.00018998"/>
-  <link id="3" bandwidth="10314625" latency="0.006932556"/>
-    
-  <route src="Jacquelin" dst="Boivin">   <link:ctn id="1"/></route>
-  <route src="Boivin"    dst="Jacquelin"><link:ctn id="1"/></route>
-
-  <route src="Jacquelin" dst="Geoff">    <link:ctn id="2"/></route>
-  <route src="Geoff"     dst="Jacquelin"><link:ctn id="2"/></route>
-
-  <route src="Geoff"  dst="Boivin">      <link:ctn id="3"/></route>
-  <route src="Boivin" dst="Geoff">       <link:ctn id="3"/></route>
-</platform>
-
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+   <host id="Jacquelin" power="137333000"/>
+   <host id="Boivin"    power="98095000"/>
+   <host id="Geoff"     power="42917000"/>
+   
+   <link id="1" bandwidth="3430125"  latency="0.000536941"/>
+   <link id="2" bandwidth="11618875" latency="0.00018998"/>
+   <link id="3" bandwidth="10314625" latency="0.006932556"/>
+     
+   <route src="Jacquelin" dst="Boivin">   <link:ctn id="1"/></route>
+   <route src="Boivin"    dst="Jacquelin"><link:ctn id="1"/></route>
+ 
+   <route src="Jacquelin" dst="Geoff">    <link:ctn id="2"/></route>
+   <route src="Geoff"     dst="Jacquelin"><link:ctn id="2"/></route>
+ 
+   <route src="Geoff"  dst="Boivin">      <link:ctn id="3"/></route>
+   <route src="Boivin" dst="Geoff">       <link:ctn id="3"/></route>
+ </AS>
+ </platform>
+ 

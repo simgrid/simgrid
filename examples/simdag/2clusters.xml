@@ -1,119 +1,121 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-  <host id="C2-06" power="5000000000"/>
-  <host id="C1-03" power="1000000000"/>
-  <host id="C2-07" power="5000000000"/>
-  <host id="C2-09" power="5000000000"/>
-  <host id="C1-02" power="1000000000"/>
-  <host id="C2-08" power="5000000000"/>
-  <host id="C1-01" power="1000000000"/>
-  <host id="C1-04" power="1000000000"/>
-  <host id="C1-00" power="1000000000"/>
-  <host id="C2-05" power="5000000000"/>
-  <link id="6" bandwidth="125000000" latency="0.000100"/>
-  <link id="11" bandwidth="125000000" latency="0.000100" sharing_policy="FATPIPE" />
-  <link id="3" bandwidth="125000000" latency="0.000100"/>
-  <link id="7" bandwidth="125000000" latency="0.000100"/>
-  <link id="9" bandwidth="125000000" latency="0.000100"/>
-  <link id="12" bandwidth="1250000000" latency="0.000100"/>
-  <link id="2" bandwidth="125000000" latency="0.000100"/>
-  <link id="14" bandwidth="1250000000" latency="0.050000"/>
-  <link id="8" bandwidth="125000000" latency="0.000100"/>
-  <link id="1" bandwidth="125000000" latency="0.000100"/>
-  <link id="4" bandwidth="125000000" latency="0.000100"/>
-  <link id="0" bandwidth="125000000" latency="0.000100"/>
-  <link id="13" bandwidth="1250000000" latency="0.000100"/>
-  <link id="10" bandwidth="125000000" latency="0.000100" sharing_policy="FATPIPE" />
-  <link id="5" bandwidth="125000000" latency="0.000100"/>
-  <route src="C2-06" dst="C1-03"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
-  <route src="C2-06" dst="C2-07"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
-  <route src="C2-06" dst="C2-09"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
-  <route src="C2-06" dst="C1-02"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
-  <route src="C2-06" dst="C2-08"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
-  <route src="C2-06" dst="C1-01"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
-  <route src="C2-06" dst="C1-04"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
-  <route src="C2-06" dst="C1-00"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-  <route src="C2-06" dst="C2-05"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
-  <route src="C1-03" dst="C2-06"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
-  <route src="C1-03" dst="C2-07"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
-  <route src="C1-03" dst="C2-09"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
-  <route src="C1-03" dst="C1-02"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
-  <route src="C1-03" dst="C2-08"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
-  <route src="C1-03" dst="C1-01"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
-  <route src="C1-03" dst="C1-04"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
-  <route src="C1-03" dst="C1-00"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-  <route src="C1-03" dst="C2-05"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
-  <route src="C2-07" dst="C2-06"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
-  <route src="C2-07" dst="C1-03"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
-  <route src="C2-07" dst="C2-09"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
-  <route src="C2-07" dst="C1-02"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
-  <route src="C2-07" dst="C2-08"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
-  <route src="C2-07" dst="C1-01"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
-  <route src="C2-07" dst="C1-04"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
-  <route src="C2-07" dst="C1-00"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-  <route src="C2-07" dst="C2-05"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
-  <route src="C2-09" dst="C2-06"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
-  <route src="C2-09" dst="C1-03"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
-  <route src="C2-09" dst="C2-07"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
-  <route src="C2-09" dst="C1-02"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
-  <route src="C2-09" dst="C2-08"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
-  <route src="C2-09" dst="C1-01"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
-  <route src="C2-09" dst="C1-04"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
-  <route src="C2-09" dst="C1-00"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-  <route src="C2-09" dst="C2-05"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
-  <route src="C1-02" dst="C2-06"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
-  <route src="C1-02" dst="C1-03"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
-  <route src="C1-02" dst="C2-07"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
-  <route src="C1-02" dst="C2-09"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
-  <route src="C1-02" dst="C2-08"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
-  <route src="C1-02" dst="C1-01"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
-  <route src="C1-02" dst="C1-04"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
-  <route src="C1-02" dst="C1-00"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-  <route src="C1-02" dst="C2-05"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
-  <route src="C2-08" dst="C2-06"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
-  <route src="C2-08" dst="C1-03"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
-  <route src="C2-08" dst="C2-07"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
-  <route src="C2-08" dst="C2-09"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
-  <route src="C2-08" dst="C1-02"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
-  <route src="C2-08" dst="C1-01"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
-  <route src="C2-08" dst="C1-04"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
-  <route src="C2-08" dst="C1-00"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-  <route src="C2-08" dst="C2-05"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
-  <route src="C1-01" dst="C2-06"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
-  <route src="C1-01" dst="C1-03"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
-  <route src="C1-01" dst="C2-07"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
-  <route src="C1-01" dst="C2-09"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
-  <route src="C1-01" dst="C1-02"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
-  <route src="C1-01" dst="C2-08"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
-  <route src="C1-01" dst="C1-04"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
-  <route src="C1-01" dst="C1-00"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-  <route src="C1-01" dst="C2-05"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
-  <route src="C1-04" dst="C2-06"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
-  <route src="C1-04" dst="C1-03"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
-  <route src="C1-04" dst="C2-07"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
-  <route src="C1-04" dst="C2-09"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
-  <route src="C1-04" dst="C1-02"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
-  <route src="C1-04" dst="C2-08"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
-  <route src="C1-04" dst="C1-01"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
-  <route src="C1-04" dst="C1-00"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-  <route src="C1-04" dst="C2-05"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
-  <route src="C1-00" dst="C2-06"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
-  <route src="C1-00" dst="C1-03"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
-  <route src="C1-00" dst="C2-07"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
-  <route src="C1-00" dst="C2-09"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
-  <route src="C1-00" dst="C1-02"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
-  <route src="C1-00" dst="C2-08"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
-  <route src="C1-00" dst="C1-01"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
-  <route src="C1-00" dst="C1-04"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
-  <route src="C1-00" dst="C2-05"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
-  <route src="C2-05" dst="C2-06"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
-  <route src="C2-05" dst="C1-03"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
-  <route src="C2-05" dst="C2-07"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
-  <route src="C2-05" dst="C2-09"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
-  <route src="C2-05" dst="C1-02"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
-  <route src="C2-05" dst="C2-08"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
-  <route src="C2-05" dst="C1-01"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
-  <route src="C2-05" dst="C1-04"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
-  <route src="C2-05" dst="C1-00"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
-</platform>
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+   <host id="C2-06" power="5000000000"/>
+   <host id="C1-03" power="1000000000"/>
+   <host id="C2-07" power="5000000000"/>
+   <host id="C2-09" power="5000000000"/>
+   <host id="C1-02" power="1000000000"/>
+   <host id="C2-08" power="5000000000"/>
+   <host id="C1-01" power="1000000000"/>
+   <host id="C1-04" power="1000000000"/>
+   <host id="C1-00" power="1000000000"/>
+   <host id="C2-05" power="5000000000"/>
+   <link id="6" bandwidth="125000000" latency="0.000100"/>
+   <link id="11" bandwidth="125000000" latency="0.000100" sharing_policy="FATPIPE" />
+   <link id="3" bandwidth="125000000" latency="0.000100"/>
+   <link id="7" bandwidth="125000000" latency="0.000100"/>
+   <link id="9" bandwidth="125000000" latency="0.000100"/>
+   <link id="12" bandwidth="1250000000" latency="0.000100"/>
+   <link id="2" bandwidth="125000000" latency="0.000100"/>
+   <link id="14" bandwidth="1250000000" latency="0.050000"/>
+   <link id="8" bandwidth="125000000" latency="0.000100"/>
+   <link id="1" bandwidth="125000000" latency="0.000100"/>
+   <link id="4" bandwidth="125000000" latency="0.000100"/>
+   <link id="0" bandwidth="125000000" latency="0.000100"/>
+   <link id="13" bandwidth="1250000000" latency="0.000100"/>
+   <link id="10" bandwidth="125000000" latency="0.000100" sharing_policy="FATPIPE" />
+   <link id="5" bandwidth="125000000" latency="0.000100"/>
+   <route src="C2-06" dst="C1-03"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
+   <route src="C2-06" dst="C2-07"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
+   <route src="C2-06" dst="C2-09"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
+   <route src="C2-06" dst="C1-02"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
+   <route src="C2-06" dst="C2-08"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
+   <route src="C2-06" dst="C1-01"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
+   <route src="C2-06" dst="C1-04"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
+   <route src="C2-06" dst="C1-00"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
+   <route src="C2-06" dst="C2-05"><link:ctn id="6"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
+   <route src="C1-03" dst="C2-06"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
+   <route src="C1-03" dst="C2-07"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
+   <route src="C1-03" dst="C2-09"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
+   <route src="C1-03" dst="C1-02"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
+   <route src="C1-03" dst="C2-08"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
+   <route src="C1-03" dst="C1-01"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
+   <route src="C1-03" dst="C1-04"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
+   <route src="C1-03" dst="C1-00"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
+   <route src="C1-03" dst="C2-05"><link:ctn id="3"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
+   <route src="C2-07" dst="C2-06"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
+   <route src="C2-07" dst="C1-03"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
+   <route src="C2-07" dst="C2-09"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
+   <route src="C2-07" dst="C1-02"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
+   <route src="C2-07" dst="C2-08"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
+   <route src="C2-07" dst="C1-01"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
+   <route src="C2-07" dst="C1-04"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
+   <route src="C2-07" dst="C1-00"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
+   <route src="C2-07" dst="C2-05"><link:ctn id="7"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
+   <route src="C2-09" dst="C2-06"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
+   <route src="C2-09" dst="C1-03"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
+   <route src="C2-09" dst="C2-07"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
+   <route src="C2-09" dst="C1-02"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
+   <route src="C2-09" dst="C2-08"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
+   <route src="C2-09" dst="C1-01"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
+   <route src="C2-09" dst="C1-04"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
+   <route src="C2-09" dst="C1-00"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
+   <route src="C2-09" dst="C2-05"><link:ctn id="9"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
+   <route src="C1-02" dst="C2-06"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
+   <route src="C1-02" dst="C1-03"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
+   <route src="C1-02" dst="C2-07"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
+   <route src="C1-02" dst="C2-09"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
+   <route src="C1-02" dst="C2-08"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
+   <route src="C1-02" dst="C1-01"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
+   <route src="C1-02" dst="C1-04"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
+   <route src="C1-02" dst="C1-00"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
+   <route src="C1-02" dst="C2-05"><link:ctn id="2"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
+   <route src="C2-08" dst="C2-06"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
+   <route src="C2-08" dst="C1-03"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
+   <route src="C2-08" dst="C2-07"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
+   <route src="C2-08" dst="C2-09"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
+   <route src="C2-08" dst="C1-02"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
+   <route src="C2-08" dst="C1-01"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
+   <route src="C2-08" dst="C1-04"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
+   <route src="C2-08" dst="C1-00"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
+   <route src="C2-08" dst="C2-05"><link:ctn id="8"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
+   <route src="C1-01" dst="C2-06"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
+   <route src="C1-01" dst="C1-03"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
+   <route src="C1-01" dst="C2-07"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
+   <route src="C1-01" dst="C2-09"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
+   <route src="C1-01" dst="C1-02"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
+   <route src="C1-01" dst="C2-08"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
+   <route src="C1-01" dst="C1-04"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
+   <route src="C1-01" dst="C1-00"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
+   <route src="C1-01" dst="C2-05"><link:ctn id="1"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
+   <route src="C1-04" dst="C2-06"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
+   <route src="C1-04" dst="C1-03"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
+   <route src="C1-04" dst="C2-07"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
+   <route src="C1-04" dst="C2-09"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
+   <route src="C1-04" dst="C1-02"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
+   <route src="C1-04" dst="C2-08"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
+   <route src="C1-04" dst="C1-01"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
+   <route src="C1-04" dst="C1-00"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
+   <route src="C1-04" dst="C2-05"><link:ctn id="4"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
+   <route src="C1-00" dst="C2-06"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
+   <route src="C1-00" dst="C1-03"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
+   <route src="C1-00" dst="C2-07"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
+   <route src="C1-00" dst="C2-09"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
+   <route src="C1-00" dst="C1-02"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
+   <route src="C1-00" dst="C2-08"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
+   <route src="C1-00" dst="C1-01"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
+   <route src="C1-00" dst="C1-04"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
+   <route src="C1-00" dst="C2-05"><link:ctn id="0"/><link:ctn id="10"/><link:ctn id="12"/><link:ctn id="14"/><link:ctn id="13"/><link:ctn id="11"/><link:ctn id="5"/>  </route>
+   <route src="C2-05" dst="C2-06"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="6"/>  </route>
+   <route src="C2-05" dst="C1-03"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="3"/>  </route>
+   <route src="C2-05" dst="C2-07"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="7"/>  </route>
+   <route src="C2-05" dst="C2-09"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="9"/>  </route>
+   <route src="C2-05" dst="C1-02"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="2"/>  </route>
+   <route src="C2-05" dst="C2-08"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="8"/>  </route>
+   <route src="C2-05" dst="C1-01"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="1"/>  </route>
+   <route src="C2-05" dst="C1-04"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="4"/>  </route>
+   <route src="C2-05" dst="C1-00"><link:ctn id="5"/><link:ctn id="11"/><link:ctn id="13"/><link:ctn id="14"/><link:ctn id="12"/><link:ctn id="10"/><link:ctn id="0"/>  </route>
+ </AS>
+ </platform>

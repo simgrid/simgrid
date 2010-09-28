@@ -91,7 +91,7 @@ void test(char *platform)
 
   /* Let's do something on it */
   commAB =
-    surf_network_model->extension.network.communicate("Cpu A","Cpu B", 0, 1, /* FIXME: hardcoding host number is bad */
+    surf_network_model->extension.network.communicate("Cpu A","Cpu B",
                                                       150.0, -1.0);
 
   surf_solve();                 /* Takes traces into account. Returns 0.0 */

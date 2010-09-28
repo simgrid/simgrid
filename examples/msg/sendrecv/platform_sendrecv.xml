@@ -1,14 +1,16 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-  <!-- For using with ping_pong example, very simple platform -->
-  <host id="Inmos" power="98095000"/>
-  <host id="Bellevue" power="76296000"/>
-  <link id="link" bandwidth="1000000" latency="0.1"/>
-  <route src="Inmos" dst="Bellevue">
-    <link:ctn id="link"/>
-  </route>
-  <route src="Bellevue" dst="Inmos">
-    <link:ctn id="link"/>
-  </route>
-</platform>
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+ <AS  id="AS0"  routing="Full">
+   <!-- For using with ping_pong example, very simple platform -->
+   <host id="Inmos" power="98095000"/>
+   <host id="Bellevue" power="76296000"/>
+   <link id="link" bandwidth="1000000" latency="0.1"/>
+   <route src="Inmos" dst="Bellevue">
+     <link:ctn id="link"/>
+   </route>
+   <route src="Bellevue" dst="Inmos">
+     <link:ctn id="link"/>
+   </route>
+ </AS>
+ </platform>
