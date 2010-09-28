@@ -23,6 +23,10 @@ set(GRAS_DEP "-lm -lpthread")
 set(SIMGRID_DEP "-lm")
 set(SMPI_DEP "")
 
+if(HAVE_PCRE_LIB)
+       SET(SIMGRID_DEP "${SIMGRID_DEP} -lpcre")
+endif(HAVE_PCRE_LIB)
+
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME} -module")
 	ADD_CUSTOM_TARGET(link_simgrid_ruby ALL
