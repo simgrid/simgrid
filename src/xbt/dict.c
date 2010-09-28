@@ -411,7 +411,7 @@ XBT_INLINE void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
-         hash_code != current->hash_code && strcmp(key, current->key))
+         (hash_code != current->hash_code || strcmp(key, current->key)))
     current = current->next;
 
   if (current == NULL)
