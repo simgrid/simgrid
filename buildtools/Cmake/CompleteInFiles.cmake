@@ -197,12 +197,14 @@ endif(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
 find_library(PATH_PCRE_LIB pcre "/usr/lib/")
 
 if(PATH_PCRE_LIB)
-       string(REGEX REPLACE "/libpcre.*[.]so$" "" PATHLIBPCRE "${PCRE_LIB}")
+       string(REGEX REPLACE "/libpcre.*[.]so$" "" PATHLIBPCRE "${PATH_PCRE_LIB}")
        	string(REGEX MATCH "-L${PATHLIBPCRE} " operation "${CMAKE_C_FLAGS}")
 		if(NOT operation)
 			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-L${PATHLIBPCRE} ")
 		endif(NOT operation)
        set(HAVE_PCRE_LIB 1)
+else(PATH_PCRE_LIB)
+		message(FATAL_ERROR "Must have libpcre")
 endif(PATH_PCRE_LIB)
 
 #--------------------------------------------------------------------------------------------------

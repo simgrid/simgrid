@@ -54,7 +54,7 @@ if(enable_supernovae AND enable_model-checking)
 	set(enable_model-checking false CACHE TYPE INTERNAL FORCE)
 	message("\n\nWith supernovae mode the model checking must be disable.!!!\n\n")
 endif(enable_supernovae AND enable_model-checking)
-
+mark_as_advanced(PATH_PCRE_LIB)
 mark_as_advanced(HAVE_SSH)
 mark_as_advanced(HAVE_RSYNC)
 mark_as_advanced(enable_coverage)
