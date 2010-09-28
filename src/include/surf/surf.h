@@ -128,8 +128,12 @@ XBT_PUBLIC(void) model_help(const char* category, s_surf_model_description_t * t
 /***************************/
 /* Generic model object */
 /***************************/
-     typedef struct s_routing s_routing_t, *routing_t;
-XBT_PUBLIC_DATA(routing_t) used_routing;
+//     typedef struct s_routing s_routing_t, *routing_t; // COMMENT BY DAVID
+//XBT_PUBLIC_DATA(routing_t) used_routing; // COMMENT BY DAVID
+
+     typedef struct s_routing_global s_routing_global_t, *routing_global_t; // ADDED BY DAVID
+XBT_PUBLIC_DATA(routing_global_t) global_routing; // ADDED BY DAVID
+
 
 /** \brief Private data available on all models
  *  \ingroup SURF_models

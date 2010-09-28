@@ -13,7 +13,9 @@ static double time_to_next_flow_completion = -1;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
                                 "Logging specific to the SURF network GTNetS module");
 
-extern routing_t used_routing;
+//extern routing_t used_routing; // COMMENTED BY DAVID
+extern routing_global_t global_routing; // ADDED BY DAVID
+
 double sg_gtnets_jitter=0.0;
 int sg_gtnets_jitter_seed=10;
 
@@ -133,29 +135,31 @@ static void create_gtnets_topology()
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;
 
-  xbt_dict_t onelink_routes = used_routing->get_onelink_routes();
-  xbt_assert0(onelink_routes, "Error onelink_routes was not initialized");
+// COMMENTED BY DAVID
+//   xbt_dict_t onelink_routes = used_routing->get_onelink_routes();
+//   xbt_assert0(onelink_routes, "Error onelink_routes was not initialized");
+// 
+//   DEBUG0("Starting topology generation");
+// 
+//   xbt_dict_foreach(onelink_routes, cursor, key, data){
+// 	s_onelink_t link = (s_onelink_t) data;
+// 
+// 	DEBUG3("Link (#%d), src (#%d), dst (#%d)", ((network_link_GTNETS_t)(link->link_ptr))->id , link->src_id, link->dst_id);
+//     DEBUG0("Calling one link route");
+//     if(used_routing->is_router(link->src_id)){
+//     	gtnets_add_router(link->src_id);
+//     }
+//     if(used_routing->is_router(link->dst_id)){
+//     	gtnets_add_router(link->dst_id);
+//     }
+//     route_onehop_new(link->src_id, link->dst_id, (network_link_GTNETS_t)(link->link_ptr));
+//   }
+// 
+//   xbt_dict_free(&route_table);
+//   if (XBT_LOG_ISENABLED(surf_network_gtnets, xbt_log_priority_debug)) {
+// 	  gtnets_print_topology();
+//   }
 
-  DEBUG0("Starting topology generation");
-
-  xbt_dict_foreach(onelink_routes, cursor, key, data){
-	s_onelink_t link = (s_onelink_t) data;
-
-	DEBUG3("Link (#%d), src (#%d), dst (#%d)", ((network_link_GTNETS_t)(link->link_ptr))->id , link->src_id, link->dst_id);
-    DEBUG0("Calling one link route");
-    if(used_routing->is_router(link->src_id)){
-    	gtnets_add_router(link->src_id);
-    }
-    if(used_routing->is_router(link->dst_id)){
-    	gtnets_add_router(link->dst_id);
-    }
-    route_onehop_new(link->src_id, link->dst_id, (network_link_GTNETS_t)(link->link_ptr));
-  }
-
-  xbt_dict_free(&route_table);
-  if (XBT_LOG_ISENABLED(surf_network_gtnets, xbt_log_priority_debug)) {
-	  gtnets_print_topology();
-  }
 }
 
 /* Main XML parsing */
@@ -261,6 +265,7 @@ static void update_actions_state(double now, double delta)
         trace_sent = action->generic_action.cost;
       }
       // tracing resource utilization
+<<<<<<< HEAD
       int src = TRACE_surf_gtnets_get_src (action);
       int dst = TRACE_surf_gtnets_get_dst (action);
       if (src != -1 && dst != -1){
@@ -272,6 +277,22 @@ static void update_actions_state(double now, double delta)
             action->generic_action.data, trace_sent/delta, now-delta, delta);
         }
       }
+=======
+      
+// COMMENTED BY DAVID
+//       int src = TRACE_surf_gtnets_get_src (action);
+//       int dst = TRACE_surf_gtnets_get_dst (action);
+//       if (src != -1 && dst != -1){
+//         xbt_dynar_t route = used_routing->get_route(src, dst);
+//         network_link_GTNETS_t link;
+//         unsigned int i;
+//         xbt_dynar_foreach(route, i, link) {
+// 
+//         	TRACE_surf_link_set_utilization (link->generic_resource.name,
+//             action->generic_action.data, (action->generic_action.remains-remain)/delta, now-delta, delta);
+//         }
+//       }
+>>>>>>> I comment all the calls to used_routing, in order to use global routing.
 #endif
 
       DEBUG1("Sent value returned by GTNetS : %f", sent);
@@ -323,7 +344,8 @@ static surf_action_t communicate(const char *src_name, const char *dst_name,
 
   DEBUG4("Setting flow src %d \"%s\", dst %d \"%s\"", src, src_name, dst, dst_name);
 
-  xbt_dynar_t links = used_routing->get_route(src, dst);
+  //xbt_dynar_t links = used_routing->get_route(src, dst); // COMMENTED BY DAVID
+  xbt_dynar_t links = global_routing->get_route(src_name, dst_name); // ADDED BY DAVID
   route_new(src, dst, links, xbt_dynar_length(links));
 
   action =  surf_action_new(sizeof(s_surf_action_network_GTNETS_t), size, surf_network_model, 0);

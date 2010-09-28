@@ -10,7 +10,8 @@
 
 #ifdef HAVE_TRACING
 
-extern routing_t used_routing;
+// extern routing_t used_routing; // COMMENTED BY DAVID
+extern routing_global_t global_routing;
 
 void __TRACE_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what)
 {
@@ -29,12 +30,15 @@ void __TRACE_link_variable (double time, const char *src, const char *dst, const
 	return;
   }
 
-  if (!used_routing) return;
+//   if (!used_routing) return;
+// 
+//   src_id = *(int*)xbt_dict_get(used_routing->host_id,src);
+//   dst_id = *(int*)xbt_dict_get(used_routing->host_id,dst);
+//   route = used_routing->get_route(src_id, dst_id);
 
-  src_id = *(int*)xbt_dict_get(used_routing->host_id,src);
-  dst_id = *(int*)xbt_dict_get(used_routing->host_id,dst);
-  route = used_routing->get_route(src_id, dst_id);
-
+  if (!global_routing) return;
+  route = global_routing->get_route(src, dst);
+  
   xbt_dynar_foreach(route, i, link_ptr) {
 	link = (*(link_CM02_t)link_ptr).lmm_resource.generic_resource.name;
 

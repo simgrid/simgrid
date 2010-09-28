@@ -32,6 +32,10 @@ typedef struct surf_action_network_CM02 {
 
   int src;  /* saving source id for tracing */
   int dst; /* saving dest id for tracing */
+  
+  char* src_name;  /* saving source id for tracing */ // ADDED BY DAVID
+  char* dst_name; /* saving dest id for tracing */ // ADDED BY DAVID
+  
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 
 #endif /* _SURF_NETWORK_PRIVATE_H */

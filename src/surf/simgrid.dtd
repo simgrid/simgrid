@@ -106,12 +106,27 @@
 
 <!-- start added by DAVID -->
 
-<!ELEMENT AS ((AS|host|gateway|router|link|route)*)>
+<!ELEMENT AS (((AS|link)*,ASroute*)|((host|router|link)*,route*))>
+<!ATTLIST AS id CDATA #REQUIRED>
+<!ATTLIST AS routing CDATA #REQUIRED>
+
+<!--<!ELEMENT route (link:ctn*)>
+<!ATTLIST route src CDATA #REQUIRED>
+<!ATTLIST route dst CDATA #REQUIRED>-->
+
+<!ELEMENT ASroute (link:ctn*)>
+<!ATTLIST ASroute src CDATA #REQUIRED>
+<!ATTLIST ASroute dst CDATA #REQUIRED>
+<!ATTLIST ASroute gw_src CDATA #REQUIRED>
+<!ATTLIST ASroute gw_dst CDATA #REQUIRED>
+
+
+<!--<!ELEMENT AS ((AS|host|gateway|router|link|route)*)>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
 
 <!ELEMENT gateway EMPTY>
-<!ATTLIST gateway id CDATA #REQUIRED>
+<!ATTLIST gateway id CDATA #REQUIRED>-->
 
 <!-- 
 

@@ -16,8 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route,surf,"Routing part of surf");
 
 
 // FIXME: the next two lines cant be comented without fix the code in network.c file.
-routing_t used_routing = NULL;
-xbt_dict_t onelink_routes = NULL;
+// routing_t used_routing = NULL;
+// xbt_dict_t onelink_routes = NULL;
+
 // 
 // /* Prototypes of each model */
 // static void routing_model_full_create(size_t size_of_link,void *loopback);
@@ -510,7 +511,7 @@ void routing_model_create(size_t size_of_links, void* loopback) {
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &parse_E_platform_add_parse_AS);
   
   /* DEBUG ONLY */  
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &DEGUB_exit);
+  //surfxml_add_callback(ETag_surfxml_platform_cb_list, &DEGUB_exit);
 
 }
 
@@ -1509,7 +1510,7 @@ static void DEGUB_exit(void) {
   (*(global_routing->finalize))();
   printf("----------------------------------\n");
   
-  exit(0); 
+  //exit(0); 
 }
 
 ////////////////////////////////////////////////////////////////////////////////

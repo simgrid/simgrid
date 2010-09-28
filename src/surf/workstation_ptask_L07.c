@@ -79,9 +79,9 @@ static void ptask_update_action_bound(surf_action_workstation_L07_t action)
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
-      cpu_L07_t card_src = action->workstation_list[i];
-      cpu_L07_t card_dst = action->workstation_list[j];
-      xbt_dynar_t route = used_routing->get_route(card_src->id, card_dst->id);
+//       cpu_L07_t card_src = action->workstation_list[i]; // COMMENTED BY DAVID
+//       cpu_L07_t card_dst = action->workstation_list[j]; // COMMENTED BY DAVID
+      xbt_dynar_t route = NULL;// used_routing->get_route(card_src->id, card_dst->id); // COMMENTED BY DAVID
       double lat = 0.0;
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
@@ -399,7 +399,8 @@ static void ptask_finalize(void)
   surf_workstation_model = NULL;
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
-  used_routing->finalize();
+  // used_routing->finalize(); // COMMENTED BY DAVID
+  global_routing->finalize();
 
   ptask_host_count = 0;
 
@@ -449,10 +450,10 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
   /* Compute the number of affected resources... */
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
-      cpu_L07_t card_src = workstation_list[i];
-      cpu_L07_t card_dst = workstation_list[j];
+//       cpu_L07_t card_src = workstation_list[i]; // COMMENTED BY DAVID
+//       cpu_L07_t card_dst = workstation_list[j]; // COMMENTED BY DAVID
       link_L07_t link;
-      xbt_dynar_t route = used_routing->get_route(card_src->id, card_dst->id);
+      xbt_dynar_t route = NULL; //used_routing->get_route(card_src->id, card_dst->id); // COMMENTED BY DAVID
       double lat = 0.0;
 
       if (communication_amount[i * workstation_nb + j] > 0)
@@ -501,10 +502,10 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
-      cpu_L07_t card_src = workstation_list[i];
-      cpu_L07_t card_dst = workstation_list[j];
+//       cpu_L07_t card_src = workstation_list[i]; // COMMENTED BY DAVID
+//       cpu_L07_t card_dst = workstation_list[j]; // COMMENTED BY DAVID
       link_L07_t link;
-      xbt_dynar_t route = used_routing->get_route(card_src->id, card_dst->id);
+      xbt_dynar_t route = NULL;// used_routing->get_route(card_src->id, card_dst->id); // COMMENTED BY DAVID
 
       if (communication_amount[i * workstation_nb + j] == 0.0)
         continue;
@@ -574,10 +575,10 @@ static surf_action_t ptask_action_sleep(void *cpu, double duration)
 
 static xbt_dynar_t ptask_get_route(void *src, void *dst)
 {
-  cpu_L07_t host_src = src;
-  cpu_L07_t host_dst = dst;
+//   cpu_L07_t host_src = src; // COMMENTED BY DAVID
+//   cpu_L07_t host_dst = dst; // COMMENTED BY DAVID
 
-  return used_routing->get_route(host_src->id, host_dst->id);
+  return NULL;// used_routing->get_route(host_src->id, host_dst->id); // COMMENTED BY DAVID
 }
 
 static double ptask_get_link_bandwidth(const void *link)

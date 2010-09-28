@@ -99,16 +99,16 @@ typedef struct {
  */
 
 // FIXME: the next lines cant be comented without fix the code in network.c file.
-struct s_routing {
-  const char *name;
-  xbt_dict_t host_id; /* char* -> int* */
-  xbt_dynar_t (*get_route)(int src, int dst);
-  xbt_dict_t (*get_onelink_routes)(void);
-  int (*is_router)(int id);
-  void (*finalize)(void);
-  int host_count;
-  int router_count;
-};
+// struct s_routing {
+//   const char *name;
+//   xbt_dict_t host_id; /* char* -> int* */
+//   xbt_dynar_t (*get_route)(int src, int dst);
+//   xbt_dict_t (*get_onelink_routes)(void);
+//   int (*is_router)(int id);
+//   void (*finalize)(void);
+//   int host_count;
+//   int router_count;
+// };
 
 ////////////////////////////////////////////////////////////////////////////////
 // HERE START THE NEW STRUCTURES
@@ -130,7 +130,7 @@ typedef struct s_route s_route_t, *route_t;
 typedef struct s_route_limits s_route_limits_t, *route_limits_t;
 typedef struct s_route_extended s_route_extended_t, *route_extended_t;
 typedef struct s_routing_component s_routing_component_t, *routing_component_t;
-typedef struct s_routing_global s_routing_global_t, *routing_global_t;
+//typedef struct s_routing_global s_routing_global_t, *routing_global_t;
 
 struct s_model_type {
   const char *name;
