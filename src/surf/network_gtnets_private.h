@@ -19,11 +19,6 @@ typedef struct network_link_GTNETS {
   int id;
 } s_network_link_GTNETS_t, *network_link_GTNETS_t;
 
-typedef struct network_card_GTNETS {
-  char *name;
-  int id;
-} s_network_card_GTNETS_t, *network_card_GTNETS_t;
-
 typedef struct surf_action_network_GTNETS {
   s_surf_action_t generic_action;
   double latency;
@@ -33,7 +28,8 @@ typedef struct surf_action_network_GTNETS {
   int suspended;
 } s_surf_action_network_GTNETS_t, *surf_action_network_GTNETS_t;
 
-//extern xbt_dict_t network_card_set;
+xbt_dict_t network_card_ids;
+
 
 
 #endif /* _SURF_NETWORK_PRIVATE_H */

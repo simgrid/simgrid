@@ -197,22 +197,15 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src, SD_workstation_t dst)
     sd_global->recyclable_route = xbt_new(SD_link_t, SD_link_get_number());
   }
 
-  surf_src = &src->surf_workstation;
-  surf_dst = &dst->surf_workstation;
-  surf_route = surf_workstation_model->extension.workstation.get_route(
-		  (void*)SD_workstation_get_name(src),(void*)SD_workstation_get_name(dst));
-
-  if(surf_route == NULL)
-  {
-	  INFO0("PBLM1 surf_route == NULL");
-  }
+  surf_src = src->surf_workstation;
+  surf_dst = dst->surf_workstation;
+  surf_route = surf_workstation_model->extension.workstation.get_route(surf_src,surf_dst);
 
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
     link_name = surf_resource_name(surf_link);
     sd_global->recyclable_route[cpt] =
       xbt_dict_get(sd_global->links, link_name);
   }
-  INFO0("FIN");
   return sd_global->recyclable_route;
 }
 

@@ -29,12 +29,8 @@ typedef struct surf_action_network_CM02 {
   double rate;
   int latency_limited;
   int suspended;
-
-  int src;  /* saving source id for tracing */
-  int dst; /* saving dest id for tracing */
-  
-  char* src_name;  /* saving source id for tracing */ // ADDED BY DAVID
-  char* dst_name; /* saving dest id for tracing */ // ADDED BY DAVID
+  char* src_name;
+  char* dst_name;
   
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 

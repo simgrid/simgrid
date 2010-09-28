@@ -86,8 +86,8 @@ int __surf_is_absolute_file_path(const char *file_path);
  * One link routing list
  */
 typedef struct {
-	int src_id;
-	int dst_id;
+	char *src;
+	char *dst;
 	void *link_ptr;
 }s_onelink, *s_onelink_t;
 
@@ -171,6 +171,8 @@ struct s_routing_global {
   void *loopback;
   size_t size_of_link;
   xbt_dynar_t (*get_route)(const char* src, const char* dst);
+  xbt_dict_t (*get_onelink_routes)(void);
+  int (*is_router)(const char *name);
   void (*finalize)(void);
   xbt_dynar_t last_route;
 };

@@ -12,7 +12,6 @@
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
   void *cpu;
-  int id;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
@@ -21,14 +20,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 surf_model_t surf_workstation_model = NULL;
 
 static workstation_CLM03_t workstation_new(const char *name,
-                                           void *cpu, int id)
+                                           void *cpu)
 {
   workstation_CLM03_t workstation = xbt_new0(s_workstation_CLM03_t, 1);
 
   workstation->generic_resource.model = surf_workstation_model;
   workstation->generic_resource.name = xbt_strdup(name);
   workstation->cpu = cpu;
-  workstation->id = id;
 
   xbt_dict_set(surf_model_resource_set(surf_workstation_model), name,
                workstation, surf_resource_free);
@@ -43,12 +41,7 @@ void create_workstations(void)
   void *cpu = NULL;
 
   xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, name, cpu) {
-    int *id = NULL;
-// COMMENTED BY DAVID
-//     if (used_routing && used_routing->host_id)
-//       id = xbt_dict_get_or_null(used_routing->host_id,name);
-
-    workstation_new(name, cpu, id ? *id : 0);
+	  workstation_new(name, cpu);
   }
 }
 
@@ -210,7 +203,7 @@ static surf_action_t ws_communicate(void *workstation_src,
   workstation_CLM03_t dst = (workstation_CLM03_t) workstation_dst;
   return surf_network_model->extension.network.
     communicate(surf_resource_name(src->cpu), surf_resource_name(dst->cpu),
-                src->id, dst->id, size, rate);
+                size, rate);
 }
 
 static e_surf_resource_state_t ws_get_state(void *workstation)
@@ -245,10 +238,8 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
 /* returns an array of network_link_CM02_t */
 static xbt_dynar_t ws_get_route(void *src, void *dst)
 {
-  workstation_CLM03_t workstation_src = (workstation_CLM03_t) src;
-  workstation_CLM03_t workstation_dst = (workstation_CLM03_t) dst;
-  return surf_network_model->extension.network.get_route(workstation_src->id,
-                                                         workstation_dst->id);
+  return surf_network_model->extension.network.get_route(surf_resource_name(src),
+			 surf_resource_name(src));
 }
 
 static double ws_get_link_bandwidth(const void *link)

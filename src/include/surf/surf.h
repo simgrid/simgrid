@@ -181,9 +181,9 @@ XBT_PUBLIC_DATA(routing_global_t) global_routing; // ADDED BY DAVID
       */
      typedef struct surf_network_model_extension_public {
        surf_action_t(*communicate) (const char *src_name,
-                                    const char *dst_name, int src, int dst,
+                                    const char *dst_name,
                                     double size, double rate);
-       xbt_dynar_t(*get_route) (int src, int dst);
+       xbt_dynar_t(*get_route) (const char *src_name, const char *dst_name);
        double (*get_link_bandwidth) (const void *link);
        double (*get_link_latency) (const void *link);
        int (*link_shared) (const void *link);

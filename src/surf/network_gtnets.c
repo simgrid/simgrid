@@ -13,8 +13,7 @@ static double time_to_next_flow_completion = -1;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
                                 "Logging specific to the SURF network GTNetS module");
 
-//extern routing_t used_routing; // COMMENTED BY DAVID
-extern routing_global_t global_routing; // ADDED BY DAVID
+extern routing_global_t global_routing;
 
 double sg_gtnets_jitter=0.0;
 int sg_gtnets_jitter_seed=10;
@@ -132,23 +131,25 @@ static void parse_link_init(void)
 /* Create the gtnets topology based on routing strategy */
 static void create_gtnets_topology()
 {
-// COMMENTED BY DAVID
 //  xbt_dict_cursor_t cursor = NULL;
 //  char *key, *data;
-//   xbt_dict_t onelink_routes = used_routing->get_onelink_routes();
+//   xbt_dict_t onelink_routes = global_routing->get_onelink_routes();
 //   xbt_assert0(onelink_routes, "Error onelink_routes was not initialized");
 //
 //   DEBUG0("Starting topology generation");
-//
+// À refaire plus tard. Il faut prendre la liste des hôtes/routeurs (dans routing)
+// À partir de cette liste, on les numérote.
+// Ensuite, on peut utiliser les id pour refaire les appels GTNets qui suivent.
+
 //   xbt_dict_foreach(onelink_routes, cursor, key, data){
 // 	s_onelink_t link = (s_onelink_t) data;
 //
-// 	DEBUG3("Link (#%d), src (#%d), dst (#%d)", ((network_link_GTNETS_t)(link->link_ptr))->id , link->src_id, link->dst_id);
+// 	DEBUG3("Link (#%d), src (#%s), dst (#%s)", ((network_link_GTNETS_t)(link->link_ptr))->id , link->src, link->dst);
 //     DEBUG0("Calling one link route");
-//     if(used_routing->is_router(link->src_id)){
+//     if(global_routing->is_router(link->src)){
 //     	gtnets_add_router(link->src_id);
 //     }
-//     if(used_routing->is_router(link->dst_id)){
+//     if(global_routing->is_router(link->dst)){
 //     	gtnets_add_router(link->dst_id);
 //     }
 //     route_onehop_new(link->src_id, link->dst_id, (network_link_GTNETS_t)(link->link_ptr));
@@ -158,7 +159,6 @@ static void create_gtnets_topology()
 //   if (XBT_LOG_ISENABLED(surf_network_gtnets, xbt_log_priority_debug)) {
 // 	  gtnets_print_topology();
 //   }
-
 }
 
 /* Main XML parsing */
@@ -319,16 +319,19 @@ static void update_resource_state(void *id,
 
 /* Max durations are not supported */
 static surf_action_t communicate(const char *src_name, const char *dst_name,
-                                 int src, int dst, double size, double rate)
+                                 double size, double rate)
 {
+  int src,dst;
+
+  // Utiliser le dictionnaire définit dans create_gtnets_topology pour initialiser correctement src et dst
+  src=dst=-1;
   surf_action_network_GTNETS_t action = NULL;
 
   xbt_assert0((src >= 0 && dst >= 0), "Either src or dst have invalid id (id<0)");
 
   DEBUG4("Setting flow src %d \"%s\", dst %d \"%s\"", src, src_name, dst, dst_name);
 
-  //xbt_dynar_t links = used_routing->get_route(src, dst); // COMMENTED BY DAVID
-  xbt_dynar_t links = global_routing->get_route(src_name, dst_name); // ADDED BY DAVID
+  xbt_dynar_t links = global_routing->get_route(src_name, dst_name);
   route_new(src, dst, links, xbt_dynar_length(links));
 
   action =  surf_action_new(sizeof(s_surf_action_network_GTNETS_t), size, surf_network_model, 0);

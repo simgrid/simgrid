@@ -126,7 +126,7 @@ static void netviva_update_resource_state(void *id,
 }
 
 static surf_action_t netviva_communicate(const char *src_name, const char *dst_name,
-                                 int src, int dst, double size, double rate)
+                                  double size, double rate)
 {
   surf_action_network_Vivaldi_t action = NULL;
   netviva_coords_t c1,c2;

@@ -484,7 +484,7 @@ static void net_update_resource_state(void *id,
 
 
 static surf_action_t net_communicate(const char *src_name, const char *dst_name,
-                                 int src, int dst, double size, double rate)
+                                 double size, double rate)
 {
   unsigned int i;
   link_CM02_t link;
@@ -595,10 +595,6 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
 	  }
   }  /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
-
-  /* saving the src and dst of this communication */
-  action->src = src;
-  action->dst = dst;
 
   XBT_OUT;
 

@@ -79,9 +79,9 @@ static void ptask_update_action_bound(surf_action_workstation_L07_t action)
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
-//       cpu_L07_t card_src = action->workstation_list[i]; // COMMENTED BY DAVID
-//       cpu_L07_t card_dst = action->workstation_list[j]; // COMMENTED BY DAVID
-      xbt_dynar_t route = NULL;// used_routing->get_route(card_src->id, card_dst->id); // COMMENTED BY DAVID
+      xbt_dynar_t route = global_routing->get_route(surf_resource_name(action->workstation_list[i]),
+    		  surf_resource_name(action->workstation_list[j]));
+
       double lat = 0.0;
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
@@ -450,10 +450,9 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
   /* Compute the number of affected resources... */
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
-//       cpu_L07_t card_src = workstation_list[i]; // COMMENTED BY DAVID
-//       cpu_L07_t card_dst = workstation_list[j]; // COMMENTED BY DAVID
       link_L07_t link;
-      xbt_dynar_t route = NULL; //used_routing->get_route(card_src->id, card_dst->id); // COMMENTED BY DAVID
+      xbt_dynar_t route = global_routing->get_route(surf_resource_name(workstation_list[i]),
+														  surf_resource_name(workstation_list[j]));
       double lat = 0.0;
 
       if (communication_amount[i * workstation_nb + j] > 0)
@@ -502,10 +501,9 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
-//       cpu_L07_t card_src = workstation_list[i]; // COMMENTED BY DAVID
-//       cpu_L07_t card_dst = workstation_list[j]; // COMMENTED BY DAVID
       link_L07_t link;
-      xbt_dynar_t route = NULL;// used_routing->get_route(card_src->id, card_dst->id); // COMMENTED BY DAVID
+      xbt_dynar_t route = global_routing->get_route(surf_resource_name(workstation_list[i]),
+														  surf_resource_name(workstation_list[j]));
 
       if (communication_amount[i * workstation_nb + j] == 0.0)
         continue;
@@ -575,8 +573,7 @@ static surf_action_t ptask_action_sleep(void *cpu, double duration)
 
 static xbt_dynar_t ptask_get_route(void *src, void *dst)
 {
-	return global_routing->get_route((char *) src,(char *) dst);
-	//return NULL; used_routing->get_route(host_src->id, host_dst->id); // COMMENTED BY DAVID
+	return global_routing->get_route( surf_resource_name(src), surf_resource_name(dst));
 }
 
 static double ptask_get_link_bandwidth(const void *link)
