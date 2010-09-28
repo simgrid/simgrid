@@ -161,13 +161,24 @@ struct s_route_extended {
   char* dst_gateway;
 };
 
+/* This enum used in the routing structure helps knowing in which situation we are. */
+typedef enum {
+  SURF_ROUTING_NULL = 0,   /**< Indefined type                                   */ 
+  SURF_ROUTING_BASE,       /**< Base case: use simple link lists for routing     */
+  SURF_ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
+} e_surf_routing_hierarchy_t;
+
 struct s_routing_component {
   model_type_t routing;
+  e_surf_routing_hierarchy_t hierarchy;
   char *name;
   struct s_routing_component* routing_father;
   xbt_dict_t routing_sons;
   route_extended_t (*get_route)(routing_component_t rc, const char* src, const char* dst);
-  xbt_dict_t (*get_network_elements)(routing_component_t rc, e_surf_network_element_type_t type);
+  void (*set_processing_units)(routing_component_t rc, const char* name);
+  void (*set_autonomous_system)(routing_component_t rc, const char* name);
+  void (*set_route)(routing_component_t rc, const char* src, const char* dst, route_t route);
+  void (*set_ASroute)(routing_component_t rc, const char* src, const char* dst, route_extended_t route);
   void (*finalize)(routing_component_t rc);
 };
 

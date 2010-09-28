@@ -26,7 +26,7 @@ xbt_dict_t trace_connect_list_link_avail = NULL;
 xbt_dict_t trace_connect_list_bandwidth = NULL;
 xbt_dict_t trace_connect_list_latency = NULL;
 
-/* This buffer is used to store the original buffer before substituing it by out own buffer. Usefull for the foreach tag */
+/* This buffer is used to store the original buffer before substituing it by out own buffer. Use full for the foreach tag */
 static xbt_dynar_t surfxml_bufferstack_stack = NULL;
 int surfxml_bufferstack_size = 2048;
 static char *old_buff = NULL;
@@ -92,8 +92,8 @@ xbt_dynar_t STag_surfxml_random_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_random_cb_list = NULL;
 xbt_dynar_t STag_surfxml_AS_cb_list = NULL;  // addded by david
 xbt_dynar_t ETag_surfxml_AS_cb_list = NULL;  // addded by david
-xbt_dynar_t STag_surfxml_gateway_cb_list = NULL;  // addded by david
-xbt_dynar_t ETag_surfxml_gateway_cb_list = NULL;  // addded by david
+xbt_dynar_t STag_surfxml_ASroute_cb_list = NULL;  // addded by david
+xbt_dynar_t ETag_surfxml_ASroute_cb_list = NULL;  // addded by david
 
 /* Stores the sets defined in the XML */
 xbt_dict_t set_list = NULL;
@@ -166,8 +166,8 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_random_cb_list);
   xbt_dynar_free(&STag_surfxml_AS_cb_list);  // addded by david
   xbt_dynar_free(&ETag_surfxml_AS_cb_list);  // addded by david
-  xbt_dynar_free(&STag_surfxml_gateway_cb_list);  // addded by david
-  xbt_dynar_free(&ETag_surfxml_gateway_cb_list);  // addded by david
+  xbt_dynar_free(&STag_surfxml_ASroute_cb_list);  // addded by david
+  xbt_dynar_free(&ETag_surfxml_ASroute_cb_list);  // addded by david
 }
 
 void surf_parse_reset_parser(void)
@@ -213,8 +213,8 @@ void surf_parse_reset_parser(void)
   ETag_surfxml_random_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_AS_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);  // addded by david
   ETag_surfxml_AS_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);  // addded by david
-  STag_surfxml_gateway_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);  // addded by david
-  ETag_surfxml_gateway_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);  // addded by david
+  STag_surfxml_ASroute_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);  // addded by david
+  ETag_surfxml_ASroute_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);  // addded by david
 }
 
 void STag_surfxml_include(void)
@@ -449,14 +449,14 @@ void ETag_surfxml_AS(void)   // addded by david
   surfxml_call_cb_functions(ETag_surfxml_AS_cb_list);
 }
 
-void STag_surfxml_gateway(void)   // addded by david
+void STag_surfxml_ASroute(void)   // addded by david
 {
-  surfxml_call_cb_functions(STag_surfxml_gateway_cb_list);
+  surfxml_call_cb_functions(STag_surfxml_ASroute_cb_list);
 }
 
-void ETag_surfxml_gateway(void)   // addded by david
+void ETag_surfxml_ASroute(void)   // addded by david
 {
-  surfxml_call_cb_functions(ETag_surfxml_gateway_cb_list);
+  surfxml_call_cb_functions(ETag_surfxml_ASroute_cb_list);
 }
 
 void surf_parse_open(const char *file)
@@ -592,22 +592,18 @@ static void init_data(void)
   trace_connect_list_latency = xbt_dict_new();
 
   random_data_list = xbt_dict_new();
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
-  surfxml_add_callback(STag_surfxml_route_cb_list,
-                       &parse_route_set_endpoints);
-  surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
-  surfxml_add_callback(STag_surfxml_route_c_multi_cb_list,
-                       &parse_Stag_route_multi);
-  surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list,
-                       &parse_Etag_route_multi);
-  surfxml_add_callback(STag_surfxml_foreach_cb_list, &parse_Stag_foreach);
-  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
-  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
-  surfxml_add_callback(STag_surfxml_trace_c_connect_cb_list,
-                       &parse_Stag_trace_c_connect);
-  surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
-  surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
+//   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+//   surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
+//   surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+//   surfxml_add_callback(STag_surfxml_set_cb_list, &parse_sets);
+//   surfxml_add_callback(STag_surfxml_route_c_multi_cb_list, &parse_Stag_route_multi);
+//   surfxml_add_callback(ETag_surfxml_route_c_multi_cb_list, &parse_Etag_route_multi);
+//   surfxml_add_callback(STag_surfxml_foreach_cb_list, &parse_Stag_foreach);
+//   surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
+//   surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
+//   surfxml_add_callback(STag_surfxml_trace_c_connect_cb_list, &parse_Stag_trace_c_connect);
+//   surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
+//   surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
 }
 
 static void free_data(void)

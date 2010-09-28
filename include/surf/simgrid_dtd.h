@@ -1,5 +1,5 @@
 /* XML processor/application API for src/surf/simgrid.dtd.
- * Generated 2010/06/17 19:11:51.
+ * Generated 2010/08/12 13:12:19.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -83,9 +83,15 @@ XBT_PUBLIC(void ) STag_surfxml_process(void);
 XBT_PUBLIC(void ) ETag_surfxml_process(void);
 XBT_PUBLIC(void ) STag_surfxml_argument(void);
 XBT_PUBLIC(void ) ETag_surfxml_argument(void);
+XBT_PUBLIC(void ) STag_surfxml_AS(void);
+XBT_PUBLIC(void ) ETag_surfxml_AS(void);
+XBT_PUBLIC(void ) STag_surfxml_ASroute(void);
+XBT_PUBLIC(void ) ETag_surfxml_ASroute(void);
 
 /* XML application data. */
 typedef enum { AU_surfxml_random_generator, A_surfxml_random_generator_DRAND48,A_surfxml_random_generator_RAND } AT_surfxml_random_generator;
+typedef int AT_surfxml_ASroute_gw_dst;
+#define AU_surfxml_ASroute_gw_dst NULL
 typedef int AT_surfxml_prop_id;
 #define AU_surfxml_prop_id NULL
 typedef int AT_surfxml_host_interference_recv;
@@ -103,6 +109,8 @@ typedef int AT_surfxml_host_interference_send;
 #define AU_surfxml_host_interference_send NULL
 typedef int AT_surfxml_set_suffix;
 #define AU_surfxml_set_suffix NULL
+typedef int AT_surfxml_AS_id;
+#define AU_surfxml_AS_id NULL
 typedef int AT_surfxml_route_impact_on_dst;
 #define AU_surfxml_route_impact_on_dst NULL
 typedef int AT_surfxml_host_power;
@@ -115,6 +123,10 @@ typedef int AT_surfxml_cluster_suffix;
 #define AU_surfxml_cluster_suffix NULL
 typedef int AT_surfxml_platform_xmlns_c_route;
 #define AU_surfxml_platform_xmlns_c_route NULL
+typedef int AT_surfxml_route_gw_dst;
+#define AU_surfxml_route_gw_dst NULL
+typedef int AT_surfxml_ASroute_src;
+#define AU_surfxml_ASroute_src NULL
 typedef int AT_surfxml_cluster_prefix;
 #define AU_surfxml_cluster_prefix NULL
 typedef int AT_surfxml_trace_file;
@@ -132,8 +144,12 @@ typedef int AT_surfxml_trace_c_connect_element;
 typedef int AT_surfxml_argument_value;
 #define AU_surfxml_argument_value NULL
 typedef enum { AU_surfxml_link_state, A_surfxml_link_state_ON,A_surfxml_link_state_OFF } AT_surfxml_link_state;
+typedef int AT_surfxml_ASroute_gw_src;
+#define AU_surfxml_ASroute_gw_src NULL
 typedef int AT_surfxml_route_impact_on_src;
 #define AU_surfxml_route_impact_on_src NULL
+typedef int AT_surfxml_AS_routing;
+#define AU_surfxml_AS_routing NULL
 typedef int AT_surfxml_link_bandwidth;
 #define AU_surfxml_link_bandwidth NULL
 typedef int AT_surfxml_cluster_id;
@@ -172,10 +188,14 @@ typedef int AT_surfxml_route_impact_on_dst_with_other_send;
 #define AU_surfxml_route_impact_on_dst_with_other_send NULL
 typedef int AT_surfxml_prop_value;
 #define AU_surfxml_prop_value NULL
+typedef int AT_surfxml_ASroute_dst;
+#define AU_surfxml_ASroute_dst NULL
 typedef int AT_surfxml_route_impact_on_src_with_other_recv;
 #define AU_surfxml_route_impact_on_src_with_other_recv NULL
 typedef int AT_surfxml_link_state_file;
 #define AU_surfxml_link_state_file NULL
+typedef int AT_surfxml_route_gw_src;
+#define AU_surfxml_route_gw_src NULL
 typedef int AT_surfxml_set_prefix;
 #define AU_surfxml_set_prefix NULL
 typedef int AT_surfxml_cluster_power;
@@ -222,6 +242,8 @@ XBT_PUBLIC_DATA(char *) surfxml_bufferstack;
 #define surfxml_pcdata (surfxml_bufferstack + surfxml_pcdata_ix)
 XBT_PUBLIC_DATA(AT_surfxml_random_generator ) AX_surfxml_random_generator;
 #define A_surfxml_random_generator AX_surfxml_random_generator
+XBT_PUBLIC_DATA(AT_surfxml_ASroute_gw_dst ) AX_surfxml_ASroute_gw_dst;
+#define A_surfxml_ASroute_gw_dst (surfxml_bufferstack + AX_surfxml_ASroute_gw_dst)
 XBT_PUBLIC_DATA(AT_surfxml_prop_id ) AX_surfxml_prop_id;
 #define A_surfxml_prop_id (surfxml_bufferstack + AX_surfxml_prop_id)
 XBT_PUBLIC_DATA(AT_surfxml_host_interference_recv ) AX_surfxml_host_interference_recv;
@@ -240,6 +262,8 @@ XBT_PUBLIC_DATA(AT_surfxml_host_interference_send ) AX_surfxml_host_interference
 #define A_surfxml_host_interference_send (surfxml_bufferstack + AX_surfxml_host_interference_send)
 XBT_PUBLIC_DATA(AT_surfxml_set_suffix ) AX_surfxml_set_suffix;
 #define A_surfxml_set_suffix (surfxml_bufferstack + AX_surfxml_set_suffix)
+XBT_PUBLIC_DATA(AT_surfxml_AS_id ) AX_surfxml_AS_id;
+#define A_surfxml_AS_id (surfxml_bufferstack + AX_surfxml_AS_id)
 XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_dst ) AX_surfxml_route_impact_on_dst;
 #define A_surfxml_route_impact_on_dst (surfxml_bufferstack + AX_surfxml_route_impact_on_dst)
 XBT_PUBLIC_DATA(AT_surfxml_host_power ) AX_surfxml_host_power;
@@ -252,6 +276,10 @@ XBT_PUBLIC_DATA(AT_surfxml_cluster_suffix ) AX_surfxml_cluster_suffix;
 #define A_surfxml_cluster_suffix (surfxml_bufferstack + AX_surfxml_cluster_suffix)
 XBT_PUBLIC_DATA(AT_surfxml_platform_xmlns_c_route ) AX_surfxml_platform_xmlns_c_route;
 #define A_surfxml_platform_xmlns_c_route (surfxml_bufferstack + AX_surfxml_platform_xmlns_c_route)
+XBT_PUBLIC_DATA(AT_surfxml_route_gw_dst ) AX_surfxml_route_gw_dst;
+#define A_surfxml_route_gw_dst (surfxml_bufferstack + AX_surfxml_route_gw_dst)
+XBT_PUBLIC_DATA(AT_surfxml_ASroute_src ) AX_surfxml_ASroute_src;
+#define A_surfxml_ASroute_src (surfxml_bufferstack + AX_surfxml_ASroute_src)
 XBT_PUBLIC_DATA(AT_surfxml_cluster_prefix ) AX_surfxml_cluster_prefix;
 #define A_surfxml_cluster_prefix (surfxml_bufferstack + AX_surfxml_cluster_prefix)
 XBT_PUBLIC_DATA(AT_surfxml_trace_file ) AX_surfxml_trace_file;
@@ -272,8 +300,12 @@ XBT_PUBLIC_DATA(AT_surfxml_argument_value ) AX_surfxml_argument_value;
 #define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
 XBT_PUBLIC_DATA(AT_surfxml_link_state ) AX_surfxml_link_state;
 #define A_surfxml_link_state AX_surfxml_link_state
+XBT_PUBLIC_DATA(AT_surfxml_ASroute_gw_src ) AX_surfxml_ASroute_gw_src;
+#define A_surfxml_ASroute_gw_src (surfxml_bufferstack + AX_surfxml_ASroute_gw_src)
 XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_src ) AX_surfxml_route_impact_on_src;
 #define A_surfxml_route_impact_on_src (surfxml_bufferstack + AX_surfxml_route_impact_on_src)
+XBT_PUBLIC_DATA(AT_surfxml_AS_routing ) AX_surfxml_AS_routing;
+#define A_surfxml_AS_routing (surfxml_bufferstack + AX_surfxml_AS_routing)
 XBT_PUBLIC_DATA(AT_surfxml_link_bandwidth ) AX_surfxml_link_bandwidth;
 #define A_surfxml_link_bandwidth (surfxml_bufferstack + AX_surfxml_link_bandwidth)
 XBT_PUBLIC_DATA(AT_surfxml_cluster_id ) AX_surfxml_cluster_id;
@@ -312,10 +344,14 @@ XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_dst_with_other_send ) AX_surfxml_rout
 #define A_surfxml_route_impact_on_dst_with_other_send (surfxml_bufferstack + AX_surfxml_route_impact_on_dst_with_other_send)
 XBT_PUBLIC_DATA(AT_surfxml_prop_value ) AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
+XBT_PUBLIC_DATA(AT_surfxml_ASroute_dst ) AX_surfxml_ASroute_dst;
+#define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
 XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_src_with_other_recv ) AX_surfxml_route_impact_on_src_with_other_recv;
 #define A_surfxml_route_impact_on_src_with_other_recv (surfxml_bufferstack + AX_surfxml_route_impact_on_src_with_other_recv)
 XBT_PUBLIC_DATA(AT_surfxml_link_state_file ) AX_surfxml_link_state_file;
 #define A_surfxml_link_state_file (surfxml_bufferstack + AX_surfxml_link_state_file)
+XBT_PUBLIC_DATA(AT_surfxml_route_gw_src ) AX_surfxml_route_gw_src;
+#define A_surfxml_route_gw_src (surfxml_bufferstack + AX_surfxml_route_gw_src)
 XBT_PUBLIC_DATA(AT_surfxml_set_prefix ) AX_surfxml_set_prefix;
 #define A_surfxml_set_prefix (surfxml_bufferstack + AX_surfxml_set_prefix)
 XBT_PUBLIC_DATA(AT_surfxml_cluster_power ) AX_surfxml_cluster_power;
