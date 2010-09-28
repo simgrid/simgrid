@@ -1,5 +1,5 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((include|trace|random|cluster|set|foreach|host|router|link|trace:connect)*,(include|route:multi|route|trace:connect|process)*)>
+<!ELEMENT platform ((include|trace|random|AS|trace:connect)*,(include|trace|random|cluster|set|foreach|host|router|link|trace:connect)*,(include|route:multi|route|trace:connect|process)*)>
 <!ATTLIST platform version CDATA "0.0">
 <!ATTLIST platform xmlns:link CDATA "http://simgrid.gforge.inria.fr/">
 <!ATTLIST platform xmlns:route CDATA "http://simgrid.gforge.inria.fr/">
@@ -84,6 +84,8 @@
 <!ELEMENT route (link:ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
+<!ATTLIST route gw_src CDATA "">
+<!ATTLIST route gw_dst CDATA "">
 <!ATTLIST route impact_on_src CDATA "0.0">
 <!ATTLIST route impact_on_dst CDATA "0.0">
 <!ATTLIST route impact_on_src_with_other_recv CDATA "0.0">
@@ -101,3 +103,38 @@
 
 <!ELEMENT argument EMPTY>
 <!ATTLIST argument value CDATA #REQUIRED>
+
+<!-- start added by DAVID -->
+
+<!ELEMENT AS ((AS|host|gateway|router|link|route)*)>
+<!ATTLIST AS id CDATA #REQUIRED>
+<!ATTLIST AS routing CDATA #REQUIRED>
+
+<!ELEMENT gateway EMPTY>
+<!ATTLIST gateway id CDATA #REQUIRED>
+
+<!-- 
+
+<!ELEMENT AS ((AS|hostDef|routerDef|ASroute)*)>
+<!ATTLIST AS id CDATA #REQUIRED>
+
+<!ELEMENT hostDef (hostAdd*)>
+
+<!ELEMENT hostAdd EMPTY>
+<!ATTLIST hostAdd id CDATA #REQUIRED>
+
+<!ELEMENT routerDef (routerAdd*)>
+
+<!ELEMENT routerAdd EMPTY>
+<!ATTLIST routerAdd id CDATA #REQUIRED>
+
+<!ELEMENT ASroute (ASlink*)>
+<!ATTLIST ASroute src CDATA #REQUIRED>
+<!ATTLIST ASroute dst CDATA #REQUIRED>
+<!ATTLIST ASroute symmetric (YES|NO) "YES">
+
+<!ELEMENT ASlink EMPTY>
+<!ATTLIST ASlink id CDATA #REQUIRED>
+
+-->
+<!-- end added by DAVID -->
