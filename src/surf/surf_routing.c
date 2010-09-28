@@ -232,7 +232,7 @@ static void parse_S_AS(void) {
     for (cpt=0;routing_models[cpt].name;cpt++)
       if (!strcmp(wanted,routing_models[cpt].name))
         fprintf(stderr,"   %s: %s\n",routing_models[cpt].name,routing_models[cpt].desc);
-    exit(1);
+    xbt_die(NULL);
   }
 
   /* make a new routing component */
@@ -437,6 +437,8 @@ static route_extended_t _get_route(const char* src,const char* dst) {
       xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
         xbt_dynar_push(e_route->generic_route.link_list,&link);
       }
+      xbt_dynar_free( &(e_route_cnt->generic_route.link_list) );
+      xbt_free(e_route_cnt);
     }
     
   } else { /* SURF_ROUTING_RECURSIVE */
@@ -506,6 +508,7 @@ static xbt_dynar_t get_route(const char* src,const char* dst) {
   global_routing->last_route = e_route->generic_route.link_list;
  
   xbt_free(e_route);
+  xbt_dynar_free(&elem_father_list);
   
   if( xbt_dynar_length(global_routing->last_route)==0 )
     return NULL;
