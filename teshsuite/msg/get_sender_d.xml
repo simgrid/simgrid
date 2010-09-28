@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+ <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <platform version="2">
+   <!-- Deployment -->
+   <process host="toto" function="send"/>
+   <process host="toto" function="receive"/>
+ </platform>
