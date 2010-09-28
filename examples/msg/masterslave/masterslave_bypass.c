@@ -70,12 +70,13 @@ static int surf_parse_bypass_platform(void)
   SURFXML_END_TAG(link);
 
 /*   <route src="host A" dst="host B"><link:ctn id="LinkA"/></route> */
-  SURFXML_BUFFER_SET(route_src, "host A");
-  SURFXML_BUFFER_SET(route_dst, "host B");
-  SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
-  SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
-  SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
-  SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
+// OLD THINGS COMMENTED
+//   SURFXML_BUFFER_SET(route_src, "host A");
+//   SURFXML_BUFFER_SET(route_dst, "host B");
+//   SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
+//   SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
+//   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
+//   SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
 
   SURFXML_START_TAG(route);
 
@@ -86,12 +87,13 @@ static int surf_parse_bypass_platform(void)
   SURFXML_END_TAG(route);
 
 /*   <route src="host B" dst="host A"><link:ctn id="LinkA"/></route> */
-  SURFXML_BUFFER_SET(route_src, "host B");
-  SURFXML_BUFFER_SET(route_dst, "host A");
-  SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
-  SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
-  SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
-  SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
+// OLD THINGS COMMENTED
+//   SURFXML_BUFFER_SET(route_src, "host B");
+//   SURFXML_BUFFER_SET(route_dst, "host A");
+//   SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
+//   SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
+//   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
+//   SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
 
   SURFXML_START_TAG(route);
 
