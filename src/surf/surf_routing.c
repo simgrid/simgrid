@@ -2209,14 +2209,14 @@ static void routing_full_parse_Scluster(void)
 	/* allocating memory for the buffer, I think 2kB should be enough */
 	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
-	DEBUG4("id='%s' prefix='%s' suffix='%s' radical='%s'",
-	  cluster_id,cluster_prefix,cluster_suffix,cluster_radical);
-	DEBUG5("power='%s' bw='%s' lat='%s' bb_bw='%s' bb_lat='%s'",
-		  cluster_power,cluster_bw,cluster_lat,cluster_bb_bw,cluster_bb_lat);
+//	DEBUG4("id='%s' prefix='%s' suffix='%s' radical='%s'",
+//	  cluster_id,cluster_prefix,cluster_suffix,cluster_radical);
+//	DEBUG5("power='%s' bw='%s' lat='%s' bb_bw='%s' bb_lat='%s'",
+//		  cluster_power,cluster_bw,cluster_lat,cluster_bb_bw,cluster_bb_lat);
 
-	DEBUG1("<AS id=\"%s\"\trouting=\"Full\">",cluster_id);
+	DEBUG1("<AS id=\"%s\"\trouting=\"RuleBased\">",cluster_id);
 	SURFXML_BUFFER_SET(AS_id, cluster_id);
-	SURFXML_BUFFER_SET(AS_routing, "Full");
+	SURFXML_BUFFER_SET(AS_routing, "RuleBased");
 	SURFXML_START_TAG(AS);
 
 	radical_elements = xbt_str_split(cluster_radical, ",");
@@ -2386,5 +2386,6 @@ static void routing_full_parse_Scluster(void)
 
 	DEBUG0("</AS>");
 	SURFXML_END_TAG(AS);
+	DEBUG0(" ");
 
 }

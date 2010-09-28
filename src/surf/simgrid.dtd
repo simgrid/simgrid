@@ -22,7 +22,7 @@
 <!ATTLIST trace:connect trace CDATA #REQUIRED>
 <!ATTLIST trace:connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|link)*,cluster*,ASroute*,bypassRoute*)|((host|router|link)*,cluster*,route*))>
+<!ELEMENT AS (((AS|link|cluster)*,ASroute*,bypassRoute*)|((host|router|link)*,route*))>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
 
