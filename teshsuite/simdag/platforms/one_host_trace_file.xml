@@ -1,9 +1,9 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
-  <host id="bob" power="1000000000"/>
-  
-  <trace id="myTrace" file="bob.trace"/>
-
+<AS  id="AS0"  routing="Full">
+  <host id="bob" power="1000000000"/>  
+</AS>
+  <trace id="myTrace" file="bob.trace" periodicity="1.0"/>
   <trace:connect trace="myTrace" element="bob" kind="POWER"/>
 </platform>

@@ -1,9 +1,11 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
+	 <AS  id="AS0"  routing="Full">
   <host id="bob" power="1000000000">
     <prop id="memory" value="1000000000"/>
     <prop id="disk" value="80E9"/>
     <prop id="OS" value="Linux 2.6.22-14"/>
   </host>
+  </AS>
 </platform>
