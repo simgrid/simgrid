@@ -341,7 +341,6 @@ static void init_data(void)
   random_data_list = xbt_dict_new();
   surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
   surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
-  
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
   surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
