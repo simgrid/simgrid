@@ -957,7 +957,7 @@ static void  model_floyd_end(void) {
     for(j = 0; j<table_size;j++) {
         TO_FLOYD_COST(i,j) = DBL_MAX;
         TO_FLOYD_PRED(i,j) = -1;
-        TO_FLOYD_LINK(i,j) = NULL; // FIXED DAVID
+        TO_FLOYD_LINK(i,j) = NULL; // FIXED by david
     }
 
    /* Put the routes in position */
@@ -968,7 +968,7 @@ static void  model_floyd_end(void) {
     TO_FLOYD_LINK(src_id,dst_id) = generic_new_extended_route(current_routing->hierarchy,data,0);
     TO_FLOYD_PRED(src_id,dst_id) = src_id;
     //link cost
-    TO_FLOYD_COST(src_id,dst_id) = 1; // assume 1 for now // TODO DAVID REDO
+    TO_FLOYD_COST(src_id,dst_id) = ((TO_FLOYD_LINK(src_id,dst_id))->generic_route.link_list)->used; // assume 1 for now // TODO DAVID REDO
     xbt_dynar_free(&keys);
   }
 
@@ -1213,8 +1213,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc, const char* s
     xbt_assert2(edge != NULL, "no route between host %d and %d", *src_id, *dst_id);
     
     e_route = (route_extended_t)xbt_graph_edge_get_data(edge);
-    
-    // TODO: correct the order
+
     links = e_route->generic_route.link_list;
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_unshift(new_e_route->generic_route.link_list,&link);
@@ -1269,7 +1268,8 @@ static route_extended_t dijkstra_get_route(routing_component_t rc, const char* s
         xbt_node_t u_node = xbt_graph_edge_get_target(edge);
         graph_node_data_t data = xbt_graph_node_get_data(u_node);
         int u_id = data->graph_id;
-        int cost_v_u = 1; //fixed link cost for now // TODO DAVID REDO
+	route_extended_t tmp_e_route = (route_extended_t)xbt_graph_edge_get_data(edge); // added TODO DAVID REDO
+        int cost_v_u = (tmp_e_route->generic_route.link_list)->used; //fixed link cost for now // TODO DAVID REDO
 
         if(cost_v_u + cost_arr[*v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = *v_id;
@@ -1286,7 +1286,6 @@ static route_extended_t dijkstra_get_route(routing_component_t rc, const char* s
 
     xbt_free(cost_arr);
     xbt_heap_free(pqueue);
-
   }
   
   //compose route path with links
