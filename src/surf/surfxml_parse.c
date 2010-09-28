@@ -43,6 +43,8 @@ xbt_dynar_t STag_surfxml_argument_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_argument_cb_list = NULL;
 xbt_dynar_t STag_surfxml_prop_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_prop_cb_list = NULL;
+xbt_dynar_t STag_surfxml_cluster_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_cluster_cb_list = NULL;
 xbt_dynar_t STag_surfxml_trace_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_trace_cb_list = NULL;
 xbt_dynar_t STag_surfxml_trace_c_connect_cb_list = NULL;
@@ -107,6 +109,8 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_ASroute_cb_list);
   xbt_dynar_free(&STag_surfxml_bypassRoute_cb_list);
   xbt_dynar_free(&ETag_surfxml_bypassRoute_cb_list);
+  xbt_dynar_free(&STag_surfxml_cluster_cb_list);
+  xbt_dynar_free(&ETag_surfxml_cluster_cb_list);
 }
 
 void surf_parse_reset_parser(void)
@@ -142,6 +146,8 @@ void surf_parse_reset_parser(void)
   ETag_surfxml_ASroute_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_bypassRoute_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   ETag_surfxml_bypassRoute_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+  STag_surfxml_cluster_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+  ETag_surfxml_cluster_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 }
 
 /* Stag and Etag parse functions */
@@ -193,6 +199,7 @@ parse_method(S,random);           parse_method(E,random);
 parse_method(S,AS);               parse_method(E,AS);
 parse_method(S,ASroute);          parse_method(E,ASroute);
 parse_method(S,bypassRoute);      parse_method(E,bypassRoute);
+parse_method(S,cluster);      	  parse_method(E,cluster);
 
 /* Open and Close parse file */
 

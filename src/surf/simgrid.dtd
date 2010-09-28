@@ -1,6 +1,5 @@
 <!-- Small DTD for SURF based tools. -->
-<!-- <!ELEMENT platform ((include|trace|random|AS|trace:connect)*,(include|trace|random|AS|set|foreach|host|router|link|trace:connect)*,(include|route|trace:connect|process)*)> -->
-<!ELEMENT platform ((include|trace|random|AS|trace:connect)*,(include|trace|random|AS|set|foreach|host|router|link|trace:connect)*,(include|route|trace:connect|process)*)> <!-- bad -->
+<!ELEMENT platform ((include|trace|random|cluster|AS|trace:connect)*,(include|trace|random|cluster|AS|set|foreach|host|router|link|trace:connect)*,(include|route|trace:connect|process)*)>
 <!ATTLIST platform version CDATA "0.0">
 <!ATTLIST platform xmlns:link CDATA "http://simgrid.gforge.inria.fr/">
 <!ATTLIST platform xmlns:route CDATA "http://simgrid.gforge.inria.fr/">
@@ -23,7 +22,7 @@
 <!ATTLIST trace:connect trace CDATA #REQUIRED>
 <!ATTLIST trace:connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|link)*,ASroute*,bypassRoute*)|((host|router|link)*,route*))>
+<!ELEMENT AS (((AS|link)*,cluster*,ASroute*,bypassRoute*)|((host|router|link)*,cluster*,route*))>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
 
@@ -39,6 +38,17 @@
 <!ATTLIST host interference_send_recv CDATA "1.0">
 <!ATTLIST host max_outgoing_rate CDATA "-1.0">
 <!ATTLIST host vivaldi  CDATA "0 0 0">
+
+<!ELEMENT cluster EMPTY>
+<!ATTLIST cluster id CDATA #REQUIRED>
+<!ATTLIST cluster prefix CDATA #REQUIRED>
+<!ATTLIST cluster suffix CDATA #REQUIRED>
+<!ATTLIST cluster radical CDATA #REQUIRED>
+<!ATTLIST cluster power CDATA #REQUIRED>
+<!ATTLIST cluster bw CDATA #REQUIRED>
+<!ATTLIST cluster lat CDATA #REQUIRED>
+<!ATTLIST cluster bb_bw CDATA #REQUIRED>
+<!ATTLIST cluster bb_lat CDATA #REQUIRED>
 
 <!ELEMENT router EMPTY>
 <!ATTLIST router id CDATA #REQUIRED>

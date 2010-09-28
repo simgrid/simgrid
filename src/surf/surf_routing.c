@@ -48,6 +48,8 @@ static void  model_none_load(void);   /* none routing model */
 static void  model_none_unload(void); /* none routing model */
 static void  model_none_end(void);    /* none routing model */
 
+static void routing_full_parse_Scluster(void);/*cluster bypass*/
+
 /* this lines are olny for replace use like index in the model table */
 #define SURF_MODEL_FULL           0
 #define SURF_MODEL_FLOYD          1
@@ -615,9 +617,9 @@ void routing_model_create(size_t size_of_links, void* loopback) {
   
   surfxml_add_callback(STag_surfxml_AS_cb_list, &parse_S_AS);
   surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS);
-  
-//   /* DEBUG ONLY */  
-//   surfxml_add_callback(ETag_surfxml_platform_cb_list, &DEBUG_exit);
+
+  surfxml_add_callback(STag_surfxml_cluster_cb_list, &routing_full_parse_Scluster);
+
 }
 
 /* ************************************************************************** */
@@ -2181,4 +2183,145 @@ static void generic_src_dst_check(routing_component_t rc, const char* src, const
       "The src(%s in %s) and dst(%s in %s) are in differents AS",src,src_as->name,dst,dst_as->name);
   xbt_assert2(rc == dst_as,
       "The routing component of src and dst is not the same as the network elements belong (%s==%s)",rc->name,dst_as->name);
+}
+
+static void routing_full_parse_Scluster(void)
+{
+
+	char *cluster_id = A_surfxml_cluster_id;
+	char *cluster_prefix = A_surfxml_cluster_prefix;
+	char *cluster_suffix = A_surfxml_cluster_suffix;
+	char *cluster_radical = A_surfxml_cluster_radical;
+	char *cluster_power = A_surfxml_cluster_power;
+	char *cluster_bw = A_surfxml_cluster_bw;
+	char *cluster_lat = A_surfxml_cluster_lat;
+	char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
+	char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
+	char *host_id, *groups, *link_id;
+	char *router_id, *link_router, *link_backbone, *route_src_dst;
+	unsigned int iter;
+	int start, end, i;
+	xbt_dynar_t radical_elements;
+	xbt_dynar_t radical_ends;
+	static int AX_ptr = 0;
+	static int surfxml_bufferstack_size = 2048;
+
+	DEBUG4("id='%s' prefix='%s' suffix='%s' radical='%s'",
+	  cluster_id,cluster_prefix,cluster_suffix,cluster_radical);
+	DEBUG5("power='%s' bw='%s' lat='%s' bb_bw='%s' bb_lat='%s'",
+		  cluster_power,cluster_bw,cluster_lat,cluster_bb_bw,cluster_bb_lat);
+
+	DEBUG1("<AS id=\"%s\"\trouting=\"Full\">",cluster_id);
+	SURFXML_BUFFER_SET(AS_id, cluster_id);
+	SURFXML_BUFFER_SET(AS_routing, "Full");
+	SURFXML_START_TAG(AS);
+
+	radical_elements = xbt_str_split(cluster_radical, ",");
+	xbt_dynar_foreach(radical_elements, iter, groups)
+	{
+		radical_ends = xbt_str_split(groups, "-");
+		switch (xbt_dynar_length(radical_ends))
+		{
+			case 1:
+			  surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
+			  host_id = bprintf("%s%d%s", cluster_prefix, start, cluster_suffix);
+			  link_id = bprintf("%s_link_%d", cluster_id, start);
+
+			  DEBUG2("\t<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
+			  SURFXML_BUFFER_SET(host_id, host_id);
+			  SURFXML_BUFFER_SET(host_power, cluster_power);
+			  SURFXML_START_TAG(host);
+			  SURFXML_END_TAG(host);
+
+			  DEBUG3("\t<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_id,cluster_bw,cluster_lat);
+			  SURFXML_BUFFER_SET(link_id, link_id);
+			  SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
+			  SURFXML_BUFFER_SET(link_latency, cluster_lat);
+			  SURFXML_START_TAG(link);
+			  SURFXML_END_TAG(link);
+
+			  break;
+
+			case 2:
+
+			  surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
+			  surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
+			  for (i = start; i <= end; i++)
+			  {
+				  host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);
+				  link_id = bprintf("%s_link_%d", cluster_id, i);
+
+				  DEBUG2("\t<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
+				  SURFXML_BUFFER_SET(host_id, host_id);
+				  SURFXML_BUFFER_SET(host_power, cluster_power);
+				  SURFXML_START_TAG(host);
+				  SURFXML_END_TAG(host);
+
+				  DEBUG3("\t<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_id,cluster_bw,cluster_lat);
+				  SURFXML_BUFFER_SET(link_id, link_id);
+				  SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
+				  SURFXML_BUFFER_SET(link_latency, cluster_lat);
+				  SURFXML_START_TAG(link);
+				  SURFXML_END_TAG(link);
+			  }
+			  break;
+
+			default:
+				DEBUG0("Malformed radical");
+		}
+
+		xbt_dynar_free(&radical_ends);
+	}
+
+	DEBUG0(" ");
+	router_id = bprintf("%s.router%s",cluster_prefix,cluster_suffix);
+	link_router = bprintf("%s_link_router",cluster_id);
+	link_backbone = bprintf("%s_backbone",cluster_id);
+
+	DEBUG1("\t<router id=\"%s\"\">",router_id);
+	DEBUG3("\t<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_router,cluster_bw,cluster_lat);
+	DEBUG3("\t<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_backbone,cluster_bb_bw,cluster_bb_lat);
+
+	char *new_suffix = bprintf("%s","");
+
+	radical_elements = xbt_str_split(cluster_suffix, ".");
+	xbt_dynar_foreach(radical_elements, iter, groups)
+	{
+		    if(strcmp(groups,""))
+		    {
+		    	new_suffix = bprintf("%s\\.%s",new_suffix,groups);
+		    }
+	}
+	route_src_dst = bprintf("%s(.*)%s",cluster_prefix,new_suffix);
+
+	DEBUG0(" ");
+	DEBUG2("\t<route\tsrc=\"%s\"\tdst=\"%s\">",route_src_dst,route_src_dst);
+	DEBUG1("\t<link:ctn\tid=\"%s_link_$src1\"/>",cluster_id);
+	DEBUG1("\t<link:ctn\tid=\"%s_backbone\"/>",cluster_id);
+	DEBUG1("\t<link:ctn\tid=\"%s_link_$dst1\"/>",cluster_id);
+	DEBUG0("\t</route>");
+	DEBUG0("</AS>");
+	SURFXML_END_TAG(AS);
+//
+//  /*   <link id="LinkA" bandwidth="10000000.0" latency="0.2"/> */
+//    SURFXML_BUFFER_SET(link_id, "LinkA");
+//    SURFXML_BUFFER_SET(link_bandwidth, "10000000.0");
+//    SURFXML_BUFFER_SET(link_bandwidth_file, "");
+//    SURFXML_BUFFER_SET(link_latency, "0.2");
+//    SURFXML_BUFFER_SET(link_latency_file, "");
+//    A_surfxml_link_state = A_surfxml_link_state_ON;
+//    SURFXML_BUFFER_SET(link_state_file, "");
+//    A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+//    SURFXML_START_TAG(link);
+//    SURFXML_END_TAG(link);
+//
+//  /*   <route src="host A" dst="host B"><link:ctn id="LinkA"/></route> */
+//  // OLD THINGS COMMENTED
+//  //   SURFXML_BUFFER_SET(route_src, "host A");
+//  //   SURFXML_BUFFER_SET(route_dst, "host B");
+//  //   SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
+//  //   SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
+//  //   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
+//  //   SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
+
 }
