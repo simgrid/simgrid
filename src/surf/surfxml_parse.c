@@ -80,10 +80,10 @@ xbt_dynar_t STag_surfxml_set_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_set_cb_list = NULL;
 xbt_dynar_t STag_surfxml_foreach_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_foreach_cb_list = NULL;
-xbt_dynar_t STag_surfxml_route_c_multi_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_route_c_multi_cb_list = NULL;
-xbt_dynar_t STag_surfxml_cluster_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_cluster_cb_list = NULL;
+// xbt_dynar_t STag_surfxml_route_c_multi_cb_list = NULL;
+// xbt_dynar_t ETag_surfxml_route_c_multi_cb_list = NULL;
+// xbt_dynar_t STag_surfxml_cluster_cb_list = NULL;
+// xbt_dynar_t ETag_surfxml_cluster_cb_list = NULL;
 xbt_dynar_t STag_surfxml_trace_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_trace_cb_list = NULL;
 xbt_dynar_t STag_surfxml_trace_c_connect_cb_list = NULL;
@@ -104,8 +104,8 @@ xbt_dict_t current_property_set = NULL;
 
 /* For the route:multi tag */
 xbt_dict_t route_table = NULL;
-xbt_dict_t route_multi_table = NULL;
-xbt_dynar_t route_multi_elements = NULL;
+// xbt_dict_t route_multi_table = NULL;
+// xbt_dynar_t route_multi_elements = NULL;
 static xbt_dynar_t route_link_list = NULL;
 xbt_dynar_t links = NULL;
 xbt_dynar_t keys = NULL;
@@ -120,12 +120,12 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t);
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = NULL;
 
-static void convert_route_multi_to_routes(void);
-static void parse_route_elem(void);
+// static void convert_route_multi_to_routes(void);
+// static void parse_route_elem(void);
 static void parse_Stag_foreach(void);
 static void parse_sets(void);
-static void parse_Stag_route_multi(void);
-static void parse_Etag_route_multi(void);
+// static void parse_Stag_route_multi(void);
+// static void parse_Etag_route_multi(void);
 static void parse_Stag_trace(void);
 static void parse_Etag_trace(void);
 static void parse_Stag_trace_c_connect(void);
@@ -156,10 +156,10 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_set_cb_list);
   xbt_dynar_free(&STag_surfxml_foreach_cb_list);
   xbt_dynar_free(&ETag_surfxml_foreach_cb_list);
-  xbt_dynar_free(&STag_surfxml_route_c_multi_cb_list);
-  xbt_dynar_free(&ETag_surfxml_route_c_multi_cb_list);
-  xbt_dynar_free(&STag_surfxml_cluster_cb_list);
-  xbt_dynar_free(&ETag_surfxml_cluster_cb_list);
+//   xbt_dynar_free(&STag_surfxml_route_c_multi_cb_list);
+//   xbt_dynar_free(&ETag_surfxml_route_c_multi_cb_list);
+//   xbt_dynar_free(&STag_surfxml_cluster_cb_list);
+//   xbt_dynar_free(&ETag_surfxml_cluster_cb_list);
   xbt_dynar_free(&STag_surfxml_trace_cb_list);
   xbt_dynar_free(&ETag_surfxml_trace_cb_list);
   xbt_dynar_free(&STag_surfxml_trace_c_connect_cb_list);
@@ -201,12 +201,12 @@ void surf_parse_reset_parser(void)
   ETag_surfxml_set_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_foreach_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   ETag_surfxml_foreach_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_route_c_multi_cb_list =
-    xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_route_c_multi_cb_list =
-    xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_cluster_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_cluster_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+//   STag_surfxml_route_c_multi_cb_list =
+//     xbt_dynar_new(sizeof(void_f_void_t), NULL);
+//   ETag_surfxml_route_c_multi_cb_list =
+//     xbt_dynar_new(sizeof(void_f_void_t), NULL);
+//   STag_surfxml_cluster_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+//   ETag_surfxml_cluster_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   ETag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_trace_c_connect_cb_list =
@@ -277,7 +277,7 @@ void STag_surfxml_platform(void)
 
 void ETag_surfxml_platform(void)
 {
-  convert_route_multi_to_routes();
+//   convert_route_multi_to_routes();
 
   surfxml_call_cb_functions(ETag_surfxml_platform_cb_list);
 
@@ -395,25 +395,25 @@ void ETag_surfxml_foreach(void)
   STag_surfxml_link_cb_list = main_STag_surfxml_link_cb_list;
 }
 
-void STag_surfxml_route_c_multi(void)
-{
-  surfxml_call_cb_functions(STag_surfxml_route_c_multi_cb_list);
-}
-
-void ETag_surfxml_route_c_multi(void)
-{
-  surfxml_call_cb_functions(ETag_surfxml_route_c_multi_cb_list);
-}
-
-void STag_surfxml_cluster(void)
-{
-  surfxml_call_cb_functions(STag_surfxml_cluster_cb_list);
-}
-
-void ETag_surfxml_cluster(void)
-{
-  surfxml_call_cb_functions(ETag_surfxml_cluster_cb_list);
-}
+// void STag_surfxml_route_c_multi(void)
+// {
+//   surfxml_call_cb_functions(STag_surfxml_route_c_multi_cb_list);
+// }
+// 
+// void ETag_surfxml_route_c_multi(void)
+// {
+//   surfxml_call_cb_functions(ETag_surfxml_route_c_multi_cb_list);
+// }
+// 
+// void STag_surfxml_cluster(void)
+// {
+//   surfxml_call_cb_functions(STag_surfxml_cluster_cb_list);
+// }
+// 
+// void ETag_surfxml_cluster(void)
+// {
+//   surfxml_call_cb_functions(ETag_surfxml_cluster_cb_list);
+// }
 
 void STag_surfxml_trace(void)
 {
@@ -595,8 +595,8 @@ static void init_data(void)
 
   if (!surfxml_bufferstack_stack)
     surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), NULL);
-  route_multi_table = xbt_dict_new();
-  route_multi_elements = xbt_dynar_new(sizeof(char *), NULL);
+//   route_multi_table = xbt_dict_new();
+//   route_multi_elements = xbt_dynar_new(sizeof(char *), NULL);
   traces_set_list = xbt_dict_new();
   if (set_list == NULL)
     set_list = xbt_dict_new();
@@ -640,10 +640,10 @@ static void free_data(void)
   xbt_dict_free(&route_table);
   route_link_list = NULL;
 
-  xbt_dict_free(&route_multi_table);
-
-  xbt_dynar_foreach(route_multi_elements, cpt, name) free(name);
-  xbt_dynar_free(&route_multi_elements);
+//   xbt_dict_free(&route_multi_table);
+// 
+//   xbt_dynar_foreach(route_multi_elements, cpt, name) free(name);
+//   xbt_dynar_free(&route_multi_elements);
 
   xbt_dict_foreach(set_list, cursor, key, data) {
     xbt_dynar_t set = (xbt_dynar_t) data;
@@ -679,15 +679,15 @@ void parse_platform_file(const char *file)
 
 /* Functions to bypass route tag. Used by the route:multi tag */
 
-static void parse_make_temporary_route(const char *src, const char *dst,
-                                       int action)
-{
-  int AX_ptr = 0;
-
-  A_surfxml_route_action = action;
-  SURFXML_BUFFER_SET(route_src, src);
-  SURFXML_BUFFER_SET(route_dst, dst);
-}
+// static void parse_make_temporary_route(const char *src, const char *dst,
+//                                        int action)
+// {
+//   int AX_ptr = 0;
+// 
+//   A_surfxml_route_action = action;
+//   SURFXML_BUFFER_SET(route_src, src);
+//   SURFXML_BUFFER_SET(route_dst, dst);
+// }
 
 /* Functions for the sets and foreach tags */
 
@@ -882,227 +882,227 @@ static void parse_Stag_foreach(void)
 
 /* Route:multi functions */
 
-static int route_multi_size = 0;
-static char *src_name, *dst_name;
-static int is_symmetric_route;
+// static int route_multi_size = 0;
+// static char *src_name, *dst_name;
+// static int is_symmetric_route;
 
-static void parse_route_elem(void)
-{
-  char *val;
+// static void parse_route_elem(void)
+// {
+//   char *val;
+// 
+//   val = xbt_strdup(A_surfxml_link_c_ctn_id);
+// 
+//   xbt_dynar_push(route_link_list, &val);
+//   //INFO2("Push %s (size now:%ld)",val,xbt_dynar_length(route_link_list));
+// }
 
-  val = xbt_strdup(A_surfxml_link_c_ctn_id);
-
-  xbt_dynar_push(route_link_list, &val);
-  //INFO2("Push %s (size now:%ld)",val,xbt_dynar_length(route_link_list));
-}
-
-static void parse_Stag_route_multi(void)
-{
-  src_name = xbt_strdup(A_surfxml_route_c_multi_src);
-  dst_name = xbt_strdup(A_surfxml_route_c_multi_dst);
-  route_action = A_surfxml_route_c_multi_action;
-  is_symmetric_route = A_surfxml_route_c_multi_symmetric;
-  route_multi_size++;
-
-  route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
+// static void parse_Stag_route_multi(void)
+// {
+//   src_name = xbt_strdup(A_surfxml_route_c_multi_src);
+//   dst_name = xbt_strdup(A_surfxml_route_c_multi_dst);
+//   route_action = A_surfxml_route_c_multi_action;
+//   is_symmetric_route = A_surfxml_route_c_multi_symmetric;
+//   route_multi_size++;
+// 
+//   route_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+// }
 
 /*
    This function is used to append or override the contents of an already existing route in the case a new one with its name is found.
    The decision is based upon the value of action specified in the xml route:multi attribute action
  */
-void manage_route(xbt_dict_t routing_table, const char *route_name,
-                  int action, int isMultiRoute)
-{
-  unsigned int cpt;
-  xbt_dynar_t links;
-  char *value;
+// void manage_route(xbt_dict_t routing_table, const char *route_name,
+//                   int action, int isMultiRoute)
+// {
+//   unsigned int cpt;
+//   xbt_dynar_t links;
+//   char *value;
+// 
+//   /* get already existing list if it exists */
+//   links = xbt_dict_get_or_null(routing_table, route_name);
+//   DEBUG3("ROUTE: %s (action:%s; len:%ld)", route_name,
+//       (action==A_surfxml_route_action_OVERRIDE?"override":(
+//           action==A_surfxml_route_action_PREPEND?"prepend":"postpend")),
+//        (links?xbt_dynar_length(links):0));
+// 
+//   if (links != NULL) {
+//     switch (action) {
+//     case A_surfxml_route_action_PREPEND:       /* add existing links at the end; route_link_list + links */
+//       xbt_dynar_foreach(links, cpt, value) {
+//         xbt_dynar_push(route_link_list, &value);
+//       }
+//       xbt_dynar_free(&links);
+//       break;
+//     case A_surfxml_route_action_POSTPEND:      /* add existing links in front; links + route_link_list */
+//     	xbt_dynar_foreach(route_link_list, cpt, value) {
+//         xbt_dynar_push(links, &value);
+//       }
+//       xbt_dynar_free(&route_link_list);
+//       route_link_list = links;
+//       break;
+//     case A_surfxml_route_action_OVERRIDE:
+//       xbt_dynar_free(&links);
+//       break;
+//     default:
+//       xbt_die(bprintf("While dealing with routes of %s, got action=%d. Please report this bug.",
+//           route_name,action));
+//       break;
+//     }
+// 
+//   }
+//   /* this is the final route; do not add if name is a set; add only if name is in set list */
+//   if (!isMultiRoute) {
+//     xbt_dict_set(routing_table, route_name, route_link_list, NULL);
+//   }
+// }
 
-  /* get already existing list if it exists */
-  links = xbt_dict_get_or_null(routing_table, route_name);
-  DEBUG3("ROUTE: %s (action:%s; len:%ld)", route_name,
-      (action==A_surfxml_route_action_OVERRIDE?"override":(
-          action==A_surfxml_route_action_PREPEND?"prepend":"postpend")),
-       (links?xbt_dynar_length(links):0));
+// static void parse_Etag_route_multi(void)
+// {
+//   char *route_name;
+// 
+//   route_name =
+//     bprintf("%s#%s#%d#%d#%d", src_name, dst_name, route_action,
+//             is_symmetric_route, route_multi_size);
+// 
+//   xbt_dynar_push(route_multi_elements, &route_name);
+// 
+//   /* Add route */
+//   xbt_dict_set(route_multi_table, route_name, route_link_list, NULL);
+//   /* add symmetric if it is the case */
+//   if (is_symmetric_route == 1) {
+//     char *symmetric_name =
+//       bprintf("%s#%s#%d#%d#%d", dst_name, src_name, route_action,
+//               !is_symmetric_route, route_multi_size);
+// 
+//     xbt_dict_set(route_multi_table, symmetric_name, route_link_list, NULL);
+//     xbt_dynar_push(route_multi_elements, &symmetric_name);
+//     is_symmetric_route = 0;
+//   }
+//   free(src_name);
+//   free(dst_name);
+// }
 
-  if (links != NULL) {
-    switch (action) {
-    case A_surfxml_route_action_PREPEND:       /* add existing links at the end; route_link_list + links */
-      xbt_dynar_foreach(links, cpt, value) {
-        xbt_dynar_push(route_link_list, &value);
-      }
-      xbt_dynar_free(&links);
-      break;
-    case A_surfxml_route_action_POSTPEND:      /* add existing links in front; links + route_link_list */
-    	xbt_dynar_foreach(route_link_list, cpt, value) {
-        xbt_dynar_push(links, &value);
-      }
-      xbt_dynar_free(&route_link_list);
-      route_link_list = links;
-      break;
-    case A_surfxml_route_action_OVERRIDE:
-      xbt_dynar_free(&links);
-      break;
-    default:
-      xbt_die(bprintf("While dealing with routes of %s, got action=%d. Please report this bug.",
-          route_name,action));
-      break;
-    }
+// static void add_multi_links(const char *src, const char *dst,
+//                             xbt_dynar_t links, const char *src_name,
+//                             const char *dst_name)
+// {
+//   unsigned int cpt;
+//   char *value, *val;
+// 
+//   surfxml_bufferstack_push(1);
+// 
+//   parse_make_temporary_route(src_name, dst_name, route_action);
+//   surfxml_call_cb_functions(STag_surfxml_route_cb_list);
+//   DEBUG2("\tADDING ROUTE: %s -> %s", src_name, dst_name);
+//   /* Build link list */
+//   xbt_dynar_foreach(links, cpt, value) {
+//     if (strcmp(value, src) == 0)
+//       val = xbt_strdup(src_name);
+//     else if (strcmp(value, dst) == 0)
+//       val = xbt_strdup(dst_name);
+//     else if (strcmp(value, "$dst") == 0)
+//       val = xbt_strdup(dst_name);
+//     else if (strcmp(value, "$src") == 0)
+//       val = xbt_strdup(src_name);
+//     else
+//       val = xbt_strdup(value);
+//     DEBUG1("\t\tELEMENT: %s", val);
+//     xbt_dynar_push(route_link_list, &val);
+//   }
+//   surfxml_call_cb_functions(ETag_surfxml_route_cb_list);
+//   surfxml_bufferstack_pop(1);
+// }
 
-  }
-  /* this is the final route; do not add if name is a set; add only if name is in set list */
-  if (!isMultiRoute) {
-    xbt_dict_set(routing_table, route_name, route_link_list, NULL);
-  }
-}
-
-static void parse_Etag_route_multi(void)
-{
-  char *route_name;
-
-  route_name =
-    bprintf("%s#%s#%d#%d#%d", src_name, dst_name, route_action,
-            is_symmetric_route, route_multi_size);
-
-  xbt_dynar_push(route_multi_elements, &route_name);
-
-  /* Add route */
-  xbt_dict_set(route_multi_table, route_name, route_link_list, NULL);
-  /* add symmetric if it is the case */
-  if (is_symmetric_route == 1) {
-    char *symmetric_name =
-      bprintf("%s#%s#%d#%d#%d", dst_name, src_name, route_action,
-              !is_symmetric_route, route_multi_size);
-
-    xbt_dict_set(route_multi_table, symmetric_name, route_link_list, NULL);
-    xbt_dynar_push(route_multi_elements, &symmetric_name);
-    is_symmetric_route = 0;
-  }
-  free(src_name);
-  free(dst_name);
-}
-
-static void add_multi_links(const char *src, const char *dst,
-                            xbt_dynar_t links, const char *src_name,
-                            const char *dst_name)
-{
-  unsigned int cpt;
-  char *value, *val;
-
-  surfxml_bufferstack_push(1);
-
-  parse_make_temporary_route(src_name, dst_name, route_action);
-  surfxml_call_cb_functions(STag_surfxml_route_cb_list);
-  DEBUG2("\tADDING ROUTE: %s -> %s", src_name, dst_name);
-  /* Build link list */
-  xbt_dynar_foreach(links, cpt, value) {
-    if (strcmp(value, src) == 0)
-      val = xbt_strdup(src_name);
-    else if (strcmp(value, dst) == 0)
-      val = xbt_strdup(dst_name);
-    else if (strcmp(value, "$dst") == 0)
-      val = xbt_strdup(dst_name);
-    else if (strcmp(value, "$src") == 0)
-      val = xbt_strdup(src_name);
-    else
-      val = xbt_strdup(value);
-    DEBUG1("\t\tELEMENT: %s", val);
-    xbt_dynar_push(route_link_list, &val);
-  }
-  surfxml_call_cb_functions(ETag_surfxml_route_cb_list);
-  surfxml_bufferstack_pop(1);
-}
-
-static void convert_route_multi_to_routes(void)
-{
-  xbt_dict_cursor_t cursor_w;
-  int symmetric;
-  unsigned int cpt, cpt2, cursor;
-  char *src_host_name, *dst_host_name, *key, *src, *dst, *val, *key_w,
-    *data_w;
-  const char *sep = "#";
-  xbt_dict_t set = NULL;
-  xbt_dynar_t src_names = NULL, dst_names = NULL, links;
-
-  if (!route_multi_elements)
-    return;
-
-  if (surf_cpu_model)
-    set = surf_model_resource_set(surf_cpu_model);
-  if (surf_workstation_model != NULL &&
-      surf_model_resource_set(surf_workstation_model) != NULL &&
-      xbt_dict_length(surf_model_resource_set(surf_workstation_model)) > 0)
-    set = surf_model_resource_set(surf_workstation_model);
-
-
-  surfxml_bufferstack_push(0);
-  /* Get all routes in the exact order they were entered in the platform file */
-  xbt_dynar_foreach(route_multi_elements, cursor, key) {
-    /* Get links for the route */
-    links = (xbt_dynar_t) xbt_dict_get_or_null(route_multi_table, key);
-    keys = xbt_str_split_str(key, sep);
-    /* Get route ends */
-    src = xbt_dynar_get_as(keys, 0, char *);
-    dst = xbt_dynar_get_as(keys, 1, char *);
-    route_action = atoi(xbt_dynar_get_as(keys, 2, char *));
-    symmetric = atoi(xbt_dynar_get_as(keys, 3, char *));
-
-    /* Create the dynar of src and dst hosts for the new routes */
-    /* NOTE: src and dst can be either set names or simple host names */
-    src_names = (xbt_dynar_t) xbt_dict_get_or_null(set_list, src);
-    dst_names = (xbt_dynar_t) xbt_dict_get_or_null(set_list, dst);
-    /* Add to dynar even if they are simple names */
-    if (src_names == NULL) {
-      src_names = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-      val = xbt_strdup(src);
-      xbt_dynar_push(src_names, &val);
-      if (strcmp(val, "$*") != 0 && NULL == xbt_dict_get_or_null(set, val))
-        THROW3(unknown_error, 0,
-               "(In route:multi (%s -> %s) source %s does not exist (not a set or a host)",
-               src, dst, src);
-    }
-    if (dst_names == NULL) {
-      dst_names = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-      val = xbt_strdup(dst);
-      if (strcmp(val, "$*") != 0 && NULL == xbt_dict_get_or_null(set, val))
-        THROW3(unknown_error, 0,
-               "(In route:multi (%s -> %s) destination %s does not exist (not a set or a host)",
-               src, dst, dst);
-      xbt_dynar_push(dst_names, &val);
-    }
-
-    /* Build the routes */
-    DEBUG2("ADDING MULTI ROUTE: %s -> %s", xbt_dynar_get_as(keys, 0, char *),
-           xbt_dynar_get_as(keys, 1, char *));
-    xbt_dynar_foreach(src_names, cpt, src_host_name) {
-      xbt_dynar_foreach(dst_names, cpt2, dst_host_name) {
-        /* If dst is $* then set this route to have its dst point to all hosts */
-        if (strcmp(src_host_name, "$*") != 0
-            && strcmp(dst_host_name, "$*") == 0) {
-          xbt_dict_foreach(set, cursor_w, key_w, data_w) {
-            //int n = xbt_dynar_member(src_names, (char*)key_w);
-            add_multi_links(src, dst, links, src_host_name, key_w);
-          }
-        }
-        /* If src is $* then set this route to have its dst point to all hosts */
-        if (strcmp(src_host_name, "$*") == 0
-            && strcmp(dst_host_name, "$*") != 0) {
-          xbt_dict_foreach(set, cursor_w, key_w, data_w) {
-            // if (!symmetric || (symmetric && !contains(dst_names, key_w)))
-            add_multi_links(src, dst, links, key_w, dst_host_name);
-          }
-        }
-        /* if none of them are equal to $* */
-        if (strcmp(src_host_name, "$*") != 0
-            && strcmp(dst_host_name, "$*") != 0) {
-          add_multi_links(src, dst, links, src_host_name, dst_host_name);
-        }
-      }
-    }
-    xbt_dynar_free(&keys);
-  }
-  surfxml_bufferstack_pop(0);
-}
+// static void convert_route_multi_to_routes(void)
+// {
+//   xbt_dict_cursor_t cursor_w;
+//   int symmetric;
+//   unsigned int cpt, cpt2, cursor;
+//   char *src_host_name, *dst_host_name, *key, *src, *dst, *val, *key_w,
+//     *data_w;
+//   const char *sep = "#";
+//   xbt_dict_t set = NULL;
+//   xbt_dynar_t src_names = NULL, dst_names = NULL, links;
+// 
+//   if (!route_multi_elements)
+//     return;
+// 
+//   if (surf_cpu_model)
+//     set = surf_model_resource_set(surf_cpu_model);
+//   if (surf_workstation_model != NULL &&
+//       surf_model_resource_set(surf_workstation_model) != NULL &&
+//       xbt_dict_length(surf_model_resource_set(surf_workstation_model)) > 0)
+//     set = surf_model_resource_set(surf_workstation_model);
+// 
+// 
+//   surfxml_bufferstack_push(0);
+//   /* Get all routes in the exact order they were entered in the platform file */
+//   xbt_dynar_foreach(route_multi_elements, cursor, key) {
+//     /* Get links for the route */
+//     links = (xbt_dynar_t) xbt_dict_get_or_null(route_multi_table, key);
+//     keys = xbt_str_split_str(key, sep);
+//     /* Get route ends */
+//     src = xbt_dynar_get_as(keys, 0, char *);
+//     dst = xbt_dynar_get_as(keys, 1, char *);
+//     route_action = atoi(xbt_dynar_get_as(keys, 2, char *));
+//     symmetric = atoi(xbt_dynar_get_as(keys, 3, char *));
+// 
+//     /* Create the dynar of src and dst hosts for the new routes */
+//     /* NOTE: src and dst can be either set names or simple host names */
+//     src_names = (xbt_dynar_t) xbt_dict_get_or_null(set_list, src);
+//     dst_names = (xbt_dynar_t) xbt_dict_get_or_null(set_list, dst);
+//     /* Add to dynar even if they are simple names */
+//     if (src_names == NULL) {
+//       src_names = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+//       val = xbt_strdup(src);
+//       xbt_dynar_push(src_names, &val);
+//       if (strcmp(val, "$*") != 0 && NULL == xbt_dict_get_or_null(set, val))
+//         THROW3(unknown_error, 0,
+//                "(In route:multi (%s -> %s) source %s does not exist (not a set or a host)",
+//                src, dst, src);
+//     }
+//     if (dst_names == NULL) {
+//       dst_names = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+//       val = xbt_strdup(dst);
+//       if (strcmp(val, "$*") != 0 && NULL == xbt_dict_get_or_null(set, val))
+//         THROW3(unknown_error, 0,
+//                "(In route:multi (%s -> %s) destination %s does not exist (not a set or a host)",
+//                src, dst, dst);
+//       xbt_dynar_push(dst_names, &val);
+//     }
+// 
+//     /* Build the routes */
+//     DEBUG2("ADDING MULTI ROUTE: %s -> %s", xbt_dynar_get_as(keys, 0, char *),
+//            xbt_dynar_get_as(keys, 1, char *));
+//     xbt_dynar_foreach(src_names, cpt, src_host_name) {
+//       xbt_dynar_foreach(dst_names, cpt2, dst_host_name) {
+//         /* If dst is $* then set this route to have its dst point to all hosts */
+//         if (strcmp(src_host_name, "$*") != 0
+//             && strcmp(dst_host_name, "$*") == 0) {
+//           xbt_dict_foreach(set, cursor_w, key_w, data_w) {
+//             //int n = xbt_dynar_member(src_names, (char*)key_w);
+//             add_multi_links(src, dst, links, src_host_name, key_w);
+//           }
+//         }
+//         /* If src is $* then set this route to have its dst point to all hosts */
+//         if (strcmp(src_host_name, "$*") == 0
+//             && strcmp(dst_host_name, "$*") != 0) {
+//           xbt_dict_foreach(set, cursor_w, key_w, data_w) {
+//             // if (!symmetric || (symmetric && !contains(dst_names, key_w)))
+//             add_multi_links(src, dst, links, key_w, dst_host_name);
+//           }
+//         }
+//         /* if none of them are equal to $* */
+//         if (strcmp(src_host_name, "$*") != 0
+//             && strcmp(dst_host_name, "$*") != 0) {
+//           add_multi_links(src, dst, links, src_host_name, dst_host_name);
+//         }
+//       }
+//     }
+//     xbt_dynar_free(&keys);
+//   }
+//   surfxml_bufferstack_pop(0);
+// }
 
 
 /* Trace management functions */
