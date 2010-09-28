@@ -265,20 +265,6 @@ static void update_actions_state(double now, double delta)
         trace_sent = action->generic_action.cost;
       }
       // tracing resource utilization
-<<<<<<< HEAD
-      int src = TRACE_surf_gtnets_get_src (action);
-      int dst = TRACE_surf_gtnets_get_dst (action);
-      if (src != -1 && dst != -1){
-        xbt_dynar_t route = used_routing->get_route(src, dst);
-        network_link_GTNETS_t link;
-        unsigned int i;
-        xbt_dynar_foreach(route, i, link) {
-        	TRACE_surf_link_set_utilization (link->generic_resource.name,
-            action->generic_action.data, trace_sent/delta, now-delta, delta);
-        }
-      }
-=======
-      
 // COMMENTED BY DAVID
 //       int src = TRACE_surf_gtnets_get_src (action);
 //       int dst = TRACE_surf_gtnets_get_dst (action);
@@ -287,12 +273,10 @@ static void update_actions_state(double now, double delta)
 //         network_link_GTNETS_t link;
 //         unsigned int i;
 //         xbt_dynar_foreach(route, i, link) {
-// 
 //         	TRACE_surf_link_set_utilization (link->generic_resource.name,
-//             action->generic_action.data, (action->generic_action.remains-remain)/delta, now-delta, delta);
+//             action->generic_action.data, trace_sent/delta, now-delta, delta);
 //         }
 //       }
->>>>>>> I comment all the calls to used_routing, in order to use global routing.
 #endif
 
       DEBUG1("Sent value returned by GTNetS : %f", sent);

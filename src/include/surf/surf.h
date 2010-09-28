@@ -663,14 +663,14 @@ XBT_PUBLIC(void) parse_platform_file(const char *file);
 /* Stores the sets */
 XBT_PUBLIC_DATA(xbt_dict_t) set_list;
 
-XBT_PUBLIC_DATA(void) manage_route(xbt_dict_t route_table,
-                                   const char *route_name, int action,
-                                   int isMultiRoute);
-XBT_PUBLIC_DATA(int) route_action;
+// XBT_PUBLIC_DATA(void) manage_route(xbt_dict_t route_table,
+//                                    const char *route_name, int action,
+//                                    int isMultiRoute);
+// XBT_PUBLIC_DATA(int) route_action;
 
 /* This is used by all models when creating the routing table while parsing */
-XBT_PUBLIC_DATA(xbt_dict_t) route_table;
-XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
+// XBT_PUBLIC_DATA(xbt_dict_t) route_table;
+// XBT_PUBLIC_DATA(xbt_dict_t) route_multi_table;
 
 
 /* For the trace and trace:connect tag (store their content till the end of the parsing) */

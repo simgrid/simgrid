@@ -1,5 +1,6 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((include|trace|random|AS|trace:connect)*,(include|trace|random|set|foreach|host|router|link|trace:connect)*,(include|route|trace:connect|process)*)>
+<!-- <!ELEMENT platform ((include|trace|random|AS|trace:connect)*,(include|trace|random|AS|set|foreach|host|router|link|trace:connect)*,(include|route|trace:connect|process)*)> -->
+<!ELEMENT platform ((include|trace|random|AS|trace:connect)*,(include|trace|random|AS|set|foreach|host|router|link|trace:connect)*,(include|route|trace:connect|process)*)> <!-- bad -->
 <!ATTLIST platform version CDATA "0.0">
 <!ATTLIST platform xmlns:link CDATA "http://simgrid.gforge.inria.fr/">
 <!ATTLIST platform xmlns:route CDATA "http://simgrid.gforge.inria.fr/">
@@ -24,15 +25,6 @@
 <!ATTLIST trace:connect kind (HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY) "HOST_AVAIL">
 <!ATTLIST trace:connect trace CDATA #REQUIRED>
 <!ATTLIST trace:connect element CDATA #REQUIRED>
-
-<!ELEMENT set EMPTY>
-<!ATTLIST set id CDATA #REQUIRED>
-<!ATTLIST set prefix CDATA #REQUIRED>
-<!ATTLIST set suffix CDATA #REQUIRED>
-<!ATTLIST set radical CDATA #REQUIRED>
-
-<!ELEMENT foreach (host|(host,link)|link)>
-<!ATTLIST foreach set_id CDATA #REQUIRED>
 
 <!ELEMENT AS (((AS|link)*,ASroute*,bypassRoute*)|((host|router|link)*,route*))>
 <!ATTLIST AS id CDATA #REQUIRED>
@@ -93,22 +85,5 @@
 <!ATTLIST argument value CDATA #REQUIRED>
 
 <!ELEMENT prop EMPTY>
-<!ATTLIST prop id CDATA #REQUIRED>
+<!ATTLIST prop id CDATA #REQUIRED> <!-- <!ATTLIST prop key CDATA #REQUIRED> -->
 <!ATTLIST prop value CDATA #REQUIRED>
-
-<!--<!ELEMENT route:multi (link:ctn+)>
-<!ATTLIST route:multi src CDATA #REQUIRED>
-<!ATTLIST route:multi dst CDATA #REQUIRED>
-<!ATTLIST route:multi action (POSTPEND|PREPEND|OVERRIDE) "POSTPEND">
-<!ATTLIST route:multi symmetric (YES|NO) "YES">-->
-
-<!--<!ELEMENT cluster EMPTY>
-<!ATTLIST cluster id CDATA #REQUIRED>
-<!ATTLIST cluster prefix CDATA #REQUIRED>
-<!ATTLIST cluster suffix CDATA #REQUIRED>
-<!ATTLIST cluster radical CDATA #REQUIRED>
-<!ATTLIST cluster power CDATA #REQUIRED>
-<!ATTLIST cluster bw CDATA #REQUIRED>
-<!ATTLIST cluster lat CDATA #REQUIRED>
-<!ATTLIST cluster bb_bw CDATA #REQUIRED>
-<!ATTLIST cluster bb_lat CDATA #REQUIRED>-->

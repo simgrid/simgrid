@@ -1460,40 +1460,40 @@ static void  model_none_end(void) {}
  * list. Remember keep the null ending of the list.
  */
 /*** Routing model structure ***/
-typedef struct {
-  s_routing_component_t generic_routing;
-  /* things that your routing model need */
-} s_routing_component_NEW_t,*routing_component_NEW_t;
+// typedef struct {
+//   s_routing_component_t generic_routing;
+//   /* things that your routing model need */
+// } s_routing_component_NEW_t,*routing_component_NEW_t;
 
 /*** Parse routing model functions ***/
-static void model_NEW_set_processing_units(routing_component_t rc, const char* name) {}
-static void model_NEW_set_autonomous_system(routing_component_t rc, const char* name) {}
-static void model_NEW_set_route(routing_component_t rc, const char* src, const char* dst, route_t route) {}
-static void model_NEW_set_ASroute(routing_component_t rc, const char* src, const char* dst, route_extended_t route) {}
-static void model_NEW_set_bypassroute(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route) {}
+// static void model_NEW_set_processing_units(routing_component_t rc, const char* name) {}
+// static void model_NEW_set_autonomous_system(routing_component_t rc, const char* name) {}
+// static void model_NEW_set_route(routing_component_t rc, const char* src, const char* dst, route_t route) {}
+// static void model_NEW_set_ASroute(routing_component_t rc, const char* src, const char* dst, route_extended_t route) {}
+// static void model_NEW_set_bypassroute(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route) {}
 
 /*** Business methods ***/
-static route_extended_t NEW_get_route(routing_component_t rc, const char* src,const char* dst) {return NULL;}
-static route_extended_t NEW_get_bypass_route(routing_component_t rc, const char* src,const char* dst) {return NULL;}
-static void NEW_finalize(routing_component_t rc) {}
+// static route_extended_t NEW_get_route(routing_component_t rc, const char* src,const char* dst) {return NULL;}
+// static route_extended_t NEW_get_bypass_route(routing_component_t rc, const char* src,const char* dst) {return NULL;}
+// static void NEW_finalize(routing_component_t rc) {}
 
 /*** Creation routing model functions ***/
-static void* model_NEW_create(void) {
-  routing_component_full_t new_component =  xbt_new0(s_routing_component_full_t,1);
-  new_component->generic_routing.set_processing_units = model_NEW_set_processing_units;
-  new_component->generic_routing.set_autonomous_system = model_NEW_set_autonomous_system;
-  new_component->generic_routing.set_route = model_NEW_set_route;
-  new_component->generic_routing.set_ASroute = model_NEW_set_ASroute;
-  new_component->generic_routing.set_bypassroute = model_NEW_set_bypassroute;
-  new_component->generic_routing.get_route = NEW_get_route;
-  new_component->generic_routing.get_bypass_route = NEW_get_bypass_route;
-  new_component->generic_routing.finalize = NEW_finalize;
-  /* initialization of internal structures */
-  return new_component;
-} /* mandatory */
-static void  model_NEW_load(void) {}   /* mandatory */
-static void  model_NEW_unload(void) {} /* mandatory */
-static void  model_NEW_end(void) {}    /* mandatory */
+// static void* model_NEW_create(void) {
+//   routing_component_full_t new_component =  xbt_new0(s_routing_component_full_t,1);
+//   new_component->generic_routing.set_processing_units = model_NEW_set_processing_units;
+//   new_component->generic_routing.set_autonomous_system = model_NEW_set_autonomous_system;
+//   new_component->generic_routing.set_route = model_NEW_set_route;
+//   new_component->generic_routing.set_ASroute = model_NEW_set_ASroute;
+//   new_component->generic_routing.set_bypassroute = model_NEW_set_bypassroute;
+//   new_component->generic_routing.get_route = NEW_get_route;
+//   new_component->generic_routing.get_bypass_route = NEW_get_bypass_route;
+//   new_component->generic_routing.finalize = NEW_finalize;
+//   /* initialization of internal structures */
+//   return new_component;
+// } /* mandatory */
+// static void  model_NEW_load(void) {}   /* mandatory */
+// static void  model_NEW_unload(void) {} /* mandatory */
+// static void  model_NEW_end(void) {}    /* mandatory */
 
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */ 
