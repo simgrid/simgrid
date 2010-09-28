@@ -22,12 +22,16 @@ static int surf_parse_bypass_platform(void)
   /* allocating memory for the buffer, I think 2kB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
-  /* <platform> */
+  DEBUG0("<platform>");
   SURFXML_BUFFER_SET(platform_version, "2");
-
   SURFXML_START_TAG(platform);
 
-/*   <host id="host A" power="100000000.00"/> */
+  DEBUG0("<AS>");
+  SURFXML_BUFFER_SET(AS_id, "AS0");
+  SURFXML_BUFFER_SET(AS_routing, "Full");
+  SURFXML_START_TAG(AS);
+
+  DEBUG0("<host id=\"host A\" power=\"100000000.00\"/>");
   SURFXML_BUFFER_SET(host_id, "host A");
   SURFXML_BUFFER_SET(host_power, "100000000.00");
   SURFXML_BUFFER_SET(host_availability, "1.0");
@@ -38,11 +42,10 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_interference_recv, "1.0");
   SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
   SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
-
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
-/*   <host id="host B" power="100000000.00"/> */
+  DEBUG0("<host id=\"host B\" power=\"100000000.00\"/>");
   SURFXML_BUFFER_SET(host_id, "host B");
   SURFXML_BUFFER_SET(host_power, "100000000.00");
   SURFXML_BUFFER_SET(host_availability, "1.0");
@@ -53,11 +56,10 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_interference_recv, "1.0");
   SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
   SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
-
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
-/*   <link id="LinkA" bandwidth="10000000.0" latency="0.2"/> */
+  DEBUG0("<link id=\"LinkA\" bandwidth=\"10000000.0\" latency=\"0.2\"/>");
   SURFXML_BUFFER_SET(link_id, "LinkA");
   SURFXML_BUFFER_SET(link_bandwidth, "10000000.0");
   SURFXML_BUFFER_SET(link_bandwidth_file, "");
@@ -69,40 +71,20 @@ static int surf_parse_bypass_platform(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
-/*   <route src="host A" dst="host B"><link:ctn id="LinkA"/></route> */
-// OLD THINGS COMMENTED
-//   SURFXML_BUFFER_SET(route_src, "host A");
-//   SURFXML_BUFFER_SET(route_dst, "host B");
-//   SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
-//   SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
-//   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
-//   SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
-
+  DEBUG0("<route src=\"host A\" dst=\"host B\">");
+  SURFXML_BUFFER_SET(route_src, "host A");
+  SURFXML_BUFFER_SET(route_dst, "host B");
   SURFXML_START_TAG(route);
-
+  DEBUG0("	<link:ctn id=\"LinkA\"/>");
   SURFXML_BUFFER_SET(link_c_ctn_id, "LinkA");
   SURFXML_START_TAG(link_c_ctn);
   SURFXML_END_TAG(link_c_ctn);
-
+  DEBUG0("</route>");
   SURFXML_END_TAG(route);
 
-/*   <route src="host B" dst="host A"><link:ctn id="LinkA"/></route> */
-// OLD THINGS COMMENTED
-//   SURFXML_BUFFER_SET(route_src, "host B");
-//   SURFXML_BUFFER_SET(route_dst, "host A");
-//   SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
-//   SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
-//   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
-//   SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
-
-  SURFXML_START_TAG(route);
-
-  SURFXML_BUFFER_SET(link_c_ctn_id, "LinkA");
-  SURFXML_START_TAG(link_c_ctn);
-  SURFXML_END_TAG(link_c_ctn);
-
-  SURFXML_END_TAG(route);
-/* </platform> */
+  DEBUG0("</AS>");
+  SURFXML_END_TAG(AS);
+  DEBUG0("</platfrom>");
   SURFXML_END_TAG(platform);
 
   free(surfxml_bufferstack);
