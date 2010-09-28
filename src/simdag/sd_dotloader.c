@@ -12,7 +12,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd,"Parsing DOT files");
 
 #undef CLEANUP
-#include <graphviz/cgraph.h>
+#include <cgraph.h>
 
 void dot_add_task(Agnode_t *dag_node) ;
 void dot_add_input_dependencies(SD_task_t current_job, Agedge_t *edge) ;
