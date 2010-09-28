@@ -342,7 +342,7 @@ static void net_update_actions_state(double now, double delta)
                                    action->weight);
     }
 #ifdef HAVE_TRACING
-    xbt_dynar_t route = used_routing->get_route(action->src, action->dst);
+    xbt_dynar_t route = global_routing->get_route(action->src_name, action->dst_name);
     link_CM02_t link;
     unsigned int i;
     xbt_dynar_foreach(route, i, link) {
