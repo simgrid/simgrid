@@ -1596,7 +1596,7 @@ static char* remplace(char* value, const char** src_list, int src_size, const ch
 /* Business methods */
 static route_extended_t rulebased_get_route(routing_component_t rc, const char* src,const char* dst) {
   xbt_assert1(rc&&src&&dst, "Invalid params for \"get_route\" function at AS \"%s\"",rc->name);
-  
+
   /* set utils vars */
   routing_component_rulebased_t routing = (routing_component_rulebased_t) rc;
 
@@ -1611,7 +1611,8 @@ static route_extended_t rulebased_get_route(routing_component_t rc, const char* 
   } else
      xbt_assert2(NULL, "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",src,dst); 
 
-  int rc_src,rc_dst;
+  int rc_src = -1;
+  int rc_dst = -1;
   int src_length = (int)strlen(src);
   int dst_length = (int)strlen(dst);
   
@@ -1649,8 +1650,14 @@ static route_extended_t rulebased_get_route(routing_component_t rc, const char* 
   if(rc_src >= 0 && rc_dst >= 0) {
     new_e_route = xbt_new0(s_route_extended_t,1);
     new_e_route->generic_route.link_list = links_list;
+  } else if( !strcmp(src,dst) && are_processing_units ) {
+    new_e_route = xbt_new0(s_route_extended_t,1);
+    xbt_dynar_push(links_list,&(global_routing->loopback));
+    new_e_route->generic_route.link_list = links_list;
+  } else { 
+    xbt_dynar_free(&link_list);
   }
-  
+
   if(!are_processing_units && new_e_route)
   {
     rule_route_extended_t ruleroute_extended = (rule_route_extended_t)ruleroute;
@@ -1838,6 +1845,7 @@ static void generic_set_autonomous_system(routing_component_t rc, const char* na
 
 static void generic_set_route(routing_component_t rc, const char* src, const char* dst, route_t route) {
   DEBUG2("Load Route from \"%s\" to \"%s\"",src,dst);
+  printf("Load Route from \"%s\" to \"%s\"\n",src,dst);
   model_type_t modeltype = rc->routing;
   xbt_dict_t _parse_routes;
   xbt_dict_t _to_index;
@@ -1875,6 +1883,7 @@ static void generic_set_route(routing_component_t rc, const char* src, const cha
 
 static void generic_set_ASroute(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route) {
   DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",src,e_route->src_gateway,dst,e_route->dst_gateway);
+  printf("Load ASroute from \"%s(%s)\" to \"%s(%s)\"\n",src,e_route->src_gateway,dst,e_route->dst_gateway);
   model_type_t modeltype = rc->routing;
   xbt_dict_t _parse_routes;
   xbt_dict_t _to_index;
