@@ -1068,32 +1068,31 @@ you still don't see how to do it, please come back to us...
 
 \subsubsection faq_MIA_asynchronous I want to do asynchronous communications in MSG
 
-We can now use asynchronous communication in MSG by using function :
+In the past (version <= 3.4), there was no function to perform asynchronous communications. 
+It could easily be implemented by creating new process when needed though. Since version 3.5, 
+we have introduced the following functions:
+ - MSG_task_isend()
+ - MSG_task_irecv()
+ - MSG_comm_test()
+ - MSG_comm_wait()
+ - MSG_comm_waitall()
+ - MSG_comm_waitany()
+ - MSG_comm_destroy()
 
-	MSG_task_isend()
-	
-	MSG_task_irecv()
-	
-	MSG_comm_test()
-	
-	MSG_comm_wait()
-	
-	MSG_comm_waitall()
-	
-	MSG_comm_waitany()
-	
-	MSG_comm_destroy()
-	
-See page :\ref MSG_ex_asynchronous_communications
+We refer you to the description of these functions for more details on their usage as well 
+as to the exemple section on \ref MSG_ex_asynchronous_communications.
 
 \subsubsection faq_MIA_thread_synchronization I need to synchronize my MSG processes
 
-You obviously cannot use pthread_mutexes of pthread_conds. The best
-thing would be to propose similar structures. Unfortunately, we
-haven't found time to do it yet. However you can try to play with
-MSG_process_suspend() and MSG_process_resume(). You can even do some
-synchronization with fake communications (using MSG_task_get(),
+You obviously cannot use pthread_mutexes of pthread_conds since we handle every 
+scheduling related decision within SimGrid. 
+
+In the past (version <=3.3.4) you could do it by playing with
+MSG_process_suspend() and MSG_process_resume() or with fake communications (using MSG_task_get(),
 MSG_task_put() and MSG_task_Iprobe()).
+
+Since version 3.4, you can use classical synchronization structures. See page \ref XBT_synchro or simply check in
+include/xbt/synchro_core.h.
 
 \subsubsection faq_MIA_host_load Where is the get_host_load function hidden in MSG?
 
