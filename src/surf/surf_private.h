@@ -158,7 +158,7 @@ struct s_routing_component {
   route_extended_t (*get_route)(routing_component_t rc, const char* src, const char* dst);
   route_extended_t (*get_bypass_route)(routing_component_t rc, const char* src, const char* dst);
   void (*finalize)(routing_component_t rc);
-  void (*set_processing_units)(routing_component_t rc, const char* name);
+  void (*set_processing_unit)(routing_component_t rc, const char* name);
   void (*set_autonomous_system)(routing_component_t rc, const char* name);
   void (*set_route)(routing_component_t rc, const char* src, const char* dst, route_t route);
   void (*set_ASroute)(routing_component_t rc, const char* src, const char* dst, route_extended_t route);
