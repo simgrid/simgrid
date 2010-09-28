@@ -271,7 +271,7 @@ static void parse_S_AS(void) {
   new_routing->hierarchy = SURF_ROUTING_NULL;
   new_routing->name = xbt_strdup(A_surfxml_AS_id);
   new_routing->routing_sons = xbt_dict_new();
-  INFO2("Routing %s for AS %s",A_surfxml_AS_routing,A_surfxml_AS_id);
+  //INFO2("Routing %s for AS %s",A_surfxml_AS_routing,A_surfxml_AS_id);
   
   if( current_routing == NULL && global_routing->root == NULL ){
     
