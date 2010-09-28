@@ -1,5 +1,5 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((include|trace|random|AS|trace:connect)*,(include|trace|random|cluster|set|foreach|host|router|link|trace:connect)*,(include|route:multi|route|trace:connect|process)*)>
+<!ELEMENT platform ((include|trace|random|AS|trace:connect)*,(include|trace|random|set|foreach|host|router|link|trace:connect)*,(include|route|trace:connect|process)*)>
 <!ATTLIST platform version CDATA "0.0">
 <!ATTLIST platform xmlns:link CDATA "http://simgrid.gforge.inria.fr/">
 <!ATTLIST platform xmlns:route CDATA "http://simgrid.gforge.inria.fr/">
@@ -34,6 +34,10 @@
 <!ELEMENT foreach (host|(host,link)|link)>
 <!ATTLIST foreach set_id CDATA #REQUIRED>
 
+<!ELEMENT AS (((AS|link)*,ASroute*,bypassRoute*)|((host|router|link)*,route*))>
+<!ATTLIST AS id CDATA #REQUIRED>
+<!ATTLIST AS routing CDATA #REQUIRED>
+
 <!ELEMENT host (prop*)>
 <!ATTLIST host id CDATA #REQUIRED>
 <!ATTLIST host power CDATA #REQUIRED>
@@ -46,21 +50,6 @@
 <!ATTLIST host interference_send_recv CDATA "1.0">
 <!ATTLIST host max_outgoing_rate CDATA "-1.0">
 <!ATTLIST host vivaldi  CDATA "0 0 0">
-
-<!ELEMENT prop EMPTY>
-<!ATTLIST prop id CDATA #REQUIRED>
-<!ATTLIST prop value CDATA #REQUIRED>
-
-<!ELEMENT cluster EMPTY>
-<!ATTLIST cluster id CDATA #REQUIRED>
-<!ATTLIST cluster prefix CDATA #REQUIRED>
-<!ATTLIST cluster suffix CDATA #REQUIRED>
-<!ATTLIST cluster radical CDATA #REQUIRED>
-<!ATTLIST cluster power CDATA #REQUIRED>
-<!ATTLIST cluster bw CDATA #REQUIRED>
-<!ATTLIST cluster lat CDATA #REQUIRED>
-<!ATTLIST cluster bb_bw CDATA #REQUIRED>
-<!ATTLIST cluster bb_lat CDATA #REQUIRED>
 
 <!ELEMENT router EMPTY>
 <!ATTLIST router id CDATA #REQUIRED>
@@ -75,25 +64,24 @@
 <!ATTLIST link state_file CDATA "">
 <!ATTLIST link sharing_policy (SHARED|FATPIPE) "SHARED">
 
-<!ELEMENT route:multi (link:ctn+)>
-<!ATTLIST route:multi src CDATA #REQUIRED>
-<!ATTLIST route:multi dst CDATA #REQUIRED>
-<!ATTLIST route:multi action (POSTPEND|PREPEND|OVERRIDE) "POSTPEND">
-<!ATTLIST route:multi symmetric (YES|NO) "YES">
-
 <!ELEMENT route (link:ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
-<!ATTLIST route gw_src CDATA "">
-<!ATTLIST route gw_dst CDATA "">
-<!ATTLIST route impact_on_src CDATA "0.0">
-<!ATTLIST route impact_on_dst CDATA "0.0">
-<!ATTLIST route impact_on_src_with_other_recv CDATA "0.0">
-<!ATTLIST route impact_on_dst_with_other_send CDATA "0.0">
-<!ATTLIST route action (POSTPEND|PREPEND|OVERRIDE) "POSTPEND">
+
+<!ELEMENT ASroute (link:ctn*)>
+<!ATTLIST ASroute src CDATA #REQUIRED>
+<!ATTLIST ASroute dst CDATA #REQUIRED>
+<!ATTLIST ASroute gw_src CDATA #REQUIRED>
+<!ATTLIST ASroute gw_dst CDATA #REQUIRED>
 
 <!ELEMENT link:ctn EMPTY>
 <!ATTLIST link:ctn id CDATA #REQUIRED>
+
+<!ELEMENT bypassRoute (link:ctn*)>
+<!ATTLIST bypassRoute src CDATA #REQUIRED>
+<!ATTLIST bypassRoute dst CDATA #REQUIRED>
+<!ATTLIST bypassRoute gw_src CDATA #REQUIRED>
+<!ATTLIST bypassRoute gw_dst CDATA #REQUIRED>
 
 <!ELEMENT process ((argument|prop)*)>
 <!ATTLIST process host CDATA #REQUIRED>
@@ -104,57 +92,23 @@
 <!ELEMENT argument EMPTY>
 <!ATTLIST argument value CDATA #REQUIRED>
 
-<!-- start added by DAVID -->
+<!ELEMENT prop EMPTY>
+<!ATTLIST prop id CDATA #REQUIRED>
+<!ATTLIST prop value CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|link)*,ASroute*,bypassRoute*)|((host|router|link)*,route*))>
-<!ATTLIST AS id CDATA #REQUIRED>
-<!ATTLIST AS routing CDATA #REQUIRED>
+<!--<!ELEMENT route:multi (link:ctn+)>
+<!ATTLIST route:multi src CDATA #REQUIRED>
+<!ATTLIST route:multi dst CDATA #REQUIRED>
+<!ATTLIST route:multi action (POSTPEND|PREPEND|OVERRIDE) "POSTPEND">
+<!ATTLIST route:multi symmetric (YES|NO) "YES">-->
 
-<!--<!ELEMENT route (link:ctn*)>
-<!ATTLIST route src CDATA #REQUIRED>
-<!ATTLIST route dst CDATA #REQUIRED>-->
-
-<!ELEMENT ASroute (link:ctn*)>
-<!ATTLIST ASroute src CDATA #REQUIRED>
-<!ATTLIST ASroute dst CDATA #REQUIRED>
-<!ATTLIST ASroute gw_src CDATA #REQUIRED>
-<!ATTLIST ASroute gw_dst CDATA #REQUIRED>
-
-<!ELEMENT bypassRoute (link:ctn*)>
-<!ATTLIST bypassRoute src CDATA #REQUIRED>
-<!ATTLIST bypassRoute dst CDATA #REQUIRED>
-<!ATTLIST bypassRoute gw_src CDATA #REQUIRED>
-<!ATTLIST bypassRoute gw_dst CDATA #REQUIRED>
-
-<!--<!ELEMENT AS ((AS|host|gateway|router|link|route)*)>
-<!ATTLIST AS id CDATA #REQUIRED>
-<!ATTLIST AS routing CDATA #REQUIRED>
-
-<!ELEMENT gateway EMPTY>
-<!ATTLIST gateway id CDATA #REQUIRED>-->
-
-<!-- 
-
-<!ELEMENT AS ((AS|hostDef|routerDef|ASroute)*)>
-<!ATTLIST AS id CDATA #REQUIRED>
-
-<!ELEMENT hostDef (hostAdd*)>
-
-<!ELEMENT hostAdd EMPTY>
-<!ATTLIST hostAdd id CDATA #REQUIRED>
-
-<!ELEMENT routerDef (routerAdd*)>
-
-<!ELEMENT routerAdd EMPTY>
-<!ATTLIST routerAdd id CDATA #REQUIRED>
-
-<!ELEMENT ASroute (ASlink*)>
-<!ATTLIST ASroute src CDATA #REQUIRED>
-<!ATTLIST ASroute dst CDATA #REQUIRED>
-<!ATTLIST ASroute symmetric (YES|NO) "YES">
-
-<!ELEMENT ASlink EMPTY>
-<!ATTLIST ASlink id CDATA #REQUIRED>
-
--->
-<!-- end added by DAVID -->
+<!--<!ELEMENT cluster EMPTY>
+<!ATTLIST cluster id CDATA #REQUIRED>
+<!ATTLIST cluster prefix CDATA #REQUIRED>
+<!ATTLIST cluster suffix CDATA #REQUIRED>
+<!ATTLIST cluster radical CDATA #REQUIRED>
+<!ATTLIST cluster power CDATA #REQUIRED>
+<!ATTLIST cluster bw CDATA #REQUIRED>
+<!ATTLIST cluster lat CDATA #REQUIRED>
+<!ATTLIST cluster bb_bw CDATA #REQUIRED>
+<!ATTLIST cluster bb_lat CDATA #REQUIRED>-->
