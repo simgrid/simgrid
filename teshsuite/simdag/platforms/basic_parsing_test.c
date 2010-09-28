@@ -16,6 +16,9 @@ int main(int argc, char **argv)
   /* creation of the environment */
   SD_create_environment(argv[1]);
 
+  printf("\n\nWorkstation number: %d, link number: %d\n\n",
+         SD_workstation_get_number(), SD_link_get_number());
+
   SD_exit();
   return 0;
 }

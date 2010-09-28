@@ -2206,6 +2206,9 @@ static void routing_full_parse_Scluster(void)
 	static int AX_ptr = 0;
 	static int surfxml_bufferstack_size = 2048;
 
+	/* allocating memory for the buffer, I think 2kB should be enough */
+	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
+
 	DEBUG4("id='%s' prefix='%s' suffix='%s' radical='%s'",
 	  cluster_id,cluster_prefix,cluster_suffix,cluster_radical);
 	DEBUG5("power='%s' bw='%s' lat='%s' bb_bw='%s' bb_lat='%s'",
@@ -2227,16 +2230,31 @@ static void routing_full_parse_Scluster(void)
 			  host_id = bprintf("%s%d%s", cluster_prefix, start, cluster_suffix);
 			  link_id = bprintf("%s_link_%d", cluster_id, start);
 
-			  DEBUG2("\t<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
+			  DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
+			  SURFXML_BUFFER_RESET();
 			  SURFXML_BUFFER_SET(host_id, host_id);
 			  SURFXML_BUFFER_SET(host_power, cluster_power);
+			  SURFXML_BUFFER_SET(host_availability, "1.0");
+			  SURFXML_BUFFER_SET(host_availability_file, "");
+			  A_surfxml_host_state = A_surfxml_host_state_ON;
+			  SURFXML_BUFFER_SET(host_state_file, "");
+			  SURFXML_BUFFER_SET(host_interference_send, "1.0");
+			  SURFXML_BUFFER_SET(host_interference_recv, "1.0");
+			  SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
+			  SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
 			  SURFXML_START_TAG(host);
 			  SURFXML_END_TAG(host);
 
-			  DEBUG3("\t<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_id,cluster_bw,cluster_lat);
+			  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_id,cluster_bw,cluster_lat);
+			  SURFXML_BUFFER_RESET();
 			  SURFXML_BUFFER_SET(link_id, link_id);
 			  SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
 			  SURFXML_BUFFER_SET(link_latency, cluster_lat);
+			  SURFXML_BUFFER_SET(link_bandwidth_file, "");
+			  SURFXML_BUFFER_SET(link_latency_file, "");
+			  A_surfxml_link_state = A_surfxml_link_state_ON;
+			  SURFXML_BUFFER_SET(link_state_file, "");
+			  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
 			  SURFXML_START_TAG(link);
 			  SURFXML_END_TAG(link);
 
@@ -2251,16 +2269,31 @@ static void routing_full_parse_Scluster(void)
 				  host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);
 				  link_id = bprintf("%s_link_%d", cluster_id, i);
 
-				  DEBUG2("\t<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
+				  DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
+				  SURFXML_BUFFER_RESET();
 				  SURFXML_BUFFER_SET(host_id, host_id);
 				  SURFXML_BUFFER_SET(host_power, cluster_power);
+				  SURFXML_BUFFER_SET(host_availability, "1.0");
+				  SURFXML_BUFFER_SET(host_availability_file, "");
+				  A_surfxml_host_state = A_surfxml_host_state_ON;
+				  SURFXML_BUFFER_SET(host_state_file, "");
+				  SURFXML_BUFFER_SET(host_interference_send, "1.0");
+				  SURFXML_BUFFER_SET(host_interference_recv, "1.0");
+				  SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
+				  SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
 				  SURFXML_START_TAG(host);
 				  SURFXML_END_TAG(host);
 
-				  DEBUG3("\t<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_id,cluster_bw,cluster_lat);
+				  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_id,cluster_bw,cluster_lat);
+				  SURFXML_BUFFER_RESET();
 				  SURFXML_BUFFER_SET(link_id, link_id);
 				  SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
 				  SURFXML_BUFFER_SET(link_latency, cluster_lat);
+				  SURFXML_BUFFER_SET(link_bandwidth_file, "");
+				  SURFXML_BUFFER_SET(link_latency_file, "");
+				  A_surfxml_link_state = A_surfxml_link_state_ON;
+				  SURFXML_BUFFER_SET(link_state_file, "");
+				  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
 				  SURFXML_START_TAG(link);
 				  SURFXML_END_TAG(link);
 			  }
@@ -2274,13 +2307,41 @@ static void routing_full_parse_Scluster(void)
 	}
 
 	DEBUG0(" ");
-	router_id = bprintf("%s.router%s",cluster_prefix,cluster_suffix);
+	router_id = bprintf("%srouter%s",cluster_prefix,cluster_suffix);
 	link_router = bprintf("%s_link_router",cluster_id);
 	link_backbone = bprintf("%s_backbone",cluster_id);
 
-	DEBUG1("\t<router id=\"%s\"\">",router_id);
-	DEBUG3("\t<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_router,cluster_bw,cluster_lat);
-	DEBUG3("\t<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_backbone,cluster_bb_bw,cluster_bb_lat);
+	DEBUG1("<router id=\"%s\"\">",router_id);
+	SURFXML_BUFFER_RESET();
+	SURFXML_BUFFER_SET(router_id, router_id);;
+	SURFXML_START_TAG(router);
+	SURFXML_END_TAG(router);
+
+	DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_router,cluster_bw,cluster_lat);
+	SURFXML_BUFFER_RESET();
+	SURFXML_BUFFER_SET(link_id, link_router);
+	SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
+	SURFXML_BUFFER_SET(link_latency, cluster_lat);
+	SURFXML_BUFFER_SET(link_bandwidth_file, "");
+	SURFXML_BUFFER_SET(link_latency_file, "");
+	A_surfxml_link_state = A_surfxml_link_state_ON;
+	SURFXML_BUFFER_SET(link_state_file, "");
+	A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+	SURFXML_START_TAG(link);
+	SURFXML_END_TAG(link);
+
+	DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_backbone,cluster_bb_bw,cluster_bb_lat);
+	SURFXML_BUFFER_RESET();
+	SURFXML_BUFFER_SET(link_id, link_backbone);
+	SURFXML_BUFFER_SET(link_bandwidth, cluster_bb_bw);
+	SURFXML_BUFFER_SET(link_latency, cluster_bb_lat);
+	SURFXML_BUFFER_SET(link_bandwidth_file, "");
+	SURFXML_BUFFER_SET(link_latency_file, "");
+	A_surfxml_link_state = A_surfxml_link_state_ON;
+	SURFXML_BUFFER_SET(link_state_file, "");
+	A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+	SURFXML_START_TAG(link);
+	SURFXML_END_TAG(link);
 
 	char *new_suffix = bprintf("%s","");
 
@@ -2295,33 +2356,35 @@ static void routing_full_parse_Scluster(void)
 	route_src_dst = bprintf("%s(.*)%s",cluster_prefix,new_suffix);
 
 	DEBUG0(" ");
-	DEBUG2("\t<route\tsrc=\"%s\"\tdst=\"%s\">",route_src_dst,route_src_dst);
-	DEBUG1("\t<link:ctn\tid=\"%s_link_$src1\"/>",cluster_id);
-	DEBUG1("\t<link:ctn\tid=\"%s_backbone\"/>",cluster_id);
-	DEBUG1("\t<link:ctn\tid=\"%s_link_$dst1\"/>",cluster_id);
-	DEBUG0("\t</route>");
+
+	DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\">",route_src_dst,route_src_dst);
+	SURFXML_BUFFER_RESET();
+	SURFXML_BUFFER_SET(route_src, route_src_dst);
+	SURFXML_BUFFER_SET(route_dst, route_src_dst);
+	SURFXML_START_TAG(route);
+
+	DEBUG1("<link:ctn\tid=\"%s_link_$src1\"/>",cluster_id);
+	SURFXML_BUFFER_RESET();
+	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$src1",cluster_id));
+	SURFXML_START_TAG(link_c_ctn);
+	SURFXML_END_TAG(link_c_ctn);
+
+	DEBUG1("<link:ctn\tid=\"%s_backbone\"/>",cluster_id);
+	SURFXML_BUFFER_RESET();
+	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_backbone",cluster_id));
+	SURFXML_START_TAG(link_c_ctn);
+	SURFXML_END_TAG(link_c_ctn);
+
+	DEBUG1("<link:ctn\tid=\"%s_link_$dst1\"/>",cluster_id);
+	SURFXML_BUFFER_RESET();
+	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$dst1",cluster_id));
+	SURFXML_START_TAG(link_c_ctn);
+	SURFXML_END_TAG(link_c_ctn);
+
+	DEBUG0("</route>");
+	SURFXML_END_TAG(route);
+
 	DEBUG0("</AS>");
 	SURFXML_END_TAG(AS);
-//
-//  /*   <link id="LinkA" bandwidth="10000000.0" latency="0.2"/> */
-//    SURFXML_BUFFER_SET(link_id, "LinkA");
-//    SURFXML_BUFFER_SET(link_bandwidth, "10000000.0");
-//    SURFXML_BUFFER_SET(link_bandwidth_file, "");
-//    SURFXML_BUFFER_SET(link_latency, "0.2");
-//    SURFXML_BUFFER_SET(link_latency_file, "");
-//    A_surfxml_link_state = A_surfxml_link_state_ON;
-//    SURFXML_BUFFER_SET(link_state_file, "");
-//    A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-//    SURFXML_START_TAG(link);
-//    SURFXML_END_TAG(link);
-//
-//  /*   <route src="host A" dst="host B"><link:ctn id="LinkA"/></route> */
-//  // OLD THINGS COMMENTED
-//  //   SURFXML_BUFFER_SET(route_src, "host A");
-//  //   SURFXML_BUFFER_SET(route_dst, "host B");
-//  //   SURFXML_BUFFER_SET(route_impact_on_src, "0.0");
-//  //   SURFXML_BUFFER_SET(route_impact_on_dst, "0.0");
-//  //   SURFXML_BUFFER_SET(route_impact_on_src_with_other_recv, "0.0");
-//  //   SURFXML_BUFFER_SET(route_impact_on_dst_with_other_send, "0.0");
 
 }
