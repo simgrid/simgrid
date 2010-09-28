@@ -114,8 +114,20 @@ struct s_routing {
 // HERE START THE NEW STRUCTURES
 ////////////////////////////////////////////////////////////////////////////////
 
+typedef enum {
+  SURF_NETWORK_ELEMENT_NULL = 0,   /* NULL */
+  SURF_NETWORK_ELEMENT_HOST,       /* host type */
+  SURF_NETWORK_ELEMENT_ROUTER,     /* router type */
+  SURF_NETWORK_ELEMENT_GATEWAY,    /* gateway type of the AS */
+  SURF_NETWORK_ELEMENT_AS,         /* AS type */
+  SURF_NETWORK_ELEMENT_AS_GATEWAY, /* gateway type for internals AS */
+  SURF_NETWORK_ELEMENT_LINK        /* link type */
+} e_surf_network_element_type_t;
+
 typedef struct s_model_type s_model_type_t, *model_type_t;
+typedef struct s_network_element s_network_element_t, *network_element_t;
 typedef struct s_route s_route_t, *route_t;
+typedef struct s_route_limits s_route_limits_t, *route_limits_t;
 typedef struct s_route_extended s_route_extended_t, *route_extended_t;
 typedef struct s_routing_component s_routing_component_t, *routing_component_t;
 typedef struct s_routing_global s_routing_global_t, *routing_global_t;
@@ -129,8 +141,18 @@ struct s_model_type {
   void (*end)();
 };
 
+struct s_network_element {
+  int id;
+  e_surf_network_element_type_t type;
+};
+
 struct s_route {
   xbt_dynar_t link_list;
+};
+
+struct s_route_limits {
+  char* src_gateway;
+  char* dst_gateway;
 };
 
 struct s_route_extended {
@@ -145,6 +167,7 @@ struct s_routing_component {
   struct s_routing_component* routing_father;
   xbt_dict_t routing_sons;
   route_extended_t (*get_route)(routing_component_t rc, const char* src, const char* dst);
+  xbt_dict_t (*get_network_elements)(routing_component_t rc, e_surf_network_element_type_t type);
   void (*finalize)(routing_component_t rc);
 };
 
