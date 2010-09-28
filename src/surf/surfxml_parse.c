@@ -24,6 +24,32 @@ xbt_dict_t trace_connect_list_link_avail = NULL;
 xbt_dict_t trace_connect_list_bandwidth = NULL;
 xbt_dict_t trace_connect_list_latency = NULL;
 
+/* This buffer is used to store the original buffer before substituting it by out own buffer. Useful for the foreach tag */
+static xbt_dynar_t surfxml_bufferstack_stack = NULL;
+int surfxml_bufferstack_size = 2048;
+static char *old_buff = NULL;
+static void surf_parse_error(char *msg);
+
+void surfxml_bufferstack_push(int new)
+{
+  if (!new)
+    old_buff = surfxml_bufferstack;
+  else {
+    xbt_dynar_push(surfxml_bufferstack_stack, &surfxml_bufferstack);
+    surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
+  }
+}
+
+void surfxml_bufferstack_pop(int new)
+{
+  if (!new)
+    surfxml_bufferstack = old_buff;
+  else {
+    free(surfxml_bufferstack);
+    xbt_dynar_pop(surfxml_bufferstack_stack, &surfxml_bufferstack);
+  }
+}
+
 /* make sure these symbols are defined as strong ones in this file so that the linked can resolve them */
 xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_platform_cb_list = NULL;
@@ -293,6 +319,9 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
 
 static void init_data(void)
 {
+  if (!surfxml_bufferstack_stack)
+    surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), NULL);
+
   random_data_list = xbt_dict_new();
   traces_set_list = xbt_dict_new();
   trace_connect_list_host_avail = xbt_dict_new();
@@ -318,6 +347,7 @@ static void free_data(void)
   xbt_dict_free(&trace_connect_list_latency);
   xbt_dict_free(&traces_set_list);
   xbt_dict_free(&random_data_list);
+  xbt_dynar_free(&surfxml_bufferstack_stack);
 }
 
 /* Here start parse */
