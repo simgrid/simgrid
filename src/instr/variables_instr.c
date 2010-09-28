@@ -14,53 +14,52 @@ extern routing_global_t global_routing;
 
 void __TRACE_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what)
 {
-	char valuestr[100];
-	xbt_dynar_t route = NULL;
-	unsigned int i;
-    void *link_ptr;
-    char *link = NULL;
+  char valuestr[100];
+  xbt_dynar_t route = NULL;
+  unsigned int i;
+  void *link_ptr;
+  char *link = NULL;
   if (!IS_TRACING || !IS_TRACING_PLATFORM) return;
 
   snprintf (valuestr, 100, "%g", value);
 
   if (strcmp (what, "declare") == 0){
-	pajeDefineVariableType (variable, "LINK", variable);
-	return;
+    pajeDefineVariableType (variable, "LINK", variable);
+    return;
   }
 
   if (!global_routing) return;
   route = global_routing->get_route(src, dst);
-  
-  xbt_dynar_foreach(route, i, link_ptr) {
-	link = (*(link_CM02_t)link_ptr).lmm_resource.generic_resource.name;
 
-	if (strcmp (what, "set") == 0){
-	  pajeSetVariable (time, variable, link, valuestr);
-	}else if (strcmp (what, "add") == 0){
-	  pajeAddVariable (time, variable, link, valuestr);
-	}else if (strcmp (what, "sub") == 0){
-	  pajeSubVariable (time, variable, link, valuestr);
-	}
+  xbt_dynar_foreach(route, i, link_ptr) {
+    link = (*(link_CM02_t)link_ptr).lmm_resource.generic_resource.name;
+
+    if (strcmp (what, "set") == 0){
+      pajeSetVariable (time, variable, link, valuestr);
+    }else if (strcmp (what, "add") == 0){
+      pajeAddVariable (time, variable, link, valuestr);
+    }else if (strcmp (what, "sub") == 0){
+      pajeSubVariable (time, variable, link, valuestr);
+    }
   }
 }
 
 void __TRACE_host_variable (double time, const char *variable, double value, const char *what)
 {
-	char valuestr[100];
+  char valuestr[100];
   if (!IS_TRACING || !IS_TRACING_PLATFORM) return;
 
   snprintf (valuestr, 100, "%g", value);
 
   if (strcmp (what, "declare") == 0){
-	pajeDefineVariableType (variable, "HOST", variable);
+    pajeDefineVariableType (variable, "HOST", variable);
   }else if (strcmp (what, "set") == 0){
-	pajeSetVariable (time, variable, MSG_host_self()->name, valuestr);
+    pajeSetVariable (time, variable, MSG_host_self()->name, valuestr);
   }else if (strcmp (what, "add") == 0){
-	pajeAddVariable (time, variable, MSG_host_self()->name, valuestr);
+    pajeAddVariable (time, variable, MSG_host_self()->name, valuestr);
   }else if (strcmp (what, "sub") == 0){
-	pajeSubVariable (time, variable, MSG_host_self()->name, valuestr);
+    pajeSubVariable (time, variable, MSG_host_self()->name, valuestr);
   }
 }
-
 
 #endif /* HAVE_TRACING */
