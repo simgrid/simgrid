@@ -22,6 +22,7 @@ static void routing_model_full_create(size_t size_of_link,void *loopback);
 static void routing_model_floyd_create(size_t size_of_link, void*loopback);
 static void routing_model_dijkstra_create(size_t size_of_link, void*loopback);
 static void routing_model_dijkstracache_create(size_t size_of_link, void*loopback);
+static void routing_model_hierarchical_create(size_t size_of_link, void*loopback); // added by DAVID
 static void routing_model_none_create(size_t size_of_link, void*loopback);
 
 /* Definition of each model */
@@ -35,12 +36,13 @@ struct model_type models[] =
   {"Floyd", "Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)", routing_model_floyd_create },
   {"Dijkstra", "Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)", routing_model_dijkstra_create },
   {"DijkstraCache", "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)", routing_model_dijkstracache_create },
+  {"Hierarchical", "Hierarchical routing", routing_model_hierarchical_create }, // added by DAVID
   {"none", "No routing (usable with Constant network only)", routing_model_none_create },
-    {NULL,NULL,NULL}};
+  {NULL,NULL,NULL}};
 
 
 void routing_model_create(size_t size_of_links, void* loopback) {
-
+// 
   char * wanted=xbt_cfg_get_string(_surf_cfg_set,"routing");
   int cpt;
   for (cpt=0;models[cpt].name;cpt++) {
@@ -54,7 +56,7 @@ void routing_model_create(size_t size_of_links, void* loopback) {
     fprintf(stderr,"   %s: %s\n",models[cpt].name,models[cpt].desc);
   xbt_die("Invalid model.");
 }
-
+// 
 /* ************************************************************************** */
 /* *************************** FULL ROUTING ********************************* */
 typedef struct {
@@ -78,6 +80,7 @@ static void onelink_route_elem_free(void *e) {
     free(tmp);
   }
 }
+
 
 /*
  * Parsing
@@ -1044,51 +1047,950 @@ static void routing_model_none_create(size_t size_of_link,void *loopback) {
   routing->get_onelink_routes = NULL;
   routing->is_router = NULL;
   routing->get_route = NULL;
-
   routing->finalize = routing_none_finalize;
 
   /* Set it in position */
   used_routing = (routing_t) routing;
 }
+  
+/* ************************************************************************** */
+/* *********************** HIERARCHICAL ROUTING ***************************** */
 
-/*****************************************************************/
-/******************* BYBASS THE PARSER ***************************/
+#define ROUTE_TABLE_HOST(dest,i,j)     (((*dest)->routing_table)[(i)+(j)*((*dest)->host_count)])
+#define ROUTE_H_TABLE_HOST(dest,i,j) (((*dest)->h_routing_table)[(i)+(j)*((*dest)->host_count)])
+#define ROUTE_V_TABLE_HOST(dest,i,j) (((*dest)->v_routing_table)[(i)+(j)*((*dest)->router_count)])
+#define ROUTE_TABLE_AS(dest,i,j)       (((*dest)->routing_table)[(i)+(j)*((*dest)->routetree_list->used)])
+#define ROUTE_H_TABLE_AS(dest,i,j)   (((*dest)->h_routing_table)[(i)+(j)*((*dest)->routetree_list->used)])
+#define ROUTE_V_TABLE_AS(dest,i,j)   (((*dest)->v_routing_table)[(i)+(j)*((*dest)->router_count)])
+
+#define H2ID(rt,val)  (val-((*rt)->host_offset))
+#define R2ID(rt,val)  (val-((*rt)->router_offset))
+#define A2ID(val)     ((*val)->id_father)
+
+#define HVALID(rt,val)  (          ((*rt)->host_count)>H2ID(rt,val) && H2ID(rt,val)=>0) 
+#define RVALID(rt,val)  (        ((*rt)->router_count)>R2ID(rt,val) && R2ID(rt,val)=>0) 
+#define AVALID(rt,val)  (((*rt)->routetree_list->used)>A2ID(val)    &&    A2ID(val)=>0) 
+
+#define ROUTE_HIERARCHICAL_HH(src,dst,rt)   (((*rt)->routing_table)[H2ID(rt,src)+H2ID(rt,dst)*((*rt)->host_count)]) 
+#define ROUTE_HIERARCHICAL_HR(src,dst,rt) (((*rt)->h_routing_table)[H2ID(rt,src)+R2ID(rt,dst)*((*rt)->host_count)]) 
+#define ROUTE_HIERARCHICAL_RH(src,dst,rt) (((*rt)->v_routing_table)[R2ID(rt,src)+H2ID(rt,dst)*((*rt)->router_count)]) 
+#define ROUTE_HIERARCHICAL_AA(src,dst,rt)   (((*rt)->routing_table)[A2ID(   src)+A2ID(   dst)*((*rt)->routetree_list->used)]) 
+#define ROUTE_HIERARCHICAL_AR(src,dst,rt) (((*rt)->h_routing_table)[A2ID(   src)+R2ID(rt,dst)*((*rt)->routetree_list->used)]) 
+#define ROUTE_HIERARCHICAL_RA(src,dst,rt) (((*rt)->v_routing_table)[R2ID(rt,src)+A2ID(   dst)*((*rt)->router_count)]) 
+
+#define SRC_DST_HIERARCHICAL_AA(src,dst,rt)   ((routelimits_t)&(((*rt)->src_dst_table)[A2ID(   src)+A2ID(   dst)*((*rt)->routetree_list->used)]))
+#define SRC_DST_HIERARCHICAL_AR(src,dst,rt) ((routelimits_t)&(((*rt)->h_src_dst_table)[A2ID(   src)+R2ID(rt,dst)*((*rt)->routetree_list->used)]))
+#define SRC_DST_HIERARCHICAL_RA(src,dst,rt) ((routelimits_t)&(((*rt)->v_src_dst_table)[R2ID(rt,src)+A2ID(   dst)*((*rt)->router_count)]))
+
+/* for the calculus of locals ids */
+int local_host_count;
+int local_router_count;
+
+/*####[ Type definition ]####################################################*/
+
+typedef struct routelimits_ {
+    int src_id;         /* source router  */
+    int dst_id;         /* destine router */
+} s_routelimits_t, *routelimits_t;
+
+typedef struct routetree_ {
+    const char* name;              /* name of the set */
+    struct routetree_* father;     /* father set */
+    int id_father;                 /* id in the father set */
+    int host_count;                /* count of host in the set */
+    int router_count;              /* count of router in the set */
+    int host_offset;               /* offset for the host id */
+    int router_offset;             /* offset for the router id */
+    xbt_dynar_t routetree_list;    /* other sets in the set */
+    xbt_dynar_t *routing_table;    /* host-host or AS-AS */
+    xbt_dynar_t *h_routing_table;  /* host-router or AS-router */
+    xbt_dynar_t *v_routing_table;  /* router-host or router-AS */
+    routelimits_t src_dst_table;   /* src and dst for routing table */
+    routelimits_t h_src_dst_table; /* src and dst for h routing table */
+    routelimits_t v_src_dst_table; /* src and dst for v routing table */
+} s_routetree_t, *routetree_t;
+
+typedef struct routing_hierarchical_t {
+  s_routing_t generic_routing;
+  routetree_t routetree;
+  xbt_dynar_t host_routetree; /* routetree_t* */
+  xbt_dynar_t last_route;     /* store the last routing path */
+  void *loopback;
+  size_t size_of_link;
+} s_routing_hierarchical_t,*routing_hierarchical_t;
+
+/*####[ routetree functions ]################################################*/
+
+/* @brief Constructor */
+routetree_t routetree_new(void) {
+  routetree_t res = xbt_new(s_routetree_t, 1);
+  res->name             = NULL;
+  res->father           = NULL;
+  res->id_father        = 0;
+  res->host_count       = 0;
+  res->router_count     = 0;
+  res->host_offset      = 0;
+  res->router_offset    = 0;
+  res->routetree_list   = NULL;
+  res->routing_table    = NULL;
+  res->h_routing_table  = NULL;
+  res->v_routing_table  = NULL;
+  res->src_dst_table   = NULL;
+  res->v_src_dst_table = NULL;
+  res->h_src_dst_table = NULL;
+  return res;
+}
+
+/* @brief Destructor */
+void routetree_free(routetree_t* routetree) {
+  unsigned int it;
+  int i,j,ni,nj;
+  int size_host_list = 0, size_router_list = 0, size_routetree_list = 0;
+  int size_of_link = ((routing_hierarchical_t)used_routing)->size_of_link;
+  routetree_t elem;
+
+  if (*routetree) {
+    size_host_list = (*routetree)->host_count;
+    size_router_list = (*routetree)->router_count;
+    if( (*routetree)->routetree_list ) size_routetree_list = ((*routetree)->routetree_list)->used;
+  
+    if( size_host_list == 0 && size_routetree_list == 0 ) {
+      return;
+    }
+    else if( size_host_list > 0 && size_routetree_list == 0 ) {
+      /* create a host table */
+      ni = size_host_list;
+      nj = size_host_list;
+      if(ni*nj > 1) {
+       for (i=0;i<ni;i++)
+         for (j=0;j<nj;j++)
+             if( &ROUTE_TABLE_HOST(routetree,i,j) )
+               xbt_dynar_free( &ROUTE_TABLE_HOST(routetree,i,j) );
+      xbt_free( (*routetree)->routing_table );
+      }
+      /* create a host vs router table */
+      ni = size_host_list;
+      nj = size_router_list;
+      if(ni*nj) {
+      for (i=0;i<ni;i++)
+        for (j=0;j<nj;j++)
+             if( &ROUTE_H_TABLE_HOST(routetree,i,j) )
+               xbt_dynar_free( &ROUTE_H_TABLE_HOST(routetree,i,j) );
+      xbt_free( (*routetree)->h_routing_table );
+      }
+      /* create a router vs host table */
+      ni = size_router_list;
+      nj = size_host_list;
+      if(ni*nj) {
+      for (i=0;i<ni;i++)
+        for (j=0;j<nj;j++)
+             if( &ROUTE_V_TABLE_HOST(routetree,i,j) )
+               xbt_dynar_free( &ROUTE_V_TABLE_HOST(routetree,i,j) );
+      xbt_free( (*routetree)->v_routing_table );
+      }
+    }
+    else if( size_host_list == 0 && size_routetree_list > 0 ) {
+      /* create a host table */
+      ni = size_routetree_list;
+      nj = size_routetree_list;
+      if(ni*nj > 1) {
+      for (i=0;i<ni;i++)
+        for (j=0;j<nj;j++)
+             if( &ROUTE_TABLE_AS(routetree,i,j) )
+               xbt_dynar_free( &ROUTE_TABLE_AS(routetree,i,j) );
+      xbt_free( (*routetree)->src_dst_table );
+      xbt_free( (*routetree)->routing_table );
+      }
+      /* create a host vs router table */
+      ni = size_routetree_list;
+      nj = size_router_list;
+      if(ni*nj) {
+      for (i=0;i<ni;i++)
+        for (j=0;j<nj;j++)
+             if( &ROUTE_H_TABLE_AS(routetree,i,j) )
+               xbt_dynar_free( &ROUTE_H_TABLE_AS(routetree,i,j) );
+      xbt_free( (*routetree)->h_src_dst_table );
+      xbt_free( (*routetree)->h_routing_table );
+      }
+      /* create a router vs host table */
+      ni = size_router_list;
+      nj = size_routetree_list;
+      if(ni*nj) {
+      for (i=0;i<ni;i++)
+        for (j=0;j<nj;j++)
+             if( &ROUTE_V_TABLE_AS(routetree,i,j) )
+               xbt_dynar_free( &ROUTE_V_TABLE_AS(routetree,i,j) );
+      xbt_free( (*routetree)->v_src_dst_table );
+      xbt_free( (*routetree)->v_routing_table );
+      }
+    }
+    else {
+      xbt_assert0(0,"The autonomous system must have hosts or autonomous systems, not the both");
+    }
+    
+    if ((*routetree)->routetree_list) {
+      xbt_dynar_foreach((*routetree)->routetree_list,it,elem) {
+         routetree_free(&elem);}
+      xbt_dynar_free(&((*routetree)->routetree_list));
+    }
+    free(*routetree);    
+    *routetree = NULL;
+
+  }
+}
+
+/* @brief Add a host to routetree */
+void routetree_add_host(const char* name, routetree_t* dest) {
+  int* val;
+  val = xbt_malloc(sizeof(int)); 
+  /* count the new host */
+  //*val = used_routing->host_count++;
+  *val = local_host_count++;
+  /* add the host to the dictonary */
+  xbt_dict_set(used_routing->host_id,name,val,xbt_free);
+  /* add the host to the routetree traduction vector */
+  xbt_dynar_push(((routing_hierarchical_t)used_routing)->host_routetree,dest);
+  /* add a local count for the routetree */
+  (*dest)->host_count++;
+}
+
+/* @brief Add a router to routetree */
+void routetree_add_router(const char* name, routetree_t* dest) {
+  int* val;
+  val = xbt_malloc(sizeof(int)); 
+  /* count the new host */
+  //*val = HOST2ROUTER(used_routing->router_count++);
+  *val = HOST2ROUTER(local_router_count++);
+  /* add the host to the dictonary */
+  xbt_dict_set(used_routing->host_id,name,val,xbt_free);
+  /* add a local count for the routetree */
+  (*dest)->router_count++;
+}
+
+/* @brief Add a child routetree to routetree father */
+void routetree_add(routetree_t* dest, routetree_t* elem) {
+  xbt_dynar_push((*dest)->routetree_list, elem);
+}
+
+void routetree_fill(routetree_t* dest, const char* name, routetree_t father, int id_father) {
+  (*dest)->name             = name;
+  (*dest)->father           = father;
+  (*dest)->id_father        = id_father;
+  (*dest)->host_count       = 0;
+  (*dest)->router_count     = 0;
+  (*dest)->host_offset      = local_host_count;
+  (*dest)->router_offset    = local_router_count;
+  (*dest)->routetree_list   = xbt_dynar_new(sizeof(routetree_t), NULL);
+  (*dest)->routing_table    = NULL;
+  (*dest)->v_routing_table  = NULL;
+  (*dest)->h_routing_table  = NULL;
+  (*dest)->src_dst_table    = NULL;
+  (*dest)->v_src_dst_table  = NULL;
+  (*dest)->h_src_dst_table  = NULL;
+}
+
+/* @brief Make the routing tables for a empty routetree */
+void routetree_fill_routing_table(routetree_t* dest) {
+
+  int i,j,ni,nj;
+  int size_host_list = 0, size_router_list = 0, size_routetree_list = 0;
+  int size_of_link = ((routing_hierarchical_t)used_routing)->size_of_link;
+  size_host_list = (*dest)->host_count;
+  size_router_list = (*dest)->router_count;
+  if( (*dest)->routetree_list ) size_routetree_list = ((*dest)->routetree_list)->used;
+  
+  if( size_host_list == 0 && size_routetree_list == 0 ) {
+    return;
+  }
+  else if( size_host_list > 0 && size_routetree_list == 0 ) {
+    /* create a host table */
+    ni = size_host_list;
+    nj = size_host_list;
+    if(ni*nj) {
+    (*dest)->routing_table = xbt_new0(xbt_dynar_t, ni * nj);
+    for (i=0;i<ni;i++)
+      for (j=0;j<nj;j++)
+          ROUTE_TABLE_HOST(dest,i,j) = xbt_dynar_new(size_of_link,NULL);
+    }
+    /* create a host vs router table */
+    ni = size_host_list;
+    nj = size_router_list;
+    if(ni*nj) {
+    (*dest)->h_routing_table = xbt_new0(xbt_dynar_t, ni * nj);
+    for (i=0;i<ni;i++)
+      for (j=0;j<nj;j++)
+          ROUTE_H_TABLE_HOST(dest,i,j) = xbt_dynar_new(size_of_link,NULL);
+    }
+    /* create a router vs host table */
+    ni = size_router_list;
+    nj = size_host_list;
+    if(ni*nj) {
+    (*dest)->v_routing_table = xbt_new0(xbt_dynar_t, ni * nj);
+    for (i=0;i<ni;i++)
+      for (j=0;j<nj;j++)
+          ROUTE_V_TABLE_HOST(dest,i,j) = xbt_dynar_new(size_of_link,NULL);
+    }
+  }
+  else if( size_host_list == 0 && size_routetree_list > 0 ) {
+    /* create a host table */
+    ni = size_routetree_list;
+    nj = size_routetree_list;
+    if(ni*nj > 1) {
+    (*dest)->src_dst_table = xbt_new0(s_routelimits_t, ni * nj);
+    (*dest)->routing_table = xbt_new0(xbt_dynar_t, ni * nj);
+    for (i=0;i<ni;i++)
+      for (j=0;j<nj;j++)
+        ROUTE_TABLE_AS(dest,i,j) = xbt_dynar_new(size_of_link,NULL);
+    }
+    /* create a host vs router table */
+    ni = size_routetree_list;
+    nj = size_router_list;
+    if(ni*nj) {
+    (*dest)->h_src_dst_table = xbt_new0(s_routelimits_t, ni * nj);
+    (*dest)->h_routing_table = xbt_new0(xbt_dynar_t, ni * nj);
+    for (i=0;i<ni;i++)
+      for (j=0;j<nj;j++)
+          ROUTE_H_TABLE_AS(dest,i,j) = xbt_dynar_new(size_of_link,NULL);
+    }
+    /* create a router vs host table */
+    ni = size_router_list;
+    nj = size_routetree_list;
+    if(ni*nj) {
+    (*dest)->v_src_dst_table = xbt_new0(s_routelimits_t, ni * nj);
+    (*dest)->v_routing_table = xbt_new0(xbt_dynar_t, ni * nj);
+    for (i=0;i<ni;i++)
+      for (j=0;j<nj;j++)
+          ROUTE_V_TABLE_AS(dest,i,j) = xbt_dynar_new(size_of_link,NULL);
+    }
+  }
+  else {
+    xbt_assert0(0,"The autonomous system must have hosts or autonomous systems, not the both");
+  }
+}
+
+////////////////////////////
+// PARSER CODE HERE
+////////////////////////////
+
+
+/////////////
+// is coming ...	
+/////////////
+
 
 /*
- * FIXME : better to add to the routing model instead !!
- *
+ * Business methods
  */
-void routing_add_route(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
-{
-    char * link_id;
-    char * name;
-    unsigned int i;
-    src_id = *(int*)xbt_dict_get(used_routing->host_id,source_id);
-    dst_id = *(int*)xbt_dict_get(used_routing->host_id,destination_id);
-    DEBUG4("Route %s %d -> %s %d",source_id,src_id,destination_id,dst_id);
-	//set Links
-    xbt_dynar_foreach(links_id,i,link_id)
-     {
-    	surf_add_route_element(link_id);
+static xbt_dynar_t routing_hierarchical_get_route(int src,int dst) {
+
+  routing_hierarchical_t routing = (routing_hierarchical_t)used_routing;
+  routetree_t* rt_src = NULL;
+  routetree_t* rt_dst = NULL;
+  routetree_t* actual = NULL;
+  xbt_dynar_t path_src = NULL;
+  xbt_dynar_t path_dst = NULL;
+  xbt_dynar_t path_first = NULL;
+  xbt_dynar_t path_last = NULL;
+  int cpt = 0;
+  int *val;
+  int index_src;
+  int index_dst;
+  int index_father_src;
+  int index_father_dst;
+  int actual_router_src;
+  int actual_router_dst;
+  routetree_t* actual_src;
+  routetree_t* actual_dst;
+  routetree_t* actual_src_father;
+  routetree_t* actual_dst_father;
+  routetree_t* father;
+  xbt_dynar_t result;
+  xbt_dynar_t path_tmp_links;
+  xbt_dynar_t path_center_links;
+  xbt_dynar_t path_src_links;
+  xbt_dynar_t path_dst_links;
+  void* link;
+  
+  xbt_dynar_reset(routing->last_route);
+  
+  // (0) test for routers ids
+  xbt_assert0(!(ISROUTER(src) || ISROUTER(dst)), "Ask for route \"from\" or \"to\" a router node");
+  
+  // (1) find the as-routetree where the src and dst are located
+  rt_src = xbt_dynar_get_ptr(routing->host_routetree,src);
+  rt_dst = xbt_dynar_get_ptr(routing->host_routetree,dst);
+ 
+  // (2) find the path to the root routetree
+  path_src = xbt_dynar_new(sizeof(routetree_t), NULL);
+  actual = rt_src; 
+  while( *actual != NULL ) {
+    xbt_dynar_push(path_src,actual);
+    actual = &((*actual)->father);
+  }
+  path_dst = xbt_dynar_new(sizeof(routetree_t), NULL);
+  actual = rt_dst; 
+  while( *actual != NULL ) {
+    xbt_dynar_push(path_dst,actual);
+    actual = &((*actual)->father);
+  }
+  
+  // (3) find the common father
+  index_src  = (path_src->used)-1;
+  index_dst  = (path_dst->used)-1;
+  actual_src = xbt_dynar_get_ptr(path_src,index_src);
+  actual_dst = xbt_dynar_get_ptr(path_dst,index_dst);
+  while( index_src >= 0 && index_dst >= 0 && *actual_src == *actual_dst ) {
+    actual_src = xbt_dynar_get_ptr(path_src,index_src);
+    actual_dst = xbt_dynar_get_ptr(path_dst,index_dst);
+    index_src--;
+    index_dst--;
+  }
+  index_src++;
+  index_dst++;
+  actual_src = xbt_dynar_get_ptr(path_src,index_src);
+  actual_dst = xbt_dynar_get_ptr(path_dst,index_dst);
+  
+  // (4) if they are in the same routetree?
+  if( *actual_src == *actual_dst ) {
+    
+    // (5.1) belong to the same routetree, are in the same routing table
+    // even if are the same host, src and dst
+    path_tmp_links = ROUTE_HIERARCHICAL_HH(src,dst,actual_src);
+    cpt = 0;
+    xbt_dynar_foreach(path_tmp_links, cpt, link) {
+      xbt_dynar_push(routing->last_route,&link);
+    }
+    
+  }
+  else {
+    
+    // (5.2) they are not in the same routetree, make the path
+    index_father_src = index_src+1;
+    index_father_dst = index_dst+1;
+    father = xbt_dynar_get_ptr(path_src,index_father_src);
+    path_center_links = ROUTE_HIERARCHICAL_AA(actual_src,actual_dst,father);
+    routelimits_t limits = SRC_DST_HIERARCHICAL_AA(actual_src,actual_dst,father);
+ 
+    // (5.2.1) make the source path
+     path_src_links = xbt_dynar_new(routing->size_of_link, NULL);
+     actual_router_dst = ROUTER2HOST(limits->src_id); /* first router in the reverse path */
+     actual_src_father = xbt_dynar_get_ptr(path_src,index_src);
+     index_src--;
+     for(index_src;index_src>=0;index_src--) {
+       actual_src = xbt_dynar_get_ptr(path_src,index_src);
+       path_tmp_links = ROUTE_HIERARCHICAL_AR(actual_src,actual_router_dst,actual_src_father);
+       cpt = 0;
+       xbt_dynar_foreach(path_tmp_links, cpt, link) {
+	 xbt_assert2(link!=NULL,"NULL link in the route from src %d to dst %d (5.2.1)", src, dst);
+         xbt_dynar_push(path_src_links,&link);
+       }
+       actual_router_dst = ROUTER2HOST(SRC_DST_HIERARCHICAL_AR(actual_src,actual_router_dst,actual_src_father)->src_id);
+       actual_src_father = actual_src;
      }
-    route_action = action;
-	if (src_id != -1 && dst_id != -1) {
-	   name = bprintf("%x#%x", src_id, dst_id);
-	   manage_route(route_table, name, route_action, 0);
-	   free(name);
-	}
+
+    // (5.2.2) make the destination path
+     path_dst_links = xbt_dynar_new(routing->size_of_link, NULL);
+     actual_router_src = ROUTER2HOST(limits->dst_id); /* first router for the path */
+     actual_dst_father = xbt_dynar_get_ptr(path_dst,index_dst);
+     index_dst--;
+     for(index_dst;index_dst>=0;index_dst--) {
+       actual_dst = xbt_dynar_get_ptr(path_dst,index_dst);
+       path_tmp_links = ROUTE_HIERARCHICAL_RA(actual_router_src,actual_dst,actual_dst_father);
+       cpt = 0;
+       xbt_dynar_foreach(path_tmp_links, cpt, link) {
+	 xbt_assert2(link!=NULL,"NULL link in the route from src %d to dst %d (5.2.2)", src, dst);
+         xbt_dynar_push(path_dst_links,&link);
+       }
+       actual_router_src = ROUTER2HOST(SRC_DST_HIERARCHICAL_RA(actual_router_src,actual_dst,actual_dst_father)->dst_id);
+       actual_dst_father = actual_dst;
+     }
+    
+    // (5.2.3) the first part of the route
+    path_first = ROUTE_HIERARCHICAL_HR(src,actual_router_dst,actual_src);
+    
+    // (5.2.4) the last part of the route
+    path_last = ROUTE_HIERARCHICAL_RH(actual_router_src,dst,actual_dst);
+    
+    // (5.2.5) make all paths together 
+    // FIXME: the paths non respect the right order
+    
+    cpt = 0;
+    xbt_dynar_foreach(path_first, cpt, link) {
+      xbt_assert2(link!=NULL,"NULL link in the route from src %d to dst %d", src, dst);
+      xbt_dynar_push(routing->last_route,&link);
+    }
+    cpt = 0;
+    xbt_dynar_foreach(path_src_links, cpt, link) {
+      xbt_assert2(link!=NULL,"NULL link in the route from src %d to dst %d", src, dst);
+      xbt_dynar_push(routing->last_route,&link);
+    }
+    cpt = 0;
+    xbt_dynar_foreach(path_center_links, cpt, link) {
+      xbt_assert2(link!=NULL,"NULL link in the route from src %d to dst %d", src, dst);
+      xbt_dynar_push(routing->last_route,&link);
+    }
+    cpt = 0;
+    xbt_dynar_foreach(path_dst_links, cpt, link) {
+      xbt_assert2(link!=NULL,"NULL link in the route from src %d to dst %d", src, dst);
+      xbt_dynar_push(routing->last_route,&link);
+    }
+    cpt = 0;
+    xbt_dynar_foreach(path_last, cpt, link) {
+      xbt_assert2(link!=NULL,"NULL link in the route from src %d to dst %d", src, dst);
+      xbt_dynar_push(routing->last_route,&link);
+    }
+    
+    xbt_dynar_free(&path_src_links);
+    xbt_dynar_free(&path_dst_links);
+  }    
+ 
+  xbt_dynar_free(&path_src);
+  xbt_dynar_free(&path_dst);
+
+//   cpt=0;
+//   xbt_dynar_foreach(routing->last_route, cpt, link)
+//   { s_surf_resource_t* generic_resource = link; 
+//   printf("< LINK > link %s\n",generic_resource->name); }
+  
+  return(routing->last_route);
+}
+
+static xbt_dict_t routing_hierarchical_get_onelink_routes(void){
+  xbt_assert0(0,"The get_onelink_routes feature is not supported in routing model Hierarchical");
+}
+
+static int routing_hierarchical_is_router(int id){
+   return ISROUTER(id);
+}
+
+static void routing_hierarchical_finalize(void) {
+  routing_hierarchical_t routing = (routing_hierarchical_t)used_routing;
+  if(routing) {    
+    xbt_dict_free(&used_routing->host_id);
+    routetree_free(&(routing->routetree));
+    xbt_dynar_free(&(routing->host_routetree));
+    xbt_dynar_free(&routing->last_route);
+    xbt_free(routing);
+    routing=NULL;
+  }
+}
+
+// void print_tree(routetree_t start)
+// {
+//   int data;
+//   unsigned int it;
+//   routetree_t elem;
+//   
+//   printf("Nombre %s - hosts %i - routers %i - as %i\n",
+// 	 start->name,
+// 	 (int)start->host_count,
+// 	 (int)start->router_count,
+// 	 (int)start->routetree_list->used);
+// /*
+//   printf("hosts:");
+//   xbt_dynar_foreach(start->host_list,it,data) {
+//     printf(" %i",data);
+//   }
+//   printf("\n");
+// 
+//   printf("routers:");
+//   xbt_dynar_foreach(start->router_list,it,data) {
+//     printf(" %i",ROUTER2HOST(data));    
+//   }
+//   printf("\n");
+//   */
+//   xbt_dynar_foreach(start->routetree_list,it,elem) {
+//     print_tree(elem);
+//   }
+// }
+  
+/* erase me */
+// The following function makes a example as if a paser program would do it.
+static void example() {
+  
+  int nb_link = 0;
+  unsigned int cpt = 0;
+  xbt_dict_cursor_t cursor = NULL;
+  char *key, *data, *end;
+  const char *sep = "#";
+  xbt_dynar_t links, keys;
+  char *link_name = NULL;
+
+  routetree_t tmp1,tmp2,tmp3,tmp4,tmp5; // erase me
+  int *val;                             // erase me
+  int i,j,n;                            // erase me
+  void* link;                           // erase me
+  
+routing_hierarchical_t routing = (routing_hierarchical_t)used_routing;
+  
+/////////// fixed network /////////////
+
+/////////// make the routetree tree /////////////
+
+	routing->routetree = routetree_new();
+	routetree_fill(&(routing->routetree),"as1",NULL,0);
+	
+		tmp2 = routetree_new();
+		routetree_fill(&(tmp2),"as2",(routing->routetree),0);
+		//hosts
+		//router
+		routetree_add_router("R21",&tmp2);
+		routetree_add_router("R22",&tmp2);
+		// add
+		routetree_add(&(routing->routetree),&tmp2);
+
+			tmp3 = routetree_new();
+			routetree_fill(&(tmp3),"as3",(tmp2),0);
+			//hosts
+			routetree_add_host("A",&tmp3);
+			routetree_add_host("B",&tmp3);
+			//router
+			routetree_add_router("R31",&tmp3);
+			routetree_add_router("R32",&tmp3);
+			// add
+			routetree_add(&(tmp2),&tmp3);
+
+		tmp4 = routetree_new();
+		routetree_fill(&(tmp4),"as4",(routing->routetree),1);
+		//hosts
+		routetree_add_host("C",&tmp4);
+		routetree_add_host("D",&tmp4);
+		routetree_add_host("E",&tmp4);
+		//router
+		routetree_add_router("R41",&tmp4);
+		routetree_add_router("R42",&tmp4);
+		// add
+		routetree_add(&(routing->routetree),&tmp4);
+
+		tmp5 = routetree_new();
+		routetree_fill(&(tmp5),"as5",(routing->routetree),2);
+		//hosts
+		routetree_add_host("F",&tmp5);
+		//router
+		routetree_add_router("R51",&tmp5);
+		// add
+		routetree_add(&(routing->routetree),&tmp5);
+
+/////////// fill the routing tables /////////////
+
+  routetree_fill_routing_table(&(routing->routetree));
+  routetree_fill_routing_table(&(tmp2));
+  routetree_fill_routing_table(&(tmp3));
+  routetree_fill_routing_table(&(tmp4));
+  routetree_fill_routing_table(&(tmp5));
+
+/////////// fill the routing tables with the routes /////////////
+
+  // as2 - as4
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "0"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp2,&tmp4,&(routing->routetree)),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "1"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp2,&tmp4,&(routing->routetree)),&link);
+  SRC_DST_HIERARCHICAL_AA(&tmp2,&tmp4,&(routing->routetree))->src_id = HOST2ROUTER(0); //r21
+  SRC_DST_HIERARCHICAL_AA(&tmp2,&tmp4,&(routing->routetree))->dst_id = HOST2ROUTER(4); //r41
+  // as4 - as2
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "0"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp4,&tmp2,&(routing->routetree)),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "1"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp4,&tmp2,&(routing->routetree)),&link);
+  SRC_DST_HIERARCHICAL_AA(&tmp4,&tmp2,&(routing->routetree))->src_id = HOST2ROUTER(4); //r41
+  SRC_DST_HIERARCHICAL_AA(&tmp4,&tmp2,&(routing->routetree))->dst_id = HOST2ROUTER(0); //r21
+
+  // as2 - as5  
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp2,&tmp5,&(routing->routetree)),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp2,&tmp5,&(routing->routetree)),&link);
+  SRC_DST_HIERARCHICAL_AA(&tmp2,&tmp5,&(routing->routetree))->src_id = HOST2ROUTER(1); //r22
+  SRC_DST_HIERARCHICAL_AA(&tmp2,&tmp5,&(routing->routetree))->dst_id = HOST2ROUTER(6); //r51
+  // as5 - as2
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp5,&tmp2,&(routing->routetree)),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp5,&tmp2,&(routing->routetree)),&link);
+  SRC_DST_HIERARCHICAL_AA(&tmp5,&tmp2,&(routing->routetree))->src_id = HOST2ROUTER(6); //r51
+  SRC_DST_HIERARCHICAL_AA(&tmp5,&tmp2,&(routing->routetree))->dst_id = HOST2ROUTER(1); //r22
+  
+  // as4 - as5
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "4"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp4,&tmp5,&(routing->routetree)),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp4,&tmp5,&(routing->routetree)),&link);
+  SRC_DST_HIERARCHICAL_AA(&tmp4,&tmp5,&(routing->routetree))->src_id = HOST2ROUTER(5); //r42
+  SRC_DST_HIERARCHICAL_AA(&tmp4,&tmp5,&(routing->routetree))->dst_id = HOST2ROUTER(6); //r51
+  // as5 - as4
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "4"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp5,&tmp4,&(routing->routetree)),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AA(&tmp5,&tmp4,&(routing->routetree)),&link);
+  SRC_DST_HIERARCHICAL_AA(&tmp5,&tmp4,&(routing->routetree))->src_id = HOST2ROUTER(6); //r51
+  SRC_DST_HIERARCHICAL_AA(&tmp5,&tmp4,&(routing->routetree))->dst_id = HOST2ROUTER(5); //r42
+
+// tmp2
+
+  // as3 - r21
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AR(&tmp3,0,&tmp2),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AR(&tmp3,0,&tmp2),&link);
+  SRC_DST_HIERARCHICAL_AR(&tmp3,0,&tmp2)->src_id = HOST2ROUTER(2); //r31
+  SRC_DST_HIERARCHICAL_AR(&tmp3,0,&tmp2)->dst_id = HOST2ROUTER(0); //r21
+  // r21 - as3
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RA(0,&tmp3,&tmp2),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RA(0,&tmp3,&tmp2),&link);
+  SRC_DST_HIERARCHICAL_RA(0,&tmp3,&tmp2)->src_id = HOST2ROUTER(0); //r21
+  SRC_DST_HIERARCHICAL_RA(0,&tmp3,&tmp2)->dst_id = HOST2ROUTER(2); //r31
+  
+  // as3 - r22
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AR(&tmp3,1,&tmp2),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "1"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_AR(&tmp3,1,&tmp2),&link);
+  SRC_DST_HIERARCHICAL_AR(&tmp3,1,&tmp2)->src_id = HOST2ROUTER(3); //r32
+  SRC_DST_HIERARCHICAL_AR(&tmp3,1,&tmp2)->dst_id = HOST2ROUTER(1); //r22
+  // r22 - as3
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RA(1,&tmp3,&tmp2),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "1"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RA(1,&tmp3,&tmp2),&link);
+  SRC_DST_HIERARCHICAL_RA(1,&tmp3,&tmp2)->src_id = HOST2ROUTER(1); //r22
+  SRC_DST_HIERARCHICAL_RA(1,&tmp3,&tmp2)->dst_id = HOST2ROUTER(3); //r32
+  
+// tmp3
+
+  // a - b
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "7"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(0,1,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(0,1,&tmp3),&link);
+  // b - a
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "7"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(1,0,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(1,0,&tmp3),&link);
+  
+  // a - r31
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(0,2,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "1"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(0,2,&tmp3),&link);
+  // a - r32
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "8"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(0,3,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "7"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(0,3,&tmp3),&link);
+  // b - r31
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(1,2,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(1,2,&tmp3),&link);
+  // b - r32
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "9"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(1,3,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(1,3,&tmp3),&link);  
+  
+   // r31 - a
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(2,0,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "1"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(2,0,&tmp3),&link);
+  // r32 - a
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "8"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(3,1,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "7"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(3,1,&tmp3),&link);
+  // r31 - b
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(2,0,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(2,0,&tmp3),&link);
+  // r32 - b
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "9"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(3,1,&tmp3),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(3,1,&tmp3),&link);  
+  
+// tmp4
+
+  // c - d
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(2,3,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "7"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(2,3,&tmp4),&link);
+  // d - c
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(3,2,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "7"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(3,2,&tmp4),&link);
+  // c - e
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "6"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(2,4,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(2,4,&tmp4),&link);
+  // e - c
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "6"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(4,2,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(4,2,&tmp4),&link);  
+  // d - e
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(3,4,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(3,4,&tmp4),&link);
+  // e - d
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(4,3,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "3"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(4,3,&tmp4),&link);
+  
+  // c - r41
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "7"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(2,4,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "9"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(2,4,&tmp4),&link);
+  // d - r41
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(3,4,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "8"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(3,4,&tmp4),&link);
+  // e - r41
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "8"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(4,4,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "0"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(4,4,&tmp4),&link);
+  // c - r42
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "6"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(2,5,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(2,5,&tmp4),&link);
+  // d - r42
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(3,5,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "1"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(3,5,&tmp4),&link);
+  // e - r42
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "9"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(4,5,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "4"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(4,5,&tmp4),&link);
+  
+  // r41 - c
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "7"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(4,2,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "9"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(4,2,&tmp4),&link);
+  // r41 - d
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(4,3,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "8"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(4,3,&tmp4),&link);
+  // r41 - e
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "8"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(4,4,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "0"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(4,4,&tmp4),&link);
+  // r42 - c
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "6"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(5,2,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "5"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(5,2,&tmp4),&link);
+  // r42 - d
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "2"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(5,3,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "1"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(5,3,&tmp4),&link);
+  // r42 - e
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "9"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(5,4,&tmp4),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "4"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(5,4,&tmp4),&link);
+  
+// tmp5
+  
+  // f - r51
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "6"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(5,6,&tmp5),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "8"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HR(5,6,&tmp5),&link);
+
+  // r51 - f
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "6"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(6,5,&tmp5),&link);
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "8"); xbt_assert0(link!=NULL,"NULL");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_RH(6,5,&tmp5),&link);
+
+// loopback
+
+  link = xbt_dict_get_or_null(surf_network_model->resource_set, "loopback"); xbt_assert0(link!=NULL,"NULL loopback");
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(0,0,&tmp3),&link);
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(1,1,&tmp3),&link);
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(2,2,&tmp4),&link);
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(3,3,&tmp4),&link);
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(4,4,&tmp4),&link);
+  xbt_dynar_push(ROUTE_HIERARCHICAL_HH(5,5,&tmp5),&link);
+    
+//   for(i=0;i<=5;i++) {
+//     for(j=0;j<=5;j++) {
+//       links = routing_hierarchical_get_route(i,j);
+//       printf("route from %d to %d",i,j);
+//       cpt=0;
+//       xbt_dynar_foreach(links, cpt, link) {
+// 	s_surf_resource_t* generic_resource = link;
+// 	printf(" l%s,",generic_resource->name);
+//       }
+//       printf("\n");
+//     }
+//   }
+// 
+//     exit(0);
 
 }
 
-void routing_add_host(char* host_id)
-{
-	int *val = xbt_malloc(sizeof(int));
-	DEBUG2("Seen host %s (#%d)",host_id,used_routing->host_count);
-	*val = used_routing->host_count++;
-	xbt_dict_set(used_routing->host_id,host_id,val,xbt_free);
-}
+static void routing_model_hierarchical_create(size_t size_of_link,void *loopback) {
+  
+  /* initialize the id counters */  
+  local_host_count = 0;
+  local_router_count = 0;
+  
+  /* initialize our structure */
+  routing_hierarchical_t routing = xbt_new0(s_routing_hierarchical_t,1);
+  routing->generic_routing.name = "Hierarchical";
+  routing->generic_routing.host_count = 0;
+  routing->generic_routing.get_route = routing_hierarchical_get_route;
+  routing->generic_routing.get_onelink_routes = routing_hierarchical_get_onelink_routes;
+  routing->generic_routing.is_router = routing_hierarchical_is_router;
+  routing->generic_routing.finalize = routing_hierarchical_finalize;
+  
+  routing->size_of_link = size_of_link;
+  routing->loopback = loopback;
+  
+  /* Set it in position */
+  used_routing = (routing_t) routing;
 
-void routing_set_routes()
-{
-	routing_full_parse_end();
+  /* Set the dict for host ids */
+  routing->generic_routing.host_id = xbt_dict_new();
+
+  /* Set the host */
+  routing->host_routetree = xbt_dynar_new(sizeof(routetree_t), NULL);
+
+  /* Create the last route array */
+  routing->last_route = xbt_dynar_new(routing->size_of_link, NULL);
+  
+  /* Setup the parsing callbacks we need */
+  
+  // DAVID - only for parse the hosts
+  surfxml_add_callback(STag_surfxml_host_cb_list, &routing_full_parse_Shost);
+  
+  // surfxml_add_callback(STag_surfxml_router_cb_list, &routing_full_parse_Srouter);
+  // surfxml_add_callback(ETag_surfxml_platform_cb_list, &routing_full_parse_end);
+  // surfxml_add_callback(STag_surfxml_route_cb_list, &routing_full_parse_Sroute_set_endpoints);
+  // surfxml_add_callback(ETag_surfxml_route_cb_list, &routing_full_parse_Eroute);
+  // surfxml_add_callback(STag_surfxml_cluster_cb_list, &routing_full_parse_Scluster);
+
+  // DAVID - make a fix example
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &example);
+
 }
