@@ -2363,9 +2363,9 @@ static void routing_full_parse_Scluster(void)
 	SURFXML_BUFFER_SET(route_dst, route_src_dst);
 	SURFXML_START_TAG(route);
 
-	DEBUG1("<link:ctn\tid=\"%s_link_$src1\"/>",cluster_id);
+	DEBUG1("<link:ctn\tid=\"%s_link_$1src\"/>",cluster_id);
 	SURFXML_BUFFER_RESET();
-	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$src1",cluster_id));
+	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$1src",cluster_id));
 	SURFXML_START_TAG(link_c_ctn);
 	SURFXML_END_TAG(link_c_ctn);
 
@@ -2375,9 +2375,9 @@ static void routing_full_parse_Scluster(void)
 	SURFXML_START_TAG(link_c_ctn);
 	SURFXML_END_TAG(link_c_ctn);
 
-	DEBUG1("<link:ctn\tid=\"%s_link_$dst1\"/>",cluster_id);
+	DEBUG1("<link:ctn\tid=\"%s_link_$1dst\"/>",cluster_id);
 	SURFXML_BUFFER_RESET();
-	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$dst1",cluster_id));
+	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$1dst",cluster_id));
 	SURFXML_START_TAG(link_c_ctn);
 	SURFXML_END_TAG(link_c_ctn);
 
