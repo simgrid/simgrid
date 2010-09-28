@@ -1,15 +1,14 @@
 <?xml version='1.0'?>
  <!DOCTYPE platform SYSTEM "simgrid.dtd">
  <platform version="2">
- <AS  id="AS0"  routing="Full">
    <!-- Platform -->
-   
+ <AS  id="AS0"  routing="Full">
    <host id="toto" power="1000000"/>
    <link id="lb" bandwidth="100000000" latency="0.000000"/>
-   <route src="toto" dst="toto"><link:ctn id="lb"/></route>
+   <route src="toto" dst="toto"><link:ctn id="lb"/></route>  	
+  </AS>  
    
    <!-- Deployment -->
    <process host="toto" function="send"/>
    <process host="toto" function="receive"/>
- </AS>
  </platform>

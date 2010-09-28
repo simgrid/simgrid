@@ -12,8 +12,10 @@
 50  0.5
 60  0.5
 </trace>
+  <AS  id="AS0"  routing="Full">
+ <host id="CPU1" power="20"/> 	
+  </AS>
 
-<host id="CPU1" power="20"/>
 <trace:connect kind="POWER" trace="1" element="CPU1"/>
 <process host="CPU1" function="test_trace">
 <argument value="420"/>
