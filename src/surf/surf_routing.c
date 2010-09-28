@@ -408,11 +408,6 @@ static xbt_dynar_t elements_father(const char* src,const char* dst) {
 
 /* Global Business methods */
 
-// typedef enum {
-//   SURF_LOCAL_SOLVE = 0,   /**< No Local solve */ 
-//   SURF_NO_LOCAL_SOLVE,       /**< Local solve */
-// } e_surf_is_local_t;
-
 static route_extended_t _get_route(const char* src,const char* dst) {
   
   void* link;
@@ -479,6 +474,9 @@ static route_extended_t _get_route(const char* src,const char* dst) {
       xbt_dynar_free( &(e_route_dst->generic_route.link_list) );
       xbt_free(e_route_dst);
   }
+  
+  xbt_dynar_free(&elem_father_list);
+  
   return e_route; 
 }
 
