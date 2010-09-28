@@ -630,6 +630,8 @@ void routing_model_create(size_t size_of_links, void* loopback) {
   
   /* DEBUG ONLY */  
   //surfxml_add_callback(ETag_surfxml_platform_cb_list, &DEBUG_exit);
+  
+  // TODO checked if ANY AS are duplicated
 }
 
 /* ************************************************************************** */
@@ -748,8 +750,8 @@ static void  model_full_end(void) {
   /* Put the routes in position */
   xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
     keys = xbt_str_split_str(key, sep);
-    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
-    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
+    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 10);
+    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 10);
     TO_ROUTE_FULL(src_id,dst_id) = generic_new_extended_route(current_routing->hierarchy,data,1);
      xbt_dynar_free(&keys);
    }
@@ -851,17 +853,22 @@ static route_extended_t floyd_get_route(routing_component_t rc, const char* src,
     if(first) first_gw = gw_dst;
     
     if(rc->hierarchy == SURF_ROUTING_RECURSIVE && !first && strcmp(gw_dst,prev_gw_src)) {
-      routing_component_t src_as = xbt_dict_get_or_null(global_routing->where_network_elements,gw_dst);
-      routing_component_t dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,prev_gw_src);
-      xbt_assert4(src_as==dst_as,"bad routing, differents AS gateways in route \"%s\" to \"%s\" (\"%s\"-\"%s\")",src,dst,gw_dst,prev_gw_src);
-      route_extended_t e_route_as_to_as = (*(src_as->get_route))(src_as,gw_dst,prev_gw_src);
+      //routing_component_t src_as = xbt_dict_get_or_null(global_routing->where_network_elements,gw_dst);
+      //routing_component_t dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,prev_gw_src);
+      //xbt_assert4(src_as==dst_as,"bad routing, differents AS gateways in route \"%s\" to \"%s\" (\"%s\"-\"%s\")",src,dst,gw_dst,prev_gw_src);
+      //route_extended_t e_route_as_to_as = (*(src_as->get_route))(src_as,gw_dst,prev_gw_src);
+      // TODO: - check for error - is possible to generate a route like =  as----as----as
+      xbt_dynar_t e_route_as_to_as = (*(global_routing->get_route))(gw_dst,prev_gw_src);
       xbt_assert2(e_route_as_to_as,"no route between \"%s\" and \"%s\"",gw_dst,prev_gw_src);
-      links = e_route_as_to_as->generic_route.link_list;
+      //links = e_route_as_to_as->generic_route.link_list;
+      links = e_route_as_to_as;
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
         xbt_dynar_insert_at(new_e_route->generic_route.link_list,pos,&link);
         pos++;
       }
+//       xbt_dynar_free(&(e_route_as_to_as->generic_route.link_list));
+//       xbt_free(e_route_as_to_as);
     }
     
     links = e_route->generic_route.link_list;
@@ -956,8 +963,8 @@ static void  model_floyd_end(void) {
    /* Put the routes in position */
   xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
     keys = xbt_str_split_str(key, sep);
-    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
-    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
+    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 10);
+    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 10);
     TO_FLOYD_LINK(src_id,dst_id) = generic_new_extended_route(current_routing->hierarchy,data,0);
     TO_FLOYD_PRED(src_id,dst_id) = src_id;
     //link cost
@@ -1210,7 +1217,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc, const char* s
     // TODO: correct the order
     links = e_route->generic_route.link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_push(new_e_route->generic_route.link_list,&link);
+      xbt_dynar_unshift(new_e_route->generic_route.link_list,&link);
     }
   
     return new_e_route;
@@ -1302,19 +1309,22 @@ static route_extended_t dijkstra_get_route(routing_component_t rc, const char* s
     if(v==dst_node_id) first_gw = gw_dst;
     
     if(rc->hierarchy == SURF_ROUTING_RECURSIVE && v!=dst_node_id && strcmp(gw_dst,prev_gw_src)) {
-      routing_component_t src_as = xbt_dict_get_or_null(global_routing->where_network_elements,gw_dst);
-      routing_component_t dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,prev_gw_src);
-      xbt_assert4(src_as==dst_as,"bad routing, differents AS gateways in route \"%s\" to \"%s\" (\"%s\"-\"%s\")",src,dst,gw_dst,prev_gw_src);
-      route_extended_t e_route_as_to_as = (*(src_as->get_route))(src_as,gw_dst,prev_gw_src);
+      //routing_component_t src_as = xbt_dict_get_or_null(global_routing->where_network_elements,gw_dst);
+      //routing_component_t dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,prev_gw_src);
+      //xbt_assert4(src_as==dst_as,"bad routing, differents AS gateways in route \"%s\" to \"%s\" (\"%s\"-\"%s\")",src,dst,gw_dst,prev_gw_src);
+      //route_extended_t e_route_as_to_as = (*(src_as->get_route))(src_as,gw_dst,prev_gw_src);
+      // TODO: - check for error - is possible to generate a route like =  as----as----as
+      xbt_dynar_t e_route_as_to_as = (*(global_routing->get_route))(gw_dst,prev_gw_src);
       xbt_assert2(e_route_as_to_as,"no route between \"%s\" and \"%s\"",gw_dst,prev_gw_src);
-      links = e_route_as_to_as->generic_route.link_list;
+      //links = e_route_as_to_as->generic_route.link_list;
+      links = e_route_as_to_as;
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
         xbt_dynar_insert_at(new_e_route->generic_route.link_list,pos,&link);
         pos++;
       }
-      xbt_dynar_free(&(e_route_as_to_as->generic_route.link_list));
-      xbt_free(e_route_as_to_as);
+//       xbt_dynar_free(&(e_route_as_to_as->generic_route.link_list));
+//       xbt_free(e_route_as_to_as);
     }
     
     links = e_route->generic_route.link_list;
@@ -1417,8 +1427,8 @@ static void  model_dijkstra_both_end(void) {
   /* Put the routes in position */
   xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
     keys = xbt_str_split_str(key, sep);
-    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 16);
-    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 16);
+    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 10);
+    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 10);
     route_extended_t e_route = generic_new_extended_route(current_routing->hierarchy,data,0);
     route_new_dijkstra(routing,src_id,dst_id,e_route);
     xbt_dynar_free(&keys);
