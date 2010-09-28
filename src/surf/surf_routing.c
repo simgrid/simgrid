@@ -629,7 +629,7 @@ void routing_model_create(size_t size_of_links, void* loopback) {
   surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS);
   
   /* DEBUG ONLY */  
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &DEBUG_exit);
+  //surfxml_add_callback(ETag_surfxml_platform_cb_list, &DEBUG_exit);
 }
 
 /* ************************************************************************** */
@@ -2000,45 +2000,6 @@ static void DEBUG_exit(void) {
   printf("-- print all the example routes --\n");
   xbt_dynar_t links;
   void* link;
-  for(i=0;i<total;i++) {
-    for(j=0;j<total;j++) {
-      printf("route from %s to %s >>>\n ",names[i],names[j]);
-      links = (*(global_routing->get_route))(names[i],names[j]);
-      printf(">>>");
-      unsigned int cpt=0;
-      xbt_dynar_foreach(links, cpt, link) {
-        s_surf_resource_t* generic_resource = link;
-        printf(" %s",generic_resource->name);
-      }
-      printf("\n");
-    }
-  }
-  for(i=0;i<total;i++) {
-    for(j=0;j<total;j++) {
-      printf("route from %s to %s >>>\n ",names[i],names[j]);
-      links = (*(global_routing->get_route))(names[i],names[j]);
-      printf(">>>");
-      unsigned int cpt=0;
-      xbt_dynar_foreach(links, cpt, link) {
-        s_surf_resource_t* generic_resource = link;
-        printf(" %s",generic_resource->name);
-      }
-      printf("\n");
-    }
-  }
-  for(i=0;i<total;i++) {
-    for(j=0;j<total;j++) {
-      printf("route from %s to %s >>>\n ",names[i],names[j]);
-      links = (*(global_routing->get_route))(names[i],names[j]);
-      printf(">>>");
-      unsigned int cpt=0;
-      xbt_dynar_foreach(links, cpt, link) {
-        s_surf_resource_t* generic_resource = link;
-        printf(" %s",generic_resource->name);
-      }
-      printf("\n");
-    }
-  }
   for(i=0;i<total;i++) {
     for(j=0;j<total;j++) {
       printf("route from %s to %s >>>\n ",names[i],names[j]);
