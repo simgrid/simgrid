@@ -428,7 +428,7 @@ static route_extended_t _get_route(const char* src,const char* dst) {
      
   xbt_assert0(src&&dst,"bad parameters for \"_get_route\" method");
   
-  route_extended_t e_route, e_route_cnt, e_route_src, e_route_dst;
+  route_extended_t e_route, e_route_cnt, e_route_src=NULL, e_route_dst=NULL;
   
   xbt_dynar_t elem_father_list = elements_father(src,dst);
   
@@ -829,7 +829,7 @@ static route_extended_t floyd_get_route(routing_component_t rc, const char* src,
   int first = 1;
   int pred = *dst_id;
   int prev_pred = 0;
-  char *gw_src,*gw_dst, *prev_gw_src,*prev_gw_dst, *first_gw;
+  char *gw_src=NULL,*gw_dst=NULL, *prev_gw_src,*prev_gw_dst, *first_gw=NULL;
   unsigned int cpt;
   void* link;
   xbt_dynar_t links;
@@ -1279,7 +1279,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc, const char* s
   }
   
   /* compose route path with links */
-  char *gw_src,*gw_dst, *prev_gw_src,*prev_gw_dst, *first_gw;
+  char *gw_src=NULL,*gw_dst=NULL, *prev_gw_src,*prev_gw_dst, *first_gw=NULL;
   
   for(v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
