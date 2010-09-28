@@ -243,10 +243,10 @@ endif(HAVE_MC)
 
 if(HAVE_JAVA)
 # java examples
-ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest ${CMAKE_BINARY_DIR})
-ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest ${CMAKE_BINARY_DIR})
-ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest ${CMAKE_BINARY_DIR})
-ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest ${CMAKE_BINARY_DIR})
+ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest ${simgrid_BINARY_DIR})
+ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest ${simgrid_BINARY_DIR})
+ADD_TEST(java-comm_time ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/comm_time CommTimeTest ${simgrid_BINARY_DIR})
+ADD_TEST(java-suspend 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/suspend SuspendTest ${simgrid_BINARY_DIR})
 endif(HAVE_JAVA)
 
 ###
