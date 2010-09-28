@@ -194,7 +194,7 @@ endif(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of pcre
-find_library(PCRE_LIB pcre "/usr/lib/" )
+find_library(PATH_PCRE_LIB pcre "/usr/lib/")
 
 if(PATH_PCRE_LIB)
        string(REGEX REPLACE "/libpcre.*[.]so$" "" PATHLIBPCRE "${PCRE_LIB}")
