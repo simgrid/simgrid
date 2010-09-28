@@ -106,7 +106,7 @@
 
 <!-- start added by DAVID -->
 
-<!ELEMENT AS (((AS|link)*,ASroute*)|((host|router|link)*,route*))>
+<!ELEMENT AS (((AS|link)*,ASroute*,bypassRoute*)|((host|router|link)*,route*))>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
 
@@ -120,6 +120,11 @@
 <!ATTLIST ASroute gw_src CDATA #REQUIRED>
 <!ATTLIST ASroute gw_dst CDATA #REQUIRED>
 
+<!ELEMENT bypassRoute (link:ctn*)>
+<!ATTLIST bypassRoute src CDATA #REQUIRED>
+<!ATTLIST bypassRoute dst CDATA #REQUIRED>
+<!ATTLIST bypassRoute gw_src CDATA #REQUIRED>
+<!ATTLIST bypassRoute gw_dst CDATA #REQUIRED>
 
 <!--<!ELEMENT AS ((AS|host|gateway|router|link|route)*)>
 <!ATTLIST AS id CDATA #REQUIRED>

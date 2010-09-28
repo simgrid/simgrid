@@ -52,6 +52,8 @@ XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_AS_cb_list; // added by david
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_AS_cb_list; // added by david
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_ASroute_cb_list; // added by david
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_ASroute_cb_list; // added by david
+XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_bypassRoute_cb_list; // added by david
+XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_bypassRoute_cb_list; // added by david
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);

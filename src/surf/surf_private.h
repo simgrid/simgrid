@@ -98,18 +98,6 @@ typedef struct {
  * Routing logic
  */
 
-// FIXME: the next lines cant be comented without fix the code in network.c file.
-// struct s_routing {
-//   const char *name;
-//   xbt_dict_t host_id; /* char* -> int* */
-//   xbt_dynar_t (*get_route)(int src, int dst);
-//   xbt_dict_t (*get_onelink_routes)(void);
-//   int (*is_router)(int id);
-//   void (*finalize)(void);
-//   int host_count;
-//   int router_count;
-// };
-
 ////////////////////////////////////////////////////////////////////////////////
 // HERE START THE NEW STRUCTURES
 ////////////////////////////////////////////////////////////////////////////////
@@ -175,11 +163,13 @@ struct s_routing_component {
   struct s_routing_component* routing_father;
   xbt_dict_t routing_sons;
   route_extended_t (*get_route)(routing_component_t rc, const char* src, const char* dst);
+  route_extended_t (*get_bypass_route)(routing_component_t rc, const char* src, const char* dst);
+  void (*finalize)(routing_component_t rc);
   void (*set_processing_units)(routing_component_t rc, const char* name);
   void (*set_autonomous_system)(routing_component_t rc, const char* name);
   void (*set_route)(routing_component_t rc, const char* src, const char* dst, route_t route);
   void (*set_ASroute)(routing_component_t rc, const char* src, const char* dst, route_extended_t route);
-  void (*finalize)(routing_component_t rc);
+  void (*set_bypassroute)(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route);
 };
 
 struct s_routing_global {
