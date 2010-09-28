@@ -199,8 +199,8 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src, SD_workstation_t dst)
 
   surf_src = &src->surf_workstation;
   surf_dst = &dst->surf_workstation;
-
-  surf_route = surf_workstation_model->extension.workstation.get_route(surf_src,surf_dst);
+  surf_route = surf_workstation_model->extension.workstation.get_route(
+		  (void*)SD_workstation_get_name(src),(void*)SD_workstation_get_name(dst));
 
   if(surf_route == NULL)
   {

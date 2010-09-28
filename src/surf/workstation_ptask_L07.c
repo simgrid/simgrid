@@ -575,10 +575,8 @@ static surf_action_t ptask_action_sleep(void *cpu, double duration)
 
 static xbt_dynar_t ptask_get_route(void *src, void *dst)
 {
-//   cpu_L07_t host_src = src; // COMMENTED BY DAVID
-//   cpu_L07_t host_dst = dst; // COMMENTED BY DAVID
-
-  return NULL;// used_routing->get_route(host_src->id, host_dst->id); // COMMENTED BY DAVID
+	return global_routing->get_route((char *) src,(char *) dst);
+	//return NULL; used_routing->get_route(host_src->id, host_dst->id); // COMMENTED BY DAVID
 }
 
 static double ptask_get_link_bandwidth(const void *link)
