@@ -10,7 +10,6 @@
 
 #ifdef HAVE_TRACING
 
-// extern routing_t used_routing; // COMMENTED BY DAVID
 extern routing_global_t global_routing;
 
 void __TRACE_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what)

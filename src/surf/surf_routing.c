@@ -581,6 +581,16 @@ static void finalize(void) {
   xbt_free(global_routing);
 }
 
+static void get_onelink_routes(void)
+{
+	xbt_die("get_onelink_routes function not implemented yet!!!");
+}
+
+static int is_router(const char *name)
+{
+	xbt_die("is_router function not implemented yet!!!");
+}
+
 /**
  * \brief Generic method: create the global routing schema
  * 
@@ -1882,7 +1892,6 @@ static void generic_set_route(routing_component_t rc, const char* src, const cha
 
 static void generic_set_ASroute(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route) {
   DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",src,e_route->src_gateway,dst,e_route->dst_gateway);
-  printf("Load ASroute from \"%s(%s)\" to \"%s(%s)\"\n",src,e_route->src_gateway,dst,e_route->dst_gateway);
   model_type_t modeltype = rc->routing;
   xbt_dict_t _parse_routes;
   xbt_dict_t _to_index;
@@ -2213,15 +2222,10 @@ static void routing_full_parse_Scluster(void)
 	xbt_dynar_t radical_elements;
 	xbt_dynar_t radical_ends;
 
+	static int surfxml_buffer_stack_stack_ptr = 0;
+	static int surfxml_buffer_stack_stack[1024];
+
 	surfxml_bufferstack_push(1);
-
-	/* allocating memory for the buffer, I think 2kB should be enough */
-	// surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
-
-//	DEBUG4("id='%s' prefix='%s' suffix='%s' radical='%s'",
-//	  cluster_id,cluster_prefix,cluster_suffix,cluster_radical);
-//	DEBUG5("power='%s' bw='%s' lat='%s' bb_bw='%s' bb_lat='%s'",
-//		  cluster_power,cluster_bw,cluster_lat,cluster_bb_bw,cluster_bb_lat);
 
 	DEBUG1("<AS id=\"%s\"\trouting=\"RuleBased\">",cluster_id);
 	SURFXML_BUFFER_SET(AS_id, cluster_id);
@@ -2240,7 +2244,6 @@ static void routing_full_parse_Scluster(void)
 			  link_id = bprintf("%s_link_%d", cluster_id, start);
 
 			  DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
-			  SURFXML_BUFFER_RESET();
 			  SURFXML_BUFFER_SET(host_id, host_id);
 			  SURFXML_BUFFER_SET(host_power, cluster_power);
 			  SURFXML_BUFFER_SET(host_availability, "1.0");
@@ -2255,7 +2258,6 @@ static void routing_full_parse_Scluster(void)
 			  SURFXML_END_TAG(host);
 
 			  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_id,cluster_bw,cluster_lat);
-			  SURFXML_BUFFER_RESET();
 			  SURFXML_BUFFER_SET(link_id, link_id);
 			  SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
 			  SURFXML_BUFFER_SET(link_latency, cluster_lat);
@@ -2279,7 +2281,6 @@ static void routing_full_parse_Scluster(void)
 				  link_id = bprintf("%s_link_%d", cluster_id, i);
 
 				  DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
-				  SURFXML_BUFFER_RESET();
 				  SURFXML_BUFFER_SET(host_id, host_id);
 				  SURFXML_BUFFER_SET(host_power, cluster_power);
 				  SURFXML_BUFFER_SET(host_availability, "1.0");
@@ -2294,7 +2295,6 @@ static void routing_full_parse_Scluster(void)
 				  SURFXML_END_TAG(host);
 
 				  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_id,cluster_bw,cluster_lat);
-				  SURFXML_BUFFER_RESET();
 				  SURFXML_BUFFER_SET(link_id, link_id);
 				  SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
 				  SURFXML_BUFFER_SET(link_latency, cluster_lat);
@@ -2321,13 +2321,11 @@ static void routing_full_parse_Scluster(void)
 	link_backbone = bprintf("%s_backbone",cluster_id);
 
 	DEBUG1("<router id=\"%s\"\">",router_id);
-	SURFXML_BUFFER_RESET();
 	SURFXML_BUFFER_SET(router_id, router_id);;
 	SURFXML_START_TAG(router);
 	SURFXML_END_TAG(router);
 
 	DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_router,cluster_bw,cluster_lat);
-	SURFXML_BUFFER_RESET();
 	SURFXML_BUFFER_SET(link_id, link_router);
 	SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
 	SURFXML_BUFFER_SET(link_latency, cluster_lat);
@@ -2340,7 +2338,6 @@ static void routing_full_parse_Scluster(void)
 	SURFXML_END_TAG(link);
 
 	DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>",link_backbone,cluster_bb_bw,cluster_bb_lat);
-	SURFXML_BUFFER_RESET();
 	SURFXML_BUFFER_SET(link_id, link_backbone);
 	SURFXML_BUFFER_SET(link_bandwidth, cluster_bb_bw);
 	SURFXML_BUFFER_SET(link_latency, cluster_bb_lat);
@@ -2367,25 +2364,21 @@ static void routing_full_parse_Scluster(void)
 	DEBUG0(" ");
 
 	DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\">",route_src_dst,route_src_dst);
-	SURFXML_BUFFER_RESET();
 	SURFXML_BUFFER_SET(route_src, route_src_dst);
 	SURFXML_BUFFER_SET(route_dst, route_src_dst);
 	SURFXML_START_TAG(route);
 
 	DEBUG1("<link:ctn\tid=\"%s_link_$1src\"/>",cluster_id);
-	SURFXML_BUFFER_RESET();
 	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$1src",cluster_id));
 	SURFXML_START_TAG(link_c_ctn);
 	SURFXML_END_TAG(link_c_ctn);
 
 	DEBUG1("<link:ctn\tid=\"%s_backbone\"/>",cluster_id);
-	SURFXML_BUFFER_RESET();
 	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_backbone",cluster_id));
 	SURFXML_START_TAG(link_c_ctn);
 	SURFXML_END_TAG(link_c_ctn);
 
 	DEBUG1("<link:ctn\tid=\"%s_link_$1dst\"/>",cluster_id);
-	SURFXML_BUFFER_RESET();
 	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$1dst",cluster_id));
 	SURFXML_START_TAG(link_c_ctn);
 	SURFXML_END_TAG(link_c_ctn);

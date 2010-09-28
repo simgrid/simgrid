@@ -186,6 +186,7 @@ xbt_dict_t surf_resource_properties(const void *resource);
 
 XBT_PUBLIC(void) surfxml_bufferstack_push(int new);
 XBT_PUBLIC(void) surfxml_bufferstack_pop(int new);
+
 XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 
 #endif /* _SURF_SURF_PRIVATE_H */

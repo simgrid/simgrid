@@ -27,6 +27,7 @@ xbt_dict_t trace_connect_list_latency = NULL;
 /* This buffer is used to store the original buffer before substituting it by out own buffer. Useful for the foreach tag */
 static xbt_dynar_t surfxml_bufferstack_stack = NULL;
 int surfxml_bufferstack_size = 2048;
+
 static char *old_buff = NULL;
 static void surf_parse_error(char *msg);
 
@@ -485,7 +486,7 @@ static void add_randomness(void)
 {
   /* If needed aditional properties can be added by using the prop tag */
   random_data_t random = random_new(random_generator, 0, random_min, random_max, random_mean, random_std_deviation);
-  xbt_dict_set(random_data_list, random_id, (void *) random, &xbt_free_ref); // FIX BY DAVID, add the xbt_free_ref function
+  xbt_dict_set(random_data_list, random_id, (void *) random, &xbt_free_ref);
 }
 
 /**
@@ -573,8 +574,8 @@ void surf_add_route_element(char* link_ctn_id)
 void surf_route_set_resource(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
 {
 	xbt_die("\"surf_route_set_resource\" not support");
-	//route_link_list = xbt_dynar_new(sizeof(char *), NULL); // COMMENTED BY DAVID
-	//routing_add_route(source_id,destination_id,links_id,action); // COMMENTED BY DAVID
+	//route_link_list = xbt_dynar_new(sizeof(char *), NULL);
+	//routing_add_route(source_id,destination_id,links_id,action);
 
 }
 
@@ -584,7 +585,7 @@ void surf_route_set_resource(char *source_id,char *destination_id,xbt_dynar_t li
 void surf_route_add_host(char *host_id)
 {
 	xbt_die("\"surf_route_add_host\" not support");
-	//routing_add_host(host_id); // COMMENTED BY DAVID
+	//routing_add_host(host_id);
 }
 
 /**
@@ -611,5 +612,5 @@ void surf_wsL07_add_traces(void)
 void surf_set_routes(void)
 {
 	xbt_die("\"surf_set_routes\" not support");
-	//routing_set_routes(); // COMMENTED BY DAVID
+	//routing_set_routes();
 }

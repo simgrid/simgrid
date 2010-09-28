@@ -325,15 +325,15 @@ static void net_update_actions_state(double now, double delta)
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
 #ifdef HAVE_TRACING
-// COMMENTED BY DAVID
-//     xbt_dynar_t route = used_routing->get_route(action->src, action->dst);
-//     
-//     link_CM02_t link;
-//     unsigned int i;
-//     xbt_dynar_foreach(route, i, link) {
-//     	TRACE_surf_link_set_utilization (link->lmm_resource.generic_resource.name,
-//           action->generic_action.data, lmm_variable_getvalue(action->variable), now-delta, delta);
-//     }
+     // COMMENTED BY DAVID
+     xbt_dynar_t route = global_routing->get_route(action->src_name, action->dst_name);
+
+     link_CM02_t link;
+     unsigned int i;
+     xbt_dynar_foreach(route, i, link) {
+     	TRACE_surf_link_set_utilization (link->lmm_resource.generic_resource.name,
+           action->generic_action.data, lmm_variable_getvalue(action->variable), now-delta, delta);
+     }
 #endif
     deltap = delta;
     if (action->latency > 0) {
@@ -495,13 +495,11 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
      Add a link_CM02_t *link and a int link_nb to network_card_CM02_t. It will represent local links for this node
      Use the cluster_id for ->id */
 
-  //xbt_dynar_t route = used_routing->get_route(src, dst);  // COMMENTED BY DAVID
   xbt_dynar_t route = global_routing->get_route(src_name, dst_name);
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
 
   if( sg_network_fullduplex == 1){
-	  //back_route = used_routing->get_route(dst, src);  // COMMENTED BY DAVID
 	  back_route = global_routing->get_route(src_name, dst_name);
   }
   
@@ -596,6 +594,8 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
   }  /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
 
+
+
   XBT_OUT;
 
   return (surf_action_t) action;
@@ -645,8 +645,6 @@ static void net_finalize(void)
 {
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
-
-  //used_routing->finalize(); // COMMENTED BY DAVID
   
   global_routing->finalize();
   
