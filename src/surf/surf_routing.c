@@ -1861,7 +1861,7 @@ static void generic_free_extended_route(route_extended_t e_route) {
 static routing_component_t generic_as_exist(routing_component_t find_from, routing_component_t to_find) {
   xbt_dict_cursor_t cursor = NULL;
   char *key;
-  int found;
+  int found=0;
   routing_component_t elem;
   xbt_dict_foreach(find_from->routing_sons, cursor, key, elem) {
     if( to_find == elem || generic_as_exist(elem,to_find) ){
