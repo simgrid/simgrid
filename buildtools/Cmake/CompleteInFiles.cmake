@@ -204,7 +204,7 @@ if(PATH_PCRE_LIB)
 		endif(NOT operation)
        set(HAVE_PCRE_LIB 1)
 else(PATH_PCRE_LIB)
-		message(FATAL_ERROR "Must have libpcre")
+		message(FATAL_ERROR "You must have libpcre installed (please install the libpcre3-dev package or equivalent)")
 endif(PATH_PCRE_LIB)
 
 #--------------------------------------------------------------------------------------------------
