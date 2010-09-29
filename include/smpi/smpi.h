@@ -245,6 +245,7 @@ XBT_PUBLIC(int) smpi_gettimeofday(struct timeval* tv, struct timezone* tz);
 XBT_PUBLIC(void) smpi_sample_1(int global, const char* file, int line, int max);
 XBT_PUBLIC(int) smpi_sample_2(int global, const char* file, int line);
 XBT_PUBLIC(void) smpi_sample_3(int global, const char* file, int line);
+XBT_PUBLIC(void) smpi_sample_flops(double flops);
 
 #define SMPI_SAMPLE_LOCAL(num) for(smpi_sample_1(0, __FILE__, __LINE__, num); \
                                    smpi_sample_2(0, __FILE__, __LINE__);      \
@@ -253,6 +254,8 @@ XBT_PUBLIC(void) smpi_sample_3(int global, const char* file, int line);
 #define SMPI_SAMPLE_GLOBAL(num) for(smpi_sample_1(1, __FILE__, __LINE__, num); \
                                     smpi_sample_2(1, __FILE__, __LINE__);      \
                                     smpi_sample_3(1, __FILE__, __LINE__))
+
+#define SMPI_SAMPLE_DELAY(flops) for(smpi_sample_flops(flops); 0; )
 
 XBT_PUBLIC(void*) smpi_shared_malloc(size_t size, const char* file, int line);
 #define SMPI_SHARED_MALLOC(size) smpi_shared_malloc(size, __FILE__, __LINE__)

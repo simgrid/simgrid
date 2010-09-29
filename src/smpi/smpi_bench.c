@@ -35,32 +35,36 @@ void smpi_bench_destroy(void) {
    }
 }
 
-static void smpi_execute(double duration) {
+static void smpi_execute_flops(double flops) {
   smx_host_t host;
   smx_action_t action;
   smx_mutex_t mutex;
   smx_cond_t cond;
   e_surf_action_state_t state;
 
+  host = SIMIX_host_self();
+  mutex = SIMIX_mutex_init();
+  cond = SIMIX_cond_init();
+  DEBUG1("Handle real computation time: %f flops", flops);
+  action = SIMIX_action_execute(host, "computation", flops);
+  SIMIX_mutex_lock(mutex);
+  SIMIX_register_action_to_condition(action, cond);
+  for(state = SIMIX_action_get_state(action);
+      state == SURF_ACTION_READY ||
+      state == SURF_ACTION_RUNNING; state = SIMIX_action_get_state(action)) {
+    SIMIX_cond_wait(cond, mutex);
+  }
+  SIMIX_unregister_action_to_condition(action, cond);
+  SIMIX_mutex_unlock(mutex);
+  SIMIX_action_destroy(action);
+  SIMIX_cond_destroy(cond);
+  SIMIX_mutex_destroy(mutex);
+}
+
+static void smpi_execute(double duration) {
   if(duration >= xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold")) {
-    host = SIMIX_host_self();
-    mutex = SIMIX_mutex_init();
-    cond = SIMIX_cond_init();
     DEBUG1("Sleep for %f to handle real computation time", duration);
-    duration *= xbt_cfg_get_double(_surf_cfg_set, "smpi/running_power");
-    action = SIMIX_action_execute(host, "computation", duration);
-    SIMIX_mutex_lock(mutex);
-    SIMIX_register_action_to_condition(action, cond);
-    for(state = SIMIX_action_get_state(action);
-        state == SURF_ACTION_READY ||
-        state == SURF_ACTION_RUNNING; state = SIMIX_action_get_state(action)) {
-      SIMIX_cond_wait(cond, mutex);
-    }
-    SIMIX_unregister_action_to_condition(action, cond);
-    SIMIX_mutex_unlock(mutex);
-    SIMIX_action_destroy(action);
-    SIMIX_cond_destroy(cond);
-    SIMIX_mutex_destroy(mutex);
+    smpi_execute_flops(duration * xbt_cfg_get_double(_surf_cfg_set, "smpi/running_power"));
   }
 }
 
@@ -162,6 +166,10 @@ void smpi_sample_3(int global, const char* file, int line) {
    smpi_bench_end(-1, NULL);
    data->time += smpi_process_simulated_elapsed();
    DEBUG2("Average mean after %d steps is %f", data->count, data->time / (double)data->count);
+}
+
+void smpi_sample_flops(double flops) {
+   smpi_execute_flops(flops);
 }
 
 void* smpi_shared_malloc(size_t size, const char* file, int line) {
