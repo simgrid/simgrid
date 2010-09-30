@@ -98,6 +98,9 @@ gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_received)
   arg->listener = xbt_thread_create("listener", listener_function, arg,1/*joinable*/);
   gras_os_sleep(0);             /* give the listener a chance to initialize before we connect to its socket */
 
+  /* We do an active wait until the listener had created the socket (FIXME: ugly hack ) */
+  while(arg->wakeup_sock_listener_side == NULL);
+  
   /* Connect the other part of the socket */
   arg->wakeup_sock_master_side =
     gras_socket_client(gras_os_myname(),
