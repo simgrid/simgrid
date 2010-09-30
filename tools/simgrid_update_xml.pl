@@ -71,10 +71,12 @@ while (defined($line = <INPUT>)) {
 	$line =~ s/\broute_element\b/link:ctn/g;
     }
     
-    if($line =~ /^(.*)<\/platform>(.*)$/) {
-	$output_string .=  " <\/AS>\n<\/platform>";
-    } else {
-    	$output_string .=  "$line\n";
+    if ($fromversion < 3)  {
+	if($line =~ /^(.*)<\/platform>(.*)$/) {
+	    $output_string .=  " <\/AS>\n<\/platform>";
+	} else {
+	    $output_string .=  "$line\n";
+	}
     }
 }
 
