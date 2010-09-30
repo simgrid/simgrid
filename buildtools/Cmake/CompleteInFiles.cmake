@@ -68,10 +68,15 @@ SET(HAVE_RUBY 0)
 set(HAVE_LUA 0)
 SET(HAVE_JAVA 0)
 SET(HAVE_TRACING 0)
+SET(HAVE_LATENCY_BOUND_TRACKING 0)
 
 if(enable_tracing)
 	SET(HAVE_TRACING 1)
 endif(enable_tracing)
+
+if(enable_latency_bound_tracking)
+	SET(HAVE_LATENCY_BOUND_TRACKING 1)
+endif(enable_latency_bound_tracking)
 
 if(enable_model-checking AND HAVE_MMAP)
 	SET(HAVE_MC 1)
