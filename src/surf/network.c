@@ -275,10 +275,12 @@ void net_action_recycle(surf_action_t action)
   return;
 }
 
+#ifdef HAVE_LATENCY_BOUND_TRACKING
 int net_get_link_latency(surf_action_t action)
 {
   return action->latency_limited;
 }
+#endif
 
 double net_action_get_remains(surf_action_t action)
 {
@@ -300,11 +302,13 @@ static double net_share_resources(double now)
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + xbt_swag_offset(s_action, variable)  )))
 
   xbt_swag_foreach(action, running_actions) {
-	if( lmm_is_variable_limited_by_latency(action->variable) ){
-		(action->generic_action).latency_limited = 1;
-	}else{
-		(action->generic_action).latency_limited = 0;
-	}
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+    if( lmm_is_variable_limited_by_latency(action->variable) ){
+      (action->generic_action).latency_limited = 1;
+    }else{
+      (action->generic_action).latency_limited = 0;
+    }
+#endif
     if (action->latency > 0) {
       if (min < 0)
         min = action->latency;
@@ -515,7 +519,9 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
   action =
     surf_action_new(sizeof(s_surf_action_network_CM02_t), size,
                     surf_network_model, failed);
+#ifdef HAVE_LATENCY_BOUND_TRACKING
   (action->generic_action).latency_limited = 0;
+#endif
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
@@ -660,7 +666,9 @@ static void surf_network_model_init_internal(void)
   surf_network_model->action_cancel = net_action_cancel;
   surf_network_model->action_recycle = net_action_recycle;
   surf_network_model->get_remains = net_action_get_remains;
+#ifdef HAVE_LATENCY_BOUND_TRACKING
   surf_network_model->get_latency_limited = net_get_link_latency;
+#endif
 
   surf_network_model->model_private->resource_used = net_resource_used;
   surf_network_model->model_private->share_resources = net_share_resources;

@@ -404,9 +404,11 @@ static void surf_network_model_init_internal(void)
   routing_model_create(sizeof(network_link_GTNETS_t), NULL);
 }
 
+#ifdef HAVE_LATENCY_BOUND_TRACKING
 static int get_latency_limited(surf_action_t action){
 	return 0;
 }
+#endif
 
 #ifdef HAVE_GTNETS
 void surf_network_model_init_GTNETS(const char *filename)
@@ -417,7 +419,9 @@ void surf_network_model_init_GTNETS(const char *filename)
   define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
 
+#ifdef HAVE_LATENCY_BOUND_TRACKING
   surf_network_model->get_latency_limited = get_latency_limited;
+#endif
 
   if(sg_gtnets_jitter > 0.0){
 	  gtnets_set_jitter(sg_gtnets_jitter);

@@ -11,7 +11,9 @@
 
 /* Pimple to get an histogram of message sizes in the simulation */
 xbt_dict_t msg_sizes = NULL;
+#ifdef HAVE_LATENCY_BOUND_TRACKING
 xbt_dict_t latency_limited_dict = NULL;
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "Logging specific to SIMIX (network)");
@@ -162,6 +164,7 @@ void SIMIX_communication_destroy(smx_comm_t comm)
 {
   VERB2("Destroy communication %p; refcount initially %d",comm,comm->refcount);
 
+#ifdef HAVE_LATENCY_BOUND_TRACKING
   //save is latency limited flag to use afterwards
   if (latency_limited_dict == NULL) {
 	  latency_limited_dict = xbt_dict_new();
@@ -170,6 +173,7 @@ void SIMIX_communication_destroy(smx_comm_t comm)
     DEBUG2("adding key %p with latency limited value %d to the dict", comm, SIMIX_action_is_latency_bounded(comm->act));
     xbt_dicti_set(latency_limited_dict, (uintptr_t)comm, SIMIX_action_is_latency_bounded(comm->act));
   }
+#endif
 
   comm->refcount--;
   if(comm->refcount > 0)
@@ -360,6 +364,7 @@ XBT_INLINE double SIMIX_communication_get_remains(smx_comm_t comm)
   return SIMIX_action_get_remains(comm->act);
 }  
 
+#ifdef HAVE_LATENCY_BOUND_TRACKING
 /**
  *  \brief verify if communication is latency bounded
  *  \param comm The communication
@@ -381,6 +386,7 @@ XBT_INLINE int SIMIX_communication_is_latency_bounded(smx_comm_t comm)
   DEBUG1("calling SIMIX_action_is_latency_bounded(%p)", comm->act);
   return SIMIX_action_is_latency_bounded(comm->act);
 }
+#endif
 
 /******************************************************************************/
 /*                    SIMIX_network_copy_data callbacks                       */

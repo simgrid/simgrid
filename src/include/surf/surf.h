@@ -73,7 +73,9 @@ XBT_PUBLIC(void) model_help(const char* category, s_surf_model_description_t * t
 				   the task is completed) */
        double remains;          /**< How much of that cost remains to
 				 * be done in the currently running task */
+#ifdef HAVE_LATENCY_BOUND_TRACKING
        int latency_limited;          /**< Set to 1 if is limited by latency, 0 otherwise */
+#endif
 
        double start;            /**< start time  */
        double finish;           /**< finish time : this is modified during the run
@@ -274,7 +276,9 @@ XBT_PUBLIC_DATA(routing_global_t) global_routing;
        void (*set_max_duration) (surf_action_t action, double duration);/**< Set the max duration of an action*/
        void (*set_priority) (surf_action_t action, double priority);/**< Set the priority of an action */
        double (*get_remains) (surf_action_t action);/**< Get the remains of an action */
+#ifdef HAVE_LATENCY_BOUND_TRACKING
        int (*get_latency_limited) (surf_action_t action);/**< Return 1 if action is limited by latency, 0 otherwise */
+#endif
 
        xbt_dict_t resource_set;
 

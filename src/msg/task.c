@@ -274,6 +274,7 @@ double MSG_task_get_remaining_communication(m_task_t task)
   return SIMIX_communication_get_remains(task->simdata->comm);
 }
 
+#ifdef HAVE_LATENCY_BOUND_TRACKING
 /** \ingroup m_task_management
  * \brief Return 1 if communication task is limited by latency, 0 otherwise
  *
@@ -285,6 +286,7 @@ int MSG_task_is_latency_bounded(m_task_t task)
 	DEBUG1("calling SIMIX_communication_is_latency_bounded(%p)", task->simdata->comm);
 	return SIMIX_communication_is_latency_bounded(task->simdata->comm);
 }
+#endif
 
 /** \ingroup m_task_management
  * \brief Returns the size of the data attached to a task #m_task_t.

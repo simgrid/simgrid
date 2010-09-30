@@ -27,7 +27,9 @@ typedef struct surf_action_network_CM02 {
   double weight;
   lmm_variable_t variable;
   double rate;
+#ifdef HAVE_LATENCY_BOUND_TRACKING
   int latency_limited;
+#endif
   int suspended;
 
 #ifdef HAVE_TRACING

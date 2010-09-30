@@ -67,8 +67,9 @@ XBT_PUBLIC(void) lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
      lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t sys);
      lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys,
                                                      lmm_constraint_t cnst);
-
+#ifdef HAVE_LATENCY_BOUND_TRACKING
      XBT_PUBLIC(int) lmm_is_variable_limited_by_latency(lmm_variable_t var);
+#endif
 
      void *lmm_constraint_id(lmm_constraint_t cnst);
      void *lmm_variable_id(lmm_variable_t var);
