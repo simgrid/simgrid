@@ -214,6 +214,9 @@ static void netviva_parse_host(void) {
   xbt_dict_set(coords, A_surfxml_host_id,coord,NULL);
 }
 
+static int netviva_get_latency_limited(surf_action_t action){
+  return 0;
+}
 void surf_network_model_init_Vivaldi(const char *filename)
 {
   xbt_assert(surf_network_model == NULL);
@@ -228,6 +231,7 @@ void surf_network_model_init_Vivaldi(const char *filename)
   surf_network_model->action_cancel = netviva_action_cancel;
   surf_network_model->action_recycle = netviva_action_recycle;
   surf_network_model->get_remains = netviva_action_get_remains;
+  surf_network_model->get_latency_limited = netviva_get_latency_limited;
 
   surf_network_model->model_private->resource_used = netviva_resource_used;
   surf_network_model->model_private->share_resources = netviva_share_resources;
