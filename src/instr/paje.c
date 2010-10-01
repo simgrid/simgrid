@@ -189,24 +189,24 @@ void TRACE_paje_create_header(void) {
 static void __pajeCreateContainer (char *output, int len, int eventid, double time, const char *alias, const char *type,
     const char *container, const char *name)
 {
-  snprintf (output, len, "%d %.15lf %s %s %s %s", eventid, time,
+  snprintf (output, len, "%d %lf %s %s %s %s", eventid, time,
       alias, type, container, name);
 }
 
 static void __pajeSetState (char *output, int len, int eventid, double time, const char *entityType, const char *container, const char *value)
 {
-  snprintf (output, len, "%d %.15lf %s %s %s", eventid, time, entityType, container, value);
+  snprintf (output, len, "%d %lf %s %s %s", eventid, time, entityType, container, value);
 }
 
 static void __pajeSetVariable (char *output, int len, int eventid, double time, const char *entityType, const char *container, const char *value)
 {
-  snprintf (output, len, "%d %.15lf %s %s %s", eventid, time, entityType, container, value);
+  snprintf (output, len, "%d %lf %s %s %s", eventid, time, entityType, container, value);
 }
 
 static void __pajeStartLink (char *output, int len, int eventid,  double time, const char *entityType, const char *container, const char *value,
 const char *sourceContainer, const char *key)
 {
-  snprintf(output, len, "%d %.15lf %s %s %s %s %s", eventid, time, entityType, container, value, sourceContainer, key);
+  snprintf(output, len, "%d %lf %s %s %s %s %s", eventid, time, entityType, container, value, sourceContainer, key);
 }
 
 /* internal do the instrumentation module */
@@ -243,7 +243,7 @@ void pajeCreateContainer(double time, const char *alias, const char *type, const
 
 void pajeDestroyContainer (double time, const char *type, const char *container)
 {
-  fprintf(tracing_file, "%d %.15lf %s %s\n", pajeDestroyContainerId, time, type, container);
+  fprintf(tracing_file, "%d %lf %s %s\n", pajeDestroyContainerId, time, type, container);
 }
 
 void pajeSetState (double time, const char *entityType, const char *container, const char *value)
@@ -262,7 +262,7 @@ void pajePushState (double time, const char *entityType, const char *container, 
 
 void pajePopState (double time, const char *entityType, const char *container)
 {
-  fprintf(tracing_file, "%d %.15lf %s %s\n", pajePopStateId, time, entityType, container);
+  fprintf(tracing_file, "%d %lf %s %s\n", pajePopStateId, time, entityType, container);
 }
 
 void pajeStartLink (double time, const char *entityType, const char *container, const char *value,
@@ -284,7 +284,7 @@ void pajeStartLinkWithVolume (double time, const char *entityType, const char *c
 void pajeEndLink (double time, const char *entityType, const char *container, const char *value,
     const char *destContainer, const char *key)
 {
-  fprintf(tracing_file, "%d %.15lf %s %s %s %s %s\n", pajeEndLinkId, time, entityType, container, value, destContainer, key);
+  fprintf(tracing_file, "%d %lf %s %s %s %s %s\n", pajeEndLinkId, time, entityType, container, value, destContainer, key);
 }
 
 void pajeDefineVariableType(const char *alias, const char *containerType, const char *name) {
@@ -314,7 +314,7 @@ void pajeSubVariable (double time, const char *entityType, const char *container
 
 void pajeNewEvent (double time, const char *entityType, const char *container, const char *value)
 {
-  fprintf(tracing_file, "%d %.15lf %s %s %s\n", pajeNewEventId, time, entityType, container, value);
+  fprintf(tracing_file, "%d %lf %s %s %s\n", pajeNewEventId, time, entityType, container, value);
 }
 
 #endif
