@@ -111,15 +111,34 @@ static xbt_dynar_t link_list = NULL; /* temporary store of current list link of 
 /**
  * \brief Add a "host" to the network element list
  */
-static void  parse_S_host(void) {
+static void  parse_S_host(char* host_id) {
   if( current_routing->hierarchy == SURF_ROUTING_NULL ) current_routing->hierarchy = SURF_ROUTING_BASE;
-  xbt_assert1(!xbt_dict_get_or_null(global_routing->where_network_elements,A_surfxml_host_id),
-      "Reading a host, processing unit \"%s\" already exist",A_surfxml_host_id);
+  xbt_assert1(!xbt_dict_get_or_null(global_routing->where_network_elements,host_id),
+      "Reading a host, processing unit \"%s\" already exist",host_id);
   xbt_assert1(current_routing->set_processing_unit,
       "no defined method \"set_processing_unit\" in \"%s\"",current_routing->name);
-  (*(current_routing->set_processing_unit))(current_routing,A_surfxml_host_id);
-  xbt_dict_set(global_routing->where_network_elements,A_surfxml_host_id,(void*)current_routing,NULL); 
+  (*(current_routing->set_processing_unit))(current_routing,host_id);
+  xbt_dict_set(global_routing->where_network_elements,host_id,(void*)current_routing,NULL);
 }
+
+/*
+ * \brief Add a host to the network element list from XML
+ */
+static void parse_S_host_XML(void)
+{
+	parse_S_host(A_surfxml_host_id);
+}
+
+/*
+ * \brief Add a host to the network element list from lua script
+ */
+static void parse_S_host_lua(char *host_id)
+{
+	parse_S_host(host_id);
+}
+/*
+ *
+ */
 
 /**
  * \brief Add a "router" to the network element list
@@ -132,22 +151,38 @@ static void parse_S_router(void) {
       "no defined method \"set_processing_unit\" in \"%s\"",current_routing->name);
   (*(current_routing->set_processing_unit))(current_routing,A_surfxml_router_id);
   xbt_dict_set(global_routing->where_network_elements,A_surfxml_router_id,(void*)current_routing,NULL); 
-#ifdef HAVE_TRACING
-  TRACE_surf_host_declaration (A_surfxml_router_id, 0);
-#endif
+  #ifdef HAVE_TRACING
+    TRACE_surf_host_declaration (A_surfxml_router_id, 0);
+  #endif
 }
 
 /**
  * \brief Set the endponints for a route
  */
-static void parse_S_route_new_and_endpoints(void) {
+static void parse_S_route_new_and_endpoints(char *src_id,char *dst_id) {
   if( src != NULL && dst != NULL && link_list != NULL )
-    THROW2(arg_error,0,"Route between %s to %s can not be defined",A_surfxml_route_src,A_surfxml_route_dst);
-  src = A_surfxml_route_src;
-  dst = A_surfxml_route_dst;
+    THROW2(arg_error,0,"Route between %s to %s can not be defined",src_id,dst_id);
+  src = src_id;
+  dst = dst_id;
   xbt_assert2(strlen(src)>0||strlen(dst)>0,
       "Some limits are null in the route between \"%s\" and \"%s\"",src,dst);
   link_list = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
+}
+
+/**
+ * \breif Set the endpoints for a route from XML
+ */
+static void parse_S_route_new_and_endpoints_XML(void)
+{
+	parse_S_route_new_and_endpoints(A_surfxml_route_src,A_surfxml_route_dst);
+}
+
+/**
+ * \breif Set the endpoints for a route from lua
+ */
+static void parse_S_route_new_and_endpoints_lua(char *id_src,char *id_dst)
+{
+	parse_S_route_new_and_endpoints(id_src,id_dst);
 }
 
 /**
@@ -183,10 +218,27 @@ static void parse_S_bypassRoute_new_and_endpoints(void) {
 /**
  * \brief Set a new link on the actual list of link for a route or ASroute
  */
-static void parse_E_link_c_ctn_new_elem(void) {
+static void parse_E_link_c_ctn_new_elem(char *link_id) {
   char *val;
-  val = xbt_strdup(A_surfxml_link_c_ctn_id);
+  val = xbt_strdup(link_id);
   xbt_dynar_push(link_list, &val);
+}
+
+/**
+ * \brief Set a new link on the actual list of link for a route or ASroute from XML
+ */
+
+static void parse_E_link_c_ctn_new_elem_XML(void)
+{
+	parse_E_link_c_ctn_new_elem(A_surfxml_link_c_ctn_id);
+}
+
+/**
+ * \brief Set a new link on the actual list of link for a route or ASroute from lua
+ */
+static void parse_E_link_c_ctn_new_elem_lua(char *link_id) {
+
+	parse_E_link_c_ctn_new_elem(link_id);
 }
 
 /**
@@ -249,13 +301,13 @@ static void parse_E_bypassRoute_store_route(void) {
 /**
  * \brief Make a new routing component
  *
- * Detect the routing model type of the routing component, make the new structure and
+ * make the new structure and
  * set the parsing functions to allows parsing the part of the routing tree
  */
-static void parse_S_AS(void) { 
+static void parse_S_AS(char* AS_id,char* AS_routing) {
   routing_component_t new_routing;
   model_type_t model = NULL;
-  char* wanted = A_surfxml_AS_routing;
+  char* wanted = AS_routing;
   int cpt;
   /* seach the routing model */
   for (cpt=0;routing_models[cpt].name;cpt++)
@@ -274,7 +326,7 @@ static void parse_S_AS(void) {
   new_routing = (routing_component_t)(*(model->create))();
   new_routing->routing = model;
   new_routing->hierarchy = SURF_ROUTING_NULL;
-  new_routing->name = xbt_strdup(A_surfxml_AS_id);
+  new_routing->name = xbt_strdup(AS_id);
   new_routing->routing_sons = xbt_dict_new();
   //INFO2("Routing %s for AS %s",A_surfxml_AS_routing,A_surfxml_AS_id);
   
@@ -286,16 +338,16 @@ static void parse_S_AS(void) {
     
   } else if( current_routing != NULL && global_routing->root != NULL ) { 
     
-    xbt_assert1(!xbt_dict_get_or_null(current_routing->routing_sons,A_surfxml_AS_id),
-           "The AS \"%s\" already exist",A_surfxml_AS_id);
+    xbt_assert1(!xbt_dict_get_or_null(current_routing->routing_sons,AS_id),
+           "The AS \"%s\" already exist",AS_id);
      /* it is a part of the tree */
     new_routing->routing_father = current_routing;
     /* set the father behavior */
     if( current_routing->hierarchy == SURF_ROUTING_NULL ) current_routing->hierarchy = SURF_ROUTING_RECURSIVE;
     /* add to the sons dictionary */
-    xbt_dict_set(current_routing->routing_sons,A_surfxml_AS_id,(void*)new_routing,NULL);
+    xbt_dict_set(current_routing->routing_sons,AS_id,(void*)new_routing,NULL);
     /* add to the father element list */
-    (*(current_routing->set_autonomous_system))(current_routing,A_surfxml_AS_id);
+    (*(current_routing->set_autonomous_system))(current_routing,AS_id);
     /* unload the prev parse rules */
     (*(current_routing->routing->unload))();
     
@@ -308,16 +360,33 @@ static void parse_S_AS(void) {
   current_routing = new_routing;
 }
 
+/*
+ * Detect the routing model type of the routing component from XML platforms
+ */
+static void parse_S_AS_XML(void)
+{
+	parse_S_AS(A_surfxml_AS_id,A_surfxml_AS_routing);
+}
+
+/*
+ * define the routing model type of routing component from lua script
+ */
+static void parse_S_AS_lua(char* id,char* mode)
+{
+	parse_S_AS(id,mode);
+}
+
+
 /**
  * \brief Finish the creation of a new routing component
  *
  * When you finish to read the routing component, other structures must be created. 
  * the "end" method allow to do that for any routing model type
  */
-static void parse_E_AS(void) {
+static void parse_E_AS(char *AS_id) {
 
   if( current_routing == NULL ) {
-    THROW1(arg_error,0,"Close AS(%s), that never open",A_surfxml_AS_id);
+    THROW1(arg_error,0,"Close AS(%s), that never open",AS_id);
   } else {
       xbt_assert1(!xbt_dict_get_or_null(global_routing->where_network_elements,current_routing->name),
           "The AS \"%s\" already exist",current_routing->name);
@@ -328,6 +397,22 @@ static void parse_E_AS(void) {
       if( current_routing != NULL )
         (*(current_routing->routing->load))();
   }
+}
+
+/*
+ * \brief Finish the creation of a new routing component from XML
+ */
+static void parse_E_AS_XML(void)
+{
+	parse_E_AS(A_surfxml_AS_id);
+}
+
+/*
+ * \brief Finish the creation of a new routing component from lua
+ */
+static void parse_E_AS_lua(char *id)
+{
+	parse_E_AS(id);
 }
 
 /* Aux Business methods */
@@ -615,21 +700,21 @@ void routing_model_create(size_t size_of_links, void* loopback) {
   current_routing = NULL;
 
   /* parse generic elements */
-  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_S_host);
+  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_S_host_XML);
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_S_router);
 
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_S_route_new_and_endpoints);
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_S_route_new_and_endpoints_XML);
   surfxml_add_callback(STag_surfxml_ASroute_cb_list, &parse_S_ASroute_new_and_endpoints);
   surfxml_add_callback(STag_surfxml_bypassRoute_cb_list, &parse_S_bypassRoute_new_and_endpoints);
   
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_E_link_c_ctn_new_elem);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_E_link_c_ctn_new_elem_XML);
   
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_E_route_store_route);
   surfxml_add_callback(ETag_surfxml_ASroute_cb_list, &parse_E_ASroute_store_route);
   surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list, &parse_E_bypassRoute_store_route);
   
-  surfxml_add_callback(STag_surfxml_AS_cb_list, &parse_S_AS);
-  surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS);
+  surfxml_add_callback(STag_surfxml_AS_cb_list, &parse_S_AS_XML);
+  surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS_XML);
 
   surfxml_add_callback(STag_surfxml_cluster_cb_list, &routing_full_parse_Scluster);
 
@@ -2397,4 +2482,57 @@ static void routing_full_parse_Scluster(void)
 	DEBUG0(" ");
 
 	surfxml_bufferstack_pop(1);
+}
+
+/*
+ * New methods to init the routing model component from the lua script
+ */
+
+/*
+ * calling parse_S_AS_lua with lua values
+ */
+void routing_AS_init(const char* AS_id,const char* AS_routing)
+{
+	parse_S_AS_lua((char*)AS_id,(char*)AS_routing);
+}
+
+/*
+ * calling parse_E_AS_lua to fisnish the creation of routing component
+ */
+void routing_AS_end(const char *AS_id)
+{
+	parse_E_AS_lua((char*)AS_id);
+}
+
+/*
+ * add a host to the network element list
+ */
+
+void routing_add_host(const char* host_id)
+{
+	parse_S_host_lua((char*)host_id);
+}
+
+/*
+ * Set a new link on the actual list of link for a route or ASroute
+ */
+void routing_add_link(const char* link_id)
+{
+	parse_E_link_c_ctn_new_elem_lua((char*)link_id);
+}
+
+/*
+ *Set the endpoints for a route
+ */
+void routing_set_route(const char* src_id,const char *dst_id)
+{
+	parse_S_route_new_and_endpoints_lua((char*)src_id,(char*)dst_id);
+}
+
+/*
+ * Store the route by calling parse_E_route_store_route
+ */
+void routing_store_route(void)
+{
+	parse_E_route_store_route();
 }
