@@ -391,6 +391,7 @@ XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
  * Setting the LogEvent's valist member is done inside _log_logEvent.
  */
 #ifdef _XBT_WIN32
+#include <stdlib.h> /* calloc */
 #define _XBT_LOG_PRE(catv, prio) do {                            \
      if (_XBT_LOG_ISENABLEDV(catv, prio)) {                      \
        s_xbt_log_event_t _log_ev;                                \
@@ -402,6 +403,7 @@ XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
        _log_ev.buffer = (char*) calloc(XBT_LOG_BUFF_SIZE + 1, sizeof(char)); \
        _xbt_log_event_log(&_log_ev
 #else
+#include <string.h> /* memset */
 #define _XBT_LOG_PRE(catv, prio) do {                            \
      if (_XBT_LOG_ISENABLEDV(catv, prio)) {                      \
        s_xbt_log_event_t _log_ev;                                \
