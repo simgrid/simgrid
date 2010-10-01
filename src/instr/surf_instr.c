@@ -180,6 +180,9 @@ void TRACE_msg_clean (void)
   xbt_dict_foreach(host_containers, cursor, key, value) {
     pajeDestroyContainer (MSG_get_clock(), "HOST", key);
   }
+  xbt_dict_foreach(created_links, cursor, key, value) {
+    pajeDestroyContainer (MSG_get_clock(), "LINK", key);
+  }
 }
 
 void TRACE_surf_host_vivaldi_parse (char *host, double x, double y, double h)
