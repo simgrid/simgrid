@@ -22,6 +22,8 @@ typedef struct s_gras_msg_listener_ {
   xbt_queue_t socks_to_close;   /* let the listener close the sockets, since it may be selecting on them. Darwin don't like this trick */
   gras_socket_t wakeup_sock_listener_side;
   gras_socket_t wakeup_sock_master_side;
+  xbt_mutex_t init_mutex; /* both this mutex and condition are used at initialization to make sure that*/
+  xbt_cond_t init_cond;   /* the main thread speaks to the listener only once it is started (FIXME: It would be easier using a semaphore, if only semaphores were in xbt_synchro) */
   xbt_thread_t listener;
 } s_gras_msg_listener_t;
 
@@ -37,6 +39,10 @@ static void listener_function(void *p)
   /* get a free socket for the receiving part of the listener */
   me->wakeup_sock_listener_side = gras_socket_server_range(5000, 6000, -1, 0);
 
+  /* wake up the launcher */
+  xbt_mutex_acquire(me->init_mutex);
+  xbt_cond_signal(me->init_cond);
+  xbt_mutex_release(me->init_mutex);
 
   /* Main loop */
   while (1) {
@@ -89,18 +95,21 @@ gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_received)
   VERB0("Launch listener");
   arg->incomming_messages = msg_received;
   arg->socks_to_close = xbt_queue_new(0, sizeof(int));
-
+  arg->init_mutex = xbt_mutex_init();
+  arg->init_cond = xbt_cond_init();
 
   /* declare the message used to awake the listener from the master */
   gras_msgtype_declare("_wakeup_listener", gras_datadesc_by_name("char"));
 
-  /* actually start the thread */
+  /* actually start the thread, and */
+  /* wait for the listener to initialize before we connect to its socket */
+  xbt_mutex_acquire(arg->init_mutex);
   arg->listener = xbt_thread_create("listener", listener_function, arg,1/*joinable*/);
-  gras_os_sleep(0);             /* give the listener a chance to initialize before we connect to its socket */
+  xbt_cond_wait(arg->init_cond, arg->init_mutex);
+  xbt_mutex_release(arg->init_mutex);
+  xbt_cond_destroy(arg->init_cond);
+  xbt_mutex_destroy(arg->init_mutex);
 
-  /* We do an active wait until the listener had created the socket (FIXME: ugly hack ) */
-  while(arg->wakeup_sock_listener_side == NULL);
-  
   /* Connect the other part of the socket */
   arg->wakeup_sock_master_side =
     gras_socket_client(gras_os_myname(),
