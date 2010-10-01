@@ -8,6 +8,7 @@
 
 #include "tesh.h"
 
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -15,42 +16,76 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
+int fg_job = 0;
 xbt_dynar_t bg_jobs = NULL;
 rctx_t armageddon_initiator = NULL;
 xbt_os_mutex_t armageddon_mutex = NULL;
+pid_t father_pid;
+struct {
+  int num;
+  struct sigaction act;
+} oldact[3];                    /* SIGINT, SIGQUIT, SIGTERM */
 
 /*
  * Module management
  */
 
-static void kill_it(void *r)
+static void armageddon_sighandler(int signum)
 {
-  rctx_t rctx = *(rctx_t *) r;
+  if (getpid() == father_pid) {
+    ERROR2("Test suite `%s': caught signal %d", testsuite_name, signum);
+    rctx_armageddon(rctx, 3);
+  }
+}
 
+static void wait_it(rctx_t rctx)
+{
   VERB2("Join thread %p which were running background cmd <%s>", rctx->runner,
         rctx->filepos);
   xbt_os_thread_join(rctx->runner, NULL);
+}
+
+static void kill_it(void *r)
+{
+  rctx_t rctx = *(rctx_t *) r;
+  wait_it(rctx);
   rctx_free(rctx);
 }
 
 void rctx_init(void)
 {
+  struct sigaction newact;
+  int i;
+  fg_job = 0;
   bg_jobs = xbt_dynar_new_sync(sizeof(rctx_t), kill_it);
   armageddon_mutex = xbt_os_mutex_init();
   armageddon_initiator = NULL;
+  father_pid = getpid();
+  memset(&newact, 0, sizeof(newact));
+  newact.sa_handler = armageddon_sighandler;
+  oldact[0].num = SIGINT;
+  oldact[1].num = SIGQUIT;
+  oldact[2].num = SIGTERM;
+  for (i = 0; i < 3; i++)
+    sigaction(oldact[i].num, &newact, &oldact[i].act);
 }
 
 void rctx_exit(void)
 {
+  int i;
   if (bg_jobs) {
     /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon from working */
     while (xbt_dynar_length(bg_jobs)) {
-      rctx_t rctx;
+      rctx_t rctx = xbt_dynar_getlast_as(bg_jobs, rctx_t);
+      wait_it(rctx);
       xbt_dynar_pop(bg_jobs, &rctx);
-      kill_it(&rctx);
+      rctx_free(rctx);
     }
-    xbt_dynar_free(&bg_jobs);
   }
+  for (i = 0; i < 3; i++)
+    sigaction(oldact[i].num, &oldact[i].act, NULL);
+  if (bg_jobs)
+    xbt_dynar_free(&bg_jobs);
   xbt_os_mutex_destroy(armageddon_mutex);
 }
 
@@ -59,21 +94,40 @@ void rctx_wait_bg(void)
   if (bg_jobs) {
     /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon from working */
     while (xbt_dynar_length(bg_jobs)) {
-      rctx_t rctx;
+      rctx_t rctx = xbt_dynar_getlast_as(bg_jobs, rctx_t);
+      wait_it(rctx);
       xbt_dynar_pop(bg_jobs, &rctx);
-      kill_it(&rctx);
+      rctx_free(rctx);
     }
     xbt_dynar_free(&bg_jobs);
   }
   bg_jobs = xbt_dynar_new_sync(sizeof(rctx_t), kill_it);
 }
 
+static void rctx_armageddon_kill_one(rctx_t initiator, const char *filepos,
+                                     rctx_t rctx)
+{
+  if (rctx != initiator) {
+    INFO2("Kill <%s> because <%s> failed", rctx->filepos, filepos);
+    xbt_os_mutex_acquire(rctx->interruption);
+    if (!rctx->reader_done) {
+      rctx->interrupted = 1;
+      kill(rctx->pid, SIGTERM);
+      usleep(100);
+      kill(rctx->pid, SIGKILL);
+    }
+    xbt_os_mutex_release(rctx->interruption);
+  }
+}
+
 void rctx_armageddon(rctx_t initiator, int exitcode)
 {
-  rctx_t rctx;
+  unsigned int cursor;
+  rctx_t job;
+  const char *filepos = initiator && initiator->filepos ?
+      initiator->filepos : "(master)";
 
-  DEBUG2("Armageddon request by <%s> (exit=%d)", initiator->filepos,
-         exitcode);
+  DEBUG2("Armageddon request by <%s> (exit=%d)", filepos, exitcode);
   xbt_os_mutex_acquire(armageddon_mutex);
   if (armageddon_initiator != NULL) {
     VERB0("Armageddon already started. Let it go");
@@ -81,26 +135,17 @@ void rctx_armageddon(rctx_t initiator, int exitcode)
     xbt_os_mutex_release(armageddon_mutex);
     return;
   }
-  DEBUG1("Armageddon request by <%s> got the lock. Let's go amok",
-         initiator->filepos);
+  DEBUG1("Armageddon request by <%s> got the lock. Let's go amok", filepos);
   armageddon_initiator = initiator;
   xbt_os_mutex_release(armageddon_mutex);
 
+  /* Kill foreground command */
+  if (fg_job)
+    rctx_armageddon_kill_one(initiator, filepos, rctx);
+
   /* Kill any background commands */
-  while (xbt_dynar_length(bg_jobs)) {
-    xbt_dynar_pop(bg_jobs, &rctx);
-    if (rctx != initiator) {
-      INFO2("Kill <%s> because <%s> failed", rctx->filepos,
-            initiator->filepos);
-      xbt_os_mutex_acquire(rctx->interruption);
-      rctx->interrupted = 1;
-      xbt_os_mutex_release(rctx->interruption);
-      if (!rctx->reader_done) {
-        kill(rctx->pid, SIGTERM);
-        usleep(100);
-        kill(rctx->pid, SIGKILL);
-      }
-    }
+  xbt_dynar_foreach(bg_jobs, cursor, job) {
+    rctx_armageddon_kill_one(initiator, filepos, job);
   }
 
   VERB0("Shut everything down!");
@@ -115,12 +160,16 @@ void rctx_empty(rctx_t rc)
 {
   int i;
   char **env_it = environ;
+  void *filepos;
 
   if (rc->cmd)
     free(rc->cmd);
   rc->cmd = NULL;
-  if (rc->filepos)
-    free(rc->filepos);
+  /* avoid race with rctx_armageddon log messages */
+  filepos = rc->filepos;
+  rc->filepos = NULL;
+  if (filepos)
+    free(filepos);
   if (rc->env)
     free(rc->env);
 
@@ -130,7 +179,6 @@ void rctx_empty(rctx_t rc)
   rc->env = malloc(i * sizeof(char *));
   memcpy(rc->env, environ, i * sizeof(char *));
 
-  rc->filepos = NULL;
   rc->is_empty = 1;
   rc->is_background = 0;
   rc->is_stoppable = 0;
@@ -456,9 +504,16 @@ void rctx_start(void)
   rctx->cmd = xbt_str_varsubst(rctx->cmd, env);
   VERB2("Start %s %s", rctx->cmd,
         (rctx->is_background ? "(background job)" : ""));
+  xbt_os_mutex_acquire(armageddon_mutex);
+  if (armageddon_initiator) {
+    VERB0("Armageddon in progress. Do not start job.");
+    xbt_os_mutex_release(armageddon_mutex);
+    return;
+  }
   if (pipe(child_in) || pipe(child_out)) {
     perror("Cannot open the pipes");
     ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
+    xbt_os_mutex_release(armageddon_mutex);
     rctx_armageddon(rctx, 4);
   }
 
@@ -466,6 +521,7 @@ void rctx_start(void)
   if (rctx->pid < 0) {
     perror("Cannot fork the command");
     ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
+    xbt_os_mutex_release(armageddon_mutex);
     rctx_armageddon(rctx, 4);
     return;
   }
@@ -489,6 +545,7 @@ void rctx_start(void)
       xbt_os_thread_create("writer", thread_writer, (void *) rctx);
 
   } else {                      /* child */
+    xbt_os_mutex_release(armageddon_mutex);
 
     close(child_in[1]);
     dup2(child_in[0], 0);
@@ -505,7 +562,10 @@ void rctx_start(void)
   rctx->is_stoppable = 1;
 
   if (!rctx->is_background) {
+    fg_job = 1;
+    xbt_os_mutex_release(armageddon_mutex);
     rctx_wait(rctx);
+    fg_job = 0;
   } else {
     /* Damn. Copy the rctx and launch a thread to handle it */
     rctx_t old = rctx;
@@ -519,6 +579,7 @@ void rctx_start(void)
     old->runner = runner;
     VERB3("Launched thread %p to wait for %s %d", runner, old->cmd, old->pid);
     xbt_dynar_push(bg_jobs, &old);
+    xbt_os_mutex_release(armageddon_mutex);
   }
 }
 
@@ -540,7 +601,7 @@ void *rctx_wait(void *r)
            rctx->cmd);
 
   /* Wait for the child to die or the timeout to happen (or an armageddon to happen) */
-  while (!rctx->interrupted && !rctx->reader_done
+  while (!rctx->reader_done
          && (rctx->end_time < 0 || rctx->end_time >= now)) {
     usleep(100);
     now = time(NULL);
@@ -553,7 +614,6 @@ void *rctx_wait(void *r)
     kill(rctx->pid, SIGTERM);
     usleep(100);
     kill(rctx->pid, SIGKILL);
-    rctx->reader_done = 1;
   }
 
   /* Make sure helper threads die.
@@ -653,7 +713,14 @@ void *rctx_wait(void *r)
     errcode = 1;
   }
 
-  if (rctx->output == e_output_check
+  if ((errcode && errcode != 1) || rctx->interrupted) {
+    /* checking output, and matching */
+    xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
+    char *out = xbt_str_join(a, "\n||");
+    xbt_dynar_free(&a);
+    INFO2("Output of <%s> so far: \n||%s", rctx->filepos, out);
+    free(out);
+  } else if (rctx->output == e_output_check
       && (rctx->output_got->used != rctx->output_wanted->used
           || strcmp(rctx->output_got->data, rctx->output_wanted->data))) {
     if (XBT_LOG_ISENABLED(tesh, xbt_log_priority_info)) {
@@ -674,21 +741,19 @@ void *rctx_wait(void *r)
     xbt_dynar_free(&a);
     INFO1("Here is the (ignored) command output: \n||%s", out);
     free(out);
-  } else if ((errcode && errcode != 1) || rctx->interrupted) {
-    /* checking output, and matching */
-    xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
-    char *out = xbt_str_join(a, "\n||");
-    xbt_dynar_free(&a);
-    INFO2("Output of <%s> so far: \n||%s", rctx->filepos, out);
-    free(out);
   }
 
   if (!rctx->is_background) {
-    rctx_empty(rctx);
+    xbt_os_mutex_acquire(armageddon_mutex);
+    /* Don't touch rctx if armageddon is in progress. */
+    if (!armageddon_initiator)
+      rctx_empty(rctx);
+    xbt_os_mutex_release(armageddon_mutex);
   }
   if (errcode) {
     if (!rctx->interrupted) {
       rctx_armageddon(rctx, errcode);
+      xbt_os_mutex_release(rctx->interruption);
       return NULL;
     }
   }

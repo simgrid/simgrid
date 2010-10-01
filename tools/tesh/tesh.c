@@ -234,10 +234,11 @@ int main(int argc, char *argv[])
   } else {
     for (i = 1; i < argc; i++) {
       suitename = xbt_strdup(argv[i]);
-      if (!strcmp("./", suitename))
+      if (!strncmp("./", suitename, 2))
         memmove(suitename, suitename + 2, strlen(suitename + 2));
 
-      if (!strcmp(".tesh", suitename + strlen(suitename) - 5))
+      if (strlen(suitename) > 5 &&
+          !strcmp(".tesh", suitename + strlen(suitename) - 5))
         suitename[strlen(suitename) - 5] = '\0';
 
       INFO1("Test suite `%s'", suitename);
