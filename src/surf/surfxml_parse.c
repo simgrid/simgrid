@@ -565,35 +565,43 @@ void surf_wsL07_link_create_resource(char *name,
 }
 
 /**
- * Route: add route element bypassing the parser :
- * same job as parse_route_elem
+ *
+ *init new routing model component
  */
 
-void surf_add_route_element(char* link_ctn_id)
+void surf_AS_new(const char* AS_id, const char *AS_mode)
 {
-	xbt_die("\"surf_add_route_element\" not supported");
-// 	char *val;
-// 	val = xbt_strdup(link_ctn_id);
-// 	xbt_dynar_push(route_link_list,&val);
+	routing_AS_init(AS_id,AS_mode);
 }
+
+void surf_AS_finalize(const char* AS_id)
+{
+	routing_AS_end(AS_id);
+}
+
+/*
+ * add host to the network element list
+ */
+void surf_route_add_host(const char* host_id)
+{
+	routing_add_host(host_id);
+}
+
 /**
  * set route
  */
-void surf_route_set_resource(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
+void surf_routing_add_route(const char *src_id,const char *dst_id,xbt_dynar_t links_id)
 {
-	xbt_die("\"surf_route_set_resource\" not supported");
-	//route_link_list = xbt_dynar_new(sizeof(char *), NULL);
-	//routing_add_route(source_id,destination_id,links_id,action);
+	unsigned int i;
+	const char * link_id;
+	routing_set_route(src_id,dst_id);
+	xbt_dynar_foreach(links_id,i,link_id)
+	{
+		routing_add_link(link_id);
+	}
 
-}
-
-/**
- * add host to routing host list
- */
-void surf_route_add_host(char *host_id)
-{
-	xbt_die("\"surf_route_add_host\" not supported");
-	//routing_add_host(host_id);
+	//store the route
+	routing_store_route();
 }
 
 /**
@@ -614,11 +622,3 @@ void surf_wsL07_add_traces(void)
 	return surf_workstation_model->extension.workstation.add_traces();
 }
 
-/**
- * set routes
- */
-void surf_set_routes(void)
-{
-	xbt_die("\"surf_set_routes\" not supported");
-	//routing_set_routes();
-}
