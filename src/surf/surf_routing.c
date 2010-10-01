@@ -1535,7 +1535,7 @@ static void model_rulebased_set_ASroute(routing_component_t rc, const char* src,
 }
 
 static void model_rulebased_set_bypassroute(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route) {
-  xbt_die("bypass routing not support for Route-Based model");
+  xbt_die("bypass routing not supported for Route-Based model");
 }
 
 #define BUFFER_SIZE 4096  /* result buffer size */
@@ -1828,7 +1828,7 @@ static void generic_set_processing_unit(routing_component_t rc, const char* name
           modeltype==&routing_models[SURF_MODEL_DIJKSTRACACHE])
     _to_index = ((routing_component_dijkstra_t)rc)->to_index;
   
-  else xbt_die("\"generic_set_processing_unit\" not support");
+  else xbt_die("\"generic_set_processing_unit\" not supported");
   *id = xbt_dict_length(_to_index);
   xbt_dict_set(_to_index,name,id,xbt_free);
 }
@@ -1848,7 +1848,7 @@ static void generic_set_autonomous_system(routing_component_t rc, const char* na
           modeltype==&routing_models[SURF_MODEL_DIJKSTRACACHE])
     _to_index = ((routing_component_dijkstra_t)rc)->to_index;
   
-  else xbt_die("\"generic_set_autonomous_system\" not support");
+  else xbt_die("\"generic_set_autonomous_system\" not supported");
   *id = xbt_dict_length(_to_index);
   xbt_dict_set(_to_index,name,id,xbt_free);
 }
@@ -1874,7 +1874,7 @@ static void generic_set_route(routing_component_t rc, const char* src, const cha
     _parse_routes = ((routing_component_dijkstra_t)rc)->parse_routes;
     _to_index = ((routing_component_dijkstra_t)rc)->to_index;
   
-  } else xbt_die("\"generic_set_route\" not support");
+  } else xbt_die("\"generic_set_route\" not supported");
 
   src_id = xbt_dict_get_or_null(_to_index, src);
   dst_id = xbt_dict_get_or_null(_to_index, dst);
@@ -1911,7 +1911,7 @@ static void generic_set_ASroute(routing_component_t rc, const char* src, const c
     _parse_routes = ((routing_component_dijkstra_t)rc)->parse_routes;
     _to_index = ((routing_component_dijkstra_t)rc)->to_index;
   
-  } else xbt_die("\"generic_set_route\" not support");
+  } else xbt_die("\"generic_set_route\" not supported");
   
   src_id = xbt_dict_get_or_null(_to_index, src);
   dst_id = xbt_dict_get_or_null(_to_index, dst);
@@ -1939,7 +1939,7 @@ static void generic_set_bypassroute(routing_component_t rc, const char* src, con
   } else if(modeltype==&routing_models[SURF_MODEL_DIJKSTRA]||
           modeltype==&routing_models[SURF_MODEL_DIJKSTRACACHE]) {
     dict_bypassRoutes = ((routing_component_dijkstra_t)rc)->bypassRoutes;
-  } else xbt_die("\"generic_set_bypassroute\" not support");
+  } else xbt_die("\"generic_set_bypassroute\" not supported");
   route_name = bprintf("%s#%s",src,dst);
   xbt_assert2(xbt_dynar_length(e_route->generic_route.link_list)>0, "Invalid count of links, must be greater than zero (%s,%s)",src,dst);
   xbt_assert4(!xbt_dict_get_or_null(dict_bypassRoutes,route_name),
@@ -1967,7 +1967,7 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc, const ch
   } else if(modeltype==&routing_models[SURF_MODEL_DIJKSTRA]||
           modeltype==&routing_models[SURF_MODEL_DIJKSTRACACHE]) {
     dict_bypassRoutes = ((routing_component_dijkstra_t)rc)->bypassRoutes;
-  } else xbt_die("\"generic_set_bypassroute\" not support");
+  } else xbt_die("\"generic_set_bypassroute\" not supported");
  
 
   routing_component_t src_as, dst_as;

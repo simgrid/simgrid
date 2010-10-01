@@ -571,7 +571,7 @@ void surf_wsL07_link_create_resource(char *name,
 
 void surf_add_route_element(char* link_ctn_id)
 {
-	xbt_die("\"surf_add_route_element\" not support");
+	xbt_die("\"surf_add_route_element\" not supported");
 // 	char *val;
 // 	val = xbt_strdup(link_ctn_id);
 // 	xbt_dynar_push(route_link_list,&val);
@@ -581,7 +581,7 @@ void surf_add_route_element(char* link_ctn_id)
  */
 void surf_route_set_resource(char *source_id,char *destination_id,xbt_dynar_t links_id,int action)
 {
-	xbt_die("\"surf_route_set_resource\" not support");
+	xbt_die("\"surf_route_set_resource\" not supported");
 	//route_link_list = xbt_dynar_new(sizeof(char *), NULL);
 	//routing_add_route(source_id,destination_id,links_id,action);
 
@@ -592,7 +592,7 @@ void surf_route_set_resource(char *source_id,char *destination_id,xbt_dynar_t li
  */
 void surf_route_add_host(char *host_id)
 {
-	xbt_die("\"surf_route_add_host\" not support");
+	xbt_die("\"surf_route_add_host\" not supported");
 	//routing_add_host(host_id);
 }
 
@@ -619,6 +619,6 @@ void surf_wsL07_add_traces(void)
  */
 void surf_set_routes(void)
 {
-	xbt_die("\"surf_set_routes\" not support");
+	xbt_die("\"surf_set_routes\" not supported");
 	//routing_set_routes();
 }

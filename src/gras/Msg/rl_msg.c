@@ -117,7 +117,7 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
     msg->kind = (e_gras_msg_kind_t) c_kind;
   }
   CATCH(e) {
-    RETHROW0("Exception caught while trying to get the mesage header: %s");
+    RETHROW0("Exception caught while trying to get the message header: %s");
   }
 
   for (cpt = 0; cpt < 4; cpt++)

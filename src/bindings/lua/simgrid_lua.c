@@ -708,7 +708,7 @@ static int Host_set_function(lua_State *L) //(host,function,nb_args,list_args)
 			return 0;
 		}
 	}
-	ERROR1("Host : %s Not Fount !!",host_id);
+	ERROR1("Host : %s Not Found !!",host_id);
 	return 1;
 }
 
