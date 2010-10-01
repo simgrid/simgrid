@@ -68,7 +68,10 @@ end
 --]]
 
 require "simgrid"
-  
+ 
+  --create new routing model
+  --simgrid.AS.new(AS_id,AS_mode)
+  simgrid.AS.new{id="AS0",mode="Full"}; 
   --simgrid.Host.new(host_id,power)
   simgrid.Host.new{id="Tremblay",power=98095000};
   simgrid.Host.new{id="Jupiter",power=76296000};
