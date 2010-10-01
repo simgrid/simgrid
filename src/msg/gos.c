@@ -465,7 +465,6 @@ msg_comm_t MSG_task_irecv(m_task_t * task, const char *alias) {
 	smx_comm_t comm;
 	smx_rdv_t rdv = MSG_mailbox_get_by_alias(alias)->rdv;
 	msg_mailbox_t mailbox=MSG_mailbox_get_by_alias(alias);
-	size_t size = sizeof(void*);
 
 	CHECK_HOST();
 
@@ -485,7 +484,7 @@ msg_comm_t MSG_task_irecv(m_task_t * task, const char *alias) {
 		CRITICAL0("MSG_task_get() was asked to write in a non empty task struct.");
 
 	/* Try to receive it by calling SIMIX network layer */
-	return SIMIX_network_irecv(rdv, task, &size);
+	return SIMIX_network_irecv(rdv, task, NULL);
 }
 /** \ingroup msg_gos_functions
  * \brief Test the status of a communication.
