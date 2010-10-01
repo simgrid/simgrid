@@ -7,6 +7,7 @@
 #ifndef MSG_DATATYPE_H
 #define MSG_DATATYPE_H
 #include "xbt/misc.h"
+#include "simgrid_config.h" // for HAVE_TRACING
 
 SG_BEGIN_DECL()
 

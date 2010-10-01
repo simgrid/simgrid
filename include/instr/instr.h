@@ -7,6 +7,8 @@
 #ifndef INSTR_H_
 #define INSTR_H_
 
+#include "simgrid_config.h"
+
 #ifdef HAVE_TRACING
 
 #include "xbt.h"
