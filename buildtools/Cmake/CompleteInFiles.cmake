@@ -650,11 +650,10 @@ foreach(fct ${diff_va})
 endforeach(fct ${diff_va})
 
 #--------------------------------------------------------------------------------------------------
-### Try execut getline command
-try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
+### check for getline
+try_compile(COMPILE_RESULT_VAR
 	${PROJECT_DIRECTORY}
 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_getline.c
-	OUTPUT_VARIABLE GETLINE_OUTPUT
 	)
 
 if(NOT COMPILE_RESULT_VAR)
