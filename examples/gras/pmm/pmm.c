@@ -60,6 +60,9 @@ static void register_messages(void)
   gras_msgtype_declare("dataB",
                        gras_datadesc_matrix(gras_datadesc_by_name("double"),
                                             NULL));
+
+  /* synchronization message */
+  gras_msgtype_declare("pmm_sync", 0);
 }
 
 /* Function prototypes */
@@ -177,7 +180,14 @@ int master(int argc, char *argv[])
     xbt_matrix_free(assignment.B);
   }
 
-  /* (have a rest while the slave perform the multiplication) */
+  /* synchronize slaves */
+  for (i = 0 ; i < PROC_MATRIX_SIZE ; i++) {
+    int j;
+    for (j = 0 ; j < SLAVE_COUNT ; j++)
+      gras_msg_wait(600, "pmm_sync", NULL, NULL);
+    for (j = 0 ; j < SLAVE_COUNT ; j++)
+      gras_msg_send(socket[j], "pmm_sync", NULL);
+  }
 
   /* Retrieve the results */
   for (i = 0; i < SLAVE_COUNT; i++) {
@@ -275,6 +285,8 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
   }
 
   for (step = 0; step < PROC_MATRIX_SIZE; step++) {
+    gras_msg_send(master, "pmm_sync", NULL);
+    gras_msg_wait(600, "pmm_sync", NULL, NULL);
 
     /* a line brodcast */
     if (myline == step) {
