@@ -132,6 +132,9 @@ static void parse_S_router(void) {
       "no defined method \"set_processing_unit\" in \"%s\"",current_routing->name);
   (*(current_routing->set_processing_unit))(current_routing,A_surfxml_router_id);
   xbt_dict_set(global_routing->where_network_elements,A_surfxml_router_id,(void*)current_routing,NULL); 
+#ifdef HAVE_TRACING
+  TRACE_surf_host_declaration (A_surfxml_router_id, 0);
+#endif
 }
 
 /**
