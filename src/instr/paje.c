@@ -18,21 +18,21 @@ static int pajeDefineEventTypeId = 3;
 static int pajeDefineLinkTypeId = 4;
 static int pajeCreateContainerId = 5;
 static int pajeSetStateId = 6;
-static int pajePushStateWithHostId = 7;
+#define UNUSED007 7
 static int pajePopStateId = 8;
 static int pajeDestroyContainerId = 9;
-static int pajeSetStateWithHostId = 10;
-static int pajeSetStateWithHostCommCompId = 11;
+#define UNUSED006 10
+#define UNUSED003 11
 static int pajeStartLinkId = 12;
 static int pajeEndLinkId = 13;
-static int pajeCreateContainerWithPowerId = 14;
-static int pajeStartLinkWithBandwidthLatencyId = 15;
-static int pajePushStateWithPowerUsedId = 16;
-static int pajePushStateWithBandwidthUsedId = 17;
-static int pajeSetStateWithPowerUsedId = 18;
+#define UNUSED000 14
+#define UNUSED004 15
+#define UNUSED008 16
+#define UNUSED009 17
+#define UNUSED005 18
 static int pajePushStateId = 19;
-static int pajeCreateContainerWithBandwidthLatencyId = 20;
-static int pajeCreateContainerWithBandwidthLatencySrcDstId = 21;
+#define UNUSED001 20
+#define UNUSED002 21
 static int pajeSetVariableId = 22;
 static int pajeAddVariableId = 23;
 static int pajeSubVariableId = 24;
@@ -106,33 +106,10 @@ void TRACE_paje_create_header(void) {
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n\
-%%EventDef PajeSetState %d \n\
-%%       Time date \n\
-%%       EntityType string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%		 Host string\n\
-%%EndEventDef\n\
-%%EventDef PajePushState %d \n\
-%%       Time date \n\
-%%       EntityType string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%       Host string \n\
-%%EndEventDef\n\
 %%EventDef PajePopState %d \n\
 %%       Time date \n\
 %%       EntityType string \n\
 %%       Container string \n\
-%%EndEventDef\n\
-%%EventDef PajeSetState %d \n\
-%%       Time date \n\
-%%       EntityType string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%		 Host string\n\
-%%		 Comm string\n\
-%%		 Comp string\n\
 %%EndEventDef\n\
 %%EventDef PajeStartLink %d \n\
 %%       Time date \n\
@@ -150,71 +127,12 @@ void TRACE_paje_create_header(void) {
 %%       DestContainer string \n\
 %%       Key string \n\
 %%EndEventDef\n\
-%%EventDef PajeCreateContainer %d \n\
-%%       Time date \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Name string \n\
-%%       Power string \n\
-%%EndEventDef \n\
-%%EventDef PajeStartLink %d \n\
-%%       Time date \n\
-%%       EntityType string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%       SourceContainer string \n\
-%%       Key string \n\
-%%       Bandwidth string \n\
-%%       Latency string \n\
-%%EndEventDef\n\
-%%EventDef PajePushState %d \n\
-%%       Time date \n\
-%%       EntityType string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%       PowerUsed string \n\
-%%EndEventDef\n\
-%%EventDef PajePushState %d \n\
-%%       Time date \n\
-%%       EntityType string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%       BandwidthUsed string \n\
-%%EndEventDef\n\
-%%EventDef PajeSetState %d \n\
-%%       Time date \n\
-%%       EntityType string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%       PowerUsed string \n\
-%%EndEventDef\n\
 %%EventDef PajePushState %d \n\
 %%       Time date \n\
 %%       EntityType string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n\
-%%EventDef PajeCreateContainer %d \n\
-%%       Time date \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Name string \n\
-%%       Bandwidth string \n\
-%%       Latency string \n\
-%%EndEventDef \n\
-%%EventDef PajeCreateContainer %d \n\
-%%       Time date \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Name string \n\
-%%       Bandwidth string \n\
-%%       Latency string \n\
-%%       SrcHost string \n\
-%%       DstHost string \n\
-%%EndEventDef \n\
 %%EventDef PajeSetVariable %d \n\
 %%       Time date \n\
 %%       EntityType string \n\
@@ -255,13 +173,10 @@ void TRACE_paje_create_header(void) {
 %%EndEventDef\n",
       pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId,
       pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId,
-      pajeDestroyContainerId, pajeSetStateId, pajeSetStateWithHostId,
-      pajePushStateWithHostId, pajePopStateId, pajeSetStateWithHostCommCompId,
-      pajeStartLinkId, pajeEndLinkId, pajeCreateContainerWithPowerId,
-      pajeStartLinkWithBandwidthLatencyId, pajePushStateWithPowerUsedId,
-      pajePushStateWithBandwidthUsedId, pajeSetStateWithPowerUsedId,
-      pajePushStateId, pajeCreateContainerWithBandwidthLatencyId,
-      pajeCreateContainerWithBandwidthLatencySrcDstId,
+      pajeDestroyContainerId, pajeSetStateId,
+      pajePopStateId,
+      pajeStartLinkId, pajeEndLinkId,
+      pajePushStateId,
       pajeSetVariableId,
       pajeAddVariableId,
       pajeSubVariableId,
@@ -293,7 +208,6 @@ const char *sourceContainer, const char *key)
 {
   snprintf(output, len, "%d %.15lf %s %s %s %s %s", eventid, time, entityType, container, value, sourceContainer, key);
 }
-
 
 /* internal do the instrumentation module */
 void pajeDefineContainerType(const char *alias, const char *containerType,
@@ -327,29 +241,6 @@ void pajeCreateContainer(double time, const char *alias, const char *type, const
   fprintf (tracing_file, "%s\n", line);
 }
 
-void pajeCreateContainerWithPower (double time, const char *alias, const char *type, const char *container, const char *name, double power)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeCreateContainer (line, TRACE_LINE_SIZE, pajeCreateContainerWithPowerId, time, alias, type, container, name);
-  fprintf (tracing_file, "%s %f\n", line, power);
-}
-
-void pajeCreateContainerWithBandwidthLatency (double time, const char *alias, const char *type, const char *container, const char *name, double bw, double lat)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeCreateContainer (line, TRACE_LINE_SIZE, pajeCreateContainerWithBandwidthLatencyId, time, alias, type, container, name);
-  fprintf (tracing_file, "%s %f %f\n", line, bw, lat);
-}
-
-
-void pajeCreateContainerWithBandwidthLatencySrcDst (double time, const char *alias, const char *type, const char *container, const char *name, double bw, double lat, const char *src, const char *dst)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeCreateContainer (line, TRACE_LINE_SIZE, pajeCreateContainerWithBandwidthLatencySrcDstId, time, alias, type, container, name);
-  fprintf (tracing_file, "%s %f %f %s %s\n", line, bw, lat, src, dst);
-}
-
-
 void pajeDestroyContainer (double time, const char *type, const char *container)
 {
   fprintf(tracing_file, "%d %.15lf %s %s\n", pajeDestroyContainerId, time, type, container);
@@ -362,46 +253,11 @@ void pajeSetState (double time, const char *entityType, const char *container, c
   fprintf(tracing_file, "%s\n", line);
 }
 
-void pajeSetStateWithPowerUsed (double time, const char *entityType, const char *container, const char *value, double powerUsed)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeSetState (line, TRACE_LINE_SIZE, pajeSetStateWithPowerUsedId, time, entityType, container, value);
-  fprintf(tracing_file, "%s %f\n", line, powerUsed);
-}
-
-void pajeSetStateWithHost (double time, const char *entityType, const char *container, const char *value, const char *host)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeSetState (line, TRACE_LINE_SIZE, pajeSetStateWithHostId, time, entityType, container, value);
-  fprintf(tracing_file, "%s %s\n", line, host);
-}
-
 void pajePushState (double time, const char *entityType, const char *container, const char *value)
 {
   char line[TRACE_LINE_SIZE];
   __pajeSetState (line, TRACE_LINE_SIZE, pajePushStateId, time, entityType, container, value);
   fprintf(tracing_file, "%s\n", line);
-}
-
-void pajePushStateWithHost (double time, const char *entityType, const char *container, const char *value, const char *host)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeSetState (line, TRACE_LINE_SIZE, pajePushStateWithHostId, time, entityType, container, value);
-  fprintf(tracing_file, "%s %s\n", line, host);
-}
-
-void pajePushStateWithPowerUsed (double time, const char *entityType, const char *container, const char *value, double powerUsed)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeSetState (line, TRACE_LINE_SIZE, pajePushStateWithPowerUsedId, time, entityType, container, value);
-  fprintf(tracing_file, "%s %f\n", line, powerUsed);
-}
-
-void pajePushStateWithBandwidthUsed (double time, const char *entityType, const char *container, const char *value, double bwUsed)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeSetState (line, TRACE_LINE_SIZE, pajePushStateWithBandwidthUsedId, time, entityType, container, value);
-  fprintf(tracing_file, "%s %f\n", line, bwUsed);
 }
 
 void pajePopState (double time, const char *entityType, const char *container)
@@ -415,14 +271,6 @@ void pajeStartLink (double time, const char *entityType, const char *container, 
   char line[TRACE_LINE_SIZE];
   __pajeStartLink (line, TRACE_LINE_SIZE, pajeStartLinkId, time, entityType, container, value, sourceContainer, key);
   fprintf (tracing_file, "%s\n", line);
-}
-
-void pajeStartLinkWithBandwidthLatency (double time, const char *entityType, const char *container, const char *value,
-    const char *sourceContainer, const char *key, double bw, double lat)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeStartLink (line, TRACE_LINE_SIZE, pajeStartLinkWithBandwidthLatencyId, time, entityType, container, value, sourceContainer, key);
-  fprintf (tracing_file, "%s %f %f\n", line, bw, lat);
 }
 
 void pajeStartLinkWithVolume (double time, const char *entityType, const char *container, const char *value,
@@ -442,7 +290,6 @@ void pajeEndLink (double time, const char *entityType, const char *container, co
 void pajeDefineVariableType(const char *alias, const char *containerType, const char *name) {
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineVariableTypeId, alias, containerType, name);
 }
-
 
 void pajeSetVariable (double time, const char *entityType, const char *container, const char *value)
 {
