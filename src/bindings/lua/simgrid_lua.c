@@ -22,6 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua,bindings,"Lua Bindings");
 // Surf ( bypass XML )
 #define LINK_MODULE_NAME "simgrid.Link"
 #define ROUTE_MODULE_NAME "simgrid.Route"
+#define AS_MODULE_NAME "simgrid.AS"
 
 /* ********************************************************************************* */
 /*                            helper functions                                       */
@@ -306,6 +307,13 @@ static int Host_at(lua_State *L)
 ******************************************************************************************/
 #include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
 #include "surf/surf_private.h"
+
+typedef struct t_AS_attr
+{
+	const char* id;
+	const char *mode;
+}AS_attr,*p_AS_attr;
+
 typedef struct t_host_attr
 {
 	//platform attribute
@@ -344,11 +352,22 @@ typedef struct t_route_attr
 
 }route_attr,*p_route_attr;
 
+//AS : One struct needed
+static p_AS_attr AS;
+
 //using xbt_dynar_t :
 static xbt_dynar_t host_list_d ;
 static xbt_dynar_t link_list_d ;
 static xbt_dynar_t route_list_d ;
 
+
+/*
+ * Initialize platform model routing
+ */
+static void create_AS(const char* id,const char * mode)
+{
+	surf_AS_new(id,mode);
+}
 
 /**
  * create host resource via CPU model [for MSG]
@@ -488,6 +507,38 @@ static void create_link_wsL07(const char *name,
 	surf_wsL07_link_create_resource(xbt_strdup(name), bw_initial, bw_trace,
 	           lat_initial, lat_trace, state_initial_link, st_trace,
 	           policy_initial_link, xbt_dict_new());
+}
+
+
+/*
+ * init AS
+ */
+
+static int AS_new(lua_State *L)
+{
+	const char *id;
+	const char *mode;
+	if(lua_istable(L,1))
+	{
+		lua_pushstring(L,"id");
+		lua_gettable(L,-2);
+		id = lua_tostring(L,-1);
+		lua_pop(L,1);
+
+		lua_pushstring(L,"mode");
+		lua_gettable(L,-2);
+		mode = lua_tostring(L,-1);
+		lua_pop(L,1);
+	}
+	else {
+        ERROR0("Bad Arguments to AS.new, Should be a table with named arguments");
+        return -1;
+		}
+	AS = malloc(sizeof(AS_attr));
+	AS->id = id;
+	AS->mode = mode;
+
+	return 0;
 }
 
 /*
@@ -724,6 +775,10 @@ static int surf_parse_bypass_platform()
 	p_link_attr p_link;
 	p_route_attr p_route;
 
+	// Init routing mode
+	create_AS(AS->id,AS->mode);
+
+
 	// Add Hosts
 	xbt_dynar_foreach(host_list_d,i,p_host)
 	{
@@ -731,6 +786,7 @@ static int surf_parse_bypass_platform()
 					p_host->state_initial,p_host->state_trace);
 		//add to routing model host list
 		surf_route_add_host((char*)p_host->id);
+
 	}
 
 	//add Links
@@ -742,12 +798,16 @@ static int surf_parse_bypass_platform()
 	// add route
 	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
-		surf_route_set_resource((char*)p_route->src_id,(char*)p_route->dest_id,p_route->links_id,0);
+		surf_routing_add_route((char*)p_route->src_id,(char*)p_route->dest_id,p_route->links_id);
 	}
 	/* </platform> */
 
+	// Finalize AS
+	surf_AS_finalize(AS->id);
+
+	// add traces
 	surf_add_host_traces();
-	surf_set_routes();
+	//surf_set_routes();
 	surf_add_link_traces();
 
 	return 0; // must return 0 ?!!
@@ -786,12 +846,12 @@ static int surf_wsL07_parse_bypass_platform()
 	// add route
 	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
-		surf_route_set_resource((char*)p_route->src_id,(char*)p_route->dest_id,p_route->links_id,0);
+		//surf_routing_add_route((char*)p_route->src_id,(char*)p_route->dest_id,p_route->links_id);
 	}
 	/* </platform> */
 
 	surf_wsL07_add_traces();
-	surf_set_routes();
+	//surf_set_routes();
 
 	return 0;
 
@@ -915,6 +975,15 @@ static const luaL_reg Host_meta[] = {
     {"__tostring",  Host_tostring},
     {0,0}
 };
+
+/*
+ * AS Methods
+ */
+static const luaL_reg AS_methods[] = {
+    {"new",AS_new},
+    {0,0}
+};
+
 
 /*
  * Link Methods
@@ -1154,6 +1223,11 @@ int luaopen_simgrid(lua_State* L) {
   lua_pushliteral(L,"__metatable");
   lua_pushvalue(L,-3);
   lua_rawset(L,-3);
+  lua_pop(L,1);
+
+  /* register the links methods to lua*/
+  luaL_openlib(L,AS_MODULE_NAME,AS_methods,0);
+  luaL_newmetatable(L,AS_MODULE_NAME);
   lua_pop(L,1);
 
   /* register the links methods to lua*/
