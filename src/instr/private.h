@@ -109,10 +109,8 @@ void TRACE_smx_action_communicate (smx_action_t act, smx_process_t proc);
 void TRACE_smx_action_destroy (smx_action_t act);
 
 /* from surf.c */
-void __TRACE_surf_init (void);
-void __TRACE_surf_finalize (void);
-void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, const char *resource);
-void __TRACE_surf_set_resource_variable (double date, const char *variable, const char *resource, double value);
+void TRACE_surf_init (void);
+void TRACE_surf_finalize (void);
 void TRACE_surf_host_declaration (char *name, double power);
 void TRACE_surf_host_set_power (double date, char *resource, double power);
 void TRACE_surf_host_define_id (const char *name, int host_id);

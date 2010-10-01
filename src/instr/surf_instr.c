@@ -14,58 +14,29 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(tracing_surf,tracing,"Tracing Surf");
 
 static xbt_dict_t created_links;
 static xbt_dict_t host_containers;
-static xbt_dict_t platform_variables; /* host or link name -> array of categories */
 static xbt_dict_t resource_variables; /* (host|link)#variable -> value */
 
 /* to trace gtnets */
 static xbt_dict_t gtnets_src; /* %p (action) -> %s */
 static xbt_dict_t gtnets_dst; /* %p (action) -> %s */
 
-void __TRACE_surf_init (void)
+void TRACE_surf_init (void)
 {
   created_links = xbt_dict_new();
-  platform_variables = xbt_dict_new();
   host_containers = xbt_dict_new();
   resource_variables = xbt_dict_new ();
   gtnets_src = xbt_dict_new ();
   gtnets_dst = xbt_dict_new ();
+
   __TRACE_surf_resource_utilization_initialize();
 }
 
-void __TRACE_surf_finalize (void)
+void TRACE_surf_finalize (void)
 {
   __TRACE_surf_resource_utilization_finalize();
 }
 
-void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, const char *resource)
-{
-  /* check if we have to set it to 0 */
-  if (!xbt_dict_get_or_null (platform_variables, resource)){
-    xbt_dynar_t array = xbt_dynar_new(sizeof(char*), xbt_free);
-    char *var_cpy = xbt_strdup(variable);
-    xbt_dynar_push (array, &var_cpy);
-    if (IS_TRACING_PLATFORM) pajeSetVariable (now, variable, resource, "0");
-    xbt_dict_set (platform_variables, resource, array, xbt_dynar_free_voidp);
-  }else{
-    xbt_dynar_t array = xbt_dict_get (platform_variables, resource);
-    unsigned int i;
-    char* cat;
-    int flag = 0;
-    xbt_dynar_foreach (array, i, cat) {
-      if (strcmp(variable, cat)==0){
-        flag = 1;
-      }
-    }
-    if (flag==0){
-      char *var_cpy = xbt_strdup(variable);
-      xbt_dynar_push (array, &var_cpy);
-      if (IS_TRACING_PLATFORM) pajeSetVariable (now, variable, resource, "0");
-    }
-  }
-  /* end of check */
-}
-
-void __TRACE_surf_set_resource_variable (double date, const char *variable, const char *resource, double value)
+static void __TRACE_surf_set_resource_variable (double date, const char *variable, const char *resource, double value)
 {
 	char aux[100], key[100];
 	char *last_value = NULL;
@@ -203,7 +174,7 @@ void TRACE_msg_clean (void)
 {
   char *key, *value;
   xbt_dict_cursor_t cursor = NULL;
-  __TRACE_surf_finalize();
+  TRACE_surf_finalize();
 
   /* get all host from host_containers */
   xbt_dict_foreach(host_containers, cursor, key, value) {

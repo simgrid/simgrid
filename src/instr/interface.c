@@ -90,7 +90,7 @@ int TRACE_start ()
   created_categories = xbt_dict_new();
   __TRACE_msg_init();
   __TRACE_category_init ();
-  __TRACE_surf_init();
+  TRACE_surf_init();
   __TRACE_msg_process_init ();
   __TRACE_smpi_init ();
 

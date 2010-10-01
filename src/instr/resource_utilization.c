@@ -10,6 +10,9 @@
 
 #define VARIABLE_SEPARATOR '#'
 
+//to check if variables were previously set to 0, otherwise paje won't simulate them
+static xbt_dict_t platform_variables; /* host or link name -> array of categories */
+
 //B
 static xbt_dict_t method_b_dict;
 
@@ -56,6 +59,35 @@ static void __TRACE_define_method (char *method)
   }else{
     currentMethod = methodB; //default
   }
+}
+
+//used by all methods
+static void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, const char *resource)
+{
+  /* check if we have to set it to 0 */
+  if (!xbt_dict_get_or_null (platform_variables, resource)){
+    xbt_dynar_t array = xbt_dynar_new(sizeof(char*), xbt_free);
+    char *var_cpy = xbt_strdup(variable);
+    xbt_dynar_push (array, &var_cpy);
+    if (IS_TRACING_PLATFORM) pajeSetVariable (now, variable, resource, "0");
+    xbt_dict_set (platform_variables, resource, array, xbt_dynar_free_voidp);
+  }else{
+    xbt_dynar_t array = xbt_dict_get (platform_variables, resource);
+    unsigned int i;
+    char* cat;
+    int flag = 0;
+    xbt_dynar_foreach (array, i, cat) {
+      if (strcmp(variable, cat)==0){
+        flag = 1;
+      }
+    }
+    if (flag==0){
+      char *var_cpy = xbt_strdup(variable);
+      xbt_dynar_push (array, &var_cpy);
+      if (IS_TRACING_PLATFORM) pajeSetVariable (now, variable, resource, "0");
+    }
+  }
+  /* end of check */
 }
 
 //A
@@ -355,6 +387,8 @@ void __TRACE_surf_resource_utilization_event (smx_action_t action, double now, d
 
 void __TRACE_surf_resource_utilization_initialize ()
 {
+  platform_variables = xbt_dict_new();
+
   __TRACE_define_method (_TRACE_platform_method());
 
   if (currentMethod == methodA){
