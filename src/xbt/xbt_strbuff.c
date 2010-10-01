@@ -267,7 +267,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
             beg_subst += offset;
             end_subst += offset;
           }
-          memmove(beg_subst + val_len, end_subst, b->used - (end_subst - b->data) + 2); /* move the end of the string a bit further */
+          memmove(beg_subst + val_len, end_subst, b->used - (end_subst - b->data) + 1); /* move the end of the string a bit further */
           memmove(beg_subst, value, val_len);   /* substitute */
           b->used = newused;
 //          DEBUG1("String is now: %s",b->data);
