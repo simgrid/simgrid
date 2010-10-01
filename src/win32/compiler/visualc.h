@@ -334,12 +334,12 @@ the double. For now, GRAS requires the structures to be compacted. */
 
 	#ifndef __VA_COPY_USE_CPP(d, s)
 	/* Predefined possible va_copy() implementation (id: CPP) */
-		#define __VA_COPY_USE_CPP(d, s) memcpy((void *)(d), (void *)(s)), sizeof(*(s))
+		#define __VA_COPY_USE_CPP(d, s) memcpy((void *)(d), (void *)(s), sizeof(*(s)))
 	#endif
 
 	#ifndef __VA_COPY_USE_CPS(d, s)
 	/* Predefined possible va_copy() implementation (id: CPS) */
-		#define __VA_COPY_USE_CPS(d, s) memcpy((void *)&(d), (void *)&(s)), sizeof((s))
+		#define __VA_COPY_USE_CPS(d, s) memcpy((void *)&(d), (void *)&(s), sizeof(s))
 	#endif
 
 	#ifndef __VA_COPY_USE_GCB(d, s)

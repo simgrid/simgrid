@@ -559,8 +559,8 @@ set(diff_va "va_copy((d),(s))"
 "__builtin_va_copy((d),(s))"
 "do { (d) = (s)\; } while (0)"
 "do { *(d) = *(s)\; } while (0)"
-"memcpy((void *)&(d), (void *)&(s)), sizeof((s))"
-"memcpy((void *)(d), (void *)(s)), sizeof(*(s))"
+"memcpy((void *)&(d), (void *)&(s), sizeof(s))"
+"memcpy((void *)(d), (void *)(s), sizeof(*(s)))"
 )
 
 foreach(fct ${diff_va})
@@ -630,15 +630,15 @@ foreach(fct ${diff_va})
 			set(__VA_COPY_USE_ASP "do { *(d) = *(s); } while (0)")
 		endif(${fctbis} STREQUAL "do { *(d) = *(s) } while (0)")
 
-		if(${fctbis} STREQUAL "memcpy((void *)&(d), (void *)&(s)), sizeof((s))")
+		if(${fctbis} STREQUAL "memcpy((void *)&(d), (void *)&(s), sizeof(s))")
 			set(ac_cv_va_copy "CPS")
-			set(__VA_COPY_USE_CPS "memcpy((void *)&(d), (void *)&(s)), sizeof((s))")
-		endif(${fctbis} STREQUAL "memcpy((void *)&(d), (void *)&(s)), sizeof((s))")
+			set(__VA_COPY_USE_CPS "memcpy((void *)&(d), (void *)&(s), sizeof(s))")
+		endif(${fctbis} STREQUAL "memcpy((void *)&(d), (void *)&(s), sizeof(s))")
 
-		if(${fctbis} STREQUAL "memcpy((void *)(d), (void *)(s)), sizeof(*(s))")
+		if(${fctbis} STREQUAL "memcpy((void *)(d), (void *)(s), sizeof(*(s)))")
 			set(ac_cv_va_copy "CPP")
-			set(__VA_COPY_USE_CPP "memcpy((void *)(d), (void *)(s)), sizeof(*(s))")
-		endif(${fctbis} STREQUAL "memcpy((void *)(d), (void *)(s)), sizeof(*(s))")
+			set(__VA_COPY_USE_CPP "memcpy((void *)(d), (void *)(s), sizeof(*(s)))")
+		endif(${fctbis} STREQUAL "memcpy((void *)(d), (void *)(s), sizeof(*(s)))")
 				
 		if(NOT STATUS_OK)
 		set(__VA_COPY_USE "__VA_COPY_USE_${ac_cv_va_copy}(d, s)")
