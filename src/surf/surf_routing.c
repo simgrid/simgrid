@@ -969,10 +969,33 @@ typedef struct {
   xbt_dict_t parse_routes; 
 } s_routing_component_floyd_t,*routing_component_floyd_t;
 
+static route_extended_t floyd_get_route(routing_component_t rc, const char* src,const char* dst);
+
 /* Business methods */
 static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
 {
-  xbt_die("\"floyd_get_onelink_routes\" function not implemented yet");
+  xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
+
+  routing_component_floyd_t routing = (routing_component_floyd_t)rc;
+  //int table_size = xbt_dict_length(routing->to_index);
+  xbt_dict_cursor_t c1 = NULL, c2 = NULL;
+  char *k1, *d1, *k2, *d2;
+  xbt_dict_foreach(routing->to_index, c1, k1, d1) {
+    xbt_dict_foreach (routing->to_index, c2, k2, d2) {
+      route_extended_t route = floyd_get_route (rc, k1, k2);
+      if (route){
+        if (xbt_dynar_length(route->generic_route.link_list) == 1){
+          void *link = *(void**)xbt_dynar_get_ptr(route->generic_route.link_list,0);
+          onelink_t onelink = xbt_new0 (s_onelink_t, 1);
+          onelink->src = xbt_strdup (k1);
+          onelink->dst = xbt_strdup (k2);
+          onelink->link_ptr = link;
+          xbt_dynar_push (ret, &onelink);
+        }
+      }
+    }
+  }
+  return ret;
 }
 
 static int floyd_is_router(const char *name)
