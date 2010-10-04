@@ -92,7 +92,7 @@ static void generic_set_bypassroute(routing_component_t rc, const char* src, con
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
-static xbt_dict_t generic_get_onelink_routes (void);
+static xbt_dynar_t generic_get_onelink_routes (routing_component_t rc);
 static int generic_is_router (const char *name);
 static route_extended_t generic_get_bypassroute(routing_component_t rc, const char* src, const char* dst);
 
@@ -677,7 +677,7 @@ static void finalize(void) {
   xbt_free(global_routing);
 }
 
-static xbt_dict_t get_onelink_routes(void)
+static xbt_dynar_t get_onelink_routes(void)
 {
 	xbt_die("global \"get_onelink_routes\" function not implemented yet");
 }
@@ -746,7 +746,7 @@ typedef struct {
 } s_routing_component_full_t,*routing_component_full_t;
 
 /* Business methods */
-static xbt_dict_t full_get_onelink_routes(void)
+static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
 {
   xbt_die("\"full_get_onelink_routes\" function not implemented yet");
 }
@@ -916,7 +916,7 @@ typedef struct {
 } s_routing_component_floyd_t,*routing_component_floyd_t;
 
 /* Business methods */
-static xbt_dict_t floyd_get_onelink_routes(void)
+static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
 {
   xbt_die("\"floyd_get_onelink_routes\" function not implemented yet");
 }
@@ -1275,7 +1275,7 @@ static void add_loopback_dijkstra(routing_component_dijkstra_t rc) {
 }
 
 /* Business methods */
-static xbt_dict_t dijkstra_get_onelink_routes(void)
+static xbt_dynar_t dijkstra_get_onelink_routes(routing_component_t rc)
 {
   xbt_die("\"dijkstra_get_onelink_routes\" function not implemented yet");
 }
@@ -1734,7 +1734,7 @@ static char* remplace(char* value, const char** src_list, int src_size, const ch
   return xbt_strdup(result_result);
 }
 
-static xbt_dict_t rulebased_get_onelink_routes(void)
+static xbt_dynar_t rulebased_get_onelink_routes(routing_component_t rc)
 {
   xbt_die("\"rulebased_get_onelink_routes\" function not implemented yet");
 }
@@ -1879,7 +1879,7 @@ typedef struct {
 } s_routing_component_none_t,*routing_component_none_t;
 
 /* Business methods */
-static xbt_dict_t none_get_onelink_routes(void){
+static xbt_dynar_t none_get_onelink_routes(routing_component_t rc){
   return NULL;
 }
 static int none_is_router(const char *name){
@@ -2107,7 +2107,7 @@ static void generic_set_bypassroute(routing_component_t rc, const char* src, con
 /* ************************************************************************** */
 /* *********************** GENERIC BUSINESS METHODS ************************* */
 
-static xbt_dict_t generic_get_onelink_routes (void)
+static xbt_dynar_t generic_get_onelink_routes (routing_component_t rc)
 {
   xbt_die("\"generic_get_onelink_routes\" not implemented yet");
 }

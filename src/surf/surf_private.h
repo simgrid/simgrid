@@ -87,11 +87,13 @@ int __surf_is_absolute_file_path(const char *file_path);
 /*
  * One link routing list
  */
-typedef struct {
+typedef struct s_onelink s_onelink_t, *onelink_t;
+struct s_onelink{
 	char *src;
 	char *dst;
 	void *link_ptr;
-}s_onelink, *s_onelink_t;
+};
+
 
 /**
  * Routing logic
@@ -158,7 +160,7 @@ struct s_routing_component {
   struct s_routing_component* routing_father;
   xbt_dict_t routing_sons;
   route_extended_t (*get_route)(routing_component_t rc, const char* src, const char* dst);
-  xbt_dict_t (*get_onelink_routes)(void);
+  xbt_dynar_t (*get_onelink_routes)(routing_component_t rc);
   int (*is_router)(const char *name);
   route_extended_t (*get_bypass_route)(routing_component_t rc, const char* src, const char* dst);
   void (*finalize)(routing_component_t rc);
@@ -175,7 +177,7 @@ struct s_routing_global {
   void *loopback;
   size_t size_of_link;
   xbt_dynar_t (*get_route)(const char* src, const char* dst);
-  xbt_dict_t (*get_onelink_routes)(void);
+  xbt_dynar_t (*get_onelink_routes)(void);
   int (*is_router)(const char *name);
   void (*finalize)(void);
   xbt_dynar_t last_route;
