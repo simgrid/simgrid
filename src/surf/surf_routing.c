@@ -748,7 +748,32 @@ typedef struct {
 /* Business methods */
 static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
 {
-  xbt_die("\"full_get_onelink_routes\" function not implemented yet");
+  xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
+
+  routing_component_full_t routing = (routing_component_full_t)rc;
+  int table_size = xbt_dict_length(routing->to_index);
+  xbt_dict_cursor_t c1 = NULL, c2 = NULL;
+  char *k1, *d1, *k2, *d2;
+  xbt_dict_foreach(routing->to_index, c1, k1, d1) {
+    xbt_dict_foreach (routing->to_index, c2, k2, d2) {
+      int *src_id = xbt_dict_get_or_null(routing->to_index, k1);
+      int *dst_id = xbt_dict_get_or_null(routing->to_index, k2);
+      xbt_assert2(src_id && dst_id, "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",src,dst);
+      route_extended_t route = TO_ROUTE_FULL(*src_id,*dst_id);
+      if (route){
+        if (xbt_dynar_length(route->generic_route.link_list) == 1){
+          void *link = *(void**)xbt_dynar_get_ptr(route->generic_route.link_list,0);
+
+          onelink_t onelink = xbt_new0 (s_onelink_t, 1);
+          onelink->src = xbt_strdup (k1);
+          onelink->dst = xbt_strdup (k2);
+          onelink->link_ptr = link;
+          xbt_dynar_push (ret, &onelink);
+        }
+      }
+    }
+  }
+  return ret;
 }
 
 static int full_is_router(const char *name)
