@@ -760,7 +760,7 @@ XBT_PUBLIC(void) routing_add_link(const char *link_id);
 //Set the endpoints for a route
 XBT_PUBLIC(void) routing_set_route(const char* src_id,const char* dst_id);
 //Store the route
-XBT_PUBLIC(void) routing_store_route();
+XBT_PUBLIC(void) routing_store_route(void);
 
 /*
  * interface between surf and lua bindings

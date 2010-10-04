@@ -228,9 +228,9 @@ static void parse_E_link_ctn_new_elem(char *link_id) {
  * \brief Set a new link on the actual list of link for a route or ASroute from XML
  */
 
-static void parse_E_link_c_ctn_new_elem_XML(void)
+static void parse_E_link_ctn_new_elem_XML(void)
 {
-	parse_E_link_c_ctn_new_elem(A_surfxml_link_c_ctn_id);
+	parse_E_link_ctn_new_elem(A_surfxml_link_ctn_id);
 }
 
 /**
@@ -238,7 +238,7 @@ static void parse_E_link_c_ctn_new_elem_XML(void)
  */
 static void parse_E_link_c_ctn_new_elem_lua(char *link_id) {
 
-	parse_E_link_c_ctn_new_elem(link_id);
+	parse_E_link_ctn_new_elem(link_id);
 }
 
 /**
