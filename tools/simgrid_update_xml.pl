@@ -77,6 +77,8 @@ while (defined($line = <INPUT>)) {
 	} else {
 	    $output_string .=  "$line\n";
 	}
+	$line =~ s/\blink:ctn\b/link_ctn/g;
+	$line =~ s/\btrace:connect\b/trace_connect/g;
     }
 }
 
