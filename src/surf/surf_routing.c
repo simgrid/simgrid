@@ -2122,7 +2122,7 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc, const ch
   } else if(modeltype==&routing_models[SURF_MODEL_DIJKSTRA]||
           modeltype==&routing_models[SURF_MODEL_DIJKSTRACACHE]) {
     dict_bypassRoutes = ((routing_component_dijkstra_t)rc)->bypassRoutes;
-  } else xbt_die("\"generic_set_bypassroute\" not supported");
+  } else xbt_die("\"generic_get_bypassroute\" not supported");
  
 
   routing_component_t src_as, dst_as;
