@@ -4,8 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+
+
 #include <float.h>
-#include <pcre.h> /* regular expresion library */
+#include "gras_config.h"
+
+#ifdef HAVE_PCRE_LIB
+	#include <pcre.h> /* regular expresion library */
+#endif
 #include "surf_private.h"
 #include "xbt/dynar.h"
 #include "xbt/str.h"
@@ -2376,6 +2382,11 @@ static void routing_full_parse_Scluster(void)
 	int start, end, i;
 	xbt_dynar_t radical_elements;
 	xbt_dynar_t radical_ends;
+	#ifndef HAVE_PCRE_LIB
+		xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), NULL);
+		char *route_src,*route_dst;
+		int j;
+	#endif
 
 	static unsigned int surfxml_buffer_stack_stack_ptr = 1;
 	static unsigned int surfxml_buffer_stack_stack[1024];
@@ -2384,9 +2395,14 @@ static void routing_full_parse_Scluster(void)
 
 	surfxml_bufferstack_push(1);
 
-	DEBUG1("<AS id=\"%s\"\trouting=\"RuleBased\">",cluster_id);
 	SURFXML_BUFFER_SET(AS_id, cluster_id);
+#ifdef HAVE_PCRE_LIB
 	SURFXML_BUFFER_SET(AS_routing, "RuleBased");
+	DEBUG1("<AS id=\"%s\"\trouting=\"RuleBased\">",cluster_id);
+#else
+	SURFXML_BUFFER_SET(AS_routing, "Full");
+	DEBUG1("<AS id=\"%s\"\trouting=\"Full\">",cluster_id);
+#endif
 	SURFXML_START_TAG(AS);
 
 	radical_elements = xbt_str_split(cluster_radical, ",");
@@ -2398,6 +2414,9 @@ static void routing_full_parse_Scluster(void)
 			case 1:
 			  surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
 			  host_id = bprintf("%s%d%s", cluster_prefix, start, cluster_suffix);
+			  #ifndef HAVE_PCRE_LIB
+			  xbt_dynar_push_as(tab_elements_num, int, start);
+			  #endif
 			  link_id = bprintf("%s_link_%d", cluster_id, start);
 
 			  DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
@@ -2436,6 +2455,9 @@ static void routing_full_parse_Scluster(void)
 			  for (i = start; i <= end; i++)
 			  {
 				  host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);
+				  #ifndef HAVE_PCRE_LIB
+				  xbt_dynar_push_as(tab_elements_num, int, i);
+				  #endif
 				  link_id = bprintf("%s_link_%d", cluster_id, i);
 
 				  DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>",host_id,cluster_power);
@@ -2521,6 +2543,8 @@ static void routing_full_parse_Scluster(void)
 
 	DEBUG0(" ");
 
+#ifdef HAVE_PCRE_LIB
+
 	DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\">",route_src_dst,route_src_dst);
 	SURFXML_BUFFER_SET(route_src, route_src_dst);
 	SURFXML_BUFFER_SET(route_dst, route_src_dst);
@@ -2543,6 +2567,43 @@ static void routing_full_parse_Scluster(void)
 
 	DEBUG0("</route>");
 	SURFXML_END_TAG(route);
+#else
+	for(i=0 ; i<=tab_elements_num->elmsize ; i++)
+	{
+		for(j=0 ; j<=tab_elements_num->elmsize ; j++)
+		{
+			route_src = bprintf("%s%d%s",cluster_prefix,xbt_dynar_get_as(tab_elements_num,i,int),cluster_suffix);
+			route_dst = bprintf("%s%d%s",cluster_prefix,xbt_dynar_get_as(tab_elements_num,j,int),cluster_suffix);
+
+			DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\">",route_src,route_dst);
+			SURFXML_BUFFER_SET(route_src, route_src);
+			SURFXML_BUFFER_SET(route_dst, route_dst);
+			SURFXML_START_TAG(route);
+
+			route_src = bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,i,int));
+			route_dst = bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,j,int));
+
+			DEBUG2("<link:ctn\tid=\"%s_link_%d\"/>",cluster_id,xbt_dynar_get_as(tab_elements_num,i,int));
+			SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,i,int)));
+			SURFXML_START_TAG(link_ctn);
+			SURFXML_END_TAG(link_ctn);
+
+			DEBUG1("<link:ctn\tid=\"%s_backbone\"/>",cluster_id);
+			SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_backbone",cluster_id));
+			SURFXML_START_TAG(link_ctn);
+			SURFXML_END_TAG(link_ctn);
+
+			DEBUG2("<link:ctn\tid=\"%s_link_%d\"/>",cluster_id,xbt_dynar_get_as(tab_elements_num,j,int));
+			SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,j,int)));
+			SURFXML_START_TAG(link_ctn);
+			SURFXML_END_TAG(link_ctn);
+
+			DEBUG0("</route>");
+			SURFXML_END_TAG(route);
+		}
+	}
+	xbt_dynar_free(&tab_elements_num);
+#endif
 
 	DEBUG0("</AS>");
 	SURFXML_END_TAG(AS);

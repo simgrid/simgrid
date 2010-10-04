@@ -200,7 +200,7 @@ endif(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
 #--------------------------------------------------------------------------------------------------
 ### Initialize of pcre
 find_library(PATH_PCRE_LIB pcre "/usr/lib/")
-
+set(HAVE_PCRE_LIB 0)
 if(PATH_PCRE_LIB)
        string(REGEX REPLACE "/libpcre.*[.]so$" "" PATHLIBPCRE "${PATH_PCRE_LIB}")
        	string(REGEX MATCH "-L${PATHLIBPCRE} " operation "${CMAKE_C_FLAGS}")
@@ -209,7 +209,7 @@ if(PATH_PCRE_LIB)
 		endif(NOT operation)
        set(HAVE_PCRE_LIB 1)
 else(PATH_PCRE_LIB)
-		message(FATAL_ERROR "You must have libpcre installed (please install the libpcre3-dev package or equivalent)")
+		message(WARNING "You should install libpcre (please install the libpcre3-dev package or equivalent)")
 endif(PATH_PCRE_LIB)
 
 #--------------------------------------------------------------------------------------------------

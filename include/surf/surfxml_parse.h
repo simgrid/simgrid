@@ -90,7 +90,6 @@ extern unsigned int surfxml_buffer_stack_stack[1024];
 
 #define SURFXML_START_TAG(tag) do{ \
 		surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr] = AX_ptr;\
-		DEBUG2("surfxml_buffer_stack_stack[%d]=%d",surfxml_buffer_stack_stack_ptr,surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr]);\
 		surfxml_buffer_stack_stack_ptr++;\
 		STag_surfxml_##tag(); \
 		}while(0)
@@ -98,7 +97,6 @@ extern unsigned int surfxml_buffer_stack_stack[1024];
 #define SURFXML_END_TAG(tag)  do{ \
 		surfxml_buffer_stack_stack_ptr--;\
 		AX_ptr = surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr-1];\
-		DEBUG1("AX_ptr=%d",AX_ptr);\
 		ETag_surfxml_##tag();\
 		} while(0)
 

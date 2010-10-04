@@ -36,6 +36,9 @@
 #cmakedefine MMALLOC_WANT_OVERIDE_LEGACY @MMALLOC_WANT_OVERIDE_LEGACY@
 #cmakedefine HAVE_MC @HAVE_MC@
 
+/* Set to true if lib pcre is present */
+#cmakedefine HAVE_PCRE_LIB @HAVE_PCRE_LIB@
+
 /* Define if building universal (internal helper macro) */
 #cmakedefine AC_APPLE_UNIVERSAL_BUILD @AC_APPLE_UNIVERSAL_BUILD@
 
