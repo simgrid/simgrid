@@ -36,22 +36,22 @@
  
    <!-- 4. Define startpoint for Lille -> $* (All other hosts including Nancy hosts) routes. It is the starting point so it overrides all previosly routes!!! -->
    <route:multi src="Lille" dst="$*" action="OVERRIDE" symmetric="NO">
-     <link:ctn id="$src"/>
+     <link_ctn id="$src"/>
    </route:multi>
  
    <!-- 5. Define Lille intra-cluster communication. Default behaviour POSTPEND links to already existing routes, and NOT symmetric because all routes are created in the first pass.  If you choose symmetric you will duplicate links due to POSTPEND !!!-->
    <route:multi src="Lille" dst="Lille" symmetric="NO">
-     <link:ctn id="Lille_bb"/>
+     <link_ctn id="Lille_bb"/>
    </route:multi>
  
    <!-- Add other links to routes. Default behaviour POSTPEND links to already existing routes -->
    <route:multi src="Nancy" dst="Lille">
-     <link:ctn id="INTER-bb"/>
-     <link:ctn id="$dst"/>
+     <link_ctn id="INTER-bb"/>
+     <link_ctn id="$dst"/>
    </route:multi>
    
    <!-- Connect the trace with the host nancy_0_host -->
-   <trace:connect trace="mytrace" kind="POWER" element="nancy_0_host"/>
+   <trace_connect trace="mytrace" kind="POWER" element="nancy_0_host"/>
  
  </AS>
  </platform>

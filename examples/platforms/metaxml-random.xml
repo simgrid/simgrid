@@ -21,16 +21,16 @@
    </foreach>
  
    <route:multi src="Lille" dst="Lille" symmetric="NO">
-     <link:ctn id="$src"/>
+     <link_ctn id="$src"/>
    </route:multi>
  
    <route:multi src="Lyon" dst="Lyon" symmetric="NO">
-     <link:ctn id="$src"/>
+     <link_ctn id="$src"/>
    </route:multi>
  
    <route:multi src="Lille" dst="Lyon">
-     <link:ctn id="$src"/>
-     <link:ctn id="$dst"/>
+     <link_ctn id="$src"/>
+     <link_ctn id="$dst"/>
    </route:multi>
  
  </AS>

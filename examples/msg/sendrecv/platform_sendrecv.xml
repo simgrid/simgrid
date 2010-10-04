@@ -7,10 +7,10 @@
    <host id="Bellevue" power="76296000"/>
    <link id="link" bandwidth="1000000" latency="0.1"/>
    <route src="Inmos" dst="Bellevue">
-     <link:ctn id="link"/>
+     <link_ctn id="link"/>
    </route>
    <route src="Bellevue" dst="Inmos">
-     <link:ctn id="link"/>
+     <link_ctn id="link"/>
    </route>
  </AS>
  </platform>

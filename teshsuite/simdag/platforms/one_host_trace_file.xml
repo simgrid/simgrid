@@ -5,5 +5,5 @@
   <host id="bob" power="1000000000"/>  
 </AS>
   <trace id="myTrace" file="bob.trace" periodicity="1.0"/>
-  <trace:connect trace="myTrace" element="bob" kind="POWER"/>
+  <trace_connect trace="myTrace" element="bob" kind="POWER"/>
 </platform>

@@ -13,7 +13,7 @@
    <link id="1" bandwidth="10000" latency="0.01"/>
  
    <route src="S1" dst="C1">
-      <link:ctn id="1"/>
+      <link_ctn id="1"/>
    </route>
  
  </AS>

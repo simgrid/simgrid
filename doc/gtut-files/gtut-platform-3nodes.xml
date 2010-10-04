@@ -10,14 +10,14 @@
    <link id="2" bandwidth="11618875" latency="0.00018998"/>
    <link id="3" bandwidth="10314625" latency="0.006932556"/>
      
-   <route src="Jacquelin" dst="Boivin">   <link:ctn id="1"/></route>
-   <route src="Boivin"    dst="Jacquelin"><link:ctn id="1"/></route>
+   <route src="Jacquelin" dst="Boivin">   <link_ctn id="1"/></route>
+   <route src="Boivin"    dst="Jacquelin"><link_ctn id="1"/></route>
  
-   <route src="Jacquelin" dst="Geoff">    <link:ctn id="2"/></route>
-   <route src="Geoff"     dst="Jacquelin"><link:ctn id="2"/></route>
+   <route src="Jacquelin" dst="Geoff">    <link_ctn id="2"/></route>
+   <route src="Geoff"     dst="Jacquelin"><link_ctn id="2"/></route>
  
-   <route src="Geoff"  dst="Boivin">      <link:ctn id="3"/></route>
-   <route src="Boivin" dst="Geoff">       <link:ctn id="3"/></route>
+   <route src="Geoff"  dst="Boivin">      <link_ctn id="3"/></route>
+   <route src="Boivin" dst="Geoff">       <link_ctn id="3"/></route>
  </AS>
  </platform>
  

@@ -9,12 +9,12 @@
    <link id="1" bandwidth="3430125" latency="0.000536941"/>
    <link id="2" bandwidth="3430125" latency="0.000536941"/>
    <link id="3" bandwidth="3430125" latency="0.000536941"/>
-   <route src="HostA" dst="HostB"><link:ctn id="1"/></route>
-   <route src="HostB" dst="HostA"><link:ctn id="1"/></route>
-   <route src="HostA" dst="HostC"><link:ctn id="2"/></route>
-   <route src="HostC" dst="HostA"><link:ctn id="2"/></route>
-   <route src="HostA" dst="HostD"><link:ctn id="3"/></route>
-   <route src="HostD" dst="HostA"><link:ctn id="3"/></route>
+   <route src="HostA" dst="HostB"><link_ctn id="1"/></route>
+   <route src="HostB" dst="HostA"><link_ctn id="1"/></route>
+   <route src="HostA" dst="HostC"><link_ctn id="2"/></route>
+   <route src="HostC" dst="HostA"><link_ctn id="2"/></route>
+   <route src="HostA" dst="HostD"><link_ctn id="3"/></route>
+   <route src="HostD" dst="HostA"><link_ctn id="3"/></route>
  </AS>
  </platform>
  

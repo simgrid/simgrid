@@ -11,7 +11,7 @@
    <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
  
    <route:multi src="bob_cluster" dst="trudy" symmetric="YES">
-     <link:ctn id="backbone"/>
+     <link_ctn id="backbone"/>
    </route:multi>
  </AS>
  </platform>

@@ -14,9 +14,9 @@
  	sharing_policy="FATPIPE"/>
   
    <route:multi src="myCluster" dst="myCluster" symmetric="NO">
-     <link:ctn id="$src"/>
-     <link:ctn id="bob_backbone"/>
-     <link:ctn id="$dst"/>
+     <link_ctn id="$src"/>
+     <link_ctn id="bob_backbone"/>
+     <link_ctn id="$dst"/>
    </route:multi>
  </AS>
  </platform>

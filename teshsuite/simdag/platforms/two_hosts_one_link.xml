@@ -8,11 +8,11 @@
    <link id="link1" bandwidth="125000000" latency="5E-5"/>
  
    <route src="bob" dst="alice">
-     <link:ctn id="link1"/>
+     <link_ctn id="link1"/>
    </route>
  
    <route src="alice" dst="bob">
-     <link:ctn id="link1"/>
+     <link_ctn id="link1"/>
    </route>
  </AS>
  </platform>

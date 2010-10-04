@@ -26,7 +26,7 @@
    <link id="l2" bandwidth="125000000" latency="0.000100">
      <prop id="type" value="ethernet"/>
    </link>
-   <route src="host1" dst="host2"><link:ctn id="l1"/><link:ctn id="l2"/></route>
-   <route src="host2" dst="host1"><link:ctn id="l2"/><link:ctn id="l1"/></route>
+   <route src="host1" dst="host2"><link_ctn id="l1"/><link_ctn id="l2"/></route>
+   <route src="host2" dst="host1"><link_ctn id="l2"/><link_ctn id="l1"/></route>
  </AS>
  </platform>

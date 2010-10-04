@@ -18,11 +18,11 @@
  		sharing_policy="SHARED" />
  	
  	<route src="cpu0" dst="cpu1">
- 		<link:ctn id="link0" />
+ 		<link_ctn id="link0" />
  	</route>
  	
  	<route src="cpu1" dst="cpu0">
- 		<link:ctn id="link0" />
+ 		<link_ctn id="link0" />
  	</route>
  	
  </AS>

@@ -5,7 +5,7 @@
  <AS  id="AS0"  routing="Full">
    <host id="toto" power="1000000"/>
    <link id="lb" bandwidth="100000000" latency="0.000000"/>
-   <route src="toto" dst="toto"><link:ctn id="lb"/></route>  	
+   <route src="toto" dst="toto"><link_ctn id="lb"/></route>  	
   </AS>  
    
    <!-- Deployment -->

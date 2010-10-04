@@ -21,47 +21,47 @@
  
  
    <route src="S1" dst="C1">
-      <link:ctn id="1"/>
-      <link:ctn id="2"/>
-      <link:ctn id="3"/>
+      <link_ctn id="1"/>
+      <link_ctn id="2"/>
+      <link_ctn id="3"/>
    </route>
  
    <route src="S2" dst="C2">
-      <link:ctn id="4"/>
-      <link:ctn id="2"/>
-      <link:ctn id="5"/>
+      <link_ctn id="4"/>
+      <link_ctn id="2"/>
+      <link_ctn id="5"/>
    </route>
  
    <route src="S1" dst="C2">
-      <link:ctn id="1"/>
-      <link:ctn id="2"/>
-      <link:ctn id="5"/>
+      <link_ctn id="1"/>
+      <link_ctn id="2"/>
+      <link_ctn id="5"/>
    </route>
  
    <route src="S2" dst="C1">
-      <link:ctn id="4"/>
-      <link:ctn id="2"/>
-      <link:ctn id="3"/>
+      <link_ctn id="4"/>
+      <link_ctn id="2"/>
+      <link_ctn id="3"/>
    </route>
  
    <route src="S1" dst="R1">
-      <link:ctn id="1"/>
+      <link_ctn id="1"/>
    </route>
  
    <route src="R1" dst="R2">
-      <link:ctn id="2"/>
+      <link_ctn id="2"/>
    </route>
  
    <route src="R2" dst="C1">
-      <link:ctn id="3"/>
+      <link_ctn id="3"/>
    </route>
  
    <route src="S2" dst="R1">
-      <link:ctn id="4"/>
+      <link_ctn id="4"/>
    </route>
  
    <route src="R2" dst="C2">
-      <link:ctn id="5"/>
+      <link_ctn id="5"/>
    </route>
  </AS>
  </platform>

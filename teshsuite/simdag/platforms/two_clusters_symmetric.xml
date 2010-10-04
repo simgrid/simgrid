@@ -14,8 +14,8 @@
    <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
  
    <route:multi src="bob_cluster" dst="alice_cluster" symmetric="YES">
-     <link:ctn id="backbone"/>
-     <link:ctn id="$dst"/>
+     <link_ctn id="backbone"/>
+     <link_ctn id="$dst"/>
    </route:multi>
  </AS>
  </platform>

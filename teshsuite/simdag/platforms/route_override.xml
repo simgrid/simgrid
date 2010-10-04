@@ -13,20 +13,20 @@
    <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
  
    <route:multi src="bob_cluster" dst="alice_cluster" symmetric="YES">
-     <link:ctn id="backbone"/>
-     <link:ctn id="$dst"/>
+     <link_ctn id="backbone"/>
+     <link_ctn id="$dst"/>
    </route:multi>
  
    <route:multi src="bob0.hamburger.edu" dst="$*" action="OVERRIDE" symmetric="NO">
-     <link:ctn id="$src"/>
-     <link:ctn id="backbone"/>
-     <link:ctn id="$dst"/>
+     <link_ctn id="$src"/>
+     <link_ctn id="backbone"/>
+     <link_ctn id="$dst"/>
    </route:multi>
  
    <route:multi src="bob0.hamburger.edu" dst="bob_cluster" action="OVERRIDE" symmetric="NO">
-     <link:ctn id="$src"/>
-     <link:ctn id="bob_cluster_bb"/>
-     <link:ctn id="$dst"/>
+     <link_ctn id="$src"/>
+     <link_ctn id="bob_cluster_bb"/>
+     <link_ctn id="$dst"/>
    </route:multi>
  
  </AS>

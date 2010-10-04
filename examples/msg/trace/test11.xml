@@ -16,7 +16,7 @@
  <host id="CPU1" power="20"/> 	
   </AS>
 
-<trace:connect kind="POWER" trace="1" element="CPU1"/>
+<trace_connect kind="POWER" trace="1" element="CPU1"/>
 <process host="CPU1" function="test_trace">
 <argument value="420"/>
 <argument value="2.0"/>

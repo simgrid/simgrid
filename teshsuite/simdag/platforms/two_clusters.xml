@@ -14,10 +14,10 @@
      <link id="backbone" bandwidth="1250000000" latency="5E-4"/>  
  	
      <ASroute src="bob_cluster" dst="alice_cluster" gw_src="bobrouter.hamburger.edu" gw_dst="alicerouter.crepe.fr">
- 		<link:ctn id="backbone"/>
+ 		<link_ctn id="backbone"/>
      </ASroute>   
      <ASroute src="alice_cluster" dst="bob_cluster" gw_src="alicerouter.crepe.fr" gw_dst="bobrouter.hamburger.edu">
- 		<link:ctn id="backbone"/>
+ 		<link_ctn id="backbone"/>
      </ASroute>   
      
  </AS>

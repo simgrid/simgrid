@@ -5,6 +5,6 @@
    <host id="Cpu A" power="100000000" availability_file="trace_A.txt" state_file="trace_A_failure.txt"/>
    <host id="Cpu B" power="100000000" availability_file="trace_B.txt"/>
    <link id="LinkA" bandwidth="10000000" latency="0.2"/>
-   <route src="Cpu A" dst="Cpu B"><link:ctn id="LinkA"/></route>
+   <route src="Cpu A" dst="Cpu B"><link_ctn id="LinkA"/></route>
  </AS>
  </platform>

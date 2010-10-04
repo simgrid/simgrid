@@ -11,26 +11,26 @@
    <link id="link3" bandwidth="125000000" latency="5E-5"/>
  
    <route src="bob" dst="alice">
-     <link:ctn id="link1"/>
+     <link_ctn id="link1"/>
    </route>
    <route src="alice" dst="bob">
-     <link:ctn id="link2"/>
-     <link:ctn id="link3"/>
+     <link_ctn id="link2"/>
+     <link_ctn id="link3"/>
    </route>
  
    <route src="bob" dst="trudy">
-     <link:ctn id="link2"/>
+     <link_ctn id="link2"/>
    </route>
  
    <route src="trudy" dst="bob">
-     <link:ctn id="link2"/>
+     <link_ctn id="link2"/>
    </route>
  
    <route src="trudy" dst="alice">
-     <link:ctn id="link3"/>
+     <link_ctn id="link3"/>
    </route>
    <route src="alice" dst="trudy">
-     <link:ctn id="link3"/>
+     <link_ctn id="link3"/>
    </route>
  </AS>
  </platform>

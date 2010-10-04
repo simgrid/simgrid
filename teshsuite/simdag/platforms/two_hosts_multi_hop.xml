@@ -11,15 +11,15 @@
          sharing_policy="FATPIPE"/>
  
    <route src="bob" dst="alice">
-     <link:ctn id="link_bob"/>
-     <link:ctn id="switch"/>
-     <link:ctn id="link_alice"/>
+     <link_ctn id="link_bob"/>
+     <link_ctn id="switch"/>
+     <link_ctn id="link_alice"/>
    </route>
  
    <route src="alice" dst="bob">
-     <link:ctn id="link_alice"/>
-     <link:ctn id="switch"/>
-     <link:ctn id="link_bob"/>
+     <link_ctn id="link_alice"/>
+     <link_ctn id="switch"/>
+     <link_ctn id="link_bob"/>
    </route>
  </AS>
  </platform>
