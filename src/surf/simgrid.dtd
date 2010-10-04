@@ -1,5 +1,5 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((include|trace|random|cluster|AS|trace:connect)*,(include|trace|random|cluster|AS|set|foreach|host|router|link|trace:connect)*,(include|route|trace:connect|process)*)>
+<!ELEMENT platform ((include|trace|random|cluster|AS|trace_connect)*,(include|trace|random|cluster|AS|set|foreach|host|router|link|trace_connect)*,(include|route|trace_connect|process)*)>
 <!ATTLIST platform version CDATA "0.0">
 <!ATTLIST platform xmlns:link CDATA "http://simgrid.gforge.inria.fr/">
 <!ATTLIST platform xmlns:route CDATA "http://simgrid.gforge.inria.fr/">
@@ -17,10 +17,10 @@
 <!ATTLIST random std_deviation CDATA #REQUIRED>
 <!ATTLIST random generator (DRAND48|RAND) "DRAND48">
 
-<!ELEMENT trace:connect EMPTY>
-<!ATTLIST trace:connect kind (HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY) "HOST_AVAIL">
-<!ATTLIST trace:connect trace CDATA #REQUIRED>
-<!ATTLIST trace:connect element CDATA #REQUIRED>
+<!ELEMENT trace_connect EMPTY>
+<!ATTLIST trace_connect kind (HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY) "HOST_AVAIL">
+<!ATTLIST trace_connect trace CDATA #REQUIRED>
+<!ATTLIST trace_connect element CDATA #REQUIRED>
 
 <!ELEMENT AS (((AS|link|cluster)*,ASroute*,bypassRoute*)|((host|router|link)*,route*))>
 <!ATTLIST AS id CDATA #REQUIRED>
@@ -63,20 +63,20 @@
 <!ATTLIST link state_file CDATA "">
 <!ATTLIST link sharing_policy (SHARED|FATPIPE) "SHARED">
 
-<!ELEMENT route (link:ctn*)>
+<!ELEMENT route (link_ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
 
-<!ELEMENT ASroute (link:ctn*)>
+<!ELEMENT ASroute (link_ctn*)>
 <!ATTLIST ASroute src CDATA #REQUIRED>
 <!ATTLIST ASroute dst CDATA #REQUIRED>
 <!ATTLIST ASroute gw_src CDATA #REQUIRED>
 <!ATTLIST ASroute gw_dst CDATA #REQUIRED>
 
-<!ELEMENT link:ctn EMPTY>
-<!ATTLIST link:ctn id CDATA #REQUIRED>
+<!ELEMENT link_ctn EMPTY>
+<!ATTLIST link_ctn id CDATA #REQUIRED>
 
-<!ELEMENT bypassRoute (link:ctn*)>
+<!ELEMENT bypassRoute (link_ctn*)>
 <!ATTLIST bypassRoute src CDATA #REQUIRED>
 <!ATTLIST bypassRoute dst CDATA #REQUIRED>
 <!ATTLIST bypassRoute gw_src CDATA #REQUIRED>

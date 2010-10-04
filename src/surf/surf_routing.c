@@ -218,7 +218,7 @@ static void parse_S_bypassRoute_new_and_endpoints(void) {
 /**
  * \brief Set a new link on the actual list of link for a route or ASroute
  */
-static void parse_E_link_c_ctn_new_elem(char *link_id) {
+static void parse_E_link_ctn_new_elem(char *link_id) {
   char *val;
   val = xbt_strdup(link_id);
   xbt_dynar_push(link_list, &val);
@@ -707,7 +707,7 @@ void routing_model_create(size_t size_of_links, void* loopback) {
   surfxml_add_callback(STag_surfxml_ASroute_cb_list, &parse_S_ASroute_new_and_endpoints);
   surfxml_add_callback(STag_surfxml_bypassRoute_cb_list, &parse_S_bypassRoute_new_and_endpoints);
   
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_E_link_c_ctn_new_elem_XML);
+  surfxml_add_callback(ETag_surfxml_link_ctn_cb_list, &parse_E_link_ctn_new_elem_XML);
   
   surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_E_route_store_route);
   surfxml_add_callback(ETag_surfxml_ASroute_cb_list, &parse_E_ASroute_store_route);
@@ -2460,19 +2460,19 @@ static void routing_full_parse_Scluster(void)
 	SURFXML_START_TAG(route);
 
 	DEBUG1("<link:ctn\tid=\"%s_link_$1src\"/>",cluster_id);
-	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$1src",cluster_id));
-	SURFXML_START_TAG(link_c_ctn);
-	SURFXML_END_TAG(link_c_ctn);
+	SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_$1src",cluster_id));
+	SURFXML_START_TAG(link_ctn);
+	SURFXML_END_TAG(link_ctn);
 
 	DEBUG1("<link:ctn\tid=\"%s_backbone\"/>",cluster_id);
-	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_backbone",cluster_id));
-	SURFXML_START_TAG(link_c_ctn);
-	SURFXML_END_TAG(link_c_ctn);
+	SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_backbone",cluster_id));
+	SURFXML_START_TAG(link_ctn);
+	SURFXML_END_TAG(link_ctn);
 
 	DEBUG1("<link:ctn\tid=\"%s_link_$1dst\"/>",cluster_id);
-	SURFXML_BUFFER_SET(link_c_ctn_id, bprintf("%s_link_$1dst",cluster_id));
-	SURFXML_START_TAG(link_c_ctn);
-	SURFXML_END_TAG(link_c_ctn);
+	SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_$1dst",cluster_id));
+	SURFXML_START_TAG(link_ctn);
+	SURFXML_END_TAG(link_ctn);
 
 	DEBUG0("</route>");
 	SURFXML_END_TAG(route);

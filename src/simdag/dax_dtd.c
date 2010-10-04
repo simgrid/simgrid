@@ -1255,8 +1255,8 @@ int dax__flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *dax_text;
-/* Validating XML processor for /home/navarrop/Developments/simgrid/src/simdag/dax.dtd.
- * Generated 2010/06/17 19:11:52.
+/* Validating XML processor for /home/mquinson/Code/simgrid/src/simdag/dax.dtd.
+ * Generated 2010/10/01 22:34:14.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

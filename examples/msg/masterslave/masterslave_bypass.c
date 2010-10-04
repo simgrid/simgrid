@@ -76,9 +76,9 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(route_dst, "host B");
   SURFXML_START_TAG(route);
   DEBUG0("	<link:ctn id=\"LinkA\"/>");
-  SURFXML_BUFFER_SET(link_c_ctn_id, "LinkA");
-  SURFXML_START_TAG(link_c_ctn);
-  SURFXML_END_TAG(link_c_ctn);
+  SURFXML_BUFFER_SET(link_ctn_id, "LinkA");
+  SURFXML_START_TAG(link_ctn);
+  SURFXML_END_TAG(link_ctn);
   DEBUG0("</route>");
   SURFXML_END_TAG(route);
 

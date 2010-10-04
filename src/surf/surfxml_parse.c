@@ -66,8 +66,8 @@ xbt_dynar_t STag_surfxml_link_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_link_cb_list = NULL;
 xbt_dynar_t STag_surfxml_route_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_route_cb_list = NULL;
-xbt_dynar_t STag_surfxml_link_c_ctn_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_link_c_ctn_cb_list = NULL;
+xbt_dynar_t STag_surfxml_link_ctn_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_link_ctn_cb_list = NULL;
 xbt_dynar_t STag_surfxml_process_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_process_cb_list = NULL;
 xbt_dynar_t STag_surfxml_argument_cb_list = NULL;
@@ -78,8 +78,8 @@ xbt_dynar_t STag_surfxml_cluster_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_cluster_cb_list = NULL;
 xbt_dynar_t STag_surfxml_trace_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_trace_cb_list = NULL;
-xbt_dynar_t STag_surfxml_trace_c_connect_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_trace_c_connect_cb_list = NULL;
+xbt_dynar_t STag_surfxml_trace_connect_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_trace_connect_cb_list = NULL;
 xbt_dynar_t STag_surfxml_random_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_random_cb_list = NULL;
 xbt_dynar_t STag_surfxml_AS_cb_list = NULL;
@@ -103,7 +103,7 @@ static void surf_parse_error(char *msg);
 
 static void parse_Stag_trace(void);
 static void parse_Etag_trace(void);
-static void parse_Stag_trace_c_connect(void);
+static void parse_Stag_trace_connect(void);
 
 static void init_randomness(void);
 static void add_randomness(void);
@@ -120,8 +120,8 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_link_cb_list);
   xbt_dynar_free(&STag_surfxml_route_cb_list);
   xbt_dynar_free(&ETag_surfxml_route_cb_list);
-  xbt_dynar_free(&STag_surfxml_link_c_ctn_cb_list);
-  xbt_dynar_free(&ETag_surfxml_link_c_ctn_cb_list);
+  xbt_dynar_free(&STag_surfxml_link_ctn_cb_list);
+  xbt_dynar_free(&ETag_surfxml_link_ctn_cb_list);
   xbt_dynar_free(&STag_surfxml_process_cb_list);
   xbt_dynar_free(&ETag_surfxml_process_cb_list);
   xbt_dynar_free(&STag_surfxml_argument_cb_list);
@@ -130,8 +130,8 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_prop_cb_list);
   xbt_dynar_free(&STag_surfxml_trace_cb_list);
   xbt_dynar_free(&ETag_surfxml_trace_cb_list);
-  xbt_dynar_free(&STag_surfxml_trace_c_connect_cb_list);
-  xbt_dynar_free(&ETag_surfxml_trace_c_connect_cb_list);
+  xbt_dynar_free(&STag_surfxml_trace_connect_cb_list);
+  xbt_dynar_free(&ETag_surfxml_trace_connect_cb_list);
   xbt_dynar_free(&STag_surfxml_random_cb_list);
   xbt_dynar_free(&ETag_surfxml_random_cb_list);
   xbt_dynar_free(&STag_surfxml_AS_cb_list);
@@ -157,8 +157,8 @@ void surf_parse_reset_parser(void)
   ETag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   ETag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_link_c_ctn_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_link_c_ctn_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+  STag_surfxml_link_ctn_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+  ETag_surfxml_link_ctn_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_process_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   ETag_surfxml_process_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_argument_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
@@ -167,8 +167,8 @@ void surf_parse_reset_parser(void)
   ETag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   ETag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_trace_c_connect_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_trace_c_connect_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+  STag_surfxml_trace_connect_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+  ETag_surfxml_trace_connect_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_random_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   ETag_surfxml_random_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
   STag_surfxml_AS_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
@@ -220,12 +220,12 @@ parse_method(S,host);             parse_method(E,host);
 parse_method(S,router);           parse_method(E,router);
 parse_method(S,link);             parse_method(E,link);
 parse_method(S,route);            parse_method(E,route);
-parse_method(S,link_c_ctn);       parse_method(E,link_c_ctn);
+parse_method(S,link_ctn);       parse_method(E,link_ctn);
 parse_method(S,process);          parse_method(E,process);
 parse_method(S,argument);         parse_method(E,argument);
 parse_method(S,prop);             parse_method(E,prop);
 parse_method(S,trace);            parse_method(E,trace);
-parse_method(S,trace_c_connect);  parse_method(E,trace_c_connect);
+parse_method(S,trace_connect);    parse_method(E,trace_connect);
 parse_method(S,random);           parse_method(E,random);
 parse_method(S,AS);               parse_method(E,AS);
 parse_method(S,ASroute);          parse_method(E,ASroute);
@@ -340,7 +340,7 @@ static void init_data(void)
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
   surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
-  surfxml_add_callback(STag_surfxml_trace_c_connect_cb_list, &parse_Stag_trace_c_connect);
+  surfxml_add_callback(STag_surfxml_trace_connect_cb_list, &parse_Stag_trace_connect);
 }
 
 static void free_data(void)
@@ -412,42 +412,42 @@ static void parse_Etag_trace(void)
   xbt_dict_set(traces_set_list, trace_id, (void *) trace, NULL);
 }
 
-static void parse_Stag_trace_c_connect(void)
+static void parse_Stag_trace_connect(void)
 {
   xbt_assert2(xbt_dict_get_or_null
-              (traces_set_list, A_surfxml_trace_c_connect_trace),
+              (traces_set_list, A_surfxml_trace_connect_trace),
               "Cannot connect trace %s to %s: trace unknown",
-              A_surfxml_trace_c_connect_trace,
-              A_surfxml_trace_c_connect_element);
+              A_surfxml_trace_connect_trace,
+              A_surfxml_trace_connect_element);
 
-  switch (A_surfxml_trace_c_connect_kind) {
-  case A_surfxml_trace_c_connect_kind_HOST_AVAIL:
+  switch (A_surfxml_trace_connect_kind) {
+  case A_surfxml_trace_connect_kind_HOST_AVAIL:
     xbt_dict_set(trace_connect_list_host_avail,
-                 A_surfxml_trace_c_connect_trace,
-                 xbt_strdup(A_surfxml_trace_c_connect_element), free);
+                 A_surfxml_trace_connect_trace,
+                 xbt_strdup(A_surfxml_trace_connect_element), free);
     break;
-  case A_surfxml_trace_c_connect_kind_POWER:
-    xbt_dict_set(trace_connect_list_power, A_surfxml_trace_c_connect_trace,
-                 xbt_strdup(A_surfxml_trace_c_connect_element), free);
+  case A_surfxml_trace_connect_kind_POWER:
+    xbt_dict_set(trace_connect_list_power, A_surfxml_trace_connect_trace,
+                 xbt_strdup(A_surfxml_trace_connect_element), free);
     break;
-  case A_surfxml_trace_c_connect_kind_LINK_AVAIL:
+  case A_surfxml_trace_connect_kind_LINK_AVAIL:
     xbt_dict_set(trace_connect_list_link_avail,
-                 A_surfxml_trace_c_connect_trace,
-                 xbt_strdup(A_surfxml_trace_c_connect_element), free);
+                 A_surfxml_trace_connect_trace,
+                 xbt_strdup(A_surfxml_trace_connect_element), free);
     break;
-  case A_surfxml_trace_c_connect_kind_BANDWIDTH:
+  case A_surfxml_trace_connect_kind_BANDWIDTH:
     xbt_dict_set(trace_connect_list_bandwidth,
-                 A_surfxml_trace_c_connect_trace,
-                 xbt_strdup(A_surfxml_trace_c_connect_element), free);
+                 A_surfxml_trace_connect_trace,
+                 xbt_strdup(A_surfxml_trace_connect_element), free);
     break;
-  case A_surfxml_trace_c_connect_kind_LATENCY:
-    xbt_dict_set(trace_connect_list_latency, A_surfxml_trace_c_connect_trace,
-                 xbt_strdup(A_surfxml_trace_c_connect_element), free);
+  case A_surfxml_trace_connect_kind_LATENCY:
+    xbt_dict_set(trace_connect_list_latency, A_surfxml_trace_connect_trace,
+                 xbt_strdup(A_surfxml_trace_connect_element), free);
     break;
   default:
     xbt_die(bprintf("Cannot connect trace %s to %s: kind of trace unknown",
-                    A_surfxml_trace_c_connect_trace,
-                    A_surfxml_trace_c_connect_element));
+                    A_surfxml_trace_connect_trace,
+                    A_surfxml_trace_connect_element));
   }
 }
 

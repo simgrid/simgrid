@@ -1,5 +1,5 @@
-/* Validating XML processor for simdag/dax.dtd.
- * Generated 2010/04/09 23:31:36.
+/* Validating XML processor for /home/mquinson/Code/simgrid/src/simdag/dax.dtd.
+ * Generated 2010/10/01 22:34:14.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
