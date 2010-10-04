@@ -121,7 +121,7 @@ static link_CM02_t net_link_new(char *name,
   xbt_dict_set(surf_network_model->resource_set, name, nw_link,
                surf_resource_free);
 #ifdef HAVE_TRACING
-  TRACE_surf_link_declaration (name, bw_initial, lat_initial);
+  TRACE_surf_link_declaration (nw_link, name, bw_initial, lat_initial);
 #endif
 
   return nw_link;
@@ -350,7 +350,7 @@ static void net_update_actions_state(double now, double delta)
     link_CM02_t link;
     unsigned int i;
     xbt_dynar_foreach(route, i, link) {
-      TRACE_surf_link_set_utilization (link->lmm_resource.generic_resource.name,
+      TRACE_surf_link_set_utilization (link,
           action->generic_action.data, lmm_variable_getvalue(action->variable), now-delta, delta);
     }
 #endif
@@ -399,7 +399,7 @@ static void net_update_resource_state(void *id,
                                 (nw_link->lmm_resource.power.peak *
                                  nw_link->lmm_resource.power.scale));
 #ifdef HAVE_TRACING
-    TRACE_surf_link_set_bandwidth (date, nw_link->lmm_resource.generic_resource.name, sg_bandwidth_factor * (nw_link->lmm_resource.power.peak * nw_link->lmm_resource.power.scale));
+    TRACE_surf_link_set_bandwidth (date, nw_link, sg_bandwidth_factor * (nw_link->lmm_resource.power.peak * nw_link->lmm_resource.power.scale));
 #endif
     if (sg_weight_S_parameter > 0) {
       while ((var = lmm_get_var_from_cnst

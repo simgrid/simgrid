@@ -63,19 +63,16 @@ static void __TRACE_surf_set_resource_variable (double date, const char *variabl
  * main: create LINK container, set initial bandwidth and latency
  * return: void
  */
-void TRACE_surf_link_declaration (char *name, double bw, double lat)
+void TRACE_surf_link_declaration (void *link, char *name, double bw, double lat)
 {
   if (!IS_TRACING) return;
 
-  if (strcmp (name, "__loopback__")==0 ||
-      strcmp (name, "loopback")==0){ //ignore loopback updates
-    return;
-  }
-
-  pajeCreateContainer (SIMIX_get_clock(), name, "LINK", "platform", name);
-  xbt_dict_set (created_links, name, xbt_strdup ("1"), xbt_free);
-  TRACE_surf_link_set_bandwidth (SIMIX_get_clock(), name, bw);
-  TRACE_surf_link_set_latency (SIMIX_get_clock(), name, lat);
+  char alias[100];
+  snprintf (alias, 100, "%p", link);
+  pajeCreateContainer (SIMIX_get_clock(), alias, "LINK", "platform", name);
+  xbt_dict_set (created_links, alias, xbt_strdup ("1"), xbt_free);
+  TRACE_surf_link_set_bandwidth (SIMIX_get_clock(), link, bw);
+  TRACE_surf_link_set_latency (SIMIX_get_clock(), link, lat);
 }
 
 /*
@@ -100,13 +97,17 @@ void TRACE_surf_host_set_power (double date, char *resource, double power)
   __TRACE_surf_set_resource_variable (date, "power", resource, power);
 }
 
-void TRACE_surf_link_set_bandwidth (double date, char *resource, double bandwidth)
+void TRACE_surf_link_set_bandwidth (double date, void *link, double bandwidth)
 {
+  char resource[100];
+  snprintf (resource, 100, "%p", link);
   __TRACE_surf_set_resource_variable (date, "bandwidth", resource, bandwidth);
 }
 
-void TRACE_surf_link_set_latency (double date, char *resource, double latency)
+void TRACE_surf_link_set_latency (double date, void *link, double latency)
 {
+  char resource[100];
+  snprintf (resource, 100, "%p", link);
   __TRACE_surf_set_resource_variable (date, "latency", resource, latency);
 }
 

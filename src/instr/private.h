@@ -106,9 +106,9 @@ void TRACE_surf_host_declaration (char *name, double power);
 void TRACE_surf_host_set_power (double date, char *resource, double power);
 void TRACE_surf_host_define_id (const char *name, int host_id);
 void TRACE_surf_host_vivaldi_parse (char *host, double x, double y, double h);
-void TRACE_surf_link_declaration (char *name, double bw, double lat);
-void TRACE_surf_link_set_bandwidth (double date, char *resource, double bandwidth);
-void TRACE_surf_link_set_latency (double date, char *resource, double latency);
+void TRACE_surf_link_declaration (void *link, char *name, double bw, double lat);
+void TRACE_surf_link_set_bandwidth (double date, void *link, double bandwidth);
+void TRACE_surf_link_set_latency (double date, void *link, double latency);
 void TRACE_surf_link_missing (void);
 void TRACE_msg_clean (void);
 
@@ -144,7 +144,7 @@ void TRACE_global_init(int *argc, char **argv);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
-void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
+void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, double value, double now, double delta);
 void __TRACE_surf_resource_utilization_start (smx_action_t action);
 void __TRACE_surf_resource_utilization_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value);
 void __TRACE_surf_resource_utilization_end (smx_action_t action);

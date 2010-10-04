@@ -14,13 +14,9 @@ extern routing_global_t global_routing;
 
 void __TRACE_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what)
 {
-  char valuestr[100];
-  xbt_dynar_t route = NULL;
-  unsigned int i;
-  void *link_ptr;
-  char *link = NULL;
   if (!IS_TRACING || !IS_TRACING_PLATFORM) return;
 
+  char valuestr[100];
   snprintf (valuestr, 100, "%g", value);
 
   if (strcmp (what, "declare") == 0){
@@ -29,17 +25,20 @@ void __TRACE_link_variable (double time, const char *src, const char *dst, const
   }
 
   if (!global_routing) return;
-  route = global_routing->get_route(src, dst);
 
+  xbt_dynar_t route = global_routing->get_route(src, dst);
+  unsigned int i;
+  void *link_ptr;
   xbt_dynar_foreach(route, i, link_ptr) {
-    link = (*(link_CM02_t)link_ptr).lmm_resource.generic_resource.name;
+    char resource[100];
+    snprintf (resource, 100, "%p", link_ptr);
 
     if (strcmp (what, "set") == 0){
-      pajeSetVariable (time, variable, link, valuestr);
+      pajeSetVariable (time, variable, resource, valuestr);
     }else if (strcmp (what, "add") == 0){
-      pajeAddVariable (time, variable, link, valuestr);
+      pajeAddVariable (time, variable, resource, valuestr);
     }else if (strcmp (what, "sub") == 0){
-      pajeSubVariable (time, variable, link, valuestr);
+      pajeSubVariable (time, variable, resource, valuestr);
     }
   }
 }

@@ -326,19 +326,17 @@ static void __TRACE_surf_resource_utilization_finalize_C ()
 /*
  * TRACE_surf_link_set_utilization: entry point from SimGrid
  */
-void TRACE_surf_link_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta)
+void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, double value, double now, double delta)
 {
   char type[100];
   if (!IS_TRACING || !IS_TRACED(smx_action)) return;
 
-  if (strcmp (name, "__loopback__")==0 ||
-      strcmp (name, "loopback")==0){ //ignore loopback updates
-    return;
-  }
   if (!value) return;
 
+  char resource[100];
+  snprintf (resource, 100, "%p", link);
   snprintf (type, 100, "b%s", smx_action->category);
-  __TRACE_surf_resource_utilization_event (smx_action, now, delta, type, name, value);
+  __TRACE_surf_resource_utilization_event (smx_action, now, delta, type, resource, value);
   return;
 }
 
