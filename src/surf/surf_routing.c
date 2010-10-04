@@ -677,9 +677,38 @@ static void finalize(void) {
   xbt_free(global_routing);
 }
 
+static xbt_dynar_t recursive_get_onelink_routes (routing_component_t rc)
+{
+  xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
+
+  //adding my one link routes
+  unsigned int cpt;
+  void *link;
+  xbt_dynar_t onelink_mine = rc->get_onelink_routes (rc);
+  if (onelink_mine){
+    xbt_dynar_foreach(onelink_mine, cpt, link) {
+      xbt_dynar_push(ret,&link);
+    }
+  }
+
+  //recursing
+  char *key;
+  xbt_dict_cursor_t cursor=NULL;
+  routing_component_t rc_child;
+  xbt_dict_foreach(rc->routing_sons, cursor, key, rc_child) {
+    xbt_dynar_t onelink_child = recursive_get_onelink_routes (rc_child);//->get_onelink_routes (rc_child);
+    if (onelink_child){
+      xbt_dynar_foreach(onelink_child, cpt, link) {
+        xbt_dynar_push(ret,&link);
+      }
+    }
+  }
+  return ret;
+}
+
 static xbt_dynar_t get_onelink_routes(void)
 {
-	xbt_die("global \"get_onelink_routes\" function not implemented yet");
+  return recursive_get_onelink_routes (global_routing->root);
 }
 
 static int is_router(const char *name)
