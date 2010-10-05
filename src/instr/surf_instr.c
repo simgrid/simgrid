@@ -100,6 +100,8 @@ void TRACE_surf_host_set_power (double date, char *resource, double power)
 
 void TRACE_surf_link_set_bandwidth (double date, void *link, double bandwidth)
 {
+  if (!TRACE_surf_link_is_traced (link)) return;
+
   char resource[100];
   snprintf (resource, 100, "%p", link);
   __TRACE_surf_set_resource_variable (date, "bandwidth", resource, bandwidth);
@@ -107,6 +109,8 @@ void TRACE_surf_link_set_bandwidth (double date, void *link, double bandwidth)
 
 void TRACE_surf_link_set_latency (double date, void *link, double latency)
 {
+  if (!TRACE_surf_link_is_traced (link)) return;
+
   char resource[100];
   snprintf (resource, 100, "%p", link);
   __TRACE_surf_set_resource_variable (date, "latency", resource, latency);
@@ -217,11 +221,24 @@ void TRACE_surf_save_onelink (void)
     char *dst = onelink->dst;
     void *link = onelink->link_ptr;
 
-    char resource[100];
-    snprintf (resource, 100, "%p", link);
+    if (TRACE_surf_link_is_traced (link)){
+      char resource[100];
+      snprintf (resource, 100, "%p", link);
 
-    pajeNewEvent (0.1, "source", resource, src);
-    pajeNewEvent (0.1, "destination", resource, dst);
+      pajeNewEvent (0.1, "source", resource, src);
+      pajeNewEvent (0.1, "destination", resource, dst);
+    }
+  }
+}
+
+int TRACE_surf_link_is_traced (void *link)
+{
+  char alias[100];
+  snprintf (alias, 100, "%p", link);
+  if (xbt_dict_get_or_null (created_links, alias)){
+    return 1;
+  }else{
+    return 0;
   }
 }
 

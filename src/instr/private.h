@@ -112,6 +112,7 @@ void TRACE_surf_link_set_latency (double date, void *link, double latency);
 void TRACE_surf_link_missing (void);
 void TRACE_msg_clean (void);
 void TRACE_surf_save_onelink (void);
+int TRACE_surf_link_is_traced (void *link);
 
 //for tracing gtnets
 void TRACE_surf_gtnets_communicate (void *action, int src, int dst);

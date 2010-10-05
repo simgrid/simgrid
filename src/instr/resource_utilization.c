@@ -331,6 +331,9 @@ void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, doubl
   char type[100];
   if (!IS_TRACING || !IS_TRACED(smx_action)) return;
 
+  //only trace link utilization if link is known by tracing mechanism
+  if (!TRACE_surf_link_is_traced (link)) return;
+
   if (!value) return;
 
   char resource[100];
