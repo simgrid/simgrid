@@ -34,10 +34,20 @@ void TRACE_surf_init (void)
 
 void TRACE_surf_finalize (void)
 {
+  char *key, *value;
+  xbt_dict_cursor_t cursor = NULL;
   __TRACE_surf_resource_utilization_finalize();
+
+  /* get all host from host_containers */
+  xbt_dict_foreach(host_containers, cursor, key, value) {
+    pajeDestroyContainer (MSG_get_clock(), "HOST", key);
+  }
+  xbt_dict_foreach(created_links, cursor, key, value) {
+    pajeDestroyContainer (MSG_get_clock(), "LINK", key);
+  }
 }
 
-static void __TRACE_surf_set_resource_variable (double date, const char *variable, const char *resource, double value)
+static void TRACE_surf_set_resource_variable (double date, const char *variable, const char *resource, double value)
 {
 	char aux[100], key[100];
 	char *last_value = NULL;
@@ -98,7 +108,7 @@ void TRACE_surf_host_declaration (char *name, double power)
 
 void TRACE_surf_host_set_power (double date, char *resource, double power)
 {
-  __TRACE_surf_set_resource_variable (date, "power", resource, power);
+  TRACE_surf_set_resource_variable (date, "power", resource, power);
 }
 
 void TRACE_surf_link_set_bandwidth (double date, void *link, double bandwidth)
@@ -107,7 +117,7 @@ void TRACE_surf_link_set_bandwidth (double date, void *link, double bandwidth)
 
   char resource[100];
   snprintf (resource, 100, "%p", link);
-  __TRACE_surf_set_resource_variable (date, "bandwidth", resource, bandwidth);
+  TRACE_surf_set_resource_variable (date, "bandwidth", resource, bandwidth);
 }
 
 void TRACE_surf_link_set_latency (double date, void *link, double latency)
@@ -116,7 +126,7 @@ void TRACE_surf_link_set_latency (double date, void *link, double latency)
 
   char resource[100];
   snprintf (resource, 100, "%p", link);
-  __TRACE_surf_set_resource_variable (date, "latency", resource, latency);
+  TRACE_surf_set_resource_variable (date, "latency", resource, latency);
 }
 
 /* to trace gtnets */
@@ -169,29 +179,6 @@ void TRACE_surf_gtnets_destroy (void *action)
   snprintf (key, 100, "%p", action);
   xbt_dict_remove (gtnets_src, key);
   xbt_dict_remove (gtnets_dst, key);
-}
-
-void TRACE_surf_link_missing (void)
-{
-  CRITICAL0("The trace cannot be done because "
-		 "the platform you are using contains "
-		 "routes with more than one link.");
-  THROW0(tracing_error, TRACE_ERROR_COMPLEX_ROUTES, "Tracing failed");
-}
-
-void TRACE_msg_clean (void)
-{
-  char *key, *value;
-  xbt_dict_cursor_t cursor = NULL;
-  TRACE_surf_finalize();
-
-  /* get all host from host_containers */
-  xbt_dict_foreach(host_containers, cursor, key, value) {
-    pajeDestroyContainer (MSG_get_clock(), "HOST", key);
-  }
-  xbt_dict_foreach(created_links, cursor, key, value) {
-    pajeDestroyContainer (MSG_get_clock(), "LINK", key);
-  }
 }
 
 void TRACE_surf_host_vivaldi_parse (char *host, double x, double y, double h)

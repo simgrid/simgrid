@@ -109,8 +109,6 @@ void TRACE_surf_host_vivaldi_parse (char *host, double x, double y, double h);
 void TRACE_surf_link_declaration (void *link, char *name, double bw, double lat);
 void TRACE_surf_link_set_bandwidth (double date, void *link, double bandwidth);
 void TRACE_surf_link_set_latency (double date, void *link, double latency);
-void TRACE_surf_link_missing (void);
-void TRACE_msg_clean (void);
 void TRACE_surf_save_onelink (void);
 int TRACE_surf_link_is_traced (void *link);
 
