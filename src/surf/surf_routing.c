@@ -56,13 +56,18 @@ static void  model_none_end(void);    /* none routing model */
 
 static void routing_full_parse_Scluster(void);/*cluster bypass*/
 
-/* this lines are olny for replace use like index in the model table */
-#define SURF_MODEL_FULL           0
-#define SURF_MODEL_FLOYD          1
-#define SURF_MODEL_DIJKSTRA       2
-#define SURF_MODEL_DIJKSTRACACHE  3
-#define SURF_MODEL_RULEBASED      4
-#define SURF_MODEL_NONE           5
+/* this lines are only for replace use like index in the model table */
+typedef enum {
+	SURF_MODEL_FULL=0,
+	SURF_MODEL_FLOYD,
+	SURF_MODEL_DIJKSTRA,
+	SURF_MODEL_DIJKSTRACACHE,
+	SURF_MODEL_NONE,
+#ifdef HAVE_PCRE_LIB
+	SURF_MODEL_RULEBASED
+#endif
+} e_routing_types;
+
 
 /* must be finish with null and carefull if change de order */
 struct s_model_type routing_models[] =
@@ -74,10 +79,11 @@ struct s_model_type routing_models[] =
   model_dijkstra_create ,model_dijkstra_both_load, model_dijkstra_both_unload, model_dijkstra_both_end },
   {"DijkstraCache", "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)",
   model_dijkstracache_create, model_dijkstra_both_load, model_dijkstra_both_unload, model_dijkstra_both_end },
-  {"RuleBased", "Rule-Based routing data (...)",
-  model_rulebased_create, model_rulebased_load, model_rulebased_unload, model_rulebased_end },
   {"none", "No routing (usable with Constant network only)",
   model_none_create, model_none_load, model_none_unload, model_none_end },
+#ifdef HAVE_PCRE_LIB
+  {"RuleBased", "Rule-Based routing data (...)", model_rulebased_create, model_rulebased_load, model_rulebased_unload, model_rulebased_end },
+#endif
   {NULL,NULL,NULL,NULL,NULL,NULL}};
 
 /* ************************************************************************** */
@@ -1647,6 +1653,7 @@ static void  model_dijkstra_both_end(void) {
   
 }
 
+#ifdef HAVE_PCRE_LIB
 /* ************************************************** */
 /* ************** RULE-BASED ROUTING **************** */
 
@@ -1946,6 +1953,8 @@ static void  model_rulebased_unload(void) {
 
 static void  model_rulebased_end(void) {
 }
+
+#endif /* HAVE_PCRE_LIB */
 
 /* ************************************************************************** */
 /* ******************************* NO ROUTING ******************************* */
@@ -2490,7 +2499,7 @@ static void routing_full_parse_Scluster(void)
 		{
 			case 1:
 			  surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
-			  host_id = bprintf("%s%d%s", cluster_prefix, start, cluster_suffix);
+			  host_id = bprintf("%s_%d%s", cluster_prefix, start, cluster_suffix);
 			  #ifndef HAVE_PCRE_LIB
 			  xbt_dynar_push_as(tab_elements_num, int, start);
 			  #endif
@@ -2531,7 +2540,7 @@ static void routing_full_parse_Scluster(void)
 			  DEBUG2("Create hosts and links from %d to %d",start,end);
 			  for (i = start; i <= end; i++)
 			  {
-				  host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);
+				  host_id = bprintf("%s_%d%s", cluster_prefix, i, cluster_suffix);
 				  #ifndef HAVE_PCRE_LIB
 				  xbt_dynar_push_as(tab_elements_num, int, i);
 				  #endif
@@ -2573,11 +2582,11 @@ static void routing_full_parse_Scluster(void)
 	}
 
 	DEBUG0(" ");
-	router_id = bprintf("%srouter%s",cluster_prefix,cluster_suffix);
-	link_router = bprintf("%s_link_router",cluster_id);
+	router_id = bprintf("%s_%s_router%s",cluster_prefix,cluster_id,cluster_suffix);
+	link_router = bprintf("%s_link_%s_router",cluster_id,cluster_id);
 	link_backbone = bprintf("%s_backbone",cluster_id);
 
-	DEBUG1("<router id=\"%s\"\">",router_id);
+	DEBUG1("<router id=\"%s\"/>",router_id);
 	SURFXML_BUFFER_SET(router_id, router_id);;
 	SURFXML_START_TAG(router);
 	SURFXML_END_TAG(router);
@@ -2616,7 +2625,7 @@ static void routing_full_parse_Scluster(void)
 		    	new_suffix = bprintf("%s\\.%s",new_suffix,groups);
 		    }
 	}
-	route_src_dst = bprintf("%s(.*)%s",cluster_prefix,new_suffix);
+	route_src_dst = bprintf("%s_(.*)%s",cluster_prefix,new_suffix);
 
 	DEBUG0(" ");
 
@@ -2645,23 +2654,53 @@ static void routing_full_parse_Scluster(void)
 	DEBUG0("</route>");
 	SURFXML_END_TAG(route);
 #else
-	for(i=0 ; i<=tab_elements_num->elmsize ; i++)
+	for(i=0 ; i<=xbt_dynar_length(tab_elements_num) ; i++)
 	{
-		for(j=0 ; j<=tab_elements_num->elmsize ; j++)
+		for(j=0 ; j<=xbt_dynar_length(tab_elements_num) ; j++)
 		{
-			route_src = bprintf("%s%d%s",cluster_prefix,xbt_dynar_get_as(tab_elements_num,i,int),cluster_suffix);
-			route_dst = bprintf("%s%d%s",cluster_prefix,xbt_dynar_get_as(tab_elements_num,j,int),cluster_suffix);
+			if(i == xbt_dynar_length(tab_elements_num))
+			{
+				route_src = router_id;
+			}
+			else
+			{
+				route_src = bprintf("%s_%d%s",cluster_prefix,xbt_dynar_get_as(tab_elements_num,i,int),cluster_suffix);
+			}
+
+			if(j == xbt_dynar_length(tab_elements_num))
+			{
+				route_dst = router_id;
+			}
+			else
+			{
+				route_dst = bprintf("%s_%d%s",cluster_prefix,xbt_dynar_get_as(tab_elements_num,j,int),cluster_suffix);
+			}
 
 			DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\">",route_src,route_dst);
 			SURFXML_BUFFER_SET(route_src, route_src);
 			SURFXML_BUFFER_SET(route_dst, route_dst);
 			SURFXML_START_TAG(route);
 
-			route_src = bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,i,int));
-			route_dst = bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,j,int));
+			if(i == xbt_dynar_length(tab_elements_num))
+			{
+				route_src = link_router;
+			}
+			else
+			{
+				route_src = bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,i,int));
+			}
 
-			DEBUG2("<link:ctn\tid=\"%s_link_%d\"/>",cluster_id,xbt_dynar_get_as(tab_elements_num,i,int));
-			SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,i,int)));
+			if(j == xbt_dynar_length(tab_elements_num))
+			{
+				route_dst = link_router;
+			}
+			else
+			{
+				route_dst = bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,j,int));
+			}
+
+			DEBUG1("<link:ctn\tid=\"%s\"/>",route_src);
+			SURFXML_BUFFER_SET(link_ctn_id, route_src);
 			SURFXML_START_TAG(link_ctn);
 			SURFXML_END_TAG(link_ctn);
 
@@ -2670,8 +2709,8 @@ static void routing_full_parse_Scluster(void)
 			SURFXML_START_TAG(link_ctn);
 			SURFXML_END_TAG(link_ctn);
 
-			DEBUG2("<link:ctn\tid=\"%s_link_%d\"/>",cluster_id,xbt_dynar_get_as(tab_elements_num,j,int));
-			SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_%d",cluster_id,xbt_dynar_get_as(tab_elements_num,j,int)));
+			DEBUG1("<link:ctn\tid=\"%s\"/>",route_dst);
+			SURFXML_BUFFER_SET(link_ctn_id, route_dst);
 			SURFXML_START_TAG(link_ctn);
 			SURFXML_END_TAG(link_ctn);
 
