@@ -1,5 +1,7 @@
 require "simgrid"
 
+  simgrid.AS.new{id="AS0",mode="Full"}; 
+
   simgrid.Host.new{id="Tremblay",power=98095000};
   simgrid.Host.new{id="Jupiter",power=76296000};
   simgrid.Host.new{id="Fafard",power=76296000};
