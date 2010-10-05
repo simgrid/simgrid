@@ -2055,8 +2055,8 @@ be relative locally.
 For <em>LINK</em> we have:
 \verbatim
   LINK = {
-    src = SrcHost;
-    dst = DstHost;
+    src = source;
+    dst = destination;
     
     size = bandwidth;
     scale = global;
@@ -2065,7 +2065,7 @@ For <em>LINK</em> we have:
 For the types specified in the <em>edge</em> parameter (such as <em>LINK</em>),
 the configuration must contain two additional parameters: <em>src</em> and
 <em>dst</em> that are used to properly identify which nodes this edge is
-connecting. The values <em>SrcHost</em> and <em>DstHost</em> are always present
+connecting. The values <em>source</em> and <em>destination</em> are always present
 in the SimGrid trace file and should not be changed in the configuration. The
 parameter <em>size</em> for the LINK, in this case, is configured as the
 variable <em>bandwidth</em>, with a <em>global</em> scale. The scale meaning
@@ -2103,8 +2103,8 @@ as configuration for HOST and LINK this:
   };
 
   LINK = {
-    src = SrcHost;
-    dst = DstHost;
+    src = source;
+    dst = destination;
     size = bandwidth;
     scale = global;
 
@@ -2166,8 +2166,8 @@ visualization was generated with the following configuration:
     };
   };
   LINK = {
-    src = SrcHost;
-    dst = DstHost;
+    src = source;
+    dst = destination;
     size = bandwidth;
     scale = global;
 
