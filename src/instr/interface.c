@@ -53,6 +53,8 @@ int TRACE_start ()
     pajeDefineVariableType ("power", "HOST", "power");
     pajeDefineVariableType ("bandwidth", "LINK", "bandwidth");
     pajeDefineVariableType ("latency", "LINK", "latency");
+    pajeDefineEventType ("source", "LINK", "source");
+    pajeDefineEventType ("destination", "LINK", "destination");
   }
 
   if (IS_TRACING_PROCESSES || IS_TRACING_VOLUME){

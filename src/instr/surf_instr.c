@@ -5,6 +5,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/private.h"
+#include "surf/surf_private.h"
 
 #ifdef HAVE_TRACING
 
@@ -197,6 +198,31 @@ void TRACE_surf_host_vivaldi_parse (char *host, double x, double y, double h)
   pajeSetVariable (0, "vivaldi_y", host, valuestr);
   snprintf (valuestr, 100, "%g", h);
   pajeSetVariable (0, "vivaldi_h", host, valuestr);
+}
+
+extern routing_global_t global_routing;
+void TRACE_surf_save_onelink (void)
+{
+  if (!IS_TRACING) return;
+
+  //get the onelinks from the parsed platform
+  xbt_dynar_t onelink_routes = global_routing->get_onelink_routes();
+  if (!onelink_routes) return;
+
+  //save them in trace file
+  onelink_t onelink;
+  unsigned int iter;
+  xbt_dynar_foreach(onelink_routes, iter, onelink) {
+    char *src = onelink->src;
+    char *dst = onelink->dst;
+    void *link = onelink->link_ptr;
+
+    char resource[100];
+    snprintf (resource, 100, "%p", link);
+
+    pajeNewEvent (0.1, "source", resource, src);
+    pajeNewEvent (0.1, "destination", resource, dst);
+  }
 }
 
 #endif
