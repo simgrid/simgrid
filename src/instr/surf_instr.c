@@ -68,6 +68,9 @@ void TRACE_surf_link_declaration (void *link, char *name, double bw, double lat)
 {
   if (!IS_TRACING) return;
 
+  //filter out loopback
+  if (!strcmp (name, "loopback") || !strcmp (name, "__loopback__")) return;
+
   char alias[100];
   snprintf (alias, 100, "%p", link);
   pajeCreateContainer (SIMIX_get_clock(), alias, "LINK", "platform", name);
