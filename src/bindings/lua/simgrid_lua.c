@@ -807,7 +807,6 @@ static int surf_parse_bypass_platform()
 
 	// add traces
 	surf_add_host_traces();
-	//surf_set_routes();
 	surf_add_link_traces();
 
 	return 0; // must return 0 ?!!
@@ -828,6 +827,9 @@ static int surf_wsL07_parse_bypass_platform()
 	p_link_attr p_link;
 	p_route_attr p_route;
 
+	// Init routing mode
+	create_AS(AS->id,AS->mode);
+
 	// Add Hosts
 	xbt_dynar_foreach(host_list_d,i,p_host)
 	{
@@ -846,16 +848,18 @@ static int surf_wsL07_parse_bypass_platform()
 	// add route
 	xbt_dynar_foreach(route_list_d,i,p_route)
 	{
-		//surf_routing_add_route((char*)p_route->src_id,(char*)p_route->dest_id,p_route->links_id);
+		surf_routing_add_route((char*)p_route->src_id,(char*)p_route->dest_id,p_route->links_id);
 	}
 	/* </platform> */
 
+	// Finalize AS
+	surf_AS_finalize(AS->id);
+	// add traces
 	surf_wsL07_add_traces();
-	//surf_set_routes();
 
 	return 0;
-
 }
+
 /*
  * surf parse bypass application for MSG Module
  */
