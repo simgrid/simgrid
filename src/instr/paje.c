@@ -60,7 +60,7 @@ void TRACE_paje_create_header(void) {
     return;
   fprintf(
       tracing_file,
-      " \
+      "\
 %%EventDef PajeDefineContainerType %d \n\
 %%       Alias string \n\
 %%       ContainerType string \n\
