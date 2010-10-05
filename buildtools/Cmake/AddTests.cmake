@@ -263,14 +263,14 @@ set_tests_properties(tesh-gras-dd-r_big32_2 PROPERTIES WILL_FAIL true)
 
 # Expected to fail until the parser gets better (v3.3.5?)
 set_tests_properties(simdag-metaxml_test PROPERTIES WILL_FAIL true)   
-set_tests_properties( msg-masterslave-console PROPERTIES WILL_FAIL true) 
+# set_tests_properties( msg-masterslave-console PROPERTIES WILL_FAIL true) 
 
 if(HAVE_RUBY)
 set_tests_properties(ruby-quicksort PROPERTIES WILL_FAIL true)
 endif(HAVE_RUBY)
 
 # Expected to fail for gras
-set(GRAS_IS_BROKEN 1)
+set(GRAS_IS_BROKEN 0)
 if(GRAS_IS_BROKEN)
 	set_tests_properties( gras-ping-rl PROPERTIES WILL_FAIL true)
 	set_tests_properties( gras-rpc-rl PROPERTIES WILL_FAIL true)
