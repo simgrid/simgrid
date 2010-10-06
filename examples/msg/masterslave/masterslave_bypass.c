@@ -38,10 +38,6 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_availability_file, "");
   A_surfxml_host_state = A_surfxml_host_state_ON;
   SURFXML_BUFFER_SET(host_state_file, "");
-  SURFXML_BUFFER_SET(host_interference_send, "1.0");
-  SURFXML_BUFFER_SET(host_interference_recv, "1.0");
-  SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
-  SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
@@ -52,10 +48,6 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_availability_file, "");
   A_surfxml_host_state = A_surfxml_host_state_ON;
   SURFXML_BUFFER_SET(host_state_file, "");
-  SURFXML_BUFFER_SET(host_interference_send, "1.0");
-  SURFXML_BUFFER_SET(host_interference_recv, "1.0");
-  SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
-  SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 

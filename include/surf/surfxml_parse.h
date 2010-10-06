@@ -47,6 +47,8 @@ XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_bypassRoute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_bypassRoute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_cluster_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_cluster_cb_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_config_cb_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_config_cb_list;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);

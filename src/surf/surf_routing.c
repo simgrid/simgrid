@@ -56,6 +56,8 @@ static void  model_none_end(void);    /* none routing model */
 
 static void routing_full_parse_Scluster(void);/*cluster bypass*/
 
+static void parse_Sconfig(void);/*config Tag*/
+
 /* this lines are only for replace use like index in the model table */
 typedef enum {
 	SURF_MODEL_FULL=0,
@@ -765,6 +767,7 @@ void routing_model_create(size_t size_of_links, void* loopback) {
 
   surfxml_add_callback(STag_surfxml_cluster_cb_list, &routing_full_parse_Scluster);
 
+  surfxml_add_callback(STag_surfxml_config_cb_list, &parse_Sconfig);
 }
 
 /* ************************************************************************** */
@@ -2470,6 +2473,12 @@ static void generic_src_dst_check(routing_component_t rc, const char* src, const
       "The routing component of src and dst is not the same as the network elements belong (%s==%s)",rc->name,dst_as->name);
 }
 
+static void parse_Sconfig(void)
+{
+	//TODO
+	DEBUG0("--->init of tag config");
+}
+
 static void routing_full_parse_Scluster(void)
 {
 	static int AX_ptr = 0;
@@ -2533,10 +2542,6 @@ static void routing_full_parse_Scluster(void)
 			  SURFXML_BUFFER_SET(host_availability_file, "");
 			  A_surfxml_host_state = A_surfxml_host_state_ON;
 			  SURFXML_BUFFER_SET(host_state_file, "");
-			  SURFXML_BUFFER_SET(host_interference_send, "1.0");
-			  SURFXML_BUFFER_SET(host_interference_recv, "1.0");
-			  SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
-			  SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
 			  SURFXML_START_TAG(host);
 			  SURFXML_END_TAG(host);
 
@@ -2574,10 +2579,6 @@ static void routing_full_parse_Scluster(void)
 				  SURFXML_BUFFER_SET(host_availability_file, "");
 				  A_surfxml_host_state = A_surfxml_host_state_ON;
 				  SURFXML_BUFFER_SET(host_state_file, "");
-				  SURFXML_BUFFER_SET(host_interference_send, "1.0");
-				  SURFXML_BUFFER_SET(host_interference_recv, "1.0");
-				  SURFXML_BUFFER_SET(host_interference_send_recv, "1.0");
-				  SURFXML_BUFFER_SET(host_max_outgoing_rate, "-1.0");
 				  SURFXML_START_TAG(host);
 				  SURFXML_END_TAG(host);
 

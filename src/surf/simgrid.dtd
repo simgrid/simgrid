@@ -1,8 +1,6 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((include|trace|random|cluster|AS|trace_connect)*,(include|trace|random|cluster|AS|set|foreach|host|router|link|trace_connect)*,(include|route|trace_connect|process)*)>
+<!ELEMENT platform ((config|include|cluster|AS|trace|trace_connect)*,(include|process)*)>
 <!ATTLIST platform version CDATA "0.0">
-<!ATTLIST platform xmlns:link CDATA "http://simgrid.gforge.inria.fr/">
-<!ATTLIST platform xmlns:route CDATA "http://simgrid.gforge.inria.fr/">
 
 <!ELEMENT trace (#PCDATA)>
 <!ATTLIST trace id CDATA #REQUIRED>
@@ -22,7 +20,7 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|link|cluster)*,ASroute*,bypassRoute*)|((host|router|link)*,route*))>
+<!ELEMENT AS (((AS|link|cluster|trace|trace_connect)*,(ASroute|trace|trace_connect)*,(bypassRoute|trace|trace_connect)*)|((host|router|link|trace|trace_connect)*,(route|trace|trace_connect)*))>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
 
@@ -33,10 +31,6 @@
 <!ATTLIST host availability_file CDATA "">
 <!ATTLIST host state (ON|OFF) "ON">
 <!ATTLIST host state_file CDATA "">
-<!ATTLIST host interference_send CDATA "1.0">
-<!ATTLIST host interference_recv CDATA "1.0">
-<!ATTLIST host interference_send_recv CDATA "1.0">
-<!ATTLIST host max_outgoing_rate CDATA "-1.0">
 <!ATTLIST host vivaldi  CDATA "0 0 0">
 
 <!ELEMENT cluster EMPTY>
@@ -90,6 +84,9 @@
 
 <!ELEMENT argument EMPTY>
 <!ATTLIST argument value CDATA #REQUIRED>
+
+<!ELEMENT config (prop*|random)>
+<!ATTLIST config id CDATA "">
 
 <!ELEMENT prop EMPTY>
 <!ATTLIST prop id CDATA #REQUIRED> <!-- <!ATTLIST prop key CDATA #REQUIRED> -->
