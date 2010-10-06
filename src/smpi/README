@@ -51,6 +51,36 @@ a LD_LIBRARY_PATH variable pointing to src/.libs
 
 
 
+
+Network Model
+=============
+
+SMPI runs with a cluster-specific network model. This model is piece-wise
+linear: each segment is described by a latency correction factor and a
+bandwidth correction factor (both are multiplicative and apply to the values
+given in the platform file).
+
+To compute the values for a specific cluster, we provide the script
+contrib/network_model/calibrate_piecewise.py. This script takes four mandatory
+command line parameters:
+
+1) a SKaMPI data file for a Pingpong_Send_Recv experiment
+2) the number of links between the nodes involved in the SKaMPI measurments
+3) the latency value of the links, as given in the platform file
+4) the bandwidth value of the links, as given in the platform file
+
+It also takes an arbitrary number of optional parameters, each being a segment
+limit on which to compute the correction factors.
+
+The script then outputs the latency and bandwidth factor for each segment that
+best fit the experimental values. You can then apply these factors in the
+network model by modifying the values in src/surf/network.c (after the "SMPI
+callbacks" comment, lines 44 to 77).
+
+
+
+
+
 What's implemented
 ==================
 
@@ -60,43 +90,112 @@ if you can.
 
 
 * MPI_Datatypes:
-MPI_BYTE  
-MPI_CHAR  
-MPI_INT   
-MPI_FLOAT
-MPI_DOUBLE
-
-
+  MPI_BYTE
+  MPI_CHAR / MPI_SIGNED_CHAR / MPI_UNSIGNED_CHAR
+  MPI_SHORT / MPI_UNSIGNED_SHORT
+  MPI_INT / MPI_UNSIGNED
+  MPI_LONG / MPI_UNSIGNED_LONG
+  MPI_LONG_LONG / MPI_LONG_LONG_INT / MPI_UNSIGNED_LONG_LONG
+  MPI_FLOAT
+  MPI_DOUBLE
+  MPI_LONG_DOUBLE
+  MPI_WCHAR
+  MPI_C_BOOL
+  MPI_INT8_T / MPI_UINT8_T
+  MPI_INT16_T / MPI_UINT16_T
+  MPI_INT32_T / MPI_UINT32_T
+  MPI_INT64_T / MPI_UINT64_T
+  MPI_C_FLOAT_COMPLEX / MPI_C_COMPLEX
+  MPI_C_DOUBLE_COMPLEX
+  MPI_C_LONG_DOUBLE_COMPLEX
+  MPI_AINT
+  MPI_OFFSET
+  MPI_FLOAT_INT
+  MPI_LONG_INT
+  MPI_DOUBLE_INT
+  MPI_SHORT_INT
+  MPI_2INT
+  MPI_LONG_DOUBLE_INT
+   
+* Type management:
+  MPI_Type_size
+  MPI_Type_get_extent
+  MPI_Type_extent
+  MPI_Type_lb
+  MPI_Type_ub
+   
 * MPI_Op:
-MPI_LAND  
-MPI_SUM   
-MPI_PROD  
-MPI_MIN   
-MPI_MAX   
-
-*primitives:
-MPI_Init
-MPI_Finalize
-MPI_Abort
-MPI_Comm_size
-MPI_Comm_split
-MPI_Comm_rank
-MPI_Type_size
-MPI_Barrier
-MPI_Irecv
-MPI_Recv
-MPI_Isend
-MPI_Send
-MPI_Sendrecv
-MPI_Bcast
-MPI_Wait
-MPI_Waitall
-MPI_Waitany
-MPI_Wtime
-MPI_Reduce
-MPI_Allreduce
-MPI_Scatter
-MPI_Alltoall
-
-
-
+  MPI_LAND
+  MPI_LOR
+  MPI_LXOR
+  MPI_SUM
+  MPI_PROD
+  MPI_MIN
+  MPI_MAX
+  MPI_MAXLOC
+  MPI_MINLOC
+  MPI_BAND
+  MPI_BOR
+  MPI_BXOR
+  User defined operations: MPI_Op_create / MPI_Op_free
+   
+* Group management:
+  MPI_Group_free
+  MPI_Group_rank
+  MPI_Group_size
+  MPI_Group_translate_ranks
+  MPI_Group_compare
+  MPI_Group_union
+  MPI_Group_intersection
+  MPI_Group_difference
+  MPI_Group_incl
+  MPI_Group_excl
+  MPI_Group_range_incl
+   
+* Communicator management:
+  MPI_Comm_rank
+  MPI_Comm_size
+  MPI_Comm_group
+  MPI_Comm_compare
+  MPI_Comm_dup
+  MPI_Comm_create
+  MPI_Comm_free
+   
+* primitives:
+  MPI_Init / MPI_Init_thread
+  MPI_Query_thread / MPI_Is_thread_main
+  MPI_Finalize
+  MPI_Abort
+  MPI_Address
+  MPI_Wtime
+  MPI_Irecv
+  MPI_Recv
+  MPI_Recv_init
+  MPI_Isend
+  MPI_Send
+  MPI_Send_init
+  MPI_Sendrecv
+  MPI_Sendrecv_replace
+  MPI_Start
+  MPI_Startall
+  MPI_Request_free
+  MPI_Test
+  MPI_Testany
+  MPI_Wait
+  MPI_Waitall
+  MPI_Waitany
+  MPI_Waitsome
+  MPI_Barrier
+  MPI_Bcast
+  MPI_Gather
+  MPI_Gatherv
+  MPI_Scatter
+  MPI_Scatterv
+  MPI_Reduce
+  MPI_Scan
+  MPI_Reduce_Scatter
+  MPI_Allgather
+  MPI_Allgatherv
+  MPI_Allreduce
+  MPI_Alltoall
+  MPI_Alltoallv
