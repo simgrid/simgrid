@@ -99,7 +99,7 @@ static void generic_set_bypassroute(routing_component_t rc, const char* src, con
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
 static xbt_dynar_t generic_get_onelink_routes (routing_component_t rc);
-static int generic_is_router (const char *name);
+static int generic_is_router (routing_component_t rc, const char *name);
 static route_extended_t generic_get_bypassroute(routing_component_t rc, const char* src, const char* dst);
 
 /* ************************************************************************** */
@@ -719,7 +719,9 @@ static xbt_dynar_t get_onelink_routes(void)
 
 static int is_router(const char *name)
 {
-	xbt_die("global \"is_router\" function not implemented yet");
+	routing_component_t rc=NULL;
+	rc = xbt_dict_get(global_routing->where_network_elements,name);
+	return rc->is_router(rc, name);
 }
 
 /**
@@ -811,9 +813,14 @@ static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
   return ret;
 }
 
-static int full_is_router(const char *name)
+static int full_is_router(routing_component_t rc, const char *name)
 {
-  xbt_die("\"full_is_router\" function not implemented yet");
+  routing_component_full_t routing = (routing_component_full_t)rc;
+
+  if(SURF_NETWORK_ELEMENT_ROUTER == ( (network_element_t) xbt_dict_get(routing->to_index , name) )->type )
+	  return 1;
+  else
+	  return 0;
 }
 
 static route_extended_t full_get_route(routing_component_t rc, const char* src,const char* dst) {
@@ -1004,9 +1011,14 @@ static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
   return ret;
 }
 
-static int floyd_is_router(const char *name)
+static int floyd_is_router(routing_component_t rc, const char *name)
 {
-  xbt_die("\"floyd_is_router\" function not implemented yet");
+  routing_component_floyd_t routing = (routing_component_floyd_t)rc;
+
+  if(SURF_NETWORK_ELEMENT_ROUTER == ( (network_element_t) xbt_dict_get(routing->to_index , name) )->type )
+	  return 1;
+  else
+	  return 0;
 }
 
 static route_extended_t floyd_get_route(routing_component_t rc, const char* src,const char* dst) {
@@ -1363,9 +1375,14 @@ static xbt_dynar_t dijkstra_get_onelink_routes(routing_component_t rc)
   xbt_die("\"dijkstra_get_onelink_routes\" function not implemented yet");
 }
 
-static int dijkstra_is_router(const char *name)
+static int dijkstra_is_router(routing_component_t rc, const char *name)
 {
-  xbt_die("\"dijkstra_is_router\" function not implemented yet");
+  routing_component_dijkstra_t routing = (routing_component_dijkstra_t)rc;
+
+  if(SURF_NETWORK_ELEMENT_ROUTER == ( (network_element_t) xbt_dict_get(routing->to_index , name) )->type )
+	  return 1;
+  else
+	  return 0;
 }
 
 static route_extended_t dijkstra_get_route(routing_component_t rc, const char* src,const char* dst) {
@@ -1823,9 +1840,13 @@ static xbt_dynar_t rulebased_get_onelink_routes(routing_component_t rc)
   xbt_die("\"rulebased_get_onelink_routes\" function not implemented yet");
 }
 
-static int rulebased_is_router(const char *name)
+static int rulebased_is_router(routing_component_t rc, const char *name)
 {
-  xbt_die("\"rulebased_is_router\" function not implemented yet");
+	  //routing_component_rulebased_t routing = (routing_component_rulebased_t)rc;
+
+//PIERRE FIXME
+
+	xbt_die("\"rulebased_is_router\" function not implemented yet");
 }
 
 /* Business methods */
@@ -1968,7 +1989,7 @@ typedef struct {
 static xbt_dynar_t none_get_onelink_routes(routing_component_t rc){
   return NULL;
 }
-static int none_is_router(const char *name){
+static int none_is_router(routing_component_t rc, const char *name){
   return -1;
 }
 static route_extended_t none_get_route(routing_component_t rc, const char* src,const char* dst){
@@ -2198,7 +2219,7 @@ static xbt_dynar_t generic_get_onelink_routes (routing_component_t rc)
   xbt_die("\"generic_get_onelink_routes\" not implemented yet");
 }
 
-static int generic_is_router (const char *name)
+static int generic_is_router (routing_component_t rc, const char *name)
 {
   xbt_die("\"generic_is_router\" not implemented yet");
 }

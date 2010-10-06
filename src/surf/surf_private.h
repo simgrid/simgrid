@@ -161,7 +161,7 @@ struct s_routing_component {
   xbt_dict_t routing_sons;
   route_extended_t (*get_route)(routing_component_t rc, const char* src, const char* dst);
   xbt_dynar_t (*get_onelink_routes)(routing_component_t rc);
-  int (*is_router)(const char *name);
+  int (*is_router)(routing_component_t rc, const char *name);
   route_extended_t (*get_bypass_route)(routing_component_t rc, const char* src, const char* dst);
   void (*finalize)(routing_component_t rc);
   void (*set_processing_unit)(routing_component_t rc, const char* name);
