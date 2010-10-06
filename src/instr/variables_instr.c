@@ -12,7 +12,7 @@
 
 extern routing_global_t global_routing;
 
-void __TRACE_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what)
+void TRACE_user_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what)
 {
   if (!IS_TRACING || !IS_TRACING_PLATFORM) return;
 
@@ -43,7 +43,7 @@ void __TRACE_link_variable (double time, const char *src, const char *dst, const
   }
 }
 
-void __TRACE_host_variable (double time, const char *variable, double value, const char *what)
+void TRACE_user_host_variable (double time, const char *variable, double value, const char *what)
 {
   char valuestr[100];
   if (!IS_TRACING || !IS_TRACING_PLATFORM) return;

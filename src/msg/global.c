@@ -190,7 +190,7 @@ MSG_error_t MSG_clean(void)
   m_process_t p = NULL;
 
 #ifdef HAVE_TRACING
-  TRACE_surf_finalize();
+  TRACE_surf_release ();
 #endif
 
   while ((p = xbt_fifo_pop(msg_global->process_list))) {

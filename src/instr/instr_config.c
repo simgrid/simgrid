@@ -19,42 +19,42 @@
 
 static int trace_configured = 0;
 
-int _TRACE_configured (void)
+int TRACE_is_configured (void)
 {
   return trace_configured;
 }
 
-int _TRACE_smpi_enabled (void)
+int TRACE_smpi_is_enabled (void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
 }
 
-int _TRACE_platform_enabled (void)
+int TRACE_platform_is_enabled (void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
 }
 
-int _TRACE_msg_task_enabled (void)
+int TRACE_msg_task_is_enabled (void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_TASK);
 }
 
-int _TRACE_msg_process_enabled (void)
+int TRACE_msg_process_is_enabled (void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
 }
 
-int _TRACE_msg_volume_enabled (void)
+int TRACE_msg_volume_is_enabled (void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VOLUME);
 }
 
-char *_TRACE_filename (void)
+char *TRACE_get_filename (void)
 {
   return xbt_cfg_get_string (_surf_cfg_set, OPT_TRACING_FILENAME);
 }
 
-char *_TRACE_platform_method (void)
+char *TRACE_get_platform_method (void)
 {
   return xbt_cfg_get_string (_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD);
 }

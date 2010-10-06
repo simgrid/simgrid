@@ -235,7 +235,7 @@ int main(int argc, char **argv)
   SIMIX_message_sizes_output("toto.txt");
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_end ();
+  TRACE_smpi_release ();
 #endif
 
   SIMIX_clean();

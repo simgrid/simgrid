@@ -10,12 +10,17 @@
 
 static xbt_dict_t process_containers = NULL;
 
-void __TRACE_msg_process_init (void)
+void TRACE_msg_process_alloc (void)
 {
   process_containers = xbt_dict_new();
 }
 
-void __TRACE_msg_process_location (m_process_t process)
+void TRACE_msg_process_release (void)
+{
+  xbt_dict_free (&process_containers);
+}
+
+static void TRACE_msg_process_location (m_process_t process)
 {
 	char name[200], alias[200];
 	m_host_t host = NULL;
@@ -33,7 +38,7 @@ void __TRACE_msg_process_location (m_process_t process)
   }
 }
 
-void __TRACE_msg_process_present (m_process_t process)
+static void TRACE_msg_process_present (m_process_t process)
 {
 	char alias[200];
 	m_host_t host = NULL;
@@ -57,8 +62,8 @@ void TRACE_msg_set_process_category (m_process_t process, const char *category)
   process->category = xbt_strdup(category);
 
   //create container of type "PROCESS" to indicate location
-  __TRACE_msg_process_location (process);
-  __TRACE_msg_process_present (process);
+  TRACE_msg_process_location (process);
+  TRACE_msg_process_present (process);
 
   //create container of type "process" to indicate behavior
   TRACE_process_container (process, name, 200);
@@ -78,8 +83,8 @@ void TRACE_msg_process_change_host (m_process_t process, m_host_t old_host, m_ho
   TRACE_process_alias_container (process, old_host, alias, 200);
   if (IS_TRACING_PROCESSES) pajePopState (MSG_get_clock(), "presence", alias);
 
-  __TRACE_msg_process_location (process);
-  __TRACE_msg_process_present (process);
+  TRACE_msg_process_location (process);
+  TRACE_msg_process_present (process);
 }
 
 void TRACE_msg_process_kill (m_process_t process)

@@ -90,6 +90,7 @@ static void __TRACE_surf_check_variable_set_to_zero (double now, const char *var
   /* end of check */
 }
 
+#define A_METHOD
 //A
 static void __TRACE_surf_resource_utilization_A (double now, double delta, const char *variable, const char *resource, double value)
 {
@@ -104,6 +105,7 @@ static void __TRACE_surf_resource_utilization_A (double now, double delta, const
   return;
 }
 
+#define B_METHOD
 //B
 static void __TRACE_surf_resource_utilization_initialize_B ()
 {
@@ -242,6 +244,7 @@ static void __TRACE_surf_resource_utilization_finalize_B ()
   xbt_dict_free (&method_b_dict);
 }
 
+#define C_METHOD
 //C
 static void __TRACE_surf_resource_utilization_start_C (smx_action_t action)
 {
@@ -323,6 +326,7 @@ static void __TRACE_surf_resource_utilization_finalize_C ()
   xbt_dict_free (&method_c_dict);
 }
 
+#define RESOURCE_UTILIZATION_INTERFACE
 /*
  * TRACE_surf_link_set_utilization: entry point from SimGrid
  */
@@ -339,7 +343,7 @@ void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, doubl
   char resource[100];
   snprintf (resource, 100, "%p", link);
   snprintf (type, 100, "b%s", smx_action->category);
-  __TRACE_surf_resource_utilization_event (smx_action, now, delta, type, resource, value);
+  TRACE_surf_resource_utilization_event (smx_action, now, delta, type, resource, value);
   return;
 }
 
@@ -354,28 +358,21 @@ void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action,
   if (!value) return;
 
   snprintf (type, 100, "p%s", smx_action->category);
-  __TRACE_surf_resource_utilization_event (smx_action, now, delta, type, name, value);
+  TRACE_surf_resource_utilization_event (smx_action, now, delta, type, name, value);
   return;
 }
 
 /*
  * __TRACE_surf_resource_utilization_*: entry points from tracing functions
  */
-void __TRACE_surf_resource_utilization_start (smx_action_t action)
+void TRACE_surf_resource_utilization_start (smx_action_t action)
 {
   if (currentMethod == methodC){
     __TRACE_surf_resource_utilization_start_C (action);
   }
 }
 
-void __TRACE_surf_resource_utilization_end (smx_action_t action)
-{
-  if (currentMethod == methodC){
-    __TRACE_surf_resource_utilization_end_C (action);
-  }
-}
-
-void __TRACE_surf_resource_utilization_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value)
+void TRACE_surf_resource_utilization_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value)
 {
   if (currentMethod == methodA){
     __TRACE_surf_resource_utilization_A (now, delta, variable, resource, value);
@@ -386,11 +383,18 @@ void __TRACE_surf_resource_utilization_event (smx_action_t action, double now, d
   }
 }
 
-void __TRACE_surf_resource_utilization_initialize ()
+void TRACE_surf_resource_utilization_end (smx_action_t action)
+{
+  if (currentMethod == methodC){
+    __TRACE_surf_resource_utilization_end_C (action);
+  }
+}
+
+void TRACE_surf_resource_utilization_alloc ()
 {
   platform_variables = xbt_dict_new();
 
-  __TRACE_define_method (_TRACE_platform_method());
+  __TRACE_define_method (TRACE_get_platform_method());
 
   if (currentMethod == methodA){
   }else if (currentMethod == methodB){
@@ -400,7 +404,7 @@ void __TRACE_surf_resource_utilization_initialize ()
   }
 }
 
-void __TRACE_surf_resource_utilization_finalize ()
+void TRACE_surf_resource_utilization_release ()
 {
   if (currentMethod == methodA){
   }else if (currentMethod == methodB){

@@ -269,9 +269,9 @@ void surf_network_model_init_Vivaldi(const char *filename)
                            "Vivaldi", surf_network_model);
 
 #ifdef HAVE_TRACING
-  __TRACE_host_variable(0,"vivaldi_x",0,"declare");
-  __TRACE_host_variable(0,"vivaldi_y",0,"declare");
-  __TRACE_host_variable(0,"vivaldi_h",0,"declare");
+  TRACE_user_host_variable(0,"vivaldi_x",0,"declare");
+  TRACE_user_host_variable(0,"vivaldi_y",0,"declare");
+  TRACE_user_host_variable(0,"vivaldi_h",0,"declare");
 #endif
 
   xbt_cfg_set_string(_surf_cfg_set, "routing", "none");

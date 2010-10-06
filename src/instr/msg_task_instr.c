@@ -10,12 +10,17 @@
 
 static xbt_dict_t task_containers = NULL;
 
-void __TRACE_msg_init (void)
+void TRACE_msg_task_alloc (void)
 {
   task_containers = xbt_dict_new();
 }
 
-void __TRACE_task_location (m_task_t task)
+void TRACE_msg_task_release (void)
+{
+  xbt_dict_free (&task_containers);
+}
+
+static void TRACE_task_location (m_task_t task)
 {
 	char container[200];
 	char name[200], alias[200];
@@ -39,7 +44,7 @@ void __TRACE_task_location (m_task_t task)
   }
 }
 
-void __TRACE_task_location_present (m_task_t task)
+static void TRACE_task_location_present (m_task_t task)
 {
 	char alias[200];
 	m_process_t process = NULL;
@@ -53,7 +58,7 @@ void __TRACE_task_location_present (m_task_t task)
   pajePushState (MSG_get_clock(), "presence", alias, "presence");
 }
 
-void __TRACE_task_location_not_present (m_task_t task)
+static void TRACE_task_location_not_present (m_task_t task)
 {
 	char alias[200];
 	m_process_t process = NULL;
@@ -80,8 +85,8 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
   strncpy(task->category, category, strlen(category)+1);
 
   //tracing task location based on host
-  __TRACE_task_location (task);
-  __TRACE_task_location_present (task);
+  TRACE_task_location (task);
+  TRACE_task_location_present (task);
 
   TRACE_task_container (task, name, 200);
   //create container of type "task" to indicate behavior
@@ -106,7 +111,7 @@ void TRACE_msg_task_execute_start (m_task_t task)
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePushState (MSG_get_clock(), "task-state", name, "execute");
 
-  __TRACE_msg_category_set (SIMIX_process_self(), task);
+  TRACE_msg_category_set (SIMIX_process_self(), task);
 }
 
 void TRACE_msg_task_execute_end (m_task_t task)
@@ -117,7 +122,7 @@ void TRACE_msg_task_execute_end (m_task_t task)
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
 
-  __TRACE_category_unset(SIMIX_process_self());
+  TRACE_category_unset(SIMIX_process_self());
 }
 
 /* MSG_task_destroy related functions */
@@ -130,7 +135,7 @@ void TRACE_msg_task_destroy (m_task_t task)
   if (IS_TRACING_TASKS) pajeDestroyContainer (MSG_get_clock(), "task", name);
 
   //finish the location of this task
-  __TRACE_task_location_not_present (task);
+  TRACE_task_location_not_present (task);
 
   //free category
   xbt_free (task->category);
@@ -151,10 +156,10 @@ void TRACE_msg_task_get_end (double start_time, m_task_t task)
   TRACE_task_container (task, name, 200);
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
 
-  __TRACE_msg_volume_finish (task);
+  TRACE_msg_volume_finish (task);
 
-  __TRACE_task_location (task);
-  __TRACE_task_location_present (task);
+  TRACE_task_location (task);
+  TRACE_task_location_present (task);
 }
 
 /* MSG_task_put related functions */
@@ -167,13 +172,13 @@ int TRACE_msg_task_put_start (m_task_t task)
   if (IS_TRACING_TASKS) pajePopState (MSG_get_clock(), "task-state", name);
   if (IS_TRACING_TASKS) pajePushState (MSG_get_clock(), "task-state", name, "communicate");
 
-  __TRACE_msg_volume_start (task);
+  TRACE_msg_volume_start (task);
 
   //trace task location grouped by host
-  __TRACE_task_location_not_present (task);
+  TRACE_task_location_not_present (task);
 
   //set current category
-  __TRACE_msg_category_set (SIMIX_process_self(), task);
+  TRACE_msg_category_set (SIMIX_process_self(), task);
   return 1;
 }
 
@@ -181,7 +186,7 @@ void TRACE_msg_task_put_end (void)
 {
   if (!IS_TRACING) return;
 
-  __TRACE_category_unset (SIMIX_process_self());
+  TRACE_category_unset (SIMIX_process_self());
 }
 
 #endif

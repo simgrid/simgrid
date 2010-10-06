@@ -10,12 +10,17 @@
 
 static xbt_dict_t current_task_category = NULL;
 
-void __TRACE_category_init ()
+void TRACE_category_alloc ()
 {
   current_task_category = xbt_dict_new();
 }
 
-void __TRACE_category_set (smx_process_t proc, const char *category)
+void TRACE_category_release ()
+{
+  xbt_dict_free (&current_task_category);
+}
+
+void TRACE_category_set (smx_process_t proc, const char *category)
 {
   char processid[100];
   char *var_cpy = NULL;
@@ -24,14 +29,14 @@ void __TRACE_category_set (smx_process_t proc, const char *category)
   xbt_dict_set (current_task_category, processid, var_cpy, xbt_free);
 }
 
-char *__TRACE_category_get (smx_process_t proc)
+char *TRACE_category_get (smx_process_t proc)
 {
   char processid[100];
   snprintf (processid, 100, "%p", proc);
   return xbt_dict_get_or_null (current_task_category, processid);
 }
 
-void __TRACE_category_unset (smx_process_t proc)
+void TRACE_category_unset (smx_process_t proc)
 {
   char processid[100];
   snprintf (processid, 100, "%p", proc);
@@ -40,9 +45,9 @@ void __TRACE_category_unset (smx_process_t proc)
   }
 }
 
-void __TRACE_msg_category_set (smx_process_t proc, m_task_t task)
+void TRACE_msg_category_set (smx_process_t proc, m_task_t task)
 {
-  __TRACE_category_set (proc, task->category);
+  TRACE_category_set (proc, task->category);
 }
 
 

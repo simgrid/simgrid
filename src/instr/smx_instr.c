@@ -16,12 +16,12 @@ void TRACE_smx_action_execute (smx_action_t act)
   if (!IS_TRACING) return;
 
   act->counter = counter++;
-  category = __TRACE_category_get (SIMIX_process_self());
+  category = TRACE_category_get (SIMIX_process_self());
   if (category){
     act->category = xbt_new (char, strlen (category)+1);
     strncpy (act->category, category, strlen(category)+1);
   }
-  __TRACE_surf_resource_utilization_start (act);
+  TRACE_surf_resource_utilization_start (act);
 }
 
 void TRACE_smx_action_communicate (smx_action_t act, smx_process_t proc)
@@ -30,11 +30,11 @@ void TRACE_smx_action_communicate (smx_action_t act, smx_process_t proc)
   if (!IS_TRACING) return;
 
   act->counter = counter++;
-  category = __TRACE_category_get (proc);
+  category = TRACE_category_get (proc);
   if (category){
     act->category = xbt_strdup (category);
   }
-  __TRACE_surf_resource_utilization_start (act);
+  TRACE_surf_resource_utilization_start (act);
 }
 
 void TRACE_smx_action_destroy (smx_action_t act)
@@ -44,7 +44,7 @@ void TRACE_smx_action_destroy (smx_action_t act)
   if (act->category){
     xbt_free (act->category);
   }
-  __TRACE_surf_resource_utilization_end (act);
+  TRACE_surf_resource_utilization_end (act);
 }
 
 #endif

@@ -21,7 +21,7 @@ static xbt_dict_t resource_variables; /* (host|link)#variable -> value */
 static xbt_dict_t gtnets_src; /* %p (action) -> %s */
 static xbt_dict_t gtnets_dst; /* %p (action) -> %s */
 
-void TRACE_surf_init (void)
+void TRACE_surf_alloc (void)
 {
   created_links = xbt_dict_new();
   host_containers = xbt_dict_new();
@@ -29,14 +29,14 @@ void TRACE_surf_init (void)
   gtnets_src = xbt_dict_new ();
   gtnets_dst = xbt_dict_new ();
 
-  __TRACE_surf_resource_utilization_initialize();
+  TRACE_surf_resource_utilization_alloc();
 }
 
-void TRACE_surf_finalize (void)
+void TRACE_surf_release (void)
 {
   char *key, *value;
   xbt_dict_cursor_t cursor = NULL;
-  __TRACE_surf_resource_utilization_finalize();
+  TRACE_surf_resource_utilization_release();
 
   /* get all host from host_containers */
   xbt_dict_foreach(host_containers, cursor, key, value) {

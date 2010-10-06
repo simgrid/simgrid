@@ -17,7 +17,7 @@ static xbt_dict_t created_categories;
 
 int TRACE_start ()
 {
-  if (!_TRACE_configured()){
+  if (!TRACE_is_configured()){
     THROW0 (tracing_error, TRACE_ERROR_START,
             "TRACE_start should be called after SimGrid initialization functions.");
     return 0;
@@ -29,7 +29,7 @@ int TRACE_start ()
     return 0;
   }
 
-  char *filename = _TRACE_filename ();
+  char *filename = TRACE_get_filename ();
   if (!filename){
     THROW0 (tracing_error, TRACE_ERROR_START,
             "Trace filename is not initialized.");
@@ -90,11 +90,11 @@ int TRACE_start ()
   /* other trace initialization */
   defined_types = xbt_dict_new();
   created_categories = xbt_dict_new();
-  __TRACE_msg_init();
-  __TRACE_category_init ();
-  TRACE_surf_init();
-  __TRACE_msg_process_init ();
-  __TRACE_smpi_init ();
+  TRACE_msg_task_alloc ();
+  TRACE_category_alloc ();
+  TRACE_surf_alloc ();
+  TRACE_msg_process_alloc ();
+  TRACE_smpi_alloc ();
 
   return 0;
 }
@@ -204,10 +204,10 @@ int TRACE_smpi_set_category (const char *category)
   if (!IS_TRACING) return 1;
   if (category != NULL){
     int ret = TRACE_category (category);
-    __TRACE_category_set (SIMIX_process_self(), category);
+    TRACE_category_set (SIMIX_process_self(), category);
     return ret;
   }else{
-    __TRACE_category_unset (SIMIX_process_self());
+    TRACE_category_unset (SIMIX_process_self());
     return 0;
   }
 }

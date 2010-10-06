@@ -8,7 +8,7 @@
 
 #ifdef HAVE_TRACING
 
-void __TRACE_msg_volume_start (m_task_t task)
+void TRACE_msg_volume_start (m_task_t task)
 {
 	m_process_t process = NULL;
 	m_host_t host = NULL;
@@ -34,7 +34,7 @@ void __TRACE_msg_volume_start (m_task_t task)
   pajeStartLinkWithVolume (MSG_get_clock(), "volume", "0", task->category, process_alias, task_name, volume);
 }
 
-void __TRACE_msg_volume_finish (m_task_t task)
+void TRACE_msg_volume_finish (m_task_t task)
 {
 	char process_name[200], process_alias[200];
 	char task_name[200];

@@ -15,11 +15,11 @@ extern int tracing_active; /* declared in paje.c */
 
 #define IS_TRACING			  (tracing_active)
 #define IS_TRACED(n)          (n->category)
-#define IS_TRACING_TASKS      (_TRACE_msg_task_enabled())
-#define IS_TRACING_PLATFORM   (_TRACE_platform_enabled())
-#define IS_TRACING_PROCESSES  (_TRACE_msg_process_enabled())
-#define IS_TRACING_VOLUME     (_TRACE_msg_volume_enabled())
-#define IS_TRACING_SMPI       (_TRACE_smpi_enabled())
+#define IS_TRACING_TASKS      (TRACE_msg_task_is_enabled())
+#define IS_TRACING_PLATFORM   (TRACE_platform_is_enabled())
+#define IS_TRACING_PROCESSES  (TRACE_msg_process_is_enabled())
+#define IS_TRACING_VOLUME     (TRACE_msg_volume_is_enabled())
+#define IS_TRACING_SMPI       (TRACE_smpi_is_enabled())
 
 #include "instr/instr.h"
 #include "msg/msg.h"
@@ -58,17 +58,16 @@ char *TRACE_process_alias_container (m_process_t process, m_host_t host, char *o
 char *TRACE_task_alias_container (m_task_t task, m_process_t process, m_host_t host, char *output, int len);
 
 /* from categories.c */
-void __TRACE_category_init (void);
-void __TRACE_category_set (smx_process_t proc, const char *category);
-char *__TRACE_category_get (smx_process_t proc);
-void __TRACE_category_unset (smx_process_t proc);
-void __TRACE_msg_category_set (smx_process_t proc, m_task_t task);
+void TRACE_category_alloc (void);
+void TRACE_category_release (void);
+void TRACE_category_set (smx_process_t proc, const char *category);
+char *TRACE_category_get (smx_process_t proc);
+void TRACE_category_unset (smx_process_t proc);
+void TRACE_msg_category_set (smx_process_t proc, m_task_t task);
 
 /* declaration of instrumentation functions from msg_task_instr.c */
-void __TRACE_msg_init (void);
-void __TRACE_task_location (m_task_t task);
-void __TRACE_task_location_present (m_task_t task);
-void __TRACE_task_location_not_present (m_task_t task);
+void TRACE_msg_task_alloc (void);
+void TRACE_msg_task_release (void);
 void TRACE_msg_task_create (m_task_t task);
 void TRACE_msg_task_execute_start (m_task_t task);
 void TRACE_msg_task_execute_end (m_task_t task);
@@ -79,9 +78,8 @@ int TRACE_msg_task_put_start (m_task_t task); //returns TRUE if the task_put_end
 void TRACE_msg_task_put_end (void);
 
 /* declaration of instrumentation functions from msg_process_instr.c */
-void __TRACE_msg_process_init (void);
-void __TRACE_msg_process_location (m_process_t process);
-void __TRACE_msg_process_present (m_process_t process);
+void TRACE_msg_process_alloc (void);
+void TRACE_msg_process_release (void);
 void TRACE_msg_process_change_host (m_process_t process, m_host_t old_host, m_host_t new_host);
 void TRACE_msg_process_kill (m_process_t process);
 void TRACE_msg_process_suspend (m_process_t process);
@@ -91,8 +89,8 @@ void TRACE_msg_process_sleep_out (m_process_t process);
 void TRACE_msg_process_end (m_process_t process);
 
 /* declaration of instrumentation functions from msg_volume.c */
-void __TRACE_msg_volume_start (m_task_t task);
-void __TRACE_msg_volume_finish (m_task_t task);
+void TRACE_msg_volume_start (m_task_t task);
+void TRACE_msg_volume_finish (m_task_t task);
 
 /* from smx.c */
 void TRACE_smx_action_execute (smx_action_t act);
@@ -100,8 +98,8 @@ void TRACE_smx_action_communicate (smx_action_t act, smx_process_t proc);
 void TRACE_smx_action_destroy (smx_action_t act);
 
 /* from surf.c */
-void TRACE_surf_init (void);
-void TRACE_surf_finalize (void);
+void TRACE_surf_alloc (void);
+void TRACE_surf_release (void);
 void TRACE_surf_host_declaration (char *name, double power);
 void TRACE_surf_host_set_power (double date, char *resource, double power);
 void TRACE_surf_host_define_id (const char *name, int host_id);
@@ -119,11 +117,11 @@ int TRACE_surf_gtnets_get_dst (void *action);
 void TRACE_surf_gtnets_destroy (void *action);
 
 /* from smpi_instr.c */
-void __TRACE_smpi_init (void);
+void TRACE_smpi_alloc (void);
+void TRACE_smpi_release (void);
 void TRACE_smpi_init (int rank);
 void TRACE_smpi_finalize (int rank);
 void TRACE_smpi_start (void);
-void TRACE_smpi_end (void);
 void TRACE_smpi_collective_in (int rank, int root, const char *operation);
 void TRACE_smpi_collective_out (int rank, int root, const char *operation);
 void TRACE_smpi_ptp_in (int rank, int src, int dst, const char *operation);
@@ -132,24 +130,24 @@ void TRACE_smpi_send (int rank, int src, int dst);
 void TRACE_smpi_recv (int rank, int src, int dst);
 
 /* from instr_config.c */
-int _TRACE_configured (void);
-int _TRACE_smpi_enabled (void);
-int _TRACE_platform_enabled (void);
-int _TRACE_msg_task_enabled (void);
-int _TRACE_msg_process_enabled (void);
-int _TRACE_msg_volume_enabled (void);
-char *_TRACE_filename (void);
-char *_TRACE_platform_method (void);
+int TRACE_is_configured (void);
+int TRACE_smpi_is_enabled (void);
+int TRACE_platform_is_enabled (void);
+int TRACE_msg_task_is_enabled (void);
+int TRACE_msg_process_is_enabled (void);
+int TRACE_msg_volume_is_enabled (void);
+char *TRACE_get_filename (void);
+char *TRACE_get_platform_method (void);
 void TRACE_global_init(int *argc, char **argv);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
 void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, double value, double now, double delta);
-void __TRACE_surf_resource_utilization_start (smx_action_t action);
-void __TRACE_surf_resource_utilization_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value);
-void __TRACE_surf_resource_utilization_end (smx_action_t action);
-void __TRACE_surf_resource_utilization_initialize (void);
-void __TRACE_surf_resource_utilization_finalize (void);
+void TRACE_surf_resource_utilization_start (smx_action_t action);
+void TRACE_surf_resource_utilization_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value);
+void TRACE_surf_resource_utilization_end (smx_action_t action);
+void TRACE_surf_resource_utilization_alloc (void);
+void TRACE_surf_resource_utilization_release (void);
 
 #endif
 
