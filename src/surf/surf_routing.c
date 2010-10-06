@@ -702,7 +702,7 @@ static xbt_dynar_t recursive_get_onelink_routes (routing_component_t rc)
   xbt_dict_cursor_t cursor=NULL;
   routing_component_t rc_child;
   xbt_dict_foreach(rc->routing_sons, cursor, key, rc_child) {
-    xbt_dynar_t onelink_child = recursive_get_onelink_routes (rc_child);//->get_onelink_routes (rc_child);
+    xbt_dynar_t onelink_child = recursive_get_onelink_routes (rc_child);
     if (onelink_child){
       xbt_dynar_foreach(onelink_child, cpt, link) {
         xbt_dynar_push(ret,&link);
