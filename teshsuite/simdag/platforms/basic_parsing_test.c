@@ -61,11 +61,11 @@ if(argc == 3)
 			list_size = SD_workstation_get_number();
 			for(i = 0; i < list_size; i++)
 			{
+				w1 = workstations[i];
+				name1 = SD_workstation_get_name(w1);
 				for(j = 0 ; j < list_size; j++)
 				{
-						  w1 = workstations[i];
 						  w2 = workstations[j];
-						  name1 = SD_workstation_get_name(w1);
 						  name2 = SD_workstation_get_name(w2);
 						  printf("Route between %s and %s\n", name1, name2);
 						  route = SD_route_get_list(w1, w2);
