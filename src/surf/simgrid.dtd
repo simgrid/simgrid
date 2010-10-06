@@ -1,5 +1,5 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((config|include|cluster|AS|trace|trace_connect)*,(include|process)*)>
+<!ELEMENT platform ((config)?,(include|cluster|AS|trace|trace_connect)*,(include|process)*)>
 <!ATTLIST platform version CDATA "0.0">
 
 <!ELEMENT trace (#PCDATA)>

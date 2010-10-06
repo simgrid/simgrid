@@ -2476,7 +2476,7 @@ static void generic_src_dst_check(routing_component_t rc, const char* src, const
 static void parse_Sconfig(void)
 {
 	//TODO
-	DEBUG0("--->init of tag config");
+	DEBUG0("WARNING tag config not yet implemented.");
 }
 
 static void routing_full_parse_Scluster(void)
