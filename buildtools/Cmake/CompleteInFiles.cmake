@@ -740,6 +740,7 @@ configure_file(${PROJECT_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_CURRENT_BINARY_DI
 configure_file(${PROJECT_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun @ONLY)
 configure_file(${PROJECT_DIRECTORY}/examples/smpi/hostfile ${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/hostfile COPYONLY)
 configure_file(${PROJECT_DIRECTORY}/examples/msg/small_platform.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform.xml COPYONLY)
+configure_file(${PROJECT_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
 
 exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
