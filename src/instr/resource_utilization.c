@@ -45,21 +45,11 @@ static char *strsplit (char *input, int field, char del) //caller should free th
 }
 
 //resource utilization tracing method
-typedef enum {methodA,methodB,methodC} TracingMethod;
-static TracingMethod currentMethod;
-
-static void __TRACE_define_method (char *method)
-{
-  if (!strcmp(method, "a")){
-    currentMethod = methodA;
-  }else if (!strcmp(method, "b")){
-    currentMethod = methodB;
-  }else if (!strcmp(method, "c")){
-    currentMethod = methodC;
-  }else{
-    currentMethod = methodB; //default
-  }
-}
+static void (*TRACE_method_alloc)(void) = NULL;
+static void (*TRACE_method_release)(void) = NULL;
+static void (*TRACE_method_start)(smx_action_t action) = NULL;
+static void (*TRACE_method_event)(smx_action_t action, double now, double delta, const char *variable, const char *resource, double value) = NULL;
+static void (*TRACE_method_end)(smx_action_t action) = NULL;
 
 //used by all methods
 static void __TRACE_surf_check_variable_set_to_zero (double now, const char *variable, const char *resource)
@@ -92,7 +82,10 @@ static void __TRACE_surf_check_variable_set_to_zero (double now, const char *var
 
 #define A_METHOD
 //A
-static void __TRACE_surf_resource_utilization_A (double now, double delta, const char *variable, const char *resource, double value)
+static void __TRACE_A_alloc (void) {}
+static void __TRACE_A_release (void) {}
+static void __TRACE_A_start (smx_action_t action) {}
+static void __TRACE_A_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value)
 {
   if (!IS_TRACING_PLATFORM) return;
 
@@ -102,18 +95,71 @@ static void __TRACE_surf_resource_utilization_A (double now, double delta, const
   __TRACE_surf_check_variable_set_to_zero (now, variable, resource);
   pajeAddVariable (now, variable, resource, valuestr);
   pajeSubVariable (now+delta, variable, resource, valuestr);
-  return;
 }
+static void __TRACE_A_end (smx_action_t action) {}
 
 #define B_METHOD
 //B
-static void __TRACE_surf_resource_utilization_initialize_B ()
+
+static void __TRACE_B_alloc (void)
 {
   method_b_dict =  xbt_dict_new();
 }
 
-static void __TRACE_surf_resource_utilization_B (double now, double delta, const char *variable, const char *resource, double value)
+static void __TRACE_B_release (void)
 {
+  xbt_dict_cursor_t cursor = NULL;
+  unsigned int cursor_ar = 0;
+    char *key, *value, *res;
+    char *resource;
+    char *aux = NULL;
+    char *var_cpy = NULL;
+    xbt_dynar_t resources = NULL;
+  if (!IS_TRACING_PLATFORM) return;
+  if (!xbt_dict_length(method_b_dict)){
+    return;
+  }else{
+    /* get all resources from method_b_dict */
+    resources = xbt_dynar_new(sizeof(char*), xbt_free);
+    xbt_dict_foreach(method_b_dict, cursor, key, value) {
+      res = strsplit (key, 0, VARIABLE_SEPARATOR);
+      aux = strsplit (key, 1, VARIABLE_SEPARATOR);
+      if (strcmp (aux, "Time") == 0){ //only need to add one of three
+        var_cpy = xbt_strdup (res);
+        xbt_dynar_push (resources, &var_cpy);
+      }
+      free (aux);
+      free (res);
+    }
+
+    /* iterate through resources array */
+    xbt_dynar_foreach (resources, cursor_ar, resource) {
+      char timekey[100], valuekey[100], variablekey[100];
+      char *time = NULL;
+      char *value = NULL;
+      char *variable = NULL;
+      snprintf (timekey, 100, "%s%cTime", resource, VARIABLE_SEPARATOR);
+      snprintf (valuekey, 100, "%s%cValue", resource, VARIABLE_SEPARATOR);
+      snprintf (variablekey, 100, "%s%cVariable", resource, VARIABLE_SEPARATOR);
+
+      time = xbt_dict_get_or_null (method_b_dict, timekey);
+      if (!time) continue;
+      value = xbt_dict_get (method_b_dict, valuekey);
+      variable = xbt_dict_get (method_b_dict, variablekey);
+      pajeSubVariable (atof(time), variable, resource, value);
+
+      xbt_dict_remove (method_b_dict, timekey);
+      xbt_dict_remove (method_b_dict, valuekey);
+      xbt_dict_remove (method_b_dict, variablekey);
+    }
+  }
+  xbt_dict_free (&method_b_dict);
+}
+
+static void __TRACE_B_start (smx_action_t action) {}
+static void __TRACE_B_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value)
+{
+
   if (!IS_TRACING_PLATFORM) return;
 
   char valuestr[100];
@@ -193,60 +239,21 @@ static void __TRACE_surf_resource_utilization_B (double now, double delta, const
   }
   return;
 }
-
-static void __TRACE_surf_resource_utilization_finalize_B ()
-{
-  xbt_dict_cursor_t cursor = NULL;
-  unsigned int cursor_ar = 0;
-    char *key, *value, *res;
-    char *resource;
-    char *aux = NULL;
-    char *var_cpy = NULL;
-    xbt_dynar_t resources = NULL;
-  if (!IS_TRACING_PLATFORM) return;
-  if (!xbt_dict_length(method_b_dict)){
-    return;
-  }else{
-    /* get all resources from method_b_dict */
-    resources = xbt_dynar_new(sizeof(char*), xbt_free);
-    xbt_dict_foreach(method_b_dict, cursor, key, value) {
-      res = strsplit (key, 0, VARIABLE_SEPARATOR);
-      aux = strsplit (key, 1, VARIABLE_SEPARATOR);
-      if (strcmp (aux, "Time") == 0){ //only need to add one of three
-        var_cpy = xbt_strdup (res);
-        xbt_dynar_push (resources, &var_cpy);
-      }
-      free (aux);
-      free (res);
-    }
-
-    /* iterate through resources array */
-    xbt_dynar_foreach (resources, cursor_ar, resource) {
-      char timekey[100], valuekey[100], variablekey[100];
-      char *time = NULL;
-      char *value = NULL;
-      char *variable = NULL;
-      snprintf (timekey, 100, "%s%cTime", resource, VARIABLE_SEPARATOR);
-      snprintf (valuekey, 100, "%s%cValue", resource, VARIABLE_SEPARATOR);
-      snprintf (variablekey, 100, "%s%cVariable", resource, VARIABLE_SEPARATOR);
-
-      time = xbt_dict_get_or_null (method_b_dict, timekey);
-      if (!time) continue;
-      value = xbt_dict_get (method_b_dict, valuekey);
-      variable = xbt_dict_get (method_b_dict, variablekey);
-      pajeSubVariable (atof(time), variable, resource, value);
-
-      xbt_dict_remove (method_b_dict, timekey);
-      xbt_dict_remove (method_b_dict, valuekey);
-      xbt_dict_remove (method_b_dict, variablekey);
-    }
-  }
-  xbt_dict_free (&method_b_dict);
-}
+static void __TRACE_B_end (smx_action_t action) {}
 
 #define C_METHOD
 //C
-static void __TRACE_surf_resource_utilization_start_C (smx_action_t action)
+static void __TRACE_C_alloc (void)
+{
+  method_c_dict = xbt_dict_new();
+}
+
+static void __TRACE_C_release (void)
+{
+  xbt_dict_free (&method_c_dict);
+}
+
+static void __TRACE_C_start (smx_action_t action)
 {
   char key[100];
   snprintf (key, 100, "%p", action);
@@ -258,32 +265,7 @@ static void __TRACE_surf_resource_utilization_start_C (smx_action_t action)
   xbt_dict_set (method_c_dict, key, xbt_dict_new(), xbt_free);
 }
 
-static void __TRACE_surf_resource_utilization_end_C (smx_action_t action)
-{
-  char key[100];
-  snprintf (key, 100, "%p", action);
-
-  xbt_dict_t action_dict = xbt_dict_get (method_c_dict, key);
-  double start_time = atof(xbt_dict_get (action_dict, "start"));
-  double end_time = atof(xbt_dict_get (action_dict, "end"));
-
-  xbt_dict_cursor_t cursor=NULL;
-  char *action_dict_key, *action_dict_value;
-  xbt_dict_foreach(action_dict,cursor,action_dict_key,action_dict_value) {
-    char resource[100], variable[100];
-    if (sscanf (action_dict_key, "%s %s", resource, variable) != 2) continue;
-    __TRACE_surf_check_variable_set_to_zero (start_time, variable, resource);
-    char value_str[100];
-    if(end_time-start_time != 0){
-      snprintf (value_str, 100, "%f", atof(action_dict_value)/(end_time-start_time));
-      pajeAddVariable (start_time, variable, resource, value_str);
-      pajeSubVariable (end_time, variable, resource, value_str);
-    }
-  }
-  xbt_dict_remove (method_c_dict, key);
-}
-
-static void __TRACE_surf_resource_utilization_C (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value)
+static void __TRACE_C_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value)
 {
   char key[100];
   snprintf (key, 100, "%p", action);
@@ -316,14 +298,29 @@ static void __TRACE_surf_resource_utilization_C (smx_action_t action, double now
   xbt_dict_set (action_dict, res_var, xbt_strdup (new_current_value), xbt_free);
 }
 
-static void __TRACE_surf_resource_utilization_initialize_C ()
+static void __TRACE_C_end (smx_action_t action)
 {
-  method_c_dict = xbt_dict_new();
-}
+  char key[100];
+  snprintf (key, 100, "%p", action);
 
-static void __TRACE_surf_resource_utilization_finalize_C ()
-{
-  xbt_dict_free (&method_c_dict);
+  xbt_dict_t action_dict = xbt_dict_get (method_c_dict, key);
+  double start_time = atof(xbt_dict_get (action_dict, "start"));
+  double end_time = atof(xbt_dict_get (action_dict, "end"));
+
+  xbt_dict_cursor_t cursor=NULL;
+  char *action_dict_key, *action_dict_value;
+  xbt_dict_foreach(action_dict,cursor,action_dict_key,action_dict_value) {
+    char resource[100], variable[100];
+    if (sscanf (action_dict_key, "%s %s", resource, variable) != 2) continue;
+    __TRACE_surf_check_variable_set_to_zero (start_time, variable, resource);
+    char value_str[100];
+    if(end_time-start_time != 0){
+      snprintf (value_str, 100, "%f", atof(action_dict_value)/(end_time-start_time));
+      pajeAddVariable (start_time, variable, resource, value_str);
+      pajeSubVariable (end_time, variable, resource, value_str);
+    }
+  }
+  xbt_dict_remove (method_c_dict, key);
 }
 
 #define RESOURCE_UTILIZATION_INTERFACE
@@ -332,7 +329,6 @@ static void __TRACE_surf_resource_utilization_finalize_C ()
  */
 void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, double value, double now, double delta)
 {
-  char type[100];
   if (!IS_TRACING || !IS_TRACED(smx_action)) return;
 
   //only trace link utilization if link is known by tracing mechanism
@@ -340,7 +336,7 @@ void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, doubl
 
   if (!value) return;
 
-  char resource[100];
+  char resource[100], type[100];
   snprintf (resource, 100, "%p", link);
   snprintf (type, 100, "b%s", smx_action->category);
   TRACE_surf_resource_utilization_event (smx_action, now, delta, type, resource, value);
@@ -352,11 +348,11 @@ void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, doubl
  */
 void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta)
 {
-  char type[100];
   if (!IS_TRACING || !IS_TRACED(smx_action)) return;
 
   if (!value) return;
 
+  char type[100];
   snprintf (type, 100, "p%s", smx_action->category);
   TRACE_surf_resource_utilization_event (smx_action, now, delta, type, name, value);
   return;
@@ -367,50 +363,55 @@ void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action,
  */
 void TRACE_surf_resource_utilization_start (smx_action_t action)
 {
-  if (currentMethod == methodC){
-    __TRACE_surf_resource_utilization_start_C (action);
-  }
+  if (!IS_TRACING) return;
+  TRACE_method_start (action);
 }
 
 void TRACE_surf_resource_utilization_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value)
 {
-  if (currentMethod == methodA){
-    __TRACE_surf_resource_utilization_A (now, delta, variable, resource, value);
-  }else if (currentMethod == methodB){
-    __TRACE_surf_resource_utilization_B (now, delta, variable, resource, value);
-  }else if (currentMethod == methodC){
-    __TRACE_surf_resource_utilization_C (action, now, delta, variable, resource, value);
-  }
+  if (!IS_TRACING) return;
+  TRACE_method_event (action, now, delta, variable, resource, value);
 }
 
 void TRACE_surf_resource_utilization_end (smx_action_t action)
 {
-  if (currentMethod == methodC){
-    __TRACE_surf_resource_utilization_end_C (action);
+  if (!IS_TRACING) return;
+  TRACE_method_end (action);
+}
+
+void TRACE_surf_resource_utilization_release ()
+{
+  if (!IS_TRACING) return;
+  TRACE_method_release ();
+}
+
+static void __TRACE_define_method (char *method)
+{
+  if (!strcmp(method, "a")){
+    TRACE_method_alloc = __TRACE_A_alloc;
+    TRACE_method_release = __TRACE_A_release;
+    TRACE_method_start = __TRACE_A_start;
+    TRACE_method_event = __TRACE_A_event;
+    TRACE_method_end = __TRACE_A_end;
+  }else if (!strcmp(method, "c")){
+    TRACE_method_alloc = __TRACE_C_alloc;
+    TRACE_method_release = __TRACE_C_release;
+    TRACE_method_start = __TRACE_C_start;
+    TRACE_method_event = __TRACE_C_event;
+    TRACE_method_end = __TRACE_C_end;
+  }else{ //default is B
+    TRACE_method_alloc = __TRACE_B_alloc;
+    TRACE_method_release = __TRACE_B_release;
+    TRACE_method_start = __TRACE_B_start;
+    TRACE_method_event = __TRACE_B_event;
+    TRACE_method_end = __TRACE_B_end;
   }
 }
 
 void TRACE_surf_resource_utilization_alloc ()
 {
   platform_variables = xbt_dict_new();
-
   __TRACE_define_method (TRACE_get_platform_method());
-
-  if (currentMethod == methodA){
-  }else if (currentMethod == methodB){
-    __TRACE_surf_resource_utilization_initialize_B();
-  }else if (currentMethod == methodC){
-    __TRACE_surf_resource_utilization_initialize_C();
-  }
-}
-
-void TRACE_surf_resource_utilization_release ()
-{
-  if (currentMethod == methodA){
-  }else if (currentMethod == methodB){
-    __TRACE_surf_resource_utilization_finalize_B();
-  }else if (currentMethod == methodC){
-    __TRACE_surf_resource_utilization_finalize_C();
-  }
+  TRACE_method_alloc ();
 }
 #endif
