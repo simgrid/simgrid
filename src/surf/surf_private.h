@@ -127,7 +127,7 @@ struct s_model_type {
 };
 
 struct s_network_element {
-  int id;
+  //int id;
   e_surf_network_element_type_t type;
 };
 

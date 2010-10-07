@@ -1,0 +1,38 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="3">
+<AS  id="AS"  routing="Full">
+	
+	<AS  id="AS0"  routing="Full">
+	   <host id="host01" power="1000000000"/>
+	   <host id="host02" power="500000000"/>
+	   <router id="router1"/>
+	</AS>
+	<AS  id="AS1"  routing="Floyd">
+	   <host id="host03" power="1000000000"/>
+	   <host id="host04" power="500000000"/>
+	   <router id="router2"/>
+	</AS>
+	<AS  id="AS2"  routing="Dijkstra">
+	   <host id="host05" power="1000000000"/>
+	   <host id="host06" power="500000000"/>
+	   <router id="router3"/>
+	   </AS>
+	<AS  id="AS3"  routing="DijkstraCache">
+	   <host id="host07" power="1000000000"/>
+	   <host id="host08" power="500000000"/>
+	   <router id="router4"/>
+	</AS>
+	<AS  id="AS4"  routing="none">
+	   <host id="host09" power="1000000000"/>
+	   <host id="host10" power="500000000"/>
+	   <router id="router5"/>
+	</AS>
+	<AS  id="AS5"  routing="RuleBased">
+	   <host id="host11" power="1000000000"/>
+	   <host id="host12" power="500000000"/>
+	   <router id="router6"/>	   
+	</AS>
+	
+</AS>
+</platform>
