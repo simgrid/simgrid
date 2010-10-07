@@ -87,64 +87,39 @@ int __surf_is_absolute_file_path(const char *file_path);
 /*
  * One link routing list
  */
-typedef struct s_onelink s_onelink_t, *onelink_t;
-struct s_onelink{
+typedef struct s_onelink {
 	char *src;
 	char *dst;
 	void *link_ptr;
-};
-
+} s_onelink_t, *onelink_t;
 
 /**
  * Routing logic
  */
 
-typedef enum {
-  SURF_NETWORK_ELEMENT_NULL = 0,   /* NULL */
-  SURF_NETWORK_ELEMENT_HOST,       /* host type */
-  SURF_NETWORK_ELEMENT_ROUTER,     /* router type */
-  SURF_NETWORK_ELEMENT_GATEWAY,    /* gateway type of the AS */
-  SURF_NETWORK_ELEMENT_AS,         /* AS type */
-  SURF_NETWORK_ELEMENT_AS_GATEWAY, /* gateway type for internals AS */
-  SURF_NETWORK_ELEMENT_LINK        /* link type */
-} e_surf_network_element_type_t;
+typedef struct s_model_type {
+	  const char *name;
+	  const char *desc;
+	  void* (*create)();
+	  void (*load)();
+	  void (*unload)();
+	  void (*end)();
+} s_model_type_t, *model_type_t;
 
-typedef struct s_model_type s_model_type_t, *model_type_t;
-typedef struct s_network_element s_network_element_t, *network_element_t;
-typedef struct s_route s_route_t, *route_t;
-typedef struct s_route_limits s_route_limits_t, *route_limits_t;
-typedef struct s_route_extended s_route_extended_t, *route_extended_t;
-typedef struct s_routing_component s_routing_component_t, *routing_component_t;
-//typedef struct s_routing_global s_routing_global_t, *routing_global_t;
-
-struct s_model_type {
-  const char *name;
-  const char *desc;
-  void* (*create)();
-  void (*load)();
-  void (*unload)();
-  void (*end)();
-};
-
-struct s_network_element {
-  //int id;
-  e_surf_network_element_type_t type;
-};
-
-struct s_route {
+typedef struct s_route  {
   xbt_dynar_t link_list;
-};
+} s_route_t, *route_t;
 
-struct s_route_limits {
-  char* src_gateway;
-  char* dst_gateway;
-};
+typedef struct s_route_limits {
+	  char* src_gateway;
+	  char* dst_gateway;
+} s_route_limits_t, *route_limits_t;
 
-struct s_route_extended {
-  s_route_t generic_route;
-  char* src_gateway;
-  char* dst_gateway;
-};
+typedef struct s_route_extended {
+	  s_route_t generic_route;
+	  char* src_gateway;
+	  char* dst_gateway;
+} s_route_extended_t, *route_extended_t;
 
 /* This enum used in the routing structure helps knowing in which situation we are. */
 typedef enum {
@@ -153,32 +128,47 @@ typedef enum {
   SURF_ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
 } e_surf_routing_hierarchy_t;
 
-struct s_routing_component {
-  model_type_t routing;
-  e_surf_routing_hierarchy_t hierarchy;
-  char *name;
-  struct s_routing_component* routing_father;
-  xbt_dict_t routing_sons;
-  route_extended_t (*get_route)(routing_component_t rc, const char* src, const char* dst);
-  xbt_dynar_t (*get_onelink_routes)(routing_component_t rc);
-  int (*is_router)(routing_component_t rc, const char *name);
-  route_extended_t (*get_bypass_route)(routing_component_t rc, const char* src, const char* dst);
-  void (*finalize)(routing_component_t rc);
-  void (*set_processing_unit)(routing_component_t rc, const char* name);
-  void (*set_autonomous_system)(routing_component_t rc, const char* name);
-  void (*set_route)(routing_component_t rc, const char* src, const char* dst, route_t route);
-  void (*set_ASroute)(routing_component_t rc, const char* src, const char* dst, route_extended_t route);
-  void (*set_bypassroute)(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route);
-};
+typedef enum {
+  SURF_NETWORK_ELEMENT_NULL = 0,   /* NULL */
+  SURF_NETWORK_ELEMENT_HOST,       /* host type */
+  SURF_NETWORK_ELEMENT_ROUTER,     /* router type */
+  SURF_NETWORK_ELEMENT_AS,         /* AS type */
+} e_surf_network_element_type_t;
+
+typedef struct s_routing_component *routing_component_t;
+typedef struct s_routing_component {
+	  model_type_t routing;
+	  e_surf_routing_hierarchy_t hierarchy;
+	  char *name;
+	  struct s_routing_component* routing_father;
+	  xbt_dict_t routing_sons;
+	  route_extended_t (*get_route)(routing_component_t rc, const char* src, const char* dst);
+	  xbt_dynar_t (*get_onelink_routes)(routing_component_t rc);
+	  e_surf_network_element_type_t (*get_network_element_type) (const char *name);
+	  route_extended_t (*get_bypass_route)(routing_component_t rc, const char* src, const char* dst);
+	  void (*finalize)(routing_component_t rc);
+	  void (*set_processing_unit)(routing_component_t rc, const char* name);
+	  void (*set_autonomous_system)(routing_component_t rc, const char* name);
+	  void (*set_route)(routing_component_t rc, const char* src, const char* dst, route_t route);
+	  void (*set_ASroute)(routing_component_t rc, const char* src, const char* dst, route_extended_t route);
+	  void (*set_bypassroute)(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route);
+} s_routing_component_t;
+
+typedef struct s_network_element_info {
+	routing_component_t rc_component;
+	e_surf_network_element_type_t rc_type;
+} s_network_element_info_t, *network_element_info_t;
+
+typedef int *network_element_t;
 
 struct s_routing_global {
   routing_component_t root;
-  xbt_dict_t where_network_elements; /* char* -> s_routing_component* */
+  xbt_dict_t where_network_elements; /* char* -> network_element_info_t */
   void *loopback;
   size_t size_of_link;
   xbt_dynar_t (*get_route)(const char* src, const char* dst);
   xbt_dynar_t (*get_onelink_routes)(void);
-  int (*is_router)(const char *name);
+  e_surf_network_element_type_t (*get_network_element_type)(const char *name);
   void (*finalize)(void);
   xbt_dynar_t last_route;
 };

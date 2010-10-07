@@ -101,7 +101,6 @@ static void generic_set_bypassroute(routing_component_t rc, const char* src, con
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
 static xbt_dynar_t generic_get_onelink_routes (routing_component_t rc);
-static int generic_is_router (routing_component_t rc, const char *name);
 static route_extended_t generic_get_bypassroute(routing_component_t rc, const char* src, const char* dst);
 
 /* ************************************************************************** */
@@ -128,13 +127,17 @@ static xbt_dynar_t link_list = NULL; /* temporary store of current list link of 
  * \brief Add a "host" to the network element list
  */
 static void  parse_S_host(char* host_id) {
-  if( current_routing->hierarchy == SURF_ROUTING_NULL ) current_routing->hierarchy = SURF_ROUTING_BASE;
+	network_element_info_t info = NULL;
+	if( current_routing->hierarchy == SURF_ROUTING_NULL ) current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert1(!xbt_dict_get_or_null(global_routing->where_network_elements,host_id),
       "Reading a host, processing unit \"%s\" already exist",host_id);
   xbt_assert1(current_routing->set_processing_unit,
       "no defined method \"set_processing_unit\" in \"%s\"",current_routing->name);
   (*(current_routing->set_processing_unit))(current_routing,host_id);
-  xbt_dict_set(global_routing->where_network_elements,host_id,(void*)current_routing,NULL);
+  info = xbt_new0(s_network_element_info_t,1);
+  info->rc_component=current_routing;
+  info->rc_type=SURF_NETWORK_ELEMENT_HOST;
+  xbt_dict_set(global_routing->where_network_elements,host_id,(void*)info,NULL);
 }
 
 /*
@@ -160,13 +163,18 @@ static void parse_S_host_lua(char *host_id)
  * \brief Add a "router" to the network element list
  */
 static void parse_S_router(void) {
+  network_element_info_t info = NULL;
+
   if( current_routing->hierarchy == SURF_ROUTING_NULL ) current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert1(!xbt_dict_get_or_null(global_routing->where_network_elements,A_surfxml_router_id),
       "Reading a router, processing unit \"%s\" already exist",A_surfxml_router_id);
   xbt_assert1(current_routing->set_processing_unit,
       "no defined method \"set_processing_unit\" in \"%s\"",current_routing->name);
   (*(current_routing->set_processing_unit))(current_routing,A_surfxml_router_id);
-  xbt_dict_set(global_routing->where_network_elements,A_surfxml_router_id,(void*)current_routing,NULL); 
+  info = xbt_new0(s_network_element_info_t,1);
+  info->rc_component=current_routing;
+  info->rc_type=SURF_NETWORK_ELEMENT_ROUTER;
+  xbt_dict_set(global_routing->where_network_elements,A_surfxml_router_id,(void*)info,NULL);
   #ifdef HAVE_TRACING
     TRACE_surf_host_declaration (A_surfxml_router_id, 0);
   #endif
@@ -352,7 +360,7 @@ static void parse_S_AS(char* AS_id,char* AS_routing) {
     new_routing->routing_father = NULL;
     global_routing->root = new_routing;
     
-  } else if( current_routing != NULL && global_routing->root != NULL ) { 
+  } else if( current_routing != NULL && global_routing->root != NULL ) {
     
     xbt_assert1(!xbt_dict_get_or_null(current_routing->routing_sons,AS_id),
            "The AS \"%s\" already exist",AS_id);
@@ -404,9 +412,13 @@ static void parse_E_AS(char *AS_id) {
   if( current_routing == NULL ) {
     THROW1(arg_error,0,"Close AS(%s), that never open",AS_id);
   } else {
+	  network_element_info_t info = NULL;
       xbt_assert1(!xbt_dict_get_or_null(global_routing->where_network_elements,current_routing->name),
           "The AS \"%s\" already exist",current_routing->name);
-      xbt_dict_set(global_routing->where_network_elements,current_routing->name,current_routing->routing_father,NULL);
+      info = xbt_new0(s_network_element_info_t,1);
+      info->rc_component=current_routing->routing_father;
+      info->rc_type=SURF_NETWORK_ELEMENT_AS;
+      xbt_dict_set(global_routing->where_network_elements,current_routing->name,info,NULL);
       (*(current_routing->routing->unload))();
       (*(current_routing->routing->end))();
       current_routing = current_routing->routing_father;
@@ -719,11 +731,11 @@ static xbt_dynar_t get_onelink_routes(void)
   return recursive_get_onelink_routes (global_routing->root);
 }
 
-static int is_router(const char *name)
+static e_surf_network_element_type_t get_network_element_type(const char *name)
 {
-	routing_component_t rc=NULL;
+	network_element_info_t rc=NULL;
 	rc = xbt_dict_get(global_routing->where_network_elements,name);
-	return rc->is_router(rc, name);
+	return rc->rc_type;
 }
 
 /**
@@ -739,7 +751,7 @@ void routing_model_create(size_t size_of_links, void* loopback) {
   global_routing->root = NULL;
   global_routing->get_route = get_route;
   global_routing->get_onelink_routes = get_onelink_routes;
-  global_routing->is_router = is_router;
+  global_routing->get_network_element_type = get_network_element_type;
   global_routing->finalize = finalize;
   global_routing->loopback = loopback;
   global_routing->size_of_link = size_of_links;
@@ -816,16 +828,6 @@ static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
   return ret;
 }
 
-static int full_is_router(routing_component_t rc, const char *name)
-{
-  routing_component_full_t routing = (routing_component_full_t)rc;
-
-  if(SURF_NETWORK_ELEMENT_ROUTER == ( (network_element_t) xbt_dict_get(routing->to_index , name) )->type )
-	  return 1;
-  else
-	  return 0;
-}
-
 static route_extended_t full_get_route(routing_component_t rc, const char* src,const char* dst) {
   xbt_assert1(rc&&src&&dst, "Invalid params for \"get_route\" function at AS \"%s\"",rc->name);
   
@@ -887,7 +889,6 @@ static void* model_full_create(void) {
   new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
   new_component->generic_routing.get_route = full_get_route;
   new_component->generic_routing.get_onelink_routes = full_get_onelink_routes;
-  new_component->generic_routing.is_router = full_is_router;
   new_component->generic_routing.get_bypass_route = generic_get_bypassroute;
   new_component->generic_routing.finalize = full_finalize;
   new_component->to_index = xbt_dict_new();
@@ -1014,16 +1015,6 @@ static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
   return ret;
 }
 
-static int floyd_is_router(routing_component_t rc, const char *name)
-{
-  routing_component_floyd_t routing = (routing_component_floyd_t)rc;
-
-  if(SURF_NETWORK_ELEMENT_ROUTER == ( (network_element_t) xbt_dict_get(routing->to_index , name) )->type )
-	  return 1;
-  else
-	  return 0;
-}
-
 static route_extended_t floyd_get_route(routing_component_t rc, const char* src,const char* dst) {
   xbt_assert1(rc&&src&&dst, "Invalid params for \"get_route\" function at AS \"%s\"",rc->name);
   
@@ -1124,7 +1115,6 @@ static void* model_floyd_create(void) {
   new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
   new_component->generic_routing.get_route = floyd_get_route;
   new_component->generic_routing.get_onelink_routes = floyd_get_onelink_routes;
-  new_component->generic_routing.is_router = floyd_is_router;
   new_component->generic_routing.get_bypass_route = generic_get_bypassroute;
   new_component->generic_routing.finalize = floyd_finalize;
   new_component->to_index = xbt_dict_new();
@@ -1378,16 +1368,6 @@ static xbt_dynar_t dijkstra_get_onelink_routes(routing_component_t rc)
   xbt_die("\"dijkstra_get_onelink_routes\" function not implemented yet");
 }
 
-static int dijkstra_is_router(routing_component_t rc, const char *name)
-{
-  routing_component_dijkstra_t routing = (routing_component_dijkstra_t)rc;
-
-  if(SURF_NETWORK_ELEMENT_ROUTER == ( (network_element_t) xbt_dict_get(routing->to_index , name) )->type )
-	  return 1;
-  else
-	  return 0;
-}
-
 static route_extended_t dijkstra_get_route(routing_component_t rc, const char* src,const char* dst) {
   xbt_assert1(rc&&src&&dst, "Invalid params for \"get_route\" function at AS \"%s\"",rc->name);
   
@@ -1594,7 +1574,6 @@ static void* model_dijkstra_both_create(int cached) {
   new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
   new_component->generic_routing.get_route = dijkstra_get_route;
   new_component->generic_routing.get_onelink_routes = dijkstra_get_onelink_routes;
-  new_component->generic_routing.is_router = dijkstra_is_router;
   new_component->generic_routing.get_bypass_route = generic_get_bypassroute;
   new_component->generic_routing.finalize = dijkstra_finalize;
   new_component->cached = cached;
@@ -1843,15 +1822,6 @@ static xbt_dynar_t rulebased_get_onelink_routes(routing_component_t rc)
   xbt_die("\"rulebased_get_onelink_routes\" function not implemented yet");
 }
 
-static int rulebased_is_router(routing_component_t rc, const char *name)
-{
-	  //routing_component_rulebased_t routing = (routing_component_rulebased_t)rc;
-
-//PIERRE FIXME
-
-	xbt_die("\"rulebased_is_router\" function not implemented yet");
-}
-
 /* Business methods */
 static route_extended_t rulebased_get_route(routing_component_t rc, const char* src,const char* dst) {
   xbt_assert1(rc&&src&&dst, "Invalid params for \"get_route\" function at AS \"%s\"",rc->name);
@@ -1955,7 +1925,6 @@ static void* model_rulebased_create(void) {
   new_component->generic_routing.set_ASroute = model_rulebased_set_ASroute;
   new_component->generic_routing.set_bypassroute = model_rulebased_set_bypassroute;
   new_component->generic_routing.get_onelink_routes = rulebased_get_onelink_routes;
-  new_component->generic_routing.is_router = rulebased_is_router;
   new_component->generic_routing.get_route = rulebased_get_route;
   new_component->generic_routing.get_bypass_route = NULL; //rulebased_get_bypass_route;
   new_component->generic_routing.finalize = rulebased_finalize;
@@ -1992,9 +1961,6 @@ typedef struct {
 static xbt_dynar_t none_get_onelink_routes(routing_component_t rc){
   return NULL;
 }
-static int none_is_router(routing_component_t rc, const char *name){
-  return -1;
-}
 static route_extended_t none_get_route(routing_component_t rc, const char* src,const char* dst){
   return NULL;
 }
@@ -2018,7 +1984,6 @@ static void* model_none_create(void) {
   new_component->generic_routing.set_bypassroute = NULL;
   new_component->generic_routing.get_route = none_get_route;
   new_component->generic_routing.get_onelink_routes = none_get_onelink_routes;
-  new_component->generic_routing.is_router = none_is_router;
   new_component->generic_routing.get_bypass_route = none_get_bypass_route;
   new_component->generic_routing.finalize = none_finalize;
   return new_component;
@@ -2220,11 +2185,6 @@ static void generic_set_bypassroute(routing_component_t rc, const char* src, con
 static xbt_dynar_t generic_get_onelink_routes (routing_component_t rc)
 {
   xbt_die("\"generic_get_onelink_routes\" not implemented yet");
-}
-
-static int generic_is_router (routing_component_t rc, const char *name)
-{
-  xbt_die("\"generic_is_router\" not implemented yet");
 }
 
 static route_extended_t generic_get_bypassroute(routing_component_t rc, const char* src, const char* dst) {

@@ -53,7 +53,6 @@ if(argc == 3)
 			SD_route_get_current_latency(w1, w2),
 			SD_route_get_current_bandwidth(w1, w2));
 
-	  printf("%s is router : %d\n",name1,global_routing->is_router(name1));
 	}
 	if(!strcmp(argv[2],"FULL_LINK"))
 	{
