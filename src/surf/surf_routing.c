@@ -470,8 +470,8 @@ static xbt_dynar_t elements_father(const char* src,const char* dst) {
   routing_component_t* father = NULL;
   
   /* (1) find the as where the src and dst are located */
-  src_as = xbt_dict_get_or_null(global_routing->where_network_elements,src);
-  dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,dst); 
+  src_as = ((network_element_info_t)xbt_dict_get_or_null(global_routing->where_network_elements,src))->rc_component;
+  dst_as = ((network_element_info_t)xbt_dict_get_or_null(global_routing->where_network_elements,dst))->rc_component;
   xbt_assert2(src_as&&dst_as, "Ask for route \"from\"(%s) or \"to\"(%s) no found",src,dst);
   
   /* (2) find the path to the root routing component */
@@ -2210,8 +2210,8 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc, const ch
   routing_component_t* current_dst = NULL;
 
   /* (1) find the as where the src and dst are located */
-  src_as = xbt_dict_get_or_null(global_routing->where_network_elements,src);
-  dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,dst); 
+  src_as = ((network_element_info_t)xbt_dict_get_or_null(global_routing->where_network_elements,src))->rc_component;
+  dst_as = ((network_element_info_t)xbt_dict_get_or_null(global_routing->where_network_elements,dst))->rc_component;
   xbt_assert2(src_as&&dst_as, "Ask for route \"from\"(%s) or \"to\"(%s) no found",src,dst);
  
   /* (2) find the path to the root routing component */
@@ -2396,7 +2396,7 @@ static routing_component_t generic_autonomous_system_exist(routing_component_t r
   routing_component_t element_as, result, elem;
   xbt_dict_cursor_t cursor = NULL;
   char *key;
-  element_as = xbt_dict_get_or_null(global_routing->where_network_elements,element);
+  element_as = ((network_element_info_t)xbt_dict_get_or_null(global_routing->where_network_elements,element))->rc_component;
   result = ((routing_component_t)-1);
   if(element_as!=rc)
     result = generic_as_exist(rc,element_as);
@@ -2415,15 +2415,15 @@ static routing_component_t generic_autonomous_system_exist(routing_component_t r
 
 static routing_component_t generic_processing_units_exist(routing_component_t rc, char* element) {
   routing_component_t element_as;
-  element_as = xbt_dict_get_or_null(global_routing->where_network_elements,element);
+  element_as = ((network_element_info_t)xbt_dict_get_or_null(global_routing->where_network_elements,element))->rc_component;
   if(element_as==rc) return element_as;
   return generic_as_exist(rc,element_as);
 }
 
 static void generic_src_dst_check(routing_component_t rc, const char* src, const char* dst) {
   
-  routing_component_t src_as = xbt_dict_get_or_null(global_routing->where_network_elements,src);
-  routing_component_t dst_as = xbt_dict_get_or_null(global_routing->where_network_elements,dst);
+  routing_component_t src_as = ((network_element_info_t)xbt_dict_get_or_null(global_routing->where_network_elements,src))->rc_component;
+  routing_component_t dst_as = ((network_element_info_t)xbt_dict_get_or_null(global_routing->where_network_elements,dst))->rc_component;
    
   xbt_assert3(src_as != NULL && dst_as  != NULL, 
       "Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",src,dst,rc->name);
