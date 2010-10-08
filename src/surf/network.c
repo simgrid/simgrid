@@ -258,6 +258,7 @@ static int net_action_unref(surf_action_t action)
 #ifdef HAVE_TRACING
     xbt_free (((surf_action_network_CM02_t)action)->src_name);
     xbt_free (((surf_action_network_CM02_t)action)->dst_name);
+    if (action->category) xbt_free (action->category);
 #endif
     free(action);
     return 1;

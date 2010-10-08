@@ -46,6 +46,9 @@ static int netviva_action_unref(surf_action_t action)
   action->refcount--;
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
+#ifdef HAVE_TRACING
+    if (action->category) xbt_free (action->category);
+#endif
     free(action);
     return 1;
   }

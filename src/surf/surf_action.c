@@ -33,6 +33,9 @@ void *surf_action_new(size_t size, double cost, surf_model_t model,
   action->start = surf_get_clock();
   action->finish = -1.0;
   action->model_type = model;
+#ifdef HAVE_TRACING
+  action->category = NULL;
+#endif
 
   if (failed)
     action->state_set = model->states.failed_action_set;

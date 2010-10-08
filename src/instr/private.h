@@ -109,6 +109,7 @@ void TRACE_surf_link_set_bandwidth (double date, void *link, double bandwidth);
 void TRACE_surf_link_set_latency (double date, void *link, double latency);
 void TRACE_surf_save_onelink (void);
 int TRACE_surf_link_is_traced (void *link);
+void TRACE_surf_action (surf_action_t surf_action, const char *category);
 
 //for tracing gtnets
 void TRACE_surf_gtnets_communicate (void *action, int src, int dst);

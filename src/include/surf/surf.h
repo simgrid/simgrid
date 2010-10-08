@@ -83,6 +83,9 @@ XBT_PUBLIC(void) model_help(const char* category, s_surf_model_description_t * t
        void *data;              /**< for your convenience */
        int refcount;
        surf_model_t model_type;
+#ifdef HAVE_TRACING
+       char *category;          /**< tracing category for categorized resource utilization monitoring */
+#endif
      } s_surf_action_t;
 
      typedef struct surf_action_lmm {
