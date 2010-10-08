@@ -231,6 +231,7 @@ static XBT_INLINE void SIMIX_communication_start(smx_comm_t comm)
                                          comm->task_size, comm->rate);
 #ifdef HAVE_TRACING
     TRACE_smx_action_communicate (comm->act, comm->src_proc);
+    TRACE_surf_action (comm->act->surf_action, comm->act->category);
 #endif
 
     /* If any of the process is suspend, create the action but stop its execution,
