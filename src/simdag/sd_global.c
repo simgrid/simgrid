@@ -80,7 +80,7 @@ void SD_init(int *argc, char **argv)
   sd_global->task_number = 0;
 
   surf_init(argc, argv);
-  xbt_cfg_set_string(_surf_cfg_set, "workstation/model", "ptask_L07");
+  xbt_cfg_setdefault_string(_surf_cfg_set, "workstation/model", "ptask_L07");
 }
 
 /**
@@ -165,8 +165,9 @@ void SD_create_environment(const char *platform_file)
   DEBUG0("SD_create_environment");
 
   surf_config_models_setup(platform_file);
-
   parse_platform_file(platform_file);
+  surf_config_models_create_elms();
+
   /* now let's create the SD wrappers for workstations and links */
   xbt_dict_foreach(surf_model_resource_set(surf_workstation_model), cursor,
                    name, surf_workstation) {
