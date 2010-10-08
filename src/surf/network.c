@@ -606,6 +606,11 @@ static surf_action_t net_communicate(const char *src_name, const char *dst_name,
   return (surf_action_t) action;
 }
 
+static xbt_dynar_t net_get_route(const char *src, const char *dst)
+{
+	return global_routing->get_route( src, dst);
+}
+
 static double net_get_link_bandwidth(const void *link)
 {
   surf_resource_lmm_t lmm = (surf_resource_lmm_t) link;
@@ -689,6 +694,7 @@ static void surf_network_model_init_internal(void)
   surf_cpu_model->set_max_duration = net_action_set_max_duration;
 
   surf_network_model->extension.network.communicate = net_communicate;
+  surf_network_model->extension.network.get_route = net_get_route;
   surf_network_model->extension.network.get_link_bandwidth =
     net_get_link_bandwidth;
   surf_network_model->extension.network.get_link_latency =
