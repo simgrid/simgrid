@@ -94,7 +94,7 @@ smx_action_t SIMIX_action_execute(smx_host_t host, const char *name,
   act->category = NULL;
 #endif
 
-  /* set communication */
+  /* set execute */
   act->surf_action =
     surf_workstation_model->extension.workstation.execute(host->host, amount);
 
