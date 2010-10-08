@@ -329,15 +329,20 @@ static void __TRACE_C_end (smx_action_t action)
  */
 void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, double value, double now, double delta)
 {
-  if (!IS_TRACING || !IS_TRACED(smx_action)) return;
-
+  if (!IS_TRACING) return;
+  if (!value) return;
   //only trace link utilization if link is known by tracing mechanism
   if (!TRACE_surf_link_is_traced (link)) return;
-
   if (!value) return;
 
-  char resource[100], type[100];
+  //trace uncategorized link utilization
+  char resource[100];
   snprintf (resource, 100, "%p", link);
+  TRACE_surf_resource_utilization_event (smx_action, now, delta, "bandwidth_used", resource, value);
+
+  //trace categorized utilization
+  if (!IS_TRACED(smx_action)) return;
+  char type[100];
   snprintf (type, 100, "b%s", smx_action->category);
   TRACE_surf_resource_utilization_event (smx_action, now, delta, type, resource, value);
   return;
@@ -348,10 +353,14 @@ void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, doubl
  */
 void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta)
 {
-  if (!IS_TRACING || !IS_TRACED(smx_action)) return;
-
+  if (!IS_TRACING) return;
   if (!value) return;
 
+  //trace uncategorized host utilization
+  TRACE_surf_resource_utilization_event (smx_action, now, delta, "power_used", name, value);
+
+  //trace categorized utilization
+  if (!IS_TRACED(smx_action)) return;
   char type[100];
   snprintf (type, 100, "p%s", smx_action->category);
   TRACE_surf_resource_utilization_event (smx_action, now, delta, type, name, value);
