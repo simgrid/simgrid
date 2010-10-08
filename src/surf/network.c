@@ -276,7 +276,7 @@ void net_action_recycle(surf_action_t action)
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-int net_get_link_latency(surf_action_t action)
+int net_get_link_latency_limited(surf_action_t action)
 {
   return action->latency_limited;
 }
@@ -612,6 +612,11 @@ static double net_get_link_bandwidth(const void *link)
   return lmm->power.peak * lmm->power.scale;
 }
 
+static double net_get_link_latency(const void *link)
+{
+	return ((link_CM02_t) link)->lat_current;
+}
+
 static int net_link_shared(const void *link)
 {
   return lmm_constraint_is_shared(((surf_resource_lmm_t) link)->constraint);
@@ -667,7 +672,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->action_recycle = net_action_recycle;
   surf_network_model->get_remains = net_action_get_remains;
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-  surf_network_model->get_latency_limited = net_get_link_latency;
+  surf_network_model->get_latency_limited = net_get_link_latency_limited;
 #endif
 
   surf_network_model->model_private->resource_used = net_resource_used;
@@ -686,6 +691,8 @@ static void surf_network_model_init_internal(void)
   surf_network_model->extension.network.communicate = net_communicate;
   surf_network_model->extension.network.get_link_bandwidth =
     net_get_link_bandwidth;
+  surf_network_model->extension.network.get_link_latency =
+  	net_get_link_latency;
   surf_network_model->extension.network.link_shared = net_link_shared;
   surf_network_model->extension.network.add_traces = net_add_traces;
   surf_network_model->extension.network.create_resource = net_create_resource;
