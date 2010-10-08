@@ -234,6 +234,7 @@ int TRACE_surf_link_is_traced (void *link)
 
 void TRACE_surf_action (surf_action_t surf_action, const char *category)
 {
+  if (!IS_TRACING) return;
   if (!IS_TRACING_PLATFORM) return;
   if (!category){
     xbt_die ("invalid tracing category");
