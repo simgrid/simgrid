@@ -1,5 +1,6 @@
 # This works mainly on my box for now
 export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
+GRAS_STUB_GENERATOR=$(GRAS_ROOT)/bin/gras_stub_generator
 
 all: 01-bones.output 02-simple.output 03-args.output 04-callback.output \
      05-globals.output 06-logs.output 07-timers.output 08-exceptions.output \
@@ -25,7 +26,7 @@ veryclean: clean
 	make -f 01-bones.mk
 
 _01-bones_client.c _01-bones_server.c _01-bones_simulator.c: 01-bones.c test.xml
-	../../tools/gras/gras_stub_generator 01-bones test.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 01-bones test.xml >/dev/null
 
 clean::
 	if [ -e 01-bones.mk ] ; then make -f 01-bones.mk clean; fi
@@ -43,7 +44,7 @@ clean::
 	make -f 02-simple.mk
 
 _02-simple_client.c _02-simple_server.c _02-simple_simulator.c: 02-simple.c test.xml
-	../../tools/gras/gras_stub_generator 02-simple test.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 02-simple test.xml >/dev/null
 
 clean::
 	if [ -e 02-simple.mk ] ; then make -f 02-simple.mk clean; fi
@@ -67,7 +68,7 @@ clean::
 	make -f 03-args.mk
 
 _03-args_client.c _03-args_server.c _03-args_simulator.c: 03-args.c 03-args.xml
-	../../tools/gras/gras_stub_generator 03-args 03-args.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 03-args 03-args.xml >/dev/null
 
 clean::
 	if [ -e 03-args.mk ] ; then make -f 03-args.mk clean; fi
@@ -91,7 +92,7 @@ clean::
 	make -f 04-callback.mk
 
 _04-callback_client.c _04-callback_server.c _04-callback_simulator.c: 04-callback.c 03-args.xml
-	../../tools/gras/gras_stub_generator 04-callback 03-args.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 04-callback 03-args.xml >/dev/null
 
 clean::
 	if [ -e 04-callback.mk ] ; then make -f 04-callback.mk clean; fi
@@ -115,7 +116,7 @@ clean::
 	make -f 05-globals.mk
 
 _05-globals_client.c _05-globals_server.c _05-globals_simulator.c: 05-globals.c 03-args.xml
-	../../tools/gras/gras_stub_generator 05-globals 03-args.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 05-globals 03-args.xml >/dev/null
 
 clean::
 	if [ -e 05-globals.mk ] ; then make -f 05-globals.mk clean; fi
@@ -185,7 +186,7 @@ clean::
 	make -f 06-logs.mk
 
 _06-logs_client.c _06-logs_server.c _06-logs_simulator.c: 06-logs.c 03-args.xml
-	../../tools/gras/gras_stub_generator 06-logs 03-args.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 06-logs 03-args.xml >/dev/null
 
 clean::
 	if [ -e 06-logs.mk ] ; then make -f 06-logs.mk clean; fi
@@ -210,7 +211,7 @@ clean::
 	make -f 07-timers.mk
 
 _07-timers_client.c _07-timers_server.c _07-timers_simulator.c: 07-timers.c 03-args.xml
-	../../tools/gras/gras_stub_generator 07-timers 03-args.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 07-timers 03-args.xml >/dev/null
 
 clean::
 	if [ -e 07-timers.mk ] ; then make -f 07-timers.mk clean; fi
@@ -240,7 +241,7 @@ clean::
 	make -f 08-exceptions.mk
 
 _08-exceptions_client.c _08-exceptions_server.c _08-exceptions_simulator.c: 08-exceptions.c 03-args.xml
-	../../tools/gras/gras_stub_generator 08-exceptions 03-args.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 08-exceptions 03-args.xml >/dev/null
 
 clean::
 	if [ -e 08-exceptions.mk ] ; then make -f 08-exceptions.mk clean; fi
@@ -269,7 +270,7 @@ clean::
 	make -f 09-simpledata.mk
 
 _09-simpledata_client.c _09-simpledata_server.c _09-simpledata_simulator.c: 09-simpledata.c 03-args.xml
-	../../tools/gras/gras_stub_generator 09-simpledata 03-args.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 09-simpledata 03-args.xml >/dev/null
 
 clean::
 	if [ -e 09-simpledata.mk ] ; then make -f 09-simpledata.mk clean; fi
@@ -294,7 +295,7 @@ clean::
 	make -f 10-rpc.mk
 
 _10-rpc_client.c _10-rpc_server.c _10-rpc_simulator.c: 10-rpc.c 03-args.xml
-	../../tools/gras/gras_stub_generator 10-rpc 03-args.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 10-rpc 03-args.xml >/dev/null
 
 clean::
 	if [ -e 10-rpc.mk ] ; then make -f 10-rpc.mk clean; fi
@@ -321,7 +322,7 @@ clean::
 	make -f 11-explicitwait.mk
 
 _11-explicitwait_client.c _11-explicitwait_server.c _11-explicitwait_simulator.c: 11-explicitwait.c 03-args.xml
-	../../tools/gras/gras_stub_generator 11-explicitwait 03-args.xml >/dev/null
+	$(GRAS_STUB_GENERATOR) 11-explicitwait 03-args.xml >/dev/null
 
 clean::
 	if [ -e 11-explicitwait.mk ] ; then make -f 11-explicitwait.mk clean; fi
