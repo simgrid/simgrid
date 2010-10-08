@@ -97,7 +97,7 @@ void TRACE_smx_action_execute (smx_action_t act);
 void TRACE_smx_action_communicate (smx_action_t act, smx_process_t proc);
 void TRACE_smx_action_destroy (smx_action_t act);
 
-/* from surf.c */
+/* from surf_instr.c */
 void TRACE_surf_alloc (void);
 void TRACE_surf_release (void);
 void TRACE_surf_host_declaration (char *name, double power);
@@ -142,8 +142,8 @@ char *TRACE_get_platform_method (void);
 void TRACE_global_init(int *argc, char **argv);
 
 /* from resource_utilization.c */
-void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, double value, double now, double delta);
-void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, double value, double now, double delta);
+void TRACE_surf_host_set_utilization (const char *name, smx_action_t smx_action, surf_action_t surf_action, double value, double now, double delta);
+void TRACE_surf_link_set_utilization (void *link, smx_action_t smx_action, surf_action_t surf_action, double value, double now, double delta);
 void TRACE_surf_resource_utilization_start (smx_action_t action);
 void TRACE_surf_resource_utilization_event (smx_action_t action, double now, double delta, const char *variable, const char *resource, double value);
 void TRACE_surf_resource_utilization_end (smx_action_t action);
