@@ -206,5 +206,7 @@ XBT_PUBLIC(void) uniq_transfer_task_name(SD_task_t task);
 
 /** @} */
 
+#include "instr/instr.h"
+
 SG_END_DECL()
 #endif

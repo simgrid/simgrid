@@ -12,6 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/config.h"
+#include "instr/private.h"
 #ifdef HAVE_LUA
 #include <lua.h>
 #include <lauxlib.h>
@@ -40,6 +41,9 @@ XBT_LOG_EXTERNAL_CATEGORY(sd_workstation);
  */
 void SD_init(int *argc, char **argv)
 {
+#ifdef HAVE_TRACING
+  TRACE_global_init (argc, argv);
+#endif
 
   s_SD_task_t task;
 
@@ -180,6 +184,10 @@ void SD_create_environment(const char *platform_file)
 
   DEBUG2("Workstation number: %d, link number: %d",
          SD_workstation_get_number(), SD_link_get_number());
+
+#ifdef HAVE_TRACING
+  TRACE_surf_save_onelink ();
+#endif
 }
 
 /**
@@ -350,6 +358,9 @@ double SD_get_clock(void)
  */
 void SD_exit(void)
 {
+#ifdef HAVE_TRACING
+  TRACE_surf_release ();
+#endif
   if (SD_INITIALISED()) {
     DEBUG0("Destroying workstation and link dictionaries...");
     xbt_dict_free(&sd_global->workstations);

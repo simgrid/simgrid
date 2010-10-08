@@ -97,6 +97,10 @@ typedef struct SD_task {
   double *computation_amount;
   double *communication_amount;
   double rate;
+
+#ifdef HAVE_TRACING
+  char *category;      /* sd task category for instrumentation */
+#endif
 } s_SD_task_t;
 
 /* Task dependencies */

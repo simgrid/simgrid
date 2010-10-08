@@ -13,6 +13,7 @@
 
 #include "xbt.h"
 #include "msg/msg.h"
+#include "simdag/simdag.h"
 
 /* Trace error codes (used in exceptions) */
 #define TRACE_ERROR_COMPLEX_ROUTES 100
@@ -37,6 +38,7 @@ XBT_PUBLIC(void) TRACE_user_link_variable (double time, const char *src, const c
 XBT_PUBLIC(void) TRACE_declare_mark (const char *mark_type);
 XBT_PUBLIC(void) TRACE_mark (const char *mark_type, const char *mark_value);
 XBT_PUBLIC(int) TRACE_smpi_set_category (const char *category);
+XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task, const char *category);
 
 #define TRACE_host_variable_declare(var) \
 	TRACE_user_host_variable(0,var,0,"declare");
@@ -108,6 +110,7 @@ XBT_PUBLIC(int) TRACE_smpi_set_category (const char *category);
 #define TRACE_declare_mark(type)
 #define TRACE_mark(type,value)
 #define TRACE_smpi_set_category(cat)
+#define TRACE_sd_set_task_category(task,cat)
 
 #endif /* HAVE_TRACING */
 

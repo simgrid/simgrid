@@ -8,6 +8,7 @@
 #include "simdag/simdag.h"
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
+#include "instr/private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd,
                                 "Logging specific to SimDag (task)");
@@ -63,6 +64,10 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   task->rate = 0;
 
   sd_global->task_number++;
+
+#ifdef HAVE_TRACING
+  TRACE_sd_task_create (task);
+#endif
 
   return task;
 }
@@ -921,6 +926,10 @@ void __SD_task_really_run(SD_task_t task)
 
   DEBUG1("surf_action = %p", task->surf_action);
 
+#ifdef HAVE_TRACING
+  if (task->category) TRACE_surf_action(task->surf_action, task->category);
+#endif
+
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   __SD_task_set_state(task, SD_RUNNING);
   xbt_assert2(__SD_task_is_running(task), "Bad state of task '%s': %d",
@@ -1218,6 +1227,10 @@ void SD_task_destroy(SD_task_t task)
 
   if (task->computation_amount)
     xbt_free(task->computation_amount);
+
+#ifdef HAVE_TRACING
+  TRACE_sd_task_destroy (task);
+#endif
 
   xbt_dynar_free(&task->tasks_before);
   xbt_dynar_free(&task->tasks_after);

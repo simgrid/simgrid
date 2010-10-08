@@ -23,6 +23,7 @@ extern int tracing_active; /* declared in paje.c */
 
 #include "instr/instr.h"
 #include "msg/msg.h"
+#include "simdag/private.h"
 #include "simix/private.h"
 
 /* from paje.c */
@@ -149,6 +150,10 @@ void TRACE_surf_resource_utilization_event (smx_action_t action, double now, dou
 void TRACE_surf_resource_utilization_end (smx_action_t action);
 void TRACE_surf_resource_utilization_alloc (void);
 void TRACE_surf_resource_utilization_release (void);
+
+/* sd_instr.c */
+void TRACE_sd_task_create (SD_task_t task);
+void TRACE_sd_task_destroy (SD_task_t task);
 
 #endif
 
