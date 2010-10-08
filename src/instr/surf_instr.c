@@ -98,7 +98,7 @@ void TRACE_surf_link_declaration (void *link, char *name, double bw, double lat)
  * main: create HOST containers, set initial power value
  * return: void
  */
-void TRACE_surf_host_declaration (char *name, double power)
+void TRACE_surf_host_declaration (const char *name, double power)
 {
   if (!IS_TRACING) return;
   pajeCreateContainer (SIMIX_get_clock(), name, "HOST", "platform", name);
@@ -106,7 +106,7 @@ void TRACE_surf_host_declaration (char *name, double power)
   TRACE_surf_host_set_power (SIMIX_get_clock(), name, power);
 }
 
-void TRACE_surf_host_set_power (double date, char *resource, double power)
+void TRACE_surf_host_set_power (double date, const char *resource, double power)
 {
   TRACE_surf_set_resource_variable (date, "power", resource, power);
 }
