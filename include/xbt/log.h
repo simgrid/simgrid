@@ -28,12 +28,12 @@
 /* XBT_LOG_MAYDAY: define this to replace the logging facilities with basic
    printf function. Useful to debug the logging facilities themselves */
 #undef XBT_LOG_MAYDAY
-/*#define XBT_LOG_MAYDAY*/
+//#define XBT_LOG_MAYDAY
 
 #ifndef _XBT_LOG_H_
 #define _XBT_LOG_H_
 
-#include "xbt/misc.h"
+#include "simgrid_config.h"
 
 #include <stdarg.h>
 SG_BEGIN_DECL()

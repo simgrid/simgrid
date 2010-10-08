@@ -84,7 +84,7 @@ static void handle_line(const char *filepos, char *line)
   }
 }
 
-static void handle_suite(const char *filename, FILE * IN)
+static void handle_suite(const char *filename, FILE * FICIN)
 {
   size_t len;
   int blankline;
@@ -99,7 +99,7 @@ static void handle_suite(const char *filename, FILE * IN)
   buff = xbt_strbuff_new();
   rctx = rctx_new();
 
-  while (getline(&line, &len, IN) != -1) {
+  while (getline(&line, &len, FICIN) != -1) {
     line_num++;
 
     /* Count the line length while checking wheather it's blank */
@@ -189,7 +189,7 @@ static void parse_environ()
 
 int main(int argc, char *argv[])
 {
-  FILE *IN = NULL;
+  FILE *FICIN = NULL;
   int i;
   char *suitename = NULL;
 
@@ -243,15 +243,15 @@ int main(int argc, char *argv[])
 
       INFO1("Test suite `%s'", suitename);
       testsuite_name = suitename;
-      IN = fopen(argv[i], "r");
-      if (!IN) {
+      FICIN = fopen(argv[i], "r");
+      if (!FICIN) {
         perror(bprintf("Impossible to open the suite file `%s'", argv[i]));
         ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
         rctx_armageddon(rctx, 1);
       }
-      handle_suite(suitename, IN);
+      handle_suite(suitename, FICIN);
       rctx_wait_bg();
-      fclose(IN);
+      fclose(FICIN);
       INFO1("Test suite `%s' OK", suitename);
       free(suitename);
     }
