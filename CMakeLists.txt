@@ -158,6 +158,8 @@ endif(HAVE_JAVA)
 ### Make tests
 if(NOT WIN32)
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
+else(NOT WIN32)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTestsWin.cmake)
 endif(NOT WIN32)
 
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
