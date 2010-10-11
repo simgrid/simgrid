@@ -179,7 +179,8 @@ int master(int argc, char *argv[])
     for (i = 0; i < number_of_tasks; i++) {
       sprintf(sprintf_buffer, "Task_%d", i);
       todo[i] =
-        MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
+          MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size,
+                          NULL);
     }
   }
 
@@ -216,7 +217,7 @@ int master(int argc, char *argv[])
   }
 
   INFO0
-    ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+      ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++)
     MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
                  slaves[i], PORT_22);

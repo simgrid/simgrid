@@ -16,7 +16,8 @@
 #include "amok/bandwidth.h"
 #include "amok/peermanagement.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(saturate, "Messages specific to this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(saturate,
+                             "Messages specific to this example");
 
 /* **********************************************************************
  * Sensor code
@@ -83,8 +84,8 @@ static double XP(const char *bw1, const char *bw2,
   amok_bw_request(bw1, 4000, bw2, 4000,
                   buf_size, msg_size, msg_amount, min_duration, &sec_sat,
                   &bw_sat);
-  INFO6("BW(%s,%s//%s,%s) => %f sec, achieving %f Mb/s", bw1, bw2, sat1, sat2,
-        sec, bw / 1024.0 / 1024.0);
+  INFO6("BW(%s,%s//%s,%s) => %f sec, achieving %f Mb/s", bw1, bw2, sat1,
+        sat2, sec, bw / 1024.0 / 1024.0);
 
   amok_bw_saturate_stop(sat1, 4000, NULL, NULL);
 
@@ -252,10 +253,12 @@ static void full_fledged_saturation(int argc, char *argv[])
       amok_bw_saturate_stop(h1->name, h1->port, &time1, &bw1);
 
       INFO2
-        ("Did an iteration on saturation pair in %ld sec (%.2f simulated sec)",
-         (long int) (time(NULL) - begin), gras_os_time() - begin_simulated);
-      INFO2("the duration of the experiment >>>>> %.3f sec (%.3f bandwidth)",
-            time1, bw1);
+          ("Did an iteration on saturation pair in %ld sec (%.2f simulated sec)",
+           (long int) (time(NULL) - begin),
+           gras_os_time() - begin_simulated);
+      INFO2
+          ("the duration of the experiment >>>>> %.3f sec (%.3f bandwidth)",
+           time1, bw1);
     }
   }
   free(bw_sat);

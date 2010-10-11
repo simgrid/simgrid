@@ -17,17 +17,17 @@ static int emigrant(int argc, char *argv[])
 {
   m_task_t task;
   INFO0
-    ("I'll look for a new job on another machine where the grass is greener.");
+      ("I'll look for a new job on another machine where the grass is greener.");
   MSG_process_change_host(MSG_get_host_by_name("Boivin"));
   INFO0("Yeah, found something to do");
   task = MSG_task_create("job", 98095000, 0, NULL);
   MSG_task_execute(task);
   MSG_task_destroy(task);
-  MSG_process_sleep (2);
+  MSG_process_sleep(2);
   INFO0("Moving back home after work");
   MSG_process_change_host(MSG_get_host_by_name("Jacquelin"));
   MSG_process_change_host(MSG_get_host_by_name("Boivin"));
-  MSG_process_sleep (4);
+  MSG_process_sleep(4);
   INFO0("Uh, nothing to do here. Stopping now");
   return 0;
 }                               /* end_of_emigrant */
@@ -37,7 +37,8 @@ static int emigrant(int argc, char *argv[])
  */
 static int policeman(int argc, char *argv[])
 {
-  INFO0("No function in the API to move the emigrant back, so do nothing.");
+  INFO0
+      ("No function in the API to move the emigrant back, so do nothing.");
   return 0;
 }                               /* end_of_policeman */
 

@@ -11,18 +11,18 @@
  * 		This file contains all the declarations of the functions related with
  * 		the tesh timer type.
  *
- */
- 
+ */  
+    
 #ifndef __TIMER_H
 #define __TIMER_H
-
+    
 #include <com.h>
-
+    
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-
+  
+#endif  /*  */
+   
 /*! \brief timer_new - create a new timer.
  *
  * \param command	The command to keep a wath.
@@ -35,10 +35,9 @@ extern "C" {
  *					[EINVAL] if the parameter is invalid.
  *					[ENOMEM] if the system has not enough space to allocate
  *					         the timer.
- */
-ttimer_t
-timer_new(command_t command);
-
+ */ 
+  ttimer_t  timer_new(command_t command);
+   
 /*! \brief timer_free - destroy a timer object.
  *
  * \param ptr		A pointer to the timer object to destroy.
@@ -51,19 +50,13 @@ timer_new(command_t command);
  *					[EINVAL] if the timer object pointed to by the parameter ptr is invalid.
  *					
  *					
- */
-int
-timer_free(ttimer_t* ptr);
-
-void
-timer_time(ttimer_t timer);
-
-void
-timer_wait(ttimer_t timer);
-
+ */ 
+  int  timer_free(ttimer_t * ptr);
+    void  timer_time(ttimer_t timer);
+    void  timer_wait(ttimer_t timer);
+   
 #ifdef __cplusplus
-}
-#endif
-
-
-#endif /* !__TIMER_H */
+} 
+#endif  /*  */
+ 
+#endif  /* !__TIMER_H */

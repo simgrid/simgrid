@@ -9,48 +9,43 @@ void terminate(void);
 
 #pragma argsused
 
-int main(int argc,char *argv[])
+int main(int argc, char *argv[])
 {
-    errno_t e;
-    initializeErrno();
+  errno_t e;
+  initializeErrno();
 
-	/* Create a test runner. */
-	test_runner = TestRunner_new();
+  /* Create a test runner. */
+  test_runner = TestRunner_new();
 
-	if(NULL == test_runner)
-		terminate();
+  if (NULL == test_runner)
+    terminate();
 
-	/* Initialize the test runner. */
-	if(E_SUCCESS != TestRunner_initialize(test_runner,argc,argv))
-		terminate();
+  /* Initialize the test runner. */
+  if (E_SUCCESS != TestRunner_initialize(test_runner, argc, argv))
+    terminate();
 
-	/* Launch the test runner. */
-	TestRunner_run(test_runner);
+  /* Launch the test runner. */
+  TestRunner_run(test_runner);
 
-    e = getErrno();
+  e = getErrno();
 
-	terminate();
+  terminate();
 
-    return e;
+  return e;
 }
 
 
 void terminate(void)
 {
-    errno_t e = getErrno();
+  errno_t e = getErrno();
 
-	if(NULL != test_runner)
-		TestRunner_free(test_runner);
-	
-	printf("\n Program terminated with the exit code : %3d (%s)\n",getErrno(),__errlist[getErrno()]);
+  if (NULL != test_runner)
+    TestRunner_free(test_runner);
 
-    terminateErrno();
-    
-	exit(e);
+  printf("\n Program terminated with the exit code : %3d (%s)\n",
+         getErrno(), __errlist[getErrno()]);
+
+  terminateErrno();
+
+  exit(e);
 }
-
-
-
-
-
- 

@@ -29,14 +29,14 @@ static void pickup(int id, int lunch)
 {
   INFO2("Thread %d gets hungry (lunch #%d)", id, lunch);
   xbt_mutex_acquire(mutex);
-  while (state[(id + (philosopher_amount - 1)) % philosopher_amount] == EATING
-         || state[(id + 1) % philosopher_amount] == EATING) {
+  while (state[(id + (philosopher_amount - 1)) % philosopher_amount] ==
+         EATING || state[(id + 1) % philosopher_amount] == EATING) {
     xbt_cond_wait(forks[id], mutex);
   }
 
   state[id] = EATING;
-  xbt_assert1(state[(id + (philosopher_amount - 1)) % philosopher_amount] ==
-              THINKING
+  xbt_assert1(state[(id + (philosopher_amount - 1)) % philosopher_amount]
+              == THINKING
               && state[(id + 1) % philosopher_amount] == THINKING,
               "Philosopher %d eats at the same time that one of its neighbors!!!",
               id);
@@ -87,8 +87,8 @@ static void philo_thread(void *arg)
 
   /* Enter an endless loop to test the killing facilities */
   INFO1
-    ("Thread %d tries to enter the dead-end; hopefully, the master will cancel it",
-     id);
+      ("Thread %d tries to enter the dead-end; hopefully, the master will cancel it",
+       id);
   xbt_mutex_acquire(dead_end);
   INFO1("Oops, thread %d reached the dead-end. Cancelation failed", id);
 }
@@ -129,7 +129,9 @@ int philosopher(int argc, char *argv[])
   /* spawn threads */
   for (i = 0; i < philosopher_amount; i++) {
     char *name = bprintf("thread %d", i);
-    philosophers[i] = xbt_thread_create(name, philo_thread, &id[i],0/*not joinable*/);
+    philosophers[i] =
+        xbt_thread_create(name, philo_thread, &id[i],
+                          0 /*not joinable */ );
     free(name);
   }
 

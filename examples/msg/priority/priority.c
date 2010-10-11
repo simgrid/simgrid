@@ -62,7 +62,8 @@ int main(int argc, char *argv[])
   MSG_error_t res = MSG_OK;
 
 #ifdef _MSC_VER
-  unsigned int prev_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
+  unsigned int prev_exponent_format =
+      _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
 

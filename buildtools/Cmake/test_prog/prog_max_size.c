@@ -10,27 +10,26 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-int main (void)
+int main(void)
 {
 
-	int c = sizeof(char);
-	int si = sizeof(short int);
-	int i = sizeof(int);
-	int li = sizeof(long int);
-	int lli = sizeof(long long int);
-	int f = sizeof(float);
-	int v = sizeof(void *);
-	int vv = sizeof(void (*) (void));
-	int t[8] = {c,si,i,li,lli,f,v,vv};
-	
-	int max = t[0];
+  int c = sizeof(char);
+  int si = sizeof(short int);
+  int i = sizeof(int);
+  int li = sizeof(long int);
+  int lli = sizeof(long long int);
+  int f = sizeof(float);
+  int v = sizeof(void *);
+  int vv = sizeof(void (*)(void));
+  int t[8] = { c, si, i, li, lli, f, v, vv };
 
-	for (i = 1; i < 8; i++)
-	{ 
-		if (t[i] > max) max = t[i];
+  int max = t[0];
 
-	} 
-	printf("%d",max);
-	return 1;
+  for (i = 1; i < 8; i++) {
+    if (t[i] > max)
+      max = t[i];
+
+  }
+  printf("%d", max);
+  return 1;
 }
-

@@ -16,7 +16,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific to this test");
 int server(int argc, char *argv[]);
 int client(int argc, char *argv[]);
 
-static int server_cb_hello_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
+static int server_cb_hello_handler(gras_msg_cb_ctx_t ctx,
+                                   void *payload_data)
 {
   INFO0("Got the message");
   return 0;

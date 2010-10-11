@@ -15,7 +15,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file, const char *application_file);
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file);
 
 typedef enum {
   PORT_22 = 0,
@@ -58,14 +59,14 @@ int master(int argc, char *argv[])
   id = atoi(argv[3]);
   sprintf(id_alias, "flow_%d", id);
   slavenames[id] = slavename;
-  TRACE_category (id_alias);
+  TRACE_category(id_alias);
 
   masternames[id] = MSG_host_get_name(MSG_host_self());
 
   {                             /*  Task creation.  */
     char sprintf_buffer[64] = "Task_0";
     todo = MSG_task_create(sprintf_buffer, 0, task_comm_size, NULL);
-    TRACE_msg_set_task_category(todo,id_alias);
+    TRACE_msg_set_task_category(todo, id_alias);
     //keep track of running tasks
     gl_task_array[id] = todo;
     gl_data_size[id] = task_comm_size;
@@ -83,10 +84,12 @@ int master(int argc, char *argv[])
 
 
   if (!bool_printed) {
-    INFO3("Send completed (to %s). Transfer time: %f\t Agregate bandwidth: %f",
-	  slave->name, (end_time - start_time),
-	  task_comm_size / (end_time - start_time));
-    INFO2("Completed peer: %s time: %f", slave->name, (end_time - start_time));
+    INFO3
+        ("Send completed (to %s). Transfer time: %f\t Agregate bandwidth: %f",
+         slave->name, (end_time - start_time),
+         task_comm_size / (end_time - start_time));
+    INFO2("Completed peer: %s time: %f", slave->name,
+          (end_time - start_time));
   }
   return 0;
 }                               /* end_of_master */
@@ -99,7 +102,7 @@ int slave(int argc, char *argv[])
   int a;
   int id = 0;
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-  int limited_latency=0;
+  int limited_latency = 0;
 #endif
   double remaining = 0;
   char id_alias[10];
@@ -127,42 +130,44 @@ int slave(int argc, char *argv[])
       if (gl_task_array[id] == NULL) {
       } else if (gl_task_array[id] == task) {
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-    	  limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
-          if(limited_latency){
-        	  INFO1("WARNING FLOW[%d] is limited by latency!!", id);
-          }
-#endif
-    	  INFO5
-          ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
-           id, gl_data_size[id] / elapsed_time, masternames[id],
-           slavenames[id], 0.0);
-      } else {
-        remaining = MSG_task_get_remaining_communication(gl_task_array[id]);
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-     	limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
-
-        if(limited_latency){
-      	  INFO1("WARNING FLOW[%d] is limited by latency!!", id);
+        limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
+        if (limited_latency) {
+          INFO1("WARNING FLOW[%d] is limited by latency!!", id);
         }
 #endif
         INFO5
-          ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
-           id, (gl_data_size[id] - remaining) / elapsed_time, masternames[id],
-           slavenames[id], remaining);
+            ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
+             id, gl_data_size[id] / elapsed_time, masternames[id],
+             slavenames[id], 0.0);
+      } else {
+        remaining =
+            MSG_task_get_remaining_communication(gl_task_array[id]);
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+        limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
+
+        if (limited_latency) {
+          INFO1("WARNING FLOW[%d] is limited by latency!!", id);
+        }
+#endif
+        INFO5
+            ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
+             id, (gl_data_size[id] - remaining) / elapsed_time,
+             masternames[id], slavenames[id], remaining);
       }
 
     }
-  }  
+  }
   char mark[100];
-  snprintf (mark, 100, "flow_%d_finished", trace_id);
-  TRACE_mark ("endmark", mark);
+  snprintf(mark, 100, "flow_%d_finished", trace_id);
+  TRACE_mark("endmark", mark);
 
   MSG_task_destroy(task);
   return 0;
 }                               /* end_of_slave */
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file, const char *application_file)
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file)
 {
   MSG_error_t res = MSG_OK;
 
@@ -193,14 +198,14 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  TRACE_start ();
-  TRACE_declare_mark ("endmark");
+  TRACE_start();
+  TRACE_declare_mark("endmark");
 
   res = test_all(argv[1], argv[2]);
 
   MSG_clean();
 
-  TRACE_end ();
+  TRACE_end();
 
   if (res == MSG_OK)
     return 0;

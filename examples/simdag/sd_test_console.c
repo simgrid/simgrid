@@ -63,17 +63,20 @@ int main(int argc, char **argv)
   computation_amount2 = 1000000;
   communication_amount12 = 2000000;
   communication_amount21 = 3000000;
-  INFO3("Computation time for %f flops on %s: %f", computation_amount1, name1,
-        SD_workstation_get_computation_time(w1, computation_amount1));
-  INFO3("Computation time for %f flops on %s: %f", computation_amount2, name2,
-        SD_workstation_get_computation_time(w2, computation_amount2));
+  INFO3("Computation time for %f flops on %s: %f", computation_amount1,
+        name1, SD_workstation_get_computation_time(w1,
+                                                   computation_amount1));
+  INFO3("Computation time for %f flops on %s: %f", computation_amount2,
+        name2, SD_workstation_get_computation_time(w2,
+                                                   computation_amount2));
 
   INFO2("Route between %s and %s:", name1, name2);
   route = SD_route_get_list(w1, w2);
   route_size = SD_route_get_size(w1, w2);
   for (i = 0; i < route_size; i++) {
     INFO3("   Link %s: latency = %f, bandwidth = %f",
-          SD_link_get_name(route[i]), SD_link_get_current_latency(route[i]),
+          SD_link_get_name(route[i]),
+          SD_link_get_current_latency(route[i]),
           SD_link_get_current_bandwidth(route[i]));
   }
   INFO2("Route latency = %f, route bandwidth = %f",
@@ -162,8 +165,9 @@ int main(int argc, char **argv)
   /* estimated time */
   task = taskD;
   INFO2("Estimated time for '%s': %f", SD_task_get_name(task),
-        SD_task_get_execution_time(task, workstation_number, workstation_list,
-                                   computation_amount, communication_amount));
+        SD_task_get_execution_time(task, workstation_number,
+                                   workstation_list, computation_amount,
+                                   communication_amount));
 
   /* let's launch the simulation! */
 
@@ -177,11 +181,10 @@ int main(int argc, char **argv)
                    computation_amount, communication_amount, rate);
 
   changed_tasks = SD_simulate(-1.0);
-  xbt_dynar_foreach(changed_tasks, ctr, task){
-		  INFO3("Task '%s' start time: %f, finish time: %f",
+  xbt_dynar_foreach(changed_tasks, ctr, task) {
+    INFO3("Task '%s' start time: %f, finish time: %f",
           SD_task_get_name(task),
-          SD_task_get_start_time(task),
-          SD_task_get_finish_time(task));
+          SD_task_get_start_time(task), SD_task_get_finish_time(task));
   }
 
   xbt_dynar_get_cpy(changed_tasks, 0, &checkD);

@@ -17,7 +17,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file, const char *application_file);
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file);
 
 typedef enum {
   PORT_22 = 0,
@@ -53,7 +54,8 @@ int master(int argc, char *argv[])
     for (i = 0; i < number_of_tasks; i++) {
       sprintf(sprintf_buffer, "Task_%d", i);
       todo[i] =
-        MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
+          MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size,
+                          NULL);
     }
   }
 
@@ -85,9 +87,9 @@ int master(int argc, char *argv[])
   }
 
   INFO0
-    ("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (i = 0; i < slaves_count; i++){
-    m_task_t finalize=MSG_task_create("finalize", 0, 0, FINALIZE);
+      ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+  for (i = 0; i < slaves_count; i++) {
+    m_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
     MSG_task_put(finalize, slaves[i], PORT_22);
   }
 
@@ -151,7 +153,7 @@ int forwarder(int argc, char *argv[])
       INFO1("Received \"%s\"", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
         INFO0
-          ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+            ("All tasks have been dispatched. Let's tell everybody the computation is over.");
         for (i = 0; i < slaves_count; i++)
           MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
                        slaves[i], PORT_22);
@@ -174,7 +176,8 @@ int forwarder(int argc, char *argv[])
 }                               /* end_of_forwarder */
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file, const char *application_file)
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file)
 {
   MSG_error_t res = MSG_OK;
 

@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 
-void __time(char* t);
+void __time(char *t);
 
 
-#endif /* #ifndef __TIME_H__ */
+#endif                          /* #ifndef __TIME_H__ */

@@ -6,16 +6,18 @@
 
 #include <stdio.h>
 #include "msg/msg.h"
-#include "xbt/sysdep.h" /* calloc, printf */
+#include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
+                             "Messages specific for this msg example");
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file, const char *application_file);
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file);
 
 /** Emitter function  */
 int master(int argc, char *argv[])
@@ -26,30 +28,30 @@ int master(int argc, char *argv[])
   long slaves_count = atol(argv[4]);
 
   //setting the variable "is_master" (previously declared) to value 1
-  TRACE_host_variable_set ("is_master", 1);
+  TRACE_host_variable_set("is_master", 1);
 
-  TRACE_mark ("msmark", "start_send_tasks");
+  TRACE_mark("msmark", "start_send_tasks");
   int i;
   for (i = 0; i < number_of_tasks; i++) {
-    m_task_t task=NULL;
+    m_task_t task = NULL;
     task = MSG_task_create("task", task_comp_size, task_comm_size, NULL);
 
     //setting the variable "task_creation" to value i
-    TRACE_host_variable_set ("task_creation", i);
+    TRACE_host_variable_set("task_creation", i);
 
     //setting the category of task to "compute"
     //the category of a task must be defined before it is sent or executed
-    TRACE_msg_set_task_category (task, "compute");
+    TRACE_msg_set_task_category(task, "compute");
     MSG_task_send(task, "master_mailbox");
   }
-  TRACE_mark ("msmark", "finish_send_tasks");
-  
-   for (i = 0; i < slaves_count; i++) { 
-     m_task_t finalize = MSG_task_create ("finalize", 0, 0, 0);
-     TRACE_msg_set_task_category(finalize, "finalize");
-     MSG_task_send(finalize, "master_mailbox");
-   } 
-  
+  TRACE_mark("msmark", "finish_send_tasks");
+
+  for (i = 0; i < slaves_count; i++) {
+    m_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
+    TRACE_msg_set_task_category(finalize, "finalize");
+    MSG_task_send(finalize, "master_mailbox");
+  }
+
   return 0;
 }
 
@@ -59,19 +61,18 @@ int slave(int argc, char *argv[])
   m_task_t task = NULL;
   int res;
 
-  TRACE_host_variable_set ("is_slave", 1);
-  while(1) {
+  TRACE_host_variable_set("is_slave", 1);
+  while (1) {
     res = MSG_task_receive(&(task), "master_mailbox");
 
-    if (!strcmp(MSG_task_get_name(task),"finalize")) {
+    if (!strcmp(MSG_task_get_name(task), "finalize")) {
       MSG_task_destroy(task);
-    	break;
+      break;
     }
-
     //adding the value returned by MSG_task_get_compute_duration(task)
     //to the variable "task_computation"
-    TRACE_host_variable_add ("task_computation",
-        MSG_task_get_compute_duration(task));
+    TRACE_host_variable_add("task_computation",
+                            MSG_task_get_compute_duration(task));
     MSG_task_execute(task);
     MSG_task_destroy(task);
     task = NULL;
@@ -81,22 +82,22 @@ int slave(int argc, char *argv[])
 
 /** Test function */
 MSG_error_t test_all(const char *platform_file,
-			    const char *application_file)
+                     const char *application_file)
 {
   MSG_error_t res = MSG_OK;
 
-  {				/*  Simulation setting */
+  {                             /*  Simulation setting */
     MSG_set_channel_number(0);
     MSG_create_environment(platform_file);
   }
-  {                            /*   Application deployment */
+  {                             /*   Application deployment */
     MSG_function_register("master", master);
     MSG_function_register("slave", slave);
     MSG_launch_application(application_file);
   }
   res = MSG_main();
-  
-  INFO1("Simulation time %g",MSG_get_clock());
+
+  INFO1("Simulation time %g", MSG_get_clock());
   return res;
 }
 
@@ -106,37 +107,36 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
-  MSG_global_init(&argc,argv);
+  MSG_global_init(&argc, argv);
   if (argc < 3) {
-     printf ("Usage: %s platform_file deployment_file\n",argv[0]);
-     printf ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
-     exit(1);
+    printf("Usage: %s platform_file deployment_file\n", argv[0]);
+    printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
+    exit(1);
   }
-
   //starting the simulation tracing
-  TRACE_start ();
+  TRACE_start();
 
   //declaring user variables
-  TRACE_host_variable_declare ("is_slave");
-  TRACE_host_variable_declare ("is_master");
-  TRACE_host_variable_declare ("task_creation");
-  TRACE_host_variable_declare ("task_computation");
+  TRACE_host_variable_declare("is_slave");
+  TRACE_host_variable_declare("is_master");
+  TRACE_host_variable_declare("task_creation");
+  TRACE_host_variable_declare("task_computation");
 
   //declaring user markers
-  TRACE_declare_mark ("msmark");
+  TRACE_declare_mark("msmark");
 
   //declaring user categories
-  TRACE_category ("compute");
-  TRACE_category ("finalize");
+  TRACE_category("compute");
+  TRACE_category("finalize");
 
-  res = test_all(argv[1],argv[2]);
+  res = test_all(argv[1], argv[2]);
   MSG_clean();
 
   //ending the simulation tracing
   TRACE_end();
 
-  if(res==MSG_OK)
+  if (res == MSG_OK)
     return 0;
   else
     return 1;
-} /* end_of_main */
+}                               /* end_of_main */

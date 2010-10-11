@@ -54,9 +54,8 @@ int main(int argc, char **argv)
   workstations = SD_workstation_get_list();
 
 
-  for(i=0 ; i < SD_workstation_get_number() ; i++)
-  {
-	  INFO1("name : %s",SD_workstation_get_name(workstations[i]) );
+  for (i = 0; i < SD_workstation_get_number(); i++) {
+    INFO1("name : %s", SD_workstation_get_name(workstations[i]));
   }
 
   w1 = workstations[0];
@@ -73,15 +72,18 @@ int main(int argc, char **argv)
   taskC = SD_task_create("Task C", NULL, 30.0);
   taskD = SD_task_create("Task D", NULL, 60.0);
 
-  INFO3("Computation time for %f flops on %s: %f", computation_amount1, name1,
-        SD_workstation_get_computation_time(w1, computation_amount1));
-  INFO3("Computation time for %f flops on %s: %f", computation_amount2, name2,
-        SD_workstation_get_computation_time(w2, computation_amount2));
+  INFO3("Computation time for %f flops on %s: %f", computation_amount1,
+        name1, SD_workstation_get_computation_time(w1,
+                                                   computation_amount1));
+  INFO3("Computation time for %f flops on %s: %f", computation_amount2,
+        name2, SD_workstation_get_computation_time(w2,
+                                                   computation_amount2));
 
   INFO2("Route between %s and %s:", name1, name2);
   for (i = 0; i < route_size; i++) {
     INFO3("\tLink %s: latency = %f, bandwidth = %f",
-          SD_link_get_name(route[i]), SD_link_get_current_latency(route[i]),
+          SD_link_get_name(route[i]),
+          SD_link_get_current_latency(route[i]),
           SD_link_get_current_bandwidth(route[i]));
   }
   INFO2("Route latency = %f, route bandwidth = %f",
@@ -104,7 +106,8 @@ int main(int argc, char **argv)
 
   TRY {
     SD_task_dependency_add(NULL, NULL, taskA, taskA);   /* shouldn't work and must raise an exception */
-    xbt_assert0(0, "Hey, I can add a dependency between Task A and Task A!");
+    xbt_assert0(0,
+                "Hey, I can add a dependency between Task A and Task A!");
   }
   CATCH(ex) {
   }
@@ -147,7 +150,7 @@ int main(int argc, char **argv)
     const int workstation_number = 2;
     const SD_workstation_t workstation_list[] = { w1, w2 };
     double computation_amount[] =
-      { computation_amount1, computation_amount2 };
+        { computation_amount1, computation_amount2 };
     double communication_amount[] = {
       0, communication_amount12,
       communication_amount21, 0
@@ -178,7 +181,7 @@ int main(int argc, char **argv)
     xbt_dynar_get_cpy(changed_tasks, 0, &checkD);
     xbt_dynar_get_cpy(changed_tasks, 1, &checkC);
     xbt_dynar_get_cpy(changed_tasks, 2, &checkB);
- 
+
     xbt_assert0(checkD == taskD &&
                 checkC == taskC &&
                 checkB == taskB, "Unexpected simulation results");

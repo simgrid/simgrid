@@ -28,11 +28,11 @@ int alice(int argc, char *argv[])
 
   INFO0("== Dump all the properties of current host");
   xbt_dict_foreach(host_props, cursor, key, data)
-    INFO2("  Host property: '%s' has value: '%s'", key, data);
+      INFO2("  Host property: '%s' has value: '%s'", key, data);
 
   INFO0("== Dump all the properties of alice");
   xbt_dict_foreach(process_props, cursor, key, data)
-    if (!strncmp(key, "SG_TEST_", 8))
+      if (!strncmp(key, "SG_TEST_", 8))
     INFO2("  Process property: '%s' has value: '%s'", key, data);
 
   INFO0("== Try to get a process property that does not exist");
@@ -68,20 +68,21 @@ int bob(int argc, char *argv[])
 
   INFO0("== Dump all the properties of host1");
   xbt_dict_foreach(host_props, cursor, key, data)
-    INFO2("  Host property: '%s' has value: '%s'", key, data);
+      INFO2("  Host property: '%s' has value: '%s'", key, data);
 
   INFO0("== Try to get a property that does not exist");
   value = gras_os_host_property_value("non existing key");
   xbt_assert1(value == NULL,
-              "The key 'non existing key' exists (with value '%s')!!", value);
+              "The key 'non existing key' exists (with value '%s')!!",
+              value);
 
   INFO0
-    ("== Set a host property that alice will try to retrieve in SG (from bob->hello)");
+      ("== Set a host property that alice will try to retrieve in SG (from bob->hello)");
   xbt_dict_set(host_props, "from bob", xbt_strdup("hello"), xbt_free_f);
 
   INFO0("== Dump all the properties of host1 again to check the addition");
   xbt_dict_foreach(host_props, cursor, key, data)
-    INFO2("  Host property: '%s' has value: '%s'", key, data);
+      INFO2("  Host property: '%s' has value: '%s'", key, data);
 
   gras_os_sleep(1);             /* KILLME once bug on empty main is solved */
   gras_exit();

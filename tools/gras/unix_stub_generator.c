@@ -65,14 +65,14 @@ char *warning = NULL;
 /**********************************************/
 
 const char *SIM_PREEMBULE =
-  "/* specific to Borland Compiler */\n"
-  "#ifdef __BORLANDC__\n"
-  "#pragma hdrstop\n"
-  "#endif\n\n"
-  "#include <stdlib.h>\n"
-  "#include <stdio.h>\n"
-  "#include \"msg/msg.h\"\n"
-  "#include <gras.h>\n" "\n" "char *gras_log=NULL;\n";
+    "/* specific to Borland Compiler */\n"
+    "#ifdef __BORLANDC__\n"
+    "#pragma hdrstop\n"
+    "#endif\n\n"
+    "#include <stdlib.h>\n"
+    "#include <stdio.h>\n"
+    "#include \"msg/msg.h\"\n"
+    "#include <gras.h>\n" "\n" "char *gras_log=NULL;\n";
 
 
 #define SIM_LAUNCH_FUNC  \
@@ -95,15 +95,15 @@ const char *SIM_PREEMBULE =
 "}\n"
 
 const char *SIM_MAIN_POSTEMBULE = "\n"
-  "\n"
-  "  gras_launch_application(argv[2]);\n"
-  "\n"
-  "  /*  Run the simulation */\n"
-  "  gras_main();\n"
-  "\n"
-  "  /* cleanup the place */\n"
-  "  gras_clean();\n"
-  "  if (gras_log)\n" "    free(gras_log);\n" "  return 0;\n" "}\n";
+    "\n"
+    "  gras_launch_application(argv[2]);\n"
+    "\n"
+    "  /*  Run the simulation */\n"
+    "  gras_main();\n"
+    "\n"
+    "  /* cleanup the place */\n"
+    "  gras_clean();\n"
+    "  if (gras_log)\n" "    free(gras_log);\n" "  return 0;\n" "}\n";
 
 
 
@@ -158,7 +158,8 @@ void generate_sim(char *project)
           "  gras_create_environment(argv[1]);\n"
           "\n" "  /*  Application deployment */\n");
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(FICOUT, "  gras_function_register(\"%s\", launch_%s);\n", key, key);
+    fprintf(FICOUT, "  gras_function_register(\"%s\", launch_%s);\n", key,
+            key);
   }
   fprintf(FICOUT, "%s", SIM_MAIN_POSTEMBULE);
   fclose(FICOUT);
@@ -178,7 +179,8 @@ void generate_rl(char *project)
 
   xbt_dict_foreach(process_function_set, cursor, key, data) {
     filename =
-      xbt_new(char, strlen(project) + strlen(RL_SOURCENAME) + strlen(key));
+        xbt_new(char,
+                strlen(project) + strlen(RL_SOURCENAME) + strlen(key));
 
     sprintf(filename, RL_SOURCENAME, project, key);
 
@@ -290,7 +292,8 @@ void generate_makefile_local(char *project, char *deployment)
   char *filename = NULL;
   FILE *FICOUT = NULL;
 
-  filename = xbt_new(char, strlen(project) + strlen(MAKEFILE_FILENAME_LOCAL));
+  filename =
+      xbt_new(char, strlen(project) + strlen(MAKEFILE_FILENAME_LOCAL));
   sprintf(filename, MAKEFILE_FILENAME_LOCAL, project);
 
   FICOUT = fopen(filename, "w");
@@ -325,7 +328,8 @@ void generate_makefile_local(char *project, char *deployment)
   }
   fprintf(FICOUT, "\n");
 
-  fprintf(FICOUT, "OBJ_FILES = $(patsubst %%.c,%%.o,$(PRECIOUS_C_FILES))\n");
+  fprintf(FICOUT,
+          "OBJ_FILES = $(patsubst %%.c,%%.o,$(PRECIOUS_C_FILES))\n");
 
   fprintf(FICOUT, "BIN_FILES = ");
 
@@ -352,13 +356,13 @@ void generate_makefile_local(char *project, char *deployment)
           deployment);
 
   fprintf(FICOUT, "\n## Generate the binaries\n");
-  fprintf(FICOUT, SIM_BINARYNAME ": " SIM_OBJNAME " $(OBJ_FILES)\n", project,
-          project);
+  fprintf(FICOUT, SIM_BINARYNAME ": " SIM_OBJNAME " $(OBJ_FILES)\n",
+          project, project);
   fprintf(FICOUT,
           "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_SIM) $(LIBS) $(LDADD) -o $@ \n");
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(FICOUT, RL_BINARYNAME " : " RL_OBJNAME " $(OBJ_FILES)\n", project,
-            key, project, key);
+    fprintf(FICOUT, RL_BINARYNAME " : " RL_OBJNAME " $(OBJ_FILES)\n",
+            project, key, project, key);
     fprintf(FICOUT,
             "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_RL) $(LIBS) $(LDADD) -o $@ \n");
   }

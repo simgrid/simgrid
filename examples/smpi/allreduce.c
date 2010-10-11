@@ -26,32 +26,32 @@
  **/
 static int ibm_test(int rank, int size)
 {
-	  int success = 1;
+  int success = 1;
 #define MAXLEN  10000
 
-	  int root = 0, i, j, k;
-	  int out[MAXLEN];
-	  int in[MAXLEN];
+  int root = 0, i, j, k;
+  int out[MAXLEN];
+  int in[MAXLEN];
 
-	  for (j = 1; j <= MAXLEN; j *= 10) {
-		    for (i = 0; i < j; i++)
-				out[i] = i;
+  for (j = 1; j <= MAXLEN; j *= 10) {
+    for (i = 0; i < j; i++)
+      out[i] = i;
 
-		    MPI_Allreduce(out, in, j, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-		    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Allreduce(out, in, j, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
 
-		    if (rank == root) {
-				for (k = 0; k < j; k++) {
-					  if (in[k] != k * size) {
-						    printf("bad answer (%d) at index %d of %d (should be %d)", in[k], k,
-									  j, k * size);
-						    success = 0;
-						    break;
-					  }
-				}
-		    }
-	  }
-	  return (success);
+    if (rank == root) {
+      for (k = 0; k < j; k++) {
+        if (in[k] != k * size) {
+          printf("bad answer (%d) at index %d of %d (should be %d)", in[k],
+                 k, j, k * size);
+          success = 0;
+          break;
+        }
+      }
+    }
+  }
+  return (success);
 }
 
 

@@ -62,7 +62,8 @@ int child(int argc, char *argv[])
     gras_socket_close(dady);
     RETHROW0("Dad don't want to speak with me! : %s");
   }
-  INFO2("Pinged dad with %d, he answered with %d; leaving now.", ping, pong);
+  INFO2("Pinged dad with %d, he answered with %d; leaving now.", ping,
+        pong);
 
   /* 7. Free the allocated resources, and shut GRAS down */
   gras_socket_close(dady);

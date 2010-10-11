@@ -126,8 +126,8 @@ static void test_dynar_scal(gras_socket_t sock, int direction)
       int ret = xbt_dynar_get_as(j, cpt, int);
       if (cpt != ret) {
         CRITICAL3
-          ("The retrieved value for cpt=%d is not the same than the injected one (%d!=%d)",
-           cpt, ret, cpt);
+            ("The retrieved value for cpt=%d is not the same than the injected one (%d!=%d)",
+             cpt, ret, cpt);
         xbt_abort();
       }
     }
@@ -245,7 +245,8 @@ static void test_hetestruct(gras_socket_t sock, int direction)
   if (direction == READ || direction == COPY) {
     xbt_assert(i->c1 == j->c1);
     xbt_assert(i->c2 == j->c2);
-    xbt_assert2(i->l1 == j->l1, "i->l1(=%ld)  !=  j->l1(=%ld)", i->l1, j->l1);
+    xbt_assert2(i->l1 == j->l1, "i->l1(=%ld)  !=  j->l1(=%ld)", i->l1,
+                j->l1);
     xbt_assert(i->l2 == j->l2);
     free(j);
   }
@@ -456,17 +457,21 @@ static void test_dynar_ref(gras_socket_t sock, int direction)
 
 /**** PBIO *****/
 GRAS_DEFINE_TYPE(s_pbio, struct s_pbio {        /* structure presented in the IEEE article */
-                 int Cnstatv; double Cstatev[12];
-                 int Cnprops;
-                 double Cprops[110]; int Cndi[4]; int Cnshr; int Cnpt;
-                 double Cdtime;
-                 double Ctime[2];
-                 int Cntens; double Cdfgrd0[373][3]; double Cdfgrd1[3][3];
-                 double Cstress[106]; double Cddsdde[106][106];};)
+                 int Cnstatv;
+                 double Cstatev[12]; int Cnprops; double Cprops[110];
+                 int Cndi[4];
+                 int Cnshr;
+                 int Cnpt; double Cdtime; double Ctime[2]; int Cntens;
+                 double Cdfgrd0[373][3];
+                 double Cdfgrd1[3][3]; double Cstress[106];
+                 double Cddsdde[106][106];
+                 };
 
-     typedef struct s_pbio pbio_t;
+    )
 
-     static void test_pbio(gras_socket_t sock, int direction)
+typedef struct s_pbio pbio_t;
+
+static void test_pbio(gras_socket_t sock, int direction)
 {
   int cpt;
   int cpt2;
@@ -474,7 +479,7 @@ GRAS_DEFINE_TYPE(s_pbio, struct s_pbio {        /* structure presented in the IE
   pbio_t i, j;
 
   INFO0
-    ("---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----");
+      ("---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----");
   pbio_type = gras_datadesc_by_symbol(s_pbio);
 
   /* Fill in that damn struct */
@@ -540,20 +545,19 @@ GRAS_DEFINE_TYPE(s_pbio, struct s_pbio {        /* structure presented in the IE
 }
 
 GRAS_DEFINE_TYPE(s_clause, struct s_clause {
-                 int num_lits; int *literals GRAS_ANNOTE(size, num_lits);       /* Tells GRAS where to find the size */
-                 };
+                 int num_lits;
+                 int *literals GRAS_ANNOTE(size, num_lits);     /* Tells GRAS where to find the size */
+                 };)
 
-  )
+typedef struct s_clause Clause;
 
-     typedef struct s_clause Clause;
-
-     static void test_clause(gras_socket_t sock, int direction)
+static void test_clause(gras_socket_t sock, int direction)
 {
   Clause *i, *j;
   int cpt;
 
   INFO0
-    ("---- Test on struct containing dynamic array and its size (cbps test) ----");
+      ("---- Test on struct containing dynamic array and its size (cbps test) ----");
 
   /* create and fill the struct */
   i = xbt_new(Clause, 1);
@@ -583,7 +587,7 @@ static void test_clause_empty(gras_socket_t sock, int direction)
   Clause *i, *j;
 
   INFO0
-    ("---- Test on struct containing dynamic array and its size when size=0 (cbps test) ----");
+      ("---- Test on struct containing dynamic array and its size when size=0 (cbps test) ----");
 
   /* create and fill the struct */
   i = xbt_new(Clause, 1);
@@ -634,7 +638,8 @@ static void register_types(void)
   gras_datadesc_struct_append(my_type, "d", gras_datadesc_by_name("int"));
   gras_datadesc_struct_close(my_type);
   my_type =
-    gras_datadesc_ref("homostruct*", gras_datadesc_by_name("homostruct"));
+      gras_datadesc_ref("homostruct*",
+                        gras_datadesc_by_name("homostruct"));
   gras_msgtype_declare("homostruct*", my_type);
 
   my_type = gras_datadesc_struct("hetestruct");
@@ -648,12 +653,13 @@ static void register_types(void)
                               gras_datadesc_by_name("unsigned long int"));
   gras_datadesc_struct_close(my_type);
   my_type =
-    gras_datadesc_ref("hetestruct*", gras_datadesc_by_name("hetestruct"));
+      gras_datadesc_ref("hetestruct*",
+                        gras_datadesc_by_name("hetestruct"));
   gras_msgtype_declare("hetestruct*", my_type);
 
   my_type =
-    gras_datadesc_array_fixed("hetestruct[10]",
-                              gras_datadesc_by_name("hetestruct"), 10);
+      gras_datadesc_array_fixed("hetestruct[10]",
+                                gras_datadesc_by_name("hetestruct"), 10);
   my_type = gras_datadesc_ref("hetestruct[10]*", my_type);
   gras_msgtype_declare("hetestruct[10]*", my_type);
 
@@ -664,7 +670,8 @@ static void register_types(void)
                               gras_datadesc_by_name("homostruct"));
   gras_datadesc_struct_close(my_type);
   my_type =
-    gras_datadesc_ref("nestedstruct*", gras_datadesc_by_name("nestedstruct"));
+      gras_datadesc_ref("nestedstruct*",
+                        gras_datadesc_by_name("nestedstruct"));
   gras_msgtype_declare("nestedstruct*", my_type);
 
   my_type = gras_datadesc_struct("chained_list_t");
@@ -677,7 +684,7 @@ static void register_types(void)
   gras_msgtype_declare("chained_list_t*", ref_my_type);
 
   my_type =
-    gras_datadesc_dynar(gras_datadesc_by_name("string"), &free_string);
+      gras_datadesc_dynar(gras_datadesc_by_name("string"), &free_string);
   gras_msgtype_declare("xbt_dynar_of_string", my_type);
 
   my_type = gras_datadesc_by_symbol(s_pbio);
@@ -717,13 +724,14 @@ int main(int argc, char *argv[])
       printf(" --write file: writes the description to the given file\n");
       printf(" --copy: copy the description in memory\n");
       printf
-        (" --regen: write the description to the file of the current architecture\n");
+          (" --regen: write the description to the file of the current architecture\n");
       printf(" --help: displays this message\n");
       exit(0);
     } else if (!strcmp(argv[cpt], "--regen")) {
       direction = WRITE;
       filename =
-        bprintf("datadesc.%s", gras_datadesc_arch_name(gras_arch_selfid()));
+          bprintf("datadesc.%s",
+                  gras_datadesc_arch_name(gras_arch_selfid()));
     } else if (!strcmp(argv[cpt], "--read")) {
       direction = READ;
     } else if (!strcmp(argv[cpt], "--write")) {
@@ -736,11 +744,13 @@ int main(int argc, char *argv[])
   }
 
   if (direction == WRITE) {
-    INFO1("Write to file %s", strrchr(filename,'/')?strrchr(filename,'/')+1:filename);
+    INFO1("Write to file %s",
+          strrchr(filename, '/') ? strrchr(filename, '/') + 1 : filename);
     sock = gras_socket_client_from_file(filename);
   }
   if (direction == READ) {
-    INFO1("Read from file %s", strrchr(filename,'/')?strrchr(filename,'/')+1:filename);
+    INFO1("Read from file %s",
+          strrchr(filename, '/') ? strrchr(filename, '/') + 1 : filename);
     sock = gras_socket_server_from_file(filename);
   }
   if (direction == COPY) {

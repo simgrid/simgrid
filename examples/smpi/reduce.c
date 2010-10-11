@@ -43,8 +43,8 @@ static int ibm_test(int rank, int size)
     if (rank == root) {
       for (k = 0; k < j; k++) {
         if (in[k] != k * size) {
-          printf("bad answer (%d) at index %d of %d (should be %d)", in[k], k,
-                 j, k * size);
+          printf("bad answer (%d) at index %d of %d (should be %d)", in[k],
+                 k, j, k * size);
           success = 0;
           break;
         }
@@ -81,7 +81,8 @@ int main(int argc, char **argv)
 
   //printf("[%d] has value %d\n", rank, value);
   MPI_Reduce(&value, &sum, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
-  MPI_Reduce(&value, &sum_mirror, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
+  MPI_Reduce(&value, &sum_mirror, 1, MPI_INT, MPI_SUM, root,
+             MPI_COMM_WORLD);
 
   MPI_Reduce(&value, &min, 1, MPI_INT, MPI_MIN, root, MPI_COMM_WORLD);
   MPI_Reduce(&value, &max, 1, MPI_INT, MPI_MAX, root, MPI_COMM_WORLD);

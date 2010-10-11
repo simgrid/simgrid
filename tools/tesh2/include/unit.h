@@ -10,17 +10,18 @@
  * 		This file contains all the declarations of the functions related with
  * 		the tesh unit concept.
  *
- */
- 
+ */  
+    
 #ifndef __UNIT_H	
 #define __UNIT_H
-
+    
 #include <com.h>
-
+    
 #ifdef __cplusplus
 extern "C" {
-#endif
-
+  
+#endif  /*  */
+  
 /*! \brief unit_new - create a new unit.
  *
  * \param runner	The runner which runs the unit.
@@ -35,10 +36,11 @@ extern "C" {
  *					[EINVAL] if one of the parameters is invalid.
  *					[ENOMEM] if the system has not enough space to allocate
  *					         the unit.
- */
-unit_t
-unit_new(runner_t runner, unit_t root, unit_t owner, fstream_t fstream);
-
+ */ 
+  unit_t 
+      unit_new(runner_t runner, unit_t root, unit_t owner,
+               fstream_t fstream);
+   
 /*! \brief unit_free - destroy a tesh unit.
  *
  * \param ptr		A pointer to the unit to destroy.
@@ -49,10 +51,9 @@ unit_new(runner_t runner, unit_t root, unit_t owner, fstream_t fstream);
  *
  * errors :
  *					[EINVAL] if the pointer to the unit to destroy is invalid.
- */
-int
-unit_free(unit_t* ptr);
-
+ */ 
+  int  unit_free(unit_t * ptr);
+   
 /*! \brief unit_run - run a tesh unit.
  *
  * \param unit		The unit to run.
@@ -68,11 +69,9 @@ unit_free(unit_t* ptr);
  *
  * remarks :		If the runner is interrupted during a call of this function,
  *					the unit is not launched but its flag interrupted is signaled.
- */
-int
-unit_run(unit_t unit, xbt_os_mutex_t mutex);
-
-
+ */ 
+  int  unit_run(unit_t unit, xbt_os_mutex_t mutex);
+    
 /*! \brief unit_interrupt - interrupt a tesh unit.
  *
  * \param unit		The unit to interrupt.
@@ -87,10 +86,9 @@ unit_run(unit_t unit, xbt_os_mutex_t mutex);
  *
  * remarks :		If the runner is interrupted during a call of this function,
  *					the unit is not launched but its flag interrupted is signaled.
- */
-int
-unit_interrupt(unit_t unit);
-
+ */ 
+  int  unit_interrupt(unit_t unit);
+   
 /*! \brief unit_summuarize - summarize the run of tesh unit.
  *
  * \param unit		The unit to summarize the run.
@@ -101,19 +99,14 @@ unit_interrupt(unit_t unit);
  *
  * errors :
  *					[EINVAL] if the unit specified as parameter is invalid.
- */
-int
-unit_summuarize(unit_t unit);
-
-int
-unit_reset(unit_t unit);
-
-void
-unit_set_error(unit_t unit, int errcode, int kind, const char* line);
-
+ */ 
+  int  unit_summuarize(unit_t unit);
+    int  unit_reset(unit_t unit);
+    void 
+      unit_set_error(unit_t unit, int errcode, int kind, const char *line);
+  
 #ifdef __cplusplus
-}
-#endif
-
-
-#endif /* !__UNIT_H */
+} 
+#endif  /*  */
+
+#endif  /* !__UNIT_H */

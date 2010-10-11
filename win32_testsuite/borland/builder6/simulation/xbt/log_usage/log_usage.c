@@ -10,20 +10,20 @@
 
 #include <gras.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,"Logging specific to this test");
-XBT_LOG_NEW_CATEGORY(top,"Useless test channel");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,
+                                "Logging specific to this test");
+XBT_LOG_NEW_CATEGORY(top, "Useless test channel");
 
 #pragma argsused
 
 int main(int argc, char **argv)
 {
-	xbt_init(&argc,argv);
-	
-	DEBUG1("val=%d", 1);
-	WARN1("val=%d", 2);
-	CDEBUG2(top, "val=%d%s", 3, "!");
-	CRITICAL6("false alarm%s%s%s%s%s%s", "","","","","","!");
-	
-	return 0;
-}
+  xbt_init(&argc, argv);
 
+  DEBUG1("val=%d", 1);
+  WARN1("val=%d", 2);
+  CDEBUG2(top, "val=%d%s", 3, "!");
+  CRITICAL6("false alarm%s%s%s%s%s%s", "", "", "", "", "", "!");
+
+  return 0;
+}

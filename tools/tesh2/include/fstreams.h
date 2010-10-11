@@ -10,16 +10,17 @@
  * 		This file contains all the declarations of the functions related with
  * 		the tesh fstreams type.
  *
- */
+ */  
 #ifndef __FSTREAMS_H
 #define __FSTREAMS_H
-
+    
 #include <com.h>
-
+    
 #ifdef __cplusplus
 extern "C" {
-#endif
-
+  
+#endif  /*  */
+  
 /*! \brief fstreams_new - create a new fstreams.
  *
  * \param directory	The directory of the tesh file.
@@ -36,39 +37,19 @@ extern "C" {
  *					[EINVAL] if one of the parameters is invalid.
  *					[ENOMEM] if the system has not enough space to allocate
  *					         the file stream.
- */
-fstreams_t
-fstreams_new(void_f_pvoid_t fn_finalize);
-
-int
-fstreams_exclude(fstreams_t fstreams, excludes_t excludes);
-
-int 
-fstreams_contains(fstreams_t fstreams, fstream_t fstream);
-
-int
-fstreams_add(fstreams_t fstreams, fstream_t fstream);
-
-int
-fstreams_free(void** fstreamsptr);
-
-int
-fstreams_get_size(fstreams_t fstreams);
-
-int
-fstreams_is_empty(fstreams_t fstreams);
-
-int 
-fstreams_contains(fstreams_t fstreams, fstream_t fstream);
-
-int
-fstreams_load(fstreams_t fstreams);
-
-
-
+ */ 
+  fstreams_t  fstreams_new(void_f_pvoid_t fn_finalize);
+    int  fstreams_exclude(fstreams_t fstreams, excludes_t excludes);
+    int  fstreams_contains(fstreams_t fstreams, fstream_t fstream);
+    int  fstreams_add(fstreams_t fstreams, fstream_t fstream);
+    int  fstreams_free(void **fstreamsptr);
+  int  fstreams_get_size(fstreams_t fstreams);
+    int  fstreams_is_empty(fstreams_t fstreams);
+    int  fstreams_contains(fstreams_t fstreams, fstream_t fstream);
+    int  fstreams_load(fstreams_t fstreams);
+     
 #ifdef __cplusplus
-}
-#endif
-
-
-#endif /* !__FSTREAMS_H */
+} 
+#endif  /*  */
+ 
+#endif  /* !__FSTREAMS_H */

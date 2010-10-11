@@ -4,7 +4,7 @@
  *      See COPYRIGHT in top-level directory.
  */
 #include "mpi.h"
- #include <string.h>
+#include <string.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -53,7 +53,7 @@
 static void print_buffer_int(void *buf, int len, char *msg, int rank)
 {
   int tmp, *v;
-  printf("**<%d> %s (#%d): ", rank, msg,len);
+  printf("**<%d> %s (#%d): ", rank, msg, len);
   for (tmp = 0; tmp < len; tmp++) {
     v = buf;
     printf("[%d]", v[tmp]);
@@ -63,109 +63,109 @@ static void print_buffer_int(void *buf, int len, char *msg, int rank)
 }
 
 
-int main( int argc, char **argv )
+int main(int argc, char **argv)
 {
 
-        MPI_Comm comm;
-        int      *sbuf, *rbuf, *erbuf;
-        int      rank, size;
-        int      *sendcounts, *recvcounts, *rdispls, *sdispls;
-        int      i, j, *p, err;
+  MPI_Comm comm;
+  int *sbuf, *rbuf, *erbuf;
+  int rank, size;
+  int *sendcounts, *recvcounts, *rdispls, *sdispls;
+  int i, j, *p, err;
 
-        MPI_Init( &argc, &argv );
-        err = 0;
+  MPI_Init(&argc, &argv);
+  err = 0;
 
-        comm = MPI_COMM_WORLD;
+  comm = MPI_COMM_WORLD;
 
-        /* Create the buffer */
-        MPI_Comm_size( comm, &size );
-        MPI_Comm_rank( comm, &rank );
-        sbuf = (int *)malloc( size * size * sizeof(int) );
-        rbuf = (int *)malloc( size * size * sizeof(int) );
-        erbuf = (int *)malloc( size * size * sizeof(int) ); // expected
-        if (!sbuf || !rbuf) {
-                fprintf( stderr, "Could not allocated buffers!\n" );
-                MPI_Abort( comm, 1 );
-        }
+  /* Create the buffer */
+  MPI_Comm_size(comm, &size);
+  MPI_Comm_rank(comm, &rank);
+  sbuf = (int *) malloc(size * size * sizeof(int));
+  rbuf = (int *) malloc(size * size * sizeof(int));
+  erbuf = (int *) malloc(size * size * sizeof(int));    // expected
+  if (!sbuf || !rbuf) {
+    fprintf(stderr, "Could not allocated buffers!\n");
+    MPI_Abort(comm, 1);
+  }
 
-        /* Load up the buffers */
-        for (i=0; i<size*size; i++) {
-                sbuf[i] = i + 100*rank;
-                rbuf[i] = -i;
-                erbuf[i]= -i;
-        }
+  /* Load up the buffers */
+  for (i = 0; i < size * size; i++) {
+    sbuf[i] = i + 100 * rank;
+    rbuf[i] = -i;
+    erbuf[i] = -i;
+  }
 
-        /* Create and load the arguments to alltoallv */
-        sendcounts = (int *)malloc( size * sizeof(int) );
-        recvcounts = (int *)malloc( size * sizeof(int) );
-        rdispls    = (int *)malloc( size * sizeof(int) );
-        sdispls    = (int *)malloc( size * sizeof(int) );
-        if (!sendcounts || !recvcounts || !rdispls || !sdispls) {
-                fprintf( stderr, "Could not allocate arg items!\n" );
-                MPI_Abort( comm, 1 );
-        }
-        for (i=0; i<size; i++) {
-                sendcounts[i] = i;
-                recvcounts[i] = rank;
-                rdispls[i]    = i * rank;
-                sdispls[i]    = (i * (i+1))/2;
-        }
+  /* Create and load the arguments to alltoallv */
+  sendcounts = (int *) malloc(size * sizeof(int));
+  recvcounts = (int *) malloc(size * sizeof(int));
+  rdispls = (int *) malloc(size * sizeof(int));
+  sdispls = (int *) malloc(size * sizeof(int));
+  if (!sendcounts || !recvcounts || !rdispls || !sdispls) {
+    fprintf(stderr, "Could not allocate arg items!\n");
+    MPI_Abort(comm, 1);
+  }
+  for (i = 0; i < size; i++) {
+    sendcounts[i] = i;
+    recvcounts[i] = rank;
+    rdispls[i] = i * rank;
+    sdispls[i] = (i * (i + 1)) / 2;
+  }
 
-        /* debug */
-        /* 
-        print_buffer_int( sbuf, size*size, strdup("sbuf:"),rank);
-        print_buffer_int( sendcounts, size, strdup("scount:"),rank);
-        print_buffer_int( recvcounts, size, strdup("rcount:"),rank);
-        print_buffer_int( sdispls, size, strdup("sdisp:"),rank);
-        print_buffer_int( rdispls, size, strdup("rdisp:"),rank);
-        */
-
-
-        /* debug : erbuf */
-        /* debug
-        for (i=0; i<size; i++) {
-                for (j=0; j<rank; j++) {
-                        *(erbuf+j+ rdispls[i]) = i * 100 + (rank*(rank+1))/2 + j; 
-                }
-        }
-        */
+  /* debug */
+  /* 
+     print_buffer_int( sbuf, size*size, strdup("sbuf:"),rank);
+     print_buffer_int( sendcounts, size, strdup("scount:"),rank);
+     print_buffer_int( recvcounts, size, strdup("rcount:"),rank);
+     print_buffer_int( sdispls, size, strdup("sdisp:"),rank);
+     print_buffer_int( rdispls, size, strdup("rdisp:"),rank);
+   */
 
 
-        //print_buffer_int( erbuf, size*size, strdup("erbuf:"),rank);
+  /* debug : erbuf */
+  /* debug
+     for (i=0; i<size; i++) {
+     for (j=0; j<rank; j++) {
+     *(erbuf+j+ rdispls[i]) = i * 100 + (rank*(rank+1))/2 + j; 
+     }
+     }
+   */
 
-        MPI_Alltoallv( sbuf, sendcounts, sdispls, MPI_INT,
-                        rbuf, recvcounts, rdispls, MPI_INT, comm );
 
-        // debug: print_buffer_int( rbuf, size*size, strdup("rbuf:"),rank);
+  //print_buffer_int( erbuf, size*size, strdup("erbuf:"),rank);
 
-        
-        /* Check rbuf */
-        for (i=0; i<size; i++) {
-                p = rbuf + rdispls[i];
-                for (j=0; j<rank; j++) {
-                        if (p[j] != i * 100 + (rank*(rank+1))/2 + j) {
-                                fprintf( stderr, "** Error: <%d> got %d expected %d for %dth\n",
-                                                rank, p[j],(i*(i+1))/2 + j, j );
-                                err++;
-                        }
-                }
-        }
+  MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT,
+                rbuf, recvcounts, rdispls, MPI_INT, comm);
 
-        /* Summary */
-        if ( err > 0) {
-                      printf("<%d> Alltoallv test: failure (%d errors).\n",rank,err);
-        }
-        if ( 0==rank ) {
-                printf("* Alltoallv TEST COMPLETE.\n");
-        }
-        free( sdispls );
-        free( rdispls );
-        free( recvcounts );
-        free( sendcounts );
-        free( rbuf );
-        free( sbuf );
-            
-        MPI_Barrier( MPI_COMM_WORLD);
-        MPI_Finalize();
-        return 0;
+  // debug: print_buffer_int( rbuf, size*size, strdup("rbuf:"),rank);
+
+
+  /* Check rbuf */
+  for (i = 0; i < size; i++) {
+    p = rbuf + rdispls[i];
+    for (j = 0; j < rank; j++) {
+      if (p[j] != i * 100 + (rank * (rank + 1)) / 2 + j) {
+        fprintf(stderr, "** Error: <%d> got %d expected %d for %dth\n",
+                rank, p[j], (i * (i + 1)) / 2 + j, j);
+        err++;
+      }
+    }
+  }
+
+  /* Summary */
+  if (err > 0) {
+    printf("<%d> Alltoallv test: failure (%d errors).\n", rank, err);
+  }
+  if (0 == rank) {
+    printf("* Alltoallv TEST COMPLETE.\n");
+  }
+  free(sdispls);
+  free(rdispls);
+  free(recvcounts);
+  free(sendcounts);
+  free(rbuf);
+  free(sbuf);
+
+  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Finalize();
+  return 0;
 }

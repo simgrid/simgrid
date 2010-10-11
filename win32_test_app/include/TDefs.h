@@ -10,25 +10,25 @@
 #else
 #define NULL ((void *)0)
 #endif
-#endif /* #ifndef NULL*/
+#endif                          /* #ifndef NULL */
 
 #if !defined(__cplusplus) && !defined(__BOOL_TYPE_DEFINED)
 typedef int bool;
 #define __BOOL_TYPE_DEFINED
-#endif /* #ifndef __cplusplus*/
+#endif                          /* #ifndef __cplusplus */
 
 #ifndef __SSIZE_TYPE_DEFINED
 typedef int ssize_t;
 #define __SSIZE_TYPE_DEFINED
-#endif /* #ifndef __SSIZE_TYPE_DEFINED */
+#endif                          /* #ifndef __SSIZE_TYPE_DEFINED */
 
 #ifndef true
 #define true 1
-#endif /* #ifndef true*/
+#endif                          /* #ifndef true */
 
 #ifndef false
 #define false 0
-#endif /* #ifndef false*/
+#endif                          /* #ifndef false */
 
 /* Asserts that a condition is true.*/
 #define ASSERT(c)						assert(c)
@@ -39,9 +39,9 @@ typedef int ssize_t;
 #ifndef __ERRNO_TYPE_DEFINED
 typedef int errno_t;
 #define __ERRNO_TYPE_DEFINED
-#endif /* #ifndef __ERRNO_TYPE_DEFINED */
+#endif                          /* #ifndef __ERRNO_TYPE_DEFINED */
 
 /* comment this line if you don't want activate the verbose mode. */
-#define __VERBOSE 
+#define __VERBOSE
 
-#endif /*  #ifndef __DEFS_H__ */
+#endif                          /*  #ifndef __DEFS_H__ */

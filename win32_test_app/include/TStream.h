@@ -12,41 +12,39 @@
  * which represents a file stream.
  */
 
-typedef struct s_Stream
-{
-	FILE* file;				/* the file stream. 					*/
-	char* line;				/* the current text line 				*/
-	size_t line_number;		/* line number in the testsuite file	*/
-    CRITICAL_SECTION cs;    /* std output managment                 */
-}s_Stream_t,* Stream_t;
+typedef struct s_Stream {
+  FILE *file;                   /* the file stream.                                     */
+  char *line;                   /* the current text line                                */
+  size_t line_number;           /* line number in the testsuite file    */
+  CRITICAL_SECTION cs;          /* std output managment                 */
+} s_Stream_t, *Stream_t;
 
 /* Line type. */
-typedef enum
-{
-	comment_line_type,						/* the text line is a comment											*/
-	invalid_token_line_type,				/* the text line contains a invalid token								*/
-	unknwn_meta_command_line_type,			/* the text line contains a unknown macro command						*/
-	invalid_timeout_value_line_type,		/* the text line contains a invalid timeout value						*/
-	timeout_value_line_type,				/* the text line contains a valid timeout value							*/
-	invalid_exit_code_line_type,			/* the text line contains a invalid exit code value						*/
-	exit_code_line_type,					/* the text line contains a valid exit code value						*/
-	invalid_export_line_type,				/* the text line contains a invalid export meta command					*/
-	export_line_type,						/* the text line contains a valid export meta command					*/
-	invalid_unset_line_type,				/* the text line contains a invalid unset meta command					*/
-	unset_line_type,						/* the text line contains a valid unset meta command					*/
-	enable_output_checking_line_type,		/* the text line contains a enable output checking meta command			*/
-	disable_output_checking_line_type,		/* the text line contains a disable output checking meta command		*/
-	enable_post_output_checking_line_type,	/* the text line contains a enable post output checking meta command	*/	
-	disable_post_output_checking_line_type,	/* the text line contains a disable post output checking meta command	*/
-	export_failed_line_type,				/* the text line contains a export meta command which failed			*/
-	unset_failed_line_type,					/* the text line contains a unset meta command which failed				*/
-    create_console_line_type,               /* the text line contains a create console meta command                 */
-    create_no_console_line_type,            /* the text line contains a create no console meta command              */
-    enable_exit_code_checking_line_type,    /* the text line contains a enable exit code checking                   */
-    disable_exit_code_checking_line_type,    /* the text line contains a disable exit code checking                  */
-    change_directory_line_type,              /* the text line contains a change directory command                   */
-    command_line_line_type                  /* the text line contains a command line                                */
-    }line_type_t;
+typedef enum {
+  comment_line_type,            /* the text line is a comment                                                                                   */
+  invalid_token_line_type,      /* the text line contains a invalid token                                                               */
+  unknwn_meta_command_line_type,        /* the text line contains a unknown macro command                                               */
+  invalid_timeout_value_line_type,      /* the text line contains a invalid timeout value                                               */
+  timeout_value_line_type,      /* the text line contains a valid timeout value                                                 */
+  invalid_exit_code_line_type,  /* the text line contains a invalid exit code value                                             */
+  exit_code_line_type,          /* the text line contains a valid exit code value                                               */
+  invalid_export_line_type,     /* the text line contains a invalid export meta command                                 */
+  export_line_type,             /* the text line contains a valid export meta command                                   */
+  invalid_unset_line_type,      /* the text line contains a invalid unset meta command                                  */
+  unset_line_type,              /* the text line contains a valid unset meta command                                    */
+  enable_output_checking_line_type,     /* the text line contains a enable output checking meta command                 */
+  disable_output_checking_line_type,    /* the text line contains a disable output checking meta command                */
+  enable_post_output_checking_line_type,        /* the text line contains a enable post output checking meta command    */
+  disable_post_output_checking_line_type,       /* the text line contains a disable post output checking meta command   */
+  export_failed_line_type,      /* the text line contains a export meta command which failed                    */
+  unset_failed_line_type,       /* the text line contains a unset meta command which failed                             */
+  create_console_line_type,     /* the text line contains a create console meta command                 */
+  create_no_console_line_type,  /* the text line contains a create no console meta command              */
+  enable_exit_code_checking_line_type,  /* the text line contains a enable exit code checking                   */
+  disable_exit_code_checking_line_type, /* the text line contains a disable exit code checking                  */
+  change_directory_line_type,   /* the text line contains a change directory command                   */
+  command_line_line_type        /* the text line contains a command line                                */
+} line_type_t;
 
 /* 
  * Buffer size used in the getline function. 
@@ -56,7 +54,7 @@ typedef enum
 /* 
  * s_Stream struct connected functions.
  */
- 
+
 /*
  * Create a new s_Stream struct and return
  * a pointer to self
@@ -73,20 +71,20 @@ bool Stream_lineIsBlank(Stream_t stream);
  * Return true if the caracter is space or tab.
  */
 bool Stream_isBlankChar(char ch);
- 
+
 
 /*
  * Return E_SUCCESS if the file is valid. 
  * Otherwise the fuction returns E_INVALID_FILE.
  */
-errno_t Stream_isValidFile(const char* file_name);
+errno_t Stream_isValidFile(const char *file_name);
 
 
 /* 
  * Return E_SUCCESS is the open file operation succeeded.
  * Otherwise the functions returns E_OPEN_FILE_FAILED.
  */
-errno_t Stream_openFile(Stream_t ptr,const char* file_name);
+errno_t Stream_openFile(Stream_t ptr, const char *file_name);
 
 /*
  * This function reads an entire line, storing 
@@ -146,7 +144,7 @@ bool Stream_isInvalidUnset(Stream_t stream);
  * expected child output. Otherwhise the function
  * returns false.
  */
-bool Stream_lineIsExpectedChildOutput(Stream_t stream); 
+bool Stream_lineIsExpectedChildOutput(Stream_t stream);
 
 /* 
  * Return true if the stream line contains a 
@@ -173,7 +171,7 @@ bool Stream_lineIsInvalidMetaCommand(Stream_t stream);
 /*
  * Print the file line.
  */
-void  Stream_printLine(Stream_t stream,line_type_t line_type);
+void Stream_printLine(Stream_t stream, line_type_t line_type);
 
 void Stream_lock(Stream_t ptr);
 void Stream_unlock(Stream_t ptr);
@@ -185,8 +183,8 @@ extern CRITICAL_SECTION cs;
 /* 
  * Free a s_Stream.
  */
- 
- void Stream_free(Stream_t ptr);
+
+void Stream_free(Stream_t ptr);
 
 
-#endif /* #ifndef __STREAM_H__ */
+#endif                          /* #ifndef __STREAM_H__ */

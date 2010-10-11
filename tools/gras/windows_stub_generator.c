@@ -82,7 +82,8 @@ borland_project_write_tabs(borland_project_t project, unsigned int count);
  * @param name The name of the node.
  */
 static void
-borland_project_begin_xml_node(borland_project_t project, const char *name);
+borland_project_begin_xml_node(borland_project_t project,
+                               const char *name);
 
 
 /*
@@ -100,8 +101,8 @@ borland_project_end_xml_node(borland_project_t project, const char *name);
  * @param value The value of the element  
  */
 static void
-borland_project_write_xml_element(borland_project_t project, const char *name,
-                                  const char *value);
+borland_project_write_xml_element(borland_project_t project,
+                                  const char *name, const char *value);
 
 /*
  * Write a FILE xml element in the borland project file.
@@ -184,7 +185,8 @@ find_file_path(const char *root_dir, const char *file_name, char *path);
 
 /*
  * generate a Microsoft Visual project file*/
-static void generate_dsp_project(dsp_t project, int is_rl, const char *name);
+static void generate_dsp_project(dsp_t project, int is_rl,
+                                 const char *name);
 
 static void
 generate_borland_project(borland_project_t project, int is_rl,
@@ -218,16 +220,16 @@ generate_borland_project(borland_project_t project, int is_rl,
 
   /* construct and write the borland project binary path */
   binary_path =
-    xbt_new0(char, strlen(project->name) + strlen(project->bin_dir) + 6);
+      xbt_new0(char, strlen(project->name) + strlen(project->bin_dir) + 6);
   sprintf(binary_path, "%s\\%s.exe", project->bin_dir, project->name);
   borland_project_write_xml_element(project, "PROJECT", binary_path);
   xbt_free(binary_path);
 
   /* construct an write the object files to generate by the compiler */
   obj_path =
-    xbt_new0(char,
-             strlen(project->name) + strlen(name) +
-             (2 * strlen(project->obj_dir)) + 11);
+      xbt_new0(char,
+               strlen(project->name) + strlen(name) +
+               (2 * strlen(project->obj_dir)) + 11);
   sprintf(binary_path, "%s\\%s.obj\n%s\\%s.obj", project->obj_dir,
           project->name, project->obj_dir, name);
   borland_project_write_xml_element(project, "OBJFILES", obj_path);
@@ -256,15 +258,15 @@ generate_borland_project(borland_project_t project, int is_rl,
 
   if (is_rl) {
     lib_files =
-      xbt_new0(char,
-               (2 * (strlen(project->lib_dir) + 1)) + strlen("libgras.lib") +
-               2);
+        xbt_new0(char,
+                 (2 * (strlen(project->lib_dir) + 1)) +
+                 strlen("libgras.lib") + 2);
     sprintf(lib_files, "%s\\libgras.lib", project->lib_dir);
   } else {
     lib_files =
-      xbt_new0(char,
-               (2 * (strlen(project->lib_dir) + 1)) + strlen("simgrid.lib") +
-               2);
+        xbt_new0(char,
+                 (2 * (strlen(project->lib_dir) + 1)) +
+                 strlen("simgrid.lib") + 2);
     sprintf(lib_files, "%s\\simgrid.lib", project->lib_dir);
   }
 
@@ -331,7 +333,7 @@ generate_borland_project(borland_project_t project, int is_rl,
   }
 
   include_path =
-    xbt_new0(char, strlen("$(BCB)\\include") + strlen(__gras_path) + 2);
+      xbt_new0(char, strlen("$(BCB)\\include") + strlen(__gras_path) + 2);
   sprintf(include_path, "$(BCB)\\include;%s", __gras_path);
 
   borland_project_write_xml_element(project, "INCLUDEPATH", include_path);
@@ -454,20 +456,21 @@ generate_borland_project(borland_project_t project, int is_rl,
   /* construct and write the list of file elements */
 
   /* add the bpf file to the list */
-  borland_project_write_file_element(project, main_source, "", project->name,
-                                     "BPF", "", "");
+  borland_project_write_file_element(project, main_source, "",
+                                     project->name, "BPF", "", "");
   xbt_free(main_source);
 
   /* FIXME : check the source file directory */
   /* add the generated source file to the list */
 
   file_name =
-    xbt_new0(char, strlen(project->src_dir) + strlen(project->name) + 5);
+      xbt_new0(char, strlen(project->src_dir) + strlen(project->name) + 5);
   sprintf(file_name, "%s\\_%s.c", project->src_dir, project->name);
   borland_project_write_file_element(project, file_name, "", project->name,
                                      "CCompiler", "", "");
 
-  memset(file_name, 0, strlen(project->src_dir) + strlen(project->name) + 4);
+  memset(file_name, 0,
+         strlen(project->src_dir) + strlen(project->name) + 4);
   sprintf(file_name, "%s\\%s.c", project->src_dir, name);
   borland_project_write_file_element(project, file_name, "", name,
                                      "CCompiler", "", "");
@@ -479,16 +482,18 @@ generate_borland_project(borland_project_t project, int is_rl,
 
   if (is_rl) {
     file_name =
-      xbt_new0(char, strlen(project->lib_dir) + strlen("libgras.lib") + 2);
+        xbt_new0(char,
+                 strlen(project->lib_dir) + strlen("libgras.lib") + 2);
     sprintf(file_name, "%s\\libgras.lib", project->lib_dir);
-    borland_project_write_file_element(project, file_name, "", "libgras.lib",
-                                       "LibTool", "", "");
+    borland_project_write_file_element(project, file_name, "",
+                                       "libgras.lib", "LibTool", "", "");
   } else {
     file_name =
-      xbt_new0(char, strlen(project->lib_dir) + strlen("simgrid.lib") + 2);
+        xbt_new0(char,
+                 strlen(project->lib_dir) + strlen("simgrid.lib") + 2);
     sprintf(file_name, "%s\\simgrid.lib", project->lib_dir);
-    borland_project_write_file_element(project, file_name, "", "simgrid.lib",
-                                       "LibTool", "", "");
+    borland_project_write_file_element(project, file_name, "",
+                                       "simgrid.lib", "LibTool", "", "");
   }
 
 
@@ -519,7 +524,8 @@ generate_borland_project(borland_project_t project, int is_rl,
   borland_project_close(project);
 }
 
-void borland_project_write_tabs(borland_project_t project, unsigned int count)
+void borland_project_write_tabs(borland_project_t project,
+                                unsigned int count)
 {
   unsigned int pos;
 
@@ -538,7 +544,8 @@ borland_project_begin_xml_node(borland_project_t project, const char *name)
   level++;
 }
 
-void borland_project_end_xml_node(borland_project_t project, const char *name)
+void borland_project_end_xml_node(borland_project_t project,
+                                  const char *name)
 {
   level--;
 
@@ -550,8 +557,8 @@ void borland_project_end_xml_node(borland_project_t project, const char *name)
 
 
 void
-borland_project_write_xml_element(borland_project_t project, const char *name,
-                                  const char *value)
+borland_project_write_xml_element(borland_project_t project,
+                                  const char *name, const char *value)
 {
   borland_project_write_tabs(project, level);
   fprintf(project->stream, "<%s value=\"%s\"/>\n", name, value);
@@ -607,21 +614,21 @@ void borland_project_write_ide_options(borland_project_t project)
 {
 
   const char *ide_options =
-    "[Version Info]\nIncludeVerInfo=0\nAutoIncBuild=0\nMajorVer=1\nMinorVer=0\nRelease=0\nBuild=0\nDebug=0\nPreRelease=0\nSpecial=0\nPrivate=0\nDLL=0\nLocale=1036\nCodePage=1252\n\n"
-    "[Version Info Keys]\nCompanyName=\nFileDescription=\nFileVersion=1.0.0.0\nInternalName=\nLegalCopyright=\nLegalTrademarks=\nOriginalFilename=\nProductName=\nProductVersion=1.0.0.0\nComments=\n\n"
-    "[Excluded Packages]\n$(BCB)\\dclclxdb60.bpl=Composants BD CLX Borland\n$(BCB)\\Bin\\dclclxstd60.bpl=Composants Standard CLX Borland\n\n"
-    "[HistoryLists\\hlIncludePath]\nCount=1\nItem0=$(BCB)\\include;$(BCB)\\include\\vcl;\n\n"
-    "[HistoryLists\\hlLibraryPath]\nCount=1\nItem0=$(BCB)\\lib\\obj;$(BCB)\\lib\n\n"
-    "[HistoryLists\\hlDebugSourcePath]\nCount=1\nItem0=$(BCB)\\source\\vcl\\\n\n"
-    "[HistoryLists\\hlConditionals]\nCount=1\nItem0=_DEBUG\n\n"
-    "[HistoryLists\\hlIntOutputDir]\nCount=0\n\n"
-    "[HistoryLists\\hlFinalOutputDir]\nCount=0\n\n"
-    "[HistoryLists\\hIBPIOutputDir]\nCount=0\n\n"
-    "[Debugging]\nDebugSourceDirs=$(BCB)\\source\\vcl\n\n"
-    "[Parameters]\nRunParams=\nLauncher=\nUseLauncher=0\nDebugCWD=\nHostApplication=\nRemoteHost=\nRemotePath=\nRemoteLauncher=\nRemoteCWD=\nRemoteDebug=0\n\n"
-    "[Compiler]\nShowInfoMsgs=0\nLinkDebugVcl=0\nLinkCGLIB=0\n\n"
-    "[CORBA]\nAddServerUnit=1\nAddClientUnit=1\nPrecompiledHeaders=1\n\n"
-    "[Language]\nActiveLang=\nProjectLang=\nRootDir=\n";
+      "[Version Info]\nIncludeVerInfo=0\nAutoIncBuild=0\nMajorVer=1\nMinorVer=0\nRelease=0\nBuild=0\nDebug=0\nPreRelease=0\nSpecial=0\nPrivate=0\nDLL=0\nLocale=1036\nCodePage=1252\n\n"
+      "[Version Info Keys]\nCompanyName=\nFileDescription=\nFileVersion=1.0.0.0\nInternalName=\nLegalCopyright=\nLegalTrademarks=\nOriginalFilename=\nProductName=\nProductVersion=1.0.0.0\nComments=\n\n"
+      "[Excluded Packages]\n$(BCB)\\dclclxdb60.bpl=Composants BD CLX Borland\n$(BCB)\\Bin\\dclclxstd60.bpl=Composants Standard CLX Borland\n\n"
+      "[HistoryLists\\hlIncludePath]\nCount=1\nItem0=$(BCB)\\include;$(BCB)\\include\\vcl;\n\n"
+      "[HistoryLists\\hlLibraryPath]\nCount=1\nItem0=$(BCB)\\lib\\obj;$(BCB)\\lib\n\n"
+      "[HistoryLists\\hlDebugSourcePath]\nCount=1\nItem0=$(BCB)\\source\\vcl\\\n\n"
+      "[HistoryLists\\hlConditionals]\nCount=1\nItem0=_DEBUG\n\n"
+      "[HistoryLists\\hlIntOutputDir]\nCount=0\n\n"
+      "[HistoryLists\\hlFinalOutputDir]\nCount=0\n\n"
+      "[HistoryLists\\hIBPIOutputDir]\nCount=0\n\n"
+      "[Debugging]\nDebugSourceDirs=$(BCB)\\source\\vcl\n\n"
+      "[Parameters]\nRunParams=\nLauncher=\nUseLauncher=0\nDebugCWD=\nHostApplication=\nRemoteHost=\nRemotePath=\nRemoteLauncher=\nRemoteCWD=\nRemoteDebug=0\n\n"
+      "[Compiler]\nShowInfoMsgs=0\nLinkDebugVcl=0\nLinkCGLIB=0\n\n"
+      "[CORBA]\nAddServerUnit=1\nAddClientUnit=1\nPrecompiledHeaders=1\n\n"
+      "[Language]\nActiveLang=\nProjectLang=\nRootDir=\n";
 
   fprintf(project->stream, ide_options);
 }
@@ -658,11 +665,11 @@ void generate_borland_simulation_project(const char *name)
   strcpy(borland_project.src_dir, buffer);
 
   borland_project.name =
-    xbt_new0(char, strlen(name) + strlen("simulator") + 2);
+      xbt_new0(char, strlen(name) + strlen("simulator") + 2);
   sprintf(borland_project.name, "%s_simulator", name);
 
   borland_project.bin_dir =
-    xbt_new0(char, strlen(buffer) + strlen("\\bin") + 1);
+      xbt_new0(char, strlen(buffer) + strlen("\\bin") + 1);
   sprintf(borland_project.bin_dir, "%s\\bin", buffer);
 
   hDir = FindFirstFile(borland_project.bin_dir, &wfd);
@@ -671,7 +678,7 @@ void generate_borland_simulation_project(const char *name)
     CreateDirectory(borland_project.bin_dir, NULL);
 
   borland_project.obj_dir =
-    xbt_new0(char, strlen(buffer) + strlen("\\obj") + 1);
+      xbt_new0(char, strlen(buffer) + strlen("\\obj") + 1);
   sprintf(borland_project.obj_dir, "%s\\obj", buffer);
 
   hDir = FindFirstFile(borland_project.obj_dir, &wfd);
@@ -705,7 +712,8 @@ void generate_borland_real_life_project(const char *name)
 
   borland_project.lib_dir = xbt_new0(char, MAX_PATH);
 
-  GetEnvironmentVariable("LIB_GRAS_PATH", borland_project.lib_dir, MAX_PATH);
+  GetEnvironmentVariable("LIB_GRAS_PATH", borland_project.lib_dir,
+                         MAX_PATH);
 
   GetCurrentDirectory(MAX_PATH, buffer);
 
@@ -714,7 +722,7 @@ void generate_borland_real_life_project(const char *name)
   strcpy(borland_project.src_dir, buffer);
 
   borland_project.bin_dir =
-    xbt_new0(char, strlen(buffer) + strlen("\\bin") + 1);
+      xbt_new0(char, strlen(buffer) + strlen("\\bin") + 1);
   sprintf(borland_project.bin_dir, "%s\\bin", buffer);
 
   hDir = FindFirstFile(borland_project.bin_dir, &wfd);
@@ -723,7 +731,7 @@ void generate_borland_real_life_project(const char *name)
     CreateDirectory(borland_project.bin_dir, NULL);
 
   borland_project.obj_dir =
-    xbt_new0(char, strlen(buffer) + strlen("\\obj") + 1);
+      xbt_new0(char, strlen(buffer) + strlen("\\obj") + 1);
   sprintf(borland_project.obj_dir, "%s\\obj", buffer);
 
   hDir = FindFirstFile(borland_project.obj_dir, &wfd);
@@ -923,7 +931,8 @@ void generate_dsp_project(dsp_t project, int is_rl, const char *name)
   fprintf(project->stream,
           "!MESSAGE use the Export Makefile command and run\n");
   fprintf(project->stream, "!MESSAGE\n");
-  fprintf(project->stream, "!MESSAGE NMAKE /f \"%s.mak\".\n", project->name);
+  fprintf(project->stream, "!MESSAGE NMAKE /f \"%s.mak\".\n",
+          project->name);
   fprintf(project->stream, "!MESSAGE\n");
   fprintf(project->stream,
           "!MESSAGE You can specify a configuration when running NMAKE\n");
@@ -1028,7 +1037,8 @@ void generate_dsp_project(dsp_t project, int is_rl, const char *name)
   fprintf(project->stream, "!ENDIF\n\n");
 
   fprintf(project->stream, "# Begin Target\n\n");
-  fprintf(project->stream, "# Name \"%s - Win32 Release\"\n", project->name);
+  fprintf(project->stream, "# Name \"%s - Win32 Release\"\n",
+          project->name);
   fprintf(project->stream, "# Name \"%s - Win32 Debug\"\n", project->name);
   fprintf(project->stream, "# Begin Group \"Source Files\"\n\n");
   fprintf(project->stream,

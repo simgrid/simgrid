@@ -33,7 +33,8 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload)
   /* 3. Log which client connected */
   INFO3(">>>>>>>> Got message PING(%d) from %s:%d <<<<<<<<",
         msg,
-        gras_socket_peer_name(expeditor), gras_socket_peer_port(expeditor));
+        gras_socket_peer_name(expeditor),
+        gras_socket_peer_port(expeditor));
 
   /* 4. Change the value of the msg variable */
   msg = 4321;
@@ -93,7 +94,8 @@ int server(int argc, char *argv[])
 
   /* 7. Housekeeping */
   if (!globals->endcondition)
-    WARN0("An error occured, the endcondition was not set by the callback");
+    WARN0
+        ("An error occured, the endcondition was not set by the callback");
 
   /* 8. Free the allocated resources, and shut GRAS down */
   gras_socket_close(globals->sock);

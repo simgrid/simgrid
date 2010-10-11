@@ -58,7 +58,8 @@ static s_process_t process;
 
 static void parse_process_init(void)
 {
-  xbt_dict_set(process_function_set, A_surfxml_process_function, NULL, NULL);
+  xbt_dict_set(process_function_set, A_surfxml_process_function, NULL,
+               NULL);
   xbt_dict_set(machine_set, A_surfxml_process_host, NULL, NULL);
   process.argc = 1;
   process.argv = xbt_new(char *, 1);
@@ -70,7 +71,8 @@ static void parse_process_init(void)
 static void parse_argument(void)
 {
   process.argc++;
-  process.argv = xbt_realloc(process.argv, (process.argc) * sizeof(char *));
+  process.argv =
+      xbt_realloc(process.argv, (process.argc) * sizeof(char *));
   process.argv[(process.argc) - 1] = xbt_strdup(A_surfxml_argument_value);
 }
 
@@ -103,8 +105,8 @@ int main(int argc, char *argv[])
   for (i = 1; i < argc; i++) {
     int need_removal = 0;
     if (!strncmp("--extra-process=", argv[i], strlen("--extra-process="))) {
-      xbt_dict_set(process_function_set, argv[i] + strlen("--extra-process="),
-                   NULL, NULL);
+      xbt_dict_set(process_function_set,
+                   argv[i] + strlen("--extra-process="), NULL, NULL);
       need_removal = 1;
     }
 
@@ -130,7 +132,8 @@ int main(int argc, char *argv[])
   DEBUG2("%p %p", parse_process_init, &parse_process_init);
   surfxml_add_callback(STag_surfxml_process_cb_list, &parse_process_init);
   surfxml_add_callback(ETag_surfxml_argument_cb_list, &parse_argument);
-  surfxml_add_callback(ETag_surfxml_process_cb_list, &parse_process_finalize);
+  surfxml_add_callback(ETag_surfxml_process_cb_list,
+                       &parse_process_finalize);
 
   for (i = 2; i < argc; i++) {
     deployment_file = argv[i];

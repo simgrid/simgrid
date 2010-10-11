@@ -14,7 +14,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific to this example");
 static int send(int argc, char *argv[])
 {
   INFO0("Sending");
-  MSG_task_put(MSG_task_create("Blah", 0.0, 0.0, NULL), MSG_host_self(), 0);
+  MSG_task_put(MSG_task_create("Blah", 0.0, 0.0, NULL), MSG_host_self(),
+               0);
   MSG_process_sleep(1.);        /* FIXME: if the sender exits before the receiver calls get_sender(), bad thing happens */
   INFO0("Exiting");
   return 0;

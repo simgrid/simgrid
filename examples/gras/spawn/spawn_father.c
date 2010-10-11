@@ -46,7 +46,8 @@ static int father_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload)
     RETHROW0("Unable to answer to my poor child: %s");
   }
   INFO2("Answered to %s:%d's request",
-        gras_socket_peer_name(expeditor), gras_socket_peer_port(expeditor));
+        gras_socket_peer_name(expeditor),
+        gras_socket_peer_port(expeditor));
 
   /* 7. Tell GRAS that we consummed this message */
   return 0;

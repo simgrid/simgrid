@@ -41,8 +41,8 @@ int main(int argc, char **argv)
   workstation = SD_workstation_get_list();
 
   /* let's launch the simulation! */
-  SD_task_schedule(taskInit, 1, SD_workstation_get_list(), &no_cost, &no_cost,
-                   -1.0);
+  SD_task_schedule(taskInit, 1, SD_workstation_get_list(), &no_cost,
+                   &no_cost, -1.0);
   SD_task_schedule(taskA, 1, &workstation[0], &no_cost,
                    &communication_amount1, -1.0);
   SD_task_schedule(taskB, 1, &workstation[1], &no_cost,

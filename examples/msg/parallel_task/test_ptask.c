@@ -17,7 +17,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 int execute(int argc, char *argv[]);
 int redistribute(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file, const char *application_file);
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file);
 
 typedef enum {
   PORT_22 = 0,
@@ -54,12 +55,12 @@ int execute(int argc, char *argv[])
               "Invalid argument %s\n", argv[argc - 1]);
   computation_duration = (double *) calloc(host_list_size, sizeof(double));
   communication_table =
-    (double *) calloc(host_list_size * host_list_size, sizeof(double));
+      (double *) calloc(host_list_size * host_list_size, sizeof(double));
   for (i = 0; i < host_list_size; i++) {
     computation_duration[i] = computation_amount / host_list_size;
     for (j = 0; j < host_list_size; j++)
       communication_table[i * host_list_size + j] =
-        communication_amount / (host_list_size * host_list_size);
+          communication_amount / (host_list_size * host_list_size);
   }
 
   sprintf(buffer, "redist#0\n");
@@ -105,11 +106,11 @@ int redistribute(int argc, char *argv[])
               "Invalid argument %s\n", argv[argc - 1]);
   computation_duration = (double *) calloc(host_list_size, sizeof(double));
   communication_table =
-    (double *) calloc(host_list_size * host_list_size, sizeof(double));
+      (double *) calloc(host_list_size * host_list_size, sizeof(double));
   for (i = 0; i < host_list_size; i++) {
     for (j = 0; j < host_list_size; j++)
       communication_table[i * host_list_size + j] =
-        communication_amount / (host_list_size * host_list_size);
+          communication_amount / (host_list_size * host_list_size);
   }
 
   sprintf(buffer, "redist#0\n");
@@ -129,7 +130,8 @@ int redistribute(int argc, char *argv[])
 }
 
 
-MSG_error_t test_all(const char *platform_file, const char *application_file)
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file)
 {
   MSG_error_t res = MSG_OK;
 

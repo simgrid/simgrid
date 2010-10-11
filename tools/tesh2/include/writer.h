@@ -11,17 +11,18 @@
  * 		This file contains all the declarations of the functions related with
  * 		the tesh writer type.
  *
- */
- 
+ */  
+    
 #ifndef __WRITER_H
 #define __WRITER_H
-
+    
 #include <com.h>
-
+    
 #ifdef __cplusplus
 extern "C" {
-#endif
-
+  
+#endif  /*  */
+  
 /*! \brief writer_new - create a new writer.
  *
  * \param command	The command owning the stdin written by the writer.
@@ -34,11 +35,9 @@ extern "C" {
  *					[EINVAL] if the parameter is invalid.
  *					[ENOMEM] if the system has not enough space to allocate
  *					         the writer.
- */
-writer_t
-writer_new(command_t command);
-
-
+ */ 
+  writer_t  writer_new(command_t command);
+    
 /*! \brief writer_free - destroy a writer object.
  *
  * \param ptr		A pointer to the writer object to destroy.
@@ -51,18 +50,13 @@ writer_new(command_t command);
  *					[EINVAL] if the writer object pointed to by the parameter ptr is invalid.
  *					
  *					
- */
-int
-writer_free(writer_t* ptr);
-
-void
-writer_write(writer_t writer);
-
-void
-writer_wait(writer_t writer);
-
+ */ 
+  int  writer_free(writer_t * ptr);
+    void  writer_write(writer_t writer);
+    void  writer_wait(writer_t writer);
+   
 #ifdef __cplusplus
-}
-#endif
+} 
+#endif  /*  */
 
-#endif /* !__WRITER_H */
+#endif  /* !__WRITER_H */

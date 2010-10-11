@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
         exit(1);
       }
       INFO1("Change directory to %s", argv[i + 1]);
-      memmove(argv + i, argv + i + 2, (argc - i - 1)*sizeof(char*));
+      memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
       argc -= 2;
       i -= 2;
     }

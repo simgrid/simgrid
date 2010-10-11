@@ -68,7 +68,8 @@ int main(int argc, char **argv)
   hosts = SD_workstation_get_list();
 
   /* sorting hosts by hostname */
-  qsort((void *) hosts, n_hosts, sizeof(SD_workstation_t), nameCompareHosts);
+  qsort((void *) hosts, n_hosts, sizeof(SD_workstation_t),
+        nameCompareHosts);
 
   /* creation of the tasks */
   taskInit = SD_task_create("Initial", NULL, 1.0);
@@ -176,11 +177,12 @@ int main(int argc, char **argv)
 
 
   /* scheduling the tasks */
-  SD_task_schedule(taskInit, 1, hosts, SD_SCHED_NO_COST, SD_SCHED_NO_COST, -1.0);
-  SD_task_schedule(PtoPComm1, 2, PtoPcomm1_hosts, SD_SCHED_NO_COST, PtoPcomm1_table,
+  SD_task_schedule(taskInit, 1, hosts, SD_SCHED_NO_COST, SD_SCHED_NO_COST,
                    -1.0);
-  SD_task_schedule(PtoPComm2, 2, PtoPcomm2_hosts, SD_SCHED_NO_COST, PtoPcomm2_table,
-                   -1.0);
+  SD_task_schedule(PtoPComm1, 2, PtoPcomm1_hosts, SD_SCHED_NO_COST,
+                   PtoPcomm1_table, -1.0);
+  SD_task_schedule(PtoPComm2, 2, PtoPcomm2_hosts, SD_SCHED_NO_COST,
+                   PtoPcomm2_table, -1.0);
   SD_task_schedule(ParComp_wocomm, 5, ParComp_wocomm_hosts,
                    ParComp_wocomm_cost, ParComp_wocomm_table, -1.0);
   SD_task_schedule(IntraRedist, 5, IntraRedist_hosts, IntraRedist_cost,
@@ -191,7 +193,8 @@ int main(int argc, char **argv)
                    InterRedist_table, -1.0);
   SD_task_schedule(ParComp_wcomm2, 5, ParComp_wcomm2_hosts,
                    ParComp_wcomm2_cost, ParComp_wcomm2_table, -1.0);
-  SD_task_schedule(taskFinal, 1, &(hosts[9]), &final_cost, SD_SCHED_NO_COST, -1.0);
+  SD_task_schedule(taskFinal, 1, &(hosts[9]), &final_cost,
+                   SD_SCHED_NO_COST, -1.0);
 
   /* let's launch the simulation! */
   changed_tasks = SD_simulate(-1.0);

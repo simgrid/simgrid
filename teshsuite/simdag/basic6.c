@@ -25,10 +25,10 @@ int main(int argc, char **argv)
   taskA = SD_task_create("Task A", NULL, 1.0);
   taskB = SD_task_create("Task B", NULL, 1.0);
 
-  SD_task_schedule(taskA, 1, SD_workstation_get_list(), comp_cost, comm_cost,
-                   -1.0);
-  SD_task_schedule(taskB, 1, SD_workstation_get_list(), comp_cost, comm_cost,
-                   -1.0);
+  SD_task_schedule(taskA, 1, SD_workstation_get_list(), comp_cost,
+                   comm_cost, -1.0);
+  SD_task_schedule(taskB, 1, SD_workstation_get_list(), comp_cost,
+                   comm_cost, -1.0);
 
   SD_simulate(-1.0);
 

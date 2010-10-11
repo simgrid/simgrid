@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   MPI_Status status;
   struct timeval *start_time = NULL, *stop_time = NULL;
   long parallel_usecs, parallel_usecs_total =
-    0, sequential_usecs, sequential_usecs_total = 0;
+      0, sequential_usecs, sequential_usecs_total = 0;
 
   MPI_Init(&argc, &argv);
 
@@ -91,15 +91,16 @@ int main(int argc, char *argv[])
 
         for (i = 1, j = n; i < size && j < N; i++, j += k) {
           k = N / size + ((i < (N % size)) ? 1 : 0);
-          MPI_Send(matrix + N * j, N * k, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+          MPI_Send(matrix + N * j, N * k, MPI_DOUBLE, i, 0,
+                   MPI_COMM_WORLD);
           MPI_Send(vector, N, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
         }
 
         // sanity check
 #ifdef DEBUG
         if (i != size || j != N) {
-          printf("index calc error: i = %d, size = %d, j = %d, N = %d\n", i,
-                 size, j, N);
+          printf("index calc error: i = %d, size = %d, j = %d, N = %d\n",
+                 i, size, j, N);
           MPI_Abort(MPI_COMM_WORLD, SANITY_ERROR);
           exit(SANITY_ERROR);
         }
@@ -131,14 +132,15 @@ int main(int argc, char *argv[])
 
         for (i = 1, j = n; i < size && j < N; i++, j += k) {
           k = N / size + ((i < (N % size)) ? 1 : 0);
-          MPI_Recv(vcalc + j, k, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
+          MPI_Recv(vcalc + j, k, MPI_DOUBLE, i, 0, MPI_COMM_WORLD,
+                   &status);
         }
 
         // sanity check
 #ifdef DEBUG
         if (i != size || j != N) {
-          printf("index calc error 2: i = %d, size = %d, j = %d, N = %d\n", i,
-                 size, j, N);
+          printf("index calc error 2: i = %d, size = %d, j = %d, N = %d\n",
+                 i, size, j, N);
           MPI_Abort(MPI_COMM_WORLD, SANITY_ERROR);
           exit(SANITY_ERROR);
         }
@@ -151,8 +153,8 @@ int main(int argc, char *argv[])
         }
 
         parallel_usecs =
-          (stop_time->tv_sec * 1000000 + stop_time->tv_usec) -
-          (start_time->tv_sec * 1000000 + start_time->tv_usec);
+            (stop_time->tv_sec * 1000000 + stop_time->tv_usec) -
+            (start_time->tv_sec * 1000000 + start_time->tv_usec);
 
         if (-1 == gettimeofday(start_time, NULL)) {
           printf("couldn't set start_time on node 0!\n");
@@ -175,8 +177,8 @@ int main(int argc, char *argv[])
         }
 
         sequential_usecs =
-          (stop_time->tv_sec * 1000000 + stop_time->tv_usec) -
-          (start_time->tv_sec * 1000000 + start_time->tv_usec);
+            (stop_time->tv_sec * 1000000 + stop_time->tv_usec) -
+            (start_time->tv_sec * 1000000 + start_time->tv_usec);
 
         // verify correctness
         for (i = 0; i < N && vcalc[i] == vcheck[i]; i++);
@@ -185,11 +187,11 @@ int main(int argc, char *argv[])
 
         if (i == N) {
           printf
-            ("ptime: %ld us, stime: %ld us, speedup: %.3f, nodes: %d, efficiency: %.3f\n",
-             parallel_usecs, sequential_usecs,
-             (double) sequential_usecs / (double) parallel_usecs, size,
-             (double) sequential_usecs / ((double) parallel_usecs *
-                                          (double) size));
+              ("ptime: %ld us, stime: %ld us, speedup: %.3f, nodes: %d, efficiency: %.3f\n",
+               parallel_usecs, sequential_usecs,
+               (double) sequential_usecs / (double) parallel_usecs, size,
+               (double) sequential_usecs / ((double) parallel_usecs *
+                                            (double) size));
 
           parallel_usecs_total += parallel_usecs;
           sequential_usecs_total += sequential_usecs;
@@ -213,14 +215,15 @@ int main(int argc, char *argv[])
     printf("prog: blocking, ");
     if (0 < successful_iterations) {
       printf
-        ("iterations: %d, avg. ptime: %.3f us, avg. stime: %.3f us, avg. speedup: %.3f, nodes: %d, avg. efficiency: %.3f\n",
-         successful_iterations,
-         (double) parallel_usecs_total / (double) successful_iterations,
-         (double) sequential_usecs_total / (double) successful_iterations,
-         (double) sequential_usecs_total / (double) parallel_usecs_total,
-         size,
-         (double) sequential_usecs_total / ((double) parallel_usecs_total *
-                                            (double) size));
+          ("iterations: %d, avg. ptime: %.3f us, avg. stime: %.3f us, avg. speedup: %.3f, nodes: %d, avg. efficiency: %.3f\n",
+           successful_iterations,
+           (double) parallel_usecs_total / (double) successful_iterations,
+           (double) sequential_usecs_total /
+           (double) successful_iterations,
+           (double) sequential_usecs_total / (double) parallel_usecs_total,
+           size,
+           (double) sequential_usecs_total /
+           ((double) parallel_usecs_total * (double) size));
     } else {
       printf("no successful iterations!\n");
     }

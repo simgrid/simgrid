@@ -3,11 +3,12 @@
 
 #include <com.h>
 #include <errno.h>
-
+    
 #ifdef __cplusplus
 extern "C" {
-#endif
-
+  
+#endif  /*  */
+  
 #define ECMDTIMEDOUT		((int)102)	/* Command timed out														*/
 #define ECMDNOTFOUND		((int)107)	/* the command is not found													*/
 #define EEXITCODENOTMATCH	((int)108)	/* the exit codes don't match												*/
@@ -24,21 +25,16 @@ extern "C" {
 #define EINCLUDENOTFOUND	((int)125)	/* the include file specified by a metacommand is not found					*/
 #define ESUFFIXTOOLONG		((int)126)	/* the suffix is too long													*/
 #define EINVCMDLINE			((int)139) /* invalid command line														*/
-
+  
 #ifndef EALREADY
 #define EALREADY			((int)131)
-#endif
-
-const char*
-error_get_at(int pos, int* code);
-
-const char*
-error_to_string(int errcode, int kind);
-
+#endif  /*  */
+   const char * error_get_at(int pos, int *code);
+  const char * error_to_string(int errcode, int kind);
+  
 #ifdef __cplusplus
-}
-#endif
-
-
-#endif /* !__XERRNO_H */
+} 
+#endif  /*  */
+
+#endif  /* !__XERRNO_H */
 

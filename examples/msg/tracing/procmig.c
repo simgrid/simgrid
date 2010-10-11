@@ -17,23 +17,23 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 static int emigrant(int argc, char *argv[])
 {
   INFO0("Setting process category");
-  TRACE_msg_set_process_category (MSG_process_self(), "emigrant");
-  MSG_process_sleep (2);
+  TRACE_msg_set_process_category(MSG_process_self(), "emigrant");
+  MSG_process_sleep(2);
   INFO0("Migrating to Tremblay");
   MSG_process_change_host(MSG_get_host_by_name("Tremblay"));
-  MSG_process_sleep (2);
+  MSG_process_sleep(2);
   INFO0("Migrating to Jupiter");
   MSG_process_change_host(MSG_get_host_by_name("Jupiter"));
-  MSG_process_sleep (2);
+  MSG_process_sleep(2);
   INFO0("Migrating to Fafard");
   MSG_process_change_host(MSG_get_host_by_name("Fafard"));
-  MSG_process_sleep (2);
+  MSG_process_sleep(2);
   INFO0("Migrating to Ginette");
   MSG_process_change_host(MSG_get_host_by_name("Ginette"));
-  MSG_process_sleep (2);
+  MSG_process_sleep(2);
   INFO0("Migrating to Bourassa");
   MSG_process_change_host(MSG_get_host_by_name("Bourassa"));
-  MSG_process_sleep (2);
+  MSG_process_sleep(2);
   return 0;
 }
 
@@ -50,10 +50,9 @@ int main(int argc, char *argv[])
               argv[0]);
     exit(1);
   }
-
   //starting the simulation trace
-  TRACE_start ();
-  TRACE_category ("emigrant");
+  TRACE_start();
+  TRACE_category("emigrant");
 
   /* Simulation setting */
   MSG_create_environment(argv[1]);

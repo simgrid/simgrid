@@ -10,17 +10,18 @@
  * 		This file contains all the declarations of the functions related with
  * 		the tesh command type.
  *
- */
- 
+ */  
+    
 #ifndef __COMMAND_H
 #define __COMMAND_H
-
+    
 #include <com.h>
-
+    
 #ifdef __cplusplus
 extern "C" {
-#endif
-
+  
+#endif  /*  */
+  
 /*! \brief command_new - create a new fstream.
  *
  * \param unit			The unit contained the command.
@@ -38,10 +39,10 @@ extern "C" {
  *						[EINVAL] if one of the parameters is invalid.
  *						[ENOMEM] if the system has not enough space to allocate
  *								 the command.
- */
-command_t
-command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex);
-
+ */ 
+  command_t 
+      command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex);
+   
 /*! \brief command_free - destroy a command object.
  *
  * \param ptr			A pointer to the command object to destroy.
@@ -53,10 +54,9 @@ command_new(unit_t unit, context_t context, xbt_os_mutex_t mutex);
  * errors :
  *						[EINVAL] if the command object pointed to by the ptr parameter is invalid.
  *					
- */
-int
-command_free(command_t* ptr);
-
+ */ 
+  int  command_free(command_t * ptr);
+   
 /*! \brief command_run - run a command object.
  *
  * \param command		The command to run.
@@ -72,32 +72,28 @@ command_free(command_t* ptr);
  *						The type of running (asynchonus or no) depend of the
  *						context of the command.
  *					
- */
-int
-command_run(command_t command);
-
+ */ 
+  int  command_run(command_t command);
+   
 /*! \brief command_exec - execute a command object.
  *
  * \param command		The command object to run.
  * \param command_line	The command line of the process to create.				
- */
-void
-command_exec(command_t command, const char* command_line);
-
+ */ 
+  void  command_exec(command_t command, const char *command_line);
+  
 /*! \brief command_wait - wait for the end of a command.
  *
  * \param command		The command object to wait for.		
- */
-void
-command_wait(command_t command);
-
+ */ 
+  void  command_wait(command_t command);
+   
 /*! \brief command_interrupt - wait for the end of a command.
  *
  * \param command		The command object to interrupt.		
- */
-void
-command_interrupt(command_t command);
-
+ */ 
+  void  command_interrupt(command_t command);
+   
 /*! \brief command_summarize - print the summary of the execution of a command.
  *
  * \param command		The command object to display the summary.	
@@ -106,10 +102,9 @@ command_interrupt(command_t command);
  *						The summary of the command is displayed only if the user
  *						specifies both summary and detail-summary options on the
  *						tesh command line.
- */
-void
-command_summarize(command_t command);
-
+ */ 
+  void  command_summarize(command_t command);
+   
 /*! \brief command_handle_failure - handle a failure caused by a command.
  *
  * \param command		The command to handle the failure.	
@@ -121,17 +116,13 @@ command_summarize(command_t command);
  *						keep-going on the command line of tesh, only the unit 
  *						containing the failed command is interrupted and all 
  *						other units continue.
- */
-void
-command_handle_failure(command_t command, cs_reason_t reason);
-
-void command_kill(command_t command);
-
-void
-command_check(command_t command);
-
+ */ 
+  void  command_handle_failure(command_t command, cs_reason_t reason);
+    void command_kill(command_t command);
+    void  command_check(command_t command);
+   
 #ifdef __cplusplus
-}
-#endif
+} 
+#endif  /*  */
 
-#endif /* !_COMMAND_H */
+#endif  /* !_COMMAND_H */

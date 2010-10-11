@@ -16,7 +16,8 @@
 #include "surf/surf.h"
 
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
+                             "Messages specific for surf example");
 
 void test(void);
 void test(void)

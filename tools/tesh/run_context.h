@@ -89,4 +89,4 @@ void *rctx_wait(void *rctx);
 /* Parse a line comming from the suite file, and add this into the rctx */
 void rctx_pushline(const char *filepos, char kind, char *line);
 
-#endif /* TESH_RUN_CONTEXT_H */
+#endif                          /* TESH_RUN_CONTEXT_H */

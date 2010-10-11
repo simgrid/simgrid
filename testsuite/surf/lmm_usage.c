@@ -16,7 +16,8 @@
 #include "xbt/module.h"
 #include <math.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
+                             "Messages specific for surf example");
 
 #define PRINT_VAR(var) DEBUG1(#var " = %g",lmm_variable_getvalue(var));
 #define SHOW_EXPR(expr) DEBUG1(#expr " = %g",expr);
@@ -151,7 +152,7 @@ void test1(method_t method)
     lmm_solve(Sys);
   } else if (method == LAGRANGE_VEGAS) {
     double x = 3 * a / 4 - 3 * b / 8 +
-      sqrt(9 * b * b + 4 * a * a - 4 * a * b) / 8;
+        sqrt(9 * b * b + 4 * a * a - 4 * a * b) / 8;
     /* Computed with mupad and D_f=1.0 */
     double max_deviation = 0.0;
     if (x > a) {
@@ -163,12 +164,14 @@ void test1(method_t method)
 
     lagrange_solve(Sys);
 
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
     max_deviation =
-      MAX(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
+        MAX(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
     max_deviation =
-      MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
+        MAX(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
+    max_deviation =
+        MAX(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
+    max_deviation =
+        MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
     if (max_deviation > MAXMIN_PRECISION) {
       WARN1("Max Deviation from optimal solution : %g", max_deviation);
@@ -196,12 +199,14 @@ void test1(method_t method)
       x = a;
     lagrange_solve(Sys);
 
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
     max_deviation =
-      MAX(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
+        MAX(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
     max_deviation =
-      MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
+        MAX(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
+    max_deviation =
+        MAX(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
+    max_deviation =
+        MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
     if (max_deviation > MAXMIN_PRECISION) {
       WARN1("Max Deviation from optimal solution : %g", max_deviation);
@@ -416,7 +421,7 @@ void test3(method_t method)
   for (j = 0; j < 16; j++) {
     tmp_name[i + j] = bprintf("X_%03d", j);
     tmp_var[j] =
-      lmm_variable_new(Sys, (void *) tmp_name[i + j], 1.0, -1.0, 15);
+        lmm_variable_new(Sys, (void *) tmp_name[i + j], 1.0, -1.0, 15);
     lmm_update_variable_weight(Sys, tmp_var[j], 1.0);
   }
 

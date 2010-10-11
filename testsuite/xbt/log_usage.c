@@ -14,7 +14,8 @@
 
 
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top, "Logging specific to this test");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,
+                                "Logging specific to this test");
 XBT_LOG_NEW_CATEGORY(top, "Useless test channel");
 
 #ifdef __BORLANDC__

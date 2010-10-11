@@ -29,7 +29,7 @@ int compare_double(const void *a, const void *b);
 
 void test_heap_validity(int size);
 void test_heap_mean_operation(int size);
-void test_reset_heap(xbt_heap_t *heap, int size);
+void test_reset_heap(xbt_heap_t * heap, int size);
 
 
 int compare_double(const void *a, const void *b)
@@ -104,7 +104,7 @@ void test_heap_mean_operation(int size)
   xbt_heap_free(heap);
 }
 
-void test_reset_heap(xbt_heap_t *heap, int size)
+void test_reset_heap(xbt_heap_t * heap, int size)
 {
   int i;
   xbt_heap_free(*heap);

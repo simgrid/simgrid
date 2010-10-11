@@ -57,8 +57,8 @@ int receiver(int argc, char *argv[])
     free(data);
 
     INFO3("Got Data from %s:%d (still %d to go)",
-          gras_socket_peer_name(expeditor), gras_socket_peer_port(expeditor),
-          todo);
+          gras_socket_peer_name(expeditor),
+          gras_socket_peer_port(expeditor), todo);
 
   }
 
@@ -86,7 +86,8 @@ int sender(int argc, char *argv[])
 
 
   /* xbt_dynar for peers */
-  xbt_dynar_t peers = xbt_dynar_new(sizeof(xbt_peer_t), &xbt_peer_free_voidp);
+  xbt_dynar_t peers =
+      xbt_dynar_new(sizeof(xbt_peer_t), &xbt_peer_free_voidp);
 
   /* Init the GRAS infrastructure and declare my globals */
   gras_init(&argc, argv);

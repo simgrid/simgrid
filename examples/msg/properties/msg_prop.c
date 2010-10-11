@@ -19,7 +19,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 int alice(int argc, char *argv[]);
 int bob(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file, const char *application_file);
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file);
 
 int alice(int argc, char *argv[])
 {
@@ -33,7 +34,7 @@ int alice(int argc, char *argv[])
 
   INFO0("== Print the properties of the host");
   xbt_dict_foreach(props, cursor, key, data)
-    INFO2("  Host property: '%s' -> '%s'", key, data);
+      INFO2("  Host property: '%s' -> '%s'", key, data);
 
   INFO0("== Try to get a host property that does not exist");
   value = MSG_host_get_property_value(host1, noexist);
@@ -41,7 +42,8 @@ int alice(int argc, char *argv[])
 
   INFO0("== Try to get a host property that does exist");
   value = MSG_host_get_property_value(host1, exist);
-  xbt_assert1(value, "\tProperty %s is undefined (where it should)", exist);
+  xbt_assert1(value, "\tProperty %s is undefined (where it should)",
+              exist);
   xbt_assert2(!strcmp(value, "180"),
               "\tValue of property %s is defined to %s (where it should be 180)",
               exist, value);
@@ -72,7 +74,7 @@ int bob(int argc, char *argv[])
 
   INFO0("== Print the properties of the process");
   xbt_dict_foreach(props, cursor, key, data)
-    INFO2("   Process property: %s -> %s", key, data);
+      INFO2("   Process property: %s -> %s", key, data);
 
   INFO0("== Try to get a process property that does not exist");
 
@@ -83,7 +85,8 @@ int bob(int argc, char *argv[])
 }
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file, const char *application_file)
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file)
 {
   MSG_function_register("alice", alice);
   MSG_function_register("bob", bob);

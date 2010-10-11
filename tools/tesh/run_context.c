@@ -40,8 +40,8 @@ static void armageddon_sighandler(int signum)
 
 static void wait_it(rctx_t rctx)
 {
-  VERB2("Join thread %p which were running background cmd <%s>", rctx->runner,
-        rctx->filepos);
+  VERB2("Join thread %p which were running background cmd <%s>",
+        rctx->runner, rctx->filepos);
   xbt_os_thread_join(rctx->runner, NULL);
 }
 
@@ -135,7 +135,8 @@ void rctx_armageddon(rctx_t initiator, int exitcode)
     xbt_os_mutex_release(armageddon_mutex);
     return;
   }
-  DEBUG1("Armageddon request by <%s> got the lock. Let's go amok", filepos);
+  DEBUG1("Armageddon request by <%s> got the lock. Let's go amok",
+         filepos);
   armageddon_initiator = initiator;
   xbt_os_mutex_release(armageddon_mutex);
 
@@ -249,9 +250,9 @@ void rctx_pushline(const char *filepos, char kind, char *line)
     if (rctx->cmd) {
       if (!rctx->is_empty) {
         ERROR2
-          ("[%s] More than one command in this chunk of lines (previous: %s).\n"
-           " Cannot guess which input/output belongs to which command.",
-           filepos, rctx->cmd);
+            ("[%s] More than one command in this chunk of lines (previous: %s).\n"
+             " Cannot guess which input/output belongs to which command.",
+             filepos, rctx->cmd);
         ERROR1("Test suite `%s': NOK (syntax error)", testsuite_name);
         rctx_armageddon(rctx, 1);
         return;
@@ -349,8 +350,8 @@ static void *thread_writer(void *r)
     int got;
     DEBUG1("Still %d chars to write", rctx->input->used - posw);
     got =
-      write(rctx->child_to, rctx->input->data + posw,
-            rctx->input->used - posw);
+        write(rctx->child_to, rctx->input->data + posw,
+              rctx->input->used - posw);
     if (got > 0)
       posw += got;
     if (got < 0) {
@@ -401,8 +402,10 @@ static void *thread_reader(void *r)
   /* let this thread wait for the child so that the main thread can detect the timeout without blocking on the wait */
   got_pid = waitpid(rctx->pid, &rctx->status, 0);
   if (got_pid != rctx->pid) {
-    perror(bprintf("(%s) Cannot wait for the child %s (got pid %d where pid %d were expected;status=%d)",
-		   xbt_thread_self_name(), rctx->cmd, (int)got_pid, (int)rctx->pid,rctx->status));
+    perror(bprintf
+           ("(%s) Cannot wait for the child %s (got pid %d where pid %d were expected;status=%d)",
+            xbt_thread_self_name(), rctx->cmd, (int) got_pid,
+            (int) rctx->pid, rctx->status));
     ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
     rctx_armageddon(rctx, 4);
     return NULL;
@@ -540,9 +543,9 @@ void rctx_start(void)
 
     rctx->reader_done = 0;
     rctx->reader =
-      xbt_os_thread_create("reader", thread_reader, (void *) rctx);
+        xbt_os_thread_create("reader", thread_reader, (void *) rctx);
     rctx->writer =
-      xbt_os_thread_create("writer", thread_writer, (void *) rctx);
+        xbt_os_thread_create("writer", thread_writer, (void *) rctx);
 
   } else {                      /* child */
     xbt_os_mutex_release(armageddon_mutex);
@@ -577,7 +580,8 @@ void rctx_start(void)
     DEBUG2("Launch a thread to wait for %s %d", old->cmd, old->pid);
     runner = xbt_os_thread_create(old->cmd, rctx_wait, (void *) old);
     old->runner = runner;
-    VERB3("Launched thread %p to wait for %s %d", runner, old->cmd, old->pid);
+    VERB3("Launched thread %p to wait for %s %d", runner, old->cmd,
+          old->pid);
     xbt_dynar_push(bg_jobs, &old);
     xbt_os_mutex_release(armageddon_mutex);
   }
@@ -634,7 +638,8 @@ void *rctx_wait(void *r)
 
   /* Check for broken pipe */
   if (rctx->brokenpipe)
-    VERB0("Warning: Child did not consume all its input (I got broken pipe)");
+    VERB0
+        ("Warning: Child did not consume all its input (I got broken pipe)");
 
   /* Check for timeouts */
   if (rctx->timeout) {
@@ -682,9 +687,10 @@ void *rctx_wait(void *r)
     if (WIFEXITED(rctx->status)
         && WEXITSTATUS(rctx->status) != rctx->expected_return) {
       if (rctx->expected_return)
-        ERROR4("Test suite `%s': NOK (<%s> returned code %d instead of %d)",
-               testsuite_name, rctx->filepos,
-               WEXITSTATUS(rctx->status), rctx->expected_return);
+        ERROR4
+            ("Test suite `%s': NOK (<%s> returned code %d instead of %d)",
+             testsuite_name, rctx->filepos, WEXITSTATUS(rctx->status),
+             rctx->expected_return);
       else
         ERROR3("Test suite `%s': NOK (<%s> returned code %d)",
                testsuite_name, rctx->filepos, WEXITSTATUS(rctx->status));
@@ -721,11 +727,12 @@ void *rctx_wait(void *r)
     INFO2("Output of <%s> so far: \n||%s", rctx->filepos, out);
     free(out);
   } else if (rctx->output == e_output_check
-      && (rctx->output_got->used != rctx->output_wanted->used
-          || strcmp(rctx->output_got->data, rctx->output_wanted->data))) {
+             && (rctx->output_got->used != rctx->output_wanted->used
+                 || strcmp(rctx->output_got->data,
+                           rctx->output_wanted->data))) {
     if (XBT_LOG_ISENABLED(tesh, xbt_log_priority_info)) {
       char *diff =
-        xbt_str_diff(rctx->output_wanted->data, rctx->output_got->data);
+          xbt_str_diff(rctx->output_wanted->data, rctx->output_got->data);
       ERROR2("Output of <%s> mismatch:\n%s", rctx->filepos, diff);
       free(diff);
     }

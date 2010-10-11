@@ -21,8 +21,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(pmm, "Parallel Matrix Multiplication");
 
 /* struct for recovering results */
 GRAS_DEFINE_TYPE(s_result, struct s_result {
-                 int linepos;
-                 int rowpos; xbt_matrix_t C GRAS_ANNOTE(subtype, double);});
+                 int linepos; int rowpos;
+                 xbt_matrix_t C GRAS_ANNOTE(subtype, double);
+                 });
 
 typedef struct s_result result_t;
 
@@ -33,7 +34,8 @@ GRAS_DEFINE_TYPE(s_pmm_assignment, struct s_pmm_assignment {
                  xbt_peer_t line[NEIGHBOR_COUNT];
                  xbt_peer_t row[NEIGHBOR_COUNT];
                  xbt_matrix_t A GRAS_ANNOTE(subtype, double);
-                 xbt_matrix_t B GRAS_ANNOTE(subtype, double);});
+                 xbt_matrix_t B GRAS_ANNOTE(subtype, double);
+                 });
 
 typedef struct s_pmm_assignment s_pmm_assignment_t;
 
@@ -55,11 +57,11 @@ static void register_messages(void)
 
   /* send data between slaves */
   gras_msgtype_declare("dataA",
-                       gras_datadesc_matrix(gras_datadesc_by_name("double"),
-                                            NULL));
+                       gras_datadesc_matrix(gras_datadesc_by_name
+                                            ("double"), NULL));
   gras_msgtype_declare("dataB",
-                       gras_datadesc_matrix(gras_datadesc_by_name("double"),
-                                            NULL));
+                       gras_datadesc_matrix(gras_datadesc_by_name
+                                            ("double"), NULL));
 
   /* synchronization message */
   gras_msgtype_declare("pmm_sync", 0);
@@ -113,8 +115,9 @@ int master(int argc, char *argv[])
   /* friends, we're ready. Come and play */
   INFO0("Wait for peers for 2 sec");
   gras_msg_handleall(2);
-  while (xbt_dynar_length(peers)<9) {
-    INFO1("Got only %ld pals. Wait 2 more seconds", xbt_dynar_length(peers));
+  while (xbt_dynar_length(peers) < 9) {
+    INFO1("Got only %ld pals. Wait 2 more seconds",
+          xbt_dynar_length(peers));
     gras_msg_handleall(2);
   }
   INFO1("Good. Got %ld pals", xbt_dynar_length(peers));
@@ -167,8 +170,9 @@ int master(int argc, char *argv[])
                                       submatrix_size * line,
                                       submatrix_size * row, NULL);
     assignment.B =
-      xbt_matrix_new_sub(B, submatrix_size, submatrix_size,
-                         submatrix_size * line, submatrix_size * row, NULL);
+        xbt_matrix_new_sub(B, submatrix_size, submatrix_size,
+                           submatrix_size * line, submatrix_size * row,
+                           NULL);
     row++;
     if (row >= PROC_MATRIX_SIZE) {
       row = 0;
@@ -181,18 +185,19 @@ int master(int argc, char *argv[])
   }
 
   /* synchronize slaves */
-  for (i = 0 ; i < PROC_MATRIX_SIZE ; i++) {
+  for (i = 0; i < PROC_MATRIX_SIZE; i++) {
     int j;
-    for (j = 0 ; j < SLAVE_COUNT ; j++)
+    for (j = 0; j < SLAVE_COUNT; j++)
       gras_msg_wait(600, "pmm_sync", NULL, NULL);
-    for (j = 0 ; j < SLAVE_COUNT ; j++)
+    for (j = 0; j < SLAVE_COUNT; j++)
       gras_msg_send(socket[j], "pmm_sync", NULL);
   }
 
   /* Retrieve the results */
   for (i = 0; i < SLAVE_COUNT; i++) {
     gras_msg_wait(6000, "result", &from, &result);
-    VERB2("%d slaves are done already. Waiting for %d", i + 1, SLAVE_COUNT);
+    VERB2("%d slaves are done already. Waiting for %d", i + 1,
+          SLAVE_COUNT);
     xbt_matrix_copy_values(C, result.C, submatrix_size, submatrix_size,
                            submatrix_size * result.linepos,
                            submatrix_size * result.rowpos, 0, 0, NULL);
@@ -204,13 +209,13 @@ int master(int argc, char *argv[])
     INFO0("XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations");
   else {
     WARN0("the result seems wrong");
-  if (DATA_MATRIX_SIZE < 30) {
-    INFO0("The Result of Multiplication is :");
-    xbt_matrix_dump(C, "C:res", 0, xbt_matrix_dump_display_double);
-  } else {
-    INFO1("Matrix size too big (%d>30) to be displayed here",
-          DATA_MATRIX_SIZE);
-  }
+    if (DATA_MATRIX_SIZE < 30) {
+      INFO0("The Result of Multiplication is :");
+      xbt_matrix_dump(C, "C:res", 0, xbt_matrix_dump_display_double);
+    } else {
+      INFO1("Matrix size too big (%d>30) to be displayed here",
+            DATA_MATRIX_SIZE);
+    }
   }
 
   amok_pm_group_shutdown("pmm");        /* Ok, we're out of here */
@@ -246,7 +251,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
   int myline, myrow;
   xbt_matrix_t mydataA, mydataB;
   xbt_matrix_t bC =
-    xbt_matrix_double_new_zeros(submatrix_size, submatrix_size);
+      xbt_matrix_double_new_zeros(submatrix_size, submatrix_size);
 
   result_t result;
 
@@ -290,7 +295,8 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
 
     /* a line brodcast */
     if (myline == step) {
-      VERB2("LINE: step(%d) = Myline(%d). Broadcast my data.", step, myline);
+      VERB2("LINE: step(%d) = Myline(%d). Broadcast my data.", step,
+            myline);
       for (l = 0; l < PROC_MATRIX_SIZE - 1; l++) {
         VERB1("LINE:   Send to %s", gras_socket_peer_name(socket_row[l]));
         gras_msg_send(socket_row[l], "dataB", &mydataB);
@@ -316,7 +322,8 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
     if (myrow == step) {
       VERB2("ROW: step(%d)=myrow(%d). Broadcast my data.", step, myrow);
       for (l = 1; l < PROC_MATRIX_SIZE; l++) {
-        VERB1("ROW:   Send to %s", gras_socket_peer_name(socket_line[l - 1]));
+        VERB1("ROW:   Send to %s",
+              gras_socket_peer_name(socket_line[l - 1]));
         gras_msg_send(socket_line[l - 1], "dataA", &mydataA);
       }
       xbt_matrix_free(bA);

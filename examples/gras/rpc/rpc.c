@@ -145,7 +145,7 @@ int client(int argc, char *argv[])
     xbt_assert1(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
                 "Got wrong message: %s", e.msg);
     INFO0
-      ("Got the expected exception when calling the exception raising RPC");
+        ("Got the expected exception when calling the exception raising RPC");
     xbt_ex_free(e);
   }
 
@@ -176,7 +176,8 @@ int client(int argc, char *argv[])
   for (i = 0; i < 5; i++) {
     INFO1("Call the exception raising RPC on the forwarder (i=%d)", i);
     TRY {
-      gras_msg_rpccall(toforwarder, 6000.0, "forward exception", NULL, NULL);
+      gras_msg_rpccall(toforwarder, 6000.0, "forward exception", NULL,
+                       NULL);
     }
     CATCH(e) {
       gotit = 1;
@@ -191,7 +192,7 @@ int client(int argc, char *argv[])
                 "Got wrong category: %d (instead of %d)",
                 e.category, unknown_error);
     INFO0
-      ("Got the expected exception when calling the exception raising RPC");
+        ("Got the expected exception when calling the exception raising RPC");
     xbt_ex_free(e);
     exception_catching();
   }
@@ -231,7 +232,8 @@ static int forwarder_cb_kill(gras_msg_cb_ctx_t ctx, void *payload_data)
   return 0;
 }
 
-static int forwarder_cb_forward_ex(gras_msg_cb_ctx_t ctx, void *payload_data)
+static int forwarder_cb_forward_ex(gras_msg_cb_ctx_t ctx,
+                                   void *payload_data)
 {
   forward_data_t fdata = gras_userdata_get();
 
@@ -313,7 +315,8 @@ static int server_cb_ping(gras_msg_cb_ctx_t ctx, void *payload_data)
   /* 2. Log which client connected */
   INFO3("Got message PING(%d) from %s:%d",
         msg,
-        gras_socket_peer_name(expeditor), gras_socket_peer_port(expeditor));
+        gras_socket_peer_name(expeditor),
+        gras_socket_peer_port(expeditor));
 
   /* 4. Change the value of the msg variable */
   msg = 4321;

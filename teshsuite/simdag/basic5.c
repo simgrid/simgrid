@@ -38,8 +38,8 @@ int main(int argc, char **argv)
   taskB = SD_task_create("Task B", NULL, 1.0);
 
   /* let's launch the simulation! */
-  SD_task_schedule(taskInit, 1, SD_workstation_get_list(), no_cost, no_cost,
-                   -1.0);
+  SD_task_schedule(taskInit, 1, SD_workstation_get_list(), no_cost,
+                   no_cost, -1.0);
   SD_task_schedule(taskA, 2, SD_workstation_get_list(), no_cost, amount,
                    -1.0);
   SD_task_schedule(taskB, 1, SD_workstation_get_list(), comput, no_cost,

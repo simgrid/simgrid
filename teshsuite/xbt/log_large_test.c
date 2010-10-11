@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
 
   xbt_init(&argc, argv);
 
-  INFO10("This is a very large message:\n0%s1%s2%s3%s4%s5%s6%s7%s8%s9%s", tmp,
-         tmp, tmp, tmp, tmp, tmp, tmp, tmp, tmp, tmp);
+  INFO10("This is a very large message:\n0%s1%s2%s3%s4%s5%s6%s7%s8%s9%s",
+         tmp, tmp, tmp, tmp, tmp, tmp, tmp, tmp, tmp, tmp);
   INFO1("Done (strlen>%d)", (int) (10 * strlen(tmp)));
   free(tmp);
 

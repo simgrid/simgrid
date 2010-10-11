@@ -19,7 +19,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 int sender(int argc, char *argv[]);
 int receiver(int argc, char *argv[]);
 
-MSG_error_t test_all(const char *platform_file, const char *application_file);
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file);
 
 typedef enum {
   PORT_22 = 0,
@@ -55,7 +56,8 @@ int sender(int argc, char *argv[])
   /* Latency */
   time = MSG_get_clock();
   sprintf(sprintf_buffer_la, "latency task");
-  task_la = MSG_task_create(sprintf_buffer_la, 0.0, task_comm_size_lat, NULL);
+  task_la =
+      MSG_task_create(sprintf_buffer_la, 0.0, task_comm_size_lat, NULL);
   task_la->data = xbt_new(double, 1);
   *(double *) task_la->data = time;
   INFO1("task_la->data = %le", *((double *) task_la->data));
@@ -64,7 +66,8 @@ int sender(int argc, char *argv[])
   /* Bandwidth */
   time = MSG_get_clock();
   sprintf(sprintf_buffer_bw, "bandwidth task");
-  task_bw = MSG_task_create(sprintf_buffer_bw, 0.0, task_comm_size_bw, NULL);
+  task_bw =
+      MSG_task_create(sprintf_buffer_bw, 0.0, task_comm_size_bw, NULL);
   task_bw->data = xbt_new(double, 1);
   *(double *) task_bw->data = time;
   INFO1("task_bw->data = %le", *((double *) task_bw->data));
@@ -123,7 +126,8 @@ int receiver(int argc, char *argv[])
 
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file, const char *application_file)
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file)
 {
 
   MSG_error_t res = MSG_OK;
@@ -154,17 +158,19 @@ int main(int argc, char *argv[])
   MSG_error_t res = MSG_OK;
 
 #ifdef _MSC_VER
-  unsigned int prev_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
+  unsigned int prev_exponent_format =
+      _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
   MSG_global_init(&argc, argv);
 
 
   if (argc != 3) {
-    CRITICAL1("Usage: %s platform_file deployment_file <model>\n", argv[0]);
+    CRITICAL1("Usage: %s platform_file deployment_file <model>\n",
+              argv[0]);
     CRITICAL1
-      ("example: %s msg_platform.xml msg_deployment.xml KCCFLN05_Vegas\n",
-       argv[0]);
+        ("example: %s msg_platform.xml msg_deployment.xml KCCFLN05_Vegas\n",
+         argv[0]);
     exit(1);
   }
 

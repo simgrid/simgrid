@@ -17,7 +17,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file, const char *application_file);
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file);
 
 typedef enum {
   PORT_22 = 0,
@@ -70,25 +71,24 @@ int master(int argc, char *argv[])
     int a;
     *((double *) task->data) = MSG_get_clock();
 
-    a =
-      MSG_task_put_with_timeout(task, slaves[i % slaves_count], PORT_22,
-                                10.0);
+    a = MSG_task_put_with_timeout(task, slaves[i % slaves_count], PORT_22,
+                                  10.0);
     if (a == MSG_OK) {
       INFO0("Send completed");
     } else if (a == MSG_HOST_FAILURE) {
       INFO0
-        ("Gloups. The cpu on which I'm running just turned off!. See you!");
+          ("Gloups. The cpu on which I'm running just turned off!. See you!");
       free(slaves);
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
       INFO1
-        ("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!",
-         slaves[i % slaves_count]->name);
+          ("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!",
+           slaves[i % slaves_count]->name);
       MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
       INFO1
-        ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
-         slaves[i % slaves_count]->name);
+          ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
+           slaves[i % slaves_count]->name);
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
@@ -97,7 +97,7 @@ int master(int argc, char *argv[])
   }
 
   INFO0
-    ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+      ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
     m_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
     int a = MSG_task_put_with_timeout(task, slaves[i], PORT_22, 1.0);
@@ -105,7 +105,7 @@ int master(int argc, char *argv[])
       continue;
     if (a == MSG_HOST_FAILURE) {
       INFO0
-        ("Gloups. The cpu on which I'm running just turned off!. See you!");
+          ("Gloups. The cpu on which I'm running just turned off!. See you!");
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
       INFO1("Mmh. Can't reach '%s'! Nevermind. Let's keep going!",
@@ -113,12 +113,13 @@ int master(int argc, char *argv[])
       MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
       INFO1
-        ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
-         slaves[i % slaves_count]->name);
+          ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
+           slaves[i % slaves_count]->name);
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
-      xbt_assert2(0, "Unexpected behavior with '%s': %d", slaves[i]->name, a);
+      xbt_assert2(0, "Unexpected behavior with '%s': %d", slaves[i]->name,
+                  a);
     }
   }
 
@@ -155,7 +156,7 @@ int slave(int argc, char *argv[])
         MSG_task_destroy(task);
       } else if (a == MSG_HOST_FAILURE) {
         INFO0
-          ("Gloups. The cpu on which I'm running just turned off!. See you!");
+            ("Gloups. The cpu on which I'm running just turned off!. See you!");
         return 0;
       } else {
         INFO0("Hey ?! What's up ? ");
@@ -163,7 +164,7 @@ int slave(int argc, char *argv[])
       }
     } else if (a == MSG_HOST_FAILURE) {
       INFO0
-        ("Gloups. The cpu on which I'm running just turned off!. See you!");
+          ("Gloups. The cpu on which I'm running just turned off!. See you!");
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
       INFO0("Mmh. Something went wrong. Nevermind. Let's keep going!");
@@ -177,7 +178,8 @@ int slave(int argc, char *argv[])
 }                               /* end_of_slave */
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file, const char *application_file)
+MSG_error_t test_all(const char *platform_file,
+                     const char *application_file)
 {
   MSG_error_t res = MSG_OK;
 

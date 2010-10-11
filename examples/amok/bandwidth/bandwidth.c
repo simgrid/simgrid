@@ -11,7 +11,8 @@
 #include "amok/bandwidth.h"
 #include "amok/peermanagement.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(Bandwidth, "Messages specific to this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,
+                             "Messages specific to this example");
 
 /* **********************************************************************
  * Sensor code
@@ -110,19 +111,21 @@ int maestro(int argc, char *argv[])
   peer = gras_socket_client(h1->name, h1->port);
 
   INFO0("Test the BW between me and one of the sensors");
-  amok_bw_test(peer, buf_size, msg_size, msg_amount, min_duration, &sec, &bw);
+  amok_bw_test(peer, buf_size, msg_size, msg_amount, min_duration, &sec,
+               &bw);
   INFO7
-    ("Experience between me and %s:%d (initially %d msgs of %d bytes, maybe modified to fill the pipe at least %.1fs) took %f sec, achieving %f kb/s",
-     h1->name, h1->port, msg_amount, msg_size, min_duration, sec,
-     ((double) bw) / 1024.0);
+      ("Experience between me and %s:%d (initially %d msgs of %d bytes, maybe modified to fill the pipe at least %.1fs) took %f sec, achieving %f kb/s",
+       h1->name, h1->port, msg_amount, msg_size, min_duration, sec,
+       ((double) bw) / 1024.0);
 
-  INFO4("Test the BW between %s:%d and %s:%d", h1->name, h1->port, h2->name,
-        h2->port);
-  amok_bw_request(h1->name, h1->port, h2->name, h2->port, buf_size, msg_size,
-                  msg_amount, min_duration, &sec, &bw);
+  INFO4("Test the BW between %s:%d and %s:%d", h1->name, h1->port,
+        h2->name, h2->port);
+  amok_bw_request(h1->name, h1->port, h2->name, h2->port, buf_size,
+                  msg_size, msg_amount, min_duration, &sec, &bw);
   INFO6
-    ("Experience between %s:%d and %s:%d took took %f sec, achieving %f kb/s",
-     h1->name, h1->port, h2->name, h2->port, sec, ((double) bw) / 1024.0);
+      ("Experience between %s:%d and %s:%d took took %f sec, achieving %f kb/s",
+       h1->name, h1->port, h2->name, h2->port, sec,
+       ((double) bw) / 1024.0);
 
   /* Game is over, friends */
   amok_pm_group_shutdown("bandwidth");

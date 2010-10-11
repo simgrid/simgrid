@@ -42,42 +42,44 @@
 
 
 #define MAXLEN 10000
- 
-int main( int argc, char *argv[] )
+
+int main(int argc, char *argv[])
 {
 #define N 1000000
-   int *out, *in,i,j,k;
-   int myself,tasks;
- 
-   out = malloc(N*sizeof(int));
-   in  = malloc(N*sizeof(int));
-   if ((out==NULL) || (in==NULL)) {
-           printf("Error: cannot allocate N bytes for in or out arrays\n");
-           exit(1);
-   }
-   MPI_Init( &argc,&argv );
-   MPI_Comm_rank(MPI_COMM_WORLD,&myself);
-   MPI_Comm_size(MPI_COMM_WORLD,&tasks);
-   for(j=1;j<=MAXLEN;j*=10)  {
-           if ( 0 == myself ) {
-                   printf("* calling MPI_Alltoall with buffers of %d ints\n",j);
-           }
-           for(i=0;i<j*tasks;i++)  
-                   out[i] = myself;
+  int *out, *in, i, j, k;
+  int myself, tasks;
 
-           MPI_Alltoall(out,j,MPI_INT,in,j,MPI_INT,MPI_COMM_WORLD);
+  out = malloc(N * sizeof(int));
+  in = malloc(N * sizeof(int));
+  if ((out == NULL) || (in == NULL)) {
+    printf("Error: cannot allocate N bytes for in or out arrays\n");
+    exit(1);
+  }
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &myself);
+  MPI_Comm_size(MPI_COMM_WORLD, &tasks);
+  for (j = 1; j <= MAXLEN; j *= 10) {
+    if (0 == myself) {
+      printf("* calling MPI_Alltoall with buffers of %d ints\n", j);
+    }
+    for (i = 0; i < j * tasks; i++)
+      out[i] = myself;
 
-           for(i=0;i<tasks;i++)  {
-                   for(k=0;k<j;k++) {
-                           if(in[k+i*j] != i) {  
-                                   printf("<%d> bad answer (%d) at index %d of %d (should be %d)\n",myself,in[k+i*j],k+i*j,j*tasks,i); 
-                                   break; 
-                           }
-                   }
-           }
-   }
-   MPI_Barrier(MPI_COMM_WORLD);
-   if(myself==0)  printf("TEST COMPLETE\n");
-   MPI_Finalize();
-   return EXIT_SUCCESS;
+    MPI_Alltoall(out, j, MPI_INT, in, j, MPI_INT, MPI_COMM_WORLD);
+
+    for (i = 0; i < tasks; i++) {
+      for (k = 0; k < j; k++) {
+        if (in[k + i * j] != i) {
+          printf("<%d> bad answer (%d) at index %d of %d (should be %d)\n",
+                 myself, in[k + i * j], k + i * j, j * tasks, i);
+          break;
+        }
+      }
+    }
+  }
+  MPI_Barrier(MPI_COMM_WORLD);
+  if (myself == 0)
+    printf("TEST COMPLETE\n");
+  MPI_Finalize();
+  return EXIT_SUCCESS;
 }

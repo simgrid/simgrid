@@ -74,8 +74,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
       }
       seconds =
-        (double) (stop_time->tv_sec - start_time->tv_sec) +
-        (double) (stop_time->tv_usec - start_time->tv_usec) / ONE_MILLION;
+          (double) (stop_time->tv_sec - start_time->tv_sec) +
+          (double) (stop_time->tv_usec -
+                    start_time->tv_usec) / ONE_MILLION;
     }
 
     free(buffer);

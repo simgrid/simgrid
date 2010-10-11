@@ -8,18 +8,17 @@
  * Declaration of the s_TestSuite, which represents
  * a suite of tests.
  */
-typedef struct s_TestSuite
-{
-	TestCaseContext_t test_case_context;	/* the context of the current test case	*/
-	Stream_t stream;						/* stdin or file stream					*/
-	size_t testCaseCount;					/* test case count						*/
-	size_t successCount;					/* test case success count				*/
-	size_t failureCount;					/* test case failure count				*/
-	#ifdef __VERBOSE
-	char currentTime[30];					/* the current time						*/
-	#endif /* #ifdef __VERBOSE */
-    ThreadDynarray_t threads;
-}s_TestSuite_t,* TestSuite_t;
+typedef struct s_TestSuite {
+  TestCaseContext_t test_case_context;  /* the context of the current test case */
+  Stream_t stream;              /* stdin or file stream                                 */
+  size_t testCaseCount;         /* test case count                                              */
+  size_t successCount;          /* test case success count                              */
+  size_t failureCount;          /* test case failure count                              */
+#ifdef __VERBOSE
+  char currentTime[30];         /* the current time                                             */
+#endif                          /* #ifdef __VERBOSE */
+  ThreadDynarray_t threads;
+} s_TestSuite_t, *TestSuite_t;
 
 /* 
  * s_TestSuite connected functions.
@@ -33,12 +32,12 @@ TestSuite_t TestSuite_new(void);
 /* 
  * Free the s_TestSuite pointed to by ptr.
  */
- void TestSuite_free(TestSuite_t ptr);
- 
+void TestSuite_free(TestSuite_t ptr);
+
  /*
- * Initialize the s_TestSuite structure.
- */
-errno_t TestSuite_initialize(TestSuite_t ptr,int argc,char *argv[]);
+  * Initialize the s_TestSuite structure.
+  */
+errno_t TestSuite_initialize(TestSuite_t ptr, int argc, char *argv[]);
 
 
 /*
@@ -46,7 +45,7 @@ errno_t TestSuite_initialize(TestSuite_t ptr,int argc,char *argv[]);
  * the address of the buffer containing the  text into  
  * s_TestSuite.current_line. 
  */
-ssize_t TestSuite_getline(TestSuite_t ptr,size_t* len);
+ssize_t TestSuite_getline(TestSuite_t ptr, size_t * len);
 
 /* 
  * Launch the test suite. 
@@ -112,11 +111,11 @@ errno_t TestSuite_checkChildOutput(TestCaseContext_t context);
 /*
  * Print message
  */
-void TestSuite_print(const char* str);
+void TestSuite_print(const char *str);
 
 /*
  * Check the child process exit code.
- */ 
+ */
 errno_t TestSuite_checkChildExitCode(TestCaseContext_t context);
 
 errno_t TestSuite_unset(TestSuite_t testSuite);
@@ -129,16 +128,16 @@ void TestSuite_enableExitCodeChecking(TestSuite_t testSuite);
 
 void TestSuite_disableExitCodeChecking(TestSuite_t testSuite);
 
-unsigned long WINAPI TestSuite_runSyncTestCase(void* param);
+unsigned long WINAPI TestSuite_runSyncTestCase(void *param);
 
-errno_t  TestSuite_runAsyncTestCase(TestSuite_t testSuite);
+errno_t TestSuite_runAsyncTestCase(TestSuite_t testSuite);
 
 /* 
  * Terminate the test suite.
  */
 void TestSuite_terminate(TestSuite_t testSuite);
 
-unsigned long WINAPI TestSuite_asyncReadChildOutput(void* param);
+unsigned long WINAPI TestSuite_asyncReadChildOutput(void *param);
 
 bool TestSuite_iSPostOutputCheckingEnabled(TestCaseContext_t context);
 
@@ -154,8 +153,8 @@ void TestSuite_setCommandLine(TestSuite_t testSuite);
  * Update the current time. 
  */
 void TestSuite_update_current_time(TestSuite_t ptr);
-#endif /* #ifdef __VERBOSE */
+#endif                          /* #ifdef __VERBOSE */
 
 
 
-#endif /* #ifndef __TestSuite_H__ */
+#endif                          /* #ifndef __TestSuite_H__ */

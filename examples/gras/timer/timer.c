@@ -35,8 +35,9 @@ static void repetitive_action(void)
     gras_timer_cancel_repeat(REPEAT_INTERVAL, repetitive_action);
   }
 
-  INFO1("repetitive_action decrementing globals->still_to_do. New value: %d",
-        globals->still_to_do - 1);
+  INFO1
+      ("repetitive_action decrementing globals->still_to_do. New value: %d",
+       globals->still_to_do - 1);
 
   globals->still_to_do--;       /* should be the last line of the action since value=0 stops the program */
 }                               /* end_of_repetitive_action */
@@ -71,7 +72,8 @@ int client(int argc, char *argv[])
   INFO0("Canceling the delayed_action.");
   gras_timer_cancel_delay(REPEAT_INTERVAL, delayed_action);
 
-  INFO1("Re-programming the delayed_action for after %f sec", DELAY_INTERVAL);
+  INFO1("Re-programming the delayed_action for after %f sec",
+        DELAY_INTERVAL);
   gras_timer_delay(REPEAT_INTERVAL, delayed_action);
 
   while (globals->still_to_do == -1 ||  /* Before delayed action runs */

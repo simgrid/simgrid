@@ -55,13 +55,15 @@ void test(char *graph_file)
   xbt_dynar_t edges = NULL;
   xbt_dynar_t nodes = NULL;
 
-  xbt_graph_t graph = xbt_graph_read(graph_file, &node_label_and_data, NULL);
+  xbt_graph_t graph =
+      xbt_graph_read(graph_file, &node_label_and_data, NULL);
 
   n = xbt_dynar_length(xbt_graph_get_nodes(graph));
 
   if (test_export_xml) {
     INFO0("---- Testing XML export. Exporting to testgraph.xml ----");
-    xbt_graph_export_graphxml(graph, "testgraph.xml", NULL, NULL, NULL, NULL);
+    xbt_graph_export_graphxml(graph, "testgraph.xml", NULL, NULL, NULL,
+                              NULL);
   }
   if (test_export_dot) {
     INFO0("---- Testing GraphViz export. Exporting to testgraph.dot ----");

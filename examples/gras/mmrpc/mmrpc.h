@@ -21,4 +21,4 @@ void mmrpc_register_messages(void);
 int server(int argc, char *argv[]);
 int client(int argc, char *argv[]);
 
-#endif /* MMRPC_H */
+#endif                          /* MMRPC_H */

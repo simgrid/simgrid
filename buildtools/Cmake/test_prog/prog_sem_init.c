@@ -8,6 +8,6 @@
 
 void main(void)
 {
-	sem_t s;
-	sem_init(&s);
+  sem_t s;
+  sem_init(&s);
 }
