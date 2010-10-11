@@ -68,7 +68,7 @@ void surf_config(const char *name, va_list pa);
 void net_action_recycle(surf_action_t action);
 double net_action_get_remains(surf_action_t action);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-int net_get_link_latency(surf_action_t action);
+int net_get_link_latency_limited(surf_action_t action);
 #endif
 void net_action_set_max_duration(surf_action_t action, double duration);
 /*
