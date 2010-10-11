@@ -160,4 +160,10 @@ IF(PIPOL_SYSTEMS)
   ENDFOREACH(SYSTEM ${PIPOL_SYSTEMS})
 ENDIF(PIPOL_SYSTEMS)
 
+ADD_CUSTOM_TARGET(pipol_kill_all_jobs
+		COMMENT "PIPOL delete all jobs"
+		COMMAND ./pipol-sub --pipol-user=${pipol_user} deleteallmyjobs
+		)
+
+
 ENDIF(pipol_user)
