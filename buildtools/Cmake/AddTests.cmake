@@ -90,6 +90,8 @@ ADD_TEST(tesh-msg-get_sender	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTO
 ADD_TEST(tesh-simdag-reinit_costs	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/test_reinit_costs.tesh)
 ADD_TEST(tesh-simdag-parser		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test.tesh)
 ADD_TEST(tesh-simdag-flatifier		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms flatifier.tesh)
+ADD_TEST(tesh-simdag-parser-full-links1		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters.xml FULL_LINK)
+ADD_TEST(tesh-simdag-parser-full-links2		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters_one_name.xml FULL_LINK)
 ADD_TEST(tesh-simdag-basic0	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic0.tesh)
 ADD_TEST(tesh-simdag-basic1	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic1.tesh)
 ADD_TEST(tesh-simdag-basic2	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic2.tesh)
