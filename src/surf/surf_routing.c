@@ -2969,7 +2969,7 @@ static void routing_full_parse_Scluster(void)
     case 1:
       surf_parse_get_int(&start,
                          xbt_dynar_get_as(radical_ends, 0, char *));
-      host_id = bprintf("%s_%d%s", cluster_prefix, start, cluster_suffix);
+      host_id = bprintf("%s%d%s", cluster_prefix, start, cluster_suffix);
 #ifndef HAVE_PCRE_LIB
       xbt_dynar_push_as(tab_elements_num, int, start);
 #endif
@@ -3007,7 +3007,7 @@ static void routing_full_parse_Scluster(void)
       surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
       DEBUG2("Create hosts and links from %d to %d", start, end);
       for (i = start; i <= end; i++) {
-        host_id = bprintf("%s_%d%s", cluster_prefix, i, cluster_suffix);
+        host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);
 #ifndef HAVE_PCRE_LIB
         xbt_dynar_push_as(tab_elements_num, int, i);
 #endif
@@ -3048,7 +3048,7 @@ static void routing_full_parse_Scluster(void)
 
   DEBUG0(" ");
   router_id =
-      bprintf("%s_%s_router%s", cluster_prefix, cluster_id,
+      bprintf("%s%s_router%s", cluster_prefix, cluster_id,
               cluster_suffix);
   link_router = bprintf("%s_link_%s_router", cluster_id, cluster_id);
   link_backbone = bprintf("%s_backbone", cluster_id);
@@ -3092,7 +3092,7 @@ static void routing_full_parse_Scluster(void)
       new_suffix = bprintf("%s\\.%s", new_suffix, groups);
     }
   }
-  route_src_dst = bprintf("%s_(.*)%s", cluster_prefix, new_suffix);
+  route_src_dst = bprintf("%s(.*)%s", cluster_prefix, new_suffix);
 
   DEBUG0(" ");
 
@@ -3127,7 +3127,7 @@ static void routing_full_parse_Scluster(void)
         route_src = router_id;
       } else {
         route_src =
-            bprintf("%s_%d%s", cluster_prefix,
+            bprintf("%s%d%s", cluster_prefix,
                     xbt_dynar_get_as(tab_elements_num, i, int),
                     cluster_suffix);
       }
@@ -3136,7 +3136,7 @@ static void routing_full_parse_Scluster(void)
         route_dst = router_id;
       } else {
         route_dst =
-            bprintf("%s_%d%s", cluster_prefix,
+            bprintf("%s%d%s", cluster_prefix,
                     xbt_dynar_get_as(tab_elements_num, j, int),
                     cluster_suffix);
       }

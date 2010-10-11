@@ -19,10 +19,14 @@
        
      <link id="backbone" bandwidth="1250000000" latency="5E-4"/>  
  	
-     <ASroute src="bob_cluster" dst="alice_cluster" gw_src="bob_bob_cluster_router.hamburger.edu" gw_dst="alice_alice_cluster_router.crepe.fr">
+     <ASroute src="bob_cluster" dst="alice_cluster" 
+	 gw_src="bobbob_cluster_router.hamburger.edu" 
+	 gw_dst="alicealice_cluster_router.crepe.fr">
  		<link_ctn id="backbone"/>
      </ASroute>   
-     <ASroute src="alice_cluster" dst="bob_cluster" gw_src="alice_alice_cluster_router.crepe.fr" gw_dst="bob_bob_cluster_router.hamburger.edu">
+     <ASroute src="alice_cluster" dst="bob_cluster" 
+	 gw_src="alicealice_cluster_router.crepe.fr" 
+	 gw_dst="bobbob_cluster_router.hamburger.edu">
  		<link_ctn id="backbone"/>
      </ASroute>   
      

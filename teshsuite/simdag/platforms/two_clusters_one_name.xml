@@ -16,16 +16,16 @@
 	 <ASroute 
 	 src="bob_cluster" 
 	 dst="bob_cluster_1" 
-	 gw_src="bob_bob_cluster_router.hamburger.edu" 
-	 gw_dst="bob_bob_cluster_1_router.hamburger.edu">
+	 gw_src="bobbob_cluster_router.hamburger.edu" 
+	 gw_dst="bobbob_cluster_1_router.hamburger.edu">
  		<link_ctn id="backbone"/>
      </ASroute>  
 	  
 	 <ASroute 
 	 src="bob_cluster_1" 
 	 dst="bob_cluster" 
-	 gw_src="bob_bob_cluster_1_router.hamburger.edu" 
-	 gw_dst="bob_bob_cluster_router.hamburger.edu">
+	 gw_src="bobbob_cluster_1_router.hamburger.edu" 
+	 gw_dst="bobbob_cluster_router.hamburger.edu">
  		<link_ctn id="backbone"/>
      </ASroute>   
  	 
