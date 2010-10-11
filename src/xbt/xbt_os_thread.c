@@ -552,8 +552,7 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
     THROW0(arg_error, EINVAL, "Cannot destroy the NULL sempahore");
 
 #ifdef HAVE_SEM_INIT
-  if (sem_destroy(sem->ps))
-    <0)
+  if (sem_destroy(sem->ps)<0)
       THROW1(system_error, errno, "sem_destroy() failed: %s",
              strerror(errno));
 #else
